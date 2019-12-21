@@ -1,0 +1,6 @@
+./dist/*
+./dev/*
+./node_modules/*
+./flow-typed/*
+./docs
+webpack.config.js

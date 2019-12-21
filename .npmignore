@@ -1,0 +1,14 @@
+.vscode
+node_modules
+spec
+dev
+.babelrc
+.eslintignore
+.eslintrc
+.travis.yml
+webpack.config.js
+yarn.lock
+_docpress
+_docs
+flow-typed
+playground

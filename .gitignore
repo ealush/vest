@@ -1,0 +1,13 @@
+node_modules
+.vscode
+.sass-cache
+dev_docpress
+_docpress
+dev
+version.json
+version.txt
+.version
+documentation/MAIN.md
+documentation/assets/**/*.css
+.DS_Store
+*.log

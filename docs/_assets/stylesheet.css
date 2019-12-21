@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+code {
+    font-family: 'Roboto Mono' !important;
+}
+
+.markdown-section code {
+    font-size: 100%;
+    color: #26B4AD;
+}
+
+.markdown-section pre code {
+    font-size: .9rem;
+    color: #26B4AD;
+}
+
+code.lang-js {
+    font-weight: 400;
+}
+
+.app-name {
+    padding: 10px;
+}
+
+.sidebar-nav {
+    padding-left: 10px;
+}
+
+body, .anchor span, a.anchor {
+    color: #3C4464;
+}
+
+.token.function,.token.keyword {
+    color: #26B4AD
+}
+
+.token.boolean, .token.number {
+    color: #59d4e8;
+}
+
+.markdown-section a:hover {
+    color: #3a6b96;
+}

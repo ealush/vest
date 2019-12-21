@@ -1,0 +1,51 @@
+{
+  "name": "vest",
+  "version": "1.0.0",
+  "description": "Validation Test",
+  "main": "./dist/vest.min.js",
+  "author": "ealush",
+  "license": "MIT",
+  "scripts": {
+    "build": "rollup --config config/rollup.js -m",
+    "pretest": "npm run build",
+    "test": "jest --config=config/jest/jest.config.js -i",
+    "eslint": "eslint -c .eslintrc \"./src/**/*.js\"; exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ealush/vest.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ealush/vest/issues"
+  },
+  "homepage": "https://ealush.github.io/vest/",
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.7.4",
+    "@babel/plugin-transform-object-assign": "^7.2.0",
+    "@babel/preset-env": "^7.7.4",
+    "@babel/register": "^7.5.5",
+    "anyone": "0.0.5",
+    "babel-eslint": "^10.0.1",
+    "babel-jest": "^24.9.0",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-add-module-exports": "^1.0.2",
+    "cross-env": "^6.0.0",
+    "date-fns": "^2.0.1",
+    "eslint": "^6.7.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jest": "^23.0.5",
+    "faker": "^4.1.0",
+    "jest": "^24.9.0",
+    "lodash": "^4.17.15",
+    "n4s": "^0.4.2",
+    "node-fetch": "^2.6.0",
+    "rollup": "^1.18.0",
+    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-commonjs": "^10.0.2",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-replace": "^2.2.0",
+    "rollup-plugin-terser": "^5.0.0",
+    "semver": "^6.3.0"
+  }
+}

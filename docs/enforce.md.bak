@@ -1,0 +1,60 @@
+## Enforce
+For assertions, vest is bundled with [Enforce](https://npmjs.com/package/n4s). Enforce is a validation assertions library. It allows you to run your data against rules and conditions and test whether it passes your validations. It is intended for validation logic that gets repeated over and over again and should not be written manually. It comes with a wide-variety of pre-built rules, but it can also be extended to support your own repeated custom logic.
+
+The way Enforce operates is similar to most common assertion libraries. You pass it a value, and one or more rules to test your value against - if the validation fails, it throws an Error, otherwise - it will move on to the next rule rule in the chain.
+
+```js
+import { enforce } from 'vest'
+
+enforce(4)
+    .isNumber();
+// passes
+
+enforce(4)
+    .isNumber()
+    .greaterThan(2);
+// passes
+
+enforce(4)
+    .lessThan(2) // throws an error, will not carry on to the next rule
+    .greaterThan(3);
+```
+
+## Content
+- [List of Enforce rules](#list-of-enforce-rules)
+- [Custom Enforce Rules](#custom-enforce-rules)
+
+Enforce exposes all predefined and custom rules. You may use chaining to make multiple enfocements for the same value.
+
+{{LIST_OF_ENFORCE_RULES}}
+
+# Custom enforce rules
+To make it easier to reuse logic across your application, sometimes you would want to encapsulate bits of logic in rules that you can use later on, for example, "what's considered a valid email".
+
+Your custom rules are essentially a single javascript object containing your rules.
+```js
+const myCustomRules = {
+    isValidEmail: (value) => value.indexOf('@') > -1,
+    hasKey: (value, {key}) => value.hasOwnProperty(key),
+    passwordsMatch: (passConfirm, options) => passConfirm === options.passConfirm && options.passIsValid
+}
+```
+Just like the predefined rules, your custom rules can accepts two parameters:
+* `value` The actual value you are testing against.
+* `args` (optional) the arguments which you pass on when running your tests.
+
+You can extend enforce with your custom rules by creating a new instance of `Enforce` and adding the rules object as the argument.
+
+```js
+import { Enforce } from 'vest';
+
+const myCustomRules = {
+    isValidEmail: (value) => value.indexOf('@') > -1,
+    hasKey: (value, key) => value.hasOwnProperty(key),
+    passwordsMatch: (passConfirm, options) => passConfirm === options.passConfirm && options.passIsValid
+}
+
+const enforce = new Enforce(myCustomRules);
+
+enforce(user.email).isValidEmail();
+```

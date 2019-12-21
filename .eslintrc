@@ -1,0 +1,49 @@
+{
+    "plugins": ["jest"],
+    "env": {
+        "es6": true,
+        "jest": true,
+        "node": true
+    },
+    "globals": {
+        "VEST_VERSION": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:import/errors",
+        "plugin:import/warnings"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 10,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "impliedStrict": true
+        }
+    },
+    "rules": {
+        "indent": [
+            "error",
+            4
+        ],
+        "no-console": 2,
+        "no-multi-spaces": 1,
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "eqeqeq": [
+            "error",
+            "always"
+        ],
+        "no-trailing-spaces": ["error", { "ignoreComments": true }],
+        "no-implicit-globals": 2,
+        "import/no-self-import": 2,
+        "import/no-useless-path-segments": 2,
+        "import/order": 2,
+        "import/newline-after-import": 2
+    }
+}

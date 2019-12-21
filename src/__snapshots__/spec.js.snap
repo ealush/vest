@@ -1,0 +1,141 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`General scenario tests Async tests Should match snapshot 1`] = `
+Object {
+  "errorCount": 1,
+  "name": "molestias-veritatis-deserunt",
+  "skipped": Array [],
+  "testCount": 2,
+  "tested": Array [
+    "doloribus-enim-quisquam",
+  ],
+  "tests": Object {
+    "doloribus-enim-quisquam": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "Fuga odit ut quidem autem dolores ipsam.",
+      ],
+      "testCount": 2,
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`General scenario tests Base case Should match snapshot 1`] = `
+Object {
+  "errorCount": 1,
+  "name": "eveniet-maxime-ea",
+  "skipped": Array [],
+  "testCount": 2,
+  "tested": Array [
+    "sed-minima-adipisci",
+    "non-rem-dolorem",
+  ],
+  "tests": Object {
+    "non-rem-dolorem": Object {
+      "errorCount": 0,
+      "testCount": 1,
+      "warnCount": 0,
+    },
+    "sed-minima-adipisci": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "Aliquam reprehenderit iure omnis assumenda eligendi enim id praesentium numquam.",
+      ],
+      "testCount": 1,
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`General scenario tests Exclusion via \`only\` Should match snapshot 1`] = `
+Object {
+  "errorCount": 0,
+  "name": "inventore-quis-impedit",
+  "skipped": Array [
+    "autem",
+    "soluta",
+  ],
+  "testCount": 1,
+  "tested": Array [
+    "doloribus-enim-quisquam",
+  ],
+  "tests": Object {
+    "doloribus-enim-quisquam": Object {
+      "errorCount": 0,
+      "testCount": 1,
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`General scenario tests Exclusion via \`skip\` Should match snapshot 1`] = `
+Object {
+  "errorCount": 0,
+  "name": "corrupti-alias-autem",
+  "skipped": Array [
+    "doloribus-enim-quisquam",
+  ],
+  "testCount": 1,
+  "tested": Array [
+    "autem",
+  ],
+  "tests": Object {
+    "autem": Object {
+      "errorCount": 0,
+      "testCount": 1,
+      "warnCount": 1,
+      "warnings": Array [
+        "Temporibus ex ex.",
+      ],
+    },
+  },
+  "warnCount": 1,
+}
+`;
+
+exports[`General scenario tests Tests with warnings Should match snapshot 1`] = `
+Object {
+  "errorCount": 0,
+  "name": "corrupti-alias-autem",
+  "skipped": Array [
+    "doloribus-enim-quisquam",
+  ],
+  "testCount": 2,
+  "tested": Array [
+    "autem",
+  ],
+  "tests": Object {
+    "autem": Object {
+      "errorCount": 0,
+      "testCount": 2,
+      "warnCount": 1,
+      "warnings": Array [
+        "Temporibus ex ex.",
+      ],
+    },
+  },
+  "warnCount": 1,
+}
+`;
+
+exports[`Vest exports All vest exports exist 1`] = `
+Object {
+  "Enforce": [Function],
+  "VERSION": Any<String>,
+  "any": [Function],
+  "draft": [Function],
+  "enforce": [Function],
+  "only": [Function],
+  "skip": [Function],
+  "test": [Function],
+  "validate": [Function],
+  "warn": [Function],
+}
+`;

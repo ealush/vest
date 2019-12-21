@@ -1,0 +1,42 @@
+language: node_js
+cache: npm
+
+before_script:
+- npm run build
+- npm run eslint
+
+after_success:
+- chmod +x ./scripts/handle_changes.sh
+- source ./scripts/handle_changes.sh
+- node ./scripts/prep_docs.js
+- chmod +x ./scripts/push_tag_to_master.sh
+- if [ "$TRAVIS_BRANCH" = "release" ]; then ./scripts/push_tag_to_master.sh; fi
+- chmod +x ./scripts/prepare_next.sh
+- if [ "$TRAVIS_BRANCH" != "master" ]; then ./scripts/prepare_next.sh; fi
+
+deploy:
+  - provider: npm
+    email: $EMAIL_ADDRESS
+    skip_cleanup: true
+    api_key: $NPM_TOKEN
+    on:
+      repo: $TRAVIS_REPO_SLUG
+      branch: master
+  - provider: npm
+    email: $EMAIL_ADDRESS
+    skip_cleanup: true
+    api_key: $NPM_TOKEN
+    tag: "next"
+    on:
+      all_branches: true
+      condition: $TRAVIS_BRANCH = "next"
+      repo: $TRAVIS_REPO_SLUG
+  - provider: npm
+    email: $EMAIL_ADDRESS
+    skip_cleanup: true
+    api_key: $NPM_TOKEN
+    tag: "DEVELOPMENT"
+    on:
+      all_branches: true
+      condition: $TRAVIS_BRANCH != "next" && $TRAVIS_BRANCH != "master" && $TRAVIS_BRANCH != "release"
+      repo: $TRAVIS_REPO_SLUG

@@ -1,0 +1,180 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`suiteResult module Initial suite result structure 1`] = `
+Object {
+  "addToSkipped": [Function],
+  "markAsDone": [Function],
+  "markFailure": [Function],
+  "markTestRun": [Function],
+  "output": Object {
+    "errorCount": 0,
+    "name": "Vest result object",
+    "skipped": Array [],
+    "testCount": 0,
+    "tested": Array [],
+    "tests": Object {},
+    "warnCount": 0,
+  },
+  "pending": Array [],
+  "setPending": [Function],
+}
+`;
+
+exports[`suiteResult module Marking a field as failed When severity is \`warning\` 1`] = `
+Object {
+  "addToSkipped": [Function],
+  "markAsDone": [Function],
+  "markFailure": [Function],
+  "markTestRun": [Function],
+  "output": Object {
+    "errorCount": 0,
+    "name": "Vest result object",
+    "skipped": Array [],
+    "testCount": 1,
+    "tested": Array [
+      "Sleimr",
+    ],
+    "tests": Object {
+      "Sleimr": Object {
+        "errorCount": 0,
+        "testCount": 1,
+        "warnCount": 1,
+        "warnings": Array [
+          "We finally came to an agreement.",
+        ],
+      },
+    },
+    "warnCount": 1,
+  },
+  "pending": Array [],
+  "setPending": [Function],
+}
+`;
+
+exports[`suiteResult module Marking a field as failed When severity is default 1`] = `
+Object {
+  "addToSkipped": [Function],
+  "markAsDone": [Function],
+  "markFailure": [Function],
+  "markTestRun": [Function],
+  "output": Object {
+    "errorCount": 1,
+    "name": "Vest result object",
+    "skipped": Array [],
+    "testCount": 1,
+    "tested": Array [
+      "Sleimr",
+    ],
+    "tests": Object {
+      "Sleimr": Object {
+        "errorCount": 1,
+        "errors": Array [
+          "We finally came to an agreement.",
+        ],
+        "testCount": 1,
+        "warnCount": 0,
+      },
+    },
+    "warnCount": 0,
+  },
+  "pending": Array [],
+  "setPending": [Function],
+}
+`;
+
+exports[`suiteResult module Marking a field as failed When statement is not provided 1`] = `
+Object {
+  "addToSkipped": [Function],
+  "markAsDone": [Function],
+  "markFailure": [Function],
+  "markTestRun": [Function],
+  "output": Object {
+    "errorCount": 1,
+    "name": "Vest result object",
+    "skipped": Array [],
+    "testCount": 1,
+    "tested": Array [
+      "Sleimr",
+    ],
+    "tests": Object {
+      "Sleimr": Object {
+        "errorCount": 1,
+        "errors": Array [],
+        "testCount": 1,
+        "warnCount": 0,
+      },
+    },
+    "warnCount": 0,
+  },
+  "pending": Array [],
+  "setPending": [Function],
+}
+`;
+
+exports[`suiteResult module Marking a test run 1`] = `
+Object {
+  "addToSkipped": [Function],
+  "markAsDone": [Function],
+  "markFailure": [Function],
+  "markTestRun": [Function],
+  "output": Object {
+    "errorCount": 0,
+    "name": "Vest result object",
+    "skipped": Array [],
+    "testCount": 1,
+    "tested": Array [
+      "Sleimr",
+    ],
+    "tests": Object {
+      "Sleimr": Object {
+        "errorCount": 0,
+        "testCount": 1,
+        "warnCount": 0,
+      },
+    },
+    "warnCount": 0,
+  },
+  "pending": Array [],
+  "setPending": [Function],
+}
+`;
+
+exports[`suiteResult module Output methods getErrors When no field specified Should return error object for whole suite 1`] = `
+Object {
+  "Borak": Array [
+    "We finally came to an agreement.",
+  ],
+  "Sleimr": Array [],
+}
+`;
+
+exports[`suiteResult module Output methods getWarnings When no field specified Should return warning object for whole suite 1`] = `
+Object {
+  "Borak": Array [
+    "We finally came to an agreement.",
+  ],
+  "Sleimr": Array [],
+}
+`;
+
+exports[`suiteResult module Skipping a field 1`] = `
+Object {
+  "addToSkipped": [Function],
+  "markAsDone": [Function],
+  "markFailure": [Function],
+  "markTestRun": [Function],
+  "output": Object {
+    "errorCount": 0,
+    "name": "Vest result object",
+    "skipped": Array [
+      "Sleimr",
+    ],
+    "testCount": 0,
+    "tested": Array [],
+    "tests": Object {},
+    "warnCount": 0,
+  },
+  "pending": Array [],
+  "setPending": [Function],
+}
+`;

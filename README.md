@@ -7,7 +7,7 @@
 - [Documentation homepage](https://ealush.github.io/vest)
 - **Try vest live**
     - [Vanilla JS example](https://stackblitz.com/edit/vest-vanilla-support-example)
-    - [ReactJS example](https://stackblitz.com/edit/vest-react-support-example)
+    - ReactJS Examples: [1](https://stackblitz.com/edit/vest-react-support-example), [2](https://stackblitz.com/edit/vest-react-registration)
 
 ## What is Vest?
 Vest is a validations library for JS apps that derives its syntax from modern JS frameworks such as Mocha or Jest. It is easy to learn due to its use of already common declarative patterns.

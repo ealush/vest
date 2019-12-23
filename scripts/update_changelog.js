@@ -33,6 +33,11 @@ const groupMessages = (gitLog) => gitLog.split('\n').reduce((accumulator, curren
 const updateChangelog = () => {
     const groupedMessages = groupMessages(gitLog);
 
+    if (!Object.keys(groupedMessages).length) {
+        console.log('');
+        return;
+    }
+
     const changelogTitle = `## [${version}] - ${format(new Date(), 'yyyy-MM-dd')}\n`;
 
     const versionLog = [

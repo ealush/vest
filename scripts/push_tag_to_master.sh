@@ -30,3 +30,8 @@ git push origin $NEXT_VERSION
 
 echo "Publishing Release"
 node ./scripts/create_release.js "$CHANGELOG"
+
+echo "Trying to update next branch"
+git checkout next
+git rebase master || git rebase --abort
+git push https://${GITHUB_TOKEN}@github.com/$TRAVIS_REPO_SLUG.git next

@@ -1,6 +1,6 @@
 {
   "name": "vest",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Validation Test",
   "main": "./dist/vest.min.js",
   "author": "ealush",

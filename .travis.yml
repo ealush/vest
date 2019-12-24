@@ -13,6 +13,8 @@ after_success:
 - if [ "$TRAVIS_BRANCH" = "release" ]; then ./scripts/push_tag_to_master.sh; fi
 - chmod +x ./scripts/prepare_next.sh
 - if [ "$TRAVIS_BRANCH" != "master" ]; then ./scripts/prepare_next.sh; fi
+- chmod +x ./scripts/rebase_next.sh
+- if [ "$TRAVIS_BRANCH" = "master" ]; then ./scripts/rebase_next.sh; fi
 
 deploy:
   - provider: npm

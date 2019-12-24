@@ -340,7 +340,7 @@
   /**
    * @type {String} Vest's major version.
    */
-  var VEST_MAJOR = "1.0.2".split('.')[0];
+  var VEST_MAJOR = "1.0.3".split('.')[0];
   /**
    * @type {Symbol} Used to store a global instance of Vest.
    */
@@ -1115,7 +1115,7 @@
   /**
    * @type {String} Version number derived from current tag.
    */
-  var VERSION = "1.0.2";
+  var VERSION = "1.0.3";
 
   var index = singleton.register({
     VERSION: VERSION,

@@ -14,20 +14,21 @@ When making a change you should never manually update Vest’s version in its `p
 
 ## Repository structure 
 Vest’s structure is fairly simple. To help you familiarize with the project, see this mapping:
+
 ```sh
 vest/
 ├── config/ # Contains build and test configurations.
 ├── docs/   # Vest's documentation.
 ├── src/    # Vest's prebuilt source code.
 │   └── core/  # Modules required for vest's functionality.
-│       └── Context/     # Vest's shared runtime, Used across the whole library.
-│       └── suiteResult/ # The output object is generated here.
-│       └── test/        # Contains the test function and its lifecycle.
-│       └── validate/    # Initializes the suite and creates a context.
+│   │   └── Context/     # Vest's shared runtime, Used across the whole library.
+│   │   └── suiteResult/ # The output object is generated here.
+│   │   └── test/        # Contains the test function and its lifecycle.
+│   │   └── validate/    # Initializes the suite and creates a context.
 │   └── hooks/ # Functions that extend vest's functionality. They all use Context.
-│       └── draft/       # Allows access to the intermediate test result.
-│       └── exclusive/   # Allows including or excluding fields in runtime.
-│       └── warn/        # Allows setting warn-only fields.
+│   │   └── draft/       # Allows access to the intermediate test result.
+│   │   └── exclusive/   # Allows including or excluding fields in runtime.
+│   │   └── warn/        # Allows setting warn-only fields.
 │   └── lib/  # Shared helper functions.
 ```
 

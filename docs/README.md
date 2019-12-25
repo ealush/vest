@@ -1,4 +1,4 @@
-![Vest](https://cdn.jsdelivr.net/gh/ealush/vest/docs/_assets/logo.png "Vest")
+![Vest](https://cdn.jsdelivr.net/gh/ealush/vest@assets/logo.png "Vest")
 
 # Vest - Validation Testing
 
@@ -61,3 +61,5 @@ res.getErrors('username') // returns an array of errors for the `username` field
 
 
 __Vest is a continuation of [Passable](https://github.com/fiverr/passable) by Fiverr.__
+
+Vest icon made by [Freepik](https://www.flaticon.com/authors/freepik)  from [www.flaticon.com](https://www.flaticon.com/).

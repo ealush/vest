@@ -1,4 +1,4 @@
-git config --global user.email "${GIT_NAME}@users.noreply.github.com" --replace-all
+git config --global user.email "${EMAIL_ADDRESS}" --replace-all
 git config --global user.name $GIT_NAME
 
 echo "Removing old master"
@@ -30,8 +30,3 @@ git push origin $NEXT_VERSION
 
 echo "Publishing Release"
 node ./scripts/create_release.js "$CHANGELOG"
-
-echo "Trying to update next branch"
-git checkout next
-git rebase master || git rebase --abort
-git push https://${GITHUB_TOKEN}@github.com/$TRAVIS_REPO_SLUG.git next

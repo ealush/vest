@@ -123,7 +123,7 @@ enforce(a).notEquals(a);
 Checks if your enforced value is empty, false, zero, null or undefined.
 
 Expected results are:
-* object: checks against count of keys (`0` is empty)
+* object: checks against the count of keys (`0` is empty)
 * array/string: checks against length. (`0` is empty)
 * number: checks the value of the number. (`0` and `NaN` are empty)
 * boolean: `false` is empty.
@@ -226,7 +226,7 @@ Checks that your numeric enforced value is larger than a given numeric value.
 ### Arguments
 * `value`: `number | string` | A numeric value against which you want to check your enforced value.
 
-Strings are parsed using `Number()`, values which are non fully numeric always return false;
+Strings are parsed using `Number()`, values which are not fully numeric always return false;
 
 ### Usage
 
@@ -254,7 +254,7 @@ Checks that your numeric enforced value is larger than or equals to a given nume
 ### Arguments
 * `value`: `number | string` | A numeric value against which you want to check your enforced value.
 
-Strings are parsed using `Number()`, values which are non fully numeric always return false;
+Strings are parsed using `Number()`, values which are not fully numeric always return false;
 
 ### Usage
 
@@ -338,7 +338,7 @@ Checks that your numeric enforced value is smaller than a given numeric value.
 ### Arguments
 * `value`: `number | string` | A numeric value against which you want to check your enforced value.
 
-Strings are parsed using `Number()`, values which are non fully numeric always return false;
+Strings are parsed using `Number()`, values which are not fully numeric always return false;
 
 ### Usage
 
@@ -367,7 +367,7 @@ Checks that your numeric enforced value is smaller than or equals to a given num
 ### Arguments
 * `value`: `number | string` | A numeric value against which you want to check your enforced value.
 
-Strings are parsed using `Number()`, values which are non fully numeric always return false;
+Strings are parsed using `Number()`, values which are not fully numeric always return false;
 
 ### Usage
 
@@ -448,7 +448,7 @@ Checks that your numeric enforced value is equals another value.
 ### Arguments
 * `value`: `number | string` | A numeric value against which you want to check your enforced value.
 
-Strings are parsed using `Number()`, values which are non fully numeric always return false;
+Strings are parsed using `Number()`, values which are not fully numeric always return false;
 
 ### Usage
 
@@ -474,7 +474,7 @@ Reverse implementation of `numberEquals`.
 ### Arguments
 * `value`: `number | string` | A numeric value against which you want to check your enforced value.
 
-Strings are parsed using `Number()`, values which are non fully numeric always return false;
+Strings are parsed using `Number()`, values which are not fully numeric always return false;
 
 ### Usage
 

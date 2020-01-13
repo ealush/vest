@@ -599,11 +599,11 @@
     "@babel/helper-plugin-utils" "^7.8.0"
 
 "@babel/plugin-transform-object-assign@^7.2.0":
-  version "7.7.4"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-object-assign/-/plugin-transform-object-assign-7.7.4.tgz#a31b70c434a00a078b2d4d10dbd59992fa70afca"
-  integrity sha512-0TpeUlnhQDwKxPLTIckdaWt46L2s61c/5w5snw1OUod5ehOJywZD98Ha3dFHVjeqkfOFtOTH7cqxddjxUuvcmg==
+  version "7.8.0"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-object-assign/-/plugin-transform-object-assign-7.8.0.tgz#6a68f1177ef88923cc3247f1f74b0997211d259e"
+  integrity sha512-fNgHDCzHLZ1qxo1gTRm9oHvRM21OwHZa7/u3TiWDRzYrRD57VpAKE5+c32PD7dkLV/cR3WGdeXP8GkanmjcMyg==
   dependencies:
-    "@babel/helper-plugin-utils" "^7.0.0"
+    "@babel/helper-plugin-utils" "^7.8.0"
 
 "@babel/plugin-transform-object-super@^7.8.0":
   version "7.8.0"

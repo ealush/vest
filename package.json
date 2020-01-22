@@ -36,7 +36,7 @@
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jest": "^23.0.5",
     "faker": "^4.1.0",
-    "jest": "^24.9.0",
+    "jest": "^25.1.0",
     "lodash": "^4.17.15",
     "n4s": "^0.4.2",
     "node-fetch": "^2.6.0",

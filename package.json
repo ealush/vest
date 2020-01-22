@@ -27,7 +27,7 @@
     "@babel/register": "^7.5.5",
     "anyone": "0.0.5",
     "babel-eslint": "^10.0.1",
-    "babel-jest": "^24.9.0",
+    "babel-jest": "^25.1.0",
     "babel-loader": "^8.0.6",
     "babel-plugin-add-module-exports": "^1.0.2",
     "cross-env": "^6.0.0",

@@ -24,6 +24,7 @@
     "@babel/core": "^7.7.4",
     "@babel/plugin-transform-object-assign": "^7.2.0",
     "@babel/preset-env": "^7.7.4",
+    "@babel/preset-typescript": "^7.8.3",
     "@babel/register": "^7.5.5",
     "anyone": "0.0.5",
     "babel-eslint": "^10.0.1",
@@ -46,6 +47,11 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-replace": "^2.2.0",
     "rollup-plugin-terser": "^5.0.0",
-    "semver": "^7.1.1"
+    "semver": "^7.1.1",
+    "typescript": "^3.7.5",
+    "@rollup/plugin-typescript": "^3.0.0",
+    "tslib": "^1.10.0"
+  },
+  "dependencies": {
   }
 }

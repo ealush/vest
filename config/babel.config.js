@@ -5,12 +5,13 @@ module.exports = (api) => {
     }
 
     const presets = [
-        '@babel/preset-env'
+        '@babel/preset-env',
+        '@babel/preset-typescript'
     ];
 
     const plugins = [
         'babel-plugin-add-module-exports',
-        '@babel/plugin-transform-object-assign'
+        '@babel/plugin-transform-object-assign',
     ];
 
     return {

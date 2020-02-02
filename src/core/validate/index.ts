@@ -12,10 +12,12 @@ import { SUITE_INIT_ERROR } from './constants';
  */
 const validate = (name, tests) => {
     if (typeof name !== 'string') {
+        // @ts-ignore
         return throwError(SUITE_INIT_ERROR + ' Expected name to be a string.', TypeError);
     }
 
     if (typeof tests !== 'function') {
+        // @ts-ignore
         return throwError(SUITE_INIT_ERROR + ' Expected tests to be a function.', TypeError);
     }
 

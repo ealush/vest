@@ -5,6 +5,8 @@
 }(this, (function () { 'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -34,26 +36,6 @@
     };
 
     return _extends.apply(this, arguments);
-  }
-
-  function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
-  }
-
-  function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-      return arr2;
-    }
-  }
-
-  function _iterableToArray(iter) {
-    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
-  }
-
-  function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance");
   }
 
   var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -111,18 +93,22 @@
       }
 
       var o = function o(n, e) {
-        return Object.prototype.hasOwnProperty.call(n, e) && "function" == typeof n[e];
+        var t,
+            r = Object.prototype.hasOwnProperty.call(n, e) && "function" == typeof n[e];
+        return r || (t = 'Rule "'.concat(e, '" was not found in rules object. Make sure you typed it correctly.'), setTimeout(function () {
+          throw new Error("[".concat("enforce", "]: ").concat(t));
+        })), r;
       },
           u = Function("return this")(),
           i = function i() {
         return "function" == typeof u.Proxy;
       };
 
-      function a(n) {
+      function c(n) {
         return Boolean(Array.isArray(n));
       }
 
-      function c(n) {
+      function a(n) {
         return Boolean("number" == typeof n);
       }
 
@@ -147,11 +133,11 @@
         return Boolean(e);
       }
 
-      function g(n, e) {
+      function b(n, e) {
         return p(n) && p(e) && Number(n) === Number(e);
       }
 
-      function b(e) {
+      function g(e) {
         return !e || (p(e) ? 0 === e : Object.prototype.hasOwnProperty.call(e, "length") ? 0 === e.length : "object" !== n(e) || 0 === Object.keys(e).length);
       }
 
@@ -171,17 +157,17 @@
         return p(n) && p(e) && Number(n) <= Number(e);
       }
 
-      function N(n, e) {
+      function d(n, e) {
         return n.length === e;
       }
 
-      a.negativeForm = "isNotArray", c.negativeForm = "isNotNumber", f.negativeForm = "isNotString", s.negativeForm = "notMatches", l.negativeForm = "notInside", y.negativeForm = "notEquals", p.negativeForm = "isNotNumeric", g.negativeForm = "numberNotEquals", b.negativeForm = "isNotEmpty", m.alias = "gt", v.alias = "gte", h.alias = "lt", O.alias = "lte", N.negativeForm = "lengthNotEquals";
+      c.negativeForm = "isNotArray", a.negativeForm = "isNotNumber", f.negativeForm = "isNotString", s.negativeForm = "notMatches", l.negativeForm = "notInside", y.negativeForm = "notEquals", p.negativeForm = "isNotNumeric", b.negativeForm = "numberNotEquals", g.negativeForm = "isNotEmpty", m.alias = "gt", v.alias = "gte", h.alias = "lt", O.alias = "lte", d.negativeForm = "lengthNotEquals";
 
-      function d(n) {
+      function N(n) {
         return !!n;
       }
 
-      d.negativeForm = "isFalsy";
+      N.negativeForm = "isFalsy";
 
       var j = function (n) {
         var e = function e(_e) {
@@ -198,15 +184,15 @@
 
         return n;
       }({
-        isArray: a,
-        isNumber: c,
+        isArray: c,
+        isNumber: a,
         isString: f,
         matches: s,
         inside: l,
         equals: y,
-        numberEquals: g,
+        numberEquals: b,
         isNumeric: p,
-        isEmpty: b,
+        isEmpty: g,
         greaterThan: m,
         greaterThanOrEquals: v,
         lessThan: h,
@@ -223,17 +209,17 @@
         shorterThanOrEquals: function shorterThanOrEquals(n, e) {
           return n.length <= e;
         },
-        lengthEquals: N,
+        lengthEquals: d,
         isOdd: function isOdd(n) {
           return !!p(n) && n % 2 != 0;
         },
         isEven: function isEven(n) {
           return !!p(n) && n % 2 == 0;
         },
-        isTruthy: d
+        isTruthy: N
       });
 
-      function E(e, t) {
+      function w(e, t) {
         if ("function" == typeof e) {
           for (var r = arguments.length, o = new Array(r > 2 ? r - 2 : 0), u = 2; u < r; u++) {
             o[u - 2] = arguments[u];
@@ -243,7 +229,7 @@
         }
       }
 
-      function w() {
+      function E() {
         var n = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {},
             t = r({}, j, {}, n);
         if (i()) return function (n) {
@@ -254,7 +240,7 @@
                   u[i] = arguments[i];
                 }
 
-                return E.apply(void 0, [t[r], n].concat(u)), e;
+                return w.apply(void 0, [t[r], n].concat(u)), e;
               };
             }
           });
@@ -268,14 +254,14 @@
                 r[o] = arguments[o];
               }
 
-              return E.apply(void 0, [t[i], n].concat(r)), u;
+              return w.apply(void 0, [t[i], n].concat(r)), u;
             })));
           }, {});
         };
       }
 
-      var F = new w();
-      return F.Enforce = w, F;
+      var F = new E();
+      return F.Enforce = E, F;
     });
   });
 
@@ -320,51 +306,53 @@
     });
   });
 
-  /**
-   * @type {Object} Reference to global object.
-   */
+  /*! *****************************************************************************
+  Copyright (c) Microsoft Corporation. All rights reserved.
+  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+  this file except in compliance with the License. You may obtain a copy of the
+  License at http://www.apache.org/licenses/LICENSE-2.0
+
+  THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+  WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+  MERCHANTABLITY OR NON-INFRINGEMENT.
+
+  See the Apache Version 2.0 License for specific language governing permissions
+  and limitations under the License.
+  ***************************************************************************** */
+
+  function __spreadArrays() {
+      for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+      for (var r = Array(s), k = 0, i = 0; i < il; i++)
+          for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+              r[k] = a[j];
+      return r;
+  }
+
   var globalObject = Function('return this')();
 
-  /**
-   * Throws a timed out error.
-   * @param {String} message  Error message to display.
-   * @param {Error} [type]    Alternative Error type.
-   */
-  var throwError = function throwError(message) {
-    var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Error;
+  var throwError = function throwError(message, type) {
+    if (type === void 0) {
+      type = Error;
+    }
+
     return setTimeout(function () {
-      throw new type("[Vest]: ".concat(message));
+      throw new type("[Vest]: " + message);
     });
   };
 
-  /**
-   * @type {String} Vest's major version.
-   */
   var VEST_MAJOR = "1.0.4".split('.')[0];
-  /**
-   * @type {Symbol} Used to store a global instance of Vest.
-   */
-
-  var SYMBOL_VEST = Symbol["for"]("VEST#".concat(VEST_MAJOR));
-
-  /**
-   * Throws an error when multiple versions of Vest are detected on the same runtime.
-   * @param  {String[]} versions List of detected Vest versions.
-   */
+  var SYMBOL_VEST = Symbol["for"]("VEST#" + VEST_MAJOR);
 
   var throwMultipleVestError = function throwMultipleVestError() {
-    for (var _len = arguments.length, versions = new Array(_len), _key = 0; _key < _len; _key++) {
-      versions[_key] = arguments[_key];
+    var versions = [];
+
+    for (var _i = 0; _i < arguments.length; _i++) {
+      versions[_i] = arguments[_i];
     }
 
-    throwError("Multiple versions of Vest detected: (".concat(versions.join(), ").\n    Most features should work regularly, but for optimal feature compatibility, you should have all running instances use the same version."));
+    throwError("Multiple versions of Vest detected: (" + versions.join() + ").\n    Most features should work regularly, but for optimal feature compatibility, you should have all running instances use the same version.");
   };
-  /**
-   * Registers current Vest instance on global object.
-   * @param {Object} vest Reference to Vest.
-   * @return {Function} Global Vest reference.
-   */
-
 
   var register = function register(vest) {
     var existing = globalObject[SYMBOL_VEST];
@@ -379,18 +367,10 @@
 
     return globalObject[SYMBOL_VEST];
   };
-  /**
-   * @returns Global Vest instance.
-   */
-
 
   var use = function use() {
     return globalObject[SYMBOL_VEST];
   };
-  /**
-   * @returns Current Vest context.
-   */
-
 
   var useContext = function useContext() {
     return use().ctx;
@@ -402,37 +382,19 @@
     register: register
   };
 
-  /**
-   * Creates a new context object, and assigns it as a static property on Vest's singleton.
-   * @param {Object} parent   Parent context.
-   */
-
   function Context(parent) {
     singleton.use().ctx = this;
 
     _extends(this, parent);
   }
-  /**
-   * Sets a testObject reference on context.
-   * @param {TestObject} A TestObject instance.
-   */
-
 
   Context.prototype.setCurrentTest = function (testObject) {
     this.currentTest = testObject;
   };
-  /**
-   * Removes current test from context.
-   */
-
 
   Context.prototype.removeCurrentTest = function () {
     delete this.currentTest;
   };
-  /**
-   * Clears stored instance from constructor function.
-   */
-
 
   Context.clear = function () {
     singleton.use().ctx = null;
@@ -453,12 +415,6 @@
 
   var GROUP_NAME_SKIP = 'skip';
 
-  /**
-   * Adds fields to a specified group.
-   * @param {String} group            To add the fields to.
-   * @param {String[]|String} item    A field name or a list of field names.
-   */
-
   var addTo = function addTo(group, item) {
     var ctx = singleton.useContext();
 
@@ -467,7 +423,7 @@
     }
 
     if (!ctx) {
-      throwError("".concat(group, " ").concat(ERROR_HOOK_CALLED_OUTSIDE));
+      throwError(group + " " + ERROR_HOOK_CALLED_OUTSIDE);
       return;
     }
 
@@ -479,29 +435,13 @@
       }
     });
   };
-  /**
-   * Adds a field or multiple fields to inclusion group.
-   * @param {String[]|String} item Item to be added to inclusion group.
-   */
-
 
   var only = function only(item) {
     return addTo(GROUP_NAME_ONLY, item);
   };
-  /**
-   * Adds a field or multiple fields to exlusion group.
-   * @param {String[]|String} item Item to be added to exlusion group.
-   */
-
   var skip = function skip(item) {
     return addTo(GROUP_NAME_SKIP, item);
   };
-  /**
-   * Checks whether a certain field name is excluded by any of the exclusion groups.
-   * @param {String} fieldName    FieldN name to test.
-   * @returns {Boolean}
-   */
-
   var isExcluded = function isExcluded(fieldName) {
     var ctx = singleton.useContext();
 
@@ -524,13 +464,6 @@
     return false;
   };
 
-  /**
-   * Describes a test call inside a Vest suite.
-   * @param {Object} ctx                  Parent context.
-   * @param {String} fieldName            Name of the field being tested.
-   * @param {String} statement            The message returned when failing.
-   * @param {Promise|Function} testFn     The actual test callbrack or promise.
-   */
   function TestObject(ctx, fieldName, statement, testFn) {
     _extends(this, {
       ctx: ctx,
@@ -541,19 +474,10 @@
       failed: false
     });
   }
-  /**
-   * @returns {Boolean} Current validity status of a test.
-   */
-
 
   TestObject.prototype.valueOf = function () {
     return this.failed !== true;
   };
-  /**
-   * Sets a test to failed.
-   * @returns {TestObject} Current instance.
-   */
-
 
   TestObject.prototype.fail = function () {
     this.ctx.result.markFailure({
@@ -564,21 +488,11 @@
     this.failed = true;
     return this;
   };
-  /**
-   * Sets a current test's `isWarning` to true.
-   * @returns {TestObject} Current instance.
-   */
-
 
   TestObject.prototype.warn = function () {
     this.isWarning = true;
     return this;
   };
-
-  /**
-   * Runs async test.
-   * @param {TestObject} testObject A TestObject instance.
-   */
 
   var runAsync = function runAsync(testObject) {
     var testFn = testObject.testFn,
@@ -605,11 +519,6 @@
 
     ctx.removeCurrentTest();
   };
-  /**
-   * Runs test callback.
-   * @param {TestObject} testObject TestObject instance.
-   * @returns {*} Result from test callback.
-   */
 
   var runTest = function runTest(testObject) {
     var result;
@@ -629,11 +538,6 @@
 
     return result;
   };
-  /**
-   * Registers test, if async - adds to pending array
-   * @param {TestObject} testObject   A TestObject Instance.
-   */
-
 
   var register$1 = function register(testObject) {
     var testFn = testObject.testFn,
@@ -664,25 +568,18 @@
       ctx.result.setPending(testObject);
     }
   };
-  /**
-   * Test function used by consumer to provide their own validations.
-   * @param {String} fieldName            Name of the field to test.
-   * @param {String} [statement]          The message returned in case of a failure.
-   * @param {function} testFn             The actual test callback.
-   * @return {TestObject}                 A TestObject instance.
-   */
-
 
   var test = function test(fieldName) {
-    var statement, testFn;
+    var args = [];
 
-    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
+    for (var _i = 1; _i < arguments.length; _i++) {
+      args[_i - 1] = arguments[_i];
     }
 
+    var statement, testFn;
+
     if (typeof args[0] === 'string') {
-      statement = args[0];
-      testFn = args[1];
+      statement = args[0], testFn = args[1];
     } else if (typeof args[0] === 'function') {
       testFn = args[0];
     }
@@ -703,32 +600,17 @@
     var doneCallbacks = [];
     var fieldCallbacks = {};
     var isAsync = false;
-    /**
-     * Adds a testObject to pending list.
-     * @param {Object} testObject
-     */
 
     var setPending = function setPending(testObject) {
       isAsync = true;
       pending.tests.push(testObject);
     };
-    /**
-     * Clears a testObject from pending list.
-     * @param {Object} testObject
-     */
-
 
     var clearFromPending = function clearFromPending(testObject) {
       pending.tests = pending.tests.filter(function (t) {
         return t !== testObject;
       });
     };
-    /**
-     * Checks if a specified field has any remaining tests.
-     * @param {String} fieldName
-     * @returns {Boolean}
-     */
-
 
     var hasRemaining = function hasRemaining(fieldName) {
       if (!pending.tests.length) {
@@ -743,11 +625,6 @@
 
       return !!pending.tests.length;
     };
-    /**
-     * Bumps test counters to indicate tests that are being performed
-     * @param {string} fieldName - The name of the field.
-     */
-
 
     var markTestRun = function markTestRun(fieldName) {
       if (!output.tests[fieldName]) {
@@ -762,19 +639,11 @@
       output.tests[fieldName].testCount++;
       output.testCount++;
     };
-    /**
-     * Marks a test as failed.
-     * @param {Object} testData
-     * @param {String} testData.fieldName       Name of field being tested.
-     * @param {String} [testData.statement]     Failure message to display.
-     * @param {Boolean} [testData.isWarning]    Indicates warn only test.
-     */
 
-
-    var markFailure = function markFailure(_ref) {
-      var fieldName = _ref.fieldName,
-          statement = _ref.statement,
-          isWarning = _ref.isWarning;
+    var markFailure = function markFailure(_a) {
+      var fieldName = _a.fieldName,
+          statement = _a.statement,
+          isWarning = _a.isWarning;
 
       if (!output.tests[fieldName]) {
         return;
@@ -799,20 +668,10 @@
       output[severityCount]++;
       output.tests[fieldName][severityCount]++;
     };
-    /**
-     * Uniquely add a field to the `skipped` list
-     * @param {string} fieldName - The name of the field.
-     */
-
 
     var addToSkipped = function addToSkipped(fieldName) {
       !output.skipped.includes(fieldName) && output.skipped.push(fieldName);
     };
-    /**
-     * Runs callbacks of specified field, or of the whole suite.
-     * @param {String} [fieldName]
-     */
-
 
     var runCallbacks = function runCallbacks(fieldName) {
       if (!fieldName) {
@@ -827,11 +686,6 @@
         });
       }
     };
-    /**
-     * Removes a field from pending, and runs its callbacks. If all fields are done, runs all callbacks.
-     * @param {Object} testObject a testObject to remove from pending.
-     */
-
 
     var markAsDone = function markAsDone(testObject) {
       if (output.canceled) {
@@ -850,22 +704,19 @@
         runCallbacks();
       }
     };
-    /**
-     * Registers a callback to run once the suite or a specified field finished running.
-     * @param {String} [name] Name of the field to call back after,
-     * @param {Function} callback A callback to run once validation is finished.
-     * @returns {Object} Output object.
-     */
-
 
     var done = function done() {
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
+      var args = [];
+
+      for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i] = arguments[_i];
       }
 
       var length = args.length,
-          callback = args[length - 1],
-          name = args[length - 2];
+          _a = length - 1,
+          callback = args[_a],
+          _b = length - 2,
+          name = args[_b];
 
       if (typeof callback !== 'function') {
         return output;
@@ -890,21 +741,11 @@
 
       return output;
     };
-    /**
-     * cancels done callbacks. They won't invoke when async operations complete
-     */
-
 
     var cancel = function cancel() {
       output.canceled = true;
       return output;
     };
-    /**
-     * Collects all fields that have an array of specified group in their results.
-     * @param {String} group Group name (warnings or errors).
-     * @returns {Object} Object of array per field.
-     */
-
 
     var collectFailureMessages = function collectFailureMessages(group) {
       var collector = {};
@@ -917,12 +758,6 @@
 
       return collector;
     };
-    /**
-     * Gets all the errors of a field, or of the whole object.
-     * @param {string} fieldName - The name of the field.
-     * @return {array | object} The field's errors, or all errors.
-     */
-
 
     var getErrors = function getErrors(fieldName) {
       if (!fieldName) {
@@ -935,12 +770,6 @@
 
       return [];
     };
-    /**
-     * Gets all the warnings of a field, or of the whole object.
-     * @param {string} [fieldName] - The name of the field.
-     * @return {array | object} The field's warnings, or all warnings.
-     */
-
 
     var getWarnings = function getWarnings(fieldName) {
       if (!fieldName) {
@@ -953,12 +782,6 @@
 
       return [];
     };
-    /**
-     * Checks if a certain field (or the whole suite) has errors.
-     * @param {string} [fieldName]
-     * @return {boolean}
-     */
-
 
     var hasErrors = function hasErrors(fieldName) {
       if (!fieldName) {
@@ -967,12 +790,6 @@
 
       return Boolean(output.tests[fieldName] && output.tests[fieldName].errorCount);
     };
-    /**
-     * Checks if a certain field (or the whole suite) has warnings
-     * @param {string} [fieldName]
-     * @return {boolean}
-     */
-
 
     var hasWarnings = function hasWarnings(fieldName) {
       if (!fieldName) {
@@ -1045,13 +862,6 @@
    */
   var SUITE_INIT_ERROR = 'Suite initialization error.';
 
-  /**
-   * Initializes a validation suite, creates a validation context.
-   * @param {String} name     Descriptive name for validation suite.
-   * @param {Function} tests  Validation suite body.
-   * @returns {Object} Vest output object.
-   */
-
   var validate = function validate(name, tests) {
     if (typeof name !== 'string') {
       return throwError(SUITE_INIT_ERROR + ' Expected name to be a string.', TypeError);
@@ -1068,14 +878,10 @@
     tests();
     Context.clear();
 
-    _toConsumableArray(result.pending).forEach(runAsync);
+    __spreadArrays(result.pending).forEach(runAsync);
 
     return result.output;
   };
-
-  /**
-   * @returns {Object} Current output object.
-   */
 
   var draft = function draft() {
     var ctx = singleton.useContext();
@@ -1091,10 +897,6 @@
    * @type {String} Error message to display when `warn` gets called outside of a test.
    */
   var ERROR_OUTSIDE_OF_TEST = 'warn hook called outside of a test callback. It won\'t have an effect.';
-
-  /**
-   * Sets a running test to warn only mode.
-   */
 
   var warn = function warn() {
     var ctx = singleton.useContext();

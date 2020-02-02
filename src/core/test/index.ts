@@ -26,6 +26,7 @@ export const runAsync = (testObject) => {
     try {
         testFn.then(done, fail);
     } catch (e) {
+        // @ts-ignore
         fail();
     }
 

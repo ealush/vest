@@ -119,6 +119,7 @@ const suiteResult = (name) => {
      */
     const markAsDone = (testObject) => {
 
+        // @ts-ignore
         if (output.canceled) {
             return;
         }
@@ -130,7 +131,10 @@ const suiteResult = (name) => {
             }
         }
 
+        // @ts-ignore
         if (!hasRemaining()) {
+
+            // @ts-ignore
             runCallbacks();
         }
     };
@@ -172,6 +176,7 @@ const suiteResult = (name) => {
      * cancels done callbacks. They won't invoke when async operations complete
      */
     const cancel = () => {
+        // @ts-ignore
         output.canceled = true;
 
         return output;

@@ -1209,10 +1209,10 @@ anymatch@^3.0.3:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
-anyone@0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/anyone/-/anyone-0.0.5.tgz#678fa6fc7fb96d099403b9ad7b0663c96a812ac2"
-  integrity sha512-9oQ6Fa4PBpt5e8ba0WXVa26+i1ig2Rxz132OVh/YJZLehlW6NnPSaoI7jAIn9E+NuoVG/taPapMJQIvwiL4zPQ==
+anyone@0.0.6-rc:
+  version "0.0.6-rc"
+  resolved "https://registry.yarnpkg.com/anyone/-/anyone-0.0.6-rc.tgz#ea1cb90efeb4859e308240a2c6a58d43eed1391d"
+  integrity sha512-x8eRjDSMQu0a+W2tsqAnTRC/XAauk0pHccaSf1AzHTE4/OBuj7ClkZUt2328rmHoJ4fn0ir3q+1YAzFsG86tbw==
 
 argparse@^1.0.7:
   version "1.0.10"

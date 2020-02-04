@@ -1,6 +1,6 @@
 /**
- * @type {Object} Reference to global object.
+ * Reference to global object.
  */
-const globalObject = Function('return this')();
+const globalObject: typeof globalThis = Function('return this')();
 
 export default globalObject;

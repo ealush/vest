@@ -6,15 +6,13 @@ import { SYMBOL_VEST } from './constants';
  * Throws an error when multiple versions of Vest are detected on the same runtime.
  * @param  {String[]} versions List of detected Vest versions.
  */
-const throwMultipleVestError = (...versions) => {
+const throwMultipleVestError = (...versions: string[]) => {
     throwError(`Multiple versions of Vest detected: (${versions.join()}).
     Most features should work regularly, but for optimal feature compatibility, you should have all running instances use the same version.`);
 };
 
 /**
  * Registers current Vest instance on global object.
- * @param {Object} vest Reference to Vest.
- * @return {Function} Global Vest reference.
  */
 const register = (vest) => {
 

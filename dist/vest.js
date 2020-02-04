@@ -287,16 +287,12 @@
 
         return arg != false && Boolean(arg); // eslint-disable-line
       };
-      /**
-       * Checks that at least one passed argument evaluates to a truthy value.
-       * @param  {[]*} [args] Any amount of values or expressions.
-       * @returns {Boolean}
-       */
-
 
       var any = function any() {
-        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-          args[_key] = arguments[_key];
+        var args = [];
+
+        for (var _i = 0; _i < arguments.length; _i++) {
+          args[_i] = arguments[_i];
         }
 
         return args.some(run);
@@ -400,19 +396,9 @@
     singleton.use().ctx = null;
   };
 
-  /**
-   *  @type {String}  Error message to display when a hook was called outside of context.
-   */
   var ERROR_HOOK_CALLED_OUTSIDE = 'hook called outside of a running suite.';
 
-  /**
-   * @type {String} Exclusivity group name: only.
-   */
   var GROUP_NAME_ONLY = 'only';
-  /**
-   * @type {String} Exclusivity group name: skip.
-   */
-
   var GROUP_NAME_SKIP = 'skip';
 
   var addTo = function addTo(group, item) {
@@ -893,9 +879,6 @@
     throwError('draft ' + ERROR_HOOK_CALLED_OUTSIDE);
   };
 
-  /**
-   * @type {String} Error message to display when `warn` gets called outside of a test.
-   */
   var ERROR_OUTSIDE_OF_TEST = 'warn hook called outside of a test callback. It won\'t have an effect.';
 
   var warn = function warn() {

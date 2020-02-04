@@ -98,9 +98,9 @@ const register = (testObject) => {
  * @param {function} testFn             The actual test callback.
  * @return {TestObject}                 A TestObject instance.
  */
-const test = (fieldName, ...args) => {
-    let statement,
-        testFn;
+const test = (fieldName: string, ...args: [string, Function]|[Function]) => {
+    let statement: string,
+        testFn: Function;
 
     if (typeof args[0] === 'string') {
         [statement, testFn] = args;

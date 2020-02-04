@@ -6,6 +6,19 @@ import test from './core/test';
 import { singleton } from './lib';
 import { VERSION } from './constants';
 
+// export const vest = {
+//     VERSION,
+//     enforce,
+//     draft,
+//     Enforce: enforce.Enforce,
+//     test,
+//     any,
+//     validate,
+//     only,
+//     skip,
+//     warn
+// };
+
 export default singleton.register({
     VERSION,
     enforce,

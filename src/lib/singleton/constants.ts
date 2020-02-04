@@ -1,10 +1,10 @@
 /**
- * @type {String} Vest's major version.
+ * Vest's major version.
  */
 // @ts-ignore
-const VEST_MAJOR = VEST_VERSION.split('.')[0];
+const VEST_MAJOR: string = VEST_VERSION.split('.')[0];
 
 /**
- * @type {Symbol} Used to store a global instance of Vest.
+ * Used to store a global instance of Vest.
  */
-export const SYMBOL_VEST = Symbol.for(`VEST#${VEST_MAJOR}`);
+export const SYMBOL_VEST: symbol = Symbol.for(`VEST#${VEST_MAJOR}`);

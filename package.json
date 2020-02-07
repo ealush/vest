@@ -1,6 +1,6 @@
 {
   "name": "vest",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Validation Test",
   "main": "./dist/vest.min.js",
   "typings": "./vest.d.ts",

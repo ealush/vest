@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, global.vest = factory());
-}(this, (function () { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (global = global || self, factory(global.vest = {}));
+}(this, (function (exports) { 'use strict';
 
   function _typeof(obj) {
     "@babel/helpers - typeof";
@@ -287,12 +287,16 @@
 
         return arg != false && Boolean(arg); // eslint-disable-line
       };
+      /**
+       * Checks that at least one passed argument evaluates to a truthy value.
+       * @param  {[]*} [args] Any amount of values or expressions.
+       * @returns {Boolean}
+       */
+
 
       var any = function any() {
-        var args = [];
-
-        for (var _i = 0; _i < arguments.length; _i++) {
-          args[_i] = arguments[_i];
+        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
         }
 
         return args.some(run);
@@ -378,23 +382,27 @@
     register: register
   };
 
-  function Context(parent) {
-    singleton.use().ctx = this;
+  var Context = function () {
+    function Context(parent) {
+      singleton.use().ctx = this;
 
-    _extends(this, parent);
-  }
+      _extends(this, parent);
+    }
 
-  Context.prototype.setCurrentTest = function (testObject) {
-    this.currentTest = testObject;
-  };
+    Context.clear = function () {
+      singleton.use().ctx = null;
+    };
 
-  Context.prototype.removeCurrentTest = function () {
-    delete this.currentTest;
-  };
+    Context.prototype.setCurrentTest = function (testObject) {
+      this.currentTest = testObject;
+    };
 
-  Context.clear = function () {
-    singleton.use().ctx = null;
-  };
+    Context.prototype.removeCurrentTest = function () {
+      delete this.currentTest;
+    };
+
+    return Context;
+  }();
 
   var ERROR_HOOK_CALLED_OUTSIDE = 'hook called outside of a running suite.';
 
@@ -450,38 +458,42 @@
     return false;
   };
 
-  function TestObject(ctx, fieldName, statement, testFn) {
-    _extends(this, {
-      ctx: ctx,
-      testFn: testFn,
-      fieldName: fieldName,
-      statement: statement,
-      isWarning: false,
-      failed: false
-    });
-  }
+  var TestObject = function () {
+    function TestObject(ctx, fieldName, statement, testFn) {
+      _extends(this, {
+        ctx: ctx,
+        testFn: testFn,
+        fieldName: fieldName,
+        statement: statement,
+        isWarning: false,
+        failed: false
+      });
+    }
 
-  TestObject.prototype.valueOf = function () {
-    return this.failed !== true;
-  };
+    TestObject.prototype.valueOf = function () {
+      return this.failed !== true;
+    };
 
-  TestObject.prototype.fail = function () {
-    this.ctx.result.markFailure({
-      fieldName: this.fieldName,
-      statement: this.statement,
-      isWarning: this.isWarning
-    });
-    this.failed = true;
-    return this;
-  };
+    TestObject.prototype.fail = function () {
+      this.ctx.result.markFailure({
+        fieldName: this.fieldName,
+        statement: this.statement,
+        isWarning: this.isWarning
+      });
+      this.failed = true;
+      return this;
+    };
 
-  TestObject.prototype.warn = function () {
-    this.isWarning = true;
-    return this;
-  };
+    TestObject.prototype.warn = function () {
+      this.isWarning = true;
+      return this;
+    };
+
+    return TestObject;
+  }();
 
   var runAsync = function runAsync(testObject) {
-    var testFn = testObject.testFn,
+    var asyncTest = testObject.asyncTest,
         statement = testObject.statement,
         ctx = testObject.ctx;
 
@@ -498,7 +510,7 @@
     ctx.setCurrentTest(testObject);
 
     try {
-      testFn.then(done, fail);
+      asyncTest.then(done, fail);
     } catch (e) {
       fail();
     }
@@ -526,8 +538,7 @@
   };
 
   var register$1 = function register(testObject) {
-    var testFn = testObject.testFn,
-        ctx = testObject.ctx,
+    var ctx = testObject.ctx,
         fieldName = testObject.fieldName;
     var isPending = false;
     var result;
@@ -538,16 +549,11 @@
     }
 
     ctx.result.markTestRun(fieldName);
-
-    if (testFn && typeof testFn.then === 'function') {
-      isPending = true;
-    } else {
-      result = runTest(testObject);
-    }
+    result = runTest(testObject);
 
     if (result && typeof result.then === 'function') {
       isPending = true;
-      testObject.testFn = result;
+      testObject.asyncTest = result;
     }
 
     if (isPending) {
@@ -698,11 +704,13 @@
         args[_i] = arguments[_i];
       }
 
-      var length = args.length,
-          _a = length - 1,
-          callback = args[_a],
-          _b = length - 2,
-          name = args[_b];
+      var name, callback;
+
+      if (typeof args[0] === 'string') {
+        name = args[0], callback = args[1];
+      } else if (typeof args[0] === 'function') {
+        callback = args[0];
+      }
 
       if (typeof callback !== 'function') {
         return output;
@@ -792,7 +800,8 @@
       testCount: 0,
       tests: {},
       skipped: [],
-      tested: []
+      tested: [],
+      canceled: false
     };
     Object.defineProperties(output, {
       hasErrors: {
@@ -843,9 +852,6 @@
     };
   };
 
-  /**
-   * @type {String}
-   */
   var SUITE_INIT_ERROR = 'Suite initialization error.';
 
   var validate = function validate(name, tests) {
@@ -902,20 +908,34 @@
    */
   var VERSION = "1.0.4";
 
-  var index = singleton.register({
+  var Enforce = enforce_min.Enforce;
+  var vest = {
     VERSION: VERSION,
     enforce: enforce_min,
     draft: draft,
-    Enforce: enforce_min.Enforce,
+    Enforce: Enforce,
     test: test,
     any: any,
     validate: validate,
     only: only,
     skip: skip,
     warn: warn
-  });
+  };
+  var index = singleton.register(vest);
 
-  return index;
+  exports.Enforce = Enforce;
+  exports.VERSION = VERSION;
+  exports.any = any;
+  exports.default = index;
+  exports.draft = draft;
+  exports.enforce = enforce_min;
+  exports.only = only;
+  exports.skip = skip;
+  exports.test = test;
+  exports.validate = validate;
+  exports.warn = warn;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 //# sourceMappingURL=vest.js.map

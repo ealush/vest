@@ -7,6 +7,7 @@ Object {
   "markFailure": [Function],
   "markTestRun": [Function],
   "output": Object {
+    "canceled": false,
     "errorCount": 0,
     "name": "Vest result object",
     "skipped": Array [],
@@ -27,6 +28,7 @@ Object {
   "markFailure": [Function],
   "markTestRun": [Function],
   "output": Object {
+    "canceled": false,
     "errorCount": 0,
     "name": "Vest result object",
     "skipped": Array [],
@@ -58,6 +60,7 @@ Object {
   "markFailure": [Function],
   "markTestRun": [Function],
   "output": Object {
+    "canceled": false,
     "errorCount": 1,
     "name": "Vest result object",
     "skipped": Array [],
@@ -89,6 +92,7 @@ Object {
   "markFailure": [Function],
   "markTestRun": [Function],
   "output": Object {
+    "canceled": false,
     "errorCount": 1,
     "name": "Vest result object",
     "skipped": Array [],
@@ -118,6 +122,7 @@ Object {
   "markFailure": [Function],
   "markTestRun": [Function],
   "output": Object {
+    "canceled": false,
     "errorCount": 0,
     "name": "Vest result object",
     "skipped": Array [],
@@ -164,6 +169,7 @@ Object {
   "markFailure": [Function],
   "markTestRun": [Function],
   "output": Object {
+    "canceled": false,
     "errorCount": 0,
     "name": "Vest result object",
     "skipped": Array [

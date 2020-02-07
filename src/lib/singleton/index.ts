@@ -1,10 +1,11 @@
+import { Vest } from '../../types';
 import throwError from '../throwError';
 import go from '../globalObject';
 import { SYMBOL_VEST } from './constants';
+import Context from '../../core/Context';
 
 /**
  * Throws an error when multiple versions of Vest are detected on the same runtime.
- * @param  {String[]} versions List of detected Vest versions.
  */
 const throwMultipleVestError = (...versions: string[]) => {
     throwError(`Multiple versions of Vest detected: (${versions.join()}).
@@ -14,7 +15,7 @@ const throwMultipleVestError = (...versions: string[]) => {
 /**
  * Registers current Vest instance on global object.
  */
-const register = (vest) => {
+const register = (vest: Vest): Vest => {
 
     const existing = go[SYMBOL_VEST];
 
@@ -32,12 +33,12 @@ const register = (vest) => {
 /**
  * @returns Global Vest instance.
  */
-const use = () => go[SYMBOL_VEST];
+const use = (): Vest => go[SYMBOL_VEST];
 
 /**
  * @returns Current Vest context.
  */
-const useContext = () => use().ctx;
+const useContext = (): Context => use().ctx;
 
 export default {
     use,

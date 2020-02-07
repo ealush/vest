@@ -1,7 +1,8 @@
+declare var VEST_VERSION: string;
+
 /**
  * Vest's major version.
  */
-// @ts-ignore
 const VEST_MAJOR: string = VEST_VERSION.split('.')[0];
 
 /**

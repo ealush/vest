@@ -4,9 +4,7 @@
         "noImplicitAny": false,
         "removeComments": true,
         "preserveConstEnums": true,
-        "sourceMap": true
-    },
-    "files": [
-        "src/**/*"
-    ]
+        "sourceMap": true,
+        "declaration": true
+    }
 }

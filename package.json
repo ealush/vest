@@ -3,6 +3,7 @@
   "version": "1.0.4",
   "description": "Validation Test",
   "main": "./dist/vest.min.js",
+  "typings": "./dist/index.d.ts",
   "author": "ealush",
   "license": "MIT",
   "scripts": {
@@ -26,8 +27,7 @@
     "@babel/preset-env": "^7.7.4",
     "@babel/preset-typescript": "^7.8.3",
     "@babel/register": "^7.5.5",
-    "@rollup/plugin-typescript": "^3.0.0",
-    "anyone": "0.0.6-rc",
+    "anyone": "^0.0.5",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^25.1.0",
     "babel-loader": "^8.0.6",
@@ -48,6 +48,7 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-replace": "^2.2.0",
     "rollup-plugin-terser": "^5.0.0",
+    "rollup-plugin-typescript2": "^0.25.3",
     "semver": "^7.1.1",
     "tslib": "^1.10.0",
     "typescript": "^3.7.5"

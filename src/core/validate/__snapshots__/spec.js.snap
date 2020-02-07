@@ -8,6 +8,7 @@ Object {
     "markFailure": [Function],
     "markTestRun": [Function],
     "output": Object {
+      "canceled": false,
       "errorCount": 0,
       "name": "formName",
       "skipped": Array [],

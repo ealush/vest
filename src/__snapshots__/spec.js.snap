@@ -2,6 +2,7 @@
 
 exports[`General scenario tests Async tests Should match snapshot 1`] = `
 Object {
+  "canceled": false,
   "errorCount": 1,
   "name": "molestias-veritatis-deserunt",
   "skipped": Array [],
@@ -25,6 +26,7 @@ Object {
 
 exports[`General scenario tests Base case Should match snapshot 1`] = `
 Object {
+  "canceled": false,
   "errorCount": 1,
   "name": "eveniet-maxime-ea",
   "skipped": Array [],
@@ -54,6 +56,7 @@ Object {
 
 exports[`General scenario tests Exclusion via \`only\` Should match snapshot 1`] = `
 Object {
+  "canceled": false,
   "errorCount": 0,
   "name": "inventore-quis-impedit",
   "skipped": Array [
@@ -77,6 +80,7 @@ Object {
 
 exports[`General scenario tests Exclusion via \`skip\` Should match snapshot 1`] = `
 Object {
+  "canceled": false,
   "errorCount": 0,
   "name": "corrupti-alias-autem",
   "skipped": Array [
@@ -102,6 +106,7 @@ Object {
 
 exports[`General scenario tests Tests with warnings Should match snapshot 1`] = `
 Object {
+  "canceled": false,
   "errorCount": 0,
   "name": "corrupti-alias-autem",
   "skipped": Array [
@@ -130,6 +135,18 @@ Object {
   "Enforce": [Function],
   "VERSION": Any<String>,
   "any": [Function],
+  "default": Object {
+    "Enforce": [Function],
+    "VERSION": "1.0.4",
+    "any": [Function],
+    "draft": [Function],
+    "enforce": [Function],
+    "only": [Function],
+    "skip": [Function],
+    "test": [Function],
+    "validate": [Function],
+    "warn": [Function],
+  },
   "draft": [Function],
   "enforce": [Function],
   "only": [Function],

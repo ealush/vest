@@ -1,23 +1,20 @@
 import { throwError } from '../../lib';
 import Context from '../Context';
 import { runAsync } from '../test';
-import suiteResult from '../suiteResult';
+import suiteResult, { VestOutput } from '../suiteResult';
 import { SUITE_INIT_ERROR } from './constants';
 
 /**
  * Initializes a validation suite, creates a validation context.
- * @param {String} name     Descriptive name for validation suite.
- * @param {Function} tests  Validation suite body.
- * @returns {Object} Vest output object.
  */
-const validate = (name, tests) => {
+const validate = (name: string, tests: Function): VestOutput => {
     if (typeof name !== 'string') {
-        // @ts-ignore
+        //@ts-ignore
         return throwError(SUITE_INIT_ERROR + ' Expected name to be a string.', TypeError);
     }
 
     if (typeof tests !== 'function') {
-        // @ts-ignore
+        //@ts-ignore
         return throwError(SUITE_INIT_ERROR + ' Expected tests to be a function.', TypeError);
     }
 

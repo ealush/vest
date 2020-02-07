@@ -3,7 +3,7 @@ import resolve from 'rollup-plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
 import replace from 'rollup-plugin-replace';
 import { terser } from 'rollup-plugin-terser';
-import typescript from '@rollup/plugin-typescript';
+import typescript from 'rollup-plugin-typescript2';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
 
 const { version } = require('../package.json');

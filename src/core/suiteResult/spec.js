@@ -312,8 +312,8 @@ describe('suiteResult module', () => {
                 });
             });
 
-            test('Cancel adds `canceled = true` to output object', () => {
-                expect(res.output.canceled).toBe(undefined);
+            test('Cancel sets `canceled = true` to output object', () => {
+                expect(res.output.canceled).toBe(false);
                 res.output.cancel();
                 expect(res.output.canceled).toBe(true);
             });

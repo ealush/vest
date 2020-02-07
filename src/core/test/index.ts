@@ -4,14 +4,13 @@ import { TestObject } from './lib';
 
 /**
  * Runs async test.
- * @param {TestObject} testObject A TestObject instance.
  */
-export const runAsync = (testObject) => {
-    const { testFn, statement, ctx } = testObject;
+export const runAsync = (testObject: TestObject) => {
+    const { asyncTest, statement, ctx } = testObject;
 
     const done = () => ctx.result.markAsDone(testObject);
 
-    const fail = (rejectionMessage) => {
+    const fail = (rejectionMessage?: string) => {
         testObject.statement = typeof rejectionMessage === 'string'
             ? rejectionMessage
             : statement;
@@ -24,9 +23,8 @@ export const runAsync = (testObject) => {
     ctx.setCurrentTest(testObject);
 
     try {
-        testFn.then(done, fail);
+        asyncTest.then(done, fail);
     } catch (e) {
-        // @ts-ignore
         fail();
     }
 
@@ -35,10 +33,8 @@ export const runAsync = (testObject) => {
 
 /**
  * Runs test callback.
- * @param {TestObject} testObject TestObject instance.
- * @returns {*} Result from test callback.
  */
-const runTest = (testObject) => {
+const runTest = (testObject: TestObject): any => {
     let result;
 
     testObject.ctx.setCurrentTest(testObject);
@@ -60,10 +56,9 @@ const runTest = (testObject) => {
 
 /**
  * Registers test, if async - adds to pending array
- * @param {TestObject} testObject   A TestObject Instance.
  */
-const register = (testObject) => {
-    const { testFn, ctx, fieldName } = testObject;
+const register = (testObject: TestObject) => {
+    const { ctx, fieldName } = testObject;
     let isPending = false;
     let result;
 
@@ -74,16 +69,12 @@ const register = (testObject) => {
 
     ctx.result.markTestRun(fieldName);
 
-    if (testFn && typeof testFn.then === 'function') {
-        isPending = true;
-    } else {
-        result = runTest(testObject);
-    }
+    result = runTest(testObject);
 
     if (result && typeof result.then === 'function') {
         isPending = true;
 
-        testObject.testFn = result;
+        testObject.asyncTest = result;
     }
 
     if (isPending) {
@@ -93,12 +84,8 @@ const register = (testObject) => {
 
 /**
  * Test function used by consumer to provide their own validations.
- * @param {String} fieldName            Name of the field to test.
- * @param {String} [statement]          The message returned in case of a failure.
- * @param {function} testFn             The actual test callback.
- * @return {TestObject}                 A TestObject instance.
  */
-const test = (fieldName: string, ...args: [string, Function]|[Function]) => {
+const test = (fieldName: string, ...args: [string, Function]|[Function]): TestObject => {
     let statement: string,
         testFn: Function;
 

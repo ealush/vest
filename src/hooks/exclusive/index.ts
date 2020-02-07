@@ -6,8 +6,6 @@ type exclusiveItem = string|string[];
 
 /**
  * Adds fields to a specified group.
- * @param {String} group            To add the fields to.
- * @param {String[]|String} item    A field name or a list of field names.
  */
 const addTo = (group: string, item: exclusiveItem) => {
     const ctx = singleton.useContext();
@@ -33,20 +31,16 @@ const addTo = (group: string, item: exclusiveItem) => {
 
 /**
  * Adds a field or multiple fields to inclusion group.
- * @param {String[]|String} item Item to be added to inclusion group.
  */
 export const only = (item: exclusiveItem) => addTo(GROUP_NAME_ONLY, item);
 
 /**
  * Adds a field or multiple fields to exlusion group.
- * @param {String[]|String} item Item to be added to exlusion group.
  */
 export const skip = (item: exclusiveItem) => addTo(GROUP_NAME_SKIP, item);
 
 /**
  * Checks whether a certain field name is excluded by any of the exclusion groups.
- * @param {String} fieldName    FieldN name to test.
- * @returns {Boolean}
  */
 export const isExcluded = (fieldName: string): boolean => {
     const ctx = singleton.useContext();

@@ -1,4 +1,13 @@
-const suiteResult = (name) => {
+import TestObject from '../test/lib/TestObject';
+
+type errorsReturn = string[] | {
+    [fieldName: string]: string[]
+};
+
+export type SuiteResultType = ReturnType<typeof suiteResult>;
+export type VestOutput = SuiteResultType['output'];
+
+const suiteResult = (name: string) => {
     const pending = { tests: [] };
     const doneCallbacks = [];
     const fieldCallbacks = {};
@@ -6,28 +15,24 @@ const suiteResult = (name) => {
 
     /**
      * Adds a testObject to pending list.
-     * @param {Object} testObject
      */
-    const setPending = (testObject) => {
+    const setPending = (testObject: TestObject) => {
         isAsync = true;
         pending.tests.push(testObject);
     };
 
     /**
      * Clears a testObject from pending list.
-     * @param {Object} testObject
      */
-    const clearFromPending = (testObject) => {
+    const clearFromPending = (testObject: TestObject) => {
         pending.tests = pending.tests
             .filter((t) => t !== testObject);
     };
 
     /**
      * Checks if a specified field has any remaining tests.
-     * @param {String} fieldName
-     * @returns {Boolean}
      */
-    const hasRemaining = (fieldName) => {
+    const hasRemaining = (fieldName?: string): boolean => {
         if (!pending.tests.length) {
             return false;
         }
@@ -42,9 +47,8 @@ const suiteResult = (name) => {
 
     /**
      * Bumps test counters to indicate tests that are being performed
-     * @param {string} fieldName - The name of the field.
      */
-    const markTestRun = (fieldName) => {
+    const markTestRun = (fieldName: string) => {
 
         if (!output.tests[fieldName]) {
             output.tests[fieldName] = {
@@ -62,12 +66,12 @@ const suiteResult = (name) => {
 
     /**
      * Marks a test as failed.
-     * @param {Object} testData
-     * @param {String} testData.fieldName       Name of field being tested.
-     * @param {String} [testData.statement]     Failure message to display.
-     * @param {Boolean} [testData.isWarning]    Indicates warn only test.
      */
-    const markFailure = ({ fieldName, statement, isWarning }) => {
+    const markFailure = ({ fieldName, statement, isWarning }: {
+        fieldName: string;
+        statement?: string;
+        isWarning?: boolean;
+    }) => {
         if (!output.tests[fieldName]) { return; }
 
         let severityGroup, severityCount;
@@ -93,17 +97,15 @@ const suiteResult = (name) => {
 
     /**
      * Uniquely add a field to the `skipped` list
-     * @param {string} fieldName - The name of the field.
      */
-    const addToSkipped = (fieldName) => {
+    const addToSkipped = (fieldName: string) => {
         !output.skipped.includes(fieldName) && output.skipped.push(fieldName);
     };
 
     /**
      * Runs callbacks of specified field, or of the whole suite.
-     * @param {String} [fieldName]
      */
-    const runCallbacks = (fieldName) => {
+    const runCallbacks = (fieldName?: string) => {
         if (!fieldName) {
             return doneCallbacks.forEach((cb) => cb(output));
         }
@@ -115,11 +117,9 @@ const suiteResult = (name) => {
 
     /**
      * Removes a field from pending, and runs its callbacks. If all fields are done, runs all callbacks.
-     * @param {Object} testObject a testObject to remove from pending.
      */
-    const markAsDone = (testObject) => {
+    const markAsDone = (testObject: TestObject) => {
 
-        // @ts-ignore
         if (output.canceled) {
             return;
         }
@@ -131,22 +131,26 @@ const suiteResult = (name) => {
             }
         }
 
-        // @ts-ignore
         if (!hasRemaining()) {
 
-            // @ts-ignore
             runCallbacks();
         }
     };
 
+    type DoneCallback = (vestOutput: typeof output) => void;
+
     /**
      * Registers a callback to run once the suite or a specified field finished running.
-     * @param {String} [name] Name of the field to call back after,
-     * @param {Function} callback A callback to run once validation is finished.
-     * @returns {Object} Output object.
      */
-    const done = (...args) => {
-        const { length, [length-1]: callback, [length-2]: name } = args;
+    const done = (...args: [string, DoneCallback]|[DoneCallback]): typeof output => {
+        let name: string,
+            callback: DoneCallback;
+
+        if (typeof args[0] === 'string') {
+            [name, callback] = args;
+        } else if (typeof args[0] === 'function') {
+            [callback] = args;
+        }
 
         if (typeof callback !== 'function') {
             return output;
@@ -175,8 +179,7 @@ const suiteResult = (name) => {
     /**
      * cancels done callbacks. They won't invoke when async operations complete
      */
-    const cancel = () => {
-        // @ts-ignore
+    const cancel = (): typeof output => {
         output.canceled = true;
 
         return output;
@@ -184,10 +187,10 @@ const suiteResult = (name) => {
 
     /**
      * Collects all fields that have an array of specified group in their results.
-     * @param {String} group Group name (warnings or errors).
-     * @returns {Object} Object of array per field.
      */
-    const collectFailureMessages = (group) => {
+    const collectFailureMessages = (group: string): {
+        [fieldName: string]: string[];
+    } => {
         const collector = {};
 
         for (const fieldName in output.tests) {
@@ -202,10 +205,8 @@ const suiteResult = (name) => {
 
     /**
      * Gets all the errors of a field, or of the whole object.
-     * @param {string} fieldName - The name of the field.
-     * @return {array | object} The field's errors, or all errors.
      */
-    const getErrors = (fieldName) => {
+    const getErrors = (fieldName?: string): errorsReturn => {
         if (!fieldName) {
             return collectFailureMessages('errors');
         }
@@ -219,10 +220,8 @@ const suiteResult = (name) => {
 
     /**
      * Gets all the warnings of a field, or of the whole object.
-     * @param {string} [fieldName] - The name of the field.
-     * @return {array | object} The field's warnings, or all warnings.
      */
-    const getWarnings = (fieldName) => {
+    const getWarnings = (fieldName?: string): errorsReturn => {
         if (!fieldName) {
             return collectFailureMessages('warnings');
         }
@@ -236,10 +235,8 @@ const suiteResult = (name) => {
 
     /**
      * Checks if a certain field (or the whole suite) has errors.
-     * @param {string} [fieldName]
-     * @return {boolean}
      */
-    const hasErrors = (fieldName) => {
+    const hasErrors = (fieldName?: string): boolean => {
         if (!fieldName) {
             return !!output.errorCount;
         }
@@ -252,10 +249,8 @@ const suiteResult = (name) => {
 
     /**
      * Checks if a certain field (or the whole suite) has warnings
-     * @param {string} [fieldName]
-     * @return {boolean}
      */
-    const hasWarnings = (fieldName) => {
+    const hasWarnings = (fieldName?: string): boolean => {
         if (!fieldName) {
             return !!output.warnCount;
         }
@@ -273,7 +268,8 @@ const suiteResult = (name) => {
         testCount: 0,
         tests: {},
         skipped: [],
-        tested: []
+        tested: [],
+        canceled: false
     };
 
     Object.defineProperties(output, {

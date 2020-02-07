@@ -5,29 +5,34 @@ import { draft, only, skip, warn } from './hooks';
 import test from './core/test';
 import { singleton } from './lib';
 import { VERSION } from './constants';
+import { Vest } from './types';
 
-// export const vest = {
-//     VERSION,
-//     enforce,
-//     draft,
-//     Enforce: enforce.Enforce,
-//     test,
-//     any,
-//     validate,
-//     only,
-//     skip,
-//     warn
-// };
+const Enforce = enforce.Enforce;
 
-export default singleton.register({
+const vest: Vest = {
     VERSION,
     enforce,
     draft,
-    Enforce: enforce.Enforce,
+    Enforce,
     test,
     any,
     validate,
     only,
     skip,
     warn
-});
+};
+
+export {
+    VERSION,
+    enforce,
+    draft,
+    Enforce,
+    test,
+    any,
+    validate,
+    only,
+    skip,
+    warn
+};
+
+export default singleton.register(vest);

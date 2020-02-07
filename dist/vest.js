@@ -5,6 +5,8 @@
 }(this, (function () { 'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -111,18 +113,22 @@
       }
 
       var o = function o(n, e) {
-        return Object.prototype.hasOwnProperty.call(n, e) && "function" == typeof n[e];
+        var t,
+            r = Object.prototype.hasOwnProperty.call(n, e) && "function" == typeof n[e];
+        return r || (t = 'Rule "'.concat(e, '" was not found in rules object. Make sure you typed it correctly.'), setTimeout(function () {
+          throw new Error("[".concat("enforce", "]: ").concat(t));
+        })), r;
       },
           u = Function("return this")(),
           i = function i() {
         return "function" == typeof u.Proxy;
       };
 
-      function a(n) {
+      function c(n) {
         return Boolean(Array.isArray(n));
       }
 
-      function c(n) {
+      function a(n) {
         return Boolean("number" == typeof n);
       }
 
@@ -147,11 +153,11 @@
         return Boolean(e);
       }
 
-      function g(n, e) {
+      function b(n, e) {
         return p(n) && p(e) && Number(n) === Number(e);
       }
 
-      function b(e) {
+      function g(e) {
         return !e || (p(e) ? 0 === e : Object.prototype.hasOwnProperty.call(e, "length") ? 0 === e.length : "object" !== n(e) || 0 === Object.keys(e).length);
       }
 
@@ -171,17 +177,17 @@
         return p(n) && p(e) && Number(n) <= Number(e);
       }
 
-      function N(n, e) {
+      function d(n, e) {
         return n.length === e;
       }
 
-      a.negativeForm = "isNotArray", c.negativeForm = "isNotNumber", f.negativeForm = "isNotString", s.negativeForm = "notMatches", l.negativeForm = "notInside", y.negativeForm = "notEquals", p.negativeForm = "isNotNumeric", g.negativeForm = "numberNotEquals", b.negativeForm = "isNotEmpty", m.alias = "gt", v.alias = "gte", h.alias = "lt", O.alias = "lte", N.negativeForm = "lengthNotEquals";
+      c.negativeForm = "isNotArray", a.negativeForm = "isNotNumber", f.negativeForm = "isNotString", s.negativeForm = "notMatches", l.negativeForm = "notInside", y.negativeForm = "notEquals", p.negativeForm = "isNotNumeric", b.negativeForm = "numberNotEquals", g.negativeForm = "isNotEmpty", m.alias = "gt", v.alias = "gte", h.alias = "lt", O.alias = "lte", d.negativeForm = "lengthNotEquals";
 
-      function d(n) {
+      function N(n) {
         return !!n;
       }
 
-      d.negativeForm = "isFalsy";
+      N.negativeForm = "isFalsy";
 
       var j = function (n) {
         var e = function e(_e) {
@@ -198,15 +204,15 @@
 
         return n;
       }({
-        isArray: a,
-        isNumber: c,
+        isArray: c,
+        isNumber: a,
         isString: f,
         matches: s,
         inside: l,
         equals: y,
-        numberEquals: g,
+        numberEquals: b,
         isNumeric: p,
-        isEmpty: b,
+        isEmpty: g,
         greaterThan: m,
         greaterThanOrEquals: v,
         lessThan: h,
@@ -223,17 +229,17 @@
         shorterThanOrEquals: function shorterThanOrEquals(n, e) {
           return n.length <= e;
         },
-        lengthEquals: N,
+        lengthEquals: d,
         isOdd: function isOdd(n) {
           return !!p(n) && n % 2 != 0;
         },
         isEven: function isEven(n) {
           return !!p(n) && n % 2 == 0;
         },
-        isTruthy: d
+        isTruthy: N
       });
 
-      function E(e, t) {
+      function w(e, t) {
         if ("function" == typeof e) {
           for (var r = arguments.length, o = new Array(r > 2 ? r - 2 : 0), u = 2; u < r; u++) {
             o[u - 2] = arguments[u];
@@ -243,7 +249,7 @@
         }
       }
 
-      function w() {
+      function E() {
         var n = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {},
             t = r({}, j, {}, n);
         if (i()) return function (n) {
@@ -254,7 +260,7 @@
                   u[i] = arguments[i];
                 }
 
-                return E.apply(void 0, [t[r], n].concat(u)), e;
+                return w.apply(void 0, [t[r], n].concat(u)), e;
               };
             }
           });
@@ -268,14 +274,14 @@
                 r[o] = arguments[o];
               }
 
-              return E.apply(void 0, [t[i], n].concat(r)), u;
+              return w.apply(void 0, [t[i], n].concat(r)), u;
             })));
           }, {});
         };
       }
 
-      var F = new w();
-      return F.Enforce = w, F;
+      var F = new E();
+      return F.Enforce = E, F;
     });
   });
 
@@ -640,7 +646,6 @@
         ctx = testObject.ctx,
         fieldName = testObject.fieldName;
     var isPending = false;
-    var result;
 
     if (isExcluded(fieldName)) {
       ctx.result.addToSkipped(fieldName);
@@ -648,12 +653,7 @@
     }
 
     ctx.result.markTestRun(fieldName);
-
-    if (testFn && typeof testFn.then === 'function') {
-      isPending = true;
-    } else {
-      result = runTest(testObject);
-    }
+    var result = runTest(testObject);
 
     if (result && typeof result.then === 'function') {
       isPending = true;

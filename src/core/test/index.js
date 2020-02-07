@@ -64,7 +64,6 @@ const runTest = (testObject) => {
 const register = (testObject) => {
     const { testFn, ctx, fieldName } = testObject;
     let isPending = false;
-    let result;
 
     if (isExcluded(fieldName)) {
         ctx.result.addToSkipped(fieldName);
@@ -73,11 +72,7 @@ const register = (testObject) => {
 
     ctx.result.markTestRun(fieldName);
 
-    if (testFn && typeof testFn.then === 'function') {
-        isPending = true;
-    } else {
-        result = runTest(testObject);
-    }
+    const result = runTest(testObject);
 
     if (result && typeof result.then === 'function') {
         isPending = true;

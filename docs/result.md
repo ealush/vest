@@ -73,6 +73,7 @@ If we specify a fieldname in our `done` call, vest will not wait for the whole s
 `.done()` calls can be infinitely chained after one another, and as the validation suite completes - they will all run immediately.
 
 `done` takes one or two arguments:
+
 | Name | Type | Optional | Description
 |-|-|-|-
 | `fieldName` | `String` | Yes | If passed, current done call will not wait for the whole suite to complete, but instead wait for a certain field to finish.

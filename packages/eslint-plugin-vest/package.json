@@ -1,0 +1,13 @@
+{
+  "name": "eslint-plugin-vest",
+  "version": "0.0.2",
+  "description": "Eslint plugin for vest validations.",
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin"
+  ],
+  "author": "ealush",
+  "main": "lib/index.js",
+  "license": "MIT"
+}

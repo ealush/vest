@@ -1,8 +1,10 @@
 import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
-import babel from 'rollup-plugin-babel';
 import replace from 'rollup-plugin-replace';
 import { terser } from 'rollup-plugin-terser';
+
+import compiler from '@ampproject/rollup-plugin-closure-compiler';
+
 const { version } = require('../package.json');
 
 const DEFAULT_FORMAT = 'umd';
@@ -13,13 +15,10 @@ const PLUGINS = [
     commonjs({
         include: /node_modules\/(anyone|n4s)/
     }),
-    babel({
-        babelrc: false,
-        ...require('./babel.config')()
-    }),
     replace({
-        VEST_VERSION: JSON.stringify(version)
-    })
+        VEST_VERSION: JSON.stringify(version),
+    }),
+    compiler(),
 ];
 
 const buildConfig = ({ format = DEFAULT_FORMAT, min = false } = {}) => ({

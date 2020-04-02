@@ -7,14 +7,14 @@ import { singleton } from './lib';
 import { VERSION } from './constants';
 
 export default singleton.register({
+    Enforce: enforce.Enforce,
     VERSION,
     enforce,
     draft,
-    Enforce: enforce.Enforce,
     test,
     any,
     validate,
     only,
     skip,
-    warn
+    warn,
 });

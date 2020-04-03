@@ -42,7 +42,7 @@
     "lodash": "^4.17.15",
     "n4s": "^0.4.5",
     "node-fetch": "^2.6.0",
-    "rollup": "^1.18.0",
+    "rollup": "^2.3.2",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",

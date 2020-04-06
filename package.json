@@ -27,7 +27,7 @@
     "@babel/plugin-transform-object-assign": "^7.2.0",
     "@babel/preset-env": "^7.7.4",
     "@babel/register": "^7.5.5",
-    "anyone": "^0.0.6",
+    "anyone": "^0.0.7",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^25.1.0",
     "babel-loader": "^8.0.6",

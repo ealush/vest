@@ -1259,10 +1259,10 @@ anymatch@^3.0.3:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
-anyone@^0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/anyone/-/anyone-0.0.6.tgz#b05755d893d235104496bef1b84b4a191bf82ef3"
-  integrity sha512-xmU4M1YD2Y0zZLu7n/QfDpRLhOplW6baGTjnIM27kp2Ya6xmYVGHqbdn+INahVsHeABlvAXpUDapKdKQEI2R2Q==
+anyone@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/anyone/-/anyone-0.0.7.tgz#c8439d460072593e954afed74dab3e9adb3bd5b0"
+  integrity sha512-8Oiu8YVNi94RZGD/IVHGyUdPWkhK4ETjEpZRipnD4WcOpD8Q7+K4KGzJMDZ2prTLmj/advh6YG6j5b4fyDPYNg==
 
 argparse@^1.0.7:
   version "1.0.10"

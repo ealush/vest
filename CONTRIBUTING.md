@@ -8,31 +8,43 @@ This project uses `yarn`. When working on this project you should first clone it
 
 Vest’s functionality is fully documented and fully tested. Please make sure to update the documentation and tests when making a functional change.
 
-
 ## Versioning strategy
-When making a change you should never manually update Vest’s version in its `package.json` file. Instead, you should prefix your commits with the change level, for example: `major:` for breaking changes, `minor:` for new features, and `patch:` for fixes within the code. If your changes are not in the code itself (documentation, for example), you should prefix your commits with `config:` or `docs:`. The next version number will be calculated from the sum of all commits in a release.
 
-## Repository structure 
+When making a change you should never manually update Vest’s version in its `package.json` file. Instead, you should prefix your commits with the change level, for example: `major:` (or `breaking:`) for breaking changes, `minor:` (or `feat:`) for new features, and `patch:` (or `fix:`) for fixes within the code. If your changes are not in the code itself (documentation, for example), you should prefix your commits with `config:` or `docs:`. The next version number will be calculated from the sum of all commits in a release.
+
+A good commit message could look like this:
+`breaking: Removed legacy interface.`
+
+When making changes to packages other than vest, you should also add the name of the package in your commit message for changelog generation. A good commit message could look like this:
+
+`fix: [eslint-plugin-vest] fix edge case bug.`
+
+## Repository structure
+
 Vest’s structure is fairly simple. To help you familiarize with the project, see this mapping:
 
 ```sh
-vest/
-├── config/ # Contains build and test configurations.
-├── docs/   # Vest's documentation.
-├── src/    # Vest's prebuilt source code.
-│   └── core/  # Modules required for vest's functionality.
-│   │   └── Context/     # Vest's shared runtime, Used across the whole library.
-│   │   └── suiteResult/ # The output object is generated here.
-│   │   └── test/        # Contains the test function and its lifecycle.
-│   │   └── validate/    # Initializes the suite and creates a context.
-│   └── hooks/ # Functions that extend vest's functionality. They all use Context.
-│   │   └── draft/       # Allows access to the intermediate test result.
-│   │   └── exclusive/   # Allows including or excluding fields in runtime.
-│   │   └── warn/        # Allows setting warn-only fields.
-│   └── lib/  # Shared helper functions.
+config/ # Contains build and test configurations.
+docs/   # Vest's documentation.
+packages/
+├── vest/   # Main Vest package.
+│   ├── src/    # Vest's prebuilt source code.
+│   │   └── core/  # Modules required for vest's functionality.
+│   │   │   └── Context/     # Vest's shared runtime, Used across the whole library.
+│   │   │   └── suiteResult/ # The output object is generated here.
+│   │   │   └── test/        # Contains the test function and its lifecycle.
+│   │   │   └── validate/    # Initializes the suite and creates a context.
+│   │   └── hooks/ # Functions that extend vest's functionality. They all use Context.
+│   │   │   └── draft/       # Allows access to the intermediate test result.
+│   │   │   └── exclusive/   # Allows including or excluding fields in runtime.
+│   │   │   └── warn/        # Allows setting warn-only fields.
+│   │   └── lib/  # Shared helper functions.
+├── eslint-plugin-vest/   # Eslint plugin with vest specific rules
+│   ├── lib/    # Contains all rules
 ```
 
 ## Branching strategy
+
 Vest’s default (and latest) branch is master, but our development branch is `next`. We do not release a new version of Vest for every single change, instead, we gather changes in the `next` branch and periodically create a new release.
 
 When working on a feature, you should branch off `next`, and base your pull requests to the `next` branch.

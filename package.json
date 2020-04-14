@@ -1,52 +1,50 @@
 {
-  "name": "vest",
-  "version": "1.0.7",
-  "description": "Validation Test",
-  "main": "./dist/vest.min.js",
-  "typings": "./vest.d.ts",
-  "author": "ealush",
   "license": "MIT",
-  "scripts": {
-    "build": "rollup --config config/rollup.js -m",
-    "pretest": "npm run build",
-    "test": "jest --config=config/jest/jest.config.js -i",
-    "eslint": "eslint -c .eslintrc \"./src/**/*.js\"; exit 0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ealush/vest.git"
-  },
-  "bugs": {
-    "url": "https://github.com/ealush/vest/issues"
-  },
-  "homepage": "https://ealush.github.io/vest/",
-  "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.7.4",
-    "@babel/plugin-transform-object-assign": "^7.2.0",
-    "@babel/preset-env": "^7.7.4",
-    "@babel/register": "^7.5.5",
-    "anyone": "0.0.5",
-    "babel-eslint": "^10.0.1",
-    "babel-jest": "^25.1.0",
-    "babel-loader": "^8.0.6",
+  "dependencies": {
+    "@ampproject/rollup-plugin-closure-compiler": "^0.24.0",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/plugin-transform-object-assign": "^7.8.3",
+    "@babel/preset-env": "^7.9.5",
+    "@babel/register": "^7.9.0",
+    "anyone": "^0.0.7",
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "^25.3.0",
     "babel-plugin-add-module-exports": "^1.0.2",
-    "cross-env": "^7.0.0",
-    "date-fns": "^2.0.1",
-    "eslint": "^6.7.1",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jest": "^23.0.5",
+    "cross-env": "^7.0.2",
+    "date-fns": "^2.12.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jest": "^23.8.2",
     "faker": "^4.1.0",
-    "jest": "^25.1.0",
+    "husky": "^4.2.5",
+    "jest": "^25.3.0",
+    "jest-cli": "^25.3.0",
     "lodash": "^4.17.15",
-    "n4s": "^0.4.2",
+    "mocha": "^3.1.2",
+    "n4s": "^0.4.6",
     "node-fetch": "^2.6.0",
-    "rollup": "^1.18.0",
+    "onchange": "^6.1.0",
+    "prettier": "2.0.4",
+    "pretty-quick": "^2.0.1",
+    "rollup": "^2.6.1",
     "rollup-plugin-babel": "^4.3.2",
-    "rollup-plugin-commonjs": "^10.0.2",
+    "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-replace": "^2.2.0",
     "rollup-plugin-terser": "^5.0.0",
-    "semver": "^7.1.1"
+    "semver": "^7.2.1"
+  },
+  "scripts": {
+    "pretest": "rollup -c ./config/builds/vest.js",
+    "prettier-watch": "onchange '**/*.js' '**/*.json' -- prettier --write {{changed}}",
+    "test": "jest --projects ./packages/*/ -i",
+    "lint": "eslint ."
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
   }
 }

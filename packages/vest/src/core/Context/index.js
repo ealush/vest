@@ -1,12 +1,17 @@
-import { singleton } from "../../lib";
+import singleton from "../../lib/singleton";
 
 /**
  * Creates a new context object, and assigns it as a static property on Vest's singleton.
  * @param {Object} parent   Parent context.
  */
 function Context(parent) {
-  singleton.use().ctx = this;
-  Object.assign(this, parent);
+  if (singleton.use().ctx) {
+    Object.assign(singleton.use().ctx, this);
+  } else {
+    singleton.use().ctx = this;
+  }
+
+  Object.assign(singleton.use().ctx, parent);
 }
 
 /**

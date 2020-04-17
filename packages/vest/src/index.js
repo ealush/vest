@@ -4,17 +4,18 @@ import { VERSION } from "./constants";
 import test from "./core/test";
 import validate from "./core/validate";
 import { draft, only, skip, warn } from "./hooks";
-import { singleton } from "./lib";
+import { singleton, runWithContext } from "./lib";
 
 export default singleton.register({
   Enforce: enforce.Enforce,
   VERSION,
-  enforce,
-  draft,
-  test,
   any,
-  validate,
+  draft,
+  enforce,
   only,
+  runWithContext,
   skip,
+  test,
+  validate,
   warn,
 });

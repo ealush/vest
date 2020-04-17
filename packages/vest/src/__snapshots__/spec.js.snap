@@ -133,6 +133,7 @@ Object {
   "draft": [Function],
   "enforce": [Function],
   "only": [Function],
+  "runWithContext": [Function],
   "skip": [Function],
   "test": [Function],
   "validate": [Function],

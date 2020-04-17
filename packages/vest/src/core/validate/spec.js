@@ -48,16 +48,15 @@ describe("Test validate suite wrapper", () => {
   });
 
   describe("Context creation", () => {
-    let mockContext, validate, name;
+    let mockRunWithContext, validate, name;
 
     beforeEach(() => {
       name = "formName";
-      mockContext = jest.fn();
-      mockContext.clear = jest.fn();
+      mockRunWithContext = jest.fn();
       jest.resetModules();
-      jest.mock("../Context/", () => ({
+      jest.mock("../../lib/runWithContext", () => ({
         __esModule: true,
-        default: mockContext,
+        default: mockRunWithContext,
       }));
       validate = require(".");
       validate(name, noop);
@@ -67,12 +66,8 @@ describe("Test validate suite wrapper", () => {
       jest.resetAllMocks();
     });
 
-    it("Should create a new context object with initialized suite data", () => {
-      expect(mockContext.mock.calls[0][0]).toMatchSnapshot();
-    });
-
-    it("Should clear created context", () => {
-      expect(mockContext.clear).toHaveBeenCalled();
+    it("Should call `runWithContext` with tests as the argument", () => {
+      expect(mockRunWithContext.mock.calls[0]).toMatchSnapshot();
     });
   });
 });

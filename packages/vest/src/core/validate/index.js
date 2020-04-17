@@ -1,5 +1,4 @@
-import { throwError } from "../../lib";
-import Context from "../Context";
+import { throwError, runWithContext } from "../../lib";
 import suiteResult from "../suiteResult";
 import { runAsync } from "../test";
 import { SUITE_INIT_ERROR } from "./constants";
@@ -27,13 +26,10 @@ const validate = (name, tests) => {
 
   const result = suiteResult(name);
 
-  new Context({ result });
-
-  tests();
-
-  Context.clear();
-
-  [...result.pending].forEach(runAsync);
+  runWithContext({ result }, () => {
+    tests();
+    [...result.pending].forEach(runAsync);
+  });
 
   return result.output;
 };

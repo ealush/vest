@@ -1,23 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test validate suite wrapper Context creation Should create a new context object with initialized suite data 1`] = `
-Object {
-  "result": Object {
-    "addToSkipped": [Function],
-    "markAsDone": [Function],
-    "markFailure": [Function],
-    "markTestRun": [Function],
-    "output": Object {
-      "errorCount": 0,
-      "name": "formName",
-      "skipped": Array [],
-      "testCount": 0,
-      "tested": Array [],
-      "tests": Object {},
-      "warnCount": 0,
+exports[`Test validate suite wrapper Context creation Should call \`runWithContext\` with tests as the argument 1`] = `
+Array [
+  Object {
+    "result": Object {
+      "addToSkipped": [Function],
+      "markAsDone": [Function],
+      "markFailure": [Function],
+      "markTestRun": [Function],
+      "output": Object {
+        "errorCount": 0,
+        "name": "formName",
+        "skipped": Array [],
+        "testCount": 0,
+        "tested": Array [],
+        "tests": Object {},
+        "warnCount": 0,
+      },
+      "pending": Array [],
+      "setPending": [Function],
     },
-    "pending": Array [],
-    "setPending": [Function],
   },
-}
+  [Function],
+]
 `;

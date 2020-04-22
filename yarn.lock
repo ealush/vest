@@ -3948,7 +3948,7 @@ minimatch@3.0.4, minimatch@^3.0.4:
   dependencies:
     brace-expansion "^1.1.7"
 
-minimist@1.x, minimist@^1.1.1, minimist@^1.2.0, minimist@^1.2.5:
+minimist@1.x, minimist@^1.1.1, minimist@^1.2.0, minimist@^1.2.3, minimist@^1.2.5:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.5.tgz#67d66014b66a6a8aaa0c083c5fd58df4e4e97602"
   integrity sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
@@ -4238,19 +4238,19 @@ once@^1.3.0, once@^1.3.1, once@^1.4.0:
   dependencies:
     wrappy "1"
 
-onchange@^6.1.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/onchange/-/onchange-6.1.0.tgz#61fe2f1e994b4b5efb67e65033e3d5ac27fec347"
-  integrity sha512-T0wvi3yzNd+Lut2ymJp2e6fTiob0TLrXnjqGaiK9MAFB8MYo/k/ZClx6ps7YhTtQ88dDm+hDHmtJXP1nJT5WNA==
+onchange@^6.1.1:
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/onchange/-/onchange-6.1.1.tgz#8e23e5c696df1b8eae4efec2b49ea24847980cf3"
+  integrity sha512-G60OULp9Hi2dixPKYn/lfs7C8oDgFcneAhZ/4nPnvzd+Ar94q3FN0UG/t1zqXI15StSLvt7NlRqylamTSGhc4A==
   dependencies:
     "@blakeembrey/deque" "^1.0.3"
     arrify "^2.0.0"
     chokidar "^3.0.0"
-    cross-spawn "^6.0.0"
+    cross-spawn "^7.0.1"
     ignore "^5.1.4"
-    minimist "^1.2.0"
+    minimist "^1.2.3"
     supports-color "^7.0.0"
-    tree-kill "^1.2.0"
+    tree-kill "^1.2.2"
 
 onetime@^5.1.0:
   version "5.1.0"
@@ -5519,7 +5519,7 @@ tr46@^1.0.1:
   dependencies:
     punycode "^2.1.0"
 
-tree-kill@^1.2.0:
+tree-kill@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/tree-kill/-/tree-kill-1.2.2.tgz#4ca09a9092c88b73a7cdc5e8a01b507b0790a0cc"
   integrity sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==

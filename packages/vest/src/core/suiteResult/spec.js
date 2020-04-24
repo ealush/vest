@@ -103,6 +103,12 @@ describe("suiteResult module", () => {
           expect(output.hasErrors(fieldName1)).toBe(true);
           expect(output.hasErrors(fieldName2)).toBe(false);
         });
+
+        describe("When field doesn't exist", () => {
+          it("Should return false", () => {
+            expect(output.hasErrors(fieldName2)).toBe(false);
+          });
+        });
       });
     });
 
@@ -121,6 +127,12 @@ describe("suiteResult module", () => {
           res.markFailure({ fieldName: fieldName1, isWarning: true });
           expect(output.hasWarnings(fieldName1)).toBe(true);
           expect(output.hasWarnings(fieldName2)).toBe(false);
+        });
+
+        describe("When field doesn't exist", () => {
+          it("Should return false", () => {
+            expect(output.hasWarnings("I Do Not Exist")).toBe(false);
+          });
         });
       });
     });
@@ -146,6 +158,12 @@ describe("suiteResult module", () => {
           expect(output.getErrors(fieldName2)).toEqual([statement]);
           res.markFailure({ fieldName: fieldName2, statement: statement2 });
           expect(output.getErrors(fieldName2)).toEqual([statement, statement2]);
+        });
+
+        describe("When field doesn't exist", () => {
+          it("Should return an empty array", () => {
+            expect(output.getErrors("I Do Not Exist")).toEqual([]);
+          });
         });
       });
     });
@@ -186,6 +204,12 @@ describe("suiteResult module", () => {
             statement,
             statement2,
           ]);
+        });
+
+        describe("When field doesn't exist", () => {
+          it("Should return an empty array", () => {
+            expect(output.getWarnings("I Do Not Exist")).toEqual([]);
+          });
         });
       });
     });

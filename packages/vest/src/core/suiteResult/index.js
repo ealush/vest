@@ -204,11 +204,7 @@ const suiteResult = (name) => {
       return collectFailureMessages("errors");
     }
 
-    if (output.tests[fieldName].errors) {
-      return output.tests[fieldName].errors;
-    }
-
-    return [];
+    return output.tests?.[fieldName]?.errors || [];
   };
 
   /**
@@ -221,11 +217,7 @@ const suiteResult = (name) => {
       return collectFailureMessages("warnings");
     }
 
-    if (output.tests[fieldName].warnings) {
-      return output.tests[fieldName].warnings;
-    }
-
-    return [];
+    return output.tests?.[fieldName]?.warnings || [];
   };
 
   /**
@@ -238,9 +230,7 @@ const suiteResult = (name) => {
       return !!output.errorCount;
     }
 
-    return Boolean(
-      output.tests[fieldName] && output.tests[fieldName].errorCount
-    );
+    return Boolean(output.tests?.[fieldName]?.errorCount);
   };
 
   /**
@@ -253,9 +243,7 @@ const suiteResult = (name) => {
       return !!output.warnCount;
     }
 
-    return Boolean(
-      output.tests[fieldName] && output.tests[fieldName].warnCount
-    );
+    return Boolean(output.tests?.[fieldName]?.warnCount);
   };
 
   const output = {

@@ -8,6 +8,7 @@ module.exports = (api) => {
   const plugins = [
     "babel-plugin-add-module-exports",
     "@babel/plugin-transform-object-assign",
+    "@babel/plugin-proposal-optional-chaining",
   ];
 
   return {

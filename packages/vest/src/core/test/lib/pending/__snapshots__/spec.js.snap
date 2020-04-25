@@ -1,0 +1,78 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`module: pending export: removePending When testObject is either pending or lagging When in lagging Should remove test from lagging 1`] = `
+Object {
+  "doneCallbacks": Array [],
+  "errorCount": 0,
+  "exclusive": Object {},
+  "fieldCallbacks": Object {},
+  "lagging": Array [],
+  "name": "suite_1",
+  "pending": Array [],
+  "skipped": Object {},
+  "suiteId": "suite_1",
+  "tests": Object {},
+  "warnCount": 0,
+}
+`;
+
+exports[`module: pending export: removePending When testObject is either pending or lagging When in pending Should remove test from pending 1`] = `
+Object {
+  "doneCallbacks": Array [],
+  "errorCount": 0,
+  "exclusive": Object {},
+  "fieldCallbacks": Object {},
+  "lagging": Array [],
+  "name": "suite_1",
+  "pending": Array [],
+  "skipped": Object {},
+  "suiteId": "suite_1",
+  "tests": Object {},
+  "warnCount": 0,
+}
+`;
+
+exports[`module: pending export: setPending When field is in lagging array Should remove test from lagging array 1`] = `
+Object {
+  "doneCallbacks": Array [],
+  "errorCount": 0,
+  "exclusive": Object {},
+  "fieldCallbacks": Object {},
+  "lagging": Array [
+    VestTest {
+      "failed": false,
+      "fieldName": "test_2",
+      "id": "8",
+      "isWarning": false,
+      "statement": "Some statement string",
+      "suiteId": "suite_1",
+      "testFn": [MockFunction],
+    },
+    VestTest {
+      "failed": false,
+      "fieldName": "test_1",
+      "id": "7",
+      "isWarning": false,
+      "statement": "Some statement string",
+      "suiteId": "suite_1",
+      "testFn": [MockFunction],
+    },
+  ],
+  "name": "suite_1",
+  "pending": Array [
+    VestTest {
+      "failed": false,
+      "fieldName": "test_0",
+      "id": "6",
+      "isWarning": false,
+      "statement": "Some statement string",
+      "suiteId": "suite_1",
+      "testFn": [MockFunction],
+    },
+  ],
+  "skipped": Object {},
+  "suiteId": "suite_1",
+  "tests": Object {},
+  "warnCount": 0,
+}
+`;

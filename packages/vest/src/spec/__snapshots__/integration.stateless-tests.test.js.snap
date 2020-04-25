@@ -1,0 +1,289 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`stateless behavior Should start suite with no previous data on each run 1`] = `
+Object {
+  "done": [Function],
+  "errorCount": 1,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`stateless behavior Should start suite with no previous data on each run 2`] = `
+Object {
+  "done": [Function],
+  "errorCount": 2,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_5": Object {
+      "errorCount": 2,
+      "errors": Array [
+        "field_statement_5",
+        "field_statement_6",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`stateless behavior Should start suite with no previous data on each run 3`] = `
+Object {
+  "done": [Function],
+  "errorCount": 5,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+    "field_2": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_2",
+      ],
+      "warnCount": 0,
+    },
+    "field_3": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_3",
+      ],
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "warnCount": 1,
+      "warnings": Array [
+        "field_statement_4",
+      ],
+    },
+    "field_5": Object {
+      "errorCount": 2,
+      "errors": Array [
+        "field_statement_5",
+        "field_statement_6",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 1,
+}
+`;
+
+exports[`stateless behavior Should start suite with no previous data on each run 4`] = `
+Object {
+  "done": [Function],
+  "errorCount": 1,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`stateless behavior Should start suite with no previous data on each run 5`] = `
+Object {
+  "done": [Function],
+  "errorCount": 2,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_5": Object {
+      "errorCount": 2,
+      "errors": Array [
+        "field_statement_5",
+        "field_statement_6",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`stateless behavior Should start suite with no previous data on each run 6`] = `
+Object {
+  "done": [Function],
+  "errorCount": 5,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+    "field_2": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_2",
+      ],
+      "warnCount": 0,
+    },
+    "field_3": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_3",
+      ],
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "warnCount": 1,
+      "warnings": Array [
+        "field_statement_4",
+      ],
+    },
+    "field_5": Object {
+      "errorCount": 2,
+      "errors": Array [
+        "field_statement_5",
+        "field_statement_6",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 1,
+}
+`;
+
+exports[`stateless behavior Should start suite with no previous data on each run 7`] = `
+Object {
+  "done": [Function],
+  "errorCount": 1,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`stateless behavior Should start suite with no previous data on each run 8`] = `
+Object {
+  "done": [Function],
+  "errorCount": 2,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_5": Object {
+      "errorCount": 2,
+      "errors": Array [
+        "field_statement_5",
+        "field_statement_6",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`stateless behavior Should start suite with no previous data on each run 9`] = `
+Object {
+  "done": [Function],
+  "errorCount": 5,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+    "field_2": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_2",
+      ],
+      "warnCount": 0,
+    },
+    "field_3": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_3",
+      ],
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "warnCount": 1,
+      "warnings": Array [
+        "field_statement_4",
+      ],
+    },
+    "field_5": Object {
+      "errorCount": 2,
+      "errors": Array [
+        "field_statement_5",
+        "field_statement_6",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 1,
+}
+`;

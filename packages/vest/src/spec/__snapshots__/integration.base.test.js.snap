@@ -1,0 +1,121 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Base behavior Should produce correct validation result 1`] = `
+Object {
+  "done": [Function],
+  "errorCount": 2,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+    "field_2": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_2",
+      ],
+      "warnCount": 0,
+    },
+    "field_3": Object {
+      "errorCount": 0,
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "warnCount": 1,
+      "warnings": Array [
+        "field_statement_4",
+      ],
+    },
+  },
+  "warnCount": 1,
+}
+`;
+
+exports[`Base behavior Should produce correct validation result 2`] = `
+Object {
+  "done": [Function],
+  "errorCount": 2,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+    "field_2": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_2",
+      ],
+      "warnCount": 0,
+    },
+    "field_3": Object {
+      "errorCount": 0,
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "warnCount": 1,
+      "warnings": Array [
+        "field_statement_4",
+      ],
+    },
+  },
+  "warnCount": 1,
+}
+`;
+
+exports[`Base behavior Should produce correct validation result 3`] = `
+Object {
+  "done": [Function],
+  "errorCount": 2,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+    "field_2": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_2",
+      ],
+      "warnCount": 0,
+    },
+    "field_3": Object {
+      "errorCount": 0,
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "warnCount": 1,
+      "warnings": Array [
+        "field_statement_4",
+      ],
+    },
+  },
+  "warnCount": 1,
+}
+`;

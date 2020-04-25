@@ -1,6 +1,9 @@
-import { singleton, throwError } from "../../lib";
-import { ERROR_HOOK_CALLED_OUTSIDE } from "../constants";
-import { GROUP_NAME_ONLY, GROUP_NAME_SKIP } from "./constants";
+import getSuiteState from '../../core/state/getSuiteState';
+import patch from '../../core/state/patch';
+import singleton from '../../lib/singleton';
+import throwError from '../../lib/throwError';
+import { ERROR_HOOK_CALLED_OUTSIDE } from '../constants';
+import { GROUP_NAME_ONLY, GROUP_NAME_SKIP } from './constants';
 
 /**
  * Adds fields to a specified group.
@@ -14,18 +17,20 @@ const addTo = (group, item) => {
     return;
   }
 
-  if (!ctx) {
+  if (ctx?.suiteId === undefined) {
     throwError(`${group} ${ERROR_HOOK_CALLED_OUTSIDE}`);
     return;
   }
 
-  ctx.exclusive = ctx.exclusive || {};
-
-  [].concat(item).forEach((fieldName) => {
-    if (typeof fieldName === "string") {
-      ctx.exclusive[group] = ctx.exclusive[group] || {};
-      ctx.exclusive[group][fieldName] = true;
-    }
+  patch(ctx.suiteId, state => {
+    const nextState = { ...state };
+    [].concat(item).forEach(fieldName => {
+      if (typeof fieldName === 'string') {
+        nextState.exclusive[group] = nextState.exclusive[group] || {};
+        nextState.exclusive[group][fieldName] = true;
+      }
+    });
+    return nextState;
   });
 };
 
@@ -33,35 +38,34 @@ const addTo = (group, item) => {
  * Adds a field or multiple fields to inclusion group.
  * @param {String[]|String} item Item to be added to inclusion group.
  */
-export const only = (item) => addTo(GROUP_NAME_ONLY, item);
+export const only = item => addTo(GROUP_NAME_ONLY, item);
 
 /**
  * Adds a field or multiple fields to exlusion group.
  * @param {String[]|String} item Item to be added to exlusion group.
  */
-export const skip = (item) => addTo(GROUP_NAME_SKIP, item);
+export const skip = item => addTo(GROUP_NAME_SKIP, item);
 
 /**
  * Checks whether a certain field name is excluded by any of the exclusion groups.
  * @param {String} fieldName    FieldN name to test.
  * @returns {Boolean}
  */
-export const isExcluded = (fieldName) => {
+export const isExcluded = fieldName => {
   const ctx = singleton.useContext();
 
-  if (!(ctx && ctx.exclusive)) {
+  if (ctx?.suiteId === undefined) {
     return false;
   }
 
-  if (
-    ctx.exclusive[GROUP_NAME_SKIP] &&
-    ctx.exclusive[GROUP_NAME_SKIP][fieldName]
-  ) {
+  const state = getSuiteState(ctx.suiteId);
+
+  if (state.exclusive?.[GROUP_NAME_SKIP]?.[fieldName]) {
     return true;
   }
 
-  if (ctx.exclusive[GROUP_NAME_ONLY]) {
-    if (ctx.exclusive[GROUP_NAME_ONLY][fieldName]) {
+  if (state.exclusive?.[GROUP_NAME_ONLY]) {
+    if (state.exclusive[GROUP_NAME_ONLY]?.[fieldName]) {
       return false;
     }
 

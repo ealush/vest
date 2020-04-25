@@ -1,4 +1,4 @@
-![Vest](https://cdn.jsdelivr.net/gh/ealush/vest@assets/logo.png "Vest")
+![Vest](https://cdn.jsdelivr.net/gh/ealush/vest@assets/logo.png 'Vest')
 
 # Vest - Validation Testing
 
@@ -19,15 +19,15 @@ The idea behind Vest is that your validations can be described as a 'spec' or a 
 
 ```js
 // validation.js
-import { validate, test, enforce } from "vest";
+import { test, enforce } from 'vest';
 
-const validation = (data) =>
-  validate("NewUserForm", () => {
-    test("username", "Must be at least 3 chars", () => {
+const validation = data =>
+  validate('NewUserForm', () => {
+    test('username', 'Must be at least 3 chars', () => {
       enforce(data.username).longerThanOrEquals(3);
     });
 
-    test("email", "Is not a valid email address", () => {
+    test('email', 'Is not a valid email address', () => {
       enforce(data.email)
         .isNotEmpty()
         .matches(/[^@]+@[^\.]+\..+/g);
@@ -39,17 +39,17 @@ export default validation;
 
 ```js
 // myFeature.js
-import validation from "./validation.js";
+import validation from './validation.js';
 
 const res = validation({
-  username: "example",
-  email: "email@example.com",
+  username: 'example',
+  email: 'email@example.com',
 });
 
 res.hasErrors(); // returns whether the form has errors
-res.hasErrors("username"); // returns whether the 'username' field has errors
+res.hasErrors('username'); // returns whether the 'username' field has errors
 res.getErrors(); // returns an object with an array of errors per field
-res.getErrors("username"); // returns an array of errors for the `username` field
+res.getErrors('username'); // returns an array of errors for the `username` field
 ```
 
 ## Why Vest?

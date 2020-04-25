@@ -12,5 +12,6 @@
   "bugs": {
     "url": "https://github.com/ealush/vest/issues"
   },
-  "homepage": "https://ealush.github.io/vest/"
+  "homepage": "https://ealush.github.io/vest/",
+  "dependencies": {}
 }

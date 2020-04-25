@@ -2,47 +2,47 @@
  * @fileoverview makes sure vest hooks are placed in the right place
  * @author ealush
  */
-"use strict";
+'use strict';
 
-const { ALL_VEST_HOOKS, VEST_KEYWORD } = require("../../constants");
-const { closest, looksLike } = require("../../helpers");
-const { correctWrapperName, hookScopeErrorMessgage } = require("./helpers");
+const { ALL_VEST_HOOKS, VEST_KEYWORD } = require('../../constants');
+const { closest, looksLike } = require('../../helpers');
+const { correctWrapperName, hookScopeErrorMessgage } = require('./helpers');
 
 const isHookParentShape = (node, name) =>
   looksLike(node, {
-    type: "CallExpression",
+    type: 'CallExpression',
     callee: {
-      type: "MemberExpression",
+      type: 'MemberExpression',
       object: {
-        type: "Identifier",
+        type: 'Identifier',
         name: VEST_KEYWORD,
       },
       property: {
-        type: "Identifier",
+        type: 'Identifier',
         name,
       },
     },
   });
 
-const functionScopeShape = (name) => ({
-  type: "CallExpression",
+const functionScopeShape = name => ({
+  type: 'CallExpression',
   callee: {
-    type: "Identifier",
+    type: 'Identifier',
     name: correctWrapperName(name),
   },
 });
 
 module.exports = {
   meta: {
-    type: "problem",
+    type: 'problem',
     docs: {
-      description: "Makes sure vest hooks are put in the right place",
-      category: "Possible Errors",
+      description: 'Makes sure vest hooks are put in the right place',
+      category: 'Possible Errors',
       recommended: true,
     },
   },
 
-  create: function (context) {
+  create(context) {
     return {
       Identifier(node) {
         const name = node.name;
@@ -54,7 +54,7 @@ module.exports = {
 
         // Finds closest `CallExpression` node
         // If correct, it is the hook itself, preceeded with `vest.`.
-        const closestCallExpression = closest(node, "CallExpression");
+        const closestCallExpression = closest(node, 'CallExpression');
 
         // Makes sure it looks like `vest.${hook_name}()` - e.g. vest.warn().
         if (!isHookParentShape(closestCallExpression, name)) {
@@ -65,7 +65,7 @@ module.exports = {
         // Not the callback, but the function which takes the callback
         const parentExpression = closest(
           closestCallExpression.parent,
-          "CallExpression"
+          'CallExpression'
         );
 
         // Makes sure it is the correct wrapping function

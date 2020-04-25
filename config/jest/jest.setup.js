@@ -1,26 +1,9 @@
-const glob = require("glob");
-const { PACKAGE_NAME_VEST } = require("../../scripts/constants");
-const { packagePath, packageJson } = require("../../util");
+const glob = require('glob');
 
-const { version } = packageJson(PACKAGE_NAME_VEST);
+const { packagePath } = require('../../util');
 
-global.vestDistVersions = [];
-
-const isWatchMode = (process.argv || []).some(
-  (arg) => arg && arg.includes("--watch")
+global.isWatchMode = (process.argv || []).some(
+  arg => arg && arg.includes('--watch')
 );
 
-const VEST_DIST_FILES = glob.sync(
-  packagePath(PACKAGE_NAME_VEST, "dist", "*.js")
-);
-
-if (!isWatchMode) {
-  VEST_DIST_FILES.map(require).forEach((file) =>
-    global.vestDistVersions.push(file)
-  );
-}
-
-global.VEST_VERSION = version;
-
-// Registers global instance
-require(packagePath(PACKAGE_NAME_VEST, "src"));
+glob.sync(packagePath('**', 'jest.setup.js')).forEach(require);

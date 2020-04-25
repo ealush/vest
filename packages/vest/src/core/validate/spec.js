@@ -1,73 +1,79 @@
-import faker from "faker";
-import { noop } from "lodash";
-import validate from ".";
+import faker from 'faker';
+import mock from '../../../testUtils/mock';
+import { OPERATION_MODE_STATELESS } from '../../constants';
+import singleton from '../../lib/singleton';
 
-describe("Test validate suite wrapper", () => {
-  describe("Test arguments", () => {
-    let mockThrowError, validate;
+let validate;
 
-    beforeEach(() => {
-      mockThrowError = jest.fn();
-      jest.resetModules();
-      jest.mock("../../lib/throwError/", () => ({
-        __esModule: true,
-        default: mockThrowError,
-      }));
-      validate = require(".");
-    });
-
-    afterEach(() => {
-      jest.resetAllMocks();
-    });
-
-    it.each([[1, {}, noop]])(
-      "Should throw a typerror error for a non string name.",
-      (value) => {
-        validate(value, noop);
-        expect(mockThrowError).toHaveBeenCalledWith(
-          "Suite initialization error. Expected name to be a string.",
-          TypeError
-        );
-      }
-    );
-
-    it.each([[1, {}, "noop"]])(
-      "Should throw a typerror error for a non function tests callback.",
-      (value) => {
-        validate(faker.random.word(), value);
-        expect(mockThrowError).toHaveBeenCalledWith(
-          "Suite initialization error. Expected tests to be a function.",
-          TypeError
-        );
-      }
-    );
+describe('module:validate', () => {
+  let suiteName,
+    tests,
+    mockCreateSuite,
+    returnedFn,
+    mockCleanupStatelessSuite,
+    output,
+    suiteId;
+  beforeEach(() => {
+    returnedFn = jest.fn();
+    tests = jest.fn();
+    mockCleanupStatelessSuite = mock('cleanupStatelessSuite');
+    suiteName = faker.lorem.word();
+    suiteId = faker.random.number();
+    mockCreateSuite = mock('createSuite', returnedFn);
+    mock('id', () => suiteId);
+    validate = require('.');
+    output = validate(suiteName, tests);
   });
 
-  it("Calls `tests` argument", (done) => {
-    validate("FormName", done);
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
-  describe("Context creation", () => {
-    let mockRunWithContext, validate, name;
-
-    beforeEach(() => {
-      name = "formName";
-      mockRunWithContext = jest.fn();
-      jest.resetModules();
-      jest.mock("../../lib/runWithContext", () => ({
-        __esModule: true,
-        default: mockRunWithContext,
-      }));
-      validate = require(".");
-      validate(name, noop);
+  it('Should set correct context for test run', () => {
+    returnedFn = jest.fn(() => {
+      expect(singleton.useContext()).toEqual({
+        name: suiteName,
+        suiteId,
+        operationMode: OPERATION_MODE_STATELESS,
+      });
     });
+    mockCreateSuite = mock('createSuite', returnedFn);
+    mock('id', () => suiteId);
+    validate = require('.');
+    validate(suiteName, tests);
+    expect(returnedFn).toHaveBeenCalled();
+  });
 
-    afterEach(() => {
-      jest.resetAllMocks();
-    });
+  it('Should call `createSuite` with passed arguments', () => {
+    expect(mockCreateSuite).toHaveBeenCalledWith(suiteName, tests);
+  });
 
-    it("Should call `runWithContext` with tests as the argument", () => {
-      expect(mockRunWithContext.mock.calls[0]).toMatchSnapshot();
+  it("Should call `createSuite`'s returned function", () => {
+    expect(returnedFn).toHaveBeenCalled();
+  });
+
+  it('Should return the returned function output', () => {
+    expect(output).toBe(returnedFn.mock.results[0][0]);
+  });
+
+  it('Should call all functions in order', () => {
+    const unsorted = [
+      returnedFn.mock.invocationCallOrder,
+      mockCreateSuite.mock.invocationCallOrder,
+      mockCleanupStatelessSuite.mock.invocationCallOrder,
+    ];
+
+    expect(unsorted.sort()).toEqual([
+      mockCreateSuite.mock.invocationCallOrder,
+      returnedFn.mock.invocationCallOrder,
+      mockCleanupStatelessSuite.mock.invocationCallOrder,
+    ]);
+  });
+
+  describe('When `createSuite` does not return a function', () => {
+    it('Should return silently', () => {
+      const output = validate('');
+      expect(output).toBeUndefined();
     });
   });
 });

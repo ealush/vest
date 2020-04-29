@@ -4241,10 +4241,10 @@ once@^1.3.0, once@^1.3.1, once@^1.4.0:
   dependencies:
     wrappy "1"
 
-onchange@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/onchange/-/onchange-7.0.0.tgz#f6cda7b31eada4b6117c36fc64bee3f6238e95b7"
-  integrity sha512-cF2/pZoYDtBCBgTcUOL6B9o1hSrNYhB55nFgy2ogcXJmMH7Ie0cMAHIkWPRTy9t/TJq5Y+0tSuzdimRLdWYEPw==
+onchange@^7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/onchange/-/onchange-7.0.1.tgz#807f807db706a497a82df93d0ee14999657f0542"
+  integrity sha512-cK8l6OhW9yUfUvkmgMSLFtGXVIt8fDmy43K6d4+M1LGYBkVuICjamGhbFbOOYdwV5HJECeUY6Izs4Mzhu7rSFg==
   dependencies:
     "@blakeembrey/deque" "^1.0.5"
     "@blakeembrey/template" "^1.0.0"

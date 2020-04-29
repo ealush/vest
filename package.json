@@ -26,7 +26,7 @@
     "mocha": "^7.1.2",
     "n4s": "^0.4.6",
     "node-fetch": "^2.6.0",
-    "onchange": "^7.0.0",
+    "onchange": "^7.0.1",
     "prettier": "2.0.5",
     "pretty-quick": "^2.0.1",
     "rollup": "^2.7.3",

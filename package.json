@@ -29,7 +29,7 @@
     "onchange": "^7.0.1",
     "prettier": "2.0.5",
     "pretty-quick": "^2.0.1",
-    "rollup": "^2.7.3",
+    "rollup": "^2.7.5",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",

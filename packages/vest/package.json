@@ -3,7 +3,6 @@
   "version": "1.0.9",
   "description": "Validation Test",
   "main": "./dist/vest.min.js",
-  "typings": "./vest.d.ts",
   "author": "ealush",
   "license": "MIT",
   "repository": {

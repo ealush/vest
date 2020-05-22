@@ -1,4 +1,5 @@
-import Context from "../../core/Context";
+import Context from '../../core/Context';
+import singleton from '../singleton';
 
 /**
  * Initializes a Vest context and runs a callback function.
@@ -7,8 +8,14 @@ import Context from "../../core/Context";
  * @returns {*} callback funcion output.
  */
 const runWithContext = (parent, fn) => {
-  new Context(parent);
-  const res = fn();
+  let context = parent;
+
+  if (singleton.useContext() !== parent) {
+    context = new Context(parent);
+  }
+
+  const res = fn(context);
+
   Context.clear();
   return res;
 };

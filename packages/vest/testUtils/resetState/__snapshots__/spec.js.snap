@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`resetState Sanity 1`] = `
+Object {
+  Symbol(mock_vest_suites): Object {},
+  Symbol(mock_vest_canceled): Object {},
+}
+`;
+
+exports[`resetState When invoked with suite name Should add a new suite to the state 1`] = `
+Array [
+  Object {
+    "doneCallbacks": Array [],
+    "errorCount": 0,
+    "exclusive": Object {},
+    "fieldCallbacks": Object {},
+    "lagging": Array [],
+    "name": "test-suite",
+    "pending": Array [],
+    "skipped": Object {},
+    "suiteId": "test-suite",
+    "tests": Object {},
+    "warnCount": 0,
+  },
+  undefined,
+]
+`;

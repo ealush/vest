@@ -1,0 +1,301 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Stateful behavior Should merge skipped fields with previous values 1`] = `
+Object {
+  "done": [Function],
+  "errorCount": 1,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`Stateful behavior Should merge skipped fields with previous values 2`] = `
+Object {
+  "done": [Function],
+  "errorCount": 3,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+    "field_5": Object {
+      "errorCount": 2,
+      "errors": Array [
+        "field_statement_5",
+        "field_statement_6",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`Stateful behavior Should merge skipped fields with previous values 3`] = `
+Object {
+  "done": [Function],
+  "errorCount": 4,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+    "field_2": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_2",
+      ],
+      "warnCount": 0,
+    },
+    "field_3": Object {
+      "errorCount": 0,
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "warnCount": 1,
+      "warnings": Array [
+        "field_statement_4",
+      ],
+    },
+    "field_5": Object {
+      "errorCount": 2,
+      "errors": Array [
+        "field_statement_5",
+        "field_statement_6",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 1,
+}
+`;
+
+exports[`Stateful behavior Should merge skipped fields with previous values 4`] = `
+Object {
+  "done": [Function],
+  "errorCount": 1,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`Stateful behavior Should merge skipped fields with previous values 5`] = `
+Object {
+  "done": [Function],
+  "errorCount": 3,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+    "field_5": Object {
+      "errorCount": 2,
+      "errors": Array [
+        "field_statement_5",
+        "field_statement_6",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`Stateful behavior Should merge skipped fields with previous values 6`] = `
+Object {
+  "done": [Function],
+  "errorCount": 4,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+    "field_2": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_2",
+      ],
+      "warnCount": 0,
+    },
+    "field_3": Object {
+      "errorCount": 0,
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "warnCount": 1,
+      "warnings": Array [
+        "field_statement_4",
+      ],
+    },
+    "field_5": Object {
+      "errorCount": 2,
+      "errors": Array [
+        "field_statement_5",
+        "field_statement_6",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 1,
+}
+`;
+
+exports[`Stateful behavior Should merge skipped fields with previous values 7`] = `
+Object {
+  "done": [Function],
+  "errorCount": 1,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`Stateful behavior Should merge skipped fields with previous values 8`] = `
+Object {
+  "done": [Function],
+  "errorCount": 3,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+    "field_5": Object {
+      "errorCount": 2,
+      "errors": Array [
+        "field_statement_5",
+        "field_statement_6",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`Stateful behavior Should merge skipped fields with previous values 9`] = `
+Object {
+  "done": [Function],
+  "errorCount": 4,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "name": "suite_name",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_1",
+      ],
+      "warnCount": 0,
+    },
+    "field_2": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "field_statement_2",
+      ],
+      "warnCount": 0,
+    },
+    "field_3": Object {
+      "errorCount": 0,
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "warnCount": 1,
+      "warnings": Array [
+        "field_statement_4",
+      ],
+    },
+    "field_5": Object {
+      "errorCount": 2,
+      "errors": Array [
+        "field_statement_5",
+        "field_statement_6",
+      ],
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 1,
+}
+`;

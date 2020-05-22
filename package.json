@@ -2,9 +2,10 @@
   "license": "MIT",
   "dependencies": {
     "@ampproject/rollup-plugin-closure-compiler": "^0.25.2",
-    "@babel/plugin-proposal-optional-chaining": "^7.9.0",
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.6",
+    "@babel/plugin-proposal-optional-chaining": "^7.9.0",
+    "@babel/plugin-proposal-pipeline-operator": "^7.8.3",
     "@babel/plugin-transform-object-assign": "^7.8.3",
     "@babel/preset-env": "^7.9.6",
     "@babel/register": "^7.9.0",
@@ -47,5 +48,9 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
+  },
+  "prettier": {
+    "arrowParens": "avoid",
+    "singleQuote": true
   }
 }

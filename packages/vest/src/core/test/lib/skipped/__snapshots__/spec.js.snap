@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`module: skipped export: mergeSkipped When previous state exists When skipped fields exist When skipped field exists in previous state Error field Should copy prev field state over 1`] = `
+Object {
+  "doneCallbacks": Array [],
+  "errorCount": 1,
+  "exclusive": Object {},
+  "fieldCallbacks": Object {},
+  "lagging": Array [],
+  "name": "suite_1",
+  "pending": Array [],
+  "skipped": Object {
+    "field_2": true,
+  },
+  "suiteId": "suiteId_1",
+  "tests": Object {
+    "field_2": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "error_string",
+      ],
+      "warnCount": 0,
+      "warnings": Array [],
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`module: skipped export: mergeSkipped When previous state exists When skipped fields exist When skipped field exists in previous state Warning field Should copy prev field state over 1`] = `
+Object {
+  "doneCallbacks": Array [],
+  "errorCount": 0,
+  "exclusive": Object {},
+  "fieldCallbacks": Object {},
+  "lagging": Array [],
+  "name": "suite_1",
+  "pending": Array [],
+  "skipped": Object {
+    "field_1": true,
+  },
+  "suiteId": "suiteId_1",
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 0,
+      "errors": Array [],
+      "warnCount": 1,
+      "warnings": Array [
+        "warning_string",
+      ],
+    },
+  },
+  "warnCount": 1,
+}
+`;
+
+exports[`module: skipped export: setSkipped When field is not yet skipped Should marked field as skipped 1`] = `
+Object {
+  "doneCallbacks": Array [],
+  "errorCount": 0,
+  "exclusive": Object {},
+  "fieldCallbacks": Object {},
+  "lagging": Array [],
+  "name": "suite_1",
+  "pending": Array [],
+  "skipped": Object {
+    "field_1": true,
+  },
+  "suiteId": "suiteId_1",
+  "tests": Object {},
+  "warnCount": 0,
+}
+`;

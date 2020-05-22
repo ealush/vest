@@ -1,5 +1,8 @@
-import { singleton, throwError } from "../../lib";
-import { ERROR_HOOK_CALLED_OUTSIDE } from "../constants";
+import produce from '../../core/produce';
+import getSuiteState from '../../core/state/getSuiteState';
+import singleton from '../../lib/singleton';
+import throwError from '../../lib/throwError';
+import { ERROR_HOOK_CALLED_OUTSIDE } from '../constants';
 
 /**
  * @returns {Object} Current output object.
@@ -7,11 +10,12 @@ import { ERROR_HOOK_CALLED_OUTSIDE } from "../constants";
 const draft = () => {
   const ctx = singleton.useContext();
 
-  if (ctx) {
-    return ctx.result.output;
+  if (ctx?.suiteId === undefined) {
+    throwError('draft ' + ERROR_HOOK_CALLED_OUTSIDE);
+    return;
   }
-
-  throwError("draft " + ERROR_HOOK_CALLED_OUTSIDE);
+  const state = getSuiteState(ctx.suiteId);
+  return produce(state, { draft: true });
 };
 
 export default draft;

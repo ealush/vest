@@ -1,11 +1,14 @@
-const faker = require("faker");
-const { ERROR_HOOK_CALLED_OUTSIDE } = require("../constants");
-const { isExcluded } = require(".");
+import mock from '../../../testUtils/mock';
+import runSpec from '../../../testUtils/runSpec';
 
-const runSpec = (vest) => {
+const faker = require('faker');
+const { ERROR_HOOK_CALLED_OUTSIDE } = require('../constants');
+const { isExcluded } = require('.');
+
+runSpec(vest => {
   const { validate, only, skip } = vest;
 
-  describe("exclusive hooks", () => {
+  describe('exclusive hooks', () => {
     let field1, field2, field3;
 
     beforeEach(() => {
@@ -14,17 +17,17 @@ const runSpec = (vest) => {
       field3 = faker.lorem.slug();
     });
 
-    describe("`only` hook", () => {
-      describe("string input", () => {
-        test("isExcluded returns false for included field", () => {
+    describe('`only` hook', () => {
+      describe('string input', () => {
+        test('isExcluded returns false for included field', () => {
           validate(faker.lorem.word(), () => {
             only(field1);
-
+            isExcluded(field1);
             expect(isExcluded(field1)).toBe(false);
           });
         });
 
-        test("isExcluded returns true for non included field", () => {
+        test('isExcluded returns true for non included field', () => {
           validate(faker.lorem.word(), () => {
             expect(isExcluded(field2)).toBe(false);
             only(field1);
@@ -33,8 +36,8 @@ const runSpec = (vest) => {
         });
       });
 
-      describe("array input", () => {
-        test("isExcluded returns false for included field", () => {
+      describe('array input', () => {
+        test('isExcluded returns false for included field', () => {
           validate(faker.lorem.word(), () => {
             only([field1, field2]);
 
@@ -43,7 +46,7 @@ const runSpec = (vest) => {
           });
         });
 
-        test("isExcluded returns true for non included field", () => {
+        test('isExcluded returns true for non included field', () => {
           validate(faker.lorem.word(), () => {
             expect(isExcluded(field3)).toBe(false);
             only([field1, field2]);
@@ -53,9 +56,9 @@ const runSpec = (vest) => {
       });
     });
 
-    describe("`skip` hook", () => {
-      describe("string input", () => {
-        test("isExcluded returns true for excluded field", () => {
+    describe('`skip` hook', () => {
+      describe('string input', () => {
+        test('isExcluded returns true for excluded field', () => {
           validate(faker.lorem.word(), () => {
             skip(field1);
 
@@ -63,7 +66,7 @@ const runSpec = (vest) => {
           });
         });
 
-        test("isExcluded returns true for non excluded field", () => {
+        test('isExcluded returns true for non excluded field', () => {
           validate(faker.lorem.word(), () => {
             skip(field1);
             expect(isExcluded(field2)).toBe(false);
@@ -71,8 +74,8 @@ const runSpec = (vest) => {
         });
       });
 
-      describe("array input", () => {
-        test("isExcluded returns true for excluded field", () => {
+      describe('array input', () => {
+        test('isExcluded returns true for excluded field', () => {
           validate(faker.lorem.word(), () => {
             skip([field1, field2]);
 
@@ -81,7 +84,7 @@ const runSpec = (vest) => {
           });
         });
 
-        test("isExcluded returns false for non included field", () => {
+        test('isExcluded returns false for non included field', () => {
           validate(faker.lorem.word(), () => {
             skip([field1, field2]);
             expect(isExcluded(field3)).toBe(false);
@@ -90,33 +93,24 @@ const runSpec = (vest) => {
       });
     });
 
-    describe("Error handling", () => {
+    describe('Error handling', () => {
       let mockThrowError, hooks;
 
       beforeEach(() => {
-        mockThrowError = jest.fn();
-        jest.resetModules();
-        jest.mock("../../lib/throwError/", () => ({
-          __esModule: true,
-          default: mockThrowError,
-        }));
-        hooks = require(".");
+        mockThrowError = mock('throwError');
+        hooks = require('.');
       });
 
-      describe.each([["only", "skip"]])("%s", (hook) => {
-        describe("When called outside of a suite", () => {
-          it("Should throw an error", () => {
+      describe.each([['only', 'skip']])('%s', hook => {
+        describe('When called outside of a suite', () => {
+          it('Should throw an error', () => {
             hooks[hook](faker.random.word());
-            expect(
-              mockThrowError.mock.calls[0][0].includes(
-                ERROR_HOOK_CALLED_OUTSIDE
-              )
-            ).toBe(true);
+            expect(mockThrowError.mock.calls[0][0]).toContain(
+              ERROR_HOOK_CALLED_OUTSIDE
+            );
           });
         });
       });
     });
   });
-};
-
-global.vestDistVersions.concat(require("../../")).forEach(runSpec);
+});

@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`VestTest TestObject constructor 1`] = `
+VestTest {
+  "failed": false,
+  "fieldName": "unicycle",
+  "id": "0",
+  "isWarning": false,
+  "statement": "I am Root.",
+  "suiteId": "validation-suite",
+  "testFn": [MockFunction],
+}
+`;
+
+exports[`VestTest testObject.fail When severity = error Should bump error counters and messages 1`] = `
+Object {
+  "errorCount": 1,
+  "tests": Object {
+    "unicycle": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "I am Root.",
+      ],
+      "warnCount": 0,
+      "warnings": Array [],
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`VestTest testObject.fail When severity = warn Should bump error counters and messages 1`] = `
+Object {
+  "errorCount": 0,
+  "tests": Object {
+    "unicycle": Object {
+      "errorCount": 0,
+      "errors": Array [],
+      "warnCount": 1,
+      "warnings": Array [
+        "I am Root.",
+      ],
+    },
+  },
+  "warnCount": 1,
+}
+`;
+
+exports[`VestTest testObject.warn Should set \`.isWarning\` to true 1`] = `
+VestTest {
+  "failed": false,
+  "fieldName": "unicycle",
+  "id": "103",
+  "isWarning": true,
+  "statement": "I am Root.",
+  "suiteId": "validation-suite",
+  "testFn": [MockFunction],
+}
+`;

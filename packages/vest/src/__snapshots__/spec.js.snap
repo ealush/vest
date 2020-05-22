@@ -2,20 +2,16 @@
 
 exports[`General scenario tests Async tests Should match snapshot 1`] = `
 Object {
-  "errorCount": 1,
+  "done": [Function],
+  "errorCount": 0,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
   "name": "molestias-veritatis-deserunt",
-  "skipped": Array [],
-  "testCount": 2,
-  "tested": Array [
-    "doloribus-enim-quisquam",
-  ],
   "tests": Object {
     "doloribus-enim-quisquam": Object {
-      "errorCount": 1,
-      "errors": Array [
-        "Fuga odit ut quidem autem dolores ipsam.",
-      ],
-      "testCount": 2,
+      "errorCount": 0,
       "warnCount": 0,
     },
   },
@@ -25,18 +21,16 @@ Object {
 
 exports[`General scenario tests Base case Should match snapshot 1`] = `
 Object {
+  "done": [Function],
   "errorCount": 1,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
   "name": "eveniet-maxime-ea",
-  "skipped": Array [],
-  "testCount": 2,
-  "tested": Array [
-    "sed-minima-adipisci",
-    "non-rem-dolorem",
-  ],
   "tests": Object {
     "non-rem-dolorem": Object {
       "errorCount": 0,
-      "testCount": 1,
       "warnCount": 0,
     },
     "sed-minima-adipisci": Object {
@@ -44,7 +38,6 @@ Object {
       "errors": Array [
         "Aliquam reprehenderit iure omnis assumenda eligendi enim id praesentium numquam.",
       ],
-      "testCount": 1,
       "warnCount": 0,
     },
   },
@@ -54,20 +47,16 @@ Object {
 
 exports[`General scenario tests Exclusion via \`only\` Should match snapshot 1`] = `
 Object {
+  "done": [Function],
   "errorCount": 0,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
   "name": "inventore-quis-impedit",
-  "skipped": Array [
-    "autem",
-    "soluta",
-  ],
-  "testCount": 1,
-  "tested": Array [
-    "doloribus-enim-quisquam",
-  ],
   "tests": Object {
     "doloribus-enim-quisquam": Object {
       "errorCount": 0,
-      "testCount": 1,
       "warnCount": 0,
     },
   },
@@ -77,19 +66,16 @@ Object {
 
 exports[`General scenario tests Exclusion via \`skip\` Should match snapshot 1`] = `
 Object {
+  "done": [Function],
   "errorCount": 0,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
   "name": "corrupti-alias-autem",
-  "skipped": Array [
-    "doloribus-enim-quisquam",
-  ],
-  "testCount": 1,
-  "tested": Array [
-    "autem",
-  ],
   "tests": Object {
     "autem": Object {
       "errorCount": 0,
-      "testCount": 1,
       "warnCount": 1,
       "warnings": Array [
         "Temporibus ex ex.",
@@ -102,19 +88,16 @@ Object {
 
 exports[`General scenario tests Tests with warnings Should match snapshot 1`] = `
 Object {
+  "done": [Function],
   "errorCount": 0,
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
   "name": "corrupti-alias-autem",
-  "skipped": Array [
-    "doloribus-enim-quisquam",
-  ],
-  "testCount": 2,
-  "tested": Array [
-    "autem",
-  ],
   "tests": Object {
     "autem": Object {
       "errorCount": 0,
-      "testCount": 2,
       "warnCount": 1,
       "warnings": Array [
         "Temporibus ex ex.",
@@ -130,6 +113,7 @@ Object {
   "Enforce": [Function],
   "VERSION": Any<String>,
   "any": [Function],
+  "create": [Function],
   "draft": [Function],
   "enforce": [Function],
   "only": [Function],
@@ -138,5 +122,9 @@ Object {
   "test": [Function],
   "validate": [Function],
   "warn": [Function],
+  Symbol(mock_vest_state): Object {
+    Symbol(mock_vest_suites): Object {},
+    Symbol(mock_vest_canceled): Object {},
+  },
 }
 `;

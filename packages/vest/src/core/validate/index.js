@@ -1,37 +1,31 @@
-import { throwError, runWithContext } from "../../lib";
-import suiteResult from "../suiteResult";
-import { runAsync } from "../test";
-import { SUITE_INIT_ERROR } from "./constants";
+import { OPERATION_MODE_STATELESS } from '../../constants/index';
+import id from '../../lib/id';
+import runWithContext from '../../lib/runWithContext';
+import createSuite from '../createSuite';
+import cleanupStatelessSuite from '../state/cleanupStatelessSuite';
 
 /**
- * Initializes a validation suite, creates a validation context.
- * @param {String} name     Descriptive name for validation suite.
- * @param {Function} tests  Validation suite body.
- * @returns {Object} Vest output object.
+ * Creates a suite and immediately invokes it.
+ * @param {string} suiteName
+ * @param {Function} tests
  */
-const validate = (name, tests) => {
-  if (typeof name !== "string") {
-    return throwError(
-      SUITE_INIT_ERROR + " Expected name to be a string.",
-      TypeError
-    );
-  }
-
-  if (typeof tests !== "function") {
-    return throwError(
-      SUITE_INIT_ERROR + " Expected tests to be a function.",
-      TypeError
-    );
-  }
-
-  const result = suiteResult(name);
-
-  runWithContext({ result }, () => {
-    tests();
-    [...result.pending].forEach(runAsync);
-  });
-
-  return result.output;
+const validate = (suiteName, tests) => {
+  const suiteId = id();
+  const res = runWithContext(
+    {
+      name: suiteName,
+      suiteId,
+      operationMode: OPERATION_MODE_STATELESS,
+    },
+    () => {
+      const suite = createSuite(suiteName, tests);
+      if (typeof suite === 'function') {
+        return suite();
+      }
+    }
+  );
+  cleanupStatelessSuite(suiteId);
+  return res;
 };
 
 export default validate;

@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`runAsyncTest: failing State updates Initial state matches snapshot (sanity) 1`] = `
+Object {
+  "doneCallbacks": Array [],
+  "errorCount": 0,
+  "exclusive": Object {},
+  "fieldCallbacks": Object {
+    "field_1": Array [],
+  },
+  "lagging": Array [],
+  "name": "suite_name_1",
+  "pending": Array [
+    VestTest {
+      "failed": false,
+      "fieldName": "field_1",
+      "id": "9",
+      "isWarning": false,
+      "statement": "some statement string",
+      "suiteId": "suiteId_1",
+      "testFn": Promise {},
+    },
+  ],
+  "skipped": Object {},
+  "suiteId": "suiteId_1",
+  "tests": Object {},
+  "warnCount": 0,
+}
+`;
+
+exports[`runAsyncTest: passing State updates Initial state matches snapshot (sanity) 1`] = `
+Object {
+  "doneCallbacks": Array [],
+  "errorCount": 0,
+  "exclusive": Object {},
+  "fieldCallbacks": Object {
+    "field_1": Array [],
+  },
+  "lagging": Array [],
+  "name": "suite_name_1",
+  "pending": Array [
+    VestTest {
+      "failed": false,
+      "fieldName": "field_1",
+      "id": "0",
+      "isWarning": false,
+      "statement": "some statement string",
+      "suiteId": "suiteId_1",
+      "testFn": Promise {},
+    },
+  ],
+  "skipped": Object {},
+  "suiteId": "suiteId_1",
+  "tests": Object {},
+  "warnCount": 0,
+}
+`;

@@ -1,20 +1,20 @@
-const { VEST_KEYWORD, VEST_IDENTIFIER_TEST } = require("../../constants");
-const { closest } = require("../../helpers");
-const { isTestCall, looksLikeExclusion, errorMessage } = require("./helpers");
+const { VEST_KEYWORD, VEST_IDENTIFIER_TEST } = require('../../constants');
+const { closest } = require('../../helpers');
+const { isTestCall, looksLikeExclusion, errorMessage } = require('./helpers');
 
 module.exports = {
   meta: {
     docs: {
-      type: "problem",
+      type: 'problem',
       description:
-        "Makes sure vest exclusion hooks are not put before your test calls",
-      category: "Possible Errors",
+        'Makes sure vest exclusion hooks are not put before your test calls',
+      category: 'Possible Errors',
       recommended: true,
     },
-    fixable: "code",
+    fixable: 'code',
   },
 
-  create: function (context) {
+  create(context) {
     return {
       CallExpression(node) {
         if (!looksLikeExclusion(node.callee)) {
@@ -42,8 +42,8 @@ module.exports = {
             }
 
             // If current reference is the first `test` call
-            // sets `firstTest` to current index so we know not
-            // to allow any more exclusion hooks
+            // Sets `firstTest` to current index so we know not
+            // To allow any more exclusion hooks
             if (isTestCall(identifier)) {
               return {
                 ...accumulator,
@@ -54,7 +54,7 @@ module.exports = {
             }
 
             // If the current reference belongs to the current node
-            // and `test` was already called, mark shouldWarn as true.
+            // And `test` was already called, mark shouldWarn as true.
             if (accumulator.firstTest) {
               return {
                 ...accumulator,
@@ -76,18 +76,18 @@ module.exports = {
           return;
         }
 
-        const callExpression = closest(node, "ExpressionStatement");
+        const callExpression = closest(node, 'ExpressionStatement');
 
         context.report({
           node: callExpression,
           message: errorMessage(name),
-          fix: function (fixer) {
+          fix(fixer) {
             const sourceCode = context.getSourceCode();
             const text = sourceCode.getText(callExpression);
             return [
               fixer.remove(callExpression),
               fixer.insertTextBefore(
-                closest(res.firstTest, "ExpressionStatement"),
+                closest(res.firstTest, 'ExpressionStatement'),
                 `${text}\n`
               ),
             ];

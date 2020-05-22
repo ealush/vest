@@ -3,9 +3,12 @@
  * @param {String} message  Error message to display.
  * @param {Error} [type]    Alternative Error type.
  */
-const throwError = (message, type = Error) =>
+const throwError = (message, type = Error) => {
+  const error = new type(`[Vest]: ${message}`);
   setTimeout(() => {
-    throw new type(`[Vest]: ${message}`);
+    throw error;
   });
+  return error;
+};
 
 export default throwError;

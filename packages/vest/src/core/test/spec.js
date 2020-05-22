@@ -1,14 +1,14 @@
-import faker from "faker";
+import faker from 'faker';
+import runSpec from '../../../testUtils/runSpec';
 
-const runSpec = (vest) => {
+runSpec(vest => {
   const { validate, test } = vest;
   describe("Test Vest's `test` function", () => {
-    describe("test callbacks", () => {
-      describe("Warn hook", () => {
-        it("Should be marked as warning when the warn hook gets called", () => {
+    describe('test callbacks', () => {
+      describe('Warn hook', () => {
+        it('Should be marked as warning when the warn hook gets called', () => {
           validate(faker.random.word(), () => {
-            let testObject;
-            testObject = test(
+            const testObject = test(
               faker.random.word(),
               faker.lorem.sentence(),
               () => {
@@ -20,11 +20,10 @@ const runSpec = (vest) => {
         });
       });
 
-      describe("Sync", () => {
-        it("Should be marked as failed after a thrown error", () => {
+      describe('Sync', () => {
+        it('Should be marked as failed after a thrown error', () => {
           validate(faker.random.word(), () => {
-            let testObject;
-            testObject = test(
+            const testObject = test(
               faker.random.word(),
               faker.lorem.sentence(),
               () => {
@@ -36,10 +35,9 @@ const runSpec = (vest) => {
           });
         });
 
-        it("Should be marked as failed for an explicit false return", () => {
+        it('Should be marked as failed for an explicit false return', () => {
           validate(faker.random.word(), () => {
-            let testObject;
-            testObject = test(
+            const testObject = test(
               faker.random.word(),
               faker.lorem.sentence(),
               () => false
@@ -50,29 +48,27 @@ const runSpec = (vest) => {
         });
       });
 
-      describe("async", () => {
-        it("Should be marked as failed when a returned promise rejects", (done) => {
-          validate(faker.random.word(), () => {
-            let testObject;
-            testObject = test(
-              faker.random.word(),
-              faker.lorem.sentence(),
-              () =>
-                new Promise((resolve, reject) => {
-                  expect(testObject.failed).toBe(false);
-                  setTimeout(reject, 300);
-                })
-            );
-            expect(testObject.failed).toBe(false);
-            setTimeout(() => {
-              expect(testObject.failed).toBe(true);
-              done();
-            }, 310);
-          });
-        });
+      describe('async', () => {
+        it('Should be marked as failed when a returned promise rejects', () =>
+          new Promise(done => {
+            validate(faker.random.word(), () => {
+              const testObject = test(
+                faker.random.word(),
+                faker.lorem.sentence(),
+                () =>
+                  new Promise((resolve, reject) => {
+                    expect(testObject.failed).toBe(false);
+                    setTimeout(reject, 300);
+                  })
+              );
+              expect(testObject.failed).toBe(false);
+              setTimeout(() => {
+                expect(testObject.failed).toBe(true);
+                done();
+              }, 310);
+            });
+          }));
       });
     });
   });
-};
-
-global.vestDistVersions.concat(require("../../")).forEach(runSpec);
+});

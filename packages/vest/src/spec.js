@@ -1,8 +1,8 @@
-const { version } = require("../package.json");
-const vest = require(".");
+const { version } = require('../package.json');
+const vest = require('.');
 
-describe("Vest exports", () => {
-  test("All vest exports exist", () => {
+describe('Vest exports', () => {
+  test('All vest exports exist', () => {
     expect(vest).toMatchSnapshot({
       VERSION: expect.any(String),
     });
@@ -10,25 +10,25 @@ describe("Vest exports", () => {
   });
 });
 
-describe("General scenario tests", () => {
+describe('General scenario tests', () => {
   let v, test, validate, enforce;
 
   beforeAll(() => {
     ({ test, validate, enforce } = vest);
   });
 
-  describe("Base case", () => {
-    it("Should match snapshot", () => {
-      v = validate("eveniet-maxime-ea", () => {
+  describe('Base case', () => {
+    it('Should match snapshot', () => {
+      v = validate('eveniet-maxime-ea', () => {
         test(
-          "sed-minima-adipisci",
-          "Aliquam reprehenderit iure omnis assumenda eligendi enim id praesentium numquam.",
+          'sed-minima-adipisci',
+          'Aliquam reprehenderit iure omnis assumenda eligendi enim id praesentium numquam.',
           () => {
             enforce(1).equals(2);
           }
         );
 
-        test("non-rem-dolorem", () => {
+        test('non-rem-dolorem', () => {
           enforce(1).inside([1, 2, 3]);
         });
       });
@@ -36,40 +36,40 @@ describe("General scenario tests", () => {
     });
   });
 
-  describe("Exclusion via `only`", () => {
-    it("Should match snapshot", () => {
-      v = validate("inventore-quis-impedit", () => {
-        vest.only("doloribus-enim-quisquam");
+  describe('Exclusion via `only`', () => {
+    it('Should match snapshot', () => {
+      v = validate('inventore-quis-impedit', () => {
+        vest.only('doloribus-enim-quisquam');
 
         test(
-          "doloribus-enim-quisquam",
-          "Ea quia saepe modi corrupti possimus similique expedita inventore.",
+          'doloribus-enim-quisquam',
+          'Ea quia saepe modi corrupti possimus similique expedita inventore.',
           () => {
             enforce(1).notEquals(2);
           }
         );
 
-        test("autem", () => null);
-        test("soluta", () => null);
+        test('autem', () => null);
+        test('soluta', () => null);
       });
       expect(v).toMatchSnapshot();
     });
   });
 
-  describe("Exclusion via `skip`", () => {
-    it("Should match snapshot", () => {
-      v = validate("corrupti-alias-autem", () => {
-        vest.skip("doloribus-enim-quisquam");
+  describe('Exclusion via `skip`', () => {
+    it('Should match snapshot', () => {
+      v = validate('corrupti-alias-autem', () => {
+        vest.skip('doloribus-enim-quisquam');
 
         test(
-          "doloribus-enim-quisquam",
-          "Ea quia saepe modi corrupti possimus similique expedita inventore.",
+          'doloribus-enim-quisquam',
+          'Ea quia saepe modi corrupti possimus similique expedita inventore.',
           () => {
             enforce(1).notEquals(2);
           }
         );
 
-        test("autem", "Temporibus ex ex.", () => {
+        test('autem', 'Temporibus ex ex.', () => {
           vest.warn();
           return 1 === 2;
         });
@@ -78,24 +78,24 @@ describe("General scenario tests", () => {
     });
   });
 
-  describe("Tests with warnings", () => {
-    it("Should match snapshot", () => {
-      v = validate("corrupti-alias-autem", () => {
-        vest.skip("doloribus-enim-quisquam");
+  describe('Tests with warnings', () => {
+    it('Should match snapshot', () => {
+      v = validate('corrupti-alias-autem', () => {
+        vest.skip('doloribus-enim-quisquam');
 
         test(
-          "doloribus-enim-quisquam",
-          "Ea quia saepe modi corrupti possimus similique expedita inventore.",
+          'doloribus-enim-quisquam',
+          'Ea quia saepe modi corrupti possimus similique expedita inventore.',
           () => {
             enforce(1).notEquals(2);
           }
         );
 
-        test("autem", "Temporibus ex ex.", () => {
+        test('autem', 'Temporibus ex ex.', () => {
           vest.warn();
           return 1 === 2;
         });
-        test("autem", () => {
+        test('autem', () => {
           vest.warn();
           enforce(1).gt(0);
         });
@@ -104,24 +104,25 @@ describe("General scenario tests", () => {
     });
   });
 
-  describe("Async tests", () => {
-    it("Should match snapshot", (done) => {
-      v = validate("molestias-veritatis-deserunt", () => {
-        test(
-          "doloribus-enim-quisquam",
-          "Fuga odit ut quidem autem dolores ipsam.",
-          () => Promise.resolve()
-        );
-        test(
-          "doloribus-enim-quisquam",
-          "Fuga odit ut quidem autem dolores ipsam.",
-          () => Promise.reject()
-        );
-      });
-      setTimeout(() => {
-        expect(v).toMatchSnapshot();
-        done();
-      });
-    });
+  describe('Async tests', () => {
+    it('Should match snapshot', () =>
+      new Promise(done => {
+        v = validate('molestias-veritatis-deserunt', () => {
+          test(
+            'doloribus-enim-quisquam',
+            'Fuga odit ut quidem autem dolores ipsam.',
+            () => Promise.resolve()
+          );
+          test(
+            'doloribus-enim-quisquam',
+            'Fuga odit ut quidem autem dolores ipsam.',
+            () => Promise.reject()
+          );
+        });
+        setTimeout(() => {
+          expect(v).toMatchSnapshot();
+          done();
+        });
+      }));
   });
 });

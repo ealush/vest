@@ -4,11 +4,7 @@
  * @param {Error} [type]    Alternative Error type.
  */
 const throwError = (message, type = Error) => {
-  const error = new type(`[Vest]: ${message}`);
-  setTimeout(() => {
-    throw error;
-  });
-  return error;
+  throw new type(`[Vest]: ${message}`);
 };
 
 export default throwError;

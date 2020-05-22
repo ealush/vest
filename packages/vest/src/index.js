@@ -3,6 +3,7 @@ import enforce from 'n4s/dist/enforce.min';
 import { VERSION } from './constants';
 import createSuite from './core/createSuite';
 import state from './core/state';
+import reset from './core/state/reset';
 import test from './core/test';
 import validate from './core/validate';
 import { draft, only, skip, warn } from './hooks';
@@ -23,6 +24,7 @@ export default singleton.register(
     test,
     validate,
     warn,
+    reset,
   },
   state.register
 );

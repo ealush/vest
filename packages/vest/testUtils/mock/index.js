@@ -6,7 +6,7 @@ const PATHS = {
   runWithContext: 'lib/runWithContext',
   throwError: 'lib/throwError',
   id: 'lib/id',
-  cleanupStatelessSuite: 'core/state/cleanupStatelessSuite',
+  cleanupCompletedSuite: 'core/state/cleanupCompletedSuite',
   patch: 'core/state/patch',
 };
 

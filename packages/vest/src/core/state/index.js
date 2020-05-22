@@ -15,10 +15,10 @@ const register = () => {
 
 /**
  * Retrieves the state object or a portion of it.
- * @param {string} [suiteId] state portion to retrieve.
+ * @param {string} [key] state portion to retrieve.
  */
-export const getState = suiteId =>
-  suiteId ? singleton.use(SYMBOL_STATE)[suiteId] : singleton.use(SYMBOL_STATE);
+export const getState = key =>
+  key ? singleton.use(SYMBOL_STATE)[key] : singleton.use(SYMBOL_STATE);
 
 /**
  * Updates the state with the value return from the setter callback.

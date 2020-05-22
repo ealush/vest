@@ -2,7 +2,7 @@ import { OPERATION_MODE_STATELESS } from '../../constants/index';
 import id from '../../lib/id';
 import runWithContext from '../../lib/runWithContext';
 import createSuite from '../createSuite';
-import cleanupStatelessSuite from '../state/cleanupStatelessSuite';
+import cleanupCompletedSuite from '../state/cleanupCompletedSuite';
 
 /**
  * Creates a suite and immediately invokes it.
@@ -24,7 +24,7 @@ const validate = (suiteName, tests) => {
       }
     }
   );
-  cleanupStatelessSuite(suiteId);
+  cleanupCompletedSuite(suiteId);
   return res;
 };
 

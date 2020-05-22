@@ -1,7 +1,7 @@
 import { OPERATION_MODE_STATELESS } from '../../../constants';
 import singleton from '../../../lib/singleton';
 import { getState } from '../../state';
-import cleanupStatelessSuite from '../../state/cleanupStatelessSuite';
+import cleanupCompletedSuite from '../../state/cleanupCompletedSuite';
 import getSuiteState from '../../state/getSuiteState';
 import hasRemainingTests from '../../state/hasRemainingTests';
 import { SYMBOL_CANCELED } from '../../state/symbols';
@@ -15,7 +15,6 @@ import runTest from '../lib/runTest';
  */
 const runDoneCallbacks = (suiteId, fieldName) => {
   const state = getSuiteState(suiteId);
-
   if (fieldName) {
     if (
       !hasRemainingTests(state, fieldName) &&
@@ -24,7 +23,6 @@ const runDoneCallbacks = (suiteId, fieldName) => {
       state.fieldCallbacks[fieldName].forEach(cb => cb());
     }
   }
-
   if (!hasRemainingTests(state)) {
     state.doneCallbacks.forEach(cb => cb());
   }
@@ -39,6 +37,7 @@ const runAsyncTest = testObject => {
   const { operationMode } = singleton.useContext();
   const done = cb => {
     // If current test instance is canceled
+
     if (getState(SYMBOL_CANCELED)[id]) {
       return;
     }
@@ -55,7 +54,7 @@ const runAsyncTest = testObject => {
     runDoneCallbacks(suiteId, fieldName);
 
     if (operationMode === OPERATION_MODE_STATELESS) {
-      cleanupStatelessSuite(suiteId);
+      cleanupCompletedSuite(suiteId);
     }
   };
   const fail = rejectionMessage => {

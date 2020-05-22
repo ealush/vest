@@ -1,22 +1,13 @@
-const faker = require("faker");
-const throwError = require(".");
+const throwError = require('.');
 
-describe("throwError", () => {
-  let _setTimeout, errorString;
+const message = 'message string';
 
-  beforeEach(() => {
-    errorString = faker.lorem.sentence();
-    _setTimeout = global.setTimeout;
-    global.setTimeout = jest.fn((cb) => cb());
+describe('throwError', () => {
+  it('Should throw with passed message', () => {
+    expect(() => throwError(message)).toThrow(`[Vest]: ${message}`);
   });
 
-  afterEach(() => {
-    global.setTimeout = _setTimeout;
-  });
-
-  it("Should throw a timed out error", () => {
-    expect(setTimeout).toHaveBeenCalledTimes(0);
-    expect(() => throwError(errorString)).toThrow();
-    expect(setTimeout).toHaveBeenCalledTimes(1);
+  it('Should throw provided error type', () => {
+    expect(() => throwError(message, TypeError)).toThrow(TypeError);
   });
 });

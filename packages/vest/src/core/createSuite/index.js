@@ -31,7 +31,7 @@ const createSuite = (name, tests) => {
   }
 
   // returns validator function
-  return () => {
+  return (...args) => {
     const parentContext = singleton.useContext() ?? {
       name,
       tests,
@@ -42,7 +42,7 @@ const createSuite = (name, tests) => {
     const output = runWithContext(parentContext, context => {
       registerSuite();
       const { suiteId } = context;
-      tests();
+      tests.apply(null, args);
       mergeSkipped(suiteId);
 
       [...getSuiteState(suiteId).pending].forEach(runAsyncTest);

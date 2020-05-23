@@ -21,10 +21,10 @@ const spec = _vest => {
     _reset = _vest.reset;
   }
 
-  const createSuite = skip => {
+  const createSuite = () => {
     const vest = _vest;
     const { test } = vest;
-    const validate = vest.create(suiteId, () => {
+    return vest.create(suiteId, skip => {
       vest.skip(skip);
 
       test('field_1', () =>
@@ -39,8 +39,6 @@ const spec = _vest => {
       test('field_4', () =>
         new Promise((res, reject) => setTimeout(reject, 250)));
     });
-
-    return validate();
   };
 
   beforeEach(() => {
@@ -67,9 +65,12 @@ const spec = _vest => {
   });
 
   describe('When suite exists', () => {
+    let validate;
+
     beforeEach(() => {
-      createSuite('field_2');
-      createSuite(['field_1', 'field_3']);
+      validate = createSuite();
+      validate('field_2');
+      validate(['field_1', 'field_3']);
     });
 
     test.skipOnWatch(

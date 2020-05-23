@@ -1,8 +1,8 @@
 import resetState from '../../testUtils/resetState';
 import runSpec from '../../testUtils/runSpec';
 
-const suite = ({ create, test, ...vest }, skip) =>
-  create('suite_name', () => {
+const suite = ({ create, test, ...vest }) =>
+  create('suite_name', skip => {
     vest.skip(skip);
     test('field_1', 'field_statement_1', () => false);
 
@@ -13,10 +13,10 @@ const suite = ({ create, test, ...vest }, skip) =>
     test('field_2', 'field_statement_2', () => {});
 
     test('field_3', 'field_statement_3', () => Promise.resolve());
-  })();
+  });
 
 runSpec(vest => {
-  let callback_1, callback_2, callback_3, callback_4, control;
+  let validate, callback_1, callback_2, callback_3, callback_4, control;
   describe('Stateful async tests', () => {
     beforeEach(() => {
       resetState();
@@ -25,14 +25,15 @@ runSpec(vest => {
       callback_3 = jest.fn();
       callback_4 = jest.fn();
       control = jest.fn();
+      validate = suite(vest);
     });
 
     it('Should only run callbacks for last suite run', () =>
       new Promise(done => {
-        suite(vest).done(callback_1).done('field_3', callback_2);
+        validate(vest).done(callback_1).done('field_3', callback_2);
         expect(callback_1).not.toHaveBeenCalled();
         expect(callback_2).not.toHaveBeenCalled();
-        suite(vest).done(callback_3).done('field_3', callback_4);
+        validate(vest).done(callback_3).done('field_3', callback_4);
         expect(callback_3).not.toHaveBeenCalled();
         expect(callback_4).not.toHaveBeenCalled();
         setTimeout(() => {
@@ -53,9 +54,9 @@ runSpec(vest => {
 
     it('Merges skipped validations from previous suite', () =>
       new Promise(done => {
-        const res = suite(vest);
+        const res = validate();
         expect(res.hasErrors('field_2')).toBe(false);
-        suite(vest, 'field_2').done(res => {
+        validate('field_2').done(res => {
           expect(res.hasErrors('field_2')).toBe(true);
           done();
         });

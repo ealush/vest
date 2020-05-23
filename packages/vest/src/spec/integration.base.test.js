@@ -28,7 +28,7 @@ runSpec(vest => {
       res = suite(vest);
     });
 
-    it('Should produce correct validation result', () => {
+    test.skipOnWatch('Should produce correct validation result', () => {
       expect(res.tests).toHaveProperty('field_1');
       expect(res.tests).toHaveProperty('field_2');
       expect(res.tests).toHaveProperty('field_3');

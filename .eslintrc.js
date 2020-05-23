@@ -52,6 +52,7 @@ module.exports = {
     'no-useless-computed-key': 2,
     'jest/expect-expect': 0,
     'jest/no-identical-title': 0,
+    'jest/no-standalone-expect': 0,
     'arrow-body-style': [2, 'as-needed'],
     'object-shorthand': [2, 'always', { avoidQuotes: true }],
   },

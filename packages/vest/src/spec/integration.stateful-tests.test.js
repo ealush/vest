@@ -7,7 +7,7 @@ runSpec(vest => {
       resetState();
     });
     let result;
-    it('Should merge skipped fields with previous values', () => {
+    test.skipOnWatch('Should merge skipped fields with previous values', () => {
       result = suite(vest, 'field_1');
       expect(result.tests.field_1.errorCount).toBe(1);
       expect(result.errorCount).toBe(1);

@@ -5,7 +5,7 @@ module.exports = {
   clearMocks: true,
   rootDir: '../../',
   roots: ['<rootDir>'],
-  setupFiles: [path.join(CONFIG_PATH, 'jest/jest.setup.js')],
+  setupFilesAfterEnv: [path.join(CONFIG_PATH, 'jest/jest.setup.js')],
   testEnvironment: 'node',
   testMatch: ['**/*/(spec|test).js', '**/*.(spec|test).js'],
   transform: {

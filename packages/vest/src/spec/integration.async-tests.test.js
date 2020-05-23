@@ -42,20 +42,23 @@ runSpec(vest => {
     beforeEach(() => {
       resetState();
     });
-    it('Should have all fields', () =>
-      new Promise(done => {
-        // ❗️Why is this test async? Because of the `resetState` beforeEach.
-        // We must not clean up before the suite is actually done.
-        result = suite(vest).done(done);
-        expect(result.tests).toHaveProperty('field_1');
-        expect(result.tests).toHaveProperty('field_2');
-        expect(result.tests).toHaveProperty('field_4');
-        expect(result.tests).toHaveProperty('field_5');
-        expect(result.tests).toHaveProperty('field_6');
-        expect(result.tests).toHaveProperty('field_7');
-        expect(result.hasErrors('field_7')).toBe(false);
-        expect(result.tests).toMatchSnapshot();
-      }));
+    test.skipOnWatch(
+      'Should have all fields',
+      () =>
+        new Promise(done => {
+          // ❗️Why is this test async? Because of the `resetState` beforeEach.
+          // We must not clean up before the suite is actually done.
+          result = suite(vest).done(done);
+          expect(result.tests).toHaveProperty('field_1');
+          expect(result.tests).toHaveProperty('field_2');
+          expect(result.tests).toHaveProperty('field_4');
+          expect(result.tests).toHaveProperty('field_5');
+          expect(result.tests).toHaveProperty('field_6');
+          expect(result.tests).toHaveProperty('field_7');
+          expect(result.hasErrors('field_7')).toBe(false);
+          expect(result.tests).toMatchSnapshot();
+        })
+    );
 
     it('Should invoke done callback specified with sync field immediately, and the others after finishing', () =>
       new Promise(done => {

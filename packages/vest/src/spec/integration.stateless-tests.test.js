@@ -13,53 +13,56 @@ runSpec(vest => {
       resetState();
     });
     let result;
-    it('Should start suite with no previous data on each run', () =>
-      new Promise(done => {
-        // ✅ First suite tests basic behavior, and callback registration
-        result = suite(vest, 'field_1')
-          .done(callback_1)
-          .done('field_1', callback_2)
-          .done('field_2', callback_3);
-        expect(result.tests.field_1.errorCount).toBe(1);
-        expect(result.errorCount).toBe(1);
-        expect(Object.keys(result.tests)).toHaveLength(1);
-        expect(result.tests).toHaveProperty('field_1');
-        expect(callback_1).toHaveBeenCalled();
-        expect(callback_2).toHaveBeenCalled();
-        expect(callback_3).not.toHaveBeenCalled();
-        expect(result).toMatchSnapshot();
+    test.skipOnWatch(
+      'Should start suite with no previous data on each run',
+      () =>
+        new Promise(done => {
+          // ✅ First suite tests basic behavior, and callback registration
+          result = suite(vest, 'field_1')
+            .done(callback_1)
+            .done('field_1', callback_2)
+            .done('field_2', callback_3);
+          expect(result.tests.field_1.errorCount).toBe(1);
+          expect(result.errorCount).toBe(1);
+          expect(Object.keys(result.tests)).toHaveLength(1);
+          expect(result.tests).toHaveProperty('field_1');
+          expect(callback_1).toHaveBeenCalled();
+          expect(callback_2).toHaveBeenCalled();
+          expect(callback_3).not.toHaveBeenCalled();
+          expect(result).toMatchSnapshot();
 
-        // ✅ Second suite to test that values do not get merged
-        result = suite(vest, 'field_5');
-        expect(result.errorCount).toBe(2);
-        expect(result.tests).not.toHaveProperty('field_1');
-        expect(result.tests.field_5.errorCount).toBe(2);
-        expect(Object.keys(result.tests)).toHaveLength(1);
-        expect(result.tests).toHaveProperty('field_5');
-        expect(result).toMatchSnapshot();
+          // ✅ Second suite to test that values do not get merged
+          result = suite(vest, 'field_5');
+          expect(result.errorCount).toBe(2);
+          expect(result.tests).not.toHaveProperty('field_1');
+          expect(result.tests.field_5.errorCount).toBe(2);
+          expect(Object.keys(result.tests)).toHaveLength(1);
+          expect(result.tests).toHaveProperty('field_5');
+          expect(result).toMatchSnapshot();
 
-        // ✅ Last suite tests that even without skipping
-        // Nothing gets merged and that we can still register the
-        // callbacks - even after delay
-        result = suite(vest);
-        expect(result.errorCount).toBe(5);
-        expect(result.tests.field_1.errorCount).toBe(1);
-        expect(result.tests.field_2.errorCount).toBe(1);
-        expect(result.tests.field_3.errorCount).toBe(1);
-        expect(result.tests.field_4.warnCount).toBe(1);
-        expect(result.tests.field_5.errorCount).toBe(2);
-        expect(Object.keys(result.tests)).toHaveLength(5);
-        expect(result).toMatchSnapshot();
-        setTimeout(() => {
-          // Testing that even though the state got discarded
-          // We still register consumer callbacks
-          expect(callback_4).not.toHaveBeenCalled();
-          result.done(callback_4);
-          expect(callback_4).toHaveBeenCalled();
-          isDeepCopy(callback_4.mock.calls[0][0], result);
-          done();
-        });
-      }));
+          // ✅ Last suite tests that even without skipping
+          // Nothing gets merged and that we can still register the
+          // callbacks - even after delay
+          result = suite(vest);
+          expect(result.errorCount).toBe(5);
+          expect(result.tests.field_1.errorCount).toBe(1);
+          expect(result.tests.field_2.errorCount).toBe(1);
+          expect(result.tests.field_3.errorCount).toBe(1);
+          expect(result.tests.field_4.warnCount).toBe(1);
+          expect(result.tests.field_5.errorCount).toBe(2);
+          expect(Object.keys(result.tests)).toHaveLength(5);
+          expect(result).toMatchSnapshot();
+          setTimeout(() => {
+            // Testing that even though the state got discarded
+            // We still register consumer callbacks
+            expect(callback_4).not.toHaveBeenCalled();
+            result.done(callback_4);
+            expect(callback_4).toHaveBeenCalled();
+            isDeepCopy(callback_4.mock.calls[0][0], result);
+            done();
+          });
+        })
+    );
   });
 });
 

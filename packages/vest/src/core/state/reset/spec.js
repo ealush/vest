@@ -72,16 +72,19 @@ const spec = _vest => {
       createSuite(['field_1', 'field_3']);
     });
 
-    test('Sanity - making sure everything works as it should', () => {
-      const suiteState = getSuiteState(suiteId);
-      expect(suiteState.lagging).toHaveLength(2);
-      expect(suiteState.pending).toHaveLength(2);
-      expect(suiteState.lagging[0].fieldName).toBe('field_1');
-      expect(suiteState.pending[0].fieldName).toBe('field_2');
-      expect(suiteState.lagging[1].fieldName).toBe('field_3');
-      expect(suiteState.pending[1].fieldName).toBe('field_4');
-      expect(getState()).toMatchSnapshot();
-    });
+    test.skipOnWatch(
+      'Sanity - making sure everything works as it should',
+      () => {
+        const suiteState = getSuiteState(suiteId);
+        expect(suiteState.lagging).toHaveLength(2);
+        expect(suiteState.pending).toHaveLength(2);
+        expect(suiteState.lagging[0].fieldName).toBe('field_1');
+        expect(suiteState.pending[0].fieldName).toBe('field_2');
+        expect(suiteState.lagging[1].fieldName).toBe('field_3');
+        expect(suiteState.pending[1].fieldName).toBe('field_4');
+        expect(getState()).toMatchSnapshot();
+      }
+    );
 
     it('Should remove suite from state', () => {
       expect(getSuites()).toHaveProperty(suiteId);

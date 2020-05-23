@@ -7,3 +7,13 @@ global.isWatchMode = (process.argv || []).some(
 );
 
 glob.sync(packagePath('**', 'jest.setup.js')).forEach(require);
+
+/* eslint-disable */
+test.skipOnWatch = (...args) => {
+  if (global.isWatchMode) {
+    return test.skip(...args);
+  }
+
+  return test(...args);
+};
+/* eslint-enable */

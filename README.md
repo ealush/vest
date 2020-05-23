@@ -22,30 +22,26 @@ The idea behind Vest is that your validations can be described as a 'spec' or a 
 // validation.js
 import vest, { test, enforce } from 'vest';
 
-const validation = data => {
-  const validate = vest.create('NewUserForm', () => {
-    test('username', 'Must be at least 3 chars', () => {
-      enforce(data.username).longerThanOrEquals(3);
-    });
-
-    test('email', 'Is not a valid email address', () => {
-      enforce(data.email)
-        .isNotEmpty()
-        .matches(/[^@]+@[^\.]+\..+/g);
-    });
+const validate = vest.create('NewUserForm', data => {
+  test('username', 'Must be at least 3 chars', () => {
+    enforce(data.username).longerThanOrEquals(3);
   });
 
-  return validate();
-};
+  test('email', 'Is not a valid email address', () => {
+    enforce(data.email)
+      .isNotEmpty()
+      .matches(/[^@]+@[^\.]+\..+/g);
+  });
+});
 
-export default validation;
+export default validate;
 ```
 
 ```js
 // myFeature.js
-import validation from './validation.js';
+import validate from './validation.js';
 
-const res = validation({
+const res = validate({
   username: 'example',
   email: 'email@example.com',
 });

@@ -7,27 +7,29 @@ To set a test's severity level to `warn`, you need to simply call Vest's warn fu
 ```js
 import vest, { test, enfroce } from 'vest';
 
-const validate = vest.create('Password', () => {
+const validate = vest.create('Password', data => {
   test('password', 'A password must have at least 6 characters', () => {
-    enforce(password).longerThan(5);
+    enforce(data.password).longerThan(5);
   }); // this test has a severity level of `error`
 
   test('password', 'Your password strength is: WEAK', () => {
     vest.warn();
 
-    enforce(password).matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]$/);
+    enforce(data.password).matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]$/
+    );
   }); // this test has a severity level of `warn`
 
   test('password', 'Your password strength is: MEDIUM', () => {
     vest.warn();
 
-    enforce(password).matches(
+    enforce(data.password).matches(
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]$/
     );
   }); // this test has a severity level of `warn`
 });
 
-validate();
+const validationResult = validate(data);
 ```
 
 **Limitations when using vest.warn()**

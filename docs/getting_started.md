@@ -24,41 +24,50 @@ First, you need to initialize your validation suite using `vest.create()`. This 
 ```js
 import vest from 'vest';
 
-const validation = data => {
-  const validate = vest.create('formName', () => {
-    // validation suite content goes here.
-  });
+const validate = vest.create('formName', () => {
+  // validation suite content goes here.
+});
 
-  return validate();
-};
+const validationResult = validate();
 ```
 
 `vest.create()` takes the following arguments:
 
-- `name`: The name of the current validation suite. _Must be unique_.
-- `callback`: The validation suite's body where your tests reside.
+| Name     | Type       | Optional | Description                                                    |
+| -------- | ---------- | -------- | -------------------------------------------------------------- |
+| `name`   | `string`   | No       | Suite name. _Must be unique_.                                  |
+| callback | `function` | No       | Your validation suite's body. This is where your tests reside. |
+
+vest.create returns a `validate` function which runs your validation suite. All the arguments you pass to it are being forwared to your tests callback. You can use it to pass form data to your validation, excluded fields, and anything required for during your validation runtime.
 
 A simple validation suite would look somewhat like this:
 
 ```js
+// validation.js
 import { test, enforce } from ‘vest’;
 
-export default (data) => {
-  const validate = vest.create('NewUserForm', () => {
+const validate = vest.create('NewUserForm', (formData) => {
     test('username', 'Must be between 2 and 10 chars', () => {
-        enforce(data.username)
+        enforce(formData.username)
             .longerThanOrEquals(2)
             .shorterThan(10);
     });
 
     test('password', 'Must contain at least one digit', () => {
-        enforce(data.password)
+        enforce(formData.password)
             .matches(/(?=.*[0-9])/);
     });
-  });
+});
 
-  return validate();
-};
+export default validate;
+```
+
+```js
+// myFeature.js
+
+import validate from './validation.js';
+
+const res = validate(formData);
 ```
 
 In the above example, we validate a form called `NewUserForm` containing username and a password.

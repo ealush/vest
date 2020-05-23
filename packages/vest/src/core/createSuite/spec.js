@@ -51,5 +51,20 @@ describe('Test createSuite module', () => {
         const validate = createSuite('FormName', done);
         validate();
       }));
+
+    it('Passes all arguments over to tests callback', () => {
+      const testsCallback = jest.fn();
+      const params = [
+        1,
+        2,
+        3,
+        { [faker.random.word()]: [1, 2, 3] },
+        false,
+        [faker.random.word()],
+      ];
+      const validate = createSuite('FormName', testsCallback);
+      validate(...params);
+      expect(testsCallback).toHaveBeenCalledWith(...params);
+    });
   });
 });

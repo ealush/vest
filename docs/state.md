@@ -41,7 +41,7 @@ In some cases, such as form reset, you want to discard of previous validation re
 import vest from 'vest';
 
 const validate = vest.create('suite_name', () => {
-  // your tests here
+  // Your tests go here
 });
 
 validate(); // validation result is added to the state.

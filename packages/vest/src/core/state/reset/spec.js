@@ -1,5 +1,4 @@
 import { getState, getSuites } from '..';
-import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import runSpec from '../../../../testUtils/runSpec';
 import vest from '../../../index';

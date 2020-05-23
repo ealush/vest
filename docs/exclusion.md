@@ -17,23 +17,21 @@ In the example below, we're assuming the argument `fieldName` is being populated
 ```js
 import vest, { enforce, test } from 'vest';
 
-const myValidation = (data, fieldName) => {
-  const validate = vest.create('New User', () => {
-    vest.only(fieldName);
+const validate = vest.create('New User', (data, fieldName) => {
+  vest.only(fieldName);
 
-    test('username', 'Username is invalid', () => {
-      /* some validation logic*/
-    });
-    test('email', 'Email is invalid', () => {
-      /* some validation logic*/
-    });
-    test('password', 'Password is invalid', () => {
-      /* some validation logic*/
-    });
+  test('username', 'Username is invalid', () => {
+    /* some validation logic*/
   });
+  test('email', 'Email is invalid', () => {
+    /* some validation logic*/
+  });
+  test('password', 'Password is invalid', () => {
+    /* some validation logic*/
+  });
+});
 
-  return validate();
-};
+const validationResult = validate(formData, changedField);
 ```
 
 ### Skipping tests
@@ -45,20 +43,18 @@ In this case, and in similar others, you can use `vest.skip()`. When called, it 
 ```js
 import vest, { enforce, test } from 'vest';
 
-const myValidation = data => {
-  const validate = vest.create('purchase', () => {
-    if (!data.promo) {
-      vest.skip('promo');
-    }
+const validate = vest.create('purchase', data => {
+  if (!data.promo) {
+    vest.skip('promo');
+  }
 
-    // this test won't run when data.promo is falsy.
-    test('promo', 'Promo code is invalid', () => {
-      /* some validation logic*/
-    });
+  // this test won't run when data.promo is falsy.
+  test('promo', 'Promo code is invalid', () => {
+    /* some validation logic*/
   });
+});
 
-  return validate();
-};
+const validationResult = validate(formData);
 ```
 
 **Read next about:**

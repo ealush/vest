@@ -92,21 +92,21 @@ In the below example, the `done` callback for `UserName` may run before the whol
 ```js
 import vest, { test, enforce } from 'vest';
 
-const validate = vest.create('SendEmailForm', () => {
+const validate = vest.create('SendEmailForm', data => {
   test(
     'UserEmail',
     'Marked as spam address',
-    async () => await isKnownSpammer(address)
+    async () => await isKnownSpammer(data.address)
   );
 
   test(
     'UserName',
     'must not be blacklisted',
-    async () => await isBlacklistedUser(username)
+    async () => await isBlacklistedUser(data.username)
   );
 });
 
-validate()
+const validationResult = validate(data)
   .done('UserName', res => {
     if (res.hasErrors('UserName')) {
       showUserNameErrors(res.errors);

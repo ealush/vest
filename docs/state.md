@@ -22,3 +22,29 @@ In case you have an async test that didn't finish from the previous suite run - 
 ## What about server side validations?
 
 You probably needs to consider running vest using its [stateless interface](./stateless_validations).
+
+## Resetting suite state with `vest.reset();`
+
+In some cases, such as form reset, you want to discard of previous validation results. This can be done with `vest.reset()`.
+
+`vest.reset` disables all pending async tests in your suite, and deletes the suite state. To use your suite again, you will need to initialize it again with `vest.create()`.
+
+### `vest.reset()` params:
+
+| Name      | Type     | Optional | Description                              |
+| --------- | -------- | -------- | ---------------------------------------- |
+| suiteName | `string` | No       | The name of the suite you with to reset. |
+
+### Usage:
+
+```js
+import vest from 'vest';
+
+const validate = vest.create('suite_name', () => {
+  // your tests here
+});
+
+validate(); // validation result is added to the state.
+
+vest.reset('suite_name'); // validation result is removed
+```

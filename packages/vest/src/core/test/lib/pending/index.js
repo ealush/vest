@@ -1,7 +1,6 @@
-import { setState } from '../../../state';
 import getSuiteState from '../../../state/getSuiteState';
 import patch from '../../../state/patch';
-import { SYMBOL_CANCELED } from '../../../state/symbols';
+import setCanceled from '../../../state/setCanceled';
 
 /**
  * Sets a test as pending in the state.
@@ -17,12 +16,12 @@ export const setPending = (suiteId, testObject) => {
       if (testObject.fieldName !== fieldName) {
         lagging.push(testObject);
       } else {
-        canceled[testObject.id] = true;
+        canceled.push(testObject);
       }
 
       return { lagging, canceled };
     },
-    { lagging: [], canceled: {} }
+    { lagging: [], canceled: [] }
   );
 
   patch(suiteId, state => ({
@@ -30,10 +29,7 @@ export const setPending = (suiteId, testObject) => {
     lagging,
     pending: state.pending.concat(testObject),
   }));
-  setState(state => ({
-    ...state,
-    [SYMBOL_CANCELED]: Object.assign(state[SYMBOL_CANCELED], canceled),
-  }));
+  setCanceled(...canceled);
 };
 
 /**

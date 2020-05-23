@@ -117,6 +117,7 @@ Object {
   "draft": [Function],
   "enforce": [Function],
   "only": [Function],
+  "reset": [Function],
   "runWithContext": [Function],
   "skip": [Function],
   "test": [Function],

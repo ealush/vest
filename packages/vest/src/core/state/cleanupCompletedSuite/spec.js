@@ -7,13 +7,13 @@ import {
 import runWithContext from '../../../lib/runWithContext';
 import singleton from '../../../lib/singleton';
 import { SYMBOL_SUITES } from '../symbols';
-import cleanupStatelessSuite from '.';
+import cleanupCompletedSuite from '.';
 
 const suiteName = 'suite_1';
 const suiteId = 'suiteId_1';
 const suiteId_2 = 'suiteId_2';
 let context, defaultContext;
-describe('cleanupStatelessSuite', () => {
+describe('cleanupCompletedSuite', () => {
   beforeEach(() => {
     defaultContext = {
       name: suiteName,
@@ -24,7 +24,7 @@ describe('cleanupStatelessSuite', () => {
 
   describe('When suite does not exist', () => {
     it('Should throw an error', () => {
-      expect(() => cleanupStatelessSuite(suiteId)).toThrow();
+      expect(() => cleanupCompletedSuite(suiteId)).toThrow();
     });
   });
 
@@ -33,7 +33,7 @@ describe('cleanupStatelessSuite', () => {
     context = singleton.useContext();
     runWithContext(context, () => {
       expect(singleton.useContext()).toBe(context);
-      cleanupStatelessSuite(suiteId);
+      cleanupCompletedSuite(suiteId);
       expect(singleton.useContext()).toBeNull();
     });
   });
@@ -53,7 +53,7 @@ describe('cleanupStatelessSuite', () => {
       it('Should remove suite from state', () => {
         expect(getState()[SYMBOL_SUITES]).toHaveProperty(suiteId);
         expect(getState()[SYMBOL_SUITES]).toHaveProperty(suiteId_2);
-        cleanupStatelessSuite(suiteId_2);
+        cleanupCompletedSuite(suiteId_2);
         expect(getState()[SYMBOL_SUITES]).not.toHaveProperty(suiteId_2);
         expect(getState()[SYMBOL_SUITES]).toHaveProperty(suiteId);
       });

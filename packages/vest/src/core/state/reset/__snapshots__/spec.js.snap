@@ -3,7 +3,7 @@
 exports[`When suite exists Sanity - making sure everything works as it should 1`] = `
 Object {
   Symbol(mock_vest_suites): Object {
-    "suite_12": Array [
+    "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
         "errorCount": 0,
@@ -21,7 +21,7 @@ Object {
             "id": "0",
             "isWarning": false,
             "statement": undefined,
-            "suiteId": "suite_12",
+            "suiteId": "suite_id",
             "testFn": Promise {},
           },
           VestTest {
@@ -30,11 +30,11 @@ Object {
             "id": "1",
             "isWarning": false,
             "statement": undefined,
-            "suiteId": "suite_12",
+            "suiteId": "suite_id",
             "testFn": Promise {},
           },
         ],
-        "name": "suite_12",
+        "name": "suite_id",
         "pending": Array [
           VestTest {
             "failed": false,
@@ -42,7 +42,7 @@ Object {
             "id": "3",
             "isWarning": false,
             "statement": undefined,
-            "suiteId": "suite_12",
+            "suiteId": "suite_id",
             "testFn": Promise {},
           },
           VestTest {
@@ -51,7 +51,7 @@ Object {
             "id": "4",
             "isWarning": false,
             "statement": undefined,
-            "suiteId": "suite_12",
+            "suiteId": "suite_id",
             "testFn": Promise {},
           },
         ],
@@ -59,7 +59,7 @@ Object {
           "field_1": true,
           "field_3": true,
         },
-        "suiteId": "suite_12",
+        "suiteId": "suite_id",
         "tests": Object {
           "field_1": Object {
             "errorCount": 0,
@@ -90,12 +90,12 @@ Object {
         },
         "fieldCallbacks": Object {},
         "lagging": null,
-        "name": "suite_12",
+        "name": "suite_id",
         "pending": null,
         "skipped": Object {
           "field_2": true,
         },
-        "suiteId": "suite_12",
+        "suiteId": "suite_id",
         "tests": Object {
           "field_1": Object {
             "errorCount": 0,
@@ -112,22 +112,6 @@ Object {
         },
         "warnCount": 0,
       },
-    ],
-    "suite_8": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {},
-        "fieldCallbacks": Object {},
-        "lagging": Array [],
-        "name": "suite_8",
-        "pending": Array [],
-        "skipped": Object {},
-        "suiteId": "suite_8",
-        "tests": Object {},
-        "warnCount": 0,
-      },
-      undefined,
     ],
   },
   Symbol(mock_vest_canceled): Object {
@@ -139,133 +123,7 @@ Object {
 exports[`When suite exists Sanity - making sure everything works as it should 2`] = `
 Object {
   Symbol(mock_vest_suites): Object {
-    "suite_12": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {
-          "skip": Object {
-            "field_1": true,
-            "field_3": true,
-          },
-        },
-        "fieldCallbacks": Object {},
-        "lagging": Array [
-          VestTest {
-            "failed": false,
-            "fieldName": "field_1",
-            "id": "0",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_12",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_3",
-            "id": "1",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_12",
-            "testFn": Promise {},
-          },
-        ],
-        "name": "suite_12",
-        "pending": Array [
-          VestTest {
-            "failed": false,
-            "fieldName": "field_2",
-            "id": "3",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_12",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_4",
-            "id": "4",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_12",
-            "testFn": Promise {},
-          },
-        ],
-        "skipped": Object {
-          "field_1": true,
-          "field_3": true,
-        },
-        "suiteId": "suite_12",
-        "tests": Object {
-          "field_1": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_2": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_3": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_4": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-        },
-        "warnCount": 0,
-      },
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {
-          "skip": Object {
-            "field_2": true,
-          },
-        },
-        "fieldCallbacks": Object {},
-        "lagging": null,
-        "name": "suite_12",
-        "pending": null,
-        "skipped": Object {
-          "field_2": true,
-        },
-        "suiteId": "suite_12",
-        "tests": Object {
-          "field_1": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_3": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_4": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-        },
-        "warnCount": 0,
-      },
-    ],
-    "suite_28": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {},
-        "fieldCallbacks": Object {},
-        "lagging": Array [],
-        "name": "suite_28",
-        "pending": Array [],
-        "skipped": Object {},
-        "suiteId": "suite_28",
-        "tests": Object {},
-        "warnCount": 0,
-      },
-      undefined,
-    ],
-    "suite_32": Array [
+    "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
         "errorCount": 0,
@@ -283,7 +141,7 @@ Object {
             "id": "15",
             "isWarning": false,
             "statement": undefined,
-            "suiteId": "suite_32",
+            "suiteId": "suite_id",
             "testFn": Promise {},
           },
           VestTest {
@@ -292,11 +150,11 @@ Object {
             "id": "16",
             "isWarning": false,
             "statement": undefined,
-            "suiteId": "suite_32",
+            "suiteId": "suite_id",
             "testFn": Promise {},
           },
         ],
-        "name": "suite_32",
+        "name": "suite_id",
         "pending": Array [
           VestTest {
             "failed": false,
@@ -304,7 +162,7 @@ Object {
             "id": "18",
             "isWarning": false,
             "statement": undefined,
-            "suiteId": "suite_32",
+            "suiteId": "suite_id",
             "testFn": Promise {},
           },
           VestTest {
@@ -313,7 +171,7 @@ Object {
             "id": "19",
             "isWarning": false,
             "statement": undefined,
-            "suiteId": "suite_32",
+            "suiteId": "suite_id",
             "testFn": Promise {},
           },
         ],
@@ -321,7 +179,7 @@ Object {
           "field_1": true,
           "field_3": true,
         },
-        "suiteId": "suite_32",
+        "suiteId": "suite_id",
         "tests": Object {
           "field_1": Object {
             "errorCount": 0,
@@ -352,12 +210,12 @@ Object {
         },
         "fieldCallbacks": Object {},
         "lagging": null,
-        "name": "suite_32",
+        "name": "suite_id",
         "pending": null,
         "skipped": Object {
           "field_2": true,
         },
-        "suiteId": "suite_32",
+        "suiteId": "suite_id",
         "tests": Object {
           "field_1": Object {
             "errorCount": 0,
@@ -375,24 +233,10 @@ Object {
         "warnCount": 0,
       },
     ],
-    "suite_8": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {},
-        "fieldCallbacks": Object {},
-        "lagging": Array [],
-        "name": "suite_8",
-        "pending": Array [],
-        "skipped": Object {},
-        "suiteId": "suite_8",
-        "tests": Object {},
-        "warnCount": 0,
-      },
-      undefined,
-    ],
   },
   Symbol(mock_vest_canceled): Object {
+    "0": true,
+    "1": true,
     "10": true,
     "11": true,
     "12": true,
@@ -400,6 +244,8 @@ Object {
     "14": true,
     "17": true,
     "2": true,
+    "3": true,
+    "4": true,
     "5": true,
     "6": true,
     "7": true,
@@ -412,259 +258,7 @@ Object {
 exports[`When suite exists Sanity - making sure everything works as it should 3`] = `
 Object {
   Symbol(mock_vest_suites): Object {
-    "suite_12": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {
-          "skip": Object {
-            "field_1": true,
-            "field_3": true,
-          },
-        },
-        "fieldCallbacks": Object {},
-        "lagging": Array [
-          VestTest {
-            "failed": false,
-            "fieldName": "field_1",
-            "id": "0",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_12",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_3",
-            "id": "1",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_12",
-            "testFn": Promise {},
-          },
-        ],
-        "name": "suite_12",
-        "pending": Array [
-          VestTest {
-            "failed": false,
-            "fieldName": "field_2",
-            "id": "3",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_12",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_4",
-            "id": "4",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_12",
-            "testFn": Promise {},
-          },
-        ],
-        "skipped": Object {
-          "field_1": true,
-          "field_3": true,
-        },
-        "suiteId": "suite_12",
-        "tests": Object {
-          "field_1": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_2": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_3": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_4": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-        },
-        "warnCount": 0,
-      },
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {
-          "skip": Object {
-            "field_2": true,
-          },
-        },
-        "fieldCallbacks": Object {},
-        "lagging": null,
-        "name": "suite_12",
-        "pending": null,
-        "skipped": Object {
-          "field_2": true,
-        },
-        "suiteId": "suite_12",
-        "tests": Object {
-          "field_1": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_3": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_4": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-        },
-        "warnCount": 0,
-      },
-    ],
-    "suite_28": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {},
-        "fieldCallbacks": Object {},
-        "lagging": Array [],
-        "name": "suite_28",
-        "pending": Array [],
-        "skipped": Object {},
-        "suiteId": "suite_28",
-        "tests": Object {},
-        "warnCount": 0,
-      },
-      undefined,
-    ],
-    "suite_32": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {
-          "skip": Object {
-            "field_1": true,
-            "field_3": true,
-          },
-        },
-        "fieldCallbacks": Object {},
-        "lagging": Array [
-          VestTest {
-            "failed": false,
-            "fieldName": "field_1",
-            "id": "15",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_32",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_3",
-            "id": "16",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_32",
-            "testFn": Promise {},
-          },
-        ],
-        "name": "suite_32",
-        "pending": Array [
-          VestTest {
-            "failed": false,
-            "fieldName": "field_2",
-            "id": "18",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_32",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_4",
-            "id": "19",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_32",
-            "testFn": Promise {},
-          },
-        ],
-        "skipped": Object {
-          "field_1": true,
-          "field_3": true,
-        },
-        "suiteId": "suite_32",
-        "tests": Object {
-          "field_1": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_2": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_3": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_4": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-        },
-        "warnCount": 0,
-      },
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {
-          "skip": Object {
-            "field_2": true,
-          },
-        },
-        "fieldCallbacks": Object {},
-        "lagging": null,
-        "name": "suite_32",
-        "pending": null,
-        "skipped": Object {
-          "field_2": true,
-        },
-        "suiteId": "suite_32",
-        "tests": Object {
-          "field_1": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_3": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_4": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-        },
-        "warnCount": 0,
-      },
-    ],
-    "suite_48": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {},
-        "fieldCallbacks": Object {},
-        "lagging": Array [],
-        "name": "suite_48",
-        "pending": Array [],
-        "skipped": Object {},
-        "suiteId": "suite_48",
-        "tests": Object {},
-        "warnCount": 0,
-      },
-      undefined,
-    ],
-    "suite_52": Array [
+    "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
         "errorCount": 0,
@@ -682,7 +276,7 @@ Object {
             "id": "30",
             "isWarning": false,
             "statement": undefined,
-            "suiteId": "suite_52",
+            "suiteId": "suite_id",
             "testFn": Promise {},
           },
           VestTest {
@@ -691,11 +285,11 @@ Object {
             "id": "31",
             "isWarning": false,
             "statement": undefined,
-            "suiteId": "suite_52",
+            "suiteId": "suite_id",
             "testFn": Promise {},
           },
         ],
-        "name": "suite_52",
+        "name": "suite_id",
         "pending": Array [
           VestTest {
             "failed": false,
@@ -703,7 +297,7 @@ Object {
             "id": "33",
             "isWarning": false,
             "statement": undefined,
-            "suiteId": "suite_52",
+            "suiteId": "suite_id",
             "testFn": Promise {},
           },
           VestTest {
@@ -712,7 +306,7 @@ Object {
             "id": "34",
             "isWarning": false,
             "statement": undefined,
-            "suiteId": "suite_52",
+            "suiteId": "suite_id",
             "testFn": Promise {},
           },
         ],
@@ -720,7 +314,7 @@ Object {
           "field_1": true,
           "field_3": true,
         },
-        "suiteId": "suite_52",
+        "suiteId": "suite_id",
         "tests": Object {
           "field_1": Object {
             "errorCount": 0,
@@ -751,12 +345,12 @@ Object {
         },
         "fieldCallbacks": Object {},
         "lagging": null,
-        "name": "suite_52",
+        "name": "suite_id",
         "pending": null,
         "skipped": Object {
           "field_2": true,
         },
-        "suiteId": "suite_52",
+        "suiteId": "suite_id",
         "tests": Object {
           "field_1": Object {
             "errorCount": 0,
@@ -774,30 +368,20 @@ Object {
         "warnCount": 0,
       },
     ],
-    "suite_8": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {},
-        "fieldCallbacks": Object {},
-        "lagging": Array [],
-        "name": "suite_8",
-        "pending": Array [],
-        "skipped": Object {},
-        "suiteId": "suite_8",
-        "tests": Object {},
-        "warnCount": 0,
-      },
-      undefined,
-    ],
   },
   Symbol(mock_vest_canceled): Object {
+    "0": true,
+    "1": true,
     "10": true,
     "11": true,
     "12": true,
     "13": true,
     "14": true,
+    "15": true,
+    "16": true,
     "17": true,
+    "18": true,
+    "19": true,
     "2": true,
     "20": true,
     "21": true,
@@ -809,7 +393,9 @@ Object {
     "27": true,
     "28": true,
     "29": true,
+    "3": true,
     "32": true,
+    "4": true,
     "5": true,
     "6": true,
     "7": true,
@@ -822,385 +408,7 @@ Object {
 exports[`When suite exists Sanity - making sure everything works as it should 4`] = `
 Object {
   Symbol(mock_vest_suites): Object {
-    "suite_12": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {
-          "skip": Object {
-            "field_1": true,
-            "field_3": true,
-          },
-        },
-        "fieldCallbacks": Object {},
-        "lagging": Array [
-          VestTest {
-            "failed": false,
-            "fieldName": "field_1",
-            "id": "0",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_12",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_3",
-            "id": "1",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_12",
-            "testFn": Promise {},
-          },
-        ],
-        "name": "suite_12",
-        "pending": Array [
-          VestTest {
-            "failed": false,
-            "fieldName": "field_2",
-            "id": "3",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_12",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_4",
-            "id": "4",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_12",
-            "testFn": Promise {},
-          },
-        ],
-        "skipped": Object {
-          "field_1": true,
-          "field_3": true,
-        },
-        "suiteId": "suite_12",
-        "tests": Object {
-          "field_1": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_2": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_3": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_4": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-        },
-        "warnCount": 0,
-      },
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {
-          "skip": Object {
-            "field_2": true,
-          },
-        },
-        "fieldCallbacks": Object {},
-        "lagging": null,
-        "name": "suite_12",
-        "pending": null,
-        "skipped": Object {
-          "field_2": true,
-        },
-        "suiteId": "suite_12",
-        "tests": Object {
-          "field_1": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_3": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_4": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-        },
-        "warnCount": 0,
-      },
-    ],
-    "suite_28": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {},
-        "fieldCallbacks": Object {},
-        "lagging": Array [],
-        "name": "suite_28",
-        "pending": Array [],
-        "skipped": Object {},
-        "suiteId": "suite_28",
-        "tests": Object {},
-        "warnCount": 0,
-      },
-      undefined,
-    ],
-    "suite_32": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {
-          "skip": Object {
-            "field_1": true,
-            "field_3": true,
-          },
-        },
-        "fieldCallbacks": Object {},
-        "lagging": Array [
-          VestTest {
-            "failed": false,
-            "fieldName": "field_1",
-            "id": "15",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_32",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_3",
-            "id": "16",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_32",
-            "testFn": Promise {},
-          },
-        ],
-        "name": "suite_32",
-        "pending": Array [
-          VestTest {
-            "failed": false,
-            "fieldName": "field_2",
-            "id": "18",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_32",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_4",
-            "id": "19",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_32",
-            "testFn": Promise {},
-          },
-        ],
-        "skipped": Object {
-          "field_1": true,
-          "field_3": true,
-        },
-        "suiteId": "suite_32",
-        "tests": Object {
-          "field_1": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_2": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_3": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_4": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-        },
-        "warnCount": 0,
-      },
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {
-          "skip": Object {
-            "field_2": true,
-          },
-        },
-        "fieldCallbacks": Object {},
-        "lagging": null,
-        "name": "suite_32",
-        "pending": null,
-        "skipped": Object {
-          "field_2": true,
-        },
-        "suiteId": "suite_32",
-        "tests": Object {
-          "field_1": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_3": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_4": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-        },
-        "warnCount": 0,
-      },
-    ],
-    "suite_48": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {},
-        "fieldCallbacks": Object {},
-        "lagging": Array [],
-        "name": "suite_48",
-        "pending": Array [],
-        "skipped": Object {},
-        "suiteId": "suite_48",
-        "tests": Object {},
-        "warnCount": 0,
-      },
-      undefined,
-    ],
-    "suite_52": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {
-          "skip": Object {
-            "field_1": true,
-            "field_3": true,
-          },
-        },
-        "fieldCallbacks": Object {},
-        "lagging": Array [
-          VestTest {
-            "failed": false,
-            "fieldName": "field_1",
-            "id": "30",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_52",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_3",
-            "id": "31",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_52",
-            "testFn": Promise {},
-          },
-        ],
-        "name": "suite_52",
-        "pending": Array [
-          VestTest {
-            "failed": false,
-            "fieldName": "field_2",
-            "id": "33",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_52",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_4",
-            "id": "34",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_52",
-            "testFn": Promise {},
-          },
-        ],
-        "skipped": Object {
-          "field_1": true,
-          "field_3": true,
-        },
-        "suiteId": "suite_52",
-        "tests": Object {
-          "field_1": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_2": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_3": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_4": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-        },
-        "warnCount": 0,
-      },
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {
-          "skip": Object {
-            "field_2": true,
-          },
-        },
-        "fieldCallbacks": Object {},
-        "lagging": null,
-        "name": "suite_52",
-        "pending": null,
-        "skipped": Object {
-          "field_2": true,
-        },
-        "suiteId": "suite_52",
-        "tests": Object {
-          "field_1": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_3": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-          "field_4": Object {
-            "errorCount": 0,
-            "warnCount": 0,
-          },
-        },
-        "warnCount": 0,
-      },
-    ],
-    "suite_68": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {},
-        "fieldCallbacks": Object {},
-        "lagging": Array [],
-        "name": "suite_68",
-        "pending": Array [],
-        "skipped": Object {},
-        "suiteId": "suite_68",
-        "tests": Object {},
-        "warnCount": 0,
-      },
-      undefined,
-    ],
-    "suite_72": Array [
+    "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
         "errorCount": 0,
@@ -1218,7 +426,7 @@ Object {
             "id": "45",
             "isWarning": false,
             "statement": undefined,
-            "suiteId": "suite_72",
+            "suiteId": "suite_id",
             "testFn": Promise {},
           },
           VestTest {
@@ -1227,11 +435,11 @@ Object {
             "id": "46",
             "isWarning": false,
             "statement": undefined,
-            "suiteId": "suite_72",
+            "suiteId": "suite_id",
             "testFn": Promise {},
           },
         ],
-        "name": "suite_72",
+        "name": "suite_id",
         "pending": Array [
           VestTest {
             "failed": false,
@@ -1239,7 +447,7 @@ Object {
             "id": "48",
             "isWarning": false,
             "statement": undefined,
-            "suiteId": "suite_72",
+            "suiteId": "suite_id",
             "testFn": Promise {},
           },
           VestTest {
@@ -1248,7 +456,7 @@ Object {
             "id": "49",
             "isWarning": false,
             "statement": undefined,
-            "suiteId": "suite_72",
+            "suiteId": "suite_id",
             "testFn": Promise {},
           },
         ],
@@ -1256,7 +464,7 @@ Object {
           "field_1": true,
           "field_3": true,
         },
-        "suiteId": "suite_72",
+        "suiteId": "suite_id",
         "tests": Object {
           "field_1": Object {
             "errorCount": 0,
@@ -1287,12 +495,12 @@ Object {
         },
         "fieldCallbacks": Object {},
         "lagging": null,
-        "name": "suite_72",
+        "name": "suite_id",
         "pending": null,
         "skipped": Object {
           "field_2": true,
         },
-        "suiteId": "suite_72",
+        "suiteId": "suite_id",
         "tests": Object {
           "field_1": Object {
             "errorCount": 0,
@@ -1310,30 +518,20 @@ Object {
         "warnCount": 0,
       },
     ],
-    "suite_8": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "errorCount": 0,
-        "exclusive": Object {},
-        "fieldCallbacks": Object {},
-        "lagging": Array [],
-        "name": "suite_8",
-        "pending": Array [],
-        "skipped": Object {},
-        "suiteId": "suite_8",
-        "tests": Object {},
-        "warnCount": 0,
-      },
-      undefined,
-    ],
   },
   Symbol(mock_vest_canceled): Object {
+    "0": true,
+    "1": true,
     "10": true,
     "11": true,
     "12": true,
     "13": true,
     "14": true,
+    "15": true,
+    "16": true,
     "17": true,
+    "18": true,
+    "19": true,
     "2": true,
     "20": true,
     "21": true,
@@ -1345,12 +543,18 @@ Object {
     "27": true,
     "28": true,
     "29": true,
+    "3": true,
+    "30": true,
+    "31": true,
     "32": true,
+    "33": true,
+    "34": true,
     "35": true,
     "36": true,
     "37": true,
     "38": true,
     "39": true,
+    "4": true,
     "40": true,
     "41": true,
     "42": true,

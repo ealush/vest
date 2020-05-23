@@ -3,7 +3,7 @@ import resetState from '../../../../testUtils/resetState';
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
 import runWithContext from '../../../lib/runWithContext';
 import Context from '../../Context';
-import { setState } from '../../state';
+import { setState, getState } from '../../state';
 import getSuiteState from '../../state/getSuiteState';
 import patch from '../../state/patch';
 import registerSuite from '../../state/registerSuite';
@@ -84,11 +84,39 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
         state = _.cloneDeep(getSuiteState(suiteId));
       });
 
-      it('Should keep state unchanged', () =>
+      it('Should remove test from pending array', () => {
+        expect(getSuiteState(suiteId).pending).toEqual(
+          expect.arrayContaining([testObject])
+        );
+        runRunAsyncTest(testObject);
+        return new Promise(done => {
+          setTimeout(() => {
+            expect(getSuiteState(suiteId).pending).toEqual(
+              expect.not.arrayContaining([testObject])
+            );
+            done();
+          });
+        });
+      });
+
+      it('Should remove test from canceled state', () => {
+        expect(getState(SYMBOL_CANCELED)).toHaveProperty(testObject.id);
+        runRunAsyncTest(testObject);
+        return new Promise(done => {
+          setTimeout(() => {
+            expect(getState(SYMBOL_CANCELED)).not.toHaveProperty(testObject.id);
+            done();
+          });
+        });
+      });
+
+      it('Should keep rest of the state unchanged', () =>
         new Promise(done => {
           runRunAsyncTest(testObject);
           setTimeout(() => {
-            expect(getSuiteState(suiteId)).toEqual(state);
+            expect(_.omit(getSuiteState(suiteId), 'pending')).toEqual(
+              _.omit(state, 'pending')
+            );
             done();
           });
         }));

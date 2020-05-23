@@ -1,6 +1,6 @@
 import getSuiteState from '../../../state/getSuiteState';
 import patch from '../../../state/patch';
-import setCanceled from '../../../state/setCanceled';
+import { setCanceled } from '../canceled';
 
 /**
  * Sets a test as pending in the state.

@@ -1,4 +1,5 @@
 import { getState, getSuites } from '..';
+import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import runSpec from '../../../../testUtils/runSpec';
 import vest from '../../../index';
@@ -7,9 +8,8 @@ import getSuiteState from '../getSuiteState';
 import { SYMBOL_CANCELED } from '../symbols';
 import reset from '.';
 
-const genSuiteId = ((n = 0) => () => `suite_${n++}`)();
-let state,
-  suiteId = genSuiteId();
+const suiteId = 'suite_id';
+let state;
 
 const spec = _vest => {
   let _reset;
@@ -41,10 +41,9 @@ const spec = _vest => {
     });
   };
 
-  beforeEach(() => {
-    suiteId = genSuiteId();
+  beforeAll(() => {
+    resetState();
   });
-
   describe('When invoked without suiteId', () => {
     it('Should throw', () => {
       expect(() => reset()).toThrow('`vest.reset` must be called with suiteId');

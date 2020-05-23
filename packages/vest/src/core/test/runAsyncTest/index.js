@@ -1,13 +1,13 @@
 import { OPERATION_MODE_STATELESS } from '../../../constants';
 import singleton from '../../../lib/singleton';
-import { getState } from '../../state';
+import { getState, getSuites } from '../../state';
 import cleanupCompletedSuite from '../../state/cleanupCompletedSuite';
 import getSuiteState from '../../state/getSuiteState';
 import hasRemainingTests from '../../state/hasRemainingTests';
 import { SYMBOL_CANCELED } from '../../state/symbols';
+import { removeCanceled } from '../lib/canceled';
 import { removePending } from '../lib/pending';
 import runTest from '../lib/runTest';
-
 /**
  * Runs done callback when async tests are finished running.
  * @param {String} suiteId
@@ -36,9 +36,23 @@ const runAsyncTest = testObject => {
   const { testFn, statement, fieldName, id, suiteId } = testObject;
   const { operationMode } = singleton.useContext();
   const done = cb => {
-    // If current test instance is canceled
+    const isCanceled = getState(SYMBOL_CANCELED)[id];
 
-    if (getState(SYMBOL_CANCELED)[id]) {
+    if (isCanceled) {
+      removeCanceled(testObject);
+    }
+
+    // This is for cases in which the suite state was already reset
+    if (!getSuites()[suiteId]) {
+      return;
+    }
+
+    removePending(testObject);
+
+    // We're returning here and not in the first `isCanceled` check
+    // because we need to remove pending regardless - as long as the\
+    // suite is present.
+    if (isCanceled) {
       return;
     }
 
@@ -50,7 +64,6 @@ const runAsyncTest = testObject => {
       cb();
     }
 
-    removePending(testObject);
     runDoneCallbacks(suiteId, fieldName);
 
     if (operationMode === OPERATION_MODE_STATELESS) {

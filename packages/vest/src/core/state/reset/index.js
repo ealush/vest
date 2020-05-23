@@ -1,7 +1,7 @@
 import { setSuites } from '..';
 import throwError from '../../../lib/throwError';
+import { setCanceled } from '../../test/lib/canceled';
 import getSuiteState from '../getSuiteState';
-import setCanceled from '../setCanceled';
 
 /**
  * Cleans up a suite from state.
@@ -13,7 +13,6 @@ const reset = suiteId => {
   }
 
   const suite = getSuiteState(suiteId);
-
   if (!suite) {
     return;
   }

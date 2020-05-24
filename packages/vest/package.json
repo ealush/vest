@@ -2,7 +2,7 @@
   "name": "vest",
   "version": "1.0.10",
   "description": "Validation Test",
-  "main": "./dist/vest.min.js",
+  "main": "./vest.min.js",
   "author": "ealush",
   "license": "MIT",
   "repository": {
@@ -12,6 +12,5 @@
   "bugs": {
     "url": "https://github.com/ealush/vest/issues"
   },
-  "homepage": "https://ealush.github.io/vest/",
-  "dependencies": {}
+  "homepage": "https://ealush.github.io/vest/"
 }

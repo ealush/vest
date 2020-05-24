@@ -11,3 +11,5 @@ documentation/MAIN.md
 documentation/assets/**/*.css
 .DS_Store
 *.log
+packages/vest/dist
+packages/vest/vest.*

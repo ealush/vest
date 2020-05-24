@@ -1,4 +1,4 @@
 module.exports = {
-  closest: require("./closest"),
-  looksLike: require("./looksLike"),
+  closest: require('./closest'),
+  looksLike: require('./looksLike'),
 };

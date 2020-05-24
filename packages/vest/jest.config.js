@@ -1,1 +1,1 @@
-module.exports = require("../../config/jest/jest.config");
+module.exports = require('../../config/jest/jest.config');

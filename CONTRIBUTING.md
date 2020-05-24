@@ -10,7 +10,7 @@ Vest’s functionality is fully documented and fully tested. Please make sure to
 
 ## Versioning strategy
 
-When making a change you should never manually update Vest’s version in its `package.json` file. Instead, you should prefix your commits with the change level, for example: `major:` (or `breaking:`) for breaking changes, `minor:` (or `feat:`) for new features, and `patch:` (or `fix:`) for fixes within the code. If your changes are not in the code itself (documentation, for example), you should prefix your commits with `config:` or `docs:`. The next version number will be calculated from the sum of all commits in a release.
+When making a change you should never manually update Vest’s version in its `package.json` file. Instead, you should prefix your commits with the change level, for example: `major:` (or `breaking:`) for breaking changes, `minor:` (or `feat:`) for new features, and `patch:` (or `fix:`) for fixes within the code. If your changes are not in the code itself (documentation, for example), you should prefix your commits with `conf:` or `docs:`. The next version number will be calculated from the sum of all commits in a release.
 
 A good commit message could look like this:
 `breaking: Removed legacy interface.`

@@ -1,11 +1,11 @@
-const RuleTester = require("eslint").RuleTester;
+const RuleTester = require('eslint').RuleTester;
 const {
   VEST_HOOK_WARN,
   VEST_HOOK_ONLY,
   VEST_HOOK_SKIP,
-} = require("../../constants");
-const { hookScopeErrorMessgage } = require("./helpers");
-const hooksScopeRule = require(".");
+} = require('../../constants');
+const { hookScopeErrorMessgage } = require('./helpers');
+const hooksScopeRule = require('.');
 
 const ruleTester = new RuleTester({ parserOptions: { ecmaVersion: 2015 } });
 
@@ -28,7 +28,7 @@ const VALID = [
   `validate('example', () => {
     vest.skip();
 });`,
-].map((code) => ({ code }));
+].map(code => ({ code }));
 
 const INVALID_WARN = [
   `validate('example', () => {
@@ -38,23 +38,23 @@ const INVALID_WARN = [
   `setTimeout(() => {
     vest.warn();
 })`,
-].map((code) => ({ code, errors: [ERROR_WARN] }));
+].map(code => ({ code, errors: [ERROR_WARN] }));
 
 const INVALID_ONLY = [
   `vest.only();`,
   `vest.test(() => {
         vest.only();
     });`,
-].map((code) => ({ code, errors: [ERROR_ONLY] }));
+].map(code => ({ code, errors: [ERROR_ONLY] }));
 
 const INVALID_SKIP = [
   `vest.skip();`,
   `vest.test(() => {
         vest.skip();
     });`,
-].map((code) => ({ code, errors: [ERROR_SKIP] }));
+].map(code => ({ code, errors: [ERROR_SKIP] }));
 
-ruleTester.run("vest-hooks-scope", hooksScopeRule, {
+ruleTester.run('vest-hooks-scope', hooksScopeRule, {
   valid: VALID,
   invalid: [].concat(INVALID_WARN, INVALID_ONLY, INVALID_SKIP),
 });

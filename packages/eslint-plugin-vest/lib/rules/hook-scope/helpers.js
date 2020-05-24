@@ -2,12 +2,12 @@ const {
   VEST_HOOK_WARN,
   VEST_IDENTIFIER_VALIDATE,
   VEST_IDENTIFIER_TEST,
-} = require("../../constants");
+} = require('../../constants');
 
-const correctWrapperName = (name) =>
+const correctWrapperName = name =>
   name === VEST_HOOK_WARN ? VEST_IDENTIFIER_TEST : VEST_IDENTIFIER_VALIDATE;
 
-const hookScopeErrorMessgage = (hookName) =>
+const hookScopeErrorMessgage = hookName =>
   `Vest hook \`${hookName}\` found in the wrong scope. This may lead to wrong validation output and unexpected behavior. Make sure you place it inside your \`${correctWrapperName(
     hookName
   )}\` callback.`;

@@ -1,32 +1,32 @@
 ## Enforce
+
 For assertions, Vest is bundled with [Enforce](https://npmjs.com/package/n4s). Enforce is a validation assertion library. It allows you to run your data against rules and conditions and test whether it passes your validations. It is intended for validation logic that gets repeated over and over again and should not be written manually. It comes with a wide variety of pre-built rules, but it can also be extended to support your own repeated custom logic.
 
 The way Enforce operates is similar to most common assertion libraries. You pass it a value, and one or more rules to test your value against - if the validation fails, it throws an Error, otherwise - it will move on to the next rule in the chain.
 
 ```js
-import { enforce } from 'vest'
+import { enforce } from 'vest';
 
-enforce(4)
-    .isNumber();
+enforce(4).isNumber();
+// passes
+
+enforce(4).isNumber().greaterThan(2);
 // passes
 
 enforce(4)
-    .isNumber()
-    .greaterThan(2);
-// passes
-
-enforce(4)
-    .lessThan(2) // throws an error, will not carry on to the next rule
-    .greaterThan(3);
+  .lessThan(2) // throws an error, will not carry on to the next rule
+  .greaterThan(3);
 ```
 
 ## Content
+
 - [List of Enforce rules](#list-of-enforce-rules)
 - [Custom Enforce Rules](#custom-enforce-rules)
 
 Enforce exposes all predefined and custom rules. You may use chaining to make multiple enfocements for the same value.
 
 # List of Enforce rules
+
 Enforce rules are functions that allow you to test your data against different criteria. The following rules are supported out-of-the-box.
 
 - [equals](#equals)
@@ -63,7 +63,9 @@ Enforce rules are functions that allow you to test your data against different c
 - [isEven](#iseven)
 
 ### equals
+
 ### Description
+
 Checks if your enforced value <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#Strict_equality_using" target="_blank">strictly equals</a> (`===`) another.
 
 It is not recommended to use this rule to compare arrays or objects, as it does not perform any sort of deep comparison on the value.
@@ -71,7 +73,8 @@ It is not recommended to use this rule to compare arrays or objects, as it does 
 For numeric value comparison, you should use `numberEquals`, which coerces numeric strings into numbers before comparing.
 
 ### Arguments
-* `value`: Any value you wish to check your enforced value against
+
+- `value`: Any value you wish to check your enforced value against
 
 ### Usage examples:
 
@@ -92,9 +95,10 @@ enforce([1, 2, 3]).equals([1, 2, 3]);
 // throws
 ```
 
-
 ## notEquals
+
 ### Description
+
 Checks if your enforced value does not <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#Strict_equality_using" target="_blank">strictly equal</a> (`===`) another.
 
 Reverse implementation of `equals`.
@@ -117,17 +121,19 @@ enforce(a).notEquals(a);
 // throws
 ```
 
-
 ## isEmpty
+
 ### Description
+
 Checks if your enforced value is empty, false, zero, null or undefined.
 
 Expected results are:
-* object: checks against the count of keys (`0` is empty)
-* array/string: checks against length. (`0` is empty)
-* number: checks the value of the number. (`0` and `NaN` are empty)
-* boolean: `false` is empty.
-* undefined/null: are both empty.
+
+- object: checks against the count of keys (`0` is empty)
+- array/string: checks against length. (`0` is empty)
+- number: checks the value of the number. (`0` and `NaN` are empty)
+- boolean: `false` is empty.
+- undefined/null: are both empty.
 
 ### Usage examples:
 
@@ -146,15 +152,16 @@ enforce(false).isEmpty();
 ```js
 enforce([1]).isEmpty();
 enforce('1').isEmpty();
-enforce({1:1}).isEmpty();
+enforce({ 1: 1 }).isEmpty();
 enforce(1).isEmpty();
 enforce(true).isEmpty();
 // throws
 ```
 
-
 ## isNotEmpty
+
 ### Description
+
 Checks that your enforced value is not empty, false, or zero.
 Reverse implementation of `isEmpty`.
 
@@ -163,7 +170,7 @@ Reverse implementation of `isEmpty`.
 ```js
 enforce([1]).isNotEmpty();
 enforce('1').isNotEmpty();
-enforce({1:1}).isNotEmpty();
+enforce({ 1: 1 }).isNotEmpty();
 // passes
 ```
 
@@ -175,9 +182,10 @@ enforce(0).isNotEmpty();
 // throws
 ```
 
-
 ## isNumeric
+
 ### Description
+
 Checks if a value is a representation of a real number
 
 ### Usage examples:
@@ -195,9 +203,10 @@ enforce('hi').isNumeric();
 // throws
 ```
 
-
 ## isNotNumeric
+
 ### Description
+
 Checks if a value is not a representation of a real number.
 Reverse implementation of `isNumeric`.
 
@@ -215,16 +224,17 @@ enforce('42').isNotNumeric();
 // throws
 ```
 
-
 ## greaterThan
 
 - alias: `gt`
 
 ### Description
+
 Checks that your numeric enforced value is larger than a given numeric value.
 
 ### Arguments
-* `value`: `number | string` | A numeric value against which you want to check your enforced value.
+
+- `value`: `number | string` | A numeric value against which you want to check your enforced value.
 
 Strings are parsed using `Number()`, values which are not fully numeric always return false;
 
@@ -244,15 +254,17 @@ enforce([100]).gt(1);
 // throws
 ```
 
-
 ## greaterThanOrEquals
+
 - alias: `gte()`
 
 ### Description
+
 Checks that your numeric enforced value is larger than or equals to a given numeric value.
 
 ### Arguments
-* `value`: `number | string` | A numeric value against which you want to check your enforced value.
+
+- `value`: `number | string` | A numeric value against which you want to check your enforced value.
 
 Strings are parsed using `Number()`, values which are not fully numeric always return false;
 
@@ -275,17 +287,20 @@ enforce([100]).gte(1);
 // throws
 ```
 
-
 ## lengthEquals
+
 ### Description
+
 Checks that your enforced value is equal to the given number.
 
 ### Arguments
-* `size`: `number` | the number which you would like your initial value to be tested against.
+
+- `size`: `number` | the number which you would like your initial value to be tested against.
 
 The `value` argument can be of the following types:
-* array: checks against length.
-* string: checks against length.
+
+- array: checks against length.
+- string: checks against length.
 
 ### Usage examples:
 
@@ -302,16 +317,20 @@ enforce('').lengthEquals(1);
 ```
 
 ## lengthNotEquals
+
 ### Description
+
 Checks that your enforced value is not equal to the given number.
 Reverse implementation of `lengthEquals`.
 
 ### Arguments
-* `size`: `number` | the number which you would like your initial value to be tested against.
+
+- `size`: `number` | the number which you would like your initial value to be tested against.
 
 The `value` argument can be of the following types:
-* array: checks against length.
-* string: checks against length.
+
+- array: checks against length.
+- string: checks against length.
 
 ### Usage examples:
 
@@ -327,16 +346,17 @@ enforce('').lengthNotEquals(0);
 // throws
 ```
 
-
 ## lessThan
 
 - alias: `lt()`
 
 ### Description
+
 Checks that your numeric enforced value is smaller than a given numeric value.
 
 ### Arguments
-* `value`: `number | string` | A numeric value against which you want to check your enforced value.
+
+- `value`: `number | string` | A numeric value against which you want to check your enforced value.
 
 Strings are parsed using `Number()`, values which are not fully numeric always return false;
 
@@ -356,16 +376,17 @@ enforce([0]).lt(1);
 // throws
 ```
 
-
 ## lessThanOrEquals
 
 - alias: `lte()`
 
 ### Description
+
 Checks that your numeric enforced value is smaller than or equals to a given numeric value.
 
 ### Arguments
-* `value`: `number | string` | A numeric value against which you want to check your enforced value.
+
+- `value`: `number | string` | A numeric value against which you want to check your enforced value.
 
 Strings are parsed using `Number()`, values which are not fully numeric always return false;
 
@@ -386,17 +407,20 @@ enforce([0]).lte(1);
 // throws
 ```
 
-
 ## longerThan
+
 ### Description
+
 Checks that your enforced value is longer than a given number.
 
 ### Arguments
-* `size`: `number` | the number which you would like your initial value to be tested against.
+
+- `size`: `number` | the number which you would like your initial value to be tested against.
 
 The `value` argument can be of the following types:
-* array: checks against length.
-* string: checks against length.
+
+- array: checks against length.
+- string: checks against length.
 
 ### Usage examples:
 
@@ -412,17 +436,20 @@ enforce('').longerThan(0);
 // throws
 ```
 
-
 ## longerThanOrEquals
+
 ### Description
+
 Checks that your enforced value is longer than or equals to a given number.
 
 ### Arguments
-* `size`: `number` | the number which you would like your initial value to be tested against.
+
+- `size`: `number` | the number which you would like your initial value to be tested against.
 
 The `value` argument can be of the following types:
-* array: checks against length.
-* string: checks against length.
+
+- array: checks against length.
+- string: checks against length.
 
 ### Usage examples:
 
@@ -440,13 +467,15 @@ enforce('').longerThanOrEquals(1);
 // throws
 ```
 
-
 ## numberEquals
+
 ### Description
+
 Checks that your numeric enforced value is equals another value.
 
 ### Arguments
-* `value`: `number | string` | A numeric value against which you want to check your enforced value.
+
+- `value`: `number | string` | A numeric value against which you want to check your enforced value.
 
 Strings are parsed using `Number()`, values which are not fully numeric always return false;
 
@@ -465,14 +494,16 @@ enforce([0]).numberEquals(1);
 // throws
 ```
 
-
 ## numberNotEquals
+
 ### Description
+
 Checks that your numeric enforced value does not equal another value.
 Reverse implementation of `numberEquals`.
 
 ### Arguments
-* `value`: `number | string` | A numeric value against which you want to check your enforced value.
+
+- `value`: `number | string` | A numeric value against which you want to check your enforced value.
 
 Strings are parsed using `Number()`, values which are not fully numeric always return false;
 
@@ -490,17 +521,20 @@ enforce('110').numberNotEquals(100);
 // throws
 ```
 
-
 ## shorterThan
+
 ### Description
+
 Checks that your enforced value is shorter than a given number.
 
 ### Arguments
-* `size`: `number` | the number which you would like your initial value to be tested against.
+
+- `size`: `number` | the number which you would like your initial value to be tested against.
 
 The `value` argument can be of the following types:
-* array: checks against length.
-* string: checks against length.
+
+- array: checks against length.
+- string: checks against length.
 
 ### Usage examples:
 
@@ -516,21 +550,25 @@ enforce('').shorterThan(0);
 // throws
 ```
 
-
 ## shorterThanOrEquals
+
 ### Description
+
 Checks that your enforced value is shorter than or equals to a given number.
 
 ### Arguments
-* `size`: `number` | the number which you would like your initial value to be tested against.
+
+- `size`: `number` | the number which you would like your initial value to be tested against.
 
 The `value` argument can be of the following types:
-* array: checks against length.
-* string: checks against length.
+
+- array: checks against length.
+- string: checks against length.
 
 ### Usage examples:
 
 #### Passing examples:
+
 ```js
 enforce([]).shorterThanOrEquals(1);
 enforce('a').shorterThanOrEquals(2);
@@ -545,13 +583,15 @@ enforce('ab').shorterThanOrEquals(1);
 // throws
 ```
 
-
 ## matches
+
 ### Description
+
 Checks if a value contains a regex match.
 
 ### Arguments
-* `regexp`: either a `RegExp` object, or a RegExp valid string
+
+- `regexp`: either a `RegExp` object, or a RegExp valid string
 
 ### Usage examples:
 
@@ -571,9 +611,10 @@ enforce('ninety eighty four').matches('[0-9]');
 // throws
 ```
 
-
 ## notMatches
+
 ### Description
+
 Checks if a value does not contain a regex match.
 Reverse implementation of `matches`.
 
@@ -589,21 +630,25 @@ enforce('ninety eighty four').notMatches('[0-9]');
 // passes
 ```
 
-
 ## inside
+
 ### Description
+
 Checks if your enforced value is contained in another array or string.
 Your enforced value can be of the following types:
-* `string`
-* `number`
-* `boolean`
+
+- `string`
+- `number`
+- `boolean`
 
 ### Arguments
-* `container`: a `string` or an `array` which may contain the value specified.
+
+- `container`: a `string` or an `array` which may contain the value specified.
 
 ### Usage examples:
 
 #### inside: array
+
 Checks for membership in an array.
 
 - string: checks if a string is an element in an array
@@ -617,6 +662,7 @@ enforce('hello').inside(['hello', 'world']);
 enforce('hello!').inside(['hello', 'world']);
 // throws
 ```
+
 - number: checks if a number is an element in an array
 
 ```js
@@ -637,11 +683,12 @@ enforce(false).inside([true, false]);
 ```
 
 ```js
-enforce(true).inside([1,2,3]);
+enforce(true).inside([1, 2, 3]);
 // throws
 ```
 
 #### inside: string
+
 - string: checks if a string is inside another string
 
 ```js
@@ -654,9 +701,10 @@ enforce('ad').inside('tru dat.');
 // throws
 ```
 
-
 ## notInside
+
 ### Description
+
 Checks if a given value is not contained in another array or string.
 Reverse implementation of `inside`.
 
@@ -674,23 +722,24 @@ enforce('da').notInside('tru dat.');
 // throws
 ```
 
-
 ## isTruthy
+
 ### Description
+
 Checks if a value is truthy; Meaning: if it can be coerced into boolean `true`.
 Anything not in the following list is considered to be truthy.
 
-* `undefined`
-* `null`
-* `false`
-* `0`
-* `NaN`
-* empty string (`""`)
+- `undefined`
+- `null`
+- `false`
+- `0`
+- `NaN`
+- empty string (`""`)
 
 ### Usage examples:
 
 ```js
-enforce("hello").isTruthy();
+enforce('hello').isTruthy();
 enforce(true).isTruthy();
 enforce(1).isTruthy();
 // passes
@@ -702,23 +751,25 @@ enforce(null).isTruthy();
 enforce(undefined).isTruthy();
 enforce(0).isTruthy();
 enforce(NaN).isTruthy();
-enforce("").isTruthy();
+enforce('').isTruthy();
 // throws
 ```
 
-
 ## isFalsy
+
 ### Description
+
 Checks if a value is falsy; Meaning: if it can be coerced into boolean `false`.
 Reverse implementation of `isTruthy`.
 
 Anything not in the following list is considered to be truthy:
-* `undefined`
-* `null`
-* `false`
-* `0`
-* `NaN`
-* empty string (`""`)
+
+- `undefined`
+- `null`
+- `false`
+- `0`
+- `NaN`
+- empty string (`""`)
 
 ### Usage examples:
 
@@ -736,9 +787,10 @@ enforce('hi').isFalsy();
 // throws
 ```
 
-
 ## isArray
+
 ### Description
+
 Checks if a value is of type `Array`.
 
 ### Usage examples:
@@ -753,9 +805,10 @@ enforce('hello').isArray();
 // throws
 ```
 
-
 ## isNotArray
+
 ### Description
+
 Checks if a value is of any type other than `Array`.
 Reverse implementation of `isArray`.
 
@@ -771,9 +824,10 @@ enforce('hello').isNotArray();
 // passes
 ```
 
-
 ## isNumber
+
 ### Description
+
 Checks if a value is of type `number`.
 
 ### Usage examples:
@@ -786,13 +840,14 @@ enforce(NaN).isNumber(); // (NaN is of type 'number!')
 
 ```js
 enforce([]).isNumber();
-enforce("143").isNumber();
+enforce('143').isNumber();
 // throws
 ```
 
-
 ## isNotNumber
+
 ### Description
+
 Checks if a value is of any type other than `number`.
 Reverse implementation of `isNumber`.
 
@@ -810,9 +865,10 @@ enforce(NaN).isNotNumber(); // throws (NaN is of type 'number!')
 // throws
 ```
 
-
 ## isString
+
 ### Description
+
 Checks if a value is of type `String`.
 
 ### Usage examples:
@@ -828,9 +884,10 @@ enforce(1984).isString();
 // throws
 ```
 
-
 ## isNotString
+
 ### Description
+
 Checks if a value is of any type other than `String`.
 Reverse implementation of `isString`.
 
@@ -846,9 +903,10 @@ enforce(['hello']).isNotString();
 // passes
 ```
 
-
 ## isOdd
+
 ### Description
+
 Checks if a value is an odd numeric value.
 
 ### Usage examples:
@@ -867,9 +925,10 @@ enforce([1]).isOdd();
 // throws
 ```
 
-
 ## isEven
+
 ### Description
+
 Checks if a value is an even numeric value.
 
 ### Usage examples:
@@ -888,21 +947,25 @@ enforce([0]).isEven();
 // throws
 ```
 
-
 # Custom enforce rules
+
 To make it easier to reuse logic across your application, sometimes you would want to encapsulate bits of logic in rules that you can use later on, for example, "what's considered a valid email".
 
 Your custom rules are essentially a single javascript object containing your rules.
+
 ```js
 const myCustomRules = {
-    isValidEmail: (value) => value.indexOf('@') > -1,
-    hasKey: (value, {key}) => value.hasOwnProperty(key),
-    passwordsMatch: (passConfirm, options) => passConfirm === options.passConfirm && options.passIsValid
-}
+  isValidEmail: value => value.indexOf('@') > -1,
+  hasKey: (value, { key }) => value.hasOwnProperty(key),
+  passwordsMatch: (passConfirm, options) =>
+    passConfirm === options.passConfirm && options.passIsValid,
+};
 ```
+
 Just like the predefined rules, your custom rules can accepts two parameters:
-* `value` The actual value you are testing against.
-* `args` (optional) the arguments which you pass on when running your tests.
+
+- `value` The actual value you are testing against.
+- `args` (optional) the arguments which you pass on when running your tests.
 
 You can extend enforce with your custom rules by creating a new instance of `Enforce` and adding the rules object as the argument.
 
@@ -910,10 +973,11 @@ You can extend enforce with your custom rules by creating a new instance of `Enf
 import { Enforce } from 'vest';
 
 const myCustomRules = {
-    isValidEmail: (value) => value.indexOf('@') > -1,
-    hasKey: (value, key) => value.hasOwnProperty(key),
-    passwordsMatch: (passConfirm, options) => passConfirm === options.passConfirm && options.passIsValid
-}
+  isValidEmail: value => value.indexOf('@') > -1,
+  hasKey: (value, key) => value.hasOwnProperty(key),
+  passwordsMatch: (passConfirm, options) =>
+    passConfirm === options.passConfirm && options.passIsValid,
+};
 
 const enforce = new Enforce(myCustomRules);
 

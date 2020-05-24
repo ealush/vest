@@ -1,9 +1,9 @@
-const { exec, packagePath, logger } = require("../../util");
+const { exec, packagePath, logger } = require('../../util');
 
 function setNextVersion({ packageName, tagId, tag, nextVersion }) {
   nextVersion = tag ? tagId : nextVersion;
 
-  logger.info("🔢 Setting next version.");
+  logger.info('🔢 Setting next version.');
 
   exec(
     `yarn --cwd ${packagePath(

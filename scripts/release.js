@@ -1,5 +1,6 @@
 const { asyncForeach, logger } = require('../util');
 const buildPackage = require('./steps/buildPackage');
+const copyDistFiles = require('./steps/copyDistFiles');
 const publishPackage = require('./steps/publishPackage');
 const pushToDefaultBranch = require('./steps/pushToDefaultBranch');
 const setNextVersion = require('./steps/setNextVersion');
@@ -27,6 +28,7 @@ const run = async () => {
 
     setNextVersion(packageData);
     buildPackage(packageData);
+    copyDistFiles(packageData);
     publishPackage(packageData);
 
     // Do not create release if there are no commit

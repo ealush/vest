@@ -1,9 +1,9 @@
-const RuleTester = require("eslint").RuleTester;
-const { VEST_HOOK_ONLY, VEST_HOOK_SKIP } = require("../../constants");
-const { errorMessage } = require("./helpers");
+const RuleTester = require('eslint').RuleTester;
+const { VEST_HOOK_ONLY, VEST_HOOK_SKIP } = require('../../constants');
+const { errorMessage } = require('./helpers');
 
 const ruleTester = new RuleTester({ parserOptions: { ecmaVersion: 2015 } });
-const excludeBeforeTest = require(".");
+const excludeBeforeTest = require('.');
 
 const valid = [
   `vest.only();`,
@@ -17,9 +17,9 @@ const valid = [
     vest.skip();
     test();
   });`,
-].map((code) => ({ code }));
+].map(code => ({ code }));
 
-const INVALID = [VEST_HOOK_ONLY, VEST_HOOK_SKIP].map((hookName) =>
+const INVALID = [VEST_HOOK_ONLY, VEST_HOOK_SKIP].map(hookName =>
   [
     [
       `validate('', () => {
@@ -52,7 +52,7 @@ test();
   }))
 );
 
-ruleTester.run("vest-exclude-before-test", excludeBeforeTest, {
+ruleTester.run('vest-exclude-before-test', excludeBeforeTest, {
   valid,
   invalid: [].concat(...INVALID),
 });

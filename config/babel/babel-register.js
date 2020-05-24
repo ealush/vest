@@ -1,5 +1,5 @@
-const { BABEL_CONFIG_PATH } = require("..");
+const { BABEL_CONFIG_PATH } = require('..');
 
-require("@babel/register")({
+require('@babel/register')({
   configFile: BABEL_CONFIG_PATH,
 });

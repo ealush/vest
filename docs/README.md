@@ -12,6 +12,7 @@
 ## What is Vest?
 
 Vest is a validations library for JS apps that derives its syntax from modern JS frameworks such as Mocha or Jest. It is easy to learn due to its use of already common declarative patterns.
+It works great with user-input validation and with validating upon user interaction to provide the best possible user experience.
 
 The idea behind Vest is that your validations can be described as a 'spec' or a contract that reflects your form or feature structure. Your validations run in production, and they are framework agnostic - meaning Vest works well with React, Angular, Vue, or even without a framework at all.
 

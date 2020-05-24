@@ -1,47 +1,51 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono&display=swap');
 
 body {
-    font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 code {
-    font-family: 'Roboto Mono' !important;
+  font-family: 'Roboto Mono' !important;
 }
 
 .markdown-section code {
-    font-size: 100%;
-    color: #26B4AD;
+  font-size: 100%;
+  color: #26b4ad;
 }
 
 .markdown-section pre code {
-    font-size: .9rem;
-    color: #26B4AD;
+  font-size: 0.9rem;
+  color: #26b4ad;
 }
 
 code.lang-js {
-    font-weight: 400;
+  font-weight: 400;
 }
 
 .app-name {
-    padding: 10px;
+  padding: 10px;
 }
 
 .sidebar-nav {
-    padding-left: 10px;
+  padding-left: 10px;
 }
 
-body, .anchor span, a.anchor {
-    color: #3C4464;
+body,
+.anchor span,
+a.anchor {
+  color: #3c4464;
 }
 
-.token.function,.token.keyword {
-    color: #26B4AD
+.token.function,
+.token.keyword {
+  color: #26b4ad;
 }
 
-.token.boolean, .token.number {
-    color: #59d4e8;
+.token.boolean,
+.token.number {
+  color: #59d4e8;
 }
 
 .markdown-section a:hover {
-    color: #3a6b96;
+  color: #3a6b96;
 }

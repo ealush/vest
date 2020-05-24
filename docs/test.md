@@ -22,11 +22,11 @@ Just like in most unit testing frameworks, a validation fails whenever an error 
 // const username = 'Gina.Vandervort';
 // const password = 'Q3O';
 
-test("username", "Should be at least 3 charachters long", () => {
+test('username', 'Should be at least 3 charachters long', () => {
   enforce(username).longerThanOrEquals(3);
 }); // this test passes
 
-test("password", "Should be at least 6 charachters long", () => {
+test('password', 'Should be at least 6 charachters long', () => {
   enforce(password).longerThanOrEquals(6); // an error is thrown here
 }); // this test fails
 ```
@@ -39,11 +39,11 @@ To make it easy to migrate your existing validation logic into Vest, it also sup
 // const username = 'Gina.Vandervort';
 // const password = 'Q3O';
 
-test("username", "Should be at least 3 charachters long", () => {
+test('username', 'Should be at least 3 charachters long', () => {
   return username.length >= 3; // = true
 }); // this test passes
 
-test("password", "Should be at least 6 charachters long", () => {
+test('password', 'Should be at least 6 charachters long', () => {
   return password.length >= 6; // = false
 }); // this test fails
 ```
@@ -60,10 +60,10 @@ An async test is declared by returning a [promise](https://developer.mozilla.org
 
 ```js
 // Example using a promise
-test("name", "I always fail", () => Promise.reject());
+test('name', 'I always fail', () => Promise.reject());
 
 // Example using async/await
-test("name", "Should be unique", async () => {
+test('name', 'Should be unique', async () => {
   return await doesUserExist(user);
 });
 ```
@@ -73,12 +73,12 @@ test("name", "Should be unique", async () => {
 When performing validations on the server, your server might need to respond with different error messages. When rejecting with a string value, your string value will be picked up as the message to show to the user.
 
 ```js
-test("name", () =>
+test('name', () =>
   new Promise((resolve, reject) => {
     fetch(`/checkUsername?name=${name}`)
-      .then((res) => res.json)
-      .then((data) => {
-        if (data.status === "fail") {
+      .then(res => res.json)
+      .then(data => {
+        if (data.status === 'fail') {
           reject(data.message); // rejects with message and marks the test as failing
         } else {
           resolve(); // completes. doesn't mark the test as failing

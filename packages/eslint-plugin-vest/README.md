@@ -48,26 +48,26 @@ This rule prevents you from calling the `vest.only()` and `vest.skip()` hooks af
 - Bad code example 🚨
 
 ```js
-validate("MyForm", () => {
-  test("fieldName1", "message", () => {
+validate('MyForm', () => {
+  test('fieldName1', 'message', () => {
     // ...
   });
 
-  test("fieldName2", "message", () => {
+  test('fieldName2', 'message', () => {
     // ...
   });
 
-  vest.only("fieldName2"); // 🚨Should be called before test()
+  vest.only('fieldName2'); // 🚨Should be called before test()
 });
 ```
 
 - Good code example ✅
 
 ```js
-validate("MyForm", () => {
+validate('MyForm', () => {
   vest.only();
 
-  test("fieldName", "message", () => {
+  test('fieldName', 'message', () => {
     // ...
   });
 });
@@ -80,15 +80,15 @@ Makes sure you only call vest hooks from the scope they are allowed to run from.
 - Bad code examples 🚨
 
 ```js
-validate("MyForm", () => {
+validate('MyForm', () => {
   vest.warn(); // 🚨Should be called inside test()
 
-  test("fieldName1", "message", () => {
+  test('fieldName1', 'message', () => {
     // ...
   });
 
-  test("fieldName2", "message", () => {
-    vest.only("fieldName2"); // 🚨Should be called inside validate()
+  test('fieldName2', 'message', () => {
+    vest.only('fieldName2'); // 🚨Should be called inside validate()
   });
 });
 ```
@@ -96,14 +96,14 @@ validate("MyForm", () => {
 - Good code examples ✅
 
 ```js
-validate("MyForm", () => {
-  vest.only("fieldName2");
+validate('MyForm', () => {
+  vest.only('fieldName2');
 
-  test("fieldName1", "message", () => {
+  test('fieldName1', 'message', () => {
     vest.warn();
     // ...
   });
 
-  test("fieldName2", "message", () => {});
+  test('fieldName2', 'message', () => {});
 });
 ```

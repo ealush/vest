@@ -1,20 +1,20 @@
-const { readdirSync } = require("fs");
+const { readdirSync } = require('fs');
 
-const PACKAGES_DIR = "packages";
+const PACKAGES_DIR = 'packages';
 const PACKAGE_NAMES = readdirSync(`./${PACKAGES_DIR}`);
 
-const PACKAGE_NAME_VEST = "vest";
-const TAG_NEXT = "next";
+const PACKAGE_NAME_VEST = 'vest';
+const TAG_NEXT = 'next';
 
-const KEYWORD_PATCH = "patch";
-const KEYWORD_MINOR = "minor";
-const KEYWORD_MAJOR = "major";
-const KEYWORD_DOCS = "docs";
-const KEYWORD_PERF = "perf";
-const KEYWORD_CONF = "conf";
-const KEYWORD_FIX = "fix";
-const KEYWORD_FEAT = "feat";
-const KEYWORD_BREAKING = "breaking";
+const KEYWORD_PATCH = 'patch';
+const KEYWORD_MINOR = 'minor';
+const KEYWORD_MAJOR = 'major';
+const KEYWORD_DOCS = 'docs';
+const KEYWORD_PERF = 'perf';
+const KEYWORD_CONF = 'conf';
+const KEYWORD_FIX = 'fix';
+const KEYWORD_FEAT = 'feat';
+const KEYWORD_BREAKING = 'breaking';
 
 const KEYWORDS_PATCH = [
   KEYWORD_PATCH,
@@ -27,9 +27,9 @@ const KEYWORDS_MINOR = [KEYWORD_MINOR, KEYWORD_FEAT];
 const KEYWORDS_MAJOR = [KEYWORD_MAJOR, KEYWORD_BREAKING];
 
 const CHANGELOG_TITLES = {
-  [KEYWORD_MAJOR]: "Changed or removed",
-  [KEYWORD_MINOR]: "Added",
-  [KEYWORD_PATCH]: "Fixed and improved",
+  [KEYWORD_MAJOR]: 'Changed or removed',
+  [KEYWORD_MINOR]: 'Added',
+  [KEYWORD_PATCH]: 'Fixed and improved',
 };
 
 module.exports = {

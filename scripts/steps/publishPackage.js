@@ -1,16 +1,16 @@
-const { exec, logger, packagePath } = require("../../util");
+const { exec, logger, packagePath } = require('../../util');
 
 function publishPackage({ packageName, tag }) {
   const command = [
-    "npm",
-    "publish",
+    'npm',
+    'publish',
     packagePath(packageName),
     tag && `--tag ${tag}`,
   ]
     .filter(Boolean)
-    .join(" ");
+    .join(' ');
 
-  logger.info("🚀 Publishing package.");
+  logger.info('🚀 Publishing package.');
   exec(command);
 }
 

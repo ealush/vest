@@ -1,7 +1,7 @@
-const semver = require("semver");
-const { packageJson } = require("../../util");
-const { TAG_NEXT } = require("../constants");
-const determineChangeLevel = require("./determineChangeLevel");
+const semver = require('semver');
+const { packageJson } = require('../../util');
+const { TAG_NEXT } = require('../constants');
+const determineChangeLevel = require('./determineChangeLevel');
 
 const {
   TRAVIS_BRANCH,
@@ -20,12 +20,12 @@ function pickTagId(nextVersion) {
     return `${nextVersion}-next-${TRAVIS_COMMIT.substr(0, 6)}`;
   }
 
-  throw Error("pickTagId: Encountered an unexpected input.");
+  throw Error('pickTagId: Encountered an unexpected input.');
 }
 
 function generatePackageData(packageName, messages) {
   const version = packageJson(packageName).version;
-  const changeLevel = determineChangeLevel(messages.join(""));
+  const changeLevel = determineChangeLevel(messages.join(''));
   const nextVersion = semver.inc(version, changeLevel);
   const tagId = pickTagId(nextVersion);
   const tag = tagId === nextVersion ? null : TAG_NEXT;

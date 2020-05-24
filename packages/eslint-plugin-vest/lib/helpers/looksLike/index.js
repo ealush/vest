@@ -1,5 +1,5 @@
 function isPrimitive(val) {
-  return val === null || ["string", "boolean", "number"].includes(typeof val);
+  return val === null || ['string', 'boolean', 'number'].includes(typeof val);
 }
 
 module.exports = function looksLike(a, b) {
@@ -13,9 +13,9 @@ module.exports = function looksLike(a, b) {
         return true;
       }
 
-      if (typeof bVal === "function") {
+      if (typeof bVal === 'function') {
         return (
-          typeof aVal === "function" && bVal.toString() === aVal.toString()
+          typeof aVal === 'function' && bVal.toString() === aVal.toString()
         );
       }
       return isPrimitive(bVal) ? bVal === aVal : looksLike(aVal, bVal);

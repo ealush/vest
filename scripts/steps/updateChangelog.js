@@ -1,6 +1,6 @@
-const fs = require("fs");
-const { format } = require("date-fns");
-const { logger } = require("../../util");
+const fs = require('fs');
+const { format } = require('date-fns');
+const { logger } = require('../../util');
 const {
   KEYWORD_MAJOR,
   KEYWORD_MINOR,
@@ -8,19 +8,19 @@ const {
   CHANGELOG_TITLES,
   KEYWORD_DOCS,
   KEYWORD_CONF,
-} = require("../constants");
-const determineLevel = require("../util/determineChangeLevel");
+} = require('../constants');
+const determineLevel = require('../util/determineChangeLevel');
 
 const IGNORE_KEYWORDS = [KEYWORD_DOCS, KEYWORD_CONF];
 const IGNORE_PATTERN = new RegExp(
-  `${IGNORE_KEYWORDS.join("|")}:|dependabot`,
-  "i"
+  `${IGNORE_KEYWORDS.join('|')}:|dependabot`,
+  'i'
 );
 
 function changelogTitle(packageName, version) {
   return `## ${packageName}: [${version}] - ${format(
     new Date(),
-    "yyyy-MM-dd"
+    'yyyy-MM-dd'
   )}\n`;
 }
 
@@ -48,7 +48,7 @@ function groupMessages(messages) {
 }
 
 function updateChangelog({ packageName, messages, nextVersion }) {
-  logger.info("📝 Updating changelog.");
+  logger.info('📝 Updating changelog.');
 
   const groupedMessages = groupMessages(messages);
   const title = changelogTitle(packageName, nextVersion);
@@ -59,14 +59,14 @@ function updateChangelog({ packageName, messages, nextVersion }) {
     groupedMessages[KEYWORD_PATCH],
   ]
     .filter(Boolean)
-    .join("\n");
+    .join('\n');
 
-  const versionLog = [title, body].join("\n");
+  const versionLog = [title, body].join('\n');
 
-  const changelog = fs.readFileSync("./CHANGELOG.md", "utf8").split("\n");
+  const changelog = fs.readFileSync('./CHANGELOG.md', 'utf8').split('\n');
   changelog.splice(6, 0, versionLog);
 
-  fs.writeFileSync("./CHANGELOG.md", changelog.join("\n"));
+  fs.writeFileSync('./CHANGELOG.md', changelog.join('\n'));
 
   return { title, body };
 }

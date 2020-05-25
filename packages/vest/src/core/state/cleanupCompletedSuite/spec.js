@@ -4,15 +4,13 @@ import {
   OPERATION_MODE_STATEFUL,
   OPERATION_MODE_STATELESS,
 } from '../../../constants';
-import runWithContext from '../../../lib/runWithContext';
-import singleton from '../../../lib/singleton';
 import { SYMBOL_SUITES } from '../symbols';
 import cleanupCompletedSuite from '.';
 
 const suiteName = 'suite_1';
 const suiteId = 'suiteId_1';
 const suiteId_2 = 'suiteId_2';
-let context, defaultContext;
+let defaultContext;
 describe('cleanupCompletedSuite', () => {
   beforeEach(() => {
     defaultContext = {
@@ -25,16 +23,6 @@ describe('cleanupCompletedSuite', () => {
   describe('When suite does not exist', () => {
     it('Should throw an error', () => {
       expect(() => cleanupCompletedSuite(suiteId)).toThrow();
-    });
-  });
-
-  it('Should clear the context after running', () => {
-    runRegisterSuite(defaultContext);
-    context = singleton.useContext();
-    runWithContext(context, () => {
-      expect(singleton.useContext()).toBe(context);
-      cleanupCompletedSuite(suiteId);
-      expect(singleton.useContext()).toBeNull();
     });
   });
 

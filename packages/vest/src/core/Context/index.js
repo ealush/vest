@@ -5,36 +5,78 @@ import singleton from '../../lib/singleton';
  * @param {Object} parent   Parent context.
  * @returns {Context} either an existing or a new context object.
  */
-function Context(parent) {
-  if (singleton.use().ctx) {
-    return Object.assign(singleton.use().ctx, parent);
+
+class Context {
+  /**
+   * Clears stored instance from constructor function.
+   */
+  static clear() {
+    const ctx = singleton.useContext();
+
+    if (ctx?.parentContext) {
+      singleton.use().ctx = ctx.parentContext;
+      ctx.parentContext.removeChildContext();
+    } else {
+      singleton.use().ctx = null;
+    }
   }
 
-  singleton.use().ctx = this;
-  Object.assign(this, parent);
-  return this;
+  constructor(ctxRef) {
+    const ctx = singleton.useContext();
+    Object.assign(this, ctxRef);
+
+    if (ctx) {
+      ctx.setChildContext(this);
+    }
+
+    singleton.use().ctx = this;
+  }
+
+  get suiteId() {
+    return this.lookup('suite_id');
+  }
+
+  set suiteId(suiteId) {
+    this.suite_id = suiteId;
+  }
+
+  lookup(key) {
+    let ctx = this;
+    do {
+      if (ctx[key]) {
+        return ctx[key];
+      }
+      ctx = ctx.parentContext;
+    } while (ctx || ctx?.parentContext);
+  }
+
+  setParentContext(parentContext) {
+    this.parentContext = parentContext;
+  }
+
+  setChildContext(childContext) {
+    childContext.parentContext = this;
+    this.childContext = childContext;
+  }
+
+  removeChildContext() {
+    this.childContext = null;
+  }
+
+  /**
+   * Sets a testObject reference on context.
+   * @param {VestTest} A VestTest instance.
+   */
+  setCurrentTest(testObject) {
+    this.currentTest = testObject;
+  }
+
+  /**
+   * Removes current test from context.
+   */
+  removeCurrentTest() {
+    delete this.currentTest;
+  }
 }
-
-/**
- * Sets a testObject reference on context.
- * @param {VestTest} A VestTest instance.
- */
-Context.prototype.setCurrentTest = function (testObject) {
-  this.currentTest = testObject;
-};
-
-/**
- * Removes current test from context.
- */
-Context.prototype.removeCurrentTest = function () {
-  delete this.currentTest;
-};
-
-/**
- * Clears stored instance from constructor function.
- */
-Context.clear = function () {
-  singleton.use().ctx = null;
-};
 
 export default Context;

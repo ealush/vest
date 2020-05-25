@@ -1,13 +1,12 @@
 import { OPERATION_MODE_STATEFUL } from '../../constants';
 import runWithContext from '../../lib/runWithContext';
 import singleton from '../../lib/singleton';
-import throwError from '../../lib/throwError';
+import validateSuiteParams from '../../lib/validateSuiteParams';
 import produce from '../produce';
 import getSuiteState from '../state/getSuiteState';
 import registerSuite from '../state/registerSuite';
 import { mergeSkipped } from '../test/lib/skipped';
 import runAsyncTest from '../test/runAsyncTest';
-import { SUITE_INIT_ERROR } from './constants';
 
 /**
  * Initializes a validation suite, creates a validation context.
@@ -16,19 +15,7 @@ import { SUITE_INIT_ERROR } from './constants';
  * @returns {Function} validator function.
  */
 const createSuite = (name, tests) => {
-  if (typeof name !== 'string') {
-    return throwError(
-      SUITE_INIT_ERROR + ' Expected name to be a string.',
-      TypeError
-    );
-  }
-
-  if (typeof tests !== 'function') {
-    return throwError(
-      SUITE_INIT_ERROR + ' Expected tests to be a function.',
-      TypeError
-    );
-  }
+  validateSuiteParams('vest.create', name, tests);
 
   // returns validator function
   return (...args) => {

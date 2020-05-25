@@ -5,38 +5,28 @@ import createSuite from '.';
 
 describe('Test createSuite module', () => {
   describe('Test arguments', () => {
-    let mockThrowError, createSuite;
+    let mockValidateSuiteParams, createSuite, name, tests;
 
     beforeEach(() => {
-      mockThrowError = mock('throwError', msg => new Error(msg));
+      mockValidateSuiteParams = mock('validateSuiteParams');
       createSuite = require('.');
+      name = faker.random.word();
+      tests = jest.fn();
     });
 
     afterEach(() => {
       jest.resetAllMocks();
     });
 
-    it.each([[1, {}, noop]])(
-      'Should throw a typerror error for a non string name.',
-      value => {
-        createSuite(value, noop);
-        expect(mockThrowError).toHaveBeenCalledWith(
-          'Suite initialization error. Expected name to be a string.',
-          TypeError
-        );
-      }
-    );
-
-    it.each([[1, {}, 'noop']])(
-      'Should throw a typerror error for a non function tests callback.',
-      value => {
-        createSuite(faker.random.word(), value);
-        expect(mockThrowError).toHaveBeenCalledWith(
-          'Suite initialization error. Expected tests to be a function.',
-          TypeError
-        );
-      }
-    );
+    it('Should call `validateSuiteParams` with passed arguments and current function name', () => {
+      expect(mockValidateSuiteParams).not.toHaveBeenCalled();
+      createSuite(name, tests);
+      expect(mockValidateSuiteParams).toHaveBeenCalledWith(
+        'vest.create',
+        name,
+        tests
+      );
+    });
   });
 
   describe('Return value', () => {

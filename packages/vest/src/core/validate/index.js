@@ -1,6 +1,7 @@
 import { OPERATION_MODE_STATELESS } from '../../constants/index';
 import id from '../../lib/id';
 import runWithContext from '../../lib/runWithContext';
+import validateSuiteParams from '../../lib/validateSuiteParams/index';
 import createSuite from '../createSuite';
 import cleanupCompletedSuite from '../state/cleanupCompletedSuite';
 
@@ -10,6 +11,7 @@ import cleanupCompletedSuite from '../state/cleanupCompletedSuite';
  * @param {Function} tests
  */
 const validate = (suiteName, tests) => {
+  validateSuiteParams('validate', suiteName, tests);
   const suiteId = id();
   const res = runWithContext(
     {

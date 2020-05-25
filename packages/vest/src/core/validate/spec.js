@@ -29,6 +29,27 @@ describe('module:validate', () => {
     jest.resetAllMocks();
   });
 
+  describe('Test arguments', () => {
+    let mockValidateSuiteParams, name, tests;
+
+    beforeEach(() => {
+      mockValidateSuiteParams = mock('validateSuiteParams');
+      validate = require('.');
+      name = faker.random.word();
+      tests = jest.fn();
+    });
+
+    it('Should call `validateSuiteParams` with passed arguments and current function name', () => {
+      expect(mockValidateSuiteParams).not.toHaveBeenCalled();
+      validate(name, tests);
+      expect(mockValidateSuiteParams).toHaveBeenCalledWith(
+        'validate',
+        name,
+        tests
+      );
+    });
+  });
+
   it('Should set correct context for test run', () => {
     returnedFn = jest.fn(() => {
       expect(singleton.useContext()).toEqual({

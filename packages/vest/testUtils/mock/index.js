@@ -8,6 +8,7 @@ const PATHS = {
   id: 'lib/id',
   cleanupCompletedSuite: 'core/state/cleanupCompletedSuite',
   patch: 'core/state/patch',
+  validateSuiteParams: 'lib/validateSuiteParams',
 };
 
 const mock = (moduleName, mockImplementation) => {

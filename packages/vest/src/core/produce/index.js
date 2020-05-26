@@ -1,50 +1,16 @@
 import copy from '../../lib/copy';
 import hasRemainingTests from '../state/hasRemainingTests';
 import patch from '../state/patch';
-
-/**
- * @param {string} suiteId
- * @param {'warn'|'error'} group
- * @returns all messages for given criteria.
- */
-const collectFailureMessages = (state, group) => {
-  const collector = {};
-
-  for (const fieldName in state.tests) {
-    if (state.tests?.[fieldName] && state.tests?.[fieldName][group]) {
-      collector[fieldName] = state.tests[fieldName][group];
-    }
-  }
-
-  return collector;
-};
-
-/**
- * @param {string} suiteId
- * @param {'errorCount'|'warnCount'} key lookup key
- * @param {string} [fieldName]
- * @returns {Boolean} whether a suite or field have errors or warnings.
- */
-const has = (state, key, fieldName) => {
-  if (!fieldName) {
-    return Boolean(state?.[key]);
-  }
-  return Boolean(state?.tests?.[fieldName]?.[key]);
-};
-
-/**
- * @param {string} suiteId
- * @param {'errors'|'warnings'} key lookup key
- * @param {string} [fieldName]
- * @returns suite or field's errors or warnings.
- */
-const get = (state, key, fieldName) => {
-  if (!fieldName) {
-    return collectFailureMessages(state, key);
-  }
-
-  return state.tests?.[fieldName]?.[key] ?? [];
-};
+import {
+  SEVERITY_COUNT_ERROR,
+  SEVERITY_COUNT_WARN,
+  SEVERITY_GROUP_ERROR,
+  SEVERITY_GROUP_WARN,
+} from '../test/lib/VestTest/constants';
+import get from './get';
+import getByGroup from './getByGroup';
+import has from './has';
+import hasByGroup from './hasByGroup';
 
 /**
  * Registers done callbacks.
@@ -94,7 +60,8 @@ const done = (state, ...args) => {
 /**
  * @returns {Object} with only public properties.
  */
-const extract = ({ errorCount, warnCount, tests, name }) => ({
+const extract = ({ groups, errorCount, warnCount, tests, name }) => ({
+  groups,
   errorCount,
   warnCount,
   tests,
@@ -114,10 +81,26 @@ const produce = (state, { draft } = {}) =>
     Object.defineProperties(
       transformedState,
       [
-        ['hasErrors', has.bind(null, state, 'errorCount')],
-        ['hasWarnings', has.bind(null, state, 'warnCount')],
-        ['getErrors', get.bind(null, state, 'errors')],
-        ['getWarnings', get.bind(null, state, 'warnings')],
+        ['hasErrors', has.bind(null, state, SEVERITY_COUNT_ERROR)],
+        ['hasWarnings', has.bind(null, state, SEVERITY_COUNT_WARN)],
+        ['getErrors', get.bind(null, state, SEVERITY_GROUP_ERROR)],
+        ['getWarnings', get.bind(null, state, SEVERITY_GROUP_WARN)],
+        [
+          'hasErrorsByGroup',
+          hasByGroup.bind(null, state, SEVERITY_COUNT_ERROR),
+        ],
+        [
+          'hasWarningsByGroup',
+          hasByGroup.bind(null, state, SEVERITY_COUNT_WARN),
+        ],
+        [
+          'getErrorsByGroup',
+          getByGroup.bind(null, state, SEVERITY_GROUP_ERROR),
+        ],
+        [
+          'getWarningsByGroup',
+          getByGroup.bind(null, state, SEVERITY_GROUP_WARN),
+        ],
       ]
         .concat(draft ? [] : [['done', done.bind(null, state)]])
         .reduce(

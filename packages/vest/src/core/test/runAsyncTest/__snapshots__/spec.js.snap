@@ -8,12 +8,14 @@ Object {
   "fieldCallbacks": Object {
     "field_1": Array [],
   },
+  "groups": Object {},
   "lagging": Array [],
   "name": "suite_name_1",
   "pending": Array [
     VestTest {
       "failed": false,
       "fieldName": "field_1",
+      "group": undefined,
       "id": "11",
       "isWarning": false,
       "statement": "some statement string",
@@ -21,7 +23,8 @@ Object {
       "testFn": Promise {},
     },
   ],
-  "skipped": Object {},
+  "skippedGroups": Object {},
+  "skippedTests": Object {},
   "suiteId": "suiteId_1",
   "tests": Object {},
   "warnCount": 0,
@@ -36,12 +39,14 @@ Object {
   "fieldCallbacks": Object {
     "field_1": Array [],
   },
+  "groups": Object {},
   "lagging": Array [],
   "name": "suite_name_1",
   "pending": Array [
     VestTest {
       "failed": false,
       "fieldName": "field_1",
+      "group": undefined,
       "id": "0",
       "isWarning": false,
       "statement": "some statement string",
@@ -49,7 +54,8 @@ Object {
       "testFn": Promise {},
     },
   ],
-  "skipped": Object {},
+  "skippedGroups": Object {},
+  "skippedTests": Object {},
   "suiteId": "suiteId_1",
   "tests": Object {},
   "warnCount": 0,

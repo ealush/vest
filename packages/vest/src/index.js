@@ -6,7 +6,7 @@ import state from './core/state';
 import reset from './core/state/reset';
 import test from './core/test';
 import validate from './core/validate';
-import { draft, only, skip, warn } from './hooks';
+import * as hooks from './hooks';
 import runWithContext from './lib/runWithContext';
 import singleton from './lib/singleton';
 
@@ -16,15 +16,12 @@ export default singleton.register(
     create: createSuite,
     VERSION,
     any,
-    draft,
     enforce,
-    only,
     runWithContext,
-    skip,
     test,
     validate,
-    warn,
     reset,
+    ...hooks,
   },
   state.register
 );

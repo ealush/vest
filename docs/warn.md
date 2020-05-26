@@ -5,7 +5,7 @@ By default, a failing test has a severity of `error`. Sometimes you may need to 
 To set a test's severity level to `warn`, you need to simply call Vest's warn function from your test body.
 
 ```js
-import vest, { test, enfroce } from 'vest';
+import vest, { test, enforce } from 'vest';
 
 const validate = vest.create('Password', data => {
   test('password', 'A password must have at least 6 characters', () => {

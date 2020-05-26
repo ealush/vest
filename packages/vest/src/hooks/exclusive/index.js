@@ -59,17 +59,32 @@ export const isExcluded = fieldName => {
 
   const state = getSuiteState(ctx.suiteId);
 
-  if (state.exclusive?.[GROUP_NAME_SKIP]?.[fieldName]) {
-    return true;
+  const group = ctx.groupName;
+
+  // If we're inside a group but what we're checking
+  // is a different field.
+  if (group && fieldName !== group) {
+    // If the group is `only`ed
+    if (state.exclusive?.[GROUP_NAME_ONLY]?.[group]) {
+      return !!state.exclusive?.[GROUP_NAME_SKIP]?.[fieldName]; // excluded if current field is skipped
+    }
   }
 
+  // If field is skipped
+  if (state.exclusive?.[GROUP_NAME_SKIP]?.[fieldName]) {
+    return true; // excluded
+  }
+
+  // If there is _ANY_ `only`ed group
   if (state.exclusive?.[GROUP_NAME_ONLY]) {
+    // If the current field is `only`ed
     if (state.exclusive[GROUP_NAME_ONLY]?.[fieldName]) {
-      return false;
+      return false; // Not excluded
     }
 
-    return true;
+    // There's an `only`ed field, but it's not this one
+    return true; // excluded
   }
 
-  return false;
+  return false; // Not excluded
 };

@@ -103,6 +103,33 @@ describe('Context', () => {
     });
   });
 
+  describe('getter: groupName', () => {
+    let groupName;
+
+    beforeEach(() => {
+      Context.clear();
+      groupName = faker.random.uuid();
+    });
+
+    describe('When groupName is present on current context', () => {
+      it('Should return groupName', () => {
+        expect(singleton.useContext()?.groupName).toBeUndefined();
+        new Context({ groupName });
+        expect(singleton.useContext().groupName).toBe(groupName);
+      });
+    });
+
+    describe('When group name is higher in the parent tree', () => {
+      it('Should get closest groupName', () => {
+        new Context({ groupName: 'not_closest' });
+        new Context({ groupName });
+        new Context({});
+        new Context({});
+        expect(singleton.useContext().groupName).toBe(groupName);
+      });
+    });
+  });
+
   describe('setChildContext', () => {
     let context;
     beforeEach(() => {

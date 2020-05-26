@@ -1,6 +1,6 @@
 # Server side and stateless validations
 
-By default Vest validations are stateful in order to reduce boilerplate code on the consumer side. This is usually fine, but in some cases, usually when performing server side validations, we would like our validations to be statelss - so that validation results do not leak between validation runs.
+By default Vest validations are stateful in order to reduce boilerplate code on the consumer side. This is usually fine, but in some cases, usually when performing server side validations, we would like our validations to be stateless - so that validation results do not leak between validation runs.
 
 Writing stateless validations is just like writing stateful validations, only that instead of declaring your suite using `vest.create`, you directly import your validate function from Vest:
 

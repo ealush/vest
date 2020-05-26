@@ -1,6 +1,6 @@
 # Vest's result object
 
-Vest validations reuturn a results object that holds all the information regarding the current run, and methods to easily interact with the data.
+Vest validations return a results object that holds all the information regarding the current run, and methods to easily interact with the data.
 
 A result object would look somewhat like this:
 
@@ -44,6 +44,32 @@ resultObject.hasWarnings();
 // true
 ```
 
+## `hasErrorsByGroup` and `hasWarningsByGroup` functions
+
+Similar to `hasErrors` and `hasWarnings`, but returns the result for a specified [group](./group)
+
+To get the result for a given field in the group:
+
+```js
+resultObject.hasErrorsByGroup('groupName', 'fieldName');
+// true
+
+resultObject.hasWarningsByGroup('groupName', 'fieldName');
+// false
+```
+
+And to get the result for a whole group.
+
+```js
+resultObject.hasErrorsByGroup('groupName');
+// true
+
+resultObject.hasWarningsByGroup('groupName');
+// true
+```
+
+[Read more about groups](./group)
+
 ## `getErrors` and `getWarnings` functions
 
 These functions return an array of errors for the specified field. If no field specified, it returns an object with all fields as keys and their error arrays as values.
@@ -66,28 +92,52 @@ resultObject.getWarnings('username');
 // []
 ```
 
+You can also call these functions without a field name, which will return you an array per field:
+
+```js
+resultObject.getErrors();
+
+// {
+//   username: ['Username is too short', `Username already exists`],
+//   password: ['Password must contain special characters']
+// }
+```
+
 **Note** If you did not specify error messages for your tests, your errors array will be empty as well. In such case you should always rely on `.hasErrors()` instead.
+
+## `getErrorsByGroup` and `getWarningsByGroup` functions
+
+Just like get `getErrors` and `getWarnings`, but narrows the result to a specified [group](./group).
+
+```js
+resultObject.getErrorsByGroup('groupName', 'fieldName');
+resultObject.getWarningsByGroup('groupName', 'fieldName');
+resultObject.getErrorsByGroup('groupName'');
+resultObject.getWarningsByGroup('groupName'');
+```
+
+[Read more about groups](./group).
 
 ## `.done()`
 
 Done is a function that can be chained to your validation suite, and allows invoking callbacks whenever a specific, or all, tests finish their validation - regardless of the validation result.
 
-If we specify a fieldname in our `done` call, vest will not wait for the whole suite to finish before running our callback. It will invoke immediately when all tests with that given name finished running.
+If we specify a field name in our `done` call, vest will not wait for the whole suite to finish before running our callback. It will invoke immediately when all tests with that given name finished running.
 
 `.done()` calls can be infinitely chained after one another, and as the validation suite completes - they will all run immediately.
 
 `done` takes one or two arguments:
 
-| Name        | Type       | Optional | Description                                                                                                                 |
-| ----------- | ---------- | -------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `fieldName` | `String`   | Yes      | If passed, current done call will not wait for the whole suite to complete, but instead wait for a certain field to finish. |
-| `callback`  | `Function` | No       | A callback to be run when either the whole suite or the specified field finished running.                                   |
+| Name        | Type       | Optional | Description                                                                                                                     |
+| ----------- | ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `fieldName` | `String`   | Yes      | If passed, the current done call will not wait for the whole suite to complete, but instead wait for a certain field to finish. |
+| `callback`  | `Function` | No       | A callback to be run when either the whole suite or the specified field finished running.                                       |
 
 The result object is being passed down to the `done` object as an argument.
 
 **Example**
 
-In the below example, the `done` callback for `UserName` may run before the whole suite finishes. Only when the rest of the suite finishes, it will call the other two done callbacks that do not have a fieldname specified.
+In the below example, the `done` callback for `UserName` may run before the whole suite finishes. Only when the rest of the suite finishes, it will call the other two done callbacks that do not have a field name specified.
 
 ```js
 import vest, { test, enforce } from 'vest';

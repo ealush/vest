@@ -16,12 +16,12 @@ describe('module: pending', () => {
     describe('When testObject it not pending or lagging', () => {
       beforeEach(() => {
         state = _.cloneDeep(getSuiteState(suiteId));
-        testObject = new VestTest(
+        testObject = new VestTest({
           suiteId,
-          'field_1',
-          'failure_message',
-          jest.fn()
-        );
+          fieldName: 'field_1',
+          statement: 'failure_message',
+          testFn: jest.fn(),
+        });
       });
       it('Should keep state unchanged', () => {
         removePending(testObject);
@@ -70,7 +70,12 @@ describe('module: pending', () => {
       testObjects = Array.from(
         { length: 5 },
         (v, i) =>
-          new VestTest(suiteId, `test_${i}`, 'Some statement string', jest.fn())
+          new VestTest({
+            suiteId,
+            fieldName: `test_${i}`,
+            statement: 'Some statement string',
+            testFn: jest.fn(),
+          })
       );
     });
 

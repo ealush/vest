@@ -2,11 +2,11 @@
 
 In some cases, you want to conditionally run tests based on the results of other tests. For example, preventing validating a field over the server when you already know the field is invalid.
 
-For this you can use `vest.draft()`. The `traft` function returns the intermediate [result object](./result) of the currently running suite.
+For this you can use `vest.draft()`. The `draft` function returns the intermediate [result object](./result) of the currently running suite.
 
 **Limitations when using vest.draft()**
 
-- It is only possible to access intermediate test results for sync tests, and it is recommended to put all the async tests at the bottom of your suite so they have access to the result of all the syenc tests.
+- It is only possible to access intermediate test results for sync tests, and it is recommended to put all the async tests at the bottom of your suite so they have access to the result of all the sync tests.
 - You may not call draft from outside a running suite. Doing that will result in a thrown error.
 - Each `draft()` call returns a copy of your suite result, and its result gets outdated between test calls. Do not try to save `draft` result in a variable for later use, instead, call `draft` whenever you need to use it.
 

@@ -6,10 +6,12 @@ Object {
   "errorCount": 1,
   "exclusive": Object {},
   "fieldCallbacks": Object {},
+  "groups": Object {},
   "lagging": Array [],
   "name": "suite_1",
   "pending": Array [],
-  "skipped": Object {
+  "skippedGroups": Object {},
+  "skippedTests": Object {
     "field_2": true,
   },
   "suiteId": "suiteId_1",
@@ -33,10 +35,12 @@ Object {
   "errorCount": 0,
   "exclusive": Object {},
   "fieldCallbacks": Object {},
+  "groups": Object {},
   "lagging": Array [],
   "name": "suite_1",
   "pending": Array [],
-  "skipped": Object {
+  "skippedGroups": Object {},
+  "skippedTests": Object {
     "field_1": true,
   },
   "suiteId": "suiteId_1",
@@ -54,16 +58,38 @@ Object {
 }
 `;
 
-exports[`module: skipped export: setSkipped When field is not yet skipped Should marked field as skipped 1`] = `
+exports[`module: skipped export: setSkippedGroup When group is not yet skipped Should marke group as skipped 1`] = `
 Object {
   "doneCallbacks": Array [],
   "errorCount": 0,
   "exclusive": Object {},
   "fieldCallbacks": Object {},
+  "groups": Object {},
   "lagging": Array [],
   "name": "suite_1",
   "pending": Array [],
-  "skipped": Object {
+  "skippedGroups": Object {
+    "group_1": true,
+  },
+  "skippedTests": Object {},
+  "suiteId": "suiteId_1",
+  "tests": Object {},
+  "warnCount": 0,
+}
+`;
+
+exports[`module: skipped export: setSkippedTest When field is not yet skipped Should marke field as skipped 1`] = `
+Object {
+  "doneCallbacks": Array [],
+  "errorCount": 0,
+  "exclusive": Object {},
+  "fieldCallbacks": Object {},
+  "groups": Object {},
+  "lagging": Array [],
+  "name": "suite_1",
+  "pending": Array [],
+  "skippedGroups": Object {},
+  "skippedTests": Object {
     "field_1": true,
   },
   "suiteId": "suiteId_1",

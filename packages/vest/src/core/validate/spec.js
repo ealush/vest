@@ -54,7 +54,7 @@ describe('module:validate', () => {
     returnedFn = jest.fn(() => {
       expect(singleton.useContext()).toEqual({
         name: suiteName,
-        suiteId,
+        suite_id: suiteId,
         operationMode: OPERATION_MODE_STATELESS,
       });
     });

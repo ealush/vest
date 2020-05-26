@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Context Nested context Should match snapshot 1`] = `
+Context {
+  "parentContext": Context {
+    "childContext": [Circular],
+    "parentContext": Context {
+      "childContext": [Circular],
+      "parentContext": Context {
+        "childContext": [Circular],
+        "suite_id": 10,
+      },
+      "prop1": "parent_1_prop_1_value",
+      "prop2": "parent_1_prop_2_value",
+    },
+    "prop1": "parent_2_prop_1_value",
+    "prop3": "parent_2_prop_3_value",
+  },
+  "prop1": "parent_2_prop_1_value",
+  "prop3": "parent_2_prop_3_value",
+}
+`;

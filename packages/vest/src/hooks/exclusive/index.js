@@ -16,7 +16,6 @@ const addTo = (group, item) => {
   if (!item) {
     return;
   }
-
   if (ctx?.suiteId === undefined) {
     throwError(`${group} ${ERROR_HOOK_CALLED_OUTSIDE}`);
     return;

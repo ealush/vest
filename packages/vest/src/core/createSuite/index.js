@@ -19,14 +19,18 @@ const createSuite = (name, tests) => {
 
   // returns validator function
   return (...args) => {
-    const parentContext = singleton.useContext() ?? {
+    const shouldCreateId = !singleton.useContext()?.suiteId;
+
+    const ctxRef = singleton.useContext() ?? {
       name,
       tests,
-      suiteId: name,
       operationMode: OPERATION_MODE_STATEFUL,
+      ...(shouldCreateId && {
+        suiteId: name,
+      }),
     };
 
-    const output = runWithContext(parentContext, context => {
+    const output = runWithContext(ctxRef, context => {
       registerSuite();
       const { suiteId } = context;
       tests.apply(null, args);

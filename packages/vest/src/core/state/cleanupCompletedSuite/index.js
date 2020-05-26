@@ -11,7 +11,6 @@ const cleanupCompletedSuite = suiteId => {
   if (hasRemainingTests(state)) {
     return;
   }
-
   reset(suiteId);
 };
 

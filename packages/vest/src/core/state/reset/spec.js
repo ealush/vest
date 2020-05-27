@@ -2,6 +2,7 @@ import { getState, getSuites } from '..';
 import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import runSpec from '../../../../testUtils/runSpec';
+import testDummy from '../../../../testUtils/testDummy';
 import vest from '../../../index';
 import copy from '../../../lib/copy';
 import getSuiteState from '../getSuiteState';
@@ -23,21 +24,16 @@ const spec = _vest => {
 
   const createSuite = () => {
     const vest = _vest;
-    const { test } = vest;
     return vest.create(suiteId, skip => {
       vest.skip(skip);
 
-      test('field_1', () =>
-        new Promise((res, reject) => setTimeout(reject, 250)));
+      testDummy(vest).failingAsync('field_1', { time: 250 });
 
-      test('field_2', () =>
-        new Promise((res, reject) => setTimeout(reject, 250)));
+      testDummy(vest).failingAsync('field_2', { time: 250 });
 
-      test('field_3', () =>
-        new Promise((res, reject) => setTimeout(reject, 250)));
+      testDummy(vest).failingAsync('field_3', { time: 250 });
 
-      test('field_4', () =>
-        new Promise((res, reject) => setTimeout(reject, 250)));
+      testDummy(vest).failingAsync('field_4', { time: 250 });
     });
   };
 

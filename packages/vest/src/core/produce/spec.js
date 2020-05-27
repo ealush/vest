@@ -4,6 +4,7 @@ import resetState from '../../../testUtils/resetState';
 import runRegisterSuite from '../../../testUtils/runRegisterSuite';
 import runSpec from '../../../testUtils/runSpec';
 import suiteIdByName from '../../../testUtils/suiteIdByName';
+import testDummy from '../../../testUtils/testDummy';
 import getSuiteState from '../state/getSuiteState';
 import hasRemainingTests from '../state/hasRemainingTests';
 import patch from '../state/patch';
@@ -36,26 +37,21 @@ let suiteId, state, produced;
 const KEPT_PROPERTIES = ['errorCount', 'warnCount', 'tests', 'name'];
 
 runSpec(vest => {
-  const { test, create } = vest;
+  const { create } = vest;
 
   const runCreateSuite = suiteName =>
     create(suiteName, () => {
       suiteId = suiteIdByName(suiteName);
 
       vest.skip(SKIPPED_FIELD);
-      test('field_1', 'statement_string_1', () => false);
-      test(SKIPPED_FIELD, 'statement_string_2', () => {});
-      test('field_3', 'statement_string_3', () => {
-        vest.warn();
-        return false;
-      });
+      testDummy(vest).failing('field_1');
+      testDummy(vest).passing(SKIPPED_FIELD);
+      testDummy(vest).failingWarning('field_3');
 
-      test('field_4', 'statement_string_4', () => {
-        vest.warn();
-      });
+      testDummy(vest).passingWarning('field_4');
 
-      test('field_5', 'statement_string_5', () => false);
-      test('field_5', 'statement_string_6', () => false);
+      testDummy(vest).failing('field_5');
+      testDummy(vest).failing('field_5');
     })();
 
   describe('module: produce', () => {
@@ -323,8 +319,8 @@ runSpec(vest => {
           const runCreateSuite = () =>
             create(suiteName, () => {
               suiteId = suiteIdByName(suiteName);
-              test('field_1', 'statement_string_1', () => Promise.reject());
-              test('sync_field_2', 'statement_string_2', () => {});
+              testDummy().failingAsync('field_1');
+              testDummy().passing('sync_field_2');
             })();
 
           describe('When field is async', () => {

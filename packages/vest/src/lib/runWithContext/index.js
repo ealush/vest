@@ -9,9 +9,16 @@ import Context from '../../core/Context';
 const runWithContext = (ctxRef, fn) => {
   const context = new Context(ctxRef);
 
-  const res = fn(context);
+  let res;
+
+  try {
+    res = fn(context);
+  } catch {
+    /*  */
+  }
 
   Context.clear();
+
   return res;
 };
 

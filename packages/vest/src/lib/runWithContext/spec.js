@@ -36,6 +36,7 @@ describe('runWithContext', () => {
     runWithContext(parent, fn);
     expect(fn).toHaveBeenCalledTimes(1);
   });
+
   it('Should clear context after running callback', () => {
     const fn = jest.fn(context => {
       expect(singleton.useContext()).toMatchObject(context);
@@ -60,6 +61,38 @@ describe('runWithContext', () => {
     });
     it('Should create a new context with the parent object', () => {
       expect(mockContext).toHaveBeenCalledWith(parent);
+    });
+  });
+
+  describe('When an error is thrown inside the callback', () => {
+    let cb;
+
+    beforeEach(() => {
+      cb = jest.fn(() => {
+        throw new Error();
+      });
+    });
+
+    test('sanity', () => {
+      expect(() => cb()).toThrow();
+    });
+
+    it('Should catch error', () => {
+      expect(() => {
+        runWithContext({}, cb);
+      }).not.toThrow();
+
+      expect(cb).toHaveBeenCalled();
+    });
+
+    it('Should clear the context', () => {
+      const context = { [faker.random.word()]: faker.random.word() };
+
+      runWithContext(context, () => {
+        expect(singleton.useContext()).toMatchObject(context);
+        throw new Error();
+      });
+      expect(singleton.useContext()).toBeNull();
     });
   });
 });

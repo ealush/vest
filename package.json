@@ -3,7 +3,7 @@
   "dependencies": {
     "@ampproject/rollup-plugin-closure-compiler": "^0.25.2",
     "@babel/cli": "^7.10.0",
-    "@babel/core": "^7.10.0",
+    "@babel/core": "^7.10.1",
     "@babel/plugin-proposal-optional-chaining": "^7.10.1",
     "@babel/plugin-proposal-pipeline-operator": "^7.8.3",
     "@babel/plugin-transform-object-assign": "^7.8.3",

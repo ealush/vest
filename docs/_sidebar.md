@@ -3,6 +3,7 @@
 - [The test Function](./test)
   - [How to fail a test](./test#failing_a_test)
   - [Warn only tests](./warn)
+  - [Grouping tests](./group)
 - [Assertions with enforce](./enforce)
 - [Understanding Vest's state](./state)
 - Advanced cases

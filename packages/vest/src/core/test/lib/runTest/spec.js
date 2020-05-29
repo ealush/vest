@@ -15,12 +15,12 @@ describe('runTest', () => {
       setCurrentTest: jest.fn(),
       removeCurrentTest: jest.fn(),
     };
-    testObject = new VestTest(
-      'suite_id',
-      faker.random.word(),
-      faker.lorem.sentence(),
-      jest.fn()
-    );
+    testObject = new VestTest({
+      suiteId: 'suite_id',
+      fieldName: faker.random.word(),
+      statement: faker.lorem.sentence(),
+      testFn: jest.fn(),
+    });
   });
 
   describe('When callback is undefined', () => {

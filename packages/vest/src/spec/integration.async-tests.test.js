@@ -76,7 +76,6 @@ runSpec(vest => {
           expect(callback_3).not.toHaveBeenCalled();
           expect(result.hasErrors('field_7')).toBe(true);
           control();
-          expect;
         });
 
         setTimeout(() => {

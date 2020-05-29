@@ -4,6 +4,7 @@ exports[`VestTest TestObject constructor 1`] = `
 VestTest {
   "failed": false,
   "fieldName": "unicycle",
+  "group": undefined,
   "id": "0",
   "isWarning": false,
   "statement": "I am Root.",
@@ -15,6 +16,7 @@ VestTest {
 exports[`VestTest testObject.fail When severity = error Should bump error counters and messages 1`] = `
 Object {
   "errorCount": 1,
+  "groups": Object {},
   "tests": Object {
     "unicycle": Object {
       "errorCount": 1,
@@ -32,6 +34,7 @@ Object {
 exports[`VestTest testObject.fail When severity = warn Should bump error counters and messages 1`] = `
 Object {
   "errorCount": 0,
+  "groups": Object {},
   "tests": Object {
     "unicycle": Object {
       "errorCount": 0,
@@ -50,6 +53,7 @@ exports[`VestTest testObject.warn Should set \`.isWarning\` to true 1`] = `
 VestTest {
   "failed": false,
   "fieldName": "unicycle",
+  "group": undefined,
   "id": "103",
   "isWarning": true,
   "statement": "I am Root.",

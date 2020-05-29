@@ -1,4 +1,4 @@
-## Enforce
+# Enforce
 
 For assertions, Vest is bundled with [Enforce](https://npmjs.com/package/n4s). Enforce is a validation assertion library. It allows you to run your data against rules and conditions and test whether it passes your validations. It is intended for validation logic that gets repeated over and over again and should not be written manually. It comes with a wide variety of pre-built rules, but it can also be extended to support your own repeated custom logic.
 

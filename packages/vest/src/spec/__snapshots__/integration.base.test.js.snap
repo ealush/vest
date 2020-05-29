@@ -5,9 +5,14 @@ Object {
   "done": [Function],
   "errorCount": 2,
   "getErrors": [Function],
+  "getErrorsByGroup": [Function],
   "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
   "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
   "name": "suite_name",
   "tests": Object {
     "field_1": Object {
@@ -45,9 +50,14 @@ Object {
   "done": [Function],
   "errorCount": 2,
   "getErrors": [Function],
+  "getErrorsByGroup": [Function],
   "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
   "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
   "name": "suite_name",
   "tests": Object {
     "field_1": Object {
@@ -85,9 +95,14 @@ Object {
   "done": [Function],
   "errorCount": 2,
   "getErrors": [Function],
+  "getErrorsByGroup": [Function],
   "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
   "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
   "name": "suite_name",
   "tests": Object {
     "field_1": Object {

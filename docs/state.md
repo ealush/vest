@@ -7,7 +7,7 @@ This can be done with Vest's [`only()` hook](./exclusion). That's where the stat
 
 When you have skipped fields in your validation suite, vest will try to see if those skipped fields ran in the previous suite, and merge them into the currently running suite result - so the result object you get will include all the fields that your user interacted with.
 
-Vest state is anchored to the suite name (defined in vest.create's first argument), which means the suite name must be unique.
+Vest state is anchored to the suite name (defined in `vest.create`'s first argument), which means the suite name must be unique.
 
 ## What Vest's state does
 

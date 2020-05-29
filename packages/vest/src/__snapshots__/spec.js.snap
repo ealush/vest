@@ -5,9 +5,14 @@ Object {
   "done": [Function],
   "errorCount": 0,
   "getErrors": [Function],
+  "getErrorsByGroup": [Function],
   "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
   "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
   "name": "molestias-veritatis-deserunt",
   "tests": Object {
     "doloribus-enim-quisquam": Object {
@@ -24,9 +29,14 @@ Object {
   "done": [Function],
   "errorCount": 1,
   "getErrors": [Function],
+  "getErrorsByGroup": [Function],
   "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
   "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
   "name": "eveniet-maxime-ea",
   "tests": Object {
     "non-rem-dolorem": Object {
@@ -50,9 +60,14 @@ Object {
   "done": [Function],
   "errorCount": 0,
   "getErrors": [Function],
+  "getErrorsByGroup": [Function],
   "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
   "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
   "name": "inventore-quis-impedit",
   "tests": Object {
     "doloribus-enim-quisquam": Object {
@@ -69,9 +84,14 @@ Object {
   "done": [Function],
   "errorCount": 0,
   "getErrors": [Function],
+  "getErrorsByGroup": [Function],
   "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
   "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
   "name": "corrupti-alias-autem",
   "tests": Object {
     "autem": Object {
@@ -91,9 +111,14 @@ Object {
   "done": [Function],
   "errorCount": 0,
   "getErrors": [Function],
+  "getErrorsByGroup": [Function],
   "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
   "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
   "name": "corrupti-alias-autem",
   "tests": Object {
     "autem": Object {
@@ -116,6 +141,7 @@ Object {
   "create": [Function],
   "draft": [Function],
   "enforce": [Function],
+  "group": [Function],
   "only": [Function],
   "reset": [Function],
   "runWithContext": [Function],

@@ -6,7 +6,7 @@ When performing validations in real world-scenarios, you may need to only run te
 
 ## Important to know before using exclusion hooks:
 
-When using `vest.only()` or `vest.skip()` you must place them before any of the tests defined in the suite. Hooks run in order of appearence, which means that if you place your `skip` hook after the filed you're skipping - it won't have any effect.
+When using `vest.only()` or `vest.skip()` you must place them before any of the tests defined in the suite. Hooks run in order of appearance, which means that if you place your `skip` hook after the filed you're skipping - it won't have any effect.
 
 ### Only running specific tests
 

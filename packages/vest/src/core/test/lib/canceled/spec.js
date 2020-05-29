@@ -7,7 +7,13 @@ import { setCanceled, removeCanceled } from '.';
 const genTests = () =>
   Array.from(
     { length: 5 },
-    (_, i) => new VestTest('suite_id', `field_${i}`, 'msg', jest.fn())
+    (_, i) =>
+      new VestTest({
+        suite_id: 'suite_id',
+        fieldName: `field_${i}`,
+        statement: 'msg',
+        testFn: jest.fn(),
+      })
   );
 
 let tests;

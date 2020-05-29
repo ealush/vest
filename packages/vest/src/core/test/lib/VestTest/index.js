@@ -1,5 +1,11 @@
 import id from '../../../../lib/id';
 import patch from '../../../state/patch';
+import {
+  SEVERITY_GROUP_WARN,
+  SEVERITY_COUNT_WARN,
+  SEVERITY_GROUP_ERROR,
+  SEVERITY_COUNT_ERROR,
+} from './constants';
 
 /**
  * Describes a test call inside a Vest suite.
@@ -7,10 +13,12 @@ import patch from '../../../state/patch';
  * @param {String} fieldName            Name of the field being tested.
  * @param {String} statement            The message returned when failing.
  * @param {Promise|Function} testFn     The actual test callbrack or promise.
+ * @param {string} [group]              The group in which the test runs.
  */
-function VestTest(suiteId, fieldName, statement, testFn) {
+function VestTest({ suiteId, fieldName, statement, testFn, group }) {
   Object.assign(this, {
     suiteId,
+    group,
     testFn,
     fieldName,
     statement,
@@ -32,34 +40,41 @@ VestTest.prototype.valueOf = function () {
  * @returns {VestTest} Current instance.
  */
 VestTest.prototype.fail = function () {
-  const { fieldName, statement, isWarning } = this;
+  const { fieldName, statement, isWarning, suiteId, group } = this;
 
   let severityGroup, severityCount;
 
   if (isWarning) {
-    severityGroup = 'warnings';
-    severityCount = 'warnCount';
+    severityGroup = SEVERITY_GROUP_WARN;
+    severityCount = SEVERITY_COUNT_WARN;
   } else {
-    severityGroup = 'errors';
-    severityCount = 'errorCount';
+    severityGroup = SEVERITY_GROUP_ERROR;
+    severityCount = SEVERITY_COUNT_ERROR;
   }
 
-  patch(this.suiteId, state => {
-    if (!state.tests[this.fieldName]) {
+  patch(suiteId, state => {
+    if (!state.tests[fieldName]) {
       return state;
     }
 
     const nextState = { ...state };
+    const objectsToBump = [nextState.tests[fieldName]];
 
-    nextState.tests[fieldName][severityGroup] =
-      state.tests[fieldName][severityGroup] || [];
-
-    if (statement) {
-      nextState.tests[fieldName][severityGroup].push(statement);
+    if (group && nextState.groups[group][fieldName] !== undefined) {
+      objectsToBump.push(nextState.groups[group][fieldName]);
     }
 
+    objectsToBump.forEach(obj => {
+      obj[severityGroup] = obj[severityGroup] || [];
+
+      if (statement) {
+        obj[severityGroup].push(statement);
+      }
+
+      obj[severityCount]++;
+    });
+
     nextState[severityCount]++;
-    nextState.tests[fieldName][severityCount]++;
 
     return nextState;
   });

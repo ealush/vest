@@ -1,13 +1,19 @@
 import _ from 'lodash';
+import collector from '../../../testUtils/collector';
 import isDeepCopy from '../../../testUtils/isDeepCopy';
 import resetState from '../../../testUtils/resetState';
 import runRegisterSuite from '../../../testUtils/runRegisterSuite';
 import runSpec from '../../../testUtils/runSpec';
 import suiteIdByName from '../../../testUtils/suiteIdByName';
 import testDummy from '../../../testUtils/testDummy';
+import group from '../../hooks/group';
 import getSuiteState from '../state/getSuiteState';
 import hasRemainingTests from '../state/hasRemainingTests';
 import patch from '../state/patch';
+import {
+  SEVERITY_COUNT_ERROR,
+  SEVERITY_COUNT_WARN,
+} from '../test/lib/VestTest/constants';
 import produce from '.';
 
 const counter = ((n = 0) => () => n++)();
@@ -20,23 +26,24 @@ const GENERATED_METHODS = [
   ...DRAFT_EXCLUDED_METHODS,
 ];
 
-const failingFields = {
-  field_1: true,
-  field_3: true,
-  field_5: true,
-};
-const warningFields = {
-  field_3: true,
-  field_4: true,
-};
+const failingFields = {};
+const warningFields = {};
 
 const SKIPPED_FIELD = 'skipped_field_name';
+const groupName = 'group_name';
 
 let suiteId, state, produced;
 
-const KEPT_PROPERTIES = ['errorCount', 'warnCount', 'tests', 'name'];
+const KEPT_PROPERTIES = [
+  SEVERITY_COUNT_ERROR,
+  SEVERITY_COUNT_WARN,
+  'tests',
+  'name',
+  'groups',
+];
 
 runSpec(vest => {
+  let collect;
   const { create } = vest;
 
   const runCreateSuite = suiteName =>
@@ -44,26 +51,37 @@ runSpec(vest => {
       suiteId = suiteIdByName(suiteName);
 
       vest.skip(SKIPPED_FIELD);
-      testDummy(vest).failing('field_1');
-      testDummy(vest).passing(SKIPPED_FIELD);
-      testDummy(vest).failingWarning('field_3');
+      collect(testDummy(vest).failing('field_1'));
+      collect(testDummy(vest).passing(SKIPPED_FIELD));
+      collect(testDummy(vest).failingWarning('field_3'));
 
-      testDummy(vest).passingWarning('field_4');
+      collect(testDummy(vest).passingWarning('field_4'));
 
-      testDummy(vest).failing('field_5');
-      testDummy(vest).failing('field_5');
+      collect(testDummy(vest).failing('field_5'));
+      collect(testDummy(vest).failing('field_5'));
     })();
 
   describe('module: produce', () => {
     let suiteName, testKeys;
 
     beforeEach(() => {
+      collect = collector();
       suiteName = `suite_${counter()}`;
       resetState();
       runCreateSuite(suiteName);
       state = getSuiteState(suiteId);
       testKeys = Object.keys(state.tests);
       produced = produce(state);
+
+      collect.collection.forEach(({ fieldName, failed, isWarning }) => {
+        if (failed) {
+          failingFields[fieldName] = true;
+        }
+
+        if (isWarning) {
+          warningFields[fieldName] = true;
+        }
+      });
     });
 
     it('Should create a deep copy of subset of the state', () => {
@@ -197,6 +215,208 @@ runSpec(vest => {
       });
     });
 
+    describe('method: hasErrorsByGroup', () => {
+      let validate, res;
+
+      describe('When no group passed', () => {
+        const validation = () =>
+          vest.create('suite_name', () => {
+            group(groupName, () => {
+              testDummy(vest).failing();
+            });
+          });
+
+        beforeEach(() => {
+          resetState();
+          validate = validation();
+          res = validate();
+        });
+
+        it('Should return false', () => {
+          expect(res.hasErrorsByGroup()).toBe(false);
+        });
+
+        it('Should return false when group does not exist', () => {
+          expect(res.hasErrorsByGroup('fake-group')).toBe(false);
+        });
+      });
+      describe('When no errors', () => {
+        const validation = () =>
+          vest.create('suite_name', () => {
+            testDummy(vest).passing();
+            testDummy(vest).failing();
+            testDummy(vest).failingWarning();
+
+            group(groupName, () => {
+              testDummy(vest).passing();
+              testDummy(vest).failingWarning();
+            });
+          });
+
+        beforeEach(() => {
+          resetState();
+          validate = validation();
+          res = validate();
+        });
+
+        it('Should return false', () => {
+          expect(res.hasErrorsByGroup(groupName)).toBe(false);
+        });
+      });
+
+      describe('When errors present', () => {
+        const validation = () =>
+          vest.create('suite_name', () => {
+            testDummy(vest).passing();
+
+            group(groupName, () => {
+              testDummy(vest).failing();
+            });
+          });
+
+        beforeEach(() => {
+          resetState();
+          validate = validation();
+          res = validate();
+        });
+
+        it('Should return false', () => {
+          expect(res.hasErrorsByGroup(groupName)).toBe(true);
+        });
+      });
+
+      describe('With fieldName', () => {
+        const validation = () =>
+          vest.create('suite_name', () => {
+            testDummy(vest).passing();
+
+            group(groupName, () => {
+              testDummy(vest).failing('failing_1');
+              testDummy(vest).passing('passing_1');
+            });
+          });
+
+        beforeEach(() => {
+          resetState();
+          validate = validation();
+          res = validate();
+        });
+
+        it('Should return false when field is passing', () => {
+          expect(res.hasErrorsByGroup(groupName, 'passing_1')).toBe(false);
+        });
+
+        it('Should return true when field is failing', () => {
+          expect(res.hasErrorsByGroup(groupName, 'failing_1')).toBe(true);
+        });
+
+        it('Should return false when field is not present', () => {
+          expect(res.hasErrorsByGroup(groupName, 'I do not Exist')).toBe(false);
+        });
+      });
+    });
+    describe('method: hasWarningsByGroup', () => {
+      let validate, res;
+
+      describe('When no group passed', () => {
+        const validation = () =>
+          vest.create('suite_name', () => {
+            group(groupName, () => {
+              testDummy(vest).failingWarning();
+            });
+          });
+
+        beforeEach(() => {
+          resetState();
+          validate = validation();
+          res = validate();
+        });
+
+        it('Should return false', () => {
+          expect(res.hasWarningsByGroup()).toBe(false);
+        });
+
+        it('Should return false when group does not exist', () => {
+          expect(res.hasWarningsByGroup('fake-group')).toBe(false);
+        });
+      });
+      describe('When no warnings', () => {
+        const validation = () =>
+          vest.create('suite_name', () => {
+            testDummy(vest).passing();
+            testDummy(vest).failing();
+            testDummy(vest).failingWarning();
+
+            group(groupName, () => {
+              testDummy(vest).passingWarnings();
+              testDummy(vest).failing();
+            });
+          });
+
+        beforeEach(() => {
+          resetState();
+          validate = validation();
+          res = validate();
+        });
+
+        it('Should return false', () => {
+          expect(res.hasWarningsByGroup(groupName)).toBe(false);
+        });
+      });
+
+      describe('When warnings present', () => {
+        const validation = () =>
+          vest.create('suite_name', () => {
+            testDummy(vest).passingWarning();
+
+            group(groupName, () => {
+              testDummy(vest).failingWarning();
+            });
+          });
+
+        beforeEach(() => {
+          resetState();
+          validate = validation();
+          res = validate();
+        });
+
+        it('Should return false', () => {
+          expect(res.hasWarningsByGroup(groupName)).toBe(true);
+        });
+      });
+
+      describe('With fieldName', () => {
+        const validation = () =>
+          vest.create('suite_name', () => {
+            testDummy(vest).passingWarning();
+
+            group(groupName, () => {
+              testDummy(vest).failingWarning('failing_1');
+              testDummy(vest).passingWarning('passing_1');
+            });
+          });
+
+        beforeEach(() => {
+          resetState();
+          validate = validation();
+          res = validate();
+        });
+
+        it('Should return false when field is passing', () => {
+          expect(res.hasWarningsByGroup(groupName, 'passing_1')).toBe(false);
+        });
+
+        it('Should return true when field is failing', () => {
+          expect(res.hasWarningsByGroup(groupName, 'failing_1')).toBe(true);
+        });
+
+        it('Should return false when field is not present', () => {
+          expect(res.hasWarningsByGroup(groupName, 'I do not Exist')).toBe(
+            false
+          );
+        });
+      });
+    });
     describe('method: done', () => {
       let doneCallback_1, doneCallback_2;
       beforeEach(() => {
@@ -354,6 +574,147 @@ runSpec(vest => {
               ).toBeUndefined();
             });
           });
+        });
+      });
+    });
+    describe('method: getErrorsByGroup', () => {
+      let res, validate;
+
+      const validation = () =>
+        vest.create('suite_name', () => {
+          testDummy(vest).failing('field_1');
+          testDummy(vest).passing('field_2');
+
+          group(groupName, () => {
+            testDummy(vest).failing('field_1', 'error_1:a');
+            testDummy(vest).failing('field_1', 'error_1:b');
+            testDummy(vest).failing('field_2', 'error_2');
+            testDummy(vest).passing('field_2');
+            testDummy(vest).failing('field_3', 'error_3');
+            testDummy(vest).failingWarning('field_1');
+            testDummy(vest).failingWarning('field_4');
+            testDummy(vest).passing('field_5');
+          });
+        });
+
+      beforeEach(() => {
+        validate = validation();
+        res = validate();
+      });
+
+      afterEach(() => {
+        resetState();
+      });
+
+      describe('When no group passed', () => {
+        it('Should throw error', () => {
+          expect(() => res.getErrorsByGroup()).toThrow(
+            '[Vest]: getErrorsByGroup requires a group name. Recieved `undefined` instead.'
+          );
+        });
+      });
+
+      describe('When no field name passed', () => {
+        it('Should return error array by field', () => {
+          expect(res.getErrorsByGroup(groupName)).toEqual({
+            field_1: ['error_1:a', 'error_1:b'],
+            field_2: ['error_2'],
+            field_3: ['error_3'],
+          });
+        });
+      });
+
+      describe('When field name passed', () => {
+        it('Should return error array for provided field', () => {
+          expect(res.getErrorsByGroup(groupName, 'field_1')).toEqual([
+            'error_1:a',
+            'error_1:b',
+          ]);
+          expect(res.getErrorsByGroup(groupName, 'field_2')).toEqual([
+            'error_2',
+          ]);
+          expect(res.getErrorsByGroup(groupName, 'field_3')).toEqual([
+            'error_3',
+          ]);
+          expect(res.getErrorsByGroup(groupName, 'field_4')).toEqual([]);
+          expect(res.getErrorsByGroup(groupName, 'field_5')).toEqual([]);
+        });
+      });
+
+      describe('When field does not exist', () => {
+        it('Should return an empty array', () => {
+          expect(res.getErrorsByGroup(groupName, 'field_100')).toEqual([]);
+        });
+      });
+    });
+
+    describe('method: getWarningsByGroup', () => {
+      let res, validate;
+
+      const validation = () =>
+        vest.create('suite_name', () => {
+          testDummy(vest).failingWarning('field_1');
+          testDummy(vest).passing('field_2');
+
+          group(groupName, () => {
+            testDummy(vest).failingWarning('field_1', 'warning_1:a');
+            testDummy(vest).failingWarning('field_1', 'warning_1:b');
+            testDummy(vest).failingWarning('field_2', 'warning_2');
+            testDummy(vest).passing('field_2');
+            testDummy(vest).failingWarning('field_3', 'warning_3');
+            testDummy(vest).failing('field_1');
+            testDummy(vest).failing('field_4');
+            testDummy(vest).passing('field_5');
+          });
+        });
+
+      beforeEach(() => {
+        validate = validation();
+        res = validate();
+      });
+
+      afterEach(() => {
+        resetState();
+      });
+
+      describe('When no group passed', () => {
+        it('Should throw error', () => {
+          expect(() => res.getWarningsByGroup()).toThrow(
+            '[Vest]: getWarningsByGroup requires a group name. Recieved `undefined` instead.'
+          );
+        });
+      });
+
+      describe('When no field name passed', () => {
+        it('Should return warning array by field', () => {
+          expect(res.getWarningsByGroup(groupName)).toEqual({
+            field_1: ['warning_1:a', 'warning_1:b'],
+            field_2: ['warning_2'],
+            field_3: ['warning_3'],
+          });
+        });
+      });
+
+      describe('When field name passed', () => {
+        it('Should return warning array for provided field', () => {
+          expect(res.getWarningsByGroup(groupName, 'field_1')).toEqual([
+            'warning_1:a',
+            'warning_1:b',
+          ]);
+          expect(res.getWarningsByGroup(groupName, 'field_2')).toEqual([
+            'warning_2',
+          ]);
+          expect(res.getWarningsByGroup(groupName, 'field_3')).toEqual([
+            'warning_3',
+          ]);
+          expect(res.getWarningsByGroup(groupName, 'field_4')).toEqual([]);
+          expect(res.getWarningsByGroup(groupName, 'field_5')).toEqual([]);
+        });
+      });
+
+      describe('When field does not exist', () => {
+        it('Should return an empty array', () => {
+          expect(res.getWarningsByGroup(groupName, 'field_100')).toEqual([]);
         });
       });
     });

@@ -4,7 +4,12 @@ import patch from '../state/patch';
 import VestTest from './lib/VestTest';
 import { setPending } from './lib/pending';
 import runTest from './lib/runTest';
-import { setSkipped } from './lib/skipped';
+import { setSkippedTest } from './lib/skipped';
+
+const BASE_COUNTERS = {
+  errorCount: 0,
+  warnCount: 0,
+};
 
 /**
  * Initiates a field in the suite state.
@@ -22,8 +27,36 @@ const initField = (suiteId, fieldName) => {
       tests: {
         ...state.tests,
         [fieldName]: {
-          errorCount: 0,
-          warnCount: 0,
+          ...BASE_COUNTERS,
+        },
+      },
+    };
+  });
+};
+
+/**
+ * Adds a field into a group in state
+ * @param {string} suiteId
+ * @param {string} group
+ * @param {string} fieldName
+ */
+const addFieldToGroup = (suiteId, group, fieldName) => {
+  if (group === undefined) {
+    return;
+  }
+
+  patch(suiteId, state => {
+    if (state.groups[group]?.[fieldName] !== undefined) {
+      return state;
+    }
+
+    return {
+      ...state,
+      groups: {
+        ...state.groups,
+        [group]: {
+          ...state.groups[group],
+          [fieldName]: { ...BASE_COUNTERS },
         },
       },
     };
@@ -57,6 +90,7 @@ const sync = testObject =>
  */
 const register = testObject => {
   initField(testObject.suiteId, testObject.fieldName);
+  addFieldToGroup(testObject.suiteId, testObject.group, testObject.fieldName);
 
   // Run test callback.
   // If a promise is returned, set as async and
@@ -80,15 +114,22 @@ const test = (fieldName, ...args) => {
 
   const ctx = singleton.useContext();
 
+  const testObject = new VestTest({
+    group: ctx.groupName,
+    suiteId: ctx.suiteId,
+    fieldName,
+    statement,
+    testFn,
+  });
+
   if (isExcluded(fieldName)) {
-    return setSkipped(ctx.suiteId, fieldName);
+    setSkippedTest(ctx.suiteId, fieldName);
+    return testObject;
   }
 
   if (typeof testFn !== 'function') {
     return;
   }
-
-  const testObject = new VestTest(ctx.suiteId, fieldName, statement, testFn);
 
   register(testObject);
 

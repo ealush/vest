@@ -40,6 +40,14 @@ class Context {
     this.suite_id = suiteId;
   }
 
+  get groupName() {
+    return this.lookup('group_name');
+  }
+
+  set groupName(groupName) {
+    this.group_name = groupName;
+  }
+
   lookup(key) {
     let ctx = this;
     do {
@@ -47,7 +55,7 @@ class Context {
         return ctx[key];
       }
       ctx = ctx.parentContext;
-    } while (ctx || ctx?.parentContext);
+    } while (ctx);
   }
 
   setParentContext(parentContext) {

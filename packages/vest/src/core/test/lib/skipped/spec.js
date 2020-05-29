@@ -3,12 +3,14 @@ import resetState from '../../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../../testUtils/runRegisterSuite';
 import getSuiteState from '../../../state/getSuiteState';
 import patch from '../../../state/patch';
-import { setSkipped, mergeSkipped } from '.';
+import { setSkippedTest, setSkippedGroup, mergeSkipped } from '.';
 
 const SUITE_NAME = 'suite_1';
 const suiteId = 'suiteId_1';
 const FIELD_NAME_1 = 'field_1';
 const FIELD_NAME_2 = 'field_2';
+const GROUP_NAME_1 = 'group_1';
+const GROUP_NAME_2 = 'group_2';
 
 const PREV_STATE_MOCK = {
   tests: {
@@ -25,6 +27,14 @@ const PREV_STATE_MOCK = {
       warnings: [],
     },
   },
+  groups: {
+    [FIELD_NAME_2]: {
+      errorCount: 1,
+      warnCount: 0,
+      errors: ['error_string'],
+      warnings: [],
+    },
+  },
 };
 
 describe('module: skipped', () => {
@@ -32,23 +42,49 @@ describe('module: skipped', () => {
     resetState(suiteId, SUITE_NAME);
   });
 
-  describe('export: setSkipped', () => {
+  describe('export: setSkippedTest', () => {
     describe('When field already skipped', () => {
       beforeEach(() => {
-        setSkipped(suiteId, FIELD_NAME_1);
+        setSkippedTest(suiteId, FIELD_NAME_1);
       });
       it('Should keep state unchanged', () => {
         const state = _.cloneDeep(getSuiteState(suiteId));
-        setSkipped(suiteId, FIELD_NAME_1);
+        setSkippedTest(suiteId, FIELD_NAME_1);
         expect(getSuiteState(suiteId)).toEqual(state);
       });
     });
 
     describe('When field is not yet skipped', () => {
-      it('Should marked field as skipped', () => {
-        expect(getSuiteState(suiteId).skipped[FIELD_NAME_1]).toBeUndefined();
-        setSkipped(suiteId, FIELD_NAME_1);
-        expect(getSuiteState(suiteId).skipped[FIELD_NAME_1]).toBe(true);
+      it('Should marke field as skipped', () => {
+        expect(
+          getSuiteState(suiteId).skippedTests[FIELD_NAME_1]
+        ).toBeUndefined();
+        setSkippedTest(suiteId, FIELD_NAME_1);
+        expect(getSuiteState(suiteId).skippedTests[FIELD_NAME_1]).toBe(true);
+        expect(getSuiteState(suiteId)).toMatchSnapshot();
+      });
+    });
+  });
+
+  describe('export: setSkippedGroup', () => {
+    describe('When group already skipped', () => {
+      beforeEach(() => {
+        setSkippedGroup(suiteId, GROUP_NAME_1);
+      });
+      it('Should keep state unchanged', () => {
+        const state = _.cloneDeep(getSuiteState(suiteId));
+        setSkippedGroup(suiteId, GROUP_NAME_1);
+        expect(getSuiteState(suiteId)).toEqual(state);
+      });
+    });
+
+    describe('When group is not yet skipped', () => {
+      it('Should marke group as skipped', () => {
+        expect(
+          getSuiteState(suiteId).skippedGroups[GROUP_NAME_1]
+        ).toBeUndefined();
+        setSkippedGroup(suiteId, GROUP_NAME_1);
+        expect(getSuiteState(suiteId).skippedGroups[GROUP_NAME_1]).toBe(true);
         expect(getSuiteState(suiteId)).toMatchSnapshot();
       });
     });
@@ -68,7 +104,7 @@ describe('module: skipped', () => {
         runRegisterSuite({ name: SUITE_NAME, suiteId });
       });
 
-      describe('When no currently skipped fields', () => {
+      describe('When no currently skipped fields or groups', () => {
         it('Should keep state unchanged', () => {
           const state = _.cloneDeep(getSuiteState(suiteId));
           mergeSkipped(suiteId);
@@ -99,7 +135,7 @@ describe('module: skipped', () => {
               expect(
                 getSuiteState(suiteId).tests[FIELD_NAME_1]
               ).toBeUndefined();
-              setSkipped(suiteId, FIELD_NAME_1);
+              setSkippedTest(suiteId, FIELD_NAME_1);
               mergeSkipped(suiteId);
               expect(getSuiteState(suiteId).tests[FIELD_NAME_1]).toEqual(
                 mock.tests[FIELD_NAME_1]
@@ -116,7 +152,7 @@ describe('module: skipped', () => {
               expect(
                 getSuiteState(suiteId).tests[FIELD_NAME_2]
               ).toBeUndefined();
-              setSkipped(suiteId, FIELD_NAME_2);
+              setSkippedTest(suiteId, FIELD_NAME_2);
               mergeSkipped(suiteId);
               expect(getSuiteState(suiteId).tests[FIELD_NAME_2]).toEqual(
                 mock.tests[FIELD_NAME_2]
@@ -128,6 +164,24 @@ describe('module: skipped', () => {
               expect(getSuiteState(suiteId)).toMatchSnapshot();
             });
           });
+        });
+      });
+
+      describe('When skipped group exists in previous state', () => {
+        let mock;
+        beforeEach(() => {
+          mock = _.cloneDeep(PREV_STATE_MOCK);
+          patch(suiteId, state => _.merge({ ...state }, mock));
+          runRegisterSuite({ name: SUITE_NAME, suiteId });
+        });
+
+        it('Should copy prev group state over', () => {
+          expect(getSuiteState(suiteId).groups[GROUP_NAME_2]).toBeUndefined();
+          setSkippedGroup(suiteId, GROUP_NAME_2);
+          mergeSkipped(suiteId);
+          expect(getSuiteState(suiteId).groups[GROUP_NAME_2]).toEqual(
+            mock.groups[GROUP_NAME_2]
+          );
         });
       });
     });

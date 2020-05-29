@@ -14,7 +14,7 @@ A test can either be synchronous or asynchronous, and it can either have a [seve
 
 There are three ways to fail a test:
 
-### Throwing an errorr inside your test body (using enforce)
+### Throwing an error inside your test body (using enforce)
 
 Just like in most unit testing frameworks, a validation fails whenever an error is thrown inside the test body. The [`enforce`](./enforce) function throws an error whenever the enforced value does not meet the specified criteria.
 
@@ -22,11 +22,11 @@ Just like in most unit testing frameworks, a validation fails whenever an error 
 // const username = 'Gina.Vandervort';
 // const password = 'Q3O';
 
-test('username', 'Should be at least 3 charachters long', () => {
+test('username', 'Should be at least 3 characters long', () => {
   enforce(username).longerThanOrEquals(3);
 }); // this test passes
 
-test('password', 'Should be at least 6 charachters long', () => {
+test('password', 'Should be at least 6 characters long', () => {
   enforce(password).longerThanOrEquals(6); // an error is thrown here
 }); // this test fails
 ```
@@ -39,11 +39,11 @@ To make it easy to migrate your existing validation logic into Vest, it also sup
 // const username = 'Gina.Vandervort';
 // const password = 'Q3O';
 
-test('username', 'Should be at least 3 charachters long', () => {
+test('username', 'Should be at least 3 characters long', () => {
   return username.length >= 3; // = true
 }); // this test passes
 
-test('password', 'Should be at least 6 charachters long', () => {
+test('password', 'Should be at least 6 characters long', () => {
   return password.length >= 6; // = false
 }); // this test fails
 ```
@@ -90,6 +90,7 @@ test('name', () =>
 **Read next about:**
 
 - [Warn only tests](./warn).
+- [Grouping tests](./group).
 - [Asserting with enforce](./enforce).
 - [Skipping or including tests](./exclusion).
 - [Accessing intermediate suite result](./draft).

@@ -3,7 +3,6 @@
 exports[`runAsyncTest: failing State updates Initial state matches snapshot (sanity) 1`] = `
 Object {
   "doneCallbacks": Array [],
-  "errorCount": 0,
   "exclusive": Object {},
   "fieldCallbacks": Object {
     "field_1": Array [],
@@ -27,14 +26,12 @@ Object {
   "skippedTests": Object {},
   "suiteId": "suiteId_1",
   "tests": Object {},
-  "warnCount": 0,
 }
 `;
 
 exports[`runAsyncTest: passing State updates Initial state matches snapshot (sanity) 1`] = `
 Object {
   "doneCallbacks": Array [],
-  "errorCount": 0,
   "exclusive": Object {},
   "fieldCallbacks": Object {
     "field_1": Array [],
@@ -58,6 +55,5 @@ Object {
   "skippedTests": Object {},
   "suiteId": "suiteId_1",
   "tests": Object {},
-  "warnCount": 0,
 }
 `;

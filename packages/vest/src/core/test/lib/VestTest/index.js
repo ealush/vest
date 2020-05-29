@@ -74,8 +74,6 @@ VestTest.prototype.fail = function () {
       obj[severityCount]++;
     });
 
-    nextState[severityCount]++;
-
     return nextState;
   });
 

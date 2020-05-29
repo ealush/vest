@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import resetState from '../../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../../testUtils/runRegisterSuite';
+import produce from '../../../produce';
 import getSuiteState from '../../../state/getSuiteState';
 import patch from '../../../state/patch';
 import { setSkippedTest, setSkippedGroup, mergeSkipped } from '.';
@@ -140,10 +141,12 @@ describe('module: skipped', () => {
               expect(getSuiteState(suiteId).tests[FIELD_NAME_1]).toEqual(
                 mock.tests[FIELD_NAME_1]
               );
-              expect(getSuiteState(suiteId).warnCount).toBe(
-                state.warnCount + mock.tests[FIELD_NAME_1].warnCount
+              expect(produce(getSuiteState(suiteId)).warnCount).toBe(
+                produce(state).warnCount + mock.tests[FIELD_NAME_1].warnCount
               );
-              expect(getSuiteState(suiteId).errorCount).toBe(state.errorCount);
+              expect(produce(getSuiteState(suiteId)).errorCount).toBe(
+                produce(state).errorCount
+              );
               expect(getSuiteState(suiteId)).toMatchSnapshot();
             });
           });
@@ -157,10 +160,13 @@ describe('module: skipped', () => {
               expect(getSuiteState(suiteId).tests[FIELD_NAME_2]).toEqual(
                 mock.tests[FIELD_NAME_2]
               );
-              expect(getSuiteState(suiteId).errorCount).toBe(
-                state.errorCount + mock.tests[FIELD_NAME_2].errorCount
+
+              expect(produce(getSuiteState(suiteId)).errorCount).toBe(
+                produce(state).errorCount + mock.tests[FIELD_NAME_2].errorCount
               );
-              expect(getSuiteState(suiteId).warnCount).toBe(state.warnCount);
+              expect(produce(getSuiteState(suiteId)).warnCount).toBe(
+                produce(state).warnCount
+              );
               expect(getSuiteState(suiteId)).toMatchSnapshot();
             });
           });

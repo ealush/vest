@@ -60,13 +60,25 @@ const done = (state, ...args) => {
 /**
  * @returns {Object} with only public properties.
  */
-const extract = ({ groups, errorCount, warnCount, tests, name }) => ({
+const extract = ({ groups, tests, name }) => ({
   groups,
-  errorCount,
-  warnCount,
   tests,
   name,
 });
+
+/**
+ * Counts the failed tests and adds global counters
+ * @param {Object} state
+ */
+const countFailures = state => {
+  state[SEVERITY_COUNT_ERROR] = 0;
+  state[SEVERITY_COUNT_WARN] = 0;
+  for (const test in state.tests) {
+    state[SEVERITY_COUNT_ERROR] += state.tests[test][SEVERITY_COUNT_ERROR];
+    state[SEVERITY_COUNT_WARN] += state.tests[test][SEVERITY_COUNT_WARN];
+  }
+  return state;
+};
 
 /**
  * @param {string} suiteId
@@ -77,6 +89,7 @@ const produce = (state, { draft } = {}) =>
   state
   |> extract
   |> copy
+  |> countFailures
   |> (transformedState =>
     Object.defineProperties(
       transformedState,

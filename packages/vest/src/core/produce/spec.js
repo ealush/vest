@@ -91,6 +91,32 @@ runSpec(vest => {
       );
     });
 
+    it('Should add global failure counters from test object', () => {
+      const res = produce({
+        tests: {
+          f1: {
+            errorCount: 1,
+            warnCount: 0,
+          },
+          f2: {
+            errorCount: 1,
+            warnCount: 1,
+          },
+          f3: {
+            errorCount: 2,
+            warnCount: 3,
+          },
+          f4: {
+            errorCount: 0,
+            warnCount: 2,
+          },
+        },
+      });
+
+      expect(res.errorCount).toBe(4);
+      expect(res.warnCount).toBe(6);
+    });
+
     it.each(GENERATED_METHODS)(
       'Should add `%s` method to the output object',
       name => {

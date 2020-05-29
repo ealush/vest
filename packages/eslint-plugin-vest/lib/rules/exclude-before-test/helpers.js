@@ -22,7 +22,7 @@ const looksLikeExclusion = node => {
 };
 
 const errorMessage = name =>
-  `\`${name}\` hook found after a test call. This may lead to missed exclusion, or unecessary validation runs which may impact performance.`;
+  `\`${name}\` hook found after a test call. This may lead to missed exclusion, or unnecessary validation runs which may impact performance.`;
 
 module.exports = {
   isTestCall,

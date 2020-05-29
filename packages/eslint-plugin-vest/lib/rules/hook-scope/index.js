@@ -6,7 +6,7 @@
 
 const { ALL_VEST_HOOKS, VEST_KEYWORD } = require('../../constants');
 const { closest, looksLike } = require('../../helpers');
-const { correctWrapperName, hookScopeErrorMessgage } = require('./helpers');
+const { correctWrapperName, hookScopeErrorMessage } = require('./helpers');
 
 const isHookParentShape = (node, name) =>
   looksLike(node, {
@@ -76,7 +76,7 @@ module.exports = {
         // Report an error
         context.report({
           node: closestCallExpression,
-          message: hookScopeErrorMessgage(name),
+          message: hookScopeErrorMessage(name),
         });
       },
     };

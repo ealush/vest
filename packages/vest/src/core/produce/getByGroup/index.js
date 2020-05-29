@@ -5,7 +5,7 @@ import collectFailureMessages from '../collectFailureMessages';
  * Gets failure messages by group.
  * @param {Object} state                  Reference to state object.
  * @param {'warn'|'error'} severityKey    Severity filter.
- * @param {string} group                  Grop name.
+ * @param {string} group                  Group name.
  * @param {string} [fieldName]            Field name.
  */
 const getByGroup = (state, severityKey, group, fieldName) => {
@@ -13,7 +13,7 @@ const getByGroup = (state, severityKey, group, fieldName) => {
     throwError(
       `get${severityKey[0].toUpperCase()}${severityKey.slice(
         1
-      )}ByGroup requires a group name. Recieved \`${group}\` instead.`
+      )}ByGroup requires a group name. Received \`${group}\` instead.`
     );
   }
 

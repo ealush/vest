@@ -21,7 +21,7 @@ describe('hasRemainingTests', () => {
     state = resetState(suiteId);
   });
 
-  describe('When no field specifid', () => {
+  describe('When no field specified', () => {
     describe('When no remaining tests', () => {
       it('should return false', () => {
         expect(hasRemainingTests(state)).toBe(false);
@@ -47,7 +47,7 @@ describe('hasRemainingTests', () => {
     });
   });
 
-  describe('When field specifid', () => {
+  describe('When field specified', () => {
     let fieldName;
 
     beforeEach(() => {

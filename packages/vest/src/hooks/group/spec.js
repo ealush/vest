@@ -188,7 +188,7 @@ runSpec(vest => {
         expect.arrayContaining(res.groups[groupName]['field_1'].errors)
       );
 
-      // This one is equal beceause it has no errors and no warnings - so both represent the base object
+      // This one is equal because it has no errors and no warnings - so both represent the base object
       expect(res.tests['field_2']).toEqual(res.groups[groupName]['field_2']);
 
       expect(res.tests['field_3'].warnings).toEqual(
@@ -263,7 +263,7 @@ runSpec(vest => {
     });
 
     test('Sanity', () => {
-      // checking that we hace the right context in the right places
+      // checking that we have the right context in the right places
 
       validate(collect);
       expect(collection[1].suiteId).toBe(suiteName);

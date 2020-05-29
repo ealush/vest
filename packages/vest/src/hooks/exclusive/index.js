@@ -40,8 +40,8 @@ const addTo = (group, item) => {
 export const only = item => addTo(GROUP_NAME_ONLY, item);
 
 /**
- * Adds a field or multiple fields to exlusion group.
- * @param {String[]|String} item Item to be added to exlusion group.
+ * Adds a field or multiple fields to exclusion group.
+ * @param {String[]|String} item Item to be added to exclusion group.
  */
 export const skip = item => addTo(GROUP_NAME_SKIP, item);
 

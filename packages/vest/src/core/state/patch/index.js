@@ -4,7 +4,7 @@ import { getSuite } from '..';
  * Updates current suite state with patcher value or output.
  * @param {string} suiteId.
  * @param {Function} patcher Uses to determine next value.
- * @retursn {Object} Next suite state.
+ * @return {Object} Next suite state.
  */
 const patch = (suiteId, patcher) => {
   const [state, prevState] = getSuite(suiteId) ?? [];

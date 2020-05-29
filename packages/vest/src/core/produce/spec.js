@@ -106,7 +106,7 @@ runSpec(vest => {
       });
 
       it.each(DRAFT_EXCLUDED_METHODS)(
-        'Should produce ouput object without `%s` method',
+        'Should produce output object without `%s` method',
         name => {
           expect(produced[name]).toBeUndefined();
         }
@@ -609,7 +609,7 @@ runSpec(vest => {
       describe('When no group passed', () => {
         it('Should throw error', () => {
           expect(() => res.getErrorsByGroup()).toThrow(
-            '[Vest]: getErrorsByGroup requires a group name. Recieved `undefined` instead.'
+            '[Vest]: getErrorsByGroup requires a group name. Received `undefined` instead.'
           );
         });
       });
@@ -680,7 +680,7 @@ runSpec(vest => {
       describe('When no group passed', () => {
         it('Should throw error', () => {
           expect(() => res.getWarningsByGroup()).toThrow(
-            '[Vest]: getWarningsByGroup requires a group name. Recieved `undefined` instead.'
+            '[Vest]: getWarningsByGroup requires a group name. Received `undefined` instead.'
           );
         });
       });

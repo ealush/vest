@@ -1,3 +1,5 @@
+/* eslint-disable spellcheck/spell-checker */
+
 const { version } = require('../package.json');
 const vest = require('.');
 

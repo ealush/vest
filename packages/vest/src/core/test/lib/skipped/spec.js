@@ -55,7 +55,7 @@ describe('module: skipped', () => {
     });
 
     describe('When field is not yet skipped', () => {
-      it('Should marke field as skipped', () => {
+      it('Should mark field as skipped', () => {
         expect(
           getSuiteState(suiteId).skippedTests[FIELD_NAME_1]
         ).toBeUndefined();
@@ -79,7 +79,7 @@ describe('module: skipped', () => {
     });
 
     describe('When group is not yet skipped', () => {
-      it('Should marke group as skipped', () => {
+      it('Should mark group as skipped', () => {
         expect(
           getSuiteState(suiteId).skippedGroups[GROUP_NAME_1]
         ).toBeUndefined();

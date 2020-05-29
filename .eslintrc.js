@@ -1,3 +1,5 @@
+const skipWords = require('./config/eslint/spellCheckerSkip');
+
 module.exports = {
   parser: 'babel-eslint',
   parserOptions: {
@@ -10,7 +12,7 @@ module.exports = {
       configFile: 'config/babel/babel.config.js',
     },
   },
-  plugins: ['jest'],
+  plugins: ['jest', 'spellcheck'],
   env: {
     es6: true,
     jest: true,
@@ -55,6 +57,12 @@ module.exports = {
     'jest/no-standalone-expect': 0,
     'arrow-body-style': [2, 'as-needed'],
     'object-shorthand': [2, 'always', { avoidQuotes: true }],
+    'spellcheck/spell-checker': [
+      1,
+      {
+        skipWords,
+      },
+    ],
   },
   ignorePatterns: ['dist', 'node_modules', 'playground'],
 };

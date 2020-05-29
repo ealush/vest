@@ -2,7 +2,7 @@
  * Checks whether there are failures in a given group.
  * @param {Object} state                  Reference to state object.
  * @param {'warn'|'error'} severityKey    Severity filter.
- * @param {string} group                  Grop name.
+ * @param {string} group                  Group name.
  * @param {string} [fieldName]            Field name.
  * @return {boolean}
  */

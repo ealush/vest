@@ -4,14 +4,14 @@ const {
   VEST_HOOK_ONLY,
   VEST_HOOK_SKIP,
 } = require('../../constants');
-const { hookScopeErrorMessgage } = require('./helpers');
+const { hookScopeErrorMessage } = require('./helpers');
 const hooksScopeRule = require('.');
 
 const ruleTester = new RuleTester({ parserOptions: { ecmaVersion: 2015 } });
 
-const ERROR_WARN = hookScopeErrorMessgage(VEST_HOOK_WARN);
-const ERROR_ONLY = hookScopeErrorMessgage(VEST_HOOK_ONLY);
-const ERROR_SKIP = hookScopeErrorMessgage(VEST_HOOK_SKIP);
+const ERROR_WARN = hookScopeErrorMessage(VEST_HOOK_WARN);
+const ERROR_ONLY = hookScopeErrorMessage(VEST_HOOK_ONLY);
+const ERROR_SKIP = hookScopeErrorMessage(VEST_HOOK_SKIP);
 
 const VALID = [
   `validate('example', () => {

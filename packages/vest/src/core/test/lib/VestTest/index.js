@@ -12,7 +12,7 @@ import {
  * @param {String} suiteId              Suite Id.
  * @param {String} fieldName            Name of the field being tested.
  * @param {String} statement            The message returned when failing.
- * @param {Promise|Function} testFn     The actual test callbrack or promise.
+ * @param {Promise|Function} testFn     The actual test callback or promise.
  * @param {string} [group]              The group in which the test runs.
  */
 function VestTest({ suiteId, fieldName, statement, testFn, group }) {

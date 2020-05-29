@@ -60,6 +60,7 @@ module.exports = {
     'spellcheck/spell-checker': [
       1,
       {
+        strings: false,
         skipWords,
       },
     ],

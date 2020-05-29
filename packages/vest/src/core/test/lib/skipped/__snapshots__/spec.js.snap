@@ -58,7 +58,7 @@ Object {
 }
 `;
 
-exports[`module: skipped export: setSkippedGroup When group is not yet skipped Should marke group as skipped 1`] = `
+exports[`module: skipped export: setSkippedGroup When group is not yet skipped Should mark group as skipped 1`] = `
 Object {
   "doneCallbacks": Array [],
   "errorCount": 0,
@@ -78,7 +78,7 @@ Object {
 }
 `;
 
-exports[`module: skipped export: setSkippedTest When field is not yet skipped Should marke field as skipped 1`] = `
+exports[`module: skipped export: setSkippedTest When field is not yet skipped Should mark field as skipped 1`] = `
 Object {
   "doneCallbacks": Array [],
   "errorCount": 0,

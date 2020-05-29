@@ -33,17 +33,17 @@ export const SAMPLE_DEEP_OBJECT = [
       first: 'Velasquez',
       last: 'Lara',
     },
-    tags: ['Lorem', 'word', 'mini', 'an', 'ad'],
+    tags: ['Lorem', 'ullamco', 'minim', 'ut', 'ad'],
     range: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
   },
   {
     _id: '5eb4784e64618155ef167791',
     index: 1,
     name: {
-      first: 'Russell',
+      first: 'Mcconnell',
       last: 'Dennis',
     },
-    tags: ['null', 'ex', 'at', 'paint', 'aqua'],
+    tags: ['nulla', 'ex', 'et', 'sint', 'aliqua'],
     range: [
       {
         a: 1,

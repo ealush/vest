@@ -11,7 +11,6 @@ exports[`resetState When invoked with suite name Should add a new suite to the s
 Array [
   Object {
     "doneCallbacks": Array [],
-    "errorCount": 0,
     "exclusive": Object {},
     "fieldCallbacks": Object {},
     "groups": Object {},
@@ -22,7 +21,6 @@ Array [
     "skippedTests": Object {},
     "suiteId": "test-suite",
     "tests": Object {},
-    "warnCount": 0,
   },
   undefined,
 ]

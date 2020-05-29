@@ -3,7 +3,6 @@
 exports[`module: pending export: removePending When testObject is either pending or lagging When in lagging Should remove test from lagging 1`] = `
 Object {
   "doneCallbacks": Array [],
-  "errorCount": 0,
   "exclusive": Object {},
   "fieldCallbacks": Object {},
   "groups": Object {},
@@ -14,14 +13,12 @@ Object {
   "skippedTests": Object {},
   "suiteId": "suite_1",
   "tests": Object {},
-  "warnCount": 0,
 }
 `;
 
 exports[`module: pending export: removePending When testObject is either pending or lagging When in pending Should remove test from pending 1`] = `
 Object {
   "doneCallbacks": Array [],
-  "errorCount": 0,
   "exclusive": Object {},
   "fieldCallbacks": Object {},
   "groups": Object {},
@@ -32,14 +29,12 @@ Object {
   "skippedTests": Object {},
   "suiteId": "suite_1",
   "tests": Object {},
-  "warnCount": 0,
 }
 `;
 
 exports[`module: pending export: setPending When field is in lagging array Should remove test from lagging array 1`] = `
 Object {
   "doneCallbacks": Array [],
-  "errorCount": 0,
   "exclusive": Object {},
   "fieldCallbacks": Object {},
   "groups": Object {},
@@ -82,6 +77,5 @@ Object {
   "skippedTests": Object {},
   "suiteId": "suite_1",
   "tests": Object {},
-  "warnCount": 0,
 }
 `;

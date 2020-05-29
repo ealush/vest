@@ -47,8 +47,6 @@ export const mergeSkipped = suiteId => {
     for (const fieldName in state.skippedTests) {
       if (prevState.tests[fieldName] && !state.tests[fieldName]) {
         nextState.tests[fieldName] = { ...prevState.tests[fieldName] };
-        nextState.errorCount += prevState.tests[fieldName].errorCount;
-        nextState.warnCount += prevState.tests[fieldName].warnCount;
       }
     }
 

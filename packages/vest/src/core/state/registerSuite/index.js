@@ -18,8 +18,6 @@ const INITIAL_SUITE_STATE = (suiteId, name) => ({
   tests: {},
   groups: {},
   exclusive: {},
-  errorCount: 0,
-  warnCount: 0,
 });
 
 /**

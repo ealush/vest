@@ -15,7 +15,6 @@ VestTest {
 
 exports[`VestTest testObject.fail When severity = error Should bump error counters and messages 1`] = `
 Object {
-  "errorCount": 1,
   "groups": Object {},
   "tests": Object {
     "unicycle": Object {
@@ -27,13 +26,11 @@ Object {
       "warnings": Array [],
     },
   },
-  "warnCount": 0,
 }
 `;
 
 exports[`VestTest testObject.fail When severity = warn Should bump error counters and messages 1`] = `
 Object {
-  "errorCount": 0,
   "groups": Object {},
   "tests": Object {
     "unicycle": Object {
@@ -45,7 +42,6 @@ Object {
       ],
     },
   },
-  "warnCount": 1,
 }
 `;
 

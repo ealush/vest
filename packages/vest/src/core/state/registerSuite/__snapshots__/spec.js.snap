@@ -3,7 +3,6 @@
 exports[`registerSuite When suite does not exist in state Should create initial suite without prevState 1`] = `
 Object {
   "doneCallbacks": Array [],
-  "errorCount": 0,
   "exclusive": Object {},
   "fieldCallbacks": Object {},
   "groups": Object {},
@@ -14,7 +13,6 @@ Object {
   "skippedTests": Object {},
   "suiteId": "suiteId_1",
   "tests": Object {},
-  "warnCount": 0,
 }
 `;
 
@@ -22,7 +20,6 @@ exports[`registerSuite When suite exists in state Prev state data handling When 
 Array [
   Object {
     "doneCallbacks": Array [],
-    "errorCount": 0,
     "exclusive": Object {},
     "fieldCallbacks": Object {},
     "groups": Object {},
@@ -40,11 +37,9 @@ Array [
     "skippedTests": Object {},
     "suiteId": "suiteId_1",
     "tests": Object {},
-    "warnCount": 0,
   },
   Object {
     "doneCallbacks": Array [],
-    "errorCount": 0,
     "exclusive": Object {},
     "fieldCallbacks": Object {},
     "groups": Object {},
@@ -55,7 +50,6 @@ Array [
     "skippedTests": Object {},
     "suiteId": "suiteId_1",
     "tests": Object {},
-    "warnCount": 0,
   },
 ]
 `;
@@ -64,7 +58,6 @@ exports[`registerSuite When suite exists in state Should match snapshot 1`] = `
 Array [
   Object {
     "doneCallbacks": Array [],
-    "errorCount": 0,
     "exclusive": Object {},
     "fieldCallbacks": Object {},
     "groups": Object {},
@@ -75,11 +68,9 @@ Array [
     "skippedTests": Object {},
     "suiteId": "suiteId_1",
     "tests": Object {},
-    "warnCount": 0,
   },
   Object {
     "doneCallbacks": Array [],
-    "errorCount": 0,
     "exclusive": Object {},
     "fieldCallbacks": Object {},
     "groups": Object {},
@@ -90,7 +81,6 @@ Array [
     "skippedTests": Object {},
     "suiteId": "suiteId_1",
     "tests": Object {},
-    "warnCount": 0,
   },
 ]
 `;

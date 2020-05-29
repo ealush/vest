@@ -59,8 +59,6 @@ describe('VestTest', () => {
         },
       },
       groups: {},
-      errorCount: 0,
-      warnCount: 0,
     });
 
     const initialState = stateMock();
@@ -94,8 +92,6 @@ describe('VestTest', () => {
         expect(res.tests[fieldName].warnCount).toBe(
           initialState.tests[fieldName].warnCount
         );
-        expect(res.errorCount).toBe(initialState.errorCount + 1);
-        expect(res.warnCount).toBe(initialState.warnCount);
         expect(res).toMatchSnapshot();
       });
     });
@@ -113,8 +109,6 @@ describe('VestTest', () => {
         expect(res.tests[fieldName].errorCount).toBe(
           initialState.tests[fieldName].errorCount
         );
-        expect(res.warnCount).toBe(initialState.warnCount + 1);
-        expect(res.errorCount).toBe(initialState.errorCount);
         expect(res).toMatchSnapshot();
       });
     });

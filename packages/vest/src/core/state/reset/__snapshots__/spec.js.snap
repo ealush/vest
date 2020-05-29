@@ -6,7 +6,6 @@ Object {
     "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
-        "errorCount": 0,
         "exclusive": Object {
           "skip": Object {
             "field_1": true,
@@ -84,11 +83,9 @@ Object {
             "warnCount": 0,
           },
         },
-        "warnCount": 0,
       },
       Object {
         "doneCallbacks": Array [],
-        "errorCount": 0,
         "exclusive": Object {
           "skip": Object {
             "field_2": true,
@@ -118,7 +115,6 @@ Object {
             "warnCount": 0,
           },
         },
-        "warnCount": 0,
       },
     ],
   },
@@ -134,7 +130,6 @@ Object {
     "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
-        "errorCount": 0,
         "exclusive": Object {
           "skip": Object {
             "field_1": true,
@@ -212,11 +207,9 @@ Object {
             "warnCount": 0,
           },
         },
-        "warnCount": 0,
       },
       Object {
         "doneCallbacks": Array [],
-        "errorCount": 0,
         "exclusive": Object {
           "skip": Object {
             "field_2": true,
@@ -246,7 +239,6 @@ Object {
             "warnCount": 0,
           },
         },
-        "warnCount": 0,
       },
     ],
   },
@@ -277,7 +269,6 @@ Object {
     "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
-        "errorCount": 0,
         "exclusive": Object {
           "skip": Object {
             "field_1": true,
@@ -355,11 +346,9 @@ Object {
             "warnCount": 0,
           },
         },
-        "warnCount": 0,
       },
       Object {
         "doneCallbacks": Array [],
-        "errorCount": 0,
         "exclusive": Object {
           "skip": Object {
             "field_2": true,
@@ -389,7 +378,6 @@ Object {
             "warnCount": 0,
           },
         },
-        "warnCount": 0,
       },
     ],
   },
@@ -435,7 +423,6 @@ Object {
     "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
-        "errorCount": 0,
         "exclusive": Object {
           "skip": Object {
             "field_1": true,
@@ -513,11 +500,9 @@ Object {
             "warnCount": 0,
           },
         },
-        "warnCount": 0,
       },
       Object {
         "doneCallbacks": Array [],
-        "errorCount": 0,
         "exclusive": Object {
           "skip": Object {
             "field_2": true,
@@ -547,7 +532,6 @@ Object {
             "warnCount": 0,
           },
         },
-        "warnCount": 0,
       },
     ],
   },

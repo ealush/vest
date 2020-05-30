@@ -17,6 +17,7 @@ Object {
   "tests": Object {
     "doloribus-enim-quisquam": Object {
       "errorCount": 0,
+      "testCount": 2,
       "warnCount": 0,
     },
   },
@@ -41,6 +42,7 @@ Object {
   "tests": Object {
     "non-rem-dolorem": Object {
       "errorCount": 0,
+      "testCount": 1,
       "warnCount": 0,
     },
     "sed-minima-adipisci": Object {
@@ -48,6 +50,7 @@ Object {
       "errors": Array [
         "Aliquam reprehenderit iure omnis assumenda eligendi enim id praesentium numquam.",
       ],
+      "testCount": 1,
       "warnCount": 0,
     },
   },
@@ -72,6 +75,7 @@ Object {
   "tests": Object {
     "doloribus-enim-quisquam": Object {
       "errorCount": 0,
+      "testCount": 1,
       "warnCount": 0,
     },
   },
@@ -96,6 +100,7 @@ Object {
   "tests": Object {
     "autem": Object {
       "errorCount": 0,
+      "testCount": 1,
       "warnCount": 1,
       "warnings": Array [
         "Temporibus ex ex.",
@@ -123,6 +128,7 @@ Object {
   "tests": Object {
     "autem": Object {
       "errorCount": 0,
+      "testCount": 2,
       "warnCount": 1,
       "warnings": Array [
         "Temporibus ex ex.",

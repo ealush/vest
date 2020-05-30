@@ -5,7 +5,7 @@ import validateSuiteParams from '../../lib/validateSuiteParams';
 import produce from '../produce';
 import getSuiteState from '../state/getSuiteState';
 import registerSuite from '../state/registerSuite';
-import { mergeSkipped } from '../test/lib/skipped';
+import mergeExcludedTests from '../test/lib/mergeExcludedTests';
 import runAsyncTest from '../test/runAsyncTest';
 
 /**
@@ -34,12 +34,11 @@ const createSuite = (name, tests) => {
       registerSuite();
       const { suiteId } = context;
       tests.apply(null, args);
-      mergeSkipped(suiteId);
+      mergeExcludedTests(suiteId);
 
       [...getSuiteState(suiteId).pending].forEach(runAsyncTest);
       return produce(getSuiteState(suiteId));
     });
-
     return output;
   };
 };

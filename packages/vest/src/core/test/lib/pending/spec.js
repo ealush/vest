@@ -8,6 +8,7 @@ import VestTest from '../VestTest';
 import { removePending, setPending } from '.';
 
 const suiteId = 'suite_1';
+const groupName = 'group_name';
 
 describe('module: pending', () => {
   let state, testObject;
@@ -77,6 +78,7 @@ describe('module: pending', () => {
             testFn: jest.fn(),
           })
       );
+      testObjects[0].groupName = groupName;
     });
 
     it('Should set supplied test object as pending', () => {
@@ -85,14 +87,14 @@ describe('module: pending', () => {
       expect(getSuiteState(suiteId).pending).toContain(testObjects[0]);
     });
 
-    describe('When field is in lagging array', () => {
+    describe('When a field of the same profile is in lagging array', () => {
       beforeEach(() => {
         patch(suiteId, state => ({
           ...state,
           lagging: state.lagging.concat(
-            testObjects[2],
-            testObjects[0],
-            testObjects[1]
+            testObjects[2], // same fieldName, group = undefined
+            testObjects[0], // same fieldName, group = group_name
+            testObjects[1] // same fieldName, group = undefined
           ),
         }));
       });

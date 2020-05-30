@@ -1,14 +1,40 @@
+import { SEVERITY_GROUP_WARN } from '../../test/lib/VestTest/constants';
+
+/**
+ * Determines whether a certain test profile has failures.
+ * @param {string} suiteId
+ * @param {'warnings'|'errors'} severityKey lookup severity
+ * @param {string} [fieldName]
+ * @returns {Boolean}
+ */
+export const hasLogic = (testObject, severityKey, fieldName) => {
+  if (!testObject.failed) {
+    return false;
+  }
+
+  if (fieldName && fieldName !== testObject.fieldName) {
+    return false;
+  }
+
+  if (
+    (severityKey === SEVERITY_GROUP_WARN && !testObject.isWarning) ||
+    (severityKey !== SEVERITY_GROUP_WARN && testObject.isWarning)
+  ) {
+    return false;
+  }
+
+  return true;
+};
+
 /**
  * @param {string} suiteId
- * @param {'errorCount'|'warnCount'} severityKey lookup severity
+ * @param {'warnings'|'errors'} severityKey lookup severity
  * @param {string} [fieldName]
  * @returns {Boolean} whether a suite or field have errors or warnings.
  */
-const has = (state, severityKey, fieldName) => {
-  if (!fieldName) {
-    return Boolean(state?.[severityKey]);
-  }
-  return Boolean(state?.tests?.[fieldName]?.[severityKey]);
-};
+const has = (state, severityKey, fieldName) =>
+  state.testObjects.some(testObject =>
+    hasLogic(testObject, severityKey, fieldName)
+  );
 
 export default has;

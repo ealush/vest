@@ -1,4 +1,3 @@
-import getSuiteState from '../../core/state/getSuiteState';
 import patch from '../../core/state/patch';
 import singleton from '../../lib/singleton';
 import throwError from '../../lib/throwError';
@@ -46,27 +45,23 @@ export const only = item => addTo(GROUP_NAME_ONLY, item);
 export const skip = item => addTo(GROUP_NAME_SKIP, item);
 
 /**
- * Checks whether a certain field name is excluded by any of the exclusion groups.
- * @param {String} fieldName    FieldN name to test.
+ * Checks whether a certain test profile excluded by any of the exclusion groups.
+ * @param {String} fieldName    Field name to test.
+ * @param {VestTest}            Test Object reference.
  * @returns {Boolean}
  */
-export const isExcluded = fieldName => {
-  const ctx = singleton.useContext();
+export const isExcluded = (state, testObject) => {
+  const { fieldName, groupName } = testObject;
 
-  if (ctx?.suiteId === undefined) {
-    return false;
-  }
+  // If inside a group
+  if (groupName) {
+    if (isGroupExcluded(state, groupName)) {
+      return true;
 
-  const state = getSuiteState(ctx.suiteId);
-
-  const group = ctx.groupName;
-
-  // If we're inside a group but what we're checking
-  // is a different field.
-  if (group && fieldName !== group) {
-    // If the group is `only`ed
-    if (state.exclusive?.[GROUP_NAME_ONLY]?.[group]) {
-      return !!state.exclusive?.[GROUP_NAME_SKIP]?.[fieldName]; // excluded if current field is skipped
+      // if group is `only`ed
+    } else if (state.exclusive?.[GROUP_NAME_ONLY]?.[groupName]) {
+      // exclude field if explicitly skipped
+      return !!state.exclusive?.[GROUP_NAME_SKIP]?.[fieldName];
     }
   }
 
@@ -87,4 +82,23 @@ export const isExcluded = fieldName => {
   }
 
   return false; // Not excluded
+};
+
+/**
+ * Checks whether a given group is excluded from running.
+ * @param {Object} state
+ * @param {String} groupName
+ * @return {Boolean}
+ */
+export const isGroupExcluded = (state, groupName) => {
+  if (state.exclusive?.[GROUP_NAME_SKIP]?.[groupName]) {
+    return true;
+  } else if (
+    state.exclusive?.[GROUP_NAME_ONLY] &&
+    !state.exclusive?.[GROUP_NAME_ONLY][groupName]
+  ) {
+    return true;
+  }
+
+  return false;
 };

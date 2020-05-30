@@ -2,11 +2,10 @@ import copy from '../../lib/copy';
 import hasRemainingTests from '../state/hasRemainingTests';
 import patch from '../state/patch';
 import {
-  SEVERITY_COUNT_ERROR,
-  SEVERITY_COUNT_WARN,
   SEVERITY_GROUP_ERROR,
   SEVERITY_GROUP_WARN,
 } from '../test/lib/VestTest/constants';
+import genTestsSummary, { countFailures } from './genTestsSummary';
 import get from './get';
 import getByGroup from './getByGroup';
 import has from './has';
@@ -24,10 +23,8 @@ const done = (state, ...args) => {
 
   const output = produce(state);
 
-  // ❗️The reason we use `tests` instead of skipped
-  // is that we later on might merge the skipped tests into
-  // our current state, and we still want to run their callbacks
-  const shouldSkipRegistration = fieldName && !state.tests[fieldName];
+  // If we do not have any tests for current field
+  const shouldSkipRegistration = fieldName && !output.tests[fieldName];
 
   if (typeof callback !== 'function' || shouldSkipRegistration) {
     return output;
@@ -67,44 +64,31 @@ const extract = ({ groups, tests, name }) => ({
 });
 
 /**
- * Counts the failed tests and adds global counters
- * @param {Object} state
- */
-const countFailures = state => {
-  state[SEVERITY_COUNT_ERROR] = 0;
-  state[SEVERITY_COUNT_WARN] = 0;
-  for (const test in state.tests) {
-    state[SEVERITY_COUNT_ERROR] += state.tests[test][SEVERITY_COUNT_ERROR];
-    state[SEVERITY_COUNT_WARN] += state.tests[test][SEVERITY_COUNT_WARN];
-  }
-  return state;
-};
-
-/**
  * @param {string} suiteId
  * @param {Object} Options
  * @returns Vest output object.
  */
 const produce = (state, { draft } = {}) =>
   state
-  |> extract
   |> copy
+  |> genTestsSummary
+  |> extract
   |> countFailures
   |> (transformedState =>
     Object.defineProperties(
       transformedState,
       [
-        ['hasErrors', has.bind(null, state, SEVERITY_COUNT_ERROR)],
-        ['hasWarnings', has.bind(null, state, SEVERITY_COUNT_WARN)],
+        ['hasErrors', has.bind(null, state, SEVERITY_GROUP_ERROR)],
+        ['hasWarnings', has.bind(null, state, SEVERITY_GROUP_WARN)],
         ['getErrors', get.bind(null, state, SEVERITY_GROUP_ERROR)],
         ['getWarnings', get.bind(null, state, SEVERITY_GROUP_WARN)],
         [
           'hasErrorsByGroup',
-          hasByGroup.bind(null, state, SEVERITY_COUNT_ERROR),
+          hasByGroup.bind(null, state, SEVERITY_GROUP_ERROR),
         ],
         [
           'hasWarningsByGroup',
-          hasByGroup.bind(null, state, SEVERITY_COUNT_WARN),
+          hasByGroup.bind(null, state, SEVERITY_GROUP_WARN),
         ],
         [
           'getErrorsByGroup',

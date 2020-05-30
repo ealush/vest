@@ -7,11 +7,13 @@ import collectFailureMessages from '../collectFailureMessages';
  * @returns suite or field's errors or warnings.
  */
 const get = (state, severityKey, fieldName) => {
-  if (!fieldName) {
-    return collectFailureMessages(state, severityKey);
-  }
+  const res = collectFailureMessages(state, severityKey, { fieldName });
 
-  return state.tests?.[fieldName]?.[severityKey] ?? [];
+  if (fieldName) {
+    return res[fieldName] || [];
+  } else {
+    return res;
+  }
 };
 
 export default get;

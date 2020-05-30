@@ -9,9 +9,8 @@ Object {
   "lagging": Array [],
   "name": "suite_1",
   "pending": Array [],
-  "skippedGroups": Object {},
-  "skippedTests": Object {},
   "suiteId": "suiteId_1",
+  "testObjects": Array [],
   "tests": Object {},
 }
 `;
@@ -33,9 +32,8 @@ Array [
     ],
     "name": "suite_1",
     "pending": Array [],
-    "skippedGroups": Object {},
-    "skippedTests": Object {},
     "suiteId": "suiteId_1",
+    "testObjects": Array [],
     "tests": Object {},
   },
   Object {
@@ -46,9 +44,8 @@ Array [
     "lagging": null,
     "name": "suite_1",
     "pending": null,
-    "skippedGroups": Object {},
-    "skippedTests": Object {},
     "suiteId": "suiteId_1",
+    "testObjects": Array [],
     "tests": Object {},
   },
 ]
@@ -64,9 +61,8 @@ Array [
     "lagging": Array [],
     "name": "suite_1",
     "pending": Array [],
-    "skippedGroups": Object {},
-    "skippedTests": Object {},
     "suiteId": "suiteId_1",
+    "testObjects": Array [],
     "tests": Object {},
   },
   Object {
@@ -77,9 +73,8 @@ Array [
     "lagging": null,
     "name": "suite_1",
     "pending": null,
-    "skippedGroups": Object {},
-    "skippedTests": Object {},
     "suiteId": "suiteId_1",
+    "testObjects": Array [],
     "tests": Object {},
   },
 ]

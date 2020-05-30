@@ -9,9 +9,8 @@ Object {
   "lagging": Array [],
   "name": "suite_1",
   "pending": Array [],
-  "skippedGroups": Object {},
-  "skippedTests": Object {},
   "suiteId": "suite_1",
+  "testObjects": Array [],
   "tests": Object {},
 }
 `;
@@ -25,14 +24,13 @@ Object {
   "lagging": Array [],
   "name": "suite_1",
   "pending": Array [],
-  "skippedGroups": Object {},
-  "skippedTests": Object {},
   "suiteId": "suite_1",
+  "testObjects": Array [],
   "tests": Object {},
 }
 `;
 
-exports[`module: pending export: setPending When field is in lagging array Should remove test from lagging array 1`] = `
+exports[`module: pending export: setPending When a field of the same profile is in lagging array Should remove test from lagging array 1`] = `
 Object {
   "doneCallbacks": Array [],
   "exclusive": Object {},
@@ -42,7 +40,6 @@ Object {
     VestTest {
       "failed": false,
       "fieldName": "test_2",
-      "group": undefined,
       "id": "8",
       "isWarning": false,
       "statement": "Some statement string",
@@ -52,7 +49,6 @@ Object {
     VestTest {
       "failed": false,
       "fieldName": "test_1",
-      "group": undefined,
       "id": "7",
       "isWarning": false,
       "statement": "Some statement string",
@@ -65,7 +61,7 @@ Object {
     VestTest {
       "failed": false,
       "fieldName": "test_0",
-      "group": undefined,
+      "groupName": "group_name",
       "id": "6",
       "isWarning": false,
       "statement": "Some statement string",
@@ -73,9 +69,8 @@ Object {
       "testFn": [MockFunction],
     },
   ],
-  "skippedGroups": Object {},
-  "skippedTests": Object {},
   "suiteId": "suite_1",
+  "testObjects": Array [],
   "tests": Object {},
 }
 `;

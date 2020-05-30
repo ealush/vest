@@ -1,9 +1,14 @@
 import mock from '../../../testUtils/mock';
 import runSpec from '../../../testUtils/runSpec';
+import getSuiteState from '../../core/state/getSuiteState';
+import VestTest from '../../core/test/lib/VestTest';
+import singleton from '../../lib/singleton';
 
 const faker = require('faker');
 const { ERROR_HOOK_CALLED_OUTSIDE } = require('../constants');
 const { isExcluded } = require('.');
+
+const suiteId = 'suite-id';
 
 runSpec(vest => {
   const { validate, only, skip } = vest;
@@ -12,9 +17,18 @@ runSpec(vest => {
     let field1, field2, field3;
 
     beforeEach(() => {
-      field1 = faker.lorem.word();
-      field2 = faker.random.word();
-      field3 = faker.lorem.slug();
+      new VestTest({
+        suiteId,
+        fieldName: faker.lorem.word(),
+      });
+      new VestTest({
+        suiteId,
+        fieldName: faker.lorem.slug(),
+      });
+      new VestTest({
+        suiteId,
+        fieldName: faker.random.word(),
+      });
     });
 
     describe('`only` hook', () => {
@@ -22,16 +36,20 @@ runSpec(vest => {
         test('isExcluded returns false for included field', () => {
           validate(faker.lorem.word(), () => {
             only(field1);
-            isExcluded(field1);
-            expect(isExcluded(field1)).toBe(false);
+            const ctx = singleton.context();
+            const state = getSuiteState(ctx.suiteId);
+            isExcluded(state, field1);
+            expect(isExcluded(state, field1)).toBe(false);
           });
         });
 
         test('isExcluded returns true for non included field', () => {
           validate(faker.lorem.word(), () => {
-            expect(isExcluded(field2)).toBe(false);
+            const ctx = singleton.context();
+            const state = getSuiteState(ctx.suiteId);
+            expect(isExcluded(state, field2)).toBe(false);
             only(field1);
-            expect(isExcluded(field2)).toBe(true);
+            expect(isExcluded(state, field2)).toBe(true);
           });
         });
       });
@@ -40,17 +58,20 @@ runSpec(vest => {
         test('isExcluded returns false for included field', () => {
           validate(faker.lorem.word(), () => {
             only([field1, field2]);
-
-            expect(isExcluded(field1)).toBe(false);
-            expect(isExcluded(field2)).toBe(false);
+            const ctx = singleton.context();
+            const state = getSuiteState(ctx.suiteId);
+            expect(isExcluded(state, field1)).toBe(false);
+            expect(isExcluded(state, field2)).toBe(false);
           });
         });
 
         test('isExcluded returns true for non included field', () => {
           validate(faker.lorem.word(), () => {
-            expect(isExcluded(field3)).toBe(false);
+            const ctx = singleton.context();
+            const state = getSuiteState(ctx.suiteId);
+            expect(isExcluded(state, field3)).toBe(false);
             only([field1, field2]);
-            expect(isExcluded(field3)).toBe(true);
+            expect(isExcluded(state, field3)).toBe(true);
           });
         });
       });
@@ -61,15 +82,18 @@ runSpec(vest => {
         test('isExcluded returns true for excluded field', () => {
           validate(faker.lorem.word(), () => {
             skip(field1);
-
-            expect(isExcluded(field1)).toBe(true);
+            const ctx = singleton.context();
+            const state = getSuiteState(ctx.suiteId);
+            expect(isExcluded(state, field1)).toBe(true);
           });
         });
 
         test('isExcluded returns true for non excluded field', () => {
           validate(faker.lorem.word(), () => {
             skip(field1);
-            expect(isExcluded(field2)).toBe(false);
+            const ctx = singleton.context();
+            const state = getSuiteState(ctx.suiteId);
+            expect(isExcluded(state, field2)).toBe(false);
           });
         });
       });
@@ -78,16 +102,19 @@ runSpec(vest => {
         test('isExcluded returns true for excluded field', () => {
           validate(faker.lorem.word(), () => {
             skip([field1, field2]);
-
-            expect(isExcluded(field1)).toBe(true);
-            expect(isExcluded(field2)).toBe(true);
+            const ctx = singleton.context();
+            const state = getSuiteState(ctx.suiteId);
+            expect(isExcluded(state, field1)).toBe(true);
+            expect(isExcluded(state, field2)).toBe(true);
           });
         });
 
         test('isExcluded returns false for non included field', () => {
           validate(faker.lorem.word(), () => {
             skip([field1, field2]);
-            expect(isExcluded(field3)).toBe(false);
+            const ctx = singleton.context();
+            const state = getSuiteState(ctx.suiteId);
+            expect(isExcluded(state, field3)).toBe(false);
           });
         });
       });

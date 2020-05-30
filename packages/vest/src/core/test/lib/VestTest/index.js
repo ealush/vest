@@ -1,11 +1,4 @@
 import id from '../../../../lib/id';
-import patch from '../../../state/patch';
-import {
-  SEVERITY_GROUP_WARN,
-  SEVERITY_COUNT_WARN,
-  SEVERITY_GROUP_ERROR,
-  SEVERITY_COUNT_ERROR,
-} from './constants';
 
 /**
  * Describes a test call inside a Vest suite.
@@ -18,7 +11,6 @@ import {
 function VestTest({ suiteId, fieldName, statement, testFn, group }) {
   Object.assign(this, {
     suiteId,
-    group,
     testFn,
     fieldName,
     statement,
@@ -26,6 +18,10 @@ function VestTest({ suiteId, fieldName, statement, testFn, group }) {
     failed: false,
     id: id(),
   });
+
+  if (group) {
+    this.groupName = group;
+  }
 }
 
 /**
@@ -40,43 +36,6 @@ VestTest.prototype.valueOf = function () {
  * @returns {VestTest} Current instance.
  */
 VestTest.prototype.fail = function () {
-  const { fieldName, statement, isWarning, suiteId, group } = this;
-
-  let severityGroup, severityCount;
-
-  if (isWarning) {
-    severityGroup = SEVERITY_GROUP_WARN;
-    severityCount = SEVERITY_COUNT_WARN;
-  } else {
-    severityGroup = SEVERITY_GROUP_ERROR;
-    severityCount = SEVERITY_COUNT_ERROR;
-  }
-
-  patch(suiteId, state => {
-    if (!state.tests[fieldName]) {
-      return state;
-    }
-
-    const nextState = { ...state };
-    const objectsToBump = [nextState.tests[fieldName]];
-
-    if (group && nextState.groups[group][fieldName] !== undefined) {
-      objectsToBump.push(nextState.groups[group][fieldName]);
-    }
-
-    objectsToBump.forEach(obj => {
-      obj[severityGroup] = obj[severityGroup] || [];
-
-      if (statement) {
-        obj[severityGroup].push(statement);
-      }
-
-      obj[severityCount]++;
-    });
-
-    return nextState;
-  });
-
   this.failed = true;
   return this;
 };

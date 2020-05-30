@@ -1,9 +1,9 @@
+import getSuiteState from '../../core/state/getSuiteState';
 import patch from '../../core/state/patch';
-import { setSkippedGroup } from '../../core/test/lib/skipped';
 import runWithContext from '../../lib/runWithContext';
 import singleton from '../../lib/singleton';
 import validateSuiteParams from '../../lib/validateSuiteParams';
-import { isExcluded } from '../exclusive';
+import { isGroupExcluded } from '../exclusive';
 
 /**
  * Registers a group in state.
@@ -26,13 +26,12 @@ const registerGroup = groupName => {
 const group = (groupName, tests) => {
   validateSuiteParams('group', groupName, tests);
 
-  const context = singleton.useContext();
+  const ctx = singleton.useContext();
+  const state = getSuiteState(ctx.suiteId);
 
-  if (isExcluded(groupName)) {
-    return setSkippedGroup(context.suiteId, groupName);
+  if (!isGroupExcluded(state, groupName)) {
+    registerGroup(groupName);
   }
-
-  registerGroup(groupName);
 
   runWithContext(
     {

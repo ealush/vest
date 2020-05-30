@@ -14,7 +14,6 @@ Object {
     VestTest {
       "failed": false,
       "fieldName": "field_1",
-      "group": undefined,
       "id": "11",
       "isWarning": false,
       "statement": "some statement string",
@@ -22,9 +21,8 @@ Object {
       "testFn": Promise {},
     },
   ],
-  "skippedGroups": Object {},
-  "skippedTests": Object {},
   "suiteId": "suiteId_1",
+  "testObjects": Array [],
   "tests": Object {},
 }
 `;
@@ -43,7 +41,6 @@ Object {
     VestTest {
       "failed": false,
       "fieldName": "field_1",
-      "group": undefined,
       "id": "0",
       "isWarning": false,
       "statement": "some statement string",
@@ -51,9 +48,8 @@ Object {
       "testFn": Promise {},
     },
   ],
-  "skippedGroups": Object {},
-  "skippedTests": Object {},
   "suiteId": "suiteId_1",
+  "testObjects": Array [],
   "tests": Object {},
 }
 `;

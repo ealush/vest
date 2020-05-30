@@ -7,6 +7,7 @@ Object {
     "errors": Array [
       "field_statement_1",
     ],
+    "testCount": 1,
     "warnCount": 0,
   },
   "field_2": Object {
@@ -14,14 +15,17 @@ Object {
     "errors": Array [
       "field_statement_2",
     ],
+    "testCount": 1,
     "warnCount": 0,
   },
   "field_3": Object {
     "errorCount": 0,
+    "testCount": 1,
     "warnCount": 0,
   },
   "field_4": Object {
     "errorCount": 0,
+    "testCount": 2,
     "warnCount": 1,
     "warnings": Array [
       "field_statement_4",
@@ -33,14 +37,17 @@ Object {
       "field_statement_5",
       "field_statement_6",
     ],
+    "testCount": 2,
     "warnCount": 0,
   },
   "field_6": Object {
     "errorCount": 0,
+    "testCount": 1,
     "warnCount": 0,
   },
   "field_7": Object {
     "errorCount": 0,
+    "testCount": 1,
     "warnCount": 0,
   },
 }
@@ -53,6 +60,7 @@ Object {
     "errors": Array [
       "field_statement_1",
     ],
+    "testCount": 1,
     "warnCount": 0,
   },
   "field_2": Object {
@@ -60,14 +68,17 @@ Object {
     "errors": Array [
       "field_statement_2",
     ],
+    "testCount": 1,
     "warnCount": 0,
   },
   "field_3": Object {
     "errorCount": 0,
+    "testCount": 1,
     "warnCount": 0,
   },
   "field_4": Object {
     "errorCount": 0,
+    "testCount": 2,
     "warnCount": 1,
     "warnings": Array [
       "field_statement_4",
@@ -79,14 +90,17 @@ Object {
       "field_statement_5",
       "field_statement_6",
     ],
+    "testCount": 2,
     "warnCount": 0,
   },
   "field_6": Object {
     "errorCount": 0,
+    "testCount": 1,
     "warnCount": 0,
   },
   "field_7": Object {
     "errorCount": 0,
+    "testCount": 1,
     "warnCount": 0,
   },
 }
@@ -99,6 +113,7 @@ Object {
     "errors": Array [
       "field_statement_1",
     ],
+    "testCount": 1,
     "warnCount": 0,
   },
   "field_2": Object {
@@ -106,14 +121,17 @@ Object {
     "errors": Array [
       "field_statement_2",
     ],
+    "testCount": 1,
     "warnCount": 0,
   },
   "field_3": Object {
     "errorCount": 0,
+    "testCount": 1,
     "warnCount": 0,
   },
   "field_4": Object {
     "errorCount": 0,
+    "testCount": 2,
     "warnCount": 1,
     "warnings": Array [
       "field_statement_4",
@@ -125,14 +143,17 @@ Object {
       "field_statement_5",
       "field_statement_6",
     ],
+    "testCount": 2,
     "warnCount": 0,
   },
   "field_6": Object {
     "errorCount": 0,
+    "testCount": 1,
     "warnCount": 0,
   },
   "field_7": Object {
     "errorCount": 0,
+    "testCount": 1,
     "warnCount": 0,
   },
 }

@@ -1,8 +1,9 @@
 const collector = () => {
   const collection = [];
 
-  const collect = (...args) => {
-    args.forEach(value => collection.push(value));
+  const collect = val => {
+    collection.push(val);
+    return val;
   };
 
   collect.collection = collection;

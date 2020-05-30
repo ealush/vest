@@ -1,4 +1,5 @@
 import { OPERATION_MODE_STATELESS } from '../../../constants';
+import runWithContext from '../../../lib/runWithContext';
 import singleton from '../../../lib/singleton';
 import { getState, getSuites } from '../../state';
 import cleanupCompletedSuite from '../../state/cleanupCompletedSuite';
@@ -7,7 +8,6 @@ import hasRemainingTests from '../../state/hasRemainingTests';
 import { SYMBOL_CANCELED } from '../../state/symbols';
 import { removeCanceled } from '../lib/canceled';
 import { removePending } from '../lib/pending';
-import runTest from '../lib/runTest';
 /**
  * Runs done callback when async tests are finished running.
  * @param {String} suiteId
@@ -77,7 +77,7 @@ const runAsyncTest = testObject => {
       testObject.fail();
     });
   };
-  runTest(testObject, () => {
+  runWithContext({ currentTest: testObject }, () => {
     try {
       testFn.then(done, fail);
     } catch (e) {

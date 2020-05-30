@@ -1,66 +1,21 @@
 import { isExcluded } from '../../hooks/exclusive';
+import runWithContext from '../../lib/runWithContext';
 import singleton from '../../lib/singleton';
+import getSuiteState from '../state/getSuiteState';
 import patch from '../state/patch';
 import VestTest from './lib/VestTest';
 import { setPending } from './lib/pending';
-import runTest from './lib/runTest';
-import { setSkippedTest } from './lib/skipped';
-
-const BASE_COUNTERS = {
-  errorCount: 0,
-  warnCount: 0,
-};
 
 /**
- * Initiates a field in the suite state.
- * @param {string} suiteId.
- * @param {string} fieldName.
+ * Stores test object inside suite state.
+ * @param {String} suiteId
+ * @param {VestTest} testObject
  */
-const initField = (suiteId, fieldName) => {
-  patch(suiteId, state => {
-    if (state.tests[fieldName] !== undefined) {
-      return state;
-    }
-
-    return {
-      ...state,
-      tests: {
-        ...state.tests,
-        [fieldName]: {
-          ...BASE_COUNTERS,
-        },
-      },
-    };
-  });
-};
-
-/**
- * Adds a field into a group in state
- * @param {string} suiteId
- * @param {string} group
- * @param {string} fieldName
- */
-const addFieldToGroup = (suiteId, group, fieldName) => {
-  if (group === undefined) {
-    return;
-  }
-
-  patch(suiteId, state => {
-    if (state.groups[group]?.[fieldName] !== undefined) {
-      return state;
-    }
-
-    return {
-      ...state,
-      groups: {
-        ...state.groups,
-        [group]: {
-          ...state.groups[group],
-          [fieldName]: { ...BASE_COUNTERS },
-        },
-      },
-    };
-  });
+const addTestToState = (suiteId, testObject) => {
+  patch(suiteId, state => ({
+    ...state,
+    testObjects: state.testObjects.concat(testObject),
+  }));
 };
 
 /**
@@ -69,7 +24,7 @@ const addFieldToGroup = (suiteId, group, fieldName) => {
  * @returns {*} Result from test callback.
  */
 const sync = testObject =>
-  runTest(testObject, () => {
+  runWithContext({ currentTest: testObject }, () => {
     let result;
     try {
       result = testObject.testFn.apply(testObject);
@@ -89,8 +44,7 @@ const sync = testObject =>
  * @param {VestTest} testObject   A VestTest Instance.
  */
 const register = testObject => {
-  initField(testObject.suiteId, testObject.fieldName);
-  addFieldToGroup(testObject.suiteId, testObject.group, testObject.fieldName);
+  addTestToState(testObject.suiteId, testObject);
 
   // Run test callback.
   // If a promise is returned, set as async and
@@ -122,8 +76,7 @@ const test = (fieldName, ...args) => {
     testFn,
   });
 
-  if (isExcluded(fieldName)) {
-    setSkippedTest(ctx.suiteId, fieldName);
+  if (isExcluded(getSuiteState(ctx.suiteId), testObject)) {
     return testObject;
   }
 

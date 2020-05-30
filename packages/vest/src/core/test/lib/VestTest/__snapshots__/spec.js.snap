@@ -4,7 +4,6 @@ exports[`VestTest TestObject constructor 1`] = `
 VestTest {
   "failed": false,
   "fieldName": "unicycle",
-  "group": undefined,
   "id": "0",
   "isWarning": false,
   "statement": "I am Root.",
@@ -13,43 +12,10 @@ VestTest {
 }
 `;
 
-exports[`VestTest testObject.fail When severity = error Should bump error counters and messages 1`] = `
-Object {
-  "groups": Object {},
-  "tests": Object {
-    "unicycle": Object {
-      "errorCount": 1,
-      "errors": Array [
-        "I am Root.",
-      ],
-      "warnCount": 0,
-      "warnings": Array [],
-    },
-  },
-}
-`;
-
-exports[`VestTest testObject.fail When severity = warn Should bump error counters and messages 1`] = `
-Object {
-  "groups": Object {},
-  "tests": Object {
-    "unicycle": Object {
-      "errorCount": 0,
-      "errors": Array [],
-      "warnCount": 1,
-      "warnings": Array [
-        "I am Root.",
-      ],
-    },
-  },
-}
-`;
-
 exports[`VestTest testObject.warn Should set \`.isWarning\` to true 1`] = `
 VestTest {
   "failed": false,
   "fieldName": "unicycle",
-  "group": undefined,
   "id": "103",
   "isWarning": true,
   "statement": "I am Root.",

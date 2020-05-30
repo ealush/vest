@@ -40,6 +40,14 @@ class Context {
     this.suite_id = suiteId;
   }
 
+  get currentTest() {
+    return this.lookup('current_test');
+  }
+
+  set currentTest(testObject) {
+    this.current_test = testObject;
+  }
+
   get groupName() {
     return this.lookup('group_name');
   }
@@ -69,21 +77,6 @@ class Context {
 
   removeChildContext() {
     this.childContext = null;
-  }
-
-  /**
-   * Sets a testObject reference on context.
-   * @param {VestTest} A VestTest instance.
-   */
-  setCurrentTest(testObject) {
-    this.currentTest = testObject;
-  }
-
-  /**
-   * Removes current test from context.
-   */
-  removeCurrentTest() {
-    delete this.currentTest;
   }
 }
 

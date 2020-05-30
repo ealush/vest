@@ -17,11 +17,13 @@ const getByGroup = (state, severityKey, group, fieldName) => {
     );
   }
 
-  if (!fieldName) {
-    return collectFailureMessages(state, severityKey, group);
-  }
+  const res = collectFailureMessages(state, severityKey, { group, fieldName });
 
-  return state.groups?.[group]?.[fieldName]?.[severityKey] || [];
+  if (fieldName) {
+    return res[fieldName] || [];
+  } else {
+    return res;
+  }
 };
 
 export default getByGroup;

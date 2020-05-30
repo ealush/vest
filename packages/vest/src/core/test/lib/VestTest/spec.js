@@ -1,4 +1,3 @@
-import mock from '../../../../../testUtils/mock';
 import VestTest from '.';
 
 const suiteId = 'validation-suite';
@@ -47,24 +46,7 @@ describe('VestTest', () => {
   });
 
   describe('testObject.fail', () => {
-    let mockPatch, res;
-
-    const stateMock = () => ({
-      tests: {
-        [fieldName]: {
-          errors: [],
-          warnings: [],
-          errorCount: 0,
-          warnCount: 0,
-        },
-      },
-      groups: {},
-    });
-
-    const initialState = stateMock();
-
     beforeEach(() => {
-      mockPatch = mock('patch', (key, patcher) => patcher(stateMock()));
       jest.resetModules();
 
       const VestTest = require('.');
@@ -80,37 +62,10 @@ describe('VestTest', () => {
       jest.resetAllMocks();
     });
 
-    describe('When severity = error', () => {
-      it('Should bump error counters and messages', () => {
-        testObject.fail();
-        res = mockPatch.mock.results[0].value;
-        expect(res.tests[fieldName].errors).toEqual([statement]);
-        expect(res.tests[fieldName].warnings).toEqual([]);
-        expect(res.tests[fieldName].errorCount).toBe(
-          initialState.tests[fieldName].errorCount + 1
-        );
-        expect(res.tests[fieldName].warnCount).toBe(
-          initialState.tests[fieldName].warnCount
-        );
-        expect(res).toMatchSnapshot();
-      });
-    });
-
-    describe('When severity = warn', () => {
-      it('Should bump error counters and messages', () => {
-        testObject.isWarning = true;
-        testObject.fail();
-        res = mockPatch.mock.results[0].value;
-        expect(res.tests[fieldName].warnings).toEqual([statement]);
-        expect(res.tests[fieldName].errors).toEqual([]);
-        expect(res.tests[fieldName].warnCount).toBe(
-          initialState.tests[fieldName].warnCount + 1
-        );
-        expect(res.tests[fieldName].errorCount).toBe(
-          initialState.tests[fieldName].errorCount
-        );
-        expect(res).toMatchSnapshot();
-      });
+    it('Should set this.failed to true', () => {
+      expect(testObject.failed).toBe(false);
+      testObject.fail();
+      expect(testObject.failed).toBe(true);
     });
   });
 

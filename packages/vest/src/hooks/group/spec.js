@@ -1,4 +1,5 @@
 import faker from 'faker';
+import _ from 'lodash';
 import enforce from 'n4s';
 import collector from '../../../testUtils/collector';
 import resetState from '../../../testUtils/resetState';
@@ -50,6 +51,7 @@ runSpec(vest => {
       beforeEach(() => {
         res = validate({ skip: groupName });
       });
+
       it('produce result object without group', () => {
         expect(res.groups[groupName]).toBeUndefined();
       });
@@ -189,7 +191,10 @@ runSpec(vest => {
       );
 
       // This one is equal because it has no errors and no warnings - so both represent the base object
-      expect(res.tests['field_2']).toEqual(res.groups[groupName]['field_2']);
+      // The test count is different, though
+      expect(_.omit(res.tests['field_2'], 'testCount')).toMatchObject(
+        _.omit(res.groups[groupName]['field_2'], 'testCount')
+      );
 
       expect(res.tests['field_3'].warnings).toEqual(
         expect.arrayContaining(res.groups[groupName]['field_3'].warnings)

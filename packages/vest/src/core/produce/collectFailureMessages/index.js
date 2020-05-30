@@ -1,21 +1,39 @@
+import { SEVERITY_GROUP_WARN } from '../../test/lib/VestTest/constants';
+
 /**
- * @param {string} suiteId            Current suite id.
+ * @param {String} suiteId            Current suite id.
  * @param {'warn'|'error'} severity   Filter by severity.
- * @param {string} [group]            Group to collect messages from.
+ * @param {Object} options
+ * @param {String} [options.group]      Group name for error lookup.
+ * @param {String} [options.fieldName]  Field name for error lookup.
  * @returns all messages for given criteria.
  */
-const collectFailureMessages = (state, severity, group) => {
-  const collector = {};
-
-  const collectFrom = group ? state.groups[group] : state.tests;
-
-  for (const fieldName in collectFrom) {
-    if (collectFrom?.[fieldName] && collectFrom?.[fieldName][severity]) {
-      collector[fieldName] = collectFrom[fieldName][severity];
+const collectFailureMessages = (state, severity, { group, fieldName } = {}) =>
+  state.testObjects.reduce((collector, testObject) => {
+    if (group && testObject.groupName !== group) {
+      return collector;
     }
-  }
 
-  return collector;
-};
+    if (fieldName && testObject.fieldName !== fieldName) {
+      return collector;
+    }
+
+    if (!testObject.failed) {
+      return collector;
+    }
+
+    if (
+      (severity !== SEVERITY_GROUP_WARN && testObject.isWarning) ||
+      (severity === SEVERITY_GROUP_WARN && !testObject.isWarning)
+    ) {
+      return collector;
+    }
+
+    collector[testObject.fieldName] = (
+      collector[testObject.fieldName] || []
+    ).concat(testObject.statement);
+
+    return collector;
+  }, {});
 
 export default collectFailureMessages;

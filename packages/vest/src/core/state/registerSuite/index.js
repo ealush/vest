@@ -11,13 +11,12 @@ const INITIAL_SUITE_STATE = (suiteId, name) => ({
   suiteId,
   pending: [],
   lagging: [],
-  skippedTests: {},
-  skippedGroups: {},
   doneCallbacks: [],
   fieldCallbacks: {},
   tests: {},
   groups: {},
   exclusive: {},
+  testObjects: [],
 });
 
 /**

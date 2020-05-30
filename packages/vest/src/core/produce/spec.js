@@ -70,7 +70,9 @@ runSpec(vest => {
       resetState();
       runCreateSuite(suiteName);
       state = getSuiteState(suiteId);
-      testKeys = Object.keys(state.tests);
+      testKeys = [
+        ...new Set(state.testObjects.map(({ fieldName }) => fieldName)),
+      ];
       produced = produce(state);
 
       collect.collection.forEach(({ fieldName, failed, isWarning }) => {
@@ -89,32 +91,6 @@ runSpec(vest => {
         _.pick(getSuiteState(suiteId), KEPT_PROPERTIES),
         _.pick(produced, KEPT_PROPERTIES)
       );
-    });
-
-    it('Should add global failure counters from test object', () => {
-      const res = produce({
-        tests: {
-          f1: {
-            errorCount: 1,
-            warnCount: 0,
-          },
-          f2: {
-            errorCount: 1,
-            warnCount: 1,
-          },
-          f3: {
-            errorCount: 2,
-            warnCount: 3,
-          },
-          f4: {
-            errorCount: 0,
-            warnCount: 2,
-          },
-        },
-      });
-
-      expect(res.errorCount).toBe(4);
-      expect(res.warnCount).toBe(6);
     });
 
     it.each(GENERATED_METHODS)(
@@ -156,7 +132,7 @@ runSpec(vest => {
           it('Should return all statement messages for failed field', () => {
             errors.forEach(field => {
               expect(produced.getErrors(field)).toEqual(
-                getSuiteState(suiteId).tests[field].errors
+                produce(getSuiteState(suiteId)).tests[field].errors
               );
             });
           });
@@ -166,7 +142,7 @@ runSpec(vest => {
             const failures = errors.reduce(
               (failures, key) =>
                 Object.assign(failures, {
-                  [key]: getSuiteState(suiteId).tests[key].errors,
+                  [key]: produce(getSuiteState(suiteId)).tests[key].errors,
                 }),
               {}
             );
@@ -186,7 +162,7 @@ runSpec(vest => {
         it('Should return all statement messages for failed field', () => {
           warnings.forEach(field => {
             expect(produced.getWarnings(field)).toEqual(
-              getSuiteState(suiteId).tests[field].warnings
+              produce(getSuiteState(suiteId)).tests[field].warnings
             );
           });
         });
@@ -196,7 +172,7 @@ runSpec(vest => {
           const failures = warnings.reduce(
             (failures, key) =>
               Object.assign(failures, {
-                [key]: getSuiteState(suiteId).tests[key].warnings,
+                [key]: produce(getSuiteState(suiteId)).tests[key].warnings,
               }),
             {}
           );
@@ -209,7 +185,7 @@ runSpec(vest => {
         it('Should return the error count of the field', () => {
           testKeys.forEach(key => {
             expect(produced.hasErrors(key)).toBe(
-              !!getSuiteState(suiteId).tests[key].errorCount
+              !!produce(getSuiteState(suiteId)).tests[key].errorCount
             );
           });
         });
@@ -217,7 +193,7 @@ runSpec(vest => {
       describe('When invoked without field name', () => {
         it('Should return the error count of the whole suite', () => {
           expect(produced.hasErrors()).toBe(
-            !!getSuiteState(suiteId).errorCount
+            !!produce(getSuiteState(suiteId)).errorCount
           );
         });
       });
@@ -227,7 +203,7 @@ runSpec(vest => {
         it('Should return the warning count of the field', () => {
           testKeys.forEach(key => {
             expect(produced.hasWarnings(key)).toBe(
-              !!getSuiteState(suiteId).tests[key].warnCount
+              !!produce(getSuiteState(suiteId)).tests[key].warnCount
             );
           });
         });
@@ -235,7 +211,7 @@ runSpec(vest => {
       describe('When invoked without field name', () => {
         it('Should return the warn count of the whole suite', () => {
           expect(produced.hasWarnings()).toBe(
-            !!getSuiteState(suiteId).warnCount
+            !!produce(getSuiteState(suiteId)).warnCount
           );
         });
       });
@@ -406,7 +382,7 @@ runSpec(vest => {
           res = validate();
         });
 
-        it('Should return false', () => {
+        it('Should return true', () => {
           expect(res.hasWarningsByGroup(groupName)).toBe(true);
         });
       });

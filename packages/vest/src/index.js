@@ -12,15 +12,16 @@ import singleton from './lib/singleton';
 
 export default singleton.register(
   {
-    Enforce: enforce.Enforce,
-    create: createSuite,
-    VERSION,
     any,
+    Enforce: enforce.Enforce,
+    VERSION,
     enforce,
-    runWithContext,
+
+    create: createSuite,
     test,
     validate,
     reset,
+    runWithContext,
     ...hooks,
   },
   state.register

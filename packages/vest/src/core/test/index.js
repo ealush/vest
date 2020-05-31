@@ -69,10 +69,10 @@ const test = (fieldName, ...args) => {
   const ctx = singleton.useContext();
 
   const testObject = new VestTest({
-    group: ctx.groupName,
-    suiteId: ctx.suiteId,
     fieldName,
+    group: ctx.groupName,
     statement,
+    suiteId: ctx.suiteId,
     testFn,
   });
 

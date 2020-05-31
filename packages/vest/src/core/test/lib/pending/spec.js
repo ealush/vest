@@ -18,9 +18,9 @@ describe('module: pending', () => {
       beforeEach(() => {
         state = _.cloneDeep(getSuiteState(suiteId));
         testObject = new VestTest({
-          suiteId,
           fieldName: 'field_1',
           statement: 'failure_message',
+          suiteId,
           testFn: jest.fn(),
         });
       });
@@ -72,9 +72,9 @@ describe('module: pending', () => {
         { length: 5 },
         (v, i) =>
           new VestTest({
-            suiteId,
             fieldName: `test_${i}`,
             statement: 'Some statement string',
+            suiteId,
             testFn: jest.fn(),
           })
       );

@@ -12,10 +12,10 @@ export const setCanceled = (...testObjects) => {
 
   setState(state => ({
     ...state,
-    [SYMBOL_CANCELED]: testObjects.reduce(
-      (ids, testObjects) => Object.assign(ids, { [testObjects.id]: true }),
-      state[SYMBOL_CANCELED]
-    ),
+    [SYMBOL_CANCELED]: testObjects.reduce((ids, testObjects) => {
+      ids[testObjects.id] = true;
+      return ids;
+    }, state[SYMBOL_CANCELED]),
   }));
 };
 

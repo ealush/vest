@@ -30,13 +30,13 @@ function generatePackageData(packageName, messages) {
   const tagId = pickTagId(nextVersion);
   const tag = tagId === nextVersion ? null : TAG_NEXT;
   return {
-    packageName,
-    messages,
-    version,
     changeLevel,
+    messages,
     nextVersion,
-    tagId,
+    packageName,
     tag,
+    tagId,
+    version,
   };
 }
 

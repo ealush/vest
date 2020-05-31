@@ -2,12 +2,12 @@ const packagePath = require('../../../../util/packagePath');
 
 const PATHS = {
   Context: 'core/Context',
+  cleanupCompletedSuite: 'core/state/cleanupCompletedSuite',
   createSuite: 'core/createSuite',
+  id: 'lib/id',
+  patch: 'core/state/patch',
   runWithContext: 'lib/runWithContext',
   throwError: 'lib/throwError',
-  id: 'lib/id',
-  cleanupCompletedSuite: 'core/state/cleanupCompletedSuite',
-  patch: 'core/state/patch',
   validateSuiteParams: 'lib/validateSuiteParams',
 };
 

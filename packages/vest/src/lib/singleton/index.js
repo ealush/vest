@@ -49,8 +49,8 @@ const set = (key, value) => (go[SYMBOL_VEST][key] = value);
 const useContext = () => use().ctx;
 
 export default {
-  use,
-  set,
-  useContext,
   register,
+  set,
+  use,
+  useContext,
 };

@@ -1,7 +1,7 @@
 const isDeepCopy = (source, clone) => {
   const queue = [[source, clone]];
 
-  while (queue.length) {
+  outer: while (queue.length) {
     const [source, clone] = queue.shift();
 
     if (!source || typeof source !== 'object') {
@@ -21,7 +21,7 @@ const isDeepCopy = (source, clone) => {
       Object.keys(source).forEach(key => queue.push([source[key], clone[key]]));
     }
 
-    continue;
+    continue outer;
   }
 };
 
@@ -33,8 +33,8 @@ export const SAMPLE_DEEP_OBJECT = [
       first: 'Velasquez',
       last: 'Lara',
     },
-    tags: ['Lorem', 'ullamco', 'minim', 'ut', 'ad'],
     range: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+    tags: ['Lorem', 'ullamco', 'minim', 'ut', 'ad'],
   },
   {
     _id: '5eb4784e64618155ef167791',
@@ -43,7 +43,6 @@ export const SAMPLE_DEEP_OBJECT = [
       first: 'Mcconnell',
       last: 'Dennis',
     },
-    tags: ['nulla', 'ex', 'et', 'sint', 'aliqua'],
     range: [
       {
         a: 1,
@@ -55,6 +54,7 @@ export const SAMPLE_DEEP_OBJECT = [
         ],
       },
     ],
+    tags: ['nulla', 'ex', 'et', 'sint', 'aliqua'],
   },
 ];
 

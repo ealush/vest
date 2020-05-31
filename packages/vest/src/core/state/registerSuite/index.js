@@ -7,16 +7,16 @@ import singleton from '../../../lib/singleton';
  * @param {string} name     Name of the validation suite.
  */
 const INITIAL_SUITE_STATE = (suiteId, name) => ({
-  name,
-  suiteId,
-  pending: [],
-  lagging: [],
   doneCallbacks: [],
-  fieldCallbacks: {},
-  tests: {},
-  groups: {},
   exclusive: {},
+  fieldCallbacks: {},
+  groups: {},
+  lagging: [],
+  name,
+  pending: [],
+  suiteId,
   testObjects: [],
+  tests: {},
 });
 
 /**
@@ -50,11 +50,10 @@ const registerSuite = () => {
 
   suite.unshift(next);
   suite.length = 2;
-  setSuites(state =>
-    Object.assign(state, {
-      [suiteId]: suite,
-    })
-  );
+  setSuites(state => {
+    state[suiteId] = suite;
+    return state;
+  });
 };
 
 export default registerSuite;

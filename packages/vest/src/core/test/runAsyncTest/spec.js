@@ -46,9 +46,9 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
     }));
 
     testObject = new VestTest({
-      suiteId,
       fieldName,
       statement: STATEMENT,
+      suiteId,
       testFn: testCase === CASE_PASSING ? Promise.resolve() : Promise.reject(),
     });
     setPending(suiteId, testObject);
@@ -162,9 +162,9 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
         setPending(
           suiteId,
           new VestTest({
-            suiteId,
             fieldName: 'pending_field',
             statement: STATEMENT,
+            suiteId,
             testFn: jest.fn(),
           })
         );

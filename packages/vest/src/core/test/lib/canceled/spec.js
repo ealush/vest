@@ -9,9 +9,9 @@ const genTests = () =>
     { length: 5 },
     (_, i) =>
       new VestTest({
-        suite_id: 'suite_id',
         fieldName: `field_${i}`,
         statement: 'msg',
+        suite_id: 'suite_id',
         testFn: jest.fn(),
       })
   );

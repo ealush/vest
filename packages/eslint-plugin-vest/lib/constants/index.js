@@ -1,10 +1,10 @@
 const constants = {
-  VEST_HOOK_WARN: 'warn',
+  VEST_HOOK_DRAFT: 'draft',
   VEST_HOOK_ONLY: 'only',
   VEST_HOOK_SKIP: 'skip',
-  VEST_HOOK_DRAFT: 'draft',
-  VEST_IDENTIFIER_VALIDATE: 'validate',
+  VEST_HOOK_WARN: 'warn',
   VEST_IDENTIFIER_TEST: 'test',
+  VEST_IDENTIFIER_VALIDATE: 'validate',
   VEST_KEYWORD: 'vest',
 };
 

@@ -1,3 +1,4 @@
+/* eslint-disable max-params */
 import throwError from '../../../lib/throwError';
 import collectFailureMessages from '../collectFailureMessages';
 

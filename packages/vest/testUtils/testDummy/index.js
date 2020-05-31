@@ -112,11 +112,11 @@ const testDummy = (vestRef = vest) => {
 
   return {
     failing,
-    passing,
     failingAsync,
-    passingAsync,
     failingWarning,
     failingWarningAsync,
+    passing,
+    passingAsync,
     passingWarning,
     passingWarningAsync,
   };

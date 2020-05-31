@@ -100,18 +100,15 @@ const produce = (state, { draft } = {}) =>
         ],
       ]
         .concat(draft ? [] : [['done', done.bind(null, state)]])
-        .reduce(
-          (properties, [name, value]) =>
-            Object.assign(properties, {
-              [name]: {
-                value,
-                writeable: true,
-                configurable: true,
-                enumerable: true,
-              },
-            }),
-          {}
-        )
+        .reduce((properties, [name, value]) => {
+          properties[name] = {
+            configurable: true,
+            enumerable: true,
+            value,
+            writeable: true,
+          };
+          return properties;
+        }, {})
     ));
 
 export default produce;

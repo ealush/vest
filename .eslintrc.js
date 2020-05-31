@@ -64,6 +64,20 @@ module.exports = {
         skipWords,
       },
     ],
+    'no-lonely-if': 2,
+    'sort-keys': [
+      1,
+      'asc',
+      {
+        natural: true,
+        minKeys: 4,
+      },
+    ],
+    'no-unneeded-ternary': 2,
+    'no-unused-expressions': 2,
+    'no-useless-catch': 2,
+    'no-duplicate-imports': 2,
+    'max-params': [2, { max: 3 }],
   },
   ignorePatterns: ['dist', 'node_modules', 'playground'],
 };

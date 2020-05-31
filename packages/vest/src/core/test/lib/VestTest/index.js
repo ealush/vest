@@ -10,13 +10,13 @@ import id from '../../../../lib/id';
  */
 function VestTest({ suiteId, fieldName, statement, testFn, group }) {
   Object.assign(this, {
+    failed: false,
+    fieldName,
+    id: id(),
+    isWarning: false,
+    statement,
     suiteId,
     testFn,
-    fieldName,
-    statement,
-    isWarning: false,
-    failed: false,
-    id: id(),
   });
 
   if (group) {

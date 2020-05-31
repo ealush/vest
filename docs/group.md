@@ -7,7 +7,7 @@ Similar to the `describe` and `context` features provided by unit testing framew
 import vest, { test, group, enforce } from 'vest';
 
 vest.create('authentication_form', data => {
-  vest.skip(data.userExists ? 'newUser' : 'existingUser');
+  vest.skip(data.userExists ? 'signUp' : 'signIn');
 
   test('userName', "Can't be empty", () => {
     enforce(data.username).isNotEmpty();
@@ -16,14 +16,15 @@ vest.create('authentication_form', data => {
     enforce(data.password).isNotEmpty();
   });
 
-  group('existingUser', () => {
+  group('signIn', () => {
     test(
       'userName',
-      'User does not exist. Please check if you typed it correctly.'
+      'User not found. Please check if you typed it correctly.',
+      findUserName(data.username)
     );
   });
 
-  group('newUser', () => {
+  group('signUp', () => {
     test('email', 'Email already registered', isEmailRegistered(data.email));
 
     test('age', 'You must be at least 18 years old to join', () => {

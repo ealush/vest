@@ -5,11 +5,11 @@ const { isTestCall, looksLikeExclusion, errorMessage } = require('./helpers');
 module.exports = {
   meta: {
     docs: {
-      type: 'problem',
+      category: 'Possible Errors',
       description:
         'Makes sure vest exclusion hooks are not put before your test calls',
-      category: 'Possible Errors',
       recommended: true,
+      type: 'problem',
     },
     fixable: 'code',
   },

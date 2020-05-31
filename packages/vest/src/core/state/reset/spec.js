@@ -47,7 +47,6 @@ const spec = _vest => {
   });
 
   describe('When suite does not exist in state', () => {
-    state;
     beforeEach(() => {
       runRegisterSuite({ name: suiteId, suiteId });
       state = copy(getState());

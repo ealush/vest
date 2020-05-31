@@ -23,8 +23,8 @@ const createSuite = (name, tests) => {
 
     const ctxRef = singleton.useContext() ?? {
       name,
-      tests,
       operationMode: OPERATION_MODE_STATEFUL,
+      tests,
       ...(shouldCreateId && {
         suiteId: name,
       }),

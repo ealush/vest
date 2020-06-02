@@ -1,12 +1,12 @@
 const fs = require('fs');
 const { logger, packagePath } = require('../../util');
-const { PACKAGE_NAME_VEST } = require('../constants');
+const { PACKAGE_NAME_VEST, PACKAGE_NAME_N4S } = require('../constants');
 
 function updateDocs() {
   logger.info('📖 Updating documentation.');
   const readme = fs.readFileSync('./README.md', 'utf8');
   const n4sRules = fs
-    .readFileSync('./node_modules/n4s/docs/rules.md', 'utf8')
+    .readFileSync(packagePath(PACKAGE_NAME_N4S, 'docs', 'rules.md'), 'utf8')
     .replace('\n#', '\n##');
   const enforceDoc = fs.readFileSync('./docs/enforce.md.bak', 'utf8');
 

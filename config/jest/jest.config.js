@@ -1,9 +1,9 @@
 const path = require('path');
 const { BABEL_CONFIG_PATH, CONFIG_PATH } = require('..');
 
-module.exports = {
+module.exports = (options = {}) => ({
   clearMocks: true,
-  rootDir: '../../',
+  rootDir: '.',
   roots: ['<rootDir>'],
   setupFilesAfterEnv: [path.join(CONFIG_PATH, 'jest/jest.setup.js')],
   testEnvironment: 'node',
@@ -11,4 +11,5 @@ module.exports = {
   transform: {
     '\\.js$': ['babel-jest', { configFile: BABEL_CONFIG_PATH }],
   },
-};
+  ...options,
+});

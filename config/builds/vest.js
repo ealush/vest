@@ -7,16 +7,13 @@ import replace from 'rollup-plugin-replace';
 import { terser } from 'rollup-plugin-terser';
 
 const { BABEL_CONFIG_PATH } = require('..');
-
 const { PACKAGE_NAME_VEST } = require('../../scripts/constants');
 const { packagePath, packageJson } = require('../../util');
-
-const LIBRARY_NAME = PACKAGE_NAME_VEST;
-const PACKAGE_PATH = path.resolve(packagePath(LIBRARY_NAME));
 
 const DEFAULT_FORMAT = 'umd';
 
 const { version } = packageJson(PACKAGE_NAME_VEST);
+const PACKAGE_PATH = path.resolve(packagePath(PACKAGE_NAME_VEST));
 
 const PLUGINS = [
   resolve(),
@@ -37,14 +34,14 @@ const buildConfig = ({ format = DEFAULT_FORMAT, min = false } = {}) => ({
   input: path.join(PACKAGE_PATH, 'src/index.js'),
   output: {
     file: [
-      path.join(PACKAGE_PATH, 'dist', LIBRARY_NAME),
+      path.join(PACKAGE_PATH, 'dist', PACKAGE_NAME_VEST),
       min && 'min',
       format !== DEFAULT_FORMAT && format,
       'js',
     ]
       .filter(Boolean)
       .join('.'),
-    name: LIBRARY_NAME,
+    name: PACKAGE_NAME_VEST,
     format,
   },
   plugins: min ? [...PLUGINS, terser()] : PLUGINS,

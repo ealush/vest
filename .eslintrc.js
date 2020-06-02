@@ -20,6 +20,7 @@ module.exports = {
   },
   globals: {
     VEST_VERSION: true,
+    LIBRARY_NAME: true,
   },
   extends: [
     'eslint:recommended',

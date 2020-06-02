@@ -30,4 +30,5 @@ module.exports = [
   'umd',
   'utf8',
   'writeable',
+  'lt',
 ];

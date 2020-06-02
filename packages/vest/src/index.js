@@ -1,5 +1,5 @@
 import any from 'anyone/any';
-import enforce from 'n4s/dist/enforce.min';
+import enforce from '../../n4s/src/enforce';
 import { VERSION } from './constants';
 import createSuite from './core/createSuite';
 import state from './core/state';

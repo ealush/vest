@@ -41,9 +41,9 @@
     "semver": "^7.3.2"
   },
   "scripts": {
-    "pretest": "rollup -c ./config/builds/vest.js",
+    "build": "rollup -c ./config/builds/index.js",
     "prettier-watch": "onchange '**/*.js' '**/*.json' -- prettier --write {{changed}}",
-    "test": "jest --projects ./packages/*/ -i",
+    "test": "jest --projects ./packages/*/",
     "lint": "eslint ."
   },
   "husky": {

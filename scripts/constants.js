@@ -4,6 +4,7 @@ const PACKAGES_DIR = 'packages';
 const PACKAGE_NAMES = readdirSync(`./${PACKAGES_DIR}`);
 
 const PACKAGE_NAME_VEST = 'vest';
+const PACKAGE_NAME_N4S = 'n4s';
 const TAG_NEXT = 'next';
 
 const KEYWORD_PATCH = 'patch';
@@ -42,6 +43,7 @@ module.exports = {
   KEYWORDS_MAJOR,
   KEYWORDS_MINOR,
   KEYWORDS_PATCH,
+  PACKAGE_NAME_N4S,
   PACKAGE_NAME_VEST,
   PACKAGE_NAMES,
   PACKAGES_DIR,

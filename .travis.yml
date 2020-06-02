@@ -6,6 +6,7 @@ jobs:
     - stage: Test
       install: yarn install --frozen-lockfile
       script:
+        - yarn build
         - yarn test
         - yarn lint
     - stage: Release

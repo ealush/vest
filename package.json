@@ -21,7 +21,7 @@
     "eslint-plugin-jest": "^23.13.2",
     "eslint-plugin-spellcheck": "^0.0.17",
     "faker": "^4.1.0",
-    "fs-extra": "^9.0.0",
+    "fs-extra": "^9.0.1",
     "husky": "^4.2.5",
     "jest": "^26.0.1",
     "jest-cli": "^26.0.0",

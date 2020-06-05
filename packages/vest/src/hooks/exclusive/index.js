@@ -11,10 +11,10 @@ import { GROUP_NAME_ONLY, GROUP_NAME_SKIP } from './constants';
  */
 const addTo = (group, item) => {
   const ctx = singleton.useContext();
-
   if (!item) {
     return;
   }
+
   if (ctx?.suiteId === undefined) {
     throwError(`${group} ${ERROR_HOOK_CALLED_OUTSIDE}`);
     return;
@@ -52,7 +52,6 @@ export const skip = item => addTo(GROUP_NAME_SKIP, item);
  */
 export const isExcluded = (state, testObject) => {
   const { fieldName, groupName } = testObject;
-
   // If inside a group
   if (groupName) {
     if (isGroupExcluded(state, groupName)) {

@@ -43,7 +43,7 @@
   "scripts": {
     "build": "rollup -c ./config/builds/index.js",
     "prettier-watch": "onchange '**/*.js' '**/*.json' -- prettier --write {{changed}}",
-    "test": "jest --projects ./packages/*/",
+    "test": "jest --projects ./packages/*/ --i",
     "lint": "eslint ."
   },
   "husky": {

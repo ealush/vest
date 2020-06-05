@@ -4,7 +4,6 @@ const vest = require('../../src');
 
 const runSpec = callback => {
   callback(vest);
-
   if (!global.isWatchMode) {
     VEST_DIST_BUILDS.forEach(callback);
   }

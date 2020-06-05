@@ -3,8 +3,8 @@ import isDeepCopy from '../../../../testUtils/isDeepCopy';
 import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
+import { KEY_SUITES } from '../constants';
 import patch from '../patch';
-import { SYMBOL_SUITES } from '../symbols';
 
 const suiteName = 'suite_1';
 const suiteId = 'suiteId_1';
@@ -24,11 +24,11 @@ describe('registerSuite', () => {
 
   describe('When suite does not exist in state', () => {
     it('Should create initial suite without prevState', () => {
-      expect(getState(SYMBOL_SUITES)[suiteId]).toBeUndefined();
+      expect(getState(KEY_SUITES)[suiteId]).toBeUndefined();
       runRegisterSuite(context);
-      expect(getState(SYMBOL_SUITES)[suiteId]).toHaveLength(2);
-      expect(getState(SYMBOL_SUITES)[suiteId][1]).toBeUndefined();
-      expect(getState(SYMBOL_SUITES)[suiteId][0]).toMatchSnapshot();
+      expect(getState(KEY_SUITES)[suiteId]).toHaveLength(2);
+      expect(getState(KEY_SUITES)[suiteId][1]).toBeUndefined();
+      expect(getState(KEY_SUITES)[suiteId][0]).toMatchSnapshot();
     });
   });
 
@@ -36,12 +36,12 @@ describe('registerSuite', () => {
     let suite;
     beforeEach(() => {
       runRegisterSuite(context);
-      suite = getState(SYMBOL_SUITES)[suiteId];
+      suite = getState(KEY_SUITES)[suiteId];
       prevSuiteState = suite[0];
       runRegisterSuite({ ...context });
     });
     it('Should move prev prevSuiteState into second array cell', () => {
-      expect(getState(SYMBOL_SUITES)[suiteId][1]).toBe(prevSuiteState);
+      expect(getState(KEY_SUITES)[suiteId][1]).toBe(prevSuiteState);
     });
 
     describe('Prev state data handling', () => {

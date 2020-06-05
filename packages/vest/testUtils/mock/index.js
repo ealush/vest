@@ -14,6 +14,7 @@ const PATHS = {
 const mock = (moduleName, mockImplementation) => {
   const mockFn = jest.fn(mockImplementation);
   jest.resetModules();
+  require('../../src'); // re-require vest for global assignments
   jest.mock(packagePath('vest/src', PATHS[moduleName]), () => ({
     __esModule: true,
     default: mockFn,

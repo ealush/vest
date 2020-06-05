@@ -155,9 +155,5 @@ Object {
   "test": [Function],
   "validate": [Function],
   "warn": [Function],
-  Symbol(mock_vest_state): Object {
-    Symbol(mock_vest_suites): Object {},
-    Symbol(mock_vest_canceled): Object {},
-  },
 }
 `;

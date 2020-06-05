@@ -2,8 +2,8 @@
 
 exports[`resetState Sanity 1`] = `
 Object {
-  Symbol(mock_vest_suites): Object {},
-  Symbol(mock_vest_canceled): Object {},
+  "_canceled": Object {},
+  "_suites": Object {},
 }
 `;
 

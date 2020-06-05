@@ -3,9 +3,9 @@ import runWithContext from '../../../lib/runWithContext';
 import singleton from '../../../lib/singleton';
 import { getState, getSuites } from '../../state';
 import cleanupCompletedSuite from '../../state/cleanupCompletedSuite';
+import { KEY_CANCELED } from '../../state/constants';
 import getSuiteState from '../../state/getSuiteState';
 import hasRemainingTests from '../../state/hasRemainingTests';
-import { SYMBOL_CANCELED } from '../../state/symbols';
 import { removeCanceled } from '../lib/canceled';
 import { removePending } from '../lib/pending';
 /**
@@ -36,7 +36,7 @@ const runAsyncTest = testObject => {
   const { testFn, statement, fieldName, id, suiteId } = testObject;
   const { operationMode } = singleton.useContext();
   const done = cb => {
-    const isCanceled = getState(SYMBOL_CANCELED)[id];
+    const isCanceled = getState(KEY_CANCELED)[id];
 
     if (isCanceled) {
       removeCanceled(testObject);

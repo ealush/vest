@@ -1178,9 +1178,9 @@
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
 "@types/node@*":
-  version "14.0.9"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.0.9.tgz#43896ab87fc82bda1dfd600cdf44a0c8a64e11d2"
-  integrity sha512-0sCTiXKXELOBxvZLN4krQ0FPOAA7ij+6WwvD0k/PHd9/KAkr4dXel5J9fh6F4x1FwAQILqAWkmpeuS6mjf1iKA==
+  version "14.0.11"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.0.11.tgz#61d4886e2424da73b7b25547f59fdcb534c165a3"
+  integrity sha512-lCvvI24L21ZVeIiyIUHZ5Oflv1hhHQ5E1S25IRlKIXaRkVgmXpJMI3wUJkmym2bTbCe+WoIibQnMVAU3FguaOg==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -1686,9 +1686,9 @@ camelcase@^6.0.0:
   integrity sha512-8KMDF1Vz2gzOq54ONPJS65IvTUaB1cHJ2DMM7MbPmLZljDH1qpzzLsWdiN9pHh6qvkRVDTi/07+eNGch/oLU4w==
 
 caniuse-lite@^1.0.30001043:
-  version "1.0.30001077"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001077.tgz#5d7da6a120b08d9f4fd94823786ecb454aaa5626"
-  integrity sha512-AEzsGvjBJL0lby/87W96PyEvwN0GsYvk5LHsglLg9tW37K4BqvAvoSCdWIE13OZQ8afupqZ73+oL/1LkedN8hA==
+  version "1.0.30001078"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001078.tgz#e1b6e2ae327b6a1ec11f65ec7a0dde1e7093074c"
+  integrity sha512-sF12qXe9VMm32IEf/+NDvmTpwJaaU7N1igpiH2FdI4DyABJSsOqG3ZAcFvszLkoLoo1y6VJLMYivukUAxaMASw==
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -2166,9 +2166,9 @@ ecc-jsbn@~0.1.1:
     safer-buffer "^2.1.0"
 
 electron-to-chromium@^1.3.413:
-  version "1.3.458"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.458.tgz#4ef179f9a0f1d8a658180c09b21bf73edddfc5eb"
-  integrity sha512-OjRkb0igW0oKE2QbzS7vBYrm7xjW/KRTtIj0OGGx57jr/YhBiKb7oZvdbaojqjfCb/7LbnwsbMbdsYjthdJbAw==
+  version "1.3.463"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.463.tgz#bae89d8c2c69b4be32f80221fe49ab5786fab368"
+  integrity sha512-mAqvpG0efJXV9BGXPVjFdBFiqmawGoIc+c8T2uXYEvbV1/261PaOT0EzZ9dKW4IdGiHXQGSKnnOU86QhJ+5JcA==
 
 emoji-regex@^7.0.1:
   version "7.0.3"
@@ -2231,9 +2231,9 @@ escape-string-regexp@^2.0.0:
   integrity sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==
 
 escodegen@^1.14.1:
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/escodegen/-/escodegen-1.14.1.tgz#ba01d0c8278b5e95a9a45350142026659027a457"
-  integrity sha512-Bmt7NcRySdIfNPfU2ZoXDrrXsG9ZjvDxcAlMfDUgRBjLOWTuIACXPBFJH7Z+cLb40JeQco5toikyc9t9P8E9SQ==
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/escodegen/-/escodegen-1.14.2.tgz#14ab71bf5026c2aa08173afba22c6f3173284a84"
+  integrity sha512-InuOIiKk8wwuOFg6x9BQXbzjrQhtyXh46K9bqVTPzSo2FnyMBaYGBMC6PhQy7yxxil9vIedFBweQBMK74/7o8A==
   dependencies:
     esprima "^4.0.1"
     estraverse "^4.2.0"
@@ -2300,9 +2300,9 @@ eslint-plugin-spellcheck@^0.0.17:
     lodash "^4.17.15"
 
 eslint-scope@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-scope/-/eslint-scope-5.0.0.tgz#e87c8887c73e8d1ec84f1ca591645c358bfc8fb9"
-  integrity sha512-oYrhJW7S0bxAFDvWqzvMPRm6pcgcnWc4QnofCAqRTRfQC0JcwenzGglTtsLyIuuWFfkqDG9vz67cnttSd53djw==
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/eslint-scope/-/eslint-scope-5.1.0.tgz#d0f971dfe59c69e0cada684b23d49dbf82600ce5"
+  integrity sha512-iiGRvtxWqgtx5m8EyQUJihBloE4EnYeGE/bz1wSPwJE6tZuJUtHlhqDM4Xj2ukE8Dyy1+HCZ4hE0fzIVMzb58w==
   dependencies:
     esrecurse "^4.1.0"
     estraverse "^4.1.1"
@@ -2322,9 +2322,9 @@ eslint-utils@^2.0.0:
     eslint-visitor-keys "^1.1.0"
 
 eslint-visitor-keys@^1.0.0, eslint-visitor-keys@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-1.1.0.tgz#e2a82cea84ff246ad6fb57f9bde5b46621459ec2"
-  integrity sha512-8y9YjtM1JBJU/A9Kc+SbaOV4y29sSWckBwMHa+FGtVj5gN/sbnKDf6xJUl+8g7FAij9LVaP8C24DUiH/f/2Z9A==
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-1.2.0.tgz#74415ac884874495f78ec2a97349525344c981fa"
+  integrity sha512-WFb4ihckKil6hu3Dp798xdzSfddwKKU3+nGniKF6HfeW6OLd2OUDEPP7TcHtB5+QXOKg2s6B2DaMPE1Nn/kxKQ==
 
 eslint@^6.8.0:
   version "6.8.0"
@@ -2842,9 +2842,9 @@ globals@^12.1.0:
     type-fest "^0.8.1"
 
 globals@^13.0.0:
-  version "13.0.0"
-  resolved "https://registry.yarnpkg.com/globals/-/globals-13.0.0.tgz#34694ea5ce49ba46fde3f110e162586ba58ff6ca"
-  integrity sha512-TdLO3ykvHpNsJZiMr+RfkwoMI+XdDaFbH87w/UZGrSzNvZ5cUU6W50oPKSDZgb6eoMWZ6Pltf5Y3oQBpKLUSkA==
+  version "13.1.0"
+  resolved "https://registry.yarnpkg.com/globals/-/globals-13.1.0.tgz#ad4f301f0e55e4f72767faa01a69de8fdaf50ea1"
+  integrity sha512-4N8AdK8YMcr4nLOUsCP62jhMVAaJVdrEevrmuqHQ/TTXCXVL8ywhd/whKrufcp1zGtKBqw4DHcvsokQ60khOJA==
   dependencies:
     type-fest "^0.8.1"
 
@@ -3289,11 +3289,11 @@ is-reference@^1.1.2:
     "@types/estree" "0.0.44"
 
 is-regex@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/is-regex/-/is-regex-1.0.5.tgz#39d589a358bf18967f726967120b8fc1aed74eae"
-  integrity sha512-vlKW17SNq44owv5AQR3Cq0bQPEb8+kF3UKZ2fiZNOWtztYE5i0CzCZxFDwO58qAOWtxdBRVO/V5Qin1wjCqFYQ==
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/is-regex/-/is-regex-1.1.0.tgz#ece38e389e490df0dc21caea2bd596f987f767ff"
+  integrity sha512-iI97M8KTWID2la5uYXlkbSDQIg4F6o1sYboZKKTDpnDQMLtUL86zxhgDet3Q2SriaYsyGqZ6Mn2SjbRKeLHdqw==
   dependencies:
-    has "^1.0.3"
+    has-symbols "^1.0.1"
 
 is-stream@^1.1.0:
   version "1.1.0"
@@ -4793,9 +4793,9 @@ regenerate-unicode-properties@^8.2.0:
     regenerate "^1.4.0"
 
 regenerate@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/regenerate/-/regenerate-1.4.0.tgz#4a856ec4b56e4077c557589cae85e7a4c8869a11"
-  integrity sha512-1G6jJVDWrt0rK99kBjvEtziZNCICAuvIPkSiUFIQxVP06RCVpq3dmDo2oi6ABpYaDYaTRr67BEhL8r1wgEZZKg==
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/regenerate/-/regenerate-1.4.1.tgz#cad92ad8e6b591773485fbe05a485caf4f457e6f"
+  integrity sha512-j2+C8+NtXQgEKWk49MMP5P/u2GhnahTtVkRIHr5R5lVRlbKvmQ+oS+A5aLKWp2ma5VkT8sh6v+v4hbH0YHR66A==
 
 regenerator-runtime@^0.13.4:
   version "0.13.5"
@@ -5820,6 +5820,11 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
+
+vest@2.0.0-next-e063c9:
+  version "2.0.0-next-e063c9"
+  resolved "https://registry.yarnpkg.com/vest/-/vest-2.0.0-next-e063c9.tgz#a6f60b52d98b5c55be031f0ba2250a300b50e566"
+  integrity sha512-QqNDqzdN1R7xJiKQ093+0B4VywLaxKgkE5jB06C0wfq2upO5Am5mpM4IbH/QYlpry5IJ+JCIUrb/WVYCN7zllg==
 
 vinyl-sourcemaps-apply@^0.2.0:
   version "0.2.1"

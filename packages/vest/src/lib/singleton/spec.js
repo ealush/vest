@@ -6,38 +6,29 @@ import mock from '../../../testUtils/mock';
 import { ALL_VEST_BUILDS } from '../../../testUtils/vestBuilds';
 import state from '../../core/state';
 import go from '../globalObject';
-import { SYMBOL_VEST } from './symbols';
+import { SYMBOL_VEST_GLOBAL } from './constants';
 import singleton from '.';
 
 describe('singleton', () => {
   afterAll(() => {
-    singleton.register(vest, _.noop);
+    go.VEST_VERSION = vest.VERSION;
+    singleton.register();
   });
 
   describe('Attaching to global scope', () => {
     beforeEach(() => {
-      delete go[SYMBOL_VEST];
+      delete go[SYMBOL_VEST_GLOBAL];
     });
 
     afterEach(() => {
-      delete go[SYMBOL_VEST];
+      delete go[SYMBOL_VEST_GLOBAL];
     });
 
-    test('That global instance is not populated', () => {
-      expect(go[SYMBOL_VEST]).toBeUndefined();
-    });
-
-    it('Should register vest on the global object', () => {
-      singleton.register(vest, _.noop);
-
-      expect(go[SYMBOL_VEST]).toBe(vest);
+    test('Santiy: That global instance is not populated yet', () => {
+      expect(go[SYMBOL_VEST_GLOBAL]).toBeUndefined();
     });
 
     describe('When already registered', () => {
-      beforeEach(() => {
-        singleton.register(vest, _.noop);
-      });
-
       describe('When same version', () => {
         it('Should return silently', () =>
           new Promise(done => {
@@ -62,33 +53,21 @@ describe('singleton', () => {
         });
 
         it('Should throw an error', () => {
-          const fn = () => null;
-          fn.VERSION = '222';
-
-          singleton.register(fn, _.noop);
+          global.VEST_VERSION = '222';
+          singleton.register();
           expect(mockThrowError.mock.calls[0][0]).toBe(
             `Multiple versions of Vest detected: (222,${version}).\n    Most features should work regularly, but for optimal feature compatibility, you should have all running instances use the same version.`
           );
+          global.VEST_VERSION = vest.VERSION;
         });
       });
-    });
-  });
-
-  describe('callback', () => {
-    let callback;
-
-    beforeEach(() => {
-      callback = jest.fn();
-    });
-    it('Should run provided callback', () => {
-      singleton.register(vest, callback);
-      expect(callback).toHaveBeenCalledTimes(1);
     });
   });
 });
 describe('Integration: singleton', () => {
   beforeAll(() => {
-    singleton.register(vest, state.register);
+    singleton.register();
+    state.register();
   });
 
   const pairs = ALL_VEST_BUILDS.reduce(

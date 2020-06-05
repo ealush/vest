@@ -4,10 +4,10 @@ import { OPERATION_MODE_STATEFUL } from '../../../constants';
 import runWithContext from '../../../lib/runWithContext';
 import Context from '../../Context';
 import { setState, getState } from '../../state';
+import { KEY_CANCELED } from '../../state/constants';
 import getSuiteState from '../../state/getSuiteState';
 import patch from '../../state/patch';
 import registerSuite from '../../state/registerSuite';
-import { SYMBOL_CANCELED } from '../../state/symbols';
 import VestTest from '../lib/VestTest';
 import { setPending } from '../lib/pending';
 import runAsyncTest from '.';
@@ -78,7 +78,7 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
       let state;
       beforeEach(() => {
         setState(state => {
-          state[SYMBOL_CANCELED][testObject.id] = true;
+          state[KEY_CANCELED][testObject.id] = true;
           return state;
         });
         state = _.cloneDeep(getSuiteState(suiteId));
@@ -100,11 +100,11 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
       });
 
       it('Should remove test from canceled state', () => {
-        expect(getState(SYMBOL_CANCELED)).toHaveProperty(testObject.id);
+        expect(getState(KEY_CANCELED)).toHaveProperty(testObject.id);
         runRunAsyncTest(testObject);
         return new Promise(done => {
           setTimeout(() => {
-            expect(getState(SYMBOL_CANCELED)).not.toHaveProperty(testObject.id);
+            expect(getState(KEY_CANCELED)).not.toHaveProperty(testObject.id);
             done();
           });
         });
@@ -188,7 +188,7 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
     describe('When test is canceled', () => {
       beforeEach(() => {
         setState(state => {
-          state[SYMBOL_CANCELED][testObject.id] = true;
+          state[KEY_CANCELED][testObject.id] = true;
           return state;
         });
       });

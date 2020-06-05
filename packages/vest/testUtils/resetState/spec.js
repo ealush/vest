@@ -1,5 +1,5 @@
 import { getState } from '../../src/core/state';
-import { SYMBOL_SUITES } from '../../src/core/state/symbols';
+import { KEY_SUITES } from '../../src/core/state/constants';
 import resetState from '.';
 
 describe('resetState', () => {
@@ -23,10 +23,10 @@ describe('resetState', () => {
     });
 
     it('Should add a new suite to the state', () => {
-      expect(getState(SYMBOL_SUITES)).toEqual({});
+      expect(getState(KEY_SUITES)).toEqual({});
       resetState(suiteId);
-      expect(getState(SYMBOL_SUITES)[suiteId]).toBeTruthy();
-      expect(getState(SYMBOL_SUITES)[suiteId]).toMatchSnapshot();
+      expect(getState(KEY_SUITES)[suiteId]).toBeTruthy();
+      expect(getState(KEY_SUITES)[suiteId]).toMatchSnapshot();
     });
   });
 });

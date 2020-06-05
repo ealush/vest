@@ -1,8 +1,8 @@
 import { getState } from '../../src/core/state';
-import { SYMBOL_SUITES } from '../../src/core/state/symbols';
+import { KEY_SUITES } from '../../src/core/state/constants';
 
 const suiteIdByName = suiteName => {
-  const suites = getState(SYMBOL_SUITES);
+  const suites = getState(KEY_SUITES);
 
   if (!suites) {
     return null;

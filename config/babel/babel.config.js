@@ -1,9 +1,20 @@
 module.exports = api => {
+  let isTest = false;
   if (api) {
+    isTest = api.env() === 'test';
     api.cache(true);
   }
 
-  const presets = ['@babel/preset-env'];
+  const presets = [
+    [
+      '@babel/preset-env',
+      {
+        ...(!isTest && {
+          loose: true,
+        }),
+      },
+    ],
+  ];
 
   const plugins = [
     'babel-plugin-add-module-exports',

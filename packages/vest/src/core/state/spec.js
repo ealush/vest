@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import resetState from '../../../testUtils/resetState';
 import singleton from '../../lib/singleton';
-import { SYMBOL_STATE, SYMBOL_CANCELED, SYMBOL_SUITES } from './symbols';
+import { KEY_STATE, KEY_CANCELED, KEY_SUITES } from './constants';
 import state, { getState, setState } from '.';
 
 describe('Module: state', () => {
@@ -23,7 +23,7 @@ describe('Module: state', () => {
 
     describe('When state does not exist', () => {
       beforeEach(() => {
-        singleton.set(SYMBOL_STATE, null);
+        singleton.set(KEY_STATE, null);
       });
 
       it('Should keep state untouched', () => {
@@ -38,18 +38,18 @@ describe('Module: state', () => {
   describe('getState', () => {
     describe('When no key specified', () => {
       it('Should return state', () => {
-        expect(getState()).toBe(singleton.use(SYMBOL_STATE));
-        singleton.set(SYMBOL_STATE, null);
+        expect(getState()).toBe(singleton.use(KEY_STATE));
+        singleton.set(KEY_STATE, null);
 
         // this checks the case when the tate doesn't exist
-        expect(getState()).toBe(singleton.use(SYMBOL_STATE));
+        expect(getState()).toBe(singleton.use(KEY_STATE));
       });
     });
 
     describe('When key specified', () => {
       it('Should return relevant state portion', () => {
-        [SYMBOL_CANCELED, SYMBOL_SUITES].forEach(key => {
-          expect(getState(key)).toBe(singleton.use(SYMBOL_STATE)[key]);
+        [KEY_CANCELED, KEY_SUITES].forEach(key => {
+          expect(getState(key)).toBe(singleton.use(KEY_STATE)[key]);
         });
       });
     });

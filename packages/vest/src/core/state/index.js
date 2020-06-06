@@ -1,14 +1,14 @@
 import singleton from '../../lib/singleton';
-import { SYMBOL_STATE, SYMBOL_CANCELED, SYMBOL_SUITES } from './symbols';
+import { KEY_STATE, KEY_CANCELED, KEY_SUITES } from './constants';
 /**
  * Registers a new state on Vest's singleton.
  */
 const register = () => {
   singleton.set(
-    SYMBOL_STATE,
-    singleton.use(SYMBOL_STATE) ?? {
-      [SYMBOL_SUITES]: {},
-      [SYMBOL_CANCELED]: {},
+    KEY_STATE,
+    singleton.use(KEY_STATE) ?? {
+      [KEY_SUITES]: {},
+      [KEY_CANCELED]: {},
     }
   );
 };
@@ -18,7 +18,7 @@ const register = () => {
  * @param {string} [key] state portion to retrieve.
  */
 export const getState = key =>
-  key ? singleton.use(SYMBOL_STATE)[key] : singleton.use(SYMBOL_STATE);
+  key ? singleton.use(KEY_STATE)[key] : singleton.use(KEY_STATE);
 
 /**
  * Updates the state with the value return from the setter callback.
@@ -26,7 +26,7 @@ export const getState = key =>
  * @returns {Object} updated state.
  */
 export const setState = setter => {
-  singleton.set(SYMBOL_STATE, setter(getState()));
+  singleton.set(KEY_STATE, setter(getState()));
 
   return getState();
 };
@@ -34,7 +34,7 @@ export const setState = setter => {
 /**
  * @returns {Object} all the suites in the state.
  */
-export const getSuites = () => getState(SYMBOL_SUITES);
+export const getSuites = () => getState(KEY_SUITES);
 
 /**
  * Updates the state with the output of the setter callback.
@@ -43,7 +43,7 @@ export const getSuites = () => getState(SYMBOL_SUITES);
  */
 export const setSuites = setter => {
   setState(state => {
-    state[SYMBOL_SUITES] = setter(state[SYMBOL_SUITES]);
+    state[KEY_SUITES] = setter(state[KEY_SUITES]);
     return state;
   });
   return getSuites();

@@ -41,10 +41,10 @@ const buildConfig = ({ format = DEFAULT_FORMAT, min = false } = {}) => ({
     ]
       .filter(Boolean)
       .join('.'),
-    name: PACKAGE_NAME_VEST,
     format,
+    name: PACKAGE_NAME_VEST,
   },
   plugins: min ? [...PLUGINS, terser()] : PLUGINS,
 });
 
-export default [buildConfig({ min: true }), buildConfig()];
+export default [buildConfig(), buildConfig({ min: true })];

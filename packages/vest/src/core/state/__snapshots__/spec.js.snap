@@ -2,14 +2,14 @@
 
 exports[`Module: state state.register When state does not exist Should keep state untouched 1`] = `
 Object {
-  Symbol(mock_vest_suites): Object {},
-  Symbol(mock_vest_canceled): Object {},
+  "_canceled": Object {},
+  "_suites": Object {},
 }
 `;
 
 exports[`Module: state state.register When state exists Should keep state untouched 1`] = `
 Object {
-  Symbol(mock_vest_suites): Object {},
-  Symbol(mock_vest_canceled): Object {},
+  "_canceled": Object {},
+  "_suites": Object {},
 }
 `;

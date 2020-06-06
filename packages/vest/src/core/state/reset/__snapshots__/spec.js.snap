@@ -2,7 +2,10 @@
 
 exports[`When suite exists Sanity - making sure everything works as it should 1`] = `
 Object {
-  Symbol(mock_vest_suites): Object {
+  "_canceled": Object {
+    "3": true,
+  },
+  "_suites": Object {
     "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
@@ -142,155 +145,12 @@ Object {
       },
     ],
   },
-  Symbol(mock_vest_canceled): Object {
-    "3": true,
-  },
 }
 `;
 
 exports[`When suite exists Sanity - making sure everything works as it should 2`] = `
 Object {
-  Symbol(mock_vest_suites): Object {
-    "suite_id": Array [
-      Object {
-        "doneCallbacks": Array [],
-        "exclusive": Object {
-          "skip": Object {
-            "field_1": true,
-            "field_3": true,
-          },
-        },
-        "fieldCallbacks": Object {},
-        "groups": Object {},
-        "lagging": Array [
-          VestTest {
-            "failed": false,
-            "fieldName": "field_1",
-            "id": "24",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_id",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_3",
-            "id": "26",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_id",
-            "testFn": Promise {},
-          },
-        ],
-        "name": "suite_id",
-        "pending": Array [
-          VestTest {
-            "failed": false,
-            "fieldName": "field_2",
-            "id": "29",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_id",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_4",
-            "id": "31",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_id",
-            "testFn": Promise {},
-          },
-        ],
-        "suiteId": "suite_id",
-        "testObjects": Array [
-          VestTest {
-            "failed": false,
-            "fieldName": "field_2",
-            "id": "29",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_id",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_4",
-            "id": "31",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_id",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_1",
-            "id": "24",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_id",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_3",
-            "id": "26",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_id",
-            "testFn": Promise {},
-          },
-        ],
-        "tests": Object {},
-      },
-      Object {
-        "doneCallbacks": Array [],
-        "exclusive": Object {
-          "skip": Object {
-            "field_2": true,
-          },
-        },
-        "fieldCallbacks": Object {},
-        "groups": Object {},
-        "lagging": null,
-        "name": "suite_id",
-        "pending": null,
-        "suiteId": "suite_id",
-        "testObjects": Array [
-          VestTest {
-            "failed": false,
-            "fieldName": "field_1",
-            "id": "24",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_id",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_3",
-            "id": "26",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_id",
-            "testFn": Promise {},
-          },
-          VestTest {
-            "failed": false,
-            "fieldName": "field_4",
-            "id": "27",
-            "isWarning": false,
-            "statement": undefined,
-            "suiteId": "suite_id",
-            "testFn": Promise {},
-          },
-        ],
-        "tests": Object {},
-      },
-    ],
-  },
-  Symbol(mock_vest_canceled): Object {
+  "_canceled": Object {
     "0": true,
     "10": true,
     "11": true,
@@ -308,12 +168,7 @@ Object {
     "7": true,
     "8": true,
   },
-}
-`;
-
-exports[`When suite exists Sanity - making sure everything works as it should 3`] = `
-Object {
-  Symbol(mock_vest_suites): Object {
+  "_suites": Object {
     "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
@@ -326,19 +181,19 @@ Object {
         "fieldCallbacks": Object {},
         "groups": Object {},
         "lagging": Array [
-          VestTest {
+          D {
             "failed": false,
             "fieldName": "field_1",
-            "id": "48",
+            "id": "24",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          VestTest {
+          D {
             "failed": false,
             "fieldName": "field_3",
-            "id": "50",
+            "id": "26",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
@@ -347,19 +202,19 @@ Object {
         ],
         "name": "suite_id",
         "pending": Array [
-          VestTest {
+          D {
             "failed": false,
             "fieldName": "field_2",
-            "id": "53",
+            "id": "29",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          VestTest {
+          D {
             "failed": false,
             "fieldName": "field_4",
-            "id": "55",
+            "id": "31",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
@@ -368,37 +223,37 @@ Object {
         ],
         "suiteId": "suite_id",
         "testObjects": Array [
-          VestTest {
+          D {
             "failed": false,
             "fieldName": "field_2",
-            "id": "53",
+            "id": "29",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          VestTest {
+          D {
             "failed": false,
             "fieldName": "field_4",
-            "id": "55",
+            "id": "31",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          VestTest {
+          D {
             "failed": false,
             "fieldName": "field_1",
-            "id": "48",
+            "id": "24",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          VestTest {
+          D {
             "failed": false,
             "fieldName": "field_3",
-            "id": "50",
+            "id": "26",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
@@ -421,28 +276,28 @@ Object {
         "pending": null,
         "suiteId": "suite_id",
         "testObjects": Array [
-          VestTest {
+          D {
             "failed": false,
             "fieldName": "field_1",
-            "id": "48",
+            "id": "24",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          VestTest {
+          D {
             "failed": false,
             "fieldName": "field_3",
-            "id": "50",
+            "id": "26",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          VestTest {
+          D {
             "failed": false,
             "fieldName": "field_4",
-            "id": "51",
+            "id": "27",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
@@ -453,7 +308,12 @@ Object {
       },
     ],
   },
-  Symbol(mock_vest_canceled): Object {
+}
+`;
+
+exports[`When suite exists Sanity - making sure everything works as it should 3`] = `
+Object {
+  "_canceled": Object {
     "0": true,
     "10": true,
     "11": true,
@@ -486,12 +346,200 @@ Object {
     "7": true,
     "8": true,
   },
+  "_suites": Object {
+    "suite_id": Array [
+      Object {
+        "doneCallbacks": Array [],
+        "exclusive": Object {
+          "skip": Object {
+            "field_1": true,
+            "field_3": true,
+          },
+        },
+        "fieldCallbacks": Object {},
+        "groups": Object {},
+        "lagging": Array [
+          S {
+            "failed": false,
+            "fieldName": "field_1",
+            "id": "48",
+            "isWarning": false,
+            "statement": undefined,
+            "suiteId": "suite_id",
+            "testFn": Promise {},
+          },
+          S {
+            "failed": false,
+            "fieldName": "field_3",
+            "id": "50",
+            "isWarning": false,
+            "statement": undefined,
+            "suiteId": "suite_id",
+            "testFn": Promise {},
+          },
+        ],
+        "name": "suite_id",
+        "pending": Array [
+          S {
+            "failed": false,
+            "fieldName": "field_2",
+            "id": "53",
+            "isWarning": false,
+            "statement": undefined,
+            "suiteId": "suite_id",
+            "testFn": Promise {},
+          },
+          S {
+            "failed": false,
+            "fieldName": "field_4",
+            "id": "55",
+            "isWarning": false,
+            "statement": undefined,
+            "suiteId": "suite_id",
+            "testFn": Promise {},
+          },
+        ],
+        "suiteId": "suite_id",
+        "testObjects": Array [
+          S {
+            "failed": false,
+            "fieldName": "field_2",
+            "id": "53",
+            "isWarning": false,
+            "statement": undefined,
+            "suiteId": "suite_id",
+            "testFn": Promise {},
+          },
+          S {
+            "failed": false,
+            "fieldName": "field_4",
+            "id": "55",
+            "isWarning": false,
+            "statement": undefined,
+            "suiteId": "suite_id",
+            "testFn": Promise {},
+          },
+          S {
+            "failed": false,
+            "fieldName": "field_1",
+            "id": "48",
+            "isWarning": false,
+            "statement": undefined,
+            "suiteId": "suite_id",
+            "testFn": Promise {},
+          },
+          S {
+            "failed": false,
+            "fieldName": "field_3",
+            "id": "50",
+            "isWarning": false,
+            "statement": undefined,
+            "suiteId": "suite_id",
+            "testFn": Promise {},
+          },
+        ],
+        "tests": Object {},
+      },
+      Object {
+        "doneCallbacks": Array [],
+        "exclusive": Object {
+          "skip": Object {
+            "field_2": true,
+          },
+        },
+        "fieldCallbacks": Object {},
+        "groups": Object {},
+        "lagging": null,
+        "name": "suite_id",
+        "pending": null,
+        "suiteId": "suite_id",
+        "testObjects": Array [
+          S {
+            "failed": false,
+            "fieldName": "field_1",
+            "id": "48",
+            "isWarning": false,
+            "statement": undefined,
+            "suiteId": "suite_id",
+            "testFn": Promise {},
+          },
+          S {
+            "failed": false,
+            "fieldName": "field_3",
+            "id": "50",
+            "isWarning": false,
+            "statement": undefined,
+            "suiteId": "suite_id",
+            "testFn": Promise {},
+          },
+          S {
+            "failed": false,
+            "fieldName": "field_4",
+            "id": "51",
+            "isWarning": false,
+            "statement": undefined,
+            "suiteId": "suite_id",
+            "testFn": Promise {},
+          },
+        ],
+        "tests": Object {},
+      },
+    ],
+  },
 }
 `;
 
 exports[`When suite exists Sanity - making sure everything works as it should 4`] = `
 Object {
-  Symbol(mock_vest_suites): Object {
+  "_canceled": Object {
+    "0": true,
+    "10": true,
+    "11": true,
+    "13": true,
+    "15": true,
+    "16": true,
+    "18": true,
+    "19": true,
+    "2": true,
+    "21": true,
+    "23": true,
+    "24": true,
+    "26": true,
+    "27": true,
+    "29": true,
+    "3": true,
+    "31": true,
+    "32": true,
+    "34": true,
+    "35": true,
+    "37": true,
+    "39": true,
+    "40": true,
+    "42": true,
+    "43": true,
+    "45": true,
+    "47": true,
+    "48": true,
+    "5": true,
+    "50": true,
+    "51": true,
+    "53": true,
+    "55": true,
+    "56": true,
+    "58": true,
+    "59": true,
+    "61": true,
+    "63": true,
+    "64": true,
+    "66": true,
+    "67": true,
+    "69": true,
+    "7": true,
+    "71": true,
+    "75": true,
+    "8": true,
+  },
+  "_suites": Object {
     "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
@@ -630,54 +678,6 @@ Object {
         "tests": Object {},
       },
     ],
-  },
-  Symbol(mock_vest_canceled): Object {
-    "0": true,
-    "10": true,
-    "11": true,
-    "13": true,
-    "15": true,
-    "16": true,
-    "18": true,
-    "19": true,
-    "2": true,
-    "21": true,
-    "23": true,
-    "24": true,
-    "26": true,
-    "27": true,
-    "29": true,
-    "3": true,
-    "31": true,
-    "32": true,
-    "34": true,
-    "35": true,
-    "37": true,
-    "39": true,
-    "40": true,
-    "42": true,
-    "43": true,
-    "45": true,
-    "47": true,
-    "48": true,
-    "5": true,
-    "50": true,
-    "51": true,
-    "53": true,
-    "55": true,
-    "56": true,
-    "58": true,
-    "59": true,
-    "61": true,
-    "63": true,
-    "64": true,
-    "66": true,
-    "67": true,
-    "69": true,
-    "7": true,
-    "71": true,
-    "75": true,
-    "8": true,
   },
 }
 `;

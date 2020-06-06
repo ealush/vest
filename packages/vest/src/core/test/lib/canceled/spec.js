@@ -1,6 +1,6 @@
 import resetState from '../../../../../testUtils/resetState';
 import { getState } from '../../../state';
-import { SYMBOL_CANCELED } from '../../../state/symbols';
+import { KEY_CANCELED } from '../../../state/constants';
 import VestTest from '../VestTest';
 import { setCanceled, removeCanceled } from '.';
 
@@ -27,11 +27,11 @@ describe('module: canceled', () => {
   describe('setCanceled', () => {
     it('Should add all passed ids to canceled object', () => {
       const ids = tests.map(({ id }) => id);
-      expect(Object.keys(getState(SYMBOL_CANCELED))).not.toEqual(
+      expect(Object.keys(getState(KEY_CANCELED))).not.toEqual(
         expect.arrayContaining(ids)
       );
       setCanceled(...tests);
-      expect(Object.keys(getState(SYMBOL_CANCELED))).toEqual(
+      expect(Object.keys(getState(KEY_CANCELED))).toEqual(
         expect.arrayContaining(ids)
       );
     });
@@ -43,9 +43,9 @@ describe('module: canceled', () => {
     });
 
     it('Should remove canceled test', () => {
-      expect(getState(SYMBOL_CANCELED)).toHaveProperty(tests[0].id);
+      expect(getState(KEY_CANCELED)).toHaveProperty(tests[0].id);
       removeCanceled(tests[0]);
-      expect(getState(SYMBOL_CANCELED)).not.toHaveProperty(tests[0].id);
+      expect(getState(KEY_CANCELED)).not.toHaveProperty(tests[0].id);
     });
   });
 });

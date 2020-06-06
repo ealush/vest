@@ -5,8 +5,8 @@ import runSpec from '../../../../testUtils/runSpec';
 import testDummy from '../../../../testUtils/testDummy';
 import vest from '../../../index';
 import copy from '../../../lib/copy';
+import { KEY_CANCELED } from '../constants';
 import getSuiteState from '../getSuiteState';
-import { SYMBOL_CANCELED } from '../symbols';
 import reset from '.';
 
 const suiteId = 'suite_id';
@@ -90,15 +90,15 @@ const spec = _vest => {
     });
 
     it('Should set all pending and lagging tests as canceled', () => {
-      const previouslyCanceled = getState(SYMBOL_CANCELED);
+      const previouslyCanceled = getState(KEY_CANCELED);
       const state = getSuiteState(suiteId);
       const allCanceled = [...state.lagging, ...state.pending].reduce(
         (canceled, { id }) => Object.assign(canceled, { [id]: true }),
         { ...previouslyCanceled }
       );
-      expect(getState(SYMBOL_CANCELED)).not.toEqual(allCanceled);
+      expect(getState(KEY_CANCELED)).not.toEqual(allCanceled);
       _reset(suiteId);
-      expect(getState(SYMBOL_CANCELED)).toEqual(allCanceled);
+      expect(getState(KEY_CANCELED)).toEqual(allCanceled);
     });
   });
 };

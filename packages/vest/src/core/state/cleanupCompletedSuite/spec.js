@@ -4,7 +4,7 @@ import {
   OPERATION_MODE_STATEFUL,
   OPERATION_MODE_STATELESS,
 } from '../../../constants';
-import { SYMBOL_SUITES } from '../symbols';
+import { KEY_SUITES } from '../constants';
 import cleanupCompletedSuite from '.';
 
 const suiteName = 'suite_1';
@@ -39,11 +39,11 @@ describe('cleanupCompletedSuite', () => {
         runRegisterSuite(defaultContext);
       });
       it('Should remove suite from state', () => {
-        expect(getState()[SYMBOL_SUITES]).toHaveProperty(suiteId);
-        expect(getState()[SYMBOL_SUITES]).toHaveProperty(suiteId_2);
+        expect(getState()[KEY_SUITES]).toHaveProperty(suiteId);
+        expect(getState()[KEY_SUITES]).toHaveProperty(suiteId_2);
         cleanupCompletedSuite(suiteId_2);
-        expect(getState()[SYMBOL_SUITES]).not.toHaveProperty(suiteId_2);
-        expect(getState()[SYMBOL_SUITES]).toHaveProperty(suiteId);
+        expect(getState()[KEY_SUITES]).not.toHaveProperty(suiteId_2);
+        expect(getState()[KEY_SUITES]).toHaveProperty(suiteId);
       });
     });
   });

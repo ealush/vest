@@ -1,5 +1,5 @@
 import { setState } from '../../../state';
-import { SYMBOL_CANCELED } from '../../../state/symbols';
+import { KEY_CANCELED } from '../../../state/constants';
 
 /**
  * Adds a VestTest to the canceled state.
@@ -12,10 +12,10 @@ export const setCanceled = (...testObjects) => {
 
   setState(state => ({
     ...state,
-    [SYMBOL_CANCELED]: testObjects.reduce((ids, testObjects) => {
+    [KEY_CANCELED]: testObjects.reduce((ids, testObjects) => {
       ids[testObjects.id] = true;
       return ids;
-    }, state[SYMBOL_CANCELED]),
+    }, state[KEY_CANCELED]),
   }));
 };
 
@@ -25,7 +25,7 @@ export const setCanceled = (...testObjects) => {
  */
 export const removeCanceled = testObject => {
   setState(state => {
-    delete state[SYMBOL_CANCELED][testObject.id];
+    delete state[KEY_CANCELED][testObject.id];
     return state;
   });
 };

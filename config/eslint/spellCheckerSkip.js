@@ -31,4 +31,6 @@ module.exports = [
   'utf8',
   'writeable',
   'lt',
+  'iife',
+  'namespace',
 ];

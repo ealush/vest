@@ -13,7 +13,7 @@ const { packagePath, packageJson } = require('../../util');
 const DEFAULT_FORMAT = 'umd';
 
 const { version } = packageJson(PACKAGE_NAME_VEST);
-const PACKAGE_PATH = path.resolve(packagePath(PACKAGE_NAME_VEST));
+const PACKAGE_PATH = packagePath(PACKAGE_NAME_VEST);
 
 const PLUGINS = [
   resolve(),

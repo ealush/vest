@@ -1,7 +1,8 @@
 const { copySync, pathExistsSync } = require('fs-extra');
-const { packagePath } = require('../../util');
+const { packagePath, logger } = require('../../util');
 
 function copyDistFiles({ packageName }) {
+  logger.info('📑 Copying distribution files');
   const distPath = packagePath(packageName, 'dist');
   if (!pathExistsSync(distPath)) {
     return;

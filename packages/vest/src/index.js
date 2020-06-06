@@ -1,4 +1,3 @@
-import any from 'anyone/any';
 import enforce from '../../n4s/src/enforce';
 import create from './core/createSuite';
 import state from './core/state';
@@ -15,7 +14,6 @@ const Enforce = enforce.Enforce;
 export default {
   Enforce,
   VERSION,
-  any,
   create,
   enforce,
   reset,

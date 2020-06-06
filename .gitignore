@@ -13,3 +13,4 @@ documentation/assets/**/*.css
 *.log
 packages/vest/dist
 packages/vest/vest.*
+packages/vest/utilities

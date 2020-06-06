@@ -143,7 +143,6 @@ exports[`Vest exports All vest exports exist 1`] = `
 Object {
   "Enforce": [Function],
   "VERSION": Any<String>,
-  "any": [Function],
   "create": [Function],
   "draft": [Function],
   "enforce": [Function],

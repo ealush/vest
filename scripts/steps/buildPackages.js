@@ -3,14 +3,10 @@ const path = require('path');
 const { CONFIG_PATH } = require('../../config');
 const { exec, logger } = require('../../util');
 
-function buildPackage({ packageName }) {
-  logger.info('🛠 Building package.');
+function buildPackages() {
+  logger.info('🛠 Building packages.');
 
-  const buildConfigPath = path.resolve(
-    CONFIG_PATH,
-    'builds',
-    [packageName, 'js'].join('.')
-  );
+  const buildConfigPath = path.resolve(CONFIG_PATH, 'builds', 'index.js');
 
   if (!fs.existsSync(buildConfigPath)) {
     return;
@@ -18,4 +14,4 @@ function buildPackage({ packageName }) {
   exec(`rollup -c ${buildConfigPath}`);
 }
 
-module.exports = buildPackage;
+module.exports = buildPackages;

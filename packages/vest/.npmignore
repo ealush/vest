@@ -2,5 +2,5 @@ src
 playground
 config
 testUtils
-./jest.config.js
 dist
+jest.config.js

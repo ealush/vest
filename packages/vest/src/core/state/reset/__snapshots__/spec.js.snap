@@ -181,7 +181,7 @@ Object {
         "fieldCallbacks": Object {},
         "groups": Object {},
         "lagging": Array [
-          D {
+          E {
             "failed": false,
             "fieldName": "field_1",
             "id": "24",
@@ -190,7 +190,7 @@ Object {
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          D {
+          E {
             "failed": false,
             "fieldName": "field_3",
             "id": "26",
@@ -202,7 +202,7 @@ Object {
         ],
         "name": "suite_id",
         "pending": Array [
-          D {
+          E {
             "failed": false,
             "fieldName": "field_2",
             "id": "29",
@@ -211,7 +211,7 @@ Object {
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          D {
+          E {
             "failed": false,
             "fieldName": "field_4",
             "id": "31",
@@ -223,7 +223,7 @@ Object {
         ],
         "suiteId": "suite_id",
         "testObjects": Array [
-          D {
+          E {
             "failed": false,
             "fieldName": "field_2",
             "id": "29",
@@ -232,7 +232,7 @@ Object {
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          D {
+          E {
             "failed": false,
             "fieldName": "field_4",
             "id": "31",
@@ -241,7 +241,7 @@ Object {
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          D {
+          E {
             "failed": false,
             "fieldName": "field_1",
             "id": "24",
@@ -250,7 +250,7 @@ Object {
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          D {
+          E {
             "failed": false,
             "fieldName": "field_3",
             "id": "26",
@@ -276,7 +276,7 @@ Object {
         "pending": null,
         "suiteId": "suite_id",
         "testObjects": Array [
-          D {
+          E {
             "failed": false,
             "fieldName": "field_1",
             "id": "24",
@@ -285,7 +285,7 @@ Object {
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          D {
+          E {
             "failed": false,
             "fieldName": "field_3",
             "id": "26",
@@ -294,7 +294,7 @@ Object {
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          D {
+          E {
             "failed": false,
             "fieldName": "field_4",
             "id": "27",

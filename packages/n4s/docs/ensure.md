@@ -24,9 +24,9 @@ ensure().isNumeric().lessThan(5).test(4); // The value I am testing.
 You can [extend](./custom) ensure in the same way you extend enforce.
 
 ```js
-import { Ensure } from 'n4s';
+import ensure from 'n4s';
 
-const ensure = new Ensure({
+ensure.extend({
   isValidEmail: value => value.includes('@'),
 });
 

@@ -2,35 +2,30 @@ import { isRule, proxySupported } from '../lib';
 import rules from '../rules';
 import runner from './runner';
 
-/**
- * Creates an enforce instance
- * @param {Object} [customRules]
- * @return {Function} enforce instance
- */
-function Enforce(customRules = {}) {
-  const rulesObject = { ...rules, ...customRules };
+const rulesObject = { ...rules };
 
-  if (proxySupported()) {
-    return value => {
-      const proxy = new Proxy(rulesObject, {
-        get: (rules, fnName) => {
-          if (!isRule(rules, fnName)) {
-            return;
-          }
+let enforce, rulesList;
 
-          return (...args) => {
-            runner(rules[fnName], value, ...args);
-            return proxy;
-          };
-        },
-      });
-      return proxy;
-    };
-  }
+if (proxySupported()) {
+  enforce = value => {
+    const proxy = new Proxy(rulesObject, {
+      get: (rules, fnName) => {
+        if (!isRule(rules, fnName)) {
+          return;
+        }
 
-  const rulesList = Object.keys(rulesObject);
+        return (...args) => {
+          runner(rules[fnName], value, ...args);
+          return proxy;
+        };
+      },
+    });
+    return proxy;
+  };
+} else {
+  rulesList = Object.keys(rulesObject);
 
-  return value =>
+  enforce = value =>
     rulesList.reduce(
       (allRules, fnName) =>
         Object.assign(allRules, {
@@ -45,7 +40,12 @@ function Enforce(customRules = {}) {
     );
 }
 
-const enforce = new Enforce();
-enforce.Enforce = Enforce;
+enforce.extend = customRules => {
+  Object.assign(rulesObject, customRules);
+
+  if (!proxySupported()) {
+    rulesList = Object.keys(rulesObject);
+  }
+};
 
 export default enforce;

@@ -26,6 +26,7 @@ const PLUGINS = [
   }),
   replace({
     VEST_VERSION: JSON.stringify(version),
+    LIBRARY_NAME: PACKAGE_NAME_VEST,
   }),
   compiler(),
 ];

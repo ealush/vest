@@ -16,48 +16,54 @@ const PACKAGE_PATH = path.resolve(packagePath(PACKAGE_NAME_N4S));
 const LIBRARY_NAME_ENFORCE = 'enforce';
 const LIBRARY_NAME_ENSURE = 'ensure';
 
-const pluginList = ({ libraryName, min } = {}) =>
-  [
-    resolve(),
-    replace({
-      LIBRARY_NAME: JSON.stringify(libraryName || PACKAGE_NAME_N4S),
-    }),
-    babel({
-      babelrc: false,
-      ...require(BABEL_CONFIG_PATH)(),
-    }),
-    compiler(),
-    min ? terser() : undefined,
-  ].filter(Boolean);
+const pluginList = ({ libraryName } = {}) => [
+  resolve(),
+  replace({
+    LIBRARY_NAME: JSON.stringify(libraryName),
+  }),
+  babel({
+    babelrc: false,
+    ...require(BABEL_CONFIG_PATH)(),
+  }),
+  compiler(),
+  terser(),
+];
 
 const buildConfig = ({
   format = DEFAULT_FORMAT,
-  min = false,
+  extended = false,
   name = '',
 } = {}) => ({
-  input: path.join(PACKAGE_PATH, 'src', name || '', 'index.js'),
+  input: path.join(
+    PACKAGE_PATH,
+    'src',
+    extended ? 'extended' : '',
+    name || '',
+    'index.js'
+  ),
   output: {
     name: name || LIBRARY_NAME_ENFORCE,
     format,
     file: [
-      path.join(PACKAGE_PATH, 'dist', name || PACKAGE_NAME_N4S),
-      min && 'min',
-      format !== DEFAULT_FORMAT && format,
+      path.join(
+        PACKAGE_PATH,
+        'dist',
+        extended ? 'extended' : '',
+        name || PACKAGE_NAME_N4S
+      ),
       'js',
     ]
       .filter(Boolean)
       .join('.'),
   },
-  plugins: pluginList({ libraryName: name, min }),
+  plugins: pluginList({ libraryName: name }),
 });
 
-const genConfig = ({ name } = {}) => [
-  buildConfig({ name }),
-  buildConfig({ name, min: true }),
-];
+const genConfig = (...args) => [buildConfig(...args)];
 
 export default [
-  ...genConfig({ name: LIBRARY_NAME_ENFORCE }),
   ...genConfig({ name: LIBRARY_NAME_ENSURE }),
   ...genConfig(),
+  ...genConfig({ name: LIBRARY_NAME_ENFORCE, extended: true }),
+  ...genConfig({ name: LIBRARY_NAME_ENSURE, extended: true }),
 ];

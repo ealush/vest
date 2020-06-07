@@ -4,6 +4,7 @@ import glob from 'glob';
 import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
+import replace from 'rollup-plugin-replace';
 import { terser } from 'rollup-plugin-terser';
 
 const { BABEL_CONFIG_PATH } = require('..');
@@ -14,23 +15,29 @@ const { packagePath } = require('../../util');
 const DIR_NAME_UTILITIES = 'utilities';
 const JS_EXTENSION = '.js';
 
+const renames = {
+  enforceExtended: 'enforce',
+};
+
+const getFileName = filePath => path.basename(filePath, JS_EXTENSION);
+
 const entries = glob
   .sync(packagePath(PACKAGE_NAME_VEST, 'src', DIR_NAME_UTILITIES, '*.js'))
   .map(input => {
-    const fileName = path.basename(input, JS_EXTENSION);
+    const fileName = getFileName(input);
     return {
+      fileName,
       input,
+      name: renames[fileName] || fileName,
       outputPath: packagePath(
         PACKAGE_NAME_VEST,
         'dist',
-        DIR_NAME_UTILITIES,
         [fileName, JS_EXTENSION].join('')
       ),
-      name: fileName,
     };
   });
 
-const PLUGINS = [
+const plugins = ({ fileName }) => [
   resolve(),
   commonjs({
     include: /node_modules\/(anyone|n4s)/,
@@ -39,13 +46,15 @@ const PLUGINS = [
     babelrc: false,
     ...require(BABEL_CONFIG_PATH)(),
   }),
+  replace({
+    LIBRARY_NAME: renames[fileName] || fileName,
+  }),
   compiler(),
   terser(),
 ];
 
-const buildConfig = ({ input, name, outputPath }) => {
+const buildConfig = ({ input, name, outputPath, fileName }) => {
   logger.info(`⚙️ Building utility: ${name}`);
-
   return {
     input,
     output: {
@@ -53,7 +62,7 @@ const buildConfig = ({ input, name, outputPath }) => {
       file: outputPath,
       name,
     },
-    plugins: PLUGINS,
+    plugins: plugins({ fileName }),
   };
 };
 

@@ -1,24 +1,24 @@
 import rules from '../rules';
-import enforce from '.';
 
 const allRules = Object.keys(rules);
 const _proxy = Proxy;
 
-const suite = ({ withProxy, Enforce }) =>
+const suite = ({ withProxy, requirePath }) =>
   describe('Test enforce function', () => {
-    let enforce = new Enforce({});
+    let enforce;
+    beforeAll(() => {
+      jest.resetModules();
 
-    if (withProxy) {
-      beforeAll(() => {
+      if (!withProxy) {
         global.Proxy = undefined;
         delete global.Proxy;
-        enforce = new Enforce({});
-      });
+      }
+      enforce = require(requirePath);
+    });
 
-      afterAll(() => {
-        global.Proxy = _proxy;
-      });
-    }
+    afterAll(() => {
+      global.Proxy = _proxy;
+    });
 
     describe('Rules object', () => {
       it('Should expose rules as functions', () => {
@@ -46,10 +46,8 @@ const suite = ({ withProxy, Enforce }) =>
     });
 
     describe('Test custom rule extensions', () => {
-      let enforce;
-
       beforeEach(() => {
-        enforce = new Enforce({
+        enforce.extend({
           isImpossible: v => !!v.match(/impossible/i),
           endsWith: (v, arg) => v.endsWith(arg),
         });
@@ -73,13 +71,9 @@ const suite = ({ withProxy, Enforce }) =>
     });
   });
 
-[
-  enforce,
-  require('../../dist/n4s'),
-  require('../../dist/n4s.min.js'),
-  require('../../dist/enforce'),
-  require('../../dist/enforce.min.js'),
-].forEach(enforce => {
-  suite({ withProxy: true, Enforce: enforce.Enforce });
-  suite({ withProxy: false, Enforce: enforce.Enforce });
+['.', '../../dist/n4s'].forEach(requirePath => {
+  jest.resetModules();
+
+  suite({ withProxy: true, requirePath });
+  suite({ withProxy: false, requirePath });
 });

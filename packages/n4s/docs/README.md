@@ -33,5 +33,6 @@ If you wish to use enforce's functionality without it throwing errors, you can u
 ## Content
 
 - [List of Enforce rules](./rules)
+- [Business reated rules](./business_rules)
 - [Custom Enforce Rules](./custom)
 - [Non throwing validations (ensure)](./ensure)

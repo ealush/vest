@@ -2,7 +2,7 @@
   "name": "n4s",
   "version": "0.4.6",
   "description": "Enforce - Validation assertions library",
-  "main": "./n4s.min.js",
+  "main": "./n4s.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ealush/vest.git"

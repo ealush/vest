@@ -11,65 +11,64 @@ import runner from './runner';
  */
 const createTestFn = registeredRules => value =>
   registeredRules.every(({ name, args }) =>
-    runner(rules[name], value, ...args)
+    runner(rulesObject[name], value, ...args)
   );
 
-/**
- * Creates an ensure instance
- * @param {Object} [customRules]
- * @return {Function} ensure instance
- */
-function Ensure(customRules = {}) {
-  const rulesObject = { ...rules, ...customRules };
+let ensure, rulesList;
 
-  if (proxySupported()) {
-    return () => {
-      const registeredRules = [];
+const rulesObject = { ...rules };
 
-      const proxy = new Proxy(rulesObject, {
-        get: (rules, ruleName) => {
-          if (ruleName === 'test') {
-            return createTestFn(registeredRules);
-          }
-
-          if (!isRule(rules, ruleName)) {
-            return;
-          }
-
-          return (...args) => {
-            registeredRules.push({ name: ruleName, args });
-            return proxy;
-          };
-        },
-      });
-
-      return proxy;
-    };
-  }
-
-  const rulesList = Object.keys(rulesObject);
-
-  return () => {
+if (proxySupported()) {
+  ensure = () => {
     const registeredRules = [];
 
-    return rulesList.reduce(
-      (allRules, ruleName) =>
-        Object.assign(allRules, {
-          ...(isRule(rulesObject, ruleName) && {
-            [ruleName]: (...args) => {
-              registeredRules.push({ name: ruleName, args });
-              return allRules;
-            },
-          }),
-        }),
-      {
-        test: createTestFn(registeredRules),
-      }
-    );
+    const proxy = new Proxy(rulesObject, {
+      get: (rules, ruleName) => {
+        if (ruleName === 'test') {
+          return createTestFn(registeredRules);
+        }
+
+        if (!isRule(rulesObject, ruleName)) {
+          return;
+        }
+
+        return (...args) => {
+          registeredRules.push({ name: ruleName, args });
+          return proxy;
+        };
+      },
+    });
+
+    return proxy;
   };
 }
 
-const ensure = new Ensure();
-ensure.Ensure = Ensure;
+rulesList = Object.keys(rulesObject);
+
+ensure = () => {
+  const registeredRules = [];
+  return rulesList.reduce(
+    (allRules, ruleName) =>
+      Object.assign(allRules, {
+        ...(isRule(rulesObject, ruleName) && {
+          [ruleName]: (...args) => {
+            registeredRules.push({ name: ruleName, args });
+            return allRules;
+          },
+        }),
+      }),
+    {
+      test: createTestFn(registeredRules),
+    }
+  );
+};
+
+ensure.extend = customRules => {
+  Object.assign(rulesObject, customRules);
+
+  if (proxySupported()) {
+    rulesList = Object.keys(rulesObject);
+  }
+};
 
 export default ensure;

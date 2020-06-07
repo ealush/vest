@@ -1,25 +1,24 @@
 import { sample } from 'lodash';
-import ensure from '..';
 import rules from '../rules';
 
 const allRules = Object.keys(rules);
 const _proxy = Proxy;
 
-const suite = ({ withProxy, Ensure }) =>
+const suite = ({ withProxy, requirePath }) =>
   describe('Test ensure function', () => {
-    let ensure = new Ensure({});
-
-    if (withProxy) {
-      beforeAll(() => {
+    let ensure;
+    beforeAll(() => {
+      jest.resetModules();
+      if (!withProxy) {
         global.Proxy = undefined;
         delete global.Proxy;
-        ensure = new Ensure({});
-      });
+      }
+      ensure = require(requirePath);
+    });
 
-      afterAll(() => {
-        global.Proxy = _proxy;
-      });
-    }
+    afterAll(() => {
+      global.Proxy = _proxy;
+    });
 
     describe('.test() function', () => {
       describe('When validation succeeds', () => {
@@ -69,7 +68,6 @@ const suite = ({ withProxy, Ensure }) =>
 
       it('Should return same rules object after every rule call', () => {
         let en;
-
         en = ensure();
         expect(en[sample(allRules)]()).toBe(en[sample(allRules)]());
         expect(en[sample(allRules)]()).toBe(en);
@@ -80,18 +78,7 @@ const suite = ({ withProxy, Ensure }) =>
     });
   });
 
-[
-  ensure,
-  require('../../dist/ensure'),
-  require('../../dist/ensure.min.js'),
-].forEach(ensure => {
-  suite({ withProxy: true, Ensure: ensure.Ensure });
-  suite({ withProxy: false, Ensure: ensure.Ensure });
+['.', '../../dist/ensure'].forEach(requirePath => {
+  suite({ withProxy: true, requirePath });
+  suite({ withProxy: false, requirePath });
 });
-
-[require('../../dist/n4s'), require('../../dist/n4s.min.js')].forEach(
-  ({ Ensure }) => {
-    suite({ withProxy: true, Ensure });
-    suite({ withProxy: false, Ensure });
-  }
-);

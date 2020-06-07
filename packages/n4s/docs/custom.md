@@ -1,6 +1,6 @@
 # Custom enforce rules
 
-To make it easier to reuse logic across your application, sometimes you would want to encapsulate bits of logic in rules that you can use later on, for example, "what's considered a valid email".
+To make it easier to reuse validations across your application, sometimes you would want to encapsulate bits of logic in rules that you can use later on, for example, "what's considered a valid email".
 
 Your custom rules are essentially a single javascript object containing your rules.
 
@@ -21,7 +21,7 @@ Just like the predefined rules, your custom rules can accepts two parameters:
 You can extend enforce with your custom rules by creating a new instance of `Enforce` and adding the rules object as the argument.
 
 ```js
-import Enforce from 'n4s';
+import enforce from 'n4s';
 
 const myCustomRules = {
   isValidEmail: value => value.indexOf('@') > -1,
@@ -30,7 +30,7 @@ const myCustomRules = {
     passConfirm === options.passConfirm && options.passIsValid,
 };
 
-const enforce = new Enforce(myCustomRules);
+enforce.extend(myCustomRules);
 
 enforce(user.email).isValidEmail();
 ```

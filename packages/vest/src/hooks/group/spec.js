@@ -1,6 +1,6 @@
 import faker from 'faker';
 import _ from 'lodash';
-import enforce from 'n4s';
+import enforce from '../../../../n4s/src';
 import collector from '../../../testUtils/collector';
 import resetState from '../../../testUtils/resetState';
 import runSpec from '../../../testUtils/runSpec';

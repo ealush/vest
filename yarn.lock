@@ -4175,11 +4175,6 @@ mute-stream@0.0.8:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.8.tgz#1630c42b2251ff81e2a283de96a5497ea92e5e0d"
   integrity sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==
 
-n4s@^0.4.6:
-  version "0.4.6"
-  resolved "https://registry.yarnpkg.com/n4s/-/n4s-0.4.6.tgz#fc0d915e4b61b4af1c28ac8550b805b3705d0171"
-  integrity sha512-QnNNTefO6oMqK/oDRzBBFxwLl6jZ/USvuk2L7rGvAgE1hCK4GMBJg0qCtcUDbd+dV8VocL1hveadfgUtzsuSwQ==
-
 nan@^2.12.1:
   version "2.14.1"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.1.tgz#d7be34dfa3105b91494c3147089315eff8874b01"
@@ -5825,11 +5820,6 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
-
-vest@2.0.0-next-417703:
-  version "2.0.0-next-417703"
-  resolved "https://registry.yarnpkg.com/vest/-/vest-2.0.0-next-417703.tgz#1311cdc195f70b1f65b4365c4218851abb479550"
-  integrity sha512-aselVxAPTQFFphn9hCvYMnRtlPfbpM1f0orUVdw71QlVA5Y1QSSfWs+Hr6wgwis8mMrxKEJ78cWQr7GbE0nYkg==
 
 vinyl-sourcemaps-apply@^0.2.0:
   version "0.2.1"

@@ -5826,10 +5826,10 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vest@2.0.0-next-e063c9:
-  version "2.0.0-next-e063c9"
-  resolved "https://registry.yarnpkg.com/vest/-/vest-2.0.0-next-e063c9.tgz#a6f60b52d98b5c55be031f0ba2250a300b50e566"
-  integrity sha512-QqNDqzdN1R7xJiKQ093+0B4VywLaxKgkE5jB06C0wfq2upO5Am5mpM4IbH/QYlpry5IJ+JCIUrb/WVYCN7zllg==
+vest@2.0.0-next-417703:
+  version "2.0.0-next-417703"
+  resolved "https://registry.yarnpkg.com/vest/-/vest-2.0.0-next-417703.tgz#1311cdc195f70b1f65b4365c4218851abb479550"
+  integrity sha512-aselVxAPTQFFphn9hCvYMnRtlPfbpM1f0orUVdw71QlVA5Y1QSSfWs+Hr6wgwis8mMrxKEJ78cWQr7GbE0nYkg==
 
 vinyl-sourcemaps-apply@^0.2.0:
   version "0.2.1"

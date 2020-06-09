@@ -77,6 +77,7 @@ const spec = _vest => {
         expect(suiteState.pending[0].fieldName).toBe('field_2');
         expect(suiteState.lagging[1].fieldName).toBe('field_3');
         expect(suiteState.pending[1].fieldName).toBe('field_4');
+        expect(getState()).toMatchSnapshot();
       }
     );
 

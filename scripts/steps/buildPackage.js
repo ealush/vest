@@ -11,6 +11,8 @@ function buildPackage(packageName) {
 
   const rollupConfigs = glob.sync(`./${packageName}*.js`, {
     cwd: buildConfigPath,
+    dot: false,
+    absolute: true,
   });
 
   rollupConfigs.forEach(configPath => {

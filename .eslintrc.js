@@ -80,5 +80,5 @@ module.exports = {
     'no-duplicate-imports': 2,
     'max-params': [2, { max: 3 }],
   },
-  ignorePatterns: ['dist', 'node_modules', 'playground'],
+  ignorePatterns: ['playground'],
 };

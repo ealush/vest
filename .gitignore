@@ -12,5 +12,8 @@ documentation/assets/**/*.css
 .DS_Store
 *.log
 packages/vest/dist
-packages/vest/vest.*
-packages/vest/utilities
+packages/vest/*.js
+packages/vest/utilities/
+packages/n4s/dist
+packages/n4s/*.js
+packages/n4s/extended/

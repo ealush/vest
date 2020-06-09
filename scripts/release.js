@@ -1,6 +1,5 @@
 const { asyncForeach, logger } = require('../util');
-const buildPackages = require('./steps/buildPackages');
-const copyDistFiles = require('./steps/copyDistFiles');
+const build = require('./build');
 const publishPackage = require('./steps/publishPackage');
 const pushToDefaultBranch = require('./steps/pushToDefaultBranch');
 const setNextVersion = require('./steps/setNextVersion');
@@ -17,7 +16,6 @@ const run = async () => {
   const { changedPackages, allMessages, messagesPerPackage } = await getDiff();
 
   updateDocs();
-  buildPackages();
 
   const packageData = changedPackages.map(packageName => {
     logger.info(`Package: 📦 ${packageName}`);
@@ -28,7 +26,7 @@ const run = async () => {
     );
 
     setNextVersion(packageData);
-    copyDistFiles(packageData);
+    build(packageName);
     publishPackage(packageData);
 
     // Do not create release if there are no commit

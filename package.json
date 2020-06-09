@@ -41,7 +41,7 @@
     "validator": "^13.0.0"
   },
   "scripts": {
-    "build": "rollup -c ./config/builds/index.js",
+    "build": "node ./scripts/buildAll",
     "prettier-watch": "onchange '**/*.js' '**/*.json' -- prettier --write {{changed}}",
     "test": "jest --projects ./packages/*/ --i",
     "lint": "eslint ."

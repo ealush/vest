@@ -13,7 +13,7 @@ import hasByGroup from './hasByGroup';
 
 /**
  * Registers done callbacks.
- * @param {string} suiteId
+ * @param {Object} state
  * @param {string} [fieldName]
  * @param {Function} doneCallback
  * @register {Object} Vest output object.
@@ -64,8 +64,9 @@ const extract = ({ groups, tests, name }) => ({
 });
 
 /**
- * @param {string} suiteId
+ * @param {Object} state
  * @param {Object} Options
+ * @param {boolean} [Options.draft]
  * @returns Vest output object.
  */
 const produce = (state, { draft } = {}) =>

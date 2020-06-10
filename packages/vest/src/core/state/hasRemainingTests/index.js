@@ -1,5 +1,6 @@
 /**
  * Checks if a given tests, or the suite as a whole still have remaining tests.
+ * @param {Object} state
  * @param {string} [fieldName]
  * @returns {Boolean}
  */

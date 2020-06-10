@@ -6,6 +6,12 @@ import {
   TEST_COUNT,
 } from '../../test/lib/VestTest/constants';
 
+/**
+ *
+ * @param {Object} stateKey The container for the test result data
+ * @param {VestTest} testObject
+ * @returns {Object} Test result summary
+ */
 const genTestObject = (stateKey, testObject) => {
   const { fieldName, isWarning, failed, statement } = testObject;
 

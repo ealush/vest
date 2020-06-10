@@ -1,11 +1,5 @@
 import singleton from '../../lib/singleton';
 
-/**
- * Creates a new context object, and assigns it as a static property on Vest's singleton.
- * @param {Object} parent   Parent context.
- * @returns {Context} either an existing or a new context object.
- */
-
 class Context {
   /**
    * Clears stored instance from constructor function.
@@ -21,6 +15,11 @@ class Context {
     }
   }
 
+  /**
+   * Creates a new context object, and assigns it as a static property on Vest's singleton.
+   * @param {Object} ctxRef   Context data reference.
+   * @returns {Context} either an existing or a new context object.
+   */
   constructor(ctxRef) {
     const ctx = singleton.useContext();
     Object.assign(this, ctxRef);

@@ -1,7 +1,7 @@
 import collectFailureMessages from '../collectFailureMessages';
 
 /**
- * @param {string} suiteId
+ * @param {Object} state
  * @param {'errors'|'warnings'} severityKey lookup severity
  * @param {string} [fieldName]
  * @returns suite or field's errors or warnings.

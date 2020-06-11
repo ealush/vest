@@ -10,3 +10,4 @@
   - [Server side and stateless validations](./stateless_validations)
   - [Excluding or including tests](./exclusion)
   - [Accessing intermediate suite result](./draft)
+  - [Utilities](./utilities)

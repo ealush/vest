@@ -1,26 +1,10 @@
 const skipWords = require('./config/eslint/spellCheckerSkip');
 
 module.exports = {
-  parser: 'babel-eslint',
-  parserOptions: {
-    ecmaVersion: 10,
-    sourceType: 'module',
-    ecmaFeatures: {
-      impliedStrict: true,
-    },
-    babelOptions: {
-      configFile: 'config/babel/babel.config.js',
-    },
-  },
-  plugins: ['jest', 'spellcheck'],
   env: {
     es6: true,
     jest: true,
     node: true,
-  },
-  globals: {
-    VEST_VERSION: true,
-    LIBRARY_NAME: true,
   },
   extends: [
     'eslint:recommended',
@@ -30,9 +14,27 @@ module.exports = {
     'plugin:import/warnings',
     'prettier',
   ],
+  globals: {
+    VEST_VERSION: true,
+    LIBRARY_NAME: true,
+  },
+  ignorePatterns: ['playground'],
+  parser: 'babel-eslint',
+  parserOptions: {
+    babelOptions: {
+      configFile: 'config/babel/babel.config.js',
+    },
+    ecmaFeatures: {
+      impliedStrict: true,
+    },
+    ecmaVersion: 10,
+    sourceType: 'module',
+  },
+  plugins: ['jest', 'spellcheck'],
+
   rules: {
-    'no-trailing-spaces': [2, { ignoreComments: false }],
-    'no-implicit-globals': 2,
+    'arrow-body-style': [2, 'as-needed'],
+    'import/newline-after-import': 2,
     'import/no-self-import': 2,
     'import/no-useless-path-segments': 2,
     'import/order': [
@@ -44,28 +46,26 @@ module.exports = {
         pathGroupsExcludedImportTypes: ['builtin'],
       },
     ],
-    'import/newline-after-import': 2,
-    'no-console': 2,
-    'no-multi-spaces': 1,
-    'no-warning-comments': 2,
-    'no-useless-return': 2,
-    'prefer-const': 2,
-    'prefer-arrow-callback': 2,
-    'no-var': 2,
-    'no-useless-computed-key': 2,
     'jest/expect-expect': 0,
     'jest/no-identical-title': 0,
     'jest/no-standalone-expect': 0,
-    'arrow-body-style': [2, 'as-needed'],
-    'object-shorthand': [2, 'always', { avoidQuotes: true }],
-    'spellcheck/spell-checker': [
-      1,
-      {
-        strings: false,
-        skipWords,
-      },
-    ],
+    'max-params': [2, { max: 3 }],
+    'no-console': 2,
+    'no-duplicate-imports': 2,
+    'no-implicit-globals': 2,
     'no-lonely-if': 2,
+    'no-multi-spaces': 1,
+    'no-trailing-spaces': [2, { ignoreComments: false }],
+    'no-unneeded-ternary': 2,
+    'no-unused-expressions': 2,
+    'no-useless-catch': 2,
+    'no-useless-computed-key': 2,
+    'no-useless-return': 2,
+    'no-var': 2,
+    'no-warning-comments': 2,
+    'object-shorthand': [2, 'always', { avoidQuotes: true }],
+    'prefer-arrow-callback': 2,
+    'prefer-const': 2,
     'sort-keys': [
       1,
       'asc',
@@ -74,11 +74,13 @@ module.exports = {
         minKeys: 4,
       },
     ],
-    'no-unneeded-ternary': 2,
-    'no-unused-expressions': 2,
-    'no-useless-catch': 2,
-    'no-duplicate-imports': 2,
-    'max-params': [2, { max: 3 }],
+    'spellcheck/spell-checker': [
+      1,
+      {
+        strings: false,
+        identifiers: false,
+        skipWords,
+      },
+    ],
   },
-  ignorePatterns: ['playground'],
 };

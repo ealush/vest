@@ -41,10 +41,13 @@ packages/
 │   │   │   └── draft/       # Allows access to the intermediate test result.
 │   │   │   └── exclusive/   # Allows including or excluding fields in runtime.
 │   │   │   └── warn/        # Allows setting warn-only fields.
+│   │   │   └── get/         # Enables out-of-context access to validation results.
+│   │   │   └── group/       # Adds another nesting level within suites.
 │   │   └── lib/  # Shared helper functions.
 │   │   └── testUtils/    # Test helper functions.
 ├── eslint-plugin-vest/   # Eslint plugin with vest specific rules
 │   ├── lib/    # Contains all rules
+├── n4s/   # Assertion library used by vest
 ```
 
 ## Branching strategy

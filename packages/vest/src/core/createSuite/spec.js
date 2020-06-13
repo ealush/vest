@@ -1,6 +1,6 @@
 import faker from 'faker';
 import { noop } from 'lodash';
-import mock from '../../../testUtils/mock';
+import mock from '../../../../../shared/testUtils/mock';
 import resetState from '../../../testUtils/resetState';
 import { OPERATION_MODE_STATELESS } from '../../constants';
 import runWithContext from '../../lib/runWithContext';

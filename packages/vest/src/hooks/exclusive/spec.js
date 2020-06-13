@@ -1,4 +1,4 @@
-import mock from '../../../testUtils/mock';
+import mock from '../../../../../shared/testUtils/mock';
 import resetState from '../../../testUtils/resetState';
 import runSpec from '../../../testUtils/runSpec';
 import testDummy from '../../../testUtils/testDummy';

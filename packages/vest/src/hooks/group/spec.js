@@ -1,7 +1,7 @@
 import faker from 'faker';
 import _ from 'lodash';
+import collector from '../../../../../shared/testUtils/collector';
 import enforce from '../../../../n4s/src';
-import collector from '../../../testUtils/collector';
 import resetState from '../../../testUtils/resetState';
 import runSpec from '../../../testUtils/runSpec';
 import { dummyTest } from '../../../testUtils/testDummy';

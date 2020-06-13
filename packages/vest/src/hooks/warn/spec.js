@@ -1,5 +1,5 @@
 import faker from 'faker';
-import mock from '../../../testUtils/mock';
+import mock from '../../../../../shared/testUtils/mock';
 import runSpec from '../../../testUtils/runSpec';
 import singleton from '../../lib/singleton';
 

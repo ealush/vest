@@ -1,8 +1,8 @@
 import faker from 'faker';
 import _ from 'lodash';
 import vest from '../..';
+import mock from '../../../../../shared/testUtils/mock';
 import { version } from '../../../package.json';
-import mock from '../../../testUtils/mock';
 import { ALL_VEST_BUILDS } from '../../../testUtils/vestBuilds';
 import state from '../../core/state';
 import go from '../globalObject';

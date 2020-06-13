@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import collector from '../../../testUtils/collector';
+import collector from '../../../../../shared/testUtils/collector';
 import resetState from '../../../testUtils/resetState';
 import runRegisterSuite from '../../../testUtils/runRegisterSuite';
 import runSpec from '../../../testUtils/runSpec';

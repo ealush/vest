@@ -1,5 +1,5 @@
 import faker from 'faker';
-import mock from '../../../testUtils/mock';
+import mock from '../../../../../shared/testUtils/mock';
 import { OPERATION_MODE_STATELESS } from '../../constants';
 import singleton from '../../lib/singleton';
 

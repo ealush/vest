@@ -1,5 +1,5 @@
 import faker from 'faker';
-import mock from '../../../testUtils/mock';
+import mock from '../../../../../shared/testUtils/mock';
 
 describe('runWithContext', () => {
   let parent, fn, mockContext, result, runWithContext, singleton;

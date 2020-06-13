@@ -1,4 +1,4 @@
-import { SAMPLE_DEEP_OBJECT } from '../../../testUtils/isDeepCopy';
+import { SAMPLE_DEEP_OBJECT } from '../../../../../shared/testUtils/isDeepCopy';
 import copy from '.';
 
 describe('copy', () => {

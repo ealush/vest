@@ -1,8 +1,6 @@
 const glob = require('glob');
 
-const {
-  default: isDeepCopy,
-} = require('../../packages/vest/testUtils/isDeepCopy');
+const { default: isDeepCopy } = require('../../shared/testUtils/isDeepCopy');
 const { packagePath } = require('../../util');
 
 global.isWatchMode = (process.argv || []).some(

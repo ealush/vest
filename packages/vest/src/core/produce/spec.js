@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import collector from '../../../testUtils/collector';
-import isDeepCopy from '../../../testUtils/isDeepCopy';
 import resetState from '../../../testUtils/resetState';
 import runRegisterSuite from '../../../testUtils/runRegisterSuite';
 import runSpec from '../../../testUtils/runSpec';
@@ -87,8 +86,7 @@ runSpec(vest => {
     });
 
     it('Should create a deep copy of subset of the state', () => {
-      isDeepCopy(
-        _.pick(getSuiteState(suiteId), KEPT_PROPERTIES),
+      expect(_.pick(getSuiteState(suiteId), KEPT_PROPERTIES)).isDeepCopyOf(
         _.pick(produced, KEPT_PROPERTIES)
       );
     });
@@ -444,12 +442,16 @@ runSpec(vest => {
 
           it('Should pass produced result to callback', () => {
             produced.done(doneCallback_1).done(doneCallback_2);
-            isDeepCopy(doneCallback_1.mock.calls[0][0], produce(state));
-            isDeepCopy(doneCallback_2.mock.calls[0][0], produce(state));
+            expect(doneCallback_1.mock.calls[0][0]).isDeepCopyOf(
+              produce(state)
+            );
+            expect(doneCallback_2.mock.calls[0][0]).isDeepCopyOf(
+              produce(state)
+            );
           });
 
           it('Should return produced result', () => {
-            isDeepCopy(produced.done(doneCallback_1), produce(state));
+            expect(produced.done(doneCallback_1)).isDeepCopyOf(produce(state));
           });
         });
 
@@ -466,13 +468,16 @@ runSpec(vest => {
           it('Should pass produced result to callback', () => {
             produced.done('field_1', doneCallback_1).done(doneCallback_2);
 
-            isDeepCopy(doneCallback_1.mock.calls[0][0], produce(state));
-            isDeepCopy(doneCallback_2.mock.calls[0][0], produce(state));
+            expect(doneCallback_1.mock.calls[0][0]).isDeepCopyOf(
+              produce(state)
+            );
+            expect(doneCallback_2.mock.calls[0][0]).isDeepCopyOf(
+              produce(state)
+            );
           });
 
           it('Should return produced result', () => {
-            isDeepCopy(
-              produced.done('field_1', doneCallback_1),
+            expect(produced.done('field_1', doneCallback_1)).isDeepCopyOf(
               produce(state)
             );
           });
@@ -516,7 +521,7 @@ runSpec(vest => {
             expect(doneCallback_1).not.toHaveBeenCalled();
           });
           it('Should return produced output', () => {
-            isDeepCopy(produced.done(doneCallback_1), produce(state));
+            expect(produced.done(doneCallback_1)).isDeepCopyOf(produce(state));
           });
 
           it('Should add callback to `doneCallBacks` array', () =>

@@ -3,6 +3,7 @@ import runWithContext from '../../lib/runWithContext';
 import singleton from '../../lib/singleton';
 import validateSuiteParams from '../../lib/validateSuiteParams';
 import produce from '../produce';
+import { getSuite } from '../state';
 import getSuiteState from '../state/getSuiteState';
 import registerSuite from '../state/registerSuite';
 import mergeExcludedTests from '../test/lib/mergeExcludedTests';
@@ -17,19 +18,29 @@ import runAsyncTest from '../test/runAsyncTest';
 const createSuite = (name, tests) => {
   validateSuiteParams('vest.create', name, tests);
 
+  const ctx = singleton.useContext();
+
+  const ctxRef = {
+    suiteId: ctx?.suiteId || name,
+    operationMode: ctx?.operationMode || OPERATION_MODE_STATEFUL,
+    name,
+  };
+
+  /**
+   * Initialize empty suite state. This is not required for vest
+   * itself, but it is handy to have a default value when using
+   * UI frameworks that might try to get the validation results
+   * during initial render. This is irrelevant for stateless mode.
+   */
+  if (
+    ctxRef.operationMode === OPERATION_MODE_STATEFUL &&
+    !getSuite(ctxRef.suiteId)
+  ) {
+    runWithContext(ctxRef, registerSuite);
+  }
+
   // returns validator function
   return (...args) => {
-    const shouldCreateId = !singleton.useContext()?.suiteId;
-
-    const ctxRef = singleton.useContext() ?? {
-      name,
-      operationMode: OPERATION_MODE_STATEFUL,
-      tests,
-      ...(shouldCreateId && {
-        suiteId: name,
-      }),
-    };
-
     const output = runWithContext(ctxRef, context => {
       registerSuite();
       const { suiteId } = context;

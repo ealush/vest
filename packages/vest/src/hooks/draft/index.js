@@ -1,8 +1,7 @@
-import produce from '../../core/produce';
-import getSuiteState from '../../core/state/getSuiteState';
 import singleton from '../../lib/singleton';
 import throwError from '../../lib/throwError';
 import { ERROR_HOOK_CALLED_OUTSIDE } from '../constants';
+import get from '../get';
 
 /**
  * @returns {Object} Current output object.
@@ -14,8 +13,8 @@ const draft = () => {
     throwError('draft ' + ERROR_HOOK_CALLED_OUTSIDE);
     return;
   }
-  const state = getSuiteState(ctx.suiteId);
-  return produce(state, { draft: true });
+
+  return get(ctx.suiteId);
 };
 
 export default draft;

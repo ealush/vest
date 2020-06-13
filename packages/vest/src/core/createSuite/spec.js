@@ -1,6 +1,10 @@
 import faker from 'faker';
 import { noop } from 'lodash';
 import mock from '../../../testUtils/mock';
+import resetState from '../../../testUtils/resetState';
+import { OPERATION_MODE_STATELESS } from '../../constants';
+import runWithContext from '../../lib/runWithContext';
+import { getSuite } from '../state';
 import createSuite from '.';
 
 describe('Test createSuite module', () => {
@@ -55,6 +59,52 @@ describe('Test createSuite module', () => {
       const validate = createSuite('FormName', testsCallback);
       validate(...params);
       expect(testsCallback).toHaveBeenCalledWith(...params);
+    });
+  });
+
+  describe('Initial run', () => {
+    const testsCb = jest.fn();
+    const suiteId = 'initial_run_spec';
+    const runCreateSuite = () => createSuite(suiteId, testsCb);
+
+    afterEach(() => {
+      resetState();
+    });
+
+    it('Should initialize with an empty state object', () => {
+      expect(getSuite(suiteId)).toBeUndefined();
+      runCreateSuite();
+      const state = getSuite(suiteId);
+      expect(state).toHaveLength(2);
+      expect(state[1]).toBeUndefined();
+      expect(state[0].suiteId).toBe(suiteId);
+      expect(state[0].name).toBe(suiteId);
+      expect(state[0].testObjects).toHaveLength(0);
+      expect(state[0].pending).toHaveLength(0);
+      expect(state[0].lagging).toHaveLength(0);
+      expect(Object.keys(state[0].exclusive)).toHaveLength(0);
+      expect(Object.keys(state[0].tests)).toHaveLength(0);
+      expect(Object.keys(state[0].groups)).toHaveLength(0);
+      expect(Object.keys(state[0].doneCallbacks)).toHaveLength(0);
+      expect(Object.keys(state[0].fieldCallbacks)).toHaveLength(0);
+
+      expect(getSuite(suiteId)).toMatchSnapshot();
+    });
+
+    it('Should return without calling tests callback', () => {
+      const validate = runCreateSuite();
+      expect(testsCb).not.toHaveBeenCalled();
+      validate();
+      expect(testsCb).toHaveBeenCalled();
+    });
+
+    describe('When in stateless mode', () => {
+      it('Should return without creating initial state', () => {
+        runWithContext({ operationMode: OPERATION_MODE_STATELESS }, () => {
+          runCreateSuite();
+        });
+      });
+      expect(getSuite(suiteId)).toBeUndefined();
     });
   });
 });

@@ -1,5 +1,4 @@
 import faker from 'faker';
-import isDeepCopy from '../../../testUtils/isDeepCopy';
 import runSpec from '../../../testUtils/runSpec';
 
 runSpec(vest => {
@@ -20,7 +19,7 @@ runSpec(vest => {
       createSuite(() => {
         const a = vest.draft();
         const b = vest.draft();
-        isDeepCopy(a, b);
+        expect(a).isDeepCopyOf(b);
       });
     });
     it('Should only contain has/get callbacks', () => {

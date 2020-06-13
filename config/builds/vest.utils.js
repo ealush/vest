@@ -47,7 +47,7 @@ const plugins = ({ fileName }) => [
     ...require(BABEL_CONFIG_PATH)(),
   }),
   replace({
-    LIBRARY_NAME: renames[fileName] || fileName,
+    LIBRARY_NAME: JSON.stringify(renames[fileName] || fileName),
   }),
   compiler(),
   terser(),

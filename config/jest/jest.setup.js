@@ -1,5 +1,8 @@
 const glob = require('glob');
 
+const {
+  default: isDeepCopy,
+} = require('../../packages/vest/testUtils/isDeepCopy');
 const { packagePath } = require('../../util');
 
 global.isWatchMode = (process.argv || []).some(
@@ -16,4 +19,8 @@ test.skipOnWatch = (...args) => {
 
   return test(...args);
 };
+
+expect.extend({
+  isDeepCopyOf: isDeepCopy,
+});
 /* eslint-enable */

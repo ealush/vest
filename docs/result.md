@@ -6,19 +6,46 @@ A result object would look somewhat like this:
 
 ```js
 {
-  'name': 'formName',       // The name of the validation suite
-  'errorCount': 0,          // Overall count of errors in the suite
-  'warnCount': 0,           // Overall count of warnings in the suite
-  'tests': Object {         // An object containing all non-skipped tests
-    'fieldName': Object {   // Name of each field
-      'errorCount': 0,      // Error count per field
-      'errors': Array [],   // Array of error messages fer field (may be undefined)
-      'warnings': Array [], // Array of warning messages fer field (may be undefined)
-      'warnCount': 0,       // Warning count per field
+  'name': 'formName',              // The name of the validation suite
+  'errorCount': Number 0,          // Overall count of errors in the suite
+  'warnCount': Number 0,           // Overall count of warnings in the suite
+  'testCount': Number 0,           // Overall test count for the suite (passing, failing and warning)
+  'tests': Object {                // An object containing all non-skipped tests
+    'fieldName': Object {          // Name of each field
+      'errorCount': Number 0,      // Error count per field
+      'errors': Array [],          // Array of error messages fer field (may be undefined)
+      'warnings': Array [],        // Array of warning messages fer field (may be undefined)
+      'warnCount': Number 0,       // Warning count per field
+      'testCount': Number 0,       // Overall test count for the field (passing, failing and warning)
     },
+    'groups': Object {             // An object containing groups declared in the suite
+      'fieldName': Object {        // Subset of res.tests[fieldName] only containing tests
+        /*... */                   // only containing tests that ran within the group
+      }
+    }
   }
 }
 ```
+
+## Accessing the last result object with `vest.get`
+
+Alternatively, if you need to access your validation results out of context - for example, from a different UI component or function, you can use `vest.get`.
+
+Vest exposes the `vest.get` function that is able to retrieve the most recent validation result of [**stateful**](./state) suites (suites created using vest.create()).
+
+In case your validations did not run yet, `vest.get` returns an empty validation result object - which can be helpful when trying to access validation result object when rendering the initial UI, or setting it in the initial state of your components.
+
+vest.get takes a single argument: the suite name. It is used to identify which validation result to retrieve.
+
+```js
+import vest from 'vest';
+
+const res = vest.get('suite_name');
+
+res.hasErrors('fieldName');
+```
+
+# Result Object Methods:
 
 Along with these values, the result object exposes the following methods:
 

@@ -1,4 +1,4 @@
-import isDeepCopy, { SAMPLE_DEEP_OBJECT } from '../../../testUtils/isDeepCopy';
+import { SAMPLE_DEEP_OBJECT } from '../../../testUtils/isDeepCopy';
 import copy from '.';
 
 describe('copy', () => {
@@ -9,8 +9,8 @@ describe('copy', () => {
   it('Should deep copy source object', () => {
     const clone = copy(SAMPLE_DEEP_OBJECT);
 
-    isDeepCopy(SAMPLE_DEEP_OBJECT, clone);
-    isDeepCopy(SAMPLE_DEEP_OBJECT[0].range, clone[0].range);
-    isDeepCopy(SAMPLE_DEEP_OBJECT[1].range[0].b, clone[1].range[0].b);
+    expect(SAMPLE_DEEP_OBJECT).isDeepCopyOf(clone);
+    expect(SAMPLE_DEEP_OBJECT[0].range).isDeepCopyOf(clone[0].range);
+    expect(SAMPLE_DEEP_OBJECT[1].range[0].b).isDeepCopyOf(clone[1].range[0].b);
   });
 });

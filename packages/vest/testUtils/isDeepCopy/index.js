@@ -6,14 +6,52 @@ const isDeepCopy = (source, clone) => {
 
     if (!source || typeof source !== 'object') {
       if (typeof clone !== 'function') {
-        expect(clone).toBe(source);
+        if (clone !== source) {
+          return {
+            pass: false,
+            message: () => 'Source and clone are not identical',
+          };
+        }
       }
       continue;
     }
 
-    expect(clone).not.toBe(source);
+    if (clone === source) {
+      return {
+        pass: false,
+        message: () =>
+          `Source and clone are the same object. Expected a deep copy. ${JSON.stringify(
+            source
+          )}===${JSON.stringify(clone)}`,
+      };
+    }
+
+    // Short circuit
+    if (
+      (clone && !source) ||
+      (source && !clone) ||
+      typeof source !== typeof clone
+    ) {
+      return {
+        pass: false,
+        message: () =>
+          `Source and clone are not of the same type: ${JSON.stringify(
+            source
+          )} does not equal ${JSON.stringify(clone)}`,
+      };
+    }
 
     if (Array.isArray(source)) {
+      // Short circuit
+      if (!Array.isArray(clone) || source.length !== clone.length) {
+        return {
+          pass: false,
+          message: () =>
+            `source and clone arrays are not identical. ${JSON.stringify(
+              source
+            )} does not equal ${JSON.stringify(clone)}`,
+        };
+      }
       source.forEach((v, i) => {
         queue.push([source[i], clone[i]]);
       });
@@ -23,6 +61,8 @@ const isDeepCopy = (source, clone) => {
 
     continue outer;
   }
+
+  return { pass: true };
 };
 
 export const SAMPLE_DEEP_OBJECT = [

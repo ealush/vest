@@ -9,10 +9,8 @@ import runWithContext from './lib/runWithContext';
 import singleton from './lib/singleton';
 
 const VERSION = VEST_VERSION;
-const Enforce = enforce.Enforce;
 
 export default {
-  Enforce,
   VERSION,
   create,
   enforce,

@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test createSuite module Initial run Should initialize with an empty state object 1`] = `
+Array [
+  Object {
+    "doneCallbacks": Array [],
+    "exclusive": Object {},
+    "fieldCallbacks": Object {},
+    "groups": Object {},
+    "lagging": Array [],
+    "name": "initial_run_spec",
+    "pending": Array [],
+    "suiteId": "initial_run_spec",
+    "testObjects": Array [],
+    "tests": Object {},
+  },
+  undefined,
+]
+`;

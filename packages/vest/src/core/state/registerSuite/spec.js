@@ -1,5 +1,4 @@
 import { getState } from '..';
-import isDeepCopy from '../../../../testUtils/isDeepCopy';
 import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
@@ -58,7 +57,7 @@ describe('registerSuite', () => {
           runRegisterSuite(context);
         });
         it('Should merge previous pending and lagging into lagging', () => {
-          isDeepCopy(suite[0].lagging, [...pending, ...lagging]);
+          expect(suite[0].lagging).isDeepCopyOf([...pending, ...lagging]);
         });
 
         it('Should match snapshot', () => {

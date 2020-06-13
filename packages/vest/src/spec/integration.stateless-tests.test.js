@@ -1,4 +1,3 @@
-import isDeepCopy from '../../testUtils/isDeepCopy';
 import resetState from '../../testUtils/resetState';
 import runSpec from '../../testUtils/runSpec';
 
@@ -58,7 +57,7 @@ runSpec(vest => {
             expect(callback_4).not.toHaveBeenCalled();
             result.done(callback_4);
             expect(callback_4).toHaveBeenCalled();
-            isDeepCopy(callback_4.mock.calls[0][0], result);
+            expect(callback_4.mock.calls[0][0]).isDeepCopyOf(result);
             done();
           });
         })

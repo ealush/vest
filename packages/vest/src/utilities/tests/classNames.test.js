@@ -40,6 +40,7 @@ describe('Utility: classNames', () => {
       invalid: 'invalid_string',
       tested: 'tested_string',
       untested: 'untested_string',
+      valid: 'valid_string',
       warning: 'warning_string',
     });
 
@@ -54,7 +55,7 @@ describe('Utility: classNames', () => {
         'tested_string warning_string'.split(' ').sort()
       );
       expect(genClass('field_4').split(' ').sort()).toEqual(
-        'tested_string'.split(' ').sort()
+        'tested_string valid_string'.split(' ').sort()
       );
 
       expect(genClass('field_5').split(' ').sort()).toEqual(

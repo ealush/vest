@@ -32,6 +32,7 @@ const cn = classNames(res, {
   untested: 'is-untested', // will only be applied if the provided field did not run yet
   tested: 'some-tested-class', // will only be applied if the provided field did run
   invalid: 'my_invalid_class', // will only be applied if the provided field ran at least once and has an errror
+  valid: 'my_valid_class', // will only be applied if the provided field ran at least once does not have errors or warnings
   warning: 'my_warning_class', // will only be applied if the provided field ran at least once and has a warning
 });
 

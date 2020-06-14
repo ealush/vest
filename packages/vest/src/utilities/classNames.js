@@ -28,6 +28,8 @@ const classNames = (res, classes = {}) => {
   selectors.untested = key => !selectors.tested(key);
   selectors.invalid = key => selectors.tested(key) && res.hasErrors(key);
   selectors.warning = key => selectors.tested(key) && res.hasWarnings(key);
+  selectors.valid = key =>
+    selectors.tested(key) && !res.hasWarnings(key) && !res.hasErrors(key);
 
   return key => {
     const classesArray = [];

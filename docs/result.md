@@ -130,7 +130,7 @@ resultObject.getErrors();
 // }
 ```
 
-**Note** If you did not specify error messages for your tests, your errors array will be empty as well. In such case you should always rely on `.hasErrors()` instead.
+!> **NOTE** If you did not specify error messages for your tests, your errors array will be empty as well. In such case you should always rely on `.hasErrors()` instead.
 
 ## `getErrorsByGroup` and `getWarningsByGroup` functions
 

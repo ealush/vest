@@ -11,7 +11,7 @@ function publishPackage({ packageName, tag }) {
     .join(' ');
 
   logger.info('🚀 Publishing package.');
-  exec(command);
+  exec(command, { exitOnFailure: false });
 }
 
 module.exports = publishPackage;

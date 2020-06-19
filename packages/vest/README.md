@@ -62,5 +62,3 @@ res.getErrors('username'); // returns an array of errors for the `username` fiel
 - If your backend is node, you can use the same Vest modules for both client-side and server-side validations.
 
 **Vest is a continuation of [Passable](https://github.com/fiverr/passable) by Fiverr.**
-
-Vest icon made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com/).

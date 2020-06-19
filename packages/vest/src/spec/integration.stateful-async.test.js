@@ -1,22 +1,35 @@
 import resetState from '../../testUtils/resetState';
 import runSpec from '../../testUtils/runSpec';
+import testDummy from '../../testUtils/testDummy';
 
-const suite = ({ create, test, ...vest }) =>
-  create('suite_name', skip => {
+const suiteName = 'suite_name';
+
+const suite = ({ create, ...vest }) =>
+  create(suiteName, skip => {
+    const dummyTest = testDummy(vest);
+
     vest.skip(skip);
-    test('field_1', 'field_statement_1', () => false);
+    vest.group('group', () => {
+      dummyTest.failingAsync('field_1', 'field_1_group_message');
+      dummyTest.failingAsync('field_4', 'field_4_group_message');
+    });
 
-    test('field_2', () =>
-      new Promise((resolve, reject) => {
-        setTimeout(() => reject('rejection_message_1'), 50);
-      }));
-    test('field_2', 'field_statement_2', () => {});
+    dummyTest.failing('field_1', 'field_statement_1');
 
-    test('field_3', 'field_statement_3', () => Promise.resolve());
+    dummyTest.failingAsync('field_2', {
+      time: 50,
+      statement: 'rejection_message_1',
+    });
+
+    dummyTest.passing('field_2', 'field_statement_2');
+
+    dummyTest.passingAsync('field_3', 'field_statement_3');
+    dummyTest.failingAsync('field_3', 'field_statement_3');
   });
 
 runSpec(vest => {
   let validate, callback_1, callback_2, callback_3, callback_4, control;
+
   describe('Stateful async tests', () => {
     beforeEach(() => {
       resetState();
@@ -54,11 +67,29 @@ runSpec(vest => {
 
     it('Merges skipped validations from previous suite', () =>
       new Promise(done => {
-        const res = validate();
+        const res = validate('group');
+        expect(res.hasErrors('field_1')).toBe(true);
+        expect(res.tests.field_1.errorCount).toBe(1);
         expect(res.hasErrors('field_2')).toBe(false);
-        validate('field_2').done(res => {
-          expect(res.hasErrors('field_2')).toBe(true);
-          done();
+        expect(res.hasErrors('field_3')).toBe(false);
+        expect(res.hasErrors('field_4')).toBe(false);
+        expect(res).toMatchSnapshot();
+        setTimeout(() => {
+          const res = vest.get(suiteName);
+          expect(res.tests.field_1.errorCount).toBe(1);
+          expect(res.hasErrors('field_2')).toBe(false);
+          expect(res.hasErrors('field_3')).toBe(true);
+          expect(res.hasErrors('field_4')).toBe(false);
+          expect(res).toMatchSnapshot();
+
+          validate('field_2').done(res => {
+            expect(res.tests.field_1.errorCount).toBe(2);
+            expect(res.hasErrors('field_2')).toBe(true);
+            expect(res.hasErrors('field_3')).toBe(true);
+            expect(res.hasErrors('field_4')).toBe(true);
+            expect(res).toMatchSnapshot();
+            done();
+          });
         });
       }));
   });

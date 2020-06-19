@@ -1,4 +1,4 @@
-![Vest](https://cdn.jsdelivr.net/gh/ealush/vest@assets/logo.png 'Vest')
+![Vest](https://cdn.jsdelivr.net/gh/ealush/vest@assets/vest-logo.png 'Vest')
 
 # Vest - Validation Testing
 

@@ -1,4 +1,4 @@
-const { PACKAGE_NAMES } = require('./constants');
+const { PACKAGE_NAMES } = require('../config');
 const buildPackage = require('./steps/buildPackage');
 const copyDistFiles = require('./steps/copyDistFiles');
 

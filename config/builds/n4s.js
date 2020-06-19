@@ -6,12 +6,12 @@ import replace from 'rollup-plugin-replace';
 import { terser } from 'rollup-plugin-terser';
 
 const { BABEL_CONFIG_PATH } = require('..');
-const { PACKAGE_NAME_N4S } = require('../../scripts/constants');
+const { PACKAGE_N4S } = require('../../shared/constants');
 const { packagePath } = require('../../util');
 
 const DEFAULT_FORMAT = 'umd';
 
-const PACKAGE_PATH = path.resolve(packagePath(PACKAGE_NAME_N4S));
+const PACKAGE_PATH = path.resolve(packagePath(PACKAGE_N4S));
 
 const LIBRARY_NAME_ENFORCE = 'enforce';
 const LIBRARY_NAME_ENSURE = 'ensure';
@@ -49,7 +49,7 @@ const buildConfig = ({
         PACKAGE_PATH,
         'dist',
         extended ? 'extended' : '',
-        name || PACKAGE_NAME_N4S
+        name || PACKAGE_N4S
       ),
       'js',
     ]

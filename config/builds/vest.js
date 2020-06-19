@@ -7,13 +7,13 @@ import replace from 'rollup-plugin-replace';
 import { terser } from 'rollup-plugin-terser';
 
 const { BABEL_CONFIG_PATH } = require('..');
-const { PACKAGE_NAME_VEST } = require('../../scripts/constants');
+const { PACKAGE_VEST } = require('../../shared/constants');
 const { packagePath, packageJson } = require('../../util');
 
 const DEFAULT_FORMAT = 'umd';
 
-const { version } = packageJson(PACKAGE_NAME_VEST);
-const PACKAGE_PATH = packagePath(PACKAGE_NAME_VEST);
+const { version } = packageJson(PACKAGE_VEST);
+const PACKAGE_PATH = packagePath(PACKAGE_VEST);
 
 const PLUGINS = [
   resolve(),
@@ -26,7 +26,7 @@ const PLUGINS = [
   }),
   replace({
     VEST_VERSION: JSON.stringify(version),
-    LIBRARY_NAME: JSON.stringify(PACKAGE_NAME_VEST),
+    LIBRARY_NAME: JSON.stringify(PACKAGE_VEST),
   }),
   compiler(),
 ];
@@ -35,7 +35,7 @@ const buildConfig = ({ format = DEFAULT_FORMAT, min = false } = {}) => ({
   input: path.join(PACKAGE_PATH, 'src/index.js'),
   output: {
     file: [
-      path.join(PACKAGE_PATH, 'dist', PACKAGE_NAME_VEST),
+      path.join(PACKAGE_PATH, 'dist', PACKAGE_VEST),
       min && 'min',
       format !== DEFAULT_FORMAT && format,
       'js',
@@ -43,7 +43,7 @@ const buildConfig = ({ format = DEFAULT_FORMAT, min = false } = {}) => ({
       .filter(Boolean)
       .join('.'),
     format,
-    name: PACKAGE_NAME_VEST,
+    name: PACKAGE_VEST,
   },
   plugins: min ? [...PLUGINS, terser()] : PLUGINS,
 });

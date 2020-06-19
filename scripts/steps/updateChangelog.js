@@ -6,10 +6,11 @@ const {
   KEYWORD_MINOR,
   KEYWORD_PATCH,
   CHANGELOG_TITLES,
-  KEYWORD_DOCS,
-  KEYWORD_CONF,
 } = require('../constants');
 const determineLevel = require('../util/determineChangeLevel');
+
+const KEYWORD_CONF = 'conf';
+const KEYWORD_DOCS = 'docs';
 
 const IGNORE_KEYWORDS = [KEYWORD_DOCS, KEYWORD_CONF];
 const IGNORE_PATTERN = new RegExp(

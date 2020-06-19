@@ -1,8 +1,8 @@
 const path = require('path');
-const { PACKAGE_NAME_VEST } = require('../../../scripts/constants');
+const { PACKAGE_VEST } = require('../../../shared/constants');
 const packagePath = require('../../../util/packagePath');
 
-const vestSrc = packagePath(PACKAGE_NAME_VEST, 'src');
+const vestSrc = packagePath(PACKAGE_VEST, 'src');
 
 const PATHS = {
   Context: path.join(vestSrc, 'core/Context'),

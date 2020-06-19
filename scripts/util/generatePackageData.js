@@ -1,6 +1,6 @@
 const semver = require('semver');
 const { packageJson } = require('../../util');
-const { TAG_NEXT } = require('../constants');
+const { TAG_NEXT, TAG_DEV } = require('../constants');
 const determineChangeLevel = require('./determineChangeLevel');
 
 const {
@@ -16,8 +16,14 @@ function pickTagId(nextVersion) {
     return nextVersion;
   }
 
-  if (TRAVIS_BRANCH === NEXT_BRANCH || TRAVIS_BRANCH !== DEFAULT_BRANCH) {
-    return `${nextVersion}-next-${TRAVIS_COMMIT.substr(0, 6)}`;
+  const commitHash = TRAVIS_COMMIT.substr(0, 6);
+
+  if (TRAVIS_BRANCH === NEXT_BRANCH) {
+    return `${nextVersion}-${TAG_NEXT}-${commitHash}`;
+  }
+
+  if (TRAVIS_BRANCH !== DEFAULT_BRANCH) {
+    return `${nextVersion}-${TAG_DEV}-${commitHash}`;
   }
 
   throw Error('pickTagId: Encountered an unexpected input.');
@@ -28,7 +34,7 @@ function generatePackageData(packageName, messages) {
   const changeLevel = determineChangeLevel(messages.join(''));
   const nextVersion = semver.inc(version, changeLevel);
   const tagId = pickTagId(nextVersion);
-  const tag = tagId === nextVersion ? null : TAG_NEXT;
+  const [, tag] = tagId.split('-');
   return {
     changeLevel,
     messages,

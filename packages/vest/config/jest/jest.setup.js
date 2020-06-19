@@ -1,9 +1,9 @@
-const { PACKAGE_NAME_VEST } = require('../../../../scripts/constants');
+const { PACKAGE_VEST } = require('../../../../shared/constants');
 const { packageJson, packagePath } = require('../../../../util');
 
-const { version } = packageJson(PACKAGE_NAME_VEST);
+const { version } = packageJson(PACKAGE_VEST);
 
 global.VEST_VERSION = version;
 
 // Registers global instance
-require(packagePath(PACKAGE_NAME_VEST, 'src'));
+require(packagePath(PACKAGE_VEST, 'src'));

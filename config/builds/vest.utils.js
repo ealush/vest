@@ -8,7 +8,7 @@ import replace from 'rollup-plugin-replace';
 import { terser } from 'rollup-plugin-terser';
 
 const { BABEL_CONFIG_PATH } = require('..');
-const { PACKAGE_NAME_VEST } = require('../../scripts/constants');
+const { PACKAGE_VEST } = require('../../shared/constants');
 const { logger } = require('../../util');
 const { packagePath } = require('../../util');
 
@@ -22,7 +22,7 @@ const renames = {
 const getFileName = filePath => path.basename(filePath, JS_EXTENSION);
 
 const entries = glob
-  .sync(packagePath(PACKAGE_NAME_VEST, 'src', DIR_NAME_UTILITIES, '*.js'))
+  .sync(packagePath(PACKAGE_VEST, 'src', DIR_NAME_UTILITIES, '*.js'))
   .map(input => {
     const fileName = getFileName(input);
     return {
@@ -30,7 +30,7 @@ const entries = glob
       input,
       name: renames[fileName] || fileName,
       outputPath: packagePath(
-        PACKAGE_NAME_VEST,
+        PACKAGE_VEST,
         'dist',
         [fileName, JS_EXTENSION].join('')
       ),

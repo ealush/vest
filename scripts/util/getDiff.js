@@ -1,10 +1,7 @@
 const { get } = require('lodash');
 const fetch = require('node-fetch');
-const {
-  PACKAGE_NAMES,
-  PACKAGE_NAME_VEST,
-  PACKAGES_DIR,
-} = require('../constants');
+const { PACKAGE_NAMES } = require('../../config');
+const { PACKAGE_VEST, PACKAGES_DIR } = require('../../shared/constants');
 
 const {
   TRAVIS_REPO_SLUG,
@@ -46,7 +43,7 @@ function splitMessagesByPackage(messages) {
       message.includes(`[${packageName}]`)
     );
 
-    modifiedPackage = modifiedPackage || PACKAGE_NAME_VEST;
+    modifiedPackage = modifiedPackage || PACKAGE_VEST;
 
     accumulator[modifiedPackage] = []
       .concat(

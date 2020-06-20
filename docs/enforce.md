@@ -20,8 +20,6 @@ enforce(4)
 
 ## Content
 
-## Content
-
 - [List of Enforce rules](#list-of-enforce-rules) - All default enforce rules
 - [Custom Enforce Rules](#custom-enforce-rules) - How to extend enforce with your rules
 - [Business Related Rules](#business-related-rules) - Using more rules such as isEmail and isCreditCard
@@ -1010,6 +1008,8 @@ Enforce uses [validator.js](https://github.com/validatorjs/validator.js) to prov
 - isURL
 
 Because these rules are business specific, and can have an impact on your bundle size, they are split into a their own bundle.
+
+For example:
 
 ```js
 import enforce from 'vest/enforceExtended';

@@ -7,7 +7,9 @@
 - [Documentation homepage](https://ealush.github.io/vest)
 - **Try vest live**
   - [Vanilla JS example](https://stackblitz.com/edit/vest-vanilla-support-example)
-  - ReactJS Examples: [1](https://stackblitz.com/edit/vest-react-support-example), [2](https://stackblitz.com/edit/vest-react-registration)
+  - ReactJS Examples: [1](https://codesandbox.io/s/youthful-williamson-loijb?file=/src/validate.js), [2](https://stackblitz.com/edit/vest-react-support-example), [3](https://stackblitz.com/edit/vest-react-registration)
+  
+## [Release Notes](https://github.com/ealush/vest/releases)
 
 ## What is Vest?
 

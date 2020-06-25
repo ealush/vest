@@ -1,4 +1,4 @@
-import { getState } from '..';
+import { getStateKey } from '..';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import {
   OPERATION_MODE_STATEFUL,
@@ -39,11 +39,11 @@ describe('cleanupCompletedSuite', () => {
         runRegisterSuite(defaultContext);
       });
       it('Should remove suite from state', () => {
-        expect(getState()[KEY_SUITES]).toHaveProperty(suiteId);
-        expect(getState()[KEY_SUITES]).toHaveProperty(suiteId_2);
+        expect(getStateKey(KEY_SUITES)).toHaveProperty(suiteId);
+        expect(getStateKey(KEY_SUITES)).toHaveProperty(suiteId_2);
         cleanupCompletedSuite(suiteId_2);
-        expect(getState()[KEY_SUITES]).not.toHaveProperty(suiteId_2);
-        expect(getState()[KEY_SUITES]).toHaveProperty(suiteId);
+        expect(getStateKey(KEY_SUITES)).not.toHaveProperty(suiteId_2);
+        expect(getStateKey(KEY_SUITES)).toHaveProperty(suiteId);
       });
     });
   });

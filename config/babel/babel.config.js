@@ -14,6 +14,7 @@ module.exports = api => {
         }),
       },
     ],
+    '@babel/preset-typescript',
   ];
 
   const plugins = [
@@ -26,7 +27,7 @@ module.exports = api => {
 
   return {
     include: [/src/, /testUtils/, /node_modules/],
-    presets,
     plugins,
+    presets,
   };
 };

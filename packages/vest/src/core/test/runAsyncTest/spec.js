@@ -1,9 +1,10 @@
 import _ from 'lodash';
+import { log } from '../../../../../../util/logger';
 import resetState from '../../../../testUtils/resetState';
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
 import runWithContext from '../../../lib/runWithContext';
 import Context from '../../Context';
-import { setState, getState } from '../../state';
+import { setState, getStateKey } from '../../state';
 import { KEY_CANCELED } from '../../state/constants';
 import getSuiteState from '../../state/getSuiteState';
 import patch from '../../state/patch';
@@ -51,6 +52,7 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
       suiteId,
       testFn: testCase === CASE_PASSING ? Promise.resolve() : Promise.reject(),
     });
+    testObject.asyncTest = testObject.testFn;
     setPending(suiteId, testObject);
   });
 
@@ -100,11 +102,11 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
       });
 
       it('Should remove test from canceled state', () => {
-        expect(getState(KEY_CANCELED)).toHaveProperty(testObject.id);
+        expect(getStateKey(KEY_CANCELED)).toHaveProperty(testObject.id);
         runRunAsyncTest(testObject);
         return new Promise(done => {
           setTimeout(() => {
-            expect(getState(KEY_CANCELED)).not.toHaveProperty(testObject.id);
+            expect(getStateKey(KEY_CANCELED)).not.toHaveProperty(testObject.id);
             done();
           });
         });
@@ -251,7 +253,7 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
         const rejectionString = 'rejection string';
         beforeEach(() => {
           testObject.testFn.catch(Function.prototype);
-          testObject.testFn = Promise.reject(rejectionString);
+          testObject.asyncTest = Promise.reject(rejectionString);
         });
 
         it('Should set test statement to rejection string', () =>

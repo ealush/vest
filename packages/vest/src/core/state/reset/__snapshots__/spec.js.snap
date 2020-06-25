@@ -20,82 +20,186 @@ Object {
         "groups": Object {},
         "lagging": Array [
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_1",
             "id": "0",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_3",
             "id": "2",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
         ],
         "name": "suite_id",
         "pending": Array [
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_2",
             "id": "5",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_4",
             "id": "7",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
         ],
         "suiteId": "suite_id",
         "testObjects": Array [
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_2",
             "id": "5",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_4",
             "id": "7",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_1",
             "id": "0",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_3",
             "id": "2",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
         ],
         "tests": Object {},
@@ -116,31 +220,70 @@ Object {
         "suiteId": "suite_id",
         "testObjects": Array [
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_1",
             "id": "0",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_3",
             "id": "2",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_4",
             "id": "3",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
         ],
         "tests": Object {},
@@ -184,83 +327,187 @@ Object {
         "fieldCallbacks": Object {},
         "groups": Object {},
         "lagging": Array [
-          A {
+          a {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_1",
             "id": "24",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
-          A {
+          a {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_3",
             "id": "26",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
         ],
         "name": "suite_id",
         "pending": Array [
-          A {
+          a {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_2",
             "id": "29",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
-          A {
+          a {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_4",
             "id": "31",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
         ],
         "suiteId": "suite_id",
         "testObjects": Array [
-          A {
+          a {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_2",
             "id": "29",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
-          A {
+          a {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_4",
             "id": "31",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
-          A {
+          a {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_1",
             "id": "24",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
-          A {
+          a {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_3",
             "id": "26",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
         ],
         "tests": Object {},
@@ -280,32 +527,71 @@ Object {
         "pending": null,
         "suiteId": "suite_id",
         "testObjects": Array [
-          A {
+          a {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_1",
             "id": "24",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
-          A {
+          a {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_3",
             "id": "26",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
-          A {
+          a {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_4",
             "id": "27",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
         ],
         "tests": Object {},
@@ -364,83 +650,187 @@ Object {
         "fieldCallbacks": Object {},
         "groups": Object {},
         "lagging": Array [
-          m {
+          n {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_1",
             "id": "48",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
-          m {
+          n {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_3",
             "id": "50",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
         ],
         "name": "suite_id",
         "pending": Array [
-          m {
+          n {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_2",
             "id": "53",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
-          m {
+          n {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_4",
             "id": "55",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
         ],
         "suiteId": "suite_id",
         "testObjects": Array [
-          m {
+          n {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_2",
             "id": "53",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
-          m {
+          n {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_4",
             "id": "55",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
-          m {
+          n {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_1",
             "id": "48",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
-          m {
+          n {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_3",
             "id": "50",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
         ],
         "tests": Object {},
@@ -460,32 +850,71 @@ Object {
         "pending": null,
         "suiteId": "suite_id",
         "testObjects": Array [
-          m {
+          n {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_1",
             "id": "48",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
-          m {
+          n {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_3",
             "id": "50",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
-          m {
+          n {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_4",
             "id": "51",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
         ],
         "tests": Object {},
@@ -560,82 +989,186 @@ Object {
         "groups": Object {},
         "lagging": Array [
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_1",
             "id": "72",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_3",
             "id": "74",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
         ],
         "name": "suite_id",
         "pending": Array [
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_2",
             "id": "77",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_4",
             "id": "79",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
         ],
         "suiteId": "suite_id",
         "testObjects": Array [
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_2",
             "id": "77",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_4",
             "id": "79",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_1",
             "id": "72",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_3",
             "id": "74",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
         ],
         "tests": Object {},
@@ -656,31 +1189,70 @@ Object {
         "suiteId": "suite_id",
         "testObjects": Array [
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_1",
             "id": "72",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_3",
             "id": "74",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
           VestTest {
+            "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_4",
             "id": "75",
             "isWarning": false,
             "statement": undefined,
             "suiteId": "suite_id",
-            "testFn": Promise {},
+            "testFn": [MockFunction] {
+              "calls": Array [
+                Array [
+                  [Circular],
+                ],
+              ],
+              "results": Array [
+                Object {
+                  "type": "return",
+                  "value": Promise {},
+                },
+              ],
+            },
           },
         ],
         "tests": Object {},

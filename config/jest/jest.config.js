@@ -9,7 +9,7 @@ module.exports = (options = {}) => ({
   testEnvironment: 'node',
   testMatch: ['**/*/(spec|test).js', '**/*.(spec|test).js'],
   transform: {
-    '\\.js$': ['babel-jest', { configFile: BABEL_CONFIG_PATH }],
+    '\\.(j|t)s$': ['babel-jest', { configFile: BABEL_CONFIG_PATH }],
   },
   ...options,
 });

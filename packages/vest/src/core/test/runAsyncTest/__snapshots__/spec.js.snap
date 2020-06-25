@@ -15,6 +15,7 @@ Object {
   "name": "suite_name_1",
   "pending": Array [
     VestTest {
+      "asyncTest": Promise {},
       "failed": false,
       "fieldName": "field_1",
       "id": "11",
@@ -45,6 +46,7 @@ Object {
   "name": "suite_name_1",
   "pending": Array [
     VestTest {
+      "asyncTest": Promise {},
       "failed": false,
       "fieldName": "field_1",
       "id": "0",

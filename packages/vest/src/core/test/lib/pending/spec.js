@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import resetState from '../../../../../testUtils/resetState';
-import { getState } from '../../../state';
+import { getStateKey } from '../../../state';
 import { KEY_CANCELED } from '../../../state/constants';
 import getSuiteState from '../../../state/getSuiteState';
 import patch from '../../../state/patch';
@@ -113,11 +113,11 @@ describe('module: pending', () => {
       });
 
       it('Should set test as canceled', () => {
-        expect(getState(KEY_CANCELED)).not.toMatchObject({
+        expect(getStateKey(KEY_CANCELED)).not.toMatchObject({
           [testObjects[0].id]: true,
         });
         setPending(suiteId, testObjects[0]);
-        expect(getState(KEY_CANCELED)).toMatchObject({
+        expect(getStateKey(KEY_CANCELED)).toMatchObject({
           [testObjects[0].id]: true,
         });
       });

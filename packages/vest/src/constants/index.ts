@@ -1,0 +1,6 @@
+export const OPERATION_MODE_STATELESS = 'STATELESS';
+export const OPERATION_MODE_STATEFUL = 'STATEFUL';
+
+export type OperationMode =
+  | typeof OPERATION_MODE_STATELESS
+  | typeof OPERATION_MODE_STATEFUL;

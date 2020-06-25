@@ -1,4 +1,4 @@
-import { getState } from '..';
+import { getStateKey } from '..';
 import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
@@ -28,13 +28,13 @@ describe('patch', () => {
       patcher = jest.fn(state => ({ ...state, ...{ k: 'v' } }));
       resetState();
       runRegisterSuite(context);
-      suite = getState(KEY_SUITES)[suiteId];
+      suite = getStateKey(KEY_SUITES)[suiteId];
       suiteState = suite[0];
       prevState = suite[1];
       patch(suiteId, patcher);
     });
     it('Should set current state value to patcher argument return value', () => {
-      expect(getState(KEY_SUITES)[suiteId][0]).toBe(
+      expect(getStateKey(KEY_SUITES)[suiteId][0]).toBe(
         patcher.mock.results[0].value
       );
     });

@@ -1,4 +1,4 @@
-import { getState, getSuites } from '..';
+import { getState, getSuites, getStateKey } from '..';
 import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import runSpec from '../../../../testUtils/runSpec';
@@ -90,15 +90,15 @@ const spec = _vest => {
     });
 
     it('Should set all pending and lagging tests as canceled', () => {
-      const previouslyCanceled = getState(KEY_CANCELED);
+      const previouslyCanceled = getStateKey(KEY_CANCELED);
       const state = getSuiteState(suiteId);
       const allCanceled = [...state.lagging, ...state.pending].reduce(
         (canceled, { id }) => Object.assign(canceled, { [id]: true }),
         { ...previouslyCanceled }
       );
-      expect(getState(KEY_CANCELED)).not.toEqual(allCanceled);
+      expect(getStateKey(KEY_CANCELED)).not.toEqual(allCanceled);
       _reset(suiteId);
-      expect(getState(KEY_CANCELED)).toEqual(allCanceled);
+      expect(getStateKey(KEY_CANCELED)).toEqual(allCanceled);
     });
   });
 };

@@ -1,8 +1,8 @@
-import { getState } from '../../src/core/state';
+import { getStateKey } from '../../src/core/state';
 import { KEY_SUITES } from '../../src/core/state/constants';
 
 const suiteIdByName = suiteName => {
-  const suites = getState(KEY_SUITES);
+  const suites = getStateKey(KEY_SUITES);
 
   if (!suites) {
     return null;

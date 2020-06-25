@@ -27,7 +27,9 @@ Object {
       "suiteId": "suite_1",
       "testFn": [MockFunction] {
         "calls": Array [
-          Array [],
+          Array [
+            [Circular],
+          ],
         ],
         "results": Array [
           Object {
@@ -47,7 +49,9 @@ Object {
       "suiteId": "suite_1",
       "testFn": [MockFunction] {
         "calls": Array [
-          Array [],
+          Array [
+            [Circular],
+          ],
         ],
         "results": Array [
           Object {
@@ -90,7 +94,9 @@ Object {
       "suiteId": "suite_1",
       "testFn": [MockFunction] {
         "calls": Array [
-          Array [],
+          Array [
+            [Circular],
+          ],
         ],
         "results": Array [
           Object {
@@ -109,7 +115,9 @@ Object {
       "suiteId": "suite_1",
       "testFn": [MockFunction] {
         "calls": Array [
-          Array [],
+          Array [
+            [Circular],
+          ],
         ],
         "results": Array [
           Object {

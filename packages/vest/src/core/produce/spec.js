@@ -9,10 +9,7 @@ import group from '../../hooks/group';
 import getSuiteState from '../state/getSuiteState';
 import hasRemainingTests from '../state/hasRemainingTests';
 import patch from '../state/patch';
-import {
-  SEVERITY_COUNT_ERROR,
-  SEVERITY_COUNT_WARN,
-} from '../test/lib/VestTest/constants';
+import { SEVERITY_COUNT_ERROR, SEVERITY_COUNT_WARN } from './constants';
 import produce from '.';
 
 const counter = ((n = 0) => () => n++)();

@@ -2,7 +2,7 @@ import _ from 'lodash';
 import resetState from '../../../testUtils/resetState';
 import singleton from '../../lib/singleton';
 import { KEY_STATE, KEY_CANCELED, KEY_SUITES } from './constants';
-import state, { getState, setState } from '.';
+import state, { getState, setState, getStateKey } from '.';
 
 describe('Module: state', () => {
   beforeEach(() => {
@@ -49,7 +49,7 @@ describe('Module: state', () => {
     describe('When key specified', () => {
       it('Should return relevant state portion', () => {
         [KEY_CANCELED, KEY_SUITES].forEach(key => {
-          expect(getState(key)).toBe(singleton.use(KEY_STATE)[key]);
+          expect(getStateKey(key)).toBe(singleton.use(KEY_STATE)[key]);
         });
       });
     });

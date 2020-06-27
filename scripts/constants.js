@@ -4,10 +4,11 @@ const TAG_DEV = 'dev';
 const KEYWORD_PATCH = 'patch';
 const KEYWORD_MINOR = 'minor';
 const KEYWORD_FEAT = 'feat';
+const KEYWORD_ADDED = 'added';
 const KEYWORD_MAJOR = 'major';
 const KEYWORD_BREAKING = 'breaking';
 
-const KEYWORDS_MINOR = [KEYWORD_MINOR, KEYWORD_FEAT];
+const KEYWORDS_MINOR = [KEYWORD_MINOR, KEYWORD_FEAT, KEYWORD_ADDED];
 const KEYWORDS_MAJOR = [KEYWORD_MAJOR, KEYWORD_BREAKING];
 
 const CHANGELOG_TITLES = {

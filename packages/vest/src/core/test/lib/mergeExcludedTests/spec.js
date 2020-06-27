@@ -84,7 +84,7 @@ describe('module: skipped', () => {
 
         const validation = () =>
           vest.create(SUITE_NAME, skip => {
-            vest.skip(skip);
+            vest.skip.group(skip);
             suiteId = singleton.useContext().suiteId;
 
             dummyTest.failing('f1', 'f1_msg');
@@ -126,10 +126,12 @@ describe('module: skipped', () => {
         test('sanity: skipped tests are not in initial state', () =>
           new Promise(done => {
             res = _.cloneDeep(validate([GROUP_NAME_1, GROUP_NAME_2]));
-            expect(res).toMatchSnapshot();
             expect(res.tests).toHaveProperty('f1');
             expect(res.tests).toHaveProperty('f2');
             expect(res.tests).toHaveProperty('f3');
+            expect(res.errorCount).toBe(3);
+            expect(res.warnCount).toBe(0);
+            expect(res.testCount).toBe(4);
             expect(res.tests.f1.errorCount).toBe(1);
             expect(res.tests.f1.warnCount).toBe(0);
             expect(res.tests.f1.errorCount).toBe(1);
@@ -139,8 +141,10 @@ describe('module: skipped', () => {
             expect(res.tests).not.toHaveProperty('f5');
             expect(res.tests).not.toHaveProperty('f6');
             expect(res.tests).not.toHaveProperty('f7');
+            expect(res).toMatchSnapshot();
             setTimeout(() => {
               res = produce(getSuiteState(suiteId));
+              expect(res.errorCount).toBe(4);
               expect(res.tests.f3.errorCount).toBe(2);
               done();
             });
@@ -150,7 +154,9 @@ describe('module: skipped', () => {
           new Promise(done => {
             // skipping group 2
             res = _.cloneDeep(validate(GROUP_NAME_2));
-            expect(res).toMatchSnapshot();
+            expect(res.errorCount).toBe(6);
+            expect(res.warnCount).toBe(1);
+            expect(res.testCount).toBe(10);
             expect(res.tests.f1.errorCount).toBe(2);
             expect(res.tests.f1.warnCount).toBe(0);
             expect(res.tests.f2.errorCount).toBe(1);
@@ -160,6 +166,7 @@ describe('module: skipped', () => {
             expect(res.tests.f4.warnCount).toBe(0);
             expect(res.tests.f5.errorCount).toBe(0);
             expect(res.tests.f5.warnCount).toBe(0);
+            expect(res).toMatchSnapshot();
             setTimeout(() => {
               res = produce(getSuiteState(suiteId));
               // both outer and inner async
@@ -173,7 +180,10 @@ describe('module: skipped', () => {
             _.cloneDeep(validate(GROUP_NAME_2));
 
             res = _.cloneDeep(validate(GROUP_NAME_1));
-            expect(res).toMatchSnapshot();
+
+            expect(res.errorCount).toBe(9);
+            expect(res.warnCount).toBe(2);
+            expect(res.testCount).toBe(16);
 
             expect(res.tests.f2.errorCount).toBe(1);
             expect(res.tests.f2.warnCount).toBe(1);
@@ -192,6 +202,7 @@ describe('module: skipped', () => {
 
             expect(res.tests.f7.errorCount).toBe(0);
             expect(res.tests.f7.warnCount).toBe(0);
+            expect(res).toMatchSnapshot();
 
             setTimeout(() => {
               res = produce(getSuiteState(suiteId));

@@ -42,7 +42,7 @@ runSpec(vest => {
       let testObject;
       let testObject1;
       vest.create(faker.random.word(), () => {
-        vest.skip('group_1');
+        vest.skip.group('group_1');
 
         testObject = testDummy(vest).failing();
 
@@ -99,7 +99,7 @@ runSpec(vest => {
 
         test('isGroupExcluded returns true for non included group', () => {
           vest.create(faker.lorem.word(), () => {
-            vest.only('group_1');
+            vest.only.group('group_1');
 
             const ctx = singleton.useContext();
             const state = getSuiteState(ctx.suiteId);
@@ -130,7 +130,7 @@ runSpec(vest => {
 
         test('isGroupExcluded returns false for included groups', () => {
           vest.create(faker.lorem.word(), () => {
-            vest.only(['group_1', 'group_2']);
+            vest.only.group(['group_1', 'group_2']);
 
             group('group_1', Function.prototype);
             group('group_2', Function.prototype);
@@ -170,7 +170,7 @@ runSpec(vest => {
 
         test('isGroupExcluded returns true for non included groups', () => {
           vest.create(faker.lorem.word(), () => {
-            vest.only(['group_1', 'group_2']);
+            vest.only.group(['group_1', 'group_2']);
             const ctx = singleton.useContext();
             const state = getSuiteState(ctx.suiteId);
 
@@ -200,7 +200,7 @@ runSpec(vest => {
 
         test('isGroupExcluded returns true for excluded groups', () => {
           vest.create(faker.lorem.word(), () => {
-            vest.skip('group_1');
+            vest.skip.group('group_1');
             const ctx = singleton.useContext();
             const state = getSuiteState(ctx.suiteId);
             res = isGroupExcluded(state, 'group_1');
@@ -248,7 +248,7 @@ runSpec(vest => {
 
         test('isGroupExcluded returns true for excluded groups', () => {
           vest.create(faker.lorem.word(), () => {
-            vest.skip(['group_1', 'group_2']);
+            vest.skip.group(['group_1', 'group_2']);
             const ctx = singleton.useContext();
             const state = getSuiteState(ctx.suiteId);
             res = [
@@ -299,6 +299,220 @@ runSpec(vest => {
           });
         });
       });
+    });
+  });
+});
+
+describe('isExcluded', () => {
+  let state;
+
+  const genState = ({ tests = {}, groups = {} }) => ({
+    exclusion: { tests, groups },
+  });
+  const genTest = (fieldName, groupName) => ({ fieldName, groupName });
+  describe('skip', () => {
+    beforeEach(() => {
+      state = genState({ tests: { field_1: false, field_2: false } });
+    });
+    it('returns true for skipped field', () => {
+      expect(isExcluded(state, genTest('field_1'))).toBe(true);
+      expect(isExcluded(state, genTest('field_2', 'group_1'))).toBe(true);
+    });
+    it('returns false for non skipped field', () => {
+      expect(isExcluded(state, genTest('field_3'))).toBe(false);
+      expect(isExcluded(state, genTest('field_4', 'group_1'))).toBe(false);
+    });
+  });
+  describe('only', () => {
+    beforeEach(() => {
+      state = genState({ tests: { field_1: true, field_2: true } });
+    });
+    it('returns false for included field', () => {
+      expect(isExcluded(state, genTest('field_1'))).toBe(false);
+      expect(isExcluded(state, genTest('field_2', 'group_1'))).toBe(false);
+    });
+    it('returns true for non included field', () => {
+      expect(isExcluded(state, genTest('field_3'))).toBe(true);
+      expect(isExcluded(state, genTest('field_4', 'group_1'))).toBe(true);
+    });
+  });
+  describe('only+skip', () => {
+    beforeEach(() => {
+      state = genState({
+        tests: { field_1: true, field_2: true, field_3: false, field_4: false },
+      });
+    });
+    it('returns false for included tests', () => {
+      expect(isExcluded(state, genTest('field_1'))).toBe(false);
+      expect(isExcluded(state, genTest('field_2', 'group_1'))).toBe(false);
+    });
+    it('returns true excluded tests', () => {
+      expect(isExcluded(state, genTest('field_3'))).toBe(true);
+      expect(isExcluded(state, genTest('field_4', 'group_1'))).toBe(true);
+    });
+    it('returns true for non included field', () => {
+      expect(isExcluded(state, genTest('field_5'))).toBe(true);
+      expect(isExcluded(state, genTest('field_6', 'group_1'))).toBe(true);
+    });
+  });
+  describe('skip.group', () => {
+    beforeEach(() => {
+      state = genState({
+        groups: {
+          group_1: false,
+          group_2: false,
+        },
+      });
+    });
+
+    it('Returns true for tests in skipped group', () => {
+      expect(isExcluded(state, genTest('field_1', 'group_1'))).toBe(true);
+      expect(isExcluded(state, genTest('field_2', 'group_2'))).toBe(true);
+    });
+    it('Returns false for tests in non skipped groups', () => {
+      expect(isExcluded(state, genTest('field_3', 'group_3'))).toBe(false);
+      expect(isExcluded(state, genTest('field_4', 'group_4'))).toBe(false);
+    });
+    it('Returns false for tests outside of any group', () => {
+      expect(isExcluded(state, genTest('field_3'))).toBe(false);
+      expect(isExcluded(state, genTest('field_4'))).toBe(false);
+    });
+  });
+  describe('only.group', () => {
+    beforeEach(() => {
+      state = genState({
+        groups: {
+          group_1: true,
+          group_2: true,
+        },
+      });
+    });
+
+    it('returns false for tests in included groups', () => {
+      expect(isExcluded(state, genTest('field_1', 'group_1'))).toBe(false);
+      expect(isExcluded(state, genTest('field_1', 'group_2'))).toBe(false);
+    });
+
+    it('returns true for groups in non included groups', () => {
+      expect(isExcluded(state, genTest('field_1', 'group_3'))).toBe(true);
+      expect(isExcluded(state, genTest('field_2', 'group_4'))).toBe(true);
+    });
+
+    it('returns false for tests outside of any group', () => {
+      expect(isExcluded(state, genTest('field_1'))).toBe(false);
+      expect(isExcluded(state, genTest('field_2'))).toBe(false);
+    });
+  });
+
+  describe('only.group + only', () => {
+    beforeEach(() => {
+      state = genState({
+        groups: {
+          group_1: true,
+          group_2: true,
+        },
+        tests: { field_1: true, field_2: true },
+      });
+    });
+
+    it('returns false for included tests', () => {
+      expect(isExcluded(state, genTest('field_1'))).toBe(false);
+      expect(isExcluded(state, genTest('field_2'))).toBe(false);
+    });
+
+    it('returns false for included tests in included groups', () => {
+      expect(isExcluded(state, genTest('field_1', 'group_1'))).toBe(false);
+      expect(isExcluded(state, genTest('field_2', 'group_2'))).toBe(false);
+    });
+
+    it('returns true for included test in non included group', () => {
+      expect(isExcluded(state, genTest('field_1', 'group_3'))).toBe(true);
+      expect(isExcluded(state, genTest('field_2', 'group_4'))).toBe(true);
+    });
+
+    it('returns true for non included test in included group', () => {
+      expect(isExcluded(state, genTest('field_3', 'group_1'))).toBe(true);
+      expect(isExcluded(state, genTest('field_4', 'group_2'))).toBe(true);
+    });
+
+    it('returns true for non included tests', () => {
+      expect(isExcluded(state, genTest('field_3'))).toBe(true);
+      expect(isExcluded(state, genTest('field_4'))).toBe(true);
+    });
+  });
+
+  describe('skip.group + only', () => {
+    beforeEach(() => {
+      state = genState({
+        groups: {
+          group_1: false,
+          group_2: false,
+        },
+        tests: { field_1: true, field_2: true },
+      });
+    });
+
+    it('returns true for tests in excluded groups', () => {
+      expect(isExcluded(state, genTest('field_1', 'group_1'))).toBe(true);
+      expect(isExcluded(state, genTest('field_2', 'group_1'))).toBe(true);
+      expect(isExcluded(state, genTest('field_3', 'group_1'))).toBe(true);
+      expect(isExcluded(state, genTest('field_1', 'group_2'))).toBe(true);
+      expect(isExcluded(state, genTest('field_2', 'group_2'))).toBe(true);
+      expect(isExcluded(state, genTest('field_3', 'group_2'))).toBe(true);
+    });
+
+    it('returns false for tests in included tests in non excluded groups', () => {
+      expect(isExcluded(state, genTest('field_1', 'group_3'))).toBe(false);
+      expect(isExcluded(state, genTest('field_2', 'group_3'))).toBe(false);
+      expect(isExcluded(state, genTest('field_1', 'group_4'))).toBe(false);
+      expect(isExcluded(state, genTest('field_2', 'group_4'))).toBe(false);
+    });
+
+    it('returns true for non included tests', () => {
+      expect(isExcluded(state, genTest('field_3'))).toBe(true);
+      expect(isExcluded(state, genTest('field_4'))).toBe(true);
+    });
+
+    it('returns false for included tests', () => {
+      expect(isExcluded(state, genTest('field_1'))).toBe(false);
+      expect(isExcluded(state, genTest('field_2'))).toBe(false);
+    });
+  });
+
+  describe('only.group + skip', () => {
+    beforeEach(() => {
+      state = genState({
+        groups: {
+          group_1: true,
+          group_2: true,
+        },
+        tests: { field_1: false, field_2: false },
+      });
+    });
+
+    it('returns true for excluded tests', () => {
+      expect(isExcluded(state, genTest('field_1'))).toBe(true);
+      expect(isExcluded(state, genTest('field_2'))).toBe(true);
+    });
+    it('returns false for non excluded tests', () => {
+      expect(isExcluded(state, genTest('field_3'))).toBe(false);
+      expect(isExcluded(state, genTest('field_4'))).toBe(false);
+    });
+    it('returns true for excluded test in included group', () => {
+      expect(isExcluded(state, genTest('field_1', 'group_1'))).toBe(true);
+      expect(isExcluded(state, genTest('field_2', 'group_2'))).toBe(true);
+    });
+    it('returns true for excluded test in non included group', () => {
+      expect(isExcluded(state, genTest('field_1', 'group_3'))).toBe(true);
+      expect(isExcluded(state, genTest('field_2', 'group_4'))).toBe(true);
+    });
+    it('returns false for non excluded test in included group', () => {
+      expect(isExcluded(state, genTest('field_3', 'group_1'))).toBe(false);
+      expect(isExcluded(state, genTest('field_4', 'group_2'))).toBe(false);
+    });
+    it('returns true for non excluded test in non included group', () => {
+      expect(isExcluded(state, genTest('field_3', 'group_3'))).toBe(true);
+      expect(isExcluded(state, genTest('field_4', 'group_4'))).toBe(true);
     });
   });
 });

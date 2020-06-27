@@ -4,7 +4,10 @@ exports[`Test createSuite module Initial run Should initialize with an empty sta
 Array [
   Object {
     "doneCallbacks": Array [],
-    "exclusive": Object {},
+    "exclusion": Object {
+      "groups": Object {},
+      "tests": Object {},
+    },
     "fieldCallbacks": Object {},
     "groups": Object {},
     "lagging": Array [],

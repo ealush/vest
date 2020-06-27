@@ -1,9 +1,12 @@
 /**
- * @type {String} Exclusivity group name: only.
+ * @type {String} Exclusion group name: only.
  */
-export const GROUP_NAME_ONLY = 'only';
+export const EXCLUSION_GROUP_NAME_ONLY = 'only';
 
 /**
- * @type {String} Exclusivity group name: skip.
+ * @type {String} Exclusion group name: skip.
  */
-export const GROUP_NAME_SKIP = 'skip';
+export const EXCLUSION_GROUP_NAME_SKIP = 'skip';
+
+export const EXCLUSION_ITEM_TYPE_TESTS = 'tests';
+export const EXCLUSION_ITEM_TYPE_GROUPS = 'groups';

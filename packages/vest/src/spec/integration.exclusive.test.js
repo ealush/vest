@@ -5,6 +5,7 @@ runSpec(vest => {
     vest.validate('suite_name', () => {
       vest.skip(exclusion.skip);
       vest.only(exclusion.only);
+      vest.skip(exclusion.skip_last);
 
       vest.test('field_1', 'msg', Function.prototype);
       vest.test('field_2', 'msg', Function.prototype);
@@ -63,11 +64,16 @@ runSpec(vest => {
   });
 
   describe('Combined', () => {
-    test('skip takes precedence over only', () => {
-      const res = validator({ only: ['field_1', 'field_2'], skip: 'field_1' });
+    test('Last declaration wins', () => {
+      const res = validator({
+        only: ['field_1', 'field_2', 'field_3'],
+        skip: ['field_1'],
+        skip_last: 'field_3',
+      });
 
-      expect(res.tests).not.toHaveProperty('field_1');
+      expect(res.tests).toHaveProperty('field_1');
       expect(res.tests).toHaveProperty('field_2');
+      expect(res.tests).not.toHaveProperty('field_3');
     });
   });
 });

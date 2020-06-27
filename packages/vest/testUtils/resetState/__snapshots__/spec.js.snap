@@ -11,7 +11,10 @@ exports[`resetState When invoked with suite name Should add a new suite to the s
 Array [
   Object {
     "doneCallbacks": Array [],
-    "exclusive": Object {},
+    "exclusion": Object {
+      "groups": Object {},
+      "tests": Object {},
+    },
     "fieldCallbacks": Object {},
     "groups": Object {},
     "lagging": Array [],

@@ -10,14 +10,17 @@ import group from '.';
 
 let suiteName = 'suite_name';
 let groupName = 'group_name_1';
+const groupName2 = 'group_name_2';
 
 runSpec(vest => {
   const topLevelTestObjects = {};
   const groupTestObjects = {};
   const validation = () =>
-    vest.create(suiteName, ({ only, skip } = {}) => {
+    vest.create(suiteName, ({ only, skip, skipGroup, onlyGroup } = {}) => {
       vest.only(only);
       vest.skip(skip);
+      vest.only.group(onlyGroup);
+      vest.skip.group(skipGroup);
 
       topLevelTestObjects['field_1'] = dummyTest.failing('field_1');
       topLevelTestObjects['field_1'] = dummyTest.failing('field_1');
@@ -32,6 +35,12 @@ runSpec(vest => {
         groupTestObjects['field_3'] = dummyTest.failingWarning('field_3');
         groupTestObjects['field_4'] = dummyTest.passingWarning('field_4');
         groupTestObjects['field_6'] = dummyTest.failing('field_6');
+      });
+
+      group(groupName2, () => {
+        groupTestObjects['field_6'] = dummyTest.failing('field_6');
+        groupTestObjects['field_7'] = dummyTest.failing('field_7');
+        groupTestObjects['field_8'] = dummyTest.passing('field_8');
       });
     });
   describe('group: exclusion', () => {
@@ -49,7 +58,7 @@ runSpec(vest => {
 
     describe('When skipped', () => {
       beforeEach(() => {
-        res = validate({ skip: groupName });
+        res = validate({ skipGroup: groupName });
       });
 
       it('produce result object without group', () => {
@@ -58,56 +67,80 @@ runSpec(vest => {
 
       it('Should skip tests within group', () => {
         Object.values(groupTestObjects).forEach(testObject => {
-          expect(testObject.testFn).not.toHaveBeenCalled();
+          if (testObject.groupName === groupName) {
+            expect(testObject.testFn).not.toHaveBeenCalled();
+          }
         });
       });
 
-      it('Should run tests outside of group', () => {
+      it('Should run all tests outside of the group', () => {
         Object.values(topLevelTestObjects).forEach(testObject => {
           expect(testObject.testFn).toHaveBeenCalled();
+        });
+        Object.values(groupTestObjects).forEach(testObject => {
+          if (testObject.groupName !== groupName) {
+            expect(testObject.testFn).toHaveBeenCalled();
+          } else {
+            expect(testObject.testFn).not.toHaveBeenCalled();
+          }
         });
       });
     });
 
     describe('When `only`ed', () => {
       beforeEach(() => {
-        res = validate({ only: groupName });
+        res = validate({ onlyGroup: groupName });
       });
       it('produce result object with group', () => {
         expect(res.groups).toHaveProperty(groupName);
       });
 
       it('produce correct result object', () => {
-        expect(res.tests['field_1'].errorCount).toBe(1);
+        expect(res.testCount).toBe(11);
+        expect(res.errorCount).toBe(5);
+        expect(res.warnCount).toBe(2);
+        expect(res.tests['field_1'].errorCount).toBe(3);
         expect(res.tests['field_1'].warnCount).toBe(0);
         expect(res.tests['field_2'].errorCount).toBe(0);
         expect(res.tests['field_2'].warnCount).toBe(0);
         expect(res.tests['field_3'].errorCount).toBe(0);
-        expect(res.tests['field_3'].warnCount).toBe(1);
+        expect(res.tests['field_3'].warnCount).toBe(2);
         expect(res.tests['field_4'].errorCount).toBe(0);
         expect(res.tests['field_4'].warnCount).toBe(0);
-        expect(res.tests['field_5']).toBeUndefined();
-        expect(res.tests['field_5']).toBeUndefined();
+        expect(res.tests['field_5'].errorCount).toBe(1);
+        expect(res.tests['field_5'].warnCount).toBe(0);
         expect(res.tests['field_6'].errorCount).toBe(1);
         expect(res.tests['field_6'].warnCount).toBe(0);
       });
 
       it('Should run tests within group', () => {
         Object.values(groupTestObjects).forEach(testObject => {
-          expect(testObject.testFn).toHaveBeenCalled();
+          if (testObject.groupName === groupName) {
+            expect(testObject.testFn).toHaveBeenCalled();
+          } else if (testObject.groupName) {
+            expect(testObject.testFn).not.toHaveBeenCalled();
+          }
         });
       });
 
-      it('Should skip tests outside of group', () => {
+      it('Should only run tests outside of the group that are not in another group', () => {
         Object.values(topLevelTestObjects).forEach(testObject => {
-          expect(testObject.testFn).not.toHaveBeenCalled();
+          expect(testObject.testFn).toHaveBeenCalled();
         });
+        let count = 0;
+        Object.values(groupTestObjects).forEach(testObject => {
+          if (testObject.groupName !== groupName) {
+            count++;
+            expect(testObject.testFn).not.toHaveBeenCalled();
+          }
+        });
+        expect(count).toBe(3);
       });
     });
 
     describe('When skipped field inside `only`ed group', () => {
       beforeEach(() => {
-        res = validate({ skip: 'field_1', only: groupName });
+        res = validate({ skip: 'field_1', onlyGroup: groupName });
       });
       it('produce result object with group', () => {
         expect(res.groups).toHaveProperty(groupName);
@@ -117,6 +150,7 @@ runSpec(vest => {
         Object.values(groupTestObjects)
           // all but skipped test
           .filter(({ fieldName }) => fieldName !== 'field_1')
+          .filter(testObject => testObject.groupName === groupName)
           .forEach(testObject => {
             expect(testObject.testFn).toHaveBeenCalled();
           });
@@ -128,9 +162,13 @@ runSpec(vest => {
             expect(testObject.testFn).not.toHaveBeenCalled();
           });
       });
-      it('Should skip all tests outside group', () => {
+      it('Should skip all matching tests outside group', () => {
         Object.values(topLevelTestObjects).forEach(testObject => {
-          expect(testObject.testFn).not.toHaveBeenCalled();
+          if (testObject.fieldName === 'field_1') {
+            expect(testObject.testFn).not.toHaveBeenCalled();
+          } else {
+            expect(testObject.testFn).toHaveBeenCalled();
+          }
         });
       });
     });

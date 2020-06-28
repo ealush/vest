@@ -53,9 +53,11 @@ const genTestObject = (stateKey, testObject) => {
 export const countFailures = state => {
   state[SEVERITY_COUNT_ERROR] = 0;
   state[SEVERITY_COUNT_WARN] = 0;
+  state[TEST_COUNT] = 0;
   for (const test in state.tests) {
     state[SEVERITY_COUNT_ERROR] += state.tests[test][SEVERITY_COUNT_ERROR];
     state[SEVERITY_COUNT_WARN] += state.tests[test][SEVERITY_COUNT_WARN];
+    state[TEST_COUNT] += state.tests[test][TEST_COUNT];
   }
   return state;
 };

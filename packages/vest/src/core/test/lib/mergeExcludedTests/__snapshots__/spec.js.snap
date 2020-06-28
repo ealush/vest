@@ -3,9 +3,10 @@
 exports[`module: skipped export: mergeExcludedTests When previous state exists When no currently skipped fields or groups When skipped field exists in previous state Error field Should copy prev field state over 1`] = `
 Object {
   "doneCallbacks": Array [],
-  "exclusive": Object {
-    "skip": Object {
-      "field_2": true,
+  "exclusion": Object {
+    "groups": Object {},
+    "tests": Object {
+      "field_2": false,
     },
   },
   "fieldCallbacks": Object {},
@@ -64,9 +65,10 @@ Object {
 exports[`module: skipped export: mergeExcludedTests When previous state exists When no currently skipped fields or groups When skipped field exists in previous state Warning field Should copy prev field state over 1`] = `
 Object {
   "doneCallbacks": Array [],
-  "exclusive": Object {
-    "skip": Object {
-      "field_1": true,
+  "exclusion": Object {
+    "groups": Object {},
+    "tests": Object {
+      "field_1": false,
     },
   },
   "fieldCallbacks": Object {},
@@ -176,6 +178,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_1",
+  "testCount": 10,
   "tests": Object {
     "f1": Object {
       "errorCount": 2,
@@ -322,6 +325,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_1",
+  "testCount": 16,
   "tests": Object {
     "f1": Object {
       "errorCount": 3,
@@ -490,6 +494,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_1",
+  "testCount": 16,
   "tests": Object {
     "f1": Object {
       "errorCount": 3,
@@ -573,6 +578,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_1",
+  "testCount": 4,
   "tests": Object {
     "f1": Object {
       "errorCount": 1,

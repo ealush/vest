@@ -5,10 +5,12 @@ import testDummy from '../../testUtils/testDummy';
 const suiteName = 'suite_name';
 
 const suite = ({ create, ...vest }) =>
-  create(suiteName, skip => {
+  create(suiteName, ({ skip, skipGroup }) => {
     const dummyTest = testDummy(vest);
 
     vest.skip(skip);
+    vest.skip.group(skipGroup);
+
     vest.group('group', () => {
       dummyTest.failingAsync('field_1', 'field_1_group_message');
       dummyTest.failingAsync('field_4', 'field_4_group_message');
@@ -67,7 +69,10 @@ runSpec(vest => {
 
     it('Merges skipped validations from previous suite', () =>
       new Promise(done => {
-        const res = validate('group');
+        const res = validate({ skipGroup: 'group' });
+        expect(res.testCount).toBe(5);
+        expect(res.errorCount).toBe(1);
+        expect(res.warnCount).toBe(0);
         expect(res.hasErrors('field_1')).toBe(true);
         expect(res.tests.field_1.errorCount).toBe(1);
         expect(res.hasErrors('field_2')).toBe(false);
@@ -76,13 +81,19 @@ runSpec(vest => {
         expect(res).toMatchSnapshot();
         setTimeout(() => {
           const res = vest.get(suiteName);
+          expect(res.testCount).toBe(5);
+          expect(res.errorCount).toBe(2);
+          expect(res.warnCount).toBe(0);
           expect(res.tests.field_1.errorCount).toBe(1);
           expect(res.hasErrors('field_2')).toBe(false);
           expect(res.hasErrors('field_3')).toBe(true);
           expect(res.hasErrors('field_4')).toBe(false);
           expect(res).toMatchSnapshot();
 
-          validate('field_2').done(res => {
+          validate({ skip: 'field_2' }).done(res => {
+            expect(res.testCount).toBe(7);
+            expect(res.errorCount).toBe(5);
+            expect(res.warnCount).toBe(0);
             expect(res.tests.field_1.errorCount).toBe(2);
             expect(res.hasErrors('field_2')).toBe(true);
             expect(res.hasErrors('field_3')).toBe(true);

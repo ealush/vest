@@ -13,6 +13,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "form-name",
+  "testCount": 3,
   "tests": Object {
     "f1": Object {
       "errorCount": 0,

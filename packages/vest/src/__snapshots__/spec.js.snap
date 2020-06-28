@@ -14,6 +14,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "molestias-veritatis-deserunt",
+  "testCount": 2,
   "tests": Object {
     "doloribus-enim-quisquam": Object {
       "errorCount": 0,
@@ -39,6 +40,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "eveniet-maxime-ea",
+  "testCount": 2,
   "tests": Object {
     "non-rem-dolorem": Object {
       "errorCount": 0,
@@ -72,6 +74,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "inventore-quis-impedit",
+  "testCount": 1,
   "tests": Object {
     "doloribus-enim-quisquam": Object {
       "errorCount": 0,
@@ -97,6 +100,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "corrupti-alias-autem",
+  "testCount": 1,
   "tests": Object {
     "autem": Object {
       "errorCount": 0,
@@ -125,6 +129,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "corrupti-alias-autem",
+  "testCount": 2,
   "tests": Object {
     "autem": Object {
       "errorCount": 0,

@@ -14,6 +14,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
+  "testCount": 5,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -51,6 +52,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
+  "testCount": 5,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -101,6 +103,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
+  "testCount": 7,
   "tests": Object {
     "field_1": Object {
       "errorCount": 2,
@@ -147,6 +150,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
+  "testCount": 5,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -184,6 +188,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
+  "testCount": 5,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -234,6 +239,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
+  "testCount": 7,
   "tests": Object {
     "field_1": Object {
       "errorCount": 2,
@@ -280,6 +286,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
+  "testCount": 5,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -317,6 +324,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
+  "testCount": 5,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -367,6 +375,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
+  "testCount": 7,
   "tests": Object {
     "field_1": Object {
       "errorCount": 2,

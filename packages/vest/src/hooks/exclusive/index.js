@@ -2,32 +2,43 @@ import patch from '../../core/state/patch';
 import singleton from '../../lib/singleton';
 import throwError from '../../lib/throwError';
 import { ERROR_HOOK_CALLED_OUTSIDE } from '../constants';
-import { GROUP_NAME_ONLY, GROUP_NAME_SKIP } from './constants';
+import {
+  EXCLUSION_GROUP_NAME_ONLY,
+  EXCLUSION_GROUP_NAME_SKIP,
+  EXCLUSION_ITEM_TYPE_TESTS,
+  EXCLUSION_ITEM_TYPE_GROUPS,
+} from './constants';
 
 /**
- * Adds fields to a specified group.
- * @param {String} group            To add the fields to.
+ * Adds fields to a specified exclusion group.
+ * @param {String} exclusionGroup   To add the fields to.
+ * @param {String} itemType         Whether the item is a group or a test.
  * @param {String[]|String} item    A field name or a list of field names.
  */
-const addTo = (group, item) => {
+const addTo = (exclusionGroup, itemType, item) => {
   const ctx = singleton.useContext();
   if (!item) {
     return;
   }
 
   if (ctx?.suiteId === undefined) {
-    throwError(`${group} ${ERROR_HOOK_CALLED_OUTSIDE}`);
+    throwError(`${exclusionGroup} ${ERROR_HOOK_CALLED_OUTSIDE}`);
     return;
   }
 
   patch(ctx.suiteId, state => {
     const nextState = { ...state };
-    [].concat(item).forEach(fieldName => {
-      if (typeof fieldName === 'string') {
-        nextState.exclusive[group] = nextState.exclusive[group] || {};
-        nextState.exclusive[group][fieldName] = true;
+
+    // Flattens arrays + strings
+    [].concat(item).forEach(itemName => {
+      if (typeof itemName !== 'string') {
+        return;
       }
+
+      nextState.exclusion[itemType][itemName] =
+        exclusionGroup === EXCLUSION_GROUP_NAME_ONLY;
     });
+
     return nextState;
   });
 };
@@ -36,13 +47,21 @@ const addTo = (group, item) => {
  * Adds a field or multiple fields to inclusion group.
  * @param {String[]|String} item Item to be added to inclusion group.
  */
-export const only = item => addTo(GROUP_NAME_ONLY, item);
+const only = item =>
+  addTo(EXCLUSION_GROUP_NAME_ONLY, EXCLUSION_ITEM_TYPE_TESTS, item);
+
+only.group = item =>
+  addTo(EXCLUSION_GROUP_NAME_ONLY, EXCLUSION_ITEM_TYPE_GROUPS, item);
 
 /**
  * Adds a field or multiple fields to exclusion group.
  * @param {String[]|String} item Item to be added to exclusion group.
  */
-export const skip = item => addTo(GROUP_NAME_SKIP, item);
+const skip = item =>
+  addTo(EXCLUSION_GROUP_NAME_SKIP, EXCLUSION_ITEM_TYPE_TESTS, item);
+
+skip.group = item =>
+  addTo(EXCLUSION_GROUP_NAME_SKIP, EXCLUSION_ITEM_TYPE_GROUPS, item);
 
 /**
  * Checks whether a certain test profile excluded by any of the exclusion groups.
@@ -50,37 +69,64 @@ export const skip = item => addTo(GROUP_NAME_SKIP, item);
  * @param {VestTest}            Test Object reference.
  * @returns {Boolean}
  */
-export const isExcluded = (state, testObject) => {
+const isExcluded = (state, testObject) => {
   const { fieldName, groupName } = testObject;
+
+  const keyTests = state.exclusion[EXCLUSION_ITEM_TYPE_TESTS];
+  const testValue = keyTests[fieldName];
+
+  // if test is skipped
+  // no need to proceed
+  if (testValue === false) {
+    return true;
+  }
+
+  const isTestIncluded = testValue === true;
+
   // If inside a group
   if (groupName) {
     if (isGroupExcluded(state, groupName)) {
-      return true;
+      return true; // field excluded by group
 
       // if group is `only`ed
-    } else if (state.exclusive?.[GROUP_NAME_ONLY]?.[groupName]) {
-      // exclude field if explicitly skipped
-      return !!state.exclusive?.[GROUP_NAME_SKIP]?.[fieldName];
+    } else if (
+      state.exclusion[EXCLUSION_ITEM_TYPE_GROUPS][groupName] === true
+    ) {
+      if (isTestIncluded) {
+        return false;
+      }
+
+      // If there is _ANY_ `only`ed test (and we already know this one isn't)
+      if (hasIncludedTests(keyTests)) {
+        return true; // Excluded implicitly
+      }
+
+      return keyTests[fieldName] === false;
     }
   }
 
-  // If field is skipped
-  if (state.exclusive?.[GROUP_NAME_SKIP]?.[fieldName]) {
-    return true; // excluded
+  // if field is only'ed
+  if (isTestIncluded) {
+    return false;
   }
 
-  // If there is _ANY_ `only`ed group
-  if (state.exclusive?.[GROUP_NAME_ONLY]) {
-    // If the current field is `only`ed
-    if (state.exclusive[GROUP_NAME_ONLY]?.[fieldName]) {
-      return false; // Not excluded
+  // If there is _ANY_ `only`ed test (and we already know this one isn't) return true
+  // Otherwise return false
+  return hasIncludedTests(keyTests);
+};
+
+/**
+ * Checks if state has included tests
+ * @param {Object} keyTests Object containing included and excluded tests
+ * @returns {boolean}
+ */
+const hasIncludedTests = keyTests => {
+  for (const test in keyTests) {
+    if (keyTests[test] === true) {
+      return true; // excluded implicitly
     }
-
-    // There's an `only`ed field, but it's not this one
-    return true; // excluded
   }
-
-  return false; // Not excluded
+  return false;
 };
 
 /**
@@ -89,15 +135,29 @@ export const isExcluded = (state, testObject) => {
  * @param {String} groupName
  * @return {Boolean}
  */
-export const isGroupExcluded = (state, groupName) => {
-  if (state.exclusive?.[GROUP_NAME_SKIP]?.[groupName]) {
-    return true;
-  } else if (
-    state.exclusive?.[GROUP_NAME_ONLY] &&
-    !state.exclusive?.[GROUP_NAME_ONLY][groupName]
-  ) {
-    return true;
+const isGroupExcluded = (state, groupName) => {
+  const keyGroups = state.exclusion[EXCLUSION_ITEM_TYPE_GROUPS];
+
+  const groupPresent = Object.prototype.hasOwnProperty.call(
+    keyGroups,
+    groupName
+  );
+
+  // When group is either only'ed or skipped
+  if (groupPresent) {
+    // Return true if group is skipped and false if only'ed
+    return keyGroups[groupName] === false;
+  }
+
+  // Group is not present
+  for (const group in keyGroups) {
+    // If any other group is only'ed
+    if (keyGroups[group] === true) {
+      return true;
+    }
   }
 
   return false;
 };
+
+export { only, skip, isExcluded, isGroupExcluded };

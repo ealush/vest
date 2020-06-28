@@ -9,10 +9,11 @@ Object {
     "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
-        "exclusive": Object {
-          "skip": Object {
-            "field_1": true,
-            "field_3": true,
+        "exclusion": Object {
+          "groups": Object {},
+          "tests": Object {
+            "field_1": false,
+            "field_3": false,
           },
         },
         "fieldCallbacks": Object {},
@@ -101,9 +102,10 @@ Object {
       },
       Object {
         "doneCallbacks": Array [],
-        "exclusive": Object {
-          "skip": Object {
-            "field_2": true,
+        "exclusion": Object {
+          "groups": Object {},
+          "tests": Object {
+            "field_2": false,
           },
         },
         "fieldCallbacks": Object {},
@@ -172,16 +174,17 @@ Object {
     "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
-        "exclusive": Object {
-          "skip": Object {
-            "field_1": true,
-            "field_3": true,
+        "exclusion": Object {
+          "groups": Object {},
+          "tests": Object {
+            "field_1": false,
+            "field_3": false,
           },
         },
         "fieldCallbacks": Object {},
         "groups": Object {},
         "lagging": Array [
-          B {
+          A {
             "failed": false,
             "fieldName": "field_1",
             "id": "24",
@@ -190,7 +193,7 @@ Object {
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          B {
+          A {
             "failed": false,
             "fieldName": "field_3",
             "id": "26",
@@ -202,7 +205,7 @@ Object {
         ],
         "name": "suite_id",
         "pending": Array [
-          B {
+          A {
             "failed": false,
             "fieldName": "field_2",
             "id": "29",
@@ -211,7 +214,7 @@ Object {
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          B {
+          A {
             "failed": false,
             "fieldName": "field_4",
             "id": "31",
@@ -223,7 +226,7 @@ Object {
         ],
         "suiteId": "suite_id",
         "testObjects": Array [
-          B {
+          A {
             "failed": false,
             "fieldName": "field_2",
             "id": "29",
@@ -232,7 +235,7 @@ Object {
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          B {
+          A {
             "failed": false,
             "fieldName": "field_4",
             "id": "31",
@@ -241,7 +244,7 @@ Object {
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          B {
+          A {
             "failed": false,
             "fieldName": "field_1",
             "id": "24",
@@ -250,7 +253,7 @@ Object {
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          B {
+          A {
             "failed": false,
             "fieldName": "field_3",
             "id": "26",
@@ -264,9 +267,10 @@ Object {
       },
       Object {
         "doneCallbacks": Array [],
-        "exclusive": Object {
-          "skip": Object {
-            "field_2": true,
+        "exclusion": Object {
+          "groups": Object {},
+          "tests": Object {
+            "field_2": false,
           },
         },
         "fieldCallbacks": Object {},
@@ -276,7 +280,7 @@ Object {
         "pending": null,
         "suiteId": "suite_id",
         "testObjects": Array [
-          B {
+          A {
             "failed": false,
             "fieldName": "field_1",
             "id": "24",
@@ -285,7 +289,7 @@ Object {
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          B {
+          A {
             "failed": false,
             "fieldName": "field_3",
             "id": "26",
@@ -294,7 +298,7 @@ Object {
             "suiteId": "suite_id",
             "testFn": Promise {},
           },
-          B {
+          A {
             "failed": false,
             "fieldName": "field_4",
             "id": "27",
@@ -350,10 +354,11 @@ Object {
     "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
-        "exclusive": Object {
-          "skip": Object {
-            "field_1": true,
-            "field_3": true,
+        "exclusion": Object {
+          "groups": Object {},
+          "tests": Object {
+            "field_1": false,
+            "field_3": false,
           },
         },
         "fieldCallbacks": Object {},
@@ -442,9 +447,10 @@ Object {
       },
       Object {
         "doneCallbacks": Array [],
-        "exclusive": Object {
-          "skip": Object {
-            "field_2": true,
+        "exclusion": Object {
+          "groups": Object {},
+          "tests": Object {
+            "field_2": false,
           },
         },
         "fieldCallbacks": Object {},
@@ -543,10 +549,11 @@ Object {
     "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
-        "exclusive": Object {
-          "skip": Object {
-            "field_1": true,
-            "field_3": true,
+        "exclusion": Object {
+          "groups": Object {},
+          "tests": Object {
+            "field_1": false,
+            "field_3": false,
           },
         },
         "fieldCallbacks": Object {},
@@ -635,9 +642,10 @@ Object {
       },
       Object {
         "doneCallbacks": Array [],
-        "exclusive": Object {
-          "skip": Object {
-            "field_2": true,
+        "exclusion": Object {
+          "groups": Object {},
+          "tests": Object {
+            "field_2": false,
           },
         },
         "fieldCallbacks": Object {},

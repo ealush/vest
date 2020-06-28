@@ -3,7 +3,10 @@
 exports[`runAsyncTest: failing State updates Initial state matches snapshot (sanity) 1`] = `
 Object {
   "doneCallbacks": Array [],
-  "exclusive": Object {},
+  "exclusion": Object {
+    "groups": Object {},
+    "tests": Object {},
+  },
   "fieldCallbacks": Object {
     "field_1": Array [],
   },
@@ -30,7 +33,10 @@ Object {
 exports[`runAsyncTest: passing State updates Initial state matches snapshot (sanity) 1`] = `
 Object {
   "doneCallbacks": Array [],
-  "exclusive": Object {},
+  "exclusion": Object {
+    "groups": Object {},
+    "tests": Object {},
+  },
   "fieldCallbacks": Object {
     "field_1": Array [],
   },

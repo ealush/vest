@@ -1,4 +1,8 @@
 import { getSuite, setSuites } from '..';
+import {
+  EXCLUSION_ITEM_TYPE_TESTS,
+  EXCLUSION_ITEM_TYPE_GROUPS,
+} from '../../../hooks/exclusive/constants';
 import singleton from '../../../lib/singleton';
 
 /**
@@ -8,7 +12,10 @@ import singleton from '../../../lib/singleton';
  */
 const INITIAL_SUITE_STATE = (suiteId, name) => ({
   doneCallbacks: [],
-  exclusive: {},
+  exclusion: {
+    [EXCLUSION_ITEM_TYPE_TESTS]: {},
+    [EXCLUSION_ITEM_TYPE_GROUPS]: {},
+  },
   fieldCallbacks: {},
   groups: {},
   lagging: [],

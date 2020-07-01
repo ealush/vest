@@ -3,6 +3,8 @@
 In many cases it can be helpful to group tests together so you can include or exclude a portion of the suite with a single condition.
 Similar to the `describe` and `context` features provided by unit testing frameworks, Vest provides `group`.
 
+[Try on CodeSandbox (React)](https://codesandbox.io/s/vest-group-example-react-4i2ne)
+
 ```js
 import vest, { test, group, enforce } from 'vest';
 

@@ -1,29 +1,26 @@
-import { setSuites } from '..';
+import { OPERATION_MODE_STATEFUL } from '../../../constants';
+import runWithContext from '../../../lib/runWithContext';
 import throwError from '../../../lib/throwError';
-import { setCanceled } from '../../test/lib/canceled';
 import getSuiteState from '../getSuiteState';
+import registerSuite from '../registerSuite';
+import remove from '../remove';
 
 /**
- * Cleans up a suite from state.
- * @param {string} suiteId
+ * Resets suite to its initial state
+ * @param {String} suiteId
  */
 const reset = suiteId => {
   if (!suiteId) {
     throwError('`vest.reset` must be called with suiteId.');
   }
 
-  const suite = getSuiteState(suiteId);
-  if (!suite) {
-    return;
-  }
+  const { name } = getSuiteState(suiteId);
+  remove(suiteId);
 
-  setCanceled(...(suite.pending || []));
-  setCanceled(...(suite.lagging || []));
-
-  setSuites(state => {
-    delete state[suiteId];
-    return state;
-  });
+  runWithContext(
+    { name, suiteId, operationMode: OPERATION_MODE_STATEFUL },
+    registerSuite
+  );
 };
 
 export default reset;

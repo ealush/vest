@@ -2,7 +2,7 @@
   "license": "MIT",
   "dependencies": {
     "@ampproject/rollup-plugin-closure-compiler": "^0.26.0",
-    "@babel/cli": "^7.10.3",
+    "@babel/cli": "^7.10.4",
     "@babel/core": "^7.10.4",
     "@babel/plugin-proposal-optional-chaining": "^7.10.1",
     "@babel/plugin-proposal-pipeline-operator": "^7.10.4",

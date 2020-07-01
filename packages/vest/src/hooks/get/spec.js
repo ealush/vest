@@ -2,7 +2,7 @@ import { dummyTest } from '../../../testUtils/testDummy';
 import createSuite from '../../core/createSuite';
 import produce from '../../core/produce';
 import getSuiteState from '../../core/state/getSuiteState';
-import reset from '../../core/state/reset';
+import remove from '../../core/state/remove';
 import get from '.';
 
 const suiteId = 'form-name';
@@ -37,7 +37,7 @@ describe('hook: vest.get()', () => {
     });
 
     afterEach(() => {
-      reset(suiteId);
+      remove(suiteId);
     });
 
     it('Should return produced result', () => {

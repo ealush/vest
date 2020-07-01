@@ -1,6 +1,6 @@
 import getSuiteState from '../getSuiteState';
 import hasRemainingTests from '../hasRemainingTests';
-import reset from '../reset';
+import remove from '../remove';
 /**
  * Removes completed "stateless" suite from state storage.
  * @param {string} suiteId
@@ -11,7 +11,7 @@ const cleanupCompletedSuite = suiteId => {
   if (hasRemainingTests(state)) {
     return;
   }
-  reset(suiteId);
+  remove(suiteId);
 };
 
 export default cleanupCompletedSuite;

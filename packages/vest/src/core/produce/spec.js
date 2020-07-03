@@ -451,7 +451,7 @@ runSpec(vest => {
           });
 
           it('Should return produced result', () => {
-            expect(produced.done(doneCallback_1)).isDeepCopyOf(produce(state));
+            expect(produced.done(doneCallback_1)).toBe(produce(state));
           });
         });
 
@@ -477,7 +477,7 @@ runSpec(vest => {
           });
 
           it('Should return produced result', () => {
-            expect(produced.done('field_1', doneCallback_1)).isDeepCopyOf(
+            expect(produced.done('field_1', doneCallback_1)).toBe(
               produce(state)
             );
           });
@@ -521,7 +521,7 @@ runSpec(vest => {
             expect(doneCallback_1).not.toHaveBeenCalled();
           });
           it('Should return produced output', () => {
-            expect(produced.done(doneCallback_1)).isDeepCopyOf(produce(state));
+            expect(produced.done(doneCallback_1)).toBe(produce(state));
           });
 
           it('Should add callback to `doneCallBacks` array', () =>
@@ -723,6 +723,40 @@ runSpec(vest => {
         it('Should return an empty array', () => {
           expect(res.getWarningsByGroup(groupName, 'field_100')).toEqual([]);
         });
+      });
+    });
+
+    describe('produce cache (integragion)', () => {
+      const control = jest.fn();
+      let draft, state;
+      const validate = vest.create('cache', () => {
+        draft = vest.draft();
+        state = vest.get('cache');
+        expect(draft).toBe(vest.draft());
+        expect(state).toBe(vest.get('cache'));
+        testDummy(vest).failing();
+        expect(state).not.toBe(vest.get('cache'));
+        expect(draft).not.toBe(vest.draft());
+        testDummy(vest).failing();
+        state = vest.get('cache');
+        control();
+      });
+
+      it('Should return same result as as long as the state did not change', () => {
+        let res = validate().done(result => {
+          expect(result).toBe(vest.get('cache'));
+        });
+        expect(control).toHaveBeenCalledTimes(1);
+        expect(state).toBe(vest.get('cache'));
+        expect(res).not.toBe(draft);
+        expect(res).not.toBe(state);
+        expect(draft).not.toBe(vest.get('cache'));
+        res = validate().done(result => {
+          expect(result).toBe(vest.get('cache'));
+        });
+        expect(res).not.toBe(draft);
+        expect(res).not.toBe(state);
+        expect(control).toHaveBeenCalledTimes(2);
       });
     });
   });

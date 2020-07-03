@@ -42,7 +42,7 @@ describe('hook: vest.get()', () => {
 
     it('Should return produced result', () => {
       validate();
-      expect(produce(getSuiteState(suiteId), { draft: true })).isDeepCopyOf(
+      expect(produce(getSuiteState(suiteId), { draft: true })).toBe(
         get(suiteId)
       );
       expect(get(suiteId)).toMatchSnapshot();

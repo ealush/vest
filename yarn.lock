@@ -1100,6 +1100,11 @@
   resolved "https://registry.yarnpkg.com/@jridgewell/resolve-uri/-/resolve-uri-1.0.0.tgz#3fdf5798f0b49e90155896f6291df186eac06c83"
   integrity sha512-9oLAnygRMi8Q5QkYEU4XWK04B+nuoXoxjRvRxgjuChkLZFBja0YPSgdZ7dZtwhncLBcQe/I/E+fLuk5qxcYVJA==
 
+"@lets/wait@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@lets/wait/-/wait-1.0.0.tgz#13204048062144a327d4967bdf38cac9df2f588e"
+  integrity sha512-rHjXHUF14M5tsqLwyfbpdHCQRzZL1vWPSmzOnYXx/SmkNvxL8n8zWA5iXxwwUYNJ05WjwR0NML8Y/r+p+8BgvQ==
+
 "@sinonjs/commons@^1.7.0":
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/@sinonjs/commons/-/commons-1.8.0.tgz#c8d68821a854c555bba172f3b06959a0039b236d"

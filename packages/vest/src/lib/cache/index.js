@@ -10,7 +10,7 @@ const createCache = (maxSize = 10) => {
    * @param {Any[]} deps  dependency array.
    * @param {Function}    cache action function.
    */
-  return (deps, cacheAction) => {
+  const cache = (deps, cacheAction) => {
     for (let i = 0; i < cacheStorage.length; i++) {
       const [cachedDeps, cachedResult] = cacheStorage[i];
 
@@ -24,7 +24,7 @@ const createCache = (maxSize = 10) => {
 
     const result = cacheAction();
 
-    cacheStorage.unshift([deps, result]);
+    cacheStorage.unshift([[...deps], result]);
 
     if (cacheStorage.length > maxSize) {
       cacheStorage.length = maxSize;
@@ -32,6 +32,21 @@ const createCache = (maxSize = 10) => {
 
     return result;
   };
+
+  /**
+   * Retrieves an item from the cache.
+   * @param {deps} deps Dependency array
+   */
+  cache.get = deps =>
+    cacheStorage[
+      cacheStorage.findIndex(
+        ([cachedDeps]) =>
+          deps.length === cachedDeps.length &&
+          deps.every((dep, i) => dep === cachedDeps[i])
+      )
+    ] ?? null;
+
+  return cache;
 };
 
 export default createCache;

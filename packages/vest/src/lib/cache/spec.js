@@ -1,8 +1,12 @@
 import _ from 'lodash';
-
 import cache from '.';
 
 describe('lib: cache', () => {
+  let c;
+
+  beforeEach(() => {
+    c = cache();
+  });
   it('should return a function', () => {
     expect(typeof cache()).toBe('function');
   });
@@ -13,7 +17,6 @@ describe('lib: cache', () => {
 
   describe('on cache miss', () => {
     it('Should call passed cache action function and return its value', () => {
-      const c = cache();
       const cacheAction = jest.fn(() => ({}));
       const res = c([{}], cacheAction);
       expect(cacheAction).toHaveBeenCalledTimes(1);
@@ -23,7 +26,6 @@ describe('lib: cache', () => {
 
   describe('On cache hit', () => {
     it('Should return cached result', () => {
-      const c = cache();
       const cacheAction = jest.fn(() => {
         Math.random();
       });
@@ -35,7 +37,6 @@ describe('lib: cache', () => {
     });
 
     it('Should return without calling the cache action', () => {
-      const c = cache();
       const cacheAction = jest.fn();
       const depsArray = [Math.random()];
       c(depsArray, cacheAction);
@@ -79,5 +80,23 @@ describe('lib: cache', () => {
     expect(c([...deps])).toBe(res);
     const sliced = deps.slice(0, -1);
     expect(c(sliced, () => null)).toBeNull();
+  });
+
+  describe('cache.get', () => {
+    describe('On cache miss', () => {
+      it('Should return null', () => {
+        expect(c.get([1, 2, 3])).toBeNull();
+        c([1, 2, 3], Math.random);
+        expect(c.get([1, 2, '3'])).toBeNull();
+      });
+    });
+
+    describe('On cache hit', () => {
+      it('Should return cached key and item from cache storage', () => {
+        const res = c([1, 2, 3], Math.random);
+        expect(c.get([1, 2, 3])[0]).toEqual([1, 2, 3]);
+        expect(c.get([1, 2, 3])[1]).toEqual(res);
+      });
+    });
   });
 });

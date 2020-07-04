@@ -49,8 +49,10 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
       fieldName,
       statement: STATEMENT,
       suiteId,
-      testFn: testCase === CASE_PASSING ? Promise.resolve() : Promise.reject(),
+      testFn: () => null,
     });
+    testObject.asyncTest =
+      testCase === CASE_PASSING ? Promise.resolve() : Promise.reject();
     setPending(suiteId, testObject);
   });
 
@@ -250,8 +252,8 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
       describe('When rejecting with a message', () => {
         const rejectionString = 'rejection string';
         beforeEach(() => {
-          testObject.testFn.catch(Function.prototype);
-          testObject.testFn = Promise.reject(rejectionString);
+          testObject.asyncTest.catch(Function.prototype);
+          testObject.asyncTest = Promise.reject(rejectionString);
         });
 
         it('Should set test statement to rejection string', () =>

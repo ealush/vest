@@ -1,10 +1,13 @@
 import { isExcluded } from '../../hooks/exclusive';
+import createCache from '../../lib/cache';
 import runWithContext from '../../lib/runWithContext';
 import singleton from '../../lib/singleton';
 import getSuiteState from '../state/getSuiteState';
 import patch from '../state/patch';
 import VestTest from './lib/VestTest';
 import { setPending } from './lib/pending';
+
+let cache;
 
 /**
  * Stores test object inside suite state.
@@ -51,7 +54,7 @@ const register = testObject => {
   // Move to pending list.
   const result = sync(testObject);
   if (typeof result?.then === 'function') {
-    testObject.testFn = result;
+    testObject.asyncTest = result;
     setPending(testObject.suiteId, testObject);
   }
 };
@@ -89,4 +92,35 @@ const test = (fieldName, ...args) => {
   return testObject;
 };
 
+test.memo = (fieldName, ...args) => {
+  cache = cache ?? createCache(100);
+
+  const { length: l, [l - 3]: msg, [l - 2]: testFn, [l - 1]: deps } = args;
+
+  const ctx = singleton.useContext();
+  const dependencies = [ctx.suiteId, fieldName].concat(deps);
+
+  const cached = cache.get(dependencies);
+
+  if (cached === null) {
+    // Cache miss. Start fresh
+    return cache(dependencies, () => test(fieldName, msg, testFn));
+  }
+
+  const [, testObject] = cached;
+
+  if (isExcluded(getSuiteState(ctx.suiteId), testObject)) {
+    return testObject;
+  }
+
+  addTestToState(testObject.suiteId, testObject);
+
+  if (typeof testObject?.asyncTest?.then === 'function') {
+    setPending(testObject.suiteId, testObject);
+  }
+
+  return testObject;
+};
+
+/* eslint-disable jest/no-export */
 export default test;

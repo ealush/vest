@@ -727,36 +727,85 @@ runSpec(vest => {
     });
 
     describe('produce cache (integragion)', () => {
-      const control = jest.fn();
-      let draft, state;
-      const validate = vest.create('cache', () => {
-        draft = vest.draft();
-        state = vest.get('cache');
-        expect(draft).toBe(vest.draft());
-        expect(state).toBe(vest.get('cache'));
-        testDummy(vest).failing();
-        expect(state).not.toBe(vest.get('cache'));
-        expect(draft).not.toBe(vest.draft());
-        testDummy(vest).failing();
-        state = vest.get('cache');
-        control();
+      describe('sync', () => {
+        const control = jest.fn();
+        let draft, state;
+        const validate = vest.create('cache', () => {
+          draft = vest.draft();
+          state = vest.get('cache');
+          expect(draft).toBe(vest.draft());
+          expect(state).toBe(vest.get('cache'));
+          testDummy(vest).failing();
+          expect(state).not.toBe(vest.get('cache'));
+          expect(draft).not.toBe(vest.draft());
+          testDummy(vest).failing();
+          state = vest.get('cache');
+          control();
+        });
+
+        it('Should return same result as as long as the state did not change', () => {
+          let res = validate().done(result => {
+            // Done results are not cached.
+            // See produce / index for more info
+            expect(result).isDeepCopyOf(vest.get('cache'));
+          });
+          expect(control).toHaveBeenCalledTimes(1);
+          expect(state).toBe(vest.get('cache'));
+          expect(res).not.toBe(draft);
+          expect(res).not.toBe(state);
+          expect(draft).not.toBe(vest.get('cache'));
+          res = validate().done(result => {
+            expect(result).isDeepCopyOf(vest.get('cache'));
+          });
+          expect(res).not.toBe(draft);
+          expect(res).not.toBe(state);
+          expect(control).toHaveBeenCalledTimes(2);
+        });
       });
 
-      it('Should return same result as as long as the state did not change', () => {
-        let res = validate().done(result => {
-          expect(result).toBe(vest.get('cache'));
+      describe('Async', () => {
+        let result;
+        const validate = vest.create('cache-async', () => {
+          testDummy(vest).passing('field_1');
+          testDummy(vest).failing('field_2');
+          testDummy(vest).failingAsync('field_3');
+          testDummy(vest).failingAsync('field_4', { time: 250 });
         });
-        expect(control).toHaveBeenCalledTimes(1);
-        expect(state).toBe(vest.get('cache'));
-        expect(res).not.toBe(draft);
-        expect(res).not.toBe(state);
-        expect(draft).not.toBe(vest.get('cache'));
-        res = validate().done(result => {
-          expect(result).toBe(vest.get('cache'));
+
+        it('Should produce correct validation result', () => {
+          result = validate();
+          const control = jest.fn();
+          return new Promise(done => {
+            expect(result.hasErrors('field_1')).toBe(false);
+            expect(result.hasErrors('field_2')).toBe(true);
+            expect(result.hasErrors('field_3')).toBe(false);
+            expect(result.hasErrors('field_4')).toBe(false);
+
+            result.done('field_3', res => {
+              expect(res).isDeepCopyOf(vest.get('cache-async'));
+              expect(res).not.toBe(result);
+              expect(res).not.isDeepCopyOf(result);
+              expect(res.hasErrors('field_1')).toBe(false);
+              expect(res.hasErrors('field_2')).toBe(true);
+              expect(res.hasErrors('field_3')).toBe(true);
+              expect(res.hasErrors('field_4')).toBe(false);
+              control();
+            });
+
+            result.done(res => {
+              expect(res.tests.field_4.errorCount).toBe(1);
+              expect(res).isDeepCopyOf(vest.get('cache-async'));
+              expect(res).not.toBe(result);
+              expect(res).not.isDeepCopyOf(result);
+              expect(res.hasErrors('field_1')).toBe(false);
+              expect(res.hasErrors('field_2')).toBe(true);
+              expect(res.hasErrors('field_3')).toBe(true);
+              expect(res.hasErrors('field_4')).toBe(true);
+
+              done();
+            });
+          });
         });
-        expect(res).not.toBe(draft);
-        expect(res).not.toBe(state);
-        expect(control).toHaveBeenCalledTimes(2);
       });
     });
   });

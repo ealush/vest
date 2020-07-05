@@ -33,7 +33,11 @@ const done = (state, ...args) => {
     return output;
   }
 
-  const cb = () => callback(produce(state, { draft: true }));
+  // This won't be cached. Because we do not know where in the
+  // Lifecycle of our validations this produce will run, the test may be
+  // outdated and we might even not have a reference for it, so we're spreading
+  // to skip the cache.
+  const cb = () => callback(produce({ ...state }, { draft: true }));
   const isFinishedTest = fieldName && !hasRemainingTests(state, fieldName);
   const isSuiteFinished = !hasRemainingTests(state);
   const shouldRunCallback = isFinishedTest || isSuiteFinished;

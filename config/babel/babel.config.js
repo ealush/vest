@@ -22,7 +22,8 @@ module.exports = api => {
     '@babel/plugin-proposal-optional-chaining',
     '@babel/plugin-proposal-nullish-coalescing-operator',
     ['@babel/plugin-proposal-pipeline-operator', { proposal: 'minimal' }],
-  ];
+    isTest && '@babel/plugin-transform-runtime',
+  ].filter(Boolean);
 
   return {
     include: [/src/, /testUtils/, /node_modules/],

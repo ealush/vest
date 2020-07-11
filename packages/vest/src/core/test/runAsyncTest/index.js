@@ -33,7 +33,7 @@ const runDoneCallbacks = (suiteId, fieldName) => {
  * @param {VestTest} testObject A VestTest instance.
  */
 const runAsyncTest = testObject => {
-  const { testFn, statement, fieldName, id, suiteId } = testObject;
+  const { asyncTest, statement, fieldName, id, suiteId } = testObject;
   const { operationMode } = singleton.useContext();
   const done = cb => {
     const isCanceled = getState(KEY_CANCELED)[id];
@@ -79,7 +79,7 @@ const runAsyncTest = testObject => {
   };
   runWithContext({ currentTest: testObject }, () => {
     try {
-      testFn.then(done, fail);
+      asyncTest.then(done, fail);
     } catch (e) {
       fail();
     }

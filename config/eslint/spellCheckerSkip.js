@@ -33,4 +33,5 @@ module.exports = [
   'lt',
   'iife',
   'namespace',
+  'tsc',
 ];

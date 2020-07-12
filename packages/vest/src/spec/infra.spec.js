@@ -1,5 +1,7 @@
-const { version } = require('../package.json');
-const vest = require('.');
+const { execSync } = require('child_process');
+const vest = require('..');
+const packagePath = require('../../../../util/packagePath');
+const { version } = require('../../package.json');
 
 describe('Vest exports', () => {
   test('All vest exports exist', () => {
@@ -124,5 +126,24 @@ describe('General scenario tests', () => {
           done();
         });
       }));
+  });
+});
+
+describe('TypeScript Typings', () => {
+  it('Should Pass tsc validation on a valid file', () => {
+    expect(() => {
+      execSync(`node_modules/.bin/tsc ${packagePath('vest', 'vest.d.ts')}`);
+    }).not.toThrow();
+  });
+
+  it('Should fail Typescript check with failing file', () => {
+    expect(() => {
+      execSync(
+        `node_modules/.bin/tsc ${packagePath(
+          'vest/src/spec/failing.d.ts',
+          'vest.d.ts'
+        )}`
+      );
+    }).toThrow();
   });
 });

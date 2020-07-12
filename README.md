@@ -12,6 +12,7 @@
     - [Example with Async tests](https://codesandbox.io/s/youthful-williamson-loijb?file=/src/validate.js)
     - [2](https://stackblitz.com/edit/vest-react-support-example?file=validation.js)
     - [3](https://stackblitz.com/edit/vest-react-registration?file=validate.js)
+  - [VueJS Example](https://codesandbox.io/s/vest-vue-example-1j6r8?file=/src/validations.js)
 
 ## [Release Notes](https://github.com/ealush/vest/releases)
 

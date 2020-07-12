@@ -8,6 +8,7 @@
 - **Try vest live**
   - [Vanilla JS example](https://stackblitz.com/edit/vest-vanilla-support-example)
   - ReactJS Examples: [1](https://stackblitz.com/edit/vest-react-support-example), [2](https://stackblitz.com/edit/vest-react-registration)
+  - [VueJS Example](https://codesandbox.io/s/vest-vue-example-1j6r8?file=/src/validations.js)
 
 ## What is Vest?
 

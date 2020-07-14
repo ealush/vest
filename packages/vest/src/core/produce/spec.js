@@ -582,6 +582,30 @@ runSpec(vest => {
             });
           });
         });
+
+        describe('When delayed', () => {
+          const validate = vest.create('delayed_done', () => {
+            testDummy(vest).failing('field_1', 'error_1:a');
+            testDummy(vest).failingAsync('field_2', 'error_1:b');
+            testDummy(vest).failingAsync('field_3', 'error_1:c', { time: 100 });
+          });
+
+          afterEach(() => {
+            resetState();
+          });
+
+          it('Should call done callback immediately when delayed', () => {
+            const res = validate();
+            return new Promise(done => {
+              setTimeout(() => {
+                const doneCb = jest.fn();
+                res.done(doneCb);
+                expect(doneCb).toHaveBeenCalled();
+                done();
+              }, 500);
+            });
+          });
+        });
       });
     });
     describe('method: getErrorsByGroup', () => {

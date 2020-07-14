@@ -1,3 +1,4 @@
+import removeElementFromArray from '../../../../lib/removeElementFromArray';
 import getSuiteState from '../../../state/getSuiteState';
 import patch from '../../../state/patch';
 import { setCanceled } from '../canceled';
@@ -46,7 +47,7 @@ export const setPending = (suiteId, testObject) => {
 export const removePending = testObject => {
   patch(testObject.suiteId, state => ({
     ...state,
-    pending: state.pending.filter(tO => tO !== testObject),
-    lagging: state.lagging.filter(tO => tO !== testObject),
+    pending: removeElementFromArray(state.pending, testObject),
+    lagging: removeElementFromArray(state.lagging, testObject),
   }));
 };

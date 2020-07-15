@@ -8,10 +8,10 @@
 - **Try vest live**
   - [Vanilla JS Example](https://stackblitz.com/edit/vest-vanilla-support-example?file=validation.js)
   - ReactJS Examples:
-    - [Example with test groups](https://codesandbox.io/s/ecstatic-waterfall-4i2ne?file=/src/validate.js)
-    - [Example with Async tests](https://codesandbox.io/s/youthful-williamson-loijb?file=/src/validate.js)
-    - [2](https://stackblitz.com/edit/vest-react-support-example?file=validation.js)
-    - [3](https://stackblitz.com/edit/vest-react-registration?file=validate.js)
+    - [Example 1 (groups)](https://codesandbox.io/s/ecstatic-waterfall-4i2ne?file=/src/validate.js)
+    - [Exmaple 2 (Async)](https://codesandbox.io/s/youthful-williamson-loijb?file=/src/validate.js)
+    - [Example 3](https://stackblitz.com/edit/vest-react-support-example?file=validation.js)
+    - [Example 4](https://stackblitz.com/edit/vest-react-registration?file=validate.js)
   - [VueJS Example](https://codesandbox.io/s/vest-vue-example-1j6r8?file=/src/validations.js)
 
 ## [Release Notes](https://github.com/ealush/vest/releases)

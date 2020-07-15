@@ -2,6 +2,7 @@ declare module 'vest' {
   type TestCB = () => void | Promise<string | void> | false;
   type DraftResult = Omit<IVestResult, 'done'>;
   type DoneCB = (res: DraftResult) => void;
+  type ExclusionArg = string | string[] | void;
 
   interface VestTest {
     failed: boolean;
@@ -14,7 +15,57 @@ declare module 'vest' {
     asyncTest?: Promise<string | void>;
   }
 
-  interface Test {
+  interface ISkip {
+    /**
+     * Skips provided field from current run.
+     * When undefined, the expression is ignored.
+     * @param [fieldName] Field name or a list of fields to exclude
+     *
+     * @example
+     *
+     * vest.skip('username');
+     * vest.skip(['username', 'password']);
+     */
+    (fieldName?: ExclusionArg): void;
+    /**
+     * Skips provided group from current run.
+     * When undefined, the expression is ignored.
+     * @param [groupName] group name or a list of groups to exclude.
+     *
+     * @example
+     *
+     * vest.skip.group('username');
+     * vest.skip.group(['username', 'password']);
+     */
+    group(groupName?: ExclusionArg): void;
+  }
+
+  interface IOnly {
+    /**
+     * Singles out a field name to be tested.
+     * When fieldName is undefined, the expression is ignored.
+     * @param [fieldName] Field name or a list of fields to include
+     *
+     * @example
+     *
+     * vest.only('username');
+     * vest.only(['username', 'password']);
+     */
+    (fieldName?: ExclusionArg): void;
+    /**
+     * Singles out a group name to be tested.
+     * When groupName is undefined, the expression is ignored.
+     * @param [groupName] Field name or a list of groups to include.
+     *
+     * @example
+     *
+     * vest.only.group('username');
+     * vest.only.group(['username', 'password']);
+     */
+    group(groupName?: ExclusionArg): void;
+  }
+
+  interface ITest {
     /**
      * Runs a single test
      * @param fieldName The name of the field being validated
@@ -71,13 +122,46 @@ declare module 'vest' {
     memo(fieldName: string, testFn: TestCB, dependencies: any[]): VestTest;
   }
 
+  interface IEnforce {
+    /**
+     * Assertion function. Throws an error on failure.
+     * @param value Value being enforced
+     */
+    (value: any): IEnforceRules;
+
+    /**
+     * Creates a new enforce instance with custom rules
+     * @param rules Rules object to add onto enforce
+     *
+     * @example
+     *
+     * const customEnforce = enforce.extend({
+     *  isValidEmail: (email) => email.includes('@')
+     * });
+     *
+     * customEnforce('notAnEmail') // throws an error
+     */
+    extend<
+      T extends { [key: string]: (value: any, ...args: any[]) => boolean }
+    >(
+      obj: T
+    ): (value: any) => IEnforceRules<T> & EnforceExtendMap<T>;
+  }
+
   interface Vest {
-    test: Test;
+    test: ITest;
+    enforce: IEnforce;
+    only: IOnly;
+    skip: ISkip;
 
     /**
      * Runs a stateless validation suite.
      * @param suiteName Unique suite name.
      * @param tests     Suite body.
+     *
+     * const res = validate('form_name', () => {
+     *  // your tests go here
+     * });
      */
     validate(suiteName: string, tests: () => void): IVestResult;
 
@@ -85,11 +169,32 @@ declare module 'vest' {
      * Runs a stateful validation suite.
      * @param suiteName Unique suite name.
      * @param tests     Suite body.
+     *
+     * @example
+     *
+     * const validate = vest.create('form_name', (data = {}) => {
+     *    // your tests go here
+     * });
+     *
+     * const res = validate({username: 'example'});
      */
     create(
       suiteName: string,
       tests: (...args: any[]) => void
     ): (...args: any[]) => IVestResult;
+
+    /**
+     * Allows grouping tests so you can handle them together
+     * @param groupName Group name.
+     * @param testFn    Group body.
+     *
+     * @example
+     *
+     * group('sign_up', () => {
+     *  // your tests go here
+     * });
+     */
+    group(groupName: string, testFn: () => void): void;
 
     /**
      * Marks a test as warning.
@@ -110,11 +215,6 @@ declare module 'vest' {
      */
     draft(): DraftResult;
     VERSION: string;
-    /**
-     * Assertion function. Throws an error on failure.
-     * @param value Value being enforced
-     */
-    enforce(value: any): IEnforceRules;
   }
 
   interface IVestResult {
@@ -282,14 +382,33 @@ declare module 'vest' {
     lengthNotEquals: (
       expected: number
     ) => IEnforceRules<T> & EnforceExtendMap<T>;
-    extend: <T extends { [key: string]: (...args: any[]) => boolean }>(
-      obj: T
-    ) => IEnforceRules<T> & EnforceExtendMap<T>;
   }
 
-  const { test, validate, create, warn, draft, VERSION, enforce }: Vest;
+  const {
+    test,
+    validate,
+    create,
+    warn,
+    draft,
+    VERSION,
+    enforce,
+    skip,
+    only,
+    group,
+  }: Vest;
 
-  export { test, validate, create, warn, draft, VERSION, enforce };
+  export {
+    test,
+    validate,
+    create,
+    warn,
+    draft,
+    VERSION,
+    enforce,
+    skip,
+    only,
+    group,
+  };
 
   const vest: Vest;
 

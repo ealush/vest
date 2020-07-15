@@ -7,7 +7,7 @@ const SCRIPT_PATH = path.resolve(
   ROOT_PATH,
   'scripts',
   'steps',
-  'push_to_default_branch.sh'
+  'push_to_latest_branch.sh'
 );
 
 const EMOJIS = [
@@ -33,8 +33,8 @@ function createCommitMessage(packageData) {
   return `${sample(EMOJIS)} Updating: ${msg}`;
 }
 
-function pushToDefaultBranch(packageData, messages) {
-  logger.info('🌎 Pushing default default branch.');
+function pushToLatestBranch(packageData, messages) {
+  logger.info('🌎 Pushing latest branch.');
 
   const command = [
     'sh',
@@ -46,4 +46,4 @@ function pushToDefaultBranch(packageData, messages) {
   exec(command);
 }
 
-module.exports = pushToDefaultBranch;
+module.exports = pushToLatestBranch;

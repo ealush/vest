@@ -5,8 +5,8 @@ const determineChangeLevel = require('./determineChangeLevel');
 
 const {
   TRAVIS_BRANCH,
-  DEFAULT_BRANCH,
-  NEXT_BRANCH,
+  LATEST_BRANCH,
+  STABLE_BRANCH,
   RELEASE_BRANCH,
   TRAVIS_COMMIT,
 } = process.env;
@@ -18,11 +18,11 @@ function pickTagId(nextVersion) {
 
   const commitHash = TRAVIS_COMMIT.substr(0, 6);
 
-  if (TRAVIS_BRANCH === NEXT_BRANCH) {
+  if (TRAVIS_BRANCH === LATEST_BRANCH) {
     return `${nextVersion}-${TAG_NEXT}-${commitHash}`;
   }
 
-  if (TRAVIS_BRANCH !== DEFAULT_BRANCH) {
+  if (TRAVIS_BRANCH !== STABLE_BRANCH) {
     return `${nextVersion}-${TAG_DEV}-${commitHash}`;
   }
 

@@ -1,7 +1,7 @@
 const { asyncForeach, logger } = require('../util');
 const build = require('./build');
 const publishPackage = require('./steps/publishPackage');
-const pushToDefaultBranch = require('./steps/pushToDefaultBranch');
+const pushToLatestBranch = require('./steps/pushToLatestBranch');
 const setNextVersion = require('./steps/setNextVersion');
 const updateChangelog = require('./steps/updateChangelog');
 const updateDocs = require('./steps/updateDocs');
@@ -44,7 +44,7 @@ const run = async () => {
     return;
   }
 
-  pushToDefaultBranch(packageData, allMessages);
+  pushToLatestBranch(packageData, allMessages);
 
   await asyncForeach(packageData, async packageData => {
     await createRelease({

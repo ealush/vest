@@ -52,6 +52,8 @@ packages/
 
 ## Branching strategy
 
-Vest’s default (and latest) branch is master, but our development branch is `next`. We do not release a new version of Vest for every single change, instead, we gather changes in the `next` branch and periodically create a new release.
-
-When working on a feature, you should branch off `next`, and base your pull requests to the `next` branch.
+| Branch Name | Role           | Description                                         |
+| ----------- | -------------- | --------------------------------------------------- |
+| `master`    | Latest         | Contains latest unreleased changes                  |
+| `stable`    | Current/stable | Current version installable by `npm i vest`         |
+| `release`   | CI             | Triggers ci build that merges from master to stable |

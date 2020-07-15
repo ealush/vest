@@ -46,6 +46,8 @@ enforce.extend = customRules => {
   if (!proxySupported()) {
     rulesList = Object.keys(rulesObject);
   }
+
+  return enforce;
 };
 
 export default enforce;

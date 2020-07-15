@@ -46,11 +46,17 @@ const suite = ({ withProxy, requirePath }) =>
     });
 
     describe('Test custom rule extensions', () => {
+      let extended;
       beforeEach(() => {
-        enforce.extend({
+        extended = enforce.extend({
           isImpossible: v => !!v.match(/impossible/i),
           endsWith: (v, arg) => v.endsWith(arg),
         });
+      });
+
+      it('Should return enforce', () => {
+        expect(typeof extended).toBe('function');
+        expect(extended).toBe(enforce);
       });
 
       it('Should throw on failing custom rule in regular test', () => {

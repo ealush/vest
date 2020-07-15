@@ -130,7 +130,7 @@ declare module 'vest' {
     (value: any): IEnforceRules;
 
     /**
-     * Creates a new enforce instance with custom rules
+     * Adds custom rules to enforce
      * @param rules Rules object to add onto enforce
      *
      * @example

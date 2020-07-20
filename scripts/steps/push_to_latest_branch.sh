@@ -28,23 +28,3 @@ git checkout -b $LATEST_BRANCH
 
 echo "Trying to update latest branch"
 git push https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG.git $LATEST_BRANCH
-
-echo "Moving up to packages/vest"
-cd packages/vest
-
-echo "Cloning gh-pages"
-git clone --single-branch --branch gh-pages https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG.git _docs
-
-echo "Copying docs directory"
-cp -R docs/. _docs
-cd _docs
-
-echo "Committing docs"
-git add .
-git commit -m "$1"
-
-echo "Pushing docs directory"
-git push https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG.git gh-pages
-
-cd../
-rm -rf _docs

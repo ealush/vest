@@ -17,7 +17,7 @@
     "babel-plugin-add-module-exports": "^1.0.2",
     "cross-env": "^7.0.2",
     "date-fns": "^2.15.0",
-    "eslint": "^7.4.0",
+    "eslint": "^7.5.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jest": "^23.18.0",

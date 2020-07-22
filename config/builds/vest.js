@@ -29,6 +29,7 @@ const PLUGINS = [
     LIBRARY_NAME: JSON.stringify(PACKAGE_VEST),
   }),
   compiler(),
+  terser(),
 ];
 
 const buildConfig = ({ format = DEFAULT_FORMAT, min = false } = {}) => ({
@@ -45,7 +46,7 @@ const buildConfig = ({ format = DEFAULT_FORMAT, min = false } = {}) => ({
     format,
     name: PACKAGE_VEST,
   },
-  plugins: min ? [...PLUGINS, terser()] : PLUGINS,
+  plugins: PLUGINS,
 });
 
 export default [buildConfig(), buildConfig({ min: true })];

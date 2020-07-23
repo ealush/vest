@@ -53,9 +53,20 @@ const register = testObject => {
   // If a promise is returned, set as async and
   // Move to pending list.
   const result = sync(testObject);
-  if (typeof result?.then === 'function') {
-    testObject.asyncTest = result;
-    setPending(testObject.suiteId, testObject);
+
+  try {
+    // try catch for safe property access
+    // in case object is an enforce chain
+    if (typeof result?.then === 'function') {
+      testObject.asyncTest = result;
+      setPending(testObject.suiteId, testObject);
+    }
+  } catch {
+    /* FUTURE: throw an error here in dev mode:
+     * Your test function ${testObject.fieldName} returned
+     * a value other than `false` or a Promise. Return values
+     * are not supported and may cause unexpected behavior.
+     */
   }
 };
 

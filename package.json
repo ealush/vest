@@ -20,7 +20,7 @@
     "eslint": "^7.5.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jest": "^23.18.0",
+    "eslint-plugin-jest": "^23.18.2",
     "eslint-plugin-spellcheck": "^0.0.17",
     "faker": "^4.1.0",
     "fs-extra": "^9.0.1",

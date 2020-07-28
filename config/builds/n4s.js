@@ -22,8 +22,8 @@ const pluginList = ({ libraryName } = {}) => [
     LIBRARY_NAME: JSON.stringify(libraryName),
   }),
   babel({
-    babelrc: false,
-    ...require(BABEL_CONFIG_PATH)(),
+    configFile: BABEL_CONFIG_PATH,
+    envName: 'production',
   }),
   compiler(),
   terser(),

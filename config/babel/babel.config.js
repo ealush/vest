@@ -1,15 +1,18 @@
 module.exports = api => {
-  let isTest = false;
-  if (api) {
-    isTest = api.env() === 'test';
-    api.cache(true);
-  }
-
   const presets = [
     [
       '@babel/preset-env',
       {
-        ...(!isTest && {
+        targets: {
+          ...(api.env('development')
+            ? {
+                node: 'current',
+              }
+            : {
+                ie: 10,
+              }),
+        },
+        ...(!api.env('test') && {
           loose: true,
         }),
       },
@@ -18,11 +21,11 @@ module.exports = api => {
 
   const plugins = [
     'babel-plugin-add-module-exports',
-    '@babel/plugin-transform-object-assign',
     '@babel/plugin-proposal-optional-chaining',
     '@babel/plugin-proposal-nullish-coalescing-operator',
     ['@babel/plugin-proposal-pipeline-operator', { proposal: 'minimal' }],
-    isTest && '@babel/plugin-transform-runtime',
+    api.env('production') && '@babel/plugin-transform-object-assign',
+    api.env('test') && '@babel/plugin-transform-runtime',
   ].filter(Boolean);
 
   return {

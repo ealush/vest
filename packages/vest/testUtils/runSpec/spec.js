@@ -45,8 +45,11 @@ describe('module: runSpec', () => {
       expect(vestDistVersions).toContain(vestSrc);
       expect(vestDistVersions).toContain(require('../../dist/vest.js'));
       expect(vestDistVersions).toContain(require('../../dist/vest.min.js'));
+      expect(vestDistVersions).toContain(
+        require('../../dist/vest.development.js')
+      );
 
-      expect(counter).toBe(3);
+      expect(counter).toBe(4);
     });
   });
 });

@@ -86,8 +86,6 @@ describe('Test createSuite module', () => {
       expect(state[0].testObjects).toHaveLength(0);
       expect(state[0].pending).toHaveLength(0);
       expect(state[0].lagging).toHaveLength(0);
-      expect(Object.keys(state[0].exclusion.groups)).toHaveLength(0);
-      expect(Object.keys(state[0].exclusion.tests)).toHaveLength(0);
       expect(Object.keys(state[0].tests)).toHaveLength(0);
       expect(Object.keys(state[0].groups)).toHaveLength(0);
       expect(Object.keys(state[0].doneCallbacks)).toHaveLength(0);

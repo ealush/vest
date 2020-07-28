@@ -2,7 +2,6 @@ import { isExcluded } from '../../hooks/exclusive';
 import createCache from '../../lib/cache';
 import runWithContext from '../../lib/runWithContext';
 import singleton from '../../lib/singleton';
-import getSuiteState from '../state/getSuiteState';
 import patch from '../state/patch';
 import VestTest from './lib/VestTest';
 import { setPending } from './lib/pending';
@@ -90,7 +89,7 @@ const test = (fieldName, ...args) => {
     testFn,
   });
 
-  if (isExcluded(getSuiteState(ctx.suiteId), testObject)) {
+  if (isExcluded(testObject)) {
     return testObject;
   }
 
@@ -120,7 +119,7 @@ test.memo = (fieldName, ...args) => {
 
   const [, testObject] = cached;
 
-  if (isExcluded(getSuiteState(ctx.suiteId), testObject)) {
+  if (isExcluded(testObject)) {
     return testObject;
   }
 

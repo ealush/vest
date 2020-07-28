@@ -1,3 +1,7 @@
+import {
+  EXCLUSION_ITEM_TYPE_TESTS,
+  EXCLUSION_ITEM_TYPE_GROUPS,
+} from '../../hooks/exclusive/constants';
 import singleton from '../../lib/singleton';
 
 class Context {
@@ -53,6 +57,19 @@ class Context {
 
   set groupName(groupName) {
     this.group_name = groupName;
+  }
+
+  get exclusion() {
+    let key = this.lookup('_exclusion');
+
+    if (key === undefined) {
+      key = this._exclusion = {
+        [EXCLUSION_ITEM_TYPE_TESTS]: {},
+        [EXCLUSION_ITEM_TYPE_GROUPS]: {},
+      };
+    }
+
+    return key;
   }
 
   lookup(key) {

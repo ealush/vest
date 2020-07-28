@@ -1,4 +1,3 @@
-import patch from '../../core/state/patch';
 import singleton from '../../lib/singleton';
 import throwError from '../../lib/throwError';
 import { ERROR_HOOK_CALLED_OUTSIDE } from '../constants';
@@ -21,25 +20,18 @@ const addTo = (exclusionGroup, itemType, item) => {
     return;
   }
 
-  if (ctx?.suiteId === undefined) {
+  if (!ctx) {
     throwError(`${exclusionGroup} ${ERROR_HOOK_CALLED_OUTSIDE}`);
     return;
   }
 
-  patch(ctx.suiteId, state => {
-    const nextState = { ...state };
+  [].concat(item).forEach(itemName => {
+    if (typeof itemName !== 'string') {
+      return null;
+    }
 
-    // Flattens arrays + strings
-    [].concat(item).forEach(itemName => {
-      if (typeof itemName !== 'string') {
-        return;
-      }
-
-      nextState.exclusion[itemType][itemName] =
-        exclusionGroup === EXCLUSION_GROUP_NAME_ONLY;
-    });
-
-    return nextState;
+    ctx.exclusion[itemType][itemName] =
+      exclusionGroup === EXCLUSION_GROUP_NAME_ONLY;
   });
 };
 
@@ -69,10 +61,12 @@ skip.group = item =>
  * @param {VestTest}            Test Object reference.
  * @returns {Boolean}
  */
-const isExcluded = (state, testObject) => {
+const isExcluded = testObject => {
   const { fieldName, groupName } = testObject;
 
-  const keyTests = state.exclusion[EXCLUSION_ITEM_TYPE_TESTS];
+  const ctx = singleton.useContext();
+
+  const keyTests = ctx.exclusion[EXCLUSION_ITEM_TYPE_TESTS];
   const testValue = keyTests[fieldName];
 
   // if test is skipped
@@ -85,13 +79,11 @@ const isExcluded = (state, testObject) => {
 
   // If inside a group
   if (groupName) {
-    if (isGroupExcluded(state, groupName)) {
+    if (isGroupExcluded(groupName)) {
       return true; // field excluded by group
 
       // if group is `only`ed
-    } else if (
-      state.exclusion[EXCLUSION_ITEM_TYPE_GROUPS][groupName] === true
-    ) {
+    } else if (ctx.exclusion[EXCLUSION_ITEM_TYPE_GROUPS][groupName] === true) {
       if (isTestIncluded) {
         return false;
       }
@@ -116,7 +108,7 @@ const isExcluded = (state, testObject) => {
 };
 
 /**
- * Checks if state has included tests
+ * Checks if context has included tests
  * @param {Object} keyTests Object containing included and excluded tests
  * @returns {boolean}
  */
@@ -131,12 +123,12 @@ const hasIncludedTests = keyTests => {
 
 /**
  * Checks whether a given group is excluded from running.
- * @param {Object} state
  * @param {String} groupName
  * @return {Boolean}
  */
-const isGroupExcluded = (state, groupName) => {
-  const keyGroups = state.exclusion[EXCLUSION_ITEM_TYPE_GROUPS];
+const isGroupExcluded = groupName => {
+  const ctx = singleton.useContext();
+  const keyGroups = ctx.exclusion[EXCLUSION_ITEM_TYPE_GROUPS];
 
   const groupPresent = Object.prototype.hasOwnProperty.call(
     keyGroups,

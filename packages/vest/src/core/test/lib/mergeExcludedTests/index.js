@@ -16,7 +16,7 @@ const mergeExcludedTests = suiteId => {
     nextState.testObjects = nextState.testObjects.concat(
       prevState.testObjects.reduce((movedTests, testObject) => {
         // Checking prev-test object against current state;
-        if (isExcluded(state, testObject)) {
+        if (isExcluded(testObject)) {
           return movedTests.concat(testObject);
         }
 

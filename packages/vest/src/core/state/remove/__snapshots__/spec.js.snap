@@ -9,13 +9,6 @@ Object {
     "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
-        "exclusion": Object {
-          "groups": Object {},
-          "tests": Object {
-            "field_1": false,
-            "field_3": false,
-          },
-        },
         "fieldCallbacks": Object {},
         "groups": Object {},
         "lagging": Array [
@@ -190,12 +183,6 @@ Object {
       },
       Object {
         "doneCallbacks": Array [],
-        "exclusion": Object {
-          "groups": Object {},
-          "tests": Object {
-            "field_2": false,
-          },
-        },
         "fieldCallbacks": Object {},
         "groups": Object {},
         "lagging": null,

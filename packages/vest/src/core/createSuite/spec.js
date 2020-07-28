@@ -37,6 +37,10 @@ describe('Test createSuite module', () => {
     it('should be a function', () => {
       expect(typeof createSuite('suiteName', noop)).toBe('function');
     });
+
+    test("returned function name is the suite's name", () => {
+      expect(createSuite('boop', noop).name).toBe('boop');
+    });
   });
 
   describe('When returned function is invoked', () => {

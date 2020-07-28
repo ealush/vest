@@ -40,18 +40,24 @@ const createSuite = (name, tests) => {
   }
 
   // returns validator function
-  return (...args) => {
-    const output = runWithContext(ctxRef, context => {
-      registerSuite();
-      const { suiteId } = context;
-      tests.apply(null, args);
-      mergeExcludedTests(suiteId);
+  // and sets the function name
+  // to the name of the suite
+  return Object.defineProperty(
+    (...args) => {
+      const output = runWithContext(ctxRef, context => {
+        registerSuite();
+        const { suiteId } = context;
+        tests.apply(null, args);
+        mergeExcludedTests(suiteId);
 
-      [...getSuiteState(suiteId).pending].forEach(runAsyncTest);
-      return produce(getSuiteState(suiteId));
-    });
-    return output;
-  };
+        [...getSuiteState(suiteId).pending].forEach(runAsyncTest);
+        return produce(getSuiteState(suiteId));
+      });
+      return output;
+    },
+    'name',
+    { value: name }
+  );
 };
 
 export default createSuite;

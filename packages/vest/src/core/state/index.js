@@ -1,40 +1,42 @@
-import singleton from '../../lib/singleton';
-import { KEY_STATE, KEY_CANCELED, KEY_SUITES } from './constants';
-/**
- * Registers a new state on Vest's singleton.
- */
-const register = () => {
-  singleton.set(
-    KEY_STATE,
-    singleton.use(KEY_STATE) ?? {
+import { KEY_CANCELED, KEY_SUITES } from './constants';
+
+export const { get, set, register } = (() => {
+  const storage = {
+    state: {
       [KEY_SUITES]: {},
       [KEY_CANCELED]: {},
-    }
-  );
-};
+    },
+  };
 
-/**
- * Retrieves the state object or a portion of it.
- * @param {string} [key] state portion to retrieve.
- */
-export const getState = key =>
-  key ? singleton.use(KEY_STATE)[key] : singleton.use(KEY_STATE);
+  /**
+   * Retrieves the state object or a portion of it.
+   */
+  const get = () => storage.state;
 
-/**
- * Updates the state with the value return from the setter callback.
- * @param {Function} setter setter function.
- * @returns {Object} updated state.
- */
-export const setState = setter => {
-  singleton.set(KEY_STATE, setter(getState()));
+  /**
+   * Updates the state with the value return from the setter callback.
+   * @param {Function} setter setter function.
+   * @returns {Object} updated state.
+   */
+  const set = setter => {
+    storage.state = setter(get());
 
-  return getState();
-};
+    return get();
+  };
 
-/**
- * @returns {Object} all the suites in the state.
- */
-export const getSuites = () => getState(KEY_SUITES);
+  const register = () =>
+    set(
+      state =>
+        state ?? {
+          [KEY_SUITES]: {},
+          [KEY_CANCELED]: {},
+        }
+    );
+
+  register();
+
+  return { get, set, register };
+})();
 
 /**
  * Updates the state with the output of the setter callback.
@@ -42,19 +44,15 @@ export const getSuites = () => getState(KEY_SUITES);
  * @returns {Object} all the suites in the state.
  */
 export const setSuites = setter => {
-  setState(state => {
+  set(state => {
     state[KEY_SUITES] = setter(state[KEY_SUITES]);
     return state;
   });
-  return getSuites();
+  return get()[KEY_SUITES];
 };
 
 /**
  * @param {string} suiteId.
  * @returns {Object} Suite from state.
  */
-export const getSuite = suiteId => getSuites()[suiteId];
-
-export default {
-  register,
-};
+export const getSuite = suiteId => get()[KEY_SUITES][suiteId];

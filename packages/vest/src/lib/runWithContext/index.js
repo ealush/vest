@@ -16,7 +16,6 @@ const runWithContext = (ctxRef, fn) => {
   } catch {
     /*  */
   }
-
   Context.clear();
 
   return res;

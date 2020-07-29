@@ -1,5 +1,5 @@
 import { getSuite, setSuites } from '..';
-import singleton from '../../../lib/singleton';
+import Context from '../../Context';
 
 /**
  * Generates a default suite state object.
@@ -22,7 +22,7 @@ const INITIAL_SUITE_STATE = (suiteId, name) => ({
  * Registers a new suite run.
  */
 const registerSuite = () => {
-  const context = singleton.useContext();
+  const context = Context.use();
   const { name, suiteId } = context;
   let suite = getSuite(suiteId);
 

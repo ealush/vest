@@ -1,4 +1,3 @@
-import resetState from '../../testUtils/resetState';
 import runSpec from '../../testUtils/runSpec';
 import testDummy from '../../testUtils/testDummy';
 
@@ -34,7 +33,7 @@ runSpec(vest => {
 
   describe('Stateful async tests', () => {
     beforeEach(() => {
-      resetState();
+      vest.reset(suiteName);
       callback_1 = jest.fn();
       callback_2 = jest.fn();
       callback_3 = jest.fn();

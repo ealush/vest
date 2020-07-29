@@ -1,9 +1,10 @@
+import vest from '../..';
 import mock from '../../../../../shared/testUtils/mock';
 import resetState from '../../../testUtils/resetState';
-import runSpec from '../../../testUtils/runSpec';
 import testDummy from '../../../testUtils/testDummy';
 import VestTest from '../../core/test/lib/VestTest';
 import runWithContext from '../../lib/runWithContext';
+import group from '../group';
 
 const faker = require('faker');
 const { ERROR_HOOK_CALLED_OUTSIDE } = require('../constants');
@@ -11,245 +12,242 @@ const { isExcluded, isGroupExcluded } = require('.');
 
 const suiteId = 'suite-id';
 
-runSpec(vest => {
-  let res, res1;
-  const { group } = vest;
+let res, res1;
 
-  afterEach(() => {
-    resetState();
+afterEach(() => {
+  resetState();
+});
+
+describe('exclusive hooks', () => {
+  let field1, field2, field3;
+
+  beforeEach(() => {
+    field1 = new VestTest({
+      suiteId,
+      fieldName: faker.lorem.word(),
+    });
+    field2 = new VestTest({
+      suiteId,
+      fieldName: faker.lorem.slug(),
+    });
+    field3 = new VestTest({
+      suiteId,
+      fieldName: faker.random.word(),
+    });
   });
 
-  describe('exclusive hooks', () => {
-    let field1, field2, field3;
+  test('isExcluded should respect group exclusion', () => {
+    let testObject;
+    let testObject1;
+    vest.create(faker.random.word(), () => {
+      vest.skip.group('group_1');
 
-    beforeEach(() => {
-      field1 = new VestTest({
-        suiteId,
-        fieldName: faker.lorem.word(),
-      });
-      field2 = new VestTest({
-        suiteId,
-        fieldName: faker.lorem.slug(),
-      });
-      field3 = new VestTest({
-        suiteId,
-        fieldName: faker.random.word(),
-      });
-    });
+      testObject = testDummy(vest).failing();
 
-    test('isExcluded should respect group exclusion', () => {
-      let testObject;
-      let testObject1;
-      vest.create(faker.random.word(), () => {
-        vest.skip.group('group_1');
-
-        testObject = testDummy(vest).failing();
-
-        group('group_1', () => {
-          testObject1 = testDummy(vest).failing();
-        });
-
-        res = isExcluded(testObject);
-        res1 = isExcluded(testObject1);
-      })();
-
-      expect(res).toBe(false);
-      expect(res1).toBe(true);
-    });
-
-    describe('`only` hook', () => {
-      describe('string input', () => {
-        test('isExcluded returns false for included field', () => {
-          vest.create(faker.lorem.word(), () => {
-            vest.only(field1.fieldName);
-            res = isExcluded(field1);
-          })();
-          expect(res).toBe(false);
-        });
-
-        test('isGroupExcluded returns false for included groups', () => {
-          vest.create(faker.lorem.word(), () => {
-            vest.only('group_name');
-
-            group('group_name', () => {
-              res = isGroupExcluded('group_name');
-            });
-          })();
-          expect(res).toBe(false);
-        });
-
-        test('isExcluded returns true for non included field', () => {
-          vest.create(faker.lorem.word(), () => {
-            vest.only(field1.fieldName);
-            res1 = isExcluded(field1);
-            res = isExcluded(field2);
-          })();
-          expect(res1).toBe(false);
-          expect(res).toBe(true);
-        });
-
-        test('isGroupExcluded returns true for non included group', () => {
-          vest.create(faker.lorem.word(), () => {
-            vest.only.group('group_1');
-
-            group('group_1', Function.prototype);
-            group('group_2', Function.prototype);
-
-            res1 = isGroupExcluded('group_1');
-            res = isGroupExcluded('group_2');
-          })();
-
-          expect(res1).toBe(false);
-          expect(res).toBe(true);
-        });
+      group('group_1', () => {
+        testObject1 = testDummy(vest).failing();
       });
 
-      describe('array input', () => {
-        test('isExcluded returns false for included field', () => {
-          vest.create(faker.lorem.word(), () => {
-            vest.only([field1.fieldName, field2.fieldName]);
-            res = isExcluded(field1);
-            res1 = isExcluded(field2);
-          })();
-          expect(res).toBe(false);
-          expect(res1).toBe(false);
-        });
+      res = isExcluded(testObject);
+      res1 = isExcluded(testObject1);
+    })();
 
-        test('isGroupExcluded returns false for included groups', () => {
-          vest.create(faker.lorem.word(), () => {
-            vest.only.group(['group_1', 'group_2']);
+    expect(res).toBe(false);
+    expect(res1).toBe(true);
+  });
 
-            group('group_1', Function.prototype);
-            group('group_2', Function.prototype);
-            group('group_3', Function.prototype);
-
-            res = [
-              isGroupExcluded('group_1'),
-              isGroupExcluded('group_2'),
-              isGroupExcluded('group_3'),
-            ];
-          })();
-          expect(res).toEqual([false, false, true]);
-        });
-
-        test('isExcluded returns true for non included field', () => {
-          vest.create(faker.lorem.word(), () => {
-            res = [isExcluded(field1), isExcluded(field2), isExcluded(field3)];
-            vest.only([field1.fieldName, field2.fieldName]);
-            res1 = [isExcluded(field1), isExcluded(field2), isExcluded(field3)];
-          })();
-          expect(res).toEqual([false, false, false]);
-          expect(res1).toEqual([false, false, true]);
-        });
-
-        test('isGroupExcluded returns true for non included groups', () => {
-          vest.create(faker.lorem.word(), () => {
-            vest.only.group(['group_1', 'group_2']);
-
-            group('group_3', Function.prototype);
-            res = [
-              isGroupExcluded('group_1'),
-              isGroupExcluded('group_2'),
-              isGroupExcluded('group_3'),
-            ];
-          })();
-          expect(res).toEqual([false, false, true]);
-        });
-      });
-    });
-
-    describe('`skip` hook', () => {
-      describe('string input', () => {
-        test('isExcluded returns true for excluded field', () => {
-          vest.create(faker.lorem.word(), () => {
-            vest.skip(field1.fieldName);
-            res = isExcluded(field1);
-          })();
-          expect(res).toBe(true);
-        });
-
-        test('isGroupExcluded returns true for excluded groups', () => {
-          vest.create(faker.lorem.word(), () => {
-            vest.skip.group('group_1');
-            res = isGroupExcluded('group_1');
-            res1 = isGroupExcluded('group_2');
-          })();
-
-          expect(res).toBe(true);
-          expect(res1).toBe(false);
-        });
-
-        test('isExcluded returns false for non excluded field', () => {
-          vest.create(faker.lorem.word(), () => {
-            vest.skip(field1.fieldName);
-            res = isExcluded(field2);
-          })();
-          expect(res).toBe(false);
-        });
-      });
-
-      test('isGroupExcluded returns false for non excluded groups', () => {
+  describe('`only` hook', () => {
+    describe('string input', () => {
+      test('isExcluded returns false for included field', () => {
         vest.create(faker.lorem.word(), () => {
-          vest.skip('group_1');
-          res = isExcluded('group_2');
+          vest.only(field1.fieldName);
+          res = isExcluded(field1);
         })();
         expect(res).toBe(false);
       });
 
-      describe('array input', () => {
-        test('isExcluded returns true for excluded field', () => {
-          vest.create(faker.lorem.word(), () => {
-            vest.skip([field1.fieldName, field2.fieldName]);
+      test('isGroupExcluded returns false for included groups', () => {
+        vest.create(faker.lorem.word(), () => {
+          vest.only('group_name');
 
-            res = isExcluded(field1);
-            res1 = isExcluded(field2);
-          })();
-          expect(res).toBe(true);
-          expect(res1).toBe(true);
-        });
+          group('group_name', () => {
+            res = isGroupExcluded('group_name');
+          });
+        })();
+        expect(res).toBe(false);
+      });
 
-        test('isGroupExcluded returns true for excluded groups', () => {
-          vest.create(faker.lorem.word(), () => {
-            vest.skip.group(['group_1', 'group_2']);
-            res = [isGroupExcluded('group_1'), isGroupExcluded('group_2')];
-          })();
-          expect(res).toEqual([true, true]);
-        });
+      test('isExcluded returns true for non included field', () => {
+        vest.create(faker.lorem.word(), () => {
+          vest.only(field1.fieldName);
+          res1 = isExcluded(field1);
+          res = isExcluded(field2);
+        })();
+        expect(res1).toBe(false);
+        expect(res).toBe(true);
+      });
 
-        test('isExcluded returns false for non included field', () => {
-          vest.create(faker.lorem.word(), () => {
-            vest.skip([field1.fieldName, field2.fieldName]);
-            res = isExcluded(field3);
-          })();
-          expect(res).toBe(false);
-        });
+      test('isGroupExcluded returns true for non included group', () => {
+        vest.create(faker.lorem.word(), () => {
+          vest.only.group('group_1');
 
-        test('isGroupExcluded returns false for non excluded groups', () => {
-          vest.create(faker.lorem.word(), () => {
-            vest.skip(['group_1', 'group_2']);
-            res = isGroupExcluded('group_3');
-          })();
-          expect(res).toEqual(false);
-        });
+          group('group_1', Function.prototype);
+          group('group_2', Function.prototype);
+
+          res1 = isGroupExcluded('group_1');
+          res = isGroupExcluded('group_2');
+        })();
+
+        expect(res1).toBe(false);
+        expect(res).toBe(true);
       });
     });
 
-    describe('Error handling', () => {
-      let mockThrowError, hooks;
-
-      beforeEach(() => {
-        mockThrowError = mock('throwError');
-        hooks = require('.');
+    describe('array input', () => {
+      test('isExcluded returns false for included field', () => {
+        vest.create(faker.lorem.word(), () => {
+          vest.only([field1.fieldName, field2.fieldName]);
+          res = isExcluded(field1);
+          res1 = isExcluded(field2);
+        })();
+        expect(res).toBe(false);
+        expect(res1).toBe(false);
       });
 
-      describe.each([['only', 'skip']])('%s', hook => {
-        describe('When called outside of a suite', () => {
-          it('Should throw an error', () => {
-            hooks[hook](faker.random.word());
-            expect(mockThrowError.mock.calls[0][0]).toContain(
-              ERROR_HOOK_CALLED_OUTSIDE
-            );
-          });
+      test('isGroupExcluded returns false for included groups', () => {
+        vest.create(faker.lorem.word(), () => {
+          vest.only.group(['group_1', 'group_2']);
+
+          group('group_1', Function.prototype);
+          group('group_2', Function.prototype);
+          group('group_3', Function.prototype);
+
+          res = [
+            isGroupExcluded('group_1'),
+            isGroupExcluded('group_2'),
+            isGroupExcluded('group_3'),
+          ];
+        })();
+        expect(res).toEqual([false, false, true]);
+      });
+
+      test('isExcluded returns true for non included field', () => {
+        vest.create(faker.lorem.word(), () => {
+          res = [isExcluded(field1), isExcluded(field2), isExcluded(field3)];
+          vest.only([field1.fieldName, field2.fieldName]);
+          res1 = [isExcluded(field1), isExcluded(field2), isExcluded(field3)];
+        })();
+        expect(res).toEqual([false, false, false]);
+        expect(res1).toEqual([false, false, true]);
+      });
+
+      test('isGroupExcluded returns true for non included groups', () => {
+        vest.create(faker.lorem.word(), () => {
+          vest.only.group(['group_1', 'group_2']);
+
+          group('group_3', Function.prototype);
+          res = [
+            isGroupExcluded('group_1'),
+            isGroupExcluded('group_2'),
+            isGroupExcluded('group_3'),
+          ];
+        })();
+        expect(res).toEqual([false, false, true]);
+      });
+    });
+  });
+
+  describe('`skip` hook', () => {
+    describe('string input', () => {
+      test('isExcluded returns true for excluded field', () => {
+        vest.create(faker.lorem.word(), () => {
+          vest.skip(field1.fieldName);
+          res = isExcluded(field1);
+        })();
+        expect(res).toBe(true);
+      });
+
+      test('isGroupExcluded returns true for excluded groups', () => {
+        vest.create(faker.lorem.word(), () => {
+          vest.skip.group('group_1');
+          res = isGroupExcluded('group_1');
+          res1 = isGroupExcluded('group_2');
+        })();
+
+        expect(res).toBe(true);
+        expect(res1).toBe(false);
+      });
+
+      test('isExcluded returns false for non excluded field', () => {
+        vest.create(faker.lorem.word(), () => {
+          vest.skip(field1.fieldName);
+          res = isExcluded(field2);
+        })();
+        expect(res).toBe(false);
+      });
+    });
+
+    test('isGroupExcluded returns false for non excluded groups', () => {
+      vest.create(faker.lorem.word(), () => {
+        vest.skip('group_1');
+        res = isExcluded('group_2');
+      })();
+      expect(res).toBe(false);
+    });
+
+    describe('array input', () => {
+      test('isExcluded returns true for excluded field', () => {
+        vest.create(faker.lorem.word(), () => {
+          vest.skip([field1.fieldName, field2.fieldName]);
+
+          res = isExcluded(field1);
+          res1 = isExcluded(field2);
+        })();
+        expect(res).toBe(true);
+        expect(res1).toBe(true);
+      });
+
+      test('isGroupExcluded returns true for excluded groups', () => {
+        vest.create(faker.lorem.word(), () => {
+          vest.skip.group(['group_1', 'group_2']);
+          res = [isGroupExcluded('group_1'), isGroupExcluded('group_2')];
+        })();
+        expect(res).toEqual([true, true]);
+      });
+
+      test('isExcluded returns false for non included field', () => {
+        vest.create(faker.lorem.word(), () => {
+          vest.skip([field1.fieldName, field2.fieldName]);
+          res = isExcluded(field3);
+        })();
+        expect(res).toBe(false);
+      });
+
+      test('isGroupExcluded returns false for non excluded groups', () => {
+        vest.create(faker.lorem.word(), () => {
+          vest.skip(['group_1', 'group_2']);
+          res = isGroupExcluded('group_3');
+        })();
+        expect(res).toEqual(false);
+      });
+    });
+  });
+
+  describe('Error handling', () => {
+    let mockThrowError, hooks;
+
+    beforeEach(() => {
+      mockThrowError = mock('throwError');
+      hooks = require('.');
+    });
+
+    describe.each([['only', 'skip']])('%s', hook => {
+      describe('When called outside of a suite', () => {
+        it('Should throw an error', () => {
+          hooks[hook](faker.random.word());
+          expect(mockThrowError.mock.calls[0][0]).toContain(
+            ERROR_HOOK_CALLED_OUTSIDE
+          );
         });
       });
     });

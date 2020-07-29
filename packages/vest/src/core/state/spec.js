@@ -1,8 +1,6 @@
 import _ from 'lodash';
 import resetState from '../../../testUtils/resetState';
-import singleton from '../../lib/singleton';
-import { KEY_STATE, KEY_CANCELED, KEY_SUITES } from './constants';
-import state, { getState, setState } from '.';
+import * as state from '.';
 
 describe('Module: state', () => {
   beforeEach(() => {
@@ -12,46 +10,38 @@ describe('Module: state', () => {
   describe('state.register', () => {
     describe('When state exists', () => {
       it('Should keep state untouched', () => {
-        const prevState = getState();
+        const prevState = state.get();
         const prevStateValue = _.cloneDeep(prevState);
         expect(prevStateValue).toMatchSnapshot();
         state.register();
-        expect(getState()).toEqual(prevStateValue);
-        expect(getState()).toBe(prevState);
+        expect(state.get()).toEqual(prevStateValue);
+        expect(state.get()).toBe(prevState);
       });
     });
 
     describe('When state does not exist', () => {
       beforeEach(() => {
-        singleton.set(KEY_STATE, null);
+        state.set(() => null);
       });
 
       it('Should keep state untouched', () => {
-        expect(getState()).toBeNull();
+        expect(state.get()).toBeNull();
         resetState();
-        expect(getState()).not.toBeNull();
-        expect(getState()).toMatchSnapshot();
+        expect(state.get()).not.toBeNull();
+        expect(state.get()).toMatchSnapshot();
       });
     });
   });
 
-  describe('getState', () => {
-    describe('When no key specified', () => {
-      it('Should return state', () => {
-        expect(getState()).toBe(singleton.use(KEY_STATE));
-        singleton.set(KEY_STATE, null);
+  describe('state.get', () => {
+    it('Should return state', () => {
+      const currentState = {};
+      state.set(() => currentState);
+      expect(state.get()).toBe(currentState);
+      state.set(() => null);
 
-        // this checks the case when the tate doesn't exist
-        expect(getState()).toBe(singleton.use(KEY_STATE));
-      });
-    });
-
-    describe('When key specified', () => {
-      it('Should return relevant state portion', () => {
-        [KEY_CANCELED, KEY_SUITES].forEach(key => {
-          expect(getState(key)).toBe(singleton.use(KEY_STATE)[key]);
-        });
-      });
+      // this checks the case when the state doesn't exist
+      expect(state.get()).toBeNull();
     });
   });
 
@@ -61,22 +51,22 @@ describe('Module: state', () => {
       setter = jest.fn(() => ({
         k: 'v',
       }));
-      prevState = getState();
+      prevState = state.get();
     });
     it('Should set value to the output of the setter argument', () => {
-      setState(setter);
-      expect(getState()).not.toBe(prevState);
-      expect(getState()).not.toEqual(prevState);
-      expect(getState()).toBe(setter.mock.results[0].value);
+      state.set(setter);
+      expect(state.get()).not.toBe(prevState);
+      expect(state.get()).not.toEqual(prevState);
+      expect(state.get()).toBe(setter.mock.results[0].value);
     });
 
     it('Should pass prevstate to setter arguments', () => {
-      setState(setter);
+      state.set(setter);
       expect(setter).toHaveBeenCalledWith(prevState);
     });
 
     it('Should return updated state', () => {
-      expect(setState(setter)).toBe(getState());
+      expect(state.set(setter)).toBe(state.get());
     });
   });
 });

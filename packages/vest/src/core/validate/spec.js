@@ -1,7 +1,7 @@
 import faker from 'faker';
 import mock from '../../../../../shared/testUtils/mock';
 import { OPERATION_MODE_STATELESS } from '../../constants';
-import singleton from '../../lib/singleton';
+import Context from '../Context';
 
 let validate;
 
@@ -52,7 +52,7 @@ describe('module:validate', () => {
 
   it('Should set correct context for test run', () => {
     returnedFn = jest.fn(() => {
-      expect(singleton.useContext()).toEqual({
+      expect(Context.use()).toEqual({
         name: suiteName,
         suite_id: suiteId,
         operationMode: OPERATION_MODE_STATELESS,

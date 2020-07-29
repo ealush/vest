@@ -14,8 +14,13 @@ const reset = suiteId => {
     throwError('`vest.reset` must be called with suiteId.');
   }
 
-  const { name } = getSuiteState(suiteId);
-  remove(suiteId);
+  let name = suiteId;
+  try {
+    name = getSuiteState(suiteId).name;
+    remove(suiteId);
+  } catch {
+    /* */
+  }
 
   runWithContext(
     { name, suiteId, operationMode: OPERATION_MODE_STATEFUL },

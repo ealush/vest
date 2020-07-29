@@ -1,4 +1,4 @@
-import singleton from '../../lib/singleton';
+import Context from '../../core/Context';
 import throwError from '../../lib/throwError';
 import { ERROR_HOOK_CALLED_OUTSIDE } from '../constants';
 import {
@@ -15,7 +15,7 @@ import {
  * @param {String[]|String} item    A field name or a list of field names.
  */
 const addTo = (exclusionGroup, itemType, item) => {
-  const ctx = singleton.useContext();
+  const ctx = Context.use();
   if (!item) {
     return;
   }
@@ -64,7 +64,7 @@ skip.group = item =>
 const isExcluded = testObject => {
   const { fieldName, groupName } = testObject;
 
-  const ctx = singleton.useContext();
+  const ctx = Context.use();
 
   const keyTests = ctx.exclusion[EXCLUSION_ITEM_TYPE_TESTS];
   const testValue = keyTests[fieldName];
@@ -127,7 +127,7 @@ const hasIncludedTests = keyTests => {
  * @return {Boolean}
  */
 const isGroupExcluded = groupName => {
-  const ctx = singleton.useContext();
+  const ctx = Context.use();
   const keyGroups = ctx.exclusion[EXCLUSION_ITEM_TYPE_GROUPS];
 
   const groupPresent = Object.prototype.hasOwnProperty.call(

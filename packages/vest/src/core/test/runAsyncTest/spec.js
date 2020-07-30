@@ -3,7 +3,7 @@ import resetState from '../../../../testUtils/resetState';
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
 import runWithContext from '../../../lib/runWithContext';
 import Context from '../../Context';
-import { setState, getState } from '../../state';
+import * as state from '../../state';
 import { KEY_CANCELED } from '../../state/constants';
 import getSuiteState from '../../state/getSuiteState';
 import patch from '../../state/patch';
@@ -77,13 +77,13 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
       }));
 
     describe('When test is canceled', () => {
-      let state;
+      let currentState;
       beforeEach(() => {
-        setState(state => {
+        state.set(state => {
           state[KEY_CANCELED][testObject.id] = true;
           return state;
         });
-        state = _.cloneDeep(getSuiteState(suiteId));
+        currentState = _.cloneDeep(getSuiteState(suiteId));
       });
 
       it('Should remove test from pending array', () => {
@@ -102,11 +102,11 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
       });
 
       it('Should remove test from canceled state', () => {
-        expect(getState(KEY_CANCELED)).toHaveProperty(testObject.id);
+        expect(state.get()[KEY_CANCELED]).toHaveProperty(testObject.id);
         runRunAsyncTest(testObject);
         return new Promise(done => {
           setTimeout(() => {
-            expect(getState(KEY_CANCELED)).not.toHaveProperty(testObject.id);
+            expect(state.get()[KEY_CANCELED]).not.toHaveProperty(testObject.id);
             done();
           });
         });
@@ -117,7 +117,7 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
           runRunAsyncTest(testObject);
           setTimeout(() => {
             expect(_.omit(getSuiteState(suiteId), 'pending')).toEqual(
-              _.omit(state, 'pending')
+              _.omit(currentState, 'pending')
             );
             done();
           });
@@ -189,7 +189,7 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
 
     describe('When test is canceled', () => {
       beforeEach(() => {
-        setState(state => {
+        state.set(state => {
           state[KEY_CANCELED][testObject.id] = true;
           return state;
         });

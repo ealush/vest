@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import resetState from '../../../../../testUtils/resetState';
-import { getState } from '../../../state';
+import * as state from '../../../state';
 import { KEY_CANCELED } from '../../../state/constants';
 import getSuiteState from '../../../state/getSuiteState';
 import patch from '../../../state/patch';
@@ -11,12 +11,12 @@ const suiteId = 'suite_1';
 const groupName = 'group_name';
 
 describe('module: pending', () => {
-  let state, testObject;
+  let currentState, testObject;
   beforeEach(() => resetState(suiteId));
   describe('export: removePending', () => {
     describe('When testObject it not pending or lagging', () => {
       beforeEach(() => {
-        state = _.cloneDeep(getSuiteState(suiteId));
+        currentState = _.cloneDeep(getSuiteState(suiteId));
         testObject = new VestTest({
           fieldName: 'field_1',
           statement: 'failure_message',
@@ -26,7 +26,7 @@ describe('module: pending', () => {
       });
       it('Should keep state unchanged', () => {
         removePending(testObject);
-        expect(getSuiteState(suiteId)).toEqual(state);
+        expect(getSuiteState(suiteId)).toEqual(currentState);
       });
     });
 
@@ -113,11 +113,11 @@ describe('module: pending', () => {
       });
 
       it('Should set test as canceled', () => {
-        expect(getState(KEY_CANCELED)).not.toMatchObject({
+        expect(state.get()[KEY_CANCELED]).not.toMatchObject({
           [testObjects[0].id]: true,
         });
         setPending(suiteId, testObjects[0]);
-        expect(getState(KEY_CANCELED)).toMatchObject({
+        expect(state.get()[KEY_CANCELED]).toMatchObject({
           [testObjects[0].id]: true,
         });
       });

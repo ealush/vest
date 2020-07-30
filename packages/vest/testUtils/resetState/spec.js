@@ -1,18 +1,18 @@
-import { getState } from '../../src/core/state';
+import * as state from '../../src/core/state';
 import { KEY_SUITES } from '../../src/core/state/constants';
 import resetState from '.';
 
 describe('resetState', () => {
   test('Sanity', () => {
-    expect(getState()).toMatchSnapshot();
+    expect(state.get()).toMatchSnapshot();
   });
 
   it('Should create a new state', () => {
-    const initialState = getState();
-    expect(getState()).toBe(initialState);
+    const initialState = state.get();
+    expect(state.get()).toBe(initialState);
     resetState();
 
-    expect(getState()).not.toBe(initialState);
+    expect(state.get()).not.toBe(initialState);
   });
 
   describe('When invoked with suite name', () => {
@@ -23,10 +23,10 @@ describe('resetState', () => {
     });
 
     it('Should add a new suite to the state', () => {
-      expect(getState(KEY_SUITES)).toEqual({});
+      expect(state.get()[KEY_SUITES]).toEqual({});
       resetState(suiteId);
-      expect(getState(KEY_SUITES)[suiteId]).toBeTruthy();
-      expect(getState(KEY_SUITES)[suiteId]).toMatchSnapshot();
+      expect(state.getSuite(suiteId)).toBeTruthy();
+      expect(state.getSuite(suiteId)).toMatchSnapshot();
     });
   });
 });

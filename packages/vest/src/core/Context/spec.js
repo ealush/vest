@@ -1,11 +1,10 @@
 import faker from 'faker';
-import singleton from '../../lib/singleton';
 import Context from '.';
 
 const resetContext = () => {
   do {
     Context.clear();
-  } while (singleton.useContext());
+  } while (Context.use());
 };
 
 describe('Context', () => {
@@ -31,16 +30,16 @@ describe('Context', () => {
     });
   });
 
-  it('Should store instance on singleton', () => {
-    expect(singleton.useContext()).toBe(instance);
+  it('Should store instance as context', () => {
+    expect(Context.use()).toBe(instance);
   });
 
   describe('Context.clear', () => {
     describe('When no nested context', () => {
       it('Should nullify stored instance', () => {
-        expect(singleton.useContext()).toBe(instance);
+        expect(Context.use()).toBe(instance);
         Context.clear();
-        expect(singleton.useContext()).toBeNull();
+        expect(Context.use()).toBeNull();
       });
     });
 
@@ -57,22 +56,30 @@ describe('Context', () => {
         let counter = 0;
 
         contextInstances.reverse().forEach(instance => {
-          expect(singleton.useContext()).toBe(instance);
+          expect(Context.use()).toBe(instance);
           const parent = instance.parentContext;
 
           Context.clear();
 
           if (parent) {
             counter++;
-            expect(singleton.useContext()).toBe(parent);
+            expect(Context.use()).toBe(parent);
           } else {
-            expect(singleton.useContext()).toBeNull();
+            expect(Context.use()).toBeNull();
           }
         });
 
         // sanity
         expect(counter).toBe(9);
       });
+    });
+  });
+
+  describe('Context.use|Context.set', () => {
+    it('Retrieves current context value', () => {
+      const ctx = {};
+      Context.set(ctx);
+      expect(Context.use()).toBe(ctx);
     });
   });
 
@@ -86,9 +93,9 @@ describe('Context', () => {
 
     describe('When suiteId is present on current context', () => {
       it('Should return suiteId', () => {
-        expect(singleton.useContext()?.suiteId).toBeUndefined();
+        expect(Context.use()?.suiteId).toBeUndefined();
         new Context({ suiteId });
-        expect(singleton.useContext().suiteId).toBe(suiteId);
+        expect(Context.use().suiteId).toBe(suiteId);
       });
     });
 
@@ -98,7 +105,7 @@ describe('Context', () => {
         new Context({ suiteId });
         new Context({});
         new Context({});
-        expect(singleton.useContext().suiteId).toBe(suiteId);
+        expect(Context.use().suiteId).toBe(suiteId);
       });
     });
   });
@@ -113,9 +120,9 @@ describe('Context', () => {
 
     describe('When groupName is present on current context', () => {
       it('Should return groupName', () => {
-        expect(singleton.useContext()?.groupName).toBeUndefined();
+        expect(Context.use()?.groupName).toBeUndefined();
         new Context({ groupName });
-        expect(singleton.useContext().groupName).toBe(groupName);
+        expect(Context.use().groupName).toBe(groupName);
       });
     });
 
@@ -125,7 +132,7 @@ describe('Context', () => {
         new Context({ groupName });
         new Context({});
         new Context({});
-        expect(singleton.useContext().groupName).toBe(groupName);
+        expect(Context.use().groupName).toBe(groupName);
       });
     });
   });
@@ -162,14 +169,12 @@ describe('Context', () => {
     });
 
     test('sanity', () => {
-      expect(singleton.useContext().suiteId).toBe('sanity');
-      expect(singleton.useContext().parentContext.childContext).toBe(
-        singleton.useContext()
-      );
+      expect(Context.use().suiteId).toBe('sanity');
+      expect(Context.use().parentContext.childContext).toBe(Context.use());
     });
 
     it('Should remove child context from context instance', () => {
-      const parent = singleton.useContext().parentContext;
+      const parent = Context.use().parentContext;
       parent.removeChildContext();
       expect(parent.childContext).toBeNull();
     });
@@ -184,9 +189,9 @@ describe('Context', () => {
     });
 
     it('Should set parent context to context instance', () => {
-      expect(singleton.useContext().parentContext).toBeUndefined();
-      singleton.useContext().setParentContext(parent);
-      expect(singleton.useContext().parentContext).toBe(parent);
+      expect(Context.use().parentContext).toBeUndefined();
+      Context.use().setParentContext(parent);
+      expect(Context.use().parentContext).toBe(parent);
     });
   });
 
@@ -207,12 +212,12 @@ describe('Context', () => {
     });
 
     test('sanity', () => {
-      expect(singleton.useContext()).toBeNull();
+      expect(Context.use()).toBeNull();
       context = new Context(parent1);
-      expect(singleton.useContext()).toBe(context);
+      expect(Context.use()).toBe(context);
       expect(context).toMatchObject(parent1);
-      expect(singleton.useContext().childContext).toBeUndefined();
-      expect(singleton.useContext().parentContext).toBeUndefined();
+      expect(Context.use().childContext).toBeUndefined();
+      expect(Context.use().parentContext).toBeUndefined();
     });
 
     it('Should match snapshot', () => {
@@ -220,20 +225,16 @@ describe('Context', () => {
       new Context(parent1);
       new Context(parent2);
       new Context(parent2);
-      expect(singleton.useContext()).toMatchSnapshot();
+      expect(Context.use()).toMatchSnapshot();
     });
 
     it('Should add recent context as child of previous context', () => {
       new Context(parent1);
       new Context(parent2);
-      expect(singleton.useContext()).toMatchObject(parent2);
-      expect(singleton.useContext().parentContext).toMatchObject(parent1);
-      expect(singleton.useContext().parentContext.childContext).toMatchObject(
-        parent2
-      );
-      expect(singleton.useContext().parentContext.childContext).toBe(
-        singleton.useContext()
-      );
+      expect(Context.use()).toMatchObject(parent2);
+      expect(Context.use().parentContext).toMatchObject(parent1);
+      expect(Context.use().parentContext.childContext).toMatchObject(parent2);
+      expect(Context.use().parentContext.childContext).toBe(Context.use());
     });
   });
 });

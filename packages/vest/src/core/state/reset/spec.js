@@ -1,6 +1,7 @@
 import { dummyTest } from '../../../../testUtils/testDummy';
 import get from '../../../hooks/get';
 import create from '../../createSuite';
+import getSuiteState from '../getSuiteState';
 import reset from '.';
 
 const validate = create('suite', () => {
@@ -31,7 +32,19 @@ describe('vest.reset', () => {
     expect(JSON.stringify(get('suite'))).toEqual(JSON.stringify(initialState));
   });
 
-  test('Shoyud throw error when called withotu suite id', () => {
+  it('Should initialize suite when not found', () => {
+    const name = 'nonexistent_suite';
+    expect(() => getSuiteState(name)).toThrow();
+    const expected = {
+      ...initialState,
+      name,
+    };
+    reset(name);
+    expect(get(name)).isDeepCopyOf(expected);
+    expect(JSON.stringify(get(name))).toEqual(JSON.stringify(expected));
+  });
+
+  test('Should throw error when called withotu suite id', () => {
     expect(reset).toThrow('[Vest]: `vest.reset` must be called with suiteId.');
   });
 });

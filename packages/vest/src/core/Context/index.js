@@ -1,34 +1,23 @@
-import singleton from '../../lib/singleton';
+import {
+  EXCLUSION_ITEM_TYPE_TESTS,
+  EXCLUSION_ITEM_TYPE_GROUPS,
+} from '../../hooks/exclusive/constants';
 
 class Context {
   /**
-   * Clears stored instance from constructor function.
-   */
-  static clear() {
-    const ctx = singleton.useContext();
-
-    if (ctx?.parentContext) {
-      singleton.use().ctx = ctx.parentContext;
-      ctx.parentContext.removeChildContext();
-    } else {
-      singleton.use().ctx = null;
-    }
-  }
-
-  /**
-   * Creates a new context object, and assigns it as a static property on Vest's singleton.
+   * Creates a new context object.
    * @param {Object} ctxRef   Context data reference.
    * @returns {Context} either an existing or a new context object.
    */
   constructor(ctxRef) {
-    const ctx = singleton.useContext();
+    const ctx = Context.use();
     Object.assign(this, ctxRef);
 
     if (ctx) {
       ctx.setChildContext(this);
     }
 
-    singleton.use().ctx = this;
+    Context.set(this);
   }
 
   get suiteId() {
@@ -55,6 +44,19 @@ class Context {
     this.group_name = groupName;
   }
 
+  get exclusion() {
+    let key = this.lookup('_exclusion');
+
+    if (key === undefined) {
+      key = this._exclusion = {
+        [EXCLUSION_ITEM_TYPE_TESTS]: {},
+        [EXCLUSION_ITEM_TYPE_GROUPS]: {},
+      };
+    }
+
+    return key;
+  }
+
   lookup(key) {
     let ctx = this;
     do {
@@ -79,4 +81,40 @@ class Context {
   }
 }
 
-export default Context;
+/**
+ * Assign static functions onto Context
+ * These functions tap into the closure
+ */
+export default Object.assign(
+  Context,
+  (() => {
+    const storage = {};
+
+    /**
+     * @returns Vest's context;
+     */
+    const use = () => storage.ctx;
+
+    /**
+     * Sets the shared context.
+     * @param {string} key
+     * @param {*} value
+     */
+    const set = value => (storage.ctx = value);
+
+    /**
+     * Clears stored instance from constructor function.
+     */
+    const clear = () => {
+      const ctx = use();
+      if (ctx?.parentContext) {
+        set(ctx.parentContext);
+        ctx.parentContext.removeChildContext();
+      } else {
+        set(null);
+      }
+    };
+
+    return { use, set, clear };
+  })()
+);

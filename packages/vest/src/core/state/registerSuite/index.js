@@ -1,9 +1,5 @@
 import { getSuite, setSuites } from '..';
-import {
-  EXCLUSION_ITEM_TYPE_TESTS,
-  EXCLUSION_ITEM_TYPE_GROUPS,
-} from '../../../hooks/exclusive/constants';
-import singleton from '../../../lib/singleton';
+import Context from '../../Context';
 
 /**
  * Generates a default suite state object.
@@ -12,10 +8,6 @@ import singleton from '../../../lib/singleton';
  */
 const INITIAL_SUITE_STATE = (suiteId, name) => ({
   doneCallbacks: [],
-  exclusion: {
-    [EXCLUSION_ITEM_TYPE_TESTS]: {},
-    [EXCLUSION_ITEM_TYPE_GROUPS]: {},
-  },
   fieldCallbacks: {},
   groups: {},
   lagging: [],
@@ -30,7 +22,7 @@ const INITIAL_SUITE_STATE = (suiteId, name) => ({
  * Registers a new suite run.
  */
 const registerSuite = () => {
-  const context = singleton.useContext();
+  const context = Context.use();
   const { name, suiteId } = context;
   let suite = getSuite(suiteId);
 

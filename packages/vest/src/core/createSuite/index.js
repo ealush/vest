@@ -1,7 +1,7 @@
 import { OPERATION_MODE_STATEFUL } from '../../constants';
 import runWithContext from '../../lib/runWithContext';
-import singleton from '../../lib/singleton';
 import validateSuiteParams from '../../lib/validateSuiteParams';
+import Context from '../Context';
 import produce from '../produce';
 import { getSuite } from '../state';
 import getSuiteState from '../state/getSuiteState';
@@ -18,7 +18,7 @@ import runAsyncTest from '../test/runAsyncTest';
 const createSuite = (name, tests) => {
   validateSuiteParams('vest.create', name, tests);
 
-  const ctx = singleton.useContext();
+  const ctx = Context.use();
 
   const ctxRef = {
     suiteId: ctx?.suiteId || name,
@@ -40,18 +40,24 @@ const createSuite = (name, tests) => {
   }
 
   // returns validator function
-  return (...args) => {
-    const output = runWithContext(ctxRef, context => {
-      registerSuite();
-      const { suiteId } = context;
-      tests.apply(null, args);
-      mergeExcludedTests(suiteId);
+  // and sets the function name
+  // to the name of the suite
+  return Object.defineProperty(
+    (...args) => {
+      const output = runWithContext(ctxRef, context => {
+        registerSuite();
+        const { suiteId } = context;
+        tests.apply(null, args);
+        mergeExcludedTests(suiteId);
 
-      [...getSuiteState(suiteId).pending].forEach(runAsyncTest);
-      return produce(getSuiteState(suiteId));
-    });
-    return output;
-  };
+        [...getSuiteState(suiteId).pending].forEach(runAsyncTest);
+        return produce(getSuiteState(suiteId));
+      });
+      return output;
+    },
+    'name',
+    { value: name }
+  );
 };
 
 export default createSuite;

@@ -9,17 +9,10 @@ Object {
     "suite_id": Array [
       Object {
         "doneCallbacks": Array [],
-        "exclusion": Object {
-          "groups": Object {},
-          "tests": Object {
-            "field_1": false,
-            "field_3": false,
-          },
-        },
         "fieldCallbacks": Object {},
         "groups": Object {},
         "lagging": Array [
-          m {
+          VestTest {
             "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_1",
@@ -39,7 +32,7 @@ Object {
               ],
             },
           },
-          m {
+          VestTest {
             "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_3",
@@ -62,7 +55,7 @@ Object {
         ],
         "name": "suite_id",
         "pending": Array [
-          m {
+          VestTest {
             "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_2",
@@ -82,7 +75,7 @@ Object {
               ],
             },
           },
-          m {
+          VestTest {
             "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_4",
@@ -105,7 +98,7 @@ Object {
         ],
         "suiteId": "suite_id",
         "testObjects": Array [
-          m {
+          VestTest {
             "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_2",
@@ -125,7 +118,7 @@ Object {
               ],
             },
           },
-          m {
+          VestTest {
             "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_4",
@@ -145,7 +138,7 @@ Object {
               ],
             },
           },
-          m {
+          VestTest {
             "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_1",
@@ -165,7 +158,7 @@ Object {
               ],
             },
           },
-          m {
+          VestTest {
             "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_3",
@@ -190,12 +183,6 @@ Object {
       },
       Object {
         "doneCallbacks": Array [],
-        "exclusion": Object {
-          "groups": Object {},
-          "tests": Object {
-            "field_2": false,
-          },
-        },
         "fieldCallbacks": Object {},
         "groups": Object {},
         "lagging": null,
@@ -203,7 +190,7 @@ Object {
         "pending": null,
         "suiteId": "suite_id",
         "testObjects": Array [
-          m {
+          VestTest {
             "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_1",
@@ -223,7 +210,7 @@ Object {
               ],
             },
           },
-          m {
+          VestTest {
             "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_3",
@@ -243,7 +230,7 @@ Object {
               ],
             },
           },
-          m {
+          VestTest {
             "asyncTest": Promise {},
             "failed": false,
             "fieldName": "field_4",

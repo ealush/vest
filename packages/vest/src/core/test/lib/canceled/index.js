@@ -1,4 +1,4 @@
-import { setState } from '../../../state';
+import * as state from '../../../state';
 import { KEY_CANCELED } from '../../../state/constants';
 
 /**
@@ -10,7 +10,7 @@ export const setCanceled = (...testObjects) => {
     return;
   }
 
-  setState(state => ({
+  state.set(state => ({
     ...state,
     [KEY_CANCELED]: testObjects.reduce((ids, testObjects) => {
       ids[testObjects.id] = true;
@@ -24,7 +24,7 @@ export const setCanceled = (...testObjects) => {
  * @param {VestTest} testObject
  */
 export const removeCanceled = testObject => {
-  setState(state => {
+  state.set(state => {
     delete state[KEY_CANCELED][testObject.id];
     return state;
   });

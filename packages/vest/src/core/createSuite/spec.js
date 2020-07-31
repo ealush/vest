@@ -37,6 +37,10 @@ describe('Test createSuite module', () => {
     it('should be a function', () => {
       expect(typeof createSuite('suiteName', noop)).toBe('function');
     });
+
+    test("returned function name is the suite's name", () => {
+      expect(createSuite('boop', noop).name).toBe('boop');
+    });
   });
 
   describe('When returned function is invoked', () => {
@@ -82,8 +86,6 @@ describe('Test createSuite module', () => {
       expect(state[0].testObjects).toHaveLength(0);
       expect(state[0].pending).toHaveLength(0);
       expect(state[0].lagging).toHaveLength(0);
-      expect(Object.keys(state[0].exclusion.groups)).toHaveLength(0);
-      expect(Object.keys(state[0].exclusion.tests)).toHaveLength(0);
       expect(Object.keys(state[0].tests)).toHaveLength(0);
       expect(Object.keys(state[0].groups)).toHaveLength(0);
       expect(Object.keys(state[0].doneCallbacks)).toHaveLength(0);

@@ -1,27 +1,20 @@
 import faker from 'faker';
-import mock from '../../../../../shared/testUtils/mock';
+import Context from '../../core/Context';
+import runWithContext from '.';
 
 describe('runWithContext', () => {
-  let parent, fn, mockContext, result, runWithContext, singleton;
+  let parent, fn, result;
 
   beforeEach(() => {
-    singleton = require('../singleton');
-
     result = faker.random.word();
     parent = { [faker.random.word()]: faker.lorem.word() };
     fn = jest.fn(() => result);
-    singleton = require('../singleton');
-    runWithContext = require('.');
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
   });
 
   it('Should call callback function after creating the context', () => {
-    expect(singleton.useContext()).toBeFalsy();
+    expect(Context.use()).toBeFalsy();
     const fn = jest.fn(() => {
-      expect(singleton.useContext()).toMatchObject(parent);
+      expect(Context.use()).toMatchObject(parent);
     });
 
     runWithContext(parent, fn);
@@ -30,7 +23,7 @@ describe('runWithContext', () => {
 
   it('Should pass context to callback', () => {
     const fn = jest.fn(context => {
-      expect(singleton.useContext()).toMatchObject(context);
+      expect(Context.use()).toMatchObject(context);
     });
 
     runWithContext(parent, fn);
@@ -39,28 +32,30 @@ describe('runWithContext', () => {
 
   it('Should clear context after running callback', () => {
     const fn = jest.fn(context => {
-      expect(singleton.useContext()).toMatchObject(context);
+      expect(Context.use()).toMatchObject(context);
     });
 
     runWithContext(parent, fn);
     expect(fn).toHaveBeenCalledTimes(1);
-    expect(singleton.useContext()).toBeNull();
+    expect(Context.use()).toBeNull();
   });
 
   it("Should return with the callback function's return value", () => {
     expect(runWithContext(parent, fn)).toBe(result);
   });
 
-  describe('Calls to context', () => {
-    beforeEach(() => {
-      mockContext = mock('Context');
-      mockContext.clear = jest.fn();
-      singleton = require('../singleton');
-      runWithContext = require('.');
-      runWithContext(parent, fn);
-    });
-    it('Should create a new context with the parent object', () => {
-      expect(mockContext).toHaveBeenCalledWith(parent);
+  describe('Creates new context', () => {
+    // eslint-disable-next-line jest/no-test-callback
+    it('Should create a new context with the parent object', done => {
+      const parentObject = {
+        a: 1,
+        b: 2,
+      };
+      runWithContext(parentObject, ctx => {
+        expect(ctx instanceof Context).toBe(true);
+        expect(ctx).toMatchObject(parentObject);
+        done();
+      });
     });
   });
 
@@ -87,12 +82,14 @@ describe('runWithContext', () => {
 
     it('Should clear the context', () => {
       const context = { [faker.random.word()]: faker.random.word() };
-
+      const done = jest.fn();
       runWithContext(context, () => {
-        expect(singleton.useContext()).toMatchObject(context);
+        expect(Context.use()).toMatchObject(context);
+        done();
         throw new Error();
       });
-      expect(singleton.useContext()).toBeNull();
+      expect(Context.use()).toBeNull();
+      expect(done).toHaveBeenCalled();
     });
   });
 });

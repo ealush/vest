@@ -43,8 +43,8 @@ const plugins = ({ fileName }) => [
     include: /node_modules\/(anyone|n4s)/,
   }),
   babel({
-    babelrc: false,
-    ...require(BABEL_CONFIG_PATH)(),
+    configFile: BABEL_CONFIG_PATH,
+    envName: 'production',
   }),
   replace({
     LIBRARY_NAME: JSON.stringify(renames[fileName] || fileName),

@@ -1,7 +1,7 @@
 import { OPERATION_MODE_STATELESS } from '../../../constants';
 import runWithContext from '../../../lib/runWithContext';
-import singleton from '../../../lib/singleton';
-import { getState, getSuites } from '../../state';
+import Context from '../../Context';
+import * as state from '../../state';
 import cleanupCompletedSuite from '../../state/cleanupCompletedSuite';
 import { KEY_CANCELED } from '../../state/constants';
 import getSuiteState from '../../state/getSuiteState';
@@ -14,17 +14,17 @@ import { removePending } from '../lib/pending';
  * @param {string} [fieldName] Field name with associated callbacks.
  */
 const runDoneCallbacks = (suiteId, fieldName) => {
-  const state = getSuiteState(suiteId);
+  const suiteState = getSuiteState(suiteId);
   if (fieldName) {
     if (
-      !hasRemainingTests(state, fieldName) &&
-      Array.isArray(state.fieldCallbacks[fieldName])
+      !hasRemainingTests(suiteState, fieldName) &&
+      Array.isArray(suiteState.fieldCallbacks[fieldName])
     ) {
-      state.fieldCallbacks[fieldName].forEach(cb => cb());
+      suiteState.fieldCallbacks[fieldName].forEach(cb => cb());
     }
   }
-  if (!hasRemainingTests(state)) {
-    state.doneCallbacks.forEach(cb => cb());
+  if (!hasRemainingTests(suiteState)) {
+    suiteState.doneCallbacks.forEach(cb => cb());
   }
 };
 
@@ -34,16 +34,16 @@ const runDoneCallbacks = (suiteId, fieldName) => {
  */
 const runAsyncTest = testObject => {
   const { asyncTest, statement, fieldName, id, suiteId } = testObject;
-  const { operationMode } = singleton.useContext();
+  const { operationMode } = Context.use();
   const done = cb => {
-    const isCanceled = getState(KEY_CANCELED)[id];
+    const isCanceled = state.get()[KEY_CANCELED][id];
 
     if (isCanceled) {
       removeCanceled(testObject);
     }
 
     // This is for cases in which the suite state was already reset
-    if (!getSuites()[suiteId]) {
+    if (!state.getSuite(suiteId)) {
       return;
     }
 

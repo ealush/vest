@@ -1,15 +1,15 @@
 import _ from 'lodash';
-import { getState, getSuites } from '..';
-import vest from '../../../..';
+import * as state from '..';
+import vest from '../../..';
 import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import testDummy from '../../../../testUtils/testDummy';
-import { KEY_CANCELED } from '../constants';
+import { KEY_CANCELED, KEY_SUITES } from '../constants';
 import getSuiteState from '../getSuiteState';
 import remove from '.';
 
 const suiteId = 'suite_id';
-let state;
+let currentState;
 
 describe('remove', () => {
   const createSuite = () =>
@@ -39,11 +39,11 @@ describe('remove', () => {
   describe('When suite does not exist in state', () => {
     beforeEach(() => {
       runRegisterSuite({ name: suiteId, suiteId });
-      state = _.cloneDeep(getState());
+      currentState = _.cloneDeep(state.get());
     });
 
     it('Should throw an error', () => {
-      expect(state).toEqual(getState());
+      expect(currentState).toEqual(state.get());
       expect(() => remove('nonexistent_suite')).toThrow(Error);
     });
   });
@@ -67,28 +67,30 @@ describe('remove', () => {
         expect(suiteState.pending[0].fieldName).toBe('field_2');
         expect(suiteState.lagging[1].fieldName).toBe('field_3');
         expect(suiteState.pending[1].fieldName).toBe('field_4');
-        expect(getState()).toMatchSnapshot();
+        expect(state.get()).toMatchSnapshot();
       }
     );
 
     it('Should remove suite from state', () => {
-      expect(getSuites()).toHaveProperty(suiteId);
+      expect(state.get()[KEY_SUITES]).toHaveProperty(suiteId);
       expect(() => getSuiteState(suiteId)).not.toThrow();
       remove(suiteId);
       expect(() => getSuiteState(suiteId)).toThrow();
-      expect(getSuites()).not.toHaveProperty(suiteId);
+      expect(state.get()[KEY_SUITES]).not.toHaveProperty(suiteId);
     });
 
     it('Should set all pending and lagging tests as canceled', () => {
-      const previouslyCanceled = getState(KEY_CANCELED);
-      const state = getSuiteState(suiteId);
-      const allCanceled = [...state.lagging, ...state.pending].reduce(
-        (canceled, { id }) => Object.assign(canceled, { [id]: true }),
-        { ...previouslyCanceled }
-      );
-      expect(getState(KEY_CANCELED)).not.toEqual(allCanceled);
+      const previouslyCanceled = state.get()[KEY_CANCELED];
+      const currentState = getSuiteState(suiteId);
+      const allCanceled = [
+        ...currentState.lagging,
+        ...currentState.pending,
+      ].reduce((canceled, { id }) => Object.assign(canceled, { [id]: true }), {
+        ...previouslyCanceled,
+      });
+      expect(state.get()[KEY_CANCELED]).not.toEqual(allCanceled);
       remove(suiteId);
-      expect(getState(KEY_CANCELED)).toEqual(allCanceled);
+      expect(state.get()[KEY_CANCELED]).toEqual(allCanceled);
     });
   });
 });

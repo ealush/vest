@@ -1,7 +1,7 @@
+import Context from '../../core/Context';
 import getSuiteState from '../../core/state/getSuiteState';
 import patch from '../../core/state/patch';
 import runWithContext from '../../lib/runWithContext';
-import singleton from '../../lib/singleton';
 import validateSuiteParams from '../../lib/validateSuiteParams';
 import { isGroupExcluded } from '../exclusive';
 
@@ -10,7 +10,7 @@ import { isGroupExcluded } from '../exclusive';
  * @param {string} groupName
  */
 const registerGroup = groupName => {
-  const context = singleton.useContext();
+  const context = Context.use();
   patch(context.suiteId, state => {
     const nextState = { ...state };
     nextState.groups[groupName] = state.groups[groupName] || {};
@@ -26,7 +26,7 @@ const registerGroup = groupName => {
 const group = (groupName, tests) => {
   validateSuiteParams('group', groupName, tests);
 
-  const ctx = singleton.useContext();
+  const ctx = Context.use();
   const state = getSuiteState(ctx.suiteId);
 
   if (!isGroupExcluded(state, groupName)) {

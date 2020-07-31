@@ -10,42 +10,54 @@ const { BABEL_CONFIG_PATH } = require('..');
 const { PACKAGE_VEST } = require('../../shared/constants');
 const { packagePath, packageJson } = require('../../util');
 
-const DEFAULT_FORMAT = 'umd';
-
 const { version } = packageJson(PACKAGE_VEST);
 const PACKAGE_PATH = packagePath(PACKAGE_VEST);
 
-const PLUGINS = [
-  resolve(),
-  commonjs({
-    include: /node_modules\/(anyone|n4s)/,
-  }),
-  babel({
-    babelrc: false,
-    ...require(BABEL_CONFIG_PATH)(),
-  }),
-  replace({
-    VEST_VERSION: JSON.stringify(version),
-    LIBRARY_NAME: JSON.stringify(PACKAGE_VEST),
-  }),
-  compiler(),
-];
+const plugins = ({ development }) => {
+  const PLUGINS = [
+    resolve(),
+    commonjs({
+      include: /node_modules\/(anyone|n4s)/,
+    }),
+    babel({
+      configFile: BABEL_CONFIG_PATH,
+      envName: development ? 'development' : 'production',
+    }),
+    replace({
+      VEST_VERSION: JSON.stringify(version),
+      LIBRARY_NAME: JSON.stringify(PACKAGE_VEST),
+    }),
+  ];
 
-const buildConfig = ({ format = DEFAULT_FORMAT, min = false } = {}) => ({
+  if (!development) {
+    PLUGINS.push(compiler(), terser());
+  }
+
+  return PLUGINS;
+};
+
+const buildConfig = ({ min = false, development = false } = {}) => ({
   input: path.join(PACKAGE_PATH, 'src/index.js'),
   output: {
     file: [
       path.join(PACKAGE_PATH, 'dist', PACKAGE_VEST),
       min && 'min',
-      format !== DEFAULT_FORMAT && format,
+      development && 'development',
       'js',
     ]
       .filter(Boolean)
       .join('.'),
-    format,
+    format: 'umd',
     name: PACKAGE_VEST,
   },
-  plugins: min ? [...PLUGINS, terser()] : PLUGINS,
+  plugins: plugins({ development }),
 });
 
-export default [buildConfig(), buildConfig({ min: true })];
+export default [
+  buildConfig(),
+  /* minified bundle will be deprecated in the next major */
+  buildConfig({
+    min: true,
+  }),
+  buildConfig({ development: true }),
+];

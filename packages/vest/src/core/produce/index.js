@@ -12,7 +12,7 @@ import getByGroup from './getByGroup';
 import has from './has';
 import hasByGroup from './hasByGroup';
 
-const cache = createCache();
+const cache = createCache(20);
 
 /**
  * Registers done callbacks.

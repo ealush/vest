@@ -1,8 +1,7 @@
 import { isExcluded } from '../../hooks/exclusive';
 import createCache from '../../lib/cache';
 import runWithContext from '../../lib/runWithContext';
-import singleton from '../../lib/singleton';
-import getSuiteState from '../state/getSuiteState';
+import Context from '../Context';
 import patch from '../state/patch';
 import VestTest from './lib/VestTest';
 import { setPending } from './lib/pending';
@@ -53,9 +52,20 @@ const register = testObject => {
   // If a promise is returned, set as async and
   // Move to pending list.
   const result = sync(testObject);
-  if (typeof result?.then === 'function') {
-    testObject.asyncTest = result;
-    setPending(testObject.suiteId, testObject);
+
+  try {
+    // try catch for safe property access
+    // in case object is an enforce chain
+    if (typeof result?.then === 'function') {
+      testObject.asyncTest = result;
+      setPending(testObject.suiteId, testObject);
+    }
+  } catch {
+    /* FUTURE: throw an error here in dev mode:
+     * Your test function ${testObject.fieldName} returned
+     * a value other than `false` or a Promise. Return values
+     * are not supported and may cause unexpected behavior.
+     */
   }
 };
 
@@ -69,7 +79,7 @@ const register = testObject => {
 const test = (fieldName, ...args) => {
   const { length, [length - 2]: statement, [length - 1]: testFn } = args;
 
-  const ctx = singleton.useContext();
+  const ctx = Context.use();
 
   const testObject = new VestTest({
     fieldName,
@@ -79,7 +89,7 @@ const test = (fieldName, ...args) => {
     testFn,
   });
 
-  if (isExcluded(getSuiteState(ctx.suiteId), testObject)) {
+  if (isExcluded(testObject)) {
     return testObject;
   }
 
@@ -97,7 +107,7 @@ test.memo = (fieldName, ...args) => {
 
   const { length: l, [l - 3]: msg, [l - 2]: testFn, [l - 1]: deps } = args;
 
-  const ctx = singleton.useContext();
+  const ctx = Context.use();
   const dependencies = [ctx.suiteId, fieldName].concat(deps);
 
   const cached = cache.get(dependencies);
@@ -109,7 +119,7 @@ test.memo = (fieldName, ...args) => {
 
   const [, testObject] = cached;
 
-  if (isExcluded(getSuiteState(ctx.suiteId), testObject)) {
+  if (isExcluded(testObject)) {
     return testObject;
   }
 

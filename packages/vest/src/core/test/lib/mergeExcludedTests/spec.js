@@ -4,7 +4,7 @@ import runRegisterSuite from '../../../../../testUtils/runRegisterSuite';
 import { dummyTest } from '../../../../../testUtils/testDummy';
 import { group } from '../../../../hooks';
 import vest from '../../../../index';
-import singleton from '../../../../lib/singleton';
+import Context from '../../../Context';
 import produce from '../../../produce';
 import getSuiteState from '../../../state/getSuiteState';
 
@@ -36,7 +36,7 @@ describe('module: skipped', () => {
           const validation = () =>
             vest.create(SUITE_NAME, skip => {
               vest.skip(skip);
-              suiteId = singleton.useContext().suiteId;
+              suiteId = Context.use().suiteId;
               dummyTest.failingWarning(FIELD_NAME_1, 'warning message');
 
               group(GROUP_NAME_1, () => {
@@ -85,7 +85,7 @@ describe('module: skipped', () => {
         const validation = () =>
           vest.create(SUITE_NAME, skip => {
             vest.skip.group(skip);
-            suiteId = singleton.useContext().suiteId;
+            suiteId = Context.use().suiteId;
 
             dummyTest.failing('f1', 'f1_msg');
             dummyTest.failing('f2', 'f2_msg');

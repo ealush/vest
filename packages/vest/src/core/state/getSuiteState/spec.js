@@ -1,6 +1,5 @@
-import { getState } from '..';
+import * as state from '..';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
-import { KEY_SUITES } from '../constants';
 import getSuiteState from '.';
 
 const suiteName = 'suite_1';
@@ -11,7 +10,7 @@ describe('getSuiteState', () => {
   it('Should return current suite state by key', () => {
     runRegisterSuite({ name: suiteName, suiteId });
     runRegisterSuite({ name: suiteName, suiteId: suiteId_2 });
-    const [currentState] = getState(KEY_SUITES)[suiteId];
+    const [currentState] = state.getSuite(suiteId);
     expect(getSuiteState(suiteId)).toBe(currentState);
   });
 });

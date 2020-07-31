@@ -28,7 +28,7 @@
     "jest": "^26.2.1",
     "jest-cli": "^26.1.0",
     "lodash": "^4.17.15",
-    "mocha": "^8.0.1",
+    "mocha": "^8.1.0",
     "node-fetch": "^2.6.0",
     "onchange": "^7.0.2",
     "prettier": "2.0.5",

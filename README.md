@@ -1,6 +1,6 @@
 ![Vest](https://cdn.jsdelivr.net/gh/ealush/vest@assets/vest-logo.png 'Vest')
 
-# Vest - Validation Testing
+# Vest 🦺 Declarative Validation Testing
 
 [![npm version](https://badge.fury.io/js/vest.svg)](https://badge.fury.io/js/vest) [![Build Status](https://travis-ci.org/ealush/vest.svg?branch=master)](https://travis-ci.org/ealush/vest) [![Known Vulnerabilities](https://snyk.io/test/npm/vest/badge.svg)](https://snyk.io/test/npm/vest)
 
@@ -20,7 +20,7 @@
 
 ## [Release Notes](https://github.com/ealush/vest/releases)
 
-## What is Vest?
+## 🦺 What is Vest?
 
 Vest is a validations library for JS apps that derives its syntax from modern JS unit testing frameworks such as Mocha or Jest. It is easy to learn due to its use of already common declarative patterns.
 It works great with user-input validation and with validating upon user interaction to provide the best possible user experience.
@@ -29,34 +29,80 @@ The idea behind Vest is that your validations can be described as a 'spec' or a 
 
 Using Vest for form validation can reduce bloat, improve feature redability and maintainability.
 
-## Vest's features
+**Basic Example**
+<img src="https://cdn.jsdelivr.net/gh/ealush/vest@assets/demos/full_3.gif">
 
-- ✅ - Declarative validation style
-- ✅ - Framework agnostic
-- ✅ - Rich, extendable, assertions library (enforce)
-- ✅ - Possibility to add multiple validations for the same field
-- ✅ - Warning (non failing) validations, such as password strength
-- ✅ - Easy to use result selecters (hasErrors, getErrors, hasWarnings...)
-- ✅ - Only validate fields the user is interacting with (or the whole field)
-- ✅ - Memoize async validations to reduce calls to the server
-- ✅ - Test grouping for multi step forms
-
-## Example code ([see sandbox](https://codesandbox.io/s/vest-react-tutorial-finished-ztt8t?file=/src/validate.js))
-
-![Full form example](https://cdn.jsdelivr.net/gh/ealush/vest@assets/demos/full_1.gif 'Full form example')
-![Full form example](https://cdn.jsdelivr.net/gh/ealush/vest@assets/demos/full.jpg 'Full form example')
-
-### Memoized validations demo:
-
+**Memoized async test**
 ![memo](https://cdn.jsdelivr.net/gh/ealush/vest@assets/demos/memo.gif 'memo')
+
+## ✅ Motivation
+
+Writing forms is an integral part of building web apps, and even though it may seem trivial at first - as your feature grows over time, so does your validation logic grows in complexity.
+
+Vest tries to remediate this by separating validation logic from feature logic so it is easier to maintain over time and refactor when needed.
+
+## ✨ Vest's features
+
+- 🎨 Framework agnostic (BYOUI)
+- ⚡️ Rich, extendable, assertions library (enforce) ([doc](http://ealush.com/vest/#/enforce))
+- 🚥 Multiple validations for the same field
+- ⚠️ Warning (non failing) tests ([doc](http://ealush.com/vest/#/warn))
+- 📝 Validate only the fields the user interacted with ([doc](http://ealush.com/vest/#/exclusion))
+- ⏳ Memoize async validations to reduce calls to the server ([doc](http://ealush.com/vest/#/test?id=testmemo-for-memoized-tests))
+- 🚦 Test grouping ([doc](http://ealush.com/vest/#/group))
+
+## Example code ([Run in sandbox](https://codesandbox.io/s/vest-react-tutorial-finished-ztt8t?file=/src/validate.js))
+
+```js
+import vest, { test } from 'vest';
+import enforce from 'vest/enforceExtended';
+
+export default vest.create('user_form', (data = {}, currentField) => {
+  vest.only(currentField);
+
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotEmpty();
+  });
+
+  test('username', 'Username is too short', () => {
+    enforce(data.username).longerThanOrEquals(3);
+  });
+
+  test('password', 'Password is required', () => {
+    enforce(data.password).isNotEmpty();
+  });
+
+  test('password', 'Password must be at least 6 chars long', () => {
+    enforce(data.password).longerThanOrEquals(6);
+  });
+
+  test('password', 'Password is weak, Maybe add a number?', () => {
+    vest.warn();
+    enforce(data.password).matches(/[0-9]/);
+  });
+
+  if (data.password) {
+    test('confirm_password', 'Passwords do not match', () => {
+      enforce(data.confirm_password).equals(data.password);
+    });
+  }
+
+  test('email', 'Email Address is not valid', () => {
+    enforce(data.email).isEmail();
+  });
+
+  test('tos', () => {
+    enforce(data.tos).isTruthy();
+  });
+});
+```
 
 ## Why Vest?
 
-- Vest is really easy to learn. You can take your existing knowledge of unit tests and transfer it to validations.
-- Vest takes into account user interaction and warn only validations.
-- Your validations are structured, making it very simple to read and write. All validation files look the same.
-- Your validation logic is separate from your feature logic, preventing the spaghetti code that's usually involved with writing validations.
-- Validation logic is easy to share and reuse across features.
-- If your backend is node, you can use the same Vest modules for both client-side and server-side validations.
+- 🧠 Vest is really easy to learn. You can take your existing knowledge of unit tests and transfer it to validations.
+- ✏️ Vest takes into account user interaction and warn only validations.
+- 🧱 Your validations are structured, making it very simple to read and write. All validation files look the same.
+- 🖇 Your validation logic is separate from your feature logic, preventing the spaghetti code that's usually involved with writing validations.
+- 🧩 Validation logic is easy to share and reuse across features.
 
 **Vest is an evolution of [Passable](https://github.com/fiverr/passable) by Fiverr.**

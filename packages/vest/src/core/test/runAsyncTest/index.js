@@ -8,35 +8,16 @@ import getSuiteState from '../../state/getSuiteState';
 import hasRemainingTests from '../../state/hasRemainingTests';
 import { removeCanceled } from '../lib/canceled';
 import { removePending } from '../lib/pending';
-/**
- * Runs done callback when async tests are finished running.
- * @param {String} suiteId
- * @param {string} [fieldName] Field name with associated callbacks.
- */
-const runDoneCallbacks = (suiteId, fieldName) => {
-  const suiteState = getSuiteState(suiteId);
-  if (fieldName) {
-    if (
-      !hasRemainingTests(suiteState, fieldName) &&
-      Array.isArray(suiteState.fieldCallbacks[fieldName])
-    ) {
-      suiteState.fieldCallbacks[fieldName].forEach(cb => cb());
-    }
-  }
-  if (!hasRemainingTests(suiteState)) {
-    suiteState.doneCallbacks.forEach(cb => cb());
-  }
-};
 
 /**
  * Runs async test.
  * @param {VestTest} testObject A VestTest instance.
  */
 const runAsyncTest = testObject => {
-  const { asyncTest, statement, fieldName, id, suiteId } = testObject;
+  const { asyncTest, statement, id, suiteId } = testObject;
   const { operationMode } = Context.use();
   const done = cb => {
-    const isCanceled = state.get()[KEY_CANCELED][id];
+    const isCanceled = state.get()[KEY_CANCELED]?.[id];
 
     if (isCanceled) {
       removeCanceled(testObject);
@@ -64,11 +45,8 @@ const runAsyncTest = testObject => {
       cb();
     }
 
-    runDoneCallbacks(suiteId, fieldName);
-
-    if (operationMode === OPERATION_MODE_STATELESS) {
-      cleanupCompletedSuite(suiteId);
-    }
+    // Perform required done callback calls and cleanups after the test is finished
+    onAsyncTestFinished(testObject, operationMode);
   };
   const fail = rejectionMessage => {
     done(() => {
@@ -84,6 +62,41 @@ const runAsyncTest = testObject => {
       fail();
     }
   });
+};
+
+/**
+ * Runs done callback when async tests are finished running.
+ * @param {String} suiteId
+ * @param {string} [fieldName] Field name with associated callbacks.
+ */
+const runDoneCallbacks = (suiteId, fieldName) => {
+  const suiteState = getSuiteState(suiteId);
+  if (fieldName) {
+    if (
+      !hasRemainingTests(suiteState, fieldName) &&
+      Array.isArray(suiteState.fieldCallbacks[fieldName])
+    ) {
+      suiteState.fieldCallbacks[fieldName].forEach(cb => cb());
+    }
+  }
+  if (!hasRemainingTests(suiteState)) {
+    suiteState.doneCallbacks.forEach(cb => cb());
+  }
+};
+
+/**
+ * Perform completion actions and cleanups after an async test
+ * @param {VestTest} testObject   A VestTest instance
+ * @param {string} operationMode  Operation mode retrieved from context
+ */
+const onAsyncTestFinished = (testObject, operationMode) => {
+  const { suiteId, fieldName } = testObject;
+
+  runDoneCallbacks(suiteId, fieldName);
+
+  if (operationMode === OPERATION_MODE_STATELESS) {
+    cleanupCompletedSuite(suiteId);
+  }
 };
 
 export default runAsyncTest;

@@ -30,7 +30,7 @@ The idea behind Vest is that your validations can be described as a 'spec' or a 
 Using Vest for form validation can reduce bloat, improve feature redability and maintainability.
 
 **Basic Example**
-<img src="https://cdn.jsdelivr.net/gh/ealush/vest@assets/demos/full_3.gif">
+![full](https://cdn.jsdelivr.net/gh/ealush/vest@assets/demos/full_3.gif 'full')
 
 **Memoized async test**
 ![memo](https://cdn.jsdelivr.net/gh/ealush/vest@assets/demos/memo.gif 'memo')

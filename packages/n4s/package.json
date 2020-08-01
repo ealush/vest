@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/ealush/vest/issues"
   },
-  "homepage": "https://github.com/ealush/vest/tree/master/packages/n4s",
+  "homepage": "https://github.com/ealush/vest/tree/latest/packages/n4s",
   "devDependencies": {
     "@ampproject/rollup-plugin-closure-compiler": "^0.25.2",
     "@babel/cli": "^7.8.4",

@@ -54,6 +54,6 @@ packages/
 
 | Branch Name | Role           | Description                                         |
 | ----------- | -------------- | --------------------------------------------------- |
-| `master`    | Latest         | Contains latest unreleased changes                  |
+| `latest`    | Latest         | Contains latest unreleased changes                  |
 | `stable`    | Current/stable | Current version installable by `npm i vest`         |
-| `release`   | CI             | Triggers ci build that merges from master to stable |
+| `release`   | CI             | Triggers ci build that merges from latest to stable |

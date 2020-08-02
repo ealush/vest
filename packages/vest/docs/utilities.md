@@ -74,7 +74,7 @@ vest.create('Checkout', () => {
 ## `promisify()`
 
 Promisify is a function that enables you to run your async validations as a [Javascript Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
-This can be mostly useful when running async validations on the server, or when you do not need the partial validation results.
+This can be useful when running async validations on the server, or when you do not need the partial validation results.
 
 !> **NOTE** The Promise is resolved when all tests finish running.
 
@@ -104,9 +104,32 @@ validate(data).then(res => {
     /* ... */
   }
 });
+```
 
-//const onChangeHandler = async () => {
-//  const res = await validate()
-//res.hasErrors()
-//}
+```js
+// validation.js
+import vest, { test } from 'vest';
+
+const validate = vest.create('CreateNewUser', data => {
+  test('email', 'The email already exists', () => doesEmailExist(data.email));
+  test('username', 'The username already exists', () =>
+    doesUsernameExist(data.username)
+  );
+});
+
+export default validate;
+```
+
+```js
+// Form.js
+import promisify from 'vest/promisify';
+import validate from './validation.js';
+
+export default function Form() {
+  const validationResult = promisify(validate(data));
+
+  validationResult.then(result => {
+    result.hasErrors('email');
+  });
+}
 ```

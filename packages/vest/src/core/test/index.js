@@ -5,6 +5,7 @@ import Context from '../Context';
 import patch from '../state/patch';
 import VestTest from './lib/VestTest';
 import { setPending } from './lib/pending';
+import runAsyncTest from './runAsyncTest';
 
 let cache;
 
@@ -58,7 +59,8 @@ const register = testObject => {
     // in case object is an enforce chain
     if (typeof result?.then === 'function') {
       testObject.asyncTest = result;
-      setPending(testObject.suiteId, testObject);
+      setPending(testObject);
+      runAsyncTest(testObject);
     }
   } catch {
     /* FUTURE: throw an error here in dev mode:
@@ -75,6 +77,9 @@ const register = testObject => {
  * @param {String} [statement]          The message returned in case of a failure.
  * @param {function} testFn             The actual test callback.
  * @return {VestTest}                 A VestTest instance.
+ *
+ * **IMPORTANT**
+ * Changes to this function need to reflect in test.memo as well
  */
 const test = (fieldName, ...args) => {
   const { length, [length - 2]: statement, [length - 1]: testFn } = args;
@@ -126,7 +131,8 @@ test.memo = (fieldName, ...args) => {
   addTestToState(testObject.suiteId, testObject);
 
   if (typeof testObject?.asyncTest?.then === 'function') {
-    setPending(testObject.suiteId, testObject);
+    setPending(testObject);
+    runAsyncTest(testObject);
   }
 
   return testObject;

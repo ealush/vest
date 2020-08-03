@@ -83,7 +83,7 @@ describe('module: pending', () => {
 
     it('Should set supplied test object as pending', () => {
       expect(getSuiteState(suiteId).pending).not.toContain(testObjects[0]);
-      setPending(suiteId, testObjects[0]);
+      setPending(testObjects[0]);
       expect(getSuiteState(suiteId).pending).toContain(testObjects[0]);
     });
 
@@ -101,14 +101,14 @@ describe('module: pending', () => {
 
       it('Should remove test from lagging array', () => {
         expect(getSuiteState(suiteId).lagging).toContain(testObjects[0]);
-        setPending(suiteId, testObjects[0]);
+        setPending(testObjects[0]);
         expect(getSuiteState(suiteId).lagging).not.toContain(testObjects[0]);
         expect(getSuiteState(suiteId)).toMatchSnapshot();
       });
 
       it('Should add test to pending array', () => {
         expect(getSuiteState(suiteId).pending).not.toContain(testObjects[0]);
-        setPending(suiteId, testObjects[0]);
+        setPending(testObjects[0]);
         expect(getSuiteState(suiteId).pending).toContain(testObjects[0]);
       });
 
@@ -116,7 +116,7 @@ describe('module: pending', () => {
         expect(state.get()[KEY_CANCELED]).not.toMatchObject({
           [testObjects[0].id]: true,
         });
-        setPending(suiteId, testObjects[0]);
+        setPending(testObjects[0]);
         expect(state.get()[KEY_CANCELED]).toMatchObject({
           [testObjects[0].id]: true,
         });

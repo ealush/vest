@@ -225,8 +225,8 @@ describe('test.memo', () => {
       it('Should only call test function once', async () => {
         expect(testCb1).not.toHaveBeenCalled();
         await validate('FAIL');
-        await validate('FAIL');
         expect(testCb1).toHaveBeenCalledTimes(1);
+        await validate('FAIL');
       });
 
       it('Should return same test object', async () => {

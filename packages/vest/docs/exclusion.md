@@ -4,7 +4,7 @@ When performing validations in real world-scenarios, you may need to only run te
 
 `vest.skip()` and `vest.only()` are functions that take a name of the test, or a list of names to either include or exclude fields from being validated. They should be called from the body of suite callback, and in order for them to take effect, they should be called before anything else.
 
-!> **NOTE** When using `vest.only()` or `vest.skip()` you must place them before any of the tests defined in the suite. Hooks run in order of appearance, which means that if you place your `skip` hook after the filed you're skipping - it won't have any effect.
+!> **NOTE** When using `vest.only()` or `vest.skip()` you must place them before any of the tests defined in the suite. Hooks run in order of appearance, which means that if you place your `skip` hook after the field you're skipping - it won't have any effect.
 
 ### Only running specific tests (including)
 

@@ -53,7 +53,7 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
     });
     testObject.asyncTest =
       testCase === CASE_PASSING ? Promise.resolve() : Promise.reject();
-    setPending(suiteId, testObject);
+    setPending(testObject);
   });
 
   afterEach(() => {
@@ -162,7 +162,6 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
     describe('When there are more tests left', () => {
       beforeEach(() => {
         setPending(
-          suiteId,
           new VestTest({
             fieldName: 'pending_field',
             statement: STATEMENT,

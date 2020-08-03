@@ -7,7 +7,6 @@ import { getSuite } from '../state';
 import getSuiteState from '../state/getSuiteState';
 import registerSuite from '../state/registerSuite';
 import mergeExcludedTests from '../test/lib/mergeExcludedTests';
-import runAsyncTest from '../test/runAsyncTest';
 
 /**
  * Initializes a validation suite, creates a validation context.
@@ -50,7 +49,6 @@ const createSuite = (name, tests) => {
         tests.apply(null, args);
         mergeExcludedTests(suiteId);
 
-        [...getSuiteState(suiteId).pending].forEach(runAsyncTest);
         return produce(getSuiteState(suiteId));
       });
       return output;

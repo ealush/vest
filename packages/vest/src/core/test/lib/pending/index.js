@@ -5,11 +5,10 @@ import { setCanceled } from '../canceled';
 
 /**
  * Sets a test as pending in the state.
- * @param {string} suiteId
  * @param {VestTest} testObject
  */
-export const setPending = (suiteId, testObject) => {
-  const { fieldName, groupName } = testObject;
+export const setPending = testObject => {
+  const { fieldName, groupName, suiteId } = testObject;
   const state = getSuiteState(suiteId);
   const { lagging, canceled } = state.lagging.reduce(
     ({ lagging, canceled }, testObject) => {

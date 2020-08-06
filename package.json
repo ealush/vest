@@ -46,7 +46,7 @@
   "scripts": {
     "build": "node ./scripts/buildAll",
     "prettier-watch": "onchange '**/*.js' '**/*.json' -- prettier --write {{changed}}",
-    "test": "jest --projects ./packages/*/ --i",
+    "test": "jest --projects ./packages/*/",
     "lint": "eslint . --ignore-path .gitignore"
   },
   "husky": {

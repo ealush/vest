@@ -23,3 +23,19 @@ export default {
   validate,
   warn,
 };
+
+export {
+  VERSION,
+  create,
+  draft,
+  enforce,
+  get,
+  group,
+  only,
+  reset,
+  runWithContext,
+  skip,
+  test,
+  validate,
+  warn,
+};

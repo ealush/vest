@@ -1,23 +1,28 @@
+const env = api => {
+  const conf = {
+    targets: {},
+    ...(!api.env('test') && {
+      loose: true,
+    }),
+  };
+
+  switch (api.env()) {
+    case 'development':
+      conf.targets.node = 'current';
+      break;
+    case 'es6':
+      conf.targets.chrome = 52;
+      break;
+    default:
+      conf.targets.ie = 10;
+      break;
+  }
+
+  return ['@babel/preset-env', conf];
+};
+
 module.exports = api => {
-  const presets = [
-    [
-      '@babel/preset-env',
-      {
-        targets: {
-          ...(api.env('development')
-            ? {
-                node: 'current',
-              }
-            : {
-                ie: 10,
-              }),
-        },
-        ...(!api.env('test') && {
-          loose: true,
-        }),
-      },
-    ],
-  ];
+  const presets = [env(api)];
 
   const plugins = [
     'babel-plugin-add-module-exports',

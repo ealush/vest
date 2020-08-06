@@ -52,6 +52,21 @@ res.getErrors(); // returns an object with an array of errors per field
 res.getErrors('username'); // returns an array of errors for the `username` field
 ```
 
+### Nodejs:
+
+When running on the server you should not "create" a suite since validations usually do not need to maintain state. Instaed, call vest.validate directly.
+
+```js
+const vest = require('vest');
+
+const { validate, test, enforce } = vest;
+
+module.exports = data =>
+  validate('form_name', () => {
+    test(/*...*/);
+  });
+```
+
 ## Why Vest?
 
 - Vest is really easy to learn. You can take your existing knowledge of unit tests and transfer it to validations.

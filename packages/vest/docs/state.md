@@ -21,7 +21,7 @@ In case you have an async test that didn't finish from the previous suite run - 
 
 ## What about server side validations?
 
-You probably needs to consider running vest using its [stateless interface](./stateless_validations).
+You probably needs to consider running vest using its [stateless interface](./node#use-validate).
 
 ## Resetting suite state with `vest.reset();`
 

@@ -125,11 +125,13 @@ export default validate;
 import promisify from 'vest/promisify';
 import validate from './validation.js';
 
-export default function Form() {
-  const validationResult = promisify(validate(data));
+const validateAsync = promisify(validate(data));
 
-  validationResult.then(result => {
-    result.hasErrors('email');
-  });
+async function handler(data) {
+  const result = await validateAsync(data);
+
+  if (result.hasErrors('email')) {
+    // Do stuff here
+  }
 }
 ```

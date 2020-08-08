@@ -7,7 +7,7 @@
 - [Assertions with enforce](./enforce)
 - [Understanding Vest's state](./state)
 - Advanced cases
-  - [Server side and stateless validations](./stateless_validations)
+  - [Using with node](./node)
   - [Excluding or including tests](./exclusion)
   - [Accessing intermediate suite result](./draft)
   - [Utilities](./utilities)

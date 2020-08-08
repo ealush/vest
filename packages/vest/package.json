@@ -2,7 +2,26 @@
   "name": "vest",
   "version": "2.0.0",
   "description": "Validation Test",
-  "main": "./vest.js",
+  "main": "./vest.es5.js",
+  "browser": "./vest.es5.js",
+  "module": "./esm/vest.mjs.js",
+  "exports": {
+    ".": {
+      "browser": "./vest.es5.js",
+      "import": "./esm/vest.mjs.js",
+      "require": "./vest.cjs.js",
+      "node": "./vest.cjs.js",
+      "default": "./vest.es5.js"
+    },
+    "./vest.es5.js": "./vest.es5.js",
+    "./any.js": "./any.js",
+    "./classNames.js": "./classNames.js",
+    "./enforceExtended.js": "./enforceExtended.js",
+    "./vest.development.js": "./vest.development.js",
+    "./vest.js": "./vest.js",
+    "./vest.min.js": "./vest.min.js",
+    "./package.json": "./package.json"
+  },
   "types": "./vest.d.ts",
   "author": "ealush",
   "license": "MIT",

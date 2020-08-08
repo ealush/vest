@@ -12,7 +12,10 @@ documentation/assets/**/*.css
 .DS_Store
 *.log
 packages/vest/dist
+packages/vest/esm
 packages/vest/*.js
+packages/vest/*.cjs
+packages/vest/*.mjs
 packages/vest/utilities/
 packages/n4s/dist
 packages/n4s/*.js

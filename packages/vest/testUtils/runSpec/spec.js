@@ -49,7 +49,7 @@ describe('module: runSpec', () => {
         require('../../dist/vest.development.js')
       );
 
-      expect(counter).toBe(4);
+      expect(counter).toBe(6);
     });
   });
 });

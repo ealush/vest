@@ -10,9 +10,7 @@ const {
   STABLE_BRANCH,
 } = process.env;
 
-function compareUrl() {
-  return `https://api.github.com/repos/${TRAVIS_REPO_SLUG}/compare/${STABLE_BRANCH}...${TRAVIS_BRANCH}`;
-}
+const compareUrl = `https://api.github.com/repos/${TRAVIS_REPO_SLUG}/compare/${STABLE_BRANCH}...${TRAVIS_BRANCH}`;
 
 function listMessages(commits = []) {
   return commits
@@ -28,7 +26,7 @@ function listMessages(commits = []) {
 }
 
 function getCommitDiff() {
-  return fetch(compareUrl(), {
+  return fetch(compareUrl, {
     ...(GITHUB_TOKEN && {
       headers: { Authorization: `token ${GITHUB_TOKEN}` },
     }),

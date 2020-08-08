@@ -6,6 +6,7 @@ import inside from './inside';
 import isArray from './isArray';
 import isEmpty from './isEmpty';
 import isEven from './isEven';
+import isNaN from './isNaN';
 import isNumber from './isNumber';
 import isNumeric from './isNumeric';
 import isOdd from './isOdd';
@@ -29,6 +30,7 @@ const rules = {
   isArray,
   isEmpty,
   isEven,
+  isNaN,
   isNumber,
   isNumeric,
   isOdd,

@@ -15,6 +15,7 @@ describe('Tests enforce rules API', () => {
 const negativeRules = [
   'isNotArray',
   'isNotEmpty',
+  'isNotNaN',
   'isNotNumber',
   'isNotNumeric',
   'isNotString',
@@ -35,6 +36,7 @@ const positiveRules = [
   'isArray',
   'isEmpty',
   'isEven',
+  'isNaN',
   'isNumber',
   'isNumeric',
   'isOdd',

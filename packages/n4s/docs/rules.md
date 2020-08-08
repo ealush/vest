@@ -30,6 +30,8 @@ Enforce rules are functions that allow you to test your data against different c
 - [isNotArray](#isnotarray)
 - [isNumber](#isnumber)
 - [isNotNumber](#isnotnumber)
+- [isNaN](#isNaN)
+- [isNotNaN](#isNotNaN)
 - [isString](#isstring)
 - [isNotString](#isnotstring)
 - [isOdd](#isodd)
@@ -802,6 +804,7 @@ enforce('hello').isNotArray();
 ### Description
 
 Checks if a value is of type `number`.
+Equals to `typeof value === 'number'`
 
 ### Usage examples:
 
@@ -824,6 +827,8 @@ enforce('143').isNumber();
 Checks if a value is of any type other than `number`.
 Reverse implementation of `isNumber`.
 
+**note** isNotNumber does not check for `NaN` value. For NaN values, use [isNaN](#isNaN).
+
 ### Usage examples:
 
 ```js
@@ -835,6 +840,48 @@ enforce(143).isNotNumber();
 ```js
 enforce(143).isNotNumber();
 enforce(NaN).isNotNumber(); // throws (NaN is of type 'number!')
+// throws
+```
+
+## isNaN
+
+### Description
+
+A wrapper around JavaScripts Number.isNaN() function. Checks if a value is NaN.
+
+### Usage examples:
+
+```js
+enforce(NaN).isNaN();
+enforce('A' / 'B').isNaN();
+// passes
+```
+
+```js
+enforce(null * null).isNaN(); // null*null = 0
+enforce(200).isNaN();
+enforce('1984').isNaN();
+// throws
+```
+
+## isNotNaN
+
+### Description
+
+Reverse implementation of `isNaN`. Checks that a value is not NaN.
+
+### Usage examples:
+
+```js
+enforce(null * null).isNaN(); // null*null = 0
+enforce(200).isNaN();
+enforce('1984').isNaN();
+// passes
+```
+
+```js
+enforce(NaN).isNaN();
+enforce('A' / 'B').isNaN();
 // throws
 ```
 

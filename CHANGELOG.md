@@ -4,6 +4,35 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## vest: [2.1.0] - 2020-08-09
+
+### Added
+- d1ce227 minor: add vest.skip.group and vest.only.group (#225) (ealush)
+- 19e592e added: test.memo for memoized tests (#238) (ealush)
+- e6cccc9 added: returned function name is the name of the suite (ealush)
+- f9f1d39 added: promisify utility (#261) (adife)
+
+### Fixed and improved
+- ba6ca3d fix: make vest.reset restore initial state (#235) (ealush)
+- a657058 patch: cache validation result for improved runtime performance (#237) (ealush)
+- 96210af Skip cache when resolving done results (#240) (ealush)
+- c2beec9 fix: edge case when calling done after delay (#252) (ealush)
+- 2582c43 types: group and skip types (#258) (ealush)
+- a215c43 patch: return enforce from extend api (ealush)
+- bb6cc1d fix: added safeguard to async test inference (#266) (ealush)
+- ff5608f Update README.md (ealush)
+- 553c8fe patch: Move exclusion to context (#274) (ealush)
+- 4f24697 patch: Replace global object with closures (#275) (ealush)
+- a3bc606 patch: clean runAsyncTest done callback (ealush)
+- 4d3b583 Update README.md (ealush)
+- 32ea43f Use latest branch (ealush)
+- 51e7aa2 patch: Skip iteration of pending tests (#294) (ealush)
+
+## n4s: [2.1.0] - 2020-08-09
+
+### Added
+- 062c40a added:  add isNaN rule (#300) (ealush)
+
 ## vest: [2.0.0] - 2020-06-20
 
 ### Changed or removed

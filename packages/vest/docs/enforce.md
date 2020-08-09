@@ -1,25 +1,26 @@
 # Enforce
-
 For assertions, Vest is bundled with [Enforce](https://npmjs.com/package/n4s). Enforce is a validation assertion library. It allows you to run your data against rules and conditions and test whether it passes your validations. It is intended for validation logic that gets repeated over and over again and should not be written manually. It comes with a wide variety of pre-built rules, but it can also be extended to support your own repeated custom logic.
 
 The way Enforce operates is similar to most common assertion libraries. You pass it a value, and one or more rules to test your value against - if the validation fails, it throws an Error, otherwise - it will move on to the next rule in the chain.
 
 ```js
-import { enforce } from 'vest';
+import { enforce } from 'vest'
 
-enforce(4).isNumber();
-// passes
-
-enforce(4).isNumber().greaterThan(2);
+enforce(4)
+    .isNumber();
 // passes
 
 enforce(4)
-  .lessThan(2) // throws an error, will not carry on to the next rule
-  .greaterThan(3);
+    .isNumber()
+    .greaterThan(2);
+// passes
+
+enforce(4)
+    .lessThan(2) // throws an error, will not carry on to the next rule
+    .greaterThan(3);
 ```
 
 ## Content
-
 - [List of Enforce rules](#list-of-enforce-rules) - All default enforce rules
 - [Custom Enforce Rules](#custom-enforce-rules) - How to extend enforce with your rules
 - [Business Related Rules](#business-related-rules) - Using more rules such as isEmail and isCreditCard
@@ -58,6 +59,8 @@ Enforce rules are functions that allow you to test your data against different c
 - [isNotArray](#isnotarray)
 - [isNumber](#isnumber)
 - [isNotNumber](#isnotnumber)
+- [isNaN](#isNaN)
+- [isNotNaN](#isNotNaN)
 - [isString](#isstring)
 - [isNotString](#isnotstring)
 - [isOdd](#isodd)
@@ -830,6 +833,7 @@ enforce('hello').isNotArray();
 ### Description
 
 Checks if a value is of type `number`.
+Equals to `typeof value === 'number'`
 
 ### Usage examples:
 
@@ -852,6 +856,8 @@ enforce('143').isNumber();
 Checks if a value is of any type other than `number`.
 Reverse implementation of `isNumber`.
 
+**note** isNotNumber does not check for `NaN` value. For NaN values, use [isNaN](#isNaN).
+
 ### Usage examples:
 
 ```js
@@ -863,6 +869,48 @@ enforce(143).isNotNumber();
 ```js
 enforce(143).isNotNumber();
 enforce(NaN).isNotNumber(); // throws (NaN is of type 'number!')
+// throws
+```
+
+## isNaN
+
+### Description
+
+A wrapper around JavaScripts Number.isNaN() function. Checks if a value is NaN.
+
+### Usage examples:
+
+```js
+enforce(NaN).isNaN();
+enforce('A' / 'B').isNaN();
+// passes
+```
+
+```js
+enforce(null * null).isNaN(); // null*null = 0
+enforce(200).isNaN();
+enforce('1984').isNaN();
+// throws
+```
+
+## isNotNaN
+
+### Description
+
+Reverse implementation of `isNaN`. Checks that a value is not NaN.
+
+### Usage examples:
+
+```js
+enforce(null * null).isNaN(); // null*null = 0
+enforce(200).isNaN();
+enforce('1984').isNaN();
+// passes
+```
+
+```js
+enforce(NaN).isNaN();
+enforce('A' / 'B').isNaN();
 // throws
 ```
 
@@ -948,25 +996,21 @@ enforce([0]).isEven();
 // throws
 ```
 
-# Custom enforce rules
 
+# Custom enforce rules
 To make it easier to reuse logic across your application, sometimes you would want to encapsulate bits of logic in rules that you can use later on, for example, "what's considered a valid email".
 
 Your custom rules are essentially a single javascript object containing your rules.
-
 ```js
 const myCustomRules = {
-  isValidEmail: value => value.indexOf('@') > -1,
-  hasKey: (value, { key }) => value.hasOwnProperty(key),
-  passwordsMatch: (passConfirm, options) =>
-    passConfirm === options.passConfirm && options.passIsValid,
-};
+    isValidEmail: (value) => value.indexOf('@') > -1,
+    hasKey: (value, {key}) => value.hasOwnProperty(key),
+    passwordsMatch: (passConfirm, options) => passConfirm === options.passConfirm && options.passIsValid
+}
 ```
-
 Just like the predefined rules, your custom rules can accepts two parameters:
-
-- `value` The actual value you are testing against.
-- `args` (optional) the arguments which you pass on when running your tests.
+* `value` The actual value you are testing against.
+* `args` (optional) the arguments which you pass on when running your tests.
 
 You can extend enforce with your custom rules by creating a new instance of `Enforce` and adding the rules object as the argument.
 
@@ -974,11 +1018,10 @@ You can extend enforce with your custom rules by creating a new instance of `Enf
 import { enforce } from 'vest';
 
 const myCustomRules = {
-  isValidEmail: value => value.indexOf('@') > -1,
-  hasKey: (value, key) => value.hasOwnProperty(key),
-  passwordsMatch: (passConfirm, options) =>
-    passConfirm === options.passConfirm && options.passIsValid,
-};
+    isValidEmail: (value) => value.indexOf('@') > -1,
+    hasKey: (value, key) => value.hasOwnProperty(key),
+    passwordsMatch: (passConfirm, options) => passConfirm === options.passConfirm && options.passIsValid
+}
 
 enforce.extend(myCustomRules);
 
@@ -1030,7 +1073,6 @@ import enforce, {
 To read the full documentation on these rules and the options they take, please visit [validator.js](https://github.com/validatorjs/validator.js).
 
 ### validator.js license:
-
 ```
 Copyright (c) 2018 Chris O'Hara <cohara87@gmail.com>
 

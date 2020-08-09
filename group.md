@@ -3,11 +3,13 @@
 In many cases it can be helpful to group tests together so you can include or exclude a portion of the suite with a single condition.
 Similar to the `describe` and `context` features provided by unit testing frameworks, Vest provides `group`.
 
+[Try on CodeSandbox (React)](https://codesandbox.io/s/vest-group-example-react-4i2ne)
+
 ```js
 import vest, { test, group, enforce } from 'vest';
 
 vest.create('authentication_form', data => {
-  vest.skip(data.userExists ? 'signUp' : 'signIn');
+  vest.skip.group(data.userExists ? 'signUp' : 'signIn');
 
   test('userName', "Can't be empty", () => {
     enforce(data.username).isNotEmpty();
@@ -49,7 +51,7 @@ You may have in your application a multi-screen form, in which you want to valid
 import vest, { test, group, enforce } from 'vest';
 
 const validate = vest.create('product-create', (data, currentTab) => {
-  vest.only(currentScreen);
+  vest.only.group(currentScreen);
 
   group('overview_tab', () => {
     test('productTitle', 'Must be at least 5 chars.', () => {
@@ -97,11 +99,11 @@ import vest, { test, group, enforce } from 'vest';
 
 const validate = vest.create('checkout_form', data => {
   if (!data.usedPromo) {
-    vest.skip('used_promo');
+    vest.skip.group('used_promo');
   }
 
   if (!data.paysWithBalance) {
-    vest.skip('balance');
+    vest.skip.group('balance');
   }
 
   test(

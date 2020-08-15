@@ -57,3 +57,58 @@ packages/
 | `latest`    | Latest         | Contains latest unreleased changes                  |
 | `stable`    | Current/stable | Current version installable by `npm i vest`         |
 | `release`   | CI             | Triggers ci build that merges from latest to stable |
+
+## Building the project
+
+```
+yarn build
+```
+
+This builds all of the projects, it will also add some gitignored files to the root of each package. You can ignore those.
+
+## Running tests
+
+```
+yarn test
+```
+
+Will run the tests for all the packages. It is required to build the project before running the tests, because some of the tests require the production build.
+
+## Adding new enforce rules
+
+Enforce rules are declared in:
+
+```
+./packages/n4s/src/rules
+```
+
+### Rule naming
+
+Rules naming convention usually follows this structure: `is[Something]` for example `isArray`, `isGreaterThan` so enforcements can be read like this:
+
+> enforce `username` is longer than `3`
+
+### Rule structure
+
+Rules are functions that take as their first argument the value passed to the enforce function, and the rest of the arguments are what is beig passed to them by the consumer:
+
+```js
+function isGreaterThan(
+  value /*enforceValue*/,
+  arg1 /*passed directly to the rule*/
+) {
+  /*..*/
+}
+```
+
+### Negative rulesList
+
+If you also want to add a negative check to your rule, for example `isNotArray`, simply add a negativeForm property to your rule.
+
+```js
+function isArray(value) {
+  return Array.isArray(value);
+}
+
+isArray.negativeForm = 'isNotArray';
+```

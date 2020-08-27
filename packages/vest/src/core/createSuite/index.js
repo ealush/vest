@@ -1,4 +1,5 @@
 import { OPERATION_MODE_STATEFUL } from '../../constants';
+import { get } from '../../hooks';
 import runWithContext from '../../lib/runWithContext';
 import validateSuiteParams from '../../lib/validateSuiteParams';
 import Context from '../Context';
@@ -59,7 +60,7 @@ const createSuite = (name, tests) => {
         value: name,
       },
       get: {
-        value: () => getSuite(name),
+        value: () => get(name),
       },
       reset: {
         value: () => reset(name),

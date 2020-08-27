@@ -99,7 +99,7 @@ describe('Test createSuite module', () => {
     it('Should be able to get the suite from the result of createSuite', () => {
       const testsCb = jest.fn();
       const suiteId = 'test_get_suite';
-      expect(createSuite(suiteId, testsCb).get()).toBe(getSuite(suiteId));
+      expect(createSuite(suiteId, testsCb).get()).toBe(get(suiteId));
     });
 
     it('Should be able to reset the suite from the result of createSuite', () => {

@@ -313,6 +313,12 @@ declare module 'vest' {
     memo(fieldName: string, testFn: TestCB, dependencies: any[]): VestTest;
   }
 
+  interface ICreateResult {
+    (...args: any[]): IVestResult;
+    get: any;
+    reset: any;
+  }
+
   interface Vest {
     test: ITest;
     enforce: IEnforce;

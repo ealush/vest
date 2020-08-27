@@ -2,7 +2,9 @@ import faker from 'faker';
 import { noop } from 'lodash';
 import mock from '../../../../../shared/testUtils/mock';
 import resetState from '../../../testUtils/resetState';
+import { dummyTest } from '../../../testUtils/testDummy';
 import { OPERATION_MODE_STATELESS } from '../../constants';
+import { get } from '../../hooks';
 import runWithContext from '../../lib/runWithContext';
 import { getSuite } from '../state';
 import createSuite from '.';
@@ -92,6 +94,23 @@ describe('Test createSuite module', () => {
       expect(Object.keys(state[0].fieldCallbacks)).toHaveLength(0);
 
       expect(getSuite(suiteId)).toMatchSnapshot();
+    });
+
+    it('Should be able to get the suite from the result of createSuite', () => {
+      const testsCb = jest.fn();
+      const suiteId = 'test_get_suite';
+      expect(createSuite(suiteId, testsCb).get()).toBe(getSuite(suiteId));
+    });
+
+    it('Should be able to reset the suite from the result of createSuite', () => {
+      const suiteId = 'test_reset_suite';
+      const testSuite = createSuite(suiteId, () => {
+        dummyTest.failing('f1', 'm1');
+      });
+      testSuite();
+      expect(get(suiteId).hasErrors()).toBe(true);
+      testSuite.reset();
+      expect(get(suiteId).hasErrors()).toBe(false);
     });
 
     it('Should return without calling tests callback', () => {

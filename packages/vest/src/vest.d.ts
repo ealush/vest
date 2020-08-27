@@ -349,10 +349,7 @@ declare module 'vest' {
      *
      * const res = validate({username: 'example'});
      */
-    create(
-      suiteName: string,
-      tests: (...args: any[]) => void
-    ): (...args: any[]) => IVestResult;
+    create(suiteName: string, tests: (...args: any[]) => void): ICreateResult;
 
     /**
      * Allows grouping tests so you can handle them together

@@ -109,8 +109,10 @@ describe('Test createSuite module', () => {
       });
       testSuite();
       expect(get(suiteId).hasErrors()).toBe(true);
+      expect(get(suiteId).testCount).toBe(1);
       testSuite.reset();
       expect(get(suiteId).hasErrors()).toBe(false);
+      expect(get(suiteId).testCount).toBe(0);
     });
 
     it('Should return without calling tests callback', () => {

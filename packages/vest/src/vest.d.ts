@@ -326,9 +326,33 @@ declare module 'vest' {
     skip: ISkip;
 
     /**
+     * Retrieves current validation state.
+     * @param suiteName Suite name.
+     *
+     * @example
+     *
+     * vest.get('user_form');
+     *
+     */
+    get: (suiteName: string) => DraftResult;
+
+    /**
+     * Resets suite state to its initial - unvalidated state.
+     * @param suiteName Suite name.
+     *
+     * @example
+     *
+     * vest.reset('user_form');
+     *
+     */
+    reset: (suiteName: string) => void;
+
+    /**
      * Runs a stateless validation suite.
      * @param suiteName Unique suite name.
      * @param tests     Suite body.
+     *
+     * @example
      *
      * const res = validate('form_name', () => {
      *  // your tests go here
@@ -396,6 +420,8 @@ declare module 'vest' {
     skip,
     only,
     group,
+    reset,
+    get,
   }: Vest;
 
   export {
@@ -409,6 +435,8 @@ declare module 'vest' {
     skip,
     only,
     group,
+    reset,
+    get,
   };
 
   const vest: Vest;

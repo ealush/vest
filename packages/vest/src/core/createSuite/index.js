@@ -1,4 +1,5 @@
 import { OPERATION_MODE_STATEFUL } from '../../constants';
+import { get } from '../../hooks';
 import runWithContext from '../../lib/runWithContext';
 import validateSuiteParams from '../../lib/validateSuiteParams';
 import Context from '../Context';
@@ -6,6 +7,7 @@ import produce from '../produce';
 import { getSuite } from '../state';
 import getSuiteState from '../state/getSuiteState';
 import registerSuite from '../state/registerSuite';
+import reset from '../state/reset';
 import mergeExcludedTests from '../test/lib/mergeExcludedTests';
 
 /**
@@ -41,7 +43,7 @@ const createSuite = (name, tests) => {
   // returns validator function
   // and sets the function name
   // to the name of the suite
-  return Object.defineProperty(
+  return Object.defineProperties(
     (...args) => {
       const output = runWithContext(ctxRef, context => {
         registerSuite();
@@ -53,8 +55,17 @@ const createSuite = (name, tests) => {
       });
       return output;
     },
-    'name',
-    { value: name }
+    {
+      name: {
+        value: name,
+      },
+      get: {
+        value: () => get(name),
+      },
+      reset: {
+        value: () => reset(name),
+      },
+    }
   );
 };
 

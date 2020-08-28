@@ -313,6 +313,12 @@ declare module 'vest' {
     memo(fieldName: string, testFn: TestCB, dependencies: any[]): VestTest;
   }
 
+  interface ICreateResult {
+    (...args: any[]): IVestResult;
+    get: Vest['get'];
+    reset: Vest['reset'];
+  }
+
   interface Vest {
     test: ITest;
     enforce: IEnforce;
@@ -367,10 +373,7 @@ declare module 'vest' {
      *
      * const res = validate({username: 'example'});
      */
-    create(
-      suiteName: string,
-      tests: (...args: any[]) => void
-    ): (...args: any[]) => IVestResult;
+    create(suiteName: string, tests: (...args: any[]) => void): ICreateResult;
 
     /**
      * Allows grouping tests so you can handle them together

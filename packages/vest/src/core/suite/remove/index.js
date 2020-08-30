@@ -1,7 +1,7 @@
 import { setSuites } from '..';
 import throwError from '../../../lib/throwError';
 import { setCanceled } from '../../test/lib/canceled';
-import getSuiteState from '../getState';
+import getState from '../getState';
 
 /**
  * Cleans up a suite from state.
@@ -12,7 +12,7 @@ const remove = suiteId => {
     throwError('`vest.remove` must be called with suiteId.');
   }
 
-  const suite = getSuiteState(suiteId);
+  const suite = getState(suiteId);
   if (!suite) {
     return;
   }

@@ -1,6 +1,6 @@
 import createCache from '../../lib/cache';
 import copy from '../../lib/copy';
-import hasRemainingTests from '../state/hasRemainingTests';
+import hasRemainingTests from '../suite/hasRemainingTests';
 import patch from '../state/patch';
 import {
   SEVERITY_GROUP_ERROR,

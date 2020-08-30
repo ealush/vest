@@ -2,10 +2,10 @@ import { OPERATION_MODE_STATELESS } from '../../../constants';
 import runWithContext from '../../../lib/runWithContext';
 import Context from '../../Context';
 import * as state from '../../state';
-import cleanupCompletedSuite from '../../state/cleanupCompletedSuite';
+import cleanupCompletedSuite from '../../suite/cleanupCompleted';
 import { KEY_CANCELED } from '../../state/constants';
 import getSuiteState from '../../state/getSuiteState';
-import hasRemainingTests from '../../state/hasRemainingTests';
+import hasRemainingTests from '../../suite/hasRemainingTests';
 import { removeCanceled } from '../lib/canceled';
 import { removePending } from '../lib/pending';
 

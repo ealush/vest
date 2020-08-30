@@ -11,8 +11,17 @@ function runner(rule, value, ...args) {
     return;
   }
 
-  if (rule(value, ...args) !== true) {
-    throw new Error(`[Enforce]: invalid ${typeof value} value`);
+  const ruleResult = rule(value, ...args);
+  // Handles boolean rules
+  if (typeof ruleResult === 'boolean' && ruleResult !== true) {
+    throw new Error(
+      `[Enforce]: invalid ${typeof value} value with rule ${rule.name}`
+    );
+  }
+
+  // Handles object rules { pass, message }
+  if (typeof ruleResult === 'object' && !ruleResult.pass) {
+    throw new Error(`[Enforce]: ${ruleResult.message}`);
   }
 }
 

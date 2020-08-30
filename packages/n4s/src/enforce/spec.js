@@ -49,8 +49,13 @@ const suite = ({ withProxy, requirePath }) =>
       let extended;
       beforeEach(() => {
         extended = enforce.extend({
-          isImpossible: v => !!v.match(/impossible/i),
           endsWith: (v, arg) => v.endsWith(arg),
+          isImpossible: v => !!v.match(/impossible/i),
+          passVerbose: () => ({
+            pass: true,
+            message: "It shouldn't throw an error",
+          }),
+          throwVerbose: () => ({ pass: false, message: 'Custom error' }),
         });
       });
 
@@ -68,6 +73,20 @@ const suite = ({ withProxy, requirePath }) =>
         enforce('Impossible! The name is Snowball')
           .endsWith('Snowball')
           .isImpossible();
+      });
+
+      it('Should throw a error with a custom message when verbose rule is used', () => {
+        const verbose = () => enforce().throwVerbose();
+        expect.assertions(1);
+        try {
+          verbose();
+        } catch (e) {
+          // eslint-disable-next-line jest/no-try-expect -- I can't catch the error message without a catch block
+          expect(e.message).toBe(`[Enforce]: Custom error`);
+        }
+      });
+      it('Should return silently for custom verbose rule in regular test', () => {
+        enforce().passVerbose();
       });
     });
 

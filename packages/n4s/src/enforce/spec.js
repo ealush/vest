@@ -81,7 +81,7 @@ const suite = ({ withProxy, requirePath }) =>
         try {
           verbose();
         } catch (e) {
-          // eslint-disable-next-line jest/no-try-expect -- I can't catch the error message without a catch block
+          // eslint-disable-next-line jest/no-try-expect -- I can't check the error message without a catch block
           expect(e.message).toBe(`[Enforce]: Custom error`);
         }
       });

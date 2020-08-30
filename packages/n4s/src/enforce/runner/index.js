@@ -13,7 +13,7 @@ function runner(rule, value, ...args) {
 
   const ruleResult = rule(value, ...args);
   // Handles boolean rules
-  if (typeof ruleResult === 'boolean' && ruleResult !== true) {
+  if (ruleResult === false) {
     throw new Error(
       `[Enforce]: invalid ${typeof value} value with rule ${rule.name}`
     );

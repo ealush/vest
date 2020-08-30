@@ -5,7 +5,7 @@ import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import testDummy from '../../../../testUtils/testDummy';
 import { KEY_CANCELED, KEY_SUITES } from '../constants';
-import getSuiteState from '../getSuiteState';
+import getSuiteState from '../getState';
 import remove from '.';
 
 const suiteId = 'suite_id';

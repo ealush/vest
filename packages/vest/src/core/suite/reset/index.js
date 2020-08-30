@@ -1,9 +1,9 @@
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
 import runWithContext from '../../../lib/runWithContext';
 import throwError from '../../../lib/throwError';
-import getSuiteState from '../getSuiteState';
+import getSuiteState from '../../state/getSuiteState';
 import registerSuite from '../registerSuite';
-import remove from '../remove';
+import remove from '../../state/remove';
 
 /**
  * Resets suite to its initial state

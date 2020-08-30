@@ -1,10 +1,10 @@
-import * as state from '..';
+import * as state from '../../state';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import {
   OPERATION_MODE_STATEFUL,
   OPERATION_MODE_STATELESS,
 } from '../../../constants';
-import { KEY_SUITES } from '../constants';
+import { KEY_SUITES } from '../../state/constants';
 import cleanupCompletedSuite from '.';
 
 const suiteName = 'suite_1';

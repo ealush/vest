@@ -1,7 +1,7 @@
 import { dummyTest } from '../../../../testUtils/testDummy';
 import get from '../../../hooks/get';
 import create from '../../createSuite';
-import getSuiteState from '../getSuiteState';
+import getSuiteState from '../../state/getSuiteState';
 import reset from '.';
 
 const validate = create('suite', () => {

@@ -1,7 +1,7 @@
 import { setSuites } from '..';
 import throwError from '../../../lib/throwError';
 import { setCanceled } from '../../test/lib/canceled';
-import getSuiteState from '../getSuiteState';
+import getSuiteState from '../getState';
 
 /**
  * Cleans up a suite from state.

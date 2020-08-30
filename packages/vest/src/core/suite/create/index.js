@@ -1,14 +1,14 @@
-import { OPERATION_MODE_STATEFUL } from '../../constants';
-import { get } from '../../hooks';
-import runWithContext from '../../lib/runWithContext';
-import validateSuiteParams from '../../lib/validateSuiteParams';
-import Context from '../Context';
-import produce from '../produce';
+import { OPERATION_MODE_STATEFUL } from '../../../constants';
+import { get } from '../../../hooks';
+import runWithContext from '../../../lib/runWithContext';
+import validateSuiteParams from '../../../lib/validateSuiteParams';
+import Context from '../../Context';
+import produce from '../../produce';
 import { getSuite } from '../state';
-import getSuiteState from '../state/getSuiteState';
-import registerSuite from '../state/registerSuite';
-import reset from '../state/reset';
-import mergeExcludedTests from '../test/lib/mergeExcludedTests';
+import getSuiteState from '../getState';
+import registerSuite from '../../state/registerSuite';
+import reset from '../reset';
+import mergeExcludedTests from '../../test/lib/mergeExcludedTests';
 
 /**
  * Initializes a validation suite, creates a validation context.

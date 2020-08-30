@@ -1,4 +1,4 @@
-import getSuiteState from '../getSuiteState';
+import getState from '../getState';
 import hasRemainingTests from '../hasRemainingTests';
 import remove from '../remove';
 /**
@@ -6,7 +6,7 @@ import remove from '../remove';
  * @param {string} suiteId
  */
 const cleanupCompletedSuite = suiteId => {
-  const state = getSuiteState(suiteId);
+  const state = getState(suiteId);
 
   if (hasRemainingTests(state)) {
     return;

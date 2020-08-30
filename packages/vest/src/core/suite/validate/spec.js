@@ -1,7 +1,7 @@
 import faker from 'faker';
-import mock from '../../../../../shared/testUtils/mock';
-import { OPERATION_MODE_STATELESS } from '../../constants';
-import Context from '../Context';
+import mock from '../../../../../../shared/testUtils/mock';
+import { OPERATION_MODE_STATELESS } from '../../../constants';
+import Context from '../../Context';
 
 let validate;
 

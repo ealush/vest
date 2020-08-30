@@ -1,7 +1,7 @@
 import { dummyTest } from '../../../../testUtils/testDummy';
 import get from '../../../hooks/get';
-import create from '../../createSuite';
-import getSuiteState from '../../state/getSuiteState';
+import create from '../create';
+import getState from '../getState';
 import reset from '.';
 
 const validate = create('suite', () => {
@@ -34,7 +34,7 @@ describe('vest.reset', () => {
 
   it('Should initialize suite when not found', () => {
     const name = 'nonexistent_suite';
-    expect(() => getSuiteState(name)).toThrow();
+    expect(() => getState(name)).toThrow();
     const expected = {
       ...initialState,
       name,

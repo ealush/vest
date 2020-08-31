@@ -23,6 +23,8 @@ const FORMAT_ES = 'es';
 const FORMAT_CJS = 'cjs';
 const DIR_ESM = 'esm';
 
+const { NODE_ENV } = process.env;
+
 const DIST_PATH = path.join(PACKAGE_PATH, DIR_NAME_DIST);
 
 const plugins = ({ name, format }) => {
@@ -56,6 +58,7 @@ const plugins = ({ name, format }) => {
     replace({
       VEST_VERSION: JSON.stringify(version),
       LIBRARY_NAME: JSON.stringify(PACKAGE_VEST),
+      __DEV__: NODE_ENV === "development" ? true : false
     }),
   ];
 

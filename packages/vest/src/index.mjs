@@ -1,8 +1,8 @@
 import enforce from '../../n4s/src/enforce';
-import create from './core/createSuite';
-import reset from './core/state/reset';
+import create from './core/suite/create';
+import reset from './core/suite/reset';
 import test from './core/test';
-import validate from './core/validate';
+import validate from './core/suite/validate';
 import { draft, only, skip, warn, get, group } from './hooks';
 import runWithContext from './lib/runWithContext';
 

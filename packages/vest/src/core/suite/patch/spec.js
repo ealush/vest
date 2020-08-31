@@ -1,7 +1,7 @@
-import * as state from '..';
 import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
+import * as state from '../../state';
 import getState from '../getState';
 import patch from '.';
 

@@ -2,7 +2,7 @@ import { isExcluded } from '../../hooks/exclusive';
 import createCache from '../../lib/cache';
 import runWithContext from '../../lib/runWithContext';
 import Context from '../Context';
-import patch from '../state/patch';
+import patch from '../suite/patch';
 import VestTest from './lib/VestTest';
 import { setPending } from './lib/pending';
 import runAsyncTest from './runAsyncTest';

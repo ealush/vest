@@ -2,8 +2,8 @@ import { OPERATION_MODE_STATELESS } from '../../../constants/index';
 import id from '../../../lib/id';
 import runWithContext from '../../../lib/runWithContext';
 import validateSuiteParams from '../../../lib/validateSuiteParams/index';
-import create from '../create';
 import cleanupCompleted from '../cleanupCompleted';
+import create from '../create';
 
 /**
  * Creates a suite and immediately invokes it.

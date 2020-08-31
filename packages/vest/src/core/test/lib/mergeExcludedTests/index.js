@@ -1,5 +1,5 @@
 import { isExcluded } from '../../../../hooks/exclusive';
-import patch from '../../../state/patch';
+import patch from '../../../suite/patch';
 
 /**
  * Merges excluded tests with their prevState values.

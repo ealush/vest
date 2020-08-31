@@ -5,9 +5,9 @@ import runWithContext from '../../../lib/runWithContext';
 import Context from '../../Context';
 import * as state from '../../state';
 import { KEY_CANCELED } from '../../state/constants';
-import getSuiteState from '../../state/getSuiteState';
-import patch from '../../state/patch';
-import registerSuite from '../../state/registerSuite';
+import getState from '../../suite/getState';
+import patch from '../../suite/patch';
+import register from '../../suite/register';
 import VestTest from '../lib/VestTest';
 import { setPending } from '../lib/pending';
 import runAsyncTest from '.';
@@ -36,7 +36,7 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
       operationMode: OPERATION_MODE_STATEFUL,
     });
 
-    registerSuite(context);
+    register(context);
     patch(suiteId, state => ({
       ...state,
       fieldCallbacks: {
@@ -62,8 +62,8 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
 
   describe('State updates', () => {
     test('Initial state matches snapshot (sanity)', () => {
-      expect(getSuiteState(suiteId).pending).toContain(testObject);
-      expect(getSuiteState(suiteId)).toMatchSnapshot();
+      expect(getState(suiteId).pending).toContain(testObject);
+      expect(getState(suiteId)).toMatchSnapshot();
       runRunAsyncTest(testObject);
     });
 
@@ -71,7 +71,7 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
       new Promise(done => {
         runRunAsyncTest(testObject);
         setTimeout(() => {
-          expect(getSuiteState(suiteId).pending).not.toContain(testObject);
+          expect(getState(suiteId).pending).not.toContain(testObject);
           done();
         });
       }));
@@ -83,17 +83,17 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
           state[KEY_CANCELED][testObject.id] = true;
           return state;
         });
-        currentState = _.cloneDeep(getSuiteState(suiteId));
+        currentState = _.cloneDeep(getState(suiteId));
       });
 
       it('Should remove test from pending array', () => {
-        expect(getSuiteState(suiteId).pending).toEqual(
+        expect(getState(suiteId).pending).toEqual(
           expect.arrayContaining([testObject])
         );
         runRunAsyncTest(testObject);
         return new Promise(done => {
           setTimeout(() => {
-            expect(getSuiteState(suiteId).pending).toEqual(
+            expect(getState(suiteId).pending).toEqual(
               expect.not.arrayContaining([testObject])
             );
             done();
@@ -116,7 +116,7 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
         new Promise(done => {
           runRunAsyncTest(testObject);
           setTimeout(() => {
-            expect(_.omit(getSuiteState(suiteId), 'pending')).toEqual(
+            expect(_.omit(getState(suiteId), 'pending')).toEqual(
               _.omit(currentState, 'pending')
             );
             done();

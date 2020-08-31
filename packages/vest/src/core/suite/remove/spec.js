@@ -1,10 +1,10 @@
 import _ from 'lodash';
-import * as state from '..';
 import vest from '../../..';
 import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import testDummy from '../../../../testUtils/testDummy';
-import { KEY_CANCELED, KEY_SUITES } from '../constants';
+import * as state from '../../state';
+import { KEY_CANCELED, KEY_SUITES } from '../../state/constants';
 import getState from '../getState';
 import remove from '.';
 

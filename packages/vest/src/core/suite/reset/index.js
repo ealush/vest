@@ -1,6 +1,6 @@
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
-import runWithContext from '../../../../lib/runWithContext';
-import throwError from '../../../../lib/throwError';
+import runWithContext from '../../../lib/runWithContext';
+import throwError from '../../../lib/throwError';
 import getState from '../getState';
 import register from '../register';
 import remove from '../remove';

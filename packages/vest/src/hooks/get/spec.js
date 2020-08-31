@@ -1,14 +1,14 @@
 import { dummyTest } from '../../../testUtils/testDummy';
-import createSuite from '../../core/createSuite';
 import produce from '../../core/produce';
-import getSuiteState from '../../core/state/getSuiteState';
-import remove from '../../core/state/remove';
+import create from '../../core/suite/create';
+import getState from '../../core/suite/getState';
+import remove from '../../core/suite/remove';
 import get from '.';
 
 const suiteId = 'form-name';
 
 const validation = () =>
-  createSuite(suiteId, () => {
+  create(suiteId, () => {
     dummyTest.passing('f1', 'msg');
     dummyTest.failing('f2', 'msg');
     dummyTest.failingWarning('f2', 'msg');
@@ -42,9 +42,7 @@ describe('hook: vest.get()', () => {
 
     it('Should return produced result', () => {
       validate();
-      expect(produce(getSuiteState(suiteId), { draft: true })).toBe(
-        get(suiteId)
-      );
+      expect(produce(getState(suiteId), { draft: true })).toBe(get(suiteId));
       expect(get(suiteId)).toMatchSnapshot();
     });
   });

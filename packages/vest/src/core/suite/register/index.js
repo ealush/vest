@@ -1,5 +1,5 @@
-import { getSuite, setSuites } from '..';
 import Context from '../../Context';
+import { getSuite, setSuites } from '../../state';
 
 /**
  * Generates a default suite state object.

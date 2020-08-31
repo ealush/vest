@@ -1,5 +1,5 @@
-import { setSuites } from '..';
 import throwError from '../../../lib/throwError';
+import { setSuites } from '../../state';
 import { setCanceled } from '../../test/lib/canceled';
 import getState from '../getState';
 

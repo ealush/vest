@@ -1,5 +1,5 @@
-import * as state from '..';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
+import * as state from '../../state';
 import getState from '.';
 
 const suiteName = 'suite_1';

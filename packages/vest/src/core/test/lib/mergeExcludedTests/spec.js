@@ -6,7 +6,7 @@ import { group } from '../../../../hooks';
 import vest from '../../../../index';
 import Context from '../../../Context';
 import produce from '../../../produce';
-import getSuiteState from '../../../state/getSuiteState';
+import getState from '../../../suite/getState';
 
 const SUITE_NAME = 'suite_1';
 const suiteId = 'suiteId_1';
@@ -56,24 +56,24 @@ describe('module: skipped', () => {
             it('Should copy prev field state over', () => {
               res = validate(/* skip */ FIELD_NAME_1);
 
-              res = produce(getSuiteState(suiteId));
+              res = produce(getState(suiteId));
 
               expect(res.tests[FIELD_NAME_1]).toEqual(
                 prevRes.tests[FIELD_NAME_1]
               );
-              expect(getSuiteState(suiteId)).toMatchSnapshot();
+              expect(getState(suiteId)).toMatchSnapshot();
             });
           });
           describe('Error field', () => {
             it('Should copy prev field state over', () => {
               res = validate(/* skip */ FIELD_NAME_2);
 
-              res = produce(getSuiteState(suiteId));
+              res = produce(getState(suiteId));
 
               expect(res.tests[FIELD_NAME_2]).toEqual(
                 prevRes.tests[FIELD_NAME_2]
               );
-              expect(getSuiteState(suiteId)).toMatchSnapshot();
+              expect(getState(suiteId)).toMatchSnapshot();
             });
           });
         });
@@ -143,7 +143,7 @@ describe('module: skipped', () => {
             expect(res.tests).not.toHaveProperty('f7');
             expect(res).toMatchSnapshot();
             setTimeout(() => {
-              res = produce(getSuiteState(suiteId));
+              res = produce(getState(suiteId));
               expect(res.errorCount).toBe(4);
               expect(res.tests.f3.errorCount).toBe(2);
               done();
@@ -168,7 +168,7 @@ describe('module: skipped', () => {
             expect(res.tests.f5.warnCount).toBe(0);
             expect(res).toMatchSnapshot();
             setTimeout(() => {
-              res = produce(getSuiteState(suiteId));
+              res = produce(getState(suiteId));
               // both outer and inner async
               expect(res.tests.f3.errorCount).toBe(4);
               done();
@@ -205,7 +205,7 @@ describe('module: skipped', () => {
             expect(res).toMatchSnapshot();
 
             setTimeout(() => {
-              res = produce(getSuiteState(suiteId));
+              res = produce(getState(suiteId));
               expect(res.tests.f3.errorCount).toBe(5);
               expect(res).toMatchSnapshot();
               done();

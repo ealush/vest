@@ -1,3 +1,5 @@
+import { transformResultEnforce } from '../../lib/transformResult';
+
 /**
  * Run a single rule against enforced value (e.g. `isNumber()`)
  *
@@ -12,16 +14,9 @@ function runner(rule, value, ...args) {
   }
 
   const ruleResult = rule(value, ...args);
-  // Handles boolean rules
-  if (ruleResult === false) {
-    throw new Error(
-      `[Enforce]: invalid ${typeof value} value with rule ${rule.name}`
-    );
-  }
-
-  // Handles object rules { pass, message }
-  if (typeof ruleResult === 'object' && !ruleResult.pass) {
-    throw new Error(`[Enforce]: ${ruleResult.message}`);
+  const result = transformResultEnforce(ruleResult, { rule, value });
+  if (!result.pass) {
+    throw new Error(result.message);
   }
 }
 

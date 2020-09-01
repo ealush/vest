@@ -75,16 +75,6 @@ const suite = ({ withProxy, requirePath }) =>
           .isImpossible();
       });
 
-      it('Should throw a error with a custom message when verbose rule is used', () => {
-        const verbose = () => enforce().throwVerbose();
-        expect.assertions(1);
-        try {
-          verbose();
-        } catch (e) {
-          // eslint-disable-next-line jest/no-try-expect -- I can't check the error message without a catch block
-          expect(e.message).toBe(`[Enforce]: Custom error`);
-        }
-      });
       it('Should return silently for custom verbose rule in regular test', () => {
         enforce().passVerbose();
       });

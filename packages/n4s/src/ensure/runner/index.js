@@ -1,3 +1,5 @@
+import { transformResultEnsure } from '../../lib/transformResult';
+
 /**
  * Run a single rule against ensured value (e.g. `isNumber()`)
  * @param {Function} rule - rule to run
@@ -7,7 +9,8 @@
  */
 function runner(rule, value, ...args) {
   try {
-    return rule(value, ...args) === true;
+    const result = rule(value, ...args);
+    return transformResultEnsure(result, { rule, value }).pass;
   } catch (err) {
     return false;
   }

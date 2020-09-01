@@ -22,6 +22,15 @@ export function formatResultMessage(interfaceName, rule, msg) {
   return `[${interfaceName}]/${rule.name} ${msg}`;
 }
 
+/**
+ * @param {string} interfaceName
+ * @param {*} result
+ * @param {function} options.rule
+ * @param {*} option.value
+ * @returns {Object} result
+ * @returns {string} result.message
+ * @returns {boolean} result.pass
+ */
 export function transformResult(interfaceName, result, { rule, value }) {
   const defaultResult = getDefaultResult(interfaceName, value, rule);
 

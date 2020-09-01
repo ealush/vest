@@ -23,13 +23,15 @@ export function formatResultMessage(interfaceName, rule, msg) {
 }
 
 /**
- * @param {string} interfaceName
- * @param {*} result
+ * Transform the result of a rule into a standard format
+ * @param {string} interfaceName to be used in the messages
+ * @param {*} result of the rule
+ * @param {Object} options
  * @param {function} options.rule
- * @param {*} option.value
+ * @param {*} options.value
  * @returns {Object} result
  * @returns {string} result.message
- * @returns {boolean} result.pass
+ * @returns {boolean} result.pass indicates if the test passes or not
  */
 export function transformResult(interfaceName, result, { rule, value }) {
   const defaultResult = getDefaultResult(interfaceName, value, rule);
@@ -39,7 +41,6 @@ export function transformResult(interfaceName, result, { rule, value }) {
     throw new Error(
       `[${interfaceName}]/${rule.name} wrong return value for the rule please check that the return is valid`
     );
-    // return { pass: false,  message:  `[${interfaceName}]/${rule.name} wrong return value for the rule please check that the return is valid`}
   }
 
   if (typeof result === 'boolean') {

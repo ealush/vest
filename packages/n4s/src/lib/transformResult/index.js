@@ -1,5 +1,3 @@
-import defaults from 'lodash/defaults';
-
 export function isValidResult(result) {
   return !!(
     typeof result === 'boolean' ||
@@ -44,9 +42,11 @@ export function transformResult(interfaceName, result, { rule, value }) {
   }
 
   if (typeof result === 'boolean') {
-    return defaults({ pass: result }, defaultResult);
+    return { ...defaultResult, pass: result };
   } else {
-    const formattedResult = {};
+    const formattedResult = {
+      pass: result.pass,
+    };
     if (result.message) {
       formattedResult.message = formatResultMessage(
         interfaceName,
@@ -54,7 +54,7 @@ export function transformResult(interfaceName, result, { rule, value }) {
         typeof result.message === 'function' ? result.message() : result.message
       );
     }
-    return defaults(formattedResult, result, defaultResult);
+    return { ...defaultResult, ...formattedResult };
   }
 }
 

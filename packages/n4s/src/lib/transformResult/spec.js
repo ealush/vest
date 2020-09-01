@@ -4,6 +4,7 @@ import {
   goodObjectMessageRule,
   badObjectRule,
   nullRule,
+  goodObjectMessageFunctionRule,
 } from '../../testUtils/rules';
 import {
   isValidResult,
@@ -79,14 +80,24 @@ describe('Test transform result', () => {
       });
     });
 
-    it('Should throw with malformed result', () => {
-      const result = badObjectRule(bool);
-      expect(() =>
-        transformResult('Test', result, { rule: badObjectRule, value: bool })
-      ).toThrow(Error);
+    it('Should get the message from the function', () => {
+      const result = goodObjectMessageFunctionRule(bool);
+      expect(
+        transformResult('Test', result, {
+          rule: goodObjectMessageFunctionRule,
+          value: bool,
+        })
+      ).toEqual({
+        pass: bool,
+        message: formatResultMessage(
+          'Test',
+          goodObjectMessageFunctionRule,
+          result.message()
+        ),
+      });
     });
 
-    it('Should throw with null result', () => {
+    it('Should throw with malformed result', () => {
       const result = badObjectRule(bool);
       expect(() =>
         transformResult('Test', result, { rule: badObjectRule, value: bool })

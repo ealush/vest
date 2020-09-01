@@ -15,6 +15,13 @@ export function goodObjectMessageRule(bool) {
   };
 }
 
+export function goodObjectMessageFunctionRule(bool) {
+  return {
+    pass: bool,
+    message: () => `I passed with ${bool}`,
+  };
+}
+
 export function badObjectRule() {
   return { message: 'Something went wrong' };
 }

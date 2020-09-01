@@ -5,7 +5,7 @@ import remove from '../remove';
  * Removes completed "stateless" suite from state storage.
  * @param {string} suiteId
  */
-const cleanupCompletedSuite = suiteId => {
+const cleanupCompleted = suiteId => {
   const state = getState(suiteId);
 
   if (hasRemainingTests(state)) {
@@ -14,4 +14,4 @@ const cleanupCompletedSuite = suiteId => {
   remove(suiteId);
 };
 
-export default cleanupCompletedSuite;
+export default cleanupCompleted;

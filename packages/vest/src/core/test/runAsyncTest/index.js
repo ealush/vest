@@ -3,7 +3,7 @@ import runWithContext from '../../../lib/runWithContext';
 import Context from '../../Context';
 import * as state from '../../state';
 import { KEY_CANCELED } from '../../state/constants';
-import cleanupCompletedSuite from '../../suite/cleanupCompleted';
+import cleanupCompleted from '../../suite/cleanupCompleted';
 import getState from '../../suite/getState';
 import hasRemainingTests from '../../suite/hasRemainingTests';
 import { removeCanceled } from '../lib/canceled';
@@ -95,7 +95,7 @@ const onAsyncTestFinished = (testObject, operationMode) => {
   runDoneCallbacks(suiteId, fieldName);
 
   if (operationMode === OPERATION_MODE_STATELESS) {
-    cleanupCompletedSuite(suiteId);
+    cleanupCompleted(suiteId);
   }
 };
 

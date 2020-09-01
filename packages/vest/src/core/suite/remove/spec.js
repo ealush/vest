@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import vest from '../../..';
 import resetState from '../../../../testUtils/resetState';
-import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
+import runRegister from '../../../../testUtils/runRegister';
 import testDummy from '../../../../testUtils/testDummy';
 import * as state from '../../state';
 import { KEY_CANCELED, KEY_SUITES } from '../../state/constants';
@@ -38,7 +38,7 @@ describe('remove', () => {
 
   describe('When suite does not exist in state', () => {
     beforeEach(() => {
-      runRegisterSuite({ name: suiteId, suiteId });
+      runRegister({ name: suiteId, suiteId });
       currentState = _.cloneDeep(state.get());
     });
 

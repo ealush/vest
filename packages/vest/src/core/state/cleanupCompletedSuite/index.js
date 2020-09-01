@@ -3,15 +3,15 @@ import hasRemainingTests from '../../suite/hasRemainingTests';
 import remove from '../../suite/remove';
 /**
  * Removes completed "stateless" suite from state storage.
- * @param {string} suiteId
+ * @param {string} Id
  */
-const cleanupCompletedSuite = suiteId => {
-  const state = getState(suiteId);
+const cleanupCompleted = Id => {
+  const state = getState(Id);
 
   if (hasRemainingTests(state)) {
     return;
   }
-  remove(suiteId);
+  remove(Id);
 };
 
-export default cleanupCompletedSuite;
+export default cleanupCompleted;

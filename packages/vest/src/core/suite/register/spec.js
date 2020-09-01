@@ -1,5 +1,5 @@
 import resetState from '../../../../testUtils/resetState';
-import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
+import runRegister from '../../../../testUtils/runRegister';
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
 import * as state from '../../state';
 import patch from '../patch';
@@ -23,7 +23,7 @@ describe('registerSuite', () => {
   describe('When suite does not exist in state', () => {
     it('Should create initial suite without prevState', () => {
       expect(state.getSuite(suiteId)).toBeUndefined();
-      runRegisterSuite(context);
+      runRegister(context);
       expect(state.getSuite(suiteId)).toHaveLength(2);
       expect(state.getSuite(suiteId)[1]).toBeUndefined();
       expect(state.getSuite(suiteId)[0]).toMatchSnapshot();
@@ -33,10 +33,10 @@ describe('registerSuite', () => {
   describe('When suite exists in state', () => {
     let suite;
     beforeEach(() => {
-      runRegisterSuite(context);
+      runRegister(context);
       suite = state.getSuite(suiteId);
       prevSuiteState = suite[0];
-      runRegisterSuite({ ...context });
+      runRegister({ ...context });
     });
     it('Should move prev prevSuiteState into second array cell', () => {
       expect(state.getSuite(suiteId)[1]).toBe(prevSuiteState);
@@ -53,7 +53,7 @@ describe('registerSuite', () => {
             pending,
             lagging,
           }));
-          runRegisterSuite(context);
+          runRegister(context);
         });
         it('Should merge previous pending and lagging into lagging', () => {
           expect(suite[0].lagging).isDeepCopyOf([...pending, ...lagging]);

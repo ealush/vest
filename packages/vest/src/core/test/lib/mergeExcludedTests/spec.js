@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import resetState from '../../../../../testUtils/resetState';
-import runRegisterSuite from '../../../../../testUtils/runRegisterSuite';
+import runRegister from '../../../../../testUtils/runRegister';
 import { dummyTest } from '../../../../../testUtils/testDummy';
 import { group } from '../../../../hooks';
 import vest from '../../../../index';
@@ -23,7 +23,7 @@ describe('module: skipped', () => {
   describe('export: mergeExcludedTests', () => {
     describe('When previous state exists', () => {
       beforeEach(() => {
-        runRegisterSuite({
+        runRegister({
           name: SUITE_NAME,
           suiteId,
         });

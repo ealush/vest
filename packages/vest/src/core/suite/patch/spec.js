@@ -1,5 +1,5 @@
 import resetState from '../../../../testUtils/resetState';
-import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
+import runRegister from '../../../../testUtils/runRegister';
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
 import * as state from '../../state';
 import getState from '../getState';
@@ -26,7 +26,7 @@ describe('patch', () => {
     beforeEach(() => {
       patcher = jest.fn(state => ({ ...state, ...{ k: 'v' } }));
       resetState();
-      runRegisterSuite(context);
+      runRegister(context);
       suite = state.getSuite(suiteId);
       suiteState = suite[0];
       prevState = suite[1];
@@ -47,7 +47,7 @@ describe('patch', () => {
     beforeEach(() => {
       patcher = {};
       resetState();
-      runRegisterSuite(context);
+      runRegister(context);
     });
 
     it('Should throw an error', () => {

@@ -5,6 +5,6 @@ import { getSuite } from '../../state';
  * @param {string} suiteId
  * @returns {Object} Current suite state.
  */
-const getSuiteState = suiteId => getSuite(suiteId)[0];
+const getState = suiteId => getSuite(suiteId)[0];
 
-export default getSuiteState;
+export default getState;

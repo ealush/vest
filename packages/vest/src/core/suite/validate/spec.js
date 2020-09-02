@@ -10,13 +10,13 @@ describe('module:validate', () => {
     tests,
     mockCreateSuite,
     returnedFn,
-    mockCleanupCompletedSuite,
+    mockCleanupCompleted,
     output,
     suiteId;
   beforeEach(() => {
     returnedFn = jest.fn();
     tests = jest.fn();
-    mockCleanupCompletedSuite = mock('cleanupCompletedSuite');
+    mockCleanupCompleted = mock('cleanupCompleted');
     suiteName = faker.lorem.word();
     suiteId = faker.random.number();
     mockCreateSuite = mock('createSuite', returnedFn);
@@ -81,13 +81,13 @@ describe('module:validate', () => {
     const unsorted = [
       returnedFn.mock.invocationCallOrder,
       mockCreateSuite.mock.invocationCallOrder,
-      mockCleanupCompletedSuite.mock.invocationCallOrder,
+      mockCleanupCompleted.mock.invocationCallOrder,
     ];
 
     expect(unsorted.sort()).toEqual([
       mockCreateSuite.mock.invocationCallOrder,
       returnedFn.mock.invocationCallOrder,
-      mockCleanupCompletedSuite.mock.invocationCallOrder,
+      mockCleanupCompleted.mock.invocationCallOrder,
     ]);
   });
 

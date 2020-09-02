@@ -17,6 +17,7 @@ module.exports = {
   globals: {
     VEST_VERSION: true,
     LIBRARY_NAME: true,
+    ENV_DEVELOPMENT : true
   },
   ignorePatterns: ['playground'],
   parser: 'babel-eslint',

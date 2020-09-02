@@ -13,7 +13,7 @@ import {
   validateResult,
 } from '.';
 
-describe('Tests `isValidResult` helper', () => {
+describe('Tests `validateResult` helper', () => {
   it('Should pass with boolean return values', () => {
     const testRule = () => true;
     validateResult(testRule());
@@ -110,7 +110,7 @@ describe.each([true, false])('Test transform result', bool => {
 describe("Test transform result's message", () => {
   [goodObjectMessageRule, goodObjectMessageRule, goodObjectRule].forEach(
     rule => {
-      it('Should containt de name of the lib', () => {
+      it('Should contain the library name', () => {
         const result = rule(true);
         expect(transformResult(result, { rule, value: true }).message).toMatch(
           LIBRARY_NAME

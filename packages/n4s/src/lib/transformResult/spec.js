@@ -13,7 +13,7 @@ import {
   validateResult,
 } from '.';
 
-describe('Tests `isValidResult` helper', () => {
+describe('Tests `validateResult` helper', () => {
   it('Should pass with boolean return values', () => {
     const testRule = () => true;
     validateResult(testRule());

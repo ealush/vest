@@ -3,14 +3,14 @@ import * as state from '../../src/core/state';
 import getState from '../../src/core/suite/getState';
 import runRegister from '../runRegister';
 
-const resetState = (Id, Name = Id) => {
+const resetState = (suiteId, suiteName = suiteId) => {
   state.set(() => null);
   state.register();
 
-  if (Name) {
+  if (suiteName) {
     runRegister({
-      Id,
-      name: Name,
+      suiteId,
+      name: suiteName,
       operationMode: OPERATION_MODE_STATEFUL,
     });
     return getState(Id);

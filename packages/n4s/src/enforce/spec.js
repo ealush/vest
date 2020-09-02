@@ -49,8 +49,13 @@ const suite = ({ withProxy, requirePath }) =>
       let extended;
       beforeEach(() => {
         extended = enforce.extend({
-          isImpossible: v => !!v.match(/impossible/i),
           endsWith: (v, arg) => v.endsWith(arg),
+          isImpossible: v => !!v.match(/impossible/i),
+          passVerbose: () => ({
+            pass: true,
+            message: "It shouldn't throw an error",
+          }),
+          throwVerbose: () => ({ pass: false, message: 'Custom error' }),
         });
       });
 
@@ -68,6 +73,10 @@ const suite = ({ withProxy, requirePath }) =>
         enforce('Impossible! The name is Snowball')
           .endsWith('Snowball')
           .isImpossible();
+      });
+
+      it('Should return silently for custom verbose rule in regular test', () => {
+        enforce().passVerbose();
       });
     });
 

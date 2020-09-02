@@ -1,4 +1,4 @@
-import { transformResultEnsure } from '../../lib/transformResult';
+import { transformResult } from '../../lib/transformResult';
 
 /**
  * Run a single rule against ensured value (e.g. `isNumber()`)
@@ -10,7 +10,7 @@ import { transformResultEnsure } from '../../lib/transformResult';
 function runner(rule, value, ...args) {
   try {
     const result = rule(value, ...args);
-    return transformResultEnsure(result, { rule, value }).pass;
+    return transformResult(result, { rule, value }).pass;
   } catch (err) {
     return false;
   }

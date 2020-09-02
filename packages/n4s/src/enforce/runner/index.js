@@ -1,4 +1,4 @@
-import { transformResultEnforce } from '../../lib/transformResult';
+import { transformResult } from '../../lib/transformResult';
 
 /**
  * Run a single rule against enforced value (e.g. `isNumber()`)
@@ -14,7 +14,7 @@ function runner(rule, value, ...args) {
   }
 
   const ruleResult = rule(value, ...args);
-  const result = transformResultEnforce(ruleResult, { rule, value });
+  const result = transformResult(ruleResult, { rule, value });
   if (!result.pass) {
     throw new Error(result.message);
   }

@@ -1,23 +1,25 @@
-export function isValidResult(result) {
-  return !!(
-    typeof result === 'boolean' ||
-    (result && typeof result.pass === 'boolean')
-  );
+import throwError from '../throwError';
+
+export function validateResult(result, rule) {
+  if (
+    typeof result !== 'boolean' &&
+    (!result || typeof result.pass !== 'boolean')
+  ) {
+    throwError(
+      `/${rule.name} wrong return value for the rule please check that the return is valid`
+    );
+  }
 }
 
 // for easier testing and mocking
-export function getDefaultResult(interfaceName, value, rule) {
+export function getDefaultResult(value, rule) {
   return {
-    message: formatResultMessage(
-      interfaceName,
-      rule,
-      `invalid ${typeof value} value`
-    ),
+    message: formatResultMessage(rule, `invalid ${typeof value} value`),
   };
 }
 
-export function formatResultMessage(interfaceName, rule, msg) {
-  return `[${interfaceName}]/${rule.name} ${msg}`;
+export function formatResultMessage(rule, msg) {
+  return `[${LIBRARY_NAME}]/${rule.name} ${msg}`;
 }
 
 /**
@@ -31,15 +33,9 @@ export function formatResultMessage(interfaceName, rule, msg) {
  * @returns {string} result.message
  * @returns {boolean} result.pass indicates if the test passes or not
  */
-export function transformResult(interfaceName, result, { rule, value }) {
-  const defaultResult = getDefaultResult(interfaceName, value, rule);
-
-  if (!isValidResult(result)) {
-    // #TODO handle invalid result
-    throw new Error(
-      `[${interfaceName}]/${rule.name} wrong return value for the rule please check that the return is valid`
-    );
-  }
+export function transformResult(result, { rule, value }) {
+  const defaultResult = getDefaultResult(value, rule);
+  validateResult(result, rule);
 
   if (typeof result === 'boolean') {
     return { ...defaultResult, pass: result };
@@ -49,7 +45,6 @@ export function transformResult(interfaceName, result, { rule, value }) {
     };
     if (result.message) {
       formattedResult.message = formatResultMessage(
-        interfaceName,
         rule,
         typeof result.message === 'function' ? result.message() : result.message
       );
@@ -57,6 +52,3 @@ export function transformResult(interfaceName, result, { rule, value }) {
     return { ...defaultResult, ...formattedResult };
   }
 }
-
-export const transformResultEnforce = transformResult.bind(null, 'Enforce');
-export const transformResultEnsure = transformResult.bind(null, 'Ensure');

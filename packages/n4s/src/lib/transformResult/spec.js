@@ -112,7 +112,7 @@ describe('Test transform result', () => {
 describe("Test transform result's message", () => {
   [goodObjectMessageRule, goodObjectMessageRule, goodObjectRule].forEach(
     rule => {
-      it('Should containt de name of the lib', () => {
+      it('Should contain the library name', () => {
         const result = rule(true);
         expect(transformResult(result, { rule, value: true }).message).toMatch(
           LIBRARY_NAME

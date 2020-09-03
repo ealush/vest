@@ -1,4 +1,4 @@
-import runRegister from '../../../../testUtils/runRegister';
+import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import {
   OPERATION_MODE_STATEFUL,
   OPERATION_MODE_STATELESS,
@@ -35,8 +35,8 @@ describe('cleanupCompleted', () => {
           name: suiteName,
           operationMode: OPERATION_MODE_STATELESS,
         };
-        runRegister(suite2Context);
-        runRegister(defaultContext);
+        runRegisterSuite(suite2Context);
+        runRegisterSuite(defaultContext);
       });
       it('Should remove suite from state', () => {
         expect(state.get()[KEY_SUITES]).toHaveProperty(suiteId);

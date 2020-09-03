@@ -2,7 +2,7 @@ import _ from 'lodash';
 import vest from '../..';
 import collector from '../../../../../shared/testUtils/collector';
 import resetState from '../../../testUtils/resetState';
-import runRegister from '../../../testUtils/runRegister';
+import runRegisterSuite from '../../../testUtils/runRegisterSuite';
 import suiteIdByName from '../../../testUtils/suiteIdByName';
 import testDummy from '../../../testUtils/testDummy';
 import group from '../../hooks/group';
@@ -422,7 +422,7 @@ describe('module: produce', () => {
     });
     describe('When no async tests', () => {
       it('Sanity', () => {
-        runRegister({ name: suiteId });
+        runRegisterSuite({ name: suiteId });
         const state = getState(suiteId);
         expect(hasRemainingTests(state)).toBe(false);
       });

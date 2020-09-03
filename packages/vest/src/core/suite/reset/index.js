@@ -1,8 +1,8 @@
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
 import runWithContext from '../../../lib/runWithContext';
 import throwError from '../../../lib/throwError';
-import getSuiteState from '../getSuiteState';
-import registerSuite from '../registerSuite';
+import getState from '../getState';
+import register from '../register';
 import remove from '../remove';
 
 /**
@@ -16,7 +16,7 @@ const reset = suiteId => {
 
   let name = suiteId;
   try {
-    name = getSuiteState(suiteId).name;
+    name = getState(suiteId).name;
     remove(suiteId);
   } catch {
     /* */
@@ -24,7 +24,7 @@ const reset = suiteId => {
 
   runWithContext(
     { name, suiteId, operationMode: OPERATION_MODE_STATEFUL },
-    registerSuite
+    register
   );
 };
 

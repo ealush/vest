@@ -6,8 +6,8 @@ const vestSrc = packagePath(PACKAGE_VEST, 'src');
 
 const PATHS = {
   Context: path.join(vestSrc, 'core/Context'),
-  cleanupCompletedSuite: path.join(vestSrc, 'core/state/cleanupCompletedSuite'),
-  createSuite: path.join(vestSrc, 'core/createSuite'),
+  cleanupCompleted: path.join(vestSrc, 'core/suite/cleanupCompleted'),
+  createSuite: path.join(vestSrc, 'core/suite/create'),
   id: path.join(vestSrc, 'lib/id'),
   patch: path.join(vestSrc, 'core/state/patch'),
   runWithContext: path.join(vestSrc, 'lib/runWithContext'),

@@ -2,8 +2,8 @@ import _ from 'lodash';
 import resetState from '../../../../../testUtils/resetState';
 import * as state from '../../../state';
 import { KEY_CANCELED } from '../../../state/constants';
-import getSuiteState from '../../../state/getSuiteState';
-import patch from '../../../state/patch';
+import getState from '../../../suite/getState';
+import patch from '../../../suite/patch';
 import VestTest from '../VestTest';
 import { removePending, setPending } from '.';
 
@@ -16,7 +16,7 @@ describe('module: pending', () => {
   describe('export: removePending', () => {
     describe('When testObject it not pending or lagging', () => {
       beforeEach(() => {
-        currentState = _.cloneDeep(getSuiteState(suiteId));
+        currentState = _.cloneDeep(getState(suiteId));
         testObject = new VestTest({
           fieldName: 'field_1',
           statement: 'failure_message',
@@ -26,7 +26,7 @@ describe('module: pending', () => {
       });
       it('Should keep state unchanged', () => {
         removePending(testObject);
-        expect(getSuiteState(suiteId)).toEqual(currentState);
+        expect(getState(suiteId)).toEqual(currentState);
       });
     });
 
@@ -40,10 +40,10 @@ describe('module: pending', () => {
         });
 
         it('Should remove test from pending', () => {
-          expect(getSuiteState(suiteId).pending).toContain(testObject);
+          expect(getState(suiteId).pending).toContain(testObject);
           removePending(testObject);
-          expect(getSuiteState(suiteId).pending).not.toContain(testObject);
-          expect(getSuiteState(suiteId)).toMatchSnapshot();
+          expect(getState(suiteId).pending).not.toContain(testObject);
+          expect(getState(suiteId)).toMatchSnapshot();
         });
       });
       describe('When in lagging', () => {
@@ -55,10 +55,10 @@ describe('module: pending', () => {
         });
 
         it('Should remove test from lagging', () => {
-          expect(getSuiteState(suiteId).lagging).toContain(testObject);
+          expect(getState(suiteId).lagging).toContain(testObject);
           removePending(testObject);
-          expect(getSuiteState(suiteId).lagging).not.toContain(testObject);
-          expect(getSuiteState(suiteId)).toMatchSnapshot();
+          expect(getState(suiteId).lagging).not.toContain(testObject);
+          expect(getState(suiteId)).toMatchSnapshot();
         });
       });
     });
@@ -82,9 +82,9 @@ describe('module: pending', () => {
     });
 
     it('Should set supplied test object as pending', () => {
-      expect(getSuiteState(suiteId).pending).not.toContain(testObjects[0]);
+      expect(getState(suiteId).pending).not.toContain(testObjects[0]);
       setPending(testObjects[0]);
-      expect(getSuiteState(suiteId).pending).toContain(testObjects[0]);
+      expect(getState(suiteId).pending).toContain(testObjects[0]);
     });
 
     describe('When a field of the same profile is in lagging array', () => {
@@ -100,16 +100,16 @@ describe('module: pending', () => {
       });
 
       it('Should remove test from lagging array', () => {
-        expect(getSuiteState(suiteId).lagging).toContain(testObjects[0]);
+        expect(getState(suiteId).lagging).toContain(testObjects[0]);
         setPending(testObjects[0]);
-        expect(getSuiteState(suiteId).lagging).not.toContain(testObjects[0]);
-        expect(getSuiteState(suiteId)).toMatchSnapshot();
+        expect(getState(suiteId).lagging).not.toContain(testObjects[0]);
+        expect(getState(suiteId)).toMatchSnapshot();
       });
 
       it('Should add test to pending array', () => {
-        expect(getSuiteState(suiteId).pending).not.toContain(testObjects[0]);
+        expect(getState(suiteId).pending).not.toContain(testObjects[0]);
         setPending(testObjects[0]);
-        expect(getSuiteState(suiteId).pending).toContain(testObjects[0]);
+        expect(getState(suiteId).pending).toContain(testObjects[0]);
       });
 
       it('Should set test as canceled', () => {

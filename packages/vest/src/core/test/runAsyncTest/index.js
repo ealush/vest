@@ -2,10 +2,10 @@ import { OPERATION_MODE_STATELESS } from '../../../constants';
 import runWithContext from '../../../lib/runWithContext';
 import Context from '../../Context';
 import * as state from '../../state';
-import cleanupCompletedSuite from '../../state/cleanupCompletedSuite';
 import { KEY_CANCELED } from '../../state/constants';
-import getSuiteState from '../../state/getSuiteState';
-import hasRemainingTests from '../../state/hasRemainingTests';
+import cleanupCompleted from '../../suite/cleanupCompleted';
+import getState from '../../suite/getState';
+import hasRemainingTests from '../../suite/hasRemainingTests';
 import { removeCanceled } from '../lib/canceled';
 import { removePending } from '../lib/pending';
 
@@ -70,7 +70,7 @@ const runAsyncTest = testObject => {
  * @param {string} [fieldName] Field name with associated callbacks.
  */
 const runDoneCallbacks = (suiteId, fieldName) => {
-  const suiteState = getSuiteState(suiteId);
+  const suiteState = getState(suiteId);
   if (fieldName) {
     if (
       !hasRemainingTests(suiteState, fieldName) &&
@@ -95,7 +95,7 @@ const onAsyncTestFinished = (testObject, operationMode) => {
   runDoneCallbacks(suiteId, fieldName);
 
   if (operationMode === OPERATION_MODE_STATELESS) {
-    cleanupCompletedSuite(suiteId);
+    cleanupCompleted(suiteId);
   }
 };
 

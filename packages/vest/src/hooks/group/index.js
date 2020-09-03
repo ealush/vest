@@ -1,6 +1,6 @@
 import Context from '../../core/Context';
-import getSuiteState from '../../core/state/getSuiteState';
-import patch from '../../core/state/patch';
+import getState from '../../core/suite/getState';
+import patch from '../../core/suite/patch';
 import runWithContext from '../../lib/runWithContext';
 import validateSuiteParams from '../../lib/validateSuiteParams';
 import { isGroupExcluded } from '../exclusive';
@@ -27,7 +27,7 @@ const group = (groupName, tests) => {
   validateSuiteParams('group', groupName, tests);
 
   const ctx = Context.use();
-  const state = getSuiteState(ctx.suiteId);
+  const state = getState(ctx.suiteId);
 
   if (!isGroupExcluded(state, groupName)) {
     registerGroup(groupName);

@@ -1,9 +1,9 @@
-import { OPERATION_MODE_STATELESS } from '../../constants/index';
-import id from '../../lib/id';
-import runWithContext from '../../lib/runWithContext';
-import validateSuiteParams from '../../lib/validateSuiteParams/index';
-import createSuite from '../createSuite';
-import cleanupCompletedSuite from '../state/cleanupCompletedSuite';
+import { OPERATION_MODE_STATELESS } from '../../../constants/index';
+import id from '../../../lib/id';
+import runWithContext from '../../../lib/runWithContext';
+import validateSuiteParams from '../../../lib/validateSuiteParams/index';
+import cleanupCompleted from '../cleanupCompleted';
+import create from '../create';
 
 /**
  * Creates a suite and immediately invokes it.
@@ -20,13 +20,13 @@ const validate = (suiteName, tests) => {
       operationMode: OPERATION_MODE_STATELESS,
     },
     () => {
-      const suite = createSuite(suiteName, tests);
+      const suite = create(suiteName, tests);
       if (typeof suite === 'function') {
         return suite();
       }
     }
   );
-  cleanupCompletedSuite(suiteId);
+  cleanupCompleted(suiteId);
   return res;
 };
 

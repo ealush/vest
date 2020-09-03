@@ -1,21 +1,21 @@
 import faker from 'faker';
 import { noop } from 'lodash';
-import mock from '../../../../../shared/testUtils/mock';
-import resetState from '../../../testUtils/resetState';
-import { dummyTest } from '../../../testUtils/testDummy';
-import { OPERATION_MODE_STATELESS } from '../../constants';
-import { get } from '../../hooks';
-import runWithContext from '../../lib/runWithContext';
-import { getSuite } from '../state';
-import createSuite from '.';
+import mock from '../../../../../../shared/testUtils/mock';
+import resetState from '../../../../testUtils/resetState';
+import { dummyTest } from '../../../../testUtils/testDummy';
+import { OPERATION_MODE_STATELESS } from '../../../constants';
+import { get } from '../../../hooks';
+import runWithContext from '../../../lib/runWithContext';
+import { getSuite } from '../../state';
+import create from '.';
 
 describe('Test createSuite module', () => {
   describe('Test arguments', () => {
-    let mockValidateSuiteParams, createSuite, name, tests;
+    let mockValidateSuiteParams, create, name, tests;
 
     beforeEach(() => {
       mockValidateSuiteParams = mock('validateSuiteParams');
-      createSuite = require('.');
+      create = require('.');
       name = faker.random.word();
       tests = jest.fn();
     });
@@ -26,7 +26,7 @@ describe('Test createSuite module', () => {
 
     it('Should call `validateSuiteParams` with passed arguments and current function name', () => {
       expect(mockValidateSuiteParams).not.toHaveBeenCalled();
-      createSuite(name, tests);
+      create(name, tests);
       expect(mockValidateSuiteParams).toHaveBeenCalledWith(
         'vest.create',
         name,
@@ -37,18 +37,18 @@ describe('Test createSuite module', () => {
 
   describe('Return value', () => {
     it('should be a function', () => {
-      expect(typeof createSuite('suiteName', noop)).toBe('function');
+      expect(typeof create('suiteName', noop)).toBe('function');
     });
 
     test("returned function name is the suite's name", () => {
-      expect(createSuite('boop', noop).name).toBe('boop');
+      expect(create('boop', noop).name).toBe('boop');
     });
   });
 
   describe('When returned function is invoked', () => {
     it('Calls `tests` argument', () =>
       new Promise(done => {
-        const validate = createSuite('FormName', done);
+        const validate = create('FormName', done);
         validate();
       }));
 
@@ -62,7 +62,7 @@ describe('Test createSuite module', () => {
         false,
         [faker.random.word()],
       ];
-      const validate = createSuite('FormName', testsCallback);
+      const validate = create('FormName', testsCallback);
       validate(...params);
       expect(testsCallback).toHaveBeenCalledWith(...params);
     });
@@ -71,7 +71,7 @@ describe('Test createSuite module', () => {
   describe('Initial run', () => {
     const testsCb = jest.fn();
     const suiteId = 'initial_run_spec';
-    const runCreateSuite = () => createSuite(suiteId, testsCb);
+    const runCreateSuite = () => create(suiteId, testsCb);
 
     afterEach(() => {
       resetState();
@@ -99,12 +99,12 @@ describe('Test createSuite module', () => {
     it('Should be able to get the suite from the result of createSuite', () => {
       const testsCb = jest.fn();
       const suiteId = 'test_get_suite';
-      expect(createSuite(suiteId, testsCb).get()).toBe(get(suiteId));
+      expect(create(suiteId, testsCb).get()).toBe(get(suiteId));
     });
 
     it('Should be able to reset the suite from the result of createSuite', () => {
       const suiteId = 'test_reset_suite';
-      const testSuite = createSuite(suiteId, () => {
+      const testSuite = create(suiteId, () => {
         dummyTest.failing('f1', 'm1');
       });
       testSuite();

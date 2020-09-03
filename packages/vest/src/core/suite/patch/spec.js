@@ -1,8 +1,8 @@
-import * as state from '..';
 import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
-import getSuiteState from '../getSuiteState';
+import * as state from '../../state';
+import getState from '../getState';
 import patch from '.';
 
 const suiteName = 'suite_1';
@@ -40,7 +40,7 @@ describe('patch', () => {
     });
 
     it('Should return next state', () => {
-      expect(patch(suiteId, patcher)).toBe(getSuiteState(suiteId));
+      expect(patch(suiteId, patcher)).toBe(getState(suiteId));
     });
   });
   describe('When patcher is not a function', () => {

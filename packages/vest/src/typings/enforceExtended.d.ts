@@ -1,3 +1,5 @@
+import { EnforceExtendMap, IEnforceRules } from './vest';
+
 interface ExtendedRules {
   isAlphanumeric: (...args: any) => IEnforceRules;
   isCreditCard: (...args: any) => IEnforceRules;

@@ -1,36 +1,54 @@
 # Custom enforce rules
 
-To make it easier to reuse validations across your application, sometimes you would want to encapsulate bits of logic in rules that you can use later on, for example, "what's considered a valid email".
+To make it easier to reuse logic across your application, sometimes you would want to encapsulate bits of logic in rules that you can use later on, for example, "what's considered a valid email".
 
-Your custom rules are essentially a single javascript object containing your rules.
+Rules are called with the argument passed to enforce(x) followed by the arguments passed to `.yourRule(y, z)`.
 
 ```js
-const myCustomRules = {
-  isValidEmail: value => value.indexOf('@') > -1,
-  hasKey: (value, { key }) => value.hasOwnProperty(key),
-  passwordsMatch: (passConfirm, options) =>
-    passConfirm === options.passConfirm && options.passIsValid,
-};
+enforce.extend({
+  yourRule(x, y, z) {
+    return {
+      pass: true,
+      message: () => '',
+    };
+  },
+});
 ```
 
-Just like the predefined rules, your custom rules can accepts two parameters:
-
-- `value` The actual value you are testing against.
-- `args` (optional) the arguments which you pass on when running your tests.
-
-You can extend enforce with your custom rules by creating a new instance of `Enforce` and adding the rules object as the argument.
-
 ```js
-import enforce from 'n4s';
+import { enforce } from 'n4s';
 
-const myCustomRules = {
+enforce.extend({
   isValidEmail: value => value.indexOf('@') > -1,
   hasKey: (value, key) => value.hasOwnProperty(key),
   passwordsMatch: (passConfirm, options) =>
     passConfirm === options.passConfirm && options.passIsValid,
-};
-
-enforce.extend(myCustomRules);
+});
 
 enforce(user.email).isValidEmail();
+```
+
+## Custom rules return value
+
+Rules can either return boolean indicating success or failure, or an object with two keys. `pass` indicates whether the validation is successful or not, and message provides a function with no arguments that return an error message in case of failure. Thus, when pass is false, message should return the error message for when enforce(x).yourRule() fails.
+
+```js
+enforce.extend({
+  isWithinRange(received, floor, ceiling) {
+    const pass = received >= floor && received <= ceiling;
+    if (pass) {
+      return {
+        message: () =>
+          `expected ${received} not to be within range ${floor} - ${ceiling}`,
+        pass: true,
+      };
+    } else {
+      return {
+        message: () =>
+          `expected ${received} to be within range ${floor} - ${ceiling}`,
+        pass: false,
+      };
+    }
+  },
+});
 ```

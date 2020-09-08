@@ -97,7 +97,7 @@ interface IVestResult {
   done(fieldName: string, cb: DoneCB): void;
 }
 
-type EnforceExtendMap<T> = {
+export type EnforceExtendMap<T> = {
   [K in keyof T]: (...args: any[]) => IEnforceRules<T> & EnforceExtendMap<T>;
 };
 

@@ -995,6 +995,7 @@ enforce([0]).isEven();
 // throws
 ```
 
+
 # Custom enforce rules
 
 To make it easier to reuse logic across your application, sometimes you would want to encapsulate bits of logic in rules that you can use later on, for example, "what's considered a valid email".

@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## vest: [2.2.0] - 2020-09-08
+
+### Added
+- 9e96ca6 FEAT: get and reset as properties of createSuite result (#330) (vligas)
+- b633f09 FEAT: use Jest assertion return api (#349) (vligas)
+
+### Fixed and improved
+- c1846d1 types: add vest.reset and vest.get types (#333) (ealush)
+- 1985f28 build: Add __dev__ global to the development build (#366) (gaweki)
+- a694c68 patch: Create a "suite" core folder (#351) (NorbertLuszkiewicz)
+- dca5b3b FIX: rules do not exist on type 'EnforceExtendMap' (#377) (ealush)
+
 ## vest: [2.1.0] - 2020-08-09
 
 ### Added

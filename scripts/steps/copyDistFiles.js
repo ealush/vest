@@ -11,7 +11,7 @@ function copyDistFiles(packageName) {
   // And copy them over to the root folder
   // This is good enough until I add a ts build
   glob
-    .sync('src/**/*.d.ts', {
+    .sync('src/typings/*.d.ts', {
       cwd: packagePath(packageName),
       absolute: true,
       ignore: '**/spec/*',

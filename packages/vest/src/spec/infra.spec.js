@@ -132,7 +132,7 @@ describe('General scenario tests', () => {
 
 describe('TypeScript Typings', () => {
   const declarationFiles = glob
-    .sync('src/**/*.d.ts', {
+    .sync('src/typings/*.d.ts', {
       cwd: packagePath('vest'),
       absolute: true,
       ignore: '**/spec/*',

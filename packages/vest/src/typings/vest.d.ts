@@ -1,9 +1,10 @@
+export type DraftResult = Omit<IVestResult, 'done'>;
+
 type TestCB = () => void | Promise<string | void> | false;
-type DraftResult = Omit<IVestResult, 'done'>;
 type DoneCB = (res: DraftResult) => void;
 type ExclusionArg = string | string[] | void;
 
-interface IVestResult {
+export type IVestResult = {
   name: string;
   errorCount: number;
   warnCount: number;
@@ -28,7 +29,6 @@ interface IVestResult {
       };
     };
   };
-
   /**
    * Returns whether the specified field has errors
    */
@@ -95,13 +95,13 @@ interface IVestResult {
    * Runs a callback when all tests of the specified field finished running
    */
   done(fieldName: string, cb: DoneCB): void;
-}
+};
 
 export type EnforceExtendMap<T> = {
   [K in keyof T]: (...args: any[]) => IEnforceRules<T> & EnforceExtendMap<T>;
 };
 
-interface IEnforceRules<T = {}> {
+export interface IEnforceRules<T = {}> {
   equals: (expected: any) => IEnforceRules<T> & EnforceExtendMap<T>;
   notEquls: (expected: any) => IEnforceRules<T> & EnforceExtendMap<T>;
   numberEquals: (

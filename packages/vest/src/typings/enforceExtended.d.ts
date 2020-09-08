@@ -1,4 +1,4 @@
-import type { EnforceExtendMap } from './vest';
+import { EnforceExtendMap, IEnforceRules } from './vest';
 
 interface ExtendedRules {
   isAlphanumeric: (...args: any) => IEnforceRules;

@@ -48,3 +48,15 @@ validate(); // validation result is added to the state.
 
 vest.reset('suite_name'); // validation result is removed
 ```
+
+Alternatively, if you have access to your suite, you can call `suite.reset` directly without providing the suite name:
+
+```js
+import vest from 'vest';
+
+const v = vest.create('suite_name', () => {
+  // Your tests go here
+});
+
+v.reset(); // validation result is removed from Vest's state.
+```

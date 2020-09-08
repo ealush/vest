@@ -27,9 +27,9 @@ A result object would look somewhat like this:
 }
 ```
 
-## Accessing the last result object with `vest.get`
+## Accessing the last result object with `.get`
 
-Alternatively, if you need to access your validation results out of context - for example, from a different UI component or function, you can use `vest.get`.
+If you need to access your validation results out of context - for example, from a different UI component or function, you can use `vest.get`
 
 Vest exposes the `vest.get` function that is able to retrieve the most recent validation result of [**stateful**](./state) suites (suites created using vest.create()).
 
@@ -43,6 +43,16 @@ import vest from 'vest';
 const res = vest.get('suite_name');
 
 res.hasErrors('fieldName');
+```
+
+Alternatively, you can access your suite's state from the `get` property on your suite function:
+
+```js
+const v = vest.create('my_form', () => {
+  /*...*/
+});
+
+v.get(); // -> returns the same value as vest.get('my_form');
 ```
 
 # Result Object Methods:

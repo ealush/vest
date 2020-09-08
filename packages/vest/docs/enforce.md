@@ -1,26 +1,25 @@
 # Enforce
+
 For assertions, Vest is bundled with [Enforce](https://npmjs.com/package/n4s). Enforce is a validation assertion library. It allows you to run your data against rules and conditions and test whether it passes your validations. It is intended for validation logic that gets repeated over and over again and should not be written manually. It comes with a wide variety of pre-built rules, but it can also be extended to support your own repeated custom logic.
 
 The way Enforce operates is similar to most common assertion libraries. You pass it a value, and one or more rules to test your value against - if the validation fails, it throws an Error, otherwise - it will move on to the next rule in the chain.
 
 ```js
-import { enforce } from 'vest'
+import { enforce } from 'vest';
 
-enforce(4)
-    .isNumber();
+enforce(4).isNumber();
+// passes
+
+enforce(4).isNumber().greaterThan(2);
 // passes
 
 enforce(4)
-    .isNumber()
-    .greaterThan(2);
-// passes
-
-enforce(4)
-    .lessThan(2) // throws an error, will not carry on to the next rule
-    .greaterThan(3);
+  .lessThan(2) // throws an error, will not carry on to the next rule
+  .greaterThan(3);
 ```
 
 ## Content
+
 - [List of Enforce rules](#list-of-enforce-rules) - All default enforce rules
 - [Custom Enforce Rules](#custom-enforce-rules) - How to extend enforce with your rules
 - [Business Related Rules](#business-related-rules) - Using more rules such as isEmail and isCreditCard
@@ -996,36 +995,59 @@ enforce([0]).isEven();
 // throws
 ```
 
-
 # Custom enforce rules
+
 To make it easier to reuse logic across your application, sometimes you would want to encapsulate bits of logic in rules that you can use later on, for example, "what's considered a valid email".
 
-Your custom rules are essentially a single javascript object containing your rules.
-```js
-const myCustomRules = {
-    isValidEmail: (value) => value.indexOf('@') > -1,
-    hasKey: (value, {key}) => value.hasOwnProperty(key),
-    passwordsMatch: (passConfirm, options) => passConfirm === options.passConfirm && options.passIsValid
-}
-```
-Just like the predefined rules, your custom rules can accepts two parameters:
-* `value` The actual value you are testing against.
-* `args` (optional) the arguments which you pass on when running your tests.
+Rules are called with the argument passed to enforce(x) followed by the arguments passed to `.yourRule(y, z)`.
 
-You can extend enforce with your custom rules by creating a new instance of `Enforce` and adding the rules object as the argument.
+```js
+enforce.extend({
+  yourRule(x, y, z) {
+    return {
+      pass: true,
+      message: () => '',
+    };
+  },
+});
+```
 
 ```js
 import { enforce } from 'vest';
 
-const myCustomRules = {
-    isValidEmail: (value) => value.indexOf('@') > -1,
-    hasKey: (value, key) => value.hasOwnProperty(key),
-    passwordsMatch: (passConfirm, options) => passConfirm === options.passConfirm && options.passIsValid
-}
-
-enforce.extend(myCustomRules);
+enforce.extend({
+  isValidEmail: value => value.indexOf('@') > -1,
+  hasKey: (value, key) => value.hasOwnProperty(key),
+  passwordsMatch: (passConfirm, options) =>
+    passConfirm === options.passConfirm && options.passIsValid,
+});
 
 enforce(user.email).isValidEmail();
+```
+
+## Custom rules return value
+
+Rules can either return boolean indicating success or failure, or an object with two keys. `pass` indicates whether the validation is successful or not, and message provides a function with no arguments that return an error message in case of failure. Thus, when pass is false, message should return the error message for when enforce(x).yourRule() fails.
+
+```js
+enforce.extend({
+  isWithinRange(received, floor, ceiling) {
+    const pass = received >= floor && received <= ceiling;
+    if (pass) {
+      return {
+        message: () =>
+          `expected ${received} not to be within range ${floor} - ${ceiling}`,
+        pass: true,
+      };
+    } else {
+      return {
+        message: () =>
+          `expected ${received} to be within range ${floor} - ${ceiling}`,
+        pass: false,
+      };
+    }
+  },
+});
 ```
 
 # Business Related Rules
@@ -1073,6 +1095,7 @@ import enforce, {
 To read the full documentation on these rules and the options they take, please visit [validator.js](https://github.com/validatorjs/validator.js).
 
 ### validator.js license:
+
 ```
 Copyright (c) 2018 Chris O'Hara <cohara87@gmail.com>
 

@@ -16,6 +16,8 @@ interface ExtendedRules {
   isURL: (...args: any) => IEnforceRules;
 }
 
-declare function enforceExtended(value: any): EnforceExtendMap<ExtendedRules>;
+declare function enforceExtended(
+  value: any
+): IEnforceRules<ExtendedRules> & EnforceExtendMap<ExtendedRules>;
 
 export default enforceExtended;

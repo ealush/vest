@@ -14,7 +14,7 @@
     "anyone": "^0.0.7",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.3.0",
-    "babel-plugin-add-module-exports": "^1.0.2",
+    "babel-plugin-add-module-exports": "^1.0.4",
     "cross-env": "^7.0.2",
     "date-fns": "^2.16.1",
     "eslint": "^7.8.1",

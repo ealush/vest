@@ -1,6 +1,5 @@
 import { OPERATION_MODE_STATELESS } from '../../../constants';
-import runWithContext from '../../../lib/runWithContext';
-import Context from '../../Context';
+import context from '../../context';
 import * as state from '../../state';
 import { KEY_CANCELED } from '../../state/constants';
 import cleanupCompleted from '../../suite/cleanupCompleted';
@@ -15,7 +14,7 @@ import { removePending } from '../lib/pending';
  */
 const runAsyncTest = testObject => {
   const { asyncTest, statement, id, suiteId } = testObject;
-  const { operationMode } = Context.use();
+  const { operationMode } = context.use();
   const done = cb => {
     const isCanceled = state.get()[KEY_CANCELED]?.[id];
 
@@ -55,7 +54,7 @@ const runAsyncTest = testObject => {
       testObject.fail();
     });
   };
-  runWithContext({ currentTest: testObject }, () => {
+  context.run({ currentTest: testObject }, () => {
     try {
       asyncTest.then(done, fail);
     } catch (e) {

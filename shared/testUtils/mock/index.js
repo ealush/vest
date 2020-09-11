@@ -5,12 +5,11 @@ const packagePath = require('../../../util/packagePath');
 const vestSrc = packagePath(PACKAGE_VEST, 'src');
 
 const PATHS = {
-  Context: path.join(vestSrc, 'core/Context'),
   cleanupCompleted: path.join(vestSrc, 'core/suite/cleanupCompleted'),
+  context: path.join(vestSrc, 'core/context'),
   createSuite: path.join(vestSrc, 'core/suite/create'),
   id: path.join(vestSrc, 'lib/id'),
   patch: path.join(vestSrc, 'core/state/patch'),
-  runWithContext: path.join(vestSrc, 'lib/runWithContext'),
   throwError: path.join(vestSrc, 'lib/throwError'),
   validateSuiteParams: path.join(vestSrc, 'lib/validateSuiteParams'),
 };

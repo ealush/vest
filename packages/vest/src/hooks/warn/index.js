@@ -1,4 +1,4 @@
-import Context from '../../core/Context';
+import context from '../../core/context';
 import throwError from '../../lib/throwError';
 import { ERROR_HOOK_CALLED_OUTSIDE } from '../constants';
 import { ERROR_OUTSIDE_OF_TEST } from './constants';
@@ -7,7 +7,7 @@ import { ERROR_OUTSIDE_OF_TEST } from './constants';
  * Sets a running test to warn only mode.
  */
 const warn = () => {
-  const ctx = Context.use();
+  const ctx = context.use();
 
   if (!ctx) {
     throwError('warn ' + ERROR_HOOK_CALLED_OUTSIDE);

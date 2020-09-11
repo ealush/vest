@@ -5,7 +5,7 @@ import resetState from '../../../../testUtils/resetState';
 import { dummyTest } from '../../../../testUtils/testDummy';
 import { OPERATION_MODE_STATELESS } from '../../../constants';
 import { get } from '../../../hooks';
-import runWithContext from '../../../lib/runWithContext';
+import context from '../../context';
 import { getSuite } from '../../state';
 import create from '.';
 
@@ -124,7 +124,7 @@ describe('Test createSuite module', () => {
 
     describe('When in stateless mode', () => {
       it('Should return without creating initial state', () => {
-        runWithContext({ operationMode: OPERATION_MODE_STATELESS }, () => {
+        context.run({ operationMode: OPERATION_MODE_STATELESS }, () => {
           runCreateSuite();
         });
       });

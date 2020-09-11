@@ -4,7 +4,7 @@ import vest from '../..';
 import collector from '../../../../../shared/testUtils/collector';
 import enforce from '../../../../n4s/src';
 import { dummyTest } from '../../../testUtils/testDummy';
-import Context from '../../core/Context';
+import context from '../../core/context';
 import group from '.';
 
 let suiteName = 'suite_name';
@@ -252,13 +252,13 @@ describe('group: base case', () => {
 
 let collect, collection;
 
-describe('group: Context creation', () => {
+describe('group: context creation', () => {
   const validation = () =>
     vest.create(suiteName, collect => {
       collect({
-        context: Context.use(),
-        suiteId: Context.use().suiteId,
-        groupName: Context.use().groupName,
+        context: context.use(),
+        suiteId: context.use().suiteId,
+        groupName: context.use().groupName,
       });
 
       dummyTest.failing();
@@ -266,16 +266,16 @@ describe('group: Context creation', () => {
 
       group(groupName, () => {
         collect({
-          context: Context.use(),
-          suiteId: Context.use().suiteId,
-          groupName: Context.use().groupName,
+          context: context.use(),
+          suiteId: context.use().suiteId,
+          groupName: context.use().groupName,
         });
         dummyTest.failing();
       });
       collect({
-        context: Context.use(),
-        suiteId: Context.use().suiteId,
-        groupName: Context.use().groupName,
+        context: context.use(),
+        suiteId: context.use().suiteId,
+        groupName: context.use().groupName,
       });
     });
   let validate;
@@ -318,7 +318,7 @@ describe('group: Context creation', () => {
     it('should go back to upper context', () => {
       validate(collect);
       expect(collection[2].groupName).toBeUndefined();
-      expect(collection[2].context.parentContext).toBeUndefined();
+      expect(collection[2].context.parentContext).toBeNull();
     });
   });
 });

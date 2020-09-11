@@ -1,32 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`runAsyncTest: failing State updates Initial state matches snapshot (sanity) 1`] = `
-Object {
-  "doneCallbacks": Array [],
-  "fieldCallbacks": Object {
-    "field_1": Array [],
-  },
-  "groups": Object {},
-  "lagging": Array [],
-  "name": "suite_name_1",
-  "pending": Array [
-    VestTest {
-      "asyncTest": Promise {},
-      "failed": false,
-      "fieldName": "field_1",
-      "id": "11",
-      "isWarning": false,
-      "statement": "some statement string",
-      "suiteId": "suiteId_1",
-      "testFn": [Function],
-    },
-  ],
-  "suiteId": "suiteId_1",
-  "testObjects": Array [],
-  "tests": Object {},
-}
-`;
-
 exports[`runAsyncTest: passing State updates Initial state matches snapshot (sanity) 1`] = `
 Object {
   "doneCallbacks": Array [],
@@ -35,7 +8,7 @@ Object {
   },
   "groups": Object {},
   "lagging": Array [],
-  "name": "suite_name_1",
+  "name": "suiteId_1",
   "pending": Array [
     VestTest {
       "asyncTest": Promise {},

@@ -1,8 +1,7 @@
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
 import { get } from '../../../hooks';
-import runWithContext from '../../../lib/runWithContext';
 import validateSuiteParams from '../../../lib/validateSuiteParams';
-import Context from '../../Context';
+import context from '../../context';
 import produce from '../../produce';
 import { getSuite } from '../../state';
 import mergeExcludedTests from '../../test/lib/mergeExcludedTests';
@@ -19,7 +18,7 @@ import reset from '../reset';
 const createSuite = (name, tests) => {
   validateSuiteParams('vest.create', name, tests);
 
-  const ctx = Context.use();
+  const ctx = context.use();
 
   const ctxRef = {
     suiteId: ctx?.suiteId || name,
@@ -37,7 +36,7 @@ const createSuite = (name, tests) => {
     ctxRef.operationMode === OPERATION_MODE_STATEFUL &&
     !getSuite(ctxRef.suiteId)
   ) {
-    runWithContext(ctxRef, register);
+    context.run(ctxRef, register);
   }
 
   // returns validator function
@@ -45,7 +44,7 @@ const createSuite = (name, tests) => {
   // to the name of the suite
   return Object.defineProperties(
     (...args) => {
-      const output = runWithContext(ctxRef, context => {
+      const output = context.run(ctxRef, context => {
         register();
         const { suiteId } = context;
         tests.apply(null, args);

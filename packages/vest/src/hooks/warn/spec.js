@@ -1,7 +1,7 @@
 import faker from 'faker';
 import vest from '../..';
 
-import Context from '../../core/Context';
+import context from '../../core/context';
 
 import { ERROR_HOOK_CALLED_OUTSIDE } from '../constants';
 import { ERROR_OUTSIDE_OF_TEST } from './constants';
@@ -14,9 +14,9 @@ describe('warn hook', () => {
       let beforeWarn, afterWarn;
       validate(faker.random.word(), () => {
         test(faker.lorem.word(), faker.lorem.sentence(), () => {
-          beforeWarn = Context.use().currentTest.isWarning;
+          beforeWarn = context.use().currentTest.isWarning;
           warn();
-          afterWarn = Context.use().currentTest.isWarning;
+          afterWarn = context.use().currentTest.isWarning;
         });
       });
 

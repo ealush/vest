@@ -1,7 +1,6 @@
 import { isExcluded } from '../../hooks/exclusive';
 import createCache from '../../lib/cache';
-import runWithContext from '../../lib/runWithContext';
-import Context from '../Context';
+import context from '../context';
 import patch from '../suite/patch';
 import VestTest from './lib/VestTest';
 import { setPending } from './lib/pending';
@@ -27,7 +26,7 @@ const addTestToState = (suiteId, testObject) => {
  * @returns {*} Result from test callback.
  */
 const sync = testObject =>
-  runWithContext({ currentTest: testObject }, () => {
+  context.run({ currentTest: testObject }, () => {
     let result;
     try {
       result = testObject.testFn.apply(testObject);
@@ -84,8 +83,7 @@ const register = testObject => {
 const test = (fieldName, ...args) => {
   const { length, [length - 2]: statement, [length - 1]: testFn } = args;
 
-  const ctx = Context.use();
-
+  const ctx = context.use();
   const testObject = new VestTest({
     fieldName,
     group: ctx.groupName,
@@ -112,7 +110,7 @@ test.memo = (fieldName, ...args) => {
 
   const { length: l, [l - 3]: msg, [l - 2]: testFn, [l - 1]: deps } = args;
 
-  const ctx = Context.use();
+  const ctx = context.use();
   const dependencies = [ctx.suiteId, fieldName].concat(deps);
 
   const cached = cache.get(dependencies);

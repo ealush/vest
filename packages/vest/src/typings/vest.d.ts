@@ -103,7 +103,7 @@ export type EnforceExtendMap<T> = {
 
 export interface IEnforceRules<T = {}> {
   equals: (expected: any) => IEnforceRules<T> & EnforceExtendMap<T>;
-  notEquls: (expected: any) => IEnforceRules<T> & EnforceExtendMap<T>;
+  notEquals: (expected: any) => IEnforceRules<T> & EnforceExtendMap<T>;
   numberEquals: (
     expected: number | string
   ) => IEnforceRules<T> & EnforceExtendMap<T>;

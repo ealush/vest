@@ -2,8 +2,8 @@ import vest from '../..';
 import mock from '../../../../../shared/testUtils/mock';
 import resetState from '../../../testUtils/resetState';
 import testDummy from '../../../testUtils/testDummy';
+import context from '../../core/context';
 import VestTest from '../../core/test/lib/VestTest';
-import runWithContext from '../../lib/runWithContext';
 import group from '../group';
 
 const faker = require('faker');
@@ -39,7 +39,7 @@ describe('exclusive hooks', () => {
   test('isExcluded should respect group exclusion', () => {
     let testObject;
     let testObject1;
-    vest.create(faker.random.word(), () => {
+    const validate = vest.create(faker.random.word(), () => {
       vest.skip.group('group_1');
 
       testObject = testDummy(vest).failing();
@@ -50,7 +50,9 @@ describe('exclusive hooks', () => {
 
       res = isExcluded(testObject);
       res1 = isExcluded(testObject1);
-    })();
+    });
+
+    validate();
 
     expect(res).toBe(false);
     expect(res1).toBe(true);
@@ -255,14 +257,11 @@ describe('exclusive hooks', () => {
 });
 
 describe('isExcluded', () => {
-  let ctx;
+  let exclusion;
 
-  const genCtx = ({ tests = {}, groups = {} }) => ({
-    _exclusion: { tests, groups },
-  });
-
-  const runIsExcluded = (ctx, ...args) =>
-    runWithContext(ctx, () => {
+  const runIsExcluded = (exclusion, ...args) =>
+    context.run({}, ctx => {
+      Object.assign(ctx.exclusion, exclusion);
       const res = isExcluded(...args);
 
       return res;
@@ -271,207 +270,285 @@ describe('isExcluded', () => {
   const genTest = (fieldName, groupName) => ({ fieldName, groupName });
   describe('skip', () => {
     beforeEach(() => {
-      ctx = genCtx({ tests: { field_1: false, field_2: false } });
+      exclusion = { tests: { field_1: false, field_2: false } };
     });
     it('returns true for skipped field', () => {
-      expect(runIsExcluded(ctx, genTest('field_1'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_2', 'group_1'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_1'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_2', 'group_1'))).toBe(
+        true
+      );
     });
     it('returns false for non skipped field', () => {
-      expect(runIsExcluded(ctx, genTest('field_3'))).toBe(false);
-      expect(runIsExcluded(ctx, genTest('field_4', 'group_1'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_3'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_4', 'group_1'))).toBe(
+        false
+      );
     });
   });
   describe('only', () => {
     beforeEach(() => {
-      ctx = genCtx({ tests: { field_1: true, field_2: true } });
+      exclusion = { tests: { field_1: true, field_2: true } };
     });
     it('returns false for included field', () => {
-      expect(runIsExcluded(ctx, genTest('field_1'))).toBe(false);
-      expect(runIsExcluded(ctx, genTest('field_2', 'group_1'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_1'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_2', 'group_1'))).toBe(
+        false
+      );
     });
     it('returns true for non included field', () => {
-      expect(runIsExcluded(ctx, genTest('field_3'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_4', 'group_1'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_3'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_4', 'group_1'))).toBe(
+        true
+      );
     });
   });
   describe('only+skip', () => {
     beforeEach(() => {
-      ctx = genCtx({
+      exclusion = {
         tests: { field_1: true, field_2: true, field_3: false, field_4: false },
-      });
+      };
     });
     it('returns false for included tests', () => {
-      expect(runIsExcluded(ctx, genTest('field_1'))).toBe(false);
-      expect(runIsExcluded(ctx, genTest('field_2', 'group_1'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_1'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_2', 'group_1'))).toBe(
+        false
+      );
     });
     it('returns true excluded tests', () => {
-      expect(runIsExcluded(ctx, genTest('field_3'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_4', 'group_1'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_3'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_4', 'group_1'))).toBe(
+        true
+      );
     });
     it('returns true for non included field', () => {
-      expect(runIsExcluded(ctx, genTest('field_5'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_6', 'group_1'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_5'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_6', 'group_1'))).toBe(
+        true
+      );
     });
   });
   describe('skip.group', () => {
     beforeEach(() => {
-      ctx = genCtx({
+      exclusion = {
         groups: {
           group_1: false,
           group_2: false,
         },
-      });
+      };
     });
 
     it('Returns true for tests in skipped group', () => {
-      expect(runIsExcluded(ctx, genTest('field_1', 'group_1'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_2', 'group_2'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_1', 'group_1'))).toBe(
+        true
+      );
+      expect(runIsExcluded(exclusion, genTest('field_2', 'group_2'))).toBe(
+        true
+      );
     });
     it('Returns false for tests in non skipped groups', () => {
-      expect(runIsExcluded(ctx, genTest('field_3', 'group_3'))).toBe(false);
-      expect(runIsExcluded(ctx, genTest('field_4', 'group_4'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_3', 'group_3'))).toBe(
+        false
+      );
+      expect(runIsExcluded(exclusion, genTest('field_4', 'group_4'))).toBe(
+        false
+      );
     });
     it('Returns false for tests outside of any group', () => {
-      expect(runIsExcluded(ctx, genTest('field_3'))).toBe(false);
-      expect(runIsExcluded(ctx, genTest('field_4'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_3'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_4'))).toBe(false);
     });
   });
   describe('only.group', () => {
     beforeEach(() => {
-      ctx = genCtx({
+      exclusion = {
         groups: {
           group_1: true,
           group_2: true,
         },
-      });
+      };
     });
 
     it('returns false for tests in included groups', () => {
-      expect(runIsExcluded(ctx, genTest('field_1', 'group_1'))).toBe(false);
-      expect(runIsExcluded(ctx, genTest('field_1', 'group_2'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_1', 'group_1'))).toBe(
+        false
+      );
+      expect(runIsExcluded(exclusion, genTest('field_1', 'group_2'))).toBe(
+        false
+      );
     });
 
     it('returns true for groups in non included groups', () => {
-      expect(runIsExcluded(ctx, genTest('field_1', 'group_3'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_2', 'group_4'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_1', 'group_3'))).toBe(
+        true
+      );
+      expect(runIsExcluded(exclusion, genTest('field_2', 'group_4'))).toBe(
+        true
+      );
     });
 
     it('returns false for tests outside of any group', () => {
-      expect(runIsExcluded(ctx, genTest('field_1'))).toBe(false);
-      expect(runIsExcluded(ctx, genTest('field_2'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_1'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_2'))).toBe(false);
     });
   });
 
   describe('only.group + only', () => {
     beforeEach(() => {
-      ctx = genCtx({
+      exclusion = {
         groups: {
           group_1: true,
           group_2: true,
         },
         tests: { field_1: true, field_2: true },
-      });
+      };
     });
 
     it('returns false for included tests', () => {
-      expect(runIsExcluded(ctx, genTest('field_1'))).toBe(false);
-      expect(runIsExcluded(ctx, genTest('field_2'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_1'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_2'))).toBe(false);
     });
 
     it('returns false for included tests in included groups', () => {
-      expect(runIsExcluded(ctx, genTest('field_1', 'group_1'))).toBe(false);
-      expect(runIsExcluded(ctx, genTest('field_2', 'group_2'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_1', 'group_1'))).toBe(
+        false
+      );
+      expect(runIsExcluded(exclusion, genTest('field_2', 'group_2'))).toBe(
+        false
+      );
     });
 
     it('returns true for included test in non included group', () => {
-      expect(runIsExcluded(ctx, genTest('field_1', 'group_3'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_2', 'group_4'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_1', 'group_3'))).toBe(
+        true
+      );
+      expect(runIsExcluded(exclusion, genTest('field_2', 'group_4'))).toBe(
+        true
+      );
     });
 
     it('returns true for non included test in included group', () => {
-      expect(runIsExcluded(ctx, genTest('field_3', 'group_1'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_4', 'group_2'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_3', 'group_1'))).toBe(
+        true
+      );
+      expect(runIsExcluded(exclusion, genTest('field_4', 'group_2'))).toBe(
+        true
+      );
     });
 
     it('returns true for non included tests', () => {
-      expect(runIsExcluded(ctx, genTest('field_3'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_4'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_3'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_4'))).toBe(true);
     });
   });
 
   describe('skip.group + only', () => {
     beforeEach(() => {
-      ctx = genCtx({
+      exclusion = {
         groups: {
           group_1: false,
           group_2: false,
         },
         tests: { field_1: true, field_2: true },
-      });
+      };
     });
 
     it('returns true for tests in excluded groups', () => {
-      expect(runIsExcluded(ctx, genTest('field_1', 'group_1'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_2', 'group_1'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_3', 'group_1'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_1', 'group_2'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_2', 'group_2'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_3', 'group_2'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_1', 'group_1'))).toBe(
+        true
+      );
+      expect(runIsExcluded(exclusion, genTest('field_2', 'group_1'))).toBe(
+        true
+      );
+      expect(runIsExcluded(exclusion, genTest('field_3', 'group_1'))).toBe(
+        true
+      );
+      expect(runIsExcluded(exclusion, genTest('field_1', 'group_2'))).toBe(
+        true
+      );
+      expect(runIsExcluded(exclusion, genTest('field_2', 'group_2'))).toBe(
+        true
+      );
+      expect(runIsExcluded(exclusion, genTest('field_3', 'group_2'))).toBe(
+        true
+      );
     });
 
     it('returns false for tests in included tests in non excluded groups', () => {
-      expect(runIsExcluded(ctx, genTest('field_1', 'group_3'))).toBe(false);
-      expect(runIsExcluded(ctx, genTest('field_2', 'group_3'))).toBe(false);
-      expect(runIsExcluded(ctx, genTest('field_1', 'group_4'))).toBe(false);
-      expect(runIsExcluded(ctx, genTest('field_2', 'group_4'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_1', 'group_3'))).toBe(
+        false
+      );
+      expect(runIsExcluded(exclusion, genTest('field_2', 'group_3'))).toBe(
+        false
+      );
+      expect(runIsExcluded(exclusion, genTest('field_1', 'group_4'))).toBe(
+        false
+      );
+      expect(runIsExcluded(exclusion, genTest('field_2', 'group_4'))).toBe(
+        false
+      );
     });
 
     it('returns true for non included tests', () => {
-      expect(runIsExcluded(ctx, genTest('field_3'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_4'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_3'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_4'))).toBe(true);
     });
 
     it('returns false for included tests', () => {
-      expect(runIsExcluded(ctx, genTest('field_1'))).toBe(false);
-      expect(runIsExcluded(ctx, genTest('field_2'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_1'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_2'))).toBe(false);
     });
   });
 
   describe('only.group + skip', () => {
     beforeEach(() => {
-      ctx = genCtx({
+      exclusion = {
         groups: {
           group_1: true,
           group_2: true,
         },
         tests: { field_1: false, field_2: false },
-      });
+      };
     });
 
     it('returns true for excluded tests', () => {
-      expect(runIsExcluded(ctx, genTest('field_1'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_2'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_1'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_2'))).toBe(true);
     });
     it('returns false for non excluded tests', () => {
-      expect(runIsExcluded(ctx, genTest('field_3'))).toBe(false);
-      expect(runIsExcluded(ctx, genTest('field_4'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_3'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_4'))).toBe(false);
     });
     it('returns true for excluded test in included group', () => {
-      expect(runIsExcluded(ctx, genTest('field_1', 'group_1'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_2', 'group_2'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_1', 'group_1'))).toBe(
+        true
+      );
+      expect(runIsExcluded(exclusion, genTest('field_2', 'group_2'))).toBe(
+        true
+      );
     });
     it('returns true for excluded test in non included group', () => {
-      expect(runIsExcluded(ctx, genTest('field_1', 'group_3'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_2', 'group_4'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_1', 'group_3'))).toBe(
+        true
+      );
+      expect(runIsExcluded(exclusion, genTest('field_2', 'group_4'))).toBe(
+        true
+      );
     });
     it('returns false for non excluded test in included group', () => {
-      expect(runIsExcluded(ctx, genTest('field_3', 'group_1'))).toBe(false);
-      expect(runIsExcluded(ctx, genTest('field_4', 'group_2'))).toBe(false);
+      expect(runIsExcluded(exclusion, genTest('field_3', 'group_1'))).toBe(
+        false
+      );
+      expect(runIsExcluded(exclusion, genTest('field_4', 'group_2'))).toBe(
+        false
+      );
     });
     it('returns true for non excluded test in non included group', () => {
-      expect(runIsExcluded(ctx, genTest('field_3', 'group_3'))).toBe(true);
-      expect(runIsExcluded(ctx, genTest('field_4', 'group_4'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_3', 'group_3'))).toBe(
+        true
+      );
+      expect(runIsExcluded(exclusion, genTest('field_4', 'group_4'))).toBe(
+        true
+      );
     });
   });
 });

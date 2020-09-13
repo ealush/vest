@@ -15,13 +15,14 @@ runSpec(vest => {
       });
     });
 
-    it('Should return a deep copy on each run', () => {
+    it('Should the same object when result is unchanged', () => {
       createSuite(() => {
         const a = vest.draft();
         const b = vest.draft();
-        expect(a).isDeepCopyOf(b);
+        expect(a).toBe(b);
       });
     });
+
     it('Should only contain has/get callbacks', () => {
       createSuite(() => {
         expect(typeof vest.draft().hasErrors).toBe('function');

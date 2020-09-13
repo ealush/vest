@@ -1,4 +1,4 @@
-import Context from '../../Context';
+import context from '../../context';
 import { getSuite, setSuites } from '../../state';
 
 /**
@@ -21,9 +21,10 @@ const INITIAL_SUITE_STATE = (suiteId, name) => ({
 /**
  * Registers a new suite run.
  */
-const registerSuite = () => {
-  const context = Context.use();
-  const { name, suiteId } = context;
+const register = () => {
+  const ctx = context.use();
+  const { name, suiteId = name } = ctx;
+
   let suite = getSuite(suiteId);
 
   let lagging = [];
@@ -55,4 +56,4 @@ const registerSuite = () => {
   });
 };
 
-export default registerSuite;
+export default register;

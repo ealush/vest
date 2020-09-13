@@ -347,7 +347,7 @@ describe('module: produce', () => {
           testDummy(vest).failingWarning();
 
           group(groupName, () => {
-            testDummy(vest).passingWarnings();
+            testDummy(vest).passingWarning();
             testDummy(vest).failing();
           });
         });

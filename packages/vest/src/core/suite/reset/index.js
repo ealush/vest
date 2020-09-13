@@ -1,6 +1,6 @@
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
-import runWithContext from '../../../lib/runWithContext';
 import throwError from '../../../lib/throwError';
+import context from '../../context';
 import getState from '../getState';
 import register from '../register';
 import remove from '../remove';
@@ -22,7 +22,7 @@ const reset = suiteId => {
     /* */
   }
 
-  runWithContext(
+  context.run(
     { name, suiteId, operationMode: OPERATION_MODE_STATEFUL },
     register
   );

@@ -30,14 +30,14 @@ packages/
 ├── vest/   # Main Vest package.
 │   ├── src/    # Vest's prebuilt source code.
 │   │   └── core/  # Modules required for vest's functionality.
-│   │   │   └── Context/     # Vest's shared runtime. Used across the whole library.
+│   │   │   └── context/     # Vest's shared runtime. Used across the whole library.
 │   │   │   └── produce/     # Generates the out put object and callbaks.
 │   │   │   └── state/       # Vest's persistent state. Used across the whole library.
 │   │   │   └── test/        # Contains the test function and its lifecycle.
 │   │   │   └── suite/       # Contains all the suite modules and methods
 │   │   │       └── create/      # Initializes the suite and creates a context and state.
 │   │   │       └── validate/    # Creates and runs a stateless suite.
-│   │   └── hooks/ # Functions that extend vest's functionality. They all use Context.
+│   │   └── hooks/ # Functions that extend vest's functionality. They all use context.
 │   │   │   └── draft/       # Allows access to the intermediate test result.
 │   │   │   └── exclusive/   # Allows including or excluding fields in runtime.
 │   │   │   └── warn/        # Allows setting warn-only fields.
@@ -47,10 +47,10 @@ packages/
 │   │   └── testUtils/    # Test helper functions.
 │   │   └── typings/      # Contains typescript declaration files for the exported modules.
 │   │   └── utilities/    # Single file exported modules.
-│   │       └── any/
-│   │       └── enforceExtended/
-│   │       └── classNames/
-│   │       └── promisify/
+│   │   │   └── any/
+│   │   │   └── enforceExtended/
+│   │   │   └── classNames/
+│   │   │   └── promisify/
 ├── eslint-plugin-vest/   # Eslint plugin with vest specific rules
 │   ├── lib/    # Contains all rules
 ├── n4s/   # Assertion library used by vest

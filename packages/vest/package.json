@@ -1,6 +1,6 @@
 {
   "name": "vest",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Validation Test",
   "main": "./vest.es5.js",
   "browser": "./vest.es5.js",

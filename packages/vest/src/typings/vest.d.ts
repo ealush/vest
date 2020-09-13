@@ -315,8 +315,8 @@ declare module 'vest' {
 
   interface ICreateResult {
     (...args: any[]): IVestResult;
-    get: Vest['get'];
-    reset: Vest['reset'];
+    get: () => ReturnType<Vest['get']>;
+    reset: () => ReturnType<Vest['reset']>;
   }
 
   interface Vest {

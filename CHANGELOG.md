@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## vest: [2.2.3] - 2020-09-16
+
+### Fixed and improved
+- 870dd86 fix: notEquals typings (ealush)
+- d7db9c3 patch: extract business logic out of context module (#382) (ealush)
+- 765dea2 fix: get/reset suite typings (gaspoute)
+
 ## vest: [2.2.0] - 2020-09-08
 
 ### Added

@@ -41,7 +41,7 @@
     "rollup-plugin-terser": "^7.0.2",
     "semver": "^7.3.2",
     "typescript": "^4.0.2",
-    "validator": "^13.1.1"
+    "validator": "^13.1.17"
   },
   "scripts": {
     "build": "node ./scripts/buildAll",

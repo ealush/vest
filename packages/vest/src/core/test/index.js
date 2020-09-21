@@ -105,6 +105,28 @@ const test = (fieldName, ...args) => {
   return testObject;
 };
 
+// TODO
+// 1. validation for the params
+// 2. Naming
+// 3. String interpolation
+// 4. Sync async
+
+test.each = table => {
+  if (!Array.isArray(table)) {
+    throw new Error('test.each must get array of arrays');
+  } else if (Array.isArray(table) && table.some(item => !Array.isArray(item))) {
+    throw new Error('test.each must get array of arrays');
+  }
+
+  return (fieldName, ...args) => {
+    const { length, [length - 2]: statement, [length - 1]: testFn } = args;
+
+    table.forEach(item => {
+      test(fieldName, statement, () => testFn(...item));
+    });
+  };
+};
+
 test.memo = (fieldName, ...args) => {
   cache = cache ?? createCache(100);
 

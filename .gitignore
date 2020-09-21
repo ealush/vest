@@ -5,6 +5,7 @@ node_modules
 packages/vest/utilities/
 packages/n4s/extended/
 packages/n4s/dist
+.idea/
 
 # build artifacts
 packages/vest/dist

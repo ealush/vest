@@ -1,7 +1,7 @@
 import isNull from '.';
 
 describe('Tests isNull rule', () => {
-  it('Should return true for `Null` value', () => {
+  it('Should return true for `null` value', () => {
     expect(isNull(null)).toBe(true);
   });
 

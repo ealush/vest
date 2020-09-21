@@ -21,6 +21,7 @@ import matches from './matches';
 import numberEquals from './numberEquals';
 import shorterThan from './shorterThan';
 import shorterThanOrEquals from './shorterThanOrEquals';
+import isNull from './isNull';
 
 const rules = {
   equals,
@@ -31,6 +32,7 @@ const rules = {
   isEmpty,
   isEven,
   isNaN,
+  isNull,
   isNumber,
   isNumeric,
   isOdd,

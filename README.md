@@ -9,7 +9,7 @@
   - [Vanilla JS Example](https://stackblitz.com/edit/vest-vanilla-support-example?file=validation.js)
   - ReactJS Examples:
     - [Example 1 (groups)](https://codesandbox.io/s/ecstatic-waterfall-4i2ne?file=/src/validate.js)
-    - [Exmaple 2 (Async)](https://codesandbox.io/s/youthful-williamson-loijb?file=/src/validate.js)
+    - [Example 2 (Async)](https://codesandbox.io/s/youthful-williamson-loijb?file=/src/validate.js)
     - [Example 3](https://stackblitz.com/edit/vest-react-support-example?file=validation.js)
     - [Example 4](https://stackblitz.com/edit/vest-react-registration?file=validate.js)
   - [VueJS Example](https://codesandbox.io/s/vest-vue-example-1j6r8?file=/src/validations.js)
@@ -27,7 +27,7 @@ It works great with user-input validation and with validating upon user interact
 
 The idea behind Vest is that your validations can be described as a 'spec' or a contract that reflects your form or feature structure. Your validations run in production, and they are framework agnostic - meaning Vest works well with React, Angular, Vue, or even without a framework at all.
 
-Using Vest for form validation can reduce bloat, improve feature redability and maintainability.
+Using Vest for form validation can reduce bloat, improve feature readability and maintainability.
 
 **Basic Example**
 ![full](https://cdn.jsdelivr.net/gh/ealush/vest@assets/demos/full_3.gif 'full')

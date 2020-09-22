@@ -2,7 +2,13 @@
 
 # Vest 🦺 Declarative Validation Testing
 
+![Github Stars](https://githubbadges.com/star.svg?user=ealush&repo=vest&style=flat)
+![Npm downloads](https://img.shields.io/npm/dt/vest?label=Downloads&logo=npm)
+
 [![npm version](https://badge.fury.io/js/vest.svg)](https://badge.fury.io/js/vest) [![Build Status](https://travis-ci.org/ealush/vest.svg?branch=latest)](https://travis-ci.org/ealush/vest) [![Known Vulnerabilities](https://snyk.io/test/npm/vest/badge.svg)](https://snyk.io/test/npm/vest)
+![minifiedSize](https://img.shields.io/bundlephobia/min/vest?color=blue&logo=npm)
+
+![Join discord](https://img.shields.io/discord/757686103292641312?label=Join%20Discord&logo=discord&logoColor=green)
 
 - [Documentation homepage](https://ealush.github.io/vest)
 - **Try vest live**

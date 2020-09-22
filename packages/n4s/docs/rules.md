@@ -34,6 +34,7 @@ Enforce rules are functions that allow you to test your data against different c
 - [isNotNaN](#isNotNaN)
 - [isString](#isstring)
 - [isNotString](#isnotstring)
+- [isUndefined](#isundefined)
 - [isOdd](#isodd)
 - [isEven](#iseven)
 
@@ -921,6 +922,26 @@ enforce('hello').isNotString();
 ```js
 enforce(['hello']).isNotString();
 // passes
+```
+
+## isUndefined
+
+### Description
+
+Enforces that a given value is (`===`) undefined.
+
+### Usage examples:
+
+```js
+enforce().isUndefined();
+enforce(undefined).isUndefined();
+// passes
+```
+
+```js
+enforce(null).isUndefined();
+enforce(true).isUndefined();
+// throws
 ```
 
 ## isOdd

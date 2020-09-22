@@ -12,6 +12,7 @@ import isNumeric from './isNumeric';
 import isOdd from './isOdd';
 import isString from './isString';
 import isTruthy from './isTruthy';
+import isUndefined from './isUndefined';
 import lengthEquals from './lengthEquals';
 import lessThan from './lessThan';
 import lessThanOrEquals from './lessThanOrEquals';
@@ -36,6 +37,7 @@ const rules = {
   isOdd,
   isString,
   isTruthy,
+  isUndefined,
   lengthEquals,
   lessThan,
   lessThanOrEquals,

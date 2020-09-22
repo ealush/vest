@@ -32,6 +32,8 @@ Enforce rules are functions that allow you to test your data against different c
 - [isNotNumber](#isnotnumber)
 - [isNaN](#isNaN)
 - [isNotNaN](#isNotNaN)
+- [isNull](#isnull)
+- [isNotNull](#isnotnull)
 - [isString](#isstring)
 - [isNotString](#isnotstring)
 - [isUndefined](#isundefined)
@@ -883,6 +885,45 @@ enforce('1984').isNaN();
 ```js
 enforce(NaN).isNaN();
 enforce('A' / 'B').isNaN();
+// throws
+```
+
+
+## isNull
+
+### Description
+
+Enforces that a specified value is `null`.
+
+### Usage examples:
+
+```js
+enforce(null).isNull();
+// passes
+```
+
+```js
+enforce(undefined).isNull();
+enforce(true).isNull();
+// throws
+```
+
+## isNotNull
+
+### Description
+
+Reverse implementation of `isNull`. Checks that a value is not null.
+
+### Usage examples:
+
+```js
+enforce("hello").isNull();
+enforce(200).isNull();
+// passes
+```
+
+```js
+enforce(null).isNull();
 // throws
 ```
 

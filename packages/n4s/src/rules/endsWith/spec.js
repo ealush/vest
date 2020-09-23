@@ -28,6 +28,6 @@ describe('Tests isArray rule', () => {
     });
 
     it('Should expose negativeForm property', () => {
-        expect(endsWith.negativeForm).toBe('isNotEndsWith');
+        expect(endsWith.negativeForm).toBe('doesNotEndWith');
     });
 });

@@ -1,4 +1,5 @@
 import { extendRules } from '../lib';
+import endsWith from './endsWith';
 import equals from './equals';
 import greaterThan from './greaterThan';
 import greaterThanOrEquals from './greaterThanOrEquals';
@@ -25,6 +26,7 @@ import shorterThan from './shorterThan';
 import shorterThanOrEquals from './shorterThanOrEquals';
 
 const rules = {
+  endsWith,
   equals,
   greaterThan,
   greaterThanOrEquals,
@@ -48,7 +50,7 @@ const rules = {
   matches,
   numberEquals,
   shorterThan,
-  shorterThanOrEquals,
+  shorterThanOrEquals
 };
 
 export default extendRules(rules);

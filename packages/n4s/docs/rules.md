@@ -32,8 +32,11 @@ Enforce rules are functions that allow you to test your data against different c
 - [isNotNumber](#isnotnumber)
 - [isNaN](#isNaN)
 - [isNotNaN](#isNotNaN)
+- [isNull](#isnull)
+- [isNotNull](#isnotnull)
 - [isString](#isstring)
 - [isNotString](#isnotstring)
+- [isUndefined](#isundefined)
 - [isOdd](#isodd)
 - [isEven](#iseven)
 
@@ -885,6 +888,45 @@ enforce('A' / 'B').isNaN();
 // throws
 ```
 
+
+## isNull
+
+### Description
+
+Enforces that a specified value is `null`.
+
+### Usage examples:
+
+```js
+enforce(null).isNull();
+// passes
+```
+
+```js
+enforce(undefined).isNull();
+enforce(true).isNull();
+// throws
+```
+
+## isNotNull
+
+### Description
+
+Reverse implementation of `isNull`. Checks that a value is not null.
+
+### Usage examples:
+
+```js
+enforce("hello").isNull();
+enforce(200).isNull();
+// passes
+```
+
+```js
+enforce(null).isNull();
+// throws
+```
+
 ## isString
 
 ### Description
@@ -921,6 +963,26 @@ enforce('hello').isNotString();
 ```js
 enforce(['hello']).isNotString();
 // passes
+```
+
+## isUndefined
+
+### Description
+
+Enforces that a given value is (`===`) undefined.
+
+### Usage examples:
+
+```js
+enforce().isUndefined();
+enforce(undefined).isUndefined();
+// passes
+```
+
+```js
+enforce(null).isUndefined();
+enforce(true).isUndefined();
+// throws
 ```
 
 ## isOdd

@@ -8,11 +8,13 @@ import isArray from './isArray';
 import isEmpty from './isEmpty';
 import isEven from './isEven';
 import isNaN from './isNaN';
+import isNull from './isNull';
 import isNumber from './isNumber';
 import isNumeric from './isNumeric';
 import isOdd from './isOdd';
 import isString from './isString';
 import isTruthy from './isTruthy';
+import isUndefined from './isUndefined';
 import lengthEquals from './lengthEquals';
 import lessThan from './lessThan';
 import lessThanOrEquals from './lessThanOrEquals';
@@ -32,11 +34,13 @@ const rules = {
   isEmpty,
   isEven,
   isNaN,
+  isNull,
   isNumber,
   isNumeric,
   isOdd,
   isString,
   isTruthy,
+  isUndefined,
   lengthEquals,
   lessThan,
   lessThanOrEquals,

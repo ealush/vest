@@ -64,6 +64,7 @@ Enforce rules are functions that allow you to test your data against different c
 - [isNotString](#isnotstring)
 - [isOdd](#isodd)
 - [isEven](#iseven)
+- [endsWith](#endswith)
 
 ### equals
 
@@ -995,6 +996,31 @@ enforce([0]).isEven();
 // throws
 ```
 
+## endsWith
+
+### Description
+
+Determines whether a string ends with the characters of a specified string.
+
+### Usage examples:
+
+```js
+enforce('aba').endsWith('ba');
+enforce('some_string').endsWith('_string');
+enforce('string with spaces').endsWith('ng with spaces');
+enforce('aaaa     ').endsWith(' ');
+// passes
+```
+
+```js
+enforce('for').endsWith('tor');
+enforce('aaaab').endsWith('aaaa');
+enforce('aa').endsWith('aaa');
+enforce(42).endsWith('b');
+enforce(42).endsWith(50);
+enforce(true).endsWith(100);
+// throws
+```
 
 # Custom enforce rules
 

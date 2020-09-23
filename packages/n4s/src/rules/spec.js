@@ -24,9 +24,9 @@ const negativeRules = [
   'notEquals',
   'notInside',
   'notMatches',
-  'doesNotEndWith',
   'numberNotEquals',
   'isNotNull',
+  'doesNotEndWith',
 ];
 
 const positiveRules = [

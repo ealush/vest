@@ -2041,6 +2041,11 @@ contains-path@^0.1.0:
   resolved "https://registry.yarnpkg.com/contains-path/-/contains-path-0.1.0.tgz#fe8cf184ff6670b6baef01a9d4861a5cbec4120a"
   integrity sha1-/ozxhP9mcLa67wGp1IYaXL7EEgo=
 
+context@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/context/-/context-0.1.0.tgz#07ca05383636b8c35468b26a83da51bb5e4c053f"
+  integrity sha512-anktVA6cG919DOdFLwiDio2mgrdUvXMN/DlLBA1Xv6rtLwZi8eXcUC7QOpB0KcHSUwOnyH9tmhsyXI+rJVzqLg==
+
 convert-source-map@^1.1.0, convert-source-map@^1.4.0, convert-source-map@^1.6.0, convert-source-map@^1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-1.7.0.tgz#17a2cb882d7f77d3490585e2ce6c524424a3a442"

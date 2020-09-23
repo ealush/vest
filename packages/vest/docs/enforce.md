@@ -65,6 +65,7 @@ Enforce rules are functions that allow you to test your data against different c
 - [isOdd](#isodd)
 - [isEven](#iseven)
 - [endsWith](#endswith)
+- [doesNotEndWith](#doesnotendwith)
 
 ### equals
 
@@ -1021,6 +1022,13 @@ enforce(42).endsWith(50);
 enforce(true).endsWith(100);
 // throws
 ```
+
+## doesNotEndWith
+
+### Description
+
+Determines whether a string does not end with the characters of a specified string.
+Reverse implementation of `endsWith`.
 
 # Custom enforce rules
 

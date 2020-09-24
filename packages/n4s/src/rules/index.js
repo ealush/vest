@@ -24,6 +24,7 @@ import matches from './matches';
 import numberEquals from './numberEquals';
 import shorterThan from './shorterThan';
 import shorterThanOrEquals from './shorterThanOrEquals';
+import startsWith from './startsWith';
 
 const rules = {
   endsWith,
@@ -50,7 +51,8 @@ const rules = {
   matches,
   numberEquals,
   shorterThan,
-  shorterThanOrEquals
+  shorterThanOrEquals,
+  startsWith
 };
 
 export default extendRules(rules);

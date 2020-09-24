@@ -66,6 +66,8 @@ Enforce rules are functions that allow you to test your data against different c
 - [isEven](#iseven)
 - [endsWith](#endswith)
 - [doesNotEndWith](#doesnotendwith)
+- [startsWith](#startsWith)
+- [doesNotStartWith](#doesnotstartwith)
 
 ### equals
 
@@ -1029,6 +1031,39 @@ enforce(true).endsWith(100);
 
 Determines whether a string does not end with the characters of a specified string.
 Reverse implementation of `endsWith`.
+
+## startsWith
+
+### Description
+
+Determines whether a string starts with the characters of a specified string.
+
+### Usage examples:
+
+```js
+enforce('aba').startsWith('ab');
+enforce('some_string').startsWith('some_');
+enforce('string with spaces').startsWith('string with s');
+enforce('aaaa     ').startsWith('aaaa ');
+// passes
+```
+
+```js
+enforce('for').startsWith('tor');
+enforce('aaaab').startsWith('aab');
+enforce('aa').startsWith('aaa');
+enforce(42).startsWith('b');
+enforce(42).startsWith(50);
+enforce(true).startsWith(100);
+// throws
+```
+
+## doesNotStartWith
+
+### Description
+
+Determines whether a string does not start with the characters of a specified string.
+Reverse implementation of `startsWith`.
 
 # Custom enforce rules
 

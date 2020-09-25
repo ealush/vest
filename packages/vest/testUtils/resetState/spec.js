@@ -1,6 +1,6 @@
 import state from '../../src/core/state';
 import { KEY_SUITES } from '../../src/core/state/constants';
-import getSuite from '../../src/core/suite/getSuite';
+import * as suiteState from '../../src/core/suite/suiteState';
 import resetState from '.';
 
 describe('resetState', () => {
@@ -26,8 +26,8 @@ describe('resetState', () => {
     it('Should add a new suite to the state', () => {
       expect(state.get()[KEY_SUITES]).toEqual({});
       resetState(suiteId);
-      expect(getSuite(suiteId)).toBeTruthy();
-      expect(getSuite(suiteId)).toMatchSnapshot();
+      expect(suiteState.getSuite(suiteId)).toBeTruthy();
+      expect(suiteState.getSuite(suiteId)).toMatchSnapshot();
     });
   });
 });

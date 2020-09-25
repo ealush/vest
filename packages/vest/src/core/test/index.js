@@ -1,7 +1,7 @@
 import { isExcluded } from '../../hooks/exclusive';
 import createCache from '../../lib/cache';
 import context from '../context';
-import patch from '../suite/patch';
+import * as suiteState from '../suite/suiteState';
 import VestTest from './lib/VestTest';
 import { setPending } from './lib/pending';
 import runAsyncTest from './runAsyncTest';
@@ -14,7 +14,7 @@ let cache;
  * @param {VestTest} testObject
  */
 const addTestToState = (suiteId, testObject) => {
-  patch(suiteId, state => ({
+  suiteState.patch(suiteId, state => ({
     ...state,
     testObjects: state.testObjects.concat(testObject),
   }));

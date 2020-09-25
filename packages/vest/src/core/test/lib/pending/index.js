@@ -1,6 +1,5 @@
 import removeElementFromArray from '../../../../lib/removeElementFromArray';
-import getState from '../../../suite/getState';
-import patch from '../../../suite/patch';
+import * as suiteState from '../../../suite/suiteState';
 import { setCanceled } from '../canceled';
 
 /**
@@ -9,7 +8,7 @@ import { setCanceled } from '../canceled';
  */
 export const setPending = testObject => {
   const { fieldName, groupName, suiteId } = testObject;
-  const state = getState(suiteId);
+  const state = suiteState.getState(suiteId);
   const { lagging, canceled } = state.lagging.reduce(
     ({ lagging, canceled }, testObject) => {
       /**
@@ -31,7 +30,7 @@ export const setPending = testObject => {
     { lagging: [], canceled: [] }
   );
 
-  patch(suiteId, state => ({
+  suiteState.patch(suiteId, state => ({
     ...state,
     lagging,
     pending: state.pending.concat(testObject),
@@ -44,7 +43,7 @@ export const setPending = testObject => {
  * @param {VestTest} testObject
  */
 export const removePending = testObject => {
-  patch(testObject.suiteId, state => ({
+  suiteState.patch(testObject.suiteId, state => ({
     ...state,
     pending: removeElementFromArray(state.pending, testObject),
     lagging: removeElementFromArray(state.lagging, testObject),

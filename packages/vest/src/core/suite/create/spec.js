@@ -6,7 +6,7 @@ import { dummyTest } from '../../../../testUtils/testDummy';
 import { OPERATION_MODE_STATELESS } from '../../../constants';
 import { get } from '../../../hooks';
 import context from '../../context';
-import getSuite from '../getSuite';
+import * as suiteState from '../suiteState';
 import create from '.';
 
 describe('Test createSuite module', () => {
@@ -78,9 +78,9 @@ describe('Test createSuite module', () => {
     });
 
     it('Should initialize with an empty state object', () => {
-      expect(getSuite(suiteId)).toBeUndefined();
+      expect(suiteState.getSuite(suiteId)).toBeUndefined();
       runCreateSuite();
-      const state = getSuite(suiteId);
+      const state = suiteState.getSuite(suiteId);
       expect(state).toHaveLength(2);
       expect(state[1]).toBeUndefined();
       expect(state[0].suiteId).toBe(suiteId);
@@ -93,7 +93,7 @@ describe('Test createSuite module', () => {
       expect(Object.keys(state[0].doneCallbacks)).toHaveLength(0);
       expect(Object.keys(state[0].fieldCallbacks)).toHaveLength(0);
 
-      expect(getSuite(suiteId)).toMatchSnapshot();
+      expect(suiteState.getSuite(suiteId)).toMatchSnapshot();
     });
 
     it('Should be able to get the suite from the result of createSuite', () => {
@@ -128,7 +128,7 @@ describe('Test createSuite module', () => {
           runCreateSuite();
         });
       });
-      expect(getSuite(suiteId)).toBeUndefined();
+      expect(suiteState.getSuite(suiteId)).toBeUndefined();
     });
   });
 });

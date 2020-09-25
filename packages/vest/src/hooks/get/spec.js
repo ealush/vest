@@ -1,8 +1,7 @@
 import { dummyTest } from '../../../testUtils/testDummy';
 import produce from '../../core/produce';
 import create from '../../core/suite/create';
-import getState from '../../core/suite/getState';
-import remove from '../../core/suite/remove';
+import * as suiteState from '../../core/suite/suiteState';
 import get from '.';
 
 const suiteId = 'form-name';
@@ -37,12 +36,14 @@ describe('hook: vest.get()', () => {
     });
 
     afterEach(() => {
-      remove(suiteId);
+      suiteState.remove(suiteId);
     });
 
     it('Should return produced result', () => {
       validate();
-      expect(produce(getState(suiteId), { draft: true })).toBe(get(suiteId));
+      expect(produce(suiteState.getState(suiteId), { draft: true })).toBe(
+        get(suiteId)
+      );
       expect(get(suiteId)).toMatchSnapshot();
     });
   });

@@ -1,5 +1,5 @@
 import produce from '../../core/produce';
-import getState from '../../core/suite/getState';
+import * as suiteState from '../../core/suite/suiteState';
 import throwError from '../../lib/throwError';
 
 /**
@@ -11,7 +11,7 @@ const get = suiteId => {
     throwError('`get` hook was called without a suite name.');
   }
 
-  const state = getState(suiteId);
+  const state = suiteState.getState(suiteId);
   return produce(state, { draft: true });
 };
 

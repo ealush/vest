@@ -3,7 +3,7 @@ import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
 import context from '../../context';
-import * as state from '../../state';
+import state from '../../state';
 import { KEY_CANCELED } from '../../state/constants';
 import getState from '../../suite/getState';
 import patch from '../../suite/patch';

@@ -1,5 +1,5 @@
 import resetState from '../../../../../testUtils/resetState';
-import * as state from '../../../state';
+import state from '../../../state';
 import { KEY_CANCELED } from '../../../state/constants';
 import VestTest from '../VestTest';
 import { setCanceled, removeCanceled } from '.';

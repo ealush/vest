@@ -1,4 +1,4 @@
-import * as state from '../../src/core/state';
+import state from '../../src/core/state';
 import { KEY_SUITES } from '../../src/core/state/constants';
 import getSuite from '../../src/core/suite/getSuite';
 import resetState from '.';

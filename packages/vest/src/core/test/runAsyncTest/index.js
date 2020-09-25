@@ -1,6 +1,6 @@
 import { OPERATION_MODE_STATELESS } from '../../../constants';
 import context from '../../context';
-import * as state from '../../state';
+import state from '../../state';
 import { KEY_CANCELED } from '../../state/constants';
 import cleanupCompleted from '../../suite/cleanupCompleted';
 import getState from '../../suite/getState';

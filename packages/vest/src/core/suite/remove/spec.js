@@ -3,7 +3,7 @@ import vest from '../../..';
 import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import testDummy from '../../../../testUtils/testDummy';
-import * as state from '../../state';
+import state from '../../state';
 import { KEY_CANCELED, KEY_SUITES } from '../../state/constants';
 import getState from '../getState';
 import remove from '.';

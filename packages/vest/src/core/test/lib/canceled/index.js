@@ -1,4 +1,4 @@
-import * as state from '../../../state';
+import state from '../../../state';
 import { KEY_CANCELED } from '../../../state/constants';
 
 /**

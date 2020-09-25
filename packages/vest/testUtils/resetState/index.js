@@ -13,7 +13,7 @@ const resetState = (suiteId, suiteName = suiteId) => {
       name: suiteName,
       operationMode: OPERATION_MODE_STATEFUL,
     });
-    return suiteState.getState(suiteId);
+    return suiteState.getCurrentState(suiteId);
   }
 };
 

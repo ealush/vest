@@ -47,7 +47,7 @@ const createSuite = (name, tests) => {
         tests.apply(null, args);
         mergeExcludedTests(suiteId);
 
-        return produce(suiteState.getState(suiteId));
+        return produce(suiteState.getCurrentState(suiteId));
       });
       return output;
     },

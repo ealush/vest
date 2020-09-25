@@ -25,7 +25,7 @@ const group = (groupName, tests) => {
   validateSuiteParams('group', groupName, tests);
 
   const ctx = context.use();
-  const state = suiteState.getState(ctx.suiteId);
+  const state = suiteState.getCurrentState(ctx.suiteId);
 
   if (!isGroupExcluded(state, groupName)) {
     registerGroup(groupName);

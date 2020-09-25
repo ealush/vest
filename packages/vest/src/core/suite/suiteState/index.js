@@ -29,7 +29,7 @@ export const getSuite = suiteId => state.get()[KEY_SUITES][suiteId];
  * @param {string} suiteId
  * @returns {Object} Current suite state.
  */
-export const getState = suiteId => getSuite(suiteId)[0];
+export const getCurrentState = suiteId => getSuite(suiteId)[0];
 
 /**
  * Updates current suite state with patcher value or output.
@@ -59,7 +59,7 @@ export const remove = suiteId => {
     throwError('`vest.remove` must be called with suiteId.');
   }
 
-  const suite = getState(suiteId);
+  const suite = getCurrentState(suiteId);
   if (!suite) {
     return;
   }
@@ -84,7 +84,7 @@ export const reset = suiteId => {
 
   let name = suiteId;
   try {
-    name = getState(suiteId).name;
+    name = getCurrentState(suiteId).name;
     remove(suiteId);
   } catch {
     /* */

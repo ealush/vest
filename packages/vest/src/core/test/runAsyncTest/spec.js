@@ -60,8 +60,10 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
 
     describe('State updates', () => {
       test('Initial state matches snapshot (sanity)', () => {
-        expect(suiteState.getState(suiteId).pending).toContain(testObject);
-        expect(suiteState.getState(suiteId)).toMatchSnapshot();
+        expect(suiteState.getCurrentState(suiteId).pending).toContain(
+          testObject
+        );
+        expect(suiteState.getCurrentState(suiteId)).toMatchSnapshot();
         runRunAsyncTest(testObject);
       });
 
@@ -69,7 +71,7 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
         new Promise(done => {
           runRunAsyncTest(testObject);
           setTimeout(() => {
-            expect(suiteState.getState(suiteId).pending).not.toContain(
+            expect(suiteState.getCurrentState(suiteId).pending).not.toContain(
               testObject
             );
             done();
@@ -83,17 +85,17 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
             state[KEY_CANCELED][testObject.id] = true;
             return state;
           });
-          currentState = _.cloneDeep(suiteState.getState(suiteId));
+          currentState = _.cloneDeep(suiteState.getCurrentState(suiteId));
         });
 
         it('Should remove test from pending array', () => {
-          expect(suiteState.getState(suiteId).pending).toEqual(
+          expect(suiteState.getCurrentState(suiteId).pending).toEqual(
             expect.arrayContaining([testObject])
           );
           runRunAsyncTest(testObject);
           return new Promise(done => {
             setTimeout(() => {
-              expect(suiteState.getState(suiteId).pending).toEqual(
+              expect(suiteState.getCurrentState(suiteId).pending).toEqual(
                 expect.not.arrayContaining([testObject])
               );
               done();
@@ -118,9 +120,9 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
           new Promise(done => {
             runRunAsyncTest(testObject);
             setTimeout(() => {
-              expect(_.omit(suiteState.getState(suiteId), 'pending')).toEqual(
-                _.omit(currentState, 'pending')
-              );
+              expect(
+                _.omit(suiteState.getCurrentState(suiteId), 'pending')
+              ).toEqual(_.omit(currentState, 'pending'));
               done();
             });
           }));

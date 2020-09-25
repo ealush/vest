@@ -11,7 +11,7 @@ const get = suiteId => {
     throwError('`get` hook was called without a suite name.');
   }
 
-  const state = suiteState.getState(suiteId);
+  const state = suiteState.getCurrentState(suiteId);
   return produce(state, { draft: true });
 };
 

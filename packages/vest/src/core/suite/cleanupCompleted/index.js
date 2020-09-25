@@ -5,7 +5,7 @@ import * as suiteState from '../suiteState';
  * @param {string} suiteId
  */
 const cleanupCompleted = suiteId => {
-  const state = suiteState.getState(suiteId);
+  const state = suiteState.getCurrentState(suiteId);
 
   if (hasRemainingTests(state)) {
     return;

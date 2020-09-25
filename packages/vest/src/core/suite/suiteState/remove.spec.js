@@ -59,7 +59,7 @@ describe('remove', () => {
     test.skipOnWatch(
       'Sanity - making sure everything works as it should',
       () => {
-        const currentState = suiteState.getState(suiteId);
+        const currentState = suiteState.getCurrentState(suiteId);
         expect(currentState.lagging).toHaveLength(2);
         expect(currentState.pending).toHaveLength(2);
         expect(currentState.lagging[0].fieldName).toBe('field_1');
@@ -72,15 +72,15 @@ describe('remove', () => {
 
     it('Should remove suite from state', () => {
       expect(state.get()[KEY_SUITES]).toHaveProperty(suiteId);
-      expect(() => suiteState.getState(suiteId)).not.toThrow();
+      expect(() => suiteState.getCurrentState(suiteId)).not.toThrow();
       suiteState.remove(suiteId);
-      expect(() => suiteState.getState(suiteId)).toThrow();
+      expect(() => suiteState.getCurrentState(suiteId)).toThrow();
       expect(state.get()[KEY_SUITES]).not.toHaveProperty(suiteId);
     });
 
     it('Should set all pending and lagging tests as canceled', () => {
       const previouslyCanceled = state.get()[KEY_CANCELED];
-      const currentState = suiteState.getState(suiteId);
+      const currentState = suiteState.getCurrentState(suiteId);
       const allCanceled = [
         ...currentState.lagging,
         ...currentState.pending,

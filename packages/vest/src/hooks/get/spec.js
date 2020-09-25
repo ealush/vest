@@ -41,9 +41,9 @@ describe('hook: vest.get()', () => {
 
     it('Should return produced result', () => {
       validate();
-      expect(produce(suiteState.getState(suiteId), { draft: true })).toBe(
-        get(suiteId)
-      );
+      expect(
+        produce(suiteState.getCurrentState(suiteId), { draft: true })
+      ).toBe(get(suiteId));
       expect(get(suiteId)).toMatchSnapshot();
     });
   });

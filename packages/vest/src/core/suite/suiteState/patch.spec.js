@@ -41,7 +41,7 @@ describe('patch', () => {
 
     it('Should return next state', () => {
       expect(suiteState.patch(suiteId, patcher)).toBe(
-        suiteState.getState(suiteId)
+        suiteState.getCurrentState(suiteId)
       );
     });
   });

@@ -69,7 +69,7 @@ const runAsyncTest = testObject => {
  * @param {string} [fieldName] Field name with associated callbacks.
  */
 const runDoneCallbacks = (suiteId, fieldName) => {
-  const currentState = suiteState.getState(suiteId);
+  const currentState = suiteState.getCurrentState(suiteId);
   if (fieldName) {
     if (
       !hasRemainingTests(currentState, fieldName) &&

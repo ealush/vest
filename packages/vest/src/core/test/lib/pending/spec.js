@@ -15,7 +15,7 @@ describe('module: pending', () => {
   describe('export: removePending', () => {
     describe('When testObject it not pending or lagging', () => {
       beforeEach(() => {
-        currentState = _.cloneDeep(suiteState.getState(suiteId));
+        currentState = _.cloneDeep(suiteState.getCurrentState(suiteId));
         testObject = new VestTest({
           fieldName: 'field_1',
           statement: 'failure_message',
@@ -25,7 +25,7 @@ describe('module: pending', () => {
       });
       it('Should keep state unchanged', () => {
         removePending(testObject);
-        expect(suiteState.getState(suiteId)).toEqual(currentState);
+        expect(suiteState.getCurrentState(suiteId)).toEqual(currentState);
       });
     });
 
@@ -39,12 +39,14 @@ describe('module: pending', () => {
         });
 
         it('Should remove test from pending', () => {
-          expect(suiteState.getState(suiteId).pending).toContain(testObject);
-          removePending(testObject);
-          expect(suiteState.getState(suiteId).pending).not.toContain(
+          expect(suiteState.getCurrentState(suiteId).pending).toContain(
             testObject
           );
-          expect(suiteState.getState(suiteId)).toMatchSnapshot();
+          removePending(testObject);
+          expect(suiteState.getCurrentState(suiteId).pending).not.toContain(
+            testObject
+          );
+          expect(suiteState.getCurrentState(suiteId)).toMatchSnapshot();
         });
       });
       describe('When in lagging', () => {
@@ -56,12 +58,14 @@ describe('module: pending', () => {
         });
 
         it('Should remove test from lagging', () => {
-          expect(suiteState.getState(suiteId).lagging).toContain(testObject);
-          removePending(testObject);
-          expect(suiteState.getState(suiteId).lagging).not.toContain(
+          expect(suiteState.getCurrentState(suiteId).lagging).toContain(
             testObject
           );
-          expect(suiteState.getState(suiteId)).toMatchSnapshot();
+          removePending(testObject);
+          expect(suiteState.getCurrentState(suiteId).lagging).not.toContain(
+            testObject
+          );
+          expect(suiteState.getCurrentState(suiteId)).toMatchSnapshot();
         });
       });
     });
@@ -85,11 +89,13 @@ describe('module: pending', () => {
     });
 
     it('Should set supplied test object as pending', () => {
-      expect(suiteState.getState(suiteId).pending).not.toContain(
+      expect(suiteState.getCurrentState(suiteId).pending).not.toContain(
         testObjects[0]
       );
       setPending(testObjects[0]);
-      expect(suiteState.getState(suiteId).pending).toContain(testObjects[0]);
+      expect(suiteState.getCurrentState(suiteId).pending).toContain(
+        testObjects[0]
+      );
     });
 
     describe('When a field of the same profile is in lagging array', () => {
@@ -105,20 +111,24 @@ describe('module: pending', () => {
       });
 
       it('Should remove test from lagging array', () => {
-        expect(suiteState.getState(suiteId).lagging).toContain(testObjects[0]);
-        setPending(testObjects[0]);
-        expect(suiteState.getState(suiteId).lagging).not.toContain(
+        expect(suiteState.getCurrentState(suiteId).lagging).toContain(
           testObjects[0]
         );
-        expect(suiteState.getState(suiteId)).toMatchSnapshot();
+        setPending(testObjects[0]);
+        expect(suiteState.getCurrentState(suiteId).lagging).not.toContain(
+          testObjects[0]
+        );
+        expect(suiteState.getCurrentState(suiteId)).toMatchSnapshot();
       });
 
       it('Should add test to pending array', () => {
-        expect(suiteState.getState(suiteId).pending).not.toContain(
+        expect(suiteState.getCurrentState(suiteId).pending).not.toContain(
           testObjects[0]
         );
         setPending(testObjects[0]);
-        expect(suiteState.getState(suiteId).pending).toContain(testObjects[0]);
+        expect(suiteState.getCurrentState(suiteId).pending).toContain(
+          testObjects[0]
+        );
       });
 
       it('Should set test as canceled', () => {

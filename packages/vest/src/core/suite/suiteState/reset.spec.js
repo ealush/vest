@@ -33,7 +33,7 @@ describe('vest.reset', () => {
 
   it('Should initialize suite when not found', () => {
     const name = 'nonexistent_suite';
-    expect(() => suiteState.getState(name)).toThrow();
+    expect(() => suiteState.getCurrentState(name)).toThrow();
     const expected = {
       ...initialState,
       name,

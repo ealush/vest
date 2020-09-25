@@ -8,7 +8,7 @@ import { setCanceled } from '../canceled';
  */
 export const setPending = testObject => {
   const { fieldName, groupName, suiteId } = testObject;
-  const state = suiteState.getState(suiteId);
+  const state = suiteState.getCurrentState(suiteId);
   const { lagging, canceled } = state.lagging.reduce(
     ({ lagging, canceled }, testObject) => {
       /**

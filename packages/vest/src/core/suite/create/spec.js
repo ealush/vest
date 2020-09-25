@@ -6,7 +6,7 @@ import { dummyTest } from '../../../../testUtils/testDummy';
 import { OPERATION_MODE_STATELESS } from '../../../constants';
 import { get } from '../../../hooks';
 import context from '../../context';
-import { getSuite } from '../../state';
+import getSuite from '../getSuite';
 import create from '.';
 
 describe('Test createSuite module', () => {

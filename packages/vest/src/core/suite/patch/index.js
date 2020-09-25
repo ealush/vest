@@ -1,4 +1,4 @@
-import { getSuite } from '../../state';
+import getSuite from '../getSuite';
 
 /**
  * Updates current suite state with patcher value or output.

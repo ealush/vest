@@ -1,18 +1,17 @@
-const createStore = initialValue => {
+const createStore = initialState => {
   const storage = {
     state: null,
   };
 
-  reset();
+  register();
   return {
     set,
     get,
-    reset,
+    register,
   };
 
   function set(setter) {
-    storage.state =
-      typeof setter === 'function' ? setter(storage.state) : setter;
+    storage.state = setter(get());
     return get();
   }
 
@@ -20,8 +19,8 @@ const createStore = initialValue => {
     return storage.state;
   }
 
-  function reset() {
-    return set(initialValue);
+  function register() {
+    return set(state => state ?? initialState());
   }
 };
 

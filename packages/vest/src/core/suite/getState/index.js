@@ -1,4 +1,4 @@
-import { getSuite } from '../../state';
+import getSuite from '../getSuite';
 
 /**
  * Retrieves most recent suite state.

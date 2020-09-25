@@ -1,5 +1,5 @@
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
-import * as state from '../../state';
+import getSuite from '../getSuite';
 import getState from '.';
 
 const suiteName = 'suite_1';
@@ -10,7 +10,7 @@ describe('getState', () => {
   it('Should return current suite state by key', () => {
     runRegisterSuite({ name: suiteName, suiteId });
     runRegisterSuite({ name: suiteName, suiteId: suiteId_2 });
-    const [currentState] = state.getSuite(suiteId);
+    const [currentState] = getSuite(suiteId);
     expect(getState(suiteId)).toBe(currentState);
   });
 });

@@ -4,6 +4,7 @@ import * as state from '../../state';
 import { KEY_CANCELED } from '../../state/constants';
 import cleanupCompleted from '../../suite/cleanupCompleted';
 import getState from '../../suite/getState';
+import getSuite from '../../suite/getSuite';
 import hasRemainingTests from '../../suite/hasRemainingTests';
 import { removeCanceled } from '../lib/canceled';
 import { removePending } from '../lib/pending';
@@ -23,7 +24,7 @@ const runAsyncTest = testObject => {
     }
 
     // This is for cases in which the suite state was already reset
-    if (!state.getSuite(suiteId)) {
+    if (!getSuite(suiteId)) {
       return;
     }
 

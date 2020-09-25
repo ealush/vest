@@ -2,6 +2,7 @@ import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
 import * as state from '../../state';
+import getSuite from '../getSuite';
 import patch from '../patch';
 
 const suiteName = 'suite_1';
@@ -22,11 +23,11 @@ describe('registerSuite', () => {
 
   describe('When suite does not exist in state', () => {
     it('Should create initial suite without prevState', () => {
-      expect(state.getSuite(suiteId)).toBeUndefined();
+      expect(getSuite(suiteId)).toBeUndefined();
       runRegisterSuite(context);
-      expect(state.getSuite(suiteId)).toHaveLength(2);
-      expect(state.getSuite(suiteId)[1]).toBeUndefined();
-      expect(state.getSuite(suiteId)[0]).toMatchSnapshot();
+      expect(getSuite(suiteId)).toHaveLength(2);
+      expect(getSuite(suiteId)[1]).toBeUndefined();
+      expect(getSuite(suiteId)[0]).toMatchSnapshot();
     });
   });
 
@@ -34,12 +35,12 @@ describe('registerSuite', () => {
     let suite;
     beforeEach(() => {
       runRegisterSuite(context);
-      suite = state.getSuite(suiteId);
+      suite = getSuite(suiteId);
       prevSuiteState = suite[0];
       runRegisterSuite({ ...context });
     });
     it('Should move prev prevSuiteState into second array cell', () => {
-      expect(state.getSuite(suiteId)[1]).toBe(prevSuiteState);
+      expect(getSuite(suiteId)[1]).toBe(prevSuiteState);
     });
 
     describe('Prev state data handling', () => {

@@ -3,9 +3,9 @@ import { get } from '../../../hooks';
 import validateSuiteParams from '../../../lib/validateSuiteParams';
 import context from '../../context';
 import produce from '../../produce';
-import { getSuite } from '../../state';
 import mergeExcludedTests from '../../test/lib/mergeExcludedTests';
 import getState from '../getState';
+import getSuite from '../getSuite';
 import register from '../register';
 import reset from '../reset';
 

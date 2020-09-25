@@ -77,7 +77,7 @@ export const remove = suiteId => {
  * Resets suite to its initial state
  * @param {String} suiteId
  */
-export const reset = suiteId => {
+export const reset = (suiteId, operationMode = OPERATION_MODE_STATEFUL) => {
   if (!suiteId) {
     throwError('`vest.reset` must be called with suiteId.');
   }
@@ -90,10 +90,7 @@ export const reset = suiteId => {
     /* */
   }
 
-  context.run(
-    { name, suiteId, operationMode: OPERATION_MODE_STATEFUL },
-    register
-  );
+  context.run({ name, suiteId, operationMode }, register);
 };
 
 /**

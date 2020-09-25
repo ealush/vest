@@ -33,7 +33,7 @@ const createSuite = (name, tests) => {
     ctxRef.operationMode === OPERATION_MODE_STATEFUL &&
     !suiteState.getSuite(ctxRef.suiteId)
   ) {
-    context.run(ctxRef, suiteState.register);
+    context.run({ ...ctxRef }, suiteState.register);
   }
 
   // returns validator function
@@ -41,7 +41,7 @@ const createSuite = (name, tests) => {
   // to the name of the suite
   return Object.defineProperties(
     (...args) => {
-      const output = context.run(ctxRef, context => {
+      const output = context.run({ ...ctxRef }, context => {
         suiteState.register();
         const { suiteId } = context;
         tests.apply(null, args);
@@ -59,7 +59,7 @@ const createSuite = (name, tests) => {
         value: () => get(name),
       },
       reset: {
-        value: () => suiteState.reset(name),
+        value: () => suiteState.reset(ctxRef.suiteId, ctxRef.operationMode),
       },
     }
   );

@@ -136,7 +136,9 @@ export interface IEnforceRules<T = {}> {
   lt: (expected: number | string) => IEnforceRules<T> & EnforceExtendMap<T>;
   lte: (expected: number | string) => IEnforceRules<T> & EnforceExtendMap<T>;
   endsWith: (suffix: string) => IEnforceRules<T> & EnforceExtendMap<T>;
+  startsWith: (prefix: string) => IEnforceRules<T> & EnforceExtendMap<T>;
   doesNotEndWith: (suffix: string) => IEnforceRules<T> & EnforceExtendMap<T>;
+  doesNotStartWith: (prefix: string) => IEnforceRules<T> & EnforceExtendMap<T>;
   numberNotEquals: (
     expected: number | string
   ) => IEnforceRules<T> & EnforceExtendMap<T>;

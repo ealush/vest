@@ -24,7 +24,7 @@ describe('Tests isArray rule', () => {
     });
 
     it('Should return false for a suffix longer than the word', () => {
-        expect(endsWith(word, word + 'aaa')).toBe(false);
+        expect(endsWith(word, word.repeat(2))).toBe(false);
     });
 
     it('Should expose negativeForm property', () => {

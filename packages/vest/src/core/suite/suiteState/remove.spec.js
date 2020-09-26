@@ -3,10 +3,9 @@ import vest from '../../..';
 import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import testDummy from '../../../../testUtils/testDummy';
-import * as state from '../../state';
+import state from '../../state';
 import { KEY_CANCELED, KEY_SUITES } from '../../state/constants';
-import getState from '../getState';
-import remove from '.';
+import * as suiteState from '.';
 
 const suiteId = 'suite_id';
 let currentState;
@@ -30,7 +29,7 @@ describe('remove', () => {
   });
   describe('When invoked without suiteId', () => {
     it('Should throw', () => {
-      expect(() => remove()).toThrow(
+      expect(() => suiteState.remove()).toThrow(
         '`vest.remove` must be called with suiteId'
       );
     });
@@ -44,7 +43,7 @@ describe('remove', () => {
 
     it('Should throw an error', () => {
       expect(currentState).toEqual(state.get());
-      expect(() => remove('nonexistent_suite')).toThrow(Error);
+      expect(() => suiteState.remove('nonexistent_suite')).toThrow(Error);
     });
   });
 
@@ -60,28 +59,28 @@ describe('remove', () => {
     test.skipOnWatch(
       'Sanity - making sure everything works as it should',
       () => {
-        const suiteState = getState(suiteId);
-        expect(suiteState.lagging).toHaveLength(2);
-        expect(suiteState.pending).toHaveLength(2);
-        expect(suiteState.lagging[0].fieldName).toBe('field_1');
-        expect(suiteState.pending[0].fieldName).toBe('field_2');
-        expect(suiteState.lagging[1].fieldName).toBe('field_3');
-        expect(suiteState.pending[1].fieldName).toBe('field_4');
+        const currentState = suiteState.getCurrentState(suiteId);
+        expect(currentState.lagging).toHaveLength(2);
+        expect(currentState.pending).toHaveLength(2);
+        expect(currentState.lagging[0].fieldName).toBe('field_1');
+        expect(currentState.pending[0].fieldName).toBe('field_2');
+        expect(currentState.lagging[1].fieldName).toBe('field_3');
+        expect(currentState.pending[1].fieldName).toBe('field_4');
         expect(state.get()).toMatchSnapshot();
       }
     );
 
     it('Should remove suite from state', () => {
       expect(state.get()[KEY_SUITES]).toHaveProperty(suiteId);
-      expect(() => getState(suiteId)).not.toThrow();
-      remove(suiteId);
-      expect(() => getState(suiteId)).toThrow();
+      expect(() => suiteState.getCurrentState(suiteId)).not.toThrow();
+      suiteState.remove(suiteId);
+      expect(() => suiteState.getCurrentState(suiteId)).toThrow();
       expect(state.get()[KEY_SUITES]).not.toHaveProperty(suiteId);
     });
 
     it('Should set all pending and lagging tests as canceled', () => {
       const previouslyCanceled = state.get()[KEY_CANCELED];
-      const currentState = getState(suiteId);
+      const currentState = suiteState.getCurrentState(suiteId);
       const allCanceled = [
         ...currentState.lagging,
         ...currentState.pending,
@@ -89,7 +88,7 @@ describe('remove', () => {
         ...previouslyCanceled,
       });
       expect(state.get()[KEY_CANCELED]).not.toEqual(allCanceled);
-      remove(suiteId);
+      suiteState.remove(suiteId);
       expect(state.get()[KEY_CANCELED]).toEqual(allCanceled);
     });
   });

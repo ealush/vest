@@ -1,8 +1,7 @@
 import { dummyTest } from '../../../../testUtils/testDummy';
 import get from '../../../hooks/get';
 import create from '../create';
-import getState from '../getState';
-import reset from '.';
+import * as suiteState from '.';
 
 const validate = create('suite', () => {
   dummyTest.failing('f1', 'm1');
@@ -27,24 +26,26 @@ describe('vest.reset', () => {
 
   it('Should return to initial state after reset', () => {
     expect(get('suite')).not.isDeepCopyOf(initialState);
-    reset('suite');
+    suiteState.reset('suite');
     expect(get('suite')).isDeepCopyOf(initialState);
     expect(JSON.stringify(get('suite'))).toEqual(JSON.stringify(initialState));
   });
 
   it('Should initialize suite when not found', () => {
     const name = 'nonexistent_suite';
-    expect(() => getState(name)).toThrow();
+    expect(() => suiteState.getCurrentState(name)).toThrow();
     const expected = {
       ...initialState,
       name,
     };
-    reset(name);
+    suiteState.reset(name);
     expect(get(name)).isDeepCopyOf(expected);
     expect(JSON.stringify(get(name))).toEqual(JSON.stringify(expected));
   });
 
   test('Should throw error when called withotu suite id', () => {
-    expect(reset).toThrow('[Vest]: `vest.reset` must be called with suiteId.');
+    expect(suiteState.reset).toThrow(
+      '[Vest]: `vest.reset` must be called with suiteId.'
+    );
   });
 });

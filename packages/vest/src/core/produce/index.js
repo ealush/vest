@@ -1,7 +1,7 @@
 import createCache from '../../lib/cache';
 import copy from '../../lib/copy';
 import hasRemainingTests from '../suite/hasRemainingTests';
-import patch from '../suite/patch';
+import * as suiteState from '../suite/suiteState';
 import {
   SEVERITY_GROUP_ERROR,
   SEVERITY_GROUP_WARN,
@@ -46,7 +46,7 @@ const done = (state, ...args) => {
     return output;
   }
 
-  patch(state.suiteId, state => {
+  suiteState.patch(state.suiteId, state => {
     if (fieldName) {
       state.fieldCallbacks[fieldName] = [].concat(
         ...(state.fieldCallbacks[fieldName] || []),

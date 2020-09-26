@@ -1,10 +1,10 @@
 import { OPERATION_MODE_STATELESS } from '../../../constants';
 import context from '../../context';
-import * as state from '../../state';
+import state from '../../state';
 import { KEY_CANCELED } from '../../state/constants';
 import cleanupCompleted from '../../suite/cleanupCompleted';
-import getState from '../../suite/getState';
 import hasRemainingTests from '../../suite/hasRemainingTests';
+import * as suiteState from '../../suite/suiteState';
 import { removeCanceled } from '../lib/canceled';
 import { removePending } from '../lib/pending';
 
@@ -23,7 +23,7 @@ const runAsyncTest = testObject => {
     }
 
     // This is for cases in which the suite state was already reset
-    if (!state.getSuite(suiteId)) {
+    if (!suiteState.getSuite(suiteId)) {
       return;
     }
 
@@ -69,17 +69,17 @@ const runAsyncTest = testObject => {
  * @param {string} [fieldName] Field name with associated callbacks.
  */
 const runDoneCallbacks = (suiteId, fieldName) => {
-  const suiteState = getState(suiteId);
+  const currentState = suiteState.getCurrentState(suiteId);
   if (fieldName) {
     if (
-      !hasRemainingTests(suiteState, fieldName) &&
-      Array.isArray(suiteState.fieldCallbacks[fieldName])
+      !hasRemainingTests(currentState, fieldName) &&
+      Array.isArray(currentState.fieldCallbacks[fieldName])
     ) {
-      suiteState.fieldCallbacks[fieldName].forEach(cb => cb());
+      currentState.fieldCallbacks[fieldName].forEach(cb => cb());
     }
   }
-  if (!hasRemainingTests(suiteState)) {
-    suiteState.doneCallbacks.forEach(cb => cb());
+  if (!hasRemainingTests(currentState)) {
+    currentState.doneCallbacks.forEach(cb => cb());
   }
 };
 

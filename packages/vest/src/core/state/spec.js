@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import resetState from '../../../testUtils/resetState';
-import * as state from '.';
+import state from '.';
 
 describe('Module: state', () => {
   beforeEach(() => {

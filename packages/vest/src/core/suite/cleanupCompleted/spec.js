@@ -3,7 +3,7 @@ import {
   OPERATION_MODE_STATEFUL,
   OPERATION_MODE_STATELESS,
 } from '../../../constants';
-import * as state from '../../state';
+import state from '../../state';
 import { KEY_SUITES } from '../../state/constants';
 import cleanupCompleted from '.';
 

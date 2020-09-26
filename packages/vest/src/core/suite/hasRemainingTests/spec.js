@@ -1,14 +1,14 @@
 import faker from 'faker';
 import _ from 'lodash';
 import resetState from '../../../../testUtils/resetState';
-import patch from '../patch';
+import * as suiteState from '../suiteState';
 import hasRemainingTests from '.';
 
 const suiteId = 'suite_1';
 let state;
 
 const addPendingOrLagging = (key, fieldName) => {
-  state = patch(suiteId, state => ({
+  state = suiteState.patch(suiteId, state => ({
     ...state,
     [key]: Array.from({ length: _.random(1, 3) }, () => ({
       fieldName: fieldName || faker.random.word(),

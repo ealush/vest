@@ -1,4 +1,4 @@
 import context from '../../src/core/context';
-import register from '../../src/core/suite/register';
+import * as suiteState from '../../src/core/suite/suiteState';
 
-export default ctx => context.run(ctx, register);
+export default ctx => context.run(ctx, suiteState.register);

@@ -3,11 +3,8 @@ import { get } from '../../../hooks';
 import validateSuiteParams from '../../../lib/validateSuiteParams';
 import context from '../../context';
 import produce from '../../produce';
-import { getSuite } from '../../state';
 import mergeExcludedTests from '../../test/lib/mergeExcludedTests';
-import getState from '../getState';
-import register from '../register';
-import reset from '../reset';
+import * as suiteState from '../suiteState';
 
 /**
  * Initializes a validation suite, creates a validation context.
@@ -34,9 +31,9 @@ const createSuite = (name, tests) => {
    */
   if (
     ctxRef.operationMode === OPERATION_MODE_STATEFUL &&
-    !getSuite(ctxRef.suiteId)
+    !suiteState.getSuite(ctxRef.suiteId)
   ) {
-    context.run(ctxRef, register);
+    context.run({ ...ctxRef }, suiteState.register);
   }
 
   // returns validator function
@@ -44,13 +41,13 @@ const createSuite = (name, tests) => {
   // to the name of the suite
   return Object.defineProperties(
     (...args) => {
-      const output = context.run(ctxRef, context => {
-        register();
+      const output = context.run({ ...ctxRef }, context => {
+        suiteState.register();
         const { suiteId } = context;
         tests.apply(null, args);
         mergeExcludedTests(suiteId);
 
-        return produce(getState(suiteId));
+        return produce(suiteState.getCurrentState(suiteId));
       });
       return output;
     },
@@ -62,7 +59,7 @@ const createSuite = (name, tests) => {
         value: () => get(name),
       },
       reset: {
-        value: () => reset(name),
+        value: () => suiteState.reset(ctxRef.suiteId, ctxRef.operationMode),
       },
     }
   );

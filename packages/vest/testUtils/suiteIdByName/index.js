@@ -1,4 +1,4 @@
-import * as state from '../../src/core/state';
+import state from '../../src/core/state';
 import { KEY_SUITES } from '../../src/core/state/constants';
 
 const suiteIdByName = suiteName => {

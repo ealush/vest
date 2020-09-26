@@ -1,9 +1,7 @@
 import resetState from '../../../../testUtils/resetState';
 import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
 import { OPERATION_MODE_STATEFUL } from '../../../constants';
-import * as state from '../../state';
-import getState from '../getState';
-import patch from '.';
+import * as suiteState from '.';
 
 const suiteName = 'suite_1';
 const suiteId = 'suiteId_1';
@@ -11,7 +9,7 @@ const suiteId = 'suiteId_1';
 let context;
 
 describe('patch', () => {
-  let patcher, suite, suiteState, prevState;
+  let patcher, suite, currentState, prevState;
 
   beforeEach(() => {
     resetState();
@@ -27,20 +25,24 @@ describe('patch', () => {
       patcher = jest.fn(state => ({ ...state, ...{ k: 'v' } }));
       resetState();
       runRegisterSuite(context);
-      suite = state.getSuite(suiteId);
-      suiteState = suite[0];
+      suite = suiteState.getSuite(suiteId);
+      currentState = suite[0];
       prevState = suite[1];
-      patch(suiteId, patcher);
+      suiteState.patch(suiteId, patcher);
     });
     it('Should set current state value to patcher argument return value', () => {
-      expect(state.getSuite(suiteId)[0]).toBe(patcher.mock.results[0].value);
+      expect(suiteState.getSuite(suiteId)[0]).toBe(
+        patcher.mock.results[0].value
+      );
     });
     it('Should pass current and prev state as the patcher arguments', () => {
-      expect(patcher).toHaveBeenCalledWith(suiteState, prevState);
+      expect(patcher).toHaveBeenCalledWith(currentState, prevState);
     });
 
     it('Should return next state', () => {
-      expect(patch(suiteId, patcher)).toBe(getState(suiteId));
+      expect(suiteState.patch(suiteId, patcher)).toBe(
+        suiteState.getCurrentState(suiteId)
+      );
     });
   });
   describe('When patcher is not a function', () => {
@@ -51,7 +53,7 @@ describe('patch', () => {
     });
 
     it('Should throw an error', () => {
-      expect(() => patch(suiteId, patcher)).toThrow(Error);
+      expect(() => suiteState.patch(suiteId, patcher)).toThrow(Error);
     });
   });
 });

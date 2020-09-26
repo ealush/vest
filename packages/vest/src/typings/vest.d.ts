@@ -148,6 +148,7 @@ export interface IEnforceRules<T = {}> {
   notMatches: (
     expected: string | RegExp
   ) => IEnforceRules<T> & EnforceExtendMap<T>;
+  isUndefined: () => IEnforceRules<T> & EnforceExtendMap<T>;
   isArray: () => IEnforceRules<T> & EnforceExtendMap<T>;
   isEmpty: () => IEnforceRules<T> & EnforceExtendMap<T>;
   isEven: () => IEnforceRules<T> & EnforceExtendMap<T>;

@@ -20,7 +20,7 @@
     "date-fns": "^2.16.1",
     "eslint": "^7.9.0",
     "eslint-config-prettier": "^6.12.0",
-    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^23.20.0",
     "eslint-plugin-spellcheck": "^0.0.17",
     "faker": "^5.1.0",

@@ -27,7 +27,8 @@ const negativeRules = [
   'numberNotEquals',
   'isNotNull',
   'doesNotEndWith',
-  'doesNotStartWith'
+  'doesNotStartWith',
+  'isNotBetween'
 ];
 
 const positiveRules = [
@@ -61,7 +62,8 @@ const positiveRules = [
   'shorterThanOrEquals',
   'isNull',
   'endsWith',
-  'startsWith'
+  'startsWith',
+  'isBetween'
 ];
 
 const allRules = [...new Set([...positiveRules, ...negativeRules])];

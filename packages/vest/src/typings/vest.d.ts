@@ -135,6 +135,7 @@ export interface IEnforceRules<T = {}> {
   gte: (expected: number | string) => IEnforceRules<T> & EnforceExtendMap<T>;
   lt: (expected: number | string) => IEnforceRules<T> & EnforceExtendMap<T>;
   lte: (expected: number | string) => IEnforceRules<T> & EnforceExtendMap<T>;
+  isBetween: (start: number, end: number) => IEnforceRules<T> & EnforceExtendMap<T>;
   endsWith: (suffix: string) => IEnforceRules<T> & EnforceExtendMap<T>;
   startsWith: (prefix: string) => IEnforceRules<T> & EnforceExtendMap<T>;
   doesNotEndWith: (suffix: string) => IEnforceRules<T> & EnforceExtendMap<T>;
@@ -164,6 +165,7 @@ export interface IEnforceRules<T = {}> {
   isNotEmpty: () => IEnforceRules<T> & EnforceExtendMap<T>;
   isNotNumber: () => IEnforceRules<T> & EnforceExtendMap<T>;
   isNotNumeric: () => IEnforceRules<T> & EnforceExtendMap<T>;
+  isNotBetween: (start: number, end: number) => IEnforceRules<T> & EnforceExtendMap<T>;
   isNotString: () => IEnforceRules<T> & EnforceExtendMap<T>;
   inside: (
     expected: Array<string | number | boolean> | string

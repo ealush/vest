@@ -1,7 +1,5 @@
 import VestTest from '.';
 
-const suiteId = 'validation-suite';
-
 const fieldName = 'unicycle';
 const statement = 'I am Root.';
 
@@ -12,7 +10,6 @@ describe('VestTest', () => {
     testObject = new VestTest({
       fieldName,
       statement,
-      suiteId,
       testFn: jest.fn(),
     });
   });
@@ -24,7 +21,7 @@ describe('VestTest', () => {
   it('Should have a unique id', () => {
     Array.from(
       { length: 100 },
-      () => new VestTest({ fieldName, statement, suiteId, testFn: jest.fn() })
+      () => new VestTest({ fieldName, statement, testFn: jest.fn() })
     ).reduce((existing, { id }) => {
       expect(existing[id]).toBeUndefined();
       existing[id] = true;
@@ -53,7 +50,6 @@ describe('VestTest', () => {
       testObject = new VestTest({
         fieldName,
         statement,
-        suiteId,
         testFn: jest.fn(),
       });
     });

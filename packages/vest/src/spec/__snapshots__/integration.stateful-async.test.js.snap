@@ -14,7 +14,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
-  "testCount": 5,
+  "testCount": 3,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -25,11 +25,6 @@ Object {
       "warnCount": 0,
     },
     "field_2": Object {
-      "errorCount": 0,
-      "testCount": 2,
-      "warnCount": 0,
-    },
-    "field_3": Object {
       "errorCount": 0,
       "testCount": 2,
       "warnCount": 0,
@@ -52,7 +47,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
-  "testCount": 5,
+  "testCount": 3,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -63,12 +58,10 @@ Object {
       "warnCount": 0,
     },
     "field_2": Object {
-      "errorCount": 0,
-      "testCount": 2,
-      "warnCount": 0,
-    },
-    "field_3": Object {
       "errorCount": 1,
+      "errors": Array [
+        "rejection_message_1",
+      ],
       "testCount": 2,
       "warnCount": 0,
     },
@@ -150,7 +143,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
-  "testCount": 5,
+  "testCount": 3,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -161,11 +154,6 @@ Object {
       "warnCount": 0,
     },
     "field_2": Object {
-      "errorCount": 0,
-      "testCount": 2,
-      "warnCount": 0,
-    },
-    "field_3": Object {
       "errorCount": 0,
       "testCount": 2,
       "warnCount": 0,
@@ -188,7 +176,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
-  "testCount": 5,
+  "testCount": 3,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -199,12 +187,10 @@ Object {
       "warnCount": 0,
     },
     "field_2": Object {
-      "errorCount": 0,
-      "testCount": 2,
-      "warnCount": 0,
-    },
-    "field_3": Object {
       "errorCount": 1,
+      "errors": Array [
+        "rejection_message_1",
+      ],
       "testCount": 2,
       "warnCount": 0,
     },
@@ -286,7 +272,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
-  "testCount": 5,
+  "testCount": 3,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -297,11 +283,6 @@ Object {
       "warnCount": 0,
     },
     "field_2": Object {
-      "errorCount": 0,
-      "testCount": 2,
-      "warnCount": 0,
-    },
-    "field_3": Object {
       "errorCount": 0,
       "testCount": 2,
       "warnCount": 0,
@@ -324,7 +305,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
-  "testCount": 5,
+  "testCount": 3,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -335,12 +316,10 @@ Object {
       "warnCount": 0,
     },
     "field_2": Object {
-      "errorCount": 0,
-      "testCount": 2,
-      "warnCount": 0,
-    },
-    "field_3": Object {
       "errorCount": 1,
+      "errors": Array [
+        "rejection_message_1",
+      ],
       "testCount": 2,
       "warnCount": 0,
     },
@@ -422,7 +401,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
-  "testCount": 5,
+  "testCount": 3,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -433,11 +412,6 @@ Object {
       "warnCount": 0,
     },
     "field_2": Object {
-      "errorCount": 0,
-      "testCount": 2,
-      "warnCount": 0,
-    },
-    "field_3": Object {
       "errorCount": 0,
       "testCount": 2,
       "warnCount": 0,
@@ -460,7 +434,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
-  "testCount": 5,
+  "testCount": 3,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -471,12 +445,10 @@ Object {
       "warnCount": 0,
     },
     "field_2": Object {
-      "errorCount": 0,
-      "testCount": 2,
-      "warnCount": 0,
-    },
-    "field_3": Object {
       "errorCount": 1,
+      "errors": Array [
+        "rejection_message_1",
+      ],
       "testCount": 2,
       "warnCount": 0,
     },
@@ -558,7 +530,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
-  "testCount": 5,
+  "testCount": 3,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -569,11 +541,6 @@ Object {
       "warnCount": 0,
     },
     "field_2": Object {
-      "errorCount": 0,
-      "testCount": 2,
-      "warnCount": 0,
-    },
-    "field_3": Object {
       "errorCount": 0,
       "testCount": 2,
       "warnCount": 0,
@@ -596,7 +563,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
-  "testCount": 5,
+  "testCount": 3,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -607,12 +574,10 @@ Object {
       "warnCount": 0,
     },
     "field_2": Object {
-      "errorCount": 0,
-      "testCount": 2,
-      "warnCount": 0,
-    },
-    "field_3": Object {
       "errorCount": 1,
+      "errors": Array [
+        "rejection_message_1",
+      ],
       "testCount": 2,
       "warnCount": 0,
     },
@@ -694,7 +659,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
-  "testCount": 5,
+  "testCount": 3,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -705,11 +670,6 @@ Object {
       "warnCount": 0,
     },
     "field_2": Object {
-      "errorCount": 0,
-      "testCount": 2,
-      "warnCount": 0,
-    },
-    "field_3": Object {
       "errorCount": 0,
       "testCount": 2,
       "warnCount": 0,
@@ -732,7 +692,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "name": "suite_name",
-  "testCount": 5,
+  "testCount": 3,
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
@@ -743,12 +703,10 @@ Object {
       "warnCount": 0,
     },
     "field_2": Object {
-      "errorCount": 0,
-      "testCount": 2,
-      "warnCount": 0,
-    },
-    "field_3": Object {
       "errorCount": 1,
+      "errors": Array [
+        "rejection_message_1",
+      ],
       "testCount": 2,
       "warnCount": 0,
     },

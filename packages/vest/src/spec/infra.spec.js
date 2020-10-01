@@ -14,15 +14,15 @@ describe('Vest exports', () => {
 });
 
 describe('General scenario tests', () => {
-  let v, test, validate, enforce;
+  let v, test, create, enforce;
 
   beforeAll(() => {
-    ({ test, validate, enforce } = vest);
+    ({ test, create, enforce } = vest);
   });
 
   describe('Base case', () => {
     it('Should match snapshot', () => {
-      v = validate('eveniet-maxime-ea', () => {
+      v = create('eveniet-maxime-ea', () => {
         test(
           'sed-minima-adipisci',
           'Aliquam reprehenderit iure omnis assumenda eligendi enim id praesentium numquam.',
@@ -35,13 +35,13 @@ describe('General scenario tests', () => {
           enforce(1).inside([1, 2, 3]);
         });
       });
-      expect(v).toMatchSnapshot();
+      expect(v()).toMatchSnapshot();
     });
   });
 
   describe('Exclusion via `only`', () => {
     it('Should match snapshot', () => {
-      v = validate('inventore-quis-impedit', () => {
+      v = create('inventore-quis-impedit', () => {
         vest.only('doloribus-enim-quisquam');
 
         test(
@@ -55,13 +55,13 @@ describe('General scenario tests', () => {
         test('autem', () => null);
         test('soluta', () => null);
       });
-      expect(v).toMatchSnapshot();
+      expect(v()).toMatchSnapshot();
     });
   });
 
   describe('Exclusion via `skip`', () => {
     it('Should match snapshot', () => {
-      v = validate('corrupti-alias-autem', () => {
+      v = create('corrupti-alias-autem', () => {
         vest.skip('doloribus-enim-quisquam');
 
         test(
@@ -77,13 +77,13 @@ describe('General scenario tests', () => {
           return 1 === 2;
         });
       });
-      expect(v).toMatchSnapshot();
+      expect(v()).toMatchSnapshot();
     });
   });
 
   describe('Tests with warnings', () => {
     it('Should match snapshot', () => {
-      v = validate('corrupti-alias-autem', () => {
+      v = create('corrupti-alias-autem', () => {
         vest.skip('doloribus-enim-quisquam');
 
         test(
@@ -103,14 +103,14 @@ describe('General scenario tests', () => {
           enforce(1).gt(0);
         });
       });
-      expect(v).toMatchSnapshot();
+      expect(v()).toMatchSnapshot();
     });
   });
 
   describe('Async tests', () => {
     it('Should match snapshot', () =>
       new Promise(done => {
-        v = validate('molestias-veritatis-deserunt', () => {
+        v = create('molestias-veritatis-deserunt', () => {
           test(
             'doloribus-enim-quisquam',
             'Fuga odit ut quidem autem dolores ipsam.',
@@ -123,7 +123,7 @@ describe('General scenario tests', () => {
           );
         });
         setTimeout(() => {
-          expect(v).toMatchSnapshot();
+          expect(v()).toMatchSnapshot();
           done();
         });
       }));

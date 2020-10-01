@@ -1,7 +1,6 @@
 import { isExcluded } from '../../hooks/exclusive';
 import createCache from '../../lib/cache';
 import context from '../context';
-import * as suiteState from '../suite/suiteState';
 import VestTest from './lib/VestTest';
 import { setPending } from './lib/pending';
 import runAsyncTest from './runAsyncTest';
@@ -10,11 +9,11 @@ let cache;
 
 /**
  * Stores test object inside suite state.
- * @param {String} suiteId
  * @param {VestTest} testObject
  */
-const addTestToState = (suiteId, testObject) => {
-  suiteState.patch(suiteId, state => ({
+const addTestToState = testObject => {
+  const { stateRef } = context.use();
+  stateRef.patch(state => ({
     ...state,
     testObjects: state.testObjects.concat(testObject),
   }));
@@ -46,7 +45,7 @@ const sync = testObject =>
  * @param {VestTest} testObject   A VestTest Instance.
  */
 const register = testObject => {
-  addTestToState(testObject.suiteId, testObject);
+  addTestToState(testObject);
 
   // Run test callback.
   // If a promise is returned, set as async and
@@ -83,12 +82,11 @@ const register = testObject => {
 const test = (fieldName, ...args) => {
   const { length, [length - 2]: statement, [length - 1]: testFn } = args;
 
-  const ctx = context.use();
+  const { groupName } = context.use();
   const testObject = new VestTest({
     fieldName,
-    group: ctx.groupName,
+    group: groupName,
     statement,
-    suiteId: ctx.suiteId,
     testFn,
   });
 
@@ -108,10 +106,12 @@ const test = (fieldName, ...args) => {
 test.memo = (fieldName, ...args) => {
   cache = cache ?? createCache(100);
 
+  const { stateRef } = context.use();
+
   const { length: l, [l - 3]: msg, [l - 2]: testFn, [l - 1]: deps } = args;
 
-  const ctx = context.use();
-  const dependencies = [ctx.suiteId, fieldName].concat(deps);
+  // Implicit dependency for more specificity
+  const dependencies = [stateRef.current().id, fieldName].concat(deps);
 
   const cached = cache.get(dependencies);
 
@@ -126,7 +126,7 @@ test.memo = (fieldName, ...args) => {
     return testObject;
   }
 
-  addTestToState(testObject.suiteId, testObject);
+  addTestToState(testObject);
 
   if (typeof testObject?.asyncTest?.then === 'function') {
     setPending(testObject);

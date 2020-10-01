@@ -1,13 +1,12 @@
 import wait from '@lets/wait';
 import vest from '../..';
 import enforce from '../../../../n4s/src/enforce';
+
+import promisify from '../../utilities/promisify';
 import test from '.';
 
-const suiteId = (n => () => `suite_${n++}`)(0);
-
-const genValidate = tests => vest.create(suiteId(), tests);
-const promisify = fn => (...args) =>
-  new Promise(resolve => fn(...args).done(resolve));
+const genValidate = (tests, suiteName = 'suite_name') =>
+  vest.create(suiteName, tests);
 
 describe('test.memo', () => {
   describe('Sync tests', () => {
@@ -219,14 +218,15 @@ describe('test.memo', () => {
               [value]
             )
           );
-        })
+        }, 'cache-hit')
       );
 
       it('Should only call test function once', async () => {
-        expect(testCb1).not.toHaveBeenCalled();
+        expect(testCb1).toHaveBeenCalledTimes(0);
         await validate('FAIL');
         expect(testCb1).toHaveBeenCalledTimes(1);
         await validate('FAIL');
+        expect(testCb1).toHaveBeenCalledTimes(1);
       });
 
       it('Should return same test object', async () => {

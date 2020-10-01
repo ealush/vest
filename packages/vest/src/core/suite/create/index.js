@@ -1,10 +1,8 @@
-import { OPERATION_MODE_STATEFUL } from '../../../constants';
-import { get } from '../../../hooks';
-import validateSuiteParams from '../../../lib/validateSuiteParams';
+import throwError from '../../../lib/throwError';
 import context from '../../context';
 import produce from '../../produce';
+import createState from '../../state';
 import mergeExcludedTests from '../../test/lib/mergeExcludedTests';
-import * as suiteState from '../suiteState';
 
 /**
  * Initializes a validation suite, creates a validation context.
@@ -12,55 +10,32 @@ import * as suiteState from '../suiteState';
  * @param {Function} tests  Validation suite body.
  * @returns {Function} validator function.
  */
-const createSuite = (name, tests) => {
-  validateSuiteParams('vest.create', name, tests);
+const createSuite = (...args) => {
+  const { length: l, [l - 2]: name, [l - 1]: tests } = args;
 
-  const ctx = context.use();
-
-  const ctxRef = {
-    suiteId: ctx?.suiteId || name,
-    operationMode: ctx?.operationMode || OPERATION_MODE_STATEFUL,
-    name,
-  };
-
-  /**
-   * Initialize empty suite state. This is not required for vest
-   * itself, but it is handy to have a default value when using
-   * UI frameworks that might try to get the validation results
-   * during initial render. This is irrelevant for stateless mode.
-   */
-  if (
-    ctxRef.operationMode === OPERATION_MODE_STATEFUL &&
-    !suiteState.getSuite(ctxRef.suiteId)
-  ) {
-    context.run({ ...ctxRef }, suiteState.register);
+  if (typeof tests !== 'function') {
+    throwError(
+      'Suite initialization error. Expected `tests` to be a function.'
+    );
   }
 
-  // returns validator function
-  // and sets the function name
-  // to the name of the suite
+  const stateRef = createState(name);
+
   return Object.defineProperties(
     (...args) => {
-      const output = context.run({ ...ctxRef }, context => {
-        suiteState.register();
-        const { suiteId } = context;
+      const output = context.run({ name, stateRef }, () => {
+        stateRef.registerValidation();
         tests.apply(null, args);
-        mergeExcludedTests(suiteId);
+        mergeExcludedTests();
 
-        return produce(suiteState.getCurrentState(suiteId));
+        return produce(stateRef);
       });
       return output;
     },
     {
-      name: {
-        value: name,
-      },
-      get: {
-        value: () => get(name),
-      },
-      reset: {
-        value: () => suiteState.reset(ctxRef.suiteId, ctxRef.operationMode),
-      },
+      get: { value: () => produce(stateRef, { draft: true }) },
+      name: { value: 'validate' },
+      reset: { value: () => stateRef.reset() },
     }
   );
 };

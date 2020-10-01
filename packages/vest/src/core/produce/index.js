@@ -1,7 +1,6 @@
 import createCache from '../../lib/cache';
 import copy from '../../lib/copy';
 import hasRemainingTests from '../suite/hasRemainingTests';
-import * as suiteState from '../suite/suiteState';
 import {
   SEVERITY_GROUP_ERROR,
   SEVERITY_GROUP_WARN,
@@ -21,10 +20,11 @@ const cache = createCache(20);
  * @param {Function} doneCallback
  * @register {Object} Vest output object.
  */
-const done = (state, ...args) => {
+const done = (stateRef, ...args) => {
   const { length, [length - 1]: callback, [length - 2]: fieldName } = args;
 
-  const output = produce(state);
+  // TODO: FInd if this line can be removed - at least for sync tests
+  const output = produce(stateRef);
 
   // If we do not have any tests for current field
   const shouldSkipRegistration = fieldName && !output.tests[fieldName];
@@ -33,11 +33,9 @@ const done = (state, ...args) => {
     return output;
   }
 
-  // This won't be cached. Because we do not know where in the
-  // Lifecycle of our validations this produce will run, the test may be
-  // outdated and we might even not have a reference for it, so we're spreading
-  // to skip the cache.
-  const cb = () => callback(produce({ ...state }, { draft: true }));
+  const state = stateRef.current();
+
+  const cb = () => callback(produce(stateRef, { draft: true }));
   const isFinishedTest = fieldName && !hasRemainingTests(state, fieldName);
   const isSuiteFinished = !hasRemainingTests(state);
   const shouldRunCallback = isFinishedTest || isSuiteFinished;
@@ -46,7 +44,7 @@ const done = (state, ...args) => {
     return output;
   }
 
-  suiteState.patch(state.suiteId, state => {
+  stateRef.patch(state => {
     if (fieldName) {
       state.fieldCallbacks[fieldName] = [].concat(
         ...(state.fieldCallbacks[fieldName] || []),
@@ -77,8 +75,9 @@ const extract = ({ groups, tests, name }) => ({
  * @returns Vest output object.
  */
 
-const produce = (state, { draft } = {}) =>
-  cache(
+const produce = (stateRef, { draft } = {}) => {
+  const state = stateRef.current();
+  return cache(
     [state, draft],
     () =>
       state
@@ -111,7 +110,7 @@ const produce = (state, { draft } = {}) =>
               getByGroup.bind(null, state, SEVERITY_GROUP_WARN),
             ],
           ]
-            .concat(draft ? [] : [['done', done.bind(null, state)]])
+            .concat(draft ? [] : [['done', done.bind(null, stateRef)]])
             .reduce((properties, [name, value]) => {
               properties[name] = {
                 configurable: true,
@@ -123,5 +122,6 @@ const produce = (state, { draft } = {}) =>
             }, {})
         ))
   );
+};
 
 export default produce;

@@ -1,11 +1,6 @@
 import _ from 'lodash';
-import resetState from '../../../../testUtils/resetState';
-import runRegisterSuite from '../../../../testUtils/runRegisterSuite';
-import { OPERATION_MODE_STATEFUL } from '../../../constants';
 import context from '../../context';
-import state from '../../state';
-import { KEY_CANCELED } from '../../state/constants';
-import * as suiteState from '../../suite/suiteState';
+import createState from '../../state';
 import VestTest from '../lib/VestTest';
 import { setPending } from '../lib/pending';
 import runAsyncTest from '.';
@@ -15,7 +10,7 @@ const STATEMENT = 'some statement string';
 const CASE_PASSING = 'passing';
 const CASE_FAILING = 'failing';
 
-const suiteId = 'suiteId_1';
+let stateRef;
 
 describe.each([CASE_PASSING /*, CASE_FAILING*/])(
   'runAsyncTest: %s',
@@ -25,22 +20,16 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
     const runRunAsyncTest = (...args) =>
       context.run(
         {
-          name: suiteId,
-          suiteId,
-          operationMode: OPERATION_MODE_STATEFUL,
+          stateRef,
         },
         () => runAsyncTest(...args)
       );
 
-    beforeAll(() => {
-      resetState();
-    });
-
     beforeEach(() => {
       fieldName = 'field_1';
 
-      runRegisterSuite({ name: suiteId });
-      suiteState.patch(suiteId, state => ({
+      stateRef = createState('suite');
+      stateRef.patch(state => ({
         ...state,
         fieldCallbacks: {
           ...state.fieldCallbacks,
@@ -50,20 +39,17 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
       testObject = new VestTest({
         fieldName,
         statement: STATEMENT,
-        suiteId,
         testFn: () => null,
       });
       testObject.asyncTest =
         testCase === CASE_PASSING ? Promise.resolve() : Promise.reject();
-      setPending(testObject);
+      context.run({ stateRef }, () => setPending(testObject));
     });
 
     describe('State updates', () => {
       test('Initial state matches snapshot (sanity)', () => {
-        expect(suiteState.getCurrentState(suiteId).pending).toContain(
-          testObject
-        );
-        expect(suiteState.getCurrentState(suiteId)).toMatchSnapshot();
+        expect(stateRef.current().pending).toContain(testObject);
+        expect(stateRef.current()).toMatchSnapshot();
         runRunAsyncTest(testObject);
       });
 
@@ -71,9 +57,7 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
         new Promise(done => {
           runRunAsyncTest(testObject);
           setTimeout(() => {
-            expect(suiteState.getCurrentState(suiteId).pending).not.toContain(
-              testObject
-            );
+            expect(stateRef.current().pending).not.toContain(testObject);
             done();
           });
         }));
@@ -81,21 +65,19 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
       describe('When test is canceled', () => {
         let currentState;
         beforeEach(() => {
-          state.set(state => {
-            state[KEY_CANCELED][testObject.id] = true;
-            return state;
-          });
-          currentState = _.cloneDeep(suiteState.getCurrentState(suiteId));
+          stateRef.setCanceled(testObject);
+
+          currentState = _.cloneDeep(stateRef.current());
         });
 
         it('Should remove test from pending array', () => {
-          expect(suiteState.getCurrentState(suiteId).pending).toEqual(
+          expect(stateRef.current().pending).toEqual(
             expect.arrayContaining([testObject])
           );
           runRunAsyncTest(testObject);
           return new Promise(done => {
             setTimeout(() => {
-              expect(suiteState.getCurrentState(suiteId).pending).toEqual(
+              expect(stateRef.current().pending).toEqual(
                 expect.not.arrayContaining([testObject])
               );
               done();
@@ -104,13 +86,11 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
         });
 
         it('Should remove test from canceled state', () => {
-          expect(state.get()[KEY_CANCELED]).toHaveProperty(testObject.id);
+          expect(stateRef.getCanceled()).toHaveProperty(testObject.id);
           runRunAsyncTest(testObject);
           return new Promise(done => {
             setTimeout(() => {
-              expect(state.get()[KEY_CANCELED]).not.toHaveProperty(
-                testObject.id
-              );
+              expect(stateRef.getCanceled()).not.toHaveProperty(testObject.id);
               done();
             });
           });
@@ -120,9 +100,9 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
           new Promise(done => {
             runRunAsyncTest(testObject);
             setTimeout(() => {
-              expect(
-                _.omit(suiteState.getCurrentState(suiteId), 'pending')
-              ).toEqual(_.omit(currentState, 'pending'));
+              expect(_.omit(stateRef.current(), 'pending')).toEqual(
+                _.omit(currentState, 'pending')
+              );
               done();
             });
           }));
@@ -135,7 +115,7 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
         fieldCallback_1 = jest.fn();
         fieldCallback_2 = jest.fn();
         doneCallback = jest.fn();
-        suiteState.patch(suiteId, state => ({
+        stateRef.patch(state => ({
           ...state,
           fieldCallbacks: {
             ...state.fieldCallbacks,
@@ -165,14 +145,15 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
 
       describe('When there are more tests left', () => {
         beforeEach(() => {
-          setPending(
-            new VestTest({
-              fieldName: 'pending_field',
-              statement: STATEMENT,
-              suiteId,
-              testFn: jest.fn(),
-            })
-          );
+          context.run({ stateRef }, () => {
+            setPending(
+              new VestTest({
+                fieldName: 'pending_field',
+                statement: STATEMENT,
+                testFn: jest.fn(),
+              })
+            );
+          });
         });
 
         it("Should only run current field's callbacks", () =>
@@ -192,10 +173,7 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
 
       describe('When test is canceled', () => {
         beforeEach(() => {
-          state.set(state => {
-            state[KEY_CANCELED][testObject.id] = true;
-            return state;
-          });
+          stateRef.setCanceled(testObject);
         });
 
         it('Should return without running any callback', () =>

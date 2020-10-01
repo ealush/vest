@@ -33,7 +33,6 @@ runSpec(vest => {
 
   describe('Stateful async tests', () => {
     beforeEach(() => {
-      vest.reset(suiteName);
       callback_1 = jest.fn();
       callback_2 = jest.fn();
       callback_3 = jest.fn();
@@ -68,8 +67,8 @@ runSpec(vest => {
 
     it('Merges skipped validations from previous suite', () =>
       new Promise(done => {
-        const res = validate({ skipGroup: 'group' });
-        expect(res.testCount).toBe(5);
+        const res = validate({ skipGroup: 'group', skip: 'field_3' });
+        expect(res.testCount).toBe(3);
         expect(res.errorCount).toBe(1);
         expect(res.warnCount).toBe(0);
         expect(res.hasErrors('field_1')).toBe(true);
@@ -79,13 +78,13 @@ runSpec(vest => {
         expect(res.hasErrors('field_4')).toBe(false);
         expect(res).toMatchSnapshot();
         setTimeout(() => {
-          const res = vest.get(suiteName);
-          expect(res.testCount).toBe(5);
+          const res = validate.get();
+          expect(res.testCount).toBe(3);
           expect(res.errorCount).toBe(2);
           expect(res.warnCount).toBe(0);
           expect(res.tests.field_1.errorCount).toBe(1);
-          expect(res.hasErrors('field_2')).toBe(false);
-          expect(res.hasErrors('field_3')).toBe(true);
+          expect(res.hasErrors('field_2')).toBe(true);
+          expect(res.hasErrors('field_3')).toBe(false);
           expect(res.hasErrors('field_4')).toBe(false);
           expect(res).toMatchSnapshot();
 
@@ -100,7 +99,7 @@ runSpec(vest => {
             expect(res).toMatchSnapshot();
             done();
           });
-        });
+        }, 50);
       }));
   });
 });

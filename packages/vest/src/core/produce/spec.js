@@ -1,20 +1,17 @@
 import _ from 'lodash';
 import vest from '../..';
 import collector from '../../../../../shared/testUtils/collector';
-import resetState from '../../../testUtils/resetState';
-import runRegisterSuite from '../../../testUtils/runRegisterSuite';
-import suiteIdByName from '../../../testUtils/suiteIdByName';
 import testDummy from '../../../testUtils/testDummy';
 import group from '../../hooks/group';
+import context from '../context';
 import hasRemainingTests from '../suite/hasRemainingTests';
-import * as suiteState from '../suite/suiteState';
 import {
   SEVERITY_COUNT_ERROR,
   SEVERITY_COUNT_WARN,
 } from '../test/lib/VestTest/constants';
+import { setPending } from '../test/lib/pending';
 import produce from '.';
 
-const counter = ((n = 0) => () => n++)();
 const DRAFT_EXCLUDED_METHODS = ['done'];
 const GENERATED_METHODS = [
   'hasErrors',
@@ -30,7 +27,7 @@ const warningFields = {};
 const SKIPPED_FIELD = 'skipped_field_name';
 const groupName = 'group_name';
 
-let suiteId, state, produced;
+let state, produced, stateRef;
 
 const KEPT_PROPERTIES = [
   SEVERITY_COUNT_ERROR,
@@ -41,12 +38,16 @@ const KEPT_PROPERTIES = [
 ];
 
 let collect;
-const { create } = vest;
+
+const getStateFromContext = () => {
+  context.run({}, ctx => {
+    stateRef = ctx.stateRef;
+    state = stateRef.current();
+  });
+};
 
 const runCreateSuite = suiteName =>
-  create(suiteName, () => {
-    suiteId = suiteIdByName(suiteName);
-
+  vest.create(suiteName, () => {
     vest.skip(SKIPPED_FIELD);
     collect(testDummy(vest).failing('field_1'));
     collect(testDummy(vest).passing(SKIPPED_FIELD));
@@ -56,21 +57,19 @@ const runCreateSuite = suiteName =>
 
     collect(testDummy(vest).failing('field_5'));
     collect(testDummy(vest).failing('field_5'));
+    getStateFromContext();
   })();
 
 describe('module: produce', () => {
-  let suiteName, testKeys;
+  let testKeys;
 
   beforeEach(() => {
     collect = collector();
-    suiteName = `suite_${counter()}`;
-    resetState();
-    runCreateSuite(suiteName);
-    state = suiteState.getCurrentState(suiteId);
+    runCreateSuite('suite_name');
     testKeys = [
       ...new Set(state.testObjects.map(({ fieldName }) => fieldName)),
     ];
-    produced = produce(state);
+    produced = produce(stateRef);
 
     collect.collection.forEach(({ fieldName, failed, isWarning }) => {
       if (failed) {
@@ -84,9 +83,9 @@ describe('module: produce', () => {
   });
 
   it('Should create a deep copy of subset of the state', () => {
-    expect(
-      _.pick(suiteState.getCurrentState(suiteId), KEPT_PROPERTIES)
-    ).isDeepCopyOf(_.pick(produced, KEPT_PROPERTIES));
+    expect(_.pick(stateRef.current(), KEPT_PROPERTIES)).isDeepCopyOf(
+      _.pick(produced, KEPT_PROPERTIES)
+    );
   });
 
   it.each(GENERATED_METHODS)(
@@ -98,9 +97,8 @@ describe('module: produce', () => {
 
   describe('When draft: true', () => {
     beforeEach(() => {
-      suiteName = `suite_${counter()}`;
-      runCreateSuite(suiteName);
-      produced = produce(state, { draft: true });
+      runCreateSuite('suiteName');
+      produced = produce(stateRef, { draft: true });
     });
 
     it.each(DRAFT_EXCLUDED_METHODS)(
@@ -128,7 +126,7 @@ describe('module: produce', () => {
         it('Should return all statement messages for failed field', () => {
           errors.forEach(field => {
             expect(produced.getErrors(field)).toEqual(
-              produce(suiteState.getCurrentState(suiteId)).tests[field].errors
+              produce(stateRef).tests[field].errors
             );
           });
         });
@@ -138,8 +136,7 @@ describe('module: produce', () => {
           const failures = errors.reduce(
             (failures, key) =>
               Object.assign(failures, {
-                [key]: produce(suiteState.getCurrentState(suiteId)).tests[key]
-                  .errors,
+                [key]: produce(stateRef).tests[key].errors,
               }),
             {}
           );
@@ -159,7 +156,7 @@ describe('module: produce', () => {
       it('Should return all statement messages for failed field', () => {
         warnings.forEach(field => {
           expect(produced.getWarnings(field)).toEqual(
-            produce(suiteState.getCurrentState(suiteId)).tests[field].warnings
+            produce(stateRef).tests[field].warnings
           );
         });
       });
@@ -169,8 +166,7 @@ describe('module: produce', () => {
         const failures = warnings.reduce(
           (failures, key) =>
             Object.assign(failures, {
-              [key]: produce(suiteState.getCurrentState(suiteId)).tests[key]
-                .warnings,
+              [key]: produce(stateRef).tests[key].warnings,
             }),
           {}
         );
@@ -183,16 +179,14 @@ describe('module: produce', () => {
       it('Should return the error count of the field', () => {
         testKeys.forEach(key => {
           expect(produced.hasErrors(key)).toBe(
-            !!produce(suiteState.getCurrentState(suiteId)).tests[key].errorCount
+            !!produce(stateRef).tests[key].errorCount
           );
         });
       });
     });
     describe('When invoked without field name', () => {
       it('Should return the error count of the whole suite', () => {
-        expect(produced.hasErrors()).toBe(
-          !!produce(suiteState.getCurrentState(suiteId)).errorCount
-        );
+        expect(produced.hasErrors()).toBe(!!produce(stateRef).errorCount);
       });
     });
   });
@@ -201,16 +195,14 @@ describe('module: produce', () => {
       it('Should return the warning count of the field', () => {
         testKeys.forEach(key => {
           expect(produced.hasWarnings(key)).toBe(
-            !!produce(suiteState.getCurrentState(suiteId)).tests[key].warnCount
+            !!produce(stateRef).tests[key].warnCount
           );
         });
       });
     });
     describe('When invoked without field name', () => {
       it('Should return the warn count of the whole suite', () => {
-        expect(produced.hasWarnings()).toBe(
-          !!produce(suiteState.getCurrentState(suiteId)).warnCount
-        );
+        expect(produced.hasWarnings()).toBe(!!produce(stateRef).warnCount);
       });
     });
   });
@@ -227,7 +219,6 @@ describe('module: produce', () => {
         });
 
       beforeEach(() => {
-        resetState();
         validate = validation();
         res = validate();
       });
@@ -254,7 +245,6 @@ describe('module: produce', () => {
         });
 
       beforeEach(() => {
-        resetState();
         validate = validation();
         res = validate();
       });
@@ -275,7 +265,6 @@ describe('module: produce', () => {
         });
 
       beforeEach(() => {
-        resetState();
         validate = validation();
         res = validate();
       });
@@ -297,7 +286,6 @@ describe('module: produce', () => {
         });
 
       beforeEach(() => {
-        resetState();
         validate = validation();
         res = validate();
       });
@@ -327,7 +315,6 @@ describe('module: produce', () => {
         });
 
       beforeEach(() => {
-        resetState();
         validate = validation();
         res = validate();
       });
@@ -354,7 +341,6 @@ describe('module: produce', () => {
         });
 
       beforeEach(() => {
-        resetState();
         validate = validation();
         res = validate();
       });
@@ -375,7 +361,6 @@ describe('module: produce', () => {
         });
 
       beforeEach(() => {
-        resetState();
         validate = validation();
         res = validate();
       });
@@ -397,7 +382,6 @@ describe('module: produce', () => {
         });
 
       beforeEach(() => {
-        resetState();
         validate = validation();
         res = validate();
       });
@@ -423,8 +407,7 @@ describe('module: produce', () => {
     });
     describe('When no async tests', () => {
       it('Sanity', () => {
-        runRegisterSuite({ name: suiteId });
-        const state = suiteState.getCurrentState(suiteId);
+        state = stateRef.current();
         expect(hasRemainingTests(state)).toBe(false);
       });
 
@@ -440,12 +423,16 @@ describe('module: produce', () => {
 
         it('Should pass produced result to callback', () => {
           produced.done(doneCallback_1).done(doneCallback_2);
-          expect(doneCallback_1.mock.calls[0][0]).isDeepCopyOf(produce(state));
-          expect(doneCallback_2.mock.calls[0][0]).isDeepCopyOf(produce(state));
+          expect(doneCallback_1.mock.calls[0][0]).isDeepCopyOf(
+            produce(stateRef)
+          );
+          expect(doneCallback_2.mock.calls[0][0]).isDeepCopyOf(
+            produce(stateRef)
+          );
         });
 
         it('Should return produced result', () => {
-          expect(produced.done(doneCallback_1)).toBe(produce(state));
+          expect(produced.done(doneCallback_1)).toBe(produce(stateRef));
         });
       });
 
@@ -462,12 +449,18 @@ describe('module: produce', () => {
         it('Should pass produced result to callback', () => {
           produced.done('field_1', doneCallback_1).done(doneCallback_2);
 
-          expect(doneCallback_1.mock.calls[0][0]).isDeepCopyOf(produce(state));
-          expect(doneCallback_2.mock.calls[0][0]).isDeepCopyOf(produce(state));
+          expect(doneCallback_1.mock.calls[0][0]).isDeepCopyOf(
+            produce(stateRef)
+          );
+          expect(doneCallback_2.mock.calls[0][0]).isDeepCopyOf(
+            produce(stateRef)
+          );
         });
 
         it('Should return produced result', () => {
-          expect(produced.done('field_1', doneCallback_1)).toBe(produce(state));
+          expect(produced.done('field_1', doneCallback_1)).toBe(
+            produce(stateRef)
+          );
         });
 
         describe('When field name does not exist in suite', () => {
@@ -491,16 +484,14 @@ describe('module: produce', () => {
 
     describe('When async (has remaining tests)', () => {
       beforeEach(() => {
-        state = suiteState.patch(suiteId, state => ({
-          ...state,
-          pending: state.pending.concat({ fieldName: 'field_1' }),
-          isAsync: true,
-        }));
-        produced = produce(state);
+        context.run({ stateRef }, () => {
+          setPending({ fieldName: 'field_1' });
+        });
+        produced = produce(stateRef);
       });
 
       it('Sanity', () => {
-        expect(hasRemainingTests(state)).toBe(true);
+        expect(hasRemainingTests(stateRef.current())).toBe(true);
       });
 
       describe('When invoked without field name', () => {
@@ -509,7 +500,7 @@ describe('module: produce', () => {
           expect(doneCallback_1).not.toHaveBeenCalled();
         });
         it('Should return produced output', () => {
-          expect(produced.done(doneCallback_1)).toBe(produce(state));
+          expect(produced.done(doneCallback_1)).toBe(produce(stateRef));
         });
 
         it('Should add callback to `doneCallBacks` array', () =>
@@ -520,22 +511,16 @@ describe('module: produce', () => {
             // that in produce().done() we wrap the callback - so we don't have
             // access to it. Instead what we do here is only allow the test to
             // finish if the callback runs.
-            suiteState.getCurrentState(suiteId).doneCallbacks[0]();
+            stateRef.current().doneCallbacks[0]();
           }));
       });
 
       describe('When invoked with field name', () => {
-        let suiteName;
-
-        beforeEach(() => {
-          suiteName = 'async-suite';
-        });
-
         const runCreateSuite = () =>
-          create(suiteName, () => {
-            suiteId = suiteIdByName(suiteName);
+          vest.create('async-suite', () => {
             testDummy().failingAsync('field_1');
             testDummy().passing('sync_field_2');
+            getStateFromContext();
           })();
 
         describe('When field is async', () => {
@@ -543,14 +528,14 @@ describe('module: produce', () => {
             new Promise(done => {
               const produced = runCreateSuite();
               expect(
-                suiteState.getCurrentState(suiteName).fieldCallbacks['field_1']
+                stateRef.current().fieldCallbacks['field_1']
               ).toBeUndefined();
 
               // The test will pass only when done gets called.
               produced.done('field_1', done);
 
               expect(
-                suiteState.getCurrentState(suiteName).fieldCallbacks['field_1']
+                stateRef.current().fieldCallbacks['field_1']
               ).not.toBeUndefined();
             }));
         });
@@ -558,14 +543,13 @@ describe('module: produce', () => {
         describe('When field is sync', () => {
           it('Should run callback immediately', () => {
             const produced = runCreateSuite();
-            suiteId = suiteIdByName(suiteName);
             expect(
-              suiteState.getCurrentState(suiteId).fieldCallbacks['sync_field_2']
+              stateRef.current().fieldCallbacks['sync_field_2']
             ).toBeUndefined();
             produced.done('sync_field_2', doneCallback_2);
             expect(doneCallback_2).toHaveBeenCalled();
             expect(
-              suiteState.getCurrentState(suiteId).fieldCallbacks['sync_field_2']
+              stateRef.current().fieldCallbacks['sync_field_2']
             ).toBeUndefined();
           });
         });
@@ -578,9 +562,7 @@ describe('module: produce', () => {
           testDummy(vest).failingAsync('field_3', 'error_1:c', { time: 100 });
         });
 
-        afterEach(() => {
-          resetState();
-        });
+        afterEach(() => {});
 
         it('Should call done callback immediately when delayed', () => {
           const res = validate();
@@ -619,10 +601,6 @@ describe('module: produce', () => {
     beforeEach(() => {
       validate = validation();
       res = validate();
-    });
-
-    afterEach(() => {
-      resetState();
     });
 
     describe('When no group passed', () => {
@@ -688,10 +666,6 @@ describe('module: produce', () => {
       res = validate();
     });
 
-    afterEach(() => {
-      resetState();
-    });
-
     describe('When no group passed', () => {
       it('Should throw error', () => {
         expect(() => res.getWarningsByGroup()).toThrow(
@@ -737,36 +711,33 @@ describe('module: produce', () => {
   describe('produce cache (integragion)', () => {
     describe('sync', () => {
       const control = jest.fn();
-      let draft, state;
+      let draft;
       const validate = vest.create('cache', () => {
         draft = vest.draft();
-        state = vest.get('cache');
+        getStateFromContext();
         expect(draft).toBe(vest.draft());
-        expect(state).toBe(vest.get('cache'));
+        expect(produce(stateRef, { draft: true })).toBe(validate.get());
         testDummy(vest).failing();
-        expect(state).not.toBe(vest.get('cache'));
+        expect(produce(stateRef)).not.toBe(validate.get());
         expect(draft).not.toBe(vest.draft());
         testDummy(vest).failing();
-        state = vest.get('cache');
         control();
       });
 
       it('Should return same result as as long as the state did not change', () => {
         let res = validate().done(result => {
-          // Done results are not cached.
-          // See produce / index for more info
-          expect(result).isDeepCopyOf(vest.get('cache'));
+          expect(result).toBe(validate.get());
         });
         expect(control).toHaveBeenCalledTimes(1);
-        expect(state).toBe(vest.get('cache'));
+        expect(produce(stateRef, { draft: true })).toBe(validate.get());
         expect(res).not.toBe(draft);
-        expect(res).not.toBe(state);
-        expect(draft).not.toBe(vest.get('cache'));
+        expect(res).not.toBe(produce(stateRef, { draft: true }));
+        expect(draft).not.toBe(validate.get());
         res = validate().done(result => {
-          expect(result).isDeepCopyOf(vest.get('cache'));
+          expect(result).toBe(validate.get());
         });
         expect(res).not.toBe(draft);
-        expect(res).not.toBe(state);
+        expect(res).not.toBe(produce(stateRef, { draft: true }));
         expect(control).toHaveBeenCalledTimes(2);
       });
     });
@@ -790,7 +761,7 @@ describe('module: produce', () => {
           expect(result.hasErrors('field_4')).toBe(false);
 
           result.done('field_3', res => {
-            expect(res).isDeepCopyOf(vest.get('cache-async'));
+            expect(res).toBe(validate.get());
             expect(res).not.toBe(result);
             expect(res).not.isDeepCopyOf(result);
             expect(res.hasErrors('field_1')).toBe(false);
@@ -802,7 +773,7 @@ describe('module: produce', () => {
 
           result.done(res => {
             expect(res.tests.field_4.errorCount).toBe(1);
-            expect(res).isDeepCopyOf(vest.get('cache-async'));
+            expect(res).toBe(validate.get());
             expect(res).not.toBe(result);
             expect(res).not.isDeepCopyOf(result);
             expect(res.hasErrors('field_1')).toBe(false);

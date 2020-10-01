@@ -1,5 +1,4 @@
 import context from '../../core/context';
-import * as suiteState from '../../core/suite/suiteState';
 import validateSuiteParams from '../../lib/validateSuiteParams';
 import { isGroupExcluded } from '../exclusive';
 
@@ -8,8 +7,8 @@ import { isGroupExcluded } from '../exclusive';
  * @param {string} groupName
  */
 const registerGroup = groupName => {
-  const ctx = context.use();
-  suiteState.patch(ctx.suiteId, state => {
+  const { stateRef } = context.use();
+  stateRef.patch(state => {
     const nextState = { ...state };
     nextState.groups[groupName] = state.groups[groupName] || {};
     return nextState;
@@ -22,10 +21,11 @@ const registerGroup = groupName => {
  * @param {Function} tests
  */
 const group = (groupName, tests) => {
+  // TODO: Replace with something local
   validateSuiteParams('group', groupName, tests);
 
-  const ctx = context.use();
-  const state = suiteState.getCurrentState(ctx.suiteId);
+  const { stateRef } = context.use();
+  const state = stateRef.current();
 
   if (!isGroupExcluded(state, groupName)) {
     registerGroup(groupName);

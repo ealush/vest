@@ -1,6 +1,5 @@
 import vest from '../..';
 import mock from '../../../../../shared/testUtils/mock';
-import resetState from '../../../testUtils/resetState';
 import testDummy from '../../../testUtils/testDummy';
 import context from '../../core/context';
 import VestTest from '../../core/test/lib/VestTest';
@@ -10,28 +9,19 @@ const faker = require('faker');
 const { ERROR_HOOK_CALLED_OUTSIDE } = require('../constants');
 const { isExcluded, isGroupExcluded } = require('.');
 
-const suiteId = 'suite-id';
-
 let res, res1;
-
-afterEach(() => {
-  resetState();
-});
 
 describe('exclusive hooks', () => {
   let field1, field2, field3;
 
   beforeEach(() => {
     field1 = new VestTest({
-      suiteId,
       fieldName: faker.lorem.word(),
     });
     field2 = new VestTest({
-      suiteId,
       fieldName: faker.lorem.slug(),
     });
     field3 = new VestTest({
-      suiteId,
       fieldName: faker.random.word(),
     });
   });

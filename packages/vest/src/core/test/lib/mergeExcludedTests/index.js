@@ -1,12 +1,12 @@
 import { isExcluded } from '../../../../hooks/exclusive';
-import * as suiteState from '../../../suite/suiteState';
+import context from '../../../context';
 
 /**
  * Merges excluded tests with their prevState values.
- * @param {string} suiteId
  */
-const mergeExcludedTests = suiteId => {
-  suiteState.patch(suiteId, (state, prevState) => {
+const mergeExcludedTests = () => {
+  const { stateRef } = context.use();
+  stateRef.patch((state, prevState) => {
     if (!prevState) {
       return state;
     }

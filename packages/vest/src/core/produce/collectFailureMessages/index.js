@@ -1,7 +1,7 @@
 import { SEVERITY_GROUP_WARN } from '../../test/lib/VestTest/constants';
 
 /**
- * @param {String} suiteId            Current suite id.
+ * @param {Object} State            State Object reference
  * @param {'warn'|'error'} severity   Filter by severity.
  * @param {Object} options
  * @param {String} [options.group]      Group name for error lookup.

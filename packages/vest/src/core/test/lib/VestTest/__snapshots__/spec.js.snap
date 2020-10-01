@@ -7,7 +7,6 @@ VestTest {
   "id": "0",
   "isWarning": false,
   "statement": "I am Root.",
-  "suiteId": "validation-suite",
   "testFn": [MockFunction],
 }
 `;
@@ -19,7 +18,6 @@ VestTest {
   "id": "103",
   "isWarning": true,
   "statement": "I am Root.",
-  "suiteId": "validation-suite",
   "testFn": [MockFunction],
 }
 `;

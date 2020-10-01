@@ -1,22 +1,15 @@
 import runSpec from '../../testUtils/runSpec';
 
-runSpec(vest => {
-  const validator = (exclusion = {}) =>
-    vest.validate('suite_name', () => {
-      vest.skip(exclusion.skip);
-      vest.only(exclusion.only);
-      vest.skip(exclusion.skip_last);
+let validate;
 
-      vest.test('field_1', 'msg', Function.prototype);
-      vest.test('field_2', 'msg', Function.prototype);
-      vest.test('field_3', 'msg', Function.prototype);
-      vest.test('field_4', 'msg', Function.prototype);
-      vest.test('field_5', 'msg', Function.prototype);
-    });
+runSpec(vest => {
+  beforeEach(() => {
+    validate = genValidate(vest);
+  });
 
   describe('only', () => {
     it('Should only have `only`ed fields', () => {
-      const res = validator({
+      const res = validate({
         only: ['field_1', 'field_2'],
       });
 
@@ -27,7 +20,7 @@ runSpec(vest => {
       expect(res.tests).not.toHaveProperty('field_5');
     });
     it('Should only have `only`ed field', () => {
-      const res = validator({
+      const res = validate({
         only: 'field_1',
       });
 
@@ -40,7 +33,7 @@ runSpec(vest => {
   });
   describe('skip', () => {
     it('Should have all but `skip`ped fields', () => {
-      const res = validator({
+      const res = validate({
         skip: ['field_1', 'field_2'],
       });
 
@@ -51,7 +44,7 @@ runSpec(vest => {
       expect(res.tests).toHaveProperty('field_5');
     });
     it('Should have all but `skip`ped field', () => {
-      const res = validator({
+      const res = validate({
         skip: 'field_1',
       });
 
@@ -65,7 +58,7 @@ runSpec(vest => {
 
   describe('Combined', () => {
     test('Last declaration wins', () => {
-      const res = validator({
+      const res = validate({
         only: ['field_1', 'field_2', 'field_3'],
         skip: ['field_1'],
         skip_last: 'field_3',
@@ -77,3 +70,17 @@ runSpec(vest => {
     });
   });
 });
+
+function genValidate(vest) {
+  return vest.create('suite_name', (exclusion = {}) => {
+    vest.skip(exclusion.skip);
+    vest.only(exclusion.only);
+    vest.skip(exclusion.skip_last);
+
+    vest.test('field_1', 'msg', Function.prototype);
+    vest.test('field_2', 'msg', Function.prototype);
+    vest.test('field_3', 'msg', Function.prototype);
+    vest.test('field_4', 'msg', Function.prototype);
+    vest.test('field_5', 'msg', Function.prototype);
+  });
+}

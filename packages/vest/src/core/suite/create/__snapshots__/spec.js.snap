@@ -1,18 +1,39 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test createSuite module Initial run Should initialize with an empty state object 1`] = `
-Array [
-  Object {
-    "doneCallbacks": Array [],
-    "fieldCallbacks": Object {},
-    "groups": Object {},
-    "lagging": Array [],
-    "name": "initial_run_spec",
-    "pending": Array [],
-    "suiteId": "initial_run_spec",
-    "testObjects": Array [],
-    "tests": Object {},
-  },
-  undefined,
-]
+exports[`Test createSuite module Initial run Should be able to get the suite from the result of createSuite 1`] = `
+Object {
+  "errorCount": 0,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "name": "test_get_suite",
+  "testCount": 0,
+  "tests": Object {},
+  "warnCount": 0,
+}
+`;
+
+exports[`Test createSuite module Initial run Should initialize with an empty result object 1`] = `
+Object {
+  "errorCount": 0,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "name": "initial_run_spec",
+  "testCount": 0,
+  "tests": Object {},
+  "warnCount": 0,
+}
 `;

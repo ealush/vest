@@ -257,7 +257,6 @@ describe('group: context creation', () => {
     vest.create(suiteName, collect => {
       collect({
         context: context.use(),
-        suiteId: context.use().suiteId,
         groupName: context.use().groupName,
       });
 
@@ -267,14 +266,12 @@ describe('group: context creation', () => {
       group(groupName, () => {
         collect({
           context: context.use(),
-          suiteId: context.use().suiteId,
           groupName: context.use().groupName,
         });
         dummyTest.failing();
       });
       collect({
         context: context.use(),
-        suiteId: context.use().suiteId,
         groupName: context.use().groupName,
       });
     });
@@ -292,15 +289,12 @@ describe('group: context creation', () => {
     // checking that we have the right context in the right places
 
     validate(collect);
-    expect(collection[1].suiteId).toBe(suiteName);
     expect(collection[1].groupName).toBe(groupName);
-    expect(collection[2].suiteId).toBe(suiteName);
     expect(collection[2].groupName).toBeUndefined();
   });
 
   it('Should initialize suite without group name', () => {
     validate(collect);
-    expect(collection[0].suiteId).toBe(suiteName);
     expect(collection[0].groupName).toBeUndefined();
   });
 
@@ -308,7 +302,6 @@ describe('group: context creation', () => {
     it('should create child context with group name', () => {
       validate(collect);
       expect(collection[1].context.parentContext).toBe(collection[0].context);
-      expect(collection[1].suiteId).toBe(suiteName);
       expect(collection[1].groupName).toBe(groupName);
       expect(collection[1].context.parentContext).toBe(collection[2].context);
     });

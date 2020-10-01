@@ -1,8 +1,7 @@
-import resetState from '../../testUtils/resetState';
 import runSpec from '../../testUtils/runSpec';
 
-const suite = ({ validate, test, enforce, ...vest }) =>
-  validate('suite_name', () => {
+function genValidate({ create, test, enforce, ...vest }) {
+  return create('suite_name', () => {
     test('field_1', 'field_statement_1', () => false);
     test('field_2', 'field_statement_2', () => {
       enforce(2).equals(3);
@@ -27,10 +26,16 @@ const suite = ({ validate, test, enforce, ...vest }) =>
     );
     test('field_7', () => Promise.reject('async_statement_2'));
   });
+}
 
 runSpec(vest => {
+  let validate;
   describe('Stateful behavior', () => {
     let result, callback_1, callback_2, callback_3, control;
+
+    beforeEach(() => {
+      validate = genValidate(vest);
+    });
 
     beforeAll(() => {
       callback_1 = jest.fn();
@@ -39,16 +44,13 @@ runSpec(vest => {
       control = jest.fn();
     });
 
-    beforeEach(() => {
-      resetState();
-    });
     test.skipOnWatch(
       'Should have all fields',
       () =>
         new Promise(done => {
           // ❗️Why is this test async? Because of the `resetState` beforeEach.
           // We must not clean up before the suite is actually done.
-          result = suite(vest).done(done);
+          result = validate(vest).done(done);
           expect(result.tests).toHaveProperty('field_1');
           expect(result.tests).toHaveProperty('field_2');
           expect(result.tests).toHaveProperty('field_4');
@@ -62,7 +64,7 @@ runSpec(vest => {
 
     it('Should invoke done callback specified with sync field immediately, and the others after finishing', () =>
       new Promise(done => {
-        result = suite(vest);
+        result = validate(vest);
         result
           .done('field_1', callback_1)
           .done('field_6', callback_2)

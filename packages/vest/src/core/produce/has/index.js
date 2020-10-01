@@ -2,7 +2,7 @@ import { SEVERITY_GROUP_WARN } from '../../test/lib/VestTest/constants';
 
 /**
  * Determines whether a certain test profile has failures.
- * @param {string} suiteId
+ * @param {VestTest} testObject
  * @param {'warnings'|'errors'} severityKey lookup severity
  * @param {string} [fieldName]
  * @returns {Boolean}
@@ -27,7 +27,7 @@ export const hasLogic = (testObject, severityKey, fieldName) => {
 };
 
 /**
- * @param {string} suiteId
+ * @param {Object} Suite State
  * @param {'warnings'|'errors'} severityKey lookup severity
  * @param {string} [fieldName]
  * @returns {Boolean} whether a suite or field have errors or warnings.

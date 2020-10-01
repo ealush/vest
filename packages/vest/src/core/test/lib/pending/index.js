@@ -1,14 +1,14 @@
 import removeElementFromArray from '../../../../lib/removeElementFromArray';
-import * as suiteState from '../../../suite/suiteState';
-import { setCanceled } from '../canceled';
+import context from '../../../context';
 
 /**
  * Sets a test as pending in the state.
  * @param {VestTest} testObject
  */
 export const setPending = testObject => {
-  const { fieldName, groupName, suiteId } = testObject;
-  const state = suiteState.getCurrentState(suiteId);
+  const { fieldName, groupName } = testObject;
+  const { stateRef } = context.use();
+  const state = stateRef.current();
   const { lagging, canceled } = state.lagging.reduce(
     ({ lagging, canceled }, testObject) => {
       /**
@@ -30,12 +30,12 @@ export const setPending = testObject => {
     { lagging: [], canceled: [] }
   );
 
-  suiteState.patch(suiteId, state => ({
+  stateRef.patch(state => ({
     ...state,
     lagging,
     pending: state.pending.concat(testObject),
   }));
-  setCanceled(...canceled);
+  stateRef.setCanceled(...canceled);
 };
 
 /**
@@ -43,7 +43,9 @@ export const setPending = testObject => {
  * @param {VestTest} testObject
  */
 export const removePending = testObject => {
-  suiteState.patch(testObject.suiteId, state => ({
+  const { stateRef } = context.use();
+
+  stateRef.patch(state => ({
     ...state,
     pending: removeElementFromArray(state.pending, testObject),
     lagging: removeElementFromArray(state.lagging, testObject),

@@ -1,47 +1,18 @@
 import faker from 'faker';
 import { noop } from 'lodash';
-import mock from '../../../../../../shared/testUtils/mock';
-import resetState from '../../../../testUtils/resetState';
 import { dummyTest } from '../../../../testUtils/testDummy';
-import { OPERATION_MODE_STATELESS } from '../../../constants';
-import { get } from '../../../hooks';
-import context from '../../context';
-import * as suiteState from '../suiteState';
 import create from '.';
 
 describe('Test createSuite module', () => {
-  describe('Test arguments', () => {
-    let mockValidateSuiteParams, create, name, tests;
-
-    beforeEach(() => {
-      mockValidateSuiteParams = mock('validateSuiteParams');
-      create = require('.');
-      name = faker.random.word();
-      tests = jest.fn();
-    });
-
-    afterEach(() => {
-      jest.resetAllMocks();
-    });
-
-    it('Should call `validateSuiteParams` with passed arguments and current function name', () => {
-      expect(mockValidateSuiteParams).not.toHaveBeenCalled();
-      create(name, tests);
-      expect(mockValidateSuiteParams).toHaveBeenCalledWith(
-        'vest.create',
-        name,
-        tests
-      );
-    });
-  });
+  describe.skip('Test Arguments');
 
   describe('Return value', () => {
     it('should be a function', () => {
       expect(typeof create('suiteName', noop)).toBe('function');
     });
 
-    test("returned function name is the suite's name", () => {
-      expect(create('boop', noop).name).toBe('boop');
+    test('returned function name is `validate`', () => {
+      expect(create('boop', noop).name).toBe('validate');
     });
   });
 
@@ -70,65 +41,42 @@ describe('Test createSuite module', () => {
 
   describe('Initial run', () => {
     const testsCb = jest.fn();
-    const suiteId = 'initial_run_spec';
-    const runCreateSuite = () => create(suiteId, testsCb);
+    const genValidate = () => create('initial_run_spec', testsCb);
 
-    afterEach(() => {
-      resetState();
-    });
+    it('Should initialize with an empty result object', () => {
+      const validate = genValidate();
+      expect(Object.keys(validate.get().tests)).toHaveLength(0);
+      expect(Object.keys(validate.get().groups)).toHaveLength(0);
 
-    it('Should initialize with an empty state object', () => {
-      expect(suiteState.getSuite(suiteId)).toBeUndefined();
-      runCreateSuite();
-      const state = suiteState.getSuite(suiteId);
-      expect(state).toHaveLength(2);
-      expect(state[1]).toBeUndefined();
-      expect(state[0].suiteId).toBe(suiteId);
-      expect(state[0].name).toBe(suiteId);
-      expect(state[0].testObjects).toHaveLength(0);
-      expect(state[0].pending).toHaveLength(0);
-      expect(state[0].lagging).toHaveLength(0);
-      expect(Object.keys(state[0].tests)).toHaveLength(0);
-      expect(Object.keys(state[0].groups)).toHaveLength(0);
-      expect(Object.keys(state[0].doneCallbacks)).toHaveLength(0);
-      expect(Object.keys(state[0].fieldCallbacks)).toHaveLength(0);
+      expect(validate.get().errorCount).toBe(0);
+      expect(validate.get().warnCount).toBe(0);
+      expect(validate.get().testCount).toBe(0);
 
-      expect(suiteState.getSuite(suiteId)).toMatchSnapshot();
+      expect(validate.get()).toMatchSnapshot();
     });
 
     it('Should be able to get the suite from the result of createSuite', () => {
       const testsCb = jest.fn();
-      const suiteId = 'test_get_suite';
-      expect(create(suiteId, testsCb).get()).toBe(get(suiteId));
+      expect(create('test_get_suite', testsCb).get()).toMatchSnapshot();
     });
 
     it('Should be able to reset the suite from the result of createSuite', () => {
-      const suiteId = 'test_reset_suite';
-      const testSuite = create(suiteId, () => {
+      const testSuite = create('test_reset_suite', () => {
         dummyTest.failing('f1', 'm1');
       });
       testSuite();
-      expect(get(suiteId).hasErrors()).toBe(true);
-      expect(get(suiteId).testCount).toBe(1);
+      expect(testSuite.get().hasErrors()).toBe(true);
+      expect(testSuite.get().testCount).toBe(1);
       testSuite.reset();
-      expect(get(suiteId).hasErrors()).toBe(false);
-      expect(get(suiteId).testCount).toBe(0);
+      expect(testSuite.get().hasErrors()).toBe(false);
+      expect(testSuite.get().testCount).toBe(0);
     });
 
     it('Should return without calling tests callback', () => {
-      const validate = runCreateSuite();
+      const validate = create(testsCb);
       expect(testsCb).not.toHaveBeenCalled();
       validate();
       expect(testsCb).toHaveBeenCalled();
-    });
-
-    describe('When in stateless mode', () => {
-      it('Should return without creating initial state', () => {
-        context.run({ operationMode: OPERATION_MODE_STATELESS }, () => {
-          runCreateSuite();
-        });
-      });
-      expect(suiteState.getSuite(suiteId)).toBeUndefined();
     });
   });
 });

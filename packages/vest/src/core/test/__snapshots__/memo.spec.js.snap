@@ -12,7 +12,7 @@ Object {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
-  "name": "suite_1",
+  "name": "suite_name",
   "testCount": 1,
   "tests": Object {
     "field_1": Object {
@@ -38,7 +38,7 @@ Object {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
-  "name": "suite_0",
+  "name": "suite_name",
   "testCount": 4,
   "tests": Object {
     "field_1": Object {
@@ -88,7 +88,7 @@ Object {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
-  "name": "suite_0",
+  "name": "suite_name",
   "testCount": 4,
   "tests": Object {
     "field_1": Object {
@@ -138,7 +138,7 @@ Object {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
-  "name": "suite_0",
+  "name": "suite_name",
   "testCount": 4,
   "tests": Object {
     "field_1": Object {

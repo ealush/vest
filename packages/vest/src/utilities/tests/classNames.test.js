@@ -13,12 +13,11 @@ describe('Utility: classNames', () => {
   });
 
   describe('When called with a vest result object', () => {
-    it('Should return a function', () => {
+    it('Should return a function', async () => {
       const validate = vest.create('form', () => {});
       expect(typeof classNames(validate())).toBe('function');
-      expect(typeof classNames(vest.validate('form', Function.prototype))).toBe(
-        'function'
-      );
+      const promisifed = await vest.validate('form', Function.prototype);
+      expect(typeof classNames(promisifed)).toBe('function');
     });
   });
 

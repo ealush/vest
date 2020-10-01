@@ -1,21 +1,19 @@
-import resetState from '../../testUtils/resetState';
 import runSpec from '../../testUtils/runSpec';
 
 runSpec(vest => {
   describe('Stateful behavior', () => {
-    beforeEach(() => {
-      resetState();
-    });
     let result;
-    test.skipOnWatch('Should merge skipped fields with previous values', () => {
-      result = suite(vest, 'field_1');
+    const validate = genValidate(vest);
+
+    test('Should merge skipped fields with previous values', () => {
+      result = validate({ only: 'field_1' });
       expect(result.tests.field_1.errorCount).toBe(1);
       expect(result.errorCount).toBe(1);
       expect(Object.keys(result.tests)).toHaveLength(1);
       expect(result.tests).toHaveProperty('field_1');
       expect(result).toMatchSnapshot();
 
-      result = suite(vest, 'field_5');
+      result = validate({ only: 'field_5' });
       expect(result.errorCount).toBe(3);
       expect(result.tests.field_1.errorCount).toBe(1);
       expect(result.tests.field_5.errorCount).toBe(2);
@@ -24,7 +22,7 @@ runSpec(vest => {
       expect(result.tests).toHaveProperty('field_5');
       expect(result).toMatchSnapshot();
 
-      result = suite(vest);
+      result = validate();
       expect(result.errorCount).toBe(4);
       expect(result.tests.field_1.errorCount).toBe(1);
       expect(result.tests.field_2.errorCount).toBe(1);
@@ -36,8 +34,8 @@ runSpec(vest => {
   });
 });
 
-const suite = ({ create, test, enforce, ...vest }, only) =>
-  create('suite_name', () => {
+function genValidate({ create, test, enforce, ...vest }) {
+  return create('suite_name', ({ only } = {}) => {
     vest.only(only);
     test('field_1', 'field_statement_1', () => false);
     test('field_2', 'field_statement_2', () => {
@@ -53,4 +51,5 @@ const suite = ({ create, test, enforce, ...vest }, only) =>
     });
     test('field_5', 'field_statement_5', () => false);
     test('field_5', 'field_statement_6', () => false);
-  })();
+  });
+}

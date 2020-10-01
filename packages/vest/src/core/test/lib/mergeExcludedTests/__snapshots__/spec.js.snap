@@ -1,118 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`module: skipped export: mergeExcludedTests When previous state exists When no currently skipped fields or groups When skipped field exists in previous state Error field Should copy prev field state over 1`] = `
-Object {
-  "doneCallbacks": Array [],
-  "fieldCallbacks": Object {},
-  "groups": Object {
-    "group_1": Object {},
-  },
-  "lagging": Array [],
-  "name": "suite_1",
-  "pending": Array [],
-  "suiteId": "suite_1",
-  "testObjects": Array [
-    VestTest {
-      "failed": true,
-      "fieldName": "field_1",
-      "id": "6",
-      "isWarning": true,
-      "statement": "warning message",
-      "suiteId": "suite_1",
-      "testFn": [MockFunction] {
-        "calls": Array [
-          Array [],
-        ],
-        "results": Array [
-          Object {
-            "type": "throw",
-            "value": [Error],
-          },
-        ],
-      },
-    },
-    VestTest {
-      "failed": true,
-      "fieldName": "field_2",
-      "groupName": "group_1",
-      "id": "5",
-      "isWarning": false,
-      "statement": "error message",
-      "suiteId": "suite_1",
-      "testFn": [MockFunction] {
-        "calls": Array [
-          Array [],
-        ],
-        "results": Array [
-          Object {
-            "type": "throw",
-            "value": [Error],
-          },
-        ],
-      },
-    },
-  ],
-  "tests": Object {},
-}
-`;
-
-exports[`module: skipped export: mergeExcludedTests When previous state exists When no currently skipped fields or groups When skipped field exists in previous state Warning field Should copy prev field state over 1`] = `
-Object {
-  "doneCallbacks": Array [],
-  "fieldCallbacks": Object {},
-  "groups": Object {
-    "group_1": Object {},
-  },
-  "lagging": Array [],
-  "name": "suite_1",
-  "pending": Array [],
-  "suiteId": "suite_1",
-  "testObjects": Array [
-    VestTest {
-      "failed": true,
-      "fieldName": "field_2",
-      "groupName": "group_1",
-      "id": "3",
-      "isWarning": false,
-      "statement": "error message",
-      "suiteId": "suite_1",
-      "testFn": [MockFunction] {
-        "calls": Array [
-          Array [],
-        ],
-        "results": Array [
-          Object {
-            "type": "throw",
-            "value": [Error],
-          },
-        ],
-      },
-    },
-    VestTest {
-      "failed": true,
-      "fieldName": "field_1",
-      "id": "0",
-      "isWarning": true,
-      "statement": "warning message",
-      "suiteId": "suite_1",
-      "testFn": [MockFunction] {
-        "calls": Array [
-          Array [],
-        ],
-        "results": Array [
-          Object {
-            "type": "throw",
-            "value": [Error],
-          },
-        ],
-      },
-    },
-  ],
-  "tests": Object {},
-}
-`;
-
-exports[`module: skipped export: mergeExcludedTests When previous state exists When skipped group exists in previous state Skipping after initial run: Should copy group state over 1`] = `
+exports[`When previous state exists When skipped group exists in previous state Skipping after initial run: Should copy group state over 1`] = `
 Object {
   "done": [Function],
   "errorCount": 6,
@@ -215,7 +103,7 @@ Object {
 }
 `;
 
-exports[`module: skipped export: mergeExcludedTests When previous state exists When skipped group exists in previous state Skipping after second run: Should copy group state over 1`] = `
+exports[`When previous state exists When skipped group exists in previous state Skipping after second run: Should copy group state over 1`] = `
 Object {
   "done": [Function],
   "errorCount": 9,
@@ -380,9 +268,8 @@ Object {
 }
 `;
 
-exports[`module: skipped export: mergeExcludedTests When previous state exists When skipped group exists in previous state Skipping after second run: Should copy group state over 2`] = `
+exports[`When previous state exists When skipped group exists in previous state Skipping after second run: Should copy group state over 2`] = `
 Object {
-  "done": [Function],
   "errorCount": 12,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -552,7 +439,7 @@ Object {
 }
 `;
 
-exports[`module: skipped export: mergeExcludedTests When previous state exists When skipped group exists in previous state sanity: skipped tests are not in initial state 1`] = `
+exports[`When previous state exists When skipped group exists in previous state sanity: skipped tests are not in initial state 1`] = `
 Object {
   "done": [Function],
   "errorCount": 3,

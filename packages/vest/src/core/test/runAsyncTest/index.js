@@ -1,11 +1,5 @@
-import { OPERATION_MODE_STATELESS } from '../../../constants';
 import context from '../../context';
-import state from '../../state';
-import { KEY_CANCELED } from '../../state/constants';
-import cleanupCompleted from '../../suite/cleanupCompleted';
 import hasRemainingTests from '../../suite/hasRemainingTests';
-import * as suiteState from '../../suite/suiteState';
-import { removeCanceled } from '../lib/canceled';
 import { removePending } from '../lib/pending';
 
 /**
@@ -13,39 +7,42 @@ import { removePending } from '../lib/pending';
  * @param {VestTest} testObject A VestTest instance.
  */
 const runAsyncTest = testObject => {
-  const { asyncTest, statement, id, suiteId } = testObject;
-  const { operationMode } = context.use();
+  const { asyncTest, statement, id } = testObject;
+  const { stateRef } = context.use();
   const done = cb => {
-    const isCanceled = state.get()[KEY_CANCELED]?.[id];
+    const isCanceled = stateRef.getCanceled()[id];
 
     if (isCanceled) {
-      removeCanceled(testObject);
+      stateRef.removeCanceled(testObject);
     }
 
     // This is for cases in which the suite state was already reset
-    if (!suiteState.getSuite(suiteId)) {
+    if (!stateRef.current()) {
       return;
     }
 
-    removePending(testObject);
+    // This allows us to reference the state in async context as well
+    context.run({ stateRef }, () => {
+      removePending(testObject);
 
-    // We're returning here and not in the first `isCanceled` check
-    // because we need to remove pending regardless - as long as the\
-    // suite is present.
-    if (isCanceled) {
-      return;
-    }
+      // We're returning here and not in the first `isCanceled` check
+      // because we need to remove pending regardless - as long as the\
+      // suite is present.
+      if (isCanceled) {
+        return;
+      }
 
-    // ❗️This callback is the `fail` function (see below)
-    // it must run before running the done callbacks
-    // so the field is marked as failed
-    // before being passed to the `done` callback
-    if (typeof cb === 'function') {
-      cb();
-    }
+      // ❗️This callback is the `fail` function (see below)
+      // it must run before running the done callbacks
+      // so the field is marked as failed
+      // before being passed to the `done` callback
+      if (typeof cb === 'function') {
+        cb();
+      }
 
-    // Perform required done callback calls and cleanups after the test is finished
-    onAsyncTestFinished(testObject, operationMode);
+      // Perform required done callback calls and cleanups after the test is finished
+      onAsyncTestFinished(testObject);
+    });
   };
   const fail = rejectionMessage => {
     done(() => {
@@ -65,11 +62,10 @@ const runAsyncTest = testObject => {
 
 /**
  * Runs done callback when async tests are finished running.
- * @param {String} suiteId
  * @param {string} [fieldName] Field name with associated callbacks.
  */
-const runDoneCallbacks = (suiteId, fieldName) => {
-  const currentState = suiteState.getCurrentState(suiteId);
+const runDoneCallbacks = (stateRef, fieldName) => {
+  const currentState = stateRef.current();
   if (fieldName) {
     if (
       !hasRemainingTests(currentState, fieldName) &&
@@ -88,14 +84,11 @@ const runDoneCallbacks = (suiteId, fieldName) => {
  * @param {VestTest} testObject   A VestTest instance
  * @param {string} operationMode  Operation mode retrieved from context
  */
-const onAsyncTestFinished = (testObject, operationMode) => {
-  const { suiteId, fieldName } = testObject;
+const onAsyncTestFinished = testObject => {
+  const { stateRef } = context.use();
+  const { fieldName } = testObject;
 
-  runDoneCallbacks(suiteId, fieldName);
-
-  if (operationMode === OPERATION_MODE_STATELESS) {
-    cleanupCompleted(suiteId);
-  }
+  runDoneCallbacks(stateRef, fieldName);
 };
 
 export default runAsyncTest;

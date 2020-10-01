@@ -1,14 +1,14 @@
 import faker from 'faker';
 import vest from '../..';
 import { dummyTest } from '../../../testUtils/testDummy';
-import { promisify } from '../promisify';
+import promisify from '../promisify';
 
 describe('Utility: promisify', () => {
   let validatorFn;
   let validateAsync;
 
   beforeEach(() => {
-    validatorFn = jest.fn(() => vest.validate('test-promisify', jest.fn()));
+    validatorFn = jest.fn(vest.create('test-promisify', jest.fn()));
     validateAsync = promisify(validatorFn);
   });
 
@@ -35,8 +35,8 @@ describe('Utility: promisify', () => {
   describe('When returned function is invoked', () => {
     it('Calls `validatorFn` argument', () =>
       new Promise(done => {
-        const validateAsync = promisify(() =>
-          vest.validate('test-promisify', () => done())
+        const validateAsync = promisify(
+          vest.create('test-promisify', () => done())
         );
         validateAsync();
       }));
@@ -62,19 +62,12 @@ describe('Utility: promisify', () => {
           dummyTest.failingAsync('field_1');
         });
 
-        const validateAsync = promisify(validate);
+        const validatorAsync = promisify(validate);
+        const p = validatorAsync('me');
 
-        const promise = validateAsync();
-        const res = vest.get('test-promisify');
-
-        expect(res.hasErrors('field_0')).toBe(true);
-        expect(res.hasErrors('field_1')).toBe(false);
-
-        promise.then(result => {
+        p.then(result => {
           expect(result.hasErrors('field_0')).toBe(true);
           expect(result.hasErrors('field_1')).toBe(true);
-          expect(result).not.toBe(res);
-          expect(result).not.isDeepCopyOf(res);
           done();
         });
       }));

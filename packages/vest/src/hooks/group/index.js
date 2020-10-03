@@ -1,5 +1,5 @@
+import { throwError } from '../../../../n4s/src/lib';
 import context from '../../core/context';
-import validateSuiteParams from '../../lib/validateSuiteParams';
 import { isGroupExcluded } from '../exclusive';
 
 /**
@@ -21,8 +21,17 @@ const registerGroup = groupName => {
  * @param {Function} tests
  */
 const group = (groupName, tests) => {
-  // TODO: Replace with something local
-  validateSuiteParams('group', groupName, tests);
+  if (typeof groupName !== 'string') {
+    throwError(
+      `group initialization error. Expected "${groupName}" to be a string.`
+    );
+  }
+
+  if (typeof tests !== 'function') {
+    throwError(
+      `group initialization error. Expected "${tests}" to be a function.`
+    );
+  }
 
   const { stateRef } = context.use();
   const state = stateRef.current();

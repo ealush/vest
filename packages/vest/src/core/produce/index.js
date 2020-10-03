@@ -23,7 +23,6 @@ const cache = createCache(20);
 const done = (stateRef, ...args) => {
   const { length, [length - 1]: callback, [length - 2]: fieldName } = args;
 
-  // TODO: FInd if this line can be removed - at least for sync tests
   const output = produce(stateRef);
 
   // If we do not have any tests for current field

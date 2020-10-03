@@ -155,7 +155,6 @@ Object {
   "runWithContext": [Function],
   "skip": [Function],
   "test": [Function],
-  "validate": [Function],
   "warn": [Function],
 }
 `;

@@ -37,3 +37,22 @@ Object {
   "warnCount": 0,
 }
 `;
+
+exports[`Test createSuite module Test suite Arguments allows omitting suite name 1`] = `
+Object {
+  "errorCount": 0,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "name": undefined,
+  "testCount": 0,
+  "tests": Object {},
+  "warnCount": 0,
+}
+`;

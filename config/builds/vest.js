@@ -1,5 +1,6 @@
 import path from 'path';
 import compiler from '@ampproject/rollup-plugin-closure-compiler';
+import phrase from 'paraphrase/dollar';
 import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
@@ -17,6 +18,7 @@ const PACKAGE_PATH = packagePath(PACKAGE_VEST);
 
 const DIR_NAME_DIST = 'dist';
 const ENV_DEVELOPMENT = 'development';
+const ENV_PRODUCTION = 'production';
 const NAME_ES5 = 'es5';
 const FORMAT_UMD = 'umd';
 const FORMAT_ES = 'es';
@@ -25,18 +27,51 @@ const DIR_ESM = 'esm';
 
 const DIST_PATH = path.join(PACKAGE_PATH, DIR_NAME_DIST);
 
-const plugins = ({ name, format }) => {
+addEsmDir();
+copyMainTemplate(FORMAT_UMD);
+
+export default [
+  { format: FORMAT_ES, input: 'index.mjs', outputDir: DIR_ESM },
+  { format: FORMAT_UMD },
+  { format: FORMAT_CJS },
+]
+  .reduce(
+    (configs, current) => configs.concat(current, { ...current, dev: true }),
+    []
+  )
+  .map(buildConfig);
+
+function buildConfig({
+  format,
+  dev = false,
+  input = 'index.js',
+  outputDir = '',
+} = {}) {
+  return {
+    input: path.join(PACKAGE_PATH, 'src', input),
+    output: {
+      file: [
+        path.join(DIST_PATH, outputDir, PACKAGE_VEST),
+        nameByFormat(format),
+        dev ? ENV_DEVELOPMENT : ENV_PRODUCTION,
+        'js',
+      ]
+        .filter(Boolean)
+        .join('.'),
+      format: format || FORMAT_UMD,
+      name: PACKAGE_VEST,
+      ...(format === FORMAT_CJS && {
+        exports: 'default',
+      }),
+    },
+    plugins: plugins({ dev, format }),
+  };
+}
+
+function plugins({ dev, format }) {
   const babelEnv = () => {
-    if ([FORMAT_CJS, FORMAT_ES].includes(format)) {
+    if (FORMAT_ES === format || dev) {
       return 'es6';
-    }
-
-    if ([NAME_ES5, 'min'].includes(name)) {
-      return NAME_ES5;
-    }
-
-    if (name === ENV_DEVELOPMENT) {
-      return ENV_DEVELOPMENT;
     }
 
     return NAME_ES5;
@@ -56,18 +91,18 @@ const plugins = ({ name, format }) => {
     replace({
       VEST_VERSION: JSON.stringify(version),
       LIBRARY_NAME: JSON.stringify(PACKAGE_VEST),
-      __DEV__: name === ENV_DEVELOPMENT,
+      __DEV__: dev === true,
     }),
   ];
 
-  if (envName === NAME_ES5) {
+  if (!dev) {
     PLUGINS.push(compiler(), terser());
   }
 
   return PLUGINS;
-};
+}
 
-const addEsmDir = () => {
+function addEsmDir() {
   const fullPath = path.join(DIST_PATH, DIR_ESM);
 
   fs.ensureDirSync(fullPath);
@@ -76,43 +111,24 @@ const addEsmDir = () => {
     path.join(fullPath, 'package.json'),
     JSON.stringify({ type: 'module' })
   );
-};
+}
 
-const buildConfig = ({
-  format,
-  name,
-  input = 'index.js',
-  outputDir = '',
-} = {}) => ({
-  input: path.join(PACKAGE_PATH, 'src', input),
-  output: {
-    file: [path.join(DIST_PATH, outputDir, PACKAGE_VEST), name, 'js']
-      .filter(Boolean)
-      .join('.'),
-    format: format || FORMAT_UMD,
-    name: PACKAGE_VEST,
-    ...(format === FORMAT_CJS && {
-      exports: 'default',
-    }),
-  },
-  plugins: plugins({ name, format }),
-});
+function copyMainTemplate(format) {
+  const template = fs.readFileSync(
+    path.join(__dirname, 'main.js.tmpl'),
+    'utf-8'
+  );
+  const phrased = phrase(template, { name: PACKAGE_VEST, format });
+  fs.writeFileSync(
+    path.join(DIST_PATH, [PACKAGE_VEST, format, 'index', 'js'].join('.')),
+    phrased
+  );
+}
 
-addEsmDir();
+function nameByFormat(format) {
+  if (format === FORMAT_ES) {
+    return 'mjs';
+  }
 
-export default [
-  buildConfig({ format: FORMAT_UMD }),
-  buildConfig({ name: NAME_ES5, format: FORMAT_UMD }),
-  buildConfig({
-    format: FORMAT_ES,
-    input: 'index.mjs',
-    name: 'mjs',
-    outputDir: DIR_ESM,
-  }),
-  buildConfig({ format: FORMAT_CJS, name: FORMAT_CJS }),
-  buildConfig({ name: ENV_DEVELOPMENT }),
-  /* this bundle will be deprecated in the next major */
-  buildConfig({
-    name: 'min',
-  }),
-];
+  return format;
+}

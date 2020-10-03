@@ -72,7 +72,6 @@ const createState = name => {
   };
 
   const removeCanceled = ({ id }) => {
-    // TODO: check if this is really needed
     delete canceled[id];
   };
 

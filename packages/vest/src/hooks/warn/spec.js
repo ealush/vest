@@ -6,19 +6,19 @@ import context from '../../core/context';
 import { ERROR_HOOK_CALLED_OUTSIDE } from '../constants';
 import { ERROR_OUTSIDE_OF_TEST } from './constants';
 
-const { validate, test, warn } = vest;
+const { create, test, warn } = vest;
 
 describe('warn hook', () => {
   describe('When currentTest exists', () => {
     it('Should set isWarning to true', () => {
       let beforeWarn, afterWarn;
-      validate(faker.random.word(), () => {
+      create(faker.random.word(), () => {
         test(faker.lorem.word(), faker.lorem.sentence(), () => {
           beforeWarn = context.use().currentTest.isWarning;
           warn();
           afterWarn = context.use().currentTest.isWarning;
         });
-      });
+      })();
 
       expect(beforeWarn).toBe(false);
       expect(afterWarn).toBe(true);
@@ -26,18 +26,18 @@ describe('warn hook', () => {
   });
 
   describe('Error handling', () => {
-    let warn, validate;
+    let warn, create;
 
     beforeEach(() => {
-      ({ validate, warn } = require('../..'));
+      ({ create, warn } = require('../..'));
     });
 
     it('Should throw error when currentTest is not present', () => {
       const done = jest.fn();
-      validate(faker.random.word(), () => {
+      create(faker.random.word(), () => {
         expect(warn).toThrow(ERROR_OUTSIDE_OF_TEST);
         done();
-      });
+      })();
       expect(done).toHaveBeenCalled();
     });
 

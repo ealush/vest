@@ -56,7 +56,7 @@ const plugins = ({ name, format }) => {
     replace({
       VEST_VERSION: JSON.stringify(version),
       LIBRARY_NAME: JSON.stringify(PACKAGE_VEST),
-      __DEV__: name === ENV_DEVELOPMENT
+      __DEV__: name === ENV_DEVELOPMENT,
     }),
   ];
 

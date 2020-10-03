@@ -7,10 +7,8 @@ const env = api => {
   };
 
   switch (api.env()) {
-    case 'development':
-      conf.targets.node = 'current';
-      break;
     case 'es6':
+    case 'development':
       conf.targets.chrome = 52;
       break;
     default:

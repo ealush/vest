@@ -1,43 +1,38 @@
-import faker from 'faker';
 import runSpec from '../../../testUtils/runSpec';
 
 runSpec(vest => {
-  const { test, validate } = vest;
-
-  const createSuite = tests => {
-    validate(faker.random.word(), tests);
-  };
+  const { test, create } = vest;
 
   describe('Draft', () => {
     it('Should be exposed as a function from vest', () => {
-      createSuite(() => {
+      create(() => {
         expect(typeof vest.draft).toBe('function');
-      });
+      })();
     });
 
     it('Should the same object when result is unchanged', () => {
-      createSuite(() => {
+      create(() => {
         const a = vest.draft();
         const b = vest.draft();
         expect(a).toBe(b);
-      });
+      })();
     });
 
     it('Should only contain has/get callbacks', () => {
-      createSuite(() => {
+      create(() => {
         expect(typeof vest.draft().hasErrors).toBe('function');
         expect(typeof vest.draft().getErrors).toBe('function');
         expect(typeof vest.draft().hasWarnings).toBe('function');
         expect(typeof vest.draft().getWarnings).toBe('function');
         expect(typeof vest.draft().done).not.toBe('function');
         expect(typeof vest.draft().cancel).not.toBe('function');
-      });
+      })();
     });
 
     it('Should contain intermediate test result', () => {
       // This test is so long because it tests `draft` throughout
       // A suite's life cycle, both as an argument, and as an import
-      createSuite(() => {
+      create(() => {
         expect(vest.draft().errorCount).toBe(0);
         expect(vest.draft().warnCount).toBe(0);
         expect(vest.draft().hasErrors()).toBe(false);
@@ -73,7 +68,7 @@ runSpec(vest => {
         expect(vest.draft().hasErrors()).toBe(true);
         expect(vest.draft().hasWarnings()).toBe(true);
         expect(vest.draft().hasWarnings('field4')).toBe(false);
-      });
+      })();
     });
   });
 });

@@ -4,7 +4,27 @@ import { dummyTest } from '../../../../testUtils/testDummy';
 import create from '.';
 
 describe('Test createSuite module', () => {
-  describe.skip('Test Arguments');
+  describe('Test suite Arguments', () => {
+    it('allows omitting suite name', () => {
+      expect(typeof create(Function.prototype)).toBe('function');
+      expect(create(Function.prototype).name).toBe('validate');
+      expect(typeof create(Function.prototype).get).toBe('function');
+      expect(typeof create(Function.prototype).reset).toBe('function');
+      expect(create(Function.prototype).get()).toMatchSnapshot();
+    });
+
+    it.each([faker.random.word(), null, undefined, 0, 1, true, false, NaN, ''])(
+      'Throws an error when `tests` callback is not a function',
+      value => {
+        expect(() => create(value)).toThrow(
+          '[Vest]: Suite initialization error. Expected `tests` to be a function.'
+        );
+        expect(() => create('suite_name', value)).toThrow(
+          '[Vest]: Suite initialization error. Expected `tests` to be a function.'
+        );
+      }
+    );
+  });
 
   describe('Return value', () => {
     it('should be a function', () => {

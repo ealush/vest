@@ -2,7 +2,7 @@
 'use strict'
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports = require('./${name}.${format}.production.js')
+  module.exports = require('./${name}.${format}.min.production.js')
 } else {
   module.exports = require('./${name}.${format}.development.js')
 }

@@ -36,12 +36,10 @@ packages/
 │   │   │   └── test/        # Contains the test function and its lifecycle.
 │   │   │   └── suite/       # Contains all the suite modules and methods
 │   │   │       └── create/      # Initializes the suite and creates a context and state.
-│   │   │       └── validate/    # Creates and runs a stateless suite.
 │   │   └── hooks/ # Functions that extend vest's functionality. They all use context.
 │   │   │   └── draft/       # Allows access to the intermediate test result.
 │   │   │   └── exclusive/   # Allows including or excluding fields in runtime.
 │   │   │   └── warn/        # Allows setting warn-only fields.
-│   │   │   └── get/         # Enables out-of-context access to validation results.
 │   │   │   └── group/       # Adds another nesting level within suites.
 │   │   └── lib/  # Shared helper functions.
 │   │   └── testUtils/    # Test helper functions.

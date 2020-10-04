@@ -36,7 +36,12 @@ export default [
   { format: FORMAT_CJS },
 ]
   .reduce(
-    (configs, current) => configs.concat(current, { ...current, dev: true }),
+    (configs, current) =>
+      configs.concat(
+        current,
+        { ...current, dev: true },
+        { ...current, min: true }
+      ),
     []
   )
   .map(buildConfig);
@@ -44,6 +49,7 @@ export default [
 function buildConfig({
   format,
   dev = false,
+  min = false,
   input = 'index.js',
   outputDir = '',
 } = {}) {
@@ -54,6 +60,7 @@ function buildConfig({
         path.join(DIST_PATH, outputDir, PACKAGE_VEST),
         nameByFormat(format),
         dev ? ENV_DEVELOPMENT : ENV_PRODUCTION,
+        min ? 'min' : null,
         'js',
       ]
         .filter(Boolean)
@@ -64,17 +71,17 @@ function buildConfig({
         exports: 'default',
       }),
     },
-    plugins: plugins({ dev, format }),
+    plugins: plugins({ dev, format, min }),
   };
 }
 
-function plugins({ dev, format }) {
+function plugins({ dev, format, min }) {
   const babelEnv = () => {
-    if (FORMAT_ES === format || dev) {
-      return 'es6';
+    if (format === FORMAT_UMD && !dev) {
+      return NAME_ES5;
     }
 
-    return NAME_ES5;
+    return 'es6';
   };
 
   const envName = babelEnv();
@@ -95,7 +102,7 @@ function plugins({ dev, format }) {
     }),
   ];
 
-  if (!dev) {
+  if (min) {
     PLUGINS.push(compiler(), terser());
   }
 

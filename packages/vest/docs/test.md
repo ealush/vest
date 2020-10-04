@@ -63,7 +63,7 @@ An async test is declared by returning a [promise](https://developer.mozilla.org
 test('name', 'I always fail', () => Promise.reject());
 
 // Example using async/await
-test('name', 'Should be unique', async () => {
+test('name', 'Already Taken', async () => {
   return await doesUserExist(user);
 });
 ```

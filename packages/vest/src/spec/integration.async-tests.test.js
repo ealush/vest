@@ -1,4 +1,4 @@
-import runSpec from '../../testUtils/runSpec';
+import vest from '..';
 
 function genValidate({ create, test, enforce, ...vest }) {
   return create('suite_name', () => {
@@ -28,64 +28,62 @@ function genValidate({ create, test, enforce, ...vest }) {
   });
 }
 
-runSpec(vest => {
-  let validate;
-  describe('Stateful behavior', () => {
-    let result, callback_1, callback_2, callback_3, control;
+let validate;
+describe('Stateful behavior', () => {
+  let result, callback_1, callback_2, callback_3, control;
 
-    beforeEach(() => {
-      validate = genValidate(vest);
-    });
+  beforeEach(() => {
+    validate = genValidate(vest);
+  });
 
-    beforeAll(() => {
-      callback_1 = jest.fn();
-      callback_2 = jest.fn();
-      callback_3 = jest.fn();
-      control = jest.fn();
-    });
+  beforeAll(() => {
+    callback_1 = jest.fn();
+    callback_2 = jest.fn();
+    callback_3 = jest.fn();
+    control = jest.fn();
+  });
 
-    test.skipOnWatch(
-      'Should have all fields',
-      () =>
-        new Promise(done => {
-          // ❗️Why is this test async? Because of the `resetState` beforeEach.
-          // We must not clean up before the suite is actually done.
-          result = validate(vest).done(done);
-          expect(result.tests).toHaveProperty('field_1');
-          expect(result.tests).toHaveProperty('field_2');
-          expect(result.tests).toHaveProperty('field_4');
-          expect(result.tests).toHaveProperty('field_5');
-          expect(result.tests).toHaveProperty('field_6');
-          expect(result.tests).toHaveProperty('field_7');
-          expect(result.hasErrors('field_7')).toBe(false);
-          expect(result.tests).toMatchSnapshot();
-        })
-    );
-
-    it('Should invoke done callback specified with sync field immediately, and the others after finishing', () =>
+  test.skipOnWatch(
+    'Should have all fields',
+    () =>
       new Promise(done => {
-        result = validate(vest);
-        result
-          .done('field_1', callback_1)
-          .done('field_6', callback_2)
-          .done(callback_3);
-        expect(callback_1).toHaveBeenCalled();
+        // ❗️Why is this test async? Because of the `resetState` beforeEach.
+        // We must not clean up before the suite is actually done.
+        result = validate(vest).done(done);
+        expect(result.tests).toHaveProperty('field_1');
+        expect(result.tests).toHaveProperty('field_2');
+        expect(result.tests).toHaveProperty('field_4');
+        expect(result.tests).toHaveProperty('field_5');
+        expect(result.tests).toHaveProperty('field_6');
+        expect(result.tests).toHaveProperty('field_7');
+        expect(result.hasErrors('field_7')).toBe(false);
+        expect(result.tests).toMatchSnapshot();
+      })
+  );
+
+  it('Should invoke done callback specified with sync field immediately, and the others after finishing', () =>
+    new Promise(done => {
+      result = validate(vest);
+      result
+        .done('field_1', callback_1)
+        .done('field_6', callback_2)
+        .done(callback_3);
+      expect(callback_1).toHaveBeenCalled();
+      expect(callback_2).not.toHaveBeenCalled();
+      expect(callback_3).not.toHaveBeenCalled();
+
+      setTimeout(() => {
         expect(callback_2).not.toHaveBeenCalled();
         expect(callback_3).not.toHaveBeenCalled();
+        expect(result.hasErrors('field_7')).toBe(true);
+        control();
+      });
 
-        setTimeout(() => {
-          expect(callback_2).not.toHaveBeenCalled();
-          expect(callback_3).not.toHaveBeenCalled();
-          expect(result.hasErrors('field_7')).toBe(true);
-          control();
-        });
-
-        setTimeout(() => {
-          expect(callback_2).toHaveBeenCalled();
-          expect(callback_3).toHaveBeenCalled();
-          expect(control).toHaveBeenCalled();
-          done();
-        }, 250);
-      }));
-  });
+      setTimeout(() => {
+        expect(callback_2).toHaveBeenCalled();
+        expect(callback_3).toHaveBeenCalled();
+        expect(control).toHaveBeenCalled();
+        done();
+      }, 250);
+    }));
 });

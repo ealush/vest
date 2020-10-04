@@ -1,36 +1,34 @@
-import runSpec from '../../testUtils/runSpec';
+import vest from '..';
 
-runSpec(vest => {
-  describe('Stateful behavior', () => {
-    let result;
-    const validate = genValidate(vest);
+describe('Stateful behavior', () => {
+  let result;
+  const validate = genValidate(vest);
 
-    test('Should merge skipped fields with previous values', () => {
-      result = validate({ only: 'field_1' });
-      expect(result.tests.field_1.errorCount).toBe(1);
-      expect(result.errorCount).toBe(1);
-      expect(Object.keys(result.tests)).toHaveLength(1);
-      expect(result.tests).toHaveProperty('field_1');
-      expect(result).toMatchSnapshot();
+  test('Should merge skipped fields with previous values', () => {
+    result = validate({ only: 'field_1' });
+    expect(result.tests.field_1.errorCount).toBe(1);
+    expect(result.errorCount).toBe(1);
+    expect(Object.keys(result.tests)).toHaveLength(1);
+    expect(result.tests).toHaveProperty('field_1');
+    expect(result).toMatchSnapshot();
 
-      result = validate({ only: 'field_5' });
-      expect(result.errorCount).toBe(3);
-      expect(result.tests.field_1.errorCount).toBe(1);
-      expect(result.tests.field_5.errorCount).toBe(2);
-      expect(Object.keys(result.tests)).toHaveLength(2);
-      expect(result.tests).toHaveProperty('field_1');
-      expect(result.tests).toHaveProperty('field_5');
-      expect(result).toMatchSnapshot();
+    result = validate({ only: 'field_5' });
+    expect(result.errorCount).toBe(3);
+    expect(result.tests.field_1.errorCount).toBe(1);
+    expect(result.tests.field_5.errorCount).toBe(2);
+    expect(Object.keys(result.tests)).toHaveLength(2);
+    expect(result.tests).toHaveProperty('field_1');
+    expect(result.tests).toHaveProperty('field_5');
+    expect(result).toMatchSnapshot();
 
-      result = validate();
-      expect(result.errorCount).toBe(4);
-      expect(result.tests.field_1.errorCount).toBe(1);
-      expect(result.tests.field_2.errorCount).toBe(1);
-      expect(result.tests.field_4.warnCount).toBe(1);
-      expect(result.tests.field_5.errorCount).toBe(2);
-      expect(Object.keys(result.tests)).toHaveLength(5);
-      expect(result).toMatchSnapshot();
-    });
+    result = validate();
+    expect(result.errorCount).toBe(4);
+    expect(result.tests.field_1.errorCount).toBe(1);
+    expect(result.tests.field_2.errorCount).toBe(1);
+    expect(result.tests.field_4.warnCount).toBe(1);
+    expect(result.tests.field_5.errorCount).toBe(2);
+    expect(Object.keys(result.tests)).toHaveLength(5);
+    expect(result).toMatchSnapshot();
   });
 });
 

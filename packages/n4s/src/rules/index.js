@@ -5,6 +5,7 @@ import greaterThan from './greaterThan';
 import greaterThanOrEquals from './greaterThanOrEquals';
 import inside from './inside';
 import isArray from './isArray';
+import isBetween from './isBetween'
 import isEmpty from './isEmpty';
 import isEven from './isEven';
 import isNaN from './isNaN';
@@ -33,6 +34,7 @@ const rules = {
   greaterThanOrEquals,
   inside,
   isArray,
+  isBetween,
   isEmpty,
   isEven,
   isNaN,

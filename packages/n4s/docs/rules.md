@@ -39,6 +39,8 @@ Enforce rules are functions that allow you to test your data against different c
 - [isUndefined](#isundefined)
 - [isOdd](#isodd)
 - [isEven](#iseven)
+- [isBetween](#isbetween)
+- [isNotBetween](#isnotbetween)
 
 ## equals
 
@@ -1026,5 +1028,56 @@ enforce(1).isEven();
 enforce('3').isEven();
 enforce('2withNumber').isEven();
 enforce([0]).isEven();
+// throws
+```
+## isBetween
+
+### Description
+
+Checks if a number is in range of two numbers (edges of range included)
+
+### Usage examples:
+
+```js
+enforce(5).isBetween(0, 5)
+enforce(5).isBetween(0, 10)
+enforce(-5).isBetween(-10, -1)
+enforce(-5.5).isBetween(-10, -1)
+enforce(-5.5).isBetween(-10, -1.1)
+enforce(-5.5).isBetween(-9.5, -1.1)
+// passes
+```
+
+```js
+enforce(5).isBetween(0, 2)
+enforce(-5).isBetween(0, 2)
+enforce('some_string').isBetween(0, 2)
+enforce(false).isBetween(0, 2)
+// throws
+```
+## isNotBetween
+
+### Description
+
+Checks if a number **is not** in range of two numbers (edges of range excluded)
+
+### Usage examples:
+
+```js
+enforce(5).isNotBetween(0, 4)
+enforce(5).isNotBetween(0, 10)
+enforce(-5).isNotBetween(-10, -1)
+enforce(-5.5).isNotBetween(-10, -1)
+enforce(-5.5).isNotBetween(-10, -1.1)
+// passes
+```
+
+```js
+enforce(5).isNotBetween(0, 5)
+enforce(5).isNotBetween(0, 10)
+enforce(-5).isNotBetween(-10, -1)
+enforce(-5).isNotBetween(-5, -1)
+enforce('some_string').isNotBetween(0, 2)
+enforce(false).isNotBetween(0, 2)
 // throws
 ```

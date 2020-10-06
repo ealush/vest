@@ -11,15 +11,10 @@ const createCache = (maxSize = 10) => {
    * @param {Function}    cache action function.
    */
   const cache = (deps, cacheAction) => {
-    for (let i = 0; i < cacheStorage.length; i++) {
-      const [cachedDeps, cachedResult] = cacheStorage[i];
+    const cacheHit = cache.get(deps);
 
-      if (
-        cachedDeps.length === deps.length &&
-        deps.every((dep, i) => dep === cachedDeps[i])
-      ) {
-        return cachedResult;
-      }
+    if (cacheHit !== null) {
+      return cacheHit[1];
     }
 
     const result = cacheAction();

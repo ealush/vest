@@ -51,13 +51,11 @@ const runAsyncTest = testObject => {
       testObject.fail();
     });
   };
-  context.run({ currentTest: testObject }, () => {
-    try {
-      asyncTest.then(done, fail);
-    } catch (e) {
-      fail();
-    }
-  });
+  try {
+    asyncTest.then(done, fail);
+  } catch (e) {
+    fail();
+  }
 };
 
 /**

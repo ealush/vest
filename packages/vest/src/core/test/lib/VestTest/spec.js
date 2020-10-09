@@ -30,10 +30,6 @@ describe('VestTest', () => {
   });
 
   describe('testObject.warn', () => {
-    it('Should return current instance', () => {
-      expect(testObject.warn()).toBe(testObject);
-    });
-
     it('Should set `.isWarning` to true', () => {
       expect(testObject.isWarning).toBe(false);
       testObject.warn();

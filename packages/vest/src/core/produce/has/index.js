@@ -1,4 +1,5 @@
 import { SEVERITY_GROUP_WARN } from '../../test/lib/VestTest/constants';
+import useTestObjects from '../../test/useTestObjects';
 
 /**
  * Determines whether a certain test profile has failures.
@@ -27,14 +28,15 @@ export const hasLogic = (testObject, severityKey, fieldName) => {
 };
 
 /**
- * @param {Object} Suite State
  * @param {'warnings'|'errors'} severityKey lookup severity
  * @param {string} [fieldName]
  * @returns {Boolean} whether a suite or field have errors or warnings.
  */
-const has = (state, severityKey, fieldName) =>
-  state.testObjects.some(testObject =>
+const has = (severityKey, fieldName) => {
+  const [testObjects] = useTestObjects();
+  return testObjects.some(testObject =>
     hasLogic(testObject, severityKey, fieldName)
   );
+};
 
 export default has;

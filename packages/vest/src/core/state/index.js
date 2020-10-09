@@ -1,92 +1,114 @@
-import genId from '../../lib/id';
+import context from '../context';
 
-const initialSuiteState = (name, id) => ({
-  doneCallbacks: [],
-  fieldCallbacks: {},
-  groups: {},
-  id,
-  lagging: [],
-  name,
-  pending: [],
-  testObjects: [],
-  tests: {},
-});
+const SYMBOL_ADD_TO_STATE = Symbol();
 
-const createState = name => {
-  const suite = [];
-  const canceled = {};
+export default (function createState() {
+  function registerHandler(initialValue) {
+    let key;
+    function use(patcher) {
+      const { stateRef } = context.use();
 
-  const id = genId();
+      if (typeof patcher === 'function') {
+        update(patcher);
+      }
 
-  const current = () => suite[0];
-  const prev = () => suite[1];
+      function update(patcher) {
+        const { stateRef } = context.use();
+        const currentState = stateRef.current();
+        const prevState = stateRef.prev();
 
-  const registerValidation = () => {
-    let lagging = [];
+        stateRef.set(
+          key,
+          typeof patcher === 'function'
+            ? patcher(currentState?.[key], prevState?.[key])
+            : patcher
+        );
+      }
 
-    const prevState = current();
-
-    lagging = [...prevState.lagging, ...prevState.pending];
-    prevState.pending = null;
-    prevState.lagging = null;
-
-    const next = Object.assign(initialSuiteState(name, id), lagging);
-
-    suite.unshift(next);
-    suite.length = 2;
-  };
-
-  const reset = () => {
-    setCanceled(...(suite.pending ?? []));
-    setCanceled(...(suite.lagging ?? []));
-
-    suite.length = 0;
-    suite.push(initialSuiteState(name, id));
-  };
-
-  const patch = patcher => {
-    const [state, prevState] = suite;
-
-    const nextState = patcher(state, prevState);
-
-    if (nextState === state) {
-      return state;
+      return [stateRef.current()[key], update];
     }
 
-    suite[0] = nextState;
+    use[SYMBOL_ADD_TO_STATE] = function (stateKey, ...args) {
+      const { stateRef } = context.use();
+      key = stateKey;
 
-    return nextState;
-  };
+      if (!Object.prototype.hasOwnProperty.call(stateRef.current(), key)) {
+        stateRef.set(
+          key,
+          typeof initialValue === 'function'
+            ? initialValue(...args)
+            : initialValue
+        );
+      }
+    };
 
-  const getCanceled = () => canceled;
+    return use;
+  }
 
-  const setCanceled = (...testObects) => {
-    if (!testObects || !testObects.length) {
-      return;
+  function createRef(handlers = {}) {
+    const state = [];
+
+    function current() {
+      return state[0];
     }
 
-    testObects.reduce(
-      (canceled, { id }) => Object.assign(canceled, { [id]: true }),
-      canceled
-    );
-  };
+    function prev() {
+      return state[1];
+    }
 
-  const removeCanceled = ({ id }) => {
-    delete canceled[id];
-  };
+    function set(key, value) {
+      state[0] = {
+        ...state[0],
+        [key]: value,
+      };
+    }
 
-  reset();
+    function reset() {
+      state.length = 0;
+
+      unshift();
+    }
+
+    function unshift() {
+      context.run({ stateRef }, () => {
+        state.unshift({});
+        for (const key in handlers) {
+          if (!Object.prototype.hasOwnProperty.call(current(), key)) {
+            if (Array.isArray(handlers[key])) {
+              /*
+                state.createRef({
+                  useSuiteId: [useSuiteId, [id, name]],
+                })
+              */
+              handlers[key][0][SYMBOL_ADD_TO_STATE](key, ...handlers[key][1]);
+            } else {
+              /*
+                state.createRef({
+                  useSuiteId,
+                });
+              */
+              handlers[key][SYMBOL_ADD_TO_STATE](key);
+            }
+          }
+        }
+      });
+    }
+
+    const stateRef = {
+      current,
+      prev,
+      reset,
+      set,
+      unshift,
+    };
+
+    context.run({ stateRef }, reset);
+
+    return stateRef;
+  }
 
   return {
-    current,
-    getCanceled,
-    patch,
-    prev,
-    registerValidation,
-    removeCanceled,
-    reset,
-    setCanceled,
+    registerHandler,
+    createRef,
   };
-};
-
-export default createState;
+})();

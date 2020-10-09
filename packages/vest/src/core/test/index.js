@@ -1,9 +1,11 @@
 import { isExcluded } from '../../hooks/exclusive';
 import createCache from '../../lib/cache';
 import context from '../context';
+import useSuiteId from '../suite/useSuiteId';
 import VestTest from './lib/VestTest';
 import { setPending } from './lib/pending';
 import runAsyncTest from './runAsyncTest';
+import useTestObjects from './useTestObjects';
 
 let cache;
 
@@ -12,11 +14,7 @@ let cache;
  * @param {VestTest} testObject
  */
 const addTestToState = testObject => {
-  const { stateRef } = context.use();
-  stateRef.patch(state => ({
-    ...state,
-    testObjects: state.testObjects.concat(testObject),
-  }));
+  useTestObjects(testObjects => testObjects.concat(testObject));
 };
 
 /**
@@ -80,7 +78,7 @@ const register = testObject => {
  * Changes to this function need to reflect in test.memo as well
  */
 const test = (fieldName, ...args) => {
-  const { length, [length - 2]: statement, [length - 1]: testFn } = args;
+  const [testFn, statement] = args.reverse();
 
   const { groupName } = context.use();
   const testObject = new VestTest({
@@ -106,12 +104,12 @@ const test = (fieldName, ...args) => {
 test.memo = (fieldName, ...args) => {
   cache = cache ?? createCache(100);
 
-  const { stateRef } = context.use();
+  const [suiteId] = useSuiteId();
 
-  const { length: l, [l - 3]: msg, [l - 2]: testFn, [l - 1]: deps } = args;
+  const [deps, testFn, msg] = args.reverse();
 
   // Implicit dependency for more specificity
-  const dependencies = [stateRef.current().id, fieldName].concat(deps);
+  const dependencies = [suiteId.id, fieldName].concat(deps);
 
   const cached = cache.get(dependencies);
 
@@ -120,7 +118,7 @@ test.memo = (fieldName, ...args) => {
     return cache(dependencies, () => test(fieldName, msg, testFn));
   }
 
-  const [, testObject] = cached;
+  const { 1: testObject } = cached;
 
   if (isExcluded(testObject)) {
     return testObject;

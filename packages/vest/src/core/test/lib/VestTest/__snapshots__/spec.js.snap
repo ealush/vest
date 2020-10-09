@@ -15,7 +15,7 @@ exports[`VestTest testObject.warn Should set \`.isWarning\` to true 1`] = `
 VestTest {
   "failed": false,
   "fieldName": "unicycle",
-  "id": "103",
+  "id": "102",
   "isWarning": true,
   "statement": "I am Root.",
   "testFn": [MockFunction],

@@ -152,7 +152,6 @@ Object {
   "enforce": [Function],
   "group": [Function],
   "only": [Function],
-  "runWithContext": [Function],
   "skip": [Function],
   "test": [Function],
   "warn": [Function],

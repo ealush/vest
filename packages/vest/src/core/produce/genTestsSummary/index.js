@@ -1,3 +1,4 @@
+import useSuiteId from '../../suite/useSuiteId';
 import {
   SEVERITY_COUNT_WARN,
   SEVERITY_COUNT_ERROR,
@@ -5,25 +6,26 @@ import {
   SEVERITY_GROUP_ERROR,
   TEST_COUNT,
 } from '../../test/lib/VestTest/constants';
+import useTestObjects from '../../test/useTestObjects';
 
 /**
  *
- * @param {Object} stateKey The container for the test result data
+ * @param {Object} summaryKey The container for the test result data
  * @param {VestTest} testObject
  * @returns {Object} Test result summary
  */
-const genTestObject = (stateKey, testObject) => {
+const genTestObject = (summaryKey, testObject) => {
   const { fieldName, isWarning, failed, statement } = testObject;
 
-  stateKey[fieldName] = stateKey[fieldName] || {
+  summaryKey[fieldName] = summaryKey[fieldName] || {
     [SEVERITY_COUNT_WARN]: 0,
     [SEVERITY_COUNT_ERROR]: 0,
     [TEST_COUNT]: 0,
   };
 
-  const testKey = stateKey[fieldName];
+  const testKey = summaryKey[fieldName];
 
-  stateKey[fieldName][TEST_COUNT]++;
+  summaryKey[fieldName][TEST_COUNT]++;
 
   if (failed) {
     if (isWarning) {
@@ -66,11 +68,17 @@ export const countFailures = state => {
  * Reads the testObjects list and gets full validation result from it.
  * @param {Object} state
  */
-const genTestsSummary = state => {
-  state.tests = {};
-  state.groups = {};
+const genTestsSummary = () => {
+  const [testObjects] = useTestObjects();
+  const [suiteIdState] = useSuiteId();
 
-  state.testObjects.forEach(testObject => {
+  const state = {
+    tests: {},
+    groups: {},
+    name: suiteIdState.name,
+  };
+
+  testObjects.forEach(testObject => {
     const { fieldName, groupName } = testObject;
 
     state.tests[fieldName] = genTestObject(state.tests, testObject);

@@ -1,9 +1,13 @@
+import genId from '../../../lib/id';
 import throwError from '../../../lib/throwError';
-import context from '../../context';
+import { bindContext } from '../../context';
 import produce from '../../produce';
-import createState from '../../state';
+import useTestCallbacks from '../../produce/useTestCallbacks';
+import state from '../../state';
 import mergeExcludedTests from '../../test/lib/mergeExcludedTests';
-
+import usePending from '../../test/lib/pending/usePending';
+import useTestObjects from '../../test/useTestObjects';
+import useSuiteId from '../useSuiteId';
 /**
  * Initializes a validation suite, creates a validation context.
  * @param {String} name     Identifier for validation suite.
@@ -11,7 +15,7 @@ import mergeExcludedTests from '../../test/lib/mergeExcludedTests';
  * @returns {Function} validator function.
  */
 const createSuite = (...args) => {
-  const { length: l, [l - 2]: name, [l - 1]: tests } = args;
+  const [tests, name] = args.reverse();
 
   if (typeof tests !== 'function') {
     throwError(
@@ -19,23 +23,28 @@ const createSuite = (...args) => {
     );
   }
 
-  const stateRef = createState(name);
+  const stateRef = state.createRef({
+    usePending,
+    useSuiteId: [useSuiteId, [genId(), name]],
+    useTestCallbacks,
+    useTestObjects,
+  });
 
   return Object.defineProperties(
-    (...args) => {
-      const output = context.run({ name, stateRef }, () => {
-        stateRef.registerValidation();
-        tests.apply(null, args);
-        mergeExcludedTests();
+    bindContext({ stateRef }, (...args) => {
+      stateRef.unshift();
 
-        return produce(stateRef);
-      });
-      return output;
-    },
+      tests.apply(null, args);
+      mergeExcludedTests();
+
+      return produce();
+    }),
     {
-      get: { value: () => produce(stateRef, { draft: true }) },
+      get: {
+        value: bindContext({ stateRef }, produce, { draft: true }),
+      },
       name: { value: 'validate' },
-      reset: { value: () => stateRef.reset() },
+      reset: { value: stateRef.reset },
     }
   );
 };

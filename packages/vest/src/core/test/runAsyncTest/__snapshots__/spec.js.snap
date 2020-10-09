@@ -2,26 +2,30 @@
 
 exports[`runAsyncTest: passing State updates Initial state matches snapshot (sanity) 1`] = `
 Object {
-  "doneCallbacks": Array [],
-  "fieldCallbacks": Object {
-    "field_1": Array [],
+  "usePending": Object {
+    "lagging": Array [],
+    "pending": Array [
+      VestTest {
+        "asyncTest": Promise {},
+        "failed": false,
+        "fieldName": "field_1",
+        "id": "0",
+        "isWarning": false,
+        "statement": "some statement string",
+        "testFn": [Function],
+      },
+    ],
   },
-  "groups": Object {},
-  "id": "0",
-  "lagging": Array [],
-  "name": "suite",
-  "pending": Array [
-    VestTest {
-      "asyncTest": Promise {},
-      "failed": false,
-      "fieldName": "field_1",
-      "id": "1",
-      "isWarning": false,
-      "statement": "some statement string",
-      "testFn": [Function],
+  "useSuiteId": Object {
+    "id": 1000,
+    "name": "suite_name",
+  },
+  "useTestCallbacks": Object {
+    "doneCallbacks": Array [],
+    "fieldCallbacks": Object {
+      "field_1": Array [],
     },
-  ],
-  "testObjects": Array [],
-  "tests": Object {},
+  },
+  "useTestObjects": Array [],
 }
 `;

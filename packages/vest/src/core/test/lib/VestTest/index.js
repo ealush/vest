@@ -31,20 +31,20 @@ VestTest.prototype.valueOf = function () {
 
 /**
  * Sets a test to failed.
- * @returns {VestTest} Current instance.
  */
 VestTest.prototype.fail = function () {
   this.failed = true;
-  return this;
 };
 
 /**
  * Sets a current test's `isWarning` to true.
- * @returns {VestTest} Current instance.
  */
 VestTest.prototype.warn = function () {
   this.isWarning = true;
-  return this;
+};
+
+VestTest.prototype.cancel = function () {
+  this.canceled = true;
 };
 
 export default VestTest;

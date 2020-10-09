@@ -1,8 +1,10 @@
 import _ from 'lodash';
-import context from '../../context';
-import createState from '../../state';
+import runCreateRef from '../../../../testUtils/runCreateRef';
+import context, { bindContext } from '../../context';
+import useTestCallbacks from '../../produce/useTestCallbacks';
 import VestTest from '../lib/VestTest';
 import { setPending } from '../lib/pending';
+import usePending from '../lib/pending/usePending';
 import runAsyncTest from '.';
 
 const STATEMENT = 'some statement string';
@@ -11,6 +13,8 @@ const CASE_PASSING = 'passing';
 const CASE_FAILING = 'failing';
 
 let stateRef;
+
+it.ctx = (str, cb) => it(str, () => context.run({ stateRef }, cb));
 
 describe.each([CASE_PASSING /*, CASE_FAILING*/])(
   'runAsyncTest: %s',
@@ -28,14 +32,18 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
     beforeEach(() => {
       fieldName = 'field_1';
 
-      stateRef = createState('suite');
-      stateRef.patch(state => ({
-        ...state,
-        fieldCallbacks: {
-          ...state.fieldCallbacks,
-          [fieldName]: state.fieldCallbacks[fieldName] || [],
-        },
-      }));
+      stateRef = runCreateRef();
+      context.run({ stateRef }, () => {
+        const [, setTestCallbacks] = useTestCallbacks();
+        setTestCallbacks(state => {
+          state.fieldCallbacks = {
+            ...state.fieldCallbacks,
+            [fieldName]: state.fieldCallbacks[fieldName] || [],
+          };
+
+          return state;
+        });
+      });
       testObject = new VestTest({
         fieldName,
         statement: STATEMENT,
@@ -43,12 +51,15 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
       });
       testObject.asyncTest =
         testCase === CASE_PASSING ? Promise.resolve() : Promise.reject();
-      context.run({ stateRef }, () => setPending(testObject));
+      context.run({ stateRef }, () => {
+        setPending(testObject);
+      });
     });
 
     describe('State updates', () => {
-      test('Initial state matches snapshot (sanity)', () => {
-        expect(stateRef.current().pending).toContain(testObject);
+      it.ctx('Initial state matches snapshot (sanity)', () => {
+        const [pendingState] = usePending();
+        expect(pendingState.pending).toContain(testObject);
         expect(stateRef.current()).toMatchSnapshot();
         runRunAsyncTest(testObject);
       });
@@ -56,56 +67,35 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
       it('Should remove test from pending array', () =>
         new Promise(done => {
           runRunAsyncTest(testObject);
-          setTimeout(() => {
-            expect(stateRef.current().pending).not.toContain(testObject);
-            done();
-          });
+          setTimeout(
+            bindContext({ stateRef }, () => {
+              const [pendingState] = usePending();
+              expect(pendingState.pending).not.toContain(testObject);
+              done();
+            })
+          );
         }));
 
       describe('When test is canceled', () => {
-        let currentState;
         beforeEach(() => {
-          stateRef.setCanceled(testObject);
-
-          currentState = _.cloneDeep(stateRef.current());
+          testObject.cancel();
         });
 
-        it('Should remove test from pending array', () => {
-          expect(stateRef.current().pending).toEqual(
+        it.ctx('Should remove test from pending array', () => {
+          const [pendingState] = usePending();
+          expect(pendingState.pending).toEqual(
             expect.arrayContaining([testObject])
           );
           runRunAsyncTest(testObject);
           return new Promise(done => {
             setTimeout(() => {
-              expect(stateRef.current().pending).toEqual(
+              expect(pendingState).toEqual(
                 expect.not.arrayContaining([testObject])
               );
               done();
             });
           });
         });
-
-        it('Should remove test from canceled state', () => {
-          expect(stateRef.getCanceled()).toHaveProperty(testObject.id);
-          runRunAsyncTest(testObject);
-          return new Promise(done => {
-            setTimeout(() => {
-              expect(stateRef.getCanceled()).not.toHaveProperty(testObject.id);
-              done();
-            });
-          });
-        });
-
-        it('Should keep rest of the state unchanged', () =>
-          new Promise(done => {
-            runRunAsyncTest(testObject);
-            setTimeout(() => {
-              expect(_.omit(stateRef.current(), 'pending')).toEqual(
-                _.omit(currentState, 'pending')
-              );
-              done();
-            });
-          }));
       });
     });
 
@@ -115,17 +105,21 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
         fieldCallback_1 = jest.fn();
         fieldCallback_2 = jest.fn();
         doneCallback = jest.fn();
-        stateRef.patch(state => ({
-          ...state,
-          fieldCallbacks: {
-            ...state.fieldCallbacks,
-            [fieldName]: (state.fieldCallbacks[fieldName] || []).concat(
-              fieldCallback_1,
-              fieldCallback_2
-            ),
-          },
-          doneCallbacks: state.doneCallbacks.concat(doneCallback),
-        }));
+
+        context.run({ stateRef }, () => {
+          const [, setTestCallbacks] = useTestCallbacks();
+
+          setTestCallbacks(state => ({
+            fieldCallbacks: {
+              ...state.fieldCallbacks,
+              [fieldName]: (state.fieldCallbacks[fieldName] || []).concat(
+                fieldCallback_1,
+                fieldCallback_2
+              ),
+            },
+            doneCallbacks: state.doneCallbacks.concat(doneCallback),
+          }));
+        });
       });
       describe('When no remaining tests', () => {
         it('Should run all callbacks', () =>
@@ -173,7 +167,7 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
 
       describe('When test is canceled', () => {
         beforeEach(() => {
-          stateRef.setCanceled(testObject);
+          testObject.cancel();
         });
 
         it('Should return without running any callback', () =>

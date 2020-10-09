@@ -1,19 +1,5 @@
 import { throwError } from '../../../../n4s/src/lib';
-import context from '../../core/context';
-import { isGroupExcluded } from '../exclusive';
-
-/**
- * Registers a group in state.
- * @param {string} groupName
- */
-const registerGroup = groupName => {
-  const { stateRef } = context.use();
-  stateRef.patch(state => {
-    const nextState = { ...state };
-    nextState.groups[groupName] = state.groups[groupName] || {};
-    return nextState;
-  });
-};
+import { bindContext } from '../../core/context';
 
 /**
  * Runs a group callback.
@@ -33,19 +19,8 @@ const group = (groupName, tests) => {
     );
   }
 
-  const { stateRef } = context.use();
-  const state = stateRef.current();
-
-  if (!isGroupExcluded(state, groupName)) {
-    registerGroup(groupName);
-  }
-
-  context.run(
-    {
-      groupName,
-    },
-    () => tests()
-  );
+  // Running with the context applied
+  bindContext({ groupName }, tests)();
 };
 
 export default group;

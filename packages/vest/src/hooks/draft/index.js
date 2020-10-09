@@ -14,7 +14,7 @@ const draft = () => {
     return;
   }
 
-  return produce(stateRef, { draft: true });
+  return produce({ draft: true });
 };
 
 export default draft;

@@ -4,7 +4,7 @@ import {
   EXCLUSION_ITEM_TYPE_GROUPS,
 } from '../../hooks/exclusive/constants';
 
-export default createContext((ctxRef, parentContext) =>
+const context = createContext((ctxRef, parentContext) =>
   parentContext
     ? null
     : Object.assign({}, ctxRef, {
@@ -14,3 +14,11 @@ export default createContext((ctxRef, parentContext) =>
         },
       })
 );
+
+export function bindContext(ctxRef, fn, ...args) {
+  return function (...runTimeArgs) {
+    return context.run(ctxRef, () => fn(...args, ...runTimeArgs));
+  };
+}
+
+export default context;

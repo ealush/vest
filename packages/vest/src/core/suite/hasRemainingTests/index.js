@@ -1,11 +1,13 @@
+import usePending from '../../test/lib/pending/usePending';
+
 /**
  * Checks if a given tests, or the suite as a whole still have remaining tests.
- * @param {Object} state
  * @param {string} [fieldName]
  * @returns {Boolean}
  */
-const hasRemainingTests = (state, fieldName) => {
-  const allIncomplete = [...state.pending, ...state.lagging];
+const hasRemainingTests = fieldName => {
+  const [{ pending, lagging }] = usePending();
+  const allIncomplete = [...pending, ...lagging];
   if (!allIncomplete.length) {
     return false;
   }

@@ -1,10 +1,10 @@
 import path from 'path';
 import compiler from '@ampproject/rollup-plugin-closure-compiler';
+import babel from '@rollup/plugin-babel';
+import commonjs from '@rollup/plugin-commonjs';
+import resolve from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
 import phrase from 'paraphrase/dollar';
-import babel from 'rollup-plugin-babel';
-import commonjs from 'rollup-plugin-commonjs';
-import resolve from 'rollup-plugin-node-resolve';
-import replace from 'rollup-plugin-replace';
 import { terser } from 'rollup-plugin-terser';
 
 const fs = require('fs-extra');
@@ -24,7 +24,7 @@ const FORMAT_UMD = 'umd';
 const FORMAT_ES = 'es';
 const FORMAT_CJS = 'cjs';
 const DIR_ESM = 'esm';
-
+const SRC_PATH = path.join(PACKAGE_PATH, 'src');
 const DIST_PATH = path.join(PACKAGE_PATH, DIR_NAME_DIST);
 
 addEsmDir();
@@ -54,7 +54,7 @@ function buildConfig({
   outputDir = '',
 } = {}) {
   return {
-    input: path.join(PACKAGE_PATH, 'src', input),
+    input: path.join(SRC_PATH, input),
     output: {
       file: [
         path.join(DIST_PATH, outputDir, PACKAGE_VEST),
@@ -93,6 +93,7 @@ function plugins({ dev, format, min }) {
     }),
     babel({
       configFile: BABEL_CONFIG_PATH,
+      babelHelpers: 'bundled',
       envName,
     }),
     replace({

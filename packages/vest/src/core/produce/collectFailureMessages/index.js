@@ -1,15 +1,16 @@
 import { SEVERITY_GROUP_WARN } from '../../test/lib/VestTest/constants';
+import useTestObjects from '../../test/useTestObjects';
 
 /**
- * @param {Object} State            State Object reference
  * @param {'warn'|'error'} severity   Filter by severity.
  * @param {Object} options
  * @param {String} [options.group]      Group name for error lookup.
  * @param {String} [options.fieldName]  Field name for error lookup.
  * @returns all messages for given criteria.
  */
-const collectFailureMessages = (state, severity, { group, fieldName } = {}) =>
-  state.testObjects.reduce((collector, testObject) => {
+const collectFailureMessages = (severity, { group, fieldName } = {}) => {
+  const [testObjects] = useTestObjects();
+  return testObjects.reduce((collector, testObject) => {
     if (group && testObject.groupName !== group) {
       return collector;
     }
@@ -35,5 +36,6 @@ const collectFailureMessages = (state, severity, { group, fieldName } = {}) =>
 
     return collector;
   }, {});
+};
 
 export default collectFailureMessages;

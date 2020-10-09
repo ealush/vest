@@ -1,8 +1,8 @@
 import path from 'path';
 import compiler from '@ampproject/rollup-plugin-closure-compiler';
-import babel from 'rollup-plugin-babel';
-import resolve from 'rollup-plugin-node-resolve';
-import replace from 'rollup-plugin-replace';
+import babel from '@rollup/plugin-babel';
+import resolve from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
 import { terser } from 'rollup-plugin-terser';
 
 const { BABEL_CONFIG_PATH } = require('..');
@@ -24,6 +24,7 @@ const pluginList = ({ libraryName } = {}) => [
   babel({
     configFile: BABEL_CONFIG_PATH,
     envName: 'production',
+    babelHelpers: 'bundled',
   }),
   compiler(),
   terser(),

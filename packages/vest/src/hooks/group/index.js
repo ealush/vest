@@ -1,5 +1,5 @@
 import { throwError } from '../../../../n4s/src/lib';
-import { bindContext } from '../../core/context';
+import context from '../../core/context';
 
 /**
  * Runs a group callback.
@@ -20,7 +20,7 @@ const group = (groupName, tests) => {
   }
 
   // Running with the context applied
-  bindContext({ groupName }, tests)();
+  context.bind({ groupName }, tests)();
 };
 
 export default group;

@@ -3,7 +3,7 @@ import vest from '../..';
 import collector from '../../../../../shared/testUtils/collector';
 import testDummy from '../../../testUtils/testDummy';
 import group from '../../hooks/group';
-import context, { bindContext } from '../context';
+import context from '../context';
 import hasRemainingTests from '../suite/hasRemainingTests';
 import {
   SEVERITY_COUNT_ERROR,
@@ -73,7 +73,7 @@ describe('module: produce', () => {
   beforeEach(() => {
     collect = collector();
     runCreateSuite('suite_name');
-    runProduce = bindContext({ stateRef }, produce);
+    runProduce = context.bind({ stateRef }, produce);
     context.run({ stateRef }, () => {
       const [testObjectsState] = useTestObjects();
       testKeys = [

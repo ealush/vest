@@ -1,5 +1,5 @@
 import createCache from '../../lib/cache';
-import context, { bindContext } from '../context';
+import context from '../context';
 import hasRemainingTests from '../suite/hasRemainingTests';
 import {
   SEVERITY_GROUP_ERROR,
@@ -34,7 +34,7 @@ const done = (...args) => {
     return output;
   }
 
-  const cb = bindContext({ stateRef }, () =>
+  const cb = context.bind({ stateRef }, () =>
     callback(produce({ draft: true }))
   );
 
@@ -73,32 +73,32 @@ const produce = ({ draft } = {}) => {
   const [testObjects] = useTestObjects();
   return cache(
     [testObjects, draft],
-    bindContext({ stateRef }, () =>
+    context.bind({ stateRef }, () =>
       Object.defineProperties(
         countFailures(genTestsSummary()),
         [
-          ['hasErrors', bindContext({ stateRef }, has, SEVERITY_GROUP_ERROR)],
-          ['hasWarnings', bindContext({ stateRef }, has, SEVERITY_GROUP_WARN)],
-          ['getErrors', bindContext({ stateRef }, get, SEVERITY_GROUP_ERROR)],
-          ['getWarnings', bindContext({ stateRef }, get, SEVERITY_GROUP_WARN)],
+          ['hasErrors', context.bind({ stateRef }, has, SEVERITY_GROUP_ERROR)],
+          ['hasWarnings', context.bind({ stateRef }, has, SEVERITY_GROUP_WARN)],
+          ['getErrors', context.bind({ stateRef }, get, SEVERITY_GROUP_ERROR)],
+          ['getWarnings', context.bind({ stateRef }, get, SEVERITY_GROUP_WARN)],
           [
             'hasErrorsByGroup',
-            bindContext({ stateRef }, hasByGroup, SEVERITY_GROUP_ERROR),
+            context.bind({ stateRef }, hasByGroup, SEVERITY_GROUP_ERROR),
           ],
           [
             'hasWarningsByGroup',
-            bindContext({ stateRef }, hasByGroup, SEVERITY_GROUP_WARN),
+            context.bind({ stateRef }, hasByGroup, SEVERITY_GROUP_WARN),
           ],
           [
             'getErrorsByGroup',
-            bindContext({ stateRef }, getByGroup, SEVERITY_GROUP_ERROR),
+            context.bind({ stateRef }, getByGroup, SEVERITY_GROUP_ERROR),
           ],
           [
             'getWarningsByGroup',
-            bindContext({ stateRef }, getByGroup, SEVERITY_GROUP_WARN),
+            context.bind({ stateRef }, getByGroup, SEVERITY_GROUP_WARN),
           ],
         ]
-          .concat(draft ? [] : [['done', bindContext({ stateRef }, done)]])
+          .concat(draft ? [] : [['done', context.bind({ stateRef }, done)]])
           .reduce((properties, [name, value]) => {
             properties[name] = {
               configurable: true,

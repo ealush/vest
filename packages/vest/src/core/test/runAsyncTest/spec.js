@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import runCreateRef from '../../../../testUtils/runCreateRef';
-import context, { bindContext } from '../../context';
+import context from '../../context';
 import useTestCallbacks from '../../produce/useTestCallbacks';
 import VestTest from '../lib/VestTest';
 import { setPending } from '../lib/pending';
@@ -68,7 +68,7 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
         new Promise(done => {
           runRunAsyncTest(testObject);
           setTimeout(
-            bindContext({ stateRef }, () => {
+            context.bind({ stateRef }, () => {
               const [pendingState] = usePending();
               expect(pendingState.pending).not.toContain(testObject);
               done();

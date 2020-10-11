@@ -1,6 +1,6 @@
 import genId from '../../../lib/id';
 import throwError from '../../../lib/throwError';
-import { bindContext } from '../../context';
+import context from '../../context';
 import produce from '../../produce';
 import useTestCallbacks from '../../produce/useTestCallbacks';
 import state from '../../state';
@@ -31,7 +31,7 @@ const createSuite = (...args) => {
   });
 
   return Object.defineProperties(
-    bindContext({ stateRef }, (...args) => {
+    context.bind({ stateRef }, (...args) => {
       stateRef.unshift();
 
       tests.apply(null, args);
@@ -41,7 +41,7 @@ const createSuite = (...args) => {
     }),
     {
       get: {
-        value: bindContext({ stateRef }, produce, { draft: true }),
+        value: context.bind({ stateRef }, produce, { draft: true }),
       },
       name: { value: 'validate' },
       reset: { value: stateRef.reset },

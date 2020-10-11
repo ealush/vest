@@ -15,10 +15,4 @@ const context = createContext((ctxRef, parentContext) =>
       })
 );
 
-export function bindContext(ctxRef, fn, ...args) {
-  return function (...runTimeArgs) {
-    return context.run(ctxRef, () => fn(...args, ...runTimeArgs));
-  };
-}
-
 export default context;

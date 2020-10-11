@@ -1,4 +1,4 @@
-import context, { bindContext } from '../../context';
+import context from '../../context';
 import useTestCallbacks from '../../produce/useTestCallbacks';
 import hasRemainingTests from '../../suite/hasRemainingTests';
 import { removePending } from '../lib/pending';
@@ -11,7 +11,7 @@ import useTestObjects from '../useTestObjects';
 const runAsyncTest = testObject => {
   const { asyncTest, statement } = testObject;
   const { stateRef } = context.use();
-  const done = bindContext({ stateRef }, () => {
+  const done = context.bind({ stateRef }, () => {
     removePending(testObject);
 
     // This is for cases in which the suite state was already reset
@@ -22,7 +22,7 @@ const runAsyncTest = testObject => {
     // Perform required done callback calls and cleanups after the test is finished
     runDoneCallbacks(testObject.fieldName);
   });
-  const fail = bindContext({ stateRef }, rejectionMessage => {
+  const fail = context.bind({ stateRef }, rejectionMessage => {
     testObject.statement =
       typeof rejectionMessage === 'string' ? rejectionMessage : statement;
     testObject.fail();

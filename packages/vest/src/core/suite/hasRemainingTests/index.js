@@ -7,7 +7,7 @@ import usePending from '../../test/lib/pending/usePending';
  */
 const hasRemainingTests = fieldName => {
   const [{ pending, lagging }] = usePending();
-  const allIncomplete = [...pending, ...lagging];
+  const allIncomplete = pending.concat(lagging);
   if (!allIncomplete.length) {
     return false;
   }

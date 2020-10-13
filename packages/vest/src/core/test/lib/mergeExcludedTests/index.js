@@ -4,9 +4,9 @@ import useTestObjects from '../../useTestObjects';
 /**
  * Merges excluded tests with their prevState values.
  */
-const mergeExcludedTests = () => {
-  useTestObjects((state, prevState) => {
-    if (!prevState) {
+const mergeExcludedTests = prevState => {
+  useTestObjects(state => {
+    if (!Array.isArray(prevState) || !prevState.length) {
       return state;
     }
 

@@ -17,7 +17,7 @@ module.exports = {
   globals: {
     VEST_VERSION: true,
     LIBRARY_NAME: true,
-    ENV_DEVELOPMENT : true
+    ENV_DEVELOPMENT: true,
   },
   ignorePatterns: ['playground'],
   parser: 'babel-eslint',
@@ -34,7 +34,6 @@ module.exports = {
   plugins: ['jest', 'spellcheck'],
 
   rules: {
-    'arrow-body-style': [2, 'as-needed'],
     'import/newline-after-import': 2,
     'import/no-self-import': 2,
     'import/no-useless-path-segments': 2,

@@ -49,10 +49,9 @@ const done = (...args) => {
 
   useTestCallbacks(current => {
     if (fieldName) {
-      current.fieldCallbacks[fieldName] = [].concat(
-        ...(current.fieldCallbacks[fieldName] || []),
-        cb
-      );
+      current.fieldCallbacks[fieldName] = (
+        current.fieldCallbacks[fieldName] || []
+      ).concat(cb);
     } else {
       current.doneCallbacks.push(cb);
     }

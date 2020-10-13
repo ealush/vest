@@ -19,15 +19,11 @@ describe('state', () => {
     it('Should initialize state with provided keys', () => {
       expect(stateRef.current()).toEqual(initialState);
     });
-
-    it('Shoult initialize without a previous state', () => {
-      expect(stateRef.prev()).toBeUndefined();
-    });
   });
 
   describe('State reset', () => {
     it.ctx('Should return state to its initial value', () => {
-      stateRef.unshift();
+      stateRef.reset();
 
       useExampleState(() => 'example_2');
 
@@ -35,34 +31,8 @@ describe('state', () => {
         ...initialState,
         exampleState: 'example_2',
       });
-      expect(stateRef.prev()).toEqual(initialState);
 
       stateRef.reset();
-      expect(stateRef.current()).toEqual(initialState);
-      expect(stateRef.prev()).toBeUndefined();
-    });
-  });
-
-  describe('unshift', () => {
-    it.ctx('Should move current state to `prev`', () => {
-      useExampleState(() => ({ example: true }));
-      const current = stateRef.current();
-
-      stateRef.unshift();
-
-      expect(stateRef.prev()).toBe(current);
-      expect(stateRef.prev()).toEqual({
-        ...initialState,
-        exampleState: { example: true },
-      });
-    });
-
-    it.ctx('Should set `current` to initial value', () => {
-      useExampleState(() => ({ example: true }));
-      const current = stateRef.current();
-
-      stateRef.unshift();
-      expect(stateRef.current()).not.toBe(current);
       expect(stateRef.current()).toEqual(initialState);
     });
   });

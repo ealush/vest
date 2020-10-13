@@ -31,11 +31,12 @@ const createSuite = (...args) => {
   });
 
   return Object.defineProperties(
-    context.bind({ stateRef }, (...args) => {
-      stateRef.unshift();
+    context.bind({ stateRef }, function () {
+      const [previousTestObjects = []] = useTestObjects();
+      stateRef.reset();
 
-      tests.apply(null, args);
-      mergeExcludedTests();
+      tests.apply(null, arguments);
+      mergeExcludedTests(previousTestObjects);
 
       return produce();
     }),

@@ -19,7 +19,7 @@ const createCache = (maxSize = 10) => {
 
     const result = cacheAction();
 
-    cacheStorage.unshift([[...deps], result]);
+    cacheStorage.unshift([deps.concat(), result]);
 
     if (cacheStorage.length > maxSize) {
       cacheStorage.length = maxSize;

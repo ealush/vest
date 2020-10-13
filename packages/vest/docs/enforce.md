@@ -1119,7 +1119,7 @@ enforce('10').isNegative(); //false
 
 Determine where number is positive
 
-+### Usage examples:
+### Usage examples:
 
 ```js
 enforce(10).isPositive(); //true

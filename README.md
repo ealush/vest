@@ -18,6 +18,7 @@
     - [Example 2 (Async)](https://codesandbox.io/s/youthful-williamson-loijb?file=/src/validate.js)
     - [Example 3](https://stackblitz.com/edit/vest-react-support-example?file=validation.js)
     - [Example 4](https://stackblitz.com/edit/vest-react-registration?file=validate.js)
+    - [Example 5 (Password validator)](https://codesandbox.io/s/password-validator-example-6puvy?file=/src/validate.js)
   - [VueJS Example](https://codesandbox.io/s/vest-vue-example-1j6r8?file=/src/validations.js)
 
 ## Tutorials

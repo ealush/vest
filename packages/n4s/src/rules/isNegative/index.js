@@ -1,6 +1,6 @@
 import isNumeric from '../isNumeric';
 
-function isNegative(value, arg1) {
+function isNegative(value) {
   if (isNumeric(value)) {
     return Number(value) < 0;
   }

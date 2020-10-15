@@ -1,4 +1,4 @@
-import usePending from '../../test/lib/pending/usePending';
+import usePending from '../../state/usePending';
 
 /**
  * Checks if a given tests, or the suite as a whole still have remaining tests.

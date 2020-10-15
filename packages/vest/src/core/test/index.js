@@ -1,11 +1,11 @@
 import { isExcluded } from '../../hooks/exclusive';
 import createCache from '../../lib/cache';
 import context from '../context';
-import useSuiteId from '../suite/useSuiteId';
+import useTestObjects from '../state/useTestObjects';
+import useSuiteId from '../state/useSuiteId';
 import VestTest from './lib/VestTest';
 import { setPending } from './lib/pending';
 import runAsyncTest from './runAsyncTest';
-import useTestObjects from './useTestObjects';
 
 let cache;
 

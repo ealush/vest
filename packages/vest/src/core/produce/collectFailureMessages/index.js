@@ -1,5 +1,5 @@
+import useTestObjects from '../../state/useTestObjects';
 import { SEVERITY_GROUP_WARN } from '../../test/lib/VestTest/constants';
-import useTestObjects from '../../test/useTestObjects';
 
 /**
  * @param {'warn'|'error'} severity   Filter by severity.

@@ -1,4 +1,5 @@
-import useSuiteId from '../../suite/useSuiteId';
+import useTestObjects from '../../state/useTestObjects';
+import useSuiteId from '../../state/useSuiteId';
 import {
   SEVERITY_COUNT_WARN,
   SEVERITY_COUNT_ERROR,
@@ -6,7 +7,6 @@ import {
   SEVERITY_GROUP_ERROR,
   TEST_COUNT,
 } from '../../test/lib/VestTest/constants';
-import useTestObjects from '../../test/useTestObjects';
 
 /**
  *

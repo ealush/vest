@@ -1,3 +1,3 @@
-import state from '../../state';
+import state from '..';
 
 export default state.registerHandler(() => []);

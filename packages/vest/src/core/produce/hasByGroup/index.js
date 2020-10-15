@@ -1,4 +1,4 @@
-import useTestObjects from '../../test/useTestObjects';
+import useTestObjects from '../../state/useTestObjects';
 import { hasLogic } from '../has';
 
 /**

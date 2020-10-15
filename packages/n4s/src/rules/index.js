@@ -9,6 +9,7 @@ import isBetween from './isBetween';
 import isEmpty from './isEmpty';
 import isEven from './isEven';
 import isNaN from './isNaN';
+import isNegative from './isNegative';
 import isNull from './isNull';
 import isNumber from './isNumber';
 import isNumeric from './isNumeric';
@@ -26,7 +27,6 @@ import numberEquals from './numberEquals';
 import shorterThan from './shorterThan';
 import shorterThanOrEquals from './shorterThanOrEquals';
 import startsWith from './startsWith';
-import isNegative from './isNegative';
 
 const rules = {
   endsWith,
@@ -39,6 +39,7 @@ const rules = {
   isEmpty,
   isEven,
   isNaN,
+  isNegative,
   isNull,
   isNumber,
   isNumeric,
@@ -56,7 +57,6 @@ const rules = {
   shorterThan,
   shorterThanOrEquals,
   startsWith,
-  isNegative,
 };
 
 export default extendRules(rules);

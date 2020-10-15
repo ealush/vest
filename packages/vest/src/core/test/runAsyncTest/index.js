@@ -1,8 +1,8 @@
 import context from '../../context';
-import useTestCallbacks from '../../produce/useTestCallbacks';
+import useTestCallbacks from '../../state/useTestCallbacks';
+import useTestObjects from '../../state/useTestObjects';
 import hasRemainingTests from '../../suite/hasRemainingTests';
 import { removePending } from '../lib/pending';
-import useTestObjects from '../useTestObjects';
 
 /**
  * Runs async test.

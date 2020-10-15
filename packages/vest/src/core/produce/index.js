@@ -1,17 +1,17 @@
 import createCache from '../../lib/cache';
 import context from '../context';
+import useTestCallbacks from '../state/useTestCallbacks';
+import useTestObjects from '../state/useTestObjects';
 import hasRemainingTests from '../suite/hasRemainingTests';
 import {
   SEVERITY_GROUP_ERROR,
   SEVERITY_GROUP_WARN,
 } from '../test/lib/VestTest/constants';
-import useTestObjects from '../test/useTestObjects';
 import genTestsSummary, { countFailures } from './genTestsSummary';
 import get from './get';
 import getByGroup from './getByGroup';
 import has from './has';
 import hasByGroup from './hasByGroup';
-import useTestCallbacks from './useTestCallbacks';
 
 const cache = createCache(20);
 

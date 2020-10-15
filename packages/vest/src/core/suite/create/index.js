@@ -2,12 +2,12 @@ import genId from '../../../lib/id';
 import throwError from '../../../lib/throwError';
 import context from '../../context';
 import produce from '../../produce';
-import useTestCallbacks from '../../produce/useTestCallbacks';
 import state from '../../state';
+import usePending from '../../state/usePending';
+import useSuiteId from '../../state/useSuiteId';
+import useTestCallbacks from '../../state/useTestCallbacks';
+import useTestObjects from '../../state/useTestObjects';
 import mergeExcludedTests from '../../test/lib/mergeExcludedTests';
-import usePending from '../../test/lib/pending/usePending';
-import useTestObjects from '../../test/useTestObjects';
-import useSuiteId from '../useSuiteId';
 /**
  * Initializes a validation suite, creates a validation context.
  * @param {String} name     Identifier for validation suite.

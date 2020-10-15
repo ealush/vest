@@ -1,5 +1,5 @@
 import removeElementFromArray from '../../../../lib/removeElementFromArray';
-import usePending from './usePending';
+import usePending from '../../../state/usePending';
 
 /**
  * Sets a test as pending in the state.

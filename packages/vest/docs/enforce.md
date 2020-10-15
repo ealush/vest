@@ -68,6 +68,8 @@ Enforce rules are functions that allow you to test your data against different c
 - [doesNotEndWith](#doesnotendwith)
 - [startsWith](#startsWith)
 - [doesNotStartWith](#doesnotstartwith)
+- [isNegative](#isnegative)
+- [isPositive](#ispositive)
 
 ### equals
 
@@ -1093,6 +1095,38 @@ enforce.extend({
 });
 
 enforce(user.email).isValidEmail();
+```
+
+## isNegative
+
+### Description
+
+Determine where number is negative
+
+### Usage examples:
+
+```js
+enforce(-10).isNegative(); //true
+enforce(-10.12).isNegative(); //true
+enforce('-10.12').isNegative(); //true
+enforce(10).isNegative(); //false
+enforce('10').isNegative(); //false
+```
+
+## isPositive
+
+### Description
+
+Determine where number is positive
+
+### Usage examples:
+
+```js
+enforce(10).isPositive(); //true
+enforce(10.12).isPositive(); //true
+enforce('10.12').isPositive(); //true
+enforce(-10).isPositive(); //false
+enforce('-10.12').isPositive(); //false
 ```
 
 ## Custom rules return value

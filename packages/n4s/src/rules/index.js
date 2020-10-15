@@ -5,10 +5,11 @@ import greaterThan from './greaterThan';
 import greaterThanOrEquals from './greaterThanOrEquals';
 import inside from './inside';
 import isArray from './isArray';
-import isBetween from './isBetween'
+import isBetween from './isBetween';
 import isEmpty from './isEmpty';
 import isEven from './isEven';
 import isNaN from './isNaN';
+import isNegative from './isNegative';
 import isNull from './isNull';
 import isNumber from './isNumber';
 import isNumeric from './isNumeric';
@@ -38,6 +39,7 @@ const rules = {
   isEmpty,
   isEven,
   isNaN,
+  isNegative,
   isNull,
   isNumber,
   isNumeric,
@@ -54,7 +56,7 @@ const rules = {
   numberEquals,
   shorterThan,
   shorterThanOrEquals,
-  startsWith
+  startsWith,
 };
 
 export default extendRules(rules);

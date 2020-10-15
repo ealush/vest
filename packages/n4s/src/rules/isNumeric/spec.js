@@ -1,4 +1,4 @@
-import isNumeric from '.';
+import { isNumeric } from '.';
 
 const NUMERICS = ['-10', '0', 0xff, '0xFF', '8e5', '3.1415', +10, '0144'];
 
@@ -21,9 +21,5 @@ describe('Tests isNumeric rule', () => {
 
   it('Should return false for non numeric values', () => {
     NON_NUMERICS.forEach(value => expect(isNumeric(value)).toBe(false));
-  });
-
-  it('Should expose negativeForm property', () => {
-    expect(isNumeric.negativeForm).toBe('isNotNumeric');
   });
 });

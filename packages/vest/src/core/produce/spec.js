@@ -4,14 +4,14 @@ import collector from '../../../../../shared/testUtils/collector';
 import testDummy from '../../../testUtils/testDummy';
 import group from '../../hooks/group';
 import context from '../context';
+import useTestCallbacks from '../state/useTestCallbacks';
+import useTestObjects from '../state/useTestObjects';
 import hasRemainingTests from '../suite/hasRemainingTests';
 import {
   SEVERITY_COUNT_ERROR,
   SEVERITY_COUNT_WARN,
 } from '../test/lib/VestTest/constants';
 import { setPending } from '../test/lib/pending';
-import useTestObjects from '../test/useTestObjects';
-import useTestCallbacks from './useTestCallbacks';
 import produce from '.';
 
 const DRAFT_EXCLUDED_METHODS = ['done'];

@@ -1,5 +1,5 @@
 import { random } from 'faker';
-import numberEquals from '.';
+import { numberEquals } from '.';
 
 describe('Tests numberEquals rule', () => {
   let arg0;

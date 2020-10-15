@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import runCreateRef from '../../../../../testUtils/runCreateRef';
 import context from '../../../context';
+import usePending from '../../../state/usePending';
 import VestTest from '../VestTest';
-import usePending from './usePending';
 import { removePending, setPending } from '.';
 
 const groupName = 'group_name';

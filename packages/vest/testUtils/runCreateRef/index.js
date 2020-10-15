@@ -1,8 +1,8 @@
-import useTestCallbacks from '../../src/core/produce/useTestCallbacks';
 import state from '../../src/core/state';
-import useSuiteId from '../../src/core/suite/useSuiteId';
-import usePending from '../../src/core/test/lib/pending/usePending';
-import useTestObjects from '../../src/core/test/useTestObjects';
+import usePending from '../../src/core/state/usePending';
+import useSuiteId from '../../src/core/state/useSuiteId';
+import useTestCallbacks from '../../src/core/state/useTestCallbacks';
+import useTestObjects from '../../src/core/state/useTestObjects';
 
 export default () =>
   state.createRef({

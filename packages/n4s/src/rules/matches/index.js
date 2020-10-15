@@ -1,4 +1,6 @@
-function matches(value, regex) {
+import { bindNot } from '../../lib';
+
+export function matches(value, regex) {
   if (regex instanceof RegExp) {
     return regex.test(value);
   } else if (typeof regex === 'string') {
@@ -8,6 +10,4 @@ function matches(value, regex) {
   }
 }
 
-matches.negativeForm = 'notMatches';
-
-export default matches;
+export const notMatches = bindNot(matches);

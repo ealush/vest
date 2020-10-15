@@ -97,7 +97,7 @@ Rules naming convention usually follows this structure: `is[Something]` for exam
 Rules are functions that take as their first argument the value passed to the enforce function, and the rest of the arguments are what is beig passed to them by the consumer:
 
 ```js
-function isGreaterThan(
+export function isGreaterThan(
   value /*enforceValue*/,
   arg1 /*passed directly to the rule*/
 ) {
@@ -107,12 +107,14 @@ function isGreaterThan(
 
 ### Negative rulesList
 
-If you also want to add a negative check to your rule, for example `isNotArray`, simply add a negativeForm property to your rule.
+If you also want to add a negative check to your rule, for example `isNotArray`, add another export, wrapped with the `binNot` function. Then inside `rules/index.js` you'll have to expose both functions.
 
 ```js
-function isArray(value) {
+import { bindNot } from '../../lib';
+
+export function isArray(value) {
   return Array.isArray(value);
 }
 
-isArray.negativeForm = 'isNotArray';
+export const isNotArray = bindNot(isArray);
 ```

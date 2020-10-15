@@ -1,5 +1,5 @@
 import faker from 'faker';
-import isEven from '.';
+import { isEven } from '.';
 
 describe('Tests isEven rule', () => {
   describe('When value is an even number', () => {

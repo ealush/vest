@@ -1,10 +1,11 @@
-import gte from '../greaterThanOrEquals';
-import lte from'../lessThanOrEquals';
+import { bindNot } from '../../lib';
+import { greaterThanOrEquals as gte } from '../greaterThanOrEquals';
+import { lessThanOrEquals as lte } from '../lessThanOrEquals';
 
-function isBetween(value, min, max) {
-    return gte(value, min) && lte(value, max);
+export function isBetween(value, min, max) {
+  return gte(value, min) && lte(value, max);
 }
 
-isBetween.negativeForm = 'isNotBetween';
+export const isNotBetween = bindNot(isBetween);
 
 export default isBetween;

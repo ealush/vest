@@ -1,10 +1,10 @@
 import _ from 'lodash';
 import runCreateRef from '../../../../testUtils/runCreateRef';
 import context from '../../context';
-import useTestCallbacks from '../../produce/useTestCallbacks';
+import usePending from '../../state/usePending';
+import useTestCallbacks from '../../state/useTestCallbacks';
 import VestTest from '../lib/VestTest';
 import { setPending } from '../lib/pending';
-import usePending from '../lib/pending/usePending';
 import runAsyncTest from '.';
 
 const STATEMENT = 'some statement string';

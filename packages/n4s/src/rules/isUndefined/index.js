@@ -1,7 +1,7 @@
-function isUndefined(value) {
+import { bindNot } from '../../lib';
+
+export function isUndefined(value) {
   return value === undefined;
 }
 
-isUndefined.negativeForm = 'isNotUndefined';
-
-export default isUndefined;
+export const isNotUndefined = bindNot(isUndefined);

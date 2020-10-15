@@ -1,5 +1,5 @@
 import faker from 'faker';
-import longerThanOrEquals from '.';
+import { longerThanOrEquals } from '.';
 
 describe('Tests longerThanOrEquals rule', () => {
   const length = faker.random.number();

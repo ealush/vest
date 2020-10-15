@@ -1,4 +1,4 @@
-import isNegative from '.';
+import { isNegative } from '.';
 
 describe('Tests isNegative rule', () => {
   describe('First argument is negative', () => {
@@ -34,11 +34,6 @@ describe('Tests isNegative rule', () => {
       });
       it('should return false for null value', () => {
         expect(isNegative(null)).toBe(false);
-      });
-    });
-    describe('Expose isPositive ', () => {
-      it('Should expose negativeForm property', () => {
-        expect(isNegative.negativeForm).toBe('isPositive');
       });
     });
   });

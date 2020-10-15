@@ -1,7 +1,7 @@
-function isArray(value) {
+import { bindNot } from '../../lib';
+
+export function isArray(value) {
   return Boolean(Array.isArray(value));
 }
 
-isArray.negativeForm = 'isNotArray';
-
-export default isArray;
+export const isNotArray = bindNot(isArray);

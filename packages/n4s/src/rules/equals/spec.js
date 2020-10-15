@@ -1,6 +1,6 @@
 import { random } from 'faker';
 import { sample } from 'lodash';
-import equals from '.';
+import { equals } from '.';
 
 const VALUES = [
   random.word(),

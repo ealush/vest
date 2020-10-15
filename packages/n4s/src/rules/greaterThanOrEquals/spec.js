@@ -1,5 +1,5 @@
 import { random } from 'faker';
-import greaterThanOrEquals from '.';
+import { greaterThanOrEquals } from '.';
 
 describe('Tests greaterThanOrEquals rule', () => {
   let arg0;

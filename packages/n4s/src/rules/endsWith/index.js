@@ -1,7 +1,11 @@
-function endsWith(value, arg1) {
-    return typeof value === 'string' && typeof arg1 === 'string' && value.endsWith(arg1);
+import { bindNot } from '../../lib';
+
+export function endsWith(value, arg1) {
+  return (
+    typeof value === 'string' &&
+    typeof arg1 === 'string' &&
+    value.endsWith(arg1)
+  );
 }
 
-endsWith.negativeForm = 'doesNotEndWith';
-
-export default endsWith;
+export const doesNotEndWith = bindNot(endsWith);

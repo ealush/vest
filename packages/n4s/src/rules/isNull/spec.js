@@ -1,4 +1,4 @@
-import isNull from '.';
+import { isNull } from '.';
 
 describe('Tests isNull rule', () => {
   it('Should return true for `null` value', () => {
@@ -21,9 +21,5 @@ describe('Tests isNull rule', () => {
     () => {},
   ])('Should return false for %s value', v => {
     expect(isNull(v)).toBe(false);
-  });
-
-  it('Should expose negativeForm property', () => {
-    expect(isNull.negativeForm).toBe('isNotNull');
   });
 });

@@ -1,7 +1,7 @@
-function isNull(value) {
+import { bindNot } from '../../lib';
+
+export function isNull(value) {
   return value === null;
 }
 
-isNull.negativeForm = 'isNotNull';
-
-export default isNull;
+export const isNotNull = bindNot(isNull);

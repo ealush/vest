@@ -1,6 +1,7 @@
-import isNumeric from '../isNumeric';
+import { bindNot } from '../../lib';
+import { isNumeric } from '../isNumeric';
 
-function isEmpty(value) {
+export function isEmpty(value) {
   if (!value) {
     return true;
   } else if (isNumeric(value)) {
@@ -14,6 +15,4 @@ function isEmpty(value) {
   }
 }
 
-isEmpty.negativeForm = 'isNotEmpty';
-
-export default isEmpty;
+export const isNotEmpty = bindNot(isEmpty);

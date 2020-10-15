@@ -1,4 +1,4 @@
-import isArray from '.';
+import { isArray } from '.';
 
 describe('Tests isArray rule', () => {
   it('Should return true for an empty array', () => {
@@ -11,9 +11,5 @@ describe('Tests isArray rule', () => {
 
   it('Should return false a string', () => {
     expect(isArray('1')).toBe(false);
-  });
-
-  it('Should expose negativeForm property', () => {
-    expect(isArray.negativeForm).toBe('isNotArray');
   });
 });

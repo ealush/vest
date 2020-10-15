@@ -1,7 +1,7 @@
-function isNaN(value) {
+import { bindNot } from '../../lib';
+
+export function isNaN(value) {
   return Number.isNaN(value);
 }
 
-isNaN.negativeForm = 'isNotNaN';
-
-export default isNaN;
+export const isNotNaN = bindNot(isNaN);

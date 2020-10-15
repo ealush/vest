@@ -1,4 +1,4 @@
-import matches from '.';
+import { matches } from '.';
 
 const URL = /(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.(?=.*[a-z]){1,24}\b([-a-zA-Z0-9@:%_+.~#?&//=()]*)/,
   LENGTH = /^[a-zA-Z]{3,7}$/,
@@ -31,9 +31,5 @@ describe('Tests matches rule', () => {
     expect(matches('no-match')).toBe(false);
     expect(matches('no-match', null)).toBe(false);
     expect(matches('no-match', 11)).toBe(false);
-  });
-
-  it('Should expose negativeForm property', () => {
-    expect(matches.negativeForm).toBe('notMatches');
   });
 });

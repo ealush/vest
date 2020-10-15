@@ -1,4 +1,4 @@
-import inside from '.';
+import { inside } from '.';
 
 describe('Inside rule', () => {
   it('Should correctly find a string inside an array', () => {
@@ -50,9 +50,5 @@ describe('Inside rule', () => {
 
   it('Should failt to find a string inside another string in which it does not exist', () => {
     expect(inside('mugs', "I'm gonna pop some tags")).toBe(false);
-  });
-
-  it('Should expose negativeForm property', () => {
-    expect(inside.negativeForm).toBe('notInside');
   });
 });

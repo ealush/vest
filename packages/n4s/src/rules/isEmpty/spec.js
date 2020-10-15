@@ -1,4 +1,4 @@
-import isEmpty from '.';
+import { isEmpty } from '.';
 
 describe('Tests isEmpty rule', () => {
   describe('Expect true', () => {
@@ -45,9 +45,5 @@ describe('Tests isEmpty rule', () => {
     it('Should return true for NaN', () => {
       expect(isEmpty(NaN)).toBe(true);
     });
-  });
-
-  it('Should expose negativeForm property', () => {
-    expect(isEmpty.negativeForm).toBe('isNotEmpty');
   });
 });

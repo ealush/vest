@@ -1,4 +1,4 @@
-import isString from '.';
+import { isString } from '.';
 
 describe('Tests isString rule', () => {
   it('Should return false for a number', () => {
@@ -11,9 +11,5 @@ describe('Tests isString rule', () => {
 
   it('Should return true a string', () => {
     expect(isString('I love you')).toBe(true);
-  });
-
-  it('Should expose negativeForm property', () => {
-    expect(isString.negativeForm).toBe('isNotString');
   });
 });

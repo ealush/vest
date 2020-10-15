@@ -1,4 +1,6 @@
-function inside(value, arg1) {
+import { bindNot } from '../../lib';
+
+export function inside(value, arg1) {
   if (
     Array.isArray(arg1) &&
     ['string', 'number', 'boolean'].indexOf(typeof value) !== -1
@@ -14,6 +16,4 @@ function inside(value, arg1) {
   return false;
 }
 
-inside.negativeForm = 'notInside';
-
-export default inside;
+export const notInside = bindNot(inside);

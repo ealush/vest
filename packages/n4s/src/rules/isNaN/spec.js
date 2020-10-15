@@ -1,8 +1,8 @@
-import _isNaN from '.';
+import * as NaNRule from '.';
 
 describe('Tests isNaN rule', () => {
   it('Should return true for `NaN` value', () => {
-    expect(_isNaN(NaN)).toBe(true);
+    expect(NaNRule.isNaN(NaN)).toBe(true);
   });
 
   it.each([
@@ -19,10 +19,6 @@ describe('Tests isNaN rule', () => {
     '0',
     '1',
   ])('Should return false for %s value', v => {
-    expect(_isNaN(v)).toBe(false);
-  });
-
-  it('Should expose negativeForm property', () => {
-    expect(_isNaN.negativeForm).toBe('isNotNaN');
+    expect(NaNRule.isNaN(v)).toBe(false);
   });
 });

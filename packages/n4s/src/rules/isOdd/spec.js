@@ -1,5 +1,5 @@
 import faker from 'faker';
-import isOdd from '.';
+import { isOdd } from '.';
 
 describe('Tests isOdd rule', () => {
   describe('When value is an odd number', () => {

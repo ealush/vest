@@ -1,5 +1,5 @@
 import faker from 'faker';
-import lengthEquals from '.';
+import { lengthEquals } from '.';
 
 describe('Tests lengthEquals rule', () => {
   const length = faker.random.number();
@@ -50,9 +50,5 @@ describe('Tests lengthEquals rule', () => {
     it('Should return false for boolean argument', () => {
       expect(lengthEquals(boolean, 0)).toBe(false);
     });
-  });
-
-  it('Should expose negativeForm property', () => {
-    expect(lengthEquals.negativeForm).toBe('lengthNotEquals');
   });
 });

@@ -10,7 +10,7 @@ import useTestObjects from '../../state/useTestObjects';
 import mergeExcludedTests from '../../test/lib/mergeExcludedTests';
 /**
  * Initializes a validation suite, creates a validation context.
- * @param {String} name     Identifier for validation suite.
+ * @param {String} [name]     Identifier for validation suite.
  * @param {Function} tests  Validation suite body.
  * @returns {Function} validator function.
  */

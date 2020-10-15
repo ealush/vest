@@ -1,5 +1,5 @@
-import useTestObjects from '../../state/useTestObjects';
 import useSuiteId from '../../state/useSuiteId';
+import useTestObjects from '../../state/useTestObjects';
 import {
   SEVERITY_COUNT_WARN,
   SEVERITY_COUNT_ERROR,

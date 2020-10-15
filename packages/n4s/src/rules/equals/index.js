@@ -1,7 +1,7 @@
-function equals(value, arg1) {
+import { bindNot } from '../../lib';
+
+export function equals(value, arg1) {
   return value === arg1;
 }
 
-equals.negativeForm = 'notEquals';
-
-export default equals;
+export const notEquals = bindNot(equals);

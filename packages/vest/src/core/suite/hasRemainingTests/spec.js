@@ -2,7 +2,7 @@ import faker from 'faker';
 import _ from 'lodash';
 import runCreateRef from '../../../../testUtils/runCreateRef';
 import context from '../../context';
-import usePending from '../../test/lib/pending/usePending';
+import usePending from '../../state/usePending';
 import hasRemainingTests from '.';
 
 let stateRef;

@@ -1,7 +1,7 @@
-function isNumber(value) {
+import { bindNot } from '../../lib';
+
+export function isNumber(value) {
   return Boolean(typeof value === 'number');
 }
 
-isNumber.negativeForm = 'isNotNumber';
-
-export default isNumber;
+export const isNotNumber = bindNot(isNumber);

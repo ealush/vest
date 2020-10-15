@@ -27,7 +27,6 @@ import shorterThan from './shorterThan';
 import shorterThanOrEquals from './shorterThanOrEquals';
 import startsWith from './startsWith';
 import isNegative from './isNegative';
-import isPositive from './isPositive';
 
 const rules = {
   endsWith,
@@ -58,7 +57,6 @@ const rules = {
   shorterThanOrEquals,
   startsWith,
   isNegative,
-  isPositive,
 };
 
 export default extendRules(rules);

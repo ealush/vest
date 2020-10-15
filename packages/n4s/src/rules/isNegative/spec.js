@@ -1,6 +1,6 @@
 import isNegative from '.';
 
-describe.only('Tests isNegative rule', () => {
+describe('Tests isNegative rule', () => {
   describe('First argument is negative', () => {
     describe('When first argument negative number', () => {
       it('Should return true for negative numer', () => {
@@ -34,6 +34,11 @@ describe.only('Tests isNegative rule', () => {
       });
       it('should return false for null value', () => {
         expect(isNegative(null)).toBe(false);
+      });
+    });
+    describe('Expose isPositive ', () => {
+      it('Should expose negativeForm property', () => {
+        expect(isNegative.negativeForm).toBe('isPositive');
       });
     });
   });

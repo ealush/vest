@@ -60,10 +60,15 @@ Enforce rules are functions that allow you to test your data against different c
 - [isNotNumber](#isnotnumber)
 - [isNaN](#isNaN)
 - [isNotNaN](#isNotNaN)
+- [isNull](#isnull)
+- [isNotNull](#isnotnull)
 - [isString](#isstring)
 - [isNotString](#isnotstring)
+- [isUndefined](#isundefined)
 - [isOdd](#isodd)
 - [isEven](#iseven)
+- [isBetween](#isbetween)
+- [isNotBetween](#isnotbetween)
 - [endsWith](#endswith)
 - [doesNotEndWith](#doesnotendwith)
 - [startsWith](#startsWith)
@@ -71,7 +76,7 @@ Enforce rules are functions that allow you to test your data against different c
 - [isNegative](#isnegative)
 - [isPositive](#ispositive)
 
-### equals
+## equals
 
 ### Description
 
@@ -919,6 +924,44 @@ enforce('A' / 'B').isNaN();
 // throws
 ```
 
+## isNull
+
+### Description
+
+Enforces that a specified value is `null`.
+
+### Usage examples:
+
+```js
+enforce(null).isNull();
+// passes
+```
+
+```js
+enforce(undefined).isNull();
+enforce(true).isNull();
+// throws
+```
+
+## isNotNull
+
+### Description
+
+Reverse implementation of `isNull`. Checks that a value is not null.
+
+### Usage examples:
+
+```js
+enforce('hello').isNull();
+enforce(200).isNull();
+// passes
+```
+
+```js
+enforce(null).isNull();
+// throws
+```
+
 ## isString
 
 ### Description
@@ -955,6 +998,26 @@ enforce('hello').isNotString();
 ```js
 enforce(['hello']).isNotString();
 // passes
+```
+
+## isUndefined
+
+### Description
+
+Enforces that a given value is (`===`) undefined.
+
+### Usage examples:
+
+```js
+enforce().isUndefined();
+enforce(undefined).isUndefined();
+// passes
+```
+
+```js
+enforce(null).isUndefined();
+enforce(true).isUndefined();
+// throws
 ```
 
 ## isOdd
@@ -998,6 +1061,59 @@ enforce(1).isEven();
 enforce('3').isEven();
 enforce('2withNumber').isEven();
 enforce([0]).isEven();
+// throws
+```
+
+## isBetween
+
+### Description
+
+Checks if a number is in range of two numbers (edges of range included)
+
+### Usage examples:
+
+```js
+enforce(5).isBetween(0, 5);
+enforce(5).isBetween(0, 10);
+enforce(-5).isBetween(-10, -1);
+enforce(-5.5).isBetween(-10, -1);
+enforce(-5.5).isBetween(-10, -1.1);
+enforce(-5.5).isBetween(-9.5, -1.1);
+// passes
+```
+
+```js
+enforce(5).isBetween(0, 2);
+enforce(-5).isBetween(0, 2);
+enforce('some_string').isBetween(0, 2);
+enforce(false).isBetween(0, 2);
+// throws
+```
+
+## isNotBetween
+
+### Description
+
+Checks if a number **is not** in range of two numbers (edges of range excluded)
+
+### Usage examples:
+
+```js
+enforce(5).isNotBetween(0, 4);
+enforce(5).isNotBetween(0, 10);
+enforce(-5).isNotBetween(-10, -1);
+enforce(-5.5).isNotBetween(-10, -1);
+enforce(-5.5).isNotBetween(-10, -1.1);
+// passes
+```
+
+```js
+enforce(5).isNotBetween(0, 5);
+enforce(5).isNotBetween(0, 10);
+enforce(-5).isNotBetween(-10, -1);
+enforce(-5).isNotBetween(-5, -1);
+enforce('some_string').isNotBetween(0, 2);
+enforce(false).isNotBetween(0, 2);
 // throws
 ```
 
@@ -1067,6 +1183,58 @@ enforce(true).startsWith(100);
 Determines whether a string does not start with the characters of a specified string.
 Reverse implementation of `startsWith`.
 
+### Usage examples:
+
+```js
+enforce('for').doesNotStartWith('tor');
+enforce('aaaab').doesNotStartWith('aab');
+enforce('aa').doesNotStartWith('aaa');
+enforce(42).doesNotStartWith('b');
+enforce(42).doesNotStartWith(50);
+enforce(true).doesNotStartWith(100);
+// passes
+```
+
+```js
+enforce('aba').doesNotStartWith('ab');
+enforce('some_string').doesNotStartWith('some_');
+enforce('string with spaces').doesNotStartWith('string with s');
+enforce('aaaa     ').doesNotStartWith('aaaa ');
+// throws
+```
+
+## isNegative
+
+### Description
+
+Determines whether a numeric value is negative or not.
+
+### Usage examples:
+
+```js
+enforce(-10).isNegative(); //passes
+enforce(-10.12).isNegative(); //passes
+enforce('-10.12').isNegative(); //passes
+enforce(10).isNegative(); // throws
+enforce('10').isNegative(); // throws
+```
+
+## isPositive
+
+### Description
+
+Determines whether a numeric value is positive or not.
+
+### Usage examples:
+
+```js
+enforce(10).isPositive(); //passes
+enforce(10.12).isPositive(); //passes
+enforce('10.12').isPositive(); //passes
+enforce(-10).isPositive(); // throws
+enforce('-10.12').isPositive(); // throws
+```
+
 # Custom enforce rules
 
 To make it easier to reuse logic across your application, sometimes you would want to encapsulate bits of logic in rules that you can use later on, for example, "what's considered a valid email".
@@ -1095,38 +1263,6 @@ enforce.extend({
 });
 
 enforce(user.email).isValidEmail();
-```
-
-## isNegative
-
-### Description
-
-Determine where number is negative
-
-### Usage examples:
-
-```js
-enforce(-10).isNegative(); //true
-enforce(-10.12).isNegative(); //true
-enforce('-10.12').isNegative(); //true
-enforce(10).isNegative(); //false
-enforce('10').isNegative(); //false
-```
-
-## isPositive
-
-### Description
-
-Determine where number is positive
-
-### Usage examples:
-
-```js
-enforce(10).isPositive(); //true
-enforce(10.12).isPositive(); //true
-enforce('10.12').isPositive(); //true
-enforce(-10).isPositive(); //false
-enforce('-10.12').isPositive(); //false
 ```
 
 ## Custom rules return value

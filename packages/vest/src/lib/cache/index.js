@@ -39,7 +39,7 @@ const createCache = (maxSize = 10) => {
           deps.length === cachedDeps.length &&
           deps.every((dep, i) => dep === cachedDeps[i])
       )
-    ] ?? null;
+    ] || null;
 
   return cache;
 };

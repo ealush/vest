@@ -1,5 +1,6 @@
 import { isExcluded } from '../../hooks/exclusive';
 import createCache from '../../lib/cache';
+import isFunction from '../../lib/isFunction';
 import context from '../context';
 import useSuiteId from '../state/useSuiteId';
 import useTestObjects from '../state/useTestObjects';
@@ -53,7 +54,7 @@ const register = testObject => {
   try {
     // try catch for safe property access
     // in case object is an enforce chain
-    if (typeof result?.then === 'function') {
+    if (isFunction(result?.then)) {
       testObject.asyncTest = result;
       setPending(testObject);
       runAsyncTest(testObject);
@@ -92,7 +93,7 @@ const test = (fieldName, ...args) => {
     return testObject;
   }
 
-  if (typeof testFn !== 'function') {
+  if (!isFunction(testFn)) {
     return;
   }
 
@@ -102,7 +103,7 @@ const test = (fieldName, ...args) => {
 };
 
 test.memo = (fieldName, ...args) => {
-  cache = cache ?? createCache(100);
+  cache = cache || createCache(100);
 
   const [suiteId] = useSuiteId();
 
@@ -126,7 +127,7 @@ test.memo = (fieldName, ...args) => {
 
   addTestToState(testObject);
 
-  if (typeof testObject?.asyncTest?.then === 'function') {
+  if (isFunction(testObject?.asyncTest?.then)) {
     setPending(testObject);
     runAsyncTest(testObject);
   }

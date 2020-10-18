@@ -1,4 +1,5 @@
 import createCache from '../../lib/cache';
+import isFunction from '../../lib/isFunction';
 import context from '../context';
 import useTestCallbacks from '../state/useTestCallbacks';
 import useTestObjects from '../state/useTestObjects';
@@ -30,7 +31,7 @@ const done = (...args) => {
   // If we do not have any tests for current field
   const shouldSkipRegistration = fieldName && !output.tests[fieldName];
 
-  if (typeof callback !== 'function' || shouldSkipRegistration) {
+  if (!isFunction(callback) || shouldSkipRegistration) {
     return output;
   }
 

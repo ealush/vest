@@ -1,5 +1,6 @@
 import { throwError } from '../../../../n4s/src/lib';
 import context from '../../core/context';
+import isFunction from '../../lib/isFunction';
 
 /**
  * Runs a group callback.
@@ -13,7 +14,7 @@ const group = (groupName, tests) => {
     );
   }
 
-  if (typeof tests !== 'function') {
+  if (!isFunction(tests)) {
     throwError(
       `group initialization error. Expected "${tests}" to be a function.`
     );

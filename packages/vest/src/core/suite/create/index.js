@@ -1,4 +1,5 @@
 import genId from '../../../lib/id';
+import isFunction from '../../../lib/isFunction';
 import throwError from '../../../lib/throwError';
 import context from '../../context';
 import produce from '../../produce';
@@ -17,7 +18,7 @@ import mergeExcludedTests from '../../test/lib/mergeExcludedTests';
 const createSuite = (...args) => {
   const [tests, name] = args.reverse();
 
-  if (typeof tests !== 'function') {
+  if (!isFunction(tests)) {
     throwError(
       'Suite initialization error. Expected `tests` to be a function.'
     );
@@ -32,7 +33,7 @@ const createSuite = (...args) => {
 
   return Object.defineProperties(
     context.bind({ stateRef }, function () {
-      const [previousTestObjects = []] = useTestObjects();
+      const [previousTestObjects] = useTestObjects();
       stateRef.reset();
 
       tests.apply(null, arguments);

@@ -1,3 +1,4 @@
+import isFunction from '../../lib/isFunction';
 import context from '../context';
 
 export default (function createState() {
@@ -12,7 +13,7 @@ export default (function createState() {
         if (!Object.prototype.hasOwnProperty.call(stateRef.current(), key)) {
           stateRef.set(
             key,
-            typeof initialValue === 'function'
+            isFunction(initialValue)
               ? initialValue.apply(null, reg.args)
               : initialValue
           );
@@ -20,7 +21,7 @@ export default (function createState() {
         return;
       }
 
-      if (typeof patcher === 'function') {
+      if (isFunction(patcher)) {
         update(patcher);
       }
 
@@ -30,7 +31,7 @@ export default (function createState() {
 
         stateRef.set(
           key,
-          typeof patcher === 'function' ? patcher(currentState?.[key]) : patcher
+          isFunction(patcher) ? patcher(currentState[key]) : patcher
         );
       }
 

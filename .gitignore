@@ -4,13 +4,11 @@ node_modules
 *.log
 packages/vest/utilities/
 packages/n4s/extended/
-packages/n4s/dist
 
 # build artifacts
-packages/vest/dist
-packages/vest/esm
-packages/vest/*.js
-packages/vest/*.d.ts
-packages/vest/*.cjs
-packages/vest/*.mjs
-packages/n4s/*.js
+packages/*/dist
+packages/*/esm
+packages/*/*.js
+packages/*/*.js.map
+packages/*/*.d.ts
+packages/*/*.mjs

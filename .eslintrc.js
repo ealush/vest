@@ -15,7 +15,7 @@ module.exports = {
     'prettier',
   ],
   globals: {
-    VEST_VERSION: true,
+    __LIB_VERSION__: true,
     LIBRARY_NAME: true,
     ENV_DEVELOPMENT: true,
   },

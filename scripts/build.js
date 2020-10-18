@@ -1,4 +1,5 @@
 const { PACKAGE_NAMES } = require('../config');
+const { PACKAGE_VEST } = require('../shared/constants');
 const buildPackage = require('./steps/buildPackage');
 const copyDistFiles = require('./steps/copyDistFiles');
 
@@ -11,7 +12,10 @@ const build = packageName => {
   if (packageName) {
     buildOne(packageName);
   } else {
-    PACKAGE_NAMES.forEach(buildOne);
+    // Build each one, guaranteed to run vest last
+    PACKAGE_NAMES.sort((a, b) => (b === PACKAGE_VEST ? -1 : 0)).forEach(
+      buildOne
+    );
   }
 };
 

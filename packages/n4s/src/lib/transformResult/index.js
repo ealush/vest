@@ -6,7 +6,7 @@ export function validateResult(result, rule) {
     (!result || typeof result.pass !== 'boolean')
   ) {
     throwError(
-      `/${rule.name} wrong return value for the rule please check that the return is valid`
+      `${rule.name} wrong return value for the rule please check that the return is valid`
     );
   }
 }

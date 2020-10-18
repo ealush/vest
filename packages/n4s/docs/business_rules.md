@@ -28,12 +28,6 @@ import enforce from 'n4s/enforceExtended';
 enforce('example@gmail.com').isEmail();
 ```
 
-```js
-import ensure from 'n4s/ensureExtended';
-
-ensure().isEmail().test('example@gmail.com');
-```
-
 Some of these rules also require locale arrays and objects. These are also exported by the extended entry point:
 
 ```js
@@ -42,14 +36,6 @@ import enforce, {
   isMobilePhoneLocales,
   isPostalCodeLocales,
 } from 'n4s/enforceExtended';
-```
-
-```js
-import ensure, {
-  isAlphanumericLocales,
-  isMobilePhoneLocales,
-  isPostalCodeLocales,
-} from 'n4s/ensureExtended';
 ```
 
 To read the full documentation on these rules and the options they take, please visit [validator.js](https://github.com/validatorjs/validator.js).

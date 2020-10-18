@@ -2,12 +2,12 @@
   "name": "vest",
   "version": "2.2.3",
   "description": "Validation Test",
-  "main": "./vest.umd.index.js",
-  "browser": "./vest.umd.index.js",
+  "main": "./vest.js",
+  "browser": "./vest.js",
   "module": "./esm/vest.mjs.production.js",
   "exports": {
     ".": {
-      "browser": "./vest.umd.index.js",
+      "browser": "./vest.js",
       "import": "./esm/vest.mjs.production.js",
       "require": "./vest.cjs.production.js",
       "node": "./vest.cjs.production.js",
@@ -24,7 +24,7 @@
     "./vest.cjs.production.js": "./vest.cjs.production.js",
     "./vest.cjs.production.min.js": "./vest.cjs.production.min.js",
     "./vest.umd.development.js": "./vest.umd.development.js",
-    "./vest.umd.index.js": "./vest.umd.index.js",
+    "./vest.js": "./vest.js",
     "./vest.umd.production.js": "./vest.umd.production.js",
     "./vest.umd.production.min.js": "./vest.umd.production.min.js",
     "./package.json": "./package.json"
@@ -39,5 +39,22 @@
   "bugs": {
     "url": "https://github.com/ealush/vest/issues"
   },
-  "homepage": "https://ealush.github.io/vest/"
+  "homepage": "https://ealush.github.io/vest/",
+  "scripts": {
+    "build": "rollup -c ./config/rollup/rollup.config.js",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "anyone": "^0.0.7",
+    "context": "^1.1.0",
+    "n4s": "^2.1.1"
+  },
+  "dependencies": {
+    "babel-jest": "^26.5.2",
+    "eslint-config-prettier": "^6.13.0",
+    "jest": "^26.5.3",
+    "jest-cli": "^26.5.3",
+    "onchange": "^7.0.2",
+    "rollup": "^2.32.0"
+  }
 }

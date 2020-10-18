@@ -11,7 +11,7 @@ Since ensure has no way of knowing when you are done adding rules, you have to d
 For example, if I want to test that the number 4 is both numeric, and is less than 5, I would:
 
 ```js
-import { ensure } from 'n4s';
+import ensure from 'n4s/ensure';
 
 ensure().isNumeric().lessThan(5).test(4); // The value I am testing.
 // `.test()` is always the last function passed
@@ -24,7 +24,7 @@ ensure().isNumeric().lessThan(5).test(4); // The value I am testing.
 You can [extend](./custom) ensure in the same way you extend enforce.
 
 ```js
-import ensure from 'n4s';
+import ensure from 'n4s/ensure';
 
 ensure.extend({
   isValidEmail: value => value.includes('@'),

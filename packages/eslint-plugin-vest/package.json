@@ -9,5 +9,8 @@
   ],
   "author": "ealush",
   "main": "lib/index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "build": "exit 0"
+  }
 }

@@ -26,7 +26,6 @@ module.exports = api => {
     'babel-plugin-add-module-exports',
     '@babel/plugin-proposal-optional-chaining',
     '@babel/plugin-proposal-nullish-coalescing-operator',
-    ['@babel/plugin-proposal-pipeline-operator', { proposal: 'minimal' }],
     api.env('production') && '@babel/plugin-transform-object-assign',
     api.env('test') && '@babel/plugin-transform-runtime',
   ].filter(Boolean);

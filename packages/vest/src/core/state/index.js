@@ -1,12 +1,24 @@
 import context from '../context';
 
-const SYMBOL_ADD_TO_STATE = Symbol();
-
 export default (function createState() {
   function registerHandler(initialValue) {
     let key;
     function use(patcher) {
-      const { stateRef } = context.use();
+      const { stateRef, reg } = context.use();
+
+      // Register state handler
+      if (reg) {
+        key = reg.key;
+        if (!Object.prototype.hasOwnProperty.call(stateRef.current(), key)) {
+          stateRef.set(
+            key,
+            typeof initialValue === 'function'
+              ? initialValue.apply(null, reg.args)
+              : initialValue
+          );
+        }
+        return;
+      }
 
       if (typeof patcher === 'function') {
         update(patcher);
@@ -24,20 +36,6 @@ export default (function createState() {
 
       return [stateRef.current()[key], update];
     }
-
-    use[SYMBOL_ADD_TO_STATE] = function (stateKey, args) {
-      const { stateRef } = context.use();
-      key = stateKey;
-
-      if (!Object.prototype.hasOwnProperty.call(stateRef.current(), key)) {
-        stateRef.set(
-          key,
-          typeof initialValue === 'function'
-            ? initialValue.apply(null, args)
-            : initialValue
-        );
-      }
-    };
 
     return use;
   }
@@ -71,15 +69,9 @@ export default (function createState() {
     };
 
     for (const key in handlers) {
+      const [handler, args] = [].concat(handlers[key]);
       registeredHandlers.push(
-        Array.isArray(handlers[key])
-          ? context.bind(
-              { stateRef },
-              handlers[key][0][SYMBOL_ADD_TO_STATE],
-              key,
-              handlers[key][1]
-            )
-          : context.bind({ stateRef }, handlers[key][SYMBOL_ADD_TO_STATE], key)
+        context.bind({ stateRef, reg: { key, args } }, handler)
       );
     }
 

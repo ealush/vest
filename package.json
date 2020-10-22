@@ -42,7 +42,7 @@
     "cross-env": "^7.0.2",
     "date-fns": "^2.16.1",
     "eslint": "^7.11.0",
-    "eslint-config-prettier": "^6.13.0",
+    "eslint-config-prettier": "^6.14.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^23.20.0",
     "eslint-plugin-spellcheck": "^0.0.17",

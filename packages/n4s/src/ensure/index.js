@@ -41,27 +41,27 @@ if (proxySupported()) {
 
     return proxy;
   };
-}
+} else {
+  rulesList = Object.keys(rulesObject);
 
-rulesList = Object.keys(rulesObject);
-
-ensure = () => {
-  const registeredRules = [];
-  return rulesList.reduce(
-    (allRules, ruleName) =>
-      Object.assign(allRules, {
-        ...(isRule(rulesObject, ruleName) && {
-          [ruleName]: (...args) => {
-            registeredRules.push({ name: ruleName, args });
-            return allRules;
-          },
+  ensure = () => {
+    const registeredRules = [];
+    return rulesList.reduce(
+      (allRules, ruleName) =>
+        Object.assign(allRules, {
+          ...(isRule(rulesObject, ruleName) && {
+            [ruleName]: (...args) => {
+              registeredRules.push({ name: ruleName, args });
+              return allRules;
+            },
+          }),
         }),
-      }),
-    {
-      test: createTestFn(registeredRules),
-    }
-  );
-};
+      {
+        test: createTestFn(registeredRules),
+      }
+    );
+  };
+}
 
 ensure.extend = customRules => {
   Object.assign(rulesObject, customRules);

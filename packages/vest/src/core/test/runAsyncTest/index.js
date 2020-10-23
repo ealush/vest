@@ -1,3 +1,4 @@
+import callEach from '../../../lib/callEach';
 import context from '../../context';
 import useTestCallbacks from '../../state/useTestCallbacks';
 import useTestObjects from '../../state/useTestObjects';
@@ -28,7 +29,7 @@ const runAsyncTest = testObject => {
     testObject.fail();
 
     // Spreading the array to invalidate the cache
-    useTestObjects(testObjects => [...testObjects]);
+    useTestObjects(testObjects => testObjects.slice());
     done();
   });
   try {
@@ -50,11 +51,11 @@ const runDoneCallbacks = fieldName => {
       !hasRemainingTests(fieldName) &&
       Array.isArray(fieldCallbacks[fieldName])
     ) {
-      fieldCallbacks[fieldName].forEach(cb => cb());
+      callEach(fieldCallbacks[fieldName]);
     }
   }
   if (!hasRemainingTests()) {
-    doneCallbacks.forEach(cb => cb());
+    callEach(doneCallbacks);
   }
 };
 

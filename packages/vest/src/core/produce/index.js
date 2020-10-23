@@ -8,7 +8,7 @@ import {
   SEVERITY_GROUP_ERROR,
   SEVERITY_GROUP_WARN,
 } from '../test/lib/VestTest/constants';
-import genTestsSummary, { countFailures } from './genTestsSummary';
+import genTestsSummary from './genTestsSummary';
 import get from './get';
 import getByGroup from './getByGroup';
 import has from './has';
@@ -36,7 +36,7 @@ const done = (...args) => {
   }
 
   const cb = context.bind({ stateRef }, () =>
-    callback(produce({ draft: true }))
+    callback(produce(/*isDraft:*/ true))
   );
 
   // is suite finished || field name exists, and test is finished
@@ -63,19 +63,18 @@ const done = (...args) => {
 };
 
 /**
- * @param {Object} Options
- * @param {boolean} [Options.draft]
+ * @param {boolean} [isDraft]
  * @returns Vest output object.
  */
 
-const produce = ({ draft } = {}) => {
+const produce = isDraft => {
   const { stateRef } = context.use();
   const [testObjects] = useTestObjects();
   return cache(
-    [testObjects, draft],
+    [testObjects, isDraft],
     context.bind({ stateRef }, () =>
       Object.defineProperties(
-        countFailures(genTestsSummary()),
+        genTestsSummary(),
         [
           ['hasErrors', context.bind({ stateRef }, has, SEVERITY_GROUP_ERROR)],
           ['hasWarnings', context.bind({ stateRef }, has, SEVERITY_GROUP_WARN)],
@@ -98,16 +97,19 @@ const produce = ({ draft } = {}) => {
             context.bind({ stateRef }, getByGroup, SEVERITY_GROUP_WARN),
           ],
         ]
-          .concat(draft ? [] : [['done', context.bind({ stateRef }, done)]])
-          .reduce((properties, [name, value]) => {
-            properties[name] = {
-              configurable: true,
-              enumerable: true,
-              value,
-              writeable: true,
-            };
-            return properties;
-          }, {})
+          .concat(isDraft ? [] : [['done', context.bind({ stateRef }, done)]])
+          .reduce(
+            (properties, [name, value]) => (
+              (properties[name] = {
+                configurable: true,
+                enumerable: true,
+                value,
+                writeable: true,
+              }),
+              properties
+            ),
+            {}
+          )
       )
     )
   );

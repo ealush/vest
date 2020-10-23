@@ -64,9 +64,9 @@ skip.group = item =>
 const isExcluded = testObject => {
   const { fieldName, groupName } = testObject;
 
-  const ctx = context.use();
+  const { exclusion } = context.use();
 
-  const keyTests = ctx.exclusion[EXCLUSION_ITEM_TYPE_TESTS];
+  const keyTests = exclusion[EXCLUSION_ITEM_TYPE_TESTS];
   const testValue = keyTests[fieldName];
 
   // if test is skipped
@@ -83,7 +83,7 @@ const isExcluded = testObject => {
       return true; // field excluded by group
 
       // if group is `only`ed
-    } else if (ctx.exclusion[EXCLUSION_ITEM_TYPE_GROUPS][groupName] === true) {
+    } else if (exclusion[EXCLUSION_ITEM_TYPE_GROUPS][groupName] === true) {
       if (isTestIncluded) {
         return false;
       }
@@ -127,13 +127,10 @@ const hasIncludedTests = keyTests => {
  * @return {Boolean}
  */
 const isGroupExcluded = groupName => {
-  const ctx = context.use();
-  const keyGroups = ctx.exclusion[EXCLUSION_ITEM_TYPE_GROUPS];
+  const { exclusion } = context.use();
+  const keyGroups = exclusion[EXCLUSION_ITEM_TYPE_GROUPS];
 
-  const groupPresent = Object.prototype.hasOwnProperty.call(
-    keyGroups,
-    groupName
-  );
+  const groupPresent = keyGroups.hasOwnProperty(groupName);
 
   // When group is either only'ed or skipped
   if (groupPresent) {

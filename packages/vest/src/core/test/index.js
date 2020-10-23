@@ -102,6 +102,15 @@ const test = (fieldName, ...args) => {
   return testObject;
 };
 
+/**
+ * Caches, or returns an already cached test call
+ * @param {String} fieldName    Name of the field to test.
+ * @param {String} [statement]  The message returned in case of a failure.
+ * @param {function} testFn     The actual test callback.
+ * @param {any[]} deps          Dependency array.
+ * @return {VestTest}           A VestTest instance.
+
+ */
 test.memo = (fieldName, ...args) => {
   cache = cache || createCache(100);
 
@@ -119,7 +128,7 @@ test.memo = (fieldName, ...args) => {
     return cache(dependencies, () => test(fieldName, msg, testFn));
   }
 
-  const { 1: testObject } = cached;
+  const [, testObject] = cached;
 
   if (isExcluded(testObject)) {
     return testObject;

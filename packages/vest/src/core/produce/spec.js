@@ -109,7 +109,7 @@ describe('module: produce', () => {
   describe('When draft: true', () => {
     beforeEach(() => {
       runCreateSuite('suiteName');
-      produced = runProduce({ draft: true });
+      produced = runProduce(/*isDraft:*/ true);
     });
 
     it.each(DRAFT_EXCLUDED_METHODS)(
@@ -726,7 +726,7 @@ describe('module: produce', () => {
         draft = vest.draft();
         getStateFromContext();
         expect(draft).toBe(vest.draft());
-        expect(produce({ draft: true })).toBe(validate.get());
+        expect(produce(/*isDraft:*/ true)).toBe(validate.get());
         testDummy(vest).failing();
         expect(produce()).not.toBe(validate.get());
         expect(draft).not.toBe(vest.draft());
@@ -742,15 +742,15 @@ describe('module: produce', () => {
           });
           expect(control).toHaveBeenCalledTimes(1);
           context.run({ stateRef }, () => {
-            expect(produce({ draft: true })).toBe(validate.get());
+            expect(produce(/*isDraft:*/ true)).toBe(validate.get());
             expect(res).not.toBe(draft);
-            expect(res).not.toBe(produce({ draft: true }));
+            expect(res).not.toBe(produce(/*isDraft:*/ true));
             expect(draft).not.toBe(validate.get());
             res = validate().done(result => {
               expect(result).toBe(validate.get());
             });
             expect(res).not.toBe(draft);
-            expect(res).not.toBe(produce({ draft: true }));
+            expect(res).not.toBe(produce(/*isDraft:*/ true));
             expect(control).toHaveBeenCalledTimes(2);
           });
         }

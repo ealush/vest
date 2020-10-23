@@ -31,6 +31,12 @@ const createSuite = (...args) => {
     useTestObjects,
   });
 
+  /*
+    context.bind returns our `validate` function
+    We then wrap it with defineProperties to add
+    the `get`, and `reset` functions.
+
+  */
   return Object.defineProperties(
     context.bind({ stateRef }, function () {
       const [previousTestObjects] = useTestObjects();
@@ -43,9 +49,8 @@ const createSuite = (...args) => {
     }),
     {
       get: {
-        value: context.bind({ stateRef }, produce, { draft: true }),
+        value: context.bind({ stateRef }, produce, /*isDraft:*/ true),
       },
-      name: { value: 'validate' },
       reset: { value: stateRef.reset },
     }
   );

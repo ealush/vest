@@ -7,7 +7,6 @@ describe('Test createSuite module', () => {
   describe('Test suite Arguments', () => {
     it('allows omitting suite name', () => {
       expect(typeof create(Function.prototype)).toBe('function');
-      expect(create(Function.prototype).name).toBe('validate');
       expect(typeof create(Function.prototype).get).toBe('function');
       expect(typeof create(Function.prototype).reset).toBe('function');
       expect(create(Function.prototype).get()).toMatchSnapshot();
@@ -29,10 +28,6 @@ describe('Test createSuite module', () => {
   describe('Return value', () => {
     it('should be a function', () => {
       expect(typeof create('suiteName', noop)).toBe('function');
-    });
-
-    test('returned function name is `validate`', () => {
-      expect(create('boop', noop).name).toBe('validate');
     });
   });
 

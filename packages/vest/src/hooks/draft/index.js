@@ -14,7 +14,7 @@ const draft = () => {
     return;
   }
 
-  return produce({ draft: true });
+  return produce(/*isDraft:*/ true);
 };
 
 export default draft;

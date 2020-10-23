@@ -55,6 +55,7 @@ module.exports = {
     'no-implicit-globals': 2,
     'no-lonely-if': 2,
     'no-multi-spaces': 1,
+    'no-prototype-builtins': 0,
     'no-trailing-spaces': [2, { ignoreComments: false }],
     'no-unneeded-ternary': 2,
     'no-unused-expressions': 2,

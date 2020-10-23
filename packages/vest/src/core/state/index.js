@@ -1,3 +1,4 @@
+import callEach from '../../lib/callEach';
 import isFunction from '../../lib/isFunction';
 import context from '../context';
 
@@ -10,7 +11,7 @@ export default (function createState() {
       // Register state handler
       if (reg) {
         key = reg.key;
-        if (!Object.prototype.hasOwnProperty.call(stateRef.current(), key)) {
+        if (!stateRef.current().hasOwnProperty(key)) {
           stateRef.set(
             key,
             isFunction(initialValue)
@@ -50,17 +51,14 @@ export default (function createState() {
     }
 
     function set(key, value) {
-      state = {
-        ...state,
-        [key]: value,
-      };
+      Object.assign(state, { [key]: value });
     }
 
     function reset() {
       state.length = 0;
 
       state = {};
-      registeredHandlers.forEach(fn => fn());
+      callEach(registeredHandlers);
     }
 
     const stateRef = {

@@ -1,10 +1,9 @@
 const genConfig = require('../../../../config/rollup/genConfig');
-const { PACKAGE_N4S } = require('../../../../shared/constants');
-const { packageDist } = require('../../../../util');
+const { packageDist, packageNames } = require('../../../../util');
 
 export default genConfig({
-  distPath: packageDist(PACKAGE_N4S),
-  input: 'extended/enforce/index.js',
+  distPath: packageDist(packageNames.N4S),
+  input: 'extended/enforceExtended.js',
   libraryName: 'enforceExtended',
-  packageName: PACKAGE_N4S,
+  packageName: packageNames.N4S,
 });

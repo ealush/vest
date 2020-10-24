@@ -19,6 +19,23 @@ When making changes to packages other than vest, you should also add the name of
 
 `fix: [eslint-plugin-vest] fix edge case bug.`
 
+## Absolute import and `src` file naming
+
+All the files under `src` are unique, and their imports are aliased for absolute imports so you can import the a module using only its filename:
+
+```js
+import state from 'state';
+```
+Instead of
+```js
+import state from '../../state';
+```
+
+### IDE support
+
+Most modern IDEs will support those aliases using the jsconfig.json file in the project root. If you move files around, or create new files during local development, you can run `yarn dev` to watch your changes and automatically generate the jsconfig file.
+
+
 ## Repository structure
 
 Vest’s structure is fairly simple. To help you familiarize with the project, see this mapping:
@@ -30,17 +47,17 @@ packages/
 ├── vest/   # Main Vest package.
 │   ├── src/    # Vest's prebuilt source code.
 │   │   └── core/  # Modules required for vest's functionality.
-│   │   │   └── context/     # Vest's shared runtime. Used across the whole library.
-│   │   │   └── produce/     # Generates the out put object and callbaks.
-│   │   │   └── state/       # Vest's persistent state. Used across the whole library.
-│   │   │   └── test/        # Contains the test function and its lifecycle.
-│   │   │   └── suite/       # Contains all the suite modules and methods
-│   │   │       └── create/      # Initializes the suite and creates a context and state.
-│   │   └── hooks/ # Functions that extend vest's functionality. They all use context.
-│   │   │   └── draft/       # Allows access to the intermediate test result.
-│   │   │   └── exclusive/   # Allows including or excluding fields in runtime.
-│   │   │   └── warn/        # Allows setting warn-only fields.
-│   │   │   └── group/       # Adds another nesting level within suites.
+│   │   │   └── ctx             # Vest's shared runtime. Used across the whole library.
+│   │   │   └── produce/        # Generates the out put object and callbaks.
+│   │   │   └── state           # Vest's persistent state. Used across the whole library.
+│   │   │   └── test/           # Contains the test function and its lifecycle.
+│   │   │   └── suite/          # Contains all the suite modules and methods
+│   │   │       └── createSuite # Initializes the suite and creates a context and state.
+│   │   └── hooks/          # Functions that extend vest's functionality. They all use context.
+│   │   │   └── draft       # Allows access to the intermediate test result.
+│   │   │   └── exclusive   # Allows including or excluding fields in runtime.
+│   │   │   └── warn        # Allows setting warn-only fields.
+│   │   │   └── group       # Adds another nesting level within suites.
 │   │   └── lib/  # Shared helper functions.
 │   │   └── testUtils/    # Test helper functions.
 │   │   └── typings/      # Contains typescript declaration files for the exported modules.
@@ -52,6 +69,7 @@ packages/
 ├── eslint-plugin-vest/   # Eslint plugin with vest specific rules
 │   ├── lib/    # Contains all rules
 ├── n4s/   # Assertion library used by vest
+├── __shared/   # Code used by multiple packages
 ```
 
 ## Branching strategy

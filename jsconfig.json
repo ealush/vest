@@ -1,0 +1,248 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "isFunction": [
+        "./packages/__shared/src/isFunction.js"
+      ],
+      "isStringValue": [
+        "./packages/__shared/src/isStringValue.js"
+      ],
+      "throwError": [
+        "./packages/__shared/src/throwError.js"
+      ],
+      "enforce": [
+        "./packages/n4s/src/enforce/enforce.js"
+      ],
+      "enforceRunner": [
+        "./packages/n4s/src/enforce/enforceRunner.js"
+      ],
+      "ensure": [
+        "./packages/n4s/src/ensure/ensure.js"
+      ],
+      "ensureRunner": [
+        "./packages/n4s/src/ensure/ensureRunner.js"
+      ],
+      "enforceExtended": [
+        "./packages/n4s/src/extended/enforceExtended.js"
+      ],
+      "ensureExtended": [
+        "./packages/n4s/src/extended/ensureExtended.js"
+      ],
+      "rulesExtended": [
+        "./packages/n4s/src/extended/rulesExtended.js"
+      ],
+      "bindNot": [
+        "./packages/n4s/src/lib/bindNot.js"
+      ],
+      "isRule": [
+        "./packages/n4s/src/lib/isRule.js"
+      ],
+      "proxySupported": [
+        "./packages/n4s/src/lib/proxySupported.js"
+      ],
+      "transformResult": [
+        "./packages/n4s/src/lib/transformResult.js"
+      ],
+      "endsWith": [
+        "./packages/n4s/src/rules/endsWith.js"
+      ],
+      "equals": [
+        "./packages/n4s/src/rules/equals.js"
+      ],
+      "greaterThan": [
+        "./packages/n4s/src/rules/greaterThan.js"
+      ],
+      "greaterThanOrEquals": [
+        "./packages/n4s/src/rules/greaterThanOrEquals.js"
+      ],
+      "inside": [
+        "./packages/n4s/src/rules/inside.js"
+      ],
+      "isArray": [
+        "./packages/n4s/src/rules/isArray.js"
+      ],
+      "isBetween": [
+        "./packages/n4s/src/rules/isBetween.js"
+      ],
+      "isEmpty": [
+        "./packages/n4s/src/rules/isEmpty.js"
+      ],
+      "isEven": [
+        "./packages/n4s/src/rules/isEven.js"
+      ],
+      "isNaN": [
+        "./packages/n4s/src/rules/isNaN.js"
+      ],
+      "isNegative": [
+        "./packages/n4s/src/rules/isNegative.js"
+      ],
+      "isNull": [
+        "./packages/n4s/src/rules/isNull.js"
+      ],
+      "isNumber": [
+        "./packages/n4s/src/rules/isNumber.js"
+      ],
+      "isNumeric": [
+        "./packages/n4s/src/rules/isNumeric.js"
+      ],
+      "isOdd": [
+        "./packages/n4s/src/rules/isOdd.js"
+      ],
+      "isString": [
+        "./packages/n4s/src/rules/isString.js"
+      ],
+      "isTruthy": [
+        "./packages/n4s/src/rules/isTruthy.js"
+      ],
+      "isUndefined": [
+        "./packages/n4s/src/rules/isUndefined.js"
+      ],
+      "lengthEquals": [
+        "./packages/n4s/src/rules/lengthEquals.js"
+      ],
+      "lessThan": [
+        "./packages/n4s/src/rules/lessThan.js"
+      ],
+      "lessThanOrEquals": [
+        "./packages/n4s/src/rules/lessThanOrEquals.js"
+      ],
+      "longerThan": [
+        "./packages/n4s/src/rules/longerThan.js"
+      ],
+      "longerThanOrEquals": [
+        "./packages/n4s/src/rules/longerThanOrEquals.js"
+      ],
+      "matches": [
+        "./packages/n4s/src/rules/matches.js"
+      ],
+      "numberEquals": [
+        "./packages/n4s/src/rules/numberEquals.js"
+      ],
+      "rules": [
+        "./packages/n4s/src/rules/rules.js"
+      ],
+      "shorterThan": [
+        "./packages/n4s/src/rules/shorterThan.js"
+      ],
+      "shorterThanOrEquals": [
+        "./packages/n4s/src/rules/shorterThanOrEquals.js"
+      ],
+      "startsWith": [
+        "./packages/n4s/src/rules/startsWith.js"
+      ],
+      "rulesTestUtils": [
+        "./packages/n4s/src/testUtils/rulesTestUtils.js"
+      ],
+      "ctx": [
+        "./packages/vest/src/core/ctx.js"
+      ],
+      "collectFailureMessages": [
+        "./packages/vest/src/core/produce/collectFailureMessages.js"
+      ],
+      "genTestsSummary": [
+        "./packages/vest/src/core/produce/genTestsSummary.js"
+      ],
+      "getFailures": [
+        "./packages/vest/src/core/produce/getFailures.js"
+      ],
+      "getFailuresByGroup": [
+        "./packages/vest/src/core/produce/getFailuresByGroup.js"
+      ],
+      "hasFaillures": [
+        "./packages/vest/src/core/produce/hasFaillures.js"
+      ],
+      "hasFailuresByGroup": [
+        "./packages/vest/src/core/produce/hasFailuresByGroup.js"
+      ],
+      "produce": [
+        "./packages/vest/src/core/produce/produce.js"
+      ],
+      "resultKeys": [
+        "./packages/vest/src/core/produce/resultKeys.js"
+      ],
+      "state": [
+        "./packages/vest/src/core/state/state.js"
+      ],
+      "usePending": [
+        "./packages/vest/src/core/state/usePending.js"
+      ],
+      "useSuiteId": [
+        "./packages/vest/src/core/state/useSuiteId.js"
+      ],
+      "useTestCallbacks": [
+        "./packages/vest/src/core/state/useTestCallbacks.js"
+      ],
+      "useTestObjects": [
+        "./packages/vest/src/core/state/useTestObjects.js"
+      ],
+      "createSuite": [
+        "./packages/vest/src/core/suite/createSuite.js"
+      ],
+      "hasRemainingTests": [
+        "./packages/vest/src/core/suite/hasRemainingTests.js"
+      ],
+      "mergeExcludedTests": [
+        "./packages/vest/src/core/test/lib/mergeExcludedTests.js"
+      ],
+      "pending": [
+        "./packages/vest/src/core/test/lib/pending.js"
+      ],
+      "VestTest": [
+        "./packages/vest/src/core/test/lib/VestTest.js"
+      ],
+      "runAsyncTest": [
+        "./packages/vest/src/core/test/runAsyncTest.js"
+      ],
+      "test": [
+        "./packages/vest/src/core/test/test.js"
+      ],
+      "draft": [
+        "./packages/vest/src/hooks/draft.js"
+      ],
+      "exclusive": [
+        "./packages/vest/src/hooks/exclusive.js"
+      ],
+      "group": [
+        "./packages/vest/src/hooks/group.js"
+      ],
+      "hookErrors": [
+        "./packages/vest/src/hooks/hookErrors.js"
+      ],
+      "hooks": [
+        "./packages/vest/src/hooks/hooks.js"
+      ],
+      "warn": [
+        "./packages/vest/src/hooks/warn.js"
+      ],
+      "cache": [
+        "./packages/vest/src/lib/cache.js"
+      ],
+      "callEach": [
+        "./packages/vest/src/lib/callEach.js"
+      ],
+      "genId": [
+        "./packages/vest/src/lib/genId.js"
+      ],
+      "removeElementFromArray": [
+        "./packages/vest/src/lib/removeElementFromArray.js"
+      ],
+      "runnableTypes": [
+        "./packages/vest/src/lib/runnableTypes.js"
+      ],
+      "any": [
+        "./packages/vest/src/utilities/any.js"
+      ],
+      "classNames": [
+        "./packages/vest/src/utilities/classNames.js"
+      ],
+      "promisify": [
+        "./packages/vest/src/utilities/promisify.js"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

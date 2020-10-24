@@ -1,15 +1,17 @@
 {
   "license": "MIT",
-  "dependencies": {},
   "scripts": {
     "build": "node ./scripts/buildAll",
     "prettier-watch": "onchange '**/*.js' '**/*.json' -- prettier --write {{changed}}",
-    "test": "jest --projects ./packages/*/",
-    "lint": "eslint . --ignore-path .gitignore"
+    "dev": "onchange -i './packages/**/src/**/*.js' -- yarn genJSConfig",
+    "genJSConfig": "node ./scripts/genJsconfig",
+    "test": "jest --projects ./packages/*",
+    "lint": "eslint . --ignore-path .gitignore",
+    "pretest": "yarn genJSConfig"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged"
+      "pre-commit": "yarn genJSConfig && pretty-quick"
     }
   },
   "prettier": {
@@ -33,6 +35,7 @@
     "@babel/preset-env": "^7.12.1",
     "@babel/register": "^7.12.1",
     "@lets/wait": "^2.0.2",
+    "@rollup/plugin-alias": "^3.1.1",
     "@rollup/plugin-babel": "^5.2.1",
     "@rollup/plugin-commonjs": "^16.0.0",
     "@rollup/plugin-node-resolve": "^10.0.0",

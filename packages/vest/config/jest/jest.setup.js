@@ -1,10 +1,9 @@
-const { PACKAGE_VEST } = require('../../../../shared/constants');
-const { packageJson, packagePath } = require('../../../../util');
+const { packageJson, packagePath, packageNames } = require('../../../../util');
 
-const { version } = packageJson(PACKAGE_VEST);
-global.LIBRARY_NAME = PACKAGE_VEST;
+const { version } = packageJson(packageNames.VEST);
+global.LIBRARY_NAME = packageNames.VEST;
 global.__LIB_VERSION__ = version;
 global.ENV_DEVELOPMENT = true;
 
 // Registers global instance
-require(packagePath(PACKAGE_VEST, 'src'));
+require(packagePath(packageNames.VEST, 'src'));

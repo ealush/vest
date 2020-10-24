@@ -1,7 +1,8 @@
 import enforce from 'n4s';
-import create from './core/suite/create';
-import test from './core/test';
-import { draft, only, skip, warn, group } from './hooks';
+
+import create from 'createSuite';
+import { draft, only, skip, warn, group } from 'hooks';
+import test from 'test';
 
 const VERSION = __LIB_VERSION__;
 

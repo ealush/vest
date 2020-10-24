@@ -1,13 +1,13 @@
 const addEsmDir = require('../../../../config/rollup/addEsmDir');
 const genConfig = require('../../../../config/rollup/genConfig');
 const writeMainTemplate = require('../../../../config/rollup/writeMainTemplate');
-const { PACKAGE_N4S } = require('../../../../shared/constants');
-const { packageDist } = require('../../../../util');
+const { packageDist, packageNames } = require('../../../../util');
 
-addEsmDir(packageDist(PACKAGE_N4S));
-writeMainTemplate(packageDist(PACKAGE_N4S), PACKAGE_N4S);
+addEsmDir(packageDist(packageNames.N4S));
+writeMainTemplate(packageDist(packageNames.N4S), packageNames.N4S);
 
 export default genConfig({
-  libraryName: PACKAGE_N4S,
-  distPath: packageDist(PACKAGE_N4S),
+  libraryName: packageNames.N4S,
+  distPath: packageDist(packageNames.N4S),
+  input: 'enforce/enforce.js',
 });

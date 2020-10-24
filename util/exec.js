@@ -1,4 +1,5 @@
 const execSync = require('child_process').execSync;
+
 const logger = require('./logger');
 
 function exec(
@@ -9,7 +10,7 @@ function exec(
     logger.info(`🎬 Executing command: "${command}"`);
   }
   try {
-    execSync(command, { stdio: 'inherit' });
+    execSync(command, { stdio: silent ? 'ignore' : 'inherit' });
   } catch (err) {
     if (throwOnFailure) {
       throw err;

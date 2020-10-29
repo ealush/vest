@@ -1,15 +1,23 @@
 const path = require('path');
-const { BABEL_CONFIG_PATH, CONFIG_PATH } = require('..');
+
+const { moduleAliases, filePaths } = require('../../util');
+
+const moduleNameMapper = moduleAliases.reduce(
+  (aliases, { name, absolute }) =>
+    Object.assign(aliases, { [`^${name}$`]: absolute }),
+  {}
+);
 
 module.exports = (options = {}) => ({
   clearMocks: true,
+  moduleNameMapper,
   rootDir: '.',
   roots: ['<rootDir>'],
-  setupFilesAfterEnv: [path.join(CONFIG_PATH, 'jest/jest.setup.js')],
+  setupFilesAfterEnv: [path.join(filePaths.CONFIG_PATH, 'jest/jest.setup.js')],
   testEnvironment: 'node',
-  testMatch: ['**/*/(spec|test).js', '**/*.(spec|test).js'],
+  testMatch: ['**/*.(spec|test).js'],
   transform: {
-    '\\.js$': ['babel-jest', { configFile: BABEL_CONFIG_PATH }],
+    '^.+\\.js$': ['babel-jest', { configFile: filePaths.BABEL_CONFIG_PATH }],
   },
   ...options,
 });

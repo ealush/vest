@@ -1,6 +1,7 @@
 const path = require('path');
 
 const { packageJson, packagePath } = require('../../util');
+
 const getPlugins = require('./getPlugins');
 const nameByFormat = require('./nameByFormat');
 

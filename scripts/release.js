@@ -1,13 +1,14 @@
 const { asyncForeach, logger } = require('../util');
+
 const build = require('./build');
-const publishPackage = require('./steps/publishPackage');
-const pushToLatestBranch = require('./steps/pushToLatestBranch');
-const setNextVersion = require('./steps/setNextVersion');
-const updateChangelog = require('./steps/updateChangelog');
-const updateDocs = require('./steps/updateDocs');
-const createRelease = require('./util/createRelease');
-const generatePackageData = require('./util/generatePackageData');
-const getDiff = require('./util/getDiff');
+const generatePackageData = require('./release/generatePackageData');
+const createRelease = require('./release/github/createRelease');
+const getDiff = require('./release/github/getDiff');
+const publishPackage = require('./release/steps/publishPackage');
+const pushToLatestBranch = require('./release/steps/pushToLatestBranch');
+const setNextVersion = require('./release/steps/setNextVersion');
+const updateChangelog = require('./release/steps/updateChangelog');
+const updateDocs = require('./release/steps/updateDocs');
 
 const { TRAVIS_BRANCH, RELEASE_BRANCH } = process.env;
 

@@ -1,7 +1,7 @@
-const { PACKAGE_NAMES } = require('../config');
-const { PACKAGE_VEST } = require('../shared/constants');
-const buildPackage = require('./steps/buildPackage');
-const copyDistFiles = require('./steps/copyDistFiles');
+const { packageNames } = require('../util/');
+
+const buildPackage = require('./build/buildPackage');
+const copyDistFiles = require('./build/copyDistFiles');
 
 const buildOne = packageName => {
   buildPackage(packageName);
@@ -9,13 +9,15 @@ const buildOne = packageName => {
 };
 
 const build = packageName => {
+  require('./genJsconfig');
+
   if (packageName) {
     buildOne(packageName);
   } else {
     // Build each one, guaranteed to run vest last
-    PACKAGE_NAMES.sort((a, b) => (b === PACKAGE_VEST ? -1 : 0)).forEach(
-      buildOne
-    );
+    packageNames.ALL_PACKAGES.sort((a, b) =>
+      b === packageNames.VEST ? -1 : 0
+    ).forEach(buildOne);
   }
 };
 

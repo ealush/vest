@@ -1,3 +1,5 @@
+const { DIR_NAME_PACKAGES } = require('../../util/filePaths');
+
 const env = api => {
   const conf = {
     targets: {},
@@ -31,7 +33,7 @@ module.exports = api => {
   ].filter(Boolean);
 
   return {
-    include: [/src/, /testUtils/, /node_modules/],
+    include: [new RegExp(DIR_NAME_PACKAGES), /testUtils/, /node_modules/],
     presets,
     plugins,
   };

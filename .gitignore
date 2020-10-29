@@ -12,3 +12,6 @@ packages/*/*.js
 packages/*/*.js.map
 packages/*/*.d.ts
 packages/*/*.mjs
+
+# Unignore direct js files
+!jest.config.js

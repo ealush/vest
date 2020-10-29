@@ -1,4 +1,9 @@
 const skipWords = require('./config/eslint/spellCheckerSkip');
+const jsconfig = require('./jsconfig.json');
+
+const paths = jsconfig.compilerOptions.paths;
+
+const aliases = Object.keys(paths);
 
 module.exports = {
   env: {
@@ -20,6 +25,15 @@ module.exports = {
     ENV_DEVELOPMENT: true,
   },
   ignorePatterns: ['playground'],
+  overrides: [
+    {
+      files: ['./packages/*/src/**/*.js'],
+      excludedFiles: '*.test.js',
+      rules: {
+        'import/no-relative-parent-imports': 2,
+      },
+    },
+  ],
   parser: 'babel-eslint',
   parserOptions: {
     babelOptions: {
@@ -34,15 +48,21 @@ module.exports = {
   plugins: ['jest', 'spellcheck'],
 
   rules: {
+    'import/extensions': [2, 'never'],
+    'import/first': 2,
     'import/newline-after-import': 2,
     'import/no-self-import': 2,
+    'import/no-unresolved': [2, { ignore: aliases }],
     'import/no-useless-path-segments': 2,
+
     'import/order': [
       'error',
       {
         alphabetize: {
           order: 'asc',
         },
+        'newlines-between': 'always',
+        pathGroups: [{ pattern: `*(${aliases.join('|')})`, group: 'internal' }],
         pathGroupsExcludedImportTypes: ['builtin'],
       },
     ],
@@ -65,7 +85,6 @@ module.exports = {
     'no-var': 2,
     'no-warning-comments': 2,
     'object-shorthand': [2, 'always', { avoidQuotes: true }],
-    'prefer-arrow-callback': 2,
     'prefer-const': 2,
     'sort-keys': [
       1,

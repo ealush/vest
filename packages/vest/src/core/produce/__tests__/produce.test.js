@@ -722,13 +722,13 @@ describe('module: produce', () => {
       const control = jest.fn();
       let draft;
       const validate = vest.create('cache', () => {
-        draft = vest.draft();
+        draft = validate.get();
         getStateFromContext();
-        expect(draft).toBe(vest.draft());
+        expect(draft).toBe(validate.get());
         expect(produce(/*isDraft:*/ true)).toBe(validate.get());
         testDummy(vest).failing();
         expect(produce()).not.toBe(validate.get());
-        expect(draft).not.toBe(vest.draft());
+        expect(draft).not.toBe(validate.get());
         testDummy(vest).failing();
         control();
       });

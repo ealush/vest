@@ -197,9 +197,6 @@
       "test": [
         "./packages/vest/src/core/test/test.js"
       ],
-      "draft": [
-        "./packages/vest/src/hooks/draft.js"
-      ],
       "exclusive": [
         "./packages/vest/src/hooks/exclusive.js"
       ],

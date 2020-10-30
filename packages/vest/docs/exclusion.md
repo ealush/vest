@@ -102,7 +102,3 @@ If you combine `vest.only.group` with `vest.skip`, if you skip a field inside a 
 **vest.skip.group()**
 
 If you combine `vest.skip.group` with `vest.only` your included field declared within the skipped tests will be ignored.
-
-**Read next about:**
-
-- [Accessing intermediate suite result](./draft).

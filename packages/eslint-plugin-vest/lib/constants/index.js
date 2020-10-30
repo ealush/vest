@@ -1,5 +1,4 @@
 const constants = {
-  VEST_HOOK_DRAFT: 'draft',
   VEST_HOOK_ONLY: 'only',
   VEST_HOOK_SKIP: 'skip',
   VEST_HOOK_WARN: 'warn',
@@ -12,7 +11,6 @@ constants.ALL_VEST_HOOKS = [
   constants.VEST_HOOK_WARN,
   constants.VEST_HOOK_ONLY,
   constants.VEST_HOOK_SKIP,
-  constants.VEST_HOOK_DRAFT,
 ];
 
 constants.VEST_EXCLUSIVE_HOOKS = [

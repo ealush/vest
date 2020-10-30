@@ -381,26 +381,12 @@ declare module 'vest' {
      */
     warn(): void;
 
-    /**
-     * Retrieves an intermediate validation result during the validation runtime.
-     */
-    draft(): DraftResult;
     VERSION: string;
   }
 
-  const {
-    test,
-    create,
-    warn,
-    draft,
-    VERSION,
-    enforce,
-    skip,
-    only,
-    group,
-  }: Vest;
+  const { test, create, warn, VERSION, enforce, skip, only, group }: Vest;
 
-  export { test, create, warn, draft, VERSION, enforce, skip, only, group };
+  export { test, create, warn, VERSION, enforce, skip, only, group };
 
   const vest: Vest;
 

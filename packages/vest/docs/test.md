@@ -115,4 +115,3 @@ export default vest.create('form-name', data => {
 - [Grouping tests](./group).
 - [Asserting with enforce](./enforce).
 - [Skipping or including tests](./exclusion).
-- [Accessing intermediate suite result](./draft).

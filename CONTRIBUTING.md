@@ -54,7 +54,6 @@ packages/
 │   │   │   └── suite/          # Contains all the suite modules and methods
 │   │   │       └── createSuite # Initializes the suite and creates a context and state.
 │   │   └── hooks/          # Functions that extend vest's functionality. They all use context.
-│   │   │   └── draft       # Allows access to the intermediate test result.
 │   │   │   └── exclusive   # Allows including or excluding fields in runtime.
 │   │   │   └── warn        # Allows setting warn-only fields.
 │   │   │   └── group       # Adds another nesting level within suites.

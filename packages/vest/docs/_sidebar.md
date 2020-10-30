@@ -9,5 +9,4 @@
 - Advanced cases
   - [Using with node](./node)
   - [Excluding or including tests](./exclusion)
-  - [Accessing intermediate suite result](./draft)
   - [Utilities](./utilities)

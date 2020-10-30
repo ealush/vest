@@ -3,7 +3,7 @@ import isRule from 'isRule';
 import proxySupported from 'proxySupported';
 import rules from 'rules';
 
-const rulesObject = { ...rules };
+const rulesObject = rules();
 
 let enforce, rulesList;
 

@@ -1,15 +1,13 @@
 import bindNot from 'bindNot';
+import isString from 'isStringValue';
 
 export function inside(value, arg1) {
-  if (
-    Array.isArray(arg1) &&
-    ['string', 'number', 'boolean'].indexOf(typeof value) !== -1
-  ) {
+  if (Array.isArray(arg1) && /^[s|n|b]/.test(typeof value)) {
     return arg1.indexOf(value) !== -1;
   }
 
   // both value and arg1 are strings
-  if (typeof arg1 === 'string' && typeof value === 'string') {
+  if (isString(arg1) && isString(value)) {
     return arg1.indexOf(value) !== -1;
   }
 

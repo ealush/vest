@@ -1,22 +1,11 @@
 import VestTest from 'VestTest';
-import createCache from 'cache';
+import addTestToState from 'addTestToState';
 import context from 'ctx';
 import { isExcluded } from 'exclusive';
 import isFunction from 'isFunction';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
-import useSuiteId from 'useSuiteId';
-import useTestObjects from 'useTestObjects';
-
-let cache;
-
-/**
- * Stores test object inside suite state.
- * @param {VestTest} testObject
- */
-const addTestToState = testObject => {
-  useTestObjects(testObjects => testObjects.concat(testObject));
-};
+import bindTestMemo from 'test.memo';
 
 /**
  * Runs sync tests - or extracts promise.
@@ -102,47 +91,7 @@ const test = (fieldName, ...args) => {
   return testObject;
 };
 
-/**
- * Caches, or returns an already cached test call
- * @param {String} fieldName    Name of the field to test.
- * @param {String} [statement]  The message returned in case of a failure.
- * @param {function} testFn     The actual test callback.
- * @param {any[]} deps          Dependency array.
- * @return {VestTest}           A VestTest instance.
-
- */
-test.memo = (fieldName, ...args) => {
-  cache = cache || createCache(100);
-
-  const [suiteId] = useSuiteId();
-
-  const [deps, testFn, msg] = args.reverse();
-
-  // Implicit dependency for more specificity
-  const dependencies = [suiteId.id, fieldName].concat(deps);
-
-  const cached = cache.get(dependencies);
-
-  if (cached === null) {
-    // Cache miss. Start fresh
-    return cache(dependencies, () => test(fieldName, msg, testFn));
-  }
-
-  const [, testObject] = cached;
-
-  if (isExcluded(testObject)) {
-    return testObject;
-  }
-
-  addTestToState(testObject);
-
-  if (isFunction(testObject?.asyncTest?.then)) {
-    setPending(testObject);
-    runAsyncTest(testObject);
-  }
-
-  return testObject;
-};
+bindTestMemo(test);
 
 /* eslint-disable jest/no-export */
 export default test;

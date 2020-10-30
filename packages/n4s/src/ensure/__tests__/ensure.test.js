@@ -2,7 +2,7 @@ import { sample } from 'lodash';
 
 import rules from 'rules';
 
-const allRules = Object.keys(rules);
+const allRules = Object.keys(rules());
 const _proxy = Proxy;
 
 const suite = ({ withProxy, requirePath }) =>

@@ -182,6 +182,9 @@
       "hasRemainingTests": [
         "./packages/vest/src/core/suite/hasRemainingTests.js"
       ],
+      "addTestToState": [
+        "./packages/vest/src/core/test/lib/addTestToState.js"
+      ],
       "mergeExcludedTests": [
         "./packages/vest/src/core/test/lib/mergeExcludedTests.js"
       ],
@@ -196,6 +199,9 @@
       ],
       "test": [
         "./packages/vest/src/core/test/test.js"
+      ],
+      "test.memo": [
+        "./packages/vest/src/core/test/test.memo.js"
       ],
       "exclusive": [
         "./packages/vest/src/hooks/exclusive.js"

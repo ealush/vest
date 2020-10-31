@@ -2,10 +2,8 @@ import isFunction from 'isFunction';
 import throwError from 'throwError';
 
 export function validateResult(result, rule) {
-  if (
-    typeof result !== 'boolean' &&
-    (!result || typeof result.pass !== 'boolean')
-  ) {
+  // if result is boolean, or if result.pass is boolean
+  if (!!result !== result && (!result || !!result.pass !== result.pass)) {
     throwError(
       `${rule.name} wrong return value for the rule please check that the return is valid`
     );
@@ -38,7 +36,8 @@ export function transformResult(result, { rule, value }) {
   const defaultResult = getDefaultResult(value, rule);
   validateResult(result, rule);
 
-  if (typeof result === 'boolean') {
+  // if result is boolean
+  if (!!result === result) {
     return { ...defaultResult, pass: result };
   } else {
     const formattedResult = {

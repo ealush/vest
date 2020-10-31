@@ -17,7 +17,7 @@ const createTestFn = registeredRules => value =>
 
 let ensure, rulesList;
 
-const rulesObject = { ...rules };
+const rulesObject = rules();
 
 if (proxySupported()) {
   ensure = () => {

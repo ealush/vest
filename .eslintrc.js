@@ -50,7 +50,7 @@ module.exports = {
   rules: {
     'import/extensions': [2, 'never'],
     'import/first': 2,
-    'import/newline-after-import': 2,
+    'import/newline-after-import': 1,
     'import/no-self-import': 2,
     'import/no-unresolved': [2, { ignore: aliases }],
     'import/no-useless-path-segments': 2,

@@ -8,7 +8,7 @@ const rulesObject = rules();
 let enforce, rulesList;
 
 if (proxySupported()) {
-  enforce = value => {
+  const enforceMain = value => {
     const proxy = new Proxy(rulesObject, {
       get: (rules, fnName) => {
         if (!isRule(rules, fnName)) {
@@ -23,10 +23,20 @@ if (proxySupported()) {
     });
     return proxy;
   };
+
+  enforce = new Proxy(enforceMain, {
+    get: (enforce, fnName) => {
+      if (!isRule(rulesObject, fnName)) {
+        return;
+      }
+
+      return (...ruleArgs) => value => rulesObject[fnName](value, ...ruleArgs);
+    },
+  });
 } else {
   rulesList = Object.keys(rulesObject);
 
-  enforce = value =>
+  const enforce = value =>
     rulesList.reduce(
       (allRules, fnName) =>
         Object.assign(allRules, {
@@ -39,6 +49,15 @@ if (proxySupported()) {
         }),
       {}
     );
+  rulesList.reduce(
+    (enforce,
+    ruleName =>
+      Object.assign(enforce, {
+        [ruleName]: (...ruleArgs) => value =>
+          rulesObject[ruleName](value, ...ruleArgs),
+      })),
+    enforce
+  );
 }
 
 enforce.extend = customRules => {
@@ -46,6 +65,14 @@ enforce.extend = customRules => {
 
   if (!proxySupported()) {
     rulesList = Object.keys(rulesObject);
+    Object.keys(customRules).reduce(
+      (enforce, ruleName) =>
+        Object.assign(enforce, {
+          [ruleName]: (...ruleArgs) => value =>
+            rulesObject[ruleName](value, ...ruleArgs),
+        }),
+      enforce
+    );
   }
 
   return enforce;

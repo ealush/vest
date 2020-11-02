@@ -2,6 +2,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "anyOf": [
+        "./packages/__shared/src/anyOf.js"
+      ],
       "isFunction": [
         "./packages/__shared/src/isFunction.js"
       ],

@@ -1,6 +1,5 @@
-import enforce from 'n4s';
-
 import create from 'createSuite';
+import enforce from 'enforce';
 import { only, skip, warn, group } from 'hooks';
 import test from 'test';
 

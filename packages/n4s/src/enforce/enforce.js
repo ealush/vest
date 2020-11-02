@@ -7,12 +7,24 @@ const rulesObject = rules();
 
 let enforce, rulesList;
 
+const bindLazyRule = ruleName => (...args) => value =>
+  rulesObject[ruleName](value, ...args);
+
+const bindLazyRules = rules =>
+  rules.reduce(
+    (enforce, ruleName) =>
+      Object.assign(enforce, {
+        [ruleName]: bindLazyRule(ruleName),
+      }),
+    enforce
+  );
+
 if (proxySupported()) {
   const enforceMain = value => {
     const proxy = new Proxy(rulesObject, {
       get: (rules, fnName) => {
         if (!isRule(rules, fnName)) {
-          return;
+          return enforce[fnName];
         }
 
         return (...args) => {
@@ -24,40 +36,34 @@ if (proxySupported()) {
     return proxy;
   };
 
+  // This is for lazy enforcement: enforce.isArray()([]) // true
   enforce = new Proxy(enforceMain, {
     get: (enforce, fnName) => {
       if (!isRule(rulesObject, fnName)) {
-        return;
+        return enforce[fnName];
       }
 
-      return (...ruleArgs) => value => rulesObject[fnName](value, ...ruleArgs);
+      return bindLazyRule(fnName);
     },
   });
 } else {
   rulesList = Object.keys(rulesObject);
 
-  const enforce = value =>
-    rulesList.reduce(
-      (allRules, fnName) =>
-        Object.assign(allRules, {
-          ...(isRule(rulesObject, fnName) && {
-            [fnName]: (...args) => {
-              runner(rulesObject[fnName], value, ...args);
-              return allRules;
-            },
-          }),
-        }),
-      {}
-    );
-  rulesList.reduce(
-    (enforce,
-    ruleName =>
-      Object.assign(enforce, {
-        [ruleName]: (...ruleArgs) => value =>
-          rulesObject[ruleName](value, ...ruleArgs),
-      })),
-    enforce
-  );
+  // This is for lazy enforcement: enforce.isArray()([]) // true
+  enforce = value =>
+    rulesList.reduce((allRules, fnName) => {
+      if (!isRule(rulesObject, fnName)) {
+        return enforce[fnName];
+      }
+      return Object.assign(allRules, {
+        [fnName]: (...args) => {
+          runner(rulesObject[fnName], value, ...args);
+          return allRules;
+        },
+      });
+    }, {});
+
+  bindLazyRules(rulesList);
 }
 
 enforce.extend = customRules => {
@@ -65,14 +71,7 @@ enforce.extend = customRules => {
 
   if (!proxySupported()) {
     rulesList = Object.keys(rulesObject);
-    Object.keys(customRules).reduce(
-      (enforce, ruleName) =>
-        Object.assign(enforce, {
-          [ruleName]: (...ruleArgs) => value =>
-            rulesObject[ruleName](value, ...ruleArgs),
-        }),
-      enforce
-    );
+    bindLazyRules(Object.keys(customRules));
   }
 
   return enforce;

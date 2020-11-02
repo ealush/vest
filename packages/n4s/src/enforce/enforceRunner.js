@@ -1,4 +1,3 @@
-import isFunction from 'isFunction';
 import { transformResult } from 'transformResult';
 
 /**
@@ -10,10 +9,6 @@ import { transformResult } from 'transformResult';
  * @throws
  */
 function runner(rule, value, ...args) {
-  if (!isFunction(rule)) {
-    return;
-  }
-
   const ruleResult = rule(value, ...args);
   const result = transformResult(ruleResult, { rule, value });
   if (!result.pass) {

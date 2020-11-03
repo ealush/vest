@@ -54,7 +54,7 @@
     "fs-extra": "^9.0.1",
     "husky": "^4.3.0",
     "jest": "^26.6.2",
-    "jest-cli": "^26.6.1",
+    "jest-cli": "^26.6.2",
     "lodash": "^4.17.20",
     "node-fetch": "^2.6.1",
     "onchange": "^7.1.0",

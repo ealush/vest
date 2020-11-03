@@ -241,6 +241,12 @@
       ],
       "promisify": [
         "./packages/vest/src/utilities/promisify.js"
+      ],
+      "vest": [
+        "./packages/vest/src/vest.js"
+      ],
+      "vest.mjs": [
+        "./packages/vest/src/vest.mjs.js"
       ]
     }
   },

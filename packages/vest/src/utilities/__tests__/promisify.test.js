@@ -1,8 +1,9 @@
 import faker from 'faker';
 
-import vest from '../..';
 import { dummyTest } from '../../../testUtils/testDummy';
 import promisify from '../promisify';
+
+import vest from 'vest';
 
 describe('Utility: promisify', () => {
   let validatorFn;

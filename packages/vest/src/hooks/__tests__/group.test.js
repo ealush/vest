@@ -2,12 +2,12 @@ import faker from 'faker';
 import _ from 'lodash';
 import enforce from 'n4s';
 
-import vest from '../..';
 import collector from '../../../testUtils/collector';
 import { dummyTest } from '../../../testUtils/testDummy';
 
 import context from 'ctx';
 import group from 'group';
+import vest from 'vest';
 
 let suiteName = 'suite_name';
 let groupName = 'group_name_1';

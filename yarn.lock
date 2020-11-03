@@ -1148,11 +1148,6 @@
   resolved "https://registry.yarnpkg.com/@jridgewell/resolve-uri/-/resolve-uri-1.0.0.tgz#3fdf5798f0b49e90155896f6291df186eac06c83"
   integrity sha512-9oLAnygRMi8Q5QkYEU4XWK04B+nuoXoxjRvRxgjuChkLZFBja0YPSgdZ7dZtwhncLBcQe/I/E+fLuk5qxcYVJA==
 
-"@lets/wait@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@lets/wait/-/wait-2.0.2.tgz#ea2e71c8f52e2028355fdec9fcb524d38580f76f"
-  integrity sha512-pDxo/Z7sht1jlrgUuwOdTFK2z/Swyfet1HeiuX6ZImx1ns/wAjaVQ1X1QRrG+lhw9gvIOWJKgrNXrmc+6/6hxw==
-
 "@nicolo-ribaudo/chokidar-2@^2.1.8":
   version "2.1.8"
   resolved "https://registry.yarnpkg.com/@nicolo-ribaudo/chokidar-2/-/chokidar-2-2.1.8.tgz#eef8d9b47e8dc589499f14d656e8d2dd978c3d14"
@@ -5864,6 +5859,11 @@ w3c-xmlserializer@^2.0.0:
   integrity sha512-4tzD0mF8iSiMiNs30BiLO3EpfGLZUT2MSX/G+o7ZywDzliWQ3OPtTZ0PTC3B3ca1UAf4cJMHB+2Bf56EriJuRA==
   dependencies:
     xml-name-validator "^3.0.0"
+
+wait@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/wait/-/wait-0.4.1.tgz#a4dc2ba71341d0301ea90546dd5442fe0ed55665"
+  integrity sha512-vOESbSWs5Jug9KvHMhjosjc7zOtKk8NflQx4XwsbWhmuGBZ6A1o6lfsm13KFrcxzbfPrJ5PfXs3OPLnkWskffA==
 
 walker@^1.0.7, walker@~1.0.5:
   version "1.0.7"

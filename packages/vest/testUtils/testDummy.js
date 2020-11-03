@@ -1,7 +1,7 @@
 /* eslint-disable jest/no-export */
 import faker from 'faker';
 
-import vest from '../src';
+import vest from 'vest';
 
 /**
  * Generates dummy vest tests.

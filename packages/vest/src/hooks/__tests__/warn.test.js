@@ -1,9 +1,8 @@
 import faker from 'faker';
 
-import vest from '../..';
-
 import context from 'ctx';
 import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
+import vest from 'vest';
 
 const { create, test, warn } = vest;
 
@@ -28,7 +27,7 @@ describe('warn hook', () => {
     let warn, create;
 
     beforeEach(() => {
-      ({ create, warn } = require('../..'));
+      ({ create, warn } = require('vest'));
     });
 
     it('Should throw error when currentTest is not present', () => {

@@ -1,10 +1,9 @@
-import wait from '@lets/wait';
 import enforce from 'n4s';
-
-import vest from '../../..';
+import wait from 'wait';
 
 import promisify from 'promisify';
 import test from 'test';
+import vest from 'vest';
 
 const genValidate = (tests, suiteName = 'suite_name') =>
   vest.create(suiteName, tests);

@@ -1,5 +1,6 @@
-import vest from '..';
 import testDummy from '../../testUtils/testDummy';
+
+import vest from 'vest';
 
 const suiteName = 'suite_name';
 

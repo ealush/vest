@@ -7,12 +7,24 @@ const rulesObject = rules();
 
 let enforce, rulesList;
 
+const bindLazyRule = ruleName => (...args) => value =>
+  rulesObject[ruleName](value, ...args);
+
+const bindLazyRules = rules =>
+  rules.reduce(
+    (enforce, ruleName) =>
+      Object.assign(enforce, {
+        [ruleName]: bindLazyRule(ruleName),
+      }),
+    enforce
+  );
+
 if (proxySupported()) {
-  enforce = value => {
+  const enforceMain = value => {
     const proxy = new Proxy(rulesObject, {
       get: (rules, fnName) => {
         if (!isRule(rules, fnName)) {
-          return;
+          return enforce[fnName];
         }
 
         return (...args) => {
@@ -23,22 +35,35 @@ if (proxySupported()) {
     });
     return proxy;
   };
+
+  // This is for lazy enforcement: enforce.isArray()([]) // true
+  enforce = new Proxy(enforceMain, {
+    get: (enforce, fnName) => {
+      if (!isRule(rulesObject, fnName)) {
+        return enforce[fnName];
+      }
+
+      return bindLazyRule(fnName);
+    },
+  });
 } else {
   rulesList = Object.keys(rulesObject);
 
+  // This is for lazy enforcement: enforce.isArray()([]) // true
   enforce = value =>
-    rulesList.reduce(
-      (allRules, fnName) =>
-        Object.assign(allRules, {
-          ...(isRule(rulesObject, fnName) && {
-            [fnName]: (...args) => {
-              runner(rulesObject[fnName], value, ...args);
-              return allRules;
-            },
-          }),
-        }),
-      {}
-    );
+    rulesList.reduce((allRules, fnName) => {
+      if (!isRule(rulesObject, fnName)) {
+        return enforce[fnName];
+      }
+      return Object.assign(allRules, {
+        [fnName]: (...args) => {
+          runner(rulesObject[fnName], value, ...args);
+          return allRules;
+        },
+      });
+    }, {});
+
+  bindLazyRules(rulesList);
 }
 
 enforce.extend = customRules => {
@@ -46,6 +71,7 @@ enforce.extend = customRules => {
 
   if (!proxySupported()) {
     rulesList = Object.keys(rulesObject);
+    bindLazyRules(Object.keys(customRules));
   }
 
   return enforce;

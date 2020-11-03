@@ -38,17 +38,15 @@ export function transformResult(result, { rule, value }) {
 
   // if result is boolean
   if (!!result === result) {
-    return { ...defaultResult, pass: result };
+    return (defaultResult.pass = result), defaultResult;
   } else {
-    const formattedResult = {
-      pass: result.pass,
-    };
+    defaultResult.pass = result.pass;
     if (result.message) {
-      formattedResult.message = formatResultMessage(
+      defaultResult.message = formatResultMessage(
         rule,
         isFunction(result.message) ? result.message() : result.message
       );
     }
-    return { ...defaultResult, ...formattedResult };
+    return defaultResult;
   }
 }

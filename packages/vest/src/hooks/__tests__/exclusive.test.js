@@ -1,4 +1,3 @@
-import vest from '../..';
 import mock from '../../../testUtils/mock';
 import testDummy from '../../../testUtils/testDummy';
 
@@ -6,6 +5,7 @@ import VestTest from 'VestTest';
 import context from 'ctx';
 import group from 'group';
 import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
+import vest from 'vest';
 
 const faker = require('faker');
 

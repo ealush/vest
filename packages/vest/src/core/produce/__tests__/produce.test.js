@@ -1,6 +1,5 @@
 import _ from 'lodash';
 
-import vest from '../../..';
 import collector from '../../../../testUtils/collector';
 import testDummy from '../../../../testUtils/testDummy';
 
@@ -12,6 +11,7 @@ import produce from 'produce';
 import { SEVERITY_COUNT_ERROR, SEVERITY_COUNT_WARN } from 'resultKeys';
 import useTestCallbacks from 'useTestCallbacks';
 import useTestObjects from 'useTestObjects';
+import vest from 'vest';
 
 const DRAFT_EXCLUDED_METHODS = ['done'];
 const GENERATED_METHODS = [

@@ -98,91 +98,69 @@ export type IVestResult = {
 };
 
 export type EnforceExtendMap<T> = {
-  [K in keyof T]: (...args: any[]) => IEnforceRules<T> & EnforceExtendMap<T>;
+  [K in keyof T]: (...args: any[]) => RuleReturn<T>;
 };
 
+type RuleReturn<T> = IEnforceRules<T> & EnforceExtendMap<T>;
+
+type TNumeral = number | string;
+type RuleNumeral<T> = (expected: TNumeral) => RuleReturn<T>;
+type RuleRange<T> = (start: TNumeral, end: TNumeral) => RuleReturn<T>;
+type RuleNoExpectedValue<T> = () => RuleReturn<T>;
+type RuleString<T> = (str: string) => RuleReturn<T>;
+type RuleMatches<T> = (expected: string | RegExp) => RuleReturn<T>;
+type RuleAny<T> = (expected: any) => RuleReturn<T>;
+type RuleInside<T> = (
+  expected: Array<string | number | boolean> | string
+) => RuleReturn<T>;
 export interface IEnforceRules<T = {}> {
-  equals: (expected: any) => IEnforceRules<T> & EnforceExtendMap<T>;
-  notEquals: (expected: any) => IEnforceRules<T> & EnforceExtendMap<T>;
-  numberEquals: (
-    expected: number | string
-  ) => IEnforceRules<T> & EnforceExtendMap<T>;
-  greaterThan: (
-    expected: number | string
-  ) => IEnforceRules<T> & EnforceExtendMap<T>;
-  greaterThanOrEquals: (
-    expected: number | string
-  ) => IEnforceRules<T> & EnforceExtendMap<T>;
-  lessThan: (
-    expected: number | string
-  ) => IEnforceRules<T> & EnforceExtendMap<T>;
-  lessThanOrEquals: (
-    expected: number | string
-  ) => IEnforceRules<T> & EnforceExtendMap<T>;
-  longerThan: (
-    expected: number | string
-  ) => IEnforceRules<T> & EnforceExtendMap<T>;
-  longerThanOrEquals: (
-    expected: number | string
-  ) => IEnforceRules<T> & EnforceExtendMap<T>;
-  shorterThan: (
-    expected: number | string
-  ) => IEnforceRules<T> & EnforceExtendMap<T>;
-  shorterThanOrEquals: (
-    expected: number | string
-  ) => IEnforceRules<T> & EnforceExtendMap<T>;
-  gt: (expected: number | string) => IEnforceRules<T> & EnforceExtendMap<T>;
-  gte: (expected: number | string) => IEnforceRules<T> & EnforceExtendMap<T>;
-  lt: (expected: number | string) => IEnforceRules<T> & EnforceExtendMap<T>;
-  lte: (expected: number | string) => IEnforceRules<T> & EnforceExtendMap<T>;
-  isBetween: (
-    start: number,
-    end: number
-  ) => IEnforceRules<T> & EnforceExtendMap<T>;
-  endsWith: (suffix: string) => IEnforceRules<T> & EnforceExtendMap<T>;
-  startsWith: (prefix: string) => IEnforceRules<T> & EnforceExtendMap<T>;
-  doesNotEndWith: (suffix: string) => IEnforceRules<T> & EnforceExtendMap<T>;
-  doesNotStartWith: (prefix: string) => IEnforceRules<T> & EnforceExtendMap<T>;
-  numberNotEquals: (
-    expected: number | string
-  ) => IEnforceRules<T> & EnforceExtendMap<T>;
-  matches: (
-    expected: string | RegExp
-  ) => IEnforceRules<T> & EnforceExtendMap<T>;
-  notMatches: (
-    expected: string | RegExp
-  ) => IEnforceRules<T> & EnforceExtendMap<T>;
-  isUndefined: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  isArray: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  isEmpty: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  isEven: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  isNumber: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  isNaN: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  isNotNaN: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  isNumeric: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  isOdd: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  isTruthy: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  isFalsy: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  isString: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  isNotArray: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  isNotEmpty: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  isNotNumber: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  isNotNumeric: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  isNotBetween: (
-    start: number,
-    end: number
-  ) => IEnforceRules<T> & EnforceExtendMap<T>;
-  isNotString: () => IEnforceRules<T> & EnforceExtendMap<T>;
-  inside: (
-    expected: Array<string | number | boolean> | string
-  ) => IEnforceRules<T> & EnforceExtendMap<T>;
-  notInside: (
-    expected: Array<string | number | boolean> | string
-  ) => IEnforceRules<T> & EnforceExtendMap<T>;
-  lengthEquals: (expected: number) => IEnforceRules<T> & EnforceExtendMap<T>;
-  lengthNotEquals: (expected: number) => IEnforceRules<T> & EnforceExtendMap<T>;
-  isNegative: (expected: number) => IEnforceRules<T> & EnforceExtendMap<T>;
-  isPositive: (expected: number) => IEnforceRules<T> & EnforceExtendMap<T>;
+  equals: RuleAny<T>;
+  notEquals: RuleAny<T>;
+  numberEquals: RuleNumeral<T>;
+  greaterThan: RuleNumeral<T>;
+  greaterThanOrEquals: RuleNumeral<T>;
+  lessThan: RuleNumeral<T>;
+  lessThanOrEquals: RuleNumeral<T>;
+  longerThan: RuleNumeral<T>;
+  longerThanOrEquals: RuleNumeral<T>;
+  shorterThan: RuleNumeral<T>;
+  shorterThanOrEquals: RuleNumeral<T>;
+  gt: RuleNumeral<T>;
+  gte: RuleNumeral<T>;
+  lt: RuleNumeral<T>;
+  lte: RuleNumeral<T>;
+  isBetween: RuleRange<T>;
+  endsWith: RuleString<T>;
+  startsWith: RuleString<T>;
+  doesNotEndWith: RuleString<T>;
+  doesNotStartWith: RuleString<T>;
+  numberNotEquals: RuleNumeral<T>;
+  matches: RuleMatches<T>;
+  notMatches: RuleMatches<T>;
+  isUndefined: RuleNoExpectedValue<T>;
+  isArray: RuleNoExpectedValue<T>;
+  isEmpty: RuleNoExpectedValue<T>;
+  isEven: RuleNoExpectedValue<T>;
+  isNumber: RuleNoExpectedValue<T>;
+  isNaN: RuleNoExpectedValue<T>;
+  isNotNaN: RuleNoExpectedValue<T>;
+  isNumeric: RuleNoExpectedValue<T>;
+  isOdd: RuleNoExpectedValue<T>;
+  isTruthy: RuleNoExpectedValue<T>;
+  isFalsy: RuleNoExpectedValue<T>;
+  isString: RuleNoExpectedValue<T>;
+  isNotArray: RuleNoExpectedValue<T>;
+  isNotEmpty: RuleNoExpectedValue<T>;
+  isNotNumber: RuleNoExpectedValue<T>;
+  isNotNumeric: RuleNoExpectedValue<T>;
+  isNotBetween: RuleRange<T>;
+  isNotString: RuleNoExpectedValue<T>;
+  inside: RuleInside<T>;
+  notInside: RuleInside<T>;
+  lengthEquals: RuleNumeral<T>;
+  lengthNotEquals: RuleNumeral<T>;
+  isNegative: RuleNumeral<T>;
+  isPositive: RuleNumeral<T>;
 }
 
 interface IEnforce {
@@ -208,6 +186,68 @@ interface IEnforce {
     obj: T
   ): (value: any) => IEnforceRules<T> & EnforceExtendMap<T>;
 }
+
+type LazyEnforceValue = (enforceValue?: any) => boolean;
+type LazyNumeral = (expected: TNumeral) => LazyEnforceValue;
+type JustLazy = () => LazyEnforceValue;
+type LazyString = (str: string) => LazyEnforceValue;
+type LazyRange = (start: number, end: number) => LazyEnforceValue;
+type LazyMatches = (expected: string | RegExp) => LazyEnforceValue;
+type LazyAny = (expected: any) => LazyEnforceValue;
+type LazyInside = (
+  expected: Array<string | number | boolean> | string
+) => LazyEnforceValue;
+
+type TEnforceLazy = {
+  [key: string]: (...args: any[]) => LazyEnforceValue;
+  equals: LazyAny;
+  notEquals: LazyAny;
+  numberEquals: LazyNumeral;
+  greaterThan: LazyNumeral;
+  greaterThanOrEquals: LazyNumeral;
+  lessThan: LazyNumeral;
+  lessThanOrEquals: LazyNumeral;
+  longerThan: LazyNumeral;
+  longerThanOrEquals: LazyNumeral;
+  shorterThan: LazyNumeral;
+  shorterThanOrEquals: LazyNumeral;
+  gt: LazyNumeral;
+  gte: LazyNumeral;
+  lt: LazyNumeral;
+  lte: LazyNumeral;
+  isBetween: LazyRange;
+  endsWith: LazyString;
+  startsWith: LazyString;
+  doesNotEndWith: LazyString;
+  doesNotStartWith: LazyString;
+  numberNotEquals: LazyNumeral;
+  matches: LazyMatches;
+  notMatches: LazyMatches;
+  isUndefined: JustLazy;
+  isArray: JustLazy;
+  isEmpty: JustLazy;
+  isEven: JustLazy;
+  isNumber: JustLazy;
+  isNaN: JustLazy;
+  isNotNaN: JustLazy;
+  isNumeric: JustLazy;
+  isOdd: JustLazy;
+  isTruthy: JustLazy;
+  isFalsy: JustLazy;
+  isString: JustLazy;
+  isNotArray: JustLazy;
+  isNotEmpty: JustLazy;
+  isNotNumber: JustLazy;
+  isNotNumeric: JustLazy;
+  isNotBetween: LazyRange;
+  isNotString: JustLazy;
+  inside: LazyInside;
+  notInside: LazyInside;
+  lengthEquals: LazyNumeral;
+  lengthNotEquals: LazyNumeral;
+  isNegative: LazyNumeral;
+  isPositive: LazyNumeral;
+};
 
 declare module 'vest' {
   interface VestTest {
@@ -335,7 +375,7 @@ declare module 'vest' {
 
   interface Vest {
     test: ITest;
-    enforce: IEnforce;
+    enforce: IEnforce & TEnforceLazy;
     only: IOnly;
     skip: ISkip;
 

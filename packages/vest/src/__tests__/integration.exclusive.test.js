@@ -1,4 +1,4 @@
-import vest from '..';
+import vest from 'vest';
 
 let validate;
 

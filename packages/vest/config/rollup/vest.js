@@ -8,6 +8,7 @@ writeMainTemplate(packageDist(packageNames.VEST), packageNames.VEST);
 
 export default genConfig({
   distPath: packageDist(packageNames.VEST),
+  esInput: 'vest.mjs.js',
+  input: 'vest.js',
   libraryName: packageNames.VEST,
-  esInput: 'index.mjs',
 });

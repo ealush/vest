@@ -1,11 +1,9 @@
-const { packagePath, packageNames } = require('../../../util');
-
-const vestSrc = packagePath(packageNames.VEST, 'src');
+const { packageNames } = require('../../../util');
 
 const mock = (moduleName, mockImplementation) => {
   const mockFn = jest.fn(mockImplementation);
   jest.resetModules();
-  require(vestSrc); // re-require vest for global assignments
+  require(packageNames.VEST); // re-require vest for global assignments
   jest.mock(moduleName, () => ({
     __esModule: true,
     default: mockFn,

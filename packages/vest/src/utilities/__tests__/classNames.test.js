@@ -1,7 +1,8 @@
-import vest from '../..';
 import { dummyTest } from '../../../testUtils/testDummy';
 import classNames from '../classNames';
 import promisify from '../promisify';
+
+import vest from 'vest';
 
 describe('Utility: classNames', () => {
   describe('When called without a vest result object', () => {

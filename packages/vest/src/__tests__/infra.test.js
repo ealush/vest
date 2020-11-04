@@ -2,9 +2,10 @@ const { execSync } = require('child_process');
 
 const glob = require('glob');
 
-const vest = require('..');
 const packagePath = require('../../../../util/packagePath');
 const { version } = require('../../package.json');
+
+const vest = require('vest');
 
 describe('Vest exports', () => {
   test('All vest exports exist', () => {

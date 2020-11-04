@@ -1,6 +1,6 @@
 import faker from 'faker';
 
-import vest, { create, test, enforce } from '../../..';
+import vest, { create, test, enforce } from 'vest';
 
 let testObject;
 

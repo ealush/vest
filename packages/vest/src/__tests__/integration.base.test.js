@@ -1,4 +1,4 @@
-import vest from '..';
+import vest from 'vest';
 
 const suite = ({ create, test, enforce, ...vest }) =>
   create('suite_name', () => {

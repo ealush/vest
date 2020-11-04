@@ -1,9 +1,9 @@
 import _ from 'lodash';
 
 import { dummyTest } from '../../../../../testUtils/testDummy';
-import vest from '../../../../index';
 
 import { group } from 'hooks';
+import vest from 'vest';
 
 const SUITE_NAME = 'suite_1';
 const FIELD_NAME_1 = 'field_1';

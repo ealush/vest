@@ -1,4 +1,4 @@
-import vest from '..';
+import vest from 'vest';
 
 function genValidate({ create, test, enforce, ...vest }) {
   return create('suite_name', () => {

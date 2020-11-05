@@ -50,7 +50,7 @@
     "n4s": "^2.1.1"
   },
   "dependencies": {
-    "babel-jest": "^26.6.2",
+    "babel-jest": "^26.6.3",
     "eslint-config-prettier": "^6.15.0",
     "jest": "^26.6.2",
     "jest-cli": "^26.6.3",

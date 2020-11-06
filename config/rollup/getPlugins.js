@@ -34,7 +34,7 @@ module.exports = function ({ dev = false, format, min, libraryName, version }) {
     alias({ entries: aliases }),
     resolve(),
     commonjs({
-      include: /node_modules\/(anyone|n4s|wait)/,
+      include: /node_modules\/(anyone|n4s|wait|context)/,
     }),
     babel({
       configFile: filePaths.BABEL_CONFIG_PATH,

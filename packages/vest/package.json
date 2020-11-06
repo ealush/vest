@@ -48,13 +48,5 @@
     "anyone": "^0.0.7",
     "context": "^1.1.0",
     "n4s": "^2.1.1"
-  },
-  "dependencies": {
-    "babel-jest": "^26.6.3",
-    "eslint-config-prettier": "^6.15.0",
-    "jest": "^26.6.3",
-    "jest-cli": "^26.6.3",
-    "onchange": "^7.0.2",
-    "rollup": "^2.33.1"
   }
 }

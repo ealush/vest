@@ -1,12 +1,9 @@
 const path = require('path');
 
-const { packageJson, packagePath } = require('../../util');
+const { packageJson, packagePath, envNames } = require('../../util');
 
 const getPlugins = require('./getPlugins');
 const nameByFormat = require('./nameByFormat');
-
-const ENV_DEVELOPMENT = 'development';
-const ENV_PRODUCTION = 'production';
 
 const FORMAT_UMD = 'umd';
 const FORMAT_CJS = 'cjs';
@@ -55,16 +52,14 @@ function buildConfig({
   packageName,
 } = {}) {
   const { version } = packageJson(packageName);
-  const PACKAGE_PATH = packagePath(packageName);
-  const SRC_PATH = path.join(PACKAGE_PATH, 'src');
 
   return {
-    input: path.join(SRC_PATH, input),
+    input: packagePath(packageName, 'src', input),
     output: {
       file: [
         path.join(distPath, outputDir, libraryName),
         nameByFormat(format),
-        dev ? ENV_DEVELOPMENT : ENV_PRODUCTION,
+        dev ? envNames.DEVELOPMENT : envNames.PRODUCTION,
         min ? 'min' : null,
         'js',
       ]

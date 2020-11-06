@@ -1,21 +1,15 @@
 {
   "name": "vest",
   "version": "2.2.3",
-  "description": "Validation Test",
+  "description": "Declarative validations.",
   "main": "./vest.js",
   "browser": "./vest.js",
   "module": "./esm/vest.mjs.production.js",
   "exports": {
-    ".": {
-      "browser": "./vest.js",
-      "import": "./esm/vest.mjs.production.js",
-      "require": "./vest.cjs.production.js",
-      "node": "./vest.cjs.production.js",
-      "default": "./vest.cjs.production.js"
-    },
+    "./vest.js": "./vest.js",
+    "./package.json": "./package.json",
     "./any.js": "./any.js",
     "./classNames.js": "./classNames.js",
-    "./enforceExtended.js": "./enforceExtended.js",
     "./esm/vest.mjs.development.js": "./esm/vest.mjs.development.js",
     "./esm/vest.mjs.production.js": "./esm/vest.mjs.production.js",
     "./esm/vest.mjs.production.min.js": "./esm/vest.mjs.production.min.js",
@@ -24,10 +18,15 @@
     "./vest.cjs.production.js": "./vest.cjs.production.js",
     "./vest.cjs.production.min.js": "./vest.cjs.production.min.js",
     "./vest.umd.development.js": "./vest.umd.development.js",
-    "./vest.js": "./vest.js",
     "./vest.umd.production.js": "./vest.umd.production.js",
     "./vest.umd.production.min.js": "./vest.umd.production.min.js",
-    "./package.json": "./package.json"
+    ".": {
+      "browser": "./vest.js",
+      "import": "./esm/vest.mjs.production.js",
+      "require": "./vest.cjs.production.js",
+      "node": "./vest.cjs.production.js",
+      "default": "./vest.cjs.production.js"
+    }
   },
   "types": "./vest.d.ts",
   "author": "ealush",

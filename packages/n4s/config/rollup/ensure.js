@@ -1,11 +1,13 @@
 const genConfig = require('../../../../config/rollup/genConfig');
-const writeMainTemplate = require('../../../../config/rollup/writeMainTemplate');
+const writeMainTemplate = require('../../../../scripts/build/writeMainTemplate');
 const { packageDist, packageNames } = require('../../../../util');
 
-writeMainTemplate(packageDist(packageNames.N4S), 'ensure');
+const distPath = packageDist(packageNames.N4S);
+
+writeMainTemplate('ensure', distPath);
 
 export default genConfig({
-  distPath: packageDist(packageNames.N4S),
+  distPath,
   input: 'ensure/ensure.js',
   libraryName: 'ensure',
   packageName: packageNames.N4S,

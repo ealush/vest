@@ -1,4 +1,5 @@
 const asyncForeach = require('./asyncForeach');
+const envNames = require('./envNames');
 const exec = require('./exec');
 const filePaths = require('./filePaths');
 const logger = require('./logger');
@@ -10,6 +11,7 @@ const packagePath = require('./packagePath');
 
 module.exports = {
   asyncForeach,
+  envNames,
   exec,
   filePaths,
   logger,

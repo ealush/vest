@@ -2,10 +2,12 @@ const path = require('path');
 
 const fs = require('fs-extra');
 
+const { packageDist } = require('../../util');
+
 const DIR_ESM = 'esm';
 
-module.exports = DIST_PATH => {
-  const fullPath = path.join(DIST_PATH, DIR_ESM);
+module.exports = packageName => {
+  const fullPath = packageDist(packageName, DIR_ESM);
 
   fs.ensureDirSync(fullPath);
 

@@ -2,6 +2,7 @@
   "license": "MIT",
   "scripts": {
     "build": "node ./scripts/buildAll",
+    "clean": "git clean -xdf --exclude=node_modules",
     "prettier-watch": "onchange '**/*.js' '**/*.json' -- prettier --write {{changed}}",
     "dev": "onchange -i './packages/**/src/**/*.js' -- yarn genJSConfig",
     "genJSConfig": "node ./scripts/genJsconfig",

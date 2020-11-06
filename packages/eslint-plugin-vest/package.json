@@ -10,7 +10,5 @@
   "author": "ealush",
   "main": "lib/index.js",
   "license": "MIT",
-  "scripts": {
-    "build": "exit 0"
-  }
+  "scripts": {}
 }

@@ -18,7 +18,7 @@ export function getDefaultResult(value, rule) {
 }
 
 export function formatResultMessage(rule, msg) {
-  return `[${LIBRARY_NAME}]/${rule.name} ${msg}`;
+  return `[${LIBRARY_NAME}]:${rule.name} ${msg}`;
 }
 
 /**

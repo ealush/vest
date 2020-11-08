@@ -2,6 +2,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "asArray": [
+        "./packages/__shared/src/asArray.js"
+      ],
       "isFunction": [
         "./packages/__shared/src/isFunction.js"
       ],
@@ -10,6 +13,15 @@
       ],
       "throwError": [
         "./packages/__shared/src/throwError.js"
+      ],
+      "compounds": [
+        "./packages/n4s/src/enforce/compounds/compounds.js"
+      ],
+      "optional": [
+        "./packages/n4s/src/enforce/compounds/optional.js"
+      ],
+      "shape": [
+        "./packages/n4s/src/enforce/compounds/shape.js"
       ],
       "enforce": [
         "./packages/n4s/src/enforce/enforce.js"

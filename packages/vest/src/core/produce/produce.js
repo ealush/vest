@@ -121,6 +121,7 @@ const produce = isDraft => {
               (properties[name] = {
                 configurable: true,
                 enumerable: true,
+                name,
                 value,
                 writeable: true,
               }),

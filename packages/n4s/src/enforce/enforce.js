@@ -1,14 +1,21 @@
+import compounds from 'compounds';
+
 import runner from 'enforceRunner';
 import isRule from 'isRule';
 import proxySupported from 'proxySupported';
 import rules from 'rules';
 
-const rulesObject = rules();
+const rulesObject = Object.assign(rules(), compounds);
 
 let enforce, rulesList;
 
-const bindLazyRule = ruleName => (...args) => value =>
-  rulesObject[ruleName](value, ...args);
+const bindLazyRule = ruleName => (...args) => {
+  return Object.defineProperty(
+    value => rulesObject[ruleName](value, ...args),
+    'name',
+    { value: ruleName }
+  );
+};
 
 const bindLazyRules = rules =>
   rules.reduce(

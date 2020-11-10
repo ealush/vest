@@ -2,16 +2,23 @@
 
 # Vest 🦺 Declarative Validation Testing
 
+![Github Stars](https://githubbadges.com/star.svg?user=ealush&repo=vest&style=flat)
+![Npm downloads](https://img.shields.io/npm/dt/vest?label=Downloads&logo=npm)
+
 [![npm version](https://badge.fury.io/js/vest.svg)](https://badge.fury.io/js/vest) [![Build Status](https://travis-ci.org/ealush/vest.svg?branch=latest)](https://travis-ci.org/ealush/vest) [![Known Vulnerabilities](https://snyk.io/test/npm/vest/badge.svg)](https://snyk.io/test/npm/vest)
+![minifiedSize](https://img.shields.io/bundlephobia/min/vest?color=blue&logo=npm)
+
+![Join discord](https://img.shields.io/discord/757686103292641312?label=Join%20Discord&logo=discord&logoColor=green)
 
 - [Documentation homepage](https://ealush.github.io/vest)
 - **Try vest live**
   - [Vanilla JS Example](https://stackblitz.com/edit/vest-vanilla-support-example?file=validation.js)
   - ReactJS Examples:
     - [Example 1 (groups)](https://codesandbox.io/s/ecstatic-waterfall-4i2ne?file=/src/validate.js)
-    - [Exmaple 2 (Async)](https://codesandbox.io/s/youthful-williamson-loijb?file=/src/validate.js)
+    - [Example 2 (Async)](https://codesandbox.io/s/youthful-williamson-loijb?file=/src/validate.js)
     - [Example 3](https://stackblitz.com/edit/vest-react-support-example?file=validation.js)
     - [Example 4](https://stackblitz.com/edit/vest-react-registration?file=validate.js)
+    - [Example 5 (Password validator)](https://codesandbox.io/s/password-validator-example-6puvy?file=/src/validate.js)
   - [VueJS Example](https://codesandbox.io/s/vest-vue-example-1j6r8?file=/src/validations.js)
 
 ## Tutorials
@@ -27,7 +34,7 @@ It works great with user-input validation and with validating upon user interact
 
 The idea behind Vest is that your validations can be described as a 'spec' or a contract that reflects your form or feature structure. Your validations run in production, and they are framework agnostic - meaning Vest works well with React, Angular, Vue, or even without a framework at all.
 
-Using Vest for form validation can reduce bloat, improve feature redability and maintainability.
+Using Vest for form validation can reduce bloat, improve feature readability and maintainability.
 
 **Basic Example**
 ![full](https://cdn.jsdelivr.net/gh/ealush/vest@assets/demos/full_3.gif 'full')

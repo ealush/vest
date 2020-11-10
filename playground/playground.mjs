@@ -1,13 +1,9 @@
-import vest, { test, enforce } from 'vest';
+import enforce from '../packages/n4s/n4s.umd.development.js';
 
-const v = vest.create('playground', (data = {}) => {
-  test('username', 'Must not be empty', () => {
-    enforce(data.username).isNotEmpty();
-  });
+const o = enforce({
+  username: 45,
+}).shape({
+  username: enforce.isBetween(1, 20),
 });
 
-v({
-  username: 'ealush',
-});
-
-console.log(v.get());
+console.log(o);

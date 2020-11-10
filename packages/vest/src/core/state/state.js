@@ -1,3 +1,4 @@
+import asArray from 'asArray';
 import callEach from 'callEach';
 import context from 'ctx';
 import isFunction from 'isFunction';
@@ -68,7 +69,7 @@ export default (function createState() {
     };
 
     for (const key in handlers) {
-      const [handler, args] = [].concat(handlers[key]);
+      const [handler, args] = asArray(handlers[key]);
       registeredHandlers.push(
         context.bind({ stateRef, reg: { key, args } }, handler)
       );

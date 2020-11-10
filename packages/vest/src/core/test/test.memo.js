@@ -2,6 +2,7 @@ import addTestToState from 'addTestToState';
 import createCache from 'cache';
 import { isExcluded } from 'exclusive';
 import isFunction from 'isFunction';
+import { isNull } from 'isNull';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
 import useSuiteId from 'useSuiteId';
@@ -28,7 +29,7 @@ export default function bindTestMemo(test) {
 
     const cached = cache.get(dependencies);
 
-    if (cached === null) {
+    if (isNull(cached)) {
       // Cache miss. Start fresh
       return cache(dependencies, () => test(fieldName, msg, testFn));
     }

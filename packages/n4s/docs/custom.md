@@ -16,8 +16,6 @@ enforce.extend({
 ```
 
 ```js
-import { enforce } from 'n4s';
-
 enforce.extend({
   isValidEmail: value => value.indexOf('@') > -1,
   hasKey: (value, key) => value.hasOwnProperty(key),

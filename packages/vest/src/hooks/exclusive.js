@@ -1,3 +1,4 @@
+import asArray from 'asArray';
 import context from 'ctx';
 import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
 import isStringValue from 'isStringValue';
@@ -34,8 +35,8 @@ const addTo = (exclusionGroup, itemType, item) => {
     return;
   }
 
-  [].concat(item).forEach(itemName => {
-    if (!isStringValue('string')) {
+  asArray(item).forEach(itemName => {
+    if (!isStringValue(itemName)) {
       return null;
     }
 

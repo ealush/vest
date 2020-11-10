@@ -161,6 +161,9 @@ export interface IEnforceRules<T = {}> {
   lengthNotEquals: RuleNumeral<T>;
   isNegative: RuleNumeral<T>;
   isPositive: RuleNumeral<T>;
+  shape: <T>(shape: {
+    [key: string]: LazyEnforceValue | LazyEnforceValue[];
+  }) => RuleReturn<T>;
 }
 
 interface IEnforce {
@@ -247,6 +250,10 @@ type TEnforceLazy = {
   lengthNotEquals: LazyNumeral;
   isNegative: LazyNumeral;
   isPositive: LazyNumeral;
+  shape: <T>(shape: {
+    [key: string]: LazyEnforceValue | LazyEnforceValue[];
+  }) => LazyEnforceValue;
+  optional: <T>(...rules: LazyEnforceValue[]) => LazyEnforceValue;
 };
 
 declare module 'vest' {

@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-const { logger } = require('../../util');
+const { logger } = require('../../../util');
 
 const { TRAVIS_REPO_SLUG, GITHUB_TOKEN } = process.env;
 

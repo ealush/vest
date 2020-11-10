@@ -13,10 +13,10 @@ const updateDocs = require('./release/steps/updateDocs');
 const { TRAVIS_BRANCH, RELEASE_BRANCH } = process.env;
 
 const run = async () => {
+  updateDocs();
+
   logger.info('🔍 Finding diffs');
   const { changedPackages, allMessages, messagesPerPackage } = await getDiff();
-
-  updateDocs();
 
   const packageData = changedPackages.map(packageName => {
     logger.info(`Package: 📦 ${packageName}`);

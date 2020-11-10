@@ -1,7 +1,7 @@
 const { get } = require('lodash');
 const fetch = require('node-fetch');
 
-const { packageNames, filePaths } = require('../../util');
+const { packageNames, filePaths } = require('../../../util');
 
 const {
   TRAVIS_REPO_SLUG,

@@ -8,17 +8,27 @@ const VEST_DOCS_PATH = packagePath(packageNames.VEST, 'docs');
 function updateDocs() {
   logger.info('📖 Updating documentation.');
   const readme = fs.readFileSync('./README.md', 'utf8');
-  const n4sRules = fs
-    .readFileSync(packagePath(packageNames.N4S, 'docs', 'rules.md'), 'utf8')
-    .replace('\n#', '\n##');
+  const n4sRules = fs.readFileSync(
+    packagePath(packageNames.N4S, 'docs', 'rules.md'),
+    'utf8'
+  );
+  const customRules = fs.readFileSync(
+    packagePath(packageNames.N4S, 'docs', 'custom.md'),
+    'utf8'
+  );
+  const shape = fs.readFileSync(
+    packagePath(packageNames.N4S, 'docs', 'shape.md'),
+    'utf8'
+  );
+
   const enforceDoc = fs.readFileSync(
     path.join(VEST_DOCS_PATH, 'enforce.md.bak'),
     'utf8'
   );
 
   const nextEnforceDoc = enforceDoc.replace(
-    '{{LIST_OF_ENFORCE_RULES}}',
-    n4sRules
+    '{{COPIED_ENFORCE_DOCS}}',
+    [n4sRules, customRules, shape].join('\n\n').replace(/^#|\n#/g, '\n##')
   );
 
   fs.writeFileSync(path.join(VEST_DOCS_PATH, 'enforce.md'), nextEnforceDoc);

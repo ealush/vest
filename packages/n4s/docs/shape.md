@@ -56,7 +56,7 @@ enforce({
 
 In regular cases, a missing key in the data object would cause an error to be thrown. To prevent that from happening, mark your optional keys with `enforce.optional`.
 
-enforce.optional will pass a key that's either not defined, undefined or null.
+enforce.optional will pass validations of a key that's either not defined, undefined or null.
 
 `enforce.optional` takes as its arguments all the rules that the value should pass - only if it is present. If it is not present in the data object.
 

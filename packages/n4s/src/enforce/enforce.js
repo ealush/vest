@@ -1,5 +1,4 @@
 import compounds from 'compounds';
-
 import runner from 'enforceRunner';
 import isRule from 'isRule';
 import proxySupported from 'proxySupported';

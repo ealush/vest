@@ -28,6 +28,8 @@ Enforce rules are functions that allow you to test your data against different c
 - [isFalsy](#isfalsy)
 - [isArray](#isarray)
 - [isNotArray](#isnotarray)
+- [isBoolean](#isboolean)
+- [isNotBoolean](#isnotboolean)
 - [isNumber](#isnumber)
 - [isNotNumber](#isnotnumber)
 - [isNaN](#isNaN)
@@ -808,6 +810,50 @@ enforce(['hello']).isNotArray();
 ```js
 enforce('hello').isNotArray();
 // passes
+```
+
+## isBoolean
+
+### Description
+
+Checks if a value is of type `boolean`.
+Equals to `typeof value === 'boolean'`
+
+### Usage examples:
+
+```js
+enforce(true).isBoolean();
+enforce(false).isBoolean();
+enforce(!!0).isBoolean();
+// passes
+```
+
+```js
+enforce([]).isBoolean();
+enforce('143').isBoolean();
+enforce('false').isBoolean();
+// throws
+```
+
+## isNotBoolean
+
+### Description
+
+Checks if a value is of any type other than `boolean`.
+Reverse implementation of `isBoolean`.
+
+### Usage examples:
+
+```js
+enforce('143').isNotBoolean();
+enforce(143).isNotBoolean();
+// passes
+```
+
+```js
+enforce(true).isNotBoolean();
+enforce(false).isNotBoolean();
+// throws
 ```
 
 ## isNumber

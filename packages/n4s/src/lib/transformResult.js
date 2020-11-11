@@ -1,13 +1,16 @@
+import isBooleanValue from 'isBooleanValue';
 import isFunction from 'isFunction';
 import throwError from 'throwError';
 
 export function validateResult(result, rule) {
   // if result is boolean, or if result.pass is boolean
-  if (!!result !== result && (!result || !!result.pass !== result.pass)) {
-    throwError(
-      `${rule.name} wrong return value for the rule please check that the return is valid`
-    );
+  if (isBooleanValue(result) || (result && isBooleanValue(result.pass))) {
+    return;
   }
+
+  throwError(
+    `${rule.name} wrong return value for the rule please check that the return is valid`
+  );
 }
 
 // for easier testing and mocking
@@ -37,7 +40,7 @@ export function transformResult(result, { rule, value }) {
   validateResult(result, rule);
 
   // if result is boolean
-  if (!!result === result) {
+  if (isBooleanValue(result)) {
     return (defaultResult.pass = result), defaultResult;
   } else {
     defaultResult.pass = result.pass;

@@ -5,6 +5,7 @@ import { greaterThanOrEquals } from 'greaterThanOrEquals';
 import { inside, notInside } from 'inside';
 import { isArray, isNotArray } from 'isArray';
 import { isBetween, isNotBetween } from 'isBetween';
+import { isBoolean, isNotBoolean } from 'isBoolean';
 import { isEmpty, isNotEmpty } from 'isEmpty';
 import { isEven } from 'isEven';
 import { isNaN, isNotNaN } from 'isNaN';
@@ -40,6 +41,7 @@ export default function rules() {
     inside,
     isArray,
     isBetween,
+    isBoolean,
     isEmpty,
     isEven,
     isFalsy,
@@ -47,6 +49,7 @@ export default function rules() {
     isNegative,
     isNotArray,
     isNotBetween,
+    isNotBoolean,
     isNotEmpty,
     isNotNaN,
     isNotNull,

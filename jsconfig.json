@@ -29,6 +29,9 @@
       "enforce": [
         "./packages/n4s/src/enforce/enforce.js"
       ],
+      "enforceKeywords": [
+        "./packages/n4s/src/enforce/enforceKeywords.js"
+      ],
       "enforceRunner": [
         "./packages/n4s/src/enforce/enforceRunner.js"
       ],

@@ -61,18 +61,14 @@ describe('Shape validation', () => {
       ).toBe(true);
     });
 
-    it('Allows array of enforcements per field', () => {
+    it('Allows multiple enforcements per field', () => {
       expect(
         shape(
           {
             friendCount: 200,
           },
           {
-            friendCount: [
-              enforce.isNumber(),
-              enforce.greaterThan(150),
-              enforce.equals(200),
-            ],
+            friendCount: enforce.isNumber().greaterThan(150).equals(200),
           }
         )
       ).toBe(true);
@@ -82,11 +78,7 @@ describe('Shape validation', () => {
             friendCount: 200,
           },
           {
-            friendCount: [
-              enforce.isNumber(),
-              enforce.greaterThan(150),
-              enforce.equals(300),
-            ],
+            friendCount: enforce.isNumber().greaterThan(150).equals(300),
           }
         )
       ).toBe(false);
@@ -308,7 +300,7 @@ describe('Shape validation', () => {
 
 const shapeRules = () => ({
   user: enforce.shape({
-    age: [enforce.isNumber(), enforce.isBetween(0, 10)],
+    age: enforce.isNumber().isBetween(0, 10),
     friends: enforce.optional(enforce.isArray()),
     id: enforce.isString(),
     name: enforce.shape({

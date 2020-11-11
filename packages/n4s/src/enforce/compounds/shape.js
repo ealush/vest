@@ -1,6 +1,6 @@
 import asArray from 'asArray';
+import { RUN_RULE } from 'enforceKeywords';
 import optional from 'optional';
-
 /**
  * @param {Object} obj  Data object that gets validated
  * @param {*} shapeObj  Shape definition
@@ -11,9 +11,9 @@ export default function shape(obj, shapeObj) {
     const value = obj[key];
 
     if (
-      !asArray(current).every(fn =>
-        fn(fn.name === optional.name ? [obj, key] : value)
-      )
+      !asArray(current[RUN_RULE]).every(fn => {
+        return fn(fn.name === optional.name ? [obj, key] : value);
+      })
     ) {
       return false;
     }

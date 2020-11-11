@@ -26,7 +26,9 @@ All the files under `src` are unique, and their imports are aliased for absolute
 ```js
 import state from 'state';
 ```
+
 Instead of
+
 ```js
 import state from '../../state';
 ```
@@ -34,7 +36,6 @@ import state from '../../state';
 ### IDE support
 
 Most modern IDEs will support those aliases using the jsconfig.json file in the project root. If you move files around, or create new files during local development, you can run `yarn dev` to watch your changes and automatically generate the jsconfig file.
-
 
 ## Repository structure
 

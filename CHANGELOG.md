@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ## vest: [2.2.3] - 2020-09-16
 
 ### Fixed and improved
+
 - 870dd86 fix: notEquals typings (ealush)
 - d7db9c3 patch: extract business logic out of context module (#382) (ealush)
 - 765dea2 fix: get/reset suite typings (gaspoute)
@@ -14,10 +15,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ## vest: [2.2.0] - 2020-09-08
 
 ### Added
+
 - 9e96ca6 FEAT: get and reset as properties of createSuite result (#330) (vligas)
 - b633f09 FEAT: use Jest assertion return api (#349) (vligas)
 
 ### Fixed and improved
+
 - c1846d1 types: add vest.reset and vest.get types (#333) (ealush)
 - 1985f28 build: Add __dev__ global to the development build (#366) (gaweki)
 - a694c68 patch: Create a "suite" core folder (#351) (NorbertLuszkiewicz)
@@ -26,12 +29,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ## vest: [2.1.0] - 2020-08-09
 
 ### Added
+
 - d1ce227 minor: add vest.skip.group and vest.only.group (#225) (ealush)
 - 19e592e added: test.memo for memoized tests (#238) (ealush)
 - e6cccc9 added: returned function name is the name of the suite (ealush)
 - f9f1d39 added: promisify utility (#261) (adife)
 
 ### Fixed and improved
+
 - ba6ca3d fix: make vest.reset restore initial state (#235) (ealush)
 - a657058 patch: cache validation result for improved runtime performance (#237) (ealush)
 - 96210af Skip cache when resolving done results (#240) (ealush)
@@ -50,7 +55,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ## n4s: [2.1.0] - 2020-08-09
 
 ### Added
-- 062c40a added:  add isNaN rule (#300) (ealush)
+
+- 062c40a added: add isNaN rule (#300) (ealush)
 
 ## vest: [2.0.0] - 2020-06-20
 

@@ -8,14 +8,15 @@ Remember: Unless it is an urgent bugfix, please use `next` as the base for your 
 Please fill the following form (leave what's relevant)
 -->
 
-| Q                | A                                                                          |
-| ---------------- | -------------------------------------------------------------------------- |
-| Bug fix?         | ✔/✖                                                                        |
-| New feature?     | ✔/✖                                                                        |
-| Breaking change? | ✔/✖                                                                        |
-| Deprecations?    | ✔/✖                                                                        |
-| Documentation?   | ✔/✖                                                                        |
-| Tests added?     | ✔/✖                                                                        |
-| Fixed issues     | comma-separated list of issues fixed by the pull request, where applicable |
+| Q                | A   |
+| ---------------- | --- |
+| Bug fix?         | ✔/✖ |
+| New feature?     | ✔/✖ |
+| Breaking change? | ✔/✖ |
+| Deprecations?    | ✔/✖ |
+| Documentation?   | ✔/✖ |
+| Tests added?     | ✔/✖ |
+| Types added?     | ✔/✖ |
+| Related issues   |     |
 
 <!-- Describe your changes below in detail. -->

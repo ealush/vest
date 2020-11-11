@@ -27,7 +27,6 @@ enforce(4)
 
 Enforce exposes all predefined and custom rules. You may use chaining to make multiple enfocements for the same value.
 
-
 ## List of Enforce rules
 
 Enforce rules are functions that allow you to test your data against different criteria. The following rules are supported out-of-the-box.
@@ -1237,7 +1236,6 @@ enforce(-10).isPositive(); // throws
 enforce('-10.12').isPositive(); // throws
 ```
 
-
 ## Custom enforce rules
 
 To make it easier to reuse logic across your application, sometimes you would want to encapsulate bits of logic in rules that you can use later on, for example, "what's considered a valid email".
@@ -1291,7 +1289,6 @@ enforce.extend({
 });
 ```
 
-
 ## Shape validations
 
 Enforce (only, not ensure) comes with a built-in lean schema validator rule called `shape`. It allows you to use all the existing and custom rules of enforce to validate the shape of an object.
@@ -1304,11 +1301,11 @@ When using enforce rules inside your shape, use the rules that exist as properti
 enforce({
   firstName: 'Rick',
   lastName: 'Sanchez',
-  age: 70
+  age: 70,
 }).shape({
   firstName: enforce.isString(),
   lastName: enforce.isString(),
-  age: enforce.isNumber()
+  age: enforce.isNumber(),
 });
 ```
 
@@ -1318,9 +1315,9 @@ To test multiple rules with the same key use an array of rules:
 
 ```js
 enforce({
-  age: 22
+  age: 22,
 }).shape({
-  age: [enforce.isNumber(), enforce.isBetween(0, 150)]
+  age: [enforce.isNumber(), enforce.isBetween(0, 150)],
 });
 ```
 
@@ -1334,15 +1331,15 @@ enforce({
     name: {
       first: 'Joseph',
       last: 'Weil',
-    }
-  }
+    },
+  },
 }).shape({
   user: enforce.shape({
     name: enforce.shape({
       first: enforce.isString(),
-      last: enforce.isString()
-    })
-  })
+      last: enforce.isString(),
+    }),
+  }),
 });
 ```
 
@@ -1360,16 +1357,16 @@ enforce({
     name: {
       first: 'Joseph',
       last: 'Weil',
-    }
-  }
+    },
+  },
 }).shape({
   user: enforce.shape({
     name: enforce.shape({
       first: enforce.isString(),
       last: enforce.isString(),
-      middle: enforce.optional(enforce.isString(), enforce.longerThan(3))
-    })
-  })
+      middle: enforce.optional(enforce.isString(), enforce.longerThan(3)),
+    }),
+  }),
 });
 ```
 

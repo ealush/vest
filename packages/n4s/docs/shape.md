@@ -10,11 +10,11 @@ When using enforce rules inside your shape, use the rules that exist as properti
 enforce({
   firstName: 'Rick',
   lastName: 'Sanchez',
-  age: 70
+  age: 70,
 }).shape({
   firstName: enforce.isString(),
   lastName: enforce.isString(),
-  age: enforce.isNumber()
+  age: enforce.isNumber(),
 });
 ```
 
@@ -24,9 +24,9 @@ To test multiple rules with the same key use an array of rules:
 
 ```js
 enforce({
-  age: 22
+  age: 22,
 }).shape({
-  age: [enforce.isNumber(), enforce.isBetween(0, 150)]
+  age: [enforce.isNumber(), enforce.isBetween(0, 150)],
 });
 ```
 
@@ -40,15 +40,15 @@ enforce({
     name: {
       first: 'Joseph',
       last: 'Weil',
-    }
-  }
+    },
+  },
 }).shape({
   user: enforce.shape({
     name: enforce.shape({
       first: enforce.isString(),
-      last: enforce.isString()
-    })
-  })
+      last: enforce.isString(),
+    }),
+  }),
 });
 ```
 
@@ -66,15 +66,15 @@ enforce({
     name: {
       first: 'Joseph',
       last: 'Weil',
-    }
-  }
+    },
+  },
 }).shape({
   user: enforce.shape({
     name: enforce.shape({
       first: enforce.isString(),
       last: enforce.isString(),
-      middle: enforce.optional(enforce.isString(), enforce.longerThan(3))
-    })
-  })
+      middle: enforce.optional(enforce.isString(), enforce.longerThan(3)),
+    }),
+  }),
 });
 ```

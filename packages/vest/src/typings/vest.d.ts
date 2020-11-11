@@ -141,6 +141,8 @@ export interface IEnforceRules<T = {}> {
   isArray: RuleNoExpectedValue<T>;
   isEmpty: RuleNoExpectedValue<T>;
   isEven: RuleNoExpectedValue<T>;
+  isBoolean: RuleNoExpectedValue<T>;
+  isNotBoolean: RuleNoExpectedValue<T>;
   isNumber: RuleNoExpectedValue<T>;
   isNaN: RuleNoExpectedValue<T>;
   isNotNaN: RuleNoExpectedValue<T>;
@@ -250,6 +252,8 @@ type TEnforceLazy = {
   lengthNotEquals: LazyNumeral;
   isNegative: LazyNumeral;
   isPositive: LazyNumeral;
+  isBoolean: JustLazy;
+  isNotBoolean: JustLazy;
   shape: <T>(shape: {
     [key: string]: LazyEnforceValue | LazyEnforceValue[];
   }) => LazyEnforceValue;

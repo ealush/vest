@@ -1,4 +1,4 @@
-import enforce from '../packages/n4s/n4s.umd.development.js';
+import vest, { enforce } from 'vest';
 
 const o = enforce({
   username: 45,

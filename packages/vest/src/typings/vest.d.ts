@@ -166,6 +166,7 @@ export interface IEnforceRules<T = {}> {
   shape: <T>(shape: {
     [key: string]: TEnforceLazy | TEnforceLazy[];
   }) => RuleReturn<T>;
+  anyOf: RuleAny<T>;
 }
 
 interface IEnforce {
@@ -259,6 +260,7 @@ type TEnforceLazy = {
   }) => TEnforceLazy;
   optional: <T>(...rules: TEnforceLazy[]) => TEnforceLazy;
   isArrayOf: <T>(...rules: TEnforceLazy[]) => TEnforceLazy;
+  anyOf: <T>(...rules: LazyEnforceValue[]) => LazyEnforceValue;
 };
 
 declare module 'vest' {

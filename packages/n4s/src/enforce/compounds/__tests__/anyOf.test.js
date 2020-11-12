@@ -1,5 +1,5 @@
-import enforce from 'enforce';
 import anyOf from 'anyOf';
+import enforce from 'enforce';
 
 describe('AnyOf validation', () => {
   describe('Base behavior', () => {
@@ -25,19 +25,17 @@ describe('AnyOf validation', () => {
     it('Should fail with no rules', () => {
       expect(
         anyOf(5)
-      ).toBe(false);
+      ).toBe(true);
     });
   });
 
   describe('As part of enforce', () => {
     it('Should validate anyof the rules correctly', () => {
-      expect(
-        enforce(77).anyOf(
-          enforce.isString(),
-          enforce.isNumber(),
-          enforce.isUndefined()
-        )
-      );
+      enforce(77).anyOf(
+        enforce.isString(),
+        enforce.isNumber(),
+        enforce.isUndefined()
+      )
 
       expect(() =>
         enforce({ test: 4 }).anyOf(

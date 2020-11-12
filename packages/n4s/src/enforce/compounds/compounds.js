@@ -1,7 +1,7 @@
 import isArrayOf from 'isArrayOf';
+import anyOf from 'anyOf';
 import optional from 'optional';
 import shape from 'shape';
-import anyOf from 'anyOf';
 
 export default {
   isArrayOf,

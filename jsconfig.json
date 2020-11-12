@@ -173,6 +173,9 @@
       "hasFailuresByGroup": [
         "./packages/vest/src/core/produce/hasFailuresByGroup.js"
       ],
+      "isMatchingSeverityProfile": [
+        "./packages/vest/src/core/produce/isMatchingSeverityProfile.js"
+      ],
       "produce": [
         "./packages/vest/src/core/produce/produce.js"
       ],

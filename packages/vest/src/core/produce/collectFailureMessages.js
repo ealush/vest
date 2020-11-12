@@ -1,4 +1,4 @@
-import { SEVERITY_GROUP_WARN } from 'resultKeys';
+import isMatchingSeverityProfile from 'isMatchingSeverityProfile';
 import useTestObjects from 'useTestObjects';
 
 /**
@@ -23,10 +23,7 @@ const collectFailureMessages = (severity, { group, fieldName } = {}) => {
       return collector;
     }
 
-    if (
-      (severity !== SEVERITY_GROUP_WARN && testObject.isWarning) ||
-      (severity === SEVERITY_GROUP_WARN && !testObject.isWarning)
-    ) {
+    if (isMatchingSeverityProfile(severity, testObject)) {
       return collector;
     }
 

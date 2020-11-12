@@ -1,4 +1,4 @@
-import { SEVERITY_GROUP_WARN } from 'resultKeys';
+import isMatchingSeverityProfile from 'isMatchingSeverityProfile';
 import useTestObjects from 'useTestObjects';
 
 /**
@@ -17,10 +17,7 @@ export const hasLogic = (testObject, severityKey, fieldName) => {
     return false;
   }
 
-  if (
-    (severityKey === SEVERITY_GROUP_WARN && !testObject.isWarning) ||
-    (severityKey !== SEVERITY_GROUP_WARN && testObject.isWarning)
-  ) {
+  if (isMatchingSeverityProfile(severityKey, testObject)) {
     return false;
   }
 

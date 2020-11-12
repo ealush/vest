@@ -164,7 +164,7 @@ export interface IEnforceRules<T = {}> {
   isNegative: RuleNumeral<T>;
   isPositive: RuleNumeral<T>;
   shape: <T>(shape: {
-    [key: string]: LazyEnforceValue | LazyEnforceValue[];
+    [key: string]: TEnforceLazy | TEnforceLazy[];
   }) => RuleReturn<T>;
 }
 
@@ -192,19 +192,19 @@ interface IEnforce {
   ): (value: any) => IEnforceRules<T> & EnforceExtendMap<T>;
 }
 
-type LazyEnforceValue = (enforceValue?: any) => boolean;
-type LazyNumeral = (expected: TNumeral) => LazyEnforceValue;
-type JustLazy = () => LazyEnforceValue;
-type LazyString = (str: string) => LazyEnforceValue;
-type LazyRange = (start: number, end: number) => LazyEnforceValue;
-type LazyMatches = (expected: string | RegExp) => LazyEnforceValue;
-type LazyAny = (expected: any) => LazyEnforceValue;
+type LazyNumeral = (expected: TNumeral) => TEnforceLazy;
+type JustLazy = () => TEnforceLazy;
+type LazyString = (str: string) => TEnforceLazy;
+type LazyRange = (start: number, end: number) => TEnforceLazy;
+type LazyMatches = (expected: string | RegExp) => TEnforceLazy;
+type LazyAny = (expected: any) => TEnforceLazy;
 type LazyInside = (
   expected: Array<string | number | boolean> | string
-) => LazyEnforceValue;
+) => TEnforceLazy;
 
 type TEnforceLazy = {
-  [key: string]: (...args: any[]) => LazyEnforceValue;
+  [key: string]: (...args: any[]) => TEnforceLazy | boolean;
+  run: (...args: any[]) => boolean;
   equals: LazyAny;
   notEquals: LazyAny;
   numberEquals: LazyNumeral;
@@ -250,14 +250,14 @@ type TEnforceLazy = {
   notInside: LazyInside;
   lengthEquals: LazyNumeral;
   lengthNotEquals: LazyNumeral;
-  isNegative: LazyNumeral;
-  isPositive: LazyNumeral;
+  isNegative: JustLazy;
+  isPositive: JustLazy;
   isBoolean: JustLazy;
   isNotBoolean: JustLazy;
   shape: <T>(shape: {
-    [key: string]: LazyEnforceValue | LazyEnforceValue[];
-  }) => LazyEnforceValue;
-  optional: <T>(...rules: LazyEnforceValue[]) => LazyEnforceValue;
+    [key: string]: TEnforceLazy | TEnforceLazy[];
+  }) => TEnforceLazy;
+  optional: <T>(...rules: TEnforceLazy[]) => TEnforceLazy;
 };
 
 declare module 'vest' {

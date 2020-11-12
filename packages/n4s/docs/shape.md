@@ -1,8 +1,8 @@
 # Shape validations
 
-Enforce (only, not ensure) comes with a built-in lean schema validator rule called `shape`. It allows you to use all the existing and custom rules of enforce to validate the shape of an object.
+Enforce comes with a built-in lean schema validator rule called `shape`. It allows you to use all the existing and custom rules of enforce to validate the shape of an object.
 
-When using enforce rules inside your shape, use the rules that exist as properties on enforce itself (`enforce.isString()`). For rules used like this, rule chaining is not possible.
+When using enforce rules inside your shape, use the rules that exist as properties on enforce itself (`enforce.isString()`).
 
 ## Example
 
@@ -20,13 +20,13 @@ enforce({
 
 ## Testing multiple rules for the same key
 
-To test multiple rules with the same key use an array of rules:
+To test multiple rules with the same key you can chain them the same way you chain regular enforce rules:
 
 ```js
 enforce({
   age: 22,
 }).shape({
-  age: [enforce.isNumber(), enforce.isBetween(0, 150)],
+  age: enforce.isNumber().isBetween(0, 150),
 });
 ```
 

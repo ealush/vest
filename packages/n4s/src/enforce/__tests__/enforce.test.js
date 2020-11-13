@@ -1,3 +1,4 @@
+import { RUN_RULE } from 'enforceKeywords';
 import rules from 'rules';
 
 const allRules = Object.keys(rules());
@@ -89,32 +90,43 @@ const suite = ({ withProxy, requirePath }) =>
         expect(typeof enforce.isAbc).toBe('function');
       });
 
-      test('Each rule returns a function', () => {
-        allRules.forEach(rule =>
-          expect(typeof enforce[rule]()).toBe('function')
+      it('Should retain all lazy functions in an array as a property of the returned object', () => {
+        expect(enforce.isEmpty()[RUN_RULE]).toBeInstanceOf(Array);
+        expect(enforce.isEmpty().isArray()[RUN_RULE]).toBeInstanceOf(Array);
+      });
+
+      it('Should store all the provided rules in the returned array', () => {
+        const res = enforce.isEmpty().isArray().equals()[RUN_RULE];
+        expect(res).toHaveLength(3);
+        expect(res[0].name).toBe('isEmpty');
+        expect(res[1].name).toBe('isArray');
+        expect(res[2].name).toBe('equals');
+        expect(typeof res[0]).toBe('function');
+        expect(typeof res[1]).toBe('function');
+        expect(typeof res[2]).toBe('function');
+      });
+
+      it('Should produce correct result when run', () => {
+        expect(enforce.isEmpty()[RUN_RULE].every(fn => fn([]))).toBe(true);
+        expect(enforce.isEmpty()[RUN_RULE].every(fn => fn([1, 2, 3]))).toBe(
+          false
         );
-      });
-
-      test('Returned function returns a boolean value', () => {
-        expect(enforce.isArray()([])).toBe(true);
-        expect(enforce.isNumber()('not_a_number')).toBe(false);
-      });
-
-      it("Should use the second function's argument as the enforce value, and the first function's arguments as the ...rest", () => {
-        expect(enforce.isEmpty()([])).toBe(true);
-        expect(enforce.isEmpty()([1, 2, 3])).toBe(false);
-        expect(enforce.isNumeric()('555')).toBe(true);
-        expect(enforce.greaterThan(10)(20)).toBe(true);
-        expect(enforce.greaterThan(10)(4)).toBe(false);
-
+        expect(enforce.isNumeric()[RUN_RULE].every(fn => fn('555'))).toBe(true);
+        expect(enforce.greaterThan(10)[RUN_RULE].every(fn => fn(20))).toBe(
+          true
+        );
+        expect(enforce.greaterThan(20)[RUN_RULE].every(fn => fn(10))).toBe(
+          false
+        );
+        expect(enforce.greaterThan(10)[RUN_RULE].every(fn => fn(4))).toBe(
+          false
+        );
         const fn = jest.fn(() => true);
-
         enforce.extend({
           getArgs: fn,
         });
-
-        enforce.getArgs(2, 3, 4, 5, 6, 7)(1);
-        // One should be first
+        enforce.getArgs(2, 3, 4, 5, 6, 7)[RUN_RULE].every(fn => fn(1));
+        // // One should be first
         expect(fn).toHaveBeenCalledWith(1, 2, 3, 4, 5, 6, 7);
       });
     });

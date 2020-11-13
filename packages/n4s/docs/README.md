@@ -26,13 +26,22 @@ enforce(4)
 npm i n4s
 ```
 
-## Using enforce without a testing framework
+## Non throwing validations
 
-If you wish to use enforce's functionality without it throwing errors, you can use its [ensure](./ensure) interface.
+> This functionality replaces the no-longer supported ensure export, as it performs the same functionality with better performance.
+
+If you wish to use enforce's functionality safely with a boolean return interface instead, you can use its lazy validation interface:
+
+```js
+enforce
+  .isArray()
+  .longerThan(3)
+  .test([1,2,3])
+```
 
 ## Content
 
 - [List of Enforce rules](./rules)
 - [Business reated rules](./business_rules)
+- [Schema validation](./shape)
 - [Custom Enforce Rules](./custom)
-- [Non throwing validations (ensure)](./ensure)

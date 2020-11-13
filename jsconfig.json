@@ -29,20 +29,14 @@
       "enforce": [
         "./packages/n4s/src/enforce/enforce.js"
       ],
+      "enforceKeywords": [
+        "./packages/n4s/src/enforce/enforceKeywords.js"
+      ],
       "enforceRunner": [
         "./packages/n4s/src/enforce/enforceRunner.js"
       ],
-      "ensure": [
-        "./packages/n4s/src/ensure/ensure.js"
-      ],
-      "ensureRunner": [
-        "./packages/n4s/src/ensure/ensureRunner.js"
-      ],
       "enforceExtended": [
         "./packages/n4s/src/extended/enforceExtended.js"
-      ],
-      "ensureExtended": [
-        "./packages/n4s/src/extended/ensureExtended.js"
       ],
       "rulesExtended": [
         "./packages/n4s/src/extended/rulesExtended.js"
@@ -175,6 +169,9 @@
       ],
       "hasFailuresByGroup": [
         "./packages/vest/src/core/produce/hasFailuresByGroup.js"
+      ],
+      "isMatchingSeverityProfile": [
+        "./packages/vest/src/core/produce/isMatchingSeverityProfile.js"
       ],
       "produce": [
         "./packages/vest/src/core/produce/produce.js"

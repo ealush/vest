@@ -1291,9 +1291,9 @@ enforce.extend({
 
 ## Shape validations
 
-Enforce (only, not ensure) comes with a built-in lean schema validator rule called `shape`. It allows you to use all the existing and custom rules of enforce to validate the shape of an object.
+Enforce comes with a built-in lean schema validator rule called `shape`. It allows you to use all the existing and custom rules of enforce to validate the shape of an object.
 
-When using enforce rules inside your shape, use the rules that exist as properties on enforce itself (`enforce.isString()`). For rules used like this, rule chaining is not possible.
+When using enforce rules inside your shape, use the rules that exist as properties on enforce itself (`enforce.isString()`).
 
 ### Example
 

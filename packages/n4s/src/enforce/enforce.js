@@ -1,6 +1,7 @@
 import compounds from 'compounds';
 import { RUN_RULE } from 'enforceKeywords';
 import runner from 'enforceRunner';
+import isFunction from 'isFunction';
 import isRule from 'isRule';
 import proxySupported from 'proxySupported';
 import rules from 'rules';
@@ -10,8 +11,7 @@ const rulesObject = Object.assign(rules(), compounds);
 let rulesList = proxySupported() ? null : Object.keys(rulesObject);
 
 const Enforce = value => {
-  const target = proxySupported() ? enforce : {};
-  const proxy = genRuleProxy(target, ruleName => (...args) => {
+  const proxy = genRuleProxy(enforce, ruleName => (...args) => {
     runner(rulesObject[ruleName], value, args);
     return proxy;
   });
@@ -38,11 +38,11 @@ function genRuleProxy(target, output) {
   if (proxySupported()) {
     return new Proxy(target, {
       get: (target, fnName) => {
-        if (!isRule(rulesObject, fnName)) {
-          return target[fnName];
+        if (isRule(rulesObject, fnName)) {
+          return output(fnName);
         }
 
-        return output(fnName);
+        return target[fnName];
       },
     });
   } else {
@@ -77,7 +77,14 @@ function bindLazyRule(ruleName) {
     const returnvalue = genRuleProxy({}, addFn);
 
     return Object.assign(returnvalue, {
-      [RUN_RULE]: registeredRules,
+      [RUN_RULE]: getValue => {
+        return registeredRules.every(fn => {
+          // This  inversion of control when getting the value is
+          // required in order to pass the function over to `shape`
+          // so it can make the decision which args to pass to `optional`
+          return fn(isFunction(getValue) ? getValue(fn.name) : getValue);
+        });
+      },
     });
   };
 

@@ -35,17 +35,8 @@
       "enforceRunner": [
         "./packages/n4s/src/enforce/enforceRunner.js"
       ],
-      "ensure": [
-        "./packages/n4s/src/ensure/ensure.js"
-      ],
-      "ensureRunner": [
-        "./packages/n4s/src/ensure/ensureRunner.js"
-      ],
       "enforceExtended": [
         "./packages/n4s/src/extended/enforceExtended.js"
-      ],
-      "ensureExtended": [
-        "./packages/n4s/src/extended/ensureExtended.js"
       ],
       "rulesExtended": [
         "./packages/n4s/src/extended/rulesExtended.js"

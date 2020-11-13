@@ -204,7 +204,7 @@ type LazyInside = (
 
 type TEnforceLazy = {
   [key: string]: (...args: any[]) => TEnforceLazy | boolean;
-  run: (...args: any[]) => boolean;
+  test: (...args: any[]) => boolean;
   equals: LazyAny;
   notEquals: LazyAny;
   numberEquals: LazyNumeral;

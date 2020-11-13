@@ -50,6 +50,9 @@
       "proxySupported": [
         "./packages/n4s/src/lib/proxySupported.js"
       ],
+      "runLazyRules": [
+        "./packages/n4s/src/lib/runLazyRules.js"
+      ],
       "transformResult": [
         "./packages/n4s/src/lib/transformResult.js"
       ],

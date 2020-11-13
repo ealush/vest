@@ -91,41 +91,37 @@ const suite = ({ withProxy, requirePath }) =>
       });
 
       it('Should retain all lazy functions in an array as a property of the returned object', () => {
-        expect(enforce.isEmpty()[RUN_RULE]).toBeInstanceOf(Array);
-        expect(enforce.isEmpty().isArray()[RUN_RULE]).toBeInstanceOf(Array);
+        expect(enforce.isEmpty()[RUN_RULE]).toBeInstanceOf(Function);
+        expect(enforce.isEmpty().isArray()[RUN_RULE]).toBeInstanceOf(Function);
       });
 
-      it('Should store all the provided rules in the returned array', () => {
-        const res = enforce.isEmpty().isArray().equals()[RUN_RULE];
-        expect(res).toHaveLength(3);
-        expect(res[0].name).toBe('isEmpty');
-        expect(res[1].name).toBe('isArray');
-        expect(res[2].name).toBe('equals');
-        expect(typeof res[0]).toBe('function');
-        expect(typeof res[1]).toBe('function');
-        expect(typeof res[2]).toBe('function');
+      it('Should run all chained rules with the test function', () => {
+        const r1 = jest.fn(() => true);
+        const r2 = jest.fn(() => true);
+        const r3 = jest.fn(() => true);
+        enforce.extend({
+          r1,
+          r2,
+          r3,
+        });
+        enforce.r1().r2().r3()[RUN_RULE]('some_value');
+        expect(r1).toHaveBeenCalledWith('some_value');
+        expect(r2).toHaveBeenCalledWith('some_value');
+        expect(r3).toHaveBeenCalledWith('some_value');
       });
 
       it('Should produce correct result when run', () => {
-        expect(enforce.isEmpty()[RUN_RULE].every(fn => fn([]))).toBe(true);
-        expect(enforce.isEmpty()[RUN_RULE].every(fn => fn([1, 2, 3]))).toBe(
-          false
-        );
-        expect(enforce.isNumeric()[RUN_RULE].every(fn => fn('555'))).toBe(true);
-        expect(enforce.greaterThan(10)[RUN_RULE].every(fn => fn(20))).toBe(
-          true
-        );
-        expect(enforce.greaterThan(20)[RUN_RULE].every(fn => fn(10))).toBe(
-          false
-        );
-        expect(enforce.greaterThan(10)[RUN_RULE].every(fn => fn(4))).toBe(
-          false
-        );
+        expect(enforce.isEmpty()[RUN_RULE]([])).toBe(true);
+        expect(enforce.isEmpty()[RUN_RULE]([1, 2, 3])).toBe(false);
+        expect(enforce.isNumeric()[RUN_RULE]('555')).toBe(true);
+        expect(enforce.greaterThan(10)[RUN_RULE](20)).toBe(true);
+        expect(enforce.greaterThan(20)[RUN_RULE](10)).toBe(false);
+        expect(enforce.greaterThan(10)[RUN_RULE](4)).toBe(false);
         const fn = jest.fn(() => true);
         enforce.extend({
           getArgs: fn,
         });
-        enforce.getArgs(2, 3, 4, 5, 6, 7)[RUN_RULE].every(fn => fn(1));
+        enforce.getArgs(2, 3, 4, 5, 6, 7)[RUN_RULE](1);
         // // One should be first
         expect(fn).toHaveBeenCalledWith(1, 2, 3, 4, 5, 6, 7);
       });

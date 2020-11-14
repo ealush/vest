@@ -10,7 +10,7 @@ import useTestObjects from 'useTestObjects';
  */
 const collectFailureMessages = (severity, { group, fieldName } = {}) => {
   const [testObjects] = useTestObjects();
-  return testObjects.reduce((collector, testObject) => {
+  const res = testObjects.reduce((collector, testObject) => {
     if (group && testObject.groupName !== group) {
       return collector;
     }
@@ -33,6 +33,12 @@ const collectFailureMessages = (severity, { group, fieldName } = {}) => {
 
     return collector;
   }, {});
+
+  if (fieldName) {
+    return res[fieldName] || [];
+  } else {
+    return res;
+  }
 };
 
 export default collectFailureMessages;

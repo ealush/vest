@@ -20,6 +20,9 @@
       "compounds": [
         "./packages/n4s/src/enforce/compounds/compounds.js"
       ],
+      "isArrayOf": [
+        "./packages/n4s/src/enforce/compounds/isArrayOf.js"
+      ],
       "optional": [
         "./packages/n4s/src/enforce/compounds/optional.js"
       ],
@@ -73,9 +76,6 @@
       ],
       "isArray": [
         "./packages/n4s/src/rules/isArray.js"
-      ],
-      "isArrayOf": [
-        "./packages/n4s/src/rules/isArrayOf.js"
       ],
       "isBetween": [
         "./packages/n4s/src/rules/isBetween.js"

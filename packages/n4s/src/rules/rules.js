@@ -27,7 +27,7 @@ import { numberEquals, numberNotEquals } from 'numberEquals';
 import { shorterThan } from 'shorterThan';
 import { shorterThanOrEquals } from 'shorterThanOrEquals';
 import { startsWith, doesNotStartWith } from 'startsWith';
-import { isArrayOf } from 'isArrayOf';
+import isArrayOf from 'isArrayOf'
 
 export default function rules() {
   return {

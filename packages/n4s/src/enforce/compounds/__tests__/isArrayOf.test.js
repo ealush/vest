@@ -40,12 +40,8 @@ describe('Tests isArrayOf rule', () => {
   describe('as part of enforce', () => {
    
     it('should return silently when valid', () => {
-      enforce([5]).isArrayOf(enforce.isNumber);
-      /*
-      enforce([1,2,'3']).isArrayOf(enforce.isNumber());
-      enforce([1,2,'3']).isArrayOf(enforce.isString());
+      enforce([1,2,'3']).isArrayOf(enforce.isNumber(), enforce.isString());
       enforce([1,2,'3']).isArrayOf(enforce.isNumeric(), enforce.lessThan(5).greaterThan(0));
-      */
     });
   
     it('should throw an exception when invalid', () => {

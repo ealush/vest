@@ -1,3 +1,6 @@
+import { isNotNull } from 'isNull';
+import { lengthEquals } from 'lengthEquals';
+
 /**
  * Creates a cache function
  * @param {number} [maxSize] Max cache size
@@ -13,7 +16,7 @@ const createCache = (maxSize = 10) => {
   const cache = (deps, cacheAction) => {
     const cacheHit = cache.get(deps);
 
-    if (cacheHit !== null) {
+    if (isNotNull(cacheHit)) {
       return cacheHit[1];
     }
 
@@ -36,7 +39,7 @@ const createCache = (maxSize = 10) => {
     cacheStorage[
       cacheStorage.findIndex(
         ([cachedDeps]) =>
-          deps.length === cachedDeps.length &&
+          lengthEquals(deps, cachedDeps.length) &&
           deps.every((dep, i) => dep === cachedDeps[i])
       )
     ] || null;

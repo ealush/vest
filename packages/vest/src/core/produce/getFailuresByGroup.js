@@ -16,13 +16,7 @@ const getByGroup = (severityKey, group, fieldName) => {
     );
   }
 
-  const res = collectFailureMessages(severityKey, { group, fieldName });
-
-  if (fieldName) {
-    return res[fieldName] || [];
-  } else {
-    return res;
-  }
+  return collectFailureMessages(severityKey, { group, fieldName });
 };
 
 export default getByGroup;

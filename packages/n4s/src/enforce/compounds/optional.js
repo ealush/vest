@@ -1,7 +1,6 @@
-import asArray from 'asArray';
-import { RUN_RULE } from 'enforceKeywords';
 import { isNull } from 'isNull';
 import { isUndefined } from 'isUndefined';
+import runLazyRules from 'runLazyRules';
 
 /**
  * @param {Array} ObjectEntry   Object and key leading to current value
@@ -15,7 +14,5 @@ export default function optional([obj, key], ...ruleGroups) {
     return true;
   }
 
-  return asArray(ruleGroups).every(ruleGroup => {
-    return ruleGroup[RUN_RULE].every(fn => fn(obj[key]));
-  });
+  return runLazyRules(ruleGroups, obj[key]);
 }

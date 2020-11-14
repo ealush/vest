@@ -1,9 +1,9 @@
+import isArrayOf from 'isArrayOf';
 import optional from 'optional';
 import shape from 'shape';
-import isArrayOf from 'isArrayOf';
 
 export default {
+  isArrayOf,
   optional,
   shape,
-  isArrayOf,
 };

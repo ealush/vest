@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { moduleAliases, filePaths, logger } = require('../util');
+const { moduleAliases, filePaths, logger, exec } = require('../util');
 
 const JSCONF_PATH = path.join(filePaths.ROOT_PATH, 'jsconfig.json');
 
@@ -28,6 +28,8 @@ fs.writeFileSync(
   JSON.stringify(config, null, 2),
   'utf8'
 );
+
+exec(`yarn prettier ./jsconfig.json -w`);
 
 function findDifference(current, next) {
   const added = [];

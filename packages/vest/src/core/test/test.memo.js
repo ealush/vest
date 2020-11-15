@@ -1,8 +1,8 @@
 import addTestToState from 'addTestToState';
 import createCache from 'cache';
 import { isExcluded } from 'exclusive';
-import isFunction from 'isFunction';
 import { isNull } from 'isNull';
+import isPromise from 'isPromise';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
 import useSuiteId from 'useSuiteId';
@@ -42,7 +42,7 @@ export default function bindTestMemo(test) {
 
     addTestToState(testObject);
 
-    if (isFunction(testObject?.asyncTest?.then)) {
+    if (isPromise(testObject?.asyncTest)) {
       setPending(testObject);
       runAsyncTest(testObject);
     }

@@ -3,6 +3,7 @@ import addTestToState from 'addTestToState';
 import context from 'ctx';
 import { isExcluded } from 'exclusive';
 import isFunction from 'isFunction';
+import isPromise from 'isPromise';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
 import bindTestMemo from 'test.memo';
@@ -43,7 +44,7 @@ const register = testObject => {
   try {
     // try catch for safe property access
     // in case object is an enforce chain
-    if (isFunction(result?.then)) {
+    if (isPromise(result)) {
       testObject.asyncTest = result;
       setPending(testObject);
       runAsyncTest(testObject);

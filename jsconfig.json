@@ -11,6 +11,9 @@
       "isFunction": [
         "./packages/__shared/src/isFunction.js"
       ],
+      "isPromise": [
+        "./packages/__shared/src/isPromise.js"
+      ],
       "isStringValue": [
         "./packages/__shared/src/isStringValue.js"
       ],

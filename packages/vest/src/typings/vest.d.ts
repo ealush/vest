@@ -258,6 +258,7 @@ type TEnforceLazy = {
     [key: string]: TEnforceLazy | TEnforceLazy[];
   }) => TEnforceLazy;
   optional: <T>(...rules: TEnforceLazy[]) => TEnforceLazy;
+  isArrayOf: <T>(...rules: TEnforceLazy[]) => TEnforceLazy;
 };
 
 declare module 'vest' {

@@ -20,6 +20,9 @@
       "compounds": [
         "./packages/n4s/src/enforce/compounds/compounds.js"
       ],
+      "isArrayOf": [
+        "./packages/n4s/src/enforce/compounds/isArrayOf.js"
+      ],
       "optional": [
         "./packages/n4s/src/enforce/compounds/optional.js"
       ],

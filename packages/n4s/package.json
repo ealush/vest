@@ -4,13 +4,13 @@
   "description": "Enforce - Validation assertions library",
   "main": "./n4s.js",
   "browser": "./n4s.js",
-  "module": "./esm/n4s.mjs.production.js",
   "exports": {
     "./n4s.js": "./n4s.js",
     "./package.json": "./package.json",
     "./enforceExtended.cjs.development.js": "./enforceExtended.cjs.development.js",
     "./enforceExtended.cjs.production.js": "./enforceExtended.cjs.production.js",
     "./enforceExtended.cjs.production.min.js": "./enforceExtended.cjs.production.min.js",
+    "./enforceExtended.js": "./enforceExtended.js",
     "./enforceExtended.umd.development.js": "./enforceExtended.umd.development.js",
     "./enforceExtended.umd.production.js": "./enforceExtended.umd.production.js",
     "./enforceExtended.umd.production.min.js": "./enforceExtended.umd.production.min.js",
@@ -56,5 +56,6 @@
   "scripts": {
     "build": "rollup -c ./config/rollup/rollup.config.js",
     "test": "jest"
-  }
+  },
+  "module": "./esm/n4s.mjs.production.js"
 }

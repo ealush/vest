@@ -4,10 +4,10 @@ const glob = require('glob');
 
 const getPlugins = require('../../../../config/rollup/getPlugins');
 const {
-  packagePath,
   logger,
   packageNames,
   packageDist,
+  packageSrc,
 } = require('../../../../util');
 
 const DIR_NAME_UTILITIES = 'utilities';
@@ -20,7 +20,7 @@ const renames = {
 const getFileName = filePath => path.basename(filePath, JS_EXTENSION);
 
 const entries = glob
-  .sync(packagePath(packageNames.VEST, 'src', DIR_NAME_UTILITIES, '*.js'))
+  .sync(packageSrc(packageNames.VEST, DIR_NAME_UTILITIES, '*' + JS_EXTENSION))
   .map(input => {
     const fileName = getFileName(input);
     return {
@@ -29,7 +29,7 @@ const entries = glob
       name: renames[fileName] || fileName,
       outputPath: path.join(
         packageDist(packageNames.VEST),
-        [fileName, JS_EXTENSION].join('')
+        [fileName.split('@')[0], JS_EXTENSION].join('')
       ),
     };
   });

@@ -1,0 +1,64 @@
+{
+  "name": "anyone",
+  "version": "0.1.0",
+  "description": "Anyone",
+  "main": "./anyone.js",
+  "scripts": {
+    "build": "rollup -c ./config/rollup/rollup.config.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ealush/vest.git"
+  },
+  "author": "ealush",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ealush/vest/issues"
+  },
+  "homepage": "https://github.com/ealush/vest/tree/latest/packages/anyone",
+  "exports": {
+    "./anyone.js": "./anyone.js",
+    "./package.json": "./package.json",
+    "./all.cjs.development.js": "./all.cjs.development.js",
+    "./all.cjs.production.js": "./all.cjs.production.js",
+    "./all.cjs.production.min.js": "./all.cjs.production.min.js",
+    "./all.umd.development.js": "./all.umd.development.js",
+    "./all.umd.production.js": "./all.umd.production.js",
+    "./all.umd.production.min.js": "./all.umd.production.min.js",
+    "./any.cjs.development.js": "./any.cjs.development.js",
+    "./any.cjs.production.js": "./any.cjs.production.js",
+    "./any.cjs.production.min.js": "./any.cjs.production.min.js",
+    "./any.umd.development.js": "./any.umd.development.js",
+    "./any.umd.production.js": "./any.umd.production.js",
+    "./any.umd.production.min.js": "./any.umd.production.min.js",
+    "./esm/all.mjs.development.js": "./esm/all.mjs.development.js",
+    "./esm/all.mjs.production.js": "./esm/all.mjs.production.js",
+    "./esm/all.mjs.production.min.js": "./esm/all.mjs.production.min.js",
+    "./esm/any.mjs.development.js": "./esm/any.mjs.development.js",
+    "./esm/any.mjs.production.js": "./esm/any.mjs.production.js",
+    "./esm/any.mjs.production.min.js": "./esm/any.mjs.production.min.js",
+    "./esm/none.mjs.development.js": "./esm/none.mjs.development.js",
+    "./esm/none.mjs.production.js": "./esm/none.mjs.production.js",
+    "./esm/none.mjs.production.min.js": "./esm/none.mjs.production.min.js",
+    "./esm/one.mjs.development.js": "./esm/one.mjs.development.js",
+    "./esm/one.mjs.production.js": "./esm/one.mjs.production.js",
+    "./esm/one.mjs.production.min.js": "./esm/one.mjs.production.min.js",
+    "./none.cjs.development.js": "./none.cjs.development.js",
+    "./none.cjs.production.js": "./none.cjs.production.js",
+    "./none.cjs.production.min.js": "./none.cjs.production.min.js",
+    "./none.umd.development.js": "./none.umd.development.js",
+    "./none.umd.production.js": "./none.umd.production.js",
+    "./none.umd.production.min.js": "./none.umd.production.min.js",
+    "./one.cjs.development.js": "./one.cjs.development.js",
+    "./one.cjs.production.js": "./one.cjs.production.js",
+    "./one.cjs.production.min.js": "./one.cjs.production.min.js",
+    "./one.umd.development.js": "./one.umd.development.js",
+    "./one.umd.production.js": "./one.umd.production.js",
+    "./one.umd.production.min.js": "./one.umd.production.min.js",
+    ".": {
+      "browser": "./anyone.js"
+    }
+  },
+  "browser": "./anyone.js"
+}

@@ -18,6 +18,7 @@ module.exports = function genConfig({
   esInput = input,
 } = {}) {
   return [
+    { distPath, format: FORMAT_UMD, input, libraryName, packageName },
     {
       distPath,
       format: FORMAT_ES,
@@ -26,7 +27,6 @@ module.exports = function genConfig({
       outputDir: DIR_ESM,
       packageName,
     },
-    { distPath, format: FORMAT_UMD, input, libraryName, packageName },
     { distPath, format: FORMAT_CJS, input, libraryName, packageName },
   ]
     .reduce(

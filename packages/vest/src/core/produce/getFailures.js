@@ -7,5 +7,4 @@ import collectFailureMessages from 'collectFailureMessages';
  */
 export default function getFailures(severityKey, fieldName) {
   return collectFailureMessages(severityKey, { fieldName });
-
 }

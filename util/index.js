@@ -8,6 +8,7 @@ const packageDist = require('./packageDist');
 const packageJson = require('./packageJson');
 const packageNames = require('./packageNames');
 const packagePath = require('./packagePath');
+const packageSrc = require('./packageSrc');
 
 module.exports = {
   asyncForeach,
@@ -20,4 +21,5 @@ module.exports = {
   packageJson,
   packageNames,
   packagePath,
+  packageSrc,
 };

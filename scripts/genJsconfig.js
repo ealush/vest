@@ -13,23 +13,25 @@ const newPaths = moduleAliases.reduce(
   {}
 );
 
-findDifference(existingPaths, newPaths);
+const shouldReWrite = findDifference(existingPaths, newPaths);
 
-const config = {
-  compilerOptions: {
-    baseUrl: '.',
-    paths: newPaths,
-  },
-  exclude: ['node_modules', filePaths.DIR_NAME_DIST],
-};
+if (shouldReWrite) {
+  const config = {
+    compilerOptions: {
+      baseUrl: '.',
+      paths: newPaths,
+    },
+    exclude: ['node_modules', filePaths.DIR_NAME_DIST],
+  };
 
-fs.writeFileSync(
-  path.join(filePaths.ROOT_PATH, 'jsconfig.json'),
-  JSON.stringify(config, null, 2),
-  'utf8'
-);
+  fs.writeFileSync(
+    path.join(filePaths.ROOT_PATH, 'jsconfig.json'),
+    JSON.stringify(config, null, 2),
+    'utf8'
+  );
 
-exec(`yarn prettier ./jsconfig.json -w`);
+  exec(`yarn prettier ./jsconfig.json -w`);
+}
 
 function findDifference(current, next) {
   const added = [];
@@ -68,4 +70,10 @@ function findDifference(current, next) {
       logger.log(`${filename}: ${prevPath} -> ${newPath}`)
     );
   }
+
+  if (added.length + changed.length + removed.length === 0) {
+    return false;
+  }
+
+  return true;
 }

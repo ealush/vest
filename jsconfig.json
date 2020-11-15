@@ -8,6 +8,14 @@
       "isPromise": ["./packages/__shared/src/isPromise.js"],
       "isStringValue": ["./packages/__shared/src/isStringValue.js"],
       "throwError": ["./packages/__shared/src/throwError.js"],
+      "anyoneTestValues": [
+        "./packages/anyone/src/__tests__/anyoneTestValues.js"
+      ],
+      "all": ["./packages/anyone/src/all.js"],
+      "any": ["./packages/anyone/src/any.js"],
+      "none": ["./packages/anyone/src/none.js"],
+      "one": ["./packages/anyone/src/one.js"],
+      "runAnyoneMethods": ["./packages/anyone/src/runner/runAnyoneMethods.js"],
       "compounds": ["./packages/n4s/src/enforce/compounds/compounds.js"],
       "isArrayOf": ["./packages/n4s/src/enforce/compounds/isArrayOf.js"],
       "optional": ["./packages/n4s/src/enforce/compounds/optional.js"],
@@ -109,8 +117,11 @@
         "./packages/vest/src/lib/removeElementFromArray.js"
       ],
       "runnableTypes": ["./packages/vest/src/lib/runnableTypes.js"],
-      "any": ["./packages/vest/src/utilities/any.js"],
+      "any@anyone": ["./packages/vest/src/utilities/any@anyone.js"],
       "classNames": ["./packages/vest/src/utilities/classNames.js"],
+      "enforceExtended@n4s": [
+        "./packages/vest/src/utilities/enforceExtended@n4s.js"
+      ],
       "promisify": ["./packages/vest/src/utilities/promisify.js"],
       "vest": ["./packages/vest/src/vest.js"],
       "vest.mjs": ["./packages/vest/src/vest.mjs.js"]

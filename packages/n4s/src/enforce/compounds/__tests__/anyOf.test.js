@@ -22,6 +22,15 @@ describe('AnyOf validation', () => {
         )
       ).toBe(true);
     });
+    it('Should succeed when rule chaining', () => {
+      expect(
+        anyOf(
+          [1, 2, 3],
+          enforce.isArray().isNotEmpty().longerThan(2),
+          enforce.isUndefined()
+        )
+      ).toBe(true);
+    });
     it('Should fail with no rules', () => {
       expect(
         anyOf(5)

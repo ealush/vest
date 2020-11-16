@@ -3,6 +3,9 @@ import isFunction from 'isFunction';
 import isStringValue from 'isStringValue';
 import throwError from 'throwError';
 
+const throwGroupError = value =>
+  throwError(`group initialization error. Expected "${value}" to be a string.`);
+
 /**
  * Runs a group callback.
  * @param {string} groupName
@@ -10,15 +13,11 @@ import throwError from 'throwError';
  */
 const group = (groupName, tests) => {
   if (!isStringValue(groupName)) {
-    throwError(
-      `group initialization error. Expected "${groupName}" to be a string.`
-    );
+    throwGroupError(groupName);
   }
 
   if (!isFunction(tests)) {
-    throwError(
-      `group initialization error. Expected "${tests}" to be a function.`
-    );
+    throwGroupError(tests);
   }
 
   // Running with the context applied

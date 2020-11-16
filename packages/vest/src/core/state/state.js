@@ -43,7 +43,7 @@ export default (function createState() {
     return use;
   }
 
-  function createRef(handlers = {}) {
+  function createRef(handlers) {
     let state = {};
     const registeredHandlers = [];
 
@@ -68,11 +68,13 @@ export default (function createState() {
       set,
     };
 
-    for (const key in handlers) {
-      const [handler, args] = asArray(handlers[key]);
-      registeredHandlers.push(
-        context.bind({ stateRef, reg: { key, args } }, handler)
-      );
+    if (handlers) {
+      for (const key in handlers) {
+        const [handler, args] = asArray(handlers[key]);
+        registeredHandlers.push(
+          context.bind({ stateRef, reg: { key, args } }, handler)
+        );
+      }
     }
 
     context.run({ stateRef }, reset);

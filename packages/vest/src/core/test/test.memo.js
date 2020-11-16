@@ -9,7 +9,7 @@ import useSuiteId from 'useSuiteId';
 
 /* eslint-disable jest/no-export */
 export default function bindTestMemo(test) {
-  const cache = createCache(100);
+  const cache = createCache(100); // arbitrary cache size
 
   /**
    * Caches, or returns an already cached test call
@@ -42,7 +42,7 @@ export default function bindTestMemo(test) {
 
     addTestToState(testObject);
 
-    if (isPromise(testObject?.asyncTest)) {
+    if (testObject && isPromise(testObject.asyncTest)) {
       setPending(testObject);
       runAsyncTest(testObject);
     }

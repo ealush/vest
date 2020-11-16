@@ -1,3 +1,4 @@
+import { isEmpty, isNotEmpty } from 'isEmpty';
 import usePending from 'usePending';
 
 /**
@@ -8,13 +9,13 @@ import usePending from 'usePending';
 const hasRemainingTests = fieldName => {
   const [{ pending, lagging }] = usePending();
   const allIncomplete = pending.concat(lagging);
-  if (!allIncomplete.length) {
+  if (isEmpty(allIncomplete)) {
     return false;
   }
   if (fieldName) {
     return allIncomplete.some(testObject => testObject.fieldName === fieldName);
   }
-  return Boolean(allIncomplete.length);
+  return isNotEmpty(allIncomplete);
 };
 
 export default hasRemainingTests;

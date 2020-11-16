@@ -163,8 +163,13 @@ export interface IEnforceRules<T = {}> {
   lengthNotEquals: RuleNumeral<T>;
   isNegative: RuleNumeral<T>;
   isPositive: RuleNumeral<T>;
+  loose: <T>(shape: {
+    [key: string]: TEnforceLazy | TEnforceLazy[];
+  }) => RuleReturn<T>;
   shape: <T>(shape: {
     [key: string]: TEnforceLazy | TEnforceLazy[];
+  }, options?: {
+    loose?: boolean
   }) => RuleReturn<T>;
 }
 
@@ -254,8 +259,13 @@ type TEnforceLazy = {
   isPositive: LazyEnforceWithNoArgs;
   isBoolean: LazyEnforceWithNoArgs;
   isNotBoolean: LazyEnforceWithNoArgs;
+  loose: <T>(shape: {
+    [key: string]: TEnforceLazy | TEnforceLazy[];
+  }) => TEnforceLazy;
   shape: <T>(shape: {
     [key: string]: TEnforceLazy | TEnforceLazy[];
+  }, options?: {
+    loose?: boolean
   }) => TEnforceLazy;
   optional: <T>(...rules: TEnforceLazy[]) => TEnforceLazy;
   isArrayOf: <T>(...rules: TEnforceLazy[]) => TEnforceLazy;

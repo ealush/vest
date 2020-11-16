@@ -3,8 +3,10 @@ import runLazyRules from 'runLazyRules';
 /**
  * @param {Object} obj  Data object that gets validated
  * @param {Object} shapeObj  Shape definition
+ * @param {Object} options
+ * @param {boolean} options.loose Ignore extra keys not defined in shapeObj
  */
-export default function shape(obj, shapeObj) {
+export function shape(obj, shapeObj, options) {
   for (const key in shapeObj) {
     const current = shapeObj[key];
     const value = obj[key];
@@ -23,11 +25,15 @@ export default function shape(obj, shapeObj) {
     }
   }
 
-  for (const key in obj) {
-    if (!shapeObj[key]) {
-      return false;
+  if (!(options || {}).loose) {
+    for (const key in obj) {
+      if (!shapeObj[key]) {
+        return false;
+      }
     }
   }
 
   return true;
 }
+
+export const loose = (obj, shapeObj) => shape(obj, shapeObj, { loose: true });

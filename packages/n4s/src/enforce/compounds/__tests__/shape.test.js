@@ -1,7 +1,7 @@
 import faker from 'faker';
 
 import enforce from 'enforce';
-import shape from 'shape';
+import { shape, loose } from 'shape';
 
 describe('Shape validation', () => {
   describe('Base behavior', () => {
@@ -163,6 +163,25 @@ describe('Shape validation', () => {
     });
   });
 
+  describe('When field is in data but not in shape with loose option', () => {
+    it('Should succeed', () => {
+      expect(
+        shape(
+          { user: 'example', password: 'x123' },
+          { user: enforce.isString(), password: enforce.endsWith('23') },
+          { loose: true }
+        )
+      ).toBe(true);
+      expect(
+        shape(
+          { user: 'example', password: 'x123' },
+          { user: enforce.isString() },
+          { loose: true }
+        )
+      ).toBe(true);
+    });
+  });
+
   describe('When field is in shape but not in data', () => {
     it('Should fail', () => {
       expect(
@@ -172,7 +191,41 @@ describe('Shape validation', () => {
         )
       ).toBe(false);
     });
+    it('Should fail even with loose', () => {
+      expect(
+        shape(
+          { user: 'example' },
+          { user: enforce.isString(), password: enforce.startsWith('x') },
+          { loose: true }
+        )
+      ).toBe(false);
+    });
   });
+
+  describe('Behavior of loose compared to shape', () => {
+    it('Should succeed', () => {
+      expect(
+        loose(
+          { user: 'example', password: 'x123' },
+          { user: enforce.isString(), password: enforce.endsWith('23') }
+        )
+      ).toBe(true);
+      expect(
+        loose(
+          { user: 'example', password: 'x123' },
+          { user: enforce.isString() }
+        )
+      ).toBe(true);
+    });
+    it('Should fail even with loose', () => {
+      expect(
+        loose(
+          { user: 'example' },
+          { user: enforce.isString(), password: enforce.startsWith('x') }
+        )
+      ).toBe(false);
+    });
+  })
 
   describe('Handling of optional fields', () => {
     it('Should allow optional fields to not be defined', () => {
@@ -294,11 +347,42 @@ describe('Shape validation', () => {
           },
         }).shape(shapeRules())
       ).toThrow();
+
+      expect(() =>
+        enforce({
+          user: {
+            age: faker.random.number(10),
+            friends: [1, 2, 3, 4, 5],
+            id: faker.random.uuid(),
+            name: {
+              first: faker.name.firstName(),
+              last: faker.name.lastName(),
+            },
+            shoeSize: 3,
+            username: faker.internet.userName(),
+          },
+        }).shape(shapeRules())
+      ).toThrow();
+
+
+      enforce({
+        user: {
+          age: faker.random.number(10),
+          friends: [1, 2, 3, 4, 5],
+          id: faker.random.uuid(),
+          name: {
+            first: faker.name.firstName(),
+            last: faker.name.lastName(),
+          },
+          shoeSize: 3,
+          username: faker.internet.userName(),
+        },
+      }).loose(shapeRules({ loose: true }));
     });
   });
 });
 
-const shapeRules = () => ({
+const shapeRules = (options) => ({
   user: enforce.shape({
     age: enforce.isNumber().isBetween(0, 10),
     friends: enforce.optional(enforce.isArray()),
@@ -307,7 +391,7 @@ const shapeRules = () => ({
       first: enforce.isString(),
       last: enforce.isString(),
       middle: enforce.optional(enforce.isString()),
-    }),
+    }, options),
     username: enforce.isString(),
-  }),
+  }, options),
 });

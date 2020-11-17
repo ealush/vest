@@ -1,5 +1,5 @@
 - [Main](./)
 - [List of Enforce Rules](./rules)
 - [Business reated rules](./business_rules)
-- [Schema validations](./shape)
+- [Schema validations](./coumpound)
 - [Custom Enforce Rules](./custom)

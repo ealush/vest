@@ -113,6 +113,10 @@ type RuleAny<T> = (expected: any) => RuleReturn<T>;
 type RuleInside<T> = (
   expected: Array<string | number | boolean> | string
 ) => RuleReturn<T>;
+type CompoundListOfRules<T> = (...rules: TEnforceLazy[]) => RuleReturn<T>;
+type TShapeObject = {
+  [key: string]: TEnforceLazy;
+};
 export interface IEnforceRules<T = {}> {
   equals: RuleAny<T>;
   notEquals: RuleAny<T>;
@@ -163,15 +167,15 @@ export interface IEnforceRules<T = {}> {
   lengthNotEquals: RuleNumeral<T>;
   isNegative: RuleNumeral<T>;
   isPositive: RuleNumeral<T>;
-  loose: <T>(shape: {
-    [key: string]: TEnforceLazy | TEnforceLazy[];
-  }) => RuleReturn<T>;
-  shape: <T>(shape: {
-    [key: string]: TEnforceLazy | TEnforceLazy[];
-  }, options?: {
-    loose?: boolean
-  }) => RuleReturn<T>;
-  anyOf: RuleAny<T>;
+  loose: <T>(shape: TShapeObject) => RuleReturn<T>;
+  shape: <T>(
+    shape: TShapeObject,
+    options?: {
+      loose?: boolean;
+    }
+  ) => RuleReturn<T>;
+  isArrayOf: CompoundListOfRules<T>;
+  anyOf: CompoundListOfRules<T>;
 }
 
 interface IEnforce {
@@ -207,6 +211,7 @@ type LazyAny = (expected: any) => TEnforceLazy;
 type LazyInside = (
   expected: Array<string | number | boolean> | string
 ) => TEnforceLazy;
+type LazyCopmoundListOfRules = <T>(...rules: TEnforceLazy[]) => TEnforceLazy;
 
 type TEnforceLazy = {
   [key: string]: (...args: any[]) => TEnforceLazy | boolean;
@@ -260,17 +265,16 @@ type TEnforceLazy = {
   isPositive: LazyEnforceWithNoArgs;
   isBoolean: LazyEnforceWithNoArgs;
   isNotBoolean: LazyEnforceWithNoArgs;
-  loose: <T>(shape: {
-    [key: string]: TEnforceLazy | TEnforceLazy[];
-  }) => TEnforceLazy;
-  shape: <T>(shape: {
-    [key: string]: TEnforceLazy | TEnforceLazy[];
-  }, options?: {
-    loose?: boolean
-  }) => TEnforceLazy;
-  optional: <T>(...rules: TEnforceLazy[]) => TEnforceLazy;
-  isArrayOf: <T>(...rules: TEnforceLazy[]) => TEnforceLazy;
-  anyOf: <T>(...rules: TEnforceLazy[]) => TEnforceLazy;
+  loose: <T>(shape: TShapeObject) => TEnforceLazy;
+  shape: <T>(
+    shape: TShapeObject,
+    options?: {
+      loose?: boolean;
+    }
+  ) => TEnforceLazy;
+  optional: LazyCopmoundListOfRules;
+  isArrayOf: LazyCopmoundListOfRules;
+  anyOf: LazyCopmoundListOfRules;
 };
 
 declare module 'vest' {

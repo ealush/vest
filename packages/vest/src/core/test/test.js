@@ -17,7 +17,7 @@ const sync = testObject =>
   context.run({ currentTest: testObject }, () => {
     let result;
     try {
-      result = testObject.testFn.apply(testObject);
+      result = testObject.testFn();
     } catch (e) {
       result = false;
     }

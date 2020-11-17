@@ -8,7 +8,7 @@
 [![npm version](https://badge.fury.io/js/vest.svg)](https://badge.fury.io/js/vest) [![Build Status](https://travis-ci.org/ealush/vest.svg?branch=latest)](https://travis-ci.org/ealush/vest) [![Known Vulnerabilities](https://snyk.io/test/npm/vest/badge.svg)](https://snyk.io/test/npm/vest)
 ![minifiedSize](https://img.shields.io/bundlephobia/min/vest?color=blue&logo=npm)
 
-![Join discord](https://img.shields.io/discord/757686103292641312?label=Join%20Discord&logo=discord&logoColor=green)
+[![Join discord](https://img.shields.io/discord/757686103292641312?label=Join%20Discord&logo=discord&logoColor=green)](https://discord.gg/WmADZpJnSe)
 
 - [Documentation homepage](https://ealush.github.io/vest)
 - **Try vest live**

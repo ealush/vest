@@ -31,7 +31,7 @@ export default function bindTestMemo(test) {
 
     if (isNull(cached)) {
       // Cache miss. Start fresh
-      return cache(dependencies, () => test(fieldName, msg, testFn));
+      return cache(dependencies, test.bind(null, fieldName, msg, testFn));
     }
 
     const [, testObject] = cached;

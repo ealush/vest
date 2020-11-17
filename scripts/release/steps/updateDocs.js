@@ -16,8 +16,8 @@ function updateDocs() {
     packagePath(packageNames.N4S, 'docs', 'custom.md'),
     'utf8'
   );
-  const shape = fs.readFileSync(
-    packagePath(packageNames.N4S, 'docs', 'shape.md'),
+  const compound = fs.readFileSync(
+    packagePath(packageNames.N4S, 'docs', 'compound.md'),
     'utf8'
   );
 
@@ -28,7 +28,7 @@ function updateDocs() {
 
   const nextEnforceDoc = enforceDoc.replace(
     '{{COPIED_ENFORCE_DOCS}}',
-    [n4sRules, customRules, shape].join('\n\n').replace(/^#|\n#/g, '\n##')
+    [n4sRules, compound, customRules].join('\n\n').replace(/^#|\n#/g, '\n##')
   );
 
   fs.writeFileSync(path.join(VEST_DOCS_PATH, 'enforce.md'), nextEnforceDoc);

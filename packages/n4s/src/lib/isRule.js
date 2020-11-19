@@ -1,7 +1,6 @@
 import isFunction from 'isFunction';
+import runtimeRules from 'runtimeRules';
 
-const isRule = (rulesObject, name) => {
-  return rulesObject.hasOwnProperty(name) && isFunction(rulesObject[name]);
-};
+const isRule = name => isFunction(runtimeRules[name]);
 
 export default isRule;

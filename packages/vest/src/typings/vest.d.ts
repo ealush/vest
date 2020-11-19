@@ -101,6 +101,11 @@ export type EnforceExtendMap<T> = {
   [K in keyof T]: (...args: any[]) => RuleReturn<T>;
 };
 
+interface IEnforceTemplateReturn {
+  (value: any): IEnforceRules;
+  test: (...args: any[]) => boolean;
+}
+
 type RuleReturn<T> = IEnforceRules<T> & EnforceExtendMap<T>;
 
 type TNumeral = number | string;
@@ -113,9 +118,12 @@ type RuleAny<T> = (expected: any) => RuleReturn<T>;
 type RuleInside<T> = (
   expected: Array<string | number | boolean> | string
 ) => RuleReturn<T>;
-type CompoundListOfRules<T> = (...rules: TEnforceLazy[]) => RuleReturn<T>;
+
+type TLazyOrTemplate = TEnforceLazy | IEnforceTemplateReturn;
+
+type CompoundListOfRules<T> = (...rules: TLazyOrTemplate[]) => RuleReturn<T>;
 type TShapeObject = {
-  [key: string]: TEnforceLazy;
+  [key: string]: TLazyOrTemplate;
 };
 export interface IEnforceRules<T = {}> {
   equals: RuleAny<T>;
@@ -200,6 +208,8 @@ interface IEnforce {
   extend<T extends { [key: string]: (value: any, ...args: any[]) => boolean }>(
     obj: T
   ): (value: any) => IEnforceRules<T> & EnforceExtendMap<T>;
+
+  template: (...rules: Array<TLazyOrTemplate>) => IEnforceTemplateReturn;
 }
 
 type LazyNumeral = (expected: TNumeral) => TEnforceLazy;
@@ -211,7 +221,7 @@ type LazyAny = (expected: any) => TEnforceLazy;
 type LazyInside = (
   expected: Array<string | number | boolean> | string
 ) => TEnforceLazy;
-type LazyCopmoundListOfRules = <T>(...rules: TEnforceLazy[]) => TEnforceLazy;
+type LazyCopmoundListOfRules = <T>(...rules: TLazyOrTemplate[]) => TEnforceLazy;
 
 type TEnforceLazy = {
   [key: string]: (...args: any[]) => TEnforceLazy | boolean;

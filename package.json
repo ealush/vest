@@ -8,7 +8,8 @@
     "genJSConfig": "node ./scripts/genJsconfig",
     "test": "jest --projects ./packages/*",
     "lint": "eslint . --ignore-path .gitignore",
-    "pretest": "yarn genJSConfig"
+    "pretest": "yarn genJSConfig",
+    "docs": "node scripts/release/steps/updateDocs"
   },
   "husky": {
     "hooks": {

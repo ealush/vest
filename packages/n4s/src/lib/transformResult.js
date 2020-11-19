@@ -9,7 +9,9 @@ export function validateResult(result, rule) {
   }
 
   throwError(
-    `${rule.name} wrong return value for the rule please check that the return is valid`
+    __DEV__
+      ? `${rule.name} wrong return value for the rule please check that the return is valid`
+      : rule.name + 'wrong return value'
   );
 }
 

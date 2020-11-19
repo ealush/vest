@@ -4,7 +4,11 @@ import isStringValue from 'isStringValue';
 import throwError from 'throwError';
 
 const throwGroupError = value =>
-  throwError(`group initialization error. Expected "${value}" to be a string.`);
+  throwError(
+    __DEV__
+      ? `group initialization error. Expected "${value}" to be a string.`
+      : 'group name must be a string'
+  );
 
 /**
  * Runs a group callback.

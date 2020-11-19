@@ -7,6 +7,7 @@ import isPromise from 'isPromise';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
 import bindTestMemo from 'test.memo';
+import throwError from 'throwError';
 
 /**
  * Runs sync tests - or extracts promise.
@@ -50,11 +51,13 @@ const register = testObject => {
       runAsyncTest(testObject);
     }
   } catch {
-    /* FUTURE: throw an error here in dev mode:
-     * Your test function ${testObject.fieldName} returned
-     * a value other than `false` or a Promise. Return values
-     * are not supported and may cause unexpected behavior.
-     */
+    if (__DEV__) {
+      throwError(
+        `Your test function ${testObject.fieldName} returned ${JSON.stringify(
+          result
+        )}. Only "false" or a Promise are supported. Return values may cause unexpected behavior.`
+      );
+    }
   }
 };
 

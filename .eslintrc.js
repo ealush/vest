@@ -20,9 +20,10 @@ module.exports = {
     'prettier',
   ],
   globals: {
+    __DEV__: true,
     __LIB_VERSION__: true,
-    LIBRARY_NAME: true,
     ENV_DEVELOPMENT: true,
+    LIBRARY_NAME: true,
   },
   ignorePatterns: ['playground'],
   overrides: [

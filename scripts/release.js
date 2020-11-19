@@ -8,13 +8,12 @@ const publishPackage = require('./release/steps/publishPackage');
 const pushToLatestBranch = require('./release/steps/pushToLatestBranch');
 const setNextVersion = require('./release/steps/setNextVersion');
 const updateChangelog = require('./release/steps/updateChangelog');
-const updateDocs = require('./release/steps/updateDocs');
+
+require('./release/steps/updateDocs');
 
 const { TRAVIS_BRANCH, RELEASE_BRANCH } = process.env;
 
 const run = async () => {
-  updateDocs();
-
   logger.info('🔍 Finding diffs');
   const { changedPackages, allMessages, messagesPerPackage } = await getDiff();
 

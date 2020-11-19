@@ -1,39 +1,70 @@
 const fs = require('fs');
 const path = require('path');
 
-const { logger, packagePath, packageNames } = require('../../../util');
+const fsExtra = require('fs-extra');
 
-const VEST_DOCS_PATH = packagePath(packageNames.VEST, 'docs');
+const {
+  logger,
+  packagePath,
+  packageNames,
+  filePaths,
+} = require('../../../util');
+
+const VEST_DOCS_PATH = packagePath(packageNames.VEST, filePaths.DIR_NAME_DOCS);
 
 function updateDocs() {
   logger.info('📖 Updating documentation.');
   const readme = fs.readFileSync('./README.md', 'utf8');
-  const n4sRules = fs.readFileSync(
-    packagePath(packageNames.N4S, 'docs', 'rules.md'),
+
+  fsExtra.ensureDirSync(
+    packagePath(packageNames.VEST, filePaths.DIR_NAME_DOCS, packageNames.N4S)
+  );
+  const enforceLinks = ['rules', 'custom', 'compound', 'template'].reduce(
+    (links, name) => {
+      const distPath = packagePath(
+        packageNames.VEST,
+        filePaths.DIR_NAME_DOCS,
+        packageNames.N4S,
+        name + '.md'
+      );
+      fsExtra.copySync(
+        packagePath(packageNames.N4S, filePaths.DIR_NAME_DOCS, name + '.md'),
+        distPath
+      );
+
+      const title = fs
+        .readFileSync(distPath, 'utf8')
+        .split('\n')[0]
+        .replace('# ', '')
+        .trim();
+      return `${links}\n  - [${title}](./${packageNames.N4S}/${name})`;
+    },
+    ''
+  );
+
+  const sidebar = fs.readFileSync(
+    packagePath(packageNames.VEST, filePaths.DIR_NAME_DOCS, '_sidebar.md.bak'),
     'utf8'
   );
-  const customRules = fs.readFileSync(
-    packagePath(packageNames.N4S, 'docs', 'custom.md'),
-    'utf8'
-  );
-  const compound = fs.readFileSync(
-    packagePath(packageNames.N4S, 'docs', 'compound.md'),
+  const enforce = fs.readFileSync(
+    packagePath(packageNames.VEST, filePaths.DIR_NAME_DOCS, 'enforce.md.bak'),
     'utf8'
   );
 
-  const enforceDoc = fs.readFileSync(
-    path.join(VEST_DOCS_PATH, 'enforce.md.bak'),
+  fs.writeFileSync(
+    packagePath(packageNames.VEST, filePaths.DIR_NAME_DOCS, '_sidebar.md'),
+    sidebar.replace('{{ENFORCE_DOCS}}', enforceLinks),
     'utf8'
   );
 
-  const nextEnforceDoc = enforceDoc.replace(
-    '{{COPIED_ENFORCE_DOCS}}',
-    [n4sRules, compound, customRules].join('\n\n').replace(/^#|\n#/g, '\n##')
+  fs.writeFileSync(
+    packagePath(packageNames.VEST, filePaths.DIR_NAME_DOCS, 'enforce.md'),
+    enforce.replace('{{ENFORCE_DOCS}}', enforceLinks),
+    'utf8'
   );
 
-  fs.writeFileSync(path.join(VEST_DOCS_PATH, 'enforce.md'), nextEnforceDoc);
   fs.writeFileSync(path.join(VEST_DOCS_PATH, 'README.md'), readme);
   fs.writeFileSync(packagePath(packageNames.VEST, 'README.md'), readme);
 }
 
-module.exports = updateDocs;
+updateDocs();

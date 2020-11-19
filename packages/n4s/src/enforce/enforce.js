@@ -1,7 +1,8 @@
 import bindLazyRule from 'bindLazyRule';
+import bindExtend from 'enforce.extend';
+import bindTemplate from 'enforce.template';
 import runner from 'enforceRunner';
 import genRuleProxy from 'genRuleProxy';
-import proxySupported from 'proxySupported';
 import runtimeRules from 'runtimeRules';
 
 const Enforce = value => {
@@ -14,14 +15,7 @@ const Enforce = value => {
 
 const enforce = genRuleProxy(Enforce, bindLazyRule);
 
-enforce.extend = customRules => {
-  Object.assign(runtimeRules, customRules);
-
-  if (!proxySupported()) {
-    genRuleProxy(Enforce, bindLazyRule);
-  }
-
-  return enforce;
-};
+bindExtend(enforce, Enforce);
+bindTemplate(enforce);
 
 export default enforce;

@@ -1,4 +1,3 @@
-const skipWords = require('./config/eslint/spellCheckerSkip');
 const jsconfig = require('./jsconfig.json');
 
 const paths = jsconfig.compilerOptions.paths;
@@ -46,7 +45,7 @@ module.exports = {
     ecmaVersion: 10,
     sourceType: 'module',
   },
-  plugins: ['jest', 'spellcheck'],
+  plugins: ['jest'],
 
   rules: {
     'import/extensions': [2, 'never'],
@@ -93,14 +92,6 @@ module.exports = {
       {
         natural: true,
         minKeys: 4,
-      },
-    ],
-    'spellcheck/spell-checker': [
-      1,
-      {
-        strings: false,
-        identifiers: false,
-        skipWords,
       },
     ],
   },

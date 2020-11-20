@@ -1,4 +1,4 @@
-import { IVestResult, DraftResult } from './vest';
+import { IVestResult, DraftResult } from './vestResult';
 
 declare function promisify(
   validatorFn: (...args: any[]) => IVestResult

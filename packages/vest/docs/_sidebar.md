@@ -4,6 +4,7 @@
   - [Creating Custom Rules](./n4s/custom)
   - [Shape and schema validation](./n4s/compound)
   - [Enforce templates](./n4s/template)
+  - [Consuming external rules](./n4s/external)
 - [The result object](./result)
 - [test](./test)
   - [How to fail a test](./test#failing_a_test)

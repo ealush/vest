@@ -411,15 +411,10 @@ declare module 'vest' {
     reset: () => void;
   }
 
-  interface Vest {
-    test: ITest;
-    enforce: IEnforce & TEnforceLazy;
-    only: IOnly;
-    skip: ISkip;
-
+  interface ICreateSuite {
     /**
      * Runs a stateful validation suite.
-     * @param suiteName Unique suite name.
+     * @param [suiteName] Unique suite name.
      * @param tests     Suite body.
      *
      * @example
@@ -430,7 +425,30 @@ declare module 'vest' {
      *
      * const res = validate({username: 'example'});
      */
-    create(suiteName: string, tests: (...args: any[]) => void): ICreateResult;
+    (suiteName: string, tests: (...args: any[]) => void): ICreateResult;
+
+    /**
+     * Runs a stateful validation suite.
+     * @param tests     Suite body.
+     *
+     * @example
+     *
+     * const validate = vest.create((data = {}) => {
+     *    // your tests go here
+     * });
+     *
+     * const res = validate({username: 'example'});
+     */
+    (tests: (...args: any[]) => void): ICreateResult;
+  }
+
+  interface Vest {
+    test: ITest;
+    enforce: IEnforce & TEnforceLazy;
+    only: IOnly;
+    skip: ISkip;
+
+    create: ICreateSuite;
 
     /**
      * Allows grouping tests so you can handle them together

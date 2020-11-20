@@ -23,10 +23,14 @@ export default function bindLazyRule(ruleName) {
     return Object.assign(returnvalue, {
       [RUN_RULE]: getValue => {
         return registeredRules.every(fn => {
-          // This  inversion of control when getting the value is
-          // required in order to pass the function over to `shape`
-          // so it can make the decision which args to pass to `optional`
-          return fn(isFunction(getValue) ? getValue(fn.name) : getValue);
+          try {
+            // This  inversion of control when getting the value is
+            // required in order to pass the function over to `shape`
+            // so it can make the decision which args to pass to `optional`
+            return !!fn(isFunction(getValue) ? getValue(fn.name) : getValue);
+          } catch (e) {
+            return false;
+          }
         });
       },
     });

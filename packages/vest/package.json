@@ -10,7 +10,6 @@
     "./package.json": "./package.json",
     "./any.js": "./any.js",
     "./classNames.js": "./classNames.js",
-    "./enforceExtended.js": "./enforceExtended.js",
     "./esm/vest.mjs.development.js": "./esm/vest.mjs.development.js",
     "./esm/vest.mjs.production.js": "./esm/vest.mjs.production.js",
     "./esm/vest.mjs.production.min.js": "./esm/vest.mjs.production.min.js",

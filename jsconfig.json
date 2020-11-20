@@ -29,8 +29,6 @@
       "enforceRunner": ["./packages/n4s/src/enforce/enforceRunner.js"],
       "genRuleProxy": ["./packages/n4s/src/enforce/genRuleProxy.js"],
       "runtimeRules": ["./packages/n4s/src/enforce/runtimeRules.js"],
-      "enforceExtended": ["./packages/n4s/src/extended/enforceExtended.js"],
-      "rulesExtended": ["./packages/n4s/src/extended/rulesExtended.js"],
       "bindNot": ["./packages/n4s/src/lib/bindNot.js"],
       "isRule": ["./packages/n4s/src/lib/isRule.js"],
       "proxySupported": ["./packages/n4s/src/lib/proxySupported.js"],
@@ -125,9 +123,6 @@
       "runnableTypes": ["./packages/vest/src/lib/runnableTypes.js"],
       "any@anyone": ["./packages/vest/src/utilities/any@anyone.js"],
       "classNames": ["./packages/vest/src/utilities/classNames.js"],
-      "enforceExtended@n4s": [
-        "./packages/vest/src/utilities/enforceExtended@n4s.js"
-      ],
       "promisify": ["./packages/vest/src/utilities/promisify.js"],
       "vest": ["./packages/vest/src/vest.js"],
       "vest.mjs": ["./packages/vest/src/vest.mjs.js"]

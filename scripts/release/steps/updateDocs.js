@@ -19,28 +19,31 @@ function updateDocs() {
   fsExtra.ensureDirSync(
     packagePath(packageNames.VEST, filePaths.DIR_NAME_DOCS, packageNames.N4S)
   );
-  const enforceLinks = ['rules', 'custom', 'compound', 'template'].reduce(
-    (links, name) => {
-      const distPath = packagePath(
-        packageNames.VEST,
-        filePaths.DIR_NAME_DOCS,
-        packageNames.N4S,
-        name + '.md'
-      );
-      fsExtra.copySync(
-        packagePath(packageNames.N4S, filePaths.DIR_NAME_DOCS, name + '.md'),
-        distPath
-      );
+  const enforceLinks = [
+    'rules',
+    'custom',
+    'compound',
+    'template',
+    'external',
+  ].reduce((links, name) => {
+    const distPath = packagePath(
+      packageNames.VEST,
+      filePaths.DIR_NAME_DOCS,
+      packageNames.N4S,
+      name + '.md'
+    );
+    fsExtra.copySync(
+      packagePath(packageNames.N4S, filePaths.DIR_NAME_DOCS, name + '.md'),
+      distPath
+    );
 
-      const title = fs
-        .readFileSync(distPath, 'utf8')
-        .split('\n')[0]
-        .replace('# ', '')
-        .trim();
-      return `${links}\n  - [${title}](./${packageNames.N4S}/${name})`;
-    },
-    ''
-  );
+    const title = fs
+      .readFileSync(distPath, 'utf8')
+      .split('\n')[0]
+      .replace('# ', '')
+      .trim();
+    return `${links}\n  - [${title}](./${packageNames.N4S}/${name})`;
+  }, '');
 
   const sidebar = fs.readFileSync(
     packagePath(packageNames.VEST, filePaths.DIR_NAME_DOCS, '_sidebar.md.bak'),

@@ -1,8 +1,3 @@
-const { execSync } = require('child_process');
-
-const glob = require('glob');
-
-const packagePath = require('../../../../util/packagePath');
 const { version } = require('../../package.json');
 
 const vest = require('vest');
@@ -130,32 +125,5 @@ describe('General scenario tests', () => {
           done();
         });
       }));
-  });
-});
-
-describe('TypeScript Typings', () => {
-  const declarationFiles = glob
-    .sync('src/typings/*.d.ts', {
-      cwd: packagePath('vest'),
-      absolute: true,
-      ignore: '**/spec/*',
-    })
-    .join(' ');
-
-  it(`Should pass tsc validation`, () => {
-    expect(() => {
-      execSync(`node_modules/.bin/tsc ${declarationFiles}`);
-    }).not.toThrow();
-  });
-
-  it('Should fail Typescript check with failing file', () => {
-    expect(() => {
-      execSync(
-        `node_modules/.bin/tsc ${packagePath(
-          'vest/src/spec/failing.d.ts',
-          'vest.d.ts'
-        )}`
-      );
-    }).toThrow();
   });
 });

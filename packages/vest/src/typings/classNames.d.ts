@@ -1,4 +1,4 @@
-import { IVestResult } from './vest';
+import { IVestResult } from './vestResult';
 
 declare function classNames(
   res: Partial<IVestResult>,

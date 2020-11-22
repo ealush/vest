@@ -3,12 +3,16 @@ const path = require('path');
 
 const glob = require('glob');
 
-const packagePath = require('../../../../util/packagePath');
+const {
+  packagePath,
+  packageSrc,
+  packageNames,
+} = require('../../../../../util');
 
 describe('Declarations', () => {
   const declarationFiles = glob
-    .sync('src/typings/*.d.ts', {
-      cwd: packagePath('vest'),
+    .sync('./*.d.ts', {
+      cwd: packageSrc(packageNames.VEST, 'typings'),
       absolute: true,
       ignore: '**/spec/*',
     })
@@ -23,9 +27,10 @@ describe('Declarations', () => {
   it('Should fail Typescript check with failing file', () => {
     expect(() => {
       execSync(
-        `node_modules/.bin/tsc ${packagePath(
-          'vest/src/spec/failing.d.ts',
-          'vest.d.ts'
+        `node_modules/.bin/tsc ${path.join(
+          __dirname,
+          'fixtures',
+          'failing.d.ts'
         )}`
       );
     }).toThrow();
@@ -33,9 +38,10 @@ describe('Declarations', () => {
 });
 
 const files = glob
-  .sync('./types/*.ts', {
+  .sync('./fixtures/*.ts', {
     absolute: true,
     cwd: __dirname,
+    ignore: ['./fixtures/*.d.ts'],
   })
   .map(f => [path.basename(f), f]);
 

@@ -5,7 +5,7 @@ const { exec, packageJson, packageNames } = require('../../../../../util');
 const { main } = packageJson(packageNames.VEST);
 
 const mainExport = path.basename(main);
-const scriptPath = path.join(__dirname, 'scripts');
+const scriptPath = path.join(__dirname, 'fixtures');
 
 const execSilent = cmd => exec(cmd, { silent: true, throwOnFailure: true });
 

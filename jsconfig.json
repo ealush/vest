@@ -34,6 +34,7 @@
       "proxySupported": ["./packages/n4s/src/lib/proxySupported.js"],
       "runLazyRules": ["./packages/n4s/src/lib/runLazyRules.js"],
       "transformResult": ["./packages/n4s/src/lib/transformResult.js"],
+      "rules": ["./packages/n4s/src/rules.js"],
       "endsWith": ["./packages/n4s/src/rules/endsWith.js"],
       "equals": ["./packages/n4s/src/rules/equals.js"],
       "greaterThan": ["./packages/n4s/src/rules/greaterThan.js"],
@@ -62,13 +63,15 @@
       "longerThanOrEquals": ["./packages/n4s/src/rules/longerThanOrEquals.js"],
       "matches": ["./packages/n4s/src/rules/matches.js"],
       "numberEquals": ["./packages/n4s/src/rules/numberEquals.js"],
-      "rules": ["./packages/n4s/src/rules/rules.js"],
       "shorterThan": ["./packages/n4s/src/rules/shorterThan.js"],
       "shorterThanOrEquals": [
         "./packages/n4s/src/rules/shorterThanOrEquals.js"
       ],
       "startsWith": ["./packages/n4s/src/rules/startsWith.js"],
       "rulesTestUtils": ["./packages/n4s/src/testUtils/rulesTestUtils.js"],
+      "genRuleTypeTest": [
+        "./packages/vest/src/__tests__/test_types/genRuleTypeTest.js"
+      ],
       "ctx": ["./packages/vest/src/core/ctx.js"],
       "collectFailureMessages": [
         "./packages/vest/src/core/produce/collectFailureMessages.js"

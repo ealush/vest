@@ -4,7 +4,6 @@ test('fieldName', 'some error message', () => {});
 test('fieldName', () => {});
 test('fieldName', 'some error message', () => false);
 test('fieldName', () => false);
-test('fieldName', 'Some error message', () => new Promise(res => res()));
 test('fieldName', () => Promise.resolve('some error message'));
 async function someFunc() {}
 test('fieldName', 'some error message', async () => {

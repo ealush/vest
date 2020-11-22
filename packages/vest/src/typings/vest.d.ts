@@ -1,7 +1,7 @@
 import { TEnforce } from './enforce';
 import { IVestResult, DraftResult } from './vestResult';
 
-type TestCB = () => void | Promise<?string> | false;
+type TestCB = () => void | Promise<void | string> | false;
 type ExclusionArg = string | string[] | void;
 
 export = vest;
@@ -14,7 +14,7 @@ interface VestTest {
   isWarning: boolean;
   statement: string;
   testFn: TestCB;
-  asyncTest?: Promise<?string>;
+  asyncTest?: Promise<void | string>;
 }
 
 interface ITest {

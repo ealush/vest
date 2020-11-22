@@ -3,11 +3,7 @@ const path = require('path');
 
 const glob = require('glob');
 
-const {
-  packagePath,
-  packageSrc,
-  packageNames,
-} = require('../../../../../util');
+const { packageSrc, packageNames } = require('../../../../../util');
 
 describe('Declarations', () => {
   const declarationFiles = glob
@@ -46,6 +42,9 @@ const files = glob
   .map(f => [path.basename(f), f]);
 
 describe('Usage', () => {
+  beforeAll(() => {
+    require('./genRuleTypeTest');
+  });
   // Running this test requires an up-to-date local build
   it.each(files)('Should run file correctly (%s)', (file, path) => {
     execSync(`node_modules/.bin/tsc --esModuleInterop	true --noEmit ${path}`, {

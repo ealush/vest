@@ -10,6 +10,7 @@ import isFunction from 'isFunction';
 import { SEVERITY_GROUP_ERROR, SEVERITY_GROUP_WARN } from 'resultKeys';
 import useTestCallbacks from 'useTestCallbacks';
 import useTestObjects from 'useTestObjects';
+import withArgs from 'withArgs';
 
 const cache = createCache(20);
 
@@ -19,7 +20,7 @@ const cache = createCache(20);
  * @param {Function} doneCallback
  * @register {Object} Vest output object.
  */
-const done = (...args) => {
+const done = withArgs(args => {
   const [callback, fieldName] = args.reverse();
   const { stateRef } = context.use();
 
@@ -57,72 +58,41 @@ const done = (...args) => {
   });
 
   return output;
-};
+});
 
 /**
  * @param {boolean} [isDraft]
  * @returns Vest output object.
  */
-
 const produce = isDraft => {
   const { stateRef } = context.use();
   const [testObjects] = useTestObjects();
 
+  const ctxRef = { stateRef };
+
   return cache(
     [testObjects, isDraft],
-    context.bind({ stateRef }, () =>
+    context.bind(ctxRef, () =>
       Object.defineProperties(
         genTestsSummary(),
         [
-          [
-            'hasErrors',
-            context.bind({ stateRef }, hasFaillures, SEVERITY_GROUP_ERROR),
-          ],
-          [
-            'hasWarnings',
-            context.bind({ stateRef }, hasFaillures, SEVERITY_GROUP_WARN),
-          ],
-          [
-            'getErrors',
-            context.bind({ stateRef }, getFailures, SEVERITY_GROUP_ERROR),
-          ],
-          [
-            'getWarnings',
-            context.bind({ stateRef }, getFailures, SEVERITY_GROUP_WARN),
-          ],
-          [
-            'hasErrorsByGroup',
-            context.bind(
-              { stateRef },
-              hasFailuresByGroup,
-              SEVERITY_GROUP_ERROR
-            ),
-          ],
-          [
-            'hasWarningsByGroup',
-            context.bind({ stateRef }, hasFailuresByGroup, SEVERITY_GROUP_WARN),
-          ],
-          [
-            'getErrorsByGroup',
-            context.bind(
-              { stateRef },
-              getFailuresByGroup,
-              SEVERITY_GROUP_ERROR
-            ),
-          ],
-          [
-            'getWarningsByGroup',
-            context.bind({ stateRef }, getFailuresByGroup, SEVERITY_GROUP_WARN),
-          ],
+          ['hasErrors', hasFaillures, SEVERITY_GROUP_ERROR],
+          ['hasWarnings', hasFaillures, SEVERITY_GROUP_WARN],
+          ['getErrors', getFailures, SEVERITY_GROUP_ERROR],
+          ['getWarnings', getFailures, SEVERITY_GROUP_WARN],
+          ['hasErrorsByGroup', hasFailuresByGroup, SEVERITY_GROUP_ERROR],
+          ['hasWarningsByGroup', hasFailuresByGroup, SEVERITY_GROUP_WARN],
+          ['getErrorsByGroup', getFailuresByGroup, SEVERITY_GROUP_ERROR],
+          ['getWarningsByGroup', getFailuresByGroup, SEVERITY_GROUP_WARN],
         ]
-          .concat(isDraft ? [] : [['done', context.bind({ stateRef }, done)]])
+          .concat(isDraft ? [] : [['done', done]])
           .reduce(
-            (properties, [name, value]) => (
+            (properties, [name, fn, severityKey]) => (
               (properties[name] = {
                 configurable: true,
                 enumerable: true,
                 name,
-                value,
+                value: context.bind(ctxRef, fn, severityKey),
                 writeable: true,
               }),
               properties

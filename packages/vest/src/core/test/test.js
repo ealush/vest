@@ -8,6 +8,7 @@ import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
 import bindTestMemo from 'test.memo';
 import throwError from 'throwError';
+import { withFirst } from 'withArgs';
 
 /**
  * Runs sync tests - or extracts promise.
@@ -71,7 +72,7 @@ const register = testObject => {
  * **IMPORTANT**
  * Changes to this function need to reflect in test.memo as well
  */
-const test = (fieldName, ...args) => {
+function test(fieldName, args) {
   const [testFn, statement] = args.reverse();
 
   const { groupName } = context.use();
@@ -93,9 +94,11 @@ const test = (fieldName, ...args) => {
   register(testObject);
 
   return testObject;
-};
+}
 
-bindTestMemo(test);
+const exportedTest = withFirst(test);
+
+bindTestMemo(exportedTest);
 
 /* eslint-disable jest/no-export */
-export default test;
+export default exportedTest;

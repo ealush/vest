@@ -7,7 +7,9 @@
       "isFunction": ["./packages/__shared/src/isFunction.js"],
       "isPromise": ["./packages/__shared/src/isPromise.js"],
       "isStringValue": ["./packages/__shared/src/isStringValue.js"],
+      "setFnName": ["./packages/__shared/src/setFnName.js"],
       "throwError": ["./packages/__shared/src/throwError.js"],
+      "withArgs": ["./packages/__shared/src/withArgs.js"],
       "anyoneTestValues": [
         "./packages/anyone/src/__tests__/anyoneTestValues.js"
       ],

@@ -1,7 +1,8 @@
 import { isNotArray } from 'isArray';
 import runLazyRules from 'runLazyRules';
+import { withFirst } from 'withArgs';
 
-export default function isArrayOf(value, ...ruleChain) {
+function isArrayOf(value, ruleChain) {
   if (isNotArray(value)) {
     return false;
   }
@@ -9,3 +10,5 @@ export default function isArrayOf(value, ...ruleChain) {
     ruleChain.some(rule => runLazyRules(rule, element))
   );
 }
+
+export default withFirst(isArrayOf);

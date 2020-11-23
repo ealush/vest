@@ -8,8 +8,9 @@ import useTestObjects from 'useTestObjects';
  * @param {String} [options.fieldName]  Field name for error lookup.
  * @returns all messages for given criteria.
  */
-const collectFailureMessages = (severity, { group, fieldName } = {}) => {
+const collectFailureMessages = (severity, options) => {
   const [testObjects] = useTestObjects();
+  const { group, fieldName } = options || {};
   const res = testObjects.reduce((collector, testObject) => {
     if (group && testObject.groupName !== group) {
       return collector;

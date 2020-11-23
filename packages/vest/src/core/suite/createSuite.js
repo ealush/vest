@@ -9,13 +9,14 @@ import usePending from 'usePending';
 import useSuiteId from 'useSuiteId';
 import useTestCallbacks from 'useTestCallbacks';
 import useTestObjects from 'useTestObjects';
+import withArgs from 'withArgs';
 /**
  * Initializes a validation suite, creates a validation context.
  * @param {String} [name]     Identifier for validation suite.
  * @param {Function} tests  Validation suite body.
  * @returns {Function} validator function.
  */
-const createSuite = (...args) => {
+const createSuite = withArgs(args => {
   const [tests, name] = args.reverse();
 
   if (!isFunction(tests)) {
@@ -53,6 +54,6 @@ const createSuite = (...args) => {
       reset: { value: stateRef.reset },
     }
   );
-};
+});
 
 export default createSuite;

@@ -6,6 +6,7 @@ import isPromise from 'isPromise';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
 import useSuiteId from 'useSuiteId';
+import { withFirst } from 'withArgs';
 
 /* eslint-disable jest/no-export */
 export default function bindTestMemo(test) {
@@ -19,7 +20,7 @@ export default function bindTestMemo(test) {
    * @param {any[]} deps          Dependency array.
    * @return {VestTest}           A VestTest instance.
    */
-  test.memo = (fieldName, ...args) => {
+  function memo(fieldName, args) {
     const [suiteId] = useSuiteId();
 
     const [deps, testFn, msg] = args.reverse();
@@ -48,5 +49,7 @@ export default function bindTestMemo(test) {
     }
 
     return testObject;
-  };
+  }
+
+  test.memo = withFirst(memo);
 }

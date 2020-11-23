@@ -23,7 +23,7 @@
     magic-string "0.25.7"
     uuid "8.1.0"
 
-"@babel/cli@^7.12.1":
+"@babel/cli@^7.12.7":
   version "7.12.7"
   resolved "https://registry.yarnpkg.com/@babel/cli/-/cli-7.12.7.tgz#63a3c38bddff02a1c633c70f2fd03019af6bf977"
   integrity sha512-vE1fidQsaWnQVs4SItkuCdi3+uXqjbhw4cIKp8aawKxOnTnlvxYMzXSeMAqo6alldQRFQYb198YQfW0Sp1jl5Q==

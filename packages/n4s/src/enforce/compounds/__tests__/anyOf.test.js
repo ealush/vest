@@ -4,22 +4,13 @@ import enforce from 'enforce';
 describe('AnyOf validation', () => {
   describe('Base behavior', () => {
     it('Should fail when all rules fail', () => {
-      expect(
-        anyOf(
-          'test',
-          enforce.isNumber(),
-          enforce.isUndefined()
-        )
-      ).toBe(false);
+      expect(anyOf('test', enforce.isNumber(), enforce.isUndefined())).toBe(
+        false
+      );
     });
     it('Should succeed when atleast one rule applies', () => {
       expect(
-        anyOf(
-          5,
-          enforce.isString(),
-          enforce.isNumber(),
-          enforce.isUndefined()
-        )
+        anyOf(5, enforce.isString(), enforce.isNumber(), enforce.isUndefined())
       ).toBe(true);
     });
     it('Should succeed when rule chaining', () => {
@@ -32,9 +23,7 @@ describe('AnyOf validation', () => {
       ).toBe(true);
     });
     it('Should fail with no rules', () => {
-      expect(
-        anyOf(5)
-      ).toBe(true);
+      expect(anyOf(5)).toBe(true);
     });
   });
 
@@ -44,13 +33,10 @@ describe('AnyOf validation', () => {
         enforce.isString(),
         enforce.isNumber(),
         enforce.isUndefined()
-      )
+      );
 
       expect(() =>
-        enforce({ test: 4 }).anyOf(
-          enforce.isNumber(),
-          enforce.isUndefined()
-        )
+        enforce({ test: 4 }).anyOf(enforce.isNumber(), enforce.isUndefined())
       ).toThrow();
     });
   });

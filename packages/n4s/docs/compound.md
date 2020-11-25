@@ -129,3 +129,11 @@ enforce({ data: [1, 2, 3] }).shape({
   data: enforce.isArrayOf(enforce.isNumber()),
 });
 ```
+
+## enforce.oneOf()
+
+enforce.oneOf can be used to determine if EXACTLY one of the rules applies. It will run against rule in the array, and will only pass if exactly one rule applies.
+
+```js
+enforce(1).oneOf(enforce.isString(), enforce.isNumber());
+```

@@ -20,6 +20,7 @@
       "runAnyoneMethods": ["./packages/anyone/src/runner/runAnyoneMethods.js"],
       "bindLazyRule": ["./packages/n4s/src/enforce/bindLazyRule.js"],
       "anyOf": ["./packages/n4s/src/enforce/compounds/anyOf.js"],
+      "oneOf": ["./packages/n4s/src/enforce/compounds/oneOf.js"],
       "compounds": ["./packages/n4s/src/enforce/compounds/compounds.js"],
       "isArrayOf": ["./packages/n4s/src/enforce/compounds/isArrayOf.js"],
       "optional": ["./packages/n4s/src/enforce/compounds/optional.js"],

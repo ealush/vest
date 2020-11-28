@@ -2,10 +2,10 @@ const fetch = require('node-fetch');
 
 const { logger } = require('../../../util');
 
-const { TRAVIS_REPO_SLUG, GITHUB_TOKEN } = process.env;
+const { GITHUB_REPOSITORY, GITHUB_TOKEN } = process.env;
 
 async function postRelease({ tag, body, title }) {
-  await fetch(`https://api.github.com/repos/${TRAVIS_REPO_SLUG}/releases`, {
+  await fetch(`https://api.github.com/repos/${GITHUB_REPOSITORY}/releases`, {
     method: 'POST',
     headers: { Authorization: `token ${GITHUB_TOKEN}` },
     body: JSON.stringify({

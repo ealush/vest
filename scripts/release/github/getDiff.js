@@ -4,13 +4,13 @@ const fetch = require('node-fetch');
 const { packageNames, filePaths } = require('../../../util');
 
 const {
-  TRAVIS_REPO_SLUG,
-  TRAVIS_BRANCH,
+  GITHUB_REPOSITORY,
+  CURRENT_BRANCH,
   GITHUB_TOKEN,
   STABLE_BRANCH,
 } = process.env;
 
-const compareUrl = `https://api.github.com/repos/${TRAVIS_REPO_SLUG}/compare/${STABLE_BRANCH}...${TRAVIS_BRANCH}`;
+const compareUrl = `https://api.github.com/repos/${GITHUB_REPOSITORY}/compare/${STABLE_BRANCH}...${CURRENT_BRANCH}`;
 
 function listMessages(commits = []) {
   return commits

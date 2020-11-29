@@ -7,4 +7,4 @@ function allOf(value, rules) {
   );
 }
 
-export default withFirst(anyOf);
+export default withFirst(allOf);

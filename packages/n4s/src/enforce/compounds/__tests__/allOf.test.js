@@ -37,26 +37,29 @@ describe('allOf validation', () => {
     )
     
     it('Should validate allof the rules correctly', () => {
-      enforce(value).allOf(
-        { id: 123, name : { first: 'Albert', last: 'Einstein' } },
-        { disabled: true }
+      enforce(
+        { id: 123, name : { first: 'Albert', last: 'Einstein' } ,disabled: true }
+      ).allOf(
+        User, DisabledAccount
       );
     });
 
     it('Should throw if one of the rules fail', () =>{
       expect( () => {
-        enforce(value).allOf(
-          { id: 123, name : { first: 'Albert', last: 0 } },
-          { disabled: true }
+        enforce(
+          { id: 123, name : { first: 'Albert', last: 0 } ,disabled: true }
+        ).allOf(
+          User, DisabledAccount
         );
       }).toThrow();
 
-      expect( () => {
-        enforce(value).allOf(
-          { id: 123, name : { first: 'Albert', last: 'Einstein' } },
-          { disabled: false }
+      expect(() => {
+        enforce(
+          { id: 123, name : { first: 'Albert', last: 'Einstein' } ,disabled: false }
+        ).allOf(
+          User, DisabledAccount
         );
       }).toThrow();
-    } )
+    })
   });
 });

@@ -1,4 +1,3 @@
-import one from 'one';
 import runLazyRules from 'runLazyRules';
 import { withFirst } from 'withArgs';
 

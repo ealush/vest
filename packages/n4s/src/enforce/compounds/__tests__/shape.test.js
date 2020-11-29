@@ -225,7 +225,7 @@ describe('Shape validation', () => {
         )
       ).toBe(false);
     });
-  })
+  });
 
   describe('Handling of optional fields', () => {
     it('Should allow optional fields to not be defined', () => {
@@ -364,7 +364,6 @@ describe('Shape validation', () => {
         }).shape(shapeRules())
       ).toThrow();
 
-
       enforce({
         user: {
           age: faker.random.number(10),
@@ -382,16 +381,22 @@ describe('Shape validation', () => {
   });
 });
 
-const shapeRules = (options) => ({
-  user: enforce.shape({
-    age: enforce.isNumber().isBetween(0, 10),
-    friends: enforce.optional(enforce.isArray()),
-    id: enforce.isString(),
-    name: enforce.shape({
-      first: enforce.isString(),
-      last: enforce.isString(),
-      middle: enforce.optional(enforce.isString()),
-    }, options),
-    username: enforce.isString(),
-  }, options),
+const shapeRules = options => ({
+  user: enforce.shape(
+    {
+      age: enforce.isNumber().isBetween(0, 10),
+      friends: enforce.optional(enforce.isArray()),
+      id: enforce.isString(),
+      name: enforce.shape(
+        {
+          first: enforce.isString(),
+          last: enforce.isString(),
+          middle: enforce.optional(enforce.isString()),
+        },
+        options
+      ),
+      username: enforce.isString(),
+    },
+    options
+  ),
 });

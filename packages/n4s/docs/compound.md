@@ -3,8 +3,9 @@
 Alongside the list of rules that only accept data provided by the user, enforce also supports compound rules - these are rules that accept other rules as their arguments. These rules let you validate more complex scenarios with the ergonomics of enforce.
 
 - [enforce.anyOf() - either/or validations](#anyof)
+- [enforce.allOf() - all/and validations](#anyof)
 - [enforce.shape() - Object's shape matching](#shape)
-  - [enforce.optional() - nullable keys](#optional)
+- [enforce.optional() - nullable keys](#optional)
 - [enforec.loose() - loose shape matching](#loose)
 - [enforce.isArrayOf() - array shape matching](#isarrayof)
 
@@ -15,6 +16,14 @@ Sometimes a value has more than one valid possibilities, `any` lets us validate 
 ```js
 enforce(value).anyOf(enforce.isString(), enforce.isArray()).isNotEmpty();
 // A valid value would either an array or a string.
+```
+## enforce.allOf() - all/and validations :id=allOf 
+
+Sometimes we need to make sure that a value for a set of rules, `all` lets us validate that a value passes _all_ of the supplied rules.
+
+```js
+enforce(value).allOf(enforce.isString(), enforce.longerThen(5));
+// A valid is string and longer then 5.
 ```
 
 ## enforce.shape() - Lean schema validation. :id=shape

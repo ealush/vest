@@ -5,7 +5,7 @@ Alongside the list of rules that only accept data provided by the user, enforce 
 - [enforce.anyOf() - either/or validations](#anyof)
 - [enforce.allOf() - all/and validations](#anyof)
 - [enforce.shape() - Object's shape matching](#shape)
-- [enforce.optional() - nullable keys](#optional)
+  - [enforce.optional() - nullable keys](#optional)
 - [enforec.loose() - loose shape matching](#loose)
 - [enforce.isArrayOf() - array shape matching](#isarrayof)
 
@@ -22,7 +22,27 @@ enforce(value).anyOf(enforce.isString(), enforce.isArray()).isNotEmpty();
 Sometimes we need to make sure that a value for a set of rules, `all` lets us validate that a value passes _all_ of the supplied rules.
 
 ```js
-enforce(value).allOf(enforce.isString(), enforce.longerThen(5));
+const User = enforce.template(
+  enforce.loose({
+    id: enforce.isNumber()
+    name: enforce.shape({
+      first: enforce.isString(),
+      last: enforce.isString(),
+      middle: enforce.optional(enforce.isString()),
+    }),
+  })
+);
+
+const DisabledAccount = enforce.template(
+  enforce.loose({
+    disabled: enforce.equals(true)
+  })
+)
+
+enforce(value).allOf(
+  User,
+  DisabledAccount
+);
 // A valid is string and longer then 5.
 ```
 

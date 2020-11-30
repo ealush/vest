@@ -10,7 +10,7 @@ export default {
   anyOf,
   isArrayOf,
   loose,
+  oneOf,
   optional,
-  shape,
-  oneOf
+  shape
 };

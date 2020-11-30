@@ -88,7 +88,11 @@ interface IEnforceRules<T = {}> {
   ) => RuleReturn<T>;
   isArrayOf: CompoundListOfRules<T>;
   anyOf: CompoundListOfRules<T>;
+<<<<<<< HEAD
   allOf: CompoundListOfRules<T>;
+=======
+  oneOf: CompoundListOfRules<T>;
+>>>>>>> latest
 }
 
 interface IEnforce {
@@ -195,7 +199,11 @@ type TEnforceLazy = {
   optional: LazyCopmoundListOfRules;
   isArrayOf: LazyCopmoundListOfRules;
   anyOf: LazyCopmoundListOfRules;
+<<<<<<< HEAD
   allOf: LazyCopmoundListOfRules;
+=======
+  oneOf: LazyCopmoundListOfRules;
+>>>>>>> latest
 };
 
 export type TEnforce = IEnforce & TEnforceLazyReturn;

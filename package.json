@@ -6,7 +6,7 @@
     "prettier-watch": "onchange '**/*.js' '**/*.json' -- prettier --write {{changed}}",
     "dev": "onchange -i './packages/**/src/**/*.js' -- yarn genJSConfig",
     "genJSConfig": "node ./scripts/genJsconfig",
-    "test": "jest --projects ./packages/",
+    "test": "jest --projects ./packages/*",
     "lint": "eslint . --ignore-path .gitignore",
     "pretest": "yarn genJSConfig",
     "docs": "node scripts/release/steps/updateDocs"

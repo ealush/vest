@@ -19,7 +19,14 @@ enforce(value).anyOf(enforce.isString(), enforce.isArray()).isNotEmpty();
 ```
 ## enforce.allOf() - all/and validations :id=allOf 
 
-Sometimes we need to make sure that a value for a set of rules, `all` lets us validate that a value passes _all_ of the supplied rules.
+`allOf` lets us validate that a value passes _all_ of the supplied rules or templates.
+
+enforce(value).allOf(
+  enforce.isArray(),
+  enforce.longerThan(2)
+);
+
+This can be even more useful when combined with shapes and templates:
 
 ```js
 const User = enforce.template(

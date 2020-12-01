@@ -3,17 +3,17 @@ import enforce from 'enforce';
 
 describe('allOf validation', () => {
   describe('Base behavior', () => {
-    it('Should fail when at least one rule fail', () => {
+    it('Should fail when at least one rule fails', () => {
       expect(allOf('test', enforce.isString(), enforce.longerThan(10))).toBe(
         false
       );
     });
-    it('Should succeed when all of the rules applies', () => {
+    it('Should succeed when all of the rules apply', () => {
       expect(allOf('test', enforce.isString(), enforce.longerThan(3))).toBe(
         true
       );
     });
-    it('Should fail with no rules', () => {
+    it('Should pass when no rules are provided', () => {
       expect(allOf(3)).toBe(true);
     });
   });

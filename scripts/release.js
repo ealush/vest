@@ -26,6 +26,7 @@ const run = async () => {
     );
 
     setNextVersion(packageData);
+
     build(packageName);
     publishPackage(packageData);
 

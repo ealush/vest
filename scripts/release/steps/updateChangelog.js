@@ -11,15 +11,6 @@ const {
   CHANGELOG_TITLES,
 } = require('../releaseKeywords');
 
-const KEYWORD_CONF = 'conf';
-const KEYWORD_DOCS = 'docs';
-
-const IGNORE_KEYWORDS = [KEYWORD_DOCS, KEYWORD_CONF];
-const IGNORE_PATTERN = new RegExp(
-  `${IGNORE_KEYWORDS.join('|')}:|dependabot`,
-  'i'
-);
-
 function changelogTitle(packageName, version) {
   return `## ${packageName}: [${version}] - ${format(
     new Date(),
@@ -34,10 +25,6 @@ function changelogTitle(packageName, version) {
  */
 function groupMessages(messages) {
   return messages.reduce((accumulator, message) => {
-    if (message.match(IGNORE_PATTERN)) {
-      return accumulator;
-    }
-
     const level = determineLevel(message);
 
     if (!accumulator[level]) {

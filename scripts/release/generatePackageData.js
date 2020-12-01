@@ -6,25 +6,25 @@ const determineChangeLevel = require('./determineChangeLevel');
 const { TAG_NEXT, TAG_DEV } = require('./releaseKeywords');
 
 const {
-  TRAVIS_BRANCH,
+  CURRENT_BRANCH,
   LATEST_BRANCH,
   STABLE_BRANCH,
   RELEASE_BRANCH,
-  TRAVIS_COMMIT,
+  GITHUB_SHA,
 } = process.env;
 
 function pickTagId(nextVersion) {
-  if (TRAVIS_BRANCH === RELEASE_BRANCH) {
+  if (CURRENT_BRANCH === RELEASE_BRANCH) {
     return nextVersion;
   }
 
-  const commitHash = TRAVIS_COMMIT.substr(0, 6);
+  const commitHash = GITHUB_SHA.substr(0, 6);
 
-  if (TRAVIS_BRANCH === LATEST_BRANCH) {
+  if (CURRENT_BRANCH === LATEST_BRANCH) {
     return `${nextVersion}-${TAG_NEXT}-${commitHash}`;
   }
 
-  if (TRAVIS_BRANCH !== STABLE_BRANCH) {
+  if (CURRENT_BRANCH !== STABLE_BRANCH) {
     return `${nextVersion}-${TAG_DEV}-${commitHash}`;
   }
 

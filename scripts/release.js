@@ -11,7 +11,7 @@ const updateChangelog = require('./release/steps/updateChangelog');
 
 require('./release/steps/updateDocs');
 
-const { TRAVIS_BRANCH, RELEASE_BRANCH } = process.env;
+const { CURRENT_BRANCH, RELEASE_BRANCH } = process.env;
 
 const run = async () => {
   logger.info('🔍 Finding diffs');
@@ -40,7 +40,7 @@ const run = async () => {
 
   // Do not push to default branch and do not publish a release
   // Unless in release branch
-  if (TRAVIS_BRANCH !== RELEASE_BRANCH) {
+  if (CURRENT_BRANCH !== RELEASE_BRANCH) {
     return;
   }
 

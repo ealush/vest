@@ -4,13 +4,13 @@ const fetch = require('node-fetch');
 const { packageNames, filePaths } = require('../../../util');
 
 const {
-  TRAVIS_REPO_SLUG,
-  TRAVIS_BRANCH,
-  GITHUB_TOKEN,
+  GITHUB_REPOSITORY,
+  CURRENT_BRANCH,
+  PUBLIC_REPO_TOKEN,
   STABLE_BRANCH,
 } = process.env;
 
-const compareUrl = `https://api.github.com/repos/${TRAVIS_REPO_SLUG}/compare/${STABLE_BRANCH}...${TRAVIS_BRANCH}`;
+const compareUrl = `https://api.github.com/repos/${GITHUB_REPOSITORY}/compare/${STABLE_BRANCH}...${CURRENT_BRANCH}`;
 
 function listMessages(commits = []) {
   return commits
@@ -27,8 +27,8 @@ function listMessages(commits = []) {
 
 function getCommitDiff() {
   return fetch(compareUrl, {
-    ...(GITHUB_TOKEN && {
-      headers: { Authorization: `token ${GITHUB_TOKEN}` },
+    ...(PUBLIC_REPO_TOKEN && {
+      headers: { Authorization: `token ${PUBLIC_REPO_TOKEN}` },
     }),
   })
     .then(res => res.json())

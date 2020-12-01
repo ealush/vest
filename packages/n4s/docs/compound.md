@@ -3,6 +3,7 @@
 Alongside the list of rules that only accept data provided by the user, enforce also supports compound rules - these are rules that accept other rules as their arguments. These rules let you validate more complex scenarios with the ergonomics of enforce.
 
 - [enforce.anyOf() - either/or validations](#anyof)
+- [enforce.allOf() - all/and validations](#allof)
 - [enforce.shape() - Object's shape matching](#shape)
   - [enforce.optional() - nullable keys](#optional)
 - [enforec.loose() - loose shape matching](#loose)
@@ -15,6 +16,41 @@ Sometimes a value has more than one valid possibilities, `any` lets us validate 
 ```js
 enforce(value).anyOf(enforce.isString(), enforce.isArray()).isNotEmpty();
 // A valid value would either an array or a string.
+```
+## enforce.allOf() - all/and validations :id=allof 
+
+`allOf` lets us validate that a value passes _all_ of the supplied rules or templates.
+
+enforce(value).allOf(
+  enforce.isArray(),
+  enforce.longerThan(2)
+);
+
+This can be even more useful when combined with shapes and templates:
+
+```js
+const User = enforce.template(
+  enforce.loose({
+    id: enforce.isNumber()
+    name: enforce.shape({
+      first: enforce.isString(),
+      last: enforce.isString(),
+      middle: enforce.optional(enforce.isString()),
+    }),
+  })
+);
+
+const DisabledAccount = enforce.template(
+  enforce.loose({
+    disabled: enforce.equals(true)
+  })
+)
+
+enforce(value).allOf(
+  User,
+  DisabledAccount
+);
+// A valid is string and longer then 5.
 ```
 
 ## enforce.shape() - Lean schema validation. :id=shape

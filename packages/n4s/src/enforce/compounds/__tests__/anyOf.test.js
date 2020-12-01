@@ -26,7 +26,6 @@ describe('AnyOf validation', () => {
       expect(anyOf(5)).toBe(true);
     });
   });
-
   describe('As part of enforce', () => {
     it('Should validate anyof the rules correctly', () => {
       enforce(77).anyOf(
@@ -34,7 +33,6 @@ describe('AnyOf validation', () => {
         enforce.isNumber(),
         enforce.isUndefined()
       );
-
       expect(() =>
         enforce({ test: 4 }).anyOf(enforce.isNumber(), enforce.isUndefined())
       ).toThrow();

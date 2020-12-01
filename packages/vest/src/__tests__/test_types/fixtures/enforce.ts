@@ -88,3 +88,7 @@ enforce
 // anyOf
 enforce(1).anyOf(enforce.isNumber(), enforce.isArray());
 enforce.anyOf(enforce.isNumber(), enforce.isArray()).test(1);
+
+// allOf
+enforce('hello').allOf(enforce.isString(), enforce.longerThan(3));
+enforce.allOf(enforce.isString(), enforce.longerThan(3)).test('hello');

@@ -88,6 +88,7 @@ interface IEnforceRules<T = {}> {
   ) => RuleReturn<T>;
   isArrayOf: CompoundListOfRules<T>;
   anyOf: CompoundListOfRules<T>;
+  allOf: CompoundListOfRules<T>;
   oneOf: CompoundListOfRules<T>;
 }
 
@@ -195,6 +196,7 @@ type TEnforceLazy = {
   optional: LazyCopmoundListOfRules;
   isArrayOf: LazyCopmoundListOfRules;
   anyOf: LazyCopmoundListOfRules;
+  allOf: LazyCopmoundListOfRules;
   oneOf: LazyCopmoundListOfRules;
 };
 

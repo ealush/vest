@@ -1,3 +1,7 @@
+import hasOwnProperty from 'hasOwnProperty';
+
+import { HAS_WARNINGS, HAS_ERRORS } from 'sharedKeys';
+
 /**
  * Creates a function that returns class names that match the validation result
  * @param {Object} res      Vest Result Object
@@ -16,20 +20,20 @@ const classNames = (res, classes = {}) => {
   const selectors = {};
 
   selectors.tested = key => {
-    if (Object.prototype.hasOwnProperty.call(testedStorage, key)) {
+    if (hasOwnProperty(testedStorage, key)) {
       return testedStorage[key];
     }
 
-    testedStorage[key] = Object.prototype.hasOwnProperty.call(res.tests, key);
+    testedStorage[key] = hasOwnProperty(res.tests, key);
 
     return selectors.tested(key);
   };
 
   selectors.untested = key => !selectors.tested(key);
-  selectors.invalid = key => selectors.tested(key) && res.hasErrors(key);
-  selectors.warning = key => selectors.tested(key) && res.hasWarnings(key);
+  selectors.invalid = key => selectors.tested(key) && res[HAS_ERRORS](key);
+  selectors.warning = key => selectors.tested(key) && res[HAS_WARNINGS](key);
   selectors.valid = key =>
-    selectors.tested(key) && !res.hasWarnings(key) && !res.hasErrors(key);
+    selectors.tested(key) && !res[HAS_WARNINGS](key) && !res[HAS_ERRORS](key);
 
   return key => {
     const classesArray = [];

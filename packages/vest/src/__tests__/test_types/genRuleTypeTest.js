@@ -12,7 +12,7 @@ const rules = glob.sync('./*.js', {
 const all = [
   ...new Set(
     Object.keys(
-      require(packageSrc(packageNames.N4S, 'enforce', 'runtimeRules.js'))
+      require(packageSrc(packageNames.N4S, 'runtime', 'runtimeRules'))
     ).concat(rules.map(rule => path.basename(rule, '.js')))
   ),
 ];

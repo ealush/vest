@@ -1,3 +1,4 @@
+
 import createCache from 'cache';
 import context from 'ctx';
 import genTestsSummary from 'genTestsSummary';
@@ -8,6 +9,7 @@ import hasFailuresByGroup from 'hasFailuresByGroup';
 import hasRemainingTests from 'hasRemainingTests';
 import isFunction from 'isFunction';
 import { SEVERITY_GROUP_ERROR, SEVERITY_GROUP_WARN } from 'resultKeys';
+import { HAS_WARNINGS, HAS_ERRORS } from 'sharedKeys';
 import useTestCallbacks from 'useTestCallbacks';
 import useTestObjects from 'useTestObjects';
 import withArgs from 'withArgs';
@@ -76,8 +78,8 @@ const produce = isDraft => {
       Object.defineProperties(
         genTestsSummary(),
         [
-          ['hasErrors', hasFaillures, SEVERITY_GROUP_ERROR],
-          ['hasWarnings', hasFaillures, SEVERITY_GROUP_WARN],
+          [HAS_ERRORS, hasFaillures, SEVERITY_GROUP_ERROR],
+          [HAS_WARNINGS, hasFaillures, SEVERITY_GROUP_WARN],
           ['getErrors', getFailures, SEVERITY_GROUP_ERROR],
           ['getWarnings', getFailures, SEVERITY_GROUP_WARN],
           ['hasErrorsByGroup', hasFailuresByGroup, SEVERITY_GROUP_ERROR],

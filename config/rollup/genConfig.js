@@ -32,9 +32,9 @@ module.exports = function genConfig({
     .reduce(
       (configs, current) =>
         configs.concat(
+          { ...current, min: true },
           { ...current },
-          { ...current, dev: true },
-          { ...current, min: true }
+          { ...current, dev: true }
         ),
       []
     )

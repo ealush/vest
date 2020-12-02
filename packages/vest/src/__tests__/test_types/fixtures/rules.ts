@@ -117,3 +117,7 @@ enforce(0).optional;
 enforce.optional;
 enforce(0).shape;
 enforce.shape;
+enforce(0).warn;
+enforce.warn;
+enforce(0).message;
+enforce.message;

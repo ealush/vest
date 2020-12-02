@@ -6,9 +6,8 @@ import { isNumeric } from 'isNumeric';
  * @return {Boolean}
  */
 export const isEven = value => {
-  if (!isNumeric(value)) {
-    return false;
+  if (isNumeric(value)) {
+    return value % 2 === 0;
   }
-
-  return value % 2 === 0;
+  return false;
 };

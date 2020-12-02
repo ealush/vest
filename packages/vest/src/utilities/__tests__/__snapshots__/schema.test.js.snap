@@ -1,0 +1,128 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`schema Should correctly present test results 1`] = `
+Object {
+  "getErrors": [Function],
+  "getWarnings": [Function],
+  "hasErrors": [Function],
+  "hasWarnings": [Function],
+  "tests": Object {
+    "friends": Object {
+      "errors": Array [
+        "id must be a string starting with x0.",
+        "middle must be a string",
+      ],
+      "hasErrors": true,
+      "hasWarnings": true,
+      "warnings": Array [
+        "last name must be a string",
+      ],
+    },
+    "friends[0]": Object {
+      "errors": Array [
+        "id must be a string starting with x0.",
+        "middle must be a string",
+      ],
+      "hasErrors": true,
+      "hasWarnings": true,
+      "warnings": Array [
+        "last name must be a string",
+      ],
+    },
+    "friends[0].id": Object {
+      "errors": Array [
+        "id must be a string starting with x0.",
+      ],
+      "hasErrors": true,
+      "hasWarnings": false,
+      "warnings": Array [],
+    },
+    "friends[0].name": Object {
+      "errors": Array [
+        "middle must be a string",
+      ],
+      "hasErrors": true,
+      "hasWarnings": true,
+      "warnings": Array [
+        "last name must be a string",
+      ],
+    },
+    "friends[0].name.first": Object {
+      "errors": Array [],
+      "hasErrors": false,
+      "hasWarnings": false,
+      "warnings": Array [],
+    },
+    "friends[0].name.last": Object {
+      "errors": Array [],
+      "hasErrors": false,
+      "hasWarnings": true,
+      "warnings": Array [
+        "last name must be a string",
+      ],
+    },
+    "friends[0].name.middle": Object {
+      "errors": Array [
+        "middle must be a string",
+      ],
+      "hasErrors": true,
+      "hasWarnings": false,
+      "warnings": Array [],
+    },
+    "id": Object {
+      "errors": Array [
+        "id must be a string starting with x0.",
+      ],
+      "hasErrors": true,
+      "hasWarnings": false,
+      "warnings": Array [],
+    },
+    "user": Object {
+      "errors": Array [
+        "User name must be a string",
+        "First name must be a string",
+      ],
+      "hasErrors": true,
+      "hasWarnings": false,
+      "warnings": Array [],
+    },
+    "user.name": Object {
+      "errors": Array [
+        "User name must be a string",
+        "First name must be a string",
+      ],
+      "hasErrors": true,
+      "hasWarnings": false,
+      "warnings": Array [],
+    },
+    "user.name.first": Object {
+      "errors": Array [
+        "First name must be a string",
+      ],
+      "hasErrors": true,
+      "hasWarnings": false,
+      "warnings": Array [],
+    },
+    "user.name.last": Object {
+      "errors": Array [],
+      "hasErrors": false,
+      "hasWarnings": false,
+      "warnings": Array [],
+    },
+    "user.name.middle": Object {
+      "errors": Array [],
+      "hasErrors": false,
+      "hasWarnings": false,
+      "warnings": Array [],
+    },
+    "user.name.username": Object {
+      "errors": Array [
+        "User name must be a string",
+      ],
+      "hasErrors": true,
+      "hasWarnings": false,
+      "warnings": Array [],
+    },
+  },
+}
+`;

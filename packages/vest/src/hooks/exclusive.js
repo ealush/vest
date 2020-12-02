@@ -1,3 +1,5 @@
+import hasOwnProperty from 'hasOwnProperty';
+
 import asArray from 'asArray';
 import context from 'ctx';
 import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
@@ -140,7 +142,7 @@ const isGroupExcluded = groupName => {
   const { exclusion } = context.use();
   const keyGroups = exclusion[EXCLUSION_ITEM_TYPE_GROUPS];
 
-  const groupPresent = keyGroups.hasOwnProperty(groupName);
+  const groupPresent = hasOwnProperty(keyGroups, groupName);
 
   // When group is either only'ed or skipped
   if (groupPresent) {

@@ -4,6 +4,7 @@ node_modules
 *.log
 packages/vest/utilities/
 packages/n4s/extended/
+playground.mjs
 
 # build artifacts
 packages/*/dist

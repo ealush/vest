@@ -1,17 +1,25 @@
 const { exec, logger, packagePath } = require('../../../util');
 
-function publishPackage({ packageName, tag }) {
+const { EMAIL_ADDRESS, GIT_NAME } = process.env;
+
+function publishPackage({ packageName, tag, tagId }) {
   const command = [
-    'npm',
-    'publish',
-    packagePath(packageName),
+    `yarn publish ${packagePath(packageName)}`,
+    tag && tagId && `--new-version ${tagId}`,
     tag && `--tag ${tag}`,
   ]
     .filter(Boolean)
     .join(' ');
 
   logger.info('🚀 Publishing package.');
-  exec(command, { exitOnFailure: false });
+  exec(
+    `
+git config --global user.email "${EMAIL_ADDRESS}"
+git config --global user.name "${GIT_NAME}"
+${command}
+git tag -d ${tagId}`,
+    { exitOnFailure: false }
+  );
 }
 
 module.exports = publishPackage;

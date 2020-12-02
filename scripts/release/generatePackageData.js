@@ -1,6 +1,6 @@
 const semver = require('semver');
 
-const { packageJson } = require('../../util');
+const { packageJson, logger } = require('../../util');
 
 const determineChangeLevel = require('./determineChangeLevel');
 const { TAG_NEXT, TAG_DEV } = require('./releaseKeywords');
@@ -14,6 +14,8 @@ const {
 } = process.env;
 
 function pickTagId(nextVersion) {
+  logger.log(`Picking tag id. Current branch: ${CURRENT_BRANCH}`);
+
   if (CURRENT_BRANCH === RELEASE_BRANCH) {
     return nextVersion;
   }

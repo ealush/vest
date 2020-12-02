@@ -25,7 +25,13 @@ const run = async () => {
       messagesPerPackage[packageName] || []
     );
 
+    logger.info(
+      'Generated package data:',
+      JSON.stringify(packageData, null, 2)
+    );
+
     setNextVersion(packageData);
+
     build(packageName);
     publishPackage(packageData);
 

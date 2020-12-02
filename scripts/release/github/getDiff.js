@@ -1,44 +1,34 @@
-const { get } = require('lodash');
-const fetch = require('node-fetch');
+const exec = require('child_process').execSync;
 
-const { packageNames, filePaths } = require('../../../util');
+const { packageNames } = require('../../../util');
 
-const {
-  GITHUB_REPOSITORY,
-  CURRENT_BRANCH,
-  PUBLIC_REPO_TOKEN,
-  STABLE_BRANCH,
-} = process.env;
+const IGNORE_KEYWORDS = ['docs', 'conf', 'ci', 'build'];
+const IGNORE_PATTERN = new RegExp(
+  `${IGNORE_KEYWORDS.join('|')}:|dependabot`,
+  'i'
+);
 
-const compareUrl = `https://api.github.com/repos/${GITHUB_REPOSITORY}/compare/${STABLE_BRANCH}...${CURRENT_BRANCH}`;
+const { CURRENT_BRANCH, STABLE_BRANCH } = process.env;
 
-function listMessages(commits = []) {
-  return commits
-    .reduce((messages, { commit, author, sha }) => {
-      const [message] = commit.message.split('\n');
-      let name = get(author, 'login', get(commit, 'author.name'));
-      name = name ? `(${name})` : '';
-      return messages.concat(
-        [sha.slice(0, 7), message, name].filter(Boolean).join(' ')
-      );
-    }, [])
-    .filter(Boolean);
+function listMessages() {
+  exec(`git fetch origin ${STABLE_BRANCH}`);
+
+  const output = exec(
+    `git log origin/${STABLE_BRANCH}..origin/${CURRENT_BRANCH} --pretty='format:%h  %s (%an)'}`
+  );
+  return output
+    .toString()
+    .split('\n')
+    .filter(msg => !msg.match(IGNORE_PATTERN));
 }
 
-function getCommitDiff() {
-  return fetch(compareUrl, {
-    ...(PUBLIC_REPO_TOKEN && {
-      headers: { Authorization: `token ${PUBLIC_REPO_TOKEN}` },
-    }),
-  })
-    .then(res => res.json())
-    .catch(() => process.exit(1));
-}
+const packageMatch = packageName =>
+  new RegExp(`\\[${packageName}\\]|\\(${packageName}\\)`, 'i');
 
 function splitMessagesByPackage(messages) {
   return messages.reduce((accumulator, message) => {
-    let [modifiedPackage] = packageNames.ALL_PACKAGES.filter(packageName =>
-      message.includes(`[${packageName}]`)
+    let [modifiedPackage] = packageNames.ALL_PACKAGES.filter(
+      packageName => !!message.match(packageMatch(packageName))
     );
 
     modifiedPackage = modifiedPackage || packageNames.VEST;
@@ -46,7 +36,7 @@ function splitMessagesByPackage(messages) {
     accumulator[modifiedPackage] = []
       .concat(
         accumulator[modifiedPackage],
-        message.replace(`[${modifiedPackage}]`, '')
+        message.replace(packageMatch(modifiedPackage), '')
       )
       .filter(Boolean);
 
@@ -54,29 +44,13 @@ function splitMessagesByPackage(messages) {
   }, {});
 }
 
-function findChangedPackages(files) {
-  return [
-    ...new Set(
-      Object.values(files)
-        .map(({ filename }) => filename)
-        .filter(filename => filename.startsWith(filePaths.DIR_NAME_PACKAGES))
-        .map(fileName => {
-          const [, packageName] = fileName.split('/');
-          return packageName;
-        })
-    ),
-  ];
-}
-
 module.exports = async function getDiff() {
-  const { commits, files } = await getCommitDiff();
-
-  const allMessages = listMessages(commits);
+  const allMessages = listMessages();
   const messagesPerPackage = splitMessagesByPackage(allMessages);
 
   return {
     allMessages,
     messagesPerPackage,
-    changedPackages: findChangedPackages(files),
+    changedPackages: Object.keys(messagesPerPackage),
   };
 };

@@ -6,8 +6,8 @@ const {
   KEYWORDS_MINOR,
 } = require('./releaseKeywords');
 
-const REGEXP_MAJOR = new RegExp(`${KEYWORDS_MAJOR.join('|')}:`, 'i');
-const REGEXP_MINOR = new RegExp(`${KEYWORDS_MINOR.join('|')}:`, 'i');
+const REGEXP_MAJOR = new RegExp(`(${KEYWORDS_MAJOR.join('|')})((.+))?:`, 'i');
+const REGEXP_MINOR = new RegExp(`(${KEYWORDS_MINOR.join('|')})((.+))?:`, 'i');
 
 /**
  * Determines semver level

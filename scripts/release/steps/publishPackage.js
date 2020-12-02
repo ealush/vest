@@ -16,10 +16,16 @@ function publishPackage({ packageName, tag, tagId }) {
     `
 git config --global user.email "${EMAIL_ADDRESS}"
 git config --global user.name "${GIT_NAME}"
-${command}
-git tag -d ${tagId}`,
+${command}`,
     { exitOnFailure: false }
   );
+
+  if (tag && tagId) {
+    exec(`git tag -d ${tagId}`, {
+      exitOnFailure: false,
+      throwOnFailure: false,
+    });
+  }
 }
 
 module.exports = publishPackage;

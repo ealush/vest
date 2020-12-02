@@ -26,7 +26,7 @@ Username('1234'); // throws
 Username('ab'); // throws
 ```
 
-You can also use templates inside other compound rules, such as `shape`, `isArrayOf` or `anyOf`.
+You can also use templates inside other compound rules, such as `shape`, `isArrayOf` ,`anyOf` or `allOf`.
 
 ```js
 enforce({

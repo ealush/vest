@@ -117,6 +117,7 @@
       "pending": ["./packages/vest/src/core/test/lib/pending.js"],
       "VestTest": ["./packages/vest/src/core/test/lib/VestTest.js"],
       "runAsyncTest": ["./packages/vest/src/core/test/runAsyncTest.js"],
+      "test.each": ["./packages/vest/src/core/test/test.each.js"],
       "test": ["./packages/vest/src/core/test/test.js"],
       "test.memo": ["./packages/vest/src/core/test/test.memo.js"],
       "exclusive": ["./packages/vest/src/hooks/exclusive.js"],

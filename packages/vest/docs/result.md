@@ -208,3 +208,25 @@ const validationResult = validate(data)
     promptUserQuestionnaire(output);
   });
 ```
+
+!> **IMPORTANT** .done calls must not be used conditionally - especially when involving async tests. This might cause unexpected behavior or missed callbacks. Instead, if needed, perform your conditional logic within your callback.
+
+```js
+// 🚨 This might not work as expected when working with async validations
+
+if (field === 'username') {
+  result.done(() => {
+    /*do something*/
+  });
+}
+```
+
+```js
+// ✅ Instead, perform your checks within your done callback
+
+result.done(() => {
+  if (field === 'username') {
+    /*do something*/
+  }
+});
+```

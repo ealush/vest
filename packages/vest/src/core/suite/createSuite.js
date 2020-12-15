@@ -41,10 +41,18 @@ const createSuite = withArgs(args => {
   return Object.defineProperties(
     context.bind({ stateRef }, function () {
       const [previousTestObjects] = useTestObjects();
+      const [{ pending }, setPending] = usePending();
       stateRef.reset();
 
+      // Move all the active pending tests to the lagging array
+      setPending({ lagging: pending, pending: [] });
+
+      // Run the consumer's callback
       tests.apply(null, arguments);
+
+      // Merge all the skipped tests with their previous results
       mergeExcludedTests(previousTestObjects);
+
       return produce();
     }),
     {

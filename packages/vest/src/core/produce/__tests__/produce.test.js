@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import wait from 'wait';
 
 import collector from '../../../../testUtils/collector';
 import testDummy from '../../../../testUtils/testDummy';
@@ -584,6 +585,38 @@ describe('module: produce', () => {
             }, 500);
           });
         });
+      });
+    });
+
+    describe('With lagging run', () => {
+      const TEST_TIMEOUT = 100;
+      let suite, cb;
+      beforeEach(() => {
+        cb = jest.fn();
+        suite = vest.create(fieldName => {
+          vest.only(fieldName);
+
+          vest.test('asyncTest', async () => {
+            await wait(TEST_TIMEOUT);
+            throw new Error();
+          });
+
+          vest.test('syncTest', () => {});
+        });
+      });
+      it('Should call `done` callback when async test is finished', async () => {
+        suite('asyncTest').done(cb);
+        expect(cb).not.toHaveBeenCalled();
+        await wait(TEST_TIMEOUT);
+        expect(cb).toHaveBeenCalled();
+      });
+
+      it('Should call `done` callback when async test is lagging', async () => {
+        suite('asyncTest').done(cb);
+        suite('syncTest').done(cb);
+        expect(cb).not.toHaveBeenCalled();
+        await wait(TEST_TIMEOUT);
+        expect(cb).toHaveBeenCalled();
       });
     });
   });

@@ -137,9 +137,16 @@ describe('module: pending', () => {
           const [pendingState] = usePending();
           expect(pendingState.lagging).toContain(testObjects[0]);
         }
-        setPending(testObjects[0]);
+        const added = new VestTest({
+          fieldName: testObjects[0].fieldName,
+          group: testObjects[0].groupName,
+          statement: 'failure message',
+          testFn: jest.fn(),
+        });
+        setPending(added);
         {
           const [pendingState] = usePending();
+          expect(pendingState.pending).toContain(added);
           expect(pendingState.lagging).not.toContain(testObjects[0]);
         }
         expect(stateRef.current()).toMatchSnapshot();
@@ -159,7 +166,14 @@ describe('module: pending', () => {
 
       it.ctx('Should set test as canceled', () => {
         expect(testObjects[0].canceled).toBeUndefined();
-        setPending(testObjects[0]);
+        setPending(
+          new VestTest({
+            fieldName: testObjects[0].fieldName,
+            group: testObjects[0].groupName,
+            statement: 'failure message',
+            testFn: jest.fn(),
+          })
+        );
         expect(testObjects[0].canceled).toBe(true);
       });
     });

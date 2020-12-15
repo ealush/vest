@@ -6,7 +6,7 @@ import usePending from 'usePending';
  * @param {VestTest} testObject
  */
 export const setPending = testObject => {
-  const { fieldName, groupName } = testObject;
+  const { fieldName, groupName, id } = testObject;
 
   const [pendingState, setPending] = usePending();
 
@@ -18,7 +18,10 @@ export const setPending = testObject => {
      */
     if (
       testObject.fieldName === fieldName &&
-      testObject.groupName === groupName
+      testObject.groupName === groupName &&
+      // This last case handles memoized tests
+      // because that retain their od across runs
+      testObject.id !== id
     ) {
       testObject.cancel();
     } else {

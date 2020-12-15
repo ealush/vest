@@ -87,13 +87,12 @@ Object {
     ],
     "pending": Array [
       VestTest {
-        "canceled": true,
         "failed": false,
         "fieldName": "test_0",
         "groupName": "group_name",
-        "id": "10",
+        "id": "15",
         "isWarning": false,
-        "statement": "Some statement string",
+        "statement": "failure message",
         "testFn": [MockFunction],
       },
     ],

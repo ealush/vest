@@ -1,6 +1,6 @@
 import runner from 'enforceRunner';
 import genRuleProxy from 'genRuleProxy';
-import isFunction from 'isFunction';
+import optionalFunctionValue from 'optionalFunctionValue';
 import runLazyRules from 'runLazyRules';
 import runtimeRules from 'runtimeRules';
 import withArgs from 'withArgs';
@@ -19,7 +19,7 @@ export default function bindTemplate(enforce) {
     };
 
     template.test = getValue =>
-      runLazyRules(rule, isFunction(getValue) ? getValue() : getValue);
+      runLazyRules(rule, optionalFunctionValue(getValue));
 
     return template;
   });

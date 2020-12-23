@@ -1,5 +1,5 @@
 import isBooleanValue from 'isBooleanValue';
-import isFunction from 'isFunction';
+import optionalFunctionValue from 'optionalFunctionValue';
 import throwError from 'throwError';
 
 export function validateResult(result, rule) {
@@ -49,7 +49,7 @@ export function transformResult(result, { rule, value }) {
     if (result.message) {
       defaultResult.message = formatResultMessage(
         rule,
-        isFunction(result.message) ? result.message() : result.message
+        optionalFunctionValue(result.message)
       );
     }
     return defaultResult;

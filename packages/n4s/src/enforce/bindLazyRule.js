@@ -1,7 +1,7 @@
 
 import { RUN_RULE } from 'enforceKeywords';
 import genRuleProxy from 'genRuleProxy';
-import isFunction from 'isFunction';
+import optionalFunctionValue from 'optionalFunctionValue';
 import runtimeRules from 'runtimeRules';
 import setFnName from 'setFnName';
 import withArgs from 'withArgs';
@@ -27,7 +27,7 @@ export default function bindLazyRule(ruleName) {
               // This  inversion of control when getting the value is
               // required in order to pass the function over to `shape`
               // so it can make the decision which args to pass to `optional`
-              return !!fn(isFunction(getValue) ? getValue(fn.name) : getValue);
+              return !!fn(optionalFunctionValue(getValue, [fn.name]));
             } catch (e) {
               return false;
             }

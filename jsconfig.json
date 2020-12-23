@@ -7,6 +7,9 @@
       "isFunction": ["./packages/__shared/src/isFunction.js"],
       "isPromise": ["./packages/__shared/src/isPromise.js"],
       "isStringValue": ["./packages/__shared/src/isStringValue.js"],
+      "optionalFunctionValue": [
+        "./packages/__shared/src/optionalFunctionValue.js"
+      ],
       "setFnName": ["./packages/__shared/src/setFnName.js"],
       "throwError": ["./packages/__shared/src/throwError.js"],
       "withArgs": ["./packages/__shared/src/withArgs.js"],
@@ -19,11 +22,11 @@
       "one": ["./packages/anyone/src/one.js"],
       "runAnyoneMethods": ["./packages/anyone/src/runner/runAnyoneMethods.js"],
       "bindLazyRule": ["./packages/n4s/src/enforce/bindLazyRule.js"],
-      "anyOf": ["./packages/n4s/src/enforce/compounds/anyOf.js"],
       "allOf": ["./packages/n4s/src/enforce/compounds/allOf.js"],
-      "oneOf": ["./packages/n4s/src/enforce/compounds/oneOf.js"],
+      "anyOf": ["./packages/n4s/src/enforce/compounds/anyOf.js"],
       "compounds": ["./packages/n4s/src/enforce/compounds/compounds.js"],
       "isArrayOf": ["./packages/n4s/src/enforce/compounds/isArrayOf.js"],
+      "oneOf": ["./packages/n4s/src/enforce/compounds/oneOf.js"],
       "optional": ["./packages/n4s/src/enforce/compounds/optional.js"],
       "shape": ["./packages/n4s/src/enforce/compounds/shape.js"],
       "enforce.extend": ["./packages/n4s/src/enforce/enforce.extend.js"],

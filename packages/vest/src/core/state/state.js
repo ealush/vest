@@ -1,7 +1,9 @@
+
 import asArray from 'asArray';
 import callEach from 'callEach';
 import context from 'ctx';
 import isFunction from 'isFunction';
+import optionalFunctionValue from 'optionalFunctionValue';
 
 export default (function createState() {
   function registerHandler(initialValue) {
@@ -13,12 +15,7 @@ export default (function createState() {
       if (reg) {
         key = reg.key;
         if (!stateRef.current().hasOwnProperty(key)) {
-          stateRef.set(
-            key,
-            isFunction(initialValue)
-              ? initialValue.apply(null, reg.args)
-              : initialValue
-          );
+          stateRef.set(key, optionalFunctionValue(initialValue, reg.args));
         }
         return;
       }
@@ -31,10 +28,7 @@ export default (function createState() {
         const { stateRef } = context.use();
         const currentState = stateRef.current();
 
-        stateRef.set(
-          key,
-          isFunction(patcher) ? patcher(currentState[key]) : patcher
-        );
+        stateRef.set(key, optionalFunctionValue(patcher, [currentState[key]]));
       }
 
       return [stateRef.current()[key], update];

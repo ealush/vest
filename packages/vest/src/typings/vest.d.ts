@@ -30,7 +30,7 @@ interface ITestEach {
    * 
    * test.each([[1,2,3],[2,1,3]])('test', (a, b, c) => `${a} + ${b} does not equal ${c}`, (a, b, c) => enforce(a + b).equals(c));
    */
-  (fieldName: string, message: string | MessageFunc, testFn: TestArgsCB): VestTest[];
+  (fieldName: string | MessageFunc, message: string | MessageFunc, testFn: TestArgsCB): VestTest[];
   /**
    * Run multiple tests using a parameter table 
    * @param {String} fieldName    Name of the field to test.
@@ -40,7 +40,7 @@ interface ITestEach {
    * 
    * test.each([[1,2,3],[2,1,3]])('test', (a, b, c) => enforce(a + b).equals(c));
    */
-  (fieldName: string, testFn: TestArgsCB): VestTest[];
+  (fieldName: string | MessageFunc, testFn: TestArgsCB): VestTest[];
 }
 
 interface ITest {

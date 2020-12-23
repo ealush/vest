@@ -1,4 +1,6 @@
 import asArray from 'asArray';
+import optionalFunctionValue from 'optionalFunctionValue';
+import throwError from 'throwError';
 import { withFirst } from 'withArgs';
 
 /* eslint-disable jest/no-export */
@@ -13,7 +15,7 @@ export default function bindTestEach(test) {
    */
   function each(table) {
     if (!Array.isArray(table)) {
-      throw new Error('[vest/test.each]: Expected table to be an array.');
+      throwError('test.each: Expected table to be an array.');
     }
 
     return withFirst((fieldName, args) => {
@@ -21,8 +23,7 @@ export default function bindTestEach(test) {
 
       return table.map(item => {
         item = asArray(item);
-        const itemStatement = typeof statement === 'function' ? statement(...item) : statement;
-        return test(fieldName, itemStatement, () => testFn(...item));
+        return test(optionalFunctionValue(fieldName, item), optionalFunctionValue(statement, item), () => testFn.apply(null, item));
       });
     })
   }

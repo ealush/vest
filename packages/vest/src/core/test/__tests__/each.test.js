@@ -1,6 +1,7 @@
 import faker from 'faker';
-import enforce from 'n4s';
 
+import VestTest from 'VestTest';
+import enforce from 'enforce';
 import test from 'test';
 import vest from 'vest';
 
@@ -18,6 +19,8 @@ describe("Test Vest's `test.each` function", () => {
         expect(testObjects).toHaveLength(2);
         expect(testObjects[0].failed).toBe(false);
         expect(testObjects[1].failed).toBe(false);
+        expect(testObjects[0]).toBeInstanceOf(VestTest);
+        expect(testObjects[1]).toBeInstanceOf(VestTest);
       });
 
       it('Should mark failed tests as such', () => {
@@ -50,27 +53,50 @@ describe("Test Vest's `test.each` function", () => {
         const testFn1 = jest.fn();
         const testFn2 = jest.fn();
 
-        const validate = vest.create(faker.random.word(), () => {
+        const res = vest.create(faker.random.word(), () => {
           vest.only('test2');
           test.each([[5, 4, 10]])('test1', statementFn1, testFn1);
           test.each([[5, 4, 10]])('test2', faker.lorem.sentence(), testFn2);
-        });
-        validate();
+        })();
         expect(testFn1).not.toHaveBeenCalled();
+        expect(res.tests.test1).not.toBeDefined();
         expect(statementFn1).toHaveBeenCalled();
         expect(testFn2).toHaveBeenCalled();
+        expect(res.tests.test2).toBeDefined();
       })
 
       it('Should work correctly with 1d-array', () => {
-        vest.create(faker.random.word(), () => {
-          testObjects = test.each([1, 2, 3])(faker.random.word(), faker.lorem.sentence(), (a) => {
+        const res = vest.create(faker.random.word(), () => {
+          testObjects = test.each([2, 1, 3])(faker.random.word(), faker.lorem.sentence(), (a) => {
             enforce(a).greaterThanOrEquals(2);
           });
         })();
         expect(testObjects).toHaveLength(3);
-        expect(testObjects[0].failed).toBe(true);
-        expect(testObjects[1].failed).toBe(false);
+        expect(testObjects[0].failed).toBe(false);
+        /* Since fieldName is shared between all result, if one fails we expect all to fail */
+        expect(res.hasErrors(testObjects[0].fieldName)).toBe(true);
+        expect(testObjects[1].failed).toBe(true);
+        expect(res.hasErrors(testObjects[1].fieldName)).toBe(true);
         expect(testObjects[2].failed).toBe(false);
+        expect(res.hasErrors(testObjects[2].fieldName)).toBe(true);
+      });
+
+      it('Should work with fieldName function', () => {
+        const res = vest.create(faker.random.word(), () => {
+          testObjects = test.each([2, 1, 3])((a) => `field${a}`, faker.lorem.sentence(), (a) => {
+            enforce(a).greaterThanOrEquals(2);
+          });
+        })();
+        expect(testObjects).toHaveLength(3);
+        expect(testObjects[0].failed).toBe(false);
+        expect(testObjects[0].fieldName).toBe('field2');
+        expect(res.hasErrors(testObjects[0].fieldName)).toBe(false);
+        expect(testObjects[1].failed).toBe(true);
+        expect(testObjects[1].fieldName).toBe('field1');
+        expect(res.hasErrors(testObjects[1].fieldName)).toBe(true);
+        expect(testObjects[2].failed).toBe(false);
+        expect(testObjects[2].fieldName).toBe('field3');
+        expect(res.hasErrors(testObjects[2].fieldName)).toBe(false);
       });
     });
   });

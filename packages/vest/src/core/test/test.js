@@ -6,6 +6,7 @@ import isFunction from 'isFunction';
 import isPromise from 'isPromise';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
+import bindTestEach from 'test.each';
 import bindTestMemo from 'test.memo';
 import throwError from 'throwError';
 import { withFirst } from 'withArgs';
@@ -98,6 +99,7 @@ function test(fieldName, args) {
 
 const exportedTest = withFirst(test);
 
+bindTestEach(exportedTest);
 bindTestMemo(exportedTest);
 
 /* eslint-disable jest/no-export */

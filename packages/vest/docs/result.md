@@ -34,22 +34,22 @@ If you need to access your validation results out of context - for example, from
 In case your validations did not run yet, `.get` returns an empty validation result object - which can be helpful when trying to access validation result object when rendering the initial UI, or setting it in the initial state of your components.
 
 ```js
-const v = vest.create('my_form', () => {
+const suite = vest.create('my_form', () => {
   /*...*/
 });
 
-v.get(); // -> returns the most recent result object for the current suite
+suite.get(); // -> returns the most recent result object for the current suite
 ```
 
 You can also use `.get()` to access the intermediate validation result during your suite's run, this is a replacement of the deprecated `vest.draft()` hook.
 
 ```js
-const v = vest.create('my_form', data => {
+const suite = vest.create('my_form', data => {
   test('username', 'Username is too short', () => {
     enforce(data.username).longerThanOrEquals(3);
   });
 
-  if (!v.get().hasErrors('username')) {
+  if (!suite.get().hasErrors('username')) {
     test('username', 'already taken', async () => {
       // some async test
     });

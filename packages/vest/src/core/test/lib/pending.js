@@ -1,3 +1,4 @@
+import asArray from 'asArray';
 import removeElementFromArray from 'removeElementFromArray';
 import usePending from 'usePending';
 
@@ -10,26 +11,29 @@ export const setPending = testObject => {
 
   const [pendingState, setPending] = usePending();
 
-  const lagging = pendingState.lagging.reduce((lagging, testObject) => {
-    /**
-     * If the test is of the same profile
-     * (same name + same group) we cancel
-     * it. Otherwise, it is lagging.
-     */
-    if (
-      testObject.fieldName === fieldName &&
-      testObject.groupName === groupName &&
-      // This last case handles memoized tests
-      // because that retain their od across runs
-      testObject.id !== id
-    ) {
-      testObject.cancel();
-    } else {
-      lagging.push(testObject);
-    }
+  const lagging = asArray(pendingState.lagging).reduce(
+    (lagging, testObject) => {
+      /**
+       * If the test is of the same profile
+       * (same name + same group) we cancel
+       * it. Otherwise, it is lagging.
+       */
+      if (
+        testObject.fieldName === fieldName &&
+        testObject.groupName === groupName &&
+        // This last case handles memoized tests
+        // because that retain their od across runs
+        testObject.id !== id
+      ) {
+        testObject.cancel();
+      } else {
+        lagging.push(testObject);
+      }
 
-    return lagging;
-  }, []);
+      return lagging;
+    },
+    []
+  );
 
   setPending(state => ({
     lagging,

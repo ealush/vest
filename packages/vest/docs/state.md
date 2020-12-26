@@ -30,9 +30,27 @@ In some cases, such as form reset, you want to discard of previous validation re
 ```js
 import vest from 'vest';
 
-const v = vest.create('suite_name', () => {
+const suite = vest.create(() => {
   // Your tests go here
 });
 
-v.reset(); // validation result is removed from Vest's state.
+suite.reset(); // validation result is removed from Vest's state.
+```
+
+## Removing a single field from the validation result
+
+Instead of resetting the whole suite, you can alternatively remove just one field. This is useful when dynamically adding and removing fields upon user interaction - and you want to delete a deleted field from the state.
+
+```js
+import vest from 'vest';
+
+const suite = vest.create(() => {
+  // Your tests go here
+
+  test('username', 'must be at least 3 chars long', () => {
+    /*...*/
+  });
+});
+
+suite.remove('username'); // validation result is removed from Vest's state.
 ```

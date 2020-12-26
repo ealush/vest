@@ -1,3 +1,4 @@
+import asArray from 'asArray';
 import context from 'ctx';
 import genId from 'genId';
 import isFunction from 'isFunction';
@@ -38,30 +39,35 @@ const createSuite = withArgs(args => {
     the `get`, and `reset` functions.
 
   */
-  return Object.defineProperties(
-    context.bind({ stateRef }, function () {
-      const [previousTestObjects] = useTestObjects();
-      const [{ pending }, setPending] = usePending();
-      stateRef.reset();
+  const suite = context.bind({ stateRef }, function () {
+    const [previousTestObjects] = useTestObjects();
+    const [{ pending }, setPending] = usePending();
+    stateRef.reset();
 
-      // Move all the active pending tests to the lagging array
-      setPending({ lagging: pending, pending: [] });
+    // Move all the active pending tests to the lagging array
+    setPending({ lagging: pending, pending: [] });
 
-      // Run the consumer's callback
-      tests.apply(null, arguments);
+    // Run the consumer's callback
+    tests.apply(null, arguments);
 
-      // Merge all the skipped tests with their previous results
-      mergeExcludedTests(previousTestObjects);
+    // Merge all the skipped tests with their previous results
+    mergeExcludedTests(previousTestObjects);
 
-      return produce();
-    }),
-    {
-      get: {
-        value: context.bind({ stateRef }, produce, /*isDraft:*/ true),
-      },
-      reset: { value: stateRef.reset },
-    }
-  );
+    return produce();
+  });
+  suite.get = context.bind({ stateRef }, produce, /*isDraft:*/ true);
+  suite.reset = stateRef.reset;
+  suite.remove = context.bind({ stateRef }, name => {
+    const [testObjects] = useTestObjects();
+
+    // We're mutating the array in `cancel`, so we have to first copy it.
+    asArray(testObjects).forEach(testObject => {
+      if (testObject.fieldName === name) {
+        testObject.cancel();
+      }
+    });
+  });
+  return suite;
 });
 
 export default createSuite;

@@ -1,4 +1,6 @@
 import id from 'genId';
+import { removePending } from 'pending';
+import removeTestFromState from 'removeTestFromState';
 
 /**
  * Describes a test call inside a Vest suite.
@@ -45,6 +47,8 @@ VestTest.prototype.warn = function () {
 
 VestTest.prototype.cancel = function () {
   this.canceled = true;
+  removePending(this);
+  removeTestFromState(this);
 };
 
 export default VestTest;

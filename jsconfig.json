@@ -115,6 +115,9 @@
         "./packages/vest/src/core/test/lib/mergeExcludedTests.js"
       ],
       "pending": ["./packages/vest/src/core/test/lib/pending.js"],
+      "removeTestFromState": [
+        "./packages/vest/src/core/test/lib/removeTestFromState.js"
+      ],
       "VestTest": ["./packages/vest/src/core/test/lib/VestTest.js"],
       "runAsyncTest": ["./packages/vest/src/core/test/runAsyncTest.js"],
       "test.each": ["./packages/vest/src/core/test/test.each.js"],

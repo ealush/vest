@@ -77,28 +77,6 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
             })
           );
         }));
-
-      describe('When test is canceled', () => {
-        beforeEach(() => {
-          testObject.cancel();
-        });
-
-        it.ctx('Should remove test from pending array', () => {
-          const [pendingState] = usePending();
-          expect(pendingState.pending).toEqual(
-            expect.arrayContaining([testObject])
-          );
-          runRunAsyncTest(testObject);
-          return new Promise(done => {
-            setTimeout(() => {
-              expect(pendingState).toEqual(
-                expect.not.arrayContaining([testObject])
-              );
-              done();
-            });
-          });
-        });
-      });
     });
 
     describe('doneCallbacks', () => {
@@ -169,7 +147,9 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
 
       describe('When test is canceled', () => {
         beforeEach(() => {
-          testObject.cancel();
+          context.run({ stateRef }, () => {
+            testObject.cancel();
+          });
         });
 
         it('Should return without running any callback', () =>

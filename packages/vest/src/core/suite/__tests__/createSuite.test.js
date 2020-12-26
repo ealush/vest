@@ -11,6 +11,7 @@ describe('Test createSuite module', () => {
       expect(typeof create(Function.prototype)).toBe('function');
       expect(typeof create(Function.prototype).get).toBe('function');
       expect(typeof create(Function.prototype).reset).toBe('function');
+      expect(typeof create(Function.prototype).remove).toBe('function');
       expect(create(Function.prototype).get()).toMatchSnapshot();
     });
 

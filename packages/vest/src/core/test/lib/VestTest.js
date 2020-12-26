@@ -45,6 +45,10 @@ VestTest.prototype.warn = function () {
   this.isWarning = true;
 };
 
+/**
+ * Marks a test as canceled, removes it from the state.
+ * This function needs to be called within a stateRef context.
+ */
 VestTest.prototype.cancel = function () {
   this.canceled = true;
   removePending(this);

@@ -4,5 +4,5 @@ const { packageDist, packageNames } = require('../../../../util');
 export default genConfig({
   libraryName: packageNames.N4S,
   distPath: packageDist(packageNames.N4S),
-  input: 'enforce/enforce.js',
+  input: 'enforce.js',
 });

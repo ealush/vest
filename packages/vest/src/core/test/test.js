@@ -9,7 +9,7 @@ import runAsyncTest from 'runAsyncTest';
 import bindTestEach from 'test.each';
 import bindTestMemo from 'test.memo';
 import throwError from 'throwError';
-import { withFirst } from 'withArgs';
+import withArgs from 'withArgs';
 
 /**
  * Runs sync tests - or extracts promise.
@@ -97,7 +97,7 @@ function test(fieldName, args) {
   return testObject;
 }
 
-const exportedTest = withFirst(test);
+const exportedTest = withArgs(test);
 
 bindTestEach(exportedTest);
 bindTestMemo(exportedTest);

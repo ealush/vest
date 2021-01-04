@@ -1,4 +1,4 @@
-const { exec, packagePath, logger } = require('../../../util');
+const { exec, packagePath, logger, packageJson } = require('../../../util');
 
 function setNextVersion({ packageName, tagId, tag, nextVersion }) {
   nextVersion = tag ? tagId : nextVersion;
@@ -6,10 +6,12 @@ function setNextVersion({ packageName, tagId, tag, nextVersion }) {
   logger.info('🔢 Setting next version.');
 
   exec(
-    `yarn --cwd ${packagePath(
+    `npm version ${nextVersion} --no-git-tag-version --prefix ${packagePath(
       packageName
-    )} version --new-version ${nextVersion} --no-git-tag-version`
+    )}`
   );
+
+  logger.info('🔢 Updated version to: ' + packageJson(packageName).version);
 }
 
 module.exports = setNextVersion;

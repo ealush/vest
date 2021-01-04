@@ -2,9 +2,24 @@ type EnforceExtendMap<T> = {
   [K in keyof T]: (...args: any[]) => RuleReturn<T>;
 };
 
-interface IEnforceTemplateReturn {
-  (value: any): IEnforceRules;
+interface IEnforceRunResult {
+  hasErrors?: boolean;
+  hasWarnings?: boolean;
+  message?: string;
+  warn?: boolean | void;
+  isArray?: boolean;
+  children?: {
+    [key: string]: IEnforceRunResult;
+  };
+}
+
+interface ILazy {
   test: (...args: any[]) => boolean;
+  run: (...args: any[]) => IEnforceRunResult;
+}
+
+interface IEnforceTemplateReturn extends ILazy {
+  (value: any): IEnforceRules;
 }
 
 type RuleReturn<T> = IEnforceRules<T> & EnforceExtendMap<T>;
@@ -131,7 +146,7 @@ type LazyCopmoundListOfRules = <T>(
   ...rules: TLazyOrTemplate[]
 ) => TEnforceLazyReturn;
 
-type TEnforceLazyReturn = TEnforceLazy & { test: (...args: any[]) => boolean };
+type TEnforceLazyReturn = TEnforceLazy & ILazy;
 
 type TEnforceLazy = {
   [key: string]: (...args: any[]) => TEnforceLazyReturn;

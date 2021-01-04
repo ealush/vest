@@ -6,7 +6,7 @@ import isPromise from 'isPromise';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
 import useSuiteId from 'useSuiteId';
-import { withFirst } from 'withArgs';
+import withArgs from 'withArgs';
 
 /* eslint-disable jest/no-export */
 export default function bindTestMemo(test) {
@@ -51,5 +51,5 @@ export default function bindTestMemo(test) {
     return testObject;
   }
 
-  test.memo = withFirst(memo);
+  test.memo = withArgs(memo);
 }

@@ -1,0 +1,107 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Rule with a message Should add message to result 1`] = `
+RuleResult {
+  "children": Object {
+    "id": RuleResult {
+      "failed": true,
+      "hasErrors": true,
+      "hasWarnings": false,
+      "message": "id must be numeric",
+      "warn": false,
+    },
+    "user": RuleResult {
+      "children": Object {
+        "name": RuleResult {
+          "children": Object {
+            "first": RuleResult {
+              "failed": false,
+              "hasErrors": false,
+              "hasWarnings": false,
+              "message": "somename is not a valid first name",
+              "warn": false,
+            },
+            "last": RuleResult {
+              "failed": true,
+              "hasErrors": true,
+              "hasWarnings": false,
+              "message": "Last name is not valid",
+              "warn": false,
+            },
+            "middle": RuleResult {
+              "failed": false,
+              "hasErrors": false,
+              "hasWarnings": false,
+              "message": "When present, middle name must be a string",
+              "warn": false,
+            },
+          },
+          "failed": true,
+          "hasErrors": true,
+          "hasWarnings": false,
+        },
+      },
+      "failed": true,
+      "hasErrors": true,
+      "hasWarnings": false,
+    },
+  },
+  "failed": true,
+  "hasErrors": true,
+  "hasWarnings": false,
+}
+`;
+
+exports[`Rule with a warning Should add a warning to the result 1`] = `
+RuleResult {
+  "children": Object {
+    "id": RuleResult {
+      "failed": true,
+      "hasErrors": false,
+      "hasWarnings": true,
+      "warn": true,
+    },
+    "user": RuleResult {
+      "children": Object {
+        "name": RuleResult {
+          "children": Object {
+            "first": RuleResult {
+              "failed": false,
+              "hasErrors": false,
+              "hasWarnings": false,
+              "warn": true,
+            },
+            "last": RuleResult {
+              "failed": true,
+              "hasErrors": true,
+              "hasWarnings": false,
+              "warn": false,
+            },
+            "middle": RuleResult {
+              "failed": false,
+              "hasErrors": false,
+              "hasWarnings": false,
+              "warn": true,
+            },
+            "username": RuleResult {
+              "failed": true,
+              "hasErrors": false,
+              "hasWarnings": true,
+              "warn": true,
+            },
+          },
+          "failed": true,
+          "hasErrors": true,
+          "hasWarnings": true,
+        },
+      },
+      "failed": true,
+      "hasErrors": true,
+      "hasWarnings": true,
+    },
+  },
+  "failed": true,
+  "hasErrors": true,
+  "hasWarnings": true,
+}
+`;

@@ -17,13 +17,14 @@ Sometimes a value has more than one valid possibilities, `any` lets us validate 
 enforce(value).anyOf(enforce.isString(), enforce.isArray()).isNotEmpty();
 // A valid value would either an array or a string.
 ```
-## enforce.allOf() - all/and validations :id=allof 
+
+## enforce.allOf() - all/and validations :id=allof
 
 `allOf` lets us validate that a value passes _all_ of the supplied rules or templates.
 
 enforce(value).allOf(
-  enforce.isArray(),
-  enforce.longerThan(2)
+enforce.isArray(),
+enforce.longerThan(2)
 );
 
 This can be even more useful when combined with shapes and templates:
@@ -107,7 +108,7 @@ In regular cases, a missing key in the data object would cause an error to be th
 
 enforce.optional will pass validations of a key that's either not defined, undefined or null.
 
-`enforce.optional` takes as its arguments all the rules that the value should pass - only if it is present. If it is not present in the data object.
+`enforce.optional` takes as its arguments all the rules that the value must pass.
 
 ```js
 enforce({
@@ -183,6 +184,4 @@ value = "1"    -> ✅ (value is string)
 value = [1, 2] -> ✅ (value is longer than 1)
 value = "12"   -> 🚨 (value is both a string and longer than 1)
 */
-
 ```
-

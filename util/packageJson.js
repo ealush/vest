@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const packagePath = require('./packagePath');
 
 function packageJSONPath(packageName) {
@@ -5,7 +7,8 @@ function packageJSONPath(packageName) {
 }
 
 function packageJson(packageName) {
-  return require(packageJSONPath(packageName));
+  const jsonString = fs.readFileSync(packageJSONPath(packageName), 'utf8');
+  return JSON.parse(jsonString);
 }
 
 packageJson.path = packageJSONPath;

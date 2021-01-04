@@ -1,3 +1,4 @@
+import hasOwnProperty from 'hasOwnProperty';
 
 import asArray from 'asArray';
 import callEach from 'callEach';
@@ -14,7 +15,7 @@ export default (function createState() {
       // Register state handler
       if (reg) {
         key = reg.key;
-        if (!stateRef.current().hasOwnProperty(key)) {
+        if (!hasOwnProperty(stateRef.current(), key)) {
           stateRef.set(key, optionalFunctionValue(initialValue, reg.args));
         }
         return;
@@ -46,12 +47,10 @@ export default (function createState() {
     }
 
     function set(key, value) {
-      Object.assign(state, { [key]: value });
+      state[key] = value;
     }
 
     function reset() {
-      state.length = 0;
-
       state = {};
       callEach(registeredHandlers);
     }

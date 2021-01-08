@@ -27,32 +27,34 @@ A result object would look somewhat like this:
 }
 ```
 
-## Accessing the last result object with `.get`
+## Accessing the recent result object with `.get`
 
-If you need to access your validation results out of context - for example, from a different UI component or function, you can use `vest.get`
+If you need to access your validation results out of context - for example, from a different UI component or function, you can use `.get()` - a function that exists as a proerty of your validation suite.
 
-Vest exposes the `vest.get` function that is able to retrieve the most recent validation result of [**stateful**](./state) suites (suites created using vest.create()).
-
-In case your validations did not run yet, `vest.get` returns an empty validation result object - which can be helpful when trying to access validation result object when rendering the initial UI, or setting it in the initial state of your components.
-
-vest.get takes a single argument: the suite name. It is used to identify which validation result to retrieve.
+In case your validations did not run yet, `.get` returns an empty validation result object - which can be helpful when trying to access validation result object when rendering the initial UI, or setting it in the initial state of your components.
 
 ```js
-import vest from 'vest';
-
-const res = vest.get('suite_name');
-
-res.hasErrors('fieldName');
-```
-
-Alternatively, you can access your suite's state from the `get` property on your suite function:
-
-```js
-const v = vest.create('my_form', () => {
+const suite = vest.create('my_form', () => {
   /*...*/
 });
 
-v.get(); // -> returns the same value as vest.get('my_form');
+suite.get(); // -> returns the most recent result object for the current suite
+```
+
+You can also use `.get()` to access the intermediate validation result during your suite's run, this is a replacement of the deprecated `vest.draft()` hook.
+
+```js
+const suite = vest.create('my_form', data => {
+  test('username', 'Username is too short', () => {
+    enforce(data.username).longerThanOrEquals(3);
+  });
+
+  if (!suite.get().hasErrors('username')) {
+    test('username', 'already taken', async () => {
+      // some async test
+    });
+  }
+});
 ```
 
 # Result Object Methods:
@@ -205,4 +207,26 @@ const validationResult = validate(data)
   .done(output => {
     promptUserQuestionnaire(output);
   });
+```
+
+!> **IMPORTANT** .done calls must not be used conditionally - especially when involving async tests. This might cause unexpected behavior or missed callbacks. Instead, if needed, perform your conditional logic within your callback.
+
+```js
+// 🚨 This might not work as expected when working with async validations
+
+if (field === 'username') {
+  result.done(() => {
+    /*do something*/
+  });
+}
+```
+
+```js
+// ✅ Instead, perform your checks within your done callback
+
+result.done(() => {
+  if (field === 'username') {
+    /*do something*/
+  }
+});
 ```

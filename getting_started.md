@@ -35,7 +35,7 @@ const validationResult = validate();
 
 | Name     | Type       | Optional | Description                                                    |
 | -------- | ---------- | -------- | -------------------------------------------------------------- |
-| `name`   | `string`   | No       | Suite name. _Must be unique_.                                  |
+| `name`   | `string`   | Yes      | Suite name.                                                    |
 | callback | `function` | No       | Your validation suite's body. This is where your tests reside. |
 
 vest.create returns a `validate` function which runs your validation suite. All the arguments you pass to it are being forwarded to your tests callback. You can use it to pass form data to your validation, excluded fields, and anything required for during your validation runtime.

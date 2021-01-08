@@ -4160,6 +4160,11 @@ multimatch@^4.0.0:
     arrify "^2.0.1"
     minimatch "^3.0.4"
 
+n4s@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/n4s/-/n4s-2.1.1.tgz#eeb998855b2717bfc95f04739b241cfcd52fe8f9"
+  integrity sha512-1jjZ+ycDASS6G1oq1zBH982wxlnYG+4I3zghGOHDJjWADafY9SIfLEry4rNGjVAd8pqDeVyoB23JwjBOknNstA==
+
 nanomatch@^1.2.9:
   version "1.2.13"
   resolved "https://registry.yarnpkg.com/nanomatch/-/nanomatch-1.2.13.tgz#b87a8aa4fc0de8fe6be88895b38983ff265bd119"
@@ -5649,6 +5654,11 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
+
+vest@^2.2.3:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/vest/-/vest-2.2.3.tgz#ff8a9bfc10d17b93b1b4e834da01fc6530634ac4"
+  integrity sha512-t1JMJFTmxHXbh+Y6gFc9iEKOfFehgura1Q7ASQearngKw/aCjgRfVHwP2bltzHCMhzsB+qMT5djh4EUMQy+JeQ==
 
 vinyl-sourcemaps-apply@^0.2.0:
   version "0.2.1"

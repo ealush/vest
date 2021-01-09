@@ -1,3 +1,5 @@
+#!/bin/sh
+
 git config --global user.email $EMAIL_ADDRESS --replace-all
 git config --global user.name $GIT_NAME
 

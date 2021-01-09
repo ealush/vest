@@ -14,7 +14,7 @@ function listMessages() {
   exec(`git fetch origin ${STABLE_BRANCH}`);
 
   const output = exec(
-    `git log origin/${STABLE_BRANCH}..origin/${CURRENT_BRANCH} --pretty='format:%h  %s (%an)'}`
+    `git log origin/${STABLE_BRANCH}..origin/${CURRENT_BRANCH} --pretty='format:%h  %s (%an)'`
   );
   return output
     .toString()

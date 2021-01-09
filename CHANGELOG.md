@@ -8,78 +8,78 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Changed or removed
 
-- 3d47fb1 breaking: remove vest.draft() (#474) (Evyatar)}
-- 0ef8ec8 breaking: remove validate (ealush)}
-- 00a5aba breaking: remove global state reference (ealush)}
+- 3d47fb1 breaking: remove vest.draft() (#474) (Evyatar)
+- 0ef8ec8 breaking: remove validate (ealush)
+- 00a5aba breaking: remove global state reference (ealush)
 
 ### Added
 
-- b8746f9 feat: suite.remove (ealush)}
-- 4dd6a30 feat: test.each (#541) (Alex Kaplan)}
-- 4c81bc0 added: enforce.loose for loose shape enforcement style #492 (#505) (Alex Kaplan)}
-- 8e3386b Added: Chaining support in lazy enforcement (#495) (Evyatar)}
+- b8746f9 feat: suite.remove (ealush)
+- 4dd6a30 feat: test.each (#541) (Alex Kaplan)
+- 4c81bc0 added: enforce.loose for loose shape enforcement style #492 (#505) (Alex Kaplan)
+- 8e3386b Added: Chaining support in lazy enforcement (#495) (Evyatar)
 
 ### Fixed and improved
 
-- ede4587 test: add tests for VestTest.cancel (ealush)}
-- f3bb418 patch: optionalFunctionValue utility (ealush)}
-- 81f3a4d fix: retain lagging list after reset (ealush)}
-- 61d6258 tests: improve rule test fixture (ealush)}
-- 8d0b087 tests: runLazyRule (ealush)}
-- 0006059 patch: reduce transpiled bundle size (#522) (Evyatar)}
-- 52691b0 patch: update dev mode errors (ealush)}
-- c3949bd patch: improve enforcement performance on legacy browsers (#507) (Evyatar)}
-- 3083ba4 patch: use rules for internal comparisons (ealush)}
-- 26d6bed patch: move anyone package inside (#502) (Evyatar)}
-- 56b195d patch: use isPromise utility (#501) (Evyatar)}
-- eb43009 patch: use enforce rules for internal evaluations (ealush)}
-- b8c8b6c patch: move severity profile logic out (#496) (Evyatar)}
-- 458bccd readme: add a discord invite link (Evyatar)}
-- c3e4449 patch: sort out organize deps (ealush)}
-- 797fe4e patch: reduce built size (#465) (Evyatar)}
-- 92924df fix: use proxy with ensure (ealush)}
-- 1d6955d patch: simplify conditions (ealush)}
-- c6b36f2 patch: remove state init symbol (ealush)}
-- 4dd0132 patch: Move state modules to the same directory (ealush)}
-- 65a7468 patch: Remove state history (ealush)}
-- 699b293 use context.bind (ealush)}
-- b080130 patch: rewrite state module (ealush)}
-- e5eac8f patch: remove context around async test (ealush)}
-- 9de029c patch: simplify cache (ealush)}
-- 1474825 test: remove runSpec module (ealush)}
-- 1a69910 types: isUndefined rule (ealush)}
-- b20aa66 patch: regorganize Context and Suite State (#413) (Evyatar)}
-- ca5dda1 fix: README typos (#392) (baahrens)}
+- ede4587 test: add tests for VestTest.cancel (ealush)
+- f3bb418 patch: optionalFunctionValue utility (ealush)
+- 81f3a4d fix: retain lagging list after reset (ealush)
+- 61d6258 tests: improve rule test fixture (ealush)
+- 8d0b087 tests: runLazyRule (ealush)
+- 0006059 patch: reduce transpiled bundle size (#522) (Evyatar)
+- 52691b0 patch: update dev mode errors (ealush)
+- c3949bd patch: improve enforcement performance on legacy browsers (#507) (Evyatar)
+- 3083ba4 patch: use rules for internal comparisons (ealush)
+- 26d6bed patch: move anyone package inside (#502) (Evyatar)
+- 56b195d patch: use isPromise utility (#501) (Evyatar)
+- eb43009 patch: use enforce rules for internal evaluations (ealush)
+- b8c8b6c patch: move severity profile logic out (#496) (Evyatar)
+- 458bccd readme: add a discord invite link (Evyatar)
+- c3e4449 patch: sort out organize deps (ealush)
+- 797fe4e patch: reduce built size (#465) (Evyatar)
+- 92924df fix: use proxy with ensure (ealush)
+- 1d6955d patch: simplify conditions (ealush)
+- c6b36f2 patch: remove state init symbol (ealush)
+- 4dd0132 patch: Move state modules to the same directory (ealush)
+- 65a7468 patch: Remove state history (ealush)
+- 699b293 use context.bind (ealush)
+- b080130 patch: rewrite state module (ealush)
+- e5eac8f patch: remove context around async test (ealush)
+- 9de029c patch: simplify cache (ealush)
+- 1474825 test: remove runSpec module (ealush)
+- 1a69910 types: isUndefined rule (ealush)
+- b20aa66 patch: regorganize Context and Suite State (#413) (Evyatar)
+- ca5dda1 fix: README typos (#392) (baahrens)
 
 ## n4s: [3.0.0] - 2021-01-08
 
 ### Changed or removed
 
-- bbe0159 breaking: Remove ensure export as it is now replaced by the lazy enforce interface (#497) (Evyatar)}
+- bbe0159 breaking: Remove ensure export as it is now replaced by the lazy enforce interface (#497) (Evyatar)
 
 ### Added
 
-- 2f948fc feat: deeply nested schema result (#555) (Evyatar)}
-- c2ea710 added: allOf compound rule (#533) (Moses3301)}
-- db7f6f4 added: oneOf compound (#526) (hpsharon)}
-- 54e500f feature: templates (#509) (Evyatar)}
-- c0053f2 added: anyOf for either/or style enforcements #269 (#493) (Alex Kaplan)}
-- 670887d added: isArrayOf rule #488 (#499) (Moses3301)}
-- 7df6371 added: rule: isBoolean (#494) (Evyatar)}
-- f3ff232 minor: Add shape validator (#491) (Evyatar)}
-- 3e33fa8 added: lazy evaluated enforcements (#479) (Evyatar)}
-- a54e455 added: isNegative & isPositive (#433) (Ganesh Patil)}
-- eecb59a feat: rule isBetween and isNotBetween (#419) (Daniel Hermon)}
-- 17f74e1 added: startsWith rule (#414) (Daniel Hermon)}
-- d77d569 added: endsWith and doesNotEndWith rules (#409) (Daniel Hermon)}
-- a424282 added: `isNull` rule. (#404) (omri lugasi)}
-- a13e860 added: isUndefined rule(#410) (omri lugasi)}
+- 2f948fc feat: deeply nested schema result (#555) (Evyatar)
+- c2ea710 added: allOf compound rule (#533) (Moses3301)
+- db7f6f4 added: oneOf compound (#526) (hpsharon)
+- 54e500f feature: templates (#509) (Evyatar)
+- c0053f2 added: anyOf for either/or style enforcements #269 (#493) (Alex Kaplan)
+- 670887d added: isArrayOf rule #488 (#499) (Moses3301)
+- 7df6371 added: rule: isBoolean (#494) (Evyatar)
+- f3ff232 minor: Add shape validator (#491) (Evyatar)
+- 3e33fa8 added: lazy evaluated enforcements (#479) (Evyatar)
+- a54e455 added: isNegative & isPositive (#433) (Ganesh Patil)
+- eecb59a feat: rule isBetween and isNotBetween (#419) (Daniel Hermon)
+- 17f74e1 added: startsWith rule (#414) (Daniel Hermon)
+- d77d569 added: endsWith and doesNotEndWith rules (#409) (Daniel Hermon)
+- a424282 added: `isNull` rule. (#404) (omri lugasi)
+- a13e860 added: isUndefined rule(#410) (omri lugasi)
 
 ### Fixed and improved
 
-- 4059180 patch: inverse arg control for more correct lazy rule flow (#500) (Evyatar)}
-- cbee269 patch: Use own modules (#476) (Evyatar)}
-- 98bd1d1 patch: bindNot for rules (ealush)}
+- 4059180 patch: inverse arg control for more correct lazy rule flow (#500) (Evyatar)
+- cbee269 patch: Use own modules (#476) (Evyatar)
+- 98bd1d1 patch: bindNot for rules (ealush)
 
 ## vest: [2.2.3] - 2020-09-16
 

@@ -81,6 +81,27 @@ describe('schema', () => {
       ...res.getErrors('friends[0].name.middle'),
     ]);
   });
+
+  it('Should return error messages when they should appear', () => {
+    const Name = enforce.loose({
+      name: enforce
+        .loose({
+          first: enforce.isString().isNotEmpty().message('first_name_error'),
+          last: enforce.isString().isNotEmpty().message('last_name_error'),
+        })
+        .message('name_error'),
+    });
+
+    const Schema = schema(Name);
+    const res = Schema({ name: {} });
+
+    expect(res.hasErrors()).toBe(true);
+    expect(res.getErrors()).toEqual({
+      name: ['name_error', 'first_name_error', 'last_name_error'],
+      'name.first': ['first_name_error'],
+      'name.last': ['last_name_error'],
+    });
+  });
 });
 
 const Name = enforce.loose({

@@ -31,7 +31,7 @@ export default function schema(enforceSchema) {
       errorMessages[test] = parsedResult[test].errors = Object.keys(
         parsedResult[test].errors
       );
-      errorMessages[test] = parsedResult[test].warnings = Object.keys(
+      warningMessages[test] = parsedResult[test].warnings = Object.keys(
         parsedResult[test].warnings
       );
       _hasErrors = _hasErrors || parsedResult[test].hasErrors;

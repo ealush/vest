@@ -8,6 +8,7 @@ const SCRIPT_PATH = path.resolve(
   filePaths.ROOT_PATH,
   'scripts',
   'release',
+  'steps',
   'push_to_latest_branch.sh'
 );
 

@@ -121,3 +121,5 @@ enforce(0).warn;
 enforce.warn;
 enforce(0).message;
 enforce.message;
+enforce(0).when;
+enforce.when;

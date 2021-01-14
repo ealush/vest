@@ -104,6 +104,123 @@ describe('schema', () => {
   });
 });
 
+describe('schema function body', () => {
+  const Shape = enforce.shape({
+    a: enforce.isNumber().message('"a" must be a number'),
+    b: enforce.isString().isNumeric().message('"b" must be a numeric string'),
+    c: enforce.isArrayOf(
+      enforce.shape({ id: enforce.isString() }).message('id must be a string')
+    ),
+  });
+
+  const data = {
+    a: 'not_a_number',
+    b: 22,
+    c: [{ id: 1 }, { id: 2 }, { id: '3' }],
+  };
+
+  it('passes all arguments to function body', () => {
+    const body = jest.fn();
+
+    const Schema = schema(Shape, body);
+    Schema(data, 'args1', 'args2', 'etc');
+
+    expect(body).toHaveBeenCalledWith(data, 'args1', 'args2', 'etc');
+  });
+
+  describe('schema.skip', () => {
+    it('Should validate all but skipped fields', () => {
+      const data = {
+        a: 'not_a_number',
+        b: 22,
+        c: [{ id: 1 }, { id: 2 }, { id: '3' }],
+      };
+      {
+        const Schema = schema(Shape, () => {
+          schema.skip('a');
+        });
+        const result = Schema(data);
+        expect(result.getErrors('a')).toEqual([]);
+        expect(result.hasErrors('a')).toBe(false);
+        expect(result.getErrors('b')).toEqual(['"b" must be a numeric string']);
+        expect(result.hasErrors('b')).toBe(true);
+        expect(result.tests).not.toHaveProperty('a');
+        expect(result.tests.b).toBeDefined();
+        expect(result.tests.c).toBeDefined();
+        expect(result.tests['c[0]']).toBeDefined();
+        expect(result.tests['c[0].id']).toBeDefined();
+        expect(result.tests['c[1].id']).toBeDefined();
+        expect(result.tests['c[2].id']).toBeDefined();
+        expect(result.tests).toMatchSnapshot();
+        expect(result.getErrors()).toMatchSnapshot();
+      }
+      {
+        const Schema = schema(Shape, () => {
+          schema.skip('c');
+        });
+        const result = Schema(data);
+        expect(result.getErrors('a')).toEqual(['"a" must be a number']);
+        expect(result.hasErrors('a')).toBe(true);
+        expect(result.hasErrors('c')).toBe(false);
+        expect(result.getErrors('c')).toEqual([]);
+        expect(result.hasErrors('c[0]')).toBe(false);
+        expect(result.hasErrors('c[0].id')).toBe(false);
+        expect(result.tests.a).toBeDefined();
+        expect(result.tests.b).toBeDefined();
+        expect(result.tests).not.toHaveProperty('c');
+        expect(result.tests).not.toHaveProperty('c[0]');
+        expect(result.tests).not.toHaveProperty('c[1]');
+        expect(result.tests).not.toHaveProperty('c[2]');
+        expect(result.tests).not.toHaveProperty('c[0].id');
+        expect(result.tests).not.toHaveProperty('c[1].id');
+        expect(result.tests).not.toHaveProperty('c[2].id');
+        expect(result.tests).toMatchSnapshot();
+        expect(result.getErrors()).toMatchSnapshot();
+      }
+      {
+        const Schema = schema(Shape, () => {
+          schema.skip('a');
+          schema.skip('b');
+        });
+        const result = Schema(data);
+        expect(result.tests.a).not.toBeDefined();
+        expect(result.tests.b).not.toBeDefined();
+        expect(result.tests.c).toBeDefined();
+        expect(result.tests).toMatchSnapshot();
+        expect(result.getErrors()).toMatchSnapshot();
+      }
+    });
+  });
+  describe('schema.only', () => {
+    it('Should only validate included fields', () => {
+      const data = {
+        a: 'not_a_number',
+        b: 22,
+        c: [{ id: 1 }, { id: 2 }, { id: '3' }],
+      };
+      {
+        const Schema = schema(Shape, () => {
+          schema.only('a');
+        });
+        const result = Schema(data);
+        expect(result.hasErrors('a')).toBe(true);
+        expect(result.getErrors('a')).toEqual(['"a" must be a number']);
+        expect(result.hasErrors('b')).toBe(false);
+        expect(result.hasErrors('c')).toBe(false);
+        expect(result.tests.a).toBeDefined();
+        expect(result.tests.b).not.toBeDefined();
+        expect(result.tests.c).not.toBeDefined();
+        expect(result.tests['c[0]']).not.toBeDefined();
+        expect(result.tests['c[0].id']).not.toBeDefined();
+        expect(result.tests['c[1].id']).not.toBeDefined();
+        expect(result.tests['c[2].id']).not.toBeDefined();
+        expect(result.tests).toMatchSnapshot();
+        expect(result.getErrors()).toMatchSnapshot();
+      }
+    });
+  });
+});
+
 const Name = enforce.loose({
   first: enforce.isString().message('First name must be a string'),
   last: enforce.isString().warn().message('last name must be a string'),

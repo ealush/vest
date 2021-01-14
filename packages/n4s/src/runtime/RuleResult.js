@@ -2,6 +2,7 @@ import hasOwnProperty from 'hasOwnProperty';
 
 import { isBoolean } from 'isBoolean';
 import { isEmpty } from 'isEmpty';
+import { isNull } from 'isNull';
 import { isUndefined } from 'isUndefined';
 import { HAS_WARNINGS, HAS_ERRORS } from 'sharedKeys';
 
@@ -65,6 +66,10 @@ RuleResult.prototype.setFailed = function (failed) {
  * @param {RuleResult} child
  */
 RuleResult.prototype.setChild = function (key, child) {
+  if (isNull(child)) {
+    return null;
+  }
+
   const isWarning =
     this[HAS_WARNINGS] || child[HAS_WARNINGS] || child.warn || this.warn;
   this.setAttribute(HAS_WARNINGS, (isWarning && child.failed) || false);
@@ -96,6 +101,10 @@ RuleResult.prototype.getChild = function (key) {
  * @param {Boolean|RuleResult} newRes
  */
 RuleResult.prototype.extend = function (newRes) {
+  if (isNull(newRes)) {
+    return this;
+  }
+
   const res = RuleResult.is(newRes)
     ? newRes
     : new RuleResult().setAttribute('warn', !!this.warn).setFailed(!newRes);

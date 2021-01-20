@@ -1,6 +1,6 @@
 {
   "name": "vest",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Declarative validations.",
   "main": "./vest.js",
   "browser": "./vest.js",

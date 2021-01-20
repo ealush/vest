@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## vest: [3.0.1] - 2021-01-20
+
+### Fixed and improved
+- 0209400  fix: custom enforce rules typings (ealush)
+- f59a659  fix: error message override when no warnings (ealush)
+
 ## vest: [3.0.0] - 2021-01-08
 
 ### Changed or removed

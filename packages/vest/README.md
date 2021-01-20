@@ -62,7 +62,6 @@ Vest tries to remediate this by separating validation logic from feature logic s
 
 ```js
 import vest, { test } from 'vest';
-import enforce from 'vest/enforceExtended';
 
 export default vest.create('user_form', (data = {}, currentField) => {
   vest.only(currentField);

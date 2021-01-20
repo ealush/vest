@@ -126,7 +126,19 @@ interface IEnforce {
    *
    * customEnforce('notAnEmail') // throws an error
    */
-  extend<T extends { [key: string]: (value: any, ...args: any[]) => boolean }>(
+  extend<
+    T extends {
+      [key: string]: (
+        value: any,
+        ...args: any[]
+      ) =>
+        | boolean
+        | {
+            pass: boolean;
+            message?: string | (() => string);
+          };
+    }
+  >(
     obj: T
   ): (value: any) => IEnforceRules<T> & EnforceExtendMap<T>;
 

@@ -38,6 +38,19 @@ enforce.extend({
 enforce('no').isLiteralNo();
 const x = enforce.isLiteralNo().run(12);
 
+enforce.extend({
+  isLetralYes: value => {
+    return value === 'yes'
+      ? {
+          pass: true,
+        }
+      : {
+          pass: false,
+          message: () => 'not a literal yes.',
+        };
+  },
+});
+
 // Enforce template
 const User = enforce.template(enforce.isString(), enforce.isNotEmpty());
 User('hello');

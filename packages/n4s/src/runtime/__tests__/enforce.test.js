@@ -45,41 +45,6 @@ const suite = ({ withProxy, requirePath }) =>
       });
     });
 
-    describe('Test custom rule extensions', () => {
-      let extended;
-      beforeEach(() => {
-        extended = enforce.extend({
-          endsWith: (v, arg) => v.endsWith(arg),
-          isImpossible: v => !!v.match(/impossible/i),
-          passVerbose: () => ({
-            pass: true,
-            message: "It shouldn't throw an error",
-          }),
-          throwVerbose: () => ({ pass: false, message: 'Custom error' }),
-        });
-      });
-
-      it('Should return enforce', () => {
-        expect(typeof extended).toBe('function');
-        expect(extended).toBe(enforce);
-      });
-
-      it('Should throw on failing custom rule in regular test', () => {
-        const t = () => enforce('The name is Snowball').endsWith('Snuffles');
-        expect(t).toThrow(Error);
-      });
-
-      it('Should return silently for custom rule in regular test', () => {
-        enforce('Impossible! The name is Snowball')
-          .endsWith('Snowball')
-          .isImpossible();
-      });
-
-      it('Should return silently for custom verbose rule in regular test', () => {
-        enforce().passVerbose();
-      });
-    });
-
     it('Should throw errors on failing enforces', () => {
       const isNumber = () => enforce('a').isNumber(true);
       expect(isNumber).toThrow(Error);

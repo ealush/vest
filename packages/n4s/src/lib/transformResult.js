@@ -16,14 +16,10 @@ export function validateResult(result, rule) {
 }
 
 // for easier testing and mocking
-export function getDefaultResult(value, rule) {
+export function getDefaultResult(value) {
   return {
-    message: formatResultMessage(rule, `invalid ${typeof value} value`),
+    message: new Error(`invalid ${typeof value} value`),
   };
-}
-
-export function formatResultMessage(rule, msg) {
-  return `[${LIBRARY_NAME}]: "${rule.name}" ${msg}`;
 }
 
 /**
@@ -47,10 +43,7 @@ export function transformResult(result, { rule, value }) {
   } else {
     defaultResult.pass = result.pass;
     if (result.message) {
-      defaultResult.message = formatResultMessage(
-        rule,
-        optionalFunctionValue(result.message)
-      );
+      defaultResult.message = optionalFunctionValue(result.message);
     }
     return defaultResult;
   }

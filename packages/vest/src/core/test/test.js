@@ -4,6 +4,8 @@ import context from 'ctx';
 import { isExcluded } from 'exclusive';
 import isFunction from 'isFunction';
 import isPromise from 'isPromise';
+import isStringValue from 'isStringValue';
+import { isUndefined } from 'isUndefined';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
 import bindTestEach from 'test.each';
@@ -22,6 +24,9 @@ const sync = testObject =>
     try {
       result = testObject.testFn();
     } catch (e) {
+      if (isUndefined(testObject.statement) && isStringValue(e)) {
+        testObject.statement = e;
+      }
       result = false;
     }
 

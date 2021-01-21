@@ -28,7 +28,7 @@ function runner(rule, value, args = []) {
   }
 
   if (!result.pass) {
-    throw new Error(result.message);
+    throw result.message;
   }
 }
 

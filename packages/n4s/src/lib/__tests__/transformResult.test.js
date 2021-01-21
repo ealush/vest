@@ -9,7 +9,6 @@ import {
 import {
   transformResult,
   getDefaultResult,
-  formatResultMessage,
   validateResult,
 } from 'transformResult';
 
@@ -54,7 +53,7 @@ describe.each([true, false])('Test transform result', bool => {
       transformResult(result, { rule: goodObjectRule, value: bool })
     ).toEqual({
       pass: bool,
-      message: formatResultMessage(goodObjectRule, result.message),
+      message: result.message,
     });
   });
 
@@ -85,10 +84,7 @@ describe.each([true, false])('Test transform result', bool => {
       })
     ).toEqual({
       pass: bool,
-      message: formatResultMessage(
-        goodObjectMessageFunctionRule,
-        result.message()
-      ),
+      message: result.message(),
     });
   });
 
@@ -105,24 +101,4 @@ describe.each([true, false])('Test transform result', bool => {
       transformResult(result, { rule: nullRule, value: bool })
     ).toThrow(Error);
   });
-});
-
-describe("Test transform result's message", () => {
-  [goodObjectMessageRule, goodObjectMessageRule, goodObjectRule].forEach(
-    rule => {
-      it('Should contain the library name', () => {
-        const result = rule(true);
-        expect(transformResult(result, { rule, value: true }).message).toMatch(
-          LIBRARY_NAME
-        );
-      });
-
-      it('Should contain the name of the rule', () => {
-        const result = rule(true);
-        expect(transformResult(result, { rule, value: true }).message).toMatch(
-          rule.name
-        );
-      });
-    }
-  );
 });

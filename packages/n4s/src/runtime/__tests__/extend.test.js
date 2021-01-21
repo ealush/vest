@@ -25,7 +25,7 @@ describe('enforce.extend', () => {
 
   it('Should throw on failing custom rule in regular test', () => {
     const t = () => enforce('The name is Snowball').endsWith('Snuffles');
-    expect(t).toThrow(Error);
+    expect(t).toThrow();
   });
 
   it('Should return silently for custom rule in regular test', () => {
@@ -40,7 +40,7 @@ describe('enforce.extend', () => {
 
   it('Should use message from returned function result', () => {
     expect(() => enforce('').failsWithFunction(2)).toThrow(
-      '[vest]: "failsWithFunction" Custom error with function'
+      'Custom error with function'
     );
   });
 });

@@ -1,6 +1,6 @@
 type DoneCB = (res: DraftResult) => void;
 
-export type IVestResult = {
+export type DraftResult = {
   name: string;
   errorCount: number;
   warnCount: number;
@@ -83,14 +83,17 @@ export type IVestResult = {
    * Returns all the warning messages for the specified group and field
    */
   getWarningsByGroup(groupName: string, fieldName: string): string[];
-  /**
-   * Runs a callback when all tests are finished running
-   */
-  done(cb: DoneCB): void;
+};
+
+type DoneResult = {
   /**
    * Runs a callback when all tests of the specified field finished running
    */
-  done(fieldName: string, cb: DoneCB): void;
+  done(fieldName: string, cb: DoneCB): IVestResult;
+  /**
+   * Runs a callback when all tests are finished running
+   */
+  done(cb: DoneCB): IVestResult;
 };
 
-export type DraftResult = Omit<IVestResult, 'done'>;
+export interface IVestResult extends DoneResult, DraftResult {}

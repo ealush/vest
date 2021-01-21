@@ -1,3 +1,5 @@
+import promisify from 'vest/promisify';
+
 import vest from 'vest';
 
 vest.create('suite_name', () => {});
@@ -91,3 +93,7 @@ getResult.tests.someField.warnCount;
 getResult.tests.someField.testCount;
 getResult.tests.someField.errors[0];
 getResult.tests.someField.warnings[0];
+
+const promisified = promisify(v);
+
+promisified({}).then(() => {});

@@ -5,7 +5,7 @@
 After validating user input, you usually need to also indicate the validation result on the page - most of the times by adding a class to your input element. One of the difficulties you are likely to face is that the logic for setting the class is not always the negation of `hasErrors`.
 
 ```js
-const addIsValidClass = !res.hasErrors('fieldName'); // this does not ALWAYS mean 'valid'
+const addIsValidClass = !res.hasErrors("fieldName"); // this does not ALWAYS mean 'valid'
 ```
 
 What about when the field is skipped or not validated yet? It does not have errors, so `res.hasErrors('fieldName')` will return `false`, and by that logic, you might mistakenly add a `is-valid` class to your element.
@@ -13,7 +13,7 @@ What about when the field is skipped or not validated yet? It does not have erro
 In this case you will also need to check if the test actually ran - so:
 
 ```js
-const addIsValidClass = res.tests[fieldName] && !res.hasErrors('fieldName');
+const addIsValidClass = res.tests[fieldName] && !res.hasErrors("fieldName");
 ```
 
 But this can get pretty cumbersome when added to multiple fields with different criteria (untested, invalid, hasWarning...).
@@ -23,22 +23,22 @@ This is what `vest/classNames` is for. It is a tiny utility function, that allow
 The way it works is simple. You call `classNames` with your result object, and the list of classes you want to be added for whenever the field is tested, untested, has warning or is invalid. It then returns a function that when called with a field name, returns a space delimited string of classes. If more than one class applies (both tested and invalid, for example) they will both be added to the string.
 
 ```js
-import classNames from 'vest/classNames';
-import validate from './validation';
+import classNames from "vest/classNames";
+import validate from "./validation";
 
 const res = validate(data);
 
 const cn = classNames(res, {
-  untested: 'is-untested', // will only be applied if the provided field did not run yet
-  tested: 'some-tested-class', // will only be applied if the provided field did run
-  invalid: 'my_invalid_class', // will only be applied if the provided field ran at least once and has an errror
-  valid: 'my_valid_class', // will only be applied if the provided field ran at least once does not have errors or warnings
-  warning: 'my_warning_class', // will only be applied if the provided field ran at least once and has a warning
+  untested: "is-untested", // will only be applied if the provided field did not run yet
+  tested: "some-tested-class", // will only be applied if the provided field did run
+  invalid: "my_invalid_class", // will only be applied if the provided field ran at least once and has an errror
+  valid: "my_valid_class", // will only be applied if the provided field ran at least once does not have errors or warnings
+  warning: "my_warning_class", // will only be applied if the provided field ran at least once and has a warning
 });
 
-const fieldOneClasses = cn('field_1'); // "is-untested"
-const fieldTwoClasses = cn('field_2'); // "some-tested-class my_invalid_class"
-const fieldThreeClasses = cn('field_3'); // "some-tested-class my_warning_class"
+const fieldOneClasses = cn("field_1"); // "is-untested"
+const fieldTwoClasses = cn("field_2"); // "some-tested-class my_invalid_class"
+const fieldThreeClasses = cn("field_3"); // "some-tested-class my_warning_class"
 ```
 
 ## `any()` for OR relationship tests
@@ -56,13 +56,13 @@ A good example would be: When your validated field can be either empty (not requ
 The only difference is - if any of the supplied tests passes, the success condition is met and `any()` returns true.
 
 ```js
-import vest, { test, enforce } from 'vest';
-import any from 'vest/any';
+import vest, { test, enforce } from "vest";
+import any from "vest/any";
 
-vest.create('Checkout', () => {
+vest.create("Checkout", () => {
   test(
-    'coupon',
-    'When filled, must be at least 5 chars',
+    "coupon",
+    "When filled, must be at least 5 chars",
     any(
       () => enforce(data.coupon).isEmpty(),
       () => enforce(data.coupon).longerThanOrEquals(5)
@@ -83,55 +83,25 @@ This can be useful when running async validations on the server, or when you do 
 `promisify()` accepts a validation suite declaration, and returns a function that when called, returns a Promise.
 
 ```js
-import vest from 'vest';
-import promisify from 'vest/promisify';
+import vest from "vest";
+import promisify from "vest/promisify";
 
 const validate = promisify(
-  vest.create('CreateNewUser', data => {
-    test('email', 'The email already exists', () => doesEmailExist(data.email));
-    test('username', 'The username already exists', () =>
+  vest.create("CreateNewUser", (data) => {
+    test("email", "The email already exists", () => doesEmailExist(data.email));
+    test("username", "The username already exists", () =>
       doesUsernameExist(data.username)
     );
   })
 );
 
-validate(data).then(res => {
-  if (res.hasErrors('email')) {
+validate(data).then((res) => {
+  if (res.hasErrors("email")) {
     /* ... */
   }
 
-  if (res.hasErrors('usename')) {
+  if (res.hasErrors("usename")) {
     /* ... */
   }
 });
-```
-
-```js
-// validation.js
-import vest, { test } from 'vest';
-
-const validate = vest.create('CreateNewUser', data => {
-  test('email', 'The email already exists', () => doesEmailExist(data.email));
-  test('username', 'The username already exists', () =>
-    doesUsernameExist(data.username)
-  );
-});
-
-export default validate;
-```
-
-```js
-// Form.js
-import promisify from 'vest/promisify';
-import validate from './validation.js';
-
-const validateAsync = promisify(validate(data));
-
-async function handler(data) {
-  const result = await validateAsync(data);
-
-  if (result.hasErrors('email')) {
-    // Do stuff here
-  }
-}
 ```

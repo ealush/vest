@@ -50,26 +50,3 @@ enforce.extend({
   },
 });
 ```
-
-This is useful when combind with Vest tests, because vest test can use the string value as the test message:
-
-```js
-enforce.extend({
-  isChecked: value => {
-    return {
-      pass: !!value.checked,
-      message: () => 'value must be checked',
-    };
-  },
-});
-
-/*...*/
-
-/*
-  tost = { checked: false }
-*/
-
-test('tos', () => {
-  enforce(tos).isChecked(); // will fail with the message: "value must be checked"
-});
-```

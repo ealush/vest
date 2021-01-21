@@ -3,6 +3,9 @@ name: Docs
 on:
   schedule:
     - cron: '0 0 * * *'
+  push:
+    branches:
+      - stable
 
 jobs:
   build:

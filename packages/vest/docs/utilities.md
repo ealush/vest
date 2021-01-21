@@ -105,33 +105,3 @@ validate(data).then(res => {
   }
 });
 ```
-
-```js
-// validation.js
-import vest, { test } from 'vest';
-
-const validate = vest.create('CreateNewUser', data => {
-  test('email', 'The email already exists', () => doesEmailExist(data.email));
-  test('username', 'The username already exists', () =>
-    doesUsernameExist(data.username)
-  );
-});
-
-export default validate;
-```
-
-```js
-// Form.js
-import promisify from 'vest/promisify';
-import validate from './validation.js';
-
-const validateAsync = promisify(validate(data));
-
-async function handler(data) {
-  const result = await validateAsync(data);
-
-  if (result.hasErrors('email')) {
-    // Do stuff here
-  }
-}
-```

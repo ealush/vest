@@ -30,8 +30,8 @@ export default function bindLazyRule(ruleName) {
 
       // Add a meta function
       if (ruleMeta[rule.name] === rule) {
-        meta.push((value, ruleResult) => {
-          ruleResult.setAttribute(rule.name, rule(value, args[0]));
+        meta.push((value, ruleResult, bail) => {
+          ruleResult.setAttribute(rule.name, rule(value, args[0], bail));
         });
       } else {
         // Register a rule
@@ -57,10 +57,16 @@ export default function bindLazyRule(ruleName) {
       returnvalue[RUN_RULE] = value => {
         const result = new RuleResult(true);
 
+        let bailed = false;
+
         // Run meta chains
         meta.forEach(fn => {
-          fn(value, result);
+          fn(value, result, shouldBail => (bailed = shouldBail));
         });
+
+        if (bailed) {
+          return null;
+        }
 
         // Iterate over all the registered rules
         // This runs the function that's inside `addFn`

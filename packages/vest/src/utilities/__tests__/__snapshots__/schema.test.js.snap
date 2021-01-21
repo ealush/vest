@@ -126,3 +126,209 @@ Object {
   },
 }
 `;
+
+exports[`schema function body schema.only Should only validate included fields 1`] = `
+Object {
+  "a": Object {
+    "errors": Array [
+      "\\"a\\" must be a number",
+    ],
+    "hasErrors": true,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+}
+`;
+
+exports[`schema function body schema.only Should only validate included fields 2`] = `
+Object {
+  "a": Array [
+    "\\"a\\" must be a number",
+  ],
+}
+`;
+
+exports[`schema function body schema.skip Should validate all but skipped fields 1`] = `
+Object {
+  "b": Object {
+    "errors": Array [
+      "\\"b\\" must be a numeric string",
+    ],
+    "hasErrors": true,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+  "c": Object {
+    "errors": Array [
+      "id must be a string",
+    ],
+    "hasErrors": true,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+  "c[0]": Object {
+    "errors": Array [
+      "id must be a string",
+    ],
+    "hasErrors": true,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+  "c[0].id": Object {
+    "errors": Array [],
+    "hasErrors": true,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+  "c[1]": Object {
+    "errors": Array [
+      "id must be a string",
+    ],
+    "hasErrors": true,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+  "c[1].id": Object {
+    "errors": Array [],
+    "hasErrors": true,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+  "c[2]": Object {
+    "errors": Array [],
+    "hasErrors": false,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+  "c[2].id": Object {
+    "errors": Array [],
+    "hasErrors": false,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+}
+`;
+
+exports[`schema function body schema.skip Should validate all but skipped fields 2`] = `
+Object {
+  "b": Array [
+    "\\"b\\" must be a numeric string",
+  ],
+  "c": Array [
+    "id must be a string",
+  ],
+  "c[0]": Array [
+    "id must be a string",
+  ],
+  "c[0].id": Array [],
+  "c[1]": Array [
+    "id must be a string",
+  ],
+  "c[1].id": Array [],
+  "c[2]": Array [],
+  "c[2].id": Array [],
+}
+`;
+
+exports[`schema function body schema.skip Should validate all but skipped fields 3`] = `
+Object {
+  "a": Object {
+    "errors": Array [
+      "\\"a\\" must be a number",
+    ],
+    "hasErrors": true,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+  "b": Object {
+    "errors": Array [
+      "\\"b\\" must be a numeric string",
+    ],
+    "hasErrors": true,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+}
+`;
+
+exports[`schema function body schema.skip Should validate all but skipped fields 4`] = `
+Object {
+  "a": Array [
+    "\\"a\\" must be a number",
+  ],
+  "b": Array [
+    "\\"b\\" must be a numeric string",
+  ],
+}
+`;
+
+exports[`schema function body schema.skip Should validate all but skipped fields 5`] = `
+Object {
+  "c": Object {
+    "errors": Array [
+      "id must be a string",
+    ],
+    "hasErrors": true,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+  "c[0]": Object {
+    "errors": Array [
+      "id must be a string",
+    ],
+    "hasErrors": true,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+  "c[0].id": Object {
+    "errors": Array [],
+    "hasErrors": true,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+  "c[1]": Object {
+    "errors": Array [
+      "id must be a string",
+    ],
+    "hasErrors": true,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+  "c[1].id": Object {
+    "errors": Array [],
+    "hasErrors": true,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+  "c[2]": Object {
+    "errors": Array [],
+    "hasErrors": false,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+  "c[2].id": Object {
+    "errors": Array [],
+    "hasErrors": false,
+    "hasWarnings": false,
+    "warnings": Array [],
+  },
+}
+`;
+
+exports[`schema function body schema.skip Should validate all but skipped fields 6`] = `
+Object {
+  "c": Array [
+    "id must be a string",
+  ],
+  "c[0]": Array [
+    "id must be a string",
+  ],
+  "c[0].id": Array [],
+  "c[1]": Array [
+    "id must be a string",
+  ],
+  "c[1].id": Array [],
+  "c[2]": Array [],
+  "c[2].id": Array [],
+}
+`;

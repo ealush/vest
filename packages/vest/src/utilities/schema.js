@@ -1,3 +1,5 @@
+import createContext from 'context';
+
 import isFunction from 'isFunction';
 import throwError from 'throwError';
 
@@ -6,19 +8,29 @@ import throwError from 'throwError';
 // path lookup
 const toPathRegexp = /\.|\[([\d)]*)\]/g;
 
+const context = createContext(() => ({
+  include: [],
+  exclude: [],
+}));
+
 /**
  * A wrapper function for an enforce schema. It gives
  * back an interface that's similar to Vest's result object
  * that will make it easier to query the validation results
  *
  * @param {Object} enforceSchema
+ * @param {Function} [body]
  */
-export default function schema(enforceSchema) {
-  return function (data) {
+function schema(enforceSchema, body) {
+  return context.bind({}, function (...args) {
+    if (isFunction(body)) {
+      body(...args);
+    }
+
     if (!isFunction(enforceSchema.run)) {
       throwError('Not a valid enforce schema.');
     }
-    const result = enforceSchema.run(data);
+    const result = enforceSchema.run(...args);
 
     const parsedResult = transformResultObject(result);
 
@@ -26,8 +38,21 @@ export default function schema(enforceSchema) {
 
     const errorMessages = {};
     const warningMessages = {};
+    const tests = {};
+
+    const { include, exclude } = context.use();
 
     for (const test in parsedResult) {
+      const isExcluded = exclude.some(name => test.startsWith(name));
+
+      const isIncluded = include.some(name => test.startsWith(name));
+
+      if (isExcluded || (include.length && !isIncluded)) {
+        continue;
+      }
+
+      tests[test] = parsedResult[test];
+
       errorMessages[test] = parsedResult[test].errors = Object.keys(
         parsedResult[test].errors
       );
@@ -50,11 +75,11 @@ export default function schema(enforceSchema) {
     }
 
     function hasErrors(key) {
-      return key ? parsedResult[key].hasErrors : _hasErrors;
+      return key ? !!errorMessages[key]?.length : _hasErrors;
     }
 
     function hasWarnings(key) {
-      return key ? parsedResult[key].hasWarnings : _hasWarnings;
+      return key ? !!warningMessages[key]?.length : _hasWarnings;
     }
 
     return {
@@ -62,9 +87,9 @@ export default function schema(enforceSchema) {
       getWarnings,
       hasErrors,
       hasWarnings,
-      tests: parsedResult,
+      tests,
     };
-  };
+  });
 }
 
 function getKeyFromResults(key, storage) {
@@ -159,3 +184,18 @@ function transformResultObject(root) {
 
   return tests;
 }
+
+export default Object.defineProperties(schema, {
+  skip: {
+    value: function skip(namespace) {
+      const { exclude } = context.use();
+      exclude.push(namespace);
+    },
+  },
+  only: {
+    value: function only(namespace) {
+      const { include } = context.use();
+      include.push(namespace);
+    },
+  },
+});

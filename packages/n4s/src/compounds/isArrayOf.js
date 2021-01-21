@@ -23,11 +23,15 @@ function isArrayOf(value, ruleChains) {
   }
 
   for (let i = 0; i < plainValue.length; i++) {
-    // Set result per each item in the array|
+    // Set result per each item in the array
     result.setChild(
       i,
       runCompoundChain(
-        EnforceContext.wrap(plainValue[i]).setFailFast(value.failFast),
+        new EnforceContext({
+          value: plainValue[i],
+          obj: plainValue,
+          key: i,
+        }).setFailFast(value.failFast),
         ruleChains,
         { mode: MODE_ANY }
       )

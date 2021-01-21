@@ -41,6 +41,7 @@
       "ruleMessage": ["./packages/n4s/src/meta/ruleMessage.js"],
       "ruleMeta": ["./packages/n4s/src/meta/ruleMeta.js"],
       "ruleWarn": ["./packages/n4s/src/meta/ruleWarn.js"],
+      "ruleWhen": ["./packages/n4s/src/meta/ruleWhen.js"],
       "rules": ["./packages/n4s/src/rules.js"],
       "endsWith": ["./packages/n4s/src/rules/endsWith.js"],
       "equals": ["./packages/n4s/src/rules/equals.js"],

@@ -1,6 +1,7 @@
 import RuleResult from 'RuleResult';
 import { MODE_ALL, MODE_ONE, MODE_ANY } from 'enforceKeywords';
 import { isEmpty } from 'isEmpty';
+import { isNull } from 'isNull';
 import { runLazyRule } from 'runLazyRules';
 
 /**
@@ -23,6 +24,10 @@ export default function runCompoundChain(value, rules, options) {
   for (const chain of rules) {
     // Inner result for each iteration
     const currentResult = runLazyRule(chain, value);
+
+    if (isNull(currentResult)) {
+      return null;
+    }
 
     const pass = currentResult.pass;
 

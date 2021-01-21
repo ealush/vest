@@ -1,5 +1,67 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Rule with "when" Should skip all excluded array items 1`] = `
+RuleResult {
+  "children": Object {
+    "items": RuleResult {
+      "children": Object {
+        "0": RuleResult {
+          "children": Object {
+            "checked": RuleResult {
+              "failed": false,
+              "hasErrors": false,
+              "hasWarnings": false,
+              "warn": false,
+            },
+          },
+          "failed": false,
+          "hasErrors": false,
+          "hasWarnings": false,
+          "when": false,
+        },
+        "3": RuleResult {
+          "children": Object {
+            "checked": RuleResult {
+              "failed": false,
+              "hasErrors": false,
+              "hasWarnings": false,
+              "warn": false,
+            },
+          },
+          "failed": false,
+          "hasErrors": false,
+          "hasWarnings": false,
+          "when": false,
+        },
+      },
+      "failed": false,
+      "hasErrors": false,
+      "hasWarnings": false,
+      "isArray": true,
+    },
+  },
+  "failed": false,
+  "hasErrors": false,
+  "hasWarnings": false,
+}
+`;
+
+exports[`Rule with "when" Should skip excluded object items 1`] = `
+RuleResult {
+  "children": Object {
+    "example1": RuleResult {
+      "failed": false,
+      "hasErrors": false,
+      "hasWarnings": false,
+      "warn": false,
+    },
+  },
+  "failed": false,
+  "hasErrors": false,
+  "hasWarnings": false,
+}
+`;
+
 exports[`Rule with a message Should add message to result 1`] = `
 RuleResult {
   "children": Object {

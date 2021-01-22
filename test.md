@@ -14,9 +14,10 @@ A test can either be synchronous or asynchronous, and it can either have a [seve
 
 There are three ways to fail a test:
 
-### Throwing an error inside your test body (using enforce)
+### Throwing inside your test body (using enforce)
 
-Just like in most unit testing frameworks, a validation fails whenever an error is thrown inside the test body. The [`enforce`](./enforce) function throws an error whenever the enforced value does not meet the specified criteria.
+Just like in most unit testing frameworks, a validation fails whenever the test body throws an exception. [`Enforce`](./enforce) throws on failed validations.
+When thrown with a string
 
 ```js
 // const username = 'Gina.Vandervort';
@@ -29,6 +30,29 @@ test('username', 'Should be at least 3 characters long', () => {
 test('password', 'Should be at least 6 characters long', () => {
   enforce(password).longerThanOrEquals(6); // an error is thrown here
 }); // this test fails
+```
+
+Alternatively, you can also throw a string value to use it as your test message. To do that, you need to omit the test message, and throw a string, for example - when using enforce.extend.
+
+```js
+enforce.extend({
+  isChecked: value => {
+    return {
+      pass: !!value.checked,
+      message: () => 'value must be checked',
+    };
+  },
+});
+
+/*...*/
+
+/*
+  tost = { checked: false }
+*/
+
+test('tos', () => {
+  enforce(tos).isChecked(); // will fail with the message: "value must be checked"
+});
 ```
 
 ### Explicitly returning false

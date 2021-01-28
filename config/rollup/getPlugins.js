@@ -21,7 +21,7 @@ const FORMAT_UMD = 'umd';
 
 module.exports = function ({ dev = false, format, min, libraryName, version }) {
   const babelEnv = () => {
-    if (format === FORMAT_UMD && !dev) {
+    if (format === FORMAT_UMD) {
       return NAME_ES5;
     }
 

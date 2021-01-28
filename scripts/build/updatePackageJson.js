@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const glob = require('glob');
 
@@ -14,29 +15,33 @@ function updatePackageJson(packageName) {
 
   const pkgJson = packageJson(packageName);
 
-  pkgJson.exports = exports.reduce(
-    (exports, file) => Object.assign(exports, { [file]: file }),
-    {}
-  );
+  pkgJson.exports = exports.reduce((exports, file) => {
+    const ext = path.extname(file);
+
+    return Object.assign(exports, {
+      [file]: file,
+      [file.slice(0, -ext.length)]: file,
+    });
+  }, {});
 
   const cjs = exports.find(file =>
     file.includes(`${packageName}.cjs.${envNames.PRODUCTION}.js`)
   );
-  const mjs = exports.find(file =>
-    file.includes(`${packageName}.mjs.${envNames.PRODUCTION}.js`)
+  const es = exports.find(file =>
+    file.includes(`${packageName}.es.${envNames.PRODUCTION}.js`)
   );
 
   /* eslint-disable sort-keys */
   pkgJson.exports['.'] = {
-    browser: mainExport,
-    import: mjs,
+    browser: es,
+    import: es,
     require: cjs,
     node: cjs,
     default: cjs,
   };
 
   pkgJson.main = pkgJson.browser = mainExport;
-  pkgJson.module = mjs;
+  pkgJson.module = es;
 
   fs.writeFileSync(
     packageJson.path(packageName),

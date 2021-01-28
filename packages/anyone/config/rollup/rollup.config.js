@@ -25,7 +25,14 @@ const config = glob
           packageName: packageNames.ANYONE,
         })
       ),
-    []
+    [
+      ...genConfig({
+        distPath: packageDist(packageNames.ANYONE),
+        input: 'anyone',
+        libraryName: 'anyone',
+        packageName: packageNames.ANYONE,
+      }),
+    ]
   );
 
 export default config;

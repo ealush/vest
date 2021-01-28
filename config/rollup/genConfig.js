@@ -3,7 +3,6 @@ const path = require('path');
 const { packageJson, packagePath, envNames } = require('../../util');
 
 const getPlugins = require('./getPlugins');
-const nameByFormat = require('./nameByFormat');
 
 const FORMAT_UMD = 'umd';
 const FORMAT_CJS = 'cjs';
@@ -58,7 +57,7 @@ function buildConfig({
     output: {
       file: [
         path.join(distPath, outputDir, libraryName),
-        nameByFormat(format),
+        format,
         dev ? envNames.DEVELOPMENT : envNames.PRODUCTION,
         min ? 'min' : null,
         'js',

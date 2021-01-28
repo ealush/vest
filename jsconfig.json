@@ -20,6 +20,7 @@
       ],
       "all": ["./packages/anyone/src/all.js"],
       "any": ["./packages/anyone/src/any.js"],
+      "anyone": ["./packages/anyone/src/anyone.js"],
       "none": ["./packages/anyone/src/none.js"],
       "one": ["./packages/anyone/src/one.js"],
       "runAnyoneMethods": ["./packages/anyone/src/runner/runAnyoneMethods.js"],

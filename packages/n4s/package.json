@@ -6,19 +6,30 @@
   "browser": "./n4s.js",
   "exports": {
     "./n4s.js": "./n4s.js",
+    "./n4s": "./n4s.js",
     "./package.json": "./package.json",
-    "./esm/n4s.mjs.development.js": "./esm/n4s.mjs.development.js",
-    "./esm/n4s.mjs.production.js": "./esm/n4s.mjs.production.js",
-    "./esm/n4s.mjs.production.min.js": "./esm/n4s.mjs.production.min.js",
+    "./package": "./package.json",
+    "./esm/n4s.es.development.js": "./esm/n4s.es.development.js",
+    "./esm/n4s.es.development": "./esm/n4s.es.development.js",
+    "./esm/n4s.es.production.js": "./esm/n4s.es.production.js",
+    "./esm/n4s.es.production": "./esm/n4s.es.production.js",
+    "./esm/n4s.es.production.min.js": "./esm/n4s.es.production.min.js",
+    "./esm/n4s.es.production.min": "./esm/n4s.es.production.min.js",
     "./n4s.cjs.development.js": "./n4s.cjs.development.js",
+    "./n4s.cjs.development": "./n4s.cjs.development.js",
     "./n4s.cjs.production.js": "./n4s.cjs.production.js",
+    "./n4s.cjs.production": "./n4s.cjs.production.js",
     "./n4s.cjs.production.min.js": "./n4s.cjs.production.min.js",
+    "./n4s.cjs.production.min": "./n4s.cjs.production.min.js",
     "./n4s.umd.development.js": "./n4s.umd.development.js",
+    "./n4s.umd.development": "./n4s.umd.development.js",
     "./n4s.umd.production.js": "./n4s.umd.production.js",
+    "./n4s.umd.production": "./n4s.umd.production.js",
     "./n4s.umd.production.min.js": "./n4s.umd.production.min.js",
+    "./n4s.umd.production.min": "./n4s.umd.production.min.js",
     ".": {
-      "browser": "./n4s.js",
-      "import": "./esm/n4s.mjs.production.js",
+      "browser": "./esm/n4s.es.production.js",
+      "import": "./esm/n4s.es.production.js",
       "require": "./n4s.cjs.production.js",
       "node": "./n4s.cjs.production.js",
       "default": "./n4s.cjs.production.js"
@@ -47,5 +58,5 @@
     "build": "rollup -c ./config/rollup/rollup.config.js",
     "test": "jest"
   },
-  "module": "./esm/n4s.mjs.production.js"
+  "module": "./esm/n4s.es.production.js"
 }

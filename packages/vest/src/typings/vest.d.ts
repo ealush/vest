@@ -7,7 +7,7 @@ type MessageFunc = (...args: any[]) => string;
 type ExclusionArg = string | string[] | void;
 
 export = vest;
-export as namespace React;
+export as namespace vest;
 
 interface VestTest {
   failed: boolean;
@@ -21,23 +21,27 @@ interface VestTest {
 
 interface ITestEach {
   /**
-   * Run multiple tests using a parameter table 
+   * Run multiple tests using a parameter table
    * @param {String} fieldName          Name of the field to test.
    * @param {String|function} message   The message returned in case of a failure.  Follows printf syntax.
    * @param {function} testFn           The actual test callback.
-   * 
+   *
    * @example
-   * 
+   *
    * test.each([[1,2,3],[2,1,3]])('test', (a, b, c) => `${a} + ${b} does not equal ${c}`, (a, b, c) => enforce(a + b).equals(c));
    */
-  (fieldName: string | MessageFunc, message: string | MessageFunc, testFn: TestArgsCB): VestTest[];
+  (
+    fieldName: string | MessageFunc,
+    message: string | MessageFunc,
+    testFn: TestArgsCB
+  ): VestTest[];
   /**
-   * Run multiple tests using a parameter table 
+   * Run multiple tests using a parameter table
    * @param {String} fieldName    Name of the field to test.
    * @param {function} testFn     The actual test callback.
-   * 
+   *
    * @example
-   * 
+   *
    * test.each([[1,2,3],[2,1,3]])('test', (a, b, c) => enforce(a + b).equals(c));
    */
   (fieldName: string | MessageFunc, testFn: TestArgsCB): VestTest[];
@@ -99,10 +103,10 @@ interface ITest {
   memo(fieldName: string, testFn: TestCB, dependencies: any[]): VestTest;
   /**
    * Create test.each with table of parameters
-   * @param {any[]} table               Array of arrays with params for each run, although it 
+   * @param {any[]} table               Array of arrays with params for each run, although it
    *                                      will accept 1d-array and treat every item as size one array (e.g. [1,2,3] -> [[1],[2],[3]])
    * @example
-   * 
+   *
    * test.each([[1,2,3],[2,1,3]])('test', 'failed', (a, b, c) => enforce(a + b).equals(c));
    */
   each(table: any[]): ITestEach;

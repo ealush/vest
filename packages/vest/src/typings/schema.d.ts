@@ -1,7 +1,7 @@
 declare function getFn(fieldName: string): string[];
 declare function getFn(): { [fieldName: string]: string[] };
 
-declare interface schema {
+declare const schema: {
   (enforceSchema: any, body?: (...args: any[]) => void): (
     data: any
   ) => {
@@ -21,6 +21,6 @@ declare interface schema {
 
   skip: (namespace: string) => void;
   only: (namespace: string) => void;
-}
+};
 
 export default schema;

@@ -2,6 +2,12 @@
 
 Using Vest in node is mostly the same as it is in the browser, but you should consider your runtime.
 
+## Validation state
+
+When running your validations in your api, you usually want to have stateless validations to prevent leakage between requests.
+
+Read more about [Vest's state](./state).
+
 ## require vs import
 
 Depending on your node version and the module system you support you can use different syntax to include Vest.
@@ -20,14 +26,6 @@ Depending on your node version and used flag, your require statement might defau
 ```js
 const vest = require('vest/vest.cjs.production.js');
 const { test, enforce } = vest;
-```
-
-### For supported environments: esm
-
-If you want to explicitly load Vest's esm module, you can import it directly:
-
-```js
-import vest, { test } from 'vest/esm/vest.mjs.js';
 ```
 
 ### Node 14

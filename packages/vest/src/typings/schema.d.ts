@@ -1,7 +1,7 @@
 declare function getFn(fieldName: string): string[];
 declare function getFn(): { [fieldName: string]: string[] };
 
-interface schema {
+declare interface schema {
   (enforceSchema: any, body?: (...args: any[]) => void): (
     data: any
   ) => {

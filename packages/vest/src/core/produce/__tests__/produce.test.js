@@ -750,7 +750,7 @@ describe('module: produce', () => {
     });
   });
 
-  describe('produce cache (integragion)', () => {
+  describe('produce cache (integration)', () => {
     describe('sync', () => {
       const control = jest.fn();
       let draft;

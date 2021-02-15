@@ -166,6 +166,7 @@ interface ICreateResult {
   (...args: any[]): IVestResult;
   get: () => DraftResult;
   reset: () => void;
+  remove: (fieldName: string) => void;
 }
 
 declare namespace vest {

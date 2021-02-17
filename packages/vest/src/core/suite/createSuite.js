@@ -1,4 +1,5 @@
 import asArray from 'asArray';
+import callEach from 'callEach';
 import context from 'ctx';
 import genId from 'genId';
 import isFunction from 'isFunction';
@@ -25,13 +26,19 @@ const createSuite = withArgs(args => {
       'Suite initialization error. Expected `tests` to be a function.'
     );
   }
+  const suiteSubscribers = [];
 
-  const stateRef = state.createRef({
-    usePending,
-    useSuiteId: [useSuiteId, [genId(), name]],
-    useTestCallbacks,
-    useTestObjects,
-  });
+  const stateRef = state.createRef(
+    {
+      usePending,
+      useSuiteId: [useSuiteId, [genId(), name]],
+      useTestCallbacks,
+      useTestObjects,
+    },
+    (state, key, value) => {
+      suiteSubscribers.forEach(sub => sub(state, key, value));
+    }
+  );
 
   /*
     context.bind returns our `validate` function
@@ -67,6 +74,14 @@ const createSuite = withArgs(args => {
       }
     });
   });
+  suite.subscribe = subscriber => {
+    if (!isFunction(subscriber)) {
+      return;
+    }
+
+    suiteSubscribers.push(subscriber);
+    return subscriber(stateRef.current());
+  };
   return suite;
 });
 

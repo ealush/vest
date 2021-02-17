@@ -5,6 +5,7 @@ import {
   SEVERITY_GROUP_ERROR,
   TEST_COUNT,
 } from 'resultKeys';
+import usePending from 'usePending';
 import useSuiteId from 'useSuiteId';
 import useTestObjects from 'useTestObjects';
 
@@ -14,6 +15,15 @@ import useTestObjects from 'useTestObjects';
 const genTestsSummary = () => {
   const [testObjects] = useTestObjects();
   const [suiteIdState] = useSuiteId();
+  const [{ pending, lagging }] = usePending();
+
+  const incompleteTests = pending
+    .concat(lagging)
+    .reduce((tests, { fieldName }) => {
+      tests[fieldName] = tests[fieldName] || 0;
+      tests[fieldName]++;
+      return tests;
+    }, {});
 
   const summary = {
     tests: {},
@@ -25,6 +35,10 @@ const genTestsSummary = () => {
     const { fieldName, groupName } = testObject;
 
     summary.tests[fieldName] = genTestObject(summary.tests, testObject);
+
+    if (incompleteTests[fieldName]) {
+      summary.tests[fieldName].pending = incompleteTests[fieldName];
+    }
 
     if (groupName) {
       summary.groups[groupName] = summary.groups[groupName] || {};

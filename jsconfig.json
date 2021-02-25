@@ -102,7 +102,7 @@
       "getFailuresByGroup": [
         "./packages/vest/src/core/produce/getFailuresByGroup.js"
       ],
-      "hasFaillures": ["./packages/vest/src/core/produce/hasFaillures.js"],
+      "hasFailures": ["./packages/vest/src/core/produce/hasFailures.js"],
       "hasFailuresByGroup": [
         "./packages/vest/src/core/produce/hasFailuresByGroup.js"
       ],

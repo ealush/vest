@@ -4,7 +4,7 @@ import context from 'ctx';
 import genTestsSummary from 'genTestsSummary';
 import getFailures from 'getFailures';
 import getFailuresByGroup from 'getFailuresByGroup';
-import hasFaillures from 'hasFaillures';
+import hasFailures from 'hasFailures';
 import hasFailuresByGroup from 'hasFailuresByGroup';
 import hasRemainingTests from 'hasRemainingTests';
 import isFunction from 'isFunction';
@@ -78,8 +78,8 @@ const produce = isDraft => {
       Object.defineProperties(
         genTestsSummary(),
         [
-          [HAS_ERRORS, hasFaillures, SEVERITY_GROUP_ERROR],
-          [HAS_WARNINGS, hasFaillures, SEVERITY_GROUP_WARN],
+          [HAS_ERRORS, hasFailures, SEVERITY_GROUP_ERROR],
+          [HAS_WARNINGS, hasFailures, SEVERITY_GROUP_WARN],
           ['getErrors', getFailures, SEVERITY_GROUP_ERROR],
           ['getWarnings', getFailures, SEVERITY_GROUP_WARN],
           ['hasErrorsByGroup', hasFailuresByGroup, SEVERITY_GROUP_ERROR],

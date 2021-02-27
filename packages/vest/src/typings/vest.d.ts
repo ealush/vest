@@ -167,6 +167,7 @@ interface ICreateResult {
   get: () => DraftResult;
   reset: () => void;
   remove: (fieldName: string) => void;
+  
   hasErrors: (fieldName?: string) => boolean;
   hasWarnings: (fieldName?: string) => boolean;
   

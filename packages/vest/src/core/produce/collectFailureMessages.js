@@ -1,6 +1,5 @@
 import createCache from 'cache';
 import context from 'ctx';
-
 import isMatchingSeverityProfile from 'isMatchingSeverityProfile';
 import useTestObjects from 'useTestObjects';
 
@@ -21,7 +20,7 @@ const collectFailureMessages = (severity, options) => {
 
   return cache(
     [testObjects, severity, options], context.bind(ctxRef, () => {
-      let res = testObjects.reduce((collector, testObject) => {
+      const res = testObjects.reduce((collector, testObject) => {
         if (group && testObject.groupName !== group) return collector;
         if (fieldName && testObject.fieldName !== fieldName) return collector;
         if (!testObject.failed) return collector;

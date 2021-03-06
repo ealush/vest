@@ -76,9 +76,19 @@ Object {
   "name": "inventore-quis-impedit",
   "testCount": 1,
   "tests": Object {
+    "autem": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
     "doloribus-enim-quisquam": Object {
       "errorCount": 0,
       "testCount": 1,
+      "warnCount": 0,
+    },
+    "soluta": Object {
+      "errorCount": 0,
+      "testCount": 0,
       "warnCount": 0,
     },
   },
@@ -110,6 +120,11 @@ Object {
         "Temporibus ex ex.",
       ],
     },
+    "doloribus-enim-quisquam": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
   },
   "warnCount": 1,
 }
@@ -138,6 +153,11 @@ Object {
       "warnings": Array [
         "Temporibus ex ex.",
       ],
+    },
+    "doloribus-enim-quisquam": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
     },
   },
   "warnCount": 1,

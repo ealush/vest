@@ -11,6 +11,7 @@ Object {
         "fieldName": "field_1",
         "id": "0",
         "isWarning": false,
+        "skipped": false,
         "statement": "some statement string",
         "testFn": [Function],
       },

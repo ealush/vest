@@ -24,6 +24,26 @@ Object {
       "testCount": 1,
       "warnCount": 0,
     },
+    "field_2": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "field_3": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "field_5": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
   },
   "warnCount": 0,
 }
@@ -51,6 +71,21 @@ Object {
         "field_statement_1",
       ],
       "testCount": 1,
+      "warnCount": 0,
+    },
+    "field_2": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "field_3": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "testCount": 0,
       "warnCount": 0,
     },
     "field_5": Object {

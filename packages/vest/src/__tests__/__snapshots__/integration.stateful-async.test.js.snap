@@ -8,7 +8,20 @@ Object {
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": Object {
+    "group": Object {
+      "field_1": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+      "field_4": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+    },
+  },
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -29,6 +42,16 @@ Object {
       "testCount": 2,
       "warnCount": 0,
     },
+    "field_3": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
   },
   "warnCount": 0,
 }
@@ -41,7 +64,20 @@ Object {
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": Object {
+    "group": Object {
+      "field_1": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+      "field_4": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+    },
+  },
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -63,6 +99,16 @@ Object {
         "rejection_message_1",
       ],
       "testCount": 2,
+      "warnCount": 0,
+    },
+    "field_3": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "testCount": 0,
       "warnCount": 0,
     },
   },

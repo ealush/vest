@@ -7,51 +7,52 @@ beforeEach(() => {
 });
 
 describe('only', () => {
-  it('Should only have `only`ed fields', () => {
+  it('Should only count included fields', () => {
     const res = validate({
       only: ['field_1', 'field_2'],
     });
 
-    expect(res.tests).toHaveProperty('field_1');
-    expect(res.tests).toHaveProperty('field_2');
-    expect(res.tests).not.toHaveProperty('field_3');
-    expect(res.tests).not.toHaveProperty('field_4');
-    expect(res.tests).not.toHaveProperty('field_5');
+    expect(res.tests.field_1.testCount).toBe(1);
+    expect(res.tests.field_2.testCount).toBe(1);
+    expect(res.tests.field_3.testCount).toBe(0);
+    expect(res.tests.field_4.testCount).toBe(0);
+    expect(res.tests.field_5.testCount).toBe(0);
   });
-  it('Should only have `only`ed field', () => {
+  it('Should only count included field', () => {
     const res = validate({
       only: 'field_1',
     });
 
-    expect(res.tests).toHaveProperty('field_1');
-    expect(res.tests).not.toHaveProperty('field_2');
-    expect(res.tests).not.toHaveProperty('field_3');
-    expect(res.tests).not.toHaveProperty('field_4');
-    expect(res.tests).not.toHaveProperty('field_5');
+    expect(res.tests.field_1.testCount).toBe(1);
+    expect(res.tests.field_2.testCount).toBe(0);
+    expect(res.tests.field_3.testCount).toBe(0);
+    expect(res.tests.field_4.testCount).toBe(0);
+    expect(res.tests.field_5.testCount).toBe(0);
   });
 });
 describe('skip', () => {
-  it('Should have all but `skip`ped fields', () => {
+  it('Should count all but excluded fields', () => {
     const res = validate({
       skip: ['field_1', 'field_2'],
     });
 
-    expect(res.tests).not.toHaveProperty('field_1');
-    expect(res.tests).not.toHaveProperty('field_2');
-    expect(res.tests).toHaveProperty('field_3');
-    expect(res.tests).toHaveProperty('field_4');
-    expect(res.tests).toHaveProperty('field_5');
+    expect(res.tests.field_1.testCount).toBe(0);
+    expect(res.tests.field_2.testCount).toBe(0);
+    expect(res.tests.field_3.testCount).toBe(1);
+    expect(res.tests.field_4.testCount).toBe(1);
+    expect(res.tests.field_5.testCount).toBe(1);
   });
-  it('Should have all but `skip`ped field', () => {
+
+  it('Should count all but excluded field', () => {
     const res = validate({
       skip: 'field_1',
     });
 
-    expect(res.tests).not.toHaveProperty('field_1');
-    expect(res.tests).toHaveProperty('field_2');
-    expect(res.tests).toHaveProperty('field_3');
-    expect(res.tests).toHaveProperty('field_4');
-    expect(res.tests).toHaveProperty('field_5');
+    expect(res.tests.field_1.testCount).toBe(0);
+    expect(res.tests.field_2.testCount).toBe(1);
+    expect(res.tests.field_3.testCount).toBe(1);
+    expect(res.tests.field_4.testCount).toBe(1);
+    expect(res.tests.field_5.testCount).toBe(1);
   });
 });
 
@@ -63,9 +64,9 @@ describe('Combined', () => {
       skip_last: 'field_3',
     });
 
-    expect(res.tests).toHaveProperty('field_1');
-    expect(res.tests).toHaveProperty('field_2');
-    expect(res.tests).not.toHaveProperty('field_3');
+    expect(res.tests.field_1.testCount).toBe(1);
+    expect(res.tests.field_2.testCount).toBe(1);
+    expect(res.tests.field_3.testCount).toBe(0);
   });
 });
 

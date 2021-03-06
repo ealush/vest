@@ -1,4 +1,3 @@
-
 import createCache from 'cache';
 import context from 'ctx';
 import genTestsSummary from 'genTestsSummary';
@@ -28,8 +27,10 @@ const done = withArgs(args => {
 
   const output = produce();
 
-  // If we do not have any tests for current field
-  const shouldSkipRegistration = fieldName && !output.tests[fieldName];
+  // If we do not have any test runs for the current field
+  const shouldSkipRegistration =
+    fieldName &&
+    (!output.tests[fieldName] || output.tests[fieldName].testCount === 0);
 
   if (!isFunction(callback) || shouldSkipRegistration) {
     return output;

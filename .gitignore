@@ -5,6 +5,7 @@ node_modules
 packages/vest/utilities/
 packages/n4s/extended/
 playground.mjs
+package-lock.json
 
 # build artifacts
 packages/*/dist

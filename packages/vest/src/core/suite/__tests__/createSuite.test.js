@@ -2,6 +2,9 @@ import faker from 'faker';
 import { noop } from 'lodash';
 
 import { dummyTest } from '../../../../testUtils/testDummy';
+import vest from 'vest';
+import enforce from 'enforce';
+import test from 'test';
 
 import create from 'createSuite';
 
@@ -97,4 +100,21 @@ describe('Test createSuite module', () => {
       expect(testsCb).toHaveBeenCalled();
     });
   });
-});
+
+  describe('Suite methods', () => {
+    let testObjects;
+
+    describe('method: hasErrors', () => {
+      const result = vest.create(faker.random.word(), () => {
+        testObjects = test.each([2, 2, 1])(faker.random.word(), faker.lorem.sentence(), (a) => {
+          enforce(a).greaterThanOrEquals(2);
+        });
+      })();
+
+
+      expect(result.hasErrors(testObjects[2].fieldName)).toBe(true);
+      expect(result.hasErrorsByGroup()).toBe(false);
+
+    });
+  });
+})

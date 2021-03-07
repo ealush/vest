@@ -57,12 +57,12 @@ const createSuite = withArgs(args => {
   });
   suite.get = context.bind({ stateRef }, produce, /*isDraft:*/ true);
   suite.reset = stateRef.reset;
-  suite.remove = context.bind({ stateRef }, name => {
+  suite.remove = context.bind({ stateRef }, fieldName => {
     const [testObjects] = useTestObjects();
 
     // We're mutating the array in `cancel`, so we have to first copy it.
     asArray(testObjects).forEach(testObject => {
-      if (testObject.fieldName === name) {
+      if (testObject.fieldName === fieldName) {
         testObject.cancel();
       }
     });

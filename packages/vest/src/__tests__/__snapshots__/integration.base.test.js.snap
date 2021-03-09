@@ -45,6 +45,11 @@ Object {
         "field_statement_4",
       ],
     },
+    "field_5": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
   },
   "warnCount": 1,
 }

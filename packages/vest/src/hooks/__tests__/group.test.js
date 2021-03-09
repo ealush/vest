@@ -58,8 +58,37 @@ describe('group: exclusion', () => {
       res = validate({ skipGroup: groupName });
     });
 
-    it('produce result object without group', () => {
-      expect(res.groups[groupName]).toBeUndefined();
+    it('produce result object with the group', () => {
+      expect(res.groups[groupName]).toBeDefined();
+      expect(res.groups[groupName]).toMatchInlineSnapshot(`
+        Object {
+          "field_1": Object {
+            "errorCount": 0,
+            "testCount": 0,
+            "warnCount": 0,
+          },
+          "field_2": Object {
+            "errorCount": 0,
+            "testCount": 0,
+            "warnCount": 0,
+          },
+          "field_3": Object {
+            "errorCount": 0,
+            "testCount": 0,
+            "warnCount": 0,
+          },
+          "field_4": Object {
+            "errorCount": 0,
+            "testCount": 0,
+            "warnCount": 0,
+          },
+          "field_6": Object {
+            "errorCount": 0,
+            "testCount": 0,
+            "warnCount": 0,
+          },
+        }
+      `);
     });
 
     it('Should skip tests within group', () => {

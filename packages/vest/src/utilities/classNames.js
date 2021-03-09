@@ -1,5 +1,6 @@
 import hasOwnProperty from 'hasOwnProperty';
 
+import { greaterThan } from 'greaterThan';
 import { HAS_WARNINGS, HAS_ERRORS } from 'sharedKeys';
 
 /**
@@ -24,7 +25,9 @@ const classNames = (res, classes = {}) => {
       return testedStorage[key];
     }
 
-    testedStorage[key] = hasOwnProperty(res.tests, key);
+    testedStorage[key] =
+      hasOwnProperty(res.tests, key) &&
+      greaterThan(res.tests[key].testCount, 0);
 
     return selectors.tested(key);
   };

@@ -100,10 +100,20 @@ describe('When previous state exists', () => {
         expect(res.tests.f1.errorCount).toBe(1);
         expect(res.tests.f2.warnCount).toBe(0);
         expect(res.tests.f3.errorCount).toBe(1);
-        expect(res.tests).not.toHaveProperty('f4');
-        expect(res.tests).not.toHaveProperty('f5');
-        expect(res.tests).not.toHaveProperty('f6');
-        expect(res.tests).not.toHaveProperty('f7');
+
+        // Handling of skipped fields
+        expect(res.tests.f4.testCount).toBe(0);
+        expect(res.tests.f4.errorCount).toBe(0);
+        expect(res.tests.f4.warnCount).toBe(0);
+        expect(res.tests.f5.testCount).toBe(0);
+        expect(res.tests.f5.errorCount).toBe(0);
+        expect(res.tests.f5.warnCount).toBe(0);
+        expect(res.tests.f6.testCount).toBe(0);
+        expect(res.tests.f6.errorCount).toBe(0);
+        expect(res.tests.f6.warnCount).toBe(0);
+        expect(res.tests.f7.testCount).toBe(0);
+        expect(res.tests.f7.errorCount).toBe(0);
+        expect(res.tests.f7.warnCount).toBe(0);
         expect(res).toMatchSnapshot();
         setTimeout(() => {
           res = validate.get();

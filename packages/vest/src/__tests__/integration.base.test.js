@@ -32,7 +32,7 @@ describe('Base behavior', () => {
     expect(res.tests).toHaveProperty('field_2');
     expect(res.tests).toHaveProperty('field_3');
     expect(res.tests).toHaveProperty('field_4');
-    expect(res.tests).not.toHaveProperty('field_5');
+    expect(res.tests.field_5.testCount).toBe(0);
     expect(suite(vest)).toMatchSnapshot();
   });
 

@@ -44,6 +44,11 @@ const sync = testObject =>
 const register = testObject => {
   addTestToState(testObject);
 
+  if (isExcluded(testObject)) {
+    testObject.markSkipped();
+    return;
+  }
+
   // Run test callback.
   // If a promise is returned, set as async and
   // Move to pending list.
@@ -88,10 +93,6 @@ function test(fieldName, args) {
     statement,
     testFn,
   });
-
-  if (isExcluded(testObject)) {
-    return testObject;
-  }
 
   if (!isFunction(testFn)) {
     return;

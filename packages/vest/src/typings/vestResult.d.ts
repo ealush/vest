@@ -1,30 +1,6 @@
 type DoneCB = (res: DraftResult) => void;
 
-export type DraftResult = {
-  name: string;
-  errorCount: number;
-  warnCount: number;
-  testCount: number;
-  tests: {
-    [fieldName: string]: {
-      errorCount: number;
-      warnCount: number;
-      testCount: number;
-      errors?: string[];
-      warnings?: string[];
-    };
-  };
-  groups: {
-    [groupName: string]: {
-      [fieldName: string]: {
-        errorCount: number;
-        warnCount: number;
-        testCount: number;
-        errors?: string[];
-        warnings?: string[];
-      };
-    };
-  };
+export type IResultMethods = {
   /**
    * Returns whether the specified field has errors
    */
@@ -84,6 +60,33 @@ export type DraftResult = {
    */
   getWarningsByGroup(groupName: string, fieldName: string): string[];
 };
+
+export interface DraftResult extends IResultMethods {
+  name: string;
+  errorCount: number;
+  warnCount: number;
+  testCount: number;
+  tests: {
+    [fieldName: string]: {
+      errorCount: number;
+      warnCount: number;
+      testCount: number;
+      errors?: string[];
+      warnings?: string[];
+    };
+  };
+  groups: {
+    [groupName: string]: {
+      [fieldName: string]: {
+        errorCount: number;
+        warnCount: number;
+        testCount: number;
+        errors?: string[];
+        warnings?: string[];
+      };
+    };
+  };
+}
 
 type DoneResult = {
   /**

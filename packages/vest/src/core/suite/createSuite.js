@@ -26,11 +26,19 @@ const createSuite = withArgs(args => {
     );
   }
 
+  const handlers = [];
   const stateRef = state.createRef({
     usePending,
     useSuiteId: [useSuiteId, [genId(), name]],
     useTestCallbacks,
     useTestObjects,
+  }, (state, key, value) => {
+    handlers.forEach(fn => fn({
+      type: 'suiteStateUpdate',
+      suiteState: state,
+      key,
+      value
+    }))
   });
 
   /*
@@ -67,6 +75,18 @@ const createSuite = withArgs(args => {
       }
     });
   });
+
+  suite.subscribe = function(handler){
+    if (!isFunction(handler)) return;
+
+    handlers.push(handler);
+
+    handler({
+      type: 'suiteSubscribeInit',
+      suiteState: stateRef.current()
+    });
+  }
+
   return suite;
 });
 

@@ -88,6 +88,29 @@ describe('state', () => {
       });
     });
   });
+
+  describe('onStateChange', () => {
+    let onStateChange = jest.fn();
+    beforeEach(() => {
+
+      stateRef = state.createRef({
+        keyWithObject: state.registerHandler(() => ({ a: true })),
+      }, onStateChange);
+    });
+
+    it('should run callback on state change', () => {
+      expect(onStateChange).toHaveBeenCalledTimes(1);
+      stateRef.set('key', 'value');
+      expect(onStateChange).toHaveBeenCalledTimes(2);
+    });
+
+    it('should run callback with updated state value', () => {
+      stateRef.set('key', 'value');
+      expect(onStateChange).toHaveBeenCalledWith(stateRef.current(),'key', 'value');
+    });
+
+    
+  })
 });
 
 const initialState = {

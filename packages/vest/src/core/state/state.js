@@ -48,7 +48,9 @@ export default (function createState() {
 
     function set(key, value) {
       state[key] = value;
-      isFunction(onStateChange) && onStateChange(state, key, value);
+      if (isFunction(onStateChange)) {
+        onStateChange(state, key, value);
+      }
     }
 
     function reset() {

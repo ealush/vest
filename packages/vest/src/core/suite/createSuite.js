@@ -34,9 +34,9 @@ const createSuite = withArgs(args => {
     useTestObjects,
   }, (state, key, value) => {
     handlers.forEach(fn => fn({
-      type: 'suiteStateUpdate',
-      suiteState: state,
       key,
+      suiteState: state,
+      type: 'suiteStateUpdate',
       value
     }))
   });

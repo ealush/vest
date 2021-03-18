@@ -1,5 +1,3 @@
-import wait from 'wait';
-
 import vest from 'vest';
 
 describe('suite.subscribe', () => {

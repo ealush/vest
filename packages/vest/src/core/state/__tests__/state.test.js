@@ -90,7 +90,7 @@ describe('state', () => {
   });
 
   describe('onStateChange', () => {
-    let onStateChange = jest.fn();
+    const onStateChange = jest.fn();
     beforeEach(() => {
 
       stateRef = state.createRef({
@@ -108,8 +108,6 @@ describe('state', () => {
       stateRef.set('key', 'value');
       expect(onStateChange).toHaveBeenCalledWith(stateRef.current(),'key', 'value');
     });
-
-    
   })
 });
 

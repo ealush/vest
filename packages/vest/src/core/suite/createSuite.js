@@ -1,3 +1,5 @@
+import createStateRef from 'createStateRef';
+
 import asArray from 'asArray';
 import context from 'ctx';
 import genId from 'genId';
@@ -27,20 +29,7 @@ const createSuite = withArgs(args => {
   const state = createState();
 
   const handlers = [];
-  const suiteId = genId();
-  const stateRef = {
-    pending: state.registerHandler(() => ({
-      pending: [],
-      lagging: [],
-    })),
-    suiteId: state.registerHandler(() => ({ id: suiteId, name })),
-    testCallbacks: state.registerHandler(() => ({
-      fieldCallbacks: [],
-      doneCallbacks: [],
-    })),
-    testObjects: state.registerHandler(() => []),
-    current: state.current, // TODO: remove this!
-  };
+  const stateRef = createStateRef(state, { suiteId: genId(), name });
 
   /*
     context.bind returns our `validate` function

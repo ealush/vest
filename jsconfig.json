@@ -111,6 +111,7 @@
       ],
       "produce": ["./packages/vest/src/core/produce/produce.js"],
       "resultKeys": ["./packages/vest/src/core/produce/resultKeys.js"],
+      "createStateRef": ["./packages/vest/src/core/state/createStateRef.js"],
       "state": ["./packages/vest/src/core/state/state.js"],
       "usePending": ["./packages/vest/src/core/state/usePending.js"],
       "useSuiteId": ["./packages/vest/src/core/state/useSuiteId.js"],

@@ -3,21 +3,21 @@
 exports[`suite.subscribe Should call handler on suite subscription initialization 1`] = `
 Array [
   Object {
-    "suiteState": Object {
-      "usePending": Object {
+    "suiteState": Array [
+      Object {
         "lagging": Array [],
         "pending": Array [],
       },
-      "useSuiteId": Object {
+      Object {
         "id": "1",
         "name": undefined,
       },
-      "useTestCallbacks": Object {
+      Object {
         "doneCallbacks": Array [],
         "fieldCallbacks": Array [],
       },
-      "useTestObjects": Array [],
-    },
+      Array [],
+    ],
     "type": "suiteSubscribeInit",
   },
 ]

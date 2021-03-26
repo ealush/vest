@@ -113,7 +113,8 @@ describe('VestTest', () => {
     });
 
     it.ctx('Should remove a testObject from the lagging state', () => {
-      usePending(state => ({ ...state, lagging: [testObject] }));
+      const [, setPending] = usePending();
+      setPending(state => ({ ...state, lagging: [testObject] }));
       {
         const [{ lagging }] = usePending();
         expect(lagging).toEqual(expect.arrayContaining([testObject]));

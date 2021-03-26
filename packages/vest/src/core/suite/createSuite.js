@@ -73,7 +73,7 @@ const createSuite = withArgs(args => {
 
     handler({
       type: 'suiteSubscribeInit',
-      suiteState: stateRef.current(),
+      suiteState: state.current(),
     });
   };
 

@@ -6,6 +6,7 @@ import VestTest from 'VestTest';
 import context from 'ctx';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
+import createState from 'state';
 import usePending from 'usePending';
 import useTestCallbacks from 'useTestCallbacks';
 
@@ -14,7 +15,7 @@ const STATEMENT = 'some statement string';
 const CASE_PASSING = 'passing';
 const CASE_FAILING = 'failing';
 
-let stateRef;
+let stateRef, state;
 
 it.ctx = (str, cb) => it(str, () => context.run({ stateRef }, cb));
 
@@ -33,8 +34,8 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
 
     beforeEach(() => {
       fieldName = 'field_1';
-
-      stateRef = runCreateRef();
+      state = createState();
+      stateRef = runCreateRef(state);
       context.run({ stateRef }, () => {
         const [, setTestCallbacks] = useTestCallbacks();
         setTestCallbacks(state => {
@@ -62,7 +63,7 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
       it.ctx('Initial state matches snapshot (sanity)', () => {
         const [pendingState] = usePending();
         expect(pendingState.pending).toContain(testObject);
-        expect(stateRef.current()).toMatchSnapshot();
+        expect(state.current()).toMatchSnapshot();
         runRunAsyncTest(testObject);
       });
 

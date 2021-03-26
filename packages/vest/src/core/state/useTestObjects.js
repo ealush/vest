@@ -1,3 +1,5 @@
-import state from 'state';
+import context from 'ctx';
 
-export default state.registerHandler(() => []);
+export default function usePending() {
+  return context.use().stateRef.testObjects();
+}

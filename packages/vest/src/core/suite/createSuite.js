@@ -4,11 +4,9 @@ import genId from 'genId';
 import isFunction from 'isFunction';
 import mergeExcludedTests from 'mergeExcludedTests';
 import produce from 'produce';
-import state from 'state';
+import createState from 'state';
 import throwError from 'throwError';
 import usePending from 'usePending';
-import useSuiteId from 'useSuiteId';
-import useTestCallbacks from 'useTestCallbacks';
 import useTestObjects from 'useTestObjects';
 import withArgs from 'withArgs';
 /**
@@ -26,20 +24,23 @@ const createSuite = withArgs(args => {
     );
   }
 
+  const state = createState();
+
   const handlers = [];
-  const stateRef = state.createRef({
-    usePending,
-    useSuiteId: [useSuiteId, [genId(), name]],
-    useTestCallbacks,
-    useTestObjects,
-  }, (state, key, value) => {
-    handlers.forEach(fn => fn({
-      key,
-      suiteState: state,
-      type: 'suiteStateUpdate',
-      value
-    }))
-  });
+  const suiteId = genId();
+  const stateRef = {
+    pending: state.registerHandler(() => ({
+      pending: [],
+      lagging: [],
+    })),
+    suiteId: state.registerHandler(() => ({ id: suiteId, name })),
+    testCallbacks: state.registerHandler(() => ({
+      fieldCallbacks: [],
+      doneCallbacks: [],
+    })),
+    testObjects: state.registerHandler(() => []),
+    current: state.current, // TODO: remove this!
+  };
 
   /*
     context.bind returns our `validate` function
@@ -50,7 +51,7 @@ const createSuite = withArgs(args => {
   const suite = context.bind({ stateRef }, function () {
     const [previousTestObjects] = useTestObjects();
     const [{ pending }, setPending] = usePending();
-    stateRef.reset();
+    state.reset();
 
     // Move all the active pending tests to the lagging array
     setPending({ lagging: pending, pending: [] });
@@ -64,7 +65,7 @@ const createSuite = withArgs(args => {
     return produce();
   });
   suite.get = context.bind({ stateRef }, produce, /*isDraft:*/ true);
-  suite.reset = stateRef.reset;
+  suite.reset = state.reset;
   suite.remove = context.bind({ stateRef }, name => {
     const [testObjects] = useTestObjects();
 
@@ -76,16 +77,16 @@ const createSuite = withArgs(args => {
     });
   });
 
-  suite.subscribe = function(handler){
+  suite.subscribe = function (handler) {
     if (!isFunction(handler)) return;
 
     handlers.push(handler);
 
     handler({
       type: 'suiteSubscribeInit',
-      suiteState: stateRef.current()
+      suiteState: stateRef.current(),
     });
-  }
+  };
 
   return suite;
 });

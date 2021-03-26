@@ -1,6 +1,5 @@
-import state from 'state';
+import context from 'ctx';
 
-export default state.registerHandler(() => ({
-  fieldCallbacks: [],
-  doneCallbacks: [],
-}));
+export default function usePending() {
+  return context.use().stateRef.testCallbacks();
+}

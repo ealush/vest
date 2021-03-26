@@ -7,7 +7,8 @@ import useTestObjects from 'useTestObjects';
  * @param {VestTest} testObject
  */
 export default testObject => {
-  useTestObjects(testObjects =>
+  const [, setTestObjects] = useTestObjects();
+  setTestObjects(testObjects =>
     // using asArray to clear the cache.
     asArray(removeElementFromArray(testObjects, testObject))
   );

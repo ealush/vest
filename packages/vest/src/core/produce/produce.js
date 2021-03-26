@@ -49,7 +49,8 @@ const done = withArgs(args => {
     return output;
   }
 
-  useTestCallbacks(current => {
+  const [, setTestCallbacks] = useTestCallbacks();
+  setTestCallbacks(current => {
     if (fieldName) {
       current.fieldCallbacks[fieldName] = (
         current.fieldCallbacks[fieldName] || []

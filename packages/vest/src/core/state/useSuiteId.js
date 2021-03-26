@@ -1,3 +1,5 @@
-import state from 'state';
+import context from 'ctx';
 
-export default state.registerHandler((id, name) => ({ id, name }));
+export default function usePending() {
+  return context.use().stateRef.suiteId();
+}

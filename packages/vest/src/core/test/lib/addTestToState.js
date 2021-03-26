@@ -5,5 +5,6 @@ import useTestObjects from 'useTestObjects';
  * @param {VestTest} testObject
  */
 export default testObject => {
-  useTestObjects(testObjects => testObjects.concat(testObject));
+  const [, setTestObjects] = useTestObjects();
+  setTestObjects(testObjects => testObjects.concat(testObject));
 };

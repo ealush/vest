@@ -1,23 +1,26 @@
+import isFunction from 'isFunction';
 import optionalFunctionValue from 'optionalFunctionValue';
 
-export default function createState() {
+export default function createState(onStateChange) {
   const state = {
     references: [],
   };
 
-  const handlers = [];
+  const initializers = [];
 
   return {
-    current,
-    registerHandler,
+    registerStateKey,
     reset,
-    set,
   };
 
-  function registerHandler(initialValue) {
-    handlers.push(initialValue);
-    const length = current().push(optionalFunctionValue(initialValue));
-    const key = length - 1;
+  function registerStateKey(initialValue) {
+    const key = initializers.length;
+    initializers.push(initialValue);
+    return initKey(key, initialValue);
+  }
+
+  function initKey(key, value) {
+    current().push(optionalFunctionValue(value));
 
     return function useStateKey() {
       return [
@@ -32,12 +35,16 @@ export default function createState() {
     return state.references;
   }
 
-  function set(key, value) {
-    state.references[key] = value;
-  }
-
   function reset() {
     state.references = [];
-    handlers.forEach(handler => registerHandler(handler));
+    initializers.forEach((value, index) => initKey(index, value));
+  }
+
+  function set(key, value) {
+    state.references[key] = value;
+
+    if (isFunction(onStateChange)) {
+      onStateChange();
+    }
   }
 }

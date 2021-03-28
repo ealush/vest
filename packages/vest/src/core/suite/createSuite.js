@@ -1,6 +1,5 @@
-import createStateRef from 'createStateRef';
-
 import asArray from 'asArray';
+import createStateRef from 'createStateRef';
 import context from 'ctx';
 import genId from 'genId';
 import isFunction from 'isFunction';
@@ -26,9 +25,17 @@ const createSuite = withArgs(args => {
     );
   }
 
-  const state = createState();
-
   const handlers = [];
+
+  const state = createState(() => {
+    handlers.forEach(fn =>
+      fn({
+        suiteState: stateRef,
+        type: 'suiteStateUpdate',
+      })
+    );
+  });
+
   const stateRef = createStateRef(state, { suiteId: genId(), name });
 
   /*
@@ -73,7 +80,7 @@ const createSuite = withArgs(args => {
 
     handler({
       type: 'suiteSubscribeInit',
-      suiteState: state.current(),
+      suiteState: stateRef,
     });
   };
 

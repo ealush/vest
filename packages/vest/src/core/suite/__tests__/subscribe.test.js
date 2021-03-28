@@ -20,6 +20,6 @@ describe('suite.subscribe', () => {
     suite();
 
     suite.subscribe(handler);
-    expect(handler.mock.calls[0]).toMatchSnapshot();
+    expect(handler.mock.calls[0][0]).toMatchSnapshot();
   });
 });

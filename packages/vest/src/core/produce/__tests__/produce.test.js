@@ -9,7 +9,6 @@ import group from 'group';
 import hasRemainingTests from 'hasRemainingTests';
 import { setPending } from 'pending';
 import produce from 'produce';
-import { SEVERITY_COUNT_ERROR, SEVERITY_COUNT_WARN } from 'resultKeys';
 import useTestCallbacks from 'useTestCallbacks';
 import useTestObjects from 'useTestObjects';
 import vest from 'vest';
@@ -29,25 +28,16 @@ const warningFields = {};
 const SKIPPED_FIELD = 'skipped_field_name';
 const groupName = 'group_name';
 
-let state, produced, stateRef;
+let produced, stateRef;
 
 it.ctx = (str, cb) => it(str, () => context.run({ stateRef }, cb));
 beforeEach.ctx = cb => beforeEach(() => context.run({ stateRef }, cb));
-
-const KEPT_PROPERTIES = [
-  SEVERITY_COUNT_ERROR,
-  SEVERITY_COUNT_WARN,
-  'tests',
-  'name',
-  'groups',
-];
 
 let collect;
 
 const getStateFromContext = () => {
   context.run({}, ctx => {
     stateRef = ctx.stateRef;
-    state = stateRef.current();
   });
 };
 
@@ -91,12 +81,6 @@ describe('module: produce', () => {
         warningFields[fieldName] = true;
       }
     });
-  });
-
-  it('Should create a deep copy of subset of the state', () => {
-    expect(_.pick(stateRef.current(), KEPT_PROPERTIES)).isDeepCopyOf(
-      _.pick(produced, KEPT_PROPERTIES)
-    );
   });
 
   it.each(GENERATED_METHODS)(
@@ -418,8 +402,7 @@ describe('module: produce', () => {
     });
     describe('When no async tests', () => {
       it.ctx('Sanity', () => {
-        state = stateRef.current();
-        expect(hasRemainingTests(state)).toBe(false);
+        expect(hasRemainingTests()).toBe(false);
       });
 
       describe('When invoked without a field name', () => {

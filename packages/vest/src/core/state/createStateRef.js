@@ -1,15 +1,14 @@
-export default function createRef(state, { suiteId, name }) {
+export default function createStateRef(state, { suiteId, name }) {
   return {
-    pending: state.registerHandler(() => ({
+    pending: state.registerStateKey(() => ({
       pending: [],
       lagging: [],
     })),
-    suiteId: state.registerHandler(() => ({ id: suiteId, name })),
-    testCallbacks: state.registerHandler(() => ({
+    suiteId: state.registerStateKey(() => ({ id: suiteId, name })),
+    testCallbacks: state.registerStateKey(() => ({
       fieldCallbacks: [],
       doneCallbacks: [],
     })),
-    testObjects: state.registerHandler(() => []),
-    current: state.current, // TODO: remove this!
+    testObjects: state.registerStateKey(() => []),
   };
 }

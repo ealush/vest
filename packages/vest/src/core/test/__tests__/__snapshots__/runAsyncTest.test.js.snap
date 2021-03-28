@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`runAsyncTest: passing State updates Initial state matches snapshot (sanity) 1`] = `
-Array [
-  Object {
+Object {
+  "pending": Object {
     "lagging": Array [],
     "pending": Array [
       VestTest {
@@ -17,16 +17,16 @@ Array [
       },
     ],
   },
-  Object {
+  "suiteId": Object {
     "id": 1000,
     "name": "suite_name",
   },
-  Object {
+  "testCallbacks": Object {
     "doneCallbacks": Array [],
     "fieldCallbacks": Object {
       "field_1": Array [],
     },
   },
-  Array [],
-]
+  "testObjects": Array [],
+}
 `;

@@ -1,5 +1,4 @@
 import createStateRef from 'createStateRef';
-
 import createState from 'state';
 
 export default state =>

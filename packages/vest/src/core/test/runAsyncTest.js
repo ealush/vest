@@ -17,8 +17,7 @@ const runAsyncTest = testObject => {
     removePending(testObject);
 
     // This is for cases in which the suite state was already reset
-    // TODO: check if this commented out conditional actually does anything
-    if (/*!stateRef.current() || */ testObject.canceled) {
+    if (testObject.canceled) {
       return;
     }
 

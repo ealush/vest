@@ -1,5 +1,5 @@
 import isMatchingSeverityProfile from 'isMatchingSeverityProfile';
-import useTestObjects from 'useTestObjects';
+import { useTestObjects } from 'stateHooks';
 
 /**
  * Determines whether a certain test profile has failures.

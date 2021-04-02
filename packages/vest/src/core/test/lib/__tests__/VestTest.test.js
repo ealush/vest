@@ -4,8 +4,8 @@ import VestTest from 'VestTest';
 import addTestToState from 'addTestToState';
 import context from 'ctx';
 import { setPending } from 'pending';
-import usePending from 'usePending';
-import useTestObjects from 'useTestObjects';
+import { usePending , useTestObjects } from 'stateHooks';
+
 
 const fieldName = 'unicycle';
 const statement = 'I am Root.';
@@ -113,7 +113,8 @@ describe('VestTest', () => {
     });
 
     it.ctx('Should remove a testObject from the lagging state', () => {
-      usePending(state => ({ ...state, lagging: [testObject] }));
+      const [, setPending] = usePending();
+      setPending(state => ({ ...state, lagging: [testObject] }));
       {
         const [{ lagging }] = usePending();
         expect(lagging).toEqual(expect.arrayContaining([testObject]));

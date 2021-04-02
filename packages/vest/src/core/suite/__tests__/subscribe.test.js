@@ -5,14 +5,10 @@ describe('suite.subscribe', () => {
   let handler;
   beforeEach(() => {
     handler = jest.fn();
-    suite = vest.create(() => {
-
-    });
-
+    suite = vest.create(() => {});
   });
 
   it('Should call handler on suite subscription initialization', () => {
-
     suite();
 
     expect(handler).toHaveBeenCalledTimes(0);
@@ -21,11 +17,9 @@ describe('suite.subscribe', () => {
   });
 
   it('Should call handler on suite subscription initialization', () => {
-
     suite();
 
     suite.subscribe(handler);
-    expect(handler.mock.calls[0]).toMatchSnapshot();
+    expect(handler.mock.calls[0][0]).toMatchSnapshot();
   });
-
 });

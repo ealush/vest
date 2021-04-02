@@ -3,8 +3,7 @@ import context from 'ctx';
 import hasRemainingTests from 'hasRemainingTests';
 import isStringValue from 'isStringValue';
 import { removePending } from 'pending';
-import useTestCallbacks from 'useTestCallbacks';
-import useTestObjects from 'useTestObjects';
+import { useTestCallbacks, useTestObjects } from 'stateHooks';
 
 /**
  * Runs async test.

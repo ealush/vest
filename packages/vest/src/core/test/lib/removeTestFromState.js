@@ -1,6 +1,7 @@
+
 import asArray from 'asArray';
 import removeElementFromArray from 'removeElementFromArray';
-import useTestObjects from 'useTestObjects';
+import { useTestObjects } from 'stateHooks';
 
 /**
  * Removes test object from suite state

@@ -1,5 +1,5 @@
 import { isEmpty, isNotEmpty } from 'isEmpty';
-import usePending from 'usePending';
+import { usePending } from 'stateHooks';
 
 /**
  * Checks if a given tests, or the suite as a whole still have remaining tests.

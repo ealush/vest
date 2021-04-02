@@ -1,3 +1,4 @@
+
 import createCache from 'cache';
 import context from 'ctx';
 import genTestsSummary from 'genTestsSummary';
@@ -9,8 +10,7 @@ import hasRemainingTests from 'hasRemainingTests';
 import isFunction from 'isFunction';
 import { SEVERITY_GROUP_ERROR, SEVERITY_GROUP_WARN } from 'resultKeys';
 import { HAS_WARNINGS, HAS_ERRORS } from 'sharedKeys';
-import useTestCallbacks from 'useTestCallbacks';
-import useTestObjects from 'useTestObjects';
+import { useTestCallbacks, useTestObjects } from 'stateHooks';
 import withArgs from 'withArgs';
 
 const cache = createCache(20);

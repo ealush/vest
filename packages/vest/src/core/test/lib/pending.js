@@ -1,6 +1,6 @@
 import asArray from 'asArray';
 import removeElementFromArray from 'removeElementFromArray';
-import usePending from 'usePending';
+import { usePending } from 'stateHooks';
 
 /**
  * Sets a test as pending in the state.

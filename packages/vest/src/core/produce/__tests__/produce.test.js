@@ -9,8 +9,7 @@ import group from 'group';
 import hasRemainingTests from 'hasRemainingTests';
 import { setPending } from 'pending';
 import produce from 'produce';
-import useTestCallbacks from 'useTestCallbacks';
-import useTestObjects from 'useTestObjects';
+import { useTestCallbacks, useTestObjects } from 'stateHooks';
 import vest from 'vest';
 
 const DRAFT_EXCLUDED_METHODS = ['done'];

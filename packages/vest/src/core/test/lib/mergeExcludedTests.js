@@ -1,5 +1,5 @@
 import { isExcluded } from 'exclusive';
-import useTestObjects from 'useTestObjects';
+import { useTestObjects } from 'stateHooks';
 
 /**
  * Merges excluded tests with their prevState values.

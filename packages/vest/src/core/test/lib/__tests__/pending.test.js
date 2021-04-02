@@ -1,12 +1,13 @@
 import _ from 'lodash';
 
+
 import expandStateRef from '../../../../../testUtils/expandStateRef';
 import runCreateRef from '../../../../../testUtils/runCreateRef';
 
 import VestTest from 'VestTest';
 import context from 'ctx';
 import { removePending, setPending } from 'pending';
-import usePending from 'usePending';
+import { usePending } from 'stateHooks';
 
 const groupName = 'group_name';
 

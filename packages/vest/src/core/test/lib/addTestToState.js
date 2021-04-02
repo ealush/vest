@@ -1,4 +1,4 @@
-import useTestObjects from 'useTestObjects';
+import { useTestObjects } from 'stateHooks';
 
 /**
  * Stores test object inside suite state.

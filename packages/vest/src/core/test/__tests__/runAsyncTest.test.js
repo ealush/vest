@@ -1,5 +1,6 @@
 import _ from 'lodash';
 
+
 import expandStateRef from '../../../../testUtils/expandStateRef';
 import runCreateRef from '../../../../testUtils/runCreateRef';
 
@@ -7,8 +8,7 @@ import VestTest from 'VestTest';
 import context from 'ctx';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
-import usePending from 'usePending';
-import useTestCallbacks from 'useTestCallbacks';
+import { usePending, useTestCallbacks } from 'stateHooks';
 
 const STATEMENT = 'some statement string';
 

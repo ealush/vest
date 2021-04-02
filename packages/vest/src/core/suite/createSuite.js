@@ -1,3 +1,4 @@
+
 import asArray from 'asArray';
 import createStateRef from 'createStateRef';
 import context from 'ctx';
@@ -6,9 +7,8 @@ import isFunction from 'isFunction';
 import mergeExcludedTests from 'mergeExcludedTests';
 import produce from 'produce';
 import createState from 'state';
+import { usePending, useTestObjects } from 'stateHooks';
 import throwError from 'throwError';
-import usePending from 'usePending';
-import useTestObjects from 'useTestObjects';
 import withArgs from 'withArgs';
 /**
  * Initializes a validation suite, creates a validation context.

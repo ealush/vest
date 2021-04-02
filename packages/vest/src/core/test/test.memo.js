@@ -5,7 +5,7 @@ import { isNull } from 'isNull';
 import isPromise from 'isPromise';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
-import useSuiteId from 'useSuiteId';
+import { useSuiteId } from 'stateHooks';
 import withArgs from 'withArgs';
 
 /* eslint-disable jest/no-export */

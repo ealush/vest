@@ -5,8 +5,8 @@ import {
   SEVERITY_GROUP_ERROR,
   TEST_COUNT,
 } from 'resultKeys';
-import useSuiteId from 'useSuiteId';
-import useTestObjects from 'useTestObjects';
+import { useSuiteId , useTestObjects } from 'stateHooks';
+
 
 /**
  * Reads the testObjects list and gets full validation result from it.

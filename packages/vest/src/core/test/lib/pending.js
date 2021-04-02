@@ -1,6 +1,6 @@
 import asArray from 'asArray';
 import removeElementFromArray from 'removeElementFromArray';
-import usePending from 'usePending';
+import { usePending } from 'stateHooks';
 
 /**
  * Sets a test as pending in the state.
@@ -46,7 +46,8 @@ export const setPending = testObject => {
  * @param {VestTest} testObject
  */
 export const removePending = testObject => {
-  usePending(state => ({
+  const [, setPending] = usePending();
+  setPending(state => ({
     pending: removeElementFromArray(state.pending, testObject),
     lagging: removeElementFromArray(state.lagging, testObject),
   }));

@@ -2,7 +2,7 @@
 
 exports[`runAsyncTest: passing State updates Initial state matches snapshot (sanity) 1`] = `
 Object {
-  "usePending": Object {
+  "pending": Object {
     "lagging": Array [],
     "pending": Array [
       VestTest {
@@ -17,16 +17,16 @@ Object {
       },
     ],
   },
-  "useSuiteId": Object {
+  "suiteId": Object {
     "id": 1000,
     "name": "suite_name",
   },
-  "useTestCallbacks": Object {
+  "testCallbacks": Object {
     "doneCallbacks": Array [],
     "fieldCallbacks": Object {
       "field_1": Array [],
     },
   },
-  "useTestObjects": Array [],
+  "testObjects": Array [],
 }
 `;

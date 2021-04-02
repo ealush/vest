@@ -1,5 +1,5 @@
 import isMatchingSeverityProfile from 'isMatchingSeverityProfile';
-import useTestObjects from 'useTestObjects';
+import { useTestObjects } from 'stateHooks';
 
 /**
  * @param {'warn'|'error'} severity   Filter by severity.

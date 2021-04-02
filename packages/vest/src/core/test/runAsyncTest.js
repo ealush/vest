@@ -3,8 +3,7 @@ import context from 'ctx';
 import hasRemainingTests from 'hasRemainingTests';
 import isStringValue from 'isStringValue';
 import { removePending } from 'pending';
-import useTestCallbacks from 'useTestCallbacks';
-import useTestObjects from 'useTestObjects';
+import { useTestCallbacks, useTestObjects } from 'stateHooks';
 
 /**
  * Runs async test.
@@ -17,7 +16,7 @@ const runAsyncTest = testObject => {
     removePending(testObject);
 
     // This is for cases in which the suite state was already reset
-    if (!stateRef.current() || testObject.canceled) {
+    if (testObject.canceled) {
       return;
     }
 
@@ -31,7 +30,8 @@ const runAsyncTest = testObject => {
     testObject.fail();
 
     // Spreading the array to invalidate the cache
-    useTestObjects(testObjects => testObjects.slice());
+    const [, setTestObjects] = useTestObjects();
+    setTestObjects(testObjects => testObjects.slice());
     done();
   });
   try {

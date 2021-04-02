@@ -1,119 +1,147 @@
-import context from 'ctx';
-import state from 'state';
+import createState from 'state';
 
-let stateRef, useExampleState;
-it.ctx = (str, cb) => it(str, () => context.run({ stateRef }, cb));
+let state;
 
 describe('state', () => {
   beforeEach(() => {
-    useExampleState = state.registerHandler(() => 'I am an example!');
-
-    stateRef = state.createRef({
-      dynamicallyProvided: [state.registerHandler((a, b) => [a, b]), [1, 2]],
-      exampleState: useExampleState,
-      explicitValue: state.registerHandler(42),
-      keyWithObject: state.registerHandler(() => ({ a: true })),
-    });
-  });
-  describe('state initialization', () => {
-    it('Should initialize state with provided keys', () => {
-      expect(stateRef.current()).toEqual(initialState);
-    });
+    state = createState();
   });
 
-  describe('State reset', () => {
-    it.ctx('Should return state to its initial value', () => {
-      stateRef.reset();
-
-      useExampleState(() => 'example_2');
-
-      expect(stateRef.current()).toEqual({
-        ...initialState,
-        exampleState: 'example_2',
-      });
-
-      stateRef.reset();
-      expect(stateRef.current()).toEqual(initialState);
+  describe('createState', () => {
+    it('Should return all stateRef methods', () => {
+      expect(state).toMatchInlineSnapshot(`
+        Object {
+          "registerStateKey": [Function],
+          "reset": [Function],
+        }
+      `);
     });
   });
 
-  describe('useHook', () => {
-    describe('When passing a callback to the useHook function', () => {
-      it.ctx('Updates the state', () => {
-        useExampleState(() => 'I am the new value of the state!');
+  describe('state.registerStateKey', () => {
+    it('Should return a function', () => {
+      expect(typeof state.registerStateKey()).toBe('function');
+    });
 
-        expect(stateRef.current().exampleState).toBe(
-          'I am the new value of the state!'
-        );
+    it('Should append another state key on each call', () => {
+      const stateValues = Array.from({ length: 100 }, () => Math.random());
+      const stateGetters = stateValues.map(value =>
+        state.registerStateKey(value)
+      );
+      expect(
+        stateGetters.every(
+          (stateGetter, i) => stateGetter()[0] === stateValues[i]
+        )
+      ).toBe(true);
+      expect(stateGetters).toHaveLength(100);
+    });
+
+    describe('When initial value is a function', () => {
+      it('Should generate initial state from key', () => {
+        const initialStateKey = { key: 'value' };
+        const stateGetter = state.registerStateKey(() => initialStateKey);
+        expect(stateGetter()[0]).toBe(initialStateKey);
       });
     });
 
-    describe('useHook return value', () => {
-      it.ctx('returns an array', () => {
-        expect(Array.isArray(useExampleState())).toBe(true);
-        expect(Array.isArray(useExampleState(() => null))).toBe(true);
-        expect(useExampleState()).toHaveLength(2);
+    describe('When initial value is not a function', () => {
+      it('Should use provided value as initial state', () => {
+        const stateValue = { key: 'value' };
+        const stateGetter = state.registerStateKey(stateValue);
+        expect(stateGetter()[0]).toBe(stateValue);
+      });
+    });
+
+    describe('When initial value is not provided', () => {
+      it('Should set initial state to undefined', () => {
+        const stateGetter = state.registerStateKey();
+        expect(stateGetter()[0]).toBeUndefined();
+      });
+    });
+  });
+
+  describe('State key function', () => {
+    it('Should return an Array with two elements', () => {
+      expect(state.registerStateKey()()).toHaveLength(2);
+      expect(state.registerStateKey('some value')()).toMatchInlineSnapshot(`
+        Array [
+          "some value",
+          [Function],
+        ]
+      `);
+    });
+
+    describe('getting current value', () => {
+      it('Should have current value in the first array element', () => {
+        const stateGetter = state.registerStateKey('Some Value');
+        expect(stateGetter()[0]).toBe('Some Value');
+      });
+    });
+
+    describe('updating the state', () => {
+      it('Should contain state updater in the second array element', () => {
+        const stateGetter = state.registerStateKey('Some Value');
+        expect(typeof stateGetter()[1]).toBe('function');
       });
 
-      describe('pos:0', () => {
-        it.ctx('Has the current value', () => {
-          expect(useExampleState()[0]).toBe('I am an example!');
-          expect(useExampleState(() => 'me too!')[0]).toBe('me too!');
-          expect(useExampleState()[0]).toBe(stateRef.current().exampleState);
+      it('Should update the state with provided value', () => {
+        const stateGetter = state.registerStateKey('Some Value');
+        const [, valueSetter] = stateGetter();
+        const nextValue = { key: 'value' };
+        valueSetter(nextValue);
+        expect(stateGetter()[0]).toBe(nextValue);
+      });
+      describe('When passing a function', () => {
+        it('Should update the state with the result of the function', () => {
+          const stateGetter = state.registerStateKey('Some Value');
+          const [, valueSetter] = stateGetter();
+          const nextValue = { key: 'value' };
+          valueSetter(() => nextValue);
+          expect(stateGetter()[0]).toBe(nextValue);
+        });
+        it('Should pass the function the current state value', () => {
+          const setter = jest.fn(() => 100);
+          const stateGetter = state.registerStateKey('555');
+          const [, valueSetter] = stateGetter();
+          valueSetter(setter);
+          expect(setter).toHaveBeenCalledWith('555');
         });
       });
-
-      describe('pos:1', () => {
-        it.ctx('Has a function', () => {
-          expect(typeof useExampleState()[1]).toBe('function');
-        });
-
-        it.ctx('Updates the state', () => {
-          const [value, setValue] = useExampleState();
-          setValue('an array of words'.split(' '));
-          expect(useExampleState()[0]).toEqual(['an', 'array', 'of', 'words']);
-          expect(useExampleState()[0]).not.toEqual(value);
-          expect(stateRef.current().exampleState).toEqual([
-            'an',
-            'array',
-            'of',
-            'words',
-          ]);
-          setValue(() => ' a function works too!');
-          expect(stateRef.current().exampleState).toEqual(
-            ' a function works too!'
-          );
-          expect(stateRef.current().exampleState).toEqual(useExampleState()[0]);
-        });
-      });
     });
   });
 
-  describe('onStateChange', () => {
-    const onStateChange = jest.fn();
-    beforeEach(() => {
+  describe('state.reset', () => {
+    it('Should fill up the state with registered keys', () => {
+      const s1 = state.registerStateKey(111);
+      const s2 = state.registerStateKey(222);
+      const s3 = state.registerStateKey(333);
+      const s4 = state.registerStateKey(444);
+      s1()[1](555);
+      s2()[1](666);
+      s3()[1](777);
+      s4()[1](888);
 
-      stateRef = state.createRef({
-        keyWithObject: state.registerHandler(() => ({ a: true })),
-      }, onStateChange);
+      // sanity
+      expect(s1()[0]).toBe(555);
+      expect(s2()[0]).toBe(666);
+      expect(s3()[0]).toBe(777);
+      expect(s4()[0]).toBe(888);
+
+      state.reset();
+
+      // testing now that everything is back to initial value
+      expect(s1()[0]).toBe(111);
+      expect(s2()[0]).toBe(222);
+      expect(s3()[0]).toBe(333);
+      expect(s4()[0]).toBe(444);
     });
 
-    it('should run callback on state change', () => {
-      expect(onStateChange).toHaveBeenCalledTimes(1);
-      stateRef.set('key', 'value');
-      expect(onStateChange).toHaveBeenCalledTimes(2);
+    it('Should allow setting a value after a state reset', () => {
+      const stateGetter = state.registerStateKey(() => 'hello!');
+      const [, stateSetter] = stateGetter();
+      state.reset();
+      stateSetter('Good Bye!');
+      expect(stateGetter()[0]).toBe('Good Bye!');
     });
-
-    it('should run callback with updated state value', () => {
-      stateRef.set('key', 'value');
-      expect(onStateChange).toHaveBeenCalledWith(stateRef.current(),'key', 'value');
-    });
-  })
+  });
 });
-
-const initialState = {
-  dynamicallyProvided: [1, 2],
-  exampleState: 'I am an example!',
-  explicitValue: 42,
-  keyWithObject: { a: true },
-};

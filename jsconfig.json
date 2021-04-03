@@ -112,7 +112,6 @@
       "produce": ["./packages/vest/src/core/produce/produce.js"],
       "resultKeys": ["./packages/vest/src/core/produce/resultKeys.js"],
       "createStateRef": ["./packages/vest/src/core/state/createStateRef.js"],
-      "state": ["./packages/vest/src/core/state/state.js"],
       "stateHooks": ["./packages/vest/src/core/state/stateHooks.js"],
       "createSuite": ["./packages/vest/src/core/suite/createSuite.js"],
       "hasRemainingTests": [

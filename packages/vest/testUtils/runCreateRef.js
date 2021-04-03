@@ -1,5 +1,6 @@
+import createState from 'vast';
+
 import createStateRef from 'createStateRef';
-import createState from 'state';
 
 export default state =>
   createStateRef(state ? state : createState(), {

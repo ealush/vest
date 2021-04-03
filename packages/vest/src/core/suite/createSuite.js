@@ -1,3 +1,4 @@
+import createState from 'vast';
 
 import asArray from 'asArray';
 import createStateRef from 'createStateRef';
@@ -6,7 +7,6 @@ import genId from 'genId';
 import isFunction from 'isFunction';
 import mergeExcludedTests from 'mergeExcludedTests';
 import produce from 'produce';
-import createState from 'state';
 import { usePending, useTestObjects } from 'stateHooks';
 import throwError from 'throwError';
 import withArgs from 'withArgs';

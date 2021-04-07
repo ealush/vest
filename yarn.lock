@@ -2049,10 +2049,10 @@ contains-path@^0.1.0:
   resolved "https://registry.yarnpkg.com/contains-path/-/contains-path-0.1.0.tgz#fe8cf184ff6670b6baef01a9d4861a5cbec4120a"
   integrity sha1-/ozxhP9mcLa67wGp1IYaXL7EEgo=
 
-context@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/context/-/context-1.1.0.tgz#1675cfe546b4d8f9925a2c4896a7ee41e917f015"
-  integrity sha512-nfNLy6MbBleZuK0vDwxUnYyu1McpjaZIHo7a3+yNoLWEJtnUjnB4z5xYZhg3XmVcCflh5U2FeaHbHUfCCLSeHA==
+context@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/context/-/context-1.1.3.tgz#e2d1e358b1a40bdc42c7f8bacb66abb050cf00b6"
+  integrity sha512-eHF34RlIQuloYviKLfTIcdA8p5teA5zg8fFlhCFK5kBvXhDE/HKOc4ezd/XYoz8/kMqWw59orOfetAa0flG6nA==
 
 convert-source-map@^1.1.0, convert-source-map@^1.4.0, convert-source-map@^1.6.0, convert-source-map@^1.7.0:
   version "1.7.0"

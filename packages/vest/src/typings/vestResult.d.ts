@@ -1,12 +1,7 @@
 type DoneCB = (res: DraftResult) => void;
 
-<<<<<<< Updated upstream
 export type IResultMethods = {
   /**
-=======
-export type Functions = {
-/**
->>>>>>> Stashed changes
    * Returns whether the specified field has errors
    */
   hasErrors: (fieldName?: string) => boolean;
@@ -64,7 +59,7 @@ export type Functions = {
    * Returns all the warning messages for the specified group and field
    */
   getWarningsByGroup(groupName: string, fieldName: string): string[];
-}
+};
 
 export type DraftResult = Functions & {
   name: string;

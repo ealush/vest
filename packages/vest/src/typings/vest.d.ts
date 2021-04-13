@@ -1,9 +1,5 @@
 import { TEnforce } from './enforce';
-<<<<<<< Updated upstream
 import { IVestResult, DraftResult, IResultMethods } from './vestResult';
-=======
-import { IVestResult, DraftResult, Functions } from './vestResult';
->>>>>>> Stashed changes
 
 type TestCB = () => void | Promise<void | string> | false;
 type TestArgsCB = (...args: any[]) => void | Promise<void | string> | false;

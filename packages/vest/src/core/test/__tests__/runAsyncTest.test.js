@@ -1,13 +1,14 @@
 import _ from 'lodash';
 
+
+import expandStateRef from '../../../../testUtils/expandStateRef';
 import runCreateRef from '../../../../testUtils/runCreateRef';
 
 import VestTest from 'VestTest';
 import context from 'ctx';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
-import usePending from 'usePending';
-import useTestCallbacks from 'useTestCallbacks';
+import { usePending, useTestCallbacks } from 'stateHooks';
 
 const STATEMENT = 'some statement string';
 
@@ -33,7 +34,6 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
 
     beforeEach(() => {
       fieldName = 'field_1';
-
       stateRef = runCreateRef();
       context.run({ stateRef }, () => {
         const [, setTestCallbacks] = useTestCallbacks();
@@ -62,7 +62,7 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
       it.ctx('Initial state matches snapshot (sanity)', () => {
         const [pendingState] = usePending();
         expect(pendingState.pending).toContain(testObject);
-        expect(stateRef.current()).toMatchSnapshot();
+        expect(expandStateRef(stateRef)).toMatchSnapshot();
         runRunAsyncTest(testObject);
       });
 

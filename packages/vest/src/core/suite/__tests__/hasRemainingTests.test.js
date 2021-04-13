@@ -5,7 +5,7 @@ import runCreateRef from '../../../../testUtils/runCreateRef';
 
 import context from 'ctx';
 import hasRemainingTests from 'hasRemainingTests';
-import usePending from 'usePending';
+import { usePending } from 'stateHooks';
 
 let stateRef;
 

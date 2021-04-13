@@ -162,11 +162,20 @@ interface IOnly {
    */
   group(groupName?: ExclusionArg): void;
 }
+interface ISubscribePayload {
+  type: string;
+  suiteState: Record<string, any>;
+  key?: string;
+  value?: any;
+}
+
 interface ICreateResult extends IResultMethods {
   (...args: any[]): IVestResult;
   get: () => DraftResult;
   reset: () => void;
   remove: (fieldName: string) => void;
+
+  subscribe: (payload: ISubscribePayload) => void;
 }
 
 declare namespace vest {

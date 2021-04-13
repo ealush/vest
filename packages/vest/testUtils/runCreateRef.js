@@ -1,13 +1,9 @@
-import state from 'state';
-import usePending from 'usePending';
-import useSuiteId from 'useSuiteId';
-import useTestCallbacks from 'useTestCallbacks';
-import useTestObjects from 'useTestObjects';
+import createState from 'vast';
 
-export default () =>
-  state.createRef({
-    usePending,
-    useSuiteId: [useSuiteId, [1000, 'suite_name']],
-    useTestCallbacks,
-    useTestObjects,
+import createStateRef from 'createStateRef';
+
+export default state =>
+  createStateRef(state ? state : createState(), {
+    suiteId: 1000,
+    name: 'suite_name',
   });

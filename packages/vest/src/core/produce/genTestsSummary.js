@@ -5,8 +5,8 @@ import {
   SEVERITY_GROUP_ERROR,
   TEST_COUNT,
 } from 'resultKeys';
-import useSuiteId from 'useSuiteId';
-import useTestObjects from 'useTestObjects';
+import { useSuiteId , useTestObjects } from 'stateHooks';
+
 
 /**
  * Reads the testObjects list and gets full validation result from it.
@@ -64,18 +64,23 @@ export default genTestsSummary;
  * @returns {Object} Test result summary
  */
 const genTestObject = (summaryKey, testObject) => {
-  const { fieldName, isWarning, failed, statement } = testObject;
+  const { fieldName, isWarning, failed, statement, skipped } = testObject;
 
   summaryKey[fieldName] = summaryKey[fieldName] || {
-    [SEVERITY_COUNT_WARN]: 0,
     [SEVERITY_COUNT_ERROR]: 0,
+    [SEVERITY_COUNT_WARN]: 0,
     [TEST_COUNT]: 0,
   };
 
   const testKey = summaryKey[fieldName];
 
+  if (skipped) {
+    return testKey;
+  }
+
   summaryKey[fieldName][TEST_COUNT]++;
 
+  // Adds to severity group
   const addTo = (count, group) => {
     testKey[count]++;
     if (statement) {

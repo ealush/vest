@@ -61,7 +61,11 @@
   "devDependencies": {
     "anyone": "^0.0.7",
     "context": "^1.1.0",
-    "n4s": "^2.1.1"
+    "n4s": "^2.1.1",
+    "vast": "^1.0.1"
   },
-  "module": "./esm/vest.es.production.js"
+  "module": "./esm/vest.es.production.js",
+  "dependencies": {
+    "context": "^1.1.3"
+  }
 }

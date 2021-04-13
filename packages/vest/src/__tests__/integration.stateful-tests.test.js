@@ -8,7 +8,7 @@ describe('Stateful behavior', () => {
     result = validate({ only: 'field_1' });
     expect(result.tests.field_1.errorCount).toBe(1);
     expect(result.errorCount).toBe(1);
-    expect(Object.keys(result.tests)).toHaveLength(1);
+    expect(Object.keys(result.tests)).toHaveLength(5); // including 4 skipped tests
     expect(result.tests).toHaveProperty('field_1');
     expect(result).toMatchSnapshot();
 
@@ -16,7 +16,7 @@ describe('Stateful behavior', () => {
     expect(result.errorCount).toBe(3);
     expect(result.tests.field_1.errorCount).toBe(1);
     expect(result.tests.field_5.errorCount).toBe(2);
-    expect(Object.keys(result.tests)).toHaveLength(2);
+    expect(Object.keys(result.tests)).toHaveLength(5); // including 4 skipped tests
     expect(result.tests).toHaveProperty('field_1');
     expect(result.tests).toHaveProperty('field_5');
     expect(result).toMatchSnapshot();

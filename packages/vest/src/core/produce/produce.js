@@ -10,8 +10,7 @@ import hasRemainingTests from 'hasRemainingTests';
 import isFunction from 'isFunction';
 import { SEVERITY_GROUP_ERROR, SEVERITY_GROUP_WARN } from 'resultKeys';
 import { HAS_WARNINGS, HAS_ERRORS } from 'sharedKeys';
-import useTestCallbacks from 'useTestCallbacks';
-import useTestObjects from 'useTestObjects';
+import { useTestCallbacks, useTestObjects } from 'stateHooks';
 import withArgs from 'withArgs';
 
 const cache = createCache(20);
@@ -28,8 +27,10 @@ const done = withArgs(args => {
 
   const output = produce();
 
-  // If we do not have any tests for current field
-  const shouldSkipRegistration = fieldName && !output.tests[fieldName];
+  // If we do not have any test runs for the current field
+  const shouldSkipRegistration =
+    fieldName &&
+    (!output.tests[fieldName] || output.tests[fieldName].testCount === 0);
 
   if (!isFunction(callback) || shouldSkipRegistration) {
     return output;
@@ -48,7 +49,8 @@ const done = withArgs(args => {
     return output;
   }
 
-  useTestCallbacks(current => {
+  const [, setTestCallbacks] = useTestCallbacks();
+  setTestCallbacks(current => {
     if (fieldName) {
       current.fieldCallbacks[fieldName] = (
         current.fieldCallbacks[fieldName] || []

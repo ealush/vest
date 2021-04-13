@@ -9,7 +9,7 @@ npm install vest
 You can also add Vest directly as a script tag to your page:
 
 ```html
-<script src="https://unpkg.com/vest@2"></script>
+<script src="https://unpkg.com/vest@3"></script>
 ```
 
 Vest tests are very much like unit tests, with only slight differences. Instead of using `describe/it/expect`, you will use `validate/[test](./test)/[enforce](./enforce)`.

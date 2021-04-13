@@ -1,29 +1,31 @@
 import _ from 'lodash';
 
+
+import expandStateRef from '../../../../../testUtils/expandStateRef';
 import runCreateRef from '../../../../../testUtils/runCreateRef';
 
 import VestTest from 'VestTest';
 import context from 'ctx';
 import { removePending, setPending } from 'pending';
-import usePending from 'usePending';
+import { usePending } from 'stateHooks';
 
 const groupName = 'group_name';
 
-let stateRef;
+let state, stateRef;
 
 it.ctx = (str, cb) => it(str, () => context.run({ stateRef }, cb));
 beforeEach.ctx = cb => beforeEach(() => context.run({ stateRef }, cb));
 
 describe('module: pending', () => {
-  let currentState, testObject;
+  let refContent, testObject;
 
   const runRemovePending = testObject => {
     context.run({ stateRef }, () => removePending(testObject));
   };
 
   beforeEach(() => {
-    stateRef = runCreateRef();
-    currentState = _.cloneDeep(stateRef.current());
+    stateRef = runCreateRef(state);
+    refContent = _.cloneDeep(expandStateRef(stateRef));
     testObject = new VestTest({
       fieldName: 'field_1',
       statement: 'failure_message',
@@ -34,7 +36,7 @@ describe('module: pending', () => {
     describe('When testObject it not pending or lagging', () => {
       it('Should keep state unchanged', () => {
         runRemovePending(testObject);
-        expect(stateRef.current()).toEqual(currentState);
+        expect(expandStateRef(stateRef)).toEqual(refContent);
       });
     });
 
@@ -59,7 +61,7 @@ describe('module: pending', () => {
             const [pendingState] = usePending();
             expect(pendingState.pending).not.toContain(testObject);
           }
-          expect(stateRef.current()).toMatchSnapshot();
+          expect(expandStateRef(stateRef)).toMatchSnapshot();
         });
       });
       describe('When in lagging', () => {
@@ -82,7 +84,7 @@ describe('module: pending', () => {
             const [pendingState] = usePending();
             expect(pendingState.lagging).not.toContain(testObject);
           }
-          expect(stateRef.current()).toMatchSnapshot();
+          expect(expandStateRef(stateRef)).toMatchSnapshot();
         });
       });
     });
@@ -114,7 +116,7 @@ describe('module: pending', () => {
         const [pendingState] = usePending();
         expect(pendingState.pending).toContain(testObjects[0]);
       }
-      expect(stateRef.current()).toMatchSnapshot();
+      expect(expandStateRef(stateRef)).toMatchSnapshot();
     });
 
     describe('When a field of the same profile is in lagging array', () => {
@@ -149,7 +151,7 @@ describe('module: pending', () => {
           expect(pendingState.pending).toContain(added);
           expect(pendingState.lagging).not.toContain(testObjects[0]);
         }
-        expect(stateRef.current()).toMatchSnapshot();
+        expect(expandStateRef(stateRef)).toMatchSnapshot();
       });
 
       it.ctx('Should add test to pending array', () => {

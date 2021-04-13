@@ -2,10 +2,8 @@ import faker from 'faker';
 import _ from 'lodash';
 import enforce from 'n4s';
 
-import collector from '../../../testUtils/collector';
 import { dummyTest } from '../../../testUtils/testDummy';
 
-import context from 'ctx';
 import group from 'group';
 import vest from 'vest';
 
@@ -58,8 +56,37 @@ describe('group: exclusion', () => {
       res = validate({ skipGroup: groupName });
     });
 
-    it('produce result object without group', () => {
-      expect(res.groups[groupName]).toBeUndefined();
+    it('produce result object with the group', () => {
+      expect(res.groups[groupName]).toBeDefined();
+      expect(res.groups[groupName]).toMatchInlineSnapshot(`
+        Object {
+          "field_1": Object {
+            "errorCount": 0,
+            "testCount": 0,
+            "warnCount": 0,
+          },
+          "field_2": Object {
+            "errorCount": 0,
+            "testCount": 0,
+            "warnCount": 0,
+          },
+          "field_3": Object {
+            "errorCount": 0,
+            "testCount": 0,
+            "warnCount": 0,
+          },
+          "field_4": Object {
+            "errorCount": 0,
+            "testCount": 0,
+            "warnCount": 0,
+          },
+          "field_6": Object {
+            "errorCount": 0,
+            "testCount": 0,
+            "warnCount": 0,
+          },
+        }
+      `);
     });
 
     it('Should skip tests within group', () => {
@@ -172,6 +199,7 @@ describe('group: exclusion', () => {
 });
 
 describe('group: base case', () => {
+  let inGroup, outsideGroup;
   const validation = () =>
     vest.create(suiteName, () => {
       dummyTest.failing('field_1');
@@ -186,8 +214,10 @@ describe('group: base case', () => {
         dummyTest.passing('field_2');
         dummyTest.failingWarning('field_3');
         dummyTest.passingWarning('field_4');
-        dummyTest.failing('field_6');
+        inGroup = dummyTest.failing('field_6');
       });
+
+      outsideGroup = dummyTest.failing('last');
     });
   let res;
   beforeEach(() => {
@@ -250,70 +280,14 @@ describe('group: base case', () => {
       res.tests['field_3'].warnCount
     );
   });
-});
 
-let collect, collection;
-
-describe('group: context creation', () => {
-  const validation = () =>
-    vest.create(suiteName, collect => {
-      collect({
-        context: context.use(),
-        groupName: context.use().groupName,
-      });
-
-      dummyTest.failing();
-      dummyTest.failing();
-
-      group(groupName, () => {
-        collect({
-          context: context.use(),
-          groupName: context.use().groupName,
-        });
-        dummyTest.failing();
-      });
-      collect({
-        context: context.use(),
-        groupName: context.use().groupName,
-      });
+  describe('Test object creation', () => {
+    it('when in group, should create test with matching group property', () => {
+      expect(inGroup.groupName).toBe(groupName);
     });
-  let validate;
 
-  beforeEach(() => {
-    suiteName = faker.random.word();
-    groupName = faker.random.word();
-    collect = collector();
-    collection = collect.collection;
-    validate = validation();
-  });
-
-  test('Sanity', () => {
-    // checking that we have the right context in the right places
-
-    validate(collect);
-    expect(collection[1].groupName).toBe(groupName);
-    expect(collection[2].groupName).toBeUndefined();
-  });
-
-  it('Should initialize suite without group name', () => {
-    validate(collect);
-    expect(collection[0].groupName).toBeUndefined();
-  });
-
-  describe('When in group', () => {
-    it('should create child context with group name', () => {
-      validate(collect);
-      expect(collection[1].context.parentContext).toBe(collection[0].context);
-      expect(collection[1].groupName).toBe(groupName);
-      expect(collection[1].context.parentContext).toBe(collection[2].context);
-    });
-  });
-
-  describe('When out of group', () => {
-    it('should go back to upper context', () => {
-      validate(collect);
-      expect(collection[2].groupName).toBeUndefined();
-      expect(collection[2].context.parentContext).toBeNull();
+    it('after exiting group, should create est without group property', () => {
+      expect(outsideGroup).not.toHaveProperty('groupName');
     });
   });
 });

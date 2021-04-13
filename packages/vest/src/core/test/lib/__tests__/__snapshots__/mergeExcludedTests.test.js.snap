@@ -48,6 +48,38 @@ Object {
         "warnCount": 0,
       },
     },
+    "group_2": Object {
+      "f1": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+      "f3": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+      "f4": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+      "f5": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+      "f6": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+      "f7": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+    },
   },
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
@@ -96,6 +128,16 @@ Object {
     "f5": Object {
       "errorCount": 0,
       "testCount": 1,
+      "warnCount": 0,
+    },
+    "f6": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "f7": Object {
+      "errorCount": 0,
+      "testCount": 0,
       "warnCount": 0,
     },
   },
@@ -447,7 +489,67 @@ Object {
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": Object {
+    "group_1": Object {
+      "f1": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+      "f2": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+      "f3": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+      "f4": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+      "f5": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+    },
+    "group_2": Object {
+      "f1": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+      "f3": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+      "f4": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+      "f5": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+      "f6": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+      "f7": Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      },
+    },
+  },
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -477,6 +579,26 @@ Object {
         "f3_msg",
       ],
       "testCount": 2,
+      "warnCount": 0,
+    },
+    "f4": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "f5": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "f6": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "f7": Object {
+      "errorCount": 0,
+      "testCount": 0,
       "warnCount": 0,
     },
   },

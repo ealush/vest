@@ -1,15 +1,14 @@
+import createState from 'vast';
+
 import asArray from 'asArray';
+import createStateRef from 'createStateRef';
 import context from 'ctx';
 import genId from 'genId';
 import isFunction from 'isFunction';
 import mergeExcludedTests from 'mergeExcludedTests';
 import produce from 'produce';
-import state from 'state';
+import { usePending, useTestObjects } from 'stateHooks';
 import throwError from 'throwError';
-import usePending from 'usePending';
-import useSuiteId from 'useSuiteId';
-import useTestCallbacks from 'useTestCallbacks';
-import useTestObjects from 'useTestObjects';
 import withArgs from 'withArgs';
 /**
  * Initializes a validation suite, creates a validation context.
@@ -26,12 +25,18 @@ const createSuite = withArgs(args => {
     );
   }
 
-  const stateRef = state.createRef({
-    usePending,
-    useSuiteId: [useSuiteId, [genId(), name]],
-    useTestCallbacks,
-    useTestObjects,
+  const handlers = [];
+
+  const state = createState(() => {
+    handlers.forEach(fn =>
+      fn({
+        suiteState: stateRef,
+        type: 'suiteStateUpdate',
+      })
+    );
   });
+
+  const stateRef = createStateRef(state, { suiteId: genId(), name });
 
   /*
     context.bind returns our `validate` function
@@ -42,7 +47,7 @@ const createSuite = withArgs(args => {
   const suite = context.bind({ stateRef }, function () {
     const [previousTestObjects] = useTestObjects();
     const [{ pending }, setPending] = usePending();
-    stateRef.reset();
+    state.reset();
 
     // Move all the active pending tests to the lagging array
     setPending({ lagging: pending, pending: [] });
@@ -75,6 +80,18 @@ const createSuite = withArgs(args => {
   suite.hasWarningsByGroup = (groupName, fieldName) => suite.get().hasWarningsByGroup(groupName, fieldName);
   suite.getErrorsByGroup = (groupName, fieldName) => suite.get().getErrorsByGroup(groupName, fieldName);
   suite.getWarningsByGroup = (groupName, fieldName) => suite.get().getWarningsByGroup(groupName, fieldName);
+
+  suite.subscribe = function (handler) {
+    if (!isFunction(handler)) return;
+
+    handlers.push(handler);
+
+    handler({
+      type: 'suiteSubscribeInit',
+      suiteState: stateRef,
+    });
+  };
+
   return suite;
 });
 

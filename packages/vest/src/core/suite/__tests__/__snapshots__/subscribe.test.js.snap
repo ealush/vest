@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`suite.subscribe Should call handler on suite subscription initialization 1`] = `
+Object {
+  "suiteState": Object {
+    "pending": [Function],
+    "suiteId": [Function],
+    "testCallbacks": [Function],
+    "testObjects": [Function],
+  },
+  "type": "suiteSubscribeInit",
+}
+`;

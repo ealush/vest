@@ -1,6 +1,6 @@
 import createCache from 'cache';
 import isMatchingSeverityProfile from 'isMatchingSeverityProfile';
-import useTestObjects from 'useTestObjects';
+import { useTestObjects } from 'stateHooks';
 
 const cache = createCache();
 

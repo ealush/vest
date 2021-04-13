@@ -1,4 +1,3 @@
-
 import message from 'ruleMessage';
 import warn from 'ruleWarn';
 import when from 'ruleWhen';

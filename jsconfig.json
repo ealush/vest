@@ -111,13 +111,8 @@
       ],
       "produce": ["./packages/vest/src/core/produce/produce.js"],
       "resultKeys": ["./packages/vest/src/core/produce/resultKeys.js"],
-      "state": ["./packages/vest/src/core/state/state.js"],
-      "usePending": ["./packages/vest/src/core/state/usePending.js"],
-      "useSuiteId": ["./packages/vest/src/core/state/useSuiteId.js"],
-      "useTestCallbacks": [
-        "./packages/vest/src/core/state/useTestCallbacks.js"
-      ],
-      "useTestObjects": ["./packages/vest/src/core/state/useTestObjects.js"],
+      "createStateRef": ["./packages/vest/src/core/state/createStateRef.js"],
+      "stateHooks": ["./packages/vest/src/core/state/stateHooks.js"],
       "createSuite": ["./packages/vest/src/core/suite/createSuite.js"],
       "hasRemainingTests": [
         "./packages/vest/src/core/suite/hasRemainingTests.js"

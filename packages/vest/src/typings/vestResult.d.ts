@@ -59,6 +59,33 @@ export type IResultMethods = {
    * Returns all the warning messages for the specified group and field
    */
   getWarningsByGroup(groupName: string, fieldName: string): string[];
+}
+
+export type DraftResult = Functions & {
+  name: string;
+  errorCount: number;
+  warnCount: number;
+  testCount: number;
+  tests: {
+    [fieldName: string]: {
+      errorCount: number;
+      warnCount: number;
+      testCount: number;
+      errors?: string[];
+      warnings?: string[];
+    };
+  };
+  groups: {
+    [groupName: string]: {
+      [fieldName: string]: {
+        errorCount: number;
+        warnCount: number;
+        testCount: number;
+        errors?: string[];
+        warnings?: string[];
+      };
+    };
+  };
 };
 
 export interface DraftResult extends IResultMethods {

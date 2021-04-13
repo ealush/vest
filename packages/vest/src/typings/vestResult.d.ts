@@ -1,7 +1,12 @@
 type DoneCB = (res: DraftResult) => void;
 
+<<<<<<< Updated upstream
 export type IResultMethods = {
   /**
+=======
+export type Functions = {
+/**
+>>>>>>> Stashed changes
    * Returns whether the specified field has errors
    */
   hasErrors: (fieldName?: string) => boolean;

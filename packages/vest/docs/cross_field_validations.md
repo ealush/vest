@@ -93,16 +93,16 @@ This requires using the function created from vest.create():
 ```js
 import vest, { test, enforce } from "vest";
 
-const v = vest.create("user_form", (data = {}) => {
+const suite = vest.create("user_form", (data = {}) => {
   test("password", "Password is required", () => {
     enforce(data.password).isNotEmpty();
   });
 
-  if (!v.hasErrors('password')) {
+  if (!suite.get().hasErrors('password')) {
     test("password", "Password is weak", () => {
       enforce(data.password).longerThan(8);
     });
   }
 });
-export default v;
+export default suite;
 ```

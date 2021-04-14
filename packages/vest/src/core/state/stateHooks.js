@@ -14,3 +14,6 @@ export function useTestCallbacks() {
 export function useTestObjects() {
   return getStateRef().testObjects();
 }
+export function useSkippedTests() {
+  return getStateRef().skippedTests();
+}

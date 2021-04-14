@@ -19,8 +19,6 @@ function VestTest({ fieldName, statement, testFn, group }) {
     testFn,
   });
 
-  this.skipped = false;
-
   if (group) {
     this.groupName = group;
   }
@@ -55,10 +53,6 @@ VestTest.prototype.cancel = function () {
   this.canceled = true;
   removePending(this);
   removeTestFromState(this);
-};
-
-VestTest.prototype.markSkipped = function () {
-  this.skipped = true;
 };
 
 export default VestTest;

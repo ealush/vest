@@ -8,6 +8,7 @@ import isStringValue from 'isStringValue';
 import { isUndefined } from 'isUndefined';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
+import { useSkippedTests } from 'stateHooks';
 import bindTestEach from 'test.each';
 import bindTestMemo from 'test.memo';
 import throwError from 'throwError';
@@ -43,11 +44,6 @@ const sync = testObject =>
  */
 const register = testObject => {
   addTestToState(testObject);
-
-  if (isExcluded(testObject)) {
-    testObject.markSkipped();
-    return;
-  }
 
   // Run test callback.
   // If a promise is returned, set as async and
@@ -85,6 +81,7 @@ const register = testObject => {
  */
 function test(fieldName, args) {
   const [testFn, statement] = args.reverse();
+  const [, setSkippedTests] = useSkippedTests();
 
   const { groupName } = context.use();
   const testObject = new VestTest({
@@ -94,8 +91,13 @@ function test(fieldName, args) {
     testFn,
   });
 
+  if (isExcluded(testObject)) {
+    setSkippedTests(skippedTests => skippedTests.concat(testObject));
+    return testObject;
+  }
+
   if (!isFunction(testFn)) {
-    return;
+    return testObject;
   }
 
   register(testObject);

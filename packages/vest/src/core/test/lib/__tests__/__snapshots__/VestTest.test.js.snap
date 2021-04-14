@@ -6,7 +6,6 @@ VestTest {
   "fieldName": "unicycle",
   "id": "0",
   "isWarning": false,
-  "skipped": false,
   "statement": "I am Root.",
   "testFn": [MockFunction],
 }
@@ -18,7 +17,6 @@ VestTest {
   "fieldName": "unicycle",
   "id": "102",
   "isWarning": true,
-  "skipped": false,
   "statement": "I am Root.",
   "testFn": [MockFunction],
 }

@@ -4,6 +4,7 @@ exports[`suite.subscribe Should call handler on suite subscription initializatio
 Object {
   "suiteState": Object {
     "pending": [Function],
+    "skippedTests": [Function],
     "suiteId": [Function],
     "testCallbacks": [Function],
     "testObjects": [Function],

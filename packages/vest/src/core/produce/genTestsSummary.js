@@ -5,8 +5,7 @@ import {
   SEVERITY_GROUP_ERROR,
   TEST_COUNT,
 } from 'resultKeys';
-import { useSuiteId , useTestObjects } from 'stateHooks';
-
+import { useSuiteId, useTestObjects, useSkippedTests } from 'stateHooks';
 
 /**
  * Reads the testObjects list and gets full validation result from it.
@@ -14,6 +13,7 @@ import { useSuiteId , useTestObjects } from 'stateHooks';
 const genTestsSummary = () => {
   const [testObjects] = useTestObjects();
   const [suiteIdState] = useSuiteId();
+  const [skippedTests] = useSkippedTests();
 
   const summary = {
     tests: {},
@@ -21,21 +21,31 @@ const genTestsSummary = () => {
     name: suiteIdState.name,
   };
 
-  testObjects.forEach(testObject => {
-    const { fieldName, groupName } = testObject;
-
-    summary.tests[fieldName] = genTestObject(summary.tests, testObject);
-
-    if (groupName) {
-      summary.groups[groupName] = summary.groups[groupName] || {};
-      summary.groups[groupName][fieldName] = genTestObject(
-        summary.groups[groupName],
-        testObject
-      );
-    }
-  });
+  appendSummary(testObjects);
+  appendSummary(skippedTests, true);
 
   return countFailures(summary);
+
+  function appendSummary(testObject, skipped) {
+    testObject.forEach(testObject => {
+      const { fieldName, groupName } = testObject;
+
+      summary.tests[fieldName] = genTestObject(
+        summary.tests,
+        testObject,
+        skipped
+      );
+
+      if (groupName) {
+        summary.groups[groupName] = summary.groups[groupName] || {};
+        summary.groups[groupName][fieldName] = genTestObject(
+          summary.groups[groupName],
+          testObject,
+          skipped
+        );
+      }
+    });
+  }
 };
 
 /**
@@ -63,8 +73,8 @@ export default genTestsSummary;
  * @param {VestTest} testObject
  * @returns {Object} Test result summary
  */
-const genTestObject = (summaryKey, testObject) => {
-  const { fieldName, isWarning, failed, statement, skipped } = testObject;
+const genTestObject = (summaryKey, testObject, skipped) => {
+  const { fieldName, isWarning, failed, statement } = testObject;
 
   summaryKey[fieldName] = summaryKey[fieldName] || {
     [SEVERITY_COUNT_ERROR]: 0,

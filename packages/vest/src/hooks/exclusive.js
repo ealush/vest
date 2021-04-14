@@ -74,14 +74,7 @@ skip.group = item =>
  * @returns {Boolean}
  */
 const isExcluded = testObject => {
-  const { fieldName, groupName, skipped } = testObject;
-
-  // this only happens after the test registration
-  // first time this gets registered, and in the follow
-  // up runs we can bail quickly
-  if (skipped) {
-    return true;
-  }
+  const { fieldName, groupName } = testObject;
 
   const { exclusion } = context.use();
 

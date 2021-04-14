@@ -79,6 +79,7 @@ describe('Stateful async tests', () => {
       expect(res).toMatchSnapshot();
       setTimeout(() => {
         const res = validate.get();
+
         expect(res.testCount).toBe(3);
         expect(res.errorCount).toBe(2);
         expect(res.warnCount).toBe(0);

@@ -72,9 +72,9 @@ const suite = vest.create('user_form', () => {
 
 ```js
 const suite = vest.create('user_form', () => {
-  if (suite.get().hasErrors('username')) {
+  vest.skipWhen(suite.get().hasErrors('username'), () => {
     /* ... */
-  }
+  });
 });
 ```
 

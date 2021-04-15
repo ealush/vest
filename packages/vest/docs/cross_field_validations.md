@@ -19,17 +19,17 @@ the `any` utility will run each function until a passing test is found. This mea
 Demo: https://codesandbox.io/s/demo-forked-tdj92?file=/src/validate.js
 
 ```js
-import vest, { test, enforce } from "vest";
-import any from "vest/any";
+import vest, { test, enforce } from 'vest';
+import any from 'vest/any';
 
-export default vest.create("form_name", (data = {}) => {
+export default vest.create('form_name', (data = {}) => {
   any(
     () =>
-      test("email", "Email or phone must be set", () => {
+      test('email', 'Email or phone must be set', () => {
         enforce(data.email).isNotEmpty();
       }),
     () =>
-      test("phone", "Email or phone must be set", () => {
+      test('phone', 'Email or phone must be set', () => {
         enforce(data.phone).isNotEmpty();
       })
   );
@@ -43,11 +43,11 @@ You could also use any within your test, if you have a joined test for both scen
 Demo: https://codesandbox.io/s/demo-forked-ltn8l?file=/src/validate.js
 
 ```js
-import vest, { test, enforce } from "vest";
-import any from "vest/any";
+import vest, { test, enforce } from 'vest';
+import any from 'vest/any';
 
-export default vest.create("form_name", (data = {}) => {
-  test("email_or_phone", "Email or phone must be set", () =>
+export default vest.create('form_name', (data = {}) => {
+  test('email_or_phone', 'Email or phone must be set', () =>
     any(
       () => {
         enforce(data.email).isNotEmpty();
@@ -62,47 +62,46 @@ export default vest.create("form_name", (data = {}) => {
 });
 ```
 
-## if/else for conditionally skipping fields
+## vest.skipWhen for conditionally skipping fields
 
-If your field depends on a different field's existence or a different simple condition, you could use a basic if/else statement.
+If your field depends on a different field's existence or a different simple condition, you could use `skipWhen`.
 In the following example I only validate `confirm` if password is not empty:
 
-DEMO: https://codesandbox.io/s/demo-forked-z2ur9?file=/src/validate.js
-
 ```js
-import vest, { test, enforce } from "vest";
+import vest, { test, enforce } from 'vest';
 
-export default vest.create("user_form", (data = {}) => {
-  test("password", "Password is required", () => {
+export default vest.create('user_form', (data = {}) => {
+  test('password', 'Password is required', () => {
     enforce(data.password).isNotEmpty();
   });
 
-  if (data.password) {
-    test("confirm", "Passwords do not match", () => {
+  vest.skipWhen(!!data.password, () => {
+    test('confirm', 'Passwords do not match', () => {
       enforce(data.confirm).equals(data.password);
     });
-  }
+  });
 });
 ```
 
-## if/else for conditionally skipping field based on a previous result
+## vest.skipWhen for conditionally skipping field based on a previous result
+
 Sometimes you might want to run a certain validation based on the validation result of a previously run test, for example - only test for password strength if password DOESN'T have Errors. You could access the intermediate validation result and use it mid-run.
 
 This requires using the function created from vest.create():
 
 ```js
-import vest, { test, enforce } from "vest";
+import vest, { test, enforce } from 'vest';
 
-const suite = vest.create("user_form", (data = {}) => {
-  test("password", "Password is required", () => {
+const suite = vest.create('user_form', (data = {}) => {
+  test('password', 'Password is required', () => {
     enforce(data.password).isNotEmpty();
   });
 
-  if (!suite.get().hasErrors('password')) {
-    test("password", "Password is weak", () => {
+  vest.skipWhen(suite.get().hasErrors('password'), () => {
+    test('password', 'Password is weak', () => {
       enforce(data.password).longerThan(8);
     });
-  }
+  });
 });
 export default suite;
 ```

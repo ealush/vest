@@ -4,8 +4,7 @@ import VestTest from 'VestTest';
 import addTestToState from 'addTestToState';
 import context from 'ctx';
 import { setPending } from 'pending';
-import { usePending , useTestObjects } from 'stateHooks';
-
+import { usePending, useTestObjects } from 'stateHooks';
 
 const fieldName = 'unicycle';
 const statement = 'I am Root.';

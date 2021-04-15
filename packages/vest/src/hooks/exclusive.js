@@ -3,6 +3,7 @@ import hasOwnProperty from 'hasOwnProperty';
 import asArray from 'asArray';
 import context from 'ctx';
 import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
+import isFunction from 'isFunction';
 import isStringValue from 'isStringValue';
 import {
   EXCLUSION_ITEM_TYPE_TESTS,
@@ -11,48 +12,12 @@ import {
 import throwError from 'throwError';
 
 /**
- * @type {String} Exclusion group name: only.
- */
-const EXCLUSION_GROUP_NAME_ONLY = 'only';
-
-/**
- * @type {String} Exclusion group name: skip.
- */
-const EXCLUSION_GROUP_NAME_SKIP = 'skip';
-
-/**
- * Adds fields to a specified exclusion group.
- * @param {String} exclusionGroup   To add the fields to.
- * @param {String} itemType         Whether the item is a group or a test.
- * @param {String[]|String} item    A field name or a list of field names.
- */
-const addTo = (exclusionGroup, itemType, item) => {
-  const ctx = context.use();
-  if (!item) {
-    return;
-  }
-
-  if (!ctx) {
-    throwError(`${exclusionGroup} ${ERROR_HOOK_CALLED_OUTSIDE}`);
-    return;
-  }
-
-  asArray(item).forEach(itemName => {
-    if (!isStringValue(itemName)) {
-      return null;
-    }
-
-    ctx.exclusion[itemType][itemName] =
-      exclusionGroup === EXCLUSION_GROUP_NAME_ONLY;
-  });
-};
-
-/**
  * Adds a field or multiple fields to inclusion group.
  * @param {String[]|String} item Item to be added to inclusion group.
  */
-const only = item =>
-  addTo(EXCLUSION_GROUP_NAME_ONLY, EXCLUSION_ITEM_TYPE_TESTS, item);
+export function only(item) {
+  return addTo(EXCLUSION_GROUP_NAME_ONLY, EXCLUSION_ITEM_TYPE_TESTS, item);
+}
 
 only.group = item =>
   addTo(EXCLUSION_GROUP_NAME_ONLY, EXCLUSION_ITEM_TYPE_GROUPS, item);
@@ -61,11 +26,23 @@ only.group = item =>
  * Adds a field or multiple fields to exclusion group.
  * @param {String[]|String} item Item to be added to exclusion group.
  */
-const skip = item =>
-  addTo(EXCLUSION_GROUP_NAME_SKIP, EXCLUSION_ITEM_TYPE_TESTS, item);
+export function skip(item) {
+  return addTo(EXCLUSION_GROUP_NAME_SKIP, EXCLUSION_ITEM_TYPE_TESTS, item);
+}
 
 skip.group = item =>
   addTo(EXCLUSION_GROUP_NAME_SKIP, EXCLUSION_ITEM_TYPE_GROUPS, item);
+
+/**
+ * Conditionally skips nested test callbacks
+ * @param {boolean} shouldSkip
+ * @param {Function} callback
+ */
+export function skipWhen(shouldSkip, callback) {
+  if (isFunction(callback)) {
+    context.run({ skip: !!shouldSkip }, () => callback());
+  }
+}
 
 /**
  * Checks whether a certain test profile excluded by any of the exclusion groups.
@@ -73,7 +50,7 @@ skip.group = item =>
  * @param {VestTest}            Test Object reference.
  * @returns {Boolean}
  */
-const isExcluded = testObject => {
+export function isExcluded(testObject) {
   const { fieldName, groupName } = testObject;
 
   const { exclusion } = context.use();
@@ -117,28 +94,14 @@ const isExcluded = testObject => {
   // If there is _ANY_ `only`ed test (and we already know this one isn't) return true
   // Otherwise return false
   return hasIncludedTests(keyTests);
-};
-
-/**
- * Checks if context has included tests
- * @param {Object} keyTests Object containing included and excluded tests
- * @returns {boolean}
- */
-const hasIncludedTests = keyTests => {
-  for (const test in keyTests) {
-    if (keyTests[test] === true) {
-      return true; // excluded implicitly
-    }
-  }
-  return false;
-};
+}
 
 /**
  * Checks whether a given group is excluded from running.
  * @param {String} groupName
  * @return {Boolean}
  */
-const isGroupExcluded = groupName => {
+export function isGroupExcluded(groupName) {
   const { exclusion } = context.use();
   const keyGroups = exclusion[EXCLUSION_ITEM_TYPE_GROUPS];
 
@@ -159,6 +122,55 @@ const isGroupExcluded = groupName => {
   }
 
   return false;
+}
+
+/**
+ * @type {String} Exclusion group name: only.
+ */
+const EXCLUSION_GROUP_NAME_ONLY = 'only';
+
+/**
+ * @type {String} Exclusion group name: skip.
+ */
+const EXCLUSION_GROUP_NAME_SKIP = 'skip';
+
+/**
+ * Adds fields to a specified exclusion group.
+ * @param {String} exclusionGroup   To add the fields to.
+ * @param {String} itemType         Whether the item is a group or a test.
+ * @param {String[]|String} item    A field name or a list of field names.
+ */
+const addTo = (exclusionGroup, itemType, item) => {
+  const ctx = context.use();
+  if (!item) {
+    return;
+  }
+
+  if (!ctx) {
+    throwError(`${exclusionGroup} ${ERROR_HOOK_CALLED_OUTSIDE}`);
+    return;
+  }
+
+  asArray(item).forEach(itemName => {
+    if (!isStringValue(itemName)) {
+      return null;
+    }
+
+    ctx.exclusion[itemType][itemName] =
+      exclusionGroup === EXCLUSION_GROUP_NAME_ONLY;
+  });
 };
 
-export { only, skip, isExcluded, isGroupExcluded };
+/**
+ * Checks if context has included tests
+ * @param {Object} keyTests Object containing included and excluded tests
+ * @returns {boolean}
+ */
+const hasIncludedTests = keyTests => {
+  for (const test in keyTests) {
+    if (keyTests[test] === true) {
+      return true; // excluded implicitly
+    }
+  }
+  return false;
+};

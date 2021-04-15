@@ -24,11 +24,11 @@ First, you need to initialize your validation suite using `vest.create()`. This 
 ```js
 import vest from 'vest';
 
-const validate = vest.create('formName', () => {
+const suite = vest.create('formName', () => {
   // validation suite content goes here.
 });
 
-const validationResult = validate();
+const validationResult = suite();
 ```
 
 `vest.create()` takes the following arguments:
@@ -43,10 +43,10 @@ vest.create returns a `validate` function which runs your validation suite. All 
 A simple validation suite would look somewhat like this:
 
 ```js
-// validation.js
+// suite.js
 import { test, enforce } from ‘vest’;
 
-const validate = vest.create('NewUserForm', (formData) => {
+const suite = vest.create('NewUserForm', (formData) => {
     test('username', 'Must be between 2 and 10 chars', () => {
         enforce(formData.username)
             .longerThanOrEquals(2)
@@ -59,15 +59,15 @@ const validate = vest.create('NewUserForm', (formData) => {
     });
 });
 
-export default validate;
+export default suite;
 ```
 
 ```js
 // myFeature.js
 
-import validate from './validation.js';
+import suite from './suite.js';
 
-const res = validate(formData);
+const res = suite(formData);
 ```
 
 In the above example, we validate a form called `NewUserForm` containing username and a password.

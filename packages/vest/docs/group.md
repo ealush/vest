@@ -47,10 +47,10 @@ In many cases it is sufficient to just use an `if` statement. The benefit of usi
 You may have in your application a multi-screen form, in which you want to validate each screen individually, but submit it all at once.
 
 ```js
-// validation.js
+// suite.js
 import vest, { test, group, enforce } from 'vest';
 
-const validate = vest.create('product-create', (data, currentTab) => {
+const suite = vest.create('product-create', (data, currentTab) => {
   vest.only.group(currentScreen);
 
   group('overview_tab', () => {
@@ -78,14 +78,14 @@ const validate = vest.create('product-create', (data, currentTab) => {
   });
 });
 
-export default validate;
+export default suite;
 ```
 
 ```js
 // myFeature.js
 
-validate(data, 'overview_tab'); // will only validate 'overview_tab' group
-validate(data, 'pricing_tab'); // will only validate 'pricing_tab' group
+suite(data, 'overview_tab'); // will only validate 'overview_tab' group
+suite(data, 'pricing_tab'); // will only validate 'pricing_tab' group
 ```
 
 ### 2. Skipping tests with shared fields
@@ -97,7 +97,7 @@ In the example below, we don't mind skipping the `balance` field directly, but i
 ```js
 import vest, { test, group, enforce } from 'vest';
 
-const validate = vest.create('checkout_form', data => {
+const suite = vest.create('checkout_form', data => {
   if (!data.usedPromo) {
     vest.skip.group('used_promo');
   }

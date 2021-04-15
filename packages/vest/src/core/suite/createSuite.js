@@ -61,17 +61,25 @@ const createSuite = withArgs(args => {
     return produce();
   });
   suite.get = context.bind({ stateRef }, produce, /*isDraft:*/ true);
-  suite.reset = state.reset;
-  suite.remove = context.bind({ stateRef }, name => {
+  suite.reset = stateRef.reset;
+  suite.remove = context.bind({ stateRef }, fieldName => {
     const [testObjects] = useTestObjects();
 
     // We're mutating the array in `cancel`, so we have to first copy it.
     asArray(testObjects).forEach(testObject => {
-      if (testObject.fieldName === name) {
+      if (testObject.fieldName === fieldName) {
         testObject.cancel();
       }
     });
   });
+  suite.hasErrors = (fieldName) => suite.get().hasErrors(fieldName);
+  suite.hasWarnings = (fieldName) => suite.get().hasWarnings(fieldName);
+  suite.getErrors = (fieldName) => suite.get().getErrors(fieldName);
+  suite.getWarnings = (fieldName) => suite.get().getWarnings(fieldName);
+  suite.hasErrorsByGroup = (groupName, fieldName) => suite.get().hasErrorsByGroup(groupName, fieldName);
+  suite.hasWarningsByGroup = (groupName, fieldName) => suite.get().hasWarningsByGroup(groupName, fieldName);
+  suite.getErrorsByGroup = (groupName, fieldName) => suite.get().getErrorsByGroup(groupName, fieldName);
+  suite.getWarningsByGroup = (groupName, fieldName) => suite.get().getWarningsByGroup(groupName, fieldName);
 
   suite.subscribe = function (handler) {
     if (!isFunction(handler)) return;

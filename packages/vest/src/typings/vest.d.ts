@@ -1,5 +1,5 @@
 import { TEnforce } from './enforce';
-import { IVestResult, DraftResult } from './vestResult';
+import { IVestResult, DraftResult, IResultMethods } from './vestResult';
 
 type TestCB = () => void | Promise<void | string> | false;
 type TestArgsCB = (...args: any[]) => void | Promise<void | string> | false;
@@ -162,7 +162,6 @@ interface IOnly {
    */
   group(groupName?: ExclusionArg): void;
 }
-
 interface ISubscribePayload {
   type: string;
   suiteState: Record<string, any>;
@@ -170,7 +169,7 @@ interface ISubscribePayload {
   value?: any;
 }
 
-interface ICreateResult {
+interface ICreateResult extends IResultMethods {
   (...args: any[]): IVestResult;
   get: () => DraftResult;
   reset: () => void;

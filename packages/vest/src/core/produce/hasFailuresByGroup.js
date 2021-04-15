@@ -1,5 +1,5 @@
-import { hasLogic } from 'hasFaillures';
-import { useTestObjects } from 'stateHooks';
+import { hasLogic } from 'hasFailures';
+import useTestObjects from 'useTestObjects';
 
 /**
  * Checks whether there are failures in a given group.

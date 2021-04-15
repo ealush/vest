@@ -80,6 +80,7 @@ const register = testObject => {
  * Changes to this function need to reflect in test.memo as well
  */
 function test(fieldName, args) {
+  const { skip } = context.use();
   const [testFn, statement] = args.reverse();
   const [, setSkippedTests] = useSkippedTests();
 
@@ -91,7 +92,7 @@ function test(fieldName, args) {
     testFn,
   });
 
-  if (isExcluded(testObject)) {
+  if (skip || isExcluded(testObject)) {
     setSkippedTests(skippedTests => skippedTests.concat(testObject));
     return testObject;
   }

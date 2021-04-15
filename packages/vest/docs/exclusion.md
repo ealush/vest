@@ -42,9 +42,7 @@ In this case, and in similar others, you can use `vest.skip()`. When called, it 
 import vest, { enforce, test } from 'vest';
 
 const suite = vest.create('purchase', data => {
-  if (!data.promo) {
-    vest.skip('promo');
-  }
+  if (!data.promo) vest.skip('promo');
 
   // this test won't run when data.promo is falsy.
   test('promo', 'Promo code is invalid', () => {
@@ -53,6 +51,30 @@ const suite = vest.create('purchase', data => {
 });
 
 const validationResult = suite(formData);
+```
+
+## Conditionally excluding portions of the suite
+
+In some cases we might need to skip a test or a group based on a given condition. In these cases, we may find it easier to use vest.skipWhen which takes a boolean expression and a callback with the tests to run. This is better than simply wrapping the tests with an if/else statement because they can are still listed in the suite result as skipped.
+
+In the following example we're skipping the server side verification of the username if the username is invalid to begin with:
+
+```js
+import vest, { test, enforce } from 'vest';
+
+const suite = vest.create('user_form', (data = {}) => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotEmpty();
+  });
+
+  vest.skipWhen(suite.get().hasErrors('password'), () => {
+    test('username', 'Username already exists', () => {
+      // this is an example for a server call
+      return doesUserExist(data.username);
+    });
+  });
+});
+export default suite;
 ```
 
 ## Including and excluding groups of tests

@@ -1,4 +1,3 @@
-
 import createCache from 'cache';
 import context from 'ctx';
 import genTestsSummary from 'genTestsSummary';

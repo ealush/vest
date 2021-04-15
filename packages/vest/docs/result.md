@@ -49,11 +49,11 @@ const suite = vest.create('my_form', data => {
     enforce(data.username).longerThanOrEquals(3);
   });
 
-  if (!suite.get().hasErrors('username')) {
+  vest.skipWhen(suite.get().hasErrors('username'), () => {
     test('username', 'already taken', async () => {
       // some async test
     });
-  }
+  });
 });
 ```
 

@@ -172,6 +172,7 @@ Object {
   "group": [Function],
   "only": [Function],
   "skip": [Function],
+  "skipWhen": [Function],
   "test": [Function],
   "warn": [Function],
 }

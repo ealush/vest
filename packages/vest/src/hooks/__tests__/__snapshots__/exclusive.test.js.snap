@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`exclusive hooks \`skipWhen\` hook When \`shouldSkip\` is \`false\` Should produce correct validation result 1`] = `
+Object {
+  "done": [Function],
+  "errorCount": 3,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {
+    "group": Object {
+      "field2": Object {
+        "errorCount": 1,
+        "testCount": 1,
+        "warnCount": 0,
+      },
+    },
+  },
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "name": undefined,
+  "testCount": 3,
+  "tests": Object {
+    "field1": Object {
+      "errorCount": 1,
+      "testCount": 1,
+      "warnCount": 0,
+    },
+    "field2": Object {
+      "errorCount": 1,
+      "testCount": 1,
+      "warnCount": 0,
+    },
+    "field3": Object {
+      "errorCount": 1,
+      "testCount": 1,
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;

@@ -1,6 +1,5 @@
 import _ from 'lodash';
 
-
 import expandStateRef from '../../../../../testUtils/expandStateRef';
 import runCreateRef from '../../../../../testUtils/runCreateRef';
 

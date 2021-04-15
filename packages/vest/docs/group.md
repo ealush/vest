@@ -98,13 +98,8 @@ In the example below, we don't mind skipping the `balance` field directly, but i
 import vest, { test, group, enforce } from 'vest';
 
 const suite = vest.create('checkout_form', data => {
-  if (!data.usedPromo) {
-    vest.skip.group('used_promo');
-  }
-
-  if (!data.paysWithBalance) {
-    vest.skip.group('balance');
-  }
+  if (!data.usedPromo) vest.skip.group('used_promo');
+  if (!data.paysWithBalance) vest.skip.group('balance');
 
   test(
     'balance',

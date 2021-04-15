@@ -110,5 +110,3 @@ export default vest.create('user_form', (data = {}, currentField) => {
 - 🧱 Your validations are structured, making it very simple to read and write. All validation files look the same.
 - 🖇 Your validation logic is separate from your feature logic, preventing the spaghetti code that's usually involved with writing validations.
 - 🧩 Validation logic is easy to share and reuse across features.
-
-**Vest is an evolution of [Passable](https://github.com/fiverr/passable) by Fiverr.**

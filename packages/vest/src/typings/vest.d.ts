@@ -163,6 +163,19 @@ interface IOnly {
   group(groupName?: ExclusionArg): void;
 }
 
+interface ISkipWhen {
+  /**
+   * Conditionally skips tests or groups of tests within a callback
+   *
+   * @example
+   *
+   * vest.skipWhen(suite.get().hasErrors('username'), () => {
+   *    test('username', 'Username already exists', () => someServerCall(data.username))
+   * });
+   */
+  (shouldSkip: boolean, callback: () => void): void;
+}
+
 interface ISubscribePayload {
   type: string;
   suiteState: Record<string, any>;
@@ -184,6 +197,7 @@ declare namespace vest {
   const test: ITest;
   const only: IOnly;
   const skip: ISkip;
+  const skipWhen: ISkipWhen;
 
   /**
    * Runs a stateful validation suite.

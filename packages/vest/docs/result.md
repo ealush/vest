@@ -29,7 +29,7 @@ A result object would look somewhat like this:
 
 ## Accessing the recent result object with `.get`
 
-If you need to access your validation results out of context - for example, from a different UI component or function, you can use `.get()` - a function that exists as a proerty of your validation suite.
+If you need to access your validation results out of context - for example, from a different UI component or function, you can use `.get()` - a function that exists as a property of your validation suite.
 
 In case your validations did not run yet, `.get` returns an empty validation result object - which can be helpful when trying to access validation result object when rendering the initial UI, or setting it in the initial state of your components.
 
@@ -181,7 +181,7 @@ In the below example, the `done` callback for `UserName` may run before the whol
 ```js
 import vest, { test, enforce } from 'vest';
 
-const validate = vest.create('SendEmailForm', data => {
+const suite = vest.create('SendEmailForm', data => {
   test(
     'UserEmail',
     'Marked as spam address',
@@ -195,7 +195,7 @@ const validate = vest.create('SendEmailForm', data => {
   );
 });
 
-const validationResult = validate(data)
+const validationResult = suite(data)
   .done('UserName', res => {
     if (res.hasErrors('UserName')) {
       showUserNameErrors(res.errors);

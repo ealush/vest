@@ -7,7 +7,7 @@ To set a test's severity level to `warn`, you need to simply call Vest's warn fu
 ```js
 import vest, { test, enforce } from 'vest';
 
-const validate = vest.create('Password', data => {
+const suite = vest.create('Password', data => {
   test('password', 'A password must have at least 6 characters', () => {
     enforce(data.password).longerThan(5);
   }); // this test has a severity level of `error`
@@ -29,7 +29,7 @@ const validate = vest.create('Password', data => {
   }); // this test has a severity level of `warn`
 });
 
-const validationResult = validate(data);
+const validationResult = suite(data);
 ```
 
 **Limitations when using vest.warn()**

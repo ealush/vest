@@ -98,10 +98,10 @@ const result = data =>
 ```js
 import vest from 'vest';
 
-const validate = data =>
+const suite = data =>
   vest.create(() => {
     /* ... */
   })();
 
-const result = validate({ username: 'example' });
+const result = suite({ username: 'example' });
 ```

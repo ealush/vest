@@ -15,7 +15,7 @@ In the example below, we're assuming the argument `fieldName` is being populated
 ```js
 import vest, { enforce, test } from 'vest';
 
-const validate = vest.create('New User', (data, fieldName) => {
+const suite = vest.create('New User', (data, fieldName) => {
   vest.only(fieldName);
 
   test('username', 'Username is invalid', () => {
@@ -29,7 +29,7 @@ const validate = vest.create('New User', (data, fieldName) => {
   });
 });
 
-const validationResult = validate(formData, changedField);
+const validationResult = suite(formData, changedField);
 ```
 
 ### Skipping tests
@@ -41,7 +41,7 @@ In this case, and in similar others, you can use `vest.skip()`. When called, it 
 ```js
 import vest, { enforce, test } from 'vest';
 
-const validate = vest.create('purchase', data => {
+const suite = vest.create('purchase', data => {
   if (!data.promo) {
     vest.skip('promo');
   }
@@ -52,7 +52,7 @@ const validate = vest.create('purchase', data => {
   });
 });
 
-const validationResult = validate(formData);
+const validationResult = suite(formData);
 ```
 
 ## Including and excluding groups of tests

@@ -76,33 +76,21 @@ const produce = isDraft => {
   return cache(
     [testObjects, isDraft],
     context.bind(ctxRef, () =>
-      Object.defineProperties(
-        genTestsSummary(),
-        [
-          [HAS_ERRORS, hasFaillures, SEVERITY_GROUP_ERROR],
-          [HAS_WARNINGS, hasFaillures, SEVERITY_GROUP_WARN],
-          ['getErrors', getFailures, SEVERITY_GROUP_ERROR],
-          ['getWarnings', getFailures, SEVERITY_GROUP_WARN],
-          ['hasErrorsByGroup', hasFailuresByGroup, SEVERITY_GROUP_ERROR],
-          ['hasWarningsByGroup', hasFailuresByGroup, SEVERITY_GROUP_WARN],
-          ['getErrorsByGroup', getFailuresByGroup, SEVERITY_GROUP_ERROR],
-          ['getWarningsByGroup', getFailuresByGroup, SEVERITY_GROUP_WARN],
-        ]
-          .concat(isDraft ? [] : [['done', done]])
-          .reduce(
-            (properties, [name, fn, severityKey]) => (
-              (properties[name] = {
-                configurable: true,
-                enumerable: true,
-                name,
-                value: context.bind(ctxRef, fn, severityKey),
-                writeable: true,
-              }),
-              properties
-            ),
-            {}
-          )
-      )
+      [
+        [HAS_ERRORS, hasFaillures, SEVERITY_GROUP_ERROR],
+        [HAS_WARNINGS, hasFaillures, SEVERITY_GROUP_WARN],
+        ['getErrors', getFailures, SEVERITY_GROUP_ERROR],
+        ['getWarnings', getFailures, SEVERITY_GROUP_WARN],
+        ['hasErrorsByGroup', hasFailuresByGroup, SEVERITY_GROUP_ERROR],
+        ['hasWarningsByGroup', hasFailuresByGroup, SEVERITY_GROUP_WARN],
+        ['getErrorsByGroup', getFailuresByGroup, SEVERITY_GROUP_ERROR],
+        ['getWarningsByGroup', getFailuresByGroup, SEVERITY_GROUP_WARN],
+      ]
+        .concat(isDraft ? [] : [['done', done]])
+        .reduce((properties, [name, fn, severityKey]) => {
+          properties[name] = context.bind(ctxRef, fn, severityKey);
+          return properties;
+        }, genTestsSummary())
     )
   );
 };

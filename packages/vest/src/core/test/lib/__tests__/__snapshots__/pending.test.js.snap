@@ -13,7 +13,7 @@ Object {
   },
   "testCallbacks": Object {
     "doneCallbacks": Array [],
-    "fieldCallbacks": Array [],
+    "fieldCallbacks": Object {},
   },
   "testObjects": Array [],
 }
@@ -32,7 +32,7 @@ Object {
   },
   "testCallbacks": Object {
     "doneCallbacks": Array [],
-    "fieldCallbacks": Array [],
+    "fieldCallbacks": Object {},
   },
   "testObjects": Array [],
 }
@@ -61,7 +61,7 @@ Object {
   },
   "testCallbacks": Object {
     "doneCallbacks": Array [],
-    "fieldCallbacks": Array [],
+    "fieldCallbacks": Object {},
   },
   "testObjects": Array [],
 }
@@ -107,7 +107,7 @@ Object {
   },
   "testCallbacks": Object {
     "doneCallbacks": Array [],
-    "fieldCallbacks": Array [],
+    "fieldCallbacks": Object {},
   },
   "testObjects": Array [],
 }

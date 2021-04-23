@@ -7,7 +7,7 @@ export default function createStateRef(state, { suiteId, name }) {
     skippedTests: state.registerStateKey(() => []),
     suiteId: state.registerStateKey(() => ({ id: suiteId, name })),
     testCallbacks: state.registerStateKey(() => ({
-      fieldCallbacks: [],
+      fieldCallbacks: {},
       doneCallbacks: [],
     })),
     testObjects: state.registerStateKey(() => []),

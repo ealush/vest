@@ -8,12 +8,16 @@ import {
 const context = createContext((ctxRef, parentContext) =>
   parentContext
     ? null
-    : Object.assign({}, ctxRef, {
-        exclusion: {
-          [EXCLUSION_ITEM_TYPE_TESTS]: {},
-          [EXCLUSION_ITEM_TYPE_GROUPS]: {},
+    : Object.assign(
+        {},
+        {
+          exclusion: {
+            [EXCLUSION_ITEM_TYPE_TESTS]: {},
+            [EXCLUSION_ITEM_TYPE_GROUPS]: {},
+          },
         },
-      })
+        ctxRef
+      )
 );
 
 export default context;

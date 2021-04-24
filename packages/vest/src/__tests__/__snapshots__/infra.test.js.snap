@@ -13,6 +13,7 @@ Object {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isValid": [Function],
   "name": "molestias-veritatis-deserunt",
   "testCount": 2,
   "tests": Object {
@@ -39,6 +40,7 @@ Object {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isValid": [Function],
   "name": "eveniet-maxime-ea",
   "testCount": 2,
   "tests": Object {
@@ -73,6 +75,7 @@ Object {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isValid": [Function],
   "name": "inventore-quis-impedit",
   "testCount": 1,
   "tests": Object {
@@ -109,6 +112,7 @@ Object {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isValid": [Function],
   "name": "corrupti-alias-autem",
   "testCount": 1,
   "tests": Object {
@@ -143,6 +147,7 @@ Object {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isValid": [Function],
   "name": "corrupti-alias-autem",
   "testCount": 2,
   "tests": Object {
@@ -171,6 +176,7 @@ Object {
   "enforce": [Function],
   "group": [Function],
   "only": [Function],
+  "optional": [Function],
   "skip": [Function],
   "skipWhen": [Function],
   "test": [Function],

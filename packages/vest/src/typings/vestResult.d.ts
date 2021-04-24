@@ -26,6 +26,12 @@ export type DraftResult = {
     };
   };
   /**
+   * Returns whether the suite as a whole is valid.
+   * Determined if there are no errors, and if no
+   * required fields are skipped.
+   */
+  isValid: () => boolean;
+  /**
    * Returns whether the specified field has errors
    */
   hasErrors: (fieldName?: string) => boolean;

@@ -21,6 +21,7 @@ Object {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isValid": [Function],
   "name": undefined,
   "testCount": 3,
   "tests": Object {

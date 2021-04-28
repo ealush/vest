@@ -1,4 +1,4 @@
-import { hasLogic } from 'hasFaillures';
+import { hasLogic } from 'hasFailures';
 import { useTestObjects } from 'stateHooks';
 
 /**

@@ -199,6 +199,8 @@ declare namespace vest {
   const skip: ISkip;
   const skipWhen: ISkipWhen;
 
+  function optional(optionalFields: string | string[]): boolean;
+
   /**
    * Runs a stateful validation suite.
    * @param [suiteName] Unique suite name.

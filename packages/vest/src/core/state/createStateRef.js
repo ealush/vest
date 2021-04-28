@@ -1,5 +1,6 @@
 export default function createStateRef(state, { suiteId, name }) {
   return {
+    optionalFields: state.registerStateKey(() => ({})),
     pending: state.registerStateKey(() => ({
       pending: [],
       lagging: [],

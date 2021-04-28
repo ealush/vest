@@ -61,6 +61,19 @@ const suite = vest.create('my_form', data => {
 
 Along with these values, the result object exposes the following methods:
 
+## `isValid` function
+
+`isValid` returns whether the validation suite as a whole is valid or not.
+
+A suite is considered valid if both conditions are met:
+
+- There are no errors (`hasErrors() === false`) in the suite - warnings are not counted as errors.
+- All non optional fields have passing tests.
+
+```js
+resultObject.isValid();
+```
+
 ## `hasErrors` and `hasWarnings` functions
 
 If you only need to know if a certain field has validation errors or warnings but don't really care which they are, you can use `hasErrors` or `hasWarnings` functions.

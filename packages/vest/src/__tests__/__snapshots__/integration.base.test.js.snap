@@ -13,6 +13,7 @@ Object {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isValid": [Function],
   "name": "suite_name",
   "testCount": 5,
   "tests": Object {

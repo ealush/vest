@@ -17,3 +17,6 @@ export function useTestObjects() {
 export function useSkippedTests() {
   return getStateRef().skippedTests();
 }
+export function useOptionalFields() {
+  return getStateRef().optionalFields();
+}

@@ -3,16 +3,57 @@ import context from 'ctx';
 import genTestsSummary from 'genTestsSummary';
 import getFailures from 'getFailures';
 import getFailuresByGroup from 'getFailuresByGroup';
-import hasFaillures from 'hasFaillures';
+import hasFailures from 'hasFailures';
 import hasFailuresByGroup from 'hasFailuresByGroup';
 import hasRemainingTests from 'hasRemainingTests';
 import isFunction from 'isFunction';
 import { SEVERITY_GROUP_ERROR, SEVERITY_GROUP_WARN } from 'resultKeys';
 import { HAS_WARNINGS, HAS_ERRORS } from 'sharedKeys';
-import { useTestCallbacks, useTestObjects } from 'stateHooks';
+import {
+  useTestCallbacks,
+  useTestObjects,
+  useOptionalFields,
+} from 'stateHooks';
 import withArgs from 'withArgs';
 
 const cache = createCache(20);
+
+/**
+ * @param {boolean} [isDraft]
+ * @returns Vest output object.
+ */
+const produce = isDraft => {
+  const { stateRef, optional } = context.use();
+  const [testObjects] = useTestObjects();
+
+  const ctxRef = { stateRef, optional };
+
+  return cache(
+    [testObjects, isDraft],
+    context.bind(ctxRef, () =>
+      [
+        [HAS_ERRORS, hasFailures, SEVERITY_GROUP_ERROR],
+        [HAS_WARNINGS, hasFailures, SEVERITY_GROUP_WARN],
+        ['getErrors', getFailures, SEVERITY_GROUP_ERROR],
+        ['getWarnings', getFailures, SEVERITY_GROUP_WARN],
+        ['hasErrorsByGroup', hasFailuresByGroup, SEVERITY_GROUP_ERROR],
+        ['hasWarningsByGroup', hasFailuresByGroup, SEVERITY_GROUP_WARN],
+        ['getErrorsByGroup', getFailuresByGroup, SEVERITY_GROUP_ERROR],
+        ['getWarningsByGroup', getFailuresByGroup, SEVERITY_GROUP_WARN],
+      ]
+        .concat(
+          [['isValid', isValid]],
+          isDraft ? [] : [['done', withArgs(done)]]
+        )
+        .reduce((properties, [name, fn, severityKey]) => {
+          properties[name] = context.bind(ctxRef, fn, severityKey);
+          return properties;
+        }, genTestsSummary())
+    )
+  );
+};
+
+export default produce;
 
 /**
  * Registers done callbacks.
@@ -20,7 +61,7 @@ const cache = createCache(20);
  * @param {Function} doneCallback
  * @register {Object} Vest output object.
  */
-const done = withArgs(args => {
+function done(args) {
   const [callback, fieldName] = args.reverse();
   const { stateRef } = context.use();
 
@@ -61,38 +102,28 @@ const done = withArgs(args => {
   });
 
   return output;
-});
+}
 
-/**
- * @param {boolean} [isDraft]
- * @returns Vest output object.
- */
-const produce = isDraft => {
-  const { stateRef } = context.use();
+function isValid() {
+  const result = produce();
+
+  if (result.hasErrors()) {
+    return false;
+  }
+
   const [testObjects] = useTestObjects();
 
-  const ctxRef = { stateRef };
+  if (testObjects.length === 0) {
+    return false;
+  }
 
-  return cache(
-    [testObjects, isDraft],
-    context.bind(ctxRef, () =>
-      [
-        [HAS_ERRORS, hasFaillures, SEVERITY_GROUP_ERROR],
-        [HAS_WARNINGS, hasFaillures, SEVERITY_GROUP_WARN],
-        ['getErrors', getFailures, SEVERITY_GROUP_ERROR],
-        ['getWarnings', getFailures, SEVERITY_GROUP_WARN],
-        ['hasErrorsByGroup', hasFailuresByGroup, SEVERITY_GROUP_ERROR],
-        ['hasWarningsByGroup', hasFailuresByGroup, SEVERITY_GROUP_WARN],
-        ['getErrorsByGroup', getFailuresByGroup, SEVERITY_GROUP_ERROR],
-        ['getWarningsByGroup', getFailuresByGroup, SEVERITY_GROUP_WARN],
-      ]
-        .concat(isDraft ? [] : [['done', done]])
-        .reduce((properties, [name, fn, severityKey]) => {
-          properties[name] = context.bind(ctxRef, fn, severityKey);
-          return properties;
-        }, genTestsSummary())
-    )
-  );
-};
+  const [optionalFields] = useOptionalFields();
 
-export default produce;
+  for (const test in result.tests) {
+    if (!optionalFields[test] && result.tests[test].testCount === 0) {
+      return false;
+    }
+  }
+
+  return true;
+}

@@ -26,6 +26,7 @@ Object {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isValid": [Function],
   "name": "suite_name",
   "testCount": 3,
   "tests": Object {
@@ -82,6 +83,7 @@ Object {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isValid": [Function],
   "name": "suite_name",
   "testCount": 3,
   "tests": Object {
@@ -141,6 +143,7 @@ Object {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isValid": [Function],
   "name": "suite_name",
   "testCount": 7,
   "tests": Object {

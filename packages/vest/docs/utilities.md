@@ -51,7 +51,7 @@ A good example would be: When your validated field can be either empty (not requ
 
 ### Usage
 
-`any()` accepts an infinite number of arguments, all of which are functions. It returns a function, that when called - behaves just like a test function callback.
+`any()` accepts an infinite number of arguments, all of which are functions. It returns a boolean, that can be used as the return value of a test function.
 
 The only difference is - if any of the supplied tests passes, the success condition is met and `any()` returns true.
 
@@ -63,7 +63,7 @@ vest.create('Checkout', () => {
   test(
     'coupon',
     'When filled, must be at least 5 chars',
-    any(
+    () => any(
       () => enforce(data.coupon).isEmpty(),
       () => enforce(data.coupon).longerThanOrEquals(5)
     )

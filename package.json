@@ -63,7 +63,7 @@
     "rollup": "^2.40.0",
     "rollup-plugin-terser": "^7.0.2",
     "semver": "^7.3.5",
-    "typescript": "^4.2.2",
+    "typescript": "^4.2.4",
     "validator": "^13.5.2",
     "vest": "^3.0.0",
     "wait": "^0.4.2"

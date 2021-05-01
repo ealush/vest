@@ -47,7 +47,7 @@
     "cross-env": "^7.0.3",
     "date-fns": "^2.17.0",
     "eslint": "^7.19.0",
-    "eslint-config-prettier": "^8.1.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^23.20.0",
     "faker": "^5.2.0",

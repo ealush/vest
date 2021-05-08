@@ -65,14 +65,19 @@ Along with these values, the result object exposes the following methods:
 
 `isValid` returns whether the validation suite as a whole is valid or not.
 
-A suite is considered valid if both conditions are met:
+A suite is considered valid if the following conditions are met:
 
 - There are no errors (`hasErrors() === false`) in the suite - warnings are not counted as errors.
 - All non optional fields have passing tests.
+- There are no pending async tests.
 
 ```js
-resultObject.isValid();
+result.isValid();
+
+suite.get().isValid();
 ```
+
+?> **Note** when `isValid` equals `false`, it does not necessarily mean that the form is inValid, but that it might not be valid _yet_. For example, if not all the fields are filled, the form is simply not valid, even though it may not be strictly invalid.
 
 ## `hasErrors` and `hasWarnings` functions
 

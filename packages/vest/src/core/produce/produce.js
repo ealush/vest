@@ -6,6 +6,7 @@ import getFailuresByGroup from 'getFailuresByGroup';
 import hasFailures from 'hasFailures';
 import hasFailuresByGroup from 'hasFailuresByGroup';
 import hasRemainingTests from 'hasRemainingTests';
+import { isNotEmpty } from 'isEmpty';
 import isFunction from 'isFunction';
 import { SEVERITY_GROUP_ERROR, SEVERITY_GROUP_WARN } from 'resultKeys';
 import { HAS_WARNINGS, HAS_ERRORS } from 'sharedKeys';
@@ -13,6 +14,7 @@ import {
   useTestCallbacks,
   useTestObjects,
   useOptionalFields,
+  usePending,
 } from 'stateHooks';
 import withArgs from 'withArgs';
 
@@ -118,6 +120,16 @@ function isValid() {
   }
 
   const [optionalFields] = useOptionalFields();
+
+  const [{ pending, lagging }] = usePending();
+
+  if (
+    isNotEmpty(
+      pending.concat(lagging).filter(testObject => !testObject.isWarning)
+    )
+  ) {
+    return false;
+  }
 
   for (const test in result.tests) {
     if (!optionalFields[test] && result.tests[test].testCount === 0) {

@@ -1,3 +1,5 @@
+import wait from 'wait';
+
 import vest, { test, optional } from 'vest';
 
 describe('isValid', () => {
@@ -71,6 +73,102 @@ describe('isValid', () => {
     });
     it('Should return false', () => {
       expect(suite(['field_2', 'field_3']).isValid()).toBe(false);
+    });
+  });
+
+  describe('When the suite has an async optional test', () => {
+    let suite;
+
+    beforeEach(() => {
+      suite = vest.create(() => {
+        optional('field_1');
+        test('field_1', async () => {
+          await wait(300);
+          return true;
+        });
+      });
+    });
+
+    describe('When test is pending', () => {
+      it('Should return false', () => {
+        suite();
+        expect(suite.get().isValid()).toBe(false);
+      });
+    });
+    describe('When test is passing', () => {
+      it('Should return true', async () => {
+        suite();
+        await wait(300);
+        expect(suite.get().isValid()).toBe(true);
+      });
+    });
+  });
+
+  describe('When the suite has warning async tests', () => {
+    let suite;
+
+    beforeEach(() => {
+      suite = vest.create(() => {
+        test('field_1', async () => {
+          vest.warn();
+          await wait(300);
+          return true;
+        });
+
+        test('field_1', () => {
+          return true;
+        });
+      });
+    });
+
+    it('Should return true', () => {
+      expect(suite().isValid()).toBe(true);
+    });
+  });
+
+  describe('When the suite has async non-optional tests', () => {
+    let suite;
+
+    beforeEach(() => {
+      suite = vest.create(only => {
+        vest.only(only);
+        optional('field_2');
+        test('field_1', async () => {
+          await wait(300);
+          return true;
+        });
+        test('field_2', () => {
+          return true;
+        });
+      });
+    });
+
+    describe('When test is pending', () => {
+      it('Should return `false`', () => {
+        const result = suite();
+
+        expect(result.isValid()).toBe(false);
+      });
+    });
+
+    describe('When async test is passing', () => {
+      it('Should return `true`', () => {
+        return new Promise(done => {
+          const result = suite().done(() => {
+            expect(result.isValid()).toBe(true);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('When test is lagging', () => {
+      it('Should return `false`', () => {
+        suite();
+        const result = suite('field_2');
+
+        expect(result.isValid()).toBe(false);
+      });
     });
   });
 

@@ -3,7 +3,7 @@ import { useTestObjects } from 'stateHooks';
 
 /**
  * Checks whether there are failures in a given group.
- * @param {'warn'|'error'} severityKey    Severity filter.
+ * @param {'errors'|'warnings'} severityKey lookup severity
  * @param {string} group                  Group name.
  * @param {string} [fieldName]            Field name.
  * @return {boolean}

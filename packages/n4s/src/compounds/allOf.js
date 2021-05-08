@@ -3,7 +3,7 @@ import runCompoundChain from 'runCompoundChain';
 import withArgs from 'withArgs';
 
 /**
- * Runs a chaen of rules, making sure that all assertions pass
+ * Runs a chain of rules, making sure that all assertions pass
  *
  * @param {EnforceContext} value
  * @param {[{test: Function, run: Function}]} ruleChains

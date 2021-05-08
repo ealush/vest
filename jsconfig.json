@@ -3,6 +3,7 @@
     "baseUrl": ".",
     "paths": {
       "asArray": ["./packages/__shared/src/asArray.js"],
+      "assign": ["./packages/__shared/src/assign.js"],
       "hasOwnProperty": ["./packages/__shared/src/hasOwnProperty.js"],
       "isBooleanValue": ["./packages/__shared/src/isBooleanValue.js"],
       "isFunction": ["./packages/__shared/src/isFunction.js"],

@@ -17,13 +17,13 @@ describe('exclusive hooks', () => {
   let field1, field2, field3;
 
   beforeEach(() => {
-    field1 = new VestTest({
+    field1 = VestTest({
       fieldName: faker.lorem.word(),
     });
-    field2 = new VestTest({
+    field2 = VestTest({
       fieldName: faker.lorem.slug(),
     });
-    field3 = new VestTest({
+    field3 = VestTest({
       fieldName: faker.random.word(),
     });
   });

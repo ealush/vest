@@ -1,4 +1,4 @@
- import create from 'createSuite';
+import create from 'createSuite';
 import enforce from 'enforce';
 import { only, skip, warn, group, skipWhen, optional } from 'hooks';
 import test from 'test';

@@ -3,7 +3,7 @@ import throwError from 'throwError';
 
 /**
  * Gets failure messages by group.
- * @param {'warn'|'error'} severityKey    Severity filter.
+ * @param {'errors'|'warnings'} severityKey lookup severity
  * @param {string} group                  Group name.
  * @param {string} [fieldName]            Field name.
  */

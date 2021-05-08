@@ -10,49 +10,55 @@ import removeTestFromState from 'removeTestFromState';
  * @param {string} [group]              The group in which the test runs.
  */
 function VestTest({ fieldName, statement, testFn, group }) {
-  Object.assign(this, {
+  const testObject = {
+    cancel,
+    fail,
     failed: false,
     fieldName,
     id: id(),
     isWarning: false,
     statement,
     testFn,
-  });
+    valueOf,
+    warn,
+  };
 
   if (group) {
-    this.groupName = group;
+    testObject.groupName = group;
+  }
+
+  return testObject;
+
+  /**
+   * @returns {Boolean} Current validity status of a test.
+   */
+  function valueOf() {
+    return testObject.failed !== true;
+  }
+
+  /**
+   * Sets a test to failed.
+   */
+  function fail() {
+    testObject.failed = true;
+  }
+
+  /**
+   * Sets a current test's `isWarning` to true.
+   */
+  function warn() {
+    testObject.isWarning = true;
+  }
+
+  /**
+   * Marks a test as canceled, removes it from the state.
+   * This function needs to be called within a stateRef context.
+   */
+  function cancel() {
+    testObject.canceled = true;
+    removePending(this);
+    removeTestFromState(this);
   }
 }
-
-/**
- * @returns {Boolean} Current validity status of a test.
- */
-VestTest.prototype.valueOf = function () {
-  return this.failed !== true;
-};
-
-/**
- * Sets a test to failed.
- */
-VestTest.prototype.fail = function () {
-  this.failed = true;
-};
-
-/**
- * Sets a current test's `isWarning` to true.
- */
-VestTest.prototype.warn = function () {
-  this.isWarning = true;
-};
-
-/**
- * Marks a test as canceled, removes it from the state.
- * This function needs to be called within a stateRef context.
- */
-VestTest.prototype.cancel = function () {
-  this.canceled = true;
-  removePending(this);
-  removeTestFromState(this);
-};
 
 export default VestTest;

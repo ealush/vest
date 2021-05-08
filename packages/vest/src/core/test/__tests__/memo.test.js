@@ -147,7 +147,7 @@ describe('test.memo', () => {
         expect(newRes).toMatchSnapshot();
       });
 
-      it('Should return new VestTest instances', () => {
+      it('Should return testObject', () => {
         validate(2);
         expect(test1Set.size).toBe(2);
         expect(test2Set.size).toBe(2);

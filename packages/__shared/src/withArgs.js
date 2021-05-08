@@ -8,7 +8,8 @@ import setFnName from 'setFnName';
  * @return {Function}
  */
 export default function withArgs(cb, fnName) {
-  return setFnName((...args) => {
+  return setFnName(function () {
+    const args = Array.from(arguments);
     const right = args.splice(cb.length - 1);
     return cb.apply(null, args.concat([right]));
   }, fnName || cb.name);

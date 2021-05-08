@@ -85,7 +85,7 @@ function test(fieldName, args) {
   const [, setSkippedTests] = useSkippedTests();
 
   const { groupName } = context.use();
-  const testObject = new VestTest({
+  const testObject = VestTest({
     fieldName,
     group: groupName,
     statement,

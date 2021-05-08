@@ -60,10 +60,8 @@ import vest, { test, enforce } from 'vest';
 import any from 'vest/any';
 
 vest.create('Checkout', () => {
-  test(
-    'coupon',
-    'When filled, must be at least 5 chars',
-    () => any(
+  test('coupon', 'When filled, must be at least 5 chars', () =>
+    any(
       () => enforce(data.coupon).isEmpty(),
       () => enforce(data.coupon).longerThanOrEquals(5)
     )

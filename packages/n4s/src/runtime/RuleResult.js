@@ -1,5 +1,6 @@
 import hasOwnProperty from 'hasOwnProperty';
 
+import assign from 'assign';
 import { isBoolean } from 'isBoolean';
 import { isEmpty } from 'isEmpty';
 import { isNull } from 'isNull';
@@ -113,7 +114,7 @@ RuleResult.prototype.extend = function (newRes) {
 
   const children = mergeChildren(res, this).children;
 
-  Object.assign(this, res);
+  assign(this, res);
   if (!isEmpty(children)) {
     this.children = children;
   }

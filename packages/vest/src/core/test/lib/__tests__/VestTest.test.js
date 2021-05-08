@@ -17,7 +17,7 @@ describe('VestTest', () => {
   let testObject;
 
   beforeEach(() => {
-    testObject = new VestTest({
+    testObject = VestTest({
       fieldName,
       statement,
       testFn: jest.fn(),
@@ -29,9 +29,8 @@ describe('VestTest', () => {
   });
 
   it('Should have a unique id', () => {
-    Array.from(
-      { length: 100 },
-      () => new VestTest({ fieldName, statement, testFn: jest.fn() })
+    Array.from({ length: 100 }, () =>
+      VestTest({ fieldName, statement, testFn: jest.fn() })
     ).reduce((existing, { id }) => {
       expect(existing[id]).toBeUndefined();
       existing[id] = true;
@@ -53,7 +52,7 @@ describe('VestTest', () => {
       jest.resetModules();
 
       const VestTest = require('VestTest');
-      testObject = new VestTest({
+      testObject = VestTest({
         fieldName,
         statement,
         testFn: jest.fn(),

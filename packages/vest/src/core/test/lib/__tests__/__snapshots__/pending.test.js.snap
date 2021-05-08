@@ -46,7 +46,9 @@ Object {
   "pending": Object {
     "lagging": Array [],
     "pending": Array [
-      VestTest {
+      Object {
+        "cancel": [Function],
+        "fail": [Function],
         "failed": false,
         "fieldName": "test_0",
         "groupName": "group_name",
@@ -54,6 +56,8 @@ Object {
         "isWarning": false,
         "statement": "Some statement string",
         "testFn": [MockFunction],
+        "valueOf": [Function],
+        "warn": [Function],
       },
     ],
   },
@@ -75,25 +79,35 @@ Object {
   "optionalFields": Object {},
   "pending": Object {
     "lagging": Array [
-      VestTest {
+      Object {
+        "cancel": [Function],
+        "fail": [Function],
         "failed": false,
         "fieldName": "test_2",
         "id": "12",
         "isWarning": false,
         "statement": "Some statement string",
         "testFn": [MockFunction],
+        "valueOf": [Function],
+        "warn": [Function],
       },
-      VestTest {
+      Object {
+        "cancel": [Function],
+        "fail": [Function],
         "failed": false,
         "fieldName": "test_1",
         "id": "11",
         "isWarning": false,
         "statement": "Some statement string",
         "testFn": [MockFunction],
+        "valueOf": [Function],
+        "warn": [Function],
       },
     ],
     "pending": Array [
-      VestTest {
+      Object {
+        "cancel": [Function],
+        "fail": [Function],
         "failed": false,
         "fieldName": "test_0",
         "groupName": "group_name",
@@ -101,6 +115,8 @@ Object {
         "isWarning": false,
         "statement": "failure message",
         "testFn": [MockFunction],
+        "valueOf": [Function],
+        "warn": [Function],
       },
     ],
   },

@@ -45,7 +45,7 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
           return state;
         });
       });
-      testObject = new VestTest({
+      testObject = VestTest({
         fieldName,
         statement: STATEMENT,
         testFn: () => null,
@@ -120,7 +120,7 @@ describe.each([CASE_PASSING /*, CASE_FAILING*/])(
         beforeEach(() => {
           context.run({ stateRef }, () => {
             setPending(
-              new VestTest({
+              VestTest({
                 fieldName: 'pending_field',
                 statement: STATEMENT,
                 testFn: jest.fn(),

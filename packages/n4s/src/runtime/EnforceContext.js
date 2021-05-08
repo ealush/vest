@@ -1,10 +1,12 @@
+import assign from 'assign';
+
 /**
  * Stores values and configuration passed down to compound rules.
  *
  * @param {Object} content
  */
 export default function EnforceContext(content) {
-  Object.assign(this, content);
+  assign(this, content);
 }
 
 /**

@@ -1,6 +1,5 @@
 import faker from 'faker';
 
-import VestTest from 'VestTest';
 import enforce from 'enforce';
 import test from 'test';
 import vest from 'vest';
@@ -22,8 +21,6 @@ describe("Test Vest's `test.each` function", () => {
         expect(testObjects).toHaveLength(2);
         expect(testObjects[0].failed).toBe(false);
         expect(testObjects[1].failed).toBe(false);
-        expect(testObjects[0]).toBeInstanceOf(VestTest);
-        expect(testObjects[1]).toBeInstanceOf(VestTest);
       });
 
       it('Should mark failed tests as such', () => {

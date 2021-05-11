@@ -10,7 +10,7 @@
 
 [![Join discord](https://img.shields.io/discord/757686103292641312?label=Join%20Discord&logo=discord&logoColor=green)](https://discord.gg/WmADZpJnSe)
 
-- [Documentation homepage](https://ealush.github.io/vest)
+- [Documentation homepage](https://vestjs.dev)
 - **Try vest live**
   - [Vanilla JS Example](https://stackblitz.com/edit/vest-vanilla-support-example?file=validation.js)
   - ReactJS Examples:

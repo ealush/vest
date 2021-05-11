@@ -51,12 +51,12 @@ Vest tries to remediate this by separating validation logic from feature logic s
 ## ✨ Vest's features
 
 - 🎨 Framework agnostic (BYOUI)
-- ⚡️ Rich, extendable, assertions library (enforce) ([doc](http://ealush.com/vest/#/enforce))
+- ⚡️ Rich, extendable, assertions library (enforce) ([doc](http://vestjs.dev/#/enforce))
 - 🚥 Multiple validations for the same field
-- ⚠️ Warning (non failing) tests ([doc](http://ealush.com/vest/#/warn))
-- 📝 Validate only the fields the user interacted with ([doc](http://ealush.com/vest/#/exclusion))
-- ⏳ Memoize async validations to reduce calls to the server ([doc](http://ealush.com/vest/#/test?id=testmemo-for-memoized-tests))
-- 🚦 Test grouping ([doc](http://ealush.com/vest/#/group))
+- ⚠️ Warning (non failing) tests ([doc](http://vestjs.dev/#/warn))
+- 📝 Validate only the fields the user interacted with ([doc](http://vestjs.dev/#/exclusion))
+- ⏳ Memoize async validations to reduce calls to the server ([doc](http://vestjs.dev/#/test?id=testmemo-for-memoized-tests))
+- 🚦 Test grouping ([doc](http://vestjs.dev/#/group))
 
 ## Example code ([Run in sandbox](https://codesandbox.io/s/vest-react-tutorial-finished-ztt8t?file=/src/validate.js))
 

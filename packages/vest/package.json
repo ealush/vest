@@ -53,7 +53,7 @@
   "bugs": {
     "url": "https://github.com/ealush/vest/issues"
   },
-  "homepage": "https://ealush.github.io/vest/",
+  "homepage": "https://vestjs.dev/",
   "scripts": {
     "build": "rollup -c ./config/rollup/rollup.config.js",
     "test": "jest"

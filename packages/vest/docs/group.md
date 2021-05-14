@@ -95,11 +95,11 @@ You sometimes want to skip some tests on a certain condition, but still run othe
 In the example below, we don't mind skipping the `balance` field directly, but if we skip the `quantity` field directly, it won't be tested at all - even though it has one test outside of the group. That's why we skip the `used_promo`.
 
 ```js
-import vest, { test, group, enforce } from 'vest';
+import vest, { test, group, enforce, skip } from 'vest';
 
 const suite = vest.create('checkout_form', data => {
-  if (!data.usedPromo) vest.skip.group('used_promo');
-  if (!data.paysWithBalance) vest.skip.group('balance');
+  if (!data.usedPromo) skip.group('used_promo');
+  if (!data.paysWithBalance) skip.group('balance');
 
   test(
     'balance',

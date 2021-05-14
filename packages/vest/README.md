@@ -93,10 +93,6 @@ export default vest.create('user_form', (data = {}, currentField) => {
     });
   }
 
-  test('email', 'Email Address is not valid', () => {
-    enforce(data.email).isEmail();
-  });
-
   test('tos', () => {
     enforce(data.tos).isTruthy();
   });

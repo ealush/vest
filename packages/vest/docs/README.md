@@ -61,10 +61,10 @@ Vest tries to remediate this by separating validation logic from feature logic s
 ## Example code ([Run in sandbox](https://codesandbox.io/s/vest-react-tutorial-finished-ztt8t?file=/src/validate.js))
 
 ```js
-import vest, { test } from 'vest';
+import vest, { test, only, skip } from 'vest';
 
 export default vest.create('user_form', (data = {}, currentField) => {
-  vest.only(currentField);
+  only(currentField);
 
   test('username', 'Username is required', () => {
     enforce(data.username).isNotEmpty();
@@ -87,15 +87,14 @@ export default vest.create('user_form', (data = {}, currentField) => {
     enforce(data.password).matches(/[0-9]/);
   });
 
-  if (data.password) {
-    test('confirm_password', 'Passwords do not match', () => {
-      enforce(data.confirm_password).equals(data.password);
-    });
-  }
-
-  test('email', 'Email Address is not valid', () => {
-    enforce(data.email).isEmail();
-  });
+  skip(
+    () => !data.password,
+    () => {
+      test('confirm_password', 'Passwords do not match', () => {
+        enforce(data.confirm_password).equals(data.password);
+      });
+    }
+  );
 
   test('tos', () => {
     enforce(data.tos).isTruthy();
@@ -110,5 +109,3 @@ export default vest.create('user_form', (data = {}, currentField) => {
 - 🧱 Your validations are structured, making it very simple to read and write. All validation files look the same.
 - 🖇 Your validation logic is separate from your feature logic, preventing the spaghetti code that's usually involved with writing validations.
 - 🧩 Validation logic is easy to share and reuse across features.
-
-**Vest is an evolution of [Passable](https://github.com/fiverr/passable) by Fiverr.**

@@ -225,85 +225,65 @@ describe('exclusive hooks', () => {
         expect(res).toEqual(false);
       });
     });
-  });
 
-  describe('`skipWhen` hook', () => {
-    let suite, fn1, fn2, fn3;
+    describe('conditional skip', () => {
+      describe('When falsy', () => {
+        it('Should run passed fields', () => {
+          const result = vest.create(faker.lorem.word(), () => {
+            vest.skip(() => false, ['field1']);
 
-    beforeEach(() => {
-      fn1 = jest.fn(() => false);
-      fn2 = jest.fn(() => false);
-      fn3 = jest.fn(() => false);
-      suite = vest.create(shouldSkip => {
-        vest.skipWhen(shouldSkip, () => {
-          vest.test('field1', fn1);
-          vest.group('group', () => {
-            vest.test('field2', fn2);
+            vest.test('field1', () => false);
+            vest.test('field2', () => false);
+          })();
+          expect(result.tests.field1.testCount).toBe(1);
+          expect(result.tests.field2.testCount).toBe(1);
+        });
+
+        describe('skip callback', () => {
+          it('Should run tests in the callback', () => {
+            const result = vest.create(faker.lorem.word(), () => {
+              vest.skip(
+                () => false,
+                () => {
+                  vest.test('field1', () => false);
+                }
+              );
+
+              vest.test('field2', () => false);
+            })();
+            expect(result.tests.field1.testCount).toBe(1);
+            expect(result.tests.field2.testCount).toBe(1);
           });
         });
-        vest.test('field3', fn3);
       });
-    });
+      describe('When truthy', () => {
+        it('Should only register - and not run passed fields', () => {
+          const result = vest.create(faker.lorem.word(), () => {
+            vest.skip(() => true, ['field1']);
 
-    describe('When `shouldSkip` is `true`', () => {
-      it('Should skip all tests within the callback', () => {
-        expect(fn1).not.toHaveBeenCalled();
-        expect(fn2).not.toHaveBeenCalled();
-        expect(fn3).not.toHaveBeenCalled(); // sanity
-        suite(true);
-        expect(fn1).not.toHaveBeenCalled();
-        expect(fn2).not.toHaveBeenCalled();
-        expect(fn3).toHaveBeenCalled(); // sanity
-      });
+            vest.test('field1', () => false);
+            vest.test('field2', () => false);
+          })();
+          expect(result.tests.field1.testCount).toBe(0);
+          expect(result.tests.field2.testCount).toBe(1);
+        });
 
-      it('Should list all skipped tests as skipped', () => {
-        const res = suite(true);
-        expect(res.tests).toMatchInlineSnapshot(`
-          Object {
-            "field1": Object {
-              "errorCount": 0,
-              "testCount": 0,
-              "warnCount": 0,
-            },
-            "field2": Object {
-              "errorCount": 0,
-              "testCount": 0,
-              "warnCount": 0,
-            },
-            "field3": Object {
-              "errorCount": 1,
-              "testCount": 1,
-              "warnCount": 0,
-            },
-          }
-        `);
-        expect(res.groups).toMatchInlineSnapshot(`
-          Object {
-            "group": Object {
-              "field2": Object {
-                "errorCount": 0,
-                "testCount": 0,
-                "warnCount": 0,
-              },
-            },
-          }
-        `);
-      });
-    });
+        describe('skip callback', () => {
+          it('Should only register - and not run tests inside the callback', () => {
+            const result = vest.create(faker.lorem.word(), () => {
+              vest.skip(
+                () => true,
+                () => {
+                  vest.test('field1', () => false);
+                }
+              );
 
-    describe('When `shouldSkip` is `false`', () => {
-      it('Should run all tests', () => {
-        expect(fn1).not.toHaveBeenCalled();
-        expect(fn2).not.toHaveBeenCalled();
-        expect(fn3).not.toHaveBeenCalled();
-        suite(false);
-        expect(fn1).toHaveBeenCalled();
-        expect(fn2).toHaveBeenCalled();
-        expect(fn3).toHaveBeenCalled();
-      });
-
-      it('Should produce correct validation result', () => {
-        expect(suite(false)).toMatchSnapshot();
+              vest.test('field2', () => false);
+            })();
+            expect(result.tests.field1.testCount).toBe(0);
+            expect(result.tests.field2.testCount).toBe(1);
+          });
+        });
       });
     });
   });

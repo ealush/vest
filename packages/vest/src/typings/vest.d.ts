@@ -123,7 +123,37 @@ interface ISkip {
    * vest.skip('username');
    * vest.skip(['username', 'password']);
    */
-  (fieldName?: ExclusionArg): void;
+  (fieldNames?: ExclusionArg): void;
+
+  /**
+   * Conditionally skips running of fields by their names.
+   * Use a function that determines whether to skip the provided fields
+   * @param shouldSkip
+   * @param fieldNames
+   *
+   * @example
+   *
+   * skip(() => !isRegisterForm, 'confirm_password');
+   */
+  (shouldSkip: () => boolean, fieldNames: ExclusionArg): void;
+
+  /**
+   * Conditionally skips running of tests in a callback.
+   * Use a function that determines whether to skip the provided callback or not
+   * @param shouldSkip
+   * @param skipCallback
+   *
+   * @example
+   *
+   * skip(
+   *  () => suite.get().hasErrors('username'),
+   *  () => {
+   *    test('username', 'User already exists', async() => {
+   *      await someAsyncFunction();
+   *    });
+   * });
+   */
+  (shouldSkip: () => boolean, skipCallback: () => void): void;
 
   /**
    * Skips provided group from current run.
@@ -163,19 +193,6 @@ interface IOnly {
   group(groupName?: ExclusionArg): void;
 }
 
-interface ISkipWhen {
-  /**
-   * Conditionally skips tests or groups of tests within a callback
-   *
-   * @example
-   *
-   * vest.skipWhen(suite.get().hasErrors('username'), () => {
-   *    test('username', 'Username already exists', () => someServerCall(data.username))
-   * });
-   */
-  (shouldSkip: boolean, callback: () => void): void;
-}
-
 interface ISubscribePayload {
   type: string;
   suiteState: Record<string, any>;
@@ -197,7 +214,6 @@ declare namespace vest {
   const test: ITest;
   const only: IOnly;
   const skip: ISkip;
-  const skipWhen: ISkipWhen;
 
   function optional(optionalFields: string | string[]): boolean;
 

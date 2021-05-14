@@ -20,6 +20,7 @@
     - [Example 4](https://stackblitz.com/edit/vest-react-registration?file=validate.js)
     - [Example 5 (Password validator)](https://codesandbox.io/s/password-validator-example-6puvy?file=/src/validate.js)
   - [VueJS Example](https://codesandbox.io/s/vest-vue-example-1j6r8?file=/src/validations.js)
+  - [Svelte Example](https://codesandbox.io/s/vestdocssvelteexample-k87t7?file=/validate.js)
 
 ## Tutorials
 
@@ -93,6 +94,10 @@ export default vest.create('user_form', (data = {}, currentField) => {
     });
   }
 
+  test('email', 'Email Address is not valid', () => {
+    enforce(data.email).isEmail();
+  });
+
   test('tos', () => {
     enforce(data.tos).isTruthy();
   });
@@ -106,3 +111,5 @@ export default vest.create('user_form', (data = {}, currentField) => {
 - 🧱 Your validations are structured, making it very simple to read and write. All validation files look the same.
 - 🖇 Your validation logic is separate from your feature logic, preventing the spaghetti code that's usually involved with writing validations.
 - 🧩 Validation logic is easy to share and reuse across features.
+
+**Vest is an evolution of [Passable](https://github.com/fiverr/passable) by Fiverr.**

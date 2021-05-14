@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## vest: [3.2.0] - 2021-05-14
+
+### Added
+- dcd8ad2  feat: add conditional to skip (ealush)
+- e3b42c6  minor: account for async tests in isValid function (ealush)
+- 60099b3  feat: add support for optional tests and "isValid" (#612) (Evyatar)
+- 09b2aa4  feat: vest.skipWhen for conditional test exclusion (#611) (Evyatar)
+- 32b1d05  feat: add state subscription (#606) (Ronen Elster)
+- 0bb9347  minor: add skipped tests to result as well (#600) (Evyatar)
+
+### Fixed and improved
+- 339fe45  patch: shave off a few bytes (ealush)
+- 73f2e35  patch: use fieldCallbacks as an object (ealush)
+- 94dd7a5  patch: simplify produce function generation (ealush)
+- d53d56d  patch: prevent skipped tests from persisting after override (ealush)
+- c0180d1  patch: upgrade context package (ealush)
+- 5791fef  patch: use vast state library (ealush)
+- a5aa3f1  patch: make state independent of context (#609) (Evyatar)
+- 72b3e40  patch: remove package-lock.json (ealush)
+- 74cb2d6  patch: add "remove" type, fix typo (#578) (Yakko Majuri)
+
 ## vest: [3.1.2] - 2021-01-30
 
 ### Fixed and improved

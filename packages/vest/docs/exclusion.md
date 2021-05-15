@@ -72,7 +72,7 @@ const suite = vest.create('user_form', (data = {}) => {
   });
 
   skip(
-    () => suite.get().hasErrors('password'), // only skip if this is truthy
+    () => suite.get().hasErrors('username'), // only skip if this is truthy
     () => {
       test('username', 'Username already exists', () => {
         // this is an example for a server call
@@ -83,6 +83,8 @@ const suite = vest.create('user_form', (data = {}) => {
 });
 export default suite;
 ```
+
+!> **Note** Using suite.get() within the suite runs returns a **DRAFT** result. This means that it may not contain the final validation result.
 
 ## Including and excluding groups of tests
 

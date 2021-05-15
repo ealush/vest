@@ -62,46 +62,23 @@ export default vest.create('form_name', (data = {}) => {
 });
 ```
 
-## vest.skipWhen for conditionally skipping fields
+## skip for conditionally skipping fields
 
-If your field depends on a different field's existence or a different simple condition, you could use `skipWhen`.
+If your field depends on a different field's existence or a different simple condition, you could use `skip`.
 In the following example I only validate `confirm` if password is not empty:
 
 ```js
-import vest, { test, enforce } from 'vest';
+import vest, { test, enforce, skip } from 'vest';
 
 export default vest.create('user_form', (data = {}) => {
   test('password', 'Password is required', () => {
     enforce(data.password).isNotEmpty();
   });
 
-  vest.skipWhen(!!data.password, () => {
+  skip(() => !data.password, () => {
     test('confirm', 'Passwords do not match', () => {
       enforce(data.confirm).equals(data.password);
     });
   });
 });
-```
-
-## vest.skipWhen for conditionally skipping field based on a previous result
-
-Sometimes you might want to run a certain validation based on the validation result of a previously run test, for example - only test for password strength if password DOESN'T have Errors. You could access the intermediate validation result and use it mid-run.
-
-This requires using the function created from vest.create():
-
-```js
-import vest, { test, enforce } from 'vest';
-
-const suite = vest.create('user_form', (data = {}) => {
-  test('password', 'Password is required', () => {
-    enforce(data.password).isNotEmpty();
-  });
-
-  vest.skipWhen(suite.get().hasErrors('password'), () => {
-    test('password', 'Password is weak', () => {
-      enforce(data.password).longerThan(8);
-    });
-  });
-});
-export default suite;
 ```

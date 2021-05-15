@@ -41,22 +41,6 @@ const suite = vest.create('my_form', () => {
 suite.get(); // -> returns the most recent result object for the current suite
 ```
 
-You can also use `.get()` to access the intermediate validation result during your suite's run, this is a replacement of the deprecated `vest.draft()` hook.
-
-```js
-const suite = vest.create('my_form', data => {
-  test('username', 'Username is too short', () => {
-    enforce(data.username).longerThanOrEquals(3);
-  });
-
-  vest.skipWhen(suite.get().hasErrors('username'), () => {
-    test('username', 'already taken', async () => {
-      // some async test
-    });
-  });
-});
-```
-
 # Result Object Methods:
 
 Along with these values, the result object exposes the following methods:

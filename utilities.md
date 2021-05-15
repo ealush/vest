@@ -24,14 +24,14 @@ The way it works is simple. You call `classNames` with your result object, and t
 
 ```js
 import classNames from 'vest/classNames';
-import validate from './validation';
+import suite from './suite';
 
-const res = validate(data);
+const res = suite(data);
 
 const cn = classNames(res, {
   untested: 'is-untested', // will only be applied if the provided field did not run yet
   tested: 'some-tested-class', // will only be applied if the provided field did run
-  invalid: 'my_invalid_class', // will only be applied if the provided field ran at least once and has an errror
+  invalid: 'my_invalid_class', // will only be applied if the provided field ran at least once and has an error
   valid: 'my_valid_class', // will only be applied if the provided field ran at least once does not have errors or warnings
   warning: 'my_warning_class', // will only be applied if the provided field ran at least once and has a warning
 });
@@ -51,7 +51,7 @@ A good example would be: When your validated field can be either empty (not requ
 
 ### Usage
 
-`any()` accepts an infinite number of arguments, all of which are functions. It returns a function, that when called - behaves just like a test function callback.
+`any()` accepts an infinite number of arguments, all of which are functions. It returns a boolean, that can be used as the return value of a test function.
 
 The only difference is - if any of the supplied tests passes, the success condition is met and `any()` returns true.
 
@@ -60,9 +60,7 @@ import vest, { test, enforce } from 'vest';
 import any from 'vest/any';
 
 vest.create('Checkout', () => {
-  test(
-    'coupon',
-    'When filled, must be at least 5 chars',
+  test('coupon', 'When filled, must be at least 5 chars', () =>
     any(
       () => enforce(data.coupon).isEmpty(),
       () => enforce(data.coupon).longerThanOrEquals(5)
@@ -86,7 +84,7 @@ This can be useful when running async validations on the server, or when you do 
 import vest from 'vest';
 import promisify from 'vest/promisify';
 
-const validate = promisify(
+const suite = promisify(
   vest.create('CreateNewUser', data => {
     test('email', 'The email already exists', () => doesEmailExist(data.email));
     test('username', 'The username already exists', () =>
@@ -95,12 +93,12 @@ const validate = promisify(
   })
 );
 
-validate(data).then(res => {
+suite(data).then(res => {
   if (res.hasErrors('email')) {
     /* ... */
   }
 
-  if (res.hasErrors('usename')) {
+  if (res.hasErrors('username')) {
     /* ... */
   }
 });

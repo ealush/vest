@@ -29,7 +29,7 @@ A result object would look somewhat like this:
 
 ## Accessing the recent result object with `.get`
 
-If you need to access your validation results out of context - for example, from a different UI component or function, you can use `.get()` - a function that exists as a proerty of your validation suite.
+If you need to access your validation results out of context - for example, from a different UI component or function, you can use `.get()` - a function that exists as a property of your validation suite.
 
 In case your validations did not run yet, `.get` returns an empty validation result object - which can be helpful when trying to access validation result object when rendering the initial UI, or setting it in the initial state of your components.
 
@@ -49,17 +49,35 @@ const suite = vest.create('my_form', data => {
     enforce(data.username).longerThanOrEquals(3);
   });
 
-  if (!suite.get().hasErrors('username')) {
+  vest.skipWhen(suite.get().hasErrors('username'), () => {
     test('username', 'already taken', async () => {
       // some async test
     });
-  }
+  });
 });
 ```
 
 # Result Object Methods:
 
 Along with these values, the result object exposes the following methods:
+
+## `isValid` function
+
+`isValid` returns whether the validation suite as a whole is valid or not.
+
+A suite is considered valid if the following conditions are met:
+
+- There are no errors (`hasErrors() === false`) in the suite - warnings are not counted as errors.
+- All non optional fields have passing tests.
+- There are no pending async tests.
+
+```js
+result.isValid();
+
+suite.get().isValid();
+```
+
+?> **Note** when `isValid` equals `false`, it does not necessarily mean that the form is inValid, but that it might not be valid _yet_. For example, if not all the fields are filled, the form is simply not valid, even though it may not be strictly invalid.
 
 ## `hasErrors` and `hasWarnings` functions
 
@@ -181,7 +199,7 @@ In the below example, the `done` callback for `UserName` may run before the whol
 ```js
 import vest, { test, enforce } from 'vest';
 
-const validate = vest.create('SendEmailForm', data => {
+const suite = vest.create('SendEmailForm', data => {
   test(
     'UserEmail',
     'Marked as spam address',
@@ -195,7 +213,7 @@ const validate = vest.create('SendEmailForm', data => {
   );
 });
 
-const validationResult = validate(data)
+const validationResult = suite(data)
   .done('UserName', res => {
     if (res.hasErrors('UserName')) {
       showUserNameErrors(res.errors);

@@ -72,9 +72,12 @@ const suite = vest.create('user_form', () => {
 
 ```js
 const suite = vest.create('user_form', () => {
-  if (suite.get().hasErrors('username')) {
-    /* ... */
-  }
+  vest.skip(
+    () => suite.get().hasErrors('username'),
+    () => {
+      /* ... */
+    }
+  );
 });
 ```
 
@@ -98,10 +101,10 @@ const result = data =>
 ```js
 import vest from 'vest';
 
-const validate = data =>
+const suite = data =>
   vest.create(() => {
     /* ... */
   })();
 
-const result = validate({ username: 'example' });
+const result = suite({ username: 'example' });
 ```

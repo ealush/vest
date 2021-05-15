@@ -10,7 +10,7 @@
 
 [![Join discord](https://img.shields.io/discord/757686103292641312?label=Join%20Discord&logo=discord&logoColor=green)](https://discord.gg/WmADZpJnSe)
 
-- [Documentation homepage](https://ealush.github.io/vest)
+- [Documentation homepage](https://vestjs.dev)
 - **Try vest live**
   - [Vanilla JS Example](https://stackblitz.com/edit/vest-vanilla-support-example?file=validation.js)
   - ReactJS Examples:
@@ -20,6 +20,7 @@
     - [Example 4](https://stackblitz.com/edit/vest-react-registration?file=validate.js)
     - [Example 5 (Password validator)](https://codesandbox.io/s/password-validator-example-6puvy?file=/src/validate.js)
   - [VueJS Example](https://codesandbox.io/s/vest-vue-example-1j6r8?file=/src/validations.js)
+  - [Svelte Example](https://codesandbox.io/s/vestdocssvelteexample-k87t7?file=/validate.js)
 
 ## Tutorials
 

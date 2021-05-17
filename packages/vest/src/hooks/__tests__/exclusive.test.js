@@ -225,67 +225,6 @@ describe('exclusive hooks', () => {
         expect(res).toEqual(false);
       });
     });
-
-    describe('conditional skip', () => {
-      describe('When falsy', () => {
-        it('Should run passed fields', () => {
-          const result = vest.create(faker.lorem.word(), () => {
-            vest.skip(() => false, ['field1']);
-
-            vest.test('field1', () => false);
-            vest.test('field2', () => false);
-          })();
-          expect(result.tests.field1.testCount).toBe(1);
-          expect(result.tests.field2.testCount).toBe(1);
-        });
-
-        describe('skip callback', () => {
-          it('Should run tests in the callback', () => {
-            const result = vest.create(faker.lorem.word(), () => {
-              vest.skip(
-                () => false,
-                () => {
-                  vest.test('field1', () => false);
-                }
-              );
-
-              vest.test('field2', () => false);
-            })();
-            expect(result.tests.field1.testCount).toBe(1);
-            expect(result.tests.field2.testCount).toBe(1);
-          });
-        });
-      });
-      describe('When truthy', () => {
-        it('Should only register - and not run passed fields', () => {
-          const result = vest.create(faker.lorem.word(), () => {
-            vest.skip(() => true, ['field1']);
-
-            vest.test('field1', () => false);
-            vest.test('field2', () => false);
-          })();
-          expect(result.tests.field1.testCount).toBe(0);
-          expect(result.tests.field2.testCount).toBe(1);
-        });
-
-        describe('skip callback', () => {
-          it('Should only register - and not run tests inside the callback', () => {
-            const result = vest.create(faker.lorem.word(), () => {
-              vest.skip(
-                () => true,
-                () => {
-                  vest.test('field1', () => false);
-                }
-              );
-
-              vest.test('field2', () => false);
-            })();
-            expect(result.tests.field1.testCount).toBe(0);
-            expect(result.tests.field2.testCount).toBe(1);
-          });
-        });
-      });
-    });
   });
 
   describe('Error handling', () => {

@@ -2,6 +2,7 @@
 
 exports[`runAsyncTest: passing State updates Initial state matches snapshot (sanity) 1`] = `
 Object {
+  "carryOverTests": Array [],
   "optionalFields": Object {},
   "pending": Object {
     "lagging": Array [],

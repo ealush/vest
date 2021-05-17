@@ -12,6 +12,7 @@
       "optionalFunctionValue": [
         "./packages/__shared/src/optionalFunctionValue.js"
       ],
+      "partition": ["./packages/__shared/src/partition.js"],
       "setFnName": ["./packages/__shared/src/setFnName.js"],
       "sharedKeys": ["./packages/__shared/src/sharedKeys.js"],
       "throwError": ["./packages/__shared/src/throwError.js"],
@@ -119,15 +120,20 @@
         "./packages/vest/src/core/suite/hasRemainingTests.js"
       ],
       "addTestToState": ["./packages/vest/src/core/test/lib/addTestToState.js"],
-      "mergeExcludedTests": [
-        "./packages/vest/src/core/test/lib/mergeExcludedTests.js"
+      "isSameProfileTest": [
+        "./packages/vest/src/core/test/lib/isSameProfileTest.js"
+      ],
+      "mergeCarryOverTests": [
+        "./packages/vest/src/core/test/lib/mergeCarryOverTests.js"
       ],
       "pending": ["./packages/vest/src/core/test/lib/pending.js"],
+      "registerTest": ["./packages/vest/src/core/test/lib/registerTest.js"],
       "removeTestFromState": [
         "./packages/vest/src/core/test/lib/removeTestFromState.js"
       ],
       "VestTest": ["./packages/vest/src/core/test/lib/VestTest.js"],
       "runAsyncTest": ["./packages/vest/src/core/test/runAsyncTest.js"],
+      "runSyncTest": ["./packages/vest/src/core/test/runSyncTest.js"],
       "test.each": ["./packages/vest/src/core/test/test.each.js"],
       "test": ["./packages/vest/src/core/test/test.js"],
       "test.memo": ["./packages/vest/src/core/test/test.memo.js"],

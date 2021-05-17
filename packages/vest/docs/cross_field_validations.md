@@ -36,7 +36,7 @@ export default vest.create('form_name', (data = {}) => {
 });
 ```
 
-### Use any to run use different conditions in the same test
+### Use any to use different conditions in the same test
 
 You could also use any within your test, if you have a joined test for both scenarios. This means that you have to return a boolean from your tests.
 
@@ -62,23 +62,44 @@ export default vest.create('form_name', (data = {}) => {
 });
 ```
 
-## skip for conditionally skipping fields
+## if/else for conditionally skipping fields
 
-If your field depends on a different field's existence or a different simple condition, you could use `skip`.
+If your field depends on a different field's existence or a different simple condition, you could use a basic if/else statement.
 In the following example I only validate `confirm` if password is not empty:
 
-```js
-import vest, { test, enforce, skip } from 'vest';
+DEMO: https://codesandbox.io/s/demo-forked-z2ur9?file=/src/validate.js
 
+```js
+import vest, { test, enforce } from 'vest';
 export default vest.create('user_form', (data = {}) => {
   test('password', 'Password is required', () => {
     enforce(data.password).isNotEmpty();
   });
-
-  skip(() => !data.password, () => {
+  if (data.password) {
     test('confirm', 'Passwords do not match', () => {
       enforce(data.confirm).equals(data.password);
     });
-  });
+  }
 });
+```
+
+## if/else for conditionally skipping field based on a previous result
+
+Sometimes you might want to run a certain validation based on the validation result of a previously run test, for example - only test for password strength if password DOESN'T have Errors. You could access the intermediate validation result and use it mid-run.
+
+This requires using the function created from vest.create():
+
+```js
+import vest, { test, enforce } from 'vest';
+const suite = vest.create('user_form', (data = {}) => {
+  test('password', 'Password is required', () => {
+    enforce(data.password).isNotEmpty();
+  });
+  if (!suite.get().hasErrors('password')) {
+    test('password', 'Password is weak', () => {
+      enforce(data.password).longerThan(8);
+    });
+  }
+});
+export default suite;
 ```

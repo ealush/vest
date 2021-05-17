@@ -1,33 +1,30 @@
 import asArray from 'asArray';
+import isSameProfileTest from 'isSameProfileTest';
 import removeElementFromArray from 'removeElementFromArray';
 import { usePending } from 'stateHooks';
-
 /**
  * Sets a test as pending in the state.
  * @param {VestTest} testObject
  */
 export const setPending = testObject => {
-  const { fieldName, groupName, id } = testObject;
-
   const [pendingState, setPending] = usePending();
 
   const lagging = asArray(pendingState.lagging).reduce(
-    (lagging, testObject) => {
+    (lagging, laggingTestObject) => {
       /**
        * If the test is of the same profile
        * (same name + same group) we cancel
        * it. Otherwise, it is lagging.
        */
       if (
-        testObject.fieldName === fieldName &&
-        testObject.groupName === groupName &&
+        isSameProfileTest(testObject, laggingTestObject) &&
         // This last case handles memoized tests
         // because that retain their od across runs
-        testObject.id !== id
+        laggingTestObject.id !== testObject.id
       ) {
-        testObject.cancel();
+        laggingTestObject.cancel();
       } else {
-        lagging.push(testObject);
+        lagging.push(laggingTestObject);
       }
 
       return lagging;

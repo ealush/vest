@@ -5,9 +5,8 @@ import createStateRef from 'createStateRef';
 import context from 'ctx';
 import genId from 'genId';
 import isFunction from 'isFunction';
-import mergeExcludedTests from 'mergeExcludedTests';
 import produce from 'produce';
-import { usePending, useTestObjects } from 'stateHooks';
+import { usePending, useTestObjects, useCarryOverTests } from 'stateHooks';
 import throwError from 'throwError';
 import withArgs from 'withArgs';
 /**
@@ -46,17 +45,16 @@ const createSuite = withArgs(args => {
   */
   const suite = context.bind({ stateRef }, function () {
     const [previousTestObjects] = useTestObjects();
+    const [, setCarryOverTests] = useCarryOverTests();
     const [{ pending }, setPending] = usePending();
     state.reset();
+    setCarryOverTests(() => previousTestObjects);
 
     // Move all the active pending tests to the lagging array
     setPending({ lagging: pending, pending: [] });
 
     // Run the consumer's callback
     tests.apply(null, arguments);
-
-    // Merge all the skipped tests with their previous results
-    mergeExcludedTests(previousTestObjects);
 
     return produce();
   });

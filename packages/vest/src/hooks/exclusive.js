@@ -3,14 +3,12 @@ import hasOwnProperty from 'hasOwnProperty';
 import asArray from 'asArray';
 import context from 'ctx';
 import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
-import isFunction from 'isFunction';
 import isStringValue from 'isStringValue';
 import {
   EXCLUSION_ITEM_TYPE_TESTS,
   EXCLUSION_ITEM_TYPE_GROUPS,
 } from 'runnableTypes';
 import throwError from 'throwError';
-import withArgs from 'withArgs';
 
 /**
  * Adds a field or multiple fields to inclusion group.
@@ -25,25 +23,11 @@ only.group = item =>
 
 /**
  * Adds a field or multiple fields to exclusion group.
- * @param {() => boolean} [shouldSkip] An optional callback determining whether "skip" should be applied
- * @param {String[]|String|Function} item Item to be added to exclusion group.
+ * @param {String[]|String} item Item to be added to exclusion group.
  */
-export const skip = withArgs(function (args) {
-  const [item, shouldSkip] = args.reverse();
-  let skip = true;
-
-  if (isFunction(shouldSkip)) {
-    skip = !!shouldSkip();
-  }
-
-  if (isFunction(item)) {
-    return context.run({ skip }, () => item());
-  }
-
-  if (skip) {
-    return addTo(EXCLUSION_GROUP_NAME_SKIP, EXCLUSION_ITEM_TYPE_TESTS, item);
-  }
-});
+export function skip(item) {
+  return addTo(EXCLUSION_GROUP_NAME_SKIP, EXCLUSION_ITEM_TYPE_TESTS, item);
+}
 
 skip.group = item =>
   addTo(EXCLUSION_GROUP_NAME_SKIP, EXCLUSION_ITEM_TYPE_GROUPS, item);

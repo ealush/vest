@@ -251,8 +251,8 @@ Object {
       "errorCount": 3,
       "errors": Array [
         "f1_msg",
-        "f1_group_2_msg",
         "f1_group_1_msg",
+        "f1_group_2_msg",
       ],
       "testCount": 3,
       "warnCount": 0,
@@ -280,8 +280,8 @@ Object {
     "f4": Object {
       "errorCount": 2,
       "errors": Array [
-        "f4_group_2_msg",
         "f4_group_1_msg",
+        "f4_group_2_msg",
       ],
       "testCount": 2,
       "warnCount": 0,
@@ -420,8 +420,8 @@ Object {
       "errorCount": 3,
       "errors": Array [
         "f1_msg",
-        "f1_group_2_msg",
         "f1_group_1_msg",
+        "f1_group_2_msg",
       ],
       "testCount": 3,
       "warnCount": 0,
@@ -442,9 +442,9 @@ Object {
       "errors": Array [
         "f3_msg",
         "f3_async_msg",
-        "f3_async_group_2_msg",
         "f3_group_1_msg",
         "f3_async_group_1_msg",
+        "f3_async_group_2_msg",
       ],
       "testCount": 5,
       "warnCount": 0,
@@ -452,8 +452,8 @@ Object {
     "f4": Object {
       "errorCount": 2,
       "errors": Array [
-        "f4_group_2_msg",
         "f4_group_1_msg",
+        "f4_group_2_msg",
       ],
       "testCount": 2,
       "warnCount": 0,

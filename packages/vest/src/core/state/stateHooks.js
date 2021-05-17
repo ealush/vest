@@ -2,6 +2,9 @@ import ctx from 'ctx';
 
 const getStateRef = () => ctx.use().stateRef;
 
+export function useCarryOverTests() {
+  return getStateRef().carryOverTests();
+}
 export function usePending() {
   return getStateRef().pending();
 }

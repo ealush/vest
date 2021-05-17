@@ -163,3 +163,127 @@ Object {
   "warnCount": 1,
 }
 `;
+
+exports[`more complex Should run correctly 1`] = `
+Object {
+  "errorCount": 0,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "name": undefined,
+  "testCount": 0,
+  "tests": Object {},
+  "warnCount": 0,
+}
+`;
+
+exports[`more complex Should run correctly 2`] = `
+Object {
+  "errorCount": 0,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "name": undefined,
+  "testCount": 2,
+  "tests": Object {
+    "confirm": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "password": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "username": Object {
+      "errorCount": 0,
+      "testCount": 2,
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`more complex Should run correctly 4`] = `
+Object {
+  "errorCount": 1,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "name": undefined,
+  "testCount": 3,
+  "tests": Object {
+    "password": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "password is required",
+      ],
+      "testCount": 1,
+      "warnCount": 0,
+    },
+    "username": Object {
+      "errorCount": 0,
+      "testCount": 2,
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`more complex Should run correctly 6`] = `
+Object {
+  "errorCount": 1,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "name": undefined,
+  "testCount": 3,
+  "tests": Object {
+    "password": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "password is required",
+      ],
+      "testCount": 1,
+      "warnCount": 0,
+    },
+    "username": Object {
+      "errorCount": 0,
+      "testCount": 2,
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;

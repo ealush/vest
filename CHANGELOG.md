@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## vest: [3.2.3] - 2021-05-27
+
+### Fixed and improved
+- c02f22f  patch: use context only as dev dep (ealush)
+
 ## vest: [3.2.2] - 2021-05-17
 
 ### Fixed and improved

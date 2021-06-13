@@ -25,10 +25,10 @@ const cache = createCache(20);
  * @returns Vest output object.
  */
 const produce = isDraft => {
-  const { stateRef, optional } = context.use();
+  const { stateRef } = context.use();
   const [testObjects] = useTestObjects();
 
-  const ctxRef = { stateRef, optional };
+  const ctxRef = { stateRef };
 
   return cache(
     [testObjects, isDraft],

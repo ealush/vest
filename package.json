@@ -42,7 +42,7 @@
     "@rollup/plugin-node-resolve": "^11.2.1",
     "@rollup/plugin-replace": "^2.4.2",
     "babel-eslint": "^10.1.0",
-    "babel-jest": "^26.6.3",
+    "babel-jest": "^27.0.6",
     "babel-plugin-add-module-exports": "^1.0.4",
     "cross-env": "^7.0.3",
     "date-fns": "^2.21.1",

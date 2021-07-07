@@ -34,7 +34,7 @@ type TDraftResult = ReturnType<typeof genTestsSummary> & {
      * Determined if there are no errors, and if no
      * required fields are skipped.
      */
-    isValid: (fieldName?: string) => boolean;
+    isValid: () => boolean;
     hasErrors: typeof hasErrors;
     hasWarnings: typeof hasWarnings;
     getErrors: typeof getErrors;
@@ -68,3 +68,4 @@ type TSupportedClasses = {
     untested?: string;
 };
 export { classNames as default };
+//# sourceMappingURL=classnames.d.ts.map

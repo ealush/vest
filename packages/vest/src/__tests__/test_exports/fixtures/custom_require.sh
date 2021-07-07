@@ -4,7 +4,7 @@ node --input-type=$1 --eval "
   const vest = require('vest/$2');
   const { test, enforce } = vest;
 
-  const validate = vest.create('import_test', () => {
+  const validate = vest.create( () => {
 
     test('field_name', 'should fail', () => {
       enforce(1).equals(2);

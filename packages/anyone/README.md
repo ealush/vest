@@ -14,12 +14,14 @@ They all accept any amount of arguments, or no arguments at all. If a function i
 All functions other than `one` will short circuit when realizing the condition is not met.
 
 ## Why use it
+
 In most cases (other than `one`) you can do just fine using `Array.prototype.some` and `Array.prototype.every`, some of these functions are used internally by Vest.
 
 - You can use these functions as conditionals:
+
 ```js
-if (one( var1, var2, var3 )) {
-    // will reach here if ONLY ONE of the arguments is true
+if (one(var1, var2, var3)) {
+  // will reach here if ONLY ONE of the arguments is true
 }
 ```
 
@@ -27,9 +29,9 @@ if (one( var1, var2, var3 )) {
 
 ```js
 all(
-    validateInput1, // returns true
-    validateInput2, // returns false
-    validateInput3  // no need to run this, we already know our validation failed
+  validateInput1, // returns true
+  validateInput2, // returns false
+  validateInput3 // no need to run this, we already know our validation failed
 );
 ```
 
@@ -52,63 +54,63 @@ import none from 'anyone/none';
 import all from 'anyone/all';
 
 any(
-    someFunction, // evaluates to false
-    1,
-    someVar // truthy
+  someFunction, // evaluates to false
+  1,
+  someVar // truthy
 );
 // true
 
 // --------
 
 any(
-    someFunction, // evaluates to false
-    0,
-    someVar // falsy
+  someFunction, // evaluates to false
+  0,
+  someVar // falsy
 );
 // false
 
 // --------
 
 one(
-    someFunction, // evaluates to false
-    0,
-    someVar // truthy
+  someFunction, // evaluates to false
+  0,
+  someVar // truthy
 );
 // true
 
 // --------
 
 none(
-    someFunction, // evaluates to false
-    1,
-    someVar // truthy
+  someFunction, // evaluates to false
+  1,
+  someVar // truthy
 );
 // false
 
 // --------
 
 none(
-    someFunction, // evaluates to false
-    0,
-    someVar // falsy
+  someFunction, // evaluates to false
+  0,
+  someVar // falsy
 );
 // true
 
 // --------
 
 all(
-    someFunction, // evaluates to false
-    0,
-    someVar // truthy
+  someFunction, // evaluates to false
+  0,
+  someVar // truthy
 );
 // false
 
 // --------
 
 all(
-    someFunction, // evaluates to true
-    1,
-    someVar // truthy
+  someFunction, // evaluates to true
+  1,
+  someVar // truthy
 );
 // true
 ```

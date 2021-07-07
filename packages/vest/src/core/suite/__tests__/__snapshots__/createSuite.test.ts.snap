@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test createSuite module Initial run Should be able to get the suite from the result of createSuite 1`] = `
+Object {
+  "errorCount": 0,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "testCount": 0,
+  "tests": Object {},
+  "warnCount": 0,
+}
+`;
+
+exports[`Test createSuite module Initial run Should initialize with an empty result object 1`] = `
+Object {
+  "errorCount": 0,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "testCount": 0,
+  "tests": Object {},
+  "warnCount": 0,
+}
+`;
+
+exports[`Test createSuite module Test suite Arguments allows omitting suite name 1`] = `
+Object {
+  "errorCount": 0,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "testCount": 0,
+  "tests": Object {},
+  "warnCount": 0,
+}
+`;

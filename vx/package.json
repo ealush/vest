@@ -1,0 +1,10 @@
+{
+  "scripts": {},
+  "bin": {
+    "vx": "./cli.js"
+  },
+  "name": "vx",
+  "private": true,
+  "dependencies": {},
+  "version": "0.0.0"
+}

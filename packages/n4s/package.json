@@ -1,62 +1,16 @@
 {
-  "name": "n4s",
   "version": "3.0.0",
-  "description": "Enforce - Validation assertions library",
-  "main": "./n4s.js",
-  "browser": "./n4s.js",
-  "exports": {
-    "./n4s.js": "./n4s.js",
-    "./n4s": "./n4s.js",
-    "./package.json": "./package.json",
-    "./package": "./package.json",
-    "./esm/n4s.es.development.js": "./esm/n4s.es.development.js",
-    "./esm/n4s.es.development": "./esm/n4s.es.development.js",
-    "./esm/n4s.es.production.js": "./esm/n4s.es.production.js",
-    "./esm/n4s.es.production": "./esm/n4s.es.production.js",
-    "./esm/n4s.es.production.min.js": "./esm/n4s.es.production.min.js",
-    "./esm/n4s.es.production.min": "./esm/n4s.es.production.min.js",
-    "./n4s.cjs.development.js": "./n4s.cjs.development.js",
-    "./n4s.cjs.development": "./n4s.cjs.development.js",
-    "./n4s.cjs.production.js": "./n4s.cjs.production.js",
-    "./n4s.cjs.production": "./n4s.cjs.production.js",
-    "./n4s.cjs.production.min.js": "./n4s.cjs.production.min.js",
-    "./n4s.cjs.production.min": "./n4s.cjs.production.min.js",
-    "./n4s.umd.development.js": "./n4s.umd.development.js",
-    "./n4s.umd.development": "./n4s.umd.development.js",
-    "./n4s.umd.production.js": "./n4s.umd.production.js",
-    "./n4s.umd.production": "./n4s.umd.production.js",
-    "./n4s.umd.production.min.js": "./n4s.umd.production.min.js",
-    "./n4s.umd.production.min": "./n4s.umd.production.min.js",
-    ".": {
-      "browser": "./esm/n4s.es.production.js",
-      "import": "./esm/n4s.es.production.js",
-      "require": "./n4s.cjs.production.js",
-      "node": "./n4s.cjs.production.js",
-      "default": "./n4s.cjs.production.js"
-    }
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ealush/vest.git"
-  },
-  "keywords": [
-    "assertion",
-    "enforce",
-    "ensure",
-    "passable",
-    "vest",
-    "n4s",
-    "validations"
-  ],
-  "author": "ealush",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ealush/vest/issues"
-  },
-  "homepage": "https://github.com/ealush/vest/tree/latest/packages/n4s",
+  "main": "index.js",
+  "types": "types",
+  "private": true,
+  "files": [
+    "dist"
+  ],
+  "name": "n4s",
+  "author": "ealush",
   "scripts": {
-    "build": "rollup -c ./config/rollup/rollup.config.js",
-    "test": "jest"
-  },
-  "module": "./esm/n4s.es.production.js"
+    "test": "vx test",
+    "release": "vx release"
+  }
 }

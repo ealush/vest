@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`VestTest TestObject constructor 1`] = `
+VestTest {
+  "canceled": false,
+  "failed": false,
+  "fieldName": "unicycle",
+  "id": "0",
+  "isWarning": false,
+  "message": "I am Root.",
+  "testFn": [MockFunction],
+}
+`;
+
+exports[`VestTest testObject.warn Should set \`.isWarning\` to true 1`] = `
+VestTest {
+  "canceled": false,
+  "failed": false,
+  "fieldName": "unicycle",
+  "id": "102",
+  "isWarning": true,
+  "message": "I am Root.",
+  "testFn": [MockFunction],
+}
+`;

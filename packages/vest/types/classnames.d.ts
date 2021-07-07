@@ -34,7 +34,7 @@ type TDraftResult = ReturnType<typeof genTestsSummary> & {
      * Determined if there are no errors, and if no
      * required fields are skipped.
      */
-    isValid: (fieldName?: string) => boolean;
+    isValid: () => boolean;
     hasErrors: typeof hasErrors;
     hasWarnings: typeof hasWarnings;
     getErrors: typeof getErrors;
@@ -59,7 +59,7 @@ interface IDone {
 /**
  * Creates a function that returns class names that match the validation result
  */
-declare function classnames(res: IVestResult | TDraftResult, classes?: TSupportedClasses): (fieldName: string) => string;
+declare function classNames(res: IVestResult | TDraftResult, classes?: TSupportedClasses): (fieldName: string) => string;
 type TSupportedClasses = {
     valid?: string;
     tested?: string;
@@ -67,4 +67,5 @@ type TSupportedClasses = {
     warning?: string;
     untested?: string;
 };
-export { classnames as default };
+export { classNames as default };
+//# sourceMappingURL=classnames.d.ts.map

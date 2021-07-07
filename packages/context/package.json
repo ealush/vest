@@ -1,0 +1,18 @@
+{
+  "version": "1.1.4",
+  "license": "MIT",
+  "main": "index.js",
+  "types": "types",
+  "private": true,
+  "files": [
+    "dist",
+    "src"
+  ],
+  "name": "context",
+  "author": "ealush",
+  "scripts": {
+    "test": "vx test",
+    "build": "vx build",
+    "release": "vx release"
+  }
+}

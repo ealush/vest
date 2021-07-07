@@ -1,9 +1,3 @@
-const jsconfig = require('./jsconfig.json');
-
-const paths = jsconfig.compilerOptions.paths;
-
-const aliases = Object.keys(paths);
-
 module.exports = {
   env: {
     es6: true,
@@ -22,39 +16,40 @@ module.exports = {
     __DEV__: true,
     __LIB_VERSION__: true,
     ENV_DEVELOPMENT: true,
-    LIBRARY_NAME: true,
   },
-  ignorePatterns: ['playground'],
+  ignorePatterns: ['*.d.ts'],
+
   overrides: [
     {
-      files: ['./packages/*/src/**/*.js'],
-      excludedFiles: '*.test.js',
+      files: ['./packages/*/src/**/*.(t|j)s'],
+      excludedFiles: '*__tests__/**/*.(t|j)s',
       rules: {
         'import/no-relative-parent-imports': 2,
+        'max-depth': [1, { max: 4 }],
+        'max-lines-per-function': [1, { max: 20 }],
+        'max-nested-callbacks': [1, { max: 3 }],
+        'max-statements': [1, { max: 10 }],
       },
     },
+    {
+      files: ['*.ts'],
+      extends: [
+        'plugin:@typescript-eslint/eslint-recommended',
+        'plugin:@typescript-eslint/recommended',
+        'plugin:import/typescript',
+      ],
+    },
   ],
-  parser: 'babel-eslint',
-  parserOptions: {
-    babelOptions: {
-      configFile: 'config/babel/babel.config.js',
-    },
-    ecmaFeatures: {
-      impliedStrict: true,
-    },
-    ecmaVersion: 10,
-    sourceType: 'module',
-  },
+  parser: '@typescript-eslint/parser',
   plugins: ['jest'],
-
   rules: {
+    complexity: [2, { max: 5 }],
     'import/extensions': [2, 'never'],
     'import/first': 2,
     'import/newline-after-import': 1,
     'import/no-self-import': 2,
-    'import/no-unresolved': [2, { ignore: aliases }],
+    'import/no-unresolved': [2],
     'import/no-useless-path-segments': 2,
-
     'import/order': [
       'error',
       {
@@ -62,14 +57,13 @@ module.exports = {
           order: 'asc',
         },
         'newlines-between': 'always',
-        pathGroups: [{ pattern: `*(${aliases.join('|')})`, group: 'internal' }],
         pathGroupsExcludedImportTypes: ['builtin'],
       },
     ],
     'jest/expect-expect': 0,
     'jest/no-identical-title': 0,
     'jest/no-standalone-expect': 0,
-    'max-params': [2, { max: 3 }],
+    'max-params': [1, { max: 3 }],
     'no-console': 2,
     'no-duplicate-imports': 2,
     'no-implicit-globals': 2,
@@ -94,5 +88,15 @@ module.exports = {
         minKeys: 4,
       },
     ],
+  },
+  settings: {
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts', '.tsx'],
+    },
+    'import/resolver': {
+      typescript: {
+        project: 'packages/*/tsconfig.json',
+      },
+    },
   },
 };

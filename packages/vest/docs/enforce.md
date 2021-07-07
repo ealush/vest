@@ -14,5 +14,4 @@ test('username', 'Must be at least three characters long', () => {
   - [List of Enforce rules](./n4s/rules)
   - [Creating Custom Rules](./n4s/custom)
   - [Shape and schema validation](./n4s/compound)
-  - [Enforce templates](./n4s/template)
   - [Consuming external rules](./n4s/external)

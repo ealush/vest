@@ -76,7 +76,7 @@ Vest tries to remediate this by separating validation logic from feature logic s
 ```js
 import { create, only, test, enforce, warn, skipWhen } from 'vest';
 
-export default create('user_form', (data = {}, currentField) => {
+export default create((data = {}, currentField) => {
   only(currentField);
 
   test('username', 'Username is required', () => {

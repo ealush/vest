@@ -34,7 +34,7 @@ type TDraftResult = ReturnType<typeof genTestsSummary> & {
      * Determined if there are no errors, and if no
      * required fields are skipped.
      */
-    isValid: (fieldName?: string) => boolean;
+    isValid: () => boolean;
     hasErrors: typeof hasErrors;
     hasWarnings: typeof hasWarnings;
     getErrors: typeof getErrors;
@@ -58,3 +58,4 @@ interface IDone {
 }
 declare const promisify: (validatorFn: (...args: any[]) => IVestResult) => (...args: any[]) => Promise<TDraftResult>;
 export { promisify as default };
+//# sourceMappingURL=promisify.d.ts.map

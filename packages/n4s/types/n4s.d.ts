@@ -1,81 +1,67 @@
-type TEnforceContext = null | {
-    meta: Record<string, any>;
-    value: any;
-    parent: () => TEnforceContext;
-};
 type DropFirst<T extends unknown[]> = T extends [
-    unknown,
+    any,
     ...infer U
 ] ? U : never;
-type TStringable = string | ((...args: any[]) => string);
 type TRuleReturn = boolean | {
     pass: boolean;
-    message?: TStringable;
+    message?: string | (() => string);
 };
 type TRuleDetailedResult = {
     pass: boolean;
     message?: string;
 };
-type TLazyRules = TRules<TLazyRuleMethods>;
-type TLazy = TLazyRules & TLazyRuleMethods;
-type TLazyRuleMethods = TLazyRuleRunners & {
-    message: (message: TLazyMessage) => TLazy;
-};
-type TLazyRuleRunners = {
+type TLazyRuleMethods = {
     test: (value: unknown) => boolean;
     run: (value: unknown) => TRuleDetailedResult;
 };
-type TLazyMessage = string | ((value: unknown, originalMessage?: TStringable) => string);
-declare function allOf(value: unknown, ...rules: TLazy[]): TRuleDetailedResult;
-declare function anyOf(value: unknown, ...rules: TLazy[]): TRuleDetailedResult;
-declare function noneOf(value: unknown, ...rules: TLazy[]): TRuleDetailedResult;
-declare function oneOf(value: unknown, ...rules: TLazy[]): TRuleDetailedResult;
-declare function optional(value: any, ruleChain: TLazy): TRuleDetailedResult;
-declare function compounds(): {
-    allOf: typeof allOf;
-    anyOf: typeof anyOf;
-    noneOf: typeof noneOf;
-    oneOf: typeof oneOf;
-    optional: typeof optional;
-};
-type TCompounds = ReturnType<typeof compounds>;
-type KCompounds = keyof TCompounds;
+declare namespace compounds {
+    type TRuleReturn = boolean | {
+        pass: boolean;
+        message?: string | (() => string);
+    };
+    type TRuleDetailedResult = {
+        pass: boolean;
+        message?: string;
+    };
+    type TLazyRuleMethods = {
+        test: (value: unknown) => boolean;
+        run: (value: unknown) => TRuleDetailedResult;
+    };
+    function anyOf(value: unknown, ...rules: TLazyRuleMethods[]): TRuleDetailedResult;
+    function noneOf(value: unknown, ...rules: TLazyRuleMethods[]): TRuleDetailedResult;
+    function oneOf(value: unknown, ...rules: TLazyRuleMethods[]): TRuleDetailedResult;
+    function allOf(value: unknown, ...rules: TLazyRuleMethods[]): TRuleDetailedResult;
+}
 type TArgs = any[];
 type TRuleValue = any;
 type TRuleBase = (value: TRuleValue, ...args: TArgs) => TRuleReturn;
 type TRule = Record<string, TRuleBase>;
-type TBaseRules = typeof baseRules;
-type KBaseRules = keyof TBaseRules;
 declare function endsWith(value: string, arg1: string): boolean;
 declare function equals(value: unknown, arg1: unknown): boolean;
-declare function greaterThan(value: number | string, gt: number | string): boolean;
-declare function greaterThanOrEquals(value: string | number, gte: string | number): boolean;
+declare function greaterThan(value: unknown, arg1: unknown): boolean;
+declare function greaterThanOrEquals(value: unknown, arg1: unknown): boolean;
 declare function inside(value: unknown, arg1: string | unknown[]): boolean;
-// The module is named "isArrayValue" since it
-// is conflicting with a nested npm dependency.
-// We may need to revisit this in the future.
 declare function isArray(value: unknown): value is Array<unknown>;
 declare function isBetween(value: number | string, min: number | string, max: number | string): boolean;
 declare function isEmpty(value: unknown): boolean;
-declare function isNaN(value: unknown): boolean;
-declare function isNegative(value: number | string): boolean;
-declare function isNull(value: unknown): value is null;
-declare function isNumber(value: unknown): value is number;
-declare function isNumeric(value: string | number): boolean;
+declare function isNaN(value: any): boolean;
+declare function isNegative(value: any): boolean;
+declare function isNull(value: any): value is null;
+declare function isNumber(value: any): value is number;
+declare function isNumeric(value: any): boolean;
 declare function isTruthy(value: unknown): boolean;
 declare function isUndefined(value?: unknown): boolean;
 declare function lengthEquals(value: string | unknown[], arg1: string | number): boolean;
-declare function lessThan(value: string | number, lt: string | number): boolean;
-declare function lessThanOrEquals(value: string | number, lte: string | number): boolean;
+declare function lessThan(value: unknown, arg1: unknown): boolean;
+declare function lessThanOrEquals(value: unknown, arg1: unknown): boolean;
 declare function longerThan(value: string | unknown[], arg1: string | number): boolean;
 declare function longerThanOrEquals(value: string | unknown[], arg1: string | number): boolean;
 declare function matches(value: string, regex: RegExp | string): boolean;
-declare function numberEquals(value: string | number, eq: string | number): boolean;
+declare function numberEquals(value: unknown, arg1: unknown): boolean;
 declare function shorterThan(value: string | unknown[], arg1: string | number): boolean;
 declare function shorterThanOrEquals(value: string | unknown[], arg1: string | number): boolean;
 declare function startsWith(value: string, arg1: string): boolean;
 declare const baseRules: {
-    condition: typeof default;
     doesNotEndWith: (value: string, arg1: string) => boolean;
     doesNotStartWith: (value: string, arg1: string) => boolean;
     endsWith: typeof endsWith;
@@ -97,17 +83,17 @@ declare const baseRules: {
     isNotBetween: (value: string | number, min: string | number, max: string | number) => boolean;
     isNotBoolean: (value: unknown) => boolean;
     isNotEmpty: (value: unknown) => boolean;
-    isNotNaN: (value: unknown) => boolean;
-    isNotNull: (value: unknown) => boolean;
-    isNotNumber: (value: unknown) => boolean;
-    isNotNumeric: (value: string | number) => boolean;
+    isNotNaN: (value: any) => boolean;
+    isNotNull: (value: any) => boolean;
+    isNotNumber: (value: any) => boolean;
+    isNotNumeric: (value: any) => boolean;
     isNotString: (v: unknown) => boolean;
     isNotUndefined: (value?: unknown) => boolean;
     isNull: typeof isNull;
     isNumber: typeof isNumber;
     isNumeric: typeof isNumeric;
     isOdd: (value: any) => boolean;
-    isPositive: (value: string | number) => boolean;
+    isPositive: (value: any) => boolean;
     isString: typeof default;
     isTruthy: typeof isTruthy;
     isUndefined: typeof isUndefined;
@@ -124,39 +110,26 @@ declare const baseRules: {
     notInside: (value: unknown, arg1: string | unknown[]) => boolean;
     notMatches: (value: string, regex: string | RegExp) => boolean;
     numberEquals: typeof numberEquals;
-    numberNotEquals: (value: string | number, eq: string | number) => boolean;
+    numberNotEquals: (value: unknown, arg1: unknown) => boolean;
     shorterThan: typeof shorterThan;
     shorterThanOrEquals: typeof shorterThanOrEquals;
     startsWith: typeof startsWith;
-} & {
-    allOf: typeof default;
-    anyOf: typeof default;
-    noneOf: typeof default;
-    oneOf: typeof default;
-    optional: typeof default;
-} & {
-    shape: typeof default;
-    loose: typeof default;
-    isArrayOf: typeof default;
 };
-type TRules<E = Record<string, unknown>> = Record<string, (...args: TArgs) => TRules & E> & {
-    [P in KCompounds]: (...args: DropFirst<Parameters<TCompounds[P]>> | TArgs) => TRules & E;
-} & {
-    [P in KBaseRules]: (...args: DropFirst<Parameters<TBaseRules[P]>> | TArgs) => TRules & E;
-};
-declare function enforceEager(value: TRuleValue): TRules;
-type TEnforceEager = typeof enforceEager;
-// Help needed improving the typings of this file.
-// Ideally, we'd be able to extend TShapeObject, but that's not possible.
-declare function partial<T extends Record<any, any>>(shapeObject: T): T;
-declare function modifiers(): {
-    partial: typeof partial;
-};
-type TModifiers = ReturnType<typeof modifiers>;
+declare const rules: typeof baseRules & Record<string, (...args: TArgs) => TRuleReturn>;
+declare function EnforceBase(value: TRuleValue): TEaegerRules;
 declare const enforce: TEnforce;
-type TEnforce = TEnforceEager & TLazyRules & TEnforceMethods;
-type TEnforceMethods = TModifiers & {
-    context: () => TEnforceContext;
+type TEaegerRules = {
+    [P in keyof typeof compounds]: (...args: DropFirst<Parameters<typeof compounds[P]>>) => TEaegerRules;
+} & {
+    [P in keyof typeof rules]: (...args: DropFirst<Parameters<typeof rules[P]>>) => TEaegerRules;
+};
+type TLazyRules = {
+    [P in keyof typeof compounds]: (...args: DropFirst<Parameters<typeof compounds[P]>>) => TLazyRules & TLazyRuleMethods;
+} & {
+    [P in keyof typeof rules]: (...args: DropFirst<Parameters<typeof rules[P]>>) => TLazyRules & TLazyRuleMethods;
+};
+type TEnforce = typeof EnforceBase & TLazyRules & {
     extend: (customRules: TRule) => void;
 };
 export { enforce as default };
+//# sourceMappingURL=n4s.d.ts.map

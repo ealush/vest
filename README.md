@@ -64,7 +64,7 @@ Vest tries to remediate this by separating validation logic from feature logic s
 ```js
 import { create, only, test, enforce, warn } from 'vest';
 
-export default create('user_form', (data = {}, currentField) => {
+export default create((data = {}, currentField) => {
   only(currentField);
 
   test('username', 'Username is required', () => {
@@ -87,12 +87,6 @@ export default create('user_form', (data = {}, currentField) => {
     warn();
     enforce(data.password).matches(/[0-9]/);
   });
-
-  if (data.password) {
-    test('confirm_password', 'Passwords do not match', () => {
-      enforce(data.confirm_password).equals(data.password);
-    });
-  }
 
   test('email', 'Email Address is not valid', () => {
     enforce(data.email).isEmail();

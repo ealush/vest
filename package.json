@@ -1,71 +1,57 @@
 {
-  "license": "MIT",
   "scripts": {
-    "build": "node ./scripts/buildAll",
-    "clean": "git clean -xdf --exclude=node_modules",
-    "prettier-watch": "onchange '**/*.js' '**/*.json' -- prettier --write {{changed}}",
-    "dev": "onchange -i './packages/**/src/**/*.js' -- yarn genJSConfig",
-    "genJSConfig": "node ./scripts/genJsconfig",
-    "test": "jest --projects ./packages/*",
-    "lint": "eslint . --ignore-path .gitignore",
-    "pretest": "yarn genJSConfig",
-    "docs": "node scripts/release/steps/updateDocs"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn genJSConfig && pretty-quick"
-    }
+    "build": "vx build",
+    "test": "vx test",
+    "release": "vx release",
+    "lint": "eslint . --ignore-path .gitignore"
   },
   "prettier": {
     "arrowParens": "avoid",
     "singleQuote": true
   },
-  "jest": {
-    "testEnvironment": "node"
-  },
-  "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
+  "vx": {},
   "devDependencies": {
     "@ampproject/rollup-plugin-closure-compiler": "^0.26.0",
-    "@babel/cli": "^7.13.0",
-    "@babel/core": "^7.13.8",
-    "@babel/plugin-proposal-optional-chaining": "^7.13.8",
-    "@babel/plugin-transform-object-assign": "^7.12.13",
-    "@babel/plugin-transform-runtime": "^7.13.15",
-    "@babel/preset-env": "^7.14.0",
-    "@babel/register": "^7.13.8",
-    "@rollup/plugin-alias": "^3.1.2",
+    "@babel/plugin-transform-object-assign": "^7.14.5",
+    "@babel/plugin-transform-runtime": "^7.14.5",
+    "@babel/preset-typescript": "^7.13.0",
     "@rollup/plugin-babel": "^5.3.0",
-    "@rollup/plugin-commonjs": "^18.0.0",
-    "@rollup/plugin-node-resolve": "^11.2.1",
     "@rollup/plugin-replace": "^2.4.2",
-    "babel-eslint": "^10.1.0",
-    "babel-jest": "^26.6.3",
-    "babel-plugin-add-module-exports": "^1.0.4",
-    "cross-env": "^7.0.3",
-    "date-fns": "^2.21.1",
-    "eslint": "^7.25.0",
+    "@types/jest": "^26.0.23",
+    "@types/lodash": "^4.14.170",
+    "@typescript-eslint/eslint-plugin": "^4.24.0",
+    "@typescript-eslint/parser": "^4.24.0",
+    "date-fns": "^2.22.1",
+    "eslint": "^7.26.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.22.1",
+    "eslint-import-resolver-typescript": "^2.4.0",
+    "eslint-plugin-import": "^2.23.3",
     "eslint-plugin-jest": "^23.20.0",
     "faker": "^5.5.3",
-    "fs-extra": "^9.1.0",
+    "fs-extra": "^10.0.0",
+    "glob": "^7.1.7",
     "husky": "^6.0.0",
     "jest": "^26.6.3",
-    "jest-cli": "^26.6.3",
     "lodash": "^4.17.21",
-    "node-fetch": "^2.6.1",
+    "nodemon": "^2.0.7",
     "onchange": "^7.1.0",
-    "prettier": "2.2.1",
-    "pretty-quick": "^3.1.0",
-    "rollup": "^2.46.0",
+    "prettier": "^2.3.0",
+    "rollup": "^2.48.0",
     "rollup-plugin-terser": "^7.0.2",
-    "semver": "^7.3.5",
-    "typescript": "^4.2.4",
-    "validator": "^13.5.2",
-    "vest": "^3.0.0",
-    "wait": "^0.4.2"
-  }
+    "rollup-plugin-ts": "^1.4.0",
+    "ts-jest": "^26.5.6",
+    "tsc": "^2.0.3",
+    "tslib": "^2.2.0",
+    "typescript": "^4.2.0",
+    "wait": "^0.4.2",
+    "yargs": "^17.0.1"
+  },
+  "workspaces": [
+    "packages/!(shared)*"
+  ],
+  "private": true,
+  "dependencies": {
+    "vx": "./vx"
+  },
+  "version": "0.0.0"
 }

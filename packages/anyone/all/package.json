@@ -1,0 +1,7 @@
+{
+  "main": "../dist/cjs/all.js",
+  "module": "../dist/es/all.production.js",
+  "name": "all",
+  "types": "../types/all.d.ts",
+  "private": true
+}

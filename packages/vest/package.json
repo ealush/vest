@@ -1,69 +1,17 @@
 {
-  "name": "vest",
-  "version": "3.2.7",
-  "description": "Declarative validations.",
-  "main": "./vest.js",
-  "browser": "./vest.js",
-  "exports": {
-    "./vest.js": "./vest.js",
-    "./vest": "./vest.js",
-    "./package.json": "./package.json",
-    "./package": "./package.json",
-    "./any.js": "./any.js",
-    "./any": "./any.js",
-    "./classNames.js": "./classNames.js",
-    "./classNames": "./classNames.js",
-    "./esm/vest.es.development.js": "./esm/vest.es.development.js",
-    "./esm/vest.es.development": "./esm/vest.es.development.js",
-    "./esm/vest.es.production.js": "./esm/vest.es.production.js",
-    "./esm/vest.es.production": "./esm/vest.es.production.js",
-    "./esm/vest.es.production.min.js": "./esm/vest.es.production.min.js",
-    "./esm/vest.es.production.min": "./esm/vest.es.production.min.js",
-    "./promisify.js": "./promisify.js",
-    "./promisify": "./promisify.js",
-    "./schema.js": "./schema.js",
-    "./schema": "./schema.js",
-    "./vest.cjs.development.js": "./vest.cjs.development.js",
-    "./vest.cjs.development": "./vest.cjs.development.js",
-    "./vest.cjs.production.js": "./vest.cjs.production.js",
-    "./vest.cjs.production": "./vest.cjs.production.js",
-    "./vest.cjs.production.min.js": "./vest.cjs.production.min.js",
-    "./vest.cjs.production.min": "./vest.cjs.production.min.js",
-    "./vest.umd.development.js": "./vest.umd.development.js",
-    "./vest.umd.development": "./vest.umd.development.js",
-    "./vest.umd.production.js": "./vest.umd.production.js",
-    "./vest.umd.production": "./vest.umd.production.js",
-    "./vest.umd.production.min.js": "./vest.umd.production.min.js",
-    "./vest.umd.production.min": "./vest.umd.production.min.js",
-    ".": {
-      "browser": "./esm/vest.es.production.js",
-      "import": "./esm/vest.es.production.js",
-      "require": "./vest.cjs.production.js",
-      "node": "./vest.cjs.production.js",
-      "default": "./vest.cjs.production.js"
-    }
-  },
-  "types": "./vest.d.ts",
-  "author": "ealush",
+  "version": "3.2.5",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ealush/vest.git"
-  },
-  "bugs": {
-    "url": "https://github.com/ealush/vest/issues"
-  },
-  "homepage": "https://vestjs.dev/",
+  "main": "index.js",
+  "types": "types/vest.d.ts",
+  "files": [
+    "dist"
+  ],
+  "private": true,
+  "name": "vest",
+  "author": "ealush",
   "scripts": {
-    "build": "rollup -c ./config/rollup/rollup.config.js",
-    "test": "jest"
-  },
-  "devDependencies": {
-    "anyone": "^0.0.7",
-    "context": "^1.1.3",
-    "n4s": "^2.1.1",
-    "vast": "^1.0.2"
-  },
-  "module": "./esm/vest.es.production.js",
-  "dependencies": {}
+    "test": "vx test",
+    "build": "vx build",
+    "release": "vx release"
+  }
 }

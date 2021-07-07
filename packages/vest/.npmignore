@@ -1,6 +1,2 @@
+node_modules
 src
-playground
-config
-testUtils
-dist
-jest.config.js

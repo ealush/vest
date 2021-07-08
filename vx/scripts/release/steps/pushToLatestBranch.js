@@ -2,13 +2,14 @@ const path = require('path');
 
 const { sample } = require('lodash');
 
-const exec = require('vx/exec');
-const logger = require('vx/logger');
 const packageJson = require('../../../util/packageJson');
-const packageNames = require('../../../util/packageNames');
-const vxPath = require('vx/vxPath');
 const listAllChangesSinceStableBranch = require('../github/listAllChangesSinceStableBranch');
 const matchPackageNameInCommit = require('../github/matchPackageNameInCommit');
+
+const exec = require('vx/exec');
+const logger = require('vx/logger');
+const packageNames = require('vx/packageNames');
+const vxPath = require('vx/vxPath');
 
 const SCRIPT_PATH = path.resolve(
   vxPath.ROOT_PATH,

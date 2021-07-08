@@ -2,9 +2,8 @@ const path = require('path');
 
 const fse = require('fs-extra');
 
-const packageNames = require('../../../util/packageNames');
-
 const logger = require('vx/logger');
+const packageNames = require('vx/packageNames');
 const vxPath = require('vx/vxPath');
 
 const DOCS = 'docs';

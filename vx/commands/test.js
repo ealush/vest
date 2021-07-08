@@ -8,11 +8,11 @@ const configOpt = `--config ${path.resolve(
   'jest.config.js'
 )}`;
 
-function test(packageName, { watch }) {
+function test(packageName, options) {
   if (!packageName) {
-    exec([`jest ./packages/*`, configOpt, watch && '--watch']);
+    exec([`jest ./packages/*`, configOpt, options]);
   } else {
-    exec([`yarn workspace ${packageName} jest`, configOpt, watch && '--watch']);
+    exec([`yarn workspace ${packageName} jest`, configOpt, options]);
   }
 }
 

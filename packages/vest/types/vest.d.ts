@@ -262,6 +262,6 @@ declare const _default: typeof testBase & {
     };
 };
 declare const test: typeof _default;
-declare const VERSION = "1.0.31";
+declare const VERSION = "3.2.3";
 export { test, create, only, skip, warn, group, optional, enforce, VERSION };
 //# sourceMappingURL=vest.d.ts.map

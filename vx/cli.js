@@ -6,14 +6,8 @@ const glob = require('glob');
 const { hideBin } = require('yargs/helpers');
 const yargs = require('yargs/yargs');
 
-const packageNames = require('./util/packageNames');
+const packageNames = require('vx/packageNames');
 const vxPath = require('vx/vxPath');
-
-require('./scripts/genTsConfig');
-
-const { _: args, ...options } = yargs(hideBin(process.argv)).argv;
-
-const [command, target = insidePackageDir()] = args;
 
 const commands = glob
   .sync(`./commands/*.js`, {
@@ -27,11 +21,36 @@ const commands = glob
     {}
   );
 
+require('./scripts/genTsConfig');
+
+const argv = hideBin(process.argv);
+
+const cli = yargs(argv)
+  .command('$0 <command> [options..]', 'Run vx monorepo utility', yargs => {
+    yargs.positional('command', {
+      describe: 'Command to run',
+      choices: Object.keys(commands),
+      demandOption: true,
+    });
+  })
+  .option('packageName', {
+    alias: 'p',
+    choices: packageNames.list,
+    demandOption: false,
+    describe: 'Optional. Package to run the command on.',
+  })
+  .help().argv;
+
+// is there a better way of doing this?
+const options = argv.slice(cli.packageName ? 3 : 1).join(' ');
+
+const { packageName = insidePackageDir(), command } = cli;
+
 if (!commands[command]) {
   throw new Error(`Command ${command} not found.`);
 }
 
-commands[command](target, options);
+commands[command](packageName, options);
 
 function insidePackageDir() {
   if (!process.cwd().includes(vxPath.PACKAGES_PATH)) {

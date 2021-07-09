@@ -7,7 +7,7 @@ const logger = require('vx/logger');
 const packageName = require('vx/packageName');
 const vxPath = require('vx/vxPath');
 
-function buildPackage(name = packageName(), options) {
+function buildPackage(name = packageName(), { options } = {}) {
   logger.info(`🛠 Building package: ${name}`);
 
   fse.removeSync(vxPath.packageDist());

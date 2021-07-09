@@ -10,9 +10,10 @@ const {
   KEYWORD_PATCH,
   CHANGELOG_TITLES,
 } = require('../releaseKeywords');
-const packageName = require('vx/packageName');
 
 const logger = require('vx/logger');
+const packageName = require('vx/packageName');
+const writeFileSync = require('vx/util/writeFileSync');
 const vxPath = require('vx/vxPath');
 
 function updateChangelog({ messages, nextVersion }) {
@@ -79,7 +80,7 @@ function getChangelog() {
 }
 
 function writeChangelog(changelog) {
-  fs.writeFileSync(changelogPath(), changelog);
+  writeFileSync(changelogPath(), changelog);
 }
 
 const changelogTemplate = `# ${packageName()} - Changelog

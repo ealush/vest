@@ -1,6 +1,6 @@
 export default function mapFirst<T>(
   array: T[],
-  callback: (item: T, breakout: (value: unknown) => void) => any
+  callback: (item: T, breakout: (value: unknown) => void) => unknown
 ): any {
   let broke = false;
   let breakoutValue = null;

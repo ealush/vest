@@ -91,7 +91,7 @@ describe('more complex', () => {
     `);
   });
 
-  const suite = create((data: Record<string, any> = {}, only: string) => {
+  const suite = create((data: Record<string, unknown> = {}, only: string) => {
     vest.only(only);
 
     test('username', 'username is required', () => {

@@ -33,6 +33,7 @@ module.exports = {
     },
     {
       files: ['*.ts'],
+      excludedFiles: ['*__tests__/**/*.(t|j)s', './**/testUtils/**/*'],
       extends: [
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
@@ -63,7 +64,7 @@ module.exports = {
     'jest/expect-expect': 0,
     'jest/no-identical-title': 0,
     'jest/no-standalone-expect': 0,
-    'max-params': [1, { max: 3 }],
+    'max-params': [1, { max: 4 }],
     'no-console': 2,
     'no-duplicate-imports': 2,
     'no-implicit-globals': 2,

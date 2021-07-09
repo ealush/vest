@@ -18,7 +18,7 @@ describe('Tests isNull rule', () => {
     1,
     '0',
     '1',
-    () => {},
+    Function.prototype,
   ])('Should return false for %s value', v => {
     expect(isNull(v)).toBe(false);
   });

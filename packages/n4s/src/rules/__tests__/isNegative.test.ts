@@ -34,6 +34,7 @@ describe('Tests isNegative rule', () => {
         expect(isNegative()).toBe(false);
       });
       it('should return false for null value', () => {
+        // @ts-expect-error - testing bad usage
         expect(isNegative(null)).toBe(false);
       });
     });

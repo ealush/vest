@@ -20,6 +20,7 @@ describe('Tests isNumeric rule', () => {
   });
 
   it('Should return false for non numeric values', () => {
+    // @ts-expect-error - testing bad usage
     NON_NUMERICS.forEach(value => expect(isNumeric(value)).toBe(false));
   });
 });

@@ -78,11 +78,11 @@ export default function createState(
     return state.references;
   }
 
-  function set(key: number, value: unknown): void {
-    const prevValue = state.references[key];
-    state.references[key] = value;
+  function set(index: number, value: unknown): void {
+    const prevValue = state.references[index];
+    state.references[index] = value;
 
-    const [, onUpdate] = registrations[key];
+    const [, onUpdate] = registrations[index];
 
     if (isFunction(onUpdate)) {
       onUpdate(value, prevValue);

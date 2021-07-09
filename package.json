@@ -51,6 +51,7 @@
   ],
   "private": true,
   "dependencies": {
+    "dotenv": "^10.0.0",
     "vx": "./vx"
   },
   "version": "0.0.0"

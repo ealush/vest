@@ -2,12 +2,18 @@
 
 const path = require('path');
 
+const dotenv = require('dotenv');
 const glob = require('glob');
 const { hideBin } = require('yargs/helpers');
 const yargs = require('yargs/yargs');
 
+const logger = require('vx/logger');
+const packageName = require('vx/packageName');
 const packageNames = require('vx/packageNames');
+const dryRun = require('vx/util/dryRun');
 const vxPath = require('vx/vxPath');
+
+dotenv.config();
 
 const commands = glob
   .sync(`./commands/*.js`, {
@@ -25,32 +31,55 @@ require('./scripts/genTsConfig');
 
 const argv = hideBin(process.argv);
 
+const namedOptions = Object.entries({
+  '--package': 2,
+  '-p': 2,
+  '--dry': 1,
+});
+
 const cli = yargs(argv)
-  .command('$0 <command> [options..]', 'Run vx monorepo utility', yargs => {
+  .command('$0 <command>', 'Run vx monorepo utility', yargs => {
     yargs.positional('command', {
       describe: 'Command to run',
       choices: Object.keys(commands),
       demandOption: true,
     });
   })
-  .option('packageName', {
+  .option('package', {
     alias: 'p',
     choices: packageNames.list,
+    default: packageName() ?? insidePackageDir(),
     demandOption: false,
-    describe: 'Optional. Package to run the command on.',
+    describe: 'Package to run against',
+  })
+  .option('dry', {
+    demandOption: false,
+    describe: 'Avoid destructive actions.',
+    global: true,
+    nargs: 0,
+    type: 'boolean',
   })
   .help().argv;
 
-// is there a better way of doing this?
-const options = argv.slice(cli.packageName ? 3 : 1).join(' ');
-
-const { packageName = insidePackageDir(), command } = cli;
+const { package, command, dry = false } = cli;
 
 if (!commands[command]) {
   throw new Error(`Command ${command} not found.`);
 }
+// FIXME: is there a better way of doing this?
+const options = argv.slice(
+  namedOptions.reduce((count, [option, increment]) => {
+    return argv.includes(option) ? count + increment : count;
+  }, 1)
+);
 
-commands[command](packageName, options);
+logger.info(`Running command ${command} for package ${package}.`);
+
+dryRun.setDryRun(dry);
+
+commands[command](package, {
+  options,
+});
 
 function insidePackageDir() {
   if (!process.cwd().includes(vxPath.PACKAGES_PATH)) {

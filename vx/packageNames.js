@@ -1,5 +1,9 @@
 const path = require('path');
 
+const glob = require('glob');
+
+const packageName = require('vx/packageName');
+
 module.exports = Object.defineProperty(
   { paths: {}, list: [], names: {} },
   'current',
@@ -9,8 +13,6 @@ module.exports = Object.defineProperty(
     },
   }
 );
-
-const glob = require('glob');
 
 const vxPath = require('vx/vxPath');
 
@@ -25,12 +27,3 @@ paths.forEach(packagePath => {
   module.exports.names[basename] = basename;
   module.exports.list.push(basename);
 });
-
-function packageName() {
-  const name = process.env.npm_package_name;
-  if (!packageName) {
-    throw new Error(`Package name not found`);
-  }
-
-  return name;
-}

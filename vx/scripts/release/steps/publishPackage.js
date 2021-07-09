@@ -1,17 +1,28 @@
 const isReleaseBranch = require('../../release/isReleaseBranch');
-const packageName = require('vx/packageName');
 
 const exec = require('vx/exec');
 const logger = require('vx/logger');
+const packageName = require('vx/packageName');
+const dryRun = require('vx/util/dryRun');
+const joinTruthy = require('vx/util/joinTruthy');
 
-function publishPackage({ tag, tagId }) {
+function publishPackage({ tag, tagId, nextVersion }) {
   if (!isReleaseBranch()) {
     logger.info(`❌  Not in release branch. Skipping publish.`);
   }
 
-  logger.info(`🚀 Publishing package: ${packageName()}`);
+  const versionToUse = tag && tagId ? tagId : nextVersion;
 
-  const command = genPublishCommand(tag, tagId);
+  logger.info(`🚀 Publishing package ${packageName()}.
+    Version: ${versionToUse}
+    Tag Id: ${tagId}
+    Tag: ${tag}`);
+
+  if (dryRun.isDryRun()) {
+    return dryRun.dryRunExitMessage(publishPackage);
+  }
+
+  const command = genPublishCommand(nextVersion, tag);
   execCommandWithGitConfig(command);
   clearTag(tag, tagId);
 }
@@ -30,21 +41,24 @@ function clearTag(tag, tagId) {
 function execCommandWithGitConfig(command) {
   const { EMAIL_ADDRESS, GIT_NAME } = process.env;
 
+  logger.info(
+    `Setting git config:
+    Email "${EMAIL_ADDRESS}"
+    Name "${GIT_NAME}"`
+  );
+
   exec(
-    `
-git config --global user.email "${EMAIL_ADDRESS}"
+    `git config --global user.email "${EMAIL_ADDRESS}"
 git config --global user.name "${GIT_NAME}"
-${command}`,
+${joinTruthy(command, ' ')}`,
     { exitOnFailure: false }
   );
 }
 
-function genPublishCommand(tag, tagId) {
+function genPublishCommand(versionToUse, tag) {
   return [
     `yarn workspace ${packageName()} publish`,
-    tag && tagId && `--new-version ${tagId}`,
+    `--new-version ${versionToUse}`,
     tag && `--tag ${tag}`,
-  ]
-    .filter(Boolean)
-    .join(' ');
+  ];
 }

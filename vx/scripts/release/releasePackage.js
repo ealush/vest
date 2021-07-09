@@ -1,5 +1,3 @@
-const packageName = require('vx/packageName');
-
 const build = require('./../build/buildPackage');
 const genDiffData = require('./../release/genDiffData');
 const getDiff = require('./../release/github/getDiff');
@@ -10,10 +8,10 @@ const updateChangelog = require('./../release/steps/updateChangelog');
 
 const logger = require('vx/logger');
 
-function releasePackage() {
-  logger.info(`Releasing package: 📦 ${packageName()}`);
+function releasePackage(packageName) {
+  logger.info(`Releasing package: 📦 ${packageName}`);
 
-  logger.info(`🔍 Finding diffs for package: ${packageName()}`);
+  logger.info(`🔍 Finding diffs for package: ${packageName}`);
   const changes = getDiff();
 
   if (!changes.length) {

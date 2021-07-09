@@ -8,11 +8,11 @@ const configOpt = `--config ${path.resolve(
   'jest.config.js'
 )}`;
 
-function test(packageName, options) {
-  if (!packageName) {
-    exec([`jest ./packages/*`, configOpt, options]);
-  } else {
+function test(packageName, { options }) {
+  if (packageName) {
     exec([`yarn workspace ${packageName} jest`, configOpt, options]);
+  } else {
+    exec([`jest ./packages/*`, configOpt, options]);
   }
 }
 

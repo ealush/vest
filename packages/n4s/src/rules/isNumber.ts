@@ -1,6 +1,6 @@
 import bindNot from 'bindNot';
 
-export function isNumber(value: any): value is number {
+export function isNumber(value: unknown): value is number {
   return Boolean(typeof value === 'number');
 }
 

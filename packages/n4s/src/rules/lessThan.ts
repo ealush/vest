@@ -1,5 +1,5 @@
 import { isNumeric } from 'isNumeric';
 
-export function lessThan(value: unknown, arg1: unknown): boolean {
-  return isNumeric(value) && isNumeric(arg1) && Number(value) < Number(arg1);
+export function lessThan(value: string | number, lt: string | number): boolean {
+  return isNumeric(value) && isNumeric(lt) && Number(value) < Number(lt);
 }

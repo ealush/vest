@@ -10,7 +10,15 @@ import runAsyncTest from 'runAsyncTest';
 import { useSuiteId } from 'stateHooks';
 import { testBase } from 'test';
 /* eslint-disable jest/no-export */
-export default function bindTestMemo(test: typeof testBase) {
+export default function bindTestMemo(test: typeof testBase): {
+  (fieldName: string, test: TTestFn, deps: unknown[]): VestTest;
+  (
+    fieldName: string,
+    message: string,
+    test: TTestFn,
+    deps: unknown[]
+  ): VestTest;
+} {
   const cache = createCache(100); // arbitrary cache size
 
   /**
@@ -22,11 +30,13 @@ export default function bindTestMemo(test: typeof testBase) {
   ): VestTest;
   function memo(
     fieldName: string,
-    ...args: [fieldName: string, test: TTestFn, deps: unknown[]]
+    ...args: [message: string, test: TTestFn, deps: unknown[]]
   ): VestTest;
   function memo(
     fieldName: string,
-    ...args: [string, TTestFn, any[]] | [TTestFn, any[]]
+    ...args:
+      | [message: string, test: TTestFn, deps: unknown[]]
+      | [test: TTestFn, deps: unknown[]]
   ): VestTest {
     const [suiteId] = useSuiteId();
 

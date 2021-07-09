@@ -1,6 +1,6 @@
 import bindNot from 'bindNot';
 
-export function isNaN(value: any): boolean {
+export function isNaN(value: unknown): boolean {
   return Number.isNaN(value);
 }
 

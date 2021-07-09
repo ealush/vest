@@ -8,7 +8,7 @@ function exec(
   command,
   { exitOnFailure = true, throwOnFailure = false, silent = false } = {}
 ) {
-  const cmd = joinTruthy(command, ' ');
+  const cmd = joinTruthy(command?.flat?.() ?? command, ' ');
 
   if (!silent) {
     logger.info(`🎬 Executing command: "${cmd}"`);

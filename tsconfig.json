@@ -12,7 +12,7 @@
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
-    "noImplicitReturns": true,
+    "noImplicitReturns": false,
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -92,7 +92,6 @@
       "removeElementFromArray": [
         "./packages/shared/src/removeElementFromArray.ts"
       ],
-      "setFnName": ["./packages/shared/src/setFnName.ts"],
       "sharedKeys": ["./packages/shared/src/sharedKeys.ts"],
       "throwError": ["./packages/shared/src/throwError.ts"],
       "utilityTypes": ["./packages/shared/src/utilityTypes.ts"],

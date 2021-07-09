@@ -6,7 +6,10 @@ import VestTest, { TTestResult } from 'VestTest';
 import { testBase } from 'test';
 
 /* eslint-disable jest/no-export */
-export default function bindTestEach(test: typeof testBase) {
+export default function bindTestEach(test: typeof testBase): (table: any[]) => {
+  (fieldName: Stringable, message: Stringable, cb: TEachCb): VestTest[];
+  (fieldName: Stringable, cb: TEachCb): VestTest[];
+} {
   /**
    * Run multiple tests using a parameter table
    */

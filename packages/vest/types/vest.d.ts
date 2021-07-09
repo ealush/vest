@@ -1,5 +1,5 @@
 type DropFirst<T extends unknown[]> = T extends [
-    any,
+    unknown,
     ...infer U
 ] ? U : never;
 type TRuleReturn = boolean | {
@@ -38,26 +38,26 @@ type TRuleBase = (value: TRuleValue, ...args: TArgs) => TRuleReturn;
 type TRule = Record<string, TRuleBase>;
 declare function endsWith(value: string, arg1: string): boolean;
 declare function equals(value: unknown, arg1: unknown): boolean;
-declare function greaterThan(value: unknown, arg1: unknown): boolean;
-declare function greaterThanOrEquals(value: unknown, arg1: unknown): boolean;
+declare function greaterThan(value: number | string, gt: number | string): boolean;
+declare function greaterThanOrEquals(value: string | number, gte: string | number): boolean;
 declare function inside(value: unknown, arg1: string | unknown[]): boolean;
 declare function isArray(value: unknown): value is Array<unknown>;
 declare function isBetween(value: number | string, min: number | string, max: number | string): boolean;
 declare function isEmpty(value: unknown): boolean;
-declare function isNaN(value: any): boolean;
-declare function isNegative(value: any): boolean;
-declare function isNull(value: any): value is null;
-declare function isNumber(value: any): value is number;
-declare function isNumeric(value: any): boolean;
+declare function isNaN(value: unknown): boolean;
+declare function isNegative(value: number | string): boolean;
+declare function isNull(value: unknown): value is null;
+declare function isNumber(value: unknown): value is number;
+declare function isNumeric(value: string | number): boolean;
 declare function isTruthy(value: unknown): boolean;
 declare function isUndefined(value?: unknown): boolean;
 declare function lengthEquals(value: string | unknown[], arg1: string | number): boolean;
-declare function lessThan(value: unknown, arg1: unknown): boolean;
-declare function lessThanOrEquals(value: unknown, arg1: unknown): boolean;
+declare function lessThan(value: string | number, lt: string | number): boolean;
+declare function lessThanOrEquals(value: string | number, lte: string | number): boolean;
 declare function longerThan(value: string | unknown[], arg1: string | number): boolean;
 declare function longerThanOrEquals(value: string | unknown[], arg1: string | number): boolean;
 declare function matches(value: string, regex: RegExp | string): boolean;
-declare function numberEquals(value: unknown, arg1: unknown): boolean;
+declare function numberEquals(value: string | number, eq: string | number): boolean;
 declare function shorterThan(value: string | unknown[], arg1: string | number): boolean;
 declare function shorterThanOrEquals(value: string | unknown[], arg1: string | number): boolean;
 declare function startsWith(value: string, arg1: string): boolean;
@@ -83,17 +83,17 @@ declare const baseRules: {
     isNotBetween: (value: string | number, min: string | number, max: string | number) => boolean;
     isNotBoolean: (value: unknown) => boolean;
     isNotEmpty: (value: unknown) => boolean;
-    isNotNaN: (value: any) => boolean;
-    isNotNull: (value: any) => boolean;
-    isNotNumber: (value: any) => boolean;
-    isNotNumeric: (value: any) => boolean;
+    isNotNaN: (value: unknown) => boolean;
+    isNotNull: (value: unknown) => boolean;
+    isNotNumber: (value: unknown) => boolean;
+    isNotNumeric: (value: string | number) => boolean;
     isNotString: (v: unknown) => boolean;
     isNotUndefined: (value?: unknown) => boolean;
     isNull: typeof isNull;
     isNumber: typeof isNumber;
     isNumeric: typeof isNumeric;
     isOdd: (value: any) => boolean;
-    isPositive: (value: any) => boolean;
+    isPositive: (value: string | number) => boolean;
     isString: typeof default;
     isTruthy: typeof isTruthy;
     isUndefined: typeof isUndefined;
@@ -110,7 +110,7 @@ declare const baseRules: {
     notInside: (value: unknown, arg1: string | unknown[]) => boolean;
     notMatches: (value: string, regex: string | RegExp) => boolean;
     numberEquals: typeof numberEquals;
-    numberNotEquals: (value: unknown, arg1: unknown) => boolean;
+    numberNotEquals: (value: string | number, eq: string | number) => boolean;
     shorterThan: typeof shorterThan;
     shorterThanOrEquals: typeof shorterThanOrEquals;
     startsWith: typeof startsWith;
@@ -258,7 +258,7 @@ declare const _default: typeof testBase & {
     };
     memo: {
         (fieldName: string, test: TTestFn, deps: unknown[]): VestTest;
-        (fieldName: string, fieldName: string, test: TTestFn, deps: unknown[]): VestTest;
+        (fieldName: string, message: string, test: TTestFn, deps: unknown[]): VestTest;
     };
 };
 declare const test: typeof _default;

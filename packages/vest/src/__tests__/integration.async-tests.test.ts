@@ -21,7 +21,7 @@ function genValidate({ create, test, enforce, ...vest }) {
       'async_statement_1',
       () =>
         new Promise(res => {
-          setTimeout(res, 250);
+          setTimeout(res, 250, null);
         })
     );
     test('field_7', () => Promise.reject('async_statement_2'));

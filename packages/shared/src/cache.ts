@@ -4,7 +4,10 @@ import { lengthEquals } from 'lengthEquals';
 /**
  * Creates a cache function
  */
-export default function createCache(maxSize = 10) {
+export default function createCache(maxSize = 10): {
+  <T>(deps: unknown[], cacheAction: (...args: unknown[]) => T): T;
+  get(deps: unknown[]): any;
+} {
   const cacheStorage: Array<[unknown[], any]> = [];
 
   /**

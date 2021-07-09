@@ -51,7 +51,7 @@ function tsConfigTemplate() {
       noFallthroughCasesInSwitch: true,
       noImplicitAny: true,
       // linter checks for common issues
-      noImplicitReturns: true,
+      noImplicitReturns: false,
       noImplicitThis: true,
       // noUnused* overlap with @typescript-eslint/no-unused-vars, can disable if duplicative
       noUnusedLocals: true,

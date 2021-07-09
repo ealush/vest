@@ -10,7 +10,6 @@ import type {
 import { baseRules, compounds, TRule, TRuleValue, TArgs } from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
-
 const rules: typeof baseRules &
   Record<string, (...args: TArgs) => TRuleReturn> = {
   ...baseRules,

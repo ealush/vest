@@ -43,7 +43,7 @@ declare function inside(value: unknown, arg1: string | unknown[]): boolean;
 declare function isArray(value: unknown): value is Array<unknown>;
 declare function isBetween(value: number | string, min: number | string, max: number | string): boolean;
 declare function isEmpty(value: unknown): boolean;
-declare function isNaN(value: any): boolean;
+declare function isNaN(value: unknown): boolean;
 declare function isNegative(value: any): boolean;
 declare function isNull(value: any): value is null;
 declare function isNumber(value: any): value is number;
@@ -74,7 +74,7 @@ declare const baseRules: {
     isBetween: typeof isBetween;
     isBoolean: typeof default;
     isEmpty: typeof isEmpty;
-    isEven: (value: any) => boolean;
+    isEven: (value: number) => boolean;
     isFalsy: (value: unknown) => boolean;
     isNaN: typeof isNaN;
     isNegative: typeof isNegative;
@@ -82,7 +82,7 @@ declare const baseRules: {
     isNotBetween: (value: string | number, min: string | number, max: string | number) => boolean;
     isNotBoolean: (value: unknown) => boolean;
     isNotEmpty: (value: unknown) => boolean;
-    isNotNaN: (value: any) => boolean;
+    isNotNaN: (value: unknown) => boolean;
     isNotNull: (value: any) => boolean;
     isNotNumber: (value: any) => boolean;
     isNotNumeric: (value: any) => boolean;

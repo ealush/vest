@@ -6,7 +6,7 @@ export function isBetween(
   value: number | string,
   min: number | string,
   max: number | string
-) {
+): boolean {
   return gte(value, min) && lte(value, max);
 }
 

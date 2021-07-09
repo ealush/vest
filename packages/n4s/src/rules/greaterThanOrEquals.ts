@@ -1,5 +1,8 @@
 import { isNumeric } from 'isNumeric';
 
-export function greaterThanOrEquals(value: unknown, arg1: unknown): boolean {
-  return isNumeric(value) && isNumeric(arg1) && Number(value) >= Number(arg1);
+export function greaterThanOrEquals(
+  value: string | number,
+  gte: string | number
+): boolean {
+  return isNumeric(value) && isNumeric(gte) && Number(value) >= Number(gte);
 }

@@ -1,8 +1,11 @@
 import bindNot from 'bindNot';
 import { isNumeric } from 'isNumeric';
 
-export function numberEquals(value: unknown, arg1: unknown): boolean {
-  return isNumeric(value) && isNumeric(arg1) && Number(value) === Number(arg1);
+export function numberEquals(
+  value: string | number,
+  eq: string | number
+): boolean {
+  return isNumeric(value) && isNumeric(eq) && Number(value) === Number(eq);
 }
 
 export const numberNotEquals = bindNot(numberEquals);

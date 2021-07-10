@@ -2,24 +2,21 @@ import throwError from 'throwError';
 import { DropFirst } from 'utilityTypes';
 
 import { isEmpty } from 'isEmpty';
-import type {
-  TRuleReturn,
-  TRuleDetailedResult,
-  TLazyRuleMethods,
-} from 'ruleReturn';
-import { baseRules, compounds, TRule, TRuleValue, TArgs } from 'runtimeRules';
+import type { TRuleDetailedResult, TLazyRuleMethods } from 'ruleReturn';
+import {
+  baseRules,
+  compounds,
+  getRule,
+  TRule,
+  TRuleValue,
+  TArgs,
+} from 'runtimeRules';
 import { transformResult } from 'transformResult';
-
-const rules: typeof baseRules &
-  Record<string, (...args: TArgs) => TRuleReturn> = {
-  ...baseRules,
-};
 
 function EnforceBase(value: TRuleValue): TEaegerRules {
   const proxy = new Proxy({} as TEaegerRules, {
-    get: (target, ruleName: string) => {
-      // @ts-ignore - this is actually fine
-      const rule = rules[ruleName] || compounds[ruleName];
+    get: (_, ruleName: string) => {
+      const rule = getRule(ruleName);
       if (rule) {
         return (...args: TArgs) => {
           const transformedResult = transformResult(
@@ -38,10 +35,9 @@ function EnforceBase(value: TRuleValue): TEaegerRules {
               throw transformedResult.message;
             }
           }
+          return proxy;
         };
       }
-
-      return target[ruleName];
     },
   });
 
@@ -49,33 +45,32 @@ function EnforceBase(value: TRuleValue): TEaegerRules {
 }
 
 const enforce = new Proxy(EnforceBase as TEnforce, {
-  get: (target: TEnforce, key: string) => {
-    const registeredRules: Array<(value: TRuleValue) => TRuleDetailedResult> =
-      [];
+  get: (_: TEnforce, key: string) => {
+    const registeredRules: TRegisteredRules = [];
 
     if (key === 'extend') {
       return function extend(customRules: TRule) {
-        Object.assign(rules, customRules);
+        Object.assign(baseRules, customRules);
       };
     }
 
-    // @ts-ignore - this is actually fine
-    if (!rules[key] || !compounds[key]) {
-      return target[key];
+    if (!getRule(key)) {
+      return;
     }
+
+    return addRegisteredRule(key);
 
     function addRegisteredRule(ruleName: string) {
       return (...args: TArgs) => {
-        // @ts-ignore - this is actually fine
-        const rule = rules[ruleName] || compounds[ruleName];
+        const rule = getRule(ruleName);
 
         registeredRules.push((value: TRuleValue) =>
           transformResult(rule(value, ...args), ruleName, value, ...args)
         );
 
         const proxy: TEnforce = new Proxy({} as TEnforce, {
-          get: (target, key: string) => {
-            if (rules[key]) {
+          get: (_, key: string) => {
+            if (getRule(key)) {
               return addRegisteredRule(key);
             }
 
@@ -90,22 +85,19 @@ const enforce = new Proxy(EnforceBase as TEnforce, {
             }
 
             if (key === 'test') {
-              // @ts-ignore need to fix this
               return (value: TRuleValue) => proxy.run(value).pass;
             }
-
-            return target[key];
           },
         });
         return proxy;
       };
     }
-
-    return addRegisteredRule(key);
   },
 });
 
 export default enforce;
+
+type TRegisteredRules = Array<(value: TRuleValue) => TRuleDetailedResult>;
 
 type TEaegerRules = {
   [P in keyof typeof compounds]: (
@@ -113,21 +105,21 @@ type TEaegerRules = {
   ) => TEaegerRules;
 } &
   {
-    [P in keyof typeof rules]: (
-      ...args: DropFirst<Parameters<typeof rules[P]>>
+    [P in keyof typeof baseRules]: (
+      ...args: DropFirst<Parameters<typeof baseRules[P]>>
     ) => TEaegerRules;
   };
 
 type TLazyRules = {
   [P in keyof typeof compounds]: (
-    ...args: DropFirst<Parameters<typeof compounds[P]>>
+    ...args: DropFirst<Parameters<typeof compounds[P]>> | TArgs
   ) => TLazyRules & TLazyRuleMethods;
 } &
   {
-    [P in keyof typeof rules]: (
-      ...args: DropFirst<Parameters<typeof rules[P]>>
+    [P in keyof typeof baseRules]: (
+      ...args: DropFirst<Parameters<typeof baseRules[P]>> | TArgs
     ) => TLazyRules & TLazyRuleMethods;
   };
 
 type TEnforce = typeof EnforceBase &
-  TLazyRules & { extend: (customRules: TRule) => void };
+  TLazyRules & { extend: (customRules: TRule) => void } & TLazyRuleMethods;

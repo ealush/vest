@@ -1,5 +1,6 @@
 const fse = require('fs-extra');
 
+const copyDist = require('./../release/steps/copyDist');
 const writeMainTemplate = require('./writeMainTemplate');
 
 const exec = require('vx/exec');
@@ -15,6 +16,8 @@ function buildPackage(name = packageName(), { options } = {}) {
   exec([`rollup -c`, vxPath.ROLLUP_CONFIG_PATH, options]);
 
   writeMainTemplate(packageName(), vxPath.packageDist(packageName()));
+
+  copyDist();
 }
 
 module.exports = buildPackage;

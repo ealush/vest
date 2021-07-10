@@ -6,11 +6,12 @@ export default function noneOf(
   value: unknown,
   ...rules: TLazyRuleMethods[]
 ): TRuleDetailedResult {
-  return mapFirst(rules, (rule, breakout) => {
-    const res = rule.run(value);
-    if (res.pass) {
-      breakout({ pass: false });
-    }
-    return { pass: true };
-  });
+  return (
+    mapFirst(rules, (rule, breakout) => {
+      const res = rule.run(value);
+      if (res.pass) {
+        breakout({ pass: false });
+      }
+    }) ?? { pass: true }
+  );
 }

@@ -66,6 +66,11 @@ const { package, command, dry = false } = cli;
 if (!commands[command]) {
   throw new Error(`Command ${command} not found.`);
 }
+
+if (package) {
+  packageName.setPackageName(package);
+}
+
 // FIXME: is there a better way of doing this?
 const options = argv.slice(
   namedOptions.reduce((count, [option, increment]) => {

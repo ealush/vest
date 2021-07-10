@@ -1,7 +1,6 @@
 const build = require('./../build/buildPackage');
 const genDiffData = require('./../release/genDiffData');
 const getDiff = require('./../release/github/getDiff');
-const copyDist = require('./../release/steps/copyDist');
 const publishPackage = require('./../release/steps/publishPackage');
 const setNextVersion = require('./../release/steps/setNextVersion');
 const updateChangelog = require('./../release/steps/updateChangelog');
@@ -30,8 +29,6 @@ function releasePackage(packageName) {
   updateChangelog(diffData);
 
   publishPackage(diffData);
-
-  copyDist();
 }
 
 module.exports = releasePackage;

@@ -1,5 +1,7 @@
 module.exports = function packageName() {
-  const name = process.env.npm_package_name;
+  return process.env.VX_PACKAGE_NAME ?? process.env.npm_package_name;
+};
 
-  return name;
+module.exports.setPackageName = function (name) {
+  process.env.VX_PACKAGE_NAME = name;
 };

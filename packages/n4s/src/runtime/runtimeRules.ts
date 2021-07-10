@@ -12,4 +12,9 @@ export type TRule = Record<string, TRuleBase>;
 
 const baseRules = rules();
 
-export { baseRules, compounds };
+function getRule(ruleName: string) {
+  // @ts-ignore - this should actually be fine
+  return baseRules[ruleName] || compounds[ruleName];
+}
+
+export { baseRules, compounds, getRule };

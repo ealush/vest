@@ -1,5 +1,6 @@
-packages/*/index.js
+packages/*/*.js
 packages/*/umd/
+packages/*/es/
 packages/*/cjs/
 packages/*/*.tgz
 

@@ -26,6 +26,7 @@ module.exports = () => {
   if (fs.existsSync(customConfigPath)) {
     customConfig = require(customConfigPath);
   }
+
   return cleanupConfig(
     customConfig?.(configs, {
       getInputFile,

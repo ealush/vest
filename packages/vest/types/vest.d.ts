@@ -168,34 +168,21 @@ declare const baseRules: {
   shorterThanOrEquals: typeof shorterThanOrEquals;
   startsWith: typeof startsWith;
 };
-declare const rules: typeof baseRules &
-  Record<string, (...args: TArgs) => TRuleReturn>;
 declare function EnforceBase(value: TRuleValue): TEaegerRules;
 declare const enforce: TEnforce;
 type TEaegerRules = {
-  [P in keyof typeof compounds]: (
-    ...args: DropFirst<Parameters<typeof compounds[P]>>
-  ) => TEaegerRules;
-} &
-  {
-    [P in keyof typeof rules]: (
-      ...args: DropFirst<Parameters<typeof rules[P]>>
-    ) => TEaegerRules;
-  };
+    [P in keyof typeof compounds]: (...args: DropFirst<Parameters<typeof compounds[P]>>) => TEaegerRules;
+} & {
+    [P in keyof typeof baseRules]: (...args: DropFirst<Parameters<typeof baseRules[P]>>) => TEaegerRules;
+};
 type TLazyRules = {
-  [P in keyof typeof compounds]: (
-    ...args: DropFirst<Parameters<typeof compounds[P]>>
-  ) => TLazyRules & TLazyRuleMethods;
-} &
-  {
-    [P in keyof typeof rules]: (
-      ...args: DropFirst<Parameters<typeof rules[P]>>
-    ) => TLazyRules & TLazyRuleMethods;
-  };
-type TEnforce = typeof EnforceBase &
-  TLazyRules & {
+    [P in keyof typeof compounds]: (...args: DropFirst<Parameters<typeof compounds[P]>> | TArgs) => TLazyRules & TLazyRuleMethods;
+} & {
+    [P in keyof typeof baseRules]: (...args: DropFirst<Parameters<typeof baseRules[P]>> | TArgs) => TLazyRules & TLazyRuleMethods;
+};
+type TEnforce = typeof EnforceBase & TLazyRules & {
     extend: (customRules: TRule) => void;
-  };
+} & TLazyRuleMethods;
 /**
  * Reads the testObjects list and gets full validation result from it.
  */

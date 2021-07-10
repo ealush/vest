@@ -1,3 +1,4 @@
+import mapFirst from 'mapFirst';
 import throwError from 'throwError';
 import { DropFirst } from 'utilityTypes';
 
@@ -77,7 +78,13 @@ const enforce = new Proxy(EnforceBase as TEnforce, {
             if (key === 'run') {
               return (value: TRuleValue) => {
                 return (
-                  registeredRules.find(rule => !rule(value).pass) ?? {
+                  mapFirst(registeredRules, (rule, breakout) => {
+                    const res = rule(value);
+
+                    if (!res.pass) {
+                      breakout(res);
+                    }
+                  }) ?? {
                     pass: true,
                   }
                 );

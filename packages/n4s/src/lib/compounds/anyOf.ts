@@ -1,5 +1,6 @@
 import mapFirst from 'mapFirst';
 
+import * as ruleReturn from 'ruleReturn';
 import type { TRuleDetailedResult, TLazyRuleMethods } from 'ruleReturn';
 
 export default function anyOf(
@@ -12,6 +13,6 @@ export default function anyOf(
       if (res.pass) {
         breakout(res);
       }
-    }) ?? { pass: false }
+    }) ?? ruleReturn.failing
   );
 }

@@ -2,10 +2,9 @@ const fs = require('fs');
 
 const lodash = require('lodash');
 
-const getModuleAliases = require('../util/moduleAliases');
-
 const exec = require('vx/exec');
 const logger = require('vx/logger');
+const getModuleAliases = require('vx/util/moduleAliases');
 const vxPath = require('vx/vxPath');
 
 const prevTsConfig = require(vxPath.TSCONFIG_PATH);

@@ -4,6 +4,7 @@ import { DropFirst } from 'utilityTypes';
 
 import { isEmpty } from 'isEmpty';
 import type { TRuleDetailedResult, TLazyRuleMethods } from 'ruleReturn';
+import * as ruleReturn from 'ruleReturn';
 import {
   baseRules,
   compounds,
@@ -84,9 +85,7 @@ const enforce = new Proxy(EnforceBase as TEnforce, {
                     if (!res.pass) {
                       breakout(res);
                     }
-                  }) ?? {
-                    pass: true,
-                  }
+                  }) ?? ruleReturn.passing()
                 );
               };
             }

@@ -15,19 +15,6 @@ it.withContext = (str, cb, getCTX) => {
   );
 };
 
-// const toPass = (res: InstanceType<typeof RuleResult>) => ({
-//   pass: res.pass,
-//   message: () => 'enforceResult.pass failed validation',
-// });
-
-// const toPassWith = (enforcement: TRunnableRule, value?: any) => {
-//   return {
-//     pass:
-//       enforcement.run(value).pass === true && enforcement.test(value) === true,
-//     message: () => 'enforceResult.pass failed validation',
-//   };
-// };
-
 const isDeepCopyOf = (
   source: any,
   clone: any
@@ -100,7 +87,5 @@ const isDeepCopyOf = (
 };
 
 expect.extend({
-  // toPass,
-  // toPassWith,
   isDeepCopyOf,
 });

@@ -1,8 +1,8 @@
+import * as vest from 'vest';
 import wait from 'wait';
 
 import promisify from 'promisify';
 import test from 'test';
-import * as vest from 'vest';
 
 const genValidate = tests => vest.create(tests);
 

@@ -34,34 +34,23 @@ function tsConfigTemplate() {
     compilerOptions: {
       allowJs: false,
       baseUrl: '.',
-      // output .d.ts declaration files for consumers
       declaration: true,
-      // interop between ESM and CJS modules. Recommended by TS
       esModuleInterop: true,
-      // error out if import and file system have a casing mismatch. Recommended by TS
       forceConsistentCasingInFileNames: true,
       importHelpers: true,
       lib: ['esnext'],
       module: 'esnext',
-      // use Node's module resolution algorithm, instead of the legacy TS one
       moduleResolution: 'node',
-      // `tsdx build` ignores this option, but it is commonly used when type-checking separately with `tsc`
       noEmit: true,
       noFallthroughCasesInSwitch: true,
       noImplicitAny: true,
-      // linter checks for common issues
       noImplicitReturns: false,
       noImplicitThis: true,
-      // noUnused* overlap with @typescript-eslint/no-unused-vars, can disable if duplicative
       noUnusedLocals: true,
       noUnusedParameters: true,
       rootDir: '.',
-      // significant perf increase by skipping checking .d.ts files, particularly those in node_modules. Recommended by TS
       skipLibCheck: true,
-      // output .js.map sourcemap files for consumers
       sourceMap: true,
-      // match output dir to input dir. e.g. dist/index instead of dist/src/index
-      // stricter type-checking for stronger correctness. Recommended by TS
       strict: true,
     },
     files: ['./config/jest/globals.d.ts'],

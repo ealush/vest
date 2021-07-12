@@ -1,5 +1,6 @@
-import { isBoolean, isNotBoolean } from 'isBoolean';
 import enforce from 'n4s';
+
+import { isBoolean, isNotBoolean } from 'isBoolean';
 
 describe('isBoolean', () => {
   it('Should pass for a boolean value', () => {

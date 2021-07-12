@@ -33,13 +33,14 @@ if (duplicates.size > 0) {
   );
 }
 
-module.exports = () =>
-  matches.reduce((accumulator, relative) => {
-    const name = path.basename(relative, '.ts');
+const output = matches.reduce((accumulator, relative) => {
+  const name = path.basename(relative, '.ts');
 
-    return accumulator.concat({
-      name,
-      relative,
-      absolute: path.join(vxPath.ROOT_PATH, relative),
-    });
-  }, []);
+  return accumulator.concat({
+    name,
+    relative,
+    absolute: path.join(vxPath.ROOT_PATH, relative),
+  });
+}, []);
+
+module.exports = () => [].concat(output);

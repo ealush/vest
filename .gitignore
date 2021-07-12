@@ -1,8 +1,12 @@
-packages/*/*.js
-packages/*/umd/
-packages/*/es/
-packages/*/cjs/
-packages/*/*.tgz
+packages/*/types/
+packages/vest/classnames/
+packages/vest/promisify/
+packages/anyone/all/
+packages/anyone/any/
+packages/anyone/none/
+packages/anyone/one/
+packages/*/index.js
+
 
 playground.*
 

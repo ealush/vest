@@ -1,4 +1,5 @@
 import bindNot from 'bindNot';
+
 import { isNumeric } from 'isNumeric';
 
 export function isNegative(value: number | string): boolean {

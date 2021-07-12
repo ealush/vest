@@ -1,13 +1,12 @@
 import faker from 'faker';
 import _ from 'lodash';
 import enforce from 'n4s';
-
+import * as vest from 'vest';
 
 import { dummyTest } from '../../../testUtils/testDummy';
 
 import VestTest from 'VestTest';
 import group from 'group';
-import * as vest from 'vest';
 
 let groupName = 'group_name_1';
 const groupName2 = 'group_name_2';

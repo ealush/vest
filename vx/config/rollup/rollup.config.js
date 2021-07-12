@@ -1,44 +1,52 @@
 const fs = require('fs');
+const path = require('path');
 
 const compiler = require('@ampproject/rollup-plugin-closure-compiler');
 const { default: babel } = require('@rollup/plugin-babel');
 const replace = require('@rollup/plugin-replace');
+const glob = require('glob');
 const { terser } = require('rollup-plugin-terser');
 const ts = require('rollup-plugin-ts');
 
 const joinTruthy = require('../../util/joinTruthy');
 const packageJson = require('../../util/packageJson');
 
+const writeCJSMain = require('./plugins/writeCJSMain');
+
 const opts = require('vx/opts');
 const packageName = require('vx/packageName');
+const moduleAliases = require('vx/util/moduleAliases')();
 const vxPath = require('vx/vxPath');
 
-const configs = [opts.env.PRODUCTION, opts.env.DEVELOPMENT].map(env =>
-  genBaseConfig({ env })
+module.exports = cleanupConfig(
+  [opts.env.PRODUCTION, opts.env.DEVELOPMENT].map(env => {
+    const customConfigPath = vxPath.packageConfigPath(
+      packageName(),
+      'vx.build.js'
+    );
+
+    let customConfig;
+
+    if (fs.existsSync(customConfigPath)) {
+      customConfig = require(customConfigPath);
+    }
+
+    return [].concat(
+      genBaseConfig({ env }),
+      genExports(packageName(), env),
+      customConfig?.({
+        getInputFile,
+        getPlugins: (options = {}) => getPlugins({ env, ...options }),
+        genOutput: (options = {}) => genOutput({ env, ...options }),
+      }) ?? []
+    );
+  })
 );
-
-module.exports = () => {
-  const customConfigPath = vxPath.packageConfigPath(
-    packageName(),
-    'vx.build.js'
-  );
-  let customConfig = baseConfig => baseConfig;
-  if (fs.existsSync(customConfigPath)) {
-    customConfig = require(customConfigPath);
-  }
-
-  return cleanupConfig(
-    customConfig?.(configs, {
-      getInputFile,
-      getPlugins,
-      genOutput,
-    }) ?? configs
-  );
-};
 
 function cleanupConfig(configs) {
   return []
-    .concat(configs)
+    .concat(...configs)
+    .filter(Boolean)
     .map(({ input, output, plugins }) => ({ input, output, plugins }));
 }
 
@@ -46,25 +54,24 @@ function genBaseConfig({ env, moduleName = packageName() }) {
   return {
     env,
     input: getInputFile(moduleName),
-    output: genOutput({ env }),
-    plugins: getPlugins({ env }),
+    output: genOutput({ env, moduleName }),
+    plugins: getPlugins({ env, moduleName }),
   };
 }
 
-function genOutput({
-  format = opts.format.UMD,
-  name = packageName(),
-  env,
-  flat = false,
-} = {}) {
+function genExports(pkgName, env) {
+  return glob
+    .sync(vxPath.packageSrc(pkgName, 'exports/*.ts'))
+    .map(file =>
+      genBaseConfig({ env, moduleName: path.basename(file, '.ts') })
+    );
+}
+
+function genOutput({ moduleName = packageName(), env } = {}) {
   const base = {
     exports: 'auto',
-    name,
+    name: moduleName,
   };
-
-  if (flat) {
-    return outputByFormat(format);
-  }
 
   return [
     outputByFormat(opts.format.ES),
@@ -75,21 +82,24 @@ function genOutput({
   function outputByFormat(format) {
     return {
       ...base,
-      format: format ?? opts.format.UMD,
+      format,
       file: vxPath.packageDist(
         packageName(),
-        (!flat && format) || '',
-        joinTruthy([name, env && env, 'js'], '.')
+        format,
+        joinTruthy([moduleName, env, 'js'], '.')
       ),
     };
   }
 }
 
 function getInputFile(moduleName = packageName()) {
-  const base = vxPath.packageSrc(packageName(), moduleName + '.ts');
-  return fs.existsSync(base)
-    ? base
-    : vxPath.packageSrc(packageName(), 'index.ts');
+  const modulePath = moduleAliases.find(ref => ref.name === moduleName);
+
+  if (!modulePath.absolute || !fs.existsSync(modulePath.absolute)) {
+    throw new Error('unable to find module path for ' + moduleName);
+  }
+
+  return modulePath.absolute;
 }
 
 function getPlugins({
@@ -127,7 +137,15 @@ function getPlugins({
   ];
 
   if (env === opts.env.PRODUCTION) {
-    plugins.push(compiler(), terser());
+    plugins.push(
+      writeCJSMain({
+        moduleName,
+        isMain: moduleName === packageName(),
+        rootPath: vxPath.package(),
+      }),
+      compiler(),
+      terser()
+    );
   }
 
   return plugins;

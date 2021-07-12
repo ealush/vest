@@ -15,8 +15,8 @@ import {
 } from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
-function EnforceBase(value: TRuleValue): TEaegerRules {
-  const proxy = new Proxy({} as TEaegerRules, {
+function EnforceBase(value: TRuleValue): TEagerRules {
+  const proxy = new Proxy({} as TEagerRules, {
     get: (_, ruleName: string) => {
       const rule = getRule(ruleName);
       if (rule) {
@@ -105,15 +105,15 @@ export default enforce;
 
 type TRegisteredRules = Array<(value: TRuleValue) => TRuleDetailedResult>;
 
-type TEaegerRules = {
+type TEagerRules = {
   [P in keyof typeof compounds]: (
     ...args: DropFirst<Parameters<typeof compounds[P]>>
-  ) => TEaegerRules;
+  ) => TEagerRules;
 } &
   {
     [P in keyof typeof baseRules]: (
       ...args: DropFirst<Parameters<typeof baseRules[P]>>
-    ) => TEaegerRules;
+    ) => TEagerRules;
   };
 
 type TLazyRules = {

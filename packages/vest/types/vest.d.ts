@@ -27,6 +27,8 @@ declare namespace compounds {
         test: (value: unknown) => boolean;
         run: (value: unknown) => TRuleDetailedResult;
     };
+    function failing(): TRuleReturn;
+    function passing(): TRuleReturn;
     function anyOf(value: unknown, ...rules: TLazyRuleMethods[]): TRuleDetailedResult;
     function noneOf(value: unknown, ...rules: TLazyRuleMethods[]): TRuleDetailedResult;
     function oneOf(value: unknown, ...rules: TLazyRuleMethods[]): TRuleDetailedResult;

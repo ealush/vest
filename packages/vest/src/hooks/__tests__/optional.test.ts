@@ -1,5 +1,6 @@
-import { useOptionalFields } from 'stateHooks';
 import { optional, create } from 'vest';
+
+import { useOptionalFields } from 'stateHooks';
 
 describe('optional hook', () => {
   it('Should add optional fields to state', () => {

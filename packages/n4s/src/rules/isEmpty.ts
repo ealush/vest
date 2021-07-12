@@ -1,6 +1,6 @@
+import bindNot from 'bindNot';
 import hasOwnProperty from 'hasOwnProperty';
 
-import bindNot from 'bindNot';
 import { isNumber } from 'isNumber';
 import { lengthEquals } from 'lengthEquals';
 

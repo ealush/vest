@@ -1,5 +1,4 @@
 import enforce from 'n4s';
-
 import * as vest from 'vest';
 
 describe('Stateful behavior', () => {

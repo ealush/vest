@@ -1,6 +1,7 @@
+import * as vest from 'vest';
+
 import { dummyTest } from '../../../testUtils/testDummy';
 
-import * as vest from 'vest';
 
 
 describe('done', () => {

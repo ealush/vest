@@ -1,6 +1,5 @@
-import isString from 'isStringValue';
-
 import bindNot from 'bindNot';
+import isString from 'isStringValue';
 
 export function endsWith(value: string, arg1: string): boolean {
   return isString(value) && isString(arg1) && value.endsWith(arg1);

@@ -1,0 +1,16 @@
+{
+  "version": "1.0.2",
+  "license": "MIT",
+  "main": "index.js",
+  "types": "types",
+  "files": [
+    "dist"
+  ],
+  "private": true,
+  "name": "vast",
+  "author": "ealush",
+  "scripts": {
+    "test": "vx test",
+    "release": "vx release"
+  }
+}

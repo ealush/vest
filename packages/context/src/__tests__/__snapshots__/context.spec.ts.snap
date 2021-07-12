@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Context Context.run Should clear context after callback run 1`] = `
+Object {
+  "a": 1,
+}
+`;
+
+exports[`Context Context.run Should clear context after callback run 2`] = `
+Object {
+  "a": 1,
+  "b": 2,
+}
+`;
+
+exports[`Context createContext Should return all methods 1`] = `
+Object {
+  "bind": [Function],
+  "run": [Function],
+  "use": [Function],
+}
+`;

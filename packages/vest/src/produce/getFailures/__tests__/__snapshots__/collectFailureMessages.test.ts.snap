@@ -1,0 +1,130 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`collectFailureMessages Snapshot tests. severity: errors When a group-fieldName combo is requested Should match snapshot 1`] = `
+Object {
+  "field_2": Array [
+    "field_2_failure message 3",
+  ],
+}
+`;
+
+exports[`collectFailureMessages Snapshot tests. severity: errors When no options passed should match snapshot 1`] = `
+Object {
+  "field_1": Array [
+    "field_1_failure message 2",
+    "field_1_failure message 3",
+  ],
+  "field_2": Array [
+    "field_2_failure message 3",
+  ],
+}
+`;
+
+exports[`collectFailureMessages Snapshot tests. severity: errors When specific field requested Should match snapshot 1`] = `
+Object {
+  "field_1": Array [
+    "field_1_failure message 2",
+    "field_1_failure message 3",
+  ],
+}
+`;
+
+exports[`collectFailureMessages Snapshot tests. severity: errors When specific field requested Should match snapshot 2`] = `
+Object {
+  "field_2": Array [
+    "field_2_failure message 3",
+  ],
+}
+`;
+
+exports[`collectFailureMessages Snapshot tests. severity: errors When specific field requested Should match snapshot 3`] = `
+Object {
+  "field_3": Array [],
+}
+`;
+
+exports[`collectFailureMessages Snapshot tests. severity: errors When specific group requested Should match snapshot 1`] = `
+Object {
+  "field_2": Array [
+    "field_2_failure message 3",
+  ],
+}
+`;
+
+exports[`collectFailureMessages Snapshot tests. severity: errors When specific group requested Should match snapshot 2`] = `
+Object {
+  "field_2": Array [
+    "field_2_failure message 3",
+  ],
+}
+`;
+
+exports[`collectFailureMessages Snapshot tests. severity: errors When specific group requested Should match snapshot 3`] = `
+Object {
+  "field_2": Array [
+    "field_2_failure message 3",
+  ],
+}
+`;
+
+exports[`collectFailureMessages Snapshot tests. severity: warnings When a group-fieldName combo is requested Should match snapshot 1`] = `
+Object {
+  "field_2": Array [
+    "field_2_warning message 3",
+  ],
+}
+`;
+
+exports[`collectFailureMessages Snapshot tests. severity: warnings When no options passed should match snapshot 1`] = `
+Object {
+  "field_2": Array [
+    "field_2_warning message 2",
+    "field_2_warning message 3",
+  ],
+}
+`;
+
+exports[`collectFailureMessages Snapshot tests. severity: warnings When specific field requested Should match snapshot 1`] = `
+Object {
+  "field_1": Array [],
+}
+`;
+
+exports[`collectFailureMessages Snapshot tests. severity: warnings When specific field requested Should match snapshot 2`] = `
+Object {
+  "field_2": Array [
+    "field_2_warning message 2",
+    "field_2_warning message 3",
+  ],
+}
+`;
+
+exports[`collectFailureMessages Snapshot tests. severity: warnings When specific field requested Should match snapshot 3`] = `
+Object {
+  "field_3": Array [],
+}
+`;
+
+exports[`collectFailureMessages Snapshot tests. severity: warnings When specific group requested Should match snapshot 1`] = `
+Object {
+  "field_2": Array [
+    "field_2_warning message 3",
+  ],
+}
+`;
+
+exports[`collectFailureMessages Snapshot tests. severity: warnings When specific group requested Should match snapshot 2`] = `
+Object {
+  "field_2": Array [
+    "field_2_warning message 3",
+  ],
+}
+`;
+
+exports[`collectFailureMessages Snapshot tests. severity: warnings When specific group requested Should match snapshot 3`] = `
+Object {
+  "field_2": Array [
+    "field_2_warning message 3",
+  ],
+}
+`;

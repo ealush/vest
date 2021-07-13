@@ -1,8 +1,12 @@
-packages/*/*.js
-packages/*/umd/
-packages/*/es/
-packages/*/cjs/
-packages/*/*.tgz
+packages/*/types/
+packages/vest/classnames/
+packages/vest/promisify/
+packages/*/
+!packages/*/
+!packages/*/src
+!packages/*/docs
+!packages/*/config
+!packages/*/testUtils
 
 playground.*
 

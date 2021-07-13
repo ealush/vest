@@ -9,36 +9,40 @@ const ts = require('rollup-plugin-ts');
 const joinTruthy = require('../../util/joinTruthy');
 const packageJson = require('../../util/packageJson');
 
+const writeCJSMain = require('./plugins/writeCJSMain');
+
 const opts = require('vx/opts');
 const packageName = require('vx/packageName');
 const vxPath = require('vx/vxPath');
 
-const configs = [opts.env.PRODUCTION, opts.env.DEVELOPMENT].map(env =>
-  genBaseConfig({ env })
+module.exports = cleanupConfig(
+  [opts.env.PRODUCTION, opts.env.DEVELOPMENT].map(env => {
+    const customConfigPath = vxPath.packageConfigPath(
+      packageName(),
+      'vx.build.js'
+    );
+
+    let customConfig = baseConfig => baseConfig;
+
+    if (fs.existsSync(customConfigPath)) {
+      customConfig = require(customConfigPath);
+    }
+
+    return [].concat(
+      genBaseConfig({ env }),
+      customConfig?.({
+        getInputFile,
+        getPlugins: (options = {}) => getPlugins({ env, ...options }),
+        genOutput: (options = {}) => genOutput({ env, ...options }),
+      })
+    );
+  })
 );
-
-module.exports = () => {
-  const customConfigPath = vxPath.packageConfigPath(
-    packageName(),
-    'vx.build.js'
-  );
-  let customConfig = baseConfig => baseConfig;
-  if (fs.existsSync(customConfigPath)) {
-    customConfig = require(customConfigPath);
-  }
-
-  return cleanupConfig(
-    customConfig?.(configs, {
-      getInputFile,
-      getPlugins,
-      genOutput,
-    }) ?? configs
-  );
-};
 
 function cleanupConfig(configs) {
   return []
-    .concat(configs)
+    .concat(...configs)
+    .filter(Boolean)
     .map(({ input, output, plugins }) => ({ input, output, plugins }));
 }
 
@@ -51,20 +55,11 @@ function genBaseConfig({ env, moduleName = packageName() }) {
   };
 }
 
-function genOutput({
-  format = opts.format.UMD,
-  name = packageName(),
-  env,
-  flat = false,
-} = {}) {
+function genOutput({ name = packageName(), env } = {}) {
   const base = {
     exports: 'auto',
     name,
   };
-
-  if (flat) {
-    return outputByFormat(format);
-  }
 
   return [
     outputByFormat(opts.format.ES),
@@ -75,11 +70,11 @@ function genOutput({
   function outputByFormat(format) {
     return {
       ...base,
-      format: format ?? opts.format.UMD,
+      format,
       file: vxPath.packageDist(
         packageName(),
-        (!flat && format) || '',
-        joinTruthy([name, env && env, 'js'], '.')
+        format,
+        joinTruthy([name, env, 'js'], '.')
       ),
     };
   }
@@ -127,7 +122,15 @@ function getPlugins({
   ];
 
   if (env === opts.env.PRODUCTION) {
-    plugins.push(compiler(), terser());
+    plugins.push(
+      writeCJSMain({
+        moduleName,
+        isMain: moduleName === packageName(),
+        rootPath: vxPath.package(),
+      }),
+      compiler(),
+      terser()
+    );
   }
 
   return plugins;

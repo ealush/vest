@@ -1,12 +1,12 @@
 packages/*/types/
 packages/vest/classnames/
 packages/vest/promisify/
-packages/*/
-!packages/*/
-!packages/*/src
-!packages/*/docs
-!packages/*/config
-!packages/*/testUtils
+packages/anyone/all/
+packages/anyone/any/
+packages/anyone/none/
+packages/anyone/one/
+packages/*/index.js
+
 
 playground.*
 

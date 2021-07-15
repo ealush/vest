@@ -10,7 +10,6 @@ function writeCJSMain({ moduleName, isMain, rootPath }) {
   return {
     name: 'write-cjs-main',
     buildEnd: async () => {
-
       let mainPath = rootPath;
 
       if (!isMain) {
@@ -36,9 +35,13 @@ function genEntry(moduleName, isMain) {
   return `'use strict'
 
 if (process.env.NODE_ENV === '${opts.env.PRODUCTION}') {
-  module.exports = require('${isMain?'.':'..'}/dist/${opts.format.CJS}/${moduleName}.${opts.env.PRODUCTION}.js')
+  module.exports = require('${isMain ? '.' : '..'}/dist/${
+    opts.format.CJS
+  }/${moduleName}.${opts.env.PRODUCTION}.js')
 } else {
-  module.exports = require('${isMain?'.':'..'}/dist/${opts.format.CJS}/${moduleName}.${opts.env.DEVELOPMENT}.js')
+  module.exports = require('${isMain ? '.' : '..'}/dist/${
+    opts.format.CJS
+  }/${moduleName}.${opts.env.DEVELOPMENT}.js')
 }`;
 }
 

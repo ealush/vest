@@ -1,4 +1,4 @@
-import { isArray } from 'isArray';
+import { isArray } from 'isArrayValue';
 
 describe('Tests isArray rule', () => {
   it('Should return true for an empty array', () => {

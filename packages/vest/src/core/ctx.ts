@@ -20,7 +20,7 @@ export default createContext<CTXType>((ctxRef, parentContext) =>
 
 type CTXType = {
   stateRef?: ReturnType<typeof createStateRef>;
-  exclusion?: {
+  exclusion: {
     tests: Record<string, boolean>;
     groups: Record<string, boolean>;
   };

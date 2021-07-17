@@ -47,8 +47,7 @@ export default function classNames(
     for (const selector in classes) {
       const sel = selector as keyof TSupportedClasses;
       if (isFunction(selectors[sel]) && selectors[sel](key)) {
-        // @ts-ignore - don't be annoying
-        classesArray.push(classes[sel]);
+        classesArray.push(classes[sel] as string);
       }
     }
 

@@ -7,7 +7,7 @@ const suite = ({ create, test, ...vest }) =>
     test('field_2', 'field_statement_2', () => {
       expect(2).toBe(3);
     });
-    test('field_3', 'field_statement_3', () => {});
+    test('field_3', 'field_statement_3', jest.fn());
     test('field_4', 'field_statement_4', () => {
       vest.warn();
       throw new Error();

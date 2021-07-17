@@ -12,9 +12,11 @@ export type TRule = Record<string, TRuleBase>;
 
 const baseRules = rules();
 
-function getRule(ruleName: string) {
-  // @ts-ignore - this should actually be fine
-  return baseRules[ruleName] || compounds[ruleName];
+function getRule(ruleName: string): TRuleBase {
+  return (
+    baseRules[ruleName as keyof typeof baseRules] ??
+    compounds[ruleName as keyof typeof compounds] // eslint-disable-line import/namespace
+  );
 }
 
 export { baseRules, compounds, getRule };

@@ -6,7 +6,6 @@ import context from 'ctx';
 import { setPending } from 'pending';
 import { usePending, useTestObjects, useLagging } from 'stateHooks';
 
-
 const fieldName = 'unicycle';
 const message = 'I am Root.';
 
@@ -49,7 +48,7 @@ describe('VestTest', () => {
     beforeEach(() => {
       jest.resetModules();
 
-      const VestTest = require('VestTest').default;
+      const VestTest = require('VestTest').default; // eslint-disable-line @typescript-eslint/no-var-requires
       testObject = new VestTest(fieldName, jest.fn(), { message });
     });
 

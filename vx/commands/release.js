@@ -5,15 +5,14 @@ const updateDocs = require('../scripts/release/steps/updateDocs');
 const exec = require('vx/exec');
 const logger = require('vx/logger');
 const dryRun = require('vx/util/dryRun');
+const integrationBranch = require('vx/util/integrationBranch');
 
 require('../scripts/genTsConfig');
 
 function release(packageName) {
-  if (packageName) {
-    exec([
-      `yarn workspace ${packageName} run vx releasePackage`,
-      dryRun.cliOpt(),
-    ]);
+  const pkg = packageName || integrationBranch.targetPackage;
+  if (pkg) {
+    exec([`yarn workspace ${pkg} run vx releasePackage`, dryRun.cliOpt()]);
   } else {
     releaseAll();
   }

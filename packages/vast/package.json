@@ -6,7 +6,6 @@
   "files": [
     "dist"
   ],
-  "private": true,
   "name": "vast",
   "author": "ealush",
   "scripts": {

@@ -3,7 +3,6 @@
   "license": "MIT",
   "main": "index.js",
   "types": "types",
-  "private": true,
   "files": [
     "dist",
     "src"

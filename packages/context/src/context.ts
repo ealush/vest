@@ -44,6 +44,7 @@ export default function createContext<T extends Record<string, unknown>>(
     ctxRef: Partial<T>,
     fn: Fn
   ) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore - this one's pretty hard to get right
     const returnedFn: Fn = function (...runTimeArgs: Parameters<Fn>) {
       return run<ReturnType<Fn>>(ctxRef, function () {

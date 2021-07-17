@@ -1,6 +1,6 @@
+import enforce from 'enforce';
 import faker from 'faker';
 import _ from 'lodash';
-import enforce from 'n4s';
 import * as vest from 'vest';
 
 import { dummyTest } from '../../../testUtils/testDummy';

@@ -3,14 +3,11 @@ const isReleaseBranch = require('../../release/isReleaseBranch');
 const exec = require('vx/exec');
 const logger = require('vx/logger');
 const packageName = require('vx/packageName');
+const { TAG_DEV } = require('vx/scripts/release/releaseKeywords');
 const dryRun = require('vx/util/dryRun');
 const joinTruthy = require('vx/util/joinTruthy');
 
 function publishPackage({ tag, tagId, nextVersion }) {
-  if (!isReleaseBranch()) {
-    logger.info(`❌  Not in release branch. Skipping publish.`);
-  }
-
   const versionToUse = tag && tagId ? tagId : nextVersion;
 
   logger.info(`🚀 Publishing package ${packageName()}.
@@ -18,11 +15,15 @@ function publishPackage({ tag, tagId, nextVersion }) {
     Tag Id: ${tagId}
     Tag: ${tag}`);
 
+  if (!shouldRelease(versionToUse)) {
+    return logger.info(`❌  Not in release branch. Skipping publish.`);
+  }
+
   if (dryRun.isDryRun()) {
     return dryRun.dryRunExitMessage(publishPackage);
   }
 
-  const command = genPublishCommand(nextVersion, tag);
+  const command = genPublishCommand(versionToUse, tag);
   execCommandWithGitConfig(command);
   clearTag(tag, tagId);
 }
@@ -61,4 +62,14 @@ function genPublishCommand(versionToUse, tag) {
     `--new-version ${versionToUse}`,
     tag && `--tag ${tag}`,
   ];
+}
+
+function shouldPublishDev(versionToUse) {
+  const [, tag] = versionToUse.split('-');
+
+  return tag === TAG_DEV;
+}
+
+function shouldRelease(versionToUse) {
+  return isReleaseBranch() || shouldPublishDev(versionToUse);
 }

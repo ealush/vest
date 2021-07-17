@@ -1,4 +1,4 @@
-import enforce from 'n4s';
+import enforce from 'enforce';
 
 import create from 'create';
 import { only, skip, warn, group, optional } from 'hooks';

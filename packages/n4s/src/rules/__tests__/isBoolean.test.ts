@@ -1,5 +1,4 @@
-import enforce from 'n4s';
-
+import enforce from 'enforce';
 import { isBoolean, isNotBoolean } from 'isBoolean';
 
 describe('isBoolean', () => {

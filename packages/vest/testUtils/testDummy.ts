@@ -1,14 +1,12 @@
 /* eslint-disable jest/no-export */
 import faker from 'faker';
 
-import * as vest from 'vest';
+import { test, warn } from 'vest';
 
 /**
  * Generates dummy vest tests.
- * @param {Object} [vestRef] Reference to vest build.
  */
-const testDummy = (vestRef = vest) => {
-  const { test } = vestRef;
+const testDummy = () => {
   const failing = (
     name: string = faker.random.word(),
     message: string = faker.random.words(),
@@ -38,7 +36,7 @@ const testDummy = (vestRef = vest) => {
       name,
       message,
       jest.fn(() => {
-        vest.warn();
+        warn();
         throw new Error();
       })
     );
@@ -73,7 +71,7 @@ const testDummy = (vestRef = vest) => {
       name,
       message,
       jest.fn(() => {
-        vest.warn();
+        warn();
       })
     );
     if (groupName) {
@@ -105,7 +103,7 @@ const testDummy = (vestRef = vest) => {
       name,
       message,
       jest.fn(() => {
-        vest.warn();
+        warn();
         return new Promise((_, reject) => {
           setTimeout(reject, time);
         });
@@ -135,7 +133,7 @@ const testDummy = (vestRef = vest) => {
       name,
       message,
       jest.fn(() => {
-        vest.warn();
+        warn();
         return new Promise(resolve => {
           setTimeout(resolve, time);
         });
@@ -153,7 +151,5 @@ const testDummy = (vestRef = vest) => {
     passingWarningAsync,
   };
 };
-
-export default testDummy;
 
 export const dummyTest = testDummy();

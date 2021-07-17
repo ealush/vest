@@ -1,3 +1,4 @@
+import assign from 'assign';
 import createContext from 'context';
 
 import VestTest from 'VestTest';
@@ -6,7 +7,7 @@ import createStateRef from 'createStateRef';
 export default createContext<CTXType>((ctxRef, parentContext) =>
   parentContext
     ? null
-    : Object.assign(
+    : assign(
         {},
         {
           exclusion: {

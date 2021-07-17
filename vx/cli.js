@@ -11,6 +11,7 @@ const logger = require('vx/logger');
 const packageName = require('vx/packageName');
 const packageNames = require('vx/packageNames');
 const dryRun = require('vx/util/dryRun');
+const joinTruthy = require('vx/util/joinTruthy');
 const vxPath = require('vx/vxPath');
 
 dotenv.config();
@@ -77,7 +78,12 @@ const options = argv.slice(
   }, 1)
 );
 
-logger.info(`Running command ${command} for package ${package}.`);
+logger.info(
+  joinTruthy([
+    `Running command ${command}`,
+    package && `for package ${package}`,
+  ])
+);
 
 dryRun.setDryRun(dry);
 

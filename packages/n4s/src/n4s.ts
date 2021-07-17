@@ -1,3 +1,4 @@
+import assign from 'assign';
 import mapFirst from 'mapFirst';
 import throwError from 'throwError';
 import { DropFirst } from 'utilityTypes';
@@ -52,7 +53,7 @@ const enforce = new Proxy(EnforceBase as TEnforce, {
 
     if (key === 'extend') {
       return function extend(customRules: TRule) {
-        Object.assign(baseRules, customRules);
+        assign(baseRules, customRules);
       };
     }
 

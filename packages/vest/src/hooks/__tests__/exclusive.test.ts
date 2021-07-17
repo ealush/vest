@@ -1,7 +1,7 @@
 import faker from 'faker';
 import * as vest from 'vest';
 
-import testDummy from '../../../testUtils/testDummy';
+import { dummyTest } from '../../../testUtils/testDummy';
 
 import VestTest from 'VestTest';
 import context from 'ctx';
@@ -26,10 +26,10 @@ describe('exclusive hooks', () => {
     const validate = vest.create(() => {
       vest.skip.group('group_1');
 
-      testObject = testDummy(vest).failing();
+      testObject = dummyTest.failing();
 
       group('group_1', () => {
-        testObject1 = testDummy(vest).failing();
+        testObject1 = dummyTest.failing();
       });
 
       res = isExcluded(testObject);

@@ -28,6 +28,7 @@
       "one": ["./packages/anyone/src/exports/one.ts"],
       "runAnyoneMethods": ["./packages/anyone/src/runner/runAnyoneMethods.ts"],
       "context": ["./packages/context/src/context.ts"],
+      "enforce": ["./packages/n4s/src/enforce.ts"],
       "allOf": ["./packages/n4s/src/lib/compounds/allOf.ts"],
       "anyOf": ["./packages/n4s/src/lib/compounds/anyOf.ts"],
       "compounds": ["./packages/n4s/src/lib/compounds/compounds.ts"],

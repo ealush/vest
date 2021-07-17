@@ -38,6 +38,8 @@ const namedOptions = Object.entries({
   '--dry': 1,
 });
 
+const defaultPackage = packageName() ?? insidePackageDir();
+
 const cli = yargs(argv)
   .command('$0 <command>', 'Run vx monorepo utility', yargs => {
     yargs.positional('command', {
@@ -49,9 +51,9 @@ const cli = yargs(argv)
   .option('package', {
     alias: 'p',
     choices: packageNames.list,
-    default: packageName() ?? insidePackageDir(),
     demandOption: false,
     describe: 'Package to run against',
+    ...(!!defaultPackage && { default: defaultPackage }),
   })
   .option('dry', {
     demandOption: false,

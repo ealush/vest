@@ -100,7 +100,7 @@ function genOutput({ moduleName = packageName(), env } = {}) {
 function getInputFile(moduleName = packageName()) {
   const modulePath = moduleAliases.find(ref => ref.name === moduleName);
 
-  if (!modulePath.absolute || !fs.existsSync(modulePath.absolute)) {
+  if (!(modulePath?.absolute && fs.existsSync(modulePath.absolute))) {
     throw new Error('unable to find module path for ' + moduleName);
   }
 

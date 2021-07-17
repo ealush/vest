@@ -15,14 +15,14 @@ it.withContext = (str, cb, getCTX) => {
   );
 };
 
-const isDeepCopyOf = (
-  source: any,
-  clone: any
+// eslint-disable-next-line complexity
+const isDeepCopyOf = <T>(
+  source: T,
+  clone: T
 ): { pass: boolean; message: () => string } => {
   const queue = [[source, clone]];
 
   outer: while (queue.length) {
-    // @ts-ignore
     const [source, clone] = queue.shift();
 
     if (!source || typeof source !== 'object') {

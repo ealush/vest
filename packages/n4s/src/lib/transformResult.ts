@@ -44,8 +44,11 @@ function validateResult(result: TRuleReturn): void {
     return;
   }
 
-  // FIXME: Better error message
-  throwError('Incorrect return value for rule');
+  if (__DEV__) {
+    throwError('Incorrect return value for rule: ' + JSON.stringify(result));
+  } else {
+    throwError();
+  }
 }
 
 function getDefaultResult(value: TRuleValue): {

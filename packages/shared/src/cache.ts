@@ -1,4 +1,3 @@
-import { isNotNull } from 'isNull';
 import { lengthEquals } from 'lengthEquals';
 
 /**
@@ -11,7 +10,7 @@ export default function createCache(maxSize = 10): {
   const cacheStorage: Array<[unknown[], any]> = [];
 
   /**
-   * @param {Any[]} deps  dependency array.
+   * @param {any[]} deps  dependency array.
    * @param {Function}    cache action function.
    */
   const cache = <T>(
@@ -20,7 +19,8 @@ export default function createCache(maxSize = 10): {
   ): T => {
     const cacheHit = cache.get(deps);
 
-    if (isNotNull(cacheHit)) {
+    // cache hit is not null
+    if (cacheHit) {
       return cacheHit[1];
     }
 
@@ -39,7 +39,7 @@ export default function createCache(maxSize = 10): {
    * Retrieves an item from the cache.
    * @param {deps} deps Dependency array
    */
-  cache.get = (deps: unknown[]): any =>
+  cache.get = (deps: unknown[]): [unknown[], any] | null =>
     cacheStorage[
       cacheStorage.findIndex(
         ([cachedDeps]) =>

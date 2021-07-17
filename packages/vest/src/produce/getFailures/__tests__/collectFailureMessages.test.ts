@@ -47,10 +47,8 @@ describe('collectFailureMessages', () => {
     ).toEqual({ field_1: [] });
   });
 
-  describe.each(['errors', 'warnings'])(
-    'Snapshot tests. severity: %s',
-    // @ts-ignore - it is unable to infer errors/warnings correctly
-    (severity: 'errors' | 'warnings') => {
+  ['errors', 'warnings'].forEach((severity: 'errors' | 'warnings') => {
+    describe('Snapshot tests. severity: ' + severity, () => {
       describe('When no options passed', () => {
         it('should match snapshot', () => {
           expect(
@@ -109,8 +107,8 @@ describe('collectFailureMessages', () => {
           ).toMatchSnapshot();
         });
       });
-    }
-  );
+    });
+  });
 
   beforeEach(() => {
     testObjects = [

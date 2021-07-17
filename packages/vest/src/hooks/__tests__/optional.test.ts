@@ -2,6 +2,7 @@ import { optional, create } from 'vest';
 
 import { useOptionalFields } from 'stateHooks';
 
+
 describe('optional hook', () => {
   it('Should add optional fields to state', () => {
     return new Promise<void>(done => {

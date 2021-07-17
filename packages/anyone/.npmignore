@@ -1,6 +1,8 @@
 node_modules
 src
-!classNames/
-!promisify/
+!all/
+!any/
+!none/
+!one/
 !types/
 !dist/

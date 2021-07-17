@@ -4,6 +4,48 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 3.2.7 - 2021-07-17
+### Fixed and improved
+- .github/PULL_REQUEST_TEMPLATE.md
+- aec6cd6  chore: cleanup unused code (ealush)
+- 0103b38  lint: handling lint of all packages (ealush)
+- .gitignore
+- 03cf487  patch(n4s): add ruleReturn default values (ealush)
+- 76e8c98  fix(n4s): make enforce compound runners fall back to correct response (ealush)
+- ff91bd2  fix(n4s): make enforce chaining work (ealush)
+- c3fd912  chore: some lint fixes (ealush)
+- f6321cf  add cli options support (ealush)
+- 49b6b84  Vest 4 Infra Setup (ealush)
+- ba6c296  patch: remove unused optional references from the state (ealush)
+
+## 3.2.6 - 2021-07-17
+### Fixed and improved
+- .github/PULL_REQUEST_TEMPLATE.md
+- aec6cd6  chore: cleanup unused code (ealush)
+- 0103b38  lint: handling lint of all packages (ealush)
+- .gitignore
+- 03cf487  patch(n4s): add ruleReturn default values (ealush)
+- 76e8c98  fix(n4s): make enforce compound runners fall back to correct response (ealush)
+- ff91bd2  fix(n4s): make enforce chaining work (ealush)
+- c3fd912  chore: some lint fixes (ealush)
+- f6321cf  add cli options support (ealush)
+- 49b6b84  Vest 4 Infra Setup (ealush)
+- ba6c296  patch: remove unused optional references from the state (ealush)
+
+## 3.2.5 - 2021-07-17
+### Fixed and improved
+- .github/PULL_REQUEST_TEMPLATE.md
+- aec6cd6  chore: cleanup unused code (ealush)
+- 0103b38  lint: handling lint of all packages (ealush)
+- .gitignore
+- 03cf487  patch(n4s): add ruleReturn default values (ealush)
+- 76e8c98  fix(n4s): make enforce compound runners fall back to correct response (ealush)
+- ff91bd2  fix(n4s): make enforce chaining work (ealush)
+- c3fd912  chore: some lint fixes (ealush)
+- f6321cf  add cli options support (ealush)
+- 49b6b84  Vest 4 Infra Setup (ealush)
+- ba6c296  patch: remove unused optional references from the state (ealush)
+
 ## 1.0.31 - 2021-07-02
 ### Fixed and improved
 - e6ea7d6  support global replaces (undefined)

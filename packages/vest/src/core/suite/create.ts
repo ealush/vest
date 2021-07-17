@@ -1,4 +1,5 @@
 import asArray from 'asArray';
+import assign from 'assign';
 import genId from 'genId';
 import isFunction from 'isFunction';
 import throwError from 'throwError';
@@ -14,7 +15,6 @@ import {
   useCarryOverTests,
   useLagging,
 } from 'stateHooks';
-
 
 export default function create<T extends (...args: any[]) => void>(
   suiteCallback: T
@@ -53,7 +53,7 @@ export default function create<T extends (...args: any[]) => void>(
     subscribe: (handler: () => void) => void;
   }
 
-  const suite: IVestSuite = Object.assign(
+  const suite: IVestSuite = assign(
     context.bind({ stateRef }, (...args: unknown[]) => {
       const [previousTestObjects] = useTestObjects();
       const [, setCarryOverTests] = useCarryOverTests();

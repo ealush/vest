@@ -14,12 +14,7 @@ const ERROR_OUTSIDE_OF_TEST = __DEV__
  * Sets a running test to warn only mode.
  */
 export default function warn(): void {
-  const ctx = context.use();
-
-  if (!ctx) {
-    throwError('warn ' + ERROR_HOOK_CALLED_OUTSIDE);
-    return;
-  }
+  const ctx = context.useX('warn ' + ERROR_HOOK_CALLED_OUTSIDE);
 
   if (!ctx.currentTest) {
     throwError(ERROR_OUTSIDE_OF_TEST);

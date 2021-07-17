@@ -3,7 +3,7 @@ import run from 'runAnyoneMethods';
 /**
  * Checks that at only one passed argument evaluates to a truthy value.
  */
-export default function one(...args: any[]): boolean {
+export default function one(...args: unknown[]): boolean {
   let count = 0;
 
   for (let i = 0; i < args.length; i++) {

@@ -2,7 +2,7 @@ const path = require('path');
 
 const glob = require('glob');
 
-const packageName = require('vx/packageName');
+const packageName = require('vx/packageName'); // eslint-disable-line
 
 module.exports = Object.defineProperty(
   { paths: {}, list: [], names: {} },

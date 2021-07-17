@@ -5,7 +5,7 @@ describe('suite.subscribe', () => {
   let handler;
   beforeEach(() => {
     handler = jest.fn();
-    suite = vest.create(() => {});
+    suite = vest.create(() => jest.fn());
   });
 
   it('Should call handler on suite subscription initialization', () => {

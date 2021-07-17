@@ -32,13 +32,17 @@ module.exports = {
       },
     },
     {
-      files: ['*.ts'],
-      excludedFiles: ['*__tests__/**/*.(t|j)s', './**/testUtils/**/*'],
+      excludedFiles: ['__tests__/**/*.(t|j)s', './**/testUtils/**/*'],
       extends: [
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
         'plugin:import/typescript',
       ],
+      files: ['*.ts'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/explicit-module-boundary-types': 'off',
+      },
     },
   ],
   parser: '@typescript-eslint/parser',
@@ -58,7 +62,16 @@ module.exports = {
           order: 'asc',
         },
         'newlines-between': 'always',
-        pathGroupsExcludedImportTypes: ['builtin'],
+        pathGroups: [
+          {
+            pattern: '^vx',
+            group: 'external',
+          },
+          {
+            pattern: './vx',
+            group: 'external',
+          },
+        ],
       },
     ],
     'jest/expect-expect': 0,
@@ -96,7 +109,7 @@ module.exports = {
     },
     'import/resolver': {
       typescript: {
-        project: 'packages/*/tsconfig.json',
+        project: './tsconfig.json',
       },
     },
   },

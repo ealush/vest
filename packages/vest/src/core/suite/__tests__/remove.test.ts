@@ -4,6 +4,7 @@ import wait from 'wait';
 import { dummyTest } from '../../../../testUtils/testDummy';
 
 
+
 describe('suite.remove', () => {
   it('Should remove field from validation result', async () => {
     const suite = vest.create(() => {

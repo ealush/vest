@@ -6,7 +6,7 @@ function genValidate({ create, test, enforce, ...vest }) {
     test('field_2', 'field_statement_2', () => {
       enforce(2).equals(3);
     });
-    test('field_3', 'field_statement_3', () => {});
+    test('field_3', 'field_statement_3', jest.fn());
     test('field_4', 'field_statement_4', () => {
       vest.warn();
       throw new Error();

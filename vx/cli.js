@@ -71,7 +71,6 @@ if (package) {
   packageName.setPackageName(package);
 }
 
-// FIXME: is there a better way of doing this?
 const options = argv.slice(
   namedOptions.reduce((count, [option, increment]) => {
     return argv.includes(option) ? count + increment : count;

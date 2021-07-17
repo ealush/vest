@@ -5,7 +5,7 @@ import testDummy from '../../../testUtils/testDummy';
 
 import VestTest from 'VestTest';
 import context from 'ctx';
-import { isExcluded, isGroupExcluded } from 'exclusive';
+import { isExcluded, isGroupExcluded, skip, only } from 'exclusive';
 import group from 'group';
 import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
 
@@ -219,23 +219,15 @@ describe('exclusive hooks', () => {
     });
   });
 
-  describe.skip('Error handling', () => {
-    let mockThrowError, hooks;
-
-    beforeEach(() => {
-      jest.resetModules();
-      mockThrowError = jest.mock('throwError');
-      hooks = require('exclusive');
-    });
-
-    describe.each([['only', 'skip']])('%s', hook => {
-      describe('When called outside of a suite', () => {
-        it('Should throw an error', () => {
-          hooks[hook](faker.random.word());
-          expect(mockThrowError.mock.calls[0][0]).toContain(
-            ERROR_HOOK_CALLED_OUTSIDE
-          );
-        });
+  describe('Error handling', () => {
+    describe('When called outside of a suite', () => {
+      it('Should throw an error', () => {
+        expect(() => only(faker.random.word())).toThrow(
+          ERROR_HOOK_CALLED_OUTSIDE
+        );
+        expect(() => skip(faker.random.word())).toThrow(
+          ERROR_HOOK_CALLED_OUTSIDE
+        );
       });
     });
   });

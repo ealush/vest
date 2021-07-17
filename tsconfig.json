@@ -44,7 +44,7 @@
         "./packages/n4s/src/rules/greaterThanOrEquals.ts"
       ],
       "inside": ["./packages/n4s/src/rules/inside.ts"],
-      "isArray": ["./packages/n4s/src/rules/isArray.ts"],
+      "isArrayValue": ["./packages/n4s/src/rules/isArrayValue.ts"],
       "isBetween": ["./packages/n4s/src/rules/isBetween.ts"],
       "isBoolean": ["./packages/n4s/src/rules/isBoolean.ts"],
       "isEmpty": ["./packages/n4s/src/rules/isEmpty.ts"],

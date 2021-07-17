@@ -3,6 +3,7 @@ import * as vest from 'vest';
 
 import test from 'test';
 
+
 let testObjects;
 
 describe("Test Vest's `test.each` function", () => {

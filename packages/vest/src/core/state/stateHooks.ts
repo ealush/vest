@@ -1,29 +1,42 @@
-import ctx from 'ctx';
 
-export function useCarryOverTests() {
+import type { TStateHandlerReturn } from 'vast';
+
+import VestTest from 'VestTest';
+import ctx from 'ctx';
+import type { TDraftResult } from 'produceDraft';
+
+export function useCarryOverTests(): TStateHandlerReturn<VestTest[]> {
   return useStateRef().carryOverTests();
 }
-export function usePending() {
+export function usePending(): TStateHandlerReturn<VestTest[]> {
   return useStateRef().pending();
 }
-export function useLagging() {
+export function useLagging(): TStateHandlerReturn<VestTest[]> {
   return useStateRef().lagging();
 }
-export function useSuiteId() {
+export function useSuiteId(): TStateHandlerReturn<string> {
   return useStateRef().suiteId();
 }
-export function useTestCallbacks() {
+export function useTestCallbacks(): TStateHandlerReturn<{
+  fieldCallbacks: Record<string, ((res: TDraftResult) => void)[]>;
+  doneCallbacks: ((res: TDraftResult) => void)[];
+}> {
   return useStateRef().testCallbacks();
 }
-export function useTestObjects() {
+export function useTestObjects(): TStateHandlerReturn<VestTest[]> {
   return useStateRef().testObjects();
 }
-export function useSkippedTests() {
+export function useSkippedTests(): TStateHandlerReturn<VestTest[]> {
   return useStateRef().skippedTests();
 }
-export function useOptionalFields() {
+export function useOptionalFields(): TStateHandlerReturn<
+  Record<string, boolean>
+> {
   return useStateRef().optionalFields();
 }
-export function useStateRef() {
-  return ctx.use()!.stateRef!;
+export function useStateRef(): Exclude<
+  ReturnType<typeof ctx.useX>['stateRef'],
+  void
+> {
+  return ctx.useX().stateRef!;
 }

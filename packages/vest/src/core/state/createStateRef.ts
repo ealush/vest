@@ -1,3 +1,4 @@
+
 import createState from 'vast';
 
 import VestTest from 'VestTest';
@@ -13,9 +14,7 @@ export default function createStateRef(
     optionalFields: state.registerStateKey<Record<string, boolean>>(() => ({})),
     pending: state.registerStateKey<VestTest[]>(() => []),
     skippedTests: state.registerStateKey<VestTest[]>(() => []),
-    suiteId: state.registerStateKey<{ id: string }>(() => ({
-      id: suiteId,
-    })),
+    suiteId: state.registerStateKey<string>(() => suiteId),
     testCallbacks: state.registerStateKey<{
       fieldCallbacks: Record<string, Array<(res: TDraftResult) => void>>;
       doneCallbacks: Array<(res: TDraftResult) => void>;

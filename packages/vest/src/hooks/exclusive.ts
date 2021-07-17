@@ -1,7 +1,6 @@
 import asArray from 'asArray';
 import hasOwnProperty from 'hasOwnProperty';
 import isStringValue from 'isStringValue';
-import throwError from 'throwError';
 
 import VestTest from 'VestTest';
 import ctx from 'ctx';
@@ -28,18 +27,17 @@ export function skip(item: TExclusionItemType): void {
 
 skip.group = (item: TExclusionItemType) => addTo('skip', 'groups', item);
 
-/**
- * Checks whether a certain test profile excluded by any of the exclusion groups.
- * @param {VestTest}            Test Object reference.
- * @returns {Boolean}
- */
+//Checks whether a certain test profile excluded by any of the exclusion groups.
+
+// eslint-disable-next-line complexity
 export function isExcluded(testObject: VestTest): boolean {
   const { fieldName, groupName } = testObject;
 
-  const context = ctx.use();
-  const exclusion = context!.exclusion;
+  const context = ctx.useX();
 
-  const keyTests = exclusion!.tests;
+  const exclusion = context.exclusion;
+
+  const keyTests = exclusion.tests;
   const testValue = keyTests[fieldName];
 
   // if test is skipped
@@ -56,7 +54,7 @@ export function isExcluded(testObject: VestTest): boolean {
       return true; // field excluded by group
 
       // if group is `only`ed
-    } else if (exclusion!.groups[groupName] === true) {
+    } else if (exclusion.groups[groupName] === true) {
       if (isTestIncluded) {
         return false;
       }
@@ -86,9 +84,9 @@ export function isExcluded(testObject: VestTest): boolean {
  * @return {Boolean}
  */
 export function isGroupExcluded(groupName: string): boolean {
-  const context = ctx.use();
-  const exclusion = context!.exclusion;
-  const keyGroups = exclusion!.groups;
+  const context = ctx.useX();
+  const exclusion = context.exclusion;
+  const keyGroups = exclusion.groups;
 
   const groupPresent = hasOwnProperty(keyGroups, groupName);
 
@@ -117,13 +115,9 @@ function addTo(
   itemType: 'tests' | 'groups',
   item: TExclusionItemType
 ) {
-  const context = ctx.use();
-  if (!item) {
-    return;
-  }
+  const context = ctx.useX(ERROR_HOOK_CALLED_OUTSIDE);
 
-  if (!context) {
-    throwError(`${exclusionGroup} ${ERROR_HOOK_CALLED_OUTSIDE}`);
+  if (!item) {
     return;
   }
 
@@ -132,7 +126,7 @@ function addTo(
       return;
     }
 
-    context!.exclusion![itemType][itemName] = exclusionGroup === 'only';
+    context.exclusion[itemType][itemName] = exclusionGroup === 'only';
   });
 }
 

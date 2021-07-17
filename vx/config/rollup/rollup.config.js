@@ -8,6 +8,7 @@ const glob = require('glob');
 const { terser } = require('rollup-plugin-terser');
 const ts = require('rollup-plugin-ts');
 
+const concatTruthy = require('../../util/concatTruthy');
 const joinTruthy = require('../../util/joinTruthy');
 const packageJson = require('../../util/packageJson');
 
@@ -18,29 +19,33 @@ const packageName = require('vx/packageName');
 const moduleAliases = require('vx/util/moduleAliases')();
 const vxPath = require('vx/vxPath');
 
+const isWatchModeOn = JSON.parse(process.env.ROLLUP_WATCH ?? false);
+
 module.exports = cleanupConfig(
-  [opts.env.PRODUCTION, opts.env.DEVELOPMENT].map(env => {
-    const customConfigPath = vxPath.packageConfigPath(
-      packageName(),
-      'vx.build.js'
-    );
+  concatTruthy(!isWatchModeOn && opts.env.PRODUCTION, opts.env.DEVELOPMENT).map(
+    env => {
+      const customConfigPath = vxPath.packageConfigPath(
+        packageName(),
+        'vx.build.js'
+      );
 
-    let customConfig;
+      let customConfig;
 
-    if (fs.existsSync(customConfigPath)) {
-      customConfig = require(customConfigPath);
+      if (fs.existsSync(customConfigPath)) {
+        customConfig = require(customConfigPath);
+      }
+
+      return [].concat(
+        genBaseConfig({ env }),
+        genExports(packageName(), env),
+        customConfig?.({
+          getInputFile,
+          getPlugins: (options = {}) => getPlugins({ env, ...options }),
+          genOutput: (options = {}) => genOutput({ env, ...options }),
+        }) ?? []
+      );
     }
-
-    return [].concat(
-      genBaseConfig({ env }),
-      genExports(packageName(), env),
-      customConfig?.({
-        getInputFile,
-        getPlugins: (options = {}) => getPlugins({ env, ...options }),
-        genOutput: (options = {}) => genOutput({ env, ...options }),
-      }) ?? []
-    );
-  })
+  )
 );
 
 function cleanupConfig(configs) {

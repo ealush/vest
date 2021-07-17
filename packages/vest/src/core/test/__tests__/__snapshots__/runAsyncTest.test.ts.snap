@@ -18,9 +18,7 @@ Object {
     },
   ],
   "skippedTests": Array [],
-  "suiteId": Object {
-    "id": "1000",
-  },
+  "suiteId": "1000",
   "testCallbacks": Object {
     "doneCallbacks": Array [],
     "fieldCallbacks": Object {
@@ -49,9 +47,7 @@ Object {
     },
   ],
   "skippedTests": Array [],
-  "suiteId": Object {
-    "id": "1000",
-  },
+  "suiteId": "1000",
   "testCallbacks": Object {
     "doneCallbacks": Array [],
     "fieldCallbacks": Object {

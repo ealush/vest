@@ -5,6 +5,7 @@ import { dummyTest } from '../../../testUtils/testDummy';
 import promisify from '../promisify';
 
 
+
 describe('Utility: promisify', () => {
   let validatorFn;
   let validateAsync;

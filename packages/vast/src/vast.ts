@@ -3,7 +3,10 @@ import optionalFunctionValue from 'optionalFunctionValue';
 
 type TStateInput<S> = S | (() => S);
 type TSetStateInput<S> = S | ((prevState: S) => S);
-type TStateHandlerReturn<S> = [S, (nextState: TSetStateInput<S>) => void];
+export type TStateHandlerReturn<S> = [
+  S,
+  (nextState: TSetStateInput<S>) => void
+];
 
 type TCreateStateReturn = {
   reset: () => void;

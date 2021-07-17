@@ -1,25 +1,36 @@
+import throwError from 'throwError';
+
 export default function createContext<T extends Record<string, unknown>>(
-  init?: (ctxRef: T, parentContext: T | void) => T | null
+  init?: (ctxRef: Partial<T>, parentContext: T | void) => T | null
 ): {
-  run: <R>(ctxRef: T, fn: (context: T) => R) => R;
-  bind: <Fn extends (...args: any[]) => any>(ctxRef: T, fn: Fn) => Fn;
+  run: <R>(ctxRef: Partial<T>, fn: (context: T) => R) => R;
+  bind: <Fn extends (...args: any[]) => any>(ctxRef: Partial<T>, fn: Fn) => Fn;
   use: () => T | undefined;
+  useX: (errorMessage?: string) => T;
 } {
   const storage: { ctx?: T; ancestry: T[] } = { ancestry: [] };
 
   return {
-    run,
     bind,
+    run,
     use,
+    useX,
   };
 
-  function run<R>(ctxRef: T, fn: (context: T) => R): R {
+  function useX(errorMessage?: string): T {
+    return (
+      storage.ctx ??
+      throwError(errorMessage ?? 'Context was used after it was closed')
+    );
+  }
+
+  function run<R>(ctxRef: Partial<T>, fn: (context: T) => R): R {
     const parentContext = use();
 
     const out = {
       ...(parentContext ? parentContext : {}),
       ...(init?.(ctxRef, parentContext) ?? ctxRef),
-    };
+    } as T;
 
     const ctx = set(Object.freeze(out));
     storage.ancestry.unshift(ctx);
@@ -29,8 +40,11 @@ export default function createContext<T extends Record<string, unknown>>(
     return res;
   }
 
-  function bind<Fn extends (...args: any[]) => any>(ctxRef: T, fn: Fn) {
-    // @ts-ignore - this one's pretty hard to get
+  function bind<Fn extends (...args: any[]) => any>(
+    ctxRef: Partial<T>,
+    fn: Fn
+  ) {
+    // @ts-ignore - this one's pretty hard to get right
     const returnedFn: Fn = function (...runTimeArgs: Parameters<Fn>) {
       return run<ReturnType<Fn>>(ctxRef, function () {
         return fn(...runTimeArgs);

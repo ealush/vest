@@ -1,10 +1,10 @@
-import { isArray, isNotArray } from 'isArray';
 
 import { endsWith, doesNotEndWith } from 'endsWith';
 import { equals, notEquals } from 'equals';
 import { greaterThan } from 'greaterThan';
 import { greaterThanOrEquals } from 'greaterThanOrEquals';
 import { inside, notInside } from 'inside';
+import { isArray, isNotArray } from 'isArrayValue';
 import { isBetween, isNotBetween } from 'isBetween';
 import { isBoolean, isNotBoolean } from 'isBoolean';
 import { isEmpty, isNotEmpty } from 'isEmpty';
@@ -29,6 +29,7 @@ import { shorterThan } from 'shorterThan';
 import { shorterThanOrEquals } from 'shorterThanOrEquals';
 import { startsWith, doesNotStartWith } from 'startsWith';
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export default function rules() {
   return {
     doesNotEndWith,

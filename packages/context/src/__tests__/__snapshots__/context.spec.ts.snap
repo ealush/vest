@@ -18,5 +18,6 @@ Object {
   "bind": [Function],
   "run": [Function],
   "use": [Function],
+  "useX": [Function],
 }
 `;

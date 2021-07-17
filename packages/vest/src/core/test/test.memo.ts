@@ -43,7 +43,7 @@ export default function bindTestMemo(test: typeof testBase): {
     const [deps, testFn, msg] = args.reverse() as [any[], TTestFn, string];
 
     // Implicit dependency for more specificity
-    const dependencies = [suiteId.id, fieldName].concat(deps);
+    const dependencies = [suiteId, fieldName].concat(deps);
 
     const cached = cache.get(dependencies);
 

@@ -14,8 +14,7 @@ function setDryRun(dry) {
 }
 
 function isDryRun() {
-  // FIXME: Check why this is sometimes gets set to a string
-  return [true, 'true'].includes(process.env[DRY_RUN_KEY]);
+  return JSON.parse(process.env[DRY_RUN_KEY] ?? false);
 }
 
 function cliOpt() {

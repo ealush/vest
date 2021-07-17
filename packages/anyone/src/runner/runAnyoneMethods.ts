@@ -3,7 +3,7 @@ import isFunction from 'isFunction';
 /**
  * Accepts a value or a function, and coerces it into a boolean value
  */
-export default function run(arg: any): boolean {
+export default function run(arg: unknown): boolean {
   if (isFunction(arg)) {
     try {
       return check(arg());
@@ -15,6 +15,7 @@ export default function run(arg: any): boolean {
   return check(arg);
 }
 
-function check(value: any): boolean {
+function check(value: unknown): boolean {
+  // We use abstract equality intentionally here. This enables falsy valueOf support.
   return Array.isArray(value) ? true : value != false && Boolean(value); // eslint-disable-line
 }

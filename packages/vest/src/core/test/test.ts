@@ -1,3 +1,4 @@
+import assign from 'assign';
 import isFunction from 'isFunction';
 
 import VestTest, { TTestFn } from 'VestTest';
@@ -41,7 +42,7 @@ export function testBase(
   return testObject;
 }
 
-export default Object.assign(testBase, {
+export default assign(testBase, {
   each: bindTestEach(testBase),
   memo: bindTestMemo(testBase),
 });

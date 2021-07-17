@@ -1,3 +1,4 @@
+import assign from 'assign';
 import createCache from 'cache';
 import isFunction from 'isFunction';
 
@@ -14,7 +15,7 @@ export function produceFullResult(): IVestResult {
   return cache(
     [testObjects],
     ctx.bind(ctxRef, () =>
-      Object.assign({}, produceDraft(), {
+      assign({}, produceDraft(), {
         done: ctx.bind(ctxRef, done),
       })
     )

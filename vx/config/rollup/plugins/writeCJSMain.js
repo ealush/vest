@@ -3,31 +3,32 @@ const path = require('path');
 const fse = require('fs-extra');
 
 const opts = require('vx/opts');
+const once = require('vx/util/once');
 
 module.exports = writeCJSMain;
 
-function writeCJSMain({ moduleName, isMain, rootPath }) {
+function writeCJSMain({ isMain, rootPath }) {
   return {
     name: 'write-cjs-main',
-    buildEnd: async () => {
+    writeBundle: once(({ name, ...opts }) => {
       let mainPath = rootPath;
 
       if (!isMain) {
-        mainPath = path.join(mainPath, moduleName);
+        mainPath = path.join(mainPath, name);
         fse.ensureDirSync(mainPath);
 
         fse.writeJSONSync(
           path.join(mainPath, 'package.json'),
-          packageJson(moduleName)
+          packageJson(name)
         );
       }
 
       fse.writeFileSync(
-        path.resolve(mainPath, 'index.js'),
-        genEntry(moduleName, isMain),
+        path.resolve(mainPath, opts.fileNames.MAIN_EXPORT),
+        genEntry(name, isMain),
         'utf8'
       );
-    },
+    }),
   };
 }
 

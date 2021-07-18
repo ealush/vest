@@ -1,9 +1,8 @@
 import genId from 'genId';
-import isStringValue from 'isStringValue';
-import { isUndefined } from 'isUndefined';
 
 import { removePending } from 'pending';
 import removeTestFromState from 'removeTestFromState';
+import shouldUseErrorAsMessage from 'shouldUseErrorAsMessage';
 
 export type TAsyncTest = Promise<string | void>;
 export type TTestResult = TAsyncTest | boolean | void;
@@ -43,7 +42,7 @@ export default class VestTest {
     try {
       result = this.testFn();
     } catch (error) {
-      if (isUndefined(this.message) && isStringValue(error)) {
+      if (shouldUseErrorAsMessage(this.message, error)) {
         this.message = error;
       }
       result = false;

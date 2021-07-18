@@ -1,4 +1,5 @@
 import faker from 'faker';
+
 import { create, test, warn } from 'vest';
 
 let testObject;

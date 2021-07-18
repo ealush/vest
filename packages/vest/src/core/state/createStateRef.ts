@@ -1,4 +1,3 @@
-
 import createState from 'vast';
 
 import VestTest from 'VestTest';

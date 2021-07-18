@@ -47,7 +47,7 @@ describe('collectFailureMessages', () => {
     ).toEqual({ field_1: [] });
   });
 
-  // @ts-ignore - it is unable to detect the type of the severity string
+  // @ts-expect-error - it can't properly infer the severity
   ['errors', 'warnings'].forEach((severity: 'errors' | 'warnings') => {
     describe('Snapshot tests. severity: ' + severity, () => {
       describe('When no options passed', () => {

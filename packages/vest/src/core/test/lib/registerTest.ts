@@ -7,7 +7,6 @@ import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
 import runSyncTest from 'runSyncTest';
 
-
 /**
  * Registers test, if async - adds to pending array
  */
@@ -28,12 +27,10 @@ export default function registerTest(testObject: VestTest): void {
       runAsyncTest(testObject);
     }
   } catch {
-    if (__DEV__) {
-      throwError(
-        `Your test function ${testObject.fieldName} returned ${JSON.stringify(
-          result
-        )}. Only "false" or a Promise are supported. Return values may cause unexpected behavior.`
-      );
-    }
+    throwError(
+      `Your test function ${testObject.fieldName} returned ${JSON.stringify(
+        result
+      )}. Only "false" or a Promise are supported. Return values may cause unexpected behavior.`
+    );
   }
 }

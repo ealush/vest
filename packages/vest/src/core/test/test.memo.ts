@@ -60,13 +60,17 @@ export default function bindTestMemo(test: typeof testBase): {
 
     addTestToState(testObject);
 
-    if (testObject && isPromise(testObject.asyncTest)) {
-      setPending(testObject);
-      runAsyncTest(testObject);
-    }
+    handleAsyncTest(testObject);
 
     return testObject;
   }
 
   return memo;
+}
+
+function handleAsyncTest(testObject: VestTest): void {
+  if (testObject && isPromise(testObject.asyncTest)) {
+    setPending(testObject);
+    runAsyncTest(testObject);
+  }
 }

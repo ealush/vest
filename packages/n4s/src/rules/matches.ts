@@ -1,7 +1,6 @@
 import bindNot from 'bindNot';
 import isString from 'isStringValue';
 
-
 export function matches(value: string, regex: RegExp | string): boolean {
   if (regex instanceof RegExp) {
     return regex.test(value);

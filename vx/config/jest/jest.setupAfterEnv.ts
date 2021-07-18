@@ -1,19 +1,6 @@
-import context from 'ctx';
 import isFunction from 'isFunction';
 
-import runCreateRef from '../../../packages/vest/testUtils/runCreateRef';
-
 import './globals.d';
-
-// TODO: Move it to the Vest area. make more usable
-it.withContext = (str, cb, getCTX) => {
-  return it(str, () =>
-    context.run(
-      isFunction(getCTX) ? getCTX() : getCTX ?? { stateRef: runCreateRef() },
-      cb
-    )
-  );
-};
 
 // eslint-disable-next-line complexity
 const isDeepCopyOf = (
@@ -23,7 +10,7 @@ const isDeepCopyOf = (
   const queue = [[source, clone]];
 
   outer: while (queue.length) {
-    // @ts-ignore
+    // @ts-expect-error - ts thinks it may be undefined, but it's unlikely, and will fail the tests anyway if it fails.
     const [source, clone] = queue.shift();
 
     if (!source || typeof source !== 'object') {

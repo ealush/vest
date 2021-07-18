@@ -2,7 +2,6 @@ import { FALSY_VALUES, TRUTHY_VALUES } from './anyoneTestValues';
 
 import run from 'runAnyoneMethods';
 
-
 describe('lib/run', () => {
   describe('When value is falsy', () => {
     it.each([FALSY_VALUES])('Should return `false` ("%s")', value =>

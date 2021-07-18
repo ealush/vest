@@ -18,7 +18,6 @@ export default function warn(): void {
 
   if (!ctx.currentTest) {
     throwError(ERROR_OUTSIDE_OF_TEST);
-    return;
   }
 
   ctx.currentTest.warn();

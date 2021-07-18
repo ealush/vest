@@ -24,6 +24,8 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Test
         run: yarn test
+      - name: Lint
+        run: yarn lint
       - name: Set npmrc
         run: echo //registry.npmjs.org/:_authToken=$NPM_TOKEN > ~/.npmrc
         env:

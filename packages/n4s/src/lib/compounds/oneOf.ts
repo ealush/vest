@@ -1,3 +1,4 @@
+import { lengthEquals } from 'lengthEquals';
 import type { TRuleDetailedResult, TLazyRuleMethods } from 'ruleReturn';
 
 export default function oneOf(
@@ -19,5 +20,5 @@ export default function oneOf(
     return result.pass;
   });
 
-  return { pass: passing.length === 1 };
+  return { pass: lengthEquals(passing, 1) };
 }

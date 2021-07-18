@@ -8,7 +8,6 @@ import context from 'ctx';
 import { removePending, setPending } from 'pending';
 import { usePending, useLagging } from 'stateHooks';
 
-
 const groupName = 'group_name';
 
 let state, stateRef;

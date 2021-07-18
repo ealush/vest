@@ -1,4 +1,3 @@
-
 import type { TStateHandlerReturn } from 'vast';
 
 import VestTest from 'VestTest';
@@ -38,5 +37,6 @@ export function useStateRef(): Exclude<
   ReturnType<typeof ctx.useX>['stateRef'],
   void
 > {
-  return ctx.useX().stateRef!;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return ctx.useX().stateRef!; // I should revisit this
 }

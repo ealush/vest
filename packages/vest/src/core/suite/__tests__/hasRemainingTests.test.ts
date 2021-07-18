@@ -8,7 +8,6 @@ import context from 'ctx';
 import hasRemainingTests from 'hasRemainingTests';
 import { usePending, useLagging } from 'stateHooks';
 
-
 let stateRef;
 const getCtx = () => ({ stateRef });
 

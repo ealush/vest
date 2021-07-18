@@ -1,9 +1,8 @@
 import bindNot from 'bindNot';
 import isString from 'isStringValue';
 
-
 export function inside(value: unknown, arg1: string | unknown[]): boolean {
-  if (Array.isArray(arg1) && /^[s|n|b]/.test(typeof value)) {
+  if (Array.isArray(arg1)) {
     return arg1.indexOf(value) !== -1;
   }
 

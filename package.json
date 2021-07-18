@@ -36,6 +36,7 @@
   ],
   "private": true,
   "dependencies": {
+    "pretty-quick": "^3.1.1",
     "vx": "./vx"
   },
   "version": "0.0.0"

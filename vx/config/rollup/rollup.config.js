@@ -12,6 +12,7 @@ const concatTruthy = require('../../util/concatTruthy');
 const joinTruthy = require('../../util/joinTruthy');
 const packageJson = require('../../util/packageJson');
 
+const addModulePackageJson = require('./plugins/addModulePackageJson');
 const writeCJSMain = require('./plugins/writeCJSMain');
 
 const opts = require('vx/opts');
@@ -66,7 +67,7 @@ function genBaseConfig({ env, moduleName = packageName() }) {
 
 function genExports(pkgName, env) {
   return glob
-    .sync(vxPath.packageSrc(pkgName, 'exports/*.ts'))
+    .sync(vxPath.packageSrc(pkgName, opts.dir.EXPORTS, '*.ts'))
     .map(file =>
       genBaseConfig({ env, moduleName: path.basename(file, '.ts') })
     );
@@ -144,10 +145,10 @@ function getPlugins({
   if (env === opts.env.PRODUCTION) {
     plugins.push(
       writeCJSMain({
-        moduleName,
         isMain: moduleName === packageName(),
         rootPath: vxPath.package(),
       }),
+      addModulePackageJson({ moduleName }),
       compiler(),
       terser()
     );

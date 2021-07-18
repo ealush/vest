@@ -4,7 +4,6 @@ import { TRUTHY_VALUES, FALSY_VALUES } from './anyoneTestValues';
 
 import one from 'one';
 
-
 describe('methods/one', () => {
   describe('When only falsy values', () => {
     it('Should return false', () => {

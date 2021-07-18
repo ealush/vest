@@ -1,5 +1,6 @@
 module.exports = {
   dir: {
+    CONFIG: 'config',
     DIST: 'dist',
     EXPORTS: 'exports',
     PACKAGES: 'packages',
@@ -13,6 +14,8 @@ module.exports = {
   },
   fileNames: {
     MAIN_EXPORT: 'index.js',
+    JEST_SETUP: 'jest.setup.ts',
+    JEST_SETUP_AFTER_ENV: 'jest.setupAfterEnv.ts',
   },
   format: {
     UMD: 'umd',

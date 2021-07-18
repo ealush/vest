@@ -1,4 +1,3 @@
-
 const filterCommitByPackage = require('./filterCommitsByPackage');
 const listAllChangesSinceStableBranch = require('./listAllChangesSinceStableBranch');
 

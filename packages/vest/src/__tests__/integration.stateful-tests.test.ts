@@ -1,4 +1,5 @@
 import enforce from 'enforce';
+
 import * as vest from 'vest';
 
 describe('Stateful behavior', () => {

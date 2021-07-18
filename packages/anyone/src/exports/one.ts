@@ -16,9 +16,5 @@ export default function one(...args: unknown[]): boolean {
     }
   }
 
-  if (count !== 1) {
-    return false;
-  }
-
-  return true;
+  return count === 1;
 }

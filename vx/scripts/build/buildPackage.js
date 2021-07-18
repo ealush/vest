@@ -1,4 +1,4 @@
-const fse = require('fs-extra');
+const cleanupDistFiles = require('./cleanupDistFiles');
 
 const exec = require('vx/exec');
 const logger = require('vx/logger');
@@ -8,7 +8,7 @@ const vxPath = require('vx/vxPath');
 function buildPackage(name = packageName(), { options } = {}) {
   logger.info(`🛠 Building package: ${name}`);
 
-  fse.removeSync(vxPath.packageDist());
+  cleanupDistFiles(name);
 
   exec([`rollup -c`, vxPath.ROLLUP_CONFIG_PATH, options]);
 }

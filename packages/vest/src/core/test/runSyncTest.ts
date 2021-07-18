@@ -1,8 +1,6 @@
-import isStringValue from 'isStringValue';
-import { isUndefined } from 'isUndefined';
-
 import VestTest, { TTestResult } from 'VestTest';
 import context from 'ctx';
+import shouldUseErrorAsMessage from 'shouldUseErrorAsMessage';
 /**
  * Runs sync tests - or extracts promise.
  */
@@ -12,7 +10,7 @@ export default function runSyncTest(testObject: VestTest): TTestResult {
     try {
       result = testObject.testFn();
     } catch (e) {
-      if (isUndefined(testObject.message) && isStringValue(e)) {
+      if (shouldUseErrorAsMessage(testObject.message, e)) {
         testObject.message = e;
       }
       result = false;

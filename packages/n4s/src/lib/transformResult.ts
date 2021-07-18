@@ -44,11 +44,7 @@ function validateResult(result: TRuleReturn): void {
     return;
   }
 
-  if (__DEV__) {
-    throwError('Incorrect return value for rule: ' + JSON.stringify(result));
-  } else {
-    throwError();
-  }
+  throwError('Incorrect return value for rule: ' + JSON.stringify(result));
 }
 
 function getDefaultResult(value: TRuleValue): {

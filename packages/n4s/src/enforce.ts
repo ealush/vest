@@ -35,6 +35,7 @@ function EnforceBase(value: TRuleValue): TEagerRules {
                 `enforce/${ruleName} failed with ${JSON.stringify(value)}`
               );
             } else {
+              // Explicitly throw a string so that vest.test can pick it up as the validation error message
               throw transformedResult.message;
             }
           }

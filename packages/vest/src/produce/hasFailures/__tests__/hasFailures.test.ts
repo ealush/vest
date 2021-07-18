@@ -9,7 +9,6 @@ import {
 import { produceFullResult } from 'produce';
 import { produceDraft } from 'produceDraft';
 
-
 const methods = {
   produceDraft,
   produceFullResult,

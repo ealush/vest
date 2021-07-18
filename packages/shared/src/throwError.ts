@@ -2,8 +2,8 @@
  * Throws a timed out error.
  */
 export default function throwError(
-  message?: string,
-  type: ErrorConstructor = Error
+  devMessage?: string,
+  productionMessage?: string | null
 ): never {
-  throw new type(message);
+  throw new Error(__DEV__ ? devMessage : productionMessage ?? devMessage);
 }

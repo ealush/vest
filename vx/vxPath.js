@@ -9,7 +9,6 @@ const vxPath = {};
 const PACKAGE_JSON = 'package.json';
 const TSCONFIG_JSON = 'tsconfig.json';
 const VX = 'vx';
-const CONFIG = 'config';
 
 vxPath.vxRoot = () => {
   return vxPath.closest(process.cwd(), (current, breakout) => {
@@ -36,7 +35,7 @@ vxPath.packageDist = (pkgName = packageName(), ...args) => {
 };
 
 vxPath.packageConfigPath = (pkgName = packageName(), ...args) => {
-  return vxPath.package(pkgName, CONFIG, ...args);
+  return vxPath.package(pkgName, opts.dir.CONFIG, ...args);
 };
 
 vxPath.packageSrc = (pkgName = packageName(), ...args) => {
@@ -84,7 +83,7 @@ vxPath.ROOT_PATH = vxPath.vxRoot();
 
 vxPath.VX_ROOT_PATH = path.resolve(vxPath.ROOT_PATH, VX);
 
-vxPath.VX_CONFIG_PATH = path.resolve(vxPath.VX_ROOT_PATH, CONFIG);
+vxPath.VX_CONFIG_PATH = path.resolve(vxPath.VX_ROOT_PATH, opts.dir.CONFIG);
 
 vxPath.VX_SCRIPTS_PATH = path.resolve(vxPath.VX_ROOT_PATH, 'scripts');
 

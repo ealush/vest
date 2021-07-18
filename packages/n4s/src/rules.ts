@@ -1,4 +1,3 @@
-
 import { endsWith, doesNotEndWith } from 'endsWith';
 import { equals, notEquals } from 'equals';
 import { greaterThan } from 'greaterThan';

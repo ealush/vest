@@ -22,8 +22,7 @@ export default function group(groupName: string, tests: () => any): void {
 
 function throwGroupError(value: unknown) {
   throwError(
-    __DEV__
-      ? `group initialization error. Expected "${value}" to be a string.`
-      : 'group name must be a string'
+    `group initialization error. Expected "${value}" to be a string.`,
+    'group name must be a string'
   );
 }

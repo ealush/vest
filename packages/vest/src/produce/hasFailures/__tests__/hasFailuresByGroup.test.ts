@@ -1,6 +1,5 @@
 import faker from 'faker';
 
-
 import { dummyTest } from '../../../../testUtils/testDummy';
 import {
   emptyTestObjects,

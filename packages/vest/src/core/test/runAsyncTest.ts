@@ -26,7 +26,8 @@ export default function runAsyncTest(testObject: VestTest): void {
     }
 
     // Perform required done callback calls and cleanups after the test is finished
-    runDoneCallbacks(testObject.fieldName);
+    runFieldCallbacks(testObject.fieldName);
+    runDoneCallbacks();
   });
   const fail = ctx.bind({ stateRef }, (rejectionMessage?: string) => {
     testObject.message = isStringValue(rejectionMessage)
@@ -47,10 +48,10 @@ export default function runAsyncTest(testObject: VestTest): void {
 }
 
 /**
- * Runs done callback when async tests are finished running.
+ * Runs done callback per field when async tests are finished running.
  */
-function runDoneCallbacks(fieldName: string) {
-  const [{ fieldCallbacks, doneCallbacks }] = useTestCallbacks();
+function runFieldCallbacks(fieldName?: string): void {
+  const [{ fieldCallbacks }] = useTestCallbacks();
 
   if (fieldName) {
     if (
@@ -60,6 +61,13 @@ function runDoneCallbacks(fieldName: string) {
       callEach(fieldCallbacks[fieldName]);
     }
   }
+}
+
+/**
+ * Runs unlabelled done callback when async tests are finished running.
+ */
+function runDoneCallbacks() {
+  const [{ doneCallbacks }] = useTestCallbacks();
   if (!hasRemainingTests()) {
     callEach(doneCallbacks);
   }

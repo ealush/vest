@@ -33,10 +33,7 @@ npm i n4s
 If you wish to use enforce's functionality safely with a boolean return interface instead, you can use its lazy validation interface:
 
 ```js
-enforce
-  .isArray()
-  .longerThan(3)
-  .test([1,2,3])
+enforce.isArray().longerThan(3).test([1, 2, 3]);
 ```
 
 ## Content

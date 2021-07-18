@@ -9,7 +9,6 @@ import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
 import { usePending, useTestCallbacks } from 'stateHooks';
 
-
 const message = 'some message string';
 
 const CASE_PASSING = 'passing';

@@ -1,4 +1,10 @@
-export { default as anyOf } from 'anyOf';
-export { default as noneOf } from 'noneOf';
-export { default as oneOf } from 'oneOf';
-export { default as allOf } from 'allOf';
+import allOf from 'allOf';
+import anyOf from 'anyOf';
+import noneOf from 'noneOf';
+import oneOf from 'oneOf';
+
+export default function compounds() {
+  return { allOf, anyOf, noneOf, oneOf };
+}
+
+export type TCompounds = ReturnType<typeof compounds>;

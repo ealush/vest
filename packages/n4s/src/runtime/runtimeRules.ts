@@ -1,4 +1,4 @@
-import * as compounds from 'compounds';
+import compounds from 'compounds';
 import type { TRuleReturn } from 'ruleReturn';
 import rules from 'rules';
 
@@ -6,17 +6,16 @@ export type TArgs = any[];
 
 export type TRuleValue = any;
 
-type TRuleBase = (value: TRuleValue, ...args: TArgs) => TRuleReturn;
+export type TRuleBase = (value: TRuleValue, ...args: TArgs) => TRuleReturn;
 
 export type TRule = Record<string, TRuleBase>;
 
-const baseRules = rules();
+export type TBaseRules = keyof typeof baseRules;
+
+const baseRules = Object.assign(rules(), compounds());
 
 function getRule(ruleName: string): TRuleBase {
-  return (
-    baseRules[ruleName as keyof typeof baseRules] ??
-    compounds[ruleName as keyof typeof compounds] // eslint-disable-line import/namespace
-  );
+  return baseRules[ruleName as TBaseRules];
 }
 
-export { baseRules, compounds, getRule };
+export { baseRules, getRule };

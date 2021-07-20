@@ -10,21 +10,20 @@ module.exports = writeCJSMain;
 function writeCJSMain({ isMain, rootPath }) {
   return {
     name: 'write-cjs-main',
-    writeBundle: once(({ name, ...opts }) => {
-      let mainPath = rootPath;
+    writeBundle: once(({ name }) => {
+      let exportPath = rootPath;
 
       if (!isMain) {
-        mainPath = path.join(mainPath, name);
-        fse.ensureDirSync(mainPath);
-
+        exportPath = path.join(exportPath, name);
+        fse.ensureDirSync(exportPath);
         fse.writeJSONSync(
-          path.join(mainPath, 'package.json'),
+          path.join(exportPath, 'package.json'),
           packageJson(name)
         );
       }
 
       fse.writeFileSync(
-        path.resolve(mainPath, opts.fileNames.MAIN_EXPORT),
+        path.resolve(exportPath, opts.fileNames.MAIN_EXPORT),
         genEntry(name, isMain),
         'utf8'
       );
@@ -48,7 +47,7 @@ if (process.env.NODE_ENV === '${opts.env.PRODUCTION}') {
 
 function packageJson(name) {
   return {
-    main: `./index.js`,
+    main: `./${opts.fileNames.MAIN_EXPORT}`,
     name,
     private: true,
     types: `../types/${name}.d.ts`,

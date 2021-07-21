@@ -31,38 +31,34 @@ export default function genEnforceLazy(key: string) {
         transformResult(rule(value, ...args), ruleName, value, ...args)
       );
 
-      let proxy = {} as TEnforce;
+      let proxy = {
+        run: genRun(),
+        test: genTest(),
+      } as TEnforce;
 
       if (!isProxySupported()) {
         eachEnforceRule((ruleName: TBaseRules) => {
           proxy[ruleName] = addLazyRule(ruleName);
         });
 
-        proxy.run = genRun();
-        proxy.test = genTest();
-
         return proxy;
       }
 
-      proxy = new Proxy({} as TEnforce, {
-        get: (_, key: string) => {
+      // reassigning the proxy here is not pretty
+      // but it's a cleaner way of getting `run` and `test` for free
+      proxy = new Proxy(proxy, {
+        get: (target, key: string) => {
           if (getRule(key)) {
             return addLazyRule(key);
           }
 
-          if (key === 'run') {
-            return genRun();
-          }
-
-          if (key === 'test') {
-            return genTest();
-          }
+          return target[key]; // already has `run` and `test` on it
         },
       });
       return proxy;
 
       function genRun() {
-        return (value: TRuleValue) => {
+        return (value: TRuleValue): TRuleDetailedResult => {
           return (
             mapFirst(registeredRules, (rule, breakout) => {
               const res = rule(value);
@@ -76,7 +72,7 @@ export default function genEnforceLazy(key: string) {
       }
 
       function genTest() {
-        return (value: TRuleValue) => proxy.run(value).pass;
+        return (value: TRuleValue): boolean => proxy.run(value).pass;
       }
     };
   }

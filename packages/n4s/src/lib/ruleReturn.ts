@@ -12,10 +12,10 @@ export type TLazyRuleMethods = {
   run: (value: unknown) => TRuleDetailedResult;
 };
 
-export function failing(): TRuleReturn {
+export function failing(): TRuleDetailedResult {
   return { pass: false };
 }
 
-export function passing(): TRuleReturn {
+export function passing(): TRuleDetailedResult {
   return { pass: true };
 }

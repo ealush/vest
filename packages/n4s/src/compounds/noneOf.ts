@@ -2,6 +2,7 @@ import mapFirst from 'mapFirst';
 
 import type { TRuleDetailedResult, TLazyRuleMethods } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
+import runLazyRule from 'runLazyRule';
 
 export default function noneOf(
   value: unknown,
@@ -9,7 +10,8 @@ export default function noneOf(
 ): TRuleDetailedResult {
   return (
     mapFirst(rules, (rule, breakout) => {
-      const res = rule.run(value);
+      const res = runLazyRule(rule, value);
+
       if (res.pass) {
         breakout(ruleReturn.failing());
       }

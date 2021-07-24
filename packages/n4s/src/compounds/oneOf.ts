@@ -1,5 +1,6 @@
 import { lengthEquals } from 'lengthEquals';
 import type { TRuleDetailedResult, TLazyRuleMethods } from 'ruleReturn';
+import runLazyRule from 'runLazyRule';
 
 export default function oneOf(
   value: unknown,
@@ -12,12 +13,12 @@ export default function oneOf(
       return false;
     }
 
-    const result = rule.run(value);
+    const res = runLazyRule(rule, value);
 
-    if (result.pass) {
-      passing.push(result);
+    if (res.pass) {
+      passing.push(res);
     }
-    return result.pass;
+    return res.pass;
   });
 
   return { pass: lengthEquals(passing, 1) };

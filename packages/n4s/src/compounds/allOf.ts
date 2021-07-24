@@ -2,6 +2,7 @@ import mapFirst from 'mapFirst';
 
 import * as ruleReturn from 'ruleReturn';
 import type { TRuleDetailedResult, TLazyRuleMethods } from 'ruleReturn';
+import runLazyRule from 'runLazyRule';
 
 export default function allOf(
   value: unknown,
@@ -9,7 +10,7 @@ export default function allOf(
 ): TRuleDetailedResult {
   return (
     mapFirst(rules, (rule, breakout) => {
-      const res = rule.run(value);
+      const res = runLazyRule(rule, value);
       if (!res.pass) {
         breakout(res);
       }

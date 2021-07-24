@@ -3,6 +3,7 @@ import { DropFirst } from 'utilityTypes';
 
 import type { TCompounds } from 'compounds';
 import eachEnforceRule from 'eachEnforceRule';
+import { ctx } from 'enforceContext';
 import { isEmpty } from 'isEmpty';
 import isProxySupported from 'isProxySupported';
 import {
@@ -39,7 +40,7 @@ export default function enforceEager(value: TRuleValue): TEagerRules {
   function genRuleCall(target: TEagerRules, rule: TRuleBase, ruleName: string) {
     return function ruleCall(...args: TArgs) {
       const transformedResult = transformResult(
-        rule(value, ...args),
+        ctx.run({ value }, () => rule(value, ...args)),
         ruleName,
         value,
         ...args

@@ -1,3 +1,4 @@
+import { ctx } from 'enforceContext';
 import type { TRuleDetailedResult, TLazyRuleMethods } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
@@ -10,7 +11,9 @@ export default function loose(
     const currentValue = inputObject[key];
     const currentRule = shapeObject[key];
 
-    const res = runLazyRule(currentRule, currentValue);
+    const res = ctx.run({ value: currentValue, set: true, meta: { key } }, () =>
+      runLazyRule(currentRule, currentValue)
+    );
 
     if (!res.pass) {
       return res;

@@ -77,6 +77,7 @@
       "genEnforceLazy": ["./packages/n4s/src/runtime/genEnforceLazy.ts"],
       "rules": ["./packages/n4s/src/runtime/rules.ts"],
       "runtimeRules": ["./packages/n4s/src/runtime/runtimeRules.ts"],
+      "isArrayOf": ["./packages/n4s/src/schema/isArrayOf.ts"],
       "loose": ["./packages/n4s/src/schema/loose.ts"],
       "schema": ["./packages/n4s/src/schema/schema.ts"],
       "shape": ["./packages/n4s/src/schema/shape.ts"],

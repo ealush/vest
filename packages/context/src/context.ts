@@ -1,3 +1,4 @@
+import assign from 'assign';
 import throwError from 'throwError';
 
 export default function createContext<T extends Record<string, unknown>>(
@@ -19,7 +20,7 @@ export default function createContext<T extends Record<string, unknown>>(
 
   function useX(errorMessage?: string): T {
     return (
-      storage.ctx ??
+      (storage.ctx as T) ??
       throwError(errorMessage ?? 'Context was used after it was closed')
     );
   }
@@ -27,10 +28,11 @@ export default function createContext<T extends Record<string, unknown>>(
   function run<R>(ctxRef: Partial<T>, fn: (context: T) => R): R {
     const parentContext = use();
 
-    const out = {
-      ...(parentContext ? parentContext : {}),
-      ...(init?.(ctxRef, parentContext) ?? ctxRef),
-    } as T;
+    const out = assign(
+      {},
+      parentContext ? parentContext : {},
+      init?.(ctxRef, parentContext) ?? ctxRef
+    ) as T;
 
     const ctx = set(Object.freeze(out));
     storage.ancestry.unshift(ctx);

@@ -33,6 +33,7 @@
       "compounds": ["./packages/n4s/src/compounds/compounds.ts"],
       "noneOf": ["./packages/n4s/src/compounds/noneOf.ts"],
       "oneOf": ["./packages/n4s/src/compounds/oneOf.ts"],
+      "optional": ["./packages/n4s/src/compounds/optional.ts"],
       "eachEnforceRule": ["./packages/n4s/src/lib/eachEnforceRule.ts"],
       "isProxySupported": ["./packages/n4s/src/lib/isProxySupported.ts"],
       "ruleReturn": ["./packages/n4s/src/lib/ruleReturn.ts"],

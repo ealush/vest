@@ -4,6 +4,7 @@ import { DropFirst } from 'utilityTypes';
 import type { TCompounds } from 'compounds';
 import eachEnforceRule from 'eachEnforceRule';
 import type { TEnforce } from 'enforce';
+import { ctx } from 'enforceContext';
 import isProxySupported from 'isProxySupported';
 import type { TRuleDetailedResult, TLazyRuleMethods } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
@@ -61,7 +62,7 @@ export default function genEnforceLazy(key: string) {
         return (value: TRuleValue): TRuleDetailedResult => {
           return (
             mapFirst(registeredRules, (rule, breakout) => {
-              const res = rule(value);
+              const res = ctx.run({ value }, () => rule(value));
 
               if (!res.pass) {
                 breakout(res);

@@ -1,3 +1,4 @@
+import assign from 'assign';
 import createCache from 'cache';
 
 import ctx from 'ctx';
@@ -19,8 +20,7 @@ export function produceDraft(): TDraftResult {
   return cache(
     [testObjects],
     ctx.bind(ctxRef, () => {
-      return {
-        ...genTestsSummary(),
+      return assign(genTestsSummary(), {
         getErrors: ctx.bind(ctxRef, getErrors),
         getErrorsByGroup: ctx.bind(ctxRef, getErrorsByGroup),
         getWarnings: ctx.bind(ctxRef, getWarnings),
@@ -30,7 +30,7 @@ export function produceDraft(): TDraftResult {
         hasWarnings: ctx.bind(ctxRef, hasWarnings),
         hasWarningsByGroup: ctx.bind(ctxRef, hasWarningsByGroup),
         isValid: ctx.bind(ctxRef, () => isValid(produceDraft())),
-      };
+      });
     })
   );
 }

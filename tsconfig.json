@@ -75,6 +75,7 @@
       ],
       "startsWith": ["./packages/n4s/src/rules/startsWith.ts"],
       "enforce": ["./packages/n4s/src/runtime/enforce.ts"],
+      "enforceContext": ["./packages/n4s/src/runtime/enforceContext.ts"],
       "enforceEager": ["./packages/n4s/src/runtime/enforceEager.ts"],
       "genEnforceLazy": ["./packages/n4s/src/runtime/genEnforceLazy.ts"],
       "rules": ["./packages/n4s/src/runtime/rules.ts"],

@@ -1,8 +1,13 @@
 import type { TRuleDetailedResult, TLazyRuleMethods } from 'ruleReturn';
+import * as ruleReturn from 'ruleReturn';
 
 export default function runLazyRule(
   lazyRule: TLazyRuleMethods,
   currentValue: any
 ): TRuleDetailedResult {
-  return lazyRule.run(currentValue);
+  try {
+    return lazyRule.run(currentValue);
+  } catch {
+    return ruleReturn.failing();
+  }
 }

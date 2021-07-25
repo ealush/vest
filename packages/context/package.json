@@ -1,8 +1,8 @@
 {
   "version": "1.1.4",
   "license": "MIT",
-  "main": "index.js",
-  "types": "types",
+  "main": "./index.js",
+  "types": "./types/context.d.ts",
   "files": [
     "dist",
     "src"
@@ -13,5 +13,6 @@
     "test": "vx test",
     "build": "vx build",
     "release": "vx release"
-  }
+  },
+  "module": "./dist/es/context.production.js"
 }

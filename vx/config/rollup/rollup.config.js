@@ -144,13 +144,13 @@ function getPlugins({
 
   if (env === opts.env.PRODUCTION) {
     plugins.push(
+      compiler(),
+      terser(),
       writeCJSMain({
         isMain: moduleName === packageName(),
         rootPath: vxPath.package(),
       }),
-      addModulePackageJson({ moduleName }),
-      compiler(),
-      terser()
+      addModulePackageJson()
     );
   }
 

@@ -1,8 +1,8 @@
 {
   "version": "3.2.7",
   "license": "MIT",
-  "main": "index.js",
-  "types": "types/vest.d.ts",
+  "main": "./index.js",
+  "types": "./types/vest.d.ts",
   "files": [
     "dist"
   ],
@@ -12,5 +12,6 @@
     "test": "vx test",
     "build": "vx build",
     "release": "vx release"
-  }
+  },
+  "module": "./dist/es/vest.production.js"
 }

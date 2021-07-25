@@ -1,8 +1,8 @@
 {
   "name": "anyone",
   "license": "MIT",
-  "main": "index.js",
-  "types": "types",
+  "main": "./index.js",
+  "types": "./types/anyone.d.ts",
   "files": [
     "dist",
     "src"
@@ -13,5 +13,6 @@
     "test": "vx test",
     "build": "vx build",
     "release": "vx release"
-  }
+  },
+  "module": "./dist/es/anyone.production.js"
 }

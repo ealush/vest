@@ -1,8 +1,8 @@
 {
   "version": "3.0.0",
   "license": "MIT",
-  "main": "index.js",
-  "types": "types",
+  "main": "./index.js",
+  "types": "./types/n4s.d.ts",
   "files": [
     "dist"
   ],
@@ -11,5 +11,6 @@
   "scripts": {
     "test": "vx test",
     "release": "vx release"
-  }
+  },
+  "module": "./dist/es/n4s.production.js"
 }

@@ -1,8 +1,8 @@
 {
   "version": "1.0.2",
   "license": "MIT",
-  "main": "index.js",
-  "types": "types",
+  "main": "./index.js",
+  "types": "./types/vast.d.ts",
   "files": [
     "dist"
   ],
@@ -11,5 +11,6 @@
   "scripts": {
     "test": "vx test",
     "release": "vx release"
-  }
+  },
+  "module": "./dist/es/vast.production.js"
 }

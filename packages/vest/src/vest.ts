@@ -1,6 +1,5 @@
-import enforce from 'enforce';
-
 import create from 'create';
+import enforce from 'enforce';
 import { only, skip, warn, group, optional } from 'hooks';
 import test from 'test';
 

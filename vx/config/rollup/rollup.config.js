@@ -1,19 +1,19 @@
 const fs = require('fs');
-const path = require('path');
 
 const compiler = require('@ampproject/rollup-plugin-closure-compiler');
 const { default: babel } = require('@rollup/plugin-babel');
 const replace = require('@rollup/plugin-replace');
-const glob = require('glob');
 const { terser } = require('rollup-plugin-terser');
 const ts = require('rollup-plugin-ts');
 
 const concatTruthy = require('../../util/concatTruthy');
 const joinTruthy = require('../../util/joinTruthy');
+const listExportedModules = require('../../util/listExportedModules');
 const packageJson = require('../../util/packageJson');
 
+const addCJSPackageJson = require('./plugins/addCJSPackageJson');
 const addModulePackageJson = require('./plugins/addModulePackageJson');
-const writeCJSMain = require('./plugins/writeCJSMain');
+const handleExports = require('./plugins/handleExports');
 
 const opts = require('vx/opts');
 const packageName = require('vx/packageName');
@@ -38,7 +38,7 @@ module.exports = cleanupConfig(
 
       return [].concat(
         genBaseConfig({ env }),
-        genExports(packageName(), env),
+        genExportsConfig(packageName(), env),
         customConfig?.({
           getInputFile,
           getPlugins: (options = {}) => getPlugins({ env, ...options }),
@@ -65,12 +65,10 @@ function genBaseConfig({ env, moduleName = packageName() }) {
   };
 }
 
-function genExports(pkgName, env) {
-  return glob
-    .sync(vxPath.packageSrc(pkgName, opts.dir.EXPORTS, '*.ts'))
-    .map(file =>
-      genBaseConfig({ env, moduleName: path.basename(file, '.ts') })
-    );
+function genExportsConfig(pkgName, env) {
+  return listExportedModules(pkgName).map(moduleName =>
+    genBaseConfig({ env, moduleName })
+  );
 }
 
 function genOutput({ moduleName = packageName(), env } = {}) {
@@ -146,11 +144,9 @@ function getPlugins({
     plugins.push(
       compiler(),
       terser(),
-      writeCJSMain({
-        isMain: moduleName === packageName(),
-        rootPath: vxPath.package(),
-      }),
-      addModulePackageJson()
+      handleExports(),
+      addModulePackageJson(),
+      addCJSPackageJson()
     );
   }
 

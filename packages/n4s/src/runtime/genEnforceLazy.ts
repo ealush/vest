@@ -79,14 +79,16 @@ export default function genEnforceLazy(key: string) {
   }
 }
 
-export type TLazyRules = Record<string, (...args: TArgs) => TLazyRules> &
+export type TLazyRules = Record<string, (...args: TArgs) => TLazy> &
   {
     [P in keyof TCompounds]: (
       ...args: DropFirst<Parameters<TCompounds[P]>> | TArgs
-    ) => TLazyRules & TLazyRuleMethods;
+    ) => TLazy;
   } &
   {
     [P in TBaseRules]: (
       ...args: DropFirst<Parameters<typeof baseRules[P]>> | TArgs
-    ) => TLazyRules & TLazyRuleMethods;
+    ) => TLazy;
   };
+
+export type TLazy = TLazyRules & TLazyRuleMethods;

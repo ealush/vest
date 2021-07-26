@@ -1,10 +1,11 @@
+import type { TLazy } from 'genEnforceLazy';
 import { lengthEquals } from 'lengthEquals';
-import type { TRuleDetailedResult, TLazyRuleMethods } from 'ruleReturn';
+import type { TRuleDetailedResult } from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 
 export default function oneOf(
   value: unknown,
-  ...rules: TLazyRuleMethods[]
+  ...rules: TLazy[]
 ): TRuleDetailedResult {
   const passing: TRuleDetailedResult[] = [];
 

@@ -1,12 +1,13 @@
 import mapFirst from 'mapFirst';
 
+import type { TLazy } from 'genEnforceLazy';
 import * as ruleReturn from 'ruleReturn';
-import type { TRuleDetailedResult, TLazyRuleMethods } from 'ruleReturn';
+import type { TRuleDetailedResult } from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 
 export default function allOf(
   value: unknown,
-  ...rules: TLazyRuleMethods[]
+  ...rules: TLazy[]
 ): TRuleDetailedResult {
   return (
     mapFirst(rules, (rule, breakout) => {

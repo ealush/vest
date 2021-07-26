@@ -1,12 +1,13 @@
 import hasOwnProperty from 'hasOwnProperty';
 
+import type { TLazy } from 'genEnforceLazy';
 import loose from 'loose';
-import type { TRuleDetailedResult, TLazyRuleMethods } from 'ruleReturn';
+import type { TRuleDetailedResult } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
 
 export default function shape(
   inputObject: Record<string, any>,
-  shapeObject: Record<string, TLazyRuleMethods>
+  shapeObject: Record<string, TLazy>
 ): TRuleDetailedResult {
   const baseRes = loose(inputObject, shapeObject);
   if (!baseRes.pass) {

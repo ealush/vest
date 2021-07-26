@@ -6,7 +6,7 @@ describe('enforce.optional', () => {
       expect(enforce.optional(enforce.isNumber()).run(null)).toEqual({
         pass: true,
       });
-      expect(enforce.optional(enforce.isArray()).run()).toEqual({
+      expect(enforce.optional(enforce.isArray()).run(undefined)).toEqual({
         pass: true,
       });
 

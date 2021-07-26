@@ -30,7 +30,7 @@ function stripContext(ctx: null | CTXType): TEnforceContext {
   };
 }
 
-export type CTXType = {
+type CTXType = {
   meta: Record<string, any>;
   value: any;
   set?: boolean;

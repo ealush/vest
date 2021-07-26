@@ -5,5 +5,3 @@ import shape from 'shape';
 export default function schema() {
   return { shape, loose, isArrayOf };
 }
-
-export type TSchema = ReturnType<typeof schema>;

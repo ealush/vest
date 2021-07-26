@@ -4,7 +4,7 @@ import { removePending } from 'pending';
 import removeTestFromState from 'removeTestFromState';
 import shouldUseErrorAsMessage from 'shouldUseErrorAsMessage';
 
-export type TAsyncTest = Promise<string | void>;
+type TAsyncTest = Promise<string | void>;
 export type TTestResult = TAsyncTest | boolean | void;
 export type TTestFn = () => TTestResult;
 

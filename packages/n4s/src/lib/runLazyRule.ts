@@ -1,8 +1,9 @@
-import type { TRuleDetailedResult, TLazyRuleMethods } from 'ruleReturn';
+import type { TLazy } from 'genEnforceLazy';
+import type { TRuleDetailedResult } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
 
 export default function runLazyRule(
-  lazyRule: TLazyRuleMethods,
+  lazyRule: TLazy,
   currentValue: any
 ): TRuleDetailedResult {
   try {

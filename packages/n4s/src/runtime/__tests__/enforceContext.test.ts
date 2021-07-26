@@ -1,6 +1,6 @@
 import enforce from 'enforce';
 
-const keepContext = jest.fn();
+let keepContext = jest.fn();
 
 describe('enforce.context', () => {
   beforeEach(() => {
@@ -207,7 +207,7 @@ enforce.extend({
   isFriendTheSameAsUser: value => {
     const context = enforce.context();
 
-    if (value === context.parent().parent().value.username) {
+    if (value === context?.parent()?.parent()?.value.username) {
       return { pass: false };
     }
 

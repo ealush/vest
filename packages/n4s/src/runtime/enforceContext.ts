@@ -11,18 +11,36 @@ export const ctx = createContext<CTXType>((ctxRef, parentContext): CTXType => {
     return {
       meta: ctxRef.meta || {},
       value: ctxRef.value,
-      parent: (): null | CTXType => parentContext,
+      parent: (): TEnforceContext => stripContext(parentContext),
     };
   }
 
   return parentContext;
 });
 
+function stripContext(ctx: null | CTXType): TEnforceContext {
+  if (!ctx) {
+    return ctx;
+  }
+
+  return {
+    value: ctx.value,
+    meta: ctx.meta,
+    parent: ctx.parent,
+  };
+}
+
 export type CTXType = {
   meta: Record<string, any>;
   value: any;
   set?: boolean;
   parent: () => CTXType | null;
+};
+
+export type TEnforceContext = null | {
+  meta: Record<string, any>;
+  value: any;
+  parent: () => TEnforceContext;
 };
 
 function emptyParent(): null {

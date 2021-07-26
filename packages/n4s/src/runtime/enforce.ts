@@ -1,7 +1,7 @@
 import assign from 'assign';
 
 import eachEnforceRule from 'eachEnforceRule';
-import { ctx, CTXType } from 'enforceContext';
+import { ctx, TEnforceContext } from 'enforceContext';
 import enforceEager from 'enforceEager';
 import genEnforceLazy, { TLazyRules } from 'genEnforceLazy';
 import isProxySupported from 'isProxySupported';
@@ -77,7 +77,7 @@ const enforce = genEnforce();
 
 export default enforce;
 
-export type TEnforce = { context: () => CTXType } & Record<
+export type TEnforce = { context: () => TEnforceContext } & Record<
   string,
   (...args: TArgs) => TLazyRuleMethods & TLazyRules
 > &

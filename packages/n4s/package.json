@@ -1,7 +1,7 @@
 {
   "version": "3.0.0",
   "license": "MIT",
-  "main": "./index.js",
+  "main": "./dist/cjs/n4s.js",
   "types": "./types/n4s.d.ts",
   "files": [
     "dist"
@@ -12,5 +12,29 @@
     "test": "vx test",
     "release": "vx release"
   },
-  "module": "./dist/es/n4s.production.js"
+  "module": "./dist/es/n4s.production.js",
+  "exports": {
+    "./dist/umd/n4s.production.js": "./dist/umd/n4s.production.js",
+    "./dist/umd/n4s.production": "./dist/umd/n4s.production.js",
+    "./dist/umd/n4s.development.js": "./dist/umd/n4s.development.js",
+    "./dist/umd/n4s.development": "./dist/umd/n4s.development.js",
+    "./dist/cjs/n4s.production.js": "./dist/cjs/n4s.production.js",
+    "./dist/cjs/n4s.production": "./dist/cjs/n4s.production.js",
+    "./dist/cjs/n4s.development.js": "./dist/cjs/n4s.development.js",
+    "./dist/cjs/n4s.development": "./dist/cjs/n4s.development.js",
+    "./dist/es/n4s.production.js": "./dist/es/n4s.production.js",
+    "./dist/es/n4s.production": "./dist/es/n4s.production.js",
+    "./dist/es/n4s.development.js": "./dist/es/n4s.development.js",
+    "./dist/es/n4s.development": "./dist/es/n4s.development.js",
+    "./n4s.js": "./dist/cjs/n4s.js",
+    "./n4s": "./dist/cjs/n4s.js",
+    ".": {
+      "browser": "./dist/es/n4s.production.js",
+      "import": "./dist/es/n4s.production.js",
+      "require": "./dist/cjs/n4s.js",
+      "node": "./dist/cjs/n4s.js",
+      "module": "./dist/es/n4s.production.js",
+      "default": "./dist/cjs/n4s.js"
+    }
+  }
 }

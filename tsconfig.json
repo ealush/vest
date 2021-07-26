@@ -104,7 +104,6 @@
       "removeElementFromArray": [
         "./packages/shared/src/removeElementFromArray.ts"
       ],
-      "sharedKeys": ["./packages/shared/src/sharedKeys.ts"],
       "throwError": ["./packages/shared/src/throwError.ts"],
       "utilityTypes": ["./packages/shared/src/utilityTypes.ts"],
       "vast": ["./packages/vast/src/vast.ts"],

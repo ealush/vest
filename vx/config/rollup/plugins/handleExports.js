@@ -56,36 +56,23 @@ if (process.env.NODE_ENV === '${opts.env.PRODUCTION}') {
 }
 
 function genPackageJson(name, isMain) {
-  const moduleExport = joinPath(
-    doubleDot(isMain),
-    opts.dir.DIST,
-    opts.format.ES,
-    exportName(name, opts.env.PRODUCTION)
-  );
-  const main = mainExport(name, isMain);
-  const types = joinPath(
-    doubleDot(isMain),
-    opts.dir.TYPES,
-    fileName(name, 'd.ts')
-  );
+  const esPath = genDistPath(name, opts.format.ES, opts.env.PRODUCTION);
+  const cjsPath = genDistPath(name, opts.format.CJS);
   return {
-    main,
-    module: moduleExport,
+    main: cjsPath,
+    module: esPath,
     name,
-    types,
+    types: typesPath(name),
     ...(isMain
       ? {
           exports: {
             ...genExportedFiles(),
             /* eslint-disable sort-keys */
             '.': {
-              browser: moduleExport,
-              import: moduleExport,
-              require: main,
-              node: main,
-              module: moduleExport,
-              default: main,
+              ...exportsOrder(name),
             },
+            './package.json': './package.json',
+            './': './',
             /* eslint-enable sort-keys */
           },
         }
@@ -127,37 +114,57 @@ function fileName(name, ext = 'js') {
 }
 
 function exportName(name, env) {
-  return fileName(`${name}.${env}`);
+  return fileName([name, env].filter(Boolean).join('.'));
 }
 
 function genExportedFiles() {
-  return [packageName()]
-    .concat(listExportedModules())
-    .reduce((files, moduleName) => {
-      Object.values(opts.format).forEach(format => {
-        [opts.env.PRODUCTION, opts.env.DEVELOPMENT].forEach(env => {
-          files.push([
-            joinPath('.', opts.dir.DIST, format, exportName(moduleName, env)),
-          ]);
-        });
-      });
-      return files.concat([
-        [joinPath('.', fileName(moduleName)), mainExport(moduleName, true)],
-      ]);
-    }, [])
-    .reduce((files, [moduleName, file = moduleName]) => {
-      return Object.assign(files, {
-        // Not a big fan of what's happening here
-        // but I've seen issues with different bundlers
-        // in which some required the file extension
-        // while others did not.
-        // This satisfies all bundlers.
-        [moduleName]: file,
-        [noExt(moduleName)]: file,
-      });
-    }, {});
+  // const exportedModules = [packageName(), ...listExportedModules()];
+
+  return listExportedModules().reduce((modules, moduleName) => {
+    const currentModule = {};
+    modules[`./${moduleName}`] = currentModule;
+
+    [opts.env.PRODUCTION, opts.env.DEVELOPMENT].reduce((currentModule, env) => {
+      currentModule[env] = exportsOrder(moduleName, env);
+
+      return currentModule;
+    }, currentModule);
+
+    Object.assign(currentModule, exportsOrder(moduleName));
+
+    return modules;
+  }, {});
 }
 
-function noExt(path) {
-  return path.substring(0, path.lastIndexOf('.'));
+function exportsOrder(moduleName, env = undefined) {
+  const esPath = genDistPath(
+    moduleName,
+    opts.format.ES,
+    env ?? opts.env.PRODUCTION
+  );
+  const cjsPath = genDistPath(moduleName, opts.format.CJS, env);
+  const umdPath = genDistPath(
+    moduleName,
+    opts.format.UMD,
+    env ?? opts.env.PRODUCTION
+  );
+
+  /* eslint-disable sort-keys */
+  return {
+    browser: esPath,
+    umd: umdPath,
+    import: esPath,
+    require: cjsPath,
+    node: cjsPath,
+    module: esPath,
+    default: cjsPath,
+  };
+  /* eslint-enable sort-keys */
 }
+
+function genDistPath(moduleName, moduleType, env) {
+  return joinPath('.', opts.dir.DIST, moduleType, exportName(moduleName, env));
+}
+
+const typesPath = moduleName =>
+  joinPath('.', opts.dir.TYPES, fileName(moduleName, 'd.ts'));

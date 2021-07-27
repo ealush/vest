@@ -1,11 +1,6 @@
 {
   "version": "3.2.7",
   "license": "MIT",
-  "main": "./dist/cjs/vest.js",
-  "types": "./types/vest.d.ts",
-  "files": [
-    "dist"
-  ],
   "name": "vest",
   "author": "ealush",
   "scripts": {
@@ -13,57 +8,74 @@
     "build": "vx build",
     "release": "vx release"
   },
+  "main": "./dist/cjs/vest.js",
+  "types": "./types/vest.d.ts",
   "module": "./dist/es/vest.production.js",
   "exports": {
-    "./dist/umd/vest.production.js": "./dist/umd/vest.production.js",
-    "./dist/umd/vest.production": "./dist/umd/vest.production.js",
-    "./dist/umd/vest.development.js": "./dist/umd/vest.development.js",
-    "./dist/umd/vest.development": "./dist/umd/vest.development.js",
-    "./dist/cjs/vest.production.js": "./dist/cjs/vest.production.js",
-    "./dist/cjs/vest.production": "./dist/cjs/vest.production.js",
-    "./dist/cjs/vest.development.js": "./dist/cjs/vest.development.js",
-    "./dist/cjs/vest.development": "./dist/cjs/vest.development.js",
-    "./dist/es/vest.production.js": "./dist/es/vest.production.js",
-    "./dist/es/vest.production": "./dist/es/vest.production.js",
-    "./dist/es/vest.development.js": "./dist/es/vest.development.js",
-    "./dist/es/vest.development": "./dist/es/vest.development.js",
-    "./vest.js": "./dist/cjs/vest.js",
-    "./vest": "./dist/cjs/vest.js",
-    "./dist/umd/classnames.production.js": "./dist/umd/classnames.production.js",
-    "./dist/umd/classnames.production": "./dist/umd/classnames.production.js",
-    "./dist/umd/classnames.development.js": "./dist/umd/classnames.development.js",
-    "./dist/umd/classnames.development": "./dist/umd/classnames.development.js",
-    "./dist/cjs/classnames.production.js": "./dist/cjs/classnames.production.js",
-    "./dist/cjs/classnames.production": "./dist/cjs/classnames.production.js",
-    "./dist/cjs/classnames.development.js": "./dist/cjs/classnames.development.js",
-    "./dist/cjs/classnames.development": "./dist/cjs/classnames.development.js",
-    "./dist/es/classnames.production.js": "./dist/es/classnames.production.js",
-    "./dist/es/classnames.production": "./dist/es/classnames.production.js",
-    "./dist/es/classnames.development.js": "./dist/es/classnames.development.js",
-    "./dist/es/classnames.development": "./dist/es/classnames.development.js",
-    "./classnames.js": "./dist/cjs/classnames.js",
-    "./classnames": "./dist/cjs/classnames.js",
-    "./dist/umd/promisify.production.js": "./dist/umd/promisify.production.js",
-    "./dist/umd/promisify.production": "./dist/umd/promisify.production.js",
-    "./dist/umd/promisify.development.js": "./dist/umd/promisify.development.js",
-    "./dist/umd/promisify.development": "./dist/umd/promisify.development.js",
-    "./dist/cjs/promisify.production.js": "./dist/cjs/promisify.production.js",
-    "./dist/cjs/promisify.production": "./dist/cjs/promisify.production.js",
-    "./dist/cjs/promisify.development.js": "./dist/cjs/promisify.development.js",
-    "./dist/cjs/promisify.development": "./dist/cjs/promisify.development.js",
-    "./dist/es/promisify.production.js": "./dist/es/promisify.production.js",
-    "./dist/es/promisify.production": "./dist/es/promisify.production.js",
-    "./dist/es/promisify.development.js": "./dist/es/promisify.development.js",
-    "./dist/es/promisify.development": "./dist/es/promisify.development.js",
-    "./promisify.js": "./dist/cjs/promisify.js",
-    "./promisify": "./dist/cjs/promisify.js",
+    "./classnames": {
+      "production": {
+        "browser": "./dist/es/classnames.production.js",
+        "umd": "./dist/umd/classnames.production.js",
+        "import": "./dist/es/classnames.production.js",
+        "require": "./dist/cjs/classnames.production.js",
+        "node": "./dist/cjs/classnames.production.js",
+        "module": "./dist/es/classnames.production.js",
+        "default": "./dist/cjs/classnames.production.js"
+      },
+      "development": {
+        "browser": "./dist/es/classnames.development.js",
+        "umd": "./dist/umd/classnames.development.js",
+        "import": "./dist/es/classnames.development.js",
+        "require": "./dist/cjs/classnames.development.js",
+        "node": "./dist/cjs/classnames.development.js",
+        "module": "./dist/es/classnames.development.js",
+        "default": "./dist/cjs/classnames.development.js"
+      },
+      "browser": "./dist/es/classnames.production.js",
+      "umd": "./dist/umd/classnames.production.js",
+      "import": "./dist/es/classnames.production.js",
+      "require": "./dist/cjs/classnames.js",
+      "node": "./dist/cjs/classnames.js",
+      "module": "./dist/es/classnames.production.js",
+      "default": "./dist/cjs/classnames.js"
+    },
+    "./promisify": {
+      "production": {
+        "browser": "./dist/es/promisify.production.js",
+        "umd": "./dist/umd/promisify.production.js",
+        "import": "./dist/es/promisify.production.js",
+        "require": "./dist/cjs/promisify.production.js",
+        "node": "./dist/cjs/promisify.production.js",
+        "module": "./dist/es/promisify.production.js",
+        "default": "./dist/cjs/promisify.production.js"
+      },
+      "development": {
+        "browser": "./dist/es/promisify.development.js",
+        "umd": "./dist/umd/promisify.development.js",
+        "import": "./dist/es/promisify.development.js",
+        "require": "./dist/cjs/promisify.development.js",
+        "node": "./dist/cjs/promisify.development.js",
+        "module": "./dist/es/promisify.development.js",
+        "default": "./dist/cjs/promisify.development.js"
+      },
+      "browser": "./dist/es/promisify.production.js",
+      "umd": "./dist/umd/promisify.production.js",
+      "import": "./dist/es/promisify.production.js",
+      "require": "./dist/cjs/promisify.js",
+      "node": "./dist/cjs/promisify.js",
+      "module": "./dist/es/promisify.production.js",
+      "default": "./dist/cjs/promisify.js"
+    },
     ".": {
       "browser": "./dist/es/vest.production.js",
+      "umd": "./dist/umd/vest.production.js",
       "import": "./dist/es/vest.production.js",
       "require": "./dist/cjs/vest.js",
       "node": "./dist/cjs/vest.js",
       "module": "./dist/es/vest.production.js",
       "default": "./dist/cjs/vest.js"
-    }
+    },
+    "./package.json": "./package.json",
+    "./": "./"
   }
 }

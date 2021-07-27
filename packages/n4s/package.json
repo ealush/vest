@@ -3,9 +3,6 @@
   "license": "MIT",
   "main": "./dist/cjs/n4s.js",
   "types": "./types/n4s.d.ts",
-  "files": [
-    "dist"
-  ],
   "name": "n4s",
   "author": "ealush",
   "scripts": {
@@ -14,27 +11,16 @@
   },
   "module": "./dist/es/n4s.production.js",
   "exports": {
-    "./dist/umd/n4s.production.js": "./dist/umd/n4s.production.js",
-    "./dist/umd/n4s.production": "./dist/umd/n4s.production.js",
-    "./dist/umd/n4s.development.js": "./dist/umd/n4s.development.js",
-    "./dist/umd/n4s.development": "./dist/umd/n4s.development.js",
-    "./dist/cjs/n4s.production.js": "./dist/cjs/n4s.production.js",
-    "./dist/cjs/n4s.production": "./dist/cjs/n4s.production.js",
-    "./dist/cjs/n4s.development.js": "./dist/cjs/n4s.development.js",
-    "./dist/cjs/n4s.development": "./dist/cjs/n4s.development.js",
-    "./dist/es/n4s.production.js": "./dist/es/n4s.production.js",
-    "./dist/es/n4s.production": "./dist/es/n4s.production.js",
-    "./dist/es/n4s.development.js": "./dist/es/n4s.development.js",
-    "./dist/es/n4s.development": "./dist/es/n4s.development.js",
-    "./n4s.js": "./dist/cjs/n4s.js",
-    "./n4s": "./dist/cjs/n4s.js",
     ".": {
       "browser": "./dist/es/n4s.production.js",
+      "umd": "./dist/umd/n4s.production.js",
       "import": "./dist/es/n4s.production.js",
       "require": "./dist/cjs/n4s.js",
       "node": "./dist/cjs/n4s.js",
       "module": "./dist/es/n4s.production.js",
       "default": "./dist/cjs/n4s.js"
-    }
+    },
+    "./package.json": "./package.json",
+    "./": "./"
   }
 }

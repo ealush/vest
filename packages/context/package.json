@@ -3,10 +3,6 @@
   "license": "MIT",
   "main": "./dist/cjs/context.js",
   "types": "./types/context.d.ts",
-  "files": [
-    "dist",
-    "src"
-  ],
   "name": "context",
   "author": "ealush",
   "scripts": {
@@ -16,27 +12,16 @@
   },
   "module": "./dist/es/context.production.js",
   "exports": {
-    "./dist/umd/context.production.js": "./dist/umd/context.production.js",
-    "./dist/umd/context.production": "./dist/umd/context.production.js",
-    "./dist/umd/context.development.js": "./dist/umd/context.development.js",
-    "./dist/umd/context.development": "./dist/umd/context.development.js",
-    "./dist/cjs/context.production.js": "./dist/cjs/context.production.js",
-    "./dist/cjs/context.production": "./dist/cjs/context.production.js",
-    "./dist/cjs/context.development.js": "./dist/cjs/context.development.js",
-    "./dist/cjs/context.development": "./dist/cjs/context.development.js",
-    "./dist/es/context.production.js": "./dist/es/context.production.js",
-    "./dist/es/context.production": "./dist/es/context.production.js",
-    "./dist/es/context.development.js": "./dist/es/context.development.js",
-    "./dist/es/context.development": "./dist/es/context.development.js",
-    "./context.js": "./dist/cjs/context.js",
-    "./context": "./dist/cjs/context.js",
     ".": {
       "browser": "./dist/es/context.production.js",
+      "umd": "./dist/umd/context.production.js",
       "import": "./dist/es/context.production.js",
       "require": "./dist/cjs/context.js",
       "node": "./dist/cjs/context.js",
       "module": "./dist/es/context.production.js",
       "default": "./dist/cjs/context.js"
-    }
+    },
+    "./package.json": "./package.json",
+    "./": "./"
   }
 }

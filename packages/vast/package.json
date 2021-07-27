@@ -3,9 +3,6 @@
   "license": "MIT",
   "main": "./dist/cjs/vast.js",
   "types": "./types/vast.d.ts",
-  "files": [
-    "dist"
-  ],
   "name": "vast",
   "author": "ealush",
   "scripts": {
@@ -14,27 +11,16 @@
   },
   "module": "./dist/es/vast.production.js",
   "exports": {
-    "./dist/umd/vast.production.js": "./dist/umd/vast.production.js",
-    "./dist/umd/vast.production": "./dist/umd/vast.production.js",
-    "./dist/umd/vast.development.js": "./dist/umd/vast.development.js",
-    "./dist/umd/vast.development": "./dist/umd/vast.development.js",
-    "./dist/cjs/vast.production.js": "./dist/cjs/vast.production.js",
-    "./dist/cjs/vast.production": "./dist/cjs/vast.production.js",
-    "./dist/cjs/vast.development.js": "./dist/cjs/vast.development.js",
-    "./dist/cjs/vast.development": "./dist/cjs/vast.development.js",
-    "./dist/es/vast.production.js": "./dist/es/vast.production.js",
-    "./dist/es/vast.production": "./dist/es/vast.production.js",
-    "./dist/es/vast.development.js": "./dist/es/vast.development.js",
-    "./dist/es/vast.development": "./dist/es/vast.development.js",
-    "./vast.js": "./dist/cjs/vast.js",
-    "./vast": "./dist/cjs/vast.js",
     ".": {
       "browser": "./dist/es/vast.production.js",
+      "umd": "./dist/umd/vast.production.js",
       "import": "./dist/es/vast.production.js",
       "require": "./dist/cjs/vast.js",
       "node": "./dist/cjs/vast.js",
       "module": "./dist/es/vast.production.js",
       "default": "./dist/cjs/vast.js"
-    }
+    },
+    "./package.json": "./package.json",
+    "./": "./"
   }
 }

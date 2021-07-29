@@ -9,12 +9,12 @@ export default function allOf(
   value: unknown,
   ...rules: TLazy[]
 ): TRuleDetailedResult {
-  return (
+  return ruleReturn.defaultToPassing(
     mapFirst(rules, (rule, breakout) => {
       const res = runLazyRule(rule, value);
       if (!res.pass) {
         breakout(res);
       }
-    }) ?? ruleReturn.passing()
+    })
   );
 }

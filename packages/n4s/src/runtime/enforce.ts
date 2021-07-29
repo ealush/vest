@@ -1,13 +1,13 @@
 import assign from 'assign';
 
 import eachEnforceRule from 'eachEnforceRule';
-import { ctx, TEnforceContext } from 'enforceContext';
-import enforceEager from 'enforceEager';
+import { ctx } from 'enforceContext';
+import enforceEager, { TEnforceEager } from 'enforceEager';
 import genEnforceLazy, { TLazyRules } from 'genEnforceLazy';
 import isProxySupported from 'isProxySupported';
+import modifiers from 'modifiers';
 import type { TLazyRuleMethods } from 'ruleReturn';
-import { baseRules, getRule, TRule, TArgs, TBaseRules } from 'runtimeRules';
-
+import { baseRules, getRule, TRule, TArgs, KBaseRules } from 'runtimeRules';
 /**
  * Enforce is quite complicated, I want to explain it in detail.
  * It is dynamic in nature, so a lot of proxy objects are involved.
@@ -36,14 +36,16 @@ import { baseRules, getRule, TRule, TArgs, TBaseRules } from 'runtimeRules';
  */
 
 function genEnforce(): TEnforce {
-  const target = {} as TEnforce;
+  const target = {
+    extend: (customRules: TRule) => {
+      assign(baseRules, customRules);
+    },
+    context: () => ctx.useX(),
+    ...modifiers(),
+  } as TEnforce;
 
   if (!isProxySupported()) {
-    target.extend = function extend(customRules: TRule) {
-      assign(baseRules, customRules);
-    };
-
-    eachEnforceRule((ruleName: TBaseRules) => {
+    eachEnforceRule((ruleName: KBaseRules) => {
       // Only on the first rule access - start the chain of calls
       target[ruleName] = genEnforceLazy(ruleName);
     });
@@ -51,16 +53,10 @@ function genEnforce(): TEnforce {
     return target;
   }
 
-  return new Proxy(enforceEager as TEnforce, {
-    get: (_: TEnforce, key: string) => {
-      if (key === 'extend') {
-        return function extend(customRules: TRule) {
-          assign(baseRules, customRules);
-        };
-      }
-
-      if (key === 'context') {
-        return () => ctx.useX();
+  return new Proxy(assign(enforceEager, target) as TEnforce, {
+    get: (target: TEnforce, key: string) => {
+      if (key in target) {
+        return target[key];
       }
 
       if (!getRule(key)) {
@@ -77,9 +73,10 @@ const enforce = genEnforce();
 
 export default enforce;
 
-export type TEnforce = { context: () => TEnforceContext } & Record<
+export type TEnforce = Record<
   string,
   (...args: TArgs) => TLazyRuleMethods & TLazyRules
 > &
-  typeof enforceEager &
-  TLazyRules & { extend: (customRules: TRule) => void } & TLazyRuleMethods;
+  TEnforceEager &
+  TLazyRules &
+  TLazyRuleMethods;

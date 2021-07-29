@@ -1,4 +1,5 @@
 import enforce from 'enforce';
+import * as ruleReturn from 'ruleReturn';
 
 let keepContext = jest.fn();
 
@@ -208,7 +209,7 @@ enforce.extend({
     const context = enforce.context();
 
     if (value === context?.parent()?.parent()?.value.username) {
-      return { pass: false };
+      return ruleReturn.failing();
     }
 
     return true;

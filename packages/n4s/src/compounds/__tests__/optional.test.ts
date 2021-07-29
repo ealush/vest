@@ -1,14 +1,15 @@
 import enforce from 'enforce';
+import * as ruleReturn from 'ruleReturn';
 
 describe('enforce.optional', () => {
   describe('lazy interface', () => {
     it('Should return a passing result for nullable values', () => {
-      expect(enforce.optional(enforce.isNumber()).run(null)).toEqual({
-        pass: true,
-      });
-      expect(enforce.optional(enforce.isArray()).run(undefined)).toEqual({
-        pass: true,
-      });
+      expect(enforce.optional(enforce.isNumber()).run(null)).toEqual(
+        ruleReturn.passing()
+      );
+      expect(enforce.optional(enforce.isArray()).run(undefined)).toEqual(
+        ruleReturn.passing()
+      );
 
       expect(
         enforce
@@ -21,16 +22,16 @@ describe('enforce.optional', () => {
             firstName: 'John',
             lastName: 'Doe',
           })
-      ).toEqual({ pass: true });
+      ).toEqual(ruleReturn.passing());
     });
 
     it('Should return passing result for non-nullable values that satisfy the tests', () => {
-      expect(enforce.optional(enforce.isNumber()).run(2)).toEqual({
-        pass: true,
-      });
-      expect(enforce.optional(enforce.isArray()).run([1, 2])).toEqual({
-        pass: true,
-      });
+      expect(enforce.optional(enforce.isNumber()).run(2)).toEqual(
+        ruleReturn.passing()
+      );
+      expect(enforce.optional(enforce.isArray()).run([1, 2])).toEqual(
+        ruleReturn.passing()
+      );
       expect(
         enforce
           .shape({
@@ -43,16 +44,16 @@ describe('enforce.optional', () => {
             middleName: 'H.',
             lastName: 'Doe',
           })
-      ).toEqual({ pass: true });
+      ).toEqual(ruleReturn.passing());
     });
 
     it('Should return a failing result for non-nullable values that do not satisfy the tests', () => {
-      expect(enforce.optional(enforce.isNumber()).run('2')).toEqual({
-        pass: false,
-      });
-      expect(enforce.optional(enforce.isArray()).run('2')).toEqual({
-        pass: false,
-      });
+      expect(enforce.optional(enforce.isNumber()).run('2')).toEqual(
+        ruleReturn.failing()
+      );
+      expect(enforce.optional(enforce.isArray()).run('2')).toEqual(
+        ruleReturn.failing()
+      );
       expect(
         enforce
           .shape({
@@ -65,7 +66,7 @@ describe('enforce.optional', () => {
             middleName: 'H.',
             lastName: 'Doe',
           })
-      ).toEqual({ pass: false });
+      ).toEqual(ruleReturn.failing());
     });
   });
 });

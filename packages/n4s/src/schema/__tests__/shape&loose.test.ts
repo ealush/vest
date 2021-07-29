@@ -1,4 +1,5 @@
 import enforce from 'enforce';
+import * as ruleReturn from 'ruleReturn';
 
 // The base behavior of 'loose' and 'shape' is practically the same
 // so we cover them using the same tests.
@@ -10,7 +11,7 @@ describe.each(['loose', 'shape'])('enforce.%s', (methodName: string) => {
           username: enforce.isString(),
           age: enforce.isNumber().gt(18),
         }).run({ username: 'ealush', age: 31 })
-      ).toEqual({ pass: true });
+      ).toEqual(ruleReturn.passing());
     });
 
     it('Should return a failing return when tests are invalid', () => {
@@ -19,7 +20,7 @@ describe.each(['loose', 'shape'])('enforce.%s', (methodName: string) => {
           username: enforce.isString(),
           age: enforce.isNumber().gt(18),
         }).run({ username: null, age: 0 })
-      ).toEqual({ pass: false });
+      ).toEqual(ruleReturn.failing());
     });
 
     describe('nested shapes', () => {
@@ -44,7 +45,7 @@ describe.each(['loose', 'shape'])('enforce.%s', (methodName: string) => {
               zip: 12345,
             },
           })
-        ).toEqual({ pass: true });
+        ).toEqual(ruleReturn.passing());
       });
       it('Should return a failing return when tests are invalid', () => {
         expect(
@@ -65,7 +66,7 @@ describe.each(['loose', 'shape'])('enforce.%s', (methodName: string) => {
               city: null,
             },
           })
-        ).toEqual({ pass: false });
+        ).toEqual(ruleReturn.failing());
       });
     });
   });

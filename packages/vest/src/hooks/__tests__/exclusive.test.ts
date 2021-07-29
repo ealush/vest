@@ -1,4 +1,5 @@
 import faker from 'faker';
+import * as vest from 'vest';
 
 import { dummyTest } from '../../../testUtils/testDummy';
 
@@ -7,7 +8,6 @@ import context from 'ctx';
 import { isExcluded, isGroupExcluded, skip, only } from 'exclusive';
 import group from 'group';
 import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
-import * as vest from 'vest';
 
 let res, res1;
 

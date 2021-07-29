@@ -1,6 +1,6 @@
-import { dummyTest } from '../../../testUtils/testDummy';
-
 import * as vest from 'vest';
+
+import { dummyTest } from '../../../testUtils/testDummy';
 
 describe('done', () => {
   describe('When no async tests', () => {

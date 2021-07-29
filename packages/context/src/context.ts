@@ -1,4 +1,5 @@
 import assign from 'assign';
+import defaultTo from 'defaultTo';
 import throwError from 'throwError';
 
 export default function createContext<T extends Record<string, unknown>>(
@@ -21,7 +22,9 @@ export default function createContext<T extends Record<string, unknown>>(
   function useX(errorMessage?: string): T {
     return (
       (storage.ctx as T) ??
-      throwError(errorMessage ?? 'Context was used after it was closed')
+      throwError(
+        defaultTo(errorMessage, 'Context was used after it was closed')
+      )
     );
   }
 

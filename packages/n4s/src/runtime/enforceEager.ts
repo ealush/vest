@@ -7,11 +7,11 @@ import { ctx } from 'enforceContext';
 import { isEmpty } from 'isEmpty';
 import isProxySupported from 'isProxySupported';
 import {
-  baseRules,
   getRule,
   TRuleValue,
   TArgs,
   TRuleBase,
+  KBaseRules,
   TBaseRules,
 } from 'runtimeRules';
 import { transformResult } from 'transformResult';
@@ -19,7 +19,7 @@ import { transformResult } from 'transformResult';
 export default function enforceEager(value: TRuleValue): TEagerRules {
   const target = {} as TEagerRules;
   if (!isProxySupported()) {
-    eachEnforceRule((ruleName: TBaseRules, ruleFn) => {
+    eachEnforceRule((ruleName: KBaseRules, ruleFn) => {
       target[ruleName] = genRuleCall(target, ruleFn, ruleName);
     });
 
@@ -61,6 +61,8 @@ export default function enforceEager(value: TRuleValue): TEagerRules {
   }
 }
 
+export type TEnforceEager = typeof enforceEager;
+
 type TEagerRules = Record<string, (...args: TArgs) => TEagerRules> &
   {
     [P in keyof TCompounds]: (
@@ -68,7 +70,7 @@ type TEagerRules = Record<string, (...args: TArgs) => TEagerRules> &
     ) => TEagerRules;
   } &
   {
-    [P in TBaseRules]: (
-      ...args: DropFirst<Parameters<typeof baseRules[P]>>
+    [P in KBaseRules]: (
+      ...args: DropFirst<Parameters<TBaseRules[P]>>
     ) => TEagerRules;
   };

@@ -2,7 +2,7 @@ import isBooleanValue from 'isBooleanValue';
 import optionalFunctionValue from 'optionalFunctionValue';
 import throwError from 'throwError';
 
-import type { TRuleReturn, TRuleDetailedResult } from 'ruleReturn';
+import { TRuleReturn, TRuleDetailedResult, ruleReturn } from 'ruleReturn';
 import type { TRuleValue, TArgs } from 'runtimeRules';
 
 /**
@@ -18,21 +18,12 @@ export function transformResult(
 
   // if result is boolean
   if (isBooleanValue(result)) {
-    return {
-      pass: result,
-    };
+    return ruleReturn(result);
   } else {
-    return {
-      pass: result.pass,
-      ...(result.message && {
-        message: optionalFunctionValue(
-          result.message,
-          ruleName,
-          value,
-          ...args
-        ),
-      }),
-    };
+    return ruleReturn(
+      result.pass,
+      optionalFunctionValue(result.message, ruleName, value, ...args)
+    );
   }
 }
 

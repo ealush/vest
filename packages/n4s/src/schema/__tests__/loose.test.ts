@@ -1,4 +1,5 @@
 import enforce from 'enforce';
+import * as ruleReturn from 'ruleReturn';
 
 describe('enforce.loose for loose matching', () => {
   describe('lazy interface', () => {
@@ -7,7 +8,7 @@ describe('enforce.loose for loose matching', () => {
         enforce
           .loose({ username: enforce.isString(), age: enforce.isNumber() })
           .run({ username: 'ealush', age: 31, foo: 'bar' })
-      ).toEqual({ pass: true });
+      ).toEqual(ruleReturn.passing());
     });
   });
   describe('eager interface', () => {

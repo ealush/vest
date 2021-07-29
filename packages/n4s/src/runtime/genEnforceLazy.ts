@@ -11,9 +11,9 @@ import * as ruleReturn from 'ruleReturn';
 import {
   TRuleValue,
   TArgs,
+  KBaseRules,
   TBaseRules,
   getRule,
-  baseRules,
 } from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
@@ -38,7 +38,7 @@ export default function genEnforceLazy(key: string) {
       } as TEnforce;
 
       if (!isProxySupported()) {
-        eachEnforceRule((ruleName: TBaseRules) => {
+        eachEnforceRule((ruleName: KBaseRules) => {
           proxy[ruleName] = addLazyRule(ruleName);
         });
 
@@ -60,14 +60,14 @@ export default function genEnforceLazy(key: string) {
 
       function genRun() {
         return (value: TRuleValue): TRuleDetailedResult => {
-          return (
+          return ruleReturn.defaultToPassing(
             mapFirst(registeredRules, (rule, breakout) => {
               const res = ctx.run({ value }, () => rule(value));
 
               if (!res.pass) {
                 breakout(res);
               }
-            }) ?? ruleReturn.passing()
+            })
           );
         };
       }
@@ -86,9 +86,11 @@ export type TLazyRules = Record<string, (...args: TArgs) => TLazy> &
     ) => TLazy;
   } &
   {
-    [P in TBaseRules]: (
-      ...args: DropFirst<Parameters<typeof baseRules[P]>> | TArgs
+    [P in KBaseRules]: (
+      ...args: DropFirst<Parameters<TBaseRules[P]>> | TArgs
     ) => TLazy;
   };
 
 export type TLazy = TLazyRules & TLazyRuleMethods;
+
+export type TShapeObject = Record<string, TLazy>;

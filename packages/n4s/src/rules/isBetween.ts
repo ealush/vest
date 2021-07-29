@@ -12,5 +12,3 @@ export function isBetween(
 }
 
 export const isNotBetween = bindNot(isBetween);
-
-export default isBetween;

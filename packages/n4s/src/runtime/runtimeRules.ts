@@ -11,12 +11,13 @@ export type TRuleBase = (value: TRuleValue, ...args: TArgs) => TRuleReturn;
 
 export type TRule = Record<string, TRuleBase>;
 
-export type TBaseRules = keyof typeof baseRules;
+export type TBaseRules = typeof baseRules;
+export type KBaseRules = keyof TBaseRules;
 
 const baseRules = Object.assign(rules(), compounds(), schema());
 
 function getRule(ruleName: string): TRuleBase {
-  return baseRules[ruleName as TBaseRules];
+  return baseRules[ruleName as KBaseRules];
 }
 
 export { baseRules, getRule };

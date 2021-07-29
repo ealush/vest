@@ -1,4 +1,5 @@
 import enforce from 'enforce';
+import * as ruleReturn from 'ruleReturn';
 
 const _proxy = global.Proxy;
 
@@ -69,21 +70,21 @@ const _proxy = global.Proxy;
 
     describe('enforce..run for structured return', () => {
       it('Should return pass:true when valid', () => {
-        expect(enforce.isNumber().run(1)).toEqual({ pass: true });
-        expect(enforce.isArray().run([])).toEqual({ pass: true });
-        expect(enforce.greaterThan(5).run(6)).toEqual({ pass: true });
-        expect(enforce.greaterThan(5).lessThan(7).run(6)).toEqual({
-          pass: true,
-        });
+        expect(enforce.isNumber().run(1)).toEqual(ruleReturn.passing());
+        expect(enforce.isArray().run([])).toEqual(ruleReturn.passing());
+        expect(enforce.greaterThan(5).run(6)).toEqual(ruleReturn.passing());
+        expect(enforce.greaterThan(5).lessThan(7).run(6)).toEqual(
+          ruleReturn.passing()
+        );
       });
 
       it('Should return pass:false when invalid', () => {
-        expect(enforce.isNumber().run('1')).toEqual({ pass: false });
-        expect(enforce.isArray().run({})).toEqual({ pass: false });
-        expect(enforce.greaterThan(6).run(5)).toEqual({ pass: false });
-        expect(enforce.greaterThan(7).lessThan(5).run(6)).toEqual({
-          pass: false,
-        });
+        expect(enforce.isNumber().run('1')).toEqual(ruleReturn.failing());
+        expect(enforce.isArray().run({})).toEqual(ruleReturn.failing());
+        expect(enforce.greaterThan(6).run(5)).toEqual(ruleReturn.failing());
+        expect(enforce.greaterThan(7).lessThan(5).run(6)).toEqual(
+          ruleReturn.failing()
+        );
       });
     });
 

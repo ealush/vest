@@ -1,4 +1,5 @@
 import enforce from 'enforce';
+import * as ruleReturn from 'ruleReturn';
 
 describe('enforce.shape excact matching', () => {
   describe('lazy interface', () => {
@@ -7,7 +8,7 @@ describe('enforce.shape excact matching', () => {
         enforce
           .shape({ username: enforce.isString(), age: enforce.isNumber() })
           .run({ username: 'ealush', age: 31, foo: 'bar' })
-      ).toEqual({ pass: false });
+      ).toEqual(ruleReturn.failing());
     });
   });
   describe('eager interface', () => {

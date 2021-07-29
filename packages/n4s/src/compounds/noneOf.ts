@@ -9,13 +9,13 @@ export default function noneOf(
   value: unknown,
   ...rules: TLazy[]
 ): TRuleDetailedResult {
-  return (
+  return ruleReturn.defaultToPassing(
     mapFirst(rules, (rule, breakout) => {
       const res = runLazyRule(rule, value);
 
       if (res.pass) {
         breakout(ruleReturn.failing());
       }
-    }) ?? ruleReturn.passing()
+    })
   );
 }

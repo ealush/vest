@@ -1,23 +1,24 @@
 import enforce from 'enforce';
+import * as ruleReturn from 'ruleReturn';
 
 describe('enforce.isArrayOf', () => {
   describe('lazy interface', () => {
     it('Should return a passing return for an empty array', () => {
-      expect(enforce.isArrayOf(enforce.isString()).run([])).toEqual({
-        pass: true,
-      });
+      expect(enforce.isArrayOf(enforce.isString()).run([])).toEqual(
+        ruleReturn.passing()
+      );
     });
 
     it('Should return a passing return for valid arrays', () => {
       expect(
         enforce.isArrayOf(enforce.isString()).run(['a', 'b', 'c'])
-      ).toEqual({ pass: true });
+      ).toEqual(ruleReturn.passing());
 
       expect(
         enforce
           .isArrayOf(enforce.anyOf(enforce.isString(), enforce.isNumber()))
           .run([1, 'b', 'c'])
-      ).toEqual({ pass: true });
+      ).toEqual(ruleReturn.passing());
 
       expect(
         enforce
@@ -31,21 +32,19 @@ describe('enforce.isArrayOf', () => {
             { id: 1, username: 'b' },
             { id: 2, username: 'c' },
           ])
-      ).toEqual({ pass: true });
+      ).toEqual(ruleReturn.passing());
     });
 
     it('Should return a failing return for invalid arrays', () => {
-      expect(enforce.isArrayOf(enforce.isString()).run([1, 2, 3])).toEqual({
-        pass: false,
-      });
+      expect(enforce.isArrayOf(enforce.isString()).run([1, 2, 3])).toEqual(
+        ruleReturn.failing()
+      );
 
       expect(
         enforce
           .isArrayOf(enforce.allOf(enforce.isString(), enforce.isNumber()))
           .run([1, 2, 3])
-      ).toEqual({
-        pass: false,
-      });
+      ).toEqual(ruleReturn.failing());
 
       expect(
         enforce
@@ -60,9 +59,7 @@ describe('enforce.isArrayOf', () => {
             { id: '2', username: 'c' },
             { id: '3', username: 'd' },
           ])
-      ).toEqual({
-        pass: false,
-      });
+      ).toEqual(ruleReturn.failing());
     });
   });
 

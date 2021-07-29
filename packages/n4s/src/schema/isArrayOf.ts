@@ -10,7 +10,7 @@ export default function isArrayOf(
   inputArray: any[],
   currentRule: TLazy
 ): TRuleDetailedResult {
-  return (
+  return ruleReturn.defaultToPassing(
     mapFirst(inputArray, (currentValue, breakout, index) => {
       const res = ctx.run(
         { value: currentValue, set: true, meta: { index } },
@@ -20,6 +20,6 @@ export default function isArrayOf(
       if (!res.pass) {
         breakout(res);
       }
-    }) ?? ruleReturn.passing()
+    })
   );
 }

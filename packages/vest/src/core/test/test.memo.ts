@@ -8,9 +8,9 @@ import { isExcluded } from 'exclusive';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
 import { useSuiteId } from 'stateHooks';
-import { testBase } from 'test';
+import type { TTestBase } from 'test';
 /* eslint-disable jest/no-export */
-export default function bindTestMemo(test: typeof testBase): {
+export default function bindTestMemo(test: TTestBase): {
   (fieldName: string, test: TTestFn, deps: unknown[]): VestTest;
   (
     fieldName: string,

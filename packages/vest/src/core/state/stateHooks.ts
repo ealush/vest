@@ -1,6 +1,7 @@
 import type { TStateHandlerReturn } from 'vast';
 
 import VestTest from 'VestTest';
+import type { TStateRef } from 'createStateRef';
 import ctx from 'ctx';
 import type { TDraftResult } from 'produceDraft';
 
@@ -33,10 +34,7 @@ export function useOptionalFields(): TStateHandlerReturn<
 > {
   return useStateRef().optionalFields();
 }
-export function useStateRef(): Exclude<
-  ReturnType<typeof ctx.useX>['stateRef'],
-  void
-> {
+export function useStateRef(): Exclude<TStateRef, void> {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return ctx.useX().stateRef!; // I should revisit this
 }

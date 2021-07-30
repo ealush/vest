@@ -46,3 +46,5 @@ export default assign(testBase, {
   each: bindTestEach(testBase),
   memo: bindTestMemo(testBase),
 });
+
+export type TTestBase = typeof testBase;

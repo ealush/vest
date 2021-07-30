@@ -1,21 +1,6 @@
 import isFunction from 'isFunction';
 import optionalFunctionValue from 'optionalFunctionValue';
 
-type TStateInput<S> = S | (() => S);
-type TSetStateInput<S> = S | ((prevState: S) => S);
-export type TStateHandlerReturn<S> = [
-  S,
-  (nextState: TSetStateInput<S>) => void
-];
-
-type TCreateStateReturn = {
-  reset: () => void;
-  registerStateKey: <S>(
-    initialState?: TStateInput<S> | undefined,
-    onUpdate?: (() => void) | undefined
-  ) => () => TStateHandlerReturn<S>;
-};
-
 export default function createState(
   onStateChange?: (...args: unknown[]) => unknown
 ): TCreateStateReturn {
@@ -96,3 +81,20 @@ export default function createState(
     }
   }
 }
+
+type TStateInput<S> = S | (() => S);
+type TSetStateInput<S> = S | ((prevState: S) => S);
+
+export type TState = ReturnType<typeof createState>;
+export type TStateHandlerReturn<S> = [
+  S,
+  (nextState: TSetStateInput<S>) => void
+];
+
+type TCreateStateReturn = {
+  reset: () => void;
+  registerStateKey: <S>(
+    initialState?: TStateInput<S> | undefined,
+    onUpdate?: (() => void) | undefined
+  ) => () => TStateHandlerReturn<S>;
+};

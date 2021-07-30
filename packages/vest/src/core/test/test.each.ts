@@ -1,14 +1,15 @@
 import asArray from 'asArray';
 import optionalFunctionValue from 'optionalFunctionValue';
 import throwError from 'throwError';
+import type { TStringable } from 'utilityTypes';
 
 import VestTest, { TTestResult } from 'VestTest';
-import { testBase } from 'test';
+import type { TTestBase } from 'test';
 
 /* eslint-disable jest/no-export */
-export default function bindTestEach(test: typeof testBase): (table: any[]) => {
-  (fieldName: Stringable, message: Stringable, cb: TEachCb): VestTest[];
-  (fieldName: Stringable, cb: TEachCb): VestTest[];
+export default function bindTestEach(test: TTestBase): (table: any[]) => {
+  (fieldName: TStringable, message: TStringable, cb: TEachCb): VestTest[];
+  (fieldName: TStringable, cb: TEachCb): VestTest[];
 } {
   /**
    * Run multiple tests using a parameter table
@@ -19,16 +20,16 @@ export default function bindTestEach(test: typeof testBase): (table: any[]) => {
     }
 
     function eachReturn(
-      fieldName: Stringable,
-      ...args: [message: Stringable, cb: TEachCb]
+      fieldName: TStringable,
+      ...args: [message: TStringable, cb: TEachCb]
     ): VestTest[];
     function eachReturn(
-      fieldName: Stringable,
+      fieldName: TStringable,
       ...args: [cb: TEachCb]
     ): VestTest[];
     function eachReturn(
-      fieldName: Stringable,
-      ...args: [message: Stringable, cb: TEachCb] | [cb: TEachCb]
+      fieldName: TStringable,
+      ...args: [message: TStringable, cb: TEachCb] | [cb: TEachCb]
     ): VestTest[] {
       const [testFn, message] = args.reverse() as [TEachCb, string];
 
@@ -48,7 +49,5 @@ export default function bindTestEach(test: typeof testBase): (table: any[]) => {
 
   return each;
 }
-
-type Stringable = string | ((...args: any[]) => string);
 
 type TEachCb = (...args: any[]) => TTestResult;

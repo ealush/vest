@@ -1,24 +1,5 @@
 import defaultTo from 'defaultTo';
-
-import { TEnforceContext } from 'enforceContext';
-import type { TModifiers } from 'modifiers';
-import { TRule } from 'runtimeRules';
-
-export type TRuleReturn =
-  | boolean
-  | {
-      pass: boolean;
-      message?: string | (() => string);
-    };
-
-export type TRuleDetailedResult = { pass: boolean; message?: string };
-
-export type TLazyRuleMethods = TModifiers & {
-  test: (value: unknown) => boolean;
-  run: (value: unknown) => TRuleDetailedResult;
-  context: () => TEnforceContext;
-  extend: (customRules: TRule) => void;
-};
+import type { TStringable } from 'utilityTypes';
 
 export function ruleReturn(
   pass: boolean,
@@ -34,11 +15,11 @@ export function ruleReturn(
 }
 
 export function failing(): TRuleDetailedResult {
-  return { pass: false };
+  return ruleReturn(false);
 }
 
 export function passing(): TRuleDetailedResult {
-  return { pass: true };
+  return ruleReturn(true);
 }
 
 export function defaultToFailing(
@@ -52,3 +33,17 @@ export function defaultToPassing(
 ): TRuleDetailedResult {
   return defaultTo(callback, passing());
 }
+
+export type TRuleReturn =
+  | boolean
+  | {
+      pass: boolean;
+      message?: TStringable;
+    };
+
+export type TRuleDetailedResult = { pass: boolean; message?: string };
+
+export type TLazyRuleMethods = {
+  test: (value: unknown) => boolean;
+  run: (value: unknown) => TRuleDetailedResult;
+};

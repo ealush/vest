@@ -1,13 +1,13 @@
 import assign from 'assign';
 
 import eachEnforceRule from 'eachEnforceRule';
-import { ctx } from 'enforceContext';
+import { TEnforceContext, ctx } from 'enforceContext';
 import enforceEager, { TEnforceEager } from 'enforceEager';
 import genEnforceLazy, { TLazyRules } from 'genEnforceLazy';
 import isProxySupported from 'isProxySupported';
-import modifiers from 'modifiers';
-import type { TLazyRuleMethods } from 'ruleReturn';
-import { baseRules, getRule, TRule, TArgs, KBaseRules } from 'runtimeRules';
+import modifiers, { TModifiers } from 'modifiers';
+import { TRule, KBaseRules, baseRules, getRule } from 'runtimeRules';
+
 /**
  * Enforce is quite complicated, I want to explain it in detail.
  * It is dynamic in nature, so a lot of proxy objects are involved.
@@ -73,10 +73,12 @@ const enforce = genEnforce();
 
 export default enforce;
 
-export type TEnforce = Record<
-  string,
-  (...args: TArgs) => TLazyRuleMethods & TLazyRules
-> &
+export type TEnforce = TModifiers &
   TEnforceEager &
   TLazyRules &
-  TLazyRuleMethods;
+  TEnforceMethods;
+
+type TEnforceMethods = {
+  context: () => TEnforceContext;
+  extend: (customRules: TRule) => void;
+};

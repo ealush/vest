@@ -4,10 +4,6 @@ import { removePending } from 'pending';
 import removeTestFromState from 'removeTestFromState';
 import shouldUseErrorAsMessage from 'shouldUseErrorAsMessage';
 
-type TAsyncTest = Promise<string | void>;
-export type TTestResult = TAsyncTest | boolean | void;
-export type TTestFn = () => TTestResult;
-
 export default class VestTest {
   fieldName: string;
   testFn: TTestFn;
@@ -73,3 +69,7 @@ export default class VestTest {
     return this.failed !== true;
   }
 }
+
+type TAsyncTest = Promise<string | void>;
+export type TTestResult = TAsyncTest | boolean | void;
+export type TTestFn = () => TTestResult;

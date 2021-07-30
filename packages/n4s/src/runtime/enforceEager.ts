@@ -1,7 +1,5 @@
 import throwError from 'throwError';
-import { DropFirst } from 'utilityTypes';
 
-import type { TCompounds } from 'compounds';
 import eachEnforceRule from 'eachEnforceRule';
 import { ctx } from 'enforceContext';
 import { isEmpty } from 'isEmpty';
@@ -12,12 +10,12 @@ import {
   TArgs,
   TRuleBase,
   KBaseRules,
-  TBaseRules,
+  TRules,
 } from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
-export default function enforceEager(value: TRuleValue): TEagerRules {
-  const target = {} as TEagerRules;
+export default function enforceEager(value: TRuleValue): TRules {
+  const target = {} as TRules;
   if (!isProxySupported()) {
     eachEnforceRule((ruleName: KBaseRules, ruleFn) => {
       target[ruleName] = genRuleCall(target, ruleFn, ruleName);
@@ -33,11 +31,11 @@ export default function enforceEager(value: TRuleValue): TEagerRules {
         return genRuleCall(proxy, rule, ruleName);
       }
     },
-  }) as TEagerRules;
+  }) as TRules;
 
   return proxy;
 
-  function genRuleCall(target: TEagerRules, rule: TRuleBase, ruleName: string) {
+  function genRuleCall(target: TRules, rule: TRuleBase, ruleName: string) {
     return function ruleCall(...args: TArgs) {
       const transformedResult = transformResult(
         ctx.run({ value }, () => rule(value, ...args)),
@@ -62,15 +60,3 @@ export default function enforceEager(value: TRuleValue): TEagerRules {
 }
 
 export type TEnforceEager = typeof enforceEager;
-
-type TEagerRules = Record<string, (...args: TArgs) => TEagerRules> &
-  {
-    [P in keyof TCompounds]: (
-      ...args: DropFirst<Parameters<TCompounds[P]>>
-    ) => TEagerRules;
-  } &
-  {
-    [P in KBaseRules]: (
-      ...args: DropFirst<Parameters<TBaseRules[P]>>
-    ) => TEagerRules;
-  };

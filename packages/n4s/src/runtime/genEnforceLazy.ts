@@ -1,20 +1,11 @@
 import mapFirst from 'mapFirst';
-import { DropFirst } from 'utilityTypes';
 
-import type { TCompounds } from 'compounds';
 import eachEnforceRule from 'eachEnforceRule';
-import type { TEnforce } from 'enforce';
 import { ctx } from 'enforceContext';
 import isProxySupported from 'isProxySupported';
 import type { TRuleDetailedResult, TLazyRuleMethods } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
-import {
-  TRuleValue,
-  TArgs,
-  KBaseRules,
-  TBaseRules,
-  getRule,
-} from 'runtimeRules';
+import { TRuleValue, TArgs, KBaseRules, getRule, TRules } from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
 type TRegisteredRules = Array<(value: TRuleValue) => TRuleDetailedResult>;
@@ -35,7 +26,7 @@ export default function genEnforceLazy(key: string) {
       let proxy = {
         run: genRun(),
         test: genTest(),
-      } as TEnforce;
+      } as TLazy;
 
       if (!isProxySupported()) {
         eachEnforceRule((ruleName: KBaseRules) => {
@@ -79,17 +70,7 @@ export default function genEnforceLazy(key: string) {
   }
 }
 
-export type TLazyRules = Record<string, (...args: TArgs) => TLazy> &
-  {
-    [P in keyof TCompounds]: (
-      ...args: DropFirst<Parameters<TCompounds[P]>> | TArgs
-    ) => TLazy;
-  } &
-  {
-    [P in KBaseRules]: (
-      ...args: DropFirst<Parameters<TBaseRules[P]>> | TArgs
-    ) => TLazy;
-  };
+export type TLazyRules = TRules<TLazyRuleMethods>;
 
 export type TLazy = TLazyRules & TLazyRuleMethods;
 

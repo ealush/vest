@@ -1,6 +1,8 @@
 import enforce from 'enforce';
 import * as ruleReturn from 'ruleReturn';
 
+/* eslint-disable sort-keys */
+
 // The base behavior of 'loose' and 'shape' is practically the same
 // so we cover them using the same tests.
 describe.each(['loose', 'shape'])('enforce.%s', (methodName: string) => {
@@ -134,3 +136,5 @@ describe.each(['loose', 'shape'])('enforce.%s', (methodName: string) => {
     });
   });
 });
+
+/* eslint-enable sort-keys */

@@ -1,4 +1,6 @@
-import compounds from 'compounds';
+import type { DropFirst } from 'utilityTypes';
+
+import compounds, { KCompounds, TCompounds } from 'compounds';
 import type { TRuleReturn } from 'ruleReturn';
 import rules from 'rules';
 import schema from 'schema';
@@ -21,3 +23,18 @@ function getRule(ruleName: string): TRuleBase {
 }
 
 export { baseRules, getRule };
+
+export type TRules<E = Record<string, unknown>> = Record<
+  string,
+  (...args: TArgs) => TRules & E
+> &
+  {
+    [P in KCompounds]: (
+      ...args: DropFirst<Parameters<TCompounds[P]>> | TArgs
+    ) => TRules & E;
+  } &
+  {
+    [P in KBaseRules]: (
+      ...args: DropFirst<Parameters<TBaseRules[P]>> | TArgs
+    ) => TRules & E;
+  };

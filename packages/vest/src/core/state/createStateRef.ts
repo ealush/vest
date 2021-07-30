@@ -1,10 +1,10 @@
-import createState from 'vast';
+import type { TState } from 'vast';
 
 import VestTest from 'VestTest';
 import type { TDraftResult } from 'produceDraft';
 
 export default function createStateRef(
-  state: ReturnType<typeof createState>,
+  state: TState,
   { suiteId }: { suiteId: string }
 ) {
   return {
@@ -24,3 +24,5 @@ export default function createStateRef(
     testObjects: state.registerStateKey<VestTest[]>(() => []),
   };
 }
+
+export type TStateRef = ReturnType<typeof createStateRef>;

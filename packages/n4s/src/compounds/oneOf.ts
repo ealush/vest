@@ -1,6 +1,7 @@
 import type { TLazy } from 'genEnforceLazy';
 import { lengthEquals } from 'lengthEquals';
-import type { TRuleDetailedResult } from 'ruleReturn';
+import { longerThan } from 'longerThan';
+import { TRuleDetailedResult, ruleReturn } from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 
 export default function oneOf(
@@ -10,7 +11,7 @@ export default function oneOf(
   const passing: TRuleDetailedResult[] = [];
 
   rules.every(rule => {
-    if (passing.length > 1) {
+    if (longerThan(passing, 1)) {
       return false;
     }
 
@@ -22,5 +23,5 @@ export default function oneOf(
     return res.pass;
   });
 
-  return { pass: lengthEquals(passing, 1) };
+  return ruleReturn(lengthEquals(passing, 1));
 }

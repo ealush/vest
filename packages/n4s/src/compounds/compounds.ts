@@ -9,3 +9,4 @@ export default function compounds() {
 }
 
 export type TCompounds = ReturnType<typeof compounds>;
+export type KCompounds = keyof TCompounds;

@@ -26,9 +26,8 @@ function hasByGroup(
 ): boolean {
   const [testObjects] = useTestObjects();
   return testObjects.some(testObject => {
-    if (group !== testObject.groupName) {
-      return false;
-    }
-    return hasFailuresLogic(testObject, severityKey, fieldName);
+    return group === testObject.groupName
+      ? hasFailuresLogic(testObject, severityKey, fieldName)
+      : false;
   });
 }

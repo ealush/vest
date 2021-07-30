@@ -2,7 +2,7 @@ import assign from 'assign';
 import createContext from 'context';
 
 import VestTest from 'VestTest';
-import createStateRef from 'createStateRef';
+import type { TStateRef } from 'createStateRef';
 
 export default createContext<CTXType>((ctxRef, parentContext) =>
   parentContext
@@ -20,7 +20,7 @@ export default createContext<CTXType>((ctxRef, parentContext) =>
 );
 
 type CTXType = {
-  stateRef?: ReturnType<typeof createStateRef>;
+  stateRef?: TStateRef;
   exclusion: {
     tests: Record<string, boolean>;
     groups: Record<string, boolean>;

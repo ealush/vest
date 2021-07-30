@@ -6,26 +6,26 @@ import VestTest from 'VestTest';
 import ctx from 'ctx';
 import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
 
-type TExclusionItemType = string | string[] | undefined;
+type TExclusionItem = string | string[] | undefined;
 
 /**
  * Adds a field or multiple fields to inclusion group.
  */
-export function only(item: TExclusionItemType): void {
+export function only(item: TExclusionItem): void {
   return addTo('only', 'tests', item);
 }
 
-only.group = (item: TExclusionItemType) => addTo('only', 'groups', item);
+only.group = (item: TExclusionItem) => addTo('only', 'groups', item);
 
 /**
  * Adds a field or multiple fields to exclusion group.
  * @param {String[]|String} item Item to be added to exclusion group.
  */
-export function skip(item: TExclusionItemType): void {
+export function skip(item: TExclusionItem): void {
   return addTo('skip', 'tests', item);
 }
 
-skip.group = (item: TExclusionItemType) => addTo('skip', 'groups', item);
+skip.group = (item: TExclusionItem) => addTo('skip', 'groups', item);
 
 //Checks whether a certain test profile excluded by any of the exclusion groups.
 
@@ -80,8 +80,6 @@ export function isExcluded(testObject: VestTest): boolean {
 
 /**
  * Checks whether a given group is excluded from running.
- * @param {String} groupName
- * @return {Boolean}
  */
 export function isGroupExcluded(groupName: string): boolean {
   const context = ctx.useX();
@@ -113,7 +111,7 @@ export function isGroupExcluded(groupName: string): boolean {
 function addTo(
   exclusionGroup: 'only' | 'skip',
   itemType: 'tests' | 'groups',
-  item: TExclusionItemType
+  item: TExclusionItem
 ) {
   const context = ctx.useX(ERROR_HOOK_CALLED_OUTSIDE);
 

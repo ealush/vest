@@ -5,7 +5,7 @@ import isFunction from 'isFunction';
 import throwError from 'throwError';
 import createState from 'vast';
 
-import createStateRef from 'createStateRef';
+import createStateRef, { TStateRef } from 'createStateRef';
 import context from 'ctx';
 import { IVestResult, produceFullResult } from 'produce';
 import { produceDraft, TDraftResult } from 'produceDraft';
@@ -86,10 +86,7 @@ export default function create<T extends (...args: any[]) => void>(
       }),
       reset: state.reset,
       subscribe(
-        handler: (stateEvent: {
-          type: string;
-          suiteState: typeof stateRef;
-        }) => void
+        handler: (stateEvent: { type: string; suiteState: TStateRef }) => void
       ) {
         if (!isFunction(handler)) return;
 

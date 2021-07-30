@@ -107,4 +107,28 @@ describe('enforce.partial', () => {
       ).toThrow();
     });
   });
+
+  it("Should retain rule's original constraints", () => {
+    expect(
+      enforce
+        .shape(
+          enforce.partial({
+            username: enforce.isString().longerThan(3),
+            id: enforce.isNumeric(),
+          })
+        )
+        .run({ username: 'foobar', id: '1', foo: 'bar' })
+    ).toEqual(ruleReturn.failing());
+
+    expect(
+      enforce
+        .loose(
+          enforce.partial({
+            username: enforce.isString().longerThan(3),
+            id: enforce.isNumeric(),
+          })
+        )
+        .run({ username: 'foobar', id: '1', foo: 'bar' })
+    ).toEqual(ruleReturn.passing());
+  });
 });

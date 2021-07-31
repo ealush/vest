@@ -1,7 +1,7 @@
 import type { TLazy } from 'genEnforceLazy';
 import { lengthEquals } from 'lengthEquals';
 import { longerThan } from 'longerThan';
-import { TRuleDetailedResult, ruleReturn } from 'ruleReturn';
+import ruleReturn, { TRuleDetailedResult } from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 
 export default function oneOf(

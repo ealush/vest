@@ -1,17 +1,17 @@
 import mapFirst from 'mapFirst';
+import optionalFunctionValue from 'optionalFunctionValue';
+import { TStringable } from 'utilityTypes';
 
 import eachEnforceRule from 'eachEnforceRule';
 import { ctx } from 'enforceContext';
 import isProxySupported from 'isProxySupported';
-import type { TRuleDetailedResult, TLazyRuleMethods } from 'ruleReturn';
-import * as ruleReturn from 'ruleReturn';
+import ruleReturn, { defaultToPassing, TRuleDetailedResult } from 'ruleReturn';
 import { TRuleValue, TArgs, KBaseRules, getRule, TRules } from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
-type TRegisteredRules = Array<(value: TRuleValue) => TRuleDetailedResult>;
-
 export default function genEnforceLazy(key: string) {
   const registeredRules: TRegisteredRules = [];
+  let lazyMessage: void | TLazyMessage;
 
   return addLazyRule(key);
 
@@ -24,8 +24,31 @@ export default function genEnforceLazy(key: string) {
       );
 
       let proxy = {
-        run: genRun(),
-        test: genTest(),
+        run: (value: TRuleValue): TRuleDetailedResult => {
+          return defaultToPassing(
+            mapFirst(registeredRules, (rule, breakout) => {
+              const res = ctx.run({ value }, () => rule(value));
+
+              if (!res.pass) {
+                breakout(
+                  ruleReturn(
+                    !!res.pass,
+                    optionalFunctionValue(lazyMessage, value, res.message) ??
+                      res.message
+                  )
+                );
+              }
+            })
+          );
+        },
+        test: (value: TRuleValue): boolean => proxy.run(value).pass,
+        message: (message: TStringable): TLazy => {
+          if (message) {
+            lazyMessage = message;
+          }
+
+          return proxy;
+        },
       } as TLazy;
 
       if (!isProxySupported()) {
@@ -48,24 +71,6 @@ export default function genEnforceLazy(key: string) {
         },
       });
       return proxy;
-
-      function genRun() {
-        return (value: TRuleValue): TRuleDetailedResult => {
-          return ruleReturn.defaultToPassing(
-            mapFirst(registeredRules, (rule, breakout) => {
-              const res = ctx.run({ value }, () => rule(value));
-
-              if (!res.pass) {
-                breakout(res);
-              }
-            })
-          );
-        };
-      }
-
-      function genTest() {
-        return (value: TRuleValue): boolean => proxy.run(value).pass;
-      }
     };
   }
 }
@@ -75,3 +80,14 @@ export type TLazyRules = TRules<TLazyRuleMethods>;
 export type TLazy = TLazyRules & TLazyRuleMethods;
 
 export type TShapeObject = Record<string, TLazy>;
+
+type TLazyRuleMethods = {
+  test: (value: unknown) => boolean;
+  run: (value: unknown) => TRuleDetailedResult;
+  message: (message: TLazyMessage) => TLazy;
+};
+
+type TRegisteredRules = Array<(value: TRuleValue) => TRuleDetailedResult>;
+type TLazyMessage =
+  | string
+  | ((value: unknown, originalMessage?: TStringable) => string);

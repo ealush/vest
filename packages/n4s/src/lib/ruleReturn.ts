@@ -1,7 +1,7 @@
 import defaultTo from 'defaultTo';
 import type { TStringable } from 'utilityTypes';
 
-export function ruleReturn(
+export default function ruleReturn(
   pass: boolean,
   message?: string
 ): TRuleDetailedResult {
@@ -42,8 +42,3 @@ export type TRuleReturn =
     };
 
 export type TRuleDetailedResult = { pass: boolean; message?: string };
-
-export type TLazyRuleMethods = {
-  test: (value: unknown) => boolean;
-  run: (value: unknown) => TRuleDetailedResult;
-};

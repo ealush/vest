@@ -2,7 +2,7 @@ import isBooleanValue from 'isBooleanValue';
 import optionalFunctionValue from 'optionalFunctionValue';
 import throwError from 'throwError';
 
-import { TRuleReturn, TRuleDetailedResult, ruleReturn } from 'ruleReturn';
+import ruleReturn, { TRuleReturn, TRuleDetailedResult } from 'ruleReturn';
 import type { TRuleValue, TArgs } from 'runtimeRules';
 
 /**

@@ -12,7 +12,8 @@ Object {
     "doneCallbacks": Array [],
     "fieldCallbacks": Object {},
   },
-  "testObjects": Array [],
+  "testsOrdered": Array [],
+  "testsOrderedCursor": 0,
 }
 `;
 
@@ -28,7 +29,8 @@ Object {
     "doneCallbacks": Array [],
     "fieldCallbacks": Object {},
   },
-  "testObjects": Array [],
+  "testsOrdered": Array [],
+  "testsOrderedCursor": 0,
 }
 `;
 
@@ -46,6 +48,7 @@ Object {
       "id": "4",
       "isWarning": false,
       "message": "Some statement string",
+      "skipped": false,
       "testFn": [MockFunction],
     },
   ],
@@ -55,7 +58,8 @@ Object {
     "doneCallbacks": Array [],
     "fieldCallbacks": Object {},
   },
-  "testObjects": Array [],
+  "testsOrdered": Array [],
+  "testsOrderedCursor": 0,
 }
 `;
 
@@ -70,6 +74,7 @@ Object {
       "id": "12",
       "isWarning": false,
       "message": "Some statement string",
+      "skipped": false,
       "testFn": [MockFunction],
     },
     VestTest {
@@ -79,6 +84,7 @@ Object {
       "id": "11",
       "isWarning": false,
       "message": "Some statement string",
+      "skipped": false,
       "testFn": [MockFunction],
     },
   ],
@@ -92,6 +98,7 @@ Object {
       "id": "15",
       "isWarning": false,
       "message": "failure message",
+      "skipped": false,
       "testFn": [MockFunction],
     },
   ],
@@ -101,6 +108,7 @@ Object {
     "doneCallbacks": Array [],
     "fieldCallbacks": Object {},
   },
-  "testObjects": Array [],
+  "testsOrdered": Array [],
+  "testsOrderedCursor": 0,
 }
 `;

@@ -3,7 +3,6 @@ import { isNull } from 'isNull';
 import isPromise from 'isPromise';
 
 import VestTest, { TTestFn } from 'VestTest';
-import addTestToState from 'addTestToState';
 import { isExcluded } from 'exclusive';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
@@ -57,8 +56,6 @@ export default function bindTestMemo(test: TTestBase): {
     if (isExcluded(testObject)) {
       return testObject;
     }
-
-    addTestToState(testObject);
 
     handleAsyncTest(testObject);
 

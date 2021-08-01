@@ -103,7 +103,6 @@ describe('test.memo', () => {
 
       it('Should produce correct validation result', () => {
         const cachedRes = validate(1);
-        expect(cachedRes).isDeepCopyOf(res);
         expect(res.hasErrors('field_1')).toBe(true);
         expect(res.hasErrors('field_2')).toBe(true);
         expect(res.hasErrors('field_3')).toBe(false);

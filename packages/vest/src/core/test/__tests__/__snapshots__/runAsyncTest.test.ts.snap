@@ -14,6 +14,7 @@ Object {
       "id": "8",
       "isWarning": false,
       "message": "some message string",
+      "skipped": false,
       "testFn": [MockFunction],
     },
   ],
@@ -25,7 +26,8 @@ Object {
       "field_1": Array [],
     },
   },
-  "testObjects": Array [],
+  "testsOrdered": Array [],
+  "testsOrderedCursor": 0,
 }
 `;
 
@@ -43,6 +45,7 @@ Object {
       "id": "0",
       "isWarning": false,
       "message": "some message string",
+      "skipped": false,
       "testFn": [MockFunction],
     },
   ],
@@ -54,6 +57,7 @@ Object {
       "field_1": Array [],
     },
   },
-  "testObjects": Array [],
+  "testsOrdered": Array [],
+  "testsOrderedCursor": 0,
 }
 `;

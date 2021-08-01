@@ -10,7 +10,8 @@ Object {
     "skippedTests": [Function],
     "suiteId": [Function],
     "testCallbacks": [Function],
-    "testObjects": [Function],
+    "testsOrdered": [Function],
+    "testsOrderedCursor": [Function],
   },
   "type": "suiteSubscribeInit",
 }

@@ -19,7 +19,6 @@ only.group = (item: TExclusionItem) => addTo('only', 'groups', item);
 
 /**
  * Adds a field or multiple fields to exclusion group.
- * @param {String[]|String} item Item to be added to exclusion group.
  */
 export function skip(item: TExclusionItem): void {
   return addTo('skip', 'tests', item);
@@ -34,6 +33,10 @@ export function isExcluded(testObject: VestTest): boolean {
   const { fieldName, groupName } = testObject;
 
   const context = ctx.useX();
+
+  if (context.skipped) {
+    return true;
+  }
 
   const exclusion = context.exclusion;
 

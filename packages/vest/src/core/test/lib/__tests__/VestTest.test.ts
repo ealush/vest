@@ -1,15 +1,12 @@
-import runCreateRef from '../../../../../testUtils/runCreateRef';
+import * as vest from 'vest';
+import wait from 'wait';
 
 import VestTest from 'VestTest';
-import addTestToState from 'addTestToState';
-import context from 'ctx';
 import { setPending } from 'pending';
-import { usePending, useTestObjects, useLagging } from 'stateHooks';
+import { usePending, useLagging } from 'stateHooks';
 
 const fieldName = 'unicycle';
 const message = 'I am Root.';
-
-let stateRef;
 
 describe('VestTest', () => {
   let testObject;
@@ -76,26 +73,24 @@ describe('VestTest', () => {
   });
 
   describe('testObject.cancel', () => {
-    const getCtx = () => ({ stateRef });
-
-    beforeEach(() => {
-      stateRef = runCreateRef();
-
-      context.run({ stateRef }, () => {
-        addTestToState(testObject);
+    it('Should remove a testObject from the state', () => {
+      return new Promise<void>(done => {
+        let testObject: VestTest;
+        const suite = vest.create(() => {
+          testObject = vest.test('f1', async () => {
+            await wait(100);
+          });
+          vest.test('f2', async () => {
+            await wait(100);
+          });
+          testObject.cancel();
+        });
+        suite();
+        expect(suite.get().tests.f1).toBeUndefined();
+        expect(suite.get().tests.f2).toBeDefined();
+        done();
       });
     });
-
-    it.withContext(
-      'Should remove a testObject from the state',
-      () => {
-        const [testObjects] = useTestObjects();
-        expect(testObjects).toEqual(expect.arrayContaining([testObject]));
-        testObject.cancel();
-        expect(testObjects).toEqual(expect.not.arrayContaining([testObject]));
-      },
-      getCtx
-    );
 
     it.withContext('Should remove a testObject from the pending state', () => {
       setPending(testObject);

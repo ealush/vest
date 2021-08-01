@@ -63,7 +63,13 @@ describe('more complex', () => {
     expect(suite.get()).toMatchSnapshot();
 
     suite(data, 'confirm');
-    expect(suite.get().tests.confirm).toMatchInlineSnapshot(`undefined`);
+    expect(suite.get().tests.confirm).toMatchInlineSnapshot(`
+      Object {
+        "errorCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+      }
+    `);
     expect(suite.get()).toMatchSnapshot();
     expect(suite.get().hasErrors('password')).toBe(true);
     expect(suite.get().hasErrors('confirm')).toBe(false);
@@ -105,11 +111,11 @@ describe('more complex', () => {
       enforce(data.password).isNotEmpty();
     });
 
-    if (!suite.get().hasErrors('password')) {
+    vest.skipWhen(suite.get().hasErrors('password'), () => {
       test('confirm', 'passwords do not match', () => {
         enforce(data.confirm).equals(data.password);
       });
-    }
+    });
   });
 });
 

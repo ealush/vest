@@ -8,6 +8,7 @@ VestTest {
   "id": "0",
   "isWarning": false,
   "message": "I am Root.",
+  "skipped": false,
   "testFn": [MockFunction],
 }
 `;
@@ -20,6 +21,7 @@ VestTest {
   "id": "102",
   "isWarning": true,
   "message": "I am Root.",
+  "skipped": false,
   "testFn": [MockFunction],
 }
 `;

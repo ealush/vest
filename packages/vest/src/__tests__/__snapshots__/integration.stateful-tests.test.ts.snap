@@ -230,6 +230,11 @@ Object {
   "isValid": [Function],
   "testCount": 3,
   "tests": Object {
+    "confirm": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
     "password": Object {
       "errorCount": 1,
       "errors": Array [
@@ -263,6 +268,11 @@ Object {
   "isValid": [Function],
   "testCount": 3,
   "tests": Object {
+    "confirm": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
     "password": Object {
       "errorCount": 1,
       "errors": Array [

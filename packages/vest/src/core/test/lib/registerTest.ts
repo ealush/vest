@@ -2,7 +2,6 @@ import isPromise from 'isPromise';
 import throwError from 'throwError';
 
 import VestTest from 'VestTest';
-import addTestToState from 'addTestToState';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
 import runSyncTest from 'runSyncTest';
@@ -11,8 +10,6 @@ import runSyncTest from 'runSyncTest';
  * Registers test, if async - adds to pending array
  */
 export default function registerTest(testObject: VestTest): void {
-  addTestToState(testObject);
-
   // Run test callback.
   // If a promise is returned, set as async and
   // Move to pending list.

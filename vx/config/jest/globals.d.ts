@@ -1,5 +1,3 @@
-export {};
-
 declare global {
   namespace jest {
     interface JestMatchers {
@@ -10,3 +8,4 @@ declare global {
     }
   }
 }
+export {};

@@ -6,7 +6,11 @@ import VestTest from 'VestTest';
 import ctx from 'ctx';
 import hasRemainingTests from 'hasRemainingTests';
 import { removePending } from 'pending';
-import { useTestCallbacks, useTestObjects, useStateRef } from 'stateHooks';
+import {
+  useTestCallbacks,
+  useRefreshTestObjects,
+  useStateRef,
+} from 'stateHooks';
 
 /**
  * Runs async test.
@@ -35,9 +39,8 @@ export default function runAsyncTest(testObject: VestTest): void {
       : message;
     testObject.fail();
 
-    // Spreading the array to invalidate the cache
-    const [, setTestObjects] = useTestObjects();
-    setTestObjects(testObjects => testObjects.slice());
+    // invalidating the "produce" cache
+    useRefreshTestObjects();
     done();
   });
   try {

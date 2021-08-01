@@ -120,10 +120,6 @@
       "isSameProfileTest": [
         "./packages/vest/src/core/test/isSameProfileTest.ts"
       ],
-      "addTestToState": ["./packages/vest/src/core/test/lib/addTestToState.ts"],
-      "mergeCarryOverTests": [
-        "./packages/vest/src/core/test/lib/mergeCarryOverTests.ts"
-      ],
       "pending": ["./packages/vest/src/core/test/lib/pending.ts"],
       "registerTest": ["./packages/vest/src/core/test/lib/registerTest.ts"],
       "removeTestFromState": [
@@ -145,6 +141,7 @@
       "hookErrors": ["./packages/vest/src/hooks/hookErrors.ts"],
       "hooks": ["./packages/vest/src/hooks/hooks.ts"],
       "optionalTests": ["./packages/vest/src/hooks/optionalTests.ts"],
+      "skipWhen": ["./packages/vest/src/hooks/skipWhen.ts"],
       "warn": ["./packages/vest/src/hooks/warn.ts"],
       "genTestsSummary": ["./packages/vest/src/produce/genTestsSummary.ts"],
       "collectFailureMessages": [

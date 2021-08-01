@@ -23,9 +23,6 @@ export function useTestCallbacks(): TStateHandlerReturn<{
 }> {
   return useStateRef().testCallbacks();
 }
-export function useTestObjects(): TStateHandlerReturn<VestTest[]> {
-  return useStateRef().testObjects();
-}
 export function useSkippedTests(): TStateHandlerReturn<VestTest[]> {
   return useStateRef().skippedTests();
 }
@@ -37,4 +34,54 @@ export function useOptionalFields(): TStateHandlerReturn<
 export function useStateRef(): Exclude<TStateRef, void> {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return ctx.useX().stateRef!; // I should revisit this
+}
+
+export function useTestsOrdered(): TStateHandlerReturn<VestTest[]> {
+  return useStateRef().testsOrdered();
+}
+
+export function useCursorAt(): TStateHandlerReturn<number> {
+  return useStateRef().testsOrderedCursor();
+}
+
+export function useTestAtCursor(initialValue: VestTest): VestTest {
+  const [cursorAt] = useCursorAt();
+  const [testsOrder, setTestsOrder] = useTestsOrdered();
+
+  if (!testsOrder[cursorAt]) {
+    setTestsOrder((testsOrder: VestTest[]) => {
+      const newTestsOrder = testsOrder.slice(0);
+      newTestsOrder[cursorAt] = initialValue;
+      return newTestsOrder;
+    });
+  }
+
+  return testsOrder[cursorAt] ?? initialValue;
+}
+
+export function useSetTestAtCursor(testObject: VestTest): void {
+  const [cursorAt] = useCursorAt();
+  const [testsOrder, setTestsOrder] = useTestsOrdered();
+
+  if (testObject === testsOrder[cursorAt]) {
+    return;
+  }
+
+  setTestsOrder((testsOrder: VestTest[]) => {
+    const newTestsOrder = testsOrder.slice(0);
+    newTestsOrder[cursorAt] = testObject;
+    return newTestsOrder;
+  });
+}
+
+export function useSetNextCursorAt(): void {
+  const [, setCursorAt] = useCursorAt();
+
+  setCursorAt((cursorAt: number) => cursorAt + 1);
+}
+
+export function useRefreshTestObjects(): void {
+  const [, setTestsOrder] = useTestsOrdered();
+
+  setTestsOrder(testsOrdered => testsOrdered.slice(0));
 }

@@ -15,6 +15,7 @@ export default class VestTest {
   failed = false;
   isWarning = false;
   canceled = false;
+  skipped = false;
 
   constructor(
     fieldName: string,
@@ -57,6 +58,10 @@ export default class VestTest {
 
   warn(): void {
     this.isWarning = true;
+  }
+
+  skip(): void {
+    this.skipped = true;
   }
 
   cancel(): void {

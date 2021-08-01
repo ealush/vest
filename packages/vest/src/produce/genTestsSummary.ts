@@ -1,13 +1,12 @@
 import VestTest from 'VestTest';
-import { useTestObjects, useSkippedTests } from 'stateHooks';
+import { useTestsOrdered } from 'stateHooks';
 import type { TSeverity } from 'vestTypes';
 
 /**
  * Reads the testObjects list and gets full validation result from it.
  */
 export default function genTestsSummary(): TTestSummary {
-  const [testObjects] = useTestObjects();
-  const [skippedTests] = useSkippedTests();
+  const [testObjects] = useTestsOrdered();
 
   const summary: TTestSummary = {
     errorCount: 0,
@@ -18,13 +17,12 @@ export default function genTestsSummary(): TTestSummary {
   };
 
   appendSummary(testObjects);
-  appendSummary(skippedTests, true);
 
   return countFailures(summary);
 
-  function appendSummary(testObjects: VestTest[], skipped?: boolean) {
+  function appendSummary(testObjects: VestTest[]) {
     testObjects.forEach(testObject => {
-      const { fieldName, groupName } = testObject;
+      const { fieldName, groupName, skipped } = testObject;
 
       summary.tests[fieldName] = genTestObject(
         summary.tests,

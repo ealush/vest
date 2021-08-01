@@ -121,10 +121,6 @@
       "isSameProfileTest": [
         "./packages/vest/src/core/test/isSameProfileTest.ts"
       ],
-      "addTestToState": ["./packages/vest/src/core/test/lib/addTestToState.ts"],
-      "mergeCarryOverTests": [
-        "./packages/vest/src/core/test/lib/mergeCarryOverTests.ts"
-      ],
       "pending": ["./packages/vest/src/core/test/lib/pending.ts"],
       "registerTest": ["./packages/vest/src/core/test/lib/registerTest.ts"],
       "removeTestFromState": [

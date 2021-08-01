@@ -27,4 +27,5 @@ type CTXType = {
   };
   currentTest?: VestTest;
   groupName?: string;
+  skipped?: boolean;
 };

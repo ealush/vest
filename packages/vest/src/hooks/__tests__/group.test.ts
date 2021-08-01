@@ -68,7 +68,6 @@ describe('group: exclusion', () => {
     });
 
     it('produce result object with the group', () => {
-      expect(res.groups[groupName]).toBeDefined();
       expect(res.groups[groupName]).toMatchInlineSnapshot(`
         Object {
           "field_1": Object {

@@ -1,18 +1,10 @@
-import isFunction from 'isFunction';
-import { isFalsy } from 'isTruthy';
 import optionalFunctionValue from 'optionalFunctionValue';
 
-// This function by itself doesn't do much, and is only a wrapper around
-// an if statement. The reason for it is to support version 4 api in version 3
-// so that someone reading the latest docs can still run the code.
+import ctx from 'ctx';
 
 export default function skipWhen(
-  conditional: boolean | (() => boolean),
-  callback: () => void
+  conditional: boolean | ((...args: any[]) => boolean),
+  callback: (...args: any[]) => void
 ): void {
-  if (isFalsy(optionalFunctionValue(conditional))) {
-    if (isFunction(callback)) {
-      callback();
-    }
-  }
+  ctx.run({ skipped: optionalFunctionValue(conditional) }, () => callback());
 }

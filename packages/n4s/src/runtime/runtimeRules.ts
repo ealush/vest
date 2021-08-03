@@ -13,7 +13,7 @@ export type TRuleBase = (value: TRuleValue, ...args: TArgs) => TRuleReturn;
 
 export type TRule = Record<string, TRuleBase>;
 
-export type TBaseRules = typeof baseRules;
+type TBaseRules = typeof baseRules;
 export type KBaseRules = keyof TBaseRules;
 
 const baseRules = Object.assign(rules(), compounds(), schema());

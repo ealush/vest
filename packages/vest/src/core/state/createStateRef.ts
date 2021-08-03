@@ -8,7 +8,6 @@ export default function createStateRef(
   { suiteId }: { suiteId: string }
 ) {
   return {
-    carryOverTests: state.registerStateKey<VestTest[]>(() => []),
     lagging: state.registerStateKey<VestTest[]>(() => []),
     optionalFields: state.registerStateKey<Record<string, boolean>>(() => ({})),
     pending: state.registerStateKey<VestTest[]>(() => []),

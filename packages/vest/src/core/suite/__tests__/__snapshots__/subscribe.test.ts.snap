@@ -3,7 +3,6 @@
 exports[`suite.subscribe Should call handler on suite subscription initialization 1`] = `
 Object {
   "suiteState": Object {
-    "carryOverTests": [Function],
     "lagging": [Function],
     "optionalFields": [Function],
     "pending": [Function],

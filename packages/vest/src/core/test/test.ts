@@ -14,12 +14,12 @@ import {
 import bindTestEach from 'test.each';
 import bindTestMemo from 'test.memo';
 
-export function testBase(
+function testBase(
   fieldName: string,
   ...args: [message: string, cb: TTestFn]
 ): VestTest;
-export function testBase(fieldName: string, ...args: [cb: TTestFn]): VestTest;
-export function testBase(
+function testBase(fieldName: string, ...args: [cb: TTestFn]): VestTest;
+function testBase(
   fieldName: string,
   ...args: [message: string, cb: TTestFn] | [cb: TTestFn]
 ): VestTest {

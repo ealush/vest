@@ -2,7 +2,6 @@
 
 exports[`module: pending export: removePending When testObject is either pending or lagging When in lagging Should remove test from lagging 1`] = `
 Object {
-  "carryOverTests": Array [],
   "lagging": Array [],
   "optionalFields": Object {},
   "pending": Array [],
@@ -19,7 +18,6 @@ Object {
 
 exports[`module: pending export: removePending When testObject is either pending or lagging When in pending Should remove test from pending 1`] = `
 Object {
-  "carryOverTests": Array [],
   "lagging": Array [],
   "optionalFields": Object {},
   "pending": Array [],
@@ -36,7 +34,6 @@ Object {
 
 exports[`module: pending export: setPending Should set supplied test object as pending 1`] = `
 Object {
-  "carryOverTests": Array [],
   "lagging": Array [],
   "optionalFields": Object {},
   "pending": Array [
@@ -65,7 +62,6 @@ Object {
 
 exports[`module: pending export: setPending When a field of the same profile is in lagging array Should remove test from lagging array 1`] = `
 Object {
-  "carryOverTests": Array [],
   "lagging": Array [
     VestTest {
       "canceled": false,

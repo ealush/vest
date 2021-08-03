@@ -2,7 +2,6 @@
 
 exports[`runAsyncTest: failing State updates Initial state matches snapshot (sanity) 1`] = `
 Object {
-  "carryOverTests": Array [],
   "lagging": Array [],
   "optionalFields": Object {},
   "pending": Array [
@@ -33,7 +32,6 @@ Object {
 
 exports[`runAsyncTest: passing State updates Initial state matches snapshot (sanity) 1`] = `
 Object {
-  "carryOverTests": Array [],
   "lagging": Array [],
   "optionalFields": Object {},
   "pending": Array [

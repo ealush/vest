@@ -5,9 +5,6 @@ import type { TStateRef } from 'createStateRef';
 import ctx from 'ctx';
 import type { TDraftResult } from 'produceDraft';
 
-export function useCarryOverTests(): TStateHandlerReturn<VestTest[]> {
-  return useStateRef().carryOverTests();
-}
 export function usePending(): TStateHandlerReturn<VestTest[]> {
   return useStateRef().pending();
 }
@@ -38,10 +35,6 @@ export function useStateRef(): Exclude<TStateRef, void> {
 
 export function useTestsOrdered(): TStateHandlerReturn<VestTest[]> {
   return useStateRef().testsOrdered();
-}
-
-export function useCursorAt(): TStateHandlerReturn<number> {
-  return useStateRef().testsOrderedCursor();
 }
 
 export function useTestAtCursor(initialValue: VestTest): VestTest {
@@ -84,4 +77,8 @@ export function useRefreshTestObjects(): void {
   const [, setTestsOrder] = useTestsOrdered();
 
   setTestsOrder(testsOrdered => testsOrdered.slice(0));
+}
+
+function useCursorAt(): TStateHandlerReturn<number> {
+  return useStateRef().testsOrderedCursor();
 }

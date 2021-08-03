@@ -73,12 +73,9 @@ const enforce = genEnforce();
 
 export default enforce;
 
-export type TEnforce = TModifiers &
-  TEnforceEager &
-  TLazyRules &
-  TEnforceMethods;
+type TEnforce = TEnforceEager & TLazyRules & TEnforceMethods;
 
-type TEnforceMethods = {
+type TEnforceMethods = TModifiers & {
   context: () => TEnforceContext;
   extend: (customRules: TRule) => void;
 };

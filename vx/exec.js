@@ -6,11 +6,16 @@ const logger = require('vx/logger');
 
 function exec(
   command,
-  { exitOnFailure = true, throwOnFailure = false, silent = false } = {}
+  {
+    exitOnFailure = true,
+    throwOnFailure = false,
+    silent = false,
+    raw = false,
+  } = {}
 ) {
   const cmd = joinTruthy(command?.flat?.() ?? command, ' ');
 
-  if (!silent) {
+  if (!raw && !silent) {
     logger.info(`🎬 Executing command: "${cmd}"`);
   }
 

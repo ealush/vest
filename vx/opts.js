@@ -5,6 +5,7 @@ module.exports = {
     EXPORTS: 'exports',
     PACKAGES: 'packages',
     SRC: 'src',
+    TESTS: '__tests__',
     TYPES: 'types',
   },
   env: {

@@ -1,4 +1,5 @@
 const packageJson = require('../../../util/packageJson');
+const isReleaseBranch = require('../isReleaseBranch');
 
 const exec = require('vx/exec');
 const logger = require('vx/logger');
@@ -13,6 +14,10 @@ function setNextVersion({ tagId, tag, nextVersion }) {
   logger.info(`🔢 Setting next version for ${packageName()}.
   Running: ${command}
   `);
+
+  if (isReleaseBranch()) {
+    return;
+  }
 
   if (dryRun.isDryRun()) {
     return logger.info(`setNextVersion: Dry run mode. Exiting.`);

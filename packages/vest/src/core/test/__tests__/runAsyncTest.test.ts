@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 import expandStateRef from '../../../../testUtils/expandStateRef';
+import itWithContext from '../../../../testUtils/itWithContext';
 import runCreateRef from '../../../../testUtils/runCreateRef';
 
 import VestTest from 'VestTest';
@@ -53,7 +54,7 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
   });
 
   describe('State updates', () => {
-    it.withContext(
+    itWithContext(
       'Initial state matches snapshot (sanity)',
       () => {
         const [pending] = usePending();

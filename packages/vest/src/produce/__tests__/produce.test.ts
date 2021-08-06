@@ -1,3 +1,4 @@
+import itWithContext from '../../../testUtils/itWithContext';
 import { dummyTest } from '../../../testUtils/testDummy';
 import { setTestObjects } from '../../../testUtils/testObjects';
 
@@ -12,7 +13,7 @@ const methods = {
 describe.each(Object.keys(methods))('produce method: %s', methodName => {
   const produceMethod = methods[methodName];
   describe('Base structure', () => {
-    it.withContext('Should match snapshot', () => {
+    itWithContext('Should match snapshot', () => {
       expect(produceMethod()).toMatchObject({
         errorCount: 0,
         groups: {},
@@ -22,7 +23,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
       });
     });
 
-    it.withContext('Its methods should reflect the correct test data', () => {
+    itWithContext('Its methods should reflect the correct test data', () => {
       setTestObjects(
         dummyTest.passing('field_1'),
         dummyTest.failing('field_1', 'message'),
@@ -83,13 +84,13 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
   });
 
   describe('Value memoization', () => {
-    it.withContext('When unchanged, should produce a memoized result', () => {
+    itWithContext('When unchanged, should produce a memoized result', () => {
       const prev = { ...produceMethod() };
       expect(prev).toMatchObject(produceMethod());
       expect(produceMethod()).toBe(produceMethod());
     });
 
-    it.withContext('When changed, should produce a new result object', () => {
+    itWithContext('When changed, should produce a new result object', () => {
       let current = produceMethod();
       setTestObjects(dummyTest.passing());
       expect(current).not.toMatchObject(produceMethod());
@@ -104,7 +105,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
 
 describe('produceDraft', () => {
   describe('exposed methods', () => {
-    it.withContext('Should have all exposed methods', () => {
+    itWithContext('Should have all exposed methods', () => {
       expect(produceDraft()).toMatchInlineSnapshot(`
         Object {
           "errorCount": 0,
@@ -129,7 +130,7 @@ describe('produceDraft', () => {
 
 describe('produceFullResult', () => {
   describe('exposed methods', () => {
-    it.withContext('Should have all exposed methods', () => {
+    itWithContext('Should have all exposed methods', () => {
       expect(produceFullResult()).toMatchInlineSnapshot(`
         Object {
           "done": [Function],

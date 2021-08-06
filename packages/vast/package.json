@@ -1,5 +1,5 @@
 {
-  "version": "1.0.2",
+  "version": "1.0.3-dev-234135",
   "license": "MIT",
   "main": "./dist/cjs/vast.js",
   "types": "./types/vast.d.ts",

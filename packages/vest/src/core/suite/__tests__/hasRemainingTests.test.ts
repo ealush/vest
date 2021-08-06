@@ -1,6 +1,7 @@
 import faker from 'faker';
 import _ from 'lodash';
 
+import itWithContext from '../../../../testUtils/itWithContext';
 import runCreateRef from '../../../../testUtils/runCreateRef';
 
 import VestTest from 'VestTest';
@@ -37,7 +38,7 @@ describe('hasRemainingTests', () => {
 
   describe('When no field specified', () => {
     describe('When no remaining tests', () => {
-      it.withContext(
+      itWithContext(
         'should return false',
         () => {
           expect(hasRemainingTests()).toBe(false);
@@ -47,7 +48,7 @@ describe('hasRemainingTests', () => {
     });
 
     describe('When there are remaining tests', () => {
-      it.withContext(
+      itWithContext(
         'pending tests return true',
         () => {
           addPendingOrLagging('pending');
@@ -57,7 +58,7 @@ describe('hasRemainingTests', () => {
         getCtx
       );
 
-      it.withContext(
+      itWithContext(
         'lagging tests return true',
         () => {
           addPendingOrLagging('lagging');
@@ -67,7 +68,7 @@ describe('hasRemainingTests', () => {
         getCtx
       );
 
-      it.withContext(
+      itWithContext(
         'lagging and pending tests return true',
         () => {
           addPendingOrLagging('lagging');
@@ -87,7 +88,7 @@ describe('hasRemainingTests', () => {
       fieldName = faker.lorem.word();
     });
     describe('When no remaining tests', () => {
-      it.withContext(
+      itWithContext(
         'Should return false',
         () => {
           expect(hasRemainingTests(fieldName)).toBe(false);
@@ -97,7 +98,7 @@ describe('hasRemainingTests', () => {
     });
 
     describe('When remaining tests', () => {
-      it.withContext(
+      itWithContext(
         'pending tests return true',
         () => {
           addPendingOrLagging('pending', fieldName);
@@ -106,7 +107,7 @@ describe('hasRemainingTests', () => {
         getCtx
       );
 
-      it.withContext(
+      itWithContext(
         'lagging tests return true',
         () => {
           addPendingOrLagging('lagging', fieldName);
@@ -115,7 +116,7 @@ describe('hasRemainingTests', () => {
         getCtx
       );
 
-      it.withContext(
+      itWithContext(
         'lagging and pending tests return true',
         () => {
           addPendingOrLagging('lagging', fieldName);

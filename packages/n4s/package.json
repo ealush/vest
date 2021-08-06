@@ -1,5 +1,5 @@
 {
-  "version": "3.0.0",
+  "version": "3.1.0-dev-234135",
   "license": "MIT",
   "main": "./dist/cjs/n4s.js",
   "types": "./types/n4s.d.ts",

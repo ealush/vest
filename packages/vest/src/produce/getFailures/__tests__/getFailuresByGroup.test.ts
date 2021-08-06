@@ -1,3 +1,4 @@
+import itWithContext from '../../../../testUtils/itWithContext';
 import { dummyTest } from '../../../../testUtils/testDummy';
 import { setTestObjects } from '../../../../testUtils/testObjects';
 
@@ -14,12 +15,12 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
   describe(`${methodName}->getErrorsByGroup`, () => {
     describe('When no tests', () => {
       describe('When no fieldName passed', () => {
-        it.withContext('Should return an empty object', () => {
+        itWithContext('Should return an empty object', () => {
           expect(produceMethod().getErrorsByGroup('group_name')).toEqual({});
         });
       });
       describe('When fieldName passed', () => {
-        it.withContext('Should return an empty array', () => {
+        itWithContext('Should return an empty array', () => {
           expect(
             produceMethod().getErrorsByGroup('group_name', 'field_name')
           ).toEqual([]);
@@ -29,7 +30,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
 
     describe('When no failures', () => {
       describe('When no fieldName passed', () => {
-        it.withContext('Should return an empty object', () => {
+        itWithContext('Should return an empty object', () => {
           setTestObjects(
             dummyTest.passing('field_1', 'message', 'group_name'),
             dummyTest.passing()
@@ -38,7 +39,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
         });
       });
       describe('When fieldName passed', () => {
-        it.withContext('Should return an empty array', () => {
+        itWithContext('Should return an empty array', () => {
           setTestObjects(
             dummyTest.passing('field_1', 'message', 'group_name'),
             dummyTest.passing()
@@ -52,7 +53,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
 
     describe('When there are failures', () => {
       describe('When no fieldName passed', () => {
-        it.withContext(
+        itWithContext(
           'Should return an object containing the error messages of each group',
           () => {
             setTestObjects(
@@ -74,7 +75,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
         );
       });
       describe('When fieldName passed', () => {
-        it.withContext(
+        itWithContext(
           "Should return an array of the field's error messages",
           () => {
             setTestObjects(
@@ -100,12 +101,12 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
   describe(`${methodName}->getWarningsByGroup`, () => {
     describe('When no tests', () => {
       describe('When no fieldName passed', () => {
-        it.withContext('Should return an empty object', () => {
+        itWithContext('Should return an empty object', () => {
           expect(produceMethod().getWarningsByGroup('group_name')).toEqual({});
         });
       });
       describe('When fieldName passed', () => {
-        it.withContext('Should return an empty array', () => {
+        itWithContext('Should return an empty array', () => {
           expect(
             produceMethod().getWarningsByGroup('group_name', 'field_name')
           ).toEqual([]);
@@ -115,7 +116,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
 
     describe('When no failures', () => {
       describe('When no fieldName passed', () => {
-        it.withContext('Should return an empty object', () => {
+        itWithContext('Should return an empty object', () => {
           setTestObjects(
             dummyTest.passing('field_1', 'message', 'group_name'),
             dummyTest.passing()
@@ -124,7 +125,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
         });
       });
       describe('When fieldName passed', () => {
-        it.withContext('Should return an empty array', () => {
+        itWithContext('Should return an empty array', () => {
           setTestObjects(
             dummyTest.passing('field_1', 'message', 'group_name'),
             dummyTest.passing()
@@ -138,7 +139,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
 
     describe('When there are failures', () => {
       describe('When no fieldName passed', () => {
-        it.withContext(
+        itWithContext(
           'Should return an object containing the warning messages of each group',
           () => {
             setTestObjects(
@@ -160,7 +161,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
         );
       });
       describe('When fieldName passed', () => {
-        it.withContext(
+        itWithContext(
           "Should return an array of the field's warning messages",
           () => {
             setTestObjects(

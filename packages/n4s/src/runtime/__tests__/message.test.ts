@@ -17,14 +17,14 @@ describe('enforce..message()', () => {
 
   it('Should set the failure message in custom rules', () => {
     expect(
-      enforce.ruleWithFailureMessage().message('oof. Failed again!').run()
+      enforce.ruleWithFailureMessage().message('oof. Failed again!').run(true)
     ).toEqual(ruleReturn(false, 'oof. Failed again!'));
 
     expect(
       enforce
         .ruleWithFailureMessage()
         .message(() => 'oof. Failed again!')
-        .run()
+        .run(true)
     ).toEqual(ruleReturn(false, 'oof. Failed again!'));
   });
 
@@ -38,14 +38,11 @@ describe('enforce..message()', () => {
       expect(msg).toHaveBeenCalledWith(arg, undefined);
     });
 
-    it('Should pass original messageas the second argument if exists', () => {
+    it('Should pass original messages the second argument if exists', () => {
       const msg = jest.fn(() => 'some message');
       const arg = {};
       expect(
-        enforce
-          .ruleWithFailureMessage(false)
-          .message(msg)
-          .run(arg, 'original message')
+        enforce.ruleWithFailureMessage(false).message(msg).run(arg)
       ).toEqual(ruleReturn(false, 'some message'));
       expect(msg).toHaveBeenCalledWith(arg, 'This should not be seen!');
     });

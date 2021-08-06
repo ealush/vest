@@ -16,7 +16,7 @@ export default function genEnforceLazy(key: string) {
   return addLazyRule(key);
 
   function addLazyRule(ruleName: string) {
-    return (...args: TArgs) => {
+    return (...args: TArgs): TLazy => {
       const rule = getRule(ruleName);
 
       registeredRules.push((value: TRuleValue) =>
@@ -79,7 +79,7 @@ export type TLazyRules = TRules<TLazyRuleMethods>;
 
 export type TLazy = TLazyRules & TLazyRuleMethods;
 
-export type TShapeObject = Record<string, TLazy>;
+export type TShapeObject = Record<any, TLazy>;
 
 type TLazyRuleMethods = {
   test: (value: unknown) => boolean;

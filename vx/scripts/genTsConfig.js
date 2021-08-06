@@ -4,6 +4,7 @@ const lodash = require('lodash');
 
 const exec = require('vx/exec');
 const logger = require('vx/logger');
+const opts = require('vx/opts');
 const getModuleAliases = require('vx/util/moduleAliases');
 const vxPath = require('vx/vxPath');
 
@@ -53,7 +54,7 @@ function tsConfigTemplate() {
       sourceMap: true,
       strict: true,
     },
-    files: ['./config/jest/globals.d.ts'],
-    include: ['./packages/*/src/**/*.ts'],
+    files: [`./${opts.dir.CONFIG}/jest/globals.d.ts`],
+    include: [`./${opts.dir.PACKAGES}/*/${opts.dir.SRC}/**/*.ts`],
   };
 }

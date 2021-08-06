@@ -1,5 +1,5 @@
 {
-  "version": "1.1.4",
+  "version": "1.2.0-dev-234135",
   "license": "MIT",
   "main": "./dist/cjs/context.js",
   "types": "./types/context.d.ts",

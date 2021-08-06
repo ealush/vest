@@ -45,7 +45,7 @@ module.exports = (custom = {}) => ({
           'TS7034',
           'TS7053',
           'TS7031',
-          'TS2339', // FIXME: Remove this one! Hides the "missing property" error
+          'TS2339', // FIXME! Remove this one! Hides the "missing property" error
         ], // essentially ignoring "any" errors in tests
       },
     },
@@ -61,6 +61,6 @@ module.exports = (custom = {}) => ({
     path.resolve(vxPath.JEST_CONFIG_PATH, 'jest.setupAfterEnv.ts'),
   ].concat(setupAfterEnvPerPackage),
   testEnvironment: 'node',
-  testMatch: [vxPath.packageSrc('*', '/**/__tests__/*.(spec|test).ts')],
+  testMatch: [vxPath.packageSrc('*', `/**/${opts.dir.TESTS}/*.(spec|test).ts`)],
   ...custom,
 });

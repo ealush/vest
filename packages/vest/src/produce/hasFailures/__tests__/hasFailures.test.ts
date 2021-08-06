@@ -1,5 +1,6 @@
 import faker from 'faker';
 
+import itWithContext from '../../../../testUtils/itWithContext';
 import { dummyTest } from '../../../../testUtils/testDummy';
 import {
   setTestObjects,
@@ -21,7 +22,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
 
   describe(`${methodName}->hasErrors`, () => {
     describe('When no test objects', () => {
-      it.withContext('should return false', () => {
+      itWithContext('should return false', () => {
         emptyTestObjects();
         expect(produceMethod().hasErrors(fieldName)).toBe(false);
         expect(produceMethod().hasErrors()).toBe(false);
@@ -29,7 +30,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
     });
 
     describe('When no failing test objects', () => {
-      it.withContext('should return false', () => {
+      itWithContext('should return false', () => {
         setTestObjects(
           dummyTest.passing(fieldName),
           dummyTest.passing('field_1'),
@@ -41,7 +42,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
     });
 
     describe('When failed fields are warning', () => {
-      it.withContext('should return false', () => {
+      itWithContext('should return false', () => {
         setTestObjects(
           dummyTest.failingWarning(),
           dummyTest.passing(fieldName)
@@ -52,7 +53,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
     });
 
     describe('When field has an error', () => {
-      it.withContext(
+      itWithContext(
         'Should return true when some of the tests of the field are erroring',
         () => {
           setTestObjects(dummyTest.passing(), dummyTest.failing(fieldName));
@@ -61,7 +62,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
         }
       );
 
-      it.withContext('should return true', () => {
+      itWithContext('should return true', () => {
         setTestObjects(dummyTest.failing(fieldName));
         expect(produceMethod().hasErrors(fieldName)).toBe(true);
         expect(produceMethod().hasErrors()).toBe(true);
@@ -71,7 +72,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
 
   describe(`${methodName}->hasWarnings`, () => {
     describe('When no test objects', () => {
-      it.withContext('should return false', () => {
+      itWithContext('should return false', () => {
         emptyTestObjects();
         expect(produceMethod().hasWarnings(fieldName)).toBe(false);
         expect(produceMethod().hasWarnings()).toBe(false);
@@ -79,7 +80,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
     });
 
     describe('When no failing test objects', () => {
-      it.withContext('should return false', () => {
+      itWithContext('should return false', () => {
         setTestObjects(
           dummyTest.passingWarning(fieldName),
           dummyTest.passing('field_1')
@@ -90,7 +91,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
     });
 
     describe('When failed fields is not warning', () => {
-      it.withContext('should return false', () => {
+      itWithContext('should return false', () => {
         setTestObjects(dummyTest.failing(fieldName));
         expect(produceMethod().hasWarnings(fieldName)).toBe(false);
         expect(produceMethod().hasWarnings()).toBe(false);
@@ -98,7 +99,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
     });
 
     describe('When field is warning', () => {
-      it.withContext(
+      itWithContext(
         'Should return true when some of the tests of the field are warning',
         () => {
           setTestObjects(
@@ -110,7 +111,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
         }
       );
 
-      it.withContext('should return false', () => {
+      itWithContext('should return false', () => {
         setTestObjects(dummyTest.failingWarning(fieldName));
         expect(produceMethod().hasWarnings(fieldName)).toBe(true);
         expect(produceMethod().hasWarnings()).toBe(true);

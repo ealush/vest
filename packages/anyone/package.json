@@ -3,7 +3,7 @@
   "license": "MIT",
   "main": "./dist/cjs/anyone.js",
   "types": "./types/anyone.d.ts",
-  "version": "0.1.0",
+  "version": "0.1.1-dev-234135",
   "author": "ealush",
   "scripts": {
     "test": "vx test",

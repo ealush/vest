@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 import expandStateRef from '../../../../../testUtils/expandStateRef';
+import itWithContext from '../../../../../testUtils/itWithContext';
 import runCreateRef from '../../../../../testUtils/runCreateRef';
 
 import VestTest from 'VestTest';
@@ -49,7 +50,7 @@ describe('module: pending', () => {
           });
         });
 
-        it.withContext(
+        itWithContext(
           'Should remove test from pending',
           () => {
             {
@@ -75,7 +76,7 @@ describe('module: pending', () => {
           });
         });
 
-        it.withContext(
+        itWithContext(
           'Should remove test from lagging',
           () => {
             {
@@ -109,7 +110,7 @@ describe('module: pending', () => {
       testObjects[0].groupName = groupName;
     });
 
-    it.withContext(
+    itWithContext(
       'Should set supplied test object as pending',
       () => {
         {
@@ -139,7 +140,7 @@ describe('module: pending', () => {
         });
       });
 
-      it.withContext(
+      itWithContext(
         'Should remove test from lagging array',
         () => {
           {
@@ -162,7 +163,7 @@ describe('module: pending', () => {
         getStateRef
       );
 
-      it.withContext(
+      itWithContext(
         'Should add test to pending array',
         () => {
           {
@@ -178,7 +179,7 @@ describe('module: pending', () => {
         getStateRef
       );
 
-      it.withContext(
+      itWithContext(
         'Should set test as canceled',
         () => {
           expect(testObjects[0].canceled).toBe(false);

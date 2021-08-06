@@ -2,14 +2,15 @@ const path = require('path');
 
 const glob = require('glob');
 
+const opts = require('vx/opts');
 const vxPath = require('vx/vxPath');
 
-const matches = glob.sync('./packages/*/src/**/*.ts', {
+const matches = glob.sync(`./${opts.dir.PACKAGES}/*/${opts.dir.SRC}/**/*.ts`, {
   cwd: vxPath.ROOT_PATH,
   absolute: false,
   ignore: [
-    './packages/*/src/**/index.ts',
-    './packages/*/src/**/__tests__/**/*',
+    `./${opts.dir.PACKAGES}/*/${opts.dir.SRC}/**/index.ts`,
+    `./${opts.dir.PACKAGES}/*/${opts.dir.SRC}/**/${opts.dir.TESTS}/**/*`,
   ],
 });
 

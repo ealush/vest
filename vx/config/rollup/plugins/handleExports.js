@@ -93,7 +93,7 @@ function writePackageJson(name, isMain, exportPath) {
 }
 
 function joinPath(...paths) {
-  return paths.join('/'); // this combats the trimming of the first dot in the path
+  return paths.join(path.sep); // this combats the trimming of the first dot in the path
 }
 
 function mainExport(name, isMain) {

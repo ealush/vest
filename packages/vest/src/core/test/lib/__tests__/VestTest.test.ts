@@ -1,6 +1,8 @@
 import * as vest from 'vest';
 import wait from 'wait';
 
+import itWithContext from '../../../../../testUtils/itWithContext';
+
 import VestTest from 'VestTest';
 import { setPending } from 'pending';
 import { usePending, useLagging } from 'stateHooks';
@@ -92,7 +94,7 @@ describe('VestTest', () => {
       });
     });
 
-    it.withContext('Should remove a testObject from the pending state', () => {
+    itWithContext('Should remove a testObject from the pending state', () => {
       setPending(testObject);
       {
         const [pending] = usePending();
@@ -105,7 +107,7 @@ describe('VestTest', () => {
       }
     });
 
-    it.withContext('Should remove a testObject from the lagging state', () => {
+    itWithContext('Should remove a testObject from the lagging state', () => {
       const [, setLagging] = useLagging();
       setLagging(() => [testObject]);
       {

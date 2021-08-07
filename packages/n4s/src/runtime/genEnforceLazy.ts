@@ -81,9 +81,12 @@ export type TLazy = TLazyRules & TLazyRuleMethods;
 
 export type TShapeObject = Record<any, TLazy>;
 
-type TLazyRuleMethods = {
+export type TLazyRuleRunners = {
   test: (value: unknown) => boolean;
   run: (value: unknown) => TRuleDetailedResult;
+};
+
+type TLazyRuleMethods = TLazyRuleRunners & {
   message: (message: TLazyMessage) => TLazy;
 };
 

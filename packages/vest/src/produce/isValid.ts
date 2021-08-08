@@ -2,7 +2,7 @@ import { isNotEmpty, isEmpty } from 'isEmpty';
 
 import type { TDraftResult } from 'produceDraft';
 import {
-  useTestsOrdered,
+  useTestObjects,
   useOptionalFields,
   usePending,
   useLagging,
@@ -13,7 +13,7 @@ export function isValid(result: TDraftResult): boolean {
     return false;
   }
 
-  const [testObjects] = useTestsOrdered();
+  const [testObjects] = useTestObjects();
 
   if (isEmpty(testObjects)) {
     return false;

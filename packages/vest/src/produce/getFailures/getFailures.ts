@@ -1,5 +1,5 @@
 import collectFailureMessages from 'collectFailureMessages';
-import { useTestsOrdered } from 'stateHooks';
+import { useTestObjects } from 'stateHooks';
 import type { TSeverity } from 'vestTypes';
 
 export function getErrors(): Record<string, string[]>;
@@ -22,7 +22,7 @@ export function getWarnings(
  * @returns suite or field's errors or warnings.
  */
 function getFailures(severityKey: TSeverity, fieldName?: string) {
-  const [testObjects] = useTestsOrdered();
+  const [testObjects] = useTestObjects();
   const failureMessages = collectFailureMessages(severityKey, testObjects, {
     fieldName,
   });

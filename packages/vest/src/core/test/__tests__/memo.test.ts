@@ -1,276 +1,187 @@
 import * as vest from 'vest';
+import { test as vestTest, enforce } from 'vest';
 import wait from 'wait';
 
 import promisify from 'promisify';
-import test from 'test';
-
-const genValidate = tests => vest.create(tests);
 
 describe('test.memo', () => {
-  describe('Sync tests', () => {
-    const testCb1 = jest.fn();
-    const testCb2 = jest.fn();
-    const testCb3 = jest.fn();
-    const testCb4 = jest.fn();
+  describe('cache hit', () => {
+    it('Should return without calling callback', () => {
+      const cb1 = jest.fn();
+      const cb2 = jest.fn(() => new Promise<void>(() => undefined));
+      const suite = vest.create(() => {
+        vestTest.memo('f1', cb1, [1]);
+        vestTest.memo('f1', cb2, [2]);
+      });
 
-    const test1Set = new Set();
-    const test2Set = new Set();
-    const test3Set = new Set();
-    const test4Set = new Set();
+      suite();
+      expect(cb1).toHaveBeenCalledTimes(1);
+      expect(cb2).toHaveBeenCalledTimes(1);
+      suite();
+      expect(cb1).toHaveBeenCalledTimes(1);
+      expect(cb2).toHaveBeenCalledTimes(1);
+    });
 
-    const validate = genValidate(value => {
-      test1Set.add(
-        test.memo(
-          'field_1',
-          'message',
+    it('Should produce correct initial result', () => {
+      const res = vest.create(() => {
+        vestTest.memo('field1', 'msg1', () => false, [{}]);
+        vestTest.memo('field1', 'msg2', () => undefined, [{}]);
+        vestTest.memo('field2', () => undefined, [{}]);
+        vestTest.memo(
+          'field3',
           () => {
-            testCb1();
+            vest.warn();
             return false;
           },
-          [value]
-        )
-      );
-      test2Set.add(
-        test.memo(
-          'field_2',
-          'message',
-          () => {
-            testCb2();
-            expect(value).toBe(2);
-          },
-          [value]
-        )
-      );
-      test3Set.add(
-        test.memo(
-          'field_3',
-          'message',
-          () => {
-            testCb3();
-            expect(value).toBe(1);
-          },
-          [value]
-        )
-      );
-      test4Set.add(
-        test.memo(
-          'field_4',
-          'message',
-          () => {
-            testCb4();
-            vest.warn();
-            expect(value).toBe(2);
-          },
-          [value]
-        )
-      );
+          [{}]
+        );
+      })();
+
+      expect(res.hasErrors('field1')).toBe(true);
+      expect(res.hasErrors('field2')).toBe(false);
+      expect(res.hasWarnings('field3')).toBe(true);
+      expect(res).toMatchSnapshot();
     });
+    describe('sync', () => {
+      it('Should restore previous result on re-run', () => {
+        const suite = vest.create(() => {
+          vestTest.memo('field1', 'msg1', () => false, [1]);
+          vestTest.memo('field1', 'msg2', () => undefined, [2]);
+          vestTest.memo('field2', () => undefined, [3]);
+          vestTest.memo(
+            'field3',
+            () => {
+              vest.warn();
+              return false;
+            },
+            [4]
+          );
+        });
 
-    let res;
+        const res = suite();
 
-    describe('On cache miss', () => {
-      it('Should run all test callbacks normally', () => {
-        expect(testCb1).not.toHaveBeenCalled();
-        expect(testCb2).not.toHaveBeenCalled();
-        expect(testCb3).not.toHaveBeenCalled();
-        expect(testCb4).not.toHaveBeenCalled();
-        validate(1);
-        expect(testCb1).toHaveBeenCalled();
-        expect(testCb2).toHaveBeenCalled();
-        expect(testCb3).toHaveBeenCalled();
-        expect(testCb4).toHaveBeenCalled();
-      });
-
-      it('Should produce correct validation result', () => {
-        res = validate(1);
-        expect(res.hasErrors('field_1')).toBe(true);
-        expect(res.hasErrors('field_2')).toBe(true);
-        expect(res.hasErrors('field_3')).toBe(false);
-        expect(res.hasErrors('field_4')).toBe(false);
-        expect(res.hasWarnings('field_4')).toBe(true);
+        expect(res.hasErrors('field1')).toBe(true);
+        expect(res.hasErrors('field2')).toBe(false);
+        expect(res.hasWarnings('field3')).toBe(true);
         expect(res).toMatchSnapshot();
+
+        const res2 = suite();
+        expect(res2.hasErrors('field1')).toBe(true);
+        expect(res2.hasErrors('field2')).toBe(false);
+        expect(res2.hasWarnings('field3')).toBe(true);
+        expect(res).isDeepCopyOf(res2);
       });
     });
 
-    describe('On cache hit', () => {
-      it('should return without running cached tests', () => {
-        validate(1);
-        expect(testCb1).not.toHaveBeenCalled();
-        expect(testCb2).not.toHaveBeenCalled();
-        expect(testCb3).not.toHaveBeenCalled();
-        expect(testCb4).not.toHaveBeenCalled();
-      });
+    describe('async', () => {
+      it('Should immediately previous result on re-run', async () => {
+        {
+          const suite = promisify(
+            vest.create(() => {
+              vestTest.memo(
+                'field1',
+                async () => {
+                  await wait(500);
+                  enforce(1).equals(2);
+                },
+                [1]
+              );
+              vestTest.memo(
+                'field2',
+                async () => {
+                  await wait(500);
+                  enforce(1).equals(2);
+                },
+                [2]
+              );
+            })
+          );
 
-      it('Should produce correct validation result', () => {
-        const cachedRes = validate(1);
-        expect(res.hasErrors('field_1')).toBe(true);
-        expect(res.hasErrors('field_2')).toBe(true);
-        expect(res.hasErrors('field_3')).toBe(false);
-        expect(res.hasErrors('field_4')).toBe(false);
-        expect(res.hasWarnings('field_4')).toBe(true);
-        expect(cachedRes).toMatchSnapshot();
-      });
+          let start = Date.now();
+          const res1 = await suite();
+          enforce(Date.now() - start).gte(500);
 
-      it('Returns the same VestTest object', () => {
-        validate(1);
-        expect(test1Set.size).toBe(1);
-        expect(test2Set.size).toBe(1);
-        expect(test3Set.size).toBe(1);
-        expect(test4Set.size).toBe(1);
-      });
-    });
+          start = Date.now();
+          const res2 = await suite();
 
-    describe('On cache update', () => {
-      it('Should call test functions again', () => {
-        expect(testCb1).not.toHaveBeenCalled();
-        expect(testCb2).not.toHaveBeenCalled();
-        expect(testCb3).not.toHaveBeenCalled();
-        expect(testCb4).not.toHaveBeenCalled();
-        validate(2);
-        expect(testCb1).toHaveBeenCalled();
-        expect(testCb2).toHaveBeenCalled();
-        expect(testCb3).toHaveBeenCalled();
-        expect(testCb4).toHaveBeenCalled();
-      });
+          // Should be immediate
+          enforce(Date.now() - start).lte(1);
 
-      it('Should produce fresh result', () => {
-        const newRes = validate(2);
-        expect(newRes).not.isDeepCopyOf(res);
-        expect(newRes.hasErrors('field_1')).toBe(true);
-        expect(newRes.hasErrors('field_2')).toBe(false);
-        expect(newRes.hasErrors('field_3')).toBe(true);
-        expect(newRes.hasErrors('field_4')).toBe(false);
-        expect(newRes.hasWarnings('field_4')).toBe(false);
-        expect(newRes).toMatchSnapshot();
-      });
-
-      it('Should return testObject', () => {
-        validate(2);
-        expect(test1Set.size).toBe(2);
-        expect(test2Set.size).toBe(2);
-        expect(test3Set.size).toBe(2);
-        expect(test4Set.size).toBe(2);
+          expect(res1).isDeepCopyOf(res2);
+        }
       });
     });
   });
 
-  describe('Async tests', () => {
-    describe('Cache miss', () => {
-      const testCb1 = jest.fn();
-
-      const validate = genValidate(value => {
-        test.memo(
-          'field_1',
-          () =>
-            new Promise<void>((resolve, reject) => {
-              testCb1();
-              setTimeout(() => {
-                if (value === 'FAIL') {
-                  reject();
-                } else {
-                  resolve();
-                }
-              }, 1000);
-            }),
-          [value]
-        );
+  describe('cache miss', () => {
+    it('Should run test normally', () => {
+      const cb1 = jest.fn(res => res);
+      const cb2 = jest.fn(
+        res => new Promise<void>((resolve, rej) => (res ? resolve() : rej()))
+      );
+      const suite = vest.create((key, res) => {
+        vestTest.memo('f1', () => cb1(res), [1, key]);
+        vestTest.memo('f2', () => cb2(res), [2, key]);
       });
-      it('Should run test functions normally', () =>
-        new Promise<void>(done => {
-          const control = jest.fn();
-          expect(testCb1).not.toHaveBeenCalled();
-          validate('FAIL').done(res => {
-            expect(res.hasErrors('field_1')).toBe(true);
-            expect(res).toMatchSnapshot();
-            control();
-          });
-          expect(testCb1).toHaveBeenCalledTimes(1);
-          setTimeout(() => {
-            expect(control).toHaveBeenCalledTimes(1);
-            done();
-          }, 1000);
-        }));
+
+      expect(cb1).toHaveBeenCalledTimes(0);
+      expect(cb2).toHaveBeenCalledTimes(0);
+      suite('a', false);
+      expect(cb1).toHaveBeenCalledTimes(1);
+      expect(cb2).toHaveBeenCalledTimes(1);
+      expect(suite.get().hasErrors()).toBe(true);
+      suite('b', true);
+      expect(cb1).toHaveBeenCalledTimes(2);
+      expect(cb2).toHaveBeenCalledTimes(2);
+      expect(suite.get().hasErrors()).toBe(false);
+    });
+  });
+
+  describe('Collision detection', () => {
+    describe('cross-field collision', () => {
+      it('Should factor in field name', () => {
+        const suite = vest.create(() => {
+          vestTest.memo('f1', () => false, [1]);
+          vestTest.memo('f2', () => true, [1]);
+        });
+
+        suite();
+        suite();
+        expect(suite.get().hasErrors('f1')).toBe(true);
+        expect(suite.get().hasErrors('f2')).toBe(false);
+      });
     });
 
-    describe('Cache hit', () => {
-      const testCb1 = jest.fn();
-      const test1Set = new Set();
-
-      const validate = promisify(
-        genValidate(value => {
-          test1Set.add(
-            test.memo(
-              'field_1',
-              () =>
-                new Promise<void>((resolve, reject) => {
-                  testCb1();
-                  setTimeout(() => {
-                    if (value.startsWith('FAIL')) {
-                      reject();
-                    } else {
-                      resolve();
-                    }
-                  }, 1000);
-                }),
-              [value]
-            )
-          );
-        })
-      );
-
-      it('Should only call test function once', async () => {
-        expect(testCb1).toHaveBeenCalledTimes(0);
-        await validate('FAIL');
-        expect(testCb1).toHaveBeenCalledTimes(1);
-        await validate('FAIL');
-        expect(testCb1).toHaveBeenCalledTimes(1);
-      });
-
-      it('Should return same test object', async () => {
-        await validate('FAIL');
-        await validate('FAIL');
-        expect(test1Set.size).toBe(1);
-      });
-
-      it('Should produce the same result', async () => {
-        const res1 = await validate('FAIL');
-        const res2 = await validate('FAIL');
-        expect(res1).isDeepCopyOf(res2);
-      });
-
-      describe('When not fully awaited', () => {
-        const testCb1 = jest.fn();
-        const test1Set = new Set();
-
-        const validate = genValidate(value => {
-          test1Set.add(
-            test.memo(
-              'field_1',
-              () =>
-                new Promise<void>((resolve, reject) => {
-                  testCb1();
-                  setTimeout(() => {
-                    if (value.startsWith('FAIL')) {
-                      reject();
-                    } else {
-                      resolve();
-                    }
-                  }, 1000);
-                }),
-              [value]
-            )
-          );
+    describe('same-field-same-suite collision', () => {
+      it('Should factor in execution order', () => {
+        const suite = vest.create(() => {
+          vestTest.memo('f1', () => false, [1]);
+          vestTest.memo('f1', () => true, [1]);
         });
-        it('Should only call latest done', async () => {
-          const doneCb1 = jest.fn();
-          const doneCb2 = jest.fn();
-          validate('FAILURE').done(doneCb1);
-          await wait(50);
-          validate('FAILURE').done(doneCb2);
-          await wait(1000);
-          expect(doneCb1).not.toHaveBeenCalled();
-          expect(doneCb2).toHaveBeenCalled();
+
+        suite();
+        suite();
+        expect(suite.get().hasErrors('f1')).toBe(true);
+        expect(suite.get().errorCount).toBe(1);
+      });
+    });
+    describe('cross-suite collision', () => {
+      it('Should factor in field name', () => {
+        const suite1 = vest.create(() => {
+          vestTest.memo('f1', () => false, [1]);
+          vestTest.memo('f2', () => true, [1]);
         });
+        const suite2 = vest.create(() => {
+          vestTest.memo('f1', () => true, [1]);
+          vestTest.memo('f2', () => false, [1]);
+        });
+
+        suite1();
+        suite2();
+        expect(suite1.get().hasErrors('f1')).toBe(true);
+        expect(suite1.get().hasErrors('f2')).toBe(false);
+        expect(suite2.get().hasErrors('f1')).toBe(false);
+        expect(suite2.get().hasErrors('f2')).toBe(true);
       });
     });
   });

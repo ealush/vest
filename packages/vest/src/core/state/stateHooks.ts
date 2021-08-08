@@ -33,35 +33,34 @@ export function useStateRef(): Exclude<TStateRef, void> {
   return ctx.useX().stateRef!; // I should revisit this
 }
 
-export function useTestsOrdered(): TStateHandlerReturn<VestTest[]> {
-  return useStateRef().testsOrdered();
+export function useTestObjects(): TStateHandlerReturn<VestTest[]> {
+  return useStateRef().testObjects();
+}
+
+export function usePrevTestObjects(): TStateHandlerReturn<VestTest[]> {
+  return useStateRef().prevTestObjects();
 }
 
 export function useTestAtCursor(initialValue: VestTest): VestTest {
   const [cursorAt] = useCursorAt();
-  const [testsOrder, setTestsOrder] = useTestsOrdered();
+  const [prevTestObjects] = usePrevTestObjects();
 
-  if (!testsOrder[cursorAt]) {
-    setTestsOrder((testsOrder: VestTest[]) => {
-      const newTestsOrder = testsOrder.slice(0);
-      newTestsOrder[cursorAt] = initialValue;
-      return newTestsOrder;
-    });
-  }
+  const nextTest = prevTestObjects[cursorAt] ?? initialValue;
+  useSetTestAtCursor(nextTest);
 
-  return testsOrder[cursorAt] ?? initialValue;
+  return nextTest;
 }
 
 export function useSetTestAtCursor(testObject: VestTest): void {
   const [cursorAt] = useCursorAt();
-  const [testsOrder, setTestsOrder] = useTestsOrdered();
+  const [testObjects, setTestObjects] = useTestObjects();
 
-  if (testObject === testsOrder[cursorAt]) {
+  if (testObject === testObjects[cursorAt]) {
     return;
   }
 
-  setTestsOrder((testsOrder: VestTest[]) => {
-    const newTestsOrder = testsOrder.slice(0);
+  setTestObjects((testObjects: VestTest[]) => {
+    const newTestsOrder = testObjects.slice(0);
     newTestsOrder[cursorAt] = testObject;
     return newTestsOrder;
   });
@@ -74,11 +73,11 @@ export function useSetNextCursorAt(): void {
 }
 
 export function useRefreshTestObjects(): void {
-  const [, setTestsOrder] = useTestsOrdered();
+  const [, setTestObjects] = useTestObjects();
 
-  setTestsOrder(testsOrdered => testsOrdered.slice(0));
+  setTestObjects(testObjects => testObjects.slice(0));
 }
 
-function useCursorAt(): TStateHandlerReturn<number> {
-  return useStateRef().testsOrderedCursor();
+export function useCursorAt(): TStateHandlerReturn<number> {
+  return useStateRef().testObjectsCursor();
 }

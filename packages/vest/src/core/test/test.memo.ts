@@ -6,7 +6,13 @@ import VestTest, { TTestFn } from 'VestTest';
 import { isExcluded } from 'exclusive';
 import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
-import { useSuiteId } from 'stateHooks';
+import {
+  useSuiteId,
+  useCursorAt,
+  useTestAtCursor,
+  useSetNextCursorAt,
+  useSetTestAtCursor,
+} from 'stateHooks';
 import type { TTestBase } from 'test';
 /* eslint-disable jest/no-export */
 export default function bindTestMemo(test: TTestBase): {
@@ -38,11 +44,12 @@ export default function bindTestMemo(test: TTestBase): {
       | [test: TTestFn, deps: unknown[]]
   ): VestTest {
     const [suiteId] = useSuiteId();
+    const [cursorAt] = useCursorAt();
 
     const [deps, testFn, msg] = args.reverse() as [any[], TTestFn, string];
 
     // Implicit dependency for more specificity
-    const dependencies = [suiteId, fieldName].concat(deps);
+    const dependencies = [suiteId, fieldName, cursorAt].concat(deps);
 
     const cached = cache.get(dependencies);
 
@@ -53,9 +60,15 @@ export default function bindTestMemo(test: TTestBase): {
 
     const [, testObject] = cached;
 
+    const prevRunTest = useTestAtCursor(testObject);
+
     if (isExcluded(testObject)) {
-      return testObject;
+      useSetNextCursorAt();
+      return prevRunTest;
     }
+
+    useSetTestAtCursor(testObject);
+    useSetNextCursorAt();
 
     handleAsyncTest(testObject);
 

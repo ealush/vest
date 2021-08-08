@@ -17,6 +17,7 @@ Object {
       "testFn": [MockFunction],
     },
   ],
+  "prevTestObjects": Array [],
   "skippedTests": Array [],
   "suiteId": "1000",
   "testCallbacks": Object {
@@ -25,8 +26,8 @@ Object {
       "field_1": Array [],
     },
   },
-  "testsOrdered": Array [],
-  "testsOrderedCursor": 0,
+  "testObjects": Array [],
+  "testObjectsCursor": 0,
 }
 `;
 
@@ -47,6 +48,7 @@ Object {
       "testFn": [MockFunction],
     },
   ],
+  "prevTestObjects": Array [],
   "skippedTests": Array [],
   "suiteId": "1000",
   "testCallbacks": Object {
@@ -55,7 +57,7 @@ Object {
       "field_1": Array [],
     },
   },
-  "testsOrdered": Array [],
-  "testsOrderedCursor": 0,
+  "testObjects": Array [],
+  "testObjectsCursor": 0,
 }
 `;

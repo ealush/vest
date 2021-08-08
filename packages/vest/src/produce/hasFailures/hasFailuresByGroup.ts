@@ -1,5 +1,5 @@
 import hasFailuresLogic from 'hasFailuresLogic';
-import { useTestsOrdered } from 'stateHooks';
+import { useTestObjects } from 'stateHooks';
 import type { TSeverity } from 'vestTypes';
 
 export function hasErrorsByGroup(
@@ -24,7 +24,7 @@ function hasByGroup(
   group: string,
   fieldName?: string
 ): boolean {
-  const [testObjects] = useTestsOrdered();
+  const [testObjects] = useTestObjects();
   return testObjects.some(testObject => {
     return group === testObject.groupName
       ? hasFailuresLogic(testObject, severityKey, fieldName)

@@ -1,7 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`test.memo Async tests Cache miss Should run test functions normally 1`] = `
+exports[`test.memo cache hit Should produce correct initial result 1`] = `
 Object {
+  "done": [Function],
   "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -13,72 +14,35 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
-  "testCount": 1,
-  "tests": Object {
-    "field_1": Object {
-      "errorCount": 1,
-      "testCount": 1,
-      "warnCount": 0,
-    },
-  },
-  "warnCount": 0,
-}
-`;
-
-exports[`test.memo Sync tests On cache hit Should produce correct validation result 1`] = `
-Object {
-  "done": [Function],
-  "errorCount": 2,
-  "getErrors": [Function],
-  "getErrorsByGroup": [Function],
-  "getWarnings": [Function],
-  "getWarningsByGroup": [Function],
-  "groups": Object {},
-  "hasErrors": [Function],
-  "hasErrorsByGroup": [Function],
-  "hasWarnings": [Function],
-  "hasWarningsByGroup": [Function],
-  "isValid": [Function],
   "testCount": 4,
   "tests": Object {
-    "field_1": Object {
+    "field1": Object {
       "errorCount": 1,
       "errors": Array [
-        "message",
+        "msg1",
       ],
-      "testCount": 1,
+      "testCount": 2,
       "warnCount": 0,
     },
-    "field_2": Object {
-      "errorCount": 1,
-      "errors": Array [
-        "message",
-      ],
-      "testCount": 1,
-      "warnCount": 0,
-    },
-    "field_3": Object {
+    "field2": Object {
       "errorCount": 0,
       "testCount": 1,
       "warnCount": 0,
     },
-    "field_4": Object {
+    "field3": Object {
       "errorCount": 0,
       "testCount": 1,
       "warnCount": 1,
-      "warnings": Array [
-        "message",
-      ],
     },
   },
   "warnCount": 1,
 }
 `;
 
-exports[`test.memo Sync tests On cache miss Should produce correct validation result 1`] = `
+exports[`test.memo cache hit sync Should restore previous result on re-run 1`] = `
 Object {
   "done": [Function],
-  "errorCount": 2,
+  "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
@@ -91,83 +55,25 @@ Object {
   "isValid": [Function],
   "testCount": 4,
   "tests": Object {
-    "field_1": Object {
+    "field1": Object {
       "errorCount": 1,
       "errors": Array [
-        "message",
+        "msg1",
       ],
-      "testCount": 1,
+      "testCount": 2,
       "warnCount": 0,
     },
-    "field_2": Object {
-      "errorCount": 1,
-      "errors": Array [
-        "message",
-      ],
-      "testCount": 1,
-      "warnCount": 0,
-    },
-    "field_3": Object {
+    "field2": Object {
       "errorCount": 0,
       "testCount": 1,
       "warnCount": 0,
     },
-    "field_4": Object {
+    "field3": Object {
       "errorCount": 0,
       "testCount": 1,
       "warnCount": 1,
-      "warnings": Array [
-        "message",
-      ],
     },
   },
   "warnCount": 1,
-}
-`;
-
-exports[`test.memo Sync tests On cache update Should produce fresh result 1`] = `
-Object {
-  "done": [Function],
-  "errorCount": 2,
-  "getErrors": [Function],
-  "getErrorsByGroup": [Function],
-  "getWarnings": [Function],
-  "getWarningsByGroup": [Function],
-  "groups": Object {},
-  "hasErrors": [Function],
-  "hasErrorsByGroup": [Function],
-  "hasWarnings": [Function],
-  "hasWarningsByGroup": [Function],
-  "isValid": [Function],
-  "testCount": 4,
-  "tests": Object {
-    "field_1": Object {
-      "errorCount": 1,
-      "errors": Array [
-        "message",
-      ],
-      "testCount": 1,
-      "warnCount": 0,
-    },
-    "field_2": Object {
-      "errorCount": 0,
-      "testCount": 1,
-      "warnCount": 0,
-    },
-    "field_3": Object {
-      "errorCount": 1,
-      "errors": Array [
-        "message",
-      ],
-      "testCount": 1,
-      "warnCount": 0,
-    },
-    "field_4": Object {
-      "errorCount": 0,
-      "testCount": 1,
-      "warnCount": 0,
-    },
-  },
-  "warnCount": 0,
 }
 `;

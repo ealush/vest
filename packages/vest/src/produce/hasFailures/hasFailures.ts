@@ -1,5 +1,5 @@
 import hasFailuresLogic from 'hasFailuresLogic';
-import { useTestsOrdered } from 'stateHooks';
+import { useTestObjects } from 'stateHooks';
 import type { TSeverity } from 'vestTypes';
 
 export function hasErrors(fieldName?: string): boolean {
@@ -11,7 +11,7 @@ export function hasWarnings(fieldName?: string): boolean {
 }
 
 function has(severityKey: TSeverity, fieldName?: string): boolean {
-  const [testObjects] = useTestsOrdered();
+  const [testObjects] = useTestObjects();
   return testObjects.some(testObject =>
     hasFailuresLogic(testObject, severityKey, fieldName)
   );

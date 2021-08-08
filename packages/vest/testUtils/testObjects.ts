@@ -1,12 +1,12 @@
 import VestTest from 'VestTest';
-import { useTestsOrdered } from 'stateHooks';
+import { useTestObjects } from 'stateHooks';
 
 export function emptyTestObjects(): void {
-  const [, setTestObjects] = useTestsOrdered();
+  const [, setTestObjects] = useTestObjects();
   setTestObjects(() => []);
 }
 
 export function setTestObjects(...args: VestTest[]): void {
-  const [, setTestObjects] = useTestsOrdered();
+  const [, setTestObjects] = useTestObjects();
   setTestObjects(() => [...args]);
 }

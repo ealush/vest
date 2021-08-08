@@ -11,6 +11,7 @@ export default function createStateRef(
     lagging: state.registerStateKey<VestTest[]>(() => []),
     optionalFields: state.registerStateKey<Record<string, boolean>>(() => ({})),
     pending: state.registerStateKey<VestTest[]>(() => []),
+    prevTestObjects: state.registerStateKey<VestTest[]>(() => []),
     skippedTests: state.registerStateKey<VestTest[]>(() => []),
     suiteId: state.registerStateKey<string>(() => suiteId),
     testCallbacks: state.registerStateKey<{
@@ -20,8 +21,8 @@ export default function createStateRef(
       fieldCallbacks: {},
       doneCallbacks: [],
     })),
-    testsOrdered: state.registerStateKey<VestTest[]>(() => []),
-    testsOrderedCursor: state.registerStateKey<number>(() => 0),
+    testObjects: state.registerStateKey<VestTest[]>(() => []),
+    testObjectsCursor: state.registerStateKey<number>(() => 0),
   };
 }
 

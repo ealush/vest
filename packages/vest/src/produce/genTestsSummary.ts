@@ -1,12 +1,12 @@
 import VestTest from 'VestTest';
-import { useTestsOrdered } from 'stateHooks';
+import { useTestObjects } from 'stateHooks';
 import type { TSeverity } from 'vestTypes';
 
 /**
  * Reads the testObjects list and gets full validation result from it.
  */
 export default function genTestsSummary(): TTestSummary {
-  const [testObjects] = useTestsOrdered();
+  const [testObjects] = useTestObjects();
 
   const summary: TTestSummary = {
     errorCount: 0,

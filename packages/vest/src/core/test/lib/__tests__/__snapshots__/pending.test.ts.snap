@@ -5,14 +5,15 @@ Object {
   "lagging": Array [],
   "optionalFields": Object {},
   "pending": Array [],
+  "prevTestObjects": Array [],
   "skippedTests": Array [],
   "suiteId": "1000",
   "testCallbacks": Object {
     "doneCallbacks": Array [],
     "fieldCallbacks": Object {},
   },
-  "testsOrdered": Array [],
-  "testsOrderedCursor": 0,
+  "testObjects": Array [],
+  "testObjectsCursor": 0,
 }
 `;
 
@@ -21,14 +22,15 @@ Object {
   "lagging": Array [],
   "optionalFields": Object {},
   "pending": Array [],
+  "prevTestObjects": Array [],
   "skippedTests": Array [],
   "suiteId": "1000",
   "testCallbacks": Object {
     "doneCallbacks": Array [],
     "fieldCallbacks": Object {},
   },
-  "testsOrdered": Array [],
-  "testsOrderedCursor": 0,
+  "testObjects": Array [],
+  "testObjectsCursor": 0,
 }
 `;
 
@@ -49,14 +51,15 @@ Object {
       "testFn": [MockFunction],
     },
   ],
+  "prevTestObjects": Array [],
   "skippedTests": Array [],
   "suiteId": "1000",
   "testCallbacks": Object {
     "doneCallbacks": Array [],
     "fieldCallbacks": Object {},
   },
-  "testsOrdered": Array [],
-  "testsOrderedCursor": 0,
+  "testObjects": Array [],
+  "testObjectsCursor": 0,
 }
 `;
 
@@ -98,13 +101,14 @@ Object {
       "testFn": [MockFunction],
     },
   ],
+  "prevTestObjects": Array [],
   "skippedTests": Array [],
   "suiteId": "1000",
   "testCallbacks": Object {
     "doneCallbacks": Array [],
     "fieldCallbacks": Object {},
   },
-  "testsOrdered": Array [],
-  "testsOrderedCursor": 0,
+  "testObjects": Array [],
+  "testObjectsCursor": 0,
 }
 `;

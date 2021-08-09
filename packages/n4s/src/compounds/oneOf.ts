@@ -9,8 +9,7 @@ export default function oneOf(
   ...rules: TLazy[]
 ): TRuleDetailedResult {
   const passing: TRuleDetailedResult[] = [];
-
-  rules.every(rule => {
+  rules.some(rule => {
     if (longerThan(passing, 1)) {
       return false;
     }
@@ -20,7 +19,6 @@ export default function oneOf(
     if (res.pass) {
       passing.push(res);
     }
-    return res.pass;
   });
 
   return ruleReturn(lengthEquals(passing, 1));

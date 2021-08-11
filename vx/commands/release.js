@@ -2,17 +2,18 @@ const isReleaseBranch = require('../scripts/release/isReleaseBranch');
 const pushToLatestBranch = require('../scripts/release/steps/pushToLatestBranch');
 const updateDocs = require('../scripts/release/steps/updateDocs');
 
-const exec = require('vx/exec');
 const logger = require('vx/logger');
+const packageName = require('vx/packageName');
 const packagesToRelease = require('vx/scripts/release/packagesToRelease');
-const dryRun = require('vx/util/dryRun');
+const releasePackage = require('vx/scripts/release/releasePackage');
 const integrationBranch = require('vx/util/integrationBranch');
+const ctx = require('vx/vxContext');
 require('../scripts/genTsConfig');
 
-function release(packageName) {
-  const pkg = packageName || integrationBranch.targetPackage;
+function release() {
+  const pkg = packageName() || integrationBranch.targetPackage;
   if (pkg) {
-    exec(['yarn workspace', pkg, 'run vx releasePackage', dryRun.cliOpt()]);
+    return ctx.withPackage(pkg, releasePackage);
   } else {
     releaseAll();
   }
@@ -26,7 +27,7 @@ async function releaseAll() {
   const releaseList = await packagesToRelease();
 
   releaseList.forEach(name => {
-    exec(['yarn workspace', name, 'run vx release', dryRun.cliOpt()]);
+    ctx.withPackage(name, release);
   });
 
   if (!isReleaseBranch()) {

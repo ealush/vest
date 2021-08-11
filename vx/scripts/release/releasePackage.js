@@ -6,11 +6,14 @@ const setNextVersion = require('./../release/steps/setNextVersion');
 const updateChangelog = require('./../release/steps/updateChangelog');
 
 const logger = require('vx/logger');
+const packageName = require('vx/packageName');
 
-function releasePackage(packageName) {
-  logger.info(`Releasing package: 📦 ${packageName}`);
+function releasePackage() {
+  const pkgName = packageName();
 
-  logger.info(`🔍 Finding diffs for package: ${packageName}`);
+  logger.info(`Releasing package: 📦 ${pkgName}`);
+
+  logger.info(`🔍 Finding diffs for package: ${pkgName}`);
   const changes = getDiff();
 
   if (!changes.length) {

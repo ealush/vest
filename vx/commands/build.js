@@ -1,11 +1,9 @@
-const exec = require('vx/exec');
+const buildPackage = require('../scripts/build/buildPackage');
 
-function build(packageName, { options }) {
-  if (packageName) {
-    exec([`yarn workspace ${packageName} vx pack`, options]);
-  } else {
-    exec([`yarn workspaces run vx pack`, options]);
-  }
+const runOnActivePackages = require('vx/util/runOnActivePackages');
+
+function build({ options }) {
+  runOnActivePackages(buildPackage, options);
 }
 
 module.exports = build;

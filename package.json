@@ -31,9 +31,6 @@
     "typescript": "^4.2.0",
     "wait": "^0.4.2"
   },
-  "workspaces": [
-    "packages/!(shared)*"
-  ],
   "private": true,
   "dependencies": {
     "pretty-quick": "^3.1.1",

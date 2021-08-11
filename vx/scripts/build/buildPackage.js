@@ -5,7 +5,8 @@ const logger = require('vx/logger');
 const packageName = require('vx/packageName');
 const vxPath = require('vx/vxPath');
 
-function buildPackage(name = packageName(), { options } = {}) {
+function buildPackage({ options } = {}) {
+  const name = packageName();
   logger.info(`🛠 Building package: ${name}`);
 
   cleanupDistFiles(name);

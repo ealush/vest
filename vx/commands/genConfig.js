@@ -1,6 +1,3 @@
-const exec = require('vx/exec');
-const vxPath = require('vx/vxPath');
+const genTsConfig = require('vx/scripts/genTsConfig');
 
-module.exports = () => {
-  exec(`node ${vxPath.VX_SCRIPTS_PATH}/genTsConfig.js`);
-};
+module.exports = genTsConfig;

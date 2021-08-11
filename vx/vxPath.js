@@ -90,7 +90,7 @@ vxPath.VX_SCRIPTS_PATH = path.resolve(vxPath.VX_ROOT_PATH, 'scripts');
 vxPath.ROLLUP_CONFIG_PATH = path.resolve(
   vxPath.VX_CONFIG_PATH,
   'rollup',
-  'rollup.config.js'
+  'rollup.config.cjs'
 );
 
 vxPath.JEST_CONFIG_PATH = path.resolve(vxPath.VX_CONFIG_PATH, 'jest');

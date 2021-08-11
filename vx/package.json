@@ -9,6 +9,7 @@
     "@babel/preset-typescript": "^7.13.0",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-replace": "^2.4.2",
+    "context": "^1.1.4",
     "date-fns": "^2.22.1",
     "dotenv": "^10.0.0",
     "fs-extra": "^10.0.0",

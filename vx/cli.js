@@ -10,8 +10,8 @@ const yargs = require('yargs/yargs');
 const logger = require('vx/logger');
 const packageName = require('vx/packageName');
 const packageNames = require('vx/packageNames');
-const dryRun = require('vx/util/dryRun');
 const joinTruthy = require('vx/util/joinTruthy');
+const ctx = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
 dotenv.config();
@@ -35,7 +35,6 @@ const argv = hideBin(process.argv);
 const namedOptions = Object.entries({
   '--package': 2,
   '-p': 2,
-  '--dry': 1,
 });
 
 const defaultPackage = packageName() ?? insidePackageDir();
@@ -55,23 +54,12 @@ const cli = yargs(argv)
     describe: 'Package to run against',
     ...(!!defaultPackage && { default: defaultPackage }),
   })
-  .option('dry', {
-    demandOption: false,
-    describe: 'Avoid destructive actions.',
-    global: true,
-    nargs: 0,
-    type: 'boolean',
-  })
   .help().argv;
 
-const { package, command, dry = false } = cli;
+const { package, command } = cli;
 
 if (!commands[command]) {
   throw new Error(`Command ${command} not found.`);
-}
-
-if (package) {
-  packageName.setPackageName(package);
 }
 
 const options = argv.slice(
@@ -87,11 +75,11 @@ logger.info(
   ])
 );
 
-dryRun.setDryRun(dry);
-
-commands[command](package, {
-  options,
-});
+ctx.withPackage(package, () =>
+  commands[command]({
+    options,
+  })
+);
 
 function insidePackageDir() {
   if (!process.cwd().includes(vxPath.PACKAGES_PATH)) {

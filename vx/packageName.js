@@ -1,7 +1,5 @@
-module.exports = function packageName() {
-  return process.env.VX_PACKAGE_NAME ?? process.env.npm_package_name;
-};
+const ctx = require('vx/vxContext');
 
-module.exports.setPackageName = function (name) {
-  process.env.VX_PACKAGE_NAME = name;
+module.exports = function packageName() {
+  return ctx.usePackage() ?? process.env.VX_PACKAGE_NAME; // VX_PACKAGE_NAME is only used by rollup (buildPackage.js)
 };

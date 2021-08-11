@@ -14,9 +14,10 @@ module.exports = {
     TEST: 'test',
   },
   fileNames: {
-    MAIN_EXPORT: 'index.js',
+    JEST_CONFIG: 'jest.config.js',
     JEST_SETUP: 'jest.setup.ts',
     JEST_SETUP_AFTER_ENV: 'jest.setupAfterEnv.ts',
+    MAIN_EXPORT: 'index.js',
   },
   format: {
     UMD: 'umd',

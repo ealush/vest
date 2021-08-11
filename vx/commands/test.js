@@ -1,19 +1,24 @@
 const path = require('path');
 
 const exec = require('vx/exec');
+const opts = require('vx/opts');
+const packageName = require('vx/packageName');
 const vxPath = require('vx/vxPath');
 
 const configOpt = `--config ${path.resolve(
   vxPath.JEST_CONFIG_PATH,
-  'jest.config.js'
+  opts.fileNames.JEST_CONFIG
 )}`;
 
-function test(packageName, { options }) {
-  if (packageName) {
-    exec([`yarn workspace ${packageName} jest`, configOpt, options]);
-  } else {
-    exec(['jest', configOpt, options]);
-  }
+function test({ options }) {
+  const pkgName = packageName();
+
+  exec([
+    'jest',
+    pkgName && `--rootDir ${vxPath.package(pkgName)}`,
+    configOpt,
+    options,
+  ]);
 }
 
 module.exports = test;

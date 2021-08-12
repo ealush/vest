@@ -18,17 +18,19 @@ const paths = moduleAliases.reduce(
   {}
 );
 
-const tsConfig = tsConfigTemplate();
+module.exports = function genTsConfig() {
+  const tsConfig = tsConfigTemplate();
 
-tsConfig.compilerOptions.paths = paths;
+  tsConfig.compilerOptions.paths = paths;
 
-if (!lodash.isEqual(prevTsConfig, tsConfig)) {
-  logger.log('generating ts config');
+  if (!lodash.isEqual(prevTsConfig, tsConfig)) {
+    logger.log('generating ts config');
 
-  fs.writeFileSync(vxPath.TSCONFIG_PATH, JSON.stringify(tsConfig, null, 2));
+    fs.writeFileSync(vxPath.TSCONFIG_PATH, JSON.stringify(tsConfig, null, 2));
 
-  exec(`yarn prettier ${vxPath.TSCONFIG_PATH} -w`);
-}
+    exec(`yarn prettier ${vxPath.TSCONFIG_PATH} -w`);
+  }
+};
 
 function tsConfigTemplate() {
   return {

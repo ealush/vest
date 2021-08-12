@@ -11,6 +11,10 @@
     "singleQuote": true
   },
   "vx": {},
+  "workspaces": [
+    "packages/*",
+    "vx/"
+  ],
   "devDependencies": {
     "@types/jest": "^26.0.23",
     "@types/lodash": "^4.14.170",

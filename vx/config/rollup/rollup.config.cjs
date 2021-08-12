@@ -1,7 +1,6 @@
 const fs = require('fs');
 
 const compiler = require('@ampproject/rollup-plugin-closure-compiler');
-const { default: babel } = require('@rollup/plugin-babel');
 const replace = require('@rollup/plugin-replace');
 const { terser } = require('rollup-plugin-terser');
 const ts = require('rollup-plugin-ts');
@@ -120,6 +119,7 @@ function getPlugins({
       },
     }),
     ts({
+      browserList: ['IE10'],
       hook: {
         outputPath: (path, kind) => {
           const basePath = vxPath.package(
@@ -132,11 +132,6 @@ function getPlugins({
           if (kind === 'declarationMap') return basePath + '.map';
         },
       },
-    }),
-    babel({
-      configFile: vxPath.BABEL_CONFIG_PATH,
-      babelHelpers: 'bundled',
-      envName: env,
     }),
   ];
 

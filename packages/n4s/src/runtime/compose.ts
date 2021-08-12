@@ -1,3 +1,4 @@
+import assign from 'assign';
 import mapFirst from 'mapFirst';
 import throwError from 'throwError';
 
@@ -13,7 +14,7 @@ export default function compose(...composites: TLazyRuleRunners[]): ((
   run: (value: any) => TRuleDetailedResult;
   test: (value: any) => boolean;
 } {
-  return Object.assign(
+  return assign(
     (value: any) => {
       const res = run(value);
 

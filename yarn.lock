@@ -1799,6 +1799,9 @@ babel-plugin-jest-hoist@^26.6.2:
     "@types/babel__core" "^7.0.0"
     "@types/babel__traverse" "^7.0.6"
 
+babel-plugin-lean-rest@./vx/config/babel/babel-plugin-lean-rest:
+  version "0.0.0"
+
 babel-plugin-polyfill-corejs2@^0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/babel-plugin-polyfill-corejs2/-/babel-plugin-polyfill-corejs2-0.2.2.tgz#e9124785e6fd94f94b618a7954e5693053bf5327"
@@ -2250,6 +2253,11 @@ concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=
+
+context@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/context/-/context-1.1.4.tgz#5ff24e5f13b2a64114ad6abfb9d2dc9ba9faf630"
+  integrity sha512-LBiS1IKHyJWhpzu0on/0L4W0DbnDFtWNkWU7Qo37CJ4rSi/9IqjF3Uw+i94x06H+r32Bs3qq46KkXLI9WEWSIg==
 
 convert-source-map@^1.4.0, convert-source-map@^1.6.0, convert-source-map@^1.7.0:
   version "1.8.0"
@@ -6074,7 +6082,12 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typescript@^3.9.5, typescript@^3.9.7, typescript@^4.2.0:
+typescript@^3.9.5, typescript@^3.9.7:
+  version "3.9.10"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.10.tgz#70f3910ac7a51ed6bef79da7800690b19bf778b8"
+  integrity sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q==
+
+typescript@^4.2.0:
   version "4.3.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.5.tgz#4d1c37cc16e893973c45a06886b7113234f119f4"
   integrity sha512-DqQgihaQ9cUrskJo9kIyW/+g0Vxsk8cDtZ52a3NGh0YNTfpUSArXSohyUGnvbPazEPLu398C0UxmKSOrPumUzA==
@@ -6232,6 +6245,8 @@ vx@./vx:
     "@babel/preset-typescript" "^7.13.0"
     "@rollup/plugin-babel" "^5.3.0"
     "@rollup/plugin-replace" "^2.4.2"
+    babel-plugin-lean-rest "./vx/config/babel/babel-plugin-lean-rest"
+    context "^1.1.4"
     date-fns "^2.22.1"
     dotenv "^10.0.0"
     fs-extra "^10.0.0"

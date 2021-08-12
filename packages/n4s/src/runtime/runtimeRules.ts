@@ -1,3 +1,4 @@
+import assign from 'assign';
 import type { DropFirst } from 'utilityTypes';
 
 import compounds, { KCompounds, TCompounds } from 'compounds';
@@ -16,7 +17,7 @@ export type TRule = Record<string, TRuleBase>;
 type TBaseRules = typeof baseRules;
 export type KBaseRules = keyof TBaseRules;
 
-const baseRules = Object.assign(rules(), compounds(), schema());
+const baseRules = assign(rules(), compounds(), schema());
 
 function getRule(ruleName: string): TRuleBase {
   return baseRules[ruleName as KBaseRules];

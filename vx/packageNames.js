@@ -4,6 +4,8 @@ const glob = require('glob');
 
 const packageName = require('vx/packageName'); // eslint-disable-line
 
+const vxPath = require('vx/vxPath');
+
 module.exports = Object.defineProperty(
   { paths: {}, list: [], names: {} },
   'current',
@@ -14,10 +16,10 @@ module.exports = Object.defineProperty(
   }
 );
 
-const vxPath = require('vx/vxPath');
+const paths = glob.sync(vxPath.package('*')).filter(packagePath => {
+  const packageJson = require(path.resolve(packagePath, 'package.json'));
 
-const paths = glob.sync(path.resolve(vxPath.PACKAGES_PATH, '*'), {
-  ignore: '**/shared',
+  return !packageJson.private;
 });
 
 paths.forEach(packagePath => {

@@ -1,3 +1,4 @@
+import defaultTo from 'defaultTo';
 import type { TStateHandlerReturn } from 'vast';
 
 import VestTest from 'VestTest';
@@ -45,7 +46,7 @@ export function useTestAtCursor(initialValue: VestTest): VestTest {
   const [cursorAt] = useCursorAt();
   const [prevTestObjects] = usePrevTestObjects();
 
-  const nextTest = prevTestObjects[cursorAt] ?? initialValue;
+  const nextTest = defaultTo(prevTestObjects[cursorAt], initialValue);
   useSetTestAtCursor(nextTest);
 
   return nextTest;

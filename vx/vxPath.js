@@ -99,7 +99,4 @@ vxPath.TSCONFIG_PATH = path.resolve(vxPath.ROOT_PATH, TSCONFIG_JSON);
 
 vxPath.PACKAGES_PATH = path.resolve(vxPath.ROOT_PATH, opts.dir.PACKAGES);
 
-vxPath.BABEL_CONFIG_PATH = path.resolve(
-  path.resolve(vxPath.VX_CONFIG_PATH, 'babel', 'babel.config.js')
-);
 module.exports = vxPath;

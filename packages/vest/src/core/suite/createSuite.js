@@ -82,6 +82,22 @@ const createSuite = withArgs(args => {
     });
   };
 
+  suite.hasErrors = (fieldName) => suite.get().hasErrors(fieldName);
+
+  suite.hasWarnings = (fieldName) => suite.get().hasWarnings(fieldName);
+
+  suite.getErrors = (fieldName) => suite.get().getErrors(fieldName);
+
+  suite.getWarnings = (fieldName) => suite.get().getWarnings(fieldName);
+
+  suite.hasErrorsByGroup = (groupName, fieldName) => suite.get().hasErrorsByGroup(groupName, fieldName);
+
+  suite.hasWarningsByGroup = (groupName, fieldName) => suite.get().hasWarningsByGroup(groupName, fieldName);
+
+  suite.getErrorsByGroup = (groupName, fieldName) => suite.get().getErrorsByGroup(groupName, fieldName);
+
+  suite.getWarningsByGroup = (groupName, fieldName) => suite.get().getWarningsByGroup(groupName, fieldName);
+
   return suite;
 });
 

@@ -19,10 +19,10 @@ the `any` utility will run each function until a passing test is found. This mea
 Demo: https://codesandbox.io/s/demo-forked-tdj92?file=/src/validate.js
 
 ```js
-import vest, { test, enforce } from 'vest';
+import { create, test, enforce } from 'vest';
 import any from 'vest/any';
 
-export default vest.create('form_name', (data = {}) => {
+export default create((data = {}) => {
   any(
     () =>
       test('email', 'Email or phone must be set', () => {
@@ -43,10 +43,10 @@ You could also use any within your test, if you have a joined test for both scen
 Demo: https://codesandbox.io/s/demo-forked-ltn8l?file=/src/validate.js
 
 ```js
-import vest, { test, enforce } from 'vest';
+import { create, test, enforce } from 'vest';
 import any from 'vest/any';
 
-export default vest.create('form_name', (data = {}) => {
+export default create((data = {}) => {
   test('email_or_phone', 'Email or phone must be set', () =>
     any(
       () => {
@@ -70,8 +70,8 @@ In the following example I only validate `confirm` if password is not empty:
 DEMO: https://codesandbox.io/s/demo-forked-z2ur9?file=/src/validate.js
 
 ```js
-import vest, { test, enforce } from 'vest';
-export default vest.create('user_form', (data = {}) => {
+import { create, test, enforce } from 'vest';
+export default create((data = {}) => {
   test('password', 'Password is required', () => {
     enforce(data.password).isNotEmpty();
   });
@@ -87,19 +87,20 @@ export default vest.create('user_form', (data = {}) => {
 
 Sometimes you might want to run a certain validation based on the validation result of a previously run test, for example - only test for password strength if password DOESN'T have Errors. You could access the intermediate validation result and use it mid-run.
 
-This requires using the function created from vest.create():
+This requires using the function created from create():
 
 ```js
-import vest, { test, enforce } from 'vest';
-const suite = vest.create('user_form', (data = {}) => {
+import { create, test, enforce, skipWhen } from 'vest';
+const suite = create((data = {}) => {
   test('password', 'Password is required', () => {
     enforce(data.password).isNotEmpty();
   });
-  if (!suite.get().hasErrors('password')) {
+
+  skipWhen(suite.get().hasErrors('password'), () => {
     test('password', 'Password is weak', () => {
       enforce(data.password).longerThan(8);
     });
-  }
+  });
 });
 export default suite;
 ```

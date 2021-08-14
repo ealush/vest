@@ -5,15 +5,15 @@ By default, a failing test has a severity of `error`. Sometimes you may need to 
 To set a test's severity level to `warn`, you need to simply call Vest's warn function from your test body.
 
 ```js
-import vest, { test, enforce } from 'vest';
+import { test, enforce, create, warn } from 'vest';
 
-const suite = vest.create('Password', data => {
+const suite = create(data => {
   test('password', 'A password must have at least 6 characters', () => {
     enforce(data.password).longerThan(5);
   }); // this test has a severity level of `error`
 
   test('password', 'Your password strength is: WEAK', () => {
-    vest.warn();
+    warn();
 
     enforce(data.password).matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]$/
@@ -21,7 +21,7 @@ const suite = vest.create('Password', data => {
   }); // this test has a severity level of `warn`
 
   test('password', 'Your password strength is: MEDIUM', () => {
-    vest.warn();
+    warn();
 
     enforce(data.password).matches(
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]$/
@@ -32,21 +32,21 @@ const suite = vest.create('Password', data => {
 const validationResult = suite(data);
 ```
 
-**Limitations when using vest.warn()**
+**Limitations when using warn()**
 
 - You may only use warn from within the body of a `test` function.
-- When using `vest.warn()` in an async test you should call the `warn` function in the sync portion of your test (and not after an `await` call or in the Promise body). Ideally, you want to call `vest.warn()` at the top of your test function.
+- When using `warn()` in an async test you should call the `warn` function in the sync portion of your test (and not after an `await` call or in the Promise body). Ideally, you want to call `warn()` at the top of your test function.
 
 ```js
 // ✔
 test('password', async () => {
-  vest.warn();
+  warn();
   return await someAsyncFunction();
 });
 
 // ✔
 test('password', () => {
-  vest.warn();
+  warn();
   return anAsyncFunction();
 });
 
@@ -54,13 +54,13 @@ test('password', () => {
 test('password', async () => {
   await someAsyncFunction();
 
-  vest.warn(); // 🚨
+  warn(); // 🚨
 });
 
 // 🚨 This will result in an your warn() call not taking effect
 test('password', () => {
   return anAsyncFunction().then(() => {
-    vest.warn(); // 🚨
+    warn(); // 🚨
   });
 });
 ```

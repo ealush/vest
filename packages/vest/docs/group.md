@@ -6,10 +6,10 @@ Similar to the `describe` and `context` features provided by unit testing framew
 [Try on CodeSandbox (React)](https://codesandbox.io/s/vest-group-example-react-4i2ne)
 
 ```js
-import vest, { test, group, enforce } from 'vest';
+import { test, group, enforce, skip, create } from 'vest';
 
-vest.create('authentication_form', data => {
-  vest.skip.group(data.userExists ? 'signUp' : 'signIn');
+create(data => {
+  skip.group(data.userExists ? 'signUp' : 'signIn');
 
   test('userName', "Can't be empty", () => {
     enforce(data.username).isNotEmpty();
@@ -38,7 +38,7 @@ vest.create('authentication_form', data => {
 
 ## Why use `group` and not just wrap the tests with an `if` statement?
 
-In many cases it is sufficient to just use an `if` statement. The benefit of using `group` is that when skipping (either using [vest.skip or vest.only](./exclusion)), Vest will merge the previous group result with the current suite. This is mostly suitable for cases like demonstrated in the first example of the multi stage form.
+In many cases it is sufficient to just use an `if` statement. The benefit of using `group` is that when skipping (either using [skip or only](./exclusion)), Vest will merge the previous group result with the current suite. This is mostly suitable for cases like demonstrated in the first example of the multi stage form.
 
 ## Use cases
 
@@ -48,10 +48,10 @@ You may have in your application a multi-screen form, in which you want to valid
 
 ```js
 // suite.js
-import vest, { test, group, enforce } from 'vest';
+import { test, group, enforce, create, only } from 'vest';
 
-const suite = vest.create('product-create', (data, currentTab) => {
-  vest.only.group(currentScreen);
+const suite = create((data, currentTab) => {
+  only.group(currentScreen);
 
   group('overview_tab', () => {
     test('productTitle', 'Must be at least 5 chars.', () => {
@@ -95,9 +95,9 @@ You sometimes want to skip some tests on a certain condition, but still run othe
 In the example below, we don't mind skipping the `balance` field directly, but if we skip the `quantity` field directly, it won't be tested at all - even though it has one test outside of the group. That's why we skip the `used_promo`.
 
 ```js
-import vest, { test, group, enforce, skip } from 'vest';
+import { create, test, group, enforce, skip } from 'vest';
 
-const suite = vest.create('checkout_form', data => {
+const suite = create(data => {
   if (!data.usedPromo) skip.group('used_promo');
   if (!data.paysWithBalance) skip.group('balance');
 

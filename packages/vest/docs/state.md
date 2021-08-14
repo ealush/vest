@@ -42,7 +42,7 @@ In some cases, such as form reset, you want to discard of previous validation re
 `.rese()` Is a property on your validation suite, calling it will remove your suite's state.
 
 ```js
-import vest from 'vest';
+import * as vest from 'vest';
 
 const suite = vest.create(() => {
   // Your tests go here
@@ -60,7 +60,7 @@ When your form contains dynamically added fields, for example - when a customer 
 Instead of resetting the whole suite, you can alternatively remove just one field. This is useful when dynamically adding and removing fields upon user interaction - and you want to delete a deleted field from the state.
 
 ```js
-import vest from 'vest';
+import * as vest from 'vest';
 
 const suite = vest.create(() => {
   // Your tests go here
@@ -86,7 +86,7 @@ To do that, all you need to do is wrap your suite initialization with a wrapper 
 ### Example
 
 ```js
-import vest from 'vest';
+import * as vest from 'vest';
 
 function suite(data) {
   return vest.create(() => {

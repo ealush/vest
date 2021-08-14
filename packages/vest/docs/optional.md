@@ -10,9 +10,9 @@ All fields are by default required, unless explicitly marked as optional using t
 `optional` can take a field name as its argument, or an array of field names.
 
 ```js
-import vest, { optional, only, test, enforce } from 'vest';
+import { optional, only, test, enforce, create } from 'vest';
 
-const suite = vest.create('RegisterPet', (data, currentField) => {
+const suite = create((data, currentField) => {
   only(currentField); // only validate this specified field
 
   optional(['pet_color', 'pet_age']);

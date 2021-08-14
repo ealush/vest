@@ -6,7 +6,6 @@ A result object would look somewhat like this:
 
 ```js
 {
-  'name': 'formName',              // The name of the validation suite
   'errorCount': Number 0,          // Overall count of errors in the suite
   'warnCount': Number 0,           // Overall count of warnings in the suite
   'testCount': Number 0,           // Overall test count for the suite (passing, failing and warning)
@@ -34,7 +33,7 @@ If you need to access your validation results out of context - for example, from
 In case your validations did not run yet, `.get` returns an empty validation result object - which can be helpful when trying to access validation result object when rendering the initial UI, or setting it in the initial state of your components.
 
 ```js
-const suite = vest.create('my_form', () => {
+const suite = create(() => {
   /*...*/
 });
 
@@ -181,9 +180,9 @@ The result object is being passed down to the `done` object as an argument.
 In the below example, the `done` callback for `UserName` may run before the whole suite finishes. Only when the rest of the suite finishes, it will call the other two done callbacks that do not have a field name specified.
 
 ```js
-import vest, { test, enforce } from 'vest';
+import { create, test, enforce } from 'vest';
 
-const suite = vest.create('SendEmailForm', data => {
+const suite = create(data => {
   test(
     'UserEmail',
     'Marked as spam address',

@@ -9,7 +9,7 @@ npm install vest
 You can also add Vest directly as a script tag to your page:
 
 ```html
-<script src="https://unpkg.com/vest@3"></script>
+<script src="https://unpkg.com/vest@4"></script>
 ```
 
 Vest tests are very much like unit tests, with only slight differences. Instead of using `describe/it/expect`, you will use `validate/[test](./test)/[enforce](./enforce)`.
@@ -24,21 +24,14 @@ First, you need to initialize your validation suite using `create()`. This initi
 ```js
 import { create } from 'vest';
 
-const suite = create('formName', () => {
+const suite = create(() => {
   // validation suite content goes here.
 });
 
 const validationResult = suite();
 ```
 
-`create()` takes the following arguments:
-
-| Name     | Type       | Optional | Description                                                    |
-| -------- | ---------- | -------- | -------------------------------------------------------------- |
-| `name`   | `string`   | Yes      | Suite name.                                                    |
-| callback | `function` | No       | Your validation suite's body. This is where your tests reside. |
-
-`create` returns a "suite" function which runs your validation suite. All the arguments you pass to it are being forwarded to your tests callback. You can use it to pass form data to your validation, excluded fields, and anything required for during your validation runtime.
+`create()` takes a callback that contains your tests, and returns a "suite" function which runs your validation suite. All the arguments you pass to it are being forwarded to your tests callback. You can use it to pass form data to your validation, excluded fields, and anything required for during your validation runtime.
 
 A simple validation suite would look somewhat like this:
 
@@ -46,7 +39,7 @@ A simple validation suite would look somewhat like this:
 // suite.js
 import { create, test, enforce } from ‘vest’;
 
-const suite = create('NewUserForm', (formData) => {
+const suite = create((formData) => {
     test('username', 'Must be between 2 and 10 chars', () => {
         enforce(formData.username)
             .longerThanOrEquals(2)
@@ -70,7 +63,7 @@ import suite from './suite.js';
 const res = suite(formData);
 ```
 
-In the above example, we validate a form called `NewUserForm` containing username and a password.
+In the above example, we validate a form containing username and a password.
 
 **Read next about:**
 

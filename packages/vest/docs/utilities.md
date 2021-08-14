@@ -43,6 +43,10 @@ const fieldThreeClasses = cn('field_3'); // "some-tested-class my_warning_class"
 
 ## `any()` for OR relationship tests
 
+`any` is a function within a package called `anyone` that was created for Vest in order to simplify repeating different kinds of inclusion and exclusion logic. If you want to use it, first you need to install it:
+
+`npm install anyone`
+
 Sometimes you need to have `OR` (`||`) relationship in your validations, this is tricky to do on your own, and `any()` simplifies this process.
 
 The general rule for using `any()` in your validation is when you can say: "At least one of the following has to pass".
@@ -59,7 +63,7 @@ The only difference is - if any of the supplied tests passes, the success condit
 import { create, test, enforce } from 'vest';
 import any from 'vest/any';
 
-create('Checkout', () => {
+create(() => {
   test('coupon', 'When filled, must be at least 5 chars', () =>
     any(
       () => enforce(data.coupon).isEmpty(),
@@ -85,7 +89,7 @@ import { create, test, skipWhen } from 'vest';
 import promisify from 'vest/promisify';
 
 const suite = promisify(
-  create('CreateNewUser', data => {
+  create(data => {
     test('email', 'The email already exists', () => doesEmailExist(data.email));
     test('username', 'The username already exists', () =>
       doesUsernameExist(data.username)

@@ -12,7 +12,7 @@ All fields are by default required, unless explicitly marked as optional using t
 ```js
 import { create, optional, only, test, enforce } from 'vest';
 
-const suite = create('RegisterPet', (data, currentField) => {
+const suite = create((data, currentField) => {
   only(currentField); // only validate this specified field
 
   optional(['pet_color', 'pet_age']);

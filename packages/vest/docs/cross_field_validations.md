@@ -20,7 +20,7 @@ Demo: https://codesandbox.io/s/demo-forked-ltn8l?file=/src/validate.js
 import { create, test, enforce } from 'vest';
 import any from 'vest/any';
 
-export default create('form_name', (data = {}) => {
+export default create((data = {}) => {
   test('email_or_phone', 'Email or phone must be set', () =>
     any(
       () => {
@@ -45,7 +45,7 @@ DEMO: https://codesandbox.io/s/demo-forked-z2ur9?file=/src/validate.js
 
 ```js
 import { create, test, enforce } from 'vest';
-export default create('user_form', (data = {}) => {
+export default create((data = {}) => {
   test('password', 'Password is required', () => {
     enforce(data.password).isNotEmpty();
   });
@@ -65,15 +65,16 @@ This requires using the function created from create():
 
 ```js
 import { create, test, enforce } from 'vest';
-const suite = create('user_form', (data = {}) => {
+const suite = create((data = {}) => {
   test('password', 'Password is required', () => {
     enforce(data.password).isNotEmpty();
   });
-  if (!suite.get().hasErrors('password')) {
+
+  skipWhen(suite.get().hasErrors('password'), () => {
     test('password', 'Password is weak', () => {
       enforce(data.password).longerThan(8);
     });
-  }
+  });
 });
 export default suite;
 ```

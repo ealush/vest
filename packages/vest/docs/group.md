@@ -8,7 +8,7 @@ Similar to the `describe` and `context` features provided by unit testing framew
 ```js
 import { create, test, group, enforce, skip } from 'vest';
 
-create('authentication_form', data => {
+create(data => {
   skip.group(data.userExists ? 'signUp' : 'signIn');
 
   test('userName', "Can't be empty", () => {
@@ -50,7 +50,7 @@ You may have in your application a multi-screen form, in which you want to valid
 // suite.js
 import { create, test, group, enforce, only } from 'vest';
 
-const suite = create('product-create', (data, currentTab) => {
+const suite = create((data, currentTab) => {
   only.group(currentScreen);
 
   group('overview_tab', () => {
@@ -97,7 +97,7 @@ In the example below, we don't mind skipping the `balance` field directly, but i
 ```js
 import { create, test, group, enforce, skip } from 'vest';
 
-const suite = create('checkout_form', data => {
+const suite = create(data => {
   if (!data.usedPromo) skip.group('used_promo');
   if (!data.paysWithBalance) skip.group('balance');
 

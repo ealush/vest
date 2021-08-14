@@ -20,7 +20,7 @@ Demo: https://codesandbox.io/s/demo-forked-ltn8l?file=/src/validate.js
 import { create, test, enforce } from 'vest';
 import any from 'vest/any';
 
-export default create('form_name', (data = {}) => {
+export default create((data = {}) => {
   test('email_or_phone', 'Email or phone must be set', () =>
     any(
       () => {

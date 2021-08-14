@@ -48,6 +48,10 @@ yarn add anyone
 ## Usage Examples
 
 ```js
+import { any, one, all, none } from 'anyone';
+```
+
+```js
 import any from 'anyone/any';
 import one from 'anyone/one';
 import none from 'anyone/none';

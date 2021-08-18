@@ -42,6 +42,10 @@ vxPath.packageSrc = (pkgName = packageName(), ...args) => {
   return vxPath.package(pkgName, opts.dir.SRC, ...args);
 };
 
+vxPath.packageDocs = (pkgName = packageName(), ...args) => {
+  return vxPath.package(pkgName, opts.dir.DOCS, ...args);
+};
+
 vxPath.packageSrcExports = (pkgName = packageName(), ...args) => {
   return vxPath.package(pkgName, opts.dir.SRC, opts.dir.EXPORTS, ...args);
 };

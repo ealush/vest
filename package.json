@@ -10,7 +10,9 @@
     "arrowParens": "avoid",
     "singleQuote": true
   },
-  "vx": {},
+  "vx": {
+    "main": "vest"
+  },
   "workspaces": [
     "packages/*",
     "vx/"

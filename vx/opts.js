@@ -2,6 +2,7 @@ module.exports = {
   dir: {
     CONFIG: 'config',
     DIST: 'dist',
+    DOCS: 'docs',
     EXPORTS: 'exports',
     PACKAGES: 'packages',
     SRC: 'src',

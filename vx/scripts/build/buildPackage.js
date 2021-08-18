@@ -11,7 +11,9 @@ function buildPackage({ options } = {}) {
 
   cleanupDistFiles(name);
 
+  process.env.VX_PACKAGE_NAME = name;
   exec([`rollup -c`, vxPath.ROLLUP_CONFIG_PATH, options]);
+  delete process.env.VX_PACKAGE_NAME;
 }
 
 module.exports = buildPackage;

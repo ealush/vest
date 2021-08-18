@@ -1,6 +1,5 @@
 const isReleaseBranch = require('../scripts/release/isReleaseBranch');
 const pushToLatestBranch = require('../scripts/release/steps/pushToLatestBranch');
-const updateDocs = require('../scripts/release/steps/updateDocs');
 
 const logger = require('vx/logger');
 const packageName = require('vx/packageName');
@@ -34,8 +33,6 @@ async function releaseAll() {
     logger.info(`❌  Not in release branch. Not pushing changes to git.`);
     return;
   }
-
-  updateDocs();
 
   pushToLatestBranch();
 }

@@ -48,6 +48,6 @@ const EvenNumeric = enforce.template(
   enforce.isEven()
 );
 
-EvenNumeric('10'); // pases
+EvenNumeric('10'); // passes
 EvenNumeric('1'); // throws
 ```

@@ -24,31 +24,4 @@ enforce('example@example.com').isEmail(); // ✅
 enforce('example[at]example[dot]com').isEmail(); // 🚨
 ```
 
-A full list of the supported validator.js rules can be found on [npmjs.com/package/validator](https://www.npmjs.com/package/validator). Some common rules are:
-
-- isAfter
-- isBefore
-- isBtcAddress
-- isCreditCard
-- isCurrency
-- isDate
-- isEmail
-- isFQDN
-- isIBAN
-- isIdentityCard
-- isIP
-- isIPRange
-- isJSON
-- isJWT
-- isMACAddress
-- isMD5
-- isMimeType
-- isMobilePhone
-- isMongoId
-- isPassportNumber
-- isPort
-- isPostalCode
-- isSlug
-- isURL
-- isTaxID
-- isUUID
+A full list of the supported validator.js rules can be found on [npmjs.com/package/validator](https://www.npmjs.com/package/validator).

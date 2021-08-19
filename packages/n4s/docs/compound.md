@@ -6,6 +6,7 @@ Alongside the list of rules that only accept data provided by the user, enforce 
 - [enforce.allOf() - all/and validations](#allof)
 - [enforce.shape() - Object's shape matching](#shape)
   - [enforce.optional() - nullable keys](#optional)
+  - [enforce.partial() - allows supplying a subset of keys](#partial)
 - [enforec.loose() - loose shape matching](#loose)
 - [enforce.isArrayOf() - array shape matching](#isarrayof)
 
@@ -20,17 +21,17 @@ enforce(value).anyOf(enforce.isString(), enforce.isArray()).isNotEmpty();
 
 ## enforce.allOf() - all/and validations :id=allof
 
-`allOf` lets us validate that a value passes _all_ of the supplied rules or templates.
+`allOf` lets us validate that a value passes _all_ of the supplied rules or composites.
 
 enforce(value).allOf(
 enforce.isArray(),
 enforce.longerThan(2)
 );
 
-This can be even more useful when combined with shapes and templates:
+This can be even more useful when combined with shapes and composites:
 
 ```js
-const User = enforce.template(
+const User = enforce.composite(
   enforce.loose({
     id: enforce.isNumber()
     name: enforce.shape({
@@ -41,7 +42,7 @@ const User = enforce.template(
   })
 );
 
-const DisabledAccount = enforce.template(
+const DisabledAccount = enforce.composite(
   enforce.loose({
     disabled: enforce.equals(true)
   })
@@ -129,7 +130,22 @@ enforce({
 });
 ```
 
-## enforec.loose() - loose shape matching :id=loose
+## enforce.partial() - allows supplying a subset of keys :id=partial
+
+When supplying a "shape" or a "loose" matcher, enforce requires at least the keys that are specified by the matcher, unless you manually wrap them with "optional". `partial` behaves like `optional` but for a whole object instead of for specific keys. By wrapping the input of a matcher with `partial`, you can supply a subset of the keys that are required as if you had used `optional` on each key.
+
+```js
+enforce({}).shape(
+  enforce.partial({
+    firstName: enforce.isString(),
+    lastName: enforce.isString(),
+  })
+);
+```
+
+This won't throw because all the fields are now treated as optional.
+
+## enforce.loose() - loose shape matching :id=loose
 
 By default, shape will treat excess keys in your data object as validation errors. If you wish to allow support for excess keys in your object's shape, you can use `enforce.loose()` which is a shorthand to `enforce.shape(data, shape, { loose: true })`.
 

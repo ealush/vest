@@ -50,3 +50,67 @@ enforce.extend({
   },
 });
 ```
+
+## Traversing the object in your custom Rules
+
+Sometimes you would need to traverse your enforced object from within your rule to get other values that are present at some other nesting level.
+
+Let's assume we have a custom rule that makes its decision by factoring in two different values, one inside a nested object, and the other by a property in a parent object.
+
+Consider this user object. It looks fine, but if you look closely, you'll see that our johndoe listed a friend with the same user name. This can't happen.
+
+```js
+{
+  name: {
+    first: 'John',
+    last: 'Doe'
+  },
+  username: 'johndoe',
+  friends: ['Mike', 'Jim', 'johndoe']
+}
+```
+
+To access context you simply need to call `enforce.context()` within your custom rule. The function will return an object that matches this structure:
+
+```
+Object {
+  "meta": Object {},
+  "parent": [Function],
+  "value": Object {},
+}
+```
+
+- **value** contains the current value in the level you're at
+- **meta** will contain the name of the current key if called within `shape` or `loose`, or `index` if called within `isArrayOf`.
+- **parent** is a function that traverses up to the parent context, and you can access all its keys as if you're in that level. You can traverse up to the top level by chaining `parent` calls. When no levels left, parent will return `null`.
+
+### Usage example
+
+First, declare your custom rule in which you want to use a value that's higher up.
+In the following example, we're getting the context, and checking if our `value` equals to the "username" that's defined two levels up.
+
+```js
+enforce.extend({
+  isFriendTheSameAsUser: value => {
+    const context = enforce.context();
+
+    if (value === context.parent().parent().value.username) {
+      return { pass: false };
+    }
+
+    return true;
+  },
+});
+```
+
+We'll use it like this:
+
+```js
+enforce({
+  username: 'johndoe',
+  friends: ['Mike', 'Jim', 'johndoe'],
+}).shape({
+  username: enforce.isString(),
+  friends: enforce.isArrayOf(enforce.isString().isFriendTheSameAsUser()),
+});
+```

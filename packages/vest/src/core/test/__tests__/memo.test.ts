@@ -1,8 +1,8 @@
-import * as vest from 'vest';
-import { test as vestTest, enforce } from 'vest';
 import wait from 'wait';
 
 import promisify from 'promisify';
+import * as vest from 'vest';
+import { test as vestTest, enforce } from 'vest';
 
 describe('test.memo', () => {
   describe('cache hit', () => {

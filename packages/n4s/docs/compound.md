@@ -21,18 +21,17 @@ enforce(value).anyOf(enforce.isString(), enforce.isArray()).isNotEmpty();
 
 ## enforce.allOf() - all/and validations :id=allof
 
-`allOf` lets us validate that a value passes _all_ of the supplied rules or composites.
+`allOf` lets us validate that a value passes _all_ of the supplied rules.
 
 enforce(value).allOf(
 enforce.isArray(),
 enforce.longerThan(2)
 );
 
-This can be even more useful when combined with shapes and composites:
+This can be even more useful when combined with shapes:
 
 ```js
-const User = enforce.composite(
-  enforce.loose({
+const User = enforce.loose({
     id: enforce.isNumber()
     name: enforce.shape({
       first: enforce.isString(),
@@ -40,13 +39,10 @@ const User = enforce.composite(
       middle: enforce.optional(enforce.isString()),
     }),
   })
-);
 
-const DisabledAccount = enforce.composite(
-  enforce.loose({
+const DisabledAccount = enforce.loose({
     disabled: enforce.equals(true)
   })
-)
 
 enforce(value).allOf(
   User,

@@ -1,9 +1,9 @@
 import _ from 'lodash';
-import * as vest from 'vest';
 
 import { dummyTest } from '../../../../../testUtils/testDummy';
 
 import { group } from 'hooks';
+import * as vest from 'vest';
 
 const FIELD_NAME_1 = 'field_1';
 const FIELD_NAME_2 = 'field_2';

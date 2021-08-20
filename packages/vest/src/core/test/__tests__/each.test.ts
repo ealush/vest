@@ -1,7 +1,7 @@
 import faker from 'faker';
-import * as vest from 'vest';
 
 import test from 'test';
+import * as vest from 'vest';
 
 let testObjects;
 

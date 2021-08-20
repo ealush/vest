@@ -25,6 +25,7 @@ import { longerThan } from 'longerThan';
 import { longerThanOrEquals } from 'longerThanOrEquals';
 import { matches, notMatches } from 'matches';
 import { numberEquals, numberNotEquals } from 'numberEquals';
+import condition from 'ruleCondition';
 import { shorterThan } from 'shorterThan';
 import { shorterThanOrEquals } from 'shorterThanOrEquals';
 import { startsWith, doesNotStartWith } from 'startsWith';
@@ -32,6 +33,7 @@ import { startsWith, doesNotStartWith } from 'startsWith';
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export default function rules() {
   return {
+    condition,
     doesNotEndWith,
     doesNotStartWith,
     endsWith,

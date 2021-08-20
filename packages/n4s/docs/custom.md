@@ -1,5 +1,31 @@
 # Creating Custom Rules
 
+By default enforce comes with a list of rules that are available to be used. They intentionally do not cover all the cases that can be encountered in a real-world application but instead focus on the most common use cases.
+
+## Inline logic with `condition`
+
+Sometimes you would need to add some custom logic to your validation. For that you can use `enforce.condition` which accepts a function.
+
+Your provided function will receive the enforced value, and returns either a boolean or a rule-return object.
+
+```js
+// Passes if the value is `1`
+enforce(1).condition(value => {
+  return value === 1;
+});
+```
+
+```js
+enforce(2).condition(value => {
+  return {
+    pass: value === 1,
+    message: 'value must be one',
+  };
+});
+```
+
+## Reusable custom rules with enforce.extend
+
 To make it easier to reuse logic across your application, sometimes you would want to encapsulate bits of logic in rules that you can use later on, for example, "what's considered a valid email".
 
 Rules are called with the argument passed to enforce(x) followed by the arguments passed to `.yourRule(y, z)`.

@@ -70,12 +70,12 @@
       "longerThanOrEquals": ["./packages/n4s/src/rules/longerThanOrEquals.ts"],
       "matches": ["./packages/n4s/src/rules/matches.ts"],
       "numberEquals": ["./packages/n4s/src/rules/numberEquals.ts"],
+      "ruleCondition": ["./packages/n4s/src/rules/ruleCondition.ts"],
       "shorterThan": ["./packages/n4s/src/rules/shorterThan.ts"],
       "shorterThanOrEquals": [
         "./packages/n4s/src/rules/shorterThanOrEquals.ts"
       ],
       "startsWith": ["./packages/n4s/src/rules/startsWith.ts"],
-      "compose": ["./packages/n4s/src/runtime/compose.ts"],
       "enforce": ["./packages/n4s/src/runtime/enforce.ts"],
       "enforceContext": ["./packages/n4s/src/runtime/enforceContext.ts"],
       "enforceEager": ["./packages/n4s/src/runtime/enforceEager.ts"],

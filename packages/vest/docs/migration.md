@@ -72,33 +72,9 @@ skipWhen(suite.hasErrors('password'), () => {
 // ...
 ```
 
-### Renamed: enforce.template -> enforce.compose
+### Removed: enforce.template
 
-### V3
-
-```js
-import { enforce } from 'vest';
-enforce.template(
-  enforce.isArrayOf(
-    enforce.shape({
-      /*...*/
-    })
-  )
-);
-```
-
-### V4
-
-```js
-import { enforce } from 'vest';
-enforce.compose(
-  enforce.isArrayOf(
-    enforce.shape({
-      /*...*/
-    })
-  )
-);
-```
+enforce.template was mostly a shorthand for a "and" style enforcements. In reality it did not provide any substantial functionality that was not achievable without it, while it contributed to confusion regarding the api.
 
 ## V2 to V3
 

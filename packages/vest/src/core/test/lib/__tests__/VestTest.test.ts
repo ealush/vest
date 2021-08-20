@@ -1,4 +1,3 @@
-import * as vest from 'vest';
 import wait from 'wait';
 
 import itWithContext from '../../../../../testUtils/itWithContext';
@@ -6,6 +5,7 @@ import itWithContext from '../../../../../testUtils/itWithContext';
 import VestTest from 'VestTest';
 import { setPending } from 'pending';
 import { usePending, useLagging } from 'stateHooks';
+import * as vest from 'vest';
 
 const fieldName = 'unicycle';
 const message = 'I am Root.';

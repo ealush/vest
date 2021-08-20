@@ -1,5 +1,6 @@
-import { test, optional, create, warn, skip, only } from 'vest';
 import wait from 'wait';
+
+import { test, optional, create, warn, skip, only } from 'vest';
 
 describe('isValid', () => {
   describe('Before any test ran', () => {

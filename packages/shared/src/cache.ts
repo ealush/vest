@@ -20,12 +20,9 @@ export default function createCache(maxSize = 10): {
     const cacheHit = cache.get(deps);
 
     // cache hit is not null
-    if (cacheHit) {
-      return cacheHit[1];
-    }
+    if (cacheHit) return cacheHit[1];
 
     const result = cacheAction();
-
     cacheStorage.unshift([deps.concat(), result]);
 
     if (cacheStorage.length > maxSize) {

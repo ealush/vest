@@ -24,9 +24,7 @@ export default function classNames(
     invalid: (key: string): boolean =>
       selectors.tested(key) && res.hasErrors(key),
     tested: (key: string): boolean => {
-      if (hasOwnProperty(testedStorage, key)) {
-        return testedStorage[key];
-      }
+      if (hasOwnProperty(testedStorage, key)) return testedStorage[key];
 
       testedStorage[key] =
         hasOwnProperty(res.tests, key) &&

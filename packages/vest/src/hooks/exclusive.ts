@@ -28,26 +28,21 @@ skip.group = (item: TExclusionItem) => addTo('skip', 'groups', item);
 
 //Checks whether a certain test profile excluded by any of the exclusion groups.
 
-// eslint-disable-next-line complexity
+// eslint-disable-next-line complexity, max-statements
 export function isExcluded(testObject: VestTest): boolean {
   const { fieldName, groupName } = testObject;
 
   const context = ctx.useX();
 
-  if (context.skipped) {
-    return true;
-  }
+  if (context.skipped) return true;
 
   const exclusion = context.exclusion;
-
   const keyTests = exclusion.tests;
   const testValue = keyTests[fieldName];
 
   // if test is skipped
   // no need to proceed
-  if (testValue === false) {
-    return true;
-  }
+  if (testValue === false) return true;
 
   const isTestIncluded = testValue === true;
 
@@ -58,23 +53,17 @@ export function isExcluded(testObject: VestTest): boolean {
 
       // if group is `only`ed
     } else if (exclusion.groups[groupName] === true) {
-      if (isTestIncluded) {
-        return false;
-      }
+      if (isTestIncluded) return false;
 
       // If there is _ANY_ `only`ed test (and we already know this one isn't)
-      if (hasIncludedTests(keyTests)) {
-        return true; // Excluded implicitly
-      }
+      if (hasIncludedTests(keyTests)) return true; // Excluded implicitly
 
       return keyTests[fieldName] === false;
     }
   }
 
   // if field is only'ed
-  if (isTestIncluded) {
-    return false;
-  }
+  if (isTestIncluded) return false;
 
   // If there is _ANY_ `only`ed test (and we already know this one isn't) return true
   // Otherwise return false

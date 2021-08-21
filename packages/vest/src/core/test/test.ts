@@ -19,6 +19,7 @@ function testBase(
   ...args: [message: string, cb: TTestFn]
 ): VestTest;
 function testBase(fieldName: string, ...args: [cb: TTestFn]): VestTest;
+// eslint-disable-next-line max-statements
 function testBase(
   fieldName: string,
   ...args: [message: string, cb: TTestFn] | [cb: TTestFn]
@@ -43,9 +44,7 @@ function testBase(
   useSetTestAtCursor(testObject);
   useSetNextCursorAt(); // maybe somehow do this only in one place?
 
-  if (!isFunction(testFn)) {
-    return testObject;
-  }
+  if (!isFunction(testFn)) return testObject;
 
   registerTest(testObject);
 

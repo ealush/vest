@@ -54,6 +54,7 @@ function countFailures(summary: TTestSummary): TTestSummary {
   return summary;
 }
 
+// eslint-disable-next-line max-statements
 function genTestObject(
   summaryKey: TTestGroup,
   testObject: VestTest,
@@ -69,9 +70,7 @@ function genTestObject(
 
   const testKey = summaryKey[fieldName];
 
-  if (skipped) {
-    return testKey;
-  }
+  if (skipped) return testKey;
 
   summaryKey[fieldName].testCount++;
 

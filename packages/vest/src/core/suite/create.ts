@@ -16,6 +16,7 @@ import {
   usePrevTestObjects,
 } from 'stateHooks';
 
+// eslint-disable-next-line max-lines-per-function
 export default function create<T extends (...args: any[]) => void>(
   suiteCallback: T
 ): {

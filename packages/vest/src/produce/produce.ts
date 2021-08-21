@@ -22,6 +22,10 @@ export function produceFullResult(): IVestResult {
   );
 }
 
+/**
+ * DONE is here and not in its own module to prevent circular dependency issues.
+ */
+
 function shouldSkipDoneRegistration(
   callback: (res: TDraftResult) => void,
 
@@ -55,23 +59,26 @@ const done: IDone = function done(...args): IVestResult {
     string
   ];
 
-  const stateRef = useStateRef();
-
   const output = produceFullResult();
 
   if (shouldSkipDoneRegistration(callback, fieldName, output)) {
     return output;
   }
 
-  const deferredCallback = ctx.bind({ stateRef }, () =>
-    callback(produceDraft())
-  );
+  const doneCallback = () => callback(produceDraft());
 
   if (shouldRunDoneCallback(fieldName)) {
-    deferredCallback();
+    doneCallback();
     return output;
   }
 
+  deferDoneCallback(doneCallback, fieldName);
+
+  return output;
+};
+
+function deferDoneCallback(doneCallback: () => void, fieldName?: string): void {
+  const deferredCallback = ctx.bind({}, doneCallback);
   const [, setTestCallbacks] = useTestCallbacks();
   setTestCallbacks(current => {
     if (fieldName) {
@@ -83,9 +90,7 @@ const done: IDone = function done(...args): IVestResult {
     }
     return current;
   });
-
-  return output;
-};
+}
 
 export type IVestResult = TDraftResult & { done: IDone };
 

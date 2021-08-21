@@ -21,18 +21,17 @@ module.exports = {
 
   overrides: [
     {
-      files: ['./packages/*/src/**/*.(t|j)s'],
-      excludedFiles: '*__tests__/**/*.(t|j)s',
+      files: ['./packages/*/src/**/*.*'],
+      excludedFiles: ['./**/__tests__/**/*.*'],
       rules: {
-        'import/no-relative-parent-imports': 2,
-        'max-depth': [1, { max: 4 }],
-        'max-lines-per-function': [1, { max: 20 }],
-        'max-nested-callbacks': [1, { max: 3 }],
+        'max-depth': [1, { max: 3 }],
+        'max-lines-per-function': [1, { max: 45 }],
+        'max-nested-callbacks': [1, { max: 2 }],
         'max-statements': [1, { max: 10 }],
       },
     },
     {
-      excludedFiles: ['__tests__/**/*.(t|j)s', './**/testUtils/**/*'],
+      excludedFiles: ['./**/__tests__/**/*.*', './**/testUtils/**/*'],
       extends: [
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',

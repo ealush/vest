@@ -1,6 +1,7 @@
 import isFunction from 'isFunction';
 import optionalFunctionValue from 'optionalFunctionValue';
 
+// eslint-disable-next-line max-lines-per-function
 export default function createState(
   onStateChange?: (...args: unknown[]) => unknown
 ): TCreateStateReturn {

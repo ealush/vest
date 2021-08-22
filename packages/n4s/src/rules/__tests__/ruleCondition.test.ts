@@ -1,5 +1,4 @@
 import enforce from 'n4s';
-
 import ruleReturn, { failing, passing } from 'ruleReturn';
 
 describe('enforce.condition', () => {
@@ -55,6 +54,7 @@ describe('enforce.condition', () => {
 
   describe('Error handling', () => {
     it('Should fail if not a function', () => {
+      // @ts-expect-error - testing bad usage
       expect(() => enforce().condition('not a function')).toThrow();
       expect(enforce.condition('not a function').run(1)).toEqual(failing());
     });
@@ -63,6 +63,8 @@ describe('enforce.condition', () => {
       expect(() => enforce(1).condition(() => 1)).toThrow();
       expect(() => enforce(1).condition(() => undefined)).toThrow();
       expect(() => enforce(1).condition(() => 'not a boolean')).toThrow();
+
+      // @ts-expect-error - testing bad usage
       expect(() => enforce(1).condition(() => ruleReturn())).toThrow();
       expect(() => enforce.condition(() => 1).run(1)).toThrow();
     });

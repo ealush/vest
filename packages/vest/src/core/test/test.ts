@@ -26,7 +26,7 @@ function testBase(
 ): VestTest {
   const [testFn, message] = args.reverse() as [TTestFn, string | undefined];
   const [, setSkippedTests] = useSkippedTests();
-  const context = ctx.use();
+  const context = ctx.useX();
   const testObject = new VestTest(fieldName, testFn, {
     message,
     groupName: context?.groupName,

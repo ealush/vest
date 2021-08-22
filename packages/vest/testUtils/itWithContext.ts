@@ -1,4 +1,4 @@
-import isFunction from 'isFunction';
+import optionalFunctionValue from 'optionalFunctionValue';
 
 import runCreateRef from './runCreateRef';
 
@@ -12,7 +12,7 @@ export default function itWithContext(
 ): void {
   return it(str, () =>
     context.run(
-      isFunction(getCTX) ? getCTX() : getCTX ?? { stateRef: runCreateRef() },
+      optionalFunctionValue(getCTX) ?? { stateRef: runCreateRef() },
       cb
     )
   );

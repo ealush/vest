@@ -43,6 +43,13 @@ module.exports = {
         '@typescript-eslint/explicit-module-boundary-types': 'off',
       },
     },
+    {
+      excludedFiles: ['./**/__tests__/**/*.*'],
+      files: ['*.ts'],
+      rules: {
+        'jest/no-export': 0,
+      },
+    },
   ],
   parser: '@typescript-eslint/parser',
   plugins: ['jest'],

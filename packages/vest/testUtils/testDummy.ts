@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-export */
 import faker from 'faker';
 
 import { test, warn } from 'vest';

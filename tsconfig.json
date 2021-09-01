@@ -136,6 +136,7 @@
       "test": ["./packages/vest/src/core/test/test.ts"],
       "VestTest": ["./packages/vest/src/core/test/VestTest.ts"],
       "classnames": ["./packages/vest/src/exports/classnames.ts"],
+      "parser": ["./packages/vest/src/exports/parser.ts"],
       "promisify": ["./packages/vest/src/exports/promisify.ts"],
       "exclusive": ["./packages/vest/src/hooks/exclusive.ts"],
       "group": ["./packages/vest/src/hooks/group.ts"],

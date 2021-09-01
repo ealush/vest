@@ -14,7 +14,6 @@ import {
   useSetTestAtCursor,
 } from 'stateHooks';
 import type { TTestBase } from 'test';
-/* eslint-disable jest/no-export */
 
 // eslint-disable-next-line max-lines-per-function
 export default function bindTestMemo(test: TTestBase): {

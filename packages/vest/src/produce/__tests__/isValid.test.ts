@@ -244,13 +244,21 @@ describe('isValid', () => {
     });
   });
 
-  describe('When fieldname is specified', () => {
+  describe('When field name is specified', () => {
     it('Should return false when field did not run yet', () => {
       expect(
         create(() => {
           skip('field_1');
           test('field_1', () => true);
         })().isValid()
+      ).toBe(false);
+    });
+
+    it('Should return false when testing for a field that does not exist', () => {
+      expect(
+        create(() => {
+          test('field_1', () => {});
+        })().isValid('field 2')
       ).toBe(false);
     });
 

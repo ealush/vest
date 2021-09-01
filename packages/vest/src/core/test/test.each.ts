@@ -6,7 +6,6 @@ import type { TStringable } from 'utilityTypes';
 import VestTest, { TTestResult } from 'VestTest';
 import type { TTestBase } from 'test';
 
-/* eslint-disable jest/no-export */
 export default function bindTestEach(test: TTestBase): (table: any[]) => {
   (fieldName: TStringable, message: TStringable, cb: TEachCb): VestTest[];
   (fieldName: TStringable, cb: TEachCb): VestTest[];

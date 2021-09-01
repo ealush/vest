@@ -56,7 +56,7 @@ describe('Utility: classnames', () => {
         'invalid_string tested_string warning_string'.split(' ').sort()
       );
       expect(genClass('field_3').split(' ').sort()).toEqual(
-        'tested_string warning_string'.split(' ').sort()
+        'tested_string valid_string warning_string'.split(' ').sort()
       );
       expect(genClass('field_4').split(' ').sort()).toEqual(
         'tested_string valid_string'.split(' ').sort()

@@ -1,6 +1,6 @@
 import wait from 'wait';
 
-import { test, optional, create, warn, skip, only } from 'vest';
+import { test, optional, create, skipWhen, warn, skip, only } from 'vest';
 
 describe('isValid', () => {
   describe('Before any test ran', () => {
@@ -177,6 +177,9 @@ describe('isValid', () => {
         test('field_1', () => {
           return true;
         });
+        test('field_1', () => {
+          return true;
+        });
         test('field_2', () => {
           return true;
         });
@@ -188,5 +191,16 @@ describe('isValid', () => {
     it('Should return true', () => {
       expect(suite('field_1').isValid()).toBe(true);
     });
+  });
+
+  describe('When a required field has some passing tests', () => {
+    expect(
+      create(() => {
+        test('field_1', () => true);
+        skipWhen(true, () => {
+          test('field_1', () => true);
+        });
+      })().isValid()
+    ).toBe(false);
   });
 });

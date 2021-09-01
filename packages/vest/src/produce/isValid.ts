@@ -3,7 +3,7 @@ import { isNotEmpty, isEmpty } from 'isEmpty';
 import type { TDraftResult } from 'produceDraft';
 import {
   useTestObjects,
-  useOptionalFields,
+  isOptionalField,
   usePending,
   useLagging,
 } from 'stateHooks';
@@ -34,13 +34,25 @@ export function isValid(result: TDraftResult): boolean {
 }
 
 function noMissingRequiredTestRuns(result: TDraftResult): boolean {
-  const [optionalFields] = useOptionalFields();
+  const testObjectsPerField = countTestObjectsPerField();
 
   for (const test in result.tests) {
-    if (!optionalFields[test] && result.tests[test].testCount === 0) {
+    if (
+      !isOptionalField(test) &&
+      result.tests[test].testCount !== testObjectsPerField[test]
+    ) {
       return false;
     }
   }
 
   return true;
+}
+
+function countTestObjectsPerField(): Record<string, number> {
+  const [testObjects] = useTestObjects();
+
+  return testObjects.reduce((counters, testObject) => {
+    counters[testObject.fieldName] = (counters[testObject.fieldName] || 0) + 1;
+    return counters;
+  }, {});
 }

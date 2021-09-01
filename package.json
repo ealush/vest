@@ -48,7 +48,7 @@
     "date-fns": "^2.21.1",
     "eslint": "^7.25.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-jest": "^23.20.0",
     "faker": "^5.5.3",
     "fs-extra": "^9.1.0",

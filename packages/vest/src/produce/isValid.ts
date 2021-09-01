@@ -15,6 +15,10 @@ export function isValid(result: TDraftResult, fieldName?: string): boolean {
     return false;
   }
 
+  if (fieldDoesNotExist(result, fieldName)) {
+    return false;
+  }
+
   if (
     isNotEmpty(
       useAllIncomplete().filter(testObject => {
@@ -31,6 +35,10 @@ export function isValid(result: TDraftResult, fieldName?: string): boolean {
   return noMissingTests(fieldName);
 }
 
+function fieldDoesNotExist(result: TDraftResult, fieldName?: string): boolean {
+  return !!fieldName && isEmpty(result.tests[fieldName]);
+}
+
 function noMissingTests(fieldName?: string): boolean {
   const [testObjects] = useTestObjects();
 
@@ -43,6 +51,6 @@ function noMissingTests(fieldName?: string): boolean {
       return true;
     }
 
-    return !testObject.isSkipped();
+    return testObject.isTested();
   });
 }

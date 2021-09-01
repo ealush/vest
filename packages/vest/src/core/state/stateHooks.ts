@@ -82,3 +82,9 @@ export function useRefreshTestObjects(): void {
 export function useCursorAt(): TStateHandlerReturn<number> {
   return useStateRef().testObjectsCursor();
 }
+
+export function isOptionalField(fieldName: string): boolean {
+  const [optionalFields] = useOptionalFields();
+
+  return !!optionalFields[fieldName];
+}

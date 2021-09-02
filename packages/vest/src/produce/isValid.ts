@@ -24,35 +24,25 @@ export function isValid(result: TDraftResult): boolean {
 
   if (
     isNotEmpty(
-      pending.concat(lagging).filter(testObject => !testObject.isWarning)
+      pending
+        .concat(lagging)
+        .filter(testObject => !isOptionalField(testObject.fieldName))
     )
   ) {
     return false;
   }
 
-  return noMissingRequiredTestRuns(result);
+  return hasMissingTests();
 }
 
-function noMissingRequiredTestRuns(result: TDraftResult): boolean {
-  const testObjectsPerField = countTestObjectsPerField();
-
-  for (const test in result.tests) {
-    if (
-      !isOptionalField(test) &&
-      result.tests[test].testCount !== testObjectsPerField[test]
-    ) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-function countTestObjectsPerField(): Record<string, number> {
+function hasMissingTests(): boolean {
   const [testObjects] = useTestObjects();
 
-  return testObjects.reduce((counters, testObject) => {
-    counters[testObject.fieldName] = (counters[testObject.fieldName] || 0) + 1;
-    return counters;
-  }, {});
+  return testObjects.every(testObject => {
+    if (isOptionalField(testObject.fieldName)) {
+      return true;
+    }
+
+    return !testObject.skipped;
+  });
 }

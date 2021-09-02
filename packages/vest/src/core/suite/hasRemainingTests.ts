@@ -1,14 +1,12 @@
 import { isEmpty, isNotEmpty } from 'isEmpty';
 
-import { usePending, useLagging } from 'stateHooks';
+import { useAllIncomplete } from 'stateHooks';
 
 /**
  * Checks if a given tests, or the suite as a whole still have remaining tests.
  */
 function hasRemainingTests(fieldName?: string): boolean {
-  const [pending] = usePending();
-  const [lagging] = useLagging();
-  const allIncomplete = pending.concat(lagging);
+  const allIncomplete = useAllIncomplete();
   if (isEmpty(allIncomplete)) {
     return false;
   }

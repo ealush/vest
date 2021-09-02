@@ -10,10 +10,10 @@ import context from 'ctx';
 import { IVestResult, produceFullResult } from 'produce';
 import { produceDraft, TDraftResult } from 'produceDraft';
 import {
-  usePending,
-  useLagging,
+  useAllIncomplete,
   useTestObjects,
   usePrevTestObjects,
+  useLagging,
 } from 'stateHooks';
 
 // eslint-disable-next-line max-lines-per-function
@@ -59,13 +59,13 @@ export default function create<T extends (...args: any[]) => void>(
       const [prevTestObjects] = useTestObjects();
       const [, setPrevTestObjects] = usePrevTestObjects();
 
-      const [pending] = usePending();
-      const [prevLagging, setLagging] = useLagging();
+      const [, setLagging] = useLagging();
+      const allIncomplete = useAllIncomplete();
       state.reset();
       setPrevTestObjects(() => prevTestObjects);
 
       // Move all the active pending tests to the lagging array
-      setLagging(pending.concat(prevLagging));
+      setLagging(allIncomplete);
 
       // Run the consumer's callback
       suiteCallback(...args);

@@ -88,3 +88,9 @@ export function isOptionalField(fieldName: string): boolean {
 
   return !!optionalFields[fieldName];
 }
+
+export function useAllIncomplete(): VestTest[] {
+  const [pending] = usePending();
+  const [lagging] = useLagging();
+  return pending.concat(lagging);
+}

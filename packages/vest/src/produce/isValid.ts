@@ -1,12 +1,7 @@
 import { isNotEmpty, isEmpty } from 'isEmpty';
 
 import type { TDraftResult } from 'produceDraft';
-import {
-  useTestObjects,
-  isOptionalField,
-  usePending,
-  useLagging,
-} from 'stateHooks';
+import { useTestObjects, isOptionalField, useAllIncomplete } from 'stateHooks';
 
 export function isValid(result: TDraftResult): boolean {
   if (result.hasErrors()) {
@@ -19,14 +14,11 @@ export function isValid(result: TDraftResult): boolean {
     return false;
   }
 
-  const [pending] = usePending();
-  const [lagging] = useLagging();
-
   if (
     isNotEmpty(
-      pending
-        .concat(lagging)
-        .filter(testObject => !isOptionalField(testObject.fieldName))
+      useAllIncomplete().filter(
+        testObject => !isOptionalField(testObject.fieldName)
+      )
     )
   ) {
     return false;

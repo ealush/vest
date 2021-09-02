@@ -49,6 +49,39 @@ describe('isValid', () => {
     it('Should return true when a required test has warnings', () => {
       expect(suite().isValid()).toBe(true);
     });
+
+    describe('When some of the tests for the required field are warnings', () => {
+      beforeEach(() => {
+        suite = create(() => {
+          test('field_1', () => {
+            warn();
+            return false;
+          });
+          test('field_1', () => true);
+        });
+      });
+      it('Should return true when a required test has warnings', () => {
+        expect(suite().isValid()).toBe(true);
+      });
+    });
+
+    describe('when a warning test in a required field is skipped', () => {
+      beforeEach(() => {
+        suite = create(() => {
+          test('field_1', () => true);
+
+          skipWhen(true, () => {
+            test('field_1', () => {
+              warn();
+              return false;
+            });
+          });
+        });
+      });
+      it('Should return false even when the skipped field is warning', () => {
+        expect(suite().isValid()).toBe(false);
+      });
+    });
   });
 
   describe('When a non optional field is skipped', () => {
@@ -89,9 +122,9 @@ describe('isValid', () => {
     });
 
     describe('When test is pending', () => {
-      it('Should return false', () => {
+      it('Should return true', () => {
         suite();
-        expect(suite.get().isValid()).toBe(false);
+        expect(suite.get().isValid()).toBe(true);
       });
     });
     describe('When test is passing', () => {
@@ -119,8 +152,11 @@ describe('isValid', () => {
       });
     });
 
-    it('Should return true', () => {
-      expect(suite().isValid()).toBe(true);
+    it('Should return false before as long as the test is pending', async () => {
+      const res = suite();
+      expect(res.isValid()).toBe(false);
+      await wait(300);
+      expect(res.isValid()).toBe(true);
     });
   });
 
@@ -141,7 +177,7 @@ describe('isValid', () => {
     });
 
     describe('When test is pending', () => {
-      it('Should return `false`', () => {
+      it('Should return `false` for a required field', () => {
         const result = suite();
 
         expect(result.isValid()).toBe(false);
@@ -189,18 +225,22 @@ describe('isValid', () => {
       });
     });
     it('Should return true', () => {
-      expect(suite('field_1').isValid()).toBe(true);
+      expect(suite().isValid()).toBe(true);
     });
   });
 
   describe('When a required field has some passing tests', () => {
-    expect(
-      create(() => {
-        test('field_1', () => true);
-        skipWhen(true, () => {
+    it('Should return false', () => {
+      expect(
+        create(() => {
           test('field_1', () => true);
-        });
-      })().isValid()
-    ).toBe(false);
+          skipWhen(true, () => {
+            test('field_1', () => {
+              return true;
+            });
+          });
+        })().isValid()
+      ).toBe(false);
+    });
   });
 });

@@ -1,6 +1,6 @@
 import { isNotEmpty, isEmpty } from 'isEmpty';
+import { nonMatchingFieldName } from 'matchingFieldName';
 
-import nonMatchingFieldName from 'nonMatchingFieldName';
 import type { TDraftResult } from 'produceDraft';
 import { useTestObjects, isOptionalField, useAllIncomplete } from 'stateHooks';
 

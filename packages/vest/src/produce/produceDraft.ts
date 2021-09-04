@@ -29,7 +29,9 @@ export function produceDraft(): TDraftResult {
         hasErrorsByGroup: ctx.bind(ctxRef, hasErrorsByGroup),
         hasWarnings: ctx.bind(ctxRef, hasWarnings),
         hasWarningsByGroup: ctx.bind(ctxRef, hasWarningsByGroup),
-        isValid: ctx.bind(ctxRef, () => isValid(produceDraft())),
+        isValid: ctx.bind(ctxRef, (fieldName?: string) =>
+          isValid(produceDraft(), fieldName)
+        ),
       });
     })
   );
@@ -41,7 +43,7 @@ export type TDraftResult = ReturnType<typeof genTestsSummary> & {
    * Determined if there are no errors, and if no
    * required fields are skipped.
    */
-  isValid: () => boolean;
+  isValid: (fieldName?: string) => boolean;
   hasErrors: typeof hasErrors;
   hasWarnings: typeof hasWarnings;
   getErrors: typeof getErrors;

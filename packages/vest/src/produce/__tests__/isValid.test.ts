@@ -243,4 +243,72 @@ describe('isValid', () => {
       ).toBe(false);
     });
   });
+
+  describe('When fieldname is specified', () => {
+    it('Should return false when field did not run yet', () => {
+      expect(
+        create(() => {
+          skip('field_1');
+          test('field_1', () => true);
+        })().isValid()
+      ).toBe(false);
+    });
+
+    it("Should return false when some of the field's tests ran", () => {
+      expect(
+        create(() => {
+          test('field_1', () => {
+            return true;
+          });
+          skipWhen(true, () => {
+            test('field_1', () => {
+              return true;
+            });
+          });
+        })().isValid()
+      ).toBe(false);
+    });
+
+    it('Should return false when the field has errors', () => {
+      expect(
+        create(() => {
+          test('field_1', () => {
+            return false;
+          });
+        })().isValid()
+      ).toBe(false);
+    });
+
+    it('Should return true when all the tests are passing', () => {
+      expect(
+        create(() => {
+          test('field_1', () => {
+            return true;
+          });
+        })().isValid()
+      ).toBe(true);
+    });
+
+    it('Should return true when the field only has warnings', () => {
+      expect(
+        create(() => {
+          test('field_1', () => {
+            warn();
+            return false;
+          });
+        })().isValid()
+      ).toBe(true);
+    });
+
+    it('Should return true if field is optional and did not run', () => {
+      expect(
+        create(() => {
+          optional('field_1');
+          skipWhen(true, () => {
+            test('field_1', () => false);
+          });
+        })().isValid()
+      ).toBe(true);
+    });
+  });
 });

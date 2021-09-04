@@ -1,10 +1,11 @@
 import { isNotEmpty, isEmpty } from 'isEmpty';
 
+import nonMatchingFieldName from 'nonMatchingFieldName';
 import type { TDraftResult } from 'produceDraft';
 import { useTestObjects, isOptionalField, useAllIncomplete } from 'stateHooks';
 
-export function isValid(result: TDraftResult): boolean {
-  if (result.hasErrors()) {
+export function isValid(result: TDraftResult, fieldName?: string): boolean {
+  if (result.hasErrors(fieldName)) {
     return false;
   }
 
@@ -16,21 +17,28 @@ export function isValid(result: TDraftResult): boolean {
 
   if (
     isNotEmpty(
-      useAllIncomplete().filter(
-        testObject => !isOptionalField(testObject.fieldName)
-      )
+      useAllIncomplete().filter(testObject => {
+        if (nonMatchingFieldName(testObject, fieldName)) {
+          return false;
+        }
+        return !isOptionalField(testObject.fieldName);
+      })
     )
   ) {
     return false;
   }
 
-  return hasMissingTests();
+  return hasMissingTests(fieldName);
 }
 
-function hasMissingTests(): boolean {
+function hasMissingTests(fieldName?: string): boolean {
   const [testObjects] = useTestObjects();
 
   return testObjects.every(testObject => {
+    if (nonMatchingFieldName(testObject, fieldName)) {
+      return true;
+    }
+
     if (isOptionalField(testObject.fieldName)) {
       return true;
     }

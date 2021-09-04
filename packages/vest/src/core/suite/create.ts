@@ -7,6 +7,7 @@ import createState from 'vast';
 
 import createStateRef, { TStateRef } from 'createStateRef';
 import context from 'ctx';
+import matchingFieldName from 'matchingFieldName';
 import { IVestResult, produceFullResult } from 'produce';
 import { produceDraft, TDraftResult } from 'produceDraft';
 import {
@@ -81,7 +82,7 @@ export default function create<T extends (...args: any[]) => void>(
 
         // We're mutating the array in `cancel`, so we have to first copy it.
         asArray(testObjects).forEach(testObject => {
-          if (testObject.fieldName === name) {
+          if (matchingFieldName(testObject, name)) {
             testObject.cancel();
           }
         });

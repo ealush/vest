@@ -1,18 +1,20 @@
+import assign from 'assign';
 import createContext from 'context';
 
 export const ctx = createContext<CTXType>((ctxRef, parentContext): CTXType => {
+  const base = {
+    value: ctxRef.value,
+    meta: ctxRef.meta || {},
+  };
+
   if (!parentContext) {
-    return {
-      value: ctxRef.value,
+    return assign(base, {
       parent: emptyParent,
-      meta: ctxRef.meta || {},
-    };
+    });
   } else if (ctxRef.set) {
-    return {
-      meta: ctxRef.meta || {},
-      value: ctxRef.value,
+    return assign(base, {
       parent: (): TEnforceContext => stripContext(parentContext),
-    };
+    });
   }
 
   return parentContext;

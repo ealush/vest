@@ -1,5 +1,5 @@
 import VestTest from 'VestTest';
-import nonMatchingFieldName from 'nonMatchingFieldName';
+import { nonMatchingFieldName } from 'matchingFieldName';
 import nonMatchingSeverityProfile from 'nonMatchingSeverityProfile';
 import type { TSeverity } from 'vestTypes';
 

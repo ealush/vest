@@ -160,9 +160,7 @@
         "./packages/vest/src/produce/hasFailures/hasFailuresLogic.ts"
       ],
       "isValid": ["./packages/vest/src/produce/isValid.ts"],
-      "nonMatchingFieldName": [
-        "./packages/vest/src/produce/nonMatchingFieldName.ts"
-      ],
+      "matchingFieldName": ["./packages/vest/src/produce/matchingFieldName.ts"],
       "nonMatchingSeverityProfile": [
         "./packages/vest/src/produce/nonMatchingSeverityProfile.ts"
       ],

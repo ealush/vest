@@ -182,14 +182,14 @@ describe('module: pending', () => {
       itWithContext(
         'Should set test as canceled',
         () => {
-          expect(testObjects[0].canceled).toBe(false);
+          expect(testObjects[0].status).not.toBe('CANCELED');
           setPending(
             new VestTest(testObjects[0].fieldName, jest.fn(), {
               groupName: testObjects[0].groupName,
               message: 'failure message',
             })
           );
-          expect(testObjects[0].canceled).toBe(true);
+          expect(testObjects[0].status).toBe('CANCELED');
         },
         getStateRef
       );

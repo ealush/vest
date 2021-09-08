@@ -24,8 +24,10 @@ export default function runAsyncTest(testObject: VestTest): void {
   const done = ctx.bind({ stateRef }, () => {
     removePending(testObject);
 
+    testObject.done();
+
     // This is for cases in which the suite state was already reset
-    if (testObject.canceled) {
+    if (testObject.isCanceled()) {
       return;
     }
 
@@ -34,6 +36,10 @@ export default function runAsyncTest(testObject: VestTest): void {
     runDoneCallbacks();
   });
   const fail = ctx.bind({ stateRef }, (rejectionMessage?: string) => {
+    if (testObject.isCanceled()) {
+      return;
+    }
+
     testObject.message = isStringValue(rejectionMessage)
       ? rejectionMessage
       : message;

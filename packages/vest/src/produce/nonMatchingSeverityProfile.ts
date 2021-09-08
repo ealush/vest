@@ -10,5 +10,5 @@ export default function nonMatchingSeverityProfile(
   severity: TSeverity,
   testObject: VestTest
 ): boolean {
-  return either(severity === 'warnings', testObject.isWarning);
+  return either(severity === 'warnings', testObject.warns);
 }

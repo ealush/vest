@@ -13,7 +13,7 @@ describe("Test Vest's `test` function", () => {
             warn();
           });
         })();
-        expect(testObject.isWarning).toBe(true);
+        expect(testObject.warns).toBe(true);
       });
     });
 
@@ -24,7 +24,7 @@ describe("Test Vest's `test` function", () => {
             throw new Error();
           });
         })();
-        expect(testObject.failed).toBe(true);
+        expect(testObject.status).toBe('FAILED');
         expect(testObject == false).toBe(true); //eslint-disable-line
       });
 
@@ -32,7 +32,7 @@ describe("Test Vest's `test` function", () => {
         create(() => {
           test(faker.random.word(), faker.lorem.sentence(), () => false);
         })();
-        expect(testObject.failed).toBe(true);
+        expect(testObject.status).toBe('FAILED');
         expect(testObject == false).toBe(true); //eslint-disable-line
       });
 
@@ -101,13 +101,13 @@ describe("Test Vest's `test` function", () => {
               faker.lorem.sentence(),
               () =>
                 new Promise((_, reject) => {
-                  expect(testObject.failed).toBe(false);
+                  expect(testObject.status).not.toBe('FAILED');
                   setTimeout(reject, 300);
                 })
             );
-            expect(testObject.failed).toBe(false);
+            expect(testObject.status).not.toBe('FAILED');
             setTimeout(() => {
-              expect(testObject.failed).toBe(true);
+              expect(testObject.status).toBe('FAILED');
               done();
             }, 310);
           })();

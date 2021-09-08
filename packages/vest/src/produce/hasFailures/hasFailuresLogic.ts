@@ -10,7 +10,7 @@ export default function hasFailuresLogic(
   severityKey: TSeverity,
   fieldName?: string
 ): boolean {
-  if (!testObject.failed) {
+  if (!testObject.hasFailures()) {
     return false;
   }
 

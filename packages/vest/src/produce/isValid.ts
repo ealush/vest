@@ -1,6 +1,6 @@
 import { isNotEmpty, isEmpty } from 'isEmpty';
-import { nonMatchingFieldName } from 'matchingFieldName';
 
+import { nonMatchingFieldName } from 'matchingFieldName';
 import type { TDraftResult } from 'produceDraft';
 import { useTestObjects, isOptionalField, useAllIncomplete } from 'stateHooks';
 
@@ -28,10 +28,10 @@ export function isValid(result: TDraftResult, fieldName?: string): boolean {
     return false;
   }
 
-  return hasMissingTests(fieldName);
+  return noMissingTests(fieldName);
 }
 
-function hasMissingTests(fieldName?: string): boolean {
+function noMissingTests(fieldName?: string): boolean {
   const [testObjects] = useTestObjects();
 
   return testObjects.every(testObject => {
@@ -43,6 +43,6 @@ function hasMissingTests(fieldName?: string): boolean {
       return true;
     }
 
-    return !testObject.skipped;
+    return !testObject.isSkipped();
   });
 }

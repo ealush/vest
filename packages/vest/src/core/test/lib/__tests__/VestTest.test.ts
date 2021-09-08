@@ -35,10 +35,10 @@ describe('VestTest', () => {
   });
 
   describe('testObject.warn', () => {
-    it('Should set `.isWarning` to true', () => {
-      expect(testObject.isWarning).toBe(false);
+    it('Should set `.warns` to true', () => {
+      expect(testObject.warns).toBe(false);
       testObject.warn();
-      expect(testObject.isWarning).toBe(true);
+      expect(testObject.warns).toBe(true);
       expect(testObject).toMatchSnapshot();
     });
   });
@@ -55,21 +55,20 @@ describe('VestTest', () => {
       jest.resetAllMocks();
     });
 
-    it('Should set this.failed to true', () => {
-      expect(testObject.failed).toBe(false);
+    it('Should set status to failed', () => {
+      expect(testObject.status).not.toBe('FAILED');
       testObject.fail();
-      expect(testObject.failed).toBe(true);
+      expect(testObject.status).toBe('FAILED');
     });
   });
 
-  describe('testobject.valueOf', () => {
-    test('When `failed` is false', () => {
-      expect(testObject.failed).toBe(false);
+  describe('testObject.valueOf', () => {
+    test('When test did not fail', () => {
       expect(testObject.valueOf()).toBe(true);
     });
 
-    test('When `failed` is true', () => {
-      testObject.failed = true;
+    test('When test failed', () => {
+      testObject.fail();
       expect(testObject.valueOf()).toBe(false);
     });
   });

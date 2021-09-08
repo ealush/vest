@@ -22,20 +22,15 @@ export default function genTestsSummary(): TTestSummary {
 
   function appendSummary(testObjects: VestTest[]) {
     testObjects.forEach(testObject => {
-      const { fieldName, groupName, skipped } = testObject;
+      const { fieldName, groupName } = testObject;
 
-      summary.tests[fieldName] = genTestObject(
-        summary.tests,
-        testObject,
-        skipped
-      );
+      summary.tests[fieldName] = genTestObject(summary.tests, testObject);
 
       if (groupName) {
         summary.groups[groupName] = summary.groups[groupName] || {};
         summary.groups[groupName][fieldName] = genTestObject(
           summary.groups[groupName],
-          testObject,
-          skipped
+          testObject
         );
       }
     });
@@ -57,10 +52,9 @@ function countFailures(summary: TTestSummary): TTestSummary {
 // eslint-disable-next-line max-statements
 function genTestObject(
   summaryKey: TTestGroup,
-  testObject: VestTest,
-  skipped?: boolean
+  testObject: VestTest
 ): TSingleTestSummary {
-  const { fieldName, isWarning, failed, message } = testObject;
+  const { fieldName, message } = testObject;
 
   summaryKey[fieldName] = summaryKey[fieldName] || {
     errorCount: 0,
@@ -70,7 +64,7 @@ function genTestObject(
 
   const testKey = summaryKey[fieldName];
 
-  if (skipped) return testKey;
+  if (testObject.isSkipped()) return testKey;
 
   summaryKey[fieldName].testCount++;
 
@@ -82,12 +76,10 @@ function genTestObject(
     }
   }
 
-  if (failed) {
-    if (isWarning) {
-      addTo('warnCount', 'warnings');
-    } else {
-      addTo('errorCount', 'errors');
-    }
+  if (testObject.isFailing()) {
+    addTo('errorCount', 'errors');
+  } else if (testObject.isWarning()) {
+    addTo('warnCount', 'warnings');
   }
 
   return testKey;

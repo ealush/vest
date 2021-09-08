@@ -22,6 +22,8 @@ export default function registerTest(testObject: VestTest): void {
       testObject.asyncTest = result;
       setPending(testObject);
       runAsyncTest(testObject);
+    } else {
+      testObject.done();
     }
   } catch {
     throwError(

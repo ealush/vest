@@ -2,26 +2,22 @@
 
 exports[`VestTest TestObject constructor 1`] = `
 VestTest {
-  "canceled": false,
-  "failed": false,
   "fieldName": "unicycle",
   "id": "0",
-  "isWarning": false,
   "message": "I am Root.",
-  "skipped": false,
+  "status": "UNTESTED",
   "testFn": [MockFunction],
+  "warns": false,
 }
 `;
 
-exports[`VestTest testObject.warn Should set \`.isWarning\` to true 1`] = `
+exports[`VestTest testObject.warn Should set \`.warns\` to true 1`] = `
 VestTest {
-  "canceled": false,
-  "failed": false,
   "fieldName": "unicycle",
   "id": "102",
-  "isWarning": true,
   "message": "I am Root.",
-  "skipped": false,
+  "status": "UNTESTED",
   "testFn": [MockFunction],
+  "warns": true,
 }
 `;

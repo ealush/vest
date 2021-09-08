@@ -11,6 +11,8 @@ export function setPending(testObject: VestTest): void {
   const [lagging, setLagging] = useLagging();
   const [, setPending] = usePending();
 
+  testObject.setPending();
+
   const nextLagging = asArray(lagging).reduce(
     (lagging: VestTest[], laggingTestObject) => {
       /**

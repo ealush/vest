@@ -7,14 +7,12 @@ Object {
   "pending": Array [
     VestTest {
       "asyncTest": Promise {},
-      "canceled": false,
-      "failed": false,
       "fieldName": "field_1",
       "id": "8",
-      "isWarning": false,
       "message": "some message string",
-      "skipped": false,
+      "status": "PENDING",
       "testFn": [MockFunction],
+      "warns": false,
     },
   ],
   "prevTestObjects": Array [],
@@ -38,14 +36,12 @@ Object {
   "pending": Array [
     VestTest {
       "asyncTest": Promise {},
-      "canceled": false,
-      "failed": false,
       "fieldName": "field_1",
       "id": "0",
-      "isWarning": false,
       "message": "some message string",
-      "skipped": false,
+      "status": "PENDING",
       "testFn": [MockFunction],
+      "warns": false,
     },
   ],
   "prevTestObjects": Array [],

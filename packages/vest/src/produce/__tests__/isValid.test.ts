@@ -152,7 +152,7 @@ describe('isValid', () => {
       });
     });
 
-    it('Should return false before as long as the test is pending', async () => {
+    it('Should return false as long as the test is pending', async () => {
       const res = suite();
       expect(res.isValid()).toBe(false);
       await wait(300);

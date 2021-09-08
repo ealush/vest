@@ -174,11 +174,13 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
     });
 
     if (testCase === CASE_PASSING) {
-      it('Should keep test object unchanged', () =>
+      it('Should keep test object unchanged except for status', () =>
         new Promise<void>(done => {
           runRunAsyncTest(testObject);
           setTimeout(() => {
-            expect(testObject).toEqual(testObjectCopy);
+            expect(testObject).toEqual(
+              Object.assign(testObjectCopy, { status: 'PASSING' })
+            );
             done();
           });
         }));

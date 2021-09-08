@@ -15,7 +15,7 @@ export default function collectFailureMessages(
         return collector;
       }
 
-      if (!testObject.failed) {
+      if (!testObject.hasFailures()) {
         return collector;
       }
 

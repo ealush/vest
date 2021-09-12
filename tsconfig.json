@@ -121,7 +121,9 @@
       "isSameProfileTest": [
         "./packages/vest/src/core/test/isSameProfileTest.ts"
       ],
-      "pending": ["./packages/vest/src/core/test/lib/pending.ts"],
+      "cancelOverriddenPendingTest": [
+        "./packages/vest/src/core/test/lib/cancelOverriddenPendingTest.ts"
+      ],
       "registerTest": ["./packages/vest/src/core/test/lib/registerTest.ts"],
       "removeTestFromState": [
         "./packages/vest/src/core/test/lib/removeTestFromState.ts"

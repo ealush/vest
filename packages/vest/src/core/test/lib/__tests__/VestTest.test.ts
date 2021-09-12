@@ -3,8 +3,7 @@ import wait from 'wait';
 import itWithContext from '../../../../../testUtils/itWithContext';
 
 import VestTest from 'VestTest';
-import { setPending } from 'pending';
-import { usePending, useLagging } from 'stateHooks';
+import { useAllIncomplete, useTestObjects } from 'stateHooks';
 import * as vest from 'vest';
 
 const fieldName = 'unicycle';
@@ -93,30 +92,19 @@ describe('VestTest', () => {
       });
     });
 
-    itWithContext('Should remove a testObject from the pending state', () => {
-      setPending(testObject);
+    itWithContext('Should be removed from the list of incomplete tests', () => {
+      const [, setTestObjects] = useTestObjects();
+      setTestObjects(testObjects => testObjects.concat(testObject));
+      testObject.setPending();
       {
-        const [pending] = usePending();
-        expect(pending).toEqual(expect.arrayContaining([testObject]));
-      }
-      testObject.cancel();
-      {
-        const [pending] = usePending();
-        expect(pending).toEqual(expect.not.arrayContaining([testObject]));
-      }
-    });
+        const allIncomplete = useAllIncomplete();
 
-    itWithContext('Should remove a testObject from the lagging state', () => {
-      const [, setLagging] = useLagging();
-      setLagging(() => [testObject]);
-      {
-        const [lagging] = useLagging();
-        expect(lagging).toEqual(expect.arrayContaining([testObject]));
+        expect(allIncomplete).toEqual(expect.arrayContaining([testObject]));
       }
       testObject.cancel();
       {
-        const [lagging] = useLagging();
-        expect(lagging).toEqual(expect.not.arrayContaining([testObject]));
+        const allIncomplete = useAllIncomplete();
+        expect(allIncomplete).toEqual(expect.not.arrayContaining([testObject]));
       }
     });
   });

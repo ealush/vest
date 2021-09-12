@@ -8,11 +8,8 @@ export default function createStateRef(
   { suiteId }: { suiteId: string }
 ) {
   return {
-    lagging: state.registerStateKey<VestTest[]>(() => []),
     optionalFields: state.registerStateKey<Record<string, boolean>>(() => ({})),
-    pending: state.registerStateKey<VestTest[]>(() => []),
     prevTestObjects: state.registerStateKey<VestTest[]>(() => []),
-    skippedTests: state.registerStateKey<VestTest[]>(() => []),
     suiteId: state.registerStateKey<string>(() => suiteId),
     testCallbacks: state.registerStateKey<{
       fieldCallbacks: Record<string, Array<(res: TDraftResult) => void>>;

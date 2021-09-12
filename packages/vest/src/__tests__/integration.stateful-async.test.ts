@@ -1,3 +1,5 @@
+import wait from 'wait';
+
 import { dummyTest } from '../../testUtils/testDummy';
 
 import * as vest from 'vest';
@@ -55,7 +57,7 @@ describe('Stateful async tests', () => {
       setTimeout(() => {
         expect(callback_1).not.toHaveBeenCalled();
         expect(callback_2).not.toHaveBeenCalled();
-        expect(callback_3).toHaveBeenCalled();
+        expect(callback_3).toHaveBeenCalledTimes(1);
         expect(control).toHaveBeenCalled();
         done();
       }, 50);
@@ -98,4 +100,30 @@ describe('Stateful async tests', () => {
         });
       }, 50);
     }));
+
+  it('Should discard of re-tested async tests', async () => {
+    const tests = [];
+    const control = jest.fn();
+    const suite = vest.create(() => {
+      tests.push(
+        vest.test('field_1', async () => {
+          await wait(100);
+          throw new Error();
+        })
+      );
+    });
+    suite().done(() => {
+      control(0);
+    });
+    await wait(5);
+    suite().done(() => {
+      control(1);
+    });
+    await wait(100);
+    expect(control).toHaveBeenCalledTimes(1);
+    expect(control).toHaveBeenCalledWith(1);
+
+    expect(tests[0].status).toBe('CANCELED');
+    expect(tests[1].status).toBe('FAILED');
+  });
 });

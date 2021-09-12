@@ -2,11 +2,11 @@ import assign from 'assign';
 import isFunction from 'isFunction';
 
 import VestTest, { TTestFn } from 'VestTest';
+import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import ctx from 'ctx';
 import { isExcluded } from 'exclusive';
 import registerTest from 'registerTest';
 import {
-  useSkippedTests,
   useTestAtCursor,
   useSetTestAtCursor,
   useSetNextCursorAt,
@@ -25,7 +25,6 @@ function testBase(
   ...args: [message: string, cb: TTestFn] | [cb: TTestFn]
 ): VestTest {
   const [testFn, message] = args.reverse() as [TTestFn, string | undefined];
-  const [, setSkippedTests] = useSkippedTests();
   const context = ctx.useX();
   const testObject = new VestTest(fieldName, testFn, {
     message,
@@ -35,11 +34,12 @@ function testBase(
   const prevRunTest = useTestAtCursor(testObject);
 
   if (isExcluded(testObject)) {
-    setSkippedTests(skippedTests => skippedTests.concat(testObject));
     testObject.skip();
     useSetNextCursorAt();
     return prevRunTest;
   }
+
+  cancelOverriddenPendingTest(prevRunTest, testObject);
 
   useSetTestAtCursor(testObject);
   useSetNextCursorAt(); // maybe somehow do this only in one place?

@@ -9,6 +9,7 @@ export function parse(res: IVestResult | TDraftResult): {
   tested: (fieldName?: string) => boolean;
   invalid: (fieldName?: string) => boolean;
   untested: (fieldName?: string) => boolean;
+  warning: (fieldName?: string) => boolean;
 } {
   const testedStorage: Record<string, boolean> = {};
 

@@ -1,14 +1,11 @@
 import _ from 'lodash';
 
-import expandStateRef from '../../../../testUtils/expandStateRef';
-import itWithContext from '../../../../testUtils/itWithContext';
 import runCreateRef from '../../../../testUtils/runCreateRef';
 
 import VestTest from 'VestTest';
 import context from 'ctx';
-import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
-import { usePending, useTestCallbacks } from 'stateHooks';
+import { useTestCallbacks, useTestObjects } from 'stateHooks';
 
 const message = 'some message string';
 
@@ -16,7 +13,6 @@ const CASE_PASSING = 'passing';
 const CASE_FAILING = 'failing';
 
 let stateRef;
-const getCtx = () => ({ stateRef });
 
 describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
   let testObject, fieldName;
@@ -49,29 +45,18 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
     testObject.asyncTest =
       testCase === CASE_PASSING ? Promise.resolve() : Promise.reject();
     context.run({ stateRef }, () => {
-      setPending(testObject);
+      testObject.setPending();
     });
   });
 
   describe('State updates', () => {
-    itWithContext(
-      'Initial state matches snapshot (sanity)',
-      () => {
-        const [pending] = usePending();
-        expect(pending).toContain(testObject);
-        expect(expandStateRef(stateRef)).toMatchSnapshot();
-        runRunAsyncTest(testObject);
-      },
-      getCtx
-    );
-
-    it('Should remove test from pending array', () =>
+    it('Should remove pending status from test object', () =>
       new Promise<void>(done => {
+        expect(testObject.status).toBe('PENDING');
         runRunAsyncTest(testObject);
         setTimeout(
           context.bind({ stateRef }, () => {
-            const [pending] = usePending();
-            expect(pending).not.toContain(testObject);
+            expect(testObject.status).not.toBe('PENDING');
             done();
           })
         );
@@ -119,11 +104,12 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
     describe('When there are more tests left', () => {
       beforeEach(() => {
         context.run({ stateRef }, () => {
-          setPending(
-            new VestTest('pending_field', jest.fn(), {
-              message,
-            })
-          );
+          const [, setTestObjects] = useTestObjects();
+          const pendingTest = new VestTest('pending_field', jest.fn(), {
+            message,
+          });
+          setTestObjects(testObjects => testObjects.concat(pendingTest));
+          pendingTest.setPending();
         });
       });
 

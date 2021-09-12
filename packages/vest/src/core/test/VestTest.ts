@@ -1,6 +1,5 @@
 import genId from 'genId';
 
-import { removePending } from 'pending';
 import removeTestFromState from 'removeTestFromState';
 import shouldUseErrorAsMessage from 'shouldUseErrorAsMessage';
 
@@ -13,14 +12,7 @@ export default class VestTest {
 
   id = genId();
   warns = false;
-  status:
-    | 'UNTESTED'
-    | 'SKIPPED'
-    | 'FAILED'
-    | 'WARNING'
-    | 'PASSING'
-    | 'PENDING'
-    | 'CANCELED' = STATUS_UNTESTED;
+  status: KStatus = STATUS_UNTESTED;
 
   constructor(
     fieldName: string,
@@ -37,10 +29,6 @@ export default class VestTest {
     if (message) {
       this.message = message;
     }
-  }
-
-  setPending() {
-    this.status = STATUS_PENDING;
   }
 
   run(): TTestResult {
@@ -61,15 +49,27 @@ export default class VestTest {
     return result;
   }
 
+  setStatus(status: KStatus): void {
+    if (this.isCanceled()) {
+      return;
+    }
+
+    this.status = status;
+  }
+
+  setPending() {
+    this.setStatus(STATUS_PENDING);
+  }
+
   fail(): void {
-    this.status = this.warns ? STATUS_WARNING : STATUS_FAILED;
+    this.setStatus(this.warns ? STATUS_WARNING : STATUS_FAILED);
   }
 
   done(): void {
     if (this.isWarning() || this.isCanceled() || this.isFailing()) {
       return;
     }
-    this.status = STATUS_PASSING;
+    this.setStatus(STATUS_PASSING);
   }
 
   warn(): void {
@@ -77,12 +77,11 @@ export default class VestTest {
   }
 
   skip(): void {
-    this.status = STATUS_SKIPPED;
+    this.setStatus(STATUS_SKIPPED);
   }
 
   cancel(): void {
-    this.status = STATUS_CANCELED;
-    removePending(this);
+    this.setStatus(STATUS_CANCELED);
     removeTestFromState(this);
   }
 
@@ -92,6 +91,10 @@ export default class VestTest {
 
   hasFailures(): boolean {
     return this.isFailing() || this.isWarning();
+  }
+
+  isPending(): boolean {
+    return this.status === STATUS_PENDING;
   }
 
   isTested(): boolean {
@@ -130,3 +133,12 @@ const STATUS_WARNING = 'WARNING';
 const STATUS_PASSING = 'PASSING';
 const STATUS_PENDING = 'PENDING';
 const STATUS_CANCELED = 'CANCELED';
+
+type KStatus =
+  | 'UNTESTED'
+  | 'SKIPPED'
+  | 'FAILED'
+  | 'WARNING'
+  | 'PASSING'
+  | 'PENDING'
+  | 'CANCELED';

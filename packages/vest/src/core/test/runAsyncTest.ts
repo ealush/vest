@@ -5,7 +5,6 @@ import isStringValue from 'isStringValue';
 import VestTest from 'VestTest';
 import ctx from 'ctx';
 import hasRemainingTests from 'hasRemainingTests';
-import { removePending } from 'pending';
 import {
   useTestCallbacks,
   useRefreshTestObjects,
@@ -22,8 +21,6 @@ export default function runAsyncTest(testObject: VestTest): void {
 
   const stateRef = useStateRef();
   const done = ctx.bind({ stateRef }, () => {
-    removePending(testObject);
-
     testObject.done();
 
     // This is for cases in which the suite state was already reset

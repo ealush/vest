@@ -6,12 +6,6 @@ import type { TStateRef } from 'createStateRef';
 import ctx from 'ctx';
 import type { TDraftResult } from 'produceDraft';
 
-export function usePending(): TStateHandlerReturn<VestTest[]> {
-  return useStateRef().pending();
-}
-export function useLagging(): TStateHandlerReturn<VestTest[]> {
-  return useStateRef().lagging();
-}
 export function useSuiteId(): TStateHandlerReturn<string> {
   return useStateRef().suiteId();
 }
@@ -20,9 +14,6 @@ export function useTestCallbacks(): TStateHandlerReturn<{
   doneCallbacks: ((res: TDraftResult) => void)[];
 }> {
   return useStateRef().testCallbacks();
-}
-export function useSkippedTests(): TStateHandlerReturn<VestTest[]> {
-  return useStateRef().skippedTests();
 }
 export function useOptionalFields(): TStateHandlerReturn<
   Record<string, boolean>
@@ -90,7 +81,8 @@ export function isOptionalField(fieldName: string): boolean {
 }
 
 export function useAllIncomplete(): VestTest[] {
-  const [pending] = usePending();
-  const [lagging] = useLagging();
-  return pending.concat(lagging);
+  const [testObjects] = useTestObjects();
+
+  // TODO: CACHE?
+  return testObjects.filter(testObject => testObject.isPending());
 }

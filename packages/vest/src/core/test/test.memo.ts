@@ -3,8 +3,8 @@ import { isNull } from 'isNull';
 import isPromise from 'isPromise';
 
 import VestTest, { TTestFn } from 'VestTest';
+import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';
-import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
 import {
   useSuiteId,
@@ -67,6 +67,8 @@ export default function bindTestMemo(test: TTestBase): {
       return prevRunTest;
     }
 
+    cancelOverriddenPendingTest(prevRunTest, testObject);
+
     useSetTestAtCursor(testObject);
     useSetNextCursorAt();
     handleAsyncTest(testObject);
@@ -79,7 +81,7 @@ export default function bindTestMemo(test: TTestBase): {
 
 function handleAsyncTest(testObject: VestTest): void {
   if (testObject && isPromise(testObject.asyncTest)) {
-    setPending(testObject);
+    testObject.setPending();
     runAsyncTest(testObject);
   }
 }

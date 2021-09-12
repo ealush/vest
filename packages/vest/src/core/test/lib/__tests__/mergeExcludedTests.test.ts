@@ -57,7 +57,6 @@ describe('When previous state exists', () => {
         dummyTest.failing('f2', 'f2_msg');
         dummyTest.failing('f3', 'f3_msg');
         dummyTest.failingAsync('f3', { message: 'f3_async_msg' });
-
         group(GROUP_NAME_1, () => {
           dummyTest.failing('f1', 'f1_group_1_msg');
           dummyTest.failingWarning('f2', 'f2_group_1_msg');
@@ -68,7 +67,6 @@ describe('When previous state exists', () => {
           dummyTest.failing('f4', 'f4_group_1_msg');
           dummyTest.passing('f5', 'f5_group_1_msg');
         });
-
         group(GROUP_NAME_2, () => {
           dummyTest.failing('f1', 'f1_group_2_msg');
           dummyTest.failingAsync('f3', {

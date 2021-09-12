@@ -2,7 +2,6 @@ import isPromise from 'isPromise';
 import throwError from 'throwError';
 
 import VestTest from 'VestTest';
-import { setPending } from 'pending';
 import runAsyncTest from 'runAsyncTest';
 import runSyncTest from 'runSyncTest';
 
@@ -20,7 +19,7 @@ export default function registerTest(testObject: VestTest): void {
     // in case object is an enforce chain
     if (isPromise(result)) {
       testObject.asyncTest = result;
-      setPending(testObject);
+      testObject.setPending();
       runAsyncTest(testObject);
     } else {
       testObject.done();

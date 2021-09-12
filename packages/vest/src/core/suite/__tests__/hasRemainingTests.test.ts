@@ -7,27 +7,22 @@ import runCreateRef from '../../../../testUtils/runCreateRef';
 import VestTest from 'VestTest';
 import context from 'ctx';
 import hasRemainingTests from 'hasRemainingTests';
-import { usePending, useLagging } from 'stateHooks';
+import { useTestObjects } from 'stateHooks';
 
 let stateRef;
 const getCtx = () => ({ stateRef });
 
-const addPendingOrLagging = (
-  key: 'pending' | 'lagging',
-  fieldName?: string
-) => {
+const addPending = (fieldName?: string) => {
   context.run({ stateRef }, () => {
-    const [, setPending] = usePending();
-    const [, setLagging] = useLagging();
+    const [, setTestObjects] = useTestObjects();
 
-    const setter = key === 'pending' ? setPending : setLagging;
+    const added = Array.from(
+      { length: _.random(1, 3) },
+      () => new VestTest(fieldName ?? faker.random.word(), jest.fn())
+    );
 
-    setter(() => {
-      return Array.from(
-        { length: _.random(1, 3) },
-        () => new VestTest(fieldName ?? faker.random.word(), jest.fn())
-      );
-    });
+    setTestObjects(testObjects => testObjects.concat(added));
+    added.forEach(testObject => testObject.setPending());
   });
 };
 
@@ -51,7 +46,7 @@ describe('hasRemainingTests', () => {
       itWithContext(
         'pending tests return true',
         () => {
-          addPendingOrLagging('pending');
+          addPending();
 
           expect(hasRemainingTests()).toBe(true);
         },
@@ -61,7 +56,7 @@ describe('hasRemainingTests', () => {
       itWithContext(
         'lagging tests return true',
         () => {
-          addPendingOrLagging('lagging');
+          addPending();
 
           expect(hasRemainingTests()).toBe(true);
         },
@@ -71,8 +66,8 @@ describe('hasRemainingTests', () => {
       itWithContext(
         'lagging and pending tests return true',
         () => {
-          addPendingOrLagging('lagging');
-          addPendingOrLagging('pending');
+          addPending();
+          addPending();
 
           expect(hasRemainingTests()).toBe(true);
         },
@@ -101,7 +96,7 @@ describe('hasRemainingTests', () => {
       itWithContext(
         'pending tests return true',
         () => {
-          addPendingOrLagging('pending', fieldName);
+          addPending(fieldName);
           expect(hasRemainingTests()).toBe(true);
         },
         getCtx
@@ -110,7 +105,7 @@ describe('hasRemainingTests', () => {
       itWithContext(
         'lagging tests return true',
         () => {
-          addPendingOrLagging('lagging', fieldName);
+          addPending(fieldName);
           expect(hasRemainingTests()).toBe(true);
         },
         getCtx
@@ -119,8 +114,8 @@ describe('hasRemainingTests', () => {
       itWithContext(
         'lagging and pending tests return true',
         () => {
-          addPendingOrLagging('lagging', fieldName);
-          addPendingOrLagging('pending', fieldName);
+          addPending(fieldName);
+          addPending(fieldName);
           expect(hasRemainingTests()).toBe(true);
         },
         getCtx

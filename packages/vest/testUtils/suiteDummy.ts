@@ -89,14 +89,14 @@ export function untested(fields?: string | string[]) {
 
 function createSuiteResult(
   fieldNames: string[] | string | undefined,
-  callback: (fieldName?: string) => void
+  callback: (fieldName?: string) => void // eslint-disable-line no-unused-vars
 ) {
   return createSuite(fieldNames, callback)();
 }
 
 function createSuite(
   fieldNames: string[] | string | undefined = 'field_1',
-  callback: (fieldName?: string) => void
+  callback: (fieldName?: string) => void // eslint-disable-line no-unused-vars
 ) {
   return create(() => {
     asArray(fieldNames).forEach(fieldName => callback(fieldName));

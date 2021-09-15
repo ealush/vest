@@ -3,10 +3,10 @@ const path = require('path');
 const fse = require('fs-extra');
 
 const opts = require('vx/opts');
-const packageName = require('vx/packageName');
 const listExportedModules = require('vx/util/listExportedModules');
 const once = require('vx/util/once');
 const packageJson = require('vx/util/packageJson');
+const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
 module.exports = handleExports;
@@ -16,7 +16,7 @@ function handleExports() {
     name: 'write-cjs-main',
     writeBundle: once(({ name }) => {
       const rootPath = vxPath.package();
-      const isMain = name === packageName();
+      const isMain = name === usePackage();
 
       let exportPath = rootPath;
 
@@ -28,7 +28,7 @@ function handleExports() {
       writePackageJson(name, isMain, exportPath);
 
       fse.writeFileSync(
-        vxPath.package(packageName(), mainExport(name, true)),
+        vxPath.package(usePackage(), mainExport(name, true)),
         genEntry(name),
         'utf8'
       );
@@ -37,7 +37,7 @@ function handleExports() {
 }
 
 function genEntry(moduleName) {
-  const pkgName = packageName();
+  const pkgName = usePackage();
   const dist = (...args) =>
     vxPath.packageDist(pkgName, opts.format.CJS, ...args);
   return `'use strict'
@@ -118,7 +118,7 @@ function exportName(name, env) {
 }
 
 function genExportedFiles() {
-  // const exportedModules = [packageName(), ...listExportedModules()];
+  // const exportedModules = [usePackage(), ...listExportedModules()];
 
   return listExportedModules().reduce((modules, moduleName) => {
     const currentModule = {};

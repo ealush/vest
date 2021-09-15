@@ -1,10 +1,10 @@
-const packageName = require('vx/packageName');
 const packageNames = require('vx/packageNames');
+const { usePackage } = require('vx/vxContext');
 const ctx = require('vx/vxContext');
 
 module.exports = (callback, ...args) => {
   const packages = packageNames;
-  const name = packageName();
+  const name = usePackage();
 
   if (name) {
     return callback(...args);

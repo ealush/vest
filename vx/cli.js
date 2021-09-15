@@ -8,9 +8,9 @@ const { hideBin } = require('yargs/helpers');
 const yargs = require('yargs/yargs');
 
 const logger = require('vx/logger');
-const packageName = require('vx/packageName');
 const packageNames = require('vx/packageNames');
 const joinTruthy = require('vx/util/joinTruthy');
+const { usePackage } = require('vx/vxContext');
 const ctx = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
@@ -37,7 +37,7 @@ const namedOptions = Object.entries({
   '-p': 2,
 });
 
-const defaultPackage = packageName() ?? insidePackageDir();
+const defaultPackage = usePackage() ?? insidePackageDir();
 
 const cli = yargs(argv)
   .command('$0 <command>', 'Run vx monorepo utility', yargs => {

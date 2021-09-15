@@ -6,10 +6,10 @@ const setNextVersion = require('./../release/steps/setNextVersion');
 const updateChangelog = require('./../release/steps/updateChangelog');
 
 const logger = require('vx/logger');
-const packageName = require('vx/packageName');
+const { usePackage } = require('vx/vxContext');
 
 function releasePackage() {
-  const pkgName = packageName();
+  const pkgName = usePackage();
 
   logger.info(`Releasing package: 📦 ${pkgName}`);
 

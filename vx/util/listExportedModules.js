@@ -3,10 +3,10 @@ const path = require('path');
 const glob = require('glob');
 
 const opts = require('vx/opts');
-const packageName = require('vx/packageName');
+const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
-function listExportedModules(pkgName = packageName()) {
+function listExportedModules(pkgName = usePackage()) {
   return (
     glob
       .sync(vxPath.packageSrc(pkgName, opts.dir.EXPORTS, '*.ts'))

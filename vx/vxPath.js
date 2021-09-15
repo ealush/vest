@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const opts = require('vx/opts');
-const packageName = require('vx/packageName');
+const { usePackage } = require('vx/vxContext');
 
 const vxPath = {};
 
@@ -26,35 +26,35 @@ vxPath.vxRoot = () => {
   });
 };
 
-vxPath.package = (pkgName = packageName(), ...args) => {
+vxPath.package = (pkgName = usePackage(), ...args) => {
   return path.resolve(vxPath.PACKAGES_PATH, pkgName, ...args);
 };
 
-vxPath.packageDist = (pkgName = packageName(), ...args) => {
+vxPath.packageDist = (pkgName = usePackage(), ...args) => {
   return vxPath.package(pkgName, opts.dir.DIST, ...args);
 };
 
-vxPath.packageConfigPath = (pkgName = packageName(), ...args) => {
+vxPath.packageConfigPath = (pkgName = usePackage(), ...args) => {
   return vxPath.package(pkgName, opts.dir.CONFIG, ...args);
 };
 
-vxPath.packageSrc = (pkgName = packageName(), ...args) => {
+vxPath.packageSrc = (pkgName = usePackage(), ...args) => {
   return vxPath.package(pkgName, opts.dir.SRC, ...args);
 };
 
-vxPath.packageDocs = (pkgName = packageName(), ...args) => {
+vxPath.packageDocs = (pkgName = usePackage(), ...args) => {
   return vxPath.package(pkgName, opts.dir.DOCS, ...args);
 };
 
-vxPath.packageSrcExports = (pkgName = packageName(), ...args) => {
+vxPath.packageSrcExports = (pkgName = usePackage(), ...args) => {
   return vxPath.package(pkgName, opts.dir.SRC, opts.dir.EXPORTS, ...args);
 };
 
-vxPath.packageTsConfig = (pkgName = packageName()) => {
+vxPath.packageTsConfig = (pkgName = usePackage()) => {
   return vxPath.package(pkgName, TSCONFIG_JSON);
 };
 
-vxPath.packageJson = (pkgName = packageName()) => {
+vxPath.packageJson = (pkgName = usePackage()) => {
   return vxPath.package(pkgName, PACKAGE_JSON);
 };
 

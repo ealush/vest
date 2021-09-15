@@ -39,6 +39,33 @@
       "module": "./dist/es/classnames.production.js",
       "default": "./dist/cjs/classnames.js"
     },
+    "./parser": {
+      "production": {
+        "browser": "./dist/es/parser.production.js",
+        "umd": "./dist/umd/parser.production.js",
+        "import": "./dist/es/parser.production.js",
+        "require": "./dist/cjs/parser.production.js",
+        "node": "./dist/cjs/parser.production.js",
+        "module": "./dist/es/parser.production.js",
+        "default": "./dist/cjs/parser.production.js"
+      },
+      "development": {
+        "browser": "./dist/es/parser.development.js",
+        "umd": "./dist/umd/parser.development.js",
+        "import": "./dist/es/parser.development.js",
+        "require": "./dist/cjs/parser.development.js",
+        "node": "./dist/cjs/parser.development.js",
+        "module": "./dist/es/parser.development.js",
+        "default": "./dist/cjs/parser.development.js"
+      },
+      "browser": "./dist/es/parser.production.js",
+      "umd": "./dist/umd/parser.production.js",
+      "import": "./dist/es/parser.production.js",
+      "require": "./dist/cjs/parser.js",
+      "node": "./dist/cjs/parser.js",
+      "module": "./dist/es/parser.production.js",
+      "default": "./dist/cjs/parser.js"
+    },
     "./promisify": {
       "production": {
         "browser": "./dist/es/promisify.production.js",

@@ -5,7 +5,7 @@ const glob = require('glob');
 const moduleAliases = require('../../util/moduleAliases');
 
 const opts = require('vx/opts');
-const packageName = require('vx/packageName');
+const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
 const moduleNameMapper = moduleAliases().reduce(
@@ -16,7 +16,7 @@ const moduleNameMapper = moduleAliases().reduce(
 
 const setupPerPackage = glob.sync(
   vxPath.packageConfigPath(
-    packageName() ?? '*',
+    usePackage() ?? '*',
     'jest',
     opts.fileNames.JEST_SETUP
   )
@@ -24,7 +24,7 @@ const setupPerPackage = glob.sync(
 
 const setupAfterEnvPerPackage = glob.sync(
   vxPath.packageConfigPath(
-    packageName() ?? '*',
+    usePackage() ?? '*',
     'jest',
     opts.fileNames.JEST_SETUP_AFTER_ENV
   )
@@ -34,7 +34,7 @@ module.exports = (custom = {}) => ({
   clearMocks: true,
   globals: {
     'ts-jest': {
-      tsconfig: packageName()
+      tsconfig: usePackage()
         ? vxPath.packageTsConfig()
         : path.join(vxPath.ROOT_PATH, 'tsconfig.json'),
       diagnostics: {

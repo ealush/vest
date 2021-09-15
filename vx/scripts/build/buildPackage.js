@@ -2,11 +2,11 @@ const cleanupDistFiles = require('./cleanupDistFiles');
 
 const exec = require('vx/exec');
 const logger = require('vx/logger');
-const packageName = require('vx/packageName');
+const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
 function buildPackage({ options } = {}) {
-  const name = packageName();
+  const name = usePackage();
   logger.info(`🛠 Building package: ${name}`);
 
   cleanupDistFiles(name);

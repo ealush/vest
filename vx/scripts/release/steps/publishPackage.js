@@ -2,15 +2,15 @@ const isReleaseBranch = require('../../release/isReleaseBranch');
 
 const exec = require('vx/exec');
 const logger = require('vx/logger');
-const packageName = require('vx/packageName');
 const { TAG_DEV } = require('vx/scripts/release/releaseKeywords');
 const joinTruthy = require('vx/util/joinTruthy');
+const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
 function publishPackage({ tag, tagId, nextVersion }) {
   const versionToUse = tag && tagId ? tagId : nextVersion;
 
-  logger.info(`🚀 Publishing package ${packageName()}.
+  logger.info(`🚀 Publishing package ${usePackage()}.
     Version: ${versionToUse}
     Tag Id: ${tagId}
     Tag: ${tag}`);

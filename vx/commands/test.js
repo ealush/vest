@@ -2,7 +2,7 @@ const path = require('path');
 
 const exec = require('vx/exec');
 const opts = require('vx/opts');
-const packageName = require('vx/packageName');
+const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
 const configOpt = `--config ${path.resolve(
@@ -11,7 +11,7 @@ const configOpt = `--config ${path.resolve(
 )}`;
 
 function test({ options }) {
-  const pkgName = packageName();
+  const pkgName = usePackage();
 
   exec([
     'jest',

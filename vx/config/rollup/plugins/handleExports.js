@@ -11,24 +11,27 @@ const vxPath = require('vx/vxPath');
 
 module.exports = handleExports;
 
+function isMain(name) {
+  return usePackage() === name;
+}
+
 function handleExports() {
   return {
     name: 'write-cjs-main',
     writeBundle: once(({ name }) => {
       const rootPath = vxPath.package();
-      const isMain = name === usePackage();
 
       let exportPath = rootPath;
 
-      if (!isMain) {
+      if (!isMain(name)) {
         exportPath = joinPath(rootPath, name);
         fse.ensureDirSync(exportPath);
       }
 
-      writePackageJson(name, isMain, exportPath);
+      writePackageJson(name, exportPath);
 
       fse.writeFileSync(
-        vxPath.package(usePackage(), mainExport(name, true)),
+        vxPath.package(usePackage(), mainExport(name)),
         genEntry(name),
         'utf8'
       );
@@ -55,15 +58,21 @@ if (process.env.NODE_ENV === '${opts.env.PRODUCTION}') {
 }`;
 }
 
-function genPackageJson(name, isMain) {
-  const esPath = genDistPath(name, opts.format.ES, opts.env.PRODUCTION);
-  const cjsPath = genDistPath(name, opts.format.CJS);
+function genPackageJson(name) {
+  const isTopLevel = isMain(name);
+  const esPath = genDistPath(
+    isTopLevel,
+    name,
+    opts.format.ES,
+    opts.env.PRODUCTION
+  );
+  const cjsPath = genDistPath(isTopLevel, name, opts.format.CJS);
   return {
     main: cjsPath,
     module: esPath,
     name,
     types: typesPath(name),
-    ...(isMain
+    ...(isTopLevel
       ? {
           exports: {
             ...genExportedFiles(),
@@ -80,10 +89,10 @@ function genPackageJson(name, isMain) {
   };
 }
 
-function writePackageJson(name, isMain, exportPath) {
-  let pkgJson = genPackageJson(name, isMain);
+function writePackageJson(name, exportPath) {
+  let pkgJson = genPackageJson(name);
 
-  if (isMain) {
+  if (isMain(name)) {
     pkgJson = { ...packageJson(name), ...pkgJson };
   }
 
@@ -96,16 +105,11 @@ function joinPath(...paths) {
   return paths.join(path.sep); // this combats the trimming of the first dot in the path
 }
 
-function mainExport(name, isMain) {
-  return joinPath(
-    doubleDot(isMain),
-    opts.dir.DIST,
-    opts.format.CJS,
-    fileName(name)
-  );
+function mainExport(name) {
+  return joinPath(opts.dir.DIST, opts.format.CJS, fileName(name));
 }
 
-function doubleDot(isMain) {
+function singleDot(isMain) {
   return isMain ? '.' : '..';
 }
 
@@ -118,8 +122,6 @@ function exportName(name, env) {
 }
 
 function genExportedFiles() {
-  // const exportedModules = [usePackage(), ...listExportedModules()];
-
   return listExportedModules().reduce((modules, moduleName) => {
     const currentModule = {};
     modules[`./${moduleName}`] = currentModule;
@@ -137,13 +139,16 @@ function genExportedFiles() {
 }
 
 function exportsOrder(moduleName, env = undefined) {
+  const isTopLevel = true;
   const esPath = genDistPath(
+    isTopLevel,
     moduleName,
     opts.format.ES,
     env ?? opts.env.PRODUCTION
   );
-  const cjsPath = genDistPath(moduleName, opts.format.CJS, env);
+  const cjsPath = genDistPath(isTopLevel, moduleName, opts.format.CJS, env);
   const umdPath = genDistPath(
+    isTopLevel,
     moduleName,
     opts.format.UMD,
     env ?? opts.env.PRODUCTION
@@ -162,9 +167,18 @@ function exportsOrder(moduleName, env = undefined) {
   /* eslint-enable sort-keys */
 }
 
-function genDistPath(moduleName, moduleType, env) {
-  return joinPath('.', opts.dir.DIST, moduleType, exportName(moduleName, env));
+function genDistPath(isTopLevel, moduleName, moduleType, env) {
+  return joinPath(
+    singleDot(isTopLevel),
+    opts.dir.DIST,
+    moduleType,
+    exportName(moduleName, env)
+  );
 }
 
 const typesPath = moduleName =>
-  joinPath('.', opts.dir.TYPES, fileName(moduleName, 'd.ts'));
+  joinPath(
+    singleDot(isMain(moduleName)),
+    opts.dir.TYPES,
+    fileName(moduleName, 'd.ts')
+  );

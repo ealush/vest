@@ -2,8 +2,7 @@ const path = require('path');
 
 const glob = require('glob');
 
-const packageName = require('vx/packageName'); // eslint-disable-line
-
+const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
 module.exports = Object.defineProperty(
@@ -11,7 +10,7 @@ module.exports = Object.defineProperty(
   'current',
   {
     get: () => {
-      return packageName();
+      return usePackage();
     },
   }
 );

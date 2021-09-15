@@ -6,7 +6,7 @@ const determineChangeLevel = require('./determineChangeLevel');
 const { TAG_NEXT, TAG_DEV } = require('./releaseKeywords');
 
 const logger = require('vx/logger');
-const packageName = require('vx/packageName');
+const { usePackage } = require('vx/vxContext');
 
 const {
   CURRENT_BRANCH,
@@ -28,7 +28,7 @@ function genDiffData(commits) {
     changeLevel,
     messages,
     nextVersion,
-    packageName: packageName(),
+    packageName: usePackage(),
     tag,
     tagId,
     version,

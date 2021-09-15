@@ -12,8 +12,8 @@ const {
 } = require('../releaseKeywords');
 
 const logger = require('vx/logger');
-const packageName = require('vx/packageName');
 const writeFileSync = require('vx/util/writeFileSync');
+const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
 function updateChangelog({ messages, nextVersion }) {
@@ -66,7 +66,7 @@ function groupMessages(messages) {
 }
 
 function changelogPath() {
-  return vxPath.package(packageName(), './CHANGELOG.md');
+  return vxPath.package(usePackage(), './CHANGELOG.md');
 }
 
 function getChangelog() {
@@ -83,7 +83,7 @@ function writeChangelog(changelog) {
   writeFileSync(changelogPath(), changelog);
 }
 
-const changelogTemplate = `# ${packageName()} - Changelog
+const changelogTemplate = `# ${usePackage()} - Changelog
 
 All notable changes to this project will be documented in this file.
 

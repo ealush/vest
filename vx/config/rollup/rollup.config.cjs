@@ -15,8 +15,8 @@ const addModulePackageJson = require('./plugins/addModulePackageJson');
 const handleExports = require('./plugins/handleExports');
 
 const opts = require('vx/opts');
-const packageName = require('vx/packageName');
 const moduleAliases = require('vx/util/moduleAliases')();
+const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
 const isWatchModeOn = JSON.parse(process.env.ROLLUP_WATCH ?? false);
@@ -25,7 +25,7 @@ module.exports = cleanupConfig(
   concatTruthy(!isWatchModeOn && opts.env.PRODUCTION, opts.env.DEVELOPMENT).map(
     env => {
       const customConfigPath = vxPath.packageConfigPath(
-        packageName(),
+        usePackage(),
         'vx.build.js'
       );
 
@@ -37,7 +37,7 @@ module.exports = cleanupConfig(
 
       return [].concat(
         genBaseConfig({ env }),
-        genExportsConfig(packageName(), env),
+        genExportsConfig(usePackage(), env),
         customConfig?.({
           getInputFile,
           getPlugins: (options = {}) => getPlugins({ env, ...options }),
@@ -55,7 +55,7 @@ function cleanupConfig(configs) {
     .map(({ input, output, plugins }) => ({ input, output, plugins }));
 }
 
-function genBaseConfig({ env, moduleName = packageName() }) {
+function genBaseConfig({ env, moduleName = usePackage() }) {
   return {
     env,
     input: getInputFile(moduleName),
@@ -70,7 +70,7 @@ function genExportsConfig(pkgName, env) {
   );
 }
 
-function genOutput({ moduleName = packageName(), env } = {}) {
+function genOutput({ moduleName = usePackage(), env } = {}) {
   const base = {
     exports: 'auto',
     name: moduleName,
@@ -87,7 +87,7 @@ function genOutput({ moduleName = packageName(), env } = {}) {
       ...base,
       format,
       file: vxPath.packageDist(
-        packageName(),
+        usePackage(),
         format,
         joinTruthy([moduleName, env, 'js'], '.')
       ),
@@ -95,7 +95,7 @@ function genOutput({ moduleName = packageName(), env } = {}) {
   }
 }
 
-function getInputFile(moduleName = packageName()) {
+function getInputFile(moduleName = usePackage()) {
   const modulePath = moduleAliases.find(ref => ref.name === moduleName);
 
   if (!(modulePath?.absolute && fs.existsSync(modulePath.absolute))) {
@@ -107,7 +107,7 @@ function getInputFile(moduleName = packageName()) {
 
 function getPlugins({
   env = opts.env.PRODUCTION,
-  moduleName = packageName(),
+  moduleName = usePackage(),
 } = {}) {
   const plugins = [
     replace({
@@ -123,7 +123,7 @@ function getPlugins({
       hook: {
         outputPath: (path, kind) => {
           const basePath = vxPath.package(
-            packageName(),
+            usePackage(),
             opts.dir.TYPES,
             moduleName + '.d.ts'
           );

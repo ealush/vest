@@ -2,15 +2,15 @@ const isReleaseBranch = require('../scripts/release/isReleaseBranch');
 const pushToLatestBranch = require('../scripts/release/steps/pushToLatestBranch');
 
 const logger = require('vx/logger');
-const packageName = require('vx/packageName');
 const packagesToRelease = require('vx/scripts/release/packagesToRelease');
 const releasePackage = require('vx/scripts/release/releasePackage');
 const integrationBranch = require('vx/util/integrationBranch');
+const { usePackage } = require('vx/vxContext');
 const ctx = require('vx/vxContext');
 require('../scripts/genTsConfig');
 
 function release() {
-  const pkg = packageName() || integrationBranch.targetPackage;
+  const pkg = usePackage() || integrationBranch.targetPackage;
   if (pkg) {
     return ctx.withPackage(pkg, releasePackage);
   } else {

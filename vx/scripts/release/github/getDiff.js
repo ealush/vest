@@ -1,12 +1,12 @@
 const filterCommitByPackage = require('./filterCommitsByPackage');
 const listAllChangesSinceStableBranch = require('./listAllChangesSinceStableBranch');
 
-const packageName = require('vx/packageName');
+const { usePackage } = require('vx/vxContext');
 
 // [{title: "...", files: ["..."]}] ...
 function getDiff() {
   const allChanges = listAllChangesSinceStableBranch();
-  return filterCommitByPackage(packageName(), allChanges);
+  return filterCommitByPackage(usePackage(), allChanges);
 }
 
 module.exports = getDiff;

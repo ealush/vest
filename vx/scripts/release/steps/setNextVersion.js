@@ -3,7 +3,7 @@ const isReleaseBranch = require('../isReleaseBranch');
 
 const exec = require('vx/exec');
 const logger = require('vx/logger');
-const packageName = require('vx/packageName');
+const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
 function setNextVersion({ tagId, tag, nextVersion }) {
@@ -11,7 +11,7 @@ function setNextVersion({ tagId, tag, nextVersion }) {
 
   const command = `yarn --cwd ${vxPath.package()} version --no-git-tag-version --new-version ${nextVersion}`;
 
-  logger.info(`🔢 Setting next version for ${packageName()}.
+  logger.info(`🔢 Setting next version for ${usePackage()}.
   Running: ${command}
   `);
 
@@ -22,7 +22,7 @@ function setNextVersion({ tagId, tag, nextVersion }) {
   exec(command);
 
   logger.info(
-    `🔢 Updated ${packageName()} version to: ` + packageJson().version
+    `🔢 Updated ${usePackage()} version to: ` + packageJson().version
   );
 }
 

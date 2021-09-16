@@ -42,6 +42,22 @@ import { create } from 'vest';
 create(() => {});
 ```
 
+### Renamed: classNames to classnames
+
+Vest 3 included the `vest/classNames` import. It is now renamed to `vest/classnames`.
+
+### V3
+
+```js
+import classNames from 'vest/classNames';
+```
+
+### V4
+
+```js
+import classnames from 'vest/classnames';
+```
+
 ### Changed: Do not use if/else statements to conditionally run tests
 
 Vest version 4 relies on order of execution and remembers the result of each test based on its location in the suite, similar to the way [hooks in react](https://reactjs.org/docs/hooks-rules.html) work. This means that tests wrapped in an if/else statement make Vest go out of sync with the suite order, and unexecuted test results will be recorded. Instead of using if/else statements, you should use the `skipWhen` function that achieves the same result.
@@ -71,6 +87,9 @@ skipWhen(suite.hasErrors('password'), () => {
 
 // ...
 ```
+
+**Note**
+If you want to completely omit a test from your suite, and you know that it won't appear at all during the lifetime of your suite, you may use `if/else`.
 
 ### Removed: enforce.template
 

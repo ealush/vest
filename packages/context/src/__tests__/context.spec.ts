@@ -1,4 +1,4 @@
-import createContext from 'context';
+import { createContext } from 'context';
 
 describe('Context', () => {
   let ctx: ReturnType<typeof createContext>;

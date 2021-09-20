@@ -3,7 +3,7 @@ import defaultTo from 'defaultTo';
 import throwError from 'throwError';
 
 // eslint-disable-next-line max-lines-per-function
-export default function createContext<T extends Record<string, unknown>>(
+export function createContext<T extends Record<string, unknown>>(
   init?: (ctxRef: Partial<T>, parentContext: T | void) => T | null
 ): {
   run: <R>(ctxRef: Partial<T>, fn: (context: T) => R) => R;

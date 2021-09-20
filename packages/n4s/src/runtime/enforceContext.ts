@@ -1,5 +1,5 @@
 import assign from 'assign';
-import createContext from 'context';
+import { createContext } from 'context';
 
 export const ctx = createContext<CTXType>((ctxRef, parentContext): CTXType => {
   const base = {

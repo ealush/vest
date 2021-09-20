@@ -13,7 +13,7 @@ npm i vast
 ## Usage
 
 ```js
-import createState from 'vast';
+import { createState } from 'vast';
 
 const state = createState(); // Creates a state reference.
 

@@ -6,7 +6,7 @@ import type { TRuleDetailedResult } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 
-export default function isArrayOf(
+export function isArrayOf(
   inputArray: any[],
   currentRule: TLazy
 ): TRuleDetailedResult {

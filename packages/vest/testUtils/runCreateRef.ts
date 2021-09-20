@@ -1,4 +1,4 @@
-import createState from 'vast';
+import { createState } from 'vast';
 
 import createStateRef from 'createStateRef';
 

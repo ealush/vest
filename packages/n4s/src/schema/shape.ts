@@ -1,11 +1,11 @@
 import hasOwnProperty from 'hasOwnProperty';
 
 import type { TShapeObject } from 'genEnforceLazy';
-import loose from 'loose';
+import { loose } from 'loose';
 import type { TRuleDetailedResult } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
 
-export default function shape(
+export function shape(
   inputObject: Record<string, any>,
   shapeObject: TShapeObject
 ): TRuleDetailedResult {

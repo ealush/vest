@@ -1,4 +1,4 @@
-import enforce from 'enforce';
+import { enforce } from 'enforce';
 import faker from 'faker';
 import _ from 'lodash';
 

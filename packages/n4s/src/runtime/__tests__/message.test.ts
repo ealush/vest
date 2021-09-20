@@ -1,4 +1,4 @@
-import enforce from 'enforce';
+import { enforce } from 'enforce';
 import ruleReturn from 'ruleReturn';
 
 describe('enforce..message()', () => {

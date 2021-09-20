@@ -11,6 +11,13 @@
   "main": "./dist/cjs/vest.js",
   "types": "./types/vest.d.ts",
   "module": "./dist/es/vest.production.js",
+  "typesVersions": {
+    ">=4.0": {
+      "*": [
+        "*"
+      ]
+    }
+  },
   "exports": {
     "./classnames": {
       "production": {

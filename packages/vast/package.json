@@ -9,6 +9,13 @@
     "test": "vx test",
     "release": "vx release"
   },
+  "typesVersions": {
+    ">=3.0": {
+      "*": [
+        "*"
+      ]
+    }
+  },
   "module": "./dist/es/vast.production.js",
   "exports": {
     ".": {

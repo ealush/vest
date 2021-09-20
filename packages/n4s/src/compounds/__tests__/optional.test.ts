@@ -1,4 +1,4 @@
-import enforce from 'enforce';
+import { enforce } from 'enforce';
 import * as ruleReturn from 'ruleReturn';
 
 describe('enforce.optional', () => {

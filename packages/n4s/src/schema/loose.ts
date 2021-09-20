@@ -4,7 +4,7 @@ import type { TRuleDetailedResult } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 
-export default function loose(
+export function loose(
   inputObject: Record<string, any>,
   shapeObject: TShapeObject
 ): TRuleDetailedResult {

@@ -25,7 +25,7 @@ import { longerThan } from 'longerThan';
 import { longerThanOrEquals } from 'longerThanOrEquals';
 import { matches, notMatches } from 'matches';
 import { numberEquals, numberNotEquals } from 'numberEquals';
-import condition from 'ruleCondition';
+import { condition } from 'ruleCondition';
 import { shorterThan } from 'shorterThan';
 import { shorterThanOrEquals } from 'shorterThanOrEquals';
 import { startsWith, doesNotStartWith } from 'startsWith';

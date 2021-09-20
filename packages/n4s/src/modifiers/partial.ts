@@ -1,4 +1,4 @@
-import enforce from 'enforce';
+import { enforce } from 'enforce';
 
 // Help needed improving the typings of this file.
 // Ideally, we'd be able to extend TShapeObject, but that's not possible.

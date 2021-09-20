@@ -1,3 +1,3 @@
-import enforce from 'enforce';
+import { enforce } from 'enforce';
 
 export default enforce;

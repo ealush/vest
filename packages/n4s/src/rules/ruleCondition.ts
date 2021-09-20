@@ -1,6 +1,6 @@
 import type { TRuleReturn } from 'ruleReturn';
 
-export default function condition(
+export function condition(
   value: any,
   callback: (value: any) => TRuleReturn
 ): TRuleReturn {

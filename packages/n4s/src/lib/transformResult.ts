@@ -1,4 +1,4 @@
-import isBooleanValue from 'isBooleanValue';
+import { isBoolean } from 'isBooleanValue';
 import optionalFunctionValue from 'optionalFunctionValue';
 import throwError from 'throwError';
 
@@ -17,7 +17,7 @@ export function transformResult(
   validateResult(result);
 
   // if result is boolean
-  if (isBooleanValue(result)) {
+  if (isBoolean(result)) {
     return ruleReturn(result);
   } else {
     return ruleReturn(
@@ -29,7 +29,7 @@ export function transformResult(
 
 function validateResult(result: TRuleReturn): void {
   // if result is boolean, or if result.pass is boolean
-  if (isBooleanValue(result) || (result && isBooleanValue(result.pass))) {
+  if (isBoolean(result) || (result && isBoolean(result.pass))) {
     return;
   }
 

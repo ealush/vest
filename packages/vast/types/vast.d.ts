@@ -12,4 +12,4 @@ type TCreateStateReturn = {
     onUpdate?: (() => void) | undefined
   ) => () => TStateHandlerReturn<S>;
 };
-export { createState as default, TState, TStateHandlerReturn };
+export { createState, TState, TStateHandlerReturn };

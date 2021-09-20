@@ -1,6 +1,6 @@
 import asArray from 'asArray';
 import hasOwnProperty from 'hasOwnProperty';
-import isStringValue from 'isStringValue';
+import { isStringValue } from 'isStringValue';
 
 import VestTest from 'VestTest';
 import ctx from 'ctx';

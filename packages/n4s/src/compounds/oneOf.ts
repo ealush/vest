@@ -4,10 +4,7 @@ import { longerThan } from 'longerThan';
 import ruleReturn, { TRuleDetailedResult } from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 
-export default function oneOf(
-  value: unknown,
-  ...rules: TLazy[]
-): TRuleDetailedResult {
+export function oneOf(value: unknown, ...rules: TLazy[]): TRuleDetailedResult {
   const passing: TRuleDetailedResult[] = [];
   rules.some(rule => {
     if (longerThan(passing, 1)) {

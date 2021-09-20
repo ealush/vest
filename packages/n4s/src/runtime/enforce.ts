@@ -68,9 +68,7 @@ function genEnforce(): TEnforce {
   });
 }
 
-const enforce = genEnforce();
-
-export default enforce;
+export const enforce = genEnforce();
 
 type TEnforce = TEnforceEager & TLazyRules & TEnforceMethods;
 

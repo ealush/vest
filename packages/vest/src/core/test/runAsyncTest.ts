@@ -1,6 +1,6 @@
 import callEach from 'callEach';
 import isPromise from 'isPromise';
-import isStringValue from 'isStringValue';
+import { isStringValue } from 'isStringValue';
 
 import VestTest from 'VestTest';
 import ctx from 'ctx';

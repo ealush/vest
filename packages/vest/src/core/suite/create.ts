@@ -3,7 +3,7 @@ import assign from 'assign';
 import genId from 'genId';
 import isFunction from 'isFunction';
 import throwError from 'throwError';
-import createState from 'vast';
+import { createState } from 'vast';
 
 import createStateRef, { TStateRef } from 'createStateRef';
 import context from 'ctx';

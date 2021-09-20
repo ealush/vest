@@ -1,5 +1,5 @@
 import isFunction from 'isFunction';
-import isStringValue from 'isStringValue';
+import { isStringValue } from 'isStringValue';
 import throwError from 'throwError';
 
 import context from 'ctx';

@@ -1,5 +1,5 @@
 import bindNot from 'bindNot';
-import isString from 'isStringValue';
+import { isStringValue as isString } from 'isStringValue';
 
 export function inside(value: unknown, arg1: string | unknown[]): boolean {
   if (Array.isArray(arg1)) {

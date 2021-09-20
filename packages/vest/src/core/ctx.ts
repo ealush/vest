@@ -1,5 +1,5 @@
 import assign from 'assign';
-import createContext from 'context';
+import { createContext } from 'context';
 
 import VestTest from 'VestTest';
 import type { TStateRef } from 'createStateRef';

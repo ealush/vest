@@ -13,7 +13,7 @@ Context's default export, it creates a context singleton object that can later b
 
 ```js
 // ctx.js
-import createContext from 'context';
+import { createContext } from 'context';
 
 export default createContext(); // { run: ƒ, bind: ƒ, use: ƒ, useX: ƒ }
 ```

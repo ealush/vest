@@ -55,12 +55,8 @@ const validationResult = suite(formData);
 
 ## skipWhen: Conditionally excluding portions of the suite
 
-<<<<<<< HEAD
-In some cases we might need to skip a test or a group based on a given condition, for example - based on the intermediate state of the currently running suite. To allow this, can use `skipWhen`.
-=======
 In some cases we might need to skip a test or a group based on a given condition, for example - based on the intermediate state of the currently running suite. To allow this, can use `skipWhen`. `skipWhen` takes a boolean expression and a callback with tests.
 If the expression is true, the tests within the callback will be skipped. Otherwise, the tests will run as normal.
->>>>>>> 506c774 (docs: align docs with v4)
 
 In the following example we're skipping the server side verification of the username if the username is invalid to begin with:
 

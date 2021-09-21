@@ -1,5 +1,5 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-vx tsconfig
+yarn vx tsconfig
 npx pretty-quick --staged

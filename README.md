@@ -37,12 +37,6 @@ The idea behind Vest is that your validations can be described as a 'spec' or a 
 
 Using Vest for form validation can reduce bloat, improve feature readability and maintainability.
 
-**Basic Example**
-![full](https://cdn.jsdelivr.net/gh/ealush/vest@assets/demos/full_3.gif 'full')
-
-**Memoized async test**
-![memo](https://cdn.jsdelivr.net/gh/ealush/vest@assets/demos/memo.gif 'memo')
-
 ## ✅ Motivation
 
 Writing forms is an integral part of building web apps, and even though it may seem trivial at first - as your feature grows over time, so does your validation logic grows in complexity.
@@ -51,11 +45,11 @@ Vest tries to remediate this by separating validation logic from feature logic s
 
 ## ✨ Vest's features
 
-- 🎨 Framework agnostic (BYOUI)
+- 🎨 Framework agnostic (Bring your own UI)
 - ⚡️ Rich, extendable, assertions library (enforce) ([doc](http://vestjs.dev/#/enforce))
 - 🚥 Multiple validations for the same field
 - ⚠️ Warning (non failing) tests ([doc](http://vestjs.dev/#/warn))
-- 📝 Validate only the fields the user interacted with ([doc](http://vestjs.dev/#/exclusion))
+- 📝 Allows validating only the fields the user interacted with ([doc](http://vestjs.dev/#/exclusion))
 - ⏳ Memoize async validations to reduce calls to the server ([doc](http://vestjs.dev/#/test?id=testmemo-for-memoized-tests))
 - 🚦 Test grouping ([doc](http://vestjs.dev/#/group))
 
@@ -64,7 +58,7 @@ Vest tries to remediate this by separating validation logic from feature logic s
 ```js
 import { create, only, test, enforce, warn, skipWhen } from 'vest';
 
-export default create((data = {}, currentField) => {
+export default create('user_form', (data = {}, currentField) => {
   only(currentField);
 
   test('username', 'Username is required', () => {
@@ -84,7 +78,7 @@ export default create((data = {}, currentField) => {
   });
 
   test('password', 'Password is weak, Maybe add a number?', () => {
-    warn();
+    vest.warn();
     enforce(data.password).matches(/[0-9]/);
   });
 
@@ -109,7 +103,5 @@ export default create((data = {}, currentField) => {
 - 🧠 Vest is really easy to learn. You can take your existing knowledge of unit tests and transfer it to validations.
 - ✏️ Vest takes into account user interaction and warn only validations.
 - 🧱 Your validations are structured, making it very simple to read and write. All validation files look the same.
-- 🖇 Your validation logic is separate from your feature logic, preventing the spaghetti code that's usually involved with writing validations.
+- 🖇 Your validation logic is separated from your feature logic, preventing the spaghetti code that's usually involved with writing validations.
 - 🧩 Validation logic is easy to share and reuse across features.
-
-**Vest is an evolution of [Passable](https://github.com/fiverr/passable) by Fiverr.**

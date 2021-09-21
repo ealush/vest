@@ -3,6 +3,7 @@ name: Integration
 on:
   push:
     branches:
+      - release
       - integration
       - integration-*
 

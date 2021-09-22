@@ -1,5 +1,5 @@
 {
-  "version": "1.0.3-dev-234135",
+  "version": "1.0.3",
   "license": "MIT",
   "main": "./dist/cjs/vast.js",
   "types": "./types/vast.d.ts",
@@ -22,5 +22,13 @@
     },
     "./package.json": "./package.json",
     "./": "./"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ealush/vest.git",
+    "directory": "packages/vast"
+  },
+  "bugs": {
+    "url": "https://github.com/ealush/vest.git/issues"
   }
 }

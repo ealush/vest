@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0-dev-234135",
+  "version": "1.2.0",
   "license": "MIT",
   "main": "./dist/cjs/context.js",
   "types": "./types/context.d.ts",
@@ -23,5 +23,13 @@
     },
     "./package.json": "./package.json",
     "./": "./"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ealush/vest.git",
+    "directory": "packages/context"
+  },
+  "bugs": {
+    "url": "https://github.com/ealush/vest.git/issues"
   }
 }

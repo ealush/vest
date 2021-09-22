@@ -42,5 +42,9 @@
     "pretty-quick": "^3.1.1",
     "vx": "./vx"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ealush/vest.git"
+  },
   "version": "0.0.0"
 }

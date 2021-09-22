@@ -1,5 +1,5 @@
 {
-  "version": "3.1.0-dev-234135",
+  "version": "3.1.0",
   "license": "MIT",
   "main": "./dist/cjs/n4s.js",
   "types": "./types/n4s.d.ts",
@@ -22,5 +22,13 @@
     },
     "./package.json": "./package.json",
     "./": "./"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ealush/vest.git",
+    "directory": "packages/n4s"
+  },
+  "bugs": {
+    "url": "https://github.com/ealush/vest.git/issues"
   }
 }

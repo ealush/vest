@@ -11,6 +11,8 @@ const vxPath = require('vx/vxPath');
 
 module.exports = handleExports;
 
+const rootPackageJson = require(path.join(vxPath.ROOT_PATH, 'package.json'));
+
 function isMain(name) {
   return usePackage() === name;
 }
@@ -84,6 +86,15 @@ function genPackageJson(name) {
             './': './',
             /* eslint-enable sort-keys */
           },
+          ...(rootPackageJson?.repository && {
+            repository: {
+              ...rootPackageJson?.repository,
+              directory: path.join(opts.dir.PACKAGES, name),
+            },
+            bugs: {
+              url: `${rootPackageJson?.repository.url}/issues`,
+            },
+          }),
         }
       : { private: true }),
   };

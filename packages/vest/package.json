@@ -1,5 +1,5 @@
 {
-  "version": "3.3.0-dev-234135",
+  "version": "3.3.0",
   "license": "MIT",
   "name": "vest",
   "author": "ealush",
@@ -104,5 +104,14 @@
     },
     "./package.json": "./package.json",
     "./": "./"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ealush/vest.git",
+    "directory": "packages/vest"
+  },
+  "bugs": {
+    "url": "https://github.com/ealush/vest.git/issues"
+  },
+  "homepage": "https://vestjs.dev/"
 }

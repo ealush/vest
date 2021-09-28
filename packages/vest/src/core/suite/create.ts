@@ -5,7 +5,7 @@ import isFunction from 'isFunction';
 import throwError from 'throwError';
 import { createState } from 'vast';
 
-import createStateRef, { TStateRef } from 'createStateRef';
+import createStateRef from 'createStateRef';
 import context from 'ctx';
 import matchingFieldName from 'matchingFieldName';
 import { IVestResult, produceFullResult } from 'produce';
@@ -21,7 +21,6 @@ export default function create<T extends (...args: any[]) => void>(
   get: () => TDraftResult;
   reset: () => void;
   remove: (fieldName: string) => void;
-  subscribe: (handler: () => void) => void;
 } {
   if (!isFunction(suiteCallback)) {
     throwError(
@@ -29,15 +28,7 @@ export default function create<T extends (...args: any[]) => void>(
     );
   }
 
-  const handlers: ((...args: unknown[]) => void)[] = [];
-  const state = createState(() => {
-    handlers.forEach(fn =>
-      fn({
-        suiteState: stateRef,
-        type: 'suiteStateUpdate',
-      })
-    );
-  });
+  const state = createState();
 
   const stateRef = createStateRef(state, { suiteId: genId() });
 
@@ -47,7 +38,6 @@ export default function create<T extends (...args: any[]) => void>(
     get: () => TDraftResult;
     reset: () => void;
     remove: (fieldName: string) => void;
-    subscribe: (handler: () => void) => void;
   }
 
   const suite: IVestSuite = assign(
@@ -78,18 +68,6 @@ export default function create<T extends (...args: any[]) => void>(
         });
       }),
       reset: state.reset,
-      subscribe(
-        handler: (stateEvent: { type: string; suiteState: TStateRef }) => void
-      ) {
-        if (!isFunction(handler)) return;
-
-        handlers.push(handler);
-
-        handler({
-          type: 'suiteSubscribeInit',
-          suiteState: stateRef,
-        });
-      },
     }
   );
 

@@ -1,4 +1,4 @@
-const { createContext } = require('context');
+const createContext = require('context').default;
 
 const ctx = createContext();
 

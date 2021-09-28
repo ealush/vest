@@ -1,7 +1,0 @@
-{
-  "main": "../dist/cjs/promisify.js",
-  "module": "../dist/es/promisify.production.js",
-  "name": "promisify",
-  "types": "../types/promisify.d.ts",
-  "private": true
-}

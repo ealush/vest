@@ -4,7 +4,8 @@
     "test": "vx test",
     "release": "vx release",
     "lint": "eslint . --ignore-path .gitignore",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "preinstall": "cd ./vx && yarn"
   },
   "prettier": {
     "arrowParens": "avoid",
@@ -14,8 +15,7 @@
     "main": "vest"
   },
   "workspaces": [
-    "packages/*",
-    "vx/"
+    "packages/*"
   ],
   "devDependencies": {
     "@types/jest": "^26.0.23",
@@ -35,12 +35,12 @@
     "tsc": "^2.0.3",
     "tslib": "^2.2.0",
     "typescript": "^4.2.0",
-    "wait": "^0.4.2"
+    "wait": "^0.4.2",
+    "pretty-quick": "^3.1.1",
+    "vx": "./vx"
   },
   "private": true,
   "dependencies": {
-    "pretty-quick": "^3.1.1",
-    "vx": "./vx"
   },
   "repository": {
     "type": "git",

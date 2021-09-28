@@ -1,3 +1,5 @@
+import wait from 'wait';
+
 import { dummyTest } from '../../../testUtils/testDummy';
 
 import * as vest from 'vest';
@@ -21,6 +23,29 @@ describe('done', () => {
 
       expect(doneCallback).toHaveBeenCalled();
       expect(fieldDoneCallback).toHaveBeenCalled();
+    });
+  });
+
+  describe('When suite lags and callbacks are registered again', () => {
+    it('It should only run most recent registered callbacks', async () => {
+      const test = [];
+      const suite = vest.create(() => {
+        test.push(dummyTest.failingAsync('test', { time: 100 }));
+      });
+
+      const doneCallback1 = jest.fn();
+      const fieldDoneCallback1 = jest.fn();
+      const doneCallback2 = jest.fn();
+      const fieldDoneCallback2 = jest.fn();
+
+      suite().done(doneCallback1).done('test', fieldDoneCallback1);
+      await wait(10);
+      suite().done(doneCallback2).done('test', fieldDoneCallback2);
+      await wait(100);
+      expect(doneCallback1).toHaveBeenCalledTimes(0);
+      expect(fieldDoneCallback1).toHaveBeenCalledTimes(0);
+      expect(doneCallback2).toHaveBeenCalledTimes(1);
+      expect(fieldDoneCallback2).toHaveBeenCalledTimes(1);
     });
   });
 

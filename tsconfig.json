@@ -139,6 +139,7 @@
       "test.memo": ["./packages/vest/src/core/test/test.memo.ts"],
       "test": ["./packages/vest/src/core/test/test.ts"],
       "VestTest": ["./packages/vest/src/core/test/VestTest.ts"],
+      "vestBus": ["./packages/vest/src/core/vestBus.ts"],
       "classnames": ["./packages/vest/src/exports/classnames.ts"],
       "parser": ["./packages/vest/src/exports/parser.ts"],
       "promisify": ["./packages/vest/src/exports/promisify.ts"],
@@ -171,6 +172,7 @@
       ],
       "produce": ["./packages/vest/src/produce/produce.ts"],
       "produceDraft": ["./packages/vest/src/produce/produceDraft.ts"],
+      "runCallbacks": ["./packages/vest/src/produce/runCallbacks.ts"],
       "vest": ["./packages/vest/src/vest.ts"],
       "vestTypes": ["./packages/vest/src/vestTypes.ts"]
     }

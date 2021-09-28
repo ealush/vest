@@ -90,6 +90,7 @@
       "asArray": ["./packages/shared/src/asArray.ts"],
       "assign": ["./packages/shared/src/assign.ts"],
       "bindNot": ["./packages/shared/src/bindNot.ts"],
+      "bus": ["./packages/shared/src/bus.ts"],
       "cache": ["./packages/shared/src/cache.ts"],
       "callEach": ["./packages/shared/src/callEach.ts"],
       "defaultTo": ["./packages/shared/src/defaultTo.ts"],

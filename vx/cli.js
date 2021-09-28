@@ -7,6 +7,8 @@ const glob = require('glob');
 const { hideBin } = require('yargs/helpers');
 const yargs = require('yargs/yargs');
 
+const genTsConfig = require('./scripts/genTsConfig');
+
 const logger = require('vx/logger');
 const packageNames = require('vx/packageNames');
 const joinTruthy = require('vx/util/joinTruthy');
@@ -28,7 +30,7 @@ const commands = glob
     {}
   );
 
-require('./scripts/genTsConfig');
+genTsConfig();
 
 const argv = hideBin(process.argv);
 

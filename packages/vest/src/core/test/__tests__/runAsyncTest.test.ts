@@ -6,6 +6,7 @@ import VestTest from 'VestTest';
 import context from 'ctx';
 import runAsyncTest from 'runAsyncTest';
 import { useTestCallbacks, useTestObjects } from 'stateHooks';
+import { initBus } from 'vestBus';
 
 const message = 'some message string';
 
@@ -15,12 +16,17 @@ const CASE_FAILING = 'failing';
 let stateRef;
 
 describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
-  let testObject, fieldName;
+  let testObject, fieldName, bus;
+
+  beforeEach(() => {
+    bus = initBus();
+  });
 
   const runRunAsyncTest = (testObject: VestTest) =>
     context.run(
       {
         stateRef,
+        bus,
       },
       () => runAsyncTest(testObject)
     );

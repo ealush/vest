@@ -28,4 +28,13 @@ type CTXType = {
   currentTest?: VestTest;
   groupName?: string;
   skipped?: boolean;
+  bus?: {
+    on: (
+      event: string,
+      handler: (...args: any[]) => void
+    ) => {
+      off: () => void;
+    };
+    emit: (event: string, ...args: any[]) => void;
+  };
 };

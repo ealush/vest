@@ -11,6 +11,7 @@ import matchingFieldName from 'matchingFieldName';
 import { IVestResult, produceFullResult } from 'produce';
 import { produceDraft, TDraftResult } from 'produceDraft';
 import { useTestObjects, usePrevTestObjects } from 'stateHooks';
+import { initBus } from 'vestBus';
 
 // eslint-disable-next-line max-lines-per-function
 export default function create<T extends (...args: any[]) => void>(
@@ -28,6 +29,7 @@ export default function create<T extends (...args: any[]) => void>(
     );
   }
 
+  const bus = initBus();
   const state = createState();
 
   const stateRef = createStateRef(state, { suiteId: genId() });
@@ -41,7 +43,7 @@ export default function create<T extends (...args: any[]) => void>(
   }
 
   const suite: IVestSuite = assign(
-    context.bind({ stateRef }, (...args: unknown[]) => {
+    context.bind({ stateRef, bus }, (...args: unknown[]) => {
       const [prevTestObjects] = useTestObjects();
       const [, setPrevTestObjects] = usePrevTestObjects();
 

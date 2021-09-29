@@ -101,6 +101,10 @@ export default class VestTest {
     return this.hasFailures() || this.isPassing();
   }
 
+  isUntested(): boolean {
+    return this.status === STATUS_UNTESTED;
+  }
+
   isFailing(): boolean {
     return this.status === STATUS_FAILED;
   }

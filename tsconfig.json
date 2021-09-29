@@ -126,6 +126,9 @@
       "cancelOverriddenPendingTest": [
         "./packages/vest/src/core/test/lib/cancelOverriddenPendingTest.ts"
       ],
+      "registerPrevRunTest": [
+        "./packages/vest/src/core/test/lib/registerPrevRunTest.ts"
+      ],
       "registerTest": ["./packages/vest/src/core/test/lib/registerTest.ts"],
       "removeTestFromState": [
         "./packages/vest/src/core/test/lib/removeTestFromState.ts"

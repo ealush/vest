@@ -1,20 +1,10 @@
 import createCache from 'cache';
 import { isNull } from 'isNull';
-import isPromise from 'isPromise';
 
 import VestTest, { TTestFn } from 'VestTest';
-import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
-import { isExcluded } from 'exclusive';
-import runAsyncTest from 'runAsyncTest';
-import {
-  useSuiteId,
-  useCursorAt,
-  useTestAtCursor,
-  useSetNextCursorAt,
-  useSetTestAtCursor,
-} from 'stateHooks';
+import registerPrevRunTest from 'registerPrevRunTest';
+import { useSuiteId, useCursorAt } from 'stateHooks';
 import type { TTestBase } from 'test';
-
 // eslint-disable-next-line max-lines-per-function
 export default function bindTestMemo(test: TTestBase): {
   (fieldName: string, test: TTestFn, deps: unknown[]): VestTest;
@@ -38,7 +28,6 @@ export default function bindTestMemo(test: TTestBase): {
     fieldName: string,
     ...args: [message: string, test: TTestFn, deps: unknown[]]
   ): VestTest;
-  // eslint-disable-next-line max-statements
   function memo(
     fieldName: string,
     ...args:
@@ -52,36 +41,16 @@ export default function bindTestMemo(test: TTestBase): {
 
     // Implicit dependency for more specificity
     const dependencies = [suiteId, fieldName, cursorAt].concat(deps);
+
     const cached = cache.get(dependencies);
 
-    // Cache miss. Start fresh
     if (isNull(cached)) {
+      // cache miss
       return cache(dependencies, () => test(fieldName, msg, testFn));
     }
 
-    const [, testObject] = cached;
-    const prevRunTest = useTestAtCursor(testObject);
-
-    if (isExcluded(testObject)) {
-      useSetNextCursorAt();
-      return prevRunTest;
-    }
-
-    cancelOverriddenPendingTest(prevRunTest, testObject);
-
-    useSetTestAtCursor(testObject);
-    useSetNextCursorAt();
-    handleAsyncTest(testObject);
-
-    return testObject;
+    return registerPrevRunTest(cached[1]);
   }
 
   return memo;
-}
-
-function handleAsyncTest(testObject: VestTest): void {
-  if (testObject && isPromise(testObject.asyncTest)) {
-    testObject.setPending();
-    runAsyncTest(testObject);
-  }
 }

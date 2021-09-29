@@ -18,7 +18,6 @@ export default function createCache(maxSize = 10): {
     cacheAction: (...args: unknown[]) => T
   ): T => {
     const cacheHit = cache.get(deps);
-
     // cache hit is not null
     if (cacheHit) return cacheHit[1];
 

@@ -1,7 +1,0 @@
-{
-  "main": "../dist/cjs/classnames.js",
-  "module": "../dist/es/classnames.production.js",
-  "name": "classnames",
-  "types": "../types/classnames.d.ts",
-  "private": true
-}

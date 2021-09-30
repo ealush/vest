@@ -1,6 +1,7 @@
 import throwError from 'throwError';
 
 import collectFailureMessages from 'collectFailureMessages';
+import getFailuresArrayOrObject from 'getFailuresArrayOrObject';
 import { useTestObjects } from 'stateHooks';
 import type { TSeverity } from 'vestTypes';
 
@@ -15,11 +16,7 @@ export function getErrorsByGroup(
 ): string[] | Record<string, string[]> {
   const errors = getByGroup('errors', groupName, fieldName);
 
-  if (fieldName) {
-    return errors[fieldName];
-  }
-
-  return errors;
+  return getFailuresArrayOrObject(errors, fieldName);
 }
 
 export function getWarningsByGroup(groupName: string): Record<string, string[]>;
@@ -31,13 +28,9 @@ export function getWarningsByGroup(
   groupName: string,
   fieldName?: string
 ): string[] | Record<string, string[]> {
-  const errors = getByGroup('warnings', groupName, fieldName);
+  const warnings = getByGroup('warnings', groupName, fieldName);
 
-  if (fieldName) {
-    return errors[fieldName];
-  }
-
-  return errors;
+  return getFailuresArrayOrObject(warnings, fieldName);
 }
 
 /**

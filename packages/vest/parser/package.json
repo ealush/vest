@@ -1,0 +1,7 @@
+{
+  "main": "../dist/cjs/parser.js",
+  "module": "../dist/es/parser.production.js",
+  "name": "parser",
+  "types": "../types/parser.d.ts",
+  "private": true
+}

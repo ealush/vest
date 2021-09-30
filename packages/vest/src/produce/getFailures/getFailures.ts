@@ -1,4 +1,5 @@
 import collectFailureMessages from 'collectFailureMessages';
+import getFailuresArrayOrObject from 'getFailuresArrayOrObject';
 import { useTestObjects } from 'stateHooks';
 import type { TSeverity } from 'vestTypes';
 
@@ -27,9 +28,5 @@ function getFailures(severityKey: TSeverity, fieldName?: string) {
     fieldName,
   });
 
-  if (fieldName) {
-    return failureMessages[fieldName];
-  }
-
-  return failureMessages;
+  return getFailuresArrayOrObject(failureMessages, fieldName);
 }

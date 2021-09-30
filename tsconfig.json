@@ -158,6 +158,9 @@
         "./packages/vest/src/produce/getFailures/collectFailureMessages.ts"
       ],
       "getFailures": ["./packages/vest/src/produce/getFailures/getFailures.ts"],
+      "getFailuresArrayOrObject": [
+        "./packages/vest/src/produce/getFailures/getFailuresArrayOrObject.ts"
+      ],
       "getFailuresByGroup": [
         "./packages/vest/src/produce/getFailures/getFailuresByGroup.ts"
       ],

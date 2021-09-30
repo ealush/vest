@@ -9,20 +9,17 @@ import context from 'ctx';
  */
 export default function group(groupName: string, tests: () => any): void {
   if (!isStringValue(groupName)) {
-    throwGroupError();
+    throwGroupError('name must be a string');
   }
 
   if (!isFunction(tests)) {
-    throwGroupError();
+    throwGroupError('callback must be a function');
   }
 
   // Running with the context applied
-  context.bind({ groupName }, tests)();
+  context.run({ groupName }, tests);
 }
 
-function throwGroupError(value: unknown) {
-  throwError(
-    `group initialization error. Expected "${value}" to be a string.`,
-    'group name must be a string'
-  );
+function throwGroupError(error: string) {
+  throwError(`Wrong arguments passed to group. Group ${error}.`);
 }

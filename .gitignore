@@ -1,6 +1,7 @@
 packages/*/types/
 packages/vest/classnames/
 packages/vest/promisify/
+packages/vest/parser/
 packages/anyone/all/
 packages/anyone/any/
 packages/anyone/none/

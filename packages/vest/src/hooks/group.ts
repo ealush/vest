@@ -7,7 +7,7 @@ import context from 'ctx';
 /**
  * Runs a group callback.
  */
-export default function group(groupName: string, tests: () => any): void {
+export default function group(groupName: string, tests: () => void): void {
   if (!isStringValue(groupName)) {
     throwGroupError('name must be a string');
   }

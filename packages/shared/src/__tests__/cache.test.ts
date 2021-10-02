@@ -100,4 +100,14 @@ describe('lib: cache', () => {
       });
     });
   });
+
+  describe('cache.invalidate', () => {
+    it('Should remove cached item from cache storage by its dependcies', () => {
+      const deps = [1, 2, 3];
+      c(deps, Math.random);
+      expect(c.get(deps)).not.toBeNull();
+      c.invalidate(deps);
+      expect(c.get(deps)).toBeNull();
+    });
+  });
 });

@@ -17,9 +17,7 @@ export default function bindTestMemo(test: TTestBase): {
 } {
   const cache = createCache(100); // arbitrary cache size
 
-  /**
-   * Caches, or returns an already cached test call
-   */
+  // Caches, or returns an already cached test call
   function memo(
     fieldName: string,
     ...args: [test: TTestFn, deps: unknown[]]
@@ -28,6 +26,7 @@ export default function bindTestMemo(test: TTestBase): {
     fieldName: string,
     ...args: [message: string, test: TTestFn, deps: unknown[]]
   ): VestTest;
+  // eslint-disable-next-line max-statements
   function memo(
     fieldName: string,
     ...args:
@@ -46,6 +45,12 @@ export default function bindTestMemo(test: TTestBase): {
 
     if (isNull(cached)) {
       // cache miss
+      return cache(dependencies, () => test(fieldName, msg, testFn));
+    }
+
+    if (cached[1].isCanceled()) {
+      // cache hit, but test is canceled
+      cache.invalidate(dependencies);
       return cache(dependencies, () => test(fieldName, msg, testFn));
     }
 

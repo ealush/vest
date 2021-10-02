@@ -111,6 +111,37 @@ describe('test.memo', () => {
         }
       });
     });
+
+    describe('Test is canceled', () => {
+      it('Should refresh', async () => {
+        let count = 0;
+        const tests = [];
+        const suite = vest.create(() => {
+          count++;
+
+          tests.push(
+            vestTest.memo(
+              'f1',
+              async () => {
+                await wait(10);
+              },
+              [true]
+            )
+          );
+
+          if (count === 1) {
+            tests[0].cancel();
+          }
+        });
+
+        suite();
+        suite();
+        suite();
+
+        expect(tests[0]).not.toBe(tests[1]);
+        expect(tests[1]).toBe(tests[2]);
+      });
+    });
   });
 
   describe('cache miss', () => {

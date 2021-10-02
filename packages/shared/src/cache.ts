@@ -6,13 +6,10 @@ import { lengthEquals } from 'lengthEquals';
 export default function createCache(maxSize = 10): {
   <T>(deps: unknown[], cacheAction: (...args: unknown[]) => T): T;
   get(deps: unknown[]): any;
+  invalidate(item: any): void;
 } {
   const cacheStorage: Array<[unknown[], any]> = [];
 
-  /**
-   * @param {any[]} deps  dependency array.
-   * @param {Function}    cache action function.
-   */
   const cache = <T>(
     deps: unknown[],
     cacheAction: (...args: unknown[]) => T
@@ -24,17 +21,22 @@ export default function createCache(maxSize = 10): {
     const result = cacheAction();
     cacheStorage.unshift([deps.concat(), result]);
 
-    if (cacheStorage.length > maxSize) {
-      cacheStorage.length = maxSize;
-    }
+    if (cacheStorage.length > maxSize) cacheStorage.length = maxSize;
 
     return result;
   };
 
-  /**
-   * Retrieves an item from the cache.
-   * @param {deps} deps Dependency array
-   */
+  // invalidate an item in the cache by its dependencies
+  cache.invalidate = (deps: any[]): void => {
+    const index = cacheStorage.findIndex(
+      ([cachedDeps]) =>
+        lengthEquals(deps, cachedDeps.length) &&
+        deps.every((dep, i) => dep === cachedDeps[i])
+    );
+    if (index > -1) cacheStorage.splice(index, 1);
+  };
+
+  // Retrieves an item from the cache.
   cache.get = (deps: unknown[]): [unknown[], any] | null =>
     cacheStorage[
       cacheStorage.findIndex(

@@ -50,7 +50,7 @@ export default class VestTest {
   }
 
   setStatus(status: KStatus): void {
-    if (this.isCanceled()) {
+    if (this.isFinalStatus()) {
       return;
     }
 
@@ -66,7 +66,7 @@ export default class VestTest {
   }
 
   done(): void {
-    if (this.isWarning() || this.isCanceled() || this.isFailing()) {
+    if (this.isFinalStatus()) {
       return;
     }
     this.setStatus(STATUS_PASSING);
@@ -74,6 +74,10 @@ export default class VestTest {
 
   warn(): void {
     this.warns = true;
+  }
+
+  isFinalStatus(): boolean {
+    return this.hasFailures() || this.isCanceled() || this.isPassing();
   }
 
   skip(): void {

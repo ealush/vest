@@ -107,5 +107,40 @@ describe('VestTest', () => {
         expect(allIncomplete).toEqual(expect.not.arrayContaining([testObject]));
       }
     });
+
+    describe('final statuses', () => {
+      let testObject, fn;
+      beforeEach(() => {
+        fn = jest.fn();
+        testObject = new VestTest('field', fn);
+      });
+      itWithContext('keep status unchanged when `failed`', () => {
+        testObject.fail();
+        expect(testObject.isFailing()).toBe(true);
+        testObject.skip();
+        expect(testObject.isSkipped()).toBe(false);
+        expect(testObject.isFailing()).toBe(true);
+        testObject.cancel();
+        expect(testObject.isCanceled()).toBe(false);
+        expect(testObject.isFailing()).toBe(true);
+        testObject.setPending();
+        expect(testObject.isPending()).toBe(false);
+        expect(testObject.isFailing()).toBe(true);
+      });
+
+      itWithContext('keep status unchanged when `canceled`', () => {
+        testObject.setStatus('CANCELED');
+        expect(testObject.isCanceled()).toBe(true);
+        testObject.fail();
+        expect(testObject.isCanceled()).toBe(true);
+        expect(testObject.isFailing()).toBe(false);
+        testObject.skip();
+        expect(testObject.isSkipped()).toBe(false);
+        expect(testObject.isCanceled()).toBe(true);
+        testObject.setPending();
+        expect(testObject.isPending()).toBe(false);
+        expect(testObject.isCanceled()).toBe(true);
+      });
+    });
   });
 });

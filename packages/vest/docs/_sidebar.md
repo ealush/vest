@@ -11,7 +11,6 @@
   - [Warn only tests](./warn)
   - [Grouping tests](./group)
   - [Optional Tests](./optional)
-- [Understanding Vest's state](./state)
 - Advanced cases
   - [Cross Field Validations](./cross_field_validations)
   - [Excluding or including tests](./exclusion)

@@ -62,7 +62,7 @@ Vest tries to remediate this by separating validation logic from feature logic s
 ## Example code ([Run in sandbox](https://codesandbox.io/s/vest-react-tutorial-finished-ztt8t?file=/src/validate.js))
 
 ```js
-import { create, only, test, warn } from 'vest';
+import { create, only, test, enforce, warn } from 'vest';
 
 export default create('user_form', (data = {}, currentField) => {
   only(currentField);

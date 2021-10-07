@@ -23,7 +23,7 @@ vest.get('user_form'); // Returns the most recent validation result
 #### v3
 
 ```js
-const suite = vest.create(() => {
+const suite = create(() => {
   /*...*/
 });
 
@@ -47,7 +47,7 @@ vest.reset('user_form'); // Resets the validity state
 #### v3
 
 ```js
-const suite = vest.create(() => {
+const suite = create(() => {
   /*...*/
 });
 
@@ -71,7 +71,7 @@ const suite = vest.create('user_form', () => {
 #### v3
 
 ```js
-const suite = vest.create('user_form', () => {
+const suite = create('user_form', () => {
   if (suite.get().hasErrors('username')) {
     /* ... */
   }
@@ -96,10 +96,10 @@ const result = data =>
 #### v3
 
 ```js
-import vest from 'vest';
+import { create } from 'vest';
 
 const suite = data =>
-  vest.create(() => {
+  create(() => {
     /* ... */
   })();
 

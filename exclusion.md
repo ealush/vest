@@ -13,9 +13,9 @@ When validating upon user interactions, you will usually want to only validate t
 In the example below, we're assuming the argument `fieldName` is being populated with the name of the field we want to test. If none is passed, the call to `only` will be ignored, and all tests will run as usual. This allows us to test each field at a time during the interaction, but test all on form submission.
 
 ```js
-import vest, { enforce, test, only } from 'vest';
+import { create, enforce, test, only } from 'vest';
 
-const suite = vest.create('New User', (data, fieldName) => {
+const suite = create('New User', (data, fieldName) => {
   only(fieldName);
 
   test('username', 'Username is invalid', () => {
@@ -39,9 +39,9 @@ There are not many cases for skipping tests, but they do exist. For example, whe
 In this case, and in similar others, you can use `skip()`. When called, it will only skip the specified fields, all other tests will run as they should.
 
 ```js
-import vest, { enforce, test, skip } from 'vest';
+import { create, enforce, test, skip } from 'vest';
 
-const suite = vest.create('purchase', data => {
+const suite = create('purchase', data => {
   if (!data.promo) skip('promo');
 
   // this test won't run when data.promo is falsy.
@@ -60,9 +60,9 @@ In some cases we might need to skip a test or a group based on a given condition
 In the following example we're skipping the server side verification of the username if the username is invalid to begin with:
 
 ```js
-import vest, { test, enforce } from 'vest';
+import { create, test, enforce } from 'vest';
 
-const suite = vest.create('user_form', (data = {}) => {
+const suite = create('user_form', (data = {}) => {
   test('username', 'Username is required', () => {
     enforce(data.username).isNotEmpty();
   });
@@ -86,9 +86,9 @@ Similar to the way you use `skip` and `only` to include and exclude tests, you c
 These two functions are very powerful and give you control of whole portions of your suite at once.
 
 ```js
-import vest, { test, group, enforce, skip } from 'vest';
+import { create, test, group, enforce, skip } from 'vest';
 
-vest.create('authentication_form', data => {
+create('authentication_form', data => {
   skip.group(data.userExists ? 'signUp' : 'signIn');
 
   test('userName', "Can't be empty", () => {

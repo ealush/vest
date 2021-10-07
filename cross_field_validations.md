@@ -10,32 +10,6 @@ All these cases can be easily handled with Vest in different ways, depending on 
 
 Your specific example can be handled with the `any` utility function. The `any` utility function takes a series of functions or expressions, and as long as at least one evaluates to `true`, it will mark your validation as passing.
 
-There are two possible ways to use `any`:
-
-### Use any to run one of multiple tests
-
-the `any` utility will run each function until a passing test is found. This means that once one of the tests passes, the others won't run at all, saving you some performance.
-
-Demo: https://codesandbox.io/s/demo-forked-tdj92?file=/src/validate.js
-
-```js
-import vest, { test, enforce } from 'vest';
-import any from 'vest/any';
-
-export default vest.create('form_name', (data = {}) => {
-  any(
-    () =>
-      test('email', 'Email or phone must be set', () => {
-        enforce(data.email).isNotEmpty();
-      }),
-    () =>
-      test('phone', 'Email or phone must be set', () => {
-        enforce(data.phone).isNotEmpty();
-      })
-  );
-});
-```
-
 ### Use any to use different conditions in the same test
 
 You could also use any within your test, if you have a joined test for both scenarios. This means that you have to return a boolean from your tests.
@@ -43,10 +17,10 @@ You could also use any within your test, if you have a joined test for both scen
 Demo: https://codesandbox.io/s/demo-forked-ltn8l?file=/src/validate.js
 
 ```js
-import vest, { test, enforce } from 'vest';
+import { create, test, enforce } from 'vest';
 import any from 'vest/any';
 
-export default vest.create('form_name', (data = {}) => {
+export default create('form_name', (data = {}) => {
   test('email_or_phone', 'Email or phone must be set', () =>
     any(
       () => {
@@ -70,8 +44,8 @@ In the following example I only validate `confirm` if password is not empty:
 DEMO: https://codesandbox.io/s/demo-forked-z2ur9?file=/src/validate.js
 
 ```js
-import vest, { test, enforce } from 'vest';
-export default vest.create('user_form', (data = {}) => {
+import { create, test, enforce } from 'vest';
+export default create('user_form', (data = {}) => {
   test('password', 'Password is required', () => {
     enforce(data.password).isNotEmpty();
   });
@@ -87,11 +61,11 @@ export default vest.create('user_form', (data = {}) => {
 
 Sometimes you might want to run a certain validation based on the validation result of a previously run test, for example - only test for password strength if password DOESN'T have Errors. You could access the intermediate validation result and use it mid-run.
 
-This requires using the function created from vest.create():
+This requires using the function created from create():
 
 ```js
-import vest, { test, enforce } from 'vest';
-const suite = vest.create('user_form', (data = {}) => {
+import { create, test, enforce } from 'vest';
+const suite = create('user_form', (data = {}) => {
   test('password', 'Password is required', () => {
     enforce(data.password).isNotEmpty();
   });

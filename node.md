@@ -35,7 +35,7 @@ With node 14's support of [package entry points](https://nodejs.org/api/esm.html
 Both of the following should work:
 
 ```js
-import vest, { test } from 'vest';
+import { create, test } from 'vest';
 ```
 
 ```js

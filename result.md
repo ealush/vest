@@ -34,7 +34,7 @@ If you need to access your validation results out of context - for example, from
 In case your validations did not run yet, `.get` returns an empty validation result object - which can be helpful when trying to access validation result object when rendering the initial UI, or setting it in the initial state of your components.
 
 ```js
-const suite = vest.create('my_form', () => {
+const suite = create('my_form', () => {
   /*...*/
 });
 
@@ -52,7 +52,7 @@ Along with these values, the result object exposes the following methods:
 A suite is considered valid if the following conditions are met:
 
 - There are no errors (`hasErrors() === false`) in the suite - warnings are not counted as errors.
-- All non optional fields have passing tests.
+- All non [optional](./optional) fields have passing tests.
 - There are no pending async tests.
 
 ```js
@@ -181,9 +181,9 @@ The result object is being passed down to the `done` object as an argument.
 In the below example, the `done` callback for `UserName` may run before the whole suite finishes. Only when the rest of the suite finishes, it will call the other two done callbacks that do not have a field name specified.
 
 ```js
-import vest, { test, enforce } from 'vest';
+import { create, test, enforce } from 'vest';
 
-const suite = vest.create('SendEmailForm', data => {
+const suite = create('SendEmailForm', data => {
   test(
     'UserEmail',
     'Marked as spam address',
@@ -232,3 +232,7 @@ result.done(() => {
   }
 });
 ```
+
+### Read more on:
+
+[Optional tests](./optional)

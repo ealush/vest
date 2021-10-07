@@ -43,7 +43,7 @@ Then configure the rules you want to use under the rules section.
 
 ### exclude-before-test
 
-This rule prevents you from calling the `vest.only()` and `vest.skip()` hooks after your test runs, improving performance and preventing unexpected behavior in async tests.
+This rule prevents you from calling the `only()` and `skip()` hooks after your test runs, improving performance and preventing unexpected behavior in async tests.
 
 - Bad code example 🚨
 
@@ -57,7 +57,7 @@ validate('MyForm', () => {
     // ...
   });
 
-  vest.only('fieldName2'); // 🚨Should be called before test()
+  only('fieldName2'); // 🚨Should be called before test()
 });
 ```
 
@@ -65,7 +65,7 @@ validate('MyForm', () => {
 
 ```js
 validate('MyForm', () => {
-  vest.only();
+  only();
 
   test('fieldName', 'message', () => {
     // ...
@@ -81,14 +81,14 @@ Makes sure you only call vest hooks from the scope they are allowed to run from.
 
 ```js
 validate('MyForm', () => {
-  vest.warn(); // 🚨Should be called inside test()
+  warn(); // 🚨Should be called inside test()
 
   test('fieldName1', 'message', () => {
     // ...
   });
 
   test('fieldName2', 'message', () => {
-    vest.only('fieldName2'); // 🚨Should be called inside validate()
+    only('fieldName2'); // 🚨Should be called inside validate()
   });
 });
 ```
@@ -97,10 +97,10 @@ validate('MyForm', () => {
 
 ```js
 validate('MyForm', () => {
-  vest.only('fieldName2');
+  only('fieldName2');
 
   test('fieldName1', 'message', () => {
-    vest.warn();
+    warn();
     // ...
   });
 

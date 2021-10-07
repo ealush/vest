@@ -10,6 +10,7 @@
   - [How to fail a test](./test#failing_a_test)
   - [Warn only tests](./warn)
   - [Grouping tests](./group)
+  - [Optional Tests](./optional)
 - [Understanding Vest's state](./state)
 - Advanced cases
   - [Cross Field Validations](./cross_field_validations)

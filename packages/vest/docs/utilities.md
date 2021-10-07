@@ -56,10 +56,10 @@ A good example would be: When your validated field can be either empty (not requ
 The only difference is - if any of the supplied tests passes, the success condition is met and `any()` returns true.
 
 ```js
-import vest, { test, enforce } from 'vest';
+import { create, test, enforce } from 'vest';
 import any from 'vest/any';
 
-vest.create('Checkout', () => {
+create('Checkout', () => {
   test('coupon', 'When filled, must be at least 5 chars', () =>
     any(
       () => enforce(data.coupon).isEmpty(),
@@ -81,11 +81,11 @@ This can be useful when running async validations on the server, or when you do 
 `promisify()` accepts a validation suite declaration, and returns a function that when called, returns a Promise.
 
 ```js
-import vest from 'vest';
+import { create, test } from 'vest';
 import promisify from 'vest/promisify';
 
 const suite = promisify(
-  vest.create('CreateNewUser', data => {
+  create('CreateNewUser', data => {
     test('email', 'The email already exists', () => doesEmailExist(data.email));
     test('username', 'The username already exists', () =>
       doesUsernameExist(data.username)

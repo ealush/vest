@@ -122,8 +122,8 @@ Memoized tests are almost identical to regular tests, only with the added depend
 ### Example:
 
 ```js
-import vest, { test } from 'vest';
-export default vest.create('form-name', data => {
+import { vest, test } from 'vest';
+export default create('form-name', data => {
   test.memo(
     'username',
     'username already exists',
@@ -153,7 +153,7 @@ const data = {
 }
 */
 
-const suite = vest.create('store_edit', data => {
+const suite = create('store_edit', data => {
   test.each(data.products)(
     name => name,
     'Price must be numeric and above zero.',

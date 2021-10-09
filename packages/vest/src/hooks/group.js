@@ -3,11 +3,9 @@ import isFunction from 'isFunction';
 import isStringValue from 'isStringValue';
 import throwError from 'throwError';
 
-const throwGroupError = value =>
+const throwGroupError = () =>
   throwError(
-    __DEV__
-      ? `group initialization error. Expected "${value}" to be a string.`
-      : 'group name must be a string'
+      "group initialization error. Incompatible argument passed to group."
   );
 
 /**
@@ -17,11 +15,11 @@ const throwGroupError = value =>
  */
 const group = (groupName, tests) => {
   if (!isStringValue(groupName)) {
-    throwGroupError(groupName);
+    throwGroupError();
   }
 
   if (!isFunction(tests)) {
-    throwGroupError(tests);
+    throwGroupError();
   }
 
   // Running with the context applied

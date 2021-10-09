@@ -14,6 +14,7 @@
   "exports": {
     "./classnames": {
       "production": {
+        "development": "./dist/cjs/classnames.development.js",
         "browser": "./dist/es/classnames.production.js",
         "umd": "./dist/umd/classnames.production.js",
         "import": "./dist/es/classnames.production.js",
@@ -22,15 +23,7 @@
         "module": "./dist/es/classnames.production.js",
         "default": "./dist/cjs/classnames.production.js"
       },
-      "development": {
-        "browser": "./dist/es/classnames.development.js",
-        "umd": "./dist/umd/classnames.development.js",
-        "import": "./dist/es/classnames.development.js",
-        "require": "./dist/cjs/classnames.development.js",
-        "node": "./dist/cjs/classnames.development.js",
-        "module": "./dist/es/classnames.development.js",
-        "default": "./dist/cjs/classnames.development.js"
-      },
+      "development": "./dist/cjs/classnames.development.js",
       "browser": "./dist/es/classnames.production.js",
       "umd": "./dist/umd/classnames.production.js",
       "import": "./dist/es/classnames.production.js",
@@ -41,6 +34,7 @@
     },
     "./parser": {
       "production": {
+        "development": "./dist/cjs/parser.development.js",
         "browser": "./dist/es/parser.production.js",
         "umd": "./dist/umd/parser.production.js",
         "import": "./dist/es/parser.production.js",
@@ -49,15 +43,7 @@
         "module": "./dist/es/parser.production.js",
         "default": "./dist/cjs/parser.production.js"
       },
-      "development": {
-        "browser": "./dist/es/parser.development.js",
-        "umd": "./dist/umd/parser.development.js",
-        "import": "./dist/es/parser.development.js",
-        "require": "./dist/cjs/parser.development.js",
-        "node": "./dist/cjs/parser.development.js",
-        "module": "./dist/es/parser.development.js",
-        "default": "./dist/cjs/parser.development.js"
-      },
+      "development": "./dist/cjs/parser.development.js",
       "browser": "./dist/es/parser.production.js",
       "umd": "./dist/umd/parser.production.js",
       "import": "./dist/es/parser.production.js",
@@ -68,6 +54,7 @@
     },
     "./promisify": {
       "production": {
+        "development": "./dist/cjs/promisify.development.js",
         "browser": "./dist/es/promisify.production.js",
         "umd": "./dist/umd/promisify.production.js",
         "import": "./dist/es/promisify.production.js",
@@ -76,15 +63,7 @@
         "module": "./dist/es/promisify.production.js",
         "default": "./dist/cjs/promisify.production.js"
       },
-      "development": {
-        "browser": "./dist/es/promisify.development.js",
-        "umd": "./dist/umd/promisify.development.js",
-        "import": "./dist/es/promisify.development.js",
-        "require": "./dist/cjs/promisify.development.js",
-        "node": "./dist/cjs/promisify.development.js",
-        "module": "./dist/es/promisify.development.js",
-        "default": "./dist/cjs/promisify.development.js"
-      },
+      "development": "./dist/cjs/promisify.development.js",
       "browser": "./dist/es/promisify.production.js",
       "umd": "./dist/umd/promisify.production.js",
       "import": "./dist/es/promisify.production.js",
@@ -94,6 +73,7 @@
       "default": "./dist/cjs/promisify.js"
     },
     ".": {
+      "development": "./dist/cjs/vest.development.js",
       "browser": "./dist/es/vest.production.js",
       "umd": "./dist/umd/vest.production.js",
       "import": "./dist/es/vest.production.js",

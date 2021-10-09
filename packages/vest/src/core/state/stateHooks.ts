@@ -16,7 +16,12 @@ export function useTestCallbacks(): TStateHandlerReturn<{
   return useStateRef().testCallbacks();
 }
 export function useOptionalFields(): TStateHandlerReturn<
-  Record<string, boolean>
+  Record<
+    string,
+    {
+      predicate?: () => boolean;
+    }
+  >
 > {
   return useStateRef().optionalFields();
 }

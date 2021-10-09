@@ -8,7 +8,9 @@ export default function createStateRef(
   { suiteId }: { suiteId: string }
 ) {
   return {
-    optionalFields: state.registerStateKey<Record<string, boolean>>(() => ({})),
+    optionalFields: state.registerStateKey<
+      Record<string, { predicate?: () => boolean }>
+    >(() => ({})),
     prevTestObjects: state.registerStateKey<VestTest[]>(() => []),
     suiteId: state.registerStateKey<string>(() => suiteId),
     testCallbacks: state.registerStateKey<{

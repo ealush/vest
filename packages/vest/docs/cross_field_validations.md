@@ -6,65 +6,13 @@ Take for example the password confirmation field, by itself it serves no purpose
 
 All these cases can be easily handled with Vest in different ways, depending on your requirements and validation strategy.
 
-## The Any utility
+## skipWhen for conditionally skipping a test
 
-Your specific example can be handled with the `any` utility function. The `any` utility function takes a series of functions or expressions, and as long as at least one evaluates to `true`, it will mark your validation as passing.
-
-### Use any to use different conditions in the same test
-
-You could also use any within your test, if you have a joined test for both scenarios. This means that you have to return a boolean from your tests.
-
-Demo: https://codesandbox.io/s/demo-forked-ltn8l?file=/src/validate.js
+Sometimes you might want to skip running a certain validation based on some criteria, for example - only test for password strength if password DOESN'T have Errors. You could access the intermediate validation result and use it mid-run.
 
 ```js
 import { create, test, enforce } from 'vest';
-import any from 'vest/any';
 
-export default create((data = {}) => {
-  test('email_or_phone', 'Email or phone must be set', () =>
-    any(
-      () => {
-        enforce(data.email).isNotEmpty();
-        return true;
-      },
-      () => {
-        enforce(data.phone).isNotEmpty();
-        return true;
-      }
-    )
-  );
-});
-```
-
-## if/else for conditionally skipping fields
-
-If your field depends on a different field's existence or a different simple condition, you could use a basic if/else statement.
-In the following example I only validate `confirm` if password is not empty:
-
-DEMO: https://codesandbox.io/s/demo-forked-z2ur9?file=/src/validate.js
-
-```js
-import { create, test, enforce } from 'vest';
-export default create((data = {}) => {
-  test('password', 'Password is required', () => {
-    enforce(data.password).isNotEmpty();
-  });
-  if (data.password) {
-    test('confirm', 'Passwords do not match', () => {
-      enforce(data.confirm).equals(data.password);
-    });
-  }
-});
-```
-
-## if/else for conditionally skipping field based on a previous result
-
-Sometimes you might want to run a certain validation based on the validation result of a previously run test, for example - only test for password strength if password DOESN'T have Errors. You could access the intermediate validation result and use it mid-run.
-
-This requires using the function created from create():
-
-```js
-import { create, test, enforce } from 'vest';
 const suite = create((data = {}) => {
   test('password', 'Password is required', () => {
     enforce(data.password).isNotEmpty();
@@ -78,3 +26,9 @@ const suite = create((data = {}) => {
 });
 export default suite;
 ```
+
+## Optional tests
+
+By default, all the tests inside Vest are required in order for the suite to be considered as "valid". Sometimes your app's logic may allow tests not to be filled out and you want them not to be accounted for in the suites validity. The optional utility allows you to specify logic to determine if a test is optional or not, for example - if it depends on a different test.
+
+Read more in the [optional tests doc](./optional).

@@ -50,7 +50,7 @@ export default class VestTest {
   }
 
   setStatus(status: KStatus): void {
-    if (this.isFinalStatus()) {
+    if (this.isFinalStatus() && status !== STATUS_OMITTED) {
       return;
     }
 
@@ -87,6 +87,10 @@ export default class VestTest {
   cancel(): void {
     this.setStatus(STATUS_CANCELED);
     removeTestFromState(this);
+  }
+
+  omit(): void {
+    this.setStatus(STATUS_OMITTED);
   }
 
   valueOf(): boolean {
@@ -141,6 +145,7 @@ const STATUS_WARNING = 'WARNING';
 const STATUS_PASSING = 'PASSING';
 const STATUS_PENDING = 'PENDING';
 const STATUS_CANCELED = 'CANCELED';
+const STATUS_OMITTED = 'OMITTED';
 
 type KStatus =
   | 'UNTESTED'
@@ -149,4 +154,5 @@ type KStatus =
   | 'WARNING'
   | 'PASSING'
   | 'PENDING'
-  | 'CANCELED';
+  | 'CANCELED'
+  | 'OMITTED';

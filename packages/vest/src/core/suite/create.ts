@@ -8,6 +8,7 @@ import { createState } from 'vast';
 import createStateRef from 'createStateRef';
 import context from 'ctx';
 import matchingFieldName from 'matchingFieldName';
+import omitOptionalTests from 'omitOptionalTests';
 import { IVestResult, produceFullResult } from 'produce';
 import { produceDraft, TDraftResult } from 'produceDraft';
 import { useTestObjects, usePrevTestObjects } from 'stateHooks';
@@ -52,7 +53,7 @@ export default function create<T extends (...args: any[]) => void>(
 
       // Run the consumer's callback
       suiteCallback(...args);
-
+      omitOptionalTests();
       const res = produceFullResult();
 
       return res;

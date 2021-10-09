@@ -5,6 +5,7 @@ import { greaterThanOrEquals } from 'greaterThanOrEquals';
 import { inside, notInside } from 'inside';
 import { isArray, isNotArray } from 'isArray';
 import { isBetween, isNotBetween } from 'isBetween';
+import { isBlank, isNotBlank } from 'isBlank';
 import { isBoolean, isNotBoolean } from 'isBoolean';
 import { isEmpty, isNotEmpty } from 'isEmpty';
 import { isEven } from 'isEven';
@@ -27,7 +28,6 @@ import { numberEquals, numberNotEquals } from 'numberEquals';
 import { shorterThan } from 'shorterThan';
 import { shorterThanOrEquals } from 'shorterThanOrEquals';
 import { startsWith, doesNotStartWith } from 'startsWith';
-import { isBlank, isNotBlank } from './rules/isBlank';
 
 export default function rules() {
   return {
@@ -43,6 +43,7 @@ export default function rules() {
     isArray,
     isBetween,
     isBoolean,
+    isBlank,
     isEmpty,
     isEven,
     isFalsy,
@@ -50,6 +51,7 @@ export default function rules() {
     isNegative,
     isNotArray,
     isNotBetween,
+    isNotBlank,
     isNotBoolean,
     isNotEmpty,
     isNotNaN,
@@ -83,7 +85,5 @@ export default function rules() {
     shorterThan,
     shorterThanOrEquals,
     startsWith,
-    isBlank,
-    isNotBlank
   };
 }

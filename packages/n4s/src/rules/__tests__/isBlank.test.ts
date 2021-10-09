@@ -1,7 +1,7 @@
 import { isBlank, isNotBlank } from 'isBlank';
 
 describe('isBlank', () => {
-  it('Should return true for a string of whitespaces', () => {
+  it('Should return true for a string of white spaces', () => {
     expect(isBlank('   ')).toBe(true);
   });
 
@@ -11,7 +11,7 @@ describe('isBlank', () => {
 });
 
 describe('isNotBlank', () => {
-  it('Should return false for a string of whitespaces', () => {
+  it('Should return false for a string of white spaces', () => {
     expect(isNotBlank('   ')).toBe(false);
   });
 

@@ -49,6 +49,7 @@ Enforce rules are functions that allow you to test your data against different c
 - [doesNotStartWith](#doesnotstartwith)
 - [isNegative](#isnegative)
 - [isPositive](#ispositive)
+- [isBlank](#isblank)
 
 ## equals
 
@@ -1251,4 +1252,17 @@ enforce(10.12).isPositive(); //passes
 enforce('10.12').isPositive(); //passes
 enforce(-10).isPositive(); // throws
 enforce('-10.12').isPositive(); // throws
+```
+
+## isBlank
+
+### Description
+
+Determines wheter an enforced string contains only whitespaces
+
+### Usage examples:
+
+```js
+enforce("   ").isBlank(); // passes
+enforce("   ").isNotBlank(); // throws
 ```

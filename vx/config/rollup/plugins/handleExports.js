@@ -158,6 +158,12 @@ function exportsOrder(moduleName, env = undefined) {
     env ?? opts.env.PRODUCTION
   );
   const cjsPath = genDistPath(isTopLevel, moduleName, opts.format.CJS, env);
+  const cjsPathDev = genDistPath(
+    isTopLevel,
+    moduleName,
+    opts.format.CJS,
+    opts.env.DEVELOPMENT
+  );
   const umdPath = genDistPath(
     isTopLevel,
     moduleName,
@@ -167,6 +173,7 @@ function exportsOrder(moduleName, env = undefined) {
 
   /* eslint-disable sort-keys */
   return {
+    development: cjsPathDev,
     browser: esPath,
     umd: umdPath,
     import: esPath,

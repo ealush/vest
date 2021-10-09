@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## n4s: [3.1.0] - 2021-10-09
+
+### Added
+- 5adc337  feat: add isBlank rule (Luca Pizzini)
+
+## vest: [3.2.6] - 2021-10-09
+
+### Fixed and improved
+- e538e5b  patch: remove incorrect messaging from group initialization error (ealush)
+
 ## vest: [3.2.5] - 2021-07-31
 
 ### Fixed and improved

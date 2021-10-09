@@ -30,6 +30,8 @@ Enforce rules are functions that allow you to test your data against different c
 - [isNotArray](#isnotarray)
 - [isBoolean](#isboolean)
 - [isNotBoolean](#isnotboolean)
+- [isBlank](#isblank)
+- [isNotBlank](#isnotblank)
 - [isNumber](#isnumber)
 - [isNotNumber](#isnotnumber)
 - [isNaN](#isNaN)
@@ -854,6 +856,32 @@ enforce(143).isNotBoolean();
 enforce(true).isNotBoolean();
 enforce(false).isNotBoolean();
 // throws
+```
+
+## isBlank
+
+### Description
+
+Determines wheter an enforced string contains only whitespaces
+
+### Usage examples:
+
+```js
+enforce('   ').isBlank(); // passes
+enforce('not blank').isBlank(); // throws
+```
+
+## isNotBlank
+
+### Description
+
+Determines wheter an enforced string contains at least a non-whitespace character
+
+### Usage examples:
+
+```js
+enforce('not blank').isNotBlank(); // passes
+enforce('   ').isNotBlank(); // throws
 ```
 
 ## isNumber

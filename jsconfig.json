@@ -55,6 +55,7 @@
       "inside": ["./packages/n4s/src/rules/inside.js"],
       "isArray": ["./packages/n4s/src/rules/isArray.js"],
       "isBetween": ["./packages/n4s/src/rules/isBetween.js"],
+      "isBlank": ["./packages/n4s/src/rules/isBlank.js"],
       "isBoolean": ["./packages/n4s/src/rules/isBoolean.js"],
       "isEmpty": ["./packages/n4s/src/rules/isEmpty.js"],
       "isEven": ["./packages/n4s/src/rules/isEven.js"],

@@ -7,8 +7,6 @@ import { lengthEquals } from 'lengthEquals';
 export function isEmpty(value) {
   if (!value) {
     return true;
-  } else if (typeof value === 'string') {
-    return value.trim() === '';
   } else if (isNumeric(value)) {
     return value === 0;
   } else if (hasOwnProperty(value, 'length')) {

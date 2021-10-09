@@ -22,6 +22,10 @@ describe('Tests isEmpty rule', () => {
       expect(isEmpty('')).toBe(true);
     });
 
+    it('Should return true for a string of whitespaces', () => {
+      expect(isEmpty('  ')).toBe(true);
+    });
+
     it('Should return false for a non empty string', () => {
       expect(isEmpty('hey')).toBe(false);
     });

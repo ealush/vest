@@ -13,6 +13,7 @@
   "module": "./dist/es/context.production.js",
   "exports": {
     ".": {
+      "development": "./dist/cjs/context.development.js",
       "browser": "./dist/es/context.production.js",
       "umd": "./dist/umd/context.production.js",
       "import": "./dist/es/context.production.js",

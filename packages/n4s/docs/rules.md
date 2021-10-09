@@ -860,7 +860,7 @@ enforce(false).isNotBoolean();
 
 ## isBlank
 
-### Description
+### Description
 
 Determines wheter an enforced string contains only whitespaces
 
@@ -873,7 +873,7 @@ enforce('not blank').isBlank(); // throws
 
 ## isNotBlank
 
-### Description
+### Description
 
 Determines wheter an enforced string contains at least a non-whitespace character
 

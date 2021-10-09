@@ -12,6 +12,7 @@
   "module": "./dist/es/n4s.production.js",
   "exports": {
     ".": {
+      "development": "./dist/cjs/n4s.development.js",
       "browser": "./dist/es/n4s.production.js",
       "umd": "./dist/umd/n4s.production.js",
       "import": "./dist/es/n4s.production.js",

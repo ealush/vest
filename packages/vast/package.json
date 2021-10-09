@@ -12,6 +12,7 @@
   "module": "./dist/es/vast.production.js",
   "exports": {
     ".": {
+      "development": "./dist/cjs/vast.development.js",
       "browser": "./dist/es/vast.production.js",
       "umd": "./dist/umd/vast.production.js",
       "import": "./dist/es/vast.production.js",

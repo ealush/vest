@@ -9,15 +9,15 @@ describe('optional hook', () => {
         optional('field_1');
         expect(useOptionalFields()[0]).toMatchInlineSnapshot(`
           Object {
-            "field_1": Object {},
+            "field_1": true,
           }
         `);
         optional(['field_2', 'field_3']);
         expect(useOptionalFields()[0]).toMatchInlineSnapshot(`
           Object {
-            "field_1": Object {},
-            "field_2": Object {},
-            "field_3": Object {},
+            "field_1": true,
+            "field_2": true,
+            "field_3": true,
           }
         `);
       })();
@@ -42,9 +42,9 @@ describe('optional hook', () => {
 
       expect(res.hasErrors('f1')).toBe(false);
       expect(res.hasErrors('f2')).toBe(false);
-      expect(res.isValid()).toBe(true);
       expect(res.isValid('f1')).toBe(true);
       expect(res.isValid('f2')).toBe(true);
+      expect(res.isValid()).toBe(true);
     });
 
     describe('example: "any of" test', () => {
@@ -63,9 +63,9 @@ describe('optional hook', () => {
 
         expect(res.hasErrors('f1')).toBe(false);
         expect(res.hasErrors('f2')).toBe(false);
-        expect(res.isValid()).toBe(true);
         expect(res.isValid('f1')).toBe(true);
         expect(res.isValid('f2')).toBe(true);
+        expect(res.isValid()).toBe(true);
       });
     });
   });

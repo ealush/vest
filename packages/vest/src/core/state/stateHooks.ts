@@ -16,15 +16,15 @@ export function useTestCallbacks(): TStateHandlerReturn<{
   return useStateRef().testCallbacks();
 }
 export function useOptionalFields(): TStateHandlerReturn<
-  Record<
-    string,
-    {
-      predicate?: () => boolean;
-    }
-  >
+  Record<string, (() => boolean) | boolean>
 > {
   return useStateRef().optionalFields();
 }
+
+export function useOmittedFields(): TStateHandlerReturn<Record<string, true>> {
+  return useStateRef().omittedFields();
+}
+
 export function useStateRef(): Exclude<TStateRef, void> {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return ctx.useX().stateRef!; // I should revisit this
@@ -77,12 +77,6 @@ export function useRefreshTestObjects(): void {
 
 export function useCursorAt(): TStateHandlerReturn<number> {
   return useStateRef().testObjectsCursor();
-}
-
-export function isOptionalField(fieldName: string): boolean {
-  const [optionalFields] = useOptionalFields();
-
-  return !!optionalFields[fieldName];
 }
 
 export function useAllIncomplete(): VestTest[] {

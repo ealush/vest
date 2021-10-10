@@ -12,13 +12,11 @@ export default function optional(optionals: TOptionalsInput): void {
       const optionalFunctions = optionals as TOptionalsObject;
       for (const field in optionalFunctions) {
         const predicate = optionalFunctions[field];
-        state[field] = {
-          predicate,
-        };
+        state[field] = predicate;
       }
     } else {
       asArray(optionals).forEach(optionalField => {
-        state[optionalField] = {};
+        state[optionalField] = true;
       });
     }
 

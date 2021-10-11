@@ -26,4 +26,4 @@ export default function optional(optionals: TOptionalsInput): void {
 
 type TOptionalsInput = string | string[] | TOptionalsObject;
 
-export type TOptionalsObject = Record<string, () => boolean>;
+type TOptionalsObject = Record<string, () => boolean>;

@@ -37,7 +37,7 @@ export function isValid(result: TDraftResult, fieldName?: string): boolean {
 }
 
 function fieldIsOmitted(fieldName?: string) {
-  const [omittedFields] = useOmittedFields();
+  const omittedFields = useOmittedFields();
 
   if (!fieldName) {
     return false;

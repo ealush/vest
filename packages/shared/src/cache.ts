@@ -1,9 +1,10 @@
 import { lengthEquals } from 'lengthEquals';
+import { longerThan } from 'longerThan';
 
 /**
  * Creates a cache function
  */
-export default function createCache(maxSize = 10): {
+export default function createCache(maxSize = 1): {
   <T>(deps: unknown[], cacheAction: (...args: unknown[]) => T): T;
   get(deps: unknown[]): any;
   invalidate(item: any): void;
@@ -21,7 +22,7 @@ export default function createCache(maxSize = 10): {
     const result = cacheAction();
     cacheStorage.unshift([deps.concat(), result]);
 
-    if (cacheStorage.length > maxSize) cacheStorage.length = maxSize;
+    if (longerThan(cacheStorage, maxSize)) cacheStorage.length = maxSize;
 
     return result;
   };

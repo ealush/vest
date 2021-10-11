@@ -7,6 +7,13 @@ import type { TStateRef } from 'createStateRef';
 import ctx from 'ctx';
 import type { TDraftResult } from 'produceDraft';
 
+// STATE REF
+export function useStateRef(): Exclude<TStateRef, void> {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return ctx.useX().stateRef!; // I should revisit this
+}
+
+// STATE KEYS
 export function useSuiteId(): TStateHandlerReturn<string> {
   return useStateRef().suiteId();
 }
@@ -21,6 +28,49 @@ export function useOptionalFields(): TStateHandlerReturn<
 > {
   return useStateRef().optionalFields();
 }
+
+export function useTestObjects(): TStateHandlerReturn<VestTest[]> {
+  return useStateRef().testObjects();
+}
+
+export function usePrevTestObjects(): TStateHandlerReturn<VestTest[]> {
+  return useStateRef().prevTestObjects();
+}
+
+export function useCursorAt(): TStateHandlerReturn<number> {
+  return useStateRef().testObjectsCursor();
+}
+
+export function useSetNextCursorAt(): void {
+  const [, setCursorAt] = useCursorAt();
+
+  setCursorAt((cursorAt: number) => cursorAt + 1);
+}
+
+// STATE ACTIONS
+
+export function useRefreshTestObjects(): void {
+  const [, setTestObjects] = useTestObjects();
+
+  setTestObjects(testObjects => testObjects.slice(0));
+}
+
+export function useSetTestAtCursor(testObject: VestTest): void {
+  const [cursorAt] = useCursorAt();
+  const [testObjects, setTestObjects] = useTestObjects();
+
+  if (testObject === testObjects[cursorAt]) {
+    return;
+  }
+
+  setTestObjects((testObjects: VestTest[]) => {
+    const newTestsOrder = testObjects.slice(0);
+    newTestsOrder[cursorAt] = testObject;
+    return newTestsOrder;
+  });
+}
+
+// DERIVED VALUES
 
 const omittedFieldsCache = createCache();
 export function useOmittedFields(): Record<string, true> {
@@ -41,19 +91,6 @@ export function useOmittedFields(): Record<string, true> {
   );
 }
 
-export function useStateRef(): Exclude<TStateRef, void> {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return ctx.useX().stateRef!; // I should revisit this
-}
-
-export function useTestObjects(): TStateHandlerReturn<VestTest[]> {
-  return useStateRef().testObjects();
-}
-
-export function usePrevTestObjects(): TStateHandlerReturn<VestTest[]> {
-  return useStateRef().prevTestObjects();
-}
-
 export function useTestAtCursor(initialValue: VestTest): VestTest {
   const [cursorAt] = useCursorAt();
   const [prevTestObjects] = usePrevTestObjects();
@@ -62,37 +99,6 @@ export function useTestAtCursor(initialValue: VestTest): VestTest {
   useSetTestAtCursor(nextTest);
 
   return nextTest;
-}
-
-export function useSetTestAtCursor(testObject: VestTest): void {
-  const [cursorAt] = useCursorAt();
-  const [testObjects, setTestObjects] = useTestObjects();
-
-  if (testObject === testObjects[cursorAt]) {
-    return;
-  }
-
-  setTestObjects((testObjects: VestTest[]) => {
-    const newTestsOrder = testObjects.slice(0);
-    newTestsOrder[cursorAt] = testObject;
-    return newTestsOrder;
-  });
-}
-
-export function useSetNextCursorAt(): void {
-  const [, setCursorAt] = useCursorAt();
-
-  setCursorAt((cursorAt: number) => cursorAt + 1);
-}
-
-export function useRefreshTestObjects(): void {
-  const [, setTestObjects] = useTestObjects();
-
-  setTestObjects(testObjects => testObjects.slice(0));
-}
-
-export function useCursorAt(): TStateHandlerReturn<number> {
-  return useStateRef().testObjectsCursor();
 }
 
 const incompleteCache = createCache();

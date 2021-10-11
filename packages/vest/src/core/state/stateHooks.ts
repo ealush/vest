@@ -1,3 +1,4 @@
+import createCache from 'cache';
 import defaultTo from 'defaultTo';
 import type { TStateHandlerReturn } from 'vast';
 
@@ -21,8 +22,23 @@ export function useOptionalFields(): TStateHandlerReturn<
   return useStateRef().optionalFields();
 }
 
-export function useOmittedFields(): TStateHandlerReturn<Record<string, true>> {
-  return useStateRef().omittedFields();
+const omittedFieldsCache = createCache();
+export function useOmittedFields(): Record<string, true> {
+  const [testObjects] = useTestObjects();
+
+  return omittedFieldsCache([testObjects], () =>
+    testObjects.reduce((omittedFields, testObject) => {
+      if (omittedFields[testObject.fieldName]) {
+        return omittedFields;
+      }
+
+      if (testObject.isOmitted()) {
+        omittedFields[testObject.fieldName] = true;
+      }
+
+      return omittedFields;
+    }, {} as Record<string, true>)
+  );
 }
 
 export function useStateRef(): Exclude<TStateRef, void> {
@@ -79,9 +95,11 @@ export function useCursorAt(): TStateHandlerReturn<number> {
   return useStateRef().testObjectsCursor();
 }
 
+const incompleteCache = createCache();
 export function useAllIncomplete(): VestTest[] {
   const [testObjects] = useTestObjects();
 
-  // TODO: CACHE?
-  return testObjects.filter(testObject => testObject.isPending());
+  return incompleteCache([testObjects], () =>
+    testObjects.filter(testObject => testObject.isPending())
+  );
 }

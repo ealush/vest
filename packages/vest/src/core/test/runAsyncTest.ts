@@ -17,6 +17,8 @@ export default function runAsyncTest(testObject: VestTest): void {
 
   const stateRef = useStateRef();
   const done = ctx.bind({ stateRef }, () => {
+    // invalidating the "produce" cache
+    useRefreshTestObjects();
     emit(Events.TEST_COMPLETED, testObject);
   });
   const fail = ctx.bind({ stateRef }, (rejectionMessage?: string) => {
@@ -29,8 +31,6 @@ export default function runAsyncTest(testObject: VestTest): void {
       : message;
     testObject.fail();
 
-    // invalidating the "produce" cache
-    useRefreshTestObjects();
     done();
   });
   try {

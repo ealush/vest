@@ -10,9 +10,17 @@
     "release": "vx release"
   },
   "module": "./dist/es/vast.production.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ealush/vest.git",
+    "directory": "packages/vast"
+  },
+  "bugs": {
+    "url": "https://github.com/ealush/vest.git/issues"
+  },
   "exports": {
     ".": {
-      "development": "./dist/cjs/vast.development.js",
+      "types": "./types/vast.d.ts",
       "browser": "./dist/es/vast.production.js",
       "umd": "./dist/umd/vast.production.js",
       "import": "./dist/es/vast.production.js",
@@ -23,13 +31,5 @@
     },
     "./package.json": "./package.json",
     "./": "./"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ealush/vest.git",
-    "directory": "packages/vast"
-  },
-  "bugs": {
-    "url": "https://github.com/ealush/vest.git/issues"
   }
 }

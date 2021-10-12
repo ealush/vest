@@ -80,6 +80,9 @@ function genPackageJson(name) {
             ...genExportedFiles(),
             /* eslint-disable sort-keys */
             '.': {
+              [opts.env.DEVELOPMENT]: {
+                ...exportsOrder(name, opts.env.DEVELOPMENT),
+              },
               ...exportsOrder(name),
             },
             './package.json': './package.json',
@@ -158,12 +161,7 @@ function exportsOrder(moduleName, env = undefined) {
     env ?? opts.env.PRODUCTION
   );
   const cjsPath = genDistPath(isTopLevel, moduleName, opts.format.CJS, env);
-  const cjsPathDev = genDistPath(
-    isTopLevel,
-    moduleName,
-    opts.format.CJS,
-    opts.env.DEVELOPMENT
-  );
+
   const umdPath = genDistPath(
     isTopLevel,
     moduleName,
@@ -171,9 +169,11 @@ function exportsOrder(moduleName, env = undefined) {
     env ?? opts.env.PRODUCTION
   );
 
+  const types = typesPath(moduleName, /* isMain */ true);
+
   /* eslint-disable sort-keys */
   return {
-    development: cjsPathDev,
+    types,
     browser: esPath,
     umd: umdPath,
     import: esPath,
@@ -194,9 +194,9 @@ function genDistPath(isTopLevel, moduleName, moduleType, env) {
   );
 }
 
-const typesPath = moduleName =>
+const typesPath = (moduleName, isTopLevel) =>
   joinPath(
-    singleDot(isMain(moduleName)),
+    singleDot(isTopLevel ?? isMain(moduleName)),
     opts.dir.TYPES,
     fileName(moduleName, 'd.ts')
   );

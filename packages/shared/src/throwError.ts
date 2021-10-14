@@ -11,3 +11,12 @@ export default function throwError(
     __DEV__ ? devMessage : defaultTo(productionMessage, devMessage)
   );
 }
+
+export function throwErrorDeferred(
+  devMessage?: string,
+  productionMessage?: string
+): void {
+  setTimeout(() => {
+    throwError(devMessage, productionMessage);
+  }, 0);
+}

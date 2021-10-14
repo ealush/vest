@@ -1,5 +1,4 @@
 import createCache from 'cache';
-import defaultTo from 'defaultTo';
 import type { TStateHandlerReturn } from 'vast';
 
 import VestTest from 'VestTest';
@@ -89,16 +88,6 @@ export function useOmittedFields(): Record<string, true> {
       return omittedFields;
     }, {} as Record<string, true>)
   );
-}
-
-export function useTestAtCursor(initialValue: VestTest): VestTest {
-  const [cursorAt] = useCursorAt();
-  const [prevTestObjects] = usePrevTestObjects();
-
-  const nextTest = defaultTo(prevTestObjects[cursorAt], initialValue);
-  useSetTestAtCursor(nextTest);
-
-  return nextTest;
 }
 
 const incompleteCache = createCache();

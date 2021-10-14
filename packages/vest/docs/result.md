@@ -46,9 +46,9 @@ Along with these values, the result object exposes the following methods:
 
 ## `isValid` function
 
-`isValid` returns whether the validation suite as a whole is valid or not.
+`isValid` returns whether the validation suite as a whole or a single field is valid or not.
 
-A suite is considered valid if the following conditions are met:
+A _suite_ is considered valid if the following conditions are met:
 
 - There are no errors (`hasErrors() === false`) in the suite - warnings are not counted as errors.
 - All non [optional](./optional) fields have passing tests.
@@ -58,6 +58,18 @@ A suite is considered valid if the following conditions are met:
 result.isValid();
 
 suite.get().isValid();
+```
+
+A _field_ is considered valid if the following conditions are met:
+
+- The field has no errors (`hasErrors() === false`) or the field is omitted via the functional "optional" API.
+- All non optional tests for the field are passing.
+- The field has no pending tests.
+
+```js
+result.isValid('username');
+
+suite.get().isValid('username');
 ```
 
 ?> **Note** when `isValid` equals `false`, it does not necessarily mean that the form is inValid, but that it might not be valid _yet_. For example, if not all the fields are filled, the form is simply not valid, even though it may not be strictly invalid.

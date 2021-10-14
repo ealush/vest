@@ -38,6 +38,7 @@ module.exports = (custom = {}) => ({
         ? vxPath.packageTsConfig()
         : path.join(vxPath.ROOT_PATH, 'tsconfig.json'),
       diagnostics: {
+        // Essentially ignoring "any" errors in TESTS
         ignoreCodes: [
           'TS7005',
           'TS7006',
@@ -45,8 +46,8 @@ module.exports = (custom = {}) => ({
           'TS7034',
           'TS7053',
           'TS7031',
-          'TS2339', // FIXME! Remove this one! Hides the "missing property" error
-        ], // essentially ignoring "any" errors in tests
+          'TS2339',
+        ],
       },
     },
   },

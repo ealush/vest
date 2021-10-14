@@ -1,6 +1,6 @@
 import wait from 'wait';
 
-import itWithContext from '../../../../../testUtils/itWithContext';
+import itWithContext from '../../../../testUtils/itWithContext';
 
 import VestTest from 'VestTest';
 import { useAllIncomplete, useTestObjects } from 'stateHooks';

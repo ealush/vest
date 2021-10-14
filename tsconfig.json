@@ -120,11 +120,11 @@
       "hasRemainingTests": [
         "./packages/vest/src/core/suite/hasRemainingTests.ts"
       ],
-      "isSameProfileTest": [
-        "./packages/vest/src/core/test/isSameProfileTest.ts"
-      ],
       "cancelOverriddenPendingTest": [
         "./packages/vest/src/core/test/lib/cancelOverriddenPendingTest.ts"
+      ],
+      "isSameProfileTest": [
+        "./packages/vest/src/core/test/lib/isSameProfileTest.ts"
       ],
       "registerPrevRunTest": [
         "./packages/vest/src/core/test/lib/registerPrevRunTest.ts"
@@ -135,6 +135,9 @@
       ],
       "shouldUseErrorAsMessage": [
         "./packages/vest/src/core/test/lib/shouldUseErrorAsMessage.ts"
+      ],
+      "useTestAtCursor": [
+        "./packages/vest/src/core/test/lib/useTestAtCursor.ts"
       ],
       "omitOptionalTests": [
         "./packages/vest/src/core/test/omitOptionalTests.ts"

@@ -97,7 +97,7 @@ module.exports = {
     'no-useless-computed-key': 2,
     'no-useless-return': 2,
     'no-var': 2,
-    'no-warning-comments': 2,
+    'no-warning-comments': 1,
     'object-shorthand': [2, 'always', { avoidQuotes: true }],
     'prefer-const': 2,
     'sort-keys': [

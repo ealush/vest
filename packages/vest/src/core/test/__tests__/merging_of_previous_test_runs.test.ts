@@ -70,7 +70,7 @@ describe('Merging of previous test runs', () => {
     });
   });
 
-  describe('When tests are passed in a different order between tests', () => {
+  describe('When tests are passed in a different order between runs', () => {
     let throwErrorDeferred, vest;
     beforeEach(() => {
       throwErrorDeferred = jest.fn();
@@ -82,7 +82,7 @@ describe('Merging of previous test runs', () => {
       vest = require('vest');
     });
 
-    afterEach(() => {
+    afterAll(() => {
       jest.resetAllMocks();
     });
 
@@ -105,6 +105,200 @@ describe('Merging of previous test runs', () => {
           'Vest Critical Error: Tests called in different order than previous run.'
         )
       );
+    });
+
+    describe('When test is omitted in subsequent run', () => {
+      it('Should omit the test from the results', () => {
+        const { create, test } = vest;
+        suite = create(() => {
+          test('f1', () => false);
+          if (counter === 0) {
+            test('f2', () => false);
+          }
+          test('f3', () => false);
+          counter++;
+        });
+
+        const resA = suite();
+        expect(resA.tests.f2).toBeDefined();
+        expect(resA.hasErrors('f1')).toBe(true);
+        expect(resA.hasErrors('f2')).toBe(true);
+        expect(resA.hasErrors('f3')).toBe(true);
+        expect(resA.tests).toMatchInlineSnapshot(`
+          Object {
+            "f1": Object {
+              "errorCount": 1,
+              "testCount": 1,
+              "warnCount": 0,
+            },
+            "f2": Object {
+              "errorCount": 1,
+              "testCount": 1,
+              "warnCount": 0,
+            },
+            "f3": Object {
+              "errorCount": 1,
+              "testCount": 1,
+              "warnCount": 0,
+            },
+          }
+        `);
+
+        const resB = suite();
+        expect(resB.tests.f2).not.toBeDefined();
+        expect(resB.hasErrors('f1')).toBe(true);
+        expect(resB.hasErrors('f2')).toBe(false);
+        expect(resB.hasErrors('f3')).toBe(true);
+        expect(resB.tests).toMatchInlineSnapshot(`
+          Object {
+            "f1": Object {
+              "errorCount": 1,
+              "testCount": 1,
+              "warnCount": 0,
+            },
+            "f3": Object {
+              "errorCount": 1,
+              "testCount": 1,
+              "warnCount": 0,
+            },
+          }
+        `);
+      });
+
+      describe('When multiple tests are omitted between a test', () => {
+        it('Should omit the tests from the results', () => {
+          const { create, test } = vest;
+          suite = create(() => {
+            test('f1', () => false);
+            if (counter === 0) {
+              test('f2', () => false);
+              test('f3', () => false);
+            }
+            test('f4', () => false);
+            if (counter === 0) {
+              test('f5', () => false);
+              test('f6', () => false);
+              test('f7', () => false);
+            }
+            test('f4', () => false);
+            counter++;
+          });
+
+          const resA = suite();
+          expect(resA.tests.f2).toBeDefined();
+          expect(resA.tests.f3).toBeDefined();
+          expect(resA.tests.f5).toBeDefined();
+          expect(resA.tests.f6).toBeDefined();
+          expect(resA.tests.f7).toBeDefined();
+          expect(resA.hasErrors('f1')).toBe(true);
+          expect(resA.hasErrors('f2')).toBe(true);
+          expect(resA.hasErrors('f3')).toBe(true);
+          expect(resA.hasErrors('f4')).toBe(true);
+          expect(resA.hasErrors('f5')).toBe(true);
+          expect(resA.hasErrors('f6')).toBe(true);
+          expect(resA.hasErrors('f7')).toBe(true);
+          expect(resA.tests).toMatchInlineSnapshot(`
+            Object {
+              "f1": Object {
+                "errorCount": 1,
+                "testCount": 1,
+                "warnCount": 0,
+              },
+              "f2": Object {
+                "errorCount": 1,
+                "testCount": 1,
+                "warnCount": 0,
+              },
+              "f3": Object {
+                "errorCount": 1,
+                "testCount": 1,
+                "warnCount": 0,
+              },
+              "f4": Object {
+                "errorCount": 2,
+                "testCount": 2,
+                "warnCount": 0,
+              },
+              "f5": Object {
+                "errorCount": 1,
+                "testCount": 1,
+                "warnCount": 0,
+              },
+              "f6": Object {
+                "errorCount": 1,
+                "testCount": 1,
+                "warnCount": 0,
+              },
+              "f7": Object {
+                "errorCount": 1,
+                "testCount": 1,
+                "warnCount": 0,
+              },
+            }
+          `);
+          const resB = suite();
+          expect(resB.tests.f2).not.toBeDefined();
+          expect(resB.tests.f3).not.toBeDefined();
+          expect(resB.tests.f5).not.toBeDefined();
+          expect(resB.tests.f6).not.toBeDefined();
+          expect(resB.tests.f7).not.toBeDefined();
+          expect(resB.hasErrors('f1')).toBe(true);
+          expect(resB.hasErrors('f2')).toBe(false);
+          expect(resB.hasErrors('f3')).toBe(false);
+          expect(resB.hasErrors('f4')).toBe(true);
+          expect(resB.hasErrors('f5')).toBe(false);
+          expect(resB.hasErrors('f6')).toBe(false);
+          expect(resB.hasErrors('f7')).toBe(false);
+          expect(resB.tests).toMatchInlineSnapshot(`
+            Object {
+              "f1": Object {
+                "errorCount": 1,
+                "testCount": 1,
+                "warnCount": 0,
+              },
+              "f4": Object {
+                "errorCount": 2,
+                "testCount": 2,
+                "warnCount": 0,
+              },
+            }
+          `);
+        });
+      });
+
+      describe('When tests are added inbetween tests', () => {
+        it('Should remove next tests in line', () => {
+          const { create, test, skipWhen } = vest;
+
+          const suite = create(() => {
+            test('f1', () => false);
+            if (counter === 1) {
+              test('f2', () => false);
+              test('f3', () => false);
+            }
+
+            skipWhen(
+              () => counter === 1,
+              () => {
+                test('f4', () => false);
+                test('f5', () => false);
+              }
+            );
+            counter++;
+          });
+
+          const resA = suite();
+          expect(resA.hasErrors('f4')).toBe(true);
+          expect(resA.hasErrors('f5')).toBe(true);
+
+          // This is testing that fact that the next test in line after f2 and f3
+          // got removed. We can see it because in normal situation, the test result is
+          // merged into the next test result.
+          const resB = suite();
+          expect(resB.hasErrors('f4')).toBe(false);
+          expect(resB.hasErrors('f5')).toBe(false);
+        });
+      });
     });
   });
 });

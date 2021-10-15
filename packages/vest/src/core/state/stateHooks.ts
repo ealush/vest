@@ -54,21 +54,6 @@ export function useRefreshTestObjects(): void {
   setTestObjects(testObjects => testObjects.slice(0));
 }
 
-export function useSetTestAtCursor(testObject: VestTest): void {
-  const [cursorAt] = useCursorAt();
-  const [testObjects, setTestObjects] = useTestObjects();
-
-  if (testObject === testObjects[cursorAt]) {
-    return;
-  }
-
-  setTestObjects((testObjects: VestTest[]) => {
-    const newTestsOrder = testObjects.slice(0);
-    newTestsOrder[cursorAt] = testObject;
-    return newTestsOrder;
-  });
-}
-
 // DERIVED VALUES
 
 const omittedFieldsCache = createCache();

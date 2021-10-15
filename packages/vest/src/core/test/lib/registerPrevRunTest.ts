@@ -5,8 +5,8 @@ import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';
 import registerTest from 'registerTest';
 import runAsyncTest from 'runAsyncTest';
-import { useSetTestAtCursor, useSetNextCursorAt } from 'stateHooks';
-import useTestAtCursor from 'useTestAtCursor';
+import { useSetNextCursorAt } from 'stateHooks';
+import { useTestAtCursor, useSetTestAtCursor } from 'useTestAtCursor';
 
 export default function registerPrevRunTest(testObject: VestTest): VestTest {
   const prevRunTest = useTestAtCursor(testObject);

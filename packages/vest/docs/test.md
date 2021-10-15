@@ -137,7 +137,7 @@ export default create(data => {
 
 Use test.each when you need to dynamically create tests from data, or when you have multiple tests that have the same overall structure.
 
-test.each takes an array of arrays. The inner array contains the arguments that each of the tests will recieve.
+test.each takes an array of arrays. The inner array contains the arguments that each of the tests will receive.
 
 Because of the dynamic nature of the iterative tests, you can also dynamically construct the fieldName and the test message by providing a function instead of a string. Your array's content will be passed over as arguments to each of these functions.
 

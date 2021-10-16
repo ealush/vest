@@ -36,16 +36,6 @@ export function usePrevTestObjects(): TStateHandlerReturn<VestTest[]> {
   return useStateRef().prevTestObjects();
 }
 
-export function useCursorAt(): TStateHandlerReturn<number> {
-  return useStateRef().testObjectsCursor();
-}
-
-export function useSetNextCursorAt(): void {
-  const [, setCursorAt] = useCursorAt();
-
-  setCursorAt((cursorAt: number) => cursorAt + 1);
-}
-
 // STATE ACTIONS
 
 export function useRefreshTestObjects(): void {

@@ -102,6 +102,7 @@
       "isFunction": ["./packages/shared/src/isFunction.ts"],
       "isPromise": ["./packages/shared/src/isPromise.ts"],
       "isStringValue": ["./packages/shared/src/isStringValue.ts"],
+      "last": ["./packages/shared/src/last.ts"],
       "mapFirst": ["./packages/shared/src/mapFirst.ts"],
       "optionalFunctionValue": [
         "./packages/shared/src/optionalFunctionValue.ts"
@@ -113,7 +114,8 @@
       "throwError": ["./packages/shared/src/throwError.ts"],
       "utilityTypes": ["./packages/shared/src/utilityTypes.ts"],
       "vast": ["./packages/vast/src/vast.ts"],
-      "ctx": ["./packages/vest/src/core/ctx.ts"],
+      "ctx": ["./packages/vest/src/core/ctx/ctx.ts"],
+      "cursorAt": ["./packages/vest/src/core/ctx/cursorAt.ts"],
       "createStateRef": ["./packages/vest/src/core/state/createStateRef.ts"],
       "stateHooks": ["./packages/vest/src/core/state/stateHooks.ts"],
       "create": ["./packages/vest/src/core/suite/create.ts"],

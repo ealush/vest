@@ -1,4 +1,6 @@
 import createCache from 'cache';
+import flatten from 'flatten';
+import type { NestedArray } from 'nestedArray';
 import type { TStateHandlerReturn } from 'vast';
 
 import VestTest from 'VestTest';
@@ -28,11 +30,13 @@ export function useOptionalFields(): TStateHandlerReturn<
   return useStateRef().optionalFields();
 }
 
-export function useTestObjects(): TStateHandlerReturn<VestTest[]> {
+export function useTestObjects(): TStateHandlerReturn<NestedArray<VestTest>> {
   return useStateRef().testObjects();
 }
 
-export function usePrevTestObjects(): TStateHandlerReturn<VestTest[]> {
+export function usePrevTestObjects(): TStateHandlerReturn<
+  NestedArray<VestTest>
+> {
   return useStateRef().prevTestObjects();
 }
 
@@ -46,9 +50,15 @@ export function useRefreshTestObjects(): void {
 
 // DERIVED VALUES
 
+export function useTestsFlat(): Array<VestTest> {
+  const [testObjects] = useTestObjects();
+
+  return flatten(testObjects);
+}
+
 const omittedFieldsCache = createCache();
 export function useOmittedFields(): Record<string, true> {
-  const [testObjects] = useTestObjects();
+  const testObjects = useTestsFlat();
 
   return omittedFieldsCache([testObjects], () =>
     testObjects.reduce((omittedFields, testObject) => {
@@ -66,8 +76,8 @@ export function useOmittedFields(): Record<string, true> {
 }
 
 const incompleteCache = createCache();
-export function useAllIncomplete(): VestTest[] {
-  const [testObjects] = useTestObjects();
+export function useAllIncomplete(): Array<VestTest> {
+  const testObjects = useTestsFlat();
 
   return incompleteCache([testObjects], () =>
     testObjects.filter(testObject => testObject.isPending())

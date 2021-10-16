@@ -12,7 +12,7 @@ import omitOptionalTests from 'omitOptionalTests';
 import { pocket, PocketType } from 'pocket';
 import { IVestResult, produceFullResult } from 'produce';
 import { produceDraft, TDraftResult } from 'produceDraft';
-import { useTestObjects, usePrevTestObjects } from 'stateHooks';
+import { useTestObjects, usePrevTestObjects, useTestsFlat } from 'stateHooks';
 import { initBus } from 'vestBus';
 
 // eslint-disable-next-line max-lines-per-function
@@ -64,7 +64,7 @@ export default function create<T extends (...args: any[]) => void>(
     {
       get: context.bind({ stateRef }, produceDraft),
       remove: context.bind({ stateRef }, name => {
-        const [testObjects] = useTestObjects();
+        const testObjects = useTestsFlat();
 
         // We're mutating the array in `cancel`, so we have to first copy it.
         asArray(testObjects).forEach(testObject => {

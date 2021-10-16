@@ -2,7 +2,7 @@ import throwError from 'throwError';
 
 import collectFailureMessages from 'collectFailureMessages';
 import getFailuresArrayOrObject from 'getFailuresArrayOrObject';
-import { useTestObjects } from 'stateHooks';
+import { useTestsFlat } from 'stateHooks';
 import type { TSeverity } from 'vestTypes';
 
 export function getErrorsByGroup(groupName: string): Record<string, string[]>;
@@ -48,7 +48,7 @@ function getByGroup(
       )}ByGroup requires a group name. Received \`${group}\` instead.`
     );
   }
-  const [testObjects] = useTestObjects();
+  const testObjects = useTestsFlat();
   const failureMessages = collectFailureMessages(severityKey, testObjects, {
     group,
     fieldName,

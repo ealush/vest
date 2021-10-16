@@ -104,6 +104,9 @@
       "isStringValue": ["./packages/shared/src/isStringValue.ts"],
       "last": ["./packages/shared/src/last.ts"],
       "mapFirst": ["./packages/shared/src/mapFirst.ts"],
+      "drillArray": ["./packages/shared/src/nestedArray/drillArray.ts"],
+      "flatten": ["./packages/shared/src/nestedArray/flatten.ts"],
+      "nestedArray": ["./packages/shared/src/nestedArray/nestedArray.ts"],
       "optionalFunctionValue": [
         "./packages/shared/src/optionalFunctionValue.ts"
       ],

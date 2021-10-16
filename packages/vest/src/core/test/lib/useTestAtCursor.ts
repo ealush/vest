@@ -6,7 +6,8 @@ import { throwErrorDeferred } from 'throwError';
 import VestTest from 'VestTest';
 import { useCursorAt } from 'cursorAt';
 import isSameProfileTest from 'isSameProfileTest';
-import { usePrevTestObjects, useTestObjects } from 'stateHooks';
+import { setCurrentPocket, useCurrentPocket, usePrevRunPocket } from 'pocket';
+import { usePrevTestObjects } from 'stateHooks';
 
 export function useTestAtCursor(newTestObject: VestTest): VestTest {
   const [, setPrevTestObjects] = usePrevTestObjects();
@@ -40,13 +41,13 @@ export function useTestAtCursor(newTestObject: VestTest): VestTest {
 
 export function useSetTestAtCursor(testObject: VestTest): void {
   const cursorAt = useCursorAt();
-  const [testObjects, setTestObjects] = useTestObjects();
+  const currentPocket = useCurrentPocket();
 
-  if (testObject === testObjects[cursorAt]) {
+  if (testObject === currentPocket[cursorAt]) {
     return;
   }
 
-  setTestObjects((testObjects: VestTest[]) => {
+  setCurrentPocket((testObjects: VestTest[]) => {
     const newTestsOrder = testObjects.slice(0);
     newTestsOrder[cursorAt] = testObject;
     return newTestsOrder;
@@ -55,7 +56,7 @@ export function useSetTestAtCursor(testObject: VestTest): void {
 
 function useGetTestAtCursor(): VestTest {
   const cursorAt = useCursorAt();
-  const [prevTestObjects] = usePrevTestObjects();
+  const prevTestObjects = usePrevRunPocket();
 
   return prevTestObjects[cursorAt];
 }

@@ -2,10 +2,10 @@ import { isEmpty } from 'isEmpty';
 import isFunction from 'isFunction';
 
 import VestTest from 'VestTest';
-import { useTestObjects, useOptionalFields } from 'stateHooks';
+import { setCurrentPocket } from 'pocket';
+import { useOptionalFields } from 'stateHooks';
 
 export default function omitOptionalTests(): void {
-  const [, setTestObjects] = useTestObjects();
   const [optionalFields] = useOptionalFields();
 
   if (isEmpty(optionalFields)) {
@@ -14,7 +14,7 @@ export default function omitOptionalTests(): void {
 
   const shouldOmit: Record<string, boolean> = {};
 
-  setTestObjects(testObjects => {
+  setCurrentPocket(testObjects => {
     return testObjects.map(testObject => {
       const fieldName = testObject.fieldName;
 

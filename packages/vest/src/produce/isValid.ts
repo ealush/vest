@@ -3,7 +3,7 @@ import { isNotEmpty, isEmpty } from 'isEmpty';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import type { TDraftResult } from 'produceDraft';
 import {
-  useTestObjects,
+  useTestsFlat,
   useAllIncomplete,
   useOptionalFields,
   useOmittedFields,
@@ -19,7 +19,7 @@ export function isValid(result: TDraftResult, fieldName?: string): boolean {
     return false;
   }
 
-  const [testObjects] = useTestObjects();
+  const testObjects = useTestsFlat();
 
   if (isEmpty(testObjects)) {
     return false;
@@ -64,7 +64,7 @@ function fieldDoesNotExist(result: TDraftResult, fieldName?: string): boolean {
 }
 
 function noMissingTests(fieldName?: string): boolean {
-  const [testObjects] = useTestObjects();
+  const testObjects = useTestsFlat();
   const [optionalFields] = useOptionalFields();
 
   return testObjects.every(testObject => {

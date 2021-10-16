@@ -3,6 +3,7 @@ import { createContext } from 'context';
 
 import VestTest from 'VestTest';
 import type { TStateRef } from 'createStateRef';
+import { PocketType } from 'pocket';
 
 export default createContext<CTXType>((ctxRef, parentContext) =>
   parentContext
@@ -10,7 +11,7 @@ export default createContext<CTXType>((ctxRef, parentContext) =>
     : assign(
         {},
         {
-          cursorAt: [0],
+          cursorAt: [],
           exclusion: {
             tests: {},
             groups: {},
@@ -27,6 +28,7 @@ type CTXType = {
     tests: Record<string, boolean>;
     groups: Record<string, boolean>;
   };
+  pocket?: { type: PocketType };
   currentTest?: VestTest;
   groupName?: string;
   skipped?: boolean;

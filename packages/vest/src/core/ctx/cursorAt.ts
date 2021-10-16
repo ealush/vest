@@ -13,3 +13,11 @@ export function moveCursorAtForward(): number {
 
   return nextCursor;
 }
+
+export function addCursorLevel(): void {
+  ctx.useX().cursorAt.push(0);
+}
+
+export function removeCursorLevel(): void {
+  ctx.useX().cursorAt.pop();
+}

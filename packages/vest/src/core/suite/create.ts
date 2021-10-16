@@ -9,6 +9,7 @@ import createStateRef from 'createStateRef';
 import context from 'ctx';
 import matchingFieldName from 'matchingFieldName';
 import omitOptionalTests from 'omitOptionalTests';
+import { pocket, PocketType } from 'pocket';
 import { IVestResult, produceFullResult } from 'produce';
 import { produceDraft, TDraftResult } from 'produceDraft';
 import { useTestObjects, usePrevTestObjects } from 'stateHooks';
@@ -52,7 +53,9 @@ export default function create<T extends (...args: any[]) => void>(
       setPrevTestObjects(() => prevTestObjects);
 
       // Run the consumer's callback
-      suiteCallback(...args);
+      pocket({ type: PocketType.SUITE }, () => {
+        suiteCallback(...args);
+      });
       omitOptionalTests();
       const res = produceFullResult();
 

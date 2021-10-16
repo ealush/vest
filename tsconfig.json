@@ -144,6 +144,7 @@
       "omitOptionalTests": [
         "./packages/vest/src/core/test/omitOptionalTests.ts"
       ],
+      "pocket": ["./packages/vest/src/core/test/pocket.ts"],
       "runAsyncTest": ["./packages/vest/src/core/test/runAsyncTest.ts"],
       "runSyncTest": ["./packages/vest/src/core/test/runSyncTest.ts"],
       "test.each": ["./packages/vest/src/core/test/test.each.ts"],

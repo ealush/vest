@@ -33,7 +33,7 @@ describe('Stateful behavior', () => {
 });
 
 describe('more complex', () => {
-  const { test, enforce, create } = vest;
+  const { test, enforce, create, skipWhen } = vest;
 
   const data = {};
 
@@ -104,11 +104,11 @@ describe('more complex', () => {
       enforce(data.password).isNotEmpty();
     });
 
-    if (!suite.get().hasErrors('password')) {
+    skipWhen(suite.get().hasErrors('password'), () => {
       test('confirm', 'passwords do not match', () => {
         enforce(data.confirm).equals(data.password);
       });
-    }
+    });
   });
 });
 

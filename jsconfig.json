@@ -143,6 +143,7 @@
       "hookErrors": ["./packages/vest/src/hooks/hookErrors.js"],
       "hooks": ["./packages/vest/src/hooks/hooks.js"],
       "optionalTests": ["./packages/vest/src/hooks/optionalTests.js"],
+      "skipWhen": ["./packages/vest/src/hooks/skipWhen.js"],
       "warn": ["./packages/vest/src/hooks/warn.js"],
       "cache": ["./packages/vest/src/lib/cache.js"],
       "callEach": ["./packages/vest/src/lib/callEach.js"],

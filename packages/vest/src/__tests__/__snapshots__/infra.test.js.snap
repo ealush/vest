@@ -178,6 +178,7 @@ Object {
   "only": [Function],
   "optional": [Function],
   "skip": [Function],
+  "skipWhen": [Function],
   "test": [Function],
   "warn": [Function],
 }

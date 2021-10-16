@@ -81,7 +81,7 @@ This can be useful when running async validations on the server, or when you do 
 `promisify()` accepts a validation suite declaration, and returns a function that when called, returns a Promise.
 
 ```js
-import { create, test } from 'vest';
+import { create, test, skipWhen } from 'vest';
 import promisify from 'vest/promisify';
 
 const suite = promisify(
@@ -94,12 +94,12 @@ const suite = promisify(
 );
 
 suite(data).then(res => {
-  if (res.hasErrors('email')) {
+  skipWhen(res.hasErrors('email'), () => {
     /* ... */
-  }
+  });
 
-  if (res.hasErrors('username')) {
+  skipWhen(res.hasErrors('username'), () => {
     /* ... */
-  }
+  });
 });
 ```

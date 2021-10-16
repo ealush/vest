@@ -10,6 +10,7 @@ export default createContext<CTXType>((ctxRef, parentContext) =>
     : assign(
         {},
         {
+          cursorAt: [0],
           exclusion: {
             tests: {},
             groups: {},
@@ -20,6 +21,7 @@ export default createContext<CTXType>((ctxRef, parentContext) =>
 );
 
 type CTXType = {
+  cursorAt: number[];
   stateRef?: TStateRef;
   exclusion: {
     tests: Record<string, boolean>;

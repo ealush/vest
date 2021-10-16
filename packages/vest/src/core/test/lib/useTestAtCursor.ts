@@ -4,9 +4,9 @@ import removeElementFromArray from 'removeElementFromArray';
 import { throwErrorDeferred } from 'throwError';
 
 import VestTest from 'VestTest';
-import { useCursorAt } from 'cursorAt';
 import isSameProfileTest from 'isSameProfileTest';
 import { usePrevTestObjects, useTestObjects } from 'stateHooks';
+import { useTestCursorAt } from 'testCursor';
 
 export function useTestAtCursor(newTestObject: VestTest): VestTest {
   const [, setPrevTestObjects] = usePrevTestObjects();
@@ -39,7 +39,7 @@ export function useTestAtCursor(newTestObject: VestTest): VestTest {
 }
 
 export function useSetTestAtCursor(testObject: VestTest): void {
-  const cursorAt = useCursorAt();
+  const cursorAt = useTestCursorAt();
   const [testObjects, setTestObjects] = useTestObjects();
 
   if (testObject === testObjects[cursorAt]) {
@@ -54,7 +54,7 @@ export function useSetTestAtCursor(testObject: VestTest): void {
 }
 
 function useGetTestAtCursor(): VestTest {
-  const cursorAt = useCursorAt();
+  const cursorAt = useTestCursorAt();
   const [prevTestObjects] = usePrevTestObjects();
 
   return prevTestObjects[cursorAt];

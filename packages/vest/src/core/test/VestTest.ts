@@ -1,7 +1,7 @@
 import genId from 'genId';
 
-import removeTestFromState from 'removeTestFromState';
 import shouldUseErrorAsMessage from 'shouldUseErrorAsMessage';
+import { useRefreshTestObjects } from 'stateHooks';
 
 export default class VestTest {
   fieldName: string;
@@ -86,7 +86,7 @@ export default class VestTest {
 
   cancel(): void {
     this.setStatus(STATUS_CANCELED);
-    removeTestFromState(this);
+    useRefreshTestObjects();
   }
 
   omit(): void {

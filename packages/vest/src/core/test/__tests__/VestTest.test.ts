@@ -73,7 +73,7 @@ describe('VestTest', () => {
   });
 
   describe('testObject.cancel', () => {
-    it('Should remove a testObject from the state', () => {
+    it('Should set the testObject to cancel', () => {
       return new Promise<void>(done => {
         let testObject: VestTest;
         const suite = vest.create(() => {
@@ -86,8 +86,8 @@ describe('VestTest', () => {
           testObject.cancel();
         });
         suite();
-        expect(suite.get().tests.f1).toBeUndefined();
-        expect(suite.get().tests.f2).toBeDefined();
+
+        expect(testObject.isCanceled()).toBe(true);
         done();
       });
     });

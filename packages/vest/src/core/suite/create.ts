@@ -11,6 +11,7 @@ import matchingFieldName from 'matchingFieldName';
 import omitOptionalTests from 'omitOptionalTests';
 import { IVestResult, produceFullResult } from 'produce';
 import { produceDraft, TDraftResult } from 'produceDraft';
+import removeTestFromState from 'removeTestFromState';
 import { useTestObjects, usePrevTestObjects } from 'stateHooks';
 import { initBus } from 'vestBus';
 
@@ -67,6 +68,7 @@ export default function create<T extends (...args: any[]) => void>(
         asArray(testObjects).forEach(testObject => {
           if (matchingFieldName(testObject, name)) {
             testObject.cancel();
+            removeTestFromState(testObject);
           }
         });
       }),

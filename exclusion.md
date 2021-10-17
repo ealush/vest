@@ -55,24 +55,24 @@ const validationResult = suite(formData);
 
 ## Conditionally excluding portions of the suite
 
-In some cases we might need to skip a test or a group based on a given condition, for example - based on the intermediate state of the currently running suite. To allow this, can use an if statement.
+In some cases we might need to skip a test or a group based on a given condition, for example - based on the intermediate state of the currently running suite. To allow this, can use `skipWhen`.
 
 In the following example we're skipping the server side verification of the username if the username is invalid to begin with:
 
 ```js
-import { create, test, enforce } from 'vest';
+import { create, test, enforce, skipWhen } from 'vest';
 
 const suite = create('user_form', (data = {}) => {
   test('username', 'Username is required', () => {
     enforce(data.username).isNotEmpty();
   });
 
-  if (!suite.get().hasErrors('username')) {
+  skipWhen(suite.get().hasErrors('username'), () => {
     test('username', 'Username already exists', () => {
       // this is an example for a server call
       return doesUserExist(data.username);
     });
-  }
+  });
 });
 export default suite;
 ```

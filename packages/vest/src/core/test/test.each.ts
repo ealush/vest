@@ -1,9 +1,12 @@
 import asArray from 'asArray';
+import { isArray } from 'isArrayValue';
 import optionalFunctionValue from 'optionalFunctionValue';
 import throwError from 'throwError';
 import type { TStringable } from 'utilityTypes';
 
+import { IsolateTypes } from 'IsolateTypes';
 import VestTest, { TTestResult } from 'VestTest';
+import { isolate } from 'isolate';
 import type { TTestBase } from 'test';
 
 export default function bindTestEach(test: TTestBase): (table: any[]) => {
@@ -14,7 +17,7 @@ export default function bindTestEach(test: TTestBase): (table: any[]) => {
    * Run multiple tests using a parameter table
    */
   function each(table: any[]) {
-    if (!Array.isArray(table)) {
+    if (!isArray(table)) {
       throwError('test.each: Expected table to be an array.');
     }
 
@@ -31,16 +34,17 @@ export default function bindTestEach(test: TTestBase): (table: any[]) => {
       ...args: [message: TStringable, cb: TEachCb] | [cb: TEachCb]
     ): VestTest[] {
       const [testFn, message] = args.reverse() as [TEachCb, string];
+      return isolate({ type: IsolateTypes.EACH }, (): VestTest[] =>
+        table.map((item: any): VestTest => {
+          item = asArray(item);
 
-      return table.map(item => {
-        item = asArray(item);
-
-        return test(
-          optionalFunctionValue<string>(fieldName, ...item),
-          optionalFunctionValue<string>(message, ...item),
-          () => testFn(...item)
-        );
-      });
+          return test(
+            optionalFunctionValue<string>(fieldName, ...item),
+            optionalFunctionValue<string>(message, ...item),
+            () => testFn(...item) // eslint-disable-line max-nested-callbacks
+          );
+        })
+      ) as VestTest[];
     }
 
     return eachReturn;

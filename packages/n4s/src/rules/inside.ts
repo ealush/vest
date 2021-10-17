@@ -1,8 +1,10 @@
 import bindNot from 'bindNot';
 import { isStringValue as isString } from 'isStringValue';
 
+import { isArray } from 'isArrayValue';
+
 export function inside(value: unknown, arg1: string | unknown[]): boolean {
-  if (Array.isArray(arg1)) {
+  if (isArray(arg1)) {
     return arg1.indexOf(value) !== -1;
   }
 

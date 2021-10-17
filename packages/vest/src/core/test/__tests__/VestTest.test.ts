@@ -74,8 +74,8 @@ describe('VestTest', () => {
 
   describe('testObject.cancel', () => {
     it('Should set the testObject to cancel', () => {
+      let testObject: VestTest;
       return new Promise<void>(done => {
-        let testObject: VestTest;
         const suite = vest.create(() => {
           testObject = vest.test('f1', async () => {
             await wait(100);
@@ -94,7 +94,10 @@ describe('VestTest', () => {
 
     itWithContext('Should be removed from the list of incomplete tests', () => {
       const [, setTestObjects] = useTestObjects();
-      setTestObjects(testObjects => testObjects.concat(testObject));
+      setTestObjects(({ prev, current }) => ({
+        prev,
+        current: current.concat(testObject),
+      }));
       testObject.setPending();
       {
         const allIncomplete = useAllIncomplete();

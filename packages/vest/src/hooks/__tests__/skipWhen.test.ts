@@ -1,25 +1,36 @@
 import * as vest from 'vest';
 
 describe('skipWhen', () => {
+  let fn = jest.fn();
   beforeEach(() => {
+    fn = jest.fn();
     suite.reset();
   });
   it('Should run callback both when condition is true or false', () => {
-    const fn = jest.fn();
+    let counter = 0;
+    const suite = vest.create(() => {
+      vest.skipWhen(counter === 1, fn);
 
-    vest.skipWhen(true, fn);
+      counter++;
+    });
+    expect(fn).toHaveBeenCalledTimes(0);
+    suite();
     expect(fn).toHaveBeenCalledTimes(1);
-    vest.skipWhen(false, fn);
+    suite();
     expect(fn).toHaveBeenCalledTimes(2);
   });
 
   it('Should respect both boolean and function conditions', () => {
-    const fn = jest.fn();
+    const suite = vest.create(() => {
+      vest.skipWhen(false, fn);
+      vest.skipWhen(true, fn);
+      vest.skipWhen(() => false, fn);
+      vest.skipWhen(() => true, fn);
+    });
 
-    vest.skipWhen(true, fn);
-    expect(fn).toHaveBeenCalledTimes(1);
-    vest.skipWhen(() => false, fn);
-    expect(fn).toHaveBeenCalledTimes(2);
+    suite();
+
+    expect(fn).toHaveBeenCalledTimes(4);
   });
 
   it('Should skip tests when the condition is truthy', () => {
@@ -35,7 +46,6 @@ describe('skipWhen', () => {
   it('Should correctly refill the state when field is skipped', () => {
     const res = suite(false);
     expect(res.tests.username.testCount).toBe(1);
-
     suite(true);
 
     expect(suite.get().tests.username.testCount).toBe(1);

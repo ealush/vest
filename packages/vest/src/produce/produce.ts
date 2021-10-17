@@ -5,12 +5,12 @@ import isFunction from 'isFunction';
 import ctx from 'ctx';
 import hasRemainingTests from 'hasRemainingTests';
 import { produceDraft, TDraftResult } from 'produceDraft';
-import { useStateRef, useTestCallbacks, useTestObjects } from 'stateHooks';
+import { useStateRef, useTestCallbacks, useTestsFlat } from 'stateHooks';
 
 const cache = createCache(20);
 
 export function produceFullResult(): IVestResult {
-  const [testObjects] = useTestObjects();
+  const testObjects = useTestsFlat();
   const ctxRef = { stateRef: useStateRef() };
   return cache(
     [testObjects],

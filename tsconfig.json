@@ -105,18 +105,18 @@
       "isStringValue": ["./packages/shared/src/isStringValue.ts"],
       "last": ["./packages/shared/src/last.ts"],
       "mapFirst": ["./packages/shared/src/mapFirst.ts"],
+      "nestedArray": ["./packages/shared/src/nestedArray.ts"],
       "optionalFunctionValue": [
         "./packages/shared/src/optionalFunctionValue.ts"
       ],
       "partition": ["./packages/shared/src/partition.ts"],
-      "removeElementFromArray": [
-        "./packages/shared/src/removeElementFromArray.ts"
-      ],
       "throwError": ["./packages/shared/src/throwError.ts"],
       "utilityTypes": ["./packages/shared/src/utilityTypes.ts"],
       "vast": ["./packages/vast/src/vast.ts"],
       "ctx": ["./packages/vest/src/core/ctx/ctx.ts"],
       "testCursor": ["./packages/vest/src/core/ctx/testCursor.ts"],
+      "isolate": ["./packages/vest/src/core/isolate/isolate.ts"],
+      "IsolateTypes": ["./packages/vest/src/core/isolate/IsolateTypes.ts"],
       "createStateRef": ["./packages/vest/src/core/state/createStateRef.ts"],
       "stateHooks": ["./packages/vest/src/core/state/stateHooks.ts"],
       "create": ["./packages/vest/src/core/suite/create.ts"],

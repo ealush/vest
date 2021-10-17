@@ -44,15 +44,20 @@ export function createState(
   }
 
   function reset(): void {
+    const prev = current();
     state.references = [];
     registrations.forEach(([initialValue], index) =>
-      initKey(index, initialValue)
+      initKey(index, initialValue, prev[index])
     );
   }
 
-  function initKey<S>(key: number, initialState?: TStateInput<S>) {
+  function initKey<S>(
+    key: number,
+    initialState?: TStateInput<S>,
+    prevState?: S | undefined
+  ) {
     current().push();
-    set(key, optionalFunctionValue(initialState));
+    set(key, optionalFunctionValue(initialState, prevState));
 
     return function useStateKey(): TStateHandlerReturn<S> {
       return [
@@ -83,7 +88,7 @@ export function createState(
   }
 }
 
-type TStateInput<S> = S | (() => S);
+type TStateInput<S> = S | ((prevState?: S) => S);
 type TSetStateInput<S> = S | ((prevState: S) => S);
 
 export type TState = ReturnType<typeof createState>;

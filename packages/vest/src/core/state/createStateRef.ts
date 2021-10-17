@@ -1,3 +1,4 @@
+import type { NestedArray } from 'nestedArray';
 import type { TState } from 'vast';
 
 import VestTest from 'VestTest';
@@ -11,8 +12,7 @@ export default function createStateRef(
     optionalFields: state.registerStateKey<
       Record<string, (() => boolean) | boolean>
     >(() => ({})),
-    prevTestObjects: state.registerStateKey<VestTest[]>(() => []),
-    suiteId: state.registerStateKey<string>(() => suiteId),
+    suiteId: state.registerStateKey<string>(suiteId),
     testCallbacks: state.registerStateKey<{
       fieldCallbacks: Record<string, Array<(res: TDraftResult) => void>>;
       doneCallbacks: Array<(res: TDraftResult) => void>;
@@ -20,7 +20,15 @@ export default function createStateRef(
       fieldCallbacks: {},
       doneCallbacks: [],
     })),
-    testObjects: state.registerStateKey<VestTest[]>(() => []),
+    testObjects: state.registerStateKey<{
+      prev: NestedArray<VestTest>;
+      current: NestedArray<VestTest>;
+    }>(prev => {
+      return {
+        prev: (prev ? prev.current : []) as NestedArray<VestTest>,
+        current: [] as NestedArray<VestTest>,
+      };
+    }),
   };
 }
 

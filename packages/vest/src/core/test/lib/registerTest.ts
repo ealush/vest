@@ -26,7 +26,7 @@ export default function registerTest(testObject: VestTest): void {
     } else {
       emit(Events.TEST_COMPLETED, testObject);
     }
-  } catch {
+  } catch (e) {
     throwError(
       `Your test function ${testObject.fieldName} returned ${JSON.stringify(
         result

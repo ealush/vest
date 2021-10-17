@@ -8,12 +8,12 @@ import { getErrorsByGroup, getWarningsByGroup } from 'getFailuresByGroup';
 import { hasErrors, hasWarnings } from 'hasFailures';
 import { hasErrorsByGroup, hasWarningsByGroup } from 'hasFailuresByGroup';
 import { isValid } from 'isValid';
-import { useTestObjects, useStateRef } from 'stateHooks';
+import { useStateRef, useTestsFlat } from 'stateHooks';
 
 const cache = createCache(20);
 
 export function produceDraft(): TDraftResult {
-  const [testObjects] = useTestObjects();
+  const testObjects = useTestsFlat();
 
   const ctxRef = { stateRef: useStateRef() };
 

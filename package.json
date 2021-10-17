@@ -4,7 +4,8 @@
     "test": "vx test",
     "release": "vx release",
     "lint": "eslint . --ignore-path .gitignore",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "dev": "vx dev"
   },
   "prettier": {
     "arrowParens": "avoid",

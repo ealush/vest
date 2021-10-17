@@ -1,11 +1,11 @@
 import { isEmpty } from 'isEmpty';
 import isFunction from 'isFunction';
+import * as nestedArray from 'nestedArray';
 
 import VestTest from 'VestTest';
-import { useTestObjects, useOptionalFields } from 'stateHooks';
+import { useOptionalFields, useSetTests } from 'stateHooks';
 
 export default function omitOptionalTests(): void {
-  const [, setTestObjects] = useTestObjects();
   const [optionalFields] = useOptionalFields();
 
   if (isEmpty(optionalFields)) {
@@ -14,8 +14,8 @@ export default function omitOptionalTests(): void {
 
   const shouldOmit: Record<string, boolean> = {};
 
-  setTestObjects(testObjects => {
-    return testObjects.map(testObject => {
+  useSetTests(tests =>
+    nestedArray.transform(tests, (testObject: VestTest) => {
       const fieldName = testObject.fieldName;
 
       if (shouldOmit.hasOwnProperty(fieldName)) {
@@ -30,8 +30,8 @@ export default function omitOptionalTests(): void {
       }
 
       return testObject;
-    });
-  });
+    })
+  );
 
   function omit(testObject: VestTest) {
     if (shouldOmit[testObject.fieldName]) {

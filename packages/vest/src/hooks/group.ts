@@ -2,7 +2,9 @@ import isFunction from 'isFunction';
 import { isStringValue } from 'isStringValue';
 import throwError from 'throwError';
 
+import { IsolateTypes } from 'IsolateTypes';
 import context from 'ctx';
+import { isolate } from 'isolate';
 
 /**
  * Runs a group callback.
@@ -17,7 +19,9 @@ export default function group(groupName: string, tests: () => void): void {
   }
 
   // Running with the context applied
-  context.run({ groupName }, tests);
+  isolate({ type: IsolateTypes.GROUP }, () => {
+    context.run({ groupName }, tests);
+  });
 }
 
 function throwGroupError(error: string) {

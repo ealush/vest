@@ -3,25 +3,23 @@ import _ from 'lodash';
 
 import itWithContext from '../../../../testUtils/itWithContext';
 import runCreateRef from '../../../../testUtils/runCreateRef';
+import { addTestObject } from '../../../../testUtils/testObjects';
 
 import VestTest from 'VestTest';
 import context from 'ctx';
 import hasRemainingTests from 'hasRemainingTests';
-import { useTestObjects } from 'stateHooks';
 
 let stateRef;
 const getCtx = () => ({ stateRef });
 
 const addPending = (fieldName?: string) => {
   context.run({ stateRef }, () => {
-    const [, setTestObjects] = useTestObjects();
-
     const added = Array.from(
       { length: _.random(1, 3) },
       () => new VestTest(fieldName ?? faker.random.word(), jest.fn())
     );
 
-    setTestObjects(testObjects => testObjects.concat(added));
+    addTestObject(added);
     added.forEach(testObject => testObject.setPending());
   });
 };

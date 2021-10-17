@@ -62,8 +62,8 @@ describe("Test Vest's `test.each` function", () => {
 
         const res = vest.create(() => {
           vest.only('test2');
-          test.each([[5, 4, 10]])('test1', statementFn1, testFn1);
-          test.each([[5, 4, 10]])('test2', faker.lorem.sentence(), testFn2);
+          test.each([[1, 2, 3]])('test1', statementFn1, testFn1);
+          test.each([[4, 5, 6]])('test2', faker.lorem.sentence(), testFn2);
         })();
         expect(testFn1).not.toHaveBeenCalled(); // skippped field
         expect(res.tests.test1.testCount).toBe(0); // skippped field
@@ -176,6 +176,175 @@ describe("Test Vest's `test.each` function", () => {
             done();
           });
         });
+      });
+    });
+  });
+
+  describe('Error handling', () => {
+    describe('When field count change', () => {
+      let counter;
+      let persist_1 = jest.fn(() => false),
+        persist_2 = jest.fn(() => false),
+        persist_3 = jest.fn(() => false);
+
+      beforeEach(() => {
+        counter = 1;
+        persist_1 = jest.fn(() => false);
+        persist_2 = jest.fn(() => false);
+        persist_3 = jest.fn(() => false);
+      });
+
+      it('Should contain the change within the "each" block', () => {
+        const suite = vest.create(() => {
+          test.each(Array.from({ length: 2 * counter }, (_, v) => v * counter))(
+            c => `f${c}`,
+            faker.lorem.sentence(),
+            () => false
+          );
+
+          vest.skipWhen(counter == 2, () => {
+            test('persist_1', persist_1);
+            test('persist_2', persist_2);
+            test('persist_3', persist_3);
+          });
+
+          counter++;
+        });
+
+        expect(persist_1).toHaveBeenCalledTimes(0);
+        expect(persist_2).toHaveBeenCalledTimes(0);
+        expect(persist_3).toHaveBeenCalledTimes(0);
+        const resA = suite();
+
+        // Called first time
+        expect(persist_1).toHaveBeenCalledTimes(1);
+        expect(persist_2).toHaveBeenCalledTimes(1);
+        expect(persist_3).toHaveBeenCalledTimes(1);
+
+        const resB = suite();
+
+        // Should not call again!
+        expect(persist_1).toHaveBeenCalledTimes(1);
+        expect(persist_2).toHaveBeenCalledTimes(1);
+        expect(persist_3).toHaveBeenCalledTimes(1);
+        expect(resA.tests.persist_1).toEqual(resB.tests.persist_1);
+        expect(resA.tests.persist_2).toEqual(resB.tests.persist_2);
+        expect(resA.tests.persist_3).toEqual(resB.tests.persist_3);
+      });
+
+      it('Should remove outdated assertions', () => {
+        const suite = vest.create(() => {
+          test.each(
+            Array.from({ length: 2 * counter }, (_, i) => (i + 1) * counter)
+          )(
+            c => `f${c}`,
+            () => false
+          );
+          counter++;
+        });
+
+        const resA = suite();
+        expect(resA.tests.f1).toBeDefined();
+        expect(resA.tests.f2).toBeDefined();
+        expect(resA.tests.f4).toBeUndefined();
+        expect(resA.tests.f6).toBeUndefined();
+        expect(resA.tests.f8).toBeUndefined();
+
+        const resB = suite();
+        expect(resB.tests.f1).toBeUndefined();
+        expect(resB.tests.f2).toBeDefined();
+        expect(resB.tests.f4).toBeDefined();
+        expect(resB.tests.f6).toBeDefined();
+        expect(resB.tests.f8).toBeDefined();
+        expect(resA).not.toEqual(resB);
+        expect(resA.tests).toMatchInlineSnapshot(`
+          Object {
+            "f1": Object {
+              "errorCount": 1,
+              "testCount": 1,
+              "warnCount": 0,
+            },
+            "f2": Object {
+              "errorCount": 1,
+              "testCount": 1,
+              "warnCount": 0,
+            },
+          }
+        `);
+        expect(resB.tests).toMatchInlineSnapshot(`
+          Object {
+            "f2": Object {
+              "errorCount": 1,
+              "testCount": 1,
+              "warnCount": 0,
+            },
+            "f4": Object {
+              "errorCount": 1,
+              "testCount": 1,
+              "warnCount": 0,
+            },
+            "f6": Object {
+              "errorCount": 1,
+              "testCount": 1,
+              "warnCount": 0,
+            },
+            "f8": Object {
+              "errorCount": 1,
+              "testCount": 1,
+              "warnCount": 0,
+            },
+          }
+        `);
+      });
+
+      it('Should not leak between each blocks', () => {
+        const suite = vest.create(() => {
+          test.each([1, 2, 3].concat(counter === 2 ? [4, 5, 6] : []))(
+            c => `f${c}`,
+            () => false
+          );
+
+          vest.skipWhen(counter === 2, () => {
+            test.each([7, 8, 9])(c => `f${c}`, persist_1);
+          });
+          counter++;
+        });
+
+        const resA = suite();
+        expect(suite.get().tests.f1).toBeDefined();
+        expect(suite.get().tests.f2).toBeDefined();
+        expect(suite.get().tests.f3).toBeDefined();
+
+        // These three only exist in the second run
+        expect(suite.get().tests.f4).toBeUndefined();
+        expect(suite.get().tests.f5).toBeUndefined();
+        expect(suite.get().tests.f6).toBeUndefined();
+
+        expect(suite.get().tests.f7).toBeDefined();
+        expect(suite.get().tests.f8).toBeDefined();
+        expect(suite.get().tests.f9).toBeDefined();
+
+        // it is the same callback for all three tests in the second  block
+        expect(persist_1).toHaveBeenCalledTimes(3);
+
+        const resB = suite();
+        expect(suite.get().tests.f1).toBeDefined();
+        expect(suite.get().tests.f2).toBeDefined();
+        expect(suite.get().tests.f3).toBeDefined();
+        expect(suite.get().tests.f4).toBeDefined();
+        expect(suite.get().tests.f5).toBeDefined();
+        expect(suite.get().tests.f6).toBeDefined();
+        expect(suite.get().tests.f7).toBeDefined();
+        expect(suite.get().tests.f8).toBeDefined();
+        expect(suite.get().tests.f9).toBeDefined();
+
+        // This proves they weren't called again and still got preserved
+        expect(persist_1).toHaveBeenCalledTimes(3);
+
+        // The result was unchanged even though the field did not run twice.
+        expect(resA.tests.f7).toEqual(resB.tests.f7);
+        expect(resA.tests.f8).toEqual(resB.tests.f8);
+        expect(resA.tests.f9).toEqual(resB.tests.f9);
       });
     });
   });

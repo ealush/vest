@@ -1,4 +1,7 @@
+import asArray from 'asArray';
 import createCache from 'cache';
+import type { NestedArray } from 'nestedArray';
+import * as nestedArray from 'nestedArray';
 import type { TStateHandlerReturn } from 'vast';
 
 import VestTest from 'VestTest';
@@ -28,12 +31,11 @@ export function useOptionalFields(): TStateHandlerReturn<
   return useStateRef().optionalFields();
 }
 
-export function useTestObjects(): TStateHandlerReturn<VestTest[]> {
+export function useTestObjects(): TStateHandlerReturn<{
+  prev: NestedArray<VestTest>;
+  current: NestedArray<VestTest>;
+}> {
   return useStateRef().testObjects();
-}
-
-export function usePrevTestObjects(): TStateHandlerReturn<VestTest[]> {
-  return useStateRef().prevTestObjects();
 }
 
 // STATE ACTIONS
@@ -41,35 +43,54 @@ export function usePrevTestObjects(): TStateHandlerReturn<VestTest[]> {
 export function useRefreshTestObjects(): void {
   const [, setTestObjects] = useTestObjects();
 
-  setTestObjects(testObjects => testObjects.slice(0));
+  setTestObjects(({ current, prev }) => ({
+    prev,
+    current: asArray(current),
+  }));
 }
 
-// DERIVED VALUES
+export function useSetTests(
+  handler: (current: NestedArray<VestTest>) => NestedArray<VestTest>
+): void {
+  const [, testObjects] = useTestObjects();
 
-const omittedFieldsCache = createCache();
-export function useOmittedFields(): Record<string, true> {
-  const [testObjects] = useTestObjects();
-
-  return omittedFieldsCache([testObjects], () =>
-    testObjects.reduce((omittedFields, testObject) => {
-      if (omittedFields[testObject.fieldName]) {
-        return omittedFields;
-      }
-
-      if (testObject.isOmitted()) {
-        omittedFields[testObject.fieldName] = true;
-      }
-
-      return omittedFields;
-    }, {} as Record<string, true>)
-  );
+  testObjects(({ current, prev }) => ({
+    prev,
+    current: asArray(handler(current)),
+  }));
 }
 
-const incompleteCache = createCache();
+// Derived state
+
 export function useAllIncomplete(): VestTest[] {
-  const [testObjects] = useTestObjects();
+  const [{ current }] = useTestObjects();
 
-  return incompleteCache([testObjects], () =>
-    testObjects.filter(testObject => testObject.isPending())
+  return nestedArray.flatten(
+    nestedArray.transform(current, testObject =>
+      testObject.isPending() ? testObject : null
+    )
   );
+}
+
+export function useOmittedFields(): Record<string, true> {
+  const testObjects = useTestsFlat();
+
+  return testObjects.reduce((omittedFields, testObject) => {
+    if (omittedFields[testObject.fieldName]) {
+      return omittedFields;
+    }
+
+    if (testObject.isOmitted()) {
+      omittedFields[testObject.fieldName] = true;
+    }
+
+    return omittedFields;
+  }, {} as Record<string, true>);
+}
+
+const flatCache = createCache();
+export function useTestsFlat(): VestTest[] {
+  const [{ current }] = useTestObjects();
+
+  return flatCache([current], () => nestedArray.flatten(current));
 }

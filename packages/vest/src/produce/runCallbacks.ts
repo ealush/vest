@@ -1,4 +1,5 @@
 import callEach from 'callEach';
+import { isArray } from 'isArrayValue';
 
 import hasRemainingTests from 'hasRemainingTests';
 import { useTestCallbacks } from 'stateHooks';
@@ -10,10 +11,7 @@ export function runFieldCallbacks(fieldName?: string): void {
   const [{ fieldCallbacks }] = useTestCallbacks();
 
   if (fieldName) {
-    if (
-      !hasRemainingTests(fieldName) &&
-      Array.isArray(fieldCallbacks[fieldName])
-    ) {
+    if (!hasRemainingTests(fieldName) && isArray(fieldCallbacks[fieldName])) {
       callEach(fieldCallbacks[fieldName]);
     }
   }

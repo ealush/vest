@@ -5,21 +5,21 @@ import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';
 import registerTest from 'registerTest';
 import runAsyncTest from 'runAsyncTest';
-import { moveTestCursorForward } from 'testCursor';
+import * as testCursor from 'testCursor';
 import { useTestAtCursor, useSetTestAtCursor } from 'useTestAtCursor';
 
 export default function registerPrevRunTest(testObject: VestTest): VestTest {
   const prevRunTest = useTestAtCursor(testObject);
+
   if (isExcluded(testObject)) {
     testObject.skip();
-    moveTestCursorForward();
+    testCursor.moveForward();
     return prevRunTest;
   }
-
   cancelOverriddenPendingTest(prevRunTest, testObject);
 
   useSetTestAtCursor(testObject);
-  moveTestCursorForward();
+  testCursor.moveForward();
 
   registerTestObjectByTier(testObject);
 

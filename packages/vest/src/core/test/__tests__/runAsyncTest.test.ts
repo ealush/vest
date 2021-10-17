@@ -1,11 +1,12 @@
 import _ from 'lodash';
 
 import runCreateRef from '../../../../testUtils/runCreateRef';
+import { addTestObject } from '../../../../testUtils/testObjects';
 
 import VestTest from 'VestTest';
 import context from 'ctx';
 import runAsyncTest from 'runAsyncTest';
-import { useTestCallbacks, useTestObjects } from 'stateHooks';
+import { useTestCallbacks } from 'stateHooks';
 import { initBus } from 'vestBus';
 
 const message = 'some message string';
@@ -110,11 +111,10 @@ describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
     describe('When there are more tests left', () => {
       beforeEach(() => {
         context.run({ stateRef }, () => {
-          const [, setTestObjects] = useTestObjects();
           const pendingTest = new VestTest('pending_field', jest.fn(), {
             message,
           });
-          setTestObjects(testObjects => testObjects.concat(pendingTest));
+          addTestObject(pendingTest);
           pendingTest.setPending();
         });
       });

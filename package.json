@@ -4,8 +4,7 @@
     "test": "vx test",
     "release": "vx release",
     "lint": "eslint . --ignore-path .gitignore",
-    "prepare": "husky install",
-    "preinstall": "cd ./vx && yarn"
+    "prepare": "husky install"
   },
   "prettier": {
     "arrowParens": "avoid",
@@ -15,7 +14,8 @@
     "main": "vest"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "./vx/"
   ],
   "devDependencies": {
     "@types/jest": "^26.0.23",

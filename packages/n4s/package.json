@@ -12,7 +12,17 @@
   "module": "./dist/es/n4s.production.js",
   "exports": {
     ".": {
-      "development": "./dist/cjs/n4s.development.js",
+      "development": {
+        "types": "./types/n4s.d.ts",
+        "browser": "./dist/es/n4s.development.js",
+        "umd": "./dist/umd/n4s.development.js",
+        "import": "./dist/es/n4s.development.js",
+        "require": "./dist/cjs/n4s.development.js",
+        "node": "./dist/cjs/n4s.development.js",
+        "module": "./dist/es/n4s.development.js",
+        "default": "./dist/cjs/n4s.development.js"
+      },
+      "types": "./types/n4s.d.ts",
       "browser": "./dist/es/n4s.production.js",
       "umd": "./dist/umd/n4s.production.js",
       "import": "./dist/es/n4s.production.js",

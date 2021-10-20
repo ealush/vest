@@ -13,7 +13,17 @@
   "module": "./dist/es/context.production.js",
   "exports": {
     ".": {
-      "development": "./dist/cjs/context.development.js",
+      "development": {
+        "types": "./types/context.d.ts",
+        "browser": "./dist/es/context.development.js",
+        "umd": "./dist/umd/context.development.js",
+        "import": "./dist/es/context.development.js",
+        "require": "./dist/cjs/context.development.js",
+        "node": "./dist/cjs/context.development.js",
+        "module": "./dist/es/context.development.js",
+        "default": "./dist/cjs/context.development.js"
+      },
+      "types": "./types/context.d.ts",
       "browser": "./dist/es/context.production.js",
       "umd": "./dist/umd/context.production.js",
       "import": "./dist/es/context.production.js",

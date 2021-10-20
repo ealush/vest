@@ -20,6 +20,16 @@
   },
   "exports": {
     ".": {
+      "development": {
+        "types": "./types/vast.d.ts",
+        "browser": "./dist/es/vast.development.js",
+        "umd": "./dist/umd/vast.development.js",
+        "import": "./dist/es/vast.development.js",
+        "require": "./dist/cjs/vast.development.js",
+        "node": "./dist/cjs/vast.development.js",
+        "module": "./dist/es/vast.development.js",
+        "default": "./dist/cjs/vast.development.js"
+      },
       "types": "./types/vast.d.ts",
       "browser": "./dist/es/vast.production.js",
       "umd": "./dist/umd/vast.production.js",

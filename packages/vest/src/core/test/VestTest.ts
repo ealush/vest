@@ -81,6 +81,12 @@ export default class VestTest {
   }
 
   skip(): void {
+    if (this.isPending()) {
+      // Without this condition, the test will be marked as skipped even if it is pending.
+      // This means that it will not be counted in "allIncomplete" and its done callbacks
+      // will not be called, or will be called prematurely.
+      return;
+    }
     this.setStatus(STATUS_SKIPPED);
   }
 

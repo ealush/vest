@@ -259,4 +259,28 @@ describe('done', () => {
       });
     });
   });
+
+  describe('When a different field is run while a field is pending', () => {
+    it('Should wait running done callbacks until all tests complete', () => {
+      const suite = vest.create(only => {
+        vest.only(only);
+
+        vest.test('async_1', async () => {
+          await wait(1000);
+          throw new Error();
+        });
+
+        vest.test('sync_2', () => false);
+      });
+
+      suite('async_1');
+
+      return new Promise<void>(done => {
+        suite('sync_2').done(res => {
+          expect(res.hasErrors('async_1')).toBe(true);
+          done();
+        });
+      });
+    });
+  });
 });

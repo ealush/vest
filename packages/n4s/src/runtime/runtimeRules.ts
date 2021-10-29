@@ -23,12 +23,20 @@ function getRule(ruleName: string): TRuleBase {
   return baseRules[ruleName as KBaseRules];
 }
 
+/* eslint-disable @typescript-eslint/no-namespace, @typescript-eslint/no-empty-interface */
+
+declare global {
+  namespace n4s {
+    interface EnforceCustomMatchers<R> {}
+  }
+}
+
 export { baseRules, getRule };
 
-export type TRules<E = Record<string, unknown>> = Record<
-  string,
-  (...args: TArgs) => TRules & E
+export type TRules<E = Record<string, unknown>> = n4s.EnforceCustomMatchers<
+  TRules & E
 > &
+  Record<string, (...args: TArgs) => TRules & E> &
   {
     [P in KCompounds]: (
       ...args: DropFirst<Parameters<TCompounds[P]>> | TArgs

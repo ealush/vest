@@ -27,9 +27,7 @@ export default function create<T extends (...args: any[]) => void>(
   remove: (fieldName: string) => void;
 } {
   if (!isFunction(suiteCallback)) {
-    throwError(
-      'Suite initialization error. Expected `tests` to be a function.'
-    );
+    throwError('vest.create: Expected callback to be a function.');
   }
 
   const bus = initBus();
@@ -53,9 +51,12 @@ export default function create<T extends (...args: any[]) => void>(
       isolate({ type: IsolateTypes.SUITE }, () => {
         suiteCallback(...args);
       });
+
+      // Remove tests that are optional and should be omitted
       omitOptionalTests();
-      const res = produceFullResult();
-      return res;
+
+      // Return the result
+      return produceFullResult();
     }),
     {
       get: context.bind({ stateRef }, produceDraft),

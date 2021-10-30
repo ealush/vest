@@ -19,10 +19,7 @@ describe('Test createSuite module', () => {
       'Throws an error when `tests` callback is not a function',
       value => {
         expect(() => create(value)).toThrow(
-          'Suite initialization error. Expected `tests` to be a function.'
-        );
-        expect(() => create(value)).toThrow(
-          'Suite initialization error. Expected `tests` to be a function.'
+          'vest.create: Expected callback to be a function.'
         );
       }
     );

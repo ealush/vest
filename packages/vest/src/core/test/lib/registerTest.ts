@@ -28,9 +28,7 @@ export default function registerTest(testObject: VestTest): void {
     }
   } catch (e) {
     throwError(
-      `Your test function ${testObject.fieldName} returned ${JSON.stringify(
-        result
-      )}. Only "false" or a Promise are supported. Return values may cause unexpected behavior.`
+      `Your test function ${testObject.fieldName} returned a value. Only "false" or Promise returns are supported.`
     );
   }
 }

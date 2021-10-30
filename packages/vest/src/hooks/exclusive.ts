@@ -12,19 +12,21 @@ type TExclusionItem = string | string[] | undefined;
  * Adds a field or multiple fields to inclusion group.
  */
 export function only(item: TExclusionItem): void {
-  return addTo('only', 'tests', item);
+  return addTo(ExclusionGroup.ONLY, 'tests', item);
 }
 
-only.group = (item: TExclusionItem) => addTo('only', 'groups', item);
+only.group = (item: TExclusionItem) =>
+  addTo(ExclusionGroup.ONLY, 'groups', item);
 
 /**
  * Adds a field or multiple fields to exclusion group.
  */
 export function skip(item: TExclusionItem): void {
-  return addTo('skip', 'tests', item);
+  return addTo(ExclusionGroup.SKIP, 'tests', item);
 }
 
-skip.group = (item: TExclusionItem) => addTo('skip', 'groups', item);
+skip.group = (item: TExclusionItem) =>
+  addTo(ExclusionGroup.SKIP, 'groups', item);
 
 //Checks whether a certain test profile excluded by any of the exclusion groups.
 
@@ -101,7 +103,7 @@ export function isGroupExcluded(groupName: string): boolean {
  * Adds fields to a specified exclusion group.
  */
 function addTo(
-  exclusionGroup: 'only' | 'skip',
+  exclusionGroup: ExclusionGroup,
   itemType: 'tests' | 'groups',
   item: TExclusionItem
 ) {
@@ -116,7 +118,8 @@ function addTo(
       return;
     }
 
-    context.exclusion[itemType][itemName] = exclusionGroup === 'only';
+    context.exclusion[itemType][itemName] =
+      exclusionGroup === ExclusionGroup.ONLY;
   });
 }
 
@@ -130,4 +133,9 @@ function hasIncludedTests(keyTests: Record<string, boolean>): boolean {
     }
   }
   return false;
+}
+
+const enum ExclusionGroup {
+  ONLY,
+  SKIP,
 }

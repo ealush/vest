@@ -8,13 +8,13 @@ import type { TDraftResult } from 'produceDraft';
 /**
  * Creates a function that returns class names that match the validation result
  */
-export default function classNames(
+export default function classnames(
   res: IVestResult | TDraftResult,
   classes: TSupportedClasses = {}
 ): (fieldName: string) => string {
   if (!res || !isFunction(res.hasErrors)) {
     throwError(
-      "[vest/classNames]: Expected first argument to be Vest's result object."
+      "classnames: Expected first argument to be Vest's result object."
     );
   }
 

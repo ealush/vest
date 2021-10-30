@@ -8,7 +8,7 @@ const promisify =
   (validatorFn: (...args: any[]) => IVestResult) =>
   (...args: any[]): Promise<TDraftResult> => {
     if (!isFunction(validatorFn)) {
-      throwError('[vest/promisify]: Expected validatorFn to be a function.');
+      throwError('promisify: Expected validatorFn to be a function.');
     }
 
     return new Promise(resolve => validatorFn(...args).done(resolve));

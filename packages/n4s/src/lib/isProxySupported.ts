@@ -1,6 +1,8 @@
+import isFunction from 'isFunction';
+
 export default function isProxySupported(): boolean {
   try {
-    return typeof Proxy === 'function';
+    return isFunction(Proxy);
   } catch {
     return false;
   }

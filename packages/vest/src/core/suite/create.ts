@@ -8,13 +8,9 @@ import { IsolateTypes } from 'IsolateTypes';
 import createStateRef from 'createStateRef';
 import context from 'ctx';
 import { isolate } from 'isolate';
-import matchingFieldName from 'matchingFieldName';
-import omitOptionalTests from 'omitOptionalTests';
 import { IVestResult, produceFullResult } from 'produce';
 import { produceDraft, TDraftResult } from 'produceDraft';
-import removeTestFromState from 'removeTestFromState';
-import { useTestsFlat } from 'stateHooks';
-import { initBus } from 'vestBus';
+import { initBus, Events } from 'vestBus';
 
 // eslint-disable-next-line max-lines-per-function
 export default function create<T extends (...args: any[]) => void>(
@@ -30,9 +26,13 @@ export default function create<T extends (...args: any[]) => void>(
     throwError('vest.create: Expected callback to be a function.');
   }
 
+  // Event bus initialization
   const bus = initBus();
+
+  // State initialization
   const state = createState();
 
+  // State reference - this holds the actual state values
   const stateRef = createStateRef(state, { suiteId: genId() });
 
   interface IVestSuite {
@@ -43,35 +43,34 @@ export default function create<T extends (...args: any[]) => void>(
     remove: (fieldName: string) => void;
   }
 
+  // Create base context reference. All hooks will derive their data from this
+  const ctxRef = { stateRef, bus };
+
   const suite: IVestSuite = assign(
-    context.bind({ stateRef, bus }, (...args: unknown[]) => {
+    // Bind the suite body to the context
+    context.bind(ctxRef, (...args: unknown[]) => {
+      // Reset the state. Migrates current test objects to `prev` array.
       state.reset();
 
-      // Run the consumer's callback
+      // Create a top level isolate
       isolate({ type: IsolateTypes.SUITE }, () => {
+        // Run the consumer's callback
         suiteCallback(...args);
       });
 
-      // Remove tests that are optional and should be omitted
-      omitOptionalTests();
+      // Report the suite is done registering tests
+      // Async tests may still be running
+      bus.emit(Events.SUITE_COMPLETED);
 
       // Return the result
       return produceFullResult();
     }),
     {
-      get: context.bind({ stateRef }, produceDraft),
-      remove: context.bind({ stateRef }, name => {
-        const testObjects = useTestsFlat();
-
-        // We're mutating the array in `cancel`, so we have to first copy it.
-        testObjects.forEach(testObject => {
-          if (matchingFieldName(testObject, name)) {
-            testObject.cancel();
-            removeTestFromState(testObject);
-          }
-        });
-      }),
+      get: context.bind(ctxRef, produceDraft),
       reset: state.reset,
+      remove: context.bind(ctxRef, (fieldName: string) => {
+        bus.emit(Events.REMOVE_FIELD, fieldName);
+      }),
     }
   );
 

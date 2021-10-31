@@ -9,7 +9,7 @@ import { useBus, Events } from 'vestBus';
  * Registers test, if async - adds to pending array
  */
 export default function registerTest(testObject: VestTest): void {
-  const { emit } = useBus();
+  const bus = useBus();
 
   // Run test callback.
   // If a promise is returned, set as async and
@@ -24,7 +24,7 @@ export default function registerTest(testObject: VestTest): void {
       testObject.setPending();
       runAsyncTest(testObject);
     } else {
-      emit(Events.TEST_COMPLETED, testObject);
+      bus.emit(Events.TEST_COMPLETED, testObject);
     }
   } catch (e) {
     throwError(

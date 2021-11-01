@@ -24,9 +24,11 @@ const isWatchModeOn = JSON.parse(process.env.ROLLUP_WATCH ?? false);
 module.exports = cleanupConfig(
   concatTruthy(!isWatchModeOn && opts.env.PRODUCTION, opts.env.DEVELOPMENT).map(
     env => {
+      const packageName = usePackage();
+
       const customConfigPath = vxPath.packageConfigPath(
-        usePackage(),
-        'vx.build.js'
+        packageName,
+        opts.fileNames.VX_BUILD
       );
 
       let customConfig;
@@ -36,11 +38,12 @@ module.exports = cleanupConfig(
       }
 
       return [].concat(
-        genBaseConfig({ env }),
+        genBaseConfig({ env, packageName }),
         genExportsConfig(usePackage(), env),
         customConfig?.({
           getInputFile,
-          getPlugins: (options = {}) => getPlugins({ env, ...options }),
+          getPlugins: (options = {}) =>
+            getPlugins({ env, packageName, ...options }),
           genOutput: (options = {}) => genOutput({ env, ...options }),
         }) ?? []
       );
@@ -55,12 +58,12 @@ function cleanupConfig(configs) {
     .map(({ input, output, plugins }) => ({ input, output, plugins }));
 }
 
-function genBaseConfig({ env, moduleName = usePackage() }) {
+function genBaseConfig({ env, packageName, moduleName = usePackage() }) {
   return {
     env,
     input: getInputFile(moduleName),
     output: genOutput({ env, moduleName }),
-    plugins: getPlugins({ env, moduleName }),
+    plugins: getPlugins({ env, moduleName, packageName }),
   };
 }
 
@@ -107,7 +110,8 @@ function getInputFile(moduleName = usePackage()) {
 
 function getPlugins({
   env = opts.env.PRODUCTION,
-  moduleName = usePackage(),
+  packageName = usePackage(),
+  moduleName = packageName,
 } = {}) {
   const plugins = [
     replace({
@@ -119,6 +123,27 @@ function getPlugins({
       },
     }),
     ts({
+      tsconfig: resolvedConfig => {
+        if (packageName === moduleName) {
+          return resolvedConfig;
+        }
+
+        // Make the package itself an external in the exported modules
+        // so that it can be imported in the generated code.
+
+        const modified = {
+          ...resolvedConfig,
+          paths: {
+            ...resolvedConfig.paths,
+          },
+        };
+
+        // This makes the package itself an external module
+        // since there is no relative path to it
+        delete modified.paths[packageName];
+
+        return modified;
+      },
       browserList: ['IE10'],
       hook: {
         outputPath: (path, kind) => {

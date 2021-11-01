@@ -1,7 +1,7 @@
 declare function createState(
   onStateChange?: (...args: unknown[]) => unknown
 ): TCreateStateReturn;
-type TStateInput<S> = S | (() => S);
+type TStateInput<S> = S | ((prevState?: S) => S);
 type TSetStateInput<S> = S | ((prevState: S) => S);
 type TState = ReturnType<typeof createState>;
 type TStateHandlerReturn<S> = [S, (nextState: TSetStateInput<S>) => void];

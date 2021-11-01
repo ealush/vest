@@ -18,6 +18,7 @@ module.exports = {
     JEST_SETUP: 'jest.setup.ts',
     JEST_SETUP_AFTER_ENV: 'jest.setupAfterEnv.ts',
     MAIN_EXPORT: 'index.js',
+    VX_BUILD: 'vx.build.js',
   },
   format: {
     UMD: 'umd',

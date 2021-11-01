@@ -1,0 +1,7 @@
+{
+  "main": "../dist/cjs/enforce-compose.js",
+  "module": "../dist/es/enforce-compose.production.js",
+  "name": "enforce-compose",
+  "types": "../types/enforce-compose.d.ts",
+  "private": true
+}

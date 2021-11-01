@@ -1,4 +1,5 @@
 packages/*/types/
+packages/n4s/compose/
 packages/vest/classnames/
 packages/vest/promisify/
 packages/vest/parser/

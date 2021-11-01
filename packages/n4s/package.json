@@ -11,6 +11,36 @@
   },
   "module": "./dist/es/n4s.production.js",
   "exports": {
+    "./compose": {
+      "production": {
+        "types": "./types/compose.d.ts",
+        "browser": "./dist/es/compose.production.js",
+        "umd": "./dist/umd/compose.production.js",
+        "import": "./dist/es/compose.production.js",
+        "require": "./dist/cjs/compose.production.js",
+        "node": "./dist/cjs/compose.production.js",
+        "module": "./dist/es/compose.production.js",
+        "default": "./dist/cjs/compose.production.js"
+      },
+      "development": {
+        "types": "./types/compose.d.ts",
+        "browser": "./dist/es/compose.development.js",
+        "umd": "./dist/umd/compose.development.js",
+        "import": "./dist/es/compose.development.js",
+        "require": "./dist/cjs/compose.development.js",
+        "node": "./dist/cjs/compose.development.js",
+        "module": "./dist/es/compose.development.js",
+        "default": "./dist/cjs/compose.development.js"
+      },
+      "types": "./types/compose.d.ts",
+      "browser": "./dist/es/compose.production.js",
+      "umd": "./dist/umd/compose.production.js",
+      "import": "./dist/es/compose.production.js",
+      "require": "./dist/cjs/compose.js",
+      "node": "./dist/cjs/compose.js",
+      "module": "./dist/es/compose.production.js",
+      "default": "./dist/cjs/compose.js"
+    },
     ".": {
       "development": {
         "types": "./types/n4s.d.ts",

@@ -51,6 +51,36 @@
       "module": "./dist/es/classnames.production.js",
       "default": "./dist/cjs/classnames.js"
     },
+    "./enforce-compose": {
+      "production": {
+        "types": "./types/enforce-compose.d.ts",
+        "browser": "./dist/es/enforce-compose.production.js",
+        "umd": "./dist/umd/enforce-compose.production.js",
+        "import": "./dist/es/enforce-compose.production.js",
+        "require": "./dist/cjs/enforce-compose.production.js",
+        "node": "./dist/cjs/enforce-compose.production.js",
+        "module": "./dist/es/enforce-compose.production.js",
+        "default": "./dist/cjs/enforce-compose.production.js"
+      },
+      "development": {
+        "types": "./types/enforce-compose.d.ts",
+        "browser": "./dist/es/enforce-compose.development.js",
+        "umd": "./dist/umd/enforce-compose.development.js",
+        "import": "./dist/es/enforce-compose.development.js",
+        "require": "./dist/cjs/enforce-compose.development.js",
+        "node": "./dist/cjs/enforce-compose.development.js",
+        "module": "./dist/es/enforce-compose.development.js",
+        "default": "./dist/cjs/enforce-compose.development.js"
+      },
+      "types": "./types/enforce-compose.d.ts",
+      "browser": "./dist/es/enforce-compose.production.js",
+      "umd": "./dist/umd/enforce-compose.production.js",
+      "import": "./dist/es/enforce-compose.production.js",
+      "require": "./dist/cjs/enforce-compose.js",
+      "node": "./dist/cjs/enforce-compose.js",
+      "module": "./dist/es/enforce-compose.production.js",
+      "default": "./dist/cjs/enforce-compose.js"
+    },
     "./parser": {
       "production": {
         "types": "./types/parser.d.ts",

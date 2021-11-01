@@ -34,13 +34,12 @@ export default function bindTestMemo(test: TTestBase): {
       | [message: string, test: TTestFn, deps: unknown[]]
       | [test: TTestFn, deps: unknown[]]
   ): VestTest {
-    const [suiteId] = useSuiteId();
     const cursorAt = testCursor.useCursorAt();
 
     const [deps, testFn, msg] = args.reverse() as [any[], TTestFn, string];
 
     // Implicit dependency for more specificity
-    const dependencies = [suiteId, fieldName, cursorAt].concat(deps);
+    const dependencies = [useSuiteId(), fieldName, cursorAt].concat(deps);
 
     const cached = cache.get(dependencies);
 

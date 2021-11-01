@@ -23,6 +23,14 @@ describe('Test createSuite module', () => {
         );
       }
     );
+
+    describe('When suite name is provided', () => {
+      it('Should add suite name to suite result', () => {
+        const res = create('form_name', () => {})();
+
+        expect(res.suiteName).toBe('form_name');
+      });
+    });
   });
 
   describe('Return value', () => {

@@ -12,16 +12,29 @@ import { IVestResult, produceFullResult } from 'produce';
 import { produceDraft, TDraftResult } from 'produceDraft';
 import { initBus, Events } from 'vestBus';
 
-// eslint-disable-next-line max-lines-per-function
-export default function create<T extends (...args: any[]) => void>(
-  suiteCallback: T
-): {
-  (...args: Parameters<T>): IVestResult;
-
+type CreateProperties = {
   get: () => TDraftResult;
   reset: () => void;
   remove: (fieldName: string) => void;
-} {
+};
+
+type CB = (...args: any[]) => void;
+
+type SuiteReturnType<T extends CB> = {
+  (...args: Parameters<T>): IVestResult;
+} & CreateProperties;
+
+function create<T extends CB>(
+  suiteName: string,
+  suiteCallback: T
+): SuiteReturnType<T>;
+function create<T extends CB>(suiteCallback: T): SuiteReturnType<T>;
+// eslint-disable-next-line max-lines-per-function
+function create<T extends CB>(
+  ...args: [suiteName: string, suiteCallback: T] | [suiteCallback: T]
+): SuiteReturnType<T> {
+  const [suiteCallback, suiteName] = args.reverse() as [T, string];
+
   if (!isFunction(suiteCallback)) {
     throwError('vest.create: Expected callback to be a function.');
   }
@@ -33,7 +46,7 @@ export default function create<T extends (...args: any[]) => void>(
   const state = createState();
 
   // State reference - this holds the actual state values
-  const stateRef = createStateRef(state, { suiteId: genId() });
+  const stateRef = createStateRef(state, { suiteId: genId(), suiteName });
 
   interface IVestSuite {
     (...args: Parameters<T>): IVestResult;
@@ -76,3 +89,5 @@ export default function create<T extends (...args: any[]) => void>(
 
   return suite;
 }
+
+export default create;

@@ -27,6 +27,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "suiteName": undefined,
   "testCount": 3,
   "tests": Object {
     "field_1": Object {
@@ -83,6 +84,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "suiteName": undefined,
   "testCount": 3,
   "tests": Object {
     "field_1": Object {
@@ -148,6 +150,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "suiteName": undefined,
   "testCount": 7,
   "tests": Object {
     "field_1": Object {

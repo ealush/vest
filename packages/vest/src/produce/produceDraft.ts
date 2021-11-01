@@ -8,7 +8,7 @@ import { getErrorsByGroup, getWarningsByGroup } from 'getFailuresByGroup';
 import { hasErrors, hasWarnings } from 'hasFailures';
 import { hasErrorsByGroup, hasWarningsByGroup } from 'hasFailuresByGroup';
 import { isValid } from 'isValid';
-import { useStateRef, useTestsFlat } from 'stateHooks';
+import { useStateRef, useTestsFlat, useSuiteName } from 'stateHooks';
 
 const cache = createCache(20);
 
@@ -20,6 +20,7 @@ export function produceDraft(): TDraftResult {
   return cache(
     [testObjects],
     ctx.bind(ctxRef, () => {
+      const suiteName = useSuiteName();
       return assign(genTestsSummary(), {
         getErrors: ctx.bind(ctxRef, getErrors),
         getErrorsByGroup: ctx.bind(ctxRef, getErrorsByGroup),
@@ -32,6 +33,7 @@ export function produceDraft(): TDraftResult {
         isValid: ctx.bind(ctxRef, (fieldName?: string) =>
           isValid(produceDraft(), fieldName)
         ),
+        suiteName,
       });
     })
   );

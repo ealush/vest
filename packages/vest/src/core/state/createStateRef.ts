@@ -6,13 +6,14 @@ import type { TDraftResult } from 'produceDraft';
 
 export default function createStateRef(
   state: TState,
-  { suiteId }: { suiteId: string }
+  { suiteId, suiteName }: { suiteId: string; suiteName: void | string }
 ) {
   return {
     optionalFields: state.registerStateKey<
       Record<string, (() => boolean) | boolean>
     >(() => ({})),
     suiteId: state.registerStateKey<string>(suiteId),
+    suiteName: state.registerStateKey<string | void>(suiteName),
     testCallbacks: state.registerStateKey<{
       fieldCallbacks: Record<string, Array<(res: TDraftResult) => void>>;
       doneCallbacks: Array<(res: TDraftResult) => void>;

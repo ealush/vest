@@ -16,8 +16,11 @@ export function useStateRef(): Exclude<TStateRef, void> {
 }
 
 // STATE KEYS
-export function useSuiteId(): TStateHandlerReturn<string> {
-  return useStateRef().suiteId();
+export function useSuiteId(): string {
+  return useStateRef().suiteId()[0];
+}
+export function useSuiteName(): string | void {
+  return useStateRef().suiteName()[0];
 }
 export function useTestCallbacks(): TStateHandlerReturn<{
   fieldCallbacks: Record<string, ((res: TDraftResult) => void)[]>;

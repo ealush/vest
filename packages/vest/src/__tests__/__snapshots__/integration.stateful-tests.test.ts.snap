@@ -14,6 +14,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "suiteName": undefined,
   "testCount": 1,
   "tests": Object {
     "field_1": Object {
@@ -63,6 +64,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "suiteName": undefined,
   "testCount": 3,
   "tests": Object {
     "field_1": Object {
@@ -116,6 +118,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "suiteName": undefined,
   "testCount": 7,
   "tests": Object {
     "field_1": Object {
@@ -174,6 +177,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "suiteName": undefined,
   "testCount": 0,
   "tests": Object {},
   "warnCount": 0,
@@ -193,6 +197,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "suiteName": undefined,
   "testCount": 2,
   "tests": Object {
     "confirm": Object {
@@ -228,6 +233,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "suiteName": undefined,
   "testCount": 3,
   "tests": Object {
     "confirm": Object {
@@ -266,6 +272,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "suiteName": undefined,
   "testCount": 3,
   "tests": Object {
     "confirm": Object {

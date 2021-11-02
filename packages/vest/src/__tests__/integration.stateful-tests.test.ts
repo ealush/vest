@@ -112,11 +112,14 @@ describe('more complex', () => {
       enforce(data.password).isNotEmpty();
     });
 
-    skipWhen(suite.get().hasErrors('password'), () => {
-      test('confirm', 'passwords do not match', () => {
-        enforce(data.confirm).equals(data.password);
-      });
-    });
+    skipWhen(
+      draft => draft.hasErrors('password'),
+      () => {
+        test('confirm', 'passwords do not match', () => {
+          enforce(data.confirm).equals(data.password);
+        });
+      }
+    );
   });
 });
 

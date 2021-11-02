@@ -1,3 +1,5 @@
+import { dummyTest } from '../../../testUtils/testDummy';
+
 import * as vest from 'vest';
 
 describe('skipWhen', () => {
@@ -31,6 +33,43 @@ describe('skipWhen', () => {
     suite();
 
     expect(fn).toHaveBeenCalledTimes(4);
+  });
+
+  it('Should pass result draft to the functional condition', () => {
+    const f = jest.fn();
+    const control = jest.fn();
+
+    vest.create(() => {
+      vest.skipWhen(draft => {
+        expect(draft.hasErrors()).toBe(false);
+        expect(draft).toMatchSnapshot();
+        control();
+        return false;
+      }, f);
+      dummyTest.failing('f1', 'msg');
+      vest.skipWhen(draft => {
+        expect(draft.hasErrors()).toBe(true);
+        expect(draft.hasErrors('f1')).toBe(true);
+        expect(draft.hasErrors('f2')).toBe(false);
+        expect(draft.hasErrors('f3')).toBe(false);
+        expect(draft).toMatchSnapshot();
+        control();
+        return false;
+      }, f);
+      dummyTest.failing('f2', 'msg');
+      vest.skipWhen(draft => {
+        expect(draft.hasErrors()).toBe(true);
+        expect(draft.hasErrors('f1')).toBe(true);
+        expect(draft.hasErrors('f2')).toBe(true);
+        expect(draft.hasErrors('f3')).toBe(false);
+        expect(draft).toMatchSnapshot();
+        control();
+        return false;
+      }, f);
+      dummyTest.failing('f3', 'msg');
+    })();
+
+    expect(control).toHaveBeenCalledTimes(3);
   });
 
   it('Should skip tests when the condition is truthy', () => {

@@ -179,11 +179,16 @@ interface ICreateResult {
   subscribe: (payload: ISubscribePayload) => void;
 }
 
+interface ISkipWhen {
+  (conditional: boolean | (() => boolean), callback: () => void): void;
+}
+
 declare namespace vest {
   const enforce: TEnforce;
   const test: ITest;
   const only: IOnly;
   const skip: ISkip;
+  const skipWhen: ISkipWhen;
 
   function optional(optionalFields: string | string[]): boolean;
 

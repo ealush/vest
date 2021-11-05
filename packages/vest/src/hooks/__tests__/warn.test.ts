@@ -12,9 +12,9 @@ describe('warn hook', () => {
       let beforeWarn, afterWarn;
       create(() => {
         test(faker.lorem.word(), faker.lorem.sentence(), () => {
-          beforeWarn = context.useX().currentTest!.warns; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+          beforeWarn = context.useX().currentTest!.warns(); // eslint-disable-line @typescript-eslint/no-non-null-assertion
           warn();
-          afterWarn = context.useX().currentTest!.warns; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+          afterWarn = context.useX().currentTest!.warns(); // eslint-disable-line @typescript-eslint/no-non-null-assertion
         });
       })();
 

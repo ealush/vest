@@ -34,10 +34,10 @@ describe('VestTest', () => {
   });
 
   describe('testObject.warn', () => {
-    it('Should set `.warns` to true', () => {
-      expect(testObject.warns).toBe(false);
+    it('Should mark the test as warning', () => {
+      expect(testObject.warns()).toBe(false);
       testObject.warn();
-      expect(testObject.warns).toBe(true);
+      expect(testObject.warns()).toBe(true);
       expect(testObject).toMatchSnapshot();
     });
   });

@@ -19,7 +19,7 @@ function testBase(
   const context = ctx.useX();
   const testObject = new VestTest(fieldName, testFn, {
     message,
-    groupName: context?.groupName,
+    groupName: context.groupName,
   });
 
   return registerPrevRunTest(testObject);

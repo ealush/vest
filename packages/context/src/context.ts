@@ -1,5 +1,6 @@
 import assign from 'assign';
 import defaultTo from 'defaultTo';
+import optionalFunctionValue from 'optionalFunctionValue';
 import throwError from 'throwError';
 
 // eslint-disable-next-line max-lines-per-function
@@ -35,7 +36,7 @@ export function createContext<T extends Record<string, unknown>>(
     const out = assign(
       {},
       parentContext ? parentContext : {},
-      init?.(ctxRef, parentContext) ?? ctxRef
+      optionalFunctionValue(init, ctxRef, parentContext) ?? ctxRef
     ) as T;
 
     const ctx = set(Object.freeze(out));

@@ -190,6 +190,7 @@
       "produce": ["./packages/vest/src/produce/produce.ts"],
       "produceDraft": ["./packages/vest/src/produce/produceDraft.ts"],
       "runCallbacks": ["./packages/vest/src/produce/runCallbacks.ts"],
+      "vest.d": ["./packages/vest/src/typings/vest.d.ts"],
       "vest": ["./packages/vest/src/vest.ts"],
       "vestTypes": ["./packages/vest/src/vestTypes.ts"]
     }

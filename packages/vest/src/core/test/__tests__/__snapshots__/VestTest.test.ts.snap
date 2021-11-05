@@ -5,19 +5,19 @@ VestTest {
   "fieldName": "unicycle",
   "id": "0",
   "message": "I am Root.",
+  "severity": "error",
   "status": "UNTESTED",
   "testFn": [MockFunction],
-  "warns": false,
 }
 `;
 
-exports[`VestTest testObject.warn Should set \`.warns\` to true 1`] = `
+exports[`VestTest testObject.warn Should mark the test as warning 1`] = `
 VestTest {
   "fieldName": "unicycle",
   "id": "102",
   "message": "I am Root.",
+  "severity": "warning",
   "status": "UNTESTED",
   "testFn": [MockFunction],
-  "warns": true,
 }
 `;

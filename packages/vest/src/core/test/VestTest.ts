@@ -3,6 +3,11 @@ import genId from 'genId';
 import shouldUseErrorAsMessage from 'shouldUseErrorAsMessage';
 import { useRefreshTestObjects } from 'stateHooks';
 
+enum TestSeverity {
+  Error = 'error',
+  Warning = 'warning',
+}
+
 export default class VestTest {
   fieldName: string;
   testFn: TTestFn;
@@ -11,7 +16,7 @@ export default class VestTest {
   message?: string;
 
   id = genId();
-  warns = false;
+  severity = TestSeverity.Error;
   status: KStatus = STATUS_UNTESTED;
 
   constructor(
@@ -57,12 +62,16 @@ export default class VestTest {
     this.status = status;
   }
 
+  warns(): boolean {
+    return this.severity === TestSeverity.Warning;
+  }
+
   setPending() {
     this.setStatus(STATUS_PENDING);
   }
 
   fail(): void {
-    this.setStatus(this.warns ? STATUS_WARNING : STATUS_FAILED);
+    this.setStatus(this.warns() ? STATUS_WARNING : STATUS_FAILED);
   }
 
   done(): void {
@@ -73,7 +82,7 @@ export default class VestTest {
   }
 
   warn(): void {
-    this.warns = true;
+    this.severity = TestSeverity.Warning;
   }
 
   isFinalStatus(): boolean {

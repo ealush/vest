@@ -13,7 +13,7 @@ describe("Test Vest's `test` function", () => {
             warn();
           });
         })();
-        expect(testObject.warns).toBe(true);
+        expect(testObject.warns()).toBe(true);
       });
     });
 

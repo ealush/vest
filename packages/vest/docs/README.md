@@ -1,5 +1,17 @@
 ![Vest](https://cdn.jsdelivr.net/gh/ealush/vest@assets/vest-logo.png 'Vest')
 
+# Version 4 of Vest is coming soon!
+
+If you want to try it out, you can already install it with the `next` tag.
+
+```npm install vest@next```
+
+This version brings many enhancements to Vest. This version is well tested, and can be used safely. If you do, however encounter any issues or have any thoughts on the next version, please report them on the issues page.
+
+For the version 4 docs, you can reach out to: https://vest.vercel.app/ or specifically to the [migration guide](https://vest.vercel.app/docs/migration_guide).
+
+A note on Typescript support: Version four uses Typescript 4 specific features, so for now only version 4 is supported.
+
 # Vest 🦺 Declarative Validation Testing
 
 ![Github Stars](https://githubbadges.com/star.svg?user=ealush&repo=vest&style=flat)

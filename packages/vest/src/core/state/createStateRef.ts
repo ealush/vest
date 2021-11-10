@@ -6,7 +6,7 @@ import type { TDraftResult } from 'produceDraft';
 
 export default function createStateRef(
   state: TState,
-  { suiteId, suiteName }: { suiteId: string; suiteName: void | string }
+  { suiteId, suiteName }: { suiteId: string; suiteName?: void | string }
 ) {
   return {
     optionalFields: state.registerStateKey<

@@ -1,7 +1,0 @@
-{
-  "main": "../dist/cjs/compose.js",
-  "module": "../dist/es/compose.production.js",
-  "name": "compose",
-  "types": "../types/compose.d.ts",
-  "private": true
-}

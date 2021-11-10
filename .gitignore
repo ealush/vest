@@ -3,6 +3,7 @@ packages/n4s/compose/
 packages/vest/classnames/
 packages/vest/promisify/
 packages/vest/parser/
+packages/vest/enforce-compose/
 packages/anyone/all/
 packages/anyone/any/
 packages/anyone/none/

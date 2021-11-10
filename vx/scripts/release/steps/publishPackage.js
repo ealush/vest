@@ -1,9 +1,10 @@
-const isReleaseBranch = require('../../release/isReleaseBranch');
+const { TAG_NEXT } = require('../releaseKeywords');
 
 const exec = require('vx/exec');
 const logger = require('vx/logger');
 const { TAG_DEV } = require('vx/scripts/release/releaseKeywords');
 const joinTruthy = require('vx/util/joinTruthy');
+const { isReleaseBranch } = require('vx/util/taggedBranch');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
@@ -60,12 +61,12 @@ function genPublishCommand(versionToUse, tag) {
   ];
 }
 
-function shouldPublishDev(versionToUse) {
+function shouldPublishPreRelease(versionToUse) {
   const [, tag] = versionToUse.split('-');
 
-  return tag === TAG_DEV;
+  return [TAG_DEV, TAG_NEXT].includes(tag);
 }
 
 function shouldRelease(versionToUse) {
-  return isReleaseBranch() || shouldPublishDev(versionToUse);
+  return isReleaseBranch || shouldPublishPreRelease(versionToUse);
 }

@@ -1,8 +1,8 @@
 const packageJson = require('../../../util/packageJson');
-const isReleaseBranch = require('../isReleaseBranch');
 
 const exec = require('vx/exec');
 const logger = require('vx/logger');
+const { isReleaseBranch } = require('vx/util/taggedBranch');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
@@ -15,7 +15,7 @@ function setNextVersion({ tagId, tag, nextVersion }) {
   Running: ${command}
   `);
 
-  if (isReleaseBranch()) {
+  if (isReleaseBranch) {
     return;
   }
 

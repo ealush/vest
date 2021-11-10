@@ -6,6 +6,7 @@ on:
       - release
       - integration
       - integration-*
+      - next-*
 
 jobs:
   build:
@@ -40,6 +41,7 @@ jobs:
         env:
           RELEASE_BRANCH: release
           INTEGRATION_BRANCH: integration
+          NEXT_BRANCH: next
           STABLE_BRANCH: stable
           LATEST_BRANCH: latest
           PUBLIC_REPO_TOKEN: ${{secrets.PUBLIC_REPO_TOKEN}}

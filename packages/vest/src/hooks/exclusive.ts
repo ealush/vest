@@ -28,15 +28,19 @@ export function skip(item: TExclusionItem): void {
 skip.group = (item: TExclusionItem) =>
   addTo(ExclusionGroup.SKIP, 'groups', item);
 
+export function isExcludedIndividually(): boolean {
+  return !!ctx.useX().skipped;
+}
+
 //Checks whether a certain test profile excluded by any of the exclusion groups.
 
 // eslint-disable-next-line complexity, max-statements
 export function isExcluded(testObject: VestTest): boolean {
   const { fieldName, groupName } = testObject;
 
-  const context = ctx.useX();
+  if (isExcludedIndividually()) return true;
 
-  if (context.skipped) return true;
+  const context = ctx.useX();
 
   const exclusion = context.exclusion;
   const keyTests = exclusion.tests;

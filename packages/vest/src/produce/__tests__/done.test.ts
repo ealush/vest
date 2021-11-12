@@ -283,4 +283,35 @@ describe('done', () => {
       });
     });
   });
+
+  describe('When suite re-runs and a pending test is now skipped', () => {
+    it.only('Should immediately call the second done callback, omit the first', async () => {
+      const done_0 = jest.fn();
+      const done_1 = jest.fn();
+
+      const suite = vest.create(username => {
+        vest.test('username', () => {
+          vest.enforce(username).isNotBlank();
+        });
+
+        vest.skipWhen(suite.get().hasErrors('username'), () => {
+          vest.test('username', async () => {
+            await wait(1000);
+            if (username === 'ealush') {
+              throw new Error();
+            }
+          });
+        });
+      });
+
+      suite('ealush').done(done_0);
+      await wait(0);
+      expect(done_0).not.toHaveBeenCalled();
+      suite('').done(done_1);
+      expect(done_0).not.toHaveBeenCalled();
+      expect(done_1).toHaveBeenCalled();
+      await wait(1000);
+      expect(done_0).not.toHaveBeenCalled();
+    });
+  });
 });

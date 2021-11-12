@@ -10,7 +10,7 @@ import runLazyRule from 'runLazyRule';
 /* eslint-disable max-lines-per-function */
 
 // TODO: This gives me a headache. Instead of `any` we should use `TLazy`
-// but it fails when using compose. The type is very complex.
+// but it fails when using compose. The type is very complex. Feel free to help.
 export default function compose(...composites: any[]): ((
   value: any
 ) => void) & {

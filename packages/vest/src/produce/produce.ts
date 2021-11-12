@@ -1,5 +1,6 @@
 import assign from 'assign';
 import createCache from 'cache';
+import { isEmpty } from 'isEmpty';
 import isFunction from 'isFunction';
 
 import ctx from 'ctx';
@@ -36,7 +37,7 @@ function shouldSkipDoneRegistration(
   return !!(
     !isFunction(callback) ||
     (fieldName &&
-      (!output.tests[fieldName] || output.tests[fieldName].testCount === 0))
+      (!output.tests[fieldName] || isEmpty(output.tests[fieldName].testCount)))
   );
 }
 

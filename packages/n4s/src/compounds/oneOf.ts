@@ -4,10 +4,12 @@ import { longerThan } from 'longerThan';
 import ruleReturn, { TRuleDetailedResult } from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 
+const REQUIRED_COUNT = 1;
+
 export function oneOf(value: unknown, ...rules: TLazy[]): TRuleDetailedResult {
   const passing: TRuleDetailedResult[] = [];
   rules.some(rule => {
-    if (longerThan(passing, 1)) {
+    if (longerThan(passing, REQUIRED_COUNT)) {
       return false;
     }
 
@@ -18,5 +20,5 @@ export function oneOf(value: unknown, ...rules: TLazy[]): TRuleDetailedResult {
     }
   });
 
-  return ruleReturn(lengthEquals(passing, 1));
+  return ruleReturn(lengthEquals(passing, REQUIRED_COUNT));
 }

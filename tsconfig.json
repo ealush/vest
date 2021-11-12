@@ -160,7 +160,6 @@
       "exclusive": ["./packages/vest/src/hooks/exclusive.ts"],
       "group": ["./packages/vest/src/hooks/group.ts"],
       "hookErrors": ["./packages/vest/src/hooks/hookErrors.ts"],
-      "hooks": ["./packages/vest/src/hooks/hooks.ts"],
       "optionalTests": ["./packages/vest/src/hooks/optionalTests.ts"],
       "skipWhen": ["./packages/vest/src/hooks/skipWhen.ts"],
       "warn": ["./packages/vest/src/hooks/warn.ts"],

@@ -7,7 +7,7 @@ By default, enforce throws an error when your validations fail. These errors sho
 You can extend Enforce per need, and you can add your custom validation rules in your app.
 
 ```js
-import enforce from 'n4s';
+import { enforce } from 'n4s';
 
 enforce(4).isNumber();
 // passes

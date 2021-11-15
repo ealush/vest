@@ -1,3 +1,1 @@
-import { enforce } from 'enforce';
-
-export default enforce;
+export { enforce } from 'enforce';

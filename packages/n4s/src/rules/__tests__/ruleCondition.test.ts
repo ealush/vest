@@ -1,4 +1,4 @@
-import enforce from 'n4s';
+import { enforce } from 'n4s';
 import ruleReturn, { failing, passing } from 'ruleReturn';
 
 describe('enforce.condition', () => {

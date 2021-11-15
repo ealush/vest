@@ -2,7 +2,7 @@ import { createState } from 'vast';
 
 let state = createState();
 
-describe('state', () => {
+describe('vast state', () => {
   beforeEach(() => {
     state = createState();
   });

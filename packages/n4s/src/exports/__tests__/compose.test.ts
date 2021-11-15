@@ -1,5 +1,5 @@
 import compose from 'compose';
-import enforce from 'n4s';
+import { enforce } from 'n4s';
 import * as ruleReturn from 'ruleReturn';
 
 describe('compose', () => {

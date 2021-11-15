@@ -285,7 +285,7 @@ describe('done', () => {
   });
 
   describe('When suite re-runs and a pending test is now skipped', () => {
-    it.only('Should immediately call the second done callback, omit the first', async () => {
+    it('Should immediately call the second done callback, omit the first', async () => {
       const done_0 = jest.fn();
       const done_1 = jest.fn();
 

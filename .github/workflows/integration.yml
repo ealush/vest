@@ -6,6 +6,7 @@ on:
       - release
       - integration
       - integration-*
+      - next
       - next-*
 
 jobs:

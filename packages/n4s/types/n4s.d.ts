@@ -237,4 +237,4 @@ type TEnforceMethods = TModifiers & {
   context: () => TEnforceContext;
   extend: (customRules: TRule) => void;
 };
-export { enforce as default };
+export { enforce };

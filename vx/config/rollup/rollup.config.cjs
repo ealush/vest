@@ -2,6 +2,7 @@ const fs = require('fs');
 
 const compiler = require('@ampproject/rollup-plugin-closure-compiler');
 const replace = require('@rollup/plugin-replace');
+const _ = require('lodash');
 const { terser } = require('rollup-plugin-terser');
 const ts = require('rollup-plugin-ts');
 
@@ -15,6 +16,7 @@ const addModulePackageJson = require('./plugins/addModulePackageJson');
 const handleExports = require('./plugins/handleExports');
 
 const opts = require('vx/opts');
+const packageNames = require('vx/packageNames');
 const moduleAliases = require('vx/util/moduleAliases')();
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
@@ -124,25 +126,26 @@ function getPlugins({
     }),
     ts({
       tsconfig: resolvedConfig => {
-        if (packageName === moduleName) {
-          return resolvedConfig;
+        const clonedConfig = _.cloneDeep(resolvedConfig);
+
+        // The changes made in this function allow using the already installed
+        // module instead of embedding of the code.
+
+        // Remove installed local packages paths list
+        for (const dep in packageJson().dependencies) {
+          if (packageNames.names[dep]) {
+            delete clonedConfig.paths[dep];
+          }
         }
 
-        // Make the package itself an external in the exported modules
-        // so that it can be imported in the generated code.
+        if (packageName === moduleName) {
+          return clonedConfig;
+        }
 
-        const modified = {
-          ...resolvedConfig,
-          paths: {
-            ...resolvedConfig.paths,
-          },
-        };
+        // Removes current package from the paths list if in an "exported" module
+        delete clonedConfig.paths[packageName];
 
-        // This makes the package itself an external module
-        // since there is no relative path to it
-        delete modified.paths[packageName];
-
-        return modified;
+        return clonedConfig;
       },
       browserList: ['IE10'],
       hook: {

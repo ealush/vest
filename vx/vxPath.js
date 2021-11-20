@@ -27,7 +27,7 @@ vxPath.vxRoot = () => {
 };
 
 vxPath.package = (pkgName = usePackage(), ...args) => {
-  return path.resolve(vxPath.PACKAGES_PATH, pkgName, ...args);
+  return path.resolve(vxPath.PACKAGES_PATH, pkgName, ...args.filter(Boolean));
 };
 
 vxPath.packageDist = (pkgName = usePackage(), ...args) => {

@@ -8,9 +8,13 @@ const vxPath = require('vx/vxPath');
 
 function listExportedModules(pkgName = usePackage()) {
   return (
-    glob
-      .sync(vxPath.packageSrc(pkgName, opts.dir.EXPORTS, '*.ts'))
-      .map(f => path.basename(f, '.ts')) ?? []
+    glob.sync(vxPath.packageSrc(pkgName, opts.dir.EXPORTS, '*.ts')).map(f => {
+      const [moduleName, namespace] = path
+        .basename(f, '.ts')
+        .split('@')
+        .reverse();
+      return [moduleName, namespace];
+    }) ?? []
   );
 }
 

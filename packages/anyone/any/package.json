@@ -1,7 +1,0 @@
-{
-  "main": "../dist/cjs/any.js",
-  "module": "../dist/es/any.production.js",
-  "name": "any",
-  "types": "../types/any.d.ts",
-  "private": true
-}

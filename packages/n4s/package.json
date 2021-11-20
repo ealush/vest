@@ -9,9 +9,7 @@
     "test": "vx test",
     "release": "vx release"
   },
-  "dependencies": {
-    "context": "next"
-  },
+  "dependencies": {},
   "module": "./dist/es/n4s.production.js",
   "exports": {
     "./compose": {

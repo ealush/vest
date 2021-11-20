@@ -1,7 +1,0 @@
-{
-  "main": "../dist/cjs/one.js",
-  "module": "../dist/es/one.production.js",
-  "name": "one",
-  "types": "../types/one.d.ts",
-  "private": true
-}

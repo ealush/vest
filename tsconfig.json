@@ -154,7 +154,7 @@
       "VestTest": ["./packages/vest/src/core/test/VestTest.ts"],
       "vestBus": ["./packages/vest/src/core/vestBus.ts"],
       "classnames": ["./packages/vest/src/exports/classnames.ts"],
-      "enforce-compose": ["./packages/vest/src/exports/enforce-compose.ts"],
+      "enforce@compose": ["./packages/vest/src/exports/enforce@compose.ts"],
       "parser": ["./packages/vest/src/exports/parser.ts"],
       "promisify": ["./packages/vest/src/exports/promisify.ts"],
       "exclusive": ["./packages/vest/src/hooks/exclusive.ts"],

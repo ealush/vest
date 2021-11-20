@@ -60,22 +60,31 @@ function cleanupConfig(configs) {
     .map(({ input, output, plugins }) => ({ input, output, plugins }));
 }
 
-function genBaseConfig({ env, packageName, moduleName = usePackage() }) {
+function genBaseConfig({
+  env,
+  packageName,
+  moduleName = usePackage(),
+  namespace = undefined,
+}) {
   return {
     env,
     input: getInputFile(moduleName),
-    output: genOutput({ env, moduleName }),
-    plugins: getPlugins({ env, moduleName, packageName }),
+    output: genOutput({ env, moduleName, namespace }),
+    plugins: getPlugins({ env, moduleName, namespace, packageName }),
   };
 }
 
 function genExportsConfig(pkgName, env) {
-  return listExportedModules(pkgName).map(moduleName =>
-    genBaseConfig({ env, moduleName })
+  return listExportedModules(pkgName).map(([moduleName, namespace]) =>
+    genBaseConfig({ env, moduleName, namespace })
   );
 }
 
-function genOutput({ moduleName = usePackage(), env } = {}) {
+function genOutput({
+  moduleName = usePackage(),
+  env,
+  namespace = undefined,
+} = {}) {
   const base = {
     exports: 'auto',
     name: moduleName,
@@ -94,6 +103,7 @@ function genOutput({ moduleName = usePackage(), env } = {}) {
       file: vxPath.packageDist(
         usePackage(),
         format,
+        namespace,
         joinTruthy([moduleName, env, 'js'], '.')
       ),
     };
@@ -114,6 +124,7 @@ function getPlugins({
   env = opts.env.PRODUCTION,
   packageName = usePackage(),
   moduleName = packageName,
+  namespace = undefined,
 } = {}) {
   const plugins = [
     replace({
@@ -153,6 +164,7 @@ function getPlugins({
           const basePath = vxPath.package(
             usePackage(),
             opts.dir.TYPES,
+            namespace,
             moduleName + '.d.ts'
           );
 
@@ -167,7 +179,7 @@ function getPlugins({
     plugins.push(
       compiler(),
       terser(),
-      handleExports(),
+      handleExports({ namespace }),
       addModulePackageJson(),
       addCJSPackageJson()
     );

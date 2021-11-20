@@ -1,7 +1,0 @@
-{
-  "main": "../dist/cjs/none.js",
-  "module": "../dist/es/none.production.js",
-  "name": "none",
-  "types": "../types/none.d.ts",
-  "private": true
-}

@@ -10,12 +10,13 @@ import {
   TArgs,
   TRuleBase,
   KBaseRules,
-  TRules,
 } from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
-export default function enforceEager(value: TRuleValue): TRules {
-  const target = {} as TRules;
+type IRules = n4s.IRules<Record<string, any>>;
+
+export default function enforceEager(value: TRuleValue): IRules {
+  const target = {} as IRules;
   if (!isProxySupported()) {
     eachEnforceRule((ruleName: KBaseRules, ruleFn) => {
       target[ruleName] = genRuleCall(target, ruleFn, ruleName);
@@ -31,11 +32,11 @@ export default function enforceEager(value: TRuleValue): TRules {
         return genRuleCall(proxy, rule, ruleName);
       }
     },
-  }) as TRules;
+  }) as IRules;
 
   return proxy;
 
-  function genRuleCall(target: TRules, rule: TRuleBase, ruleName: string) {
+  function genRuleCall(target: IRules, rule: TRuleBase, ruleName: string) {
     return function ruleCall(...args: TArgs) {
       const transformedResult = transformResult(
         ctx.run({ value }, () => rule(value, ...args)),

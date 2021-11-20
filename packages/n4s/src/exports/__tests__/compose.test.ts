@@ -1,6 +1,8 @@
 import compose from 'compose';
 import { enforce } from 'n4s';
 import * as ruleReturn from 'ruleReturn';
+import 'schema';
+import 'compounds';
 
 describe('compose', () => {
   it('Should create "and" relationship between composed rules', () => {

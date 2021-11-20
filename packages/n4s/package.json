@@ -9,7 +9,9 @@
     "test": "vx test",
     "release": "vx release"
   },
-  "dependencies": {},
+  "dependencies": {
+    "context": "next"
+  },
   "module": "./dist/es/n4s.production.js",
   "exports": {
     "./compose": {
@@ -41,6 +43,66 @@
       "node": "./dist/cjs/compose.js",
       "module": "./dist/es/compose.production.js",
       "default": "./dist/cjs/compose.js"
+    },
+    "./compounds": {
+      "production": {
+        "types": "./types/compounds.d.ts",
+        "browser": "./dist/es/compounds.production.js",
+        "umd": "./dist/umd/compounds.production.js",
+        "import": "./dist/es/compounds.production.js",
+        "require": "./dist/cjs/compounds.production.js",
+        "node": "./dist/cjs/compounds.production.js",
+        "module": "./dist/es/compounds.production.js",
+        "default": "./dist/cjs/compounds.production.js"
+      },
+      "development": {
+        "types": "./types/compounds.d.ts",
+        "browser": "./dist/es/compounds.development.js",
+        "umd": "./dist/umd/compounds.development.js",
+        "import": "./dist/es/compounds.development.js",
+        "require": "./dist/cjs/compounds.development.js",
+        "node": "./dist/cjs/compounds.development.js",
+        "module": "./dist/es/compounds.development.js",
+        "default": "./dist/cjs/compounds.development.js"
+      },
+      "types": "./types/compounds.d.ts",
+      "browser": "./dist/es/compounds.production.js",
+      "umd": "./dist/umd/compounds.production.js",
+      "import": "./dist/es/compounds.production.js",
+      "require": "./dist/cjs/compounds.js",
+      "node": "./dist/cjs/compounds.js",
+      "module": "./dist/es/compounds.production.js",
+      "default": "./dist/cjs/compounds.js"
+    },
+    "./schema": {
+      "production": {
+        "types": "./types/schema.d.ts",
+        "browser": "./dist/es/schema.production.js",
+        "umd": "./dist/umd/schema.production.js",
+        "import": "./dist/es/schema.production.js",
+        "require": "./dist/cjs/schema.production.js",
+        "node": "./dist/cjs/schema.production.js",
+        "module": "./dist/es/schema.production.js",
+        "default": "./dist/cjs/schema.production.js"
+      },
+      "development": {
+        "types": "./types/schema.d.ts",
+        "browser": "./dist/es/schema.development.js",
+        "umd": "./dist/umd/schema.development.js",
+        "import": "./dist/es/schema.development.js",
+        "require": "./dist/cjs/schema.development.js",
+        "node": "./dist/cjs/schema.development.js",
+        "module": "./dist/es/schema.development.js",
+        "default": "./dist/cjs/schema.development.js"
+      },
+      "types": "./types/schema.d.ts",
+      "browser": "./dist/es/schema.production.js",
+      "umd": "./dist/umd/schema.production.js",
+      "import": "./dist/es/schema.production.js",
+      "require": "./dist/cjs/schema.js",
+      "node": "./dist/cjs/schema.js",
+      "module": "./dist/es/schema.production.js",
+      "default": "./dist/cjs/schema.js"
     },
     ".": {
       "development": {

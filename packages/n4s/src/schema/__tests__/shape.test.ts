@@ -1,5 +1,7 @@
 import { enforce } from 'enforce';
 import * as ruleReturn from 'ruleReturn';
+import 'schema';
+import 'compounds';
 
 describe('enforce.shape excact matching', () => {
   describe('lazy interface', () => {

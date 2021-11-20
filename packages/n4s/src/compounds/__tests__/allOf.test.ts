@@ -1,5 +1,6 @@
 import { enforce } from 'enforce';
 import * as ruleReturn from 'ruleReturn';
+import 'compounds';
 
 describe('allOf', () => {
   describe('Lazy Assertions', () => {

@@ -1,7 +1,7 @@
 import assign from 'assign';
 
 import eachEnforceRule from 'eachEnforceRule';
-import { TEnforceContext, ctx } from 'enforceContext';
+import { ctx, TEnforceContext } from 'enforceContext';
 import enforceEager, { TEnforceEager } from 'enforceEager';
 import genEnforceLazy, { TLazyRules } from 'genEnforceLazy';
 import isProxySupported from 'isProxySupported';
@@ -70,7 +70,7 @@ function genEnforce(): TEnforce {
 
 export const enforce = genEnforce();
 
-type TEnforce = TEnforceEager & TLazyRules & TEnforceMethods;
+type TEnforce = TEnforceMethods & TLazyRules & TEnforceEager;
 
 type TEnforceMethods = TModifiers & {
   context: () => TEnforceContext;

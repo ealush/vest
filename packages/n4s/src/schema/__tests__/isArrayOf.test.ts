@@ -1,4 +1,6 @@
 import { enforce } from 'enforce';
+import 'schema';
+import 'compounds';
 import * as ruleReturn from 'ruleReturn';
 
 describe('enforce.isArrayOf', () => {

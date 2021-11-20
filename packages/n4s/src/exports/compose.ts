@@ -1,22 +1,17 @@
 import mapFirst from 'mapFirst';
 import throwError from 'throwError';
 
-import { ctx } from 'enforceContext';
-import type { TLazy } from 'genEnforceLazy';
+import type { TComposeResult, TLazyRuleRunners } from 'genEnforceLazy';
 import { isEmpty } from 'isEmpty';
+import { ctx } from 'n4s';
 import { defaultToPassing, TRuleDetailedResult } from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 
 /* eslint-disable max-lines-per-function */
 
-// TODO: This gives me a headache. Instead of `any` we should use `TLazy`
-// but it fails when using compose. The type is very complex. Feel free to help.
-export default function compose(...composites: any[]): ((
-  value: any
-) => void) & {
-  run: (value: any) => TRuleDetailedResult;
-  test: (value: any) => boolean;
-} {
+export default function compose(
+  ...composites: TLazyRuleRunners[]
+): TComposeResult {
   return Object.assign(
     (value: any) => {
       const res = run(value);
@@ -41,14 +36,17 @@ export default function compose(...composites: any[]): ((
       return defaultToPassing(
         mapFirst(
           composites,
-          (composite: TLazy, breakout: (res: TRuleDetailedResult) => void) => {
+          (
+            composite: TLazyRuleRunners,
+            breakout: (res: TRuleDetailedResult) => void
+          ) => {
             /* HACK: Just a small white lie. ~~HELP WANTED~~.
                The ideal is that instead of `TLazyRuleRunners` We would simply use `TLazy` to begin with.
                The problem is that lazy rules can't really be passed to this function due to some generic hell
                so we're limiting it to a small set of functions.
             */
 
-            const res = runLazyRule(composite as TLazy, value);
+            const res = runLazyRule(composite, value);
 
             if (!res.pass) {
               breakout(res);

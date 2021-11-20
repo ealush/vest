@@ -19,7 +19,10 @@
   "bugs": {
     "url": "https://github.com/ealush/vest.git/issues"
   },
-  "dependencies": {},
+  "dependencies": {
+    "context": "next",
+    "n4s": "next"
+  },
   "homepage": "https://vestjs.dev/",
   "exports": {
     "./classnames": {
@@ -81,6 +84,66 @@
       "node": "./../dist/cjs/enforce/compose.js",
       "module": "./../dist/es/enforce/compose.production.js",
       "default": "./../dist/cjs/enforce/compose.js"
+    },
+    "./compounds": {
+      "production": {
+        "types": "./../types/enforce/compounds.d.ts",
+        "browser": "./../dist/es/enforce/compounds.production.js",
+        "umd": "./../dist/umd/enforce/compounds.production.js",
+        "import": "./../dist/es/enforce/compounds.production.js",
+        "require": "./../dist/cjs/enforce/compounds.production.js",
+        "node": "./../dist/cjs/enforce/compounds.production.js",
+        "module": "./../dist/es/enforce/compounds.production.js",
+        "default": "./../dist/cjs/enforce/compounds.production.js"
+      },
+      "development": {
+        "types": "./../types/enforce/compounds.d.ts",
+        "browser": "./../dist/es/enforce/compounds.development.js",
+        "umd": "./../dist/umd/enforce/compounds.development.js",
+        "import": "./../dist/es/enforce/compounds.development.js",
+        "require": "./../dist/cjs/enforce/compounds.development.js",
+        "node": "./../dist/cjs/enforce/compounds.development.js",
+        "module": "./../dist/es/enforce/compounds.development.js",
+        "default": "./../dist/cjs/enforce/compounds.development.js"
+      },
+      "types": "./../types/enforce/compounds.d.ts",
+      "browser": "./../dist/es/enforce/compounds.production.js",
+      "umd": "./../dist/umd/enforce/compounds.production.js",
+      "import": "./../dist/es/enforce/compounds.production.js",
+      "require": "./../dist/cjs/enforce/compounds.js",
+      "node": "./../dist/cjs/enforce/compounds.js",
+      "module": "./../dist/es/enforce/compounds.production.js",
+      "default": "./../dist/cjs/enforce/compounds.js"
+    },
+    "./schema": {
+      "production": {
+        "types": "./../types/enforce/schema.d.ts",
+        "browser": "./../dist/es/enforce/schema.production.js",
+        "umd": "./../dist/umd/enforce/schema.production.js",
+        "import": "./../dist/es/enforce/schema.production.js",
+        "require": "./../dist/cjs/enforce/schema.production.js",
+        "node": "./../dist/cjs/enforce/schema.production.js",
+        "module": "./../dist/es/enforce/schema.production.js",
+        "default": "./../dist/cjs/enforce/schema.production.js"
+      },
+      "development": {
+        "types": "./../types/enforce/schema.d.ts",
+        "browser": "./../dist/es/enforce/schema.development.js",
+        "umd": "./../dist/umd/enforce/schema.development.js",
+        "import": "./../dist/es/enforce/schema.development.js",
+        "require": "./../dist/cjs/enforce/schema.development.js",
+        "node": "./../dist/cjs/enforce/schema.development.js",
+        "module": "./../dist/es/enforce/schema.development.js",
+        "default": "./../dist/cjs/enforce/schema.development.js"
+      },
+      "types": "./../types/enforce/schema.d.ts",
+      "browser": "./../dist/es/enforce/schema.production.js",
+      "umd": "./../dist/umd/enforce/schema.production.js",
+      "import": "./../dist/es/enforce/schema.production.js",
+      "require": "./../dist/cjs/enforce/schema.js",
+      "node": "./../dist/cjs/enforce/schema.js",
+      "module": "./../dist/es/enforce/schema.production.js",
+      "default": "./../dist/cjs/enforce/schema.js"
     },
     "./parser": {
       "production": {

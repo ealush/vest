@@ -1,3 +1,18 @@
+declare const ctx: {
+  run: <R>(ctxRef: Partial<CTXType>, fn: (context: CTXType) => R) => R;
+  bind: <Fn extends (...args: any[]) => any>(
+    ctxRef: Partial<CTXType>,
+    fn: Fn
+  ) => Fn;
+  use: () => CTXType | undefined;
+  useX: (errorMessage?: string | undefined) => CTXType;
+};
+type CTXType = {
+  meta: Record<string, any>;
+  value: any;
+  set?: boolean;
+  parent: () => CTXType | null;
+};
 type TEnforceContext = null | {
   meta: Record<string, any>;
   value: any;
@@ -17,33 +32,6 @@ type TRuleDetailedResult = {
   pass: boolean;
   message?: string;
 };
-type TLazyRules = TRules<TLazyRuleMethods>;
-type TLazy = TLazyRules & TLazyRuleMethods;
-type TShapeObject = Record<any, TLazy>;
-type TLazyRuleMethods = TLazyRuleRunners & {
-  message: (message: TLazyMessage) => TLazy;
-};
-type TLazyRuleRunners = {
-  test: (value: unknown) => boolean;
-  run: (value: unknown) => TRuleDetailedResult;
-};
-type TLazyMessage =
-  | string
-  | ((value: unknown, originalMessage?: TStringable) => string);
-declare function allOf(value: unknown, ...rules: TLazy[]): TRuleDetailedResult;
-declare function anyOf(value: unknown, ...rules: TLazy[]): TRuleDetailedResult;
-declare function noneOf(value: unknown, ...rules: TLazy[]): TRuleDetailedResult;
-declare function oneOf(value: unknown, ...rules: TLazy[]): TRuleDetailedResult;
-declare function optional(value: any, ruleChain: TLazy): TRuleDetailedResult;
-declare function compounds(): {
-  allOf: typeof allOf;
-  anyOf: typeof anyOf;
-  noneOf: typeof noneOf;
-  oneOf: typeof oneOf;
-  optional: typeof optional;
-};
-type TCompounds = ReturnType<typeof compounds>;
-type KCompounds = keyof TCompounds;
 type TArgs = any[];
 type TRuleValue = any;
 type TRuleBase = (value: TRuleValue, ...args: TArgs) => TRuleReturn;
@@ -116,18 +104,6 @@ declare function shorterThanOrEquals(
   arg1: string | number
 ): boolean;
 declare function startsWith(value: string, arg1: string): boolean;
-declare function shape(
-  inputObject: Record<string, any>,
-  shapeObject: TShapeObject
-): TRuleDetailedResult;
-declare function loose(
-  inputObject: Record<string, any>,
-  shapeObject: TShapeObject
-): TRuleDetailedResult;
-declare function isArrayOf(
-  inputArray: any[],
-  currentRule: TLazy
-): TRuleDetailedResult;
 declare const baseRules: {
   condition: typeof condition;
   doesNotEndWith: (value: string, arg1: string) => boolean;
@@ -191,50 +167,57 @@ declare const baseRules: {
   shorterThan: typeof shorterThan;
   shorterThanOrEquals: typeof shorterThanOrEquals;
   startsWith: typeof startsWith;
-} & {
-  allOf: typeof allOf;
-  anyOf: typeof anyOf;
-  noneOf: typeof noneOf;
-  oneOf: typeof oneOf;
-  optional: typeof optional;
-} & {
-  shape: typeof shape;
-  loose: typeof loose;
-  isArrayOf: typeof isArrayOf;
 };
-/* eslint-disable @typescript-eslint/no-namespace, @typescript-eslint/no-empty-interface */
-declare global {
-  namespace n4s {
-    interface EnforceCustomMatchers<R> {}
-  }
-}
 type TRules<E = Record<string, unknown>> = n4s.EnforceCustomMatchers<
-  TRules & E
+  TRules<E> & E
 > &
-  Record<string, (...args: TArgs) => TRules & E> &
-  {
-    [P in KCompounds]: (
-      ...args: DropFirst<Parameters<TCompounds[P]>> | TArgs
-    ) => TRules & E;
-  } &
+  Record<string, (...args: TArgs) => TRules<E> & E> &
   {
     [P in KBaseRules]: (
       ...args: DropFirst<Parameters<TBaseRules[P]>> | TArgs
-    ) => TRules & E;
+    ) => TRules<E> & E;
   };
-declare function enforceEager(value: TRuleValue): TRules;
+/* eslint-disable @typescript-eslint/no-namespace, @typescript-eslint/no-empty-interface */
+declare global {
+  namespace n4s {
+    interface IRules<E> extends TRules<E> {}
+  }
+}
+type IRules = n4s.IRules<Record<string, any>>;
+declare function enforceEager(value: TRuleValue): IRules;
 type TEnforceEager = typeof enforceEager;
+type TLazyRules = n4s.IRules<TLazyRuleMethods>;
+type TLazy = TLazyRules &
+  TLazyRuleMethods &
+  // This is a "catch all" hack to make TS happy while not
+  // losing type hints
+  Record<string, (...args: any[]) => any>;
+type TLazyRuleMethods = TLazyRuleRunners & {
+  message: (message: TLazyMessage) => TLazy;
+};
+type TLazyRuleRunners = {
+  test: (value: unknown) => boolean;
+  run: (value: unknown) => TRuleDetailedResult;
+};
+type TLazyMessage =
+  | string
+  | ((value: unknown, originalMessage?: TStringable) => string);
 // Help needed improving the typings of this file.
-// Ideally, we'd be able to extend TShapeObject, but that's not possible.
+// Ideally, we'd be able to extend IShapeObject, but that's not possible.
 declare function partial<T extends Record<any, any>>(shapeObject: T): T;
 declare function modifiers(): {
   partial: typeof partial;
 };
 type TModifiers = ReturnType<typeof modifiers>;
 declare const enforce: TEnforce;
-type TEnforce = TEnforceEager & TLazyRules & TEnforceMethods;
+type TEnforce = TEnforceMethods & TLazyRules & TEnforceEager;
 type TEnforceMethods = TModifiers & {
   context: () => TEnforceContext;
   extend: (customRules: TRule) => void;
 };
-export { enforce };
+declare global {
+  namespace n4s {
+    interface EnforceCustomMatchers<R> {}
+  }
+}
+export { enforce, ctx };

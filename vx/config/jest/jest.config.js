@@ -8,6 +8,19 @@ const opts = require('vx/opts');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
+const ignoreGeneratedExports = moduleAliases().reduce((allExports, current) => {
+  const find = path.join(opts.dir.SRC, opts.dir.EXPORTS);
+  if (current.absolute.indexOf(find) === -1) {
+    return allExports;
+  }
+
+  const x = path
+    .join(...current.absolute.split(find))
+    .replace('.ts', '/package.json');
+
+  return allExports.concat(x);
+}, []);
+
 const moduleNameMapper = moduleAliases().reduce(
   (aliases, { name, absolute }) =>
     Object.assign(aliases, { [`^${name}$`]: absolute }),
@@ -52,6 +65,7 @@ module.exports = (custom = {}) => ({
     },
   },
   moduleNameMapper,
+  modulePathIgnorePatterns: [...ignoreGeneratedExports],
   preset: 'ts-jest',
   rootDir: '.',
   roots: ['<rootDir>'],

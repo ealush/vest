@@ -1,5 +1,7 @@
 packages/*/types/
 packages/n4s/compose/
+packages/n4s/compounds/
+packages/n4s/schema/
 packages/vest/classnames/
 packages/vest/promisify/
 packages/vest/parser/

@@ -1,5 +1,6 @@
 import { enforce } from 'enforce';
 import * as ruleReturn from 'ruleReturn';
+import 'schema';
 
 describe('enforce.loose for loose matching', () => {
   describe('lazy interface', () => {

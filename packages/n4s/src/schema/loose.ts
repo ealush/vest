@@ -1,12 +1,12 @@
-import { ctx } from 'enforceContext';
-import type { TShapeObject } from 'genEnforceLazy';
+import type { IShapeObject } from 'genEnforceLazy';
+import { ctx } from 'n4s';
 import type { TRuleDetailedResult } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 
 export function loose(
   inputObject: Record<string, any>,
-  shapeObject: TShapeObject
+  shapeObject: IShapeObject
 ): TRuleDetailedResult {
   for (const key in shapeObject) {
     const currentValue = inputObject[key];

@@ -39,7 +39,6 @@
     "wait": "^0.4.2"
   },
   "private": true,
-  "dependencies": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/ealush/vest.git"

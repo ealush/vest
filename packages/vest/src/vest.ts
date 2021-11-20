@@ -1,4 +1,4 @@
-import { enforce } from 'enforce';
+import { enforce } from 'n4s';
 
 import create from 'create';
 import { only, skip } from 'exclusive';

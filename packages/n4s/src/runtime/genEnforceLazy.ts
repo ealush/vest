@@ -6,7 +6,7 @@ import eachEnforceRule from 'eachEnforceRule';
 import { ctx } from 'enforceContext';
 import isProxySupported from 'isProxySupported';
 import ruleReturn, { defaultToPassing, TRuleDetailedResult } from 'ruleReturn';
-import { TRuleValue, TArgs, KBaseRules, getRule, TRules } from 'runtimeRules';
+import { TRuleValue, TArgs, KBaseRules, getRule } from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
 // eslint-disable-next-line max-lines-per-function
@@ -78,20 +78,28 @@ export default function genEnforceLazy(key: string) {
   }
 }
 
-export type TLazyRules = TRules<TLazyRuleMethods>;
+export type TLazyRules = n4s.IRules<TLazyRuleMethods>;
 
-export type TLazy = TLazyRules & TLazyRuleMethods;
+export type TLazy = TLazyRules &
+  TLazyRuleMethods &
+  // This is a "catch all" hack to make TS happy while not
+  // losing type hints
+  Record<string, (...args: any[]) => any>;
 
-export type TShapeObject = Record<any, TLazy>;
+export interface IShapeObject
+  extends Record<string, any>,
+    Record<string, TLazyRuleRunners> {}
 
 type TLazyRuleMethods = TLazyRuleRunners & {
   message: (message: TLazyMessage) => TLazy;
 };
 
-type TLazyRuleRunners = {
+export type TLazyRuleRunners = {
   test: (value: unknown) => boolean;
   run: (value: unknown) => TRuleDetailedResult;
 };
+
+export type TComposeResult = TLazyRuleRunners & ((value: any) => void);
 
 type TRegisteredRules = Array<(value: TRuleValue) => TRuleDetailedResult>;
 type TLazyMessage =

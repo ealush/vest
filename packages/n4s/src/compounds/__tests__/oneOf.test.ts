@@ -1,6 +1,9 @@
 import { enforce } from 'enforce';
 import * as ruleReturn from 'ruleReturn';
 
+import 'schema';
+import 'compounds';
+
 describe('enforce.oneOf', () => {
   it('Should fail when multiple enforcements are met', () => {
     expect(

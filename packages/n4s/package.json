@@ -39,10 +39,10 @@
       "browser": "./dist/es/compose.production.js",
       "umd": "./dist/umd/compose.production.js",
       "import": "./dist/es/compose.production.js",
-      "require": "./dist/cjs/compose.js",
-      "node": "./dist/cjs/compose.js",
+      "require": "./dist/cjs/compose.production.js",
+      "node": "./dist/cjs/compose.production.js",
       "module": "./dist/es/compose.production.js",
-      "default": "./dist/cjs/compose.js"
+      "default": "./dist/cjs/compose.production.js"
     },
     "./compounds": {
       "production": {
@@ -69,10 +69,10 @@
       "browser": "./dist/es/compounds.production.js",
       "umd": "./dist/umd/compounds.production.js",
       "import": "./dist/es/compounds.production.js",
-      "require": "./dist/cjs/compounds.js",
-      "node": "./dist/cjs/compounds.js",
+      "require": "./dist/cjs/compounds.production.js",
+      "node": "./dist/cjs/compounds.production.js",
       "module": "./dist/es/compounds.production.js",
-      "default": "./dist/cjs/compounds.js"
+      "default": "./dist/cjs/compounds.production.js"
     },
     "./schema": {
       "production": {
@@ -99,10 +99,10 @@
       "browser": "./dist/es/schema.production.js",
       "umd": "./dist/umd/schema.production.js",
       "import": "./dist/es/schema.production.js",
-      "require": "./dist/cjs/schema.js",
-      "node": "./dist/cjs/schema.js",
+      "require": "./dist/cjs/schema.production.js",
+      "node": "./dist/cjs/schema.production.js",
       "module": "./dist/es/schema.production.js",
-      "default": "./dist/cjs/schema.js"
+      "default": "./dist/cjs/schema.production.js"
     },
     ".": {
       "development": {
@@ -119,10 +119,10 @@
       "browser": "./dist/es/n4s.production.js",
       "umd": "./dist/umd/n4s.production.js",
       "import": "./dist/es/n4s.production.js",
-      "require": "./dist/cjs/n4s.js",
-      "node": "./dist/cjs/n4s.js",
+      "require": "./dist/cjs/n4s.production.js",
+      "node": "./dist/cjs/n4s.production.js",
       "module": "./dist/es/n4s.production.js",
-      "default": "./dist/cjs/n4s.js"
+      "default": "./dist/cjs/n4s.production.js"
     },
     "./package.json": "./package.json",
     "./": "./"

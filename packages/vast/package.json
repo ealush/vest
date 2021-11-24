@@ -34,10 +34,10 @@
       "browser": "./dist/es/vast.production.js",
       "umd": "./dist/umd/vast.production.js",
       "import": "./dist/es/vast.production.js",
-      "require": "./dist/cjs/vast.js",
-      "node": "./dist/cjs/vast.js",
+      "require": "./dist/cjs/vast.production.js",
+      "node": "./dist/cjs/vast.production.js",
       "module": "./dist/es/vast.production.js",
-      "default": "./dist/cjs/vast.js"
+      "default": "./dist/cjs/vast.production.js"
     },
     "./package.json": "./package.json",
     "./": "./"

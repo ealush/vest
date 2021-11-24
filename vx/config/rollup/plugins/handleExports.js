@@ -6,18 +6,11 @@ const opts = require('vx/opts');
 const listExportedModules = require('vx/util/listExportedModules');
 const once = require('vx/util/once');
 const packageJson = require('vx/util/packageJson');
+const rootPackageJson = require('vx/util/rootPackageJson');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
-module.exports = handleExports;
-
-const rootPackageJson = require(path.join(vxPath.ROOT_PATH, 'package.json'));
-
-function isMain(name) {
-  return usePackage() === name;
-}
-
-function handleExports({ namespace } = {}) {
+module.exports = function handleExports({ namespace } = {}) {
   return {
     name: 'write-cjs-main',
     writeBundle: once(({ name }) => {
@@ -25,89 +18,49 @@ function handleExports({ namespace } = {}) {
 
       let exportPath = rootPath;
 
-      if (!isMain(name)) {
+      const shouldNest = !isMainExport(name);
+
+      if (shouldNest) {
         exportPath = joinPath(rootPath, namespace, name);
         fse.ensureDirSync(exportPath);
       }
+      writePackageJson(name, exportPath, { namespace });
 
-      writePackageJson(name, exportPath, namespace);
-
-      fse.writeFileSync(
-        vxPath.package(usePackage(), mainExport(name)),
-        genEntry(name),
-        'utf8'
-      );
+      writeEntry(name);
     }),
   };
-}
+};
 
-function genEntry(moduleName) {
+function writeEntry(name) {
   const pkgName = usePackage();
   const dist = (...args) =>
     vxPath.packageDist(pkgName, opts.format.CJS, ...args);
-  return `'use strict'
+  const content = `'use strict'
 
 if (process.env.NODE_ENV === '${opts.env.PRODUCTION}') {
   module.exports = require('./${path.relative(
     dist(),
-    dist(exportName(moduleName, opts.env.PRODUCTION))
+    dist(exportName(name, opts.env.PRODUCTION))
   )}');
 } else {
   module.exports = require('./${path.relative(
     dist(),
-    dist(exportName(moduleName, opts.env.DEVELOPMENT))
+    dist(exportName(name, opts.env.DEVELOPMENT))
   )}');
 }`;
+
+  const mainExportPath = genDistPath(name, {
+    format: opts.format.CJS,
+    env: null,
+  });
+
+  fse.writeFileSync(vxPath.package(pkgName, mainExportPath), content, 'utf8');
 }
 
-function genPackageJson(name, namespace) {
-  const isTopLevel = isMain(name);
-  const esPath = genDistPath(
-    isTopLevel,
-    namespace,
-    name,
-    opts.format.ES,
-    opts.env.PRODUCTION
-  );
-  const cjsPath = genDistPath(isTopLevel, namespace, name, opts.format.CJS);
-  return {
-    main: cjsPath,
-    module: esPath,
-    name,
-    types: typesPath([name, namespace]),
-    ...(isTopLevel
-      ? {
-          exports: {
-            ...genExportedFiles(),
-            /* eslint-disable sort-keys */
-            '.': {
-              [opts.env.DEVELOPMENT]: {
-                ...exportsOrder([name], opts.env.DEVELOPMENT),
-              },
-              ...exportsOrder([name]),
-            },
-            './package.json': './package.json',
-            './': './',
-            /* eslint-enable sort-keys */
-          },
-          ...(rootPackageJson?.repository && {
-            repository: {
-              ...rootPackageJson?.repository,
-              directory: path.join(opts.dir.PACKAGES, name),
-            },
-            bugs: {
-              url: `${rootPackageJson?.repository.url}/issues`,
-            },
-          }),
-        }
-      : { private: true }),
-  };
-}
+function writePackageJson(name, exportPath, { namespace } = {}) {
+  let pkgJson = generatePackageJson(name, namespace);
 
-function writePackageJson(name, exportPath, namespace) {
-  let pkgJson = genPackageJson(name, namespace);
-
-  if (isMain(name)) {
+  if (isMainExport(name)) {
     pkgJson = { ...packageJson(name), ...pkgJson };
   }
 
@@ -116,69 +69,127 @@ function writePackageJson(name, exportPath, namespace) {
   });
 }
 
-function joinPath(...paths) {
-  return paths.filter(Boolean).join(path.sep); // this combats the trimming of the first dot in the path
+function generatePackageJson(moduleName, namespace) {
+  if (!isMainExport(moduleName)) {
+    return {
+      ...genPackgeJsonBase(moduleName, {
+        namespace,
+        isNested: true,
+      }),
+      private: true,
+    };
+  }
+
+  return {
+    ...genPackgeJsonBase(moduleName, { namespace }),
+    ...genRepoDetails(moduleName),
+    exports: {
+      ...genExportedFilesInMainPackageJson(),
+      ...genExports(moduleName, namespace),
+    },
+  };
 }
 
-function mainExport(name) {
-  return joinPath(opts.dir.DIST, opts.format.CJS, fileName(name));
+function genPackgeJsonBase(moduleName, { namespace, isNested = false }) {
+  let prefix = '.';
+  if (isNested) {
+    prefix = namespace ? '../..' : '..';
+  }
+
+  /* eslint-disable sort-keys */
+  const cjsPath = genDistPath(moduleName, {
+    prefix,
+    namespace,
+    format: opts.format.CJS,
+    env: null,
+  });
+
+  const esPath = genDistPath(moduleName, {
+    prefix,
+    namespace,
+    format: opts.format.ES,
+    env: opts.env.PRODUCTION,
+  });
+
+  const typesPath = genTypesPath(moduleName, { prefix, namespace });
+
+  return {
+    main: cjsPath,
+    module: esPath,
+    name: moduleName,
+    types: typesPath,
+  };
 }
 
-function singleDot(isMain) {
-  return isMain ? '.' : '..';
+function genExports(moduleName, namespace) {
+  /* eslint-disable sort-keys */
+  return {
+    '.': {
+      [opts.env.DEVELOPMENT]: genMainPackageJSONFileExports(moduleName, {
+        env: opts.env.DEVELOPMENT,
+        namespace,
+      }),
+      ...genMainPackageJSONFileExports(moduleName, {
+        env: opts.env.PRODUCTION,
+        namespace,
+      }),
+    },
+    './package.json': './package.json',
+    './': './',
+  };
 }
 
-function fileName(name, ext = 'js') {
-  return [name, ext].join('.');
-}
-
-function exportName(name, env) {
-  return fileName([name, env].filter(Boolean).join('.'));
-}
-
-function genExportedFiles() {
+function genExportedFilesInMainPackageJson() {
   return listExportedModules().reduce((modules, [moduleName, namespace]) => {
     const currentModule = {};
-    modules[`./${moduleName}`] = currentModule;
+    modules['./' + path.join(...filterFalsy([namespace, moduleName]))] =
+      currentModule;
 
     [opts.env.PRODUCTION, opts.env.DEVELOPMENT].reduce((currentModule, env) => {
-      currentModule[env] = exportsOrder([moduleName, namespace], env);
+      currentModule[env] = genMainPackageJSONFileExports(moduleName, {
+        namespace,
+        env,
+      });
 
       return currentModule;
     }, currentModule);
 
-    Object.assign(currentModule, exportsOrder([moduleName, namespace]));
+    Object.assign(
+      currentModule,
+      genMainPackageJSONFileExports(moduleName, {
+        namespace,
+      })
+    );
 
     return modules;
   }, {});
 }
 
-function exportsOrder([moduleName, namespace], env = undefined) {
-  const isTopLevel = true;
-  const esPath = genDistPath(
-    isTopLevel,
+function genMainPackageJSONFileExports(
+  moduleName,
+  { env = opts.env.PRODUCTION, namespace = undefined }
+) {
+  const prefix = '.';
+  const cjsPath = genDistPath(moduleName, {
+    prefix,
     namespace,
-    moduleName,
-    opts.format.ES,
-    env ?? opts.env.PRODUCTION
-  );
-  const cjsPath = genDistPath(
-    isTopLevel,
+    format: opts.format.CJS,
+    env,
+  });
+  const esPath = genDistPath(moduleName, {
+    prefix,
     namespace,
-    moduleName,
-    opts.format.CJS,
-    env
-  );
+    format: opts.format.ES,
+    env,
+  });
+  const umdPath = genDistPath(moduleName, {
+    prefix,
+    namespace,
+    format: opts.format.UMD,
+    env,
+  });
 
-  const umdPath = genDistPath(
-    isTopLevel,
-    namespace,
-    moduleName,
-    opts.format.UMD,
-    env ?? opts.env.PRODUCTION
-  );
-
-  const types = typesPath([moduleName, namespace], /* isMain */ true);
+  const types = genTypesPath(moduleName, { prefix, namespace });
 
   /* eslint-disable sort-keys */
   return {
@@ -194,27 +205,71 @@ function exportsOrder([moduleName, namespace], env = undefined) {
   /* eslint-enable sort-keys */
 }
 
-// eslint-disable-next-line max-params
-function genDistPath(isTopLevel, namespace, moduleName, moduleType, env) {
+function genRepoDetails(name) {
+  const rootPkgJson = rootPackageJson();
+
+  return {
+    ...(rootPkgJson?.repository && {
+      repository: {
+        ...rootPkgJson?.repository,
+        directory: path.join(opts.dir.PACKAGES, name),
+      },
+      bugs: {
+        url: `${rootPkgJson?.repository.url}/issues`,
+      },
+    }),
+  };
+}
+
+function isMainExport(name) {
+  return usePackage() === name;
+}
+
+function joinPath(...paths) {
+  return paths.filter(Boolean).join(path.sep); // this combats the trimming of the first dot in the path
+}
+
+function genDistPath(
+  moduleName,
+  {
+    namespace = undefined,
+    env = opts.env.PRODUCTION,
+    format = opts.format.CJS,
+    prefix,
+  }
+) {
   return joinPath(
-    singleDot(isTopLevel),
-    levelUp(namespace),
-    opts.dir.DIST,
-    moduleType,
-    namespace,
-    exportName(moduleName, env)
+    // add nesting level
+    ...filterFalsy([
+      prefix,
+      opts.dir.DIST,
+      format,
+      namespace,
+      exportName(moduleName, env),
+    ])
   );
 }
 
-const typesPath = ([moduleName, namespace], isTopLevel) =>
-  joinPath(
-    singleDot(isTopLevel ?? isMain(moduleName)),
-    levelUp(namespace),
-    opts.dir.TYPES,
-    namespace,
-    fileName(moduleName, 'd.ts')
+function genTypesPath(moduleName, { namespace = undefined, prefix }) {
+  return joinPath(
+    // add nesting level
+    ...filterFalsy([
+      prefix,
+      opts.dir.TYPES,
+      namespace,
+      fileName(moduleName, 'd.ts'),
+    ])
   );
+}
 
-function levelUp(value) {
-  return value ? '..' : undefined;
+function exportName(name, env) {
+  return fileName(filterFalsy([name, env]).join('.'));
+}
+
+function filterFalsy(arr) {
+  return arr.filter(Boolean);
+}
+
+function fileName(name, ext = 'js') {
+  return [name, ext].join('.');
 }

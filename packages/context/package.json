@@ -27,10 +27,10 @@
       "browser": "./dist/es/context.production.js",
       "umd": "./dist/umd/context.production.js",
       "import": "./dist/es/context.production.js",
-      "require": "./dist/cjs/context.js",
-      "node": "./dist/cjs/context.js",
+      "require": "./dist/cjs/context.production.js",
+      "node": "./dist/cjs/context.production.js",
       "module": "./dist/es/context.production.js",
-      "default": "./dist/cjs/context.js"
+      "default": "./dist/cjs/context.production.js"
     },
     "./package.json": "./package.json",
     "./": "./"

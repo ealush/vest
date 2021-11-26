@@ -1,8 +1,8 @@
+import { enforce } from 'n4s';
 import { DropFirst } from 'utilityTypes';
 
 import { isArrayOf } from 'isArrayOf';
 import { loose } from 'loose';
-import { enforce } from 'n4s';
 import { shape } from 'shape';
 
 enforce.extend({ shape, loose, isArrayOf });

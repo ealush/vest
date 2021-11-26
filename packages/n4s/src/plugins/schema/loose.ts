@@ -1,5 +1,6 @@
-import type { IShapeObject } from 'genEnforceLazy';
 import { ctx } from 'n4s';
+
+import type { IShapeObject } from 'genEnforceLazy';
 import type { TRuleDetailedResult } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
 import runLazyRule from 'runLazyRule';

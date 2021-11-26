@@ -5,7 +5,6 @@ import { ctx, TEnforceContext } from 'enforceContext';
 import enforceEager, { TEnforceEager } from 'enforceEager';
 import genEnforceLazy, { TLazyRules } from 'genEnforceLazy';
 import isProxySupported from 'isProxySupported';
-import modifiers, { TModifiers } from 'modifiers';
 import { TRule, KBaseRules, baseRules, getRule } from 'runtimeRules';
 /**
  * Enforce is quite complicated, I want to explain it in detail.
@@ -40,7 +39,6 @@ function genEnforce(): TEnforce {
     extend: (customRules: TRule) => {
       assign(baseRules, customRules);
     },
-    ...modifiers(),
   } as TEnforce;
 
   if (!isProxySupported()) {
@@ -72,7 +70,7 @@ export const enforce = genEnforce();
 
 type TEnforce = TEnforceMethods & TLazyRules & TEnforceEager;
 
-type TEnforceMethods = TModifiers & {
+type TEnforceMethods = {
   context: () => TEnforceContext;
   extend: (customRules: TRule) => void;
 };

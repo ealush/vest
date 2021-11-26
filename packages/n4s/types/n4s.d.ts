@@ -202,16 +202,9 @@ type TLazyRuleRunners = {
 type TLazyMessage =
   | string
   | ((value: unknown, originalMessage?: TStringable) => string);
-// Help needed improving the typings of this file.
-// Ideally, we'd be able to extend IShapeObject, but that's not possible.
-declare function partial<T extends Record<any, any>>(shapeObject: T): T;
-declare function modifiers(): {
-  partial: typeof partial;
-};
-type TModifiers = ReturnType<typeof modifiers>;
 declare const enforce: TEnforce;
 type TEnforce = TEnforceMethods & TLazyRules & TEnforceEager;
-type TEnforceMethods = TModifiers & {
+type TEnforceMethods = {
   context: () => TEnforceContext;
   extend: (customRules: TRule) => void;
 };

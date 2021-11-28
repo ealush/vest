@@ -1,17 +1,20 @@
 import { enforce } from 'enforce';
 import * as ruleReturn from 'ruleReturn';
-import 'schema';
+import { partial } from 'schema';
+
 import 'compounds';
 
-describe('enforce.partial', () => {
+describe('partial', () => {
   describe('Lazy Interface', () => {
     it('Should pass when wrapped fields are undefined or null', () => {
       const rules = enforce.shape(
-        enforce.partial({
+        partial({
           username: enforce.isString().longerThan(3),
           id: enforce.isNumeric(),
         })
       );
+
+      partial({});
 
       expect(rules.run({})).toEqual(ruleReturn.passing());
       expect(
@@ -24,7 +27,7 @@ describe('enforce.partial', () => {
 
     it('Should pass when wrapped fields are valid', () => {
       const rules = enforce.shape(
-        enforce.partial({
+        partial({
           username: enforce.isString().longerThan(3),
           id: enforce.isNumeric(),
         })
@@ -37,7 +40,7 @@ describe('enforce.partial', () => {
 
     it('Should pass when some wrapped fields are missing', () => {
       const rules = enforce.shape(
-        enforce.partial({
+        partial({
           username: enforce.isString().longerThan(3),
           id: enforce.isNumeric(),
         })
@@ -48,7 +51,7 @@ describe('enforce.partial', () => {
 
     it('Should fail when wrapped fields are invalid', () => {
       const rules = enforce.shape(
-        enforce.partial({
+        partial({
           username: enforce.isString().longerThan(3),
           id: enforce.isNumeric(),
         })
@@ -63,7 +66,7 @@ describe('enforce.partial', () => {
   describe('Eager interface', () => {
     it('Should pass when wrapped fields are undefined or null', () => {
       enforce({}).shape(
-        enforce.partial({
+        partial({
           username: enforce.isString().longerThan(3),
           id: enforce.isNumeric(),
         })
@@ -73,7 +76,7 @@ describe('enforce.partial', () => {
         username: null,
         id: null,
       }).shape(
-        enforce.partial({
+        partial({
           username: enforce.isString().longerThan(3),
           id: enforce.isNumeric(),
         })
@@ -82,7 +85,7 @@ describe('enforce.partial', () => {
 
     it('Should pass when wrapped fields are valid', () => {
       enforce({ username: 'foobar', id: 1 }).shape(
-        enforce.partial({
+        partial({
           username: enforce.isString().longerThan(3),
           id: enforce.isNumeric(),
         })
@@ -91,7 +94,7 @@ describe('enforce.partial', () => {
 
     it('Should pass when some wrapped fields are missing', () => {
       enforce({ username: 'foobar' }).shape(
-        enforce.partial({
+        partial({
           username: enforce.isString().longerThan(3),
           id: enforce.isNumeric(),
         })
@@ -101,7 +104,7 @@ describe('enforce.partial', () => {
     it('Should fail when wrapped fields are invalid', () => {
       expect(() =>
         enforce({ username: 'foo', id: '1' }).shape(
-          enforce.partial({
+          partial({
             username: enforce.isString().longerThan(3),
             id: enforce.isNumeric(),
           })
@@ -114,7 +117,7 @@ describe('enforce.partial', () => {
     expect(
       enforce
         .shape(
-          enforce.partial({
+          partial({
             username: enforce.isString().longerThan(3),
             id: enforce.isNumeric(),
           })
@@ -125,7 +128,7 @@ describe('enforce.partial', () => {
     expect(
       enforce
         .loose(
-          enforce.partial({
+          partial({
             username: enforce.isString().longerThan(3),
             id: enforce.isNumeric(),
           })

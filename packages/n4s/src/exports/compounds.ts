@@ -5,9 +5,8 @@ import { allOf } from 'allOf';
 import { anyOf } from 'anyOf';
 import { noneOf } from 'noneOf';
 import { oneOf } from 'oneOf';
-import { optional } from 'optional';
 
-enforce.extend({ allOf, anyOf, noneOf, oneOf, optional });
+enforce.extend({ allOf, anyOf, noneOf, oneOf });
 
 /* eslint-disable @typescript-eslint/no-namespace */
 declare global {
@@ -17,7 +16,6 @@ declare global {
       anyOf: (...args: DropFirst<Parameters<typeof anyOf>>) => R;
       noneOf: (...args: DropFirst<Parameters<typeof noneOf>>) => R;
       oneOf: (...args: DropFirst<Parameters<typeof oneOf>>) => R;
-      optional: (...args: DropFirst<Parameters<typeof optional>>) => R;
     }
   }
 }

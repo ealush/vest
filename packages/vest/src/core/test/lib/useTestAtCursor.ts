@@ -5,6 +5,7 @@ import type { NestedArray } from 'nestedArray';
 import { throwErrorDeferred } from 'throwError';
 
 import VestTest from 'VestTest';
+import ctx from 'ctx';
 import isSameProfileTest from 'isSameProfileTest';
 import { shouldAllowReorder } from 'isolate';
 import { useTestObjects, useSetTests } from 'stateHooks';
@@ -33,6 +34,10 @@ export function useTestAtCursor(newTestObject: VestTest): VestTest {
 
   let prevTest: NestedArray<VestTest> | VestTest | null =
     useGetTestAtCursor(prevTests);
+
+  if (nonMatchingTestKey(prevTest, newTestObject)) {
+    retainPrevTestByKey(prevTest);
+  }
 
   if (shouldPurgePrevTest(prevTest, newTestObject)) {
     throwTestOrderError(prevTest, newTestObject);
@@ -78,6 +83,23 @@ function useGetTestAtCursor(tests: NestedArray<VestTest>): VestTest {
 
 function shouldPurgePrevTest(prevTest: VestTest, newTest: VestTest): boolean {
   return isNotEmpty(prevTest) && !isSameProfileTest(prevTest, newTest);
+}
+
+function nonMatchingTestKey(
+  prevTest: VestTest,
+  newTestObject: VestTest
+): boolean {
+  if (isEmpty(prevTest)) {
+    return false;
+  }
+  return prevTest.key !== newTestObject.key;
+}
+
+function retainPrevTestByKey(prevTest: VestTest): undefined {
+  const context = ctx.useX();
+
+  // TODO: Handle duplicate key
+  context.prevRunKeys[prevTest.key] = prevTest;
 }
 
 function throwTestOrderError(

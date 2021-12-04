@@ -12,18 +12,20 @@ export default createContext<CTXType>((ctxRef, parentContext) =>
     : assign(
         {},
         {
-          isolate: { type: IsolateTypes.DEFAULT },
-          testCursor: createCursor(),
           exclusion: {
             tests: {},
             groups: {},
           },
+          isolate: { type: IsolateTypes.DEFAULT },
+          prevRunKeys: {},
+          testCursor: createCursor(),
         },
         ctxRef
       )
 );
 
 type CTXType = {
+  prevRunKeys: Record<string, VestTest>;
   isolate: { type: IsolateTypes };
   testCursor: ReturnType<typeof createCursor>;
   stateRef?: TStateRef;

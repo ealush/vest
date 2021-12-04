@@ -1,5 +1,18 @@
 import isPromise from 'isPromise';
 
+// TODO:
+/**
+ *
+ * Key flow:
+ * When no prev-runs exist, we're only "recordings" the test state.
+ *
+ * When prev-runs exist, we're refilling the test state with the prev-run state.
+ *
+ * When expecting a test with a certain key, but a different key (or not key) test is encountered:
+ *  Search in the prev test run if the encountered key was present in the previous run state. If so, rehydrate. Keep aside the newly misplaced test state.
+ *  If not found throughout the run, discard of that found key test.
+ */
+
 import VestTest from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded, isExcludedIndividually } from 'exclusive';

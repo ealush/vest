@@ -97,3 +97,15 @@ export function useTestsFlat(): VestTest[] {
 
   return flatCache([current], () => nestedArray.flatten(current));
 }
+
+export function usePrevTestKeys(): Record<string, VestTest> {
+  const [{ prev }] = useTestObjects();
+
+  return nestedArray.flatten(prev).reduce((prevTestKeys, testObject) => {
+    if (!testObject.key) {
+      return prevTestKeys;
+    }
+    prevTestKeys[testObject.key] = testObject;
+    return prevTestKeys;
+  }, {} as Record<string, VestTest>);
+}

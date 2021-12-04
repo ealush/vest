@@ -2,7 +2,7 @@ import assign from 'assign';
 import { createContext } from 'context';
 import { createCursor } from 'cursor';
 
-import { IsolateTypes } from 'IsolateTypes';
+import { IsolateKeys, IsolateTypes } from 'IsolateTypes';
 import VestTest from 'VestTest';
 import type { TStateRef } from 'createStateRef';
 
@@ -12,19 +12,28 @@ export default createContext<CTXType>((ctxRef, parentContext) =>
     : assign(
         {},
         {
-          isolate: { type: IsolateTypes.DEFAULT },
-          testCursor: createCursor(),
           exclusion: {
             tests: {},
             groups: {},
           },
+          isolate: {
+            type: IsolateTypes.DEFAULT,
+            keys: {
+              current: {},
+              prev: {},
+            },
+          },
+          testCursor: createCursor(),
         },
         ctxRef
       )
 );
 
 type CTXType = {
-  isolate: { type: IsolateTypes };
+  isolate: {
+    type: IsolateTypes;
+    keys: IsolateKeys;
+  };
   testCursor: ReturnType<typeof createCursor>;
   stateRef?: TStateRef;
   exclusion: {

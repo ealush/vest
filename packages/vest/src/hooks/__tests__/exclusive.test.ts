@@ -167,7 +167,7 @@ describe('exclusive hooks', () => {
       test('isExcluded returns false for non excluded field', () => {
         vest.create(() => {
           vest.skip(test1.fieldName);
-          res = isExcluded(vest.test(test2, jest.fn()));
+          res = isExcluded(vest.test(test2.fieldName, jest.fn()));
         })();
         expect(res).toBe(false);
       });

@@ -1,3 +1,4 @@
+import mockThrowError from '../../../../testUtils/mockThrowError';
 import { dummyTest } from '../../../../testUtils/testDummy';
 
 import { create, skipWhen } from 'vest';
@@ -73,13 +74,9 @@ describe('Merging of previous test runs', () => {
   describe('When tests are passed in a different order between runs', () => {
     let throwErrorDeferred, vest;
     beforeEach(() => {
-      throwErrorDeferred = jest.fn();
-      jest.resetModules();
-      jest.mock('throwError', () => ({
-        throwErrorDeferred,
-        default: jest.fn(),
-      }));
-      vest = require('vest');
+      const mock = mockThrowError();
+      throwErrorDeferred = mock.throwErrorDeferred;
+      vest = mock.vest;
     });
 
     afterAll(() => {

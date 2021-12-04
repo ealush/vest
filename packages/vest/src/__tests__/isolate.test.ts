@@ -1,20 +1,17 @@
+import mockThrowError from '../../testUtils/mockThrowError';
+
 import { IsolateTypes } from 'IsolateTypes';
 
 describe('isolate', () => {
   let firstRun = true;
   let vest, isolate, skipWhen, dummyTest;
-  let throwError, throwErrorDeferred;
+  let throwErrorDeferred;
 
   beforeEach(() => {
     firstRun = true;
-    jest.resetModules();
-    throwError = jest.fn();
-    throwErrorDeferred = jest.fn();
-    jest.mock('throwError', () => ({
-      throwErrorDeferred,
-      default: throwError,
-    }));
-    vest = require('vest');
+    const mock = mockThrowError();
+    throwErrorDeferred = mock.throwErrorDeferred;
+    vest = mock.vest;
     skipWhen = vest.skipWhen;
     isolate = require('isolate').isolate;
     dummyTest = require('../../testUtils/testDummy').dummyTest;

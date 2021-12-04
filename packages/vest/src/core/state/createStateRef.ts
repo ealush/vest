@@ -26,7 +26,7 @@ export default function createStateRef(
       current: NestedArray<VestTest>;
     }>(prev => {
       return {
-        prev: (prev ? prev.current : []) as NestedArray<VestTest>,
+        prev: prev ? prev.current : [],
         current: [] as NestedArray<VestTest>,
       };
     }),

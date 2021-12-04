@@ -4,6 +4,7 @@ exports[`VestTest TestObject constructor 1`] = `
 VestTest {
   "fieldName": "unicycle",
   "id": "0",
+  "key": null,
   "message": "I am Root.",
   "severity": "error",
   "status": "UNTESTED",
@@ -15,6 +16,7 @@ exports[`VestTest testObject.warn Should mark the test as warning 1`] = `
 VestTest {
   "fieldName": "unicycle",
   "id": "102",
+  "key": null,
   "message": "I am Root.",
   "severity": "warning",
   "status": "UNTESTED",

@@ -4,6 +4,7 @@ Simple utility for context propagation within Javascript applications and librar
 It allows you to keep reference for shared variables, and access them down in your function call even if not declared in the same scope.
 
 ## How Context Works?
+
 The way context works is quite simple. Creating a context initializes a closure with a context storage object. When you run your context call, it takes your values, and places them in the context storage object. When your function finishes running, the context is cleared.
 
 ![image](https://user-images.githubusercontent.com/11255103/137119151-6912d3f1-ab48-4c91-a426-76af8abc8c55.png)
@@ -125,13 +126,15 @@ Working with context inside within async code may lead to unexpected results whe
 This is known and expected behavior. Context is a synchronous context propagation tool that completely relies on the synchronous nature of function calls in JS - this is exactly what allows context to run.
 
 #### But my function is still running. Why did the context clear?
+
 The async parts of your function are actually not executed along with your sync code, and even though you "await" it, the browser carries on and allows other code to run in between instead of blocking execution until your async code is complete.
 
 #### Ok, so what do I do?
+
 There are multiple strategies of handling async functions with context.
 
 1. Pulling your values from context right before your async call
-This is the most obvious and easiest to achieve, though not always what you need. The basic idea is that you take whatever you need from the context when it is still available to you.
+   This is the most obvious and easiest to achieve, though not always what you need. The basic idea is that you take whatever you need from the context when it is still available to you.
 
 2. context.bind or context.run your async function to the context you extracted
-This is the next logical step - you have a function that you know should run later with your context. You can bind your context to it for delayed execution. When your function runs later down the line within your asynchronous code, internally it will still have access to whatever you bound to it.
+   This is the next logical step - you have a function that you know should run later with your context. You can bind your context to it for delayed execution. When your function runs later down the line within your asynchronous code, internally it will still have access to whatever you bound to it.

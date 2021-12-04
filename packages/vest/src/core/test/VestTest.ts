@@ -14,6 +14,7 @@ export default class VestTest {
   asyncTest?: TAsyncTest;
   groupName?: string;
   message?: string;
+  key?: null | string = null;
 
   id = genId();
   severity = TestSeverity.Error;
@@ -22,7 +23,11 @@ export default class VestTest {
   constructor(
     fieldName: string,
     testFn: TTestFn,
-    { message, groupName }: { message?: string; groupName?: string } = {}
+    {
+      message,
+      groupName,
+      key,
+    }: { message?: string; groupName?: string; key?: string } = {}
   ) {
     this.fieldName = fieldName;
     this.testFn = testFn;
@@ -33,6 +38,10 @@ export default class VestTest {
 
     if (message) {
       this.message = message;
+    }
+
+    if (key) {
+      this.key = key;
     }
   }
 

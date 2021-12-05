@@ -114,6 +114,96 @@ describe("Test Vest's `test` function", () => {
         }));
     });
   });
+
+  describe('test params', () => {
+    let testObject;
+    it('creates a test without a message and without a key', () => {
+      create(() => {
+        testObject = test('field_name', () => undefined);
+      })();
+      expect(testObject.fieldName).toBe('field_name');
+      expect(testObject.key).toBeNull();
+      expect(testObject.message).toBeUndefined();
+      expect(testObject).toMatchSnapshot();
+    });
+
+    it('creates a test without a key', () => {
+      create(() => {
+        testObject = test('field_name', 'failure message', () => undefined);
+      })();
+      expect(testObject.fieldName).toBe('field_name');
+      expect(testObject.key).toBeNull();
+      expect(testObject.message).toBe('failure message');
+      expect(testObject).toMatchSnapshot();
+    });
+
+    it('creates a test without a message and with a key', () => {
+      create(() => {
+        testObject = test('field_name', () => undefined, 'keyboardcat');
+      })();
+      expect(testObject.fieldName).toBe('field_name');
+      expect(testObject.key).toBe('keyboardcat');
+      expect(testObject.message).toBeUndefined();
+      expect(testObject).toMatchSnapshot();
+    });
+
+    it('creates a test with a message and with a key', () => {
+      create(() => {
+        testObject = test(
+          'field_name',
+          'failure message',
+          () => undefined,
+          'keyboardcat'
+        );
+      })();
+      expect(testObject.fieldName).toBe('field_name');
+      expect(testObject.key).toBe('keyboardcat');
+      expect(testObject.message).toBe('failure message');
+      expect(testObject).toMatchSnapshot();
+    });
+
+    it('throws when field name is not a string', () => {
+      const control = jest.fn();
+      create(() => {
+        // @ts-ignore
+        expect(() => test(undefined, () => undefined)).toThrow(
+          'Incompatible params passed to test function. fieldName must be a string'
+        );
+        // @ts-expect-error
+        expect(() => test(null, 'error message', () => undefined)).toThrow(
+          'Incompatible params passed to test function. fieldName must be a string'
+        );
+        expect(() =>
+          // @ts-expect-error
+          test(null, 'error message', () => undefined, 'key')
+        ).toThrow(
+          'Incompatible params passed to test function. fieldName must be a string'
+        );
+        control();
+      })();
+      expect(control).toHaveBeenCalled();
+    });
+
+    it('throws when callback is not a function', () => {
+      const control = jest.fn();
+      create(() => {
+        // @ts-expect-error
+        expect(() => test('x')).toThrow(
+          'Incompatible params passed to test function. Test callback must be a function'
+        );
+        // @ts-expect-error
+        expect(() => test('x', 'msg', undefined)).toThrow(
+          'Incompatible params passed to test function. Test callback must be a function'
+        );
+        // @ts-expect-error
+        expect(() => test('x', 'msg', undefined, 'key')).toThrow(
+          'Incompatible params passed to test function. Test callback must be a function'
+        );
+        control();
+      })();
+      expect(control).toHaveBeenCalled();
+    });
+  });
 });
 
 function failWithString(msg?: string) {

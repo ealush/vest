@@ -1,12 +1,12 @@
+import isNullish from 'isNullish';
+
 import type { TLazy } from 'genEnforceLazy';
-import { isNull } from 'isNull';
-import { isUndefined } from 'isUndefined';
 import type { TRuleDetailedResult } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 
 export function optional(value: any, ruleChain: TLazy): TRuleDetailedResult {
-  if (isUndefined(value) || isNull(value)) {
+  if (isNullish(value)) {
     return ruleReturn.passing();
   }
   return runLazyRule(ruleChain, value);

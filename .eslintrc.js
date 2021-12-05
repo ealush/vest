@@ -37,7 +37,10 @@ module.exports = {
         'plugin:@typescript-eslint/recommended',
         'plugin:import/typescript',
       ],
-      files: ['*.ts'],
+      files: ['packages/**/*.ts'],
+      parserOptions: {
+        project: ['./tsconfig.json'], // Specify it only for TypeScript files
+      },
       rules: {
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/explicit-module-boundary-types': 'off',
@@ -91,6 +94,7 @@ module.exports = {
     'no-multi-spaces': 1,
     'no-prototype-builtins': 0,
     'no-trailing-spaces': [2, { ignoreComments: false }],
+    'no-undef': 2,
     'no-unneeded-ternary': 2,
     'no-unused-expressions': 2,
     'no-useless-catch': 2,

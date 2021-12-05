@@ -7,37 +7,44 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ## vest: [3.2.8] - 2021-11-02
 
 ### Fixed and improved
-- 9555d1b  types: Add types for skipWhen (ealush)
+
+- 9555d1b types: Add types for skipWhen (ealush)
 
 ## vest: [3.2.7] - 2021-10-16
 
 ### Fixed and improved
-- c2964e0  patch: add skipWhen for forward compatibility (ealush)
+
+- c2964e0 patch: add skipWhen for forward compatibility (ealush)
 
 ## n4s: [3.1.0] - 2021-10-09
 
 ### Added
-- 5adc337  feat: add isBlank rule (Luca Pizzini)
+
+- 5adc337 feat: add isBlank rule (Luca Pizzini)
 
 ## vest: [3.2.6] - 2021-10-09
 
 ### Fixed and improved
-- e538e5b  patch: remove incorrect messaging from group initialization error (ealush)
+
+- e538e5b patch: remove incorrect messaging from group initialization error (ealush)
 
 ## vest: [3.2.5] - 2021-07-31
 
 ### Fixed and improved
-- 3bb7f76  patch: Fix crashing of setFnName in IE11 (#671) (Václav Jančařík)
+
+- 3bb7f76 patch: Fix crashing of setFnName in IE11 (#671) (Václav Jančařík)
 
 ## vest: [3.2.4] - 2021-07-19
 
 ### Fixed and improved
-- ba6c296  patch: remove unused optional references from the state (ealush)
+
+- ba6c296 patch: remove unused optional references from the state (ealush)
 
 ## vest: [3.2.3] - 2021-05-27
 
 ### Fixed and improved
-- c02f22f  patch: use context only as dev dep (ealush)
+
+- c02f22f patch: use context only as dev dep (ealush)
 
 ## vest: [3.2.2] - 2021-05-17
 

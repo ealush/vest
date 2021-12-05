@@ -1,3 +1,5 @@
+import VestTest from 'VestTest';
+
 export enum IsolateTypes {
   DEFAULT,
   SUITE,
@@ -5,3 +7,8 @@ export enum IsolateTypes {
   SKIP_WHEN,
   GROUP,
 }
+
+export type IsolateKeys = {
+  current: Record<string, VestTest>;
+  prev: Record<string, VestTest>;
+};

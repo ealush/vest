@@ -9,7 +9,7 @@ export default function optional(optionals: TOptionalsInput): void {
 
   setOptionalFields(state => {
     if (!isArray(optionals) && !isStringValue(optionals)) {
-      const optionalFunctions = optionals as TOptionalsObject;
+      const optionalFunctions = optionals;
       for (const field in optionalFunctions) {
         const predicate = optionalFunctions[field];
         state[field] = predicate;

@@ -101,6 +101,7 @@
       "hasOwnProperty": ["./packages/shared/src/hasOwnProperty.ts"],
       "isBooleanValue": ["./packages/shared/src/isBooleanValue.ts"],
       "isFunction": ["./packages/shared/src/isFunction.ts"],
+      "isNullish": ["./packages/shared/src/isNullish.ts"],
       "isPromise": ["./packages/shared/src/isPromise.ts"],
       "isStringValue": ["./packages/shared/src/isStringValue.ts"],
       "last": ["./packages/shared/src/last.ts"],
@@ -123,6 +124,7 @@
       "hasRemainingTests": [
         "./packages/vest/src/core/suite/hasRemainingTests.ts"
       ],
+      "key": ["./packages/vest/src/core/test/key.ts"],
       "cancelOverriddenPendingTest": [
         "./packages/vest/src/core/test/lib/cancelOverriddenPendingTest.ts"
       ],
@@ -158,6 +160,7 @@
       "enforce@schema": ["./packages/vest/src/exports/enforce@schema.ts"],
       "parser": ["./packages/vest/src/exports/parser.ts"],
       "promisify": ["./packages/vest/src/exports/promisify.ts"],
+      "each": ["./packages/vest/src/hooks/each.ts"],
       "exclusive": ["./packages/vest/src/hooks/exclusive.ts"],
       "group": ["./packages/vest/src/hooks/group.ts"],
       "hookErrors": ["./packages/vest/src/hooks/hookErrors.ts"],

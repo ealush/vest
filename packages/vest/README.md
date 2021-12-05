@@ -4,7 +4,7 @@
 
 If you want to try it out, you can already install it with the `next` tag.
 
-```npm install vest@next```
+`npm install vest@next`
 
 This version brings many enhancements to Vest. This version is well tested, and can be used safely. If you do, however encounter any issues or have any thoughts on the next version, please report them on the issues page.
 

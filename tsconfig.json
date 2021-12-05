@@ -149,7 +149,6 @@
       ],
       "runAsyncTest": ["./packages/vest/src/core/test/runAsyncTest.ts"],
       "runSyncTest": ["./packages/vest/src/core/test/runSyncTest.ts"],
-      "test.each": ["./packages/vest/src/core/test/test.each.ts"],
       "test.memo": ["./packages/vest/src/core/test/test.memo.ts"],
       "test": ["./packages/vest/src/core/test/test.ts"],
       "VestTest": ["./packages/vest/src/core/test/VestTest.ts"],

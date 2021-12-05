@@ -6,7 +6,6 @@ import throwError from 'throwError';
 import VestTest, { TTestFn } from 'VestTest';
 import ctx from 'ctx';
 import registerPrevRunTest from 'registerPrevRunTest';
-import bindTestEach from 'test.each';
 import bindTestMemo from 'test.memo';
 
 function testBase(fieldName: string, message: string, cb: TTestFn): VestTest;
@@ -49,7 +48,6 @@ function testBase(
 }
 
 export default assign(testBase, {
-  each: bindTestEach(testBase),
   memo: bindTestMemo(testBase),
 });
 

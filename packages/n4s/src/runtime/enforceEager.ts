@@ -25,7 +25,7 @@ export default function enforceEager(value: TRuleValue): IRules {
     return target;
   }
 
-  const proxy = new Proxy(target, {
+  const proxy: IRules = new Proxy(target, {
     get: (_, ruleName: string) => {
       const rule = getRule(ruleName);
       if (rule) {

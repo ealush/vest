@@ -1,1 +1,0 @@
-{"version":3,"file":"anyone.d.ts","sourceRoot":"","sources":["../src/anyone.ts","../../shared/src/isFunction.ts","../src/runner/runAnyoneMethods.ts","../src/all.ts","../src/any.ts","../../n4s/src/lib/bindNot.ts","../src/none.ts","../src/one.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA,OAAO,uBAAkB,CAAY"}

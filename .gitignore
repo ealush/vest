@@ -1,4 +1,5 @@
 packages/*/types/
+packages/*/types/*
 packages/n4s/compose/
 packages/n4s/compounds/
 packages/n4s/schema/
@@ -12,6 +13,7 @@ packages/anyone/any/
 packages/anyone/none/
 packages/anyone/one/
 packages/*/index.js
+.env
 
 
 playground.*

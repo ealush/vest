@@ -1,1 +1,0 @@
-{"version":3,"file":"none.d.ts","sourceRoot":"","sources":["../src/exports/none.ts","../../shared/src/bindNot.ts","../../shared/src/isFunction.ts","../src/runner/runAnyoneMethods.ts"],"names":[],"mappings":"AAIA;;GAEG;AACH,iBAAwB,IAAI,CAAC,GAAG,IAAI,EAAE,OAAO,EAAE,GAAG,OAAO,CAExD"}

@@ -1,3 +1,5 @@
+import { isNullish, isNotNullish } from 'isNullish';
+
 import { endsWith, doesNotEndWith } from 'endsWith';
 import { equals, notEquals } from 'equals';
 import { greaterThan } from 'greaterThan';
@@ -59,11 +61,13 @@ export default function rules() {
     isNotEmpty,
     isNotNaN,
     isNotNull,
+    isNotNullish,
     isNotNumber,
     isNotNumeric,
     isNotString,
     isNotUndefined,
     isNull,
+    isNullish,
     isNumber,
     isNumeric,
     isOdd,

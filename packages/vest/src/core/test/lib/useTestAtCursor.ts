@@ -1,6 +1,6 @@
 import defaultTo from 'defaultTo';
 import { isEmpty, isNotEmpty } from 'isEmpty';
-import isNullish from 'isNullish';
+import { isNullish } from 'isNullish';
 import * as nestedArray from 'nestedArray';
 import type { NestedArray } from 'nestedArray';
 import { throwErrorDeferred } from 'throwError';

@@ -1,4 +1,4 @@
-import isNullish from 'isNullish';
+import { isNullish } from 'isNullish';
 
 import type { TLazy } from 'genEnforceLazy';
 import type { TRuleDetailedResult } from 'ruleReturn';

@@ -1,5 +1,5 @@
 import asArray from 'asArray';
-import isNullish from 'isNullish';
+import { isNullish } from 'isNullish';
 import * as nestedArray from 'nestedArray';
 import { throwErrorDeferred } from 'throwError';
 

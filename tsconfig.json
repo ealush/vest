@@ -117,12 +117,53 @@
       "ctx": ["./packages/vest/src/core/ctx/ctx.ts"],
       "testCursor": ["./packages/vest/src/core/ctx/testCursor.ts"],
       "isolate": ["./packages/vest/src/core/isolate/isolate.ts"],
+      "each": ["./packages/vest/src/core/isolate/isolates/each.ts"],
+      "group": ["./packages/vest/src/core/isolate/isolates/group.ts"],
+      "skipWhen": ["./packages/vest/src/core/isolate/isolates/skipWhen.ts"],
       "IsolateTypes": ["./packages/vest/src/core/isolate/IsolateTypes.ts"],
       "createStateRef": ["./packages/vest/src/core/state/createStateRef.ts"],
       "stateHooks": ["./packages/vest/src/core/state/stateHooks.ts"],
       "create": ["./packages/vest/src/core/suite/create.ts"],
       "hasRemainingTests": [
         "./packages/vest/src/core/suite/hasRemainingTests.ts"
+      ],
+      "genTestsSummary": [
+        "./packages/vest/src/core/suite/produce/genTestsSummary.ts"
+      ],
+      "collectFailureMessages": [
+        "./packages/vest/src/core/suite/produce/getFailures/collectFailureMessages.ts"
+      ],
+      "getFailures": [
+        "./packages/vest/src/core/suite/produce/getFailures/getFailures.ts"
+      ],
+      "getFailuresArrayOrObject": [
+        "./packages/vest/src/core/suite/produce/getFailures/getFailuresArrayOrObject.ts"
+      ],
+      "getFailuresByGroup": [
+        "./packages/vest/src/core/suite/produce/getFailures/getFailuresByGroup.ts"
+      ],
+      "hasFailures": [
+        "./packages/vest/src/core/suite/produce/hasFailures/hasFailures.ts"
+      ],
+      "hasFailuresByGroup": [
+        "./packages/vest/src/core/suite/produce/hasFailures/hasFailuresByGroup.ts"
+      ],
+      "hasFailuresLogic": [
+        "./packages/vest/src/core/suite/produce/hasFailures/hasFailuresLogic.ts"
+      ],
+      "isValid": ["./packages/vest/src/core/suite/produce/isValid.ts"],
+      "matchingFieldName": [
+        "./packages/vest/src/core/suite/produce/matchingFieldName.ts"
+      ],
+      "nonMatchingSeverityProfile": [
+        "./packages/vest/src/core/suite/produce/nonMatchingSeverityProfile.ts"
+      ],
+      "produce": ["./packages/vest/src/core/suite/produce/produce.ts"],
+      "produceDraft": [
+        "./packages/vest/src/core/suite/produce/produceDraft.ts"
+      ],
+      "runCallbacks": [
+        "./packages/vest/src/core/suite/produce/runCallbacks.ts"
       ],
       "key": ["./packages/vest/src/core/test/key.ts"],
       "cancelOverriddenPendingTest": [
@@ -159,39 +200,10 @@
       "enforce@schema": ["./packages/vest/src/exports/enforce@schema.ts"],
       "parser": ["./packages/vest/src/exports/parser.ts"],
       "promisify": ["./packages/vest/src/exports/promisify.ts"],
-      "each": ["./packages/vest/src/hooks/each.ts"],
       "exclusive": ["./packages/vest/src/hooks/exclusive.ts"],
-      "group": ["./packages/vest/src/hooks/group.ts"],
       "hookErrors": ["./packages/vest/src/hooks/hookErrors.ts"],
       "optionalTests": ["./packages/vest/src/hooks/optionalTests.ts"],
-      "skipWhen": ["./packages/vest/src/hooks/skipWhen.ts"],
       "warn": ["./packages/vest/src/hooks/warn.ts"],
-      "genTestsSummary": ["./packages/vest/src/produce/genTestsSummary.ts"],
-      "collectFailureMessages": [
-        "./packages/vest/src/produce/getFailures/collectFailureMessages.ts"
-      ],
-      "getFailures": ["./packages/vest/src/produce/getFailures/getFailures.ts"],
-      "getFailuresArrayOrObject": [
-        "./packages/vest/src/produce/getFailures/getFailuresArrayOrObject.ts"
-      ],
-      "getFailuresByGroup": [
-        "./packages/vest/src/produce/getFailures/getFailuresByGroup.ts"
-      ],
-      "hasFailures": ["./packages/vest/src/produce/hasFailures/hasFailures.ts"],
-      "hasFailuresByGroup": [
-        "./packages/vest/src/produce/hasFailures/hasFailuresByGroup.ts"
-      ],
-      "hasFailuresLogic": [
-        "./packages/vest/src/produce/hasFailures/hasFailuresLogic.ts"
-      ],
-      "isValid": ["./packages/vest/src/produce/isValid.ts"],
-      "matchingFieldName": ["./packages/vest/src/produce/matchingFieldName.ts"],
-      "nonMatchingSeverityProfile": [
-        "./packages/vest/src/produce/nonMatchingSeverityProfile.ts"
-      ],
-      "produce": ["./packages/vest/src/produce/produce.ts"],
-      "produceDraft": ["./packages/vest/src/produce/produceDraft.ts"],
-      "runCallbacks": ["./packages/vest/src/produce/runCallbacks.ts"],
       "vest.d": ["./packages/vest/src/typings/vest.d.ts"],
       "vest": ["./packages/vest/src/vest.ts"],
       "vestTypes": ["./packages/vest/src/vestTypes.ts"]

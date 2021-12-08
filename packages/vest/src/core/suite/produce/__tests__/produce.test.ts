@@ -1,9 +1,9 @@
-import itWithContext from '../../../testUtils/itWithContext';
-import { dummyTest } from '../../../testUtils/testDummy';
-import { setTestObjects } from '../../../testUtils/testObjects';
-
 import { produceFullResult } from 'produce';
 import { produceDraft } from 'produceDraft';
+
+import itWithContext from '../../../../../testUtils/itWithContext';
+import { dummyTest } from '../../../../../testUtils/testDummy';
+import { setTestObjects } from '../../../../../testUtils/testObjects';
 
 const methods = {
   produceDraft,

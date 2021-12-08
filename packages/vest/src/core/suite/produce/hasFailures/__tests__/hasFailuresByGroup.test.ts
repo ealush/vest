@@ -1,13 +1,12 @@
 import faker from 'faker';
+import { hasErrorsByGroup, hasWarningsByGroup } from 'hasFailuresByGroup';
 
-import itWithContext from '../../../../testUtils/itWithContext';
-import { dummyTest } from '../../../../testUtils/testDummy';
+import itWithContext from '../../../../../../testUtils/itWithContext';
+import { dummyTest } from '../../../../../../testUtils/testDummy';
 import {
   emptyTestObjects,
   setTestObjects,
-} from '../../../../testUtils/testObjects';
-
-import { hasErrorsByGroup, hasWarningsByGroup } from 'hasFailuresByGroup';
+} from '../../../../../../testUtils/testObjects';
 
 const fieldName = faker.random.word();
 const groupName = faker.lorem.word();

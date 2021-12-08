@@ -2,7 +2,7 @@ import { enforce } from 'enforce';
 import faker from 'faker';
 import _ from 'lodash';
 
-import { dummyTest } from '../../../testUtils/testDummy';
+import { dummyTest } from '../../../../../testUtils/testDummy';
 
 import VestTest from 'VestTest';
 import group from 'group';

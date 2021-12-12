@@ -57,7 +57,12 @@ function cleanupConfig(configs) {
   return []
     .concat(...configs)
     .filter(Boolean)
-    .map(({ input, output, plugins }) => ({ input, output, plugins }));
+    .map(({ input, output, plugins, external }) => ({
+      external,
+      input,
+      output,
+      plugins,
+    }));
 }
 
 function genBaseConfig({
@@ -68,6 +73,12 @@ function genBaseConfig({
 }) {
   return {
     env,
+    // This turns the installed "internal" dependencies into external dependencies
+    external: [
+      ...Object.keys(packageJson()?.dependencies ?? {}),
+      moduleName === usePackage() ? null : usePackage(),
+    ].filter(Boolean),
+
     input: getInputFile(moduleName),
     output: genOutput({ env, moduleName, namespace }),
     plugins: getPlugins({ env, moduleName, namespace, packageName }),
@@ -97,15 +108,23 @@ function genOutput({
   ];
 
   function outputByFormat(format) {
+    // creates "globals" from the installed internal packages
+    const globals = Object.keys(packageJson()?.dependencies ?? {}).reduce(
+      (g, c) => Object.assign(g, { [c]: c }),
+      {
+        ...(moduleName !== usePackage() && { [usePackage()]: usePackage() }),
+      }
+    );
     return {
       ...base,
-      format,
       file: vxPath.packageDist(
         usePackage(),
         format,
         namespace,
         joinTruthy([moduleName, env, 'js'], '.')
       ),
+      format,
+      globals,
     };
   }
 }
@@ -143,7 +162,7 @@ function getPlugins({
         // module instead of embedding of the code.
 
         // Remove installed local packages paths list
-        for (const dep in packageJson().dependencies) {
+        for (const dep in packageJson()?.dependencies ?? {}) {
           if (packageNames.names[dep]) {
             delete clonedConfig.paths[dep];
           }

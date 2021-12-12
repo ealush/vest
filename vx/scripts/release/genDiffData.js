@@ -7,7 +7,7 @@ const { TAG_NEXT, TAG_DEV } = require('./releaseKeywords');
 
 const logger = require('vx/logger');
 const {
-  isStableBranch,
+  isIntegrationBranch,
   isReleaseBranch,
   isNextBranch,
 } = require('vx/util/taggedBranch');
@@ -49,7 +49,7 @@ function pickTagId(nextVersion) {
     return `${nextVersion}-${TAG_NEXT}-${commitHash}`;
   }
 
-  if (isStableBranch) {
+  if (isIntegrationBranch) {
     return `${nextVersion}-${TAG_DEV}-${commitHash}`;
   }
 

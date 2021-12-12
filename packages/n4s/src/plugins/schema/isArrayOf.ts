@@ -1,7 +1,7 @@
 import mapFirst from 'mapFirst';
-import { ctx } from 'n4s';
 
 import type { TLazy } from 'genEnforceLazy';
+import { ctx } from 'n4s';
 import type { TRuleDetailedResult } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
 import runLazyRule from 'runLazyRule';

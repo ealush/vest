@@ -366,9 +366,9 @@ describe('isExcluded', () => {
       );
     });
 
-    it('returns false for tests outside of any group', () => {
-      expect(runIsExcluded(exclusion, genTest('field_1'))).toBe(false);
-      expect(runIsExcluded(exclusion, genTest('field_2'))).toBe(false);
+    it('returns true for tests outside of any group', () => {
+      expect(runIsExcluded(exclusion, genTest('field_1'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_2'))).toBe(true);
     });
   });
 
@@ -383,9 +383,9 @@ describe('isExcluded', () => {
       };
     });
 
-    it('returns false for included tests', () => {
-      expect(runIsExcluded(exclusion, genTest('field_1'))).toBe(false);
-      expect(runIsExcluded(exclusion, genTest('field_2'))).toBe(false);
+    it('returns true for included tests outside of the group', () => {
+      expect(runIsExcluded(exclusion, genTest('field_1'))).toBe(true);
+      expect(runIsExcluded(exclusion, genTest('field_2'))).toBe(true);
     });
 
     it('returns false for included tests in included groups', () => {
@@ -432,7 +432,7 @@ describe('isExcluded', () => {
       };
     });
 
-    it('returns true for tests in excluded groups', () => {
+    it('returns true for included tests in excluded groups', () => {
       expect(runIsExcluded(exclusion, genTest('field_1', 'group_1'))).toBe(
         true
       );
@@ -453,7 +453,7 @@ describe('isExcluded', () => {
       );
     });
 
-    it('returns false for tests in included tests in non excluded groups', () => {
+    it('returns false for included tests in non excluded groups', () => {
       expect(runIsExcluded(exclusion, genTest('field_1', 'group_3'))).toBe(
         false
       );
@@ -473,7 +473,7 @@ describe('isExcluded', () => {
       expect(runIsExcluded(exclusion, genTest('field_4'))).toBe(true);
     });
 
-    it('returns false for included tests', () => {
+    it('returns false for included tests outside of the group', () => {
       expect(runIsExcluded(exclusion, genTest('field_1'))).toBe(false);
       expect(runIsExcluded(exclusion, genTest('field_2'))).toBe(false);
     });
@@ -493,10 +493,6 @@ describe('isExcluded', () => {
     it('returns true for excluded tests', () => {
       expect(runIsExcluded(exclusion, genTest('field_1'))).toBe(true);
       expect(runIsExcluded(exclusion, genTest('field_2'))).toBe(true);
-    });
-    it('returns false for non excluded tests', () => {
-      expect(runIsExcluded(exclusion, genTest('field_3'))).toBe(false);
-      expect(runIsExcluded(exclusion, genTest('field_4'))).toBe(false);
     });
     it('returns true for excluded test in included group', () => {
       expect(runIsExcluded(exclusion, genTest('field_1', 'group_1'))).toBe(

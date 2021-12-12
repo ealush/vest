@@ -55,16 +55,16 @@ describe('group: exclusion', () => {
         });
       }
     );
-  let res, validate;
+  let res, suite;
 
   beforeEach(() => {
     groupName = faker.random.word();
-    validate = validation();
+    suite = validation();
   });
 
   describe('When skipped', () => {
     beforeEach(() => {
-      res = validate({ skipGroup: groupName });
+      res = suite({ skipGroup: groupName });
     });
 
     it('produce result object with the group', () => {
@@ -123,25 +123,25 @@ describe('group: exclusion', () => {
 
   describe('When `only`ed', () => {
     beforeEach(() => {
-      res = validate({ onlyGroup: groupName });
+      res = suite({ onlyGroup: groupName });
     });
     it('produce result object with group', () => {
       expect(res.groups).toHaveProperty(groupName);
     });
 
     it('produce correct result object', () => {
-      expect(res.testCount).toBe(11);
-      expect(res.errorCount).toBe(5);
-      expect(res.warnCount).toBe(2);
-      expect(res.tests['field_1'].errorCount).toBe(3);
+      expect(res.testCount).toBe(5);
+      expect(res.errorCount).toBe(2);
+      expect(res.warnCount).toBe(1);
+      expect(res.tests['field_1'].errorCount).toBe(1);
       expect(res.tests['field_1'].warnCount).toBe(0);
       expect(res.tests['field_2'].errorCount).toBe(0);
       expect(res.tests['field_2'].warnCount).toBe(0);
       expect(res.tests['field_3'].errorCount).toBe(0);
-      expect(res.tests['field_3'].warnCount).toBe(2);
+      expect(res.tests['field_3'].warnCount).toBe(1);
       expect(res.tests['field_4'].errorCount).toBe(0);
       expect(res.tests['field_4'].warnCount).toBe(0);
-      expect(res.tests['field_5'].errorCount).toBe(1);
+      expect(res.tests['field_5'].errorCount).toBe(0);
       expect(res.tests['field_5'].warnCount).toBe(0);
       expect(res.tests['field_6'].errorCount).toBe(1);
       expect(res.tests['field_6'].warnCount).toBe(0);
@@ -156,25 +156,11 @@ describe('group: exclusion', () => {
         }
       });
     });
-
-    it('Should only run tests outside of the group that are not in another group', () => {
-      Object.values(topLevelTestObjects).forEach(testObject => {
-        expect(testObject.testFn).toHaveBeenCalled();
-      });
-      let count = 0;
-      Object.values(groupTestObjects).forEach(testObject => {
-        if (testObject.groupName !== groupName) {
-          count++;
-          expect(testObject.testFn).not.toHaveBeenCalled();
-        }
-      });
-      expect(count).toBe(3);
-    });
   });
 
   describe('When skipped field inside `only`ed group', () => {
     beforeEach(() => {
-      res = validate({ skip: 'field_1', onlyGroup: groupName });
+      res = suite({ skip: 'field_1', onlyGroup: groupName });
     });
     it('produce result object with group', () => {
       expect(res.groups).toHaveProperty(groupName);
@@ -196,13 +182,9 @@ describe('group: exclusion', () => {
           expect(testObject.testFn).not.toHaveBeenCalled();
         });
     });
-    it('Should skip all matching tests outside group', () => {
+    it('Should skip all tests outside of the group', () => {
       Object.values(topLevelTestObjects).forEach(testObject => {
-        if (testObject.fieldName === 'field_1') {
-          expect(testObject.testFn).not.toHaveBeenCalled();
-        } else {
-          expect(testObject.testFn).toHaveBeenCalled();
-        }
+        expect(testObject.testFn).not.toHaveBeenCalled();
       });
     });
   });
@@ -232,8 +214,8 @@ describe('group: base case', () => {
   let res;
   beforeEach(() => {
     groupName = faker.random.word();
-    const validate = validation();
-    res = validate();
+    const suite = validation();
+    res = suite();
   });
 
   it('Should contain all tests in tests object', () => {

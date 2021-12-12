@@ -68,12 +68,51 @@ export function isExcluded(testObject: VestTest): boolean {
     }
   }
 
+  if (isMissingFromIncludedGroup(groupName)) {
+    return true;
+  }
+
   // if field is only'ed
   if (isTestIncluded) return false;
 
   // If there is _ANY_ `only`ed test (and we already know this one isn't) return true
   // Otherwise return false
   return hasIncludedTests(keyTests);
+}
+
+// eslint-disable-next-line max-statements
+function isMissingFromIncludedGroup(groupName?: string): boolean {
+  const context = ctx.useX();
+  const exclusion = context.exclusion;
+
+  if (!hasIncludedGroups()) {
+    return false;
+  }
+
+  if (!groupName) {
+    return true;
+  }
+
+  if (groupName in exclusion.groups) {
+    if (exclusion.groups[groupName]) {
+      return false;
+    }
+    return true;
+  }
+
+  return true;
+}
+
+function hasIncludedGroups(): boolean {
+  const context = ctx.useX();
+  const exclusion = context.exclusion;
+
+  for (const group in exclusion.groups) {
+    if (exclusion.groups[group]) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /**

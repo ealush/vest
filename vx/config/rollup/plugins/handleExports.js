@@ -64,7 +64,7 @@ function writePackageJson(name, exportPath, { namespace } = {}) {
     pkgJson = { ...packageJson(name), ...pkgJson };
   }
 
-  fse.writeJSONSync(joinPath(exportPath, 'package.json'), pkgJson, {
+  fse.writeJSONSync(joinPath(exportPath, vxPath.PACKAGE_JSON), pkgJson, {
     spaces: 2,
   });
 }

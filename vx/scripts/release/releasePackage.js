@@ -1,9 +1,10 @@
 const build = require('./../build/buildPackage');
-const genDiffData = require('./../release/genDiffData');
-const getDiff = require('./../release/github/getDiff');
-const publishPackage = require('./../release/steps/publishPackage');
-const setNextVersion = require('./../release/steps/setNextVersion');
-const updateChangelog = require('./../release/steps/updateChangelog');
+const genDiffData = require('./genDiffData');
+const getDiff = require('./github/getDiff');
+const publishPackage = require('./steps/publishPackage');
+const setNextVersion = require('./steps/setNextVersion');
+const updateChangelog = require('./steps/updateChangelog');
+const updateLocalDepsToLatest = require('./steps/updateLocalDepsToLatest');
 
 const logger = require('vx/logger');
 const { usePackage } = require('vx/vxContext');
@@ -26,6 +27,8 @@ function releasePackage() {
   logger.info('⚙️ Generated diff data:', JSON.stringify(diffData, null, 2));
 
   setNextVersion(diffData);
+
+  updateLocalDepsToLatest();
 
   build();
 

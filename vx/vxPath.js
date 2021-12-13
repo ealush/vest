@@ -10,6 +10,9 @@ const PACKAGE_JSON = 'package.json';
 const TSCONFIG_JSON = 'tsconfig.json';
 const VX = 'vx';
 
+vxPath.PACKAGE_JSON = PACKAGE_JSON;
+vxPath.TSCONFIG_JSON = TSCONFIG_JSON;
+
 vxPath.vxRoot = () => {
   return vxPath.closest(process.cwd(), (current, breakout) => {
     const pkgJsonPath = path.resolve(current, PACKAGE_JSON);

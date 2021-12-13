@@ -49,7 +49,7 @@ module.exports = (custom = {}) => ({
     'ts-jest': {
       tsconfig: usePackage()
         ? vxPath.packageTsConfig()
-        : path.join(vxPath.ROOT_PATH, 'tsconfig.json'),
+        : path.join(vxPath.ROOT_PATH, vxPath.TSCONFIG_JSON),
       diagnostics: {
         // Essentially ignoring "any" errors in TESTS
         ignoreCodes: [

@@ -16,7 +16,9 @@ export default function registerPrevRunTest(testObject: VestTest): VestTest {
     // if we're directly within a skipWhen block
     // This mostly means that we're probably giving
     // up on this async test intentionally.
-    prevRunTest.skip(isExcludedIndividually());
+    if (isExcludedIndividually()) {
+      prevRunTest.omit();
+    }
     testCursor.moveForward();
     return prevRunTest;
   }

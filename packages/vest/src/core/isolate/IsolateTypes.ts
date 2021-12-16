@@ -5,6 +5,7 @@ export enum IsolateTypes {
   SUITE,
   EACH,
   SKIP_WHEN,
+  OMIT_WHEN,
   GROUP,
 }
 

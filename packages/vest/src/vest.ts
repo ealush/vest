@@ -4,6 +4,7 @@ import create from 'create';
 import each from 'each';
 import { only, skip } from 'exclusive';
 import group from 'group';
+import omitWhen from 'omitWhen';
 import optional from 'optionalTests';
 import skipWhen from 'skipWhen';
 import test from 'test';
@@ -20,6 +21,7 @@ export {
   group,
   optional,
   skipWhen,
+  omitWhen,
   enforce,
   VERSION,
 };

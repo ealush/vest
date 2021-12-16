@@ -119,6 +119,7 @@
       "isolate": ["./packages/vest/src/core/isolate/isolate.ts"],
       "each": ["./packages/vest/src/core/isolate/isolates/each.ts"],
       "group": ["./packages/vest/src/core/isolate/isolates/group.ts"],
+      "omitWhen": ["./packages/vest/src/core/isolate/isolates/omitWhen.ts"],
       "skipWhen": ["./packages/vest/src/core/isolate/isolates/skipWhen.ts"],
       "IsolateTypes": ["./packages/vest/src/core/isolate/IsolateTypes.ts"],
       "createStateRef": ["./packages/vest/src/core/state/createStateRef.ts"],

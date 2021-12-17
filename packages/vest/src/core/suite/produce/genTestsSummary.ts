@@ -64,7 +64,7 @@ function genTestObject(
 
   const testKey = summaryKey[fieldName];
 
-  if (testObject.isSkipped()) return testKey;
+  if (testObject.isNonActionable()) return testKey;
 
   summaryKey[fieldName].testCount++;
 

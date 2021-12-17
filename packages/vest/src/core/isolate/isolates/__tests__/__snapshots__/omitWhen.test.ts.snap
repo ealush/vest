@@ -1,0 +1,315 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`omitWhen When conditional is falsy boolean conditional Should have all tests within the omit block referenced in the result 1`] = `
+Object {
+  "field_1": Object {
+    "errorCount": 1,
+    "testCount": 2,
+    "warnCount": 0,
+  },
+  "field_2": Object {
+    "errorCount": 0,
+    "testCount": 0,
+    "warnCount": 0,
+  },
+  "field_3": Object {
+    "errorCount": 0,
+    "testCount": 0,
+    "warnCount": 0,
+  },
+  "field_4": Object {
+    "errorCount": 0,
+    "testCount": 0,
+    "warnCount": 0,
+  },
+}
+`;
+
+exports[`omitWhen When conditional is falsy boolean conditional Should run tests normally 1`] = `
+Object {
+  "field_1": Object {
+    "errorCount": 1,
+    "testCount": 2,
+    "warnCount": 0,
+  },
+  "field_2": Object {
+    "errorCount": 0,
+    "testCount": 0,
+    "warnCount": 0,
+  },
+  "field_3": Object {
+    "errorCount": 0,
+    "testCount": 0,
+    "warnCount": 0,
+  },
+  "field_4": Object {
+    "errorCount": 0,
+    "testCount": 0,
+    "warnCount": 0,
+  },
+}
+`;
+
+exports[`omitWhen When conditional is falsy boolean conditional Should run tests normally 2`] = `
+Object {
+  "field_1": Object {
+    "errorCount": 1,
+    "testCount": 2,
+    "warnCount": 0,
+  },
+  "field_2": Object {
+    "errorCount": 0,
+    "testCount": 0,
+    "warnCount": 0,
+  },
+  "field_3": Object {
+    "errorCount": 0,
+    "testCount": 0,
+    "warnCount": 0,
+  },
+  "field_4": Object {
+    "errorCount": 0,
+    "testCount": 1,
+    "warnCount": 0,
+  },
+}
+`;
+
+exports[`omitWhen When conditional is falsy function conditional Should have all tests within the omit block referenced in the result 1`] = `
+Object {
+  "field_1": Object {
+    "errorCount": 1,
+    "testCount": 2,
+    "warnCount": 0,
+  },
+  "field_2": Object {
+    "errorCount": 0,
+    "testCount": 0,
+    "warnCount": 0,
+  },
+  "field_3": Object {
+    "errorCount": 0,
+    "testCount": 0,
+    "warnCount": 0,
+  },
+  "field_4": Object {
+    "errorCount": 0,
+    "testCount": 0,
+    "warnCount": 0,
+  },
+}
+`;
+
+exports[`omitWhen When conditional is falsy function conditional Should run tests normally 1`] = `
+Object {
+  "field_1": Object {
+    "errorCount": 1,
+    "testCount": 2,
+    "warnCount": 0,
+  },
+  "field_2": Object {
+    "errorCount": 0,
+    "testCount": 0,
+    "warnCount": 0,
+  },
+  "field_3": Object {
+    "errorCount": 0,
+    "testCount": 0,
+    "warnCount": 0,
+  },
+  "field_4": Object {
+    "errorCount": 0,
+    "testCount": 0,
+    "warnCount": 0,
+  },
+}
+`;
+
+exports[`omitWhen When conditional is falsy function conditional Should run tests normally 2`] = `
+Object {
+  "field_1": Object {
+    "errorCount": 1,
+    "testCount": 2,
+    "warnCount": 0,
+  },
+  "field_2": Object {
+    "errorCount": 0,
+    "testCount": 0,
+    "warnCount": 0,
+  },
+  "field_3": Object {
+    "errorCount": 0,
+    "testCount": 0,
+    "warnCount": 0,
+  },
+  "field_4": Object {
+    "errorCount": 0,
+    "testCount": 1,
+    "warnCount": 0,
+  },
+}
+`;
+
+exports[`omitWhen When conditional is truthy boolean conditional Should avoid running the omitted tests 1`] = `
+Object {
+  "errorCount": 1,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "suiteName": undefined,
+  "testCount": 2,
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 0,
+      "testCount": 1,
+      "warnCount": 0,
+    },
+    "field_2": Object {
+      "errorCount": 1,
+      "testCount": 1,
+      "warnCount": 0,
+    },
+    "field_3": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`omitWhen When conditional is truthy boolean conditional Should skip and not run omitted fields when no filter provided 1`] = `
+Object {
+  "errorCount": 1,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "suiteName": undefined,
+  "testCount": 2,
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 0,
+      "testCount": 1,
+      "warnCount": 0,
+    },
+    "field_2": Object {
+      "errorCount": 1,
+      "testCount": 1,
+      "warnCount": 0,
+    },
+    "field_3": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`omitWhen When conditional is truthy function conditional Should avoid running the omitted tests 1`] = `
+Object {
+  "errorCount": 1,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "suiteName": undefined,
+  "testCount": 2,
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 0,
+      "testCount": 1,
+      "warnCount": 0,
+    },
+    "field_2": Object {
+      "errorCount": 1,
+      "testCount": 1,
+      "warnCount": 0,
+    },
+    "field_3": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`omitWhen When conditional is truthy function conditional Should skip and not run omitted fields when no filter provided 1`] = `
+Object {
+  "errorCount": 1,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "suiteName": undefined,
+  "testCount": 2,
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 0,
+      "testCount": 1,
+      "warnCount": 0,
+    },
+    "field_2": Object {
+      "errorCount": 1,
+      "testCount": 1,
+      "warnCount": 0,
+    },
+    "field_3": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+    "field_4": Object {
+      "errorCount": 0,
+      "testCount": 0,
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;

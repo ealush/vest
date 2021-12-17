@@ -132,6 +132,10 @@ export default class VestTest {
     return this.isFailing() || this.isWarning();
   }
 
+  isNonActionable(): boolean {
+    return this.isSkipped() || this.isOmitted() || this.isCanceled();
+  }
+
   isPending(): boolean {
     return this.status === STATUS_PENDING;
   }

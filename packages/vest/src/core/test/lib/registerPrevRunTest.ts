@@ -3,13 +3,21 @@ import isPromise from 'isPromise';
 import VestTest from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded, isExcludedIndividually } from 'exclusive';
+import { isOmitted } from 'omitWhen';
 import registerTest from 'registerTest';
 import runAsyncTest from 'runAsyncTest';
 import * as testCursor from 'testCursor';
 import { useTestAtCursor, useSetTestAtCursor } from 'useTestAtCursor';
 
+// eslint-disable-next-line max-statements
 export default function registerPrevRunTest(testObject: VestTest): VestTest {
   const prevRunTest = useTestAtCursor(testObject);
+
+  if (isOmitted()) {
+    prevRunTest.omit();
+    testCursor.moveForward();
+    return prevRunTest;
+  }
 
   if (isExcluded(testObject)) {
     // We're forcing skipping the pending test

@@ -43,6 +43,7 @@ type CTXType = {
   currentTest?: VestTest;
   groupName?: string;
   skipped?: boolean;
+  omitted?: boolean;
   bus?: {
     on: (
       event: string,

@@ -1,6 +1,7 @@
 import { enforce } from 'n4s';
 
 import create from 'create';
+import context from 'ctx';
 import each from 'each';
 import { only, skip } from 'exclusive';
 import group from 'group';
@@ -24,4 +25,5 @@ export {
   omitWhen,
   enforce,
   VERSION,
+  context,
 };

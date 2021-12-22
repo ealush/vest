@@ -8,7 +8,7 @@ import group from 'group';
 import omitWhen from 'omitWhen';
 import optional from 'optionalTests';
 import skipWhen from 'skipWhen';
-import test from 'test';
+import { test } from 'test';
 import warn from 'warn';
 
 const VERSION = __LIB_VERSION__;

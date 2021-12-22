@@ -56,7 +56,7 @@ function testBase(
  *  enforce(data.username).isNotBlank();
  * });
  */
-export default assign(testBase, {
+export const test = assign(testBase, {
   memo: bindTestMemo(testBase),
 });
 

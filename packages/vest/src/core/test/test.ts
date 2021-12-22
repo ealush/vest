@@ -47,6 +47,15 @@ function testBase(
   return registerPrevRunTest(testObject);
 }
 
+/**
+ * Represents a single case in a validation suite.
+ *
+ * @example
+ *
+ * test("username", "Username is required", () => {
+ *  enforce(data.username).isNotBlank();
+ * });
+ */
 export default assign(testBase, {
   memo: bindTestMemo(testBase),
 });

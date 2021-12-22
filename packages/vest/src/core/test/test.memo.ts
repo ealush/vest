@@ -18,7 +18,9 @@ export default function bindTestMemo(test: TTestBase): {
 } {
   const cache = createCache(100); // arbitrary cache size
 
-  // Caches, or returns an already cached test call
+  /**
+   * Caches a test result based on the test's dependencies.
+   */
   function memo(
     fieldName: string,
     ...args: [test: TTestFn, deps: unknown[]]

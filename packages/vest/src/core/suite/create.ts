@@ -24,6 +24,17 @@ type SuiteReturnType<T extends CB> = {
   (...args: Parameters<T>): IVestResult;
 } & CreateProperties;
 
+/**
+ * Creates a new validation suite
+ *
+ * @example
+ *
+ * const suite = create((data = {}) => {
+ *  test("username", "Username is required", () => {
+ *    enforce(data.username).isNotBlank();
+ *  });
+ * });
+ */
 function create<T extends CB>(
   suiteName: string,
   suiteCallback: T

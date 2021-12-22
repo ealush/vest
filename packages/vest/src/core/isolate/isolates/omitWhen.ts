@@ -5,6 +5,15 @@ import ctx from 'ctx';
 import { isolate } from 'isolate';
 import { produceDraft, TDraftResult } from 'produceDraft';
 
+/**
+ * Conditionally omits tests from the suite.
+ *
+ * @example
+ *
+ * omitWhen(res => res.hasErrors('username'), () => {
+ *  test('username', 'User already taken', async () => await doesUserExist(username)
+ * });
+ */
 export default function omitWhen(
   conditional: boolean | ((draft: TDraftResult) => boolean),
   callback: (...args: any[]) => void

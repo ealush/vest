@@ -4,6 +4,17 @@ import { isStringValue } from 'isStringValue';
 
 import { useOptionalFields } from 'stateHooks';
 
+/**
+ * Marks a field as optional, either just by name, or by a given condition.
+ *
+ * @example
+ *
+ * optional('field_name');
+ *
+ * optional({
+ *  username: () => allowUsernameEmpty,
+ * });
+ */
 export default function optional(optionals: TOptionalsInput): void {
   const [, setOptionalFields] = useOptionalFields();
 

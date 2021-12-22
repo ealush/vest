@@ -9,7 +9,11 @@ import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
 type TExclusionItem = string | string[] | undefined;
 
 /**
- * Adds a field or multiple fields to inclusion group.
+ * Adds a field or a list of fields into the inclusion list
+ *
+ * @example
+ *
+ * only('username');
  */
 export function only(item: TExclusionItem): void {
   return addTo(ExclusionGroup.ONLY, 'tests', item);
@@ -19,7 +23,11 @@ only.group = (item: TExclusionItem) =>
   addTo(ExclusionGroup.ONLY, 'groups', item);
 
 /**
- * Adds a field or multiple fields to exclusion group.
+ * Adds a field or a list of fields into the exclusion list
+ *
+ * @example
+ *
+ * skip('username');
  */
 export function skip(item: TExclusionItem): void {
   return addTo(ExclusionGroup.SKIP, 'tests', item);

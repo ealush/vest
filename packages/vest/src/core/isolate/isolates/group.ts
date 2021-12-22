@@ -7,7 +7,13 @@ import context from 'ctx';
 import { isolate } from 'isolate';
 
 /**
- * Runs a group callback.
+ * Runs tests within a group so that they can be controlled or queried separately.
+ *
+ * @example
+ *
+ * group('group_name', () => {
+ *  // Tests go here
+ * });
  */
 export default function group(groupName: string, tests: () => void): void {
   if (!isStringValue(groupName)) {

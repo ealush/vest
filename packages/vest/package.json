@@ -20,8 +20,8 @@
     "url": "https://github.com/ealush/vest.git/issues"
   },
   "dependencies": {
-    "context": "next",
-    "n4s": "next"
+    "context": "^2.0.0",
+    "n4s": "^4.0.1"
   },
   "homepage": "https://vestjs.dev/",
   "exports": {

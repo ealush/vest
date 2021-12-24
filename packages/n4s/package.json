@@ -10,7 +10,7 @@
     "release": "vx release"
   },
   "dependencies": {
-    "context": "next"
+    "context": "^2.0.0"
   },
   "module": "./dist/es/n4s.production.js",
   "exports": {

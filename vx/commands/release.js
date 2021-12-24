@@ -1,4 +1,4 @@
-// const pushToLatestBranch = require('../scripts/release/steps/pushToLatestBranch');
+const pushToLatestBranch = require('../scripts/release/steps/pushToLatestBranch');
 
 const logger = require('vx/logger');
 const packagesToRelease = require('vx/scripts/release/packagesToRelease');
@@ -31,9 +31,8 @@ async function releaseAll() {
 
   if (!isReleaseBranch) {
     logger.info(`❌  Not in release branch. Not pushing changes to git.`);
-    // return;
+    return;
   }
 
-  // TODO: add this back after the major release. First I want to handle the changelog manually.
-  // pushToLatestBranch();
+  pushToLatestBranch();
 }

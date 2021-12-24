@@ -3,7 +3,7 @@ const genDiffData = require('./genDiffData');
 const getDiff = require('./github/getDiff');
 const publishPackage = require('./steps/publishPackage');
 const setNextVersion = require('./steps/setNextVersion');
-const updateChangelog = require('./steps/updateChangelog');
+// const updateChangelog = require('./steps/updateChangelog');
 const updateLocalDepsToLatest = require('./steps/updateLocalDepsToLatest');
 
 const logger = require('vx/logger');
@@ -36,7 +36,7 @@ function releasePackage() {
   // to the repo as well. Need to revisit this.
   // build();
 
-  updateChangelog(diffData);
+  // updateChangelog(diffData);
 
   publishPackage(diffData);
 }

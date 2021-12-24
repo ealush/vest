@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 4.0.0 2021-12-24
+
+- 7daf6d2 rule(n4s): add isNullish rule, improve isBlank (ealush)
+- ddceca7 patch(n4s): improve partial support (ealush)
+- 0370fc1 n4s: extract non-required modules (ealush)
+- 7baedf2 n4s: use named export in entry (ealush)
+- 780c5b7 types(n4s): Allow adding types for custom matchers (ealush)
+- 149aab3 add(n4s): enforce.condition (ealush)
+- d786b34 fix(n4s): make sure oneOf correctly validates single case (ealush)
+- 49e601a feat(n4s): enforce.compose (ealush)
+- 1dddaf4 patch(n4s): improve types for rule chaining (undefined)
+- b5ce72d feat(n4s): context propagation within enforce (undefined)
+- 32fe8a5 feat(n4s): add shape and loose validations (undefined)
+- 39b92f1 patch: enable enforce in es5 environments (undefined)
+- 75306ff fix(n4s): make enforce compound runners fall back to correct response (ealush)
+- 4751584 fix(n4s): make enforce chaining work (ealush)
+
 ## 3.1.0 - 2021-08-06
 
 ### Added

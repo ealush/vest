@@ -86,10 +86,6 @@ export type TLazy = TLazyRules &
   // losing type hints
   Record<string, (...args: any[]) => any>;
 
-export interface IShapeObject
-  extends Record<string, any>,
-    Record<string, TLazyRuleRunners> {}
-
 type TLazyRuleMethods = TLazyRuleRunners & {
   message: (message: TLazyMessage) => TLazy;
 };

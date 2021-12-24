@@ -49,10 +49,8 @@ function getByGroup(
     );
   }
   const testObjects = useTestsFlat();
-  const failureMessages = collectFailureMessages(severityKey, testObjects, {
+  return collectFailureMessages(severityKey, testObjects, {
     group,
     fieldName,
   });
-
-  return failureMessages;
 }

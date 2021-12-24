@@ -1,9 +1,9 @@
 import hasOwnProperty from 'hasOwnProperty';
 
-import type { IShapeObject } from 'genEnforceLazy';
 import { loose } from 'loose';
 import type { TRuleDetailedResult } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
+import type { IShapeObject } from 'schemaTypes';
 
 export function shape(
   inputObject: Record<string, any>,

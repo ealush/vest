@@ -45,6 +45,7 @@
       "loose": ["./packages/n4s/src/plugins/schema/loose.ts"],
       "optional": ["./packages/n4s/src/plugins/schema/optional.ts"],
       "partial": ["./packages/n4s/src/plugins/schema/partial.ts"],
+      "schemaTypes": ["./packages/n4s/src/plugins/schema/schemaTypes.ts"],
       "shape": ["./packages/n4s/src/plugins/schema/shape.ts"],
       "endsWith": ["./packages/n4s/src/rules/endsWith.ts"],
       "equals": ["./packages/n4s/src/rules/equals.ts"],

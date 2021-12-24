@@ -10,10 +10,12 @@ import { useTestCallbacks } from 'stateHooks';
 export function runFieldCallbacks(fieldName?: string): void {
   const [{ fieldCallbacks }] = useTestCallbacks();
 
-  if (fieldName) {
-    if (!hasRemainingTests(fieldName) && isArray(fieldCallbacks[fieldName])) {
-      callEach(fieldCallbacks[fieldName]);
-    }
+  if (
+    fieldName &&
+    !hasRemainingTests(fieldName) &&
+    isArray(fieldCallbacks[fieldName])
+  ) {
+    callEach(fieldCallbacks[fieldName]);
   }
 }
 

@@ -29,9 +29,7 @@ async function packagesToRelease() {
     release.add(name);
   }
 
-  const sortedDeps = await sortDependencies([...release]);
-
-  return sortedDeps;
+  return await sortDependencies([...release]);
 }
 
 module.exports = packagesToRelease;

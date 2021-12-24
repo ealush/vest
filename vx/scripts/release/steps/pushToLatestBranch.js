@@ -42,13 +42,12 @@ module.exports = pushToLatestBranch;
 function filterChangedPackages(commits) {
   return packageNames.list.filter(packageName => {
     return commits.some(({ title, files }) => {
-      const keep =
+      return (
         !!title.match(matchPackageNameInCommit(packageName)) ||
         !!files.some(file => {
           return file.match(`packages/${packageName}`);
-        });
-
-      return keep;
+        })
+      );
     });
   });
 }

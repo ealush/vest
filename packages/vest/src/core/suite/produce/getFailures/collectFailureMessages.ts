@@ -9,7 +9,7 @@ export default function collectFailureMessages(
   options: { group?: string; fieldName?: string } = {}
 ): Record<string, string[]> {
   const { group, fieldName } = options || {};
-  const res = testObjects.reduce(
+  return testObjects.reduce(
     (collector: Record<string, string[]>, testObject) => {
       if (noMatch(testObject, severity, group, fieldName)) {
         return collector;
@@ -27,8 +27,6 @@ export default function collectFailureMessages(
     },
     { ...(fieldName && { [fieldName]: [] }) }
   );
-
-  return res;
 }
 
 function noGroupMatch(

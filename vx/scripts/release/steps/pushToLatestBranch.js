@@ -12,8 +12,7 @@ const packageNames = require('vx/packageNames');
 const vxPath = require('vx/vxPath');
 
 const SCRIPT_PATH = path.resolve(
-  vxPath.ROOT_PATH,
-  'scripts',
+  vxPath.VX_SCRIPTS_PATH,
   'release',
   'steps',
   'push_to_latest_branch.sh'

@@ -1,4 +1,4 @@
-# Vest
+# Vest - Declarative validations framework
 
 [Vest Documentation](https://vestjs.dev)
 

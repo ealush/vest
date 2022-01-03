@@ -5,6 +5,7 @@ import context from 'ctx';
 import each from 'each';
 import { only, skip } from 'exclusive';
 import group from 'group';
+import include from 'include';
 import omitWhen from 'omitWhen';
 import optional from 'optionalTests';
 import skipWhen from 'skipWhen';
@@ -26,4 +27,5 @@ export {
   enforce,
   VERSION,
   context,
+  include,
 };

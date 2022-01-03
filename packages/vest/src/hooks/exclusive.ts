@@ -1,6 +1,7 @@
 import asArray from 'asArray';
 import hasOwnProperty from 'hasOwnProperty';
 import { isStringValue } from 'isStringValue';
+import optionalFunctionValue from 'optionalFunctionValue';
 
 import VestTest from 'VestTest';
 import ctx from 'ctx';
@@ -42,7 +43,7 @@ export function isExcludedIndividually(): boolean {
 
 //Checks whether a certain test profile excluded by any of the exclusion groups.
 
-// eslint-disable-next-line complexity, max-statements
+// eslint-disable-next-line complexity, max-statements, max-lines-per-function
 export function isExcluded(testObject: VestTest): boolean {
   const { fieldName, groupName } = testObject;
 
@@ -51,6 +52,7 @@ export function isExcluded(testObject: VestTest): boolean {
   const context = ctx.useX();
 
   const exclusion = context.exclusion;
+  const inclusion = context.inclusion;
   const keyTests = exclusion.tests;
   const testValue = keyTests[fieldName];
 
@@ -84,8 +86,13 @@ export function isExcluded(testObject: VestTest): boolean {
   if (isTestIncluded) return false;
 
   // If there is _ANY_ `only`ed test (and we already know this one isn't) return true
-  // Otherwise return false
-  return hasIncludedTests(keyTests);
+  if (hasIncludedTests(keyTests)) {
+    // Check if inclusion rules for this field (`include` hook)
+    return !optionalFunctionValue(inclusion[fieldName]);
+  }
+
+  // We're done here. This field is not excluded
+  return false;
 }
 
 // eslint-disable-next-line max-statements

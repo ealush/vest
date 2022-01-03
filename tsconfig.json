@@ -204,6 +204,7 @@
       "promisify": ["./packages/vest/src/exports/promisify.ts"],
       "exclusive": ["./packages/vest/src/hooks/exclusive.ts"],
       "hookErrors": ["./packages/vest/src/hooks/hookErrors.ts"],
+      "include": ["./packages/vest/src/hooks/include.ts"],
       "optionalTests": ["./packages/vest/src/hooks/optionalTests.ts"],
       "warn": ["./packages/vest/src/hooks/warn.ts"],
       "vest.d": ["./packages/vest/src/typings/vest.d.ts"],

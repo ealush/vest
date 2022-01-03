@@ -1,9 +1,9 @@
 import mapFirst from 'mapFirst';
-import { ctx } from 'n4s';
 import throwError from 'throwError';
 
 import type { TComposeResult, TLazyRuleRunners } from 'genEnforceLazy';
 import { isEmpty } from 'isEmpty';
+import { ctx } from 'n4s';
 import { defaultToPassing, TRuleDetailedResult } from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 

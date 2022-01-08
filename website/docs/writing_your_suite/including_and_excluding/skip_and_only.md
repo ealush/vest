@@ -38,6 +38,10 @@ const suite = create((data, fieldName) => {
 const validationResult = suite(formData, changedField);
 ```
 
+:::tip Linking related fields so they run together
+You can make fields run together by using [include](./include). This is useful when you have fields that depend on each other, and you want to make sure they run at the same time.
+:::
+
 ### Skipping tests
 
 There are not many cases for skipping tests, but they do exist. For example, when you wish to prevent validation of a promo code when none provided.

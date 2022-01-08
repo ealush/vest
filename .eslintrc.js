@@ -17,8 +17,7 @@ module.exports = {
     __LIB_VERSION__: true,
     ENV_DEVELOPMENT: true,
   },
-  ignorePatterns: ['*.d.ts'],
-
+  ignorePatterns: ['*.d.ts', '/website/'],
   overrides: [
     {
       files: ['./packages/*/src/**/*.*'],

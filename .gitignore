@@ -1,3 +1,5 @@
+website/.docusaurus
+website/build/
 packages/*/types/
 packages/*/types/*
 packages/n4s/compose/

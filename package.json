@@ -5,7 +5,9 @@
     "release": "vx release",
     "lint": "eslint . --ignore-path .gitignore",
     "prepare": "husky install",
-    "dev": "vx dev"
+    "dev": "vx dev",
+    "website:start": "yarn workspace website start",
+    "website:build": "yarn workspace website build"
   },
   "prettier": {
     "arrowParens": "avoid",
@@ -13,6 +15,7 @@
   },
   "vx": {},
   "workspaces": [
+    "website",
     "packages/*",
     "./vx/"
   ],

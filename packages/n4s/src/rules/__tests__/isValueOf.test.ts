@@ -9,7 +9,7 @@ const objectToTest = {
 
 describe('isValueOf tests', () => {
   describe('When "Bravo" is the value of key "b"', () => {
-    it('Should return true using enforce', () => {
+    it('Should pass when used in enforce', () => {
       enforce('Bravo').isValueOf(objectToTest);
     });
     it('Should return true', () => {

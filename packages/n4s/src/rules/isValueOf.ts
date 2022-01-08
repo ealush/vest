@@ -3,11 +3,17 @@ import { isNotNullish } from 'isNullish';
 import { isString, isPlainObject } from 'lodash';
 
 export function isValueOf(value: string, objectToCheck: object): boolean {
-  return (
-    isNotNullish(objectToCheck) &&
-    isPlainObject(objectToCheck) &&
-    isString(value) &&
-    Object.values(objectToCheck).includes(value)
-  );
+
+  if (isNullish(objectToCheck)) {
+    return false;
+  }
+
+  for (const key in objectToCheck) {
+    if (objectToCheck[key] === value) {
+      return true;
+    }
+  }
+  
+  return false;
 }
 export const isNotValueOf = bindNot(isValueOf);

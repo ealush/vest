@@ -51,6 +51,8 @@ Enforce rules are functions that allow you to test your data against different c
 - [doesNotStartWith](#doesnotstartwith)
 - [isNegative](#isnegative)
 - [isPositive](#ispositive)
+- [isPositive](#isvalueof)
+- [isPositive](#isnotvalueof)
 
 ## equals
 
@@ -1279,4 +1281,40 @@ enforce(10.12).isPositive(); //passes
 enforce('10.12').isPositive(); //passes
 enforce(-10).isPositive(); // throws
 enforce('-10.12').isPositive(); // throws
+```
+
+## isValueOf
+
+### Description
+
+Determines whether a string value exists as one of the values for a key in an object.
+
+### Usage examples:
+
+```js
+enforce('Bravo').isValueOf({ a: 'Alpha', b: 'Bravo', c: 'Charlie' });
+// passes
+```
+
+```js
+enforce('Delta').isValueOf({ a: 'Alpha', b: 'Bravo', c: 'Charlie' });
+// throws
+```
+
+## isNotValueOf
+
+### Description
+
+Determines whether a string is not a value of any key in an object.
+
+### Usage examples:
+
+```js
+enforce('Delta').isNotValueOf({ a: 'Alpha', b: 'Bravo', c: 'Charlie' });
+// passes
+```
+
+```js
+enforce('Bravo').isValueOf({ a: 'Alpha', b: 'Bravo', c: 'Charlie' });
+// throws
 ```

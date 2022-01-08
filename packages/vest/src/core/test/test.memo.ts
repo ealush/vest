@@ -1,3 +1,4 @@
+/* eslint-disable jest/valid-title */
 import createCache from 'cache';
 import { isNull } from 'isNull';
 

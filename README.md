@@ -56,3 +56,5 @@ Here are some code sandboxes to get you started:
 - [Vue](https://codesandbox.io/s/vue-hsyt8)
 - [Svelte](https://codesandbox.io/s/svelte-tsfhx)
 - [Vanilla](https://codesandbox.io/s/vest-vanilla-js-35u8e)
+- [Angular](https://codesandbox.io/s/vest-angular-dht77)
+

@@ -76,6 +76,6 @@ module.exports = (custom = {}) => ({
     path.resolve(vxPath.JEST_CONFIG_PATH, 'jest.setupAfterEnv.ts'),
   ].concat(setupAfterEnvPerPackage),
   testEnvironment: 'node',
-  testMatch: [vxPath.packageSrc('*', `/**/${opts.dir.TESTS}/*.(spec|test).ts`)],
+  testMatch: [vxPath.packageSrc('*', `**/${opts.dir.TESTS}/*.(spec|test).ts`)],
   ...custom,
 });

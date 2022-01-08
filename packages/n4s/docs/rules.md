@@ -51,8 +51,8 @@ Enforce rules are functions that allow you to test your data against different c
 - [doesNotStartWith](#doesnotstartwith)
 - [isNegative](#isnegative)
 - [isPositive](#ispositive)
-- [isPositive](#isvalueof)
-- [isPositive](#isnotvalueof)
+- [isValueOf](#isvalueof)
+- [isNotValueOf](#isnotvalueof)
 
 ## equals
 

@@ -1,23 +1,14 @@
 const fs = require('fs');
 
-const compiler = require('@ampproject/rollup-plugin-closure-compiler');
-const replace = require('@rollup/plugin-replace');
-const _ = require('lodash');
-const { terser } = require('rollup-plugin-terser');
-const ts = require('rollup-plugin-ts');
-
-const concatTruthy = require('../../util/concatTruthy');
-const joinTruthy = require('../../util/joinTruthy');
-const listExportedModules = require('../../util/listExportedModules');
-const packageJson = require('../../util/packageJson');
-
-const addCJSPackageJson = require('./plugins/addCJSPackageJson');
-const addModulePackageJson = require('./plugins/addModulePackageJson');
-const handleExports = require('./plugins/handleExports');
+const { format, disallowExternals } = require('./format');
+const getPlugins = require('./getPlugins');
 
 const opts = require('vx/opts');
-const packageNames = require('vx/packageNames');
+const concatTruthy = require('vx/util/concatTruthy');
+const joinTruthy = require('vx/util/joinTruthy');
+const listExportedModules = require('vx/util/listExportedModules');
 const moduleAliases = require('vx/util/moduleAliases')();
+const packageJson = require('vx/util/packageJson');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
@@ -75,7 +66,9 @@ function genBaseConfig({
     env,
     // This turns the installed "internal" dependencies into external dependencies
     external: [
-      ...Object.keys(packageJson()?.dependencies ?? {}),
+      ...Object.keys(
+        disallowExternals ? {} : packageJson()?.dependencies ?? {}
+      ),
       moduleName === usePackage() ? null : usePackage(),
     ].filter(Boolean),
 
@@ -101,32 +94,24 @@ function genOutput({
     name: moduleName,
   };
 
-  return [
-    outputByFormat(opts.format.ES),
-    outputByFormat(opts.format.UMD),
-    outputByFormat(opts.format.CJS),
-  ];
+  // creates "globals" from the installed internal packages
+  const globals = Object.keys(
+    disallowExternals ? {} : packageJson()?.dependencies ?? {}
+  ).reduce((g, c) => Object.assign(g, { [c]: c }), {
+    ...(moduleName !== usePackage() && { [usePackage()]: usePackage() }),
+  });
 
-  function outputByFormat(format) {
-    // creates "globals" from the installed internal packages
-    const globals = Object.keys(packageJson()?.dependencies ?? {}).reduce(
-      (g, c) => Object.assign(g, { [c]: c }),
-      {
-        ...(moduleName !== usePackage() && { [usePackage()]: usePackage() }),
-      }
-    );
-    return {
-      ...base,
-      file: vxPath.packageDist(
-        usePackage(),
-        format,
-        namespace,
-        joinTruthy([moduleName, env, 'js'], '.')
-      ),
+  return {
+    ...base,
+    file: vxPath.packageDist(
+      usePackage(),
       format,
-      globals,
-    };
-  }
+      namespace,
+      joinTruthy([moduleName, env, 'js'], '.')
+    ),
+    format,
+    globals,
+  };
 }
 
 function getInputFile(moduleName = usePackage()) {
@@ -137,72 +122,4 @@ function getInputFile(moduleName = usePackage()) {
   }
 
   return modulePath.absolute;
-}
-
-function getPlugins({
-  env = opts.env.PRODUCTION,
-  packageName = usePackage(),
-  moduleName = packageName,
-  namespace = undefined,
-} = {}) {
-  const plugins = [
-    replace({
-      preventAssignment: true,
-      values: {
-        __LIB_VERSION__: JSON.stringify(packageJson().version),
-        LIBRARY_NAME: moduleName,
-        __DEV__: env === opts.env.DEVELOPMENT,
-      },
-    }),
-    ts({
-      tsconfig: resolvedConfig => {
-        const clonedConfig = _.cloneDeep(resolvedConfig);
-
-        // The changes made in this function allow using the already installed
-        // module instead of embedding of the code.
-
-        // Remove installed local packages paths list
-        for (const dep in packageJson()?.dependencies ?? {}) {
-          if (packageNames.names[dep]) {
-            delete clonedConfig.paths[dep];
-          }
-        }
-
-        if (packageName === moduleName) {
-          return clonedConfig;
-        }
-
-        // Removes current package from the paths list if in an "exported" module
-        delete clonedConfig.paths[packageName];
-
-        return clonedConfig;
-      },
-      browserList: ['IE10'],
-      hook: {
-        outputPath: (path, kind) => {
-          const basePath = vxPath.package(
-            usePackage(),
-            opts.dir.TYPES,
-            namespace,
-            moduleName + '.d.ts'
-          );
-
-          if (kind === 'declaration') return basePath;
-          if (kind === 'declarationMap') return basePath + '.map';
-        },
-      },
-    }),
-  ];
-
-  if (env === opts.env.PRODUCTION) {
-    plugins.push(
-      compiler(),
-      terser(),
-      handleExports({ namespace }),
-      addModulePackageJson(),
-      addCJSPackageJson()
-    );
-  }
-
-  return plugins;
 }

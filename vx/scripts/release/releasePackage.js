@@ -1,4 +1,4 @@
-// const build = require('./../build/buildPackage');
+const build = require('./../build/buildPackage');
 const genDiffData = require('./genDiffData');
 const getDiff = require('./github/getDiff');
 const publishPackage = require('./steps/publishPackage');
@@ -30,11 +30,7 @@ function releasePackage() {
 
   updateLocalDepsToLatest();
 
-  // At the moment we're building all packages in the integration.yml workflow.
-  // This is because we don't install all packages, but some are linked so we don't
-  // have their dist and type files. A possible solution might be to add the types
-  // to the repo as well. Need to revisit this.
-  // build();
+  build();
 
   // updateChangelog(diffData);
 

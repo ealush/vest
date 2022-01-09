@@ -51,6 +51,8 @@ Enforce rules are functions that allow you to test your data against different c
 - [doesNotStartWith](#doesnotstartwith)
 - [isNegative](#isnegative)
 - [isPositive](#ispositive)
+- [isKeyOf](#iskeyof)
+- [isNotKeyOf](#isnotkeyof)
 
 ## equals
 
@@ -1279,4 +1281,53 @@ enforce(10.12).isPositive(); //passes
 enforce('10.12').isPositive(); //passes
 enforce(-10).isPositive(); // throws
 enforce('-10.12').isPositive(); // throws
+```
+
+## isKeyOf
+
+### Description
+
+Determines whether a value is a key of an object
+
+### Usage examples:
+
+```js
+enforce('banans').isKeyOf({ banans: 5 });
+enforce(1976).isKeyOf({ 1976: 'Rocky' });
+
+// passes
+```
+
+```js
+enforce('avocados').isKeyOf({ cantelopes: 5 });
+enforce(1967).isKeyOf({ 1988: 'Rain Man' });
+enforce('key').isKeyOf(undefined);
+enforce(15).isKeyOf(null);
+enforce('star').isKeyOf(false);
+enforce('triangle').isKeyOf(true);
+// throws
+```
+
+## isNotKeyOf
+
+### Description
+
+Determines whether a value **is not** a key of an object
+
+### Usage examples:
+
+```js
+enforce('avocados').isNotKeyOf({ cantelopes: 5 });
+enforce(1967).isNotKeyOf({ 1988: 'Rain Man' });
+enforce('key').isNotKeyOf(undefined);
+enforce(15).isNotKeyOf(null);
+enforce('star').isNotKeyOf(false);
+enforce('triangle').isNotKeyOf(true);
+// passes
+```
+
+```js
+enforce('banans').isNotKeyOf({ banans: 5 });
+enforce(1976).isNotKeyOf({ 1976: 'Rocky' });
+// throws
 ```

@@ -60,6 +60,7 @@
       "isBoolean": ["./packages/n4s/src/rules/isBoolean.ts"],
       "isEmpty": ["./packages/n4s/src/rules/isEmpty.ts"],
       "isEven": ["./packages/n4s/src/rules/isEven.ts"],
+      "isKeyOf": ["./packages/n4s/src/rules/isKeyOf.ts"],
       "isNaN": ["./packages/n4s/src/rules/isNaN.ts"],
       "isNegative": ["./packages/n4s/src/rules/isNegative.ts"],
       "isNull": ["./packages/n4s/src/rules/isNull.ts"],

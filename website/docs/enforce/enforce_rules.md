@@ -38,8 +38,8 @@ Enforce rules are functions that allow you to test your data against different c
 - [isNotBlank](#isnotblank)
 - [isNumber](#isnumber)
 - [isNotNumber](#isnotnumber)
-- [isNaN](#isNaN)
-- [isNotNaN](#isNotNaN)
+- [isNaN](#isnan)
+- [isNotNaN](#isnotnan)
 - [isNull](#isnull)
 - [isNotNull](#isnotnull)
 - [isNullish](#isnullish)
@@ -53,10 +53,12 @@ Enforce rules are functions that allow you to test your data against different c
 - [isNotBetween](#isnotbetween)
 - [endsWith](#endswith)
 - [doesNotEndWith](#doesnotendwith)
-- [startsWith](#startsWith)
+- [startsWith](#startswith)
 - [doesNotStartWith](#doesnotstartwith)
 - [isNegative](#isnegative)
 - [isPositive](#ispositive)
+- [isValueOf](#isvalueof)
+- [isNotValueOf](#isnotvalueof)
 
 ## equals
 
@@ -562,8 +564,6 @@ The `value` argument can be of the following types:
 - string: checks against length.
 
 ### Usage examples:
-
-#### Passing examples:
 
 ```js
 enforce([]).shorterThanOrEquals(1);
@@ -1321,4 +1321,40 @@ enforce(10.12).isPositive(); //passes
 enforce('10.12').isPositive(); //passes
 enforce(-10).isPositive(); // throws
 enforce('-10.12').isPositive(); // throws
+```
+
+## isValueOf
+
+### Description
+
+Determines whether a value exists as inside an object.
+
+### Usage examples:
+
+```js
+enforce('Bravo').isValueOf({ a: 'Alpha', b: 'Bravo', c: 'Charlie' });
+// passes
+```
+
+```js
+enforce('Delta').isValueOf({ a: 'Alpha', b: 'Bravo', c: 'Charlie' });
+// throws
+```
+
+## isNotValueOf
+
+### Description
+
+Determines whether a string is not a value of an object..
+
+### Usage examples:
+
+```js
+enforce('Delta').isNotValueOf({ a: 'Alpha', b: 'Bravo', c: 'Charlie' });
+// passes
+```
+
+```js
+enforce('Bravo').isNotValueOf({ a: 'Alpha', b: 'Bravo', c: 'Charlie' });
+// throws
 ```

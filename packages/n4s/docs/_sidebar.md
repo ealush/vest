@@ -1,5 +1,0 @@
-- [Main](./)
-- [List of Enforce Rules](./rules)
-- [Schema validations](./compound)
-- [Custom Enforce Rules](./custom)
-- [Consuming external rules](./external)

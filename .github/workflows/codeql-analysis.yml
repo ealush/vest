@@ -13,7 +13,7 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ latest, vest-4-integration-branch ]
+    branches: [ latest, stable ]
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ latest, vest-4-integration-branch ]
@@ -32,7 +32,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'javascript' ]
+        language: [ 'javascript', 'TypeScript' ]
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby' ]
         # Learn more about CodeQL language support at https://git.io/codeql-language-support
 

@@ -4,12 +4,21 @@ const logger = require('vx/logger');
 const packagesToRelease = require('vx/scripts/release/packagesToRelease');
 const releasePackage = require('vx/scripts/release/releasePackage');
 const { isReleaseBranch } = require('vx/util/taggedBranch');
-const { targetPackage } = require('vx/util/taggedBranch');
+const {
+  targetPackage,
+  branchAllowsRelease,
+  CURRENT_BRANCH,
+} = require('vx/util/taggedBranch');
 const { usePackage } = require('vx/vxContext');
 const ctx = require('vx/vxContext');
 require('../scripts/genTsConfig');
 
 function release() {
+  if (!branchAllowsRelease) {
+    logger.info(`❌  Branch ${CURRENT_BRANCH} does not allow release. Exiting`);
+    return;
+  }
+
   const pkg = usePackage() || targetPackage;
   if (pkg) {
     return ctx.withPackage(pkg, releasePackage);

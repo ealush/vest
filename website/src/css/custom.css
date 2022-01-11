@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;700&display=swap');
+
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary-lightest: #fdfdfd;
+  --ifm-color-primary-lighter: #4b6889;
+  --ifm-color-primary-light: #486383;
+  --ifm-color-primary: #697098;
+  --ifm-color-primary-dark: #3b516b;
+  --ifm-color-primary-darker: #374d65;
+  --ifm-color-primary-darkest: #212432;
+  --ifm-font-family-base: 'Rubik', sans-serif;
+  --ifm-code-font-size: 95%;
+  --ifm-heading-color: var(--ifm-font-color-base);
+  --main-content-background-color: none;
+  --darkest-alt: #171819;
+}
+
+html[data-theme='dark'] {
+  --main-content-background-color: #1b1e2a;
+  --ifm-background-color: var(--darkest-alt);
+}
+
+main {
+  background-color: var(--main-content-background-color);
+}
+
+.aa-DetachedSearchButton {
+  color: blue;
+}
+
+h1 {
+  padding-bottom: 1rem;
+}
+
+.docusaurus-highlight-code-line {
+  background-color: rgba(0, 0, 0, 0.1);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+}
+
+.footer {
+  background-color: var(--darkest-alt);
+}
+
+html[data-theme='dark'] .docusaurus-highlight-code-line {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme='dark'] .navbar {
+  background-color: var(--ifm-background-color);
+  border-bottom: 1px solid var(--ifm-color-primary-darker);
+}
+
+html[data-theme='light'] .hero__primary.hero {
+  background-color: var(--ifm-color-primary-lightest);
+  color: var(--ifm-color-primary-darkest);
+}
+
+html[data-theme='dark'] .hero__primary.hero {
+  background-color: var(--ifm-background-color);
+  color: var(--ifm-color-primary-darkest);
+}
+
+html[data-theme='dark'] .hero__title {
+  color: var(--ifm-color-primary-lightest);
+}
+
+.hero__title {
+  text-transform: uppercase;
+  color: var(--ifm-heading-color);
+}
+
+.hero__subtitle {
+  color: var(--ifm-heading-color);
+}
+
+section {
+  display: flex;
+  align-items: center;
+  padding: 2rem 0;
+  width: 100%;
+}
+
+.header-discord-link {
+  display: flex;
+}
+.header-discord-link:before {
+  background: url('https://badgen.net/discord/online-members/WmADZpJnSe?icon=discord&scale=1.2&label=Discord')
+    no-repeat;
+  background-position: left;
+  content: '';
+  display: flex;
+  height: 24px;
+  width: 150px;
+  justify-content: center;
+  align-items: center;
+}
+.header-github-link:before {
+  background: url('https://badgen.net/github/stars/ealush/vest?scale=1.2&color=yellow&icon=github')
+    no-repeat;
+  background-position: left;
+  content: '';
+  display: flex;
+  height: 24px;
+  width: 115px;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-npm-link:before {
+  background: url('https://badgen.net/npm/v/vest?icon=npm&scale=1.2&color=red&label')
+    no-repeat;
+  background-position: left;
+  content: '';
+  display: flex;
+  height: 24px;
+  width: 90px;
+  justify-content: center;
+  align-items: center;
+}

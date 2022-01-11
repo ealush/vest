@@ -67,7 +67,7 @@ module.exports = (custom = {}) => ({
   moduleNameMapper,
   modulePathIgnorePatterns: [...ignoreGeneratedExports],
   preset: 'ts-jest',
-  rootDir: '.',
+  rootDir: vxPath.ROOT_PATH,
   roots: ['<rootDir>'],
   setupFiles: [path.resolve(vxPath.JEST_CONFIG_PATH, 'jest.setup.ts')].concat(
     setupPerPackage
@@ -76,6 +76,6 @@ module.exports = (custom = {}) => ({
     path.resolve(vxPath.JEST_CONFIG_PATH, 'jest.setupAfterEnv.ts'),
   ].concat(setupAfterEnvPerPackage),
   testEnvironment: 'node',
-  testMatch: [vxPath.packageSrc('*', `/**/${opts.dir.TESTS}/*.(spec|test).ts`)],
+  testMatch: [vxPath.packageSrc('*', `**/${opts.dir.TESTS}/*.(spec|test).ts`)],
   ...custom,
 });

@@ -1,10 +1,14 @@
+---
+sidebar_position: 5
+---
+
 # Consuming external rules
 
 Enforce comes with the bare minimum of rules needed for input validation, not assuming your business logic constraints.
 
-In some cases you might require more validations such as `isEmail` or `isPhoneNumber`. Enforce intentionally does not include those, since those validations may not necessarily reflect the way those validations should work in your app.
+In some cases you might require more validations such as `isEmail` or `isPhoneNumber`. Enforce intentionally does not include them because they do not necessarily reflect the way they should work in your app.
 
-Luckily, there are numerous packages that can be used along with enforce to add those validations. One of the most popular, and most compatible is `validator.js`.
+Luckily, there are numerous packages that can be used along with enforce to add those validations. One of the most popular and most compatible is `validator.js`.
 
 ```
 npm i validator

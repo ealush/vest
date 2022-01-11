@@ -16,6 +16,7 @@ export default createContext<CTXType>((ctxRef, parentContext) =>
             tests: {},
             groups: {},
           },
+          inclusion: {},
           isolate: {
             type: IsolateTypes.DEFAULT,
             keys: {
@@ -40,6 +41,7 @@ type CTXType = {
     tests: Record<string, boolean>;
     groups: Record<string, boolean>;
   };
+  inclusion: Record<string, boolean | (() => boolean)>;
   currentTest?: VestTest;
   groupName?: string;
   skipped?: boolean;

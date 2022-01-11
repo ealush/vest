@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+---
+
 # List of Enforce rules
 
 Enforce rules are functions that allow you to test your data against different criteria. The following rules are supported out-of-the-box.
@@ -34,10 +38,12 @@ Enforce rules are functions that allow you to test your data against different c
 - [isNotBlank](#isnotblank)
 - [isNumber](#isnumber)
 - [isNotNumber](#isnotnumber)
-- [isNaN](#isNaN)
-- [isNotNaN](#isNotNaN)
+- [isNaN](#isnan)
+- [isNotNaN](#isnotnan)
 - [isNull](#isnull)
 - [isNotNull](#isnotnull)
+- [isNullish](#isnullish)
+- [isNotNullish](#isnotnullish)
 - [isString](#isstring)
 - [isNotString](#isnotstring)
 - [isUndefined](#isundefined)
@@ -47,12 +53,16 @@ Enforce rules are functions that allow you to test your data against different c
 - [isNotBetween](#isnotbetween)
 - [endsWith](#endswith)
 - [doesNotEndWith](#doesnotendwith)
-- [startsWith](#startsWith)
+- [startsWith](#startswith)
 - [doesNotStartWith](#doesnotstartwith)
 - [isNegative](#isnegative)
 - [isPositive](#ispositive)
+  <<<<<<< HEAD:packages/n4s/docs/rules.md
 - [isKeyOf](#iskeyof)
-- [isNotKeyOf](#isnotkeyof)
+- # [isNotKeyOf](#isnotkeyof)
+- [isValueOf](#isvalueof)
+- [isNotValueOf](#isnotvalueof)
+  > > > > > > > origin/latest:website/docs/enforce/enforce_rules.md
 
 ## equals
 
@@ -252,7 +262,7 @@ enforce([100]).gt(1);
 
 ### Description
 
-Checks that your numeric enforced value is larger than or equals to a given numeric value.
+Checks that your numeric enforced value is larger than or equals a given numeric value.
 
 ### Arguments
 
@@ -374,7 +384,7 @@ enforce([0]).lt(1);
 
 ### Description
 
-Checks that your numeric enforced value is smaller than or equals to a given numeric value.
+Checks that your numeric enforced value is smaller than or equals a given numeric value.
 
 ### Arguments
 
@@ -432,7 +442,7 @@ enforce('').longerThan(0);
 
 ### Description
 
-Checks that your enforced value is longer than or equals to a given number.
+Checks that your enforced value is longer than or equals a given number.
 
 ### Arguments
 
@@ -546,7 +556,7 @@ enforce('').shorterThan(0);
 
 ### Description
 
-Checks that your enforced value is shorter than or equals to a given number.
+Checks that your enforced value is shorter than or equals a given number.
 
 ### Arguments
 
@@ -558,8 +568,6 @@ The `value` argument can be of the following types:
 - string: checks against length.
 
 ### Usage examples:
-
-#### Passing examples:
 
 ```js
 enforce([]).shorterThanOrEquals(1);
@@ -821,7 +829,7 @@ enforce('hello').isNotArray();
 ### Description
 
 Checks if a value is of type `boolean`.
-Equals to `typeof value === 'boolean'`
+Equals `typeof value === 'boolean'`
 
 ### Usage examples:
 
@@ -864,7 +872,7 @@ enforce(false).isNotBoolean();
 
 ### Description
 
-Determines wheter an enforced string contains only whitespaces
+Determines whether an enforced string contains only whitespaces. It will also check for null or undefined. All other values will return `false` - to not be confused with `isEmpty`.
 
 ### Usage examples:
 
@@ -877,7 +885,7 @@ enforce('not blank').isBlank(); // throws
 
 ### Description
 
-Determines wheter an enforced string contains at least a non-whitespace character
+Determines whether an enforced string contains at least a non-whitespace character. Will also return true for `null` or `undefined`. Any other value will return `true`. This is the reverse of `isBlank`.
 
 ### Usage examples:
 
@@ -891,7 +899,7 @@ enforce('   ').isNotBlank(); // throws
 ### Description
 
 Checks if a value is of type `number`.
-Equals to `typeof value === 'number'`
+Equals `typeof value === 'number'`
 
 ### Usage examples:
 
@@ -1010,6 +1018,42 @@ enforce(null).isNull();
 // throws
 ```
 
+## isNullish
+
+### Description
+
+Checks if a value is either `null` or `undefined`.
+
+### Usage examples:
+
+```js
+enforce(null).isNullish(); // passes
+enforce(undefined).isNullish(); // passes
+```
+
+```js
+enforce('hello').isNullish(); // throws
+enforce(200).isNullish(); // throws
+```
+
+## isNotNullish
+
+### Description
+
+Checks if a value is not `null` or `undefined`.
+
+### Usage examples:
+
+```js
+enforce('hello').isNotNullish(); // passes
+enforce(200).isNotNullish(); // passes
+```
+
+```js
+enforce(null).isNotNullish(); // throws
+enforce(undefined).isNotNullish(); // throws
+```
+
 ## isString
 
 ### Description
@@ -1116,7 +1160,7 @@ enforce([0]).isEven();
 
 ### Description
 
-Checks if a number is in range of two numbers (edges of range included)
+Checks if a number is in the range of two numbers (edges of range included)
 
 ### Usage examples:
 
@@ -1283,6 +1327,42 @@ enforce(-10).isPositive(); // throws
 enforce('-10.12').isPositive(); // throws
 ```
 
+## isValueOf
+
+### Description
+
+Determines whether a value exists as inside an object.
+
+### Usage examples:
+
+```js
+enforce('Bravo').isValueOf({ a: 'Alpha', b: 'Bravo', c: 'Charlie' });
+// passes
+```
+
+```js
+enforce('Delta').isValueOf({ a: 'Alpha', b: 'Bravo', c: 'Charlie' });
+// throws
+```
+
+## isNotValueOf
+
+### Description
+
+Determines whether a string is not a value of an object..
+
+### Usage examples:
+
+```js
+enforce('Delta').isNotValueOf({ a: 'Alpha', b: 'Bravo', c: 'Charlie' });
+// passes
+```
+
+```js
+enforce('Bravo').isNotValueOf({ a: 'Alpha', b: 'Bravo', c: 'Charlie' });
+// throws
+```
+
 ## isKeyOf
 
 ### Description
@@ -1292,7 +1372,7 @@ Determines whether a value is a key of an object
 ### Usage examples:
 
 ```js
-enforce('banans').isKeyOf({ banans: 5 });
+enforce('bananas').isKeyOf({ bananas: 5 });
 enforce(1976).isKeyOf({ 1976: 'Rocky' });
 
 // passes
@@ -1327,7 +1407,7 @@ enforce('triangle').isNotKeyOf(true);
 ```
 
 ```js
-enforce('banans').isNotKeyOf({ banans: 5 });
+enforce('bananas').isNotKeyOf({ bananas: 5 });
 enforce(1976).isNotKeyOf({ 1976: 'Rocky' });
 // throws
 ```

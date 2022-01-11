@@ -47,7 +47,7 @@ function genEnforce(): TEnforce {
       target[ruleName] = genEnforceLazy(ruleName);
     });
 
-    return target;
+    return assign(enforceEager, target);
   }
 
   return new Proxy(assign(enforceEager, target) as TEnforce, {

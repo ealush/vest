@@ -25,8 +25,7 @@ export { baseRules, getRule };
 export type TRules<E = Record<string, unknown>> = n4s.EnforceCustomMatchers<
   TRules<E> & E
 > &
-  Record<string, (...args: TArgs) => TRules<E> & E> &
-  {
+  Record<string, (...args: TArgs) => TRules<E> & E> & {
     [P in KBaseRules]: (
       ...args: DropFirst<Parameters<TBaseRules[P]>> | TArgs
     ) => TRules<E> & E;

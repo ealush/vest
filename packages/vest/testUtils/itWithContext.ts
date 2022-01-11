@@ -1,3 +1,4 @@
+/* eslint-disable jest/valid-title */
 import optionalFunctionValue from 'optionalFunctionValue';
 
 import runCreateRef from './runCreateRef';

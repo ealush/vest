@@ -21,6 +21,7 @@ import { isOdd } from 'isOdd';
 import { isString, isNotString } from 'isString';
 import { isTruthy, isFalsy } from 'isTruthy';
 import { isUndefined, isNotUndefined } from 'isUndefined';
+import { isValueOf, isNotValueOf } from 'isValueOf';
 import { lengthEquals, lengthNotEquals } from 'lengthEquals';
 import { lessThan } from 'lessThan';
 import { lessThanOrEquals } from 'lessThanOrEquals';
@@ -69,6 +70,7 @@ export default function rules() {
     isNotNumeric,
     isNotString,
     isNotUndefined,
+    isNotValueOf,
     isNull,
     isNullish,
     isNumber,
@@ -78,6 +80,7 @@ export default function rules() {
     isString,
     isTruthy,
     isUndefined,
+    isValueOf,
     lengthEquals,
     lengthNotEquals,
     lessThan,

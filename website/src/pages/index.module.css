@@ -1,0 +1,128 @@
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+.heroBanner {
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  color: var(--ifm-color-primary);
+  position: relative;
+  padding: 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  margin: 2rem auto;
+  display: block;
+  width: 300px;
+  height: 300px;
+  background: transparent url(../../static/img/logo.svg) no-repeat;
+}
+
+.heroTagline {
+  padding: 0;
+  font-weight: 500;
+  font-size: 1.2rem;
+  line-height: 1.7rem;
+}
+
+.titleContainer {
+  margin: 0 auto;
+  max-width: 500px;
+  position: relative;
+  display: flex;
+}
+
+.btn:last-child {
+  margin-right: 0;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.btn {
+  border: none;
+  font-weight: 400;
+  font-size: 1rem;
+  padding: 1rem 1.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-right: 1rem;
+}
+
+.btnQuickStart {
+  color: var(--ifm-color-primary-lightest);
+  background: #4351cf;
+}
+
+.btnQuickStart:hover {
+  background: #2c39ae;
+  color: var(--ifm-color-primary-lightest);
+}
+
+.btnGit {
+  color: var(--darkest-alt);
+  background: #e9eaec;
+}
+
+.btnGit:hover {
+  background: #d0d2d7;
+}
+
+.logoContainer {
+  height: 300px;
+  width: 300px;
+  margin: 2rem;
+  position: relative;
+}
+
+html[data-theme='dark'] .logoContainer:before {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 75px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 100px;
+  background: #fff;
+  opacity: 0.4;
+  filter: blur(60px);
+  z-index: 0;
+}
+
+.vestLogo {
+  position: relative;
+  z-index: 1;
+}
+
+@media screen and (max-width: 966px) {
+  .indexContentWrapper {
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .titleContainer {
+    flex-direction: column;
+  }
+  .buttons {
+    flex-direction: column;
+  }
+
+  .btn {
+    margin: 1rem 0;
+    width: 100%;
+  }
+}

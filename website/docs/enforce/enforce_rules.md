@@ -57,7 +57,6 @@ Enforce rules are functions that allow you to test your data against different c
 - [doesNotStartWith](#doesnotstartwith)
 - [isNegative](#isnegative)
 - [isPositive](#ispositive)
-  <<<<<<< HEAD:packages/n4s/docs/rules.md
 - [isKeyOf](#iskeyof)
 - # [isNotKeyOf](#isnotkeyof)
 - [isValueOf](#isvalueof)

@@ -57,10 +57,10 @@ Enforce rules are functions that allow you to test your data against different c
 - [doesNotStartWith](#doesnotstartwith)
 - [isNegative](#isnegative)
 - [isPositive](#ispositive)
-- [isKeyOf](#iskeyof)
-- # [isNotKeyOf](#isnotkeyof)
 - [isValueOf](#isvalueof)
 - [isNotValueOf](#isnotvalueof)
+- [isKeyOf](#iskeyof)
+- [isNotKeyOf](#isnotkeyof)
 
 ## equals
 

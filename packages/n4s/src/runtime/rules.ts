@@ -11,6 +11,7 @@ import { isBlank, isNotBlank } from 'isBlank';
 import { isBoolean, isNotBoolean } from 'isBoolean';
 import { isEmpty, isNotEmpty } from 'isEmpty';
 import { isEven } from 'isEven';
+import { isKeyOf, isNotKeyOf } from 'isKeyOf';
 import { isNaN, isNotNaN } from 'isNaN';
 import { isPositive, isNegative } from 'isNegative';
 import { isNull, isNotNull } from 'isNull';
@@ -53,6 +54,7 @@ export default function rules() {
     isEmpty,
     isEven,
     isFalsy,
+    isKeyOf,
     isNaN,
     isNegative,
     isNotArray,
@@ -60,6 +62,7 @@ export default function rules() {
     isNotBlank,
     isNotBoolean,
     isNotEmpty,
+    isNotKeyOf,
     isNotNaN,
     isNotNull,
     isNotNullish,

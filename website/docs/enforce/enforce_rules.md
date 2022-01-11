@@ -61,7 +61,6 @@ Enforce rules are functions that allow you to test your data against different c
 - # [isNotKeyOf](#isnotkeyof)
 - [isValueOf](#isvalueof)
 - [isNotValueOf](#isnotvalueof)
-  > > > > > > > origin/latest:website/docs/enforce/enforce_rules.md
 
 ## equals
 

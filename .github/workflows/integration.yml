@@ -8,6 +8,9 @@ on:
       - integration-*
       - next
       - next-*
+      - latest
+  pull_request:
+    branches: [latest]
 
 jobs:
   build:

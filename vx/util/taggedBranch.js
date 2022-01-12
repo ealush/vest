@@ -15,7 +15,12 @@ const isReleaseBranch = CURRENT_BRANCH.startsWith(RELEASE_BRANCH);
 const [, targetPackage = undefined] =
   isIntegrationBranch || isNextBranch ? CURRENT_BRANCH.split('-') : [];
 
+const branchAllowsRelease =
+  isReleaseBranch || isNextBranch || isIntegrationBranch;
+
 module.exports = {
+  CURRENT_BRANCH,
+  branchAllowsRelease,
   isIntegrationBranch,
   isLatestBranch,
   isNextBranch,

@@ -1,2 +1,1 @@
-// eslint-disable-next-line import/no-unresolved
-import 'n4s/schema';
+import 'n4s/schema'; // eslint-disable-line import/no-unresolved

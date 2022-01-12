@@ -1,6 +1,6 @@
 import mapFirst from 'mapFirst';
 
-import type { TLazy } from 'genEnforceLazy';
+import type { TLazyRuleRunners } from 'genEnforceLazy';
 import { ctx } from 'n4s';
 import type { TRuleDetailedResult } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
@@ -8,7 +8,7 @@ import runLazyRule from 'runLazyRule';
 
 export function isArrayOf(
   inputArray: any[],
-  currentRule: TLazy
+  currentRule: TLazyRuleRunners
 ): TRuleDetailedResult {
   return ruleReturn.defaultToPassing(
     mapFirst(inputArray, (currentValue, breakout, index) => {

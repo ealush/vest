@@ -10,7 +10,7 @@ Vest's community is still growing, but there are already some excellent usage ex
 
 - [Vue Form Validations With Vest (video)](https://portal.gitnation.org/contents/vue-form-validations-with-vest) - A Vue.JS London presentation on how to use Vest with Vue.
 
-- [Up your form validation game with Vest (video)](https://portal.gitnation.org/contents/vue-form-validations-with-vest) - A session from the Svelte Summit on how to use Vest with Svelte.
+- [Up your form validation game with Vest (video)](http://www.youtube.com/watch?v=X2PuiawaGV4) - A session from the Svelte Summit on how to use Vest with Svelte.
 
 # Integrations
 

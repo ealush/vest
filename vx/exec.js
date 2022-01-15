@@ -1,5 +1,7 @@
 const execSync = require('child_process').execSync;
 
+const asyncExecute = require('async-execute');
+
 const joinTruthy = require('./util/joinTruthy');
 
 const logger = require('vx/logger');
@@ -21,6 +23,12 @@ function exec(
 
   execCommand(cmd, { silent, throwOnFailure, exitOnFailure });
 }
+
+exec.async = function (command, options = { pipe: true }) {
+  const cmd = joinTruthy(command?.flat?.() ?? command, ' ');
+
+  return asyncExecute(cmd, options);
+};
 
 module.exports = exec;
 

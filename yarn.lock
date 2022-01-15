@@ -3226,6 +3226,11 @@ astral-regex@^2.0.0:
   resolved "https://registry.yarnpkg.com/astral-regex/-/astral-regex-2.0.0.tgz#483143c567aeed4785759c0865786dc77d7d2e31"
   integrity sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==
 
+async-execute@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/async-execute/-/async-execute-1.2.0.tgz#8cbc497f2e84ecca79e9538cf0fc3734d62274ee"
+  integrity sha512-YH6K9LgkvZjo27hry0kZuDRwQ/xsuzjCRwR3EOgVMe2a5etYmDxgmKUGdfWX0pLXZKJW/VaHa89lggXCKSY1dQ==
+
 async@^2.6.2:
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.3.tgz#d72625e2344a3656e3a3ad4fa749fa83299d82ff"
@@ -10790,6 +10795,7 @@ vx@./vx:
   dependencies:
     "@ampproject/rollup-plugin-closure-compiler" "^0.27.0"
     "@rollup/plugin-replace" "^3.0.1"
+    async-execute "^1.2.0"
     context latest
     date-fns "^2.28.0"
     dotenv "^10.0.0"

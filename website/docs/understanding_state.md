@@ -43,7 +43,7 @@ In some cases, such as form reset, you want to discard of previous validation re
 
 ### Usage:
 
-`.rese()` Is a property on your validation suite. Calling it will remove your suite's state.
+`.reset()` Is a property on your validation suite. Calling it will remove your suite's state.
 
 ```js
 import { create } from 'vest';

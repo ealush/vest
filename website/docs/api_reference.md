@@ -13,6 +13,7 @@ Below is a list of all the API functions exposed by Vest.
   - [suite.get](./writing_your_suite/vests_suite.md#using-suiteget) - Returns the current validation state of the suite.
   - [suite.remove](./writing_your_suite/vests_suite.md##removing-a-single-field-from-the-suite-state) - Removes a single field from the suite.
   - [suite.reset](./writing_your_suite/vests_suite.md#cleaning-up-our-validation-state) - Resets the suite to its initial state.
+  - [suite.resetField](./writing_your_suite/vests_suite.md#cleaning-up-our-validation-state) - Resets a single field to an untested state.
 
 - [test](./writing_tests/using_the_test_function.md) - A single validation test inside your suite.
 

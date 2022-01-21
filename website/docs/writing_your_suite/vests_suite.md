@@ -55,6 +55,14 @@ This method is especially useful if we want to access our suite state from withi
 
 When you want to clean up the suite state, for example, when the user clears the form, or when you want to navigate out of the page in an SPA - but the user might return to it later on, you can call `suite.reset()`. This will reset the suite state and cancel any pending async validations that may still be running.
 
+## Resetting a single field
+
+Sometimes you wish to only reset the validity of a single field, for example - if you want to to reset the validity as the user starts typing again and you only run the validation on blur.
+
+Simply call `suite.resetField(fieldName)` and that field will be reset to its untested state.
+
 ## Removing a single field from the suite state
+
+Note: You rarely need to use `suite.remove`, and this is mostly useful for external libraries validating on your behalf. Most users are fine using `reset` and `omitWhen`.
 
 Sometimes we want to remove a certain field from the suite state. For example, when the user removed a dynamically added field. In this case, we can call `suite.remove(fieldName)`. This will remove the field from the suite state and cancel any pending async validations that may still be running.

@@ -97,3 +97,11 @@ export function useTestsFlat(): VestTest[] {
 
   return flatCache([current], () => nestedArray.flatten(current));
 }
+
+export function useEachTestObject(
+  handler: (testObject: VestTest) => void
+): void {
+  const testObjects = useTestsFlat();
+
+  testObjects.forEach(handler);
+}

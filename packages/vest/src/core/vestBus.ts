@@ -7,8 +7,9 @@ import matchingFieldName from 'matchingFieldName';
 import omitOptionalTests from 'omitOptionalTests';
 import removeTestFromState from 'removeTestFromState';
 import { runFieldCallbacks, runDoneCallbacks } from 'runCallbacks';
-import { useTestsFlat } from 'stateHooks';
+import { useEachTestObject } from 'stateHooks';
 
+// eslint-disable-next-line max-lines-per-function
 export function initBus() {
   const bus = createBus();
 
@@ -34,12 +35,19 @@ export function initBus() {
 
   // Removes a certain field from the state.
   bus.on(Events.REMOVE_FIELD, (fieldName: string) => {
-    const testObjects = useTestsFlat();
-
-    testObjects.forEach(testObject => {
+    useEachTestObject(testObject => {
       if (matchingFieldName(testObject, fieldName)) {
         testObject.cancel();
         removeTestFromState(testObject);
+      }
+    });
+  });
+
+  // Resets a certain field in the state.
+  bus.on(Events.RESET_FIELD, (fieldName: string) => {
+    useEachTestObject(testObject => {
+      if (matchingFieldName(testObject, fieldName)) {
+        testObject.reset();
       }
     });
   });
@@ -60,5 +68,6 @@ export function useBus() {
 export enum Events {
   TEST_COMPLETED = 'test_completed',
   REMOVE_FIELD = 'remove_field',
+  RESET_FIELD = 'reset_field',
   SUITE_COMPLETED = 'suite_completed',
 }

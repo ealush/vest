@@ -120,6 +120,11 @@ export default class VestTest {
     useRefreshTestObjects();
   }
 
+  reset(): void {
+    this.status = STATUS_UNTESTED;
+    useRefreshTestObjects();
+  }
+
   omit(): void {
     this.setStatus(STATUS_OMITTED);
   }

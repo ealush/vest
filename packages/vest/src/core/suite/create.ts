@@ -15,6 +15,7 @@ import { initBus, Events } from 'vestBus';
 type CreateProperties = {
   get: () => TDraftResult;
   reset: () => void;
+  resetField: (fieldName: string) => void;
   remove: (fieldName: string) => void;
 };
 
@@ -64,6 +65,7 @@ function create<T extends CB>(
 
     get: () => TDraftResult;
     reset: () => void;
+    resetField: (fieldName: string) => void;
     remove: (fieldName: string) => void;
   }
 
@@ -91,9 +93,12 @@ function create<T extends CB>(
     }),
     {
       get: context.bind(ctxRef, produceDraft),
-      reset: state.reset,
       remove: context.bind(ctxRef, (fieldName: string) => {
         bus.emit(Events.REMOVE_FIELD, fieldName);
+      }),
+      reset: state.reset,
+      resetField: context.bind(ctxRef, (fieldName: string) => {
+        bus.emit(Events.RESET_FIELD, fieldName);
       }),
     }
   );

@@ -111,11 +111,24 @@ function genPackgeJsonBase(moduleName, { namespace, isNested = false }) {
     env: opts.env.PRODUCTION,
   });
 
+  const umdPath = genDistPath(moduleName, {
+    prefix,
+    namespace,
+    format: opts.format.UMD,
+    env: opts.env.PRODUCTION,
+  });
+
+  const umdExports = {
+    unpkg: umdPath,
+    jsdelivr: umdPath,
+  };
+
   const typesPath = genTypesPath(moduleName, { prefix, namespace });
 
   return {
     main: cjsPath,
     module: esPath,
+    ...umdExports,
     name: moduleName,
     types: typesPath,
   };

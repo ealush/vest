@@ -1386,7 +1386,7 @@
     webpack-merge "^5.8.0"
     webpackbar "^5.0.0-3"
 
-"@docusaurus/core@^2.0.0-beta.15":
+"@docusaurus/core@2.0.0-beta.15", "@docusaurus/core@^2.0.0-beta.15":
   version "2.0.0-beta.15"
   resolved "https://registry.yarnpkg.com/@docusaurus/core/-/core-2.0.0-beta.15.tgz#1a3f8361803767072e56c77d60332c87e59f1ad0"
   integrity sha512-zXhhD0fApMSvq/9Pkm9DQxa//hGOXVCq9yMHiXOkI5D1tLec7PxtnaC5cLfGHljkN9cKIfRDYUVcG1gHymVfpA==
@@ -1624,13 +1624,22 @@
     "@docusaurus/utils-validation" "2.0.0-beta.14"
     tslib "^2.3.1"
 
-"@docusaurus/plugin-google-gtag@2.0.0-beta.14", "@docusaurus/plugin-google-gtag@^2.0.0-beta.14":
+"@docusaurus/plugin-google-gtag@2.0.0-beta.14":
   version "2.0.0-beta.14"
   resolved "https://registry.yarnpkg.com/@docusaurus/plugin-google-gtag/-/plugin-google-gtag-2.0.0-beta.14.tgz#be950af01da784965a7fd7ba61d557055cceeb5e"
   integrity sha512-DcaNRvu0VLS/C6qRAG0QNWjnuP8dAdzH0NOfl86AxdK6dWOP5NlGD9QoIFKTa19PB8iTzM2XZn/hOCub4hR6MQ==
   dependencies:
     "@docusaurus/core" "2.0.0-beta.14"
     "@docusaurus/utils-validation" "2.0.0-beta.14"
+    tslib "^2.3.1"
+
+"@docusaurus/plugin-google-gtag@^2.0.0-beta.15":
+  version "2.0.0-beta.15"
+  resolved "https://registry.yarnpkg.com/@docusaurus/plugin-google-gtag/-/plugin-google-gtag-2.0.0-beta.15.tgz#4db3330d302653e8541dc3cb86a4dbfef0cc96f8"
+  integrity sha512-E5Rm3+dN7i3A9V5uq5sl9xTNA3aXsLwTZEA2SpOkY571dCpd+sfVvz1lR+KRY9Fy6ZHk8PqrNImgCWfIerRuZQ==
+  dependencies:
+    "@docusaurus/core" "2.0.0-beta.15"
+    "@docusaurus/utils-validation" "2.0.0-beta.15"
     tslib "^2.3.1"
 
 "@docusaurus/plugin-sitemap@2.0.0-beta.14":
@@ -4854,10 +4863,10 @@ dot-prop@^5.2.0:
   dependencies:
     is-obj "^2.0.0"
 
-dotenv@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-10.0.0.tgz#3d4227b8fb95f81096cdd2b66653fb2c7085ba81"
-  integrity sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==
+dotenv@^15.0.0:
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-15.0.0.tgz#2a585639429bf2c2c62f387f0fffde9c75aafde0"
+  integrity sha512-/l1sXXm79ry34KwwS0y4oVZjB468iw/6u9g1W26dtexKcIJAnVL2pMF+hxQwzZ7LutxOwEgtym9eIxvX33CMKg==
 
 duplexer3@^0.1.4:
   version "0.1.4"
@@ -10886,7 +10895,7 @@ vx@./vx:
     "@rollup/plugin-replace" "^3.0.1"
     context latest
     date-fns "^2.28.0"
-    dotenv "^10.0.0"
+    dotenv "^15.0.0"
     fs-extra "^10.0.0"
     glob "^7.2.0"
     madge "^5.0.1"

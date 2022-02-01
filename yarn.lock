@@ -4854,10 +4854,10 @@ dot-prop@^5.2.0:
   dependencies:
     is-obj "^2.0.0"
 
-dotenv@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-10.0.0.tgz#3d4227b8fb95f81096cdd2b66653fb2c7085ba81"
-  integrity sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==
+dotenv@^15.0.0:
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-15.0.0.tgz#2a585639429bf2c2c62f387f0fffde9c75aafde0"
+  integrity sha512-/l1sXXm79ry34KwwS0y4oVZjB468iw/6u9g1W26dtexKcIJAnVL2pMF+hxQwzZ7LutxOwEgtym9eIxvX33CMKg==
 
 duplexer3@^0.1.4:
   version "0.1.4"
@@ -10463,10 +10463,10 @@ ts-jest@^27.1.2:
     semver "7.x"
     yargs-parser "20.x"
 
-tsc@^2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/tsc/-/tsc-2.0.3.tgz#037fe579e3bd67a5cbdaa604b43c6c1991b04bef"
-  integrity sha512-SN+9zBUtrpUcOpaUO7GjkEHgWtf22c7FKbKCA4e858eEM7Qz86rRDpgOU2lBIDf0fLCsEg65ms899UMUIB2+Ow==
+tsc@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/tsc/-/tsc-2.0.4.tgz#5f6499146abea5dca4420b451fa4f2f9345238f5"
+  integrity sha512-fzoSieZI5KKJVBYGvwbVZs/J5za84f2lSTLPYf6AGiIf43tZ3GNrI1QzTLcjtyDDP4aLxd46RTZq1nQxe7+k5Q==
 
 tsconfig-paths@^3.12.0, tsconfig-paths@^3.9.0:
   version "3.12.0"
@@ -10886,7 +10886,7 @@ vx@./vx:
     "@rollup/plugin-replace" "^3.0.1"
     context latest
     date-fns "^2.28.0"
-    dotenv "^10.0.0"
+    dotenv "^15.0.0"
     fs-extra "^10.0.0"
     glob "^7.2.0"
     madge "^5.0.1"

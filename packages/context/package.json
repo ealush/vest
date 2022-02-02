@@ -42,5 +42,7 @@
   },
   "bugs": {
     "url": "https://github.com/ealush/vest.git/issues"
-  }
+  },
+  "unpkg": "./dist/umd/context.production.js",
+  "jsdelivr": "./dist/umd/context.production.js"
 }

@@ -227,5 +227,7 @@
     },
     "./package.json": "./package.json",
     "./": "./"
-  }
+  },
+  "unpkg": "./dist/umd/vest.production.js",
+  "jsdelivr": "./dist/umd/vest.production.js"
 }

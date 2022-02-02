@@ -28,7 +28,9 @@ export default function registerTest(testObject: VestTest): void {
     }
   } catch (e) {
     throwError(
-      `Your test function ${testObject.fieldName} returned a value. Only "false" or Promise returns are supported.`
+      `Unexpected error encountered during test registration.
+      Test Object: ${testObject}.
+      Error: ${e}.`
     );
   }
 }

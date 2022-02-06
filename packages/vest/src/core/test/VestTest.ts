@@ -142,7 +142,7 @@ export default class VestTest {
   }
 
   isPending(): boolean {
-    return this.status === STATUS_PENDING;
+    return this.statusEquals(STATUS_PENDING);
   }
 
   isTested(): boolean {
@@ -150,31 +150,35 @@ export default class VestTest {
   }
 
   isOmitted(): boolean {
-    return this.status === STATUS_OMITTED;
+    return this.statusEquals(STATUS_OMITTED);
   }
 
   isUntested(): boolean {
-    return this.status === STATUS_UNTESTED;
+    return this.statusEquals(STATUS_UNTESTED);
   }
 
   isFailing(): boolean {
-    return this.status === STATUS_FAILED;
+    return this.statusEquals(STATUS_FAILED);
   }
 
   isCanceled(): boolean {
-    return this.status === STATUS_CANCELED;
+    return this.statusEquals(STATUS_CANCELED);
   }
 
   isSkipped(): boolean {
-    return this.status === STATUS_SKIPPED;
+    return this.statusEquals(STATUS_SKIPPED);
   }
 
   isPassing(): boolean {
-    return this.status === STATUS_PASSING;
+    return this.statusEquals(STATUS_PASSING);
   }
 
   isWarning(): boolean {
-    return this.status === STATUS_WARNING;
+    return this.statusEquals(STATUS_WARNING);
+  }
+
+  statusEquals(status: KStatus): boolean {
+    return this.status === status;
   }
 }
 

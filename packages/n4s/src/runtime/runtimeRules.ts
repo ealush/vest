@@ -22,7 +22,7 @@ function getRule(ruleName: string): TRuleBase {
 
 export { baseRules, getRule };
 
-export type TRules<E = Record<string, unknown>> = n4s.EnforceCustomMatchers<
+type TRules<E = Record<string, unknown>> = n4s.EnforceCustomMatchers<
   TRules<E> & E
 > &
   Record<string, (...args: TArgs) => TRules<E> & E> & {

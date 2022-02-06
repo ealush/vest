@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 11
 ---
 
 # Using Vest in node
@@ -10,7 +10,7 @@ Using Vest in node is mostly the same as it is in the browser, but you should co
 
 When running your validations in your api, you usually want to have stateless validations to prevent leakage between requests.
 
-Read more about [Vest's state](../understanding_state.md).
+Read more about [Vest's state](./understanding_state.md).
 
 ## require vs import
 

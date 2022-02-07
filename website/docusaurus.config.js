@@ -113,8 +113,8 @@ const config = {
                 to: '/docs/api_reference',
               },
               {
-                label: 'External Resources',
-                to: '/docs/external_resources',
+                label: 'Community Resources and Integrations',
+                to: '/docs/community_resources/integrations',
               },
             ],
           },

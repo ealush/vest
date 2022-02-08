@@ -1,6 +1,6 @@
-import * as vest from 'vest';
+import { dummyTest } from '../../../../../testUtils/testDummy';
 
-import { dummyTest } from '../../../testUtils/testDummy';
+import * as vest from 'vest';
 
 describe('skipWhen', () => {
   let fn = jest.fn();
@@ -88,6 +88,69 @@ describe('skipWhen', () => {
     suite(true);
 
     expect(suite.get().tests.username.testCount).toBe(1);
+  });
+
+  describe('nested calls', () => {
+    let suite;
+
+    describe('skipped in non-skipped', () => {
+      beforeEach(() => {
+        suite = vest.create(() => {
+          vest.skipWhen(false, () => {
+            vest.test('outer', () => false);
+
+            vest.skipWhen(true, () => {
+              vest.test('outer', () => false);
+            });
+          });
+        });
+        suite();
+      });
+      it('Should run `outer` and skip `inner`', () => {
+        expect(suite.get().testCount).toBe(1);
+        expect(suite.get().hasErrors('outer')).toBe(true);
+        expect(suite.get().hasErrors('inner')).toBe(false);
+      });
+    });
+
+    describe('skipped in skipped', () => {
+      beforeEach(() => {
+        suite = vest.create(() => {
+          vest.skipWhen(true, () => {
+            vest.test('outer', () => false);
+
+            vest.skipWhen(true, () => {
+              vest.test('outer', () => false);
+            });
+          });
+        });
+        suite();
+      });
+      it('Should skip both `outer` and `inner`', () => {
+        expect(suite.get().testCount).toBe(0);
+        expect(suite.get().hasErrors('outer')).toBe(false);
+        expect(suite.get().hasErrors('inner')).toBe(false);
+      });
+    });
+    describe('non-skipped in skipped', () => {
+      beforeEach(() => {
+        suite = vest.create(() => {
+          vest.skipWhen(true, () => {
+            vest.test('outer', () => false);
+
+            vest.skipWhen(false, () => {
+              vest.test('outer', () => false);
+            });
+          });
+        });
+        suite();
+      });
+      it('Should skip both', () => {
+        expect(suite.get().testCount).toBe(0);
+        expect(suite.get().hasErrors('outer')).toBe(false);
+        expect(suite.get().hasErrors('inner')).toBe(false);
+      });
+    });
   });
 });
 

@@ -1,0 +1,87 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`skipWhen Should pass result draft to the functional condition 1`] = `
+Object {
+  "errorCount": 0,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "suiteName": undefined,
+  "testCount": 0,
+  "tests": Object {},
+  "warnCount": 0,
+}
+`;
+
+exports[`skipWhen Should pass result draft to the functional condition 2`] = `
+Object {
+  "errorCount": 1,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "suiteName": undefined,
+  "testCount": 1,
+  "tests": Object {
+    "f1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "msg",
+      ],
+      "testCount": 1,
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;
+
+exports[`skipWhen Should pass result draft to the functional condition 3`] = `
+Object {
+  "errorCount": 2,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "suiteName": undefined,
+  "testCount": 2,
+  "tests": Object {
+    "f1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "msg",
+      ],
+      "testCount": 1,
+      "warnCount": 0,
+    },
+    "f2": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "msg",
+      ],
+      "testCount": 1,
+      "warnCount": 0,
+    },
+  },
+  "warnCount": 0,
+}
+`;

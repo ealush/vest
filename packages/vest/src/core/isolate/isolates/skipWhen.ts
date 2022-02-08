@@ -2,6 +2,7 @@ import optionalFunctionValue from 'optionalFunctionValue';
 
 import { IsolateTypes } from 'IsolateTypes';
 import ctx from 'ctx';
+import { isExcludedIndividually } from 'exclusive';
 import { isolate } from 'isolate';
 import { produceDraft, TDraftResult } from 'produceDraft';
 
@@ -21,10 +22,15 @@ export default function skipWhen(
   isolate({ type: IsolateTypes.SKIP_WHEN }, () => {
     ctx.run(
       {
-        skipped: optionalFunctionValue(
-          conditional,
-          optionalFunctionValue(produceDraft)
-        ),
+        skipped:
+          // Checking for nested conditional. If we're in a nested skipWhen,
+          // we should skip the test if the parent conditional is true.
+          isExcludedIndividually() ||
+          // Otherwise, we should skip the test if the conditional is true.
+          optionalFunctionValue(
+            conditional,
+            optionalFunctionValue(produceDraft)
+          ),
       },
       () => callback()
     );

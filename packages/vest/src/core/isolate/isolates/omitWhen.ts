@@ -21,10 +21,12 @@ export default function omitWhen(
   isolate({ type: IsolateTypes.OMIT_WHEN }, () => {
     ctx.run(
       {
-        omitted: optionalFunctionValue(
-          conditional,
-          optionalFunctionValue(produceDraft)
-        ),
+        omitted:
+          isOmitted() ||
+          optionalFunctionValue(
+            conditional,
+            optionalFunctionValue(produceDraft)
+          ),
       },
       () => callback()
     );

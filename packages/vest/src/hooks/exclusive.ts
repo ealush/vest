@@ -6,6 +6,7 @@ import optionalFunctionValue from 'optionalFunctionValue';
 import VestTest from 'VestTest';
 import ctx from 'ctx';
 import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
+import { isExcludedIndividually } from 'skipWhen';
 
 type TExclusionItem = string | string[] | undefined;
 
@@ -36,10 +37,6 @@ export function skip(item: TExclusionItem): void {
 
 skip.group = (item: TExclusionItem) =>
   addTo(ExclusionGroup.SKIP, 'groups', item);
-
-export function isExcludedIndividually(): boolean {
-  return !!ctx.useX().skipped;
-}
 
 //Checks whether a certain test profile excluded by any of the exclusion groups.
 

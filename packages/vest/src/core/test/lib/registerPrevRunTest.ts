@@ -2,10 +2,11 @@ import isPromise from 'isPromise';
 
 import VestTest from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
-import { isExcluded, isExcludedIndividually } from 'exclusive';
+import { isExcluded } from 'exclusive';
 import { isOmitted } from 'omitWhen';
 import registerTest from 'registerTest';
 import runAsyncTest from 'runAsyncTest';
+import { isExcludedIndividually } from 'skipWhen';
 import * as testCursor from 'testCursor';
 import { useTestAtCursor, useSetTestAtCursor } from 'useTestAtCursor';
 

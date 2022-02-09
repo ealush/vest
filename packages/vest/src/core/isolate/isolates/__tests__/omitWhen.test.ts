@@ -158,4 +158,67 @@ describe('omitWhen', () => {
       expect(cb4).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('nested calls', () => {
+    let suite;
+
+    describe('omitted in non-omitted', () => {
+      beforeEach(() => {
+        suite = vest.create(() => {
+          vest.omitWhen(false, () => {
+            vest.test('outer', () => false);
+
+            vest.omitWhen(true, () => {
+              vest.test('outer', () => false);
+            });
+          });
+        });
+        suite();
+      });
+      it('Should run `outer` and omit `inner`', () => {
+        expect(suite.get().testCount).toBe(1);
+        expect(suite.get().hasErrors('outer')).toBe(true);
+        expect(suite.get().hasErrors('inner')).toBe(false);
+      });
+    });
+
+    describe('omitted in omitted', () => {
+      beforeEach(() => {
+        suite = vest.create(() => {
+          vest.omitWhen(true, () => {
+            vest.test('outer', () => false);
+
+            vest.omitWhen(true, () => {
+              vest.test('outer', () => false);
+            });
+          });
+        });
+        suite();
+      });
+      it('Should omit both `outer` and `inner`', () => {
+        expect(suite.get().testCount).toBe(0);
+        expect(suite.get().hasErrors('outer')).toBe(false);
+        expect(suite.get().hasErrors('inner')).toBe(false);
+      });
+    });
+    describe('non-omitted in omitted', () => {
+      beforeEach(() => {
+        suite = vest.create(() => {
+          vest.omitWhen(true, () => {
+            vest.test('outer', () => false);
+
+            vest.omitWhen(false, () => {
+              vest.test('outer', () => false);
+            });
+          });
+        });
+        suite();
+      });
+      it('Should omit both', () => {
+        expect(suite.get().testCount).toBe(0);
+        expect(suite.get().hasErrors('outer')).toBe(false);
+        expect(suite.get().hasErrors('inner')).toBe(false);
+      });
+    });
+  });
 });

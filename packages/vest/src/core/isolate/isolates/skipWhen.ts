@@ -2,7 +2,6 @@ import optionalFunctionValue from 'optionalFunctionValue';
 
 import { IsolateTypes } from 'IsolateTypes';
 import ctx from 'ctx';
-import { isExcludedIndividually } from 'exclusive';
 import { isolate } from 'isolate';
 import { produceDraft, TDraftResult } from 'produceDraft';
 
@@ -35,4 +34,8 @@ export default function skipWhen(
       () => callback()
     );
   });
+}
+
+export function isExcludedIndividually(): boolean {
+  return !!ctx.useX().skipped;
 }

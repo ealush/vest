@@ -86,7 +86,7 @@ function create<T extends CB>(
 
       // Report the suite is done registering tests
       // Async tests may still be running
-      bus.emit(Events.SUITE_COMPLETED);
+      bus.emit(Events.SUITE_CALLBACK_DONE_RUNNING);
 
       // Return the result
       return produceFullResult();

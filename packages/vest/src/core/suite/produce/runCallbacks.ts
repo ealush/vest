@@ -24,7 +24,5 @@ export function runFieldCallbacks(fieldName?: string): void {
  */
 export function runDoneCallbacks() {
   const [{ doneCallbacks }] = useTestCallbacks();
-  if (!hasRemainingTests()) {
-    callEach(doneCallbacks);
-  }
+  callEach(doneCallbacks);
 }

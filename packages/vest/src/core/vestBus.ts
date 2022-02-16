@@ -3,6 +3,7 @@ import throwError from 'throwError';
 
 import VestTest from 'VestTest';
 import ctx from 'ctx';
+import hasRemainingTests from 'hasRemainingTests';
 import matchingFieldName from 'matchingFieldName';
 import omitOptionalTests from 'omitOptionalTests';
 import removeTestFromState from 'removeTestFromState';
@@ -23,14 +24,23 @@ export function initBus() {
     testObject.done();
 
     runFieldCallbacks(testObject.fieldName);
-    runDoneCallbacks();
+
+    if (!hasRemainingTests()) {
+      // When no more tests are running, emit the done event
+      bus.emit(Events.ALL_RUNNING_TESTS_FINISHED);
+    }
   });
 
   // Report that the suite completed its synchronous test run.
   // Async operations may still be running.
-  bus.on(Events.SUITE_COMPLETED, () => {
+  bus.on(Events.SUITE_CALLBACK_DONE_RUNNING, () => {
     // Remove tests that are optional and need to be omitted
     omitOptionalTests();
+  });
+
+  // Called when all the tests, including async, are done running
+  bus.on(Events.ALL_RUNNING_TESTS_FINISHED, () => {
+    runDoneCallbacks();
   });
 
   // Removes a certain field from the state.
@@ -67,7 +77,8 @@ export function useBus() {
 
 export enum Events {
   TEST_COMPLETED = 'test_completed',
+  ALL_RUNNING_TESTS_FINISHED = 'all_running_tests_finished',
   REMOVE_FIELD = 'remove_field',
   RESET_FIELD = 'reset_field',
-  SUITE_COMPLETED = 'suite_completed',
+  SUITE_CALLBACK_DONE_RUNNING = 'suite_callback_done_running',
 }

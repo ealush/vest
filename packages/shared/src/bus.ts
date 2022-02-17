@@ -6,21 +6,13 @@ export function createBus(): {
 
   return {
     emit(event: string, data: any) {
-      if (!listeners[event]) {
-        return;
-      }
-
-      listeners[event].forEach(listener => {
-        listener(data);
+      (listeners[event] || []).forEach(handler => {
+        handler(data);
       });
     },
 
     on(event: string, handler: (...args: any[]) => void): { off: () => void } {
-      if (!listeners[event]) {
-        listeners[event] = [];
-      }
-
-      listeners[event].push(handler);
+      listeners[event] = (listeners[event] || []).concat(handler);
 
       return {
         off() {

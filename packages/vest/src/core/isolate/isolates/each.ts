@@ -22,7 +22,7 @@ export default function each<T>(
   callback: (arg: T, index: number) => void
 ): void {
   if (!isFunction(callback)) {
-    throwError('callback must be a function');
+    throwError('each callback must be a function');
   }
 
   isolate({ type: IsolateTypes.EACH }, () => {

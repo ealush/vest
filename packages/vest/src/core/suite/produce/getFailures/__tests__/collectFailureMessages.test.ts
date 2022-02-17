@@ -1,3 +1,4 @@
+import { Severity } from 'Severity';
 import VestTest from 'VestTest';
 import collectFailureMessages from 'collectFailureMessages';
 
@@ -5,14 +6,14 @@ describe('collectFailureMessages', () => {
   let testObjects: VestTest[] = [];
 
   it('Should return an object containing just the requested field', () => {
-    const result = collectFailureMessages('errors', testObjects, {
+    const result = collectFailureMessages(Severity.ERRORS, testObjects, {
       fieldName: 'field_1',
     });
     expect(Object.keys(result)).toEqual(['field_1']);
   });
 
   test('Result has an array of matching error messages', () => {
-    const result = collectFailureMessages('errors', testObjects, {
+    const result = collectFailureMessages(Severity.ERRORS, testObjects, {
       fieldName: 'field_1',
     });
     expect(result.field_1).toEqual([
@@ -22,7 +23,7 @@ describe('collectFailureMessages', () => {
   });
 
   it('Should return filtered messages by the selected group', () => {
-    const result = collectFailureMessages('errors', testObjects, {
+    const result = collectFailureMessages(Severity.ERRORS, testObjects, {
       group: 'group1',
     });
 
@@ -31,7 +32,7 @@ describe('collectFailureMessages', () => {
 
   it('Should return an empty object when no options and no failures', () => {
     expect(
-      collectFailureMessages('errors', [
+      collectFailureMessages(Severity.ERRORS, [
         new VestTest('field_1', jest.fn(), { message: 'error_message' }),
       ])
     ).toEqual({});
@@ -40,15 +41,14 @@ describe('collectFailureMessages', () => {
   it('Should return an object with an empty array when selected field has no errors', () => {
     expect(
       collectFailureMessages(
-        'errors',
+        Severity.ERRORS,
         [new VestTest('field_1', jest.fn(), { message: 'error_message' })],
         { fieldName: 'field_1' }
       )
     ).toEqual({ field_1: [] });
   });
 
-  // @ts-expect-error - it can't properly infer the severity
-  ['errors', 'warnings'].forEach((severity: 'errors' | 'warnings') => {
+  [Severity.ERRORS, Severity.WARNINGS].forEach((severity: Severity) => {
     describe('Snapshot tests. severity: ' + severity, () => {
       describe('When no options passed', () => {
         it('should match snapshot', () => {

@@ -1,5 +1,6 @@
 import faker from 'faker';
 
+import { Severity } from 'Severity';
 import VestTest from 'VestTest';
 import hasFailuresLogic from 'hasFailuresLogic';
 
@@ -15,9 +16,11 @@ describe('hasFailuresLogic', () => {
 
   describe('When test did not fail', () => {
     it('Should return false', () => {
-      expect(hasFailuresLogic(testObject, 'errors')).toBe(false);
-      expect(hasFailuresLogic(testObject, 'warnings')).toBe(false);
-      expect(hasFailuresLogic(testObject, 'errors', fieldName)).toBe(false);
+      expect(hasFailuresLogic(testObject, Severity.ERRORS)).toBe(false);
+      expect(hasFailuresLogic(testObject, Severity.WARNINGS)).toBe(false);
+      expect(hasFailuresLogic(testObject, Severity.ERRORS, fieldName)).toBe(
+        false
+      );
     });
   });
 
@@ -28,36 +31,36 @@ describe('hasFailuresLogic', () => {
     describe('When field name is not provided', () => {
       describe('When non matching severity profile', () => {
         it('should return false', () => {
-          expect(hasFailuresLogic(testObject, 'warnings')).toBe(false);
+          expect(hasFailuresLogic(testObject, Severity.WARNINGS)).toBe(false);
           testObject.warn();
-          expect(hasFailuresLogic(testObject, 'errors')).toBe(false);
+          expect(hasFailuresLogic(testObject, Severity.ERRORS)).toBe(false);
         });
       });
 
       describe('When matching severity profile', () => {
         it('Should return true', () => {
-          expect(hasFailuresLogic(testObject, 'errors')).toBe(true);
+          expect(hasFailuresLogic(testObject, Severity.ERRORS)).toBe(true);
           testObject.warn();
-          expect(hasFailuresLogic(testObject, 'warnings')).toBe(true);
+          expect(hasFailuresLogic(testObject, Severity.WARNINGS)).toBe(true);
         });
       });
     });
     describe('When field name is provided', () => {
       describe('When field name matches', () => {
         it('should return false', () => {
-          expect(hasFailuresLogic(testObject, 'errors', 'non_matching')).toBe(
-            false
-          );
+          expect(
+            hasFailuresLogic(testObject, Severity.ERRORS, 'non_matching')
+          ).toBe(false);
         });
       });
 
       describe('When field name matches', () => {
         it('Should continue with normal flow', () => {
-          expect(hasFailuresLogic(testObject, 'warnings')).toBe(false);
+          expect(hasFailuresLogic(testObject, Severity.WARNINGS)).toBe(false);
           testObject.warn();
-          expect(hasFailuresLogic(testObject, 'errors')).toBe(false);
+          expect(hasFailuresLogic(testObject, Severity.ERRORS)).toBe(false);
           testObject.fail();
-          expect(hasFailuresLogic(testObject, 'warnings')).toBe(true);
+          expect(hasFailuresLogic(testObject, Severity.WARNINGS)).toBe(true);
         });
       });
     });

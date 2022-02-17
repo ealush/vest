@@ -1,6 +1,8 @@
+import assign from 'assign';
+
+import { Severity } from 'Severity';
 import VestTest from 'VestTest';
 import { useTestsFlat } from 'stateHooks';
-import type { TSeverity } from 'vestTypes';
 
 /**
  * Reads the testObjects list and gets full validation result from it.
@@ -8,13 +10,10 @@ import type { TSeverity } from 'vestTypes';
 export default function genTestsSummary(): TTestSummary {
   const testObjects = useTestsFlat();
 
-  const summary: TTestSummary = {
-    errorCount: 0,
+  const summary: TTestSummary = assign(baseStats(), {
     groups: {},
-    testCount: 0,
     tests: {},
-    warnCount: 0,
-  };
+  });
 
   appendSummary(testObjects);
 
@@ -56,11 +55,7 @@ function genTestObject(
 ): TSingleTestSummary {
   const { fieldName, message } = testObject;
 
-  summaryKey[fieldName] = summaryKey[fieldName] || {
-    errorCount: 0,
-    warnCount: 0,
-    testCount: 0,
-  };
+  summaryKey[fieldName] = summaryKey[fieldName] || baseStats();
 
   const testKey = summaryKey[fieldName];
 
@@ -69,20 +64,29 @@ function genTestObject(
   summaryKey[fieldName].testCount++;
 
   // Adds to severity group
-  function addTo(countKey: 'warnCount' | 'errorCount', group: TSeverity) {
+  function addTo(severity: Severity) {
+    const countKey = severity === Severity.ERRORS ? 'errorCount' : 'warnCount';
     testKey[countKey]++;
     if (message) {
-      testKey[group] = (testKey[group] || []).concat(message);
+      testKey[severity] = (testKey[severity] || []).concat(message);
     }
   }
 
   if (testObject.isFailing()) {
-    addTo('errorCount', 'errors');
+    addTo(Severity.ERRORS);
   } else if (testObject.isWarning()) {
-    addTo('warnCount', 'warnings');
+    addTo(Severity.WARNINGS);
   }
 
   return testKey;
+}
+
+function baseStats() {
+  return {
+    errorCount: 0,
+    warnCount: 0,
+    testCount: 0,
+  };
 }
 
 type TTestSummary = {

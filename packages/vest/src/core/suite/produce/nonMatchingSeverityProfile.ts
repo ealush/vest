@@ -1,14 +1,14 @@
 import either from 'either';
 
+import { Severity } from 'Severity';
 import VestTest from 'VestTest';
-import type { TSeverity } from 'vestTypes';
 
 /**
  * Checks that a given test object matches the currently specified severity level
  */
 export default function nonMatchingSeverityProfile(
-  severity: TSeverity,
+  severity: Severity,
   testObject: VestTest
 ): boolean {
-  return either(severity === 'warnings', testObject.warns());
+  return either(severity === Severity.WARNINGS, testObject.warns());
 }

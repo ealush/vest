@@ -7,9 +7,9 @@ import last from 'last';
 
 export type NestedArray<T> = Array<NestedArray<T> | T>;
 
-// This is sort of a map/filter in one function.
-// Normally, behaves like a nested-array map
-// Returning `null` will drop the element from the array
+// This is kind of a map/filter in one function.
+// Normally, behaves like a nested-array map,
+// but returning `null` will drop the element from the array
 export function transform<T>(
   array: NestedArray<T>,
   cb: (value: T) => NestedArray<T> | T | null

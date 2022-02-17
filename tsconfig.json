@@ -169,6 +169,7 @@
       "runCallbacks": [
         "./packages/vest/src/core/suite/produce/runCallbacks.ts"
       ],
+      "Severity": ["./packages/vest/src/core/suite/produce/Severity.ts"],
       "key": ["./packages/vest/src/core/test/key.ts"],
       "cancelOverriddenPendingTest": [
         "./packages/vest/src/core/test/lib/cancelOverriddenPendingTest.ts"
@@ -210,8 +211,7 @@
       "optionalTests": ["./packages/vest/src/hooks/optionalTests.ts"],
       "warn": ["./packages/vest/src/hooks/warn.ts"],
       "vest.d": ["./packages/vest/src/typings/vest.d.ts"],
-      "vest": ["./packages/vest/src/vest.ts"],
-      "vestTypes": ["./packages/vest/src/vestTypes.ts"]
+      "vest": ["./packages/vest/src/vest.ts"]
     }
   },
   "files": ["./config/jest/globals.d.ts"],

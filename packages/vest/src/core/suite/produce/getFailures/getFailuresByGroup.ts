@@ -1,9 +1,9 @@
 import throwError from 'throwError';
 
+import { Severity } from 'Severity';
 import collectFailureMessages from 'collectFailureMessages';
 import getFailuresArrayOrObject from 'getFailuresArrayOrObject';
 import { useTestsFlat } from 'stateHooks';
-import type { TSeverity } from 'vestTypes';
 
 export function getErrorsByGroup(groupName: string): Record<string, string[]>;
 export function getErrorsByGroup(
@@ -14,7 +14,7 @@ export function getErrorsByGroup(
   groupName: string,
   fieldName?: string
 ): string[] | Record<string, string[]> {
-  const errors = getByGroup('errors', groupName, fieldName);
+  const errors = getByGroup(Severity.ERRORS, groupName, fieldName);
 
   return getFailuresArrayOrObject(errors, fieldName);
 }
@@ -28,7 +28,7 @@ export function getWarningsByGroup(
   groupName: string,
   fieldName?: string
 ): string[] | Record<string, string[]> {
-  const warnings = getByGroup('warnings', groupName, fieldName);
+  const warnings = getByGroup(Severity.WARNINGS, groupName, fieldName);
 
   return getFailuresArrayOrObject(warnings, fieldName);
 }
@@ -37,7 +37,7 @@ export function getWarningsByGroup(
  * Gets failure messages by group.
  */
 function getByGroup(
-  severityKey: TSeverity,
+  severityKey: Severity,
   group: string,
   fieldName?: string
 ): Record<string, string[]> {

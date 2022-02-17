@@ -29,23 +29,21 @@ export default function createCache(maxSize = 1): {
 
   // invalidate an item in the cache by its dependencies
   cache.invalidate = (deps: any[]): void => {
-    const index = cacheStorage.findIndex(
-      ([cachedDeps]) =>
-        lengthEquals(deps, cachedDeps.length) &&
-        deps.every((dep, i) => dep === cachedDeps[i])
-    );
+    const index = findIndex(deps);
     if (index > -1) cacheStorage.splice(index, 1);
   };
 
   // Retrieves an item from the cache.
   cache.get = (deps: unknown[]): [unknown[], any] | null =>
-    cacheStorage[
-      cacheStorage.findIndex(
-        ([cachedDeps]) =>
-          lengthEquals(deps, cachedDeps.length) &&
-          deps.every((dep, i) => dep === cachedDeps[i])
-      )
-    ] || null;
+    cacheStorage[findIndex(deps)] || null;
 
   return cache;
+
+  function findIndex(deps: unknown[]): number {
+    return cacheStorage.findIndex(
+      ([cachedDeps]) =>
+        lengthEquals(deps, cachedDeps.length) &&
+        deps.every((dep, i) => dep === cachedDeps[i])
+    );
+  }
 }

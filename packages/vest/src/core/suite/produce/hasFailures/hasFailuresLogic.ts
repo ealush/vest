@@ -1,13 +1,13 @@
+import { Severity } from 'Severity';
 import VestTest from 'VestTest';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import nonMatchingSeverityProfile from 'nonMatchingSeverityProfile';
-import type { TSeverity } from 'vestTypes';
 /**
  * Determines whether a certain test profile has failures.
  */
 export default function hasFailuresLogic(
   testObject: VestTest,
-  severityKey: TSeverity,
+  severityKey: Severity,
   fieldName?: string
 ): boolean {
   if (!testObject.hasFailures()) {

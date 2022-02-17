@@ -1,26 +1,26 @@
+import { Severity } from 'Severity';
 import hasFailuresLogic from 'hasFailuresLogic';
 import { useTestsFlat } from 'stateHooks';
-import type { TSeverity } from 'vestTypes';
 
 export function hasErrorsByGroup(
   groupName: string,
   fieldName?: string
 ): boolean {
-  return hasByGroup('errors', groupName, fieldName);
+  return hasByGroup(Severity.ERRORS, groupName, fieldName);
 }
 
 export function hasWarningsByGroup(
   groupName: string,
   fieldName?: string
 ): boolean {
-  return hasByGroup('warnings', groupName, fieldName);
+  return hasByGroup(Severity.WARNINGS, groupName, fieldName);
 }
 
 /**
  * Checks whether there are failures in a given group.
  */
 function hasByGroup(
-  severityKey: TSeverity,
+  severityKey: Severity,
   group: string,
   fieldName?: string
 ): boolean {

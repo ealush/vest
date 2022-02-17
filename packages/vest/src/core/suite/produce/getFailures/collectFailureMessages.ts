@@ -1,10 +1,10 @@
+import { Severity } from 'Severity';
 import VestTest from 'VestTest';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import nonMatchingSeverityProfile from 'nonMatchingSeverityProfile';
-import type { TSeverity } from 'vestTypes';
 
 export default function collectFailureMessages(
-  severity: TSeverity,
+  severity: Severity,
   testObjects: VestTest[],
   options: { group?: string; fieldName?: string } = {}
 ): Record<string, string[]> {
@@ -38,7 +38,7 @@ function noGroupMatch(
 
 function noMatch(
   testObject: VestTest,
-  severity: TSeverity,
+  severity: Severity,
   group: void | string,
   fieldName: void | string
 ): boolean {

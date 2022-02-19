@@ -3,6 +3,7 @@ import { createContext } from 'context';
 import { createCursor } from 'cursor';
 
 import { IsolateKeys, IsolateTypes } from 'IsolateTypes';
+import { Modes } from 'Modes';
 import VestTest from 'VestTest';
 import type { TStateRef } from 'createStateRef';
 
@@ -24,6 +25,7 @@ export default createContext<CTXType>((ctxRef, parentContext) =>
               prev: {},
             },
           },
+          mode: [Modes.ALL],
           testCursor: createCursor(),
         },
         ctxRef
@@ -46,6 +48,7 @@ type CTXType = {
   groupName?: string;
   skipped?: boolean;
   omitted?: boolean;
+  mode: [Modes];
   bus?: {
     on: (
       event: string,

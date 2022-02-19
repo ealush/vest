@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # optional fields
 
 By default, all the tests inside Vest are required in order for the suite to be considered as "valid". Sometimes your app's logic may allow tests not to be filled out, and you want them not to be accounted for in the suites validity.

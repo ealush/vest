@@ -3,6 +3,7 @@ import isPromise from 'isPromise';
 import VestTest from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';
+import { shouldSkipBasedOnMode } from 'mode';
 import { isOmitted } from 'omitWhen';
 import registerTest from 'registerTest';
 import runAsyncTest from 'runAsyncTest';
@@ -13,6 +14,12 @@ import { useTestAtCursor, useSetTestAtCursor } from 'useTestAtCursor';
 // eslint-disable-next-line max-statements
 export default function registerPrevRunTest(testObject: VestTest): VestTest {
   const prevRunTest = useTestAtCursor(testObject);
+
+  if (shouldSkipBasedOnMode(testObject)) {
+    testCursor.moveForward();
+    testObject.skip();
+    return testObject;
+  }
 
   if (isOmitted()) {
     prevRunTest.omit();

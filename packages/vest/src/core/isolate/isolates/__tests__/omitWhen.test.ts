@@ -169,7 +169,7 @@ describe('omitWhen', () => {
             vest.test('outer', () => false);
 
             vest.omitWhen(true, () => {
-              vest.test('outer', () => false);
+              vest.test('inner', () => false);
             });
           });
         });
@@ -189,7 +189,7 @@ describe('omitWhen', () => {
             vest.test('outer', () => false);
 
             vest.omitWhen(true, () => {
-              vest.test('outer', () => false);
+              vest.test('inner', () => false);
             });
           });
         });
@@ -208,7 +208,7 @@ describe('omitWhen', () => {
             vest.test('outer', () => false);
 
             vest.omitWhen(false, () => {
-              vest.test('outer', () => false);
+              vest.test('inner', () => false);
             });
           });
         });

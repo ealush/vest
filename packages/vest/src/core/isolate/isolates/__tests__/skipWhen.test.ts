@@ -100,7 +100,7 @@ describe('skipWhen', () => {
             vest.test('outer', () => false);
 
             vest.skipWhen(true, () => {
-              vest.test('outer', () => false);
+              vest.test('inner', () => false);
             });
           });
         });
@@ -120,7 +120,7 @@ describe('skipWhen', () => {
             vest.test('outer', () => false);
 
             vest.skipWhen(true, () => {
-              vest.test('outer', () => false);
+              vest.test('inner', () => false);
             });
           });
         });
@@ -139,7 +139,7 @@ describe('skipWhen', () => {
             vest.test('outer', () => false);
 
             vest.skipWhen(false, () => {
-              vest.test('outer', () => false);
+              vest.test('inner', () => false);
             });
           });
         });

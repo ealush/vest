@@ -29,7 +29,7 @@ export default function registerTest(testObject: VestTest): void {
   } catch (e) {
     throwError(
       `Unexpected error encountered during test registration.
-      Test Object: ${testObject}.
+      Test Object: ${JSON.stringify(testObject)}.
       Error: ${e}.`
     );
   }

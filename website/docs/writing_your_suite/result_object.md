@@ -162,8 +162,8 @@ Just like get `getErrors` and `getWarnings`, but narrows the result to a specifi
 ```js
 resultObject.getErrorsByGroup('groupName', 'fieldName');
 resultObject.getWarningsByGroup('groupName', 'fieldName');
-resultObject.getErrorsByGroup('groupName'');
-resultObject.getWarningsByGroup('groupName'');
+resultObject.getErrorsByGroup('groupName');
+resultObject.getWarningsByGroup('groupName');
 ```
 
 [Read more about groups](../writing_tests/advanced_test_features/grouping_tests.md).
@@ -172,7 +172,7 @@ resultObject.getWarningsByGroup('groupName'');
 
 Done is a function that can be chained to your validation suite, and allows invoking callbacks whenever one, or all fields, are finished running - regardless of the validation result.
 
-If we specify a field name in our `done` call, Vest will not wait for the whole suite to finish before running our callback. It will invoke immediately when all tests with that given name finished running.
+If we specify a field name in our `done` call, Vest will not wait for the whole suite to finish before running our callback. It will invoke immediately when all tests with that given name finish running.
 
 `.done()` calls can be infinitely chained after one another, and as the validation suite completes - they will all run immediately.
 

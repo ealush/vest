@@ -7,7 +7,7 @@ import type { TStateHandlerReturn } from 'vast';
 import VestTest from 'VestTest';
 import type { TStateRef } from 'createStateRef';
 import ctx from 'ctx';
-import type { TDraftResult } from 'produceDraft';
+import type { SuiteResult } from 'produceSuiteResult';
 
 // STATE REF
 export function useStateRef(): Exclude<TStateRef, void> {
@@ -23,8 +23,8 @@ export function useSuiteName(): string | void {
   return useStateRef().suiteName()[0];
 }
 export function useTestCallbacks(): TStateHandlerReturn<{
-  fieldCallbacks: Record<string, ((res: TDraftResult) => void)[]>;
-  doneCallbacks: ((res: TDraftResult) => void)[];
+  fieldCallbacks: Record<string, ((res: SuiteResult) => void)[]>;
+  doneCallbacks: ((res: SuiteResult) => void)[];
 }> {
   return useStateRef().testCallbacks();
 }

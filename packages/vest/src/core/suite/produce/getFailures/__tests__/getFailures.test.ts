@@ -1,12 +1,12 @@
-import { produceFullResult } from 'produce';
-import { produceDraft } from 'produceDraft';
-
 import itWithContext from '../../../../../../testUtils/itWithContext';
 import { dummyTest } from '../../../../../../testUtils/testDummy';
 import { setTestObjects } from '../../../../../../testUtils/testObjects';
 
+import { produceSuiteResult } from 'produceSuiteResult';
+import { produceFullResult } from 'produceSuiteRunResult';
+
 const methods = {
-  produceDraft,
+  produceSuiteResult,
   produceFullResult,
 };
 

@@ -8,12 +8,12 @@ import { IsolateTypes } from 'IsolateTypes';
 import createStateRef from 'createStateRef';
 import context from 'ctx';
 import { isolate } from 'isolate';
-import { IVestResult, produceFullResult } from 'produce';
-import { produceDraft, TDraftResult } from 'produceDraft';
+import { produceSuiteResult, SuiteResult } from 'produceSuiteResult';
+import { SuiteRunResult, produceFullResult } from 'produceSuiteRunResult';
 import { initBus, Events } from 'vestBus';
 
 type CreateProperties = {
-  get: () => TDraftResult;
+  get: () => SuiteResult;
   reset: () => void;
   resetField: (fieldName: string) => void;
   remove: (fieldName: string) => void;
@@ -22,7 +22,7 @@ type CreateProperties = {
 type CB = (...args: any[]) => void;
 
 type SuiteReturnType<T extends CB> = {
-  (...args: Parameters<T>): IVestResult;
+  (...args: Parameters<T>): SuiteRunResult;
 } & CreateProperties;
 
 /**
@@ -61,9 +61,9 @@ function create<T extends CB>(
   const stateRef = createStateRef(state, { suiteId: genId(), suiteName });
 
   interface IVestSuite {
-    (...args: Parameters<T>): IVestResult;
+    (...args: Parameters<T>): SuiteRunResult;
 
-    get: () => TDraftResult;
+    get: () => SuiteResult;
     reset: () => void;
     resetField: (fieldName: string) => void;
     remove: (fieldName: string) => void;
@@ -92,7 +92,7 @@ function create<T extends CB>(
       return produceFullResult();
     }),
     {
-      get: context.bind(ctxRef, produceDraft),
+      get: context.bind(ctxRef, produceSuiteResult),
       remove: context.bind(ctxRef, (fieldName: string) => {
         bus.emit(Events.REMOVE_FIELD, fieldName);
       }),

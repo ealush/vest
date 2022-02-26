@@ -162,9 +162,11 @@
       "nonMatchingSeverityProfile": [
         "./packages/vest/src/core/suite/produce/nonMatchingSeverityProfile.ts"
       ],
-      "produce": ["./packages/vest/src/core/suite/produce/produce.ts"],
-      "produceDraft": [
-        "./packages/vest/src/core/suite/produce/produceDraft.ts"
+      "produceSuiteResult": [
+        "./packages/vest/src/core/suite/produce/produceSuiteResult.ts"
+      ],
+      "produceSuiteRunResult": [
+        "./packages/vest/src/core/suite/produce/produceSuiteRunResult.ts"
       ],
       "runCallbacks": [
         "./packages/vest/src/core/suite/produce/runCallbacks.ts"
@@ -212,7 +214,6 @@
       "Modes": ["./packages/vest/src/hooks/mode/Modes.ts"],
       "optionalTests": ["./packages/vest/src/hooks/optionalTests.ts"],
       "warn": ["./packages/vest/src/hooks/warn.ts"],
-      "vest.d": ["./packages/vest/src/typings/vest.d.ts"],
       "vest": ["./packages/vest/src/vest.ts"]
     }
   },

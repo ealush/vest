@@ -3,7 +3,7 @@ import optionalFunctionValue from 'optionalFunctionValue';
 import { IsolateTypes } from 'IsolateTypes';
 import ctx from 'ctx';
 import { isolate } from 'isolate';
-import { produceDraft, TDraftResult } from 'produceDraft';
+import { produceSuiteResult, SuiteResult } from 'produceSuiteResult';
 
 /**
  * Conditionally skips running tests within the callback.
@@ -15,7 +15,7 @@ import { produceDraft, TDraftResult } from 'produceDraft';
  * });
  */
 export default function skipWhen(
-  conditional: boolean | ((draft: TDraftResult) => boolean),
+  conditional: boolean | ((draft: SuiteResult) => boolean),
   callback: (...args: any[]) => void
 ): void {
   isolate({ type: IsolateTypes.SKIP_WHEN }, () => {
@@ -28,7 +28,7 @@ export default function skipWhen(
           // Otherwise, we should skip the test if the conditional is true.
           optionalFunctionValue(
             conditional,
-            optionalFunctionValue(produceDraft)
+            optionalFunctionValue(produceSuiteResult)
           ),
       },
       () => callback()

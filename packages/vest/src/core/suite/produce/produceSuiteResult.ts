@@ -12,7 +12,7 @@ import { useStateRef, useTestsFlat, useSuiteName } from 'stateHooks';
 
 const cache = createCache(20);
 
-export function produceDraft(): TDraftResult {
+export function produceSuiteResult(): SuiteResult {
   const testObjects = useTestsFlat();
 
   const ctxRef = { stateRef: useStateRef() };
@@ -31,7 +31,7 @@ export function produceDraft(): TDraftResult {
         hasWarnings: ctx.bind(ctxRef, hasWarnings),
         hasWarningsByGroup: ctx.bind(ctxRef, hasWarningsByGroup),
         isValid: ctx.bind(ctxRef, (fieldName?: string) =>
-          isValid(produceDraft(), fieldName)
+          isValid(produceSuiteResult(), fieldName)
         ),
         suiteName,
       });
@@ -39,7 +39,7 @@ export function produceDraft(): TDraftResult {
   );
 }
 
-export type TDraftResult = ReturnType<typeof genTestsSummary> & {
+export type SuiteResult = ReturnType<typeof genTestsSummary> & {
   /**
    * Returns whether the suite as a whole is valid.
    * Determined if there are no errors, and if no

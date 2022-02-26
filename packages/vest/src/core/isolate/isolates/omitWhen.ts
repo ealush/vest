@@ -3,7 +3,7 @@ import optionalFunctionValue from 'optionalFunctionValue';
 import { IsolateTypes } from 'IsolateTypes';
 import ctx from 'ctx';
 import { isolate } from 'isolate';
-import { produceDraft, TDraftResult } from 'produceDraft';
+import { produceSuiteResult, SuiteResult } from 'produceSuiteResult';
 
 /**
  * Conditionally omits tests from the suite.
@@ -15,7 +15,7 @@ import { produceDraft, TDraftResult } from 'produceDraft';
  * });
  */
 export default function omitWhen(
-  conditional: boolean | ((draft: TDraftResult) => boolean),
+  conditional: boolean | ((draft: SuiteResult) => boolean),
   callback: (...args: any[]) => void
 ): void {
   isolate({ type: IsolateTypes.OMIT_WHEN }, () => {
@@ -25,7 +25,7 @@ export default function omitWhen(
           isOmitted() ||
           optionalFunctionValue(
             conditional,
-            optionalFunctionValue(produceDraft)
+            optionalFunctionValue(produceSuiteResult)
           ),
       },
       () => callback()

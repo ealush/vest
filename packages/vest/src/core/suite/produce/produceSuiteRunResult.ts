@@ -5,18 +5,18 @@ import isFunction from 'isFunction';
 
 import ctx from 'ctx';
 import hasRemainingTests from 'hasRemainingTests';
-import { produceDraft, TDraftResult } from 'produceDraft';
+import { produceSuiteResult, SuiteResult } from 'produceSuiteResult';
 import { useStateRef, useTestCallbacks, useTestsFlat } from 'stateHooks';
 
 const cache = createCache(20);
 
-export function produceFullResult(): IVestResult {
+export function produceFullResult(): SuiteRunResult {
   const testObjects = useTestsFlat();
   const ctxRef = { stateRef: useStateRef() };
   return cache(
     [testObjects],
     ctx.bind(ctxRef, () =>
-      assign({}, produceDraft(), {
+      assign({}, produceSuiteResult(), {
         done: ctx.bind(ctxRef, done),
       })
     )
@@ -28,10 +28,10 @@ export function produceFullResult(): IVestResult {
  */
 
 function shouldSkipDoneRegistration(
-  callback: (res: TDraftResult) => void,
+  callback: (res: SuiteResult) => void,
 
   fieldName: string | undefined,
-  output: IVestResult
+  output: SuiteRunResult
 ): boolean {
   // If we do not have any test runs for the current field
   return !!(
@@ -54,9 +54,9 @@ function shouldRunDoneCallback(fieldName?: string): boolean {
  * Registers done callbacks.
  * @register {Object} Vest output object.
  */
-const done: IDone = function done(...args): IVestResult {
+const done: IDone = function done(...args): SuiteRunResult {
   const [callback, fieldName] = args.reverse() as [
-    (res: TDraftResult) => void,
+    (res: SuiteResult) => void,
     string
   ];
 
@@ -66,7 +66,7 @@ const done: IDone = function done(...args): IVestResult {
     return output;
   }
 
-  const doneCallback = () => callback(produceDraft());
+  const doneCallback = () => callback(produceSuiteResult());
 
   if (shouldRunDoneCallback(fieldName)) {
     doneCallback();
@@ -93,9 +93,11 @@ function deferDoneCallback(doneCallback: () => void, fieldName?: string): void {
   });
 }
 
-export type IVestResult = TDraftResult & { done: IDone };
+export type SuiteRunResult = SuiteResult & { done: IDone };
 
 interface IDone {
-  (...args: [cb: (res: TDraftResult) => void]): IVestResult;
-  (...args: [fieldName: string, cb: (res: TDraftResult) => void]): IVestResult;
+  (...args: [cb: (res: SuiteResult) => void]): SuiteRunResult;
+  (
+    ...args: [fieldName: string, cb: (res: SuiteResult) => void]
+  ): SuiteRunResult;
 }

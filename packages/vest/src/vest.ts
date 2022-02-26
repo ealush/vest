@@ -1,5 +1,6 @@
 import { enforce } from 'n4s';
 
+import VestTest from 'VestTest';
 import create from 'create';
 import context from 'ctx';
 import each from 'each';
@@ -9,6 +10,8 @@ import include from 'include';
 import { eager } from 'mode';
 import omitWhen from 'omitWhen';
 import optional from 'optionalTests';
+import type { SuiteResult } from 'produceSuiteResult';
+import type { SuiteRunResult } from 'produceSuiteRunResult';
 import skipWhen from 'skipWhen';
 import { test } from 'test';
 import warn from 'warn';
@@ -31,3 +34,5 @@ export {
   include,
   eager,
 };
+
+export type { SuiteResult, SuiteRunResult, VestTest };

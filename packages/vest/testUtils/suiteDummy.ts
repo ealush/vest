@@ -5,25 +5,25 @@ import { dummyTest } from './testDummy';
 import { optional, create, skip } from 'vest';
 
 export function failing(failingFields?: string | string[]) {
-  return createSuiteResult(failingFields, fieldName => {
+  return createSuiteRunResult(failingFields, fieldName => {
     dummyTest.failing(fieldName);
   });
 }
 
 export function warning(failingFields?: string | string[]) {
-  return createSuiteResult(failingFields, fieldName => {
+  return createSuiteRunResult(failingFields, fieldName => {
     dummyTest.failingWarning(fieldName);
   });
 }
 
 export function failingAsync(failingFields?: string | string[]) {
-  return createSuiteResult(failingFields, fieldName => {
+  return createSuiteRunResult(failingFields, fieldName => {
     dummyTest.failingAsync(fieldName);
   });
 }
 
 export function passing(fields?: string | string[]) {
-  return createSuiteResult(fields, fieldName => {
+  return createSuiteRunResult(fields, fieldName => {
     dummyTest.passing(fieldName);
   });
 }
@@ -87,7 +87,7 @@ export function untested(fields?: string | string[]) {
   return suite.get();
 }
 
-function createSuiteResult(
+function createSuiteRunResult(
   fieldNames: string[] | string | undefined,
   callback: (fieldName?: string) => void // eslint-disable-line no-unused-vars
 ) {

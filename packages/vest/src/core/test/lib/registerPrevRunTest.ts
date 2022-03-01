@@ -15,6 +15,9 @@ import { useTestAtCursor, useSetTestAtCursor } from 'useTestAtCursor';
 export default function registerPrevRunTest(testObject: VestTest): VestTest {
   if (shouldSkipBasedOnMode(testObject)) {
     testObject.skip();
+    useTestAtCursor(testObject);
+    testCursor.moveForward();
+    return testObject;
   }
 
   const prevRunTest = useTestAtCursor(testObject);

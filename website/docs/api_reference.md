@@ -37,6 +37,7 @@ Below is a list of all the API functions exposed by Vest.
 - [optional](./writing_your_suite/optional_fields.md) - Allows you to mark a field as optional.
 - [group](./writing_tests/advanced_test_features/grouping_tests.md) - Allows grouping multiple tests with a given name.
 - [each](./writing_tests/advanced_test_features/dynamic_tests.md) - Allows iteration over an array of values to dynamically run tests.
+- [eager](./writing_your_suite/eager.md) - bails early on failed tests for a certain field
 
 ## Suite Result API
 

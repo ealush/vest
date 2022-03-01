@@ -13,13 +13,11 @@ import { useTestAtCursor, useSetTestAtCursor } from 'useTestAtCursor';
 
 // eslint-disable-next-line max-statements
 export default function registerPrevRunTest(testObject: VestTest): VestTest {
-  const prevRunTest = useTestAtCursor(testObject);
-
   if (shouldSkipBasedOnMode(testObject)) {
-    testCursor.moveForward();
     testObject.skip();
-    return testObject;
   }
+
+  const prevRunTest = useTestAtCursor(testObject);
 
   if (isOmitted()) {
     prevRunTest.omit();

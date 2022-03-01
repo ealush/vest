@@ -101,4 +101,29 @@ describe('mode: eager', () => {
       expect(suite.get().errorCount).toBe(6);
     });
   });
+
+  describe('When test used to fail and it now passes', () => {
+    let run = 0;
+    beforeEach(() => {
+      suite = create(() => {
+        dummyTest.passing('field_1');
+
+        if (run === 0) {
+          dummyTest.failing('field_1', 'second-of-field_1');
+        } else {
+          dummyTest.passing('field_1');
+        }
+        run++;
+      });
+    });
+
+    it('Should treat test as passing', () => {
+      suite();
+      expect(suite.get().hasErrors()).toBe(true);
+      expect(suite.get().getErrors('field_1')).toEqual(['second-of-field_1']);
+      suite();
+      expect(suite.get().hasErrors()).toBe(false);
+      expect(suite.get().getErrors('field_1')).toEqual([]);
+    });
+  });
 });

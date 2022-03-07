@@ -20,6 +20,7 @@ describe('include', () => {
         });
 
         const res = suite();
+        console.log({ res });
         expect(res.hasErrors('field_1')).toBe(true);
         expect(res.tests.field_1.testCount).toBe(1);
         expect(res.hasErrors('field_2')).toBe(true);

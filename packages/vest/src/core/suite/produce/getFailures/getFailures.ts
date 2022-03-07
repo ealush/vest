@@ -11,6 +11,12 @@ export function getErrors(
   return getFailures(Severity.ERRORS, fieldName);
 }
 
+export function getError(fieldName: string): string;
+export function getError(fieldName: string): string {
+  return getErrors(fieldName)[0];
+}
+
+// function getWarning(fieldName: string): string;
 export function getWarnings(): Record<string, string[]>;
 export function getWarnings(fieldName?: string): string[];
 export function getWarnings(
@@ -27,6 +33,5 @@ function getFailures(severityKey: Severity, fieldName?: string) {
   const failureMessages = collectFailureMessages(severityKey, testObjects, {
     fieldName,
   });
-
   return getFailuresArrayOrObject(failureMessages, fieldName);
 }

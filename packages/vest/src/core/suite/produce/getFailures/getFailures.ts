@@ -16,13 +16,22 @@ export function getError(fieldName: string): string {
   return getErrors(fieldName)[0];
 }
 
-// function getWarning(fieldName: string): string;
 export function getWarnings(): Record<string, string[]>;
 export function getWarnings(fieldName?: string): string[];
 export function getWarnings(
   fieldName?: string
 ): string[] | Record<string, string[]> {
   return getFailures(Severity.WARNINGS, fieldName);
+}
+
+// export function getWarning(
+//   fieldName?: string
+// ): string {
+//   return getFailures(Severity.WARNINGS, fieldName);
+// }
+export function getWarning(fieldName: string): string;
+export function getWarning(fieldName: string): string {
+  return getWarnings(fieldName)[0];
 }
 
 /**

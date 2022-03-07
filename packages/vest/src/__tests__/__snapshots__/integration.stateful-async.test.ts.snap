@@ -4,8 +4,10 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
 Object {
   "done": [Function],
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {
@@ -61,8 +63,10 @@ Object {
 exports[`Stateful async tests Merges skipped validations from previous suite 2`] = `
 Object {
   "errorCount": 2,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {
@@ -121,8 +125,10 @@ Object {
 exports[`Stateful async tests Merges skipped validations from previous suite 3`] = `
 Object {
   "errorCount": 5,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {

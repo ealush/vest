@@ -4,8 +4,10 @@ exports[`test.memo cache hit Should produce correct initial result 1`] = `
 Object {
   "done": [Function],
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -44,8 +46,10 @@ exports[`test.memo cache hit sync Should restore previous result on re-run 1`] =
 Object {
   "done": [Function],
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},

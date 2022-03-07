@@ -153,8 +153,10 @@ Object {
 exports[`omitWhen When conditional is truthy boolean conditional Should avoid running the omitted tests 1`] = `
 Object {
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -194,8 +196,10 @@ Object {
 exports[`omitWhen When conditional is truthy boolean conditional Should skip and not run omitted fields when no filter provided 1`] = `
 Object {
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -235,8 +239,10 @@ Object {
 exports[`omitWhen When conditional is truthy function conditional Should avoid running the omitted tests 1`] = `
 Object {
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -276,8 +282,10 @@ Object {
 exports[`omitWhen When conditional is truthy function conditional Should skip and not run omitted fields when no filter provided 1`] = `
 Object {
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},

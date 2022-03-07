@@ -4,8 +4,10 @@ exports[`Stateful behavior Should merge skipped fields with previous values 1`] 
 Object {
   "done": [Function],
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -54,8 +56,10 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
 Object {
   "done": [Function],
   "errorCount": 3,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -108,8 +112,10 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
 Object {
   "done": [Function],
   "errorCount": 4,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -167,8 +173,10 @@ Object {
 exports[`more complex Should run correctly 1`] = `
 Object {
   "errorCount": 0,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -187,8 +195,10 @@ Object {
 exports[`more complex Should run correctly 2`] = `
 Object {
   "errorCount": 0,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -223,8 +233,10 @@ Object {
 exports[`more complex Should run correctly 4`] = `
 Object {
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -262,8 +274,10 @@ Object {
 exports[`more complex Should run correctly 6`] = `
 Object {
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},

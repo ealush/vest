@@ -109,8 +109,10 @@ describe('produceSuiteResult', () => {
       expect(produceSuiteResult()).toMatchInlineSnapshot(`
         Object {
           "errorCount": 0,
+          "getError": [Function],
           "getErrors": [Function],
           "getErrorsByGroup": [Function],
+          "getWarning": [Function],
           "getWarnings": [Function],
           "getWarningsByGroup": [Function],
           "groups": Object {},
@@ -136,8 +138,10 @@ describe('produceFullResult', () => {
         Object {
           "done": [Function],
           "errorCount": 0,
+          "getError": [Function],
           "getErrors": [Function],
           "getErrorsByGroup": [Function],
+          "getWarning": [Function],
           "getWarnings": [Function],
           "getWarningsByGroup": [Function],
           "groups": Object {},

@@ -4,8 +4,10 @@ exports[`include Field is excluded via \`skip\` Should disregard \`include.when\
 Object {
   "done": [Function],
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -36,8 +38,10 @@ exports[`include Field is excluded via \`skip\` Should disregard \`include\` and
 Object {
   "done": [Function],
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -68,8 +72,10 @@ exports[`include Test is excluded by being out of an included group Should disre
 Object {
   "done": [Function],
   "errorCount": 0,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {
@@ -103,8 +109,10 @@ exports[`include Test is excluded via \`skip.group\` Should disregard \`include.
 Object {
   "done": [Function],
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {
@@ -148,8 +156,10 @@ exports[`include Test is excluded via \`skip.group\` Should disregard \`include\
 Object {
   "done": [Function],
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {
@@ -193,8 +203,10 @@ exports[`include Test is excluded via \`skipWhen\` Should disregard \`include.wh
 Object {
   "done": [Function],
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -220,8 +232,10 @@ exports[`include Test is excluded via \`skipWhen\` Should disregard \`include\` 
 Object {
   "done": [Function],
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -247,8 +261,10 @@ exports[`include There is an \`onlyd\` field \`include\` is run as-is without mo
 Object {
   "done": [Function],
   "errorCount": 2,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -279,8 +295,10 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
 Object {
   "done": [Function],
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -316,8 +334,10 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
 Object {
   "done": [Function],
   "errorCount": 2,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -353,8 +373,10 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
 Object {
   "done": [Function],
   "errorCount": 2,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -380,8 +402,10 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
 Object {
   "done": [Function],
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -417,8 +441,10 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
 Object {
   "done": [Function],
   "errorCount": 2,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -454,8 +480,10 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
 Object {
   "done": [Function],
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -491,8 +519,10 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
 Object {
   "done": [Function],
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -528,8 +558,10 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
 Object {
   "done": [Function],
   "errorCount": 2,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -565,8 +597,10 @@ exports[`include When no \`skip\` or \`only\` include has no effect 1`] = `
 Object {
   "done": [Function],
   "errorCount": 2,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},
@@ -597,8 +631,10 @@ exports[`include When no \`skip\` or \`only\` include().when has no effect 1`] =
 Object {
   "done": [Function],
   "errorCount": 2,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": Object {},

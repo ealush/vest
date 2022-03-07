@@ -71,6 +71,28 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
       });
     });
   });
+  describe(`${methodName}->getError`, () => {
+    describe('When no error', () => {
+      describe('When requesting a fieldName', () => {
+        itWithContext('Should return an empty string', () => {
+          setTestObjects(dummyTest.passing('field_1'), dummyTest.passing());
+          expect(produceMethod().getError('field_1')).toBe('');
+        });
+      });
+    });
+    describe(`When there's is an error`, () => {
+      describe('When requesting a fieldName', () => {
+        itWithContext('Should return an empty string', () => {
+          setTestObjects(
+            dummyTest.failing('field_1', 'msg_1'),
+            dummyTest.passing('field_1', 'msg_4'),
+            dummyTest.failingWarning('field_1', 'msg_5')
+          );
+          expect(produceMethod().getError('field_1')).toBe('msg_1');
+        });
+      });
+    });
+  });
 
   describe(`${methodName}->getWarnings`, () => {
     describe('When no testObjects', () => {

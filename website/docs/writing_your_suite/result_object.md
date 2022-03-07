@@ -118,6 +118,28 @@ resultObject.hasWarningsByGroup('groupName');
 
 [Read more about groups](../writing_tests/advanced_test_features/grouping_tests.md)
 
+## `getError` and `getWarning`
+
+These functions must accept a field name string, returns a single string error for the specified field.
+
+```js
+resultObject.getError('username');
+// 'Username is too short'
+
+resultObject.getWarning('password');
+// 'Password must contain special characters'
+```
+
+If there is no error for the field, the function defaults to an empty array:
+
+```js
+resultObject.getError('username');
+// ''
+
+resultObject.getWarning('username');
+// ''
+```
+
 ## `getErrors` and `getWarnings`
 
 These functions return an array of errors for the specified field. If no field is specified, it returns an object with all fields as keys and their error arrays as values.

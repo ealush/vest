@@ -1,4 +1,4 @@
-import throwError from 'throwError';
+import invariant from 'invariant';
 
 import eachEnforceRule from 'eachEnforceRule';
 import { ctx } from 'enforceContext';
@@ -45,16 +45,13 @@ export default function enforceEager(value: TRuleValue): IRules {
         ...args
       );
 
-      if (!transformedResult.pass) {
-        if (isEmpty(transformedResult.message)) {
-          throwError(
-            `enforce/${ruleName} failed with ${JSON.stringify(value)}`
-          );
-        } else {
-          // Explicitly throw a string so that vest.test can pick it up as the validation error message
-          throw transformedResult.message;
-        }
-      }
+      invariant(
+        transformedResult.pass,
+        isEmpty(transformedResult.message)
+          ? `enforce/${ruleName} failed with ${JSON.stringify(value)}`
+          : new String(transformedResult.message)
+      );
+
       return target;
     };
   }

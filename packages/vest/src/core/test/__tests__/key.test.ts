@@ -147,11 +147,11 @@ describe('key', () => {
     });
 
     describe('When the same key is encountered twice', () => {
-      let throwErrorDeferred, vest;
+      let deferThrow, vest;
       beforeEach(() => {
         const mock = mockThrowError();
 
-        throwErrorDeferred = mock.throwErrorDeferred;
+        deferThrow = mock.deferThrow;
         vest = mock.vest;
       });
 
@@ -166,7 +166,7 @@ describe('key', () => {
           vest.test('field2', () => false, 'key_1');
         });
         suite();
-        expect(throwErrorDeferred).toHaveBeenCalledWith(
+        expect(deferThrow).toHaveBeenCalledWith(
           `Encountered the same test key "key_1" twice. This may lead to tests overriding each other's results, or to tests being unexpectedly omitted.`
         );
       });

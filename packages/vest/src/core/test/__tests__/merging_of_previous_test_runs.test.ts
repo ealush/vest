@@ -72,10 +72,10 @@ describe('Merging of previous test runs', () => {
   });
 
   describe('When tests are passed in a different order between runs', () => {
-    let throwErrorDeferred, vest;
+    let deferThrow, vest;
     beforeEach(() => {
       const mock = mockThrowError();
-      throwErrorDeferred = mock.throwErrorDeferred;
+      deferThrow = mock.deferThrow;
       vest = mock.vest;
     });
 
@@ -93,11 +93,11 @@ describe('Merging of previous test runs', () => {
       });
 
       suite();
-      expect(throwErrorDeferred).not.toHaveBeenCalled();
+      expect(deferThrow).not.toHaveBeenCalled();
 
       suite();
 
-      expect(throwErrorDeferred).toHaveBeenCalledWith(
+      expect(deferThrow).toHaveBeenCalledWith(
         expect.stringContaining(
           'Vest Critical Error: Tests called in different order than previous run.'
         )
@@ -142,7 +142,7 @@ describe('Merging of previous test runs', () => {
         `);
 
         const resB = suite();
-        expect(resB.tests.f2).not.toBeDefined();
+        expect(resB.tests.f2).toBeUndefined();
         expect(resB.hasErrors('f1')).toBe(true);
         expect(resB.hasErrors('f2')).toBe(false);
         expect(resB.hasErrors('f3')).toBe(true);
@@ -234,11 +234,11 @@ describe('Merging of previous test runs', () => {
             }
           `);
           const resB = suite();
-          expect(resB.tests.f2).not.toBeDefined();
-          expect(resB.tests.f3).not.toBeDefined();
-          expect(resB.tests.f5).not.toBeDefined();
-          expect(resB.tests.f6).not.toBeDefined();
-          expect(resB.tests.f7).not.toBeDefined();
+          expect(resB.tests.f2).toBeUndefined();
+          expect(resB.tests.f3).toBeUndefined();
+          expect(resB.tests.f5).toBeUndefined();
+          expect(resB.tests.f6).toBeUndefined();
+          expect(resB.tests.f7).toBeUndefined();
           expect(resB.hasErrors('f1')).toBe(true);
           expect(resB.hasErrors('f2')).toBe(false);
           expect(resB.hasErrors('f3')).toBe(false);

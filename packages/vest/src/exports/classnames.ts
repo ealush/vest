@@ -1,5 +1,5 @@
+import invariant from 'invariant';
 import isFunction from 'isFunction';
-import throwError from 'throwError';
 
 import { parse } from 'parser';
 import type { SuiteResult } from 'produceSuiteResult';
@@ -12,11 +12,10 @@ export default function classnames(
   res: SuiteRunResult | SuiteResult,
   classes: TSupportedClasses = {}
 ): (fieldName: string) => string {
-  if (!res || !isFunction(res.hasErrors)) {
-    throwError(
-      "classnames: Expected first argument to be Vest's result object."
-    );
-  }
+  invariant(
+    res && isFunction(res.hasErrors),
+    "classnames: Expected first argument to be Vest's result object."
+  );
 
   const selectors = parse(res);
 

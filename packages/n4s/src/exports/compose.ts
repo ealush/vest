@@ -1,9 +1,8 @@
+import invariant from 'invariant';
 import mapFirst from 'mapFirst';
-import throwError from 'throwError';
+import { ctx } from 'n4s';
 
 import type { TComposeResult, TLazyRuleRunners } from 'genEnforceLazy';
-import { isEmpty } from 'isEmpty';
-import { ctx } from 'n4s';
 import { defaultToPassing, TRuleDetailedResult } from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 
@@ -16,14 +15,7 @@ export default function compose(
     (value: any) => {
       const res = run(value);
 
-      if (!res.pass) {
-        if (isEmpty(res.message)) {
-          throwError();
-        } else {
-          // Explicitly throw a string so that vest.test can pick it up as the validation error message
-          throw res.message;
-        }
-      }
+      invariant(res.pass, new String(res.message));
     },
     {
       run,

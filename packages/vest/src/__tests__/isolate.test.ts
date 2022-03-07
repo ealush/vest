@@ -5,12 +5,12 @@ import { IsolateTypes } from 'IsolateTypes';
 describe('isolate', () => {
   let firstRun = true;
   let vest, isolate, skipWhen, dummyTest;
-  let throwErrorDeferred;
+  let deferThrow;
 
   beforeEach(() => {
     firstRun = true;
     const mock = mockThrowError();
-    throwErrorDeferred = mock.throwErrorDeferred;
+    deferThrow = mock.deferThrow;
     vest = mock.vest;
     skipWhen = vest.skipWhen;
     isolate = require('isolate').isolate;
@@ -240,10 +240,10 @@ describe('isolate', () => {
         });
 
         suite();
-        expect(throwErrorDeferred).toHaveBeenCalledTimes(0);
+        expect(deferThrow).toHaveBeenCalledTimes(0);
         suite();
-        expect(throwErrorDeferred).toHaveBeenCalledTimes(1);
-        expect(throwErrorDeferred).toHaveBeenCalledWith(
+        expect(deferThrow).toHaveBeenCalledTimes(1);
+        expect(deferThrow).toHaveBeenCalledWith(
           expect.stringContaining(
             'Vest Critical Error: Tests called in different order than previous run'
           )
@@ -258,9 +258,9 @@ describe('isolate', () => {
         });
 
         suite();
-        expect(throwErrorDeferred).toHaveBeenCalledTimes(0);
+        expect(deferThrow).toHaveBeenCalledTimes(0);
         suite();
-        expect(throwErrorDeferred).toHaveBeenCalledTimes(0);
+        expect(deferThrow).toHaveBeenCalledTimes(0);
       });
     });
   });

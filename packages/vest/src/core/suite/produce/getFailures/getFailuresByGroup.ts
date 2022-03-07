@@ -1,4 +1,4 @@
-import throwError from 'throwError';
+import invariant from 'invariant';
 
 import { Severity } from 'Severity';
 import collectFailureMessages from 'collectFailureMessages';
@@ -41,13 +41,12 @@ function getByGroup(
   group: string,
   fieldName?: string
 ): Record<string, string[]> {
-  if (!group) {
-    throwError(
-      `get${severityKey[0].toUpperCase()}${severityKey.slice(
-        1
-      )}ByGroup requires a group name. Received \`${group}\` instead.`
-    );
-  }
+  invariant(
+    group,
+    `get${severityKey[0].toUpperCase()}${severityKey.slice(
+      1
+    )}ByGroup requires a group name. Received \`${group}\` instead.`
+  );
   const testObjects = useTestsFlat();
   return collectFailureMessages(severityKey, testObjects, {
     group,

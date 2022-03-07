@@ -3,7 +3,7 @@ import { isEmpty, isNotEmpty } from 'isEmpty';
 import { isNullish } from 'isNullish';
 import * as nestedArray from 'nestedArray';
 import type { NestedArray } from 'nestedArray';
-import { throwErrorDeferred } from 'throwError';
+import { deferThrow } from 'throwError';
 
 import VestTest from 'VestTest';
 import isSameProfileTest from 'isSameProfileTest';
@@ -42,7 +42,7 @@ export function useTestAtCursor(newTestObject: VestTest): VestTest {
     return nextTest;
   }
 
-  if (shouldPurgePrevTest(prevTest, newTestObject)) {
+  if (testReorderDetected(prevTest, newTestObject)) {
     throwTestOrderError(prevTest, newTestObject);
 
     removeAllNextTestsInIsolate();
@@ -85,7 +85,7 @@ function useGetTestAtCursor(tests: NestedArray<VestTest>): VestTest {
   return nestedArray.valueAtPath(tests, cursorPath) as VestTest;
 }
 
-function shouldPurgePrevTest(prevTest: VestTest, newTest: VestTest): boolean {
+function testReorderDetected(prevTest: VestTest, newTest: VestTest): boolean {
   return isNotEmpty(prevTest) && !isSameProfileTest(prevTest, newTest);
 }
 
@@ -97,7 +97,7 @@ function throwTestOrderError(
     return;
   }
 
-  throwErrorDeferred(`Vest Critical Error: Tests called in different order than previous run.
+  deferThrow(`Vest Critical Error: Tests called in different order than previous run.
     expected: ${prevTest.fieldName}
     received: ${newTestObject.fieldName}
     This can happen on one of two reasons:

@@ -1,5 +1,5 @@
 import { createBus } from 'bus';
-import throwError from 'throwError';
+import invariant from 'invariant';
 
 import VestTest from 'VestTest';
 import ctx from 'ctx';
@@ -68,9 +68,7 @@ export function initBus() {
 export function useBus() {
   const context = ctx.useX();
 
-  if (!context.bus) {
-    throwError();
-  }
+  invariant(context.bus);
 
   return context.bus;
 }

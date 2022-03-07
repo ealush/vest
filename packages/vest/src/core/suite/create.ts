@@ -1,7 +1,7 @@
 import assign from 'assign';
 import genId from 'genId';
+import invariant from 'invariant';
 import isFunction from 'isFunction';
-import throwError from 'throwError';
 import { createState } from 'vast';
 
 import { IsolateTypes } from 'IsolateTypes';
@@ -47,9 +47,10 @@ function create<T extends CB>(
 ): SuiteReturnType<T> {
   const [suiteCallback, suiteName] = args.reverse() as [T, string];
 
-  if (!isFunction(suiteCallback)) {
-    throwError('vest.create: Expected callback to be a function.');
-  }
+  invariant(
+    isFunction(suiteCallback),
+    'vest.create: Expected callback to be a function.'
+  );
 
   // Event bus initialization
   const bus = initBus();

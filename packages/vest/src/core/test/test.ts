@@ -1,7 +1,7 @@
 import assign from 'assign';
+import invariant from 'invariant';
 import isFunction from 'isFunction';
-import { isNotString } from 'isString';
-import throwError from 'throwError';
+import { isString } from 'isString';
 
 import VestTest, { TTestFn } from 'VestTest';
 import ctx from 'ctx';
@@ -29,13 +29,15 @@ function testBase(
     isFunction(args[1]) ? args : [undefined, ...args]
   ) as [string | undefined, TTestFn, string | undefined];
 
-  if (isNotString(fieldName)) {
-    throwIncompatibleParamsError('fieldName', 'string');
-  }
+  invariant(
+    isString(fieldName),
+    incompatibleParamsError('fieldName', 'string')
+  );
 
-  if (!isFunction(testFn)) {
-    throwIncompatibleParamsError('Test callback', 'function');
-  }
+  invariant(
+    isFunction(testFn),
+    incompatibleParamsError('Test callback', 'function')
+  );
 
   const context = ctx.useX();
   const testObject = new VestTest(fieldName, testFn, {
@@ -62,8 +64,6 @@ export const test = assign(testBase, {
 
 export type TTestBase = typeof testBase;
 
-function throwIncompatibleParamsError(name: string, expected: string) {
-  throwError(
-    `Incompatible params passed to test function. ${name} must be a ${expected}`
-  );
+function incompatibleParamsError(name: string, expected: string) {
+  return `Incompatible params passed to test function. ${name} must be a ${expected}`;
 }

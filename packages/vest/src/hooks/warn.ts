@@ -1,4 +1,4 @@
-import throwError from 'throwError';
+import invariant from 'invariant';
 
 import context from 'ctx';
 import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
@@ -13,9 +13,7 @@ const ERROR_OUTSIDE_OF_TEST = __DEV__
 export default function warn(): void {
   const ctx = context.useX('warn ' + ERROR_HOOK_CALLED_OUTSIDE);
 
-  if (!ctx.currentTest) {
-    throwError(ERROR_OUTSIDE_OF_TEST);
-  }
+  invariant(ctx.currentTest, ERROR_OUTSIDE_OF_TEST);
 
   ctx.currentTest.warn();
 }

@@ -1,7 +1,7 @@
 import asArray from 'asArray';
 import { isNullish } from 'isNullish';
 import * as nestedArray from 'nestedArray';
-import { throwErrorDeferred } from 'throwError';
+import { deferThrow } from 'throwError';
 
 import VestTest from 'VestTest';
 import ctx from 'ctx';
@@ -40,7 +40,7 @@ export function useRetainTestKey(key: string, testObject: VestTest) {
   if (isNullish(current[key])) {
     current[key] = testObject;
   } else {
-    throwErrorDeferred(
+    deferThrow(
       `Encountered the same test key "${key}" twice. This may lead to tests overriding each other's results, or to tests being unexpectedly omitted.`
     );
   }

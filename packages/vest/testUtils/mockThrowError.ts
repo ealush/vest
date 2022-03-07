@@ -1,16 +1,13 @@
 export default function mockThrowError() {
-  const throwErrorDeferred = jest.fn();
-  const throwError = jest.fn();
+  const deferThrow = jest.fn();
   jest.resetModules();
   jest.mock('throwError', () => ({
-    throwErrorDeferred,
-    default: throwError,
+    deferThrow,
   }));
   const vest = require('vest');
 
   return {
-    throwErrorDeferred,
-    throwError,
+    deferThrow,
     vest,
   };
 }

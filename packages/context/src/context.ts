@@ -1,7 +1,7 @@
 import assign from 'assign';
 import defaultTo from 'defaultTo';
+import invariant from 'invariant';
 import optionalFunctionValue from 'optionalFunctionValue';
-import throwError from 'throwError';
 
 // eslint-disable-next-line max-lines-per-function
 export function createContext<T extends Record<string, unknown>>(
@@ -22,12 +22,11 @@ export function createContext<T extends Record<string, unknown>>(
   };
 
   function useX(errorMessage?: string): T {
-    return (
-      (storage.ctx as T) ??
-      throwError(
-        defaultTo(errorMessage, 'Context was used after it was closed')
-      )
+    invariant(
+      storage.ctx,
+      defaultTo(errorMessage, 'Context was used after it was closed')
     );
+    return storage.ctx as T;
   }
 
   function run<R>(ctxRef: Partial<T>, fn: (context: T) => R): R {

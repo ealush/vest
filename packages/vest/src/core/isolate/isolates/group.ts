@@ -1,6 +1,6 @@
+import invariant from 'invariant';
 import isFunction from 'isFunction';
 import { isStringValue } from 'isStringValue';
-import throwError from 'throwError';
 
 import { IsolateTypes } from 'IsolateTypes';
 import context from 'ctx';
@@ -16,13 +16,9 @@ import { isolate } from 'isolate';
  * });
  */
 export default function group(groupName: string, tests: () => void): void {
-  if (!isStringValue(groupName)) {
-    throwGroupError('name must be a string');
-  }
+  invariant(isStringValue(groupName), groupErrorMsg('name must be a string'));
 
-  if (!isFunction(tests)) {
-    throwGroupError('callback must be a function');
-  }
+  invariant(isFunction(tests), groupErrorMsg('callback must be a function'));
 
   // Running with the context applied
   isolate({ type: IsolateTypes.GROUP }, () => {
@@ -30,6 +26,6 @@ export default function group(groupName: string, tests: () => void): void {
   });
 }
 
-function throwGroupError(error: string) {
-  throwError(`Wrong arguments passed to group. Group ${error}.`);
+function groupErrorMsg(error: string) {
+  return `Wrong arguments passed to group. Group ${error}.`;
 }

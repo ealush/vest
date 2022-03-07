@@ -1,6 +1,6 @@
+import invariant from 'invariant';
 import { isBoolean } from 'isBooleanValue';
 import optionalFunctionValue from 'optionalFunctionValue';
-import throwError from 'throwError';
 
 import ruleReturn, { TRuleReturn, TRuleDetailedResult } from 'ruleReturn';
 import type { TRuleValue, TArgs } from 'runtimeRules';
@@ -29,9 +29,8 @@ export function transformResult(
 
 function validateResult(result: TRuleReturn): void {
   // if result is boolean, or if result.pass is boolean
-  if (isBoolean(result) || (result && isBoolean(result.pass))) {
-    return;
-  }
-
-  throwError('Incorrect return value for rule: ' + JSON.stringify(result));
+  invariant(
+    isBoolean(result) || (result && isBoolean(result.pass)),
+    'Incorrect return value for rule: ' + JSON.stringify(result)
+  );
 }

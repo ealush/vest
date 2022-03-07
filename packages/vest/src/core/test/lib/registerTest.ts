@@ -1,5 +1,4 @@
 import isPromise from 'isPromise';
-import throwError from 'throwError';
 
 import VestTest from 'VestTest';
 import runAsyncTest from 'runAsyncTest';
@@ -27,7 +26,7 @@ export default function registerTest(testObject: VestTest): void {
       bus.emit(Events.TEST_COMPLETED, testObject);
     }
   } catch (e) {
-    throwError(
+    throw new Error(
       `Unexpected error encountered during test registration.
       Test Object: ${JSON.stringify(testObject)}.
       Error: ${e}.`

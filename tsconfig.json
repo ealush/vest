@@ -102,6 +102,7 @@
       "genId": ["./packages/shared/src/genId.ts"],
       "globals.d": ["./packages/shared/src/globals.d.ts"],
       "hasOwnProperty": ["./packages/shared/src/hasOwnProperty.ts"],
+      "invariant": ["./packages/shared/src/invariant.ts"],
       "isBooleanValue": ["./packages/shared/src/isBooleanValue.ts"],
       "isFunction": ["./packages/shared/src/isFunction.ts"],
       "isNullish": ["./packages/shared/src/isNullish.ts"],

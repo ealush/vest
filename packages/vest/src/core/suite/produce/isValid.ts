@@ -1,7 +1,7 @@
 import { isNotEmpty, isEmpty } from 'isEmpty';
 
+import { hasErrors } from 'hasFailures';
 import { nonMatchingFieldName } from 'matchingFieldName';
-import type { SuiteResult } from 'produceSuiteResult';
 import {
   useTestsFlat,
   useAllIncomplete,
@@ -10,12 +10,12 @@ import {
 } from 'stateHooks';
 
 // eslint-disable-next-line max-statements, complexity
-export function isValid(result: SuiteResult, fieldName?: string): boolean {
+export function isValid(fieldName?: string): boolean {
   if (fieldIsOmitted(fieldName)) {
     return true;
   }
 
-  if (result.hasErrors(fieldName)) {
+  if (hasErrors(fieldName)) {
     return false;
   }
 
@@ -25,7 +25,7 @@ export function isValid(result: SuiteResult, fieldName?: string): boolean {
     return false;
   }
 
-  if (fieldDoesNotExist(result, fieldName)) {
+  if (fieldDoesNotExist(fieldName)) {
     return false;
   }
 
@@ -59,8 +59,12 @@ function hasNonOptionalIncomplete(fieldName?: string) {
   );
 }
 
-function fieldDoesNotExist(result: SuiteResult, fieldName?: string): boolean {
-  return !!fieldName && isEmpty(result.tests[fieldName]);
+function fieldDoesNotExist(fieldName?: string): boolean {
+  const testObjects = useTestsFlat();
+  return (
+    !!fieldName &&
+    !testObjects.find(testObject => testObject.fieldName === fieldName)
+  );
 }
 
 function noMissingTests(fieldName?: string): boolean {

@@ -30,9 +30,7 @@ export function produceSuiteResult(): SuiteResult {
         hasErrorsByGroup: ctx.bind(ctxRef, hasErrorsByGroup),
         hasWarnings: ctx.bind(ctxRef, hasWarnings),
         hasWarningsByGroup: ctx.bind(ctxRef, hasWarningsByGroup),
-        isValid: ctx.bind(ctxRef, (fieldName?: string) =>
-          isValid(produceSuiteResult(), fieldName)
-        ),
+        isValid: ctx.bind(ctxRef, isValid),
         suiteName,
       });
     })

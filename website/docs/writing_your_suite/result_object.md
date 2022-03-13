@@ -134,10 +134,10 @@ If there is no error for the field, the function defaults to an empty array:
 
 ```js
 resultObject.getError('username');
-// []
+// ''
 
 resultObject.getWarning('username');
-// []
+// ''
 ```
 
 ## `getErrors` and `getWarnings`

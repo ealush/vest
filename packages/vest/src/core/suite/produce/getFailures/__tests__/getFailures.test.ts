@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import itWithContext from '../../../../../../testUtils/itWithContext';
 import { dummyTest } from '../../../../../../testUtils/testDummy';
 import { setTestObjects } from '../../../../../../testUtils/testObjects';
@@ -67,6 +68,28 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
             dummyTest.failingWarning('field_1', 'msg_5')
           );
           expect(produceMethod().getErrors('field_1')).toEqual(['msg_1']);
+        });
+      });
+    });
+  });
+  describe(`${methodName}->getError`, () => {
+    describe('When no error', () => {
+      describe('When requesting a fieldName', () => {
+        itWithContext('Should return an empty string', () => {
+          setTestObjects(dummyTest.passing('field_1'), dummyTest.passing());
+          expect(produceMethod().getError('field_1')).toBe('');
+        });
+      });
+    });
+    describe(`When there's is an are error`, () => {
+      describe('When requesting a fieldName', () => {
+        itWithContext('Should return an empty string', () => {
+          setTestObjects(
+            dummyTest.failing('field_1', 'msg_1'),
+            dummyTest.passing('field_1', 'msg_4'),
+            dummyTest.failingWarning('field_1', 'msg_5')
+          );
+          expect(produceMethod().getError('field_1')).toBe('msg_1');
         });
       });
     });

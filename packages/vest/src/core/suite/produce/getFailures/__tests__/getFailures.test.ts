@@ -81,7 +81,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
         });
       });
     });
-    describe(`When there's is an are error`, () => {
+    describe(`When there's is an error`, () => {
       describe('When requesting a fieldName', () => {
         itWithContext('Should return an empty string', () => {
           setTestObjects(

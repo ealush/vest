@@ -1,6 +1,6 @@
 import assign from 'assign';
 
-import { Severity } from 'Severity';
+import { Severity, SeverityCount } from 'Severity';
 import VestTest from 'VestTest';
 import { useTestsFlat } from 'stateHooks';
 
@@ -15,25 +15,37 @@ export default function genTestsSummary(): TTestSummary {
     tests: {},
   });
 
-  appendSummary(testObjects);
+  testObjects.reduce(
+    (summary: TTestSummary, testObject: VestTest): TTestSummary => {
+      appendToTest(summary.tests, testObject);
+      appendToGroup(summary.groups, testObject);
+      return summary;
+    },
+    summary
+  );
 
   return countFailures(summary);
+}
 
-  function appendSummary(testObjects: VestTest[]) {
-    testObjects.forEach(testObject => {
-      const { fieldName, groupName } = testObject;
+function appendToTest(tests: TTestGroup, testObject: VestTest) {
+  tests[testObject.fieldName] = appendTestObject(tests, testObject);
+}
 
-      summary.tests[fieldName] = genTestObject(summary.tests, testObject);
+/**
+ * Appends to a group object if within a group
+ */
+function appendToGroup(groups: TGroups, testObject: VestTest) {
+  const { groupName } = testObject;
 
-      if (groupName) {
-        summary.groups[groupName] = summary.groups[groupName] || {};
-        summary.groups[groupName][fieldName] = genTestObject(
-          summary.groups[groupName],
-          testObject
-        );
-      }
-    });
+  if (!groupName) {
+    return;
   }
+
+  groups[groupName] = groups[groupName] || {};
+  groups[groupName][testObject.fieldName] = appendTestObject(
+    groups[groupName],
+    testObject
+  );
 }
 
 /**
@@ -48,8 +60,11 @@ function countFailures(summary: TTestSummary): TTestSummary {
   return summary;
 }
 
+/**
+ * Appends the test to a results object
+ */
 // eslint-disable-next-line max-statements
-function genTestObject(
+function appendTestObject(
   summaryKey: TTestGroup,
   testObject: VestTest
 ): TSingleTestSummary {
@@ -63,22 +78,27 @@ function genTestObject(
 
   summaryKey[fieldName].testCount++;
 
-  // Adds to severity group
-  function addTo(severity: Severity) {
-    const countKey = severity === Severity.ERRORS ? 'errorCount' : 'warnCount';
+  if (testObject.isFailing()) {
+    incrementFailures(Severity.ERRORS);
+  } else if (testObject.isWarning()) {
+    incrementFailures(Severity.WARNINGS);
+  }
+
+  return testKey;
+
+  function incrementFailures(severity: Severity) {
+    const countKey = getCountKey(severity);
     testKey[countKey]++;
     if (message) {
       testKey[severity] = (testKey[severity] || []).concat(message);
     }
   }
+}
 
-  if (testObject.isFailing()) {
-    addTo(Severity.ERRORS);
-  } else if (testObject.isWarning()) {
-    addTo(Severity.WARNINGS);
-  }
-
-  return testKey;
+function getCountKey(severity: Severity): SeverityCount {
+  return severity === Severity.ERRORS
+    ? SeverityCount.ERROR_COUNT
+    : SeverityCount.WARN_COUNT;
 }
 
 function baseStats() {
@@ -89,8 +109,10 @@ function baseStats() {
   };
 }
 
+type TGroups = Record<string, TTestGroup>;
+
 type TTestSummary = {
-  groups: Record<string, TTestGroup>;
+  groups: TGroups;
   tests: TTestGroup;
 } & TTestSummaryBase;
 

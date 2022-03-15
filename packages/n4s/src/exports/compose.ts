@@ -1,8 +1,8 @@
 import invariant from 'invariant';
 import mapFirst from 'mapFirst';
-import { ctx } from 'n4s';
 
 import type { TComposeResult, TLazyRuleRunners } from 'genEnforceLazy';
+import { ctx } from 'n4s';
 import { defaultToPassing, TRuleDetailedResult } from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 

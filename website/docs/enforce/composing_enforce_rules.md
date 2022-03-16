@@ -21,6 +21,9 @@ Let's assume the following:
 Expressing this with basic enforce rules is easy, but can be cumbersome, and also not very reusable.
 
 ```js
+import { enforce } from 'vest';
+import 'vest/enforce/schema'; // for the schema rules
+
 enforce(userObj).shape({
   id: enforce.number(),
   name: enforce.shape({
@@ -49,6 +52,7 @@ Instead, we can compose these different characteristics into composites that can
 
 ```js
 import compose from 'vest/enforce/compose';
+import 'vest/enforce/schema'; // for the schema rules
 
 const Entity = compose(
   enforce.loose({

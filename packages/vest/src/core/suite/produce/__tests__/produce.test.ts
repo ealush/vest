@@ -122,6 +122,7 @@ describe('produceSuiteResult', () => {
           "suiteName": undefined,
           "testCount": 0,
           "tests": Object {},
+          "valid": false,
           "warnCount": 0,
         }
       `);
@@ -149,6 +150,7 @@ describe('produceFullResult', () => {
           "suiteName": undefined,
           "testCount": 0,
           "tests": Object {},
+          "valid": false,
           "warnCount": 0,
         }
       `);

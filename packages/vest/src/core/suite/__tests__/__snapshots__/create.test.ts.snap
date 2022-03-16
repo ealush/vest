@@ -16,6 +16,7 @@ Object {
   "suiteName": undefined,
   "testCount": 0,
   "tests": Object {},
+  "valid": false,
   "warnCount": 0,
 }
 `;
@@ -36,6 +37,7 @@ Object {
   "suiteName": undefined,
   "testCount": 0,
   "tests": Object {},
+  "valid": false,
   "warnCount": 0,
 }
 `;
@@ -56,6 +58,7 @@ Object {
   "suiteName": undefined,
   "testCount": 0,
   "tests": Object {},
+  "valid": false,
   "warnCount": 0,
 }
 `;

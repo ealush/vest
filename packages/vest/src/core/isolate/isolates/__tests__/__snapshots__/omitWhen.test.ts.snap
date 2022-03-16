@@ -5,21 +5,25 @@ Object {
   "field_1": Object {
     "errorCount": 1,
     "testCount": 2,
+    "valid": false,
     "warnCount": 0,
   },
   "field_2": Object {
     "errorCount": 0,
     "testCount": 0,
+    "valid": false,
     "warnCount": 0,
   },
   "field_3": Object {
     "errorCount": 0,
     "testCount": 0,
+    "valid": false,
     "warnCount": 0,
   },
   "field_4": Object {
     "errorCount": 0,
     "testCount": 0,
+    "valid": false,
     "warnCount": 0,
   },
 }
@@ -30,21 +34,25 @@ Object {
   "field_1": Object {
     "errorCount": 1,
     "testCount": 2,
+    "valid": false,
     "warnCount": 0,
   },
   "field_2": Object {
     "errorCount": 0,
     "testCount": 0,
+    "valid": false,
     "warnCount": 0,
   },
   "field_3": Object {
     "errorCount": 0,
     "testCount": 0,
+    "valid": false,
     "warnCount": 0,
   },
   "field_4": Object {
     "errorCount": 0,
     "testCount": 0,
+    "valid": false,
     "warnCount": 0,
   },
 }
@@ -55,21 +63,25 @@ Object {
   "field_1": Object {
     "errorCount": 1,
     "testCount": 2,
+    "valid": false,
     "warnCount": 0,
   },
   "field_2": Object {
     "errorCount": 0,
     "testCount": 0,
+    "valid": false,
     "warnCount": 0,
   },
   "field_3": Object {
     "errorCount": 0,
     "testCount": 0,
+    "valid": false,
     "warnCount": 0,
   },
   "field_4": Object {
     "errorCount": 0,
     "testCount": 1,
+    "valid": true,
     "warnCount": 0,
   },
 }
@@ -80,21 +92,25 @@ Object {
   "field_1": Object {
     "errorCount": 1,
     "testCount": 2,
+    "valid": false,
     "warnCount": 0,
   },
   "field_2": Object {
     "errorCount": 0,
     "testCount": 0,
+    "valid": false,
     "warnCount": 0,
   },
   "field_3": Object {
     "errorCount": 0,
     "testCount": 0,
+    "valid": false,
     "warnCount": 0,
   },
   "field_4": Object {
     "errorCount": 0,
     "testCount": 0,
+    "valid": false,
     "warnCount": 0,
   },
 }
@@ -105,21 +121,25 @@ Object {
   "field_1": Object {
     "errorCount": 1,
     "testCount": 2,
+    "valid": false,
     "warnCount": 0,
   },
   "field_2": Object {
     "errorCount": 0,
     "testCount": 0,
+    "valid": false,
     "warnCount": 0,
   },
   "field_3": Object {
     "errorCount": 0,
     "testCount": 0,
+    "valid": false,
     "warnCount": 0,
   },
   "field_4": Object {
     "errorCount": 0,
     "testCount": 0,
+    "valid": false,
     "warnCount": 0,
   },
 }
@@ -130,21 +150,25 @@ Object {
   "field_1": Object {
     "errorCount": 1,
     "testCount": 2,
+    "valid": false,
     "warnCount": 0,
   },
   "field_2": Object {
     "errorCount": 0,
     "testCount": 0,
+    "valid": false,
     "warnCount": 0,
   },
   "field_3": Object {
     "errorCount": 0,
     "testCount": 0,
+    "valid": false,
     "warnCount": 0,
   },
   "field_4": Object {
     "errorCount": 0,
     "testCount": 1,
+    "valid": true,
     "warnCount": 0,
   },
 }
@@ -169,24 +193,29 @@ Object {
     "field_1": Object {
       "errorCount": 0,
       "testCount": 1,
+      "valid": true,
       "warnCount": 0,
     },
     "field_2": Object {
       "errorCount": 1,
       "testCount": 1,
+      "valid": false,
       "warnCount": 0,
     },
     "field_3": Object {
       "errorCount": 0,
       "testCount": 0,
+      "valid": true,
       "warnCount": 0,
     },
     "field_4": Object {
       "errorCount": 0,
       "testCount": 0,
+      "valid": true,
       "warnCount": 0,
     },
   },
+  "valid": false,
   "warnCount": 0,
 }
 `;
@@ -210,24 +239,29 @@ Object {
     "field_1": Object {
       "errorCount": 0,
       "testCount": 1,
+      "valid": true,
       "warnCount": 0,
     },
     "field_2": Object {
       "errorCount": 1,
       "testCount": 1,
+      "valid": false,
       "warnCount": 0,
     },
     "field_3": Object {
       "errorCount": 0,
       "testCount": 0,
+      "valid": true,
       "warnCount": 0,
     },
     "field_4": Object {
       "errorCount": 0,
       "testCount": 0,
+      "valid": true,
       "warnCount": 0,
     },
   },
+  "valid": false,
   "warnCount": 0,
 }
 `;
@@ -251,24 +285,29 @@ Object {
     "field_1": Object {
       "errorCount": 0,
       "testCount": 1,
+      "valid": true,
       "warnCount": 0,
     },
     "field_2": Object {
       "errorCount": 1,
       "testCount": 1,
+      "valid": false,
       "warnCount": 0,
     },
     "field_3": Object {
       "errorCount": 0,
       "testCount": 0,
+      "valid": true,
       "warnCount": 0,
     },
     "field_4": Object {
       "errorCount": 0,
       "testCount": 0,
+      "valid": true,
       "warnCount": 0,
     },
   },
+  "valid": false,
   "warnCount": 0,
 }
 `;
@@ -292,24 +331,29 @@ Object {
     "field_1": Object {
       "errorCount": 0,
       "testCount": 1,
+      "valid": true,
       "warnCount": 0,
     },
     "field_2": Object {
       "errorCount": 1,
       "testCount": 1,
+      "valid": false,
       "warnCount": 0,
     },
     "field_3": Object {
       "errorCount": 0,
       "testCount": 0,
+      "valid": true,
       "warnCount": 0,
     },
     "field_4": Object {
       "errorCount": 0,
       "testCount": 0,
+      "valid": true,
       "warnCount": 0,
     },
   },
+  "valid": false,
   "warnCount": 0,
 }
 `;

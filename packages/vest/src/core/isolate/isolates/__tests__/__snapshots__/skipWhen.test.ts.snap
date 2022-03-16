@@ -16,6 +16,7 @@ Object {
   "suiteName": undefined,
   "testCount": 0,
   "tests": Object {},
+  "valid": false,
   "warnCount": 0,
 }
 `;
@@ -42,9 +43,11 @@ Object {
         "msg",
       ],
       "testCount": 1,
+      "valid": false,
       "warnCount": 0,
     },
   },
+  "valid": false,
   "warnCount": 0,
 }
 `;
@@ -71,6 +74,7 @@ Object {
         "msg",
       ],
       "testCount": 1,
+      "valid": false,
       "warnCount": 0,
     },
     "f2": Object {
@@ -79,9 +83,11 @@ Object {
         "msg",
       ],
       "testCount": 1,
+      "valid": false,
       "warnCount": 0,
     },
   },
+  "valid": false,
   "warnCount": 0,
 }
 `;

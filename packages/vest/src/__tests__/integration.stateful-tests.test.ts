@@ -58,6 +58,7 @@ describe('more complex', () => {
           "password is required",
         ],
         "testCount": 1,
+        "valid": false,
         "warnCount": 0,
       }
     `);
@@ -68,6 +69,7 @@ describe('more complex', () => {
       Object {
         "errorCount": 0,
         "testCount": 0,
+        "valid": false,
         "warnCount": 0,
       }
     `);
@@ -81,6 +83,7 @@ describe('more complex', () => {
       Object {
         "errorCount": 0,
         "testCount": 0,
+        "valid": false,
         "warnCount": 0,
       }
     `);
@@ -92,6 +95,7 @@ describe('more complex', () => {
       Object {
         "errorCount": 0,
         "testCount": 1,
+        "valid": true,
         "warnCount": 0,
       }
     `);

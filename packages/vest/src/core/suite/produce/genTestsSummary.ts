@@ -2,21 +2,23 @@ import assign from 'assign';
 
 import { Severity, SeverityCount } from 'Severity';
 import VestTest from 'VestTest';
+import { isValid } from 'isValid';
 import { useTestsFlat } from 'stateHooks';
 
 /**
  * Reads the testObjects list and gets full validation result from it.
  */
-export default function genTestsSummary(): TTestSummary {
+export default function genTestsSummary(): SuiteSummary {
   const testObjects = useTestsFlat();
 
-  const summary: TTestSummary = assign(baseStats(), {
+  const summary: SuiteSummary = assign(baseStats(), {
     groups: {},
     tests: {},
+    valid: false,
   });
 
   testObjects.reduce(
-    (summary: TTestSummary, testObject: VestTest): TTestSummary => {
+    (summary: SuiteSummary, testObject: VestTest): SuiteSummary => {
       appendToTest(summary.tests, testObject);
       appendToGroup(summary.groups, testObject);
       return summary;
@@ -24,17 +26,24 @@ export default function genTestsSummary(): TTestSummary {
     summary
   );
 
+  summary.valid = isValid();
+
   return countFailures(summary);
 }
 
-function appendToTest(tests: TTestGroup, testObject: VestTest) {
+function appendToTest(tests: TestGroup, testObject: VestTest) {
   tests[testObject.fieldName] = appendTestObject(tests, testObject);
+  // If `valid` is false to begin with, keep it that way. Otherwise, assess.
+  tests[testObject.fieldName].valid =
+    tests[testObject.fieldName].valid === false
+      ? false
+      : isValid(testObject.fieldName);
 }
 
 /**
  * Appends to a group object if within a group
  */
-function appendToGroup(groups: TGroups, testObject: VestTest) {
+function appendToGroup(groups: Groups, testObject: VestTest) {
   const { groupName } = testObject;
 
   if (!groupName) {
@@ -51,7 +60,7 @@ function appendToGroup(groups: TGroups, testObject: VestTest) {
 /**
  * Counts the failed tests and adds global counters
  */
-function countFailures(summary: TTestSummary): TTestSummary {
+function countFailures(summary: SuiteSummary): SuiteSummary {
   for (const test in summary.tests) {
     summary.errorCount += summary.tests[test].errorCount;
     summary.warnCount += summary.tests[test].warnCount;
@@ -65,9 +74,9 @@ function countFailures(summary: TTestSummary): TTestSummary {
  */
 // eslint-disable-next-line max-statements
 function appendTestObject(
-  summaryKey: TTestGroup,
+  summaryKey: TestGroup,
   testObject: VestTest
-): TSingleTestSummary {
+): SingleTestSummary {
   const { fieldName, message } = testObject;
 
   summaryKey[fieldName] = summaryKey[fieldName] || baseStats();
@@ -109,21 +118,23 @@ function baseStats() {
   };
 }
 
-type TGroups = Record<string, TTestGroup>;
+type Groups = Record<string, TestGroup>;
 
-type TTestSummary = {
-  groups: TGroups;
-  tests: TTestGroup;
-} & TTestSummaryBase;
+export type SuiteSummary = {
+  groups: Groups;
+  tests: TestGroup;
+  valid: boolean;
+} & SummaryBase;
 
-type TTestGroup = Record<string, TSingleTestSummary>;
+type TestGroup = Record<string, SingleTestSummary>;
 
-type TSingleTestSummary = {
+type SingleTestSummary = SummaryBase & {
   errors: string[];
   warnings: string[];
-} & TTestSummaryBase;
+  valid: boolean;
+};
 
-type TTestSummaryBase = {
+type SummaryBase = {
   errorCount: number;
   warnCount: number;
   testCount: number;

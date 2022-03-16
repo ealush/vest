@@ -53,6 +53,7 @@ describe('suite.resetField', () => {
             "f1 error",
           ],
           "testCount": 1,
+          "valid": false,
           "warnCount": 0,
         },
         "field2": Object {
@@ -61,6 +62,7 @@ describe('suite.resetField', () => {
             "f2 error",
           ],
           "testCount": 1,
+          "valid": false,
           "warnCount": 0,
         },
       }

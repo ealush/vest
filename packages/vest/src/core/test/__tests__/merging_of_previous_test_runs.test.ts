@@ -126,16 +126,19 @@ describe('Merging of previous test runs', () => {
             "f1": Object {
               "errorCount": 1,
               "testCount": 1,
+              "valid": false,
               "warnCount": 0,
             },
             "f2": Object {
               "errorCount": 1,
               "testCount": 1,
+              "valid": false,
               "warnCount": 0,
             },
             "f3": Object {
               "errorCount": 1,
               "testCount": 1,
+              "valid": false,
               "warnCount": 0,
             },
           }
@@ -151,11 +154,13 @@ describe('Merging of previous test runs', () => {
             "f1": Object {
               "errorCount": 1,
               "testCount": 1,
+              "valid": false,
               "warnCount": 0,
             },
             "f3": Object {
               "errorCount": 1,
               "testCount": 1,
+              "valid": false,
               "warnCount": 0,
             },
           }
@@ -199,36 +204,43 @@ describe('Merging of previous test runs', () => {
               "f1": Object {
                 "errorCount": 1,
                 "testCount": 1,
+                "valid": false,
                 "warnCount": 0,
               },
               "f2": Object {
                 "errorCount": 1,
                 "testCount": 1,
+                "valid": false,
                 "warnCount": 0,
               },
               "f3": Object {
                 "errorCount": 1,
                 "testCount": 1,
+                "valid": false,
                 "warnCount": 0,
               },
               "f4": Object {
                 "errorCount": 2,
                 "testCount": 2,
+                "valid": false,
                 "warnCount": 0,
               },
               "f5": Object {
                 "errorCount": 1,
                 "testCount": 1,
+                "valid": false,
                 "warnCount": 0,
               },
               "f6": Object {
                 "errorCount": 1,
                 "testCount": 1,
+                "valid": false,
                 "warnCount": 0,
               },
               "f7": Object {
                 "errorCount": 1,
                 "testCount": 1,
+                "valid": false,
                 "warnCount": 0,
               },
             }
@@ -251,11 +263,13 @@ describe('Merging of previous test runs', () => {
               "f1": Object {
                 "errorCount": 1,
                 "testCount": 1,
+                "valid": false,
                 "warnCount": 0,
               },
               "f4": Object {
                 "errorCount": 2,
                 "testCount": 2,
+                "valid": false,
                 "warnCount": 0,
               },
             }

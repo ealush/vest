@@ -23,6 +23,7 @@ Object {
         "field_statement_1",
       ],
       "testCount": 1,
+      "valid": false,
       "warnCount": 0,
     },
     "field_2": Object {
@@ -31,16 +32,19 @@ Object {
         "field_statement_2",
       ],
       "testCount": 1,
+      "valid": false,
       "warnCount": 0,
     },
     "field_3": Object {
       "errorCount": 0,
       "testCount": 1,
+      "valid": true,
       "warnCount": 0,
     },
     "field_4": Object {
       "errorCount": 0,
       "testCount": 2,
+      "valid": true,
       "warnCount": 1,
       "warnings": Array [
         "field_statement_4",
@@ -49,9 +53,11 @@ Object {
     "field_5": Object {
       "errorCount": 0,
       "testCount": 0,
+      "valid": false,
       "warnCount": 0,
     },
   },
+  "valid": false,
   "warnCount": 1,
 }
 `;

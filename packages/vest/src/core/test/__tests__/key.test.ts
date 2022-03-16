@@ -111,11 +111,13 @@ describe('key', () => {
         expect(res1.tests.reordered).toEqual({
           errorCount: 1,
           testCount: 1,
+          valid: false,
           warnCount: 0,
         });
         expect(res2.tests.reordered).toEqual({
           errorCount: 0,
           testCount: 0,
+          valid: false,
           warnCount: 0,
         });
         expect(res1.tests).not.toEqual(res2.tests);
@@ -124,21 +126,25 @@ describe('key', () => {
             "field1": Object {
               "errorCount": 1,
               "testCount": 1,
+              "valid": false,
               "warnCount": 0,
             },
             "field2": Object {
               "errorCount": 1,
               "testCount": 1,
+              "valid": false,
               "warnCount": 0,
             },
             "field3": Object {
               "errorCount": 1,
               "testCount": 1,
+              "valid": false,
               "warnCount": 0,
             },
             "reordered": Object {
               "errorCount": 0,
               "testCount": 0,
+              "valid": false,
               "warnCount": 0,
             },
           }

@@ -23,19 +23,23 @@ Object {
         "msg1",
       ],
       "testCount": 2,
+      "valid": false,
       "warnCount": 0,
     },
     "field2": Object {
       "errorCount": 0,
       "testCount": 1,
+      "valid": true,
       "warnCount": 0,
     },
     "field3": Object {
       "errorCount": 0,
       "testCount": 1,
+      "valid": true,
       "warnCount": 1,
     },
   },
+  "valid": false,
   "warnCount": 1,
 }
 `;
@@ -63,19 +67,23 @@ Object {
         "msg1",
       ],
       "testCount": 2,
+      "valid": false,
       "warnCount": 0,
     },
     "field2": Object {
       "errorCount": 0,
       "testCount": 1,
+      "valid": true,
       "warnCount": 0,
     },
     "field3": Object {
       "errorCount": 0,
       "testCount": 1,
+      "valid": true,
       "warnCount": 1,
     },
   },
+  "valid": false,
   "warnCount": 1,
 }
 `;

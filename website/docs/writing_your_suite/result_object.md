@@ -10,6 +10,7 @@ A result object would look somewhat like this:
 
 ```js
 {
+  'valid': false,           // Whether the suite as a whole is valid or not
   'errorCount': 0,          // Overall count of errors in the suite
   'warnCount': 0,           // Overall count of warnings in the suite
   'testCount': 0,           // Overall test count for the suite (passing, failing and warning)
@@ -20,6 +21,7 @@ A result object would look somewhat like this:
       'warnings': [],       // Array of warning messages fer field (may be undefined)
       'warnCount': 0,       // Warning count per field
       'testCount': 0,       // Overall test count for the field (passing, failing and warning)
+      'valid': false,       // Field specific validity
     },
     'groups': {             // An object containing groups declared in the suite
       ['fieldName']: {      // Subset of res.tests[fieldName]

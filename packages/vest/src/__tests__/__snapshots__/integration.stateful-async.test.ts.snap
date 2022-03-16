@@ -36,24 +36,29 @@ Object {
         "field_message_1",
       ],
       "testCount": 1,
+      "valid": false,
       "warnCount": 0,
     },
     "field_2": Object {
       "errorCount": 0,
       "testCount": 2,
+      "valid": false,
       "warnCount": 0,
     },
     "field_3": Object {
       "errorCount": 0,
       "testCount": 0,
+      "valid": false,
       "warnCount": 0,
     },
     "field_4": Object {
       "errorCount": 0,
       "testCount": 0,
+      "valid": false,
       "warnCount": 0,
     },
   },
+  "valid": false,
   "warnCount": 0,
 }
 `;
@@ -93,6 +98,7 @@ Object {
         "field_message_1",
       ],
       "testCount": 1,
+      "valid": false,
       "warnCount": 0,
     },
     "field_2": Object {
@@ -101,19 +107,23 @@ Object {
         "rejection_message_1",
       ],
       "testCount": 2,
+      "valid": false,
       "warnCount": 0,
     },
     "field_3": Object {
       "errorCount": 0,
       "testCount": 0,
+      "valid": false,
       "warnCount": 0,
     },
     "field_4": Object {
       "errorCount": 0,
       "testCount": 0,
+      "valid": false,
       "warnCount": 0,
     },
   },
+  "valid": false,
   "warnCount": 0,
 }
 `;
@@ -160,6 +170,7 @@ Object {
         "field_message_1",
       ],
       "testCount": 2,
+      "valid": false,
       "warnCount": 0,
     },
     "field_2": Object {
@@ -168,6 +179,7 @@ Object {
         "rejection_message_1",
       ],
       "testCount": 2,
+      "valid": false,
       "warnCount": 0,
     },
     "field_3": Object {
@@ -176,6 +188,7 @@ Object {
         "field_message_3",
       ],
       "testCount": 2,
+      "valid": false,
       "warnCount": 0,
     },
     "field_4": Object {
@@ -184,9 +197,11 @@ Object {
         "field_4_group_message",
       ],
       "testCount": 1,
+      "valid": false,
       "warnCount": 0,
     },
   },
+  "valid": false,
   "warnCount": 0,
 }
 `;

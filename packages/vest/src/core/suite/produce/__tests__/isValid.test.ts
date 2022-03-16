@@ -153,10 +153,10 @@ describe('isValid', () => {
     });
 
     it('Should return false as long as the test is pending', async () => {
-      const res = suite();
-      expect(res.isValid()).toBe(false);
+      suite();
+      expect(suite.get().isValid()).toBe(false);
       await wait(300);
-      expect(res.isValid()).toBe(true);
+      expect(suite.get().isValid()).toBe(true);
     });
   });
 
@@ -187,7 +187,7 @@ describe('isValid', () => {
     describe('When async test is passing', () => {
       it('Should return `true`', () => {
         return new Promise<void>(done => {
-          const result = suite().done(() => {
+          suite().done(result => {
             expect(result.isValid()).toBe(true);
             done();
           });

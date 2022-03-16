@@ -1,7 +1,8 @@
 import { enforce } from 'n4s';
 
+import create, { Suite } from './core/suite/create';
+
 import VestTest from 'VestTest';
-import create from 'create';
 import context from 'ctx';
 import each from 'each';
 import { only, skip } from 'exclusive';
@@ -35,4 +36,4 @@ export {
   eager,
 };
 
-export type { SuiteResult, SuiteRunResult, VestTest };
+export type { SuiteResult, SuiteRunResult, VestTest, Suite };

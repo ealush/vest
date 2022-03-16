@@ -21,7 +21,7 @@ type CreateProperties = {
 
 type CB = (...args: any[]) => void;
 
-type SuiteReturnType<T extends CB> = {
+export type Suite<T extends CB> = {
   (...args: Parameters<T>): SuiteRunResult;
 } & CreateProperties;
 
@@ -36,15 +36,12 @@ type SuiteReturnType<T extends CB> = {
  *  });
  * });
  */
-function create<T extends CB>(
-  suiteName: string,
-  suiteCallback: T
-): SuiteReturnType<T>;
-function create<T extends CB>(suiteCallback: T): SuiteReturnType<T>;
+function create<T extends CB>(suiteName: string, suiteCallback: T): Suite<T>;
+function create<T extends CB>(suiteCallback: T): Suite<T>;
 // eslint-disable-next-line max-lines-per-function
 function create<T extends CB>(
   ...args: [suiteName: string, suiteCallback: T] | [suiteCallback: T]
-): SuiteReturnType<T> {
+): Suite<T> {
   const [suiteCallback, suiteName] = args.reverse() as [T, string];
 
   invariant(

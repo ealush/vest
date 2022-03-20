@@ -1307,6 +1307,7 @@ enforce(-10.12).isNegative(); //passes
 enforce('-10.12').isNegative(); //passes
 enforce(10).isNegative(); // throws
 enforce('10').isNegative(); // throws
+enforce(0).isNegative(); // throws
 ```
 
 ## isPositive
@@ -1323,6 +1324,7 @@ enforce(10.12).isPositive(); //passes
 enforce('10.12').isPositive(); //passes
 enforce(-10).isPositive(); // throws
 enforce('-10.12').isPositive(); // throws
+enforce(0).isPositive(); // throws
 ```
 
 ## isValueOf

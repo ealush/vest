@@ -67,6 +67,7 @@
       "isNumber": ["./packages/n4s/src/rules/isNumber.ts"],
       "isNumeric": ["./packages/n4s/src/rules/isNumeric.ts"],
       "isOdd": ["./packages/n4s/src/rules/isOdd.ts"],
+      "isPositive": ["./packages/n4s/src/rules/isPositive.ts"],
       "isString": ["./packages/n4s/src/rules/isString.ts"],
       "isTruthy": ["./packages/n4s/src/rules/isTruthy.ts"],
       "isUndefined": ["./packages/n4s/src/rules/isUndefined.ts"],

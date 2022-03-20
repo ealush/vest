@@ -24,8 +24,8 @@ function listAllChangesSinceStableBranch() {
         commit
           .split('\n') // split each line of each commit
           .filter(Boolean) // ignore empty lines
-          .filter(line => !line.match(IGNORE_PATTERN)) // ignore excluded terms
     )
+    .filter(([title]) => !title.match(IGNORE_PATTERN)) // ignore excluded terms
     .map(([title, ...files]) => ({
       title,
       files,

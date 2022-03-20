@@ -2,6 +2,7 @@ import asArray from '../../shared/src/asArray';
 
 import { dummyTest } from './testDummy';
 
+import type { SuiteResult } from 'vest';
 import { optional, create, skip } from 'vest';
 
 export function failing(failingFields?: string | string[]) {
@@ -101,4 +102,8 @@ function createSuite(
   return create(() => {
     asArray(fieldNames).forEach(fieldName => callback(fieldName));
   });
+}
+
+export function ser(res: SuiteResult) {
+  return JSON.parse(JSON.stringify(res));
 }

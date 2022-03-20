@@ -1,10 +1,13 @@
 import { greaterThan } from 'greaterThan';
 import hasOwnProperty from 'hasOwnProperty';
 
+import { SeverityCount } from 'Severity';
+import { SuiteSummary } from 'genTestsSummary';
 import type { SuiteResult } from 'produceSuiteResult';
 import type { SuiteRunResult } from 'produceSuiteRunResult';
 
-export function parse(res: SuiteRunResult | SuiteResult): {
+// eslint-disable-next-line max-lines-per-function
+export function parse(res: SuiteRunResult | SuiteResult | SuiteSummary): {
   valid: (fieldName?: string) => boolean;
   tested: (fieldName?: string) => boolean;
   invalid: (fieldName?: string) => boolean;
@@ -14,26 +17,55 @@ export function parse(res: SuiteRunResult | SuiteResult): {
   const testedStorage: Record<string, boolean> = {};
 
   const selectors = {
-    invalid: res.hasErrors,
-    tested: (fieldName?: string): boolean => {
-      if (!fieldName) {
-        return greaterThan(res.testCount, 0);
-      }
-
-      if (hasOwnProperty(testedStorage, fieldName))
-        return testedStorage[fieldName];
-
-      testedStorage[fieldName] =
-        hasOwnProperty(res.tests, fieldName) &&
-        greaterThan(res.tests[fieldName].testCount, 0);
-
-      return selectors.tested(fieldName);
-    },
-    untested: (fieldName?: string): boolean =>
-      res.testCount === 0 || !selectors.tested(fieldName),
-    valid: res.isValid,
-    warning: res.hasWarnings,
+    invalid: hasErrors,
+    tested: isTested,
+    untested: isUntested,
+    valid: isValid,
+    warning: hasWarnings,
   };
 
   return selectors;
+
+  function isTested(fieldName?: string): boolean {
+    if (!fieldName) {
+      return greaterThan(res.testCount, 0);
+    }
+
+    if (hasOwnProperty(testedStorage, fieldName))
+      return testedStorage[fieldName];
+
+    testedStorage[fieldName] =
+      hasOwnProperty(res.tests, fieldName) &&
+      greaterThan(res.tests[fieldName].testCount, 0);
+
+    return selectors.tested(fieldName);
+  }
+
+  function isUntested(fieldName?: string): boolean {
+    return res.testCount === 0 || !selectors.tested(fieldName);
+  }
+
+  function isValid(fieldName?: string): boolean {
+    return Boolean(fieldName ? res.tests?.[fieldName]?.valid : res.valid);
+  }
+
+  function hasWarnings(fieldName?: string): boolean {
+    return hasFailures(res, SeverityCount.WARN_COUNT, fieldName);
+  }
+
+  function hasErrors(fieldName?: string): boolean {
+    return hasFailures(res, SeverityCount.ERROR_COUNT, fieldName);
+  }
+}
+
+function hasFailures(
+  res: SuiteSummary,
+  countKey: SeverityCount,
+  fieldName?: string
+): boolean {
+  const failureCount = fieldName
+    ? res.tests?.[fieldName]?.[countKey]
+    : res[countKey] ?? 0;
+
+  return greaterThan(failureCount, 0);
 }

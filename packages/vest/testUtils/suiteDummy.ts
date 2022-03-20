@@ -2,8 +2,7 @@ import asArray from '../../shared/src/asArray';
 
 import { dummyTest } from './testDummy';
 
-import type { SuiteResult } from 'vest';
-import { optional, create, skip } from 'vest';
+import { optional, create, skip, SuiteResult } from 'vest';
 
 export function failing(failingFields?: string | string[]) {
   return createSuiteRunResult(failingFields, fieldName => {

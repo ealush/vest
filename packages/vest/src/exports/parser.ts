@@ -1,4 +1,5 @@
 import hasOwnProperty from 'hasOwnProperty';
+import invariant from 'invariant';
 import { isPositive } from 'isPositive';
 
 import { SeverityCount } from 'Severity';
@@ -14,6 +15,11 @@ export function parse(res: SuiteRunResult | SuiteResult | SuiteSummary): {
   untested: (fieldName?: string) => boolean;
   warning: (fieldName?: string) => boolean;
 } {
+  invariant(
+    res && hasOwnProperty(res, 'valid'),
+    "Vest parser: expected argument at position 0 to be Vest's result object."
+  );
+
   const testedStorage: Record<string, boolean> = {};
 
   const selectors = {

@@ -1,6 +1,6 @@
-import invariant from 'invariant';
 import isFunction from 'isFunction';
 
+import { SuiteSummary } from 'genTestsSummary';
 import { parse } from 'parser';
 import type { SuiteResult } from 'produceSuiteResult';
 import type { SuiteRunResult } from 'produceSuiteRunResult';
@@ -9,14 +9,9 @@ import type { SuiteRunResult } from 'produceSuiteRunResult';
  * Creates a function that returns class names that match the validation result
  */
 export default function classnames(
-  res: SuiteRunResult | SuiteResult,
+  res: SuiteRunResult | SuiteResult | SuiteSummary,
   classes: TSupportedClasses = {}
 ): (fieldName: string) => string {
-  invariant(
-    res && isFunction(res.hasErrors),
-    "classnames: Expected first argument to be Vest's result object."
-  );
-
   const selectors = parse(res);
 
   return (key: string): string => {

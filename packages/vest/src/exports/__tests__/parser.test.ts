@@ -429,4 +429,13 @@ describe('parser.parse', () => {
       });
     });
   });
+
+  describe('When input is not a Vest object', () => {
+    it('Should throw an error', () => {
+      expect(() => {
+        // @ts-ignore - this is not a vest object
+        parse({});
+      }).toThrow();
+    });
+  });
 });

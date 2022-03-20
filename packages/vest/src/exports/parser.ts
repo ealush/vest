@@ -1,5 +1,5 @@
-import { greaterThan } from 'greaterThan';
 import hasOwnProperty from 'hasOwnProperty';
+import { isPositive } from 'isPositive';
 
 import { SeverityCount } from 'Severity';
 import { SuiteSummary } from 'genTestsSummary';
@@ -28,7 +28,7 @@ export function parse(res: SuiteRunResult | SuiteResult | SuiteSummary): {
 
   function isTested(fieldName?: string): boolean {
     if (!fieldName) {
-      return greaterThan(res.testCount, 0);
+      return isPositive(res.testCount);
     }
 
     if (hasOwnProperty(testedStorage, fieldName))
@@ -36,7 +36,7 @@ export function parse(res: SuiteRunResult | SuiteResult | SuiteSummary): {
 
     testedStorage[fieldName] =
       hasOwnProperty(res.tests, fieldName) &&
-      greaterThan(res.tests[fieldName].testCount, 0);
+      isPositive(res.tests[fieldName].testCount);
 
     return selectors.tested(fieldName);
   }
@@ -67,5 +67,5 @@ function hasFailures(
     ? res.tests?.[fieldName]?.[countKey]
     : res[countKey] ?? 0;
 
-  return greaterThan(failureCount, 0);
+  return isPositive(failureCount);
 }

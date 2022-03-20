@@ -1,8 +1,9 @@
-import { isNumeric } from 'isNumeric';
+import { greaterThan } from 'greaterThan';
+import { numberEquals } from 'numberEquals';
 
 export function greaterThanOrEquals(
   value: string | number,
   gte: string | number
 ): boolean {
-  return isNumeric(value) && isNumeric(gte) && Number(value) >= Number(gte);
+  return numberEquals(value, gte) || greaterThan(value, gte);
 }

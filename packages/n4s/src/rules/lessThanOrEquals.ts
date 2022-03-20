@@ -1,8 +1,9 @@
-import { isNumeric } from 'isNumeric';
+import { lessThan } from 'lessThan';
+import { numberEquals } from 'numberEquals';
 
 export function lessThanOrEquals(
   value: string | number,
   lte: string | number
 ): boolean {
-  return isNumeric(value) && isNumeric(lte) && Number(value) <= Number(lte);
+  return numberEquals(value, lte) || lessThan(value, lte);
 }

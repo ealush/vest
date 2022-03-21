@@ -8,7 +8,7 @@ import { parse } from 'parser';
  */
 export default function classnames(
   res: SuiteSummary,
-  classes: TSupportedClasses = {}
+  classes: SupportedClasses = {}
 ): (fieldName: string) => string {
   const selectors = parse(res);
 
@@ -16,7 +16,7 @@ export default function classnames(
     const classesArray: string[] = [];
 
     for (const selector in classes) {
-      const sel = selector as keyof TSupportedClasses;
+      const sel = selector as keyof SupportedClasses;
       if (isFunction(selectors[sel]) && selectors[sel](key)) {
         classesArray.push(classes[sel] as string);
       }
@@ -26,7 +26,7 @@ export default function classnames(
   };
 }
 
-type TSupportedClasses = {
+type SupportedClasses = {
   valid?: string;
   tested?: string;
   invalid?: string;

@@ -1,11 +1,11 @@
 import { enforce } from 'n4s';
 
-import create, { Suite } from './core/suite/create';
-
 import VestTest from 'VestTest';
+import create, { Suite } from 'create';
 import context from 'ctx';
 import each from 'each';
 import { only, skip } from 'exclusive';
+import type { SuiteSummary } from 'genTestsSummary';
 import group from 'group';
 import include from 'include';
 import { eager } from 'mode';
@@ -36,4 +36,4 @@ export {
   eager,
 };
 
-export type { SuiteResult, SuiteRunResult, VestTest, Suite };
+export type { SuiteResult, SuiteRunResult, SuiteSummary, VestTest, Suite };

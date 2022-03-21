@@ -4,11 +4,9 @@ import { isPositive } from 'isPositive';
 
 import { SeverityCount } from 'Severity';
 import { SuiteSummary } from 'genTestsSummary';
-import type { SuiteResult } from 'produceSuiteResult';
-import type { SuiteRunResult } from 'produceSuiteRunResult';
 
 // eslint-disable-next-line max-lines-per-function
-export function parse(res: SuiteRunResult | SuiteResult | SuiteSummary): {
+export function parse(res: SuiteSummary): {
   valid: (fieldName?: string) => boolean;
   tested: (fieldName?: string) => boolean;
   invalid: (fieldName?: string) => boolean;

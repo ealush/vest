@@ -2,14 +2,12 @@ import isFunction from 'isFunction';
 
 import { SuiteSummary } from 'genTestsSummary';
 import { parse } from 'parser';
-import type { SuiteResult } from 'produceSuiteResult';
-import type { SuiteRunResult } from 'produceSuiteRunResult';
 
 /**
  * Creates a function that returns class names that match the validation result
  */
 export default function classnames(
-  res: SuiteRunResult | SuiteResult | SuiteSummary,
+  res: SuiteSummary,
   classes: TSupportedClasses = {}
 ): (fieldName: string) => string {
   const selectors = parse(res);

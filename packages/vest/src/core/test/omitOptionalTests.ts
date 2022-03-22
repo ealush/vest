@@ -1,3 +1,4 @@
+import hasOwnProperty from 'hasOwnProperty';
 import { isEmpty } from 'isEmpty';
 import isFunction from 'isFunction';
 import * as nestedArray from 'nestedArray';
@@ -18,15 +19,10 @@ export default function omitOptionalTests(): void {
     nestedArray.transform(tests, (testObject: VestTest) => {
       const fieldName = testObject.fieldName;
 
-      if (shouldOmit.hasOwnProperty(fieldName)) {
+      if (hasOwnProperty(shouldOmit, fieldName)) {
         omit(testObject);
       } else {
-        const optionalConfig = optionalFields[fieldName];
-        if (isFunction(optionalConfig)) {
-          shouldOmit[fieldName] = optionalConfig();
-
-          omit(testObject);
-        }
+        runOptionalConfig(testObject);
       }
 
       return testObject;
@@ -36,6 +32,15 @@ export default function omitOptionalTests(): void {
   function omit(testObject: VestTest) {
     if (shouldOmit[testObject.fieldName]) {
       testObject.omit();
+    }
+  }
+
+  function runOptionalConfig(testObject: VestTest) {
+    const optionalConfig = optionalFields[testObject.fieldName];
+    if (isFunction(optionalConfig)) {
+      shouldOmit[testObject.fieldName] = optionalConfig();
+
+      omit(testObject);
     }
   }
 }

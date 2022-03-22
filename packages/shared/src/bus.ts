@@ -1,24 +1,32 @@
+import { CB } from 'utilityTypes';
+
 export function createBus(): {
-  on: (event: string, handler: (...args: any[]) => void) => { off: () => void };
+  on: (event: string, handler: CB) => OnReturn;
   emit: (event: string, ...args: any[]) => void;
 } {
-  const listeners: Record<string, ((...args: any[]) => void)[]> = {};
+  const listeners: Record<string, CB[]> = {};
 
   return {
     emit(event: string, data: any) {
-      (listeners[event] || []).forEach(handler => {
+      listener(event).forEach(handler => {
         handler(data);
       });
     },
 
-    on(event: string, handler: (...args: any[]) => void): { off: () => void } {
-      listeners[event] = (listeners[event] || []).concat(handler);
+    on(event: string, handler: CB): OnReturn {
+      listeners[event] = listener(event).concat(handler);
 
       return {
         off() {
-          listeners[event] = listeners[event].filter(h => h !== handler);
+          listeners[event] = listener(event).filter(h => h !== handler);
         },
       };
     },
   };
+
+  function listener(event: string): CB[] {
+    return listeners[event] || [];
+  }
 }
+
+type OnReturn = { off: () => void };

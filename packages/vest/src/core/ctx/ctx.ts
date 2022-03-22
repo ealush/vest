@@ -1,6 +1,7 @@
 import assign from 'assign';
 import { createContext } from 'context';
 import { createCursor } from 'cursor';
+import { CB } from 'utilityTypes';
 
 import { IsolateKeys, IsolateTypes } from 'IsolateTypes';
 import { Modes } from 'Modes';
@@ -52,7 +53,7 @@ type CTXType = {
   bus?: {
     on: (
       event: string,
-      handler: (...args: any[]) => void
+      handler: CB
     ) => {
       off: () => void;
     };

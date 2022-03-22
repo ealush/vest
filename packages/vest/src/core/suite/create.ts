@@ -2,6 +2,7 @@ import assign from 'assign';
 import genId from 'genId';
 import invariant from 'invariant';
 import isFunction from 'isFunction';
+import { CB } from 'utilityTypes';
 import { createState } from 'vast';
 
 import { IsolateTypes } from 'IsolateTypes';
@@ -18,8 +19,6 @@ type CreateProperties = {
   resetField: (fieldName: string) => void;
   remove: (fieldName: string) => void;
 };
-
-type CB = (...args: any[]) => void;
 
 export type Suite<T extends CB> = {
   (...args: Parameters<T>): SuiteRunResult;

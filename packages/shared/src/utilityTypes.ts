@@ -3,3 +3,5 @@ export type DropFirst<T extends unknown[]> = T extends [unknown, ...infer U]
   : never;
 
 export type TStringable = string | ((...args: any[]) => string);
+
+export type CB = (...args: any[]) => void;

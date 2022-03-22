@@ -1,4 +1,5 @@
 import optionalFunctionValue from 'optionalFunctionValue';
+import { CB } from 'utilityTypes';
 
 import { IsolateTypes } from 'IsolateTypes';
 import ctx from 'ctx';
@@ -16,7 +17,7 @@ import { produceSuiteResult, SuiteResult } from 'produceSuiteResult';
  */
 export default function skipWhen(
   conditional: boolean | ((draft: SuiteResult) => boolean),
-  callback: (...args: any[]) => void
+  callback: CB
 ): void {
   isolate({ type: IsolateTypes.SKIP_WHEN }, () => {
     ctx.run(

@@ -20,7 +20,7 @@ export default function omitOptionalTests(): void {
       const fieldName = testObject.fieldName;
 
       if (hasOwnProperty(shouldOmit, fieldName)) {
-        omit(testObject);
+        verifyAndOmit(testObject);
       } else {
         runOptionalConfig(testObject);
       }
@@ -29,7 +29,7 @@ export default function omitOptionalTests(): void {
     })
   );
 
-  function omit(testObject: VestTest) {
+  function verifyAndOmit(testObject: VestTest) {
     if (shouldOmit[testObject.fieldName]) {
       testObject.omit();
     }
@@ -40,7 +40,7 @@ export default function omitOptionalTests(): void {
     if (isFunction(optionalConfig)) {
       shouldOmit[testObject.fieldName] = optionalConfig();
 
-      omit(testObject);
+      verifyAndOmit(testObject);
     }
   }
 }

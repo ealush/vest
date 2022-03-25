@@ -1,96 +1,56 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`collectFailureMessages Snapshot tests. severity: errors When a group-fieldName combo is requested Should match snapshot 1`] = `
-Object {
-  "field_2": Array [
-    "field_2_failure message 3",
-  ],
-}
-`;
-
-exports[`collectFailureMessages Snapshot tests. severity: errors When no options passed should match snapshot 1`] = `
+exports[`collectFailureMessages getErrors When no options passed should match snapshot 1`] = `
 Object {
   "field_1": Array [
     "field_1_failure message 2",
     "field_1_failure message 3",
   ],
   "field_2": Array [
+    "field_2_failure message 1",
     "field_2_failure message 3",
   ],
 }
 `;
 
-exports[`collectFailureMessages Snapshot tests. severity: errors When specific field requested Should match snapshot 1`] = `
-Object {
-  "field_1": Array [
-    "field_1_failure message 2",
-    "field_1_failure message 3",
-  ],
-}
+exports[`collectFailureMessages getErrors When specific field requested Should match snapshot 1`] = `
+Array [
+  "field_1_failure message 2",
+  "field_1_failure message 3",
+]
 `;
 
-exports[`collectFailureMessages Snapshot tests. severity: errors When specific field requested Should match snapshot 2`] = `
-Object {
-  "field_2": Array [
-    "field_2_failure message 3",
-  ],
-}
+exports[`collectFailureMessages getErrors When specific field requested Should match snapshot 2`] = `
+Array [
+  "field_2_failure message 1",
+  "field_2_failure message 3",
+]
 `;
 
-exports[`collectFailureMessages Snapshot tests. severity: errors When specific field requested Should match snapshot 3`] = `
-Object {
-  "field_3": Array [],
-}
-`;
+exports[`collectFailureMessages getErrors When specific field requested Should match snapshot 3`] = `Array []`;
 
-exports[`collectFailureMessages Snapshot tests. severity: errors When specific group requested Should match snapshot 1`] = `
-Object {
-  "field_2": Array [
-    "field_2_failure message 3",
-  ],
-}
-`;
-
-exports[`collectFailureMessages Snapshot tests. severity: errors When specific group requested Should match snapshot 2`] = `
-Object {
-  "field_2": Array [
-    "field_2_failure message 3",
-  ],
-}
-`;
-
-exports[`collectFailureMessages Snapshot tests. severity: errors When specific group requested Should match snapshot 3`] = `
-Object {
-  "field_2": Array [
-    "field_2_failure message 3",
-  ],
-}
-`;
-
-exports[`collectFailureMessages Snapshot tests. severity: warnings When a group-fieldName combo is requested Should match snapshot 1`] = `
-Object {
-  "field_2": Array [
-    "field_2_warning message 3",
-  ],
-}
-`;
-
-exports[`collectFailureMessages Snapshot tests. severity: warnings When no options passed should match snapshot 1`] = `
-Object {
-  "field_2": Array [
-    "field_2_warning message 2",
-    "field_2_warning message 3",
-  ],
-}
-`;
-
-exports[`collectFailureMessages Snapshot tests. severity: warnings When specific field requested Should match snapshot 1`] = `
+exports[`collectFailureMessages getErrorsByGroup Should match snapshot 1`] = `
 Object {
   "field_1": Array [],
+  "field_2": Array [
+    "field_2_failure message 1",
+    "field_2_failure message 3",
+  ],
 }
 `;
 
-exports[`collectFailureMessages Snapshot tests. severity: warnings When specific field requested Should match snapshot 2`] = `
+exports[`collectFailureMessages getErrorsByGroup with field name Should match snapshot 1`] = `Array []`;
+
+exports[`collectFailureMessages getErrorsByGroup with field name Should match snapshot 2`] = `
+Array [
+  "field_2_failure message 1",
+  "field_2_failure message 3",
+]
+`;
+
+exports[`collectFailureMessages getErrorsByGroup with field name Should match snapshot 3`] = `Array []`;
+
+exports[`collectFailureMessages getWarnings When no options passed should match snapshot 1`] = `
 Object {
   "field_2": Array [
     "field_2_warning message 2",
@@ -99,13 +59,18 @@ Object {
 }
 `;
 
-exports[`collectFailureMessages Snapshot tests. severity: warnings When specific field requested Should match snapshot 3`] = `
-Object {
-  "field_3": Array [],
-}
+exports[`collectFailureMessages getWarnings When specific field requested Should match snapshot 1`] = `Array []`;
+
+exports[`collectFailureMessages getWarnings When specific field requested Should match snapshot 2`] = `
+Array [
+  "field_2_warning message 2",
+  "field_2_warning message 3",
+]
 `;
 
-exports[`collectFailureMessages Snapshot tests. severity: warnings When specific group requested Should match snapshot 1`] = `
+exports[`collectFailureMessages getWarnings When specific field requested Should match snapshot 3`] = `Array []`;
+
+exports[`collectFailureMessages getWarningsByGroup Should match snapshot 1`] = `
 Object {
   "field_2": Array [
     "field_2_warning message 3",
@@ -113,18 +78,12 @@ Object {
 }
 `;
 
-exports[`collectFailureMessages Snapshot tests. severity: warnings When specific group requested Should match snapshot 2`] = `
-Object {
-  "field_2": Array [
-    "field_2_warning message 3",
-  ],
-}
+exports[`collectFailureMessages getWarningsByGroup with field name Should match snapshot 1`] = `Array []`;
+
+exports[`collectFailureMessages getWarningsByGroup with field name Should match snapshot 2`] = `
+Array [
+  "field_2_warning message 3",
+]
 `;
 
-exports[`collectFailureMessages Snapshot tests. severity: warnings When specific group requested Should match snapshot 3`] = `
-Object {
-  "field_2": Array [
-    "field_2_warning message 3",
-  ],
-}
-`;
+exports[`collectFailureMessages getWarningsByGroup with field name Should match snapshot 3`] = `Array []`;

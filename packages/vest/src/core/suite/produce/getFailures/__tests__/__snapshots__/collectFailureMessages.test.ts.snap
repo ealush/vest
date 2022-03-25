@@ -10,6 +10,9 @@ Object {
     "field_2_failure message 1",
     "field_2_failure message 3",
   ],
+  "field_3": Array [],
+  "v": Array [],
+  "x": Array [],
 }
 `;
 
@@ -36,6 +39,7 @@ Object {
     "field_2_failure message 1",
     "field_2_failure message 3",
   ],
+  "field_3": Array [],
 }
 `;
 
@@ -52,10 +56,14 @@ exports[`collectFailureMessages getErrorsByGroup with field name Should match sn
 
 exports[`collectFailureMessages getWarnings When no options passed should match snapshot 1`] = `
 Object {
+  "field_1": Array [],
   "field_2": Array [
     "field_2_warning message 2",
     "field_2_warning message 3",
   ],
+  "field_3": Array [],
+  "v": Array [],
+  "x": Array [],
 }
 `;
 
@@ -72,9 +80,11 @@ exports[`collectFailureMessages getWarnings When specific field requested Should
 
 exports[`collectFailureMessages getWarningsByGroup Should match snapshot 1`] = `
 Object {
+  "field_1": Array [],
   "field_2": Array [
     "field_2_warning message 3",
   ],
+  "field_3": Array [],
 }
 `;
 

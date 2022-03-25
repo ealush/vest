@@ -1,7 +1,8 @@
+import invariant from 'invariant';
+
 import { Severity } from 'Severity';
-import collectFailureMessages from 'collectFailureMessages';
-import getFailuresArrayOrObject from 'getFailuresArrayOrObject';
-import { useTestsFlat } from 'stateHooks';
+import { getByFieldName, collectAll } from 'collectFailures';
+import ctx from 'ctx';
 
 export function getErrors(): Record<string, string[]>;
 export function getErrors(fieldName?: string): string[];
@@ -23,10 +24,9 @@ export function getWarnings(
  * @returns suite or field's errors or warnings.
  */
 function getFailures(severityKey: Severity, fieldName?: string) {
-  const testObjects = useTestsFlat();
-  const failureMessages = collectFailureMessages(severityKey, testObjects, {
-    fieldName,
-  });
-
-  return getFailuresArrayOrObject(failureMessages, fieldName);
+  const { summary } = ctx.useX();
+  invariant(summary);
+  return fieldName
+    ? getByFieldName(summary.tests, severityKey, fieldName)
+    : collectAll(summary.tests, severityKey);
 }

@@ -1,9 +1,10 @@
 import invariant from 'invariant';
 
 import { Severity } from 'Severity';
-import collectFailureMessages from 'collectFailureMessages';
-import getFailuresArrayOrObject from 'getFailuresArrayOrObject';
-import { useTestsFlat } from 'stateHooks';
+import { collectAll, getByFieldName } from 'collectFailures';
+import ctx from 'ctx';
+// import getFailuresArrayOrObject from 'getFailuresArrayOrObject';
+// import { useTestsFlat } from 'stateHooks';
 
 export function getErrorsByGroup(groupName: string): Record<string, string[]>;
 export function getErrorsByGroup(
@@ -14,9 +15,12 @@ export function getErrorsByGroup(
   groupName: string,
   fieldName?: string
 ): string[] | Record<string, string[]> {
-  const errors = getByGroup(Severity.ERRORS, groupName, fieldName);
+  const { summary } = ctx.useX();
+  invariant(summary);
 
-  return getFailuresArrayOrObject(errors, fieldName);
+  return fieldName
+    ? getByFieldName(summary.groups[groupName], Severity.ERRORS, fieldName)
+    : collectAll(summary.groups[groupName], Severity.ERRORS);
 }
 
 export function getWarningsByGroup(groupName: string): Record<string, string[]>;
@@ -28,28 +32,10 @@ export function getWarningsByGroup(
   groupName: string,
   fieldName?: string
 ): string[] | Record<string, string[]> {
-  const warnings = getByGroup(Severity.WARNINGS, groupName, fieldName);
+  const { summary } = ctx.useX();
+  invariant(summary);
 
-  return getFailuresArrayOrObject(warnings, fieldName);
-}
-
-/**
- * Gets failure messages by group.
- */
-function getByGroup(
-  severityKey: Severity,
-  group: string,
-  fieldName?: string
-): Record<string, string[]> {
-  invariant(
-    group,
-    `get${severityKey[0].toUpperCase()}${severityKey.slice(
-      1
-    )}ByGroup requires a group name. Received \`${group}\` instead.`
-  );
-  const testObjects = useTestsFlat();
-  return collectFailureMessages(severityKey, testObjects, {
-    group,
-    fieldName,
-  });
+  return fieldName
+    ? getByFieldName(summary.groups[groupName], Severity.WARNINGS, fieldName)
+    : collectAll(summary.groups[groupName], Severity.WARNINGS);
 }

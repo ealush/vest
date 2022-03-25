@@ -126,7 +126,7 @@ export type SuiteSummary = {
   valid: boolean;
 } & SummaryBase;
 
-type TestGroup = Record<string, SingleTestSummary>;
+export type TestGroup = Record<string, SingleTestSummary>;
 
 type SingleTestSummary = SummaryBase & {
   errors: string[];

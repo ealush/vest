@@ -14,7 +14,6 @@ export default function registerTest(testObject: VestTest): void {
   // If a promise is returned, set as async and
   // Move to pending list.
   const result = runSyncTest(testObject);
-
   try {
     // try catch for safe property access
     // in case object is an enforce chain

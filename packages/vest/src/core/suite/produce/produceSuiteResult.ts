@@ -20,17 +20,19 @@ export function produceSuiteResult(): SuiteResult {
   return cache(
     [testObjects],
     ctx.bind(ctxRef, () => {
+      const summary = genTestsSummary();
       const suiteName = useSuiteName();
-      return assign(genTestsSummary(), {
-        getErrors: ctx.bind(ctxRef, getErrors),
-        getErrorsByGroup: ctx.bind(ctxRef, getErrorsByGroup),
-        getWarnings: ctx.bind(ctxRef, getWarnings),
-        getWarningsByGroup: ctx.bind(ctxRef, getWarningsByGroup),
-        hasErrors: ctx.bind(ctxRef, hasErrors),
-        hasErrorsByGroup: ctx.bind(ctxRef, hasErrorsByGroup),
-        hasWarnings: ctx.bind(ctxRef, hasWarnings),
-        hasWarningsByGroup: ctx.bind(ctxRef, hasWarningsByGroup),
-        isValid: ctx.bind(ctxRef, isValid),
+      const ref = { summary, ...ctxRef };
+      return assign(summary, {
+        getErrors: ctx.bind(ref, getErrors),
+        getErrorsByGroup: ctx.bind(ref, getErrorsByGroup),
+        getWarnings: ctx.bind(ref, getWarnings),
+        getWarningsByGroup: ctx.bind(ref, getWarningsByGroup),
+        hasErrors: ctx.bind(ref, hasErrors),
+        hasErrorsByGroup: ctx.bind(ref, hasErrorsByGroup),
+        hasWarnings: ctx.bind(ref, hasWarnings),
+        hasWarningsByGroup: ctx.bind(ref, hasWarningsByGroup),
+        isValid: ctx.bind(ref, isValid),
         suiteName,
       });
     })

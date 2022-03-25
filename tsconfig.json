@@ -136,8 +136,8 @@
       "genTestsSummary": [
         "./packages/vest/src/core/suite/produce/genTestsSummary.ts"
       ],
-      "collectFailureMessages": [
-        "./packages/vest/src/core/suite/produce/getFailures/collectFailureMessages.ts"
+      "collectFailures": [
+        "./packages/vest/src/core/suite/produce/getFailures/collectFailures.ts"
       ],
       "getFailures": [
         "./packages/vest/src/core/suite/produce/getFailures/getFailures.ts"

@@ -1,6 +1,8 @@
+import { lessThan } from 'lessThan';
+
 export function shorterThan(
   value: string | unknown[],
   arg1: string | number
 ): boolean {
-  return value.length < Number(arg1);
+  return lessThan(value.length, arg1);
 }

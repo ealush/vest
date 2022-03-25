@@ -1,6 +1,8 @@
+import { greaterThan } from 'greaterThan';
+
 export function longerThan(
   value: string | unknown[],
   arg1: string | number
 ): boolean {
-  return value.length > Number(arg1);
+  return greaterThan(value.length, arg1);
 }

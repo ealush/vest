@@ -52,6 +52,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
       expect(produceMethod().hasWarnings('field_5')).toBe(true);
       expect(produceMethod().getErrors()).toEqual({
         field_1: ['message', 'failure_message', 'failure_message with group'],
+        field_2: [],
         field_3: ['msg'],
       });
       expect(produceMethod().getWarnings()).toEqual({

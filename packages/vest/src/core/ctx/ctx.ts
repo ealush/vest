@@ -7,6 +7,7 @@ import { IsolateKeys, IsolateTypes } from 'IsolateTypes';
 import { Modes } from 'Modes';
 import VestTest from 'VestTest';
 import type { TStateRef } from 'createStateRef';
+import { SuiteSummary } from 'genTestsSummary';
 
 export default createContext<CTXType>((ctxRef, parentContext) =>
   parentContext
@@ -59,4 +60,5 @@ type CTXType = {
     };
     emit: (event: string, ...args: any[]) => void;
   };
+  summary?: SuiteSummary;
 };

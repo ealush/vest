@@ -1,9 +1,6 @@
 // TODO: Verify this test file is not needed and delete it
 import { dummyTest } from '../../../../../../testUtils/testDummy';
 
-import { Severity } from 'Severity';
-import VestTest from 'VestTest';
-import collectFailureMessages from 'collectFailureMessages';
 import create from 'create';
 import group from 'group';
 import { SuiteResult } from 'produceSuiteResult';
@@ -26,6 +23,7 @@ describe('collectFailureMessages', () => {
     expect(result).toEqual({
       field_1: [],
       field_2: ['field_2_failure message 1', 'field_2_failure message 3'],
+      field_3: [],
     });
   });
 
@@ -34,13 +32,7 @@ describe('collectFailureMessages', () => {
   });
 
   it('Should return an object with an empty array when selected field has no errors', () => {
-    expect(
-      collectFailureMessages(
-        Severity.ERRORS,
-        [new VestTest('field_1', jest.fn(), { message: 'error_message' })],
-        { fieldName: 'field_1' }
-      )
-    ).toEqual({ field_1: [] });
+    expect(res.getErrors('v')).toEqual([]);
   });
 
   describe('getErrors', () => {
@@ -120,6 +112,11 @@ describe('collectFailureMessages', () => {
         'group_1'
       );
       dummyTest.failing('field_2', 'field_2_failure message 3', 'group_1');
+      dummyTest.passing('v');
+
+      group('group_2', () => {
+        dummyTest.passing('x');
+      });
     });
     suite();
     res = suite.get();

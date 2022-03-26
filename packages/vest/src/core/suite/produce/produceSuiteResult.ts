@@ -10,7 +10,7 @@ import { hasErrorsByGroup, hasWarningsByGroup } from 'hasFailuresByGroup';
 import { isValid } from 'isValid';
 import { useStateRef, useTestsFlat, useSuiteName } from 'stateHooks';
 
-const cache = createCache(20);
+const cache = createCache(1);
 
 export function produceSuiteResult(): SuiteResult {
   const testObjects = useTestsFlat();

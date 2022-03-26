@@ -8,7 +8,7 @@ import ctx from 'ctx';
 import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
 import { isExcludedIndividually } from 'skipWhen';
 
-type TExclusionItem = string | string[] | undefined;
+type ExclusionItem = string | string[] | undefined;
 
 /**
  * Adds a field or a list of fields into the inclusion list
@@ -17,11 +17,11 @@ type TExclusionItem = string | string[] | undefined;
  *
  * only('username');
  */
-export function only(item: TExclusionItem): void {
+export function only(item: ExclusionItem): void {
   return addTo(ExclusionGroup.ONLY, 'tests', item);
 }
 
-only.group = (item: TExclusionItem) =>
+only.group = (item: ExclusionItem) =>
   addTo(ExclusionGroup.ONLY, 'groups', item);
 
 /**
@@ -31,11 +31,11 @@ only.group = (item: TExclusionItem) =>
  *
  * skip('username');
  */
-export function skip(item: TExclusionItem): void {
+export function skip(item: ExclusionItem): void {
   return addTo(ExclusionGroup.SKIP, 'tests', item);
 }
 
-skip.group = (item: TExclusionItem) =>
+skip.group = (item: ExclusionItem) =>
   addTo(ExclusionGroup.SKIP, 'groups', item);
 
 //Checks whether a certain test profile excluded by any of the exclusion groups.
@@ -160,7 +160,7 @@ export function isGroupExcluded(groupName: string): boolean {
 function addTo(
   exclusionGroup: ExclusionGroup,
   itemType: 'tests' | 'groups',
-  item: TExclusionItem
+  item: ExclusionItem
 ) {
   const context = ctx.useX(ERROR_HOOK_CALLED_OUTSIDE);
 

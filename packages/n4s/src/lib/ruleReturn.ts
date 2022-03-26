@@ -1,11 +1,11 @@
 import defaultTo from 'defaultTo';
-import type { TStringable } from 'utilityTypes';
+import type { Stringable } from 'utilityTypes';
 
 export default function ruleReturn(
   pass: boolean,
   message?: string
-): TRuleDetailedResult {
-  const output: TRuleDetailedResult = { pass };
+): RuleDetailedResult {
+  const output: RuleDetailedResult = { pass };
 
   if (message) {
     output.message = message;
@@ -14,31 +14,31 @@ export default function ruleReturn(
   return output;
 }
 
-export function failing(): TRuleDetailedResult {
+export function failing(): RuleDetailedResult {
   return ruleReturn(false);
 }
 
-export function passing(): TRuleDetailedResult {
+export function passing(): RuleDetailedResult {
   return ruleReturn(true);
 }
 
 export function defaultToFailing(
-  callback: (...args: any[]) => TRuleDetailedResult
-): TRuleDetailedResult {
+  callback: (...args: any[]) => RuleDetailedResult
+): RuleDetailedResult {
   return defaultTo(callback, failing());
 }
 
 export function defaultToPassing(
-  callback: (...args: any[]) => TRuleDetailedResult
-): TRuleDetailedResult {
+  callback: (...args: any[]) => RuleDetailedResult
+): RuleDetailedResult {
   return defaultTo(callback, passing());
 }
 
-export type TRuleReturn =
+export type RuleReturn =
   | boolean
   | {
       pass: boolean;
-      message?: TStringable;
+      message?: Stringable;
     };
 
-export type TRuleDetailedResult = { pass: boolean; message?: string };
+export type RuleDetailedResult = { pass: boolean; message?: string };

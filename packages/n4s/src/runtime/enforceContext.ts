@@ -13,14 +13,14 @@ export const ctx = createContext<CTXType>((ctxRef, parentContext): CTXType => {
     });
   } else if (ctxRef.set) {
     return assign(base, {
-      parent: (): TEnforceContext => stripContext(parentContext),
+      parent: (): EnforceContext => stripContext(parentContext),
     });
   }
 
   return parentContext;
 });
 
-function stripContext(ctx: null | CTXType): TEnforceContext {
+function stripContext(ctx: null | CTXType): EnforceContext {
   if (!ctx) {
     return ctx;
   }
@@ -39,10 +39,10 @@ type CTXType = {
   parent: () => CTXType | null;
 };
 
-export type TEnforceContext = null | {
+export type EnforceContext = null | {
   meta: Record<string, any>;
   value: any;
-  parent: () => TEnforceContext;
+  parent: () => EnforceContext;
 };
 
 function emptyParent(): null {

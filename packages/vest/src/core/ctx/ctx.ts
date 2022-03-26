@@ -6,7 +6,7 @@ import { CB } from 'utilityTypes';
 import { IsolateKeys, IsolateTypes } from 'IsolateTypes';
 import { Modes } from 'Modes';
 import VestTest from 'VestTest';
-import type { TStateRef } from 'createStateRef';
+import type { StateRef } from 'createStateRef';
 import { SuiteSummary } from 'genTestsSummary';
 
 export default createContext<CTXType>((ctxRef, parentContext) =>
@@ -40,7 +40,7 @@ type CTXType = {
     keys: IsolateKeys;
   };
   testCursor: ReturnType<typeof createCursor>;
-  stateRef?: TStateRef;
+  stateRef?: StateRef;
   exclusion: {
     tests: Record<string, boolean>;
     groups: Record<string, boolean>;

@@ -1,13 +1,13 @@
 import { ctx } from 'n4s';
-import type { TRuleDetailedResult } from 'ruleReturn';
+import type { RuleDetailedResult } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
-import type { IShapeObject } from 'schemaTypes';
+import type { ShapeObject } from 'schemaTypes';
 
 export function loose(
   inputObject: Record<string, any>,
-  shapeObject: IShapeObject
-): TRuleDetailedResult {
+  shapeObject: ShapeObject
+): RuleDetailedResult {
   for (const key in shapeObject) {
     const currentValue = inputObject[key];
     const currentRule = shapeObject[key];

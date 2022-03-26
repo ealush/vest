@@ -4,7 +4,7 @@ import optionalFunctionValue from 'optionalFunctionValue';
 // eslint-disable-next-line max-lines-per-function
 export function createState(
   onStateChange?: (...args: unknown[]) => unknown
-): TCreateStateReturn {
+): CreateStateReturn {
   const state: {
     references: unknown[];
   } = {
@@ -35,9 +35,9 @@ export function createState(
    * useColor()[0]; -> "green"
    */
   function registerStateKey<S>(
-    initialState?: TStateInput<S>,
+    initialState?: StateInput<S>,
     onUpdate?: () => void
-  ): () => TStateHandlerReturn<S> {
+  ): () => StateHandlerReturn<S> {
     const key = registrations.length;
     registrations.push([initialState, onUpdate]);
     return initKey(key, initialState);
@@ -53,16 +53,16 @@ export function createState(
 
   function initKey<S>(
     key: number,
-    initialState?: TStateInput<S>,
+    initialState?: StateInput<S>,
     prevState?: S | undefined
   ) {
     current().push();
     set(key, optionalFunctionValue(initialState, prevState));
 
-    return function useStateKey(): TStateHandlerReturn<S> {
+    return function useStateKey(): StateHandlerReturn<S> {
       return [
         current()[key],
-        (nextState: TSetStateInput<S>) =>
+        (nextState: SetStateInput<S>) =>
           set(key, optionalFunctionValue(nextState, current()[key])),
       ];
     };
@@ -88,19 +88,16 @@ export function createState(
   }
 }
 
-type TStateInput<S> = S | ((prevState?: S) => S);
-type TSetStateInput<S> = S | ((prevState: S) => S);
+type StateInput<S> = S | ((prevState?: S) => S);
+type SetStateInput<S> = S | ((prevState: S) => S);
 
-export type TState = ReturnType<typeof createState>;
-export type TStateHandlerReturn<S> = [
-  S,
-  (nextState: TSetStateInput<S>) => void
-];
+export type State = ReturnType<typeof createState>;
+export type StateHandlerReturn<S> = [S, (nextState: SetStateInput<S>) => void];
 
-type TCreateStateReturn = {
+type CreateStateReturn = {
   reset: () => void;
   registerStateKey: <S>(
-    initialState?: TStateInput<S> | undefined,
+    initialState?: StateInput<S> | undefined,
     onUpdate?: (() => void) | undefined
-  ) => () => TStateHandlerReturn<S>;
+  ) => () => StateHandlerReturn<S>;
 };

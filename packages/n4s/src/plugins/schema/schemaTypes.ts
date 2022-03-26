@@ -1,5 +1,5 @@
-import { TLazyRuleRunners } from 'genEnforceLazy';
+import { LazyRuleRunners } from 'genEnforceLazy';
 
-export interface IShapeObject
+export interface ShapeObject
   extends Record<string, any>,
-    Record<string, TLazyRuleRunners> {}
+    Record<string, LazyRuleRunners> {}

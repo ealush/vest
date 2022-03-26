@@ -1,7 +1,7 @@
 import { enforce } from 'n4s';
 
 // Help needed improving the typings of this file.
-// Ideally, we'd be able to extend IShapeObject, but that's not possible.
+// Ideally, we'd be able to extend ShapeObject, but that's not possible.
 export function partial<T extends Record<any, any>>(shapeObject: T): T {
   const output = {} as T;
   for (const key in shapeObject) {

@@ -3,31 +3,31 @@ import invariant from 'invariant';
 import isFunction from 'isFunction';
 import { isString } from 'isString';
 
-import VestTest, { TTestFn } from 'VestTest';
+import VestTest, { TestFn } from 'VestTest';
 import ctx from 'ctx';
 import registerPrevRunTest from 'registerPrevRunTest';
 import bindTestMemo from 'test.memo';
 
-function testBase(fieldName: string, message: string, cb: TTestFn): VestTest;
-function testBase(fieldName: string, cb: TTestFn): VestTest;
+function testBase(fieldName: string, message: string, cb: TestFn): VestTest;
+function testBase(fieldName: string, cb: TestFn): VestTest;
 function testBase(
   fieldName: string,
   message: string,
-  cb: TTestFn,
+  cb: TestFn,
   key: string
 ): VestTest;
-function testBase(fieldName: string, cb: TTestFn, key: string): VestTest;
+function testBase(fieldName: string, cb: TestFn, key: string): VestTest;
 function testBase(
   fieldName: string,
   ...args:
-    | [message: string, cb: TTestFn]
-    | [cb: TTestFn]
-    | [message: string, cb: TTestFn, key: string]
-    | [cb: TTestFn, key: string]
+    | [message: string, cb: TestFn]
+    | [cb: TestFn]
+    | [message: string, cb: TestFn, key: string]
+    | [cb: TestFn, key: string]
 ): VestTest {
   const [message, testFn, key] = (
     isFunction(args[1]) ? args : [undefined, ...args]
-  ) as [string | undefined, TTestFn, string | undefined];
+  ) as [string | undefined, TestFn, string | undefined];
 
   invariant(
     isString(fieldName),
@@ -62,7 +62,7 @@ export const test = assign(testBase, {
   memo: bindTestMemo(testBase),
 });
 
-export type TTestBase = typeof testBase;
+export type TestBase = typeof testBase;
 
 function incompatibleParamsError(name: string, expected: string) {
   return `Incompatible params passed to test function. ${name} must be a ${expected}`;

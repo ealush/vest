@@ -15,7 +15,7 @@ import { useOptionalFields } from 'stateHooks';
  *  username: () => allowUsernameEmpty,
  * });
  */
-export default function optional(optionals: TOptionalsInput): void {
+export default function optional(optionals: OptionalsInput): void {
   const [, setOptionalFields] = useOptionalFields();
 
   setOptionalFields(state => {
@@ -35,6 +35,6 @@ export default function optional(optionals: TOptionalsInput): void {
   });
 }
 
-type TOptionalsInput = string | string[] | TOptionalsObject;
+type OptionalsInput = string | string[] | OptionalsObject;
 
-type TOptionalsObject = Record<string, () => boolean>;
+type OptionalsObject = Record<string, () => boolean>;

@@ -1,39 +1,39 @@
 import type { DropFirst } from 'utilityTypes';
 
-import type { TRuleReturn } from 'ruleReturn';
+import type { RuleReturn } from 'ruleReturn';
 import rules from 'rules';
 
-export type TArgs = any[];
+export type Args = any[];
 
-export type TRuleValue = any;
+export type RuleValue = any;
 
-export type TRuleBase = (value: TRuleValue, ...args: TArgs) => TRuleReturn;
+export type RuleBase = (value: RuleValue, ...args: Args) => RuleReturn;
 
-export type TRule = Record<string, TRuleBase>;
+export type Rule = Record<string, RuleBase>;
 
-type TBaseRules = typeof baseRules;
-export type KBaseRules = keyof TBaseRules;
+type BaseRules = typeof baseRules;
+export type KBaseRules = keyof BaseRules;
 
 const baseRules = rules();
 
-function getRule(ruleName: string): TRuleBase {
+function getRule(ruleName: string): RuleBase {
   return baseRules[ruleName as KBaseRules];
 }
 
 export { baseRules, getRule };
 
-type TRules<E = Record<string, unknown>> = n4s.EnforceCustomMatchers<
-  TRules<E> & E
+type Rules<E = Record<string, unknown>> = n4s.EnforceCustomMatchers<
+  Rules<E> & E
 > &
-  Record<string, (...args: TArgs) => TRules<E> & E> & {
+  Record<string, (...args: Args) => Rules<E> & E> & {
     [P in KBaseRules]: (
-      ...args: DropFirst<Parameters<TBaseRules[P]>> | TArgs
-    ) => TRules<E> & E;
+      ...args: DropFirst<Parameters<BaseRules[P]>> | Args
+    ) => Rules<E> & E;
   };
 
 /* eslint-disable @typescript-eslint/no-namespace, @typescript-eslint/no-empty-interface */
 declare global {
   namespace n4s {
-    interface IRules<E> extends TRules<E> {}
+    interface IRules<E> extends Rules<E> {}
   }
 }

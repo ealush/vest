@@ -1,33 +1,33 @@
 import mapFirst from 'mapFirst';
 import optionalFunctionValue from 'optionalFunctionValue';
-import { TStringable } from 'utilityTypes';
+import { Stringable } from 'utilityTypes';
 
 import eachEnforceRule from 'eachEnforceRule';
 import { ctx } from 'enforceContext';
 import isProxySupported from 'isProxySupported';
-import ruleReturn, { defaultToPassing, TRuleDetailedResult } from 'ruleReturn';
-import { TRuleValue, TArgs, KBaseRules, getRule } from 'runtimeRules';
+import ruleReturn, { defaultToPassing, RuleDetailedResult } from 'ruleReturn';
+import { RuleValue, Args, KBaseRules, getRule } from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
 // eslint-disable-next-line max-lines-per-function
 export default function genEnforceLazy(key: string) {
-  const registeredRules: TRegisteredRules = [];
-  let lazyMessage: void | TLazyMessage;
+  const registeredRules: RegisteredRules = [];
+  let lazyMessage: void | LazyMessage;
 
   return addLazyRule(key);
 
   // eslint-disable-next-line max-lines-per-function
   function addLazyRule(ruleName: string) {
     // eslint-disable-next-line max-lines-per-function
-    return (...args: TArgs): TLazy => {
+    return (...args: Args): Lazy => {
       const rule = getRule(ruleName);
 
-      registeredRules.push((value: TRuleValue) =>
+      registeredRules.push((value: RuleValue) =>
         transformResult(rule(value, ...args), ruleName, value, ...args)
       );
 
       let proxy = {
-        run: (value: TRuleValue): TRuleDetailedResult => {
+        run: (value: RuleValue): RuleDetailedResult => {
           return defaultToPassing(
             mapFirst(registeredRules, (rule, breakout) => {
               const res = ctx.run({ value }, () => rule(value));
@@ -44,15 +44,15 @@ export default function genEnforceLazy(key: string) {
             })
           );
         },
-        test: (value: TRuleValue): boolean => proxy.run(value).pass,
-        message: (message: TStringable): TLazy => {
+        test: (value: RuleValue): boolean => proxy.run(value).pass,
+        message: (message: Stringable): Lazy => {
           if (message) {
             lazyMessage = message;
           }
 
           return proxy;
         },
-      } as TLazy;
+      } as Lazy;
 
       if (!isProxySupported()) {
         eachEnforceRule((ruleName: KBaseRules) => {
@@ -78,26 +78,26 @@ export default function genEnforceLazy(key: string) {
   }
 }
 
-export type TLazyRules = n4s.IRules<TLazyRuleMethods>;
+export type LazyRules = n4s.IRules<LazyRuleMethods>;
 
-export type TLazy = TLazyRules &
-  TLazyRuleMethods &
+export type Lazy = LazyRules &
+  LazyRuleMethods &
   // This is a "catch all" hack to make TS happy while not
   // losing type hints
   Record<string, (...args: any[]) => any>;
 
-type TLazyRuleMethods = TLazyRuleRunners & {
-  message: (message: TLazyMessage) => TLazy;
+type LazyRuleMethods = LazyRuleRunners & {
+  message: (message: LazyMessage) => Lazy;
 };
 
-export type TLazyRuleRunners = {
+export type LazyRuleRunners = {
   test: (value: unknown) => boolean;
-  run: (value: unknown) => TRuleDetailedResult;
+  run: (value: unknown) => RuleDetailedResult;
 };
 
-export type TComposeResult = TLazyRuleRunners & ((value: any) => void);
+export type ComposeResult = LazyRuleRunners & ((value: any) => void);
 
-type TRegisteredRules = Array<(value: TRuleValue) => TRuleDetailedResult>;
-type TLazyMessage =
+type RegisteredRules = Array<(value: RuleValue) => RuleDetailedResult>;
+type LazyMessage =
   | string
-  | ((value: unknown, originalMessage?: TStringable) => string);
+  | ((value: unknown, originalMessage?: Stringable) => string);

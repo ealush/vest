@@ -1,9 +1,9 @@
 import { isNumeric } from 'isNumeric';
-import type { TRuleValue } from 'runtimeRules';
+import type { RuleValue } from 'runtimeRules';
 /**
  * Validates that a given value is an odd number
  */
-export const isOdd = (value: TRuleValue): boolean => {
+export const isOdd = (value: RuleValue): boolean => {
   if (isNumeric(value)) {
     return value % 2 !== 0;
   }

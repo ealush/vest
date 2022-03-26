@@ -1,10 +1,10 @@
 import optionalFunctionValue from 'optionalFunctionValue';
-import { TStringable } from 'utilityTypes';
+import { Stringable } from 'utilityTypes';
 
 export default function invariant(
   condition: any,
   // eslint-disable-next-line @typescript-eslint/ban-types
-  message?: String | TStringable
+  message?: String | Stringable
 ): asserts condition {
   if (condition) {
     return;

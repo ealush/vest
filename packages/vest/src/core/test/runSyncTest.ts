@@ -1,10 +1,10 @@
-import VestTest, { TTestResult } from 'VestTest';
+import VestTest, { TestResult } from 'VestTest';
 import context from 'ctx';
 import shouldUseErrorAsMessage from 'shouldUseErrorAsMessage';
 /**
  * Runs sync tests - or extracts promise.
  */
-export default function runSyncTest(testObject: VestTest): TTestResult {
+export default function runSyncTest(testObject: VestTest): TestResult {
   return context.run({ currentTest: testObject }, () => {
     let result;
     try {

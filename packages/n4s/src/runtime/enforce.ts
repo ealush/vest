@@ -1,11 +1,11 @@
 import assign from 'assign';
 
 import eachEnforceRule from 'eachEnforceRule';
-import { ctx, TEnforceContext } from 'enforceContext';
-import enforceEager, { TEnforceEager } from 'enforceEager';
-import genEnforceLazy, { TLazyRules } from 'genEnforceLazy';
+import { ctx, EnforceContext } from 'enforceContext';
+import enforceEager, { EnforceEager } from 'enforceEager';
+import genEnforceLazy, { LazyRules } from 'genEnforceLazy';
 import isProxySupported from 'isProxySupported';
-import { TRule, KBaseRules, baseRules, getRule } from 'runtimeRules';
+import { Rule, KBaseRules, baseRules, getRule } from 'runtimeRules';
 /**
  * Enforce is quite complicated, I want to explain it in detail.
  * It is dynamic in nature, so a lot of proxy objects are involved.
@@ -33,13 +33,13 @@ import { TRule, KBaseRules, baseRules, getRule } from 'runtimeRules';
  * while run will return an object with the validation result and an optional message created by the rule.
  */
 
-function genEnforce(): TEnforce {
+function genEnforce(): Enforce {
   const target = {
     context: () => ctx.useX(),
-    extend: (customRules: TRule) => {
+    extend: (customRules: Rule) => {
       assign(baseRules, customRules);
     },
-  } as TEnforce;
+  } as Enforce;
 
   if (!isProxySupported()) {
     eachEnforceRule((ruleName: KBaseRules) => {
@@ -50,8 +50,8 @@ function genEnforce(): TEnforce {
     return assign(enforceEager, target);
   }
 
-  return new Proxy(assign(enforceEager, target) as TEnforce, {
-    get: (target: TEnforce, key: string) => {
+  return new Proxy(assign(enforceEager, target) as Enforce, {
+    get: (target: Enforce, key: string) => {
       if (key in target) {
         return target[key];
       }
@@ -68,9 +68,9 @@ function genEnforce(): TEnforce {
 
 export const enforce = genEnforce();
 
-type TEnforce = TEnforceMethods & TLazyRules & TEnforceEager;
+type Enforce = EnforceMethods & LazyRules & EnforceEager;
 
-type TEnforceMethods = {
-  context: () => TEnforceContext;
-  extend: (customRules: TRule) => void;
+type EnforceMethods = {
+  context: () => EnforceContext;
+  extend: (customRules: Rule) => void;
 };

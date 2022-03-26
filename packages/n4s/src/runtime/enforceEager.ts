@@ -4,18 +4,12 @@ import eachEnforceRule from 'eachEnforceRule';
 import { ctx } from 'enforceContext';
 import { isEmpty } from 'isEmpty';
 import isProxySupported from 'isProxySupported';
-import {
-  getRule,
-  TRuleValue,
-  TArgs,
-  TRuleBase,
-  KBaseRules,
-} from 'runtimeRules';
+import { getRule, RuleValue, Args, RuleBase, KBaseRules } from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
 type IRules = n4s.IRules<Record<string, any>>;
 
-export default function enforceEager(value: TRuleValue): IRules {
+export default function enforceEager(value: RuleValue): IRules {
   const target = {} as IRules;
   if (!isProxySupported()) {
     eachEnforceRule((ruleName: KBaseRules, ruleFn) => {
@@ -36,8 +30,8 @@ export default function enforceEager(value: TRuleValue): IRules {
 
   return proxy;
 
-  function genRuleCall(target: IRules, rule: TRuleBase, ruleName: string) {
-    return function ruleCall(...args: TArgs) {
+  function genRuleCall(target: IRules, rule: RuleBase, ruleName: string) {
+    return function ruleCall(...args: Args) {
       const transformedResult = transformResult(
         ctx.run({ value }, () => rule(value, ...args)),
         ruleName,
@@ -57,4 +51,4 @@ export default function enforceEager(value: TRuleValue): IRules {
   }
 }
 
-export type TEnforceEager = typeof enforceEager;
+export type EnforceEager = typeof enforceEager;

@@ -54,7 +54,7 @@ function shouldRunDoneCallback(fieldName?: string): boolean {
  * Registers done callbacks.
  * @register {Object} Vest output object.
  */
-const done: IDone = function done(...args): SuiteRunResult {
+const done: Done = function done(...args): SuiteRunResult {
   const [callback, fieldName] = args.reverse() as [
     (res: SuiteResult) => void,
     string
@@ -93,9 +93,9 @@ function deferDoneCallback(doneCallback: () => void, fieldName?: string): void {
   });
 }
 
-export type SuiteRunResult = SuiteResult & { done: IDone };
+export type SuiteRunResult = SuiteResult & { done: Done };
 
-interface IDone {
+interface Done {
   (...args: [cb: (res: SuiteResult) => void]): SuiteRunResult;
   (
     ...args: [fieldName: string, cb: (res: SuiteResult) => void]

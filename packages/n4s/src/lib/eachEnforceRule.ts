@@ -1,9 +1,9 @@
 import isFunction from 'isFunction';
 
-import { baseRules, getRule, KBaseRules, TRuleBase } from 'runtimeRules';
+import { baseRules, getRule, KBaseRules, RuleBase } from 'runtimeRules';
 
 export default function eachEnforceRule(
-  action: (ruleName: KBaseRules, rule: TRuleBase) => void
+  action: (ruleName: KBaseRules, rule: RuleBase) => void
 ) {
   for (const ruleName in baseRules) {
     const ruleFn = getRule(ruleName);

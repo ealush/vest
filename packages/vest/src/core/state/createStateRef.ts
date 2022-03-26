@@ -1,11 +1,11 @@
 import type { NestedArray } from 'nestedArray';
-import type { TState } from 'vast';
+import type { State } from 'vast';
 
 import VestTest from 'VestTest';
 import type { SuiteResult } from 'produceSuiteResult';
 
 export default function createStateRef(
-  state: TState,
+  state: State,
   { suiteId, suiteName }: { suiteId: string; suiteName?: void | string }
 ) {
   return {
@@ -33,4 +33,4 @@ export default function createStateRef(
   };
 }
 
-export type TStateRef = ReturnType<typeof createStateRef>;
+export type StateRef = ReturnType<typeof createStateRef>;

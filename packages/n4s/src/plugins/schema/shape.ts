@@ -1,14 +1,14 @@
 import hasOwnProperty from 'hasOwnProperty';
 
 import { loose } from 'loose';
-import type { TRuleDetailedResult } from 'ruleReturn';
+import type { RuleDetailedResult } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
-import type { IShapeObject } from 'schemaTypes';
+import type { ShapeObject } from 'schemaTypes';
 
 export function shape(
   inputObject: Record<string, any>,
-  shapeObject: IShapeObject
-): TRuleDetailedResult {
+  shapeObject: ShapeObject
+): RuleDetailedResult {
   const baseRes = loose(inputObject, shapeObject);
   if (!baseRes.pass) {
     return baseRes;

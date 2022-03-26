@@ -10,8 +10,8 @@ enum TestSeverity {
 
 export default class VestTest {
   fieldName: string;
-  testFn: TTestFn;
-  asyncTest?: TAsyncTest;
+  testFn: TestFn;
+  asyncTest?: AsyncTest;
   groupName?: string;
   message?: string;
   key?: null | string = null;
@@ -22,7 +22,7 @@ export default class VestTest {
 
   constructor(
     fieldName: string,
-    testFn: TTestFn,
+    testFn: TestFn,
     {
       message,
       groupName,
@@ -45,8 +45,8 @@ export default class VestTest {
     }
   }
 
-  run(): TTestResult {
-    let result: TTestResult;
+  run(): TestResult {
+    let result: TestResult;
     try {
       result = this.testFn();
     } catch (error) {
@@ -182,9 +182,9 @@ export default class VestTest {
   }
 }
 
-type TAsyncTest = Promise<string | void>;
-export type TTestResult = TAsyncTest | boolean | void;
-export type TTestFn = () => TTestResult;
+type AsyncTest = Promise<string | void>;
+export type TestResult = AsyncTest | boolean | void;
+export type TestFn = () => TestResult;
 
 const STATUS_UNTESTED = 'UNTESTED';
 const STATUS_SKIPPED = 'SKIPPED';

@@ -2,20 +2,15 @@
 import createCache from 'cache';
 import { isNull } from 'isNull';
 
-import VestTest, { TTestFn } from 'VestTest';
+import VestTest, { TestFn } from 'VestTest';
 import registerPrevRunTest from 'registerPrevRunTest';
 import { useSuiteId } from 'stateHooks';
-import type { TTestBase } from 'test';
+import type { TestBase } from 'test';
 import * as testCursor from 'testCursor';
 // eslint-disable-next-line max-lines-per-function
-export default function bindTestMemo(test: TTestBase): {
-  (fieldName: string, test: TTestFn, deps: unknown[]): VestTest;
-  (
-    fieldName: string,
-    message: string,
-    test: TTestFn,
-    deps: unknown[]
-  ): VestTest;
+export default function bindTestMemo(test: TestBase): {
+  (fieldName: string, test: TestFn, deps: unknown[]): VestTest;
+  (fieldName: string, message: string, test: TestFn, deps: unknown[]): VestTest;
 } {
   const cache = createCache(10); // arbitrary cache size
 
@@ -24,22 +19,22 @@ export default function bindTestMemo(test: TTestBase): {
    */
   function memo(
     fieldName: string,
-    ...args: [test: TTestFn, deps: unknown[]]
+    ...args: [test: TestFn, deps: unknown[]]
   ): VestTest;
   function memo(
     fieldName: string,
-    ...args: [message: string, test: TTestFn, deps: unknown[]]
+    ...args: [message: string, test: TestFn, deps: unknown[]]
   ): VestTest;
   // eslint-disable-next-line max-statements
   function memo(
     fieldName: string,
     ...args:
-      | [message: string, test: TTestFn, deps: unknown[]]
-      | [test: TTestFn, deps: unknown[]]
+      | [message: string, test: TestFn, deps: unknown[]]
+      | [test: TestFn, deps: unknown[]]
   ): VestTest {
     const cursorAt = testCursor.useCursorAt();
 
-    const [deps, testFn, msg] = args.reverse() as [any[], TTestFn, string];
+    const [deps, testFn, msg] = args.reverse() as [any[], TestFn, string];
 
     // Implicit dependency for more specificity
     const dependencies = [useSuiteId(), fieldName, cursorAt].concat(deps);

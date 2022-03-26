@@ -142,9 +142,6 @@
       "getFailures": [
         "./packages/vest/src/core/suite/produce/getFailures/getFailures.ts"
       ],
-      "getFailuresArrayOrObject": [
-        "./packages/vest/src/core/suite/produce/getFailures/getFailuresArrayOrObject.ts"
-      ],
       "getFailuresByGroup": [
         "./packages/vest/src/core/suite/produce/getFailures/getFailuresByGroup.ts"
       ],

@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 
 import { Severity } from 'Severity';
-import { getByFieldName, collectAll } from 'collectFailures';
+import { gatherFailures } from 'collectFailures';
 import ctx from 'ctx';
 
 export function getErrors(): Record<string, string[]>;
@@ -26,7 +26,6 @@ export function getWarnings(
 function getFailures(severityKey: Severity, fieldName?: string) {
   const { summary } = ctx.useX();
   invariant(summary);
-  return fieldName
-    ? getByFieldName(summary.tests, severityKey, fieldName)
-    : collectAll(summary.tests, severityKey);
+
+  return gatherFailures(summary.tests, severityKey, fieldName);
 }

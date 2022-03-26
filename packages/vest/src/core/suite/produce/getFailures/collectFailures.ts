@@ -1,7 +1,19 @@
 import { Severity } from 'Severity';
 import { TestGroup } from 'genTestsSummary';
 
-export function getByFieldName(
+// calls collectAll or getByFieldName depending on whether fieldName is provided
+
+export function gatherFailures(
+  testGroup: TestGroup,
+  severityKey: Severity,
+  fieldName?: string
+): string[] | Record<string, string[]> {
+  return fieldName
+    ? getByFieldName(testGroup, severityKey, fieldName)
+    : collectAll(testGroup, severityKey);
+}
+
+function getByFieldName(
   testGroup: TestGroup,
   severityKey: Severity,
   fieldName: string
@@ -9,7 +21,7 @@ export function getByFieldName(
   return testGroup?.[fieldName]?.[severityKey] || [];
 }
 
-export function collectAll(
+function collectAll(
   testGroup: TestGroup,
   severityKey: Severity
 ): Record<string, string[]> {

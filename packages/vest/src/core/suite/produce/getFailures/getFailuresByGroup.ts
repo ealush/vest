@@ -1,10 +1,8 @@
 import invariant from 'invariant';
 
 import { Severity } from 'Severity';
-import { collectAll, getByFieldName } from 'collectFailures';
+import { gatherFailures } from 'collectFailures';
 import ctx from 'ctx';
-// import getFailuresArrayOrObject from 'getFailuresArrayOrObject';
-// import { useTestsFlat } from 'stateHooks';
 
 export function getErrorsByGroup(groupName: string): Record<string, string[]>;
 export function getErrorsByGroup(
@@ -15,12 +13,7 @@ export function getErrorsByGroup(
   groupName: string,
   fieldName?: string
 ): string[] | Record<string, string[]> {
-  const { summary } = ctx.useX();
-  invariant(summary);
-
-  return fieldName
-    ? getByFieldName(summary.groups[groupName], Severity.ERRORS, fieldName)
-    : collectAll(summary.groups[groupName], Severity.ERRORS);
+  return getFailuresByGroup(groupName, Severity.ERRORS, fieldName);
 }
 
 export function getWarningsByGroup(groupName: string): Record<string, string[]>;
@@ -32,10 +25,16 @@ export function getWarningsByGroup(
   groupName: string,
   fieldName?: string
 ): string[] | Record<string, string[]> {
+  return getFailuresByGroup(groupName, Severity.WARNINGS, fieldName);
+}
+
+function getFailuresByGroup(
+  groupName: string,
+  severityKey: Severity,
+  fieldName?: string
+): string[] | Record<string, string[]> {
   const { summary } = ctx.useX();
   invariant(summary);
 
-  return fieldName
-    ? getByFieldName(summary.groups[groupName], Severity.WARNINGS, fieldName)
-    : collectAll(summary.groups[groupName], Severity.WARNINGS);
+  return gatherFailures(summary.groups[groupName], severityKey, fieldName);
 }

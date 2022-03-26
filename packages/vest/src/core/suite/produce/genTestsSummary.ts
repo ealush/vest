@@ -2,7 +2,7 @@ import assign from 'assign';
 
 import { Severity, SeverityCount } from 'Severity';
 import VestTest from 'VestTest';
-import { isValid } from 'isValid';
+import { shouldAddValidProp } from 'isValid';
 import { useTestsFlat } from 'stateHooks';
 
 /**
@@ -26,7 +26,7 @@ export default function genTestsSummary(): SuiteSummary {
     summary
   );
 
-  summary.valid = isValid();
+  summary.valid = shouldAddValidProp();
 
   return countFailures(summary);
 }
@@ -37,7 +37,7 @@ function appendToTest(tests: TestGroup, testObject: VestTest) {
   tests[testObject.fieldName].valid =
     tests[testObject.fieldName].valid === false
       ? false
-      : isValid(testObject.fieldName);
+      : shouldAddValidProp(testObject.fieldName);
 }
 
 /**

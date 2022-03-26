@@ -1,5 +1,7 @@
+import invariant from 'invariant';
 import { isNotEmpty, isEmpty } from 'isEmpty';
 
+import ctx from 'ctx';
 import { hasErrors } from 'hasFailures';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import {
@@ -9,8 +11,16 @@ import {
   useOmittedFields,
 } from 'stateHooks';
 
-// eslint-disable-next-line max-statements, complexity
 export function isValid(fieldName?: string): boolean {
+  const { summary } = ctx.useX();
+
+  invariant(summary);
+
+  return Boolean(fieldName ? summary.tests?.[fieldName]?.valid : summary.valid);
+}
+
+// eslint-disable-next-line max-statements, complexity
+export function shouldAddValidProp(fieldName?: string): boolean {
   if (fieldIsOmitted(fieldName)) {
     return true;
   }

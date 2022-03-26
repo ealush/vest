@@ -17,7 +17,7 @@ export default function bindTestMemo(test: TTestBase): {
     deps: unknown[]
   ): VestTest;
 } {
-  const cache = createCache(100); // arbitrary cache size
+  const cache = createCache(10); // arbitrary cache size
 
   /**
    * Caches a test result based on the test's dependencies.

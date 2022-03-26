@@ -1,10 +1,10 @@
 import invariant from 'invariant';
 
 import { Severity } from 'Severity';
-import { gatherFailures } from 'collectFailures';
+import { FailureMessages, gatherFailures } from 'collectFailures';
 import ctx from 'ctx';
 
-export function getErrorsByGroup(groupName: string): Record<string, string[]>;
+export function getErrorsByGroup(groupName: string): FailureMessages;
 export function getErrorsByGroup(
   groupName: string,
   fieldName: string
@@ -12,11 +12,11 @@ export function getErrorsByGroup(
 export function getErrorsByGroup(
   groupName: string,
   fieldName?: string
-): string[] | Record<string, string[]> {
+): string[] | FailureMessages {
   return getFailuresByGroup(groupName, Severity.ERRORS, fieldName);
 }
 
-export function getWarningsByGroup(groupName: string): Record<string, string[]>;
+export function getWarningsByGroup(groupName: string): FailureMessages;
 export function getWarningsByGroup(
   groupName: string,
   fieldName: string
@@ -24,7 +24,7 @@ export function getWarningsByGroup(
 export function getWarningsByGroup(
   groupName: string,
   fieldName?: string
-): string[] | Record<string, string[]> {
+): string[] | FailureMessages {
   return getFailuresByGroup(groupName, Severity.WARNINGS, fieldName);
 }
 
@@ -32,7 +32,7 @@ function getFailuresByGroup(
   groupName: string,
   severityKey: Severity,
   fieldName?: string
-): string[] | Record<string, string[]> {
+): string[] | FailureMessages {
   const { summary } = ctx.useX();
   invariant(summary);
 

@@ -7,7 +7,7 @@ export function gatherFailures(
   testGroup: TestGroup,
   severityKey: Severity,
   fieldName?: string
-): string[] | Record<string, string[]> {
+): string[] | FailureMessages {
   return fieldName
     ? getByFieldName(testGroup, severityKey, fieldName)
     : collectAll(testGroup, severityKey);
@@ -24,8 +24,8 @@ function getByFieldName(
 function collectAll(
   testGroup: TestGroup,
   severityKey: Severity
-): Record<string, string[]> {
-  const output = {};
+): FailureMessages {
+  const output: FailureMessages = {};
 
   for (const field in testGroup) {
     output[field] = testGroup[field]?.[severityKey] || [];
@@ -33,3 +33,5 @@ function collectAll(
 
   return output;
 }
+
+export type FailureMessages = Record<string, string[]>;

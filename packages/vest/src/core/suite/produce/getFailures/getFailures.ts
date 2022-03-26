@@ -1,22 +1,18 @@
 import invariant from 'invariant';
 
 import { Severity } from 'Severity';
-import { gatherFailures } from 'collectFailures';
+import { FailureMessages, gatherFailures } from 'collectFailures';
 import ctx from 'ctx';
 
-export function getErrors(): Record<string, string[]>;
+export function getErrors(): FailureMessages;
 export function getErrors(fieldName?: string): string[];
-export function getErrors(
-  fieldName?: string
-): string[] | Record<string, string[]> {
+export function getErrors(fieldName?: string): string[] | FailureMessages {
   return getFailures(Severity.ERRORS, fieldName);
 }
 
-export function getWarnings(): Record<string, string[]>;
+export function getWarnings(): FailureMessages;
 export function getWarnings(fieldName?: string): string[];
-export function getWarnings(
-  fieldName?: string
-): string[] | Record<string, string[]> {
+export function getWarnings(fieldName?: string): string[] | FailureMessages {
   return getFailures(Severity.WARNINGS, fieldName);
 }
 

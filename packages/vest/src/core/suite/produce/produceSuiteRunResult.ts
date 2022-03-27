@@ -79,15 +79,14 @@ const done: Done = function done(...args): SuiteRunResult {
 };
 
 function deferDoneCallback(doneCallback: () => void, fieldName?: string): void {
-  const deferredCallback = ctx.bind({}, doneCallback);
   const [, setTestCallbacks] = useTestCallbacks();
   setTestCallbacks(current => {
     if (fieldName) {
       current.fieldCallbacks[fieldName] = (
         current.fieldCallbacks[fieldName] || []
-      ).concat(deferredCallback);
+      ).concat(doneCallback);
     } else {
-      current.doneCallbacks.push(deferredCallback);
+      current.doneCallbacks.push(doneCallback);
     }
     return current;
   });

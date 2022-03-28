@@ -16,7 +16,7 @@ describe('Context', () => {
     });
   });
 
-  describe('Context.run', () => {
+  describe('context.run', () => {
     it('Should create a new context instance', () => {
       const top = ctx.use();
 
@@ -182,6 +182,91 @@ describe('Context', () => {
 
         const bound = ctx.bind({ value2: 300 }, fn);
         ctx.run({ value: 200, value2: 200 }, bound);
+      });
+    });
+  });
+
+  describe('context.use', () => {
+    describe('When in an active context', () => {
+      it('Should return a cloned ctxRef object', () => {
+        const ctxRef = { a: 1, b: 2 };
+
+        ctx.run(ctxRef, () => {
+          expect(ctx.use()).toEqual(ctxRef);
+        });
+      });
+
+      it('Should return a frozen context object', () => {
+        const ctxRef = { a: 1, b: 2 };
+
+        ctx.run(ctxRef, () => {
+          expect(Object.isFrozen(ctx.use())).toBe(true);
+        });
+      });
+
+      describe('When before running the context', () => {
+        it('Should return undefined', () => {
+          expect(ctx.use()).toBeUndefined();
+        });
+      });
+
+      describe('When after closing the context', () => {
+        it('Should return undefined', () => {
+          ctx.run({}, () => {});
+          expect(ctx.use()).toBeNull();
+        });
+      });
+    });
+  });
+
+  describe('context.useX', () => {
+    describe('When in an active context', () => {
+      it('Should return a cloned ctxRef object', () => {
+        const ctxRef = { a: 1, b: 2 };
+
+        ctx.run(ctxRef, () => {
+          expect(ctx.useX()).toEqual(ctxRef);
+        });
+      });
+
+      it('Should return a frozen context object', () => {
+        const ctxRef = { a: 1, b: 2 };
+
+        ctx.run(ctxRef, () => {
+          expect(Object.isFrozen(ctx.useX())).toBe(true);
+        });
+      });
+
+      describe('When before running the context', () => {
+        it('Should throw error', () => {
+          expect(() => ctx.useX()).toThrow(
+            'Context was used after it was closed'
+          );
+        });
+
+        it('Should allow a custom context message', () => {
+          expect(() => ctx.useX('Custom Failure Message')).toThrow(
+            'Custom Failure Message'
+          );
+        });
+      });
+
+      describe('When after closing the context', () => {
+        beforeEach(() => {
+          ctx.run({}, () => {});
+        });
+
+        it('Should return undefined', () => {
+          expect(() => ctx.useX()).toThrow(
+            'Context was used after it was closed'
+          );
+        });
+
+        it('Should allow a custom context message', () => {
+          expect(() => ctx.useX('Custom Failure Message')).toThrow(
+            'Custom Failure Message'
+          );
+        });
       });
     });
   });

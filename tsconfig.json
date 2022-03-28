@@ -136,6 +136,9 @@
       "genTestsSummary": [
         "./packages/vest/src/core/suite/produce/genTestsSummary.ts"
       ],
+      "collectFailures": [
+        "./packages/vest/src/core/suite/produce/getFailures/collectFailures.ts"
+      ],
       "getFailures": [
         "./packages/vest/src/core/suite/produce/getFailures/getFailures.ts"
       ],

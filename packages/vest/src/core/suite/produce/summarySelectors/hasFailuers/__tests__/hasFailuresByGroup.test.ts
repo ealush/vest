@@ -1,6 +1,6 @@
 import faker from 'faker';
 
-import { dummyTest } from '../../../../../../testUtils/testDummy';
+import { dummyTest } from '../../../../../../../testUtils/testDummy';
 
 import * as vest from 'vest';
 
@@ -11,7 +11,7 @@ let suite;
 describe('hasErrorsByGroup', () => {
   describe('When no tests', () => {
     it('Should return false', () => {
-      suite = vest.create(() => {});
+      suite = vest.create(() => undefined);
 
       expect(suite().hasErrorsByGroup(groupName)).toBe(false);
     });
@@ -99,7 +99,7 @@ describe('hasErrorsByGroup', () => {
 describe('hasWarningsByGroup', () => {
   describe('When no tests', () => {
     it('Should return false', () => {
-      suite = vest.create(() => {});
+      suite = vest.create(() => undefined);
       expect(suite().hasWarningsByGroup(groupName)).toBe(false);
     });
   });

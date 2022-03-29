@@ -1,8 +1,6 @@
-import invariant from 'invariant';
-
 import { Severity } from 'Severity';
 import { FailureMessages, gatherFailures } from 'collectFailures';
-import ctx from 'ctx';
+import { useSummary } from 'genTestsSummary';
 
 export function getErrorsByGroup(groupName: string): FailureMessages;
 export function getErrorsByGroup(
@@ -33,8 +31,7 @@ function getFailuresByGroup(
   severityKey: Severity,
   fieldName?: string
 ): string[] | FailureMessages {
-  const { summary } = ctx.useX();
-  invariant(summary);
+  const summary = useSummary();
 
   return gatherFailures(summary.groups[groupName], severityKey, fieldName);
 }

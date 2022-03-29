@@ -1,8 +1,6 @@
-import invariant from 'invariant';
-
 import { Severity } from 'Severity';
 import { FailureMessages, gatherFailures } from 'collectFailures';
-import ctx from 'ctx';
+import { useSummary } from 'genTestsSummary';
 
 export function getErrors(): FailureMessages;
 export function getErrors(fieldName?: string): string[];
@@ -20,8 +18,7 @@ export function getWarnings(fieldName?: string): string[] | FailureMessages {
  * @returns suite or field's errors or warnings.
  */
 function getFailures(severityKey: Severity, fieldName?: string) {
-  const { summary } = ctx.useX();
-  invariant(summary);
+  const summary = useSummary();
 
   return gatherFailures(summary.tests, severityKey, fieldName);
 }

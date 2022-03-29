@@ -1,31 +1,29 @@
-import invariant from 'invariant';
 import { isPositive } from 'isPositive';
 
 import { countKeyBySeverity, Severity } from 'Severity';
-import ctx from 'ctx';
+import { useSummary } from 'genTestsSummary';
 
 export function hasErrorsByGroup(
   groupName: string,
   fieldName?: string
 ): boolean {
-  return has(Severity.ERRORS, groupName, fieldName);
+  return hasFailuresByGroup(Severity.ERRORS, groupName, fieldName);
 }
 
 export function hasWarningsByGroup(
   groupName: string,
   fieldName?: string
 ): boolean {
-  return has(Severity.WARNINGS, groupName, fieldName);
+  return hasFailuresByGroup(Severity.WARNINGS, groupName, fieldName);
 }
 
 // eslint-disable-next-line max-statements
-function has(
+function hasFailuresByGroup(
   severityKey: Severity,
   groupName: string,
   fieldName?: string
 ): boolean {
-  const { summary } = ctx.useX();
-  invariant(summary);
+  const summary = useSummary();
 
   const severityCount = countKeyBySeverity(severityKey);
 

@@ -167,12 +167,6 @@
       "getFailuresByGroup": [
         "./packages/vest/src/core/suite/produce/summarySelectors/getFailures/getFailuresByGroup.ts"
       ],
-      "hasFailures.test": [
-        "./packages/vest/src/core/suite/produce/summarySelectors/hasFailuers/__tsets__/hasFailures.test.ts"
-      ],
-      "hasFailuresByGroup.test": [
-        "./packages/vest/src/core/suite/produce/summarySelectors/hasFailuers/__tsets__/hasFailuresByGroup.test.ts"
-      ],
       "hasFailures": [
         "./packages/vest/src/core/suite/produce/summarySelectors/hasFailuers/hasFailures.ts"
       ],

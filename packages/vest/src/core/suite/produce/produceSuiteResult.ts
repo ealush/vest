@@ -22,7 +22,7 @@ export function produceSuiteResult(): SuiteResult {
     ctx.bind(ctxRef, () => {
       const summary = genTestsSummary();
       const suiteName = useSuiteName();
-      const ref = assign({ summary }, ctxRef);
+      const ref = { summary };
       return assign(summary, {
         getErrors: ctx.bind(ref, getErrors),
         getErrorsByGroup: ctx.bind(ref, getErrorsByGroup),

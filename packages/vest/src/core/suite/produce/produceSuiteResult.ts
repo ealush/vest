@@ -1,8 +1,9 @@
 import assign from 'assign';
 import createCache from 'cache';
+import { isEmpty } from 'isEmpty';
 
 import ctx from 'ctx';
-import genTestsSummary from 'genTestsSummary';
+import genTestsSummary, { SuiteSummary } from 'genTestsSummary';
 import { getErrors, getWarnings } from 'getFailures';
 import { getErrorsByGroup, getWarningsByGroup } from 'getFailuresByGroup';
 import { hasErrors, hasWarnings } from 'hasFailures';
@@ -20,7 +21,19 @@ export function produceSuiteResult(): SuiteResult {
   return cache(
     [testObjects],
     ctx.bind(ctxRef, () => {
-      const summary = genTestsSummary();
+      let summary: SuiteSummary;
+
+      if (isEmpty(testObjects)) {
+        const fromCtx = ctx.useX().summary;
+        if (fromCtx) {
+          summary = fromCtx;
+        } else {
+          summary = genTestsSummary();
+        }
+      } else {
+        summary = genTestsSummary();
+      }
+
       const suiteName = useSuiteName();
       const ref = { summary };
       return assign(summary, {

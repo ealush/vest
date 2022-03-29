@@ -2,12 +2,14 @@ import assign from 'assign';
 import genId from 'genId';
 import invariant from 'invariant';
 import isFunction from 'isFunction';
+import optionalFunctionValue from 'optionalFunctionValue';
 import { CB } from 'utilityTypes';
 import { createState } from 'vast';
 
 import { IsolateTypes } from 'IsolateTypes';
 import createStateRef from 'createStateRef';
 import context from 'ctx';
+import { SuiteSummary } from 'genTestsSummary';
 import { isolate } from 'isolate';
 import { produceSuiteResult, SuiteResult } from 'produceSuiteResult';
 import { SuiteRunResult, produceFullResult } from 'produceSuiteRunResult';
@@ -18,6 +20,7 @@ type CreateProperties = {
   reset: () => void;
   resetField: (fieldName: string) => void;
   remove: (fieldName: string) => void;
+  init: (initializer: SuiteSummary | (() => SuiteSummary)) => void;
 };
 
 export type Suite<T extends CB> = {
@@ -64,6 +67,7 @@ function create<T extends CB>(
     reset: () => void;
     resetField: (fieldName: string) => void;
     remove: (fieldName: string) => void;
+    init: (initializer: SuiteSummary | (() => SuiteSummary)) => void;
   }
 
   // Create base context reference. All hooks will derive their data from this
@@ -90,6 +94,12 @@ function create<T extends CB>(
     }),
     {
       get: context.bind(ctxRef, produceSuiteResult),
+      init: (initializer: SuiteSummary | (() => SuiteSummary)): void => {
+        context.run(
+          assign({ summary: optionalFunctionValue(initializer) }, ctxRef),
+          produceSuiteResult
+        );
+      },
       remove: context.bind(ctxRef, (fieldName: string) => {
         bus.emit(Events.REMOVE_FIELD, fieldName);
       }),

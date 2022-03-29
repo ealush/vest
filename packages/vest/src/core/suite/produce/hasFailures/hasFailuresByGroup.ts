@@ -1,33 +1,49 @@
-import { Severity } from 'Severity';
-import hasFailuresLogic from 'hasFailuresLogic';
-import { useTestsFlat } from 'stateHooks';
+import invariant from 'invariant';
+import { isPositive } from 'isPositive';
+
+import { countKeyBySeverity, Severity } from 'Severity';
+import ctx from 'ctx';
 
 export function hasErrorsByGroup(
   groupName: string,
   fieldName?: string
 ): boolean {
-  return hasByGroup(Severity.ERRORS, groupName, fieldName);
+  return has(Severity.ERRORS, groupName, fieldName);
 }
 
 export function hasWarningsByGroup(
   groupName: string,
   fieldName?: string
 ): boolean {
-  return hasByGroup(Severity.WARNINGS, groupName, fieldName);
+  return has(Severity.WARNINGS, groupName, fieldName);
 }
 
-/**
- * Checks whether there are failures in a given group.
- */
-function hasByGroup(
+// eslint-disable-next-line max-statements
+function has(
   severityKey: Severity,
-  group: string,
+  groupName: string,
   fieldName?: string
 ): boolean {
-  const testObjects = useTestsFlat();
-  return testObjects.some(testObject => {
-    return group === testObject.groupName
-      ? hasFailuresLogic(testObject, severityKey, fieldName)
-      : false;
-  });
+  const { summary } = ctx.useX();
+  invariant(summary);
+
+  const severityCount = countKeyBySeverity(severityKey);
+
+  const group = summary.groups[groupName];
+
+  if (!group) {
+    return false;
+  }
+
+  if (fieldName) {
+    return isPositive(group[fieldName]?.[severityCount]);
+  }
+
+  for (const field in group) {
+    if (isPositive(group[field]?.[severityCount])) {
+      return true;
+    }
+  }
+
+  return false;
 }

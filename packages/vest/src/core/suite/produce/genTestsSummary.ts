@@ -1,6 +1,6 @@
 import assign from 'assign';
 
-import { Severity, SeverityCount } from 'Severity';
+import { countKeyBySeverity, Severity } from 'Severity';
 import VestTest from 'VestTest';
 import { shouldAddValidProp } from 'isValid';
 import { useTestsFlat } from 'stateHooks';
@@ -96,18 +96,12 @@ function appendTestObject(
   return testKey;
 
   function incrementFailures(severity: Severity) {
-    const countKey = getCountKey(severity);
+    const countKey = countKeyBySeverity(severity);
     testKey[countKey]++;
     if (message) {
       testKey[severity] = (testKey[severity] || []).concat(message);
     }
   }
-}
-
-function getCountKey(severity: Severity): SeverityCount {
-  return severity === Severity.ERRORS
-    ? SeverityCount.ERROR_COUNT
-    : SeverityCount.WARN_COUNT;
 }
 
 function baseStats() {

@@ -1,8 +1,9 @@
 import { Modes } from './Modes';
 
+import { Severity } from 'Severity';
 import VestTest from 'VestTest';
 import ctx from 'ctx';
-import { hasErrors } from 'hasFailures';
+import { hasFailures } from 'hasFailures';
 
 /**
  * Sets the suite to "eager" (fail fast) mode.
@@ -28,7 +29,8 @@ export function eager() {
 }
 
 export function shouldSkipBasedOnMode(testObject: VestTest): boolean {
-  if (isEager() && hasErrors(testObject.fieldName)) return true;
+  if (isEager() && hasFailures(Severity.ERRORS, testObject.fieldName))
+    return true;
 
   return false;
 }

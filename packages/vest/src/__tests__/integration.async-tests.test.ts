@@ -1,6 +1,6 @@
 import * as vest from 'vest';
 
-function genValidate({ create, test, enforce, ...vest }) {
+function genSuite({ create, test, enforce, ...vest }) {
   return create(() => {
     test('field_1', 'field_statement_1', () => false);
     test('field_2', 'field_statement_2', () => {
@@ -28,12 +28,12 @@ function genValidate({ create, test, enforce, ...vest }) {
   });
 }
 
-let validate;
+let suite;
 describe('Stateful behavior', () => {
   let result, callback_1, callback_2, callback_3, control;
 
   beforeEach(() => {
-    validate = genValidate({ ...vest });
+    suite = genSuite({ ...vest });
   });
 
   beforeAll(() => {
@@ -47,7 +47,7 @@ describe('Stateful behavior', () => {
     new Promise<void>(done => {
       // ❗️Why is this test async? Because of the `resetState` beforeEach.
       // We must not clean up before the suite is actually done.
-      result = validate(vest).done(done);
+      result = suite(vest).done(done);
       expect(result.tests).toHaveProperty('field_1');
       expect(result.tests).toHaveProperty('field_2');
       expect(result.tests).toHaveProperty('field_4');
@@ -60,7 +60,7 @@ describe('Stateful behavior', () => {
 
   it('Should invoke done callback specified with sync field immediately, and the others after finishing', () =>
     new Promise<void>(done => {
-      result = validate(vest);
+      result = suite(vest);
       result
         .done('field_1', callback_1)
         .done('field_6', callback_2)
@@ -72,7 +72,7 @@ describe('Stateful behavior', () => {
       setTimeout(() => {
         expect(callback_2).not.toHaveBeenCalled();
         expect(callback_3).not.toHaveBeenCalled();
-        expect(result.hasErrors('field_7')).toBe(true);
+        expect(suite.get().hasErrors('field_7')).toBe(true);
         control();
       });
 

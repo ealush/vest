@@ -1,8 +1,9 @@
 import invariant from 'invariant';
 import { isNotEmpty, isEmpty } from 'isEmpty';
 
+import { Severity } from 'Severity';
 import ctx from 'ctx';
-import { hasErrors } from 'hasFailures';
+import { hasFailures } from 'hasFailures';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import {
   useTestsFlat,
@@ -25,7 +26,7 @@ export function shouldAddValidProp(fieldName?: string): boolean {
     return true;
   }
 
-  if (hasErrors(fieldName)) {
+  if (hasFailures(Severity.ERRORS, fieldName)) {
     return false;
   }
 

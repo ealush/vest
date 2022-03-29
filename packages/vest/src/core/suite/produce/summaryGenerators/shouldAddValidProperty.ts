@@ -1,8 +1,6 @@
-import invariant from 'invariant';
 import { isNotEmpty, isEmpty } from 'isEmpty';
 
-import ctx from 'ctx';
-import { hasErrors } from 'hasFailures';
+import { hasErrorsByTestObjects } from 'hasFailuresByTestObjects';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import {
   useTestsFlat,
@@ -11,21 +9,13 @@ import {
   useOmittedFields,
 } from 'stateHooks';
 
-export function isValid(fieldName?: string): boolean {
-  const { summary } = ctx.useX();
-
-  invariant(summary);
-
-  return Boolean(fieldName ? summary.tests?.[fieldName]?.valid : summary.valid);
-}
-
 // eslint-disable-next-line max-statements, complexity
-export function shouldAddValidProp(fieldName?: string): boolean {
+export default function shouldAddValidProp(fieldName?: string): boolean {
   if (fieldIsOmitted(fieldName)) {
     return true;
   }
 
-  if (hasErrors(fieldName)) {
+  if (hasErrorsByTestObjects(fieldName)) {
     return false;
   }
 

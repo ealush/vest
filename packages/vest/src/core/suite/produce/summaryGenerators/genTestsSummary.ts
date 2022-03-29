@@ -1,9 +1,18 @@
 import assign from 'assign';
+import invariant from 'invariant';
 
-import { Severity, SeverityCount } from 'Severity';
+import { countKeyBySeverity, Severity } from 'Severity';
 import VestTest from 'VestTest';
-import { shouldAddValidProp } from 'isValid';
+import ctx from 'ctx';
+import shouldAddValidProp from 'shouldAddValidProperty';
 import { useTestsFlat } from 'stateHooks';
+
+export function useSummary(): SuiteSummary {
+  const { summary } = ctx.useX();
+  invariant(summary);
+
+  return summary;
+}
 
 /**
  * Reads the testObjects list and gets full validation result from it.
@@ -96,18 +105,12 @@ function appendTestObject(
   return testKey;
 
   function incrementFailures(severity: Severity) {
-    const countKey = getCountKey(severity);
+    const countKey = countKeyBySeverity(severity);
     testKey[countKey]++;
     if (message) {
       testKey[severity] = (testKey[severity] || []).concat(message);
     }
   }
-}
-
-function getCountKey(severity: Severity): SeverityCount {
-  return severity === Severity.ERRORS
-    ? SeverityCount.ERROR_COUNT
-    : SeverityCount.WARN_COUNT;
 }
 
 function baseStats() {

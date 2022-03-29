@@ -1,11 +1,11 @@
 import faker from 'faker';
 
-import itWithContext from '../../../../../../testUtils/itWithContext';
-import { dummyTest } from '../../../../../../testUtils/testDummy';
+import itWithContext from '../../../../../../../testUtils/itWithContext';
+import { dummyTest } from '../../../../../../../testUtils/testDummy';
 import {
   setTestObjects,
   emptyTestObjects,
-} from '../../../../../../testUtils/testObjects';
+} from '../../../../../../../testUtils/testObjects';
 
 import { produceSuiteResult } from 'produceSuiteResult';
 import { produceFullResult } from 'produceSuiteRunResult';

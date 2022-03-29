@@ -1,6 +1,6 @@
-import itWithContext from '../../../../../../testUtils/itWithContext';
-import { dummyTest } from '../../../../../../testUtils/testDummy';
-import { setTestObjects } from '../../../../../../testUtils/testObjects';
+import itWithContext from '../../../../../../../testUtils/itWithContext';
+import { dummyTest } from '../../../../../../../testUtils/testDummy';
+import { setTestObjects } from '../../../../../../../testUtils/testObjects';
 
 import { produceSuiteResult } from 'produceSuiteResult';
 import { produceFullResult } from 'produceSuiteRunResult';

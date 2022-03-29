@@ -1,4 +1,4 @@
-import { dummyTest } from '../../../../../../testUtils/testDummy';
+import { dummyTest } from '../../../../../../../testUtils/testDummy';
 
 import group from 'group';
 import { create } from 'vest';

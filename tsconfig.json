@@ -133,34 +133,6 @@
       "hasRemainingTests": [
         "./packages/vest/src/core/suite/hasRemainingTests.ts"
       ],
-      "genTestsSummary": [
-        "./packages/vest/src/core/suite/produce/genTestsSummary.ts"
-      ],
-      "collectFailures": [
-        "./packages/vest/src/core/suite/produce/getFailures/collectFailures.ts"
-      ],
-      "getFailures": [
-        "./packages/vest/src/core/suite/produce/getFailures/getFailures.ts"
-      ],
-      "getFailuresByGroup": [
-        "./packages/vest/src/core/suite/produce/getFailures/getFailuresByGroup.ts"
-      ],
-      "hasFailures": [
-        "./packages/vest/src/core/suite/produce/hasFailures/hasFailures.ts"
-      ],
-      "hasFailuresByGroup": [
-        "./packages/vest/src/core/suite/produce/hasFailures/hasFailuresByGroup.ts"
-      ],
-      "hasFailuresLogic": [
-        "./packages/vest/src/core/suite/produce/hasFailures/hasFailuresLogic.ts"
-      ],
-      "isValid": ["./packages/vest/src/core/suite/produce/isValid.ts"],
-      "matchingFieldName": [
-        "./packages/vest/src/core/suite/produce/matchingFieldName.ts"
-      ],
-      "nonMatchingSeverityProfile": [
-        "./packages/vest/src/core/suite/produce/nonMatchingSeverityProfile.ts"
-      ],
       "produceSuiteResult": [
         "./packages/vest/src/core/suite/produce/produceSuiteResult.ts"
       ],
@@ -171,6 +143,45 @@
         "./packages/vest/src/core/suite/produce/runCallbacks.ts"
       ],
       "Severity": ["./packages/vest/src/core/suite/produce/Severity.ts"],
+      "genTestsSummary": [
+        "./packages/vest/src/core/suite/produce/summaryGenerators/genTestsSummary.ts"
+      ],
+      "hasFailuresByTestObjects": [
+        "./packages/vest/src/core/suite/produce/summaryGenerators/hasFailuresByTestObjects.ts"
+      ],
+      "matchingFieldName": [
+        "./packages/vest/src/core/suite/produce/summaryGenerators/helpers/matchingFieldName.ts"
+      ],
+      "nonMatchingSeverityProfile": [
+        "./packages/vest/src/core/suite/produce/summaryGenerators/helpers/nonMatchingSeverityProfile.ts"
+      ],
+      "shouldAddValidProperty": [
+        "./packages/vest/src/core/suite/produce/summaryGenerators/shouldAddValidProperty.ts"
+      ],
+      "collectFailures": [
+        "./packages/vest/src/core/suite/produce/summarySelectors/getFailures/collectFailures.ts"
+      ],
+      "getFailures": [
+        "./packages/vest/src/core/suite/produce/summarySelectors/getFailures/getFailures.ts"
+      ],
+      "getFailuresByGroup": [
+        "./packages/vest/src/core/suite/produce/summarySelectors/getFailures/getFailuresByGroup.ts"
+      ],
+      "hasFailures.test": [
+        "./packages/vest/src/core/suite/produce/summarySelectors/hasFailuers/__tsets__/hasFailures.test.ts"
+      ],
+      "hasFailuresByGroup.test": [
+        "./packages/vest/src/core/suite/produce/summarySelectors/hasFailuers/__tsets__/hasFailuresByGroup.test.ts"
+      ],
+      "hasFailures": [
+        "./packages/vest/src/core/suite/produce/summarySelectors/hasFailuers/hasFailures.ts"
+      ],
+      "hasFailuresByGroup": [
+        "./packages/vest/src/core/suite/produce/summarySelectors/hasFailuers/hasFailuresByGroup.ts"
+      ],
+      "isValid": [
+        "./packages/vest/src/core/suite/produce/summarySelectors/isValid.ts"
+      ],
       "key": ["./packages/vest/src/core/test/key.ts"],
       "cancelOverriddenPendingTest": [
         "./packages/vest/src/core/test/lib/cancelOverriddenPendingTest.ts"

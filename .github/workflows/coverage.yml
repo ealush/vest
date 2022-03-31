@@ -25,4 +25,3 @@ jobs:
         with:
           skip-step: install
           test-script: yarn test
-          package-manager: yarn

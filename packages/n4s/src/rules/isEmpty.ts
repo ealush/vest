@@ -15,7 +15,7 @@ export function isEmpty(value: unknown): boolean {
     return lengthEquals(Object.keys(value as Record<string, unknown>), 0);
   }
 
-  return true;
+  return false;
 }
 
 export const isNotEmpty = bindNot(isEmpty);

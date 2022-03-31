@@ -45,5 +45,9 @@ describe('Tests isEmpty rule', () => {
     it('Should return true for NaN', () => {
       expect(isEmpty(NaN)).toBe(true);
     });
+
+    it('Should return false for a Symbol', () => {
+      expect(isEmpty(Symbol('hey'))).toBe(false);
+    });
   });
 });

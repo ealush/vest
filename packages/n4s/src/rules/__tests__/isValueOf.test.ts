@@ -47,6 +47,13 @@ describe('isValueOf tests', () => {
       expect(() => enforce(null).isValueOf(testObject)).toThrow();
     });
   });
+
+  describe('When object to check is nullish', () => {
+    it('Should return false', () => {
+      expect(isValueOf('Bravo', null)).toBe(false);
+      expect(isValueOf('Bravo', undefined)).toBe(false);
+    });
+  });
 });
 
 describe('isNotValueOf tests', () => {
@@ -67,6 +74,13 @@ describe('isNotValueOf tests', () => {
     });
     it('Should throw using enforce', () => {
       expect(() => enforce(42).isNotValueOf(testObject)).toThrow();
+    });
+  });
+
+  describe('When object to check is nullish', () => {
+    it('Should return true', () => {
+      expect(isNotValueOf('Bravo', null)).toBe(true);
+      expect(isNotValueOf('Bravo', undefined)).toBe(true);
     });
   });
 });

@@ -1,16 +1,22 @@
-import { enforce } from 'enforce';
 import * as ruleReturn from 'ruleReturn';
 
 const _proxy = global.Proxy;
+let enforce;
 
 [true, false].forEach(proxyEnabled => {
   describe(`Proxy support (${proxyEnabled})`, () => {
     beforeEach(() => {
-      // @ts-expect-error - explicitly overriding proxy object
-      global.Proxy = proxyEnabled ? _proxy : undefined;
+      if (!proxyEnabled) {
+        // @ts-expect-error - explicitly overriding proxy object
+        delete global.proxy;
+      }
+      jest.resetModules();
+      jest.doMock('isProxySupported', () => () => proxyEnabled);
+      enforce = require('enforce').enforce;
     });
 
     afterEach(() => {
+      jest.resetModules();
       global.Proxy = _proxy;
     });
 
@@ -91,10 +97,12 @@ const _proxy = global.Proxy;
     describe('enforce.extend for custom validators', () => {
       beforeEach(() => {
         enforce.extend({
-          isEmail: (value: string) => ({
-            pass: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value),
-            message: () => value + ' is not a valid email address',
-          }),
+          isEmail(value: string) {
+            return {
+              pass: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value),
+              message: () => value + ' is not a valid email address',
+            };
+          },
         });
       });
       describe('enforce..test for boolean return', () => {
@@ -138,6 +146,12 @@ const _proxy = global.Proxy;
               message: 'example!gmail.com is not a valid email address',
             }
           );
+        });
+      });
+
+      describe('When accessing a rule that does not exist', () => {
+        it('Should return undefined', () => {
+          expect(enforce.doesNotExist).toBeUndefined();
         });
       });
     });

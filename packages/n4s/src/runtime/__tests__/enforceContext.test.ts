@@ -111,9 +111,9 @@ describe('enforce.context', () => {
           })
           .someCustomRule();
 
-        expect(keepContext.mock.calls[0][0].value).toEqual('Elle'); // first
-        expect(keepContext.mock.calls[1][0].value).toEqual('Tester'); // last
-        expect(keepContext.mock.calls[2][0].value).toEqual('Sophie'); // middle
+        expect(keepContext.mock.calls[0][0].value).toBe('Elle'); // first
+        expect(keepContext.mock.calls[1][0].value).toBe('Tester'); // last
+        expect(keepContext.mock.calls[2][0].value).toBe('Sophie'); // middle
         expect(keepContext.mock.calls[3][0].value).toEqual({
           first: 'Elle',
           last: 'Tester',
@@ -155,9 +155,9 @@ describe('enforce.context', () => {
           enforce.isString().someCustomRule()
         );
 
-        expect(keepContext.mock.calls[0][0].value).toEqual('Elle');
-        expect(keepContext.mock.calls[1][0].value).toEqual('Tester');
-        expect(keepContext.mock.calls[2][0].value).toEqual('Sophie');
+        expect(keepContext.mock.calls[0][0].value).toBe('Elle');
+        expect(keepContext.mock.calls[1][0].value).toBe('Tester');
+        expect(keepContext.mock.calls[2][0].value).toBe('Sophie');
       });
 
       it('passes the current index into the context meta field', () => {

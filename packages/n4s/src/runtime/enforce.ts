@@ -38,17 +38,11 @@ function genEnforce(): Enforce {
     context: () => ctx.useX(),
     extend: (customRules: Rule) => {
       assign(baseRules, customRules);
+      handleNoProxy(); // TODO: REMOVE when we stop supporting ES5
     },
   } as Enforce;
 
-  if (!isProxySupported()) {
-    eachEnforceRule((ruleName: KBaseRules) => {
-      // Only on the first rule access - start the chain of calls
-      target[ruleName] = genEnforceLazy(ruleName);
-    });
-
-    return assign(enforceEager, target);
-  }
+  handleNoProxy();
 
   return new Proxy(assign(enforceEager, target) as Enforce, {
     get: (target: Enforce, key: string) => {
@@ -64,6 +58,17 @@ function genEnforce(): Enforce {
       return genEnforceLazy(key);
     },
   });
+
+  function handleNoProxy() {
+    if (!isProxySupported()) {
+      eachEnforceRule((ruleName: KBaseRules) => {
+        // Only on the first rule access - start the chain of calls
+        target[ruleName] = genEnforceLazy(ruleName);
+      });
+
+      return assign(enforceEager, target);
+    }
+  }
 }
 
 export const enforce = genEnforce();

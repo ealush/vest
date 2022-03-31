@@ -8,6 +8,15 @@ describe('include', () => {
     cb2 = jest.fn(() => false);
   });
 
+  describe('When not passing a string fieldName', () => {
+    it('Should throw an error', () => {
+      // @ts-ignore
+      expect(() => vest.include({})).toThrow();
+      // @ts-ignore
+      expect(() => vest.include(undefined)).toThrow();
+    });
+  });
+
   describe('There is an `onlyd` field', () => {
     describe('`include` is run as-is without modifiers', () => {
       it('Should run the included test along with the onlyd test', () => {

@@ -1,5 +1,6 @@
 import defaultTo from 'defaultTo';
 import hasOwnProperty from 'hasOwnProperty';
+import invariant from 'invariant';
 import { isStringValue } from 'isStringValue';
 import optionalFunctionValue from 'optionalFunctionValue';
 
@@ -14,9 +15,7 @@ export default function include(fieldName: string): {
   const context = ctx.useX();
   const { inclusion, exclusion } = context;
 
-  if (!fieldName) {
-    return { when };
-  }
+  invariant(isStringValue(fieldName));
 
   inclusion[fieldName] = defaultTo(exclusion.tests[fieldName], true);
 

@@ -1,5 +1,3 @@
-import invariant from 'invariant';
-
 export enum Severity {
   WARNINGS = 'warnings',
   ERRORS = 'errors',
@@ -11,12 +9,7 @@ export enum SeverityCount {
 }
 
 export function countKeyBySeverity(severity: Severity): SeverityCount {
-  switch (severity) {
-    case Severity.ERRORS:
-      return SeverityCount.ERROR_COUNT;
-    case Severity.WARNINGS:
-      return SeverityCount.WARN_COUNT;
-    default:
-      invariant(false);
-  }
+  return severity === Severity.ERRORS
+    ? SeverityCount.ERROR_COUNT
+    : SeverityCount.WARN_COUNT;
 }

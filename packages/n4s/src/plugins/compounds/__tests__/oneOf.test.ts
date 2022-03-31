@@ -7,13 +7,7 @@ import 'compounds';
 describe('enforce.oneOf', () => {
   it('Should fail when multiple enforcements are met', () => {
     expect(
-      User.run({
-        id: 11,
-        name: {
-          first: 'John',
-          last: 'Doe',
-        },
-      })
+      enforce.oneOf(enforce.isNumber(), enforce.greaterThan(2)).run(3)
     ).toEqual(ruleReturn.failing());
   });
 

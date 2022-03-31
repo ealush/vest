@@ -1,0 +1,28 @@
+name: Coverage
+
+on:
+  pull_request:
+    branches: [latest]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install
+        run: yarn install --frozen-lockfile
+      - name: Jest coverage report
+        uses: ArtiomTr/jest-coverage-report-action@v2.0.5
+        with:
+          skip-step: install
+          test-script: yarn test
+          package-manager: yarn

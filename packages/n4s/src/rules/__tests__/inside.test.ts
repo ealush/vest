@@ -51,4 +51,11 @@ describe('Inside rule', () => {
   it('Should failt to find a string inside another string in which it does not exist', () => {
     expect(inside('mugs', "I'm gonna pop some tags")).toBe(false);
   });
+
+  it('Should return false when either values is not an array or string', () => {
+    // @ts-ignore
+    expect(inside('pop', 1)).toBe(false);
+    // @ts-ignore
+    expect(inside(1, 'pop')).toBe(false);
+  });
 });

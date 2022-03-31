@@ -75,22 +75,6 @@ export function useAllIncomplete(): VestTest[] {
   );
 }
 
-export function useOmittedFields(): Record<string, true> {
-  const testObjects = useTestsFlat();
-
-  return testObjects.reduce((omittedFields, testObject) => {
-    if (omittedFields[testObject.fieldName]) {
-      return omittedFields;
-    }
-
-    if (testObject.isOmitted()) {
-      omittedFields[testObject.fieldName] = true;
-    }
-
-    return omittedFields;
-  }, {} as Record<string, true>);
-}
-
 const flatCache = createCache();
 export function useTestsFlat(): VestTest[] {
   const [{ current }] = useTestObjects();

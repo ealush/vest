@@ -20,10 +20,6 @@ export default function shouldAddValidProp(fieldName?: string): boolean {
     return false;
   }
 
-  if (fieldDoesNotExist(fieldName)) {
-    return false;
-  }
-
   if (hasNonOptionalIncomplete(fieldName)) {
     return false;
   }
@@ -51,14 +47,6 @@ function hasNonOptionalIncomplete(fieldName?: string) {
       }
       return optionalFields[testObject.fieldName] !== true;
     })
-  );
-}
-
-function fieldDoesNotExist(fieldName?: string): boolean {
-  const testObjects = useTestsFlat();
-  return (
-    !!fieldName &&
-    !testObjects.find(testObject => testObject.fieldName === fieldName)
   );
 }
 

@@ -23,6 +23,10 @@ describe('isolate', () => {
   });
 
   describe('Base behavior', () => {
+    it("Should throw an error if the callback isn't a function", () => {
+      expect(() => isolate({}, 'not a function')).toThrow();
+    });
+
     it('Should retain test results between runs', () => {
       const f1 = jest.fn(() => false);
       const f2 = jest.fn(() => false);
@@ -74,8 +78,8 @@ describe('isolate', () => {
       expect(suite.get().hasErrors('f5')).toBe(true);
       expect(suite.get().tests.f1).toBeDefined();
       expect(suite.get().tests.f2).toBeDefined();
-      expect(suite.get().tests.f3).not.toBeDefined();
-      expect(suite.get().tests.f4).not.toBeDefined();
+      expect(suite.get().tests.f3).toBeUndefined();
+      expect(suite.get().tests.f4).toBeUndefined();
       expect(suite.get().tests.f5).toBeDefined();
 
       suite();
@@ -114,7 +118,7 @@ describe('isolate', () => {
         expect(suite.get().hasErrors('f2')).toBe(false);
         expect(suite.get().hasErrors('f3')).toBe(true);
         expect(suite.get().tests.f1).toBeDefined();
-        expect(suite.get().tests.f2).not.toBeDefined();
+        expect(suite.get().tests.f2).toBeUndefined();
         expect(suite.get().tests.f3).toBeDefined();
 
         suite();
@@ -162,7 +166,7 @@ describe('isolate', () => {
       expect(suite.get().tests.f3).toBeDefined();
       expect(suite.get().tests.f4).toBeDefined();
       expect(suite.get().tests.f5).toBeDefined();
-      expect(suite.get().tests.f6).not.toBeDefined();
+      expect(suite.get().tests.f6).toBeUndefined();
 
       suite();
       expect(suite.get().hasErrors('f1')).toBe(true);
@@ -198,11 +202,11 @@ describe('isolate', () => {
       expect(suite.get().hasErrors('f1')).toBe(true);
       expect(suite.get().hasErrors('f2')).toBe(false);
       expect(suite.get().tests.f1).toBeDefined();
-      expect(suite.get().tests.f2).not.toBeDefined();
+      expect(suite.get().tests.f2).toBeUndefined();
       suite();
       expect(suite.get().hasErrors('f1')).toBe(false);
       expect(suite.get().hasErrors('f2')).toBe(true);
-      expect(suite.get().tests.f1).not.toBeDefined();
+      expect(suite.get().tests.f1).toBeUndefined();
       expect(suite.get().tests.f2).toBeDefined();
     });
   });
@@ -223,11 +227,11 @@ describe('isolate', () => {
       expect(suite.get().hasErrors('f1')).toBe(true);
       expect(suite.get().hasErrors('f2')).toBe(false);
       expect(suite.get().tests.f1).toBeDefined();
-      expect(suite.get().tests.f2).not.toBeDefined();
+      expect(suite.get().tests.f2).toBeUndefined();
       suite();
       expect(suite.get().hasErrors('f1')).toBe(false);
       expect(suite.get().hasErrors('f2')).toBe(true);
-      expect(suite.get().tests.f1).not.toBeDefined();
+      expect(suite.get().tests.f1).toBeUndefined();
       expect(suite.get().tests.f2).toBeDefined();
     });
 

@@ -1,3 +1,4 @@
+import invariant from 'invariant';
 import isFunction from 'isFunction';
 import * as nestedArray from 'nestedArray';
 
@@ -12,9 +13,8 @@ export function isolate(
   { type = IsolateTypes.DEFAULT }: { type?: IsolateTypes },
   callback: () => VestTest[] | void
 ): VestTest[] | void {
-  if (!isFunction(callback)) {
-    return;
-  }
+  invariant(isFunction(callback));
+
   const keys: IsolateKeys = {
     current: {},
     prev: {},

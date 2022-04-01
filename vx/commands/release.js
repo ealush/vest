@@ -1,5 +1,6 @@
 const pushToLatestBranch = require('../scripts/release/steps/pushToLatestBranch');
 
+const build = require('vx/commands/build');
 const logger = require('vx/logger');
 const packagesToRelease = require('vx/scripts/release/packagesToRelease');
 const releasePackage = require('vx/scripts/release/releasePackage');
@@ -18,6 +19,11 @@ function release() {
     logger.info(`❌  Branch ${CURRENT_BRANCH} does not allow release. Exiting`);
     return;
   }
+
+  // Start by running a build, we don't really want to build here
+  // but the types are required for the release script.
+  // FIXME: We should come back and fix this.
+  build({ SINGLE: true });
 
   const pkg = usePackage() || targetPackage;
   if (pkg) {

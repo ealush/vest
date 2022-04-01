@@ -12,10 +12,12 @@ const packageJson = require('vx/util/packageJson');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
-const isWatchModeOn = JSON.parse(process.env.ROLLUP_WATCH ?? false);
+const buildSingle = JSON.parse(
+  process.env.ROLLUP_WATCH ?? process.env.VX_BUILD_SINGLE ?? false
+);
 
 module.exports = cleanupConfig(
-  concatTruthy(!isWatchModeOn && opts.env.PRODUCTION, opts.env.DEVELOPMENT).map(
+  concatTruthy(!buildSingle && opts.env.PRODUCTION, opts.env.DEVELOPMENT).map(
     env => {
       const packageName = usePackage();
 

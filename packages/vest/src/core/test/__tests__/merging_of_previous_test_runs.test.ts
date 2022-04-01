@@ -125,21 +125,27 @@ describe('Merging of previous test runs', () => {
           Object {
             "f1": Object {
               "errorCount": 1,
+              "errors": Array [],
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
+              "warnings": Array [],
             },
             "f2": Object {
               "errorCount": 1,
+              "errors": Array [],
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
+              "warnings": Array [],
             },
             "f3": Object {
               "errorCount": 1,
+              "errors": Array [],
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
+              "warnings": Array [],
             },
           }
         `);
@@ -153,15 +159,19 @@ describe('Merging of previous test runs', () => {
           Object {
             "f1": Object {
               "errorCount": 1,
+              "errors": Array [],
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
+              "warnings": Array [],
             },
             "f3": Object {
               "errorCount": 1,
+              "errors": Array [],
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
+              "warnings": Array [],
             },
           }
         `);
@@ -203,45 +213,59 @@ describe('Merging of previous test runs', () => {
             Object {
               "f1": Object {
                 "errorCount": 1,
+                "errors": Array [],
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
+                "warnings": Array [],
               },
               "f2": Object {
                 "errorCount": 1,
+                "errors": Array [],
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
+                "warnings": Array [],
               },
               "f3": Object {
                 "errorCount": 1,
+                "errors": Array [],
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
+                "warnings": Array [],
               },
               "f4": Object {
                 "errorCount": 2,
+                "errors": Array [],
                 "testCount": 2,
                 "valid": false,
                 "warnCount": 0,
+                "warnings": Array [],
               },
               "f5": Object {
                 "errorCount": 1,
+                "errors": Array [],
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
+                "warnings": Array [],
               },
               "f6": Object {
                 "errorCount": 1,
+                "errors": Array [],
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
+                "warnings": Array [],
               },
               "f7": Object {
                 "errorCount": 1,
+                "errors": Array [],
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
+                "warnings": Array [],
               },
             }
           `);
@@ -262,15 +286,19 @@ describe('Merging of previous test runs', () => {
             Object {
               "f1": Object {
                 "errorCount": 1,
+                "errors": Array [],
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
+                "warnings": Array [],
               },
               "f4": Object {
                 "errorCount": 2,
+                "errors": Array [],
                 "testCount": 2,
                 "valid": false,
                 "warnCount": 0,
+                "warnings": Array [],
               },
             }
           `);

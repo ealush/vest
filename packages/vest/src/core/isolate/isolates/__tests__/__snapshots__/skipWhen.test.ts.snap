@@ -45,6 +45,7 @@ Object {
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -76,6 +77,7 @@ Object {
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "f2": Object {
       "errorCount": 1,
@@ -85,6 +87,7 @@ Object {
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,

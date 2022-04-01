@@ -110,42 +110,54 @@ describe('key', () => {
         expect(calls[0][2]).toBe(calls[1][2]);
         expect(res1.tests.reordered).toEqual({
           errorCount: 1,
+          errors: [],
           testCount: 1,
           valid: false,
           warnCount: 0,
+          warnings: [],
         });
         expect(res2.tests.reordered).toEqual({
           errorCount: 0,
+          errors: [],
           testCount: 0,
           valid: false,
           warnCount: 0,
+          warnings: [],
         });
         expect(res1.tests).not.toEqual(res2.tests);
         expect(res2.tests).toMatchInlineSnapshot(`
           Object {
             "field1": Object {
               "errorCount": 1,
+              "errors": Array [],
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
+              "warnings": Array [],
             },
             "field2": Object {
               "errorCount": 1,
+              "errors": Array [],
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
+              "warnings": Array [],
             },
             "field3": Object {
               "errorCount": 1,
+              "errors": Array [],
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
+              "warnings": Array [],
             },
             "reordered": Object {
               "errorCount": 0,
+              "errors": Array [],
               "testCount": 0,
               "valid": false,
               "warnCount": 0,
+              "warnings": Array [],
             },
           }
         `);

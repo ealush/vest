@@ -1,10 +1,10 @@
 import { Severity } from 'Severity';
-import { TestGroup } from 'genTestsSummary';
+import { TestsContainer } from 'genTestsSummary';
 
 // calls collectAll or getByFieldName depending on whether fieldName is provided
 
 export function gatherFailures(
-  testGroup: TestGroup,
+  testGroup: TestsContainer,
   severityKey: Severity,
   fieldName?: string
 ): string[] | FailureMessages {
@@ -14,7 +14,7 @@ export function gatherFailures(
 }
 
 function getByFieldName(
-  testGroup: TestGroup,
+  testGroup: TestsContainer,
   severityKey: Severity,
   fieldName: string
 ): string[] {
@@ -22,13 +22,15 @@ function getByFieldName(
 }
 
 function collectAll(
-  testGroup: TestGroup,
+  testGroup: TestsContainer,
   severityKey: Severity
 ): FailureMessages {
   const output: FailureMessages = {};
 
   for (const field in testGroup) {
-    output[field] = testGroup[field]?.[severityKey] || [];
+    // We will probably never get to the fallback array
+    // leaving it just in case the implementation changes
+    output[field] = testGroup[field][severityKey] || [];
   }
 
   return output;

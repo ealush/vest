@@ -40,7 +40,7 @@ export default function genTestsSummary(): SuiteSummary {
   return countFailures(summary);
 }
 
-function appendToTest(tests: TestGroup, testObject: VestTest) {
+function appendToTest(tests: Tests, testObject: VestTest) {
   tests[testObject.fieldName] = appendTestObject(tests, testObject);
   // If `valid` is false to begin with, keep it that way. Otherwise, assess.
   tests[testObject.fieldName].valid =
@@ -79,16 +79,26 @@ function countFailures(summary: SuiteSummary): SuiteSummary {
 }
 
 /**
- * Appends the test to a results object
+ * Appends the test to a results object.
+ * Overload is only needed to satisfy typescript. No use in breaking it down to multiple
+ * functions as it is really the same, with the difference of "valid" missing in groups
  */
 // eslint-disable-next-line max-statements
 function appendTestObject(
-  summaryKey: TestGroup,
+  summaryKey: Tests,
   testObject: VestTest
-): SingleTestSummary {
+): SingleTestSummary;
+function appendTestObject(
+  summaryKey: Group,
+  testObject: VestTest
+): BaseTestSummary;
+function appendTestObject(
+  summaryKey: Group | Tests,
+  testObject: VestTest
+): TestsContainer[keyof TestsContainer] {
   const { fieldName, message } = testObject;
 
-  summaryKey[fieldName] = summaryKey[fieldName] || baseStats();
+  summaryKey[fieldName] = summaryKey[fieldName] || baseTestStats();
 
   const testKey = summaryKey[fieldName];
 
@@ -121,20 +131,33 @@ function baseStats() {
   };
 }
 
-type Groups = Record<string, TestGroup>;
+function baseTestStats() {
+  return assign(baseStats(), {
+    errors: [],
+    warnings: [],
+  });
+}
 
 export type SuiteSummary = {
   groups: Groups;
-  tests: TestGroup;
+  tests: Tests;
   valid: boolean;
 } & SummaryBase;
 
-export type TestGroup = Record<string, SingleTestSummary>;
+export type TestsContainer = Group | Tests;
+export type GroupTestSummary = BaseTestSummary;
 
-type SingleTestSummary = SummaryBase & {
+type Groups = Record<string, Group>;
+type Group = Record<string, GroupTestSummary>;
+type Tests = Record<string, SingleTestSummary>;
+
+type SingleTestSummary = BaseTestSummary & {
+  valid: boolean;
+};
+
+type BaseTestSummary = SummaryBase & {
   errors: string[];
   warnings: string[];
-  valid: boolean;
 };
 
 type SummaryBase = {

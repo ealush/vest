@@ -1649,14 +1649,6 @@
     postcss "^8.4.6"
     postcss-sort-media-queries "^4.2.1"
 
-"@docusaurus/logger@2.0.0-beta.15":
-  version "2.0.0-beta.15"
-  resolved "https://registry.yarnpkg.com/@docusaurus/logger/-/logger-2.0.0-beta.15.tgz#6d17a05fb292d15fdc43b5fa90fd2a49ad5d40ce"
-  integrity sha512-5bDSHCyLfMtz6QnFfICdL5mgxbGfC7DW1V+/Q17nRdpZSPZgsNKK/Esp0zdDi1oxAyEpXMXx64nLaHL7joJxIg==
-  dependencies:
-    chalk "^4.1.2"
-    tslib "^2.3.1"
-
 "@docusaurus/logger@2.0.0-beta.16":
   version "2.0.0-beta.16"
   resolved "https://registry.yarnpkg.com/@docusaurus/logger/-/logger-2.0.0-beta.16.tgz#26eed0285db090848dca4ad8cc4fbb07fcd632ee"
@@ -1918,7 +1910,7 @@
     joi "^17.6.0"
     tslib "^2.3.1"
 
-"@docusaurus/utils@2.0.0-beta.16":
+"@docusaurus/utils@2.0.0-beta.16", "@docusaurus/utils@^2.0.0-beta.4":
   version "2.0.0-beta.16"
   resolved "https://registry.yarnpkg.com/@docusaurus/utils/-/utils-2.0.0-beta.16.tgz#829f589d44237f46d61fae64ec138939a9ca3425"
   integrity sha512-ngOVqWlT+JvHsWDYH1i0oou9Dhhm6gKcTB3PR3nkIlDOdn+MViuhhKivTBD9et5JxAnf8A1hk/oaUO9tBU7WGA==
@@ -1939,28 +1931,6 @@
     url-loader "^4.1.1"
     webpack "^5.69.1"
 
-"@docusaurus/utils@^2.0.0-beta.4":
-  version "2.0.0-beta.15"
-  resolved "https://registry.yarnpkg.com/@docusaurus/utils/-/utils-2.0.0-beta.15.tgz#60868046700d5585cfa6ffc57c5f3fbed00b61fc"
-  integrity sha512-xkoPmFxCBkDqbZR4U3SE752OcXtWTGgZnc/pZWxItzb1IYRGNZHrzdIr7CnI7rppriuZzsyivDGiC4Ud9MWhkA==
-  dependencies:
-    "@docusaurus/logger" "2.0.0-beta.15"
-    "@mdx-js/runtime" "^1.6.22"
-    "@svgr/webpack" "^6.0.0"
-    file-loader "^6.2.0"
-    fs-extra "^10.0.0"
-    github-slugger "^1.4.0"
-    globby "^11.0.4"
-    gray-matter "^4.0.3"
-    js-yaml "^4.0.0"
-    lodash "^4.17.20"
-    micromatch "^4.0.4"
-    remark-mdx-remove-exports "^1.6.22"
-    remark-mdx-remove-imports "^1.6.22"
-    resolve-pathname "^3.0.0"
-    tslib "^2.3.1"
-    url-loader "^4.1.1"
-
 "@easyops-cn/autocomplete.js@^0.38.1":
   version "0.38.1"
   resolved "https://registry.yarnpkg.com/@easyops-cn/autocomplete.js/-/autocomplete.js-0.38.1.tgz#46dff5795a9a032fa9b9250fdf63ca6c61c07629"
@@ -1969,14 +1939,15 @@
     cssesc "^3.0.0"
     immediate "^3.2.3"
 
-"@easyops-cn/docusaurus-search-local@^0.22.0":
-  version "0.22.0"
-  resolved "https://registry.yarnpkg.com/@easyops-cn/docusaurus-search-local/-/docusaurus-search-local-0.22.0.tgz#55c6b1500373c2582218e5926daab276148afadb"
-  integrity sha512-5nTERMiuS9G4ztFUlfBFAdL7o2ER8x6K6e1ZUifRxThzRpAvGm5E1YPSBqhu5HRciIdItBEuN5LiYV1tx4CJwg==
+"@easyops-cn/docusaurus-search-local@^0.23.0":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@easyops-cn/docusaurus-search-local/-/docusaurus-search-local-0.23.0.tgz#29ea72db96be96588d7dceea18bbb3db9f367d36"
+  integrity sha512-fKGgD3yExRjzZy/FwT+3gM+8bOOeRD9QB2C/z84zA/9832zWwxrzOKRDrczK5qJvXEm4/BirUq8gF5zyG79LDg==
   dependencies:
     "@docusaurus/utils" "^2.0.0-beta.4"
     "@docusaurus/utils-validation" "^2.0.0-beta.4"
     "@easyops-cn/autocomplete.js" "^0.38.1"
+    "@node-rs/jieba" "^1.6.0"
     cheerio "^1.0.0-rc.3"
     clsx "^1.1.1"
     debug "^4.2.0"
@@ -2241,7 +2212,7 @@
   resolved "https://registry.yarnpkg.com/@mdn/browser-compat-data/-/browser-compat-data-4.1.2.tgz#3d33b0ccb96deb766b82aea8b60fed759884776c"
   integrity sha512-IzFTNGGMx+2fUPO2Gne9l9AiiRKIAAr+gsQNWmHzEnExhSbEmXX8BEfmR6ZW/6wu9mACWWmhMWtvjGf/lwcpog==
 
-"@mdx-js/mdx@1.6.22", "@mdx-js/mdx@^1.6.22":
+"@mdx-js/mdx@^1.6.22":
   version "1.6.22"
   resolved "https://registry.yarnpkg.com/@mdx-js/mdx/-/mdx-1.6.22.tgz#8a723157bf90e78f17dc0f27995398e6c731f1ba"
   integrity sha512-AMxuLxPz2j5/6TpF/XSdKpQP1NlG0z11dFOlq+2IP/lSgl11GY8ji6S/rgsViN/L0BDvHvUMruRb7ub+24LUYA==
@@ -2266,24 +2237,99 @@
     unist-builder "2.0.3"
     unist-util-visit "2.0.3"
 
-"@mdx-js/react@1.6.22", "@mdx-js/react@^1.6.21", "@mdx-js/react@^1.6.22":
+"@mdx-js/react@^1.6.21", "@mdx-js/react@^1.6.22":
   version "1.6.22"
   resolved "https://registry.yarnpkg.com/@mdx-js/react/-/react-1.6.22.tgz#ae09b4744fddc74714ee9f9d6f17a66e77c43573"
   integrity sha512-TDoPum4SHdfPiGSAaRBw7ECyI8VaHpK8GJugbJIJuqyh6kzw9ZLJZW3HGL3NNrJGxcAixUvqROm+YuQOo5eXtg==
-
-"@mdx-js/runtime@^1.6.22":
-  version "1.6.22"
-  resolved "https://registry.yarnpkg.com/@mdx-js/runtime/-/runtime-1.6.22.tgz#3edd388bf68a519ffa1aaf9c446b548165102345"
-  integrity sha512-p17spaO2+55VLCuxXA3LVHC4phRx60NR2XMdZ+qgVU1lKvEX4y88dmFNOzGDCPLJ03IZyKrJ/rPWWRiBrd9JrQ==
-  dependencies:
-    "@mdx-js/mdx" "1.6.22"
-    "@mdx-js/react" "1.6.22"
-    buble-jsx-only "^0.19.8"
 
 "@mdx-js/util@1.6.22":
   version "1.6.22"
   resolved "https://registry.yarnpkg.com/@mdx-js/util/-/util-1.6.22.tgz#219dfd89ae5b97a8801f015323ffa4b62f45718b"
   integrity sha512-H1rQc1ZOHANWBvPcW+JpGwr+juXSxM8Q8YCkm3GhZd8REu1fHR3z99CErO1p9pkcfcxZnMdIZdIsXkOHY0NilA==
+
+"@node-rs/jieba-android-arm-eabi@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@node-rs/jieba-android-arm-eabi/-/jieba-android-arm-eabi-1.6.0.tgz#9484c3c58bf6e6eca3590b5bb467652debdbf93e"
+  integrity sha512-U98G1bzHi4t53/WJcexZ7Jfjkln5msa+xk9zlNVOJh9cVUWZ2vi2xtNuxnGAkjnlEqH1If9tHllCm/a1jR7WvQ==
+
+"@node-rs/jieba-android-arm64@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@node-rs/jieba-android-arm64/-/jieba-android-arm64-1.6.0.tgz#bfbe448f1f99efb5be318a47946d45ea8926482d"
+  integrity sha512-S/fbVPT3ao2r0apmNFtNuysDoAbqdDDG1vpUlNWp3UQ17cNaIeX66sG0s96LT699xbOfFTgIQ21cjmTma8oK6w==
+
+"@node-rs/jieba-darwin-arm64@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@node-rs/jieba-darwin-arm64/-/jieba-darwin-arm64-1.6.0.tgz#45c83a6f0d896b88967a497796c4e259f296814b"
+  integrity sha512-WEGvN2CIdDCPabXeT6rbkVDrBt99eUoatzDI0fCro5ZwqfHejrDAYqv0HJwv343aAj75wH6R7ALmqSWtyVb8Gg==
+
+"@node-rs/jieba-darwin-x64@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@node-rs/jieba-darwin-x64/-/jieba-darwin-x64-1.6.0.tgz#0153540b00cee2cddf1e880afbdea38eb19c891e"
+  integrity sha512-gXJ+bl0u/iWizUcwkSHxgSLq7gkMVYKVX3HhiC4ZWFTnbxDHSg3vkSBAN4gaWO+dQNQTLdaTsBB1Yr9yDmg8Qg==
+
+"@node-rs/jieba-freebsd-x64@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@node-rs/jieba-freebsd-x64/-/jieba-freebsd-x64-1.6.0.tgz#9116631c8d1b23d03cdfe57538b10f7deba781ad"
+  integrity sha512-5JYq6cmg0i24cjo3qG2vEH5LSGNmgSfSAbTw1Jv5uxNnNen1ZbL+p++jQ9Of4gy/fxPZHyL0l+CiIroaHyadqw==
+
+"@node-rs/jieba-linux-arm-gnueabihf@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@node-rs/jieba-linux-arm-gnueabihf/-/jieba-linux-arm-gnueabihf-1.6.0.tgz#90396ce29ebb3afa200ca89342cedf0df5eba66c"
+  integrity sha512-wTwgEGglLhdWLyEW5IHsQbnGhqkxfCUyTbUQyHtYFHiltLn88R0FA3NDyPXHuqOwdgzmvheSA5RS9VtoXwTOmw==
+
+"@node-rs/jieba-linux-arm64-gnu@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@node-rs/jieba-linux-arm64-gnu/-/jieba-linux-arm64-gnu-1.6.0.tgz#de6118508b31204e6357e846e898bb26fe6801dc"
+  integrity sha512-CYaHs24jqgaNgXDQnvxNQkTEuIVyJB5v9KB48ycgjKuaLRIMI061cbGk6dHkMbTI8kY+L42xsINOtBCK8bx6Vw==
+
+"@node-rs/jieba-linux-arm64-musl@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@node-rs/jieba-linux-arm64-musl/-/jieba-linux-arm64-musl-1.6.0.tgz#038e28db8233a4d6de4d24d9f36000a5457e8f15"
+  integrity sha512-i/E1Dyl3RWWQPn5Vfl3iFTBS1sOb98ygLz8QjKBSv20Q1rsNyHtBFt3ROvxei5Oto3fTtUj83xAxMv4b7YAl4A==
+
+"@node-rs/jieba-linux-x64-gnu@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@node-rs/jieba-linux-x64-gnu/-/jieba-linux-x64-gnu-1.6.0.tgz#b47194f6d5c54f6c008f6d52e7816916a43e73d3"
+  integrity sha512-JOfZQtPB7zFO2/W8sTj3qZWS+yba6+K9T/Euo2kyAXKzB7mQ0H4A1JG/1+Xurp1z+rpf4MleAVIfyHhziY1whQ==
+
+"@node-rs/jieba-linux-x64-musl@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@node-rs/jieba-linux-x64-musl/-/jieba-linux-x64-musl-1.6.0.tgz#0d7ee6d8be7b7b3b672489f9307e4e40bdcd5c5c"
+  integrity sha512-Bspjuz2qphMOPaosWsPHaQ7/wCSn7uAlKi77o+u3W3ZZXf87BJrNFXsjvrjfeM3EPd5PwD98zXaovB21tW78AQ==
+
+"@node-rs/jieba-win32-arm64-msvc@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@node-rs/jieba-win32-arm64-msvc/-/jieba-win32-arm64-msvc-1.6.0.tgz#c66dcc5fa82f32bc95ed9f3fe5fec2ccd66d1b00"
+  integrity sha512-VcuL+ayu59eC1LzQuj1Yd7A0l+ySRbradkF7NJaTF8LrJjSYh4OMU71GVGxzlSKalHysrCWqMH+Si9S0/quZZQ==
+
+"@node-rs/jieba-win32-ia32-msvc@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@node-rs/jieba-win32-ia32-msvc/-/jieba-win32-ia32-msvc-1.6.0.tgz#f1a6171ed3300d69b103b6b0c9a475c8989fc436"
+  integrity sha512-eW35Paf/oP092PpRhLmtRmMBarkb4vUYoLcjjEg6ddGW2XWMYWysUOpNG0zz5tQfqmtTIrWr521fFo4w55A75w==
+
+"@node-rs/jieba-win32-x64-msvc@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@node-rs/jieba-win32-x64-msvc/-/jieba-win32-x64-msvc-1.6.0.tgz#8a8b50fa82a10544bac16cd4a0d321368a8e0297"
+  integrity sha512-rvgzU8yzBeVsKM/nBgjjWBnuQ3M+o9pNCM0dgL8hJgwN+WCb1OJjN8rVEbwZZVlsYgM5JV6SDdwD3VZC6miW6A==
+
+"@node-rs/jieba@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@node-rs/jieba/-/jieba-1.6.0.tgz#0ff07d74e0e0b5f46edee7dfd787444af2f289fa"
+  integrity sha512-DP3R+yg7HgQ5Jr1x8dIuDJgv2ELMCTu6gapuHgFehqRZW8KvoaXb//NK7tGuQqNvC9U5nA++cRP5f37VuIYtHw==
+  optionalDependencies:
+    "@node-rs/jieba-android-arm-eabi" "1.6.0"
+    "@node-rs/jieba-android-arm64" "1.6.0"
+    "@node-rs/jieba-darwin-arm64" "1.6.0"
+    "@node-rs/jieba-darwin-x64" "1.6.0"
+    "@node-rs/jieba-freebsd-x64" "1.6.0"
+    "@node-rs/jieba-linux-arm-gnueabihf" "1.6.0"
+    "@node-rs/jieba-linux-arm64-gnu" "1.6.0"
+    "@node-rs/jieba-linux-arm64-musl" "1.6.0"
+    "@node-rs/jieba-linux-x64-gnu" "1.6.0"
+    "@node-rs/jieba-linux-x64-musl" "1.6.0"
+    "@node-rs/jieba-win32-arm64-msvc" "1.6.0"
+    "@node-rs/jieba-win32-ia32-msvc" "1.6.0"
+    "@node-rs/jieba-win32-x64-msvc" "1.6.0"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -3161,11 +3207,6 @@ accepts@~1.3.4, accepts@~1.3.5, accepts@~1.3.7:
     mime-types "~2.1.24"
     negotiator "0.6.2"
 
-acorn-dynamic-import@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/acorn-dynamic-import/-/acorn-dynamic-import-4.0.0.tgz#482210140582a36b83c3e342e1cfebcaa9240948"
-  integrity sha512-d3OEjQV4ROpoflsnUA8HozoIR504TFxNivYEUi6uwz0IYhBkTDXGuWlNdMtybRt3nqVx/L6XqMt0FxkXuWKZhw==
-
 acorn-globals@^6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/acorn-globals/-/acorn-globals-6.0.0.tgz#46cdd39f0f8ff08a876619b55f5ac8a6dc770b45"
@@ -3179,7 +3220,7 @@ acorn-import-assertions@^1.7.6:
   resolved "https://registry.yarnpkg.com/acorn-import-assertions/-/acorn-import-assertions-1.8.0.tgz#ba2b5939ce62c238db6d93d81c9b111b29b855e9"
   integrity sha512-m7VZ3jwz4eK6A4Vtt8Ew1/mNbP24u0FhdyfA7fSvnJR6LMdfOYnmuIrrJAgrYfYJ10F/otaHTtrtrtmHdMNzEw==
 
-acorn-jsx@^5.0.1, acorn-jsx@^5.3.1:
+acorn-jsx@^5.3.1:
   version "5.3.2"
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.3.2.tgz#7ed5bb55908b3b2f1bc55c6af1653bada7f07937"
   integrity sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==
@@ -3203,11 +3244,6 @@ acorn@7.3.1:
   version "7.3.1"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-7.3.1.tgz#85010754db53c3fbaf3b9ea3e083aa5c5d147ffd"
   integrity sha512-tLc0wSnatxAQHVHUapaHdz72pi9KUyHjq5KyHjGg9Y8Ifdc79pTh2XvI6I1/chZbnM7QtNKzh66ooDogPZSleA==
-
-acorn@^6.1.1:
-  version "6.4.2"
-  resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.4.2.tgz#35866fd710528e92de10cf06016498e47e39e1e6"
-  integrity sha512-XtGIhXwF8YM8bJhGxG5kXgjkEuNGLTkoYqVE+KMR+aspr4KGYmKYg7yUe3KghyQ9yheNwLnjmzh/7+gfDBmHCQ==
 
 acorn@^7.1.1, acorn@^7.4.0:
   version "7.4.1"
@@ -3852,19 +3888,6 @@ bser@2.1.1:
   dependencies:
     node-int64 "^0.4.0"
 
-buble-jsx-only@^0.19.8:
-  version "0.19.8"
-  resolved "https://registry.yarnpkg.com/buble-jsx-only/-/buble-jsx-only-0.19.8.tgz#6e3524aa0f1c523de32496ac9aceb9cc2b493867"
-  integrity sha512-7AW19pf7PrKFnGTEDzs6u9+JZqQwM1VnLS19OlqYDhXomtFFknnoQJAPHeg84RMFWAvOhYrG7harizJNwUKJsA==
-  dependencies:
-    acorn "^6.1.1"
-    acorn-dynamic-import "^4.0.0"
-    acorn-jsx "^5.0.1"
-    chalk "^2.4.2"
-    magic-string "^0.25.3"
-    minimist "^1.2.0"
-    regexpu-core "^4.5.4"
-
 buffer-from@^1.0.0:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.2.tgz#2b146a6fd72e80b4f55d255f35ed59a3a9a41bd5"
@@ -3972,7 +3995,7 @@ ccount@^1.0.0, ccount@^1.0.3:
   resolved "https://registry.yarnpkg.com/ccount/-/ccount-1.1.0.tgz#246687debb6014735131be8abab2d93898f8d043"
   integrity sha512-vlNK021QdI7PNeiUh/lKkC/mNHHfV0m/Ad5JoI0TYtlBnJAslM/JIkm/tGC88bkLIwO6OQ5uV6ztS6kVAtCDlg==
 
-chalk@2.x, chalk@^2.0.0, chalk@^2.4.2:
+chalk@2.x, chalk@^2.0.0:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
   integrity sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==
@@ -5950,15 +5973,6 @@ fresh@0.5.2:
   resolved "https://registry.yarnpkg.com/fresh/-/fresh-0.5.2.tgz#3d8cadd90d976569fa835ab1f8e4b23a105605a7"
   integrity sha1-PYyt2Q2XZWn6g1qx+OSyOhBWBac=
 
-fs-extra@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-10.0.0.tgz#9ff61b655dde53fb34a82df84bb214ce802e17c1"
-  integrity sha512-C5owb14u9eJwizKGdchcDUQeFtlSHHthBk8pbX9Vc1PFZrLombudjDnNns88aYslCyF6IY5SUw3Roz6xShcEIQ==
-  dependencies:
-    graceful-fs "^4.2.0"
-    jsonfile "^6.0.1"
-    universalify "^2.0.0"
-
 fs-extra@^10.0.1:
   version "10.0.1"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-10.0.1.tgz#27de43b4320e833f6867cc044bfce29fdf0ef3b8"
@@ -7581,7 +7595,7 @@ js-yaml@^3.13.1:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
-js-yaml@^4.0.0, js-yaml@^4.1.0:
+js-yaml@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-4.1.0.tgz#c1fb65f8f5017901cdd2c951864ba18458a10602"
   integrity sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==
@@ -7981,7 +7995,7 @@ madge@^5.0.1:
     typescript "^3.9.5"
     walkdir "^0.4.1"
 
-magic-string@0.25.7, magic-string@^0.25.3, magic-string@^0.25.7:
+magic-string@0.25.7, magic-string@^0.25.7:
   version "0.25.7"
   resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.7.tgz#3f497d6fd34c669c6798dcb821f2ef31f5445051"
   integrity sha512-4CrMT5DOHTDk4HYDlzmwu4FVCcIYI8gauveasrdCu2IKIFOJ3f0v/8MDGJCDL9oD2ppz/Av1b0Nj345H9M+XIA==
@@ -9781,7 +9795,7 @@ regexpp@^3.1.0:
   resolved "https://registry.yarnpkg.com/regexpp/-/regexpp-3.2.0.tgz#0425a2768d8f23bad70ca4b90461fa2f1213e1b2"
   integrity sha512-pq2bWo9mVD43nbts2wGv17XLiNLya+GklZ8kaDLV2Z08gDCsGpnKn9BFMepvWuHCbyVvY7J5o5+BVvoQbmlJLg==
 
-regexpu-core@^4.5.4, regexpu-core@^4.7.1:
+regexpu-core@^4.7.1:
   version "4.8.0"
   resolved "https://registry.yarnpkg.com/regexpu-core/-/regexpu-core-4.8.0.tgz#e5605ba361b67b1718478501327502f4479a98f0"
   integrity sha512-1F6bYsoYiz6is+oz70NWur2Vlh9KWtswuRuzJOfeYUrfPX2o8n74AnUVaOGDbUqVGO9fNHu48/pjJO4sNVwsOg==
@@ -9855,20 +9869,6 @@ remark-footnotes@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/remark-footnotes/-/remark-footnotes-2.0.0.tgz#9001c4c2ffebba55695d2dd80ffb8b82f7e6303f"
   integrity sha512-3Clt8ZMH75Ayjp9q4CorNeyjwIxHFcTkaektplKGl2A1jNGEUey8cKL0ZC5vJwfcD5GFGsNLImLG/NGzWIzoMQ==
-
-remark-mdx-remove-exports@^1.6.22:
-  version "1.6.22"
-  resolved "https://registry.yarnpkg.com/remark-mdx-remove-exports/-/remark-mdx-remove-exports-1.6.22.tgz#9e34f3d02c9c54b02ca0a1fde946449338d06ecb"
-  integrity sha512-7g2uiTmTGfz5QyVb+toeX25frbk1Y6yd03RXGPtqx0+DVh86Gb7MkNYbk7H2X27zdZ3CQv1W/JqlFO0Oo8IxVA==
-  dependencies:
-    unist-util-remove "2.0.0"
-
-remark-mdx-remove-imports@^1.6.22:
-  version "1.6.22"
-  resolved "https://registry.yarnpkg.com/remark-mdx-remove-imports/-/remark-mdx-remove-imports-1.6.22.tgz#79f711c95359cff437a120d1fbdc1326ec455826"
-  integrity sha512-lmjAXD8Ltw0TsvBzb45S+Dxx7LTJAtDaMneMAv8LAUIPEyYoKkmGbmVsiF0/pY6mhM1Q16swCmu1TN+ie/vn/A==
-  dependencies:
-    unist-util-remove "2.0.0"
 
 remark-mdx@1.6.22:
   version "1.6.22"
@@ -11164,13 +11164,6 @@ unist-util-remove-position@^2.0.0:
   integrity sha512-fDZsLYIe2uT+oGFnuZmy73K6ZxOPG/Qcm+w7jbEjaFcJgbQ6cqjs/eSPzXhsmGpAsWPkqZM9pYjww5QTn3LHMA==
   dependencies:
     unist-util-visit "^2.0.0"
-
-unist-util-remove@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/unist-util-remove/-/unist-util-remove-2.0.0.tgz#32c2ad5578802f2ca62ab808173d505b2c898488"
-  integrity sha512-HwwWyNHKkeg/eXRnE11IpzY8JT55JNM1YCwwU9YNCnfzk6s8GhPXrVBBZWiwLeATJbI7euvoGSzcy9M29UeW3g==
-  dependencies:
-    unist-util-is "^4.0.0"
 
 unist-util-remove@^2.0.0:
   version "2.1.0"

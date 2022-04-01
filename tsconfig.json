@@ -221,6 +221,6 @@
       "vest": ["./packages/vest/src/vest.ts"]
     }
   },
-  "files": ["./config/jest/globals.d.ts"],
+  "files": ["./vx/config/jest/globals.d.ts"],
   "include": ["./packages/*/src/**/*.ts"]
 }

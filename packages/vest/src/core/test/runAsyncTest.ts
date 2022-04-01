@@ -36,6 +36,8 @@ export default function runAsyncTest(testObject: VestTest): void {
   try {
     asyncTest.then(done, fail);
   } catch (e) {
+    // We will probably never get here, unless the consumer uses a buggy custom Promise
+    // implementation that behaves differently than the native one, or if they for some
     fail();
   }
 }

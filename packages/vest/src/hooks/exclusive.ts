@@ -75,7 +75,7 @@ export function isExcluded(testObject: VestTest): boolean {
     }
   }
 
-  if (isMissingFromIncludedGroup(groupName)) {
+  if (isTopLevelWhenThereIsAnIncludedGroup(groupName)) {
     return true;
   }
 
@@ -85,45 +85,12 @@ export function isExcluded(testObject: VestTest): boolean {
   // If there is _ANY_ `only`ed test (and we already know this one isn't) return true
   if (hasIncludedTests(keyTests)) {
     // Check if inclusion rules for this field (`include` hook)
+    // TODO: Check if this may need to be moved outside of the condition.
+    // What if there are no included tests? This shouldn't run then?
     return !optionalFunctionValue(inclusion[fieldName]);
   }
 
   // We're done here. This field is not excluded
-  return false;
-}
-
-// eslint-disable-next-line max-statements
-function isMissingFromIncludedGroup(groupName?: string): boolean {
-  const context = ctx.useX();
-  const exclusion = context.exclusion;
-
-  if (!hasIncludedGroups()) {
-    return false;
-  }
-
-  if (!groupName) {
-    return true;
-  }
-
-  if (groupName in exclusion.groups) {
-    if (exclusion.groups[groupName]) {
-      return false;
-    }
-    return true;
-  }
-
-  return true;
-}
-
-function hasIncludedGroups(): boolean {
-  const context = ctx.useX();
-  const exclusion = context.exclusion;
-
-  for (const group in exclusion.groups) {
-    if (exclusion.groups[group]) {
-      return true;
-    }
-  }
   return false;
 }
 
@@ -144,14 +111,9 @@ export function isGroupExcluded(groupName: string): boolean {
   }
 
   // Group is not present
-  for (const group in keyGroups) {
-    // If any other group is only'ed
-    if (keyGroups[group] === true) {
-      return true;
-    }
-  }
 
-  return false;
+  // Return whether other groups are included
+  return hasIncludedGroups();
 }
 
 /**
@@ -185,6 +147,28 @@ function hasIncludedTests(keyTests: Record<string, boolean>): boolean {
   for (const test in keyTests) {
     if (keyTests[test] === true) {
       return true; // excluded implicitly
+    }
+  }
+  return false;
+}
+
+// are we not in a group and there is an included group?
+function isTopLevelWhenThereIsAnIncludedGroup(groupName?: string): boolean {
+  if (!hasIncludedGroups()) {
+    return false;
+  }
+
+  // Return whether there's an included group, and we're not inside a group
+  return !groupName;
+}
+
+function hasIncludedGroups(): boolean {
+  const context = ctx.useX();
+  const exclusion = context.exclusion;
+
+  for (const group in exclusion.groups) {
+    if (exclusion.groups[group]) {
+      return true;
     }
   }
   return false;

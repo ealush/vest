@@ -27,8 +27,12 @@ export default function include(fieldName: string): {
     const context = ctx.useX();
     const { inclusion, exclusion } = context;
 
+    // This callback will run as part of the "isExcluded" series of checks
     inclusion[fieldName] = (): boolean => {
       if (hasOwnProperty(exclusion.tests, fieldName)) {
+        // I suspect this code is technically unreachable because
+        // if there are any skip/only rules applied to the current
+        // field, the "isExcluded" function will have already bailed
         return defaultTo(exclusion.tests[fieldName], true);
       }
 

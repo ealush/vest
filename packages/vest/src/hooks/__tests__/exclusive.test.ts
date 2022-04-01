@@ -214,7 +214,29 @@ describe('exclusive hooks', () => {
           vest.skip(['group_1', 'group_2']);
           res = isGroupExcluded('group_3');
         })();
-        expect(res).toEqual(false);
+        expect(res).toBe(false);
+      });
+    });
+
+    describe('Field is in a non included group', () => {
+      let suite;
+
+      beforeEach(() => {
+        suite = vest.create(() => {
+          vest.only.group('group_1');
+
+          vest.group('group_1', () => {
+            vest.test('field_1', jest.fn());
+          });
+          vest.group('group_2', () => {
+            vest.test('field_2', jest.fn());
+          });
+        });
+        suite();
+      });
+
+      it('Should exclude test', () => {
+        expect(suite.get().tests.field_2.testCount).toBe(0);
       });
     });
   });

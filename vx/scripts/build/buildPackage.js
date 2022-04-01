@@ -12,8 +12,17 @@ function buildPackage({ options } = {}) {
 
   cleanupDistFiles(name);
   process.env.VX_PACKAGE_NAME = name;
+  process.env.VX_BUILD_SINGLE = !!options.SINGLE;
 
-  [opts.format.ES, opts.format.UMD, opts.format.CJS].forEach(format => {
+  let builds;
+
+  if (options.SINGLE) {
+    builds = [opts.format.CJS];
+  } else {
+    builds = [opts.format.ES, opts.format.UMD, opts.format.CJS];
+  }
+
+  builds.forEach(format => {
     exec([
       `rollup -c`,
       vxPath.ROLLUP_CONFIG_PATH,
@@ -22,6 +31,7 @@ function buildPackage({ options } = {}) {
     ]);
   });
   delete process.env.VX_PACKAGE_NAME;
+  delete process.env.VX_BUILD_SINGLE;
 }
 
 module.exports = buildPackage;

@@ -19,15 +19,19 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -54,15 +58,19 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -82,8 +90,10 @@ Object {
     "g2": Object {
       "field_1": Object {
         "errorCount": 0,
+        "errors": Array [],
         "testCount": 0,
         "warnCount": 0,
+        "warnings": Array [],
       },
     },
   },
@@ -97,9 +107,11 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -119,13 +131,17 @@ Object {
     "g1": Object {
       "field_1": Object {
         "errorCount": 0,
+        "errors": Array [],
         "testCount": 0,
         "warnCount": 0,
+        "warnings": Array [],
       },
       "field_2": Object {
         "errorCount": 0,
+        "errors": Array [],
         "testCount": 0,
         "warnCount": 0,
+        "warnings": Array [],
       },
     },
   },
@@ -139,15 +155,19 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -167,13 +187,17 @@ Object {
     "g1": Object {
       "field_1": Object {
         "errorCount": 0,
+        "errors": Array [],
         "testCount": 0,
         "warnCount": 0,
+        "warnings": Array [],
       },
       "field_2": Object {
         "errorCount": 0,
+        "errors": Array [],
         "testCount": 0,
         "warnCount": 0,
+        "warnings": Array [],
       },
     },
   },
@@ -187,15 +211,19 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -222,9 +250,11 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -251,9 +281,11 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -280,15 +312,19 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -315,21 +351,27 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_3": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -356,21 +398,27 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_3": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -397,9 +445,11 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 2,
+      "errors": Array [],
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -426,21 +476,27 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_3": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -467,21 +523,27 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_3": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -508,21 +570,27 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_3": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -549,21 +617,27 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_3": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -590,21 +664,27 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_3": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -631,15 +711,19 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -666,15 +750,19 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,

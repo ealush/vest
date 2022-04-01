@@ -55,6 +55,7 @@ describe('suite.resetField', () => {
           "testCount": 1,
           "valid": false,
           "warnCount": 0,
+          "warnings": Array [],
         },
         "field2": Object {
           "errorCount": 1,
@@ -64,6 +65,7 @@ describe('suite.resetField', () => {
           "testCount": 1,
           "valid": false,
           "warnCount": 0,
+          "warnings": Array [],
         },
       }
     `);

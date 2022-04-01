@@ -1,20 +1,21 @@
 import { isPositive } from 'isPositive';
 
-import { countKeyBySeverity, Severity } from 'Severity';
+import { SeverityCount } from 'Severity';
 import { useSummary } from 'genTestsSummary';
 
 export function hasErrors(fieldName?: string): boolean {
-  return hasFailures(Severity.ERRORS, fieldName);
+  return hasFailures(SeverityCount.ERROR_COUNT, fieldName);
 }
 
 export function hasWarnings(fieldName?: string): boolean {
-  return hasFailures(Severity.WARNINGS, fieldName);
+  return hasFailures(SeverityCount.WARN_COUNT, fieldName);
 }
 
-function hasFailures(severityKey: Severity, fieldName?: string): boolean {
+function hasFailures(
+  severityCount: SeverityCount,
+  fieldName?: string
+): boolean {
   const summary = useSummary();
-
-  const severityCount = countKeyBySeverity(severityKey);
 
   if (fieldName) {
     return isPositive(summary.tests[fieldName]?.[severityCount]);

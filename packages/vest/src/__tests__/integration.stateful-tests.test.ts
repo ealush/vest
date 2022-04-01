@@ -60,6 +60,7 @@ describe('more complex', () => {
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
+        "warnings": Array [],
       }
     `);
     expect(suite.get()).toMatchSnapshot();
@@ -68,9 +69,11 @@ describe('more complex', () => {
     expect(suite.get().tests.confirm).toMatchInlineSnapshot(`
       Object {
         "errorCount": 0,
+        "errors": Array [],
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
+        "warnings": Array [],
       }
     `);
     expect(suite.get()).toMatchSnapshot();
@@ -82,9 +85,11 @@ describe('more complex', () => {
     expect(suite.get().tests.confirm).toMatchInlineSnapshot(`
       Object {
         "errorCount": 0,
+        "errors": Array [],
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
+        "warnings": Array [],
       }
     `);
     data.confirm = '123456';
@@ -94,9 +99,11 @@ describe('more complex', () => {
     expect(suite.get().tests.confirm).toMatchInlineSnapshot(`
       Object {
         "errorCount": 0,
+        "errors": Array [],
         "testCount": 1,
         "valid": true,
         "warnCount": 0,
+        "warnings": Array [],
       }
     `);
   });

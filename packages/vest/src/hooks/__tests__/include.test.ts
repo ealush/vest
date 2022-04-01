@@ -280,6 +280,21 @@ describe('include', () => {
       expect(res).toMatchSnapshot();
     });
   });
+
+  describe('Field is included via `only`', () => {
+    it('Should disregard `when` condition and test the field anyway', () => {
+      const suite = vest.create(() => {
+        vest.only('field_1');
+        vest.include('field_1').when(false);
+
+        vest.test('field_1', () => false);
+      });
+
+      const res = suite();
+      expect(res.hasErrors('field_1')).toBe(true);
+      expect(res.tests.field_1.testCount).toBe(1);
+    });
+  });
   describe('Test is excluded by being out of an included group', () => {
     it('Should disregard `include` and avoid running the test', () => {
       const suite = vest.create(() => {

@@ -72,28 +72,38 @@ describe('group: exclusion', () => {
         Object {
           "field_1": Object {
             "errorCount": 0,
+            "errors": Array [],
             "testCount": 0,
             "warnCount": 0,
+            "warnings": Array [],
           },
           "field_2": Object {
             "errorCount": 0,
+            "errors": Array [],
             "testCount": 0,
             "warnCount": 0,
+            "warnings": Array [],
           },
           "field_3": Object {
             "errorCount": 0,
+            "errors": Array [],
             "testCount": 0,
             "warnCount": 0,
+            "warnings": Array [],
           },
           "field_4": Object {
             "errorCount": 0,
+            "errors": Array [],
             "testCount": 0,
             "warnCount": 0,
+            "warnings": Array [],
           },
           "field_6": Object {
             "errorCount": 0,
+            "errors": Array [],
             "testCount": 0,
             "warnCount": 0,
+            "warnings": Array [],
           },
         }
       `);

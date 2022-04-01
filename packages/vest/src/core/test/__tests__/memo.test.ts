@@ -74,7 +74,7 @@ describe('test.memo', () => {
     });
 
     describe('async', () => {
-      it('Should immediately previous result on re-run', async () => {
+      it('Should immediately return previous result on re-run', async () => {
         {
           const suite = promisify(
             vest.create(() => {

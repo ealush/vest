@@ -4,27 +4,35 @@ exports[`omitWhen When conditional is falsy boolean conditional Should have all 
 Object {
   "field_1": Object {
     "errorCount": 1,
+    "errors": Array [],
     "testCount": 2,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_2": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 0,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_3": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 0,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_4": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 0,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
 }
 `;
@@ -33,27 +41,35 @@ exports[`omitWhen When conditional is falsy boolean conditional Should run tests
 Object {
   "field_1": Object {
     "errorCount": 1,
+    "errors": Array [],
     "testCount": 2,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_2": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 0,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_3": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 0,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_4": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 0,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
 }
 `;
@@ -62,27 +78,35 @@ exports[`omitWhen When conditional is falsy boolean conditional Should run tests
 Object {
   "field_1": Object {
     "errorCount": 1,
+    "errors": Array [],
     "testCount": 2,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_2": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 0,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_3": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 0,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_4": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 1,
     "valid": true,
     "warnCount": 0,
+    "warnings": Array [],
   },
 }
 `;
@@ -91,27 +115,35 @@ exports[`omitWhen When conditional is falsy function conditional Should have all
 Object {
   "field_1": Object {
     "errorCount": 1,
+    "errors": Array [],
     "testCount": 2,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_2": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 0,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_3": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 0,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_4": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 0,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
 }
 `;
@@ -120,27 +152,35 @@ exports[`omitWhen When conditional is falsy function conditional Should run test
 Object {
   "field_1": Object {
     "errorCount": 1,
+    "errors": Array [],
     "testCount": 2,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_2": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 0,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_3": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 0,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_4": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 0,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
 }
 `;
@@ -149,27 +189,35 @@ exports[`omitWhen When conditional is falsy function conditional Should run test
 Object {
   "field_1": Object {
     "errorCount": 1,
+    "errors": Array [],
     "testCount": 2,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_2": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 0,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_3": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 0,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_4": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 1,
     "valid": true,
     "warnCount": 0,
+    "warnings": Array [],
   },
 }
 `;
@@ -192,27 +240,35 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 1,
       "valid": true,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_3": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": true,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_4": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": true,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -238,27 +294,35 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 1,
       "valid": true,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_3": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": true,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_4": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": true,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -284,27 +348,35 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 1,
       "valid": true,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_3": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": true,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_4": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": true,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,
@@ -330,27 +402,35 @@ Object {
   "tests": Object {
     "field_1": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 1,
       "valid": true,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_2": Object {
       "errorCount": 1,
+      "errors": Array [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_3": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": true,
       "warnCount": 0,
+      "warnings": Array [],
     },
     "field_4": Object {
       "errorCount": 0,
+      "errors": Array [],
       "testCount": 0,
       "valid": true,
       "warnCount": 0,
+      "warnings": Array [],
     },
   },
   "valid": false,

@@ -10,6 +10,7 @@ Object {
     "testCount": 1,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_2": Object {
     "errorCount": 1,
@@ -19,15 +20,19 @@ Object {
     "testCount": 1,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_3": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 1,
     "valid": true,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_4": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 2,
     "valid": true,
     "warnCount": 1,
@@ -44,18 +49,23 @@ Object {
     "testCount": 2,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_6": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 1,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
   "field_7": Object {
     "errorCount": 0,
+    "errors": Array [],
     "testCount": 1,
     "valid": false,
     "warnCount": 0,
+    "warnings": Array [],
   },
 }
 `;

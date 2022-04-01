@@ -6,16 +6,11 @@ const { usePackage } = require('vx/vxContext');
 
 const vxPath = {};
 
-const PACKAGE_JSON = 'package.json';
-const TSCONFIG_JSON = 'tsconfig.json';
 const VX = 'vx';
-
-vxPath.PACKAGE_JSON = PACKAGE_JSON;
-vxPath.TSCONFIG_JSON = TSCONFIG_JSON;
 
 vxPath.vxRoot = () => {
   return vxPath.closest(process.cwd(), (current, breakout) => {
-    const pkgJsonPath = path.resolve(current, PACKAGE_JSON);
+    const pkgJsonPath = path.resolve(current, opts.fileNames.PACKAGE_JSON);
 
     if (!fs.existsSync(pkgJsonPath)) {
       return;
@@ -50,11 +45,11 @@ vxPath.packageSrcExports = (pkgName = usePackage(), ...args) => {
 };
 
 vxPath.packageTsConfig = (pkgName = usePackage()) => {
-  return vxPath.package(pkgName, TSCONFIG_JSON);
+  return vxPath.package(pkgName, opts.fileNames.TSCONFIG_JSON);
 };
 
 vxPath.packageJson = (pkgName = usePackage()) => {
-  return vxPath.package(pkgName, PACKAGE_JSON);
+  return vxPath.package(pkgName, opts.fileNames.PACKAGE_JSON);
 };
 
 vxPath.closest = (start, predicate) => {
@@ -82,6 +77,10 @@ vxPath.closest = (start, predicate) => {
   }
 };
 
+vxPath.rel = absolutePath => {
+  return ['.', path.relative(vxPath.ROOT_PATH, absolutePath)].join(path.sep);
+};
+
 vxPath.ROOT_PATH = vxPath.vxRoot();
 
 vxPath.VX_ROOT_PATH = path.resolve(vxPath.ROOT_PATH, VX);
@@ -103,7 +102,10 @@ vxPath.JEST_CONFIG_FILE_PATH = path.resolve(
   opts.fileNames.JEST_CONFIG
 );
 
-vxPath.TSCONFIG_PATH = path.resolve(vxPath.ROOT_PATH, TSCONFIG_JSON);
+vxPath.TSCONFIG_PATH = path.resolve(
+  vxPath.ROOT_PATH,
+  opts.fileNames.TSCONFIG_JSON
+);
 
 vxPath.PACKAGES_PATH = path.resolve(vxPath.ROOT_PATH, opts.dir.PACKAGES);
 

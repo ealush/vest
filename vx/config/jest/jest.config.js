@@ -16,7 +16,7 @@ const ignoreGeneratedExports = moduleAliases().reduce((allExports, current) => {
 
   const x = path
     .join(...current.absolute.split(find))
-    .replace('.ts', '/package.json');
+    .replace('.ts', `/${opts.fileNames.PACKAGE_JSON}`);
 
   return allExports.concat(x);
 }, []);
@@ -49,7 +49,7 @@ module.exports = (custom = {}) => ({
     'ts-jest': {
       tsconfig: usePackage()
         ? vxPath.packageTsConfig()
-        : path.join(vxPath.ROOT_PATH, vxPath.TSCONFIG_JSON),
+        : path.join(vxPath.ROOT_PATH, opts.fileNames.TSCONFIG_JSON),
       diagnostics: {
         // Essentially ignoring "any" errors in TESTS
         ignoreCodes: [
@@ -69,11 +69,11 @@ module.exports = (custom = {}) => ({
   preset: 'ts-jest',
   rootDir: vxPath.ROOT_PATH,
   roots: ['<rootDir>'],
-  setupFiles: [path.resolve(vxPath.JEST_CONFIG_PATH, 'jest.setup.ts')].concat(
-    setupPerPackage
-  ),
+  setupFiles: [
+    path.resolve(vxPath.JEST_CONFIG_PATH, opts.fileNames.JEST_SETUP),
+  ].concat(setupPerPackage),
   setupFilesAfterEnv: [
-    path.resolve(vxPath.JEST_CONFIG_PATH, 'jest.setupAfterEnv.ts'),
+    path.resolve(vxPath.JEST_CONFIG_PATH, opts.fileNames.JEST_SETUP_AFTER_ENV),
   ].concat(setupAfterEnvPerPackage),
   testEnvironment: 'node',
   testMatch: [vxPath.packageSrc('*', `**/${opts.dir.TESTS}/*.(spec|test).ts`)],

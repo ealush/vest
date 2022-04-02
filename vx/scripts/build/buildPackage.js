@@ -6,7 +6,7 @@ const opts = require('vx/opts');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
-function buildPackage({ options } = {}) {
+function buildPackage(options = {}) {
   const name = usePackage();
   logger.info(`🛠 Building package: ${name}`);
 
@@ -23,12 +23,7 @@ function buildPackage({ options } = {}) {
   }
 
   builds.forEach(format => {
-    exec([
-      `rollup -c`,
-      vxPath.ROLLUP_CONFIG_PATH,
-      options,
-      `--format=${format}`,
-    ]);
+    exec([`rollup -c`, vxPath.ROLLUP_CONFIG_PATH, `--format=${format}`]);
   });
   delete process.env.VX_PACKAGE_NAME;
   delete process.env.VX_BUILD_SINGLE;

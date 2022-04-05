@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import itWithContext from '../../../../../../testUtils/itWithContext';
 import { dummyTest } from '../../../../../../testUtils/testDummy';
 import { setTestObjects } from '../../../../../../testUtils/testObjects';

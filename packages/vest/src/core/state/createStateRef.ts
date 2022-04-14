@@ -34,3 +34,9 @@ export default function createStateRef(
 }
 
 export type StateRef = ReturnType<typeof createStateRef>;
+
+type StateKeys = keyof StateRef;
+
+export type StateKey<T extends StateKeys> = ReturnType<StateRef[T]>;
+export type StateValue<T extends StateKeys> = StateKey<T>[0];
+export type StateSetter<T extends StateKeys> = StateKey<T>[1];

@@ -75,12 +75,7 @@ export function useTestObjects(): StateKey<'testObjects'> {
 // STATE ACTIONS
 
 export function useRefreshTestObjects(): void {
-  const [, setTestObjects] = useTestObjects();
-
-  setTestObjects(({ current, prev }) => ({
-    prev,
-    current: asArray(current),
-  }));
+  useSetTests(tests => tests);
 }
 
 export function useSetTests(
@@ -97,13 +92,7 @@ export function useSetTests(
 // Derived state
 
 export function useAllIncomplete(): VestTest[] {
-  const [{ current }] = useTestObjects();
-
-  return nestedArray.flatten(
-    nestedArray.transform(current, testObject =>
-      testObject.isPending() ? testObject : null
-    )
-  );
+  return useTestsFlat().filter(test => test.isPending());
 }
 
 const flatCache = createCache();

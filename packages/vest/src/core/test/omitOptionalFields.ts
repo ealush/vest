@@ -4,9 +4,14 @@ import isFunction from 'isFunction';
 import * as nestedArray from 'nestedArray';
 
 import VestTest from 'VestTest';
-import { useOptionalFields, useSetTests } from 'stateHooks';
+import {
+  useOptionalFields,
+  useSetTests,
+  useOptionalFieldConfig,
+  useSetOptionalField,
+} from 'stateHooks';
 
-export default function omitOptionalTests(): void {
+export default function omitOptionalFields(): void {
   const [optionalFields] = useOptionalFields();
 
   if (isEmpty(optionalFields)) {
@@ -32,11 +37,12 @@ export default function omitOptionalTests(): void {
   function verifyAndOmit(testObject: VestTest) {
     if (shouldOmit[testObject.fieldName]) {
       testObject.omit();
+      useSetOptionalField(testObject.fieldName, current => [current[0], true]);
     }
   }
 
   function runOptionalConfig(testObject: VestTest) {
-    const optionalConfig = optionalFields[testObject.fieldName];
+    const optionalConfig = useOptionalFieldConfig(testObject.fieldName);
     if (isFunction(optionalConfig)) {
       shouldOmit[testObject.fieldName] = optionalConfig();
 

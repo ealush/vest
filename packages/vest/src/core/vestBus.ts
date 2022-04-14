@@ -5,7 +5,7 @@ import VestTest from 'VestTest';
 import ctx from 'ctx';
 import hasRemainingTests from 'hasRemainingTests';
 import matchingFieldName from 'matchingFieldName';
-import omitOptionalTests from 'omitOptionalTests';
+import omitOptionalFields from 'omitOptionalFields';
 import removeTestFromState from 'removeTestFromState';
 import { runFieldCallbacks, runDoneCallbacks } from 'runCallbacks';
 import { useEachTestObject } from 'stateHooks';
@@ -35,7 +35,7 @@ export function initBus() {
   // Async operations may still be running.
   bus.on(Events.SUITE_CALLBACK_DONE_RUNNING, () => {
     // Remove tests that are optional and need to be omitted
-    omitOptionalTests();
+    omitOptionalFields();
   });
 
   // Called when all the tests, including async, are done running

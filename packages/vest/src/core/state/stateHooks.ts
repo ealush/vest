@@ -1,7 +1,10 @@
 import asArray from 'asArray';
+import assign from 'assign';
 import createCache from 'cache';
 import type { NestedArray } from 'nestedArray';
 import * as nestedArray from 'nestedArray';
+import optionalFunctionValue from 'optionalFunctionValue';
+import { ValueOf } from 'utilityTypes';
 
 import VestTest from 'VestTest';
 import type { StateKey, StateRef, StateValue } from 'createStateRef';
@@ -23,8 +26,46 @@ export function useSuiteName(): StateValue<'suiteName'> {
 export function useTestCallbacks(): StateKey<'testCallbacks'> {
   return useStateRef().testCallbacks();
 }
+
+// OPTIONAL FIELDS
+
+function useOptionalField(
+  fieldName: string
+): ValueOf<StateValue<'optionalFields'>> {
+  const [optionalFields] = useOptionalFields();
+  return optionalFields[fieldName];
+}
+
 export function useOptionalFields(): StateKey<'optionalFields'> {
   return useStateRef().optionalFields();
+}
+
+export function useSetOptionalField(
+  fieldName: string,
+  setter:
+    | ((
+        current: ValueOf<StateValue<'optionalFields'>>
+      ) => ValueOf<StateValue<'optionalFields'>>)
+    | ValueOf<StateValue<'optionalFields'>>
+): void {
+  const [, setOptionalFields] = useOptionalFields();
+  setOptionalFields(optionalFields =>
+    assign(optionalFields, {
+      [fieldName]: optionalFunctionValue(setter, optionalFields[fieldName]),
+    })
+  );
+}
+
+export function useOptionalFieldApplied(
+  fieldName: string
+): ValueOf<StateValue<'optionalFields'>>[1] {
+  return useOptionalField(fieldName)?.[1];
+}
+
+export function useOptionalFieldConfig(
+  fieldName: string
+): ValueOf<StateValue<'optionalFields'>>[0] {
+  return useOptionalField(fieldName)?.[0];
 }
 
 export function useTestObjects(): StateKey<'testObjects'> {

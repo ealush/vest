@@ -2,7 +2,12 @@ import { isNotEmpty, isEmpty } from 'isEmpty';
 
 import { hasErrorsByTestObjects } from 'hasFailuresByTestObjects';
 import { nonMatchingFieldName } from 'matchingFieldName';
-import { useTestsFlat, useAllIncomplete, useOptionalFields } from 'stateHooks';
+import {
+  useTestsFlat,
+  useAllIncomplete,
+  useOptionalFieldConfig,
+  useOptionalFieldApplied,
+} from 'stateHooks';
 
 // eslint-disable-next-line max-statements, complexity
 export default function shouldAddValidProp(fieldName?: string): boolean {
@@ -31,28 +36,23 @@ function fieldIsOmitted(fieldName?: string) {
   if (!fieldName) {
     return false;
   }
-  const flatTests = useTestsFlat();
-  return flatTests.some(
-    testObject => testObject.fieldName === fieldName && testObject.isOmitted()
-  );
+
+  return useOptionalFieldApplied(fieldName) === true;
 }
 
 function hasNonOptionalIncomplete(fieldName?: string) {
-  const [optionalFields] = useOptionalFields();
-
   return isNotEmpty(
     useAllIncomplete().filter(testObject => {
       if (nonMatchingFieldName(testObject, fieldName)) {
         return false;
       }
-      return optionalFields[testObject.fieldName] !== true;
+      return useOptionalFieldConfig(testObject.fieldName) !== true;
     })
   );
 }
 
 function noMissingTests(fieldName?: string): boolean {
   const testObjects = useTestsFlat();
-  const [optionalFields] = useOptionalFields();
 
   return testObjects.every(testObject => {
     if (nonMatchingFieldName(testObject, fieldName)) {
@@ -60,7 +60,7 @@ function noMissingTests(fieldName?: string): boolean {
     }
 
     return (
-      optionalFields[testObject.fieldName] === true ||
+      useOptionalFieldConfig(testObject.fieldName) === true ||
       testObject.isTested() ||
       testObject.isOmitted()
     );

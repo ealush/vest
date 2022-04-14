@@ -196,8 +196,8 @@
       "useTestAtCursor": [
         "./packages/vest/src/core/test/lib/useTestAtCursor.ts"
       ],
-      "omitOptionalTests": [
-        "./packages/vest/src/core/test/omitOptionalTests.ts"
+      "omitOptionalFields": [
+        "./packages/vest/src/core/test/omitOptionalFields.ts"
       ],
       "runAsyncTest": ["./packages/vest/src/core/test/runAsyncTest.ts"],
       "runSyncTest": ["./packages/vest/src/core/test/runSyncTest.ts"],
@@ -216,7 +216,7 @@
       "include": ["./packages/vest/src/hooks/include.ts"],
       "mode": ["./packages/vest/src/hooks/mode/mode.ts"],
       "Modes": ["./packages/vest/src/hooks/mode/Modes.ts"],
-      "optionalTests": ["./packages/vest/src/hooks/optionalTests.ts"],
+      "optionalFields": ["./packages/vest/src/hooks/optionalFields.ts"],
       "warn": ["./packages/vest/src/hooks/warn.ts"],
       "vest": ["./packages/vest/src/vest.ts"]
     }

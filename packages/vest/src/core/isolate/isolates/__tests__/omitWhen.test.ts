@@ -221,4 +221,18 @@ describe('omitWhen', () => {
       });
     });
   });
+
+  describe('When some tests of the same field are inside omitWhen and some not', () => {
+    it('Should mark the field as invalid when failing', () => {
+      const res = vest.create(() => {
+        vest.test('f1', () => false);
+
+        vest.omitWhen(true, () => {
+          vest.test('f1', () => false);
+        });
+      })();
+      expect(res.isValid()).toBe(false);
+      expect(res.isValid('f1')).toBe(false);
+    });
+  });
 });

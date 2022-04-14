@@ -10,7 +10,7 @@ export default function createStateRef(
 ) {
   return {
     optionalFields: state.registerStateKey<
-      Record<string, (() => boolean) | boolean>
+      Record<string, [rule: (() => boolean) | boolean, isApplied: boolean]>
     >(() => ({})),
     suiteId: state.registerStateKey<string>(suiteId),
     suiteName: state.registerStateKey<string | void>(suiteName),

@@ -9,15 +9,27 @@ describe('optional hook', () => {
         optional('field_1');
         expect(useOptionalFields()[0]).toMatchInlineSnapshot(`
           Object {
-            "field_1": true,
+            "field_1": Array [
+              true,
+              false,
+            ],
           }
         `);
         optional(['field_2', 'field_3']);
         expect(useOptionalFields()[0]).toMatchInlineSnapshot(`
           Object {
-            "field_1": true,
-            "field_2": true,
-            "field_3": true,
+            "field_1": Array [
+              true,
+              false,
+            ],
+            "field_2": Array [
+              true,
+              false,
+            ],
+            "field_3": Array [
+              true,
+              false,
+            ],
           }
         `);
       })();

@@ -10,7 +10,7 @@ import group from 'group';
 import include from 'include';
 import { eager } from 'mode';
 import omitWhen from 'omitWhen';
-import optional from 'optionalTests';
+import optional from 'optionalFields';
 import type { SuiteResult } from 'produceSuiteResult';
 import type { SuiteRunResult } from 'produceSuiteRunResult';
 import skipWhen from 'skipWhen';

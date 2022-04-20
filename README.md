@@ -52,7 +52,7 @@ Vest tries to remediate this by separating validation logic from feature logic, 
 
 Here are some code sandboxes to get you started:
 
-- [React](https://codesandbox.io/s/react-28jwx)
-- [Vue](https://codesandbox.io/s/vue-hsyt8)
-- [Svelte](https://codesandbox.io/s/svelte-tsfhx)
-- [Vanilla](https://codesandbox.io/s/vest-vanilla-js-35u8e)
+- [React](https://codesandbox.io/s/react-28jwx?file=/src/suite.js)
+- [Vue](https://codesandbox.io/s/vue-hsyt8?file=/src/suite.js)
+- [Svelte](https://codesandbox.io/s/svelte-tsfhx?file=/suite.js)
+- [Vanilla](https://codesandbox.io/s/vest-vanilla-js-35u8e?file=/src/suite.js)

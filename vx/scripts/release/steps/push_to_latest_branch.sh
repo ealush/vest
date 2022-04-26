@@ -20,7 +20,7 @@ git add .
 git commit -m "$1" -m "$2"
 
 echo "Pushing to $STABLE_BRANCH"
-git push https://$PUBLIC_REPO_TOKEN@github.com/$GITHUB_REPOSITORY.git $STABLE_BRANCH
+git push https://$PUBLIC_REPO_TOKEN@github.com/$GITHUB_REPOSITORY.git $STABLE_BRANCH -f
 
 echo "Deleting local latest branch ($LATEST_BRANCH)"
 git branch -D $LATEST_BRANCH

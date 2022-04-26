@@ -11,32 +11,43 @@ const logger = require('vx/logger');
 const packageNames = require('vx/packageNames');
 const vxPath = require('vx/vxPath');
 
-const SCRIPT_PATH = path.resolve(
+const RELEASE_SCRIPTS = path.resolve(
   vxPath.VX_SCRIPTS_PATH,
   'release',
-  'steps',
+  'steps'
+);
+
+const PUSH_TO_LATEST_BRANCH = path.resolve(
+  RELEASE_SCRIPTS,
   'push_to_latest_branch.sh'
 );
 
+const CREATE_GIT_TAG = path.resolve(RELEASE_SCRIPTS, 'create_git_tag.sh');
+
 const EMOJIS = ['🚀', '🦺', '🤘', '✨', '🌈', '✅'];
 
-function pushToLatestBranch() {
+function commitChangesToGit() {
   logger.info('🌎 Pushing latest branch.');
 
   const allChanges = listAllChangesSinceStableBranch();
   const changedPackages = filterChangedPackages(allChanges);
-  const messages = allChanges.map(({ title }) => title);
-  const command = [
-    'sh',
-    SCRIPT_PATH,
-    `"${createCommitMessage(changedPackages)}"`,
-    `"${messages.join('\n')}"`,
-  ].join(' ');
 
-  exec(command);
+  pushToLatestBranch(allChanges, changedPackages);
+  createTags(changedPackages);
 }
 
-module.exports = pushToLatestBranch;
+module.exports = commitChangesToGit;
+
+function pushToLatestBranch(allChanges, changedPackages) {
+  const messages = allChanges.map(({ title }) => title);
+
+  exec([
+    'sh',
+    PUSH_TO_LATEST_BRANCH,
+    `"${createCommitMessage(changedPackages)}"`,
+    `"${messages.join('\n')}"`,
+  ]);
+}
 
 function filterChangedPackages(commits) {
   return packageNames.list.filter(packageName => {
@@ -59,4 +70,13 @@ function createCommitMessage(changedPackages) {
     .join(', ');
 
   return `${sample(EMOJIS)} Updating: ${msg}`;
+}
+
+function createTags(changedPackages) {
+  return changedPackages.forEach(packageName => {
+    const version = packageJson(packageName).version;
+    const tag = `${packageName}@${version}`;
+
+    exec(['sh', CREATE_GIT_TAG, tag]);
+  });
 }

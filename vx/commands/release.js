@@ -1,4 +1,4 @@
-const pushToLatestBranch = require('../scripts/release/steps/pushToLatestBranch');
+const commitChangesToGit = require('../scripts/release/steps/commitChangesToGit');
 
 const build = require('vx/commands/build');
 const logger = require('vx/logger');
@@ -49,5 +49,5 @@ async function releaseAll() {
     return;
   }
 
-  pushToLatestBranch();
+  commitChangesToGit();
 }

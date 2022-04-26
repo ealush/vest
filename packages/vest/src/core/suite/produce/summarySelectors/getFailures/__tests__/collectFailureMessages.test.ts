@@ -23,7 +23,6 @@ describe('collectFailureMessages', () => {
     expect(result).toEqual({
       field_1: [],
       field_2: ['field_2_failure message 1', 'field_2_failure message 3'],
-      field_3: [],
     });
   });
 

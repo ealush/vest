@@ -1,4 +1,6 @@
-import { Severity } from 'Severity';
+import { isPositive } from 'isPositive';
+
+import { countKeyBySeverity, Severity } from 'Severity';
 import { TestsContainer } from 'genTestsSummary';
 
 // calls collectAll or getByFieldName depending on whether fieldName is provided
@@ -27,10 +29,14 @@ function collectAll(
 ): FailureMessages {
   const output: FailureMessages = {};
 
+  const countKey = countKeyBySeverity(severityKey);
+
   for (const field in testGroup) {
-    // We will probably never get to the fallback array
-    // leaving it just in case the implementation changes
-    output[field] = testGroup[field][severityKey] || [];
+    if (isPositive(testGroup[field][countKey])) {
+      // We will probably never get to the fallback array
+      // leaving it just in case the implementation changes
+      output[field] = testGroup[field][severityKey] || [];
+    }
   }
 
   return output;

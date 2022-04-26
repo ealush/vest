@@ -107,10 +107,6 @@ describe('done', () => {
           .done('field_2', res => {
             expect(res.getErrors()).toEqual({
               field_1: ['error message'],
-              field_2: [],
-              field_3: [],
-              field_4: [],
-              field_5: [],
             });
             expect(res).toMatchObject({
               errorCount: 1,
@@ -186,10 +182,7 @@ describe('done', () => {
           .done('field_4', res => {
             expect(res.getErrors()).toEqual({
               field_1: ['error message'],
-              field_2: [],
-              field_3: [],
               field_4: ['error_message'],
-              field_5: [],
             });
             expect(res).toMatchObject({
               errorCount: 2,

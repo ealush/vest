@@ -28,12 +28,9 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
     });
     describe('When no errors', () => {
       describe('When no parameters passed', () => {
-        itWithContext('Should return an object with empty error arrays', () => {
+        itWithContext('Should return an object no errors', () => {
           setTestObjects(dummyTest.passing('f1'), dummyTest.passing('f2'));
-          expect(produceMethod().getErrors()).toEqual({
-            f1: [],
-            f2: [],
-          });
+          expect(produceMethod().getErrors()).toEqual({});
         });
       });
       describe('When requesting a fieldName', () => {
@@ -92,10 +89,7 @@ describe.each(Object.keys(methods))('produce method: %s', methodName => {
       describe('When no parameters passed', () => {
         itWithContext('Should return an empty object', () => {
           setTestObjects(dummyTest.passing('x'), dummyTest.passing('y'));
-          expect(produceMethod().getWarnings()).toEqual({
-            x: [],
-            y: [],
-          });
+          expect(produceMethod().getWarnings()).toEqual({});
         });
       });
       describe('When requesting a fieldName', () => {

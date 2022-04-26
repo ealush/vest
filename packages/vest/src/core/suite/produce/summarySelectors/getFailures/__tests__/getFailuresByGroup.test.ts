@@ -40,9 +40,7 @@ describe.each(modes)('produce method: %s', mode => {
             dummyTest.passing('field_1', 'message', 'group_name');
             dummyTest.passing('f2');
           });
-          expect(getRes().getErrorsByGroup('group_name')).toEqual({
-            field_1: [],
-          });
+          expect(getRes().getErrorsByGroup('group_name')).toEqual({});
         });
       });
       describe('When fieldName passed', () => {
@@ -122,14 +120,12 @@ describe.each(modes)('produce method: %s', mode => {
 
     describe('When no failures', () => {
       describe('When no fieldName passed', () => {
-        it('Should return an object with empty message arrays', () => {
+        it('Should return an object with no message arrays', () => {
           suite = create(() => {
             dummyTest.passing('field_1', 'message', 'group_name');
             dummyTest.passing();
           });
-          expect(getRes().getWarningsByGroup('group_name')).toEqual({
-            field_1: [],
-          });
+          expect(getRes().getWarningsByGroup('group_name')).toEqual({});
         });
       });
       describe('When fieldName passed', () => {

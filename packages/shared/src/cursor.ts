@@ -1,7 +1,7 @@
 import asArray from 'asArray';
 import last from 'last';
 
-export function createCursor() {
+export function createCursor(): Cursor {
   const storage: { cursor: number[] } = {
     cursor: [],
   };
@@ -42,3 +42,12 @@ export function createCursor() {
     reset,
   };
 }
+
+export type Cursor = {
+  addLevel: () => void;
+  cursorAt: () => number;
+  getCursor: () => number[];
+  next: () => number;
+  removeLevel: () => void;
+  reset: () => void;
+};

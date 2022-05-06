@@ -1,6 +1,6 @@
 import assign from 'assign';
 import { createContext } from 'context';
-import { createCursor } from 'cursor';
+import { createCursor, Cursor } from 'cursor';
 import { CB } from 'utilityTypes';
 
 import { IsolateKeys, IsolateTypes } from 'IsolateTypes';
@@ -39,7 +39,7 @@ type CTXType = {
     type: IsolateTypes;
     keys: IsolateKeys;
   };
-  testCursor: ReturnType<typeof createCursor>;
+  testCursor: Cursor;
   stateRef?: StateRef;
   exclusion: {
     tests: Record<string, boolean>;

@@ -56,3 +56,9 @@ Here are some code sandboxes to get you started:
 - [Vue](https://codesandbox.io/s/vue-hsyt8?file=/src/suite.js)
 - [Svelte](https://codesandbox.io/s/svelte-tsfhx?file=/suite.js)
 - [Vanilla](https://codesandbox.io/s/vest-vanilla-js-35u8e?file=/src/suite.js)
+
+# Contribute
+
+Information describing how to contribute can be found here:
+
+https://github.com/ealush/vest/blob/latest/CONTRIBUTING.md

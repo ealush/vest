@@ -7,7 +7,7 @@ import { getErrors, getWarnings } from 'getFailures';
 import { getErrorsByGroup, getWarningsByGroup } from 'getFailuresByGroup';
 import { hasErrors, hasWarnings } from 'hasFailures';
 import { hasErrorsByGroup, hasWarningsByGroup } from 'hasFailuresByGroup';
-import { isValid } from 'isValid';
+import { isValid, isValidByGroup } from 'isValid';
 import { useStateRef, useTestsFlat, useSuiteName } from 'stateHooks';
 
 const cache = createCache(1);
@@ -33,6 +33,7 @@ export function produceSuiteResult(): SuiteResult {
         hasWarnings: ctx.bind(ref, hasWarnings),
         hasWarningsByGroup: ctx.bind(ref, hasWarningsByGroup),
         isValid: ctx.bind(ref, isValid),
+        isValidByGroup: ctx.bind(ref, isValidByGroup),
         suiteName,
       });
     })
@@ -45,7 +46,8 @@ export type SuiteResult = ReturnType<typeof genTestsSummary> & {
    * Determined if there are no errors, and if no
    * required fields are skipped.
    */
-  isValid: (fieldName?: string) => boolean;
+  isValid: typeof isValid;
+  isValidByGroup: typeof isValidByGroup;
   hasErrors: typeof hasErrors;
   hasWarnings: typeof hasWarnings;
   getErrors: typeof getErrors;

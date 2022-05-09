@@ -4,7 +4,10 @@ import invariant from 'invariant';
 import { countKeyBySeverity, Severity } from 'Severity';
 import VestTest from 'VestTest';
 import ctx from 'ctx';
-import shouldAddValidProp from 'shouldAddValidProperty';
+import {
+  shouldAddValidProperty,
+  shouldAddValidPropertyInGroup,
+} from 'shouldAddValidProperty';
 import { useTestsFlat } from 'stateHooks';
 
 export function useSummary(): SuiteSummary {
@@ -35,7 +38,7 @@ export default function genTestsSummary(): SuiteSummary {
     summary
   );
 
-  summary.valid = shouldAddValidProp();
+  summary.valid = shouldAddValidProperty();
 
   return countFailures(summary);
 }
@@ -46,7 +49,7 @@ function appendToTest(tests: Tests, testObject: VestTest) {
   tests[testObject.fieldName].valid =
     tests[testObject.fieldName].valid === false
       ? false
-      : shouldAddValidProp(testObject.fieldName);
+      : shouldAddValidProperty(testObject.fieldName);
 }
 
 /**
@@ -64,6 +67,11 @@ function appendToGroup(groups: Groups, testObject: VestTest) {
     groups[groupName],
     testObject
   );
+
+  groups[groupName][testObject.fieldName].valid =
+    groups[groupName][testObject.fieldName].valid === false
+      ? false
+      : shouldAddValidPropertyInGroup(groupName, testObject.fieldName);
 }
 
 /**
@@ -85,13 +93,9 @@ function countFailures(summary: SuiteSummary): SuiteSummary {
  */
 // eslint-disable-next-line max-statements
 function appendTestObject(
-  summaryKey: Tests,
+  summaryKey: Tests | Group,
   testObject: VestTest
 ): SingleTestSummary;
-function appendTestObject(
-  summaryKey: Group,
-  testObject: VestTest
-): BaseTestSummary;
 function appendTestObject(
   summaryKey: Group | Tests,
   testObject: VestTest
@@ -145,19 +149,16 @@ export type SuiteSummary = {
 } & SummaryBase;
 
 export type TestsContainer = Group | Tests;
-export type GroupTestSummary = BaseTestSummary;
+export type GroupTestSummary = SingleTestSummary;
 
 type Groups = Record<string, Group>;
 type Group = Record<string, GroupTestSummary>;
 type Tests = Record<string, SingleTestSummary>;
 
-type SingleTestSummary = BaseTestSummary & {
-  valid: boolean;
-};
-
-type BaseTestSummary = SummaryBase & {
+type SingleTestSummary = SummaryBase & {
   errors: string[];
   warnings: string[];
+  valid: boolean;
 };
 
 type SummaryBase = {

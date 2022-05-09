@@ -235,6 +235,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
   "tests": Object {
@@ -289,6 +290,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
   "tests": Object {
@@ -343,6 +345,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
   "tests": Object {
@@ -397,6 +400,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
   "tests": Object {

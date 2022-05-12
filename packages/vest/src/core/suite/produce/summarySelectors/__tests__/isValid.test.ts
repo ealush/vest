@@ -274,7 +274,7 @@ describe('isValid', () => {
         create(() => {
           skip('field_1');
           test('field_1', () => true);
-        })().isValid()
+        })().isValid('field_1')
       ).toBe(false);
     });
 
@@ -297,7 +297,7 @@ describe('isValid', () => {
               return true;
             });
           });
-        })().isValid()
+        })().isValid('field_1')
       ).toBe(false);
     });
 
@@ -307,7 +307,7 @@ describe('isValid', () => {
           test('field_1', () => {
             return false;
           });
-        })().isValid()
+        })().isValid('field_1')
       ).toBe(false);
     });
 
@@ -317,7 +317,7 @@ describe('isValid', () => {
           test('field_1', () => {
             return true;
           });
-        })().isValid()
+        })().isValid('field_1')
       ).toBe(true);
     });
 
@@ -328,7 +328,7 @@ describe('isValid', () => {
             warn();
             return false;
           });
-        })().isValid()
+        })().isValid('field_1')
       ).toBe(true);
     });
 
@@ -339,7 +339,7 @@ describe('isValid', () => {
           skipWhen(true, () => {
             test('field_1', () => false);
           });
-        })().isValid()
+        })().isValid('field_1')
       ).toBe(true);
     });
   });

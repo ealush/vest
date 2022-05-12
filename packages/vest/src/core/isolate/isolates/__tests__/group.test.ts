@@ -1,11 +1,13 @@
 import { enforce } from 'enforce';
 import faker from 'faker';
 import _ from 'lodash';
+import partition from 'partition';
 
 import { dummyTest } from '../../../../../testUtils/testDummy';
 
 import VestTest from 'VestTest';
 import group from 'group';
+import matchingGroupName from 'matchingGroupName';
 import * as vest from 'vest';
 
 let groupName = 'group_name_1';
@@ -74,6 +76,7 @@ describe('group: exclusion', () => {
             "errorCount": 0,
             "errors": Array [],
             "testCount": 0,
+            "valid": false,
             "warnCount": 0,
             "warnings": Array [],
           },
@@ -81,6 +84,7 @@ describe('group: exclusion', () => {
             "errorCount": 0,
             "errors": Array [],
             "testCount": 0,
+            "valid": false,
             "warnCount": 0,
             "warnings": Array [],
           },
@@ -88,6 +92,7 @@ describe('group: exclusion', () => {
             "errorCount": 0,
             "errors": Array [],
             "testCount": 0,
+            "valid": false,
             "warnCount": 0,
             "warnings": Array [],
           },
@@ -95,6 +100,7 @@ describe('group: exclusion', () => {
             "errorCount": 0,
             "errors": Array [],
             "testCount": 0,
+            "valid": false,
             "warnCount": 0,
             "warnings": Array [],
           },
@@ -102,6 +108,7 @@ describe('group: exclusion', () => {
             "errorCount": 0,
             "errors": Array [],
             "testCount": 0,
+            "valid": false,
             "warnCount": 0,
             "warnings": Array [],
           },
@@ -110,23 +117,29 @@ describe('group: exclusion', () => {
     });
 
     it('Should skip tests within group', () => {
-      Object.values(groupTestObjects).forEach(testObject => {
-        if (testObject.groupName === groupName) {
+      Object.values(groupTestObjects)
+        .filter(testObject => {
+          return matchingGroupName(testObject, groupName);
+        })
+        .forEach(testObject => {
           expect(testObject.testFn).not.toHaveBeenCalled();
-        }
-      });
+        });
     });
 
     it('Should run all tests outside of the group', () => {
       Object.values(topLevelTestObjects).forEach(testObject => {
         expect(testObject.testFn).toHaveBeenCalled();
       });
-      Object.values(groupTestObjects).forEach(testObject => {
-        if (testObject.groupName !== groupName) {
-          expect(testObject.testFn).toHaveBeenCalled();
-        } else {
-          expect(testObject.testFn).not.toHaveBeenCalled();
-        }
+
+      const [withGroup, withoutGroup] = partition(
+        Object.values(groupTestObjects),
+        testObject => matchingGroupName(testObject, groupName)
+      );
+      withGroup.forEach(testObject => {
+        expect(testObject.testFn).not.toHaveBeenCalled();
+      });
+      withoutGroup.forEach(testObject => {
+        expect(testObject.testFn).toHaveBeenCalled();
       });
     });
   });
@@ -158,12 +171,19 @@ describe('group: exclusion', () => {
     });
 
     it('Should run tests within group', () => {
-      Object.values(groupTestObjects).forEach(testObject => {
-        if (testObject.groupName === groupName) {
-          expect(testObject.testFn).toHaveBeenCalled();
-        } else if (testObject.groupName) {
-          expect(testObject.testFn).not.toHaveBeenCalled();
+      const [withGroup, withoutGroup] = partition(
+        Object.values(groupTestObjects),
+        testObject => {
+          return matchingGroupName(testObject, groupName);
         }
+      );
+
+      withGroup.forEach(testObject => {
+        expect(testObject.testFn).toHaveBeenCalled();
+      });
+
+      withoutGroup.forEach(testObject => {
+        expect(testObject.testFn).not.toHaveBeenCalled();
       });
     });
   });
@@ -262,9 +282,7 @@ describe('group: base case', () => {
     );
 
     // This one is equal since it has no tests outside the group
-    expect(_.omit(res.tests['field_6'], 'valid')).toEqual(
-      res.groups[groupName]['field_6']
-    );
+    expect(res.tests['field_6']).toEqual(res.groups[groupName]['field_6']);
   });
 
   test('Group object is a subset of test object (negating previous test)', () => {

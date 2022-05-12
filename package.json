@@ -21,7 +21,7 @@
   ],
   "devDependencies": {
     "@types/jest": "^27.4.1",
-    "@types/lodash": "^4.14.181",
+    "@types/lodash": "^4.14.182",
     "@typescript-eslint/eslint-plugin": "^4.24.0",
     "@typescript-eslint/parser": "^4.24.0",
     "eslint": "^7.26.0",
@@ -30,7 +30,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^26.1.5",
     "faker": "^5.5.3",
-    "husky": "^7.0.0",
+    "husky": "^8.0.1",
     "jest": "^27.4.7",
     "lodash": "^4.17.21",
     "prettier": "^2.6.2",

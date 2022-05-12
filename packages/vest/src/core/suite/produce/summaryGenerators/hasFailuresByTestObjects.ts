@@ -1,6 +1,7 @@
 import { Severity } from 'Severity';
 import VestTest from 'VestTest';
 import { nonMatchingFieldName } from 'matchingFieldName';
+import { nonMatchingGroupName } from 'matchingGroupName';
 import nonMatchingSeverityProfile from 'nonMatchingSeverityProfile';
 import { useTestsFlat } from 'stateHooks';
 
@@ -22,6 +23,22 @@ export function hasFailuresByTestObjects(
     hasFailuresByTestObject(testObject, severityKey, fieldName)
   );
 }
+
+export function hasGroupFailuresByTestObjects(
+  severityKey: Severity,
+  groupName: string,
+  fieldName?: string
+): boolean {
+  const testObjects = useTestsFlat();
+  return testObjects.some(testObject => {
+    if (nonMatchingGroupName(testObject, groupName)) {
+      return false;
+    }
+
+    return hasFailuresByTestObject(testObject, severityKey, fieldName);
+  });
+}
+
 /**
  * Determines whether a certain test profile has failures.
  */

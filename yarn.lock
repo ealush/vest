@@ -1594,7 +1594,7 @@
     webpack-merge "^5.8.0"
     webpackbar "^5.0.2"
 
-"@docusaurus/core@^2.0.0-beta.20":
+"@docusaurus/core@2.0.0-beta.20", "@docusaurus/core@^2.0.0-beta.20":
   version "2.0.0-beta.20"
   resolved "https://registry.yarnpkg.com/@docusaurus/core/-/core-2.0.0-beta.20.tgz#cf4aeeccecacb547a6fb42340c83bed0cccb57c0"
   integrity sha512-a3UgZ4lIcIOoZd4j9INqVkWSXEDxR7EicJXt8eq2whg4N5hKGqLHoDSnWfrVSPQn4NoG5T7jhPypphSoysImfQ==
@@ -1835,7 +1835,7 @@
     "@docusaurus/utils-validation" "2.0.0-beta.18"
     tslib "^2.3.1"
 
-"@docusaurus/plugin-google-gtag@2.0.0-beta.18", "@docusaurus/plugin-google-gtag@^2.0.0-beta.18":
+"@docusaurus/plugin-google-gtag@2.0.0-beta.18":
   version "2.0.0-beta.18"
   resolved "https://registry.yarnpkg.com/@docusaurus/plugin-google-gtag/-/plugin-google-gtag-2.0.0-beta.18.tgz#b51611ac01915523ddcfc9732f7862cf4996a0e1"
   integrity sha512-h7vPuLVo/9pHmbFcvb4tCpjg4SxxX4k+nfVDyippR254FM++Z/nA5pRB0WvvIJ3ZTe0ioOb5Wlx2xdzJIBHUNg==
@@ -1843,6 +1843,15 @@
     "@docusaurus/core" "2.0.0-beta.18"
     "@docusaurus/utils-validation" "2.0.0-beta.18"
     tslib "^2.3.1"
+
+"@docusaurus/plugin-google-gtag@^2.0.0-beta.20":
+  version "2.0.0-beta.20"
+  resolved "https://registry.yarnpkg.com/@docusaurus/plugin-google-gtag/-/plugin-google-gtag-2.0.0-beta.20.tgz#7284bcfad9cb4e5d63605e95f6da73ca8ac8f053"
+  integrity sha512-EMZdiMTNg4NwE60xwjbetcqMDqAOazMTwQAQ4OuNAclv7oh8+VPCvqRF8s8AxCoI2Uqc7vh8yzNUuM307Ne9JA==
+  dependencies:
+    "@docusaurus/core" "2.0.0-beta.20"
+    "@docusaurus/utils-validation" "2.0.0-beta.20"
+    tslib "^2.4.0"
 
 "@docusaurus/plugin-sitemap@2.0.0-beta.18":
   version "2.0.0-beta.18"

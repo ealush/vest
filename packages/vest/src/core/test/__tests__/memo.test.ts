@@ -76,36 +76,33 @@ describe('test.memo', () => {
     describe('async', () => {
       it('Should immediately return previous result on re-run', async () => {
         {
-          const suite = promisify(
-            vest.create(() => {
-              vestTest.memo(
-                'field1',
-                async () => {
-                  await wait(500);
-                  enforce(1).equals(2);
-                },
-                [1]
-              );
-              vestTest.memo(
-                'field2',
-                async () => {
-                  await wait(500);
-                  enforce(1).equals(2);
-                },
-                [2]
-              );
-            })
-          );
+          const suite = vest.create(() => {
+            vestTest.memo(
+              'field1',
+              async () => {
+                await wait(500);
+                enforce(1).equals(2);
+              },
+              [1]
+            );
+            vestTest.memo(
+              'field2',
+              async () => {
+                await wait(500);
+                enforce(1).equals(2);
+              },
+              [2]
+            );
+          });
+
+          const asyncSuite = promisify(suite);
 
           let start = Date.now();
-          const res1 = await suite();
+          const res1 = await asyncSuite();
           enforce(Date.now() - start).gte(500);
 
           start = Date.now();
-          const res2 = await suite();
-
-          // Should be immediate
-          enforce(Date.now() - start).lte(1);
+          const res2 = suite();
 
           expect(res1).isDeepCopyOf(res2);
         }

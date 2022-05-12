@@ -11,7 +11,7 @@ Below is a list of all the API functions exposed by Vest.
 - [create](./writing_your_suite/vests_suite.md#basic-suite-structure) - Creates a new Vest suite. Returns a function that runs your validations.
 
   - [suite.get](./writing_your_suite/vests_suite.md#using-suiteget) - Returns the current validation state of the suite.
-  - [suite.remove](./writing_your_suite/vests_suite.md##removing-a-single-field-from-the-suite-state) - Removes a single field from the suite.
+  - [suite.remove](./writing_your_suite/vests_suite.md#removing-a-single-field-from-the-suite-state) - Removes a single field from the suite.
   - [suite.reset](./writing_your_suite/vests_suite.md#cleaning-up-our-validation-state) - Resets the suite to its initial state.
   - [suite.resetField](./writing_your_suite/vests_suite.md#cleaning-up-our-validation-state) - Resets a single field to an untested state.
 
@@ -45,13 +45,14 @@ After running your suite, the results object is returned. It has the following f
 
 - [hasErrors](./writing_your_suite/result_object.md#haserrors-and-haswarnings) - Returns true if the suite or the provided field has errors.
 - [hasWarnings](./writing_your_suite/result_object.md#haserrors-and-haswarnings) - Returns true if the suite or the provided field has warnings.
-- [getErrors](./writing_your_suite/result_object.md##geterrors-and-getwarnings) - Returns an object with errors in the suite, or an array of objects for a specific field.
-- [getWarnings](./writing_your_suite/result_object.md##geterrors-and-getwarnings) - Returns an object with warnings in the suite, or an array of objects for a specific field.
+- [getErrors](./writing_your_suite/result_object.md#geterrors-and-getwarnings) - Returns an object with errors in the suite, or an array of objects for a specific field.
+- [getWarnings](./writing_your_suite/result_object.md#geterrors-and-getwarnings) - Returns an object with warnings in the suite, or an array of objects for a specific field.
 - [hasErrorsByGroup](./writing_your_suite/result_object.md#haserrorsbygroup-and-haswarningsbygroup) - Returns true if the provided group has errors.
 - [hasWarningByGroup](./writing_your_suite/result_object.md#haserrorsbygroup-and-haswarningsbygroup) - Returns true if the provided group has warnings.
 - [getErrorsByGroup](./writing_your_suite/result_object.md#geterrorsbygroup-and-getwarningsbygroup) - Returns an object with errors in the provided group.
 - [getWarningsByGroup](./writing_your_suite/result_object.md#geterrorsbygroup-and-getwarningsbygroup) - Returns an object with warnings in the provided group.
-- [isValid](./writing_your_suite/result_object.md##isvalid) - Returns true if the suite or the provided field is valid.
+- [isValid](./writing_your_suite/result_object.md#isvalid) - Returns true if the suite or the provided field is valid.
+- [isValidByGroup](./writing_your_suite/result_object.md#isvalidbygroup) - Returns true if a certain group or a field in a group is valid or not.
 - [done](./writing_your_suite/result_object.md#done) - Accepts a callback that will run when the suite is done running.
 
 ## Vest's external exports

@@ -152,6 +152,9 @@
       "matchingFieldName": [
         "./packages/vest/src/core/suite/produce/summaryGenerators/helpers/matchingFieldName.ts"
       ],
+      "matchingGroupName": [
+        "./packages/vest/src/core/suite/produce/summaryGenerators/helpers/matchingGroupName.ts"
+      ],
       "nonMatchingSeverityProfile": [
         "./packages/vest/src/core/suite/produce/summaryGenerators/helpers/nonMatchingSeverityProfile.ts"
       ],

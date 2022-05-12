@@ -14,6 +14,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
   "tests": Object {
@@ -53,6 +54,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
   "tests": Object {
@@ -92,6 +94,7 @@ Object {
         "errorCount": 0,
         "errors": Array [],
         "testCount": 0,
+        "valid": false,
         "warnCount": 0,
         "warnings": Array [],
       },
@@ -102,6 +105,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 0,
   "tests": Object {
@@ -133,6 +137,7 @@ Object {
         "errorCount": 0,
         "errors": Array [],
         "testCount": 0,
+        "valid": false,
         "warnCount": 0,
         "warnings": Array [],
       },
@@ -140,6 +145,7 @@ Object {
         "errorCount": 0,
         "errors": Array [],
         "testCount": 0,
+        "valid": false,
         "warnCount": 0,
         "warnings": Array [],
       },
@@ -150,6 +156,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
   "tests": Object {
@@ -189,6 +196,7 @@ Object {
         "errorCount": 0,
         "errors": Array [],
         "testCount": 0,
+        "valid": false,
         "warnCount": 0,
         "warnings": Array [],
       },
@@ -196,6 +204,7 @@ Object {
         "errorCount": 0,
         "errors": Array [],
         "testCount": 0,
+        "valid": false,
         "warnCount": 0,
         "warnings": Array [],
       },
@@ -206,6 +215,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
   "tests": Object {
@@ -245,6 +255,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
   "tests": Object {
@@ -276,6 +287,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
   "tests": Object {
@@ -307,6 +319,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
   "tests": Object {
@@ -346,6 +359,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
   "tests": Object {
@@ -393,6 +407,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
   "tests": Object {
@@ -440,6 +455,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
   "tests": Object {
@@ -471,6 +487,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
   "tests": Object {
@@ -518,6 +535,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
   "tests": Object {
@@ -565,6 +583,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
   "tests": Object {
@@ -612,6 +631,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
   "tests": Object {
@@ -659,6 +679,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
   "tests": Object {
@@ -706,6 +727,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
   "tests": Object {
@@ -745,6 +767,7 @@ Object {
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
   "tests": Object {

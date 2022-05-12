@@ -94,6 +94,26 @@ resultObject.hasWarnings();
 // true
 ```
 
+## `isValidByGroup`
+
+Similar to `isValid`, but returns the result for a specified [group](../writing_tests/advanced_test_features/grouping_tests.md). Providing a group name that doesn't exist will return `false`. When adding a fieldName, only the field within that group will be checked.
+
+```js
+resultObject.isValidByGroup('groupName', 'fieldName');
+resultObject.isValidByGroup('groupName');
+```
+
+### Return Value
+
+Returns a boolean value, whether the group/field combo is valid or not.
+
+### Parameters
+
+| Parameter | Type   | Required? | Description                                                                                              |
+| --------- | ------ | --------- | -------------------------------------------------------------------------------------------------------- |
+| groupName | string | Yes       | Name of the group                                                                                        |
+| fieldName | string | No        | Name of the field. When specified, only the result for the specified field within the group is returned. |
+
 ## `hasErrorsByGroup` and `hasWarningsByGroup`
 
 Similar to `hasErrors` and `hasWarnings`, but returns the result for a specified [group](../writing_tests/advanced_test_features/grouping_tests.md)

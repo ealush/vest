@@ -1,6 +1,5 @@
 import assign from 'assign';
 import { createContext } from 'context';
-import { createCursor, Cursor } from 'cursor';
 import { CB } from 'utilityTypes';
 
 import { Isolate, IsolateTypes } from 'IsolateTypes';
@@ -23,7 +22,6 @@ export default createContext<CTXType>((ctxRef, parentContext) =>
           inclusion: {},
           isolate: generateIsolate(IsolateTypes.DEFAULT),
           mode: [Modes.ALL],
-          testCursor: createCursor(),
         },
         ctxRef
       )
@@ -31,7 +29,6 @@ export default createContext<CTXType>((ctxRef, parentContext) =>
 
 type CTXType = {
   isolate: Isolate;
-  testCursor: Cursor;
   stateRef?: StateRef;
   exclusion: {
     tests: Record<string, boolean>;

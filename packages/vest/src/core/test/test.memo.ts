@@ -3,10 +3,10 @@ import createCache from 'cache';
 import { isNull } from 'isNull';
 
 import VestTest, { TestFn } from 'VestTest';
+import { useIsolate } from 'isolate';
 import registerPrevRunTest from 'registerPrevRunTest';
 import { useSuiteId } from 'stateHooks';
 import type { TestBase } from 'test';
-import * as testCursor from 'testCursor';
 // eslint-disable-next-line max-lines-per-function
 export default function bindTestMemo(test: TestBase): {
   (fieldName: string, test: TestFn, deps: unknown[]): VestTest;
@@ -32,7 +32,7 @@ export default function bindTestMemo(test: TestBase): {
       | [message: string, test: TestFn, deps: unknown[]]
       | [test: TestFn, deps: unknown[]]
   ): VestTest {
-    const cursorAt = testCursor.useCursorAt();
+    const cursorAt = useIsolate().cursor.current();
 
     const [deps, testFn, msg] = args.reverse() as [any[], TestFn, string];
 

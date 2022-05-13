@@ -3,20 +3,21 @@ import isPromise from 'isPromise';
 import VestTest from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';
+import { useIsolate } from 'isolate';
 import { shouldSkipBasedOnMode } from 'mode';
 import { isOmitted } from 'omitWhen';
 import registerTest from 'registerTest';
 import runAsyncTest from 'runAsyncTest';
 import { isExcludedIndividually } from 'skipWhen';
-import * as testCursor from 'testCursor';
 import { useTestAtCursor, useSetTestAtCursor } from 'useTestAtCursor';
 
 // eslint-disable-next-line max-statements
 export default function registerPrevRunTest(testObject: VestTest): VestTest {
+  const isolate = useIsolate();
   if (shouldSkipBasedOnMode(testObject)) {
     testObject.skip();
     useTestAtCursor(testObject);
-    testCursor.moveForward();
+    isolate.cursor.next();
     return testObject;
   }
 
@@ -24,7 +25,7 @@ export default function registerPrevRunTest(testObject: VestTest): VestTest {
 
   if (isOmitted()) {
     prevRunTest.omit();
-    testCursor.moveForward();
+    isolate.cursor.next();
     return prevRunTest;
   }
 
@@ -34,13 +35,13 @@ export default function registerPrevRunTest(testObject: VestTest): VestTest {
     // This mostly means that we're probably giving
     // up on this async test intentionally.
     prevRunTest.skip(isExcludedIndividually());
-    testCursor.moveForward();
+    isolate.cursor.next();
     return prevRunTest;
   }
   cancelOverriddenPendingTest(prevRunTest, testObject);
 
   useSetTestAtCursor(testObject);
-  testCursor.moveForward();
+  isolate.cursor.next();
 
   registerTestObjectByTier(testObject);
 

@@ -5,13 +5,13 @@ import { deferThrow } from 'throwError';
 
 import VestTest from 'VestTest';
 import ctx from 'ctx';
+import { useCurrentPath } from 'isolate';
 import { useTestObjects } from 'stateHooks';
-import * as testCursor from 'testCursor';
 
 export function usePrevKeys(): Record<string, VestTest> {
   const [{ prev }] = useTestObjects();
 
-  return asArray(nestedArray.getCurrent(prev, testCursor.usePath())).reduce(
+  return asArray(nestedArray.getCurrent(prev, useCurrentPath())).reduce(
     (prevKeys, testObject) => {
       if (!(testObject instanceof VestTest)) {
         return prevKeys;

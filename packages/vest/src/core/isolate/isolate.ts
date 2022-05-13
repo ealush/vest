@@ -9,7 +9,6 @@ import VestTest from 'VestTest';
 import ctx from 'ctx';
 import { usePrevKeys } from 'key';
 import { useSetTests } from 'stateHooks';
-import * as testCursor from 'testCursor';
 
 export function isolate(
   { type = IsolateTypes.DEFAULT }: { type?: IsolateTypes },
@@ -17,25 +16,35 @@ export function isolate(
 ): VestTest[] | void {
   invariant(isFunction(callback));
 
-  const next = generateIsolate(type);
+  const parent = useIsolate();
 
-  const path = testCursor.usePath();
-  return ctx.run({ isolate: next }, () => {
-    testCursor.addLevel();
+  const isolate = generateIsolate(type, useCurrentPath());
 
-    next.keys.prev = usePrevKeys();
+  const output = ctx.run({ isolate }, () => {
+    isolate.keys.prev = usePrevKeys();
 
-    useSetTests(tests => nestedArray.setValueAtPath(tests, path, []));
+    useSetTests(tests => nestedArray.setValueAtPath(tests, isolate.path, []));
 
     const res = callback();
-    testCursor.removeLevel();
-    testCursor.moveForward();
     return res;
   });
+
+  parent.cursor.next();
+
+  return output;
+}
+
+export function useIsolate(): Isolate {
+  return ctx.useX().isolate;
 }
 
 export function shouldAllowReorder() {
   return ctx.useX().isolate.type === IsolateTypes.EACH;
+}
+
+export function useCurrentPath(): number[] {
+  const isolate = useIsolate();
+  return isolate.path.concat(isolate.cursor.current());
 }
 
 export function generateIsolate(

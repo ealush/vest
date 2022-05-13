@@ -7,7 +7,7 @@ import { deferThrow } from 'throwError';
 
 import VestTest from 'VestTest';
 import isSameProfileTest from 'isSameProfileTest';
-import { shouldAllowReorder, useCurrentPath, useIsolate } from 'isolate';
+import { shouldAllowReorder, useCurrentPath, useCursor } from 'isolate';
 import { usePrevTestByKey, useRetainTestKey } from 'key';
 import { useTestObjects, useSetTests } from 'stateHooks';
 
@@ -59,7 +59,7 @@ function removeAllNextTestsInIsolate() {
 
   const prevTests = testObjects.prev;
   const current = nestedArray.getCurrent(prevTests, useCurrentPath());
-  const cursorAt = useIsolate().cursor.current();
+  const cursorAt = useCursor().current();
 
   current.splice(cursorAt);
   // We actually don't mind mutating the state directly (as can be seen above). There is no harm in it

@@ -8,17 +8,22 @@ export function createIsolateCursor(): IsolateCursor {
     next,
   };
 
+  /**
+   * @returns {number} The current value of the cursor
+   */
   function current(): number {
     return cursor.value;
   }
 
-  function next(): number {
+  /**
+   * Moves the isolate cursor forward by 1
+   */
+  function next(): void {
     cursor.value++;
-    return cursor.value;
   }
 }
 
 export type IsolateCursor = {
   current: () => number;
-  next: () => number;
+  next: () => void;
 };

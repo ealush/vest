@@ -3,7 +3,7 @@ import createCache from 'cache';
 import { isNull } from 'isNull';
 
 import VestTest, { TestFn } from 'VestTest';
-import { useIsolate } from 'isolate';
+import { useCursor } from 'isolate';
 import registerPrevRunTest from 'registerPrevRunTest';
 import { useSuiteId } from 'stateHooks';
 import type { TestBase } from 'test';
@@ -32,7 +32,7 @@ export default function bindTestMemo(test: TestBase): {
       | [message: string, test: TestFn, deps: unknown[]]
       | [test: TestFn, deps: unknown[]]
   ): VestTest {
-    const cursorAt = useIsolate().cursor.current();
+    const cursorAt = useCursor().current();
 
     const [deps, testFn, msg] = args.reverse() as [any[], TestFn, string];
 

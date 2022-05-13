@@ -1,13 +1,13 @@
 import assign from 'assign';
 import { createContext } from 'context';
-import { createCursor, Cursor } from 'cursor';
 import { CB } from 'utilityTypes';
 
-import { IsolateKeys, IsolateTypes } from 'IsolateTypes';
+import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { Modes } from 'Modes';
 import VestTest from 'VestTest';
 import type { StateRef } from 'createStateRef';
 import { SuiteSummary } from 'genTestsSummary';
+import { generateIsolate } from 'isolate';
 
 export default createContext<CTXType>((ctxRef, parentContext) =>
   parentContext
@@ -20,26 +20,15 @@ export default createContext<CTXType>((ctxRef, parentContext) =>
             groups: {},
           },
           inclusion: {},
-          isolate: {
-            type: IsolateTypes.DEFAULT,
-            keys: {
-              current: {},
-              prev: {},
-            },
-          },
+          isolate: generateIsolate(IsolateTypes.DEFAULT),
           mode: [Modes.ALL],
-          testCursor: createCursor(),
         },
         ctxRef
       )
 );
 
 type CTXType = {
-  isolate: {
-    type: IsolateTypes;
-    keys: IsolateKeys;
-  };
-  testCursor: Cursor;
+  isolate: Isolate;
   stateRef?: StateRef;
   exclusion: {
     tests: Record<string, boolean>;

@@ -7,10 +7,9 @@ import { deferThrow } from 'throwError';
 
 import VestTest from 'VestTest';
 import isSameProfileTest from 'isSameProfileTest';
-import { shouldAllowReorder } from 'isolate';
+import { shouldAllowReorder, useCurrentPath, useCursor } from 'isolate';
 import { usePrevTestByKey, useRetainTestKey } from 'key';
 import { useTestObjects, useSetTests } from 'stateHooks';
-import * as testCursor from 'testCursor';
 
 /**
  * This module serves as the "collision detection" mechanism for Vest.
@@ -59,8 +58,9 @@ function removeAllNextTestsInIsolate() {
   const [testObjects, setTestObjects] = useTestObjects();
 
   const prevTests = testObjects.prev;
-  const current = nestedArray.getCurrent(prevTests, testCursor.usePath());
-  const cursorAt = testCursor.useCursorAt();
+  const current = nestedArray.getCurrent(prevTests, useCurrentPath());
+  const cursorAt = useCursor().current();
+
   current.splice(cursorAt);
   // We actually don't mind mutating the state directly (as can be seen above). There is no harm in it
   // since we're only touching the "prev" state. The reason we still use the setter function is
@@ -72,7 +72,7 @@ function removeAllNextTestsInIsolate() {
 }
 
 export function useSetTestAtCursor(testObject: VestTest): void {
-  const cursorPath = testCursor.usePath();
+  const cursorPath = useCurrentPath();
 
   useSetTests(tests =>
     nestedArray.setValueAtPath(tests, cursorPath, testObject)
@@ -80,7 +80,7 @@ export function useSetTestAtCursor(testObject: VestTest): void {
 }
 
 function useGetTestAtCursor(tests: NestedArray<VestTest>): VestTest {
-  const cursorPath = testCursor.usePath();
+  const cursorPath = useCurrentPath();
 
   return nestedArray.valueAtPath(tests, cursorPath) as VestTest;
 }

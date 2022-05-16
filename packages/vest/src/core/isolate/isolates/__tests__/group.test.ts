@@ -311,4 +311,50 @@ describe('group: base case', () => {
       expect(outsideGroup).not.toHaveProperty('groupName');
     });
   });
+
+  test('Group validity', () => {
+    const suite = vest.create(() => {
+      vest.group('group_1', () => {
+        vest.test('field_1', () => {});
+        vest.test('field_2', () => {});
+        vest.test('field_2', () => false);
+      });
+      vest.group('group_2', () => {
+        vest.test('field_1', () => false);
+        vest.test('field_2', () => {});
+      });
+      vest.group('group_3', () => {
+        vest.test('field_1', () => false);
+        vest.test('field_2', () => false);
+      });
+      vest.group('group_4', () => {
+        vest.test('field_1', () => {});
+        vest.test('field_2', () => {});
+      });
+    });
+
+    const res = suite();
+
+    expect(res.groups.group_1.field_1.valid).toBe(true);
+    expect(res.groups.group_1.field_2.valid).toBe(false);
+    expect(res.groups.group_2.field_1.valid).toBe(false);
+    expect(res.groups.group_2.field_2.valid).toBe(true);
+    expect(res.groups.group_3.field_1.valid).toBe(false);
+    expect(res.groups.group_3.field_2.valid).toBe(false);
+    expect(res.groups.group_4.field_1.valid).toBe(true);
+    expect(res.groups.group_4.field_2.valid).toBe(true);
+    expect(res.isValidByGroup('group_1')).toBe(false);
+    expect(res.isValidByGroup('group_1', 'field_1')).toBe(true);
+    expect(res.isValidByGroup('group_1', 'field_2')).toBe(false);
+    expect(res.isValidByGroup('group_2')).toBe(false);
+    expect(res.isValidByGroup('group_2', 'field_1')).toBe(false);
+    expect(res.isValidByGroup('group_2', 'field_2')).toBe(true);
+    expect(res.isValidByGroup('group_3')).toBe(false);
+    expect(res.isValidByGroup('group_3', 'field_1')).toBe(false);
+    expect(res.isValidByGroup('group_3', 'field_2')).toBe(false);
+    expect(res.isValidByGroup('group_4')).toBe(true);
+    expect(res.isValidByGroup('group_4', 'field_1')).toBe(true);
+    expect(res.isValidByGroup('group_4', 'field_2')).toBe(true);
+    expect(res).toMatchSnapshot();
+  });
 });

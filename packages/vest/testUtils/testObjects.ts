@@ -1,21 +1,14 @@
 import VestTest from 'VestTest';
-import { useTestObjects } from 'stateHooks';
+import { useSetTests } from 'stateHooks';
 
 export function emptyTestObjects(): void {
-  const [, setTestObjects] = useTestObjects();
-  setTestObjects(({ prev }) => ({ prev, current: [] }));
+  useSetTests(() => []);
 }
 
 export function setTestObjects(...args: VestTest[]): void {
-  const [, setTestObjects] = useTestObjects();
-  setTestObjects(({ prev }) => ({ prev, current: [...args] }));
+  useSetTests(() => [...args]);
 }
 
 export function addTestObject(addedTests: VestTest[] | VestTest): void {
-  const [, setTestObjects] = useTestObjects();
-
-  setTestObjects(({ prev, current }) => ({
-    prev,
-    current: current.concat(addedTests),
-  }));
+  useSetTests(tests => tests.concat(addedTests));
 }

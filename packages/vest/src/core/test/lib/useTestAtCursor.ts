@@ -8,6 +8,7 @@ import { deferThrow } from 'throwError';
 import VestTest from 'VestTest';
 import isSameProfileTest from 'isSameProfileTest';
 import { shouldAllowReorder, useCurrentPath, useCursor } from 'isolate';
+import { setIsolateCurrentTests } from 'isolateHooks';
 import { usePrevTestByKey, useRetainTestKey } from 'key';
 import { useTestObjects, useSetTests } from 'stateHooks';
 
@@ -55,16 +56,20 @@ export function useTestAtCursor(newTestObject: VestTest): VestTest {
 }
 
 function removeAllNextTestsInIsolate() {
+  const [testObjects, setTestObjects] = useTestObjects();
+
+  const prevTests = testObjects.prev;
+  const current = nestedArray.getCurrent(prevTests, useCurrentPath());
   const cursorAt = useCursor().current();
 
+  current.splice(cursorAt);
   // We actually don't mind mutating the state directly (as can be seen above). There is no harm in it
   // since we're only touching the "prev" state. The reason we still use the setter function is
   // to prevent future headaches if we ever do need to rely on prev-state immutability.
-
-  useSetTests(current => {
-    current.splice(cursorAt);
-    return current;
-  });
+  setTestObjects(({ current }) => ({
+    prev: prevTests,
+    current,
+  }));
 }
 
 export function useSetTestAtCursor(testObject: VestTest): void {
@@ -73,6 +78,7 @@ export function useSetTestAtCursor(testObject: VestTest): void {
   useSetTests(tests =>
     nestedArray.setValueAtPath(tests, cursorPath, testObject)
   );
+  setIsolateCurrentTests(testObject);
 }
 
 function useGetTestAtCursor(tests: NestedArray<VestTest>): VestTest {

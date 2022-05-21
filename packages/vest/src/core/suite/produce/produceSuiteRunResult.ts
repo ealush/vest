@@ -5,6 +5,7 @@ import isFunction from 'isFunction';
 
 import ctx from 'ctx';
 import hasRemainingTests from 'hasRemainingTests';
+import { useIsolate } from 'isolateHooks';
 import { produceSuiteResult, SuiteResult } from 'produceSuiteResult';
 import { useStateRef, useTestCallbacks, useTestsFlat } from 'stateHooks';
 
@@ -12,7 +13,7 @@ const cache = createCache(20);
 
 export function produceFullResult(): SuiteRunResult {
   const testObjects = useTestsFlat();
-  const ctxRef = { stateRef: useStateRef() };
+  const ctxRef = { stateRef: useStateRef(), isolate: useIsolate() };
   return cache(
     [testObjects],
     ctx.bind(ctxRef, () =>

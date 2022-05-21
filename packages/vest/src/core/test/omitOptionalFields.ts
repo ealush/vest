@@ -4,6 +4,7 @@ import isFunction from 'isFunction';
 import * as nestedArray from 'nestedArray';
 
 import VestTest from 'VestTest';
+import { setIsolateRootTests } from 'isolateHooks';
 import {
   useOptionalFields,
   useSetTests,
@@ -20,7 +21,7 @@ export default function omitOptionalFields(): void {
 
   const shouldOmit: Record<string, boolean> = {};
 
-  useSetTests(tests =>
+  const cb = tests =>
     nestedArray.transform(tests, (testObject: VestTest) => {
       const fieldName = testObject.fieldName;
 
@@ -31,8 +32,10 @@ export default function omitOptionalFields(): void {
       }
 
       return testObject;
-    })
-  );
+    });
+
+  useSetTests(cb);
+  setIsolateRootTests(cb);
 
   function verifyAndOmit(testObject: VestTest) {
     if (shouldOmit[testObject.fieldName]) {

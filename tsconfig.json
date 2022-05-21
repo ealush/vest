@@ -121,6 +121,7 @@
       "ctx": ["./packages/vest/src/core/ctx/ctx.ts"],
       "isolate": ["./packages/vest/src/core/isolate/isolate.ts"],
       "isolateCursor": ["./packages/vest/src/core/isolate/isolateCursor.ts"],
+      "isolateHooks": ["./packages/vest/src/core/isolate/isolateHooks.ts"],
       "each": ["./packages/vest/src/core/isolate/isolates/each.ts"],
       "group": ["./packages/vest/src/core/isolate/isolates/group.ts"],
       "omitWhen": ["./packages/vest/src/core/isolate/isolates/omitWhen.ts"],

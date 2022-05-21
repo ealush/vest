@@ -9,6 +9,7 @@ import { ValueOf } from 'utilityTypes';
 import VestTest from 'VestTest';
 import type { StateKey, StateRef, StateValue } from 'createStateRef';
 import ctx from 'ctx';
+import { useIsolateRootTests, useRefreshIsolateRootTests } from 'isolateHooks';
 
 // STATE REF
 export function useStateRef(): Exclude<StateRef, void> {
@@ -76,6 +77,7 @@ export function useTestObjects(): StateKey<'testObjects'> {
 
 export function useRefreshTestObjects(): void {
   useSetTests(tests => tests);
+  useRefreshIsolateRootTests();
 }
 
 export function useSetTests(
@@ -98,6 +100,9 @@ export function useAllIncomplete(): VestTest[] {
 const flatCache = createCache();
 export function useTestsFlat(): VestTest[] {
   const [{ current }] = useTestObjects();
+  const all = useIsolateRootTests();
+
+  expect(all).toEqual(current);
 
   return flatCache([current], () => nestedArray.flatten(current));
 }

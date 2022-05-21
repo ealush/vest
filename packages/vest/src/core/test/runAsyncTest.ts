@@ -3,6 +3,7 @@ import { isStringValue } from 'isStringValue';
 
 import VestTest from 'VestTest';
 import ctx from 'ctx';
+import { useIsolate } from 'isolateHooks';
 import { useRefreshTestObjects, useStateRef } from 'stateHooks';
 import { useBus, Events } from 'vestBus';
 /**
@@ -16,12 +17,13 @@ export default function runAsyncTest(testObject: VestTest): void {
   const { emit } = useBus();
 
   const stateRef = useStateRef();
-  const done = ctx.bind({ stateRef }, () => {
+  const isolate = useIsolate();
+  const done = ctx.bind({ stateRef, isolate }, () => {
     // invalidating the "produce" cache
     useRefreshTestObjects();
     emit(Events.TEST_COMPLETED, testObject);
   });
-  const fail = ctx.bind({ stateRef }, (rejectionMessage?: string) => {
+  const fail = ctx.bind({ stateRef, isolate }, (rejectionMessage?: string) => {
     if (testObject.isCanceled()) {
       return;
     }

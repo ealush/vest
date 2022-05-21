@@ -222,20 +222,44 @@ describe('exclusive hooks', () => {
       let suite;
 
       beforeEach(() => {
+        // suite = vest.create(() => {
+        //   vest.only.group('group_1');
+        //   vest.group('group_1', () => {
+        //     vest.test('field_1', jest.fn());
+        //   });
+        //   vest.group('group_2', () => {
+        //     vest.test('field_2', jest.fn());
+        //   });
+        // });
+        // suite();
+      });
+
+      it.only('Should exclude test', () => {
         suite = vest.create(() => {
           vest.only.group('group_1');
 
+          console.log('entering group 1');
           vest.group('group_1', () => {
+            console.log('entered group 1');
             vest.test('field_1', jest.fn());
+
+            console.log('exiting group 1');
           });
+          console.log('exited group 1');
+          console.log('entering group 2');
+          console.log(
+            JSON.stringify(
+              vest.context.useX().isolate.tests.root.current,
+              null,
+              2
+            )
+          );
           vest.group('group_2', () => {
+            console.log('entered group 2');
             vest.test('field_2', jest.fn());
           });
         });
         suite();
-      });
-
-      it('Should exclude test', () => {
         expect(suite.get().tests.field_2.testCount).toBe(0);
       });
     });

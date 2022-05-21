@@ -1,3 +1,5 @@
+import { NestedArray } from 'nestedArray';
+
 import VestTest from 'VestTest';
 import { IsolateCursor } from 'isolateCursor';
 
@@ -20,4 +22,11 @@ export type Isolate = {
   keys: IsolateKeys;
   path: number[];
   cursor: IsolateCursor;
+  tests: {
+    root: {
+      current: NestedArray<VestTest>;
+    };
+    current: NestedArray<VestTest>;
+  };
+  parent: Isolate | null;
 };

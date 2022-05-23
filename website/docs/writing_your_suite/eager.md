@@ -6,7 +6,7 @@ sidebar_position: 5
 
 Sometimes we wish to fail fast and not continue run subsequent tests of a failing field. We can do this manually per test using [skipWhen](./including_and_excluding/skipWhen.md), but if we want to do this automatically for all the tests in the suite, we can set the suite to `eager` mode.
 
-`eager` mode means that once a test of a given field fails, the suite will continue running subsequent tests of that same field. Other tests will run normally.
+`eager` mode means that once a test of a given field fails, the suite will not continue running subsequent tests of that same field. Other tests will run normally.
 
 :::tip NOTE
 Eager mode disregards groups and nested blocks, meaning that a failing field at any level, will skip its subsequent runs regardless of where the test was specified.

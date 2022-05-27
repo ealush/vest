@@ -4,8 +4,7 @@ import * as nestedArray from 'nestedArray';
 import { deferThrow } from 'throwError';
 
 import VestTest from 'VestTest';
-import ctx from 'ctx';
-import { useCurrentPath } from 'isolate';
+import { useCurrentPath, useIsolate } from 'isolate';
 import { useTestObjects } from 'stateHooks';
 
 export function usePrevKeys(): Record<string, VestTest> {
@@ -29,14 +28,12 @@ export function usePrevKeys(): Record<string, VestTest> {
 }
 
 export function usePrevTestByKey(key: string): VestTest | undefined {
-  const prev = ctx.useX().isolate.keys.prev;
+  const prev = useIsolate().keys.prev;
   return prev[key];
 }
 
 export function useRetainTestKey(key: string, testObject: VestTest) {
-  const context = ctx.useX();
-
-  const current = context.isolate.keys.current;
+  const current = useIsolate().keys.current;
   if (isNullish(current[key])) {
     current[key] = testObject;
   } else {

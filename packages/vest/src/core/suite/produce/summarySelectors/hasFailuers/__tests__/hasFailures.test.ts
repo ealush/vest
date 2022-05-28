@@ -1,120 +1,140 @@
 import faker from 'faker';
 
-import itWithContext from '../../../../../../../testUtils/itWithContext';
 import { dummyTest } from '../../../../../../../testUtils/testDummy';
-import {
-  setTestObjects,
-  emptyTestObjects,
-} from '../../../../../../../testUtils/testObjects';
 
-import { produceSuiteResult } from 'produceSuiteResult';
-import { produceFullResult } from 'produceSuiteRunResult';
+import * as vest from 'vest';
 
-const methods = {
-  produceSuiteResult,
-  produceFullResult,
-};
-
-describe.each(Object.keys(methods))('produce method: %s', methodName => {
-  const produceMethod = methods[methodName];
-
+describe('produce method: hasFailures', () => {
   const fieldName = faker.random.word();
 
-  describe(`${methodName}->hasErrors`, () => {
+  describe(`hasErrors`, () => {
     describe('When no test objects', () => {
-      itWithContext('should return false', () => {
-        emptyTestObjects();
-        expect(produceMethod().hasErrors(fieldName)).toBe(false);
-        expect(produceMethod().hasErrors()).toBe(false);
+      it('should return false', () => {
+        const suite = vest.create(() => {});
+        const res = suite();
+        expect(res.hasErrors(fieldName)).toBe(false);
+        expect(suite.get().hasErrors(fieldName)).toBe(false);
+        expect(res.hasErrors()).toBe(false);
+        expect(suite.get().hasErrors()).toBe(false);
       });
     });
 
     describe('When no failing test objects', () => {
-      itWithContext('should return false', () => {
-        setTestObjects(
-          dummyTest.passing(fieldName),
-          dummyTest.passing('field_1'),
-          dummyTest.passing('field_2')
-        );
-        expect(produceMethod().hasErrors(fieldName)).toBe(false);
-        expect(produceMethod().hasErrors()).toBe(false);
+      it('should return false', () => {
+        const suite = vest.create(() => {
+          dummyTest.passing(fieldName);
+          dummyTest.passing('field_1');
+          dummyTest.passing('field_2');
+        });
+        const res = suite();
+        expect(res.hasErrors(fieldName)).toBe(false);
+        expect(suite.get().hasErrors(fieldName)).toBe(false);
+        expect(res.hasErrors()).toBe(false);
+        expect(suite.get().hasErrors()).toBe(false);
       });
     });
 
     describe('When failed fields are warning', () => {
-      itWithContext('should return false', () => {
-        setTestObjects(
-          dummyTest.failingWarning(),
-          dummyTest.passing(fieldName)
-        );
-        expect(produceMethod().hasErrors(fieldName)).toBe(false);
-        expect(produceMethod().hasErrors()).toBe(false);
+      it('should return false', () => {
+        const suite = vest.create(() => {
+          dummyTest.failingWarning();
+          dummyTest.passing(fieldName);
+        });
+        const res = suite();
+        expect(res.hasErrors(fieldName)).toBe(false);
+        expect(suite.get().hasErrors(fieldName)).toBe(false);
+        expect(res.hasErrors()).toBe(false);
+        expect(suite.get().hasErrors()).toBe(false);
       });
     });
 
     describe('When field has an error', () => {
-      itWithContext(
-        'Should return true when some of the tests of the field are erroring',
-        () => {
-          setTestObjects(dummyTest.passing(), dummyTest.failing(fieldName));
-          expect(produceMethod().hasErrors(fieldName)).toBe(true);
-          expect(produceMethod().hasErrors()).toBe(true);
-        }
-      );
+      it('Should return true when some of the tests of the field are erroring', () => {
+        const suite = vest.create(() => {
+          dummyTest.passing();
+          dummyTest.failing(fieldName);
+        });
+        const res = suite();
+        expect(res.hasErrors(fieldName)).toBe(true);
+        expect(suite.get().hasErrors(fieldName)).toBe(true);
+        expect(res.hasErrors()).toBe(true);
+        expect(suite.get().hasErrors()).toBe(true);
+      });
 
-      itWithContext('should return true', () => {
-        setTestObjects(dummyTest.failing(fieldName));
-        expect(produceMethod().hasErrors(fieldName)).toBe(true);
-        expect(produceMethod().hasErrors()).toBe(true);
+      it('should return true', () => {
+        const suite = vest.create(() => {
+          dummyTest.failing(fieldName);
+        });
+        const res = suite();
+        expect(res.hasErrors(fieldName)).toBe(true);
+        expect(suite.get().hasErrors(fieldName)).toBe(true);
+        expect(res.hasErrors()).toBe(true);
+        expect(suite.get().hasErrors()).toBe(true);
       });
     });
   });
 
-  describe(`${methodName}->hasWarnings`, () => {
+  describe(`hasWarnings`, () => {
     describe('When no test objects', () => {
-      itWithContext('should return false', () => {
-        emptyTestObjects();
-        expect(produceMethod().hasWarnings(fieldName)).toBe(false);
-        expect(produceMethod().hasWarnings()).toBe(false);
+      it('should return false', () => {
+        const suite = vest.create(() => {});
+        const res = suite();
+        expect(res.hasWarnings(fieldName)).toBe(false);
+        expect(suite.get().hasWarnings(fieldName)).toBe(false);
+        expect(res.hasWarnings()).toBe(false);
+        expect(suite.get().hasWarnings()).toBe(false);
       });
     });
 
     describe('When no failing test objects', () => {
-      itWithContext('should return false', () => {
-        setTestObjects(
-          dummyTest.passingWarning(fieldName),
-          dummyTest.passing('field_1')
-        );
-        expect(produceMethod().hasWarnings(fieldName)).toBe(false);
-        expect(produceMethod().hasWarnings()).toBe(false);
+      it('should return false', () => {
+        const suite = vest.create(() => {
+          dummyTest.passingWarning(fieldName);
+          dummyTest.passing('field_1');
+        });
+        const res = suite();
+        expect(res.hasWarnings(fieldName)).toBe(false);
+        expect(suite.get().hasWarnings(fieldName)).toBe(false);
+        expect(res.hasWarnings()).toBe(false);
+        expect(suite.get().hasWarnings()).toBe(false);
       });
     });
 
     describe('When failed fields is not warning', () => {
-      itWithContext('should return false', () => {
-        setTestObjects(dummyTest.failing(fieldName));
-        expect(produceMethod().hasWarnings(fieldName)).toBe(false);
-        expect(produceMethod().hasWarnings()).toBe(false);
+      it('should return false', () => {
+        const suite = vest.create(() => {
+          dummyTest.failing(fieldName);
+        });
+        const res = suite();
+        expect(res.hasWarnings(fieldName)).toBe(false);
+        expect(suite.get().hasWarnings(fieldName)).toBe(false);
+        expect(res.hasWarnings()).toBe(false);
+        expect(suite.get().hasWarnings()).toBe(false);
       });
     });
 
     describe('When field is warning', () => {
-      itWithContext(
-        'Should return true when some of the tests of the field are warning',
-        () => {
-          setTestObjects(
-            dummyTest.passingWarning(),
-            dummyTest.failingWarning(fieldName)
-          );
-          expect(produceMethod().hasWarnings(fieldName)).toBe(true);
-          expect(produceMethod().hasWarnings()).toBe(true);
-        }
-      );
+      it('Should return true when some of the tests of the field are warning', () => {
+        const suite = vest.create(() => {
+          dummyTest.passingWarning();
+          dummyTest.failingWarning(fieldName);
+        });
+        const res = suite();
+        expect(res.hasWarnings(fieldName)).toBe(true);
+        expect(suite.get().hasWarnings(fieldName)).toBe(true);
+        expect(res.hasWarnings()).toBe(true);
+        expect(suite.get().hasWarnings()).toBe(true);
+      });
 
-      itWithContext('should return false', () => {
-        setTestObjects(dummyTest.failingWarning(fieldName));
-        expect(produceMethod().hasWarnings(fieldName)).toBe(true);
-        expect(produceMethod().hasWarnings()).toBe(true);
+      it('should return false', () => {
+        const suite = vest.create(() => {
+          dummyTest.failingWarning(fieldName);
+        });
+        const res = suite();
+        expect(res.hasWarnings(fieldName)).toBe(true);
+        expect(suite.get().hasWarnings(fieldName)).toBe(true);
+        expect(res.hasWarnings()).toBe(true);
+        expect(suite.get().hasWarnings()).toBe(true);
       });
     });
   });

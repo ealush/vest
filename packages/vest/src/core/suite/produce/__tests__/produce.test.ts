@@ -1,112 +1,114 @@
-import itWithContext from '../../../../../testUtils/itWithContext';
+import { ser } from '../../../../../testUtils/suiteDummy';
 import { dummyTest } from '../../../../../testUtils/testDummy';
-import { setTestObjects } from '../../../../../testUtils/testObjects';
 
-import { produceSuiteResult } from 'produceSuiteResult';
-import { produceFullResult } from 'produceSuiteRunResult';
+import * as vest from 'vest';
 
-const methods = {
-  produceSuiteResult,
-  produceFullResult,
-};
-
-describe.each(Object.keys(methods))('produce method: %s', methodName => {
-  const produceMethod = methods[methodName];
+describe('produce method Suite Result', () => {
   describe('Base structure', () => {
-    itWithContext('Should match snapshot', () => {
-      expect(produceMethod()).toMatchObject({
+    it('Should match snapshot', () => {
+      const suite = vest.create(() => {});
+      expect(suite()).toMatchObject({
         errorCount: 0,
         groups: {},
         testCount: 0,
         tests: {},
         warnCount: 0,
       });
+      expect(ser(suite())).toEqual(ser(suite.get()));
     });
 
-    itWithContext('Its methods should reflect the correct test data', () => {
-      setTestObjects(
-        dummyTest.passing('field_1'),
-        dummyTest.failing('field_1', 'message'),
-        dummyTest.failing('field_1', 'failure_message'),
-        dummyTest.failing('field_1', 'failure_message with group', 'group_1'),
-        dummyTest.failingWarning('field_2', 'warning test'),
-        dummyTest.failingWarning('field_2', 'another warning test'),
-        dummyTest.passing('field_2'),
-        dummyTest.passing('field_3', '', 'group_1'),
-        dummyTest.failing('field_3', 'msg'),
-        dummyTest.passing('field_4'),
-        dummyTest.passing('field_5', '', 'group_2'),
-        dummyTest.failingWarning('field_5', 'warning message', 'group_2')
-      );
+    it('Its methods should reflect the correct test data', () => {
+      const suite = vest.create(() => {
+        dummyTest.passing('field_1');
+        dummyTest.failing('field_1', 'message');
+        dummyTest.failing('field_1', 'failure_message');
+        dummyTest.failing('field_1', 'failure_message with group', 'group_1');
+        dummyTest.failingWarning('field_2', 'warning test');
+        dummyTest.failingWarning('field_2', 'another warning test');
+        dummyTest.passing('field_2');
+        dummyTest.passing('field_3', '', 'group_1');
+        dummyTest.failing('field_3', 'msg');
+        dummyTest.passing('field_4');
+        dummyTest.passing('field_5', '', 'group_2');
+        dummyTest.failingWarning('field_5', 'warning message', 'group_2');
+      });
 
-      expect(produceMethod().hasErrors()).toBe(true);
-      expect(produceMethod().hasErrors('field_1')).toBe(true);
-      expect(produceMethod().hasErrors('field_2')).toBe(false);
-      expect(produceMethod().hasErrors('field_3')).toBe(true);
-      expect(produceMethod().hasErrors('field_4')).toBe(false);
-      expect(produceMethod().hasErrors('field_5')).toBe(false);
-      expect(produceMethod().hasWarnings('field_1')).toBe(false);
-      expect(produceMethod().hasWarnings('field_2')).toBe(true);
-      expect(produceMethod().hasWarnings('field_3')).toBe(false);
-      expect(produceMethod().hasWarnings('field_4')).toBe(false);
-      expect(produceMethod().hasWarnings('field_5')).toBe(true);
-      expect(produceMethod().getErrors()).toEqual({
+      const res = suite();
+
+      expect(ser(suite.get())).toEqual(ser(res));
+
+      expect(res.hasErrors()).toBe(true);
+      expect(res.hasErrors('field_1')).toBe(true);
+      expect(res.hasErrors('field_2')).toBe(false);
+      expect(res.hasErrors('field_3')).toBe(true);
+      expect(res.hasErrors('field_4')).toBe(false);
+      expect(res.hasErrors('field_5')).toBe(false);
+      expect(res.hasWarnings('field_1')).toBe(false);
+      expect(res.hasWarnings('field_2')).toBe(true);
+      expect(res.hasWarnings('field_3')).toBe(false);
+      expect(res.hasWarnings('field_4')).toBe(false);
+      expect(res.hasWarnings('field_5')).toBe(true);
+      expect(res.getErrors()).toEqual({
         field_1: ['message', 'failure_message', 'failure_message with group'],
         field_3: ['msg'],
       });
-      expect(produceMethod().getWarnings()).toEqual({
+      expect(res.getWarnings()).toEqual({
         field_2: ['warning test', 'another warning test'],
         field_5: ['warning message'],
       });
-      expect(produceMethod().getErrors()).toEqual({
+      expect(res.getErrors()).toEqual({
         field_1: ['message', 'failure_message', 'failure_message with group'],
         field_3: ['msg'],
       });
-      expect(produceMethod().hasErrorsByGroup('group_1')).toBe(true);
-      expect(produceMethod().hasErrorsByGroup('group_1', 'field_1')).toBe(true);
-      expect(produceMethod().hasErrorsByGroup('group_2')).toBe(false);
-      expect(produceMethod().hasErrorsByGroup('group_1', 'field_2')).toBe(
-        false
-      );
-      expect(produceMethod().hasErrorsByGroup('group_3')).toBe(false);
-      expect(produceMethod().hasWarningsByGroup('group_1')).toBe(false);
-      expect(produceMethod().hasWarningsByGroup('group_1', 'field_1')).toBe(
-        false
-      );
-      expect(produceMethod().hasWarningsByGroup('group_2')).toBe(true);
-      expect(produceMethod().hasWarningsByGroup('group_1', 'field_2')).toBe(
-        false
-      );
-      expect(produceMethod().hasWarningsByGroup('group_2', 'field_5')).toBe(
-        true
-      );
+      expect(res.hasErrorsByGroup('group_1')).toBe(true);
+      expect(res.hasErrorsByGroup('group_1', 'field_1')).toBe(true);
+      expect(res.hasErrorsByGroup('group_2')).toBe(false);
+      expect(res.hasErrorsByGroup('group_1', 'field_2')).toBe(false);
+      expect(res.hasErrorsByGroup('group_3')).toBe(false);
+      expect(res.hasWarningsByGroup('group_1')).toBe(false);
+      expect(res.hasWarningsByGroup('group_1', 'field_1')).toBe(false);
+      expect(res.hasWarningsByGroup('group_2')).toBe(true);
+      expect(res.hasWarningsByGroup('group_1', 'field_2')).toBe(false);
+      expect(res.hasWarningsByGroup('group_2', 'field_5')).toBe(true);
     });
   });
 
   describe('Value memoization', () => {
-    itWithContext('When unchanged, should produce a memoized result', () => {
-      const prev = { ...produceMethod() };
-      expect(prev).toMatchObject(produceMethod());
-      expect(produceMethod()).toBe(produceMethod());
+    it('When unchanged, should produce a memoized result', () => {
+      const suite = vest.create(() => {
+        dummyTest.passing('field_1');
+        dummyTest.failing('field_1', 'message');
+      });
+      const res = suite();
+      expect(res).toMatchObject(suite.get());
+      expect(suite.get()).toBe(suite.get());
     });
 
-    itWithContext('When changed, should produce a new result object', () => {
-      let current = produceMethod();
-      setTestObjects(dummyTest.passing());
-      expect(current).not.toMatchObject(produceMethod());
-      expect(current).not.toBe(produceMethod());
-      current = produceMethod();
-      setTestObjects(dummyTest.failing());
-      expect(current).not.toMatchObject(produceMethod());
-      expect(current).not.toBe(produceMethod());
+    it('When changed, should produce a new result object', () => {
+      const suite = vest.create((v1, v2) => {
+        vest.test('f1', () => {
+          vest.enforce(v1).equals(1);
+        });
+        vest.test('f2', () => {
+          vest.enforce(v2).equals(2);
+        });
+      });
+      const res1 = suite(1, 2);
+      const res2 = suite(1, 1);
+      suite(2, 1);
+      expect(res1).not.toMatchObject(suite.get());
+      expect(res1).not.toBe(suite.get());
+      expect(res2).not.toMatchObject(suite.get());
+      expect(res2).not.toBe(suite.get());
     });
   });
 });
 
-describe('produceSuiteResult', () => {
+describe('suite.get()', () => {
   describe('exposed methods', () => {
-    itWithContext('Should have all exposed methods', () => {
-      expect(produceSuiteResult()).toMatchInlineSnapshot(`
+    it('Should have all exposed methods', () => {
+      const suite = vest.create(() => {});
+      expect(suite.get()).toMatchInlineSnapshot(`
         Object {
           "errorCount": 0,
           "getErrors": [Function],
@@ -131,10 +133,10 @@ describe('produceSuiteResult', () => {
   });
 });
 
-describe('produceFullResult', () => {
+describe('suite()', () => {
   describe('exposed methods', () => {
-    itWithContext('Should have all exposed methods', () => {
-      expect(produceFullResult()).toMatchInlineSnapshot(`
+    it('Should have all exposed methods', () => {
+      expect(vest.create(() => {})()).toMatchInlineSnapshot(`
         Object {
           "done": [Function],
           "errorCount": 0,

@@ -16,7 +16,7 @@
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-ts": "^2.0.7",
     "ts-jest": "^28.0.3",
-    "yargs": "^17.5.0"
+    "yargs": "^17.5.1"
   },
   "name": "vx",
   "private": true,

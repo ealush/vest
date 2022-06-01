@@ -119,6 +119,9 @@
       "utilityTypes": ["./packages/shared/src/utilityTypes.ts"],
       "vast": ["./packages/vast/src/vast.ts"],
       "ctx": ["./packages/vest/src/core/ctx/ctx.ts"],
+      "generateIsolate": [
+        "./packages/vest/src/core/isolate/generateIsolate.ts"
+      ],
       "isolate": ["./packages/vest/src/core/isolate/isolate.ts"],
       "isolateCursor": ["./packages/vest/src/core/isolate/isolateCursor.ts"],
       "each": ["./packages/vest/src/core/isolate/isolates/each.ts"],

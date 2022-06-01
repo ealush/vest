@@ -2,11 +2,12 @@ import invariant from 'invariant';
 import isFunction from 'isFunction';
 import * as nestedArray from 'nestedArray';
 
-import { createIsolateCursor, IsolateCursor } from './isolateCursor';
+import { IsolateCursor } from './isolateCursor';
 
 import { Isolate, IsolateTypes } from 'IsolateTypes';
 import VestTest from 'VestTest';
 import ctx from 'ctx';
+import { generateIsolate } from 'generateIsolate';
 import { usePrevKeys } from 'key';
 import { useSetTests } from 'stateHooks';
 
@@ -61,19 +62,4 @@ export function useCurrentPath(): number[] {
  */
 export function useCursor(): IsolateCursor {
   return useIsolate().cursor;
-}
-
-export function generateIsolate(
-  type: IsolateTypes,
-  path: number[] = []
-): Isolate {
-  return {
-    cursor: createIsolateCursor(),
-    keys: {
-      current: {},
-      prev: {},
-    },
-    path,
-    type,
-  };
 }

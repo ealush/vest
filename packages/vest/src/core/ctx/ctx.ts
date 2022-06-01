@@ -7,7 +7,7 @@ import { Modes } from 'Modes';
 import VestTest from 'VestTest';
 import type { StateRef } from 'createStateRef';
 import { SuiteSummary } from 'genTestsSummary';
-import { generateIsolate } from 'isolate';
+import { generateIsolate } from 'generateIsolate';
 
 export default createContext<CTXType>((ctxRef, parentContext) =>
   parentContext

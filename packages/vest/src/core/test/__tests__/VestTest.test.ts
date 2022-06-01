@@ -1,9 +1,7 @@
 import wait from 'wait';
 
-import itWithContext from '../../../../testUtils/itWithContext';
-
 import VestTest from 'VestTest';
-import { useAllIncomplete, useTestObjects } from 'stateHooks';
+import { useAllIncomplete } from 'stateHooks';
 import * as vest from 'vest';
 
 const fieldName = 'unicycle';
@@ -92,57 +90,78 @@ describe('VestTest', () => {
       });
     });
 
-    itWithContext('Should be removed from the list of incomplete tests', () => {
-      const [, setTestObjects] = useTestObjects();
-      setTestObjects(({ prev, current }) => ({
-        prev,
-        current: current.concat(testObject),
-      }));
-      testObject.setPending();
-      {
-        const allIncomplete = useAllIncomplete();
+    it('Should be removed from the list of incomplete tests', () => {
+      const control = jest.fn();
+      vest.create(() => {
+        const testObject = vest.test('f1', async () => {
+          await wait(100);
+        });
 
-        expect(allIncomplete).toEqual(expect.arrayContaining([testObject]));
-      }
-      testObject.cancel();
-      {
-        const allIncomplete = useAllIncomplete();
-        expect(allIncomplete).toEqual(expect.not.arrayContaining([testObject]));
-      }
+        expect(testObject.isPending()).toBe(true);
+        {
+          const allIncomplete = useAllIncomplete();
+
+          expect(allIncomplete).toEqual(expect.arrayContaining([testObject]));
+        }
+        testObject.cancel();
+        {
+          const allIncomplete = useAllIncomplete();
+          expect(allIncomplete).toEqual(
+            expect.not.arrayContaining([testObject])
+          );
+        }
+        control();
+      })();
+      expect(control).toHaveBeenCalledTimes(1);
     });
 
     describe('final statuses', () => {
-      let testObject, fn;
+      let control;
       beforeEach(() => {
-        fn = jest.fn();
-        testObject = new VestTest('field', fn);
+        control = jest.fn();
       });
-      itWithContext('keep status unchanged when `failed`', () => {
-        testObject.fail();
-        expect(testObject.isFailing()).toBe(true);
-        testObject.skip();
-        expect(testObject.isSkipped()).toBe(false);
-        expect(testObject.isFailing()).toBe(true);
-        testObject.cancel();
-        expect(testObject.isCanceled()).toBe(false);
-        expect(testObject.isFailing()).toBe(true);
-        testObject.setPending();
-        expect(testObject.isPending()).toBe(false);
-        expect(testObject.isFailing()).toBe(true);
+      it('keep status unchanged when `failed`', () => {
+        vest.create(() => {
+          // async so it is not a final status
+          const testObject = vest.test('f1', async () => {
+            await wait(100);
+          });
+          testObject.fail();
+          expect(testObject.isFailing()).toBe(true);
+          testObject.skip();
+          expect(testObject.isSkipped()).toBe(false);
+          expect(testObject.isFailing()).toBe(true);
+          testObject.cancel();
+          expect(testObject.isCanceled()).toBe(false);
+          expect(testObject.isFailing()).toBe(true);
+          testObject.setPending();
+          expect(testObject.isPending()).toBe(false);
+          expect(testObject.isFailing()).toBe(true);
+          control();
+        })();
+        expect(control).toHaveBeenCalledTimes(1);
       });
 
-      itWithContext('keep status unchanged when `canceled`', () => {
-        testObject.setStatus('CANCELED');
-        expect(testObject.isCanceled()).toBe(true);
-        testObject.fail();
-        expect(testObject.isCanceled()).toBe(true);
-        expect(testObject.isFailing()).toBe(false);
-        testObject.skip();
-        expect(testObject.isSkipped()).toBe(false);
-        expect(testObject.isCanceled()).toBe(true);
-        testObject.setPending();
-        expect(testObject.isPending()).toBe(false);
-        expect(testObject.isCanceled()).toBe(true);
+      it('keep status unchanged when `canceled`', () => {
+        vest.create(() => {
+          // async so it is not a final status
+          const testObject = vest.test('f1', async () => {
+            await wait(100);
+          });
+          testObject.setStatus('CANCELED');
+          expect(testObject.isCanceled()).toBe(true);
+          testObject.fail();
+          expect(testObject.isCanceled()).toBe(true);
+          expect(testObject.isFailing()).toBe(false);
+          testObject.skip();
+          expect(testObject.isSkipped()).toBe(false);
+          expect(testObject.isCanceled()).toBe(true);
+          testObject.setPending();
+          expect(testObject.isPending()).toBe(false);
+          expect(testObject.isCanceled()).toBe(true);
+          control();
+        })();
+        expect(control).toHaveBeenCalledTimes(1);
       });
     });
   });

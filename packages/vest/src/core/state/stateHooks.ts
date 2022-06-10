@@ -1,13 +1,12 @@
 import asArray from 'asArray';
 import assign from 'assign';
 import createCache from 'cache';
-import type { NestedArray } from 'nestedArray';
 import * as nestedArray from 'nestedArray';
 import optionalFunctionValue from 'optionalFunctionValue';
 import { ValueOf } from 'utilityTypes';
 
 import VestTest from 'VestTest';
-import type { StateKey, StateRef, StateValue } from 'createStateRef';
+import type { StateKey, StateRef, StateValue, VestTests } from 'createStateRef';
 import ctx from 'ctx';
 
 // STATE REF
@@ -78,9 +77,7 @@ export function useRefreshTestObjects(): void {
   useSetTests(tests => tests);
 }
 
-export function useSetTests(
-  handler: (current: NestedArray<VestTest>) => NestedArray<VestTest>
-): void {
+export function useSetTests(handler: (current: VestTests) => VestTests): void {
   const [, testObjects] = useTestObjects();
 
   testObjects(({ current, prev }) => ({

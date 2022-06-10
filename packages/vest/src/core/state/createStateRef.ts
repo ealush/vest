@@ -1,4 +1,4 @@
-import type { NestedArray } from 'nestedArray';
+import { NestedArray } from 'nestedArray';
 import type { State, UseState } from 'vast';
 
 import VestTest from 'VestTest';
@@ -19,7 +19,7 @@ export default function createStateRef(
     testObjects: state.registerStateKey<TestObjects>(prev => {
       return {
         prev: prev ? prev.current : [],
-        current: [] as NestedArray<VestTest>,
+        current: [] as VestTests,
       };
     }),
   };
@@ -52,6 +52,8 @@ type TestCallbacks = {
 };
 
 type TestObjects = {
-  prev: NestedArray<VestTest>;
-  current: NestedArray<VestTest>;
+  prev: VestTests;
+  current: VestTests;
 };
+
+export type VestTests = NestedArray<VestTest>;

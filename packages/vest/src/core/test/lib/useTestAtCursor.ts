@@ -2,10 +2,10 @@ import defaultTo from 'defaultTo';
 import { isEmpty, isNotEmpty } from 'isEmpty';
 import { isNullish } from 'isNullish';
 import * as nestedArray from 'nestedArray';
-import type { NestedArray } from 'nestedArray';
 import { deferThrow } from 'throwError';
 
 import VestTest from 'VestTest';
+import { VestTests } from 'createStateRef';
 import isSameProfileTest from 'isSameProfileTest';
 import { shouldAllowReorder, useCurrentPath, useCursor } from 'isolate';
 import { usePrevTestByKey, useRetainTestKey } from 'key';
@@ -32,8 +32,7 @@ export function useTestAtCursor(newTestObject: VestTest): VestTest {
     return newTestObject;
   }
 
-  let prevTest: NestedArray<VestTest> | VestTest | null =
-    useGetTestAtCursor(prevTests);
+  let prevTest: VestTests | VestTest | null = useGetTestAtCursor(prevTests);
 
   if (!isNullish(newTestObject.key)) {
     const nextTest = handleKeyTest(newTestObject.key, newTestObject);
@@ -75,7 +74,7 @@ export function useSetTestAtCursor(testObject: VestTest): void {
   );
 }
 
-function useGetTestAtCursor(tests: NestedArray<VestTest>): VestTest {
+function useGetTestAtCursor(tests: VestTests): VestTest {
   const cursorPath = useCurrentPath();
 
   return nestedArray.valueAtPath(tests, cursorPath) as VestTest;

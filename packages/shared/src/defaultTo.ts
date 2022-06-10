@@ -1,8 +1,8 @@
 import optionalFunctionValue from 'optionalFunctionValue';
 
 export default function defaultTo<T>(
-  callback: T | ((...args: any[]) => T),
-  defaultValue: T
+  value: T | ((...args: any[]) => T),
+  defaultValue: T | (() => T)
 ): T {
-  return optionalFunctionValue(callback) ?? defaultValue;
+  return optionalFunctionValue(value) ?? optionalFunctionValue(defaultValue);
 }

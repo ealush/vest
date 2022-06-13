@@ -1,6 +1,6 @@
 import bindNot from 'bindNot';
 
-export function isUndefined(value?: unknown): boolean {
+export function isUndefined(value?: unknown): value is undefined {
   return value === undefined;
 }
 

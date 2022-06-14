@@ -31,7 +31,7 @@ export default function compose(
           composites,
           (
             composite: LazyRuleRunners,
-            breakout: (res: RuleDetailedResult) => void
+            breakout: (conditional: boolean, res: RuleDetailedResult) => void
           ) => {
             /* HACK: Just a small white lie. ~~HELP WANTED~~.
                The ideal is that instead of `LazyRuleRunners` We would simply use `Lazy` to begin with.
@@ -41,9 +41,7 @@ export default function compose(
 
             const res = runLazyRule(composite, value);
 
-            if (!res.pass) {
-              breakout(res);
-            }
+            breakout(!res.pass, res);
           }
         )
       );

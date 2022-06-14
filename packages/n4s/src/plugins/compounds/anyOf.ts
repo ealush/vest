@@ -9,9 +9,7 @@ export function anyOf(value: unknown, ...rules: Lazy[]): RuleDetailedResult {
   return ruleReturn.defaultToFailing(
     mapFirst(rules, (rule, breakout) => {
       const res = runLazyRule(rule, value);
-      if (res.pass) {
-        breakout(res);
-      }
+      breakout(res.pass, res);
     })
   );
 }

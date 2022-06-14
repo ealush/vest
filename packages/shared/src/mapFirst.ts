@@ -2,7 +2,7 @@ export default function mapFirst<T>(
   array: T[],
   callback: (
     item: T,
-    breakout: (value: unknown) => void,
+    breakout: (conditional: boolean, value: unknown) => void,
     index: number
   ) => unknown
 ): any {
@@ -16,8 +16,10 @@ export default function mapFirst<T>(
     }
   }
 
-  function breakout(value: unknown) {
-    broke = true;
-    breakoutValue = value;
+  function breakout(conditional: boolean, value: unknown) {
+    if (conditional) {
+      broke = true;
+      breakoutValue = value;
+    }
   }
 }

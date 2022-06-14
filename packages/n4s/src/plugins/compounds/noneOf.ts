@@ -10,9 +10,7 @@ export function noneOf(value: unknown, ...rules: Lazy[]): RuleDetailedResult {
     mapFirst(rules, (rule, breakout) => {
       const res = runLazyRule(rule, value);
 
-      if (res.pass) {
-        breakout(ruleReturn.failing());
-      }
+      breakout(res.pass, ruleReturn.failing());
     })
   );
 }

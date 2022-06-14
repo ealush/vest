@@ -1,7 +1,7 @@
 import mapFirst from 'mapFirst';
+import { ctx } from 'n4s';
 
 import type { LazyRuleRunners } from 'genEnforceLazy';
-import { ctx } from 'n4s';
 import type { RuleDetailedResult } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
@@ -17,9 +17,7 @@ export function isArrayOf(
         () => runLazyRule(currentRule, currentValue)
       );
 
-      if (!res.pass) {
-        breakout(res);
-      }
+      breakout(!res.pass, res);
     })
   );
 }

@@ -32,15 +32,14 @@ export default function genEnforceLazy(key: string) {
             mapFirst(registeredRules, (rule, breakout) => {
               const res = ctx.run({ value }, () => rule(value));
 
-              if (!res.pass) {
-                breakout(
-                  ruleReturn(
-                    !!res.pass,
-                    optionalFunctionValue(lazyMessage, value, res.message) ??
-                      res.message
-                  )
-                );
-              }
+              breakout(
+                !res.pass,
+                ruleReturn(
+                  !!res.pass,
+                  optionalFunctionValue(lazyMessage, value, res.message) ??
+                    res.message
+                )
+              );
             })
           );
         },

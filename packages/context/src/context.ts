@@ -22,11 +22,12 @@ export function createContext<T extends Record<string, unknown>>(
   };
 
   function useX(errorMessage?: string): T {
+    const ctx = use();
     invariant(
-      storage.ctx,
+      ctx,
       defaultTo(errorMessage, 'Context was used after it was closed')
     );
-    return storage.ctx as T;
+    return ctx;
   }
 
   function run<R>(ctxRef: Partial<T>, fn: (context: T) => R): R {

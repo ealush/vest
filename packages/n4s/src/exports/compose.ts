@@ -1,8 +1,9 @@
-import invariant from 'invariant';
+import assign from 'assign';
+import invariant, { StringObject } from 'invariant';
 import mapFirst from 'mapFirst';
+import { ctx } from 'n4s';
 
 import type { ComposeResult, LazyRuleRunners } from 'genEnforceLazy';
-import { ctx } from 'n4s';
 import { defaultToPassing, RuleDetailedResult } from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 
@@ -11,11 +12,11 @@ import runLazyRule from 'runLazyRule';
 export default function compose(
   ...composites: LazyRuleRunners[]
 ): ComposeResult {
-  return Object.assign(
+  return assign(
     (value: any) => {
       const res = run(value);
 
-      invariant(res.pass, new String(res.message));
+      invariant(res.pass, StringObject(res.message));
     },
     {
       run,

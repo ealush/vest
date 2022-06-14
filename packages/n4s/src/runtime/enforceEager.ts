@@ -1,8 +1,8 @@
-import invariant from 'invariant';
+import invariant, { StringObject } from 'invariant';
+import { isNullish } from 'isNullish';
 
 import eachEnforceRule from 'eachEnforceRule';
 import { ctx } from 'enforceContext';
-import { isEmpty } from 'isEmpty';
 import isProxySupported from 'isProxySupported';
 import { getRule, RuleValue, Args, RuleBase, KBaseRules } from 'runtimeRules';
 import { transformResult } from 'transformResult';
@@ -32,18 +32,15 @@ export default function enforceEager(value: RuleValue): IRules {
 
   function genRuleCall(target: IRules, rule: RuleBase, ruleName: string) {
     return function ruleCall(...args: Args) {
-      const transformedResult = transformResult(
-        ctx.run({ value }, () => rule(value, ...args)),
-        ruleName,
-        value,
-        ...args
+      const transformedResult = ctx.run({ value }, () =>
+        transformResult(rule(value, ...args), ruleName, value, ...args)
       );
 
       invariant(
         transformedResult.pass,
-        isEmpty(transformedResult.message)
+        isNullish(transformedResult.message)
           ? `enforce/${ruleName} failed with ${JSON.stringify(value)}`
-          : new String(transformedResult.message)
+          : StringObject(transformedResult.message)
       );
 
       return target;

@@ -93,6 +93,7 @@
       "runtimeRules": ["./packages/n4s/src/runtime/runtimeRules.ts"],
       "asArray": ["./packages/shared/src/asArray.ts"],
       "assign": ["./packages/shared/src/assign.ts"],
+      "bailGuard": ["./packages/shared/src/bailGuard.ts"],
       "bindNot": ["./packages/shared/src/bindNot.ts"],
       "bus": ["./packages/shared/src/bus.ts"],
       "cache": ["./packages/shared/src/cache.ts"],

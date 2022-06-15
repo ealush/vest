@@ -1,3 +1,4 @@
+import bailGuard from 'bailGuard';
 import { createBus } from 'bus';
 import invariant from 'invariant';
 
@@ -16,20 +17,22 @@ export function initBus() {
 
   // Report a the completion of a test. There may be other tests with the same
   // name that are still running, or not yet started.
-  bus.on(Events.TEST_COMPLETED, (testObject: VestTest) => {
-    if (testObject.isCanceled()) {
-      return;
-    }
+  bus.on(
+    Events.TEST_COMPLETED,
+    bailGuard(
+      testObject => !testObject.isCanceled(),
+      (testObject: VestTest) => {
+        testObject.done();
 
-    testObject.done();
+        runFieldCallbacks(testObject.fieldName);
 
-    runFieldCallbacks(testObject.fieldName);
-
-    if (!hasRemainingTests()) {
-      // When no more tests are running, emit the done event
-      bus.emit(Events.ALL_RUNNING_TESTS_FINISHED);
-    }
-  });
+        if (!hasRemainingTests()) {
+          // When no more tests are running, emit the done event
+          bus.emit(Events.ALL_RUNNING_TESTS_FINISHED);
+        }
+      }
+    )
+  );
 
   // Report that the suite completed its synchronous test run.
   // Async operations may still be running.
@@ -45,21 +48,27 @@ export function initBus() {
 
   // Removes a certain field from the state.
   bus.on(Events.REMOVE_FIELD, (fieldName: string) => {
-    useEachTestObject(testObject => {
-      if (matchingFieldName(testObject, fieldName)) {
-        testObject.cancel();
-        removeTestFromState(testObject);
-      }
-    });
+    useEachTestObject(
+      bailGuard(
+        testObject => matchingFieldName(testObject, fieldName),
+        testObject => {
+          testObject.cancel();
+          removeTestFromState(testObject);
+        }
+      )
+    );
   });
 
   // Resets a certain field in the state.
   bus.on(Events.RESET_FIELD, (fieldName: string) => {
-    useEachTestObject(testObject => {
-      if (matchingFieldName(testObject, fieldName)) {
-        testObject.reset();
-      }
-    });
+    useEachTestObject(
+      bailGuard(
+        testObject => matchingFieldName(testObject, fieldName),
+        testObject => {
+          testObject.reset();
+        }
+      )
+    );
   });
 
   return bus;

@@ -1,3 +1,4 @@
+import bailGuard from 'bailGuard';
 import defaultTo from 'defaultTo';
 import { isEmpty, isNotEmpty } from 'isEmpty';
 import { isNullish } from 'isNullish';
@@ -7,7 +8,7 @@ import { deferThrow } from 'throwError';
 import VestTest from 'VestTest';
 import { VestTests } from 'createStateRef';
 import isSameProfileTest from 'isSameProfileTest';
-import { shouldAllowReorder, useCurrentPath, useCursor } from 'isolate';
+import { disallowReorder, useCurrentPath, useCursor } from 'isolate';
 import { usePrevTestByKey, useRetainTestKey } from 'key';
 import { useTestObjects, useSetTests } from 'stateHooks';
 
@@ -84,21 +85,20 @@ function testReorderDetected(prevTest: VestTest, newTest: VestTest): boolean {
   return isNotEmpty(prevTest) && !isSameProfileTest(prevTest, newTest);
 }
 
-function throwTestOrderError(
-  prevTest: VestTest,
-  newTestObject: VestTest
-): void {
-  if (shouldAllowReorder()) {
-    return;
-  }
-
-  deferThrow(`Vest Critical Error: Tests called in different order than previous run.
+const throwTestOrderError = bailGuard(
+  disallowReorder,
+  function throwTestOrderError(
+    prevTest: VestTest,
+    newTestObject: VestTest
+  ): void {
+    deferThrow(`Vest Critical Error: Tests called in different order than previous run.
     expected: ${prevTest.fieldName}
     received: ${newTestObject.fieldName}
     This can happen on one of two reasons:
     1. You're using if/else statements to conditionally select tests. Instead, use "skipWhen".
     2. You are iterating over a list of tests, and their order changed. Use "each" and a custom key prop so that Vest retains their state.`);
-}
+  }
+);
 
 function handleKeyTest(key: string, newTestObject: VestTest): VestTest {
   const prevTestByKey = usePrevTestByKey(key);

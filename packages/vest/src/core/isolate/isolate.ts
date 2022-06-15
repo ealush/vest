@@ -45,8 +45,8 @@ export function useIsolate(): Isolate {
 /**
  * @returns {boolean} Whether or not the current isolate allows tests to be reordered
  */
-export function shouldAllowReorder(): boolean {
-  return useIsolate().type === IsolateTypes.EACH;
+export function disallowReorder(): boolean {
+  return useIsolate().type !== IsolateTypes.EACH;
 }
 
 /**

@@ -28,9 +28,7 @@ export function eager() {
 }
 
 export function shouldSkipBasedOnMode(testObject: VestTest): boolean {
-  if (isEager() && hasErrorsByTestObjects(testObject.fieldName)) return true;
-
-  return false;
+  return isEager() && hasErrorsByTestObjects(testObject.fieldName);
 }
 
 function isEager(): boolean {

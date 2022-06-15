@@ -111,6 +111,7 @@
       "isStringValue": ["./packages/shared/src/isStringValue.ts"],
       "last": ["./packages/shared/src/last.ts"],
       "mapFirst": ["./packages/shared/src/mapFirst.ts"],
+      "MBailGuard": ["./packages/shared/src/MBailGuard.ts"],
       "nestedArray": ["./packages/shared/src/nestedArray.ts"],
       "optionalFunctionValue": [
         "./packages/shared/src/optionalFunctionValue.ts"

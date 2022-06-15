@@ -64,7 +64,7 @@ module.exports = {
     'import/no-unresolved': [2],
     'import/no-useless-path-segments': 2,
     'import/order': [
-      'error',
+      'warn',
       {
         alphabetize: {
           order: 'asc',

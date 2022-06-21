@@ -20,6 +20,10 @@ test('username', 'Username is required', () => {
 test('username', 'Username must be at least 3 chars', () => {
   enforce(data.username).longerThanOrEquals(3);
 });
+
+test('username', 'Username already taken', async () => {
+  await doesUserExist(data.username);
+});
 ```
 
 ## Installation

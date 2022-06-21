@@ -3,6 +3,8 @@ name: Coverage
 on:
   pull_request:
     branches: [latest]
+    branches-ignore:
+      - 'dependabot/**'
 
 jobs:
   build:

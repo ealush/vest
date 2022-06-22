@@ -1,7 +1,4 @@
-import assign from 'assign';
-import createCache from 'cache';
-import { isEmpty } from 'isEmpty';
-import isFunction from 'isFunction';
+import { isEmpty, assign, isFunction, cache as createCache } from 'vest-utils';
 
 import ctx from 'ctx';
 import hasRemainingTests from 'hasRemainingTests';

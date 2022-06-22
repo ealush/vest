@@ -1,5 +1,4 @@
-import assign from 'assign';
-import invariant from 'invariant';
+import { assign, invariant } from 'vest-utils';
 
 import { countKeyBySeverity, Severity } from 'Severity';
 import VestTest from 'VestTest';

@@ -1,5 +1,4 @@
-import invariant from 'invariant';
-import isFunction from 'isFunction';
+import { invariant, isFunction } from 'vest-utils';
 
 import { IsolateTypes } from 'IsolateTypes';
 import { isolate } from 'isolate';

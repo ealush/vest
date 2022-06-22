@@ -1,4 +1,4 @@
-import isFunction from 'isFunction';
+import { isFunction } from 'vest-utils';
 
 export default function isProxySupported(): boolean {
   try {

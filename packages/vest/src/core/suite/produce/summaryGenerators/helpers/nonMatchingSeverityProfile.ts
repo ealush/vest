@@ -1,4 +1,4 @@
-import either from 'either';
+import { either } from 'vest-utils';
 
 import { Severity } from 'Severity';
 import VestTest from 'VestTest';

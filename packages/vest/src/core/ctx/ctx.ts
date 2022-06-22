@@ -1,6 +1,6 @@
-import assign from 'assign';
 import { createContext } from 'context';
 import { CB } from 'utilityTypes';
+import { assign } from 'vest-utils';
 
 import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { Modes } from 'Modes';

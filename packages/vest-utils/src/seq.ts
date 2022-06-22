@@ -2,9 +2,9 @@
  * @returns a unique numeric id.
  */
 
-const genId: () => string = (
+const seq: () => string = (
   (n: number) => (): string =>
     `${n++}`
 )(0);
 
-export default genId;
+export default seq;

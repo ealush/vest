@@ -1,5 +1,5 @@
-import optionalFunctionValue from 'optionalFunctionValue';
 import { CB } from 'utilityTypes';
+import { optionalFunctionValue } from 'vest-utils';
 
 import { IsolateTypes } from 'IsolateTypes';
 import ctx from 'ctx';

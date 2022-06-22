@@ -1,6 +1,4 @@
-import invariant from 'invariant';
-import { isBoolean } from 'isBooleanValue';
-import optionalFunctionValue from 'optionalFunctionValue';
+import { invariant, optionalFunctionValue, isBoolean } from 'vest-utils';
 
 import ruleReturn, { RuleReturn, RuleDetailedResult } from 'ruleReturn';
 import type { RuleValue, Args } from 'runtimeRules';

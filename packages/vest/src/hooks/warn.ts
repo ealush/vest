@@ -1,4 +1,4 @@
-import invariant from 'invariant';
+import { invariant } from 'vest-utils';
 
 import context from 'ctx';
 import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';

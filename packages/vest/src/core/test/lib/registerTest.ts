@@ -1,4 +1,4 @@
-import isPromise from 'isPromise';
+import { isPromise } from 'vest-utils';
 
 import VestTest from 'VestTest';
 import runAsyncTest from 'runAsyncTest';

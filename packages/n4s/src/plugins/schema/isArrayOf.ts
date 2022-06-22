@@ -1,5 +1,5 @@
-import mapFirst from 'mapFirst';
 import { ctx } from 'n4s';
+import { mapFirst } from 'vest-utils';
 
 import type { LazyRuleRunners } from 'genEnforceLazy';
 import type { RuleDetailedResult } from 'ruleReturn';

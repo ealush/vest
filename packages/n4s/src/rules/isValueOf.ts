@@ -1,5 +1,4 @@
-import bindNot from 'bindNot';
-import { isNullish } from 'isNullish';
+import { bindNot, isNullish } from 'vest-utils';
 
 export function isValueOf(value: any, objectToCheck: any): boolean {
   if (isNullish(objectToCheck)) {

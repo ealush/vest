@@ -1,4 +1,4 @@
-import mapFirst from 'mapFirst';
+import { mapFirst } from 'vest-utils';
 
 import type { Lazy } from 'genEnforceLazy';
 import * as ruleReturn from 'ruleReturn';

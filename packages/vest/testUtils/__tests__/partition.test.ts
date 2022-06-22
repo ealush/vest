@@ -1,4 +1,4 @@
-import partition from 'partition';
+import { partition } from 'vest-utils';
 
 describe('partition', () => {
   it('Should correctly partition array', () => {

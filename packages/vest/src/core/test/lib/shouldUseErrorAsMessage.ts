@@ -1,5 +1,4 @@
-import { isStringValue } from 'isStringValue';
-import { isUndefined } from 'isUndefined';
+import { isStringValue, isUndefined } from 'vest-utils';
 
 export default function shouldUseErrorAsMessage(
   message: string | void,

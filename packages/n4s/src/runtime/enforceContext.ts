@@ -1,5 +1,5 @@
-import assign from 'assign';
 import { createContext } from 'context';
+import { assign } from 'vest-utils';
 
 export const ctx = createContext<CTXType>((ctxRef, parentContext): CTXType => {
   const base = {

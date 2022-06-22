@@ -1,4 +1,4 @@
-import { isPositive } from 'isPositive';
+import { isPositive } from 'vest-utils';
 
 import { SeverityCount } from 'Severity';
 import { useSummary } from 'genTestsSummary';

@@ -1,7 +1,9 @@
-import asArray from 'asArray';
-import hasOwnProperty from 'hasOwnProperty';
-import { isStringValue } from 'isStringValue';
-import optionalFunctionValue from 'optionalFunctionValue';
+import {
+  isStringValue,
+  asArray,
+  hasOwnProperty,
+  optionalFunctionValue,
+} from 'vest-utils';
 
 import VestTest from 'VestTest';
 import ctx from 'ctx';

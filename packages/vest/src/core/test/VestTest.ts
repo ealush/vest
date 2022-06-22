@@ -1,4 +1,4 @@
-import genId from 'genId';
+import { seq } from 'vest-utils';
 
 import shouldUseErrorAsMessage from 'shouldUseErrorAsMessage';
 import { useRefreshTestObjects } from 'stateHooks';
@@ -16,7 +16,7 @@ export default class VestTest {
   message?: string;
   key?: null | string = null;
 
-  id = genId();
+  id = seq();
   severity = TestSeverity.Error;
   status: KStatus = STATUS_UNTESTED;
 

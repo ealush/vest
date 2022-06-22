@@ -1,7 +1,4 @@
-import bindNot from 'bindNot';
-import { isStringValue as isString } from 'isStringValue';
-
-import { isArray } from 'isArrayValue';
+import { isStringValue as isString, bindNot, isArray } from 'vest-utils';
 
 export function inside(value: unknown, arg1: string | unknown[]): boolean {
   if (isArray(arg1)) {

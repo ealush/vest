@@ -1,9 +1,11 @@
-import asArray from 'asArray';
-import assign from 'assign';
-import createCache from 'cache';
-import * as nestedArray from 'nestedArray';
-import optionalFunctionValue from 'optionalFunctionValue';
 import { ValueOf } from 'utilityTypes';
+import {
+  cache as createCache,
+  nestedArray,
+  asArray,
+  assign,
+  optionalFunctionValue,
+} from 'vest-utils';
 
 import VestTest from 'VestTest';
 import type { StateKey, StateRef, StateValue, VestTests } from 'createStateRef';

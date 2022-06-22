@@ -1,4 +1,4 @@
-import isFunction from 'isFunction';
+import { isFunction } from 'vest-utils';
 
 /**
  * Accepts a value or a function, and coerces it into a boolean value

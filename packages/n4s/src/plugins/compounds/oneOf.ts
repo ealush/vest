@@ -1,6 +1,7 @@
+import { greaterThan } from 'vest-utils';
+
 import { equals } from 'equals';
 import type { Lazy } from 'genEnforceLazy';
-import { greaterThan } from 'greaterThan';
 import ruleReturn, { RuleDetailedResult } from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 

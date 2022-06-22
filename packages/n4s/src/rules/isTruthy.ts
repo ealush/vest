@@ -1,4 +1,4 @@
-import bindNot from 'bindNot';
+import { bindNot } from 'vest-utils';
 
 export function isTruthy(value: unknown): boolean {
   return !!value;

@@ -1,4 +1,4 @@
-import bindNot from 'bindNot';
+import { bindNot } from 'vest-utils';
 
 import { greaterThanOrEquals as gte } from 'greaterThanOrEquals';
 import { lessThanOrEquals as lte } from 'lessThanOrEquals';

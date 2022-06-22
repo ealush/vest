@@ -1,5 +1,6 @@
 export default function partition<T>(
   array: T[],
+  // eslint-disable-next-line no-unused-vars
   predicate: (value: T, index: number, array: T[]) => boolean
 ): [T[], T[]] {
   return array.reduce(

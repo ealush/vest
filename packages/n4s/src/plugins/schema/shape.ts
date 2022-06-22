@@ -1,4 +1,4 @@
-import hasOwnProperty from 'hasOwnProperty';
+import { hasOwnProperty } from 'vest-utils';
 
 import { loose } from 'loose';
 import type { RuleDetailedResult } from 'ruleReturn';

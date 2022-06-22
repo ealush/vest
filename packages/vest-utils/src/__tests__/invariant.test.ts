@@ -1,4 +1,4 @@
-import invariant from 'invariant';
+import { invariant } from 'vest-utils';
 
 describe('invariant', () => {
   it('should throw an error when condition is false', () => {

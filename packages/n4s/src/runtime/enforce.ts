@@ -1,4 +1,4 @@
-import assign from 'assign';
+import { assign } from 'vest-utils';
 
 import eachEnforceRule from 'eachEnforceRule';
 import { ctx, EnforceContext } from 'enforceContext';

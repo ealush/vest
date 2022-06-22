@@ -1,4 +1,4 @@
-import { isNullish } from 'isNullish';
+import { isNullish } from 'vest-utils';
 
 import type { Lazy } from 'genEnforceLazy';
 import type { RuleDetailedResult } from 'ruleReturn';

@@ -1,4 +1,4 @@
-import { isNotEmpty, isEmpty } from 'isEmpty';
+import { isNotEmpty, isEmpty } from 'vest-utils';
 
 import { Severity } from 'Severity';
 import VestTest from 'VestTest';

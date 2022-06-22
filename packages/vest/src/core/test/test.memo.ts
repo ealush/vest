@@ -1,6 +1,5 @@
 /* eslint-disable jest/valid-title */
-import createCache from 'cache';
-import { isNull } from 'isNull';
+import { cache as createCache, isNull } from 'vest-utils';
 
 import VestTest, { TestFn } from 'VestTest';
 import { useCursor } from 'isolateHooks';

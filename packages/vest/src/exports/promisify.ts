@@ -1,5 +1,4 @@
-import invariant from 'invariant';
-import isFunction from 'isFunction';
+import { invariant, isFunction } from 'vest-utils';
 
 import { SuiteResult } from 'produceSuiteResult';
 import { SuiteRunResult } from 'produceSuiteRunResult';

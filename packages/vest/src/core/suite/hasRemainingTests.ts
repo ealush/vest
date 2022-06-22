@@ -1,4 +1,4 @@
-import { isEmpty } from 'isEmpty';
+import { isEmpty } from 'vest-utils';
 
 import matchingFieldName from 'matchingFieldName';
 import { useAllIncomplete } from 'stateHooks';

@@ -1,5 +1,5 @@
-import defaultTo from 'defaultTo';
 import type { Stringable } from 'utilityTypes';
+import { defaultTo } from 'vest-utils';
 
 export default function ruleReturn(
   pass: boolean,

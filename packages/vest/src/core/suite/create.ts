@@ -1,9 +1,6 @@
-import assign from 'assign';
-import genId from 'genId';
-import invariant from 'invariant';
-import isFunction from 'isFunction';
 import { CB } from 'utilityTypes';
 import { createState } from 'vast';
+import { assign, seq, invariant, isFunction } from 'vest-utils';
 
 import { IsolateTypes } from 'IsolateTypes';
 import createStateRef from 'createStateRef';
@@ -55,7 +52,7 @@ function create<T extends CB>(
   const state = createState();
 
   // State reference - this holds the actual state values
-  const stateRef = createStateRef(state, { suiteId: genId(), suiteName });
+  const stateRef = createStateRef(state, { suiteId: seq(), suiteName });
 
   interface IVestSuite {
     (...args: Parameters<T>): SuiteRunResult;

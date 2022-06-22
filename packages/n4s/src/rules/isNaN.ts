@@ -1,4 +1,4 @@
-import bindNot from 'bindNot';
+import { bindNot } from 'vest-utils';
 
 export function isNaN(value: unknown): boolean {
   return Number.isNaN(value);

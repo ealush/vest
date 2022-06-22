@@ -1,4 +1,4 @@
-import { isPositive } from 'isPositive';
+import { isPositive } from 'vest-utils';
 
 describe('Test isPositive rule', () => {
   it('Should return false for zero', () => {

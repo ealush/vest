@@ -1,4 +1,4 @@
-import { NestedArray } from 'nestedArray';
+import type { NestedArray } from 'nestedArray';
 import type { State, UseState } from 'vast';
 
 import VestTest from 'VestTest';

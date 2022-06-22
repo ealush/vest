@@ -1,4 +1,4 @@
-import bindNot from 'bindNot';
+import { bindNot } from 'vest-utils';
 
 describe('bindNot', () => {
   it('Should return return a function', () => {

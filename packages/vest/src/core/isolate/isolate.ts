@@ -1,6 +1,4 @@
-import invariant from 'invariant';
-import isFunction from 'isFunction';
-import * as nestedArray from 'nestedArray';
+import { nestedArray, invariant, isFunction } from 'vest-utils';
 
 import { useCurrentPath, useCursor, useIsolate } from './isolateHooks';
 

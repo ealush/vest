@@ -1,5 +1,6 @@
+import { numberEquals } from 'vest-utils';
+
 import { lessThan } from 'lessThan';
-import { numberEquals } from 'numberEquals';
 
 export function lessThanOrEquals(
   value: string | number,

@@ -1,8 +1,8 @@
 import { enforce } from 'enforce';
 import faker from 'faker';
 import _ from 'lodash';
-import partition from 'partition';
 
+import partition from '../../../../../testUtils/partition';
 import { dummyTest } from '../../../../../testUtils/testDummy';
 
 import VestTest from 'VestTest';

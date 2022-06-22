@@ -1,8 +1,10 @@
-import defaultTo from 'defaultTo';
-import hasOwnProperty from 'hasOwnProperty';
-import invariant from 'invariant';
-import { isStringValue } from 'isStringValue';
-import optionalFunctionValue from 'optionalFunctionValue';
+import {
+  isStringValue,
+  defaultTo,
+  hasOwnProperty,
+  invariant,
+  optionalFunctionValue,
+} from 'vest-utils';
 
 import ctx from 'ctx';
 import { produceSuiteResult, SuiteResult } from 'produceSuiteResult';

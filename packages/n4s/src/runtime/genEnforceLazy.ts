@@ -1,6 +1,5 @@
-import mapFirst from 'mapFirst';
-import optionalFunctionValue from 'optionalFunctionValue';
 import { CB, Stringable } from 'utilityTypes';
+import { mapFirst, optionalFunctionValue } from 'vest-utils';
 
 import eachEnforceRule from 'eachEnforceRule';
 import { ctx } from 'enforceContext';

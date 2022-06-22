@@ -1,8 +1,7 @@
-import { isArray } from 'isArrayValue';
-import { isNotNull } from 'isNull';
-
 import asArray from 'asArray';
 import defaultTo from 'defaultTo';
+import { isArray } from 'isArrayValue';
+import { isNotNull } from 'isNull';
 import last from 'last';
 
 export type NestedArray<T> = Array<NestedArray<T> | T>;

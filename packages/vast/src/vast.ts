@@ -1,5 +1,4 @@
-import isFunction from 'isFunction';
-import optionalFunctionValue from 'optionalFunctionValue';
+import { isFunction, optionalFunctionValue } from 'vest-utils';
 
 // eslint-disable-next-line max-lines-per-function
 export function createState(

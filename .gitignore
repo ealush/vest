@@ -11,6 +11,7 @@ packages/*/*
 !packages/*/README.md
 !packages/*/package.json
 !packages/*/tsconfig.json
+!packages/*/testUtils
 .env
 
 playground.*

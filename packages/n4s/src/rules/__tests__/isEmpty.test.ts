@@ -1,4 +1,4 @@
-import { isEmpty } from 'isEmpty';
+import { isEmpty } from 'vest-utils';
 
 describe('Tests isEmpty rule', () => {
   describe('Expect true', () => {

@@ -1,4 +1,4 @@
-import defaultTo from 'defaultTo';
+import { defaultTo } from 'vest-utils';
 
 describe('defaultTo', () => {
   describe('When value is a function', () => {

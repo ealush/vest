@@ -1,4 +1,4 @@
-import isFunction from 'isFunction';
+import { isFunction } from 'vest-utils';
 
 import { SuiteSummary } from 'genTestsSummary';
 import { parse } from 'parser';

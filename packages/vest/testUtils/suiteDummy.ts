@@ -1,4 +1,4 @@
-import asArray from '../../shared/src/asArray';
+import { asArray } from 'vest-utils';
 
 import { dummyTest } from './testDummy';
 

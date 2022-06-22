@@ -1,5 +1,4 @@
-import { createBus } from 'bus';
-import invariant from 'invariant';
+import { bus, invariant } from 'vest-utils';
 
 import VestTest from 'VestTest';
 import ctx from 'ctx';
@@ -12,11 +11,11 @@ import { useEachTestObject } from 'stateHooks';
 
 // eslint-disable-next-line max-lines-per-function
 export function initBus() {
-  const bus = createBus();
+  const vestBus = bus.createBus();
 
   // Report a the completion of a test. There may be other tests with the same
   // name that are still running, or not yet started.
-  bus.on(Events.TEST_COMPLETED, (testObject: VestTest) => {
+  vestBus.on(Events.TEST_COMPLETED, (testObject: VestTest) => {
     if (testObject.isCanceled()) {
       return;
     }
@@ -27,24 +26,24 @@ export function initBus() {
 
     if (!hasRemainingTests()) {
       // When no more tests are running, emit the done event
-      bus.emit(Events.ALL_RUNNING_TESTS_FINISHED);
+      vestBus.emit(Events.ALL_RUNNING_TESTS_FINISHED);
     }
   });
 
   // Report that the suite completed its synchronous test run.
   // Async operations may still be running.
-  bus.on(Events.SUITE_CALLBACK_DONE_RUNNING, () => {
+  vestBus.on(Events.SUITE_CALLBACK_DONE_RUNNING, () => {
     // Remove tests that are optional and need to be omitted
     omitOptionalFields();
   });
 
   // Called when all the tests, including async, are done running
-  bus.on(Events.ALL_RUNNING_TESTS_FINISHED, () => {
+  vestBus.on(Events.ALL_RUNNING_TESTS_FINISHED, () => {
     runDoneCallbacks();
   });
 
   // Removes a certain field from the state.
-  bus.on(Events.REMOVE_FIELD, (fieldName: string) => {
+  vestBus.on(Events.REMOVE_FIELD, (fieldName: string) => {
     useEachTestObject(testObject => {
       if (matchingFieldName(testObject, fieldName)) {
         testObject.cancel();
@@ -54,7 +53,7 @@ export function initBus() {
   });
 
   // Resets a certain field in the state.
-  bus.on(Events.RESET_FIELD, (fieldName: string) => {
+  vestBus.on(Events.RESET_FIELD, (fieldName: string) => {
     useEachTestObject(testObject => {
       if (matchingFieldName(testObject, fieldName)) {
         testObject.reset();
@@ -62,7 +61,7 @@ export function initBus() {
     });
   });
 
-  return bus;
+  return vestBus;
 }
 
 export function useBus() {

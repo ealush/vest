@@ -1,5 +1,4 @@
-import { greaterThan } from 'greaterThan';
-import { numberEquals } from 'numberEquals';
+import { greaterThan, numberEquals } from 'vest-utils';
 
 export function greaterThanOrEquals(
   value: string | number,

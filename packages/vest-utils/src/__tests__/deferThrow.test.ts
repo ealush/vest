@@ -1,4 +1,4 @@
-import { deferThrow } from 'throwError';
+import { deferThrow } from 'vest-utils';
 
 // @ts-ignore
 const _to = global.setTimeout;

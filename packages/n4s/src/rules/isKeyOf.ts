@@ -1,4 +1,4 @@
-import bindNot from 'bindNot';
+import { bindNot } from 'vest-utils';
 
 export function isKeyOf(key: string | symbol | number, obj: any): boolean {
   return key in obj;

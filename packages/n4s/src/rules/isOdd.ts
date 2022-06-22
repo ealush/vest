@@ -1,4 +1,5 @@
-import { isNumeric } from 'isNumeric';
+import { isNumeric } from 'vest-utils';
+
 import type { RuleValue } from 'runtimeRules';
 /**
  * Validates that a given value is an odd number

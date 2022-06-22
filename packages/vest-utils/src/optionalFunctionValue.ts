@@ -1,4 +1,4 @@
-import isFunction from './isFunction';
+import isFunction from 'isFunction';
 
 export default function optionalFunctionValue<T>(
   value: T | ((...args: any[]) => T),

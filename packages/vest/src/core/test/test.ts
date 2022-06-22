@@ -1,7 +1,5 @@
-import assign from 'assign';
-import invariant from 'invariant';
-import isFunction from 'isFunction';
 import { isString } from 'isString';
+import { assign, invariant, isFunction } from 'vest-utils';
 
 import VestTest, { TestFn } from 'VestTest';
 import ctx from 'ctx';

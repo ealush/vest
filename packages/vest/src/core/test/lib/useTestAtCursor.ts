@@ -1,8 +1,11 @@
-import defaultTo from 'defaultTo';
-import { isEmpty, isNotEmpty } from 'isEmpty';
-import { isNullish } from 'isNullish';
-import * as nestedArray from 'nestedArray';
-import { deferThrow } from 'throwError';
+import {
+  isEmpty,
+  isNotEmpty,
+  isNullish,
+  nestedArray,
+  defaultTo,
+  deferThrow,
+} from 'vest-utils';
 
 import { useCurrentPath, useCursor } from '../../isolate/isolateHooks';
 

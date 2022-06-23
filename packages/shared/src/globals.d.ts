@@ -1,3 +1,3 @@
-declare var __DEV__: boolean;
-declare var __LIB_VERSION__: string;
-declare var LIBRARY_NAME: string;
+declare const __DEV__: boolean;
+declare const __LIB_VERSION__: string;
+declare const LIBRARY_NAME: string;

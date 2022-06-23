@@ -2,21 +2,15 @@ website/.docusaurus
 website/build/
 packages/*/types/
 packages/*/types/*
-packages/n4s/compose/
-packages/n4s/compounds/
-packages/n4s/schema/
-packages/vest/classnames/
-packages/vest/promisify/
-packages/vest/parser/
-packages/vest/enforce-compose/
-packages/vest/enforce/
-packages/anyone/all/
-packages/anyone/any/
-packages/anyone/none/
-packages/anyone/one/
 packages/*/index.js
+packages/*/*
+!packages/*/src/
+!packages/*/src/*
+!packages/*/CHANGELOG.md
+!packages/*/LICENSE
+!packages/*/README.md
+!packages/*/package.json
 .env
-
 
 playground.*
 

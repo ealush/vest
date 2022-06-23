@@ -10,6 +10,7 @@ packages/*/*
 !packages/*/LICENSE
 !packages/*/README.md
 !packages/*/package.json
+!packages/*/tsconfig.json
 .env
 
 playground.*

@@ -32,6 +32,8 @@ jobs:
         run: yarn test
       - name: Lint
         run: yarn lint
+      - name: Build Types
+        run: yarn build --buildSingle
       - name: Set npmrc
         run: echo //registry.npmjs.org/:_authToken=$NPM_TOKEN > ~/.npmrc
         env:

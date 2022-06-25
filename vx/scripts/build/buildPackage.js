@@ -12,11 +12,11 @@ function buildPackage(options = {}) {
 
   cleanupDistFiles(name);
   process.env.VX_PACKAGE_NAME = name;
-  process.env.VX_BUILD_SINGLE = !!options.SINGLE;
+  process.env.VX_BUILD_SINGLE = !!options.buildSingle;
 
   let builds;
 
-  if (options.SINGLE) {
+  if (options.buildSingle) {
     builds = [opts.format.CJS];
   } else {
     builds = [opts.format.ES, opts.format.UMD, opts.format.CJS];

@@ -34,11 +34,6 @@ genTsConfig();
 
 const argv = hideBin(process.argv);
 
-const namedOptions = Object.entries({
-  '--package': 2,
-  '-p': 2,
-});
-
 const defaultPackage = usePackage() ?? insidePackageDir();
 
 const cli = yargs(argv)
@@ -56,19 +51,17 @@ const cli = yargs(argv)
     describe: 'Package to run against',
     ...(!!defaultPackage && { default: defaultPackage }),
   })
+  .option('buildSingle', {
+    demandOption: false,
+    describe: 'build format',
+  })
   .help().argv;
 
-const { package, command } = cli;
+const { package, command, buildSingle } = cli;
 
 if (!commands[command]) {
   throw new Error(`Command ${command} not found.`);
 }
-
-const options = argv.slice(
-  namedOptions.reduce((count, [option, increment]) => {
-    return argv.includes(option) ? count + increment : count;
-  }, 1)
-);
 
 logger.info(
   joinTruthy([
@@ -79,7 +72,7 @@ logger.info(
 
 ctx.withPackage(package, () =>
   commands[command]({
-    options,
+    buildSingle,
   })
 );
 

@@ -4,7 +4,7 @@ import * as nestedArray from 'nestedArray';
 import { deferThrow } from 'throwError';
 
 import VestTest from 'VestTest';
-import { useCurrentPath, useIsolate } from 'isolate';
+import { useCurrentPath, useIsolate } from 'isolateHooks';
 import { useTestObjects } from 'stateHooks';
 
 export function usePrevKeys(): Record<string, VestTest> {

@@ -4,10 +4,12 @@ import { isNullish } from 'isNullish';
 import * as nestedArray from 'nestedArray';
 import { deferThrow } from 'throwError';
 
+import { useCurrentPath, useCursor } from '../../isolate/isolateHooks';
+
 import VestTest from 'VestTest';
 import { VestTests } from 'createStateRef';
 import isSameProfileTest from 'isSameProfileTest';
-import { shouldAllowReorder, useCurrentPath, useCursor } from 'isolate';
+import { shouldAllowReorder } from 'isolate';
 import { usePrevTestByKey, useRetainTestKey } from 'key';
 import { useTestObjects, useSetTests } from 'stateHooks';
 

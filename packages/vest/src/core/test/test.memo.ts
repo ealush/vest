@@ -3,7 +3,7 @@ import createCache from 'cache';
 import { isNull } from 'isNull';
 
 import VestTest, { TestFn } from 'VestTest';
-import { useCursor } from 'isolate';
+import { useCursor } from 'isolateHooks';
 import registerPrevRunTest from 'registerPrevRunTest';
 import { useSuiteId } from 'stateHooks';
 import type { TestBase } from 'test';

@@ -3,7 +3,7 @@ import isPromise from 'isPromise';
 import VestTest from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';
-import { useCursor } from 'isolate';
+import { useCursor } from 'isolateHooks';
 import { shouldSkipBasedOnMode } from 'mode';
 import { isOmitted } from 'omitWhen';
 import registerTest from 'registerTest';

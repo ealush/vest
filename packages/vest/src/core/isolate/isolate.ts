@@ -2,9 +2,9 @@ import invariant from 'invariant';
 import isFunction from 'isFunction';
 import * as nestedArray from 'nestedArray';
 
-import { IsolateCursor } from './isolateCursor';
+import { useCurrentPath, useCursor, useIsolate } from './isolateHooks';
 
-import { Isolate, IsolateTypes } from 'IsolateTypes';
+import { IsolateTypes } from 'IsolateTypes';
 import VestTest from 'VestTest';
 import ctx from 'ctx';
 import { generateIsolate } from 'generateIsolate';
@@ -36,30 +36,8 @@ export function isolate(
 }
 
 /**
- * @returns {Isolate} The current isolate layer
- */
-export function useIsolate(): Isolate {
-  return ctx.useX().isolate;
-}
-
-/**
  * @returns {boolean} Whether or not the current isolate allows tests to be reordered
  */
 export function shouldAllowReorder(): boolean {
   return useIsolate().type === IsolateTypes.EACH;
-}
-
-/**
- * @returns {number[]} The current cursor path of the isolate tree
- */
-export function useCurrentPath(): number[] {
-  const isolate = useIsolate();
-  return isolate.path.concat(isolate.cursor.current());
-}
-
-/**
- * @returns {IsolateCursor} The cursor object for the current isolate
- */
-export function useCursor(): IsolateCursor {
-  return useIsolate().cursor;
 }

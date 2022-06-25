@@ -3,6 +3,7 @@ const path = require('path');
 const glob = require('glob');
 
 const opts = require('vx/opts');
+const packageJson = require('vx/util/packageJson');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
@@ -32,3 +33,19 @@ paths.forEach(packagePath => {
   module.exports.names[basename] = basename;
   module.exports.list.push(basename);
 });
+
+// Cheap sync alternative to depsTree. Might end up using this in the future.
+module.exports.list = [
+  ...module.exports.list.sort((packageA, packageB) => {
+    const jsonA = packageJson(packageA);
+    const jsonB = packageJson(packageB);
+
+    if (jsonA?.dependencies?.[packageB]) {
+      return 1;
+    } else if (jsonB?.dependencies?.[packageA]) {
+      return -1;
+    } else {
+      return 0;
+    }
+  }),
+];

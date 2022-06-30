@@ -45,9 +45,9 @@ After running your suite, the results object is returned. It has the following f
 
 - [hasErrors](./writing_your_suite/result_object.md#haserrors-and-haswarnings) - Returns true if the suite or the provided field has errors.
 - [hasWarnings](./writing_your_suite/result_object.md#haserrors-and-haswarnings) - Returns true if the suite or the provided field has warnings.
-- [getError](./writing_your_suite/result_object.md##geterror-and-getwarning) - Returns a string error in the suite, or for a specific field.
+- [getError](./writing_your_suite/result_object.md##geterror-and-getwarning) - Returns a string error for a specific field.
 - [getErrors](./writing_your_suite/result_object.md##geterrors-and-getwarnings) - Returns an object with errors in the suite, or an array of objects for a specific field.
-- [getWarning](./writing_your_suite/result_object.md##geterror-and-getwarning) - Returns a string warning in the suite, or for a specific field.
+- [getWarning](./writing_your_suite/result_object.md##geterror-and-getwarning) - Returns a string warning for a specific field.
 - [getWarnings](./writing_your_suite/result_object.md##geterrors-and-getwarnings) - Returns an object with warnings in the suite, or an array of objects for a specific field.
 - [hasErrorsByGroup](./writing_your_suite/result_object.md#haserrorsbygroup-and-haswarningsbygroup) - Returns true if the provided group has errors.
 - [hasWarningByGroup](./writing_your_suite/result_object.md#haserrorsbygroup-and-haswarningsbygroup) - Returns true if the provided group has warnings.

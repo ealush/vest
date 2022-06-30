@@ -11,7 +11,6 @@ export function getErrors(
   return getFailures(Severity.ERRORS, fieldName);
 }
 
-export function getError(fieldName: string): string;
 export function getError(fieldName: string): string {
   return getErrors(fieldName)[0] || '';
 }
@@ -24,7 +23,6 @@ export function getWarnings(
   return getFailures(Severity.WARNINGS, fieldName);
 }
 
-export function getWarning(fieldName: string): string;
 export function getWarning(fieldName: string): string {
   return getWarnings(fieldName)[0] || '';
 }

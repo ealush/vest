@@ -2,13 +2,14 @@ import assign from 'assign';
 import defaultTo from 'defaultTo';
 import invariant from 'invariant';
 import optionalFunctionValue from 'optionalFunctionValue';
+import { CB } from 'utilityTypes';
 
 // eslint-disable-next-line max-lines-per-function
 export function createContext<T extends Record<string, unknown>>(
   init?: (ctxRef: Partial<T>, parentContext: T | void) => T | null
 ): {
   run: <R>(ctxRef: Partial<T>, fn: (context: T) => R) => R;
-  bind: <Fn extends (...args: any[]) => any>(ctxRef: Partial<T>, fn: Fn) => Fn;
+  bind: <Fn extends CB>(ctxRef: Partial<T>, fn: Fn) => Fn;
   use: () => T | undefined;
   useX: (errorMessage?: string) => T;
 } {
@@ -47,10 +48,7 @@ export function createContext<T extends Record<string, unknown>>(
     return res;
   }
 
-  function bind<Fn extends (...args: any[]) => any>(
-    ctxRef: Partial<T>,
-    fn: Fn
-  ) {
+  function bind<Fn extends CB>(ctxRef: Partial<T>, fn: Fn) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore - this one's pretty hard to get right
     const returnedFn: Fn = function (...runTimeArgs: Parameters<Fn>) {

@@ -1,6 +1,6 @@
 import mapFirst from 'mapFirst';
 import optionalFunctionValue from 'optionalFunctionValue';
-import { Stringable } from 'utilityTypes';
+import { CB, Stringable } from 'utilityTypes';
 
 import eachEnforceRule from 'eachEnforceRule';
 import { ctx } from 'enforceContext';
@@ -83,7 +83,7 @@ export type Lazy = LazyRules &
   LazyRuleMethods &
   // This is a "catch all" hack to make TS happy while not
   // losing type hints
-  Record<string, (...args: any[]) => any>;
+  Record<string, CB>;
 
 type LazyRuleMethods = LazyRuleRunners & {
   message: (message: LazyMessage) => Lazy;

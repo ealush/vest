@@ -1,4 +1,4 @@
-import { isEmpty, isNotEmpty } from 'isEmpty';
+import { isEmpty } from 'isEmpty';
 
 import matchingFieldName from 'matchingFieldName';
 import { useAllIncomplete } from 'stateHooks';
@@ -17,7 +17,7 @@ function hasRemainingTests(fieldName?: string): boolean {
     );
   }
 
-  return isNotEmpty(allIncomplete);
+  return true;
 }
 
 export default hasRemainingTests;

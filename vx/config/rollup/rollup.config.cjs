@@ -100,7 +100,7 @@ function genOutput({
   const globals = Object.keys(
     disallowExternals ? {} : packageJson()?.dependencies ?? {}
   ).reduce((g, c) => Object.assign(g, { [c]: c }), {
-    ...(moduleName !== usePackage() && { [usePackage()]: usePackage() }),
+    ...{ [usePackage()]: usePackage() },
   });
 
   return {

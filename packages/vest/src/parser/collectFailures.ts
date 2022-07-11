@@ -1,7 +1,7 @@
 import { isPositive } from 'isPositive';
 
 import { countKeyBySeverity, Severity } from 'Severity';
-import { TestsContainer } from 'genTestsSummary';
+import { TestsContainer } from 'SuiteSummaryTypes';
 
 // calls collectAll or getByFieldName depending on whether fieldName is provided
 
@@ -9,7 +9,7 @@ export function gatherFailures(
   testGroup: TestsContainer,
   severityKey: Severity,
   fieldName?: string
-): string[] | FailureMessages {
+): GetFailuresResponse {
   return fieldName
     ? getByFieldName(testGroup, severityKey, fieldName)
     : collectAll(testGroup, severityKey);
@@ -43,3 +43,5 @@ function collectAll(
 }
 
 export type FailureMessages = Record<string, string[]>;
+
+export type GetFailuresResponse = FailureMessages | string[];

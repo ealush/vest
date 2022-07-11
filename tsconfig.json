@@ -164,23 +164,8 @@
       "shouldAddValidProperty": [
         "./packages/vest/src/core/suite/produce/summaryGenerators/shouldAddValidProperty.ts"
       ],
-      "collectFailures": [
-        "./packages/vest/src/core/suite/produce/summarySelectors/getFailures/collectFailures.ts"
-      ],
-      "getFailures": [
-        "./packages/vest/src/core/suite/produce/summarySelectors/getFailures/getFailures.ts"
-      ],
-      "getFailuresByGroup": [
-        "./packages/vest/src/core/suite/produce/summarySelectors/getFailures/getFailuresByGroup.ts"
-      ],
-      "hasFailures": [
-        "./packages/vest/src/core/suite/produce/summarySelectors/hasFailuers/hasFailures.ts"
-      ],
-      "hasFailuresByGroup": [
-        "./packages/vest/src/core/suite/produce/summarySelectors/hasFailuers/hasFailuresByGroup.ts"
-      ],
-      "isValid": [
-        "./packages/vest/src/core/suite/produce/summarySelectors/isValid.ts"
+      "SuiteSummaryTypes": [
+        "./packages/vest/src/core/suite/produce/summarySelectors/SuiteSummaryTypes.ts"
       ],
       "key": ["./packages/vest/src/core/test/key.ts"],
       "cancelOverriddenPendingTest": [
@@ -224,6 +209,7 @@
       "Modes": ["./packages/vest/src/hooks/mode/Modes.ts"],
       "optionalFields": ["./packages/vest/src/hooks/optionalFields.ts"],
       "warn": ["./packages/vest/src/hooks/warn.ts"],
+      "collectFailures": ["./packages/vest/src/parser/collectFailures.ts"],
       "vest": ["./packages/vest/src/vest.ts"]
     }
   },

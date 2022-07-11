@@ -1,16 +1,17 @@
 import { enforce } from 'n4s';
 
+import { SuiteSummary } from 'SuiteSummaryTypes';
 import VestTest from 'VestTest';
 import create, { Suite } from 'create';
 import context from 'ctx';
 import each from 'each';
 import { only, skip } from 'exclusive';
-import type { SuiteSummary } from 'genTestsSummary';
 import group from 'group';
 import include from 'include';
 import { eager } from 'mode';
 import omitWhen from 'omitWhen';
 import optional from 'optionalFields';
+import { parse as parseSuite } from 'parser';
 import type { SuiteResult } from 'produceSuiteResult';
 import type { SuiteRunResult } from 'produceSuiteRunResult';
 import skipWhen from 'skipWhen';
@@ -34,6 +35,7 @@ export {
   context,
   include,
   eager,
+  parseSuite,
 };
 
 export type { SuiteResult, SuiteRunResult, SuiteSummary, VestTest, Suite };

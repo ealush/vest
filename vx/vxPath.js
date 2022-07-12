@@ -24,6 +24,16 @@ vxPath.vxRoot = () => {
   });
 };
 
+vxPath.packageNameFromPath = pathSegment => {
+  // ./packages/vest/src/core/isolate/isolates/skipWhen.ts
+
+  const packagesPosition = pathSegment.indexOf(opts.dir.PACKAGES); // 2
+  const withoutDir = pathSegment.substring(
+    packagesPosition + opts.dir.PACKAGES.length
+  ); // /vest/src/core/isolate/isolates/skipWhen.ts
+  return withoutDir.split(path.sep)[1]; //vest
+};
+
 vxPath.package = (pkgName = usePackage(), ...args) => {
   return path.resolve(vxPath.PACKAGES_PATH, pkgName, ...args.filter(Boolean));
 };

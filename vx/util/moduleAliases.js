@@ -36,11 +36,13 @@ if (duplicates.size > 0) {
 
 const output = matches.reduce((accumulator, relative) => {
   const name = path.basename(relative, '.ts');
+  const package = vxPath.packageNameFromPath(relative);
 
   return accumulator.concat({
-    name,
-    relative,
     absolute: path.join(vxPath.ROOT_PATH, relative),
+    name,
+    package,
+    relative,
   });
 }, []);
 

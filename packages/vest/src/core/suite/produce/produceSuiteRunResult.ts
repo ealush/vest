@@ -1,4 +1,9 @@
-import { isEmpty, assign, isFunction, cache as createCache } from 'vest-utils';
+import {
+  assign,
+  isFunction,
+  cache as createCache,
+  numberEquals,
+} from 'vest-utils';
 
 import ctx from 'ctx';
 import hasRemainingTests from 'hasRemainingTests';
@@ -33,8 +38,7 @@ function shouldSkipDoneRegistration(
   // If we do not have any test runs for the current field
   return !!(
     !isFunction(callback) ||
-    (fieldName &&
-      (!output.tests[fieldName] || isEmpty(output.tests[fieldName].testCount)))
+    (fieldName && numberEquals(output.tests[fieldName]?.testCount, 0))
   );
 }
 

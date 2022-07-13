@@ -316,4 +316,18 @@ describe('done', () => {
       expect(done_0).not.toHaveBeenCalled();
     });
   });
+
+  describe('Passing a field that does not exist', () => {
+    it('Should call the callback immedaitely', () => {
+      const cb = jest.fn();
+
+      const suite = vest.create(() => {
+        vest.test('test', () => {});
+      });
+
+      suite().done('non-existent', cb);
+
+      expect(cb).toHaveBeenCalled();
+    });
+  });
 });

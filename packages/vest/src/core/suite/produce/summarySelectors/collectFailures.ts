@@ -1,7 +1,7 @@
 import { isPositive } from 'vest-utils';
 
 import { countKeyBySeverity, Severity } from 'Severity';
-import { TestsContainer } from 'genTestsSummary';
+import { FailureMessages, TestsContainer } from 'SuiteSummaryTypes';
 
 // calls collectAll or getByFieldName depending on whether fieldName is provided
 
@@ -41,5 +41,3 @@ function collectAll(
 
   return output;
 }
-
-export type FailureMessages = Record<string, string[]>;

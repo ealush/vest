@@ -1,6 +1,6 @@
 import { isFunction } from 'vest-utils';
 
-import { SuiteSummary } from 'genTestsSummary';
+import { SuiteSummary } from 'SuiteSummaryTypes';
 import { parse } from 'parser';
 
 /**

@@ -2,10 +2,9 @@ name: Coverage
 
 on:
   pull_request:
-    branches: 
+    branches:
       - latest
       - '!dependabot/**'
-
 
 jobs:
   build:
@@ -24,7 +23,7 @@ jobs:
       - name: Install
         run: yarn install --frozen-lockfile
       - name: Jest coverage report
-        uses: ArtiomTr/jest-coverage-report-action@v2.0.5
+        uses: ArtiomTr/jest-coverage-report-action@v2
         with:
           skip-step: install
           test-script: yarn test

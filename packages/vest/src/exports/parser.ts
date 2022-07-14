@@ -1,70 +1,54 @@
-import { isPositive, defaultTo, hasOwnProperty, invariant } from 'vest-utils';
+import { hasOwnProperty, invariant, isPositive } from 'vest-utils';
 
-import { SeverityCount } from 'Severity';
-import { SuiteSummary } from 'genTestsSummary';
+import { SuiteSummary } from 'SuiteSummaryTypes';
+import { suiteSelectors } from 'suiteSelectors';
 
-// eslint-disable-next-line max-lines-per-function
-export function parse(res: SuiteSummary): {
-  valid: (fieldName?: string) => boolean;
-  tested: (fieldName?: string) => boolean;
-  invalid: (fieldName?: string) => boolean;
-  untested: (fieldName?: string) => boolean;
-  warning: (fieldName?: string) => boolean;
-} {
+// eslint-disable-next-line max-lines-per-function, max-statements
+export function parse(summary: SuiteSummary): ParsedVestObject {
   invariant(
-    res && hasOwnProperty(res, 'valid'),
+    summary && hasOwnProperty(summary, 'valid'),
     "Vest parser: expected argument at position 0 to be Vest's result object."
   );
+
+  const sel = suiteSelectors(summary);
 
   const testedStorage: Record<string, boolean> = {};
 
   const selectors = {
-    invalid: hasErrors,
+    invalid: sel.hasErrors,
     tested: isTested,
     untested: isUntested,
-    valid: isValid,
-    warning: hasWarnings,
+    valid: sel.isValid,
+    warning: sel.hasWarnings,
   };
 
   return selectors;
 
+  // Booleans
   function isTested(fieldName?: string): boolean {
     if (!fieldName) {
-      return isPositive(res.testCount);
+      return isPositive(summary.testCount);
     }
 
     if (hasOwnProperty(testedStorage, fieldName))
       return testedStorage[fieldName];
 
     testedStorage[fieldName] =
-      hasOwnProperty(res.tests, fieldName) &&
-      isPositive(res.tests[fieldName].testCount);
+      hasOwnProperty(summary.tests, fieldName) &&
+      isPositive(summary.tests[fieldName].testCount);
 
     return selectors.tested(fieldName);
   }
 
   function isUntested(fieldName?: string): boolean {
-    return res.testCount === 0 || !selectors.tested(fieldName);
+    return !(isPositive(summary.testCount) && selectors.tested(fieldName));
   }
+}
 
-  function isValid(fieldName?: string): boolean {
-    return fieldName ? Boolean(res.tests[fieldName]?.valid) : res.valid;
-  }
-
-  function hasWarnings(fieldName?: string): boolean {
-    return hasFailures(SeverityCount.WARN_COUNT, fieldName);
-  }
-
-  function hasErrors(fieldName?: string): boolean {
-    return hasFailures(SeverityCount.ERROR_COUNT, fieldName);
-  }
-
-  function hasFailures(countKey: SeverityCount, fieldName?: string): boolean {
-    const failureCount = defaultTo(
-      fieldName ? res.tests[fieldName]?.[countKey] : res[countKey],
-      0
-    );
-
-    return isPositive(failureCount);
-  }
+interface ParsedVestObject {
+  valid(fieldName?: string): boolean;
+  tested(fieldName?: string): boolean;
+  invalid(fieldName?: string): boolean;
+  untested(fieldName?: string): boolean;
+  warning(fieldName?: string): boolean;
 }

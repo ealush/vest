@@ -1,6 +1,6 @@
 import faker from 'faker';
 
-import { dummyTest } from '../../../../../../../testUtils/testDummy';
+import { dummyTest } from '../../../../../../testUtils/testDummy';
 
 import * as vest from 'vest';
 

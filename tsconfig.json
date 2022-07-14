@@ -164,23 +164,14 @@
       "shouldAddValidProperty": [
         "./packages/vest/src/core/suite/produce/summaryGenerators/shouldAddValidProperty.ts"
       ],
+      "SuiteSummaryTypes": [
+        "./packages/vest/src/core/suite/produce/summaryGenerators/SuiteSummaryTypes.ts"
+      ],
       "collectFailures": [
-        "./packages/vest/src/core/suite/produce/summarySelectors/getFailures/collectFailures.ts"
+        "./packages/vest/src/core/suite/produce/summarySelectors/collectFailures.ts"
       ],
-      "getFailures": [
-        "./packages/vest/src/core/suite/produce/summarySelectors/getFailures/getFailures.ts"
-      ],
-      "getFailuresByGroup": [
-        "./packages/vest/src/core/suite/produce/summarySelectors/getFailures/getFailuresByGroup.ts"
-      ],
-      "hasFailures": [
-        "./packages/vest/src/core/suite/produce/summarySelectors/hasFailuers/hasFailures.ts"
-      ],
-      "hasFailuresByGroup": [
-        "./packages/vest/src/core/suite/produce/summarySelectors/hasFailuers/hasFailuresByGroup.ts"
-      ],
-      "isValid": [
-        "./packages/vest/src/core/suite/produce/summarySelectors/isValid.ts"
+      "suiteSelectors": [
+        "./packages/vest/src/core/suite/produce/summarySelectors/suiteSelectors.ts"
       ],
       "key": ["./packages/vest/src/core/test/key.ts"],
       "cancelOverriddenPendingTest": [

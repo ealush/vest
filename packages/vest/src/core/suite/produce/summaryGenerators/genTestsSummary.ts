@@ -1,6 +1,14 @@
 import { assign, invariant } from 'vest-utils';
 
 import { countKeyBySeverity, Severity } from 'Severity';
+import {
+  Group,
+  Groups,
+  SingleTestSummary,
+  SuiteSummary,
+  Tests,
+  TestsContainer,
+} from 'SuiteSummaryTypes';
 import VestTest from 'VestTest';
 import ctx from 'ctx';
 import {
@@ -140,28 +148,3 @@ function baseTestStats() {
     warnings: [],
   });
 }
-
-export type SuiteSummary = {
-  groups: Groups;
-  tests: Tests;
-  valid: boolean;
-} & SummaryBase;
-
-export type TestsContainer = Group | Tests;
-export type GroupTestSummary = SingleTestSummary;
-
-type Groups = Record<string, Group>;
-type Group = Record<string, GroupTestSummary>;
-type Tests = Record<string, SingleTestSummary>;
-
-type SingleTestSummary = SummaryBase & {
-  errors: string[];
-  warnings: string[];
-  valid: boolean;
-};
-
-type SummaryBase = {
-  errorCount: number;
-  warnCount: number;
-  testCount: number;
-};

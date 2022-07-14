@@ -1,11 +1,11 @@
 import { enforce } from 'n4s';
 
+import { SuiteSummary } from 'SuiteSummaryTypes';
 import VestTest from 'VestTest';
 import create, { Suite } from 'create';
 import context from 'ctx';
 import each from 'each';
 import { only, skip } from 'exclusive';
-import type { SuiteSummary } from 'genTestsSummary';
 import group from 'group';
 import include from 'include';
 import { eager } from 'mode';

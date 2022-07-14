@@ -1,5 +1,5 @@
 // TODO: Verify this test file is not needed and delete it
-import { dummyTest } from '../../../../../../../testUtils/testDummy';
+import { dummyTest } from '../../../../../../testUtils/testDummy';
 
 import create from 'create';
 import group from 'group';

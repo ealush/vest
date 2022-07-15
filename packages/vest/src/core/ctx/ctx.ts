@@ -4,7 +4,6 @@ import { assign } from 'vest-utils';
 
 import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { Modes } from 'Modes';
-import { SuiteSummary } from 'SuiteSummaryTypes';
 import VestTest from 'VestTest';
 import type { StateRef } from 'createStateRef';
 import { generateIsolate } from 'generateIsolate';
@@ -49,5 +48,4 @@ type CTXType = {
     };
     emit: (event: string, ...args: any[]) => void;
   };
-  summary?: SuiteSummary;
 };

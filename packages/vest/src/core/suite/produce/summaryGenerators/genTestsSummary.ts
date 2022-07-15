@@ -1,4 +1,4 @@
-import { assign, invariant } from 'vest-utils';
+import { assign } from 'vest-utils';
 
 import { countKeyBySeverity, Severity } from 'Severity';
 import {
@@ -10,19 +10,11 @@ import {
   TestsContainer,
 } from 'SuiteSummaryTypes';
 import VestTest from 'VestTest';
-import ctx from 'ctx';
 import {
   shouldAddValidProperty,
   shouldAddValidPropertyInGroup,
 } from 'shouldAddValidProperty';
 import { useTestsFlat } from 'stateHooks';
-
-export function useSummary(): SuiteSummary {
-  const { summary } = ctx.useX();
-  invariant(summary);
-
-  return summary;
-}
 
 /**
  * Reads the testObjects list and gets full validation result from it.

@@ -12,7 +12,6 @@ export default createContext<CTXType>((ctxRef, parentContext) =>
   parentContext
     ? null
     : assign(
-        {},
         {
           exclusion: {
             tests: {},

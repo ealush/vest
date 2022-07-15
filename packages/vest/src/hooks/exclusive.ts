@@ -42,7 +42,7 @@ skip.group = (item: ExclusionItem) =>
 
 //Checks whether a certain test profile excluded by any of the exclusion groups.
 
-// eslint-disable-next-line complexity, max-statements, max-lines-per-function
+// eslint-disable-next-line complexity, max-statements
 export function isExcluded(testObject: VestTest): boolean {
   const { fieldName, groupName } = testObject;
 

@@ -6,7 +6,7 @@ import { useCursor } from 'isolateHooks';
 import registerPrevRunTest from 'registerPrevRunTest';
 import { useSuiteId } from 'stateHooks';
 import type { TestBase } from 'test';
-// eslint-disable-next-line max-lines-per-function
+
 export default function bindTestMemo(test: TestBase): {
   (fieldName: string, test: TestFn, deps: unknown[]): VestTest;
   (fieldName: string, message: string, test: TestFn, deps: unknown[]): VestTest;

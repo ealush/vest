@@ -3,7 +3,7 @@ import { hasOwnProperty, invariant, isPositive } from 'vest-utils';
 
 import { SuiteSummary } from 'SuiteSummaryTypes';
 
-// eslint-disable-next-line max-lines-per-function, max-statements
+// eslint-disable-next-line max-statements
 export function parse(summary: SuiteSummary): ParsedVestObject {
   invariant(
     summary && hasOwnProperty(summary, 'valid'),

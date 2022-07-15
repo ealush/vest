@@ -8,7 +8,6 @@ import { transformResult } from 'transformResult';
 
 type IRules = n4s.IRules<Record<string, any>>;
 
-// eslint-disable-next-line max-lines-per-function
 export default function enforceEager(value: RuleValue): IRules {
   const target = {} as IRules;
 

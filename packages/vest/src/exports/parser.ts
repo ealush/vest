@@ -1,7 +1,7 @@
+import { suiteSelectors } from 'vest';
 import { hasOwnProperty, invariant, isPositive } from 'vest-utils';
 
 import { SuiteSummary } from 'SuiteSummaryTypes';
-import { suiteSelectors } from 'suiteSelectors';
 
 // eslint-disable-next-line max-lines-per-function, max-statements
 export function parse(summary: SuiteSummary): ParsedVestObject {

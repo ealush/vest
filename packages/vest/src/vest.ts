@@ -14,11 +14,14 @@ import optional from 'optionalFields';
 import type { SuiteResult } from 'produceSuiteResult';
 import type { SuiteRunResult } from 'produceSuiteRunResult';
 import skipWhen from 'skipWhen';
+import { suiteSelectors } from 'suiteSelectors';
 import { test } from 'test';
 import warn from 'warn';
 
 const VERSION = __LIB_VERSION__;
+
 export {
+  suiteSelectors,
   test,
   create,
   each,

@@ -32,13 +32,13 @@ export type Suite<T extends CB> = {
  *  });
  * });
  */
-function create<T extends CB>(suiteName: string, suiteCallback: T): Suite<T>;
+function create<T extends CB>(suiteName: SuiteName, suiteCallback: T): Suite<T>;
 function create<T extends CB>(suiteCallback: T): Suite<T>;
 // eslint-disable-next-line max-lines-per-function
 function create<T extends CB>(
-  ...args: [suiteName: string, suiteCallback: T] | [suiteCallback: T]
+  ...args: [suiteName: SuiteName, suiteCallback: T] | [suiteCallback: T]
 ): Suite<T> {
-  const [suiteCallback, suiteName] = args.reverse() as [T, string];
+  const [suiteCallback, suiteName] = args.reverse() as [T, SuiteName];
 
   invariant(
     isFunction(suiteCallback),
@@ -101,3 +101,5 @@ function create<T extends CB>(
 }
 
 export default create;
+
+export type SuiteName = string | void;

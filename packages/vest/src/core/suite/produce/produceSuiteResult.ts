@@ -1,5 +1,7 @@
 import { cache as createCache, assign } from 'vest-utils';
 
+import { SuiteSummary } from 'SuiteSummaryTypes';
+import { SuiteName } from 'create';
 import ctx from 'ctx';
 import genTestsSummary from 'genTestsSummary';
 import { useStateRef, useTestsFlat, useSuiteName } from 'stateHooks';
@@ -24,4 +26,5 @@ export function produceSuiteResult(): SuiteResult {
   );
 }
 
-export type SuiteResult = ReturnType<typeof genTestsSummary> & SuiteSelectors;
+export type SuiteResult = SuiteSummary &
+  SuiteSelectors & { suiteName: SuiteName };

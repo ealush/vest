@@ -1,7 +1,6 @@
 const path = require('path');
 
 const glob = require('glob');
-
 const opts = require('vx/opts');
 const vxPath = require('vx/vxPath');
 
@@ -34,16 +33,34 @@ if (duplicates.size > 0) {
   );
 }
 
-const output = matches.reduce((accumulator, relative) => {
-  const name = path.basename(relative, '.ts');
-  const package = vxPath.packageNameFromPath(relative);
+const output = Object.values(
+  matches.reduce((accumulator, relative) => {
+    const name = path.basename(relative, '.ts');
+    const package = vxPath.packageNameFromPath(relative);
 
-  return accumulator.concat({
-    absolute: path.join(vxPath.ROOT_PATH, relative),
-    name,
-    package,
-    relative,
-  });
-}, []);
+    accumulator[package] = accumulator[package] || {
+      packageName: package,
+      modules: [],
+      entry: null,
+    };
 
-module.exports = () => [].concat(output);
+    if (name === package) {
+      accumulator[package].entry = {
+        absolute: path.join(vxPath.ROOT_PATH, relative),
+        name,
+        relative,
+      };
+    }
+
+    accumulator[package].modules.push({
+      absolute: path.join(vxPath.ROOT_PATH, relative),
+      name,
+      package,
+      relative,
+    });
+
+    return accumulator;
+  }, {})
+);
+
+module.exports = () => [...output];

@@ -3,6 +3,9 @@
   "compilerOptions": {
     "declarationMap": true,
     "declarationDir": "./types",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "paths": {
+      "vast": ["./packages/vast/src/vast.ts"]
+    }
   }
 }

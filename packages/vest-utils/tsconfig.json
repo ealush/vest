@@ -3,6 +3,44 @@
   "compilerOptions": {
     "declarationMap": true,
     "declarationDir": "./types",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "paths": {
+      "asArray": ["./packages/vest-utils/src/asArray.ts"],
+      "assign": ["./packages/vest-utils/src/assign.ts"],
+      "bindNot": ["./packages/vest-utils/src/bindNot.ts"],
+      "bus": ["./packages/vest-utils/src/bus.ts"],
+      "cache": ["./packages/vest-utils/src/cache.ts"],
+      "callEach": ["./packages/vest-utils/src/callEach.ts"],
+      "defaultTo": ["./packages/vest-utils/src/defaultTo.ts"],
+      "deferThrow": ["./packages/vest-utils/src/deferThrow.ts"],
+      "either": ["./packages/vest-utils/src/either.ts"],
+      "globals.d": ["./packages/vest-utils/src/globals.d.ts"],
+      "greaterThan": ["./packages/vest-utils/src/greaterThan.ts"],
+      "hasOwnProperty": ["./packages/vest-utils/src/hasOwnProperty.ts"],
+      "invariant": ["./packages/vest-utils/src/invariant.ts"],
+      "isArrayValue": ["./packages/vest-utils/src/isArrayValue.ts"],
+      "isBooleanValue": ["./packages/vest-utils/src/isBooleanValue.ts"],
+      "isEmpty": ["./packages/vest-utils/src/isEmpty.ts"],
+      "isFunction": ["./packages/vest-utils/src/isFunction.ts"],
+      "isNull": ["./packages/vest-utils/src/isNull.ts"],
+      "isNullish": ["./packages/vest-utils/src/isNullish.ts"],
+      "isNumeric": ["./packages/vest-utils/src/isNumeric.ts"],
+      "isPositive": ["./packages/vest-utils/src/isPositive.ts"],
+      "isPromise": ["./packages/vest-utils/src/isPromise.ts"],
+      "isStringValue": ["./packages/vest-utils/src/isStringValue.ts"],
+      "isUndefined": ["./packages/vest-utils/src/isUndefined.ts"],
+      "last": ["./packages/vest-utils/src/last.ts"],
+      "lengthEquals": ["./packages/vest-utils/src/lengthEquals.ts"],
+      "longerThan": ["./packages/vest-utils/src/longerThan.ts"],
+      "mapFirst": ["./packages/vest-utils/src/mapFirst.ts"],
+      "nestedArray": ["./packages/vest-utils/src/nestedArray.ts"],
+      "numberEquals": ["./packages/vest-utils/src/numberEquals.ts"],
+      "optionalFunctionValue": [
+        "./packages/vest-utils/src/optionalFunctionValue.ts"
+      ],
+      "seq": ["./packages/vest-utils/src/seq.ts"],
+      "utilityTypes": ["./packages/vest-utils/src/utilityTypes.ts"],
+      "vest-utils": ["./packages/vest-utils/src/vest-utils.ts"]
+    }
   }
 }

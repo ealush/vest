@@ -3,6 +3,14 @@
   "compilerOptions": {
     "declarationMap": true,
     "declarationDir": "./types",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "paths": {
+      "anyone": ["./packages/anyone/src/anyone.ts"],
+      "all": ["./packages/anyone/src/exports/all.ts"],
+      "any": ["./packages/anyone/src/exports/any.ts"],
+      "none": ["./packages/anyone/src/exports/none.ts"],
+      "one": ["./packages/anyone/src/exports/one.ts"],
+      "runAnyoneMethods": ["./packages/anyone/src/runner/runAnyoneMethods.ts"]
+    }
   }
 }

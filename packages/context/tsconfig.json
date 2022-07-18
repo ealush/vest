@@ -3,6 +3,9 @@
   "compilerOptions": {
     "declarationMap": true,
     "declarationDir": "./types",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "paths": {
+      "context": ["./packages/context/src/context.ts"]
+    }
   }
 }

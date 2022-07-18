@@ -9,24 +9,13 @@ const packageNames = require('vx/packageNames');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
-// const ignoreGeneratedExports = moduleAliases().reduce((allExports, current) => {
-//   const find = path.join(opts.dir.SRC, opts.dir.EXPORTS);
-//   if (current.absolute.indexOf(find) === -1) {
-//     return allExports;
-//   }
-
-//   const x = path
-//     .join(...current.absolute.split(find))
-//     .replace('.ts', `/${opts.fileNames.PACKAGE_JSON}`);
-
-//   return allExports.concat(x);
-// }, []);
-
-// const moduleNameMapper = moduleAliases().reduce(
-//   (aliases, { name, absolute }) =>
-//     Object.assign(aliases, { [`^${name}$`]: absolute }),
-//   {}
-// );
+const modulesPerPackage = moduleAliases().reduce(
+  (accumulator, currentPackage) =>
+    Object.assign(accumulator, {
+      [currentPackage.packageName]: currentPackage.modules,
+    }),
+  {}
+);
 
 const setupPerPackage = glob.sync(
   vxPath.packageConfigPath(
@@ -44,38 +33,24 @@ const setupAfterEnvPerPackage = glob.sync(
   )
 );
 
-const modulesByPackage = moduleAliases().reduce(
-  (accumulator, package) =>
-    Object.assign(accumulator, { [package.packageName]: package.modules }),
-  {}
-);
-
-const x = {
-  projects: packageNames.list.map(packageName => {
-    return {
-      displayName: packageName,
-      ...baseConfig({
-        testMatch: [
-          vxPath.packageSrc(
-            packageName,
-            `**/${opts.dir.TESTS}/*.(spec|test).ts`
-          ),
-        ],
-        moduleNameMapper: modulesByPackage[packageName].reduce(
-          (accumulator, currentModule) =>
-            Object.assign(accumulator, {
+module.exports = {
+  projects: packageNames.list.map(package => ({
+    displayName: package,
+    ...baseConfig(
+      {
+        moduleNameMapper: modulesPerPackage[package].reduce(
+          (modules, currentModule) =>
+            Object.assign(modules, {
               [`^${currentModule.name}$`]: currentModule.absolute,
             }),
           {}
         ),
-      }),
-    };
-  }),
+        rootDir: vxPath.package(package),
+      },
+      package
+    ),
+  })),
 };
-
-console.log(x.projects[5].moduleNameMapper);
-
-module.exports = x;
 
 function baseConfig(custom = {}, packageName = null) {
   return {
@@ -100,10 +75,8 @@ function baseConfig(custom = {}, packageName = null) {
         },
       },
     },
-    // moduleNameMapper,
     // modulePathIgnorePatterns: [...ignoreGeneratedExports],
     preset: 'ts-jest',
-    // projects: ['<rootDir>/packages/vest'],
     rootDir: vxPath.ROOT_PATH,
     roots: ['<rootDir>'],
     setupFiles: [

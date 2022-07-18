@@ -1,10 +1,10 @@
-import { DropFirst } from 'utilityTypes';
-
 import { allOf } from 'allOf';
 import { anyOf } from 'anyOf';
-import { enforce } from 'n4s';
 import { noneOf } from 'noneOf';
 import { oneOf } from 'oneOf';
+import { DropFirst } from 'vest-utils';
+
+import { enforce } from 'n4s';
 
 enforce.extend({ allOf, anyOf, noneOf, oneOf });
 

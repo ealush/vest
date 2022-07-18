@@ -1,10 +1,10 @@
-import { DropFirst } from 'utilityTypes';
-
 import { isArrayOf } from 'isArrayOf';
 import { loose } from 'loose';
-import { enforce } from 'n4s';
 import { optional } from 'optional';
 import { shape } from 'shape';
+import { DropFirst } from 'vest-utils';
+
+import { enforce } from 'n4s';
 
 export { partial } from 'partial';
 

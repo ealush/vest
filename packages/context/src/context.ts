@@ -1,9 +1,9 @@
-import { CB } from 'utilityTypes';
 import {
   assign,
   defaultTo,
   invariant,
   optionalFunctionValue,
+  CB,
 } from 'vest-utils';
 
 // eslint-disable-next-line max-lines-per-function

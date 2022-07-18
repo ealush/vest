@@ -1,4 +1,4 @@
-import { ValueOf } from 'utilityTypes';
+import { ValueOf } from 'vest-utils';
 import {
   cache as createCache,
   nestedArray,

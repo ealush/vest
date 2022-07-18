@@ -1,13 +1,11 @@
-import { CB } from 'utilityTypes';
-import { createState } from 'vast';
-import { assign, seq, invariant, isFunction } from 'vest-utils';
-
 import { IsolateTypes } from 'IsolateTypes';
 import createStateRef from 'createStateRef';
 import context from 'ctx';
 import { isolate } from 'isolate';
 import { produceSuiteResult, SuiteResult } from 'produceSuiteResult';
 import { SuiteRunResult, produceFullResult } from 'produceSuiteRunResult';
+import { createState } from 'vast';
+import { assign, seq, invariant, isFunction, CB } from 'vest-utils';
 import { initBus, Events } from 'vestBus';
 
 type CreateProperties = {

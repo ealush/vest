@@ -1,4 +1,4 @@
-import type { Stringable } from 'utilityTypes';
+import type { Stringable } from 'vest-utils';
 import { defaultTo } from 'vest-utils';
 
 export default function ruleReturn(

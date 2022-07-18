@@ -1,12 +1,10 @@
-import { CB, Stringable } from 'utilityTypes';
-import { mapFirst, optionalFunctionValue } from 'vest-utils';
-
 import eachEnforceRule from 'eachEnforceRule';
 import { ctx } from 'enforceContext';
 import isProxySupported from 'isProxySupported';
 import ruleReturn, { defaultToPassing, RuleDetailedResult } from 'ruleReturn';
 import { RuleValue, Args, KBaseRules, getRule } from 'runtimeRules';
 import { transformResult } from 'transformResult';
+import { mapFirst, optionalFunctionValue, CB, Stringable } from 'vest-utils';
 
 // eslint-disable-next-line max-lines-per-function
 export default function genEnforceLazy(key: string) {

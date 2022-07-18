@@ -1,12 +1,10 @@
-import { createContext } from 'context';
-import { CB } from 'utilityTypes';
-import { assign } from 'vest-utils';
-
 import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { Modes } from 'Modes';
 import VestTest from 'VestTest';
+import { createContext } from 'context';
 import type { StateRef } from 'createStateRef';
 import { generateIsolate } from 'generateIsolate';
+import { assign, CB } from 'vest-utils';
 
 export default createContext<CTXType>((ctxRef, parentContext) =>
   parentContext

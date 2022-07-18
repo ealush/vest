@@ -1,4 +1,4 @@
-import { CB } from 'utilityTypes';
+import { CB } from 'vest-utils';
 import { optionalFunctionValue } from 'vest-utils';
 
 import { IsolateTypes } from 'IsolateTypes';

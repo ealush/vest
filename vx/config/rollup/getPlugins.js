@@ -68,7 +68,7 @@ module.exports = function getPlugins({
         }
 
         // Removes current package from the paths list if in an "exported" module
-        delete clonedConfig.paths[packageName];
+        // delete clonedConfig.paths[packageName];
 
         return clonedConfig;
       },

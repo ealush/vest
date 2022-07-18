@@ -1,8 +1,8 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "declarationMap": true,
     "declarationDir": "./types",
+    "declarationMap": true,
     "outDir": "./dist",
     "paths": {
       "anyone": ["./packages/anyone/src/anyone.ts"],

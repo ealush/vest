@@ -16,6 +16,14 @@ const buildSingle = JSON.parse(
   process.env.ROLLUP_WATCH ?? process.env.VX_BUILD_SINGLE ?? false
 );
 
+const modulesPerPackage = moduleAliases.reduce(
+  (accumulator, currentPackage) =>
+    Object.assign(accumulator, {
+      [currentPackage.packageName]: currentPackage.modules,
+    }),
+  {}
+);
+
 module.exports = cleanupConfig(
   concatTruthy(!buildSingle && opts.env.PRODUCTION, opts.env.DEVELOPMENT).map(
     env => {
@@ -117,7 +125,10 @@ function genOutput({
 }
 
 function getInputFile(moduleName = usePackage()) {
-  const modulePath = moduleAliases.find(ref => ref.name === moduleName);
+  const currentPackage = usePackage();
+  const modulePath = modulesPerPackage[currentPackage].find(
+    ref => ref.name === moduleName
+  );
 
   if (!(modulePath?.absolute && fs.existsSync(modulePath.absolute))) {
     throw new Error('unable to find module path for ' + moduleName);

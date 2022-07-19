@@ -1,10 +1,8 @@
-import { isString } from 'isString';
-import { assign, invariant, isFunction } from 'vest-utils';
-
 import VestTest, { TestFn } from 'VestTest';
 import ctx from 'ctx';
 import registerPrevRunTest from 'registerPrevRunTest';
 import bindTestMemo from 'test.memo';
+import { assign, invariant, isFunction, isStringValue } from 'vest-utils';
 
 function testBase(fieldName: string, message: string, cb: TestFn): VestTest;
 function testBase(fieldName: string, cb: TestFn): VestTest;
@@ -28,7 +26,7 @@ function testBase(
   ) as [string | undefined, TestFn, string | undefined];
 
   invariant(
-    isString(fieldName),
+    isStringValue(fieldName),
     incompatibleParamsError('fieldName', 'string')
   );
 

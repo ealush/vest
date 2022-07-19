@@ -6,7 +6,6 @@ import { isNullish, nestedArray, asArray, deferThrow } from 'vest-utils';
 export function usePrevKeys(): Record<string, VestTest> {
   const [{ prev }] = useTestObjects();
 
-  // @ts-ignore - fixme
   return asArray(nestedArray.getCurrent(prev, useCurrentPath())).reduce(
     (prevKeys, testObject) => {
       if (!(testObject instanceof VestTest)) {

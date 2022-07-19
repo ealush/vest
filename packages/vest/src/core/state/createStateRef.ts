@@ -1,8 +1,7 @@
-import type { NestedArray } from 'nestedArray';
-import type { State, UseState } from 'vast';
-
 import VestTest from 'VestTest';
 import type { SuiteResult } from 'produceSuiteResult';
+import type { State, UseState } from 'vast';
+import { nestedArray } from 'vest-utils';
 
 export default function createStateRef(
   state: State,
@@ -56,4 +55,4 @@ type TestObjects = {
   current: VestTests;
 };
 
-export type VestTests = NestedArray<VestTest>;
+export type VestTests = nestedArray.NestedArray<VestTest>;

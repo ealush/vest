@@ -19,7 +19,6 @@
       "development": {
         "types": "./types/context.d.ts",
         "browser": "./dist/es/context.development.js",
-        "umd": "./dist/umd/context.development.js",
         "import": "./dist/es/context.development.js",
         "require": "./dist/cjs/context.development.js",
         "node": "./dist/cjs/context.development.js",
@@ -28,7 +27,6 @@
       },
       "types": "./types/context.d.ts",
       "browser": "./dist/es/context.production.js",
-      "umd": "./dist/umd/context.production.js",
       "import": "./dist/es/context.production.js",
       "require": "./dist/cjs/context.production.js",
       "node": "./dist/cjs/context.production.js",

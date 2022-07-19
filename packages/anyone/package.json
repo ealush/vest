@@ -19,7 +19,6 @@
       "production": {
         "types": "./types/all.d.ts",
         "browser": "./dist/es/all.production.js",
-        "umd": "./dist/umd/all.production.js",
         "import": "./dist/es/all.production.js",
         "require": "./dist/cjs/all.production.js",
         "node": "./dist/cjs/all.production.js",
@@ -29,7 +28,6 @@
       "development": {
         "types": "./types/all.d.ts",
         "browser": "./dist/es/all.development.js",
-        "umd": "./dist/umd/all.development.js",
         "import": "./dist/es/all.development.js",
         "require": "./dist/cjs/all.development.js",
         "node": "./dist/cjs/all.development.js",
@@ -38,7 +36,6 @@
       },
       "types": "./types/all.d.ts",
       "browser": "./dist/es/all.production.js",
-      "umd": "./dist/umd/all.production.js",
       "import": "./dist/es/all.production.js",
       "require": "./dist/cjs/all.production.js",
       "node": "./dist/cjs/all.production.js",
@@ -49,7 +46,6 @@
       "production": {
         "types": "./types/any.d.ts",
         "browser": "./dist/es/any.production.js",
-        "umd": "./dist/umd/any.production.js",
         "import": "./dist/es/any.production.js",
         "require": "./dist/cjs/any.production.js",
         "node": "./dist/cjs/any.production.js",
@@ -59,7 +55,6 @@
       "development": {
         "types": "./types/any.d.ts",
         "browser": "./dist/es/any.development.js",
-        "umd": "./dist/umd/any.development.js",
         "import": "./dist/es/any.development.js",
         "require": "./dist/cjs/any.development.js",
         "node": "./dist/cjs/any.development.js",
@@ -68,7 +63,6 @@
       },
       "types": "./types/any.d.ts",
       "browser": "./dist/es/any.production.js",
-      "umd": "./dist/umd/any.production.js",
       "import": "./dist/es/any.production.js",
       "require": "./dist/cjs/any.production.js",
       "node": "./dist/cjs/any.production.js",
@@ -79,7 +73,6 @@
       "production": {
         "types": "./types/none.d.ts",
         "browser": "./dist/es/none.production.js",
-        "umd": "./dist/umd/none.production.js",
         "import": "./dist/es/none.production.js",
         "require": "./dist/cjs/none.production.js",
         "node": "./dist/cjs/none.production.js",
@@ -89,7 +82,6 @@
       "development": {
         "types": "./types/none.d.ts",
         "browser": "./dist/es/none.development.js",
-        "umd": "./dist/umd/none.development.js",
         "import": "./dist/es/none.development.js",
         "require": "./dist/cjs/none.development.js",
         "node": "./dist/cjs/none.development.js",
@@ -98,7 +90,6 @@
       },
       "types": "./types/none.d.ts",
       "browser": "./dist/es/none.production.js",
-      "umd": "./dist/umd/none.production.js",
       "import": "./dist/es/none.production.js",
       "require": "./dist/cjs/none.production.js",
       "node": "./dist/cjs/none.production.js",
@@ -109,7 +100,6 @@
       "production": {
         "types": "./types/one.d.ts",
         "browser": "./dist/es/one.production.js",
-        "umd": "./dist/umd/one.production.js",
         "import": "./dist/es/one.production.js",
         "require": "./dist/cjs/one.production.js",
         "node": "./dist/cjs/one.production.js",
@@ -119,7 +109,6 @@
       "development": {
         "types": "./types/one.d.ts",
         "browser": "./dist/es/one.development.js",
-        "umd": "./dist/umd/one.development.js",
         "import": "./dist/es/one.development.js",
         "require": "./dist/cjs/one.development.js",
         "node": "./dist/cjs/one.development.js",
@@ -128,7 +117,6 @@
       },
       "types": "./types/one.d.ts",
       "browser": "./dist/es/one.production.js",
-      "umd": "./dist/umd/one.production.js",
       "import": "./dist/es/one.production.js",
       "require": "./dist/cjs/one.production.js",
       "node": "./dist/cjs/one.production.js",
@@ -139,7 +127,6 @@
       "development": {
         "types": "./types/anyone.d.ts",
         "browser": "./dist/es/anyone.development.js",
-        "umd": "./dist/umd/anyone.development.js",
         "import": "./dist/es/anyone.development.js",
         "require": "./dist/cjs/anyone.development.js",
         "node": "./dist/cjs/anyone.development.js",
@@ -148,7 +135,6 @@
       },
       "types": "./types/anyone.d.ts",
       "browser": "./dist/es/anyone.production.js",
-      "umd": "./dist/umd/anyone.production.js",
       "import": "./dist/es/anyone.production.js",
       "require": "./dist/cjs/anyone.production.js",
       "node": "./dist/cjs/anyone.production.js",

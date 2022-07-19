@@ -1,7 +1,9 @@
 const path = require('path');
 
 const glob = require('glob');
+
 const opts = require('vx/opts');
+const packageNames = require('vx/packageNames');
 const vxPath = require('vx/vxPath');
 
 const matches = glob.sync(vxPath.rel(vxPath.packageSrc('*', '**/*.ts')), {
@@ -13,23 +15,44 @@ const matches = glob.sync(vxPath.rel(vxPath.packageSrc('*', '**/*.ts')), {
   ],
 });
 
-const { duplicates } = matches.reduce(
-  ({ existing, duplicates }, current) => {
+const dupesPerPackage = matches.reduce(
+  (packages, current) => {
     const basename = path.basename(current);
+    const package = vxPath.packageNameFromPath(current);
+
+    const existing = packages[package].existing;
 
     existing[basename] = (existing[basename] || 0) + 1;
     if (existing[basename] > 1) {
-      duplicates.add(basename);
+      packages[package].duplicates.add(basename);
     }
 
-    return { existing, duplicates };
+    return packages;
   },
-  { existing: {}, duplicates: new Set() }
+
+  packageNames.list.reduce(
+    (accumulator, package) =>
+      Object.assign(accumulator, {
+        [package]: { existing: {}, duplicates: new Set() },
+      }),
+    {}
+  )
 );
 
-if (duplicates.size > 0) {
+const verifiedDuplicates = Object.entries(dupesPerPackage).reduce(
+  (err, [package, { duplicates }]) => {
+    if (duplicates.size > 0) {
+      err.push(`  - ${package}: ${[...duplicates].join(', ')} \n`);
+    }
+
+    return err;
+  },
+  []
+);
+
+if (verifiedDuplicates.length > 0) {
   throw new Error(
-    'Found duplicate module names: \n- ' + [...duplicates].join('\n- ')
+    'Found duplicate module names: \n- ' + verifiedDuplicates.join('\n')
   );
 }
 

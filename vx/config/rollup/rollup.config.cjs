@@ -125,6 +125,7 @@ function genOutput({
 
 function getInputFile(moduleName = usePackage()) {
   const currentPackage = usePackage();
+
   const modulePath = modulesPerPackage[currentPackage].find(
     ref => ref.name === moduleName
   );

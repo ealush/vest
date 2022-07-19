@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const { format, disallowExternals } = require('./format');
+const { format } = require('./format');
 const getPlugins = require('./getPlugins');
 
 const opts = require('vx/opts');
@@ -76,9 +76,7 @@ function genBaseConfig({
     env,
     // This turns the installed "internal" dependencies into external dependencies
     external: [
-      ...Object.keys(
-        disallowExternals ? {} : packageJson()?.dependencies ?? {}
-      ),
+      ...Object.keys(packageJson()?.dependencies ?? {}),
       moduleName === usePackage() ? null : usePackage(),
     ].filter(Boolean),
 
@@ -105,11 +103,12 @@ function genOutput({
   };
 
   // creates "globals" from the installed internal packages
-  const globals = Object.keys(
-    disallowExternals ? {} : packageJson()?.dependencies ?? {}
-  ).reduce((g, c) => Object.assign(g, { [c]: c }), {
-    ...{ [usePackage()]: usePackage() },
-  });
+  const globals = Object.keys(packageJson()?.dependencies ?? {}).reduce(
+    (g, c) => Object.assign(g, { [c]: c }),
+    {
+      ...{ [usePackage()]: usePackage() },
+    }
+  );
 
   return {
     ...base,

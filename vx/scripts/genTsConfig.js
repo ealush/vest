@@ -8,8 +8,6 @@ const packageNames = require('vx/packageNames');
 const getModuleAliases = require('vx/util/moduleAliases');
 const vxPath = require('vx/vxPath');
 
-const prevTsConfig = require(vxPath.TSCONFIG_PATH);
-
 const moduleAliases = getModuleAliases();
 
 const paths = moduleAliases.reduce(

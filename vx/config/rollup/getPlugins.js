@@ -4,7 +4,6 @@ const _ = require('lodash');
 const { terser } = require('rollup-plugin-terser');
 const ts = require('rollup-plugin-ts');
 
-const { disallowExternals } = require('./format');
 const addCJSPackageJson = require('./plugins/addCJSPackageJson');
 const addModulePackageJson = require('./plugins/addModulePackageJson');
 const handleExports = require('./plugins/handleExports');
@@ -46,31 +45,31 @@ module.exports = function getPlugins({
         },
       },
       transpileOnly: env !== opts.env.PRODUCTION,
-      // eslint-disable-next-line complexity
-      tsconfig: resolvedConfig => {
-        if (disallowExternals) {
-          return resolvedConfig;
-        }
-        const clonedConfig = _.cloneDeep(resolvedConfig);
+      tsconfig: {
+        fileName: vxPath.packageTsConfig(packageName),
+        // eslint-disable-next-line complexity
+        hook: resolvedConfig => {
+          const clonedConfig = _.cloneDeep(resolvedConfig);
 
-        // The changes made in this function allow using the already installed
-        // module instead of embedding of the code.
+          // The changes made in this function allow using the already installed
+          // module instead of embedding of the code.
 
-        // Remove installed local packages paths list
-        for (const dep in packageJson()?.dependencies ?? {}) {
-          if (packageNames.names[dep]) {
-            delete clonedConfig.paths[dep];
+          // Remove installed local packages paths list
+          for (const dep in packageJson()?.dependencies ?? {}) {
+            if (packageNames.names[dep]) {
+              delete clonedConfig.paths[dep];
+            }
           }
-        }
 
-        if (packageName === moduleName) {
+          if (packageName === moduleName) {
+            return clonedConfig;
+          }
+
+          // Removes current package from the paths list if in an "exported" module
+          // delete clonedConfig.paths[packageName];
+
           return clonedConfig;
-        }
-
-        // Removes current package from the paths list if in an "exported" module
-        // delete clonedConfig.paths[packageName];
-
-        return clonedConfig;
+        },
       },
     }),
   ];

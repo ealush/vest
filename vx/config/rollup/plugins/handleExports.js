@@ -115,24 +115,11 @@ function genPackgeJsonBase(moduleName, { namespace, isNested = false }) {
     env: opts.env.PRODUCTION,
   });
 
-  const umdPath = genDistPath(moduleName, {
-    prefix,
-    namespace,
-    format: opts.format.UMD,
-    env: opts.env.PRODUCTION,
-  });
-
-  const umdExports = {
-    unpkg: umdPath,
-    jsdelivr: umdPath,
-  };
-
   const typesPath = genTypesPath(moduleName, { prefix, namespace });
 
   return {
     main: cjsPath,
     module: esPath,
-    ...umdExports,
     name: moduleName,
     types: typesPath,
   };
@@ -199,12 +186,6 @@ function genMainPackageJSONFileExports(
     format: opts.format.ES,
     env,
   });
-  const umdPath = genDistPath(moduleName, {
-    prefix,
-    namespace,
-    format: opts.format.UMD,
-    env,
-  });
 
   const types = genTypesPath(moduleName, { prefix, namespace });
 
@@ -212,7 +193,6 @@ function genMainPackageJSONFileExports(
   return {
     types,
     browser: esPath,
-    umd: umdPath,
     import: esPath,
     require: cjsPath,
     node: cjsPath,

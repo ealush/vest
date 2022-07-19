@@ -19,7 +19,7 @@ function buildPackage(options = {}) {
   if (options.buildSingle) {
     builds = [opts.format.CJS];
   } else {
-    builds = [opts.format.ES, opts.format.UMD, opts.format.CJS];
+    builds = [opts.format.ES, opts.format.CJS];
   }
 
   builds.forEach(format => {

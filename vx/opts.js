@@ -23,7 +23,6 @@ module.exports = {
     VX_BUILD: 'vx.build.js',
   },
   format: {
-    UMD: 'umd',
     CJS: 'cjs',
     ES: 'es',
   },

@@ -7,7 +7,8 @@
     "prepare": "husky install",
     "dev": "vx dev",
     "website:start": "yarn workspace website start",
-    "website:build": "yarn workspace website build"
+    "website:build": "yarn workspace website build",
+    "jest": "jest"
   },
   "prettier": {
     "arrowParens": "avoid",

@@ -14,17 +14,18 @@ function buildPackage(options = {}) {
   process.env.VX_PACKAGE_NAME = name;
   process.env.VX_BUILD_SINGLE = !!options.buildSingle;
 
-  let builds;
+  const format = [];
 
   if (options.buildSingle) {
-    builds = [opts.format.CJS];
-  } else {
-    builds = [opts.format.ES, opts.format.UMD, opts.format.CJS];
+    format.push(opts.format.CJS);
   }
 
-  builds.forEach(format => {
-    exec([`rollup -c`, vxPath.ROLLUP_CONFIG_PATH, `--format=${format}`]);
-  });
+  exec([
+    `rollup -c`,
+    vxPath.ROLLUP_CONFIG_PATH,
+    format.length && `--format=${format}`,
+  ]);
+
   delete process.env.VX_PACKAGE_NAME;
   delete process.env.VX_BUILD_SINGLE;
 }

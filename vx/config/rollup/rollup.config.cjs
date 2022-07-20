@@ -21,26 +21,9 @@ module.exports = cleanupConfig(
     env => {
       const packageName = usePackage();
 
-      const customConfigPath = vxPath.packageConfigPath(
-        packageName,
-        opts.fileNames.VX_BUILD
-      );
-
-      let customConfig;
-
-      if (fs.existsSync(customConfigPath)) {
-        customConfig = require(customConfigPath);
-      }
-
       return [].concat(
         genBaseConfig({ env, packageName }),
-        genExportsConfig(usePackage(), env),
-        customConfig?.({
-          getInputFile,
-          getPlugins: (options = {}) =>
-            getPlugins({ env, packageName, ...options }),
-          genOutput: (options = {}) => genOutput({ env, ...options }),
-        }) ?? []
+        genExportsConfig(usePackage(), env)
       );
     }
   )
@@ -75,7 +58,9 @@ function genBaseConfig({
     ].filter(Boolean),
 
     input: getInputFile(moduleName),
-    output: genOutput({ env, moduleName, namespace }),
+    output: format.map(format =>
+      genOutput({ env, format, moduleName, namespace })
+    ),
     plugins: getPlugins({ env, moduleName, namespace, packageName }),
   };
 }
@@ -90,6 +75,7 @@ function genOutput({
   moduleName = usePackage(),
   env,
   namespace = undefined,
+  format,
 } = {}) {
   const base = {
     exports: 'auto',

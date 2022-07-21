@@ -1,4 +1,4 @@
-import { isArray, isStringValue, asArray } from 'vest-utils';
+import { isArray, isStringValue, asArray, isBoolean } from 'vest-utils';
 
 import { useSetOptionalField } from 'stateHooks';
 
@@ -22,14 +22,17 @@ export default function optional(optionals: OptionalsInput): void {
     });
   } else {
     // if it's an object, we iterate over the keys and add them to the list
-    const optionalFunctions = optionals;
-    for (const field in optionalFunctions) {
-      const predicate = optionalFunctions[field];
-      useSetOptionalField(field, [predicate, false]);
+    for (const field in optionals) {
+      const value = optionals[field];
+
+      useSetOptionalField(
+        field,
+        isBoolean(value) ? [value, true] : [value, false]
+      );
     }
   }
 }
 
 type OptionalsInput = string | string[] | OptionalsObject;
 
-type OptionalsObject = Record<string, () => boolean>;
+type OptionalsObject = Record<string, (() => boolean) | boolean>;

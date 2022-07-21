@@ -25,7 +25,7 @@ export default function registerPrevRunTest(testObject: VestTest): VestTest {
 
   const prevRunTest = useTestAtCursor(testObject);
 
-  if (isOmitted()) {
+  if (isOmitted(testObject.fieldName)) {
     prevRunTest.omit();
     cursor.next();
     return prevRunTest;

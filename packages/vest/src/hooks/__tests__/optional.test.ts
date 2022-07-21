@@ -81,4 +81,21 @@ describe('optional hook', () => {
       });
     });
   });
+
+  describe('boolean optional field indicator', () => {
+    it('Should set a field as optional when optional is set to true', () => {
+      const suite = create(() => {
+        optional({
+          field_1: true,
+        });
+        test('field_1', () => false);
+      });
+
+      const res = suite();
+
+      expect(res.hasErrors('field_1')).toBe(false);
+      expect(res.isValid('field_1')).toBe(true);
+      expect(res.isValid()).toBe(true);
+    });
+  });
 });

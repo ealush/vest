@@ -28,6 +28,12 @@ export default function optional(optionals: OptionalsInput): void {
 
       useSetOptionalField(
         field,
+        //This looks kind of complicated. We might need to simplify that.
+
+        // 1. If the provided condition is a boolean, we just use it, and apply it immediately.
+        //    The assumption is that a boolean is an immediate omission rule
+        // 2. If the provided condition is a function, we do not apply it just yet
+        //    and instead, apply it when the suite run is complete.
         isBoolean(value) ? [value, value] : [value, false]
       );
     }

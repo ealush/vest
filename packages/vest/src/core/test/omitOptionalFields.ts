@@ -1,35 +1,47 @@
-import { isEmpty, hasOwnProperty, isFunction, nestedArray } from 'vest-utils';
+import { isEmpty, hasOwnProperty, isFunction } from 'vest-utils';
 
 import VestTest from 'VestTest';
 import {
   useOptionalFields,
-  useSetTests,
+  // useSetTests,
   useOptionalFieldConfig,
   useSetOptionalField,
+  useTestsFlat,
+  useRefreshTestObjects,
 } from 'stateHooks';
+
+/**
+ * This module gets triggered once the suite is done running its sync tests.
+ *
+ * It goes over all the tests in the state, and checks if they need to be omitted.
+ */
 
 export default function omitOptionalFields(): void {
   const [optionalFields] = useOptionalFields();
 
+  // If there are no optional fields, we don't need to do anything
   if (isEmpty(optionalFields)) {
     return;
   }
 
+  // Create an object to store the fields that need to be omitted
   const shouldOmit: Record<string, boolean> = {};
 
-  useSetTests(tests =>
-    nestedArray.transform(tests, (testObject: VestTest) => {
-      const fieldName = testObject.fieldName;
+  // iterate over each of the tests in the state
+  useTestsFlat().forEach(testObject => {
+    // If we already added the current field (not this test specifically)
+    // no need for further checks, go and omit the test
+    if (hasOwnProperty(shouldOmit, testObject.fieldName)) {
+      verifyAndOmit(testObject);
+    } else {
+      // check if the field has an optional function
+      // if so, run it and verify/omit the test
+      runOptionalConfig(testObject);
+    }
+  });
 
-      if (hasOwnProperty(shouldOmit, fieldName)) {
-        verifyAndOmit(testObject);
-      } else {
-        runOptionalConfig(testObject);
-      }
-
-      return testObject;
-    })
-  );
+  // refresh the tests in the state so that the omitted fields are applied
+  useRefreshTestObjects();
 
   function verifyAndOmit(testObject: VestTest) {
     if (shouldOmit[testObject.fieldName]) {
@@ -39,7 +51,10 @@ export default function omitOptionalFields(): void {
   }
 
   function runOptionalConfig(testObject: VestTest) {
+    // Ge the optional configuration for the given field
     const optionalConfig = useOptionalFieldConfig(testObject.fieldName);
+
+    // If the optional was set to a function, run it and verify/omit the test
     if (isFunction(optionalConfig)) {
       shouldOmit[testObject.fieldName] = optionalConfig();
 

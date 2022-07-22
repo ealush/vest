@@ -8,16 +8,16 @@ import {
 } from 'hasFailuresByTestObjects';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
+import { optionalFiedIsOmitted } from 'optionalFields';
 import {
   useTestsFlat,
   useAllIncomplete,
   useOptionalFieldConfig,
-  useOptionalFieldApplied,
 } from 'stateHooks';
 
 // eslint-disable-next-line max-statements, complexity
 export function shouldAddValidProperty(fieldName?: string): boolean {
-  if (fieldIsOmitted(fieldName)) {
+  if (optionalFiedIsOmitted(fieldName)) {
     return true;
   }
 
@@ -43,7 +43,7 @@ export function shouldAddValidPropertyInGroup(
   groupName: string,
   fieldName?: string
 ): boolean {
-  if (fieldIsOmitted(fieldName)) {
+  if (optionalFiedIsOmitted(fieldName)) {
     return true;
   }
 
@@ -57,14 +57,6 @@ export function shouldAddValidPropertyInGroup(
   }
 
   return noMissingTestsByGroup(groupName, fieldName);
-}
-
-function fieldIsOmitted(fieldName?: string) {
-  if (!fieldName) {
-    return false;
-  }
-
-  return useOptionalFieldApplied(fieldName) === true;
 }
 
 // Does the given field have any pending tests that are not optional?

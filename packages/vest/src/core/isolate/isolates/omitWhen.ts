@@ -5,7 +5,6 @@ import { IsolateTypes } from 'IsolateTypes';
 import ctx from 'ctx';
 import { isolate } from 'isolate';
 import { produceSuiteResult, SuiteResult } from 'produceSuiteResult';
-import { useOptionalFieldApplied, useOptionalFieldConfig } from 'stateHooks';
 
 /**
  * Conditionally omits tests from the suite.
@@ -24,7 +23,7 @@ export default function omitWhen(
     ctx.run(
       {
         omitted:
-          isOmitted() ||
+          inActiveOmitWhen() ||
           optionalFunctionValue(
             conditional,
             optionalFunctionValue(produceSuiteResult)
@@ -35,20 +34,7 @@ export default function omitWhen(
   });
 }
 
-export function isOmitted(fieldName?: string): boolean {
-  if (ctx.useX().omitted) {
-    return true;
-  }
-
-  if (!fieldName) {
-    return false;
-  }
-
-  const config = useOptionalFieldConfig(fieldName);
-
-  if (config === true && useOptionalFieldApplied(fieldName)) {
-    return true;
-  }
-
-  return false;
+// Checks that we're currently in an active omitWhen block
+export function inActiveOmitWhen(): boolean {
+  return !!ctx.useX().omitted;
 }

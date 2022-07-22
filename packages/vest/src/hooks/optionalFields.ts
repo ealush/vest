@@ -1,6 +1,6 @@
 import { isArray, isStringValue, asArray, isBoolean } from 'vest-utils';
 
-import { useSetOptionalField } from 'stateHooks';
+import { useOptionalFieldApplied, useSetOptionalField } from 'stateHooks';
 
 /**
  * Marks a field as optional, either just by name, or by a given condition.
@@ -18,6 +18,7 @@ export default function optional(optionals: OptionalsInput): void {
   // we just add them to the list of optional fields.
   if (isArray(optionals) || isStringValue(optionals)) {
     asArray(optionals).forEach(optionalField => {
+      // [true: the field is declared as optional but..., false: the rule was not applied yet, treated as non optional for now]
       useSetOptionalField(optionalField, [true, false]);
     });
   } else {
@@ -27,10 +28,18 @@ export default function optional(optionals: OptionalsInput): void {
 
       useSetOptionalField(
         field,
-        isBoolean(value) ? [value, true] : [value, false]
+        isBoolean(value) ? [value, value] : [value, false]
       );
     }
   }
+}
+
+export function optionalFiedIsOmitted(fieldName?: string) {
+  if (!fieldName) {
+    return false;
+  }
+
+  return useOptionalFieldApplied(fieldName) === true;
 }
 
 type OptionalsInput = string | string[] | OptionalsObject;

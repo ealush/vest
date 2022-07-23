@@ -59,3 +59,23 @@ export function optionalFiedIsOmitted(fieldName?: string) {
 type OptionalsInput = string | string[] | OptionalsObject;
 
 type OptionalsObject = Record<string, (() => boolean) | boolean>;
+
+type ImmediateOptionalFieldDeclaration = {
+  type: OptionalFieldTypes.Immediate;
+  rule: boolean | (() => boolean);
+  applied: boolean;
+};
+
+type DelayedOptionalFieldDeclaration = {
+  type: OptionalFieldTypes.Delayed;
+  applied: boolean;
+};
+
+export type OptionalFieldDeclaration =
+  | ImmediateOptionalFieldDeclaration
+  | DelayedOptionalFieldDeclaration;
+
+enum OptionalFieldTypes {
+  Immediate,
+  Delayed,
+}

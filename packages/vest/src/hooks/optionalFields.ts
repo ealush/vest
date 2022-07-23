@@ -2,15 +2,10 @@ import {
   isArray,
   isStringValue,
   asArray,
-  isBoolean,
   optionalFunctionValue,
 } from 'vest-utils';
 
-import {
-  useOptionalFieldApplied,
-  useSetOptionalField,
-  useSetOptionalFieldNew,
-} from 'stateHooks';
+import { useOptionalField, useSetOptionalField } from 'stateHooks';
 
 /**
  * Marks a field as optional, either just by name, or by a given condition.
@@ -29,10 +24,10 @@ export default function optional(optionals: OptionalsInput): void {
   if (isArray(optionals) || isStringValue(optionals)) {
     asArray(optionals).forEach(optionalField => {
       // [true: the field is declared as optional but..., false: the rule was not applied yet, treated as non optional for now]
-      useSetOptionalField(optionalField, [true, false]);
-      useSetOptionalFieldNew(optionalField, () => ({
+      useSetOptionalField(optionalField, () => ({
         type: OptionalFieldTypes.Delayed,
         applied: false,
+        rule: null,
       }));
     });
   } else {
@@ -40,33 +35,21 @@ export default function optional(optionals: OptionalsInput): void {
     for (const field in optionals) {
       const value = optionals[field];
 
-      useSetOptionalFieldNew(field, () => ({
+      useSetOptionalField(field, () => ({
         type: OptionalFieldTypes.Immediate,
         rule: value,
         applied: optionalFunctionValue(value),
       }));
-      useSetOptionalField(
-        field,
-        //This looks kind of complicated. We might need to simplify that.
-
-        // 1. If the provided condition is a boolean, we just use it, and apply it immediately.
-        //    The assumption is that a boolean is an immediate omission rule
-        // 2. If the provided condition is a function, we run it immediately, and use its result as the "apply"
-        //    We might or might not run the function again in the future.
-        isBoolean(value)
-          ? [value, value]
-          : [value, optionalFunctionValue(value)]
-      );
     }
   }
 }
 
-export function optionalFiedIsOmitted(fieldName?: string) {
+export function optionalFiedIsApplied(fieldName?: string) {
   if (!fieldName) {
     return false;
   }
 
-  return useOptionalFieldApplied(fieldName) === true;
+  return useOptionalField(fieldName).applied;
 }
 
 type OptionalsInput = string | string[] | OptionalsObject;
@@ -82,13 +65,14 @@ type ImmediateOptionalFieldDeclaration = {
 type DelayedOptionalFieldDeclaration = {
   type: OptionalFieldTypes.Delayed;
   applied: boolean;
+  rule: null;
 };
 
 export type OptionalFieldDeclaration =
   | ImmediateOptionalFieldDeclaration
   | DelayedOptionalFieldDeclaration;
 
-enum OptionalFieldTypes {
+export enum OptionalFieldTypes {
   Immediate,
   Delayed,
 }

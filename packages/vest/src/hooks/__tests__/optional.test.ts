@@ -1,43 +1,6 @@
-import { useOptionalFields } from 'stateHooks';
 import { optional, create, test } from 'vest';
 
 describe('optional hook', () => {
-  it('Should add optional fields to state', () => {
-    return new Promise<void>(done => {
-      create(() => {
-        expect(useOptionalFields()[0]).toMatchInlineSnapshot(`Object {}`);
-        optional('field_1');
-        expect(useOptionalFields()[0]).toMatchInlineSnapshot(`
-          Object {
-            "field_1": Array [
-              true,
-              false,
-            ],
-          }
-        `);
-        optional(['field_2', 'field_3']);
-        expect(useOptionalFields()[0]).toMatchInlineSnapshot(`
-          Object {
-            "field_1": Array [
-              true,
-              false,
-            ],
-            "field_2": Array [
-              true,
-              false,
-            ],
-            "field_3": Array [
-              true,
-              false,
-            ],
-          }
-        `);
-      })();
-
-      done();
-    });
-  });
-
   describe('Functional Optional Interface', () => {
     it('Should omit test failures based on optional functions', () => {
       const suite = create(() => {

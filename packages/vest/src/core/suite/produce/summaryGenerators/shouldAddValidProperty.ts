@@ -8,16 +8,12 @@ import {
 } from 'hasFailuresByTestObjects';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
-import { optionalFiedIsOmitted } from 'optionalFields';
-import {
-  useTestsFlat,
-  useAllIncomplete,
-  useOptionalFieldConfig,
-} from 'stateHooks';
+import { optionalFiedIsApplied, OptionalFieldTypes } from 'optionalFields';
+import { useTestsFlat, useAllIncomplete, useOptionalField } from 'stateHooks';
 
 // eslint-disable-next-line max-statements, complexity
 export function shouldAddValidProperty(fieldName?: string): boolean {
-  if (optionalFiedIsOmitted(fieldName)) {
+  if (optionalFiedIsApplied(fieldName)) {
     return true;
   }
 
@@ -41,9 +37,9 @@ export function shouldAddValidProperty(fieldName?: string): boolean {
 
 export function shouldAddValidPropertyInGroup(
   groupName: string,
-  fieldName?: string
+  fieldName: string
 ): boolean {
-  if (optionalFiedIsOmitted(fieldName)) {
+  if (optionalFiedIsApplied(fieldName)) {
     return true;
   }
 
@@ -63,35 +59,33 @@ export function shouldAddValidPropertyInGroup(
 function hasNonOptionalIncomplete(fieldName?: string) {
   return isNotEmpty(
     useAllIncomplete().filter(testObject =>
-      isOptionalFieldIncomplete(testObject, fieldName)
+      isTestObjectOptional(testObject, fieldName)
     )
   );
 }
 
 // Do the given group/field have any pending tests that are not optional?
-function hasNonOptionalIncompleteByGroup(
-  groupName: string,
-  fieldName?: string
-) {
+function hasNonOptionalIncompleteByGroup(groupName: string, fieldName: string) {
   return isNotEmpty(
     useAllIncomplete().filter(testObject => {
       if (nonMatchingGroupName(testObject, groupName)) {
         return false;
       }
 
-      return isOptionalFieldIncomplete(testObject, fieldName);
+      return isTestObjectOptional(testObject, fieldName);
     })
   );
 }
 
-function isOptionalFieldIncomplete(
+function isTestObjectOptional(
   testObject: VestTest,
   fieldName?: string
 ): boolean {
   if (nonMatchingFieldName(testObject, fieldName)) {
     return false;
   }
-  return useOptionalFieldConfig(testObject.fieldName) !== true;
+
+  return optionalFiedIsApplied(fieldName);
 }
 
 function noMissingTests(fieldName?: string): boolean {
@@ -124,7 +118,8 @@ function missingTestsLogic(testObject: VestTest, fieldName?: string): boolean {
   }
 
   return (
-    useOptionalFieldConfig(testObject.fieldName) === true ||
+    useOptionalField(testObject.fieldName).type ===
+      OptionalFieldTypes.Delayed ||
     testObject.isTested() ||
     testObject.isOmitted()
   );

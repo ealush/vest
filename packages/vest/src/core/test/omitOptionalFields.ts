@@ -1,19 +1,13 @@
-import {
-  isEmpty,
-  hasOwnProperty,
-  isFunction,
-  optionalFunctionValue,
-} from 'vest-utils';
+import { isEmpty, hasOwnProperty, optionalFunctionValue } from 'vest-utils';
 
 import VestTest from 'VestTest';
+import { OptionalFieldTypes } from 'optionalFields';
 import {
   useOptionalFields,
-  // useSetTests,
-  useOptionalFieldConfig,
-  useSetOptionalField,
   useTestsFlat,
   useRefreshTestObjects,
-  useSetOptionalFieldNew,
+  useSetOptionalField,
+  useOptionalField,
 } from 'stateHooks';
 
 /**
@@ -52,8 +46,7 @@ export default function omitOptionalFields(): void {
   function verifyAndOmit(testObject: VestTest) {
     if (shouldOmit[testObject.fieldName]) {
       testObject.omit();
-      useSetOptionalField(testObject.fieldName, current => [current[0], true]);
-      useSetOptionalFieldNew(testObject.fieldName, () => ({
+      useSetOptionalField(testObject.fieldName, () => ({
         applied: true,
       }));
     }
@@ -61,11 +54,13 @@ export default function omitOptionalFields(): void {
 
   function runOptionalConfig(testObject: VestTest) {
     // Ge the optional configuration for the given field
-    const optionalConfig = useOptionalFieldConfig(testObject.fieldName);
+    const optionalConfig = useOptionalField(testObject.fieldName);
 
     // If the optional was set to a function, run it and verify/omit the test
-    if (isFunction(optionalConfig)) {
-      shouldOmit[testObject.fieldName] = optionalFunctionValue(optionalConfig);
+    if (optionalConfig.type === OptionalFieldTypes.Immediate) {
+      shouldOmit[testObject.fieldName] = optionalFunctionValue(
+        optionalConfig.rule
+      );
 
       verifyAndOmit(testObject);
     }

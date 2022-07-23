@@ -11,7 +11,6 @@ export default function createStateRef(
 ): StateRef {
   return {
     optionalFields: state.registerStateKey<OptionalFields>(() => ({})),
-    optionalFieldsNew: state.registerStateKey<OptionalFieldsNew>(() => ({})),
     suiteId: state.registerStateKey<string>(suiteId),
     suiteName: state.registerStateKey<SuiteName>(suiteName),
     testCallbacks: state.registerStateKey<TestCallbacks>(() => ({
@@ -29,7 +28,6 @@ export default function createStateRef(
 
 export type StateRef = {
   optionalFields: UseState<OptionalFields>;
-  optionalFieldsNew: UseState<OptionalFieldsNew>;
   suiteId: UseState<string>;
   suiteName: UseState<SuiteName>;
   testCallbacks: UseState<TestCallbacks>;
@@ -38,16 +36,11 @@ export type StateRef = {
 
 type StateKeys = keyof StateRef;
 
-type OptionalFieldsNew = Record<string, OptionalFieldDeclaration>;
+type OptionalFields = Record<string, OptionalFieldDeclaration>;
 
 export type StateKey<T extends StateKeys> = ReturnType<StateRef[T]>;
 export type StateValue<T extends StateKeys> = StateKey<T>[0];
 export type StateSetter<T extends StateKeys> = StateKey<T>[1];
-
-type OptionalFields = Record<
-  string,
-  [rule: (() => boolean) | boolean, isApplied: boolean]
->;
 
 type SuiteName = string | void;
 

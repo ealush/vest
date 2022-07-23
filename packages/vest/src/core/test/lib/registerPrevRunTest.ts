@@ -6,7 +6,7 @@ import { isExcluded } from 'exclusive';
 import { useCursor } from 'isolateHooks';
 import { shouldSkipBasedOnMode } from 'mode';
 import { inActiveOmitWhen } from 'omitWhen';
-import { optionalFiedIsOmitted } from 'optionalFields';
+import { optionalFiedIsApplied } from 'optionalFields';
 import registerTest from 'registerTest';
 import runAsyncTest from 'runAsyncTest';
 import { isExcludedIndividually } from 'skipWhen';
@@ -26,7 +26,7 @@ export default function registerPrevRunTest(testObject: VestTest): VestTest {
 
   const prevRunTest = useTestAtCursor(testObject);
 
-  if (inActiveOmitWhen() || optionalFiedIsOmitted(testObject.fieldName)) {
+  if (inActiveOmitWhen() || optionalFiedIsApplied(testObject.fieldName)) {
     prevRunTest.omit();
     cursor.next();
     return prevRunTest;

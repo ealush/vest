@@ -6,7 +6,11 @@ import {
   optionalFunctionValue,
 } from 'vest-utils';
 
-import { useOptionalFieldApplied, useSetOptionalField } from 'stateHooks';
+import {
+  useOptionalFieldApplied,
+  useSetOptionalField,
+  useSetOptionalFieldNew,
+} from 'stateHooks';
 
 /**
  * Marks a field as optional, either just by name, or by a given condition.
@@ -26,12 +30,21 @@ export default function optional(optionals: OptionalsInput): void {
     asArray(optionals).forEach(optionalField => {
       // [true: the field is declared as optional but..., false: the rule was not applied yet, treated as non optional for now]
       useSetOptionalField(optionalField, [true, false]);
+      useSetOptionalFieldNew(optionalField, () => ({
+        type: OptionalFieldTypes.Delayed,
+        applied: false,
+      }));
     });
   } else {
     // if it's an object, we iterate over the keys and add them to the list
     for (const field in optionals) {
       const value = optionals[field];
 
+      useSetOptionalFieldNew(field, () => ({
+        type: OptionalFieldTypes.Immediate,
+        rule: value,
+        applied: optionalFunctionValue(value),
+      }));
       useSetOptionalField(
         field,
         //This looks kind of complicated. We might need to simplify that.

@@ -13,6 +13,7 @@ import {
   useSetOptionalField,
   useTestsFlat,
   useRefreshTestObjects,
+  useSetOptionalFieldNew,
 } from 'stateHooks';
 
 /**
@@ -52,6 +53,9 @@ export default function omitOptionalFields(): void {
     if (shouldOmit[testObject.fieldName]) {
       testObject.omit();
       useSetOptionalField(testObject.fieldName, current => [current[0], true]);
+      useSetOptionalFieldNew(testObject.fieldName, () => ({
+        applied: true,
+      }));
     }
   }
 

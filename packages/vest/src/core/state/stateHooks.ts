@@ -41,6 +41,25 @@ export function useOptionalFields(): StateKey<'optionalFields'> {
   return useStateRef().optionalFields();
 }
 
+export function useOptionalFieldsNew(): StateKey<'optionalFieldsNew'> {
+  return useStateRef().optionalFieldsNew();
+}
+
+export function useSetOptionalFieldNew(
+  fieldName: string,
+  setter: (
+    current: ValueOf<StateValue<'optionalFieldsNew'>>
+  ) => Partial<ValueOf<StateValue<'optionalFieldsNew'>>>
+) {
+  const [, setOptionalFieldsNew] = useOptionalFieldsNew();
+
+  setOptionalFieldsNew(prev =>
+    assign(prev, {
+      [fieldName]: assign({}, prev[fieldName], setter(prev[fieldName])),
+    })
+  );
+}
+
 export function useSetOptionalField(
   fieldName: string,
   setter:

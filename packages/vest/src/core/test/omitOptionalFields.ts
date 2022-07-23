@@ -1,4 +1,9 @@
-import { isEmpty, hasOwnProperty, isFunction } from 'vest-utils';
+import {
+  isEmpty,
+  hasOwnProperty,
+  isFunction,
+  optionalFunctionValue,
+} from 'vest-utils';
 
 import VestTest from 'VestTest';
 import {
@@ -56,7 +61,7 @@ export default function omitOptionalFields(): void {
 
     // If the optional was set to a function, run it and verify/omit the test
     if (isFunction(optionalConfig)) {
-      shouldOmit[testObject.fieldName] = optionalConfig();
+      shouldOmit[testObject.fieldName] = optionalFunctionValue(optionalConfig);
 
       verifyAndOmit(testObject);
     }

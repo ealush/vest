@@ -1,4 +1,10 @@
-import { isArray, isStringValue, asArray, isBoolean } from 'vest-utils';
+import {
+  isArray,
+  isStringValue,
+  asArray,
+  isBoolean,
+  optionalFunctionValue,
+} from 'vest-utils';
 
 import { useOptionalFieldApplied, useSetOptionalField } from 'stateHooks';
 
@@ -32,9 +38,11 @@ export default function optional(optionals: OptionalsInput): void {
 
         // 1. If the provided condition is a boolean, we just use it, and apply it immediately.
         //    The assumption is that a boolean is an immediate omission rule
-        // 2. If the provided condition is a function, we do not apply it just yet
-        //    and instead, apply it when the suite run is complete.
-        isBoolean(value) ? [value, value] : [value, false]
+        // 2. If the provided condition is a function, we run it immediately, and use its result as the "apply"
+        //    We might or might not run the function again in the future.
+        isBoolean(value)
+          ? [value, value]
+          : [value, optionalFunctionValue(value)]
       );
     }
   }

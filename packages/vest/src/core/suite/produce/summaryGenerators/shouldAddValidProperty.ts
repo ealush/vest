@@ -92,10 +92,6 @@ function noMissingTests(fieldName?: string): boolean {
   const testObjects = useTestsFlat();
 
   return testObjects.every(testObject => {
-    if (nonMatchingFieldName(testObject, fieldName)) {
-      return true;
-    }
-
     return missingTestsLogic(testObject, fieldName);
   });
 }

@@ -13,17 +13,20 @@ import { useTestsFlat, useAllIncomplete, useOptionalField } from 'stateHooks';
 
 // eslint-disable-next-line max-statements, complexity
 export function shouldAddValidProperty(fieldName?: string): boolean {
+  // Is the field optional, and the optional condition is applied
   if (optionalFiedIsApplied(fieldName)) {
     return true;
   }
 
-  if (hasErrorsByTestObjects(fieldName)) {
+  const testObjects = useTestsFlat();
+
+  // Are there no tests?
+  if (isEmpty(testObjects)) {
     return false;
   }
 
-  const testObjects = useTestsFlat();
-
-  if (isEmpty(testObjects)) {
+  // Does the field have any tests with errors?
+  if (hasErrorsByTestObjects(fieldName)) {
     return false;
   }
 
@@ -32,6 +35,7 @@ export function shouldAddValidProperty(fieldName?: string): boolean {
     return false;
   }
 
+  // Does the field have no missing tests?
   return noMissingTests(fieldName);
 }
 
@@ -88,14 +92,17 @@ function isTestObjectOptional(
   return optionalFiedIsApplied(fieldName);
 }
 
+// Did all of the tests for the provided field run/omit?
+// This makes sure that the fields are not skipped or pending.
 function noMissingTests(fieldName?: string): boolean {
   const testObjects = useTestsFlat();
 
-  return testObjects.every(testObject => {
-    return missingTestsLogic(testObject, fieldName);
-  });
+  return testObjects.every(testObject =>
+    noMissingTestsLogic(testObject, fieldName)
+  );
 }
 
+// Does the group have no missing tests?
 function noMissingTestsByGroup(groupName: string, fieldName?: string): boolean {
   const testObjects = useTestsFlat();
 
@@ -104,11 +111,15 @@ function noMissingTestsByGroup(groupName: string, fieldName?: string): boolean {
       return true;
     }
 
-    return missingTestsLogic(testObject, fieldName);
+    return noMissingTestsLogic(testObject, fieldName);
   });
 }
 
-function missingTestsLogic(testObject: VestTest, fieldName?: string): boolean {
+// Does the object qualify as either tested or omitted (but not skipped!)
+function noMissingTestsLogic(
+  testObject: VestTest,
+  fieldName?: string
+): boolean {
   if (nonMatchingFieldName(testObject, fieldName)) {
     return true;
   }

@@ -23,7 +23,7 @@ export default function omitWhen(
     ctx.run(
       {
         omitted:
-          isOmitted() ||
+          inActiveOmitWhen() ||
           optionalFunctionValue(
             conditional,
             optionalFunctionValue(produceSuiteResult)
@@ -34,6 +34,7 @@ export default function omitWhen(
   });
 }
 
-export function isOmitted(): boolean {
+// Checks that we're currently in an active omitWhen block
+export function inActiveOmitWhen(): boolean {
   return !!ctx.useX().omitted;
 }

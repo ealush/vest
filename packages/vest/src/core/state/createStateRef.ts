@@ -2,6 +2,7 @@ import type { NestedArray } from 'nestedArray';
 import type { State, UseState } from 'vast';
 
 import VestTest from 'VestTest';
+import { OptionalFieldDeclaration } from 'optionalFields';
 import type { SuiteResult } from 'produceSuiteResult';
 
 export default function createStateRef(
@@ -35,14 +36,11 @@ export type StateRef = {
 
 type StateKeys = keyof StateRef;
 
+type OptionalFields = Record<string, OptionalFieldDeclaration>;
+
 export type StateKey<T extends StateKeys> = ReturnType<StateRef[T]>;
 export type StateValue<T extends StateKeys> = StateKey<T>[0];
 export type StateSetter<T extends StateKeys> = StateKey<T>[1];
-
-type OptionalFields = Record<
-  string,
-  [rule: (() => boolean) | boolean, isApplied: boolean]
->;
 
 type SuiteName = string | void;
 

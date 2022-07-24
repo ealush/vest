@@ -46,15 +46,22 @@ suite({ age: 'Five' }, /* -> only validate pet_age */ 'pet_age').isValid();
 // 🚨 When erroring, optional fields still make the suite invalid
 ```
 
-## Advanced Usage - Supplying custom omission function
+## Custom omission rules
 
-Since every app is different, your app's logic may require some other definition of optional. An example would be that the user typed inside the field and then removed its content, or - if a field may only be empty when a different field is supplied - Vest cannot be aware of this logic, and you will have to tell Vest to conditionally omit the results for this field by providing `optional` with a custom omission function.
+Since every app is different, your app's logic may require some other definition of optional. An example would be that the user typed inside the field and then removed its content, or - if a field may only be empty when a different field is supplied - Vest cannot be aware of this logic, and you will have to tell Vest to conditionally omit the results for this field by providing `optional` with a custom omission rule.
 
-To provide a custom optional function, instead of passing a list of fields, you need to provide an object with predicate functions. These functions will be run when your suite finishes its **synchronous** run, and when they evaluate to true - will omit _any_ failures your field might have from the suite.
+To provide a custom optional rule, instead of passing a list of fields, you need to provide an object with the field names as its keys, and either a boolean or a function returning a boolean as its value. These rules will be evaluated immediately, and then again after your suite finishes its **synchronous** run. When true, Vest will omit _ALL_ failures your field might have from the suite.
 
-:::danger IMPORTANT - ASYNC TESTS ARE UNSUPPORTED WITH CUSTOM OPTIONAL FUNCTIONS
-You should avoid using the custom omission function along with async tests. This is unsupported and may cause unexpected behavior. The reason for this limitation is due to the fact that the omission conditionals are calculated at the end of the suite, while the async tests may keep running. Allowing it will require re-calculation for each async test that finishes, which could be expensive.
+:::danger IMPORTANT - ASYNC TESTS ARE UNSUPPORTED WITH CUSTOM OPTIONAL RULES
+You should avoid using the custom omission rules along with async tests. This is unsupported and may cause unexpected behavior. The reason for this limitation is due to the fact that the omission conditionals are calculated at the end of the suite, while the async tests may keep running. Allowing it will require re-calculation for each async test that finishes, which could be expensive.
 :::
+
+```js
+optional({
+  fieldName: true, // omit all failures for this field
+  fieldName2: () => true, // omit all failures for this field
+});
+```
 
 ### Examples
 
@@ -63,7 +70,7 @@ You should avoid using the custom omission function along with async tests. This
 ```js
 const suite = create(data => {
   optional({
-    pet_name: () => !data.pet_name,
+    pet_name: !data.pet_name,
   });
 
   test('pet_name', 'Pet Name may be left empty', () => {

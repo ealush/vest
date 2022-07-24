@@ -1,43 +1,6 @@
-import { useOptionalFields } from 'stateHooks';
 import { optional, create, test } from 'vest';
 
 describe('optional hook', () => {
-  it('Should add optional fields to state', () => {
-    return new Promise<void>(done => {
-      create(() => {
-        expect(useOptionalFields()[0]).toMatchInlineSnapshot(`Object {}`);
-        optional('field_1');
-        expect(useOptionalFields()[0]).toMatchInlineSnapshot(`
-          Object {
-            "field_1": Array [
-              true,
-              false,
-            ],
-          }
-        `);
-        optional(['field_2', 'field_3']);
-        expect(useOptionalFields()[0]).toMatchInlineSnapshot(`
-          Object {
-            "field_1": Array [
-              true,
-              false,
-            ],
-            "field_2": Array [
-              true,
-              false,
-            ],
-            "field_3": Array [
-              true,
-              false,
-            ],
-          }
-        `);
-      })();
-
-      done();
-    });
-  });
-
   describe('Functional Optional Interface', () => {
     it('Should omit test failures based on optional functions', () => {
       const suite = create(() => {
@@ -78,6 +41,42 @@ describe('optional hook', () => {
         expect(res.isValid('f1')).toBe(true);
         expect(res.isValid('f2')).toBe(true);
         expect(res.isValid()).toBe(true);
+      });
+    });
+  });
+
+  describe('boolean optional field indicator', () => {
+    describe('When true', () => {
+      it('Should omit field as optional', () => {
+        const suite = create(() => {
+          optional({
+            field_1: true,
+          });
+          test('field_1', () => false);
+        });
+
+        const res = suite();
+
+        expect(res.hasErrors('field_1')).toBe(false);
+        expect(res.isValid('field_1')).toBe(true);
+        expect(res.isValid()).toBe(true);
+      });
+    });
+
+    describe('When false', () => {
+      it('Should fail the field normally', () => {
+        const suite = create(() => {
+          optional({
+            field_1: false,
+          });
+          test('field_1', () => false);
+        });
+
+        const res = suite();
+
+        expect(res.hasErrors('field_1')).toBe(true);
+        expect(res.isValid('field_1')).toBe(false);
+        expect(res.isValid()).toBe(false);
       });
     });
   });

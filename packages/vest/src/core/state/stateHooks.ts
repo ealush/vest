@@ -1,11 +1,5 @@
 import { ValueOf } from 'utilityTypes';
-import {
-  cache as createCache,
-  nestedArray,
-  asArray,
-  assign,
-  optionalFunctionValue,
-} from 'vest-utils';
+import { cache as createCache, nestedArray, asArray, assign } from 'vest-utils';
 
 import VestTest from 'VestTest';
 import type { StateKey, StateRef, StateValue, VestTests } from 'createStateRef';
@@ -30,43 +24,30 @@ export function useTestCallbacks(): StateKey<'testCallbacks'> {
 
 // OPTIONAL FIELDS
 
-function useOptionalField(
-  fieldName: string
-): ValueOf<StateValue<'optionalFields'>> {
-  const [optionalFields] = useOptionalFields();
-  return optionalFields[fieldName];
-}
-
 export function useOptionalFields(): StateKey<'optionalFields'> {
   return useStateRef().optionalFields();
 }
 
 export function useSetOptionalField(
   fieldName: string,
-  setter:
-    | ((
-        current: ValueOf<StateValue<'optionalFields'>>
-      ) => ValueOf<StateValue<'optionalFields'>>)
-    | ValueOf<StateValue<'optionalFields'>>
-): void {
+  setter: (
+    current: ValueOf<StateValue<'optionalFields'>>
+  ) => Partial<ValueOf<StateValue<'optionalFields'>>>
+) {
   const [, setOptionalFields] = useOptionalFields();
-  setOptionalFields(optionalFields =>
-    assign(optionalFields, {
-      [fieldName]: optionalFunctionValue(setter, optionalFields[fieldName]),
+
+  setOptionalFields(prev =>
+    assign(prev, {
+      [fieldName]: assign({}, prev[fieldName], setter(prev[fieldName])),
     })
   );
 }
 
-export function useOptionalFieldApplied(
+export function useOptionalField(
   fieldName: string
-): ValueOf<StateValue<'optionalFields'>>[1] {
-  return useOptionalField(fieldName)?.[1];
-}
-
-export function useOptionalFieldConfig(
-  fieldName: string
-): ValueOf<StateValue<'optionalFields'>>[0] {
-  return useOptionalField(fieldName)?.[0];
+): ValueOf<StateValue<'optionalFields'>> {
+  const [optionalFields] = useOptionalFields();
+  return optionalFields[fieldName] ?? {};
 }
 
 export function useTestObjects(): StateKey<'testObjects'> {

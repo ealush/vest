@@ -1,6 +1,11 @@
-import { isArray, isStringValue, asArray } from 'vest-utils';
+import {
+  isArray,
+  isStringValue,
+  asArray,
+  optionalFunctionValue,
+} from 'vest-utils';
 
-import { useSetOptionalField } from 'stateHooks';
+import { useOptionalField, useSetOptionalField } from 'stateHooks';
 
 /**
  * Marks a field as optional, either just by name, or by a given condition.
@@ -14,22 +19,66 @@ import { useSetOptionalField } from 'stateHooks';
  * });
  */
 export default function optional(optionals: OptionalsInput): void {
-  // When the optional is given as a string or a list of strings
-  // we just add them to the list of optional fields.
+  // There are two types of optional field declarations:
+
+  // 1. Delayed: A string, which is the name of the field to be optional.
+  // We will only determine whether to omit the test after the suite is done running
+  //
+  // 2. Immediate: Either a boolean or a function, which is used to determine
+  // if the field should be optional.
+
+  // Delayed case (field name)
   if (isArray(optionals) || isStringValue(optionals)) {
     asArray(optionals).forEach(optionalField => {
-      useSetOptionalField(optionalField, [true, false]);
+      useSetOptionalField(optionalField, () => ({
+        type: OptionalFieldTypes.Delayed,
+        applied: false,
+        rule: null,
+      }));
     });
   } else {
-    // if it's an object, we iterate over the keys and add them to the list
-    const optionalFunctions = optionals;
-    for (const field in optionalFunctions) {
-      const predicate = optionalFunctions[field];
-      useSetOptionalField(field, [predicate, false]);
+    // Immediately case (function or boolean)
+    for (const field in optionals) {
+      const value = optionals[field];
+
+      useSetOptionalField(field, () => ({
+        type: OptionalFieldTypes.Immediate,
+        rule: value,
+        applied: optionalFunctionValue(value),
+      }));
     }
   }
 }
 
+export function optionalFiedIsApplied(fieldName?: string) {
+  if (!fieldName) {
+    return false;
+  }
+
+  return useOptionalField(fieldName).applied;
+}
+
 type OptionalsInput = string | string[] | OptionalsObject;
 
-type OptionalsObject = Record<string, () => boolean>;
+type OptionalsObject = Record<string, (() => boolean) | boolean>;
+
+type ImmediateOptionalFieldDeclaration = {
+  type: OptionalFieldTypes.Immediate;
+  rule: boolean | (() => boolean);
+  applied: boolean;
+};
+
+type DelayedOptionalFieldDeclaration = {
+  type: OptionalFieldTypes.Delayed;
+  applied: boolean;
+  rule: null;
+};
+
+export type OptionalFieldDeclaration =
+  | ImmediateOptionalFieldDeclaration
+  | DelayedOptionalFieldDeclaration;
+
+export enum OptionalFieldTypes {
+  Immediate,
+  Delayed,
+}

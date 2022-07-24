@@ -56,7 +56,7 @@ export default function omitOptionalFields(): void {
     // Ge the optional configuration for the given field
     const optionalConfig = useOptionalField(testObject.fieldName);
 
-    // If the optional was set to a function, run it and verify/omit the test
+    // If the optional was set to a function or a boolean, run it and verify/omit the test
     if (optionalConfig.type === OptionalFieldTypes.Immediate) {
       shouldOmit[testObject.fieldName] = optionalFunctionValue(
         optionalConfig.rule

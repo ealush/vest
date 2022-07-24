@@ -124,10 +124,28 @@ function noMissingTestsLogic(
     return true;
   }
 
+  /**
+   * The reason we're checking for the optional field here and not in "omitOptionalFields"
+   * is because that unlike the bool/function check we do there, here it only depends on
+   * whether the field was tested alredy or not.
+   *
+   * We qualify the test as not missing only if it was already run, if it is omitted,
+   * or if it is marked as optional, even if the optional check did not apply yet -
+   * but the test did not reach its final state.
+   */
+
   return (
-    useOptionalField(testObject.fieldName).type ===
-      OptionalFieldTypes.Delayed ||
+    optionalTestAwaitsResolution(testObject) ||
     testObject.isTested() ||
     testObject.isOmitted()
+  );
+}
+
+function optionalTestAwaitsResolution(testObject: VestTest): boolean {
+  // Does the test belong to an optional field,
+  // and the test itself is still in an indeterminate state?
+  return (
+    useOptionalField(testObject.fieldName).type ===
+      OptionalFieldTypes.Delayed && testObject.awaitsResolution()
   );
 }

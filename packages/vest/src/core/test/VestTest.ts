@@ -133,20 +133,8 @@ export default class VestTest {
     return !this.isFailing();
   }
 
-  hasFailures(): boolean {
-    return this.isFailing() || this.isWarning();
-  }
-
-  isNonActionable(): boolean {
-    return this.isSkipped() || this.isOmitted() || this.isCanceled();
-  }
-
   isPending(): boolean {
     return this.statusEquals(STATUS_PENDING);
-  }
-
-  isTested(): boolean {
-    return this.hasFailures() || this.isPassing();
   }
 
   isOmitted(): boolean {
@@ -175,6 +163,24 @@ export default class VestTest {
 
   isWarning(): boolean {
     return this.statusEquals(STATUS_WARNING);
+  }
+
+  hasFailures(): boolean {
+    return this.isFailing() || this.isWarning();
+  }
+
+  isNonActionable(): boolean {
+    return this.isSkipped() || this.isOmitted() || this.isCanceled();
+  }
+
+  isTested(): boolean {
+    return this.hasFailures() || this.isPassing();
+  }
+
+  awaitsResolution(): boolean {
+    // Is the test in a state where it can still be run, or complete running
+    // and its final status is indeterminate?
+    return this.isSkipped() || this.isUntested() || this.isPending();
   }
 
   statusEquals(status: KStatus): boolean {

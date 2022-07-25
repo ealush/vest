@@ -32,6 +32,7 @@
       "compounds": ["./packages/n4s/src/exports/compounds.ts"],
       "schema": ["./packages/n4s/src/exports/schema.ts"],
       "eachEnforceRule": ["./packages/n4s/src/lib/eachEnforceRule.ts"],
+      "enforceUtilityTypes": ["./packages/n4s/src/lib/enforceUtilityTypes.ts"],
       "isProxySupported": ["./packages/n4s/src/lib/isProxySupported.ts"],
       "ruleReturn": ["./packages/n4s/src/lib/ruleReturn.ts"],
       "runLazyRule": ["./packages/n4s/src/lib/runLazyRule.ts"],

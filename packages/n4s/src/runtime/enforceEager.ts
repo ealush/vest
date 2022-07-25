@@ -66,4 +66,4 @@ export default function enforceEager(value: RuleValue): IRules {
   }
 }
 
-export type EnforceEager = typeof enforceEager;
+export type EnforceEager = (value: RuleValue) => IRules;

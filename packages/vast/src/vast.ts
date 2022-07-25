@@ -90,7 +90,7 @@ export function createState(
 type StateInput<S> = S | ((prevState?: S) => S);
 type SetStateInput<S> = S | ((prevState: S) => S);
 
-export type State = ReturnType<typeof createState>;
+export type State = CreateStateReturn;
 export type StateHandlerReturn<S> = [S, (nextState: SetStateInput<S>) => void];
 export type UseState<S> = () => StateHandlerReturn<S>;
 

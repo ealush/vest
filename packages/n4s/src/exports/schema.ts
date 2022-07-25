@@ -1,6 +1,6 @@
 import { enforce } from 'n4s';
-import { DropFirst } from 'utilityTypes';
 
+import { EnforceCustomMatcher } from 'enforceUtilityTypes';
 import { isArrayOf } from 'isArrayOf';
 import { loose } from 'loose';
 import { optional } from 'optional';
@@ -14,10 +14,10 @@ enforce.extend({ isArrayOf, loose, optional, shape });
 declare global {
   namespace n4s {
     interface EnforceCustomMatchers<R> {
-      isArrayOf: (...args: DropFirst<Parameters<typeof isArrayOf>>) => R;
-      loose: (...args: DropFirst<Parameters<typeof loose>>) => R;
-      shape: (...args: DropFirst<Parameters<typeof shape>>) => R;
-      optional: (...args: DropFirst<Parameters<typeof optional>>) => R;
+      isArrayOf: EnforceCustomMatcher<typeof isArrayOf, R>;
+      loose: EnforceCustomMatcher<typeof loose, R>;
+      shape: EnforceCustomMatcher<typeof shape, R>;
+      optional: EnforceCustomMatcher<typeof optional, R>;
     }
   }
 }

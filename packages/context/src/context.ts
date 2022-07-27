@@ -15,7 +15,7 @@ export function createContext<T extends Record<string, unknown>>(
   use: () => T | undefined;
   useX: (errorMessage?: string) => T;
 } {
-  const storage: { ctx?: T; ancestry: T[] } = { ancestry: [] };
+  const storage: { ctx?: T } = {};
 
   return {
     bind,
@@ -43,10 +43,9 @@ export function createContext<T extends Record<string, unknown>>(
     ) as T;
 
     const ctx = set(Object.freeze(out));
-    storage.ancestry.unshift(ctx);
     const res = fn(ctx);
 
-    clear();
+    storage.ctx = parentContext;
     return res;
   }
 
@@ -68,10 +67,5 @@ export function createContext<T extends Record<string, unknown>>(
 
   function set(value: T): T {
     return (storage.ctx = value);
-  }
-
-  function clear() {
-    storage.ancestry.shift();
-    set(storage.ancestry[0] ?? null);
   }
 }

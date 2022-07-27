@@ -64,7 +64,7 @@ describe('Context', () => {
           expect(ctx.use()).toMatchSnapshot();
         });
       });
-      expect(ctx.use()).toBeNull();
+      expect(ctx.use()).toBeUndefined();
     });
 
     describe('Context nesting', () => {
@@ -213,7 +213,7 @@ describe('Context', () => {
       describe('When after closing the context', () => {
         it('Should return undefined', () => {
           ctx.run({}, () => {});
-          expect(ctx.use()).toBeNull();
+          expect(ctx.use()).toBeUndefined();
         });
       });
     });

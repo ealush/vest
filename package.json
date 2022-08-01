@@ -29,7 +29,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-typescript": "^3.3.0",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jest": "^26.5.3",
+    "eslint-plugin-jest": "^26.7.0",
     "faker": "^5.5.3",
     "husky": "^8.0.1",
     "jest": "^28.1.2",

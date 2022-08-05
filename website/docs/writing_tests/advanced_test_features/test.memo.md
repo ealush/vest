@@ -1,5 +1,8 @@
 ---
 sidebar_position: 1
+title: Memoizing test results
+description: Vest supports memoization out of the box, and it can be used for async tests as well.
+keywords: [Vest, Memoizing, test, results]
 ---
 
 ## test.memo for memoized tests

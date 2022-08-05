@@ -1,5 +1,8 @@
 ---
 sidebar_position: 2
+title: Async Validations
+description: Here's how to write async tests.
+keywords: [Vest, Async, Validations]
 ---
 
 # Writing Asynchronous Tests

@@ -1,5 +1,8 @@
 ---
 sidebar_position: 4
+title: Creating custom enforce rules
+description: Sometimes we wish to create custom enforce rules. Here's how we can do this.
+keywords: [Vest, custom, enforce, rule, creating, custom, rules]
 ---
 
 # Creating Custom Rules

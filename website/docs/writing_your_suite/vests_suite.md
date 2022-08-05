@@ -1,5 +1,8 @@
 ---
 sidebar_position: 1
+title: Vest's Suite
+description: All your validations reside in a Vest suite. The suite is a function that retains a javascript closure with the current validation state, and it returns the result object. It also exposes some methods to interact with the data, reset the state and handle async validations.
+keywords: [Vest, Suite, Form, Validation]
 ---
 
 # Vest's Suite

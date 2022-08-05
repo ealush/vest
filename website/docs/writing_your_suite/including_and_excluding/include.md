@@ -1,5 +1,8 @@
 ---
 sidebar_position: 5
+title: Linking fields together
+description: Sometimes we want to run tests on multiple fields together. "include" is a way to do this.
+keywords: [Vest, Include, Link, Linking fields together]
 ---
 
 # Conditionally Running tests together - linked fields

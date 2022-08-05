@@ -1,5 +1,8 @@
 ---
 sidebar_position: 3
+title: Failing with a custom message
+description: Sometimes we wish to fail with a message based on the validation result. Here's how we can do this.
+keywords: [Vest, custom, message, failing, with, message]
 ---
 
 # Failing with a custom message

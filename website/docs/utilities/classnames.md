@@ -1,5 +1,8 @@
 ---
 sidebar_position: 1
+title: Utility - Classnames
+description: Classnames is a utility function that allows you to create a classname string by the validation results.
+keywords: [Vest, Classnames]
 ---
 
 # classnames

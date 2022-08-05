@@ -1,5 +1,8 @@
 ---
 sidebar_position: 4
+title: Warn only tests
+description: Warn only tests are useful when you want to fail a test without marking the suite as invalid.
+keywords: [Vest, Warn, Warn only tests]
 ---
 
 # Warn-only tests

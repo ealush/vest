@@ -1,5 +1,8 @@
 ---
 sidebar_position: 10
+title: Upgrade guides
+description: Guides for upgrading Vest
+keywords: [Vest, Upgrade]
 ---
 
 # Upgrade guides

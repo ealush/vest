@@ -6,15 +6,36 @@ import {
   optionalFunctionValue,
 } from 'vest-utils';
 
+export function createContext<T extends unknown>(
+  defaultContextValue?: T
+): CtxReturn<T> {
+  let contextValue = undefined;
+
+  return {
+    use,
+    run,
+  };
+
+  function use(): T {
+    return defaultTo(contextValue, defaultContextValue);
+  }
+
+  function run<R>(value: T, cb: () => R): R {
+    const parentContext = use();
+
+    contextValue = value;
+
+    const res = cb();
+
+    contextValue = parentContext;
+    return res;
+  }
+}
+
 // eslint-disable-next-line max-lines-per-function
-export function createContext<T extends Record<string, unknown>>(
+export function createCascade<T extends Record<string, unknown>>(
   init?: (ctxRef: Partial<T>, parentContext: T | void) => T | null
-): {
-  run: <R>(ctxRef: Partial<T>, fn: (context: T) => R) => R;
-  bind: <Fn extends CB>(ctxRef: Partial<T>, fn: Fn) => Fn;
-  use: () => T | undefined;
-  useX: (errorMessage?: string) => T;
-} {
+): CtxCascadeReturn<T> {
   const storage: { ctx?: T } = {};
 
   return {
@@ -69,3 +90,15 @@ export function createContext<T extends Record<string, unknown>>(
     return (storage.ctx = value);
   }
 }
+
+type CtxReturn<T> = {
+  use: () => T;
+  run: <R>(value: T, cb: () => R) => R;
+};
+
+export type CtxCascadeReturn<T> = {
+  run: <R>(ctxRef: Partial<T>, fn: (context: T) => R) => R;
+  bind: <Fn extends CB>(ctxRef: Partial<T>, fn: Fn) => Fn;
+  use: () => T | undefined;
+  useX: (errorMessage?: string) => T;
+};

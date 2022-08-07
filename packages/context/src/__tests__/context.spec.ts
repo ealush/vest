@@ -1,18 +1,18 @@
-import { createContext } from 'context';
+import { createCascade, CtxCascadeReturn } from 'context';
 
 describe('Context', () => {
-  let ctx: ReturnType<typeof createContext>;
+  let ctx: CtxCascadeReturn<any>;
 
   beforeEach(() => {
-    ctx = createContext();
+    ctx = createCascade();
   });
-  describe('createContext', () => {
+  describe('createCascade', () => {
     it('Should return a new context on each run', () => {
-      expect(createContext()).not.toBe(createContext());
+      expect(createCascade()).not.toBe(createCascade());
     });
 
     it('Should return all methods', () => {
-      expect(createContext()).toMatchSnapshot();
+      expect(createCascade()).toMatchSnapshot();
     });
   });
 
@@ -275,7 +275,7 @@ describe('Context', () => {
     it('Should run init function on every context.run', () => {
       const init = jest.fn();
 
-      const ctx = createContext(init);
+      const ctx = createCascade(init);
 
       expect(init).not.toHaveBeenCalled();
 
@@ -299,7 +299,7 @@ describe('Context', () => {
     it('Should accept ctxRef as first argument', () => {
       const init = jest.fn();
 
-      const ctx = createContext(init);
+      const ctx = createCascade(init);
       const ref1 = { a: 1, b: 2 };
       const ref2 = { a: 2, b: 3 };
 
@@ -313,7 +313,7 @@ describe('Context', () => {
     it('Should accept parentContext as second argument', () => {
       const init = jest.fn();
 
-      const ctx = createContext(init);
+      const ctx = createCascade(init);
       let p1;
       ctx.run({}, context => {
         p1 = context;
@@ -324,7 +324,7 @@ describe('Context', () => {
     });
 
     it('When not nullish, should use init value as ctxRef', () => {
-      const ctx = createContext<{ override?: boolean; value?: string }>(() => ({
+      const ctx = createCascade<{ override?: boolean; value?: string }>(() => ({
         override: true,
       }));
       ctx.run({ value: 'x' }, context => {
@@ -334,7 +334,7 @@ describe('Context', () => {
     });
 
     it('When nullish, should default to ctxRef', () => {
-      const ctx = createContext(() => null);
+      const ctx = createCascade(() => null);
 
       ctx.run({ value: 'x' }, context => {
         expect(context.value).toBe('x');

@@ -13,6 +13,15 @@ Object {
 }
 `;
 
+exports[`Context createCascade Should return all methods 1`] = `
+Object {
+  "bind": [Function],
+  "run": [Function],
+  "use": [Function],
+  "useX": [Function],
+}
+`;
+
 exports[`Context createContext Should return all methods 1`] = `
 Object {
   "bind": [Function],

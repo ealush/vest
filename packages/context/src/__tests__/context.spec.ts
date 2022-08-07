@@ -25,9 +25,9 @@ describe('Context', () => {
       });
     });
 
-    it('Should pass current context as second argument', () => {
-      ctx.run({}, context => {
-        expect(ctx.use()).toBe(context);
+    it('Should pass no arguments to the callback', () => {
+      ctx.run({}, (...args) => {
+        expect(args).toHaveLength(0);
       });
     });
 
@@ -37,9 +37,9 @@ describe('Context', () => {
           id: 55,
           user: 'boomsa',
         },
-        context => {
-          expect(context.id).toBe(55);
-          expect(context.user).toBe('boomsa');
+        () => {
+          expect(ctx.use().id).toBe(55);
+          expect(ctx.use().user).toBe('boomsa');
         }
       );
     });
@@ -49,9 +49,9 @@ describe('Context', () => {
         {
           id: 55,
         },
-        context => {
-          expect(context.id).toBe(55);
-          expect(context.user).toBeUndefined();
+        () => {
+          expect(ctx.use().id).toBe(55);
+          expect(ctx.use().user).toBeUndefined();
         }
       );
     });
@@ -74,24 +74,24 @@ describe('Context', () => {
             id: 99,
             name: 'watermelonbunny',
           },
-          context => {
-            expect(context.id).toBe(99);
-            expect(context.name).toBe('watermelonbunny');
+          () => {
+            expect(ctx.use().id).toBe(99);
+            expect(ctx.use().name).toBe('watermelonbunny');
 
             ctx.run(
               {
                 name: 'Emanuelle',
                 color: 'blue',
               },
-              context => {
-                expect(context.id).toBe(99);
-                expect(context.name).toBe('Emanuelle');
-                expect(context.color).toBe('blue');
+              () => {
+                expect(ctx.use().id).toBe(99);
+                expect(ctx.use().name).toBe('Emanuelle');
+                expect(ctx.use().color).toBe('blue');
 
-                ctx.run({}, context => {
-                  expect(context.id).toBe(99);
-                  expect(context.name).toBe('Emanuelle');
-                  expect(context.color).toBe('blue');
+                ctx.run({}, () => {
+                  expect(ctx.use().id).toBe(99);
+                  expect(ctx.use().name).toBe('Emanuelle');
+                  expect(ctx.use().color).toBe('blue');
                 });
               }
             );
@@ -105,18 +105,18 @@ describe('Context', () => {
             id: 99,
             name: 'watermelonbunny',
           },
-          context => {
+          () => {
             ctx.run(
               {
                 name: 'Emanuelle',
                 color: 'blue',
               },
-              context => {
+              () => {
                 ctx.run({}, () => null);
-                expect(context.id).toBe(99);
-                expect(context.name).toBe('Emanuelle');
-                expect(context.color).toBe('blue');
-                expect(context).toMatchInlineSnapshot(`
+                expect(ctx.use().id).toBe(99);
+                expect(ctx.use().name).toBe('Emanuelle');
+                expect(ctx.use().color).toBe('blue');
+                expect(ctx.use()).toMatchInlineSnapshot(`
                   Object {
                     "color": "blue",
                     "id": 99,
@@ -125,9 +125,9 @@ describe('Context', () => {
                 `);
               }
             );
-            expect(context.id).toBe(99);
-            expect(context.name).toBe('watermelonbunny');
-            expect(context).toMatchInlineSnapshot(`
+            expect(ctx.use().id).toBe(99);
+            expect(ctx.use().name).toBe('watermelonbunny');
+            expect(ctx.use()).toMatchInlineSnapshot(`
               Object {
                 "id": 99,
                 "name": "watermelonbunny",
@@ -315,8 +315,8 @@ describe('Context', () => {
 
       const ctx = createCascade(init);
       let p1;
-      ctx.run({}, context => {
-        p1 = context;
+      ctx.run({}, () => {
+        p1 = ctx.use();
         ctx.run({}, () => null);
       });
       expect(init.mock.calls[0][1]).toBeUndefined();
@@ -327,17 +327,17 @@ describe('Context', () => {
       const ctx = createCascade<{ override?: boolean; value?: string }>(() => ({
         override: true,
       }));
-      ctx.run({ value: 'x' }, context => {
-        expect(context.override).toBe(true);
-        expect(context.value).toBeUndefined();
+      ctx.run({ value: 'x' }, () => {
+        expect(ctx.useX().override).toBe(true);
+        expect(ctx.useX().value).toBeUndefined();
       });
     });
 
     it('When nullish, should default to ctxRef', () => {
       const ctx = createCascade(() => null);
 
-      ctx.run({ value: 'x' }, context => {
-        expect(context.value).toBe('x');
+      ctx.run({ value: 'x' }, () => {
+        expect(ctx.useX().value).toBe('x');
       });
     });
   });

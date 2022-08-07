@@ -36,7 +36,7 @@ export function createContext<T extends unknown>(
 export function createCascade<T extends Record<string, unknown>>(
   init?: (ctxRef: Partial<T>, parentContext: T | void) => T | null
 ): CtxCascadeReturn<T> {
-  const storage: { ctx?: T } = {};
+  let contextValue = undefined;
 
   return {
     bind,
@@ -54,7 +54,7 @@ export function createCascade<T extends Record<string, unknown>>(
     return ctx;
   }
 
-  function run<R>(ctxRef: Partial<T>, fn: (context: T) => R): R {
+  function run<R>(ctxRef: Partial<T>, fn: () => R): R {
     const parentContext = use();
 
     const out = assign(
@@ -63,10 +63,11 @@ export function createCascade<T extends Record<string, unknown>>(
       optionalFunctionValue(init, ctxRef, parentContext) ?? ctxRef
     ) as T;
 
-    const ctx = set(Object.freeze(out));
-    const res = fn(ctx);
+    set(Object.freeze(out));
 
-    storage.ctx = parentContext;
+    const res = fn();
+
+    contextValue = parentContext;
     return res;
   }
 
@@ -83,11 +84,11 @@ export function createCascade<T extends Record<string, unknown>>(
   }
 
   function use() {
-    return storage.ctx;
+    return contextValue;
   }
 
   function set(value: T): T {
-    return (storage.ctx = value);
+    return (contextValue = value);
   }
 }
 
@@ -97,7 +98,7 @@ type CtxReturn<T> = {
 };
 
 export type CtxCascadeReturn<T> = {
-  run: <R>(ctxRef: Partial<T>, fn: (context: T) => R) => R;
+  run: <R>(ctxRef: Partial<T>, fn: () => R) => R;
   bind: <Fn extends CB>(ctxRef: Partial<T>, fn: Fn) => Fn;
   use: () => T | undefined;
   useX: (errorMessage?: string) => T;

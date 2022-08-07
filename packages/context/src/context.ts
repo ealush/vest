@@ -9,14 +9,14 @@ import {
 export function createContext<T extends unknown>(
   defaultContextValue?: T
 ): CtxReturn<T> {
-  let contextValue = undefined;
+  let contextValue: T | undefined = undefined;
 
   return {
     use,
     run,
   };
 
-  function use(): T {
+  function use(): T | undefined {
     return defaultTo(contextValue, defaultContextValue);
   }
 
@@ -32,7 +32,6 @@ export function createContext<T extends unknown>(
   }
 }
 
-// eslint-disable-next-line max-lines-per-function
 export function createCascade<T extends Record<string, unknown>>(
   init?: (value: Partial<T>, parentContext: T | void) => T | null
 ): CtxCascadeReturn<T> {
@@ -67,20 +66,16 @@ export function createCascade<T extends Record<string, unknown>>(
   }
 
   function bind<Fn extends CB>(value: Partial<T>, fn: Fn) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore - this one's pretty hard to get right
-    const returnedFn: Fn = function (...runTimeArgs: Parameters<Fn>) {
+    return function (...runTimeArgs: Parameters<Fn>) {
       return run<ReturnType<Fn>>(value, function () {
         return fn(...runTimeArgs);
       });
-    };
-
-    return returnedFn;
+    } as Fn;
   }
 }
 
 export type CtxReturn<T> = {
-  use: () => T;
+  use: () => T | undefined;
   run: <R>(value: T, cb: () => R) => R;
 };
 

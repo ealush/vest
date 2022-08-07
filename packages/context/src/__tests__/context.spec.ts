@@ -1,6 +1,85 @@
-import { createCascade, CtxCascadeReturn } from 'context';
+import {
+  createCascade,
+  createContext,
+  CtxCascadeReturn,
+  CtxReturn,
+} from 'context';
 
 describe('Context', () => {
+  let ctx: CtxReturn<any>;
+
+  beforeEach(() => {
+    ctx = createContext();
+  });
+
+  describe('Exposed Methods', () => {
+    it('should have a use method', () => {
+      expect(ctx.use).toBeInstanceOf(Function);
+    });
+
+    it('should have a run method', () => {
+      expect(ctx.run).toBeInstanceOf(Function);
+    });
+  });
+
+  describe('use', () => {
+    describe('When not inside of an active context', () => {
+      describe('When a default value was not provided', () => {
+        it('should return undefined', () => {
+          expect(ctx.use()).toBeUndefined();
+        });
+      });
+
+      describe('When a default value was provided', () => {
+        beforeEach(() => {
+          ctx = createContext('i am the default value!');
+        });
+
+        it('should return the default value', () => {
+          expect(ctx.use()).toBe('i am the default value!');
+        });
+      });
+    });
+  });
+
+  describe('run', () => {
+    describe('It should set the current context value to the passed value', () => {
+      it('should set the current context value to the passed value', () => {
+        const value = { some: 'object' };
+        ctx.run(value, () => {
+          expect(ctx.use()).toBe(value);
+        });
+      });
+    });
+
+    describe('When nesting run calls', () => {
+      it("sets each layer's context with its respective value", () => {
+        const value_a = { some: 'object' };
+        ctx.run(value_a, () => {
+          expect(ctx.use()).toBe(value_a);
+          const value_b = { another: 'obj' };
+          ctx.run(value_b, () => {
+            expect(ctx.use()).toBe(value_b);
+          });
+        });
+      });
+
+      it('Restores the previous context value when exiting a context layer', () => {
+        const value_a = { some: 'object' };
+        ctx.run(value_a, () => {
+          const value_b = { another: 'obj' };
+          ctx.run(value_b, () => {
+            expect(ctx.use()).toBe(value_b);
+          });
+          expect(ctx.use()).toBe(value_a);
+        });
+        expect(ctx.use()).toBeUndefined();
+      });
+    });
+  });
+});
+
+describe('Cascading Context', () => {
   let ctx: CtxCascadeReturn<any>;
 
   beforeEach(() => {

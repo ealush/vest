@@ -79,7 +79,7 @@ export function createCascade<T extends Record<string, unknown>>(
   }
 }
 
-type CtxReturn<T> = {
+export type CtxReturn<T> = {
   use: () => T;
   run: <R>(value: T, cb: () => R) => R;
 };

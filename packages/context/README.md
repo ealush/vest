@@ -5,7 +5,7 @@ It allows you to keep reference for shared variables, and access them down in yo
 
 ## How Context Works?
 
-The way context works is quite simple. Creating a context initializes a closure with a context storage object. When you run your context call, it takes your values, and places them in the context storage object. When your function finishes running, the context is cleared.
+The way context works is quite simple. Creating a context initializes a closure with a context storage object. When you run your context call, it takes your values, and places them in the context's closure. When your function finishes running, the context is cleared.
 
 ![image](https://user-images.githubusercontent.com/11255103/137119151-6912d3f1-ab48-4c91-a426-76af8abc8c55.png)
 
@@ -13,24 +13,80 @@ The reason the context is cleared after its run is so that items can't override 
 
 ## API Reference
 
-Context tries to mimic the behavior of Javascript scopes without actually being in the same scopes, and the API is built around context initialization, setting of values within the context and retrieving values.
+### Top Level Exports
 
-### createContext()
+The context package exports these two functions:
 
-Context's default export, it creates a context singleton object that can later be referenced.
+- `createContext`: Creates a new context.
+- `createCascade`: Creates a new cascading context.
+
+## createContext()
+
+Create context is the minimal implementation of context. It allows propagation of values down in your function call.
+
+createContext takes a single argument - defaultContextValue. This value is used when not withing a running context.
+
+### Arguments
+
+| Argument            | Type  | Optional? | Description                                                  |
+| ------------------- | ----- | --------- | ------------------------------------------------------------ |
+| defaultContextValue | `any` | Yes       | The default value to use when not withing a running context. |
+
+### Returned object
+
+`createContext` returns an object containing the following functions:
+
+- `use`: Returns the current context value, or the default value when not withing a running context.
+- `useX`: Returns the current context, throws an error if not within a running context or the context is undefined. `useX` will throw even if a default value is provided.
+- `run`: Runs the context, passing the given value into the context.
+
+**Note About Typescript Usage**
+For convenience, `use` assumes we're alwyas inside a context. If you want to have runtime safety, you can use `useX` instead to make sure you're excplicitly using a defined context.
+
+### Usage Example
 
 ```js
-// ctx.js
-import { createContext } from 'context';
+const context = createContext(0); // Create a context with a default value of 0.
 
-export default createContext(); // { run: ƒ, bind: ƒ, use: ƒ, useX: ƒ }
+function myFunc() {
+  context.run(100, someOtherFunc); // Run the context with a value of 100.
+}
+
+function someOtherFunc() {
+  const number = context.use(); // Returns the value of the context.
+}
 ```
 
-createContext also accepts an initialization function that's run every time ctx.run is called. It allows intercepting the context initialization and adding custom logic, or default values.
-The init function is passed the context object run was called with, and the parent context if it was called within a previously created context. The init function needs to return the desired context object.
+## createCascade()
+
+`createCascade` is a more advanced version of `createContext` that allows you to create cascading contexts. It assumes the value is always an object, and when nesting context layers, it merges their values together.
+
+`createCascade` does not take a default value, but an initializer function instead. This initializer is called on each `run` call, and it allows you to modify or augment the context value being passed down. The init function is passed the context object run was called with, and the parent context if it was called within a previously created context. The init function needs to return the desired context object.
+
+### Arguments
+
+| Argument    | Type       | Optional? | Description                                                  |
+| ----------- | ---------- | --------- | ------------------------------------------------------------ |
+| initializer | `Function` | Yes       | The initializer function to use when creating a new context. |
+
+The initializer function can either return the the next context object. If null is returned itself, the initializer will take no effect.
+The initializer receives the context object, and the parent context object, if present.
+
+### Returned object
+
+`createCascade` returns an object containing the following functions:
+
+- `use`: Returns the current context value.
+- `useX`: Returns the current context, throws an error if not within a running context or the context is undefined.
+- `run`: Runs the context, passing the given value into the context. Merges the given value with the parent context if it exists, while not overriding the parent context.
+- `bind`: Binds a given function to the context. Allows for delayd execution of a function as if it was called within the context.
+
+### Usage Examples
+
+#### Initializer Function
 
 ```js
-createContext((ctx, parentContext) => {
+createCascade((ctx, parentContext) => {
   if (parentContext === null) {
     // we're at the top level
     // so let's add a default cart object
@@ -44,7 +100,7 @@ createContext((ctx, parentContext) => {
 });
 ```
 
-### run()
+#### run()
 
 Runs a callback function within the context. It takes an object referencing the data you want to store within your context, and a callback function to run.
 
@@ -116,6 +172,24 @@ function getProductData(productId) {
   });
 }
 ```
+
+## Typescript Support
+
+both `createContext` and `createCascade` have full typescript support. To gain the full benefits of typescript within your context, it is best to annotate your context with its types:
+
+```ts
+const someContext = createContext<number>(0);
+
+const someCascadeContext = createCascade<{
+  username: string;
+  firstName: string;
+  middleName?: string;
+  lastName: string;
+  age: number;
+}>();
+```
+
+This meakes sure that all the functions (`run`, `use`, `useX` and `bind`) will be aware of these types, and either accept them as inputs, or add them to the return value.
 
 ## Troubleshooting
 

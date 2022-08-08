@@ -7,8 +7,6 @@ It allows you to keep reference for shared variables, and access them down in yo
 
 The way context works is quite simple. Creating a context initializes a closure with a context storage object. When you run your context call, it takes your values, and places them in the context's closure. When your function finishes running, the context is cleared.
 
-![image](https://user-images.githubusercontent.com/11255103/137119151-6912d3f1-ab48-4c91-a426-76af8abc8c55.png)
-
 The reason the context is cleared after its run is so that items can't override one another. Assume you have two running the same async function twice, and it writes to the context, expecting to read the value somewhere down the line. Now you have two competing consumers of this single resource, and one eventually get the wrong value since they both read from and write to the same place.
 
 ## API Reference

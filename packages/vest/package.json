@@ -1,5 +1,5 @@
 {
-  "version": "4.6.0",
+  "version": "4.6.1",
   "license": "MIT",
   "name": "vest",
   "author": "ealush",
@@ -20,8 +20,8 @@
     "url": "https://github.com/ealush/vest.git/issues"
   },
   "dependencies": {
-    "context": "^3.0.0",
-    "n4s": "^4.2.0",
+    "context": "^3.0.1",
+    "n4s": "^4.2.1",
     "vest-utils": "^0.0.2"
   },
   "homepage": "https://vestjs.dev/",

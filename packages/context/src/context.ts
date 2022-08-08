@@ -8,7 +8,7 @@ import {
 
 export function createContext<T extends unknown>(
   defaultContextValue?: T
-): CtxReturn<T> {
+): CtxApi<T> {
   let contextValue: T | undefined = undefined;
 
   return {
@@ -16,8 +16,8 @@ export function createContext<T extends unknown>(
     run,
   };
 
-  function use(): T | undefined {
-    return defaultTo(contextValue, defaultContextValue);
+  function use(): T {
+    return defaultTo(contextValue, defaultContextValue) as T;
   }
 
   function run<R>(value: T, cb: () => R): R {
@@ -34,7 +34,7 @@ export function createContext<T extends unknown>(
 
 export function createCascade<T extends Record<string, unknown>>(
   init?: (value: Partial<T>, parentContext: T | void) => T | null
-): CtxCascadeReturn<T> {
+): CtxCascadeApi<T> {
   const ctx = createContext<T>();
 
   return {
@@ -74,12 +74,12 @@ export function createCascade<T extends Record<string, unknown>>(
   }
 }
 
-export type CtxReturn<T> = {
+export type CtxApi<T> = {
   use: () => T | undefined;
   run: <R>(value: T, cb: () => R) => R;
 };
 
-export type CtxCascadeReturn<T> = {
+export type CtxCascadeApi<T> = {
   run: <R>(value: Partial<T>, fn: () => R) => R;
   bind: <Fn extends CB>(value: Partial<T>, fn: Fn) => Fn;
   use: () => T | undefined;

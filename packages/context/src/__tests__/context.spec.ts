@@ -1,12 +1,7 @@
-import {
-  createCascade,
-  createContext,
-  CtxCascadeReturn,
-  CtxReturn,
-} from 'context';
+import { createCascade, createContext, CtxCascadeApi, CtxApi } from 'context';
 
 describe('Context', () => {
-  let ctx: CtxReturn<any>;
+  let ctx: CtxApi<any>;
 
   beforeEach(() => {
     ctx = createContext();
@@ -80,7 +75,7 @@ describe('Context', () => {
 });
 
 describe('Cascading Context', () => {
-  let ctx: CtxCascadeReturn<any>;
+  let ctx: CtxCascadeApi<any>;
 
   beforeEach(() => {
     ctx = createCascade();

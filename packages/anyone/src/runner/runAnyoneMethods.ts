@@ -17,5 +17,5 @@ export default function run(arg: unknown): boolean {
 
 function check(value: unknown): boolean {
   // We use abstract equality intentionally here. This enables falsy valueOf support.
-  return Array.isArray(value) ? true : value != false && Boolean(value); // eslint-disable-line
+  return Array.isArray(value) ? true : value != false && Boolean(value);
 }

@@ -28,4 +28,14 @@ describe('lib/run', () => {
       );
     });
   });
+
+  describe('When the function throws an error', () => {
+    it('Should return false', () => {
+      expect(
+        run(() => {
+          throw new Error();
+        })
+      ).toBe(false);
+    });
+  });
 });

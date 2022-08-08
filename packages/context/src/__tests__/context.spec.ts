@@ -37,6 +37,22 @@ describe('Context', () => {
     });
   });
 
+  describe('useX', () => {
+    describe('When not inside of an active context', () => {
+      it('Should throw an error', () => {
+        expect(() => {
+          ctx.useX();
+        }).toThrow('Context was used after it was closed');
+      });
+
+      it('Should throw an error with a custom message when passed', () => {
+        expect(() => {
+          ctx.useX('i am the error message!');
+        }).toThrow('i am the error message!');
+      });
+    });
+  });
+
   describe('run', () => {
     describe('It should set the current context value to the passed value', () => {
       it('should set the current context value to the passed value', () => {

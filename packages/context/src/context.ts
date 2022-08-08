@@ -6,10 +6,13 @@ import {
   optionalFunctionValue,
 } from 'vest-utils';
 
+const USEX_DEFAULT_ERROR_MESSAGE = 'Not inside of a running context.';
+const EMPTY_CONTEXT = Symbol();
+
 export function createContext<T extends unknown>(
   defaultContextValue?: T
 ): CtxApi<T> {
-  let contextValue: T | undefined = undefined;
+  let contextValue: T | symbol = EMPTY_CONTEXT;
 
   return {
     run,
@@ -18,20 +21,19 @@ export function createContext<T extends unknown>(
   };
 
   function use(): T {
-    return defaultTo(contextValue, defaultContextValue) as T;
+    return (isInsideContext() ? contextValue : defaultContextValue) as T;
   }
 
   function useX(errorMessage?: string): T {
-    const contextValue = use();
     invariant(
-      contextValue,
-      defaultTo(errorMessage, 'Context was used after it was closed')
+      isInsideContext(),
+      defaultTo(errorMessage, USEX_DEFAULT_ERROR_MESSAGE)
     );
-    return contextValue;
+    return contextValue as T;
   }
 
   function run<R>(value: T, cb: () => R): R {
-    const parentContext = use();
+    const parentContext = isInsideContext() ? use() : EMPTY_CONTEXT;
 
     contextValue = value;
 
@@ -39,6 +41,10 @@ export function createContext<T extends unknown>(
 
     contextValue = parentContext;
     return res;
+  }
+
+  function isInsideContext(): boolean {
+    return contextValue !== EMPTY_CONTEXT;
   }
 }
 

@@ -42,13 +42,24 @@ describe('Context', () => {
       it('Should throw an error', () => {
         expect(() => {
           ctx.useX();
-        }).toThrow('Context was used after it was closed');
+        }).toThrow('Not inside of a running context.');
       });
 
       it('Should throw an error with a custom message when passed', () => {
         expect(() => {
           ctx.useX('i am the error message!');
         }).toThrow('i am the error message!');
+      });
+
+      describe('When a default value was provided', () => {
+        beforeEach(() => {
+          ctx = createContext('i am the default value!');
+        });
+        it('Should disregard default value', () => {
+          expect(() => {
+            ctx.useX();
+          }).toThrow('Not inside of a running context.');
+        });
       });
     });
   });
@@ -329,9 +340,7 @@ describe('Cascading Context', () => {
 
       describe('When before running the context', () => {
         it('Should throw error', () => {
-          expect(() => ctx.useX()).toThrow(
-            'Context was used after it was closed'
-          );
+          expect(() => ctx.useX()).toThrow('Not inside of a running context.');
         });
 
         it('Should allow a custom context message', () => {
@@ -347,9 +356,7 @@ describe('Cascading Context', () => {
         });
 
         it('Should return undefined', () => {
-          expect(() => ctx.useX()).toThrow(
-            'Context was used after it was closed'
-          );
+          expect(() => ctx.useX()).toThrow('Not inside of a running context.');
         });
 
         it('Should allow a custom context message', () => {

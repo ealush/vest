@@ -75,7 +75,7 @@ The initializer receives the context object, and the parent context object, if p
 `createCascade` returns an object containing the following functions:
 
 - `use`: Returns the current context value.
-- `useX`: Returns the current context, throws an error if not within a running context or the context is undefined.
+- `useX`: Returns the current context, throws an error if not within a running context.
 - `run`: Runs the context, passing the given value into the context. Merges the given value with the parent context if it exists, while not overriding the parent context.
 - `bind`: Binds a given function to the context. Allows for delayd execution of a function as if it was called within the context.
 

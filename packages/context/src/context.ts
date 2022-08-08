@@ -12,12 +12,22 @@ export function createContext<T extends unknown>(
   let contextValue: T | undefined = undefined;
 
   return {
-    use,
     run,
+    use,
+    useX,
   };
 
   function use(): T {
     return defaultTo(contextValue, defaultContextValue) as T;
+  }
+
+  function useX(errorMessage?: string): T {
+    const contextValue = use();
+    invariant(
+      contextValue,
+      defaultTo(errorMessage, 'Context was used after it was closed')
+    );
+    return contextValue;
   }
 
   function run<R>(value: T, cb: () => R): R {
@@ -41,17 +51,8 @@ export function createCascade<T extends Record<string, unknown>>(
     bind,
     run,
     use: ctx.use,
-    useX,
+    useX: ctx.useX,
   };
-
-  function useX(errorMessage?: string): T {
-    const contextValue = ctx.use();
-    invariant(
-      contextValue,
-      defaultTo(errorMessage, 'Context was used after it was closed')
-    );
-    return contextValue;
-  }
 
   function run<R>(value: Partial<T>, fn: () => R): R {
     const parentContext = ctx.use();
@@ -74,14 +75,16 @@ export function createCascade<T extends Record<string, unknown>>(
   }
 }
 
-export type CtxApi<T> = {
-  use: () => T | undefined;
+type ContextConsumptionApi<T> = {
+  use: () => T;
+  useX: (errorMessage?: string) => T;
+};
+
+export type CtxApi<T> = ContextConsumptionApi<T> & {
   run: <R>(value: T, cb: () => R) => R;
 };
 
-export type CtxCascadeApi<T> = {
+export type CtxCascadeApi<T> = ContextConsumptionApi<T> & {
   run: <R>(value: Partial<T>, fn: () => R) => R;
   bind: <Fn extends CB>(value: Partial<T>, fn: Fn) => Fn;
-  use: () => T | undefined;
-  useX: (errorMessage?: string) => T;
 };

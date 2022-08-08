@@ -20,7 +20,7 @@
     "url": "https://github.com/ealush/vest.git/issues"
   },
   "dependencies": {
-    "context": "^2.0.9",
+    "context": "^3.0.0",
     "n4s": "^4.2.0",
     "vest-utils": "^0.0.2"
   },

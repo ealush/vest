@@ -10,7 +10,7 @@
     "release": "vx release"
   },
   "dependencies": {
-    "context": "^2.0.9",
+    "context": "^3.0.0",
     "vest-utils": "^0.0.2"
   },
   "module": "./dist/es/n4s.production.js",

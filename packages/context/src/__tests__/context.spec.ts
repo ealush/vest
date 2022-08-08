@@ -1,18 +1,108 @@
-import { createContext } from 'context';
+import { createCascade, createContext, CtxCascadeApi, CtxApi } from 'context';
 
 describe('Context', () => {
-  let ctx: ReturnType<typeof createContext>;
+  let ctx: CtxApi<any>;
 
   beforeEach(() => {
     ctx = createContext();
   });
-  describe('createContext', () => {
+
+  describe('Exposed Methods', () => {
+    it('should have a use method', () => {
+      expect(ctx.use).toBeInstanceOf(Function);
+    });
+
+    it('should have a run method', () => {
+      expect(ctx.run).toBeInstanceOf(Function);
+    });
+  });
+
+  describe('use', () => {
+    describe('When not inside of an active context', () => {
+      describe('When a default value was not provided', () => {
+        it('should return undefined', () => {
+          expect(ctx.use()).toBeUndefined();
+        });
+      });
+
+      describe('When a default value was provided', () => {
+        beforeEach(() => {
+          ctx = createContext('i am the default value!');
+        });
+
+        it('should return the default value', () => {
+          expect(ctx.use()).toBe('i am the default value!');
+        });
+      });
+    });
+  });
+
+  describe('useX', () => {
+    describe('When not inside of an active context', () => {
+      it('Should throw an error', () => {
+        expect(() => {
+          ctx.useX();
+        }).toThrow('Context was used after it was closed');
+      });
+
+      it('Should throw an error with a custom message when passed', () => {
+        expect(() => {
+          ctx.useX('i am the error message!');
+        }).toThrow('i am the error message!');
+      });
+    });
+  });
+
+  describe('run', () => {
+    describe('It should set the current context value to the passed value', () => {
+      it('should set the current context value to the passed value', () => {
+        const value = { some: 'object' };
+        ctx.run(value, () => {
+          expect(ctx.use()).toBe(value);
+        });
+      });
+    });
+
+    describe('When nesting run calls', () => {
+      it("sets each layer's context with its respective value", () => {
+        const value_a = { some: 'object' };
+        ctx.run(value_a, () => {
+          expect(ctx.use()).toBe(value_a);
+          const value_b = { another: 'obj' };
+          ctx.run(value_b, () => {
+            expect(ctx.use()).toBe(value_b);
+          });
+        });
+      });
+
+      it('Restores the previous context value when exiting a context layer', () => {
+        const value_a = { some: 'object' };
+        ctx.run(value_a, () => {
+          const value_b = { another: 'obj' };
+          ctx.run(value_b, () => {
+            expect(ctx.use()).toBe(value_b);
+          });
+          expect(ctx.use()).toBe(value_a);
+        });
+        expect(ctx.use()).toBeUndefined();
+      });
+    });
+  });
+});
+
+describe('Cascading Context', () => {
+  let ctx: CtxCascadeApi<any>;
+
+  beforeEach(() => {
+    ctx = createCascade();
+  });
+  describe('createCascade', () => {
     it('Should return a new context on each run', () => {
-      expect(createContext()).not.toBe(createContext());
+      expect(createCascade()).not.toBe(createCascade());
     });
 
     it('Should return all methods', () => {
-      expect(createContext()).toMatchSnapshot();
+      expect(createCascade()).toMatchSnapshot();
     });
   });
 
@@ -25,9 +115,9 @@ describe('Context', () => {
       });
     });
 
-    it('Should pass current context as second argument', () => {
-      ctx.run({}, context => {
-        expect(ctx.use()).toBe(context);
+    it('Should pass no arguments to the callback', () => {
+      ctx.run({}, (...args) => {
+        expect(args).toHaveLength(0);
       });
     });
 
@@ -37,9 +127,9 @@ describe('Context', () => {
           id: 55,
           user: 'boomsa',
         },
-        context => {
-          expect(context.id).toBe(55);
-          expect(context.user).toBe('boomsa');
+        () => {
+          expect(ctx.use().id).toBe(55);
+          expect(ctx.use().user).toBe('boomsa');
         }
       );
     });
@@ -49,9 +139,9 @@ describe('Context', () => {
         {
           id: 55,
         },
-        context => {
-          expect(context.id).toBe(55);
-          expect(context.user).toBeUndefined();
+        () => {
+          expect(ctx.use().id).toBe(55);
+          expect(ctx.use().user).toBeUndefined();
         }
       );
     });
@@ -74,24 +164,24 @@ describe('Context', () => {
             id: 99,
             name: 'watermelonbunny',
           },
-          context => {
-            expect(context.id).toBe(99);
-            expect(context.name).toBe('watermelonbunny');
+          () => {
+            expect(ctx.use().id).toBe(99);
+            expect(ctx.use().name).toBe('watermelonbunny');
 
             ctx.run(
               {
                 name: 'Emanuelle',
                 color: 'blue',
               },
-              context => {
-                expect(context.id).toBe(99);
-                expect(context.name).toBe('Emanuelle');
-                expect(context.color).toBe('blue');
+              () => {
+                expect(ctx.use().id).toBe(99);
+                expect(ctx.use().name).toBe('Emanuelle');
+                expect(ctx.use().color).toBe('blue');
 
-                ctx.run({}, context => {
-                  expect(context.id).toBe(99);
-                  expect(context.name).toBe('Emanuelle');
-                  expect(context.color).toBe('blue');
+                ctx.run({}, () => {
+                  expect(ctx.use().id).toBe(99);
+                  expect(ctx.use().name).toBe('Emanuelle');
+                  expect(ctx.use().color).toBe('blue');
                 });
               }
             );
@@ -105,18 +195,18 @@ describe('Context', () => {
             id: 99,
             name: 'watermelonbunny',
           },
-          context => {
+          () => {
             ctx.run(
               {
                 name: 'Emanuelle',
                 color: 'blue',
               },
-              context => {
+              () => {
                 ctx.run({}, () => null);
-                expect(context.id).toBe(99);
-                expect(context.name).toBe('Emanuelle');
-                expect(context.color).toBe('blue');
-                expect(context).toMatchInlineSnapshot(`
+                expect(ctx.use().id).toBe(99);
+                expect(ctx.use().name).toBe('Emanuelle');
+                expect(ctx.use().color).toBe('blue');
+                expect(ctx.use()).toMatchInlineSnapshot(`
                   Object {
                     "color": "blue",
                     "id": 99,
@@ -125,9 +215,9 @@ describe('Context', () => {
                 `);
               }
             );
-            expect(context.id).toBe(99);
-            expect(context.name).toBe('watermelonbunny');
-            expect(context).toMatchInlineSnapshot(`
+            expect(ctx.use().id).toBe(99);
+            expect(ctx.use().name).toBe('watermelonbunny');
+            expect(ctx.use()).toMatchInlineSnapshot(`
               Object {
                 "id": 99,
                 "name": "watermelonbunny",
@@ -275,7 +365,7 @@ describe('Context', () => {
     it('Should run init function on every context.run', () => {
       const init = jest.fn();
 
-      const ctx = createContext(init);
+      const ctx = createCascade(init);
 
       expect(init).not.toHaveBeenCalled();
 
@@ -299,7 +389,7 @@ describe('Context', () => {
     it('Should accept ctxRef as first argument', () => {
       const init = jest.fn();
 
-      const ctx = createContext(init);
+      const ctx = createCascade(init);
       const ref1 = { a: 1, b: 2 };
       const ref2 = { a: 2, b: 3 };
 
@@ -313,10 +403,10 @@ describe('Context', () => {
     it('Should accept parentContext as second argument', () => {
       const init = jest.fn();
 
-      const ctx = createContext(init);
+      const ctx = createCascade(init);
       let p1;
-      ctx.run({}, context => {
-        p1 = context;
+      ctx.run({}, () => {
+        p1 = ctx.use();
         ctx.run({}, () => null);
       });
       expect(init.mock.calls[0][1]).toBeUndefined();
@@ -324,20 +414,20 @@ describe('Context', () => {
     });
 
     it('When not nullish, should use init value as ctxRef', () => {
-      const ctx = createContext<{ override?: boolean; value?: string }>(() => ({
+      const ctx = createCascade<{ override?: boolean; value?: string }>(() => ({
         override: true,
       }));
-      ctx.run({ value: 'x' }, context => {
-        expect(context.override).toBe(true);
-        expect(context.value).toBeUndefined();
+      ctx.run({ value: 'x' }, () => {
+        expect(ctx.useX().override).toBe(true);
+        expect(ctx.useX().value).toBeUndefined();
       });
     });
 
     it('When nullish, should default to ctxRef', () => {
-      const ctx = createContext(() => null);
+      const ctx = createCascade(() => null);
 
-      ctx.run({ value: 'x' }, context => {
-        expect(context.value).toBe('x');
+      ctx.run({ value: 'x' }, () => {
+        expect(ctx.useX().value).toBe('x');
       });
     });
   });

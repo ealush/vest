@@ -259,8 +259,8 @@ describe('isExcluded', () => {
   let exclusion;
 
   const runIsExcluded = (exclusion, testObject: VestTest) =>
-    context.run({}, ctx => {
-      Object.assign(ctx.exclusion, exclusion);
+    context.run({}, () => {
+      Object.assign(context.useX().exclusion, exclusion);
       const res = isExcluded(testObject);
 
       return res;

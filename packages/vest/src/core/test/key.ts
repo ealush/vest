@@ -7,21 +7,20 @@ import { useTestObjects } from 'stateHooks';
 export function usePrevKeys(): Record<string, VestTest> {
   const [{ prev }] = useTestObjects();
 
-  return asArray(nestedArray.getCurrent(prev, useCurrentPath())).reduce(
-    (prevKeys, testObject) => {
-      if (!(testObject instanceof VestTest)) {
-        return prevKeys;
-      }
-
-      if (isNullish(testObject.key)) {
-        return prevKeys;
-      }
-
-      prevKeys[testObject.key] = testObject;
+  return asArray<nestedArray.NestedArray<VestTest>>(
+    nestedArray.getCurrent(prev, useCurrentPath())
+  ).reduce((prevKeys, testObject) => {
+    if (!(testObject instanceof VestTest)) {
       return prevKeys;
-    },
-    {} as Record<string, VestTest>
-  );
+    }
+
+    if (isNullish(testObject.key)) {
+      return prevKeys;
+    }
+
+    prevKeys[testObject.key] = testObject;
+    return prevKeys;
+  }, {} as Record<string, VestTest>);
 }
 
 export function usePrevTestByKey(key: string): VestTest | undefined {

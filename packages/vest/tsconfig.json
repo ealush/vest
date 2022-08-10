@@ -1,8 +1,92 @@
 {
   "extends": "../../tsconfig.json",
+  "rootDir": ".",
   "compilerOptions": {
+    "baseUrl": ".",
     "declarationMap": true,
     "declarationDir": "./types",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "paths": {
+      "ctx": ["src/core/ctx/ctx.ts"],
+      "generateIsolate": ["src/core/isolate/generateIsolate.ts"],
+      "isolate": ["src/core/isolate/isolate.ts"],
+      "isolateCursor": ["src/core/isolate/isolateCursor.ts"],
+      "isolateHooks": ["src/core/isolate/isolateHooks.ts"],
+      "each": ["src/core/isolate/isolates/each.ts"],
+      "group": ["src/core/isolate/isolates/group.ts"],
+      "omitWhen": ["src/core/isolate/isolates/omitWhen.ts"],
+      "skipWhen": ["src/core/isolate/isolates/skipWhen.ts"],
+      "IsolateTypes": ["src/core/isolate/IsolateTypes.ts"],
+      "createStateRef": ["src/core/state/createStateRef.ts"],
+      "stateHooks": ["src/core/state/stateHooks.ts"],
+      "create": ["src/core/suite/create.ts"],
+      "hasRemainingTests": ["src/core/suite/hasRemainingTests.ts"],
+      "produceSuiteResult": ["src/core/suite/produce/produceSuiteResult.ts"],
+      "produceSuiteRunResult": [
+        "src/core/suite/produce/produceSuiteRunResult.ts"
+      ],
+      "runCallbacks": ["src/core/suite/produce/runCallbacks.ts"],
+      "Severity": ["src/core/suite/produce/Severity.ts"],
+      "genTestsSummary": [
+        "src/core/suite/produce/summaryGenerators/genTestsSummary.ts"
+      ],
+      "hasFailuresByTestObjects": [
+        "src/core/suite/produce/summaryGenerators/hasFailuresByTestObjects.ts"
+      ],
+      "matchingFieldName": [
+        "src/core/suite/produce/summaryGenerators/helpers/matchingFieldName.ts"
+      ],
+      "matchingGroupName": [
+        "src/core/suite/produce/summaryGenerators/helpers/matchingGroupName.ts"
+      ],
+      "nonMatchingSeverityProfile": [
+        "src/core/suite/produce/summaryGenerators/helpers/nonMatchingSeverityProfile.ts"
+      ],
+      "shouldAddValidProperty": [
+        "src/core/suite/produce/summaryGenerators/shouldAddValidProperty.ts"
+      ],
+      "SuiteSummaryTypes": [
+        "src/core/suite/produce/summaryGenerators/SuiteSummaryTypes.ts"
+      ],
+      "collectFailures": [
+        "src/core/suite/produce/summarySelectors/collectFailures.ts"
+      ],
+      "suiteSelectors": [
+        "src/core/suite/produce/summarySelectors/suiteSelectors.ts"
+      ],
+      "key": ["src/core/test/key.ts"],
+      "cancelOverriddenPendingTest": [
+        "src/core/test/lib/cancelOverriddenPendingTest.ts"
+      ],
+      "isSameProfileTest": ["src/core/test/lib/isSameProfileTest.ts"],
+      "registerPrevRunTest": ["src/core/test/lib/registerPrevRunTest.ts"],
+      "registerTest": ["src/core/test/lib/registerTest.ts"],
+      "removeTestFromState": ["src/core/test/lib/removeTestFromState.ts"],
+      "shouldUseErrorAsMessage": [
+        "src/core/test/lib/shouldUseErrorAsMessage.ts"
+      ],
+      "useTestAtCursor": ["src/core/test/lib/useTestAtCursor.ts"],
+      "omitOptionalFields": ["src/core/test/omitOptionalFields.ts"],
+      "runAsyncTest": ["src/core/test/runAsyncTest.ts"],
+      "runSyncTest": ["src/core/test/runSyncTest.ts"],
+      "test.memo": ["src/core/test/test.memo.ts"],
+      "test": ["src/core/test/test.ts"],
+      "VestTest": ["src/core/test/VestTest.ts"],
+      "vestBus": ["src/core/vestBus.ts"],
+      "classnames": ["src/exports/classnames.ts"],
+      "enforce@compose": ["src/exports/enforce@compose.ts"],
+      "enforce@compounds": ["src/exports/enforce@compounds.ts"],
+      "enforce@schema": ["src/exports/enforce@schema.ts"],
+      "parser": ["src/exports/parser.ts"],
+      "promisify": ["src/exports/promisify.ts"],
+      "exclusive": ["src/hooks/exclusive.ts"],
+      "hookErrors": ["src/hooks/hookErrors.ts"],
+      "include": ["src/hooks/include.ts"],
+      "mode": ["src/hooks/mode/mode.ts"],
+      "Modes": ["src/hooks/mode/Modes.ts"],
+      "optionalFields": ["src/hooks/optionalFields.ts"],
+      "warn": ["src/hooks/warn.ts"],
+      "vest": ["src/vest.ts"]
+    }
   }
 }

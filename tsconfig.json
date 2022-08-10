@@ -16,10 +16,6 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "rootDir": ".",
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
     "paths": {
       "anyone": ["./packages/anyone/src/anyone.ts"],
       "all": ["./packages/anyone/src/exports/all.ts"],
@@ -217,7 +213,11 @@
       "optionalFields": ["./packages/vest/src/hooks/optionalFields.ts"],
       "warn": ["./packages/vest/src/hooks/warn.ts"],
       "vest": ["./packages/vest/src/vest.ts"]
-    }
+    },
+    "rootDir": ".",
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true
   },
   "files": ["./vx/config/jest/globals.d.ts"],
   "include": ["./packages/*/src/**/*.ts"]

@@ -1,4 +1,4 @@
-import { CB } from 'utilityTypes';
+import type { CB } from 'vest-utils';
 import {
   assign,
   defaultTo,

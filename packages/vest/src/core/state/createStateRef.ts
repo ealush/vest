@@ -1,5 +1,5 @@
-import type { NestedArray } from 'nestedArray';
 import type { State, UseState } from 'vast';
+import { nestedArray } from 'vest-utils';
 
 import VestTest from 'VestTest';
 import { OptionalFieldDeclaration } from 'optionalFields';
@@ -54,4 +54,4 @@ type TestObjects = {
   current: VestTests;
 };
 
-export type VestTests = NestedArray<VestTest>;
+export type VestTests = nestedArray.NestedArray<VestTest>;

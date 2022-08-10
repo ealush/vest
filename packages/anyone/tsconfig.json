@@ -1,8 +1,18 @@
 {
   "extends": "../../tsconfig.json",
+  "rootDir": ".",
   "compilerOptions": {
+    "baseUrl": ".",
     "declarationMap": true,
     "declarationDir": "./types",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "paths": {
+      "anyone": ["src/anyone.ts"],
+      "all": ["src/exports/all.ts"],
+      "any": ["src/exports/any.ts"],
+      "none": ["src/exports/none.ts"],
+      "one": ["src/exports/one.ts"],
+      "runAnyoneMethods": ["src/runner/runAnyoneMethods.ts"]
+    }
   }
 }

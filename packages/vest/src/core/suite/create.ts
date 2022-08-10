@@ -1,5 +1,5 @@
-import { CB } from 'utilityTypes';
 import { createState } from 'vast';
+import type { CB } from 'vest-utils';
 import { assign, seq, invariant, isFunction } from 'vest-utils';
 
 import { IsolateTypes } from 'IsolateTypes';

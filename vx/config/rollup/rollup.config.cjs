@@ -5,8 +5,11 @@ const getPlugins = require('./getPlugins');
 
 const opts = require('vx/opts');
 const concatTruthy = require('vx/util/concatTruthy');
+const {
+  listExportedModules,
+  getExportedModuleNames,
+} = require('vx/util/exportedModules');
 const joinTruthy = require('vx/util/joinTruthy');
-const listExportedModules = require('vx/util/listExportedModules');
 const moduleAliases = require('vx/util/moduleAliases')();
 const packageJson = require('vx/util/packageJson');
 const { usePackage } = require('vx/vxContext');
@@ -23,7 +26,7 @@ module.exports = cleanupConfig(
 
       return [].concat(
         genBaseConfig({ env, packageName }),
-        genExportsConfig(usePackage(), env)
+        genExportsConfig(packageName, env)
       );
     }
   )
@@ -47,7 +50,7 @@ function genBaseConfig({
   moduleName = usePackage(),
   namespace = undefined,
 }) {
-  return {
+  const config = {
     env,
     // This turns the installed "internal" dependencies into external dependencies
     external: [
@@ -57,12 +60,14 @@ function genBaseConfig({
       moduleName === usePackage() ? null : usePackage(),
     ].filter(Boolean),
 
-    input: getInputFile(moduleName),
+    input: getInputFile(moduleName, namespace),
     output: format.map(format =>
       genOutput({ env, format, moduleName, namespace })
     ),
     plugins: getPlugins({ env, moduleName, namespace, packageName }),
   };
+
+  return config;
 }
 
 function genExportsConfig(pkgName, env) {
@@ -102,11 +107,12 @@ function genOutput({
   };
 }
 
-function getInputFile(moduleName = usePackage()) {
-  const modulePath = moduleAliases.find(ref => ref.name === moduleName);
+function getInputFile(moduleName = usePackage(), namespace) {
+  const moduleToResolve = getExportedModuleNames(namespace, moduleName);
+  const modulePath = moduleAliases.find(ref => ref.name === moduleToResolve);
 
   if (!(modulePath?.absolute && fs.existsSync(modulePath.absolute))) {
-    throw new Error('unable to find module path for ' + moduleName);
+    throw new Error('unable to find module path for ' + moduleToResolve);
   }
 
   return modulePath.absolute;

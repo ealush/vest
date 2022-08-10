@@ -1,8 +1,46 @@
 {
   "extends": "../../tsconfig.json",
+  "rootDir": ".",
   "compilerOptions": {
+    "baseUrl": ".",
     "declarationMap": true,
     "declarationDir": "./types",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "paths": {
+      "asArray": ["src/asArray.ts"],
+      "assign": ["src/assign.ts"],
+      "bindNot": ["src/bindNot.ts"],
+      "bus": ["src/bus.ts"],
+      "cache": ["src/cache.ts"],
+      "callEach": ["src/callEach.ts"],
+      "defaultTo": ["src/defaultTo.ts"],
+      "deferThrow": ["src/deferThrow.ts"],
+      "either": ["src/either.ts"],
+      "globals.d": ["src/globals.d.ts"],
+      "greaterThan": ["src/greaterThan.ts"],
+      "hasOwnProperty": ["src/hasOwnProperty.ts"],
+      "invariant": ["src/invariant.ts"],
+      "isArrayValue": ["src/isArrayValue.ts"],
+      "isBooleanValue": ["src/isBooleanValue.ts"],
+      "isEmpty": ["src/isEmpty.ts"],
+      "isFunction": ["src/isFunction.ts"],
+      "isNull": ["src/isNull.ts"],
+      "isNullish": ["src/isNullish.ts"],
+      "isNumeric": ["src/isNumeric.ts"],
+      "isPositive": ["src/isPositive.ts"],
+      "isPromise": ["src/isPromise.ts"],
+      "isStringValue": ["src/isStringValue.ts"],
+      "isUndefined": ["src/isUndefined.ts"],
+      "last": ["src/last.ts"],
+      "lengthEquals": ["src/lengthEquals.ts"],
+      "longerThan": ["src/longerThan.ts"],
+      "mapFirst": ["src/mapFirst.ts"],
+      "nestedArray": ["src/nestedArray.ts"],
+      "numberEquals": ["src/numberEquals.ts"],
+      "optionalFunctionValue": ["src/optionalFunctionValue.ts"],
+      "seq": ["src/seq.ts"],
+      "utilityTypes": ["src/utilityTypes.ts"],
+      "vest-utils": ["src/vest-utils.ts"]
+    }
   }
 }

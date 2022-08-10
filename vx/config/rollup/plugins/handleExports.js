@@ -3,7 +3,7 @@ const path = require('path');
 const fse = require('fs-extra');
 
 const opts = require('vx/opts');
-const listExportedModules = require('vx/util/listExportedModules');
+const { listExportedModules } = require('vx/util/exportedModules');
 const once = require('vx/util/once');
 const packageJson = require('vx/util/packageJson');
 const rootPackageJson = require('vx/util/rootPackageJson');

@@ -1,8 +1,13 @@
 {
   "extends": "../../tsconfig.json",
+  "rootDir": ".",
   "compilerOptions": {
+    "baseUrl": ".",
     "declarationMap": true,
     "declarationDir": "./types",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "paths": {
+      "vast": ["src/vast.ts"]
+    }
   }
 }

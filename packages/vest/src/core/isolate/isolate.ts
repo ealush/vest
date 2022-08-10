@@ -1,11 +1,10 @@
 import { nestedArray, invariant, isFunction } from 'vest-utils';
 
-import { useCurrentPath, useCursor, useIsolate } from './isolateHooks';
-
 import { IsolateTypes } from 'IsolateTypes';
 import VestTest from 'VestTest';
 import ctx from 'ctx';
 import { generateIsolate } from 'generateIsolate';
+import { useCurrentPath, useCursor, useIsolate } from 'isolateHooks';
 import { usePrevKeys } from 'key';
 import { useSetTests } from 'stateHooks';
 

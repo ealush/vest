@@ -1,5 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-yarn vx tsconfig
-npx pretty-quick --staged
+yarn vx precommit

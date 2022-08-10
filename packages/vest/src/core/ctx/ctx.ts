@@ -1,6 +1,5 @@
 import { createCascade } from 'context';
-import { CB } from 'utilityTypes';
-import { assign } from 'vest-utils';
+import { assign, CB } from 'vest-utils';
 
 import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { Modes } from 'Modes';

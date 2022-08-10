@@ -1,4 +1,4 @@
-import { CB } from 'utilityTypes';
+import type { CB } from 'utilityTypes';
 
 export function createBus(): {
   on: (event: string, handler: CB) => OnReturn;

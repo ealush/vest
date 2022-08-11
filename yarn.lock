@@ -4214,10 +4214,12 @@ content-type@~1.0.4:
   resolved "https://registry.yarnpkg.com/content-type/-/content-type-1.0.4.tgz#e138cc75e040c727b1966fe5e5f8c9aee256fe3b"
   integrity sha512-hIP3EEPs8tB9AT1L+NUqtwOAps4mk2Zob89MWXMHjHWg9milF/j4osnnQLXBCBFBk/tvIG/tUc9mOUJiPBhPXA==
 
-context@latest:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/context/-/context-2.0.1.tgz#f5bbd0d4ee2a5ced0eba2636595173704759dfed"
-  integrity sha512-8QV3EXa7WP9l8aL8a3BMM792vvuPbIyp6ktGHEX6V4XiGNaiqxCGMRGzEavE3cPnHWqI9fXTujPEfBPt0iRhQw==
+context@3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/context/-/context-3.0.1.tgz#e11075de2cf3d150317c6266d2bc9a0eaad09059"
+  integrity sha512-ZfQuo26hLk5W0ndyuw6i7YB9qyP1N6afUHybH/j8dHrvoZU2pxzdNLm5JvhiX40kwkoO7Zeg1HYW/w5MYEXc3Q==
+  dependencies:
+    vest-utils "^0.0.2"
 
 convert-source-map@^1.4.0, convert-source-map@^1.6.0, convert-source-map@^1.7.0:
   version "1.8.0"
@@ -10473,6 +10475,11 @@ vary@~1.1.2:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
+vest-utils@0.0.2, vest-utils@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/vest-utils/-/vest-utils-0.0.2.tgz#b333a80b0137887f3c19fb57618f626134465c42"
+  integrity sha512-E+5ZAjUPn9vhJ9Pq/C2gBR02hKq8HrjELmsTsyX13Vwheeja4XVwzYRfPDIuox11QDQ7Mdf8VFLjH8JeRLIs9A==
+
 vfile-location@^3.0.0, vfile-location@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/vfile-location/-/vfile-location-3.2.0.tgz#d8e41fbcbd406063669ebf6c33d56ae8721d0f3c"
@@ -10520,7 +10527,7 @@ vx@./vx:
   dependencies:
     "@ampproject/rollup-plugin-closure-compiler" "^0.27.0"
     "@rollup/plugin-replace" "^4.0.0"
-    context latest
+    context "3.0.1"
     date-fns "^2.29.1"
     dotenv "^16.0.1"
     fs-extra "^10.1.0"

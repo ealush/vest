@@ -1,6 +1,6 @@
 const path = require('path');
 
-const { writeJSON } = require('fs-extra');
+const { writeJSONSync } = require('fs-extra');
 const lodash = require('lodash');
 
 const exec = require('vx/exec');
@@ -69,9 +69,8 @@ function isConfigEqual(path, tsConfig) {
 function writeTsConfig(path, tsConfig) {
   logger.log(`Writing ts config to ${path}`);
 
-  writeJSON(path, tsConfig, { spaces: 2 }).then(() => {
-    exec(`yarn prettier ${path} -w`);
-  });
+  writeJSONSync(path, tsConfig, { spaces: 2 });
+  exec(`yarn prettier ${path} -w`);
 }
 
 function packageTsConfigTemplate(paths = []) {

@@ -10,12 +10,6 @@ const vxPath = require('vx/vxPath');
 
 const moduleAliases = getModuleAliases();
 
-const paths = moduleAliases.reduce(
-  (paths, currentModule) =>
-    Object.assign(paths, { [currentModule.name]: [currentModule.relative] }),
-  {}
-);
-
 const pathPerPackage = moduleAliases.reduce((paths, currentModule) => {
   paths[currentModule.package] = paths[currentModule.package] || {};
   const rel = path.relative(
@@ -27,7 +21,7 @@ const pathPerPackage = moduleAliases.reduce((paths, currentModule) => {
 }, {});
 
 module.exports = function genTsConfig() {
-  const mainTsConfig = rootTsConfigTemplate(paths);
+  const mainTsConfig = rootTsConfigTemplate();
 
   if (!isConfigEqual(vxPath.TSCONFIG_PATH, mainTsConfig)) {
     logger.log('Writing main tsconfig.json');
@@ -86,7 +80,7 @@ function packageTsConfigTemplate(paths = []) {
   };
 }
 
-function rootTsConfigTemplate(paths = []) {
+function rootTsConfigTemplate() {
   return {
     compilerOptions: {
       allowJs: false,
@@ -105,13 +99,11 @@ function rootTsConfigTemplate(paths = []) {
       noImplicitThis: true,
       noUnusedLocals: true,
       noUnusedParameters: true,
-      paths,
-      rootDir: '.',
       skipLibCheck: true,
       sourceMap: true,
       strict: true,
     },
     files: [`${vxPath.rel(vxPath.JEST_CONFIG_PATH)}/globals.d.ts`],
-    include: ['./packages/*/src/**/*.ts'],
+    include: [vxPath.rel(vxPath.packageSrc('*', '**/*.ts'))],
   };
 }

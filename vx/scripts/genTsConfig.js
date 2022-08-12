@@ -5,20 +5,8 @@ const lodash = require('lodash');
 const exec = require('vx/exec');
 const logger = require('vx/logger');
 const packageNames = require('vx/packageNames');
-const getModuleAliases = require('vx/util/moduleAliases');
+const pathsPerPackage = require('vx/util/pathsPerPackage');
 const vxPath = require('vx/vxPath');
-
-const moduleAliases = getModuleAliases();
-
-const pathPerPackage = moduleAliases.reduce((paths, currentModule) => {
-  paths[currentModule.package] = paths[currentModule.package] || {};
-  const rel = path.relative(
-    vxPath.package(currentModule.package),
-    currentModule.relative
-  );
-  paths[currentModule.package][currentModule.name] = [rel];
-  return paths;
-}, {});
 
 module.exports = function genTsConfig() {
   const mainTsConfig = rootTsConfigTemplate();
@@ -31,7 +19,7 @@ module.exports = function genTsConfig() {
   }
 
   packageNames.list.forEach(packageName => {
-    const paths = pathPerPackage[packageName];
+    const paths = genPathsPerPackage(packageName);
     const tsConfig = packageTsConfigTemplate(paths, packageName);
 
     const tsConfigPath = vxPath.packageTsConfig(packageName);
@@ -106,4 +94,21 @@ function rootTsConfigTemplate() {
     files: [`${vxPath.rel(vxPath.JEST_CONFIG_PATH)}/globals.d.ts`],
     include: [vxPath.rel(vxPath.packageSrc('*', '**/*.ts'))],
   };
+}
+
+function genPathsPerPackage(packageName) {
+  const packageData = pathsPerPackage.packages[packageName];
+
+  return packageData.reduce(
+    (paths, currentModule) =>
+      Object.assign(paths, {
+        [currentModule.name]: [
+          path.relative(
+            vxPath.package(currentModule.package),
+            currentModule.relative
+          ),
+        ],
+      }),
+    {}
+  );
 }

@@ -3,32 +3,9 @@ const path = require('path');
 const glob = require('glob');
 const opts = require('vx/opts');
 const packageNames = require('vx/packageNames');
+const pathsPerPackage = require('vx/util/pathsPerPackage');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
-
-const moduleAliases = require('../../util/moduleAliases');
-
-const ignoreGeneratedExports = moduleAliases().reduce((allExports, current) => {
-  const find = path.join(opts.dir.SRC, opts.dir.EXPORTS);
-  if (current.absolute.indexOf(find) === -1) {
-    return allExports;
-  }
-
-  const x = path
-    .join(...current.absolute.split(find))
-    .replace('.ts', `/${opts.fileNames.PACKAGE_JSON}`);
-
-  return allExports.concat(x);
-}, []);
-
-const nameMepperPerPackage = moduleAliases().reduce((aliases, module) => {
-  const { package, name, absolute } = module;
-
-  aliases[package] = aliases[package] || {};
-  aliases[package][`^${name}$`] = absolute;
-
-  return aliases;
-}, {});
 
 const setupPerPackage = glob.sync(
   vxPath.packageConfigPath(
@@ -49,7 +26,7 @@ const setupAfterEnvPerPackage = glob.sync(
 const projects = packageNames.list.map(packageName => ({
   ...baseConfig(),
   displayName: packageName,
-  moduleNameMapper: nameMepperPerPackage[packageName],
+  moduleNameMapper: genNameMapper(pathsPerPackage.packages[packageName]),
   rootDir: vxPath.package(packageName),
   testMatch: [`**/${opts.dir.TESTS}/*.(spec|test).ts`],
 }));
@@ -77,7 +54,6 @@ function baseConfig() {
         },
       },
     },
-    modulePathIgnorePatterns: [...ignoreGeneratedExports],
     preset: 'ts-jest',
     rootDir: vxPath.ROOT_PATH,
     roots: ['<rootDir>'],
@@ -92,4 +68,14 @@ function baseConfig() {
     ].concat(setupAfterEnvPerPackage),
     testEnvironment: 'node',
   };
+}
+
+function genNameMapper(modules) {
+  return modules.reduce(
+    (aliases, { name, absolute }) =>
+      Object.assign(aliases, {
+        [`^${name}$`]: absolute,
+      }),
+    {}
+  );
 }

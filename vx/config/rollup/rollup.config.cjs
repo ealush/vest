@@ -1,7 +1,5 @@
 const fs = require('fs');
 
-const { format, disallowExternals } = require('./format');
-
 const opts = require('vx/opts');
 const concatTruthy = require('vx/util/concatTruthy');
 const {
@@ -9,11 +7,12 @@ const {
   getExportedModuleNames,
 } = require('vx/util/exportedModules');
 const joinTruthy = require('vx/util/joinTruthy');
-const moduleAliases = require('vx/util/moduleAliases')();
 const packageJson = require('vx/util/packageJson');
+const pathsPerPackage = require('vx/util/pathsPerPackage');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
+const { format, disallowExternals } = require('./format');
 const getPlugins = require('./getPlugins');
 
 const buildSingle = JSON.parse(
@@ -61,7 +60,7 @@ function genBaseConfig({
       moduleName === usePackage() ? null : usePackage(),
     ].filter(Boolean),
 
-    input: getInputFile(moduleName, namespace),
+    input: getInputFile(packageName, moduleName, namespace),
     output: format.map(format =>
       genOutput({ env, format, moduleName, namespace })
     ),
@@ -108,12 +107,17 @@ function genOutput({
   };
 }
 
-function getInputFile(moduleName = usePackage(), namespace) {
+function getInputFile(
+  packageName = usePackage(),
+  moduleName = usePackage(),
+  namespace
+) {
   const moduleToResolve = getExportedModuleNames(namespace, moduleName);
-  const modulePath = moduleAliases.find(ref => ref.name === moduleToResolve);
+  const packageModules = pathsPerPackage.packages[packageName];
+  const modulePath = packageModules.find(ref => ref.name === moduleToResolve);
 
   if (!(modulePath?.absolute && fs.existsSync(modulePath.absolute))) {
-    throw new Error('unable to find module path for ' + moduleToResolve);
+    throw new Error('VX: unable to find module path for ' + moduleToResolve);
   }
 
   return modulePath.absolute;

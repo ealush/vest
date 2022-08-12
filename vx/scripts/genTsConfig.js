@@ -78,8 +78,8 @@ function packageTsConfigTemplate(paths = []) {
     rootDir: '.',
     compilerOptions: {
       baseUrl: '.',
-      declarationMap: true,
       declarationDir: './types',
+      declarationMap: true,
       outDir: './dist',
       paths,
     },

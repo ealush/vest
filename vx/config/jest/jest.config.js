@@ -21,11 +21,14 @@ const ignoreGeneratedExports = moduleAliases().reduce((allExports, current) => {
   return allExports.concat(x);
 }, []);
 
-const moduleNameMapper = moduleAliases().reduce(
-  (aliases, { name, absolute }) =>
-    Object.assign(aliases, { [`^${name}$`]: absolute }),
-  {}
-);
+const nameMepperPerPackage = moduleAliases().reduce((aliases, module) => {
+  const { package, name, absolute } = module;
+
+  aliases[package] = aliases[package] || {};
+  aliases[package][`^${name}$`] = absolute;
+
+  return aliases;
+}, {});
 
 const setupPerPackage = glob.sync(
   vxPath.packageConfigPath(
@@ -44,45 +47,52 @@ const setupAfterEnvPerPackage = glob.sync(
 );
 
 const projects = packageNames.list.map(packageName => ({
+  ...baseConfig(),
   displayName: packageName,
-  testMatch: [`**/${opts.dir.TESTS}/*.(spec|test).ts`],
+  moduleNameMapper: nameMepperPerPackage[packageName],
   rootDir: vxPath.package(packageName),
+  testMatch: [`**/${opts.dir.TESTS}/*.(spec|test).ts`],
 }));
 
-module.exports = (custom = {}) => ({
-  clearMocks: true,
-  globals: {
-    'ts-jest': {
-      projects,
-      tsconfig: usePackage()
-        ? vxPath.packageTsConfig()
-        : path.join(vxPath.ROOT_PATH, opts.fileNames.TSCONFIG_JSON),
-      diagnostics: {
-        // Essentially ignoring "any" errors in TESTS
-        ignoreCodes: [
-          'TS7005',
-          'TS7006',
-          'TS7016',
-          'TS7034',
-          'TS7053',
-          'TS7031',
-          'TS2339',
-        ],
+module.exports = {
+  projects,
+};
+
+function baseConfig() {
+  return {
+    clearMocks: true,
+    globals: {
+      'ts-jest': {
+        // tsconfig: usePackage(),
+        //   ? vxPath.packageTsConfig()
+        //   : path.join(vxPath.ROOT_PATH, opts.fileNames.TSCONFIG_JSON),
+        diagnostics: {
+          // Essentially ignoring "any" errors in TESTS
+          ignoreCodes: [
+            'TS7005',
+            'TS7006',
+            'TS7016',
+            'TS7034',
+            'TS7053',
+            'TS7031',
+            'TS2339',
+          ],
+        },
       },
     },
-  },
-  moduleNameMapper,
-  modulePathIgnorePatterns: [...ignoreGeneratedExports],
-  preset: 'ts-jest',
-  rootDir: vxPath.ROOT_PATH,
-  roots: ['<rootDir>'],
-  setupFiles: [
-    path.resolve(vxPath.JEST_CONFIG_PATH, opts.fileNames.JEST_SETUP),
-  ].concat(setupPerPackage),
-  setupFilesAfterEnv: [
-    path.resolve(vxPath.JEST_CONFIG_PATH, opts.fileNames.JEST_SETUP_AFTER_ENV),
-  ].concat(setupAfterEnvPerPackage),
-  testEnvironment: 'node',
-  testMatch: [vxPath.packageSrc('*', `**/${opts.dir.TESTS}/*.(spec|test).ts`)],
-  ...custom,
-});
+    modulePathIgnorePatterns: [...ignoreGeneratedExports],
+    preset: 'ts-jest',
+    rootDir: vxPath.ROOT_PATH,
+    roots: ['<rootDir>'],
+    setupFiles: [
+      path.resolve(vxPath.JEST_CONFIG_PATH, opts.fileNames.JEST_SETUP),
+    ].concat(setupPerPackage),
+    setupFilesAfterEnv: [
+      path.resolve(
+        vxPath.JEST_CONFIG_PATH,
+        opts.fileNames.JEST_SETUP_AFTER_ENV
+      ),
+    ].concat(setupAfterEnvPerPackage),
+    testEnvironment: 'node',
+  };
+}

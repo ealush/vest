@@ -1,3 +1,5 @@
+import { isFunction } from 'vest-utils';
+
 import './globals.d';
 
 // eslint-disable-next-line complexity
@@ -12,7 +14,7 @@ const isDeepCopyOf = (
     const [source, clone] = queue.shift();
 
     if (!source || typeof source !== 'object') {
-      if (typeof clone !== 'function') {
+      if (!isFunction(clone)) {
         if (clone !== source) {
           return {
             pass: false,

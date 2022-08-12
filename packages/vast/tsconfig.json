@@ -3,11 +3,11 @@
   "rootDir": ".",
   "compilerOptions": {
     "baseUrl": ".",
-    "declarationMap": true,
     "declarationDir": "./types",
+    "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "vast": ["src/vast.ts"]
+      "vast": ["./packages/vast/src/vast.ts"]
     }
   }
 }

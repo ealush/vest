@@ -61,7 +61,7 @@ function genBaseConfig({
       moduleName === usePackage() ? null : usePackage(),
     ].filter(Boolean),
 
-    input: getInputFile(moduleName, namespace),
+    input: getInputFile(packageName, moduleName, namespace),
     output: format.map(format =>
       genOutput({ env, format, moduleName, namespace })
     ),
@@ -108,12 +108,15 @@ function genOutput({
   };
 }
 
-function getInputFile(moduleName = usePackage(), namespace) {
+function getInputFile(packageName, moduleName = usePackage(), namespace) {
   const moduleToResolve = getExportedModuleNames(namespace, moduleName);
-  const modulePath = moduleAliases.find(ref => ref.name === moduleToResolve);
+  const packageModules = moduleAliases.packages[packageName];
+  const modulePath = packageModules.find(ref => ref.name === moduleToResolve);
 
   if (!(modulePath?.absolute && fs.existsSync(modulePath.absolute))) {
-    throw new Error('unable to find module path for ' + moduleToResolve);
+    throw new Error(
+      'VX ERROR: unable to find module path for ' + moduleToResolve
+    );
   }
 
   return modulePath.absolute;

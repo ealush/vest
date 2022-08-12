@@ -13,36 +13,59 @@ const matches = glob.sync(vxPath.rel(vxPath.packageSrc('*', '**/*.ts')), {
   ],
 });
 
-const { duplicates } = matches.reduce(
-  ({ existing, duplicates }, current) => {
-    const basename = path.basename(current);
-
-    existing[basename] = (existing[basename] || 0) + 1;
-    if (existing[basename] > 1) {
-      duplicates.add(basename);
-    }
-
-    return { existing, duplicates };
-  },
-  { existing: {}, duplicates: new Set() }
-);
-
-if (duplicates.size > 0) {
-  throw new Error(
-    'Found duplicate module names: \n- ' + [...duplicates].join('\n- ')
-  );
-}
-
-const output = matches.reduce((accumulator, relative) => {
+const groupedMatches = matches.reduce((acc, relative) => {
   const name = path.basename(relative, '.ts');
   const package = vxPath.packageNameFromPath(relative);
+  const absolute = path.join(vxPath.ROOT_PATH, relative);
 
-  return accumulator.concat({
-    absolute: path.join(vxPath.ROOT_PATH, relative),
+  const moduleData = {
+    absolute,
     name,
     package,
     relative,
-  });
-}, []);
+  };
 
-module.exports = () => [].concat(output);
+  acc[package] = (acc[package] || []).concat(moduleData);
+  return acc;
+}, {});
+
+// FIXME: ADD BACK IN
+// const { duplicates } = matches.reduce(
+//   ({ existing, duplicates }, current) => {
+//     const basename = path.basename(current);
+
+//     existing[basename] = (existing[basename] || 0) + 1;
+//     if (existing[basename] > 1) {
+//       duplicates.add(basename);
+//     }
+
+//     return { existing, duplicates };
+//   },
+//   { existing: {}, duplicates: new Set() }
+// );
+
+// if (duplicates.size > 0) {
+//   throw new Error(
+//     'Found duplicate module names: \n- ' + [...duplicates].join('\n- ')
+//   );
+// }
+
+// const output = matches.reduce((accumulator, relative) => {
+//   const name = path.basename(relative, '.ts');
+//   const package = vxPath.packageNameFromPath(relative);
+
+//   return accumulator.concat({
+//     absolute: path.join(vxPath.ROOT_PATH, relative),
+//     name,
+//     package,
+//     relative,
+//   });
+// }, []);
+
+module.exports = () => ({
+  packages: groupedMatches,
+  list: Object.entries(groupedMatches).map(([packageName, modules]) => ({
+    packageName,
+    modules,
+  })),
+});

@@ -3,11 +3,11 @@
   "rootDir": ".",
   "compilerOptions": {
     "baseUrl": ".",
-    "declarationMap": true,
     "declarationDir": "./types",
+    "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "context": ["src/context.ts"]
+      "context": ["./packages/context/src/context.ts"]
     }
   }
 }

@@ -3,16 +3,16 @@
   "rootDir": ".",
   "compilerOptions": {
     "baseUrl": ".",
-    "declarationMap": true,
     "declarationDir": "./types",
+    "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "anyone": ["src/anyone.ts"],
-      "all": ["src/exports/all.ts"],
-      "any": ["src/exports/any.ts"],
-      "none": ["src/exports/none.ts"],
-      "one": ["src/exports/one.ts"],
-      "runAnyoneMethods": ["src/runner/runAnyoneMethods.ts"]
+      "anyone": ["./packages/anyone/src/anyone.ts"],
+      "all": ["./packages/anyone/src/exports/all.ts"],
+      "any": ["./packages/anyone/src/exports/any.ts"],
+      "none": ["./packages/anyone/src/exports/none.ts"],
+      "one": ["./packages/anyone/src/exports/one.ts"],
+      "runAnyoneMethods": ["./packages/anyone/src/runner/runAnyoneMethods.ts"]
     }
   }
 }

@@ -1,7 +1,6 @@
-const path = require('path');
-
 const { writeJSONSync } = require('fs-extra');
 const lodash = require('lodash');
+
 const exec = require('vx/exec');
 const logger = require('vx/logger');
 const packageNames = require('vx/packageNames');
@@ -10,15 +9,17 @@ const vxPath = require('vx/vxPath');
 
 const moduleAliases = getModuleAliases();
 
-const pathPerPackage = moduleAliases.reduce((paths, currentModule) => {
-  paths[currentModule.package] = paths[currentModule.package] || {};
-  const rel = path.relative(
-    vxPath.package(currentModule.package),
-    currentModule.relative
+function pathsPerPackage(packageName) {
+  const packageData = moduleAliases.packages[packageName];
+
+  return packageData.reduce(
+    (paths, currentModule) =>
+      Object.assign(paths, {
+        [currentModule.name]: [currentModule.relative],
+      }),
+    {}
   );
-  paths[currentModule.package][currentModule.name] = [rel];
-  return paths;
-}, {});
+}
 
 module.exports = function genTsConfig() {
   const mainTsConfig = rootTsConfigTemplate();
@@ -31,7 +32,7 @@ module.exports = function genTsConfig() {
   }
 
   packageNames.list.forEach(packageName => {
-    const paths = pathPerPackage[packageName];
+    const paths = pathsPerPackage(packageName);
     const tsConfig = packageTsConfigTemplate(paths, packageName);
 
     const tsConfigPath = vxPath.packageTsConfig(packageName);

@@ -29,10 +29,55 @@ const groupedMatches = matches.reduce((acc, relative) => {
   return acc;
 }, {});
 
+const list = Object.entries(groupedMatches).map(([packageName, modules]) => ({
+  packageName,
+  modules,
+}));
+
+findDuplicates();
+
 module.exports = {
   packages: groupedMatches,
-  list: Object.entries(groupedMatches).map(([packageName, modules]) => ({
-    packageName,
-    modules,
-  })),
+  list,
 };
+
+function findDuplicates() {
+  const duplicatesContainer = list.reduce((acc, package) => {
+    const baseline = new Set();
+    const duplicates = new Set();
+
+    acc[package.packageName] = {
+      baseline,
+      duplicates,
+    };
+
+    package.modules.forEach(({ name }) => {
+      if (baseline.has(name)) {
+        duplicates.add(name);
+      }
+      baseline.add(name);
+    });
+
+    return acc;
+  }, {});
+
+  const duplicatesPerPackage = [];
+
+  for (const [packageName, { duplicates }] of Object.entries(
+    duplicatesContainer
+  )) {
+    if (duplicates.size > 0) {
+      duplicatesPerPackage.push(
+        `${packageName}: ${[...duplicates].map(dup => `\n   -${dup}`).join('')}`
+      );
+    }
+  }
+
+  if (duplicatesPerPackage.length > 0) {
+    throw new Error(
+      `VX: Duplicates found in the following packages:\n\n${duplicatesPerPackage.join(
+        '\n'
+      )}\n`
+    );
+  }
+}

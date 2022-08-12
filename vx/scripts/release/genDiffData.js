@@ -1,10 +1,4 @@
 const semver = require('semver');
-
-const packageJson = require('../../util/packageJson');
-
-const determineChangeLevel = require('./determineChangeLevel');
-const { TAG_NEXT, TAG_DEV } = require('./releaseKeywords');
-
 const logger = require('vx/logger');
 const {
   isIntegrationBranch,
@@ -12,6 +6,11 @@ const {
   isNextBranch,
 } = require('vx/util/taggedBranch');
 const { usePackage } = require('vx/vxContext');
+
+const packageJson = require('../../util/packageJson');
+
+const determineChangeLevel = require('./determineChangeLevel');
+const { TAG_NEXT, TAG_DEV } = require('./releaseKeywords');
 
 const { CURRENT_BRANCH, GITHUB_SHA } = process.env;
 

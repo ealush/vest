@@ -1,7 +1,7 @@
+const { usePackage } = require('vx/vxContext');
+
 const filterCommitByPackage = require('./filterCommitsByPackage');
 const listAllChangesSinceStableBranch = require('./listAllChangesSinceStableBranch');
-
-const { usePackage } = require('vx/vxContext');
 
 // [{title: "...", files: ["..."]}] ...
 function getDiff() {

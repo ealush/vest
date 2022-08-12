@@ -1,5 +1,3 @@
-const { TAG_NEXT } = require('../releaseKeywords');
-
 const exec = require('vx/exec');
 const logger = require('vx/logger');
 const { TAG_DEV } = require('vx/scripts/release/releaseKeywords');
@@ -7,6 +5,8 @@ const joinTruthy = require('vx/util/joinTruthy');
 const { isReleaseBranch } = require('vx/util/taggedBranch');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
+
+const { TAG_NEXT } = require('../releaseKeywords');
 
 function publishPackage({ tag, tagId, nextVersion }) {
   const versionToUse = tag && tagId ? tagId : nextVersion;

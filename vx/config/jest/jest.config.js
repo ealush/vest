@@ -1,12 +1,11 @@
 const path = require('path');
 
 const glob = require('glob');
-
-const moduleAliases = require('../../util/moduleAliases');
-
 const opts = require('vx/opts');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
+
+const moduleAliases = require('../../util/moduleAliases');
 
 const ignoreGeneratedExports = moduleAliases().reduce((allExports, current) => {
   const find = path.join(opts.dir.SRC, opts.dir.EXPORTS);

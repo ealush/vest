@@ -2,6 +2,7 @@ const path = require('path');
 
 const glob = require('glob');
 const opts = require('vx/opts');
+const packageNames = require('vx/packageNames');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
@@ -42,10 +43,17 @@ const setupAfterEnvPerPackage = glob.sync(
   )
 );
 
+const projects = packageNames.list.map(packageName => ({
+  displayName: packageName,
+  testMatch: [`**/${opts.dir.TESTS}/*.(spec|test).ts`],
+  rootDir: vxPath.package(packageName),
+}));
+
 module.exports = (custom = {}) => ({
   clearMocks: true,
   globals: {
     'ts-jest': {
+      projects,
       tsconfig: usePackage()
         ? vxPath.packageTsConfig()
         : path.join(vxPath.ROOT_PATH, opts.fileNames.TSCONFIG_JSON),

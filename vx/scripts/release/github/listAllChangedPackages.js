@@ -1,9 +1,9 @@
 const path = require('path');
 
-const listAllChangesSinceStableBranch = require('./listAllChangesSinceStableBranch');
-
 const opts = require('vx/opts');
 const packageNames = require('vx/packageNames');
+
+const listAllChangesSinceStableBranch = require('./listAllChangesSinceStableBranch');
 
 function listAllChangedPackages() {
   const changes = listAllChangesSinceStableBranch();

@@ -28,12 +28,12 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install
         run: yarn install --frozen-lockfile
+      - name: Build Types
+        run: yarn build --buildSingle
       - name: Test
         run: yarn test
       - name: Lint
         run: yarn lint
-      - name: Build Types
-        run: yarn build --buildSingle
       - name: Set npmrc
         run: echo //registry.npmjs.org/:_authToken=$NPM_TOKEN > ~/.npmrc
         env:

@@ -2,7 +2,6 @@ const path = require('path');
 
 const { memoize } = require('lodash');
 const madge = require('madge');
-
 const opts = require('vx/opts');
 const vxPath = require('vx/vxPath');
 

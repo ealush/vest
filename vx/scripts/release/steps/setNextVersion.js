@@ -1,9 +1,9 @@
-const packageJson = require('../../../util/packageJson');
-
 const exec = require('vx/exec');
 const logger = require('vx/logger');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
+
+const packageJson = require('../../../util/packageJson');
 
 function setNextVersion({ tagId, tag, nextVersion }) {
   nextVersion = tag ? tagId : nextVersion;

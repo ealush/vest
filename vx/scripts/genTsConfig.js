@@ -2,7 +2,6 @@ const path = require('path');
 
 const { writeJSONSync } = require('fs-extra');
 const lodash = require('lodash');
-
 const exec = require('vx/exec');
 const logger = require('vx/logger');
 const packageNames = require('vx/packageNames');
@@ -79,8 +78,8 @@ function packageTsConfigTemplate(paths = []) {
     rootDir: '.',
     compilerOptions: {
       baseUrl: '.',
-      declarationMap: true,
       declarationDir: './types',
+      declarationMap: true,
       outDir: './dist',
       paths,
     },

@@ -8,8 +8,11 @@ import { transformResult } from 'transformResult';
 
 type IRules = n4s.IRules<Record<string, any>>;
 
+const MESSAGE = 'message';
+
 export default function enforceEager(value: RuleValue): IRules {
   const target = {} as IRules;
+  let customMessage: string | undefined = undefined;
 
   // This condition is for when we don't have proxy support (ES5).
   // In this case, we need to manually assign the rules to the target object on runtime.
@@ -26,13 +29,17 @@ export default function enforceEager(value: RuleValue): IRules {
 
   // We create a proxy intercepting access to the target object (which is empty).
   const proxy: IRules = new Proxy(target, {
-    get: (_, ruleName: string) => {
+    get: (_, key: string) => {
       // On property access, we identify if it is a rule or not.
-      const rule = getRule(ruleName);
+      const rule = getRule(key);
 
       // If it is a rule, we wrap it with `genRuleCall` that adds the base enforce behavior
       if (rule) {
-        return genRuleCall(proxy, rule, ruleName);
+        return genRuleCall(proxy, rule, key);
+      }
+
+      if (key === MESSAGE) {
+        return message;
       }
     },
   });
@@ -48,21 +55,30 @@ export default function enforceEager(value: RuleValue): IRules {
       // 1. Create a context with the value being enforced
       // 2. Call the rule within the context, and pass over the arguments passed to it
       // 3. Transform the result to the correct output format
-      const transformedResult = ctx.run({ value }, () =>
-        transformResult(rule(value, ...args), ruleName, value, ...args)
-      );
+      const transformedResult = ctx.run({ value }, () => {
+        return transformResult(rule(value, ...args), ruleName, value, ...args);
+      });
+
+      const shouldUseCustomMessage = !isNullish(customMessage);
 
       // On rule failure (the result is false), we either throw an error
       // or throw a string value if the rule has a message defined in it.
       invariant(
         transformedResult.pass,
-        isNullish(transformedResult.message)
+        shouldUseCustomMessage
+          ? customMessage
+          : isNullish(transformedResult.message)
           ? `enforce/${ruleName} failed with ${JSON.stringify(value)}`
           : StringObject(transformedResult.message)
       );
 
       return target;
     };
+  }
+
+  function message(input: string) {
+    customMessage = input;
+    return proxy;
   }
 }
 

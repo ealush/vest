@@ -49,6 +49,29 @@ describe('enforce..message()', () => {
   });
 });
 
+describe('enforce().message()', () => {
+  it('should return message as a function', () => {
+    expect(enforce(3).message).toBeInstanceOf(Function);
+  });
+  it('should return message after chainning', () => {
+    expect(enforce(1).equals(1).message).toBeInstanceOf(Function);
+  });
+  it('should throw the message error on failure', () => {
+    expect(() => {
+      enforce('').message('octopus').equals('evyatar');
+    }).toThrow('octopus');
+  });
+  it('should throw the message error on failure with the last message that failed', () => {
+    expect(() => {
+      enforce(10)
+        .message('must be a number!')
+        .isNumeric()
+        .message('too high')
+        .lessThan(8);
+    }).toThrow('too high');
+  });
+});
+
 enforce.extend({
   ruleWithFailureMessage: () => ({
     pass: false,

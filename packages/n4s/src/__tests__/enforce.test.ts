@@ -155,5 +155,11 @@ let enforce;
         });
       });
     });
+
+    describe('Test enforce().message', () => {
+      it('Is enforce().message a function?', () => {
+        expect(enforce('').message).toBeInstanceOf(Function);
+      });
+    });
   });
 });

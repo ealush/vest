@@ -7,11 +7,16 @@ import { getRule, RuleValue, Args, RuleBase, KBaseRules } from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
 type IRules = n4s.IRules<Record<string, any>>;
+type TModifiers = {
+  message: (input: string) => enforceEagerReturn;
+};
 
-const MESSAGE = 'message';
+type enforceEagerReturn = IRules & TModifiers;
 
-export default function enforceEager(value: RuleValue): IRules {
-  const target = {} as IRules;
+export default function enforceEager(value: RuleValue): enforceEagerReturn {
+  const target = {
+    message,
+  } as enforceEagerReturn;
   let customMessage: string | undefined = undefined;
 
   // This condition is for when we don't have proxy support (ES5).
@@ -28,7 +33,7 @@ export default function enforceEager(value: RuleValue): IRules {
   }
 
   // We create a proxy intercepting access to the target object (which is empty).
-  const proxy: IRules = new Proxy(target, {
+  const proxy: enforceEagerReturn = new Proxy(target, {
     get: (_, key: string) => {
       // On property access, we identify if it is a rule or not.
       const rule = getRule(key);
@@ -37,10 +42,7 @@ export default function enforceEager(value: RuleValue): IRules {
       if (rule) {
         return genRuleCall(proxy, rule, key);
       }
-
-      if (key === MESSAGE) {
-        return message;
-      }
+      return target[key];
     },
   });
 
@@ -49,7 +51,11 @@ export default function enforceEager(value: RuleValue): IRules {
   // This function is used to wrap a rule with the base enforce behavior
   // It takes the target object, the rule function, and the rule name
   // It then returns the rule, in a manner that can be used by enforce
-  function genRuleCall(target: IRules, rule: RuleBase, ruleName: string) {
+  function genRuleCall(
+    target: enforceEagerReturn,
+    rule: RuleBase,
+    ruleName: string
+  ) {
     return function ruleCall(...args: Args) {
       // Order of operation:
       // 1. Create a context with the value being enforced
@@ -59,27 +65,28 @@ export default function enforceEager(value: RuleValue): IRules {
         return transformResult(rule(value, ...args), ruleName, value, ...args);
       });
 
-      const shouldUseCustomMessage = !isNullish(customMessage);
+      function renderMessage() {
+        const shouldUseCustomMessage = !isNullish(customMessage);
+        if (shouldUseCustomMessage) return customMessage;
+        if (isNullish(transformedResult.message)) {
+          return `enforce/${ruleName} failed with ${JSON.stringify(value)}`;
+        } else {
+          return StringObject(transformedResult.message);
+        }
+      }
 
       // On rule failure (the result is false), we either throw an error
       // or throw a string value if the rule has a message defined in it.
-      invariant(
-        transformedResult.pass,
-        shouldUseCustomMessage
-          ? customMessage
-          : isNullish(transformedResult.message)
-          ? `enforce/${ruleName} failed with ${JSON.stringify(value)}`
-          : StringObject(transformedResult.message)
-      );
+      invariant(transformedResult.pass, renderMessage());
 
       return target;
     };
   }
 
-  function message(input: string) {
+  function message(input: string): enforceEagerReturn {
     customMessage = input;
     return proxy;
   }
 }
 
-export type EnforceEager = (value: RuleValue) => IRules;
+export type EnforceEager = (value: RuleValue) => enforceEagerReturn;

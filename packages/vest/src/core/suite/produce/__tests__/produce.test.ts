@@ -111,8 +111,10 @@ describe('suite.get()', () => {
       expect(suite.get()).toMatchInlineSnapshot(`
         Object {
           "errorCount": 0,
+          "getError": [Function],
           "getErrors": [Function],
           "getErrorsByGroup": [Function],
+          "getWarning": [Function],
           "getWarnings": [Function],
           "getWarningsByGroup": [Function],
           "groups": Object {},
@@ -140,8 +142,10 @@ describe('suite()', () => {
         Object {
           "done": [Function],
           "errorCount": 0,
+          "getError": [Function],
           "getErrors": [Function],
           "getErrorsByGroup": [Function],
+          "getWarning": [Function],
           "getWarnings": [Function],
           "getWarningsByGroup": [Function],
           "groups": Object {},

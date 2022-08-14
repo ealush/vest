@@ -1,8 +1,31 @@
+/* eslint-disable no-console */
 import { dummyTest } from '../../../../../../testUtils/testDummy';
 
 import * as vest from 'vest';
 
 describe('->getFailures', () => {
+  describe('getError', () => {
+    describe('When no error', () => {
+      describe('When requesting a fieldName', () => {
+        it('Should return an empty string', () => {
+          const suite = vest.create(() => {});
+          expect(suite().getError('field_1')).toBe('');
+          expect(suite.get().getError('field_1')).toBe('');
+        });
+      });
+    });
+    describe('When got an error', () => {
+      describe('When requesting a fieldName', () => {
+        it('Should return an empty string', () => {
+          const suite = vest.create(() => {
+            dummyTest.failing('field_1', 'msg_1');
+          });
+          expect(suite().getError('field_1')).toBe('msg_1');
+          expect(suite.get().getError('field_1')).toBe('msg_1');
+        });
+      });
+    });
+  });
   describe(`getErrors`, () => {
     describe('When no tests', () => {
       describe('When no parameters passed', () => {
@@ -80,6 +103,64 @@ describe('->getFailures', () => {
     });
   });
 
+  describe('getWarning', () => {
+    describe('When got no warning', () => {
+      describe('When no parameters passed', () => {
+        it('Should return an empty string', () => {
+          const suite = vest.create(() => {
+            dummyTest.passing('x');
+            dummyTest.passing('y');
+          });
+          expect(suite().getWarning()).toBe('');
+          expect(suite.get().getWarning()).toBe('');
+        });
+      });
+      describe('When requesting a fieldName', () => {
+        it('Should return an empty string', () => {
+          const suite = vest.create(() => {
+            dummyTest.passing('field_1');
+            dummyTest.passing();
+          });
+          expect(suite().getWarning('field_1')).toBe('');
+          expect(suite.get().getWarning('field_1')).toBe('');
+        });
+      });
+    });
+    describe('When there is a warning', () => {
+      describe('When no parameters passed', () => {
+        it('Should return an object with a string per field', () => {
+          const suite = vest.create(() => {
+            dummyTest.failingWarning('field_1', 'msg_1');
+            dummyTest.failingWarning('field_2', 'msg_2');
+            dummyTest.failingWarning('field_2', 'msg_3');
+            dummyTest.passingWarning('field_1', 'msg_4');
+            dummyTest.failing('field_1', 'msg_5');
+          });
+          expect(suite().getWarning()).toEqual({
+            field_1: 'msg_1',
+            field_2: 'msg_2',
+          });
+          expect(suite.get().getWarning()).toEqual({
+            field_1: 'msg_1',
+            field_2: 'msg_2',
+          });
+        });
+      });
+      describe('When requesting a fieldName', () => {
+        it('Should return a string message', () => {
+          const suite = vest.create(() => {
+            dummyTest.failingWarning('field_1', 'msg_1');
+            dummyTest.failingWarning('field_2', 'msg_2');
+            dummyTest.failingWarning('field_2', 'msg_3');
+            dummyTest.passingWarning('field_1', 'msg_4');
+            dummyTest.failing('field_1', 'msg_5');
+          });
+          expect(suite().getWarning('field_1')).toBe('msg_1');
+          expect(suite.get().getWarning('field_1')).toBe('msg_1');
+        });
+      });
+    });
+  });
   describe(`getWarnings`, () => {
     describe('When no testObjects', () => {
       describe('When no parameters passed', () => {
@@ -141,7 +222,7 @@ describe('->getFailures', () => {
         });
       });
       describe('When requesting a fieldName', () => {
-        it('Should return an empty array', () => {
+        it('Should return an array containing the field message', () => {
           const suite = vest.create(() => {
             dummyTest.failingWarning('field_1', 'msg_1');
             dummyTest.failingWarning('field_2', 'msg_2');

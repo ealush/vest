@@ -25,4 +25,8 @@ type SummaryBase = {
 
 export type GetFailuresResponse = FailureMessages | string[];
 
+export type GetFailureResponse = FailureMessage | string;
+
 export type FailureMessages = Record<string, string[]>;
+
+export type FailureMessage = Record<string, string>;

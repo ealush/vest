@@ -3,7 +3,9 @@ import { isPositive } from 'vest-utils';
 import { Severity, SeverityCount } from 'Severity';
 import {
   FailureMessages,
+  FailureMessage,
   GetFailuresResponse,
+  GetFailureResponse,
   SuiteSummary,
   TestsContainer,
 } from 'SuiteSummaryTypes';
@@ -12,8 +14,10 @@ import { gatherFailures } from 'collectFailures';
 // eslint-disable-next-line max-lines-per-function, max-statements
 export function suiteSelectors(summary: SuiteSummary): SuiteSelectors {
   const selectors = {
+    getError,
     getErrors,
     getErrorsByGroup,
+    getWarning,
     getWarnings,
     getWarningsByGroup,
     hasErrors,
@@ -80,10 +84,30 @@ export function suiteSelectors(summary: SuiteSummary): SuiteSelectors {
 
   // Responses
 
+  function getWarning(): FailureMessage;
+  function getWarning(fieldName: string): string;
+  function getWarning(fieldName?: string): GetFailureResponse {
+    if (fieldName) return getWarnings(fieldName)[0] || '';
+
+    const result: GetFailureResponse = {},
+      warnings = getWarnings();
+    console.log({ getWarnings: warnings });
+    if (!Object.keys(warnings).length) return '';
+    Object.keys(warnings).forEach(
+      (key: string) => (result[key] = warnings[key][0])
+    );
+    return result;
+  }
+
   function getWarnings(): FailureMessages;
   function getWarnings(fieldName: string): string[];
   function getWarnings(fieldName?: string): GetFailuresResponse {
     return getFailures(summary, Severity.WARNINGS, fieldName);
+  }
+
+  function getError(fieldName: string): string;
+  function getError(fieldName: string): string {
+    return getErrors(fieldName)[0] || '';
   }
 
   function getErrors(): FailureMessages;
@@ -111,8 +135,10 @@ export function suiteSelectors(summary: SuiteSummary): SuiteSelectors {
 }
 
 export interface SuiteSelectors {
+  getError(fieldName?: string): string;
   getErrors(fieldName: string): string[];
   getErrors(): FailureMessages;
+  getWarning(fieldName?: string): string;
   getWarnings(): FailureMessages;
   getWarnings(fieldName: string): string[];
   getErrorsByGroup(groupName: string, fieldName: string): string[];

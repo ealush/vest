@@ -8,15 +8,15 @@ import { transformResult } from 'transformResult';
 
 type IRules = n4s.IRules<Record<string, any>>;
 type TModifiers = {
-  message: (input: string) => enforceEagerReturn;
+  message: (input: string) => EnforceEagerReturn;
 };
 
-type enforceEagerReturn = IRules & TModifiers;
+type EnforceEagerReturn = IRules & TModifiers;
 
-export default function enforceEager(value: RuleValue): enforceEagerReturn {
+export default function enforceEager(value: RuleValue): EnforceEagerReturn {
   const target = {
     message,
-  } as enforceEagerReturn;
+  } as EnforceEagerReturn;
   let customMessage: string | undefined = undefined;
 
   // This condition is for when we don't have proxy support (ES5).
@@ -33,7 +33,7 @@ export default function enforceEager(value: RuleValue): enforceEagerReturn {
   }
 
   // We create a proxy intercepting access to the target object (which is empty).
-  const proxy: enforceEagerReturn = new Proxy(target, {
+  const proxy: EnforceEagerReturn = new Proxy(target, {
     get: (_, key: string) => {
       // On property access, we identify if it is a rule or not.
       const rule = getRule(key);
@@ -52,7 +52,7 @@ export default function enforceEager(value: RuleValue): enforceEagerReturn {
   // It takes the target object, the rule function, and the rule name
   // It then returns the rule, in a manner that can be used by enforce
   function genRuleCall(
-    target: enforceEagerReturn,
+    target: EnforceEagerReturn,
     rule: RuleBase,
     ruleName: string
   ) {
@@ -83,10 +83,10 @@ export default function enforceEager(value: RuleValue): enforceEagerReturn {
     };
   }
 
-  function message(input: string): enforceEagerReturn {
+  function message(input: string): EnforceEagerReturn {
     customMessage = input;
     return proxy;
   }
 }
 
-export type EnforceEager = (value: RuleValue) => enforceEagerReturn;
+export type EnforceEager = (value: RuleValue) => EnforceEagerReturn;

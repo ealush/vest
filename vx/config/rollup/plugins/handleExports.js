@@ -151,7 +151,7 @@ function genExports(moduleName, namespace) {
       }),
     },
     './package.json': './package.json',
-    './': './',
+    './*': './*',
   };
 }
 

@@ -65,7 +65,7 @@ export default function enforceEager(value: RuleValue): EnforceEagerReturn {
         return transformResult(rule(value, ...args), ruleName, value, ...args);
       });
 
-      function renderMessage() {
+      function enforceMessage() {
         const shouldUseCustomMessage = !isNullish(customMessage);
         if (shouldUseCustomMessage) return customMessage;
         if (isNullish(transformedResult.message)) {
@@ -77,7 +77,7 @@ export default function enforceEager(value: RuleValue): EnforceEagerReturn {
 
       // On rule failure (the result is false), we either throw an error
       // or throw a string value if the rule has a message defined in it.
-      invariant(transformedResult.pass, renderMessage());
+      invariant(transformedResult.pass, enforceMessage());
 
       return target;
     };

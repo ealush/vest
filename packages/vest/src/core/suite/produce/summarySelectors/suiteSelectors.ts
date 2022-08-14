@@ -91,7 +91,6 @@ export function suiteSelectors(summary: SuiteSummary): SuiteSelectors {
 
     const result: GetFailureResponse = {},
       warnings = getWarnings();
-    console.log({ getWarnings: warnings });
     if (!Object.keys(warnings).length) return '';
     Object.keys(warnings).forEach(
       (key: string) => (result[key] = warnings[key][0])

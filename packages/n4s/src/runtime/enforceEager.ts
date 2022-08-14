@@ -70,9 +70,8 @@ export default function enforceEager(value: RuleValue): EnforceEagerReturn {
         if (shouldUseCustomMessage) return customMessage;
         if (isNullish(transformedResult.message)) {
           return `enforce/${ruleName} failed with ${JSON.stringify(value)}`;
-        } else {
-          return StringObject(transformedResult.message);
         }
+        return StringObject(transformedResult.message);
       }
 
       // On rule failure (the result is false), we either throw an error

@@ -36,7 +36,7 @@
       "default": "./dist/cjs/context.production.js"
     },
     "./package.json": "./package.json",
-    "./": "./"
+    "./*": "./*"
   },
   "repository": {
     "type": "git",

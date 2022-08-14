@@ -126,7 +126,7 @@
       "default": "./dist/cjs/n4s.production.js"
     },
     "./package.json": "./package.json",
-    "./": "./"
+    "./*": "./*"
   },
   "repository": {
     "type": "git",

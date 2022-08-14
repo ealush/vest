@@ -88,6 +88,7 @@ module.exports = {
     'jest/no-standalone-expect': 0,
     'max-params': [1, { max: 4 }],
     'no-console': 2,
+    'no-else-return': 1,
     'no-implicit-globals': 2,
     'no-lonely-if': 2,
     'no-multi-spaces': 1,

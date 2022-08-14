@@ -5,9 +5,8 @@ export function matches(value: string, regex: RegExp | string): boolean {
     return regex.test(value);
   } else if (isString(regex)) {
     return new RegExp(regex).test(value);
-  } else {
-    return false;
   }
+  return false;
 }
 
 export const notMatches = bindNot(matches);

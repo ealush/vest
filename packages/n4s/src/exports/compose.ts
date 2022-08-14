@@ -1,7 +1,7 @@
-import { ctx } from 'n4s';
 import { invariant, StringObject, assign, mapFirst } from 'vest-utils';
 
 import type { ComposeResult, LazyRuleRunners } from 'genEnforceLazy';
+import { ctx } from 'n4s';
 import { defaultToPassing, RuleDetailedResult } from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 

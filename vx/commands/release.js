@@ -22,9 +22,8 @@ function release() {
   const pkg = usePackage() || targetPackage;
   if (pkg) {
     return ctx.withPackage(pkg, releasePackage);
-  } else {
-    releaseAll();
   }
+  releaseAll();
 }
 
 module.exports = release;

@@ -17,12 +17,11 @@ export function transformResult(
   // if result is boolean
   if (isBoolean(result)) {
     return ruleReturn(result);
-  } else {
-    return ruleReturn(
-      result.pass,
-      optionalFunctionValue(result.message, ruleName, value, ...args)
-    );
   }
+  return ruleReturn(
+    result.pass,
+    optionalFunctionValue(result.message, ruleName, value, ...args)
+  );
 }
 
 function validateResult(result: RuleReturn): void {

@@ -43,8 +43,7 @@ module.exports.list = [
       return 1;
     } else if (jsonB?.dependencies?.[packageA]) {
       return -1;
-    } else {
-      return 0;
     }
+    return 0;
   }),
 ];

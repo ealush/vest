@@ -43,7 +43,7 @@
       "default": "./dist/cjs/vast.production.js"
     },
     "./package.json": "./package.json",
-    "./": "./"
+    "./*": "./*"
   },
   "unpkg": "./dist/umd/vast.production.js",
   "jsdelivr": "./dist/umd/vast.production.js"

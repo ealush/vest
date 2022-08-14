@@ -42,6 +42,6 @@
       "default": "./dist/cjs/vest-utils.production.js"
     },
     "./package.json": "./package.json",
-    "./": "./"
+    "./*": "./*"
   }
 }

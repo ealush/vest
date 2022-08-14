@@ -228,7 +228,7 @@
       "default": "./dist/cjs/vest.production.js"
     },
     "./package.json": "./package.json",
-    "./": "./"
+    "./*": "./*"
   },
   "unpkg": "./dist/umd/vest.production.js",
   "jsdelivr": "./dist/umd/vest.production.js"

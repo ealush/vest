@@ -156,7 +156,7 @@
       "default": "./dist/cjs/anyone.production.js"
     },
     "./package.json": "./package.json",
-    "./": "./"
+    "./*": "./*"
   },
   "repository": {
     "type": "git",

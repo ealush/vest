@@ -1,7 +1,5 @@
-const path = require('path');
-
-const opts = require('vx/opts');
 const packageNames = require('vx/packageNames');
+const vxPath = require('vx/vxPath');
 
 const listAllChangesSinceStableBranch = require('./listAllChangesSinceStableBranch');
 
@@ -10,12 +8,7 @@ function listAllChangedPackages() {
   return Object.keys(
     changes.reduce((packages, { files = [] }) => {
       return files.reduce((packages, file) => {
-        if (!file.startsWith(opts.dir.PACKAGES)) {
-          return packages;
-        }
-
-        const [, packageName] = file.split(path.sep);
-
+        const packageName = vxPath.packageNameFromPath(file);
         if (!packageNames.names[packageName]) {
           return packages;
         }

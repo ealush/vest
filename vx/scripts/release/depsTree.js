@@ -1,53 +1,45 @@
-const path = require('path');
-
 const { memoize } = require('lodash');
-const madge = require('madge');
-const opts = require('vx/opts');
-const vxPath = require('vx/vxPath');
+const packageNames = require('vx/packageNames');
+const packageJson = require('vx/util/packageJson');
 
 // Takes import map and turns it into a dependency map
-const buildDepsTree = memoize(async function buildDepsTree() {
-  const baseTree = (await getAllDeps()).tree;
+const buildDepsMemo = memoize(function (package, deps) {
+  const pkgJson = packageJson(package);
 
-  const depTree = {};
-  for (const file in baseTree) {
-    const [packageName] = file.split(path.sep);
-    depTree[packageName] = depTree[packageName] ?? {};
-    baseTree[file].forEach(dep => {
-      const [depName] = dep.split(path.sep);
+  // Is circular object ok?
+  deps[package] = deps[package] || {};
 
-      if (depName === packageName) {
-        return;
-      }
-      depTree[depName] = depTree[depName] || {};
+  const dependencies = Object.keys(pkgJson.dependencies || {});
 
-      if (!depTree[depName][packageName]) {
-        depTree[depName][packageName] = depTree[packageName];
-      }
-    });
-  }
-  return depTree;
+  dependencies.forEach(dependency => {
+    deps[dependency] = deps[dependency] || {};
+    deps[dependency][package] =
+      deps[package] ?? buildDepsMemo(dependency, deps);
+  });
+
+  return deps;
 });
 
+function buildDepsTree() {
+  return packageNames.list.reduce(
+    (deps, packageName) => buildDepsMemo(packageName, deps),
+    {}
+  );
+}
+
 // Sorts an array of packages by their dependency depth
-async function sortDependencies(packagesList) {
-  const deps = await buildDepsTree();
+function sortDependencies(packagesList) {
+  const deps = buildDepsTree();
 
   return packagesList.sort(
     (a, b) => countMaxDepth(deps[b]) - countMaxDepth(deps[a])
   );
 }
 
-module.exports = { buildDepsTree, sortDependencies };
-
-// Uses madge to get all the packages. Note: must be run from the root of the repo.
-const getAllDeps = memoize(function getAllDeps() {
-  return madge(vxPath.PACKAGES_PATH, {
-    excludeRegExp: [`${opts.dir.TESTS}|.d.ts|shared`, /^((?!src).)*$/],
-    fileExtensions: ['ts'],
-    tsConfig: vxPath.TSCONFIG_PATH,
-  });
-});
+module.exports = {
+  buildDepsTree,
+  sortDependencies,
+};
 
 // Counts max dependency depth
 const countMaxDepth = memoize(function countMaxDepth(node) {

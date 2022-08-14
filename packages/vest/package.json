@@ -1,5 +1,5 @@
 {
-  "version": "4.6.2",
+  "version": "4.6.3",
   "license": "MIT",
   "name": "vest",
   "author": "ealush",
@@ -228,7 +228,7 @@
       "default": "./dist/cjs/vest.production.js"
     },
     "./package.json": "./package.json",
-    "./*": "./*"
+    "./": "./"
   },
   "unpkg": "./dist/umd/vest.production.js",
   "jsdelivr": "./dist/umd/vest.production.js"

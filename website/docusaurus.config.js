@@ -58,6 +58,19 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      metadata: [
+        {
+          name: 'keywords',
+          content:
+            'vest, validations, javascript validations, unit tests, enforce, async validations, react validation, vue validation, svelte validation, reactjs, vuejs, angular, schema validation, js, unit tests, declarative, framework agnostic',
+        },
+        {
+          name: 'description',
+          content:
+            'Vest is an open source validations framework that makes it easy to write your JS form validation.',
+        },
+      ],
+
       colorMode: {
         defaultMode: 'light',
         disableSwitch: false,

@@ -1,5 +1,8 @@
 ---
 sidebar_position: 2
+title: Vest's core concepts
+description: Understand the core concepts of Vest and how it differs from other validation libraries.
+keywords: [Vest, Core concepts, Farmework Agnostic, Validation, Suite]
 ---
 
 # Core Concepts

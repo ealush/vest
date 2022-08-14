@@ -1,5 +1,19 @@
 ---
 sidebar_position: 2
+title: Vest's Results Object
+description: Vest validations return a results object that holds all the information regarding the current run and methods to interact with the data.
+keywords:
+  [
+    Vest,
+    Results object,
+    methods,
+    selectors,
+    hasErrors,
+    isValid,
+    getErrors,
+    hasWarnings,
+    getWarnings,
+  ]
 ---
 
 # The Result Object

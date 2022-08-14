@@ -1,5 +1,8 @@
 ---
 sidebar_position: 1
+title: Recipe- "any" test - at least one must pass
+description: A common scenario is to require at least one test to pass to consider the suite as passing.
+keywords: [Recipe, any, test, at least, one, must, pass]
 ---
 
 # "any" Test - At least one test must pass

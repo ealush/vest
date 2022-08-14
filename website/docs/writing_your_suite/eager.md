@@ -1,5 +1,8 @@
 ---
 sidebar_position: 5
+title: Failing Tests Fast with Eager mode
+description: Sometimes we wish to fail fast and not continue run subsequent tests of a failing field. Eager mode tells Vest to fail immediately, and not continue executing tests of a failing fields.
+keywords: [Vest, Eager, Eager mode, Fail fast]
 ---
 
 # eager mode, failing fast

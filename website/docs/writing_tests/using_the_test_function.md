@@ -1,5 +1,8 @@
 ---
 sidebar_position: 1
+title: The Test Function
+description: The test function is the main function in Vest that holds your validation logic.
+keywords: [Test, Validation, Logic]
 ---
 
 # The Test Function

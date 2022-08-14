@@ -1,4 +1,4 @@
-import type { DropFirst } from 'utilityTypes';
+import type { DropFirst } from 'vest-utils';
 
 import type { RuleReturn } from 'ruleReturn';
 import rules from 'rules';

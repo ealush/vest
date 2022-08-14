@@ -1,5 +1,5 @@
 import optionalFunctionValue from 'optionalFunctionValue';
-import { Stringable } from 'utilityTypes';
+import type { Stringable } from 'utilityTypes';
 
 export default function invariant(
   condition: any,

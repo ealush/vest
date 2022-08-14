@@ -1,7 +1,7 @@
-import { createContext } from 'context';
+import { createCascade } from 'context';
 import { assign } from 'vest-utils';
 
-export const ctx = createContext<CTXType>((ctxRef, parentContext): CTXType => {
+export const ctx = createCascade<CTXType>((ctxRef, parentContext): CTXType => {
   const base = {
     value: ctxRef.value,
     meta: ctxRef.meta || {},
@@ -22,7 +22,7 @@ export const ctx = createContext<CTXType>((ctxRef, parentContext): CTXType => {
 
 function stripContext(ctx: null | CTXType): EnforceContext {
   if (!ctx) {
-    return ctx;
+    return null;
   }
 
   return {

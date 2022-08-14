@@ -1,5 +1,8 @@
 ---
 sidebar_position: 1
+title: Getting started
+description: Getting started with Vest is easy. Here are some examples.
+keywords: [Vest, Get started, Quickstart]
 ---
 
 # Getting Started

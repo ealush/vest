@@ -1,15 +1,14 @@
 const path = require('path');
 
 const { sample } = require('lodash');
-
-const packageJson = require('../../../util/packageJson');
-const listAllChangesSinceStableBranch = require('../github/listAllChangesSinceStableBranch');
-const matchPackageNameInCommit = require('../github/matchPackageNameInCommit');
-
 const exec = require('vx/exec');
 const logger = require('vx/logger');
 const packageNames = require('vx/packageNames');
 const vxPath = require('vx/vxPath');
+
+const packageJson = require('../../../util/packageJson');
+const listAllChangesSinceStableBranch = require('../github/listAllChangesSinceStableBranch');
+const matchPackageNameInCommit = require('../github/matchPackageNameInCommit');
 
 const RELEASE_SCRIPTS = path.resolve(
   vxPath.VX_SCRIPTS_PATH,

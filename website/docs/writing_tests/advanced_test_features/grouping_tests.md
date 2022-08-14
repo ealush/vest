@@ -1,5 +1,8 @@
 ---
 sidebar_position: 3
+title: Test Groups
+description: In some cases it can be helpful to group tests together so you can include or exclude a portion of the suite with a single condition.
+keywords: [Vest, Test Groups]
 ---
 
 # Grouping tests

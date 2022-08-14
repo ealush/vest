@@ -1,5 +1,50 @@
 ---
 sidebar_position: 3
+title: Api reference
+description: Reference to All Vest's exported functions
+keywords:
+  [
+    Vest,
+    API,
+    Reference,
+    create,
+    suite.get,
+    suite.remove,
+    suite.reset,
+    suite.resetField,
+    test,
+    test.memo,
+    warn,
+    enforce,
+    enforce.extend,
+    compose,
+    only,
+    only.group,
+    skip,
+    include,
+    include.when,
+    skip.group,
+    skipWhen,
+    omitWhen,
+    optional,
+    group,
+    each,
+    eager,
+    hasErrors,
+    hasWarnings,
+    getErrors,
+    getWarnings,
+    hasErrorsByGroup,
+    hasWarningByGroup,
+    getErrorsByGroup,
+    getWarningsByGroup,
+    isValid,
+    isValidByGroup,
+    done,
+    classnames,
+    promisify,
+    compose,
+  ]
 ---
 
 # API Reference

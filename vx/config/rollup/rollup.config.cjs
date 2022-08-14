@@ -1,29 +1,32 @@
 const fs = require('fs');
 
-const { format, disallowExternals } = require('./format');
-const getPlugins = require('./getPlugins');
-
 const opts = require('vx/opts');
 const concatTruthy = require('vx/util/concatTruthy');
+const {
+  listExportedModules,
+  getExportedModuleNames,
+} = require('vx/util/exportedModules');
 const joinTruthy = require('vx/util/joinTruthy');
-const listExportedModules = require('vx/util/listExportedModules');
-const moduleAliases = require('vx/util/moduleAliases')();
 const packageJson = require('vx/util/packageJson');
+const pathsPerPackage = require('vx/util/pathsPerPackage');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
+
+const { format, disallowExternals } = require('./format');
+const getPlugins = require('./getPlugins');
 
 const buildSingle = JSON.parse(
   process.env.ROLLUP_WATCH ?? process.env.VX_BUILD_SINGLE ?? false
 );
 
 module.exports = cleanupConfig(
-  concatTruthy(!buildSingle && opts.env.PRODUCTION, opts.env.DEVELOPMENT).map(
+  concatTruthy(opts.env.PRODUCTION, !buildSingle && opts.env.DEVELOPMENT).map(
     env => {
       const packageName = usePackage();
 
       return [].concat(
         genBaseConfig({ env, packageName }),
-        genExportsConfig(usePackage(), env)
+        genExportsConfig(packageName, env)
       );
     }
   )
@@ -47,7 +50,7 @@ function genBaseConfig({
   moduleName = usePackage(),
   namespace = undefined,
 }) {
-  return {
+  const config = {
     env,
     // This turns the installed "internal" dependencies into external dependencies
     external: [
@@ -57,12 +60,14 @@ function genBaseConfig({
       moduleName === usePackage() ? null : usePackage(),
     ].filter(Boolean),
 
-    input: getInputFile(moduleName),
+    input: getInputFile(packageName, moduleName, namespace),
     output: format.map(format =>
       genOutput({ env, format, moduleName, namespace })
     ),
     plugins: getPlugins({ env, moduleName, namespace, packageName }),
   };
+
+  return config;
 }
 
 function genExportsConfig(pkgName, env) {
@@ -102,11 +107,17 @@ function genOutput({
   };
 }
 
-function getInputFile(moduleName = usePackage()) {
-  const modulePath = moduleAliases.find(ref => ref.name === moduleName);
+function getInputFile(
+  packageName = usePackage(),
+  moduleName = usePackage(),
+  namespace
+) {
+  const moduleToResolve = getExportedModuleNames(namespace, moduleName);
+  const packageModules = pathsPerPackage.packages[packageName];
+  const modulePath = packageModules.find(ref => ref.name === moduleToResolve);
 
   if (!(modulePath?.absolute && fs.existsSync(modulePath.absolute))) {
-    throw new Error('unable to find module path for ' + moduleName);
+    throw new Error('VX: unable to find module path for ' + moduleToResolve);
   }
 
   return modulePath.absolute;

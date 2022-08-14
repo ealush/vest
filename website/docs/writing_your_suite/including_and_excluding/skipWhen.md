@@ -1,10 +1,13 @@
 ---
 sidebar_position: 3
+title: skipWhen for conditionally skipping tests
+description: In some cases we might need to skip a test or a group based on a condition, skipWhen is a helper function for this.
+keywords: [Vest, skipWhen, conditionally skip tests]
 ---
 
 # skipWhen: Conditional Exclusion
 
-In some cases we might need to skip a test or a group based on a given condition, for example - based on the intermediate state of the currently running suite. To allow this, you can use `skipWhen`. `skipWhen` takes a boolean expression and a callback with tests.
+In some cases we might need to skip a test or a group based on a condition, for example - based on the intermediate state of the currently running suite. To allow this, you can use `skipWhen`. `skipWhen` takes a boolean expression and a callback with tests.
 If the expression is true, the tests within the callback will be skipped. Otherwise, the tests will run as normal.
 
 :::tip Note

@@ -1,4 +1,4 @@
-import { CB } from 'utilityTypes';
+import type { CB } from 'vest-utils';
 import {
   assign,
   defaultTo,
@@ -6,66 +6,91 @@ import {
   optionalFunctionValue,
 } from 'vest-utils';
 
-// eslint-disable-next-line max-lines-per-function
-export function createContext<T extends Record<string, unknown>>(
-  init?: (ctxRef: Partial<T>, parentContext: T | void) => T | null
-): {
-  run: <R>(ctxRef: Partial<T>, fn: (context: T) => R) => R;
-  bind: <Fn extends CB>(ctxRef: Partial<T>, fn: Fn) => Fn;
-  use: () => T | undefined;
-  useX: (errorMessage?: string) => T;
-} {
-  const storage: { ctx?: T } = {};
+const USEX_DEFAULT_ERROR_MESSAGE = 'Not inside of a running context.';
+const EMPTY_CONTEXT = Symbol();
+
+export function createContext<T extends unknown>(
+  defaultContextValue?: T
+): CtxApi<T> {
+  let contextValue: T | symbol = EMPTY_CONTEXT;
 
   return {
-    bind,
     run,
     use,
     useX,
   };
 
-  function useX(errorMessage?: string): T {
-    const ctx = use();
-    invariant(
-      ctx,
-      defaultTo(errorMessage, 'Context was used after it was closed')
-    );
-    return ctx;
+  function use(): T {
+    return (isInsideContext() ? contextValue : defaultContextValue) as T;
   }
 
-  function run<R>(ctxRef: Partial<T>, fn: (context: T) => R): R {
-    const parentContext = use();
+  function useX(errorMessage?: string): T {
+    invariant(
+      isInsideContext(),
+      defaultTo(errorMessage, USEX_DEFAULT_ERROR_MESSAGE)
+    );
+    return contextValue as T;
+  }
+
+  function run<R>(value: T, cb: () => R): R {
+    const parentContext = isInsideContext() ? use() : EMPTY_CONTEXT;
+
+    contextValue = value;
+
+    const res = cb();
+
+    contextValue = parentContext;
+    return res;
+  }
+
+  function isInsideContext(): boolean {
+    return contextValue !== EMPTY_CONTEXT;
+  }
+}
+
+export function createCascade<T extends Record<string, unknown>>(
+  init?: (value: Partial<T>, parentContext: T | void) => T | null
+): CtxCascadeApi<T> {
+  const ctx = createContext<T>();
+
+  return {
+    bind,
+    run,
+    use: ctx.use,
+    useX: ctx.useX,
+  };
+
+  function run<R>(value: Partial<T>, fn: () => R): R {
+    const parentContext = ctx.use();
 
     const out = assign(
       {},
       parentContext ? parentContext : {},
-      optionalFunctionValue(init, ctxRef, parentContext) ?? ctxRef
+      optionalFunctionValue(init, value, parentContext) ?? value
     ) as T;
 
-    const ctx = set(Object.freeze(out));
-    const res = fn(ctx);
-
-    storage.ctx = parentContext;
-    return res;
+    return ctx.run(Object.freeze(out), fn);
   }
 
-  function bind<Fn extends CB>(ctxRef: Partial<T>, fn: Fn) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore - this one's pretty hard to get right
-    const returnedFn: Fn = function (...runTimeArgs: Parameters<Fn>) {
-      return run<ReturnType<Fn>>(ctxRef, function () {
+  function bind<Fn extends CB>(value: Partial<T>, fn: Fn) {
+    return function (...runTimeArgs: Parameters<Fn>) {
+      return run<ReturnType<Fn>>(value, function () {
         return fn(...runTimeArgs);
       });
-    };
-
-    return returnedFn;
-  }
-
-  function use() {
-    return storage.ctx;
-  }
-
-  function set(value: T): T {
-    return (storage.ctx = value);
+    } as Fn;
   }
 }
+
+type ContextConsumptionApi<T> = {
+  use: () => T;
+  useX: (errorMessage?: string) => T;
+};
+
+export type CtxApi<T> = ContextConsumptionApi<T> & {
+  run: <R>(value: T, cb: () => R) => R;
+};
+
+export type CtxCascadeApi<T> = ContextConsumptionApi<T> & {
+  run: <R>(value: Partial<T>, fn: () => R) => R;
+  bind: <Fn extends CB>(value: Partial<T>, fn: Fn) => Fn;
+};

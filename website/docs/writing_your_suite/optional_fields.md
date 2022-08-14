@@ -1,5 +1,8 @@
 ---
 sidebar_position: 4
+title: Optional fields
+description: By default, all the tests inside Vest are required in order for the suite to be considered as "valid". Learn how to specify optional fields.
+keywords: [optional fields, required fields, unfilled]
 ---
 
 # optional fields

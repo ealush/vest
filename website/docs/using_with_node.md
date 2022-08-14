@@ -1,5 +1,8 @@
 ---
 sidebar_position: 11
+title: Using with Node.js
+description: Learn how to use the Vest with Node.js
+keywords: [Vest, Node, Server Side]
 ---
 
 # Using Vest in node

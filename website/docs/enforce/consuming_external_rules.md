@@ -1,5 +1,8 @@
 ---
 sidebar_position: 5
+title: Consuming third party rules
+description: Here's how to use third party rules.
+keywords: [Vest, third party, rules]
 ---
 
 # Consuming external rules

@@ -1,5 +1,8 @@
 ---
 sidebar_position: 6
+title: Enforce Rules Composition
+description: When you have rules that you often use together or different groups of rules that describe the same behavior, you can compose them into a single rule for easier reuse.
+keywords: [Vest, enforce, rules, composition, shape, loose, schema, compose]
 ---
 
 # Composing enforce rules

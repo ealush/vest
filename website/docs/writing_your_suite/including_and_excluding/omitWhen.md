@@ -1,5 +1,8 @@
 ---
 sidebar_position: 4
+title: conditionally omit tests from the suite
+description: Sometimes we wish to conditionally omit tests from the suite so they are not considered when running the suite, and not just skip them. Use omitWhen for that.
+keywords: [Vest, omitWhen, conditionally omit tests]
 ---
 
 # omitWhen - Conditionally omit tests from a suite

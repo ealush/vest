@@ -1,5 +1,8 @@
 ---
 sidebar_position: 2
+title: Utility - Promisify
+description: Promisify is a utility function that allows you to convert your suite into a Promise.
+keywords: [Vest, Promisify]
 ---
 
 ## `promisify()`

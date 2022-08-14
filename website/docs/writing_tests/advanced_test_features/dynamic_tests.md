@@ -1,5 +1,8 @@
 ---
 sidebar_position: 2
+title: Dynamically adding tests by iterating over an array
+description: Vest allows you to add tests dynamically by iterating over an array.
+keywords: [Vest, dynamically, adding, tests, iterating, array]
 ---
 
 # Dynamic Tests with `each`

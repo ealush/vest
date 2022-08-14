@@ -1,6 +1,5 @@
-import { createContext } from 'context';
-import { CB } from 'utilityTypes';
-import { assign } from 'vest-utils';
+import { createCascade } from 'context';
+import { assign, CB } from 'vest-utils';
 
 import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { Modes } from 'Modes';
@@ -8,7 +7,7 @@ import VestTest from 'VestTest';
 import type { StateRef } from 'createStateRef';
 import { generateIsolate } from 'generateIsolate';
 
-export default createContext<CTXType>((ctxRef, parentContext) =>
+export default createCascade<CTXType>((ctxRef, parentContext) =>
   parentContext
     ? null
     : assign(

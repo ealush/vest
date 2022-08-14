@@ -29,3 +29,8 @@ export { isUndefined, isNotUndefined } from 'isUndefined';
 export { isArray, isNotArray } from 'isArrayValue';
 export { isEmpty, isNotEmpty } from 'isEmpty';
 export { isPositive } from 'isPositive';
+
+export type { DropFirst } from 'utilityTypes';
+export type { Stringable } from 'utilityTypes';
+export type { CB } from 'utilityTypes';
+export type { ValueOf } from 'utilityTypes';

@@ -1,5 +1,8 @@
 ---
 sidebar_position: 10
+title: Understanding Vest's state
+description: Learn how Vest's State works
+keywords: [Vest, Stateful Validations]
 ---
 
 # Understanding Vest's state

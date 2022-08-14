@@ -1,5 +1,8 @@
 ---
 sidebar_position: 1
+title: Skip and Only
+description: Skip and Only allow to exclude and include fields in the suite.
+keywords: [Vest, Skip, Only, exclude, include]
 ---
 
 # including or excluding tests (only/skip)

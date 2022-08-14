@@ -1,5 +1,3 @@
-const commitChangesToGit = require('../scripts/release/steps/commitChangesToGit');
-
 const logger = require('vx/logger');
 const packagesToRelease = require('vx/scripts/release/packagesToRelease');
 const releasePackage = require('vx/scripts/release/releasePackage');
@@ -11,6 +9,8 @@ const {
 } = require('vx/util/taggedBranch');
 const { usePackage } = require('vx/vxContext');
 const ctx = require('vx/vxContext');
+
+const commitChangesToGit = require('../scripts/release/steps/commitChangesToGit');
 require('../scripts/genTsConfig');
 
 function release() {

@@ -1,5 +1,8 @@
 ---
 sidebar_position: 2
+title: Including and Excluding Groups
+description: skip.group and only.group allow you to skip and only run groups or tests in a group
+keywords: [Vest, Skip, Only, exclude, include, skip.group, only.group, group]
 ---
 
 # Including and excluding groups

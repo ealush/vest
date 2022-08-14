@@ -1,5 +1,4 @@
-import { Modes } from './Modes';
-
+import { Modes } from 'Modes';
 import VestTest from 'VestTest';
 import ctx from 'ctx';
 import { hasErrorsByTestObjects } from 'hasFailuresByTestObjects';

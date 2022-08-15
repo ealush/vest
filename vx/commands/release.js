@@ -28,10 +28,10 @@ function release() {
 
 module.exports = release;
 
-async function releaseAll() {
+function releaseAll() {
   logger.info('🏃 Running release script.');
 
-  const releaseList = await packagesToRelease();
+  const releaseList = packagesToRelease();
 
   releaseList.forEach(name => {
     ctx.withPackage(name, release);

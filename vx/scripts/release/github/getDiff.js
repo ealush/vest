@@ -4,9 +4,9 @@ const filterCommitByPackage = require('./filterCommitsByPackage');
 const listAllChangesSinceStableBranch = require('./listAllChangesSinceStableBranch');
 
 // [{title: "...", files: ["..."]}] ...
-function getDiff() {
+function getDiff(packageName = usePackage()) {
   const allChanges = listAllChangesSinceStableBranch();
-  return filterCommitByPackage(usePackage(), allChanges);
+  return filterCommitByPackage(packageName, allChanges);
 }
 
 module.exports = getDiff;

@@ -36,9 +36,36 @@ function sortDependencies(packagesList) {
   );
 }
 
+// eslint-disable-next-line complexity
+const dependsOn = memoize(function dependsOn(
+  a, // dependent package
+  b, // depends on
+  tree = buildDepsTree(), // dependency tree
+  foundB = false // whether b has been found
+) {
+  if (a === b) {
+    return false;
+  }
+
+  if (tree.hasOwnProperty(a) && foundB) {
+    return true;
+  }
+
+  for (const dep in tree) {
+    const res = dependsOn(a, b, tree[dep], dep === b);
+
+    if (res) {
+      return true;
+    }
+  }
+
+  return false;
+});
+
 module.exports = {
   buildDepsTree,
   sortDependencies,
+  dependsOn,
 };
 
 // Counts max dependency depth

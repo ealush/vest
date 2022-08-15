@@ -37,12 +37,7 @@ function sortDependencies(packagesList) {
 }
 
 // eslint-disable-next-line complexity
-const dependsOn = memoize(function dependsOn(
-  a, // dependent package
-  b, // depends on
-  tree = buildDepsTree(), // dependency tree
-  foundB = false // whether b has been found
-) {
+function dependsOn(a, b, tree = buildDepsTree(), foundB = false) {
   if (a === b) {
     return false;
   }
@@ -60,7 +55,7 @@ const dependsOn = memoize(function dependsOn(
   }
 
   return false;
-});
+}
 
 module.exports = {
   buildDepsTree,

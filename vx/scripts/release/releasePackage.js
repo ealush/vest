@@ -15,14 +15,14 @@ function releasePackage() {
   logger.info(`Releasing package: 📦 ${pkgName}`);
 
   logger.info(`🔍 Finding diffs for package: ${pkgName}`);
-  const changes = getDiff(pkgName);
+  const { changesToPackage } = getDiff(pkgName);
 
-  if (!changes.length) {
+  if (!changesToPackage.length) {
     logger.info('🛌 No commits related to package. Exiting.');
     return;
   }
 
-  const diffData = genDiffData(changes);
+  const diffData = genDiffData(changesToPackage);
 
   logger.info('⚙️ Generated diff data:', JSON.stringify(diffData, null, 2));
 

@@ -9,6 +9,22 @@ keywords: [Vest, custom, message, failing, with, message]
 
 Sometimes your validation logic might result in different failure reasons that are unknown before you run the test. In this case the message argument is not as useful, and instead you should omit it. Vest allows you to provide the message within the test body itself by doing one of the following:
 
+## Enforce message
+
+A custom message can ban passed to enforce via the `message` modifier. Multiple messages can be passed as well in case you have multiple failure conditions.
+
+The message must be specified before the rule it refers to, because once the rule failes, enforce throws immediately.
+
+```js
+test('username', () => {
+  enforce(data.username)
+    .message('Username is required')
+    .isNotBlank()
+    .message('Username must be at least 3 characters')
+    .longerThan(2);
+});
+```
+
 ## Throwing a string
 
 If the message param is omitted, and the test throws a string value, the string will be used as the test's message:

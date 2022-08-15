@@ -6,7 +6,7 @@ const packageJson = require('vx/util/packageJson');
 const buildDepsMemo = memoize(function (package, deps) {
   const pkgJson = packageJson(package);
 
-  // Is circular object ok?
+  // This doesn't really do much, only prevent a circular dependency tree which countMaxDepth can't handle
   deps[package] = deps[package] || {};
 
   const dependencies = Object.keys(pkgJson.dependencies || {});
@@ -36,9 +36,31 @@ function sortDependencies(packagesList) {
   );
 }
 
+// eslint-disable-next-line complexity
+function dependsOn(a, b, tree = buildDepsTree(), foundB = false) {
+  if (a === b) {
+    return false;
+  }
+
+  if (tree.hasOwnProperty(a) && foundB) {
+    return true;
+  }
+
+  for (const dep in tree) {
+    const res = dependsOn(a, b, tree[dep], dep === b);
+
+    if (res) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 module.exports = {
   buildDepsTree,
   sortDependencies,
+  dependsOn,
 };
 
 // Counts max dependency depth

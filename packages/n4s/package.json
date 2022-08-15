@@ -1,5 +1,5 @@
 {
-  "version": "4.2.3",
+  "version": "4.3.0",
   "license": "MIT",
   "main": "./dist/cjs/n4s.js",
   "types": "./types/n4s.d.ts",
@@ -10,8 +10,8 @@
     "release": "vx release"
   },
   "dependencies": {
-    "context": "^3.0.2",
-    "vest-utils": "^0.0.3"
+    "context": "^3.0.3",
+    "vest-utils": "^0.0.4"
   },
   "module": "./dist/es/n4s.production.js",
   "exports": {

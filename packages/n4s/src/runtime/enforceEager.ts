@@ -13,6 +13,7 @@ type TModifiers = {
 
 type EnforceEagerReturn = IRules & TModifiers;
 
+// eslint-disable-next-line max-lines-per-function
 export default function enforceEager(value: RuleValue): EnforceEagerReturn {
   const target = {
     message,
@@ -66,7 +67,7 @@ export default function enforceEager(value: RuleValue): EnforceEagerReturn {
       });
 
       function enforceMessage() {
-        if (!isNullish(customMessage)) return customMessage;
+        if (!isNullish(customMessage)) return StringObject(customMessage);
         if (isNullish(transformedResult.message)) {
           return `enforce/${ruleName} failed with ${JSON.stringify(value)}`;
         }

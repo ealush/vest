@@ -1,6 +1,6 @@
 import faker from 'faker';
 
-import { create, test, warn } from 'vest';
+import { create, test, warn, enforce } from 'vest';
 
 let testObject;
 
@@ -64,6 +64,17 @@ describe("Test Vest's `test` function", () => {
           });
         });
         describe('When field does not have a message', () => {
+          it('Should use message from enforce().message()', () => {
+            const res = create(() => {
+              test('field_without_message', () => {
+                enforce(100).message('some_field_message').equals(0);
+              });
+            })();
+
+            expect(res.getErrors('field_without_message')).toEqual([
+              'some_field_message',
+            ]);
+          });
           it('Should use message from thrown error', () => {
             const res = create(() => {
               test('field_without_message', () => {

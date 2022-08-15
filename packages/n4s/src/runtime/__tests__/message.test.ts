@@ -56,6 +56,17 @@ describe('enforce().message()', () => {
   it('should return message after chainning', () => {
     expect(enforce(1).equals(1).message).toBeInstanceOf(Function);
   });
+
+  it('Should throw a literal string', () => {
+    let i;
+    try {
+      enforce(1).message('oogie booogie').equals(2);
+    } catch (e) {
+      i = e;
+    }
+    expect(i).toBe('oogie booogie');
+  });
+
   it('should throw the message error on failure', () => {
     expect(() => {
       enforce('').message('octopus').equals('evyatar');

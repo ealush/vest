@@ -66,8 +66,7 @@ export default function enforceEager(value: RuleValue): EnforceEagerReturn {
       });
 
       function enforceMessage() {
-        const shouldUseCustomMessage = !isNullish(customMessage);
-        if (shouldUseCustomMessage) return customMessage;
+        if (!isNullish(customMessage)) return customMessage;
         if (isNullish(transformedResult.message)) {
           return `enforce/${ruleName} failed with ${JSON.stringify(value)}`;
         }

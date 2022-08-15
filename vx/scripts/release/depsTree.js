@@ -6,7 +6,7 @@ const packageJson = require('vx/util/packageJson');
 const buildDepsMemo = memoize(function (package, deps) {
   const pkgJson = packageJson(package);
 
-  // Is circular object ok?
+  // This doesn't really do much, only prevent a circular dependency tree which countMaxDepth can't handle
   deps[package] = deps[package] || {};
 
   const dependencies = Object.keys(pkgJson.dependencies || {});

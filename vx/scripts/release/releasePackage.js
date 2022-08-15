@@ -15,10 +15,10 @@ function releasePackage() {
   logger.info(`Releasing package: 📦 ${pkgName}`);
 
   logger.info(`🔍 Finding diffs for package: ${pkgName}`);
-  const { changesToPackage } = getDiff(pkgName);
+  const { changesToPackage, changedByDependency } = getDiff(pkgName);
 
-  if (!changesToPackage.length) {
-    logger.info('🛌 No commits related to package. Exiting.');
+  if (!changedByDependency && !changesToPackage.length) {
+    logger.info('🛌 No Changes related to current package. Exiting.');
     return;
   }
 

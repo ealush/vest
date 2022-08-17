@@ -7,30 +7,15 @@ import registerPrevRunTest from 'registerPrevRunTest';
 import { useSuiteId } from 'stateHooks';
 import type { TestBase } from 'test';
 
-export default function bindTestMemo(test: TestBase): {
-  (fieldName: string, test: TestFn, deps: unknown[]): VestTest;
-  (fieldName: string, message: string, test: TestFn, deps: unknown[]): VestTest;
-} {
+export default function testMemo(test: TestBase): TestMemo {
   const cache = createCache(10); // arbitrary cache size
 
   /**
    * Caches a test result based on the test's dependencies.
    */
-  function memo(
-    fieldName: string,
-    ...args: [test: TestFn, deps: unknown[]]
-  ): VestTest;
-  function memo(
-    fieldName: string,
-    ...args: [message: string, test: TestFn, deps: unknown[]]
-  ): VestTest;
-  // eslint-disable-next-line max-statements
-  function memo(
-    fieldName: string,
-    ...args:
-      | [message: string, test: TestFn, deps: unknown[]]
-      | [test: TestFn, deps: unknown[]]
-  ): VestTest {
+  function memo(fieldName: string, ...args: ParametersWithoutMessage): VestTest;
+  function memo(fieldName: string, ...args: ParametersWithMessage): VestTest;
+  function memo(fieldName: string, ...args: ParamsOverload): VestTest {
     const cursorAt = useCursor().current();
 
     const [deps, testFn, msg] = args.reverse() as [any[], TestFn, string];
@@ -56,3 +41,17 @@ export default function bindTestMemo(test: TestBase): {
 
   return memo;
 }
+
+type TestMemo = {
+  (fieldName: string, ...args: ParametersWithoutMessage): VestTest;
+  (fieldName: string, ...args: ParametersWithMessage): VestTest;
+};
+
+type ParametersWithoutMessage = [test: TestFn, dependencies: unknown[]];
+type ParametersWithMessage = [
+  message: string,
+  test: TestFn,
+  dependencies: unknown[]
+];
+
+type ParamsOverload = ParametersWithoutMessage | ParametersWithMessage;

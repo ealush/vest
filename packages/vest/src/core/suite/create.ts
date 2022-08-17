@@ -23,7 +23,6 @@ import { initBus, Events } from 'vestBus';
  */
 function create<T extends CB>(suiteName: SuiteName, suiteCallback: T): Suite<T>;
 function create<T extends CB>(suiteCallback: T): Suite<T>;
-// eslint-disable-next-line max-lines-per-function
 function create<T extends CB>(
   ...args: [suiteName: SuiteName, suiteCallback: T] | [suiteCallback: T]
 ): Suite<T> {

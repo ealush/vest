@@ -8,7 +8,7 @@ import {
 import VestTest, { TestFn } from 'VestTest';
 import ctx from 'ctx';
 import registerPrevRunTest from 'registerPrevRunTest';
-import bindTestMemo from 'test.memo';
+import testMemo from 'test.memo';
 
 function testBase(fieldName: string, message: string, cb: TestFn): VestTest;
 function testBase(fieldName: string, cb: TestFn): VestTest;
@@ -42,6 +42,7 @@ function testBase(
   );
 
   const context = ctx.useX();
+
   const testObject = new VestTest(fieldName, testFn, {
     message,
     groupName: context.groupName,
@@ -61,7 +62,7 @@ function testBase(
  * });
  */
 export const test = assign(testBase, {
-  memo: bindTestMemo(testBase),
+  memo: testMemo(testBase),
 });
 
 export type TestBase = typeof testBase;

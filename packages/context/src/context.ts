@@ -9,6 +9,9 @@ import {
 const USEX_DEFAULT_ERROR_MESSAGE = 'Not inside of a running context.';
 const EMPTY_CONTEXT = Symbol();
 
+/**
+ * Base context interface.
+ */
 export function createContext<T extends unknown>(
   defaultContextValue?: T
 ): CtxApi<T> {
@@ -48,6 +51,10 @@ export function createContext<T extends unknown>(
   }
 }
 
+/**
+ * Cascading context - another implementation of context, that assumes the context value is an object.
+ * When nesting context runs, the the values of the current layer merges with the layers above it.
+ */
 export function createCascade<T extends Record<string, unknown>>(
   init?: (value: Partial<T>, parentContext: T | void) => T | null
 ): CtxCascadeApi<T> {

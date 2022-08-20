@@ -1,5 +1,7 @@
 # Enforce - n4s
 
+[![Join Discord](https://badgen.net/discord/online-members/WmADZpJnSe?icon=discord&label=Discord)](https://discord.gg/WmADZpJnSe) [![Version](https://badgen.net/npm/v/vest?&icon=npm)](https://www.npmjs.com/package/n4s) [![Downloads](https://badgen.net/npm/dt/n4s?label=Downloads)](https://www.npmjs.com/package/n4s) [![bundlephobia](https://badgen.net/bundlephobia/minzip/n4s)](https://bundlephobia.com/package/n4s) [![Status](https://badgen.net/github/status/ealush/vest)](https://github.com/ealush/vest/actions)
+
 Enforce is a validations assertions library. It provides rules that you can test your data against.
 
 By default, enforce throws an error when your validations fail. These errors should be caught by a validation testing framework such as [Vest](https://github.com/ealush/vest).

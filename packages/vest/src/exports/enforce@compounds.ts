@@ -1,2 +1,2 @@
 // eslint-disable-next-line import/no-unresolved
-import 'n4s/compounds';
+export * as compounds from 'n4s/compounds';

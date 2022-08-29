@@ -18,12 +18,12 @@ import 'vest/enforce/compounds';
 These rules will then become available in `enforce`:
 
 - [Compound rules](#compound-rules)
-  - [enforce.anyOf() - either/or validations](#enforceanyof---eitheror-validations)
+  - [enforce.anyOf() - or validations](#enforceanyof---or-validations)
   - [enforce.allOf() - all/and validations](#enforceallof---alland-validations)
   - [enforce.oneOf()](#enforceoneof)
   - [enforce.noneOf - None rules](#enforcenoneof---none-rules)
 
-## enforce.anyOf() - either/or validations
+## enforce.anyOf() - or validations
 
 Sometimes a value has more than one valid possibility, `any` lets us validate that a value passes _at least_ one of the supplied rules.
 

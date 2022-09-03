@@ -1,4 +1,4 @@
-# Context
+# Context 🪆
 
 [![Join Discord](https://badgen.net/discord/online-members/WmADZpJnSe?icon=discord&label=Discord)](https://discord.gg/WmADZpJnSe) [![Version](https://badgen.net/npm/v/vest?&icon=npm)](https://www.npmjs.com/package/context) [![Downloads](https://badgen.net/npm/dt/context?label=Downloads)](https://www.npmjs.com/package/context) [![bundlephobia](https://badgen.net/bundlephobia/minzip/context)](https://bundlephobia.com/package/context) [![Status](https://badgen.net/github/status/ealush/vest)](https://github.com/ealush/vest/actions)
 

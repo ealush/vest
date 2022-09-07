@@ -7,7 +7,7 @@
     "@rollup/plugin-replace": "^4.0.0",
     "context": "3.0.2",
     "date-fns": "^2.29.2",
-    "dotenv": "^16.0.1",
+    "dotenv": "^16.0.2",
     "fs-extra": "^10.1.0",
     "glob": "^8.0.3",
     "onchange": "^7.1.0",

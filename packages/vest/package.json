@@ -3,6 +3,19 @@
   "license": "MIT",
   "name": "vest",
   "author": "ealush",
+  "description": "A lightweight, extensible, and framework agnostic validation framework inspired by unit testing libraries.",
+  "keywords": [
+    "vest",
+    "enforce",
+    "validation",
+    "form",
+    "react-validation",
+    "vue-validation",
+    "angular-validation",
+    "validation-framework",
+    "svelte-validation",
+    "schema-validation"
+  ],
   "scripts": {
     "test": "vx test",
     "build": "vx build",

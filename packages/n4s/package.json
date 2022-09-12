@@ -5,6 +5,13 @@
   "types": "./types/n4s.d.ts",
   "name": "n4s",
   "author": "ealush",
+  "description": "Assertion library for form validations",
+  "keywords": [
+    "vest",
+    "enforce",
+    "n4s",
+    "validation"
+  ],
   "scripts": {
     "test": "vx test",
     "release": "vx release"

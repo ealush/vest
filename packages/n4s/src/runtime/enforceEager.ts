@@ -9,16 +9,33 @@ import { transformResult } from 'transformResult';
 type IRules = n4s.IRules<Record<string, any>>;
 type TModifiers = {
   message: (input: string) => EnforceEagerReturn;
+  not: IRules;
+};
+
+type ModifierStorage = {
+  not: boolean;
+  message: string | undefined;
 };
 
 type EnforceEagerReturn = IRules & TModifiers;
 
-// eslint-disable-next-line max-lines-per-function
+// eslint-disable-next-line max-lines-per-function, max-statements
 export default function enforceEager(value: RuleValue): EnforceEagerReturn {
-  const target = {
-    message,
-  } as EnforceEagerReturn;
-  let customMessage: string | undefined = undefined;
+  const modifierStorage: ModifierStorage = {
+    message: undefined,
+    not: false,
+  };
+
+  let proxy: EnforceEagerReturn = Object.defineProperties(
+    {
+      message,
+    } as EnforceEagerReturn,
+    {
+      not: {
+        get: not,
+      },
+    }
+  );
 
   // This condition is for when we don't have proxy support (ES5).
   // In this case, we need to manually assign the rules to the target object on runtime.
@@ -27,15 +44,15 @@ export default function enforceEager(value: RuleValue): EnforceEagerReturn {
     // We iterate over each of the rules, and add them to the target object being return by enforce
     eachEnforceRule((ruleName: KBaseRules, ruleFn) => {
       // We then wrap the rule with `genRuleCall` that adds the base enforce behavior
-      target[ruleName] = genRuleCall(target, ruleFn, ruleName);
+      proxy[ruleName] = genRuleCall(proxy, ruleFn, ruleName);
     });
 
-    return target;
+    return proxy;
   }
 
   // We create a proxy intercepting access to the target object (which is empty).
-  const proxy: EnforceEagerReturn = new Proxy(target, {
-    get: (_, key: string) => {
+  proxy = new Proxy(proxy, {
+    get: (target, key: string) => {
       // On property access, we identify if it is a rule or not.
       const rule = getRule(key);
 
@@ -67,7 +84,8 @@ export default function enforceEager(value: RuleValue): EnforceEagerReturn {
       });
 
       function enforceMessage() {
-        if (!isNullish(customMessage)) return StringObject(customMessage);
+        if (!isNullish(modifierStorage.message))
+          return StringObject(modifierStorage.message);
         if (isNullish(transformedResult.message)) {
           return `enforce/${ruleName} failed with ${JSON.stringify(value)}`;
         }
@@ -76,15 +94,29 @@ export default function enforceEager(value: RuleValue): EnforceEagerReturn {
 
       // On rule failure (the result is false), we either throw an error
       // or throw a string value if the rule has a message defined in it.
-      invariant(transformedResult.pass, enforceMessage());
+      invariant(
+        modifierStorage.not ? !transformedResult.pass : transformedResult.pass,
+        enforceMessage()
+      );
+
+      clearNot();
 
       return target;
     };
   }
 
   function message(input: string): EnforceEagerReturn {
-    customMessage = input;
+    modifierStorage.message = input;
     return proxy;
+  }
+
+  function not() {
+    modifierStorage.not = true;
+    return proxy;
+  }
+
+  function clearNot() {
+    modifierStorage.not = false;
   }
 }
 

@@ -20,7 +20,7 @@ export function testVerifyProxy(testBody: (enforce: Enforce) => void) {
       });
 
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      testBody(require('enforce').enforce);
+      testBody(require('enforce').enforce as Enforce);
     });
   });
 }

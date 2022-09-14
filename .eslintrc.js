@@ -30,7 +30,7 @@ module.exports = {
       },
     },
     {
-      excludedFiles: ['./**/__tests__/**/*.*', './**/testUtils/**/*'],
+      excludedFiles: ['./**/__tests__/**/*.*'],
       extends: [
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
@@ -41,8 +41,12 @@ module.exports = {
         project: ['./tsconfig.json'], // Specify it only for TypeScript files
       },
       rules: {
-        '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/explicit-module-boundary-types': 'off',
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-unused-expressions': 'warn',
+        '@typescript-eslint/no-unused-vars': 'warn',
+        'no-unused-expressions': 'off',
+        'no-unused-vars': 'off',
       },
     },
     {

@@ -73,7 +73,7 @@ function genEnforce(): Enforce {
 
 export const enforce = genEnforce();
 
-type Enforce = EnforceMethods & LazyRules & EnforceEager;
+export type Enforce = EnforceMethods & LazyRules & EnforceEager;
 
 type EnforceMethods = {
   context: () => EnforceContext;

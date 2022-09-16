@@ -130,8 +130,12 @@ testVerifyProxy((enforce: Enforce) => {
     });
 
     describe('When accessing a rule that does not exist', () => {
-      it('Should return undefined', () => {
-        expect(enforce.doesNotExist).toBeUndefined();
+      it('Should chain normally', () => {
+        expect(enforce.doesNotExist()).isDeepCopyOf(enforce.equals());
+      });
+
+      it('Should fail on execution', () => {
+        expect(() => enforce.doesNotExist().test(1)).toThrow();
       });
     });
   });

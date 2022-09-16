@@ -5,7 +5,7 @@ import { ctx, EnforceContext } from 'enforceContext';
 import enforceEager, { EnforceEager } from 'enforceEager';
 import genEnforceLazy, { LazyRules } from 'genEnforceLazy';
 import isProxySupported from 'isProxySupported';
-import { Rule, KBaseRules, baseRules, getRule } from 'runtimeRules';
+import { Rule, KBaseRules, baseRules } from 'runtimeRules';
 /**
  * Enforce is quite complicated, I want to explain it in detail.
  * It is dynamic in nature, so a lot of proxy objects are involved.
@@ -48,10 +48,6 @@ function genEnforce(): Enforce {
     get: (target: Enforce, key: string) => {
       if (key in target) {
         return target[key];
-      }
-
-      if (!getRule(key)) {
-        return;
       }
 
       // Only on the first rule access - start the chain of calls

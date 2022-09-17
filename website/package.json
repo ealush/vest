@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@docusaurus/core": "^2.1.0",
-    "@docusaurus/plugin-google-gtag": "^2.0.0-beta.20",
+    "@docusaurus/plugin-google-gtag": "^2.1.0",
     "@docusaurus/preset-classic": "^2.0.0-beta.20",
     "@easyops-cn/docusaurus-search-local": "^0.31.0",
     "@mdx-js/react": "^1.6.21",

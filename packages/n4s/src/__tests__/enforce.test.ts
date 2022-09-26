@@ -130,8 +130,10 @@ testVerifyProxy((enforce: Enforce) => {
     });
 
     describe('When accessing a rule that does not exist', () => {
-      it('Should chain normally', () => {
-        expect(enforce.doesNotExist()).isDeepCopyOf(enforce.equals());
+      it('Should throw an error', () => {
+        expect(() => enforce.doesNotExist()).toThrow(
+          'enforce.doesNotExist is not a function'
+        );
       });
 
       it('Should fail on execution', () => {

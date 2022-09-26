@@ -6,13 +6,21 @@ import {
   optionalFunctionValue,
   Stringable,
   hasOwnProperty,
+  CB,
 } from 'vest-utils';
 
 import { ctx, EnforceContext } from 'enforceContext';
 import enforceEager, { EnforceEager } from 'enforceEager';
 import { Lazy, LazyRules } from 'genEnforceLazy';
 import ruleReturn, { defaultToPassing, RuleDetailedResult } from 'ruleReturn';
-import { Rule, baseRules, Args, getRule, RuleValue } from 'runtimeRules';
+import {
+  Rule,
+  baseRules,
+  Args,
+  getRule,
+  RuleValue,
+  RuleBase,
+} from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
 const enforceMethods = {
@@ -22,114 +30,163 @@ const enforceMethods = {
   },
 } as Enforce;
 
-export const enforce = new Proxy(enforceEager as Enforce, {
-  // eslint-disable-next-line max-lines-per-function
-  get(target: Enforce, key: string) {
-    const appliedOperations: AppliedOperations = [];
-    const modifierStorage: ModifierStorage = {
-      message: undefined,
-    };
+// eslint-disable-next-line max-lines-per-function
+function genEnforce() {
+  return new Proxy(enforceEager as Enforce, {
+    // eslint-disable-next-line max-lines-per-function
+    get(target: Enforce, key: string) {
+      const enforceLazyState = getEnforceLazyState();
 
-    if (isFunction(enforceMethods[key])) {
-      return enforceMethods[key];
-    }
+      if (isFunction(enforceMethods[key])) {
+        return enforceMethods[key];
+      }
 
-    if (hasOwnProperty(target, key)) {
-      return target[key];
-    }
+      if (hasOwnProperty(target, key)) {
+        return target[key];
+      }
 
-    const tail = {
-      run(value: RuleValue): RuleDetailedResult {
-        return defaultToPassing(
-          mapFirst(appliedOperations, ({ type, operation }, breakout) => {
-            if (type === AppliedTypes.ACTIVE_MODIFIER) {
-              return operation();
-            }
+      const tail = getTail(enforceLazyState);
 
-            const res = ctx.run({ value }, () => operation(value));
+      const chain: Lazy = new Proxy(tail as Lazy, {
+        get(_, key: string) {
+          if (hasOwnProperty(tail, key)) {
+            return tail[key];
+          }
 
-            breakout(
-              !res.pass,
-              ruleReturn(
-                !!res.pass,
-                optionalFunctionValue(
-                  modifierStorage.message,
-                  value,
-                  res.message
-                ) ?? res.message
-              )
-            );
-          })
-        );
-      },
-      test(value: RuleValue): boolean {
-        return tail.run(value).pass;
-      },
-    };
+          return applyOperation(enforceLazyState, chain, key);
+        },
+      });
 
-    const modifiers = {
-      message,
-    };
+      return applyOperation(enforceLazyState, chain, key);
+    },
+  });
+}
 
-    const proxy: Lazy = new Proxy(tail as Lazy, {
-      get(_, key: string) {
-        if (hasOwnProperty(tail, key)) {
-          return tail[key];
+function getTail(enforceLazyState: EnforceLazyState) {
+  const { appliedOperations, modifierStorage } = enforceLazyState;
+
+  return {
+    run,
+    test,
+  };
+
+  function test(value: RuleValue): boolean {
+    return run(value).pass;
+  }
+
+  function run(value: RuleValue): RuleDetailedResult {
+    return defaultToPassing(
+      mapFirst(appliedOperations, ({ type, operation }, breakout) => {
+        if (type === AppliedTypes.ACTIVE_MODIFIER) {
+          return operation();
         }
 
-        return applyOperation(key);
-      },
-    });
+        const res = ctx.run({ value }, () => operation(value));
 
-    return applyOperation(key);
+        breakout(
+          !res.pass,
+          ruleReturn(
+            !!res.pass,
+            optionalFunctionValue(
+              modifierStorage.message,
+              value,
+              res.message
+            ) ?? res.message
+          )
+        );
+      })
+    );
+  }
+}
 
-    function applyOperation(key: string) {
-      const rule = getRule(key);
+function getEnforceLazyState() {
+  const appliedOperations: AppliedOperations = [];
+  const modifierStorage: ModifierStorage = {
+    message: undefined,
+  };
 
-      if (isFunction(rule)) {
-        return (...args: Args) => {
-          appliedOperations.push({
-            type: AppliedTypes.RULE,
-            name: key,
-            operation: (value: RuleValue) => {
-              return transformResult(rule(value, ...args), key, value, ...args);
-            },
-          });
+  return {
+    appliedOperations,
+    modifierStorage,
+  };
+}
 
-          return proxy;
-        };
-      }
+// eslint-disable-next-line max-lines-per-function
+function applyOperation(
+  enforceLazyState: EnforceLazyState,
+  chain: Lazy,
+  key: string
+) {
+  const { appliedOperations, modifierStorage } = enforceLazyState;
 
-      if (!hasOwnProperty(modifiers, key)) {
-        return;
-      }
+  const modifiers = {
+    message,
+  };
 
-      const modifier = modifiers[key];
+  const rule = getRule(key);
 
-      if (isFunction(modifier)) {
-        return (...args: Args) => {
-          appliedOperations.push({
-            type: AppliedTypes.ACTIVE_MODIFIER,
-            name: key,
-            operation() {
-              modifier(...args);
-            },
-          });
+  if (isFunction(rule)) {
+    return (...args: Args) => {
+      appliedOperations.push(getRuleOperation(rule, key, ...args));
 
-          return proxy;
-        };
-      }
+      return chain;
+    };
+  }
+
+  if (!hasOwnProperty(modifiers, key)) {
+    return;
+  }
+
+  const modifier = modifiers[key];
+
+  if (isFunction(modifier)) {
+    return (...args: Args) => {
+      appliedOperations.push(
+        getActiveModifierOperation(modifier, key, ...args)
+      );
+
+      return chain;
+    };
+  }
+
+  function message(msg: Stringable): Lazy {
+    if (msg) {
+      modifierStorage.message = msg;
     }
 
-    function message(msg: Stringable): Lazy {
-      if (msg) {
-        modifierStorage.message = msg;
-      }
+    return chain;
+  }
+}
 
-      return proxy;
-    }
-  },
-});
+function getRuleOperation(
+  rule: RuleBase,
+  key: string,
+  ...args: Args
+): RuleOperation {
+  return {
+    type: AppliedTypes.RULE,
+    name: key,
+    operation: (value: RuleValue) => {
+      return transformResult(rule(value, ...args), key, value, ...args);
+    },
+  };
+}
+
+function getActiveModifierOperation(
+  modifier: CB,
+  key: string,
+  ...args: Args
+): ActiveModifierOperation {
+  return {
+    type: AppliedTypes.ACTIVE_MODIFIER,
+    name: key,
+    operation() {
+      modifier(...args);
+    },
+  };
+}
+
+export const enforce = genEnforce();
 
 export type Enforce = EnforceMethods & LazyRules & EnforceEager;
 
@@ -142,21 +199,27 @@ type EnforceMethods = {
   extend: (customRules: Rule) => void;
 };
 
-type AppliedOperations = Array<
-  | {
-      type: AppliedTypes.RULE;
-      name: string;
-      operation: (value: RuleValue) => RuleDetailedResult;
-    }
-  | {
-      type: AppliedTypes.ACTIVE_MODIFIER;
-      name: string;
-      operation: (...args: Args) => void;
-    }
->;
+type RuleOperation = {
+  type: AppliedTypes.RULE;
+  name: string;
+  operation: (value: RuleValue) => RuleDetailedResult;
+};
+
+type ActiveModifierOperation = {
+  type: AppliedTypes.ACTIVE_MODIFIER;
+  name: string;
+  operation: CB;
+};
+
+type AppliedOperations = Array<RuleOperation | ActiveModifierOperation>;
 
 enum AppliedTypes {
   RULE,
   ACTIVE_MODIFIER,
   PASSIVE_MODIFIER,
 }
+
+type EnforceLazyState = {
+  appliedOperations: AppliedOperations;
+  modifierStorage: ModifierStorage;
+};

@@ -1,3 +1,5 @@
+// This file hurts my brain.
+
 /* eslint-disable max-statements */
 import {
   assign,
@@ -9,9 +11,11 @@ import {
   CB,
 } from 'vest-utils';
 
+import eachEnforceRule from 'eachEnforceRule';
 import { ctx, EnforceContext } from 'enforceContext';
 import enforceEager, { EnforceEager } from 'enforceEager';
 import { Lazy, LazyRules } from 'genEnforceLazy';
+import isProxySupported from 'isProxySupported';
 import ruleReturn, { defaultToPassing, RuleDetailedResult } from 'ruleReturn';
 import {
   Rule,
@@ -23,15 +27,58 @@ import {
 } from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
-const enforceMethods = {
-  context: () => ctx.useX(),
-  extend: (customRules: Rule) => {
-    assign(baseRules, customRules);
-  },
-} as Enforce;
-
 // eslint-disable-next-line max-lines-per-function
 function genEnforce() {
+  const enforceMethods = {
+    context: () => ctx.useX(),
+    extend(customRules: Rule) {
+      assign(baseRules, customRules);
+    },
+  } as Enforce;
+
+  if (isProxySupported()) {
+    enforceMethods.extend = function extend(customRules: Rule) {
+      assign(baseRules, customRules);
+      for (const customRule in customRules) {
+        Object.defineProperty(enforceEager, customRule, {
+          get() {
+            return (...args: Args) => {
+              const enforceLazyState = getEnforceLazyState();
+              const tail = getTail(enforceLazyState);
+              const chain = {};
+
+              applyOperation(
+                enforceLazyState,
+                chain as Lazy,
+                customRule
+              )(...args);
+              return assign(chain, tail);
+            };
+          },
+        });
+      }
+    };
+
+    eachEnforceRule((key: string) => {
+      const enforceLazyState = getEnforceLazyState();
+      const tail = getTail(enforceLazyState);
+
+      const chain = {};
+
+      // @ts-ignore
+      enforceEager[key] = applyOperation(
+        enforceLazyState,
+        // @ts-ignore
+        chain as Lazy,
+        key
+      );
+
+      return assign(chain, tail);
+    });
+
+    return assign(enforceEager, enforceMethods);
+  }
+
   return new Proxy(enforceEager as Enforce, {
     // eslint-disable-next-line max-lines-per-function
     get(target: Enforce, key: string) {
@@ -123,31 +170,22 @@ function applyOperation(
     message,
   };
 
-  const rule = getRule(key);
-
-  if (isFunction(rule)) {
-    return (...args: Args) => {
-      appliedOperations.push(getRuleOperation(rule, key, ...args));
-
-      return chain;
-    };
-  }
-
-  if (!hasOwnProperty(modifiers, key)) {
-    return;
-  }
-
-  const modifier = modifiers[key];
-
-  if (isFunction(modifier)) {
+  if (hasOwnProperty(modifiers, key) && isFunction(modifiers[key])) {
     return (...args: Args) => {
       appliedOperations.push(
-        getActiveModifierOperation(modifier, key, ...args)
+        getActiveModifierOperation(modifiers[key], key, ...args)
       );
 
       return chain;
     };
   }
+
+  return (...args: Args) => {
+    const rule = getRule(key);
+    appliedOperations.push(getRuleOperation(rule, key, ...args));
+
+    return chain;
+  };
 
   function message(msg: Stringable): Lazy {
     if (msg) {

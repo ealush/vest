@@ -95,7 +95,7 @@ To do that, all you need to do is wrap your suite initialization with a wrapper 
 ```js
 import { create } from 'vest';
 
-function suite(data) {
+function serversideStatelessCheck(data) {
   return create(() => {
     test('username', 'username is required', () => {
       enforce(data.username).isNotEmpty();
@@ -105,5 +105,5 @@ function suite(data) {
   // so what we return is actually the suite result
 }
 
-const result = suite({ username: 'Mike123' });
+const result = serversideStatelessCheck({ username: 'Mike123' });
 ```

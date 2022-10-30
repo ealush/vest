@@ -6,7 +6,7 @@
     "@ampproject/rollup-plugin-closure-compiler": "^0.27.0",
     "@rollup/plugin-replace": "^4.0.0",
     "context": "3.0.2",
-    "date-fns": "^2.29.2",
+    "date-fns": "^2.29.3",
     "dotenv": "^16.0.2",
     "fs-extra": "^10.1.0",
     "glob": "^8.0.3",

@@ -11,7 +11,7 @@
     "fs-extra": "^10.1.0",
     "glob": "^8.0.3",
     "onchange": "^7.1.0",
-    "rollup": "^2.79.0",
+    "rollup": "^2.79.1",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-ts": "^3.0.2",
     "ts-jest": "^29.0.3",

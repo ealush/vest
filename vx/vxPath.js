@@ -99,6 +99,8 @@ vxPath.VX_CONFIG_PATH = path.resolve(vxPath.VX_ROOT_PATH, opts.dir.CONFIG);
 
 vxPath.VX_SCRIPTS_PATH = path.resolve(vxPath.VX_ROOT_PATH, 'scripts');
 
+vxPath.VX_COMMANDS_PATH = path.resolve(vxPath.VX_ROOT_PATH, 'commands');
+
 vxPath.ROLLUP_CONFIG_PATH = path.resolve(
   vxPath.VX_CONFIG_PATH,
   'rollup',

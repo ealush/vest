@@ -4,30 +4,30 @@ const path = require('path');
 
 const dotenv = require('dotenv');
 const glob = require('glob');
+const { hideBin } = require('yargs/helpers');
+const yargs = require('yargs/yargs');
+
+const genTsConfig = require('./scripts/genTsConfig');
+
 const logger = require('vx/logger');
 const packageNames = require('vx/packageNames');
 const joinTruthy = require('vx/util/joinTruthy');
 const { usePackage } = require('vx/vxContext');
 const ctx = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
-const { hideBin } = require('yargs/helpers');
-const yargs = require('yargs/yargs');
-
-const genTsConfig = require('./scripts/genTsConfig');
 
 dotenv.config();
 
 const commands = glob
-  .sync(`./commands/*.js`, {
+  .sync(`./commands/*/*.js`, {
     cwd: vxPath.VX_ROOT_PATH,
+    absolute: true,
   })
-  .reduce(
-    (commands, command) =>
-      Object.assign(commands, {
-        [path.basename(command, '.js')]: require(command),
-      }),
-    {}
-  );
+  .reduce((commands, command) => {
+    return Object.assign(commands, {
+      [path.basename(command, '.js')]: require(command),
+    });
+  }, {});
 
 genTsConfig();
 

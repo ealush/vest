@@ -1,0 +1,8 @@
+{
+  "name": "{{PACKAGE_NAME}}",
+  "version": "{{PACKAGE_VERSION}}",
+  "description": "{{PACKAGE_DESCRIPTION}}",
+  "license": "{{PACKAGE_LICENSE}}",
+  "author": "{{PACKAGE_AUTHOR}}",
+  "private": true
+}

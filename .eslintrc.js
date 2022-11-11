@@ -57,7 +57,7 @@ module.exports = {
   plugins: ['jest'],
   rules: {
     complexity: [2, { max: 5 }],
-    'import/extensions': [2, 'never'],
+    'import/extensions': [0, 'ignorePackages'],
     'import/first': 2,
     'import/newline-after-import': 1,
     'import/no-duplicates': 2,

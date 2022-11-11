@@ -1,7 +1,7 @@
 const path = require('path');
 
 const glob = require('glob');
-const opts = require('vx/opts');
+
 const packageJson = require('vx/util/packageJson');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
@@ -16,14 +16,7 @@ module.exports = Object.defineProperty(
   }
 );
 
-const paths = glob.sync(vxPath.package('*')).filter(packagePath => {
-  const packageJson = require(path.resolve(
-    packagePath,
-    opts.fileNames.PACKAGE_JSON
-  ));
-
-  return !packageJson.private;
-});
+const paths = glob.sync(vxPath.package('*'));
 
 paths.forEach(packagePath => {
   const basename = path.basename(packagePath);

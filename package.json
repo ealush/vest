@@ -37,7 +37,7 @@
     "prettier": "^2.7.1",
     "pretty-quick": "^3.1.1",
     "tsc": "^2.0.4",
-    "tslib": "^2.4.0",
+    "tslib": "^2.4.1",
     "typescript": "^4.8.4",
     "vx": "./vx",
     "wait": "^0.4.2"

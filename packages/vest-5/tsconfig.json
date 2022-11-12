@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "rootDir": ".",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declarationDir": "./types",
+    "declarationMap": true,
+    "outDir": "./dist",
+    "paths": {
+      "vest-5": ["src/vest-5.ts"]
+    }
+  }
+}

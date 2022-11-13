@@ -9,8 +9,12 @@ function createSuite<T extends CB>(
   ...args: [suiteName: SuiteName, suiteCallback: T] | [suiteCallback: T]
 ): Suite<T> {
   const [suiteCallback, suiteName] = args.reverse() as [T, SuiteName];
+
+  return {};
 }
 
 export type SuiteName = string | void;
 
-export type Suite<T extends CB> = {};
+export type Suite<T extends CB> = Record<string, any>;
+
+export default createSuite;

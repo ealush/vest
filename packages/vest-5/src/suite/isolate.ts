@@ -4,6 +4,6 @@ export enum IsolateTypes {
 
 export type Isolate = {
   type: IsolateTypes;
-  path: number[];
   cursor: number;
+  children: Isolate[];
 };

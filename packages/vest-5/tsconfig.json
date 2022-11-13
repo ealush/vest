@@ -8,6 +8,8 @@
     "outDir": "./dist",
     "paths": {
       "createSuite": ["src/suite/createSuite.ts"],
+      "ctx": ["src/suite/ctx.ts"],
+      "isolate": ["src/suite/isolate.ts"],
       "vest-5": ["src/vest-5.ts"]
     }
   }

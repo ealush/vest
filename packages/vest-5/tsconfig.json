@@ -7,11 +7,11 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "createIsolate": ["src/suite/createIsolate.ts"],
+      "ctx": ["src/context/ctx.ts"],
+      "createIsolate": ["src/isolate/createIsolate.ts"],
+      "isolate": ["src/isolate/isolate.ts"],
+      "isolateTypes": ["src/isolate/isolateTypes.ts"],
       "createSuite": ["src/suite/createSuite.ts"],
-      "ctx": ["src/suite/ctx.ts"],
-      "isolate": ["src/suite/isolate.ts"],
-      "isolateTypes": ["src/suite/isolateTypes.ts"],
       "vest-5": ["src/vest-5.ts"]
     }
   }

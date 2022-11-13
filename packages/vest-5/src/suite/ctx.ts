@@ -1,8 +1,11 @@
 import { createContext } from 'context';
 
-import { Isolate } from './isolate';
+import { createIsolate } from './createIsolate';
+import { Isolate } from './isolateTypes';
 
-const suiteRuntime = createContext<SuiteRuntime>();
+const suiteRuntime = createContext<SuiteRuntime>({
+  isolate: createIsolate(),
+});
 
 type SuiteRuntime = {
   isolate: Isolate;
@@ -12,6 +15,6 @@ function useSuiteRuntime() {
   return suiteRuntime.useX();
 }
 
-function useIsolate() {
+export function useIsolate() {
   return useSuiteRuntime().isolate;
 }

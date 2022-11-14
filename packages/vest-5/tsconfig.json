@@ -8,11 +8,14 @@
     "outDir": "./dist",
     "paths": {
       "ctx": ["src/context/ctx.ts"],
+      "group": ["src/group/group.ts"],
       "createIsolate": ["src/isolate/createIsolate.ts"],
       "isolate": ["src/isolate/isolate.ts"],
       "isolateTypes": ["src/isolate/isolateTypes.ts"],
       "createSuite": ["src/suite/createSuite.ts"],
       "test": ["src/test/test.ts"],
+      "TestTypes": ["src/test/TestTypes.ts"],
+      "VestTest": ["src/test/VestTest.ts"],
       "vest-5": ["src/vest-5.ts"]
     }
   }

@@ -10,11 +10,9 @@ export function isolate<T>(type: IsolateTypes, callback: IsolateCb<T>): T {
   const child = createIsolate<T>(type);
 
   if (parent) {
-    // @ts-ignore
     parent.children[parent.cursor++] = child;
   }
 
-  // @ts-ignore
   return suiteRuntime.run<T>(child, () => {
     const result = callback();
 

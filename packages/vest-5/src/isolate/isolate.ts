@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { suiteRuntime, useIsolate } from '../context/ctx';
+import { suiteRuntime, useIsolate } from 'ctx';
 
-import { createIsolate } from './createIsolate';
-import { IsolateTypes } from './isolateTypes';
+import { createIsolate } from 'createIsolate';
+import { IsolateTypes } from 'isolateTypes';
 
 export function isolate<T>(type: IsolateTypes, callback: IsolateCb<T>): T {
   const parent = useIsolate();

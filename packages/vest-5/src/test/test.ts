@@ -1,16 +1,15 @@
 import { isolate } from 'isolate';
 
+import { TestFn } from 'TestTypes';
 import { IsolateTypes } from 'isolateTypes';
 
-type TestCallback = () => void | false | Promise<void | false | string>;
-
-function vestTest(name: string, message: string, cb: TestCallback): void;
-function vestTest(name: string, cb: TestCallback): void;
+function vestTest(name: string, message: string, cb: TestFn): void;
+function vestTest(name: string, cb: TestFn): void;
 function vestTest(
   name: string,
-  ...args: [message: string, cb: TestCallback] | [cb: TestCallback]
+  ...args: [message: string, cb: TestFn] | [cb: TestFn]
 ): void {
-  const [cb, message] = args.reverse() as [TestCallback, string | undefined];
+  const [cb, message] = args.reverse() as [TestFn, string | undefined];
 
   return isolate(IsolateTypes.TEST, () => {
     cb();

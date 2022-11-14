@@ -1,6 +1,6 @@
 import { createContext } from 'context';
 
-import { Isolate } from '../isolate/isolateTypes';
+import { Isolate } from 'isolateTypes';
 
 export const suiteRuntime = createContext<SuiteRuntime>();
 

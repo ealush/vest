@@ -12,6 +12,7 @@
       "isolate": ["src/isolate/isolate.ts"],
       "isolateTypes": ["src/isolate/isolateTypes.ts"],
       "createSuite": ["src/suite/createSuite.ts"],
+      "test": ["src/test/test.ts"],
       "vest-5": ["src/vest-5.ts"]
     }
   }

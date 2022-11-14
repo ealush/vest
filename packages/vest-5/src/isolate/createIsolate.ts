@@ -1,4 +1,4 @@
-import { Isolate, IsolateTypes } from './isolateTypes';
+import { Isolate, IsolateTypes } from 'isolateTypes';
 
 export function createIsolate<T>(
   type: IsolateTypes = IsolateTypes.DEFAULT,

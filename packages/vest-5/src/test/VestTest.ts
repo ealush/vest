@@ -1,6 +1,6 @@
 import { seq } from 'vest-utils';
 
-import { AsyncTest, TestFn, TestResult } from 'TestTypes';
+import { TestFn, TestResult } from 'TestTypes';
 import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
 
 enum TestSeverity {

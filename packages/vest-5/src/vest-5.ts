@@ -1,1 +1,5 @@
-export const main = () => 'vest-5';
+import { createSuite } from 'createSuite';
+import { group } from 'group';
+import { test } from 'test';
+
+export { createSuite, test, group };

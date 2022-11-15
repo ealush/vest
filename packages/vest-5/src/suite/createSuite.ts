@@ -24,4 +24,4 @@ export type SuiteName = string | void;
 
 export type Suite<T extends CB> = Record<string, any>;
 
-export default createSuite;
+export { createSuite };

@@ -13,6 +13,8 @@
       "isolate": ["src/isolate/isolate.ts"],
       "isolateTypes": ["src/isolate/isolateTypes.ts"],
       "createSuite": ["src/suite/createSuite.ts"],
+      "produceSuiteSummary": ["src/suiteResult/produceSuiteSummary.ts"],
+      "SuiteSymmaryTypes": ["src/suiteResult/SuiteSymmaryTypes.ts"],
       "shouldUseErrorMessage": ["src/test/shouldUseErrorMessage.ts"],
       "test": ["src/test/test.ts"],
       "TestTypes": ["src/test/TestTypes.ts"],

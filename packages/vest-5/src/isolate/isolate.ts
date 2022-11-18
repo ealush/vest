@@ -17,11 +17,15 @@ export function isolate<T>(
     parent.children[parent.cursor++] = child;
   }
 
-  return suiteRuntime.run<T>(child, () => {
+  const result = suiteRuntime.run<T>(child, () => {
     const result = callback();
 
     return result;
   });
+
+  console.log(JSON.stringify(child, null, 2));
+
+  return result;
 }
 
 type IsolateCb<T> = (...args: any[]) => T;

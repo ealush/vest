@@ -1,7 +1,8 @@
-import { TestFn } from 'TestTypes';
 import { VestTest } from 'VestTest';
 import { currentTest } from 'ctx';
 import { isolate } from 'isolate';
+
+import { TestFn } from 'TestTypes';
 import { IsolateTypes } from 'isolateTypes';
 
 function vestTest(name: string, message: string, cb: TestFn): VestTest;
@@ -16,13 +17,17 @@ function vestTest(
     message,
   });
 
-  return isolate(IsolateTypes.TEST, () => {
-    return currentTest.run(test, () => {
-      test.run();
+  return isolate(
+    IsolateTypes.TEST,
+    () => {
+      return currentTest.run(test, () => {
+        test.run();
 
-      return test;
-    });
-  });
+        return test;
+      });
+    },
+    test
+  );
 }
 
 export { vestTest as test };

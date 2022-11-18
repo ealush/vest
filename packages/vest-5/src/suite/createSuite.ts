@@ -1,6 +1,6 @@
+import { isolate } from 'isolate';
 import type { CB } from 'vest-utils';
 
-import { isolate } from 'isolate';
 import { IsolateTypes } from 'isolateTypes';
 
 function createSuite<T extends CB>(

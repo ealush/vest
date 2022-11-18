@@ -4,10 +4,14 @@ import { suiteRuntime, useIsolate } from 'ctx';
 import { createIsolate } from 'createIsolate';
 import { IsolateTypes } from 'isolateTypes';
 
-export function isolate<T>(type: IsolateTypes, callback: IsolateCb<T>): T {
+export function isolate<T>(
+  type: IsolateTypes,
+  callback: IsolateCb<T>,
+  data?: T
+): T {
   const parent = useIsolate();
 
-  const child = createIsolate<T>(type);
+  const child = createIsolate<T>(type, data);
 
   if (parent) {
     parent.children[parent.cursor++] = child;

@@ -16,6 +16,7 @@
       "SuiteWalker": ["src/isolate/SuiteWalker.ts"],
       "walker": ["src/isolate/walker.ts"],
       "optional": ["src/optional/optional.ts"],
+      "OptionalTypes": ["src/optional/OptionalTypes.ts"],
       "createSuite": ["src/suite/createSuite.ts"],
       "hasFailuresByTestObjects": [
         "src/suiteResult/hasFailuresByTestObjects.ts"

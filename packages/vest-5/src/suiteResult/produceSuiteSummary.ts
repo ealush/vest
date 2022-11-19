@@ -1,5 +1,4 @@
 import { countKeyBySeverity, Severity } from 'Severity';
-import { TestWalker } from 'SuiteWalker';
 import { VestTest } from 'VestTest';
 import {
   shouldAddValidProperty,
@@ -15,6 +14,7 @@ import {
   Tests,
   TestsContainer,
 } from 'SuiteSymmaryTypes';
+import { TestWalker } from 'SuiteWalker';
 
 export function produceSuiteSummary(): SuiteSummary {
   const summary: SuiteSummary = assign(baseStats(), {

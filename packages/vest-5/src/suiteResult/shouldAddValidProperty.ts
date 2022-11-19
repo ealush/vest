@@ -1,7 +1,4 @@
-// TODO: IMPLEMENT
-
 import { Severity } from 'Severity';
-import { TestWalker } from 'SuiteWalker';
 import { VestTest } from 'VestTest';
 import {
   hasErrorsByTestObjects,
@@ -9,11 +6,11 @@ import {
 } from 'hasFailuresByTestObjects';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
-import {
-  isOptionalFiedApplied,
-  OptionalFieldTypes,
-  useOptionalField,
-} from 'optional';
+import { isOptionalFiedApplied } from 'optional';
+
+import { OptionalFieldTypes } from 'OptionalTypes';
+import { useOptionalField } from 'SuiteContext';
+import { TestWalker } from 'SuiteWalker';
 
 export function shouldAddValidProperty(fieldName: string): boolean {
   // Is the field optional, and the optional condition is applied
@@ -21,10 +18,8 @@ export function shouldAddValidProperty(fieldName: string): boolean {
     return true;
   }
 
-  // const testObjects = useTestsFlat();
-
-  // // Are there no tests?
-  if (TestWalker.hasAnyTests()) {
+  // Are there no tests?
+  if (TestWalker.hasNoTests()) {
     return false;
   }
 

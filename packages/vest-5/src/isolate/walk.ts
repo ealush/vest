@@ -1,8 +1,9 @@
-import { Isolate } from 'isolateTypes';
+import { Isolate, IsolateTypes } from 'isolateTypes';
 
 export function walk(
   startNode: Isolate<unknown>,
-  callback: (isolate: Isolate<unknown>, breakout: () => void) => void
+  callback: (isolate: Isolate<unknown>, breakout: () => void) => void,
+  visitOnly?: IsolateTypes
 ): void {
   let broke = false;
 
@@ -11,7 +12,20 @@ export function walk(
       return;
     }
 
-    callback(isolate, breakout);
+    if (!visitOnly || isolate.type === visitOnly) {
+      callback(isolate, breakout);
+    }
+
+    walk(
+      isolate,
+      (child, innerBreakout) => {
+        callback(child, () => {
+          innerBreakout();
+          breakout();
+        });
+      },
+      visitOnly
+    );
   }
 
   function breakout() {

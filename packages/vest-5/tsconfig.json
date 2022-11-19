@@ -12,11 +12,20 @@
       "createIsolate": ["src/isolate/createIsolate.ts"],
       "isolate": ["src/isolate/isolate.ts"],
       "isolateTypes": ["src/isolate/isolateTypes.ts"],
-      "walk": ["src/isolate/walk.ts"],
+      "walker": ["src/isolate/walker.ts"],
       "createSuite": ["src/suite/createSuite.ts"],
+      "hasFailuresByTestObjects": [
+        "src/suiteResult/hasFailuresByTestObjects.ts"
+      ],
       "produceSuiteSummary": ["src/suiteResult/produceSuiteSummary.ts"],
       "Severity": ["src/suiteResult/Severity.ts"],
+      "shouldAddValidProperty": ["src/suiteResult/shouldAddValidProperty.ts"],
       "SuiteSymmaryTypes": ["src/suiteResult/SuiteSymmaryTypes.ts"],
+      "matchingFieldName": ["src/test/helpers/matchingFieldName.ts"],
+      "matchingGroupName": ["src/test/helpers/matchingGroupName.ts"],
+      "nonMatchingSeverityProfile": [
+        "src/test/helpers/nonMatchingSeverityProfile.ts"
+      ],
       "shouldUseErrorMessage": ["src/test/shouldUseErrorMessage.ts"],
       "test": ["src/test/test.ts"],
       "TestTypes": ["src/test/TestTypes.ts"],

@@ -1,10 +1,12 @@
-import { Severity } from 'Severity';
-import VestTest from 'VestTest';
-
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
-import nonMatchingSeverityProfile from 'nonMatchingSeverityProfile';
-import { useTestsFlat } from 'stateHooks';
+import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
+import * as walker from 'walker';
+
+import { Severity } from 'Severity';
+import { VestTest } from 'VestTest';
+import { useIsolate } from 'ctx';
+import { Isolate, IsolateTypes } from 'isolateTypes';
 
 /**
  * The difference between this file and hasFailures is that hasFailures uses the static
@@ -19,9 +21,17 @@ export function hasFailuresByTestObjects(
   severityKey: Severity,
   fieldName?: string
 ): boolean {
-  const testObjects = useTestsFlat();
-  return testObjects.some(testObject =>
-    hasFailuresByTestObject(testObject, severityKey, fieldName)
+  const isolate = useIsolate();
+  return walker.some(
+    isolate,
+    (node: Isolate<unknown>) => {
+      return hasFailuresByTestObject(
+        node.data as VestTest,
+        severityKey,
+        fieldName
+      );
+    },
+    IsolateTypes.TEST
   );
 }
 
@@ -30,14 +40,19 @@ export function hasGroupFailuresByTestObjects(
   groupName: string,
   fieldName?: string
 ): boolean {
-  const testObjects = useTestsFlat();
-  return testObjects.some(testObject => {
-    if (nonMatchingGroupName(testObject, groupName)) {
-      return false;
-    }
+  const isolate = useIsolate();
+  return walker.some(
+    isolate,
+    (node: Isolate<unknown>) => {
+      const testObject = node.data as VestTest;
+      if (nonMatchingGroupName(testObject, groupName)) {
+        return false;
+      }
 
-    return hasFailuresByTestObject(testObject, severityKey, fieldName);
-  });
+      return hasFailuresByTestObject(testObject, severityKey, fieldName);
+    },
+    IsolateTypes.TEST
+  );
 }
 
 /**

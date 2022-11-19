@@ -1,7 +1,7 @@
-import { countKeyBySeverity, Severity } from 'Severity';
-import { VestTest } from 'VestTest';
 import { assign } from 'vest-utils';
+import * as walker from 'walker';
 
+import { countKeyBySeverity, Severity } from 'Severity';
 import {
   Group,
   Groups,
@@ -10,8 +10,12 @@ import {
   Tests,
   TestsContainer,
 } from 'SuiteSymmaryTypes';
+import { VestTest } from 'VestTest';
 import { Isolate, IsolateTypes } from 'isolateTypes';
-import { walk } from 'walk';
+import {
+  shouldAddValidProperty,
+  shouldAddValidPropertyInGroup,
+} from 'shouldAddValidProperty';
 
 export function produceSuiteSummary(isolate: Isolate<unknown>): SuiteSummary {
   const summary: SuiteSummary = assign(baseStats(), {
@@ -20,7 +24,7 @@ export function produceSuiteSummary(isolate: Isolate<unknown>): SuiteSummary {
     valid: false,
   });
 
-  walk(
+  walker.walk(
     isolate,
     (node: Isolate<unknown>) => {
       const testIsolate = node as Isolate<VestTest>;
@@ -40,11 +44,13 @@ export function produceSuiteSummary(isolate: Isolate<unknown>): SuiteSummary {
 }
 
 function appendToTest(tests: Tests, testObject: VestTest) {
-  tests[testObject.name] = appendTestObject(tests, testObject);
+  tests[testObject.fieldName] = appendTestObject(tests, testObject);
   // If `valid` is false to begin with, keep it that way. Otherwise, assess.
-  tests[testObject.name].valid =
+  tests[testObject.fieldName].valid =
     // eslint-disable-next-line no-unneeded-ternary
-    tests[testObject.name].valid === false ? false : true; //TODO: UNCOMMENT shouldAddValidProperty(testObject.name);
+    tests[testObject.fieldName].valid === false
+      ? false
+      : shouldAddValidProperty(testObject.fieldName);
 }
 
 /**
@@ -58,16 +64,15 @@ function appendToGroup(groups: Groups, testObject: VestTest) {
   }
 
   groups[groupName] = groups[groupName] || {};
-  groups[groupName][testObject.name] = appendTestObject(
+  groups[groupName][testObject.fieldName] = appendTestObject(
     groups[groupName],
     testObject
   );
 
-  // TODO: ADD THIS PART BACK
-  // groups[groupName][testObject.name].valid =
-  //   groups[groupName][testObject.name].valid === false
-  //     ? false
-  //     : shouldAddValidPropertyInGroup(groupName, testObject.name);
+  groups[groupName][testObject.fieldName].valid =
+    groups[groupName][testObject.fieldName].valid === false
+      ? false
+      : shouldAddValidPropertyInGroup(groupName, testObject.fieldName);
 }
 
 /**
@@ -96,15 +101,15 @@ function appendTestObject(
   summaryKey: Group | Tests,
   testObject: VestTest
 ): TestsContainer[keyof TestsContainer] {
-  const { name, message } = testObject;
+  const { fieldName, message } = testObject;
 
-  summaryKey[name] = summaryKey[name] || baseTestStats();
+  summaryKey[fieldName] = summaryKey[fieldName] || baseTestStats();
 
-  const testKey = summaryKey[name];
+  const testKey = summaryKey[fieldName];
 
   if (testObject.isNonActionable()) return testKey;
 
-  summaryKey[name].testCount++;
+  summaryKey[fieldName].testCount++;
 
   if (testObject.isFailing()) {
     incrementFailures(Severity.ERRORS);

@@ -9,7 +9,7 @@ enum TestSeverity {
 }
 
 export class VestTest {
-  name: string;
+  fieldName: string;
   testFn: TestFn;
   groupName?: string;
   message?: string;
@@ -21,7 +21,7 @@ export class VestTest {
   status: KStatus = STATUS_UNTESTED;
 
   constructor(
-    name: string,
+    fieldName: string,
     testFn: TestFn,
     {
       message,
@@ -29,7 +29,7 @@ export class VestTest {
     }: // key,
     { message?: string; groupName?: string; key?: string } = {}
   ) {
-    this.name = name;
+    this.fieldName = fieldName;
     this.testFn = testFn;
 
     if (groupName) {

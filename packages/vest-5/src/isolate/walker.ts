@@ -57,3 +57,27 @@ export function some(
 
   return hasMatch;
 }
+
+export function has(startNode: Isolate, match: IsolateTypes): boolean {
+  return some(startNode, () => true, match);
+}
+
+export function find(
+  startNode: Isolate,
+  predicate: (node: Isolate) => boolean,
+  visitOnly?: IsolateTypes
+): Isolate | null {
+  let found = null;
+  walk(
+    startNode,
+    (node, breakout) => {
+      if (predicate(node)) {
+        breakout();
+        found = node;
+      }
+    },
+    visitOnly
+  );
+
+  return found;
+}

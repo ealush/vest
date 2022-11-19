@@ -1,11 +1,10 @@
+import { Severity } from 'Severity';
+import { SuiteWalker } from 'SuiteWalker';
+import { VestTest } from 'VestTest';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
 import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
-import * as walker from 'walker';
 
-import { Severity } from 'Severity';
-import { VestTest } from 'VestTest';
-import { useIsolate } from 'ctx';
 import { Isolate, IsolateTypes } from 'isolateTypes';
 
 /**
@@ -21,18 +20,13 @@ export function hasFailuresByTestObjects(
   severityKey: Severity,
   fieldName?: string
 ): boolean {
-  const isolate = useIsolate();
-  return walker.some(
-    isolate,
-    (node: Isolate) => {
-      return hasFailuresByTestObject(
-        node.data as VestTest,
-        severityKey,
-        fieldName
-      );
-    },
-    IsolateTypes.TEST
-  );
+  return SuiteWalker.some((node: Isolate) => {
+    return hasFailuresByTestObject(
+      node.data as VestTest,
+      severityKey,
+      fieldName
+    );
+  }, IsolateTypes.TEST);
 }
 
 export function hasGroupFailuresByTestObjects(
@@ -40,19 +34,14 @@ export function hasGroupFailuresByTestObjects(
   groupName: string,
   fieldName?: string
 ): boolean {
-  const isolate = useIsolate();
-  return walker.some(
-    isolate,
-    (node: Isolate) => {
-      const testObject = node.data as VestTest;
-      if (nonMatchingGroupName(testObject, groupName)) {
-        return false;
-      }
+  return SuiteWalker.some((node: Isolate) => {
+    const testObject = node.data as VestTest;
+    if (nonMatchingGroupName(testObject, groupName)) {
+      return false;
+    }
 
-      return hasFailuresByTestObject(testObject, severityKey, fieldName);
-    },
-    IsolateTypes.TEST
-  );
+    return hasFailuresByTestObject(testObject, severityKey, fieldName);
+  }, IsolateTypes.TEST);
 }
 
 /**

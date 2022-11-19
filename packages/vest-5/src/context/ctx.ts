@@ -1,15 +1,17 @@
 import { VestTest } from 'VestTest';
 import { createContext } from 'context';
+
 import { Isolate } from 'isolateTypes';
 
-export const suiteRuntime = createContext<SuiteRuntime>();
-export const currentTest = createContext<VestTest | undefined>(undefined);
-export const currentGroup = createContext<string | undefined>(undefined);
-
-type SuiteRuntime = Isolate;
+export const SuiteRuntimeContext = createContext<Isolate>();
+export const SuiteRuntimeRootContext = createContext<Isolate>();
+export const CurrentTestContext = createContext<VestTest | undefined>(
+  undefined
+);
+export const CurrentGroupContext = createContext<string | undefined>(undefined);
 
 function useSuiteRuntime() {
-  return suiteRuntime.use();
+  return SuiteRuntimeContext.use();
 }
 
 export function useIsolate() {
@@ -17,9 +19,9 @@ export function useIsolate() {
 }
 
 export function useCurrentTest() {
-  return currentTest.use();
+  return CurrentTestContext.use();
 }
 
 export function useCurrentGroup() {
-  return currentGroup.use();
+  return CurrentGroupContext.use();
 }

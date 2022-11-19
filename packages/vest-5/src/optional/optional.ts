@@ -1,4 +1,4 @@
-import { createContext } from 'context/src/context';
+import { createContext } from 'context';
 import {
   isArray,
   isStringValue,

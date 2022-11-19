@@ -8,6 +8,7 @@
     "outDir": "./dist",
     "paths": {
       "ctx": ["src/context/ctx.ts"],
+      "SuiteContext": ["src/context/SuiteContext.ts"],
       "group": ["src/group/group.ts"],
       "createIsolate": ["src/isolate/createIsolate.ts"],
       "isolate": ["src/isolate/isolate.ts"],

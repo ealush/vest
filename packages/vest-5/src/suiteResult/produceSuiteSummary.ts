@@ -1,11 +1,11 @@
 import { countKeyBySeverity, Severity } from 'Severity';
+import { TestWalker } from 'SuiteWalker';
 import { VestTest } from 'VestTest';
 import {
   shouldAddValidProperty,
   shouldAddValidPropertyInGroup,
 } from 'shouldAddValidProperty';
 import { assign } from 'vest-utils';
-import * as walker from 'walker';
 
 import {
   Group,
@@ -15,30 +15,18 @@ import {
   Tests,
   TestsContainer,
 } from 'SuiteSymmaryTypes';
-import { Isolate, IsolateTypes } from 'isolateTypes';
 
-export function produceSuiteSummary(isolate: Isolate): SuiteSummary {
+export function produceSuiteSummary(): SuiteSummary {
   const summary: SuiteSummary = assign(baseStats(), {
     groups: {},
     tests: {},
     valid: false,
   });
 
-  walker.walk(
-    isolate,
-    (node: Isolate) => {
-      const testIsolate = node as Isolate;
-      const testObject = testIsolate.data;
-
-      if (!testObject) {
-        return;
-      }
-
-      appendToTest(summary.tests, testObject);
-      appendToGroup(summary.groups, testObject);
-    },
-    IsolateTypes.TEST
-  );
+  TestWalker.walkTests(testObject => {
+    appendToTest(summary.tests, testObject);
+    appendToGroup(summary.groups, testObject);
+  });
 
   return countFailures(summary);
 }

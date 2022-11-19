@@ -81,3 +81,23 @@ export function find(
 
   return found;
 }
+
+export function every(
+  startNode: Isolate,
+  predicate: (node: Isolate) => boolean,
+  visitOnly?: IsolateTypes
+): boolean {
+  let hasMatch = true;
+  walk(
+    startNode,
+    (node, breakout) => {
+      if (!predicate(node)) {
+        breakout();
+        hasMatch = false;
+      }
+    },
+    visitOnly
+  );
+
+  return hasMatch;
+}

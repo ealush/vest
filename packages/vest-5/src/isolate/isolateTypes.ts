@@ -6,9 +6,9 @@ export enum IsolateTypes {
   GROUP = 'GROUP',
 }
 
-export type Isolate<T> = {
+export type Isolate = {
   type: IsolateTypes;
   cursor: number;
-  children: Isolate<T>[];
-  data?: T | undefined;
+  children: Isolate[];
+  data?: any;
 };

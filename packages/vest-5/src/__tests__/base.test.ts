@@ -7,9 +7,10 @@ describe('base scenario', () => {
 
       group('some group', () => {
         test('password', 'password is too short', () => false);
+        test('password', 'password is too short', () => {});
       });
     });
 
-    suite();
+    console.log(suite());
   });
 });

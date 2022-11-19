@@ -61,6 +61,14 @@ export function optional(optionals: OptionalsInput): void {
   }
 }
 
+export function isOptionalFiedApplied(fieldName?: string) {
+  if (!fieldName) {
+    return false;
+  }
+
+  return useOptionalField(fieldName).applied;
+}
+
 type OptionalFields = Record<string, OptionalFieldDeclaration>;
 
 type OptionalsInput = string | string[] | OptionalsObject;

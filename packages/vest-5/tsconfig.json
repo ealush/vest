@@ -13,6 +13,7 @@
       "isolate": ["src/isolate/isolate.ts"],
       "isolateTypes": ["src/isolate/isolateTypes.ts"],
       "walker": ["src/isolate/walker.ts"],
+      "optional": ["src/optional/optional.ts"],
       "createSuite": ["src/suite/createSuite.ts"],
       "hasFailuresByTestObjects": [
         "src/suiteResult/hasFailuresByTestObjects.ts"

@@ -1,9 +1,9 @@
 import { Isolate, IsolateTypes } from 'isolateTypes';
 
-export function createIsolate<T>(
+export function createIsolate(
   type: IsolateTypes = IsolateTypes.DEFAULT,
-  data?: T | undefined
-): Isolate<T> {
+  data?: any
+): Isolate {
   return {
     children: [],
     cursor: 0,

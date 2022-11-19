@@ -5,20 +5,16 @@ import { CB } from 'vest-utils';
 import { createIsolate } from 'createIsolate';
 import { Isolate, IsolateTypes } from 'isolateTypes';
 
-export function isolate<T = unknown>(
-  type: IsolateTypes,
-  callback: CB,
-  data?: T
-): Isolate<T> {
+export function isolate(type: IsolateTypes, callback: CB, data?: any): Isolate {
   const parent = useIsolate();
 
-  const current = createIsolate<T>(type, data);
+  const current = createIsolate(type, data);
 
   if (parent) {
     parent.children[parent.cursor++] = current;
   }
 
-  suiteRuntime.run<T>(current, callback);
+  suiteRuntime.run(current, callback);
 
   return current;
 }

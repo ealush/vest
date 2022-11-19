@@ -17,7 +17,7 @@ function createSuite<T extends CB>(
 
   function suite() {
     let output;
-    const rootIsolate = isolate(IsolateTypes.SUITE, () => {
+    isolate(IsolateTypes.SUITE, () => {
       suiteCallback();
 
       output = produceSuiteSummary();

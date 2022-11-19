@@ -39,8 +39,8 @@ export class SuiteWalker {
 }
 
 export class TestWalker {
-  static hasAnyTests(): boolean {
-    return SuiteWalker.has(IsolateTypes.TEST);
+  static hasNoTests(): boolean {
+    return !SuiteWalker.has(IsolateTypes.TEST);
   }
 
   static someIncompleteTests(predicate: (test: VestTest) => boolean): boolean {

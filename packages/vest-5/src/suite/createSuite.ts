@@ -2,6 +2,8 @@ import { isolate } from 'isolate';
 import { SuiteSummary } from 'vest';
 import type { CB } from 'vest-utils';
 
+import { SuiteContext } from '../context/SuiteContext';
+
 import { IsolateTypes } from 'isolateTypes';
 import { produceSuiteSummary } from 'produceSuiteSummary';
 
@@ -18,9 +20,10 @@ function createSuite<T extends CB>(
   function suite() {
     let output;
     isolate(IsolateTypes.SUITE, () => {
-      suiteCallback();
-
-      output = produceSuiteSummary();
+      SuiteContext.run({}, () => {
+        suiteCallback();
+        output = produceSuiteSummary();
+      });
     });
 
     return output as unknown as SuiteSummary;

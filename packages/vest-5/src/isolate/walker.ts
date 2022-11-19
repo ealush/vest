@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import { Isolate, IsolateTypes } from 'isolateTypes';
 
 export function walk(
@@ -16,6 +17,10 @@ export function walk(
       callback(isolate, breakout);
     }
 
+    if (broke) {
+      return;
+    }
+
     walk(
       isolate,
       (child, innerBreakout) => {
@@ -31,4 +36,24 @@ export function walk(
   function breakout() {
     broke = true;
   }
+}
+
+export function some(
+  startNode: Isolate<unknown>,
+  predicate: (node: Isolate<unknown>) => boolean,
+  visitOnly?: IsolateTypes
+): boolean {
+  let hasMatch = false;
+  walk(
+    startNode,
+    (node, breakout) => {
+      if (predicate(node)) {
+        breakout();
+        hasMatch = true;
+      }
+    },
+    visitOnly
+  );
+
+  return hasMatch;
 }

@@ -1,4 +1,4 @@
-import { isNotEmpty, isEmpty } from 'vest-utils';
+import { isEmpty } from 'vest-utils';
 
 import { Severity } from 'Severity';
 import VestTest from 'VestTest';
@@ -61,24 +61,20 @@ export function shouldAddValidPropertyInGroup(
 
 // Does the given field have any pending tests that are not optional?
 function hasNonOptionalIncomplete(fieldName?: string) {
-  return isNotEmpty(
-    useAllIncomplete().filter(testObject =>
-      isTestObjectOptional(testObject, fieldName)
-    )
+  return useAllIncomplete().some(testObject =>
+    isTestObjectOptional(testObject, fieldName)
   );
 }
 
 // Do the given group/field have any pending tests that are not optional?
 function hasNonOptionalIncompleteByGroup(groupName: string, fieldName: string) {
-  return isNotEmpty(
-    useAllIncomplete().filter(testObject => {
-      if (nonMatchingGroupName(testObject, groupName)) {
-        return false;
-      }
+  return useAllIncomplete().some(testObject => {
+    if (nonMatchingGroupName(testObject, groupName)) {
+      return false;
+    }
 
-      return isTestObjectOptional(testObject, fieldName);
-    })
-  );
+    return isTestObjectOptional(testObject, fieldName);
+  });
 }
 
 function isTestObjectOptional(

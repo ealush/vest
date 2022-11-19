@@ -1,10 +1,11 @@
-import { CurrentGroupContext } from 'ctx';
 import { isolate } from 'isolate';
+
+import { SuiteContext } from '../context/SuiteContext';
 
 import { Isolate, IsolateTypes } from 'isolateTypes';
 
-export function group(name: string, callback: () => void): Isolate {
+export function group(groupName: string, callback: () => void): Isolate {
   return isolate(IsolateTypes.GROUP, () => {
-    CurrentGroupContext.run(name, callback);
+    SuiteContext.run({ groupName }, callback);
   });
 }

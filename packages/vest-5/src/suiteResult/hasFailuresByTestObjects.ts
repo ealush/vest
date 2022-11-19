@@ -24,7 +24,7 @@ export function hasFailuresByTestObjects(
   const isolate = useIsolate();
   return walker.some(
     isolate,
-    (node: Isolate<unknown>) => {
+    (node: Isolate) => {
       return hasFailuresByTestObject(
         node.data as VestTest,
         severityKey,
@@ -43,7 +43,7 @@ export function hasGroupFailuresByTestObjects(
   const isolate = useIsolate();
   return walker.some(
     isolate,
-    (node: Isolate<unknown>) => {
+    (node: Isolate) => {
       const testObject = node.data as VestTest;
       if (nonMatchingGroupName(testObject, groupName)) {
         return false;

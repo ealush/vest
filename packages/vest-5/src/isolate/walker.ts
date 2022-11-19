@@ -2,8 +2,8 @@
 import { Isolate, IsolateTypes } from 'isolateTypes';
 
 export function walk(
-  startNode: Isolate<unknown>,
-  callback: (isolate: Isolate<unknown>, breakout: () => void) => void,
+  startNode: Isolate,
+  callback: (isolate: Isolate, breakout: () => void) => void,
   visitOnly?: IsolateTypes
 ): void {
   let broke = false;
@@ -39,8 +39,8 @@ export function walk(
 }
 
 export function some(
-  startNode: Isolate<unknown>,
-  predicate: (node: Isolate<unknown>) => boolean,
+  startNode: Isolate,
+  predicate: (node: Isolate) => boolean,
   visitOnly?: IsolateTypes
 ): boolean {
   let hasMatch = false;

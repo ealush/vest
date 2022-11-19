@@ -1,6 +1,7 @@
 import { VestTest } from 'VestTest';
-import { CurrentTestContext } from 'ctx';
 import { isolate } from 'isolate';
+
+import { SuiteContext } from '../context/SuiteContext';
 
 import { TestFn } from 'TestTypes';
 import { IsolateTypes } from 'isolateTypes';
@@ -20,7 +21,8 @@ function vestTest(
   isolate(
     IsolateTypes.TEST,
     () => {
-      return CurrentTestContext.run(test, () => {
+      SuiteContext.run({ currentTest: test }, () => {
+        // TODO: Register logic here
         test.run();
       });
     },

@@ -1,5 +1,5 @@
 import { Severity } from 'Severity';
-import { SuiteWalker, TestWalker } from 'SuiteWalker';
+import { TestWalker } from 'SuiteWalker';
 import { VestTest } from 'VestTest';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';

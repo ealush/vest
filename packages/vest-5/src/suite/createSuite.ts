@@ -20,7 +20,7 @@ function createSuite<T extends CB>(
     const rootIsolate = isolate(IsolateTypes.SUITE, () => {
       suiteCallback();
 
-      output = produceSuiteSummary(rootIsolate);
+      output = produceSuiteSummary();
     });
 
     return output as unknown as SuiteSummary;

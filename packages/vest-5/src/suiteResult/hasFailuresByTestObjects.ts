@@ -1,11 +1,9 @@
 import { Severity } from 'Severity';
-import { SuiteWalker } from 'SuiteWalker';
+import { SuiteWalker, TestWalker } from 'SuiteWalker';
 import { VestTest } from 'VestTest';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
 import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
-
-import { Isolate, IsolateTypes } from 'isolateTypes';
 
 /**
  * The difference between this file and hasFailures is that hasFailures uses the static
@@ -20,13 +18,9 @@ export function hasFailuresByTestObjects(
   severityKey: Severity,
   fieldName?: string
 ): boolean {
-  return SuiteWalker.some((node: Isolate) => {
-    return hasFailuresByTestObject(
-      node.data as VestTest,
-      severityKey,
-      fieldName
-    );
-  }, IsolateTypes.TEST);
+  return TestWalker.someTests(testObject => {
+    return hasFailuresByTestObject(testObject, severityKey, fieldName);
+  });
 }
 
 export function hasGroupFailuresByTestObjects(
@@ -34,14 +28,13 @@ export function hasGroupFailuresByTestObjects(
   groupName: string,
   fieldName?: string
 ): boolean {
-  return SuiteWalker.some((node: Isolate) => {
-    const testObject = node.data as VestTest;
+  return TestWalker.someTests(testObject => {
     if (nonMatchingGroupName(testObject, groupName)) {
       return false;
     }
 
     return hasFailuresByTestObject(testObject, severityKey, fieldName);
-  }, IsolateTypes.TEST);
+  });
 }
 
 /**

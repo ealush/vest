@@ -1,7 +1,12 @@
+import { countKeyBySeverity, Severity } from 'Severity';
+import { VestTest } from 'VestTest';
+import {
+  shouldAddValidProperty,
+  shouldAddValidPropertyInGroup,
+} from 'shouldAddValidProperty';
 import { assign } from 'vest-utils';
 import * as walker from 'walker';
 
-import { countKeyBySeverity, Severity } from 'Severity';
 import {
   Group,
   Groups,
@@ -10,14 +15,9 @@ import {
   Tests,
   TestsContainer,
 } from 'SuiteSymmaryTypes';
-import { VestTest } from 'VestTest';
 import { Isolate, IsolateTypes } from 'isolateTypes';
-import {
-  shouldAddValidProperty,
-  shouldAddValidPropertyInGroup,
-} from 'shouldAddValidProperty';
 
-export function produceSuiteSummary(isolate: Isolate<unknown>): SuiteSummary {
+export function produceSuiteSummary(isolate: Isolate): SuiteSummary {
   const summary: SuiteSummary = assign(baseStats(), {
     groups: {},
     tests: {},
@@ -26,8 +26,8 @@ export function produceSuiteSummary(isolate: Isolate<unknown>): SuiteSummary {
 
   walker.walk(
     isolate,
-    (node: Isolate<unknown>) => {
-      const testIsolate = node as Isolate<VestTest>;
+    (node: Isolate) => {
+      const testIsolate = node as Isolate;
       const testObject = testIsolate.data;
 
       if (!testObject) {

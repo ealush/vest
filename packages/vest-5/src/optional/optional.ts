@@ -1,4 +1,3 @@
-import { createContext } from 'context';
 import {
   isArray,
   isStringValue,
@@ -7,27 +6,12 @@ import {
   assign,
 } from 'vest-utils';
 
-const OptionalFieldContext = createContext<OptionalFields>({});
-
-export function useOptionalFields(): OptionalFields {
-  return OptionalFieldContext.useX();
-}
-
-export function useOptionalField(fieldName: string) {
-  return useOptionalFields()[fieldName];
-}
-
-export function useSetOptionalField(
-  fieldName: string,
-  setter: (current: OptionalFieldDeclaration) => OptionalFieldDeclaration
-): void {
-  const current = useOptionalFields();
-  const currentField = useOptionalField(fieldName);
-
-  assign(current, {
-    [fieldName]: assign({}, currentField, setter(currentField)),
-  });
-}
+import {
+  OptionalFieldDeclaration,
+  OptionalFieldTypes,
+  OptionalsInput,
+} from 'OptionalTypes';
+import { useOptionalField, useOptionalFields } from 'SuiteContext';
 
 export function optional(optionals: OptionalsInput): void {
   // There are two types of optional field declarations:
@@ -69,29 +53,14 @@ export function isOptionalFiedApplied(fieldName?: string) {
   return useOptionalField(fieldName).applied;
 }
 
-type OptionalFields = Record<string, OptionalFieldDeclaration>;
+function useSetOptionalField(
+  fieldName: string,
+  setter: (current: OptionalFieldDeclaration) => OptionalFieldDeclaration
+): void {
+  const current = useOptionalFields();
+  const currentField = useOptionalField(fieldName);
 
-type OptionalsInput = string | string[] | OptionalsObject;
-
-type OptionalsObject = Record<string, (() => boolean) | boolean>;
-
-type ImmediateOptionalFieldDeclaration = {
-  type: OptionalFieldTypes.Immediate;
-  rule: boolean | (() => boolean);
-  applied: boolean;
-};
-
-type DelayedOptionalFieldDeclaration = {
-  type: OptionalFieldTypes.Delayed;
-  applied: boolean;
-  rule: null;
-};
-
-export type OptionalFieldDeclaration =
-  | ImmediateOptionalFieldDeclaration
-  | DelayedOptionalFieldDeclaration;
-
-export enum OptionalFieldTypes {
-  Immediate,
-  Delayed,
+  assign(current, {
+    [fieldName]: assign({}, currentField, setter(currentField)),
+  });
 }

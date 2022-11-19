@@ -1,7 +1,7 @@
 import { VestTest } from 'VestTest';
 import { isolate } from 'isolate';
 
-import { SuiteContext } from '../context/SuiteContext';
+import { SuiteContext, useGroupName } from '../context/SuiteContext';
 
 import { TestFn } from 'TestTypes';
 import { IsolateTypes } from 'isolateTypes';
@@ -14,8 +14,11 @@ function vestTest(
 ): VestTest {
   const [cb, message] = args.reverse() as [TestFn, string | undefined];
 
+  const groupName = useGroupName();
+
   const test = new VestTest(fieldName, cb, {
     message,
+    groupName,
   });
 
   isolate(

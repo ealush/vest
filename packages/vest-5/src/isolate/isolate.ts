@@ -1,31 +1,24 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { suiteRuntime, useIsolate } from 'ctx';
+import { CB } from 'vest-utils';
 
 import { createIsolate } from 'createIsolate';
-import { IsolateTypes } from 'isolateTypes';
+import { Isolate, IsolateTypes } from 'isolateTypes';
 
-export function isolate<T>(
+export function isolate<T = unknown>(
   type: IsolateTypes,
-  callback: IsolateCb<T>,
+  callback: CB,
   data?: T
-): T {
+): Isolate<T> {
   const parent = useIsolate();
 
-  const child = createIsolate<T>(type, data);
+  const current = createIsolate<T>(type, data);
 
   if (parent) {
-    parent.children[parent.cursor++] = child;
+    parent.children[parent.cursor++] = current;
   }
 
-  const result = suiteRuntime.run<T>(child, () => {
-    const result = callback();
+  suiteRuntime.run<T>(current, callback);
 
-    return result;
-  });
-
-  console.log(JSON.stringify(child, null, 2));
-
-  return result;
+  return current;
 }
-
-type IsolateCb<T> = (...args: any[]) => T;

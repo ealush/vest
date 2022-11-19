@@ -17,17 +17,17 @@ function vestTest(
     message,
   });
 
-  return isolate(
+  isolate(
     IsolateTypes.TEST,
     () => {
       return currentTest.run(test, () => {
         test.run();
-
-        return test;
       });
     },
     test
   );
+
+  return test;
 }
 
 export { vestTest as test };

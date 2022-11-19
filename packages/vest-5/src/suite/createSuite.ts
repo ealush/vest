@@ -1,24 +1,26 @@
 import { isolate } from 'isolate';
+import { SuiteSummary } from 'vest';
 import type { CB } from 'vest-utils';
 
 import { IsolateTypes } from 'isolateTypes';
+import { produceSuiteSummary } from 'produceSuiteSummary';
 
 function createSuite<T extends CB>(
   suiteName: SuiteName,
   suiteCallback: T
-): Suite<T>;
-function createSuite<T extends CB>(suiteCallback: T): Suite<T>;
+): Suite;
+function createSuite<T extends CB>(suiteCallback: T): Suite;
 function createSuite<T extends CB>(
   ...args: [suiteName: SuiteName, suiteCallback: T] | [suiteCallback: T]
-): Suite<T> {
+): Suite {
   const [suiteCallback /*suiteName*/] = args.reverse() as [T, SuiteName];
 
   function suite() {
-    isolate(IsolateTypes.SUITE, () => {
+    const finishedIsolate = isolate(IsolateTypes.SUITE, () => {
       suiteCallback();
     });
 
-    return {};
+    return produceSuiteSummary(finishedIsolate);
   }
 
   return suite;
@@ -26,8 +28,10 @@ function createSuite<T extends CB>(
 
 export type SuiteName = string | void;
 
-export type Suite<T extends CB> = (...args: any[]) => SuiteMethods<T>;
+export type Suite /*<T extends CB>*/ = (
+  ...args: any[]
+) => SuiteSummary; /* & SuiteMethods<T>;*/
 
-type SuiteMethods<T> = Record<string, T>;
+// type SuiteMethods<T> = Record<string, T>;
 
 export { createSuite };

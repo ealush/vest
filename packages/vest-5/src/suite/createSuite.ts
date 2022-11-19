@@ -16,11 +16,14 @@ function createSuite<T extends CB>(
   const [suiteCallback /*suiteName*/] = args.reverse() as [T, SuiteName];
 
   function suite() {
-    const finishedIsolate = isolate(IsolateTypes.SUITE, () => {
+    let output;
+    const rootIsolate = isolate(IsolateTypes.SUITE, () => {
       suiteCallback();
+
+      output = produceSuiteSummary(rootIsolate);
     });
 
-    return produceSuiteSummary(finishedIsolate);
+    return output as unknown as SuiteSummary;
   }
 
   return suite;

@@ -1,7 +1,8 @@
-import { TestFn } from 'TestTypes';
 import { VestTest } from 'VestTest';
-import { currentTest } from 'ctx';
+import { CurrentTestContext } from 'ctx';
 import { isolate } from 'isolate';
+
+import { TestFn } from 'TestTypes';
 import { IsolateTypes } from 'isolateTypes';
 
 function vestTest(fieldName: string, message: string, cb: TestFn): VestTest;
@@ -19,7 +20,7 @@ function vestTest(
   isolate(
     IsolateTypes.TEST,
     () => {
-      return currentTest.run(test, () => {
+      return CurrentTestContext.run(test, () => {
         test.run();
       });
     },

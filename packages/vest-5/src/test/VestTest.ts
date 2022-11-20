@@ -1,6 +1,6 @@
 import { seq } from 'vest-utils';
 
-import { TestFn, TestResult } from 'TestTypes';
+import { TestFn, TestResult, AsyncTest } from 'TestTypes';
 import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
 
 enum TestSeverity {
@@ -13,7 +13,7 @@ export class VestTest {
   testFn: TestFn;
   groupName?: string;
   message?: string;
-  // asyncTest: AsyncTest | null;
+  asyncTest?: AsyncTest;
   // key?: null | string = null;
 
   id = seq();

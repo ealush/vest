@@ -7,7 +7,6 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "ctx": ["src/context/ctx.ts"],
       "SuiteContext": ["src/context/SuiteContext.ts"],
       "group": ["src/group/group.ts"],
       "createIsolate": ["src/isolate/createIsolate.ts"],
@@ -18,13 +17,16 @@
       "optional": ["src/optional/optional.ts"],
       "OptionalTypes": ["src/optional/OptionalTypes.ts"],
       "createSuite": ["src/suite/createSuite.ts"],
+      "runCallbacks": ["src/suite/runCallbacks.ts"],
       "hasFailuresByTestObjects": [
         "src/suiteResult/hasFailuresByTestObjects.ts"
       ],
       "produceSuiteSummary": ["src/suiteResult/produceSuiteSummary.ts"],
       "Severity": ["src/suiteResult/Severity.ts"],
       "shouldAddValidProperty": ["src/suiteResult/shouldAddValidProperty.ts"],
-      "SuiteSymmaryTypes": ["src/suiteResult/SuiteSymmaryTypes.ts"],
+      "suiteResult": ["src/suiteResult/suiteResult.ts"],
+      "SuiteResultTypes": ["src/suiteResult/SuiteResultTypes.ts"],
+      "suiteRunResult": ["src/suiteResult/suiteRunResult.ts"],
       "matchingFieldName": ["src/test/helpers/matchingFieldName.ts"],
       "matchingGroupName": ["src/test/helpers/matchingGroupName.ts"],
       "nonMatchingSeverityProfile": [

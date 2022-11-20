@@ -28,6 +28,8 @@ export function produceSuiteSummary(): SuiteSummary {
     appendToGroup(summary.groups, testObject);
   });
 
+  summary.valid = shouldAddValidProperty();
+
   return countFailures(summary);
 }
 

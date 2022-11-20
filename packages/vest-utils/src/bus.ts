@@ -1,9 +1,6 @@
 import type { CB } from 'utilityTypes';
 
-export function createBus(): {
-  on: (event: string, handler: CB) => OnReturn;
-  emit: (event: string, ...args: any[]) => void;
-} {
+export function createBus(): BusType {
   const listeners: Record<string, CB[]> = {};
 
   return {
@@ -30,3 +27,8 @@ export function createBus(): {
 }
 
 type OnReturn = { off: () => void };
+
+export type BusType = {
+  on: (event: string, handler: CB) => OnReturn;
+  emit: (event: string, ...args: any[]) => void;
+};

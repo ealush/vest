@@ -1,6 +1,7 @@
+import { initVestBus } from 'VestBus';
 import { VestTest } from 'VestTest';
 import { createCascade } from 'context';
-import { assign } from 'vest-utils';
+import { assign, BusType } from 'vest-utils';
 
 import { OptionalFields } from 'OptionalTypes';
 
@@ -9,12 +10,13 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) =>
     ? null
     : assign(
         {
-          optional: {},
+          VestBus: initVestBus(),
           exclusion: {
             tests: {},
             groups: {},
           },
           inclusion: {},
+          optional: {},
         },
         ctxRef
       )
@@ -29,6 +31,7 @@ type CTXType = {
   currentTest?: VestTest;
   groupName?: string;
   optional: OptionalFields;
+  VestBus: BusType;
   // skipped?: boolean;
   // omitted?: boolean;
 };
@@ -47,4 +50,8 @@ export function useOptionalFields(): OptionalFields {
 
 export function useOptionalField(fieldName: string) {
   return useOptionalFields()[fieldName] ?? {};
+}
+
+export function useVestBus() {
+  return SuiteContext.useX().VestBus;
 }

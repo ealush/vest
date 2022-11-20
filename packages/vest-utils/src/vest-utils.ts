@@ -1,4 +1,5 @@
 export { default as cache, CacheApi } from 'cache';
+export { BusType } from 'bus';
 export { isNullish, isNotNullish } from 'isNullish';
 export * as nestedArray from 'nestedArray';
 export { default as asArray } from 'asArray';

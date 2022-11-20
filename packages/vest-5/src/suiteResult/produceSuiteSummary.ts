@@ -13,7 +13,7 @@ import {
   SuiteSummary,
   Tests,
   TestsContainer,
-} from 'SuiteSymmaryTypes';
+} from 'SuiteResultTypes';
 import { TestWalker } from 'SuiteWalker';
 
 export function produceSuiteSummary(): SuiteSummary {

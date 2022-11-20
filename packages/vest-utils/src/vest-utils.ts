@@ -1,5 +1,6 @@
 export { default as cache, CacheApi } from 'cache';
 export { BusType } from 'bus';
+export { TinyState } from 'tinyState';
 export { isNullish, isNotNullish } from 'isNullish';
 export * as nestedArray from 'nestedArray';
 export { default as asArray } from 'asArray';
@@ -30,6 +31,7 @@ export { isUndefined, isNotUndefined } from 'isUndefined';
 export { isArray, isNotArray } from 'isArrayValue';
 export { isEmpty, isNotEmpty } from 'isEmpty';
 export { isPositive } from 'isPositive';
+export * as tinyState from 'tinyState';
 
 export type { DropFirst } from 'utilityTypes';
 export type { Stringable } from 'utilityTypes';

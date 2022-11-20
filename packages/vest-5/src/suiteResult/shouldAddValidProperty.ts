@@ -12,7 +12,7 @@ import { OptionalFieldTypes } from 'OptionalTypes';
 import { useOptionalField } from 'SuiteContext';
 import { TestWalker } from 'SuiteWalker';
 
-export function shouldAddValidProperty(fieldName: string): boolean {
+export function shouldAddValidProperty(fieldName?: string): boolean {
   // Is the field optional, and the optional condition is applied
   if (isOptionalFiedApplied(fieldName)) {
     return true;

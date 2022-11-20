@@ -5,7 +5,7 @@ import runAsyncTest from 'runAsyncTest';
 import runSyncTest from 'runSyncTest';
 import { useBus, Events } from 'vestBus';
 /**
- * Registers test, if async - adds to pending array
+ * Registers test, if async
  */
 export default function registerTest(testObject: VestTest): void {
   const bus = useBus();

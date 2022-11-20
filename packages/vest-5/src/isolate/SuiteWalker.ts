@@ -1,5 +1,6 @@
 import { VestTest } from 'VestTest';
 import { SuiteRuntimeRootContext } from 'ctx';
+import matchingFieldName from 'matchingFieldName';
 import * as walker from 'walker';
 
 import { Isolate, IsolateTypes } from 'isolateTypes';
@@ -75,5 +76,14 @@ export class TestWalker {
 
       callback(testObject, breakout);
     }, IsolateTypes.TEST);
+  }
+
+  static hasRemainingTests(fieldName?: string): boolean {
+    return TestWalker.someIncompleteTests(testObject => {
+      if (fieldName) {
+        return matchingFieldName(testObject, fieldName);
+      }
+      return true;
+    });
   }
 }

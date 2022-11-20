@@ -1,5 +1,8 @@
-import { VestTest } from 'vest';
+import { VestTest } from 'VestTest';
+import { runDoneCallbacks, runFieldCallbacks } from 'runCallbacks';
 import { bus } from 'vest-utils';
+
+import { TestWalker } from 'SuiteWalker';
 
 export function initVestBus() {
   const VestBus = bus.createBus();
@@ -13,14 +16,17 @@ export function initVestBus() {
 
     testObject.done();
 
-    // TODO: Implement this
-    // runFieldCallbacks(testObject.fieldName);
+    runFieldCallbacks(testObject.fieldName);
 
-    // TODO: Implement this
-    // if (!hasRemainingTests()) {
-    //   // When no more tests are running, emit the done event
-    //   VestBus.emit(Events.ALL_RUNNING_TESTS_FINISHED);
-    // }
+    if (!TestWalker.hasRemainingTests()) {
+      // When no more tests are running, emit the done event
+      VestBus.emit(Events.ALL_RUNNING_TESTS_FINISHED);
+    }
+  });
+
+  // Called when all the tests, including async, are done running
+  VestBus.on(Events.ALL_RUNNING_TESTS_FINISHED, () => {
+    runDoneCallbacks();
   });
 
   return VestBus;

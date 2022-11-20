@@ -12,3 +12,5 @@ export function createTinyState<S>(
     },
   ];
 }
+
+export type TinyState<S> = () => [S, (next: S | ((prev: S) => S)) => void];

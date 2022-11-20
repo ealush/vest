@@ -1,8 +1,8 @@
 import { VestTest } from 'VestTest';
-import { SuiteRuntimeRootContext } from 'ctx';
 import matchingFieldName from 'matchingFieldName';
 import * as walker from 'walker';
 
+import { useSuiteRuntimeRoot } from 'SuiteContext';
 import { Isolate, IsolateTypes } from 'isolateTypes';
 
 export class SuiteWalker {
@@ -10,32 +10,32 @@ export class SuiteWalker {
     callback: (isolate: Isolate, breakout: () => void) => void,
     visitOnly?: IsolateTypes
   ): void {
-    walker.walk(SuiteRuntimeRootContext.useX(), callback, visitOnly);
+    walker.walk(useSuiteRuntimeRoot(), callback, visitOnly);
   }
 
   static some(
     predicate: (node: Isolate) => boolean,
     visitOnly?: IsolateTypes
   ): boolean {
-    return walker.some(SuiteRuntimeRootContext.useX(), predicate, visitOnly);
+    return walker.some(useSuiteRuntimeRoot(), predicate, visitOnly);
   }
 
   static has(match: IsolateTypes): boolean {
-    return walker.has(SuiteRuntimeRootContext.useX(), match);
+    return walker.has(useSuiteRuntimeRoot(), match);
   }
 
   static find(
     predicate: (node: Isolate) => boolean,
     visitOnly?: IsolateTypes
   ): Isolate | null {
-    return walker.find(SuiteRuntimeRootContext.useX(), predicate, visitOnly);
+    return walker.find(useSuiteRuntimeRoot(), predicate, visitOnly);
   }
 
   static every(
     predicate: (node: Isolate) => boolean,
     visitOnly?: IsolateTypes
   ): boolean {
-    return walker.every(SuiteRuntimeRootContext.useX(), predicate, visitOnly);
+    return walker.every(useSuiteRuntimeRoot(), predicate, visitOnly);
   }
 }
 

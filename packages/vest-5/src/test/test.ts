@@ -1,8 +1,8 @@
 import { VestTest } from 'VestTest';
 import { isolate } from 'isolate';
+import { runTestObjectByTier } from 'runTest';
 
-import { SuiteContext, useGroupName } from '../context/SuiteContext';
-
+import { useGroupName } from 'SuiteContext';
 import { TestFn } from 'TestTypes';
 import { IsolateTypes } from 'isolateTypes';
 
@@ -16,7 +16,7 @@ function vestTest(
 
   const groupName = useGroupName();
 
-  const test = new VestTest(fieldName, cb, {
+  const testObject = new VestTest(fieldName, cb, {
     message,
     groupName,
   });
@@ -24,15 +24,13 @@ function vestTest(
   isolate(
     IsolateTypes.TEST,
     () => {
-      SuiteContext.run({ currentTest: test }, () => {
-        // TODO: Register logic here
-        test.run();
-      });
+      // TODO: Register logic here
+      runTestObjectByTier(testObject);
     },
-    test
+    testObject
   );
 
-  return test;
+  return testObject;
 }
 
 export { vestTest as test };

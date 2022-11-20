@@ -30,11 +30,13 @@
       "nonMatchingSeverityProfile": [
         "src/test/helpers/nonMatchingSeverityProfile.ts"
       ],
+      "runTest": ["src/test/runTest.ts"],
       "shouldUseErrorMessage": ["src/test/shouldUseErrorMessage.ts"],
       "test": ["src/test/test.ts"],
       "TestTypes": ["src/test/TestTypes.ts"],
       "VestTest": ["src/test/VestTest.ts"],
-      "vest-5": ["src/vest-5.ts"]
+      "vest-5": ["src/vest-5.ts"],
+      "VestBus": ["src/VestBus/VestBus.ts"]
     }
   }
 }

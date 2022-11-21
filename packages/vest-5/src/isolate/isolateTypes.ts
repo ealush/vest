@@ -4,6 +4,8 @@ export enum IsolateTypes {
   SUITE = 'SUITE',
   EACH = 'EACH',
   GROUP = 'GROUP',
+  SKIP_WHEN = 'SKIP_WHEN',
+  OMIT_WHEN = 'OMIT_WHEN',
 }
 
 export type Isolate = {

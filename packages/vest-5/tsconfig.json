@@ -8,6 +8,8 @@
     "outDir": "./dist",
     "paths": {
       "SuiteContext": ["src/context/SuiteContext.ts"],
+      "omitWhen": ["src/flowControl/omitWhen.ts"],
+      "skipWhen": ["src/flowControl/skipWhen.ts"],
       "group": ["src/group/group.ts"],
       "createIsolate": ["src/isolate/createIsolate.ts"],
       "isolate": ["src/isolate/isolate.ts"],

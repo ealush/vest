@@ -46,8 +46,8 @@ type CTXType = {
   fieldCallbacks: TinyState<FieldCallbacks>;
   suiteRuntimeRoot: Isolate;
   isolate?: Isolate;
-  // skipped?: boolean;
-  // omitted?: boolean;
+  skipped?: boolean;
+  omitted?: boolean;
 };
 
 export function persist<T extends CB>(cb: T) {

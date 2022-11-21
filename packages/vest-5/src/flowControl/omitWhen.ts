@@ -15,7 +15,7 @@ import { suiteResult, SuiteResult } from 'suiteResult';
  *  test('username', 'User already taken', async () => await doesUserExist(username)
  * });
  */
-export default function omitWhen(
+export function omitWhen(
   conditional: boolean | ((draft: SuiteResult) => boolean),
   callback: CB
 ): void {

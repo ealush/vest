@@ -2,7 +2,7 @@ import { isolate } from 'isolate';
 import type { CB } from 'vest-utils';
 import { optionalFunctionValue } from 'vest-utils';
 
-import { SuiteContext } from 'SuiteContext';
+import { SuiteContext, useOmitted } from 'SuiteContext';
 import { IsolateTypes } from 'isolateTypes';
 import { suiteResult, SuiteResult } from 'suiteResult';
 
@@ -23,7 +23,7 @@ export function omitWhen(
     SuiteContext.run(
       {
         omitted:
-          inActiveOmitWhen() ||
+          withinActiveOmitWhen() ||
           optionalFunctionValue(
             conditional,
             optionalFunctionValue(suiteResult)
@@ -35,6 +35,6 @@ export function omitWhen(
 }
 
 // Checks that we're currently in an active omitWhen block
-export function inActiveOmitWhen(): boolean {
-  return !!SuiteContext.useX().omitted;
+export function withinActiveOmitWhen(): boolean {
+  return useOmitted();
 }

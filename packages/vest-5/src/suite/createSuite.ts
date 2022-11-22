@@ -1,9 +1,8 @@
-import type { CB } from 'vest-utils';
-
-import { SuiteContext } from '../context/SuiteContext';
-
 import { IsolateTypes } from 'IsolateTypes';
 import { isolate } from 'isolate';
+import type { CB } from 'vest-utils';
+
+import { SuiteContext } from 'SuiteContext';
 import { SuiteRunResult, suiteRunResult } from 'suiteRunResult';
 
 function createSuite<T extends CB>(

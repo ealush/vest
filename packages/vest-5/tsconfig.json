@@ -9,6 +9,7 @@
     "paths": {
       "SuiteContext": ["src/context/SuiteContext.ts"],
       "ErrorStrings": ["src/errors/ErrorStrings.ts"],
+      "each": ["src/flowControl/each.ts"],
       "exclusive": ["src/flowControl/exclusive.ts"],
       "mode": ["src/flowControl/mode.ts"],
       "omitWhen": ["src/flowControl/omitWhen.ts"],
@@ -16,7 +17,7 @@
       "group": ["src/group/group.ts"],
       "createIsolate": ["src/isolate/createIsolate.ts"],
       "isolate": ["src/isolate/isolate.ts"],
-      "isolateTypes": ["src/isolate/isolateTypes.ts"],
+      "IsolateTypes": ["src/isolate/IsolateTypes.ts"],
       "SuiteWalker": ["src/isolate/SuiteWalker.ts"],
       "walker": ["src/isolate/walker.ts"],
       "optional": ["src/optional/optional.ts"],

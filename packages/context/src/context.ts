@@ -76,7 +76,7 @@ export function createCascade<T extends Record<string, unknown>>(
       optionalFunctionValue(init, value, parentContext) ?? value
     ) as T;
 
-    return ctx.run(Object.freeze(out), fn);
+    return ctx.run(Object.freeze(out), fn) as R;
   }
 
   function bind<Fn extends CB>(value: Partial<T>, fn: Fn) {

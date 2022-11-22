@@ -1,7 +1,7 @@
-import VestTest from 'VestTest';
 import type { State, UseState } from 'vast';
 import { nestedArray } from 'vest-utils';
 
+import VestTest from 'VestTest';
 import { OptionalFieldDeclaration } from 'optionalFields';
 import type { SuiteResult } from 'produceSuiteResult';
 

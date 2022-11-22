@@ -8,6 +8,7 @@
     "outDir": "./dist",
     "paths": {
       "SuiteContext": ["src/context/SuiteContext.ts"],
+      "SuiteHistory": ["src/context/SuiteHistory.ts"],
       "ErrorStrings": ["src/errors/ErrorStrings.ts"],
       "each": ["src/flowControl/each.ts"],
       "exclusive": ["src/flowControl/exclusive.ts"],

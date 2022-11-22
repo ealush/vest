@@ -17,7 +17,7 @@
       "group": ["src/group/group.ts"],
       "createIsolate": ["src/isolate/createIsolate.ts"],
       "isolate": ["src/isolate/isolate.ts"],
-      "IsolateTypes": ["src/isolate/IsolateTypes.ts"],
+      "isolateTypes": ["src/isolate/isolateTypes.ts"],
       "SuiteWalker": ["src/isolate/SuiteWalker.ts"],
       "walker": ["src/isolate/walker.ts"],
       "optional": ["src/optional/optional.ts"],

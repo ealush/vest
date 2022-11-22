@@ -1,6 +1,5 @@
-import { bindNot } from 'vest-utils';
-
 import { VestTest } from 'VestTest';
+import { bindNot } from 'vest-utils';
 
 export const nonMatchingGroupName = bindNot(matchingGroupName);
 

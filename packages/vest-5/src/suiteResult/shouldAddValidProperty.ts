@@ -1,4 +1,7 @@
+import { OptionalFieldTypes } from 'OptionalTypes';
 import { Severity } from 'Severity';
+import { useOptionalField } from 'SuiteContext';
+import { TestWalker } from 'SuiteWalker';
 import { VestTest } from 'VestTest';
 import {
   hasErrorsByTestObjects,
@@ -7,10 +10,6 @@ import {
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
 import { isOptionalFiedApplied } from 'optional';
-
-import { OptionalFieldTypes } from 'OptionalTypes';
-import { useOptionalField } from 'SuiteContext';
-import { TestWalker } from 'SuiteWalker';
 
 export function shouldAddValidProperty(fieldName?: string): boolean {
   // Is the field optional, and the optional condition is applied

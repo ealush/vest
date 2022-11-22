@@ -1,6 +1,6 @@
+import VestTest from 'VestTest';
 import { nestedArray } from 'vest-utils';
 
-import VestTest from 'VestTest';
 import { useSetTests } from 'stateHooks';
 
 /**

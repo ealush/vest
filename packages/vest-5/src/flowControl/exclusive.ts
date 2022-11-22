@@ -1,3 +1,4 @@
+import { ErrorStrings } from 'ErrorStrings';
 import { VestTest } from 'VestTest';
 import { isExcludedIndividually } from 'skipWhen';
 import {
@@ -7,8 +8,7 @@ import {
   optionalFunctionValue,
 } from 'vest-utils';
 
-import { ErrorStrings } from 'ErrorStrings';
-import { SuiteContext, useExclusion, useInclusion } from 'SuiteContext';
+import { useExclusion, useInclusion } from 'SuiteContext';
 
 type ExclusionItem = string | string[] | undefined;
 

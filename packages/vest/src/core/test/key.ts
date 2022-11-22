@@ -1,6 +1,6 @@
-import VestTest from 'VestTest';
 import { isNullish, nestedArray, asArray, deferThrow } from 'vest-utils';
 
+import VestTest from 'VestTest';
 import { useCurrentPath, useIsolate } from 'isolateHooks';
 import { useTestObjects } from 'stateHooks';
 

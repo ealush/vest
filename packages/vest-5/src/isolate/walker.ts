@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import { Isolate, IsolateTypes } from 'isolateTypes';
+import { Isolate, IsolateTypes } from 'IsolateTypes';
 
 export function walk(
   startNode: Isolate,

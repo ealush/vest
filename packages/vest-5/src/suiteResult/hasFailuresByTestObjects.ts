@@ -1,9 +1,10 @@
 import { Severity } from 'Severity';
-import { TestWalker } from 'SuiteWalker';
 import { VestTest } from 'VestTest';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
 import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
+
+import { TestWalker } from 'SuiteWalker';
 
 /**
  * The difference between this file and hasFailures is that hasFailures uses the static

@@ -1,9 +1,9 @@
-import * as walker from 'walker';
-
 import { Isolate, IsolateTypes } from 'IsolateTypes';
-import { useSuiteRuntimeRoot } from 'SuiteContext';
 import { VestTest } from 'VestTest';
 import matchingFieldName from 'matchingFieldName';
+import * as walker from 'walker';
+
+import { useSuiteRuntimeRoot } from 'SuiteContext';
 
 export class SuiteWalker {
   static walk(

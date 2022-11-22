@@ -1,6 +1,6 @@
-import VestTest from 'VestTest';
 import { isPromise } from 'vest-utils';
 
+import VestTest from 'VestTest';
 import runAsyncTest from 'runAsyncTest';
 import runSyncTest from 'runSyncTest';
 import { useBus, Events } from 'vestBus';

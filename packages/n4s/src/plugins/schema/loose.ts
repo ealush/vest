@@ -1,4 +1,5 @@
 import { ctx } from 'n4s';
+
 import type { RuleDetailedResult } from 'ruleReturn';
 import * as ruleReturn from 'ruleReturn';
 import runLazyRule from 'runLazyRule';

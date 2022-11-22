@@ -80,7 +80,7 @@ function deferDoneCallback(
   if (fieldName) {
     setFieldCallbacks(fieldCallbacks =>
       assign(fieldCallbacks, {
-        fieldName: (fieldCallbacks[fieldName] || []).concat(doneCallback),
+        [fieldName]: (fieldCallbacks[fieldName] || []).concat(doneCallback),
       })
     );
 

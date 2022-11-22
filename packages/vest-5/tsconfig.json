@@ -10,6 +10,7 @@
       "SuiteContext": ["src/context/SuiteContext.ts"],
       "ErrorStrings": ["src/errors/ErrorStrings.ts"],
       "exclusive": ["src/flowControl/exclusive.ts"],
+      "mode": ["src/flowControl/mode.ts"],
       "omitWhen": ["src/flowControl/omitWhen.ts"],
       "skipWhen": ["src/flowControl/skipWhen.ts"],
       "group": ["src/group/group.ts"],
@@ -40,6 +41,7 @@
       "shouldUseErrorMessage": ["src/test/shouldUseErrorMessage.ts"],
       "test": ["src/test/test.ts"],
       "TestTypes": ["src/test/TestTypes.ts"],
+      "verifyTestRun": ["src/test/verifyTestRun.ts"],
       "VestTest": ["src/test/VestTest.ts"],
       "vest-5": ["src/vest-5.ts"],
       "VestBus": ["src/VestBus/VestBus.ts"]

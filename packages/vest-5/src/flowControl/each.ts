@@ -1,6 +1,6 @@
-import { IsolateTypes } from 'IsolateTypes';
 import { invariant, isFunction } from 'vest-utils';
 
+import { IsolateTypes } from 'IsolateTypes';
 import { isolate } from 'isolate';
 
 /**

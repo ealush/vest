@@ -1,6 +1,6 @@
-import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { CB } from 'vest-utils';
 
+import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { SuiteContext, useIsolate } from 'SuiteContext';
 import { createIsolate } from 'createIsolate';
 

@@ -1,10 +1,11 @@
 import wait from 'wait';
 
-import { createSuite, test as vestTest, group } from 'vest-5';
+import { createSuite, test as vestTest, group, skip } from 'vest-5';
 
 describe('base scenario', () => {
   it('Should reflect correct structure', done => {
     const suite = createSuite('user', () => {
+      skip('password');
       vestTest('password', 'password is too short', () => {});
       vestTest('username', 'username is required', () => {});
       vestTest('password', 'password is too short', async () => {

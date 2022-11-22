@@ -5,7 +5,6 @@ import { useGroupName } from 'SuiteContext';
 import { TestFn } from 'TestTypes';
 import { IsolateTypes } from 'isolateTypes';
 import { attemptRunTestObjectByTier } from 'runTest';
-import { verifyTestRun } from 'verifyTestRun';
 
 function vestTest(fieldName: string, message: string, cb: TestFn): VestTest;
 function vestTest(fieldName: string, cb: TestFn): VestTest;

@@ -24,6 +24,7 @@
       "OptionalTypes": ["src/optional/OptionalTypes.ts"],
       "createSuite": ["src/suite/createSuite.ts"],
       "runCallbacks": ["src/suite/runCallbacks.ts"],
+      "collectFailures": ["src/suiteResult/collectFailures.ts"],
       "hasFailuresByTestObjects": [
         "src/suiteResult/hasFailuresByTestObjects.ts"
       ],
@@ -33,6 +34,7 @@
       "suiteResult": ["src/suiteResult/suiteResult.ts"],
       "SuiteResultTypes": ["src/suiteResult/SuiteResultTypes.ts"],
       "suiteRunResult": ["src/suiteResult/suiteRunResult.ts"],
+      "suiteSelectors": ["src/suiteResult/suiteSelectors.ts"],
       "matchingFieldName": ["src/test/helpers/matchingFieldName.ts"],
       "matchingGroupName": ["src/test/helpers/matchingGroupName.ts"],
       "nonMatchingSeverityProfile": [

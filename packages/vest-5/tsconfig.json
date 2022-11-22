@@ -15,6 +15,7 @@
       "omitWhen": ["src/flowControl/omitWhen.ts"],
       "skipWhen": ["src/flowControl/skipWhen.ts"],
       "group": ["src/group/group.ts"],
+      "include": ["src/include/include.ts"],
       "createIsolate": ["src/isolate/createIsolate.ts"],
       "isolate": ["src/isolate/isolate.ts"],
       "IsolateTypes": ["src/isolate/IsolateTypes.ts"],

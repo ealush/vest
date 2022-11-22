@@ -1,9 +1,9 @@
-import { isolate } from 'isolate';
+import { IsolateTypes } from 'IsolateTypes';
 import type { CB } from 'vest-utils';
 import { optionalFunctionValue } from 'vest-utils';
 
 import { SuiteContext, useOmitted } from 'SuiteContext';
-import { IsolateTypes } from 'isolateTypes';
+import { isolate } from 'isolate';
 import { suiteResult, SuiteResult } from 'suiteResult';
 
 /**

@@ -1,4 +1,4 @@
-import { Isolate, IsolateTypes } from 'isolateTypes';
+import { Isolate, IsolateTypes } from 'IsolateTypes';
 
 export function createIsolate(
   type: IsolateTypes = IsolateTypes.DEFAULT,

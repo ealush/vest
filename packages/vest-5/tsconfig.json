@@ -47,7 +47,8 @@
       "verifyTestRun": ["src/test/verifyTestRun.ts"],
       "VestTest": ["src/test/VestTest.ts"],
       "vest-5": ["src/vest-5.ts"],
-      "VestBus": ["src/VestBus/VestBus.ts"]
+      "VestBus": ["src/VestBus/VestBus.ts"],
+      "warn": ["src/warn/warn.ts"]
     }
   }
 }

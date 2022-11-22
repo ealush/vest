@@ -1,11 +1,19 @@
-import { Events } from 'VestBus';
 import { VestTest } from 'VestTest';
+import { verifyTestRun } from 'verifyTestRun';
 import { isPromise, isStringValue } from 'vest-utils';
 
 import { SuiteContext, useVestBus } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
+import { Events } from 'VestBus';
 
-export function runTestObjectByTier(testObject: VestTest) {
+export function attemptRunTestObjectByTier(testObject: VestTest) {
+  verifyTestRun(testObject);
+
+  if (testObject.isNonActionable()) {
+    // TODO: Need to test that this works as expected
+    return;
+  }
+
   if (testObject.isUntested()) {
     runTest(testObject);
   } else if (isPromise(testObject.asyncTest)) {

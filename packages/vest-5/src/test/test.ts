@@ -1,10 +1,11 @@
 import { VestTest } from 'VestTest';
 import { isolate } from 'isolate';
-import { runTestObjectByTier } from 'runTest';
+import { verifyTestRun } from 'verifyTestRun';
 
 import { useGroupName } from 'SuiteContext';
 import { TestFn } from 'TestTypes';
 import { IsolateTypes } from 'isolateTypes';
+import { attemptRunTestObjectByTier } from 'runTest';
 
 function vestTest(fieldName: string, message: string, cb: TestFn): VestTest;
 function vestTest(fieldName: string, cb: TestFn): VestTest;
@@ -24,8 +25,7 @@ function vestTest(
   isolate(
     IsolateTypes.TEST,
     () => {
-      // TODO: Register logic here
-      runTestObjectByTier(testObject);
+      attemptRunTestObjectByTier(testObject);
     },
     testObject
   );

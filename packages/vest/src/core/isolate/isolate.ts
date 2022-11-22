@@ -1,7 +1,7 @@
-import { nestedArray, invariant, isFunction } from 'vest-utils';
-
 import { IsolateTypes } from 'IsolateTypes';
 import VestTest from 'VestTest';
+import { nestedArray, invariant, isFunction } from 'vest-utils';
+
 import ctx from 'ctx';
 import { generateIsolate } from 'generateIsolate';
 import { useCurrentPath, useCursor, useIsolate } from 'isolateHooks';

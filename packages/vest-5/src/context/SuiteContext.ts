@@ -1,5 +1,6 @@
 import { VestTest } from 'VestTest';
 import { createCascade } from 'context';
+import { Modes } from 'mode';
 import { assign, BusType, CB, TinyState, tinyState } from 'vest-utils';
 
 import { OptionalFields } from 'OptionalTypes';
@@ -25,6 +26,7 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
       fieldCallbacks: tinyState.createTinyState<FieldCallbacks>({}),
       inclusion: {},
       isolate: suiteRuntimeRoot,
+      mode: tinyState.createTinyState<Modes>(Modes.ALL),
       optional: {},
       suiteRuntimeRoot,
     },
@@ -48,6 +50,7 @@ type CTXType = {
   isolate?: Isolate;
   skipped?: boolean;
   omitted?: boolean;
+  mode: TinyState<Modes>;
 };
 
 export function persist<T extends CB>(cb: T) {
@@ -92,4 +95,24 @@ export function useSuiteRuntimeRoot() {
 
 export function useIsolate() {
   return SuiteContext.useX().isolate;
+}
+
+export function useExclusion(hookError?: string) {
+  return SuiteContext.useX(hookError).exclusion;
+}
+
+export function useInclusion() {
+  return SuiteContext.useX().inclusion;
+}
+
+export function useMode() {
+  return SuiteContext.useX().mode();
+}
+
+export function useSkipped() {
+  return SuiteContext.useX().skipped ?? false;
+}
+
+export function useOmitted() {
+  return SuiteContext.useX().omitted ?? false;
 }

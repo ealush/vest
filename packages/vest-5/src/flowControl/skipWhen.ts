@@ -1,7 +1,7 @@
 import { isolate } from 'isolate';
 import { CB, optionalFunctionValue } from 'vest-utils';
 
-import { SuiteContext } from 'SuiteContext';
+import { SuiteContext, useSkipped } from 'SuiteContext';
 import { IsolateTypes } from 'isolateTypes';
 import { suiteResult, SuiteResult } from 'suiteResult';
 
@@ -34,5 +34,5 @@ export function skipWhen(
 }
 
 export function isExcludedIndividually(): boolean {
-  return !!SuiteContext.useX().skipped;
+  return useSkipped();
 }

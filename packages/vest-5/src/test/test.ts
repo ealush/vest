@@ -1,8 +1,9 @@
 import { IsolateTypes } from 'IsolateTypes';
-import { useGroupName } from 'SuiteContext';
-import { TestFn } from 'TestTypes';
 import { VestTest } from 'VestTest';
 import { isolate } from 'isolate';
+
+import { useGroupName } from 'SuiteContext';
+import { TestFn } from 'TestTypes';
 import { attemptRunTestObjectByTier } from 'runTest';
 
 function vestTest(fieldName: string, message: string, cb: TestFn): VestTest;

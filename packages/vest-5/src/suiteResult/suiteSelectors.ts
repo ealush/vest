@@ -1,13 +1,13 @@
+import { Severity, SeverityCount } from 'Severity';
+import { gatherFailures } from 'collectFailures';
 import { isPositive } from 'vest-utils';
 
-import { Severity, SeverityCount } from 'Severity';
 import {
   FailureMessages,
   GetFailuresResponse,
   SuiteSummary,
   TestsContainer,
 } from 'SuiteResultTypes';
-import { gatherFailures } from 'collectFailures';
 
 // eslint-disable-next-line max-lines-per-function, max-statements
 export function suiteSelectors(summary: SuiteSummary): SuiteSelectors {
@@ -42,7 +42,6 @@ export function suiteSelectors(summary: SuiteSummary): SuiteSelectors {
     if (fieldName) {
       return isFieldValid(group, fieldName);
     }
-
     for (const fieldName in group) {
       if (!isFieldValid(group, fieldName)) {
         return false;

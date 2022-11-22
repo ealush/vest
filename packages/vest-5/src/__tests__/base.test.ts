@@ -1,32 +1,25 @@
-import wait from 'wait';
-
-import { createSuite, test as vestTest, group, skip } from 'vest-5';
+import { createSuite, test as vestTest, warn } from 'vest-5';
 
 describe('base scenario', () => {
-  it('Should reflect correct structure', done => {
+  it('Should reflect correct structure', () => {
     const suite = createSuite('user', () => {
-      skip('password');
-      vestTest('password', 'password is too short', () => {});
-      vestTest('username', 'username is required', () => {});
-      vestTest('password', 'password is too short', async () => {
-        await wait(2500);
+      vestTest('password', 'password is too short', () => false);
+      vestTest('username', () => {
+        warn();
+        throw 'username is required';
       });
-
-      group('some group', () => {});
     });
 
     // console.log(suite());
 
-    suite()
-      .done(() => {
-        console.log('all tests are done');
-        done();
-      })
-      .done('username', () => {
-        console.log('username is done');
-      })
-      .done('password', () => {
-        console.log('password is done');
-      });
+    const res = suite();
+
+    console.log(
+      res.isValid(),
+      res.hasErrors(),
+      res.hasWarnings(),
+      res.getErrors(),
+      res.getWarnings()
+    );
   });
 });

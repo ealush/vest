@@ -1,4 +1,3 @@
-import { gatherFailures } from 'collectFailures';
 import { isPositive } from 'vest-utils';
 
 import { Severity, SeverityCount } from 'Severity';
@@ -8,6 +7,7 @@ import {
   SuiteSummary,
   TestsContainer,
 } from 'SuiteResultTypes';
+import { gatherFailures } from 'collectFailures';
 
 // eslint-disable-next-line max-lines-per-function, max-statements
 export function suiteSelectors(summary: SuiteSummary): SuiteSelectors {

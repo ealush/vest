@@ -5,6 +5,7 @@ const {
   isReleaseBranch,
   isNextBranch,
 } = require('vx/util/taggedBranch');
+const { CURRENT_BRANCH } = require('vx/util/taggedBranch');
 const { usePackage } = require('vx/vxContext');
 
 const packageJson = require('../../util/packageJson');
@@ -12,7 +13,7 @@ const packageJson = require('../../util/packageJson');
 const determineChangeLevel = require('./determineChangeLevel');
 const { TAG_NEXT, TAG_DEV } = require('./releaseKeywords');
 
-const { CURRENT_BRANCH, GITHUB_SHA } = process.env;
+const { GITHUB_SHA } = process.env;
 
 // commits: [{title: "...", files: ["..."]}]
 function genDiffData(commits) {

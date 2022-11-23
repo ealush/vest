@@ -37,10 +37,6 @@ jobs:
         run: echo //registry.npmjs.org/:_authToken=$NPM_TOKEN > ~/.npmrc
         env:
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
       - name: Release
         run: yarn release
         env:
@@ -52,4 +48,3 @@ jobs:
           PUBLIC_REPO_TOKEN: ${{secrets.PUBLIC_REPO_TOKEN}}
           EMAIL_ADDRESS: ${{secrets.EMAIL_ADDRESS}}
           GIT_NAME: ${{secrets.GIT_NAME}}
-          CURRENT_BRANCH: ${{ steps.extract_branch.outputs.branch }}

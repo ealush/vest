@@ -33,4 +33,4 @@ Because you write your validation suite outside of your feature code, and Vest r
 
 ### Can I run Vest in my production app?
 
-Unlike testing libraries, Vest runs in your production app. Vest does look like a testing framework, but it is also very conscious of your runtime in terms of performance and resources.
+Unlike testing libraries, Vest runs in production. Vest does look like a testing framework, but it is also very conscious of your runtime in terms of performance and resources.

@@ -5,19 +5,19 @@ const listAllChangesSinceStableBranch = require('./listAllChangesSinceStableBran
 
 function listAllChangedPackages() {
   const changes = listAllChangesSinceStableBranch();
-  return Object.keys(
-    changes.reduce((packages, { files = [] }) => {
-      return files.reduce((packages, file) => {
-        const packageName = vxPath.packageNameFromPath(file);
-        if (!packageNames.names[packageName]) {
-          return packages;
-        }
-        packages[packageName] = packages[packageName] || true;
 
+  return changes.reduce((packages, { files = [] }) => {
+    return files.reduce((packages, file) => {
+      const packageName = vxPath.packageNameFromPath(file);
+      if (!packageNames.names[packageName]) {
         return packages;
-      }, packages);
-    }, {})
-  );
+      }
+
+      packages.add(packageName);
+
+      return packages;
+    }, packages);
+  }, new Set());
 }
 
 module.exports = listAllChangedPackages;

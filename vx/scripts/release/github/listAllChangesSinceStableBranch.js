@@ -13,7 +13,7 @@ function listAllChangesSinceStableBranch() {
   exec(`git fetch origin ${STABLE_BRANCH}`);
 
   const output = exec(
-    `git log origin/${STABLE_BRANCH}..HEAD --name-only --pretty='format:%h  %s (%an)'`
+    `git log origin/${STABLE_BRANCH} --name-only --pretty='format:%h  %s (%an)'`
   );
 
   return output

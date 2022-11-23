@@ -6,18 +6,20 @@ const {
 const listAllChangedPackages = require('vx/scripts/release/github/listAllChangedPackages');
 
 // Gets all the packages that need to be released in the correct order
+// eslint-disable-next-line complexity
 function packagesToRelease() {
   const deps = buildDepsTree();
 
-  const changedPackages = listAllChangedPackages();
+  const changedPackagesSet = listAllChangedPackages();
 
+  const changedPackagesArray = Array.from(changedPackagesSet);
   logger.info(
-    `💡 The following packages were changed: \n  - ${changedPackages.join(
+    `💡 The following packages were changed: \n  - ${changedPackagesArray.join(
       '\n  - '
     )}\n`
   );
 
-  const queue = [...changedPackages];
+  const queue = changedPackagesArray;
   const release = new Set();
 
   const unchangedDependents = new Set();
@@ -33,17 +35,22 @@ function packagesToRelease() {
 
     for (const dep in dependents) {
       queue.push(dep);
-      unchangedDependents.add(dep);
+
+      if (!changedPackagesSet.has(dep)) {
+        unchangedDependents.add(dep);
+      }
     }
 
     release.add(name);
   }
 
-  logger.info(
-    `🧱 The following packages did not change, but will be released because they depend on changed packages: \n  - ${[
-      ...unchangedDependents,
-    ].join('\n  - ')} \n`
-  );
+  if (unchangedDependents.size) {
+    logger.info(
+      `🧱 The following packages did not change, but will be released because they depend on changed packages: \n  - ${[
+        ...unchangedDependents,
+      ].join('\n  - ')} \n`
+    );
+  }
 
   const allPackagesToRelease = sortDependencies([...release]);
 

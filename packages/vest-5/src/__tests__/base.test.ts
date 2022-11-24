@@ -13,7 +13,7 @@ describe('base scenario', () => {
 
     // console.log(suite());
 
-    const res = suite();
+    const res = suite().done(console.log);
 
     console.log(
       res.isValid(),

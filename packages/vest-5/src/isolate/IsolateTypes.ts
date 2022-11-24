@@ -10,8 +10,6 @@ export enum IsolateTypes {
 
 export type Isolate = {
   type: IsolateTypes;
-  cursor: number;
-  nextCursor: () => void;
   children: Isolate[];
   data?: any;
 };

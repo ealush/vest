@@ -6,15 +6,9 @@ export function createIsolate(
 ): Isolate {
   const isolate = {
     children: [],
-    cursor: 0,
     data,
-    nextCursor,
     type,
   };
 
   return isolate;
-
-  function nextCursor(): void {
-    isolate.cursor++;
-  }
 }

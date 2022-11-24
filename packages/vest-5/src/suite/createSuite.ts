@@ -1,6 +1,7 @@
 import type { CB } from 'vest-utils';
 
 import { IsolateTypes } from 'IsolateTypes';
+import { PersistedContextProvider } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
 import { isolate } from 'isolate';
 import { SuiteRunResult, suiteRunResult } from 'suiteRunResult';
@@ -15,7 +16,7 @@ function createSuite<T extends CB>(
 ): Suite {
   const [suiteCallback /*suiteName*/] = args.reverse() as [T, SuiteName];
 
-  function suite(): SuiteRunResult {
+  return PersistedContextProvider(function suite(): SuiteRunResult {
     const [, output] = SuiteContext.run({}, () => {
       return isolate(IsolateTypes.SUITE, () => {
         suiteCallback();
@@ -24,9 +25,7 @@ function createSuite<T extends CB>(
     });
 
     return output;
-  }
-
-  return suite;
+  });
 }
 
 export type SuiteName = string | void;

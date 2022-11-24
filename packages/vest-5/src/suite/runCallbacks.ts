@@ -1,6 +1,6 @@
 import { isArray, callEach } from 'vest-utils';
 
-import { useDoneCallbacks, useFieldCallbacks } from 'SuiteContext';
+import { useDoneCallbacks, useFieldCallbacks } from 'PersistedContext';
 import { TestWalker } from 'SuiteWalker';
 
 /**

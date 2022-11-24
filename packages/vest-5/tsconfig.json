@@ -7,9 +7,6 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "CallbackContext": ["src/context/CallbackContext.ts"],
-      "IsolateContext": ["src/context/IsolateContext.ts"],
-      "persistContext": ["src/context/persistContext.ts"],
       "SuiteContext": ["src/context/SuiteContext.ts"],
       "ErrorStrings": ["src/errors/ErrorStrings.ts"],
       "each": ["src/flowControl/each.ts"],

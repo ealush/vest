@@ -1,7 +1,6 @@
-import { invariant, isFunction } from 'vest-utils';
-
 import { IsolateTypes } from 'IsolateTypes';
 import { isolate } from 'isolate';
+import { invariant, isFunction } from 'vest-utils';
 
 /**
  * Iterates over an array of items, allowing to run tests individually per item.

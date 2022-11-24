@@ -1,12 +1,12 @@
-import { Isolate } from 'IsolateTypes';
-import { VestTest } from 'VestTest';
 import { createCascade } from 'context';
-import { Modes } from 'mode';
 import { assign, BusType, CB, TinyState, tinyState } from 'vest-utils';
 
+import { Isolate } from 'IsolateTypes';
 import { OptionalFields } from 'OptionalTypes';
 import { initVestBus } from 'VestBus';
+import { VestTest } from 'VestTest';
 import { createIsolate } from 'createIsolate';
+import { Modes } from 'mode';
 import { SuiteResult } from 'suiteResult';
 
 export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {

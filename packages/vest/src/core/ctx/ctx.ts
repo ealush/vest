@@ -1,9 +1,9 @@
+import { Isolate, IsolateTypes } from 'IsolateTypes';
+import VestTest from 'VestTest';
 import { createCascade } from 'context';
 import { assign, CB } from 'vest-utils';
 
-import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { Modes } from 'Modes';
-import VestTest from 'VestTest';
 import type { StateRef } from 'createStateRef';
 import { generateIsolate } from 'generateIsolate';
 

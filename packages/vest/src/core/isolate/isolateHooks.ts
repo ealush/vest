@@ -1,4 +1,5 @@
 import { Isolate } from 'IsolateTypes';
+
 import ctx from 'ctx';
 import { IsolateCursor } from 'isolateCursor';
 

@@ -1,17 +1,17 @@
+import { persistEssential } from 'persistEssential';
 import { assign, isFunction, numberEquals } from 'vest-utils';
 
 import {
   DoneCallback,
-  persist as persistContext,
   useDoneCallbacks,
   useFieldCallbacks,
-} from 'SuiteContext';
+} from 'PersistedContext';
 import { TestWalker } from 'SuiteWalker';
 import { suiteResult, SuiteResult } from 'suiteResult';
 
 export function suiteRunResult(): SuiteRunResult {
   return assign({}, suiteResult(), {
-    done: persistContext(done),
+    done: persistEssential(done),
   });
 }
 

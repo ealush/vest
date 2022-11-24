@@ -1,5 +1,5 @@
 import { createCascade } from 'context';
-import { assign, BusType, CB, TinyState, tinyState } from 'vest-utils';
+import { assign, BusType, TinyState, tinyState } from 'vest-utils';
 
 import { Isolate } from 'IsolateTypes';
 import { OptionalFields } from 'OptionalTypes';
@@ -7,7 +7,6 @@ import { initVestBus } from 'VestBus';
 import { VestTest } from 'VestTest';
 import { createIsolate } from 'createIsolate';
 import { Modes } from 'mode';
-import { SuiteResult } from 'suiteResult';
 
 export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
   if (parentContext) {
@@ -18,12 +17,10 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
   return assign(
     {
       VestBus: initVestBus(),
-      doneCallbacks: tinyState.createTinyState<DoneCallbacks>([]),
       exclusion: {
         tests: {},
         groups: {},
       },
-      fieldCallbacks: tinyState.createTinyState<FieldCallbacks>({}),
       inclusion: {},
       isolate: suiteRuntimeRoot,
       mode: tinyState.createTinyState<Modes>(Modes.ALL),
@@ -44,22 +41,12 @@ type CTXType = {
   groupName?: string;
   optional: OptionalFields;
   VestBus: BusType;
-  doneCallbacks: TinyState<DoneCallbacks>;
-  fieldCallbacks: TinyState<FieldCallbacks>;
   suiteRuntimeRoot: Isolate;
   isolate?: Isolate;
   skipped?: boolean;
   omitted?: boolean;
   mode: TinyState<Modes>;
 };
-
-export function persist<T extends CB>(cb: T) {
-  return SuiteContext.bind({ ...SuiteContext.useX() }, cb);
-}
-
-type FieldCallbacks = Record<string, DoneCallbacks>;
-type DoneCallbacks = Array<DoneCallback>;
-export type DoneCallback = (res: SuiteResult) => void;
 
 export function useCurrentTest() {
   return SuiteContext.useX().currentTest;
@@ -79,14 +66,6 @@ export function useOptionalField(fieldName: string) {
 
 export function useVestBus() {
   return SuiteContext.useX().VestBus;
-}
-
-export function useDoneCallbacks() {
-  return SuiteContext.useX().doneCallbacks();
-}
-
-export function useFieldCallbacks() {
-  return SuiteContext.useX().fieldCallbacks();
 }
 
 export function useSuiteRuntimeRoot() {

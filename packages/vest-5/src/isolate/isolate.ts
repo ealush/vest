@@ -1,6 +1,6 @@
-import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { CB } from 'vest-utils';
 
+import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { SuiteContext, useIsolate } from 'SuiteContext';
 import { createIsolate } from 'createIsolate';
 
@@ -14,8 +14,7 @@ export function isolate<Callback extends CB = CB>(
   const current = createIsolate(type, data);
 
   if (parent) {
-    parent.children[parent.cursor] = current;
-    parent.nextCursor();
+    parent.children.push(current);
   }
 
   const output = SuiteContext.run(

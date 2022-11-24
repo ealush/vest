@@ -1,7 +1,6 @@
+import { useMode } from 'SuiteContext';
 import { VestTest } from 'VestTest';
 import { hasErrorsByTestObjects } from 'hasFailuresByTestObjects';
-
-import { useMode } from 'SuiteContext';
 
 export enum Modes {
   ALL,

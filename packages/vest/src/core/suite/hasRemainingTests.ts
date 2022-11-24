@@ -1,6 +1,6 @@
+import matchingFieldName from 'matchingFieldName';
 import { isEmpty } from 'vest-utils';
 
-import matchingFieldName from 'matchingFieldName';
 import { useAllIncomplete } from 'stateHooks';
 /**
  * Checks if a given field, or the suite as a whole still have remaining tests.

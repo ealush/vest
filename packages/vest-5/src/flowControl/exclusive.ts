@@ -1,5 +1,3 @@
-import { VestTest } from 'VestTest';
-import { isExcludedIndividually } from 'skipWhen';
 import {
   isStringValue,
   asArray,
@@ -9,6 +7,8 @@ import {
 
 import { ErrorStrings } from 'ErrorStrings';
 import { useExclusion, useInclusion } from 'SuiteContext';
+import { VestTest } from 'VestTest';
+import { isExcludedIndividually } from 'skipWhen';
 
 type ExclusionItem = string | string[] | undefined;
 

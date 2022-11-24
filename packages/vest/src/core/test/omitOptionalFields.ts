@@ -1,6 +1,6 @@
+import VestTest from 'VestTest';
 import { isEmpty, hasOwnProperty, optionalFunctionValue } from 'vest-utils';
 
-import VestTest from 'VestTest';
 import { OptionalFieldTypes } from 'optionalFields';
 import {
   useOptionalFields,

@@ -22,6 +22,7 @@
       "isolate": ["src/isolate/isolate.ts"],
       "IsolateTypes": ["src/isolate/IsolateTypes.ts"],
       "SuiteWalker": ["src/isolate/SuiteWalker.ts"],
+      "VestReconciler": ["src/isolate/VestReconciler.ts"],
       "walker": ["src/isolate/walker.ts"],
       "optional": ["src/optional/optional.ts"],
       "OptionalTypes": ["src/optional/OptionalTypes.ts"],
@@ -38,11 +39,15 @@
       "SuiteResultTypes": ["src/suiteResult/SuiteResultTypes.ts"],
       "suiteRunResult": ["src/suiteResult/suiteRunResult.ts"],
       "suiteSelectors": ["src/suiteResult/suiteSelectors.ts"],
+      "cancelOverriddenPendingTest": [
+        "src/test/cancelOverriddenPendingTest.ts"
+      ],
       "matchingFieldName": ["src/test/helpers/matchingFieldName.ts"],
       "matchingGroupName": ["src/test/helpers/matchingGroupName.ts"],
       "nonMatchingSeverityProfile": [
         "src/test/helpers/nonMatchingSeverityProfile.ts"
       ],
+      "isSameProfileTest": ["src/test/isSameProfileTest.ts"],
       "runTest": ["src/test/runTest.ts"],
       "shouldUseErrorMessage": ["src/test/shouldUseErrorMessage.ts"],
       "test": ["src/test/test.ts"],

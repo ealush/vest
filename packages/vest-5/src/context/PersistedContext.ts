@@ -1,30 +1,30 @@
+import { Isolate } from 'IsolateTypes';
 import { createCascade } from 'context';
-import { assign, CB, tinyState, TinyState } from 'vest-utils';
+import { tinyState, TinyState } from 'vest-utils';
 
 import { SuiteResult } from 'suiteResult';
 
-export const PersistedContext = createCascade<CTXType>(
-  (ctxRef, parentContext) => {
+export const PersistedContext = createCascade<StateType>(
+  // @ts-ignore
+  (vestState, parentContext) => {
     if (parentContext) {
       return null;
     }
 
-    return assign(
-      {
-        doneCallbacks: tinyState.createTinyState<DoneCallbacks>([]),
-        fieldCallbacks: tinyState.createTinyState<FieldCallbacks>({}),
-      },
-      ctxRef
-    );
+    return vestState;
   }
 );
 
-export function PersistedContextProvider<T extends CB>(cb: CB): T {
-  // @ts-ignore
-  return PersistedContext.bind({}, cb);
+export function createVestState(): StateType {
+  return {
+    historyRoot: tinyState.createTinyState<Isolate | null>(null),
+    doneCallbacks: tinyState.createTinyState<DoneCallbacks>([]),
+    fieldCallbacks: tinyState.createTinyState<FieldCallbacks>({}),
+  };
 }
 
-type CTXType = {
+type StateType = {
+  historyRoot: TinyState<Isolate | null>;
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
 };
@@ -39,4 +39,8 @@ export function useDoneCallbacks() {
 
 export function useFieldCallbacks() {
   return PersistedContext.useX().fieldCallbacks();
+}
+
+export function useHistoryRoot() {
+  return PersistedContext.useX().historyRoot();
 }

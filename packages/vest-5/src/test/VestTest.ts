@@ -14,7 +14,7 @@ export class VestTest {
   groupName?: string;
   message?: string;
   asyncTest?: AsyncTest;
-  // key?: null | string = null;
+  key?: null | string = null;
 
   id = seq();
   severity = TestSeverity.Error;
@@ -26,8 +26,8 @@ export class VestTest {
     {
       message,
       groupName,
-    }: // key,
-    { message?: string; groupName?: string; key?: string } = {}
+      key,
+    }: { message?: string; groupName?: string; key?: string } = {}
   ) {
     this.fieldName = fieldName;
     this.testFn = testFn;
@@ -38,6 +38,10 @@ export class VestTest {
 
     if (message) {
       this.message = message;
+    }
+
+    if (key) {
+      this.key = key;
     }
   }
 

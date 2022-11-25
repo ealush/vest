@@ -13,14 +13,7 @@ describe('base scenario', () => {
 
     // console.log(suite());
 
-    const res = suite().done(console.log);
-
-    console.log(
-      res.isValid(),
-      res.hasErrors(),
-      res.hasWarnings(),
-      res.getErrors(),
-      res.getWarnings()
-    );
+    suite();
+    suite();
   });
 });

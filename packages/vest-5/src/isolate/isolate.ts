@@ -1,6 +1,7 @@
-import { Isolate, IsolateTypes } from 'IsolateTypes';
-import { CB } from 'vest-utils';
+import { VestReconciler } from 'VestReconciler';
+import { CB, invariant } from 'vest-utils';
 
+import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { PersistedContext, useHistoryNode } from 'PersistedContext';
 import { SuiteContext, useIsolate, useSetNextIsolateChild } from 'SuiteContext';
 import { createIsolate } from 'createIsolate';
@@ -33,11 +34,13 @@ function reconcileHistoryNode<Callback extends CB = CB>(
   current: Isolate,
   callback: CB
 ): [Isolate, ReturnType<Callback>] {
-  if (!historyNode) {
-    return [current, runAsNew(historyNode, current, callback)];
+  if (VestReconciler(historyNode, current)) {
+    invariant(historyNode);
+
+    return [historyNode, getNodeOuput(historyNode)];
   }
 
-  return [historyNode, getNodeOuput(historyNode)];
+  return [current, runAsNew(historyNode, current, callback)];
 }
 
 function getNodeOuput(node: Isolate): any {

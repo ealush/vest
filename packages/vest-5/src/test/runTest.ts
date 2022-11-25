@@ -1,9 +1,9 @@
+import { VestTest } from 'VestTest';
 import { isPromise, isStringValue } from 'vest-utils';
 
 import { SuiteContext, useVestBus } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
 import { Events } from 'VestBus';
-import { VestTest } from 'VestTest';
 import { verifyTestRun } from 'verifyTestRun';
 
 export function attemptRunTestObjectByTier(testObject: VestTest) {

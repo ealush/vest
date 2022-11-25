@@ -12,4 +12,5 @@ export type Isolate = {
   type: IsolateTypes;
   children: Isolate[];
   data?: any;
+  cursor: number;
 };

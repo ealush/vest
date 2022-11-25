@@ -14,6 +14,6 @@ describe('base scenario', () => {
     // console.log(suite());
 
     suite();
-    suite();
+    suite().done(console.log);
   });
 });

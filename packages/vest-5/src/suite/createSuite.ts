@@ -1,9 +1,13 @@
+import { IsolateTypes } from 'IsolateTypes';
+import { isolate } from 'isolate';
 import type { CB } from 'vest-utils';
 
-import { IsolateTypes } from 'IsolateTypes';
-import { PersistedContextProvider } from 'PersistedContext';
-import { SuiteContext } from 'SuiteContext';
-import { isolate } from 'isolate';
+import {
+  createVestState,
+  PersistedContext,
+  useHistoryRoot,
+} from 'PersistedContext';
+import { SuiteContext, useSuiteRuntimeRoot } from 'SuiteContext';
 import { SuiteRunResult, suiteRunResult } from 'suiteRunResult';
 
 function createSuite<T extends CB>(
@@ -16,16 +20,25 @@ function createSuite<T extends CB>(
 ): Suite {
   const [suiteCallback /*suiteName*/] = args.reverse() as [T, SuiteName];
 
-  return PersistedContextProvider(function suite(): SuiteRunResult {
-    const [, output] = SuiteContext.run({}, () => {
-      return isolate(IsolateTypes.SUITE, () => {
-        suiteCallback();
-        return suiteRunResult();
-      });
-    });
+  const state = createVestState();
 
-    return output;
-  });
+  return function suite(): SuiteRunResult {
+    return PersistedContext.run(state, () => {
+      const [, setHistoryRoot] = useHistoryRoot();
+
+      const [, output] = SuiteContext.run({}, () => {
+        // eslint-disable-next-line max-nested-callbacks
+        return isolate(IsolateTypes.SUITE, () => {
+          suiteCallback();
+
+          setHistoryRoot(useSuiteRuntimeRoot());
+          return suiteRunResult();
+        });
+      });
+
+      return output;
+    });
+  };
 }
 
 export type SuiteName = string | void;

@@ -2,7 +2,7 @@ import { Isolate } from 'IsolateTypes';
 import { VestTest } from 'VestTest';
 import { createCascade } from 'context';
 import { Modes } from 'mode';
-import { assign, BusType, TinyState, tinyState } from 'vest-utils';
+import { assign, BusType, invariant, TinyState, tinyState } from 'vest-utils';
 
 import { OptionalFields } from 'OptionalTypes';
 import { initVestBus } from 'VestBus';
@@ -94,4 +94,12 @@ export function useSkipped() {
 
 export function useOmitted() {
   return SuiteContext.useX().omitted ?? false;
+}
+
+export function useSetNextIsolateChild(child: Isolate): void {
+  const currentIsolate = useIsolate();
+
+  invariant(currentIsolate, 'Not within an active isolate');
+
+  currentIsolate.children[currentIsolate.cursor++] = child;
 }

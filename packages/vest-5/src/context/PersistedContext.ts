@@ -1,6 +1,6 @@
 import { Isolate } from 'IsolateTypes';
 import { createCascade } from 'context';
-import { tinyState, TinyState } from 'vest-utils';
+import { invariant, tinyState, TinyState } from 'vest-utils';
 
 import { SuiteResult } from 'suiteResult';
 
@@ -11,24 +11,31 @@ export const PersistedContext = createCascade<StateType>(
       return null;
     }
 
+    invariant(vestState.historyRoot);
+
+    const [historyRoot] = vestState.historyRoot();
+    vestState.historyNode = historyRoot;
+
     return vestState;
   }
 );
 
 export function createVestState(): StateType {
-  const historyRoot = tinyState.createTinyState<Isolate | null>(null);
+  const historyRootState = tinyState.createTinyState<Isolate | null>(null);
+
+  const [historyRoot] = historyRootState();
 
   return {
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>([]),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>({}),
     historyNode: historyRoot,
-    historyRoot,
+    historyRoot: historyRootState,
   };
 }
 
 type StateType = {
   historyRoot: TinyState<Isolate | null>;
-  historyNode: TinyState<Isolate | null>;
+  historyNode: Isolate | null;
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
 };
@@ -50,5 +57,13 @@ export function useHistoryRoot() {
 }
 
 export function useHistoryNode() {
-  return PersistedContext.useX().historyNode();
+  return PersistedContext.useX().historyNode;
+}
+
+export function useSetHistory(history: Isolate) {
+  const context = PersistedContext.useX();
+
+  const [, setHistoryRoot] = context.historyRoot();
+
+  setHistoryRoot(history);
 }

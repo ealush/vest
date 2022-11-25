@@ -16,15 +16,19 @@ export const PersistedContext = createCascade<StateType>(
 );
 
 export function createVestState(): StateType {
+  const historyRoot = tinyState.createTinyState<Isolate | null>(null);
+
   return {
-    historyRoot: tinyState.createTinyState<Isolate | null>(null),
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>([]),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>({}),
+    historyNode: historyRoot,
+    historyRoot,
   };
 }
 
 type StateType = {
   historyRoot: TinyState<Isolate | null>;
+  historyNode: TinyState<Isolate | null>;
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
 };
@@ -43,4 +47,8 @@ export function useFieldCallbacks() {
 
 export function useHistoryRoot() {
   return PersistedContext.useX().historyRoot();
+}
+
+export function useHistoryNode() {
+  return PersistedContext.useX().historyNode();
 }

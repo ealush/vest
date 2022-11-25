@@ -1,11 +1,10 @@
-import { isOptionalFiedApplied } from 'optional';
-
 import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { VestTest } from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';
 import { shouldSkipBasedOnMode } from 'mode';
 import { withinActiveOmitWhen } from 'omitWhen';
+import { isOptionalFiedApplied } from 'optional';
 import { isExcludedIndividually } from 'skipWhen';
 
 // eslint-disable-next-line max-statements, complexity
@@ -34,7 +33,7 @@ export function VestReconciler(
     isOptionalFiedApplied(currentTestObject.fieldName)
   ) {
     prevTestObject.omit();
-    return false;
+    return true;
   }
 
   if (isExcluded(currentTestObject)) {
@@ -43,6 +42,7 @@ export function VestReconciler(
     // This mostly means that we're probably giving
     // up on this async test intentionally.
     prevTestObject.skip(isExcludedIndividually());
+    return true;
   }
 
   cancelOverriddenPendingTest(prevTestObject, currentTestObject);

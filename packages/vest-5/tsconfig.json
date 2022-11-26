@@ -8,7 +8,6 @@
     "outDir": "./dist",
     "paths": {
       "PersistedContext": ["src/context/PersistedContext.ts"],
-      "persistEssential": ["src/context/persistEssential.ts"],
       "SuiteContext": ["src/context/SuiteContext.ts"],
       "ErrorStrings": ["src/errors/ErrorStrings.ts"],
       "each": ["src/flowControl/each.ts"],

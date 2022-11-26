@@ -1,7 +1,7 @@
+import VestTest from 'VestTest';
 import { cache as createCache, nestedArray, asArray, assign } from 'vest-utils';
 import type { ValueOf } from 'vest-utils';
 
-import VestTest from 'VestTest';
 import type { StateKey, StateRef, StateValue, VestTests } from 'createStateRef';
 import ctx from 'ctx';
 

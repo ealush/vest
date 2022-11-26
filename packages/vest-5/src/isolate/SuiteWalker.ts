@@ -4,11 +4,10 @@ import matchingFieldName from 'matchingFieldName';
 import { invariant } from 'vest-utils';
 import * as walker from 'walker';
 
-import { useSuiteRuntimeRootSoft } from 'IsolateContext';
-import { useHistoryRoot } from 'PersistedContext';
+import { useRuntimeRoot, useHistoryRoot } from 'PersistedContext';
 
 function useAvailableSuiteRoot(): Isolate {
-  const root = useSuiteRuntimeRootSoft();
+  const root = useRuntimeRoot();
 
   if (root) {
     return root;

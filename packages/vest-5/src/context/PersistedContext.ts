@@ -1,8 +1,15 @@
 import { Isolate } from 'IsolateTypes';
 import { createCascade } from 'context';
 import { assign } from 'lodash';
-import { invariant, isNullish, tinyState, TinyState } from 'vest-utils';
+import {
+  invariant,
+  tinyState,
+  TinyState,
+  deferThrow,
+  isNullish,
+} from 'vest-utils';
 
+import { createIsolate } from 'createIsolate';
 import { SuiteResult } from 'suiteResult';
 
 export const PersistedContext = createCascade<CTXType>(
@@ -14,10 +21,13 @@ export const PersistedContext = createCascade<CTXType>(
     invariant(vestState.historyRoot);
 
     const [historyRoot] = vestState.historyRoot();
+    const runtimeRoot = createIsolate();
 
     return assign(
       {
         historyNody: historyRoot,
+        runtimeNode: runtimeRoot,
+        runtimeRoot,
       },
       vestState
     ) as CTXType;
@@ -34,6 +44,8 @@ export function createVestState(): StateType {
 
 type CTXType = StateType & {
   historyNode: Isolate | null;
+  runtimeNode: Isolate | null;
+  runtimeRoot: Isolate | null;
 };
 
 type StateType = {
@@ -78,4 +90,40 @@ export function useHistoryKeyValue(key?: string | null) {
   const historyNode = PersistedContext.useX().historyNode;
 
   return historyNode?.keys[key];
+}
+
+export function useIsolate() {
+  return PersistedContext.useX().runtimeNode ?? null;
+}
+
+export function useRuntimeRoot() {
+  return PersistedContext.useX().runtimeNode;
+}
+
+export function useSetNextIsolateChild(child: Isolate): void {
+  const currentIsolate = useIsolate();
+
+  invariant(currentIsolate, 'Not within an active isolate');
+
+  currentIsolate.children[currentIsolate.cursor++] = child;
+}
+
+export function useSetIsolateKey(key: string | undefined, value: any): void {
+  if (!key) {
+    return;
+  }
+
+  const currentIsolate = useIsolate();
+
+  invariant(currentIsolate, 'Not within an active isolate');
+
+  if (isNullish(currentIsolate.keys[key])) {
+    currentIsolate.keys[key] = value;
+
+    return;
+  }
+
+  deferThrow(
+    `Encountered the same test key "${key}" twice. This may lead to tests overriding each other's results, or to tests being unexpectedly omitted.`
+  );
 }

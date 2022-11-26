@@ -2,12 +2,7 @@ import { IsolateTypes } from 'IsolateTypes';
 import { isolate } from 'isolate';
 import type { CB } from 'vest-utils';
 
-import { useSuiteRuntimeRoot } from 'IsolateContext';
-import {
-  createVestState,
-  PersistedContext,
-  useSetHistory,
-} from 'PersistedContext';
+import { createVestState, PersistedContext } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
 import { SuiteRunResult, suiteRunResult } from 'suiteRunResult';
 
@@ -30,7 +25,6 @@ function createSuite<T extends CB>(
         return isolate(IsolateTypes.SUITE, () => {
           suiteCallback();
 
-          useSetHistory(useSuiteRuntimeRoot());
           return suiteRunResult();
         });
       });

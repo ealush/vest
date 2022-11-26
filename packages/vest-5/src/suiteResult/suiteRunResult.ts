@@ -6,8 +6,9 @@ import {
   useDoneCallbacks,
   useFieldCallbacks,
 } from 'PersistedContext';
+import { Done, SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
 import { TestWalker } from 'SuiteWalker';
-import { suiteResult, SuiteResult } from 'suiteResult';
+import { suiteResult } from 'suiteResult';
 
 export function suiteRunResult(): SuiteRunResult {
   return assign({}, suiteResult(), {
@@ -88,13 +89,4 @@ function deferDoneCallback(
   }
 
   setDoneCallbacks(doneCallbacks => doneCallbacks.concat(doneCallback));
-}
-
-export type SuiteRunResult = SuiteResult & { done: Done };
-
-interface Done {
-  (...args: [cb: (res: SuiteResult) => void]): SuiteRunResult;
-  (
-    ...args: [fieldName: string, cb: (res: SuiteResult) => void]
-  ): SuiteRunResult;
 }

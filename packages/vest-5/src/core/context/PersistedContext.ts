@@ -1,4 +1,3 @@
-import { Isolate } from 'IsolateTypes';
 import { createCascade } from 'context';
 import {
   assign,
@@ -10,8 +9,9 @@ import {
   CB,
 } from 'vest-utils';
 
+import { Isolate } from 'IsolateTypes';
 import { OptionalFields } from 'OptionalTypes';
-import { SuiteResult } from 'suiteResult';
+import { SuiteResult } from 'SuiteResultTypes';
 
 export const PersistedContext = createCascade<CTXType>(
   (vestState, parentContext) => {

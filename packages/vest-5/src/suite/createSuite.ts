@@ -1,10 +1,10 @@
+import { IsolateTypes } from 'IsolateTypes';
+import { isolate } from 'isolate';
 import { assign, CB } from 'vest-utils';
 
-import { IsolateTypes } from 'IsolateTypes';
 import { createVestState, PersistedContext } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
 import { SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
-import { isolate } from 'isolate';
 import { suiteResult } from 'suiteResult';
 import { suiteRunResult } from 'suiteRunResult';
 
@@ -16,9 +16,9 @@ function createSuite<T extends CB>(suiteCallback: T): Suite;
 function createSuite<T extends CB>(
   ...args: [suiteName: SuiteName, suiteCallback: T] | [suiteCallback: T]
 ): Suite {
-  const [suiteCallback /*suiteName*/] = args.reverse() as [T, SuiteName];
+  const [suiteCallback, suiteName] = args.reverse() as [T, SuiteName];
 
-  const state = createVestState();
+  const state = createVestState({ suiteName });
 
   const suite = PersistedContext.bind(state, function suite(): SuiteRunResult {
     const [, output] = SuiteContext.run({}, () => {
@@ -38,7 +38,7 @@ function createSuite<T extends CB>(
   });
 }
 
-export type SuiteName = string | void;
+export type SuiteName = string | undefined;
 
 export type Suite /*<T extends CB>*/ = ((...args: any[]) => SuiteRunResult) &
   SuiteMethods;

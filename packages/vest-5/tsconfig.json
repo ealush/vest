@@ -52,17 +52,21 @@
       "mode": ["src/suiteLevelFlowControl/mode.ts"],
       "optional": ["src/suiteLevelFlowControl/optional/optional.ts"],
       "OptionalTypes": ["src/suiteLevelFlowControl/optional/OptionalTypes.ts"],
-      "collectFailures": ["src/suiteResult/collectFailures.ts"],
+      "collectFailures": ["src/suiteResult/selectors/collectFailures.ts"],
       "hasFailuresByTestObjects": [
-        "src/suiteResult/hasFailuresByTestObjects.ts"
+        "src/suiteResult/selectors/hasFailuresByTestObjects.ts"
       ],
-      "produceSuiteSummary": ["src/suiteResult/produceSuiteSummary.ts"],
+      "produceSuiteSummary": [
+        "src/suiteResult/selectors/produceSuiteSummary.ts"
+      ],
+      "shouldAddValidProperty": [
+        "src/suiteResult/selectors/shouldAddValidProperty.ts"
+      ],
+      "suiteSelectors": ["src/suiteResult/selectors/suiteSelectors.ts"],
       "Severity": ["src/suiteResult/Severity.ts"],
-      "shouldAddValidProperty": ["src/suiteResult/shouldAddValidProperty.ts"],
       "suiteResult": ["src/suiteResult/suiteResult.ts"],
       "SuiteResultTypes": ["src/suiteResult/SuiteResultTypes.ts"],
       "suiteRunResult": ["src/suiteResult/suiteRunResult.ts"],
-      "suiteSelectors": ["src/suiteResult/suiteSelectors.ts"],
       "vest-5": ["src/vest-5.ts"],
       "vest": ["src/vest.ts"]
     }

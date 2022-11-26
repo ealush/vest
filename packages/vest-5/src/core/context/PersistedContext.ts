@@ -1,3 +1,4 @@
+import { Isolate } from 'IsolateTypes';
 import { createCascade } from 'context';
 import {
   assign,
@@ -9,7 +10,6 @@ import {
   CB,
 } from 'vest-utils';
 
-import { Isolate } from 'IsolateTypes';
 import { OptionalFields } from 'OptionalTypes';
 import { SuiteResult } from 'SuiteResultTypes';
 
@@ -35,11 +35,16 @@ export const PersistedContext = createCascade<CTXType>(
   }
 );
 
-export function createVestState(): StateType {
+export function createVestState({
+  suiteName,
+}: {
+  suiteName?: string;
+}): StateType {
   return {
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>([]),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>({}),
     historyRoot: tinyState.createTinyState<Isolate | null>(null),
+    suiteName,
   };
 }
 
@@ -58,6 +63,7 @@ type StateType = {
   historyRoot: TinyState<Isolate | null>;
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
+  suiteName: string | undefined;
 };
 
 type FieldCallbacks = Record<string, DoneCallbacks>;
@@ -88,6 +94,10 @@ export function useHistoryNode() {
   return PersistedContext.useX().historyNode;
 }
 
+export function useSuiteName() {
+  return PersistedContext.useX().suiteName;
+}
+
 export function useSetHistory(history: Isolate) {
   const context = PersistedContext.useX();
 
@@ -111,7 +121,7 @@ export function useIsolate() {
 }
 
 export function useRuntimeRoot() {
-  return PersistedContext.useX().runtimeNode;
+  return PersistedContext.useX().runtimeRoot;
 }
 
 export function useSetNextIsolateChild(child: Isolate): void {

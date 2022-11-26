@@ -7,7 +7,8 @@ import {
 } from 'vest-utils';
 
 import { useExclusion, useInclusion } from 'SuiteContext';
-import { suiteResult, SuiteResult } from 'suiteResult';
+import { SuiteResult } from 'SuiteResultTypes';
+import { suiteResult } from 'suiteResult';
 
 export function include(fieldName: string): {
   when: (

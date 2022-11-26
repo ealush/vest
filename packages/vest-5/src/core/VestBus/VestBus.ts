@@ -1,7 +1,8 @@
+import { bus } from 'vest-utils';
+
 import { TestWalker } from 'SuiteWalker';
 import { VestTest } from 'VestTest';
 import { runDoneCallbacks, runFieldCallbacks } from 'runCallbacks';
-import { bus } from 'vest-utils';
 
 export function initVestBus() {
   const VestBus = bus.createBus();

@@ -1,11 +1,12 @@
-import { IsolateTypes } from 'IsolateTypes';
-import { isolate } from 'isolate';
 import { assign, CB } from 'vest-utils';
 
+import { IsolateTypes } from 'IsolateTypes';
 import { createVestState, PersistedContext } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
-import { SuiteResult, suiteResult } from 'suiteResult';
-import { SuiteRunResult, suiteRunResult } from 'suiteRunResult';
+import { SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
+import { isolate } from 'isolate';
+import { suiteResult } from 'suiteResult';
+import { suiteRunResult } from 'suiteRunResult';
 
 function createSuite<T extends CB>(
   suiteName: SuiteName,

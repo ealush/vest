@@ -1,15 +1,18 @@
+import { enforce } from 'n4s';
+import { optional } from 'optional';
+
+import { SuiteSummary } from 'SuiteResultTypes';
+import type { SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
+import { VestTest } from 'VestTest';
+import { createSuite, Suite } from 'createSuite';
 import { skip, only } from 'exclusive';
 import { group } from 'group';
 import { include } from 'include';
-import { enforce } from 'n4s';
 import { omitWhen } from 'omitWhen';
-import { optional } from 'optional';
 import { skipWhen } from 'skipWhen';
 import { suiteSelectors } from 'suiteSelectors';
 import { test } from 'test';
 import { warn } from 'warn';
-
-import { createSuite } from 'createSuite';
 
 export {
   createSuite,
@@ -25,3 +28,5 @@ export {
   include,
   suiteSelectors,
 };
+
+export type { SuiteResult, SuiteRunResult, SuiteSummary, VestTest, Suite };

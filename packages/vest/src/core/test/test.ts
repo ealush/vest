@@ -1,4 +1,3 @@
-import VestTest, { TestFn } from 'VestTest';
 import {
   isStringValue as isString,
   assign,
@@ -6,6 +5,7 @@ import {
   isFunction,
 } from 'vest-utils';
 
+import VestTest, { TestFn } from 'VestTest';
 import ctx from 'ctx';
 import registerPrevRunTest from 'registerPrevRunTest';
 import testMemo from 'test.memo';

@@ -1,5 +1,4 @@
 import VestTest from 'VestTest';
-
 import isSameProfileTest from 'isSameProfileTest';
 
 export default function cancelOverriddenPendingTest(

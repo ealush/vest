@@ -1,12 +1,11 @@
-import { invariant } from 'vest-utils';
-import * as walker from 'walker';
-
 import { Isolate, IsolateTypes } from 'IsolateTypes';
-import { useRuntimeRoot, useHistoryRoot } from 'PersistedContext';
 import { VestTest } from 'VestTest';
 import matchingFieldName from 'matchingFieldName';
+import * as walker from 'walker';
 
-function useAvailableSuiteRoot(): Isolate {
+import { useRuntimeRoot, useHistoryRoot } from 'PersistedContext';
+
+function useAvailableSuiteRoot(): Isolate | null {
   const root = useRuntimeRoot();
 
   if (root) {
@@ -14,9 +13,6 @@ function useAvailableSuiteRoot(): Isolate {
   }
 
   const [historyRoot] = useHistoryRoot();
-
-  // TODO: Find a way to make this invariant more informative
-  invariant(historyRoot, 'No root found');
 
   return historyRoot;
 }
@@ -26,32 +22,48 @@ export class SuiteWalker {
     callback: (isolate: Isolate, breakout: () => void) => void,
     visitOnly?: IsolateTypes
   ): void {
-    walker.walk(useAvailableSuiteRoot(), callback, visitOnly);
+    const root = useAvailableSuiteRoot();
+
+    if (!root) return;
+
+    walker.walk(root, callback, visitOnly);
   }
 
   static some(
     predicate: (node: Isolate) => boolean,
     visitOnly?: IsolateTypes
   ): boolean {
-    return walker.some(useAvailableSuiteRoot(), predicate, visitOnly);
+    const root = useAvailableSuiteRoot();
+
+    if (!root) return false;
+    return walker.some(root, predicate, visitOnly);
   }
 
   static has(match: IsolateTypes): boolean {
-    return walker.has(useAvailableSuiteRoot(), match);
+    const root = useAvailableSuiteRoot();
+
+    if (!root) return false;
+    return walker.has(root, match);
   }
 
   static find(
     predicate: (node: Isolate) => boolean,
     visitOnly?: IsolateTypes
   ): Isolate | null {
-    return walker.find(useAvailableSuiteRoot(), predicate, visitOnly);
+    const root = useAvailableSuiteRoot();
+
+    if (!root) return null;
+    return walker.find(root, predicate, visitOnly);
   }
 
   static every(
     predicate: (node: Isolate) => boolean,
     visitOnly?: IsolateTypes
   ): boolean {
-    return walker.every(useAvailableSuiteRoot(), predicate, visitOnly);
+    const root = useAvailableSuiteRoot();
+
+    if (!root) return false;
+    return walker.every(root, predicate, visitOnly);
   }
 }
 

@@ -1,7 +1,8 @@
-import { Modes } from 'Modes';
 import VestTest from 'VestTest';
-import ctx from 'ctx';
 import { hasErrorsByTestObjects } from 'hasFailuresByTestObjects';
+
+import { Modes } from 'Modes';
+import ctx from 'ctx';
 
 /**
  * Sets the suite to "eager" (fail fast) mode.

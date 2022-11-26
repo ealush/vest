@@ -1,9 +1,10 @@
 import { IsolateTypes } from 'IsolateTypes';
 import { isolate } from 'isolate';
-import type { CB } from 'vest-utils';
+import { assign, CB } from 'vest-utils';
 
 import { createVestState, PersistedContext } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
+import { SuiteResult, suiteResult } from 'suiteResult';
 import { SuiteRunResult, suiteRunResult } from 'suiteRunResult';
 
 function createSuite<T extends CB>(
@@ -18,30 +19,31 @@ function createSuite<T extends CB>(
 
   const state = createVestState();
 
-  const suite = function suite(): SuiteRunResult {
-    return PersistedContext.run(state, () => {
-      const [, output] = SuiteContext.run({}, () => {
-        // eslint-disable-next-line max-nested-callbacks
-        return isolate(IsolateTypes.SUITE, () => {
-          suiteCallback();
+  const suite = PersistedContext.bind(state, function suite(): SuiteRunResult {
+    const [, output] = SuiteContext.run({}, () => {
+      // eslint-disable-next-line max-nested-callbacks
+      return isolate(IsolateTypes.SUITE, () => {
+        suiteCallback();
 
-          return suiteRunResult();
-        });
+        return suiteRunResult();
       });
-
-      return output;
     });
-  };
 
-  return suite;
+    return output;
+  });
+
+  return assign(suite, {
+    get: PersistedContext.bind(state, suiteResult),
+  });
 }
 
 export type SuiteName = string | void;
 
-export type Suite /*<T extends CB>*/ = (
-  ...args: any[]
-) => SuiteRunResult; /* & SuiteMethods<T>;*/
+export type Suite /*<T extends CB>*/ = ((...args: any[]) => SuiteRunResult) &
+  SuiteMethods;
 
-// type SuiteMethods<T> = Record<string, T>;
+type SuiteMethods = {
+  get: () => SuiteResult;
+};
 
 export { createSuite };

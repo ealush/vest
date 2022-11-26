@@ -7,6 +7,7 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
+      "IsolateContext": ["src/context/IsolateContext.ts"],
       "PersistedContext": ["src/context/PersistedContext.ts"],
       "persistEssential": ["src/context/persistEssential.ts"],
       "SuiteContext": ["src/context/SuiteContext.ts"],

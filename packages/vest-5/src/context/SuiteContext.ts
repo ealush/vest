@@ -1,10 +1,9 @@
+import { VestTest } from 'VestTest';
 import { createCascade } from 'context';
+import { Modes } from 'mode';
 import { assign, BusType, TinyState, tinyState } from 'vest-utils';
 
-import { OptionalFields } from 'OptionalTypes';
 import { initVestBus } from 'VestBus';
-import { VestTest } from 'VestTest';
-import { Modes } from 'mode';
 
 export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
   if (parentContext) {
@@ -20,7 +19,6 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
       },
       inclusion: {},
       mode: tinyState.createTinyState<Modes>(Modes.ALL),
-      optional: {},
     },
     ctxRef
   );
@@ -34,7 +32,6 @@ type CTXType = {
   inclusion: Record<string, boolean | (() => boolean)>;
   currentTest?: VestTest;
   groupName?: string;
-  optional: OptionalFields;
   VestBus: BusType;
   skipped?: boolean;
   omitted?: boolean;
@@ -47,14 +44,6 @@ export function useCurrentTest() {
 
 export function useGroupName() {
   return SuiteContext.useX().groupName;
-}
-
-export function useOptionalFields(): OptionalFields {
-  return SuiteContext.useX().optional;
-}
-
-export function useOptionalField(fieldName: string) {
-  return useOptionalFields()[fieldName] ?? {};
 }
 
 export function useVestBus() {

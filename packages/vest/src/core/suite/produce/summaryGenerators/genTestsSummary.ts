@@ -1,11 +1,6 @@
-import { countKeyBySeverity, Severity } from 'Severity';
-import VestTest from 'VestTest';
-import {
-  shouldAddValidProperty,
-  shouldAddValidPropertyInGroup,
-} from 'shouldAddValidProperty';
 import { assign } from 'vest-utils';
 
+import { countKeyBySeverity, Severity } from 'Severity';
 import {
   Group,
   Groups,
@@ -14,6 +9,11 @@ import {
   Tests,
   TestsContainer,
 } from 'SuiteSummaryTypes';
+import VestTest from 'VestTest';
+import {
+  shouldAddValidProperty,
+  shouldAddValidPropertyInGroup,
+} from 'shouldAddValidProperty';
 import { useTestsFlat } from 'stateHooks';
 
 /**

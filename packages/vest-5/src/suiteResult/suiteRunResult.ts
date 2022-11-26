@@ -1,4 +1,3 @@
-import { persistEssential } from 'persistEssential';
 import { assign, isFunction, numberEquals } from 'vest-utils';
 
 import {
@@ -7,6 +6,7 @@ import {
   useFieldCallbacks,
 } from 'PersistedContext';
 import { TestWalker } from 'SuiteWalker';
+import { persistEssential } from 'persistEssential';
 import { suiteResult, SuiteResult } from 'suiteResult';
 
 export function suiteRunResult(): SuiteRunResult {

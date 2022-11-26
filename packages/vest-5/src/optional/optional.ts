@@ -11,7 +11,7 @@ import {
   OptionalFieldTypes,
   OptionalsInput,
 } from 'OptionalTypes';
-import { useOptionalField, useOptionalFields } from 'SuiteContext';
+import { useOptionalField, useOptionalFields } from 'PersistedContext';
 
 export function optional(optionals: OptionalsInput): void {
   // There are two types of optional field declarations:

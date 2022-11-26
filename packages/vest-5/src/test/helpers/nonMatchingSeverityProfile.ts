@@ -1,7 +1,6 @@
-import { either } from 'vest-utils';
-
 import { Severity } from 'Severity';
 import { VestTest } from 'VestTest';
+import { either } from 'vest-utils';
 
 /**
  * Checks that a given test object matches the currently specified severity level

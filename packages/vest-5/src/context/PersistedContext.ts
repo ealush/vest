@@ -1,7 +1,7 @@
 import { Isolate } from 'IsolateTypes';
 import { createCascade } from 'context';
-import { assign } from 'lodash';
 import {
+  assign,
   invariant,
   tinyState,
   TinyState,
@@ -9,6 +9,7 @@ import {
   isNullish,
 } from 'vest-utils';
 
+import { OptionalFields } from 'OptionalTypes';
 import { createIsolate } from 'createIsolate';
 import { SuiteResult } from 'suiteResult';
 
@@ -26,6 +27,7 @@ export const PersistedContext = createCascade<CTXType>(
     return assign(
       {
         historyNody: historyRoot,
+        optional: {},
         runtimeNode: runtimeRoot,
         runtimeRoot,
       },
@@ -46,6 +48,7 @@ type CTXType = StateType & {
   historyNode: Isolate | null;
   runtimeNode: Isolate | null;
   runtimeRoot: Isolate | null;
+  optional: OptionalFields;
 };
 
 type StateType = {
@@ -57,6 +60,14 @@ type StateType = {
 type FieldCallbacks = Record<string, DoneCallbacks>;
 type DoneCallbacks = Array<DoneCallback>;
 export type DoneCallback = (res: SuiteResult) => void;
+
+export function useOptionalFields(): OptionalFields {
+  return PersistedContext.useX().optional;
+}
+
+export function useOptionalField(fieldName: string) {
+  return useOptionalFields()[fieldName] ?? {};
+}
 
 export function useDoneCallbacks() {
   return PersistedContext.useX().doneCallbacks();

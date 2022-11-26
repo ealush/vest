@@ -1,5 +1,4 @@
 import VestTest, { TestResult } from 'VestTest';
-
 import context from 'ctx';
 /**
  * Runs sync tests - or extracts promise.

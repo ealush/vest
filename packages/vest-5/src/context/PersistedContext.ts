@@ -1,6 +1,6 @@
 import { Isolate } from 'IsolateTypes';
 import { createCascade } from 'context';
-import { invariant, tinyState, TinyState } from 'vest-utils';
+import { invariant, isNullish, tinyState, TinyState } from 'vest-utils';
 
 import { SuiteResult } from 'suiteResult';
 
@@ -66,4 +66,14 @@ export function useSetHistory(history: Isolate) {
   const [, setHistoryRoot] = context.historyRoot();
 
   setHistoryRoot(history);
+}
+
+export function useHistoryKeyValue(key?: string | null) {
+  if (isNullish(key)) {
+    return;
+  }
+
+  const historyNode = PersistedContext.useX().historyNode;
+
+  return historyNode?.keys[key];
 }

@@ -1,7 +1,6 @@
-import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
-
 import { Severity } from 'Severity';
 import { VestTest } from 'VestTest';
+import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
 
 describe('nonMatchingSeverityProfile', () => {
   let testObject: VestTest;

@@ -1,6 +1,6 @@
-import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { CB, invariant } from 'vest-utils';
 
+import { Isolate, IsolateTypes } from 'IsolateTypes';
 import {
   useSetNextIsolateChild,
   PersistedContext,

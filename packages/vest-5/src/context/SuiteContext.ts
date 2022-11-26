@@ -1,27 +1,16 @@
-import { Isolate } from 'IsolateTypes';
-import { VestTest } from 'VestTest';
 import { createCascade } from 'context';
-import { Modes } from 'mode';
-import {
-  assign,
-  BusType,
-  deferThrow,
-  invariant,
-  TinyState,
-  tinyState,
-  isNullish,
-} from 'vest-utils';
+import { assign, BusType, TinyState, tinyState } from 'vest-utils';
 
 import { OptionalFields } from 'OptionalTypes';
 import { initVestBus } from 'VestBus';
-import { createIsolate } from 'createIsolate';
+import { VestTest } from 'VestTest';
+import { Modes } from 'mode';
 
 export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
   if (parentContext) {
     return null;
   }
 
-  const suiteRuntimeRoot = createIsolate();
   return assign(
     {
       VestBus: initVestBus(),
@@ -30,10 +19,8 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
         groups: {},
       },
       inclusion: {},
-      isolate: suiteRuntimeRoot,
       mode: tinyState.createTinyState<Modes>(Modes.ALL),
       optional: {},
-      suiteRuntimeRoot,
     },
     ctxRef
   );
@@ -49,8 +36,6 @@ type CTXType = {
   groupName?: string;
   optional: OptionalFields;
   VestBus: BusType;
-  suiteRuntimeRoot: Isolate;
-  isolate?: Isolate;
   skipped?: boolean;
   omitted?: boolean;
   mode: TinyState<Modes>;
@@ -76,14 +61,6 @@ export function useVestBus() {
   return SuiteContext.useX().VestBus;
 }
 
-export function useSuiteRuntimeRoot() {
-  return SuiteContext.useX().suiteRuntimeRoot;
-}
-
-export function useIsolate() {
-  return SuiteContext.useX().isolate ?? null;
-}
-
 export function useExclusion(hookError?: string) {
   return SuiteContext.useX(hookError).exclusion;
 }
@@ -102,32 +79,4 @@ export function useSkipped() {
 
 export function useOmitted() {
   return SuiteContext.useX().omitted ?? false;
-}
-
-export function useSetNextIsolateChild(child: Isolate): void {
-  const currentIsolate = useIsolate();
-
-  invariant(currentIsolate, 'Not within an active isolate');
-
-  currentIsolate.children[currentIsolate.cursor++] = child;
-}
-
-export function useSetIsolateKey(key: string | undefined, value: any): void {
-  if (!key) {
-    return;
-  }
-
-  const currentIsolate = useIsolate();
-
-  invariant(currentIsolate, 'Not within an active isolate');
-
-  if (isNullish(currentIsolate.keys[key])) {
-    currentIsolate.keys[key] = value;
-
-    return;
-  }
-
-  deferThrow(
-    `Encountered the same test key "${key}" twice. This may lead to tests overriding each other's results, or to tests being unexpectedly omitted.`
-  );
 }

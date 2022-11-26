@@ -34,7 +34,9 @@ function reconcileHistoryNode<Callback extends CB = CB>(
   current: Isolate,
   callback: CB
 ): [Isolate, ReturnType<Callback>] {
-  if (VestReconciler(historyNode, current)) {
+  const shouldUseHistoryNode = VestReconciler(historyNode, current);
+
+  if (shouldUseHistoryNode) {
     invariant(historyNode);
 
     return [historyNode, getNodeOuput(historyNode)];

@@ -8,7 +8,6 @@
     "outDir": "./dist",
     "paths": {
       "PersistedContext": ["src/context/PersistedContext.ts"],
-      "PersistedContext": ["src/context/PersistedContext.ts"],
       "persistEssential": ["src/context/persistEssential.ts"],
       "SuiteContext": ["src/context/SuiteContext.ts"],
       "ErrorStrings": ["src/errors/ErrorStrings.ts"],
@@ -56,6 +55,7 @@
       "verifyTestRun": ["src/test/verifyTestRun.ts"],
       "VestTest": ["src/test/VestTest.ts"],
       "vest-5": ["src/vest-5.ts"],
+      "vest": ["src/vest.ts"],
       "VestBus": ["src/VestBus/VestBus.ts"],
       "warn": ["src/warn/warn.ts"]
     }

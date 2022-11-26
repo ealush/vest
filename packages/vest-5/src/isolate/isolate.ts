@@ -15,7 +15,7 @@ export function isolate<Callback extends CB = CB>(
   const parent = useIsolate();
   const hisoryParent = useHistoryNode();
 
-  const current = createIsolate(type, data);
+  const current = createIsolate(type, parent, data);
 
   let historyNode = null;
 

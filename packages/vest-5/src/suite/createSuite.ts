@@ -18,7 +18,7 @@ function createSuite<T extends CB>(
 
   const state = createVestState();
 
-  return function suite(): SuiteRunResult {
+  const suite = function suite(): SuiteRunResult {
     return PersistedContext.run(state, () => {
       const [, output] = SuiteContext.run({}, () => {
         // eslint-disable-next-line max-nested-callbacks
@@ -32,6 +32,8 @@ function createSuite<T extends CB>(
       return output;
     });
   };
+
+  return suite;
 }
 
 export type SuiteName = string | void;

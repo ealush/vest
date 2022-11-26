@@ -2,11 +2,12 @@ import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { CB, invariant } from 'vest-utils';
 
 import {
-  IsolateContext,
-  useIsolateSoft,
   useSetNextIsolateChild,
-} from 'IsolateContext';
-import { PersistedContext, useHistoryNode } from 'PersistedContext';
+  PersistedContext,
+  useHistoryNode,
+  useSetHistory,
+  useIsolate,
+} from 'PersistedContext';
 import { VestReconciler } from 'VestReconciler';
 import { createIsolate } from 'createIsolate';
 
@@ -16,7 +17,7 @@ export function isolate<Callback extends CB = CB>(
   callback: Callback,
   data?: any
 ): [Isolate, ReturnType<Callback>] {
-  const parent = useIsolateSoft();
+  const parent = useIsolate();
   const hisoryParent = useHistoryNode();
 
   const current = createIsolate(type, parent, data);
@@ -30,7 +31,13 @@ export function isolate<Callback extends CB = CB>(
     historyNode = hisoryParent?.children[cursor] ?? null;
   }
 
-  return reconcileHistoryNode(historyNode, current, callback);
+  const output = reconcileHistoryNode(historyNode, current, callback);
+
+  if (!parent) {
+    useSetHistory(current);
+  }
+
+  return output;
 }
 
 function reconcileHistoryNode<Callback extends CB = CB>(
@@ -59,9 +66,9 @@ function runAsNew<Callback extends CB = CB>(
   callback: CB
 ): ReturnType<Callback> {
   const output = PersistedContext.run({ historyNode }, () => {
-    return IsolateContext.run(
+    return PersistedContext.run(
       {
-        isolate: current,
+        runtimeNode: current,
       },
       callback
     );

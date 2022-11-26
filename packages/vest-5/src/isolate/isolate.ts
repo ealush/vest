@@ -1,9 +1,9 @@
-import { VestReconciler } from 'VestReconciler';
+import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { CB, invariant } from 'vest-utils';
 
-import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { PersistedContext, useHistoryNode } from 'PersistedContext';
 import { SuiteContext, useIsolate, useSetNextIsolateChild } from 'SuiteContext';
+import { VestReconciler } from 'VestReconciler';
 import { createIsolate } from 'createIsolate';
 
 // eslint-disable-next-line max-statements

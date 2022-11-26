@@ -1,11 +1,11 @@
 /* eslint-disable jest/valid-title */
+import VestTest, { TestFn } from 'VestTest';
+import type { TestBase } from 'test';
 import { cache as createCache, isNull } from 'vest-utils';
 
-import VestTest, { TestFn } from 'VestTest';
 import { useCursor } from 'isolateHooks';
 import registerPrevRunTest from 'registerPrevRunTest';
 import { useSuiteId } from 'stateHooks';
-import type { TestBase } from 'test';
 
 export default function testMemo(test: TestBase): TestMemo {
   const cache = createCache<VestTest>(10); // arbitrary cache size

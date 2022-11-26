@@ -7,10 +7,10 @@ import {
   TinyState,
   deferThrow,
   isNullish,
+  CB,
 } from 'vest-utils';
 
 import { OptionalFields } from 'OptionalTypes';
-import { createIsolate } from 'createIsolate';
 import { SuiteResult } from 'suiteResult';
 
 export const PersistedContext = createCascade<CTXType>(
@@ -22,14 +22,13 @@ export const PersistedContext = createCascade<CTXType>(
     invariant(vestState.historyRoot);
 
     const [historyRoot] = vestState.historyRoot();
-    const runtimeRoot = createIsolate();
 
     return assign(
       {
         historyNody: historyRoot,
         optional: {},
-        runtimeNode: runtimeRoot,
-        runtimeRoot,
+        runtimeNode: null,
+        runtimeRoot: null,
       },
       vestState
     ) as CTXType;
@@ -42,6 +41,10 @@ export function createVestState(): StateType {
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>({}),
     historyRoot: tinyState.createTinyState<Isolate | null>(null),
   };
+}
+
+export function persist<T extends CB>(cb: T): T {
+  return PersistedContext.bind({ ...PersistedContext.useX() }, cb);
 }
 
 type CTXType = StateType & {

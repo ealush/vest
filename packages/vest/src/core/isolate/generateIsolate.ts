@@ -1,5 +1,4 @@
 import { Isolate, IsolateTypes } from 'IsolateTypes';
-
 import { createIsolateCursor } from 'isolateCursor';
 
 export function generateIsolate(

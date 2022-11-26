@@ -1,6 +1,11 @@
+import { countKeyBySeverity, Severity } from 'Severity';
+import { VestTest } from 'VestTest';
+import {
+  shouldAddValidProperty,
+  shouldAddValidPropertyInGroup,
+} from 'shouldAddValidProperty';
 import { assign } from 'vest-utils';
 
-import { countKeyBySeverity, Severity } from 'Severity';
 import {
   Group,
   Groups,
@@ -10,11 +15,6 @@ import {
   TestsContainer,
 } from 'SuiteResultTypes';
 import { TestWalker } from 'SuiteWalker';
-import { VestTest } from 'VestTest';
-import {
-  shouldAddValidProperty,
-  shouldAddValidPropertyInGroup,
-} from 'shouldAddValidProperty';
 
 export function produceSuiteSummary(): SuiteSummary {
   const summary: SuiteSummary = assign(baseStats(), {

@@ -1,12 +1,12 @@
-import VestTest from 'VestTest';
-import matchingFieldName from 'matchingFieldName';
-import { runFieldCallbacks, runDoneCallbacks } from 'runCallbacks';
 import { bus, invariant } from 'vest-utils';
 
+import VestTest from 'VestTest';
 import ctx from 'ctx';
 import hasRemainingTests from 'hasRemainingTests';
+import matchingFieldName from 'matchingFieldName';
 import omitOptionalFields from 'omitOptionalFields';
 import removeTestFromState from 'removeTestFromState';
+import { runFieldCallbacks, runDoneCallbacks } from 'runCallbacks';
 import { useEachTestObject } from 'stateHooks';
 
 // eslint-disable-next-line max-lines-per-function

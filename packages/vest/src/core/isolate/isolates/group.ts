@@ -1,8 +1,8 @@
+import { IsolateTypes } from 'IsolateTypes';
+import { isolate } from 'isolate';
 import { isStringValue, invariant, isFunction } from 'vest-utils';
 
-import { IsolateTypes } from 'IsolateTypes';
 import context from 'ctx';
-import { isolate } from 'isolate';
 
 /**
  * Runs tests within a group so that they can be controlled or queried separately.

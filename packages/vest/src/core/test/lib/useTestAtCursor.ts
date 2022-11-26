@@ -1,3 +1,6 @@
+import VestTest from 'VestTest';
+import isSameProfileTest from 'isSameProfileTest';
+import { shouldAllowReorder } from 'isolate';
 import {
   isEmpty,
   isNotEmpty,
@@ -9,10 +12,7 @@ import {
 
 import { useCurrentPath, useCursor } from '../../isolate/isolateHooks';
 
-import VestTest from 'VestTest';
 import { VestTests } from 'createStateRef';
-import isSameProfileTest from 'isSameProfileTest';
-import { shouldAllowReorder } from 'isolate';
 import { usePrevTestByKey, useRetainTestKey } from 'key';
 import { useTestObjects, useSetTests } from 'stateHooks';
 

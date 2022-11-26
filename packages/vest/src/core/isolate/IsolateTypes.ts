@@ -1,4 +1,5 @@
 import VestTest from 'VestTest';
+
 import { IsolateCursor } from 'isolateCursor';
 
 export enum IsolateTypes {

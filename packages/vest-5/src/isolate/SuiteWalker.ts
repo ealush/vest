@@ -1,10 +1,10 @@
-import { Isolate, IsolateTypes } from 'IsolateTypes';
-import { VestTest } from 'VestTest';
-import matchingFieldName from 'matchingFieldName';
 import { invariant } from 'vest-utils';
 import * as walker from 'walker';
 
+import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { useRuntimeRoot, useHistoryRoot } from 'PersistedContext';
+import { VestTest } from 'VestTest';
+import matchingFieldName from 'matchingFieldName';
 
 function useAvailableSuiteRoot(): Isolate {
   const root = useRuntimeRoot();

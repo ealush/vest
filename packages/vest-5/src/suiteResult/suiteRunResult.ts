@@ -2,16 +2,16 @@ import { assign, isFunction, numberEquals } from 'vest-utils';
 
 import {
   DoneCallback,
+  persist,
   useDoneCallbacks,
   useFieldCallbacks,
 } from 'PersistedContext';
 import { TestWalker } from 'SuiteWalker';
-import { persistEssential } from 'persistEssential';
 import { suiteResult, SuiteResult } from 'suiteResult';
 
 export function suiteRunResult(): SuiteRunResult {
   return assign({}, suiteResult(), {
-    done: persistEssential(done),
+    done: persist(done),
   });
 }
 

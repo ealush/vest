@@ -3,7 +3,7 @@ import { VestTest } from 'VestTest';
 import { isolate } from 'isolate';
 import { isFunction } from 'vest-utils';
 
-import { useGroupName } from 'SuiteContext';
+import { useGroupName, useSetIsolateKey } from 'SuiteContext';
 import { TestFn } from 'TestTypes';
 import { attemptRunTestObjectByTier } from 'runTest';
 
@@ -35,6 +35,8 @@ function vestTest(
     groupName,
     key,
   });
+
+  useSetIsolateKey(key, testObject);
 
   isolate(
     IsolateTypes.TEST,

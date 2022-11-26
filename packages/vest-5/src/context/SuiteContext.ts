@@ -73,7 +73,7 @@ export function useSuiteRuntimeRoot() {
 }
 
 export function useIsolate() {
-  return SuiteContext.useX().isolate;
+  return SuiteContext.useX().isolate ?? null;
 }
 
 export function useExclusion(hookError?: string) {
@@ -102,4 +102,16 @@ export function useSetNextIsolateChild(child: Isolate): void {
   invariant(currentIsolate, 'Not within an active isolate');
 
   currentIsolate.children[currentIsolate.cursor++] = child;
+}
+
+export function useSetIsolateKey(key: string | undefined, value: any): void {
+  if (!key) {
+    return;
+  }
+
+  const currentIsolate = useIsolate();
+
+  invariant(currentIsolate, 'Not within an active isolate');
+
+  currentIsolate.keys[key] = value;
 }

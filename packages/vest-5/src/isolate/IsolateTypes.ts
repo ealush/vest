@@ -11,6 +11,7 @@ export enum IsolateTypes {
 export type Isolate = {
   type: IsolateTypes;
   children: Isolate[];
+  keys: Record<string, any>;
   parent: Isolate | null;
   data?: any;
   cursor: number;

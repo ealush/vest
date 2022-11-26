@@ -2,7 +2,15 @@ import { Isolate } from 'IsolateTypes';
 import { VestTest } from 'VestTest';
 import { createCascade } from 'context';
 import { Modes } from 'mode';
-import { assign, BusType, invariant, TinyState, tinyState } from 'vest-utils';
+import {
+  assign,
+  BusType,
+  deferThrow,
+  invariant,
+  TinyState,
+  tinyState,
+  isNullish,
+} from 'vest-utils';
 
 import { OptionalFields } from 'OptionalTypes';
 import { initVestBus } from 'VestBus';
@@ -113,5 +121,13 @@ export function useSetIsolateKey(key: string | undefined, value: any): void {
 
   invariant(currentIsolate, 'Not within an active isolate');
 
-  currentIsolate.keys[key] = value;
+  if (isNullish(currentIsolate.keys[key])) {
+    currentIsolate.keys[key] = value;
+
+    return;
+  }
+
+  deferThrow(
+    `Encountered the same test key "${key}" twice. This may lead to tests overriding each other's results, or to tests being unexpectedly omitted.`
+  );
 }

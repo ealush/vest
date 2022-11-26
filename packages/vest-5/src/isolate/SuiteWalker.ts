@@ -1,41 +1,58 @@
-import * as walker from 'walker';
-
 import { Isolate, IsolateTypes } from 'IsolateTypes';
-import { useSuiteRuntimeRoot } from 'SuiteContext';
 import { VestTest } from 'VestTest';
 import matchingFieldName from 'matchingFieldName';
+import { invariant } from 'vest-utils';
+import * as walker from 'walker';
+
+import { useSuiteRuntimeRootSoft } from 'IsolateContext';
+import { useHistoryRoot } from 'PersistedContext';
+
+function useAvailableSuiteRoot(): Isolate {
+  const root = useSuiteRuntimeRootSoft();
+
+  if (root) {
+    return root;
+  }
+
+  const [historyRoot] = useHistoryRoot();
+
+  // TODO: Find a way to make this invariant more informative
+  invariant(historyRoot, 'No root found');
+
+  return historyRoot;
+}
 
 export class SuiteWalker {
   static walk(
     callback: (isolate: Isolate, breakout: () => void) => void,
     visitOnly?: IsolateTypes
   ): void {
-    walker.walk(useSuiteRuntimeRoot(), callback, visitOnly);
+    walker.walk(useAvailableSuiteRoot(), callback, visitOnly);
   }
 
   static some(
     predicate: (node: Isolate) => boolean,
     visitOnly?: IsolateTypes
   ): boolean {
-    return walker.some(useSuiteRuntimeRoot(), predicate, visitOnly);
+    return walker.some(useAvailableSuiteRoot(), predicate, visitOnly);
   }
 
   static has(match: IsolateTypes): boolean {
-    return walker.has(useSuiteRuntimeRoot(), match);
+    return walker.has(useAvailableSuiteRoot(), match);
   }
 
   static find(
     predicate: (node: Isolate) => boolean,
     visitOnly?: IsolateTypes
   ): Isolate | null {
-    return walker.find(useSuiteRuntimeRoot(), predicate, visitOnly);
+    return walker.find(useAvailableSuiteRoot(), predicate, visitOnly);
   }
 
   static every(
     predicate: (node: Isolate) => boolean,
     visitOnly?: IsolateTypes
   ): boolean {
-    return walker.every(useSuiteRuntimeRoot(), predicate, visitOnly);
+    return walker.every(useAvailableSuiteRoot(), predicate, visitOnly);
   }
 }
 

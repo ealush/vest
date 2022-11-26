@@ -1,9 +1,10 @@
+import { IsolateTypes } from 'IsolateTypes';
+import { isolate } from 'isolate';
 import { CB, optionalFunctionValue } from 'vest-utils';
 
-import { IsolateTypes } from 'IsolateTypes';
 import { SuiteContext, useSkipped } from 'SuiteContext';
-import { isolate } from 'isolate';
-import { suiteResult, SuiteResult } from 'suiteResult';
+import { SuiteResult } from 'SuiteResultTypes';
+import { suiteResult } from 'suiteResult';
 
 /**
  * Conditionally skips running tests within the callback.

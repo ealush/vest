@@ -1,9 +1,9 @@
-import { createSuite, test as vestTest } from 'vest-5';
+import { create, test as vestTest } from 'vest-5';
 
 describe('base scenario', () => {
   it('Should reflect correct structure', () => {
     let counter = 0;
-    const suite = createSuite('user', () => {
+    const suite = create('user', () => {
       if (counter) {
         vestTest('username', () => {
           return false;

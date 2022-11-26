@@ -11,7 +11,7 @@ import { warn } from 'warn';
 import { createSuite } from 'createSuite';
 
 export {
-  createSuite,
+  createSuite as create,
   test,
   group,
   optional,

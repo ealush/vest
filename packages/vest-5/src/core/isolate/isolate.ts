@@ -1,12 +1,13 @@
+import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { CB, invariant } from 'vest-utils';
 
-import { Isolate, IsolateTypes } from 'IsolateTypes';
 import {
   useSetNextIsolateChild,
   PersistedContext,
   useHistoryNode,
   useSetHistory,
   useIsolate,
+  useRuntimeRoot,
 } from 'PersistedContext';
 import { VestReconciler } from 'VestReconciler';
 import { createIsolate } from 'createIsolate';
@@ -65,14 +66,15 @@ function runAsNew<Callback extends CB = CB>(
   current: Isolate,
   callback: CB
 ): ReturnType<Callback> {
-  const output = PersistedContext.run({ historyNode }, () => {
-    return PersistedContext.run(
-      {
-        runtimeNode: current,
-      },
-      callback
-    );
-  });
+  const runtimeRoot = useRuntimeRoot();
+  const output = PersistedContext.run(
+    {
+      historyNode,
+      runtimeNode: current,
+      ...(!runtimeRoot && { runtimeRoot: current }),
+    },
+    callback
+  );
 
   current.output = output;
   return output;

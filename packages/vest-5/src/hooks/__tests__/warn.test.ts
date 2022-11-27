@@ -15,7 +15,7 @@ describe('warn hook', () => {
         });
       })();
 
-      expect(t.warns()).toBe(true);
+      expect((t as vest.VestTest).warns()).toBe(true);
     });
   });
 

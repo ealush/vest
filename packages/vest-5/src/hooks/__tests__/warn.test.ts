@@ -5,6 +5,10 @@ import { ErrorStrings } from 'ErrorStrings';
 
 const { create, test, warn } = vest;
 
+function asVestTest(t: unknown): vest.VestTest {
+  return t as vest.VestTest;
+}
+
 describe('warn hook', () => {
   describe('When currentTest exists', () => {
     it('Should set warns to true', () => {
@@ -15,7 +19,7 @@ describe('warn hook', () => {
         });
       })();
 
-      expect((t as vest.VestTest).warns()).toBe(true);
+      expect(asVestTest(t).warns()).toBe(true);
     });
   });
 

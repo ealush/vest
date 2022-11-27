@@ -1,5 +1,6 @@
 import { invariant } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { useCurrentTest } from 'SuiteContext';
 
 const ERROR_OUTSIDE_OF_TEST = __DEV__
@@ -10,7 +11,7 @@ const ERROR_OUTSIDE_OF_TEST = __DEV__
  * Sets a running test to warn only mode.
  */
 export function warn(): void {
-  const currentTest = useCurrentTest();
+  const currentTest = useCurrentTest(ErrorStrings.HOOK_CALLED_OUTSIDE);
 
   invariant(currentTest, ERROR_OUTSIDE_OF_TEST);
 

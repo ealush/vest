@@ -38,8 +38,8 @@ type CTXType = {
   mode: TinyState<Modes>;
 };
 
-export function useCurrentTest() {
-  return SuiteContext.useX().currentTest;
+export function useCurrentTest(msg?: string) {
+  return SuiteContext.useX(msg).currentTest;
 }
 
 export function useGroupName() {

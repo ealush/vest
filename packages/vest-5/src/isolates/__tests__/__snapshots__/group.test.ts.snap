@@ -1,0 +1,114 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`group: base case Group validity 1`] = `
+Object {
+  "done": [Function],
+  "errorCount": 4,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {
+    "group_1": Object {
+      "field_1": Object {
+        "errorCount": 0,
+        "errors": Array [],
+        "testCount": 1,
+        "valid": true,
+        "warnCount": 0,
+        "warnings": Array [],
+      },
+      "field_2": Object {
+        "errorCount": 1,
+        "errors": Array [],
+        "testCount": 2,
+        "valid": false,
+        "warnCount": 0,
+        "warnings": Array [],
+      },
+    },
+    "group_2": Object {
+      "field_1": Object {
+        "errorCount": 1,
+        "errors": Array [],
+        "testCount": 1,
+        "valid": false,
+        "warnCount": 0,
+        "warnings": Array [],
+      },
+      "field_2": Object {
+        "errorCount": 0,
+        "errors": Array [],
+        "testCount": 1,
+        "valid": true,
+        "warnCount": 0,
+        "warnings": Array [],
+      },
+    },
+    "group_3": Object {
+      "field_1": Object {
+        "errorCount": 1,
+        "errors": Array [],
+        "testCount": 1,
+        "valid": false,
+        "warnCount": 0,
+        "warnings": Array [],
+      },
+      "field_2": Object {
+        "errorCount": 1,
+        "errors": Array [],
+        "testCount": 1,
+        "valid": false,
+        "warnCount": 0,
+        "warnings": Array [],
+      },
+    },
+    "group_4": Object {
+      "field_1": Object {
+        "errorCount": 0,
+        "errors": Array [],
+        "testCount": 1,
+        "valid": true,
+        "warnCount": 0,
+        "warnings": Array [],
+      },
+      "field_2": Object {
+        "errorCount": 0,
+        "errors": Array [],
+        "testCount": 1,
+        "valid": true,
+        "warnCount": 0,
+        "warnings": Array [],
+      },
+    },
+  },
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "suiteName": undefined,
+  "testCount": 9,
+  "tests": Object {
+    "field_1": Object {
+      "errorCount": 2,
+      "errors": Array [],
+      "testCount": 4,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": Array [],
+    },
+    "field_2": Object {
+      "errorCount": 2,
+      "errors": Array [],
+      "testCount": 5,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": Array [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+}
+`;

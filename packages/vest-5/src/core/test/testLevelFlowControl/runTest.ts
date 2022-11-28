@@ -1,9 +1,10 @@
+import { VestTest } from 'VestTest';
 import { isPromise, isStringValue } from 'vest-utils';
 
+import { persist } from 'PersistedContext';
 import { SuiteContext, useVestBus } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
 import { Events } from 'VestBus';
-import { VestTest } from 'VestTest';
 import { verifyTestRun } from 'verifyTestRun';
 
 export function attemptRunTestObjectByTier(testObject: VestTest) {
@@ -65,26 +66,23 @@ function runAsyncTest(testObject: VestTest): void {
 
   const VestBus = useVestBus();
 
-  const done = SuiteContext.bind({ ...SuiteContext.useX() }, () => {
+  const done = persist(() => {
     // invalidating the "produce" cache
     // useRefreshTestObjects();
     VestBus.emit(Events.TEST_COMPLETED, testObject);
   });
-  const fail = SuiteContext.bind(
-    { ...SuiteContext.useX() },
-    (rejectionMessage?: string) => {
-      if (testObject.isCanceled()) {
-        return;
-      }
-
-      testObject.message = isStringValue(rejectionMessage)
-        ? rejectionMessage
-        : message;
-      testObject.fail();
-
-      done();
+  const fail = persist((rejectionMessage?: string) => {
+    if (testObject.isCanceled()) {
+      return;
     }
-  );
+
+    testObject.message = isStringValue(rejectionMessage)
+      ? rejectionMessage
+      : message;
+    testObject.fail();
+
+    done();
+  });
 
   asyncTest.then(done, fail);
 }

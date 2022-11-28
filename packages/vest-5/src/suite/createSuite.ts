@@ -37,6 +37,7 @@ function createSuite<T extends CB>(
 
   return assign(suite, {
     get: PersistedContext.bind(state, suiteResult),
+    reset: () => null,
   });
 }
 
@@ -47,6 +48,7 @@ export type Suite<T extends CB> = ((...args: Parameters<T>) => SuiteRunResult) &
 
 type SuiteMethods = {
   get: () => SuiteResult;
+  reset: () => void;
 };
 
 export { createSuite };

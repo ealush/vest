@@ -1,5 +1,6 @@
 import { Isolate } from 'IsolateTypes';
 import { createCascade } from 'context';
+import { createState } from 'vast';
 import {
   assign,
   invariant,
@@ -34,6 +35,19 @@ export const PersistedContext = createCascade<CTXType>(
     ) as CTXType;
   }
 );
+
+export function createVestState2({ suiteName }: { suiteName?: string }) {
+  const state = createState();
+
+  const stateRef = {
+    doneCallbacks: state.registerStateKey<DoneCallbacks>(() => []),
+    fieldCallbacks: state.registerStateKey<FieldCallbacks>(() => ({})),
+    historyRoot: state.registerStateKey<Isolate | null>(null),
+    suiteName: state.registerStateKey<string | undefined>(suiteName),
+  };
+
+  return [state, stateRef];
+}
 
 export function createVestState({
   suiteName,

@@ -18,10 +18,10 @@ function createSuite<T extends CB>(
 ): Suite<T> {
   const [suiteCallback, suiteName] = args.reverse() as [T, SuiteName];
 
-  const state = createVestState({ suiteName });
+  const { state, stateRef } = createVestState({ suiteName });
 
   const suite = PersistedContext.bind(
-    state,
+    stateRef,
     function suite(...args: Parameters<T>): SuiteRunResult {
       const [, output] = SuiteContext.run({}, () => {
         // eslint-disable-next-line max-nested-callbacks
@@ -36,8 +36,8 @@ function createSuite<T extends CB>(
   );
 
   return assign(suite, {
-    get: PersistedContext.bind(state, suiteResult),
-    reset: () => null,
+    get: PersistedContext.bind(stateRef, suiteResult),
+    reset: state.reset,
   });
 }
 

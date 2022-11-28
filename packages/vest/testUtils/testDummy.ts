@@ -1,5 +1,6 @@
 /* eslint-disable jest/valid-title */
 import faker from 'faker';
+
 import { test, warn } from 'vest';
 
 /**
@@ -15,7 +16,7 @@ const testDummy = () => {
       name,
       message,
       jest.fn(() => {
-        throw new Error();
+        return false;
       })
     );
 
@@ -36,7 +37,7 @@ const testDummy = () => {
       message,
       jest.fn(() => {
         warn();
-        throw new Error();
+        return false;
       })
     );
 

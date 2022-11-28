@@ -97,3 +97,122 @@ Object {
   "warnCount": 0,
 }
 `;
+
+exports[`skipWhen Should pass result draft to the functional condition 4`] = `
+Object {
+  "errorCount": 1,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "suiteName": undefined,
+  "testCount": 1,
+  "tests": Object {
+    "f1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "msg",
+      ],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": Array [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+}
+`;
+
+exports[`skipWhen Should pass result draft to the functional condition 5`] = `
+Object {
+  "errorCount": 2,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "suiteName": undefined,
+  "testCount": 2,
+  "tests": Object {
+    "f1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "msg",
+      ],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": Array [],
+    },
+    "f2": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "msg",
+      ],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": Array [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+}
+`;
+
+exports[`skipWhen Should pass result draft to the functional condition 6`] = `
+Object {
+  "errorCount": 2,
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": Object {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "suiteName": undefined,
+  "testCount": 2,
+  "tests": Object {
+    "f1": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "msg",
+      ],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": Array [],
+    },
+    "f2": Object {
+      "errorCount": 1,
+      "errors": Array [
+        "msg",
+      ],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": Array [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+}
+`;

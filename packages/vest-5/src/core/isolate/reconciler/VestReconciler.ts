@@ -1,20 +1,20 @@
-import { isOptionalFiedApplied } from 'optional';
-import { deferThrow, invariant, isNotEmpty, isNullish } from 'vest-utils';
-
 import { Isolate, IsolateTypes } from 'IsolateTypes';
-import {
-  useSetIsolateKey,
-  useIsolate,
-  useHistoryKeyValue,
-  useHistoryNode,
-} from 'PersistedContext';
 import { VestTest } from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';
 import { isSameProfileTest } from 'isSameProfileTest';
 import { shouldSkipBasedOnMode } from 'mode';
 import { withinActiveOmitWhen } from 'omitWhen';
+import { isOptionalFiedApplied } from 'optional';
 import { isExcludedIndividually } from 'skipWhen';
+import { deferThrow, invariant, isNotEmpty, isNullish } from 'vest-utils';
+
+import {
+  useSetIsolateKey,
+  useIsolate,
+  useHistoryKeyValue,
+  useHistoryNode,
+} from 'PersistedContext';
 
 // eslint-disable-next-line max-statements, complexity
 export function VestReconciler(
@@ -43,8 +43,8 @@ export function VestReconciler(
     withinActiveOmitWhen() ||
     isOptionalFiedApplied(currentTestObject.fieldName)
   ) {
-    prevTestObject.omit();
-    return true;
+    currentTestObject.omit();
+    return false;
   }
 
   if (isExcluded(currentTestObject)) {

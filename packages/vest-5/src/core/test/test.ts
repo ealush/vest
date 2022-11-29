@@ -1,10 +1,10 @@
-import { isFunction } from 'vest-utils';
-
 import { IsolateTypes } from 'IsolateTypes';
-import { useGroupName } from 'SuiteContext';
-import { TestFn } from 'TestTypes';
 import { VestTest } from 'VestTest';
 import { isolate } from 'isolate';
+import { isFunction } from 'vest-utils';
+
+import { useGroupName } from 'SuiteContext';
+import { TestFn } from 'TestTypes';
 import { attemptRunTestObjectByTier } from 'runTest';
 
 function vestTest(fieldName: string, message: string, cb: TestFn): VestTest;
@@ -36,7 +36,7 @@ function vestTest(
     key,
   });
 
-  isolate(
+  const [selectedIsolate] = isolate(
     IsolateTypes.TEST,
     () => {
       attemptRunTestObjectByTier(testObject);
@@ -44,7 +44,7 @@ function vestTest(
     testObject
   );
 
-  return testObject;
+  return selectedIsolate.data as VestTest;
 }
 
 export { vestTest as test };

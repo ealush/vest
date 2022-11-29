@@ -25,14 +25,19 @@ export function isolate<Callback extends CB = CB>(
 
   if (parent) {
     const cursor = parent.cursor;
-    useSetNextIsolateChild(current);
 
     historyNode = historyNode?.children[cursor] ?? null;
   }
   const output = reconcileHistoryNode(historyNode, current, callback);
 
+  const [nextIsolateChild] = output;
+
+  if (parent) {
+    useSetNextIsolateChild(nextIsolateChild);
+  }
+
   if (!parent) {
-    useSetHistory(current);
+    useSetHistory(nextIsolateChild);
   }
 
   return output;

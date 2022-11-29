@@ -95,8 +95,8 @@ describe('lib: cache', () => {
     describe('On cache hit', () => {
       it('Should return cached key and item from cache storage', () => {
         const res = c([1, 2, 3], Math.random);
-        expect(c.get([1, 2, 3])[0]).toEqual([1, 2, 3]);
-        expect(c.get([1, 2, 3])[1]).toEqual(res);
+        expect(c.get([1, 2, 3])?.[0]).toEqual([1, 2, 3]);
+        expect(c.get([1, 2, 3])?.[1]).toEqual(res);
       });
     });
   });

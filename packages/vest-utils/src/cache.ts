@@ -4,14 +4,16 @@ import { longerThan } from 'longerThan';
 /**
  * Creates a cache function
  */
-export default function createCache(maxSize = 1): {
-  <T>(deps: unknown[], cacheAction: (...args: unknown[]) => T): T;
-  get(deps: unknown[]): any;
+export default function createCache<T = unknown>(
+  maxSize = 1
+): {
+  (deps: unknown[], cacheAction: (...args: unknown[]) => T): T;
+  get(deps: unknown[]): [unknown[], T] | null;
   invalidate(item: any): void;
 } {
-  const cacheStorage: Array<[unknown[], any]> = [];
+  const cacheStorage: Array<[unknown[], T]> = [];
 
-  const cache = <T>(
+  const cache = (
     deps: unknown[],
     cacheAction: (...args: unknown[]) => T
   ): T => {
@@ -34,7 +36,7 @@ export default function createCache(maxSize = 1): {
   };
 
   // Retrieves an item from the cache.
-  cache.get = (deps: unknown[]): [unknown[], any] | null =>
+  cache.get = (deps: unknown[]): [unknown[], T] | null =>
     cacheStorage[findIndex(deps)] || null;
 
   return cache;

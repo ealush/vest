@@ -123,6 +123,7 @@ describe('omitWhen', () => {
         expect(suite.get().tests.field_2.testCount).toBe(1);
         expect(suite.get().tests.field_3.testCount).toBe(0);
         expect(suite.get().tests.field_4.testCount).toBe(0);
+
         expect(suite.get().isValid()).toBe(true);
       });
 

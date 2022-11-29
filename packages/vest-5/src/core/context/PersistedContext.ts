@@ -1,7 +1,7 @@
 import { Isolate } from 'IsolateTypes';
 import { createCascade } from 'context';
 import { createState, UseState } from 'vast';
-import { assign, invariant, deferThrow, isNullish, CB } from 'vest-utils';
+import { assign, invariant, deferThrow, isNullish, CB, seq } from 'vest-utils';
 
 import { OptionalFields } from 'OptionalTypes';
 import { SuiteResult } from 'SuiteResultTypes';
@@ -35,6 +35,7 @@ export function createVestState({ suiteName }: { suiteName?: string }) {
     doneCallbacks: state.registerStateKey<DoneCallbacks>(() => []),
     fieldCallbacks: state.registerStateKey<FieldCallbacks>(() => ({})),
     historyRoot: state.registerStateKey<Isolate | null>(null),
+    suiteId: seq(),
     suiteName,
   };
 
@@ -57,6 +58,7 @@ type StateType = {
   doneCallbacks: UseState<DoneCallbacks>;
   fieldCallbacks: UseState<FieldCallbacks>;
   suiteName: string | undefined;
+  suiteId: number;
 };
 
 type FieldCallbacks = Record<string, DoneCallbacks>;
@@ -89,6 +91,10 @@ export function useHistoryNode() {
 
 export function useSuiteName() {
   return PersistedContext.useX().suiteName;
+}
+
+export function useSuiteId() {
+  return PersistedContext.useX().suiteId;
 }
 
 export function useSetHistory(history: Isolate) {

@@ -49,3 +49,9 @@ export default function createCache<T = unknown>(
     );
   }
 }
+
+export type CacheApi<T = unknown> = {
+  (deps: unknown[], cacheAction: (...args: unknown[]) => T): T;
+  get(deps: unknown[]): [unknown[], T] | null;
+  invalidate(item: any): void;
+};

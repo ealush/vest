@@ -1,4 +1,4 @@
-export { default as cache } from 'cache';
+export { default as cache, CacheApi } from 'cache';
 export { isNullish, isNotNullish } from 'isNullish';
 export * as nestedArray from 'nestedArray';
 export { default as asArray } from 'asArray';

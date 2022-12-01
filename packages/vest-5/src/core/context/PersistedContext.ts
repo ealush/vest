@@ -58,7 +58,7 @@ type StateType = {
   doneCallbacks: UseState<DoneCallbacks>;
   fieldCallbacks: UseState<FieldCallbacks>;
   suiteName: string | undefined;
-  suiteId: number;
+  suiteId: string;
 };
 
 type FieldCallbacks = Record<string, DoneCallbacks>;

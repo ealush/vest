@@ -1,12 +1,11 @@
-import { IsolateTypes } from 'IsolateTypes';
 import { VestTest } from 'VestTest';
-import { genTestObject } from 'genTestObject';
-import { isolate } from 'isolate';
-import { isFunction } from 'vest-utils';
+import { testObjectIsolate } from 'testObjectIsolate';
+import { assign, isFunction } from 'vest-utils';
+
+import { wrapTestMemo } from './test.memo';
 
 import { useGroupName } from 'SuiteContext';
 import { TestFn } from 'TestTypes';
-import { attemptRunTestObjectByTier } from 'runTest';
 
 function vestTest(fieldName: string, message: string, cb: TestFn): VestTest;
 function vestTest(fieldName: string, cb: TestFn): VestTest;
@@ -31,21 +30,17 @@ function vestTest(
 
   const groupName = useGroupName();
 
-  const testObject = genTestObject(fieldName, testFn, {
+  const testObject = new VestTest(fieldName, testFn, {
     message,
     groupName,
     key,
   });
 
-  const [selectedIsolate] = isolate(
-    IsolateTypes.TEST,
-    () => {
-      attemptRunTestObjectByTier(testObject);
-    },
-    testObject
-  );
-
-  return selectedIsolate.data as VestTest;
+  return testObjectIsolate(testObject);
 }
 
-export { vestTest as test };
+export const test = assign(vestTest, {
+  memo: wrapTestMemo(vestTest),
+});
+
+export type VTest = typeof vestTest;

@@ -6,6 +6,7 @@ export enum IsolateTypes {
   GROUP = 'GROUP',
   SKIP_WHEN = 'SKIP_WHEN',
   OMIT_WHEN = 'OMIT_WHEN',
+  TEST_MEMO = 'TEST_MEMO',
 }
 
 export type Isolate = {

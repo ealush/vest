@@ -1,7 +1,17 @@
 import { Isolate } from 'IsolateTypes';
+import { VestTest } from 'VestTest';
 import { createCascade } from 'context';
 import { createState, UseState } from 'vast';
-import { assign, invariant, deferThrow, isNullish, CB, seq } from 'vest-utils';
+import {
+  assign,
+  invariant,
+  deferThrow,
+  isNullish,
+  CB,
+  seq,
+  cache,
+} from 'vest-utils';
+import { CacheApi } from 'vest-utils/src/vest-utils';
 
 import { OptionalFields } from 'OptionalTypes';
 import { SuiteResult } from 'SuiteResultTypes';
@@ -37,6 +47,7 @@ export function createVestState({ suiteName }: { suiteName?: string }) {
     historyRoot: state.registerStateKey<Isolate | null>(null),
     suiteId: seq(),
     suiteName,
+    testMemoCache: cache<VestTest>(10),
   };
 
   return { state, stateRef };
@@ -51,6 +62,7 @@ type CTXType = StateType & {
   runtimeNode: Isolate | null;
   runtimeRoot: Isolate | null;
   optional: OptionalFields;
+  testMemoCache: CacheApi<VestTest>;
 };
 
 type StateType = {
@@ -97,6 +109,10 @@ export function useSuiteId() {
   return PersistedContext.useX().suiteId;
 }
 
+export function useTestMemoCache() {
+  return PersistedContext.useX().testMemoCache;
+}
+
 export function useSetHistory(history: Isolate) {
   const context = PersistedContext.useX();
 
@@ -116,6 +132,10 @@ export function useHistoryKeyValue(key?: string | null) {
 
 export function useIsolate() {
   return PersistedContext.useX().runtimeNode ?? null;
+}
+
+export function useCurrentCursor() {
+  return useIsolate()?.cursor ?? 0;
 }
 
 export function useRuntimeRoot() {

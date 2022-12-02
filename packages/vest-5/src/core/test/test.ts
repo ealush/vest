@@ -1,5 +1,6 @@
 import { IsolateTypes } from 'IsolateTypes';
 import { VestTest } from 'VestTest';
+import { genTestObject } from 'genTestObject';
 import { isolate } from 'isolate';
 import { isFunction } from 'vest-utils';
 
@@ -30,7 +31,7 @@ function vestTest(
 
   const groupName = useGroupName();
 
-  const testObject = new VestTest(fieldName, testFn, {
+  const testObject = genTestObject(fieldName, testFn, {
     message,
     groupName,
     key,

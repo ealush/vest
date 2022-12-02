@@ -19,7 +19,6 @@
       "VestReconciler": ["src/core/isolate/reconciler/VestReconciler.ts"],
       "SuiteWalker": ["src/core/isolate/SuiteWalker.ts"],
       "walker": ["src/core/isolate/walker.ts"],
-      "genTestObject": ["src/core/test/genTestObject.ts"],
       "matchingFieldName": ["src/core/test/helpers/matchingFieldName.ts"],
       "matchingGroupName": ["src/core/test/helpers/matchingGroupName.ts"],
       "nonMatchingSeverityProfile": [
@@ -28,9 +27,11 @@
       "shouldUseErrorMessage": [
         "src/core/test/helpers/shouldUseErrorMessage.ts"
       ],
+      "test.memo": ["src/core/test/test.memo.ts"],
       "test": ["src/core/test/test.ts"],
       "runTest": ["src/core/test/testLevelFlowControl/runTest.ts"],
       "verifyTestRun": ["src/core/test/testLevelFlowControl/verifyTestRun.ts"],
+      "testObjectIsolate": ["src/core/test/testObjectIsolate.ts"],
       "TestTypes": ["src/core/test/TestTypes.ts"],
       "VestTest": ["src/core/test/VestTest.ts"],
       "VestBus": ["src/core/VestBus/VestBus.ts"],

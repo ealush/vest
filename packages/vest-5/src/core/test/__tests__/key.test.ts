@@ -1,7 +1,7 @@
+import mockThrowError from '../../../../testUtils/mockThrowError';
+
 import * as vest from 'vest';
 import { create, test, skipWhen } from 'vest';
-
-import mockThrowError from '../../../../testUtils/mockThrowError';
 
 describe('key', () => {
   describe('When key is provided', () => {

@@ -117,7 +117,6 @@ export class VestTest {
 
   cancel(): void {
     this.setStatus(STATUS_CANCELED);
-    // useRefreshTestObjects();
   }
 
   reset(): void {

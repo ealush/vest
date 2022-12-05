@@ -1,3 +1,5 @@
+import { VestTest } from 'VestTest';
+
 export enum IsolateTypes {
   DEFAULT = 'DEFAULT',
   TEST = 'TEST',
@@ -9,12 +11,14 @@ export enum IsolateTypes {
   TEST_MEMO = 'TEST_MEMO',
 }
 
-export type Isolate = {
-  type: IsolateTypes;
+export type Isolate<T = IsolateTypes, D = any> = {
+  type: T;
   children: Isolate[];
-  keys: Record<string, any>;
+  keys: Record<string, Isolate>;
   parent: Isolate | null;
-  data?: any;
+  data?: D;
   cursor: number;
   output?: any;
 };
+
+export type IsolateTest = Isolate<IsolateTypes.TEST, VestTest>;

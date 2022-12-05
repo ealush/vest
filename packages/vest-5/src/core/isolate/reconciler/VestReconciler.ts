@@ -84,6 +84,7 @@ function getIsolateTest(isolate: Isolate): VestTest | undefined {
   return isolate.data;
 }
 
+// eslint-disable-next-line complexity
 function handleCollision(newNode: IsolateTest, prevNode: Isolate): IsolateTest {
   const newTestObject = getIsolateTestX(newNode);
 
@@ -99,9 +100,10 @@ function handleCollision(newNode: IsolateTest, prevNode: Isolate): IsolateTest {
   if (testReorderDetected(newTestObject, prevTestObject)) {
     throwTestOrderError(prevTestObject, newTestObject);
     removeAllNextTestsInIsolate();
+    return newNode;
   }
 
-  return newNode;
+  return (prevNode ? prevNode : newNode) as IsolateTest;
 }
 
 function throwTestOrderError(

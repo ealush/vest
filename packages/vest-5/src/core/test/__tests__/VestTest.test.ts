@@ -42,7 +42,7 @@ describe('VestTest', () => {
     beforeEach(() => {
       jest.resetModules();
 
-      const VestTest = require('VestTest').default; // eslint-disable-line @typescript-eslint/no-var-requires
+      const { VestTest } = require('VestTest'); // eslint-disable-line @typescript-eslint/no-var-requires
       testObject = new VestTest(fieldName, jest.fn(), { message });
     });
 

@@ -48,15 +48,15 @@ function reconcileHistoryNode<Callback extends CB = CB>(
   current: Isolate,
   callback: CB
 ): [Isolate, ReturnType<Callback>] {
-  const shouldUseHistoryNode = VestReconciler(historyNode, current);
+  const nextNode = VestReconciler(historyNode, current);
 
-  if (shouldUseHistoryNode) {
-    invariant(historyNode);
+  invariant(nextNode);
 
-    return [historyNode, getNodeOuput(historyNode)];
+  if (nextNode === current) {
+    return [current, runAsNew(historyNode, current, callback)];
   }
 
-  return [current, runAsNew(historyNode, current, callback)];
+  return [nextNode, getNodeOuput(nextNode)];
 }
 
 function getNodeOuput(node: Isolate): any {

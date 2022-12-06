@@ -1,3 +1,5 @@
+import { Isolate } from 'IsolateTypes';
+import { VestTest } from 'VestTest';
 import { createCascade } from 'context';
 import { createState, UseState } from 'vast';
 import {
@@ -11,10 +13,8 @@ import {
 } from 'vest-utils';
 import { CacheApi } from 'vest-utils/src/vest-utils';
 
-import { Isolate } from 'IsolateTypes';
 import { OptionalFields } from 'OptionalTypes';
 import { SuiteResult } from 'SuiteResultTypes';
-import { VestTest } from 'VestTest';
 
 export const PersistedContext = createCascade<CTXType>(
   (vestState, parentContext) => {
@@ -120,7 +120,7 @@ export function useSetHistory(history: Isolate) {
   setHistoryRoot(history);
 }
 
-export function useHistoryKeyValue(key?: string | null): Isolate | null {
+export function useHistoryKey(key?: string | null): Isolate | null {
   if (isNullish(key)) {
     return null;
   }

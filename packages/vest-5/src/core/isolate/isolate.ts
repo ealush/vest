@@ -9,8 +9,8 @@ import {
   useIsolate,
   useRuntimeRoot,
 } from 'PersistedContext';
-import { VestReconciler } from 'VestReconciler';
 import { createIsolate } from 'createIsolate';
+import { vestReconciler } from 'vestReconciler';
 
 // eslint-disable-next-line max-statements
 export function isolate<Callback extends CB = CB>(
@@ -48,7 +48,7 @@ function reconcileHistoryNode<Callback extends CB = CB>(
   current: Isolate,
   callback: CB
 ): [Isolate, ReturnType<Callback>] {
-  const nextNode = VestReconciler(historyNode, current);
+  const nextNode = vestReconciler(historyNode, current);
 
   invariant(nextNode);
 

@@ -1,4 +1,3 @@
-import { SuiteSelectors, suiteSelectors } from 'suiteSelectors';
 import { cache as createCache, assign } from 'vest-utils';
 
 import { SuiteSummary } from 'SuiteSummaryTypes';
@@ -6,6 +5,7 @@ import { SuiteName } from 'create';
 import ctx from 'ctx';
 import genTestsSummary from 'genTestsSummary';
 import { useStateRef, useTestsFlat, useSuiteName } from 'stateHooks';
+import { SuiteSelectors, suiteSelectors } from 'suiteSelectors';
 
 const cache = createCache<SuiteResult>(1);
 

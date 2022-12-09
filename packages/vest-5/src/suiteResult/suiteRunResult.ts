@@ -32,7 +32,7 @@ const done: Done = function done(...args): SuiteRunResult {
     return output;
   }
 
-  const doneCallback = () => callback(suiteRunResult());
+  const doneCallback = () => callback(suiteResult());
 
   if (shouldRunDoneCallback(fieldName)) {
     doneCallback();

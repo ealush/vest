@@ -10,6 +10,8 @@ import {
   CB,
   seq,
   cache,
+  TinyState,
+  tinyState,
 } from 'vest-utils';
 import { CacheApi } from 'vest-utils/src/vest-utils';
 
@@ -28,6 +30,8 @@ export const PersistedContext = createCascade<CTXType>(
 
     return assign(
       {
+        doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
+        fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
         historyNode: historyRootNode,
         optional: {},
         runtimeNode: null,
@@ -42,8 +46,6 @@ export function createVestState({ suiteName }: { suiteName?: string }) {
   const state = createState();
 
   const stateRef = {
-    doneCallbacks: state.registerStateKey<DoneCallbacks>(() => []),
-    fieldCallbacks: state.registerStateKey<FieldCallbacks>(() => ({})),
     historyRoot: state.registerStateKey<Isolate | null>(null),
     suiteId: seq(),
     suiteName,
@@ -63,12 +65,12 @@ type CTXType = StateType & {
   runtimeRoot: Isolate | null;
   optional: OptionalFields;
   testMemoCache: CacheApi<VestTest>;
+  doneCallbacks: TinyState<DoneCallbacks>;
+  fieldCallbacks: TinyState<FieldCallbacks>;
 };
 
 type StateType = {
   historyRoot: UseState<Isolate | null>;
-  doneCallbacks: UseState<DoneCallbacks>;
-  fieldCallbacks: UseState<FieldCallbacks>;
   suiteName: string | undefined;
   suiteId: string;
 };

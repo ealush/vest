@@ -47,6 +47,7 @@ export function createVestState({ suiteName }: { suiteName?: string }) {
 
   const stateRef = {
     historyRoot: state.registerStateKey<Isolate | null>(null),
+    optional: {},
     suiteId: seq(),
     suiteName,
     testMemoCache: cache<VestTest>(10),
@@ -63,7 +64,6 @@ type CTXType = StateType & {
   historyNode: Isolate | null;
   runtimeNode: Isolate | null;
   runtimeRoot: Isolate | null;
-  optional: OptionalFields;
   testMemoCache: CacheApi<VestTest>;
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
@@ -73,6 +73,7 @@ type StateType = {
   historyRoot: UseState<Isolate | null>;
   suiteName: string | undefined;
   suiteId: string;
+  optional: OptionalFields;
 };
 
 type FieldCallbacks = Record<string, DoneCallbacks>;

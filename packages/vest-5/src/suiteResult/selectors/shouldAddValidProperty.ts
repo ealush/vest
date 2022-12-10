@@ -136,6 +136,7 @@ function noMissingTestsLogic(
 function optionalTestAwaitsResolution(testObject: VestTest): boolean {
   // Does the test belong to an optional field,
   // and the test itself is still in an indeterminate state?
+
   return (
     useOptionalField(testObject.fieldName).type ===
       OptionalFieldTypes.Delayed && testObject.awaitsResolution()

@@ -1,9 +1,9 @@
+import { VestTest } from 'VestTest';
 import { createCascade } from 'context';
+import { Modes } from 'mode';
 import { assign, BusType, TinyState, tinyState } from 'vest-utils';
 
 import { initVestBus } from 'VestBus';
-import { VestTest } from 'VestTest';
-import { Modes } from 'mode';
 
 export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
   if (parentContext) {

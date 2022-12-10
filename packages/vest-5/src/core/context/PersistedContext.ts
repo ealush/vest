@@ -1,4 +1,6 @@
 import { Isolate } from 'IsolateTypes';
+import { OptionalFields } from 'OptionalTypes';
+import { SuiteResult } from 'SuiteResultTypes';
 import { VestTest } from 'VestTest';
 import { createCascade } from 'context';
 import { createState, UseState } from 'vast';
@@ -14,9 +16,6 @@ import {
   tinyState,
 } from 'vest-utils';
 import { CacheApi } from 'vest-utils/src/vest-utils';
-
-import { OptionalFields } from 'OptionalTypes';
-import { SuiteResult } from 'SuiteResultTypes';
 
 export const PersistedContext = createCascade<CTXType>(
   (vestState, parentContext) => {
@@ -138,7 +137,7 @@ export function useIsolate() {
 }
 
 export function useCurrentCursor() {
-  return useIsolate()?.cursor ?? 0;
+  return useIsolate()?.children.length ?? 0;
 }
 
 export function useRuntimeRoot() {
@@ -150,7 +149,7 @@ export function useSetNextIsolateChild(child: Isolate): void {
 
   invariant(currentIsolate, 'Not within an active isolate');
 
-  currentIsolate.children[currentIsolate.cursor++] = child;
+  currentIsolate.children.push(child);
 }
 
 export function useSetIsolateKey(

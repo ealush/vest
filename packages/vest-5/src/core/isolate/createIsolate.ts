@@ -7,7 +7,6 @@ export function createIsolate(
 ): Isolate {
   const isolate = {
     children: [],
-    cursor: 0,
     data,
     keys: {},
     parent,

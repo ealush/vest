@@ -101,3 +101,21 @@ export function every(
 
   return hasMatch;
 }
+
+export function pluck(
+  startNode: Isolate,
+  predicate: (node: Isolate) => boolean,
+  visitOnly?: IsolateTypes
+): void {
+  walk(
+    startNode,
+    node => {
+      if (predicate(node) && node.parent) {
+        node.parent.children = node.parent.children.filter(
+          child => child !== node
+        );
+      }
+    },
+    visitOnly
+  );
+}

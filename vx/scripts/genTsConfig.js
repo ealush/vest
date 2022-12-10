@@ -4,6 +4,7 @@ const { writeJSONSync } = require('fs-extra');
 const lodash = require('lodash');
 const exec = require('vx/exec');
 const logger = require('vx/logger');
+const opts = require('vx/opts');
 const packageNames = require('vx/packageNames');
 const pathsPerPackage = require('vx/util/pathsPerPackage');
 const vxPath = require('vx/vxPath');
@@ -93,6 +94,9 @@ function rootTsConfigTemplate() {
     },
     files: [`${vxPath.rel(vxPath.JEST_CONFIG_PATH)}/globals.d.ts`],
     include: [vxPath.rel(vxPath.packageSrc('*', '**/*.ts'))],
+    exclude: [
+      vxPath.rel(vxPath.packageSrc('*', `**/${opts.dir.TESTS}/*.test.ts`)),
+    ],
   };
 }
 

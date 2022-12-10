@@ -21,5 +21,6 @@
     "strict": true
   },
   "files": ["./vx/config/jest/globals.d.ts"],
-  "include": ["./packages/*/src/**/*.ts"]
+  "include": ["./packages/*/src/**/*.ts"],
+  "exclude": ["./packages/*/src/**/__tests__/*.test.ts"]
 }

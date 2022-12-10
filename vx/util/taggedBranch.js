@@ -1,5 +1,5 @@
 const {
-  CURRENT_BRANCH = process.env.GITHUB_REF_NAME,
+  CURRENT_BRANCH = (process.env.GITHUB_REF_NAME = ''),
   INTEGRATION_BRANCH,
   NEXT_BRANCH,
   LATEST_BRANCH,
@@ -21,10 +21,10 @@ const branchAllowsRelease =
 module.exports = {
   CURRENT_BRANCH,
   INTEGRATION_BRANCH,
-  NEXT_BRANCH,
   LATEST_BRANCH,
-  STABLE_BRANCH,
+  NEXT_BRANCH,
   RELEASE_BRANCH,
+  STABLE_BRANCH,
   branchAllowsRelease,
   isIntegrationBranch,
   isLatestBranch,

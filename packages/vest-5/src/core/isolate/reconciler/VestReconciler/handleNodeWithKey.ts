@@ -1,8 +1,8 @@
 import { IsolateTest } from 'IsolateTypes';
-import { getIsolateTestX } from 'getIsolateTest';
 import { invariant, isNullish } from 'vest-utils';
 
 import { useHistoryKey, useSetIsolateKey } from 'PersistedContext';
+import { getIsolateTestX } from 'getIsolateTest';
 
 export function handleNodeWithKey(testNode: IsolateTest): IsolateTest {
   const testObject = getIsolateTestX(testNode);

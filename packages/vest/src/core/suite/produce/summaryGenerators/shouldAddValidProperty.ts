@@ -1,3 +1,5 @@
+import { isEmpty } from 'vest-utils';
+
 import { Severity } from 'Severity';
 import VestTest from 'VestTest';
 import {
@@ -6,8 +8,6 @@ import {
 } from 'hasFailuresByTestObjects';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
-import { isEmpty } from 'vest-utils';
-
 import { optionalFiedIsApplied, OptionalFieldTypes } from 'optionalFields';
 import { useTestsFlat, useAllIncomplete, useOptionalField } from 'stateHooks';
 

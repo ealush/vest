@@ -1,13 +1,13 @@
 import { Isolate, IsolateTest, IsolateTypes } from 'IsolateTypes';
 import { VestTest } from 'VestTest';
-import { getIsolateTest, getIsolateTestX } from 'getIsolateTest';
-import { handleNodeWithKey } from 'handleNodeWithKey';
 import { isSameProfileTest } from 'isSameProfileTest';
-import { testHasKey } from 'testHasKey';
 import { deferThrow, invariant, isNullish } from 'vest-utils';
 
 import { useHistoryNode, useIsolate } from 'PersistedContext';
+import { getIsolateTest, getIsolateTestX } from 'getIsolateTest';
+import { handleNodeWithKey } from 'handleNodeWithKey';
 import { isIsolateType } from 'isIsolateType';
+import { testHasKey } from 'testHasKey';
 
 export function handleCollision(
   newNode: IsolateTest,

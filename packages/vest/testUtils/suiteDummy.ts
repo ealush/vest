@@ -1,7 +1,8 @@
-import { optional, create, skip, SuiteResult } from 'vest';
 import { asArray } from 'vest-utils';
 
 import { dummyTest } from './testDummy';
+
+import { optional, create, skip, SuiteResult } from 'vest';
 
 export function failing(failingFields?: string | string[]) {
   return createSuiteRunResult(failingFields, fieldName => {

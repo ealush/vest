@@ -1,13 +1,12 @@
 import { Isolate, IsolateTest, IsolateTypes } from 'IsolateTypes';
+import { useCurrentCursor, useHistoryNode, useIsolate } from 'PersistedContext';
 import { VestTest } from 'VestTest';
-import { isSameProfileTest } from 'isSameProfileTest';
-import { deferThrow, invariant, isNullish } from 'vest-utils';
-
-import { useHistoryNode, useIsolate } from 'PersistedContext';
 import { getIsolateTest, getIsolateTestX } from 'getIsolateTest';
 import { handleNodeWithKey } from 'handleNodeWithKey';
 import { isIsolateType } from 'isIsolateType';
+import { isSameProfileTest } from 'isSameProfileTest';
 import { testHasKey } from 'testHasKey';
+import { deferThrow, invariant, isNullish } from 'vest-utils';
 
 export function handleCollision(
   newNode: IsolateTest,
@@ -40,7 +39,7 @@ function removeAllNextTestsInIsolate() {
     return;
   }
 
-  historyNode.children.length = testIsolate?.children.length;
+  historyNode.children.length = useCurrentCursor();
 }
 
 function shouldUseKey(newNode: IsolateTest, prevNode: Isolate): boolean {

@@ -1,9 +1,8 @@
 import { Isolate, IsolateTypes } from 'IsolateTypes';
+import { useRuntimeRoot, useHistoryRoot } from 'PersistedContext';
 import { VestTest } from 'VestTest';
 import matchingFieldName from 'matchingFieldName';
 import * as walker from 'walker';
-
-import { useRuntimeRoot, useHistoryRoot } from 'PersistedContext';
 
 function useAvailableSuiteRoot(): Isolate | null {
   const root = useRuntimeRoot();
@@ -65,6 +64,16 @@ export class SuiteWalker {
     if (!root) return false;
     return walker.every(root, predicate, visitOnly);
   }
+
+  static pluck(
+    predicate: (node: Isolate) => boolean,
+    visitOnly?: IsolateTypes
+  ): void {
+    const root = useAvailableSuiteRoot();
+
+    if (!root) return;
+    return walker.pluck(root, predicate, visitOnly);
+  }
 }
 
 export class TestWalker {
@@ -112,6 +121,20 @@ export class TestWalker {
         return matchingFieldName(testObject, fieldName);
       }
       return true;
+    });
+  }
+
+  static pluckTests(predicate: (test: VestTest) => boolean): void {
+    SuiteWalker.pluck(isolate => {
+      const testObject = isolate.data as VestTest;
+
+      return predicate(testObject);
+    }, IsolateTypes.TEST);
+  }
+
+  static removeTestByFieldName(fieldName: string): void {
+    TestWalker.pluckTests(testObject => {
+      return matchingFieldName(testObject, fieldName);
     });
   }
 }

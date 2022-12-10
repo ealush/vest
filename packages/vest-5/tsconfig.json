@@ -32,8 +32,8 @@
       "vestReconciler": [
         "src/core/isolate/reconciler/VestReconciler/vestReconciler.ts"
       ],
-      "SuiteWalker": ["src/core/isolate/SuiteWalker.ts"],
       "walker": ["src/core/isolate/walker.ts"],
+      "SuiteWalker": ["src/core/SuiteWalker/SuiteWalker.ts"],
       "matchingFieldName": ["src/core/test/helpers/matchingFieldName.ts"],
       "matchingGroupName": ["src/core/test/helpers/matchingGroupName.ts"],
       "nonMatchingSeverityProfile": [

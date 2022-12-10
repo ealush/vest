@@ -1,6 +1,4 @@
 import { Isolate, IsolateTypes } from 'IsolateTypes';
-import { CB, invariant } from 'vest-utils';
-
 import {
   useSetNextIsolateChild,
   PersistedContext,
@@ -8,8 +6,10 @@ import {
   useSetHistory,
   useIsolate,
   useRuntimeRoot,
+  useCurrentCursor,
 } from 'PersistedContext';
 import { createIsolate } from 'createIsolate';
+import { CB, invariant } from 'vest-utils';
 import { vestReconciler } from 'vestReconciler';
 
 // eslint-disable-next-line max-statements
@@ -24,9 +24,7 @@ export function isolate<Callback extends CB = CB>(
   const current = createIsolate(type, parent, data);
 
   if (parent) {
-    const cursor = parent.cursor;
-
-    historyNode = historyNode?.children[cursor] ?? null;
+    historyNode = historyNode?.children[useCurrentCursor()] ?? null;
   }
   const output = reconcileHistoryNode(historyNode, current, callback);
 

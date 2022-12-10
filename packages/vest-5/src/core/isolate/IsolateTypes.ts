@@ -17,7 +17,6 @@ export type Isolate<T = IsolateTypes, D = any> = {
   keys: Record<string, Isolate>;
   parent: Isolate | null;
   data?: D;
-  cursor: number;
   output?: any;
 };
 

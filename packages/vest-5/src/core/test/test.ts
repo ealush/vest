@@ -1,10 +1,10 @@
+import { VestTest } from 'VestTest';
 import { assign, invariant, isFunction, isStringValue } from 'vest-utils';
 
 import { wrapTestMemo } from './test.memo';
 
 import { useGroupName } from 'SuiteContext';
 import { TestFn } from 'TestTypes';
-import { VestTest } from 'VestTest';
 import { testObjectIsolate } from 'testObjectIsolate';
 
 function vestTest(fieldName: string, message: string, cb: TestFn): VestTest;

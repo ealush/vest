@@ -1,6 +1,5 @@
 import { VestTest } from 'VestTest';
 import { VTest } from 'test';
-import { testObjectIsolate } from 'testObjectIsolate';
 import { isNull } from 'vest-utils';
 
 import {
@@ -9,6 +8,7 @@ import {
   useTestMemoCache,
 } from 'PersistedContext';
 import { TestFn } from 'TestTypes';
+import { testObjectIsolate } from 'testObjectIsolate';
 
 export function wrapTestMemo(test: VTest): TestMemo {
   /**

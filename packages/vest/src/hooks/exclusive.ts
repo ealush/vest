@@ -1,5 +1,3 @@
-import VestTest from 'VestTest';
-import { isExcludedIndividually } from 'skipWhen';
 import {
   isStringValue,
   asArray,
@@ -7,8 +5,10 @@ import {
   optionalFunctionValue,
 } from 'vest-utils';
 
+import VestTest from 'VestTest';
 import ctx from 'ctx';
 import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
+import { isExcludedIndividually } from 'skipWhen';
 
 type ExclusionItem = string | string[] | undefined;
 

@@ -1,20 +1,9 @@
 import { Isolate, IsolateTypes } from 'IsolateTypes';
-import { useRuntimeRoot, useHistoryRoot } from 'PersistedContext';
 import { VestTest } from 'VestTest';
 import matchingFieldName from 'matchingFieldName';
 import * as walker from 'walker';
 
-function useAvailableSuiteRoot(): Isolate | null {
-  const root = useRuntimeRoot();
-
-  if (root) {
-    return root;
-  }
-
-  const [historyRoot] = useHistoryRoot();
-
-  return historyRoot;
-}
+import { useAvailableSuiteRoot } from 'PersistedContext';
 
 export class SuiteWalker {
   static walk(

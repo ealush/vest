@@ -1,6 +1,4 @@
 import { Isolate } from 'IsolateTypes';
-import { OptionalFields } from 'OptionalTypes';
-import { SuiteResult } from 'SuiteResultTypes';
 import { VestTest } from 'VestTest';
 import { createCascade } from 'context';
 import { createState, UseState } from 'vast';
@@ -17,6 +15,9 @@ import {
 } from 'vest-utils';
 import { CacheApi } from 'vest-utils/src/vest-utils';
 
+import { OptionalFields } from 'OptionalTypes';
+import { SuiteResult } from 'SuiteResultTypes';
+
 export const PersistedContext = createCascade<CTXType>(
   (vestState, parentContext) => {
     if (parentContext) {
@@ -29,8 +30,6 @@ export const PersistedContext = createCascade<CTXType>(
 
     return assign(
       {
-        doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
-        fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
         historyNode: historyRootNode,
         optional: {},
         runtimeNode: null,
@@ -45,6 +44,8 @@ export function createVestState({ suiteName }: { suiteName?: string }) {
   const state = createState();
 
   const stateRef = {
+    doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
+    fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
     historyRoot: state.registerStateKey<Isolate | null>(null),
     optional: {},
     suiteId: seq(),
@@ -59,17 +60,25 @@ export function persist<T extends CB>(cb: T): T {
   return PersistedContext.bind(PersistedContext.useX(), cb);
 }
 
+export function resetCallbacks(state: StateType) {
+  const [, , resetDoneCallbacks] = state.doneCallbacks();
+  const [, , resetFieldCallbacks] = state.fieldCallbacks();
+
+  resetDoneCallbacks();
+  resetFieldCallbacks();
+}
+
 type CTXType = StateType & {
   historyNode: Isolate | null;
   runtimeNode: Isolate | null;
   runtimeRoot: Isolate | null;
   testMemoCache: CacheApi<VestTest>;
-  doneCallbacks: TinyState<DoneCallbacks>;
-  fieldCallbacks: TinyState<FieldCallbacks>;
 };
 
 type StateType = {
   historyRoot: UseState<Isolate | null>;
+  doneCallbacks: TinyState<DoneCallbacks>;
+  fieldCallbacks: TinyState<FieldCallbacks>;
   suiteName: string | undefined;
   suiteId: string;
   optional: OptionalFields;
@@ -173,4 +182,16 @@ export function useSetIsolateKey(
   deferThrow(
     `Encountered the same test key "${key}" twice. This may lead to tests overriding each other's results, or to tests being unexpectedly omitted.`
   );
+}
+
+export function useAvailableSuiteRoot(): Isolate | null {
+  const root = useRuntimeRoot();
+
+  if (root) {
+    return root;
+  }
+
+  const [historyRoot] = useHistoryRoot();
+
+  return historyRoot;
 }

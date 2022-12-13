@@ -121,6 +121,14 @@ export class TestWalker {
     }, IsolateTypes.TEST);
   }
 
+  static resetField(fieldName: string): void {
+    TestWalker.walkTests(testObject => {
+      if (matchingFieldName(testObject, fieldName)) {
+        testObject.reset();
+      }
+    });
+  }
+
   static removeTestByFieldName(fieldName: string): void {
     TestWalker.pluckTests(testObject => {
       return matchingFieldName(testObject, fieldName);

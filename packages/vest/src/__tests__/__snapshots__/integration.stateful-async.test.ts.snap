@@ -1,30 +1,30 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Stateful async tests Merges skipped validations from previous suite 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {
-    "group": Object {
-      "field_1": Object {
+  "groups": {
+    "group": {
+      "field_1": {
         "errorCount": 0,
-        "errors": Array [],
+        "errors": [],
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
-      "field_4": Object {
+      "field_4": {
         "errorCount": 0,
-        "errors": Array [],
+        "errors": [],
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
     },
   },
@@ -36,40 +36,40 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 3,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "field_message_1",
       ],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_3": Object {
+    "field_3": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_4": Object {
+    "field_4": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -78,29 +78,29 @@ Object {
 `;
 
 exports[`Stateful async tests Merges skipped validations from previous suite 2`] = `
-Object {
+{
   "errorCount": 2,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {
-    "group": Object {
-      "field_1": Object {
+  "groups": {
+    "group": {
+      "field_1": {
         "errorCount": 0,
-        "errors": Array [],
+        "errors": [],
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
-      "field_4": Object {
+      "field_4": {
         "errorCount": 0,
-        "errors": Array [],
+        "errors": [],
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
     },
   },
@@ -112,42 +112,42 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 3,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "field_message_1",
       ],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "rejection_message_1",
       ],
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_3": Object {
+    "field_3": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_4": Object {
+    "field_4": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -156,33 +156,33 @@ Object {
 `;
 
 exports[`Stateful async tests Merges skipped validations from previous suite 3`] = `
-Object {
+{
   "errorCount": 5,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {
-    "group": Object {
-      "field_1": Object {
+  "groups": {
+    "group": {
+      "field_1": {
         "errorCount": 1,
-        "errors": Array [
+        "errors": [
           "field_1_group_message",
         ],
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
-      "field_4": Object {
+      "field_4": {
         "errorCount": 1,
-        "errors": Array [
+        "errors": [
           "field_4_group_message",
         ],
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
     },
   },
@@ -194,47 +194,47 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 7,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 2,
-      "errors": Array [
+      "errors": [
         "field_1_group_message",
         "field_message_1",
       ],
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "rejection_message_1",
       ],
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_3": Object {
+    "field_3": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "field_message_3",
       ],
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_4": Object {
+    "field_4": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "field_4_group_message",
       ],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,

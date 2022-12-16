@@ -1,7 +1,7 @@
+import { create, skipWhen } from 'vest';
+
 import mockThrowError from '../../../../testUtils/mockThrowError';
 import { dummyTest } from '../../../../testUtils/testDummy';
-
-import { create, skipWhen } from 'vest';
 
 describe('Merging of previous test runs', () => {
   let suite;
@@ -122,30 +122,30 @@ describe('Merging of previous test runs', () => {
         expect(resA.hasErrors('f2')).toBe(true);
         expect(resA.hasErrors('f3')).toBe(true);
         expect(resA.tests).toMatchInlineSnapshot(`
-          Object {
-            "f1": Object {
+          {
+            "f1": {
               "errorCount": 1,
-              "errors": Array [],
+              "errors": [],
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
-              "warnings": Array [],
+              "warnings": [],
             },
-            "f2": Object {
+            "f2": {
               "errorCount": 1,
-              "errors": Array [],
+              "errors": [],
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
-              "warnings": Array [],
+              "warnings": [],
             },
-            "f3": Object {
+            "f3": {
               "errorCount": 1,
-              "errors": Array [],
+              "errors": [],
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
-              "warnings": Array [],
+              "warnings": [],
             },
           }
         `);
@@ -156,22 +156,22 @@ describe('Merging of previous test runs', () => {
         expect(resB.hasErrors('f2')).toBe(false);
         expect(resB.hasErrors('f3')).toBe(true);
         expect(resB.tests).toMatchInlineSnapshot(`
-          Object {
-            "f1": Object {
+          {
+            "f1": {
               "errorCount": 1,
-              "errors": Array [],
+              "errors": [],
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
-              "warnings": Array [],
+              "warnings": [],
             },
-            "f3": Object {
+            "f3": {
               "errorCount": 1,
-              "errors": Array [],
+              "errors": [],
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
-              "warnings": Array [],
+              "warnings": [],
             },
           }
         `);
@@ -210,62 +210,62 @@ describe('Merging of previous test runs', () => {
           expect(resA.hasErrors('f6')).toBe(true);
           expect(resA.hasErrors('f7')).toBe(true);
           expect(resA.tests).toMatchInlineSnapshot(`
-            Object {
-              "f1": Object {
+            {
+              "f1": {
                 "errorCount": 1,
-                "errors": Array [],
+                "errors": [],
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
-                "warnings": Array [],
+                "warnings": [],
               },
-              "f2": Object {
+              "f2": {
                 "errorCount": 1,
-                "errors": Array [],
+                "errors": [],
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
-                "warnings": Array [],
+                "warnings": [],
               },
-              "f3": Object {
+              "f3": {
                 "errorCount": 1,
-                "errors": Array [],
+                "errors": [],
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
-                "warnings": Array [],
+                "warnings": [],
               },
-              "f4": Object {
+              "f4": {
                 "errorCount": 2,
-                "errors": Array [],
+                "errors": [],
                 "testCount": 2,
                 "valid": false,
                 "warnCount": 0,
-                "warnings": Array [],
+                "warnings": [],
               },
-              "f5": Object {
+              "f5": {
                 "errorCount": 1,
-                "errors": Array [],
+                "errors": [],
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
-                "warnings": Array [],
+                "warnings": [],
               },
-              "f6": Object {
+              "f6": {
                 "errorCount": 1,
-                "errors": Array [],
+                "errors": [],
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
-                "warnings": Array [],
+                "warnings": [],
               },
-              "f7": Object {
+              "f7": {
                 "errorCount": 1,
-                "errors": Array [],
+                "errors": [],
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
-                "warnings": Array [],
+                "warnings": [],
               },
             }
           `);
@@ -283,22 +283,22 @@ describe('Merging of previous test runs', () => {
           expect(resB.hasErrors('f6')).toBe(false);
           expect(resB.hasErrors('f7')).toBe(false);
           expect(resB.tests).toMatchInlineSnapshot(`
-            Object {
-              "f1": Object {
+            {
+              "f1": {
                 "errorCount": 1,
-                "errors": Array [],
+                "errors": [],
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
-                "warnings": Array [],
+                "warnings": [],
               },
-              "f4": Object {
+              "f4": {
                 "errorCount": 2,
-                "errors": Array [],
+                "errors": [],
                 "testCount": 2,
                 "valid": false,
                 "warnCount": 0,
-                "warnings": Array [],
+                "warnings": [],
               },
             }
           `);

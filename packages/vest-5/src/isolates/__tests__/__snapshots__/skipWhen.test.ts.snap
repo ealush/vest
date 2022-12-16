@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`skipWhen Should pass result draft to the functional condition 1`] = `
-Object {
+{
   "errorCount": 0,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -16,20 +16,20 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 0,
-  "tests": Object {},
+  "tests": {},
   "valid": false,
   "warnCount": 0,
 }
 `;
 
 exports[`skipWhen Should pass result draft to the functional condition 2`] = `
-Object {
+{
   "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -38,16 +38,16 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
-  "tests": Object {
-    "f1": Object {
+  "tests": {
+    "f1": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "msg",
       ],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -56,13 +56,13 @@ Object {
 `;
 
 exports[`skipWhen Should pass result draft to the functional condition 3`] = `
-Object {
+{
   "errorCount": 2,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -71,26 +71,26 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
-  "tests": Object {
-    "f1": Object {
+  "tests": {
+    "f1": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "msg",
       ],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "f2": Object {
+    "f2": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "msg",
       ],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,

@@ -1,7 +1,7 @@
 import faker from 'faker';
-import * as vest from 'vest';
 
 import { ErrorStrings } from 'ErrorStrings';
+import * as vest from 'vest';
 
 const { create, test, warn } = vest;
 

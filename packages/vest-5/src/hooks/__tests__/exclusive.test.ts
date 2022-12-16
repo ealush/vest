@@ -1,13 +1,13 @@
-import { VestTest } from 'VestTest';
-import { isExcluded, isGroupExcluded, skip, only } from 'exclusive';
 import faker from 'faker';
-import { group } from 'group';
-import * as vest from 'vest';
 
 import { dummyTest } from '../../../testUtils/testDummy';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { SuiteContext, useExclusion } from 'SuiteContext';
+import { VestTest } from 'VestTest';
+import { isExcluded, isGroupExcluded, skip, only } from 'exclusive';
+import { group } from 'group';
+import * as vest from 'vest';
 
 let res, res1;
 

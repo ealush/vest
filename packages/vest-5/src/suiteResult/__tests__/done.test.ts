@@ -1,7 +1,8 @@
-import * as vest from 'vest';
 import wait from 'wait';
 
 import { dummyTest } from '../../../testUtils/testDummy';
+
+import * as vest from 'vest';
 
 describe('done', () => {
   describe('When no async tests', () => {

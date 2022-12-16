@@ -1,6 +1,7 @@
+import { IsolateTypes } from 'IsolateTypes';
+import { isolate } from 'isolate';
 import { assign, CB, invariant, isFunction } from 'vest-utils';
 
-import { IsolateTypes } from 'IsolateTypes';
 import {
   createVestState,
   PersistedContext,
@@ -9,7 +10,6 @@ import {
 import { SuiteContext } from 'SuiteContext';
 import { SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
 import { TestWalker } from 'SuiteWalker';
-import { isolate } from 'isolate';
 import { suiteResult } from 'suiteResult';
 import { suiteRunResult } from 'suiteRunResult';
 

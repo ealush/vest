@@ -1,8 +1,6 @@
-import { asVestTest } from 'asVestTest';
-import { invariant } from 'vest-utils';
 import wait from 'wait';
 
-import { VestTest } from 'VestTest';
+import { asVestTest } from 'asVestTest';
 import * as vest from 'vest';
 
 describe('runAsyncTest', () => {

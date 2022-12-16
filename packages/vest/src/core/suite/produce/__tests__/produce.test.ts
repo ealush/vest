@@ -109,13 +109,13 @@ describe('suite.get()', () => {
     it('Should have all exposed methods', () => {
       const suite = vest.create(() => {});
       expect(suite.get()).toMatchInlineSnapshot(`
-        Object {
+        {
           "errorCount": 0,
           "getErrors": [Function],
           "getErrorsByGroup": [Function],
           "getWarnings": [Function],
           "getWarningsByGroup": [Function],
-          "groups": Object {},
+          "groups": {},
           "hasErrors": [Function],
           "hasErrorsByGroup": [Function],
           "hasWarnings": [Function],
@@ -124,7 +124,7 @@ describe('suite.get()', () => {
           "isValidByGroup": [Function],
           "suiteName": undefined,
           "testCount": 0,
-          "tests": Object {},
+          "tests": {},
           "valid": false,
           "warnCount": 0,
         }
@@ -137,14 +137,14 @@ describe('suite()', () => {
   describe('exposed methods', () => {
     it('Should have all exposed methods', () => {
       expect(vest.create(() => {})()).toMatchInlineSnapshot(`
-        Object {
+        {
           "done": [Function],
           "errorCount": 0,
           "getErrors": [Function],
           "getErrorsByGroup": [Function],
           "getWarnings": [Function],
           "getWarningsByGroup": [Function],
-          "groups": Object {},
+          "groups": {},
           "hasErrors": [Function],
           "hasErrorsByGroup": [Function],
           "hasWarnings": [Function],
@@ -153,7 +153,7 @@ describe('suite()', () => {
           "isValidByGroup": [Function],
           "suiteName": undefined,
           "testCount": 0,
-          "tests": Object {},
+          "tests": {},
           "valid": false,
           "warnCount": 0,
         }

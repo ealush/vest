@@ -1,8 +1,9 @@
 import faker from 'faker';
 import { noop } from 'lodash';
-import { create } from 'vest';
 
 import { dummyTest } from '../../../testUtils/testDummy';
+
+import { create } from 'vest';
 
 describe('Test createSuite module', () => {
   describe('Test suite Arguments', () => {

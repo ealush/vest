@@ -1,7 +1,7 @@
+import { dummyTest } from '../../../../testUtils/testDummy';
+
 import { create, group } from 'vest';
 import * as vest from 'vest';
-
-import { dummyTest } from '../../../../testUtils/testDummy';
 
 const modes = ['SuiteRunResult', 'SuiteResult'];
 

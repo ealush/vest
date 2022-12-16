@@ -1,13 +1,14 @@
-import { VestTest } from 'VestTest';
 import faker from 'faker';
-import { group } from 'group';
 import _ from 'lodash';
-import { matchingGroupName } from 'matchingGroupName';
 import { enforce } from 'n4s';
-import * as vest from 'vest';
 
 import partition from '../../../testUtils/partition';
 import { dummyTest } from '../../../testUtils/testDummy';
+
+import { VestTest } from 'VestTest';
+import { group } from 'group';
+import { matchingGroupName } from 'matchingGroupName';
+import * as vest from 'vest';
 
 let groupName = 'group_name_1';
 const groupName2 = 'group_name_2';

@@ -1,7 +1,7 @@
-import * as vest from 'vest';
-
 import { ser } from '../../../testUtils/suiteDummy';
 import { dummyTest } from '../../../testUtils/testDummy';
+
+import * as vest from 'vest';
 
 describe('produce method Suite Result', () => {
   describe('Base structure', () => {

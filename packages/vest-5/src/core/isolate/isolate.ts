@@ -1,4 +1,6 @@
 import { Isolate, IsolateTypes } from 'IsolateTypes';
+import { CB, invariant } from 'vest-utils';
+
 import {
   useSetNextIsolateChild,
   PersistedContext,
@@ -9,7 +11,6 @@ import {
   useCurrentCursor,
 } from 'PersistedContext';
 import { createIsolate } from 'createIsolate';
-import { CB, invariant } from 'vest-utils';
 import { vestReconciler } from 'vestReconciler';
 
 // eslint-disable-next-line max-statements

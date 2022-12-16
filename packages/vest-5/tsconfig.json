@@ -23,8 +23,8 @@
       "handleCollision": [
         "src/core/isolate/reconciler/VestReconciler/handleCollision.ts"
       ],
-      "handleNodeWithKey": [
-        "src/core/isolate/reconciler/VestReconciler/handleNodeWithKey.ts"
+      "handleTestNodeWithKey": [
+        "src/core/isolate/reconciler/VestReconciler/handleTestNodeWithKey.ts"
       ],
       "testHasKey": [
         "src/core/isolate/reconciler/VestReconciler/testHasKey.ts"
@@ -34,6 +34,7 @@
       ],
       "walker": ["src/core/isolate/walker.ts"],
       "SuiteWalker": ["src/core/SuiteWalker/SuiteWalker.ts"],
+      "asVestTest": ["src/core/test/helpers/asVestTest.ts"],
       "matchingFieldName": ["src/core/test/helpers/matchingFieldName.ts"],
       "matchingGroupName": ["src/core/test/helpers/matchingGroupName.ts"],
       "nonMatchingSeverityProfile": [

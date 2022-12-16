@@ -10,7 +10,7 @@ import { isNullish } from 'vest-utils';
 
 import { getIsolateTest, getIsolateTestX } from 'getIsolateTest';
 import { handleCollision } from 'handleCollision';
-import { handleNodeWithKey } from 'handleNodeWithKey';
+import { handleTestNodeWithKey } from 'handleTestNodeWithKey';
 import { isTestIsolate } from 'isIsolateType';
 import { testHasKey } from 'testHasKey';
 
@@ -73,7 +73,7 @@ function handleNoHistoryNode(testNode: IsolateTest): IsolateTest {
   const testObject = getIsolateTestX(testNode);
 
   if (testHasKey(testObject)) {
-    return handleNodeWithKey(testNode);
+    return handleTestNodeWithKey(testNode);
   }
 
   return testNode;

@@ -16,6 +16,8 @@ packages/*/*
 
 playground.*
 
+.vscode
+
 # Logs
 logs
 *.log

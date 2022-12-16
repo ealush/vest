@@ -1,10 +1,9 @@
 // TODO: Verify this test file is not needed and delete it
-import { create, group } from 'vest';
-import * as vest from 'vest';
-
 import { dummyTest } from '../../../../testUtils/testDummy';
 
 import { SuiteResult } from 'SuiteResultTypes';
+import { create, group } from 'vest';
+import * as vest from 'vest';
 
 describe('collectFailureMessages', () => {
   let suite, res: SuiteResult;

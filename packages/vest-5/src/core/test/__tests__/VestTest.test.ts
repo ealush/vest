@@ -1,6 +1,7 @@
+import wait from 'wait';
+
 import { VestTest } from 'VestTest';
 import * as vest from 'vest';
-import wait from 'wait';
 
 const fieldName = 'unicycle';
 const message = 'I am Root.';

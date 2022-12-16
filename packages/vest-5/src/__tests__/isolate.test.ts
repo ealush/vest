@@ -1,6 +1,6 @@
-import { IsolateTypes } from 'IsolateTypes';
-
 import mockThrowError from '../../testUtils/mockThrowError';
+
+import { IsolateTypes } from 'IsolateTypes';
 
 describe('isolate', () => {
   let firstRun = true;

@@ -1,3 +1,5 @@
+import wait from 'wait';
+
 import {
   test,
   optional,
@@ -8,7 +10,6 @@ import {
   only,
   group,
 } from 'vest';
-import wait from 'wait';
 
 const GROUP_NAME = 'group_1';
 

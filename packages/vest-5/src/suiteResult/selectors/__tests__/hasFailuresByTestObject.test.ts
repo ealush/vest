@@ -1,6 +1,7 @@
+import faker from 'faker';
+
 import { Severity } from 'Severity';
 import { VestTest } from 'VestTest';
-import faker from 'faker';
 import { hasFailuresByTestObject } from 'hasFailuresByTestObjects';
 
 const fieldName: string = faker.random.word();

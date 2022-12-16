@@ -89,34 +89,6 @@ describe('VestTest', () => {
       });
     });
 
-    // FIXME: This is a low quality test that relies on implementation details.
-    // It should probably be someplace else, related to the running of test
-    // and not of the test object itself
-    // it.skip('Should be removed from the list of incomplete tests', () => {
-    //   const control = jest.fn();
-    //   vest.create(() => {
-    //     const testObject = vest.test('f1', async () => {
-    //       await wait(100);
-    //     });
-
-    //     expect(testObject.isPending()).toBe(true);
-    //     {
-    //       const allIncomplete = useAllIncomplete();
-
-    //       expect(allIncomplete).toEqual(expect.arrayContaining([testObject]));
-    //     }
-    //     testObject.cancel();
-    //     {
-    //       const allIncomplete = useAllIncomplete();
-    //       expect(allIncomplete).toEqual(
-    //         expect.not.arrayContaining([testObject])
-    //       );
-    //     }
-    //     control();
-    //   })();
-    //   expect(control).toHaveBeenCalledTimes(1);
-    // });
-
     describe('final statuses', () => {
       let control;
       beforeEach(() => {

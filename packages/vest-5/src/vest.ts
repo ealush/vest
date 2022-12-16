@@ -12,8 +12,8 @@ import { suiteSelectors } from 'suiteSelectors';
 import { test } from 'test';
 import { warn } from 'warn';
 
-import { SuiteSummary } from 'SuiteResultTypes';
 import type { SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
+import { SuiteSummary } from 'SuiteResultTypes';
 import { createSuite, Suite } from 'createSuite';
 
 export {

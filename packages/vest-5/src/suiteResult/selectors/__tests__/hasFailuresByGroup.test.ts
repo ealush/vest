@@ -1,7 +1,8 @@
 import faker from 'faker';
-import * as vest from 'vest';
 
 import { dummyTest } from '../../../../testUtils/testDummy';
+
+import * as vest from 'vest';
 
 const fieldName = faker.random.word();
 const groupName = faker.lorem.word();

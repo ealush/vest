@@ -5,7 +5,7 @@ import { deferThrow, invariant, isNullish } from 'vest-utils';
 
 import { useCurrentCursor, useHistoryNode, useIsolate } from 'PersistedContext';
 import { getIsolateTest, getIsolateTestX } from 'getIsolateTest';
-import { handleNodeWithKey } from 'handleNodeWithKey';
+import { handleTestNodeWithKey } from 'handleTestNodeWithKey';
 import { isIsolateType } from 'isIsolateType';
 import { testHasKey } from 'testHasKey';
 
@@ -16,7 +16,7 @@ export function handleCollision(
   const newTestObject = getIsolateTestX(newNode);
 
   if (shouldUseKey(newNode, prevNode)) {
-    return handleNodeWithKey(newNode);
+    return handleTestNodeWithKey(newNode);
   }
 
   const prevTestObject = getIsolateTest(prevNode);

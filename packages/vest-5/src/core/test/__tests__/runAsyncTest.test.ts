@@ -1,16 +1,10 @@
+import { asVestTest } from 'asVestTest';
 import { invariant } from 'vest-utils';
 import wait from 'wait';
 
 import { VestTest } from 'VestTest';
 import * as vest from 'vest';
 
-function asVestTest(value: any): vest.VestTest {
-  invariant(
-    value instanceof VestTest,
-    'Expected value to be an instance of VestTest'
-  );
-  return value;
-}
 describe('runAsyncTest', () => {
   describe('State Updates', () => {
     it('Should remove pending status from test object', async () => {

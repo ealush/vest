@@ -126,38 +126,38 @@ describe('key', () => {
         });
         expect(res1.tests).not.toEqual(res2.tests);
         expect(res2.tests).toMatchInlineSnapshot(`
-          Object {
-            "field1": Object {
+          {
+            "field1": {
               "errorCount": 1,
-              "errors": Array [],
+              "errors": [],
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
-              "warnings": Array [],
+              "warnings": [],
             },
-            "field2": Object {
+            "field2": {
               "errorCount": 1,
-              "errors": Array [],
+              "errors": [],
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
-              "warnings": Array [],
+              "warnings": [],
             },
-            "field3": Object {
+            "field3": {
               "errorCount": 1,
-              "errors": Array [],
+              "errors": [],
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
-              "warnings": Array [],
+              "warnings": [],
             },
-            "reordered": Object {
+            "reordered": {
               "errorCount": 0,
-              "errors": Array [],
+              "errors": [],
               "testCount": 0,
               "valid": false,
               "warnCount": 0,
-              "warnings": Array [],
+              "warnings": [],
             },
           }
         `);

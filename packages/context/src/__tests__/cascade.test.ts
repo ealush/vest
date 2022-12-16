@@ -117,7 +117,7 @@ describe('Cascading Context', () => {
                 expect(ctx.use().name).toBe('Emanuelle');
                 expect(ctx.use().color).toBe('blue');
                 expect(ctx.use()).toMatchInlineSnapshot(`
-                  Object {
+                  {
                     "color": "blue",
                     "id": 99,
                     "name": "Emanuelle",
@@ -128,7 +128,7 @@ describe('Cascading Context', () => {
             expect(ctx.use().id).toBe(99);
             expect(ctx.use().name).toBe('watermelonbunny');
             expect(ctx.use()).toMatchInlineSnapshot(`
-              Object {
+              {
                 "id": 99,
                 "name": "watermelonbunny",
               }
@@ -148,7 +148,7 @@ describe('Cascading Context', () => {
       return new Promise<void>(done => {
         const fn = () => {
           expect(ctx.use()).toMatchInlineSnapshot(`
-            Object {
+            {
               "value": 55,
             }
           `);
@@ -172,7 +172,7 @@ describe('Cascading Context', () => {
         const fn = () => {
           expect(ctx.use()).toMatchObject({ value: 200, value2: 300 });
           expect(ctx.use()).toMatchInlineSnapshot(`
-            Object {
+            {
               "value": 200,
               "value2": 300,
             }

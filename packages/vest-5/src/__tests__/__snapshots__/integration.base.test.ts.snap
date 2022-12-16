@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Base behavior Should produce correct validation result 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 2,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -17,52 +17,52 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 5,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "field_statement_1",
       ],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "field_statement_2",
       ],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_3": Object {
+    "field_3": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": true,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_4": Object {
+    "field_4": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 2,
       "valid": true,
       "warnCount": 1,
-      "warnings": Array [
+      "warnings": [
         "field_statement_4",
       ],
     },
-    "field_5": Object {
+    "field_5": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,

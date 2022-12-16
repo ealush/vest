@@ -1,23 +1,23 @@
-import { IsolateTest } from 'IsolateTypes';
 import { invariant, isNullish } from 'vest-utils';
 
+import { IsolateTest } from 'IsolateTypes';
 import { useHistoryKey, useSetIsolateKey } from 'PersistedContext';
 import { asVestTest } from 'asVestTest';
 import { getIsolateTestX } from 'getIsolateTest';
 
-export function handleNodeWithKey(testNode: IsolateTest): IsolateTest {
+export function handleTestNodeWithKey(testNode: IsolateTest): IsolateTest {
   const testObject = getIsolateTestX(testNode);
 
   invariant(testObject.key);
 
-  const prevNodeByKey = useHistoryKey(testObject.key) as IsolateTest;
-
-  asVestTest(prevNodeByKey.data);
+  const prevNodeByKey = useHistoryKey(testObject.key);
 
   let nextNode = testNode;
 
   if (!isNullish(prevNodeByKey)) {
-    nextNode = prevNodeByKey;
+    asVestTest(prevNodeByKey.data);
+
+    nextNode = prevNodeByKey as IsolateTest;
   }
 
   useSetIsolateKey(testObject.key, testNode);

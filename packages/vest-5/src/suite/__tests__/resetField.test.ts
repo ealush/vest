@@ -46,26 +46,26 @@ describe('suite.resetField', () => {
 
   it('sanity', () => {
     expect(suite.get().tests).toMatchInlineSnapshot(`
-      Object {
-        "field1": Object {
+      {
+        "field1": {
           "errorCount": 1,
-          "errors": Array [
+          "errors": [
             "f1 error",
           ],
           "testCount": 1,
           "valid": false,
           "warnCount": 0,
-          "warnings": Array [],
+          "warnings": [],
         },
-        "field2": Object {
+        "field2": {
           "errorCount": 1,
-          "errors": Array [
+          "errors": [
             "f2 error",
           ],
           "testCount": 1,
           "valid": false,
           "warnCount": 0,
-          "warnings": Array [],
+          "warnings": [],
         },
       }
     `);

@@ -1,14 +1,13 @@
+import VestTest from 'VestTest';
 import faker from 'faker';
+import group from 'group';
 import _ from 'lodash';
+import matchingGroupName from 'matchingGroupName';
 import { enforce } from 'n4s';
+import * as vest from 'vest';
 
 import partition from '../../../../../testUtils/partition';
 import { dummyTest } from '../../../../../testUtils/testDummy';
-
-import VestTest from 'VestTest';
-import group from 'group';
-import matchingGroupName from 'matchingGroupName';
-import * as vest from 'vest';
 
 let groupName = 'group_name_1';
 const groupName2 = 'group_name_2';
@@ -71,46 +70,46 @@ describe('group: exclusion', () => {
 
     it('produce result object with the group', () => {
       expect(res.groups[groupName]).toMatchInlineSnapshot(`
-        Object {
-          "field_1": Object {
+        {
+          "field_1": {
             "errorCount": 0,
-            "errors": Array [],
+            "errors": [],
             "testCount": 0,
             "valid": false,
             "warnCount": 0,
-            "warnings": Array [],
+            "warnings": [],
           },
-          "field_2": Object {
+          "field_2": {
             "errorCount": 0,
-            "errors": Array [],
+            "errors": [],
             "testCount": 0,
             "valid": false,
             "warnCount": 0,
-            "warnings": Array [],
+            "warnings": [],
           },
-          "field_3": Object {
+          "field_3": {
             "errorCount": 0,
-            "errors": Array [],
+            "errors": [],
             "testCount": 0,
             "valid": false,
             "warnCount": 0,
-            "warnings": Array [],
+            "warnings": [],
           },
-          "field_4": Object {
+          "field_4": {
             "errorCount": 0,
-            "errors": Array [],
+            "errors": [],
             "testCount": 0,
             "valid": false,
             "warnCount": 0,
-            "warnings": Array [],
+            "warnings": [],
           },
-          "field_6": Object {
+          "field_6": {
             "errorCount": 0,
-            "errors": Array [],
+            "errors": [],
             "testCount": 0,
             "valid": false,
             "warnCount": 0,
-            "warnings": Array [],
+            "warnings": [],
           },
         }
       `);

@@ -38,23 +38,25 @@ module.exports = {
 function baseConfig() {
   return {
     clearMocks: true,
-    globals: {
-      'ts-jest': {
-        diagnostics: {
-          // Essentially ignoring "any" errors in TESTS
-          ignoreCodes: [
-            'TS7005',
-            'TS7006',
-            'TS7016',
-            'TS7034',
-            'TS7053',
-            'TS7031',
-            'TS2339',
-          ],
+    transform: {
+      '^.+\\.(ts|tsx)$': [
+        'ts-jest',
+        {
+          diagnostics: {
+            // Essentially ignoring "any" errors in TESTS
+            ignoreCodes: [
+              'TS7005',
+              'TS7006',
+              'TS7016',
+              'TS7034',
+              'TS7053',
+              'TS7031',
+              'TS2339',
+            ],
+          },
         },
-      },
+      ],
     },
-    preset: 'ts-jest',
     rootDir: vxPath.ROOT_PATH,
     roots: ['<rootDir>'],
     setupFiles: [

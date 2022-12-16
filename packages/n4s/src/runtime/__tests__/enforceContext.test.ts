@@ -14,10 +14,10 @@ describe('enforce.context', () => {
     it('Should match snapshot', () => {
       enforce({}).someCustomRule();
       expect(keepContext.mock.calls[0][0]).toMatchInlineSnapshot(`
-        Object {
-          "meta": Object {},
+        {
+          "meta": {},
           "parent": [Function],
-          "value": Object {},
+          "value": {},
         }
       `);
     });

@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Stateful behavior Should merge skipped fields with previous values 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -17,48 +17,48 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "field_statement_1",
       ],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_3": Object {
+    "field_3": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_4": Object {
+    "field_4": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_5": Object {
+    "field_5": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -67,14 +67,14 @@ Object {
 `;
 
 exports[`Stateful behavior Should merge skipped fields with previous values 2`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 3,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -83,51 +83,51 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 3,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "field_statement_1",
       ],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_3": Object {
+    "field_3": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_4": Object {
+    "field_4": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_5": Object {
+    "field_5": {
       "errorCount": 2,
-      "errors": Array [
+      "errors": [
         "field_statement_5",
         "field_statement_6",
       ],
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -136,14 +136,14 @@ Object {
 `;
 
 exports[`Stateful behavior Should merge skipped fields with previous values 3`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 4,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -152,55 +152,55 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 7,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "field_statement_1",
       ],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "field_statement_2",
       ],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_3": Object {
+    "field_3": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": true,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_4": Object {
+    "field_4": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 2,
       "valid": true,
       "warnCount": 1,
-      "warnings": Array [
+      "warnings": [
         "field_statement_4",
       ],
     },
-    "field_5": Object {
+    "field_5": {
       "errorCount": 2,
-      "errors": Array [
+      "errors": [
         "field_statement_5",
         "field_statement_6",
       ],
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -209,13 +209,13 @@ Object {
 `;
 
 exports[`more complex Should run correctly 1`] = `
-Object {
+{
   "errorCount": 0,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -224,20 +224,20 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 0,
-  "tests": Object {},
+  "tests": {},
   "valid": false,
   "warnCount": 0,
 }
 `;
 
 exports[`more complex Should run correctly 2`] = `
-Object {
+{
   "errorCount": 0,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -246,30 +246,30 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
-  "tests": Object {
-    "confirm": Object {
+  "tests": {
+    "confirm": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "password": Object {
+    "password": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "username": Object {
+    "username": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 2,
       "valid": true,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -278,13 +278,13 @@ Object {
 `;
 
 exports[`more complex Should run correctly 4`] = `
-Object {
+{
   "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -293,32 +293,32 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 3,
-  "tests": Object {
-    "confirm": Object {
+  "tests": {
+    "confirm": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "password": Object {
+    "password": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "password is required",
       ],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "username": Object {
+    "username": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 2,
       "valid": true,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -327,13 +327,13 @@ Object {
 `;
 
 exports[`more complex Should run correctly 6`] = `
-Object {
+{
   "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -342,32 +342,32 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 3,
-  "tests": Object {
-    "confirm": Object {
+  "tests": {
+    "confirm": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "password": Object {
+    "password": {
       "errorCount": 1,
-      "errors": Array [
+      "errors": [
         "password is required",
       ],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "username": Object {
+    "username": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 2,
       "valid": true,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,

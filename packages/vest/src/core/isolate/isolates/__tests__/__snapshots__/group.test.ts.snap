@@ -1,84 +1,84 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`group: base case Group validity 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 4,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {
-    "group_1": Object {
-      "field_1": Object {
+  "groups": {
+    "group_1": {
+      "field_1": {
         "errorCount": 0,
-        "errors": Array [],
+        "errors": [],
         "testCount": 1,
         "valid": true,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
-      "field_2": Object {
+      "field_2": {
         "errorCount": 1,
-        "errors": Array [],
+        "errors": [],
         "testCount": 2,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
     },
-    "group_2": Object {
-      "field_1": Object {
+    "group_2": {
+      "field_1": {
         "errorCount": 1,
-        "errors": Array [],
+        "errors": [],
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
-      "field_2": Object {
+      "field_2": {
         "errorCount": 0,
-        "errors": Array [],
+        "errors": [],
         "testCount": 1,
         "valid": true,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
     },
-    "group_3": Object {
-      "field_1": Object {
+    "group_3": {
+      "field_1": {
         "errorCount": 1,
-        "errors": Array [],
+        "errors": [],
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
-      "field_2": Object {
+      "field_2": {
         "errorCount": 1,
-        "errors": Array [],
+        "errors": [],
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
     },
-    "group_4": Object {
-      "field_1": Object {
+    "group_4": {
+      "field_1": {
         "errorCount": 0,
-        "errors": Array [],
+        "errors": [],
         "testCount": 1,
         "valid": true,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
-      "field_2": Object {
+      "field_2": {
         "errorCount": 0,
-        "errors": Array [],
+        "errors": [],
         "testCount": 1,
         "valid": true,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
     },
   },
@@ -90,22 +90,22 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 9,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 2,
-      "errors": Array [],
+      "errors": [],
       "testCount": 4,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 2,
-      "errors": Array [],
+      "errors": [],
       "testCount": 5,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,

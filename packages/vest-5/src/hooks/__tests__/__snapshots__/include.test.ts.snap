@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`include Field is excluded via \`skip\` Should disregard \`include.when\` and avoid running the test 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -17,22 +17,22 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -41,14 +41,14 @@ Object {
 `;
 
 exports[`include Field is excluded via \`skip\` Should disregard \`include\` and avoid running the test 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -57,22 +57,22 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -81,22 +81,22 @@ Object {
 `;
 
 exports[`include Test is excluded by being out of an included group Should disregard \`include\` and avoid running the test 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 0,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {
-    "g2": Object {
-      "field_1": Object {
+  "groups": {
+    "g2": {
+      "field_1": {
         "errorCount": 0,
-        "errors": Array [],
+        "errors": [],
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
     },
   },
@@ -108,14 +108,14 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 0,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -124,30 +124,30 @@ Object {
 `;
 
 exports[`include Test is excluded via \`skip.group\` Should disregard \`include.when\` and avoid running the test 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {
-    "g1": Object {
-      "field_1": Object {
+  "groups": {
+    "g1": {
+      "field_1": {
         "errorCount": 0,
-        "errors": Array [],
+        "errors": [],
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
-      "field_2": Object {
+      "field_2": {
         "errorCount": 0,
-        "errors": Array [],
+        "errors": [],
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
     },
   },
@@ -159,22 +159,22 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -183,30 +183,30 @@ Object {
 `;
 
 exports[`include Test is excluded via \`skip.group\` Should disregard \`include\` and avoid running the test 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {
-    "g1": Object {
-      "field_1": Object {
+  "groups": {
+    "g1": {
+      "field_1": {
         "errorCount": 0,
-        "errors": Array [],
+        "errors": [],
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
-      "field_2": Object {
+      "field_2": {
         "errorCount": 0,
-        "errors": Array [],
+        "errors": [],
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       },
     },
   },
@@ -218,22 +218,22 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -242,14 +242,14 @@ Object {
 `;
 
 exports[`include Test is excluded via \`skipWhen\` Should disregard \`include.when\` and avoid running the matching tests 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -258,14 +258,14 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -274,14 +274,14 @@ Object {
 `;
 
 exports[`include Test is excluded via \`skipWhen\` Should disregard \`include\` and avoid running the matching tests 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -290,14 +290,14 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -306,14 +306,14 @@ Object {
 `;
 
 exports[`include There is an \`onlyd\` field \`include\` is run as-is without modifiers Should run the included test along with the onlyd test 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 2,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -322,22 +322,22 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -346,14 +346,14 @@ Object {
 `;
 
 exports[`include There is an \`onlyd\` field include().when() \`when\` param is a boolean when \`false\` Should skip run included field 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -362,30 +362,30 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_3": Object {
+    "field_3": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -394,14 +394,14 @@ Object {
 `;
 
 exports[`include There is an \`onlyd\` field include().when() \`when\` param is a boolean when \`true\` Should run included field 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 2,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -410,30 +410,30 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_3": Object {
+    "field_3": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -442,14 +442,14 @@ Object {
 `;
 
 exports[`include There is an \`onlyd\` field include().when() \`when\` param is a function Callback evaluation Should evaluate per test run 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 2,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -458,14 +458,14 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 2,
-      "errors": Array [],
+      "errors": [],
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -474,14 +474,14 @@ Object {
 `;
 
 exports[`include There is an \`onlyd\` field include().when() \`when\` param is a function when  returning\`false\` Should skip run included field 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -490,30 +490,30 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_3": Object {
+    "field_3": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -522,14 +522,14 @@ Object {
 `;
 
 exports[`include There is an \`onlyd\` field include().when() \`when\` param is a function when returning \`true\` Should run included field 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 2,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -538,30 +538,30 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_3": Object {
+    "field_3": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -570,14 +570,14 @@ Object {
 `;
 
 exports[`include There is an \`onlyd\` field include().when() \`when\` param is a string \`when\` param is a name of a non-included field Should avoid running the included field 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -586,30 +586,30 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_3": Object {
+    "field_3": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -618,14 +618,14 @@ Object {
 `;
 
 exports[`include There is an \`onlyd\` field include().when() \`when\` param is a string \`when\` param is a name of a skipped field Should avoid running the included field 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 1,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -634,30 +634,30 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 1,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_3": Object {
+    "field_3": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -666,14 +666,14 @@ Object {
 `;
 
 exports[`include There is an \`onlyd\` field include().when() \`when\` param is a string \`when\` param is a name of an onlyd field Should run included field along with the onlyd field 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 2,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -682,30 +682,30 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_3": Object {
+    "field_3": {
       "errorCount": 0,
-      "errors": Array [],
+      "errors": [],
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -714,14 +714,14 @@ Object {
 `;
 
 exports[`include When no \`skip\` or \`only\` include has no effect 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 2,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -730,22 +730,22 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,
@@ -754,14 +754,14 @@ Object {
 `;
 
 exports[`include When no \`skip\` or \`only\` include().when has no effect 1`] = `
-Object {
+{
   "done": [Function],
   "errorCount": 2,
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
-  "groups": Object {},
+  "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
@@ -770,22 +770,22 @@ Object {
   "isValidByGroup": [Function],
   "suiteName": undefined,
   "testCount": 2,
-  "tests": Object {
-    "field_1": Object {
+  "tests": {
+    "field_1": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
-    "field_2": Object {
+    "field_2": {
       "errorCount": 1,
-      "errors": Array [],
+      "errors": [],
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
-      "warnings": Array [],
+      "warnings": [],
     },
   },
   "valid": false,

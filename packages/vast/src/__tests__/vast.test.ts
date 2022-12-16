@@ -10,7 +10,7 @@ describe('vast state', () => {
   describe('createState', () => {
     it('Should return all stateRef methods', () => {
       expect(state).toMatchInlineSnapshot(`
-        Object {
+        {
           "registerStateKey": [Function],
           "reset": [Function],
         }
@@ -64,7 +64,7 @@ describe('vast state', () => {
     it('Should return an Array with two elements', () => {
       expect(state.registerStateKey()()).toHaveLength(2);
       expect(state.registerStateKey('some value')()).toMatchInlineSnapshot(`
-        Array [
+        [
           "some value",
           [Function],
         ]

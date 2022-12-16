@@ -71,46 +71,46 @@ describe('group: exclusion', () => {
 
     it('produce result object with the group', () => {
       expect(res.groups[groupName]).toMatchInlineSnapshot(`
-        Object {
-          "field_1": Object {
+        {
+          "field_1": {
             "errorCount": 0,
-            "errors": Array [],
+            "errors": [],
             "testCount": 0,
             "valid": false,
             "warnCount": 0,
-            "warnings": Array [],
+            "warnings": [],
           },
-          "field_2": Object {
+          "field_2": {
             "errorCount": 0,
-            "errors": Array [],
+            "errors": [],
             "testCount": 0,
             "valid": false,
             "warnCount": 0,
-            "warnings": Array [],
+            "warnings": [],
           },
-          "field_3": Object {
+          "field_3": {
             "errorCount": 0,
-            "errors": Array [],
+            "errors": [],
             "testCount": 0,
             "valid": false,
             "warnCount": 0,
-            "warnings": Array [],
+            "warnings": [],
           },
-          "field_4": Object {
+          "field_4": {
             "errorCount": 0,
-            "errors": Array [],
+            "errors": [],
             "testCount": 0,
             "valid": false,
             "warnCount": 0,
-            "warnings": Array [],
+            "warnings": [],
           },
-          "field_6": Object {
+          "field_6": {
             "errorCount": 0,
-            "errors": Array [],
+            "errors": [],
             "testCount": 0,
             "valid": false,
             "warnCount": 0,
-            "warnings": Array [],
+            "warnings": [],
           },
         }
       `);

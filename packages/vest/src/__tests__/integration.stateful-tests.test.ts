@@ -1,5 +1,4 @@
 import { enforce } from 'n4s';
-
 import * as vest from 'vest';
 
 describe('Stateful behavior', () => {
@@ -52,28 +51,28 @@ describe('more complex', () => {
     suite(data, 'password');
     expect(suite.get().hasErrors()).toBe(true);
     expect(suite.get().tests.password).toMatchInlineSnapshot(`
-      Object {
+      {
         "errorCount": 1,
-        "errors": Array [
+        "errors": [
           "password is required",
         ],
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       }
     `);
     expect(suite.get()).toMatchSnapshot();
 
     suite(data, 'confirm');
     expect(suite.get().tests.confirm).toMatchInlineSnapshot(`
-      Object {
+      {
         "errorCount": 0,
-        "errors": Array [],
+        "errors": [],
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       }
     `);
     expect(suite.get()).toMatchSnapshot();
@@ -83,13 +82,13 @@ describe('more complex', () => {
     data.password = '123456';
     suite(data, 'password');
     expect(suite.get().tests.confirm).toMatchInlineSnapshot(`
-      Object {
+      {
         "errorCount": 0,
-        "errors": Array [],
+        "errors": [],
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       }
     `);
     data.confirm = '123456';
@@ -97,13 +96,13 @@ describe('more complex', () => {
     expect(suite.get().hasErrors('password')).toBe(false);
     expect(suite.get().hasErrors('confirm')).toBe(false);
     expect(suite.get().tests.confirm).toMatchInlineSnapshot(`
-      Object {
+      {
         "errorCount": 0,
-        "errors": Array [],
+        "errors": [],
         "testCount": 1,
         "valid": true,
         "warnCount": 0,
-        "warnings": Array [],
+        "warnings": [],
       }
     `);
   });

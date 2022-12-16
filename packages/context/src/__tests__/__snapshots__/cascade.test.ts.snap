@@ -1,20 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Cascading Context context.run Should clear context after callback run 1`] = `
-Object {
+{
   "a": 1,
 }
 `;
 
 exports[`Cascading Context context.run Should clear context after callback run 2`] = `
-Object {
+{
   "a": 1,
   "b": 2,
 }
 `;
 
 exports[`Cascading Context createCascade Should return all methods 1`] = `
-Object {
+{
   "bind": [Function],
   "run": [Function],
   "use": [Function],

@@ -26,10 +26,10 @@ describe('VestTest', () => {
       { length: 100 },
       () => new VestTest(fieldName, jest.fn(), { message })
     ).reduce((existing, { id }) => {
-      expect(existing[id]).toBeUndefined();
-      existing[id] = true;
+      expect(existing.has(id)).toBe(false);
+      existing.add(id);
       return existing;
-    }, {});
+    }, new Set<string>());
   });
 
   describe('testObject.warn', () => {

@@ -47,9 +47,9 @@ describe('key', () => {
 
     describe('When two tests in two different isolates have the same key', () => {
       it('Should regarad each key as unique and retain each tests individual result', () => {
-        const calls = [];
+        const calls: vest.VestTest[][] = [];
         const suite = vest.create(() => {
-          const currentCall = [];
+          const currentCall: vest.VestTest[] = [];
 
           vest.skipWhen(calls.length === 1, () => {
             vest.group('group_1', () => {
@@ -85,9 +85,9 @@ describe('key', () => {
         jest.resetAllMocks();
       });
       it('Should retain keyd tests', () => {
-        const calls = [];
+        const calls: vest.VestTest[][] = [];
         const suite = vest.create(() => {
-          const currentCall = [];
+          const currentCall: vest.VestTest[] = [];
           vest.skipWhen(calls.length === 1, () => {
             if (calls.length === 1) {
               vest.test('reordered', () => false);

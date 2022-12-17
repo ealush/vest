@@ -16,7 +16,7 @@ import {
 import { CacheApi } from 'vest-utils/src/vest-utils';
 
 import { OptionalFields } from 'OptionalTypes';
-import { SuiteResult } from 'SuiteResultTypes';
+import { SuiteName, SuiteResult } from 'SuiteResultTypes';
 
 export const PersistedContext = createCascade<CTXType>(
   (vestState, parentContext) => {
@@ -40,7 +40,7 @@ export const PersistedContext = createCascade<CTXType>(
   }
 );
 
-export function createVestState({ suiteName }: { suiteName?: string }) {
+export function createVestState({ suiteName }: { suiteName?: SuiteName }) {
   const state = createState();
 
   const stateRef = {

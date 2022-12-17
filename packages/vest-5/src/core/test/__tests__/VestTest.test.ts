@@ -1,5 +1,7 @@
 import wait from 'wait';
 
+import { TestPromise } from '../../../../testUtils/testPromise';
+
 import { VestTest } from 'VestTest';
 import * as vest from 'vest';
 
@@ -72,7 +74,7 @@ describe('VestTest', () => {
   describe('testObject.cancel', () => {
     it('Should set the testObject to cancel', () => {
       let testObject: VestTest;
-      return new Promise<void>(done => {
+      return TestPromise(done => {
         const suite = vest.create(() => {
           testObject = vest.test('f1', async () => {
             await wait(100);

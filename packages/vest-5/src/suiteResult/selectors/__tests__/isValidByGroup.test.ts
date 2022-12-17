@@ -1,5 +1,7 @@
 import wait from 'wait';
 
+import { TestPromise } from '../../../../testUtils/testPromise';
+
 import {
   test,
   optional,
@@ -241,7 +243,7 @@ describe('isValidByGroup', () => {
 
     describe('When async test is passing', () => {
       it('Should return `true`', () => {
-        return new Promise<void>(done => {
+        return TestPromise(done => {
           suite().done(result => {
             expect(result.isValidByGroup(GROUP_NAME)).toBe(true);
             expect(result.isValidByGroup(GROUP_NAME, 'field_1')).toBe(true);

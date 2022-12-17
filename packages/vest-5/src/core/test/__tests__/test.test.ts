@@ -1,5 +1,7 @@
 import faker from 'faker';
 
+import { TestPromise } from '../../../../testUtils/testPromise';
+
 import { create, test, warn, enforce } from 'vest';
 
 let testObject;
@@ -105,7 +107,7 @@ describe("Test Vest's `test` function", () => {
 
     describe('async', () => {
       it('Should be marked as failed when a returned promise rejects', () =>
-        new Promise<void>(done => {
+        TestPromise(done => {
           create(() => {
             testObject = test(
               faker.random.word(),

@@ -1,7 +1,9 @@
+import { TEnforceMock } from '../../testUtils/TEnforceMock';
+
 import * as ruleReturn from 'ruleReturn';
 
 const _proxy = global.Proxy;
-let enforce;
+let enforce: TEnforceMock;
 
 [true, false].forEach(proxyEnabled => {
   describe(`Proxy support (${proxyEnabled})`, () => {
@@ -12,7 +14,7 @@ let enforce;
       }
       jest.resetModules();
       jest.doMock('isProxySupported', () => () => proxyEnabled);
-      enforce = require('enforce').enforce;
+      enforce = require('enforce').enforce as TEnforceMock;
     });
 
     afterEach(() => {

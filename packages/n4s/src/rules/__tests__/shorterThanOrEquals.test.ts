@@ -46,10 +46,12 @@ describe('Tests shorterThanOrEquals rule', () => {
     });
 
     it('Should return false for number argument', () => {
+      // @ts-expect-error - testing wrong input
       expect(shorterThanOrEquals(length, 0)).toBe(false);
     });
 
     it('Should return false for boolean argument', () => {
+      // @ts-expect-error - testing wrong input
       expect(shorterThanOrEquals(boolean, 0)).toBe(false);
     });
   });

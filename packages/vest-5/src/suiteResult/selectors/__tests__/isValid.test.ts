@@ -1,5 +1,7 @@
 import wait from 'wait';
 
+import { TestPromise } from '../../../../testUtils/testPromise';
+
 import { test, optional, create, skipWhen, warn, skip, only } from 'vest';
 
 describe('isValid', () => {
@@ -205,7 +207,7 @@ describe('isValid', () => {
 
     describe('When async test is passing', () => {
       it('Should return `true`', () => {
-        return new Promise<void>(done => {
+        return TestPromise(done => {
           suite().done(result => {
             expect(result.isValid()).toBe(true);
             expect(result.isValid('field_1')).toBe(true);

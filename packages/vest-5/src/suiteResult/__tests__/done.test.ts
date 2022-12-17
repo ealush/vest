@@ -1,6 +1,7 @@
 import wait from 'wait';
 
 import { dummyTest } from '../../../testUtils/testDummy';
+import { TestPromise } from '../../../testUtils/testPromise';
 
 import * as vest from 'vest';
 
@@ -55,7 +56,7 @@ describe('done', () => {
         const check1 = jest.fn();
         const check2 = jest.fn();
         const check3 = jest.fn();
-        return new Promise<void>(done => {
+        return TestPromise(done => {
           const doneCallback = jest.fn(() => {
             expect(check1).toHaveBeenCalled();
             expect(check2).toHaveBeenCalled();
@@ -91,7 +92,7 @@ describe('done', () => {
 
   describe('done arguments', () => {
     it('Should pass down the up to date validation result', () => {
-      return new Promise<void>(done => {
+      return TestPromise(done => {
         const result = vest.create(() => {
           dummyTest.failing('field_1', 'error message');
           dummyTest.passing('field_2');
@@ -277,7 +278,7 @@ describe('done', () => {
 
       suite('async_1');
 
-      return new Promise<void>(done => {
+      return TestPromise(done => {
         suite('sync_2').done(res => {
           expect(res.hasErrors('async_1')).toBe(true);
           done();

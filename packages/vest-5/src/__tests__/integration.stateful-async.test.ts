@@ -1,6 +1,7 @@
 import wait from 'wait';
 
 import { dummyTest } from '../../testUtils/testDummy';
+import { TestPromise } from '../../testUtils/testPromise';
 
 import * as vest from 'vest';
 
@@ -40,7 +41,7 @@ describe('Stateful async tests', () => {
   });
 
   it('Should only run callbacks for last suite run', () =>
-    new Promise<void>(done => {
+    TestPromise(done => {
       validate(vest).done(callback_1).done('field_3', callback_2);
       expect(callback_1).not.toHaveBeenCalled();
       expect(callback_2).not.toHaveBeenCalled();
@@ -64,7 +65,7 @@ describe('Stateful async tests', () => {
     }));
 
   it('Merges skipped validations from previous suite', () =>
-    new Promise<void>(done => {
+    TestPromise(done => {
       const res = validate({ skipGroup: 'group', skip: 'field_3' });
       expect(res.testCount).toBe(3);
       expect(res.errorCount).toBe(1);

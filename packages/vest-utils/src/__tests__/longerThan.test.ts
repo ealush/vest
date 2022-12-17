@@ -1,4 +1,4 @@
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 
 import { longerThan } from 'longerThan';
 
@@ -46,10 +46,12 @@ describe('Tests longerThan rule', () => {
     });
 
     it('Should return false for number argument', () => {
+      // @ts-expect-error - testing wrong input
       expect(longerThan(length, 0)).toBe(false);
     });
 
     it('Should return false for boolean argument', () => {
+      // @ts-expect-error - testing wrong input
       expect(longerThan(boolean, 0)).toBe(false);
     });
   });

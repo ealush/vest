@@ -30,7 +30,7 @@
     "eslint-import-resolver-typescript": "^3.5.2",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^27.1.5",
-    "faker": "^5.5.3",
+    "@faker-js/faker": "^7.6.0",
     "husky": "^8.0.1",
     "lodash": "^4.17.21",
     "prettier": "^2.7.1",

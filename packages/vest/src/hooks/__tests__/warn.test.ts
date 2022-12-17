@@ -1,4 +1,4 @@
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 
 import context from 'ctx';
 import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';

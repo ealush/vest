@@ -1,39 +1,42 @@
+import wait from 'wait';
+
+import { TestPromise } from '../../testUtils/testPromise';
+
 import * as vest from 'vest';
 
-function genSuite({ create, test, enforce, ...vest }) {
-  return create(() => {
-    test('field_1', 'field_statement_1', () => false);
-    test('field_2', 'field_statement_2', () => {
-      enforce(2).equals(3);
+function genSuite() {
+  return vest.create(() => {
+    vest.test('field_1', 'field_statement_1', () => false);
+    vest.test('field_2', 'field_statement_2', () => {
+      vest.enforce(2).equals(3);
     });
-    test('field_3', 'field_statement_3', jest.fn());
-    test('field_4', 'field_statement_4', () => {
+    vest.test('field_3', 'field_statement_3', jest.fn());
+    vest.test('field_4', 'field_statement_4', () => {
       vest.warn();
       throw new Error();
     });
-    test('field_4', 'field_statement_4', () => {
+    vest.test('field_4', 'field_statement_4', () => {
       vest.warn();
     });
-    test('field_5', 'field_statement_5', () => false);
-    test('field_5', 'field_statement_6', () => false);
-    test(
-      'field_6',
-      'async_statement_1',
-      () =>
-        new Promise(res => {
-          setTimeout(res, 250, null);
-        })
-    );
-    test('field_7', () => Promise.reject('async_statement_2'));
+    vest.test('field_5', 'field_statement_5', () => false);
+    vest.test('field_5', 'field_statement_6', () => false);
+    vest.test('field_6', 'async_statement_1', async () => {
+      await wait(250);
+    });
+    vest.test('field_7', () => Promise.reject('async_statement_2'));
   });
 }
 
-let suite;
+let suite: vest.Suite<() => void>;
 describe('Stateful behavior', () => {
-  let result, callback_1, callback_2, callback_3, control;
+  let result,
+    callback_1 = jest.fn(),
+    callback_2 = jest.fn(),
+    callback_3 = jest.fn(),
+    control = jest.fn();
 
   beforeEach(() => {
-    suite = genSuite({ ...vest });
+    suite = genSuite();
   });
 
   beforeAll(() => {
@@ -44,10 +47,10 @@ describe('Stateful behavior', () => {
   });
 
   test('Should have all fields', () =>
-    new Promise<void>(done => {
+    TestPromise(done => {
       // ❗️Why is this test async? Because of the `resetState` beforeEach.
       // We must not clean up before the suite is actually done.
-      result = suite(vest).done(done);
+      result = suite().done(done);
       expect(result.tests).toHaveProperty('field_1');
       expect(result.tests).toHaveProperty('field_2');
       expect(result.tests).toHaveProperty('field_4');
@@ -59,8 +62,8 @@ describe('Stateful behavior', () => {
     }));
 
   it('Should invoke done callback specified with sync field immediately, and the others after finishing', () =>
-    new Promise<void>(done => {
-      result = suite(vest);
+    TestPromise(done => {
+      result = suite();
       result
         .done('field_1', callback_1)
         .done('field_6', callback_2)

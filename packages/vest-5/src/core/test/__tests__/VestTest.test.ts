@@ -9,7 +9,7 @@ const fieldName = 'unicycle';
 const message = 'I am Root.';
 
 describe('VestTest', () => {
-  let testObject;
+  let testObject: VestTest;
 
   beforeEach(() => {
     testObject = new VestTest(fieldName, jest.fn(), {
@@ -92,7 +92,7 @@ describe('VestTest', () => {
     });
 
     describe('final statuses', () => {
-      let control;
+      let control = jest.fn();
       beforeEach(() => {
         control = jest.fn();
       });

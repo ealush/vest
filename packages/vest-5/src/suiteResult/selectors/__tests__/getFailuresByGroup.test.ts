@@ -6,7 +6,7 @@ import * as vest from 'vest';
 const modes = ['SuiteRunResult', 'SuiteResult'];
 
 describe.each(modes)('produce method: %s', mode => {
-  let suite;
+  let suite: vest.Suite<(...args: any[]) => void>;
 
   function getRes(...args: any[]) {
     const res = suite(...args);

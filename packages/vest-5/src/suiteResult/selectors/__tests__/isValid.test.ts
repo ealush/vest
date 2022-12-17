@@ -2,6 +2,7 @@ import wait from 'wait';
 
 import { TestPromise } from '../../../../testUtils/testPromise';
 
+import * as vest from 'vest';
 import { test, optional, create, skipWhen, warn, skip, only } from 'vest';
 
 describe('isValid', () => {
@@ -16,7 +17,7 @@ describe('isValid', () => {
   });
 
   describe('When there are errors in the suite', () => {
-    let suite;
+    let suite: vest.Suite<(...args: any[]) => void>;
 
     beforeEach(() => {
       suite = create((fieldToSkip: string) => {
@@ -46,7 +47,7 @@ describe('isValid', () => {
   });
 
   describe('When there are warnings in the suite', () => {
-    let suite;
+    let suite: vest.Suite<(...args: any[]) => void>;
 
     beforeEach(() => {
       suite = create(() => {
@@ -96,7 +97,7 @@ describe('isValid', () => {
   });
 
   describe('When a non optional field is skipped', () => {
-    let suite;
+    let suite: vest.Suite<(...args: any[]) => void>;
 
     beforeEach(() => {
       suite = create(fieldToSkip => {
@@ -121,7 +122,7 @@ describe('isValid', () => {
   });
 
   describe('When the suite has an async optional test', () => {
-    let suite;
+    let suite: vest.Suite<(...args: any[]) => void>;
 
     beforeEach(() => {
       suite = create(() => {
@@ -150,7 +151,7 @@ describe('isValid', () => {
   });
 
   describe('When the suite has warning async tests', () => {
-    let suite;
+    let suite: vest.Suite<(...args: any[]) => void>;
 
     beforeEach(() => {
       suite = create(() => {
@@ -181,7 +182,7 @@ describe('isValid', () => {
   });
 
   describe('When the suite has async non-optional tests', () => {
-    let suite;
+    let suite: vest.Suite<(...args: any[]) => void>;
 
     beforeEach(() => {
       suite = create(currentField => {
@@ -229,7 +230,7 @@ describe('isValid', () => {
   });
 
   describe('When a all required fields are passing', () => {
-    let suite;
+    let suite: vest.Suite<(...args: any[]) => void>;
 
     beforeEach(() => {
       suite = create(() => {

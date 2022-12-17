@@ -6,7 +6,8 @@ import { create, group } from 'vest';
 import * as vest from 'vest';
 
 describe('collectFailureMessages', () => {
-  let suite, res: SuiteResult;
+  let suite: vest.Suite<(...args: any[]) => void>;
+  let res: SuiteResult;
 
   test('Result has an array of matching error messages', () => {
     const result = res.getErrors();

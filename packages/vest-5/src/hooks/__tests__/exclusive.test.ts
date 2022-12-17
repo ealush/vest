@@ -3,16 +3,16 @@ import faker from 'faker';
 import { dummyTest } from '../../../testUtils/testDummy';
 
 import { ErrorStrings } from 'ErrorStrings';
-import { SuiteContext, useExclusion } from 'SuiteContext';
+import { SuiteContext, TExclusion, useExclusion } from 'SuiteContext';
 import { VestTest } from 'VestTest';
 import { isExcluded, isGroupExcluded, skip, only } from 'exclusive';
 import { group } from 'group';
 import * as vest from 'vest';
 
-let res, res1;
+let res: boolean, res1: boolean;
 
 describe('exclusive hooks', () => {
-  let test1, test2, test3;
+  let test1: vest.VestTest, test2: vest.VestTest, test3: vest.VestTest;
 
   beforeEach(() => {
     test1 = new VestTest(faker.lorem.word(), jest.fn());
@@ -21,8 +21,9 @@ describe('exclusive hooks', () => {
   });
 
   test('isExcluded should respect group exclusion', () => {
-    let testObject;
-    let testObject1;
+    let testObject: vest.VestTest;
+    let testObject1: vest.VestTest;
+
     const validate = vest.create(() => {
       vest.skip.group('group_1');
 
@@ -101,6 +102,7 @@ describe('exclusive hooks', () => {
       });
 
       test('isGroupExcluded returns false for included groups', () => {
+        const results: boolean[] = [];
         vest.create(() => {
           vest.only.group(['group_1', 'group_2']);
 
@@ -108,37 +110,44 @@ describe('exclusive hooks', () => {
           group('group_2', jest.fn());
           group('group_3', jest.fn());
 
-          res = [
+          results.push(
             isGroupExcluded('group_1'),
             isGroupExcluded('group_2'),
-            isGroupExcluded('group_3'),
-          ];
+            isGroupExcluded('group_3')
+          );
         })();
-        expect(res).toEqual([false, false, true]);
+        expect(results).toEqual([false, false, true]);
       });
 
       test('isExcluded returns true for non included field', () => {
+        const results: boolean[] = [];
+        const results1: boolean[] = [];
         vest.create(() => {
-          res = [isExcluded(test1), isExcluded(test2), isExcluded(test3)];
+          results.push(isExcluded(test1), isExcluded(test2), isExcluded(test3));
           vest.only([test1.fieldName, test2.fieldName]);
-          res1 = [isExcluded(test1), isExcluded(test2), isExcluded(test3)];
+          results1.push(
+            isExcluded(test1),
+            isExcluded(test2),
+            isExcluded(test3)
+          );
         })();
-        expect(res).toEqual([false, false, false]);
-        expect(res1).toEqual([false, false, true]);
+        expect(results).toEqual([false, false, false]);
+        expect(results1).toEqual([false, false, true]);
       });
 
       test('isGroupExcluded returns true for non included groups', () => {
+        const results: boolean[] = [];
         vest.create(() => {
           vest.only.group(['group_1', 'group_2']);
 
           group('group_3', jest.fn());
-          res = [
+          results.push(
             isGroupExcluded('group_1'),
             isGroupExcluded('group_2'),
-            isGroupExcluded('group_3'),
-          ];
+            isGroupExcluded('group_3')
+          );
         })();
-        expect(res).toEqual([false, false, true]);
+        expect(results).toEqual([false, false, true]);
       });
     });
   });
@@ -194,11 +203,12 @@ describe('exclusive hooks', () => {
       });
 
       test('isGroupExcluded returns true for excluded groups', () => {
+        const results: boolean[] = [];
         vest.create(() => {
           vest.skip.group(['group_1', 'group_2']);
-          res = [isGroupExcluded('group_1'), isGroupExcluded('group_2')];
+          results.push(isGroupExcluded('group_1'), isGroupExcluded('group_2'));
         })();
-        expect(res).toEqual([true, true]);
+        expect(results).toEqual([true, true]);
       });
 
       test('isExcluded returns false for non included field', () => {
@@ -219,7 +229,7 @@ describe('exclusive hooks', () => {
     });
 
     describe('Field is in a non included group', () => {
-      let suite;
+      let suite: vest.Suite<() => void>;
 
       beforeEach(() => {
         suite = vest.create(() => {
@@ -256,9 +266,12 @@ describe('exclusive hooks', () => {
 });
 
 describe('isExcluded', () => {
-  let exclusion;
+  let exclusion: Partial<TExclusion>;
 
-  const runIsExcluded = (exclusion, testObject: VestTest) =>
+  const runIsExcluded = (
+    exclusion: Partial<TExclusion>,
+    testObject: VestTest
+  ) =>
     SuiteContext.run({}, () => {
       Object.assign(useExclusion(), exclusion);
       const res = isExcluded(testObject);

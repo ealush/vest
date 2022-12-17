@@ -1,9 +1,9 @@
-import { VestTest } from 'VestTest';
 import { createCascade } from 'context';
-import { Modes } from 'mode';
 import { assign, BusType, TinyState, tinyState } from 'vest-utils';
 
 import { initVestBus } from 'VestBus';
+import { VestTest } from 'VestTest';
+import { Modes } from 'mode';
 
 export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
   if (parentContext) {
@@ -25,10 +25,7 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
 });
 
 type CTXType = {
-  exclusion: {
-    tests: Record<string, boolean>;
-    groups: Record<string, boolean>;
-  };
+  exclusion: TExclusion;
   inclusion: Record<string, boolean | (() => boolean)>;
   currentTest?: VestTest;
   groupName?: string;
@@ -36,6 +33,11 @@ type CTXType = {
   skipped?: boolean;
   omitted?: boolean;
   mode: TinyState<Modes>;
+};
+
+export type TExclusion = {
+  tests: Record<string, boolean>;
+  groups: Record<string, boolean>;
 };
 
 export function useCurrentTest(msg?: string) {

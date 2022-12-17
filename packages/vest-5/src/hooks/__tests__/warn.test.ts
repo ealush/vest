@@ -24,12 +24,6 @@ describe('warn hook', () => {
   });
 
   describe('Error handling', () => {
-    let warn, create;
-
-    beforeEach(() => {
-      ({ create, warn } = require('vest'));
-    });
-
     it('Should throw error when currentTest is not present', () => {
       const done = jest.fn();
       create(() => {

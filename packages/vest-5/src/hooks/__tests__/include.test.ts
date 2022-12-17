@@ -1,7 +1,8 @@
 import * as vest from 'vest';
 
 describe('include', () => {
-  let cb1, cb2;
+  let cb1 = jest.fn(),
+    cb2 = jest.fn();
 
   beforeEach(() => {
     cb1 = jest.fn(() => false);

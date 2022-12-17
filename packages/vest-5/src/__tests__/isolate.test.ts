@@ -1,9 +1,9 @@
 import { CB } from 'vest-utils';
 import { TDeferThrow } from 'vest-utils/src/deferThrow';
 
-import { TDummyTest } from '../../../vest/testUtils/testDummy';
 import { TVestMock } from '../../testUtils/TVestMock';
 import mockThrowError from '../../testUtils/mockThrowError';
+import { TDummyTest } from '../../testUtils/testDummy';
 
 import { IsolateTypes } from 'IsolateTypes';
 

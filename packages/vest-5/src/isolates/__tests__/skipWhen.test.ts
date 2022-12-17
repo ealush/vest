@@ -91,7 +91,7 @@ describe('skipWhen', () => {
   });
 
   describe('nested calls', () => {
-    let suite;
+    let suite: vest.Suite<() => void>;
 
     describe('skipped in non-skipped', () => {
       beforeEach(() => {

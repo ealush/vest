@@ -4,7 +4,7 @@ import { TestWalker } from 'SuiteWalker';
 import * as vest from 'vest';
 
 describe('TestWalker.hasRemainingTests', () => {
-  let hasRemaining = null;
+  let hasRemaining: boolean | null = null;
   let count = 0;
 
   beforeEach(() => {

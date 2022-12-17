@@ -1,14 +1,14 @@
 import * as vest from 'vest';
 
-let validate;
+let suite: vest.Suite<(exclusion?: Record<string, string | string[]>) => void>;
 
 beforeEach(() => {
-  validate = genValidate(vest);
+  suite = genSuite();
 });
 
 describe('only', () => {
   it('Should only count included fields', () => {
-    const res = validate({
+    const res = suite({
       only: ['field_1', 'field_2'],
     });
 
@@ -19,7 +19,7 @@ describe('only', () => {
     expect(res.tests.field_5.testCount).toBe(0);
   });
   it('Should only count included field', () => {
-    const res = validate({
+    const res = suite({
       only: 'field_1',
     });
 
@@ -32,7 +32,7 @@ describe('only', () => {
 });
 describe('skip', () => {
   it('Should count all but excluded fields', () => {
-    const res = validate({
+    const res = suite({
       skip: ['field_1', 'field_2'],
     });
 
@@ -44,7 +44,7 @@ describe('skip', () => {
   });
 
   it('Should count all but excluded field', () => {
-    const res = validate({
+    const res = suite({
       skip: 'field_1',
     });
 
@@ -58,7 +58,7 @@ describe('skip', () => {
 
 describe('Combined', () => {
   test('Last declaration wins', () => {
-    const res = validate({
+    const res = suite({
       only: ['field_1', 'field_2', 'field_3'],
       skip: ['field_1'],
       skip_last: 'field_3',
@@ -70,16 +70,16 @@ describe('Combined', () => {
   });
 });
 
-function genValidate(vest) {
+function genSuite() {
   return vest.create((exclusion: Record<string, string | string[]> = {}) => {
     vest.skip(exclusion?.skip);
     vest.only(exclusion?.only);
     vest.skip(exclusion?.skip_last);
 
-    vest.test('field_1', 'msg', Function.prototype);
-    vest.test('field_2', 'msg', Function.prototype);
-    vest.test('field_3', 'msg', Function.prototype);
-    vest.test('field_4', 'msg', Function.prototype);
-    vest.test('field_5', 'msg', Function.prototype);
+    vest.test('field_1', 'msg', () => {});
+    vest.test('field_2', 'msg', () => {});
+    vest.test('field_3', 'msg', () => {});
+    vest.test('field_4', 'msg', () => {});
+    vest.test('field_5', 'msg', () => {});
   });
 }

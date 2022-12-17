@@ -1,7 +1,6 @@
 import { invariant, isFunction } from 'vest-utils';
 
-import { SuiteResult } from 'produceSuiteResult';
-import { SuiteRunResult } from 'produceSuiteRunResult';
+import { SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
 
 const promisify =
   (validatorFn: (...args: any[]) => SuiteRunResult) =>

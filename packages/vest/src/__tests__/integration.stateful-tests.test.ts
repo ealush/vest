@@ -1,9 +1,10 @@
 import { enforce } from 'n4s';
+
 import * as vest from 'vest';
 
 describe('Stateful behavior', () => {
   let result;
-  const validate = genValidate(vest);
+  const validate = genSuite();
 
   test('Should merge skipped fields with previous values', () => {
     result = validate({ only: 'field_1' });
@@ -34,8 +35,6 @@ describe('Stateful behavior', () => {
 });
 
 describe('more complex', () => {
-  const { test, enforce, create, skipWhen } = vest;
-
   const data: Record<string, string> = {};
 
   it('Should run correctly', () => {
@@ -107,48 +106,50 @@ describe('more complex', () => {
     `);
   });
 
-  const suite = create((data: Record<string, unknown> = {}, only: string) => {
-    vest.only(only);
+  const suite = vest.create(
+    (data: Record<string, unknown> = {}, only: string) => {
+      vest.only(only);
 
-    test('username', 'username is required', () => {
-      enforce(data.username).isNotEmpty();
-    });
+      vest.test('username', 'username is required', () => {
+        enforce(data.username).isNotEmpty();
+      });
 
-    test('username', 'username must be at least 3 characters', () => {
-      enforce(data.username).longerThanOrEquals(3);
-    });
+      vest.test('username', 'username must be at least 3 characters', () => {
+        enforce(data.username).longerThanOrEquals(3);
+      });
 
-    test('password', 'password is required', () => {
-      enforce(data.password).isNotEmpty();
-    });
+      vest.test('password', 'password is required', () => {
+        enforce(data.password).isNotEmpty();
+      });
 
-    skipWhen(
-      draft => draft.hasErrors('password'),
-      () => {
-        test('confirm', 'passwords do not match', () => {
-          enforce(data.confirm).equals(data.password);
-        });
-      }
-    );
-  });
+      vest.skipWhen(
+        draft => draft.hasErrors('password'),
+        () => {
+          vest.test('confirm', 'passwords do not match', () => {
+            enforce(data.confirm).equals(data.password);
+          });
+        }
+      );
+    }
+  );
 });
 
-function genValidate({ create, test, ...vest }) {
-  return create(({ only }: { only?: string | string[] } = {}) => {
+function genSuite() {
+  return vest.create(({ only }: { only?: string | string[] } = {}) => {
     vest.only(only);
-    test('field_1', 'field_statement_1', () => false);
-    test('field_2', 'field_statement_2', () => {
+    vest.test('field_1', 'field_statement_1', () => false);
+    vest.test('field_2', 'field_statement_2', () => {
       enforce(2).equals(3);
     });
-    test('field_3', 'field_statement_3', jest.fn());
-    test('field_4', 'field_statement_4', () => {
+    vest.test('field_3', 'field_statement_3', jest.fn());
+    vest.test('field_4', 'field_statement_4', () => {
       vest.warn();
       throw new Error();
     });
-    test('field_4', 'field_statement_4', () => {
+    vest.test('field_4', 'field_statement_4', () => {
       vest.warn();
     });
-    test('field_5', 'field_statement_5', () => false);
-    test('field_5', 'field_statement_6', () => false);
+    vest.test('field_5', 'field_statement_5', () => false);
+    vest.test('field_5', 'field_statement_6', () => false);
   });
 }

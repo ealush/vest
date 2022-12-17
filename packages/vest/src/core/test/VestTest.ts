@@ -1,19 +1,19 @@
 import { seq } from 'vest-utils';
 
-import shouldUseErrorAsMessage from 'shouldUseErrorAsMessage';
-import { useRefreshTestObjects } from 'stateHooks';
+import { TestFn, TestResult, AsyncTest } from 'TestTypes';
+import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
 
 enum TestSeverity {
   Error = 'error',
   Warning = 'warning',
 }
 
-export default class VestTest {
+export class VestTest {
   fieldName: string;
   testFn: TestFn;
-  asyncTest?: AsyncTest;
   groupName?: string;
   message?: string;
+  asyncTest?: AsyncTest;
   key?: null | string = null;
 
   id = seq();
@@ -117,12 +117,11 @@ export default class VestTest {
 
   cancel(): void {
     this.setStatus(STATUS_CANCELED);
-    useRefreshTestObjects();
   }
 
   reset(): void {
     this.status = STATUS_UNTESTED;
-    useRefreshTestObjects();
+    // useRefreshTestObjects();
   }
 
   omit(): void {
@@ -187,10 +186,6 @@ export default class VestTest {
     return this.status === status;
   }
 }
-
-type AsyncTest = Promise<string | void>;
-export type TestResult = AsyncTest | boolean | void;
-export type TestFn = () => TestResult;
 
 const STATUS_UNTESTED = 'UNTESTED';
 const STATUS_SKIPPED = 'SKIPPED';

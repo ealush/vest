@@ -1,25 +1,22 @@
-import {
-  isStringValue as isString,
-  assign,
-  invariant,
-  isFunction,
-} from 'vest-utils';
+import { VestTest } from 'VestTest';
+import { assign, invariant, isFunction, isStringValue } from 'vest-utils';
 
-import VestTest, { TestFn } from 'VestTest';
-import ctx from 'ctx';
-import registerPrevRunTest from 'registerPrevRunTest';
-import testMemo from 'test.memo';
+import { wrapTestMemo } from './test.memo';
 
-function testBase(fieldName: string, message: string, cb: TestFn): VestTest;
-function testBase(fieldName: string, cb: TestFn): VestTest;
-function testBase(
+import { useGroupName } from 'SuiteContext';
+import { TestFn } from 'TestTypes';
+import { testObjectIsolate } from 'testObjectIsolate';
+
+function vestTest(fieldName: string, message: string, cb: TestFn): VestTest;
+function vestTest(fieldName: string, cb: TestFn): VestTest;
+function vestTest(
   fieldName: string,
   message: string,
   cb: TestFn,
   key: string
 ): VestTest;
-function testBase(fieldName: string, cb: TestFn, key: string): VestTest;
-function testBase(
+function vestTest(fieldName: string, cb: TestFn, key: string): VestTest;
+function vestTest(
   fieldName: string,
   ...args:
     | [message: string, cb: TestFn]
@@ -31,42 +28,26 @@ function testBase(
     isFunction(args[1]) ? args : [undefined, ...args]
   ) as [string | undefined, TestFn, string | undefined];
 
-  invariant(
-    isString(fieldName),
-    incompatibleParamsError('fieldName', 'string')
-  );
+  invariant(isStringValue(fieldName), invalidParamError('fieldName', 'string'));
+  invariant(isFunction(testFn), invalidParamError('callback', 'function'));
 
-  invariant(
-    isFunction(testFn),
-    incompatibleParamsError('Test callback', 'function')
-  );
-
-  const context = ctx.useX();
+  const groupName = useGroupName();
 
   const testObject = new VestTest(fieldName, testFn, {
     message,
-    groupName: context.groupName,
+    groupName,
     key,
   });
 
-  return registerPrevRunTest(testObject);
+  return testObjectIsolate(testObject);
 }
 
-/**
- * Represents a single case in a validation suite.
- *
- * @example
- *
- * test("username", "Username is required", () => {
- *  enforce(data.username).isNotBlank();
- * });
- */
-export const test = assign(testBase, {
-  memo: testMemo(testBase),
+export const test = assign(vestTest, {
+  memo: wrapTestMemo(vestTest),
 });
 
-export type TestBase = typeof testBase;
+export type VTest = typeof vestTest;
 
-function incompatibleParamsError(name: string, expected: string) {
-  return `Incompatible params passed to test function. ${name} must be a ${expected}`;
+function invalidParamError(name: string, expected: string): string {
+  return `Incompatible params passed to test function. Test ${name} must be a ${expected}`;
 }

@@ -1,19 +1,25 @@
+import { CB } from 'vest-utils';
+import { TDeferThrow } from 'vest-utils/src/deferThrow';
+
+import { TVestMock } from '../../testUtils/TVestMock';
 import mockThrowError from '../../testUtils/mockThrowError';
+import { TDummyTest } from '../../testUtils/testDummy';
 
 import { IsolateTypes } from 'IsolateTypes';
 
 describe('isolate', () => {
+  let vest: TVestMock;
   let firstRun = true;
-  let vest, isolate, skipWhen, dummyTest;
-  let deferThrow;
+  let isolate = require('isolate').isolate;
+  let dummyTest: TDummyTest;
+  let deferThrow: TDeferThrow;
 
   beforeEach(() => {
     firstRun = true;
     const mock = mockThrowError();
     deferThrow = mock.deferThrow;
-    vest = mock.vest;
-    skipWhen = vest.skipWhen;
     isolate = require('isolate').isolate;
+    vest = mock.vest;
     dummyTest = require('../../testUtils/testDummy').dummyTest;
   });
 
@@ -31,7 +37,7 @@ describe('isolate', () => {
       const f1 = jest.fn(() => false);
       const f2 = jest.fn(() => false);
       const suite = genSuite(() => {
-        skipWhen(!firstRun, () => {
+        vest.skipWhen(!firstRun, () => {
           isolate({ type: IsolateTypes.DEFAULT }, () => {
             vest.test('f1', f1);
             vest.test('f2', f2);
@@ -102,13 +108,13 @@ describe('isolate', () => {
     it('Should only retain the state of the unmoved state before the order index', () => {
       const suite = genSuite(() => {
         isolate({ type: IsolateTypes.EACH }, () => {
-          skipWhen(!firstRun, () => {
+          vest.skipWhen(!firstRun, () => {
             dummyTest.failing('f1');
           });
           if (!firstRun) {
             dummyTest.failing('f2');
           }
-          skipWhen(!firstRun, () => {
+          vest.skipWhen(!firstRun, () => {
             dummyTest.failing('f3');
           });
         });
@@ -143,7 +149,7 @@ describe('isolate', () => {
         // this way we can tell if the state is kept or discarded.
         // if the state is kept, they should be invalid. Otherwise
         // they should be untested.
-        skipWhen(!firstRun, () => {
+        vest.skipWhen(!firstRun, () => {
           isolate({ type: IsolateTypes.EACH }, () => {
             dummyTest.failing('f2');
             dummyTest.failing('f3');
@@ -256,7 +262,7 @@ describe('isolate', () => {
 
       it('Should allow unordered tests within an each isolate', () => {
         const suite = genSuite(() => {
-          isolate({ type: IsolateTypes.EACH }, () => {
+          isolate(IsolateTypes.EACH, () => {
             dummyTest.failing(firstRun ? 'f1' : 'f2');
           });
         });
@@ -269,7 +275,7 @@ describe('isolate', () => {
     });
   });
 
-  function genSuite(cb) {
+  function genSuite(cb: CB) {
     return vest.create(() => {
       cb();
       firstRun = false;

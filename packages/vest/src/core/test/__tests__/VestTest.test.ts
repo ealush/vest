@@ -1,14 +1,15 @@
 import wait from 'wait';
 
-import VestTest from 'VestTest';
-import { useAllIncomplete } from 'stateHooks';
+import { TestPromise } from '../../../../testUtils/testPromise';
+
+import { VestTest } from 'VestTest';
 import * as vest from 'vest';
 
 const fieldName = 'unicycle';
 const message = 'I am Root.';
 
 describe('VestTest', () => {
-  let testObject;
+  let testObject: VestTest;
 
   beforeEach(() => {
     testObject = new VestTest(fieldName, jest.fn(), {
@@ -25,10 +26,10 @@ describe('VestTest', () => {
       { length: 100 },
       () => new VestTest(fieldName, jest.fn(), { message })
     ).reduce((existing, { id }) => {
-      expect(existing[id]).toBeUndefined();
-      existing[id] = true;
+      expect(existing.has(id)).toBe(false);
+      existing.add(id);
       return existing;
-    }, {});
+    }, new Set<string>());
   });
 
   describe('testObject.warn', () => {
@@ -73,7 +74,7 @@ describe('VestTest', () => {
   describe('testObject.cancel', () => {
     it('Should set the testObject to cancel', () => {
       let testObject: VestTest;
-      return new Promise<void>(done => {
+      return TestPromise(done => {
         const suite = vest.create(() => {
           testObject = vest.test('f1', async () => {
             await wait(100);
@@ -90,33 +91,8 @@ describe('VestTest', () => {
       });
     });
 
-    it('Should be removed from the list of incomplete tests', () => {
-      const control = jest.fn();
-      vest.create(() => {
-        const testObject = vest.test('f1', async () => {
-          await wait(100);
-        });
-
-        expect(testObject.isPending()).toBe(true);
-        {
-          const allIncomplete = useAllIncomplete();
-
-          expect(allIncomplete).toEqual(expect.arrayContaining([testObject]));
-        }
-        testObject.cancel();
-        {
-          const allIncomplete = useAllIncomplete();
-          expect(allIncomplete).toEqual(
-            expect.not.arrayContaining([testObject])
-          );
-        }
-        control();
-      })();
-      expect(control).toHaveBeenCalledTimes(1);
-    });
-
     describe('final statuses', () => {
-      let control;
+      let control = jest.fn();
       beforeEach(() => {
         control = jest.fn();
       });

@@ -1,11 +1,14 @@
 import wait from 'wait';
 
 import { dummyTest } from '../../testUtils/testDummy';
+import { TestPromise } from '../../testUtils/testPromise';
 
 import * as vest from 'vest';
 
-const suite = ({ create, ...vest }) =>
-  create(({ skip, skipGroup }) => {
+type SuiteParams = { skip?: string; skipGroup?: string };
+
+const suite = () =>
+  vest.create(({ skip, skipGroup }: SuiteParams = {}) => {
     vest.skip(skip);
     vest.skip.group(skipGroup);
 
@@ -27,7 +30,12 @@ const suite = ({ create, ...vest }) =>
     dummyTest.failingAsync('field_3', { message: 'field_message_3' });
   });
 
-let validate, callback_1, callback_2, callback_3, callback_4, control;
+let validate: vest.Suite<({ skip, skipGroup }: SuiteParams) => void>;
+let callback_1 = jest.fn(),
+  callback_2 = jest.fn(),
+  callback_3 = jest.fn(),
+  callback_4 = jest.fn(),
+  control = jest.fn();
 
 describe('Stateful async tests', () => {
   beforeEach(() => {
@@ -36,15 +44,15 @@ describe('Stateful async tests', () => {
     callback_3 = jest.fn();
     callback_4 = jest.fn();
     control = jest.fn();
-    validate = suite(vest);
+    validate = suite();
   });
 
   it('Should only run callbacks for last suite run', () =>
-    new Promise<void>(done => {
-      validate(vest).done(callback_1).done('field_3', callback_2);
+    TestPromise(done => {
+      validate({}).done(callback_1).done('field_3', callback_2);
       expect(callback_1).not.toHaveBeenCalled();
       expect(callback_2).not.toHaveBeenCalled();
-      validate(vest).done(callback_3).done('field_3', callback_4);
+      validate({}).done(callback_3).done('field_3', callback_4);
       expect(callback_3).not.toHaveBeenCalled();
       expect(callback_4).not.toHaveBeenCalled();
       setTimeout(() => {
@@ -64,7 +72,7 @@ describe('Stateful async tests', () => {
     }));
 
   it('Merges skipped validations from previous suite', () =>
-    new Promise<void>(done => {
+    TestPromise(done => {
       const res = validate({ skipGroup: 'group', skip: 'field_3' });
       expect(res.testCount).toBe(3);
       expect(res.errorCount).toBe(1);
@@ -102,11 +110,11 @@ describe('Stateful async tests', () => {
     }));
 
   it('Should discard of re-tested async tests', async () => {
-    const tests = [];
+    const tests: Array<vest.VestTest> = [];
     const control = jest.fn();
     const suite = vest.create(() => {
       tests.push(
-        vest.test('field_1', async () => {
+        vest.test('field_1', tests.length.toString(), async () => {
           await wait(100);
           throw new Error();
         })

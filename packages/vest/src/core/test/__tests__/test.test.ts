@@ -1,8 +1,10 @@
 import { faker } from '@faker-js/faker';
 
-import { create, test, warn, enforce } from 'vest';
+import { TestPromise } from '../../../../testUtils/testPromise';
 
-let testObject;
+import { create, test, warn, enforce, VestTest } from 'vest';
+
+let testObject: VestTest;
 
 describe("Test Vest's `test` function", () => {
   describe('test callbacks', () => {
@@ -25,6 +27,7 @@ describe("Test Vest's `test` function", () => {
           });
         })();
         expect(testObject.status).toBe('FAILED');
+        // @ts-ignore - very much intentional
         expect(testObject == false).toBe(true); //eslint-disable-line
       });
 
@@ -33,6 +36,7 @@ describe("Test Vest's `test` function", () => {
           test(faker.random.word(), faker.lorem.sentence(), () => false);
         })();
         expect(testObject.status).toBe('FAILED');
+        // @ts-ignore - very much intentional
         expect(testObject == false).toBe(true); //eslint-disable-line
       });
 
@@ -105,7 +109,7 @@ describe("Test Vest's `test` function", () => {
 
     describe('async', () => {
       it('Should be marked as failed when a returned promise rejects', () =>
-        new Promise<void>(done => {
+        TestPromise(done => {
           create(() => {
             testObject = test(
               faker.random.word(),
@@ -127,7 +131,7 @@ describe("Test Vest's `test` function", () => {
   });
 
   describe('test params', () => {
-    let testObject;
+    let testObject: VestTest;
     it('creates a test without a message and without a key', () => {
       create(() => {
         testObject = test('field_name', () => undefined);
@@ -178,17 +182,17 @@ describe("Test Vest's `test` function", () => {
       create(() => {
         // @ts-ignore
         expect(() => test(undefined, () => undefined)).toThrow(
-          'Incompatible params passed to test function. fieldName must be a string'
+          'Incompatible params passed to test function. Test fieldName must be a string'
         );
         // @ts-expect-error
         expect(() => test(null, 'error message', () => undefined)).toThrow(
-          'Incompatible params passed to test function. fieldName must be a string'
+          'Incompatible params passed to test function. Test fieldName must be a string'
         );
         expect(() =>
           // @ts-expect-error
           test(null, 'error message', () => undefined, 'key')
         ).toThrow(
-          'Incompatible params passed to test function. fieldName must be a string'
+          'Incompatible params passed to test function. Test fieldName must be a string'
         );
         control();
       })();

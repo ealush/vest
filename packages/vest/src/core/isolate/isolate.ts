@@ -1,40 +1,82 @@
-import { nestedArray, invariant, isFunction } from 'vest-utils';
+import { Isolate, IsolateTypes } from 'IsolateTypes';
+import { CB, invariant } from 'vest-utils';
 
-import { IsolateTypes } from 'IsolateTypes';
-import VestTest from 'VestTest';
-import ctx from 'ctx';
-import { generateIsolate } from 'generateIsolate';
-import { useCurrentPath, useCursor, useIsolate } from 'isolateHooks';
-import { usePrevKeys } from 'key';
-import { useSetTests } from 'stateHooks';
+import {
+  useSetNextIsolateChild,
+  PersistedContext,
+  useHistoryNode,
+  useSetHistory,
+  useIsolate,
+  useRuntimeRoot,
+  useCurrentCursor,
+} from 'PersistedContext';
+import { createIsolate } from 'createIsolate';
+import { vestReconciler } from 'vestReconciler';
 
-export function isolate(
-  { type = IsolateTypes.DEFAULT }: { type?: IsolateTypes },
-  callback: () => VestTest[] | void
-): VestTest[] | void {
-  invariant(isFunction(callback));
+// eslint-disable-next-line max-statements
+export function isolate<Callback extends CB = CB>(
+  type: IsolateTypes,
+  callback: Callback,
+  data?: any
+): [Isolate, ReturnType<Callback>] {
+  const parent = useIsolate();
+  let historyNode = useHistoryNode();
 
-  // Generate a new Isolate layer, with its own cursor
-  const isolate = generateIsolate(type, useCurrentPath());
+  const current = createIsolate(type, parent, data);
 
-  const output = ctx.run({ isolate }, () => {
-    isolate.keys.prev = usePrevKeys();
+  if (parent) {
+    historyNode = historyNode?.children[useCurrentCursor()] ?? null;
+  }
+  const output = reconcileHistoryNode(historyNode, current, callback);
 
-    useSetTests(tests => nestedArray.setValueAtPath(tests, isolate.path, []));
+  const [nextIsolateChild] = output;
 
-    const res = callback();
-    return res;
-  });
+  if (parent) {
+    useSetNextIsolateChild(nextIsolateChild);
+  }
 
-  // Move the parent cursor forward once we're done
-  useCursor().next();
+  if (!parent) {
+    useSetHistory(nextIsolateChild);
+  }
 
   return output;
 }
 
-/**
- * @returns {boolean} Whether or not the current isolate allows tests to be reordered
- */
-export function shouldAllowReorder(): boolean {
-  return useIsolate().type === IsolateTypes.EACH;
+function reconcileHistoryNode<Callback extends CB = CB>(
+  historyNode: Isolate | null,
+  current: Isolate,
+  callback: CB
+): [Isolate, ReturnType<Callback>] {
+  const nextNode = vestReconciler(historyNode, current);
+
+  invariant(nextNode);
+
+  if (nextNode === current) {
+    return [current, runAsNew(historyNode, current, callback)];
+  }
+
+  return [nextNode, getNodeOuput(nextNode)];
+}
+
+function getNodeOuput(node: Isolate): any {
+  return node.output;
+}
+
+function runAsNew<Callback extends CB = CB>(
+  historyNode: Isolate | null,
+  current: Isolate,
+  callback: CB
+): ReturnType<Callback> {
+  const runtimeRoot = useRuntimeRoot();
+  const output = PersistedContext.run(
+    {
+      historyNode,
+      runtimeNode: current,
+      ...(!runtimeRoot && { runtimeRoot: current }),
+    },
+    callback
+  );
+
+  current.output = output;
+  return output;
 }

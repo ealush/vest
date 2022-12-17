@@ -1,218 +1,175 @@
-import _ from 'lodash';
+import wait from 'wait';
 
-import runCreateRef from '../../../../testUtils/runCreateRef';
-import { addTestObject } from '../../../../testUtils/testObjects';
+import { asVestTest } from 'asVestTest';
+import * as vest from 'vest';
 
-import VestTest from 'VestTest';
-import context from 'ctx';
-import runAsyncTest from 'runAsyncTest';
-import { useTestCallbacks } from 'stateHooks';
-import { initBus } from 'vestBus';
-
-const message = 'some message string';
-
-const CASE_PASSING = 'passing';
-const CASE_FAILING = 'failing';
-
-let stateRef;
-
-describe.each([CASE_PASSING, CASE_FAILING])('runAsyncTest: %s', testCase => {
-  let testObject, fieldName, bus;
-
-  beforeEach(() => {
-    bus = initBus();
-  });
-
-  const runRunAsyncTest = (testObject: VestTest) =>
-    context.run(
-      {
-        stateRef,
-        bus,
-      },
-      () => runAsyncTest(testObject)
-    );
-
-  beforeEach(() => {
-    fieldName = 'field_1';
-    stateRef = runCreateRef();
-    context.run({ stateRef }, () => {
-      const [, setTestCallbacks] = useTestCallbacks();
-      setTestCallbacks(state => {
-        state.fieldCallbacks = {
-          ...state.fieldCallbacks,
-          [fieldName]: state.fieldCallbacks[fieldName] || [],
-        };
-
-        return state;
-      });
-    });
-    testObject = new VestTest(fieldName, jest.fn(), {
-      message,
-    });
-    testObject.asyncTest =
-      testCase === CASE_PASSING ? Promise.resolve() : Promise.reject();
-    context.run({ stateRef }, () => {
-      testObject.setPending();
-    });
-  });
-
-  describe('State updates', () => {
-    it('Should remove pending status from test object', () =>
-      new Promise<void>(done => {
-        expect(testObject.status).toBe('PENDING');
-        runRunAsyncTest(testObject);
-        setTimeout(
-          context.bind({ stateRef }, () => {
-            expect(testObject.status).not.toBe('PENDING');
-            done();
-          })
-        );
-      }));
-  });
-
-  describe('doneCallbacks', () => {
-    let fieldCallback_1, fieldCallback_2, doneCallback;
-    beforeEach(() => {
-      fieldCallback_1 = jest.fn();
-      fieldCallback_2 = jest.fn();
-      doneCallback = jest.fn();
-
-      context.run({ stateRef }, () => {
-        const [, setTestCallbacks] = useTestCallbacks();
-
-        setTestCallbacks(state => ({
-          fieldCallbacks: {
-            ...state.fieldCallbacks,
-            [fieldName]: (state.fieldCallbacks[fieldName] || []).concat(
-              fieldCallback_1,
-              fieldCallback_2
-            ),
-          },
-          doneCallbacks: state.doneCallbacks.concat(doneCallback),
-        }));
-      });
-    });
-    describe('When no remaining tests', () => {
-      it('Should run all callbacks', () =>
-        new Promise<void>(done => {
-          expect(fieldCallback_1).not.toHaveBeenCalled();
-          expect(fieldCallback_2).not.toHaveBeenCalled();
-          expect(doneCallback).not.toHaveBeenCalled();
-          runRunAsyncTest(testObject);
-          setTimeout(() => {
-            expect(fieldCallback_1).toHaveBeenCalled();
-            expect(fieldCallback_2).toHaveBeenCalled();
-            expect(doneCallback).toHaveBeenCalled();
-            done();
-          });
-        }));
-    });
-
-    describe('When there are more tests left', () => {
-      beforeEach(() => {
-        context.run({ stateRef }, () => {
-          const pendingTest = new VestTest('pending_field', jest.fn(), {
-            message,
-          });
-          addTestObject(pendingTest);
-          pendingTest.setPending();
+describe('runAsyncTest', () => {
+  describe('State Updates', () => {
+    it('Should remove pending status from test object', async () => {
+      let testObject: void | vest.VestTest = undefined;
+      const suite = vest.create(() => {
+        testObject = vest.test('field_1', async () => {
+          await wait(100);
         });
       });
+      suite();
 
-      it("Should only run current field's callbacks", () =>
-        new Promise<void>(done => {
-          expect(fieldCallback_1).not.toHaveBeenCalled();
-          expect(fieldCallback_2).not.toHaveBeenCalled();
-          expect(doneCallback).not.toHaveBeenCalled();
-          runRunAsyncTest(testObject);
-          setTimeout(() => {
-            expect(fieldCallback_1).toHaveBeenCalled();
-            expect(fieldCallback_2).toHaveBeenCalled();
-            expect(doneCallback).not.toHaveBeenCalled();
-            done();
-          });
-        }));
-    });
+      testObject = asVestTest(testObject);
 
-    describe('When test is canceled', () => {
-      beforeEach(() => {
-        context.run({ stateRef }, () => {
-          testObject.cancel();
-        });
-      });
-
-      it('Should return without running any callback', () =>
-        new Promise<void>(done => {
-          expect(fieldCallback_1).not.toHaveBeenCalled();
-          expect(fieldCallback_2).not.toHaveBeenCalled();
-          expect(doneCallback).not.toHaveBeenCalled();
-          runRunAsyncTest(testObject);
-          setTimeout(() => {
-            expect(fieldCallback_1).not.toHaveBeenCalled();
-            expect(fieldCallback_2).not.toHaveBeenCalled();
-            expect(doneCallback).not.toHaveBeenCalled();
-            done();
-          });
-        }));
+      expect(testObject.isPending()).toBe(true);
+      await wait(100);
+      expect(testObject.isPending()).toBe(false);
     });
   });
 
-  describe('testObject', () => {
-    let testObjectCopy;
+  describe('Callbacks', () => {
+    describe('When there are no remaining pending tests', () => {
+      it('Should run all callbacks', async () => {
+        const cb1 = jest.fn();
+        const cb2 = jest.fn();
+        const cb3 = jest.fn();
 
-    beforeEach(() => {
-      testObject.fail = jest.fn();
-      testObjectCopy = _.cloneDeep(testObject);
-    });
-
-    if (testCase === CASE_PASSING) {
-      it('Should keep test object unchanged except for status', () =>
-        new Promise<void>(done => {
-          runRunAsyncTest(testObject);
-          setTimeout(() => {
-            expect(testObject).toEqual(
-              Object.assign(testObjectCopy, { status: 'PASSING' })
-            );
-            done();
+        const suite = vest.create(() => {
+          vest.test('field_1', async () => {
+            await wait(100);
           });
-        }));
-
-      it('Should return without calling testObject.fail', () =>
-        new Promise<void>(done => {
-          runRunAsyncTest(testObject);
-          setTimeout(() => {
-            expect(testObject.fail).not.toHaveBeenCalled();
-            done();
+          vest.test('field_2', () => {});
+          vest.test('field_3', async () => {
+            await wait(50);
           });
-        }));
-    }
-
-    if (testCase === CASE_FAILING) {
-      it('Should call testObject.fail', () =>
-        new Promise<void>(done => {
-          runRunAsyncTest(testObject);
-          setTimeout(() => {
-            expect(testObject.fail).toHaveBeenCalled();
-            done();
-          });
-        }));
-
-      describe('When rejecting with a message', () => {
-        const rejectionString = 'rejection string';
-        beforeEach(() => {
-          testObject.asyncTest.catch(Function.prototype);
-          testObject.asyncTest = Promise.reject(rejectionString);
         });
 
-        it('Should set test message to rejection string', () =>
-          new Promise<void>(done => {
-            runRunAsyncTest(testObject);
-            setTimeout(() => {
-              expect(testObject.message).toBe(rejectionString);
-              done();
-            });
-          }));
+        suite().done(cb1).done(cb2).done('field_1', cb3);
+
+        expect(cb1).not.toHaveBeenCalled();
+        expect(cb2).not.toHaveBeenCalled();
+        expect(cb3).not.toHaveBeenCalled();
+        await wait(50);
+        expect(cb1).not.toHaveBeenCalled();
+        expect(cb2).not.toHaveBeenCalled();
+        expect(cb3).not.toHaveBeenCalled();
+        await wait(50);
+        expect(cb1).toHaveBeenCalled();
+        expect(cb2).toHaveBeenCalled();
+        expect(cb3).toHaveBeenCalled();
       });
-    }
+    });
+
+    describe('When there are remaining pending tests', () => {
+      it('Should only run callbacks for completed tests', async () => {
+        const cb1 = jest.fn();
+        const cb2 = jest.fn();
+        const cb3 = jest.fn();
+
+        const suite = vest.create(() => {
+          vest.test('field_1', async () => {
+            await wait(100);
+          });
+          vest.test('field_2', () => {});
+          vest.test('field_3', async () => {
+            await wait(50);
+          });
+        });
+
+        suite().done(cb1).done('field_2', cb2).done('field_3', cb3);
+
+        expect(cb1).not.toHaveBeenCalled();
+        expect(cb2).toHaveBeenCalled();
+        expect(cb3).not.toHaveBeenCalled();
+        await wait(50);
+        expect(cb1).not.toHaveBeenCalled();
+        expect(cb3).toHaveBeenCalled();
+        await wait(50);
+        expect(cb1).toHaveBeenCalled();
+        expect(cb2).toHaveBeenCalled();
+        expect(cb3).toHaveBeenCalled();
+      });
+    });
+
+    describe('When the test run was canceled', () => {
+      it('Should not run the callbacks', async () => {
+        const cb1 = jest.fn();
+        const cb2 = jest.fn();
+        const cb3 = jest.fn();
+
+        const testObject: Array<vest.VestTest> = [];
+
+        const suite = vest.create(() => {
+          testObject.push(
+            vest.test('field_1', async () => {
+              await wait(10);
+            })
+          );
+          vest.test('field_2', () => {});
+        });
+
+        suite().done(cb1).done(cb2).done('field_1', cb3);
+
+        expect(cb1).not.toHaveBeenCalled();
+        expect(cb2).not.toHaveBeenCalled();
+        expect(cb3).not.toHaveBeenCalled();
+
+        suite();
+
+        await wait(10);
+        expect(cb1).not.toHaveBeenCalled();
+        expect(cb2).not.toHaveBeenCalled();
+        expect(cb3).not.toHaveBeenCalled();
+      });
+    });
+  });
+  describe('Final test status', () => {
+    describe('When passing', () => {
+      it('Should set the test status to passing', async () => {
+        let testObject: void | vest.VestTest = undefined;
+        const suite = vest.create(() => {
+          testObject = vest.test('field_1', async () => {
+            await wait(100);
+          });
+        });
+        suite();
+
+        testObject = asVestTest(testObject);
+
+        expect(testObject.isPassing()).toBe(false);
+        await wait(100);
+        expect(testObject.isPassing()).toBe(true);
+      });
+    });
+    describe('When failing', () => {
+      it('Should set the test status to failing', async () => {
+        let testObject: void | vest.VestTest = undefined;
+        const suite = vest.create(() => {
+          testObject = vest.test('field_1', async () => {
+            throw new Error('');
+          });
+        });
+        suite();
+
+        testObject = asVestTest(testObject);
+
+        expect(testObject.isFailing()).toBe(false);
+        await wait(100);
+        expect(testObject.isFailing()).toBe(true);
+      });
+    });
+    describe('When warning', () => {
+      it('Should set the test status to failing', async () => {
+        let testObject: void | vest.VestTest = undefined;
+        const suite = vest.create(() => {
+          testObject = vest.test('field_1', async () => {
+            vest.warn();
+            throw new Error('');
+          });
+        });
+        suite();
+
+        testObject = asVestTest(testObject);
+
+        expect(testObject.isWarning()).toBe(false);
+        await wait(100);
+        expect(testObject.isWarning()).toBe(true);
+      });
+    });
   });
 });

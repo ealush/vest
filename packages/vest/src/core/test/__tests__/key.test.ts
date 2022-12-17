@@ -1,14 +1,16 @@
-import * as vest from 'vest';
-import { create, test, skipWhen } from 'vest';
+import { TDeferThrow } from 'vest-utils/src/deferThrow';
 
+import { TVestMock } from '../../../../testUtils/TVestMock';
 import mockThrowError from '../../../../testUtils/mockThrowError';
+
+import * as vest from 'vest';
 
 describe('key', () => {
   describe('When key is provided', () => {
     describe('When tests change their order between runs', () => {
       it('Should retain test results', () => {
         let count = 0;
-        const suite = create(() => {
+        const suite = vest.create(() => {
           /**
            * This test is pretty confusing, but its the most effective way to test this behavior.
            *
@@ -20,17 +22,17 @@ describe('key', () => {
            * skipWhen: to prevent running the tests so they have to get the previous state
            */
 
-          skipWhen(count === 1, () => {
+          vest.skipWhen(count === 1, () => {
             if (count === 0) {
-              test('field_1', () => false, 'field_1_key_1');
-              test('field_1', () => undefined, 'field_1_key_2');
-              test('field_2', () => false, 'field_2_key_1');
-              test('field_2', () => undefined, 'field_2_key_2');
+              vest.test('field_1', () => false, 'field_1_key_1');
+              vest.test('field_1', () => undefined, 'field_1_key_2');
+              vest.test('field_2', () => false, 'field_2_key_1');
+              vest.test('field_2', () => undefined, 'field_2_key_2');
             } else {
-              test('field_2', () => undefined, 'field_2_key_2');
-              test('field_2', () => false, 'field_2_key_1');
-              test('field_1', () => undefined, 'field_1_key_2');
-              test('field_1', () => false, 'field_1_key_1');
+              vest.test('field_2', () => undefined, 'field_2_key_2');
+              vest.test('field_2', () => false, 'field_2_key_1');
+              vest.test('field_1', () => undefined, 'field_1_key_2');
+              vest.test('field_1', () => false, 'field_1_key_1');
             }
           });
           count++;
@@ -45,17 +47,17 @@ describe('key', () => {
 
     describe('When two tests in two different isolates have the same key', () => {
       it('Should regarad each key as unique and retain each tests individual result', () => {
-        const calls = [];
-        const suite = create(() => {
-          const currentCall = [];
+        const calls: vest.VestTest[][] = [];
+        const suite = vest.create(() => {
+          const currentCall: vest.VestTest[] = [];
 
-          skipWhen(calls.length === 1, () => {
+          vest.skipWhen(calls.length === 1, () => {
             vest.group('group_1', () => {
-              currentCall.push(test('field1', () => false, 'key_1'));
+              currentCall.push(vest.test('field1', () => false, 'key_1'));
             });
 
             vest.group('group_2', () => {
-              currentCall.push(test('field2', () => false, 'key_1'));
+              currentCall.push(vest.test('field2', () => false, 'key_1'));
             });
           });
 
@@ -74,7 +76,7 @@ describe('key', () => {
     });
 
     describe('When tests without a key reorder get added above a test with a key', () => {
-      let vest;
+      let vest: TVestMock;
       beforeEach(() => {
         vest = mockThrowError().vest;
       });
@@ -83,9 +85,9 @@ describe('key', () => {
         jest.resetAllMocks();
       });
       it('Should retain keyd tests', () => {
-        const calls = [];
+        const calls: vest.VestTest[][] = [];
         const suite = vest.create(() => {
-          const currentCall = [];
+          const currentCall: vest.VestTest[] = [];
           vest.skipWhen(calls.length === 1, () => {
             if (calls.length === 1) {
               vest.test('reordered', () => false);
@@ -165,7 +167,7 @@ describe('key', () => {
     });
 
     describe('When the same key is encountered twice', () => {
-      let deferThrow, vest;
+      let deferThrow: TDeferThrow, vest: TVestMock;
       beforeEach(() => {
         const mock = mockThrowError();
 

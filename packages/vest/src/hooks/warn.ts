@@ -1,7 +1,7 @@
 import { invariant } from 'vest-utils';
 
-import context from 'ctx';
-import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
+import { ErrorStrings } from 'ErrorStrings';
+import { useCurrentTest } from 'SuiteContext';
 
 const ERROR_OUTSIDE_OF_TEST = __DEV__
   ? "warn hook called outside of a test callback. It won't have an effect."
@@ -10,10 +10,10 @@ const ERROR_OUTSIDE_OF_TEST = __DEV__
 /**
  * Sets a running test to warn only mode.
  */
-export default function warn(): void {
-  const ctx = context.useX('warn ' + ERROR_HOOK_CALLED_OUTSIDE);
+export function warn(): void {
+  const currentTest = useCurrentTest(ErrorStrings.HOOK_CALLED_OUTSIDE);
 
-  invariant(ctx.currentTest, ERROR_OUTSIDE_OF_TEST);
+  invariant(currentTest, ERROR_OUTSIDE_OF_TEST);
 
-  ctx.currentTest.warn();
+  currentTest.warn();
 }

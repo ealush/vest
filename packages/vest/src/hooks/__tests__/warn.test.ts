@@ -1,35 +1,29 @@
 import { faker } from '@faker-js/faker';
 
-import context from 'ctx';
-import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
+import { ErrorStrings } from 'ErrorStrings';
 import * as vest from 'vest';
 
 const { create, test, warn } = vest;
 
+function asVestTest(t: unknown): vest.VestTest {
+  return t as vest.VestTest;
+}
+
 describe('warn hook', () => {
   describe('When currentTest exists', () => {
     it('Should set warns to true', () => {
-      let beforeWarn, afterWarn;
+      let t;
       create(() => {
-        test(faker.lorem.word(), faker.lorem.sentence(), () => {
-          beforeWarn = context.useX().currentTest!.warns(); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+        t = test(faker.lorem.word(), faker.lorem.sentence(), () => {
           warn();
-          afterWarn = context.useX().currentTest!.warns(); // eslint-disable-line @typescript-eslint/no-non-null-assertion
         });
       })();
 
-      expect(beforeWarn).toBe(false);
-      expect(afterWarn).toBe(true);
+      expect(asVestTest(t).warns()).toBe(true);
     });
   });
 
   describe('Error handling', () => {
-    let warn, create;
-
-    beforeEach(() => {
-      ({ create, warn } = require('vest'));
-    });
-
     it('Should throw error when currentTest is not present', () => {
       const done = jest.fn();
       create(() => {
@@ -42,7 +36,7 @@ describe('warn hook', () => {
     });
 
     it('Should throw error when no suite present', () => {
-      expect(warn).toThrow(ERROR_HOOK_CALLED_OUTSIDE);
+      expect(warn).toThrow(ErrorStrings.HOOK_CALLED_OUTSIDE);
     });
   });
 });

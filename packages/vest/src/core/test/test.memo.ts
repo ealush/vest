@@ -1,45 +1,59 @@
-/* eslint-disable jest/valid-title */
-import { cache as createCache, isNull } from 'vest-utils';
+import { VestTest } from 'VestTest';
+import { VTest } from 'test';
+import { isNull } from 'vest-utils';
 
-import VestTest, { TestFn } from 'VestTest';
-import { useCursor } from 'isolateHooks';
-import registerPrevRunTest from 'registerPrevRunTest';
-import { useSuiteId } from 'stateHooks';
-import type { TestBase } from 'test';
+import {
+  useCurrentCursor,
+  useSuiteId,
+  useTestMemoCache,
+} from 'PersistedContext';
+import { TestFn } from 'TestTypes';
+import { testObjectIsolate } from 'testObjectIsolate';
 
-export default function testMemo(test: TestBase): TestMemo {
-  const cache = createCache<VestTest>(10); // arbitrary cache size
-
+export function wrapTestMemo(test: VTest): TestMemo {
   /**
    * Caches a test result based on the test's dependencies.
    */
   function memo(fieldName: string, ...args: ParametersWithoutMessage): VestTest;
   function memo(fieldName: string, ...args: ParametersWithMessage): VestTest;
   function memo(fieldName: string, ...args: ParamsOverload): VestTest {
-    const cursorAt = useCursor().current();
-
     const [deps, testFn, msg] = args.reverse() as [any[], TestFn, string];
 
-    // Implicit dependency for more specificity
-    const dependencies = [useSuiteId(), fieldName, cursorAt].concat(deps);
+    // Implicit dependency for better specificity
+    const dependencies = [useSuiteId(), fieldName, useCurrentCursor()].concat(
+      deps
+    );
 
-    const cached = cache.get(dependencies);
+    return getTestFromCache(dependencies, cacheAction);
 
-    if (isNull(cached)) {
-      // cache miss
-      return cache(dependencies, () => test(fieldName, msg, testFn));
+    function cacheAction() {
+      return test(fieldName, msg, testFn);
     }
-
-    if (cached[1].isCanceled()) {
-      // cache hit, but test is canceled
-      cache.invalidate(dependencies);
-      return cache(dependencies, () => test(fieldName, msg, testFn));
-    }
-
-    return registerPrevRunTest(cached[1]);
   }
 
   return memo;
+}
+
+function getTestFromCache(
+  dependencies: any[],
+  cacheAction: () => VestTest
+): VestTest {
+  const cache = useTestMemoCache();
+
+  const cached = cache.get(dependencies);
+
+  if (isNull(cached)) {
+    // cache miss
+    return cache(dependencies, cacheAction);
+  }
+
+  if (cached[1].isCanceled()) {
+    // cache hit, but test is canceled
+    cache.invalidate(dependencies);
+    return cache(dependencies, cacheAction);
+  }
+
+  return testObjectIsolate(cached[1]);
 }
 
 type TestMemo = {

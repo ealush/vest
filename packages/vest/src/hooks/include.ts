@@ -6,16 +6,17 @@ import {
   optionalFunctionValue,
 } from 'vest-utils';
 
-import ctx from 'ctx';
-import { produceSuiteResult, SuiteResult } from 'produceSuiteResult';
+import { useExclusion, useInclusion } from 'SuiteContext';
+import { SuiteResult } from 'SuiteResultTypes';
+import { suiteResult } from 'suiteResult';
 
-export default function include(fieldName: string): {
+export function include(fieldName: string): {
   when: (
     condition: string | boolean | ((draft: SuiteResult) => boolean)
   ) => void;
 } {
-  const context = ctx.useX();
-  const { inclusion, exclusion } = context;
+  const inclusion = useInclusion();
+  const exclusion = useExclusion();
 
   invariant(isStringValue(fieldName));
 
@@ -26,8 +27,8 @@ export default function include(fieldName: string): {
   function when(
     condition: string | ((draft: SuiteResult) => boolean) | boolean
   ): void {
-    const context = ctx.useX();
-    const { inclusion, exclusion } = context;
+    const inclusion = useInclusion();
+    const exclusion = useExclusion();
 
     // This callback will run as part of the "isExcluded" series of checks
     inclusion[fieldName] = (): boolean => {
@@ -44,7 +45,7 @@ export default function include(fieldName: string): {
 
       return optionalFunctionValue(
         condition,
-        optionalFunctionValue(produceSuiteResult)
+        optionalFunctionValue(suiteResult)
       );
     };
   }

@@ -7,72 +7,51 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "ctx": ["src/core/ctx/ctx.ts"],
-      "generateIsolate": ["src/core/isolate/generateIsolate.ts"],
+      "PersistedContext": ["src/core/context/PersistedContext.ts"],
+      "SuiteContext": ["src/core/context/SuiteContext.ts"],
+      "createIsolate": ["src/core/isolate/createIsolate.ts"],
+      "isIsolateType": ["src/core/isolate/isIsolateType.ts"],
       "isolate": ["src/core/isolate/isolate.ts"],
-      "isolateCursor": ["src/core/isolate/isolateCursor.ts"],
-      "isolateHooks": ["src/core/isolate/isolateHooks.ts"],
-      "each": ["src/core/isolate/isolates/each.ts"],
-      "group": ["src/core/isolate/isolates/group.ts"],
-      "omitWhen": ["src/core/isolate/isolates/omitWhen.ts"],
-      "skipWhen": ["src/core/isolate/isolates/skipWhen.ts"],
       "IsolateTypes": ["src/core/isolate/IsolateTypes.ts"],
-      "createStateRef": ["src/core/state/createStateRef.ts"],
-      "stateHooks": ["src/core/state/stateHooks.ts"],
-      "create": ["src/core/suite/create.ts"],
-      "hasRemainingTests": ["src/core/suite/hasRemainingTests.ts"],
-      "produceSuiteResult": ["src/core/suite/produce/produceSuiteResult.ts"],
-      "produceSuiteRunResult": [
-        "src/core/suite/produce/produceSuiteRunResult.ts"
-      ],
-      "runCallbacks": ["src/core/suite/produce/runCallbacks.ts"],
-      "Severity": ["src/core/suite/produce/Severity.ts"],
-      "genTestsSummary": [
-        "src/core/suite/produce/summaryGenerators/genTestsSummary.ts"
-      ],
-      "hasFailuresByTestObjects": [
-        "src/core/suite/produce/summaryGenerators/hasFailuresByTestObjects.ts"
-      ],
-      "matchingFieldName": [
-        "src/core/suite/produce/summaryGenerators/helpers/matchingFieldName.ts"
-      ],
-      "matchingGroupName": [
-        "src/core/suite/produce/summaryGenerators/helpers/matchingGroupName.ts"
-      ],
-      "nonMatchingSeverityProfile": [
-        "src/core/suite/produce/summaryGenerators/helpers/nonMatchingSeverityProfile.ts"
-      ],
-      "shouldAddValidProperty": [
-        "src/core/suite/produce/summaryGenerators/shouldAddValidProperty.ts"
-      ],
-      "SuiteSummaryTypes": [
-        "src/core/suite/produce/summaryGenerators/SuiteSummaryTypes.ts"
-      ],
-      "collectFailures": [
-        "src/core/suite/produce/summarySelectors/collectFailures.ts"
-      ],
-      "suiteSelectors": [
-        "src/core/suite/produce/summarySelectors/suiteSelectors.ts"
-      ],
-      "key": ["src/core/test/key.ts"],
       "cancelOverriddenPendingTest": [
-        "src/core/test/lib/cancelOverriddenPendingTest.ts"
+        "src/core/isolate/reconciler/cancelOverriddenPendingTest.ts"
       ],
-      "isSameProfileTest": ["src/core/test/lib/isSameProfileTest.ts"],
-      "registerPrevRunTest": ["src/core/test/lib/registerPrevRunTest.ts"],
-      "registerTest": ["src/core/test/lib/registerTest.ts"],
-      "removeTestFromState": ["src/core/test/lib/removeTestFromState.ts"],
-      "shouldUseErrorAsMessage": [
-        "src/core/test/lib/shouldUseErrorAsMessage.ts"
+      "isSameProfileTest": ["src/core/isolate/reconciler/isSameProfileTest.ts"],
+      "getIsolateTest": [
+        "src/core/isolate/reconciler/VestReconciler/getIsolateTest.ts"
       ],
-      "useTestAtCursor": ["src/core/test/lib/useTestAtCursor.ts"],
-      "omitOptionalFields": ["src/core/test/omitOptionalFields.ts"],
-      "runAsyncTest": ["src/core/test/runAsyncTest.ts"],
-      "runSyncTest": ["src/core/test/runSyncTest.ts"],
+      "handleCollision": [
+        "src/core/isolate/reconciler/VestReconciler/handleCollision.ts"
+      ],
+      "handleTestNodeWithKey": [
+        "src/core/isolate/reconciler/VestReconciler/handleTestNodeWithKey.ts"
+      ],
+      "testHasKey": [
+        "src/core/isolate/reconciler/VestReconciler/testHasKey.ts"
+      ],
+      "vestReconciler": [
+        "src/core/isolate/reconciler/VestReconciler/vestReconciler.ts"
+      ],
+      "walker": ["src/core/isolate/walker.ts"],
+      "SuiteWalker": ["src/core/SuiteWalker/SuiteWalker.ts"],
+      "asVestTest": ["src/core/test/helpers/asVestTest.ts"],
+      "matchingFieldName": ["src/core/test/helpers/matchingFieldName.ts"],
+      "matchingGroupName": ["src/core/test/helpers/matchingGroupName.ts"],
+      "nonMatchingSeverityProfile": [
+        "src/core/test/helpers/nonMatchingSeverityProfile.ts"
+      ],
+      "shouldUseErrorMessage": [
+        "src/core/test/helpers/shouldUseErrorMessage.ts"
+      ],
       "test.memo": ["src/core/test/test.memo.ts"],
       "test": ["src/core/test/test.ts"],
+      "runTest": ["src/core/test/testLevelFlowControl/runTest.ts"],
+      "verifyTestRun": ["src/core/test/testLevelFlowControl/verifyTestRun.ts"],
+      "testObjectIsolate": ["src/core/test/testObjectIsolate.ts"],
+      "TestTypes": ["src/core/test/TestTypes.ts"],
       "VestTest": ["src/core/test/VestTest.ts"],
-      "vestBus": ["src/core/vestBus.ts"],
+      "VestBus": ["src/core/VestBus/VestBus.ts"],
+      "ErrorStrings": ["src/errors/ErrorStrings.ts"],
       "classnames": ["src/exports/classnames.ts"],
       "enforce@compose": ["src/exports/enforce@compose.ts"],
       "enforce@compounds": ["src/exports/enforce@compounds.ts"],
@@ -80,12 +59,40 @@
       "parser": ["src/exports/parser.ts"],
       "promisify": ["src/exports/promisify.ts"],
       "exclusive": ["src/hooks/exclusive.ts"],
-      "hookErrors": ["src/hooks/hookErrors.ts"],
       "include": ["src/hooks/include.ts"],
-      "mode": ["src/hooks/mode/mode.ts"],
-      "Modes": ["src/hooks/mode/Modes.ts"],
-      "optionalFields": ["src/hooks/optionalFields.ts"],
+      "mode": ["src/hooks/mode.ts"],
+      "optional": ["src/hooks/optional/optional.ts"],
+      "OptionalTypes": ["src/hooks/optional/OptionalTypes.ts"],
       "warn": ["src/hooks/warn.ts"],
+      "each": ["src/isolates/each.ts"],
+      "group": ["src/isolates/group.ts"],
+      "omitWhen": ["src/isolates/omitWhen.ts"],
+      "skipWhen": ["src/isolates/skipWhen.ts"],
+      "createSuite": ["src/suite/createSuite.ts"],
+      "runCallbacks": ["src/suite/runCallbacks.ts"],
+      "deferDoneCallback": ["src/suiteResult/done/deferDoneCallback.ts"],
+      "shouldRunDoneCallback": [
+        "src/suiteResult/done/shouldRunDoneCallback.ts"
+      ],
+      "shouldSkipDoneRegistration": [
+        "src/suiteResult/done/shouldSkipDoneRegistration.ts"
+      ],
+      "collectFailures": ["src/suiteResult/selectors/collectFailures.ts"],
+      "hasFailuresByTestObjects": [
+        "src/suiteResult/selectors/hasFailuresByTestObjects.ts"
+      ],
+      "produceSuiteSummary": [
+        "src/suiteResult/selectors/produceSuiteSummary.ts"
+      ],
+      "shouldAddValidProperty": [
+        "src/suiteResult/selectors/shouldAddValidProperty.ts"
+      ],
+      "suiteSelectors": ["src/suiteResult/selectors/suiteSelectors.ts"],
+      "Severity": ["src/suiteResult/Severity.ts"],
+      "suiteResult": ["src/suiteResult/suiteResult.ts"],
+      "SuiteResultTypes": ["src/suiteResult/SuiteResultTypes.ts"],
+      "suiteRunResult": ["src/suiteResult/suiteRunResult.ts"],
+      "vest-5": ["src/vest-5.ts"],
       "vest": ["src/vest.ts"]
     }
   }

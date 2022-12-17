@@ -1,12 +1,13 @@
-import { create, skipWhen } from 'vest';
-
+import { TVestMock } from '../../../../testUtils/TVestMock';
 import mockThrowError from '../../../../testUtils/mockThrowError';
 import { dummyTest } from '../../../../testUtils/testDummy';
 
+import * as vest from 'vest';
+
 describe('Merging of previous test runs', () => {
-  let suite;
+  let suite: vest.Suite<(...args: any[]) => void>;
   let counter = 0;
-  let testContainer = [];
+  let testContainer: vest.VestTest[][] = [];
 
   beforeEach(() => {
     counter = 0;
@@ -14,8 +15,8 @@ describe('Merging of previous test runs', () => {
   });
   describe('When test skipped in subsequent run', () => {
     it('Should merge its result from previous runs', () => {
-      suite = create(() => {
-        skipWhen(counter === 1, () => {
+      suite = vest.create(() => {
+        vest.skipWhen(counter === 1, () => {
           testContainer.push([
             dummyTest.failing('f1'),
             dummyTest.failing('f2'),
@@ -42,10 +43,10 @@ describe('Merging of previous test runs', () => {
 
   describe('When test changes in subsequent run', () => {
     it('Should update the result accordingly', () => {
-      suite = create(() => {
-        testContainer.push(
-          counter === 0 ? dummyTest.passing('f1') : dummyTest.failing('f1')
-        );
+      suite = vest.create(() => {
+        testContainer.push([
+          counter === 0 ? dummyTest.passing('f1') : dummyTest.failing('f1'),
+        ]);
 
         dummyTest.failing('f2');
         counter++;
@@ -72,7 +73,7 @@ describe('Merging of previous test runs', () => {
   });
 
   describe('When tests are passed in a different order between runs', () => {
-    let deferThrow, vest;
+    let deferThrow: (message: string) => void, vest: TVestMock;
     beforeEach(() => {
       const mock = mockThrowError();
       deferThrow = mock.deferThrow;
@@ -84,11 +85,12 @@ describe('Merging of previous test runs', () => {
     });
 
     it('Should defer-throw an error', () => {
-      const { create, test } = vest;
-      suite = create(() => {
-        testContainer.push(
-          counter === 0 ? test('f1', jest.fn()) : test('f2', () => false)
-        );
+      suite = vest.create(() => {
+        testContainer.push([
+          counter === 0
+            ? vest.test('f1', jest.fn())
+            : vest.test('f2', () => false),
+        ]);
         counter++;
       });
 
@@ -106,13 +108,12 @@ describe('Merging of previous test runs', () => {
 
     describe('When test is omitted in subsequent run', () => {
       it('Should omit the test from the results', () => {
-        const { create, test } = vest;
-        suite = create(() => {
-          test('f1', () => false);
+        suite = vest.create(() => {
+          vest.test('f1', () => false);
           if (counter === 0) {
-            test('f2', () => false);
+            vest.test('f2', () => false);
           }
-          test('f3', () => false);
+          vest.test('f3', () => false);
           counter++;
         });
 
@@ -179,20 +180,19 @@ describe('Merging of previous test runs', () => {
 
       describe('When multiple tests are omitted between a test', () => {
         it('Should omit the tests from the results', () => {
-          const { create, test } = vest;
-          suite = create(() => {
-            test('f1', () => false);
+          suite = vest.create(() => {
+            vest.test('f1', () => false);
             if (counter === 0) {
-              test('f2', () => false);
-              test('f3', () => false);
+              vest.test('f2', () => false);
+              vest.test('f3', () => false);
             }
-            test('f4', () => false);
+            vest.test('f4', () => false);
             if (counter === 0) {
-              test('f5', () => false);
-              test('f6', () => false);
-              test('f7', () => false);
+              vest.test('f5', () => false);
+              vest.test('f6', () => false);
+              vest.test('f7', () => false);
             }
-            test('f4', () => false);
+            vest.test('f4', () => false);
             counter++;
           });
 
@@ -307,20 +307,18 @@ describe('Merging of previous test runs', () => {
 
       describe('When tests are added inbetween tests', () => {
         it('Should remove next tests in line', () => {
-          const { create, test, skipWhen } = vest;
-
-          const suite = create(() => {
-            test('f1', () => false);
+          const suite = vest.create(() => {
+            vest.test('f1', () => false);
             if (counter === 1) {
-              test('f2', () => false);
-              test('f3', () => false);
+              vest.test('f2', () => false);
+              vest.test('f3', () => false);
             }
 
-            skipWhen(
+            vest.skipWhen(
               () => counter === 1,
               () => {
-                test('f4', () => false);
-                test('f5', () => false);
+                vest.test('f4', () => false);
+                vest.test('f5', () => false);
               }
             );
             counter++;

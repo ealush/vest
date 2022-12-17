@@ -1,6 +1,7 @@
 /* eslint-disable jest/valid-title */
 import { faker } from '@faker-js/faker';
-import { test, warn } from 'vest';
+
+import { test as vestTest, warn } from 'vest';
 
 /**
  * Generates dummy vest tests.
@@ -11,11 +12,11 @@ const testDummy = () => {
     message: string = faker.random.words(),
     groupName?: string
   ) => {
-    const to = test(
+    const to = vestTest(
       name,
       message,
       jest.fn(() => {
-        return false;
+        throw new Error();
       })
     );
 
@@ -31,12 +32,12 @@ const testDummy = () => {
     message = faker.random.words(),
     groupName?: string
   ) => {
-    const to = test(
+    const to = vestTest(
       name,
       message,
       jest.fn(() => {
         warn();
-        return false;
+        throw new Error();
       })
     );
 
@@ -52,7 +53,7 @@ const testDummy = () => {
     message = faker.random.words(),
     groupName?: string
   ) => {
-    const to = test(name, message, jest.fn());
+    const to = vestTest(name, message, jest.fn());
 
     if (groupName) {
       to.groupName = groupName;
@@ -66,7 +67,7 @@ const testDummy = () => {
     message = faker.random.words(),
     groupName?: string
   ) => {
-    const to = test(
+    const to = vestTest(
       name,
       message,
       jest.fn(() => {
@@ -83,7 +84,7 @@ const testDummy = () => {
     name = faker.random.word(),
     { message = faker.random.words(), time = 0 } = {}
   ) =>
-    test(
+    vestTest(
       name,
       message,
       jest.fn(
@@ -98,7 +99,7 @@ const testDummy = () => {
     name = faker.random.word(),
     { message = faker.random.words(), time = 0 } = {}
   ) =>
-    test(
+    vestTest(
       name,
       message,
       jest.fn(() => {
@@ -113,7 +114,7 @@ const testDummy = () => {
     name = faker.random.word(),
     { message = faker.random.words(), time = 0 } = {}
   ) =>
-    test(
+    vestTest(
       name,
       message,
       jest.fn(
@@ -128,7 +129,7 @@ const testDummy = () => {
     name = faker.random.word(),
     { message = faker.random.words(), time = 0 } = {}
   ) =>
-    test(
+    vestTest(
       name,
       message,
       jest.fn(() => {

@@ -5,9 +5,9 @@ import {
   optionalFunctionValue,
 } from 'vest-utils';
 
-import VestTest from 'VestTest';
-import ctx from 'ctx';
-import { ERROR_HOOK_CALLED_OUTSIDE } from 'hookErrors';
+import { ErrorStrings } from 'ErrorStrings';
+import { useExclusion, useInclusion } from 'SuiteContext';
+import { VestTest } from 'VestTest';
 import { isExcludedIndividually } from 'skipWhen';
 
 type ExclusionItem = string | string[] | undefined;
@@ -48,10 +48,8 @@ export function isExcluded(testObject: VestTest): boolean {
 
   if (isExcludedIndividually()) return true;
 
-  const context = ctx.useX();
-
-  const exclusion = context.exclusion;
-  const inclusion = context.inclusion;
+  const exclusion = useExclusion();
+  const inclusion = useInclusion();
   const keyTests = exclusion.tests;
   const testValue = keyTests[fieldName];
 
@@ -100,8 +98,7 @@ export function isExcluded(testObject: VestTest): boolean {
  * Checks whether a given group is excluded from running.
  */
 export function isGroupExcluded(groupName: string): boolean {
-  const context = ctx.useX();
-  const exclusion = context.exclusion;
+  const exclusion = useExclusion();
   const keyGroups = exclusion.groups;
 
   const groupPresent = hasOwnProperty(keyGroups, groupName);
@@ -126,7 +123,7 @@ function addTo(
   itemType: 'tests' | 'groups',
   item: ExclusionItem
 ) {
-  const context = ctx.useX(ERROR_HOOK_CALLED_OUTSIDE);
+  const exclusion = useExclusion(ErrorStrings.HOOK_CALLED_OUTSIDE);
 
   if (!item) {
     return;
@@ -137,8 +134,7 @@ function addTo(
       return;
     }
 
-    context.exclusion[itemType][itemName] =
-      exclusionGroup === ExclusionGroup.ONLY;
+    exclusion[itemType][itemName] = exclusionGroup === ExclusionGroup.ONLY;
   });
 }
 
@@ -165,8 +161,7 @@ function isTopLevelWhenThereIsAnIncludedGroup(groupName?: string): boolean {
 }
 
 function hasIncludedGroups(): boolean {
-  const context = ctx.useX();
-  const exclusion = context.exclusion;
+  const exclusion = useExclusion();
 
   for (const group in exclusion.groups) {
     if (exclusion.groups[group]) {

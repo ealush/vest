@@ -1,5 +1,7 @@
 import wait from 'wait';
 
+import { TestPromise } from '../../../../testUtils/testPromise';
+
 import promisify from 'promisify';
 import * as vest from 'vest';
 import { test as vestTest, enforce } from 'vest';
@@ -8,7 +10,7 @@ describe('test.memo', () => {
   describe('cache hit', () => {
     it('Should return without calling callback', () => {
       const cb1 = jest.fn();
-      const cb2 = jest.fn(() => new Promise<void>(() => undefined));
+      const cb2 = jest.fn(() => TestPromise(() => undefined));
       const suite = vest.create(() => {
         vestTest.memo('f1', cb1, [1]);
         vestTest.memo('f1', cb2, [2]);
@@ -112,7 +114,7 @@ describe('test.memo', () => {
     describe('Test is canceled', () => {
       it('Should refresh', async () => {
         let count = 0;
-        const tests = [];
+        const tests: vest.VestTest[] = [];
         const suite = vest.create(() => {
           count++;
 

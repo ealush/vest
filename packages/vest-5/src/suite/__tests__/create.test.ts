@@ -2,6 +2,7 @@ import faker from 'faker';
 import { noop } from 'lodash';
 
 import { dummyTest } from '../../../testUtils/testDummy';
+import { TestPromise } from '../../../testUtils/testPromise';
 
 import { create } from 'vest';
 
@@ -41,7 +42,7 @@ describe('Test createSuite module', () => {
 
   describe('When returned function is invoked', () => {
     it('Calls `tests` argument', () =>
-      new Promise<void>(done => {
+      TestPromise(done => {
         const validate = create(() => {
           done();
         });

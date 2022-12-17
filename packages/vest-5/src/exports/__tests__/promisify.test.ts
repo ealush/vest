@@ -1,6 +1,7 @@
 import faker from 'faker';
 
 import { dummyTest } from '../../../testUtils/testDummy';
+import { TestPromise } from '../../../testUtils/testPromise';
 import promisify from '../promisify';
 
 import * as vest from 'vest';
@@ -28,7 +29,7 @@ describe('Utility: promisify', () => {
     });
 
     it('should be a promise', () =>
-      new Promise<void>(done => {
+      TestPromise(done => {
         const res = validateAsync();
         expect(typeof res?.then).toBe('function');
         res.then(() => done());
@@ -37,7 +38,7 @@ describe('Utility: promisify', () => {
 
   describe('When returned function is invoked', () => {
     it('Calls `validatorFn` argument', () =>
-      new Promise<void>(done => {
+      TestPromise(done => {
         const validateAsync = promisify(vest.create(() => done()));
         validateAsync();
       }));
@@ -57,7 +58,7 @@ describe('Utility: promisify', () => {
 
   describe('Initial run', () => {
     it('Produces correct validation', () =>
-      new Promise<void>(done => {
+      TestPromise(done => {
         const validate = vest.create(() => {
           dummyTest.failing('field_0');
           dummyTest.failingAsync('field_1');

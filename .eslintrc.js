@@ -43,6 +43,7 @@ module.exports = {
       rules: {
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/explicit-module-boundary-types': 'off',
+        '@typescript-eslint/no-unused-vars': 'warn',
       },
     },
     {
@@ -97,6 +98,7 @@ module.exports = {
     'no-undef': 2,
     'no-unneeded-ternary': 2,
     'no-unused-expressions': 2,
+    'no-unused-vars': 0,
     'no-useless-catch': 2,
     'no-useless-computed-key': 2,
     'no-useless-return': 2,
@@ -104,6 +106,7 @@ module.exports = {
     'no-warning-comments': 1,
     'object-shorthand': [2, 'always', { avoidQuotes: true }],
     'prefer-const': 2,
+
     'sort-keys': [
       1,
       'asc',

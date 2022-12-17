@@ -114,7 +114,7 @@ describe('test.memo', () => {
     describe('Test is canceled', () => {
       it('Should refresh', async () => {
         let count = 0;
-        const tests = [];
+        const tests: vest.VestTest[] = [];
         const suite = vest.create(() => {
           count++;
 

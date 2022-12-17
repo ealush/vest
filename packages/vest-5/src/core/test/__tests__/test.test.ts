@@ -2,9 +2,9 @@ import faker from 'faker';
 
 import { TestPromise } from '../../../../testUtils/testPromise';
 
-import { create, test, warn, enforce } from 'vest';
+import { create, test, warn, enforce, VestTest } from 'vest';
 
-let testObject;
+let testObject: VestTest;
 
 describe("Test Vest's `test` function", () => {
   describe('test callbacks', () => {
@@ -27,6 +27,7 @@ describe("Test Vest's `test` function", () => {
           });
         })();
         expect(testObject.status).toBe('FAILED');
+        // @ts-ignore - very much intentional
         expect(testObject == false).toBe(true); //eslint-disable-line
       });
 
@@ -35,6 +36,7 @@ describe("Test Vest's `test` function", () => {
           test(faker.random.word(), faker.lorem.sentence(), () => false);
         })();
         expect(testObject.status).toBe('FAILED');
+        // @ts-ignore - very much intentional
         expect(testObject == false).toBe(true); //eslint-disable-line
       });
 
@@ -129,7 +131,7 @@ describe("Test Vest's `test` function", () => {
   });
 
   describe('test params', () => {
-    let testObject;
+    let testObject: VestTest;
     it('creates a test without a message and without a key', () => {
       create(() => {
         testObject = test('field_name', () => undefined);

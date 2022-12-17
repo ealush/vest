@@ -2,7 +2,13 @@ import * as vest from 'vest';
 import { omitWhen, only } from 'vest';
 
 describe('omitWhen', () => {
-  let suite, cb1, cb2, cb3, cb4, cb5, allFieldsPass;
+  let suite: vest.Suite<(...args: any[]) => void>;
+  let cb1 = jest.fn(),
+    cb2 = jest.fn(),
+    cb3 = jest.fn(),
+    cb4 = jest.fn(),
+    cb5 = jest.fn(),
+    allFieldsPass: boolean | undefined;
 
   beforeEach(() => {
     cb1 = jest.fn();
@@ -161,7 +167,7 @@ describe('omitWhen', () => {
   });
 
   describe('nested calls', () => {
-    let suite;
+    let suite: vest.Suite<(...args: any[]) => void>;
 
     describe('omitted in non-omitted', () => {
       beforeEach(() => {

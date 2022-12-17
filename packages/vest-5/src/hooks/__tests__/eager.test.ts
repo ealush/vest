@@ -1,9 +1,10 @@
 import { dummyTest } from '../../../testUtils/testDummy';
 
+import * as vest from 'vest';
 import { create, eager, only, group } from 'vest';
 
 describe('mode: eager', () => {
-  let suite;
+  let suite: vest.Suite<(...args: any[]) => void>;
 
   describe('When tests fail', () => {
     beforeEach(() => {

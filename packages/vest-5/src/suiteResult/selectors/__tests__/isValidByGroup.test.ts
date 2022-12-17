@@ -2,6 +2,7 @@ import wait from 'wait';
 
 import { TestPromise } from '../../../../testUtils/testPromise';
 
+import * as vest from 'vest';
 import {
   test,
   optional,
@@ -29,7 +30,7 @@ describe('isValidByGroup', () => {
   });
 
   describe('When there are errors in the group', () => {
-    let suite;
+    let suite: vest.Suite<(...args: any[]) => void>;
 
     beforeEach(() => {
       suite = create((fieldToSkip: string) => {
@@ -69,7 +70,7 @@ describe('isValidByGroup', () => {
   });
 
   describe('When there are warnings in the group', () => {
-    let suite;
+    let suite: vest.Suite<(...args: any[]) => void>;
 
     beforeEach(() => {
       suite = create(() => {
@@ -121,7 +122,7 @@ describe('isValidByGroup', () => {
   });
 
   describe('When a non optional field is skipped', () => {
-    let suite;
+    let suite: vest.Suite<(...args: any[]) => void>;
 
     beforeEach(() => {
       suite = create(fieldToSkip => {
@@ -150,7 +151,7 @@ describe('isValidByGroup', () => {
   });
 
   describe('When the suite has an async optional test', () => {
-    let suite;
+    let suite: vest.Suite<(...args: any[]) => void>;
 
     beforeEach(() => {
       suite = create(() => {
@@ -182,7 +183,7 @@ describe('isValidByGroup', () => {
   });
 
   describe('When the suite has warning async tests', () => {
-    let suite;
+    let suite: vest.Suite<(...args: any[]) => void>;
 
     beforeEach(() => {
       suite = create(() => {
@@ -215,7 +216,7 @@ describe('isValidByGroup', () => {
   });
 
   describe('When the suite has async non-optional tests', () => {
-    let suite;
+    let suite: vest.Suite<(...args: any[]) => void>;
 
     beforeEach(() => {
       suite = create(currentField => {
@@ -265,7 +266,7 @@ describe('isValidByGroup', () => {
   });
 
   describe('When a all required fields are passing', () => {
-    let suite;
+    let suite: vest.Suite<(...args: any[]) => void>;
 
     beforeEach(() => {
       suite = create(() => {

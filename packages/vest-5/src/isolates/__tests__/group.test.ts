@@ -57,7 +57,8 @@ describe('group: exclusion', () => {
         });
       }
     );
-  let res, suite;
+  let res: vest.SuiteRunResult;
+  let suite: vest.Suite<(...args: any[]) => void>;
 
   beforeEach(() => {
     groupName = faker.random.word();
@@ -221,7 +222,7 @@ describe('group: exclusion', () => {
 });
 
 describe('group: base case', () => {
-  let inGroup, outsideGroup;
+  let inGroup: VestTest, outsideGroup: VestTest;
   const validation = () =>
     vest.create(() => {
       dummyTest.failing('field_1');
@@ -241,7 +242,7 @@ describe('group: base case', () => {
 
       outsideGroup = dummyTest.failing('last');
     });
-  let res;
+  let res: vest.SuiteRunResult;
   beforeEach(() => {
     groupName = faker.random.word();
     const suite = validation();

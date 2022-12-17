@@ -1,5 +1,6 @@
 /* eslint-disable jest/valid-title */
 import { faker } from '@faker-js/faker';
+
 import { test as vestTest, warn } from 'vest';
 
 /**
@@ -152,3 +153,5 @@ const testDummy = () => {
 };
 
 export const dummyTest = testDummy();
+
+export type TDummyTest = typeof dummyTest;

@@ -7,8 +7,8 @@ import promisify from '../promisify';
 import * as vest from 'vest';
 
 describe('Utility: promisify', () => {
-  let validatorFn;
-  let validateAsync;
+  let validatorFn: jest.Mock<vest.SuiteRunResult, any>;
+  let validateAsync: (...args: any[]) => Promise<vest.SuiteResult>;
 
   beforeEach(() => {
     validatorFn = jest.fn(vest.create(jest.fn()));

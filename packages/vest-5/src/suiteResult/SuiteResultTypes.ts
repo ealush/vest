@@ -29,9 +29,12 @@ export type GetFailuresResponse = FailureMessages | string[];
 
 export type FailureMessages = Record<string, string[]>;
 
-export type SuiteResult = SuiteSummary & SuiteSelectors;
+export type SuiteResult = SuiteSummary &
+  SuiteSelectors & { suiteName: SuiteName };
 
 export type SuiteRunResult = SuiteResult & { done: Done };
+
+export type SuiteName = string | undefined;
 
 export interface Done {
   (...args: [cb: (res: SuiteResult) => void]): SuiteRunResult;

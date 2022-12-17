@@ -43,16 +43,8 @@ function baseConfig() {
         'ts-jest',
         {
           diagnostics: {
-            // Essentially ignoring "any" errors in TESTS
-            ignoreCodes: [
-              'TS7005',
-              'TS7006',
-              'TS7016',
-              'TS7034',
-              'TS7053',
-              'TS7031',
-              'TS2339',
-            ],
+            // Property '__DEV__' does not exist on type 'typeof globalThis'
+            ignoreCodes: ['TS2339'],
           },
         },
       ],

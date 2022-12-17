@@ -1,4 +1,4 @@
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import { noop } from 'lodash';
 
 import { dummyTest } from '../../../testUtils/testDummy';
@@ -19,6 +19,7 @@ describe('Test createSuite module', () => {
     it.each([faker.random.word(), null, undefined, 0, 1, true, false, NaN, ''])(
       'Throws an error when `tests` callback is not a function',
       value => {
+        // @ts-expect-error - testing invalid input
         expect(() => create(value)).toThrow(
           'vest.create: Expected callback to be a function.'
         );

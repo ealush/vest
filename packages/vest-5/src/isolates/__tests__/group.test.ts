@@ -1,4 +1,4 @@
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import _ from 'lodash';
 import { enforce } from 'n4s';
 

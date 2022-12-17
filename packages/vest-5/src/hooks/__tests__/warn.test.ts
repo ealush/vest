@@ -1,4 +1,4 @@
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 
 import { ErrorStrings } from 'ErrorStrings';
 import * as vest from 'vest';

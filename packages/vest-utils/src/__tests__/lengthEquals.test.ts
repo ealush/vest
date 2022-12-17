@@ -1,4 +1,4 @@
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 
 import { lengthEquals } from 'lengthEquals';
 
@@ -46,10 +46,12 @@ describe('Tests lengthEquals rule', () => {
     });
 
     it('Should return false for number argument', () => {
-      expect(lengthEquals(length, 0)).toBe(false);
+      // @ts-expect-error - testing wrong input
+      expect(lengthEquals(100, 0)).toBe(false);
     });
 
     it('Should return false for boolean argument', () => {
+      // @ts-expect-error - testing wrong input
       expect(lengthEquals(boolean, 0)).toBe(false);
     });
   });

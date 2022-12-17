@@ -1,5 +1,5 @@
 /* eslint-disable jest/valid-title */
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import { test as vestTest, warn } from 'vest';
 
 /**

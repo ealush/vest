@@ -1,5 +1,5 @@
 import VestTest from 'VestTest';
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import group from 'group';
 import _ from 'lodash';
 import matchingGroupName from 'matchingGroupName';

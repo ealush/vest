@@ -1,4 +1,4 @@
-import { random, datatype } from 'faker';
+import { random, datatype } from '@faker-js/faker';
 import { sample } from 'lodash';
 
 import { equals } from 'equals';

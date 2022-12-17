@@ -3,3 +3,5 @@ export default function deferThrow(message?: string): void {
     throw new Error(message);
   }, 0);
 }
+
+export type TDeferThrow = typeof deferThrow;

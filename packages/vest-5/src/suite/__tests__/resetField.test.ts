@@ -1,7 +1,8 @@
+import * as vest from 'vest';
 import { create, test } from 'vest';
 
 describe('suite.resetField', () => {
-  let suite;
+  let suite: vest.Suite<(...args: any[]) => void>;
 
   beforeEach(() => {
     suite = create(() => {

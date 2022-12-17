@@ -1,11 +1,12 @@
-import { random, datatype } from 'faker';
+import { faker } from '@faker-js/faker';
 
 import { numberEquals } from 'numberEquals';
 
-describe('Tests numberEquals rule', () => {
-  let arg0;
+const { random, datatype } = faker;
 
+describe('Tests numberEquals rule', () => {
   describe('Arguments are numbers', () => {
+    let arg0: number;
     beforeEach(() => {
       arg0 = datatype.number();
     });
@@ -30,9 +31,15 @@ describe('Tests numberEquals rule', () => {
   });
 
   describe('Arguments are numeric strings', () => {
+    let arg0: string;
+
+    beforeEach(() => {
+      arg0 = datatype.number().toString();
+    });
+
     describe('When first argument is larger', () => {
       it('Should return false', () => {
-        expect(numberEquals(`${arg0}`, `${arg0 - 1}`)).toBe(false);
+        expect(numberEquals(`${arg0}`, `${Number(arg0) - 1}`)).toBe(false);
       });
     });
 
@@ -44,7 +51,7 @@ describe('Tests numberEquals rule', () => {
 
     describe('When values are equal', () => {
       it('Should return true', () => {
-        expect(numberEquals(arg0, arg0)).toBe(true);
+        expect(numberEquals('100', '100')).toBe(true);
       });
     });
   });
@@ -52,6 +59,7 @@ describe('Tests numberEquals rule', () => {
   describe('Arguments are non numeric', () => {
     [random.word(), `${datatype.number()}`.split(''), {}].forEach(element => {
       it('Should return false', () => {
+        // @ts-expect-error - testing invalid input
         expect(numberEquals(element, 0)).toBe(false);
       });
     });

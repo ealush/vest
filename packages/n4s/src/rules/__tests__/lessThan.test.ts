@@ -1,4 +1,4 @@
-import { random, datatype } from 'faker';
+import { random, datatype } from '@faker-js/faker';
 
 import { lessThan } from 'lessThan';
 

@@ -46,10 +46,12 @@ describe('Tests longerThanOrEquals rule', () => {
     });
 
     it('Should return false for number argument', () => {
+      // @ts-expect-error - testing invalid input
       expect(longerThanOrEquals(length, 0)).toBe(false);
     });
 
     it('Should return false for boolean argument', () => {
+      // @ts-expect-error - testing invalid input
       expect(longerThanOrEquals(boolean, 0)).toBe(false);
     });
   });

@@ -1,13 +1,15 @@
-import { random, datatype } from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import { sample } from 'lodash';
 
 import { equals } from 'equals';
 
+const { random, datatype } = faker;
+
 const VALUES = [
   random.word(),
   datatype.number(),
-  { [random.objectElement()]: random.word() },
-  [random.arrayElement()],
+  { [random.alpha()]: random.word() },
+  [datatype.number()],
   datatype.boolean(),
 ];
 
@@ -29,6 +31,7 @@ describe('Equals rule', () => {
 
       // consistently produce a different value
       while (sampled === value) {
+        // @ts-expect-error - testing different types of values
         sampled = sample(VALUES);
       }
 

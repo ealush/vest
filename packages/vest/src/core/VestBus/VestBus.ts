@@ -1,8 +1,9 @@
-import { VestTest } from 'VestTest';
-import { runDoneCallbacks, runFieldCallbacks } from 'runCallbacks';
 import { bus } from 'vest-utils';
 
+import { resetCallbacks } from 'PersistedContext';
 import { TestWalker } from 'SuiteWalker';
+import { VestTest } from 'VestTest';
+import { runDoneCallbacks, runFieldCallbacks } from 'runCallbacks';
 
 export function initVestBus() {
   const VestBus = bus.createBus();
@@ -33,6 +34,10 @@ export function initVestBus() {
     TestWalker.resetField(fieldName);
   });
 
+  VestBus.on(Events.SUITE_RUN_STARTED, () => {
+    resetCallbacks();
+  });
+
   return VestBus;
 }
 
@@ -40,6 +45,7 @@ export enum Events {
   TEST_COMPLETED = 'test_completed',
   ALL_RUNNING_TESTS_FINISHED = 'all_running_tests_finished',
   REMOVE_FIELD = 'remove_field', // TODO: IMPLEMENT
-  RESET_FIELD = 'reset_field', // TODO: IMPLEMENT
+  RESET_FIELD = 'reset_field',
   SUITE_CALLBACK_DONE_RUNNING = 'suite_callback_done_running', // TODO: IMPLEMENT
+  SUITE_RUN_STARTED = 'suite_run_started',
 }

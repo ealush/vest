@@ -1,14 +1,11 @@
 import { assign, CB, invariant, isFunction } from 'vest-utils';
 
 import { IsolateTypes } from 'IsolateTypes';
-import {
-  createVestState,
-  PersistedContext,
-  resetCallbacks,
-} from 'PersistedContext';
-import { SuiteContext } from 'SuiteContext';
+import { createVestState, PersistedContext } from 'PersistedContext';
+import { SuiteContext, useVestBus } from 'SuiteContext';
 import { SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
 import { TestWalker } from 'SuiteWalker';
+import { Events } from 'VestBus';
 import { isolate } from 'isolate';
 import { suiteResult } from 'suiteResult';
 import { suiteRunResult } from 'suiteRunResult';
@@ -33,10 +30,9 @@ function createSuite<T extends CB>(
   const suite = PersistedContext.bind(
     stateRef,
     function suite(...args: Parameters<T>): SuiteRunResult {
-      // TODO: This should probably not be here
-      resetCallbacks(stateRef);
-
       const [, output] = SuiteContext.run({}, () => {
+        useVestBus().emit(Events.SUITE_RUN_STARTED);
+
         // eslint-disable-next-line max-nested-callbacks
         return isolate(IsolateTypes.SUITE, () => {
           suiteCallback(...args);

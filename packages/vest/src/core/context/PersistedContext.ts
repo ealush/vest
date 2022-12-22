@@ -1,5 +1,3 @@
-import { Isolate } from 'IsolateTypes';
-import { VestTest } from 'VestTest';
 import { createCascade } from 'context';
 import { createState, UseState } from 'vast';
 import {
@@ -15,8 +13,10 @@ import {
 } from 'vest-utils';
 import { CacheApi } from 'vest-utils/src/vest-utils';
 
+import { Isolate } from 'IsolateTypes';
 import { OptionalFields } from 'OptionalTypes';
 import { SuiteName, SuiteResult } from 'SuiteResultTypes';
+import { VestTest } from 'VestTest';
 
 export const PersistedContext = createCascade<CTXType>(
   (vestState, parentContext) => {
@@ -60,9 +60,9 @@ export function persist<T extends CB>(cb: T): T {
   return PersistedContext.bind(PersistedContext.useX(), cb);
 }
 
-export function resetCallbacks(state: StateType) {
-  const [, , resetDoneCallbacks] = state.doneCallbacks();
-  const [, , resetFieldCallbacks] = state.fieldCallbacks();
+export function resetCallbacks() {
+  const [, , resetDoneCallbacks] = useDoneCallbacks();
+  const [, , resetFieldCallbacks] = useFieldCallbacks();
 
   resetDoneCallbacks();
   resetFieldCallbacks();

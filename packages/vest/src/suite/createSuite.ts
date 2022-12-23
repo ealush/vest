@@ -33,11 +33,7 @@ function createSuite<T extends CB>(
       const [, output] = SuiteContext.run({}, () => {
         useVestBus().emit(Events.SUITE_RUN_STARTED);
 
-        // eslint-disable-next-line max-nested-callbacks
-        return isolate(IsolateTypes.SUITE, () => {
-          suiteCallback(...args);
-          return suiteRunResult();
-        });
+        return isolate(IsolateTypes.SUITE, runSuiteCallback(...args));
       });
 
       return output;
@@ -50,6 +46,13 @@ function createSuite<T extends CB>(
     remove: PersistedContext.bind(stateRef, TestWalker.removeTestByFieldName),
     resetField: PersistedContext.bind(stateRef, TestWalker.resetField),
   });
+
+  function runSuiteCallback(...args: Parameters<T>): () => SuiteRunResult {
+    return () => {
+      suiteCallback(...args);
+      return suiteRunResult();
+    };
+  }
 }
 
 export type SuiteName = string | undefined;

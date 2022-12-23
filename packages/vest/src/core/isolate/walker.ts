@@ -1,6 +1,6 @@
-/* eslint-disable complexity */
 import { Isolate, IsolateTypes } from 'IsolateTypes';
 
+// eslint-disable-next-line complexity
 export function walk(
   startNode: Isolate,
   callback: (isolate: Isolate, breakout: () => void) => void,

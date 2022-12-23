@@ -1,6 +1,6 @@
-import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { CB, invariant } from 'vest-utils';
 
+import { Isolate, IsolateTypes } from 'IsolateTypes';
 import {
   useSetNextIsolateChild,
   PersistedContext,
@@ -27,15 +27,14 @@ export function isolate<Callback extends CB = CB>(
   if (parent) {
     historyNode = historyNode?.children[useCurrentCursor()] ?? null;
   }
+
   const output = reconcileHistoryNode(historyNode, current, callback);
 
   const [nextIsolateChild] = output;
 
   if (parent) {
     useSetNextIsolateChild(nextIsolateChild);
-  }
-
-  if (!parent) {
+  } else {
     useSetHistory(nextIsolateChild);
   }
 

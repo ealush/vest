@@ -37,7 +37,6 @@ function appendToTest(tests: Tests, testObject: VestTest) {
   tests[testObject.fieldName] = appendTestObject(tests, testObject);
   // If `valid` is false to begin with, keep it that way. Otherwise, assess.
   tests[testObject.fieldName].valid =
-    // eslint-disable-next-line no-unneeded-ternary
     tests[testObject.fieldName].valid === false
       ? false
       : shouldAddValidProperty(testObject.fieldName);
@@ -82,7 +81,6 @@ function countFailures(summary: SuiteSummary): SuiteSummary {
  * Overload is only needed to satisfy typescript. No use in breaking it down to multiple
  * functions as it is really the same, with the difference of "valid" missing in groups
  */
-// eslint-disable-next-line max-statements
 function appendTestObject(
   summaryKey: Tests | Group,
   testObject: VestTest

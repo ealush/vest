@@ -71,9 +71,6 @@
       "createSuite": ["src/suite/createSuite.ts"],
       "runCallbacks": ["src/suite/runCallbacks.ts"],
       "deferDoneCallback": ["src/suiteResult/done/deferDoneCallback.ts"],
-      "shouldRunDoneCallback": [
-        "src/suiteResult/done/shouldRunDoneCallback.ts"
-      ],
       "shouldSkipDoneRegistration": [
         "src/suiteResult/done/shouldSkipDoneRegistration.ts"
       ],

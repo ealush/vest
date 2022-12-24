@@ -2,8 +2,8 @@ import { assign } from 'vest-utils';
 
 import { persist } from 'PersistedContext';
 import { Done, SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
+import { TestWalker } from 'SuiteWalker';
 import { deferDoneCallback } from 'deferDoneCallback';
-import { shouldRunDoneCallback } from 'shouldRunDoneCallback';
 import { shouldSkipDoneRegistration } from 'shouldSkipDoneRegistration';
 import { suiteResult } from 'suiteResult';
 
@@ -31,7 +31,7 @@ const done: Done = function done(...args): SuiteRunResult {
 
   const doneCallback = () => callback(suiteResult());
 
-  if (shouldRunDoneCallback(fieldName)) {
+  if (!TestWalker.hasRemainingTests(fieldName)) {
     doneCallback();
     return output;
   }

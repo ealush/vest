@@ -16,7 +16,7 @@ export { default as isBoolean } from 'isBooleanValue';
 export { default as last } from 'last';
 export { default as deferThrow } from 'deferThrow';
 export * as bus from 'bus';
-export { default as seq } from 'seq';
+export { default as seq, genSeq } from 'seq';
 export { default as isFunction } from 'isFunction';
 export { default as mapFirst } from 'mapFirst';
 export { greaterThan } from 'greaterThan';

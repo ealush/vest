@@ -2,9 +2,13 @@
  * @returns a unique numeric id.
  */
 
-const seq: () => string = (
-  (n: number) => (): string =>
-    `${n++}`
-)(0);
+const seq = genSeq();
 
 export default seq;
+
+export function genSeq(namespace?: string): () => string {
+  return (
+    (n: number) => () =>
+      `${namespace ? namespace + '_' : ''}${n++}`
+  )(0);
+}

@@ -1,10 +1,10 @@
-import { VestTest } from 'VestTest';
 import { isPromise, isStringValue } from 'vest-utils';
 
-import { persist } from 'PersistedContext';
-import { SuiteContext, useVestBus } from 'SuiteContext';
+import { persist, useVestBus } from 'PersistedContext';
+import { SuiteContext } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
 import { Events } from 'VestBus';
+import { VestTest } from 'VestTest';
 import { verifyTestRun } from 'verifyTestRun';
 
 export function attemptRunTestObjectByTier(testObject: VestTest) {

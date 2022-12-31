@@ -1,13 +1,14 @@
 import { createCascade } from 'context';
 import { createState, UseState } from 'vast';
 import {
-  assign,
   invariant,
   deferThrow,
   isNullish,
   CB,
   seq,
   cache,
+  assign,
+  BusType,
   TinyState,
   tinyState,
 } from 'vest-utils';
@@ -16,6 +17,7 @@ import { CacheApi } from 'vest-utils/src/vest-utils';
 import { Isolate } from 'IsolateTypes';
 import { OptionalFields } from 'OptionalTypes';
 import { SuiteName, SuiteResult } from 'SuiteResultTypes';
+import { initVestBus } from 'VestBus';
 import { VestTest } from 'VestTest';
 
 export const PersistedContext = createCascade<CTXType>(
@@ -28,15 +30,21 @@ export const PersistedContext = createCascade<CTXType>(
 
     const [historyRootNode] = vestState.historyRoot();
 
-    return assign(
+    const ctxRef = {} as CTXType;
+
+    assign(
+      ctxRef,
       {
+        VestBus: initVestBus(ctxRef),
         historyNode: historyRootNode,
         optional: {},
         runtimeNode: null,
         runtimeRoot: null,
       },
       vestState
-    ) as CTXType;
+    );
+
+    return ctxRef;
   }
 );
 
@@ -73,6 +81,7 @@ type CTXType = StateType & {
   runtimeNode: Isolate | null;
   runtimeRoot: Isolate | null;
   testMemoCache: CacheApi<VestTest>;
+  VestBus: BusType;
 };
 
 type StateType = {
@@ -86,6 +95,11 @@ type StateType = {
 
 type FieldCallbacks = Record<string, DoneCallbacks>;
 type DoneCallbacks = Array<DoneCallback>;
+
+export function useVestBus() {
+  return PersistedContext.useX().VestBus;
+}
+
 export type DoneCallback = (res: SuiteResult) => void;
 
 export function useOptionalFields(): OptionalFields {

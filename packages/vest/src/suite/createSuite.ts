@@ -1,8 +1,12 @@
 import { assign, CB, invariant, isFunction } from 'vest-utils';
 
 import { IsolateTypes } from 'IsolateTypes';
-import { createVestState, PersistedContext } from 'PersistedContext';
-import { SuiteContext, useVestBus } from 'SuiteContext';
+import {
+  createVestState,
+  PersistedContext,
+  useVestBus,
+} from 'PersistedContext';
+import { SuiteContext } from 'SuiteContext';
 import { SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
 import { TestWalker } from 'SuiteWalker';
 import { Events } from 'VestBus';

@@ -100,6 +100,10 @@ export function useVestBus() {
   return PersistedContext.useX().VestBus;
 }
 
+export function useEmit() {
+  return useVestBus().emit;
+}
+
 export type DoneCallback = (res: SuiteResult) => void;
 
 export function useOptionalFields(): OptionalFields {

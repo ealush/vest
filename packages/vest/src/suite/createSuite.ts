@@ -1,11 +1,7 @@
 import { assign, CB, invariant, isFunction } from 'vest-utils';
 
 import { IsolateTypes } from 'IsolateTypes';
-import {
-  createVestState,
-  PersistedContext,
-  useVestBus,
-} from 'PersistedContext';
+import { createVestState, PersistedContext, useEmit } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
 import { SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
 import { TestWalker } from 'SuiteWalker';
@@ -19,6 +15,7 @@ function createSuite<T extends CB>(
   suiteCallback: T
 ): Suite<T>;
 function createSuite<T extends CB>(suiteCallback: T): Suite<T>;
+// eslint-disable-next-line max-lines-per-function
 function createSuite<T extends CB>(
   ...args: [suiteName: SuiteName, suiteCallback: T] | [suiteCallback: T]
 ): Suite<T> {
@@ -31,24 +28,34 @@ function createSuite<T extends CB>(
 
   const { state, stateRef } = createVestState({ suiteName });
 
-  const suite = PersistedContext.bind(
-    stateRef,
-    function suite(...args: Parameters<T>): SuiteRunResult {
-      const [, output] = SuiteContext.run({}, () => {
-        useVestBus().emit(Events.SUITE_RUN_STARTED);
+  return PersistedContext.run(stateRef, () => {
+    return assign(
+      PersistedContext.bind(
+        stateRef,
 
-        return isolate(IsolateTypes.SUITE, runSuiteCallback(...args));
-      });
+        function suite(...args: Parameters<T>): SuiteRunResult {
+          // eslint-disable-next-line max-nested-callbacks
+          const [, output] = SuiteContext.run({}, () => {
+            const emit = useEmit();
 
-      return output;
-    }
-  );
+            emit(Events.SUITE_RUN_STARTED);
 
-  return assign(suite, {
-    get: PersistedContext.bind(stateRef, suiteResult),
-    reset: state.reset,
-    remove: PersistedContext.bind(stateRef, TestWalker.removeTestByFieldName),
-    resetField: PersistedContext.bind(stateRef, TestWalker.resetField),
+            return isolate(IsolateTypes.SUITE, runSuiteCallback(...args));
+          });
+
+          return output;
+        }
+      ),
+      {
+        get: PersistedContext.bind(stateRef, suiteResult),
+        reset: state.reset,
+        remove: PersistedContext.bind(
+          stateRef,
+          TestWalker.removeTestByFieldName
+        ),
+        resetField: PersistedContext.bind(stateRef, TestWalker.resetField),
+      }
+    );
   });
 
   function runSuiteCallback(...args: Parameters<T>): () => SuiteRunResult {

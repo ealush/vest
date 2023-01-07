@@ -2,7 +2,7 @@ import { assign, CB, invariant, isFunction } from 'vest-utils';
 
 import { IsolateTypes } from 'IsolateTypes';
 import {
-  createVestState,
+  // createVestState,
   persist,
   PersistedContext,
   useEmit,
@@ -31,29 +31,27 @@ function createSuite<T extends CB>(
     'vest.create: Expected callback to be a function.'
   );
 
-  const { state, stateRef } = createVestState({ suiteName });
+  // const { state, stateRef } = createVestState({ suiteName });
 
-  return PersistedContext.run(stateRef, () => {
+  return PersistedContext.run({ suiteName }, () => {
     return assign(
-      PersistedContext.bind(
-        stateRef,
-        function suite(...args: Parameters<T>): SuiteRunResult {
-          // eslint-disable-next-line max-nested-callbacks
-          const [, output] = SuiteContext.run({}, () => {
-            const emit = useEmit();
+      persist(function suite(...args: Parameters<T>): SuiteRunResult {
+        // eslint-disable-next-line max-nested-callbacks
+        const [, output] = SuiteContext.run({}, () => {
+          const emit = useEmit();
 
-            emit(Events.SUITE_RUN_STARTED);
+          emit(Events.SUITE_RUN_STARTED);
 
-            return isolate(IsolateTypes.SUITE, runSuiteCallback(...args));
-          });
+          return isolate(IsolateTypes.SUITE, runSuiteCallback(...args));
+        });
 
-          return output;
-        }
-      ),
+        return output;
+      }),
       {
         get: persist(suiteResult),
         remove: persist(TestWalker.removeTestByFieldName),
-        reset: state.reset,
+        // @ts-ignore
+        reset: {}?.reset,
         resetField: persist(TestWalker.resetField),
       }
     );

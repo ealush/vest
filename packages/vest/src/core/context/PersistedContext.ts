@@ -21,30 +21,29 @@ import { initVestBus } from 'VestBus';
 import { VestTest } from 'VestTest';
 
 export const PersistedContext = createCascade<CTXType>(
-  (vestState, parentContext) => {
+  (ctxRef, parentContext) => {
+    if (ctxRef.suiteId) {
+      return ctxRef as CTXType;
+    }
     if (parentContext) {
       return null;
     }
+
+    const { stateRef: vestState } = createVestState({
+      suiteName: ctxRef.suiteName,
+    });
 
     invariant(vestState.historyRoot);
 
     const [historyRootNode] = vestState.historyRoot();
 
-    const ctxRef = {} as CTXType;
-
-    assign(
-      ctxRef,
-      {
-        VestBus: initVestBus(ctxRef),
-        historyNode: historyRootNode,
-        optional: {},
-        runtimeNode: null,
-        runtimeRoot: null,
-      },
-      vestState
-    );
-
-    return ctxRef;
+    return assign(vestState, {
+      VestBus: initVestBus(vestState),
+      historyNode: historyRootNode,
+      optional: {},
+      runtimeNode: null,
+      runtimeRoot: null,
+    });
   }
 );
 
@@ -70,7 +69,7 @@ export function persist<T extends CB>(cb: T): T {
   // @ts-ignore
   return function persisted(...args: Parameters<T>): ReturnType<T> {
     const ctxToUse = PersistedContext.use() ?? prev;
-    return PersistedContext.run(ctxToUse, () => cb(...args));
+    return PersistedContext.runWithRef(ctxToUse, () => cb(...args));
   };
 }
 

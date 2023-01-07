@@ -63,9 +63,14 @@ export function createCascade<T extends Record<string, unknown>>(
   return {
     bind,
     run,
+    runWithRef,
     use: ctx.use,
     useX: ctx.useX,
   };
+
+  function runWithRef<R>(value: T, fn: () => R): R {
+    return ctx.run(value, fn);
+  }
 
   function run<R>(value: Partial<T>, fn: () => R): R {
     const parentContext = ctx.use();
@@ -100,4 +105,5 @@ export type CtxApi<T> = ContextConsumptionApi<T> & {
 export type CtxCascadeApi<T> = ContextConsumptionApi<T> & {
   run: <R>(value: Partial<T>, fn: () => R) => R;
   bind: <Fn extends CB>(value: Partial<T>, fn: Fn) => Fn;
+  runWithRef: <R>(value: T, fn: () => R) => R;
 };

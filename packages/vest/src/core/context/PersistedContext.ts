@@ -65,7 +65,13 @@ export function createVestState({ suiteName }: { suiteName?: SuiteName }) {
 }
 
 export function persist<T extends CB>(cb: T): T {
-  return PersistedContext.bind(PersistedContext.useX(), cb);
+  const prev = PersistedContext.useX();
+
+  // @ts-ignore
+  return function persisted(...args: Parameters<T>): ReturnType<T> {
+    const ctxToUse = PersistedContext.use() ?? prev;
+    return PersistedContext.run(ctxToUse, () => cb(...args));
+  };
 }
 
 export function resetCallbacks() {

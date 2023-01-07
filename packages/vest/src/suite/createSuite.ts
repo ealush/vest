@@ -1,7 +1,12 @@
 import { assign, CB, invariant, isFunction } from 'vest-utils';
 
 import { IsolateTypes } from 'IsolateTypes';
-import { createVestState, PersistedContext, useEmit } from 'PersistedContext';
+import {
+  createVestState,
+  persist,
+  PersistedContext,
+  useEmit,
+} from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
 import { SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
 import { TestWalker } from 'SuiteWalker';
@@ -32,7 +37,6 @@ function createSuite<T extends CB>(
     return assign(
       PersistedContext.bind(
         stateRef,
-
         function suite(...args: Parameters<T>): SuiteRunResult {
           // eslint-disable-next-line max-nested-callbacks
           const [, output] = SuiteContext.run({}, () => {
@@ -47,13 +51,10 @@ function createSuite<T extends CB>(
         }
       ),
       {
-        get: PersistedContext.bind(stateRef, suiteResult),
+        get: persist(suiteResult),
+        remove: persist(TestWalker.removeTestByFieldName),
         reset: state.reset,
-        remove: PersistedContext.bind(
-          stateRef,
-          TestWalker.removeTestByFieldName
-        ),
-        resetField: PersistedContext.bind(stateRef, TestWalker.resetField),
+        resetField: persist(TestWalker.resetField),
       }
     );
   });

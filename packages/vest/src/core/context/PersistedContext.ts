@@ -1,5 +1,4 @@
 import { createCascade } from 'context';
-import { createState, State, UseState } from 'vast';
 import {
   invariant,
   deferThrow,
@@ -47,24 +46,23 @@ export const PersistedContext = createCascade<CTXType>(
   }
 );
 
-export function createVestState({ suiteName }: { suiteName?: SuiteName }): {
-  state: State;
-  stateRef: StateType;
-} {
-  const state = createState();
-
+export function createVestState({
+  suiteName,
+}: {
+  suiteName?: SuiteName;
+}): StateType {
   const stateRef: StateType = {
     VestBus: initVestBus(),
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
-    historyRoot: state.registerStateKey<Isolate | null>(null),
+    historyRoot: tinyState.createTinyState<Isolate | null>(null),
     optional: {},
     suiteId: seq(),
     suiteName,
     testMemoCache: cache<VestTest>(10),
   };
 
-  return { state, stateRef };
+  return stateRef;
 }
 
 export function persist<T extends CB>(cb: T): T {
@@ -77,12 +75,19 @@ export function persist<T extends CB>(cb: T): T {
   };
 }
 
-export function resetCallbacks() {
+export function useResetCallbacks() {
   const [, , resetDoneCallbacks] = useDoneCallbacks();
   const [, , resetFieldCallbacks] = useFieldCallbacks();
 
   resetDoneCallbacks();
   resetFieldCallbacks();
+}
+
+export function useResetSuite() {
+  useResetCallbacks();
+  const [, , resetHistoryRoot] = useHistoryRoot();
+
+  resetHistoryRoot();
 }
 
 type CTXType = StateType & {
@@ -93,7 +98,7 @@ type CTXType = StateType & {
 
 type StateType = {
   testMemoCache: CacheApi<VestTest>;
-  historyRoot: UseState<Isolate | null>;
+  historyRoot: TinyState<Isolate | null>;
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
   suiteName: string | undefined;
@@ -113,7 +118,7 @@ export function useEmit() {
   return persist(useVestBus().emit);
 }
 
-export function prepareEmitter<T>(event: Events): (arg: T) => void {
+export function prepareEmitter<T = void>(event: Events): (arg: T) => void {
   const emit = useEmit();
 
   return (arg: T) => emit(event, arg);

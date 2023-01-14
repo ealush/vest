@@ -17,7 +17,7 @@ import { CacheApi } from 'vest-utils/src/vest-utils';
 import { Isolate } from 'IsolateTypes';
 import { OptionalFields } from 'OptionalTypes';
 import { SuiteName, SuiteResult } from 'SuiteResultTypes';
-import { initVestBus } from 'VestBus';
+import { Events, initVestBus } from 'VestBus';
 import { VestTest } from 'VestTest';
 
 export const PersistedContext = createCascade<CTXType>(
@@ -110,7 +110,13 @@ export function useVestBus() {
 }
 
 export function useEmit() {
-  return useVestBus().emit;
+  return persist(useVestBus().emit);
+}
+
+export function prepareEmitter<T>(event: Events): (arg: T) => void {
+  const emit = useEmit();
+
+  return (arg: T) => emit(event, arg);
 }
 
 export type DoneCallback = (res: SuiteResult) => void;

@@ -13,22 +13,16 @@ import {
 import { createIsolate } from 'createIsolate';
 import { vestReconciler } from 'vestReconciler';
 
-// eslint-disable-next-line max-statements
 export function isolate<Callback extends CB = CB>(
   type: IsolateTypes,
   callback: Callback,
   data?: any
 ): [Isolate, ReturnType<Callback>] {
   const parent = useIsolate();
-  let historyNode = useHistoryNode();
 
   const current = createIsolate(type, parent, data);
 
-  if (parent) {
-    historyNode = historyNode?.children[useCurrentCursor()] ?? null;
-  }
-
-  const output = reconcileHistoryNode(historyNode, current, callback);
+  const output = reconcileHistoryNode(current, callback);
 
   const [nextIsolateChild] = output;
 
@@ -42,16 +36,26 @@ export function isolate<Callback extends CB = CB>(
 }
 
 function reconcileHistoryNode<Callback extends CB = CB>(
-  historyNode: Isolate | null,
   current: Isolate,
   callback: CB
 ): [Isolate, ReturnType<Callback>] {
-  const nextNode = vestReconciler(historyNode, current);
+  const parent = useIsolate();
+
+  const historyNode = useHistoryNode();
+  let localHistoryNode = historyNode;
+
+  if (parent) {
+    // If we have a parent, we need to get the history node from the parent's children
+    // We take the history node from the cursor of the active node's children
+    localHistoryNode = historyNode?.children[useCurrentCursor()] ?? null;
+  }
+
+  const nextNode = vestReconciler(localHistoryNode, current);
 
   invariant(nextNode);
 
-  if (nextNode === current) {
-    return [current, runAsNew(historyNode, current, callback)];
+  if (Object.is(nextNode, current)) {
+    return [current, runAsNew(localHistoryNode, current, callback)];
   }
 
   return [nextNode, getNodeOuput(nextNode)];
@@ -62,14 +66,17 @@ function getNodeOuput(node: Isolate): any {
 }
 
 function runAsNew<Callback extends CB = CB>(
-  historyNode: Isolate | null,
+  localHistoryNode: Isolate | null,
   current: Isolate,
   callback: CB
 ): ReturnType<Callback> {
   const runtimeRoot = useRuntimeRoot();
+
+  // We're creating a new child isolate context where the local history node
+  // is the current history node, thus advancing the history cursor.
   const output = PersistedContext.run(
     {
-      historyNode,
+      historyNode: localHistoryNode,
       runtimeNode: current,
       ...(!runtimeRoot && { runtimeRoot: current }),
     },

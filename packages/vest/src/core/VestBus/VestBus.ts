@@ -1,16 +1,16 @@
 import { bus } from 'vest-utils';
 
-import { PersistedContext, resetCallbacks } from 'PersistedContext';
+import { resetCallbacks } from 'PersistedContext';
 import { TestWalker } from 'SuiteWalker';
 import { VestTest } from 'VestTest';
 import { runDoneCallbacks, runFieldCallbacks } from 'runCallbacks';
 
-export function initVestBus(ctxRef: any) {
+export function initVestBus() {
   const VestBus = bus.createBus();
 
   // Report a the completion of a test. There may be other tests with the same
   // name that are still running, or not yet started.
-  on(Events.TEST_COMPLETED, (testObject: VestTest) => {
+  VestBus.on(Events.TEST_COMPLETED, (testObject: VestTest) => {
     if (testObject.isCanceled()) {
       return;
     }
@@ -26,23 +26,19 @@ export function initVestBus(ctxRef: any) {
   });
 
   // Called when all the tests, including async, are done running
-  on(Events.ALL_RUNNING_TESTS_FINISHED, () => {
+  VestBus.on(Events.ALL_RUNNING_TESTS_FINISHED, () => {
     runDoneCallbacks();
   });
 
-  on(Events.RESET_FIELD, (fieldName: string) => {
+  VestBus.on(Events.RESET_FIELD, (fieldName: string) => {
     TestWalker.resetField(fieldName);
   });
 
-  on(Events.SUITE_RUN_STARTED, () => {
+  VestBus.on(Events.SUITE_RUN_STARTED, () => {
     resetCallbacks();
   });
 
   return VestBus;
-
-  function on(event: Events, callback: (...args: any[]) => void) {
-    VestBus.on(event, PersistedContext.bind(ctxRef, callback));
-  }
 }
 
 export enum Events {

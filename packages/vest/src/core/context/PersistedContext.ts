@@ -1,5 +1,5 @@
 import { createCascade } from 'context';
-import { createState, UseState } from 'vast';
+import { createState, State, UseState } from 'vast';
 import {
   invariant,
   deferThrow,
@@ -35,7 +35,6 @@ export const PersistedContext = createCascade<CTXType>(
     assign(
       ctxRef,
       {
-        VestBus: initVestBus(ctxRef),
         historyNode: historyRootNode,
         optional: {},
         runtimeNode: null,
@@ -48,10 +47,14 @@ export const PersistedContext = createCascade<CTXType>(
   }
 );
 
-export function createVestState({ suiteName }: { suiteName?: SuiteName }) {
+export function createVestState({ suiteName }: { suiteName?: SuiteName }): {
+  state: State;
+  stateRef: StateType;
+} {
   const state = createState();
 
-  const stateRef = {
+  const stateRef: StateType = {
+    VestBus: initVestBus(),
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
     historyRoot: state.registerStateKey<Isolate | null>(null),
@@ -86,17 +89,17 @@ type CTXType = StateType & {
   historyNode: Isolate | null;
   runtimeNode: Isolate | null;
   runtimeRoot: Isolate | null;
-  testMemoCache: CacheApi<VestTest>;
-  VestBus: BusType;
 };
 
 type StateType = {
+  testMemoCache: CacheApi<VestTest>;
   historyRoot: UseState<Isolate | null>;
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
   suiteName: string | undefined;
   suiteId: string;
   optional: OptionalFields;
+  VestBus: BusType;
 };
 
 type FieldCallbacks = Record<string, DoneCallbacks>;

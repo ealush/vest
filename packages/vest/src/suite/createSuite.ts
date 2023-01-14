@@ -31,7 +31,7 @@ function createSuite<T extends CB>(
     'vest.create: Expected callback to be a function.'
   );
 
-  const { state, stateRef } = createVestState({ suiteName });
+  const stateRef = createVestState({ suiteName });
 
   return PersistedContext.run(stateRef, () => {
     return assign(
@@ -53,7 +53,7 @@ function createSuite<T extends CB>(
       {
         get: persist(suiteResult),
         remove: prepareEmitter<string>(Events.REMOVE_FIELD),
-        reset: state.reset,
+        reset: prepareEmitter(Events.RESET_SUITE),
         resetField: prepareEmitter<string>(Events.RESET_FIELD),
       }
     );

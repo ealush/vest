@@ -5,11 +5,11 @@ import {
   createVestState,
   persist,
   PersistedContext,
+  prepareEmitter,
   useEmit,
 } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
 import { SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
-import { TestWalker } from 'SuiteWalker';
 import { Events } from 'VestBus';
 import { isolate } from 'isolate';
 import { suiteResult } from 'suiteResult';
@@ -52,9 +52,9 @@ function createSuite<T extends CB>(
       ),
       {
         get: persist(suiteResult),
-        remove: persist(TestWalker.removeTestByFieldName),
+        remove: prepareEmitter<string>(Events.REMOVE_FIELD),
         reset: state.reset,
-        resetField: persist(TestWalker.resetField),
+        resetField: prepareEmitter<string>(Events.RESET_FIELD),
       }
     );
   });

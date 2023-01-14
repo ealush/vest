@@ -23,10 +23,8 @@ export function vestReconciler(
     return currentNode;
   }
 
-  const testNode = currentNode as IsolateTest;
-
   if (isNullish(historyNode)) {
-    return handleNoHistoryNode(testNode);
+    return handleNoHistoryNode(currentNode);
   }
 
   const prevTestObject = getIsolateTest(historyNode);
@@ -35,15 +33,37 @@ export function vestReconciler(
     return currentNode;
   }
 
-  return vestReconcilerImplementation(historyNode as IsolateTest, testNode);
+  const reconcilerOutput = vestReconcilerImplementation(
+    historyNode as IsolateTest,
+    currentNode
+  );
+
+  cancelOverriddenPendingTestOnTestReRun(
+    reconcilerOutput,
+    currentNode,
+    prevTestObject
+  );
+
+  return reconcilerOutput;
 }
-// eslint-disable-next-line max-statements
+
+function cancelOverriddenPendingTestOnTestReRun(
+  nextNode: Isolate,
+  currentNode: Isolate,
+  prevTestObject: VestTest
+) {
+  const currentTestObject = getIsolateTestX(currentNode);
+
+  if (nextNode === currentNode) {
+    cancelOverriddenPendingTest(prevTestObject, currentTestObject);
+  }
+}
+
 export function vestReconcilerImplementation(
   historyNode: IsolateTest,
   currentNode: IsolateTest
 ): Isolate {
   const currentTestObject = getIsolateTestX(currentNode);
-  const prevTestObject = getIsolateTestX(historyNode);
 
   const collisionResult = handleCollision(currentNode, historyNode);
 
@@ -58,9 +78,6 @@ export function vestReconcilerImplementation(
   if (isExcluded(currentTestObject)) {
     return forceSkipIfInSkipWhen(collisionResult);
   }
-
-  // TODO: This should probably happen everywhere we return the current node
-  cancelOverriddenPendingTest(prevTestObject, currentTestObject);
 
   return currentNode;
 }

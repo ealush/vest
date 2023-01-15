@@ -10,8 +10,8 @@ import {
   BusType,
   TinyState,
   tinyState,
+  CacheApi,
 } from 'vest-utils';
-import { CacheApi } from 'vest-utils/src/vest-utils';
 
 import { Isolate } from 'IsolateTypes';
 import { OptionalFields } from 'OptionalTypes';

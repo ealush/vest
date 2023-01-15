@@ -5,10 +5,10 @@ import { Done, SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
 import { TestWalker } from 'SuiteWalker';
 import { deferDoneCallback } from 'deferDoneCallback';
 import { shouldSkipDoneRegistration } from 'shouldSkipDoneRegistration';
-import { suiteResult } from 'suiteResult';
+import { createSuiteResult } from 'suiteResult';
 
 export function suiteRunResult(): SuiteRunResult {
-  return assign({}, suiteResult(), {
+  return assign({}, createSuiteResult(), {
     done: persist(done),
   });
 }
@@ -29,7 +29,7 @@ const done: Done = function done(...args): SuiteRunResult {
     return output;
   }
 
-  const doneCallback = () => callback(suiteResult());
+  const doneCallback = () => callback(createSuiteResult());
 
   if (!TestWalker.hasRemainingTests(fieldName)) {
     doneCallback();

@@ -1,11 +1,11 @@
-import { IsolateTypes } from 'IsolateTypes';
-import { isolate } from 'isolate';
 import type { CB } from 'vest-utils';
 import { optionalFunctionValue } from 'vest-utils';
 
+import { IsolateTypes } from 'IsolateTypes';
 import { SuiteContext, useOmitted } from 'SuiteContext';
 import { SuiteResult } from 'SuiteResultTypes';
-import { suiteResult } from 'suiteResult';
+import { isolate } from 'isolate';
+import { createSuiteResult } from 'suiteResult';
 
 /**
  * Conditionally omits tests from the suite.
@@ -27,10 +27,10 @@ export function omitWhen(
           withinActiveOmitWhen() ||
           optionalFunctionValue(
             conditional,
-            optionalFunctionValue(suiteResult)
+            optionalFunctionValue(createSuiteResult)
           ),
       },
-      () => callback()
+      callback
     );
   });
 }

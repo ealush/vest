@@ -19,6 +19,8 @@ import { SuiteName, SuiteResult } from 'SuiteResultTypes';
 import { Events, initVestBus } from 'VestBus';
 import { VestTest } from 'VestTest';
 
+const suiteResultCache = cache<SuiteResult>();
+
 export const PersistedContext = createCascade<CTXType>(
   (vestState, parentContext) => {
     if (parentContext) {
@@ -59,6 +61,7 @@ export function createVestState({
     optional: {},
     suiteId: seq(),
     suiteName,
+    suiteResultCache,
     testMemoCache: cache<VestTest>(10),
   };
 
@@ -73,6 +76,17 @@ export function persist<T extends CB>(cb: T): T {
     const ctxToUse = PersistedContext.use() ?? prev;
     return PersistedContext.run(ctxToUse, () => cb(...args));
   };
+}
+
+export function useSuiteResultCache(action: () => SuiteResult) {
+  const suiteResultCache = PersistedContext.useX().suiteResultCache;
+
+  return suiteResultCache([useSuiteId()], action);
+}
+
+export function useExpireSuiteResultCache() {
+  const suiteResultCache = PersistedContext.useX().suiteResultCache;
+  suiteResultCache.invalidate([useSuiteId()]);
 }
 
 export function useResetCallbacks() {
@@ -105,6 +119,7 @@ type StateType = {
   suiteId: string;
   optional: OptionalFields;
   VestBus: BusType;
+  suiteResultCache: CacheApi<SuiteResult>;
 };
 
 type FieldCallbacks = Record<string, DoneCallbacks>;
@@ -114,6 +129,10 @@ export function useVestBus() {
   return PersistedContext.useX().VestBus;
 }
 
+/*
+  Returns an emitter, but it also has a shortcut for emitting an event immediately
+  by passing an event name.
+*/
 export function useEmit() {
   return persist(useVestBus().emit);
 }

@@ -1,5 +1,5 @@
 import { createCascade } from 'context';
-import { assign, TinyState, tinyState } from 'vest-utils';
+import { assign, TinyState, tinyState, cache, CacheApi } from 'vest-utils';
 
 import { VestTest } from 'VestTest';
 import { Modes } from 'mode';
@@ -17,6 +17,7 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
       },
       inclusion: {},
       mode: tinyState.createTinyState<Modes>(Modes.ALL),
+      testMemoCache,
     },
     ctxRef
   );
@@ -30,6 +31,7 @@ type CTXType = {
   skipped?: boolean;
   omitted?: boolean;
   mode: TinyState<Modes>;
+  testMemoCache: CacheApi<VestTest>;
 };
 
 export type TExclusion = {
@@ -63,4 +65,10 @@ export function useSkipped() {
 
 export function useOmitted() {
   return SuiteContext.useX().omitted ?? false;
+}
+
+const testMemoCache = cache<VestTest>(10);
+
+export function useTestMemoCache() {
+  return SuiteContext.useX().testMemoCache;
 }

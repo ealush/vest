@@ -1,13 +1,10 @@
-import { VestTest } from 'VestTest';
-import { VTest } from 'test';
 import { isNull } from 'vest-utils';
 
-import {
-  useCurrentCursor,
-  useSuiteId,
-  useTestMemoCache,
-} from 'PersistedContext';
+import { useCurrentCursor, useSuiteId } from 'PersistedContext';
+import { useTestMemoCache } from 'SuiteContext';
 import { TestFn } from 'TestTypes';
+import { VestTest } from 'VestTest';
+import { VTest } from 'test';
 import { testObjectIsolate } from 'testObjectIsolate';
 
 export function wrapTestMemo(test: VTest): TestMemo {

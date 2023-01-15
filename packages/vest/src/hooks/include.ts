@@ -8,7 +8,7 @@ import {
 
 import { useExclusion, useInclusion } from 'SuiteContext';
 import { SuiteResult } from 'SuiteResultTypes';
-import { suiteResult } from 'suiteResult';
+import { createSuiteResult } from 'suiteResult';
 
 export function include(fieldName: string): {
   when: (
@@ -45,7 +45,7 @@ export function include(fieldName: string): {
 
       return optionalFunctionValue(
         condition,
-        optionalFunctionValue(suiteResult)
+        optionalFunctionValue(createSuiteResult)
       );
     };
   }

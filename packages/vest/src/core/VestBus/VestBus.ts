@@ -1,16 +1,21 @@
 import { bus } from 'vest-utils';
 
-import { useResetCallbacks, useResetSuite } from 'PersistedContext';
+import {
+  useExpireSuiteResultCache,
+  useResetCallbacks,
+  useResetSuite,
+} from 'PersistedContext';
 import { TestWalker } from 'SuiteWalker';
 import { VestTest } from 'VestTest';
 import { runDoneCallbacks, runFieldCallbacks } from 'runCallbacks';
 
+// eslint-disable-next-line max-lines-per-function
 export function initVestBus() {
   const VestBus = bus.createBus();
 
   // Report a the completion of a test. There may be other tests with the same
   // name that are still running, or not yet started.
-  VestBus.on(Events.TEST_COMPLETED, (testObject: VestTest) => {
+  on(Events.TEST_COMPLETED, (testObject: VestTest) => {
     if (testObject.isCanceled()) {
       return;
     }
@@ -25,31 +30,45 @@ export function initVestBus() {
     }
   });
 
+  on(Events.TEST_RUN_STARTED, () => {
+    /* Let's just invalidate the suite cache for now */
+  });
+
   // Called when all the tests, including async, are done running
-  VestBus.on(Events.ALL_RUNNING_TESTS_FINISHED, () => {
+  on(Events.ALL_RUNNING_TESTS_FINISHED, () => {
     runDoneCallbacks();
   });
 
-  VestBus.on(Events.RESET_FIELD, (fieldName: string) => {
+  on(Events.RESET_FIELD, (fieldName: string) => {
     TestWalker.resetField(fieldName);
   });
 
-  VestBus.on(Events.SUITE_RUN_STARTED, () => {
+  on(Events.SUITE_RUN_STARTED, () => {
     useResetCallbacks();
   });
 
-  VestBus.on(Events.REMOVE_FIELD, (fieldName: string) => {
+  on(Events.REMOVE_FIELD, (fieldName: string) => {
     TestWalker.removeTestByFieldName(fieldName);
   });
 
-  VestBus.on(Events.RESET_SUITE, () => {
+  on(Events.RESET_SUITE, () => {
     useResetSuite();
   });
 
   return VestBus;
+
+  function on(event: Events, cb: (...args: any[]) => void) {
+    VestBus.on(event, (...args: any[]) => {
+      // This is more concise, but it might be an overkill
+      // if we're adding events that don't need to invalidate the cache
+      useExpireSuiteResultCache();
+      cb(...args);
+    });
+  }
 }
 
 export enum Events {
+  TEST_RUN_STARTED = 'test_run_started',
   TEST_COMPLETED = 'test_completed',
   ALL_RUNNING_TESTS_FINISHED = 'all_running_tests_finished',
   REMOVE_FIELD = 'remove_field',

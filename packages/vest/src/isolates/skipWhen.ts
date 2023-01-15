@@ -1,10 +1,10 @@
-import { IsolateTypes } from 'IsolateTypes';
-import { isolate } from 'isolate';
 import { CB, optionalFunctionValue } from 'vest-utils';
 
+import { IsolateTypes } from 'IsolateTypes';
 import { SuiteContext, useSkipped } from 'SuiteContext';
 import { SuiteResult } from 'SuiteResultTypes';
-import { suiteResult } from 'suiteResult';
+import { isolate } from 'isolate';
+import { createSuiteResult } from 'suiteResult';
 
 /**
  * Conditionally skips running tests within the callback.
@@ -27,7 +27,10 @@ export function skipWhen(
           // we should skip the test if the parent conditional is true.
           isExcludedIndividually() ||
           // Otherwise, we should skip the test if the conditional is true.
-          optionalFunctionValue(condition, optionalFunctionValue(suiteResult)),
+          optionalFunctionValue(
+            condition,
+            optionalFunctionValue(createSuiteResult)
+          ),
       },
       callback
     );

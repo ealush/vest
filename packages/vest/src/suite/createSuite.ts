@@ -12,7 +12,7 @@ import { SuiteContext } from 'SuiteContext';
 import { SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
 import { Events } from 'VestBus';
 import { isolate } from 'isolate';
-import { suiteResult } from 'suiteResult';
+import { createSuiteResult } from 'suiteResult';
 import { suiteRunResult } from 'suiteRunResult';
 
 function createSuite<T extends CB>(
@@ -52,7 +52,7 @@ function createSuite<T extends CB>(
       // can access the stateRef when it's called.
       PersistedContext.bind(stateRef, suite),
       {
-        get: persist(suiteResult),
+        get: persist(createSuiteResult),
         remove: prepareEmitter<string>(Events.REMOVE_FIELD),
         reset: prepareEmitter(Events.RESET_SUITE),
         resetField: prepareEmitter<string>(Events.RESET_FIELD),

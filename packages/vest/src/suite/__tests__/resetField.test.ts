@@ -31,7 +31,7 @@ describe('suite.resetField', () => {
 
   it('Should refresh the suite result', () => {
     const res = suite.get();
-    expect(res).isDeepCopyOf(suite.get());
+    expect(res).toBe(suite.get());
     suite.resetField('field1');
     expect(res).not.toBe(suite.get());
   });

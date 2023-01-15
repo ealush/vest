@@ -74,8 +74,7 @@ describe('produce method Suite Result', () => {
   });
 
   describe('Value memoization', () => {
-    // TODO: REIMPLEMENT SUITE RESULT CACHE
-    it.skip('When unchanged, should produce a memoized result', () => {
+    it('When unchanged, should produce a memoized result', () => {
       const suite = vest.create(() => {
         dummyTest.passing('field_1');
         dummyTest.failing('field_1', 'message');

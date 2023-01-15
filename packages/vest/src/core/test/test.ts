@@ -1,10 +1,12 @@
-import { VestTest } from 'VestTest';
 import { assign, invariant, isFunction, isStringValue } from 'vest-utils';
 
 import { wrapTestMemo } from './test.memo';
 
+import { useEmit } from 'PersistedContext';
 import { useGroupName } from 'SuiteContext';
 import { TestFn } from 'TestTypes';
+import { Events } from 'VestBus';
+import { VestTest } from 'VestTest';
 import { testObjectIsolate } from 'testObjectIsolate';
 
 function vestTest(fieldName: string, message: string, cb: TestFn): VestTest;
@@ -32,12 +34,16 @@ function vestTest(
   invariant(isFunction(testFn), invalidParamError('callback', 'function'));
 
   const groupName = useGroupName();
+  const emit = useEmit();
 
   const testObject = new VestTest(fieldName, testFn, {
     message,
     groupName,
     key,
   });
+
+  // This invalidates the suite cache.
+  emit(Events.TEST_RUN_STARTED);
 
   return testObjectIsolate(testObject);
 }

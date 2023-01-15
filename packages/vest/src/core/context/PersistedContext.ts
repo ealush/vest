@@ -17,7 +17,6 @@ import { Isolate } from 'IsolateTypes';
 import { OptionalFields } from 'OptionalTypes';
 import { SuiteName, SuiteResult } from 'SuiteResultTypes';
 import { Events, initVestBus } from 'VestBus';
-import { VestTest } from 'VestTest';
 
 const suiteResultCache = cache<SuiteResult>();
 
@@ -62,7 +61,6 @@ export function createVestState({
     suiteId: seq(),
     suiteName,
     suiteResultCache,
-    testMemoCache: cache<VestTest>(10),
   };
 
   return stateRef;
@@ -111,7 +109,6 @@ type CTXType = StateType & {
 };
 
 type StateType = {
-  testMemoCache: CacheApi<VestTest>;
   historyRoot: TinyState<Isolate | null>;
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
@@ -175,10 +172,6 @@ export function useSuiteName() {
 
 export function useSuiteId() {
   return PersistedContext.useX().suiteId;
-}
-
-export function useTestMemoCache() {
-  return PersistedContext.useX().testMemoCache;
 }
 
 export function useSetHistory(history: Isolate) {

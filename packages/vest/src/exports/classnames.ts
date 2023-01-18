@@ -1,7 +1,7 @@
-import { parse } from 'parser';
 import { isFunction } from 'vest-utils';
 
 import { SuiteSummary } from 'SuiteResultTypes';
+import { parse } from 'parser';
 
 /**
  * Creates a function that returns class names that match the validation result

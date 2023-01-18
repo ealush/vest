@@ -1,6 +1,7 @@
+import { invariant } from 'vest-utils';
+
 import { Isolate } from 'IsolateTypes';
 import { VestTest } from 'VestTest';
-import { invariant } from 'vest-utils';
 
 export function getIsolateTestX(isolate: Isolate): VestTest {
   invariant(isolate.data);

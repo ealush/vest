@@ -9,7 +9,6 @@ import { TestWalker } from 'SuiteWalker';
 import { VestTest } from 'VestTest';
 import { runDoneCallbacks, runFieldCallbacks } from 'runCallbacks';
 
-// eslint-disable-next-line max-lines-per-function
 export function initVestBus() {
   const VestBus = bus.createBus();
 

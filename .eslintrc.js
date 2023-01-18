@@ -24,7 +24,10 @@ module.exports = {
       excludedFiles: ['./**/__tests__/**/*.*'],
       rules: {
         'max-depth': [1, { max: 3 }],
-        'max-lines-per-function': [1, { max: 45, skipComments: true }],
+        'max-lines-per-function': [
+          1,
+          { max: 45, skipComments: true, skipBlankLines: true },
+        ],
         'max-nested-callbacks': [1, { max: 2 }],
         'max-statements': [1, { max: 10 }],
       },

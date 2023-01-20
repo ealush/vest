@@ -3,6 +3,7 @@ import { isOptionalFiedApplied } from 'optional';
 import { OptionalFieldTypes } from 'OptionalTypes';
 import { useOptionalField } from 'PersistedContext';
 import { Severity } from 'Severity';
+import { TFieldName } from 'SuiteResultTypes';
 import { TestWalker } from 'SuiteWalker';
 import { VestTest } from 'VestTest';
 import {
@@ -12,7 +13,7 @@ import {
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
 
-export function shouldAddValidProperty(fieldName?: string): boolean {
+export function shouldAddValidProperty(fieldName?: TFieldName): boolean {
   // Is the field optional, and the optional condition is applied
   if (isOptionalFiedApplied(fieldName)) {
     return true;
@@ -39,7 +40,7 @@ export function shouldAddValidProperty(fieldName?: string): boolean {
 
 export function shouldAddValidPropertyInGroup(
   groupName: string,
-  fieldName: string
+  fieldName: TFieldName
 ): boolean {
   if (isOptionalFiedApplied(fieldName)) {
     return true;
@@ -58,7 +59,7 @@ export function shouldAddValidPropertyInGroup(
 }
 
 // Does the given field have any pending tests that are not optional?
-function hasNonOptionalIncomplete(fieldName?: string) {
+function hasNonOptionalIncomplete(fieldName?: TFieldName) {
   return TestWalker.someIncompleteTests(testObject => {
     return isTestObjectOptional(testObject, fieldName);
   });
@@ -67,7 +68,7 @@ function hasNonOptionalIncomplete(fieldName?: string) {
 // Do the given group/field have any pending tests that are not optional?
 function hasNonOptionalIncompleteByGroup(
   groupName: string,
-  fieldName: string
+  fieldName: TFieldName
 ): boolean {
   return TestWalker.someIncompleteTests(testObject => {
     if (nonMatchingGroupName(testObject, groupName)) {
@@ -80,7 +81,7 @@ function hasNonOptionalIncompleteByGroup(
 
 function isTestObjectOptional(
   testObject: VestTest,
-  fieldName?: string
+  fieldName?: TFieldName
 ): boolean {
   if (nonMatchingFieldName(testObject, fieldName)) {
     return false;
@@ -98,7 +99,10 @@ function noMissingTests(fieldName?: string): boolean {
 }
 
 // Does the group have no missing tests?
-function noMissingTestsByGroup(groupName: string, fieldName?: string): boolean {
+function noMissingTestsByGroup(
+  groupName: string,
+  fieldName?: TFieldName
+): boolean {
   return TestWalker.everyTest(testObject => {
     if (nonMatchingGroupName(testObject, groupName)) {
       return true;
@@ -110,7 +114,7 @@ function noMissingTestsByGroup(groupName: string, fieldName?: string): boolean {
 
 function noMissingTestsLogic(
   testObject: VestTest,
-  fieldName?: string
+  fieldName?: TFieldName
 ): boolean {
   if (nonMatchingFieldName(testObject, fieldName)) {
     return true;

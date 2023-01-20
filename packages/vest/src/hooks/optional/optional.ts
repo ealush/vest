@@ -12,8 +12,11 @@ import {
   OptionalsInput,
 } from 'OptionalTypes';
 import { useOptionalField, useOptionalFields } from 'PersistedContext';
+import { TFieldName } from 'SuiteResultTypes';
 
-export function optional(optionals: OptionalsInput): void {
+export function optional<F extends TFieldName>(
+  optionals: OptionalsInput<F>
+): void {
   // There are two types of optional field declarations:
 
   // 1. Delayed: A string, which is the name of the field to be optional.
@@ -45,7 +48,7 @@ export function optional(optionals: OptionalsInput): void {
   }
 }
 
-export function isOptionalFiedApplied(fieldName?: string) {
+export function isOptionalFiedApplied(fieldName?: TFieldName) {
   if (!fieldName) {
     return false;
   }
@@ -54,7 +57,7 @@ export function isOptionalFiedApplied(fieldName?: string) {
 }
 
 function useSetOptionalField(
-  fieldName: string,
+  fieldName: TFieldName,
   setter: (current: OptionalFieldDeclaration) => OptionalFieldDeclaration
 ): void {
   const current = useOptionalFields();

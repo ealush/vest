@@ -9,20 +9,22 @@ import {
   useEmit,
 } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
-import { SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
+import { SuiteResult, SuiteRunResult, TFieldName } from 'SuiteResultTypes';
 import { Events } from 'VestBus';
 import { isolate } from 'isolate';
 import { createSuiteResult } from 'suiteResult';
 import { suiteRunResult } from 'suiteRunResult';
 
-function createSuite<T extends CB>(
+function createSuite<T extends CB, F extends TFieldName>(
   suiteName: SuiteName,
   suiteCallback: T
-): Suite<T>;
-function createSuite<T extends CB>(suiteCallback: T): Suite<T>;
-function createSuite<T extends CB>(
+): Suite<T, F>;
+function createSuite<T extends CB, F extends TFieldName>(
+  suiteCallback: T
+): Suite<T, F>;
+function createSuite<T extends CB, F extends TFieldName>(
   ...args: [suiteName: SuiteName, suiteCallback: T] | [suiteCallback: T]
-): Suite<T> {
+): Suite<T, F> {
   const [suiteCallback, suiteName] = args.reverse() as [T, SuiteName];
 
   validateSuiteCallback(suiteCallback);
@@ -31,7 +33,7 @@ function createSuite<T extends CB>(
   // It holds the suite's persisted values that may remain between runs.
   const stateRef = createVestState({ suiteName });
 
-  function suite(...args: Parameters<T>): SuiteRunResult {
+  function suite(...args: Parameters<T>): SuiteRunResult<F> {
     const [, output] = SuiteContext.run({}, () => {
       const emit = useEmit();
 
@@ -60,7 +62,7 @@ function createSuite<T extends CB>(
     );
   });
 
-  function runSuiteCallback(...args: Parameters<T>): () => SuiteRunResult {
+  function runSuiteCallback(...args: Parameters<T>): () => SuiteRunResult<F> {
     return () => {
       suiteCallback(...args);
       return suiteRunResult();
@@ -79,14 +81,16 @@ function validateSuiteCallback<T extends CB>(
 
 export type SuiteName = string | undefined;
 
-export type Suite<T extends CB> = ((...args: Parameters<T>) => SuiteRunResult) &
-  SuiteMethods;
+export type Suite<T extends CB, F extends TFieldName> = ((
+  ...args: Parameters<T>
+) => SuiteRunResult<F>) &
+  SuiteMethods<F>;
 
-type SuiteMethods = {
-  get: () => SuiteResult;
+type SuiteMethods<F extends TFieldName> = {
+  get: () => SuiteResult<F>;
   reset: () => void;
-  remove: (fieldName: string) => void;
-  resetField: (fieldName: string) => void;
+  remove: (fieldName: F) => void;
+  resetField: (fieldName: F) => void;
 };
 
 export { createSuite };

@@ -1,3 +1,5 @@
+import { TFieldName } from '../SuiteResultTypes';
+
 import { Severity } from 'Severity';
 import { TestWalker } from 'SuiteWalker';
 import { VestTest } from 'VestTest';
@@ -10,13 +12,13 @@ import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
  * summary object, while this one uses the actual validation state
  */
 
-export function hasErrorsByTestObjects(fieldName?: string): boolean {
+export function hasErrorsByTestObjects(fieldName?: TFieldName): boolean {
   return hasFailuresByTestObjects(Severity.ERRORS, fieldName);
 }
 
 export function hasFailuresByTestObjects(
   severityKey: Severity,
-  fieldName?: string
+  fieldName?: TFieldName
 ): boolean {
   return TestWalker.someTests(testObject => {
     return hasFailuresByTestObject(testObject, severityKey, fieldName);
@@ -26,7 +28,7 @@ export function hasFailuresByTestObjects(
 export function hasGroupFailuresByTestObjects(
   severityKey: Severity,
   groupName: string,
-  fieldName?: string
+  fieldName?: TFieldName
 ): boolean {
   return TestWalker.someTests(testObject => {
     if (nonMatchingGroupName(testObject, groupName)) {
@@ -43,7 +45,7 @@ export function hasGroupFailuresByTestObjects(
 export function hasFailuresByTestObject(
   testObject: VestTest,
   severityKey: Severity,
-  fieldName?: string
+  fieldName?: TFieldName
 ): boolean {
   if (!testObject.hasFailures()) {
     return false;

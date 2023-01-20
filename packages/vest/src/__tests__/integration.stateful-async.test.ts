@@ -30,7 +30,7 @@ const suite = () =>
     dummyTest.failingAsync('field_3', { message: 'field_message_3' });
   });
 
-let validate: vest.Suite<({ skip, skipGroup }: SuiteParams) => void>;
+let validate: vest.Suite<({ skip, skipGroup }: SuiteParams) => void, string>;
 let callback_1 = jest.fn(),
   callback_2 = jest.fn(),
   callback_3 = jest.fn(),

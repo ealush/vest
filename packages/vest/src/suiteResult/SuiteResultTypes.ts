@@ -1,17 +1,18 @@
+import { Done } from 'suiteRunResult';
 import { SuiteSelectors } from 'suiteSelectors';
 
-export type SuiteSummary = {
+export type SuiteSummary<F extends TFieldName> = {
   groups: Groups;
-  tests: Tests;
+  tests: Tests<F>;
   valid: boolean;
 } & SummaryBase;
 
-export type TestsContainer = Group | Tests;
+export type TestsContainer<F extends TFieldName> = Group | Tests<F>;
 export type GroupTestSummary = SingleTestSummary;
 
 export type Groups = Record<string, Group>;
 export type Group = Record<string, GroupTestSummary>;
-export type Tests = Record<string, SingleTestSummary>;
+export type Tests<F extends TFieldName> = Record<F, SingleTestSummary>;
 
 export type SingleTestSummary = SummaryBase & {
   errors: string[];
@@ -29,16 +30,13 @@ export type GetFailuresResponse = FailureMessages | string[];
 
 export type FailureMessages = Record<string, string[]>;
 
-export type SuiteResult = SuiteSummary &
-  SuiteSelectors & { suiteName: SuiteName };
+export type SuiteResult<F extends TFieldName> = SuiteSummary<F> &
+  SuiteSelectors<F> & { suiteName: SuiteName };
 
-export type SuiteRunResult = SuiteResult & { done: Done };
+export type SuiteRunResult<F extends TFieldName> = SuiteResult<F> & {
+  done: Done<F>;
+};
 
 export type SuiteName = string | undefined;
 
-export interface Done {
-  (...args: [cb: (res: SuiteResult) => void]): SuiteRunResult;
-  (
-    ...args: [fieldName: string, cb: (res: SuiteResult) => void]
-  ): SuiteRunResult;
-}
+export type TFieldName<T extends string = string> = T;

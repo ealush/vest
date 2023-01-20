@@ -1,11 +1,11 @@
-import { TVestMock } from '../../../../testUtils/TVestMock';
+import { TTestSuite, TVestMock } from '../../../../testUtils/TVestMock';
 import mockThrowError from '../../../../testUtils/mockThrowError';
 import { dummyTest } from '../../../../testUtils/testDummy';
 
 import * as vest from 'vest';
 
 describe('Merging of previous test runs', () => {
-  let suite: vest.Suite<(...args: any[]) => void>;
+  let suite: TTestSuite;
   let counter = 0;
   let testContainer: vest.VestTest[][] = [];
 

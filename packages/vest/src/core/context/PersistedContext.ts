@@ -69,11 +69,10 @@ export function createVestState({
 export function persist<T extends CB>(cb: T): T {
   const prev = PersistedContext.useX();
 
-  // @ts-ignore
   return function persisted(...args: Parameters<T>): ReturnType<T> {
     const ctxToUse = PersistedContext.use() ?? prev;
     return PersistedContext.run(ctxToUse, () => cb(...args));
-  };
+  } as T;
 }
 
 export function useSuiteResultCache(action: () => SuiteResult<TFieldName>) {

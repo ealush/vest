@@ -1,23 +1,23 @@
 import { isFunction } from 'vest-utils';
 
-import { SuiteSummary } from 'SuiteResultTypes';
+import { SuiteSummary, TFieldName } from 'SuiteResultTypes';
 import { parse } from 'parser';
 
 /**
  * Creates a function that returns class names that match the validation result
  */
-export default function classnames(
-  res: SuiteSummary,
+export default function classnames<F extends TFieldName>(
+  res: SuiteSummary<F>,
   classes: SupportedClasses = {}
-): (fieldName: string) => string {
+): (fieldName: F) => string {
   const selectors = parse(res);
 
-  return (key: string): string => {
+  return function cn(fieldName: F): string {
     const classesArray: string[] = [];
 
     for (const selector in classes) {
       const sel = selector as keyof SupportedClasses;
-      if (isFunction(selectors[sel]) && selectors[sel](key)) {
+      if (isFunction(selectors[sel]) && selectors[sel](fieldName)) {
         classesArray.push(classes[sel] as string);
       }
     }

@@ -1,8 +1,13 @@
+import { TFieldName } from 'SuiteResultTypes';
+
 export type OptionalFields = Record<string, OptionalFieldDeclaration>;
 
-export type OptionalsInput = string | string[] | OptionalsObject;
+export type OptionalsInput<F extends TFieldName> = F | F[] | OptionalsObject<F>;
 
-type OptionalsObject = Record<string, (() => boolean) | boolean>;
+type OptionalsObject<F extends TFieldName> = Record<
+  F,
+  (() => boolean) | boolean
+>;
 
 type ImmediateOptionalFieldDeclaration = {
   type: OptionalFieldTypes.Immediate;

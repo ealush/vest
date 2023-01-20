@@ -1,10 +1,10 @@
 import { dummyTest } from '../../../testUtils/testDummy';
 
-import * as vest from 'vest';
+import { TTestSuite } from 'testUtils/TVestMock';
 import { create, eager, only, group } from 'vest';
 
 describe('mode: eager', () => {
-  let suite: vest.Suite<(...args: any[]) => void>;
+  let suite: TTestSuite;
 
   describe('When tests fail', () => {
     beforeEach(() => {

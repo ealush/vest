@@ -7,12 +7,14 @@ import {
 } from 'vest-utils';
 
 import { useExclusion, useInclusion } from 'SuiteContext';
-import { SuiteResult } from 'SuiteResultTypes';
+import { SuiteResult, TFieldName } from 'SuiteResultTypes';
 import { createSuiteResult } from 'suiteResult';
 
-export function include(fieldName: string): {
+export function include<F extends TFieldName>(
+  fieldName: F
+): {
   when: (
-    condition: string | boolean | ((draft: SuiteResult) => boolean)
+    condition: F | TFieldName | boolean | ((draft: SuiteResult<F>) => boolean)
   ) => void;
 } {
   const inclusion = useInclusion();
@@ -25,7 +27,7 @@ export function include(fieldName: string): {
   return { when };
 
   function when(
-    condition: string | ((draft: SuiteResult) => boolean) | boolean
+    condition: F | TFieldName | ((draft: SuiteResult<F>) => boolean) | boolean
   ): void {
     const inclusion = useInclusion();
     const exclusion = useExclusion();

@@ -1,5 +1,6 @@
 import { dummyTest } from '../../../testUtils/testDummy';
 
+import { TTestSuite } from 'testUtils/TVestMock';
 import * as vest from 'vest';
 
 describe('skipWhen', () => {
@@ -91,7 +92,7 @@ describe('skipWhen', () => {
   });
 
   describe('nested calls', () => {
-    let suite: vest.Suite<() => void>;
+    let suite: TTestSuite;
 
     describe('skipped in non-skipped', () => {
       beforeEach(() => {

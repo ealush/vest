@@ -1,9 +1,11 @@
 import { hasOwnProperty, invariant, isPositive } from 'vest-utils';
 
-import { SuiteSummary } from 'SuiteResultTypes';
+import { SuiteSummary, TFieldName } from 'SuiteResultTypes';
 import { suiteSelectors } from 'vest';
 
-export function parse(summary: SuiteSummary): ParsedVestObject {
+export function parse<F extends TFieldName>(
+  summary: SuiteSummary<F>
+): ParsedVestObject<F> {
   invariant(
     summary && hasOwnProperty(summary, 'valid'),
     "Vest parser: expected argument at position 0 to be Vest's result object."
@@ -24,7 +26,7 @@ export function parse(summary: SuiteSummary): ParsedVestObject {
   return selectors;
 
   // Booleans
-  function isTested(fieldName?: string): boolean {
+  function isTested(fieldName?: F): boolean {
     if (!fieldName) {
       return isPositive(summary.testCount);
     }
@@ -39,15 +41,15 @@ export function parse(summary: SuiteSummary): ParsedVestObject {
     return selectors.tested(fieldName);
   }
 
-  function isUntested(fieldName?: string): boolean {
+  function isUntested(fieldName?: F): boolean {
     return !(isPositive(summary.testCount) && selectors.tested(fieldName));
   }
 }
 
-interface ParsedVestObject {
-  valid(fieldName?: string): boolean;
-  tested(fieldName?: string): boolean;
-  invalid(fieldName?: string): boolean;
-  untested(fieldName?: string): boolean;
-  warning(fieldName?: string): boolean;
+interface ParsedVestObject<F extends TFieldName> {
+  valid(fieldName?: F): boolean;
+  tested(fieldName?: F): boolean;
+  invalid(fieldName?: F): boolean;
+  untested(fieldName?: F): boolean;
+  warning(fieldName?: F): boolean;
 }

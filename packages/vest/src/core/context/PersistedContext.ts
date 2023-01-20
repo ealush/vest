@@ -15,10 +15,10 @@ import {
 
 import { Isolate } from 'IsolateTypes';
 import { OptionalFields } from 'OptionalTypes';
-import { SuiteName, SuiteResult } from 'SuiteResultTypes';
+import { SuiteName, SuiteResult, TFieldName } from 'SuiteResultTypes';
 import { Events, initVestBus } from 'VestBus';
 
-const suiteResultCache = cache<SuiteResult>();
+const suiteResultCache = cache<SuiteResult<TFieldName>>();
 
 export const PersistedContext = createCascade<CTXType>(
   (vestState, parentContext) => {
@@ -69,13 +69,14 @@ export function createVestState({
 export function persist<T extends CB>(cb: T): T {
   const prev = PersistedContext.useX();
 
+  // @ts-ignore
   return function persisted(...args: Parameters<T>): ReturnType<T> {
     const ctxToUse = PersistedContext.use() ?? prev;
     return PersistedContext.run(ctxToUse, () => cb(...args));
-  } as T;
+  };
 }
 
-export function useSuiteResultCache(action: () => SuiteResult) {
+export function useSuiteResultCache(action: () => SuiteResult<TFieldName>) {
   const suiteResultCache = PersistedContext.useX().suiteResultCache;
 
   return suiteResultCache([useSuiteId()], action);
@@ -115,7 +116,7 @@ type StateType = {
   suiteId: string;
   optional: OptionalFields;
   VestBus: BusType;
-  suiteResultCache: CacheApi<SuiteResult>;
+  suiteResultCache: CacheApi<SuiteResult<TFieldName>>;
 };
 
 type FieldCallbacks = Record<string, DoneCallbacks>;
@@ -139,13 +140,13 @@ export function prepareEmitter<T = void>(event: Events): (arg: T) => void {
   return (arg: T) => emit(event, arg);
 }
 
-export type DoneCallback = (res: SuiteResult) => void;
+export type DoneCallback = (res: SuiteResult<TFieldName>) => void;
 
 export function useOptionalFields(): OptionalFields {
   return PersistedContext.useX().optional;
 }
 
-export function useOptionalField(fieldName: string) {
+export function useOptionalField(fieldName: TFieldName) {
   return useOptionalFields()[fieldName] ?? {};
 }
 

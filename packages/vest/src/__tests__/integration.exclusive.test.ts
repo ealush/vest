@@ -1,6 +1,9 @@
 import * as vest from 'vest';
 
-let suite: vest.Suite<(exclusion?: Record<string, string | string[]>) => void>;
+let suite: vest.Suite<
+  (exclusion?: Record<string, string | string[]>) => void,
+  string
+>;
 
 beforeEach(() => {
   suite = genSuite();

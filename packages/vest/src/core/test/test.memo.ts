@@ -2,18 +2,28 @@ import { isNull } from 'vest-utils';
 
 import { useCurrentCursor, useSuiteId } from 'PersistedContext';
 import { useTestMemoCache } from 'SuiteContext';
+import { TFieldName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
 import { VestTest } from 'VestTest';
 import { VTest } from 'test';
 import { testObjectIsolate } from 'testObjectIsolate';
 
-export function wrapTestMemo(test: VTest): TestMemo {
+export function wrapTestMemo(test: VTest): TestMemo<TFieldName> {
   /**
    * Caches a test result based on the test's dependencies.
    */
-  function memo(fieldName: string, ...args: ParametersWithoutMessage): VestTest;
-  function memo(fieldName: string, ...args: ParametersWithMessage): VestTest;
-  function memo(fieldName: string, ...args: ParamsOverload): VestTest {
+  function memo<F extends TFieldName>(
+    fieldName: F,
+    ...args: ParametersWithoutMessage
+  ): VestTest;
+  function memo<F extends TFieldName>(
+    fieldName: F,
+    ...args: ParametersWithMessage
+  ): VestTest;
+  function memo<F extends TFieldName>(
+    fieldName: F,
+    ...args: ParamsOverload
+  ): VestTest {
     const [deps, testFn, msg] = args.reverse() as [any[], TestFn, string];
 
     // Implicit dependency for better specificity
@@ -53,9 +63,9 @@ function getTestFromCache(
   return testObjectIsolate(cached[1]);
 }
 
-type TestMemo = {
-  (fieldName: string, ...args: ParametersWithoutMessage): VestTest;
-  (fieldName: string, ...args: ParametersWithMessage): VestTest;
+type TestMemo<F extends TFieldName> = {
+  (fieldName: F, ...args: ParametersWithoutMessage): VestTest;
+  (fieldName: F, ...args: ParametersWithMessage): VestTest;
 };
 
 type ParametersWithoutMessage = [test: TestFn, dependencies: unknown[]];

@@ -1,5 +1,7 @@
 import { assign } from 'vest-utils';
 
+import { TFieldName } from '../SuiteResultTypes';
+
 import {
   DoneCallback,
   useDoneCallbacks,
@@ -8,7 +10,7 @@ import {
 
 export function deferDoneCallback(
   doneCallback: DoneCallback,
-  fieldName?: string
+  fieldName?: TFieldName
 ): void {
   const [, setFieldCallbacks] = useFieldCallbacks();
   const [, setDoneCallbacks] = useDoneCallbacks();

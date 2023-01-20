@@ -2,6 +2,7 @@ import * as walker from 'walker';
 
 import { Isolate, IsolateTypes } from 'IsolateTypes';
 import { useAvailableSuiteRoot } from 'PersistedContext';
+import { TFieldName } from 'SuiteResultTypes';
 import { VestTest } from 'VestTest';
 import matchingFieldName from 'matchingFieldName';
 
@@ -104,7 +105,7 @@ export class TestWalker {
     }, IsolateTypes.TEST);
   }
 
-  static hasRemainingTests(fieldName?: string): boolean {
+  static hasRemainingTests(fieldName?: TFieldName): boolean {
     return TestWalker.someIncompleteTests(testObject => {
       if (fieldName) {
         return matchingFieldName(testObject, fieldName);
@@ -121,7 +122,7 @@ export class TestWalker {
     }, IsolateTypes.TEST);
   }
 
-  static resetField(fieldName: string): void {
+  static resetField(fieldName: TFieldName): void {
     TestWalker.walkTests(testObject => {
       if (matchingFieldName(testObject, fieldName)) {
         testObject.reset();
@@ -129,7 +130,7 @@ export class TestWalker {
     });
   }
 
-  static removeTestByFieldName(fieldName: string): void {
+  static removeTestByFieldName(fieldName: TFieldName): void {
     TestWalker.pluckTests(testObject => {
       return matchingFieldName(testObject, fieldName);
     });

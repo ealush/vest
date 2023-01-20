@@ -7,7 +7,7 @@ import * as vest from 'vest';
 const fieldName = faker.random.word();
 const groupName = faker.lorem.word();
 
-let suite: vest.Suite<(...args: any[]) => void>;
+let suite: vest.Suite<(...args: any[]) => void, string>;
 describe('hasErrorsByGroup', () => {
   describe('When no tests', () => {
     it('Should return false', () => {

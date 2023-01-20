@@ -8,6 +8,7 @@ import { VestTest } from 'VestTest';
 import { isExcluded, isGroupExcluded, skip, only } from 'exclusive';
 import { group } from 'group';
 import * as vest from 'vest';
+import { TTestSuite } from 'testUtils/TVestMock';
 
 let res: boolean, res1: boolean;
 
@@ -229,7 +230,7 @@ describe('exclusive hooks', () => {
     });
 
     describe('Field is in a non included group', () => {
-      let suite: vest.Suite<() => void>;
+      let suite: TTestSuite;
 
       beforeEach(() => {
         suite = vest.create(() => {

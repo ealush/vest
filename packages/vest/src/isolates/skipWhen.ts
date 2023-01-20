@@ -2,7 +2,7 @@ import { CB, optionalFunctionValue } from 'vest-utils';
 
 import { IsolateTypes } from 'IsolateTypes';
 import { SuiteContext, useSkipped } from 'SuiteContext';
-import { SuiteResult } from 'SuiteResultTypes';
+import { SuiteResult, TFieldName } from 'SuiteResultTypes';
 import { isolate } from 'isolate';
 import { createSuiteResult } from 'suiteResult';
 
@@ -15,8 +15,8 @@ import { createSuiteResult } from 'suiteResult';
  *  test('username', 'User already taken', async () => await doesUserExist(username)
  * });
  */
-export function skipWhen(
-  condition: boolean | ((draft: SuiteResult) => boolean),
+export function skipWhen<F extends TFieldName>(
+  condition: boolean | ((draft: SuiteResult<F>) => boolean),
   callback: CB
 ): void {
   isolate(IsolateTypes.SKIP_WHEN, () => {

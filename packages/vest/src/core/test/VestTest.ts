@@ -2,6 +2,7 @@ import { seq } from 'vest-utils';
 
 import { TestFn, TestResult, AsyncTest } from 'TestTypes';
 import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
+import { TFieldName } from 'SuiteResultTypes';
 
 enum TestSeverity {
   Error = 'error',
@@ -9,7 +10,7 @@ enum TestSeverity {
 }
 
 export class VestTest {
-  fieldName: string;
+  fieldName: TFieldName;
   testFn: TestFn;
   groupName?: string;
   message?: string;
@@ -21,7 +22,7 @@ export class VestTest {
   status: KStatus = STATUS_UNTESTED;
 
   constructor(
-    fieldName: string,
+    fieldName: TFieldName,
     testFn: TestFn,
     {
       message,

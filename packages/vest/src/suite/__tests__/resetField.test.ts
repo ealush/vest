@@ -1,8 +1,8 @@
-import * as vest from 'vest';
+import { TTestSuite } from 'testUtils/TVestMock';
 import { create, test } from 'vest';
 
 describe('suite.resetField', () => {
-  let suite: vest.Suite<(...args: any[]) => void>;
+  let suite: TTestSuite;
 
   beforeEach(() => {
     suite = create(() => {

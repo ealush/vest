@@ -1,8 +1,9 @@
+import { TTestSuite } from 'testUtils/TVestMock';
 import * as vest from 'vest';
 import { omitWhen, only } from 'vest';
 
 describe('omitWhen', () => {
-  let suite: vest.Suite<(...args: any[]) => void>;
+  let suite: TTestSuite;
   let cb1 = jest.fn(),
     cb2 = jest.fn(),
     cb3 = jest.fn(),
@@ -167,7 +168,7 @@ describe('omitWhen', () => {
   });
 
   describe('nested calls', () => {
-    let suite: vest.Suite<(...args: any[]) => void>;
+    let suite: TTestSuite;
 
     describe('omitted in non-omitted', () => {
       beforeEach(() => {

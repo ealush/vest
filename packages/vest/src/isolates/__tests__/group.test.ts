@@ -9,6 +9,7 @@ import { VestTest } from 'VestTest';
 import { group } from 'group';
 import { matchingGroupName } from 'matchingGroupName';
 import * as vest from 'vest';
+import { TTestSuite } from 'testUtils/TVestMock';
 
 let groupName = 'group_name_1';
 const groupName2 = 'group_name_2';
@@ -57,8 +58,8 @@ describe('group: exclusion', () => {
         });
       }
     );
-  let res: vest.SuiteRunResult;
-  let suite: vest.Suite<(...args: any[]) => void>;
+  let res: vest.SuiteRunResult<string>;
+  let suite: TTestSuite;
 
   beforeEach(() => {
     groupName = faker.random.word();
@@ -242,7 +243,7 @@ describe('group: base case', () => {
 
       outsideGroup = dummyTest.failing('last');
     });
-  let res: vest.SuiteRunResult;
+  let res: vest.SuiteRunResult<string>;
   beforeEach(() => {
     groupName = faker.random.word();
     const suite = validation();

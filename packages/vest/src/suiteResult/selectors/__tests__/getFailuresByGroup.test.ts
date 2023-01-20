@@ -1,12 +1,13 @@
 import { dummyTest } from '../../../../testUtils/testDummy';
 
+import { TTestSuite } from 'testUtils/TVestMock';
 import { create, group } from 'vest';
 import * as vest from 'vest';
 
 const modes = ['SuiteRunResult', 'SuiteResult'];
 
 describe.each(modes)('produce method: %s', mode => {
-  let suite: vest.Suite<(...args: any[]) => void>;
+  let suite: TTestSuite;
 
   function getRes(...args: any[]) {
     const res = suite(...args);

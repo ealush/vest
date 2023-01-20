@@ -3,6 +3,7 @@ import wait from 'wait';
 import { TestPromise } from '../../testUtils/testPromise';
 
 import * as vest from 'vest';
+import { TTestSuite } from 'testUtils/TVestMock';
 
 function genSuite() {
   return vest.create(() => {
@@ -27,7 +28,7 @@ function genSuite() {
   });
 }
 
-let suite: vest.Suite<() => void>;
+let suite: TTestSuite;
 describe('Stateful behavior', () => {
   let result,
     callback_1 = jest.fn(),

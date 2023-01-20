@@ -4,22 +4,31 @@ import { wrapTestMemo } from './test.memo';
 
 import { useEmit } from 'PersistedContext';
 import { useGroupName } from 'SuiteContext';
+import { TFieldName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
 import { Events } from 'VestBus';
 import { VestTest } from 'VestTest';
 import { testObjectIsolate } from 'testObjectIsolate';
 
-function vestTest(fieldName: string, message: string, cb: TestFn): VestTest;
-function vestTest(fieldName: string, cb: TestFn): VestTest;
-function vestTest(
-  fieldName: string,
+function vestTest<F extends TFieldName>(
+  fieldName: F,
+  message: string,
+  cb: TestFn
+): VestTest;
+function vestTest<F extends TFieldName>(fieldName: F, cb: TestFn): VestTest;
+function vestTest<F extends TFieldName>(
+  fieldName: F,
   message: string,
   cb: TestFn,
   key: string
 ): VestTest;
-function vestTest(fieldName: string, cb: TestFn, key: string): VestTest;
-function vestTest(
-  fieldName: string,
+function vestTest<F extends TFieldName>(
+  fieldName: F,
+  cb: TestFn,
+  key: string
+): VestTest;
+function vestTest<F extends TFieldName>(
+  fieldName: F,
   ...args:
     | [message: string, cb: TestFn]
     | [cb: TestFn]

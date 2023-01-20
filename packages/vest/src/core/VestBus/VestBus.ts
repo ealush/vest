@@ -8,6 +8,7 @@ import {
 import { TestWalker } from 'SuiteWalker';
 import { VestTest } from 'VestTest';
 import { runDoneCallbacks, runFieldCallbacks } from 'runCallbacks';
+import { TFieldName } from 'SuiteResultTypes';
 
 export function initVestBus() {
   const VestBus = bus.createBus();
@@ -38,7 +39,7 @@ export function initVestBus() {
     runDoneCallbacks();
   });
 
-  on(Events.RESET_FIELD, (fieldName: string) => {
+  on(Events.RESET_FIELD, (fieldName: TFieldName) => {
     TestWalker.resetField(fieldName);
   });
 
@@ -46,7 +47,7 @@ export function initVestBus() {
     useResetCallbacks();
   });
 
-  on(Events.REMOVE_FIELD, (fieldName: string) => {
+  on(Events.REMOVE_FIELD, (fieldName: TFieldName) => {
     TestWalker.removeTestByFieldName(fieldName);
   });
 

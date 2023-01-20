@@ -6,6 +6,7 @@ import {
   Groups,
   SingleTestSummary,
   SuiteSummary,
+  TFieldName,
   Tests,
   TestsContainer,
 } from 'SuiteResultTypes';
@@ -16,12 +17,12 @@ import {
   shouldAddValidPropertyInGroup,
 } from 'shouldAddValidProperty';
 
-export function produceSuiteSummary(): SuiteSummary {
-  const summary: SuiteSummary = assign(baseStats(), {
+export function produceSuiteSummary<F extends TFieldName>(): SuiteSummary<F> {
+  const summary: SuiteSummary<F> = assign(baseStats(), {
     groups: {},
     tests: {},
     valid: false,
-  });
+  }) as SuiteSummary<F>;
 
   TestWalker.walkTests(testObject => {
     appendToTest(summary.tests, testObject);
@@ -33,7 +34,7 @@ export function produceSuiteSummary(): SuiteSummary {
   return countFailures(summary);
 }
 
-function appendToTest(tests: Tests, testObject: VestTest) {
+function appendToTest(tests: Tests<TFieldName>, testObject: VestTest) {
   tests[testObject.fieldName] = appendTestObject(tests, testObject);
   // If `valid` is false to begin with, keep it that way. Otherwise, assess.
   tests[testObject.fieldName].valid =
@@ -67,7 +68,9 @@ function appendToGroup(groups: Groups, testObject: VestTest) {
 /**
  * Counts the failed tests and adds global counters
  */
-function countFailures(summary: SuiteSummary): SuiteSummary {
+function countFailures(
+  summary: SuiteSummary<TFieldName>
+): SuiteSummary<TFieldName> {
   for (const test in summary.tests) {
     summary.errorCount += summary.tests[test].errorCount;
     summary.warnCount += summary.tests[test].warnCount;
@@ -82,13 +85,13 @@ function countFailures(summary: SuiteSummary): SuiteSummary {
  * functions as it is really the same, with the difference of "valid" missing in groups
  */
 function appendTestObject(
-  summaryKey: Tests | Group,
+  summaryKey: Tests<TFieldName> | Group,
   testObject: VestTest
 ): SingleTestSummary;
 function appendTestObject(
-  summaryKey: Group | Tests,
+  summaryKey: Group | Tests<TFieldName>,
   testObject: VestTest
-): TestsContainer[keyof TestsContainer] {
+): TestsContainer<TFieldName>[keyof TestsContainer<TFieldName>] {
   const { fieldName, message } = testObject;
 
   summaryKey[fieldName] = summaryKey[fieldName] || baseTestStats();

@@ -2,6 +2,7 @@ import { asArray } from 'vest-utils';
 
 import { dummyTest } from './testDummy';
 
+import { TFieldName } from 'SuiteResultTypes';
 import { optional, create, skip, SuiteResult } from 'vest';
 
 export function failing(failingFields?: string | string[]) {
@@ -103,6 +104,6 @@ function createSuite(
   });
 }
 
-export function ser(res: SuiteResult) {
+export function ser<F extends TFieldName>(res: SuiteResult<F>) {
   return JSON.parse(JSON.stringify(res));
 }

@@ -2,12 +2,13 @@
 import { dummyTest } from '../../../../testUtils/testDummy';
 
 import { SuiteResult } from 'SuiteResultTypes';
+import { TTestSuite } from 'testUtils/TVestMock';
 import { create, group } from 'vest';
 import * as vest from 'vest';
 
 describe('collectFailureMessages', () => {
-  let suite: vest.Suite<(...args: any[]) => void>;
-  let res: SuiteResult;
+  let suite: TTestSuite;
+  let res: SuiteResult<string>;
 
   test('Result has an array of matching error messages', () => {
     const result = res.getErrors();

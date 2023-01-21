@@ -7,10 +7,12 @@ import {
 
 import { ErrorStrings } from 'ErrorStrings';
 import { useExclusion, useInclusion } from 'SuiteContext';
+import { TFieldName } from 'SuiteResultTypes';
 import { VestTest } from 'VestTest';
 import { isExcludedIndividually } from 'skipWhen';
 
 type ExclusionItem = string | string[] | undefined;
+type FieldExclusion<F extends TFieldName> = F | F[] | undefined;
 
 /**
  * Adds a field or a list of fields into the inclusion list
@@ -19,7 +21,7 @@ type ExclusionItem = string | string[] | undefined;
  *
  * only('username');
  */
-export function only(item: ExclusionItem): void {
+export function only<F extends TFieldName>(item: FieldExclusion<F>): void {
   return addTo(ExclusionGroup.ONLY, 'tests', item);
 }
 
@@ -33,7 +35,7 @@ only.group = (item: ExclusionItem) =>
  *
  * skip('username');
  */
-export function skip(item: ExclusionItem): void {
+export function skip<F extends TFieldName>(item: FieldExclusion<F>): void {
   return addTo(ExclusionGroup.SKIP, 'tests', item);
 }
 

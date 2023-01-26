@@ -8,7 +8,7 @@ import { useSuiteId } from 'stateHooks';
 import type { TestBase } from 'test';
 
 export default function testMemo(test: TestBase): TestMemo {
-  const cache = createCache(10); // arbitrary cache size
+  const cache = createCache<VestTest>(10); // arbitrary cache size
 
   /**
    * Caches a test result based on the test's dependencies.

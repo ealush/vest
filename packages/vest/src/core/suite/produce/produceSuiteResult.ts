@@ -7,7 +7,7 @@ import genTestsSummary from 'genTestsSummary';
 import { useStateRef, useTestsFlat, useSuiteName } from 'stateHooks';
 import { SuiteSelectors, suiteSelectors } from 'suiteSelectors';
 
-const cache = createCache(1);
+const cache = createCache<SuiteResult>(1);
 
 export function produceSuiteResult(): SuiteResult {
   const testObjects = useTestsFlat();

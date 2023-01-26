@@ -10,7 +10,7 @@ import hasRemainingTests from 'hasRemainingTests';
 import { produceSuiteResult, SuiteResult } from 'produceSuiteResult';
 import { useStateRef, useTestCallbacks, useTestsFlat } from 'stateHooks';
 
-const cache = createCache(20);
+const cache = createCache<SuiteRunResult>(20);
 
 export function produceFullResult(): SuiteRunResult {
   const testObjects = useTestsFlat();

@@ -75,7 +75,7 @@ export function useAllIncomplete(): VestTest[] {
   return useTestsFlat().filter(test => test.isPending());
 }
 
-const flatCache = createCache();
+const flatCache = createCache<VestTest[]>();
 export function useTestsFlat(): VestTest[] {
   const [{ current }] = useTestObjects();
 

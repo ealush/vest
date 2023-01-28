@@ -210,10 +210,7 @@ export function useSetNextIsolateChild(child: Isolate): void {
   currentIsolate.children.push(child);
 }
 
-export function useSetIsolateKey(
-  key: string | undefined,
-  value: Isolate
-): void {
+export function useSetIsolateKey(key: string | null, value: Isolate): void {
   if (!key) {
     return;
   }

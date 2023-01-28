@@ -3,7 +3,6 @@ import { deferThrow, isNullish, invariant } from 'vest-utils';
 
 import { Isolate } from 'Isolate';
 import { IsolateTypes } from 'IsolateTypes';
-import { useIsolate } from 'PersistedContext';
 import { Reconciler } from 'Reconciler';
 import { VestTest } from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
@@ -75,7 +74,7 @@ class IsolateTestReconciler extends Reconciler {
   }
 
   static onNodeReorder(newNode: IsolateTest, prevNode?: Isolate): IsolateTest {
-    throwTestOrderError(prevNode?.data, newNode.data);
+    throwTestOrderError(newNode, prevNode);
     this.removeAllNextNodesInIsolate();
     return newNode;
   }
@@ -164,16 +163,16 @@ function forceSkipIfInSkipWhen(testNode: IsolateTest): IsolateTest {
 }
 
 function throwTestOrderError(
-  prevTest: VestTest | undefined,
-  newTestObject: VestTest
+  newNode: IsolateTest,
+  prevNode: Isolate | undefined
 ): void {
-  if (shouldAllowReorder()) {
+  if (shouldAllowReorder(newNode)) {
     return;
   }
 
   deferThrow(`Vest Critical Error: Tests called in different order than previous run.
-    expected: ${prevTest?.fieldName}
-    received: ${newTestObject.fieldName}
+    expected: ${newNode.data.fieldName}
+    received: ${prevNode?.data?.fieldName}
     This can happen on one of two reasons:
     1. You're using if/else statements to conditionally select tests. Instead, use "skipWhen".
     2. You are iterating over a list of tests, and their order changed. Use "each" and a custom key prop so that Vest retains their state.`);
@@ -182,8 +181,8 @@ function throwTestOrderError(
 /**
  * @returns {boolean} Whether or not the current isolate allows tests to be reordered
  */
-function shouldAllowReorder(): boolean {
-  const parent = useIsolate();
+function shouldAllowReorder(newNode: IsolateTest): boolean {
+  const parent = newNode.parent;
   invariant(parent);
   return isIsolateType(parent, IsolateTypes.EACH);
 }

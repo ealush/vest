@@ -44,7 +44,7 @@ export class Reconciler {
       return [node, runAsNew(localHistoryNode, node, callback)];
     }
 
-    return [nextNode, getNodeOuput(nextNode)];
+    return [nextNode, nextNode.output];
   }
 
   static removeAllNextNodesInIsolate() {
@@ -81,10 +81,6 @@ export class Reconciler {
     this.removeAllNextNodesInIsolate();
     return newNode;
   }
-}
-
-function getNodeOuput(node: Isolate): any {
-  return node.output;
 }
 
 function runAsNew<Callback extends CB = CB>(

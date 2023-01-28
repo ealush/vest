@@ -11,11 +11,13 @@
       "SuiteContext": ["src/core/context/SuiteContext.ts"],
       "isIsolateType": ["src/core/isolate/isIsolateType.ts"],
       "Isolate": ["src/core/isolate/Isolate.ts"],
+      "IsolateTest": ["src/core/isolate/IsolateTest/IsolateTest.ts"],
       "IsolateTypes": ["src/core/isolate/IsolateTypes.ts"],
       "cancelOverriddenPendingTest": [
         "src/core/isolate/reconciler/cancelOverriddenPendingTest.ts"
       ],
       "isSameProfileTest": ["src/core/isolate/reconciler/isSameProfileTest.ts"],
+      "Reconciler": ["src/core/isolate/reconciler/Reconciler/Reconciler.ts"],
       "getIsolateTest": [
         "src/core/isolate/reconciler/VestReconciler/getIsolateTest.ts"
       ],

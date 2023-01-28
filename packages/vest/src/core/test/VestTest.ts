@@ -15,7 +15,7 @@ export class VestTest {
   groupName?: string;
   message?: string;
   asyncTest?: AsyncTest;
-  key?: null | string = null;
+  key: null | string = null;
 
   id = seq();
   severity = TestSeverity.Error;

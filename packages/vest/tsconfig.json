@@ -21,8 +21,8 @@
       "getIsolateTest": [
         "src/core/isolate/reconciler/VestReconciler/getIsolateTest.ts"
       ],
-      "handleTestNodeWithKey": [
-        "src/core/isolate/reconciler/VestReconciler/handleTestNodeWithKey.ts"
+      "handleIsolateNodeWithKey": [
+        "src/core/isolate/reconciler/VestReconciler/handleIsolateNodeWithKey.ts"
       ],
       "walker": ["src/core/isolate/walker.ts"],
       "SuiteWalker": ["src/core/SuiteWalker/SuiteWalker.ts"],

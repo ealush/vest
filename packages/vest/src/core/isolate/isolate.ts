@@ -15,7 +15,7 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
   parent: Isolate | null = null;
   data?: D;
   output?: any;
-  key?: null | string = null;
+  key: null | string = null;
   static reconciler = Reconciler;
 
   constructor(type: T, data?: any) {
@@ -33,7 +33,7 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
     return this;
   }
 
-  setKey(key: string | undefined | null): this {
+  setKey(key: string | null): this {
     this.key = key;
     return this;
   }

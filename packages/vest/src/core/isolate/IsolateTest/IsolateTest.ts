@@ -1,3 +1,4 @@
+import { handleIsolateNodeWithKey } from 'handleIsolateNodeWithKey';
 import { isOptionalFiedApplied } from 'optional';
 import { deferThrow, isNullish, invariant } from 'vest-utils';
 
@@ -9,7 +10,6 @@ import { VestTest } from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';
 import { getIsolateTest, getIsolateTestX } from 'getIsolateTest';
-import { handleTestNodeWithKey } from 'handleTestNodeWithKey';
 import { isIsolateType, isTestIsolate } from 'isIsolateType';
 import { isSameProfileTest } from 'isSameProfileTest';
 import { shouldSkipBasedOnMode } from 'mode';
@@ -53,8 +53,8 @@ class IsolateTestReconciler extends Reconciler {
   static handleCollision(newNode: IsolateTest, prevNode: Isolate): IsolateTest {
     const newTestObject = getIsolateTestX(newNode);
 
-    if (shouldUseKey(newNode, prevNode)) {
-      return handleTestNodeWithKey(newNode);
+    if (newNode.usesKey()) {
+      return handleIsolateNodeWithKey(newNode) as IsolateTest;
     }
 
     const prevTestObject = getIsolateTest(prevNode);
@@ -119,7 +119,7 @@ function handleNoHistoryNode(testNode: IsolateTest): IsolateTest {
   // const testObject = getIsolateTestX(testNode);
 
   if (testNode.usesKey()) {
-    return handleTestNodeWithKey(testNode);
+    return handleIsolateNodeWithKey(testNode) as IsolateTest;
   }
 
   return testNode;
@@ -148,15 +148,6 @@ function forceSkipIfInSkipWhen(testNode: IsolateTest): IsolateTest {
   // up on this async test intentionally.
   collisionTestObject.skip(isExcludedIndividually());
   return testNode;
-}
-
-function shouldUseKey(newNode: IsolateTest, prevNode: Isolate): boolean {
-  // const newTestObject = getIsolateTestX(newNode);
-
-  return !!(
-    (isNullish(prevNode) || getIsolateTest(prevNode)) &&
-    newNode.usesKey()
-  );
 }
 
 function throwTestOrderError(

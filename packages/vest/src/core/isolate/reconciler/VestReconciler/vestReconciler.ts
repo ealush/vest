@@ -1,6 +1,7 @@
 import { isOptionalFiedApplied } from 'optional';
 import { isNullish } from 'vest-utils';
 
+import { Isolate, IsolateTest } from 'Isolate';
 import { VestTest } from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';
@@ -8,7 +9,6 @@ import { getIsolateTest, getIsolateTestX } from 'getIsolateTest';
 import { handleCollision } from 'handleCollision';
 import { handleTestNodeWithKey } from 'handleTestNodeWithKey';
 import { isTestIsolate } from 'isIsolateType';
-import { Isolate, IsolateTest } from 'isolate';
 import { shouldSkipBasedOnMode } from 'mode';
 import { withinActiveOmitWhen } from 'omitWhen';
 import { isExcludedIndividually } from 'skipWhen';

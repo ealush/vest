@@ -1,5 +1,5 @@
+import { Isolate, IsolateTest } from 'Isolate';
 import { IsolateTypes } from 'IsolateTypes';
-import { Isolate, IsolateTest } from 'isolate';
 
 export function isIsolateType(isolate: Isolate, type: IsolateTypes): boolean {
   return isolate.type === type;

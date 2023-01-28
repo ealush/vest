@@ -10,7 +10,7 @@
       "PersistedContext": ["src/core/context/PersistedContext.ts"],
       "SuiteContext": ["src/core/context/SuiteContext.ts"],
       "isIsolateType": ["src/core/isolate/isIsolateType.ts"],
-      "isolate": ["src/core/isolate/isolate.ts"],
+      "Isolate": ["src/core/isolate/Isolate.ts"],
       "IsolateTypes": ["src/core/isolate/IsolateTypes.ts"],
       "cancelOverriddenPendingTest": [
         "src/core/isolate/reconciler/cancelOverriddenPendingTest.ts"

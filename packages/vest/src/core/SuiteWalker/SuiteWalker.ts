@@ -1,10 +1,10 @@
 import * as walker from 'walker';
 
+import { Isolate } from 'Isolate';
 import { IsolateTypes } from 'IsolateTypes';
 import { useAvailableSuiteRoot } from 'PersistedContext';
 import { TFieldName } from 'SuiteResultTypes';
 import { VestTest } from 'VestTest';
-import { Isolate } from 'isolate';
 import matchingFieldName from 'matchingFieldName';
 
 export class SuiteWalker {

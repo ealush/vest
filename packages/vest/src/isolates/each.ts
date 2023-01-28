@@ -1,7 +1,7 @@
 import { invariant, isFunction } from 'vest-utils';
 
 import { IsolateTypes } from 'IsolateTypes';
-import { isolate } from 'isolate';
+import { Isolate } from 'isolate';
 
 /**
  * Iterates over an array of items, allowing to run tests individually per item.
@@ -22,7 +22,7 @@ export function each<T>(
 ): void {
   invariant(isFunction(callback), 'each callback must be a function');
 
-  isolate(IsolateTypes.EACH, () => {
+  Isolate.create(IsolateTypes.EACH, () => {
     list.forEach((arg, index) => {
       callback(arg, index);
     });

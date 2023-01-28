@@ -1,9 +1,9 @@
-import { Isolate, IsolateTypes } from 'IsolateTypes';
+import { IsolateTypes } from 'IsolateTypes';
 import { SuiteContext } from 'SuiteContext';
-import { isolate } from 'isolate';
+import { Isolate } from 'isolate';
 
 export function group(groupName: string, callback: () => void): Isolate {
-  const [groupIsolate] = isolate(IsolateTypes.GROUP, () => {
+  const [groupIsolate] = Isolate.create(IsolateTypes.GROUP, () => {
     SuiteContext.run({ groupName }, callback);
   });
 

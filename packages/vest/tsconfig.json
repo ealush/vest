@@ -12,6 +12,9 @@
       "isIsolate": ["src/core/isolate/isIsolate.ts"],
       "Isolate": ["src/core/isolate/Isolate.ts"],
       "IsolateTest": ["src/core/isolate/IsolateTest/IsolateTest.ts"],
+      "IsolateTestReconciler": [
+        "src/core/isolate/IsolateTest/IsolateTestReconciler.ts"
+      ],
       "IsolateTypes": ["src/core/isolate/IsolateTypes.ts"],
       "cancelOverriddenPendingTest": [
         "src/core/isolate/reconciler/cancelOverriddenPendingTest.ts"

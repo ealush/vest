@@ -8,6 +8,7 @@ import {
   PersistedContext,
   useRuntimeRoot,
 } from 'PersistedContext';
+import { handleIsolateNodeWithKey } from 'handleIsolateNodeWithKey';
 
 export class Reconciler {
   static reconciler(
@@ -55,6 +56,30 @@ export class Reconciler {
     }
 
     historyNode.children.length = useCurrentCursor();
+  }
+
+  static handleCollision(newNode: Isolate, prevNode: Isolate): Isolate {
+    // we should base our calculation on the key property
+    if (newNode.usesKey()) {
+      return handleIsolateNodeWithKey(newNode);
+    }
+
+    if (this.nodeReorderDetected(newNode, prevNode)) {
+      this.onNodeReorder(newNode, prevNode);
+    }
+
+    return prevNode ? prevNode : newNode;
+  }
+
+  // @ts-ignore - for now a general case reorder detection is unlikely
+  static nodeReorderDetected(newNode: Isolate, prevNode: Isolate): boolean {
+    return false;
+  }
+
+  // @ts-ignore - for now a general case reorder detection is unlikely
+  static onNodeReorder(newNode: Isolate, prevNode: Isolate): Isolate {
+    this.removeAllNextNodesInIsolate();
+    return newNode;
   }
 }
 

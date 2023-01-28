@@ -13,7 +13,7 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
   children: Isolate[] = [];
   keys: Record<string, Isolate> = {};
   parent: Isolate | null = null;
-  data?: D;
+  data: D;
   output?: any;
   key: null | string = null;
   static reconciler = Reconciler;

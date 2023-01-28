@@ -7,10 +7,10 @@ import { TDummyTest } from '../../testUtils/testDummy';
 
 import { IsolateTypes } from 'IsolateTypes';
 
-describe('isolate', () => {
+describe('Isolate', () => {
   let vest: TVestMock;
   let firstRun = true;
-  let Isolate = require('isolate').Isolate;
+  let Isolate = require('Isolate').Isolate;
   let dummyTest: TDummyTest;
   let deferThrow: TDeferThrow;
 
@@ -18,7 +18,7 @@ describe('isolate', () => {
     firstRun = true;
     const mock = mockThrowError();
     deferThrow = mock.deferThrow;
-    Isolate = require('isolate').Isolate;
+    Isolate = require('Isolate').Isolate;
     vest = mock.vest;
     dummyTest = require('../../testUtils/testDummy').dummyTest;
   });

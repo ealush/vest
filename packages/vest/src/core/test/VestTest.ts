@@ -1,8 +1,8 @@
 import { seq } from 'vest-utils';
 
+import { TFieldName } from 'SuiteResultTypes';
 import { TestFn, TestResult, AsyncTest } from 'TestTypes';
 import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
-import { TFieldName } from 'SuiteResultTypes';
 
 enum TestSeverity {
   Error = 'error',

@@ -1,4 +1,4 @@
-import { CB } from 'vest-utils';
+import { CB, isNotNullish } from 'vest-utils';
 
 import { IsolateTypes } from 'IsolateTypes';
 import {
@@ -28,8 +28,18 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
     return this;
   }
 
-  saveOutput(output: any): void {
+  saveOutput(output: any): this {
     this.output = output;
+    return this;
+  }
+
+  setKey(key: string | undefined | null): this {
+    this.key = key;
+    return this;
+  }
+
+  usesKey(): boolean {
+    return isNotNullish(this.key);
   }
 
   static create<Callback extends CB = CB>(
@@ -39,7 +49,7 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
   ): Isolate {
     const parent = useIsolate();
 
-    const newCreatedNode = new Isolate(type, data).setParent(parent);
+    const newCreatedNode = new this(type, data).setParent(parent);
 
     const [nextIsolateChild, output] = this.reconciler.reconcile(
       newCreatedNode,

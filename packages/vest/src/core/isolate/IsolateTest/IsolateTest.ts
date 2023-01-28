@@ -1,4 +1,3 @@
-import { handleIsolateNodeWithKey } from 'handleIsolateNodeWithKey';
 import { isOptionalFiedApplied } from 'optional';
 import { deferThrow, isNullish, invariant } from 'vest-utils';
 
@@ -10,6 +9,7 @@ import { VestTest } from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';
 import { getIsolateTest, getIsolateTestX } from 'getIsolateTest';
+import { handleIsolateNodeWithKey } from 'handleIsolateNodeWithKey';
 import { isIsolateType, isTestIsolate } from 'isIsolateType';
 import { isSameProfileTest } from 'isSameProfileTest';
 import { shouldSkipBasedOnMode } from 'mode';
@@ -50,22 +50,34 @@ class IsolateTestReconciler extends Reconciler {
     return reconcilerOutput;
   }
 
-  static handleCollision(newNode: IsolateTest, prevNode: Isolate): IsolateTest {
-    const newTestObject = getIsolateTestX(newNode);
+  static nodeReorderDetected(
+    newNode: IsolateTest,
+    prevNode?: Isolate
+  ): boolean {
+    const prevTest = prevNode?.data;
+    const newTest = newNode.data;
+    return !!prevTest && !isSameProfileTest(prevTest, newTest);
+  }
 
+  static handleCollision(
+    newNode: IsolateTest,
+    prevNode?: Isolate
+  ): IsolateTest {
     if (newNode.usesKey()) {
       return handleIsolateNodeWithKey(newNode) as IsolateTest;
     }
 
-    const prevTestObject = getIsolateTest(prevNode);
-
-    if (testReorderDetected(newTestObject, prevTestObject)) {
-      throwTestOrderError(prevTestObject, newTestObject);
-      this.removeAllNextNodesInIsolate();
-      return newNode;
+    if (this.nodeReorderDetected(newNode, prevNode)) {
+      return this.onNodeReorder(newNode, prevNode);
     }
 
     return (prevNode ? prevNode : newNode) as IsolateTest;
+  }
+
+  static onNodeReorder(newNode: IsolateTest, prevNode?: Isolate): IsolateTest {
+    throwTestOrderError(prevNode?.data, newNode.data);
+    this.removeAllNextNodesInIsolate();
+    return newNode;
   }
 
   static pickNode(historyNode: IsolateTest, currentNode: IsolateTest): Isolate {
@@ -94,6 +106,7 @@ export class IsolateTest extends Isolate<IsolateTypes.TEST, VestTest> {
 
   constructor(type: IsolateTypes.TEST, data: VestTest) {
     super(type, data);
+    this.data = data;
 
     this.setKey(data.key);
   }
@@ -164,13 +177,6 @@ function throwTestOrderError(
     This can happen on one of two reasons:
     1. You're using if/else statements to conditionally select tests. Instead, use "skipWhen".
     2. You are iterating over a list of tests, and their order changed. Use "each" and a custom key prop so that Vest retains their state.`);
-}
-
-function testReorderDetected(
-  newTest: VestTest,
-  prevTest: VestTest | undefined
-): boolean {
-  return !!prevTest && !isSameProfileTest(prevTest, newTest);
 }
 
 /**

@@ -34,15 +34,13 @@ function createSuite<T extends CB, F extends TFieldName>(
   const stateRef = createVestState({ suiteName });
 
   function suite(...args: Parameters<T>): SuiteRunResult<F> {
-    const [, output] = SuiteContext.run({}, () => {
+    return SuiteContext.run({}, () => {
       const emit = useEmit();
 
       emit(Events.SUITE_RUN_STARTED);
 
       return Isolate.create(IsolateTypes.SUITE, runSuiteCallback(...args));
-    });
-
-    return output;
+    }).output;
   }
 
   // Assign methods to the suite

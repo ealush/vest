@@ -2,13 +2,14 @@ import { CB, invariant, isNullish } from 'vest-utils';
 
 import type { Isolate } from 'Isolate';
 import {
+  useHistoryKey,
+  useSetIsolateKey,
   useHistoryNode,
   useIsolate,
   useCurrentCursor,
   PersistedContext,
   useRuntimeRoot,
 } from 'PersistedContext';
-import { handleIsolateNodeWithKey } from 'handleIsolateNodeWithKey';
 
 export class Reconciler {
   static reconciler(
@@ -61,7 +62,7 @@ export class Reconciler {
   static handleCollision(newNode: Isolate, prevNode: Isolate): Isolate {
     // we should base our calculation on the key property
     if (newNode.usesKey()) {
-      return handleIsolateNodeWithKey(newNode);
+      return this.handleIsolateNodeWithKey(newNode);
     }
 
     if (this.nodeReorderDetected(newNode, prevNode)) {
@@ -80,6 +81,22 @@ export class Reconciler {
   static onNodeReorder(newNode: Isolate, prevNode: Isolate): Isolate {
     this.removeAllNextNodesInIsolate();
     return newNode;
+  }
+
+  static handleIsolateNodeWithKey(node: Isolate): Isolate {
+    invariant(node.usesKey());
+
+    const prevNodeByKey = useHistoryKey(node.key);
+
+    let nextNode = node;
+
+    if (!isNullish(prevNodeByKey)) {
+      nextNode = prevNodeByKey;
+    }
+
+    useSetIsolateKey(node.key, node);
+
+    return nextNode;
   }
 }
 

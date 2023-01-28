@@ -1,4 +1,4 @@
-import { isOptionalFiedApplied } from 'optional';
+import { isIsolateType, isTestIsolate } from 'isIsolate';
 import { deferThrow, isNullish, invariant } from 'vest-utils';
 
 import { Isolate } from 'Isolate';
@@ -8,11 +8,10 @@ import { VestTest } from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';
 import { getIsolateTest, getIsolateTestX } from 'getIsolateTest';
-import { handleIsolateNodeWithKey } from 'handleIsolateNodeWithKey';
-import { isIsolateType, isTestIsolate } from 'isIsolateType';
 import { isSameProfileTest } from 'isSameProfileTest';
 import { shouldSkipBasedOnMode } from 'mode';
 import { withinActiveOmitWhen } from 'omitWhen';
+import { isOptionalFiedApplied } from 'optional';
 import { isExcludedIndividually } from 'skipWhen';
 
 class IsolateTestReconciler extends Reconciler {
@@ -26,7 +25,7 @@ class IsolateTestReconciler extends Reconciler {
     }
 
     if (isNullish(historyNode)) {
-      return handleNoHistoryNode(currentNode);
+      return this.handleNoHistoryNode(currentNode);
     }
 
     const prevTestObject = getIsolateTest(historyNode);
@@ -63,7 +62,7 @@ class IsolateTestReconciler extends Reconciler {
     prevNode?: Isolate
   ): IsolateTest {
     if (newNode.usesKey()) {
-      return handleIsolateNodeWithKey(newNode) as IsolateTest;
+      return this.handleIsolateNodeWithKey(newNode) as IsolateTest;
     }
 
     if (this.nodeReorderDetected(newNode, prevNode)) {
@@ -98,6 +97,16 @@ class IsolateTestReconciler extends Reconciler {
 
     return currentNode;
   }
+
+  static handleNoHistoryNode(testNode: IsolateTest): IsolateTest {
+    // const testObject = getIsolateTestX(testNode);
+
+    if (testNode.usesKey()) {
+      return this.handleIsolateNodeWithKey(testNode) as IsolateTest;
+    }
+
+    return testNode;
+  }
 }
 
 export class IsolateTest extends Isolate<IsolateTypes.TEST, VestTest> {
@@ -125,16 +134,6 @@ function cancelOverriddenPendingTestOnTestReRun(
 
 function shouldOmit(testObject: VestTest): boolean {
   return withinActiveOmitWhen() || isOptionalFiedApplied(testObject.fieldName);
-}
-
-function handleNoHistoryNode(testNode: IsolateTest): IsolateTest {
-  // const testObject = getIsolateTestX(testNode);
-
-  if (testNode.usesKey()) {
-    return handleIsolateNodeWithKey(testNode) as IsolateTest;
-  }
-
-  return testNode;
 }
 
 function skipTestAndReturn(testNode: IsolateTest): IsolateTest {

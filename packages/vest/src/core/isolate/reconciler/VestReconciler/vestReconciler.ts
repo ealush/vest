@@ -1,7 +1,8 @@
+import { IsolateTest } from 'IsolateTest';
 import { isOptionalFiedApplied } from 'optional';
 import { isNullish } from 'vest-utils';
 
-import { Isolate, IsolateTest } from 'Isolate';
+import { Isolate } from 'Isolate';
 import { VestTest } from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';

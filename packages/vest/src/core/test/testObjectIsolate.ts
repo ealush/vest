@@ -1,4 +1,5 @@
-import { IsolateTest } from 'Isolate';
+import { IsolateTest } from 'IsolateTest';
+
 import { IsolateTypes } from 'IsolateTypes';
 import { VestTest } from 'VestTest';
 import { attemptRunTestObjectByTier } from 'runTest';

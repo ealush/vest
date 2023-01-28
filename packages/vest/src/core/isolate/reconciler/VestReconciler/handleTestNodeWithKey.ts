@@ -1,6 +1,6 @@
+import { IsolateTest } from 'IsolateTest';
 import { invariant, isNullish } from 'vest-utils';
 
-import { IsolateTest } from 'Isolate';
 import { useHistoryKey, useSetIsolateKey } from 'PersistedContext';
 import { asVestTest } from 'asVestTest';
 import { getIsolateTestX } from 'getIsolateTest';

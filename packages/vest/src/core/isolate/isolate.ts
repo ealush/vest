@@ -1,6 +1,6 @@
 import { CB, invariant } from 'vest-utils';
 
-import { Isolate, IsolateTypes } from 'IsolateTypes';
+import { IsolateTypes } from 'IsolateTypes';
 import {
   useSetNextIsolateChild,
   PersistedContext,
@@ -10,30 +10,52 @@ import {
   useRuntimeRoot,
   useCurrentCursor,
 } from 'PersistedContext';
-import { createIsolate } from 'createIsolate';
+import { VestTest } from 'VestTest';
 import { vestReconciler } from 'vestReconciler';
 
-export function isolate<Callback extends CB = CB>(
-  type: IsolateTypes,
-  callback: Callback,
-  data?: any
-): [Isolate, ReturnType<Callback>] {
-  const parent = useIsolate();
+export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
+  type: T;
+  children: Isolate[] = [];
+  keys: Record<string, Isolate> = {};
+  parent: Isolate | null = null;
+  data?: D;
+  output?: any;
+  key?: null | string = null;
 
-  const current = createIsolate(type, parent, data);
-
-  const output = reconcileHistoryNode(current, callback);
-
-  const [nextIsolateChild] = output;
-
-  if (parent) {
-    useSetNextIsolateChild(nextIsolateChild);
-  } else {
-    useSetHistory(nextIsolateChild);
+  constructor(type: T, data?: any) {
+    this.type = type;
+    this.data = data;
   }
 
-  return output;
+  setParent(parent: Isolate | null): Isolate {
+    this.parent = parent;
+    return this;
+  }
+
+  static create<Callback extends CB = CB>(
+    type: IsolateTypes,
+    callback: Callback,
+    data?: any
+  ): [Isolate, ReturnType<Callback>] {
+    const parent = useIsolate();
+
+    const newCreatedNode = new Isolate(type, data).setParent(parent);
+
+    const output = reconcileHistoryNode(newCreatedNode, callback);
+
+    const [nextIsolateChild] = output;
+
+    if (parent) {
+      useSetNextIsolateChild(nextIsolateChild);
+    } else {
+      useSetHistory(nextIsolateChild);
+    }
+
+    return output;
+  }
 }
+
+export class IsolateTest extends Isolate<IsolateTypes.TEST, VestTest> {}
 
 function reconcileHistoryNode<Callback extends CB = CB>(
   current: Isolate,

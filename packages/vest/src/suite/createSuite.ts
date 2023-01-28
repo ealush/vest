@@ -11,7 +11,7 @@ import {
 import { SuiteContext } from 'SuiteContext';
 import { SuiteResult, SuiteRunResult, TFieldName } from 'SuiteResultTypes';
 import { Events } from 'VestBus';
-import { isolate } from 'isolate';
+import { Isolate } from 'isolate';
 import { createSuiteResult } from 'suiteResult';
 import { suiteRunResult } from 'suiteRunResult';
 
@@ -39,7 +39,7 @@ function createSuite<T extends CB, F extends TFieldName>(
 
       emit(Events.SUITE_RUN_STARTED);
 
-      return isolate(IsolateTypes.SUITE, runSuiteCallback(...args));
+      return Isolate.create(IsolateTypes.SUITE, runSuiteCallback(...args));
     });
 
     return output;

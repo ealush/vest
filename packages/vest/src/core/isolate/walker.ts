@@ -1,4 +1,5 @@
-import { Isolate, IsolateTypes } from 'IsolateTypes';
+import { IsolateTypes } from 'IsolateTypes';
+import { Isolate } from 'isolate';
 
 // eslint-disable-next-line complexity
 export function walk(

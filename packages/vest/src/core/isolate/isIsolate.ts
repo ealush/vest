@@ -1,6 +1,5 @@
-import { IsolateTest } from 'IsolateTest';
-
 import { Isolate } from 'Isolate';
+import { IsolateTest } from 'IsolateTest';
 import { IsolateTypes } from 'IsolateTypes';
 
 export function isIsolateType(isolate: Isolate, type: IsolateTypes): boolean {

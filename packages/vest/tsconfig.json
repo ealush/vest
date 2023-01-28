@@ -9,7 +9,7 @@
     "paths": {
       "PersistedContext": ["src/core/context/PersistedContext.ts"],
       "SuiteContext": ["src/core/context/SuiteContext.ts"],
-      "isIsolateType": ["src/core/isolate/isIsolateType.ts"],
+      "isIsolate": ["src/core/isolate/isIsolate.ts"],
       "Isolate": ["src/core/isolate/Isolate.ts"],
       "IsolateTest": ["src/core/isolate/IsolateTest/IsolateTest.ts"],
       "IsolateTypes": ["src/core/isolate/IsolateTypes.ts"],
@@ -20,9 +20,6 @@
       "Reconciler": ["src/core/isolate/reconciler/Reconciler/Reconciler.ts"],
       "getIsolateTest": [
         "src/core/isolate/reconciler/VestReconciler/getIsolateTest.ts"
-      ],
-      "handleIsolateNodeWithKey": [
-        "src/core/isolate/reconciler/VestReconciler/handleIsolateNodeWithKey.ts"
       ],
       "walker": ["src/core/isolate/walker.ts"],
       "SuiteWalker": ["src/core/SuiteWalker/SuiteWalker.ts"],

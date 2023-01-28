@@ -13,10 +13,10 @@ import {
   CacheApi,
 } from 'vest-utils';
 
-import { Isolate } from 'IsolateTypes';
 import { OptionalFields } from 'OptionalTypes';
 import { SuiteName, SuiteResult, TFieldName } from 'SuiteResultTypes';
 import { Events, initVestBus } from 'VestBus';
+import { Isolate } from 'isolate';
 
 const suiteResultCache = cache<SuiteResult<TFieldName>>();
 

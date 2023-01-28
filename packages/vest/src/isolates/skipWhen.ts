@@ -3,7 +3,7 @@ import { CB, optionalFunctionValue } from 'vest-utils';
 import { IsolateTypes } from 'IsolateTypes';
 import { SuiteContext, useSkipped } from 'SuiteContext';
 import { SuiteResult, TFieldName } from 'SuiteResultTypes';
-import { isolate } from 'isolate';
+import { Isolate } from 'isolate';
 import { createSuiteResult } from 'suiteResult';
 
 /**
@@ -19,7 +19,7 @@ export function skipWhen<F extends TFieldName>(
   condition: boolean | ((draft: SuiteResult<F>) => boolean),
   callback: CB
 ): void {
-  isolate(IsolateTypes.SKIP_WHEN, () => {
+  Isolate.create(IsolateTypes.SKIP_WHEN, () => {
     SuiteContext.run(
       {
         skipped:

@@ -9,7 +9,6 @@
     "paths": {
       "PersistedContext": ["src/core/context/PersistedContext.ts"],
       "SuiteContext": ["src/core/context/SuiteContext.ts"],
-      "createIsolate": ["src/core/isolate/createIsolate.ts"],
       "isIsolateType": ["src/core/isolate/isIsolateType.ts"],
       "isolate": ["src/core/isolate/isolate.ts"],
       "IsolateTypes": ["src/core/isolate/IsolateTypes.ts"],

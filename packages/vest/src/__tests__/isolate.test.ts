@@ -10,7 +10,7 @@ import { IsolateTypes } from 'IsolateTypes';
 describe('isolate', () => {
   let vest: TVestMock;
   let firstRun = true;
-  let isolate = require('isolate').isolate;
+  let Isolate = require('isolate').Isolate;
   let dummyTest: TDummyTest;
   let deferThrow: TDeferThrow;
 
@@ -18,7 +18,7 @@ describe('isolate', () => {
     firstRun = true;
     const mock = mockThrowError();
     deferThrow = mock.deferThrow;
-    isolate = require('isolate').isolate;
+    Isolate = require('isolate').Isolate;
     vest = mock.vest;
     dummyTest = require('../../testUtils/testDummy').dummyTest;
   });
@@ -30,7 +30,7 @@ describe('isolate', () => {
 
   describe('Base behavior', () => {
     it("Should throw an error if the callback isn't a function", () => {
-      expect(() => isolate({}, 'not a function')).toThrow();
+      expect(() => Isolate.create({}, 'not a function')).toThrow();
     });
 
     it('Should retain test results between runs', () => {
@@ -38,7 +38,7 @@ describe('isolate', () => {
       const f2 = jest.fn(() => false);
       const suite = genSuite(() => {
         vest.skipWhen(!firstRun, () => {
-          isolate({ type: IsolateTypes.DEFAULT }, () => {
+          Isolate.create({ type: IsolateTypes.DEFAULT }, () => {
             vest.test('f1', f1);
             vest.test('f2', f2);
           });
@@ -63,7 +63,7 @@ describe('isolate', () => {
       const suite = genSuite(() => {
         dummyTest.failing('f1');
 
-        isolate({ type: IsolateTypes.EACH }, () => {
+        Isolate.create({ type: IsolateTypes.EACH }, () => {
           dummyTest.failing('f2');
           if (!firstRun) {
             dummyTest.failing('f3');
@@ -107,7 +107,7 @@ describe('isolate', () => {
 
     it('Should only retain the state of the unmoved state before the order index', () => {
       const suite = genSuite(() => {
-        isolate({ type: IsolateTypes.EACH }, () => {
+        Isolate.create({ type: IsolateTypes.EACH }, () => {
           vest.skipWhen(!firstRun, () => {
             dummyTest.failing('f1');
           });
@@ -150,7 +150,7 @@ describe('isolate', () => {
         // if the state is kept, they should be invalid. Otherwise
         // they should be untested.
         vest.skipWhen(!firstRun, () => {
-          isolate({ type: IsolateTypes.EACH }, () => {
+          Isolate.create({ type: IsolateTypes.EACH }, () => {
             dummyTest.failing('f2');
             dummyTest.failing('f3');
             dummyTest.failing('f4');
@@ -194,11 +194,11 @@ describe('isolate', () => {
     it('Should replace isolate completely', () => {
       const suite = genSuite(() => {
         if (firstRun) {
-          isolate({ type: IsolateTypes.EACH }, () => {
+          Isolate.create({ type: IsolateTypes.EACH }, () => {
             dummyTest.failing('f1');
           });
         } else {
-          isolate({ type: IsolateTypes.EACH }, () => {
+          Isolate.create({ type: IsolateTypes.EACH }, () => {
             dummyTest.failing('f2');
           });
         }
@@ -223,7 +223,7 @@ describe('isolate', () => {
         if (firstRun) {
           dummyTest.failing('f1');
         } else {
-          isolate({ type: IsolateTypes.EACH }, () => {
+          Isolate.create({ type: IsolateTypes.EACH }, () => {
             dummyTest.failing('f2');
           });
         }
@@ -244,7 +244,7 @@ describe('isolate', () => {
     describe('Errors', () => {
       it('should throw a deferred error when the tests are out of order', () => {
         const suite = genSuite(() => {
-          isolate({ type: IsolateTypes.GROUP }, () => {
+          Isolate.create({ type: IsolateTypes.GROUP }, () => {
             dummyTest.failing(firstRun ? 'f1' : 'f2');
           });
         });
@@ -262,7 +262,7 @@ describe('isolate', () => {
 
       it('Should allow unordered tests within an each isolate', () => {
         const suite = genSuite(() => {
-          isolate(IsolateTypes.EACH, () => {
+          Isolate.create(IsolateTypes.EACH, () => {
             dummyTest.failing(firstRun ? 'f1' : 'f2');
           });
         });

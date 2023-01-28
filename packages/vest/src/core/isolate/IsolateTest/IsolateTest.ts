@@ -15,7 +15,6 @@ import { isSameProfileTest } from 'isSameProfileTest';
 import { shouldSkipBasedOnMode } from 'mode';
 import { withinActiveOmitWhen } from 'omitWhen';
 import { isExcludedIndividually } from 'skipWhen';
-import { testHasKey } from 'testHasKey';
 
 class IsolateTestReconciler extends Reconciler {
   static reconciler(
@@ -92,6 +91,12 @@ class IsolateTestReconciler extends Reconciler {
 
 export class IsolateTest extends Isolate<IsolateTypes.TEST, VestTest> {
   static reconciler = IsolateTestReconciler;
+
+  constructor(type: IsolateTypes.TEST, data: VestTest) {
+    super(type, data);
+
+    this.setKey(data.key);
+  }
 }
 
 function cancelOverriddenPendingTestOnTestReRun(
@@ -111,9 +116,9 @@ function shouldOmit(testObject: VestTest): boolean {
 }
 
 function handleNoHistoryNode(testNode: IsolateTest): IsolateTest {
-  const testObject = getIsolateTestX(testNode);
+  // const testObject = getIsolateTestX(testNode);
 
-  if (testHasKey(testObject)) {
+  if (testNode.usesKey()) {
     return handleTestNodeWithKey(testNode);
   }
 
@@ -146,11 +151,11 @@ function forceSkipIfInSkipWhen(testNode: IsolateTest): IsolateTest {
 }
 
 function shouldUseKey(newNode: IsolateTest, prevNode: Isolate): boolean {
-  const newTestObject = getIsolateTestX(newNode);
+  // const newTestObject = getIsolateTestX(newNode);
 
   return !!(
     (isNullish(prevNode) || getIsolateTest(prevNode)) &&
-    testHasKey(newTestObject)
+    newNode.usesKey()
   );
 }
 

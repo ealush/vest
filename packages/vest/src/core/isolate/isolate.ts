@@ -13,29 +13,7 @@ import {
 import { VestTest } from 'VestTest';
 import { vestReconciler } from 'vestReconciler';
 
-export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
-  type: T;
-  children: Isolate[] = [];
-  keys: Record<string, Isolate> = {};
-  parent: Isolate | null = null;
-  data?: D;
-  output?: any;
-  key?: null | string = null;
-
-  constructor(type: T, data?: any) {
-    this.type = type;
-    this.data = data;
-  }
-
-  setParent(parent: Isolate | null): this {
-    this.parent = parent;
-    return this;
-  }
-
-  saveOutput(output: any): void {
-    this.output = output;
-  }
-
+class Reconciler {
   static reconciler(
     currentNode: Isolate,
     historicNode: Isolate | null
@@ -71,6 +49,40 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
 
     return [nextNode, getNodeOuput(nextNode)];
   }
+}
+
+class VestReconciler extends Reconciler {
+  static reconciler(
+    currentNode: Isolate,
+    historicNode: Isolate | null
+  ): Isolate {
+    return vestReconciler(historicNode, currentNode);
+  }
+}
+
+export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
+  type: T;
+  children: Isolate[] = [];
+  keys: Record<string, Isolate> = {};
+  parent: Isolate | null = null;
+  data?: D;
+  output?: any;
+  key?: null | string = null;
+  static reconciler = Reconciler;
+
+  constructor(type: T, data?: any) {
+    this.type = type;
+    this.data = data;
+  }
+
+  setParent(parent: Isolate | null): this {
+    this.parent = parent;
+    return this;
+  }
+
+  saveOutput(output: any): void {
+    this.output = output;
+  }
 
   static create<Callback extends CB = CB>(
     type: IsolateTypes,
@@ -81,7 +93,10 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
 
     const newCreatedNode = new Isolate(type, data).setParent(parent);
 
-    const [nextIsolateChild, output] = this.reconcile(newCreatedNode, callback);
+    const [nextIsolateChild, output] = this.reconciler.reconcile(
+      newCreatedNode,
+      callback
+    );
 
     nextIsolateChild.saveOutput(output);
 
@@ -96,12 +111,7 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
 }
 
 export class IsolateTest extends Isolate<IsolateTypes.TEST, VestTest> {
-  static reconciler(
-    currentNode: Isolate,
-    historicNode: Isolate | null
-  ): Isolate {
-    return vestReconciler(historicNode, currentNode);
-  }
+  static reconciler = VestReconciler;
 }
 
 function getNodeOuput(node: Isolate): any {

@@ -27,23 +27,30 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
     this.data = data;
   }
 
-  setParent(parent: Isolate | null): Isolate {
+  setParent(parent: Isolate | null): this {
     this.parent = parent;
     return this;
+  }
+
+  saveOutput(output: any): void {
+    this.output = output;
   }
 
   static create<Callback extends CB = CB>(
     type: IsolateTypes,
     callback: Callback,
     data?: any
-  ): [Isolate, ReturnType<Callback>] {
+  ): Isolate {
     const parent = useIsolate();
 
     const newCreatedNode = new Isolate(type, data).setParent(parent);
 
-    const output = reconcileHistoryNode(newCreatedNode, callback);
+    const [nextIsolateChild, output] = reconcileHistoryNode(
+      newCreatedNode,
+      callback
+    );
 
-    const [nextIsolateChild] = output;
+    nextIsolateChild.saveOutput(output);
 
     if (parent) {
       useSetNextIsolateChild(nextIsolateChild);
@@ -51,7 +58,7 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
       useSetHistory(nextIsolateChild);
     }
 
-    return output;
+    return nextIsolateChild;
   }
 }
 

@@ -47,6 +47,14 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
     callback: Callback,
     data?: any
   ): Isolate {
+    return this.createImplementation(type, callback, data);
+  }
+
+  static createImplementation<Callback extends CB = CB>(
+    type: IsolateTypes,
+    callback: Callback,
+    data?: any
+  ): Isolate {
     const parent = useIsolate();
 
     const newCreatedNode = new this(type, data).setParent(parent);

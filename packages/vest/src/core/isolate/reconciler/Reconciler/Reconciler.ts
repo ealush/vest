@@ -1,6 +1,5 @@
 import { CB, invariant, isNullish } from 'vest-utils';
 
-import type { Isolate } from 'Isolate';
 import {
   useHistoryKey,
   useSetIsolateKey,
@@ -10,6 +9,7 @@ import {
   PersistedContext,
   useRuntimeRoot,
 } from 'PersistedContext';
+import type { Isolate } from 'isolate';
 
 export class Reconciler {
   static reconciler(

@@ -1,6 +1,6 @@
 import { assign, CB, invariant, isFunction } from 'vest-utils';
 
-import { Isolate } from 'Isolate';
+import { Isolate } from 'isolate';
 import { IsolateTypes } from 'IsolateTypes';
 import {
   createVestState,

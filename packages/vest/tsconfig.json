@@ -10,7 +10,7 @@
       "PersistedContext": ["src/core/context/PersistedContext.ts"],
       "SuiteContext": ["src/core/context/SuiteContext.ts"],
       "isIsolate": ["src/core/isolate/isIsolate.ts"],
-      "Isolate": ["src/core/isolate/Isolate.ts"],
+      "isolate": ["src/core/isolate/isolate.ts"],
       "IsolateTest": ["src/core/isolate/IsolateTest/IsolateTest.ts"],
       "IsolateTestReconciler": [
         "src/core/isolate/IsolateTest/IsolateTestReconciler.ts"

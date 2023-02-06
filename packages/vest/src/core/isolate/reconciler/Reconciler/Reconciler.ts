@@ -72,15 +72,15 @@ export class Reconciler {
     return prevNode ? prevNode : newNode;
   }
 
-  // @ts-ignore - for now a general case reorder detection is unlikely
   static nodeReorderDetected(newNode: Isolate, prevNode: Isolate): boolean {
-    return false;
+    // This is a dummy return just to satisfy the linter. Overrides will supply the real implementation.
+    return !(newNode ?? prevNode);
   }
 
-  // @ts-ignore - for now a general case reorder detection is unlikely
   static onNodeReorder(newNode: Isolate, prevNode: Isolate): Isolate {
     this.removeAllNextNodesInIsolate();
-    return newNode;
+    // This is a dummy return just to satisfy the linter. Overrides will supply the real implementation.
+    return newNode ?? prevNode;
   }
 
   static handleIsolateNodeWithKey(node: Isolate): Isolate {

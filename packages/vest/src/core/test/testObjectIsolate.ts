@@ -1,5 +1,4 @@
 import { IsolateTest, IsolateTestInput } from 'IsolateTest';
-// import { IsolateTypes } from 'IsolateTypes';
 import { attemptRunTestObjectByTier } from 'runTest';
 
 export function testObjectIsolate(

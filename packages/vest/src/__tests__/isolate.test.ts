@@ -10,6 +10,8 @@ import { IsolateTypes } from 'IsolateTypes';
 describe('isolate', () => {
   let vest: TVestMock;
   let firstRun = true;
+  // eslint-disable-next-line no-unused-expressions
+  require('IsolateTest').IsolateTest;
   let Isolate = require('isolate').Isolate;
   let dummyTest: TDummyTest;
   let deferThrow: TDeferThrow;
@@ -18,6 +20,8 @@ describe('isolate', () => {
     firstRun = true;
     const mock = mockThrowError();
     deferThrow = mock.deferThrow;
+    // eslint-disable-next-line no-unused-expressions
+    require('IsolateTest').IsolateTest;
     Isolate = require('isolate').Isolate;
     vest = mock.vest;
     dummyTest = require('../../testUtils/testDummy').dummyTest;

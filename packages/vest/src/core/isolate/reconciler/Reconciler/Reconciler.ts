@@ -34,7 +34,7 @@ export class Reconciler {
     if (parent) {
       // If we have a parent, we need to get the history node from the parent's children
       // We take the history node from the cursor of the active node's children
-      localHistoryNode = historyNode?.children[useCurrentCursor()] ?? null;
+      localHistoryNode = historyNode?.at(useCurrentCursor()) ?? null;
     }
 
     const nextNode = this.reconciler(node, localHistoryNode);
@@ -56,7 +56,7 @@ export class Reconciler {
       return;
     }
 
-    historyNode.children.length = useCurrentCursor();
+    historyNode.slice(useCurrentCursor());
   }
 
   static handleCollision(newNode: Isolate, prevNode: Isolate): Isolate {

@@ -2,7 +2,7 @@
 
 exports[`IsolateTest TestObject constructor 1`] = `
 IsolateTest {
-  "children": [],
+  "children": null,
   "fieldName": "unicycle",
   "id": "0",
   "key": null,
@@ -18,7 +18,7 @@ IsolateTest {
 
 exports[`IsolateTest testObject.warn Should mark the test as warning 1`] = `
 IsolateTest {
-  "children": [],
+  "children": null,
   "fieldName": "unicycle",
   "id": "102",
   "key": null,

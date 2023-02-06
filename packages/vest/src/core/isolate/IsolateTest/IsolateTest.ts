@@ -1,4 +1,4 @@
-import { CB, seq } from 'vest-utils';
+import { CB, invariant, seq } from 'vest-utils';
 
 import { IsolateTestReconciler } from './IsolateTestReconciler';
 
@@ -198,6 +198,10 @@ export class IsolateTest extends Isolate<IsolateTypes.TEST> {
 
   static is(value: any): value is IsolateTest {
     return value instanceof IsolateTest;
+  }
+
+  static isX(value: any): asserts value is IsolateTest {
+    invariant(this.is(value));
   }
 }
 

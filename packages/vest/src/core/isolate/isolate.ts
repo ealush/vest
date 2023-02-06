@@ -81,4 +81,8 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
       useSetHistory(node);
     }
   }
+
+  static is(node: any): boolean {
+    return node instanceof Isolate;
+  }
 }

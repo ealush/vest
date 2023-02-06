@@ -1,12 +1,12 @@
 import { isOptionalFiedApplied } from 'optional';
 
-import { VestTest } from 'VestTest';
+import { IsolateTest } from 'IsolateTest';
 import { isExcluded } from 'exclusive';
 import { shouldSkipBasedOnMode } from 'mode';
 import { withinActiveOmitWhen } from 'omitWhen';
 import { isExcludedIndividually } from 'skipWhen';
 
-export function verifyTestRun(testObject: VestTest): VestTest {
+export function verifyTestRun(testObject: IsolateTest): IsolateTest {
   if (shouldSkipBasedOnMode(testObject)) {
     testObject.skip();
 

@@ -5,17 +5,17 @@ import { enforce } from 'n4s';
 import partition from '../../../testUtils/partition';
 import { dummyTest } from '../../../testUtils/testDummy';
 
-import { VestTest } from 'VestTest';
+import { IsolateTest } from 'IsolateTest';
 import { group } from 'group';
 import { matchingGroupName } from 'matchingGroupName';
-import * as vest from 'vest';
 import { TTestSuite } from 'testUtils/TVestMock';
+import * as vest from 'vest';
 
 let groupName = 'group_name_1';
 const groupName2 = 'group_name_2';
 
-const topLevelTestObjects: Record<string, VestTest> = {};
-const groupTestObjects: Record<string, VestTest> = {};
+const topLevelTestObjects: Record<string, IsolateTest> = {};
+const groupTestObjects: Record<string, IsolateTest> = {};
 
 describe('group: exclusion', () => {
   const validation = () =>
@@ -223,7 +223,7 @@ describe('group: exclusion', () => {
 });
 
 describe('group: base case', () => {
-  let inGroup: VestTest, outsideGroup: VestTest;
+  let inGroup: IsolateTest, outsideGroup: IsolateTest;
   const validation = () =>
     vest.create(() => {
       dummyTest.failing('field_1');

@@ -6,7 +6,7 @@ import * as vest from 'vest';
 describe('runAsyncTest', () => {
   describe('State Updates', () => {
     it('Should remove pending status from test object', async () => {
-      let testObject: void | vest.VestTest = undefined;
+      let testObject: void | vest.IsolateTest = undefined;
       const suite = vest.create(() => {
         testObject = vest.test('field_1', async () => {
           await wait(100);
@@ -92,7 +92,7 @@ describe('runAsyncTest', () => {
         const cb2 = jest.fn();
         const cb3 = jest.fn();
 
-        const testObject: Array<vest.VestTest> = [];
+        const testObject: Array<vest.IsolateTest> = [];
 
         const suite = vest.create(() => {
           testObject.push(
@@ -121,7 +121,7 @@ describe('runAsyncTest', () => {
   describe('Final test status', () => {
     describe('When passing', () => {
       it('Should set the test status to passing', async () => {
-        let testObject: void | vest.VestTest = undefined;
+        let testObject: void | vest.IsolateTest = undefined;
         const suite = vest.create(() => {
           testObject = vest.test('field_1', async () => {
             await wait(100);
@@ -138,7 +138,7 @@ describe('runAsyncTest', () => {
     });
     describe('When failing', () => {
       it('Should set the test status to failing', async () => {
-        let testObject: void | vest.VestTest = undefined;
+        let testObject: void | vest.IsolateTest = undefined;
         const suite = vest.create(() => {
           testObject = vest.test('field_1', async () => {
             throw new Error('');
@@ -155,7 +155,7 @@ describe('runAsyncTest', () => {
     });
     describe('When warning', () => {
       it('Should set the test status to failing', async () => {
-        let testObject: void | vest.VestTest = undefined;
+        let testObject: void | vest.IsolateTest = undefined;
         const suite = vest.create(() => {
           testObject = vest.test('field_1', async () => {
             vest.warn();

@@ -1,9 +1,9 @@
 import { enforce } from 'n4s';
 import { optional } from 'optional';
 
+import { IsolateTest } from 'IsolateTest';
 import type { SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
 import { SuiteSummary } from 'SuiteResultTypes';
-import { VestTest } from 'VestTest';
 import { createSuite, Suite } from 'createSuite';
 import { each } from 'each';
 import { skip, only } from 'exclusive';
@@ -33,4 +33,4 @@ export {
   each,
 };
 
-export type { SuiteResult, SuiteRunResult, SuiteSummary, VestTest, Suite };
+export type { SuiteResult, SuiteRunResult, SuiteSummary, IsolateTest, Suite };

@@ -110,7 +110,7 @@ describe('Stateful async tests', () => {
     }));
 
   it('Should discard of re-tested async tests', async () => {
-    const tests: Array<vest.VestTest> = [];
+    const tests: Array<vest.IsolateTest> = [];
     const control = jest.fn();
     const suite = vest.create(() => {
       tests.push(

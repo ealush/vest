@@ -2,42 +2,43 @@ import { assign, invariant, isFunction, isStringValue } from 'vest-utils';
 
 import { wrapTestMemo } from './test.memo';
 
+import { IsolateTest } from 'IsolateTest';
 import { useEmit } from 'PersistedContext';
 import { useGroupName } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
 import { Events } from 'VestBus';
-import { VestTest } from 'VestTest';
+import { IsolateKey } from 'isolate';
 import { testObjectIsolate } from 'testObjectIsolate';
 
 function vestTest<F extends TFieldName>(
   fieldName: F,
   message: string,
   cb: TestFn
-): VestTest;
-function vestTest<F extends TFieldName>(fieldName: F, cb: TestFn): VestTest;
+): IsolateTest;
+function vestTest<F extends TFieldName>(fieldName: F, cb: TestFn): IsolateTest;
 function vestTest<F extends TFieldName>(
   fieldName: F,
   message: string,
   cb: TestFn,
-  key: string
-): VestTest;
+  key: IsolateKey
+): IsolateTest;
 function vestTest<F extends TFieldName>(
   fieldName: F,
   cb: TestFn,
-  key: string
-): VestTest;
+  key: IsolateKey
+): IsolateTest;
 function vestTest<F extends TFieldName>(
   fieldName: F,
   ...args:
     | [message: string, cb: TestFn]
     | [cb: TestFn]
-    | [message: string, cb: TestFn, key: string]
-    | [cb: TestFn, key: string]
-): VestTest {
+    | [message: string, cb: TestFn, key: IsolateKey]
+    | [cb: TestFn, key: IsolateKey]
+): IsolateTest {
   const [message, testFn, key] = (
     isFunction(args[1]) ? args : [undefined, ...args]
-  ) as [string | undefined, TestFn, string | undefined];
+  ) as [string | undefined, TestFn, IsolateKey];
 
   invariant(isStringValue(fieldName), invalidParamError('fieldName', 'string'));
   invariant(isFunction(testFn), invalidParamError('callback', 'function'));
@@ -45,16 +46,12 @@ function vestTest<F extends TFieldName>(
   const groupName = useGroupName();
   const emit = useEmit();
 
-  const testObject = new VestTest(fieldName, testFn, {
-    message,
-    groupName,
-    key,
-  });
+  const testObjectInput = { fieldName, testFn, message, groupName, key };
 
   // This invalidates the suite cache.
   emit(Events.TEST_RUN_STARTED);
 
-  return testObjectIsolate(testObject);
+  return testObjectIsolate(testObjectInput);
 }
 
 export const test = assign(vestTest, {

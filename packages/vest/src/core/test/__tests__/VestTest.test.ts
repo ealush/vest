@@ -2,17 +2,20 @@ import wait from 'wait';
 
 import { TestPromise } from '../../../../testUtils/testPromise';
 
-import { VestTest } from 'VestTest';
+import { IsolateTest } from 'IsolateTest';
+import { IsolateTypes } from 'IsolateTypes';
 import * as vest from 'vest';
 
 const fieldName = 'unicycle';
 const message = 'I am Root.';
 
-describe('VestTest', () => {
-  let testObject: VestTest;
+describe('IsolateTest', () => {
+  let testObject: IsolateTest;
 
   beforeEach(() => {
-    testObject = new VestTest(fieldName, jest.fn(), {
+    testObject = new IsolateTest(IsolateTypes.TEST, {
+      fieldName,
+      testFn: jest.fn(),
       message,
     });
   });
@@ -24,7 +27,12 @@ describe('VestTest', () => {
   it('Should have a unique id', () => {
     Array.from(
       { length: 100 },
-      () => new VestTest(fieldName, jest.fn(), { message })
+      () =>
+        new IsolateTest(IsolateTypes.TEST, {
+          fieldName,
+          testFn: jest.fn(),
+          message,
+        })
     ).reduce((existing, { id }) => {
       expect(existing.has(id)).toBe(false);
       existing.add(id);
@@ -45,8 +53,8 @@ describe('VestTest', () => {
     beforeEach(() => {
       jest.resetModules();
 
-      const { VestTest } = require('VestTest'); // eslint-disable-line @typescript-eslint/no-var-requires
-      testObject = new VestTest(fieldName, jest.fn(), { message });
+      const { IsolateTest } = require('IsolateTest'); // eslint-disable-line @typescript-eslint/no-var-requires
+      testObject = new IsolateTest(fieldName, jest.fn(), { message });
     });
 
     afterEach(() => {
@@ -73,7 +81,7 @@ describe('VestTest', () => {
 
   describe('testObject.cancel', () => {
     it('Should set the testObject to cancel', () => {
-      let testObject: VestTest;
+      let testObject: IsolateTest;
       return TestPromise(done => {
         const suite = vest.create(() => {
           testObject = vest.test('f1', async () => {

@@ -2,9 +2,9 @@ import { faker } from '@faker-js/faker';
 
 import { TestPromise } from '../../../../testUtils/testPromise';
 
-import { create, test, warn, enforce, VestTest } from 'vest';
+import { create, test, warn, enforce, IsolateTest } from 'vest';
 
-let testObject: VestTest;
+let testObject: IsolateTest;
 
 describe("Test Vest's `test` function", () => {
   describe('test callbacks', () => {
@@ -131,7 +131,7 @@ describe("Test Vest's `test` function", () => {
   });
 
   describe('test params', () => {
-    let testObject: VestTest;
+    let testObject: IsolateTest;
     it('creates a test without a message and without a key', () => {
       create(() => {
         testObject = test('field_name', () => undefined);

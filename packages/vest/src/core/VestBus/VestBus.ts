@@ -1,21 +1,21 @@
 import { bus } from 'vest-utils';
 
+import { IsolateTest } from 'IsolateTest';
 import {
   useExpireSuiteResultCache,
   useResetCallbacks,
   useResetSuite,
 } from 'PersistedContext';
-import { TestWalker } from 'SuiteWalker';
-import { VestTest } from 'VestTest';
-import { runDoneCallbacks, runFieldCallbacks } from 'runCallbacks';
 import { TFieldName } from 'SuiteResultTypes';
+import { TestWalker } from 'SuiteWalker';
+import { runDoneCallbacks, runFieldCallbacks } from 'runCallbacks';
 
 export function initVestBus() {
   const VestBus = bus.createBus();
 
   // Report a the completion of a test. There may be other tests with the same
   // name that are still running, or not yet started.
-  on(Events.TEST_COMPLETED, (testObject: VestTest) => {
+  on(Events.TEST_COMPLETED, (testObject: IsolateTest) => {
     if (testObject.isCanceled()) {
       return;
     }

@@ -1,5 +1,5 @@
+import { IsolateTest } from 'IsolateTest';
 import { useMode } from 'SuiteContext';
-import { VestTest } from 'VestTest';
 import { hasErrorsByTestObjects } from 'hasFailuresByTestObjects';
 
 export enum Modes {
@@ -42,6 +42,6 @@ function isEager(): boolean {
   return isMode(Modes.EAGER);
 }
 
-export function shouldSkipBasedOnMode(testObject: VestTest): boolean {
+export function shouldSkipBasedOnMode(testObject: IsolateTest): boolean {
   return isEager() && hasErrorsByTestObjects(testObject.fieldName);
 }

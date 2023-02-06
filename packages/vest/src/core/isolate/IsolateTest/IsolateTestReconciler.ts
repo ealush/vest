@@ -6,7 +6,7 @@ import { IsolateTypes } from 'IsolateTypes';
 import { Reconciler } from 'Reconciler';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';
-import { isIsolateType, isTestIsolate } from 'isIsolate';
+import { isIsolateType } from 'isIsolate';
 import { isSameProfileTest } from 'isSameProfileTest';
 import { Isolate } from 'isolate';
 import { shouldSkipBasedOnMode } from 'mode';
@@ -19,7 +19,7 @@ export class IsolateTestReconciler extends Reconciler {
     historyNode: Isolate | null
   ): Isolate {
     // Start by verifying params
-    if (!isTestIsolate(currentNode)) {
+    if (!IsolateTest.is(currentNode)) {
       return currentNode;
     }
 

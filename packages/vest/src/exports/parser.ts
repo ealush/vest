@@ -1,6 +1,8 @@
-import { hasOwnProperty, invariant, isPositive } from 'vest-utils';
+import { hasOwnProperty, invariant, isNullish, isPositive } from 'vest-utils';
 
 import { SuiteSummary, TFieldName } from 'SuiteResultTypes';
+
+// @ts-ignore - Need to understand why Vest is not being recognized
 import { suiteSelectors } from 'vest';
 
 export function parse<F extends TFieldName>(
@@ -27,18 +29,23 @@ export function parse<F extends TFieldName>(
 
   // Booleans
   function isTested(fieldName?: F): boolean {
-    if (!fieldName) {
+    if (isNullish(fieldName)) {
       return isPositive(summary.testCount);
     }
 
-    if (hasOwnProperty(testedStorage, fieldName))
+    if (hasOwnProperty(testedStorage, fieldName)) {
       return testedStorage[fieldName];
+    }
 
+    addFieldToTestedStorage(fieldName);
+
+    return selectors.tested(fieldName);
+  }
+
+  function addFieldToTestedStorage(fieldName: F): void {
     testedStorage[fieldName] =
       hasOwnProperty(summary.tests, fieldName) &&
       isPositive(summary.tests[fieldName].testCount);
-
-    return selectors.tested(fieldName);
   }
 
   function isUntested(fieldName?: F): boolean {

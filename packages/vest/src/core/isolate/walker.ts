@@ -2,13 +2,13 @@ import { isNullish, optionalFunctionValue } from 'vest-utils';
 
 import type { Isolate } from 'isolate';
 
-export type VisitOnlyPredicate = boolean | ((isolate: Isolate) => boolean);
+export type VisitOnlyPredicate = (isolate: Isolate) => boolean;
 
 // eslint-disable-next-line complexity, max-statements
 export function walk(
   startNode: Isolate,
   callback: (isolate: Isolate, breakout: () => void) => void,
-  visitOnly?: boolean | ((isolate: Isolate) => boolean)
+  visitOnly?: VisitOnlyPredicate
 ): void {
   if (isNullish(startNode.children)) {
     return;

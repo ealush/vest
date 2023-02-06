@@ -1,6 +1,5 @@
 import { assign, CB, invariant, isFunction } from 'vest-utils';
 
-import { Isolate } from 'isolate';
 import { IsolateTypes } from 'IsolateTypes';
 import {
   createVestState,
@@ -12,6 +11,7 @@ import {
 import { SuiteContext } from 'SuiteContext';
 import { SuiteResult, SuiteRunResult, TFieldName } from 'SuiteResultTypes';
 import { Events } from 'VestBus';
+import { Isolate } from 'isolate';
 import { createSuiteResult } from 'suiteResult';
 import { suiteRunResult } from 'suiteRunResult';
 

@@ -195,7 +195,7 @@ export function useIsolate() {
 }
 
 export function useCurrentCursor() {
-  return useIsolate()?.children.length ?? 0;
+  return useIsolate()?.cursor() ?? 0;
 }
 
 export function useRuntimeRoot() {
@@ -207,7 +207,7 @@ export function useSetNextIsolateChild(child: Isolate): void {
 
   invariant(currentIsolate, 'Not within an active isolate');
 
-  currentIsolate.children.push(child);
+  currentIsolate.addChild(child);
 }
 
 export function useSetIsolateKey(key: string | null, value: Isolate): void {

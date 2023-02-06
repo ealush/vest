@@ -1,11 +1,14 @@
-import { IsolateTypes } from 'IsolateTypes';
-import { Isolate } from 'isolate';
+import { isNullish, optionalFunctionValue } from 'vest-utils';
+
+import type { Isolate } from 'isolate';
+
+export type VisitOnlyPredicate = boolean | ((isolate: Isolate) => boolean);
 
 // eslint-disable-next-line complexity
 export function walk(
   startNode: Isolate,
   callback: (isolate: Isolate, breakout: () => void) => void,
-  visitOnly?: IsolateTypes
+  visitOnly?: boolean | ((isolate: Isolate) => boolean)
 ): void {
   let broke = false;
 
@@ -14,7 +17,7 @@ export function walk(
       return;
     }
 
-    if (!visitOnly || isolate.type === visitOnly) {
+    if (isNullish(visitOnly) || optionalFunctionValue(visitOnly, isolate)) {
       callback(isolate, breakout);
     }
 
@@ -42,7 +45,7 @@ export function walk(
 export function some(
   startNode: Isolate,
   predicate: (node: Isolate) => boolean,
-  visitOnly?: IsolateTypes
+  visitOnly?: VisitOnlyPredicate
 ): boolean {
   let hasMatch = false;
   walk(
@@ -59,14 +62,14 @@ export function some(
   return hasMatch;
 }
 
-export function has(startNode: Isolate, match: IsolateTypes): boolean {
+export function has(startNode: Isolate, match: VisitOnlyPredicate): boolean {
   return some(startNode, () => true, match);
 }
 
 export function find(
   startNode: Isolate,
   predicate: (node: Isolate) => boolean,
-  visitOnly?: IsolateTypes
+  visitOnly?: VisitOnlyPredicate
 ): Isolate | null {
   let found = null;
   walk(
@@ -86,7 +89,7 @@ export function find(
 export function every(
   startNode: Isolate,
   predicate: (node: Isolate) => boolean,
-  visitOnly?: IsolateTypes
+  visitOnly?: VisitOnlyPredicate
 ): boolean {
   let hasMatch = true;
   walk(
@@ -106,7 +109,7 @@ export function every(
 export function pluck(
   startNode: Isolate,
   predicate: (node: Isolate) => boolean,
-  visitOnly?: IsolateTypes
+  visitOnly?: VisitOnlyPredicate
 ): void {
   walk(
     startNode,

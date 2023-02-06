@@ -1,16 +1,15 @@
 import * as walker from 'walker';
 
 import { IsolateTest } from 'IsolateTest';
-import { IsolateTypes } from 'IsolateTypes';
 import { useAvailableSuiteRoot } from 'PersistedContext';
 import { TFieldName } from 'SuiteResultTypes';
-import { Isolate } from 'isolate';
+import type { Isolate } from 'isolate';
 import matchingFieldName from 'matchingFieldName';
 
-export class SuiteWalker {
+class SuiteWalker {
   static walk(
     callback: (isolate: Isolate, breakout: () => void) => void,
-    visitOnly?: IsolateTypes
+    visitOnly?: walker.VisitOnlyPredicate
   ): void {
     const root = useAvailableSuiteRoot();
 
@@ -21,7 +20,7 @@ export class SuiteWalker {
 
   static some(
     predicate: (node: Isolate) => boolean,
-    visitOnly?: IsolateTypes
+    visitOnly?: walker.VisitOnlyPredicate
   ): boolean {
     const root = useAvailableSuiteRoot();
 
@@ -29,7 +28,7 @@ export class SuiteWalker {
     return walker.some(root, predicate, visitOnly);
   }
 
-  static has(match: IsolateTypes): boolean {
+  static has(match: walker.VisitOnlyPredicate): boolean {
     const root = useAvailableSuiteRoot();
 
     if (!root) return false;
@@ -38,7 +37,7 @@ export class SuiteWalker {
 
   static find(
     predicate: (node: Isolate) => boolean,
-    visitOnly?: IsolateTypes
+    visitOnly?: walker.VisitOnlyPredicate
   ): Isolate | null {
     const root = useAvailableSuiteRoot();
 
@@ -48,7 +47,7 @@ export class SuiteWalker {
 
   static every(
     predicate: (node: Isolate) => boolean,
-    visitOnly?: IsolateTypes
+    visitOnly?: walker.VisitOnlyPredicate
   ): boolean {
     const root = useAvailableSuiteRoot();
 
@@ -58,7 +57,7 @@ export class SuiteWalker {
 
   static pluck(
     predicate: (node: Isolate) => boolean,
-    visitOnly?: IsolateTypes
+    visitOnly?: walker.VisitOnlyPredicate
   ): void {
     const root = useAvailableSuiteRoot();
 
@@ -69,43 +68,43 @@ export class SuiteWalker {
 
 export class TestWalker {
   static hasNoTests(): boolean {
-    return !SuiteWalker.has(IsolateTypes.TEST);
+    return !SuiteWalker.has(IsolateTest.is);
   }
 
   static someIncompleteTests(
     predicate: (test: IsolateTest) => boolean
   ): boolean {
     return SuiteWalker.some(isolate => {
-      const testObject = isolate as IsolateTest;
+      IsolateTest.isX(isolate);
 
-      return testObject.isPending() && predicate(testObject);
-    }, IsolateTypes.TEST);
+      return isolate.isPending() && predicate(isolate);
+    }, IsolateTest.is);
   }
 
   static someTests(predicate: (test: IsolateTest) => boolean): boolean {
     return SuiteWalker.some(isolate => {
-      const testObject = isolate as IsolateTest;
+      IsolateTest.isX(isolate);
 
-      return predicate(testObject);
-    }, IsolateTypes.TEST);
+      return predicate(isolate);
+    }, IsolateTest.is);
   }
 
   static everyTest(predicate: (test: IsolateTest) => boolean): boolean {
     return SuiteWalker.every(isolate => {
-      const testObject = isolate as IsolateTest;
+      IsolateTest.isX(isolate);
 
-      return predicate(testObject);
-    }, IsolateTypes.TEST);
+      return predicate(isolate);
+    }, IsolateTest.is);
   }
 
   static walkTests(
     callback: (test: IsolateTest, breakout: () => void) => void
   ): void {
     SuiteWalker.walk((isolate, breakout) => {
-      const testObject = isolate as IsolateTest;
+      IsolateTest.isX(isolate);
 
-      callback(testObject, breakout);
-    }, IsolateTypes.TEST);
+      callback(isolate, breakout);
+    }, IsolateTest.is);
   }
 
   static hasRemainingTests(fieldName?: TFieldName): boolean {
@@ -119,10 +118,10 @@ export class TestWalker {
 
   static pluckTests(predicate: (test: IsolateTest) => boolean): void {
     SuiteWalker.pluck(isolate => {
-      const testObject = isolate as IsolateTest;
+      IsolateTest.isX(isolate);
 
-      return predicate(testObject);
-    }, IsolateTypes.TEST);
+      return predicate(isolate);
+    }, IsolateTest.is);
   }
 
   static resetField(fieldName: TFieldName): void {

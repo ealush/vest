@@ -6,7 +6,6 @@ import { IsolateTypes } from 'IsolateTypes';
 import { Reconciler } from 'Reconciler';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';
-import { getIsolateTest, getIsolateTestX } from 'getIsolateTest';
 import { isIsolateType, isTestIsolate } from 'isIsolate';
 import { isSameProfileTest } from 'isSameProfileTest';
 import { Isolate } from 'isolate';
@@ -28,21 +27,16 @@ export class IsolateTestReconciler extends Reconciler {
       return this.handleNoHistoryNode(currentNode);
     }
 
-    const prevTestObject = getIsolateTest(historyNode);
-
-    if (isNullish(prevTestObject)) {
+    if (!IsolateTest.is(historyNode)) {
       return currentNode;
     }
 
-    const reconcilerOutput = this.pickNode(
-      historyNode as IsolateTest,
-      currentNode
-    );
+    const reconcilerOutput = this.pickNode(historyNode, currentNode);
 
     cancelOverriddenPendingTestOnTestReRun(
       reconcilerOutput,
       currentNode,
-      prevTestObject
+      historyNode
     );
 
     return reconcilerOutput;
@@ -77,19 +71,17 @@ export class IsolateTestReconciler extends Reconciler {
   }
 
   static pickNode(historyNode: IsolateTest, currentNode: IsolateTest): Isolate {
-    const currentTestObject = getIsolateTestX(currentNode);
-
     const collisionResult = this.handleCollision(currentNode, historyNode);
 
-    if (shouldSkipBasedOnMode(currentTestObject)) {
+    if (shouldSkipBasedOnMode(currentNode)) {
       return skipTestAndReturn(currentNode);
     }
 
-    if (shouldOmit(currentTestObject)) {
+    if (shouldOmit(currentNode)) {
       return omitTestAndReturn(currentNode);
     }
 
-    if (isExcluded(currentTestObject)) {
+    if (isExcluded(currentNode)) {
       return forceSkipIfInSkipWhen(collisionResult);
     }
 
@@ -97,8 +89,6 @@ export class IsolateTestReconciler extends Reconciler {
   }
 
   static handleNoHistoryNode(testNode: IsolateTest): IsolateTest {
-    // const testObject = getIsolateTestX(testNode);
-
     if (testNode.usesKey()) {
       return this.handleIsolateNodeWithKey(testNode) as IsolateTest;
     }
@@ -112,10 +102,8 @@ function cancelOverriddenPendingTestOnTestReRun(
   currentNode: Isolate,
   prevTestObject: IsolateTest
 ) {
-  const currentTestObject = getIsolateTestX(currentNode);
-
-  if (nextNode === currentNode) {
-    cancelOverriddenPendingTest(prevTestObject, currentTestObject);
+  if (nextNode === currentNode && IsolateTest.is(currentNode)) {
+    cancelOverriddenPendingTest(prevTestObject, currentNode);
   }
 }
 
@@ -124,27 +112,21 @@ function shouldOmit(testObject: IsolateTest): boolean {
 }
 
 function skipTestAndReturn(testNode: IsolateTest): IsolateTest {
-  const testObject = getIsolateTestX(testNode);
-
-  testObject.skip();
+  testNode.skip();
   return testNode;
 }
 
 function omitTestAndReturn(testNode: IsolateTest): IsolateTest {
-  const testObject = getIsolateTestX(testNode);
-
-  testObject.omit();
+  testNode.omit();
   return testNode;
 }
 
 function forceSkipIfInSkipWhen(testNode: IsolateTest): IsolateTest {
-  const collisionTestObject = getIsolateTestX(testNode);
-
   // We're forcing skipping the pending test
   // if we're directly within a skipWhen block
   // This mostly means that we're probably giving
   // up on this async test intentionally.
-  collisionTestObject.skip(isExcludedIndividually());
+  testNode.skip(isExcludedIndividually());
   return testNode;
 }
 

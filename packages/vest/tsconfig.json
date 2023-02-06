@@ -21,9 +21,6 @@
       ],
       "isSameProfileTest": ["src/core/isolate/reconciler/isSameProfileTest.ts"],
       "Reconciler": ["src/core/isolate/reconciler/Reconciler/Reconciler.ts"],
-      "getIsolateTest": [
-        "src/core/isolate/reconciler/VestReconciler/getIsolateTest.ts"
-      ],
       "walker": ["src/core/isolate/walker.ts"],
       "SuiteWalker": ["src/core/SuiteWalker/SuiteWalker.ts"],
       "asVestTest": ["src/core/test/helpers/asVestTest.ts"],

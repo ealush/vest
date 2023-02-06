@@ -10,19 +10,17 @@ import { Reconciler } from 'Reconciler';
 
 export type IsolateKey = null | string;
 
-export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
+export class Isolate<T extends IsolateTypes = IsolateTypes, _D = any> {
   type: T;
   children: Isolate[] = [];
   keys: Record<string, Isolate> = {};
   parent: Isolate | null = null;
-  data: D;
   output?: any;
   key: IsolateKey = null;
   static reconciler = Reconciler;
 
-  constructor(type: T, data?: any) {
+  constructor(type: T, _data?: any) {
     this.type = type;
-    this.data = data;
   }
 
   setParent(parent: Isolate | null): this {

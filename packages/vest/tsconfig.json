@@ -77,7 +77,6 @@
       "suiteResult": ["src/suiteResult/suiteResult.ts"],
       "SuiteResultTypes": ["src/suiteResult/SuiteResultTypes.ts"],
       "suiteRunResult": ["src/suiteResult/suiteRunResult.ts"],
-      "vest-5": ["src/vest-5.ts"],
       "vest": ["src/vest.ts"]
     }
   }

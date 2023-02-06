@@ -3,7 +3,6 @@
 exports[`Test Vest's \`test\` function test params creates a test with a message and with a key 1`] = `
 IsolateTest {
   "children": [],
-  "data": undefined,
   "fieldName": "field_name",
   "id": "23",
   "key": "keyboardcat",
@@ -14,7 +13,6 @@ IsolateTest {
     "children": [
       [Circular],
     ],
-    "data": undefined,
     "key": null,
     "keys": {
       "keyboardcat": [Circular],
@@ -61,7 +59,6 @@ IsolateTest {
 exports[`Test Vest's \`test\` function test params creates a test without a key 1`] = `
 IsolateTest {
   "children": [],
-  "data": undefined,
   "fieldName": "field_name",
   "id": "19",
   "key": null,
@@ -72,7 +69,6 @@ IsolateTest {
     "children": [
       [Circular],
     ],
-    "data": undefined,
     "key": null,
     "keys": {},
     "output": {
@@ -117,7 +113,6 @@ IsolateTest {
 exports[`Test Vest's \`test\` function test params creates a test without a message and with a key 1`] = `
 IsolateTest {
   "children": [],
-  "data": undefined,
   "fieldName": "field_name",
   "id": "21",
   "key": "keyboardcat",
@@ -127,7 +122,6 @@ IsolateTest {
     "children": [
       [Circular],
     ],
-    "data": undefined,
     "key": null,
     "keys": {
       "keyboardcat": [Circular],
@@ -174,7 +168,6 @@ IsolateTest {
 exports[`Test Vest's \`test\` function test params creates a test without a message and without a key 1`] = `
 IsolateTest {
   "children": [],
-  "data": undefined,
   "fieldName": "field_name",
   "id": "17",
   "key": null,
@@ -184,7 +177,6 @@ IsolateTest {
     "children": [
       [Circular],
     ],
-    "data": undefined,
     "key": null,
     "keys": {},
     "output": {

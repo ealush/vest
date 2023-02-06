@@ -1,11 +1,11 @@
 import { isOptionalFiedApplied } from 'optional';
 
+import { IsolateTest } from 'IsolateTest';
 import { OptionalFieldTypes } from 'OptionalTypes';
 import { useOptionalField } from 'PersistedContext';
 import { Severity } from 'Severity';
 import { TFieldName } from 'SuiteResultTypes';
 import { TestWalker } from 'SuiteWalker';
-import { VestTest } from 'VestTest';
 import {
   hasErrorsByTestObjects,
   hasGroupFailuresByTestObjects,
@@ -80,7 +80,7 @@ function hasNonOptionalIncompleteByGroup(
 }
 
 function isTestObjectOptional(
-  testObject: VestTest,
+  testObject: IsolateTest,
   fieldName?: TFieldName
 ): boolean {
   if (nonMatchingFieldName(testObject, fieldName)) {
@@ -113,7 +113,7 @@ function noMissingTestsByGroup(
 }
 
 function noMissingTestsLogic(
-  testObject: VestTest,
+  testObject: IsolateTest,
   fieldName?: TFieldName
 ): boolean {
   if (nonMatchingFieldName(testObject, fieldName)) {
@@ -137,7 +137,7 @@ function noMissingTestsLogic(
   );
 }
 
-function optionalTestAwaitsResolution(testObject: VestTest): boolean {
+function optionalTestAwaitsResolution(testObject: IsolateTest): boolean {
   // Does the test belong to an optional field,
   // and the test itself is still in an indeterminate state?
 

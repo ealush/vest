@@ -7,7 +7,7 @@ import * as vest from 'vest';
 describe('Merging of previous test runs', () => {
   let suite: TTestSuite;
   let counter = 0;
-  let testContainer: vest.VestTest[][] = [];
+  let testContainer: vest.IsolateTest[][] = [];
 
   beforeEach(() => {
     counter = 0;

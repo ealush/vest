@@ -1,8 +1,8 @@
 import { TFieldName } from '../SuiteResultTypes';
 
+import { IsolateTest } from 'IsolateTest';
 import { Severity } from 'Severity';
 import { TestWalker } from 'SuiteWalker';
-import { VestTest } from 'VestTest';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
 import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
@@ -43,7 +43,7 @@ export function hasGroupFailuresByTestObjects(
  * Determines whether a certain test profile has failures.
  */
 export function hasFailuresByTestObject(
-  testObject: VestTest,
+  testObject: IsolateTest,
   severityKey: Severity,
   fieldName?: TFieldName
 ): boolean {

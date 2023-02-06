@@ -5,8 +5,8 @@ import * as vest from 'vest';
 
 const { create, test, warn } = vest;
 
-function asVestTest(t: unknown): vest.VestTest {
-  return t as vest.VestTest;
+function asVestTest(t: unknown): vest.IsolateTest {
+  return t as vest.IsolateTest;
 }
 
 describe('warn hook', () => {

@@ -1,13 +1,13 @@
 import { isPromise, isStringValue } from 'vest-utils';
 
+import { IsolateTest } from 'IsolateTest';
 import { persist, useVestBus } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
 import { Events } from 'VestBus';
-import { VestTest } from 'VestTest';
 import { verifyTestRun } from 'verifyTestRun';
 
-export function attemptRunTestObjectByTier(testObject: VestTest) {
+export function attemptRunTestObjectByTier(testObject: IsolateTest) {
   verifyTestRun(testObject);
 
   if (testObject.isNonActionable()) {
@@ -23,14 +23,14 @@ export function attemptRunTestObjectByTier(testObject: VestTest) {
   }
 }
 
-function runSyncTest(testObject: VestTest): TestResult {
+function runSyncTest(testObject: IsolateTest): TestResult {
   return SuiteContext.run({ currentTest: testObject }, () => testObject.run());
 }
 
 /**
  * runs test, if async - adds to pending array
  */
-function runTest(testObject: VestTest): void {
+function runTest(testObject: IsolateTest): void {
   const VestBus = useVestBus();
 
   // Run test callback.
@@ -59,7 +59,7 @@ function runTest(testObject: VestTest): void {
 /**
  * Runs async test.
  */
-function runAsyncTest(testObject: VestTest): void {
+function runAsyncTest(testObject: IsolateTest): void {
   const { asyncTest, message } = testObject;
 
   if (!isPromise(asyncTest)) return;

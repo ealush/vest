@@ -1,5 +1,6 @@
 import { assign } from 'vest-utils';
 
+import { IsolateTest } from 'IsolateTest';
 import { countKeyBySeverity, Severity } from 'Severity';
 import {
   Group,
@@ -11,7 +12,6 @@ import {
   TestsContainer,
 } from 'SuiteResultTypes';
 import { TestWalker } from 'SuiteWalker';
-import { VestTest } from 'VestTest';
 import {
   shouldAddValidProperty,
   shouldAddValidPropertyInGroup,
@@ -34,7 +34,7 @@ export function produceSuiteSummary<F extends TFieldName>(): SuiteSummary<F> {
   return countFailures(summary);
 }
 
-function appendToTest(tests: Tests<TFieldName>, testObject: VestTest) {
+function appendToTest(tests: Tests<TFieldName>, testObject: IsolateTest) {
   tests[testObject.fieldName] = appendTestObject(tests, testObject);
   // If `valid` is false to begin with, keep it that way. Otherwise, assess.
   tests[testObject.fieldName].valid =
@@ -46,7 +46,7 @@ function appendToTest(tests: Tests<TFieldName>, testObject: VestTest) {
 /**
  * Appends to a group object if within a group
  */
-function appendToGroup(groups: Groups, testObject: VestTest) {
+function appendToGroup(groups: Groups, testObject: IsolateTest) {
   const { groupName } = testObject;
 
   if (!groupName) {
@@ -86,11 +86,11 @@ function countFailures(
  */
 function appendTestObject(
   summaryKey: Tests<TFieldName> | Group,
-  testObject: VestTest
+  testObject: IsolateTest
 ): SingleTestSummary;
 function appendTestObject(
   summaryKey: Group | Tests<TFieldName>,
-  testObject: VestTest
+  testObject: IsolateTest
 ): TestsContainer<TFieldName>[keyof TestsContainer<TFieldName>] {
   const { fieldName, message } = testObject;
 

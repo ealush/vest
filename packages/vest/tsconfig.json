@@ -41,7 +41,6 @@
       "verifyTestRun": ["src/core/test/testLevelFlowControl/verifyTestRun.ts"],
       "testObjectIsolate": ["src/core/test/testObjectIsolate.ts"],
       "TestTypes": ["src/core/test/TestTypes.ts"],
-      "VestTest": ["src/core/test/VestTest.ts"],
       "VestBus": ["src/core/VestBus/VestBus.ts"],
       "ErrorStrings": ["src/errors/ErrorStrings.ts"],
       "classnames": ["src/exports/classnames.ts"],

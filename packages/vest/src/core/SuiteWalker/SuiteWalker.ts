@@ -1,9 +1,9 @@
 import * as walker from 'walker';
 
+import { IsolateTest } from 'IsolateTest';
 import { IsolateTypes } from 'IsolateTypes';
 import { useAvailableSuiteRoot } from 'PersistedContext';
 import { TFieldName } from 'SuiteResultTypes';
-import { VestTest } from 'VestTest';
 import { Isolate } from 'isolate';
 import matchingFieldName from 'matchingFieldName';
 
@@ -72,35 +72,37 @@ export class TestWalker {
     return !SuiteWalker.has(IsolateTypes.TEST);
   }
 
-  static someIncompleteTests(predicate: (test: VestTest) => boolean): boolean {
+  static someIncompleteTests(
+    predicate: (test: IsolateTest) => boolean
+  ): boolean {
     return SuiteWalker.some(isolate => {
-      const testObject = isolate.data as VestTest;
+      const testObject = isolate as IsolateTest;
 
       return testObject.isPending() && predicate(testObject);
     }, IsolateTypes.TEST);
   }
 
-  static someTests(predicate: (test: VestTest) => boolean): boolean {
+  static someTests(predicate: (test: IsolateTest) => boolean): boolean {
     return SuiteWalker.some(isolate => {
-      const testObject = isolate.data as VestTest;
+      const testObject = isolate as IsolateTest;
 
       return predicate(testObject);
     }, IsolateTypes.TEST);
   }
 
-  static everyTest(predicate: (test: VestTest) => boolean): boolean {
+  static everyTest(predicate: (test: IsolateTest) => boolean): boolean {
     return SuiteWalker.every(isolate => {
-      const testObject = isolate.data as VestTest;
+      const testObject = isolate as IsolateTest;
 
       return predicate(testObject);
     }, IsolateTypes.TEST);
   }
 
   static walkTests(
-    callback: (test: VestTest, breakout: () => void) => void
+    callback: (test: IsolateTest, breakout: () => void) => void
   ): void {
     SuiteWalker.walk((isolate, breakout) => {
-      const testObject = isolate.data as VestTest;
+      const testObject = isolate as IsolateTest;
 
       callback(testObject, breakout);
     }, IsolateTypes.TEST);
@@ -115,9 +117,9 @@ export class TestWalker {
     });
   }
 
-  static pluckTests(predicate: (test: VestTest) => boolean): void {
+  static pluckTests(predicate: (test: IsolateTest) => boolean): void {
     SuiteWalker.pluck(isolate => {
-      const testObject = isolate.data as VestTest;
+      const testObject = isolate as IsolateTest;
 
       return predicate(testObject);
     }, IsolateTypes.TEST);

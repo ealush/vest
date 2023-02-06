@@ -1,13 +1,13 @@
-import { IsolateTest } from 'IsolateTest';
-
+import { IsolateTest, IsolateTestInput } from 'IsolateTest';
 import { IsolateTypes } from 'IsolateTypes';
-import { VestTest } from 'VestTest';
 import { attemptRunTestObjectByTier } from 'runTest';
 
-export function testObjectIsolate(testObject: VestTest): VestTest {
+export function testObjectIsolate(
+  testObjectInput: IsolateTestInput
+): IsolateTest {
   return IsolateTest.create(
     IsolateTypes.TEST,
-    () => attemptRunTestObjectByTier(testObject),
-    testObject
-  ).data;
+    (testObject: IsolateTest) => attemptRunTestObjectByTier(testObject),
+    testObjectInput
+  );
 }

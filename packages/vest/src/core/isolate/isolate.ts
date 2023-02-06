@@ -52,7 +52,7 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
     return this.createImplementation(type, callback, data);
   }
 
-  static createImplementation<Callback extends CB = CB>(
+  private static createImplementation<Callback extends CB = CB>(
     type: IsolateTypes,
     callback: Callback,
     data?: any

@@ -48,12 +48,11 @@ export class IsolateTest extends Isolate<IsolateTypes.TEST> {
     this.setKey(key);
   }
 
-  static create<Callback extends CB = CB>(
-    type: IsolateTypes,
+  static factory<Callback extends CB = CB>(
     callback: Callback,
-    data?: any
+    data: IsolateTestInput
   ): IsolateTest {
-    return this.createImplementation(type, callback, data) as IsolateTest;
+    return super.create(IsolateTypes.TEST, callback, data) as IsolateTest;
   }
 
   run(): TestResult {

@@ -2,7 +2,7 @@
 
 exports[`Test Vest's \`test\` function test params creates a test with a message and with a key 1`] = `
 IsolateTest {
-  "children": [],
+  "children": null,
   "fieldName": "field_name",
   "id": "23",
   "key": "keyboardcat",
@@ -58,7 +58,7 @@ IsolateTest {
 
 exports[`Test Vest's \`test\` function test params creates a test without a key 1`] = `
 IsolateTest {
-  "children": [],
+  "children": null,
   "fieldName": "field_name",
   "id": "19",
   "key": null,
@@ -112,7 +112,7 @@ IsolateTest {
 
 exports[`Test Vest's \`test\` function test params creates a test without a message and with a key 1`] = `
 IsolateTest {
-  "children": [],
+  "children": null,
   "fieldName": "field_name",
   "id": "21",
   "key": "keyboardcat",
@@ -167,7 +167,7 @@ IsolateTest {
 
 exports[`Test Vest's \`test\` function test params creates a test without a message and without a key 1`] = `
 IsolateTest {
-  "children": [],
+  "children": null,
   "fieldName": "field_name",
   "id": "17",
   "key": null,

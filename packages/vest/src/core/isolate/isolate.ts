@@ -1,4 +1,4 @@
-import { CB, isNotNullish } from 'vest-utils';
+import { CB, invariant, isNotNullish, isNullish } from 'vest-utils';
 
 import { IsolateTypes } from 'IsolateTypes';
 import {
@@ -12,7 +12,7 @@ export type IsolateKey = null | string;
 
 export class Isolate<T extends IsolateTypes = IsolateTypes, _D = any> {
   type: T;
-  children: Isolate[] = [];
+  children: Isolate[] | null = [];
   keys: Record<string, Isolate> = {};
   parent: Isolate | null = null;
   output?: any;
@@ -40,6 +40,32 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, _D = any> {
 
   usesKey(): boolean {
     return isNotNullish(this.key);
+  }
+
+  addChild(child: Isolate): void {
+    invariant(this.children);
+
+    this.children.push(child);
+  }
+
+  removeChild(node: Isolate): void {
+    this.children = this.children?.filter(child => child !== node) ?? null;
+  }
+
+  slice(at: number): void {
+    if (isNullish(this.children)) {
+      return;
+    }
+
+    this.children.length = at;
+  }
+
+  at(at: number): Isolate | null {
+    return this.children?.[at] ?? null;
+  }
+
+  cursor(): number {
+    return this.children?.length ?? 0;
   }
 
   static create<Callback extends CB = CB>(

@@ -4,12 +4,16 @@ import type { Isolate } from 'isolate';
 
 export type VisitOnlyPredicate = boolean | ((isolate: Isolate) => boolean);
 
-// eslint-disable-next-line complexity
+// eslint-disable-next-line complexity, max-statements
 export function walk(
   startNode: Isolate,
   callback: (isolate: Isolate, breakout: () => void) => void,
   visitOnly?: boolean | ((isolate: Isolate) => boolean)
 ): void {
+  if (isNullish(startNode.children)) {
+    return;
+  }
+
   let broke = false;
 
   for (const isolate of startNode.children) {
@@ -115,9 +119,7 @@ export function pluck(
     startNode,
     node => {
       if (predicate(node) && node.parent) {
-        node.parent.children = node.parent.children.filter(
-          child => child !== node
-        );
+        node.parent.removeChild(node);
       }
     },
     visitOnly

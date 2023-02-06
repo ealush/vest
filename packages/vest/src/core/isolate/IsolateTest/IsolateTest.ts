@@ -17,6 +17,7 @@ export type IsolateTestInput = {
 };
 
 export class IsolateTest extends Isolate<IsolateTypes.TEST> {
+  children = null;
   fieldName: TFieldName;
   testFn: TestFn;
   groupName?: string;

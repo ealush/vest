@@ -1,47 +1,227 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Test Vest's \`test\` function test params creates a test with a message and with a key 1`] = `
-VestTest {
+IsolateTest {
+  "children": [],
+  "data": undefined,
   "fieldName": "field_name",
   "id": "23",
   "key": "keyboardcat",
+  "keys": {},
   "message": "failure message",
+  "output": undefined,
+  "parent": Isolate {
+    "children": [
+      [Circular],
+    ],
+    "data": undefined,
+    "key": null,
+    "keys": {
+      "keyboardcat": [Circular],
+    },
+    "output": {
+      "done": [Function],
+      "errorCount": 0,
+      "getErrors": [Function],
+      "getErrorsByGroup": [Function],
+      "getWarnings": [Function],
+      "getWarningsByGroup": [Function],
+      "groups": {},
+      "hasErrors": [Function],
+      "hasErrorsByGroup": [Function],
+      "hasWarnings": [Function],
+      "hasWarningsByGroup": [Function],
+      "isValid": [Function],
+      "isValidByGroup": [Function],
+      "suiteName": undefined,
+      "testCount": 1,
+      "tests": {
+        "field_name": {
+          "errorCount": 0,
+          "errors": [],
+          "testCount": 1,
+          "valid": true,
+          "warnCount": 0,
+          "warnings": [],
+        },
+      },
+      "valid": true,
+      "warnCount": 0,
+    },
+    "parent": null,
+    "type": "SUITE",
+  },
   "severity": "error",
   "status": "PASSING",
   "testFn": [Function],
+  "type": "TEST",
 }
 `;
 
 exports[`Test Vest's \`test\` function test params creates a test without a key 1`] = `
-VestTest {
+IsolateTest {
+  "children": [],
+  "data": undefined,
   "fieldName": "field_name",
   "id": "19",
   "key": null,
+  "keys": {},
   "message": "failure message",
+  "output": undefined,
+  "parent": Isolate {
+    "children": [
+      [Circular],
+    ],
+    "data": undefined,
+    "key": null,
+    "keys": {},
+    "output": {
+      "done": [Function],
+      "errorCount": 0,
+      "getErrors": [Function],
+      "getErrorsByGroup": [Function],
+      "getWarnings": [Function],
+      "getWarningsByGroup": [Function],
+      "groups": {},
+      "hasErrors": [Function],
+      "hasErrorsByGroup": [Function],
+      "hasWarnings": [Function],
+      "hasWarningsByGroup": [Function],
+      "isValid": [Function],
+      "isValidByGroup": [Function],
+      "suiteName": undefined,
+      "testCount": 1,
+      "tests": {
+        "field_name": {
+          "errorCount": 0,
+          "errors": [],
+          "testCount": 1,
+          "valid": true,
+          "warnCount": 0,
+          "warnings": [],
+        },
+      },
+      "valid": true,
+      "warnCount": 0,
+    },
+    "parent": null,
+    "type": "SUITE",
+  },
   "severity": "error",
   "status": "PASSING",
   "testFn": [Function],
+  "type": "TEST",
 }
 `;
 
 exports[`Test Vest's \`test\` function test params creates a test without a message and with a key 1`] = `
-VestTest {
+IsolateTest {
+  "children": [],
+  "data": undefined,
   "fieldName": "field_name",
   "id": "21",
   "key": "keyboardcat",
+  "keys": {},
+  "output": undefined,
+  "parent": Isolate {
+    "children": [
+      [Circular],
+    ],
+    "data": undefined,
+    "key": null,
+    "keys": {
+      "keyboardcat": [Circular],
+    },
+    "output": {
+      "done": [Function],
+      "errorCount": 0,
+      "getErrors": [Function],
+      "getErrorsByGroup": [Function],
+      "getWarnings": [Function],
+      "getWarningsByGroup": [Function],
+      "groups": {},
+      "hasErrors": [Function],
+      "hasErrorsByGroup": [Function],
+      "hasWarnings": [Function],
+      "hasWarningsByGroup": [Function],
+      "isValid": [Function],
+      "isValidByGroup": [Function],
+      "suiteName": undefined,
+      "testCount": 1,
+      "tests": {
+        "field_name": {
+          "errorCount": 0,
+          "errors": [],
+          "testCount": 1,
+          "valid": true,
+          "warnCount": 0,
+          "warnings": [],
+        },
+      },
+      "valid": true,
+      "warnCount": 0,
+    },
+    "parent": null,
+    "type": "SUITE",
+  },
   "severity": "error",
   "status": "PASSING",
   "testFn": [Function],
+  "type": "TEST",
 }
 `;
 
 exports[`Test Vest's \`test\` function test params creates a test without a message and without a key 1`] = `
-VestTest {
+IsolateTest {
+  "children": [],
+  "data": undefined,
   "fieldName": "field_name",
   "id": "17",
   "key": null,
+  "keys": {},
+  "output": undefined,
+  "parent": Isolate {
+    "children": [
+      [Circular],
+    ],
+    "data": undefined,
+    "key": null,
+    "keys": {},
+    "output": {
+      "done": [Function],
+      "errorCount": 0,
+      "getErrors": [Function],
+      "getErrorsByGroup": [Function],
+      "getWarnings": [Function],
+      "getWarningsByGroup": [Function],
+      "groups": {},
+      "hasErrors": [Function],
+      "hasErrorsByGroup": [Function],
+      "hasWarnings": [Function],
+      "hasWarningsByGroup": [Function],
+      "isValid": [Function],
+      "isValidByGroup": [Function],
+      "suiteName": undefined,
+      "testCount": 1,
+      "tests": {
+        "field_name": {
+          "errorCount": 0,
+          "errors": [],
+          "testCount": 1,
+          "valid": true,
+          "warnCount": 0,
+          "warnings": [],
+        },
+      },
+      "valid": true,
+      "warnCount": 0,
+    },
+    "parent": null,
+    "type": "SUITE",
+  },
   "severity": "error",
   "status": "PASSING",
   "testFn": [Function],
+  "type": "TEST",
 }
 `;

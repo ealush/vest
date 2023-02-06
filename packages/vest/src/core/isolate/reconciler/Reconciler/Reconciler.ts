@@ -115,7 +115,7 @@ function runAsNew<Callback extends CB = CB>(
       runtimeNode: current,
       ...(!runtimeRoot && { runtimeRoot: current }),
     },
-    callback
+    () => callback(current)
   );
 
   current.output = output;

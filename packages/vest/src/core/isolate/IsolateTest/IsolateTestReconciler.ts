@@ -1,10 +1,9 @@
 import { isOptionalFiedApplied } from 'optional';
 import { deferThrow, isNullish, invariant } from 'vest-utils';
 
-import type { IsolateTest } from 'IsolateTest';
+import { IsolateTest } from 'IsolateTest';
 import { IsolateTypes } from 'IsolateTypes';
 import { Reconciler } from 'Reconciler';
-import { VestTest } from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';
 import { getIsolateTest, getIsolateTestX } from 'getIsolateTest';
@@ -53,9 +52,7 @@ export class IsolateTestReconciler extends Reconciler {
     newNode: IsolateTest,
     prevNode?: Isolate
   ): boolean {
-    const prevTest = prevNode?.data;
-    const newTest = newNode.data;
-    return !!prevTest && !isSameProfileTest(prevTest, newTest);
+    return !!IsolateTest.is(prevNode) && !isSameProfileTest(prevNode, newNode);
   }
 
   static handleCollision(
@@ -113,7 +110,7 @@ export class IsolateTestReconciler extends Reconciler {
 function cancelOverriddenPendingTestOnTestReRun(
   nextNode: Isolate,
   currentNode: Isolate,
-  prevTestObject: VestTest
+  prevTestObject: IsolateTest
 ) {
   const currentTestObject = getIsolateTestX(currentNode);
 
@@ -122,7 +119,7 @@ function cancelOverriddenPendingTestOnTestReRun(
   }
 }
 
-function shouldOmit(testObject: VestTest): boolean {
+function shouldOmit(testObject: IsolateTest): boolean {
   return withinActiveOmitWhen() || isOptionalFiedApplied(testObject.fieldName);
 }
 
@@ -160,8 +157,8 @@ function throwTestOrderError(
   }
 
   deferThrow(`Vest Critical Error: Tests called in different order than previous run.
-    expected: ${newNode.data.fieldName}
-    received: ${prevNode?.data?.fieldName}
+    expected: ${newNode.fieldName}
+    received: ${IsolateTest.is(prevNode) ? prevNode.fieldName : undefined}
     This can happen on one of two reasons:
     1. You're using if/else statements to conditionally select tests. Instead, use "skipWhen".
     2. You are iterating over a list of tests, and their order changed. Use "each" and a custom key prop so that Vest retains their state.`);

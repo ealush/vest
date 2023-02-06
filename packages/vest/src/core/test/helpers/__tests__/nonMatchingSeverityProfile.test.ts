@@ -1,12 +1,16 @@
+import { IsolateTest } from 'IsolateTest';
+import { IsolateTypes } from 'IsolateTypes';
 import { Severity } from 'Severity';
-import { VestTest } from 'VestTest';
 import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
 
 describe('nonMatchingSeverityProfile', () => {
-  let testObject: VestTest;
+  let testObject: IsolateTest;
 
   beforeEach(() => {
-    testObject = new VestTest('field', jest.fn());
+    testObject = new IsolateTest(IsolateTypes.TEST, {
+      fieldName: 'field',
+      testFn: jest.fn(),
+    });
   });
   describe('When matching', () => {
     describe('When both are warning', () => {

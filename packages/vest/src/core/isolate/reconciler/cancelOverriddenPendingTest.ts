@@ -1,9 +1,9 @@
-import { VestTest } from 'VestTest';
+import { IsolateTest } from 'IsolateTest';
 import { isSameProfileTest } from 'isSameProfileTest';
 
 export default function cancelOverriddenPendingTest(
-  prevRunTestObject: VestTest,
-  currentRunTestObject: VestTest
+  prevRunTestObject: IsolateTest,
+  currentRunTestObject: IsolateTest
 ): void {
   if (
     currentRunTestObject !== prevRunTestObject &&

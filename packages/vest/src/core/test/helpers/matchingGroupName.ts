@@ -1,11 +1,11 @@
 import { bindNot } from 'vest-utils';
 
-import { VestTest } from 'VestTest';
+import { IsolateTest } from 'IsolateTest';
 
 export const nonMatchingGroupName = bindNot(matchingGroupName);
 
 export function matchingGroupName(
-  testObject: VestTest,
+  testObject: IsolateTest,
   groupName: string | void
 ): boolean {
   return testObject.groupName === groupName;

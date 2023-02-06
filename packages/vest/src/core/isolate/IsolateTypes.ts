@@ -1,5 +1,3 @@
-// import { VestTest } from 'VestTest';
-
 export enum IsolateTypes {
   DEFAULT = 'DEFAULT',
   TEST = 'TEST',

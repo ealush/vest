@@ -3,27 +3,37 @@ import { faker } from '@faker-js/faker';
 import { dummyTest } from '../../../testUtils/testDummy';
 
 import { ErrorStrings } from 'ErrorStrings';
+import { IsolateTest } from 'IsolateTest';
+import { IsolateTypes } from 'IsolateTypes';
 import { SuiteContext, TExclusion, useExclusion } from 'SuiteContext';
-import { VestTest } from 'VestTest';
 import { isExcluded, isGroupExcluded, skip, only } from 'exclusive';
 import { group } from 'group';
-import * as vest from 'vest';
 import { TTestSuite } from 'testUtils/TVestMock';
+import * as vest from 'vest';
 
 let res: boolean, res1: boolean;
 
 describe('exclusive hooks', () => {
-  let test1: vest.VestTest, test2: vest.VestTest, test3: vest.VestTest;
+  let test1: vest.IsolateTest, test2: vest.IsolateTest, test3: vest.IsolateTest;
 
   beforeEach(() => {
-    test1 = new VestTest(faker.lorem.word(), jest.fn());
-    test2 = new VestTest(faker.lorem.slug(), jest.fn());
-    test3 = new VestTest(faker.random.word(), jest.fn());
+    test1 = new IsolateTest(IsolateTypes.TEST, {
+      fieldName: faker.lorem.word(),
+      testFn: jest.fn(),
+    });
+    test2 = new IsolateTest(IsolateTypes.TEST, {
+      fieldName: faker.lorem.slug(),
+      testFn: jest.fn(),
+    });
+    test3 = new IsolateTest(IsolateTypes.TEST, {
+      fieldName: faker.random.word(),
+      testFn: jest.fn(),
+    });
   });
 
   test('isExcluded should respect group exclusion', () => {
-    let testObject: vest.VestTest;
-    let testObject1: vest.VestTest;
+    let testObject: vest.IsolateTest;
+    let testObject1: vest.IsolateTest;
 
     const validate = vest.create(() => {
       vest.skip.group('group_1');
@@ -271,7 +281,7 @@ describe('isExcluded', () => {
 
   const runIsExcluded = (
     exclusion: Partial<TExclusion>,
-    testObject: VestTest
+    testObject: IsolateTest
   ) =>
     SuiteContext.run({}, () => {
       Object.assign(useExclusion(), exclusion);
@@ -281,7 +291,9 @@ describe('isExcluded', () => {
     });
 
   const genTest = (fieldName: string, groupName?: string) =>
-    new VestTest(fieldName, jest.fn(), {
+    new IsolateTest(IsolateTypes.TEST, {
+      fieldName,
+      testFn: jest.fn(),
       groupName,
     });
   describe('skip', () => {

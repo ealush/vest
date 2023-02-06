@@ -1,8 +1,8 @@
-import { VestTest } from 'VestTest';
+import { IsolateTest } from 'IsolateTest';
 
 export function isSameProfileTest(
-  testObject1: VestTest,
-  testObject2: VestTest
+  testObject1: IsolateTest,
+  testObject2: IsolateTest
 ): boolean {
   return (
     testObject1.fieldName === testObject2.fieldName &&

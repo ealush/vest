@@ -6,9 +6,9 @@ import {
 } from 'vest-utils';
 
 import { ErrorStrings } from 'ErrorStrings';
+import { IsolateTest } from 'IsolateTest';
 import { useExclusion, useInclusion } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
-import { VestTest } from 'VestTest';
 import { isExcludedIndividually } from 'skipWhen';
 
 type ExclusionItem = string | string[] | undefined;
@@ -45,7 +45,7 @@ skip.group = (item: ExclusionItem) =>
 //Checks whether a certain test profile excluded by any of the exclusion groups.
 
 // eslint-disable-next-line complexity, max-statements
-export function isExcluded(testObject: VestTest): boolean {
+export function isExcluded(testObject: IsolateTest): boolean {
   const { fieldName, groupName } = testObject;
 
   if (isExcludedIndividually()) return true;

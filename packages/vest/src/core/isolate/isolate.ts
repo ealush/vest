@@ -8,6 +8,8 @@ import {
 } from 'PersistedContext';
 import { Reconciler } from 'Reconciler';
 
+export type IsolateKey = null | string;
+
 export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
   type: T;
   children: Isolate[] = [];
@@ -15,7 +17,7 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
   parent: Isolate | null = null;
   data: D;
   output?: any;
-  key: null | string = null;
+  key: IsolateKey = null;
   static reconciler = Reconciler;
 
   constructor(type: T, data?: any) {
@@ -66,12 +68,17 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, D = any> {
 
     nextIsolateChild.saveOutput(output);
 
-    if (parent) {
-      useSetNextIsolateChild(nextIsolateChild);
-    } else {
-      useSetHistory(nextIsolateChild);
-    }
+    this.setNode(nextIsolateChild);
 
     return nextIsolateChild;
+  }
+
+  static setNode(node: Isolate): void {
+    const parent = useIsolate();
+    if (parent) {
+      useSetNextIsolateChild(node);
+    } else {
+      useSetHistory(node);
+    }
   }
 }

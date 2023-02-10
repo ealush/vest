@@ -20,7 +20,7 @@ export function initVestBus() {
       return;
     }
 
-    testObject.done();
+    testObject.pass();
 
     runFieldCallbacks(testObject.fieldName);
 

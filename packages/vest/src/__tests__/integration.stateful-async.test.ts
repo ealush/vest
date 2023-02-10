@@ -131,7 +131,7 @@ describe('Stateful async tests', () => {
     expect(control).toHaveBeenCalledTimes(1);
     expect(control).toHaveBeenCalledWith(1);
 
-    expect(tests[0].status).toBe('CANCELED');
-    expect(tests[1].status).toBe('FAILED');
+    expect(tests[0].isCanceled()).toBe(true);
+    expect(tests[1].isFailing()).toBe(true);
   });
 });

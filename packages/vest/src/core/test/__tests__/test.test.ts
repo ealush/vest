@@ -26,7 +26,7 @@ describe("Test Vest's `test` function", () => {
             throw new Error();
           });
         })();
-        expect(testObject.status).toBe('FAILED');
+        expect(testObject.isFailing()).toBe(true);
         // @ts-ignore - very much intentional
         expect(testObject == false).toBe(true); //eslint-disable-line
       });
@@ -35,7 +35,7 @@ describe("Test Vest's `test` function", () => {
         create(() => {
           test(faker.random.word(), faker.lorem.sentence(), () => false);
         })();
-        expect(testObject.status).toBe('FAILED');
+        expect(testObject.isFailing()).toBe(true);
         // @ts-ignore - very much intentional
         expect(testObject == false).toBe(true); //eslint-disable-line
       });
@@ -116,13 +116,13 @@ describe("Test Vest's `test` function", () => {
               faker.lorem.sentence(),
               () =>
                 new Promise((_, reject) => {
-                  expect(testObject.status).not.toBe('FAILED');
+                  expect(testObject.isFailing()).toBe(false);
                   setTimeout(reject, 300);
                 })
             );
-            expect(testObject.status).not.toBe('FAILED');
+            expect(testObject.isFailing()).toBe(false);
             setTimeout(() => {
-              expect(testObject.status).toBe('FAILED');
+              expect(testObject.isFailing()).toBe(true);
               done();
             }, 310);
           })();

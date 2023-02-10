@@ -15,6 +15,12 @@
       "IsolateTestReconciler": [
         "src/core/isolate/IsolateTest/IsolateTestReconciler.ts"
       ],
+      "IsolateTestStateMachine": [
+        "src/core/isolate/IsolateTest/IsolateTestStateMachine.ts"
+      ],
+      "SimpleStateMachine": [
+        "src/core/isolate/IsolateTest/SimpleStateMachine.ts"
+      ],
       "IsolateTypes": ["src/core/isolate/IsolateTypes.ts"],
       "cancelOverriddenPendingTest": [
         "src/core/isolate/reconciler/cancelOverriddenPendingTest.ts"

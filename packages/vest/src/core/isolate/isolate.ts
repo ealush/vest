@@ -11,7 +11,6 @@ import { Reconciler } from 'Reconciler';
 export type IsolateKey = null | string;
 
 export class Isolate<T extends IsolateTypes = IsolateTypes, _D = any> {
-  type: T;
   children: Isolate[] | null = [];
   keys: Record<string, Isolate> = {};
   parent: Isolate | null = null;
@@ -19,9 +18,8 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, _D = any> {
   key: IsolateKey = null;
   static reconciler = Reconciler;
 
-  constructor(type: T, _data?: any) {
-    this.type = type;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  constructor(public type: T, _data?: _D) {}
 
   setParent(parent: Isolate | null): this {
     this.parent = parent;

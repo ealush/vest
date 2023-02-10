@@ -1,6 +1,11 @@
 import { CB, invariant, seq } from 'vest-utils';
 
 import { IsolateTestReconciler } from 'IsolateTestReconciler';
+import {
+  TestAction,
+  TestStatus,
+  createTestStateMachine,
+} from 'IsolateTestStateMachine';
 import { IsolateTypes } from 'IsolateTypes';
 import { TFieldName } from 'SuiteResultTypes';
 import { TestFn, AsyncTest, TestResult } from 'TestTypes';
@@ -24,7 +29,7 @@ export class IsolateTest extends Isolate<IsolateTypes.TEST> {
   asyncTest?: AsyncTest;
   id = seq();
   severity = TestSeverity.Error;
-  status: KStatus = STATUS_UNTESTED;
+  private stateMachine = createTestStateMachine();
 
   static reconciler = IsolateTestReconciler;
 
@@ -55,6 +60,14 @@ export class IsolateTest extends Isolate<IsolateTypes.TEST> {
     return super.create(IsolateTypes.TEST, callback, data) as IsolateTest;
   }
 
+  get status(): TestStatus {
+    return this.stateMachine.getState();
+  }
+
+  setStatus(status: TestStatus, payload?: any): void {
+    this.stateMachine.transition(status, payload);
+  }
+
   run(): TestResult {
     let result: TestResult;
     try {
@@ -73,104 +86,42 @@ export class IsolateTest extends Isolate<IsolateTypes.TEST> {
     return result;
   }
 
-  setStatus(status: KStatus): void {
-    if (this.isFinalStatus() && status !== STATUS_OMITTED) {
-      return;
-    }
-
-    this.status = status;
-  }
+  // Selectors
 
   warns(): boolean {
     return this.severity === TestSeverity.Warning;
   }
 
-  setPending() {
-    this.setStatus(STATUS_PENDING);
-  }
-
-  fail(): void {
-    this.setStatus(this.warns() ? STATUS_WARNING : STATUS_FAILED);
-  }
-
-  done(): void {
-    if (this.isFinalStatus()) {
-      return;
-    }
-    this.setStatus(STATUS_PASSING);
-  }
-
-  warn(): void {
-    this.severity = TestSeverity.Warning;
-  }
-
-  isFinalStatus(): boolean {
-    return this.hasFailures() || this.isCanceled() || this.isPassing();
-  }
-
-  skip(force?: boolean): void {
-    if (this.isPending() && !force) {
-      // Without this condition, the test will be marked as skipped even if it is pending.
-      // This means that it will not be counted in "allIncomplete" and its done callbacks
-      // will not be called, or will be called prematurely.
-      // What this mostly say is that when we have a pending test for one field, and we then
-      // start typing in a different field - the pending test will be canceled, which
-      // is usually an unwanted behavior.
-      // The only scenario in which we DO want to cancel the async test regardless
-      // is when we specifically skip a test with `skipWhen`, which is handled by the
-      // "force" boolean flag.
-      // I am not a fan of this flag, but it gets the job done.
-      return;
-    }
-    this.setStatus(STATUS_SKIPPED);
-  }
-
-  cancel(): void {
-    this.setStatus(STATUS_CANCELED);
-  }
-
-  reset(): void {
-    this.status = STATUS_UNTESTED;
-  }
-
-  omit(): void {
-    this.setStatus(STATUS_OMITTED);
-  }
-
-  valueOf(): boolean {
-    return !this.isFailing();
-  }
-
   isPending(): boolean {
-    return this.statusEquals(STATUS_PENDING);
+    return this.statusEquals(TestStatus.PENDING);
   }
 
   isOmitted(): boolean {
-    return this.statusEquals(STATUS_OMITTED);
+    return this.statusEquals(TestStatus.OMITTED);
   }
 
   isUntested(): boolean {
-    return this.statusEquals(STATUS_UNTESTED);
+    return this.statusEquals(TestStatus.UNTESTED);
   }
 
   isFailing(): boolean {
-    return this.statusEquals(STATUS_FAILED);
+    return this.statusEquals(TestStatus.FAILED);
   }
 
   isCanceled(): boolean {
-    return this.statusEquals(STATUS_CANCELED);
+    return this.statusEquals(TestStatus.CANCELED);
   }
 
   isSkipped(): boolean {
-    return this.statusEquals(STATUS_SKIPPED);
+    return this.statusEquals(TestStatus.SKIPPED);
   }
 
   isPassing(): boolean {
-    return this.statusEquals(STATUS_PASSING);
+    return this.statusEquals(TestStatus.PASSING);
   }
 
   isWarning(): boolean {
-    return this.statusEquals(STATUS_WARNING);
+    return this.statusEquals(TestStatus.WARNING);
   }
 
   hasFailures(): boolean {
@@ -191,8 +142,56 @@ export class IsolateTest extends Isolate<IsolateTypes.TEST> {
     return this.isSkipped() || this.isUntested() || this.isPending();
   }
 
-  statusEquals(status: KStatus): boolean {
+  statusEquals(status: TestStatus): boolean {
     return this.status === status;
+  }
+
+  // State modifiers
+
+  setPending() {
+    this.setStatus(TestStatus.PENDING);
+  }
+
+  fail(): void {
+    this.setStatus(this.warns() ? TestStatus.WARNING : TestStatus.FAILED);
+  }
+
+  pass(): void {
+    this.setStatus(TestStatus.PASSING);
+  }
+
+  warn(): void {
+    this.severity = TestSeverity.Warning;
+  }
+
+  skip(force?: boolean): void {
+    // Without this force flag, the test will be marked as skipped even if it is pending.
+    // This means that it will not be counted in "allIncomplete" and its done callbacks
+    // will not be called, or will be called prematurely.
+    // What this mostly say is that when we have a pending test for one field, and we then
+    // start typing in a different field - the pending test will be canceled, which
+    // is usually an unwanted behavior.
+    // The only scenario in which we DO want to cancel the async test regardless
+    // is when we specifically skip a test with `skipWhen`, which is handled by the
+    // "force" boolean flag.
+    // I am not a fan of this flag, but it gets the job done.
+    this.setStatus(TestStatus.SKIPPED, force);
+  }
+
+  cancel(): void {
+    this.setStatus(TestStatus.CANCELED);
+  }
+
+  reset(): void {
+    this.stateMachine.transition(TestAction.RESET);
+  }
+
+  omit(): void {
+    this.setStatus(TestStatus.OMITTED);
+  }
+
+  valueOf(): boolean {
+    return !this.isFailing();
   }
 
   static is(value: any): value is IsolateTest {
@@ -208,22 +207,3 @@ enum TestSeverity {
   Error = 'error',
   Warning = 'warning',
 }
-
-const STATUS_UNTESTED = 'UNTESTED';
-const STATUS_SKIPPED = 'SKIPPED';
-const STATUS_FAILED = 'FAILED';
-const STATUS_WARNING = 'WARNING';
-const STATUS_PASSING = 'PASSING';
-const STATUS_PENDING = 'PENDING';
-const STATUS_CANCELED = 'CANCELED';
-const STATUS_OMITTED = 'OMITTED';
-
-type KStatus =
-  | 'UNTESTED'
-  | 'SKIPPED'
-  | 'FAILED'
-  | 'WARNING'
-  | 'PASSING'
-  | 'PENDING'
-  | 'CANCELED'
-  | 'OMITTED';

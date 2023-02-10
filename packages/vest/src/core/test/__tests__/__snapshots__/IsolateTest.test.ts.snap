@@ -10,7 +10,10 @@ IsolateTest {
   "message": "I am Root.",
   "parent": null,
   "severity": "error",
-  "status": "UNTESTED",
+  "stateMachine": {
+    "getState": [Function],
+    "transition": [Function],
+  },
   "testFn": [MockFunction],
   "type": "TEST",
 }
@@ -26,7 +29,10 @@ IsolateTest {
   "message": "I am Root.",
   "parent": null,
   "severity": "warning",
-  "status": "UNTESTED",
+  "stateMachine": {
+    "getState": [Function],
+    "transition": [Function],
+  },
   "testFn": [MockFunction],
   "type": "TEST",
 }

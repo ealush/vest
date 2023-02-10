@@ -1,7 +1,5 @@
 import { assign, invariant, isFunction, isStringValue } from 'vest-utils';
 
-import { wrapTestMemo } from './test.memo';
-
 import { IsolateTest } from 'IsolateTest';
 import { useEmit } from 'PersistedContext';
 import { useGroupName } from 'SuiteContext';
@@ -9,6 +7,7 @@ import { TFieldName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
 import { Events } from 'VestBus';
 import { IsolateKey } from 'isolate';
+import { wrapTestMemo } from 'test.memo';
 import { testObjectIsolate } from 'testObjectIsolate';
 
 function vestTest<F extends TFieldName>(
@@ -46,7 +45,7 @@ function vestTest<F extends TFieldName>(
   const groupName = useGroupName();
   const emit = useEmit();
 
-  const testObjectInput = { fieldName, testFn, message, groupName, key };
+  const testObjectInput = { fieldName, groupName, key, message, testFn };
 
   // This invalidates the suite cache.
   emit(Events.TEST_RUN_STARTED);

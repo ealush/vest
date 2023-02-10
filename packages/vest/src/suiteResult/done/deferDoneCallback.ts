@@ -1,12 +1,11 @@
 import { assign } from 'vest-utils';
 
-import { TFieldName } from '../SuiteResultTypes';
-
 import {
   DoneCallback,
   useDoneCallbacks,
   useFieldCallbacks,
 } from 'PersistedContext';
+import { TFieldName } from 'SuiteResultTypes';
 
 export function deferDoneCallback(
   doneCallback: DoneCallback,

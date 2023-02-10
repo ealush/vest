@@ -1,7 +1,6 @@
-import { TFieldName } from '../SuiteResultTypes';
-
 import { IsolateTest } from 'IsolateTest';
 import { Severity } from 'Severity';
+import { TFieldName } from 'SuiteResultTypes';
 import { TestWalker } from 'SuiteWalker';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';

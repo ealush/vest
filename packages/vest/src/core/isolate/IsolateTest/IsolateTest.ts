@@ -1,7 +1,6 @@
 import { CB, invariant, seq } from 'vest-utils';
 
-import { IsolateTestReconciler } from './IsolateTestReconciler';
-
+import { IsolateTestReconciler } from 'IsolateTestReconciler';
 import { IsolateTypes } from 'IsolateTypes';
 import { TFieldName } from 'SuiteResultTypes';
 import { TestFn, AsyncTest, TestResult } from 'TestTypes';
@@ -132,7 +131,6 @@ export class IsolateTest extends Isolate<IsolateTypes.TEST> {
 
   reset(): void {
     this.status = STATUS_UNTESTED;
-    // useRefreshTestObjects();
   }
 
   omit(): void {

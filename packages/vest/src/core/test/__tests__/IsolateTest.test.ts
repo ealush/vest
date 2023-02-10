@@ -62,9 +62,9 @@ describe('IsolateTest', () => {
     });
 
     it('Should set status to failed', () => {
-      expect(testObject.status).not.toBe('FAILED');
+      expect(testObject.isFailing()).toBe(false);
       testObject.fail();
-      expect(testObject.status).toBe('FAILED');
+      expect(testObject.isFailing()).toBe(true);
     });
   });
 
@@ -132,7 +132,7 @@ describe('IsolateTest', () => {
           const testObject = vest.test('f1', async () => {
             await wait(100);
           });
-          testObject.setStatus('CANCELED');
+          testObject.cancel();
           expect(testObject.isCanceled()).toBe(true);
           testObject.fail();
           expect(testObject.isCanceled()).toBe(true);

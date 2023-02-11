@@ -21,7 +21,6 @@ export function initVestBus() {
     }
 
     testObject.pass();
-
     runFieldCallbacks(testObject.fieldName);
 
     if (!TestWalker.hasRemainingTests()) {

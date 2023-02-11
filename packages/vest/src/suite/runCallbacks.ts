@@ -2,7 +2,7 @@ import { isArray, callEach } from 'vest-utils';
 
 import { useDoneCallbacks, useFieldCallbacks } from 'PersistedContext';
 import { TFieldName } from 'SuiteResultTypes';
-import { TestWalker } from 'SuiteWalker';
+import { TestWalker } from 'TestWalker';
 
 /**
  * Runs done callback per field when async tests are finished running.

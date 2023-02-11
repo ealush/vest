@@ -11,7 +11,7 @@ import {
   Tests,
   TestsContainer,
 } from 'SuiteResultTypes';
-import { TestWalker } from 'SuiteWalker';
+import { TestWalker } from 'TestWalker';
 import {
   shouldAddValidProperty,
   shouldAddValidPropertyInGroup,

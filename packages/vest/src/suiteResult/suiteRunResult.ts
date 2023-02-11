@@ -2,7 +2,7 @@ import { assign } from 'vest-utils';
 
 import { persist } from 'PersistedContext';
 import { SuiteResult, SuiteRunResult, TFieldName } from 'SuiteResultTypes';
-import { TestWalker } from 'SuiteWalker';
+import { TestWalker } from 'TestWalker';
 import { deferDoneCallback } from 'deferDoneCallback';
 import { shouldSkipDoneRegistration } from 'shouldSkipDoneRegistration';
 import { createSuiteResult } from 'suiteResult';

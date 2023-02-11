@@ -1,6 +1,6 @@
 import wait from 'wait';
 
-import { TestWalker } from 'SuiteWalker';
+import { TestWalker } from 'TestWalker';
 import * as vest from 'vest';
 
 describe('TestWalker.hasRemainingTests', () => {

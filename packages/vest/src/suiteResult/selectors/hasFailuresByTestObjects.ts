@@ -1,7 +1,7 @@
 import { IsolateTest } from 'IsolateTest';
 import { Severity } from 'Severity';
 import { TFieldName } from 'SuiteResultTypes';
-import { TestWalker } from 'SuiteWalker';
+import { TestWalker } from 'TestWalker';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
 import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';

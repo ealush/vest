@@ -7,7 +7,7 @@ import {
   useResetSuite,
 } from 'PersistedContext';
 import { TFieldName } from 'SuiteResultTypes';
-import { TestWalker } from 'SuiteWalker';
+import { TestWalker } from 'TestWalker';
 import { runDoneCallbacks, runFieldCallbacks } from 'runCallbacks';
 
 export function initVestBus() {

@@ -17,7 +17,7 @@ export function attemptRunTestObjectByTier(testObject: IsolateTest) {
 
   if (testObject.isUntested()) {
     runTest(testObject);
-  } else if (isPromise(testObject.asyncTest)) {
+  } else if (testObject.isAsyncTest()) {
     testObject.setPending();
     runAsyncTest(testObject);
   }
@@ -67,8 +67,6 @@ function runAsyncTest(testObject: IsolateTest): void {
   const VestBus = useVestBus();
 
   const done = persist(() => {
-    // invalidating the "produce" cache
-    // useRefreshTestObjects();
     VestBus.emit(Events.TEST_COMPLETED, testObject);
   });
   const fail = persist((rejectionMessage?: string) => {

@@ -21,6 +21,7 @@
       "SimpleStateMachine": [
         "src/core/isolate/IsolateTest/SimpleStateMachine.ts"
       ],
+      "TestWalker": ["src/core/isolate/IsolateTest/TestWalker.ts"],
       "IsolateTypes": ["src/core/isolate/IsolateTypes.ts"],
       "cancelOverriddenPendingTest": [
         "src/core/isolate/reconciler/cancelOverriddenPendingTest.ts"

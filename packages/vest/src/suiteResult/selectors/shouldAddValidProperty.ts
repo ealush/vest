@@ -5,7 +5,7 @@ import { OptionalFieldTypes } from 'OptionalTypes';
 import { useOptionalField } from 'PersistedContext';
 import { Severity } from 'Severity';
 import { TFieldName } from 'SuiteResultTypes';
-import { TestWalker } from 'SuiteWalker';
+import { TestWalker } from 'TestWalker';
 import {
   hasErrorsByTestObjects,
   hasGroupFailuresByTestObjects,

@@ -1,4 +1,4 @@
-import { CB, invariant, seq } from 'vest-utils';
+import { CB, invariant, isPromise, seq } from 'vest-utils';
 
 import { IsolateTestReconciler } from 'IsolateTestReconciler';
 import {
@@ -192,6 +192,10 @@ export class IsolateTest extends Isolate<IsolateTypes.TEST> {
 
   valueOf(): boolean {
     return !this.isFailing();
+  }
+
+  isAsyncTest(): boolean {
+    return isPromise(this.asyncTest);
   }
 
   static is(value: any): value is IsolateTest {

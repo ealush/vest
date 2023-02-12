@@ -4,7 +4,6 @@
   "description": "Declarative Form Validations Framework",
   "license": "MIT",
   "author": "ealush",
-  "private": true,
   "main": "./dist/cjs/vest.js",
   "module": "./dist/es/vest.production.js",
   "unpkg": "./dist/umd/vest.production.js",

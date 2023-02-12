@@ -29,8 +29,6 @@ module.exports = function updateLocalDepsToLatest() {
     const depPkgJson = packageJson(name);
 
     if (depPkgJson && depPkgJson.name === name) {
-      const latestKnown = `^${depPkgJson.version}`;
-
       // If we have a "targetPackage", we might not be building our dependencies, so start with
       // taking the latest from the current tag. Might not be perfect, but since this is mostly
       // used for development or "next", it's not too bad, and we're defaulting to the latest
@@ -40,9 +38,12 @@ module.exports = function updateLocalDepsToLatest() {
           ? TAG_NEXT
           : isIntegrationBranch
           ? TAG_DEV
-          : latestKnown;
+          : depPkgJson.version;
       } else {
-        deps[name] = latestKnown;
+        deps[name] =
+          isNextBranch || isIntegrationBranch
+            ? depPkgJson.version // In development we want to use the specific version
+            : `^${depPkgJson.version}`; // In production we want to use the latest version within range
       }
     }
   }

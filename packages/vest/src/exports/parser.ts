@@ -2,6 +2,7 @@ import { hasOwnProperty, invariant, isNullish, isPositive } from 'vest-utils';
 
 import { SuiteSummary, TFieldName } from 'SuiteResultTypes';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - Need to understand why Vest is not being recognized
 import { suiteSelectors } from 'vest';
 

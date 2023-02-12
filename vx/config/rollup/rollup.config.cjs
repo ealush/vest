@@ -67,8 +67,6 @@ function genBaseConfig({
     plugins: getPlugins({ env, moduleName, namespace, packageName }),
   };
 
-  console.log(moduleName, JSON.stringify(config, null, 2));
-
   return config;
 }
 

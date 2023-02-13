@@ -3,7 +3,6 @@ import wait from 'wait';
 import { TestPromise } from '../../../../testUtils/testPromise';
 
 import { IsolateTest } from 'IsolateTest';
-import { IsolateTypes } from 'IsolateTypes';
 import * as vest from 'vest';
 
 const fieldName = 'unicycle';
@@ -13,7 +12,7 @@ describe('IsolateTest', () => {
   let testObject: IsolateTest;
 
   beforeEach(() => {
-    testObject = new IsolateTest(IsolateTypes.TEST, {
+    testObject = new IsolateTest({
       fieldName,
       testFn: jest.fn(),
       message,
@@ -28,7 +27,7 @@ describe('IsolateTest', () => {
     Array.from(
       { length: 100 },
       () =>
-        new IsolateTest(IsolateTypes.TEST, {
+        new IsolateTest({
           fieldName,
           testFn: jest.fn(),
           message,

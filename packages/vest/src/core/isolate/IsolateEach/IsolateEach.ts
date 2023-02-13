@@ -1,6 +1,5 @@
-import { IsolateTypes } from 'IsolateTypes';
 import { Isolate } from 'isolate';
 
-export class IsolateEach extends Isolate<IsolateTypes.EACH> {
+export class IsolateEach extends Isolate {
   allowReorder = true;
 }

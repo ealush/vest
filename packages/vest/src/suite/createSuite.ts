@@ -1,6 +1,5 @@
 import { assign, CB, invariant, isFunction } from 'vest-utils';
 
-import { IsolateTypes } from 'IsolateTypes';
 import {
   createVestState,
   persist,
@@ -39,7 +38,7 @@ function createSuite<T extends CB, F extends TFieldName>(
 
       emit(Events.SUITE_RUN_STARTED);
 
-      return Isolate.create(IsolateTypes.SUITE, runSuiteCallback(...args));
+      return Isolate.create(runSuiteCallback(...args));
     }).output;
   }
 

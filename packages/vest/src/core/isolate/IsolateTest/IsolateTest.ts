@@ -6,7 +6,6 @@ import {
   TestStatus,
   createTestStateMachine,
 } from 'IsolateTestStateMachine';
-import { IsolateTypes } from 'IsolateTypes';
 import { TFieldName } from 'SuiteResultTypes';
 import { TestFn, AsyncTest, TestResult } from 'TestTypes';
 import { Isolate, IsolateKey } from 'isolate';
@@ -20,7 +19,7 @@ export type IsolateTestInput = {
   key?: IsolateKey;
 };
 
-export class IsolateTest extends Isolate<IsolateTypes.TEST> {
+export class IsolateTest extends Isolate {
   children = null;
   fieldName: TFieldName;
   testFn: TestFn;
@@ -33,11 +32,14 @@ export class IsolateTest extends Isolate<IsolateTypes.TEST> {
 
   static reconciler = IsolateTestReconciler;
 
-  constructor(
-    type: IsolateTypes.TEST,
-    { fieldName, testFn, message, groupName, key = null }: IsolateTestInput
-  ) {
-    super(type);
+  constructor({
+    fieldName,
+    testFn,
+    message,
+    groupName,
+    key = null,
+  }: IsolateTestInput) {
+    super();
 
     this.fieldName = fieldName;
     this.testFn = testFn;
@@ -57,7 +59,7 @@ export class IsolateTest extends Isolate<IsolateTypes.TEST> {
     callback: Callback,
     data: IsolateTestInput
   ): IsolateTest {
-    return super.create(IsolateTypes.TEST, callback, data) as IsolateTest;
+    return super.create(callback, data) as IsolateTest;
   }
 
   get status(): TestStatus {

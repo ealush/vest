@@ -1,7 +1,6 @@
 import type { CB } from 'vest-utils';
 import { optionalFunctionValue } from 'vest-utils';
 
-import { IsolateTypes } from 'IsolateTypes';
 import { SuiteContext, useOmitted } from 'SuiteContext';
 import { SuiteResult, TFieldName } from 'SuiteResultTypes';
 import { Isolate } from 'isolate';
@@ -20,7 +19,7 @@ export function omitWhen<F extends TFieldName>(
   conditional: boolean | ((draft: SuiteResult<F>) => boolean),
   callback: CB
 ): void {
-  Isolate.create(IsolateTypes.OMIT_WHEN, () => {
+  Isolate.create(() => {
     SuiteContext.run(
       {
         omitted:

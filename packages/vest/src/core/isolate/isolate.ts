@@ -1,4 +1,5 @@
 import { CB, invariant, isNotNullish, isNullish } from 'vest-utils';
+import { closestExists } from 'walker';
 
 import { IsolateTypes } from 'IsolateTypes';
 import {
@@ -16,6 +17,7 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, _D = any> {
   parent: Isolate | null = null;
   output?: any;
   key: IsolateKey = null;
+  allowReorder = false;
   static reconciler = Reconciler;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -64,6 +66,10 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, _D = any> {
 
   cursor(): number {
     return this.children?.length ?? 0;
+  }
+
+  shouldAllowReorder(): boolean {
+    return closestExists(this, node => node.allowReorder) ?? false;
   }
 
   static create<Callback extends CB = CB>(

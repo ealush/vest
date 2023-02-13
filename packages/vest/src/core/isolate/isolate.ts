@@ -1,7 +1,6 @@
 import { CB, invariant, isNotNullish, isNullish } from 'vest-utils';
 import { closestExists } from 'walker';
 
-import { IsolateTypes } from 'IsolateTypes';
 import {
   useSetNextIsolateChild,
   useSetHistory,
@@ -11,7 +10,7 @@ import { Reconciler } from 'Reconciler';
 
 export type IsolateKey = null | string;
 
-export class Isolate<T extends IsolateTypes = IsolateTypes, _D = any> {
+export class Isolate<_D = any> {
   children: Isolate[] | null = [];
   keys: Record<string, Isolate> = {};
   parent: Isolate | null = null;
@@ -21,7 +20,7 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, _D = any> {
   static reconciler = Reconciler;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  constructor(public type: T, _data?: _D) {}
+  constructor(_data?: _D) {}
 
   setParent(parent: Isolate | null): this {
     this.parent = parent;
@@ -73,21 +72,19 @@ export class Isolate<T extends IsolateTypes = IsolateTypes, _D = any> {
   }
 
   static create<Callback extends CB = CB>(
-    type: IsolateTypes,
     callback: Callback,
     data?: any
   ): Isolate {
-    return this.createImplementation(type, callback, data);
+    return this.createImplementation(callback, data);
   }
 
   private static createImplementation<Callback extends CB = CB>(
-    type: IsolateTypes,
     callback: Callback,
     data?: any
   ): Isolate {
     const parent = useIsolate();
 
-    const newCreatedNode = new this(type, data).setParent(parent);
+    const newCreatedNode = new this(data).setParent(parent);
 
     const [nextIsolateChild, output] = this.reconciler.reconcile(
       newCreatedNode,

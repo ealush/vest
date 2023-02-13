@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 
 import { IsolateTest } from 'IsolateTest';
-import { IsolateTypes } from 'IsolateTypes';
 import { Severity } from 'Severity';
 import { hasFailuresByTestObject } from 'hasFailuresByTestObjects';
 
@@ -12,7 +11,7 @@ describe('hasFailuresByTestObject', () => {
 
   beforeEach(() => {
     const fieldName: string = faker.random.word();
-    testObject = new IsolateTest(IsolateTypes.TEST, {
+    testObject = new IsolateTest({
       fieldName,
       testFn: jest.fn(),
     });

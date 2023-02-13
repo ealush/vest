@@ -4,7 +4,6 @@ import { dummyTest } from '../../../testUtils/testDummy';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
-import { IsolateTypes } from 'IsolateTypes';
 import { SuiteContext, TExclusion, useExclusion } from 'SuiteContext';
 import { isExcluded, isGroupExcluded, skip, only } from 'exclusive';
 import { group } from 'group';
@@ -17,15 +16,15 @@ describe('exclusive hooks', () => {
   let test1: vest.IsolateTest, test2: vest.IsolateTest, test3: vest.IsolateTest;
 
   beforeEach(() => {
-    test1 = new IsolateTest(IsolateTypes.TEST, {
+    test1 = new IsolateTest({
       fieldName: faker.lorem.word(),
       testFn: jest.fn(),
     });
-    test2 = new IsolateTest(IsolateTypes.TEST, {
+    test2 = new IsolateTest({
       fieldName: faker.lorem.slug(),
       testFn: jest.fn(),
     });
-    test3 = new IsolateTest(IsolateTypes.TEST, {
+    test3 = new IsolateTest({
       fieldName: faker.random.word(),
       testFn: jest.fn(),
     });
@@ -291,7 +290,7 @@ describe('isExcluded', () => {
     });
 
   const genTest = (fieldName: string, groupName?: string) =>
-    new IsolateTest(IsolateTypes.TEST, {
+    new IsolateTest({
       fieldName,
       testFn: jest.fn(),
       groupName,

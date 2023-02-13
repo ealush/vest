@@ -1,5 +1,4 @@
 import { IsolateTest } from 'IsolateTest';
-import { IsolateTypes } from 'IsolateTypes';
 import { Severity } from 'Severity';
 import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
 
@@ -7,7 +6,7 @@ describe('nonMatchingSeverityProfile', () => {
   let testObject: IsolateTest;
 
   beforeEach(() => {
-    testObject = new IsolateTest(IsolateTypes.TEST, {
+    testObject = new IsolateTest({
       fieldName: 'field',
       testFn: jest.fn(),
     });

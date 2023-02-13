@@ -5,8 +5,6 @@ import { TVestMock } from '../../testUtils/TVestMock';
 import mockThrowError from '../../testUtils/mockThrowError';
 import { TDummyTest } from '../../testUtils/testDummy';
 
-import { IsolateTypes } from 'IsolateTypes';
-
 describe('isolate', () => {
   let vest: TVestMock;
   let firstRun = true;
@@ -46,7 +44,7 @@ describe('isolate', () => {
       const f2 = jest.fn(() => false);
       const suite = genSuite(() => {
         vest.skipWhen(!firstRun, () => {
-          Isolate.create(IsolateTypes.DEFAULT, () => {
+          Isolate.create(() => {
             vest.test('f1', f1);
             vest.test('f2', f2);
           });
@@ -71,7 +69,7 @@ describe('isolate', () => {
       const suite = genSuite(() => {
         dummyTest.failing('f1');
 
-        Isolate.create(IsolateTypes.EACH, () => {
+        Isolate.create(() => {
           dummyTest.failing('f2');
           if (!firstRun) {
             dummyTest.failing('f3');
@@ -115,7 +113,7 @@ describe('isolate', () => {
 
     it('Should only retain the state of the unmoved state before the order index', () => {
       const suite = genSuite(() => {
-        Isolate.create(IsolateTypes.EACH, () => {
+        Isolate.create(() => {
           vest.skipWhen(!firstRun, () => {
             dummyTest.failing('f1');
           });
@@ -158,7 +156,7 @@ describe('isolate', () => {
         // if the state is kept, they should be invalid. Otherwise
         // they should be untested.
         vest.skipWhen(!firstRun, () => {
-          Isolate.create(IsolateTypes.EACH, () => {
+          Isolate.create(() => {
             dummyTest.failing('f2');
             dummyTest.failing('f3');
             dummyTest.failing('f4');
@@ -202,11 +200,11 @@ describe('isolate', () => {
     it('Should replace isolate completely', () => {
       const suite = genSuite(() => {
         if (firstRun) {
-          Isolate.create(IsolateTypes.EACH, () => {
+          Isolate.create(() => {
             dummyTest.failing('f1');
           });
         } else {
-          Isolate.create(IsolateTypes.EACH, () => {
+          Isolate.create(() => {
             dummyTest.failing('f2');
           });
         }
@@ -231,7 +229,7 @@ describe('isolate', () => {
         if (firstRun) {
           dummyTest.failing('f1');
         } else {
-          Isolate.create(IsolateTypes.EACH, () => {
+          Isolate.create(() => {
             dummyTest.failing('f2');
           });
         }
@@ -252,7 +250,7 @@ describe('isolate', () => {
     describe('Errors', () => {
       it('should throw a deferred error when the tests are out of order', () => {
         const suite = genSuite(() => {
-          Isolate.create(IsolateTypes.GROUP, () => {
+          Isolate.create(() => {
             dummyTest.failing(firstRun ? 'f1' : 'f2');
           });
         });
@@ -273,7 +271,7 @@ describe('isolate', () => {
           allowReorder = true;
         }
         const suite = genSuite(() => {
-          DIsolate.create(IsolateTypes.DEFAULT, () => {
+          DIsolate.create(() => {
             dummyTest.failing(firstRun ? 'f1' : 'f2');
           });
         });

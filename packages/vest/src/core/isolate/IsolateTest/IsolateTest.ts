@@ -55,7 +55,7 @@ export class IsolateTest extends Isolate {
     this.setKey(key);
   }
 
-  static factory<Callback extends CB = CB>(
+  static create<Callback extends CB = CB>(
     callback: Callback,
     data: IsolateTestInput
   ): IsolateTest {

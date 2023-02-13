@@ -4,7 +4,7 @@ import { attemptRunTestObjectByTier } from 'runTest';
 export function testObjectIsolate(
   testObjectInput: IsolateTestInput
 ): IsolateTest {
-  return IsolateTest.factory(
+  return IsolateTest.create(
     (testObject: IsolateTest) => attemptRunTestObjectByTier(testObject),
     testObjectInput
   );

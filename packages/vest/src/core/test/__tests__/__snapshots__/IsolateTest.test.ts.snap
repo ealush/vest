@@ -16,7 +16,6 @@ IsolateTest {
     "transition": [Function],
   },
   "testFn": [MockFunction],
-  "type": "TEST",
 }
 `;
 
@@ -36,6 +35,5 @@ IsolateTest {
     "transition": [Function],
   },
   "testFn": [MockFunction],
-  "type": "TEST",
 }
 `;

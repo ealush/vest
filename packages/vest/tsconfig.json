@@ -11,6 +11,7 @@
       "SuiteContext": ["src/core/context/SuiteContext.ts"],
       "isIsolate": ["src/core/isolate/isIsolate.ts"],
       "isolate": ["src/core/isolate/isolate.ts"],
+      "IsolateEach": ["src/core/isolate/IsolateEach/IsolateEach.ts"],
       "IsolateTest": ["src/core/isolate/IsolateTest/IsolateTest.ts"],
       "IsolateTestReconciler": [
         "src/core/isolate/IsolateTest/IsolateTestReconciler.ts"

@@ -125,3 +125,24 @@ export function pluck(
     visitOnly
   );
 }
+
+export function closest(
+  startNode: Isolate,
+  predicate: (node: Isolate) => boolean
+): Isolate | null {
+  let current = startNode;
+  while (current.parent) {
+    if (predicate(current)) {
+      return current;
+    }
+    current = current.parent;
+  }
+  return null;
+}
+
+export function closestExists(
+  startNode: Isolate,
+  predicate: (node: Isolate) => boolean
+): boolean {
+  return !!closest(startNode, predicate);
+}

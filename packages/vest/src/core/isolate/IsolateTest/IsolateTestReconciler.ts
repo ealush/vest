@@ -1,12 +1,10 @@
 import { isOptionalFiedApplied } from 'optional';
-import { deferThrow, isNullish, invariant } from 'vest-utils';
+import { deferThrow, isNullish } from 'vest-utils';
 
 import { IsolateTest } from 'IsolateTest';
-import { IsolateTypes } from 'IsolateTypes';
 import { Reconciler } from 'Reconciler';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isExcluded } from 'exclusive';
-import { isIsolateType } from 'isIsolate';
 import { isSameProfileTest } from 'isSameProfileTest';
 import { Isolate } from 'isolate';
 import { shouldSkipBasedOnMode } from 'mode';
@@ -134,7 +132,7 @@ function throwTestOrderError(
   newNode: IsolateTest,
   prevNode: Isolate | undefined
 ): void {
-  if (shouldAllowReorder(newNode)) {
+  if (newNode.shouldAllowReorder()) {
     return;
   }
 
@@ -144,13 +142,4 @@ function throwTestOrderError(
     This can happen on one of two reasons:
     1. You're using if/else statements to conditionally select tests. Instead, use "skipWhen".
     2. You are iterating over a list of tests, and their order changed. Use "each" and a custom key prop so that Vest retains their state.`);
-}
-
-/**
- * @returns {boolean} Whether or not the current isolate allows tests to be reordered
- */
-function shouldAllowReorder(newNode: IsolateTest): boolean {
-  const parent = newNode.parent;
-  invariant(parent);
-  return isIsolateType(parent, IsolateTypes.EACH);
 }

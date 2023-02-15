@@ -1,7 +1,7 @@
 {
   "scripts": {
     "build": "vx build",
-    "test": "vx test",
+    "test": "jest",
     "release": "vx release",
     "lint": "eslint . --ignore-path .gitignore",
     "prepare": "husky install",

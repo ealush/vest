@@ -36,7 +36,6 @@ export const PersistedContext = createCascade<CTXType>(
       ctxRef,
       {
         historyNode: historyRootNode,
-        optional: {},
         runtimeNode: null,
         runtimeRoot: null,
       },

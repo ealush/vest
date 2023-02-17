@@ -105,6 +105,8 @@ export class Isolate<_D = any> {
     } else {
       useSetHistory(node);
     }
+
+    node.setParent(parent);
   }
 
   static is(node: any): boolean {

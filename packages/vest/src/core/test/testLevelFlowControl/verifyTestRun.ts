@@ -6,27 +6,44 @@ import { shouldSkipBasedOnMode } from 'mode';
 import { withinActiveOmitWhen } from 'omitWhen';
 import { isExcludedIndividually } from 'skipWhen';
 
-export function verifyTestRun(testObject: IsolateTest): IsolateTest {
+export function verifyTestRun(
+  testObject: IsolateTest,
+  collisionResult: IsolateTest = testObject
+): IsolateTest {
   if (shouldSkipBasedOnMode(testObject)) {
-    testObject.skip();
-
-    return testObject;
+    return skipTestAndReturn(testObject);
   }
 
-  if (withinActiveOmitWhen() || isOptionalFiedApplied(testObject.fieldName)) {
-    testObject.omit();
-
-    return testObject;
+  if (shouldOmit(testObject)) {
+    return omitTestAndReturn(testObject);
   }
 
   if (isExcluded(testObject)) {
-    // We're forcing skipping the pending test
-    // if we're directly within a skipWhen block
-    // This mostly means that we're probably giving
-    // up on this async test intentionally.
-    testObject.skip(isExcludedIndividually());
-    return testObject;
+    return forceSkipIfInSkipWhen(collisionResult);
   }
 
   return testObject;
+}
+
+export function shouldOmit(testObject: IsolateTest): boolean {
+  return withinActiveOmitWhen() || isOptionalFiedApplied(testObject.fieldName);
+}
+
+export function skipTestAndReturn(testNode: IsolateTest): IsolateTest {
+  testNode.skip();
+  return testNode;
+}
+
+export function omitTestAndReturn(testNode: IsolateTest): IsolateTest {
+  testNode.omit();
+  return testNode;
+}
+
+export function forceSkipIfInSkipWhen(testNode: IsolateTest): IsolateTest {
+  // We're forcing skipping the pending test
+  // if we're directly within a skipWhen block
+  // This mostly means that we're probably giving
+  // up on this async test intentionally.
+  testNode.skip(isExcludedIndividually());
+  return testNode;
 }

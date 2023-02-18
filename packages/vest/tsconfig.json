@@ -29,7 +29,6 @@
       "isSameProfileTest": ["src/core/isolate/reconciler/isSameProfileTest.ts"],
       "Reconciler": ["src/core/isolate/reconciler/Reconciler/Reconciler.ts"],
       "walker": ["src/core/isolate/walker.ts"],
-      "SuiteWalker": ["src/core/SuiteWalker/SuiteWalker.ts"],
       "asVestTest": ["src/core/test/helpers/asVestTest.ts"],
       "matchingFieldName": ["src/core/test/helpers/matchingFieldName.ts"],
       "matchingGroupName": ["src/core/test/helpers/matchingGroupName.ts"],

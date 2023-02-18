@@ -1,47 +1,85 @@
+import * as walker from 'walker';
+
 import { IsolateTest } from 'IsolateTest';
+import { useAvailableSuiteRoot } from 'PersistedContext';
 import { TFieldName } from 'SuiteResultTypes';
-import { SuiteWalker } from 'SuiteWalker';
+import { Isolate } from 'isolate';
 import matchingFieldName from 'matchingFieldName';
 
+type MaybeRoot = Isolate | null;
+
 export class TestWalker {
-  static hasNoTests(): boolean {
-    return !SuiteWalker.has(IsolateTest.is);
+  static defaultRoot() {
+    return useAvailableSuiteRoot();
+  }
+
+  static hasNoTests(root: MaybeRoot = TestWalker.defaultRoot()): boolean {
+    if (!root) return true;
+    return !walker.has(root, IsolateTest.is);
   }
 
   static someIncompleteTests(
-    predicate: (test: IsolateTest) => boolean
+    predicate: (test: IsolateTest) => boolean,
+    root: MaybeRoot = TestWalker.defaultRoot()
   ): boolean {
-    return SuiteWalker.some(isolate => {
-      IsolateTest.isX(isolate);
+    if (!root) return false;
+    return walker.some(
+      root,
+      isolate => {
+        IsolateTest.isX(isolate);
 
-      return isolate.isPending() && predicate(isolate);
-    }, IsolateTest.is);
+        return isolate.isPending() && predicate(isolate);
+      },
+      IsolateTest.is
+    );
   }
 
-  static someTests(predicate: (test: IsolateTest) => boolean): boolean {
-    return SuiteWalker.some(isolate => {
-      IsolateTest.isX(isolate);
+  static someTests(
+    predicate: (test: IsolateTest) => boolean,
+    root: MaybeRoot = TestWalker.defaultRoot()
+  ): boolean {
+    if (!root) return false;
+    return walker.some(
+      root,
+      isolate => {
+        IsolateTest.isX(isolate);
 
-      return predicate(isolate);
-    }, IsolateTest.is);
+        return predicate(isolate);
+      },
+      IsolateTest.is
+    );
   }
 
-  static everyTest(predicate: (test: IsolateTest) => boolean): boolean {
-    return SuiteWalker.every(isolate => {
-      IsolateTest.isX(isolate);
+  static everyTest(
+    predicate: (test: IsolateTest) => boolean,
+    root: MaybeRoot = TestWalker.defaultRoot()
+  ): boolean {
+    if (!root) return false;
+    return walker.every(
+      root,
+      isolate => {
+        IsolateTest.isX(isolate);
 
-      return predicate(isolate);
-    }, IsolateTest.is);
+        return predicate(isolate);
+      },
+      IsolateTest.is
+    );
   }
 
   static walkTests(
-    callback: (test: IsolateTest, breakout: () => void) => void
+    callback: (test: IsolateTest, breakout: () => void) => void,
+    root: MaybeRoot = TestWalker.defaultRoot()
   ): void {
-    SuiteWalker.walk((isolate, breakout) => {
-      IsolateTest.isX(isolate);
+    if (!root) return;
+    walker.walk(
+      root,
+      (isolate, breakout) => {
+        IsolateTest.isX(isolate);
 
-      callback(isolate, breakout);
-    }, IsolateTest.is);
+        callback(isolate, breakout);
+      },
+      IsolateTest.is
+    );
   }
 
   static hasRemainingTests(fieldName?: TFieldName): boolean {
@@ -53,12 +91,20 @@ export class TestWalker {
     });
   }
 
-  static pluckTests(predicate: (test: IsolateTest) => boolean): void {
-    SuiteWalker.pluck(isolate => {
-      IsolateTest.isX(isolate);
+  static pluckTests(
+    predicate: (test: IsolateTest) => boolean,
+    root: MaybeRoot = TestWalker.defaultRoot()
+  ): void {
+    if (!root) return;
+    walker.pluck(
+      root,
+      isolate => {
+        IsolateTest.isX(isolate);
 
-      return predicate(isolate);
-    }, IsolateTest.is);
+        return predicate(isolate);
+      },
+      IsolateTest.is
+    );
   }
 
   static resetField(fieldName: TFieldName): void {
@@ -66,12 +112,15 @@ export class TestWalker {
       if (matchingFieldName(testObject, fieldName)) {
         testObject.reset();
       }
-    });
+    }, TestWalker.defaultRoot());
   }
 
-  static removeTestByFieldName(fieldName: TFieldName): void {
+  static removeTestByFieldName(
+    fieldName: TFieldName,
+    root: MaybeRoot = TestWalker.defaultRoot()
+  ): void {
     TestWalker.pluckTests(testObject => {
       return matchingFieldName(testObject, fieldName);
-    });
+    }, root);
   }
 }

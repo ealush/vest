@@ -13,7 +13,7 @@ import {
   CacheApi,
 } from 'vest-utils';
 
-import { OptionalFields } from 'OptionalTypes';
+import type { IsolateSuite } from 'IsolateSuite';
 import { SuiteName, SuiteResult, TFieldName } from 'SuiteResultTypes';
 import { Events, initVestBus } from 'VestBus';
 import { Isolate } from 'isolate';
@@ -56,7 +56,6 @@ export function createVestState({
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
     historyRoot: tinyState.createTinyState<Isolate | null>(null),
-    optional: {},
     suiteId: seq(),
     suiteName,
     suiteResultCache,
@@ -112,7 +111,6 @@ type StateType = {
   fieldCallbacks: TinyState<FieldCallbacks>;
   suiteName: string | undefined;
   suiteId: string;
-  optional: OptionalFields;
   VestBus: BusType;
   suiteResultCache: CacheApi<SuiteResult<TFieldName>>;
 };
@@ -139,14 +137,6 @@ export function prepareEmitter<T = void>(event: Events): (arg: T) => void {
 }
 
 export type DoneCallback = (res: SuiteResult<TFieldName>) => void;
-
-export function useOptionalFields(): OptionalFields {
-  return PersistedContext.useX().optional;
-}
-
-export function useOptionalField(fieldName: TFieldName) {
-  return useOptionalFields()[fieldName] ?? {};
-}
 
 export function useDoneCallbacks() {
   return PersistedContext.useX().doneCallbacks();
@@ -229,14 +219,14 @@ export function useSetIsolateKey(key: string | null, value: Isolate): void {
   );
 }
 
-export function useAvailableSuiteRoot(): Isolate | null {
+export function useAvailableSuiteRoot(): IsolateSuite | null {
   const root = useRuntimeRoot();
 
   if (root) {
-    return root;
+    return root as IsolateSuite;
   }
 
   const [historyRoot] = useHistoryRoot();
 
-  return historyRoot;
+  return historyRoot as IsolateSuite;
 }

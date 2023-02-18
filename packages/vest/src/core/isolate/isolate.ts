@@ -1,5 +1,5 @@
 import { CB, invariant, isNotNullish, isNullish } from 'vest-utils';
-import { closestExists } from 'walker';
+import { closest, closestExists } from 'walker';
 
 import {
   useSetNextIsolateChild,
@@ -69,6 +69,10 @@ export class Isolate<_D = any> {
 
   shouldAllowReorder(): boolean {
     return closestExists(this, node => node.allowReorder) ?? false;
+  }
+
+  get rootNode(): Isolate {
+    return closest(this, node => isNullish(node.parent)) ?? this;
   }
 
   static create<Callback extends CB = CB>(

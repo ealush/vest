@@ -10,7 +10,7 @@ IsolateTest {
   "keys": {},
   "message": "failure message",
   "output": undefined,
-  "parent": Isolate {
+  "parent": IsolateSuite {
     "allowReorder": false,
     "children": [
       [Circular],
@@ -19,6 +19,7 @@ IsolateTest {
     "keys": {
       "keyboardcat": [Circular],
     },
+    "optional": {},
     "output": {
       "done": [Function],
       "errorCount": 0,
@@ -69,13 +70,14 @@ IsolateTest {
   "keys": {},
   "message": "failure message",
   "output": undefined,
-  "parent": Isolate {
+  "parent": IsolateSuite {
     "allowReorder": false,
     "children": [
       [Circular],
     ],
     "key": null,
     "keys": {},
+    "optional": {},
     "output": {
       "done": [Function],
       "errorCount": 0,
@@ -125,7 +127,7 @@ IsolateTest {
   "key": "keyboardcat",
   "keys": {},
   "output": undefined,
-  "parent": Isolate {
+  "parent": IsolateSuite {
     "allowReorder": false,
     "children": [
       [Circular],
@@ -134,6 +136,7 @@ IsolateTest {
     "keys": {
       "keyboardcat": [Circular],
     },
+    "optional": {},
     "output": {
       "done": [Function],
       "errorCount": 0,
@@ -183,13 +186,14 @@ IsolateTest {
   "key": null,
   "keys": {},
   "output": undefined,
-  "parent": Isolate {
+  "parent": IsolateSuite {
     "allowReorder": false,
     "children": [
       [Circular],
     ],
     "key": null,
     "keys": {},
+    "optional": {},
     "output": {
       "done": [Function],
       "errorCount": 0,

@@ -2,7 +2,7 @@ import { isOptionalFiedApplied } from 'optional';
 
 import { IsolateTest } from 'IsolateTest';
 import { OptionalFieldTypes } from 'OptionalTypes';
-import { useOptionalField } from 'PersistedContext';
+import { useAvailableSuiteRoot } from 'PersistedContext';
 import { Severity } from 'Severity';
 import { TFieldName } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
@@ -142,7 +142,7 @@ function optionalTestAwaitsResolution(testObject: IsolateTest): boolean {
   // and the test itself is still in an indeterminate state?
 
   return (
-    useOptionalField(testObject.fieldName).type ===
+    useAvailableSuiteRoot()?.getOptionalField(testObject.fieldName).type ===
       OptionalFieldTypes.Delayed && testObject.awaitsResolution()
   );
 }

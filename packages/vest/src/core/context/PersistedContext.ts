@@ -74,13 +74,13 @@ export function persist<T extends CB>(cb: T): T {
 }
 
 export function useSuiteResultCache(action: () => SuiteResult<TFieldName>) {
-  const suiteResultCache = PersistedContext.useX().suiteResultCache;
+  const suiteResultCache = useX().suiteResultCache;
 
   return suiteResultCache([useSuiteId()], action);
 }
 
 export function useExpireSuiteResultCache() {
-  const suiteResultCache = PersistedContext.useX().suiteResultCache;
+  const suiteResultCache = useX().suiteResultCache;
   suiteResultCache.invalidate([useSuiteId()]);
 }
 
@@ -118,8 +118,12 @@ type StateType = {
 type FieldCallbacks = Record<string, DoneCallbacks>;
 type DoneCallbacks = Array<DoneCallback>;
 
+function useX(): CTXType {
+  return PersistedContext.useX();
+}
+
 export function useVestBus() {
-  return PersistedContext.useX().VestBus;
+  return useX().VestBus;
 }
 
 /*
@@ -139,27 +143,27 @@ export function prepareEmitter<T = void>(event: Events): (arg: T) => void {
 export type DoneCallback = (res: SuiteResult<TFieldName>) => void;
 
 export function useDoneCallbacks() {
-  return PersistedContext.useX().doneCallbacks();
+  return useX().doneCallbacks();
 }
 
 export function useFieldCallbacks() {
-  return PersistedContext.useX().fieldCallbacks();
+  return useX().fieldCallbacks();
 }
 
 export function useHistoryRoot() {
-  return PersistedContext.useX().historyRoot();
+  return useX().historyRoot();
 }
 
 export function useHistoryNode() {
-  return PersistedContext.useX().historyNode;
+  return useX().historyNode;
 }
 
 export function useSuiteName() {
-  return PersistedContext.useX().suiteName;
+  return useX().suiteName;
 }
 
 export function useSuiteId() {
-  return PersistedContext.useX().suiteId;
+  return useX().suiteId;
 }
 
 export function useSetHistory(history: Isolate) {
@@ -174,13 +178,13 @@ export function useHistoryKey(key?: string | null): Isolate | null {
     return null;
   }
 
-  const historyNode = PersistedContext.useX().historyNode;
+  const historyNode = useX().historyNode;
 
   return historyNode?.keys[key] ?? null;
 }
 
 export function useIsolate() {
-  return PersistedContext.useX().runtimeNode ?? null;
+  return useX().runtimeNode ?? null;
 }
 
 export function useCurrentCursor() {
@@ -188,7 +192,7 @@ export function useCurrentCursor() {
 }
 
 export function useRuntimeRoot() {
-  return PersistedContext.useX().runtimeRoot;
+  return useX().runtimeRoot;
 }
 
 export function useSetNextIsolateChild(child: Isolate): void {

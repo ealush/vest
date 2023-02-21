@@ -1,5 +1,7 @@
 import { isPromise, isStringValue } from 'vest-utils';
 
+import { BusType } from '../../../../../vest-utils/src/bus';
+
 import { IsolateTest } from 'IsolateTest';
 import { persist, useVestBus } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
@@ -45,7 +47,7 @@ function runTest(testObject: IsolateTest): void {
       testObject.setPending();
       runAsyncTest(testObject);
     } else {
-      VestBus.emit(Events.TEST_COMPLETED, testObject);
+      onTestCompleted(VestBus, testObject);
     }
   } catch (e) {
     throw new Error(
@@ -67,7 +69,7 @@ function runAsyncTest(testObject: IsolateTest): void {
   const VestBus = useVestBus();
 
   const done = persist(() => {
-    VestBus.emit(Events.TEST_COMPLETED, testObject);
+    onTestCompleted(VestBus, testObject);
   });
   const fail = persist((rejectionMessage?: string) => {
     if (testObject.isCanceled()) {
@@ -83,4 +85,12 @@ function runAsyncTest(testObject: IsolateTest): void {
   });
 
   asyncTest.then(done, fail);
+}
+
+function onTestCompleted(VestBus: BusType, testObject: IsolateTest) {
+  // Attempts passing if the test is not already failed.
+  // or is not canceled/omitted.
+  testObject.pass();
+
+  VestBus.emit(Events.TEST_COMPLETED, testObject);
 }

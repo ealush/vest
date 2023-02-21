@@ -20,7 +20,6 @@ export function initVestBus() {
       return;
     }
 
-    testObject.pass();
     runFieldCallbacks(testObject.fieldName);
 
     if (!TestWalker.hasRemainingTests()) {

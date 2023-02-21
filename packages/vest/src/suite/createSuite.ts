@@ -1,4 +1,4 @@
-import { assign, CB, invariant, isFunction } from 'vest-utils';
+import { assign, CB } from 'vest-utils';
 
 import { IsolateSuite } from 'IsolateSuite';
 import {
@@ -9,10 +9,16 @@ import {
   useEmit,
 } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
-import { SuiteResult, SuiteRunResult, TFieldName } from 'SuiteResultTypes';
+import {
+  SuiteName,
+  SuiteResult,
+  SuiteRunResult,
+  TFieldName,
+} from 'SuiteResultTypes';
 import { Events } from 'VestBus';
 import { createSuiteResult } from 'suiteResult';
 import { suiteRunResult } from 'suiteRunResult';
+import { validateSuiteCallback } from 'validateSuiteCallback';
 
 function createSuite<T extends CB, F extends TFieldName>(
   suiteName: SuiteName,
@@ -66,17 +72,6 @@ function createSuite<T extends CB, F extends TFieldName>(
     };
   }
 }
-
-function validateSuiteCallback<T extends CB>(
-  suiteCallback: T
-): asserts suiteCallback is T {
-  invariant(
-    isFunction(suiteCallback),
-    'vest.create: Expected callback to be a function.'
-  );
-}
-
-export type SuiteName = string | undefined;
 
 export type Suite<T extends CB, F extends TFieldName> = ((
   ...args: Parameters<T>

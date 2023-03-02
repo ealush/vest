@@ -56,9 +56,16 @@ module.exports = {
         'jest/no-export': 0,
       },
     },
+    {
+      files: ['./**/vest/src/**/*.*'],
+      excludedFiles: ['./**/__tests__/**/*.*'],
+      rules: {
+        'vest-internal/use-use': 2,
+      },
+    },
   ],
   parser: '@typescript-eslint/parser',
-  plugins: ['jest'],
+  plugins: ['jest', 'vest-internal'],
   rules: {
     complexity: [2, { max: 5 }],
     'import/extensions': [0, 'ignorePackages'],

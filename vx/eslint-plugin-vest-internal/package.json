@@ -1,0 +1,13 @@
+{
+  "name": "eslint-plugin-vest-internal",
+  "version": "0.1.3",
+  "description": "Eslint plugin for vest internals.",
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin"
+  ],
+  "author": "ealush",
+  "main": "lib/index.js",
+  "license": "MIT"
+}

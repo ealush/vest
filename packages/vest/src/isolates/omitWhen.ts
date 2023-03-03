@@ -4,7 +4,7 @@ import { optionalFunctionValue } from 'vest-utils';
 import { SuiteContext, useOmitted } from 'SuiteContext';
 import { SuiteResult, TFieldName } from 'SuiteResultTypes';
 import { Isolate } from 'isolate';
-import { createSuiteResult } from 'suiteResult';
+import { useCreateSuiteResult } from 'suiteResult';
 
 /**
  * Conditionally omits tests from the suite.
@@ -15,6 +15,7 @@ import { createSuiteResult } from 'suiteResult';
  *  test('username', 'User already taken', async () => await doesUserExist(username)
  * });
  */
+// @vx-allow use-use
 export function omitWhen<F extends TFieldName>(
   conditional: boolean | ((draft: SuiteResult<F>) => boolean),
   callback: CB
@@ -23,10 +24,10 @@ export function omitWhen<F extends TFieldName>(
     SuiteContext.run(
       {
         omitted:
-          withinActiveOmitWhen() ||
+          useWithinActiveOmitWhen() ||
           optionalFunctionValue(
             conditional,
-            optionalFunctionValue(createSuiteResult)
+            optionalFunctionValue(useCreateSuiteResult)
           ),
       },
       callback
@@ -35,6 +36,6 @@ export function omitWhen<F extends TFieldName>(
 }
 
 // Checks that we're currently in an active omitWhen block
-export function withinActiveOmitWhen(): boolean {
+export function useWithinActiveOmitWhen(): boolean {
   return useOmitted();
 }

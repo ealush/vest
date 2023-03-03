@@ -1,32 +1,34 @@
-import { isOptionalFiedApplied } from 'optional';
+import { useIsOptionalFiedApplied } from 'optional';
 
 import { IsolateTest } from 'IsolateTest';
-import { isExcluded } from 'exclusive';
-import { shouldSkipBasedOnMode } from 'mode';
-import { withinActiveOmitWhen } from 'omitWhen';
-import { isExcludedIndividually } from 'skipWhen';
+import { useIsExcluded } from 'exclusive';
+import { useShouldSkipBasedOnMode } from 'mode';
+import { useWithinActiveOmitWhen } from 'omitWhen';
+import { useIsExcludedIndividually } from 'skipWhen';
 
-export function verifyTestRun(
+export function useVerifyTestRun(
   testObject: IsolateTest,
   collisionResult: IsolateTest = testObject
 ): IsolateTest {
-  if (shouldSkipBasedOnMode(testObject)) {
+  if (useShouldSkipBasedOnMode(testObject)) {
     return skipTestAndReturn(testObject);
   }
 
-  if (shouldOmit(testObject)) {
+  if (useShouldOmit(testObject)) {
     return omitTestAndReturn(testObject);
   }
 
-  if (isExcluded(testObject)) {
-    return forceSkipIfInSkipWhen(collisionResult);
+  if (useIsExcluded(testObject)) {
+    return useForceSkipIfInSkipWhen(collisionResult);
   }
 
   return testObject;
 }
 
-export function shouldOmit(testObject: IsolateTest): boolean {
-  return withinActiveOmitWhen() || isOptionalFiedApplied(testObject.fieldName);
+export function useShouldOmit(testObject: IsolateTest): boolean {
+  return (
+    useWithinActiveOmitWhen() || useIsOptionalFiedApplied(testObject.fieldName)
+  );
 }
 
 export function skipTestAndReturn(testNode: IsolateTest): IsolateTest {
@@ -39,11 +41,11 @@ export function omitTestAndReturn(testNode: IsolateTest): IsolateTest {
   return testNode;
 }
 
-export function forceSkipIfInSkipWhen(testNode: IsolateTest): IsolateTest {
+export function useForceSkipIfInSkipWhen(testNode: IsolateTest): IsolateTest {
   // We're forcing skipping the pending test
   // if we're directly within a skipWhen block
   // This mostly means that we're probably giving
   // up on this async test intentionally.
-  testNode.skip(isExcludedIndividually());
+  testNode.skip(useIsExcludedIndividually());
   return testNode;
 }

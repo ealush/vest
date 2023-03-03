@@ -1,4 +1,4 @@
-import { isOptionalFiedApplied } from 'optional';
+import { useIsOptionalFiedApplied } from 'optional';
 
 import { IsolateTest } from 'IsolateTest';
 import { OptionalFieldTypes } from 'OptionalTypes';
@@ -13,9 +13,9 @@ import {
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
 
-export function shouldAddValidProperty(fieldName?: TFieldName): boolean {
+export function useShouldAddValidProperty(fieldName?: TFieldName): boolean {
   // Is the field optional, and the optional condition is applied
-  if (isOptionalFiedApplied(fieldName)) {
+  if (useIsOptionalFiedApplied(fieldName)) {
     return true;
   }
 
@@ -30,19 +30,19 @@ export function shouldAddValidProperty(fieldName?: TFieldName): boolean {
   }
 
   // Does the given field have any pending tests that are not optional?
-  if (hasNonOptionalIncomplete(fieldName)) {
+  if (useHasNonOptionalIncomplete(fieldName)) {
     return false;
   }
 
   // Does the field have no missing tests?
-  return noMissingTests(fieldName);
+  return useNoMissingTests(fieldName);
 }
 
-export function shouldAddValidPropertyInGroup(
+export function useShouldAddValidPropertyInGroup(
   groupName: string,
   fieldName: TFieldName
 ): boolean {
-  if (isOptionalFiedApplied(fieldName)) {
+  if (useIsOptionalFiedApplied(fieldName)) {
     return true;
   }
 
@@ -51,22 +51,22 @@ export function shouldAddValidPropertyInGroup(
   }
 
   // Do the given group/field have any pending tests that are not optional?
-  if (hasNonOptionalIncompleteByGroup(groupName, fieldName)) {
+  if (useHasNonOptionalIncompleteByGroup(groupName, fieldName)) {
     return false;
   }
 
-  return noMissingTestsByGroup(groupName, fieldName);
+  return useNoMissingTestsByGroup(groupName, fieldName);
 }
 
 // Does the given field have any pending tests that are not optional?
-function hasNonOptionalIncomplete(fieldName?: TFieldName) {
+function useHasNonOptionalIncomplete(fieldName?: TFieldName) {
   return TestWalker.someIncompleteTests(testObject => {
-    return isTestObjectOptional(testObject, fieldName);
+    return useIsTestObjectOptional(testObject, fieldName);
   });
 }
 
 // Do the given group/field have any pending tests that are not optional?
-function hasNonOptionalIncompleteByGroup(
+function useHasNonOptionalIncompleteByGroup(
   groupName: string,
   fieldName: TFieldName
 ): boolean {
@@ -75,11 +75,11 @@ function hasNonOptionalIncompleteByGroup(
       return false;
     }
 
-    return isTestObjectOptional(testObject, fieldName);
+    return useIsTestObjectOptional(testObject, fieldName);
   });
 }
 
-function isTestObjectOptional(
+function useIsTestObjectOptional(
   testObject: IsolateTest,
   fieldName?: TFieldName
 ): boolean {
@@ -87,19 +87,19 @@ function isTestObjectOptional(
     return false;
   }
 
-  return isOptionalFiedApplied(fieldName);
+  return useIsOptionalFiedApplied(fieldName);
 }
 
 // Did all of the tests for the provided field run/omit?
 // This makes sure that the fields are not skipped or pending.
-function noMissingTests(fieldName?: string): boolean {
+function useNoMissingTests(fieldName?: string): boolean {
   return TestWalker.everyTest(testObject => {
-    return noMissingTestsLogic(testObject, fieldName);
+    return useNoMissingTestsLogic(testObject, fieldName);
   });
 }
 
 // Does the group have no missing tests?
-function noMissingTestsByGroup(
+function useNoMissingTestsByGroup(
   groupName: string,
   fieldName?: TFieldName
 ): boolean {
@@ -108,11 +108,11 @@ function noMissingTestsByGroup(
       return true;
     }
 
-    return noMissingTestsLogic(testObject, fieldName);
+    return useNoMissingTestsLogic(testObject, fieldName);
   });
 }
 
-function noMissingTestsLogic(
+function useNoMissingTestsLogic(
   testObject: IsolateTest,
   fieldName?: TFieldName
 ): boolean {
@@ -131,13 +131,13 @@ function noMissingTestsLogic(
    */
 
   return (
-    optionalTestAwaitsResolution(testObject) ||
+    useOptionalTestAwaitsResolution(testObject) ||
     testObject.isTested() ||
     testObject.isOmitted()
   );
 }
 
-function optionalTestAwaitsResolution(testObject: IsolateTest): boolean {
+function useOptionalTestAwaitsResolution(testObject: IsolateTest): boolean {
   // Does the test belong to an optional field,
   // and the test itself is still in an indeterminate state?
 

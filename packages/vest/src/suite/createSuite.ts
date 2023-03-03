@@ -2,17 +2,17 @@ import { assign, CB, invariant, isFunction } from 'vest-utils';
 
 import { IsolateSuite } from 'IsolateSuite';
 import {
-  createVestState,
+  useCreateVestState,
   persist,
   PersistedContext,
-  prepareEmitter,
+  usePrepareEmitter,
   useEmit,
 } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
 import { SuiteResult, SuiteRunResult, TFieldName } from 'SuiteResultTypes';
 import { Events } from 'VestBus';
-import { createSuiteResult } from 'suiteResult';
-import { suiteRunResult } from 'suiteRunResult';
+import { useCreateSuiteResult } from 'suiteResult';
+import { useSuiteRunResult } from 'suiteRunResult';
 
 function createSuite<T extends CB, F extends TFieldName>(
   suiteName: SuiteName,
@@ -21,6 +21,7 @@ function createSuite<T extends CB, F extends TFieldName>(
 function createSuite<T extends CB, F extends TFieldName>(
   suiteCallback: T
 ): Suite<T, F>;
+// @vx-allow use-use
 function createSuite<T extends CB, F extends TFieldName>(
   ...args: [suiteName: SuiteName, suiteCallback: T] | [suiteCallback: T]
 ): Suite<T, F> {
@@ -30,10 +31,11 @@ function createSuite<T extends CB, F extends TFieldName>(
 
   // Create a stateRef for the suite
   // It holds the suite's persisted values that may remain between runs.
-  const stateRef = createVestState({ suiteName });
+  const stateRef = useCreateVestState({ suiteName });
 
   function suite(...args: Parameters<T>): SuiteRunResult<F> {
     return SuiteContext.run({}, () => {
+      // eslint-disable-next-line vest-internal/use-use
       const emit = useEmit();
 
       emit(Events.SUITE_RUN_STARTED);
@@ -51,10 +53,10 @@ function createSuite<T extends CB, F extends TFieldName>(
       // can access the stateRef when it's called.
       PersistedContext.bind(stateRef, suite),
       {
-        get: persist(createSuiteResult),
-        remove: prepareEmitter<string>(Events.REMOVE_FIELD),
-        reset: prepareEmitter(Events.RESET_SUITE),
-        resetField: prepareEmitter<string>(Events.RESET_FIELD),
+        get: persist(useCreateSuiteResult),
+        remove: usePrepareEmitter<string>(Events.REMOVE_FIELD),
+        reset: usePrepareEmitter(Events.RESET_SUITE),
+        resetField: usePrepareEmitter<string>(Events.RESET_FIELD),
       }
     );
   });
@@ -62,7 +64,7 @@ function createSuite<T extends CB, F extends TFieldName>(
   function runSuiteCallback(...args: Parameters<T>): () => SuiteRunResult<F> {
     return () => {
       suiteCallback(...args);
-      return suiteRunResult();
+      return useSuiteRunResult();
     };
   }
 }

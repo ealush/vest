@@ -13,11 +13,13 @@ import {
 } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
 import {
-  shouldAddValidProperty,
-  shouldAddValidPropertyInGroup,
+  useShouldAddValidProperty,
+  useShouldAddValidPropertyInGroup,
 } from 'shouldAddValidProperty';
 
-export function produceSuiteSummary<F extends TFieldName>(): SuiteSummary<F> {
+export function useProduceSuiteSummary<
+  F extends TFieldName
+>(): SuiteSummary<F> {
   const summary: SuiteSummary<F> = assign(baseStats(), {
     groups: {},
     tests: {},
@@ -25,28 +27,28 @@ export function produceSuiteSummary<F extends TFieldName>(): SuiteSummary<F> {
   }) as SuiteSummary<F>;
 
   TestWalker.walkTests(testObject => {
-    appendToTest(summary.tests, testObject);
-    appendToGroup(summary.groups, testObject);
+    useAppendToTest(summary.tests, testObject);
+    useAppendToGroup(summary.groups, testObject);
   });
 
-  summary.valid = shouldAddValidProperty();
+  summary.valid = useShouldAddValidProperty();
 
   return countFailures(summary);
 }
 
-function appendToTest(tests: Tests<TFieldName>, testObject: IsolateTest) {
+function useAppendToTest(tests: Tests<TFieldName>, testObject: IsolateTest) {
   tests[testObject.fieldName] = appendTestObject(tests, testObject);
   // If `valid` is false to begin with, keep it that way. Otherwise, assess.
   tests[testObject.fieldName].valid =
     tests[testObject.fieldName].valid === false
       ? false
-      : shouldAddValidProperty(testObject.fieldName);
+      : useShouldAddValidProperty(testObject.fieldName);
 }
 
 /**
  * Appends to a group object if within a group
  */
-function appendToGroup(groups: Groups, testObject: IsolateTest) {
+function useAppendToGroup(groups: Groups, testObject: IsolateTest) {
   const { groupName } = testObject;
 
   if (!groupName) {
@@ -62,7 +64,7 @@ function appendToGroup(groups: Groups, testObject: IsolateTest) {
   groups[groupName][testObject.fieldName].valid =
     groups[groupName][testObject.fieldName].valid === false
       ? false
-      : shouldAddValidPropertyInGroup(groupName, testObject.fieldName);
+      : useShouldAddValidPropertyInGroup(groupName, testObject.fieldName);
 }
 
 /**

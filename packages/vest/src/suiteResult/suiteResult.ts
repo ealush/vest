@@ -2,11 +2,11 @@ import { assign } from 'vest-utils';
 
 import { useSuiteName, useSuiteResultCache } from 'PersistedContext';
 import { SuiteResult, TFieldName } from 'SuiteResultTypes';
-import { produceSuiteSummary } from 'produceSuiteSummary';
+import { useProduceSuiteSummary } from 'produceSuiteSummary';
 import { suiteSelectors } from 'suiteSelectors';
 
-export function createSuiteResult<F extends TFieldName>(): SuiteResult<F> {
-  const summary = produceSuiteSummary();
+export function useCreateSuiteResult<F extends TFieldName>(): SuiteResult<F> {
+  const summary = useProduceSuiteSummary();
   const suiteName = useSuiteName();
 
   return useSuiteResultCache(() =>

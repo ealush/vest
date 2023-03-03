@@ -10,6 +10,7 @@ const ERROR_OUTSIDE_OF_TEST = __DEV__
 /**
  * Sets a running test to warn only mode.
  */
+// @vx-allow use-use
 export function warn(): void {
   const currentTest = useCurrentTest(ErrorStrings.HOOK_CALLED_OUTSIDE);
 

@@ -7,6 +7,7 @@ import { TFieldName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
 import { VTest } from 'test';
 
+// @vx-allow use-use
 export function wrapTestMemo(test: VTest): TestMemo<TFieldName> {
   /**
    * Caches a test result based on the test's dependencies.
@@ -30,7 +31,7 @@ export function wrapTestMemo(test: VTest): TestMemo<TFieldName> {
       deps
     );
 
-    return getTestFromCache(dependencies, cacheAction);
+    return useGetTestFromCache(dependencies, cacheAction);
 
     function cacheAction() {
       return test(fieldName, msg, testFn);
@@ -40,7 +41,7 @@ export function wrapTestMemo(test: VTest): TestMemo<TFieldName> {
   return memo;
 }
 
-function getTestFromCache(
+function useGetTestFromCache(
   dependencies: any[],
   cacheAction: () => IsolateTest
 ): IsolateTest {

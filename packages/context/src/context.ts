@@ -12,9 +12,7 @@ const EMPTY_CONTEXT = Symbol();
 /**
  * Base context interface.
  */
-export function createContext<T extends unknown>(
-  defaultContextValue?: T
-): CtxApi<T> {
+export function createContext<T>(defaultContextValue?: T): CtxApi<T> {
   let contextValue: T | symbol = EMPTY_CONTEXT;
 
   return {

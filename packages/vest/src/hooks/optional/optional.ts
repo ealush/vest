@@ -10,6 +10,7 @@ import { OptionalFieldTypes, OptionalsInput } from 'OptionalTypes';
 import { useAvailableSuiteRoot, useRuntimeRoot } from 'PersistedContext';
 import { TFieldName } from 'SuiteResultTypes';
 
+// @vx-allow use-use
 export function optional<F extends TFieldName>(
   optionals: OptionalsInput<F>
 ): void {
@@ -46,7 +47,7 @@ export function optional<F extends TFieldName>(
   }
 }
 
-export function isOptionalFiedApplied(fieldName?: TFieldName) {
+export function useIsOptionalFiedApplied(fieldName?: TFieldName) {
   if (!fieldName) {
     return false;
   }

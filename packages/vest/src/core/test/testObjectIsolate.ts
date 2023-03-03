@@ -1,11 +1,11 @@
 import { IsolateTest, IsolateTestInput } from 'IsolateTest';
-import { attemptRunTestObjectByTier } from 'runTest';
+import { useAttemptRunTestObjectByTier } from 'runTest';
 
-export function testObjectIsolate(
+export function useTestObjectIsolate(
   testObjectInput: IsolateTestInput
 ): IsolateTest {
   return IsolateTest.create(
-    (testObject: IsolateTest) => attemptRunTestObjectByTier(testObject),
+    (testObject: IsolateTest) => useAttemptRunTestObjectByTier(testObject),
     testObjectInput
   );
 }

@@ -7,7 +7,7 @@ import {
 } from 'PersistedContext';
 import { TFieldName } from 'SuiteResultTypes';
 
-export function deferDoneCallback(
+export function useDeferDoneCallback(
   doneCallback: DoneCallback,
   fieldName?: TFieldName
 ): void {

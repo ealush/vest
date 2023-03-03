@@ -8,7 +8,7 @@ import { TestFn } from 'TestTypes';
 import { Events } from 'VestBus';
 import { IsolateKey } from 'isolate';
 import { wrapTestMemo } from 'test.memo';
-import { testObjectIsolate } from 'testObjectIsolate';
+import { useTestObjectIsolate } from 'testObjectIsolate';
 
 function vestTest<F extends TFieldName>(
   fieldName: F,
@@ -27,6 +27,7 @@ function vestTest<F extends TFieldName>(
   cb: TestFn,
   key: IsolateKey
 ): IsolateTest;
+// @vx-allow use-use
 function vestTest<F extends TFieldName>(
   fieldName: F,
   ...args:
@@ -50,7 +51,7 @@ function vestTest<F extends TFieldName>(
   // This invalidates the suite cache.
   emit(Events.TEST_RUN_STARTED);
 
-  return testObjectIsolate(testObjectInput);
+  return useTestObjectIsolate(testObjectInput);
 }
 
 export const test = assign(vestTest, {

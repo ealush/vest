@@ -42,7 +42,7 @@ export class Reconciler {
     invariant(nextNode);
 
     if (Object.is(nextNode, node)) {
-      return [node, runAsNew(localHistoryNode, node, callback)];
+      return [node, useRunAsNew(localHistoryNode, node, callback)];
     }
 
     return [nextNode, nextNode.output];
@@ -100,7 +100,7 @@ export class Reconciler {
   }
 }
 
-function runAsNew<Callback extends CB = CB>(
+function useRunAsNew<Callback extends CB = CB>(
   localHistoryNode: Isolate | null,
   current: Isolate,
   callback: CB

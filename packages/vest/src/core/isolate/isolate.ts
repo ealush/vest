@@ -19,7 +19,7 @@ export class Isolate<_D = any> {
   allowReorder = false;
   static reconciler = Reconciler;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
   constructor(_data?: _D) {}
 
   setParent(parent: Isolate | null): this {

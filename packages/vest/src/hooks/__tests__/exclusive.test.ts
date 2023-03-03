@@ -5,7 +5,7 @@ import { dummyTest } from '../../../testUtils/testDummy';
 import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
 import { SuiteContext, TExclusion, useExclusion } from 'SuiteContext';
-import { isExcluded, isGroupExcluded, skip, only } from 'exclusive';
+import { useIsExcluded, useIsGroupExcluded, skip, only } from 'exclusive';
 import { group } from 'group';
 import { TTestSuite } from 'testUtils/TVestMock';
 import * as vest from 'vest';
@@ -43,8 +43,8 @@ describe('exclusive hooks', () => {
         testObject1 = dummyTest.failing();
       });
 
-      res = isExcluded(testObject);
-      res1 = isExcluded(testObject1);
+      res = useIsExcluded(testObject);
+      res1 = useIsExcluded(testObject1);
     });
 
     validate();
@@ -58,7 +58,7 @@ describe('exclusive hooks', () => {
       test('isExcluded returns false for included field', () => {
         vest.create(() => {
           vest.only(test1.fieldName);
-          res = isExcluded(test1);
+          res = useIsExcluded(test1);
         })();
         expect(res).toBe(false);
       });
@@ -68,7 +68,7 @@ describe('exclusive hooks', () => {
           vest.only('group_name');
 
           group('group_name', () => {
-            res = isGroupExcluded('group_name');
+            res = useIsGroupExcluded('group_name');
           });
         })();
         expect(res).toBe(false);
@@ -77,8 +77,8 @@ describe('exclusive hooks', () => {
       test('isExcluded returns true for non included field', () => {
         vest.create(() => {
           vest.only(test1.fieldName);
-          res1 = isExcluded(test1);
-          res = isExcluded(test2);
+          res1 = useIsExcluded(test1);
+          res = useIsExcluded(test2);
         })();
         expect(res1).toBe(false);
         expect(res).toBe(true);
@@ -91,8 +91,8 @@ describe('exclusive hooks', () => {
           group('group_1', jest.fn());
           group('group_2', jest.fn());
 
-          res1 = isGroupExcluded('group_1');
-          res = isGroupExcluded('group_2');
+          res1 = useIsGroupExcluded('group_1');
+          res = useIsGroupExcluded('group_2');
         })();
 
         expect(res1).toBe(false);
@@ -104,8 +104,8 @@ describe('exclusive hooks', () => {
       test('isExcluded returns false for included field', () => {
         vest.create(() => {
           vest.only([test1.fieldName, test2.fieldName]);
-          res = isExcluded(test1);
-          res1 = isExcluded(test2);
+          res = useIsExcluded(test1);
+          res1 = useIsExcluded(test2);
         })();
         expect(res).toBe(false);
         expect(res1).toBe(false);
@@ -121,9 +121,9 @@ describe('exclusive hooks', () => {
           group('group_3', jest.fn());
 
           results.push(
-            isGroupExcluded('group_1'),
-            isGroupExcluded('group_2'),
-            isGroupExcluded('group_3')
+            useIsGroupExcluded('group_1'),
+            useIsGroupExcluded('group_2'),
+            useIsGroupExcluded('group_3')
           );
         })();
         expect(results).toEqual([false, false, true]);
@@ -133,12 +133,16 @@ describe('exclusive hooks', () => {
         const results: boolean[] = [];
         const results1: boolean[] = [];
         vest.create(() => {
-          results.push(isExcluded(test1), isExcluded(test2), isExcluded(test3));
+          results.push(
+            useIsExcluded(test1),
+            useIsExcluded(test2),
+            useIsExcluded(test3)
+          );
           vest.only([test1.fieldName, test2.fieldName]);
           results1.push(
-            isExcluded(test1),
-            isExcluded(test2),
-            isExcluded(test3)
+            useIsExcluded(test1),
+            useIsExcluded(test2),
+            useIsExcluded(test3)
           );
         })();
         expect(results).toEqual([false, false, false]);
@@ -152,9 +156,9 @@ describe('exclusive hooks', () => {
 
           group('group_3', jest.fn());
           results.push(
-            isGroupExcluded('group_1'),
-            isGroupExcluded('group_2'),
-            isGroupExcluded('group_3')
+            useIsGroupExcluded('group_1'),
+            useIsGroupExcluded('group_2'),
+            useIsGroupExcluded('group_3')
           );
         })();
         expect(results).toEqual([false, false, true]);
@@ -167,7 +171,7 @@ describe('exclusive hooks', () => {
       test('isExcluded returns true for excluded field', () => {
         vest.create(() => {
           vest.skip(test1.fieldName);
-          res = isExcluded(test1);
+          res = useIsExcluded(test1);
         })();
         expect(res).toBe(true);
       });
@@ -175,8 +179,8 @@ describe('exclusive hooks', () => {
       test('isGroupExcluded returns true for excluded groups', () => {
         vest.create(() => {
           vest.skip.group('group_1');
-          res = isGroupExcluded('group_1');
-          res1 = isGroupExcluded('group_2');
+          res = useIsGroupExcluded('group_1');
+          res1 = useIsGroupExcluded('group_2');
         })();
 
         expect(res).toBe(true);
@@ -186,7 +190,7 @@ describe('exclusive hooks', () => {
       test('isExcluded returns false for non excluded field', () => {
         vest.create(() => {
           vest.skip(test1.fieldName);
-          res = isExcluded(vest.test(test2.fieldName, jest.fn()));
+          res = useIsExcluded(vest.test(test2.fieldName, jest.fn()));
         })();
         expect(res).toBe(false);
       });
@@ -195,7 +199,7 @@ describe('exclusive hooks', () => {
     test('isGroupExcluded returns false for tests in non excluded groups', () => {
       vest.create(() => {
         vest.skip('group_1');
-        res = isExcluded(vest.test('field_1', jest.fn()));
+        res = useIsExcluded(vest.test('field_1', jest.fn()));
       })();
       expect(res).toBe(false);
     });
@@ -205,8 +209,8 @@ describe('exclusive hooks', () => {
         vest.create(() => {
           vest.skip([test1.fieldName, test2.fieldName]);
 
-          res = isExcluded(test1);
-          res1 = isExcluded(test2);
+          res = useIsExcluded(test1);
+          res1 = useIsExcluded(test2);
         })();
         expect(res).toBe(true);
         expect(res1).toBe(true);
@@ -216,7 +220,10 @@ describe('exclusive hooks', () => {
         const results: boolean[] = [];
         vest.create(() => {
           vest.skip.group(['group_1', 'group_2']);
-          results.push(isGroupExcluded('group_1'), isGroupExcluded('group_2'));
+          results.push(
+            useIsGroupExcluded('group_1'),
+            useIsGroupExcluded('group_2')
+          );
         })();
         expect(results).toEqual([true, true]);
       });
@@ -224,7 +231,7 @@ describe('exclusive hooks', () => {
       test('isExcluded returns false for non included field', () => {
         vest.create(() => {
           vest.skip([test1.fieldName, test2.fieldName]);
-          res = isExcluded(test3);
+          res = useIsExcluded(test3);
         })();
         expect(res).toBe(false);
       });
@@ -232,7 +239,7 @@ describe('exclusive hooks', () => {
       test('isGroupExcluded returns false for non excluded groups', () => {
         vest.create(() => {
           vest.skip(['group_1', 'group_2']);
-          res = isGroupExcluded('group_3');
+          res = useIsGroupExcluded('group_3');
         })();
         expect(res).toBe(false);
       });
@@ -284,7 +291,7 @@ describe('isExcluded', () => {
   ) =>
     SuiteContext.run({}, () => {
       Object.assign(useExclusion(), exclusion);
-      const res = isExcluded(testObject);
+      const res = useIsExcluded(testObject);
 
       return res;
     });

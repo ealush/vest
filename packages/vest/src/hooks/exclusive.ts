@@ -9,7 +9,7 @@ import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
 import { useExclusion, useInclusion } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
-import { isExcludedIndividually } from 'skipWhen';
+import { useIsExcludedIndividually } from 'skipWhen';
 
 type ExclusionItem = string | string[] | undefined;
 type FieldExclusion<F extends TFieldName> = F | F[] | undefined;
@@ -21,12 +21,13 @@ type FieldExclusion<F extends TFieldName> = F | F[] | undefined;
  *
  * only('username');
  */
+// @vx-allow use-use
 export function only<F extends TFieldName>(item: FieldExclusion<F>): void {
-  return addTo(ExclusionGroup.ONLY, 'tests', item);
+  return useAddTo(ExclusionGroup.ONLY, 'tests', item);
 }
 
 only.group = (item: ExclusionItem) =>
-  addTo(ExclusionGroup.ONLY, 'groups', item);
+  useAddTo(ExclusionGroup.ONLY, 'groups', item);
 
 /**
  * Adds a field or a list of fields into the exclusion list
@@ -35,20 +36,21 @@ only.group = (item: ExclusionItem) =>
  *
  * skip('username');
  */
+// @vx-allow use-use
 export function skip<F extends TFieldName>(item: FieldExclusion<F>): void {
-  return addTo(ExclusionGroup.SKIP, 'tests', item);
+  return useAddTo(ExclusionGroup.SKIP, 'tests', item);
 }
 
 skip.group = (item: ExclusionItem) =>
-  addTo(ExclusionGroup.SKIP, 'groups', item);
+  useAddTo(ExclusionGroup.SKIP, 'groups', item);
 
 //Checks whether a certain test profile excluded by any of the exclusion groups.
 
 // eslint-disable-next-line complexity, max-statements
-export function isExcluded(testObject: IsolateTest): boolean {
+export function useIsExcluded(testObject: IsolateTest): boolean {
   const { fieldName, groupName } = testObject;
 
-  if (isExcludedIndividually()) return true;
+  if (useIsExcludedIndividually()) return true;
 
   const exclusion = useExclusion();
   const inclusion = useInclusion();
@@ -63,7 +65,7 @@ export function isExcluded(testObject: IsolateTest): boolean {
 
   // If inside a group
   if (groupName) {
-    if (isGroupExcluded(groupName)) {
+    if (useIsGroupExcluded(groupName)) {
       return true; // field excluded by group
 
       // if group is `only`ed
@@ -77,7 +79,7 @@ export function isExcluded(testObject: IsolateTest): boolean {
     }
   }
 
-  if (isTopLevelWhenThereIsAnIncludedGroup(groupName)) {
+  if (useIsTopLevelWhenThereIsAnIncludedGroup(groupName)) {
     return true;
   }
 
@@ -99,7 +101,7 @@ export function isExcluded(testObject: IsolateTest): boolean {
 /**
  * Checks whether a given group is excluded from running.
  */
-export function isGroupExcluded(groupName: string): boolean {
+export function useIsGroupExcluded(groupName: string): boolean {
   const exclusion = useExclusion();
   const keyGroups = exclusion.groups;
 
@@ -114,13 +116,13 @@ export function isGroupExcluded(groupName: string): boolean {
   // Group is not present
 
   // Return whether other groups are included
-  return hasIncludedGroups();
+  return useHasIncludedGroups();
 }
 
 /**
  * Adds fields to a specified exclusion group.
  */
-function addTo(
+function useAddTo(
   exclusionGroup: ExclusionGroup,
   itemType: 'tests' | 'groups',
   item: ExclusionItem
@@ -153,8 +155,8 @@ function hasIncludedTests(keyTests: Record<string, boolean>): boolean {
 }
 
 // are we not in a group and there is an included group?
-function isTopLevelWhenThereIsAnIncludedGroup(groupName?: string): boolean {
-  if (!hasIncludedGroups()) {
+function useIsTopLevelWhenThereIsAnIncludedGroup(groupName?: string): boolean {
+  if (!useHasIncludedGroups()) {
     return false;
   }
 
@@ -162,7 +164,7 @@ function isTopLevelWhenThereIsAnIncludedGroup(groupName?: string): boolean {
   return !groupName;
 }
 
-function hasIncludedGroups(): boolean {
+function useHasIncludedGroups(): boolean {
   const exclusion = useExclusion();
 
   for (const group in exclusion.groups) {

@@ -3,12 +3,12 @@ import { assign } from 'vest-utils';
 import { persist } from 'PersistedContext';
 import { SuiteResult, SuiteRunResult, TFieldName } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
-import { deferDoneCallback } from 'deferDoneCallback';
+import { useDeferDoneCallback } from 'deferDoneCallback';
 import { shouldSkipDoneRegistration } from 'shouldSkipDoneRegistration';
-import { createSuiteResult } from 'suiteResult';
+import { useCreateSuiteResult } from 'suiteResult';
 
-export function suiteRunResult<F extends TFieldName>(): SuiteRunResult<F> {
-  return assign({}, createSuiteResult(), {
+export function useSuiteRunResult<F extends TFieldName>(): SuiteRunResult<F> {
+  return assign({}, useCreateSuiteResult(), {
     done: persist(done),
   });
 }
@@ -17,21 +17,22 @@ export function suiteRunResult<F extends TFieldName>(): SuiteRunResult<F> {
  * Registers done callbacks.
  * @register {Object} Vest output object.
  */
+// @vx-allow use-use
 function done<F extends TFieldName>(...args: any[]): SuiteRunResult<F> {
   const [callback, fieldName] = args.reverse() as [
     (res: SuiteResult<F>) => void,
     string
   ];
-  const output = suiteRunResult();
+  const output = useSuiteRunResult();
   if (shouldSkipDoneRegistration(callback, fieldName, output)) {
     return output;
   }
-  const doneCallback = () => callback(createSuiteResult());
+  const useDoneCallback = () => callback(useCreateSuiteResult());
   if (!TestWalker.hasRemainingTests(fieldName)) {
-    doneCallback();
+    useDoneCallback();
     return output;
   }
-  deferDoneCallback(doneCallback, fieldName);
+  useDeferDoneCallback(useDoneCallback, fieldName);
   return output;
 }
 

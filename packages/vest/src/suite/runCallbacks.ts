@@ -7,7 +7,7 @@ import { TestWalker } from 'TestWalker';
 /**
  * Runs done callback per field when async tests are finished running.
  */
-export function runFieldCallbacks(fieldName?: TFieldName): void {
+export function useRunFieldCallbacks(fieldName?: TFieldName): void {
   const [fieldCallbacks] = useFieldCallbacks();
 
   if (
@@ -22,7 +22,7 @@ export function runFieldCallbacks(fieldName?: TFieldName): void {
 /**
  * Runs unlabelled done callback when async tests are finished running.
  */
-export function runDoneCallbacks() {
+export function useRunDoneCallbacks() {
   const [doneCallbacks] = useDoneCallbacks();
   callEach(doneCallbacks);
 }

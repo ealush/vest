@@ -7,10 +7,10 @@ import { persist, useVestBus } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
 import { Events } from 'VestBus';
-import { verifyTestRun } from 'verifyTestRun';
+import { useVerifyTestRun } from 'verifyTestRun';
 
-export function attemptRunTestObjectByTier(testObject: IsolateTest) {
-  verifyTestRun(testObject);
+export function useAttemptRunTestObjectByTier(testObject: IsolateTest) {
+  useVerifyTestRun(testObject);
 
   if (testObject.isNonActionable()) {
     // TODO: Need to test that this works as expected
@@ -18,10 +18,10 @@ export function attemptRunTestObjectByTier(testObject: IsolateTest) {
   }
 
   if (testObject.isUntested()) {
-    runTest(testObject);
+    useRunTest(testObject);
   } else if (testObject.isAsyncTest()) {
     testObject.setPending();
-    runAsyncTest(testObject);
+    useRunAsyncTest(testObject);
   }
 }
 
@@ -32,7 +32,7 @@ function runSyncTest(testObject: IsolateTest): TestResult {
 /**
  * runs test, if async - adds to pending array
  */
-function runTest(testObject: IsolateTest): void {
+function useRunTest(testObject: IsolateTest): void {
   const VestBus = useVestBus();
 
   // Run test callback.
@@ -45,7 +45,7 @@ function runTest(testObject: IsolateTest): void {
     if (isPromise(result)) {
       testObject.asyncTest = result;
       testObject.setPending();
-      runAsyncTest(testObject);
+      useRunAsyncTest(testObject);
     } else {
       onTestCompleted(VestBus, testObject);
     }
@@ -61,7 +61,7 @@ function runTest(testObject: IsolateTest): void {
 /**
  * Runs async test.
  */
-function runAsyncTest(testObject: IsolateTest): void {
+function useRunAsyncTest(testObject: IsolateTest): void {
   const { asyncTest, message } = testObject;
 
   if (!isPromise(asyncTest)) return;

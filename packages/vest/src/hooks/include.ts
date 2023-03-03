@@ -8,8 +8,9 @@ import {
 
 import { useExclusion, useInclusion } from 'SuiteContext';
 import { SuiteResult, TFieldName } from 'SuiteResultTypes';
-import { createSuiteResult } from 'suiteResult';
+import { useCreateSuiteResult } from 'suiteResult';
 
+// @vx-allow use-use
 export function include<F extends TFieldName>(
   fieldName: F
 ): {
@@ -47,7 +48,7 @@ export function include<F extends TFieldName>(
 
       return optionalFunctionValue(
         condition,
-        optionalFunctionValue(createSuiteResult)
+        optionalFunctionValue(useCreateSuiteResult)
       );
     };
   }

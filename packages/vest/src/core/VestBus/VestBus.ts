@@ -8,9 +8,9 @@ import {
 } from 'PersistedContext';
 import { TFieldName } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
-import { runDoneCallbacks, runFieldCallbacks } from 'runCallbacks';
+import { useRunDoneCallbacks, useRunFieldCallbacks } from 'runCallbacks';
 
-export function initVestBus() {
+export function useInitVestBus() {
   const VestBus = bus.createBus();
 
   // Report a the completion of a test. There may be other tests with the same
@@ -20,7 +20,7 @@ export function initVestBus() {
       return;
     }
 
-    runFieldCallbacks(testObject.fieldName);
+    useRunFieldCallbacks(testObject.fieldName);
 
     if (!TestWalker.hasRemainingTests()) {
       // When no more tests are running, emit the done event
@@ -34,7 +34,7 @@ export function initVestBus() {
 
   // Called when all the tests, including async, are done running
   on(Events.ALL_RUNNING_TESTS_FINISHED, () => {
-    runDoneCallbacks();
+    useRunDoneCallbacks();
   });
 
   on(Events.RESET_FIELD, (fieldName: TFieldName) => {

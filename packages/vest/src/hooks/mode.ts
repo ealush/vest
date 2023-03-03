@@ -26,22 +26,23 @@ export enum Modes {
  *  });
  * });
  */
+// @vx-allow use-use
 export function eager() {
   const [, setMode] = useMode();
 
   setMode(Modes.EAGER);
 }
 
-function isMode(mode: Modes): boolean {
+function useIsMode(mode: Modes): boolean {
   const [currentMode] = useMode();
 
   return currentMode === mode;
 }
 
-function isEager(): boolean {
-  return isMode(Modes.EAGER);
+function useIsEager(): boolean {
+  return useIsMode(Modes.EAGER);
 }
 
-export function shouldSkipBasedOnMode(testObject: IsolateTest): boolean {
-  return isEager() && hasErrorsByTestObjects(testObject.fieldName);
+export function useShouldSkipBasedOnMode(testObject: IsolateTest): boolean {
+  return useIsEager() && hasErrorsByTestObjects(testObject.fieldName);
 }

@@ -15,7 +15,7 @@ import {
 
 import type { IsolateSuite } from 'IsolateSuite';
 import { SuiteName, SuiteResult, TFieldName } from 'SuiteResultTypes';
-import { Events, initVestBus } from 'VestBus';
+import { Events, useInitVestBus } from 'VestBus';
 import { Isolate } from 'isolate';
 
 const suiteResultCache = cache<SuiteResult<TFieldName>>();
@@ -46,13 +46,13 @@ export const PersistedContext = createCascade<CTXType>(
   }
 );
 
-export function createVestState({
+export function useCreateVestState({
   suiteName,
 }: {
   suiteName?: SuiteName;
 }): StateType {
   const stateRef: StateType = {
-    VestBus: initVestBus(),
+    VestBus: useInitVestBus(),
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
     historyRoot: tinyState.createTinyState<Isolate | null>(null),
@@ -134,7 +134,7 @@ export function useEmit() {
   return persist(useVestBus().emit);
 }
 
-export function prepareEmitter<T = void>(event: Events): (arg: T) => void {
+export function usePrepareEmitter<T = void>(event: Events): (arg: T) => void {
   const emit = useEmit();
 
   return (arg: T) => emit(event, arg);

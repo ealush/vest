@@ -5,7 +5,7 @@ import { Reconciler } from 'Reconciler';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isSameProfileTest } from 'isSameProfileTest';
 import { Isolate } from 'isolate';
-import { verifyTestRun } from 'verifyTestRun';
+import { useVerifyTestRun } from 'verifyTestRun';
 
 export class IsolateTestReconciler extends Reconciler {
   static reconciler(
@@ -67,7 +67,7 @@ export class IsolateTestReconciler extends Reconciler {
   static pickNode(historyNode: IsolateTest, currentNode: IsolateTest): Isolate {
     const collisionResult = this.handleCollision(currentNode, historyNode);
 
-    return verifyTestRun(currentNode, collisionResult);
+    return useVerifyTestRun(currentNode, collisionResult);
   }
 
   static handleNoHistoryNode(testNode: IsolateTest): IsolateTest {

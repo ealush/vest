@@ -7,8 +7,8 @@ import { TFieldName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
 import { Events } from 'VestBus';
 import { IsolateKey } from 'isolate';
+import { useAttemptRunTestObjectByTier } from 'runTest';
 import { wrapTestMemo } from 'test.memo';
-import { useTestObjectIsolate } from 'testObjectIsolate';
 
 function vestTest<F extends TFieldName>(
   fieldName: F,
@@ -51,7 +51,7 @@ function vestTest<F extends TFieldName>(
   // This invalidates the suite cache.
   emit(Events.TEST_RUN_STARTED);
 
-  return useTestObjectIsolate(testObjectInput);
+  return IsolateTest.create(useAttemptRunTestObjectByTier, testObjectInput);
 }
 
 export const test = assign(vestTest, {

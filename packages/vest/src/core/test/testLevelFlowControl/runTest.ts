@@ -1,6 +1,4 @@
-import { isPromise, isStringValue } from 'vest-utils';
-
-import { BusType } from '../../../../../vest-utils/src/bus';
+import { isPromise, isStringValue, BusType } from 'vest-utils';
 
 import { IsolateTest } from 'IsolateTest';
 import { persist, useVestBus } from 'PersistedContext';

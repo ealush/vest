@@ -10556,6 +10556,11 @@ vest-utils@0.0.3, vest-utils@^0.0.3:
   resolved "https://registry.yarnpkg.com/vest-utils/-/vest-utils-0.0.3.tgz#a3be45f8876e7b2421477f5d2c23a4aed83b3155"
   integrity sha512-ZVeNgF0CSf+35/jFd639savGiYiH8FO5PAOGKeUbyd6PwfiPkqm84XwAnErq5qcXoCZT3N9cw94YevduFTUTjg==
 
+vest-utils@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/vest-utils/-/vest-utils-0.0.4.tgz#c0fd0260c1772bc97732694da2c500c734cd25d3"
+  integrity sha512-H9YiK3yjg2CG+0KF5BzoFJYW38fFnfC+Z/5xDvJpRmGBe7J3X2Y29iHihgp1iQJl93JmEv/Kch8cjIQ+H3ilyg==
+
 vfile-location@^3.0.0, vfile-location@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/vfile-location/-/vfile-location-3.2.0.tgz#d8e41fbcbd406063669ebf6c33d56ae8721d0f3c"

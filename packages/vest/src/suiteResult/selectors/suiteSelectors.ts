@@ -1,5 +1,6 @@
-import { isPositive } from 'vest-utils';
+import { invariant, isPositive } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { Severity, SeverityCount } from 'Severity';
 import {
   FailureMessages,
@@ -15,8 +16,10 @@ export function suiteSelectors<F extends TFieldName>(
   summary: SuiteSummary<F>
 ): SuiteSelectors<F> {
   const selectors = {
+    getError,
     getErrors,
     getErrorsByGroup,
+    getWarning,
     getWarnings,
     getWarningsByGroup,
     hasErrors,
@@ -88,11 +91,22 @@ export function suiteSelectors<F extends TFieldName>(
     return getFailures(summary, Severity.WARNINGS, fieldName);
   }
 
+  function getWarning(fieldName: F): void | string {
+    invariant(fieldName, ErrorStrings.FIELD_NAME_REQUIRED);
+    return getFailures(summary, Severity.WARNINGS, fieldName)[0];
+  }
+
   function getErrors(): FailureMessages;
   function getErrors(fieldName: F): string[];
   function getErrors(fieldName?: F): GetFailuresResponse {
     return getFailures(summary, Severity.ERRORS, fieldName);
   }
+
+  function getError(fieldName: F): void | string {
+    invariant(fieldName, ErrorStrings.FIELD_NAME_REQUIRED);
+    return getFailures(summary, Severity.ERRORS, fieldName)[0];
+  }
+
   function getErrorsByGroup(groupName: string): FailureMessages;
   function getErrorsByGroup(groupName: string, fieldName: F): string[];
   function getErrorsByGroup(
@@ -113,6 +127,8 @@ export function suiteSelectors<F extends TFieldName>(
 }
 
 export interface SuiteSelectors<F extends TFieldName> {
+  getWarning(fieldName: F): void | string;
+  getError(fieldName: F): void | string;
   getErrors(fieldName: F): string[];
   getErrors(): FailureMessages;
   getWarnings(): FailureMessages;
@@ -131,6 +147,15 @@ export interface SuiteSelectors<F extends TFieldName> {
 
 // Gathers all failures of a given severity
 // With a fieldName, it will only gather failures for that field
+function getFailures(
+  summary: SuiteSummary<TFieldName>,
+  severityKey: Severity
+): FailureMessages;
+function getFailures(
+  summary: SuiteSummary<TFieldName>,
+  severityKey: Severity,
+  fieldName?: TFieldName
+): string[];
 function getFailures(
   summary: SuiteSummary<TFieldName>,
   severityKey: Severity,

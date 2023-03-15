@@ -3,9 +3,7 @@ import { invariant } from 'vest-utils';
 import { ErrorStrings } from 'ErrorStrings';
 import { useCurrentTest } from 'SuiteContext';
 
-const ERROR_OUTSIDE_OF_TEST = __DEV__
-  ? "warn hook called outside of a test callback. It won't have an effect."
-  : 'warn called outside of a test.';
+const ERROR_OUTSIDE_OF_TEST = ErrorStrings.WARN_MUST_BE_CALLED_FROM_TEST;
 
 /**
  * Sets a running test to warn only mode.

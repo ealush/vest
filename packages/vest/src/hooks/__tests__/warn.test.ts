@@ -27,9 +27,7 @@ describe('warn hook', () => {
     it('Should throw error when currentTest is not present', () => {
       const done = jest.fn();
       create(() => {
-        expect(warn).toThrow(
-          "warn hook called outside of a test callback. It won't have an effect."
-        );
+        expect(warn).toThrow(ErrorStrings.WARN_MUST_BE_CALLED_FROM_TEST);
         done();
       })();
       expect(done).toHaveBeenCalled();

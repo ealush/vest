@@ -1,17 +1,18 @@
+import { suiteSelectors } from 'vest';
 import { hasOwnProperty, invariant, isNullish, isPositive } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { SuiteSummary, TFieldName } from 'SuiteResultTypes';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - Need to understand why Vest is not being recognized
-import { suiteSelectors } from 'vest';
 
 export function parse<F extends TFieldName>(
   summary: SuiteSummary<F>
 ): ParsedVestObject<F> {
   invariant(
     summary && hasOwnProperty(summary, 'valid'),
-    "Vest parser: expected argument at position 0 to be Vest's result object."
+    ErrorStrings.PARSER_EXPECT_RESULT_OBJECT
   );
 
   const sel = suiteSelectors(summary);

@@ -1,5 +1,6 @@
 import { invariant, isFunction } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { IsolateEach } from 'IsolateEach';
 
 /**
@@ -19,7 +20,10 @@ export function each<T>(
   list: T[],
   callback: (arg: T, index: number) => void
 ): void {
-  invariant(isFunction(callback), 'each callback must be a function');
+  invariant(
+    isFunction(callback),
+    ErrorStrings.EACH_CALLBACK_MUST_BE_A_FUNCTION
+  );
 
   IsolateEach.create(() => {
     list.forEach((arg, index) => {

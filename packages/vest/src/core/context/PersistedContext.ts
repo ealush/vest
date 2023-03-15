@@ -13,6 +13,7 @@ import {
   CacheApi,
 } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import type { IsolateSuite } from 'IsolateSuite';
 import { SuiteName, SuiteResult, TFieldName } from 'SuiteResultTypes';
 import { Events, useInitVestBus } from 'VestBus';
@@ -198,7 +199,7 @@ export function useRuntimeRoot() {
 export function useSetNextIsolateChild(child: Isolate): void {
   const currentIsolate = useIsolate();
 
-  invariant(currentIsolate, 'Not within an active isolate');
+  invariant(currentIsolate, ErrorStrings.NO_ACTIVE_ISOLATE);
 
   currentIsolate.addChild(child);
 }
@@ -210,7 +211,7 @@ export function useSetIsolateKey(key: string | null, value: Isolate): void {
 
   const currentIsolate = useIsolate();
 
-  invariant(currentIsolate, 'Not within an active isolate');
+  invariant(currentIsolate, ErrorStrings.NO_ACTIVE_ISOLATE);
 
   if (isNullish(currentIsolate.keys[key])) {
     currentIsolate.keys[key] = value;

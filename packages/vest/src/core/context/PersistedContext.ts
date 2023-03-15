@@ -51,7 +51,7 @@ export function useCreateVestState({
   suiteName,
 }: {
   suiteName?: SuiteName;
-}): StateType {
+} = {}): StateType {
   const stateRef: StateType = {
     VestBus: useInitVestBus(),
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),

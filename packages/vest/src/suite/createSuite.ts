@@ -1,4 +1,4 @@
-import { assign, CB, invariant, isFunction } from 'vest-utils';
+import { assign, CB } from 'vest-utils';
 
 import { IsolateSuite } from 'IsolateSuite';
 import {
@@ -9,10 +9,12 @@ import {
   useEmit,
 } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
-import { SuiteResult, SuiteRunResult, TFieldName } from 'SuiteResultTypes';
+import { SuiteName, SuiteRunResult, TFieldName } from 'SuiteResultTypes';
+import { Suite } from 'SuiteTypes';
 import { Events } from 'VestBus';
 import { useCreateSuiteResult } from 'suiteResult';
 import { useSuiteRunResult } from 'suiteRunResult';
+import { validateSuiteCallback } from 'validateSuiteParams';
 
 function createSuite<T extends CB, F extends TFieldName>(
   suiteName: SuiteName,
@@ -68,28 +70,5 @@ function createSuite<T extends CB, F extends TFieldName>(
     };
   }
 }
-
-function validateSuiteCallback<T extends CB>(
-  suiteCallback: T
-): asserts suiteCallback is T {
-  invariant(
-    isFunction(suiteCallback),
-    'vest.create: Expected callback to be a function.'
-  );
-}
-
-export type SuiteName = string | undefined;
-
-export type Suite<T extends CB, F extends TFieldName> = ((
-  ...args: Parameters<T>
-) => SuiteRunResult<F>) &
-  SuiteMethods<F>;
-
-type SuiteMethods<F extends TFieldName> = {
-  get: () => SuiteResult<F>;
-  reset: () => void;
-  remove: (fieldName: F) => void;
-  resetField: (fieldName: F) => void;
-};
 
 export { createSuite };

@@ -4,8 +4,10 @@ exports[`group: base case Group validity 1`] = `
 {
   "done": [Function],
   "errorCount": 4,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {

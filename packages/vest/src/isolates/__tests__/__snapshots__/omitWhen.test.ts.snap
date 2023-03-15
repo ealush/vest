@@ -225,8 +225,10 @@ exports[`omitWhen When conditional is falsy function conditional Should run test
 exports[`omitWhen When conditional is truthy boolean conditional Should avoid running the omitted tests 1`] = `
 {
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},
@@ -280,8 +282,10 @@ exports[`omitWhen When conditional is truthy boolean conditional Should avoid ru
 exports[`omitWhen When conditional is truthy boolean conditional Should skip and not run omitted fields when no filter provided 1`] = `
 {
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},
@@ -335,8 +339,10 @@ exports[`omitWhen When conditional is truthy boolean conditional Should skip and
 exports[`omitWhen When conditional is truthy function conditional Should avoid running the omitted tests 1`] = `
 {
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},
@@ -390,8 +396,10 @@ exports[`omitWhen When conditional is truthy function conditional Should avoid r
 exports[`omitWhen When conditional is truthy function conditional Should skip and not run omitted fields when no filter provided 1`] = `
 {
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},

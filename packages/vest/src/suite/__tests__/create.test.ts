@@ -4,6 +4,7 @@ import { noop } from 'lodash';
 import { dummyTest } from '../../../testUtils/testDummy';
 import { TestPromise } from '../../../testUtils/testPromise';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { create } from 'vest';
 
 describe('Test createSuite module', () => {
@@ -21,7 +22,7 @@ describe('Test createSuite module', () => {
       value => {
         // @ts-expect-error - testing invalid input
         expect(() => create(value)).toThrow(
-          'vest.create: Expected callback to be a function.'
+          ErrorStrings.SUITE_MUST_BE_INITIALIZED_WITH_FUNCTION
         );
       }
     );

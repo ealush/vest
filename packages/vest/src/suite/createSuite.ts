@@ -42,7 +42,9 @@ function createSuite<T extends CB, F extends TFieldName>(
 
       emit(Events.SUITE_RUN_STARTED);
 
-      return IsolateSuite.create(runSuiteCallback(...args));
+      return IsolateSuite.create(
+        useRunSuiteCallback<T, F>(suiteCallback, ...args)
+      );
     }).output;
   }
 
@@ -62,13 +64,16 @@ function createSuite<T extends CB, F extends TFieldName>(
       }
     );
   });
+}
 
-  function runSuiteCallback(...args: Parameters<T>): () => SuiteRunResult<F> {
-    return () => {
-      suiteCallback(...args);
-      return useSuiteRunResult();
-    };
-  }
+function useRunSuiteCallback<T extends CB, F extends TFieldName>(
+  suiteCallback: T,
+  ...args: Parameters<T>
+): () => SuiteRunResult<F> {
+  return () => {
+    suiteCallback(...args);
+    return useSuiteRunResult<F>();
+  };
 }
 
 export { createSuite };

@@ -3,8 +3,10 @@
 exports[`skipWhen Should pass result draft to the functional condition 1`] = `
 {
   "errorCount": 0,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},
@@ -25,8 +27,10 @@ exports[`skipWhen Should pass result draft to the functional condition 1`] = `
 exports[`skipWhen Should pass result draft to the functional condition 2`] = `
 {
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},
@@ -58,8 +62,10 @@ exports[`skipWhen Should pass result draft to the functional condition 2`] = `
 exports[`skipWhen Should pass result draft to the functional condition 3`] = `
 {
   "errorCount": 2,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},

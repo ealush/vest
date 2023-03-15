@@ -4,8 +4,10 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
 {
   "done": [Function],
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {
@@ -80,8 +82,10 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
 exports[`Stateful async tests Merges skipped validations from previous suite 2`] = `
 {
   "errorCount": 2,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {
@@ -158,8 +162,10 @@ exports[`Stateful async tests Merges skipped validations from previous suite 2`]
 exports[`Stateful async tests Merges skipped validations from previous suite 3`] = `
 {
   "errorCount": 5,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {

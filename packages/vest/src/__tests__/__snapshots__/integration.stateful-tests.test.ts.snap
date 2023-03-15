@@ -4,8 +4,10 @@ exports[`Stateful behavior Should merge skipped fields with previous values 1`] 
 {
   "done": [Function],
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},
@@ -70,8 +72,10 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
 {
   "done": [Function],
   "errorCount": 3,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},
@@ -139,8 +143,10 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
 {
   "done": [Function],
   "errorCount": 4,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},
@@ -211,8 +217,10 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
 exports[`more complex Should run correctly 1`] = `
 {
   "errorCount": 0,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},
@@ -233,8 +241,10 @@ exports[`more complex Should run correctly 1`] = `
 exports[`more complex Should run correctly 2`] = `
 {
   "errorCount": 0,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},
@@ -280,8 +290,10 @@ exports[`more complex Should run correctly 2`] = `
 exports[`more complex Should run correctly 4`] = `
 {
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},
@@ -329,8 +341,10 @@ exports[`more complex Should run correctly 4`] = `
 exports[`more complex Should run correctly 6`] = `
 {
   "errorCount": 1,
+  "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
+  "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},

@@ -63,6 +63,10 @@
       "skipWhen": ["src/isolates/skipWhen.ts"],
       "createSuite": ["src/suite/createSuite.ts"],
       "runCallbacks": ["src/suite/runCallbacks.ts"],
+      "SuiteTypes": ["src/suite/SuiteTypes.ts"],
+      "validateSuiteParams": [
+        "src/suite/validateParams/validateSuiteParams.ts"
+      ],
       "deferDoneCallback": ["src/suiteResult/done/deferDoneCallback.ts"],
       "shouldSkipDoneRegistration": [
         "src/suiteResult/done/shouldSkipDoneRegistration.ts"

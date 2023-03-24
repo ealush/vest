@@ -1,5 +1,6 @@
-import { assign, invariant, isFunction, isStringValue } from 'vest-utils';
+import { assign, invariant, isFunction, isStringValue, text } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
 import { useEmit } from 'PersistedContext';
 import { useGroupName } from 'SuiteContext';
@@ -40,8 +41,7 @@ function vestTest<F extends TFieldName>(
     isFunction(args[1]) ? args : [undefined, ...args]
   ) as [string | undefined, TestFn, IsolateKey];
 
-  invariant(isStringValue(fieldName), invalidParamError('fieldName', 'string'));
-  invariant(isFunction(testFn), invalidParamError('callback', 'function'));
+  validateTestParams(fieldName, testFn);
 
   const groupName = useGroupName();
   const emit = useEmit();
@@ -60,6 +60,22 @@ export const test = assign(vestTest, {
 
 export type VTest = typeof vestTest;
 
-function invalidParamError(name: string, expected: string): string {
-  return `Incompatible params passed to test function. Test ${name} must be a ${expected}`;
+function validateTestParams(fieldName: string, testFn: TestFn): void {
+  const fnName = 'test';
+  invariant(
+    isStringValue(fieldName),
+    text(ErrorStrings.INVALID_PARAM_PASSED_TO_FUNCTION, {
+      fn_name: fnName,
+      param: 'fieldName',
+      expected: 'string',
+    })
+  );
+  invariant(
+    isFunction(testFn),
+    text(ErrorStrings.INVALID_PARAM_PASSED_TO_FUNCTION, {
+      fn_name: fnName,
+      param: 'callback',
+      expected: 'function',
+    })
+  );
 }

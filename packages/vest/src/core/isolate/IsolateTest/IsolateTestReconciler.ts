@@ -1,5 +1,6 @@
-import { deferThrow, isNullish } from 'vest-utils';
+import { deferThrow, isNullish, text } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
 import { Reconciler } from 'Reconciler';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
@@ -97,10 +98,10 @@ function throwTestOrderError(
     return;
   }
 
-  deferThrow(`Vest Critical Error: Tests called in different order than previous run.
-    expected: ${newNode.fieldName}
-    received: ${IsolateTest.is(prevNode) ? prevNode.fieldName : undefined}
-    This can happen on one of two reasons:
-    1. You're using if/else statements to conditionally select tests. Instead, use "skipWhen".
-    2. You are iterating over a list of tests, and their order changed. Use "each" and a custom key prop so that Vest retains their state.`);
+  deferThrow(
+    text(ErrorStrings.TESTS_CALLED_IN_DIFFERENT_ORDER, {
+      fieldName: newNode.fieldName,
+      prevName: IsolateTest.is(prevNode) ? prevNode.fieldName : undefined,
+    })
+  );
 }

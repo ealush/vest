@@ -1,7 +1,9 @@
 import { faker } from '@faker-js/faker';
+import { text } from 'vest-utils';
 
 import { TestPromise } from '../../../../testUtils/testPromise';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { create, test, warn, enforce, IsolateTest } from 'vest';
 
 let testObject: IsolateTest;
@@ -182,17 +184,29 @@ describe("Test Vest's `test` function", () => {
       create(() => {
         // @ts-ignore
         expect(() => test(undefined, () => undefined)).toThrow(
-          'Incompatible params passed to test function. Test fieldName must be a string'
+          text(ErrorStrings.INVALID_PARAM_PASSED_TO_FUNCTION, {
+            fn_name: 'test',
+            param: 'fieldName',
+            expected: 'string',
+          })
         );
         // @ts-expect-error
         expect(() => test(null, 'error message', () => undefined)).toThrow(
-          'Incompatible params passed to test function. Test fieldName must be a string'
+          text(ErrorStrings.INVALID_PARAM_PASSED_TO_FUNCTION, {
+            fn_name: 'test',
+            param: 'fieldName',
+            expected: 'string',
+          })
         );
         expect(() =>
           // @ts-expect-error
           test(null, 'error message', () => undefined, 'key')
         ).toThrow(
-          'Incompatible params passed to test function. Test fieldName must be a string'
+          text(ErrorStrings.INVALID_PARAM_PASSED_TO_FUNCTION, {
+            fn_name: 'test',
+            param: 'fieldName',
+            expected: 'string',
+          })
         );
         control();
       })();
@@ -204,15 +218,27 @@ describe("Test Vest's `test` function", () => {
       create(() => {
         // @ts-expect-error
         expect(() => test('x')).toThrow(
-          'Incompatible params passed to test function. Test callback must be a function'
+          text(ErrorStrings.INVALID_PARAM_PASSED_TO_FUNCTION, {
+            fn_name: 'test',
+            param: 'callback',
+            expected: 'function',
+          })
         );
         // @ts-expect-error
         expect(() => test('x', 'msg', undefined)).toThrow(
-          'Incompatible params passed to test function. Test callback must be a function'
+          text(ErrorStrings.INVALID_PARAM_PASSED_TO_FUNCTION, {
+            fn_name: 'test',
+            param: 'callback',
+            expected: 'function',
+          })
         );
         // @ts-expect-error
         expect(() => test('x', 'msg', undefined, 'key')).toThrow(
-          'Incompatible params passed to test function. Test callback must be a function'
+          text(ErrorStrings.INVALID_PARAM_PASSED_TO_FUNCTION, {
+            fn_name: 'test',
+            param: 'callback',
+            expected: 'function',
+          })
         );
         control();
       })();

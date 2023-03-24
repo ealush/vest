@@ -39,6 +39,7 @@
       "numberEquals": ["src/numberEquals.ts"],
       "optionalFunctionValue": ["src/optionalFunctionValue.ts"],
       "seq": ["src/seq.ts"],
+      "text": ["src/text.ts"],
       "tinyState": ["src/tinyState.ts"],
       "utilityTypes": ["src/utilityTypes.ts"],
       "vest-utils": ["src/vest-utils.ts"]

@@ -1,5 +1,6 @@
-import { isPromise, isStringValue, BusType } from 'vest-utils';
+import { isPromise, isStringValue, BusType, text } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
 import { persist, useVestBus } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
@@ -49,9 +50,10 @@ function useRunTest(testObject: IsolateTest): void {
     }
   } catch (e) {
     throw new Error(
-      `Unexpected error encountered during test registration.
-      Test Object: ${JSON.stringify(testObject)}.
-      Error: ${e}.`
+      text(ErrorStrings.UNEXPECTED_TEST_REGISTRATION_ERROR, {
+        testObject: JSON.stringify(testObject),
+        error: e,
+      })
     );
   }
 }

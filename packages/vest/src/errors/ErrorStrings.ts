@@ -8,4 +8,16 @@ export enum ErrorStrings {
   PARSER_EXPECT_RESULT_OBJECT = "Vest parser: expected argument at position 0 to be Vest's result object.",
   WARN_MUST_BE_CALLED_FROM_TEST = 'Warn must be called from within the body of a test function',
   EACH_CALLBACK_MUST_BE_A_FUNCTION = 'Each must be called with a function',
+  INVALID_PARAM_PASSED_TO_FUNCTION = 'Incompatible params passed to {fn_name} function. "{param}" must be of type {expected}',
+  ENCOUNTERED_THE_SAME_KEY_TWICE = `Encountered the same test key "{key}" twice. This may lead to tests overriding each other's results, or to tests being unexpectedly omitted.`,
+  TESTS_CALLED_IN_DIFFERENT_ORDER = `Vest Critical Error: Tests called in different order than previous run.
+    expected: {fieldName}
+    received: {prevName}
+    This can happen on one of two reasons:
+    1. You're using if/else statements to conditionally select tests. Instead, use "skipWhen".
+    2. You are iterating over a list of tests, and their order changed. Use "each" and a custom key prop so that Vest retains their state.`,
+  UNEXPECTED_TEST_REGISTRATION_ERROR = `Unexpected error encountered during test registration.
+      Please report this issue to Vest's Github repository.
+      Test Object: {testObject}.
+      Error: {error}.`,
 }

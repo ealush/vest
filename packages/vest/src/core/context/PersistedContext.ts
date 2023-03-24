@@ -11,6 +11,7 @@ import {
   TinyState,
   tinyState,
   CacheApi,
+  text,
 } from 'vest-utils';
 
 import { ErrorStrings } from 'ErrorStrings';
@@ -219,9 +220,7 @@ export function useSetIsolateKey(key: string | null, value: Isolate): void {
     return;
   }
 
-  deferThrow(
-    `Encountered the same test key "${key}" twice. This may lead to tests overriding each other's results, or to tests being unexpectedly omitted.`
-  );
+  deferThrow(text(ErrorStrings.ENCOUNTERED_THE_SAME_KEY_TWICE, { key }));
 }
 
 export function useAvailableSuiteRoot(): IsolateSuite | null {

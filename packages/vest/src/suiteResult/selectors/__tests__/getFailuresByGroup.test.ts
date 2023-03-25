@@ -1,5 +1,6 @@
 import { dummyTest } from '../../../../testUtils/testDummy';
 
+import { Modes } from 'mode';
 import { TTestSuite } from 'testUtils/TVestMock';
 import { create, group } from 'vest';
 import * as vest from 'vest';
@@ -37,6 +38,7 @@ describe.each(modes)('produce method: %s', mode => {
       describe('When no fieldName passed', () => {
         it('Should return an object with empty message arrays', () => {
           suite = create(() => {
+            vest.mode(Modes.ALL);
             dummyTest.passing('field_1', 'message', 'group_name');
             dummyTest.passing('f2');
           });
@@ -46,6 +48,7 @@ describe.each(modes)('produce method: %s', mode => {
       describe('When fieldName passed', () => {
         it('Should return an empty array', () => {
           suite = create(() => {
+            vest.mode(Modes.ALL);
             dummyTest.passing('field_1', 'message', 'group_name');
             dummyTest.passing();
           });
@@ -60,6 +63,7 @@ describe.each(modes)('produce method: %s', mode => {
       describe('When no fieldName passed', () => {
         it('Should return an object containing the error messages of each group', () => {
           suite = create(() => {
+            vest.mode(Modes.ALL);
             dummyTest.failing('field_1', 'message_1', 'group_name');
             dummyTest.failing('field_1', 'message_2');
             dummyTest.failing('field_2');
@@ -79,6 +83,7 @@ describe.each(modes)('produce method: %s', mode => {
       describe('When fieldName passed', () => {
         it("Should return an array of the field's error messages", () => {
           suite = create(() => {
+            vest.mode(Modes.ALL);
             group('group_name', () => {
               vest.test('field_1', 'message_1', () => false);
               vest.test('field_2', 'message_3', () => false);
@@ -122,6 +127,7 @@ describe.each(modes)('produce method: %s', mode => {
       describe('When no fieldName passed', () => {
         it('Should return an object with no message arrays', () => {
           suite = create(() => {
+            vest.mode(Modes.ALL);
             dummyTest.passing('field_1', 'message', 'group_name');
             dummyTest.passing();
           });
@@ -131,6 +137,7 @@ describe.each(modes)('produce method: %s', mode => {
       describe('When fieldName passed', () => {
         it('Should return an empty array', () => {
           suite = create(() => {
+            vest.mode(Modes.ALL);
             dummyTest.passing('field_1', 'message', 'group_name');
             dummyTest.passing();
           });
@@ -145,6 +152,7 @@ describe.each(modes)('produce method: %s', mode => {
       describe('When no fieldName passed', () => {
         it('Should return an object containing the warning messages of each group', () => {
           suite = create(() => {
+            vest.mode(Modes.ALL);
             dummyTest.failingWarning('field_1', 'message_1', 'group_name');
             dummyTest.failingWarning('field_1', 'message_2');
             dummyTest.failingWarning('field_2');
@@ -164,6 +172,7 @@ describe.each(modes)('produce method: %s', mode => {
       describe('When fieldName passed', () => {
         it("Should return an array of the field's warning messages", () => {
           suite = create(() => {
+            vest.mode(Modes.ALL);
             group('group_name', () => {
               vest.test('field_1', 'message_1', () => {
                 vest.warn();

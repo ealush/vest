@@ -3,8 +3,8 @@ import { useMode } from 'SuiteContext';
 import { hasErrorsByTestObjects } from 'hasFailuresByTestObjects';
 
 export enum Modes {
-  ALL,
-  EAGER,
+  ALL = 'ALL',
+  EAGER = 'EAGER',
 }
 
 /**
@@ -31,6 +31,13 @@ export function eager() {
   const [, setMode] = useMode();
 
   setMode(Modes.EAGER);
+}
+
+// @vx-allow use-use
+export function mode(mode: Modes): void {
+  const [, setMode] = useMode();
+
+  setMode(mode);
 }
 
 function useIsMode(mode: Modes): boolean {

@@ -1,5 +1,6 @@
 import { enforce } from 'n4s';
 
+import { Modes } from 'mode';
 import * as vest from 'vest';
 
 describe('Stateful behavior', () => {
@@ -136,6 +137,7 @@ describe('more complex', () => {
 
 function genSuite() {
   return vest.create(({ only }: { only?: string | string[] } = {}) => {
+    vest.mode(Modes.ALL);
     vest.only(only);
     vest.test('field_1', 'field_statement_1', () => false);
     vest.test('field_2', 'field_statement_2', () => {

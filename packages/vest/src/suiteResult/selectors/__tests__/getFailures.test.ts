@@ -1,5 +1,6 @@
 import { dummyTest } from '../../../../testUtils/testDummy';
 
+import { Modes } from 'mode';
 import * as vest from 'vest';
 
 describe('->getFailures', () => {
@@ -48,6 +49,7 @@ describe('->getFailures', () => {
       describe('When no parameters passed', () => {
         it('Should return an object with an array per field', () => {
           const suite = vest.create(() => {
+            vest.mode(Modes.ALL);
             dummyTest.failing('field_1', 'msg_1');
             dummyTest.failing('field_2', 'msg_2');
             dummyTest.failing('field_2', 'msg_3');

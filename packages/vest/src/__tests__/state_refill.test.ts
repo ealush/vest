@@ -1,9 +1,11 @@
+import { Modes } from 'mode';
 import * as vest from 'vest';
 
 describe('state refill', () => {
   it('Should refill test state according to the execution order', () => {
     const suiteStates: vest.SuiteResult<string>[][] = [];
     const suite = vest.create(() => {
+      vest.mode(Modes.ALL);
       const currentRun = [suite.get()];
       expect(suite.get().hasErrors('field1')).toBe(false);
       vest.test('field1', () => false);

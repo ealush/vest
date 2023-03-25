@@ -1,3 +1,4 @@
+import { Modes } from 'mode';
 import * as vest from 'vest';
 
 describe('include', () => {
@@ -197,6 +198,7 @@ describe('include', () => {
           it('Should run the callback for each matching test', () => {
             const cb = jest.fn(() => true);
             const suite = vest.create(() => {
+              vest.mode(Modes.ALL);
               vest.only('field_1');
               vest.include('field_2').when(cb);
 
@@ -221,6 +223,7 @@ describe('include', () => {
 
             const suite = vest.create(() => {
               let shouldRun = false;
+              vest.mode(Modes.ALL);
               vest.only('x');
               vest.include('field_1').when(() => shouldRun);
 
@@ -398,6 +401,7 @@ describe('include', () => {
   describe('When no `skip` or `only`', () => {
     test('include has no effect', () => {
       const suite = vest.create(() => {
+        vest.mode(Modes.ALL);
         vest.include('field_1');
 
         vest.test('field_1', () => false);
@@ -414,6 +418,7 @@ describe('include', () => {
 
     test('include().when has no effect', () => {
       const suite = vest.create(() => {
+        vest.mode(Modes.ALL);
         vest.include('field_1').when(false);
 
         vest.test('field_1', () => false);

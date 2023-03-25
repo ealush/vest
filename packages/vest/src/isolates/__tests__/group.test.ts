@@ -8,6 +8,7 @@ import { dummyTest } from '../../../testUtils/testDummy';
 import { IsolateTest } from 'IsolateTest';
 import { group } from 'group';
 import { matchingGroupName } from 'matchingGroupName';
+import { Modes } from 'mode';
 import { TTestSuite } from 'testUtils/TVestMock';
 import * as vest from 'vest';
 
@@ -31,6 +32,7 @@ describe('group: exclusion', () => {
         skipGroup?: string;
         onlyGroup?: string;
       } = {}) => {
+        vest.mode(Modes.ALL);
         vest.only(only);
         vest.skip(skip);
         vest.only.group(onlyGroup);
@@ -316,6 +318,7 @@ describe('group: base case', () => {
 
   test('Group validity', () => {
     const suite = vest.create(() => {
+      vest.mode(Modes.ALL);
       vest.group('group_1', () => {
         vest.test('field_1', () => {});
         vest.test('field_2', () => {});

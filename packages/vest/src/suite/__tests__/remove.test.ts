@@ -2,11 +2,13 @@ import wait from 'wait';
 
 import { dummyTest } from '../../../testUtils/testDummy';
 
+import { Modes } from 'mode';
 import * as vest from 'vest';
 
 describe('suite.remove', () => {
   it('Should remove field from validation result', async () => {
     const suite = vest.create(() => {
+      vest.mode(Modes.ALL);
       dummyTest.failing('field1');
       dummyTest.failing('field1');
       dummyTest.failingAsync('field1', { time: 100 });

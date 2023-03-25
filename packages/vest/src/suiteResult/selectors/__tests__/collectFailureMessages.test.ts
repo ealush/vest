@@ -2,6 +2,7 @@
 import { dummyTest } from '../../../../testUtils/testDummy';
 
 import { SuiteResult } from 'SuiteResultTypes';
+import { Modes } from 'mode';
 import { TTestSuite } from 'testUtils/TVestMock';
 import { create, group } from 'vest';
 import * as vest from 'vest';
@@ -96,6 +97,7 @@ describe('collectFailureMessages', () => {
 
   beforeEach(() => {
     suite = create(() => {
+      vest.mode(Modes.ALL);
       dummyTest.passing('field_1', 'field_1_failure message 1');
       dummyTest.failing('field_1', 'field_1_failure message 2');
       dummyTest.failing('field_1', 'field_1_failure message 3');

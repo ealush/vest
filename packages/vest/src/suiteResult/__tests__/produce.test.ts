@@ -1,6 +1,7 @@
 import { ser } from '../../../testUtils/suiteDummy';
 import { dummyTest } from '../../../testUtils/testDummy';
 
+import { Modes } from 'mode';
 import * as vest from 'vest';
 
 describe('produce method Suite Result', () => {
@@ -19,6 +20,7 @@ describe('produce method Suite Result', () => {
 
     it('Its methods should reflect the correct test data', () => {
       const suite = vest.create(() => {
+        vest.mode(Modes.ALL);
         dummyTest.passing('field_1');
         dummyTest.failing('field_1', 'message');
         dummyTest.failing('field_1', 'failure_message');

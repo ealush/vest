@@ -3,12 +3,14 @@ import wait from 'wait';
 import { dummyTest } from '../../testUtils/testDummy';
 import { TestPromise } from '../../testUtils/testPromise';
 
+import { Modes } from 'mode';
 import * as vest from 'vest';
 
 type SuiteParams = { skip?: string; skipGroup?: string };
 
 const suite = () =>
   vest.create(({ skip, skipGroup }: SuiteParams = {}) => {
+    vest.mode(Modes.ALL);
     vest.skip(skip);
     vest.skip.group(skipGroup);
 

@@ -2,6 +2,7 @@ import wait from 'wait';
 
 import { TestPromise } from '../../../../testUtils/testPromise';
 
+import { Modes } from 'mode';
 import promisify from 'promisify';
 import * as vest from 'vest';
 import { test as vestTest, enforce } from 'vest';
@@ -26,6 +27,7 @@ describe('test.memo', () => {
 
     it('Should produce correct initial result', () => {
       const res = vest.create(() => {
+        vest.mode(Modes.ALL);
         vestTest.memo('field1', 'msg1', () => false, [{}]);
         vestTest.memo('field1', 'msg2', () => undefined, [{}]);
         vestTest.memo('field2', () => undefined, [{}]);
@@ -47,6 +49,7 @@ describe('test.memo', () => {
     describe('sync', () => {
       it('Should restore previous result on re-run', () => {
         const suite = vest.create(() => {
+          vest.mode(Modes.ALL);
           vestTest.memo('field1', 'msg1', () => false, [1]);
           vestTest.memo('field1', 'msg2', () => undefined, [2]);
           vestTest.memo('field2', () => undefined, [3]);

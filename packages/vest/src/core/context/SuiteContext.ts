@@ -16,7 +16,7 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
         groups: {},
       },
       inclusion: {},
-      mode: tinyState.createTinyState<Modes>(Modes.ALL),
+      mode: tinyState.createTinyState<Modes>(Modes.EAGER),
       testMemoCache,
     },
     ctxRef

@@ -2,11 +2,13 @@ import wait from 'wait';
 
 import { TestPromise } from '../../testUtils/testPromise';
 
-import * as vest from 'vest';
+import { Modes } from 'mode';
 import { TTestSuite } from 'testUtils/TVestMock';
+import * as vest from 'vest';
 
 function genSuite() {
   return vest.create(() => {
+    vest.mode(Modes.ALL);
     vest.test('field_1', 'field_statement_1', () => false);
     vest.test('field_2', 'field_statement_2', () => {
       vest.enforce(2).equals(3);

@@ -2,6 +2,7 @@ import { TTestSuite, TVestMock } from '../../../../testUtils/TVestMock';
 import mockThrowError from '../../../../testUtils/mockThrowError';
 import { dummyTest } from '../../../../testUtils/testDummy';
 
+import { Modes } from 'mode';
 import * as vest from 'vest';
 
 describe('Merging of previous test runs', () => {
@@ -16,6 +17,7 @@ describe('Merging of previous test runs', () => {
   describe('When test skipped in subsequent run', () => {
     it('Should merge its result from previous runs', () => {
       suite = vest.create(() => {
+        vest.mode(Modes.ALL);
         vest.skipWhen(counter === 1, () => {
           testContainer.push([
             dummyTest.failing('f1'),
@@ -181,6 +183,7 @@ describe('Merging of previous test runs', () => {
       describe('When multiple tests are omitted between a test', () => {
         it('Should omit the tests from the results', () => {
           suite = vest.create(() => {
+            vest.mode(Modes.ALL);
             vest.test('f1', () => false);
             if (counter === 0) {
               vest.test('f2', () => false);

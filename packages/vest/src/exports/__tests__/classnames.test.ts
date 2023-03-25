@@ -2,6 +2,7 @@ import { dummyTest } from '../../../testUtils/testDummy';
 import classnames from '../classnames';
 import promisify from '../promisify';
 
+import { Modes } from 'mode';
 import * as vest from 'vest';
 
 describe('Utility: classnames', () => {
@@ -27,6 +28,7 @@ describe('Utility: classnames', () => {
   });
 
   const validate = vest.create(() => {
+    vest.mode(Modes.ALL);
     vest.skip('field_1');
 
     dummyTest.failing('field_1');

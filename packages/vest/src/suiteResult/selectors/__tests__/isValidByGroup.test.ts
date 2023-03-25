@@ -2,6 +2,7 @@ import wait from 'wait';
 
 import { TestPromise } from '../../../../testUtils/testPromise';
 
+import { Modes } from 'mode';
 import { TTestSuite } from 'testUtils/TVestMock';
 import {
   test,
@@ -13,6 +14,7 @@ import {
   only,
   group,
 } from 'vest';
+import * as vest from 'vest';
 
 const GROUP_NAME = 'group_1';
 
@@ -467,6 +469,7 @@ describe('isValidByGroup', () => {
 
   describe('When the field exists both inside and outside of the group', () => {
     const suite = create(() => {
+      vest.mode(Modes.ALL);
       test('field_1', () => false);
       group('group_1', () => {
         test('field_1', () => {});

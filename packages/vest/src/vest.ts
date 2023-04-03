@@ -13,6 +13,7 @@ import { include } from 'include';
 import { eager, mode, Modes } from 'mode';
 import { omitWhen } from 'omitWhen';
 import { skipWhen } from 'skipWhen';
+import { staticSuite } from 'staticSuite';
 import { suiteSelectors } from 'suiteSelectors';
 import { test } from 'test';
 import { warn } from 'warn';
@@ -33,6 +34,7 @@ export {
   eager,
   each,
   mode,
+  staticSuite,
 };
 
 export type {

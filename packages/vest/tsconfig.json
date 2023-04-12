@@ -62,6 +62,7 @@
       "omitWhen": ["src/isolates/omitWhen.ts"],
       "skipWhen": ["src/isolates/skipWhen.ts"],
       "createSuite": ["src/suite/createSuite.ts"],
+      "getTypedMethods": ["src/suite/getTypedMethods.ts"],
       "runCallbacks": ["src/suite/runCallbacks.ts"],
       "staticSuite": ["src/suite/staticSuite.ts"],
       "SuiteTypes": ["src/suite/SuiteTypes.ts"],

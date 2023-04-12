@@ -1,6 +1,7 @@
 import { CB } from 'vest-utils';
 
 import { SuiteResult, SuiteRunResult, TFieldName } from 'SuiteResultTypes';
+import { TTypedMethods } from 'getTypedMethods';
 
 export type Suite<T extends CB, F extends TFieldName> = ((
   ...args: Parameters<T>
@@ -12,4 +13,4 @@ export type SuiteMethods<F extends TFieldName> = {
   reset: () => void;
   remove: (fieldName: F) => void;
   resetField: (fieldName: F) => void;
-};
+} & TTypedMethods<F>;

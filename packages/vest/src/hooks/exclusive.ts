@@ -11,8 +11,8 @@ import { useExclusion, useInclusion } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
 import { useIsExcludedIndividually } from 'skipWhen';
 
-type ExclusionItem = string | string[] | undefined;
-type FieldExclusion<F extends TFieldName> = F | F[] | undefined;
+export type ExclusionItem = string | string[] | undefined;
+export type FieldExclusion<F extends TFieldName> = F | F[] | undefined;
 
 /**
  * Adds a field or a list of fields into the inclusion list

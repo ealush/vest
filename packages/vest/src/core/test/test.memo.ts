@@ -8,19 +8,19 @@ import { TestFn } from 'TestTypes';
 import { VTest } from 'test';
 
 // @vx-allow use-use
-export function wrapTestMemo(test: VTest): TestMemo<TFieldName> {
+export function wrapTestMemo<FN extends TFieldName>(test: VTest): TestMemo<FN> {
   /**
    * Caches a test result based on the test's dependencies.
    */
-  function memo<F extends TFieldName>(
+  function memo<F extends FN>(
     fieldName: F,
     ...args: ParametersWithoutMessage
   ): IsolateTest;
-  function memo<F extends TFieldName>(
+  function memo<F extends FN>(
     fieldName: F,
     ...args: ParametersWithMessage
   ): IsolateTest;
-  function memo<F extends TFieldName>(
+  function memo<F extends FN>(
     fieldName: F,
     ...args: ParamsOverload
   ): IsolateTest {
@@ -67,7 +67,7 @@ function useGetTestFromCache(
   return cachedValue;
 }
 
-type TestMemo<F extends TFieldName> = {
+export type TestMemo<F extends TFieldName> = {
   (fieldName: F, ...args: ParametersWithoutMessage): IsolateTest;
   (fieldName: F, ...args: ParametersWithMessage): IsolateTest;
 };

@@ -12,6 +12,7 @@ import { SuiteContext } from 'SuiteContext';
 import { SuiteName, SuiteRunResult, TFieldName } from 'SuiteResultTypes';
 import { Suite } from 'SuiteTypes';
 import { Events } from 'VestBus';
+import { getTypedMethods } from 'getTypedMethods';
 import { useCreateSuiteResult } from 'suiteResult';
 import { useSuiteRunResult } from 'suiteRunResult';
 import { validateSuiteCallback } from 'validateSuiteParams';
@@ -61,6 +62,7 @@ function createSuite<T extends CB, F extends TFieldName>(
         remove: usePrepareEmitter<string>(Events.REMOVE_FIELD),
         reset: usePrepareEmitter(Events.RESET_SUITE),
         resetField: usePrepareEmitter<string>(Events.RESET_FIELD),
+        ...getTypedMethods(),
       }
     );
   });

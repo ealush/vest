@@ -7,7 +7,7 @@ import {
 
 import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
-import { useExclusion, useInclusion } from 'SuiteContext';
+import { TExclusion, useExclusion, useInclusion } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
 import { useIsExcludedIndividually } from 'skipWhen';
 
@@ -124,7 +124,7 @@ export function useIsGroupExcluded(groupName: string): boolean {
  */
 function useAddTo(
   exclusionGroup: ExclusionGroup,
-  itemType: 'tests' | 'groups',
+  itemType: keyof TExclusion,
   item: ExclusionItem
 ) {
   const exclusion = useExclusion(ErrorStrings.HOOK_CALLED_OUTSIDE);

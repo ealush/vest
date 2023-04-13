@@ -25,7 +25,7 @@ export function getTypedMethods<F extends TFieldName>(): TTypedMethods<F> {
 export type TTypedMethods<F extends TFieldName> = {
   include: (fieldName: F) => {
     when: (
-      condition: string | boolean | F | ((draft: SuiteResult<F>) => boolean)
+      condition: boolean | F | ((draft: SuiteResult<F>) => boolean)
     ) => void;
   };
   omitWhen: (
@@ -46,15 +46,10 @@ export type TTypedMethods<F extends TFieldName> = {
     callback: CB
   ) => void;
   test: {
-    <F extends string>(fieldName: F, message: string, cb: TestFn): IsolateTest;
-    <F extends string>(fieldName: F, cb: TestFn): IsolateTest;
-    <F extends string>(
-      fieldName: F,
-      message: string,
-      cb: TestFn,
-      key: IsolateKey
-    ): IsolateTest;
-    <F extends string>(fieldName: F, cb: TestFn, key: IsolateKey): IsolateTest;
+    (fieldName: F, message: string, cb: TestFn): IsolateTest;
+    (fieldName: F, cb: TestFn): IsolateTest;
+    (fieldName: F, message: string, cb: TestFn, key: IsolateKey): IsolateTest;
+    (fieldName: F, cb: TestFn, key: IsolateKey): IsolateTest;
   } & {
     memo: TestMemo<F>;
   };

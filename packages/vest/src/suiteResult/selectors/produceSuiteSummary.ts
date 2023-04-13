@@ -8,6 +8,7 @@ import {
   SingleTestSummary,
   SuiteSummary,
   TFieldName,
+  TGroupName,
   Tests,
   TestsContainer,
 } from 'SuiteResultTypes';
@@ -18,13 +19,14 @@ import {
 } from 'shouldAddValidProperty';
 
 export function useProduceSuiteSummary<
-  F extends TFieldName
->(): SuiteSummary<F> {
-  const summary: SuiteSummary<F> = assign(baseStats(), {
+  F extends TFieldName,
+  G extends TGroupName
+>(): SuiteSummary<F, G> {
+  const summary: SuiteSummary<F, G> = assign(baseStats(), {
     groups: {},
     tests: {},
     valid: false,
-  }) as SuiteSummary<F>;
+  }) as SuiteSummary<F, G>;
 
   TestWalker.walkTests(testObject => {
     useAppendToTest(summary.tests, testObject);
@@ -48,7 +50,10 @@ function useAppendToTest(tests: Tests<TFieldName>, testObject: IsolateTest) {
 /**
  * Appends to a group object if within a group
  */
-function useAppendToGroup(groups: Groups, testObject: IsolateTest) {
+function useAppendToGroup(
+  groups: Groups<TGroupName, TFieldName>,
+  testObject: IsolateTest
+) {
   const { groupName } = testObject;
 
   if (!groupName) {
@@ -71,8 +76,8 @@ function useAppendToGroup(groups: Groups, testObject: IsolateTest) {
  * Counts the failed tests and adds global counters
  */
 function countFailures(
-  summary: SuiteSummary<TFieldName>
-): SuiteSummary<TFieldName> {
+  summary: SuiteSummary<TFieldName, TGroupName>
+): SuiteSummary<TFieldName, TGroupName> {
   for (const test in summary.tests) {
     summary.errorCount += summary.tests[test].errorCount;
     summary.warnCount += summary.tests[test].warnCount;
@@ -87,13 +92,16 @@ function countFailures(
  * functions as it is really the same, with the difference of "valid" missing in groups
  */
 function appendTestObject(
-  summaryKey: Tests<TFieldName> | Group,
+  summaryKey: Tests<TFieldName> | Group<TGroupName>,
   testObject: IsolateTest
 ): SingleTestSummary;
 function appendTestObject(
-  summaryKey: Group | Tests<TFieldName>,
+  summaryKey: Group<TGroupName> | Tests<TFieldName>,
   testObject: IsolateTest
-): TestsContainer<TFieldName>[keyof TestsContainer<TFieldName>] {
+): TestsContainer<TFieldName, TGroupName>[keyof TestsContainer<
+  TFieldName,
+  TGroupName
+>] {
   const { fieldName, message } = testObject;
 
   summaryKey[fieldName] = summaryKey[fieldName] || baseTestStats();

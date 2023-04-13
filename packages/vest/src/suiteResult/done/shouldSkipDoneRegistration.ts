@@ -4,13 +4,18 @@
 
 import { isFunction, numberEquals } from 'vest-utils';
 
-import { SuiteResult, SuiteRunResult, TFieldName } from 'SuiteResultTypes';
+import {
+  SuiteResult,
+  SuiteRunResult,
+  TFieldName,
+  TGroupName,
+} from 'SuiteResultTypes';
 
 export function shouldSkipDoneRegistration(
-  callback: (res: SuiteResult<TFieldName>) => void,
+  callback: (res: SuiteResult<TFieldName, TGroupName>) => void,
 
   fieldName: TFieldName | undefined,
-  output: SuiteRunResult<TFieldName>
+  output: SuiteRunResult<TFieldName, TGroupName>
 ): boolean {
   // If we do not have any test runs for the current field
   return !!(

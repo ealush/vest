@@ -2,13 +2,13 @@ import { suiteSelectors } from 'vest';
 import { hasOwnProperty, invariant, isNullish, isPositive } from 'vest-utils';
 
 import { ErrorStrings } from 'ErrorStrings';
-import { SuiteSummary, TFieldName } from 'SuiteResultTypes';
+import { SuiteSummary, TFieldName, TGroupName } from 'SuiteResultTypes';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - Need to understand why Vest is not being recognized
 
-export function parse<F extends TFieldName>(
-  summary: SuiteSummary<F>
+export function parse<F extends TFieldName, G extends TGroupName>(
+  summary: SuiteSummary<F, G>
 ): ParsedVestObject<F> {
   invariant(
     summary && hasOwnProperty(summary, 'valid'),

@@ -8,11 +8,12 @@ import {
 import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
 import { TExclusion, useExclusion, useInclusion } from 'SuiteContext';
-import { TFieldName } from 'SuiteResultTypes';
+import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { useIsExcludedIndividually } from 'skipWhen';
 
 export type ExclusionItem = string | string[] | undefined;
 export type FieldExclusion<F extends TFieldName> = F | F[] | undefined;
+export type GroupExclusion<G extends TGroupName> = G | G[] | undefined;
 
 /**
  * Adds a field or a list of fields into the inclusion list
@@ -26,8 +27,9 @@ export function only<F extends TFieldName>(item: FieldExclusion<F>): void {
   return useAddTo(ExclusionGroup.ONLY, 'tests', item);
 }
 
-only.group = (item: ExclusionItem) =>
-  useAddTo(ExclusionGroup.ONLY, 'groups', item);
+only.group = function group<G extends TGroupName>(item: GroupExclusion<G>) {
+  return useAddTo(ExclusionGroup.ONLY, 'groups', item);
+};
 
 /**
  * Adds a field or a list of fields into the exclusion list
@@ -41,8 +43,9 @@ export function skip<F extends TFieldName>(item: FieldExclusion<F>): void {
   return useAddTo(ExclusionGroup.SKIP, 'tests', item);
 }
 
-skip.group = (item: ExclusionItem) =>
-  useAddTo(ExclusionGroup.SKIP, 'groups', item);
+skip.group = function group<G extends TGroupName>(item: GroupExclusion<G>) {
+  return useAddTo(ExclusionGroup.SKIP, 'groups', item);
+};
 
 //Checks whether a certain test profile excluded by any of the exclusion groups.
 
@@ -101,7 +104,7 @@ export function useIsExcluded(testObject: IsolateTest): boolean {
 /**
  * Checks whether a given group is excluded from running.
  */
-export function useIsGroupExcluded(groupName: string): boolean {
+export function useIsGroupExcluded(groupName: TGroupName): boolean {
   const exclusion = useExclusion();
   const keyGroups = exclusion.groups;
 

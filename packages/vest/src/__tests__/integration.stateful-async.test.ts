@@ -3,6 +3,7 @@ import wait from 'wait';
 import { dummyTest } from '../../testUtils/testDummy';
 import { TestPromise } from '../../testUtils/testPromise';
 
+import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { Modes } from 'mode';
 import * as vest from 'vest';
 
@@ -32,7 +33,11 @@ const suite = () =>
     dummyTest.failingAsync('field_3', { message: 'field_message_3' });
   });
 
-let validate: vest.Suite<({ skip, skipGroup }: SuiteParams) => void, string>;
+let validate: vest.Suite<
+  ({ skip, skipGroup }: SuiteParams) => void,
+  TFieldName,
+  TGroupName
+>;
 let callback_1 = jest.fn(),
   callback_2 = jest.fn(),
   callback_3 = jest.fn(),

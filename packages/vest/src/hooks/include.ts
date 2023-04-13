@@ -7,15 +7,19 @@ import {
 } from 'vest-utils';
 
 import { useExclusion, useInclusion } from 'SuiteContext';
-import { SuiteResult, TFieldName } from 'SuiteResultTypes';
+import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { useCreateSuiteResult } from 'suiteResult';
 
 // @vx-allow use-use
-export function include<F extends TFieldName>(
+export function include<F extends TFieldName, G extends TGroupName>(
   fieldName: F
 ): {
   when: (
-    condition: F | TFieldName | boolean | ((draft: SuiteResult<F>) => boolean)
+    condition:
+      | F
+      | TFieldName
+      | boolean
+      | ((draft: SuiteResult<F, G>) => boolean)
   ) => void;
 } {
   const inclusion = useInclusion();
@@ -28,7 +32,11 @@ export function include<F extends TFieldName>(
   return { when };
 
   function when(
-    condition: F | TFieldName | ((draft: SuiteResult<F>) => boolean) | boolean
+    condition:
+      | F
+      | TFieldName
+      | ((draft: SuiteResult<F, G>) => boolean)
+      | boolean
   ): void {
     const inclusion = useInclusion();
     const exclusion = useExclusion();

@@ -4,11 +4,14 @@ import { dummyTest } from '../../../testUtils/testDummy';
 import { TestPromise } from '../../../testUtils/testPromise';
 import promisify from '../promisify';
 
+import { TFieldName } from 'SuiteResultTypes';
 import * as vest from 'vest';
 
 describe('Utility: promisify', () => {
-  let validatorFn: jest.Mock<vest.SuiteRunResult<string>, any>;
-  let validateAsync: (...args: any[]) => Promise<vest.SuiteResult<string>>;
+  let validatorFn: jest.Mock<vest.SuiteRunResult<string, TFieldName>, any>;
+  let validateAsync: (
+    ...args: any[]
+  ) => Promise<vest.SuiteResult<string, TFieldName>>;
 
   beforeEach(() => {
     validatorFn = jest.fn(vest.create(jest.fn()));

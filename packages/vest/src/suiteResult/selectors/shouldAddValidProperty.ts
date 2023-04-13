@@ -4,7 +4,7 @@ import { IsolateTest } from 'IsolateTest';
 import { OptionalFieldTypes } from 'OptionalTypes';
 import { useAvailableSuiteRoot } from 'PersistedContext';
 import { Severity } from 'Severity';
-import { TFieldName } from 'SuiteResultTypes';
+import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
 import {
   hasErrorsByTestObjects,
@@ -39,7 +39,7 @@ export function useShouldAddValidProperty(fieldName?: TFieldName): boolean {
 }
 
 export function useShouldAddValidPropertyInGroup(
-  groupName: string,
+  groupName: TGroupName,
   fieldName: TFieldName
 ): boolean {
   if (useIsOptionalFiedApplied(fieldName)) {
@@ -67,7 +67,7 @@ function useHasNonOptionalIncomplete(fieldName?: TFieldName) {
 
 // Do the given group/field have any pending tests that are not optional?
 function useHasNonOptionalIncompleteByGroup(
-  groupName: string,
+  groupName: TGroupName,
   fieldName: TFieldName
 ): boolean {
   return TestWalker.someIncompleteTests(testObject => {
@@ -100,7 +100,7 @@ function useNoMissingTests(fieldName?: string): boolean {
 
 // Does the group have no missing tests?
 function useNoMissingTestsByGroup(
-  groupName: string,
+  groupName: TGroupName,
   fieldName?: TFieldName
 ): boolean {
   return TestWalker.everyTest(testObject => {

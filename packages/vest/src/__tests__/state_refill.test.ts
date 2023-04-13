@@ -3,7 +3,7 @@ import * as vest from 'vest';
 
 describe('state refill', () => {
   it('Should refill test state according to the execution order', () => {
-    const suiteStates: vest.SuiteResult<string>[][] = [];
+    const suiteStates: vest.SuiteResult<string, string>[][] = [];
     const suite = vest.create(() => {
       vest.mode(Modes.ALL);
       const currentRun = [suite.get()];

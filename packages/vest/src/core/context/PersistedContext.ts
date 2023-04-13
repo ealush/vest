@@ -16,11 +16,16 @@ import {
 
 import { ErrorStrings } from 'ErrorStrings';
 import type { IsolateSuite } from 'IsolateSuite';
-import { SuiteName, SuiteResult, TFieldName } from 'SuiteResultTypes';
+import {
+  SuiteName,
+  SuiteResult,
+  TFieldName,
+  TGroupName,
+} from 'SuiteResultTypes';
 import { Events, useInitVestBus } from 'VestBus';
 import { Isolate } from 'isolate';
 
-const suiteResultCache = cache<SuiteResult<TFieldName>>();
+const suiteResultCache = cache<SuiteResult<TFieldName, TGroupName>>();
 
 export const PersistedContext = createCascade<CTXType>(
   (vestState, parentContext) => {
@@ -75,7 +80,9 @@ export function persist<T extends CB>(cb: T): T {
   } as T;
 }
 
-export function useSuiteResultCache(action: () => SuiteResult<TFieldName>) {
+export function useSuiteResultCache(
+  action: () => SuiteResult<TFieldName, TGroupName>
+) {
   const suiteResultCache = useX().suiteResultCache;
 
   return suiteResultCache([useSuiteId()], action);
@@ -114,7 +121,7 @@ type StateType = {
   suiteName: string | undefined;
   suiteId: string;
   VestBus: BusType;
-  suiteResultCache: CacheApi<SuiteResult<TFieldName>>;
+  suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName>>;
 };
 
 type FieldCallbacks = Record<string, DoneCallbacks>;
@@ -142,7 +149,7 @@ export function usePrepareEmitter<T = void>(event: Events): (arg: T) => void {
   return (arg: T) => emit(event, arg);
 }
 
-export type DoneCallback = (res: SuiteResult<TFieldName>) => void;
+export type DoneCallback = (res: SuiteResult<TFieldName, TGroupName>) => void;
 
 export function useDoneCallbacks() {
   return useX().doneCallbacks();

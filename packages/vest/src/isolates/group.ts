@@ -1,7 +1,11 @@
 import { SuiteContext } from 'SuiteContext';
+import { TGroupName } from 'SuiteResultTypes';
 import { Isolate } from 'isolate';
 
-export function group(groupName: string, callback: () => void): Isolate {
+export function group<G extends TGroupName>(
+  groupName: G,
+  callback: () => void
+): Isolate {
   return Isolate.create(() => {
     SuiteContext.run({ groupName }, callback);
   });

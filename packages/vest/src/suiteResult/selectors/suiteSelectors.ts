@@ -7,14 +7,15 @@ import {
   GetFailuresResponse,
   SuiteSummary,
   TFieldName,
+  TGroupName,
   TestsContainer,
 } from 'SuiteResultTypes';
 import { gatherFailures } from 'collectFailures';
 
 // eslint-disable-next-line max-lines-per-function, max-statements
-export function suiteSelectors<F extends TFieldName>(
-  summary: SuiteSummary<F>
-): SuiteSelectors<F> {
+export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
+  summary: SuiteSummary<F, G>
+): SuiteSelectors<F, G> {
   const selectors = {
     getError,
     getErrors,
@@ -38,7 +39,11 @@ export function suiteSelectors<F extends TFieldName>(
     return fieldName ? Boolean(summary.tests[fieldName]?.valid) : summary.valid;
   }
 
-  function isValidByGroup(groupName: string, fieldName?: F): boolean {
+  function isValidByGroup<G extends TGroupName>(
+    groupName: G,
+    fieldName?: F
+  ): boolean {
+    // @ts-ignore need to sort this one out
     const group = summary.groups[groupName];
 
     if (!group) {
@@ -65,7 +70,10 @@ export function suiteSelectors<F extends TFieldName>(
     return hasFailures(summary, SeverityCount.ERROR_COUNT, fieldName);
   }
 
-  function hasWarningsByGroup(groupName: string, fieldName?: F): boolean {
+  function hasWarningsByGroup<G extends TGroupName>(
+    groupName: G,
+    fieldName?: F
+  ): boolean {
     return hasFailuresByGroup(
       summary,
       SeverityCount.WARN_COUNT,
@@ -74,7 +82,10 @@ export function suiteSelectors<F extends TFieldName>(
     );
   }
 
-  function hasErrorsByGroup(groupName: string, fieldName?: F): boolean {
+  function hasErrorsByGroup<G extends TGroupName>(
+    groupName: G,
+    fieldName?: F
+  ): boolean {
     return hasFailuresByGroup(
       summary,
       SeverityCount.ERROR_COUNT,
@@ -107,57 +118,54 @@ export function suiteSelectors<F extends TFieldName>(
     return getFailures(summary, Severity.ERRORS, fieldName)[0];
   }
 
-  function getErrorsByGroup(groupName: string): FailureMessages;
-  function getErrorsByGroup(groupName: string, fieldName: F): string[];
-  function getErrorsByGroup(
-    groupName: string,
-    fieldName?: F
-  ): GetFailuresResponse {
+  function getErrorsByGroup(groupName: G): FailureMessages;
+  function getErrorsByGroup(groupName: G, fieldName: F): string[];
+  function getErrorsByGroup(groupName: G, fieldName?: F): GetFailuresResponse {
     return getFailuresByGroup(summary, Severity.ERRORS, groupName, fieldName);
   }
 
-  function getWarningsByGroup(groupName: string): FailureMessages;
-  function getWarningsByGroup(groupName: string, fieldName: F): string[];
+  function getWarningsByGroup(groupName: G): FailureMessages;
+  function getWarningsByGroup(groupName: G, fieldName: F): string[];
   function getWarningsByGroup(
-    groupName: string,
+    groupName: G,
     fieldName?: F
   ): GetFailuresResponse {
     return getFailuresByGroup(summary, Severity.WARNINGS, groupName, fieldName);
   }
 }
 
-export interface SuiteSelectors<F extends TFieldName> {
+export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
   getWarning(fieldName: F): void | string;
   getError(fieldName: F): void | string;
   getErrors(fieldName: F): string[];
   getErrors(): FailureMessages;
   getWarnings(): FailureMessages;
   getWarnings(fieldName: F): string[];
-  getErrorsByGroup(groupName: string, fieldName: F): string[];
-  getErrorsByGroup(groupName: string): FailureMessages;
-  getWarningsByGroup(groupName: string): FailureMessages;
-  getWarningsByGroup(groupName: string, fieldName: F): string[];
+  getErrorsByGroup(groupName: G, fieldName: F): string[];
+  getErrorsByGroup(groupName: G): FailureMessages;
+  getWarningsByGroup(groupName: G): FailureMessages;
+  getWarningsByGroup(groupName: G, fieldName: F): string[];
   hasErrors(fieldName?: F): boolean;
   hasWarnings(fieldName?: F): boolean;
-  hasErrorsByGroup(groupName: string, fieldName?: F): boolean;
-  hasWarningsByGroup(groupName: string, fieldName?: F): boolean;
+  hasErrorsByGroup(groupName: G, fieldName?: F): boolean;
+  hasWarningsByGroup(groupName: G, fieldName?: F): boolean;
   isValid(fieldName?: F): boolean;
-  isValidByGroup(groupName: string, fieldName?: F): boolean;
+  isValidByGroup(groupName: G, fieldName?: F): boolean;
 }
 
 // Gathers all failures of a given severity
 // With a fieldName, it will only gather failures for that field
 function getFailures(
-  summary: SuiteSummary<TFieldName>,
+  summary: SuiteSummary<TFieldName, TGroupName>,
   severityKey: Severity
 ): FailureMessages;
 function getFailures(
-  summary: SuiteSummary<TFieldName>,
+  summary: SuiteSummary<TFieldName, TGroupName>,
   severityKey: Severity,
   fieldName?: TFieldName
 ): string[];
 function getFailures(
-  summary: SuiteSummary<TFieldName>,
+  summary: SuiteSummary<TFieldName, TGroupName>,
   severityKey: Severity,
   fieldName?: TFieldName
 ): GetFailuresResponse {
@@ -167,16 +175,16 @@ function getFailures(
 // Gathers all failures of a given severity within a group
 // With a fieldName, it will only gather failures for that field
 function getFailuresByGroup(
-  summary: SuiteSummary<TFieldName>,
+  summary: SuiteSummary<TFieldName, TGroupName>,
   severityKey: Severity,
-  groupName: string,
+  groupName: TGroupName,
   fieldName?: TFieldName
 ): GetFailuresResponse {
   return gatherFailures(summary.groups[groupName], severityKey, fieldName);
 }
 // Checks if a field is valid within a container object - can be within a group or top level
 function isFieldValid(
-  testContainer: TestsContainer<TFieldName>,
+  testContainer: TestsContainer<TFieldName, TGroupName>,
   fieldName: TFieldName
 ): boolean {
   return !!testContainer[fieldName]?.valid;
@@ -185,9 +193,9 @@ function isFieldValid(
 // Checks if a there are any failures of a given severity within a group
 // If a fieldName is provided, it will only check for failures within that field
 function hasFailuresByGroup(
-  summary: SuiteSummary<TFieldName>,
+  summary: SuiteSummary<TFieldName, TGroupName>,
   severityCount: SeverityCount,
-  groupName: string,
+  groupName: TGroupName,
   fieldName?: TFieldName
 ): boolean {
   const group = summary.groups[groupName];
@@ -212,7 +220,7 @@ function hasFailuresByGroup(
 // Checks if there are any failures of a given severity
 // If a fieldName is provided, it will only check for failures within that field
 function hasFailures(
-  summary: SuiteSummary<TFieldName>,
+  summary: SuiteSummary<TFieldName, TGroupName>,
   countKey: SeverityCount,
   fieldName?: TFieldName
 ): boolean {

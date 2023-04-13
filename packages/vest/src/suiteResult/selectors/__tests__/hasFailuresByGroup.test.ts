@@ -2,12 +2,13 @@ import { faker } from '@faker-js/faker';
 
 import { dummyTest } from '../../../../testUtils/testDummy';
 
+import { TTestSuite } from 'testUtils/TVestMock';
 import * as vest from 'vest';
 
 const fieldName = faker.random.word();
 const groupName = faker.lorem.word();
 
-let suite: vest.Suite<(...args: any[]) => void, string>;
+let suite: TTestSuite;
 describe('hasErrorsByGroup', () => {
   describe('When no tests', () => {
     it('Should return false', () => {

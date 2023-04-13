@@ -2,7 +2,7 @@ import type { CB } from 'vest-utils';
 import { optionalFunctionValue } from 'vest-utils';
 
 import { SuiteContext, useOmitted } from 'SuiteContext';
-import { SuiteResult, TFieldName } from 'SuiteResultTypes';
+import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { Isolate } from 'isolate';
 import { useCreateSuiteResult } from 'suiteResult';
 
@@ -16,8 +16,8 @@ import { useCreateSuiteResult } from 'suiteResult';
  * });
  */
 // @vx-allow use-use
-export function omitWhen<F extends TFieldName>(
-  conditional: boolean | ((draft: SuiteResult<F>) => boolean),
+export function omitWhen<F extends TFieldName, G extends TGroupName>(
+  conditional: boolean | ((draft: SuiteResult<F, G>) => boolean),
   callback: CB
 ): void {
   Isolate.create(() => {

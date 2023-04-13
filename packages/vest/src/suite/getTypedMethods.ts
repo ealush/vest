@@ -2,15 +2,18 @@ import { optional, skipWhen, omitWhen, IsolateTest } from 'vest';
 import { CB } from 'vest-utils';
 
 import { OptionalsInput } from 'OptionalTypes';
-import { SuiteResult, TFieldName } from 'SuiteResultTypes';
+import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
-import { ExclusionItem, FieldExclusion, only, skip } from 'exclusive';
+import { FieldExclusion, GroupExclusion, only, skip } from 'exclusive';
 import { include } from 'include';
 import { IsolateKey } from 'isolate';
 import { test } from 'test';
 import { TestMemo } from 'test.memo';
 
-export function getTypedMethods<F extends TFieldName>(): TTypedMethods<F> {
+export function getTypedMethods<
+  F extends TFieldName,
+  G extends TGroupName
+>(): TTypedMethods<F, G> {
   return {
     include,
     omitWhen,
@@ -22,27 +25,27 @@ export function getTypedMethods<F extends TFieldName>(): TTypedMethods<F> {
   };
 }
 
-export type TTypedMethods<F extends TFieldName> = {
+export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
   include: (fieldName: F) => {
     when: (
-      condition: boolean | F | ((draft: SuiteResult<F>) => boolean)
+      condition: boolean | F | ((draft: SuiteResult<F, G>) => boolean)
     ) => void;
   };
   omitWhen: (
-    conditional: boolean | ((draft: SuiteResult<F>) => boolean),
+    conditional: boolean | ((draft: SuiteResult<F, G>) => boolean),
     callback: CB
   ) => void;
   only: {
     (item: FieldExclusion<F>): void;
-    group(item: ExclusionItem): void;
+    group(item: GroupExclusion<G>): void;
   };
   optional: (optionals: OptionalsInput<F>) => void;
   skip: {
     (item: FieldExclusion<F>): void;
-    group(item: ExclusionItem): void;
+    group(item: GroupExclusion<G>): void;
   };
   skipWhen: (
-    condition: boolean | ((draft: SuiteResult<F>) => boolean),
+    condition: boolean | ((draft: SuiteResult<F, G>) => boolean),
     callback: CB
   ) => void;
   test: {

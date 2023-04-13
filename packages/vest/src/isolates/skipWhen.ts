@@ -1,7 +1,7 @@
 import { CB, optionalFunctionValue } from 'vest-utils';
 
 import { SuiteContext, useSkipped } from 'SuiteContext';
-import { SuiteResult, TFieldName } from 'SuiteResultTypes';
+import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { Isolate } from 'isolate';
 import { useCreateSuiteResult } from 'suiteResult';
 
@@ -15,8 +15,8 @@ import { useCreateSuiteResult } from 'suiteResult';
  * });
  */
 // @vx-allow use-use
-export function skipWhen<F extends TFieldName>(
-  condition: boolean | ((draft: SuiteResult<F>) => boolean),
+export function skipWhen<F extends TFieldName, G extends TGroupName>(
+  condition: boolean | ((draft: SuiteResult<F, G>) => boolean),
   callback: CB
 ): void {
   Isolate.create(() => {

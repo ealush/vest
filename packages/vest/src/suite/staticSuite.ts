@@ -1,10 +1,12 @@
 import { CB } from 'vest-utils';
 
-import { SuiteRunResult, TFieldName } from 'SuiteResultTypes';
+import { SuiteRunResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { createSuite } from 'createSuite';
 
-export function staticSuite<T extends CB, F extends TFieldName>(
-  suiteCallback: T
-): (...args: Parameters<T>) => SuiteRunResult<F> {
+export function staticSuite<
+  T extends CB,
+  F extends TFieldName = string,
+  G extends TGroupName = string
+>(suiteCallback: T): (...args: Parameters<T>) => SuiteRunResult<F, G> {
   return (...args) => createSuite(suiteCallback)(...args);
 }

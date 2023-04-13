@@ -21,7 +21,7 @@ const suite = () =>
   })();
 
 describe('Base behavior', () => {
-  let res: vest.SuiteRunResult<string>;
+  let res: vest.SuiteRunResult<string, string>;
 
   beforeEach(() => {
     res = suite();

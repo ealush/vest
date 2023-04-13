@@ -1,6 +1,6 @@
 import { IsolateTest } from 'IsolateTest';
 import { Severity } from 'Severity';
-import { TFieldName } from 'SuiteResultTypes';
+import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
@@ -26,7 +26,7 @@ export function hasFailuresByTestObjects(
 
 export function hasGroupFailuresByTestObjects(
   severityKey: Severity,
-  groupName: string,
+  groupName: TGroupName,
   fieldName?: TFieldName
 ): boolean {
   return TestWalker.someTests(testObject => {

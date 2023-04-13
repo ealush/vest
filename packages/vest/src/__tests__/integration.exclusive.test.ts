@@ -1,9 +1,7 @@
+import { TTestSuite } from 'testUtils/TVestMock';
 import * as vest from 'vest';
 
-let suite: vest.Suite<
-  (exclusion?: Record<string, string | string[]>) => void,
-  string
->;
+let suite: TTestSuite;
 
 beforeEach(() => {
   suite = genSuite();

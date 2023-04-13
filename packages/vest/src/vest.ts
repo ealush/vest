@@ -1,9 +1,12 @@
 import { enforce } from 'n4s';
 import { optional } from 'optional';
 
-import { IsolateTest } from 'IsolateTest';
-import type { SuiteResult, SuiteRunResult } from 'SuiteResultTypes';
-import { SuiteSummary } from 'SuiteResultTypes';
+import type { IsolateTest } from 'IsolateTest';
+import type {
+  SuiteResult,
+  SuiteRunResult,
+  SuiteSummary,
+} from 'SuiteResultTypes';
 import type { Suite } from 'SuiteTypes';
 import { createSuite } from 'createSuite';
 import { each } from 'each';

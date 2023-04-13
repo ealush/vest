@@ -9,7 +9,7 @@ import * as vest from 'vest';
 
 describe('collectFailureMessages', () => {
   let suite: TTestSuite;
-  let res: SuiteResult<string>;
+  let res: SuiteResult<string, string>;
 
   test('Result has an array of matching error messages', () => {
     const result = res.getErrors();

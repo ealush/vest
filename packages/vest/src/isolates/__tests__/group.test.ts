@@ -60,7 +60,7 @@ describe('group: exclusion', () => {
         });
       }
     );
-  let res: vest.SuiteRunResult<string>;
+  let res: vest.SuiteRunResult<string, string>;
   let suite: TTestSuite;
 
   beforeEach(() => {
@@ -245,7 +245,7 @@ describe('group: base case', () => {
 
       outsideGroup = dummyTest.failing('last');
     });
-  let res: vest.SuiteRunResult<string>;
+  let res: vest.SuiteRunResult<string, string>;
   beforeEach(() => {
     groupName = faker.random.word();
     const suite = validation();

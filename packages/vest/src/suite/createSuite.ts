@@ -9,7 +9,12 @@ import {
   useEmit,
 } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
-import { SuiteName, SuiteRunResult, TFieldName } from 'SuiteResultTypes';
+import {
+  SuiteName,
+  SuiteRunResult,
+  TFieldName,
+  TGroupName,
+} from 'SuiteResultTypes';
 import { Suite } from 'SuiteTypes';
 import { Events } from 'VestBus';
 import { getTypedMethods } from 'getTypedMethods';
@@ -17,17 +22,24 @@ import { useCreateSuiteResult } from 'suiteResult';
 import { useSuiteRunResult } from 'suiteRunResult';
 import { validateSuiteCallback } from 'validateSuiteParams';
 
-function createSuite<T extends CB, F extends TFieldName>(
-  suiteName: SuiteName,
-  suiteCallback: T
-): Suite<T, F>;
-function createSuite<T extends CB, F extends TFieldName>(
-  suiteCallback: T
-): Suite<T, F>;
+function createSuite<
+  T extends CB,
+  F extends TFieldName = string,
+  G extends TGroupName = string
+>(suiteName: SuiteName, suiteCallback: T): Suite<T, F, G>;
+function createSuite<
+  T extends CB,
+  F extends TFieldName = string,
+  G extends TGroupName = string
+>(suiteCallback: T): Suite<T, F, G>;
 // @vx-allow use-use
-function createSuite<T extends CB, F extends TFieldName>(
+function createSuite<
+  T extends CB,
+  F extends TFieldName = string,
+  G extends TGroupName = string
+>(
   ...args: [suiteName: SuiteName, suiteCallback: T] | [suiteCallback: T]
-): Suite<T, F> {
+): Suite<T, F, G> {
   const [suiteCallback, suiteName] = args.reverse() as [T, SuiteName];
 
   validateSuiteCallback(suiteCallback);
@@ -36,7 +48,7 @@ function createSuite<T extends CB, F extends TFieldName>(
   // It holds the suite's persisted values that may remain between runs.
   const stateRef = useCreateVestState({ suiteName });
 
-  function suite(...args: Parameters<T>): SuiteRunResult<F> {
+  function suite(...args: Parameters<T>): SuiteRunResult<F, G> {
     return SuiteContext.run({}, () => {
       // eslint-disable-next-line vest-internal/use-use
       const emit = useEmit();
@@ -44,7 +56,7 @@ function createSuite<T extends CB, F extends TFieldName>(
       emit(Events.SUITE_RUN_STARTED);
 
       return IsolateSuite.create(
-        useRunSuiteCallback<T, F>(suiteCallback, ...args)
+        useRunSuiteCallback<T, F, G>(suiteCallback, ...args)
       );
     }).output;
   }
@@ -68,13 +80,14 @@ function createSuite<T extends CB, F extends TFieldName>(
   });
 }
 
-function useRunSuiteCallback<T extends CB, F extends TFieldName>(
-  suiteCallback: T,
-  ...args: Parameters<T>
-): () => SuiteRunResult<F> {
+function useRunSuiteCallback<
+  T extends CB,
+  F extends TFieldName,
+  G extends TGroupName
+>(suiteCallback: T, ...args: Parameters<T>): () => SuiteRunResult<F, G> {
   return () => {
     suiteCallback(...args);
-    return useSuiteRunResult<F>();
+    return useSuiteRunResult<F, G>();
   };
 }
 

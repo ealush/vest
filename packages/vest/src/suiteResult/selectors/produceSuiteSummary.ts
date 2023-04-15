@@ -10,7 +10,6 @@ import {
   TFieldName,
   TGroupName,
   Tests,
-  TestsContainer,
 } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
 import {
@@ -94,14 +93,7 @@ function countFailures(
 function appendTestObject(
   summaryKey: Tests<TFieldName> | Group<TGroupName>,
   testObject: IsolateTest
-): SingleTestSummary;
-function appendTestObject(
-  summaryKey: Group<TGroupName> | Tests<TFieldName>,
-  testObject: IsolateTest
-): TestsContainer<TFieldName, TGroupName>[keyof TestsContainer<
-  TFieldName,
-  TGroupName
->] {
+): SingleTestSummary {
   const { fieldName, message } = testObject;
 
   summaryKey[fieldName] = summaryKey[fieldName] || baseTestStats();

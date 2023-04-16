@@ -4,6 +4,13 @@ exports[`include Field is excluded via \`skip\` Should disregard \`include.when\
 {
   "done": [Function],
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -39,6 +46,13 @@ exports[`include Field is excluded via \`skip\` Should disregard \`include.when\
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
@@ -46,6 +60,13 @@ exports[`include Field is excluded via \`skip\` Should disregard \`include\` and
 {
   "done": [Function],
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -81,6 +102,13 @@ exports[`include Field is excluded via \`skip\` Should disregard \`include\` and
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
@@ -88,6 +116,7 @@ exports[`include Test is excluded by being out of an included group Should disre
 {
   "done": [Function],
   "errorCount": 0,
+  "errors": [],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -126,6 +155,7 @@ exports[`include Test is excluded by being out of an included group Should disre
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [],
 }
 `;
 
@@ -133,6 +163,13 @@ exports[`include Test is excluded via \`skip.group\` Should disregard \`include.
 {
   "done": [Function],
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -187,6 +224,13 @@ exports[`include Test is excluded via \`skip.group\` Should disregard \`include.
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
@@ -194,6 +238,13 @@ exports[`include Test is excluded via \`skip.group\` Should disregard \`include\
 {
   "done": [Function],
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -248,6 +299,13 @@ exports[`include Test is excluded via \`skip.group\` Should disregard \`include\
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
@@ -255,6 +313,13 @@ exports[`include Test is excluded via \`skipWhen\` Should disregard \`include.wh
 {
   "done": [Function],
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -282,6 +347,13 @@ exports[`include Test is excluded via \`skipWhen\` Should disregard \`include.wh
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
@@ -289,6 +361,13 @@ exports[`include Test is excluded via \`skipWhen\` Should disregard \`include\` 
 {
   "done": [Function],
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -316,6 +395,13 @@ exports[`include Test is excluded via \`skipWhen\` Should disregard \`include\` 
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
@@ -323,6 +409,18 @@ exports[`include There is an \`onlyd\` field \`include\` is run as-is without mo
 {
   "done": [Function],
   "errorCount": 2,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -358,6 +456,18 @@ exports[`include There is an \`onlyd\` field \`include\` is run as-is without mo
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
@@ -365,6 +475,13 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
 {
   "done": [Function],
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -408,6 +525,13 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
@@ -415,6 +539,18 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
 {
   "done": [Function],
   "errorCount": 2,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -458,6 +594,18 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
@@ -465,6 +613,18 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
 {
   "done": [Function],
   "errorCount": 2,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -492,6 +652,18 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
@@ -499,6 +671,13 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
 {
   "done": [Function],
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -542,6 +721,13 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
@@ -549,6 +735,18 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
 {
   "done": [Function],
   "errorCount": 2,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -592,6 +790,18 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
@@ -599,6 +809,13 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
 {
   "done": [Function],
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -642,6 +859,13 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
@@ -649,6 +873,13 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
 {
   "done": [Function],
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -692,6 +923,13 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
@@ -699,6 +937,18 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
 {
   "done": [Function],
   "errorCount": 2,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -742,6 +992,18 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
@@ -749,6 +1011,18 @@ exports[`include When no \`skip\` or \`only\` include has no effect 1`] = `
 {
   "done": [Function],
   "errorCount": 2,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -784,6 +1058,18 @@ exports[`include When no \`skip\` or \`only\` include has no effect 1`] = `
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
@@ -791,6 +1077,18 @@ exports[`include When no \`skip\` or \`only\` include().when has no effect 1`] =
 {
   "done": [Function],
   "errorCount": 2,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -826,5 +1124,17 @@ exports[`include When no \`skip\` or \`only\` include().when has no effect 1`] =
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;

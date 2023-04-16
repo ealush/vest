@@ -4,6 +4,28 @@ exports[`group: base case Group validity 1`] = `
 {
   "done": [Function],
   "errorCount": 4,
+  "errors": [
+    {
+      "fieldName": "field_2",
+      "groupName": "group_1",
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_1",
+      "groupName": "group_2",
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_1",
+      "groupName": "group_3",
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": "group_3",
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -112,5 +134,27 @@ exports[`group: base case Group validity 1`] = `
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_2",
+      "groupName": "group_1",
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_1",
+      "groupName": "group_2",
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_1",
+      "groupName": "group_3",
+      "message": undefined,
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": "group_3",
+      "message": undefined,
+    },
+  ],
 }
 `;

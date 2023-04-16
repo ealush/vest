@@ -2,6 +2,8 @@ import { Done } from 'suiteRunResult';
 import { SuiteSelectors } from 'suiteSelectors';
 
 export type SuiteSummary<F extends TFieldName, G extends TGroupName> = {
+  errors: SummaryFailure<F, G>[];
+  warnings: SummaryFailure<F, G>[];
   groups: Groups<G, F>;
   tests: Tests<F>;
   valid: boolean;
@@ -23,6 +25,12 @@ export type SingleTestSummary = SummaryBase & {
   errors: string[];
   warnings: string[];
   valid: boolean;
+};
+
+export type SummaryFailure<F extends TFieldName, G extends TGroupName> = {
+  fieldName: F;
+  groupName: G | undefined;
+  message: string | undefined;
 };
 
 type SummaryBase = {

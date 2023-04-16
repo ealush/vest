@@ -4,6 +4,13 @@ exports[`Stateful behavior Should merge skipped fields with previous values 1`] 
 {
   "done": [Function],
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": "field_statement_1",
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -65,6 +72,13 @@ exports[`Stateful behavior Should merge skipped fields with previous values 1`] 
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": "field_statement_1",
+    },
+  ],
 }
 `;
 
@@ -72,6 +86,23 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
 {
   "done": [Function],
   "errorCount": 3,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": "field_statement_1",
+    },
+    {
+      "fieldName": "field_5",
+      "groupName": undefined,
+      "message": "field_statement_5",
+    },
+    {
+      "fieldName": "field_5",
+      "groupName": undefined,
+      "message": "field_statement_6",
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -136,6 +167,23 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": "field_statement_1",
+    },
+    {
+      "fieldName": "field_5",
+      "groupName": undefined,
+      "message": "field_statement_5",
+    },
+    {
+      "fieldName": "field_5",
+      "groupName": undefined,
+      "message": "field_statement_6",
+    },
+  ],
 }
 `;
 
@@ -143,6 +191,28 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
 {
   "done": [Function],
   "errorCount": 4,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": "field_statement_1",
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": "field_statement_2",
+    },
+    {
+      "fieldName": "field_5",
+      "groupName": undefined,
+      "message": "field_statement_5",
+    },
+    {
+      "fieldName": "field_5",
+      "groupName": undefined,
+      "message": "field_statement_6",
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -211,12 +281,35 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
   },
   "valid": false,
   "warnCount": 1,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": "field_statement_1",
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": "field_statement_2",
+    },
+    {
+      "fieldName": "field_5",
+      "groupName": undefined,
+      "message": "field_statement_5",
+    },
+    {
+      "fieldName": "field_5",
+      "groupName": undefined,
+      "message": "field_statement_6",
+    },
+  ],
 }
 `;
 
 exports[`more complex Should run correctly 1`] = `
 {
   "errorCount": 0,
+  "errors": [],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -235,12 +328,14 @@ exports[`more complex Should run correctly 1`] = `
   "tests": {},
   "valid": false,
   "warnCount": 0,
+  "warnings": [],
 }
 `;
 
 exports[`more complex Should run correctly 2`] = `
 {
   "errorCount": 0,
+  "errors": [],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -284,12 +379,20 @@ exports[`more complex Should run correctly 2`] = `
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [],
 }
 `;
 
 exports[`more complex Should run correctly 4`] = `
 {
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "password",
+      "groupName": undefined,
+      "message": "password is required",
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -335,12 +438,26 @@ exports[`more complex Should run correctly 4`] = `
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "password",
+      "groupName": undefined,
+      "message": "password is required",
+    },
+  ],
 }
 `;
 
 exports[`more complex Should run correctly 6`] = `
 {
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "password",
+      "groupName": undefined,
+      "message": "password is required",
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -386,5 +503,12 @@ exports[`more complex Should run correctly 6`] = `
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "password",
+      "groupName": undefined,
+      "message": "password is required",
+    },
+  ],
 }
 `;

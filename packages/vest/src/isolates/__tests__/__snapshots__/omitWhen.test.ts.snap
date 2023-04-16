@@ -225,6 +225,13 @@ exports[`omitWhen When conditional is falsy function conditional Should run test
 exports[`omitWhen When conditional is truthy boolean conditional Should avoid running the omitted tests 1`] = `
 {
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -276,12 +283,26 @@ exports[`omitWhen When conditional is truthy boolean conditional Should avoid ru
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
 exports[`omitWhen When conditional is truthy boolean conditional Should skip and not run omitted fields when no filter provided 1`] = `
 {
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -333,12 +354,26 @@ exports[`omitWhen When conditional is truthy boolean conditional Should skip and
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
 exports[`omitWhen When conditional is truthy function conditional Should avoid running the omitted tests 1`] = `
 {
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -390,12 +425,26 @@ exports[`omitWhen When conditional is truthy function conditional Should avoid r
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;
 
 exports[`omitWhen When conditional is truthy function conditional Should skip and not run omitted fields when no filter provided 1`] = `
 {
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -447,5 +496,12 @@ exports[`omitWhen When conditional is truthy function conditional Should skip an
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
 }
 `;

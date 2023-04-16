@@ -8,5 +8,5 @@ export function staticSuite<
   F extends TFieldName = string,
   G extends TGroupName = string
 >(suiteCallback: T): (...args: Parameters<T>) => SuiteRunResult<F, G> {
-  return (...args) => createSuite(suiteCallback)(...args);
+  return (...args) => createSuite<T, F, G>(suiteCallback)(...args);
 }

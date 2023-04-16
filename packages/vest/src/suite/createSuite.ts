@@ -74,7 +74,7 @@ function createSuite<
         remove: usePrepareEmitter<string>(Events.REMOVE_FIELD),
         reset: usePrepareEmitter(Events.RESET_SUITE),
         resetField: usePrepareEmitter<string>(Events.RESET_FIELD),
-        ...getTypedMethods(),
+        ...getTypedMethods<F, G>(),
       }
     );
   });

@@ -11,11 +11,14 @@ import {
   TGroupName,
 } from 'SuiteResultTypes';
 
-export function shouldSkipDoneRegistration(
-  callback: (res: SuiteResult<TFieldName, TGroupName>) => void,
+export function shouldSkipDoneRegistration<
+  F extends TFieldName,
+  G extends TGroupName
+>(
+  callback: (res: SuiteResult<F, G>) => void,
 
-  fieldName: TFieldName | undefined,
-  output: SuiteRunResult<TFieldName, TGroupName>
+  fieldName: F | undefined,
+  output: SuiteRunResult<F, G>
 ): boolean {
   // If we do not have any test runs for the current field
   return !!(

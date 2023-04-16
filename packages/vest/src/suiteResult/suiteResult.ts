@@ -9,10 +9,13 @@ export function useCreateSuiteResult<
   F extends TFieldName,
   G extends TGroupName
 >(): SuiteResult<F, G> {
-  const summary = useProduceSuiteSummary();
+  const summary = useProduceSuiteSummary<F, G>();
   const suiteName = useSuiteName();
 
-  return useSuiteResultCache<F, G>(() =>
-    assign(summary, suiteSelectors<F, G>(summary), { suiteName })
+  return useSuiteResultCache<F, G>(
+    () =>
+      assign(summary, suiteSelectors<F, G>(summary), {
+        suiteName,
+      }) as SuiteResult<F, G>
   );
 }

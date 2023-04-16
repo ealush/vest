@@ -16,7 +16,7 @@ export function useSuiteRunResult<
   F extends TFieldName,
   G extends TGroupName
 >(): SuiteRunResult<F, G> {
-  return assign({}, useCreateSuiteResult(), {
+  return assign({}, useCreateSuiteResult<F, G>(), {
     done: persist(done),
   });
 }
@@ -31,10 +31,10 @@ function done<F extends TFieldName, G extends TGroupName>(
 ): SuiteRunResult<F, G> {
   const [callback, fieldName] = args.reverse() as [
     (res: SuiteResult<F, G>) => void,
-    string
+    F
   ];
-  const output = useSuiteRunResult();
-  if (shouldSkipDoneRegistration(callback, fieldName, output)) {
+  const output = useSuiteRunResult<F, G>();
+  if (shouldSkipDoneRegistration<F, G>(callback, fieldName, output)) {
     return output;
   }
   const useDoneCallback = () => callback(useCreateSuiteResult());

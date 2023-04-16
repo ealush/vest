@@ -82,10 +82,10 @@ export function persist<T extends CB>(cb: T): T {
 
 export function useSuiteResultCache<F extends TFieldName, G extends TGroupName>(
   action: () => SuiteResult<F, G>
-) {
+): SuiteResult<F, G> {
   const suiteResultCache = useX().suiteResultCache;
 
-  return suiteResultCache([useSuiteId()], action);
+  return suiteResultCache([useSuiteId()], action) as SuiteResult<F, G>;
 }
 
 export function useExpireSuiteResultCache() {

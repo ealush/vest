@@ -113,6 +113,7 @@ describe('suite.get()', () => {
       expect(suite.get()).toMatchInlineSnapshot(`
         {
           "errorCount": 0,
+          "errors": [],
           "getError": [Function],
           "getErrors": [Function],
           "getErrorsByGroup": [Function],
@@ -131,6 +132,7 @@ describe('suite.get()', () => {
           "tests": {},
           "valid": false,
           "warnCount": 0,
+          "warnings": [],
         }
       `);
     });
@@ -144,6 +146,7 @@ describe('suite()', () => {
         {
           "done": [Function],
           "errorCount": 0,
+          "errors": [],
           "getError": [Function],
           "getErrors": [Function],
           "getErrorsByGroup": [Function],
@@ -162,6 +165,7 @@ describe('suite()', () => {
           "tests": {},
           "valid": false,
           "warnCount": 0,
+          "warnings": [],
         }
       `);
     });

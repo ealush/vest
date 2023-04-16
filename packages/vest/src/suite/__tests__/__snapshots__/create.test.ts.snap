@@ -3,6 +3,7 @@
 exports[`Test createSuite module Initial run Should be able to get the suite from the result of createSuite 1`] = `
 {
   "errorCount": 0,
+  "errors": [],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -21,12 +22,14 @@ exports[`Test createSuite module Initial run Should be able to get the suite fro
   "tests": {},
   "valid": false,
   "warnCount": 0,
+  "warnings": [],
 }
 `;
 
 exports[`Test createSuite module Initial run Should initialize with an empty result object 1`] = `
 {
   "errorCount": 0,
+  "errors": [],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -45,12 +48,14 @@ exports[`Test createSuite module Initial run Should initialize with an empty res
   "tests": {},
   "valid": false,
   "warnCount": 0,
+  "warnings": [],
 }
 `;
 
 exports[`Test createSuite module Test suite Arguments allows omitting suite name 1`] = `
 {
   "errorCount": 0,
+  "errors": [],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -69,5 +74,6 @@ exports[`Test createSuite module Test suite Arguments allows omitting suite name
   "tests": {},
   "valid": false,
   "warnCount": 0,
+  "warnings": [],
 }
 `;

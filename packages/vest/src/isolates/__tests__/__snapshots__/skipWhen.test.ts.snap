@@ -3,6 +3,7 @@
 exports[`skipWhen Should pass result draft to the functional condition 1`] = `
 {
   "errorCount": 0,
+  "errors": [],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -21,12 +22,20 @@ exports[`skipWhen Should pass result draft to the functional condition 1`] = `
   "tests": {},
   "valid": false,
   "warnCount": 0,
+  "warnings": [],
 }
 `;
 
 exports[`skipWhen Should pass result draft to the functional condition 2`] = `
 {
   "errorCount": 1,
+  "errors": [
+    {
+      "fieldName": "f1",
+      "groupName": undefined,
+      "message": "msg",
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -56,12 +65,31 @@ exports[`skipWhen Should pass result draft to the functional condition 2`] = `
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "f1",
+      "groupName": undefined,
+      "message": "msg",
+    },
+  ],
 }
 `;
 
 exports[`skipWhen Should pass result draft to the functional condition 3`] = `
 {
   "errorCount": 2,
+  "errors": [
+    {
+      "fieldName": "f1",
+      "groupName": undefined,
+      "message": "msg",
+    },
+    {
+      "fieldName": "f2",
+      "groupName": undefined,
+      "message": "msg",
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -101,5 +129,17 @@ exports[`skipWhen Should pass result draft to the functional condition 3`] = `
   },
   "valid": false,
   "warnCount": 0,
+  "warnings": [
+    {
+      "fieldName": "f1",
+      "groupName": undefined,
+      "message": "msg",
+    },
+    {
+      "fieldName": "f2",
+      "groupName": undefined,
+      "message": "msg",
+    },
+  ],
 }
 `;

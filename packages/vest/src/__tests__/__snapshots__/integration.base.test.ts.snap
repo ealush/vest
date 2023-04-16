@@ -4,6 +4,18 @@ exports[`Base behavior Should produce correct validation result 1`] = `
 {
   "done": [Function],
   "errorCount": 2,
+  "errors": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": "field_statement_1",
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": "field_statement_2",
+    },
+  ],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -69,5 +81,17 @@ exports[`Base behavior Should produce correct validation result 1`] = `
   },
   "valid": false,
   "warnCount": 1,
+  "warnings": [
+    {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": "field_statement_1",
+    },
+    {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": "field_statement_2",
+    },
+  ],
 }
 `;

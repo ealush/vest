@@ -6,7 +6,7 @@ import {
   TestStatus,
   createTestStateMachine,
 } from 'IsolateTestStateMachine';
-import { TFieldName } from 'SuiteResultTypes';
+import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestFn, AsyncTest, TestResult } from 'TestTypes';
 import { Isolate, IsolateKey } from 'isolate';
 import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
@@ -19,11 +19,14 @@ export type IsolateTestInput = {
   key?: IsolateKey;
 };
 
-export class IsolateTest extends Isolate {
+export class IsolateTest<
+  F extends TFieldName = TFieldName,
+  G extends TGroupName = TGroupName
+> extends Isolate {
   children = null;
-  fieldName: TFieldName;
+  fieldName: F;
   testFn: TestFn;
-  groupName?: string;
+  groupName?: G;
   message?: string;
   asyncTest?: AsyncTest;
   id = seq();
@@ -41,11 +44,11 @@ export class IsolateTest extends Isolate {
   }: IsolateTestInput) {
     super();
 
-    this.fieldName = fieldName;
+    this.fieldName = fieldName as F;
     this.testFn = testFn;
 
     if (groupName) {
-      this.groupName = groupName;
+      this.groupName = groupName as G;
     }
 
     if (message) {

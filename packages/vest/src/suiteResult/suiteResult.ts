@@ -12,7 +12,7 @@ export function useCreateSuiteResult<
   const summary = useProduceSuiteSummary();
   const suiteName = useSuiteName();
 
-  return useSuiteResultCache(() =>
-    assign(summary, suiteSelectors(summary), { suiteName })
+  return useSuiteResultCache<F, G>(() =>
+    assign(summary, suiteSelectors<F, G>(summary), { suiteName })
   );
 }

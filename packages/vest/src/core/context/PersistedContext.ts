@@ -80,8 +80,8 @@ export function persist<T extends CB>(cb: T): T {
   } as T;
 }
 
-export function useSuiteResultCache(
-  action: () => SuiteResult<TFieldName, TGroupName>
+export function useSuiteResultCache<F extends TFieldName, G extends TGroupName>(
+  action: () => SuiteResult<F, G>
 ) {
   const suiteResultCache = useX().suiteResultCache;
 

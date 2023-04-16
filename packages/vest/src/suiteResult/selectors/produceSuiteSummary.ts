@@ -26,7 +26,7 @@ export function useProduceSuiteSummary<
     valid: false,
   }) as SuiteSummary<F, G>;
 
-  TestWalker.walkTests(testObject => {
+  TestWalker.walkTests<F, G>(testObject => {
     summary.tests = useAppendToTest(summary.tests, testObject);
     summary.groups = useAppendToGroup(summary.groups, testObject);
   });
@@ -36,10 +36,10 @@ export function useProduceSuiteSummary<
   return countFailures(summary);
 }
 
-function useAppendToTest(
-  tests: Tests<TFieldName>,
-  testObject: IsolateTest
-): Tests<TFieldName> {
+function useAppendToTest<F extends TFieldName>(
+  tests: Tests<F>,
+  testObject: IsolateTest<F>
+): Tests<F> {
   const newTests = {
     ...tests,
   };
@@ -91,9 +91,9 @@ function useAppendToGroup(
 /**
  * Counts the failed tests and adds global counters
  */
-function countFailures(
-  summary: SuiteSummary<TFieldName, TGroupName>
-): SuiteSummary<TFieldName, TGroupName> {
+function countFailures<F extends TFieldName, G extends TGroupName>(
+  summary: SuiteSummary<F, G>
+): SuiteSummary<F, G> {
   for (const test in summary.tests) {
     summary.errorCount += summary.tests[test].errorCount;
     summary.warnCount += summary.tests[test].warnCount;

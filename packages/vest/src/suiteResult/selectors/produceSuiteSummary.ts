@@ -1,9 +1,8 @@
-import { assign } from 'vest-utils';
+import { assign, defaultTo } from 'vest-utils';
 
 import { IsolateTest } from 'IsolateTest';
 import { countKeyBySeverity, Severity } from 'Severity';
 import {
-  Group,
   Groups,
   SingleTestSummary,
   SuiteSummary,
@@ -28,8 +27,8 @@ export function useProduceSuiteSummary<
   }) as SuiteSummary<F, G>;
 
   TestWalker.walkTests(testObject => {
-    useAppendToTest(summary.tests, testObject);
-    useAppendToGroup(summary.groups, testObject);
+    summary.tests = useAppendToTest(summary.tests, testObject);
+    summary.groups = useAppendToGroup(summary.groups, testObject);
   });
 
   summary.valid = useShouldAddValidProperty();
@@ -37,13 +36,25 @@ export function useProduceSuiteSummary<
   return countFailures(summary);
 }
 
-function useAppendToTest(tests: Tests<TFieldName>, testObject: IsolateTest) {
-  tests[testObject.fieldName] = appendTestObject(tests, testObject);
+function useAppendToTest(
+  tests: Tests<TFieldName>,
+  testObject: IsolateTest
+): Tests<TFieldName> {
+  const newTests = {
+    ...tests,
+  };
+
+  newTests[testObject.fieldName] = appendTestObject(
+    newTests[testObject.fieldName],
+    testObject
+  );
   // If `valid` is false to begin with, keep it that way. Otherwise, assess.
-  tests[testObject.fieldName].valid =
-    tests[testObject.fieldName].valid === false
+  newTests[testObject.fieldName].valid =
+    newTests[testObject.fieldName].valid === false
       ? false
       : useShouldAddValidProperty(testObject.fieldName);
+
+  return newTests;
 }
 
 /**
@@ -52,23 +63,29 @@ function useAppendToTest(tests: Tests<TFieldName>, testObject: IsolateTest) {
 function useAppendToGroup(
   groups: Groups<TGroupName, TFieldName>,
   testObject: IsolateTest
-) {
+): Groups<TGroupName, TFieldName> {
   const { groupName } = testObject;
 
   if (!groupName) {
-    return;
+    return groups;
   }
 
-  groups[groupName] = groups[groupName] || {};
-  groups[groupName][testObject.fieldName] = appendTestObject(
-    groups[groupName],
+  const newGroups = {
+    ...groups,
+  };
+
+  newGroups[groupName] = newGroups[groupName] || {};
+  newGroups[groupName][testObject.fieldName] = appendTestObject(
+    newGroups[groupName][testObject.fieldName],
     testObject
   );
 
-  groups[groupName][testObject.fieldName].valid =
-    groups[groupName][testObject.fieldName].valid === false
+  newGroups[groupName][testObject.fieldName].valid =
+    newGroups[groupName][testObject.fieldName].valid === false
       ? false
       : useShouldAddValidPropertyInGroup(groupName, testObject.fieldName);
+
+  return newGroups;
 }
 
 /**
@@ -91,18 +108,19 @@ function countFailures(
  * functions as it is really the same, with the difference of "valid" missing in groups
  */
 function appendTestObject(
-  summaryKey: Tests<TFieldName> | Group<TGroupName>,
+  summaryKey: SingleTestSummary | undefined,
   testObject: IsolateTest
 ): SingleTestSummary {
-  const { fieldName, message } = testObject;
+  const { message } = testObject;
 
-  summaryKey[fieldName] = summaryKey[fieldName] || baseTestStats();
+  const nextSummaryKey = defaultTo<SingleTestSummary>(
+    summaryKey ? { ...summaryKey } : null,
+    baseTestStats
+  );
 
-  const testKey = summaryKey[fieldName];
+  if (testObject.isNonActionable()) return nextSummaryKey;
 
-  if (testObject.isNonActionable()) return testKey;
-
-  summaryKey[fieldName].testCount++;
+  nextSummaryKey.testCount++;
 
   if (testObject.isFailing()) {
     incrementFailures(Severity.ERRORS);
@@ -110,13 +128,15 @@ function appendTestObject(
     incrementFailures(Severity.WARNINGS);
   }
 
-  return testKey;
+  return nextSummaryKey;
 
   function incrementFailures(severity: Severity) {
     const countKey = countKeyBySeverity(severity);
-    testKey[countKey]++;
+    nextSummaryKey[countKey]++;
     if (message) {
-      testKey[severity] = (testKey[severity] || []).concat(message);
+      nextSummaryKey[severity] = (nextSummaryKey[severity] || []).concat(
+        message
+      );
     }
   }
 }
@@ -133,5 +153,6 @@ function baseTestStats() {
   return assign(baseStats(), {
     errors: [],
     warnings: [],
+    valid: true,
   });
 }

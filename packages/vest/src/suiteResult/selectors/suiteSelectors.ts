@@ -155,17 +155,17 @@ export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
 
 // Gathers all failures of a given severity
 // With a fieldName, it will only gather failures for that field
-function getFailures(
-  summary: SuiteSummary<TFieldName, TGroupName>,
+function getFailures<F extends TFieldName, G extends TGroupName>(
+  summary: SuiteSummary<F, G>,
   severityKey: Severity
 ): FailureMessages;
-function getFailures(
-  summary: SuiteSummary<TFieldName, TGroupName>,
+function getFailures<F extends TFieldName, G extends TGroupName>(
+  summary: SuiteSummary<F, G>,
   severityKey: Severity,
   fieldName?: TFieldName
 ): string[];
-function getFailures(
-  summary: SuiteSummary<TFieldName, TGroupName>,
+function getFailures<F extends TFieldName, G extends TGroupName>(
+  summary: SuiteSummary<F, G>,
   severityKey: Severity,
   fieldName?: TFieldName
 ): GetFailuresResponse {

@@ -2,7 +2,7 @@ import * as walker from 'walker';
 
 import { IsolateTest } from 'IsolateTest';
 import { useAvailableSuiteRoot } from 'PersistedContext';
-import { TFieldName } from 'SuiteResultTypes';
+import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { Isolate } from 'isolate';
 import matchingFieldName from 'matchingFieldName';
 
@@ -66,8 +66,8 @@ export class TestWalker {
     );
   }
 
-  static walkTests(
-    callback: (test: IsolateTest, breakout: () => void) => void,
+  static walkTests<F extends TFieldName, G extends TGroupName>(
+    callback: (test: IsolateTest<F, G>, breakout: () => void) => void,
     root: MaybeRoot = TestWalker.defaultRoot()
   ): void {
     if (!root) return;
@@ -76,7 +76,7 @@ export class TestWalker {
       (isolate, breakout) => {
         IsolateTest.isX(isolate);
 
-        callback(isolate, breakout);
+        callback(isolate as IsolateTest<F, G>, breakout);
       },
       IsolateTest.is
     );

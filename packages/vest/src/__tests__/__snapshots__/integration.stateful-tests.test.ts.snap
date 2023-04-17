@@ -72,13 +72,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 1`] 
   },
   "valid": false,
   "warnCount": 0,
-  "warnings": [
-    {
-      "fieldName": "field_1",
-      "groupName": undefined,
-      "message": "field_statement_1",
-    },
-  ],
+  "warnings": [],
 }
 `;
 
@@ -167,23 +161,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
   },
   "valid": false,
   "warnCount": 0,
-  "warnings": [
-    {
-      "fieldName": "field_1",
-      "groupName": undefined,
-      "message": "field_statement_1",
-    },
-    {
-      "fieldName": "field_5",
-      "groupName": undefined,
-      "message": "field_statement_5",
-    },
-    {
-      "fieldName": "field_5",
-      "groupName": undefined,
-      "message": "field_statement_6",
-    },
-  ],
+  "warnings": [],
 }
 `;
 
@@ -283,24 +261,9 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
   "warnCount": 1,
   "warnings": [
     {
-      "fieldName": "field_1",
+      "fieldName": "field_4",
       "groupName": undefined,
-      "message": "field_statement_1",
-    },
-    {
-      "fieldName": "field_2",
-      "groupName": undefined,
-      "message": "field_statement_2",
-    },
-    {
-      "fieldName": "field_5",
-      "groupName": undefined,
-      "message": "field_statement_5",
-    },
-    {
-      "fieldName": "field_5",
-      "groupName": undefined,
-      "message": "field_statement_6",
+      "message": "field_statement_4",
     },
   ],
 }
@@ -438,13 +401,7 @@ exports[`more complex Should run correctly 4`] = `
   },
   "valid": false,
   "warnCount": 0,
-  "warnings": [
-    {
-      "fieldName": "password",
-      "groupName": undefined,
-      "message": "password is required",
-    },
-  ],
+  "warnings": [],
 }
 `;
 
@@ -503,12 +460,6 @@ exports[`more complex Should run correctly 6`] = `
   },
   "valid": false,
   "warnCount": 0,
-  "warnings": [
-    {
-      "fieldName": "password",
-      "groupName": undefined,
-      "message": "password is required",
-    },
-  ],
+  "warnings": [],
 }
 `;

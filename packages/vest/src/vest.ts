@@ -38,13 +38,7 @@ export {
   each,
   mode,
   staticSuite,
-};
-
-export type {
-  SuiteResult,
-  SuiteRunResult,
-  SuiteSummary,
-  IsolateTest,
-  Suite,
   Modes,
 };
+
+export type { SuiteResult, SuiteRunResult, SuiteSummary, IsolateTest, Suite };

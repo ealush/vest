@@ -58,9 +58,9 @@ exports[`test.memo cache hit Should produce correct initial result 1`] = `
   "warnCount": 1,
   "warnings": [
     {
-      "fieldName": "field1",
+      "fieldName": "field3",
       "groupName": undefined,
-      "message": "msg1",
+      "message": undefined,
     },
   ],
 }
@@ -124,9 +124,9 @@ exports[`test.memo cache hit sync Should restore previous result on re-run 1`] =
   "warnCount": 1,
   "warnings": [
     {
-      "fieldName": "field1",
+      "fieldName": "field3",
       "groupName": undefined,
-      "message": "msg1",
+      "message": undefined,
     },
   ],
 }

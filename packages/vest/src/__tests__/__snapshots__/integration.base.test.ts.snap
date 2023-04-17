@@ -83,14 +83,9 @@ exports[`Base behavior Should produce correct validation result 1`] = `
   "warnCount": 1,
   "warnings": [
     {
-      "fieldName": "field_1",
+      "fieldName": "field_4",
       "groupName": undefined,
-      "message": "field_statement_1",
-    },
-    {
-      "fieldName": "field_2",
-      "groupName": undefined,
-      "message": "field_statement_2",
+      "message": "field_statement_4",
     },
   ],
 }

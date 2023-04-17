@@ -7,6 +7,7 @@ import {
   SingleTestSummary,
   SuiteSummary,
   SummaryFailure,
+  SummaryFailureKey,
   TFieldName,
   TGroupName,
   Tests,
@@ -32,8 +33,16 @@ export function useProduceSuiteSummary<
   TestWalker.walkTests<F, G>(testObject => {
     summary.tests = useAppendToTest(summary.tests, testObject);
     summary.groups = useAppendToGroup(summary.groups, testObject);
-    summary.errors = appendFailures(summary.errors, testObject);
-    summary.warnings = appendFailures(summary.warnings, testObject);
+    summary.errors = appendFailures(
+      SummaryFailureKey.errors,
+      summary.errors,
+      testObject
+    );
+    summary.warnings = appendFailures(
+      SummaryFailureKey.warnings,
+      summary.warnings,
+      testObject
+    );
   });
 
   summary.valid = useShouldAddValidProperty();
@@ -42,10 +51,16 @@ export function useProduceSuiteSummary<
 }
 
 function appendFailures<F extends TFieldName, G extends TGroupName>(
+  key: SummaryFailureKey,
   failures: SummaryFailure<F, G>[],
   testObject: IsolateTest<F, G>
 ): SummaryFailure<F, G>[] {
-  if (testObject.isFailing()) {
+  const shouldAppend =
+    key === SummaryFailureKey.warnings
+      ? testObject.isWarning()
+      : testObject.isFailing();
+
+  if (shouldAppend) {
     return failures.concat({
       fieldName: testObject.fieldName,
       groupName: testObject.groupName,

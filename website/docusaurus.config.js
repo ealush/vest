@@ -39,13 +39,13 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl: 'https://github.com/ealush/vest/edit/latest/website/',
+          lastVersion: 'current',
+          versions: {
+            current: {
+              label: '5.x',
+            },
+          },
         },
-        // blog: {
-        //   showReadingTime: true,
-        //   // Please change this to your repo.
-        //   editUrl:
-        //     "https://github.com/ealush/vest/edit/main/latest/website/blog/",
-        // },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
@@ -83,10 +83,10 @@ const config = {
         },
         items: [
           {
-            type: 'doc',
-            docId: 'get_started',
+            type: 'docSidebar',
             position: 'left',
-            label: 'Documentation',
+            sidebarId: 'tutorialSidebar',
+            label: 'Getting Started',
           },
           {
             type: 'doc',
@@ -95,19 +95,32 @@ const config = {
             label: 'API Reference',
           },
           {
-            href: 'https://www.npmjs.com/package/vest',
-            className: 'header-npm-link',
-            position: 'right',
+            type: 'docsVersionDropdown',
+            position: 'left',
           },
           {
-            href: 'https://github.com/ealush/vest',
-            className: 'header-github-link',
             position: 'right',
+            type: 'html',
+            value: badgeLink(
+              'https://www.npmjs.com/package/vest',
+              'https://badgen.net/npm/v/vest?icon=npm&scale=1.2&color=red&label'
+            ),
           },
           {
-            href: 'https://discord.gg/WmADZpJnSe',
-            className: 'header-discord-link',
             position: 'right',
+            type: 'html',
+            value: badgeLink(
+              'https://github.com/ealush/vest',
+              'https://badgen.net/github/stars/ealush/vest?scale=1.2&color=yellow&icon=github'
+            ),
+          },
+          {
+            position: 'right',
+            type: 'html',
+            value: badgeLink(
+              'https://discord.gg/WmADZpJnSe',
+              'https://badgen.net/discord/online-members/WmADZpJnSe?icon=discord&scale=1.2&label=Discord'
+            ),
           },
         ],
       },
@@ -164,3 +177,9 @@ const config = {
 };
 
 module.exports = config;
+
+function badgeLink(url, badge) {
+  return `<a href="${url}" class="header-badge" target="_blank">
+    <img src="${badge}" />
+  </a>`;
+}

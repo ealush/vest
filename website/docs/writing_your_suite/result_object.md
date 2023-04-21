@@ -13,6 +13,8 @@ keywords:
     getErrors,
     hasWarnings,
     getWarnings,
+    getError,
+    getWarning,
   ]
 ---
 
@@ -165,6 +167,55 @@ resultObject.hasWarningsByGroup('groupName');
 ```
 
 [Read more about groups](../writing_tests/advanced_test_features/grouping_tests.md)
+
+## `getError` and `getWarning`
+
+:::warning WARNING
+Both these functions may return undefined when no errors or warnings are present, so make sure to check for that if you're relying on their return value.
+:::
+
+### `getError()`
+
+```typescript
+// When no field name is provided: Gets the first error object
+const firstError = result.getError();
+console.log(firstError);
+// Output: { fieldName: 'username', message: 'Username is required', groupName: undefined }
+
+// When a fieldname is provided: Gets the first error message for the field
+const usernameError = result.getError('username');
+console.log(usernameError);
+// Output: 'Username is required'
+```
+
+The `getError()` function allows you to retrieve the first error message of a given field. If a field name is not provided, it returns the first error object in the `errors` array.
+
+If a field name is provided, it returns the first error message for that field, or `undefined` if there were no errors for that field. If no field name is provided, it returns the first error object in the `errors` array, or `undefined` if there were no errors.
+
+#### Example:
+
+```js
+const error = result.getError(); // get first error object
+console.log(`Error on field ${error.fieldName}: ${error.message}`);
+```
+
+### `getWarning()`
+
+```typescript
+// When no field name is provided: Gets the first warning object in the suite
+const firstWarning = result.getWarning();
+console.log(
+  `First warning: ${firstWarning.fieldName} - ${firstWarning.message}`
+);
+
+// When a field name is provided: Gets the first warning string for the field
+const usernameWarning = result.getWarning('username');
+console.log(`Warning for username field: ${usernameWarning}`);
+```
+
+The `getWarning()` function allows you to retrieve the first warning message of a given field. If a field name is not provided, it returns the first warning object in the `warnings` array.
+
+If a field name is provided, it returns the first warning message for that field, or `undefined` if there were no warnings for that field. If no
 
 ## `getErrors` and `getWarnings`
 

@@ -9,14 +9,14 @@ keywords: [Test, Validation, Logic]
 
 The `test` function represents a single case in your validation suite. It accepts the following arguments:
 
-| Name       | Type       | Optional | Description                                                                                                        |
-| ---------- | ---------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
-| `name`     | `String`   | No       | The name of the value or field that is validated.                                                                  |
-| `message`  | `String`   | Yes      | An error message to display to the user in case of a failure.                                                      |
-| `callback` | `Function` | No       | The actual validation logic for the given test.                                                                    |
-| `key`      | `String`   | Yes      | A unique key used to retain test value when reordering [dynamic tests](./advanced_test_features/dynamic_tests.md). |
+| Name       | Type       | Optional | Description                                                           |
+| ---------- | ---------- | -------- | --------------------------------------------------------------------- |
+| `name`     | `String`   | No       | The name of the value or field that is validated.                     |
+| `message`  | `String`   | Yes      | An error message to display to the user in case of a failure.         |
+| `callback` | `Function` | No       | The actual validation logic for the given test.                       |
+| `key`      | `String`   | Yes      | A unique key used to retain test value when reordering dynamic tests. |
 
-A test can either be synchronous or asynchronous, and it can either have a [severity](./warn_only_tests.md) of `error` or of `warn`.
+A test can either be synchronous or asynchronous, and it can either have a severity of `error` or of `warn`.
 
 :::tip
 The test function is very similar to a unit test's `it` or `test` function, with some additions.
@@ -26,7 +26,7 @@ The test function is very similar to a unit test's `it` or `test` function, with
 
 ### Throwing inside your test body (using enforce)
 
-Just like in most unit testing frameworks, a validation fails whenever the test body throws an exception. [`Enforce`](../enforce/enforce.md) throws an error on failed validations.
+Just like in most unit testing frameworks, a validation fails whenever the test body throws an exception. enforce throws an error on failed validations.
 When thrown with a string
 
 ```js

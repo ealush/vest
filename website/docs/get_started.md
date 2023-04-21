@@ -15,12 +15,6 @@ To install the stable version of Vest, run:
 npm i vest
 ```
 
-You can also embed Vest directly as a script tag in your page:
-
-```html
-<script src="https://unpkg.com/vest@4/dist/umd/vest.production.js"></script>
-```
-
 ## Writing your first suite
 
 A Vest suite is very similar to a unit testing suite in Jest or Mocha, so the following might look familiar:

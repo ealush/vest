@@ -43,6 +43,18 @@ A result object would look somewhat like this:
       }
     }
   }
+  'errors': [               // An array containing all the errors occurred in order
+    {
+      fieldName: "fieldname",
+      groupName: undefined, // or whatever group we're in
+      message: "validation message"
+    },
+  ],
+  'warnings': [{            // An array containing all the warnings occurred in order
+      fieldName: "fieldname",
+      groupName: undefined, // or whatever group we're in
+      message: "validation message"
+    }]
 }
 ```
 

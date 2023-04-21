@@ -26,12 +26,6 @@ export enum Modes {
  *  });
  * });
  */
-// @vx-allow use-use
-export function eager() {
-  const [, setMode] = useMode();
-
-  setMode(Modes.EAGER);
-}
 
 // @vx-allow use-use
 export function mode(mode: Modes): void {

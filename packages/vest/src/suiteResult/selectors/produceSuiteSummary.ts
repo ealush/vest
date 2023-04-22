@@ -72,19 +72,18 @@ function useAppendToTest<F extends TFieldName>(
   tests: Tests<F>,
   testObject: IsolateTest<F>
 ): Tests<F> {
+  const { fieldName } = testObject;
+
   const newTests = {
     ...tests,
   };
 
-  newTests[testObject.fieldName] = appendTestObject(
-    newTests[testObject.fieldName],
-    testObject
-  );
+  newTests[fieldName] = appendTestObject(newTests[fieldName], testObject);
   // If `valid` is false to begin with, keep it that way. Otherwise, assess.
-  newTests[testObject.fieldName].valid =
-    newTests[testObject.fieldName].valid === false
+  newTests[fieldName].valid =
+    newTests[fieldName].valid === false
       ? false
-      : useShouldAddValidProperty(testObject.fieldName);
+      : useShouldAddValidProperty(fieldName);
 
   return newTests;
 }
@@ -96,7 +95,7 @@ function useAppendToGroup(
   groups: Groups<TGroupName, TFieldName>,
   testObject: IsolateTest
 ): Groups<TGroupName, TFieldName> {
-  const { groupName } = testObject;
+  const { groupName, fieldName } = testObject;
 
   if (!groupName) {
     return groups;
@@ -107,15 +106,15 @@ function useAppendToGroup(
   };
 
   newGroups[groupName] = newGroups[groupName] || {};
-  newGroups[groupName][testObject.fieldName] = appendTestObject(
-    newGroups[groupName][testObject.fieldName],
+  newGroups[groupName][fieldName] = appendTestObject(
+    newGroups[groupName][fieldName],
     testObject
   );
 
-  newGroups[groupName][testObject.fieldName].valid =
-    newGroups[groupName][testObject.fieldName].valid === false
+  newGroups[groupName][fieldName].valid =
+    newGroups[groupName][fieldName].valid === false
       ? false
-      : useShouldAddValidPropertyInGroup(groupName, testObject.fieldName);
+      : useShouldAddValidPropertyInGroup(groupName, fieldName);
 
   return newGroups;
 }

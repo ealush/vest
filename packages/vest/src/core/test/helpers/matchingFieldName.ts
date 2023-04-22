@@ -1,16 +1,16 @@
-import { IsolateTest } from 'IsolateTest';
 import { TFieldName } from 'SuiteResultTypes';
+import { WithFieldName } from 'TestTypes';
 
 export function nonMatchingFieldName(
-  testObject: IsolateTest,
+  WithFieldName: WithFieldName<TFieldName>,
   fieldName?: TFieldName | void
 ): boolean {
-  return !!fieldName && !matchingFieldName(testObject, fieldName);
+  return !!fieldName && !matchingFieldName(WithFieldName, fieldName);
 }
 
 export default function matchingFieldName(
-  testObject: IsolateTest,
+  WithFieldName: WithFieldName<TFieldName>,
   fieldName?: TFieldName | void
 ): boolean {
-  return !!(fieldName && testObject.fieldName === fieldName);
+  return !!(fieldName && WithFieldName.fieldName === fieldName);
 }

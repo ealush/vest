@@ -37,7 +37,7 @@ exports[`test.memo cache hit Should produce correct initial result 1`] = `
       "warnCount": 0,
       "warnings": [],
     },
-    "field2": {
+    "field2": SummaryBase {
       "errorCount": 0,
       "errors": [],
       "testCount": 1,
@@ -45,7 +45,7 @@ exports[`test.memo cache hit Should produce correct initial result 1`] = `
       "warnCount": 0,
       "warnings": [],
     },
-    "field3": {
+    "field3": SummaryBase {
       "errorCount": 0,
       "errors": [],
       "testCount": 1,
@@ -103,7 +103,7 @@ exports[`test.memo cache hit sync Should restore previous result on re-run 1`] =
       "warnCount": 0,
       "warnings": [],
     },
-    "field2": {
+    "field2": SummaryBase {
       "errorCount": 0,
       "errors": [],
       "testCount": 1,
@@ -111,7 +111,7 @@ exports[`test.memo cache hit sync Should restore previous result on re-run 1`] =
       "warnCount": 0,
       "warnings": [],
     },
-    "field3": {
+    "field3": SummaryBase {
       "errorCount": 0,
       "errors": [],
       "testCount": 1,

@@ -27,7 +27,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 1`] 
   "suiteName": undefined,
   "testCount": 1,
   "tests": {
-    "field_1": {
+    "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [
         "field_statement_1",
@@ -37,7 +37,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 1`] 
       "warnCount": 0,
       "warnings": [],
     },
-    "field_2": {
+    "field_2": SummaryBase {
       "errorCount": 0,
       "errors": [],
       "testCount": 0,
@@ -45,7 +45,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 1`] 
       "warnCount": 0,
       "warnings": [],
     },
-    "field_3": {
+    "field_3": SummaryBase {
       "errorCount": 0,
       "errors": [],
       "testCount": 0,
@@ -113,7 +113,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
   "suiteName": undefined,
   "testCount": 3,
   "tests": {
-    "field_1": {
+    "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [
         "field_statement_1",
@@ -123,7 +123,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
       "warnCount": 0,
       "warnings": [],
     },
-    "field_2": {
+    "field_2": SummaryBase {
       "errorCount": 0,
       "errors": [],
       "testCount": 0,
@@ -131,7 +131,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
       "warnCount": 0,
       "warnings": [],
     },
-    "field_3": {
+    "field_3": SummaryBase {
       "errorCount": 0,
       "errors": [],
       "testCount": 0,
@@ -207,7 +207,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
   "suiteName": undefined,
   "testCount": 7,
   "tests": {
-    "field_1": {
+    "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [
         "field_statement_1",
@@ -217,7 +217,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
       "warnCount": 0,
       "warnings": [],
     },
-    "field_2": {
+    "field_2": SummaryBase {
       "errorCount": 1,
       "errors": [
         "field_statement_2",
@@ -227,7 +227,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
       "warnCount": 0,
       "warnings": [],
     },
-    "field_3": {
+    "field_3": SummaryBase {
       "errorCount": 0,
       "errors": [],
       "testCount": 1,
@@ -270,7 +270,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
 `;
 
 exports[`more complex Should run correctly 1`] = `
-{
+SuiteSummary {
   "errorCount": 0,
   "errors": [],
   "getError": [Function],
@@ -296,7 +296,7 @@ exports[`more complex Should run correctly 1`] = `
 `;
 
 exports[`more complex Should run correctly 2`] = `
-{
+SuiteSummary {
   "errorCount": 0,
   "errors": [],
   "getError": [Function],
@@ -315,7 +315,7 @@ exports[`more complex Should run correctly 2`] = `
   "suiteName": undefined,
   "testCount": 2,
   "tests": {
-    "confirm": {
+    "confirm": SummaryBase {
       "errorCount": 0,
       "errors": [],
       "testCount": 0,
@@ -323,7 +323,7 @@ exports[`more complex Should run correctly 2`] = `
       "warnCount": 0,
       "warnings": [],
     },
-    "password": {
+    "password": SummaryBase {
       "errorCount": 0,
       "errors": [],
       "testCount": 0,
@@ -347,7 +347,7 @@ exports[`more complex Should run correctly 2`] = `
 `;
 
 exports[`more complex Should run correctly 4`] = `
-{
+SuiteSummary {
   "errorCount": 1,
   "errors": [
     {
@@ -372,7 +372,7 @@ exports[`more complex Should run correctly 4`] = `
   "suiteName": undefined,
   "testCount": 3,
   "tests": {
-    "confirm": {
+    "confirm": SummaryBase {
       "errorCount": 0,
       "errors": [],
       "testCount": 0,
@@ -380,7 +380,7 @@ exports[`more complex Should run correctly 4`] = `
       "warnCount": 0,
       "warnings": [],
     },
-    "password": {
+    "password": SummaryBase {
       "errorCount": 1,
       "errors": [
         "password is required",
@@ -406,7 +406,7 @@ exports[`more complex Should run correctly 4`] = `
 `;
 
 exports[`more complex Should run correctly 6`] = `
-{
+SuiteSummary {
   "errorCount": 1,
   "errors": [
     {
@@ -431,7 +431,7 @@ exports[`more complex Should run correctly 6`] = `
   "suiteName": undefined,
   "testCount": 3,
   "tests": {
-    "confirm": {
+    "confirm": SummaryBase {
       "errorCount": 0,
       "errors": [],
       "testCount": 0,
@@ -439,7 +439,7 @@ exports[`more complex Should run correctly 6`] = `
       "warnCount": 0,
       "warnings": [],
     },
-    "password": {
+    "password": SummaryBase {
       "errorCount": 1,
       "errors": [
         "password is required",

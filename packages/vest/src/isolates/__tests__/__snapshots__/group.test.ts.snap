@@ -34,7 +34,7 @@ exports[`group: base case Group validity 1`] = `
   "getWarningsByGroup": [Function],
   "groups": {
     "group_1": {
-      "field_1": {
+      "field_1": SummaryBase {
         "errorCount": 0,
         "errors": [],
         "testCount": 1,
@@ -52,7 +52,7 @@ exports[`group: base case Group validity 1`] = `
       },
     },
     "group_2": {
-      "field_1": {
+      "field_1": SummaryBase {
         "errorCount": 1,
         "errors": [],
         "testCount": 1,
@@ -60,7 +60,7 @@ exports[`group: base case Group validity 1`] = `
         "warnCount": 0,
         "warnings": [],
       },
-      "field_2": {
+      "field_2": SummaryBase {
         "errorCount": 0,
         "errors": [],
         "testCount": 1,
@@ -70,7 +70,7 @@ exports[`group: base case Group validity 1`] = `
       },
     },
     "group_3": {
-      "field_1": {
+      "field_1": SummaryBase {
         "errorCount": 1,
         "errors": [],
         "testCount": 1,
@@ -78,7 +78,7 @@ exports[`group: base case Group validity 1`] = `
         "warnCount": 0,
         "warnings": [],
       },
-      "field_2": {
+      "field_2": SummaryBase {
         "errorCount": 1,
         "errors": [],
         "testCount": 1,
@@ -88,7 +88,7 @@ exports[`group: base case Group validity 1`] = `
       },
     },
     "group_4": {
-      "field_1": {
+      "field_1": SummaryBase {
         "errorCount": 0,
         "errors": [],
         "testCount": 1,
@@ -96,7 +96,7 @@ exports[`group: base case Group validity 1`] = `
         "warnCount": 0,
         "warnings": [],
       },
-      "field_2": {
+      "field_2": SummaryBase {
         "errorCount": 0,
         "errors": [],
         "testCount": 1,

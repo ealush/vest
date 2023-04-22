@@ -3,13 +3,22 @@ import { WithFieldName } from 'TestTypes';
 import { Done } from 'suiteRunResult';
 import { SuiteSelectors } from 'suiteSelectors';
 
-export type SuiteSummary<F extends TFieldName, G extends TGroupName> = {
-  [Severity.ERRORS]: SummaryFailure<F, G>[];
-  [Severity.WARNINGS]: SummaryFailure<F, G>[];
-  groups: Groups<G, F>;
-  tests: Tests<F>;
-  valid: boolean;
-} & SummaryBase;
+export class SummaryBase {
+  public errorCount = 0;
+  public warnCount = 0;
+  public testCount = 0;
+}
+
+export class SuiteSummary<
+  F extends TFieldName,
+  G extends TGroupName
+> extends SummaryBase {
+  public [Severity.ERRORS]: SummaryFailure<F, G>[] = [];
+  public [Severity.WARNINGS]: SummaryFailure<F, G>[] = [];
+  public groups: Groups<G, F> = {} as Groups<G, F>;
+  public tests: Tests<F> = {} as Tests<F>;
+  public valid = false;
+}
 
 export type TestsContainer<F extends TFieldName, G extends TGroupName> =
   | Group<G>
@@ -35,12 +44,6 @@ export type SummaryFailure<
 > = WithFieldName<F> & {
   groupName: G | undefined;
   message: string | undefined;
-};
-
-type SummaryBase = {
-  errorCount: number;
-  warnCount: number;
-  testCount: number;
 };
 
 export type GetFailuresResponse = FailureMessages | string[];

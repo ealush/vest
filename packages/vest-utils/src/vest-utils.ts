@@ -23,6 +23,7 @@ export { default as mapFirst } from 'mapFirst';
 export { greaterThan } from 'greaterThan';
 export { longerThan } from 'longerThan';
 export { isNumeric, isNotNumeric } from 'isNumeric';
+export { isObject } from 'isObject';
 export { lengthEquals, lengthNotEquals } from 'lengthEquals';
 export { numberEquals, numberNotEquals } from 'numberEquals';
 export { isNull, isNotNull } from 'isNull';

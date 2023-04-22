@@ -1,17 +1,15 @@
+import { isObject } from 'isObject';
+
 import { isEmpty } from 'isEmpty';
-import { isNullish } from 'isNullish';
 
 const regexp = /{(.*?)}/g;
 
-export function text(
-  str: string,
-  ...substitutions: Array<Record<string, unknown> | unknown>
-): string {
+export function text(str: string, ...substitutions: Array<unknown>): string {
   const first = substitutions[0];
 
-  if (typeof first === 'object' && !isNullish(first)) {
+  if (isObject(first)) {
     return str.replace(regexp, (placeholder, key: string) => {
-      return `${(first as Record<string, unknown>)[key] ?? placeholder}`;
+      return `${first[key] ?? placeholder}`;
     });
   }
 

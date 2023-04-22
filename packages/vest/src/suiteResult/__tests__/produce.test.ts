@@ -111,7 +111,7 @@ describe('suite.get()', () => {
     it('Should have all exposed methods', () => {
       const suite = vest.create(() => {});
       expect(suite.get()).toMatchInlineSnapshot(`
-        {
+        SuiteSummary {
           "errorCount": 0,
           "errors": [],
           "getError": [Function],

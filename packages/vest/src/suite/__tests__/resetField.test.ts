@@ -48,7 +48,7 @@ describe('suite.resetField', () => {
   it('sanity', () => {
     expect(suite.get().tests).toMatchInlineSnapshot(`
       {
-        "field1": {
+        "field1": SummaryBase {
           "errorCount": 1,
           "errors": [
             "f1 error",
@@ -58,7 +58,7 @@ describe('suite.resetField', () => {
           "warnCount": 0,
           "warnings": [],
         },
-        "field2": {
+        "field2": SummaryBase {
           "errorCount": 1,
           "errors": [
             "f2 error",

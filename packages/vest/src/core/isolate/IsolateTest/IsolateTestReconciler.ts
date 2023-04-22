@@ -49,14 +49,14 @@ export class IsolateTestReconciler extends Reconciler {
     prevNode?: Isolate
   ): IsolateTest {
     if (newNode.usesKey()) {
-      return this.handleIsolateNodeWithKey(newNode) as IsolateTest;
+      return IsolateTest.cast(this.handleIsolateNodeWithKey(newNode));
     }
 
     if (this.nodeReorderDetected(newNode, prevNode)) {
       return this.onNodeReorder(newNode, prevNode);
     }
 
-    return (prevNode ? prevNode : newNode) as IsolateTest;
+    return IsolateTest.cast(prevNode ? prevNode : newNode);
   }
 
   static onNodeReorder(newNode: IsolateTest, prevNode?: Isolate): IsolateTest {
@@ -73,7 +73,7 @@ export class IsolateTestReconciler extends Reconciler {
 
   static handleNoHistoryNode(testNode: IsolateTest): IsolateTest {
     if (testNode.usesKey()) {
-      return this.handleIsolateNodeWithKey(testNode) as IsolateTest;
+      return IsolateTest.cast(this.handleIsolateNodeWithKey(testNode));
     }
 
     return testNode;

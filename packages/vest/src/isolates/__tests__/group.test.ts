@@ -76,7 +76,7 @@ describe('group: exclusion', () => {
     it('produce result object with the group', () => {
       expect(res.groups[groupName]).toMatchInlineSnapshot(`
         {
-          "field_1": {
+          "field_1": SummaryBase {
             "errorCount": 0,
             "errors": [],
             "testCount": 0,
@@ -84,7 +84,7 @@ describe('group: exclusion', () => {
             "warnCount": 0,
             "warnings": [],
           },
-          "field_2": {
+          "field_2": SummaryBase {
             "errorCount": 0,
             "errors": [],
             "testCount": 0,
@@ -92,7 +92,7 @@ describe('group: exclusion', () => {
             "warnCount": 0,
             "warnings": [],
           },
-          "field_3": {
+          "field_3": SummaryBase {
             "errorCount": 0,
             "errors": [],
             "testCount": 0,
@@ -100,7 +100,7 @@ describe('group: exclusion', () => {
             "warnCount": 0,
             "warnings": [],
           },
-          "field_4": {
+          "field_4": SummaryBase {
             "errorCount": 0,
             "errors": [],
             "testCount": 0,
@@ -108,7 +108,7 @@ describe('group: exclusion', () => {
             "warnCount": 0,
             "warnings": [],
           },
-          "field_6": {
+          "field_6": SummaryBase {
             "errorCount": 0,
             "errors": [],
             "testCount": 0,

@@ -19,7 +19,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
   "getWarningsByGroup": [Function],
   "groups": {
     "group": {
-      "field_1": {
+      "field_1": SummaryBase {
         "errorCount": 0,
         "errors": [],
         "testCount": 0,
@@ -27,7 +27,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
         "warnCount": 0,
         "warnings": [],
       },
-      "field_4": {
+      "field_4": SummaryBase {
         "errorCount": 0,
         "errors": [],
         "testCount": 0,
@@ -72,7 +72,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
       "warnCount": 0,
       "warnings": [],
     },
-    "field_4": {
+    "field_4": SummaryBase {
       "errorCount": 0,
       "errors": [],
       "testCount": 0,
@@ -88,7 +88,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
 `;
 
 exports[`Stateful async tests Merges skipped validations from previous suite 2`] = `
-{
+SuiteSummary {
   "errorCount": 2,
   "errors": [
     {
@@ -110,7 +110,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 2`]
   "getWarningsByGroup": [Function],
   "groups": {
     "group": {
-      "field_1": {
+      "field_1": SummaryBase {
         "errorCount": 0,
         "errors": [],
         "testCount": 0,
@@ -118,7 +118,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 2`]
         "warnCount": 0,
         "warnings": [],
       },
-      "field_4": {
+      "field_4": SummaryBase {
         "errorCount": 0,
         "errors": [],
         "testCount": 0,
@@ -165,7 +165,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 2`]
       "warnCount": 0,
       "warnings": [],
     },
-    "field_4": {
+    "field_4": SummaryBase {
       "errorCount": 0,
       "errors": [],
       "testCount": 0,
@@ -181,7 +181,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 2`]
 `;
 
 exports[`Stateful async tests Merges skipped validations from previous suite 3`] = `
-{
+SuiteSummary {
   "errorCount": 5,
   "errors": [
     {
@@ -218,7 +218,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 3`]
   "getWarningsByGroup": [Function],
   "groups": {
     "group": {
-      "field_1": {
+      "field_1": SummaryBase {
         "errorCount": 1,
         "errors": [
           "field_1_group_message",
@@ -228,7 +228,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 3`]
         "warnCount": 0,
         "warnings": [],
       },
-      "field_4": {
+      "field_4": SummaryBase {
         "errorCount": 1,
         "errors": [
           "field_4_group_message",
@@ -280,7 +280,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 3`]
       "warnCount": 0,
       "warnings": [],
     },
-    "field_4": {
+    "field_4": SummaryBase {
       "errorCount": 1,
       "errors": [
         "field_4_group_message",

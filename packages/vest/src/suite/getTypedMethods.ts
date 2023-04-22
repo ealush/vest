@@ -1,12 +1,13 @@
-import { optional, skipWhen, omitWhen, IsolateTest } from 'vest';
+import { optional, skipWhen, omitWhen, IsolateTest, group } from 'vest';
 import { CB } from 'vest-utils';
+
+import { Isolate, IsolateKey } from '../core/isolate/isolate';
 
 import { OptionalsInput } from 'OptionalTypes';
 import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
 import { FieldExclusion, GroupExclusion, only, skip } from 'exclusive';
 import { include } from 'include';
-import { IsolateKey } from 'isolate';
 import { test } from 'test';
 import { TestMemo } from 'test.memo';
 
@@ -15,6 +16,7 @@ export function getTypedMethods<
   G extends TGroupName
 >(): TTypedMethods<F, G> {
   return {
+    group,
     include,
     omitWhen,
     only,
@@ -56,4 +58,5 @@ export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
   } & {
     memo: TestMemo<F>;
   };
+  group: (groupName: G, callback: () => void) => Isolate;
 };

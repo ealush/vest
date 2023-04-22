@@ -1,11 +1,11 @@
-import { invariant, isPositive } from 'vest-utils';
+import { isPositive } from 'vest-utils';
 
-import { ErrorStrings } from 'ErrorStrings';
 import { Severity, SeverityCount } from 'Severity';
 import {
   FailureMessages,
   GetFailuresResponse,
   SuiteSummary,
+  SummaryFailure,
   TFieldName,
   TGroupName,
   TestsContainer,
@@ -102,9 +102,8 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     return getFailures(summary, Severity.WARNINGS, fieldName);
   }
 
-  function getWarning(fieldName: F): void | string {
-    invariant(fieldName, ErrorStrings.FIELD_NAME_REQUIRED);
-    return getFailures(summary, Severity.WARNINGS, fieldName)[0];
+  function getWarning(fieldName?: F): void | string | SummaryFailure<F, G> {
+    return getFailure<F, G>(Severity.WARNINGS, summary, fieldName as F);
   }
 
   function getErrors(): FailureMessages;
@@ -113,9 +112,8 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     return getFailures(summary, Severity.ERRORS, fieldName);
   }
 
-  function getError(fieldName: F): void | string {
-    invariant(fieldName, ErrorStrings.FIELD_NAME_REQUIRED);
-    return getFailures(summary, Severity.ERRORS, fieldName)[0];
+  function getError(fieldName?: F): void | string | SummaryFailure<F, G> {
+    return getFailure<F, G>(Severity.ERRORS, summary, fieldName as F);
   }
 
   function getErrorsByGroup(groupName: G): FailureMessages;
@@ -135,8 +133,8 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
 }
 
 export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
-  getWarning(fieldName: F): void | string;
-  getError(fieldName: F): void | string;
+  getWarning(fieldName?: F): void | string | SummaryFailure<F, G>;
+  getError(fieldName?: F): void | string | SummaryFailure<F, G>;
   getErrors(fieldName: F): string[];
   getErrors(): FailureMessages;
   getWarnings(): FailureMessages;
@@ -229,4 +227,30 @@ function hasFailures(
     : summary[countKey] || 0;
 
   return isPositive(failureCount);
+}
+
+function getFailure<F extends TFieldName, G extends TGroupName>(
+  severity: Severity,
+  summary: SuiteSummary<F, G>
+): SummaryFailure<F, G> | undefined;
+function getFailure<F extends TFieldName, G extends TGroupName>(
+  severity: Severity,
+  summary: SuiteSummary<F, G>,
+  fieldName: F
+): string | undefined;
+function getFailure<F extends TFieldName, G extends TGroupName>(
+  severity: Severity,
+  summary: SuiteSummary<F, G>,
+  fieldName?: F
+): SummaryFailure<F, G> | string | undefined {
+  const summaryKey = summary[severity];
+
+  if (!fieldName) {
+    return summaryKey[0];
+  }
+
+  return summaryKey.find(
+    (summaryFailure: SummaryFailure<TFieldName, TGroupName>) =>
+      summaryFailure.fieldName === fieldName
+  )?.message;
 }

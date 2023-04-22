@@ -7,7 +7,6 @@ import {
   SingleTestSummary,
   SuiteSummary,
   SummaryFailure,
-  SummaryFailureKey,
   TFieldName,
   TGroupName,
   Tests,
@@ -34,12 +33,12 @@ export function useProduceSuiteSummary<
     summary.tests = useAppendToTest(summary.tests, testObject);
     summary.groups = useAppendToGroup(summary.groups, testObject);
     summary.errors = appendFailures(
-      SummaryFailureKey.errors,
+      Severity.ERRORS,
       summary.errors,
       testObject
     );
     summary.warnings = appendFailures(
-      SummaryFailureKey.warnings,
+      Severity.WARNINGS,
       summary.warnings,
       testObject
     );
@@ -51,14 +50,12 @@ export function useProduceSuiteSummary<
 }
 
 function appendFailures<F extends TFieldName, G extends TGroupName>(
-  key: SummaryFailureKey,
+  key: Severity,
   failures: SummaryFailure<F, G>[],
   testObject: IsolateTest<F, G>
 ): SummaryFailure<F, G>[] {
   const shouldAppend =
-    key === SummaryFailureKey.warnings
-      ? testObject.isWarning()
-      : testObject.isFailing();
+    key === Severity.WARNINGS ? testObject.isWarning() : testObject.isFailing();
 
   if (shouldAppend) {
     return failures.concat({

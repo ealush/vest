@@ -1,19 +1,28 @@
-import { ErrorStrings } from 'ErrorStrings';
 import * as vest from 'vest';
 
 describe('->getFailure (singular form)', () => {
   describe('getError', () => {
     describe('When not passing a field name', () => {
-      it('Should throw an error', () => {
-        const suite = vest.create(() => {});
-        // @ts-ignore - Testing error throwing
-        expect(() => suite().getError()).toThrow(
-          ErrorStrings.FIELD_NAME_REQUIRED
-        );
-        // @ts-ignore - Testing error throwing
-        expect(() => suite.get().getError()).toThrow(
-          ErrorStrings.FIELD_NAME_REQUIRED
-        );
+      describe('When there are no errors', () => {
+        it('Should return undefined', () => {
+          const suite = vest.create(() => {});
+          expect(suite().getErrors()).toEqual({});
+          expect(suite.get().getError()).toBeUndefined();
+        });
+      });
+
+      describe('When there are errors', () => {
+        it('Should return the first error object', () => {
+          const suite = vest.create(() => {
+            vest.test('field_1', 'msg_1', () => false);
+            vest.test('field_2', 'msg_2', () => false);
+          });
+          expect(suite().getError()).toEqual({
+            fieldName: 'field_1',
+            message: 'msg_1',
+            groupName: undefined,
+          });
+        });
       });
     });
 
@@ -34,6 +43,16 @@ describe('->getFailure (singular form)', () => {
         });
         expect(suite().getError('field_1')).toBeUndefined();
         expect(suite.get().getError('field_1')).toBeUndefined();
+      });
+    });
+
+    describe('When there are errors', () => {
+      it('Should return the first error', () => {
+        const suite = vest.create(() => {
+          vest.test('field_1', 'msg_1', () => false);
+          vest.test('field_2', 'msg_2', () => false);
+        });
+        expect(suite().getError('field_1')).toBe('msg_1');
       });
     });
 
@@ -73,16 +92,34 @@ describe('->getFailure (singular form)', () => {
 
   describe('getWarning', () => {
     describe('When not passing a field name', () => {
-      it('Should throw an error', () => {
-        const suite = vest.create(() => {});
-        // @ts-ignore - Testing error throwing
-        expect(() => suite().getWarning()).toThrow(
-          ErrorStrings.FIELD_NAME_REQUIRED
-        );
-        // @ts-ignore - Testing error throwing
-        expect(() => suite.get().getWarning()).toThrow(
-          ErrorStrings.FIELD_NAME_REQUIRED
-        );
+      describe('When there are no warnings', () => {
+        it('Should return undefined', () => {
+          const suite = vest.create(() => {});
+          expect(suite().getWarnings()).toEqual({});
+          expect(suite.get().getWarning()).toBeUndefined();
+        });
+      });
+
+      describe('When there are warnings', () => {
+        it('Should return the first warning object', () => {
+          const suite = vest.create(() => {
+            vest.test('t1', 't1 message', () => {
+              vest.warn();
+              return false;
+            });
+
+            vest.test('t2', 't2 message', () => {
+              vest.warn();
+              return false;
+            });
+          });
+
+          expect(suite().getWarning()).toEqual({
+            fieldName: 't1',
+            message: 't1 message',
+            groupName: undefined,
+          });
+        });
       });
     });
 

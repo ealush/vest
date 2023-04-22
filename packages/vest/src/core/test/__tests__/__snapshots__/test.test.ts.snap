@@ -40,7 +40,7 @@ IsolateTest {
       "suiteName": undefined,
       "testCount": 1,
       "tests": {
-        "field_name": {
+        "field_name": SummaryBase {
           "errorCount": 0,
           "errors": [],
           "testCount": 1,
@@ -102,7 +102,7 @@ IsolateTest {
       "suiteName": undefined,
       "testCount": 1,
       "tests": {
-        "field_name": {
+        "field_name": SummaryBase {
           "errorCount": 0,
           "errors": [],
           "testCount": 1,
@@ -165,7 +165,7 @@ IsolateTest {
       "suiteName": undefined,
       "testCount": 1,
       "tests": {
-        "field_name": {
+        "field_name": SummaryBase {
           "errorCount": 0,
           "errors": [],
           "testCount": 1,
@@ -226,7 +226,7 @@ IsolateTest {
       "suiteName": undefined,
       "testCount": 1,
       "tests": {
-        "field_name": {
+        "field_name": SummaryBase {
           "errorCount": 0,
           "errors": [],
           "testCount": 1,

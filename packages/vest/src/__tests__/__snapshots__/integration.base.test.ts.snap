@@ -32,7 +32,7 @@ exports[`Base behavior Should produce correct validation result 1`] = `
   "suiteName": undefined,
   "testCount": 5,
   "tests": {
-    "field_1": {
+    "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [
         "field_statement_1",
@@ -42,7 +42,7 @@ exports[`Base behavior Should produce correct validation result 1`] = `
       "warnCount": 0,
       "warnings": [],
     },
-    "field_2": {
+    "field_2": SummaryBase {
       "errorCount": 1,
       "errors": [
         "field_statement_2",
@@ -52,7 +52,7 @@ exports[`Base behavior Should produce correct validation result 1`] = `
       "warnCount": 0,
       "warnings": [],
     },
-    "field_3": {
+    "field_3": SummaryBase {
       "errorCount": 0,
       "errors": [],
       "testCount": 1,

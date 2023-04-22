@@ -62,7 +62,15 @@ export class IsolateTest<
     callback: Callback,
     data: IsolateTestInput
   ): IsolateTest {
-    return super.create(callback, data) as IsolateTest;
+    return IsolateTest.cast(super.create(callback, data));
+  }
+
+  static cast<
+    F extends TFieldName = TFieldName,
+    G extends TGroupName = TGroupName
+  >(isolate: Isolate): IsolateTest<F, G> {
+    IsolateTest.isX(isolate);
+    return isolate as IsolateTest<F, G>;
   }
 
   get status(): TestStatus {

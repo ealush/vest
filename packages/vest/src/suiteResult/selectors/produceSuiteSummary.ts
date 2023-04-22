@@ -6,6 +6,7 @@ import {
   Groups,
   SingleTestSummary,
   SuiteSummary,
+  SummaryBase,
   SummaryFailure,
   TFieldName,
   TGroupName,
@@ -21,13 +22,7 @@ export function useProduceSuiteSummary<
   F extends TFieldName,
   G extends TGroupName
 >(): SuiteSummary<F, G> {
-  const summary: SuiteSummary<F, G> = assign(baseStats(), {
-    errors: [] as SummaryFailure<F, G>[],
-    groups: {},
-    tests: {},
-    valid: false,
-    warnings: [] as SummaryFailure<F, G>[],
-  }) as SuiteSummary<F, G>;
+  const summary: SuiteSummary<F, G> = new SuiteSummary();
 
   TestWalker.walkTests<F, G>(testObject => {
     summary.tests = useAppendToTest(summary.tests, testObject);
@@ -172,16 +167,8 @@ function appendTestObject(
   }
 }
 
-function baseStats() {
-  return {
-    errorCount: 0,
-    warnCount: 0,
-    testCount: 0,
-  };
-}
-
 function baseTestStats() {
-  return assign(baseStats(), {
+  return assign(new SummaryBase(), {
     errors: [],
     warnings: [],
     valid: true,

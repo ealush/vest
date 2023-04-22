@@ -126,7 +126,7 @@ describe('Merging of previous test runs', () => {
         expect(resA.hasErrors('f3')).toBe(true);
         expect(resA.tests).toMatchInlineSnapshot(`
           {
-            "f1": {
+            "f1": SummaryBase {
               "errorCount": 1,
               "errors": [],
               "testCount": 1,
@@ -134,7 +134,7 @@ describe('Merging of previous test runs', () => {
               "warnCount": 0,
               "warnings": [],
             },
-            "f2": {
+            "f2": SummaryBase {
               "errorCount": 1,
               "errors": [],
               "testCount": 1,
@@ -142,7 +142,7 @@ describe('Merging of previous test runs', () => {
               "warnCount": 0,
               "warnings": [],
             },
-            "f3": {
+            "f3": SummaryBase {
               "errorCount": 1,
               "errors": [],
               "testCount": 1,
@@ -160,7 +160,7 @@ describe('Merging of previous test runs', () => {
         expect(resB.hasErrors('f3')).toBe(true);
         expect(resB.tests).toMatchInlineSnapshot(`
           {
-            "f1": {
+            "f1": SummaryBase {
               "errorCount": 1,
               "errors": [],
               "testCount": 1,
@@ -168,7 +168,7 @@ describe('Merging of previous test runs', () => {
               "warnCount": 0,
               "warnings": [],
             },
-            "f3": {
+            "f3": SummaryBase {
               "errorCount": 1,
               "errors": [],
               "testCount": 1,
@@ -214,7 +214,7 @@ describe('Merging of previous test runs', () => {
           expect(resA.hasErrors('f7')).toBe(true);
           expect(resA.tests).toMatchInlineSnapshot(`
             {
-              "f1": {
+              "f1": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
                 "testCount": 1,
@@ -222,7 +222,7 @@ describe('Merging of previous test runs', () => {
                 "warnCount": 0,
                 "warnings": [],
               },
-              "f2": {
+              "f2": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
                 "testCount": 1,
@@ -230,7 +230,7 @@ describe('Merging of previous test runs', () => {
                 "warnCount": 0,
                 "warnings": [],
               },
-              "f3": {
+              "f3": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
                 "testCount": 1,
@@ -246,7 +246,7 @@ describe('Merging of previous test runs', () => {
                 "warnCount": 0,
                 "warnings": [],
               },
-              "f5": {
+              "f5": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
                 "testCount": 1,
@@ -254,7 +254,7 @@ describe('Merging of previous test runs', () => {
                 "warnCount": 0,
                 "warnings": [],
               },
-              "f6": {
+              "f6": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
                 "testCount": 1,
@@ -262,7 +262,7 @@ describe('Merging of previous test runs', () => {
                 "warnCount": 0,
                 "warnings": [],
               },
-              "f7": {
+              "f7": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
                 "testCount": 1,
@@ -287,7 +287,7 @@ describe('Merging of previous test runs', () => {
           expect(resB.hasErrors('f7')).toBe(false);
           expect(resB.tests).toMatchInlineSnapshot(`
             {
-              "f1": {
+              "f1": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
                 "testCount": 1,

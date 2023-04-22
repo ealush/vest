@@ -129,7 +129,7 @@ describe('key', () => {
         expect(res1.tests).not.toEqual(res2.tests);
         expect(res2.tests).toMatchInlineSnapshot(`
           {
-            "field1": {
+            "field1": SummaryBase {
               "errorCount": 1,
               "errors": [],
               "testCount": 1,
@@ -137,7 +137,7 @@ describe('key', () => {
               "warnCount": 0,
               "warnings": [],
             },
-            "field2": {
+            "field2": SummaryBase {
               "errorCount": 1,
               "errors": [],
               "testCount": 1,
@@ -145,7 +145,7 @@ describe('key', () => {
               "warnCount": 0,
               "warnings": [],
             },
-            "field3": {
+            "field3": SummaryBase {
               "errorCount": 1,
               "errors": [],
               "testCount": 1,
@@ -153,7 +153,7 @@ describe('key', () => {
               "warnCount": 0,
               "warnings": [],
             },
-            "reordered": {
+            "reordered": SummaryBase {
               "errorCount": 0,
               "errors": [],
               "testCount": 0,

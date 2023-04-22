@@ -74,9 +74,7 @@ export class TestWalker {
     walker.walk(
       root,
       (isolate, breakout) => {
-        IsolateTest.isX(isolate);
-
-        callback(isolate as IsolateTest<F, G>, breakout);
+        callback(IsolateTest.cast<F, G>(isolate), breakout);
       },
       IsolateTest.is
     );

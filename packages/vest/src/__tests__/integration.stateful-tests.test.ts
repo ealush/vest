@@ -51,7 +51,7 @@ describe('more complex', () => {
     suite(data, 'password');
     expect(suite.get().hasErrors()).toBe(true);
     expect(suite.get().tests.password).toMatchInlineSnapshot(`
-      {
+      SummaryBase {
         "errorCount": 1,
         "errors": [
           "password is required",
@@ -66,7 +66,7 @@ describe('more complex', () => {
 
     suite(data, 'confirm');
     expect(suite.get().tests.confirm).toMatchInlineSnapshot(`
-      {
+      SummaryBase {
         "errorCount": 0,
         "errors": [],
         "testCount": 0,
@@ -82,7 +82,7 @@ describe('more complex', () => {
     data.password = '123456';
     suite(data, 'password');
     expect(suite.get().tests.confirm).toMatchInlineSnapshot(`
-      {
+      SummaryBase {
         "errorCount": 0,
         "errors": [],
         "testCount": 0,
@@ -96,7 +96,7 @@ describe('more complex', () => {
     expect(suite.get().hasErrors('password')).toBe(false);
     expect(suite.get().hasErrors('confirm')).toBe(false);
     expect(suite.get().tests.confirm).toMatchInlineSnapshot(`
-      {
+      SummaryBase {
         "errorCount": 0,
         "errors": [],
         "testCount": 1,

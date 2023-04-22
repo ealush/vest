@@ -2,7 +2,6 @@ export { default as cache, CacheApi } from 'cache';
 export { BusType } from 'bus';
 export { TinyState } from 'tinyState';
 export { isNullish, isNotNullish } from 'isNullish';
-export * as nestedArray from 'nestedArray';
 export { default as asArray } from 'asArray';
 export { default as callEach } from 'callEach';
 export { default as hasOwnProperty } from 'hasOwnProperty';

@@ -11,6 +11,7 @@ import {
   TestsContainer,
 } from 'SuiteResultTypes';
 import { gatherFailures } from 'collectFailures';
+import matchingFieldName from 'matchingFieldName';
 
 // eslint-disable-next-line max-lines-per-function, max-statements
 export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
@@ -251,6 +252,6 @@ function getFailure<F extends TFieldName, G extends TGroupName>(
 
   return summaryKey.find(
     (summaryFailure: SummaryFailure<TFieldName, TGroupName>) =>
-      summaryFailure.fieldName === fieldName
+      matchingFieldName(summaryFailure, fieldName)
   )?.message;
 }

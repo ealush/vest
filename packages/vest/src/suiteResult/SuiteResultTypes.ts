@@ -1,9 +1,10 @@
+import { Severity } from 'Severity';
 import { Done } from 'suiteRunResult';
 import { SuiteSelectors } from 'suiteSelectors';
 
 export type SuiteSummary<F extends TFieldName, G extends TGroupName> = {
-  [SummaryFailureKey.errors]: SummaryFailure<F, G>[];
-  [SummaryFailureKey.warnings]: SummaryFailure<F, G>[];
+  [Severity.ERRORS]: SummaryFailure<F, G>[];
+  [Severity.WARNINGS]: SummaryFailure<F, G>[];
   groups: Groups<G, F>;
   tests: Tests<F>;
   valid: boolean;
@@ -26,11 +27,6 @@ export type SingleTestSummary = SummaryBase & {
   warnings: string[];
   valid: boolean;
 };
-
-export enum SummaryFailureKey {
-  errors = 'errors',
-  warnings = 'warnings',
-}
 
 export type SummaryFailure<F extends TFieldName, G extends TGroupName> = {
   fieldName: F;

@@ -79,31 +79,3 @@ const suite = create(() => {
 
 suite.remove('username'); // validation result is removed from Vest's state.
 ```
-
-## Server-side validations
-
-When running your validations on the server, you want to keep each request isolated with its own state, and not update the same validation state between requests. Doing that can cause failed validations to seem successful or vice versa due to different requests relying on the same state.
-
-### Solution: Treat validations as stateless
-
-While when on the browser you usually want to treat validations as statefull - even though it might sometimes not be the case - on the server you almost always want to treat your validations as stateless.
-
-To do that, all you need to do is wrap your suite initialization with a wrapper function. Whenever you call that function, a new suite state will be created.
-
-### Example
-
-```js
-import { create } from 'vest';
-
-function serversideStatelessCheck(data) {
-  return create(() => {
-    test('username', 'username is required', () => {
-      enforce(data.username).isNotEmpty();
-    });
-  })();
-  // Note that we're immediately invoking our suite
-  // so what we return is actually the suite result
-}
-
-const result = serversideStatelessCheck({ username: 'Mike123' });
-```

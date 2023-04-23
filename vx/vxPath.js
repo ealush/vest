@@ -62,6 +62,10 @@ vxPath.packageJson = (pkgName = usePackage()) => {
   return vxPath.package(pkgName, opts.fileNames.PACKAGE_JSON);
 };
 
+vxPath.packageNpmIgnore = (pkgName = usePackage()) => {
+  return vxPath.package(pkgName, opts.fileNames.NPM_IGNORE);
+};
+
 vxPath.closest = (start, predicate) => {
   let current = start;
   let broke = false;

@@ -1,14 +1,14 @@
 {
   "scripts": {
     "build": "vx build",
-    "test": "jest",
+    "test": "vx prepare && jest",
     "release": "vx release",
     "lint": "eslint . --ignore-path .gitignore",
     "prepare": "husky install",
     "dev": "vx dev",
     "website:start": "yarn workspace website start",
     "website:build": "yarn workspace website build",
-    "jest": "jest"
+    "jest": "vx prepare &&  jest"
   },
   "prettier": {
     "arrowParens": "avoid",

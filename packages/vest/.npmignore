@@ -4,3 +4,4 @@ src
 !promisify/
 !types/
 !dist/
+tsconfig.json

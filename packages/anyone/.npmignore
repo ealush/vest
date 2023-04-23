@@ -6,3 +6,4 @@ src
 !one/
 !types/
 !dist/
+tsconfig.json

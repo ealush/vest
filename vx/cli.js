@@ -13,8 +13,6 @@ const vxPath = require('vx/vxPath');
 const { hideBin } = require('yargs/helpers');
 const yargs = require('yargs/yargs');
 
-const genTsConfig = require('./scripts/genTsConfig');
-
 dotenv.config();
 
 const commands = glob
@@ -27,8 +25,6 @@ const commands = glob
       [path.basename(command, '.js')]: require(command),
     });
   }, {});
-
-genTsConfig();
 
 const argv = hideBin(process.argv);
 
@@ -56,6 +52,11 @@ const cli = yargs(argv)
   .help().argv;
 
 const { package, command, buildSingle } = cli;
+
+// Prepare all packages before running any other command.
+if (command !== 'prepare') {
+  commands.prepare();
+}
 
 if (!commands[command]) {
   throw new Error(`Command ${command} not found.`);

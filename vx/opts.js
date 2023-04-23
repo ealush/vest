@@ -18,6 +18,7 @@ module.exports = {
     JEST_SETUP: 'jest.setup.ts',
     JEST_SETUP_AFTER_ENV: 'jest.setupAfterEnv.ts',
     MAIN_EXPORT: 'index.js',
+    NPM_IGNORE: '.npmignore',
     PACKAGE_JSON: 'package.json',
     TSCONFIG_JSON: 'tsconfig.json',
     VX_BUILD: 'vx.build.js',

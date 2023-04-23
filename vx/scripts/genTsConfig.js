@@ -33,6 +33,8 @@ module.exports = function genTsConfig() {
 
     writeTsConfig(tsConfigPath, tsConfig);
   });
+
+  logger.info('👌 Done generating tsconfig files.\n');
 };
 
 function isConfigEqual(path, tsConfig) {
@@ -48,10 +50,10 @@ function isConfigEqual(path, tsConfig) {
 }
 
 function writeTsConfig(path, tsConfig) {
-  logger.log(`Writing ts config to ${path}`);
+  logger.log(`📝 Writing ts config to ${path}`);
 
   writeJSONSync(path, tsConfig, { spaces: 2 });
-  exec(`yarn prettier ${path} -w`);
+  exec(`💅 yarn prettier ${path} -w`);
 }
 
 function packageTsConfigTemplate(paths = []) {

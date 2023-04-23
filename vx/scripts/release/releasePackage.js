@@ -1,6 +1,3 @@
-const logger = require('vx/logger');
-const { usePackage } = require('vx/vxContext');
-
 const build = require('./../build/buildPackage');
 const genDiffData = require('./genDiffData');
 const getDiff = require('./github/getDiff');
@@ -9,7 +6,10 @@ const setNextVersion = require('./steps/setNextVersion');
 // const updateChangelog = require('./steps/updateChangelog');
 const updateLocalDepsToLatest = require('./steps/updateLocalDepsToLatest');
 
-function releasePackage() {
+const logger = require('vx/logger');
+const { usePackage } = require('vx/vxContext');
+
+function releasePackage({ isTopLevelChange }) {
   const pkgName = usePackage();
 
   logger.info(`Releasing package: 📦 ${pkgName}`);
@@ -17,7 +17,7 @@ function releasePackage() {
   logger.info(`🔍 Finding diffs for package: ${pkgName}`);
   const { changesToPackage, changedByDependency } = getDiff(pkgName);
 
-  if (!changedByDependency && !changesToPackage.length) {
+  if (!changedByDependency && !changesToPackage.length && !isTopLevelChange) {
     logger.info('🛌 No Changes related to current package. Exiting.');
     return;
   }

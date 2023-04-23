@@ -14,7 +14,7 @@ const ctx = require('vx/vxContext');
 
 require('../../scripts/genTsConfig');
 
-function release() {
+function release({ isTopLevelChange }) {
   if (!branchAllowsRelease) {
     logger.info(`❌  Branch ${CURRENT_BRANCH} does not allow release. Exiting`);
     return;
@@ -22,7 +22,7 @@ function release() {
 
   const pkg = usePackage() || targetPackage;
   if (pkg) {
-    return ctx.withPackage(pkg, releasePackage);
+    return ctx.withPackage(pkg, () => releasePackage({ isTopLevelChange }));
   }
   releaseAll();
 }
@@ -32,10 +32,10 @@ module.exports = release;
 function releaseAll() {
   logger.info('🏃 Running release script.');
 
-  const releaseList = packagesToRelease();
+  const { packageListToRelease, isTopLevelChange } = packagesToRelease();
 
-  releaseList.forEach(name => {
-    ctx.withPackage(name, release);
+  packageListToRelease.forEach(name => {
+    ctx.withPackage(name, () => release({ isTopLevelChange }));
   });
 
   if (!isReleaseBranch) {

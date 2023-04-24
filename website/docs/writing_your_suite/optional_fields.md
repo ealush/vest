@@ -1,21 +1,29 @@
 ---
 sidebar_position: 4
 title: Optional fields
-description: By default, all the tests inside Vest are required in order for the suite to be considered as "valid". Learn how to specify optional fields.
-keywords: [optional fields, required fields, unfilled]
+description: Learn how to specify optional fields in Vest, a library for writing validation tests in JavaScript. By default, all tests in a Vest suite are required, but sometimes you may want to skip certain tests. The `optional` function allows you to mark fields as optional, so that they are not accounted for in the suite's validity. Learn how to use the `optional` function, define custom optional rules, and the difference between `optional` and `warn`.
+keywords:
+  [
+    optional fields,
+    required fields,
+    unfilled,
+    validation tests,
+    JavaScript,
+    Vest library,
+    custom optional rules,
+    warning tests,
+  ]
 ---
 
-# optional fields
+# Optional Fields
 
-By default, all the tests inside Vest are required in order for the suite to be considered as "valid". Sometimes your app's logic may allow tests not to be filled out, and you want them not to be accounted for in the suites validity.
+By default, all tests inside Vest are required for the suite to be considered "valid". However, there may be situations in which some tests can be skipped, such as when dealing with optional fields in your application's logic. In such cases, Vest provides the `optional` function, which allows you to mark fields as optional, so that they are not accounted for in the suite's validity.
 
-For cases like this, Vest provides the `optional` function which allows you to mark a field, or multiple fields as optional. Vest's definition of "optional" is that the field did not have any test runs in the lifetime of the suite.
+Vest's definition of "optional" is that the field did not have any test runs in the lifetime of the suite. If your app requires custom logic, you can define your custom rules for omission.
 
-If your app requires custom logic, please see the advanced section below.
+## Basic Usage - Allowing Tests Not to Run
 
-## Basic Usage - allowing tests not to run
-
-`optional` can take a field name as its argument or an array of field names.
+The `optional` function can take a field name as its argument or an array of field names. For example, the following code specifies that `pet_color` and `pet_age` fields are optional:
 
 ```js
 import { create, optional, only, test, enforce } from 'vest';
@@ -24,10 +32,6 @@ const suite = create((data, currentField) => {
   only(currentField); // only validate this specified field
 
   optional(['pet_color', 'pet_age']);
-  /** Equivalent to:
-   * optional('pet_color')
-   * optional('pet_age')
-   **/
 
   test('pet_name', 'Pet Name is required', () => {
     enforce(data.pet_name).isNotEmpty();
@@ -42,33 +46,17 @@ const suite = create((data, currentField) => {
   });
 });
 
-suite({ name: 'Indie' }, /* -> only validate pet_name */ 'pet_name').isValid();
-// ✅ Since pet_color and pet_age are optional, the suite may still be valid
-
-suite({ age: 'Five' }, /* -> only validate pet_age */ 'pet_age').isValid();
-// 🚨 When erroring, optional fields still make the suite invalid
+suite({ name: 'Indie' }, 'pet_name').isValid(); // ✅ Since pet_color and pet_age are optional, the suite may still be valid
+suite({ age: 'Five' }, 'pet_age').isValid(); // 🚨 When erroring, optional fields still make the suite invalid
 ```
 
-## Custom omission rules
+## Custom Omission Rules
 
-Since every app is different, your app's logic may require some other definition of optional. An example would be that the user typed inside the field and then removed its content, or - if a field may only be empty when a different field is supplied - Vest cannot be aware of this logic, and you will have to tell Vest to conditionally omit the results for this field by providing `optional` with a custom omission rule.
+Since every app is different, your app's logic may require some other definition of optional. For example, the user may have typed inside a field and then removed its content. In such cases, you can provide `optional` with a custom omission rule.
 
-To provide a custom optional rule, instead of passing a list of fields, you need to provide an object with the field names as its keys, and either a boolean or a function returning a boolean as its value. These rules will be evaluated immediately, and then again after your suite finishes its **synchronous** run. When true, Vest will omit _ALL_ failures your field might have from the suite.
+To provide a custom optional rule, you need to provide an object with the field names as its keys, and either a boolean or a function returning a boolean as its value. These rules will be evaluated immediately, and then again after your suite finishes its **synchronous** run. When true, Vest will omit _ALL_ failures your field might have from the suite. It is important to note that custom omission rules are not supported for asynchronous tests.
 
-:::danger IMPORTANT - ASYNC TESTS ARE UNSUPPORTED WITH CUSTOM OPTIONAL RULES
-You should avoid using the custom omission rules along with async tests. This is unsupported and may cause unexpected behavior. The reason for this limitation is due to the fact that the omission conditionals are calculated at the end of the suite, while the async tests may keep running. Allowing it will require re-calculation for each async test that finishes, which could be expensive.
-:::
-
-```js
-optional({
-  fieldName: true, // omit all failures for this field
-  fieldName2: () => true, // omit all failures for this field
-});
-```
-
-### Examples
-
-**An example allowing a field to be empty even if its `touched` or `dirty`**
+The following code demonstrates an example of how to allow a field to be empty even if it's "touched" or "dirty":
 
 ```js
 const suite = create(data => {
@@ -82,7 +70,7 @@ const suite = create(data => {
 });
 ```
 
-**An example allowing a field to be empty if a different field is filled**
+The following code demonstrates how to allow a field to be empty if a different field is filled:
 
 ```js
 const suite = create(data => {
@@ -109,11 +97,14 @@ const suite = create(data => {
 });
 ```
 
+:::danger IMPORTANT - ASYNC TESTS ARE UNSUPPORTED WITH CUSTOM OPTIONAL RULES
+You should avoid using the custom omission rules along with async tests. This is unsupported and may cause unexpected behavior. The reason for this limitation is due to the fact that the omission conditionals are calculated at the end of the suite, while the async tests may keep running. Allowing it will require re-calculation for each async test that finishes, which could be expensive.
+:::
+
 ## Difference between `optional` and `warn`
 
-While on its surface, optional might seem similar to warn, they are quite different.
-Optional, like "only" and "skip" is set on the field level, which means that when set - all tests of an optional field are considered optional. Warn, on the other hand - is set on the test level, so the only tests affected are the tests that have the "warn" option applied within them.
+The difference between `optional` and `warn` is significant, despite their similar appearance. While `optional`, like `only` and `skip`, is applied to the entire field, making all tests optional, `warn` is set at the test level and only affects specific tests marked with the `warn` option.
 
-Another distinction is that warning tests cannot set the suite to be invalid.
+Another notable distinction is that tests marked as warnings do not make the suite invalid.
 
-There may be rare occasions in which you have an optional and a warning only field, in which case, you may combine the two.
+In some rare instances, you might have a field that is both optional and a warning. In these cases, you can combine the two options.

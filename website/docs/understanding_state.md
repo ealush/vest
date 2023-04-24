@@ -1,52 +1,41 @@
 ---
 sidebar_position: 10
 title: Understanding Vest's state
-description: Learn how Vest's State works
-keywords: [Vest, Stateful Validations]
+description: Learn how Vest's State works, and its drawbacks. Explore solutions for different scenarios.
+keywords: [Vest, Stateful Validations, Field merge, Resetting, Removing fields]
 ---
 
 # Understanding Vest's state
 
-Vest is designed to help perform validations on user inputs. The nature of user inputs is that they are filled one by one by the user. In order to provide good user experience, the best approach is to validate fields as the user type, or when they leave the field.
+Vest is a framework designed to perform validations on user inputs. To provide good user experience, we validate fields upon user interaction. Vest's state mechanism helps us accomplish this.
 
-The difficult part when validating upon user interaction is that we want to only validate the field that the user is currently interacting with, and not the rest of the form. This
-This can be done with Vest's [`only()` hook](./writing_your_suite/including_and_excluding/skip_and_only.md). That's where the state mechanism is becoming useful.
+The state mechanism helps validate [only the current field](./writing_your_suite/including_and_excluding/skip_and_only.md) and not the rest of the form, making it suitable for validating user inputs one by one.
 
-When you have skipped fields in your validation suite, vest will try to see if those skipped fields ran in the previous suite, and merge them into the currently running suite result - so the result object you get will include all the fields that your user interacted with.
+When you skip fields in your validation suite, Vest will merge their results from the previous suite run with the current result object. This helps maintain state between suite runs.
 
 ## What Vest's state does
 
-- _Skipped field merge_
+- _Skipped field merge_: Vest merges skipped fields' previous results with the current result object.
 
-As mentioned before - whenever you skip a field, vest will look for it in your previously ran validations and add it to the current result.
-
-- _Lagging async `done` callback blocking_
-
-In case you have an async test that didn't finish from the previous suite run - and you already ran another async test for the same field - vest will block the [`done()`](./writing_your_suite/result_object.md#done) callbacks for that field from running for the previous suite result.
+- _Lagging async `done` callback blocking_: When an async test doesn't finish from the previous suite run, Vest blocks the [`done()` callbacks](./writing_your_suite/result_object.md#done) for that field from running for the previous suite result.
 
 # Drawbacks when using stateful validations
 
-When the validations are stateful, you get the benefit of not having to know which fields have already been validated, or keeping track of their previous results.
+When validations are stateful, the benefit is that we don't have to keep track of which fields have already been validated and their previous results. However, the drawback of this approach is that when we run the same form in multiple unrelated contexts, the previous validation state still holds the previous result.
 
-The drawback of this approach is that when you run the same form in multiple-unrelated contexts, the previous validation state still holds the previous result.
-
-Here are a few examples and their solutions:
+Here are some examples and solutions:
 
 ## Single Page Application - suite result retention
 
-This scenario applies to cases when your form is a part of a single-page-app with client-side routing. Let's assume your user successfully submits the form, navigates outside of the page, and then later in the same session, navigate back to the form.
+Suppose your form is a part of a single-page-app with client-side routing. In that case, if the user submits the form successfully, navigates outside the page, and later navigates back to the form, the form will have a successful validation state because the previous result is stored in the suite state.
 
-The form will then have a successful validation state since the previous result is stored in the suite state.
+### Solution: Resetting suite state with `.reset()`
 
-### Solution: Resetting suite state with `.reset();`
+In some cases, such as form reset, we want to discard previous validation results. This can be done with `vest.reset()`.
 
-In some cases, such as form reset, you want to discard of previous validation results. This can be done with `vest.reset()`.
-
-`.reset` disables all pending async tests in your suite and empties the state out.
+`.reset()` is a property on your validation suite. Calling it will remove the suite's state.
 
 ### Usage:
-
-`.reset()` Is a property on your validation suite. Calling it will remove your suite's state.
 
 ```js
 import { create } from 'vest';
@@ -60,11 +49,11 @@ suite.reset(); // validation result is removed from Vest's state.
 
 ## Dynamically added fields
 
-When your form contains dynamically added fields, for example - when a customer can add fields to their checkout form on the fly, those items would still exist in the suite state when the user removed them from the form. This means that you may have an unsuccessful suite result, even though it should be successful.
+When your form contains dynamically added fields, for example - when a customer can add fields to their checkout form on the fly, those items still exist in the suite state when the user removes them from the form. This means you may have an unsuccessful suite result, even though it should be successful.
 
 ### Solution: Removing a single field from the validation result
 
-Instead of resetting the whole suite, you can alternatively remove just one field. This is useful when dynamically adding and removing fields upon user interaction - and you want to delete a deleted field from the state.
+Instead of resetting the whole suite, we can alternatively remove just one field. This is useful when dynamically adding and removing fields upon user interaction, and we want to delete a deleted field from the state.
 
 ```js
 import { create, test } from 'vest';

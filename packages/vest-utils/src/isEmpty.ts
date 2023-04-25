@@ -1,8 +1,7 @@
-import { isObject } from 'isObject';
-
 import bindNot from 'bindNot';
 import hasOwnProperty from 'hasOwnProperty';
 import { lengthEquals } from 'lengthEquals';
+import { isObject } from 'valueIsObject';
 
 export function isEmpty(value: unknown): boolean {
   if (!value) {

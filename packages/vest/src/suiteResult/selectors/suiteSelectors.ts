@@ -40,11 +40,7 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     return fieldName ? Boolean(summary.tests[fieldName]?.valid) : summary.valid;
   }
 
-  function isValidByGroup<G extends TGroupName>(
-    groupName: G,
-    fieldName?: F
-  ): boolean {
-    // @ts-ignore need to sort this one out
+  function isValidByGroup(groupName: G, fieldName?: F): boolean {
     const group = summary.groups[groupName];
 
     if (!group) {

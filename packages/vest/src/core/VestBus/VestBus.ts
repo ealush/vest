@@ -72,6 +72,5 @@ export enum Events {
   REMOVE_FIELD = 'remove_field',
   RESET_FIELD = 'reset_field',
   RESET_SUITE = 'reset_suite',
-  SUITE_CALLBACK_DONE_RUNNING = 'suite_callback_done_running', // TODO: IMPLEMENT
   SUITE_RUN_STARTED = 'suite_run_started',
 }

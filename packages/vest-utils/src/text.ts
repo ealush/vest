@@ -1,6 +1,5 @@
-import { isObject } from 'isObject';
-
 import { isEmpty } from 'isEmpty';
+import { isObject } from 'valueIsObject';
 
 const regexp = /{(.*?)}/g;
 

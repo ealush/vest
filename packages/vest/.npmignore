@@ -4,9 +4,11 @@ src
 !types/
 !dist/
 tsconfig.json
-!all/
-!any/
-!none/
-!one/
+!classnames/
+!enforce@compose/
+!enforce@compounds/
+!enforce@schema/
+!parser/
+!promisify/
 
 # Manual Section. Edit at will.

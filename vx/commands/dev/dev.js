@@ -6,6 +6,6 @@ module.exports = () => {
     `${vxPath.vxRoot()}/node_modules/.bin/onchange -d 5000 -i -k ${vxPath.packageSrc(
       '*',
       '**/*.ts'
-    )} ${vxPath.packageSrc('*', '**/*.ts')} -- vx tsconfig`
+    )} ${vxPath.packageSrc('*', '**/*.ts')} -- vx prepare`
   );
 };

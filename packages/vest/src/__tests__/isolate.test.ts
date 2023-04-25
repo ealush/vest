@@ -10,7 +10,7 @@ describe('isolate', () => {
   let firstRun = true;
   // eslint-disable-next-line no-unused-expressions
   require('IsolateTest').IsolateTest;
-  let Isolate = require('isolate').Isolate;
+  let Isolate = require('Isolate').Isolate;
   // eslint-disable-next-line no-unused-expressions
   require('IsolateEach').IsolateEach;
   let dummyTest: TDummyTest;
@@ -22,7 +22,7 @@ describe('isolate', () => {
     deferThrow = mock.deferThrow;
     // eslint-disable-next-line no-unused-expressions
     require('IsolateTest').IsolateTest;
-    Isolate = require('isolate').Isolate;
+    Isolate = require('Isolate').Isolate;
     // eslint-disable-next-line no-unused-expressions
     require('IsolateEach').IsolateEach;
     vest = mock.vest;

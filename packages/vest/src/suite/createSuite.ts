@@ -1,3 +1,4 @@
+import { Events } from 'Events';
 import { assign, CB } from 'vest-utils';
 
 import { IsolateSuite } from 'IsolateSuite';
@@ -16,7 +17,6 @@ import {
   TGroupName,
 } from 'SuiteResultTypes';
 import { Suite } from 'SuiteTypes';
-import { Events } from 'VestBus';
 import { getTypedMethods } from 'getTypedMethods';
 import { useCreateSuiteResult } from 'suiteResult';
 import { useSuiteRunResult } from 'suiteRunResult';

@@ -1,11 +1,11 @@
 import { deferThrow, isNullish, text } from 'vest-utils';
 
 import { ErrorStrings } from 'ErrorStrings';
+import type { Isolate } from 'Isolate';
 import { IsolateTest } from 'IsolateTest';
 import { Reconciler } from 'Reconciler';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isSameProfileTest } from 'isSameProfileTest';
-import { Isolate } from 'isolate';
 import { useVerifyTestRun } from 'verifyTestRun';
 
 export class IsolateTestReconciler extends Reconciler {

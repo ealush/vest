@@ -1,8 +1,7 @@
 import { optional, skipWhen, omitWhen, IsolateTest, group } from 'vest';
 import { CB } from 'vest-utils';
 
-import { Isolate, IsolateKey } from '../core/isolate/isolate';
-
+import { Isolate, IsolateKey } from 'Isolate';
 import { OptionalsInput } from 'OptionalTypes';
 import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';

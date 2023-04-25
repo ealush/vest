@@ -1,3 +1,4 @@
+import { Events } from 'Events';
 import { bus } from 'vest-utils';
 
 import { IsolateTest } from 'IsolateTest';
@@ -63,14 +64,4 @@ export function useInitVestBus() {
       cb(...args);
     });
   }
-}
-
-export enum Events {
-  TEST_RUN_STARTED = 'test_run_started',
-  TEST_COMPLETED = 'test_completed',
-  ALL_RUNNING_TESTS_FINISHED = 'all_running_tests_finished',
-  REMOVE_FIELD = 'remove_field',
-  RESET_FIELD = 'reset_field',
-  RESET_SUITE = 'reset_suite',
-  SUITE_RUN_STARTED = 'suite_run_started',
 }

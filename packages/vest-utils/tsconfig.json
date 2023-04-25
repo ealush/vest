@@ -27,7 +27,6 @@
       "isNull": ["src/isNull.ts"],
       "isNullish": ["src/isNullish.ts"],
       "isNumeric": ["src/isNumeric.ts"],
-      "isObject": ["src/isObject.ts"],
       "isPositive": ["src/isPositive.ts"],
       "isPromise": ["src/isPromise.ts"],
       "isStringValue": ["src/isStringValue.ts"],
@@ -42,6 +41,7 @@
       "text": ["src/text.ts"],
       "tinyState": ["src/tinyState.ts"],
       "utilityTypes": ["src/utilityTypes.ts"],
+      "valueIsObject": ["src/valueIsObject.ts"],
       "vest-utils": ["src/vest-utils.ts"]
     }
   }

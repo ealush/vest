@@ -12,6 +12,8 @@ packages/*/*
 !packages/*/package.json
 !packages/*/tsconfig.json
 !packages/*/testUtils
+!packages/*/.npmignore
+!packages/*/tsconfig.json
 .env
 
 playground.*

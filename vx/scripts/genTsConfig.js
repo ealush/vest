@@ -53,7 +53,7 @@ function writeTsConfig(path, tsConfig) {
   logger.log(`📝 Writing ts config to ${path}`);
 
   writeJSONSync(path, tsConfig, { spaces: 2 });
-  exec(`💅 yarn prettier ${path} -w`);
+  exec(`yarn prettier ${path} -w`);
 }
 
 function packageTsConfigTemplate(paths = []) {

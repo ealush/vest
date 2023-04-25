@@ -1,3 +1,4 @@
+import { Events } from 'Events';
 import { isPromise, isStringValue, BusType, text } from 'vest-utils';
 
 import { ErrorStrings } from 'ErrorStrings';
@@ -5,7 +6,6 @@ import { IsolateTest } from 'IsolateTest';
 import { persist, useVestBus } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
-import { Events } from 'VestBus';
 import { useVerifyTestRun } from 'verifyTestRun';
 
 export function useAttemptRunTestObjectByTier(testObject: IsolateTest) {

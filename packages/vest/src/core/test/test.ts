@@ -1,13 +1,13 @@
+import { Events } from 'Events';
 import { assign, invariant, isFunction, isStringValue, text } from 'vest-utils';
 
 import { ErrorStrings } from 'ErrorStrings';
+import { IsolateKey } from 'Isolate';
 import { IsolateTest } from 'IsolateTest';
 import { useEmit } from 'PersistedContext';
 import { useGroupName } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
-import { Events } from 'VestBus';
-import { IsolateKey } from 'isolate';
 import { useAttemptRunTestObjectByTier } from 'runTest';
 import { wrapTestMemo } from 'test.memo';
 

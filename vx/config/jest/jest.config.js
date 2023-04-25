@@ -38,6 +38,17 @@ module.exports = {
 function baseConfig() {
   return {
     clearMocks: true,
+    transform: {
+      '^.+\\.(ts|tsx)$': [
+        'ts-jest',
+        {
+          diagnostics: {
+            // Property '__DEV__' does not exist on type 'typeof globalThis'
+            ignoreCodes: ['TS2339'],
+          },
+        },
+      ],
+    },
     rootDir: vxPath.ROOT_PATH,
     roots: ['<rootDir>'],
     setupFiles: [
@@ -50,17 +61,6 @@ function baseConfig() {
       ),
     ].concat(setupAfterEnvPerPackage),
     testEnvironment: 'node',
-    transform: {
-      '^.+\\.(ts|tsx)$': [
-        'ts-jest',
-        {
-          diagnostics: {
-            // Property '__DEV__' does not exist on type 'typeof globalThis'
-            ignoreCodes: ['TS2339'],
-          },
-        },
-      ],
-    },
   };
 }
 

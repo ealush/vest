@@ -1,3 +1,4 @@
+import type { Events } from 'Events';
 import { createCascade } from 'context';
 import {
   invariant,
@@ -15,6 +16,7 @@ import {
 } from 'vest-utils';
 
 import { ErrorStrings } from 'ErrorStrings';
+import { Isolate } from 'Isolate';
 import type { IsolateSuite } from 'IsolateSuite';
 import {
   SuiteName,
@@ -22,8 +24,7 @@ import {
   TFieldName,
   TGroupName,
 } from 'SuiteResultTypes';
-import { Events, useInitVestBus } from 'VestBus';
-import { Isolate } from 'isolate';
+import { useInitVestBus } from 'VestBus';
 
 const suiteResultCache = cache<SuiteResult<TFieldName, TGroupName>>();
 

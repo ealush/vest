@@ -1,9 +1,9 @@
 import * as walker from 'walker';
 
+import { Isolate } from 'Isolate';
 import { IsolateTest } from 'IsolateTest';
 import { useAvailableSuiteRoot } from 'PersistedContext';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { Isolate } from 'isolate';
 import matchingFieldName from 'matchingFieldName';
 
 type MaybeRoot = Isolate | null;

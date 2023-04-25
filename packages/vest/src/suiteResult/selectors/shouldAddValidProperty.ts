@@ -1,3 +1,5 @@
+import { useIsOptionalFiedApplied } from 'optional';
+
 import { IsolateTest } from 'IsolateTest';
 import { OptionalFieldTypes } from 'OptionalTypes';
 import { useAvailableSuiteRoot } from 'PersistedContext';
@@ -10,7 +12,6 @@ import {
 } from 'hasFailuresByTestObjects';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
-import { useIsOptionalFiedApplied } from 'optional';
 
 export function useShouldAddValidProperty(fieldName?: TFieldName): boolean {
   // Is the field optional, and the optional condition is applied

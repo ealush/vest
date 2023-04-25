@@ -1,5 +1,6 @@
 import { CB, invariant, isPromise, seq } from 'vest-utils';
 
+import { Isolate, IsolateKey } from 'Isolate';
 import { IsolateTestReconciler } from 'IsolateTestReconciler';
 import {
   TestAction,
@@ -8,7 +9,6 @@ import {
 } from 'IsolateTestStateMachine';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestFn, AsyncTest, TestResult } from 'TestTypes';
-import { Isolate, IsolateKey } from 'isolate';
 import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
 
 export type IsolateTestInput = {

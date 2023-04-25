@@ -1,6 +1,6 @@
+import { Isolate } from 'Isolate';
 import { OptionalFieldDeclaration, OptionalFields } from 'OptionalTypes';
 import { TFieldName } from 'SuiteResultTypes';
-import { Isolate } from 'isolate';
 
 export class IsolateSuite extends Isolate {
   optional: OptionalFields = {};

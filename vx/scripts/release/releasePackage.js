@@ -1,3 +1,6 @@
+const logger = require('vx/logger');
+const { usePackage } = require('vx/vxContext');
+
 const build = require('./../build/buildPackage');
 const genDiffData = require('./genDiffData');
 const getDiff = require('./github/getDiff');
@@ -5,9 +8,6 @@ const publishPackage = require('./steps/publishPackage');
 const setNextVersion = require('./steps/setNextVersion');
 // const updateChangelog = require('./steps/updateChangelog');
 const updateLocalDepsToLatest = require('./steps/updateLocalDepsToLatest');
-
-const logger = require('vx/logger');
-const { usePackage } = require('vx/vxContext');
 
 function releasePackage({ isTopLevelChange }) {
   const pkgName = usePackage();

@@ -21,7 +21,7 @@
     "context": "^3.0.4",
     "n4s": "^4.3.3",
     "vast": "^1.0.14",
-    "vest-utils": "^0.0.4"
+    "vest-utils": "^0.1.0"
   },
   "exports": {
     "./classnames": {

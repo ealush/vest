@@ -1,5 +1,4 @@
 import { enforce } from 'n4s';
-import { optional } from 'optional';
 
 import type { IsolateTest } from 'IsolateTest';
 import type {
@@ -15,6 +14,7 @@ import { group } from 'group';
 import { include } from 'include';
 import { mode, Modes } from 'mode';
 import { omitWhen } from 'omitWhen';
+import { optional } from 'optional';
 import { skipWhen } from 'skipWhen';
 import { staticSuite } from 'staticSuite';
 import { suiteSelectors } from 'suiteSelectors';

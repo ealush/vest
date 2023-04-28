@@ -2,26 +2,28 @@
 sidebar_position: 3
 title: skipWhen for conditionally skipping tests
 description: In some cases we might need to skip a test or a group based on a condition, skipWhen is a helper function for this.
-keywords: [Vest, skipWhen, conditionally skip tests]
+keywords:
+  [vest, skipwhen, conditional exclusion, skipping tests, conditional tests]
 ---
 
 # skipWhen: Conditional Exclusion
 
-In some cases we might need to skip a test or a group based on a condition, for example - based on the intermediate state of the currently running suite. To allow this, you can use `skipWhen`. `skipWhen` takes a boolean expression and a callback with tests.
-If the expression is true, the tests within the callback will be skipped. Otherwise, the tests will run as normal.
+Sometimes, you might need to skip a test or a group based on a condition. For instance, you might need to skip tests based on the intermediate state of the currently running suite. In such cases, you can use `skipWhen`, which is a helper function that takes a boolean expression and a callback with tests. If the expression evaluates to `true`, the tests within the callback will be skipped, and if it's `false`, the tests will run as normal.
 
-:::tip Note
-When using `skipWhen` the tests within the block will be skipped, but will still be counted against isValid, so as long as the tests don't run - the suite will not be marked as valid. If you wish these tests to override suite validity, use [`omitWhen`](./omitWhen) instead.
-:::
+## Parameters
 
-## Params
+The skipWhen function takes the following parameters:
 
 | Name        | Type                   | Description                                                                                           |
 | :---------- | :--------------------- | :---------------------------------------------------------------------------------------------------- |
 | Conditional | `boolean`/`function`\* | The conditional expression to be evaluated. When Truthy, the tests within `skipWhen` will be skipped. |
 | Body        | `function`             | A callback function containing the tests to either skip or run.                                       |
 
-\* When using the function conditional, the function will be passed the current validation result as an argument, so it can be used to skip tests based on the current validation result.
+\* When using the function conditional, the function will be passed the current validation result as an argument so that it can be used to skip tests based on the current validation result.
+
+:::tip Note
+When using `skipWhen`, the tests within the block will be skipped, but will still be counted against `isValid`. As long as the tests don't run, the suite will not be marked as valid. If you wish these tests to override suite validity, use [`omitWhen`](./omitWhen) instead.
+:::
 
 ## Usage Example
 
@@ -32,13 +34,13 @@ import { create, test, enforce, skipWhen } from 'vest';
 
 export default create((data = {}) => {
   test('username', 'Username is required', () => {
-    enforce(data.username).isNotEmpty();
+    enforce(data.username).isNotBlank();
   });
 
   skipWhen(
     res => res.hasErrors('username'),
     () => {
-      test('username', 'Username already exists', () => {
+      test('username', 'Username already exists', async () => {
         // this is an example for a server call
         return doesUserExist(data.username);
       });
@@ -46,3 +48,7 @@ export default create((data = {}) => {
   );
 });
 ```
+
+In this example, we first validate that the `username` field is not empty. If it's empty, we report an error. Next, we use `skipWhen` to skip the verification of the username on the server-side if the `username` field has an error. If the `username` field does not have an error, we perform the server-side verification using a function called `doesUserExist`, which returns a promise that resolves to `true` if the username already exists, or `false` otherwise.
+
+Using `skipWhen` allows us to conditionally skip tests, depending on the state of the validation result. In this case, it helps us avoid unnecessary server-side requests if the `username` field is empty, or if it already has an error.

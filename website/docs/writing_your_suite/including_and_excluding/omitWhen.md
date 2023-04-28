@@ -2,7 +2,19 @@
 sidebar_position: 4
 title: conditionally omit tests from the suite
 description: Sometimes we wish to conditionally omit tests from the suite so they are not considered when running the suite, and not just skip them. Use omitWhen for that.
-keywords: [Vest, omitWhen, conditionally omit tests]
+keywords:
+  [
+    Vest,
+    omitWhen,
+    skipWhen,
+    conditional exclusion,
+    skipping tests,
+    conditional tests,
+    validation,
+    test skipping,
+    omit tests,
+    skip tests,
+  ]
 ---
 
 # omitWhen - Conditionally omit tests from a suite
@@ -13,9 +25,7 @@ Generally, when we skip fields, they are counted against `isValid`, meaning, unl
 
 ## Differences from `skipWhen`
 
-When using `skipWhen` the tests within the block will be skipped, but will still be counted against `isValid`. When using `omitWhen`, the tests within the block will be omitted, and will not be counted against `isValid`.
-
-This also means that the validation message of a test, enclosed by `omitWhen`, is omitted from the suite result if the condition for the `omitWhen` is true. It is unlike the `skipWhen` modifier which caches the validation message of an enclosed test if the test was skipped.
+Unlike `skipWhen`, tests omitted using `omitWhen` are not counted against `isValid`. Additionally, any validation message of an omitted test will be excluded from the suite result if the condition for the `omitWhen` is true.
 
 ## Params
 

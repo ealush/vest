@@ -2,16 +2,21 @@
 sidebar_position: 3
 title: Failing with a custom message
 description: Sometimes we wish to fail with a message based on the validation result. Here's how we can do this.
-keywords: [Vest, custom, message, failing, with, message]
+keywords:
+  [Vest, custom message, failing, validation, error message, enforce, test]
 ---
 
 # Failing with a custom message
 
-Sometimes your validation logic might result in different failure reasons that are unknown before you run the test. In this case the message argument is not as useful, and instead you should omit it. Vest allows you to provide the message within the test body itself by doing one of the following:
+Custom messages can be very useful when you don't know the validation result in the client, but get it from the server instead. This can happen when you're performing validation on user input and sending it to a server for processing. If there's an issue with the input, the server will send back a validation result, but it may not be immediately clear what went wrong. This is where custom messages can help.
+
+# Implementing Custom Messages in Vest
+
+Vest allows you to provide custom messages within the test body itself. There are a few different ways to do this:
 
 ## Enforce message
 
-A custom message can ban passed to enforce via the `message` modifier. Multiple messages can be passed as well in case you have multiple failure conditions.
+The `enforce` function in Vest allows you to pass a custom message using the `message` modifier. This can be useful if you have multiple failure conditions.
 
 The message must be specified before the rule it refers to, because once the rule failes, enforce throws immediately.
 
@@ -27,7 +32,7 @@ test('username', () => {
 
 ## Throwing a string
 
-If the message param is omitted, and the test throws a string value, the string will be used as the test's message:
+If the message parameter is omitted, and the test throws a string value, the string will be used as the test's message. This can be useful if you want to provide a custom message for a specific validation rule.
 
 ```js
 test('price', () => {

@@ -7,7 +7,7 @@ keywords: [Test, Validation, Logic]
 
 # The Test Function
 
-The `test` function represents a single case in your validation suite. It accepts the following arguments:
+The `test` function is the main function in Vest that holds your validation logic. It accepts the following arguments:
 
 | Name       | Type       | Optional | Description                                                           |
 | ---------- | ---------- | -------- | --------------------------------------------------------------------- |
@@ -18,16 +18,13 @@ The `test` function represents a single case in your validation suite. It accept
 
 A test can either be synchronous or asynchronous, and it can either have a severity of `error` or of `warn`.
 
-:::tip
-The test function is very similar to a unit test's `it` or `test` function, with some additions.
-:::
-
 ## How to fail a test?
 
-### Throwing inside your test body (using enforce)
+There are two ways to fail a test:
 
-Just like in most unit testing frameworks, a validation fails whenever the test body throws an exception. enforce throws an error on failed validations.
-When thrown with a string
+### Throwing an exception (using enforce)
+
+Just like in most unit testing frameworks, a validation fails whenever the test body throws an exception.
 
 ```js
 // const username = 'Gina.Vandervort';
@@ -63,7 +60,7 @@ test('tos', () => {
 });
 ```
 
-### Explicitly returning false
+### Returning false
 
 To make it easy to migrate your existing validation logic into Vest, it also supports validations explicitly returning `false` (and not any other falsy value) to represent failures.
 
@@ -80,6 +77,31 @@ test('password', 'Should be at least 6 characters long', () => {
 }); // this test fails
 ```
 
-### Rejecting a Promise
+### Rejecting a Promise (Asynchronous Tests)
 
-Read more in the next section on async tests.
+Asynchronous tests are executed asynchronously and return a Promise. The Promise will be resolved with a boolean value indicating whether the test passed or failed, or rejected with an error.
+
+To fail an asynchronous test, you can either throw an Error in the async function or reject the Promise.
+
+```js
+test('email', 'email is already taken', async () => {
+  const isTaken = await isEmailTaken(data.email);
+
+  enforce(isTaken).isFalse();
+});
+```
+
+Or with a promise:
+
+```js
+test('email', 'email is already taken', () => {
+  return isEmailTaken(data.email);
+});
+
+// returns a promise that rejects if the email is taken
+function isEmailTaken(email) {
+  /*...*/
+}
+```
+
+[Read more](./async_tests.md) on async tests.

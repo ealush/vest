@@ -1,6 +1,7 @@
 const logger = require('vx/logger');
 const packagesToRelease = require('vx/scripts/release/packagesToRelease');
 const releasePackage = require('vx/scripts/release/releasePackage');
+const commitChangesToGit = require('vx/scripts/release/steps/commitChangesToGit');
 const { isReleaseBranch } = require('vx/util/taggedBranch');
 const {
   targetPackage,
@@ -10,9 +11,7 @@ const {
 const { usePackage } = require('vx/vxContext');
 const ctx = require('vx/vxContext');
 
-const commitChangesToGit = require('../../scripts/release/steps/commitChangesToGit');
-
-require('../../scripts/genTsConfig');
+require('vx/scripts/genTsConfig');
 
 function release({ isTopLevelChange }) {
   if (!branchAllowsRelease) {

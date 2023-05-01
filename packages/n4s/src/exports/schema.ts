@@ -1,8 +1,8 @@
-import { enforce } from 'n4s';
 
 import { EnforceCustomMatcher } from 'enforceUtilityTypes';
 import { isArrayOf } from 'isArrayOf';
 import { loose } from 'loose';
+import { enforce } from 'n4s';
 import { optional } from 'optional';
 import { shape } from 'shape';
 

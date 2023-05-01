@@ -1,24 +1,38 @@
-const exec = require('vx/exec');
+const { writeJSONSync } = require('fs-extra');
+
 const logger = require('vx/logger');
+const packageJson = require('vx/util/packageJson');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
-const packageJson = require('../../../util/packageJson');
-
 function setNextVersion({ tagId, tag, nextVersion }) {
+  const packageName = usePackage();
+  const existingPkgJson = packageJson(packageName);
+
+  const prevVersion = existingPkgJson.version;
+
   nextVersion = tag ? tagId : nextVersion;
 
-  const command = `yarn --cwd ${vxPath.package()} version --no-git-tag-version --new-version ${nextVersion}`;
+  const nextPackageJson = { ...existingPkgJson, version: nextVersion };
 
-  logger.info(`🔢 Setting next version for ${usePackage()}.
-  Running: ${command}
-  `);
-
-  exec(command);
+  existingPkgJson.version = nextVersion;
 
   logger.info(
-    `🔢 Updated ${usePackage()} version to: ` + packageJson().version
+    `🔢 Setting next version for ${usePackage()}. From ${prevVersion} to ${nextVersion}`
   );
+
+  writeJSONSync(vxPath.packageJson(packageName), nextPackageJson, {
+    spaces: 2,
+  });
+
+  const updated = packageJson(packageName);
+
+  if (updated.version !== nextVersion) {
+    logger.error(
+      `🚨 Failed to update ${usePackage()} version to: ` + nextVersion
+    );
+    return process.exit(1);
+  }
 }
 
 module.exports = setNextVersion;

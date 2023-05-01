@@ -1,6 +1,7 @@
 const path = require('path');
 
 const glob = require('glob');
+
 const opts = require('vx/opts');
 const packageNames = require('vx/packageNames');
 const pathsPerPackage = require('vx/util/pathsPerPackage');

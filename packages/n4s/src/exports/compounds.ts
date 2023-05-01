@@ -1,9 +1,9 @@
-import { enforce } from 'n4s';
 
 import { allOf } from 'allOf';
 import { anyOf } from 'anyOf';
 import { EnforceCustomMatcher } from 'enforceUtilityTypes';
 import { Lazy } from 'genEnforceLazy';
+import { enforce } from 'n4s';
 import { noneOf } from 'noneOf';
 import { oneOf } from 'oneOf';
 import { RuleDetailedResult } from 'ruleReturn';

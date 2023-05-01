@@ -1,8 +1,7 @@
 const execSync = require('child_process').execSync;
 
 const logger = require('vx/logger');
-
-const joinTruthy = require('./util/joinTruthy');
+const joinTruthy = require('vx/util/joinTruthy');
 
 function exec(
   command,

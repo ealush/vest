@@ -1,4 +1,5 @@
 const { memoize } = require('lodash');
+
 const packageNames = require('vx/packageNames');
 const packageJson = require('vx/util/packageJson');
 

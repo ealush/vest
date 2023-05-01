@@ -1,10 +1,10 @@
+const cleanupDistFiles = require('./cleanupDistFiles');
+
 const exec = require('vx/exec');
 const logger = require('vx/logger');
 const opts = require('vx/opts');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
-
-const cleanupDistFiles = require('./cleanupDistFiles');
 
 function buildPackage(options = {}) {
   const name = usePackage();

@@ -1,6 +1,7 @@
 const path = require('path');
 
 const glob = require('glob');
+
 const packageJson = require('vx/util/packageJson');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');

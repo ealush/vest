@@ -1,15 +1,15 @@
 const path = require('path');
 
 const { sample } = require('lodash');
-
-const listAllChangesSinceStableBranch = require('../github/listAllChangesSinceStableBranch');
-const matchPackageNameInCommit = require('../github/matchPackageNameInCommit');
-
 const exec = require('vx/exec');
 const logger = require('vx/logger');
+const opts = require('vx/opts');
 const packageNames = require('vx/packageNames');
 const packageJson = require('vx/util/packageJson');
 const vxPath = require('vx/vxPath');
+
+const listAllChangesSinceStableBranch = require('../github/listAllChangesSinceStableBranch');
+const matchPackageNameInCommit = require('../github/matchPackageNameInCommit');
 
 const RELEASE_SCRIPTS = path.resolve(
   vxPath.VX_SCRIPTS_PATH,
@@ -55,7 +55,7 @@ function filterChangedPackages(commits) {
       return (
         !!title.match(matchPackageNameInCommit(packageName)) ||
         !!files.some(file => {
-          return file.match(`packages/${packageName}`);
+          return file.match(`${opts.dir.PACKAGES}/${packageName}`);
         })
       );
     });

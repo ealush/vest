@@ -43,7 +43,7 @@
       "runTest": ["src/core/test/testLevelFlowControl/runTest.ts"],
       "verifyTestRun": ["src/core/test/testLevelFlowControl/verifyTestRun.ts"],
       "TestTypes": ["src/core/test/TestTypes.ts"],
-      "Events": ["src/core/VestBus/Events.ts"],
+      "BusEvents": ["src/core/VestBus/BusEvents.ts"],
       "VestBus": ["src/core/VestBus/VestBus.ts"],
       "ErrorStrings": ["src/errors/ErrorStrings.ts"],
       "classnames": ["src/exports/classnames.ts"],

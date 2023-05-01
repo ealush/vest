@@ -14,7 +14,6 @@ const packageJson = require('vx/util/packageJson');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
-
 module.exports = function getPlugins({
   env = opts.env.PRODUCTION,
   packageName = usePackage(),
@@ -50,6 +49,7 @@ module.exports = function getPlugins({
         fileName: vxPath.packageTsConfig(packageName),
         // eslint-disable-next-line complexity
         hook: resolvedConfig => {
+          console.log(resolvedConfig);
           resolvedConfig.rootDir = vxPath.package(packageName);
 
           if (disallowExternals) {

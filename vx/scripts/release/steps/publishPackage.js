@@ -8,7 +8,6 @@ const { isReleaseBranch } = require('vx/util/taggedBranch');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
-
 function publishPackage({ tag, tagId, nextVersion }) {
   const versionToUse = tag && tagId ? tagId : nextVersion;
 
@@ -55,11 +54,7 @@ ${joinTruthy(command, ' ')}`,
 }
 
 function genPublishCommand(versionToUse, tag) {
-  return [
-    `yarn --cwd ${vxPath.package()} publish`,
-    `--new-version ${versionToUse}`,
-    tag && `--tag ${tag}`,
-  ];
+  return ['pnpm', `--filter ${usePackage()}`, 'publish', tag && `--tag ${tag}`];
 }
 
 function shouldPublishPreRelease(versionToUse) {

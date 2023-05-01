@@ -16,9 +16,16 @@
     "rollup": "^2.79.1",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-ts": "^3.0.2",
+    "semver": "^7.5.0",
     "ts-jest": "^29.0.0",
     "vest-utils": "0.0.3",
-    "yargs": "^17.6.2"
+    "yargs": "^17.6.2",
+    "tsc": "^2.0.4",
+    "tslib": "^2.4.1",
+    "typescript": "^4.8.4"
+  },
+  "scripts": {
+    "rollup": "node_modules/.bin/rollup"
   },
   "name": "vx",
   "private": true,

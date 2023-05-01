@@ -1,0 +1,5 @@
+packages:
+  - 'packages/*'
+  - 'website'
+  - 'vx'
+  - 'vx/eslint-plugin-vest-internal'

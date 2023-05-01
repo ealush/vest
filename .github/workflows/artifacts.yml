@@ -23,11 +23,11 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - uses: bahmutov/npm-install@v1
       - name: Build Types
-        run: yarn build
+        run: pnpm build
       - name: Test
-        run: yarn test
+        run: pnpm test
       - name: Lint
-        run: yarn lint
+        run: pnpm lint
       - name: Set npmrc
         run: echo //registry.npmjs.org/:_authToken=$NPM_TOKEN > ~/.npmrc
         env:
@@ -37,7 +37,7 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
       - name: Release
-        run: yarn release
+        run: pnpm release
         env:
           RELEASE_BRANCH: release
           INTEGRATION_BRANCH: integration

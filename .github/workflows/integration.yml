@@ -28,17 +28,17 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - uses: bahmutov/npm-install@v1
       - name: Build Types
-        run: yarn build --buildSingle
+        run: pnpm build --buildSingle
       - name: Test
-        run: yarn test
+        run: pnpm test
       - name: Lint
-        run: yarn lint
+        run: pnpm lint
       - name: Set npmrc
         run: echo //registry.npmjs.org/:_authToken=$NPM_TOKEN > ~/.npmrc
         env:
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
       - name: Release
-        run: yarn release
+        run: pnpm release
         env:
           RELEASE_BRANCH: release
           INTEGRATION_BRANCH: integration

@@ -54,7 +54,7 @@ function writeTsConfig(path, tsConfig) {
   logger.log(`📝 Writing ts config to ${path}`);
 
   writeJSONSync(path, tsConfig, { spaces: 2 });
-  exec(`yarn prettier ${path} -w`);
+  exec(`pnpm prettier ${path} -w`);
 }
 
 function packageTsConfigTemplate(paths = []) {
@@ -80,7 +80,7 @@ function rootTsConfigTemplate() {
       esModuleInterop: true,
       forceConsistentCasingInFileNames: true,
       importHelpers: true,
-      lib: ['esnext'],
+      lib: ['esnext', 'dom'],
       module: 'esnext',
       moduleResolution: 'node',
       noEmit: true,

@@ -21,7 +21,7 @@ function buildPackage(options = {}) {
   }
 
   exec([
-    `rollup -c`,
+    `pnpm --filter vx rollup -c`,
     vxPath.ROLLUP_CONFIG_PATH,
     format.length && `--format=${format}`,
   ]);

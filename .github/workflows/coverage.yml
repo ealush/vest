@@ -22,11 +22,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Build Types
-        run: yarn build --buildSingle
+        run: pnpm build --buildSingle
       - name: Jest coverage report
         uses: ArtiomTr/jest-coverage-report-action@v2
         with:
           skip-step: install
-          test-script: yarn jest
+          test-script: pnpm jest

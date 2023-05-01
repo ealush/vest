@@ -6,8 +6,8 @@
     "lint": "eslint . --ignore-path .gitignore",
     "prepare": "husky install",
     "dev": "vx dev",
-    "website:start": "yarn workspace website start",
-    "website:build": "yarn workspace website build",
+    "website:start": "pnpm --filter website start ",
+    "website:build": "pnpm --filter website build ",
     "jest": "vx prepare && jest"
   },
   "prettier": {
@@ -36,10 +36,7 @@
     "lodash": "^4.17.21",
     "prettier": "^2.7.1",
     "pretty-quick": "^3.1.1",
-    "tsc": "^2.0.4",
-    "tslib": "^2.4.1",
-    "typescript": "^4.8.4",
-    "vx": "./vx",
+    "vx": "^0.0.0",
     "wait": "^0.4.2"
   },
   "private": true,

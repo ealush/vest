@@ -1,5 +1,8 @@
 const fs = require('fs');
 
+const { format, disallowExternals } = require('./format');
+const getPlugins = require('./getPlugins');
+
 const opts = require('vx/opts');
 const concatTruthy = require('vx/util/concatTruthy');
 const {
@@ -11,9 +14,6 @@ const packageJson = require('vx/util/packageJson');
 const pathsPerPackage = require('vx/util/pathsPerPackage');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
-
-const { format, disallowExternals } = require('./format');
-const getPlugins = require('./getPlugins');
 
 const buildSingle = JSON.parse(
   process.env.ROLLUP_WATCH ?? process.env.VX_BUILD_SINGLE ?? false

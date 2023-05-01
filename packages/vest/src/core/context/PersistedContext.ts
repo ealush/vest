@@ -1,4 +1,3 @@
-import type { Events } from 'Events';
 import { createCascade } from 'context';
 import {
   invariant,
@@ -15,6 +14,7 @@ import {
   text,
 } from 'vest-utils';
 
+import type { Events } from 'BusEvents';
 import { ErrorStrings } from 'ErrorStrings';
 import { Isolate } from 'Isolate';
 import type { IsolateSuite } from 'IsolateSuite';

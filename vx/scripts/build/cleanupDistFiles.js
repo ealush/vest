@@ -2,7 +2,6 @@ const path = require('path');
 
 const fse = require('fs-extra');
 const glob = require('glob');
-
 const vxPath = require('vx/vxPath');
 
 function cleanupDistFiles(packageName) {

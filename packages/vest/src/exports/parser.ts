@@ -1,8 +1,8 @@
+import { suiteSelectors } from 'vest';
 import { hasOwnProperty, invariant, isNullish, isPositive } from 'vest-utils';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { SuiteSummary, TFieldName, TGroupName } from 'SuiteResultTypes';
-import { suiteSelectors } from 'vest';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - Need to understand why Vest is not being recognized

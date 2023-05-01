@@ -1,7 +1,6 @@
 const path = require('path');
 
 const glob = require('glob');
-
 const opts = require('vx/opts');
 const packageNames = require('vx/packageNames');
 const pathsPerPackage = require('vx/util/pathsPerPackage');
@@ -39,17 +38,6 @@ module.exports = {
 function baseConfig() {
   return {
     clearMocks: true,
-    transform: {
-      '^.+\\.(ts|tsx)$': [
-        'ts-jest',
-        {
-          diagnostics: {
-            // Property '__DEV__' does not exist on type 'typeof globalThis'
-            ignoreCodes: ['TS2339'],
-          },
-        },
-      ],
-    },
     rootDir: vxPath.ROOT_PATH,
     roots: ['<rootDir>'],
     setupFiles: [
@@ -62,6 +50,17 @@ function baseConfig() {
       ),
     ].concat(setupAfterEnvPerPackage),
     testEnvironment: 'node',
+    transform: {
+      '^.+\\.(ts|tsx)$': [
+        'ts-jest',
+        {
+          diagnostics: {
+            // Property '__DEV__' does not exist on type 'typeof globalThis'
+            ignoreCodes: ['TS2339'],
+          },
+        },
+      ],
+    },
   };
 }
 

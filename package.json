@@ -5,6 +5,7 @@
     "release": "vx release",
     "lint": "eslint . --ignore-path .gitignore",
     "prepare": "husky install",
+    "postinstall": "yarn build",
     "dev": "vx dev",
     "website:start": "yarn workspace website start",
     "website:build": "yarn workspace website build",
@@ -47,5 +48,6 @@
     "type": "git",
     "url": "https://github.com/ealush/vest.git"
   },
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "packageManager": "yarn@3.5.0"
 }

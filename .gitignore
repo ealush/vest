@@ -16,6 +16,8 @@ packages/*/*
 !packages/*/tsconfig.json
 .env
 
+!.husky/_/*
+
 playground.*
 
 .vscode
@@ -131,4 +133,5 @@ dist
 !.yarn/plugins
 !.yarn/sdks
 !.yarn/versions
+!.yarnrc.yml
 .pnp.*

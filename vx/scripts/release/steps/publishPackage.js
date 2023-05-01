@@ -54,11 +54,8 @@ ${joinTruthy(command, ' ')}`,
 }
 
 function genPublishCommand(versionToUse, tag) {
-  return [
-    `yarn --cwd ${vxPath.package()} publish`,
-    `--new-version ${versionToUse}`,
-    tag && `--tag ${tag}`,
-  ];
+  const package = usePackage();
+  return [`yarn workspace ${package} npm publish`, tag && `--tag ${tag}`];
 }
 
 function shouldPublishPreRelease(versionToUse) {

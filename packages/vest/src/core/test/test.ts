@@ -1,6 +1,6 @@
-import { Events } from 'Events';
 import { assign, invariant, isFunction, isStringValue, text } from 'vest-utils';
 
+import { Events } from 'BusEvents';
 import { ErrorStrings } from 'ErrorStrings';
 import { IsolateKey } from 'Isolate';
 import { IsolateTest } from 'IsolateTest';

@@ -3,17 +3,15 @@ const replace = require('@rollup/plugin-replace');
 const _ = require('lodash');
 const { terser } = require('rollup-plugin-terser');
 const ts = require('rollup-plugin-ts');
-
-const { disallowExternals } = require('./format');
-const addCJSPackageJson = require('./plugins/addCJSPackageJson');
-const addModulePackageJson = require('./plugins/addModulePackageJson');
-const handleExports = require('./plugins/handleExports');
-
 const opts = require('vx/opts');
 const packageJson = require('vx/util/packageJson');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
+const { disallowExternals } = require('./format');
+const addCJSPackageJson = require('./plugins/addCJSPackageJson');
+const addModulePackageJson = require('./plugins/addModulePackageJson');
+const handleExports = require('./plugins/handleExports');
 
 module.exports = function getPlugins({
   env = opts.env.PRODUCTION,

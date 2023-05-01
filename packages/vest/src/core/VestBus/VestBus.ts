@@ -1,6 +1,6 @@
-import { Events } from 'Events';
 import { bus } from 'vest-utils';
 
+import { Events } from 'BusEvents';
 import { IsolateTest } from 'IsolateTest';
 import {
   useExpireSuiteResultCache,

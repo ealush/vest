@@ -1,6 +1,6 @@
-import { Events } from 'Events';
 import { assign, CB } from 'vest-utils';
 
+import { Events } from 'BusEvents';
 import { IsolateSuite } from 'IsolateSuite';
 import {
   useCreateVestState,

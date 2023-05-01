@@ -1,10 +1,10 @@
+const { usePackage } = require('vx/vxContext');
+const vxPath = require('vx/vxPath');
+
 const { dependsOn } = require('../depsTree');
 
 const listAllChangesSinceStableBranch = require('./listAllChangesSinceStableBranch');
 const matchPackageNameInCommit = require('./matchPackageNameInCommit');
-
-const { usePackage } = require('vx/vxContext');
-const vxPath = require('vx/vxPath');
 
 // [{title: "...", files: ["..."]}] ...
 function getDiff(packageName = usePackage()) {

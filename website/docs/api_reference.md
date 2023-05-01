@@ -63,7 +63,7 @@ Below is a list of all the API functions exposed by Vest.
 
 - [staticSuite](./server_side_validations.md) - creates a stateless suite that is used for server side validations.
 
-- [test](./writing_tests/using_the_test_function.md) - A single validation test inside your suite.
+- [test](./writing_tests/the_test_function.md) - A single validation test inside your suite.
 
   - [test.memo](./writing_tests/advanced_test_features/test.memo.md) - Memoizes a test run as long as its dependencies haven't changed.
   - [warn](./writing_tests/warn_only_tests.md) - resides within the test body. Sets the test's severity to warning.

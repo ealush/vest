@@ -8,7 +8,8 @@
     "dev": "vx dev",
     "website:start": "yarn workspace website start",
     "website:build": "yarn workspace website build",
-    "jest": "vx prepare && jest"
+    "jest": "vx prepare && jest",
+    "postinstall": "vx build --buildSingle"
   },
   "prettier": {
     "arrowParens": "avoid",

@@ -1,10 +1,8 @@
 import { mapFirst, optionalFunctionValue, CB, Stringable } from 'vest-utils';
 
-import eachEnforceRule from 'eachEnforceRule';
 import { ctx } from 'enforceContext';
-import isProxySupported from 'isProxySupported';
 import ruleReturn, { defaultToPassing, RuleDetailedResult } from 'ruleReturn';
-import { RuleValue, Args, KBaseRules, getRule } from 'runtimeRules';
+import { RuleValue, Args, getRule } from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
 // eslint-disable-next-line max-lines-per-function
@@ -50,14 +48,6 @@ export default function genEnforceLazy(key: string) {
           return proxy;
         },
       } as Lazy;
-
-      if (!isProxySupported()) {
-        eachEnforceRule((ruleName: KBaseRules) => {
-          proxy[ruleName] = addLazyRule(ruleName);
-        });
-
-        return proxy;
-      }
 
       // reassigning the proxy here is not pretty
       // but it's a cleaner way of getting `run` and `test` for free

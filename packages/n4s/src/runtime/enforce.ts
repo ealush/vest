@@ -1,11 +1,9 @@
 import { assign } from 'vest-utils';
 
-import eachEnforceRule from 'eachEnforceRule';
 import { ctx, EnforceContext } from 'enforceContext';
 import enforceEager, { EnforceEager } from 'enforceEager';
 import genEnforceLazy, { LazyRules } from 'genEnforceLazy';
-import isProxySupported from 'isProxySupported';
-import { Rule, KBaseRules, baseRules, getRule } from 'runtimeRules';
+import { Rule, baseRules, getRule } from 'runtimeRules';
 /**
  * Enforce is quite complicated, I want to explain it in detail.
  * It is dynamic in nature, so a lot of proxy objects are involved.
@@ -38,11 +36,8 @@ function genEnforce(): Enforce {
     context: () => ctx.useX(),
     extend: (customRules: Rule) => {
       assign(baseRules, customRules);
-      handleNoProxy(); // TODO: REMOVE when we stop supporting ES5
     },
   } as Enforce;
-
-  handleNoProxy();
 
   return new Proxy(assign(enforceEager, target) as Enforce, {
     get: (target: Enforce, key: string) => {
@@ -58,17 +53,6 @@ function genEnforce(): Enforce {
       return genEnforceLazy(key);
     },
   });
-
-  function handleNoProxy() {
-    if (!isProxySupported()) {
-      eachEnforceRule((ruleName: KBaseRules) => {
-        // Only on the first rule access - start the chain of calls
-        target[ruleName] = genEnforceLazy(ruleName);
-      });
-
-      return assign(enforceEager, target);
-    }
-  }
 }
 
 export const enforce = genEnforce();

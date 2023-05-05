@@ -12,7 +12,7 @@ export type RuleBase = (value: RuleValue, ...args: Args) => RuleReturn;
 export type Rule = Record<string, RuleBase>;
 
 type BaseRules = typeof baseRules;
-export type KBaseRules = keyof BaseRules;
+type KBaseRules = keyof BaseRules;
 
 const baseRules = rules();
 

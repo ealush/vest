@@ -1,9 +1,7 @@
 import { invariant, StringObject, isNullish } from 'vest-utils';
 
-import eachEnforceRule from 'eachEnforceRule';
 import { ctx } from 'enforceContext';
-import isProxySupported from 'isProxySupported';
-import { getRule, RuleValue, Args, RuleBase, KBaseRules } from 'runtimeRules';
+import { getRule, RuleValue, Args, RuleBase } from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
 type IRules = n4s.IRules<Record<string, any>>;
@@ -19,19 +17,6 @@ export default function enforceEager(value: RuleValue): EnforceEagerReturn {
     message,
   } as EnforceEagerReturn;
   let customMessage: string | undefined = undefined;
-
-  // This condition is for when we don't have proxy support (ES5).
-  // In this case, we need to manually assign the rules to the target object on runtime.
-  // The follow up proxy block is used in case we do have proxy support, and we can assign each rule upon invocation.
-  if (!isProxySupported()) {
-    // We iterate over each of the rules, and add them to the target object being return by enforce
-    eachEnforceRule((ruleName: KBaseRules, ruleFn) => {
-      // We then wrap the rule with `genRuleCall` that adds the base enforce behavior
-      target[ruleName] = genRuleCall(target, ruleFn, ruleName);
-    });
-
-    return target;
-  }
 
   // We create a proxy intercepting access to the target object (which is empty).
   const proxy: EnforceEagerReturn = new Proxy(target, {

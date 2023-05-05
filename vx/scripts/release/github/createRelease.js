@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+
 const logger = require('vx/logger');
 
 const { GITHUB_REPOSITORY, PUBLIC_REPO_TOKEN } = process.env;

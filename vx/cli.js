@@ -4,14 +4,15 @@ const path = require('path');
 
 const dotenv = require('dotenv');
 const glob = require('glob');
+const { hideBin } = require('yargs/helpers');
+const yargs = require('yargs/yargs');
+
 const logger = require('vx/logger');
 const packageNames = require('vx/packageNames');
 const joinTruthy = require('vx/util/joinTruthy');
 const { usePackage } = require('vx/vxContext');
 const ctx = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
-const { hideBin } = require('yargs/helpers');
-const yargs = require('yargs/yargs');
 
 dotenv.config();
 

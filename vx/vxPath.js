@@ -6,8 +6,6 @@ const { usePackage } = require('vx/vxContext');
 
 const vxPath = {};
 
-const VX = 'vx';
-
 vxPath.vxRoot = () => {
   return vxPath.closest(process.cwd(), (current, breakout) => {
     const pkgJsonPath = path.resolve(current, opts.fileNames.PACKAGE_JSON);
@@ -18,7 +16,7 @@ vxPath.vxRoot = () => {
 
     const pkgJson = require(pkgJsonPath);
 
-    if (pkgJson[VX]) {
+    if (pkgJson[opts.packageJsonFields.VX]) {
       breakout(current);
     }
   });
@@ -97,21 +95,21 @@ vxPath.rel = absolutePath => {
 
 vxPath.ROOT_PATH = vxPath.vxRoot();
 
-vxPath.VX_ROOT_PATH = path.resolve(vxPath.ROOT_PATH, VX);
+vxPath.VX_ROOT_PATH = path.resolve(vxPath.ROOT_PATH, opts.packageJsonFields.VX);
 
 vxPath.VX_CONFIG_PATH = path.resolve(vxPath.VX_ROOT_PATH, opts.dir.CONFIG);
 
-vxPath.VX_SCRIPTS_PATH = path.resolve(vxPath.VX_ROOT_PATH, 'scripts');
+vxPath.VX_SCRIPTS_PATH = path.resolve(vxPath.VX_ROOT_PATH, opts.dir.SCRIPTS);
 
-vxPath.VX_COMMANDS_PATH = path.resolve(vxPath.VX_ROOT_PATH, 'commands');
+vxPath.VX_COMMANDS_PATH = path.resolve(vxPath.VX_ROOT_PATH, opts.dir.COMMANDS);
 
 vxPath.ROLLUP_CONFIG_PATH = path.resolve(
   vxPath.VX_CONFIG_PATH,
-  'rollup',
-  'rollup.config.cjs'
+  opts.dir.ROLLUP,
+  opts.fileNames.ROLLUP_CONFIG
 );
 
-vxPath.JEST_CONFIG_PATH = path.resolve(vxPath.VX_CONFIG_PATH, 'jest');
+vxPath.JEST_CONFIG_PATH = path.resolve(vxPath.VX_CONFIG_PATH, opts.dir.JEST);
 
 vxPath.JEST_CONFIG_FILE_PATH = path.resolve(
   vxPath.JEST_CONFIG_PATH,

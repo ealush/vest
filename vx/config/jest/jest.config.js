@@ -1,6 +1,7 @@
 const path = require('path');
 
 const glob = require('glob');
+
 const opts = require('vx/opts');
 const packageNames = require('vx/packageNames');
 const pathsPerPackage = require('vx/util/pathsPerPackage');
@@ -10,7 +11,7 @@ const vxPath = require('vx/vxPath');
 const setupPerPackage = glob.sync(
   vxPath.packageConfigPath(
     usePackage() ?? '*',
-    'jest',
+    opts.dir.JEST,
     opts.fileNames.JEST_SETUP
   )
 );
@@ -18,7 +19,7 @@ const setupPerPackage = glob.sync(
 const setupAfterEnvPerPackage = glob.sync(
   vxPath.packageConfigPath(
     usePackage() ?? '*',
-    'jest',
+    opts.dir.JEST,
     opts.fileNames.JEST_SETUP_AFTER_ENV
   )
 );

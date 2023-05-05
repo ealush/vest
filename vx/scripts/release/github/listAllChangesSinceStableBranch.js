@@ -1,8 +1,8 @@
 const exec = require('child_process').execSync;
 
-const { STABLE_BRANCH, CURRENT_BRANCH } = require('vx/util/taggedBranch');
-
 const IGNORE_PATTERN = require('./commitIgnorePattern');
+
+const { STABLE_BRANCH, CURRENT_BRANCH } = require('vx/util/taggedBranch');
 
 /**
  * Lists all the commits and their changed files:

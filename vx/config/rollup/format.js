@@ -1,5 +1,6 @@
-const opts = require('vx/opts');
 const yargs = require('yargs/yargs');
+
+const opts = require('vx/opts');
 
 const format = [].concat(
   yargs(process.argv).argv.format ?? [

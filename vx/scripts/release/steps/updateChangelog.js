@@ -2,10 +2,6 @@ const fs = require('fs');
 
 const { format } = require('date-fns');
 const fse = require('fs-extra');
-const logger = require('vx/logger');
-const writeFileSync = require('vx/util/writeFileSync');
-const { usePackage } = require('vx/vxContext');
-const vxPath = require('vx/vxPath');
 
 const determineLevel = require('../determineChangeLevel');
 const {
@@ -14,6 +10,12 @@ const {
   KEYWORD_PATCH,
   CHANGELOG_TITLES,
 } = require('../releaseKeywords');
+
+const logger = require('vx/logger');
+const opts = require('vx/opts');
+const writeFileSync = require('vx/util/writeFileSync');
+const { usePackage } = require('vx/vxContext');
+const vxPath = require('vx/vxPath');
 
 function updateChangelog({ messages, nextVersion }) {
   logger.info('📝 Updating changelog.');
@@ -65,7 +67,7 @@ function groupMessages(messages) {
 }
 
 function changelogPath() {
-  return vxPath.package(usePackage(), './CHANGELOG.md');
+  return vxPath.package(usePackage(), opts.fileNames.CHANGELOG);
 }
 
 function getChangelog() {

@@ -1,4 +1,7 @@
 const fse = require('fs-extra');
+
+const { TAG_NEXT, TAG_DEV } = require('../releaseKeywords');
+
 const logger = require('vx/logger');
 const packageNames = require('vx/packageNames');
 const packageJson = require('vx/util/packageJson');
@@ -8,8 +11,6 @@ const {
   targetPackage,
 } = require('vx/util/taggedBranch');
 const vxPath = require('vx/vxPath');
-
-const { TAG_NEXT, TAG_DEV } = require('../releaseKeywords');
 
 // eslint-disable-next-line complexity
 module.exports = function updateLocalDepsToLatest() {

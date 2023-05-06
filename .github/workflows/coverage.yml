@@ -3,7 +3,7 @@ name: Coverage
 on:
   pull_request:
     branches:
-      - latest
+      - '*'
       - '!dependabot/**'
 
 jobs:
@@ -22,10 +22,6 @@ jobs:
         with:
           fetch-depth: 0
       - uses: bahmutov/npm-install@v1
-      - name: Install
-        run: yarn install --frozen-lockfile
-      - name: Build Types
-        run: yarn build --buildSingle
       - name: Jest coverage report
         uses: ArtiomTr/jest-coverage-report-action@v2
         with:

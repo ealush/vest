@@ -27,8 +27,6 @@ jobs:
         with:
           fetch-depth: 0
       - uses: bahmutov/npm-install@v1
-      - name: Build Types
-        run: yarn build --buildSingle
       - name: Test
         run: yarn test
       - name: Lint

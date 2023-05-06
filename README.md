@@ -6,11 +6,9 @@
 
 ![Vest](https://cdn.jsdelivr.net/gh/ealush/vest@assets/logo_250.png 'Vest')
 
-Vest is a form-validation framework inspired by unit testing libraries like Mocha or Jest; It is designed to be easy to use and easy to learn by introducing their declarative syntax.
+Vest is a declarative validations framework designed to simplify the process of writing and maintaining form validations for your web application. Inspired by popular unit testing libraries such as Mocha and Jest, Vest allows developers to describe their validation requirements using a suite-like syntax, separating validation logic from feature logic to create more maintainable and readable code.
 
-The idea behind Vest is that your validations can be described as a suite - a contract that reflects your form or feature structure. Vest is framework agnostic, meaning it can be used with any UI framework, or without any framework at all.
-
-Using Vest for form validation can reduce bloat, improve feature readability and maintainability.
+Vest's framework-agnostic approach means that it can be used with any UI framework, or without any framework at all. With Vest, you can reduce code bloat, improve feature readability and maintainability, and enhance the user experience of your web application.
 
 ```js
 test('username', 'Username is required', () => {
@@ -34,21 +32,45 @@ npm i vest
 
 ## Motivation
 
-Writing forms is an integral part of building web apps, and even though it may seem trivial at first - as your feature grows over time, so does your validation logic grows in complexity.
+Building web applications often involves writing complex forms that require validation. As the complexity of these forms increases, so does the complexity of the validation logic required to ensure data is accurate and complete.
 
-Vest tries to remediate this by separating validation logic from feature logic, so it's easier to maintain over time and refactor when needed.
+At this point, developers may start to experience issues with code bloat, poor maintainability, and difficulty in managing validation logic across different features of an application. This can lead to bugs, errors, and a poor user experience.
+
+Vest was designed to address these issues by providing a simple, intuitive way to write form validation that is easy to learn, scalable, and extensible. By separating validation logic from feature logic, Vest helps developers create maintainable code that is easy to update, debug, and refactor.
+
+With Vest, developers can reduce the complexity and increase the readability of their code, leading to more efficient development cycles, fewer bugs, and a better user experience overall.
 
 # Why Vest?
 
-💡 Vest is easy to Learn. Vest adopts the syntax and style of unit testing frameworks, so you can leverage the knowledge you already have to write your form validations.
+Writing form validations can be time-consuming and complex, especially as your web application grows and evolves over time. Vest simplifies the process by providing a set of powerful tools that take care of the annoying parts for you, such as managing validation state and handling async validations.
 
-🎨 Vest is framework agnostic. You can use Vest with any UI framework out there.
+Vest's declarative syntax is also designed to be easy to learn, especially for developers who are already familiar with unit testing frameworks. With Vest, you can leverage your existing knowledge to write effective form validations quickly and easily.
 
-🧠 Vest takes care of all the annoying parts for you. It manages its validation state, handles async validations, and much more.
+### 💡 Easy to Learn
 
-🧩 Vest is extendable. You can easily add new kinds of validations to Vest according to your needs.
+Vest adopts the syntax and style of unit testing frameworks, so you can leverage the knowledge you already have to write your form validations.
 
-♻️ Validation logic in Vest can be shared across multiple features in your app.
+### 🎨 Framework Agnostic
+
+Vest is framework-agnostic, which means you can use it with any UI framework out there.
+
+### 🧠 Takes Care of the Annoying Parts
+
+Vest manages its validation state, handles async validations, and much more, so you don't have to.
+
+### 🧩 Extendable
+
+You can easily add new kinds of validations to Vest according to your needs.
+
+### ♻️ Reusable Validation Logic
+
+Validation logic in Vest can be shared across multiple features in your app, making it easy to maintain and refactor your codebase.
+
+🧬 Supports Declarative Syntax
+Vest's declarative syntax makes it easy to describe your form or feature structure and write clear, concise validations.
+
+🧪 Promotes Testing and Debugging
+By separating validation logic from feature logic, Vest makes it easier to test and debug your code, which can save you time and reduce errors.
 
 # Getting Started
 

@@ -10,20 +10,13 @@ jobs:
   build:
     if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18.x]
     steps:
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: bahmutov/npm-install@v1
+      - name: Install
+        run: yarn install --frozen-lockfile
       - name: Jest coverage report
         uses: ArtiomTr/jest-coverage-report-action@v2
         with:
+          package-manager: yarn
           skip-step: install
           test-script: yarn jest

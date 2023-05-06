@@ -1,4 +1,10 @@
-import { isPromise, isStringValue, BusType, text } from 'vest-utils';
+import {
+  isPromise,
+  isStringValue,
+  BusType,
+  text,
+  deferThrow,
+} from 'vest-utils';
 
 import { Events } from 'BusEvents';
 import { ErrorStrings } from 'ErrorStrings';
@@ -11,16 +17,21 @@ import { useVerifyTestRun } from 'verifyTestRun';
 export function useAttemptRunTestObjectByTier(testObject: IsolateTest) {
   useVerifyTestRun(testObject);
 
-  if (testObject.isNonActionable()) {
-    // TODO: Need to test that this works as expected
-    return;
+  if (testObject.isUntested()) {
+    return useRunTest(testObject);
   }
 
-  if (testObject.isUntested()) {
-    useRunTest(testObject);
-  } else if (testObject.isAsyncTest()) {
+  if (testObject.isAsyncTest()) {
     testObject.setPending();
     useRunAsyncTest(testObject);
+  }
+
+  if (!testObject.isNonActionable()) {
+    deferThrow(
+      text(ErrorStrings.UNEXPECTED_TEST_REGISTRATION_ERROR, {
+        testObject: JSON.stringify(testObject),
+      })
+    );
   }
 }
 

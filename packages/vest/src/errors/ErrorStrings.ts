@@ -20,4 +20,6 @@ export enum ErrorStrings {
       Please report this issue to Vest's Github repository.
       Test Object: {testObject}.
       Error: {error}.`,
+  UNEXPECTED_TEST_RUN_ERROR = `Unexpected error encountered during test run. Please report this issue to Vest's Github repository.
+      Test Object: {testObject}.`,
 }

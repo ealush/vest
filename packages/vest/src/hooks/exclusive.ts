@@ -92,8 +92,6 @@ export function useIsExcluded(testObject: IsolateTest): boolean {
   // If there is _ANY_ `only`ed test (and we already know this one isn't) return true
   if (hasIncludedTests(keyTests)) {
     // Check if inclusion rules for this field (`include` hook)
-    // TODO: Check if this may need to be moved outside of the condition.
-    // What if there are no included tests? This shouldn't run then?
     return !optionalFunctionValue(inclusion[fieldName]);
   }
 

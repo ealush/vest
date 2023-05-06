@@ -1,4 +1,3 @@
-// TODO: Verify this test file is not needed and delete it
 import { dummyTest } from '../../../../testUtils/testDummy';
 
 import { SuiteResult } from 'SuiteResultTypes';

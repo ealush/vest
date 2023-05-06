@@ -5,6 +5,7 @@ const {
   LATEST_BRANCH,
   STABLE_BRANCH,
   RELEASE_BRANCH,
+  RELEASE_KEEP_VERSION_BRANCH,
 } = process.env;
 const packageNames = require('vx/packageNames');
 
@@ -13,6 +14,9 @@ const isNextBranch = CURRENT_BRANCH.startsWith(NEXT_BRANCH);
 const isLatestBranch = CURRENT_BRANCH.startsWith(LATEST_BRANCH);
 const isStableBranch = CURRENT_BRANCH.startsWith(STABLE_BRANCH);
 const isReleaseBranch = CURRENT_BRANCH.startsWith(RELEASE_BRANCH);
+const isReleaseKeepVersionBranch = CURRENT_BRANCH.startsWith(
+  RELEASE_KEEP_VERSION_BRANCH
+);
 const [, target = undefined] =
   isIntegrationBranch || isNextBranch ? CURRENT_BRANCH.split('-') : [];
 
@@ -31,6 +35,7 @@ module.exports = {
   isLatestBranch,
   isNextBranch,
   isReleaseBranch,
+  isReleaseKeepVersionBranch,
   isStableBranch,
   targetPackage: packageNames.names[target],
 };

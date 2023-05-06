@@ -1,26 +1,23 @@
-const { TAG_NEXT } = require('../releaseKeywords');
+const { TAG_NEXT, TAG_DEV } = require('../releaseKeywords');
 
 const exec = require('vx/exec');
 const logger = require('vx/logger');
-const { TAG_DEV } = require('vx/scripts/release/releaseKeywords');
 const joinTruthy = require('vx/util/joinTruthy');
 const { isReleaseBranch } = require('vx/util/taggedBranch');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
-function publishPackage({ tag, tagId, nextVersion }) {
-  const versionToUse = tag && tagId ? tagId : nextVersion;
-
+function publishPackage({ tag, tagId, versionToPublish }) {
   logger.info(`🚀 Publishing package ${usePackage()}.
-    Version: ${versionToUse}
+    Version: ${versionToPublish}
     Tag Id: ${tagId}
     Tag: ${tag}`);
 
-  if (!shouldRelease(versionToUse)) {
+  if (!shouldRelease(versionToPublish)) {
     return logger.info(`❌  Not in release branch. Skipping publish.`);
   }
 
-  const command = genPublishCommand(versionToUse, tag);
+  const command = genPublishCommand(versionToPublish, tag);
   execCommandWithGitConfig(command);
   clearTag(tag, tagId);
 }

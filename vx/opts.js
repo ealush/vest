@@ -17,6 +17,7 @@ module.exports = {
     DEVELOPMENT: 'development',
     TEST: 'test',
   },
+
   fileNames: {
     CHANGELOG: 'CHANGELOG.md',
     JEST_CONFIG: 'jest.config.js',
@@ -29,12 +30,12 @@ module.exports = {
     TSCONFIG_JSON: 'tsconfig.json',
     VX_BUILD: 'vx.build.js',
   },
-  packageJsonFields: {
-    VX: 'vx',
-  },
   format: {
     UMD: 'umd',
     CJS: 'cjs',
     ES: 'es',
+  },
+  packageJsonFields: {
+    VX: 'vx',
   },
 };

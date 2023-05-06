@@ -1,24 +1,45 @@
 const { writeJSONSync } = require('fs-extra');
 
+const { isReleaseKeepVersionBranch } = require('../../../util/taggedBranch');
+
 const logger = require('vx/logger');
 const packageJson = require('vx/util/packageJson');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
-function setNextVersion({ tagId, tag, nextVersion }) {
+function setNextVersion({
+  tagId,
+  tag,
+  nextVersion,
+  versionToPublish,
+  changeLevel,
+}) {
   const packageName = usePackage();
   const existingPkgJson = packageJson(packageName);
 
+  if (isReleaseKeepVersionBranch) {
+    logger.info(
+      `🔢 Skipping version update for ${usePackage()} due to release keep version branch.
+      Version being kept: ${existingPkgJson.version}.
+
+      Diff data:
+      packageName: ${packageName}
+      changeLevel: ${changeLevel}
+      tagId: ${tagId}
+      tag: ${tag}
+      versionToPublish: ${versionToPublish}`
+    );
+    return;
+  }
+
   const prevVersion = existingPkgJson.version;
 
-  nextVersion = tag ? tagId : nextVersion;
+  const nextPackageJson = { ...existingPkgJson, version: versionToPublish };
 
-  const nextPackageJson = { ...existingPkgJson, version: nextVersion };
-
-  existingPkgJson.version = nextVersion;
+  existingPkgJson.version = versionToPublish;
 
   logger.info(
-    `🔢 Setting next version for ${usePackage()}. From ${prevVersion} to ${nextVersion}`
+    `🔢 Setting next version for ${usePackage()}. From ${prevVersion} to ${versionToPublish}`
   );
 
   writeJSONSync(vxPath.packageJson(packageName), nextPackageJson, {
@@ -27,9 +48,9 @@ function setNextVersion({ tagId, tag, nextVersion }) {
 
   const updated = packageJson(packageName);
 
-  if (updated.version !== nextVersion) {
+  if (updated.version !== versionToPublish) {
     logger.error(
-      `🚨 Failed to update ${usePackage()} version to: ` + nextVersion
+      `🚨 Failed to update ${usePackage()} version to: ` + versionToPublish
     );
     return process.exit(1);
   }

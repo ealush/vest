@@ -9,6 +9,7 @@ const {
   isIntegrationBranch,
   isReleaseBranch,
   isNextBranch,
+  isReleaseKeepVersionBranch,
 } = require('vx/util/taggedBranch');
 const { CURRENT_BRANCH } = require('vx/util/taggedBranch');
 const { usePackage } = require('vx/vxContext');
@@ -31,6 +32,11 @@ function genDiffData(commits) {
     tag,
     tagId,
     version,
+    versionToPublish: isReleaseKeepVersionBranch
+      ? version
+      : tag
+      ? tagId
+      : nextVersion,
   };
 }
 
@@ -46,12 +52,16 @@ function pickTagId(nextVersion) {
   const commitHash = GITHUB_SHA.substr(0, 6);
 
   if (isNextBranch) {
-    return `${nextVersion}-${TAG_NEXT}-${commitHash}`;
+    return getTag(nextVersion, TAG_NEXT, commitHash);
   }
 
   if (isIntegrationBranch) {
-    return `${nextVersion}-${TAG_DEV}-${commitHash}`;
+    return getTag(nextVersion, TAG_DEV, commitHash);
   }
 
   throw Error('pickTagId: Encountered an unexpected input.');
+}
+
+function getTag(...keywords) {
+  return keywords.filter(Boolean).join('-');
 }

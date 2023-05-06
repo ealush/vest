@@ -54,7 +54,7 @@ You may have in your application a multi-screen form in which you want to valida
 import { create, test, group, enforce, only } from 'vest';
 
 const suite = create((data, currentTab) => {
-  only.group(currentScreen);
+  only.group(currentTab);
 
   group('overview_tab', () => {
     test('productTitle', 'Must be at least 5 chars.', () => {

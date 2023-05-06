@@ -11,7 +11,7 @@
     "release": "vx release"
   },
   "dependencies": {
-    "vest-utils": "^0.1.1"
+    "vest-utils": "^0.2.0"
   },
   "module": "./dist/es/anyone.production.js",
   "exports": {

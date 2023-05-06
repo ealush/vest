@@ -1,6 +1,6 @@
 {
   "name": "vest",
-  "version": "4.100.100",
+  "version": "5.0.1",
   "description": "Declarative Form Validations Framework",
   "license": "MIT",
   "author": "ealush",
@@ -18,10 +18,10 @@
     "url": "https://github.com/ealush/vest.git/issues"
   },
   "dependencies": {
-    "context": "^3.0.4",
-    "n4s": "^4.3.3",
+    "context": "^3.0.8",
+    "n4s": "^5.0.0",
     "vast": "^1.0.14",
-    "vest-utils": "^0.1.0"
+    "vest-utils": "^0.2.0"
   },
   "exports": {
     "./classnames": {

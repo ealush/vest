@@ -39,10 +39,10 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl: 'https://github.com/ealush/vest/edit/latest/website/',
-          lastVersion: 'current',
+          lastVersion: '4.x',
           versions: {
-            current: {
-              label: '5.x',
+            '4.x': {
+              label: '4.x',
             },
           },
         },

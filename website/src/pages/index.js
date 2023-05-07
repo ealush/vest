@@ -42,6 +42,14 @@ function HomepageHeader() {
           Github
         </Link>
       </div>
+      <div className={styles.buttons}>
+        <Link
+          className={clsx('button', styles.btn, styles.btnPromote)}
+          to="/docs/next/get_started"
+        >
+          Try The Next Version!
+        </Link>
+      </div>
     </header>
   );
 }

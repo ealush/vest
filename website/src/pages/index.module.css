@@ -49,6 +49,10 @@
   width: 100%;
 }
 
+.buttons + .buttons {
+  margin-top: 1rem;
+}
+
 .btn {
   border: none;
   font-weight: 400;
@@ -79,6 +83,16 @@
 .btnGit:hover {
   color: var(--darkest-alt);
   background: #d0d2d7;
+}
+
+.btnPromote {
+  color: var(--ifm-color-primary-lightest);
+  background: #e91e63;
+}
+
+.btnPromote:hover {
+  background: #bc124c;
+  color: var(--ifm-color-primary-lightest);
 }
 
 .logoContainer {

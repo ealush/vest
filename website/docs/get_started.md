@@ -7,17 +7,21 @@ keywords: [Vest, Get started, Quickstart, Validation, JavaScript]
 
 # Introduction to Vest
 
-Vest is a JavaScript validation framework that allows you to write and run validations for your code. It is designed to be simple to use while still being powerful enough to handle complex validation scenarios. In this guide, we'll walk you through the process of installing Vest and writing your first validation suite.
+Vest is a powerful and easy-to-use JavaScript validation framework that allows you to write and run validations for your code. It is designed to handle complex validation scenarios while still being simple to use. This guide will show you how to install and use Vest@5, the latest version of the framework that's currently in development.
+
+## Development status
+
+Vest@5 is currently in its final development stages and all features are already supported. Although it has not been officially released yet, you can still install and use it by installing the "next" tag with the following command:
 
 ## Installation
 
 To get started with Vest, you will need to install it using npm. Open up your terminal and run the following command:
 
 ```
-npm i vest
+npm i vest@next
 ```
 
-This will install the latest stable version of Vest in your project.
+This will install the next version of Vest in your project.
 
 ## Writing your first suite
 

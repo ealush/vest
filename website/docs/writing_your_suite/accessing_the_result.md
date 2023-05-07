@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-title: Vest's Results Object
+title: Accessing Vest's Result
 description: Vest validations return a results object that holds all the information regarding the current run and methods to interact with the data.
 keywords:
   [
@@ -18,7 +18,7 @@ keywords:
   ]
 ---
 
-# The Result Object
+# Accessing Vest's Result
 
 Vest validations return a results object that holds all the information regarding the current run and methods to interact with the data.
 
@@ -60,9 +60,28 @@ A result object would look somewhat like this:
 }
 ```
 
-# Result Object methods
+# Suite Result Methods
 
-Along with this data, our result object also contains a few other methods that can be used to interact with the data:
+Along with this data, our result object also contains a few other methods that can be used to interact with the data. All these methods can be accessed in the following ways:
+
+1. Directly via the result object returned by the suite.
+2. Calling the method on the suite itself.
+3. Via the `suite.get()` method.
+
+All the following examples are valid and equivalent:
+
+```js
+const result = suite(formData);
+
+// 1 - Directly via the result object
+result.hasErrors();
+
+// 2 - Calling the method on the suite itself
+suite.hasErrors();
+
+// 3 - Via the `suite.get()` method
+suite.get().hasErrors();
+```
 
 ## `isValid`
 
@@ -79,6 +98,8 @@ A _suite_ is considered valid if the following conditions are met:
 ```js
 result.isValid();
 
+suite.isValid();
+
 suite.get().isValid();
 ```
 
@@ -92,6 +113,8 @@ A _field_ is considered valid if the following conditions are met:
 
 ```js
 result.isValid('username');
+
+suite.isValid('username');
 
 suite.get().isValid('username');
 ```

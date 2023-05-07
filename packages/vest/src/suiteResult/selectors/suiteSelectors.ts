@@ -4,6 +4,7 @@ import { Severity, SeverityCount } from 'Severity';
 import {
   FailureMessages,
   GetFailuresResponse,
+  SuiteResult,
   SuiteSummary,
   SummaryFailure,
   TFieldName,
@@ -12,6 +13,42 @@ import {
 } from 'SuiteResultTypes';
 import { gatherFailures } from 'collectFailures';
 import matchingFieldName from 'matchingFieldName';
+
+export function bindSuiteSelectors<F extends TFieldName, G extends TGroupName>(
+  get: <F extends string, G extends string>() => SuiteResult<F, G>
+): SuiteSelectors<F, G> {
+  return {
+    getError: (...args: Parameters<SuiteSelectors<F, G>['getError']>) =>
+      get().getError(...args),
+    getErrors: (...args: Parameters<SuiteSelectors<F, G>['getErrors']>) =>
+      get().getErrors(...args),
+    getErrorsByGroup: (
+      ...args: Parameters<SuiteSelectors<F, G>['getErrorsByGroup']>
+    ) => get().getErrorsByGroup(...args),
+    getWarning: (...args: Parameters<SuiteSelectors<F, G>['getWarning']>) =>
+      get().getWarning(...args),
+    getWarnings: (...args: Parameters<SuiteSelectors<F, G>['getWarnings']>) =>
+      get().getWarnings(...args),
+    getWarningsByGroup: (
+      ...args: Parameters<SuiteSelectors<F, G>['getWarningsByGroup']>
+    ) => get().getWarningsByGroup(...args),
+    hasErrors: (...args: Parameters<SuiteSelectors<F, G>['hasErrors']>) =>
+      get().hasErrors(...args),
+    hasErrorsByGroup: (
+      ...args: Parameters<SuiteSelectors<F, G>['hasErrorsByGroup']>
+    ) => get().hasErrorsByGroup(...args),
+    hasWarnings: (...args: Parameters<SuiteSelectors<F, G>['hasWarnings']>) =>
+      get().hasWarnings(...args),
+    hasWarningsByGroup: (
+      ...args: Parameters<SuiteSelectors<F, G>['hasWarningsByGroup']>
+    ) => get().hasWarningsByGroup(...args),
+    isValid: (...args: Parameters<SuiteSelectors<F, G>['isValid']>) =>
+      get().isValid(...args),
+    isValidByGroup: (
+      ...args: Parameters<SuiteSelectors<F, G>['isValidByGroup']>
+    ) => get().isValidByGroup(...args),
+  } as unknown as SuiteSelectors<F, G>;
+}
 
 // eslint-disable-next-line max-lines-per-function, max-statements
 export function suiteSelectors<F extends TFieldName, G extends TGroupName>(

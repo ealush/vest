@@ -20,6 +20,7 @@ import { Suite } from 'SuiteTypes';
 import { getTypedMethods } from 'getTypedMethods';
 import { useCreateSuiteResult } from 'suiteResult';
 import { useSuiteRunResult } from 'suiteRunResult';
+import { bindSuiteSelectors } from 'suiteSelectors';
 import { validateSuiteCallback } from 'validateSuiteParams';
 
 function createSuite<
@@ -74,6 +75,7 @@ function createSuite<
         remove: usePrepareEmitter<string>(Events.REMOVE_FIELD),
         reset: usePrepareEmitter(Events.RESET_SUITE),
         resetField: usePrepareEmitter<string>(Events.RESET_FIELD),
+        ...bindSuiteSelectors<F, G>(persist(useCreateSuiteResult)),
         ...getTypedMethods<F, G>(),
       }
     );

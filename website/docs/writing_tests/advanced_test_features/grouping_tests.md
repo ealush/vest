@@ -142,4 +142,4 @@ Your result object exposes the following methods:
 - hasErrorsByGroup
 - hasWarningsByGroup
 
-Read more about these methods in [the result object](../../writing_your_suite/result_object.md).
+Read more about these methods in [the result object](../../writing_your_suite/accessing_the_result.md).

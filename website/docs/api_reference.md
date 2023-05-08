@@ -92,19 +92,19 @@ Below is a list of all the API functions exposed by Vest.
 
 After running your suite, the results object is returned. It has the following functions:
 
-- [hasErrors](./writing_your_suite/result_object.md#haserrors-and-haswarnings) - Returns true if the suite or the provided field has errors.
-- [hasWarnings](./writing_your_suite/result_object.md#haserrors-and-haswarnings) - Returns true if the suite or the provided field has warnings.
-- [getError](./writing_your_suite/result_object.md#geterror-and-getwarning) - Returns the first error in the suite, or of a specific field.
-- [getWarning](./writing_your_suite/result_object.md#geterror-and-getwarning) - Returns the first warning in the suite, or of a specific field.
-- [getErrors](./writing_your_suite/result_object.md#geterrors-and-getwarnings) - Returns an object with errors in the suite, or an array of objects for a specific field.
-- [getWarnings](./writing_your_suite/result_object.md#geterrors-and-getwarnings) - Returns an object with warnings in the suite, or an array of objects for a specific field.
-- [hasErrorsByGroup](./writing_your_suite/result_object.md#haserrorsbygroup-and-haswarningsbygroup) - Returns true if the provided group has errors.
-- [hasWarningByGroup](./writing_your_suite/result_object.md#haserrorsbygroup-and-haswarningsbygroup) - Returns true if the provided group has warnings.
-- [getErrorsByGroup](./writing_your_suite/result_object.md#geterrorsbygroup-and-getwarningsbygroup) - Returns an object with errors in the provided group.
-- [getWarningsByGroup](./writing_your_suite/result_object.md#geterrorsbygroup-and-getwarningsbygroup) - Returns an object with warnings in the provided group.
-- [isValid](./writing_your_suite/result_object.md#isvalid) - Returns true if the suite or the provided field is valid.
-- [isValidByGroup](./writing_your_suite/result_object.md#isvalidbygroup) - Returns true if a certain group or a field in a group is valid or not.
-- [done](./writing_your_suite/result_object.md#done) - Accepts a callback that will run when the suite is done running.
+- [hasErrors](./writing_your_suite/accessing_the_result.md#haserrors-and-haswarnings) - Returns true if the suite or the provided field has errors.
+- [hasWarnings](./writing_your_suite/accessing_the_result.md#haserrors-and-haswarnings) - Returns true if the suite or the provided field has warnings.
+- [getError](./writing_your_suite/accessing_the_result.md#geterror-and-getwarning) - Returns the first error in the suite, or of a specific field.
+- [getWarning](./writing_your_suite/accessing_the_result.md#geterror-and-getwarning) - Returns the first warning in the suite, or of a specific field.
+- [getErrors](./writing_your_suite/accessing_the_result.md#geterrors-and-getwarnings) - Returns an object with errors in the suite, or an array of objects for a specific field.
+- [getWarnings](./writing_your_suite/accessing_the_result.md#geterrors-and-getwarnings) - Returns an object with warnings in the suite, or an array of objects for a specific field.
+- [hasErrorsByGroup](./writing_your_suite/accessing_the_result.md#haserrorsbygroup-and-haswarningsbygroup) - Returns true if the provided group has errors.
+- [hasWarningByGroup](./writing_your_suite/accessing_the_result.md#haserrorsbygroup-and-haswarningsbygroup) - Returns true if the provided group has warnings.
+- [getErrorsByGroup](./writing_your_suite/accessing_the_result.md#geterrorsbygroup-and-getwarningsbygroup) - Returns an object with errors in the provided group.
+- [getWarningsByGroup](./writing_your_suite/accessing_the_result.md#geterrorsbygroup-and-getwarningsbygroup) - Returns an object with warnings in the provided group.
+- [isValid](./writing_your_suite/accessing_the_result.md#isvalid) - Returns true if the suite or the provided field is valid.
+- [isValidByGroup](./writing_your_suite/accessing_the_result.md#isvalidbygroup) - Returns true if a certain group or a field in a group is valid or not.
+- [done](./writing_your_suite/accessing_the_result.md#done) - Accepts a callback that will run when the suite is done running.
 
 ## Vest's external exports
 

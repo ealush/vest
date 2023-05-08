@@ -17,7 +17,7 @@ When you skip fields in your validation suite, Vest will merge their results fro
 
 - _Skipped field merge_: Vest merges skipped fields' previous results with the current result object.
 
-- _Lagging async `done` callback blocking_: When an async test doesn't finish from the previous suite run, Vest blocks the [`done()` callbacks](./writing_your_suite/result_object.md#done) for that field from running for the previous suite result.
+- _Lagging async `done` callback blocking_: When an async test doesn't finish from the previous suite run, Vest blocks the [`done()` callbacks](./writing_your_suite/accessing_the_result.md#done) for that field from running for the previous suite result.
 
 # Drawbacks when using stateful validations
 

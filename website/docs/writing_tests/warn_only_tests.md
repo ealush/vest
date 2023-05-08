@@ -86,4 +86,4 @@ result.getWarnings('password'); // Returns an array of warnings for the password
 
 **Read next about:**
 
-- [Vest's result object](../writing_your_suite/result_object.md).
+- [Vest's result object](../writing_your_suite/accessing_the_result.md).

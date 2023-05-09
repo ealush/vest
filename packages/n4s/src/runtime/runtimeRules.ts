@@ -34,6 +34,7 @@ type Rules<E = Record<string, unknown>> = n4s.EnforceCustomMatchers<
 /* eslint-disable @typescript-eslint/no-namespace, @typescript-eslint/no-empty-interface */
 declare global {
   namespace n4s {
+    // @ts-ignore - interface is used for type inference
     interface IRules<E> extends Rules<E> {}
   }
 }

@@ -10,14 +10,14 @@ const configOpt = `--config ${path.resolve(
   opts.fileNames.JEST_CONFIG
 )}`;
 
-function test({ options }) {
+function test({ cliOptions }) {
   const pkgName = usePackage();
 
   exec([
-    'jest',
+    'yarn jest',
     pkgName && `--rootDir ${vxPath.package(pkgName)}`,
     configOpt,
-    options,
+    cliOptions,
   ]);
 }
 

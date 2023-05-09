@@ -1,14 +1,13 @@
 {
   "scripts": {
     "build": "vx build",
-    "test": "vx prepare && jest",
+    "test": "vx test",
     "release": "vx release",
     "lint": "eslint . --ignore-path .gitignore",
     "prepare": "husky install",
     "dev": "vx dev",
     "website:start": "yarn workspace website start",
     "website:build": "yarn workspace website build",
-    "jest": "vx prepare && jest",
     "postinstall": "vx build --buildSingle"
   },
   "prettier": {
@@ -35,12 +34,11 @@
     "eslint-plugin-jest": "^27.1.5",
     "husky": "^8.0.1",
     "lodash": "^4.17.21",
-    "prettier": "^2.7.1",
     "pretty-quick": "^3.1.1",
     "tsc": "^2.0.4",
     "tslib": "^2.4.1",
     "typescript": "^4.8.4",
-    "vx": "./vx",
+    "vx": "workspace:*",
     "wait": "^0.4.2"
   },
   "private": true,
@@ -48,5 +46,6 @@
     "type": "git",
     "url": "https://github.com/ealush/vest.git"
   },
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "packageManager": "yarn@3.5.1"
 }

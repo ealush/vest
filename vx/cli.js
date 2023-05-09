@@ -32,6 +32,7 @@ const argv = hideBin(process.argv);
 const defaultPackage = usePackage() ?? insidePackageDir();
 
 const cli = yargs(argv)
+  .parserConfiguration({ 'unknown-options-as-args': true })
   .command('$0 <command>', 'Run vx monorepo utility', yargs => {
     yargs.positional('command', {
       describe: 'Command to run',
@@ -52,7 +53,7 @@ const cli = yargs(argv)
   })
   .help().argv;
 
-const { package, command, buildSingle } = cli;
+const { package, command, buildSingle, _: cliOptions = [] } = cli;
 
 // Prepare all packages before running any other command.
 if (command !== 'prepare') {
@@ -73,6 +74,7 @@ logger.info(
 ctx.withPackage(package, () =>
   commands[command]({
     buildSingle,
+    cliOptions: cliOptions.join(' '),
   })
 );
 

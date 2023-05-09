@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - name: Jest coverage report
         uses: ArtiomTr/jest-coverage-report-action@v2
         with:

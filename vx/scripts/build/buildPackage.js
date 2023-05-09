@@ -21,8 +21,9 @@ function buildPackage(options = {}) {
   }
 
   exec([
-    `rollup -c`,
+    `yarn rollup -c`,
     vxPath.ROLLUP_CONFIG_PATH,
+    options.cliOptions,
     format.length && `--format=${format}`,
   ]);
 

@@ -17,7 +17,7 @@ function publishPackage({ tag, tagId, versionToPublish }) {
     return logger.info(`❌  Not in release branch. Skipping publish.`);
   }
 
-  const command = genPublishCommand(versionToPublish, tag);
+  const command = genPublishCommand(tag);
   execCommandWithGitConfig(command);
   clearTag(tag, tagId);
 }
@@ -26,7 +26,7 @@ module.exports = publishPackage;
 
 function clearTag(tag, tagId) {
   if (tag && tagId) {
-    exec(`git tag -d ${tagId}`, {
+    exec(`git tag -d ${tagId} || echo "git tag not found. skipping."`, {
       exitOnFailure: false,
       throwOnFailure: false,
     });
@@ -50,12 +50,8 @@ ${joinTruthy(command, ' ')}`,
   );
 }
 
-function genPublishCommand(versionToUse, tag) {
-  return [
-    `yarn --cwd ${vxPath.package()} publish`,
-    `--new-version ${versionToUse}`,
-    tag && `--tag ${tag}`,
-  ];
+function genPublishCommand(tag) {
+  return [`yarn workspace ${usePackage()} npm publish`, tag && `--tag ${tag}`];
 }
 
 function shouldPublishPreRelease(versionToUse) {

@@ -29,7 +29,7 @@ The structure of the repo is as follows
 
 Before working on a big change on Vest’s codebase, it is a good idea to first discuss the change in an issue to make sure it fits the project’s goals and future plans.
 
-This project uses `yarn`. When working on this project you should first clone it locally, install its dependencies and run the tests (`yarn test`) to make sure everything works. You should regularly run the tests during development to make sure they still pass and no functionality has been affected by your changes.
+This project uses `yarn`. When working on this project you should first clone it locally, install its dependencies and run the tests (`vx test`) to make sure everything works. You should regularly run the tests during development to make sure they still pass and no functionality has been affected by your changes.
 
 Vest’s functionality is fully documented and fully tested. Please make sure to update the documentation and tests when making a functional change.
 
@@ -57,20 +57,20 @@ The naming convention for a test file is `moduleName.test.ts`.
 
 #### Running tests
 
-To run tests, you need to run `yarn test`. This will run all tests in all packages. The tests are being run by jest.
+To run tests, you need to run `vx test`. This will run all tests in all packages. The tests are being run by jest.
 
 You can narrow it down by specifying the package name:
 
-`yarn test -p vest`
+`vx test vest`
 
 Normal jest options can be passed to the test command.
 
-`yarn test -p vest --watch someFileName`
+`vx test --watch`
 
 ### Building your changes
 
-To build your changes, you need to run `yarn build`. This will build all packages.
-You can also run `yarn build -p packageName` to build only one package.
+To build your changes, you need to run `vx build`. This will build all packages.
+You can also run `vx build -p <packageName>` to build only one package.
 
 This will generate all distribution files and type declarations.
 

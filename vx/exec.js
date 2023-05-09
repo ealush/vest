@@ -1,5 +1,7 @@
 const execSync = require('child_process').execSync;
 
+const vxPath = require('./vxPath');
+
 const logger = require('vx/logger');
 const joinTruthy = require('vx/util/joinTruthy');
 
@@ -18,7 +20,7 @@ function exec(
     logger.info(`🎬 Executing command: "${cmd}"`);
   }
 
-  execCommand(cmd, { silent, throwOnFailure, exitOnFailure });
+  execCommand(cmd, { exitOnFailure, silent, throwOnFailure });
 }
 
 module.exports = exec;
@@ -39,6 +41,7 @@ function execCommand(command, { silent, throwOnFailure, exitOnFailure }) {
 
 function run(command, silent) {
   execSync(command, {
+    cwd: vxPath.VX_ROOT_PATH,
     stdio: silent ? 'ignore' : 'inherit',
   });
 }

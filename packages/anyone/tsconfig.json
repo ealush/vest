@@ -7,12 +7,12 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "anyone": ["src/anyone.ts"],
-      "all": ["src/exports/all.ts"],
-      "any": ["src/exports/any.ts"],
-      "none": ["src/exports/none.ts"],
-      "one": ["src/exports/one.ts"],
-      "runAnyoneMethods": ["src/runner/runAnyoneMethods.ts"]
+      "anyone": ["./src/anyone.ts"],
+      "all": ["./src/exports/all.ts"],
+      "any": ["./src/exports/any.ts"],
+      "none": ["./src/exports/none.ts"],
+      "one": ["./src/exports/one.ts"],
+      "runAnyoneMethods": ["./src/runner/runAnyoneMethods.ts"]
     }
   }
 }

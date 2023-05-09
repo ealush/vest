@@ -11,6 +11,7 @@ module.exports = {
     SRC: 'src',
     TESTS: '__tests__',
     TYPES: 'types',
+    VX: 'vx',
   },
   env: {
     PRODUCTION: 'production',
@@ -34,8 +35,5 @@ module.exports = {
     UMD: 'umd',
     CJS: 'cjs',
     ES: 'es',
-  },
-  packageJsonFields: {
-    VX: 'vx',
   },
 };

@@ -103,16 +103,11 @@ function rootTsConfigTemplate() {
 function genPathsPerPackage(packageName) {
   const packageData = pathsPerPackage.packages[packageName];
 
-  return packageData.reduce(
-    (paths, currentModule) =>
-      Object.assign(paths, {
-        [currentModule.name]: [
-          path.relative(
-            vxPath.package(currentModule.package),
-            currentModule.relative
-          ),
-        ],
-      }),
-    {}
-  );
+  return packageData.reduce((paths, currentModule) => {
+    return Object.assign(paths, {
+      [currentModule.name]: [
+        vxPath.rel(currentModule.absolute, vxPath.package(packageName)),
+      ],
+    });
+  }, {});
 }

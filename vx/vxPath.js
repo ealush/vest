@@ -16,7 +16,7 @@ vxPath.vxRoot = () => {
 
     const pkgJson = require(pkgJsonPath);
 
-    if (pkgJson[opts.packageJsonFields.VX]) {
+    if (pkgJson[opts.dir.VX]) {
       breakout(current);
     }
   });
@@ -89,13 +89,13 @@ vxPath.closest = (start, predicate) => {
   }
 };
 
-vxPath.rel = absolutePath => {
-  return ['.', path.relative(vxPath.ROOT_PATH, absolutePath)].join(path.sep);
+vxPath.rel = (to, from = vxPath.ROOT_PATH) => {
+  return ['.', path.relative(from, to)].join(path.sep);
 };
 
 vxPath.ROOT_PATH = vxPath.vxRoot();
 
-vxPath.VX_ROOT_PATH = path.resolve(vxPath.ROOT_PATH, opts.packageJsonFields.VX);
+vxPath.VX_ROOT_PATH = path.resolve(vxPath.ROOT_PATH, opts.dir.VX);
 
 vxPath.VX_CONFIG_PATH = path.resolve(vxPath.VX_ROOT_PATH, opts.dir.CONFIG);
 

@@ -12842,9 +12842,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup@npm:^2.79.1":
-  version: 2.79.1
-  resolution: "rollup@npm:2.79.1"
+"rollup@npm:^3.21.6":
+  version: 3.21.6
+  resolution: "rollup@npm:3.21.6"
   dependencies:
     fsevents: ~2.3.2
   dependenciesMeta:
@@ -12852,7 +12852,7 @@ __metadata:
       optional: true
   bin:
     rollup: dist/bin/rollup
-  checksum: 6a2bf167b3587d4df709b37d149ad0300692cc5deb510f89ac7bdc77c8738c9546ae3de9322b0968e1ed2b0e984571f5f55aae28fa7de4cfcb1bc5402a4e2be6
+  checksum: bb6786ee0d755f253d3aa3820b05806a482abe9c9fd6dad14df83b386a370d48af20c4be66f732a15b5e89c0ae6269a7b82736b64f34ae61552c58de0eecedeb
   languageName: node
   linkType: hard
 
@@ -14644,7 +14644,7 @@ __metadata:
     jest: ^29.5.0
     onchange: ^7.1.0
     prettier: ^2.8.8
-    rollup: ^2.79.1
+    rollup: ^3.21.6
     rollup-plugin-terser: ^7.0.2
     rollup-plugin-ts: ^3.2.0
     ts-jest: ^29.1.0

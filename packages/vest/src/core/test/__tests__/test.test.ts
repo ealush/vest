@@ -4,7 +4,8 @@ import { text } from 'vest-utils';
 import { TestPromise } from '../../../../testUtils/testPromise';
 
 import { ErrorStrings } from 'ErrorStrings';
-import { create, test, warn, enforce, IsolateTest } from 'vest';
+import { enforce, IsolateTest } from 'vest';
+import * as vest from 'vest';
 
 let testObject: IsolateTest;
 
@@ -12,10 +13,14 @@ describe("Test Vest's `test` function", () => {
   describe('test callbacks', () => {
     describe('Warn hook', () => {
       it('Should be marked as warning when the warn hook gets called', () => {
-        create(() => {
-          testObject = test(faker.random.word(), faker.lorem.sentence(), () => {
-            warn();
-          });
+        vest.create(() => {
+          testObject = vest.test(
+            faker.random.word(),
+            faker.lorem.sentence(),
+            () => {
+              vest.warn();
+            }
+          );
         })();
         expect(testObject.warns()).toBe(true);
       });
@@ -23,10 +28,14 @@ describe("Test Vest's `test` function", () => {
 
     describe('Sync', () => {
       it('Should be marked as failed after a thrown error', () => {
-        create(() => {
-          testObject = test(faker.random.word(), faker.lorem.sentence(), () => {
-            throw new Error();
-          });
+        vest.create(() => {
+          testObject = vest.test(
+            faker.random.word(),
+            faker.lorem.sentence(),
+            () => {
+              throw new Error();
+            }
+          );
         })();
         expect(testObject.isFailing()).toBe(true);
         // @ts-ignore - very much intentional
@@ -34,8 +43,8 @@ describe("Test Vest's `test` function", () => {
       });
 
       it('Should be marked as failed for an explicit false return', () => {
-        create(() => {
-          test(faker.random.word(), faker.lorem.sentence(), () => false);
+        vest.create(() => {
+          vest.test(faker.random.word(), faker.lorem.sentence(), () => false);
         })();
         expect(testObject.isFailing()).toBe(true);
         // @ts-ignore - very much intentional
@@ -45,14 +54,18 @@ describe("Test Vest's `test` function", () => {
       describe('Thrown with a message', () => {
         describe('When field has a message', () => {
           it("Should use field's own message", () => {
-            const res = create(() => {
-              test('field_with_message', 'some_field_message', () => {
+            const res = vest.create(() => {
+              vest.test('field_with_message', 'some_field_message', () => {
                 failWithString();
               });
-              test('warning_field_with_message', 'some_field_message', () => {
-                warn();
-                failWithString();
-              });
+              vest.test(
+                'warning_field_with_message',
+                'some_field_message',
+                () => {
+                  vest.warn();
+                  failWithString();
+                }
+              );
             })();
 
             expect(res.getErrors('field_with_message')).toEqual([
@@ -71,8 +84,8 @@ describe("Test Vest's `test` function", () => {
         });
         describe('When field does not have a message', () => {
           it('Should use message from enforce().message()', () => {
-            const res = create(() => {
-              test('field_without_message', () => {
+            const res = vest.create(() => {
+              vest.test('field_without_message', () => {
                 enforce(100).message('some_field_message').equals(0);
               });
             })();
@@ -82,12 +95,12 @@ describe("Test Vest's `test` function", () => {
             ]);
           });
           it('Should use message from thrown error', () => {
-            const res = create(() => {
-              test('field_without_message', () => {
+            const res = vest.create(() => {
+              vest.test('field_without_message', () => {
                 failWithString();
               });
-              test('warning_field_without_message', () => {
-                warn();
+              vest.test('warning_field_without_message', () => {
+                vest.warn();
                 failWithString();
               });
             })();
@@ -112,8 +125,8 @@ describe("Test Vest's `test` function", () => {
     describe('async', () => {
       it('Should be marked as failed when a returned promise rejects', () =>
         TestPromise(done => {
-          create(() => {
-            testObject = test(
+          vest.create(() => {
+            testObject = vest.test(
               faker.random.word(),
               faker.lorem.sentence(),
               () =>
@@ -135,8 +148,8 @@ describe("Test Vest's `test` function", () => {
   describe('test params', () => {
     let testObject: IsolateTest;
     it('creates a test without a message and without a key', () => {
-      create(() => {
-        testObject = test('field_name', () => undefined);
+      vest.create(() => {
+        testObject = vest.test('field_name', () => undefined);
       })();
       expect(testObject.fieldName).toBe('field_name');
       expect(testObject.key).toBeNull();
@@ -145,8 +158,12 @@ describe("Test Vest's `test` function", () => {
     });
 
     it('creates a test without a key', () => {
-      create(() => {
-        testObject = test('field_name', 'failure message', () => undefined);
+      vest.create(() => {
+        testObject = vest.test(
+          'field_name',
+          'failure message',
+          () => undefined
+        );
       })();
       expect(testObject.fieldName).toBe('field_name');
       expect(testObject.key).toBeNull();
@@ -155,8 +172,8 @@ describe("Test Vest's `test` function", () => {
     });
 
     it('creates a test without a message and with a key', () => {
-      create(() => {
-        testObject = test('field_name', () => undefined, 'keyboardcat');
+      vest.create(() => {
+        testObject = vest.test('field_name', () => undefined, 'keyboardcat');
       })();
       expect(testObject.fieldName).toBe('field_name');
       expect(testObject.key).toBe('keyboardcat');
@@ -165,8 +182,8 @@ describe("Test Vest's `test` function", () => {
     });
 
     it('creates a test with a message and with a key', () => {
-      create(() => {
-        testObject = test(
+      vest.create(() => {
+        testObject = vest.test(
           'field_name',
           'failure message',
           () => undefined,
@@ -181,9 +198,9 @@ describe("Test Vest's `test` function", () => {
 
     it('throws when field name is not a string', () => {
       const control = jest.fn();
-      create(() => {
+      vest.create(() => {
         // @ts-ignore
-        expect(() => test(undefined, () => undefined)).toThrow(
+        expect(() => vest.test(undefined, () => undefined)).toThrow(
           text(ErrorStrings.INVALID_PARAM_PASSED_TO_FUNCTION, {
             fn_name: 'test',
             param: 'fieldName',
@@ -191,7 +208,7 @@ describe("Test Vest's `test` function", () => {
           })
         );
         // @ts-expect-error
-        expect(() => test(null, 'error message', () => undefined)).toThrow(
+        expect(() => vest.test(null, 'error message', () => undefined)).toThrow(
           text(ErrorStrings.INVALID_PARAM_PASSED_TO_FUNCTION, {
             fn_name: 'test',
             param: 'fieldName',
@@ -200,7 +217,7 @@ describe("Test Vest's `test` function", () => {
         );
         expect(() =>
           // @ts-expect-error
-          test(null, 'error message', () => undefined, 'key')
+          vest.test(null, 'error message', () => undefined, 'key')
         ).toThrow(
           text(ErrorStrings.INVALID_PARAM_PASSED_TO_FUNCTION, {
             fn_name: 'test',
@@ -215,9 +232,9 @@ describe("Test Vest's `test` function", () => {
 
     it('throws when callback is not a function', () => {
       const control = jest.fn();
-      create(() => {
+      vest.create(() => {
         // @ts-expect-error
-        expect(() => test('x')).toThrow(
+        expect(() => vest.test('x')).toThrow(
           text(ErrorStrings.INVALID_PARAM_PASSED_TO_FUNCTION, {
             fn_name: 'test',
             param: 'callback',
@@ -225,7 +242,7 @@ describe("Test Vest's `test` function", () => {
           })
         );
         // @ts-expect-error
-        expect(() => test('x', 'msg', undefined)).toThrow(
+        expect(() => vest.test('x', 'msg', undefined)).toThrow(
           text(ErrorStrings.INVALID_PARAM_PASSED_TO_FUNCTION, {
             fn_name: 'test',
             param: 'callback',
@@ -233,7 +250,7 @@ describe("Test Vest's `test` function", () => {
           })
         );
         // @ts-expect-error
-        expect(() => test('x', 'msg', undefined, 'key')).toThrow(
+        expect(() => vest.test('x', 'msg', undefined, 'key')).toThrow(
           text(ErrorStrings.INVALID_PARAM_PASSED_TO_FUNCTION, {
             fn_name: 'test',
             param: 'callback',

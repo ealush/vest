@@ -5998,13 +5998,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"context@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "context@npm:1.2.1"
-  checksum: 88892f74f430850ef0514d3c4cdadb7204de962fcb47477ded48f067826df024b61bcd4845969e5153dee13914f556bcac1e2d99ed28bd8f83bef4adb0690efc
-  languageName: node
-  linkType: hard
-
 "convert-source-map@npm:^1.6.0, convert-source-map@npm:^1.7.0":
   version: 1.9.0
   resolution: "convert-source-map@npm:1.9.0"
@@ -10787,16 +10780,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"n4s@npm:^5.0.0":
-  version: 5.0.1
-  resolution: "n4s@npm:5.0.1"
-  dependencies:
-    context: ^1.2.1
-  checksum: c635d8bae48699a9109820c2e70939c513c9c50c3e05cd291eb21a83e7aa6ae1b7f359e7704f8ac04754008135aa346078443f4f8e432127fa17e29dc436ddc6
-  languageName: node
-  linkType: hard
-
-"n4s@workspace:packages/n4s":
+"n4s@^4.3.0, n4s@workspace:packages/n4s":
   version: 0.0.0-use.local
   resolution: "n4s@workspace:packages/n4s"
   dependencies:
@@ -14637,7 +14621,7 @@ __metadata:
   resolution: "vest@workspace:packages/vest"
   dependencies:
     context: ^3.0.8
-    n4s: ^5.0.0
+    n4s: ^4.3.0
     vast: ^1.0.14
     vest-utils: ^0.2.0
   languageName: unknown

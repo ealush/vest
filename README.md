@@ -1,10 +1,22 @@
 # Vest - Declarative validations framework
 
+![Vest](https://cdn.jsdelivr.net/gh/ealush/vest@assets/logo_250.png 'Vest')
+
 [Vest Documentation](https://vestjs.dev)
 
 [![Join Discord](https://badgen.net/discord/online-members/WmADZpJnSe?icon=discord&label=Discord)](https://discord.gg/WmADZpJnSe) [![Github Stars](https://badgen.net/github/stars/ealush/vest?color=yellow&label=Github%20🌟)](https://github.com/ealush/vest) [![Version](https://badgen.net/npm/v/vest?&icon=npm)](https://www.npmjs.com/package/vest) [![Downloads](https://badgen.net/npm/dt/vest?label=Downloads)](https://www.npmjs.com/package/vest) [![bundlephobia](https://badgen.net/bundlephobia/minzip/vest)](https://bundlephobia.com/package/vest) [![Status](https://badgen.net/github/status/ealush/vest)](https://github.com/ealush/vest/actions)
 
-![Vest](https://cdn.jsdelivr.net/gh/ealush/vest@assets/logo_250.png 'Vest')
+## Vest 5 is almost here! 🎉
+
+[Vest 5 Migration guide](https://vestjs.dev/docs/next/upgrade_guide)
+
+You can already try it with the `next` tag:
+
+```
+npm install vest@next
+```
+
+---
 
 Vest is a declarative validations framework designed to simplify the process of writing and maintaining form validations for your web application. Inspired by popular unit testing libraries such as Mocha and Jest, Vest allows developers to describe their validation requirements using a suite-like syntax, separating validation logic from feature logic to create more maintainable and readable code.
 

@@ -15,65 +15,35 @@
   },
   "module": "./dist/es/anyone.production.js",
   "exports": {
-    "./all": {
+    "./one": {
       "production": {
-        "types": "./types/all.d.ts",
-        "browser": "./dist/es/all.production.js",
-        "umd": "./dist/umd/all.production.js",
-        "import": "./dist/es/all.production.js",
-        "require": "./dist/cjs/all.production.js",
-        "node": "./dist/cjs/all.production.js",
-        "module": "./dist/es/all.production.js",
-        "default": "./dist/cjs/all.production.js"
+        "types": "./types/one.d.ts",
+        "browser": "./dist/es/one.production.js",
+        "umd": "./dist/umd/one.production.js",
+        "import": "./dist/es/one.production.js",
+        "require": "./dist/cjs/one.production.js",
+        "node": "./dist/cjs/one.production.js",
+        "module": "./dist/es/one.production.js",
+        "default": "./dist/cjs/one.production.js"
       },
       "development": {
-        "types": "./types/all.d.ts",
-        "browser": "./dist/es/all.development.js",
-        "umd": "./dist/umd/all.development.js",
-        "import": "./dist/es/all.development.js",
-        "require": "./dist/cjs/all.development.js",
-        "node": "./dist/cjs/all.development.js",
-        "module": "./dist/es/all.development.js",
-        "default": "./dist/cjs/all.development.js"
+        "types": "./types/one.d.ts",
+        "browser": "./dist/es/one.development.js",
+        "umd": "./dist/umd/one.development.js",
+        "import": "./dist/es/one.development.js",
+        "require": "./dist/cjs/one.development.js",
+        "node": "./dist/cjs/one.development.js",
+        "module": "./dist/es/one.development.js",
+        "default": "./dist/cjs/one.development.js"
       },
-      "types": "./types/all.d.ts",
-      "browser": "./dist/es/all.production.js",
-      "umd": "./dist/umd/all.production.js",
-      "import": "./dist/es/all.production.js",
-      "require": "./dist/cjs/all.production.js",
-      "node": "./dist/cjs/all.production.js",
-      "module": "./dist/es/all.production.js",
-      "default": "./dist/cjs/all.production.js"
-    },
-    "./any": {
-      "production": {
-        "types": "./types/any.d.ts",
-        "browser": "./dist/es/any.production.js",
-        "umd": "./dist/umd/any.production.js",
-        "import": "./dist/es/any.production.js",
-        "require": "./dist/cjs/any.production.js",
-        "node": "./dist/cjs/any.production.js",
-        "module": "./dist/es/any.production.js",
-        "default": "./dist/cjs/any.production.js"
-      },
-      "development": {
-        "types": "./types/any.d.ts",
-        "browser": "./dist/es/any.development.js",
-        "umd": "./dist/umd/any.development.js",
-        "import": "./dist/es/any.development.js",
-        "require": "./dist/cjs/any.development.js",
-        "node": "./dist/cjs/any.development.js",
-        "module": "./dist/es/any.development.js",
-        "default": "./dist/cjs/any.development.js"
-      },
-      "types": "./types/any.d.ts",
-      "browser": "./dist/es/any.production.js",
-      "umd": "./dist/umd/any.production.js",
-      "import": "./dist/es/any.production.js",
-      "require": "./dist/cjs/any.production.js",
-      "node": "./dist/cjs/any.production.js",
-      "module": "./dist/es/any.production.js",
-      "default": "./dist/cjs/any.production.js"
+      "types": "./types/one.d.ts",
+      "browser": "./dist/es/one.production.js",
+      "umd": "./dist/umd/one.production.js",
+      "import": "./dist/es/one.production.js",
+      "require": "./dist/cjs/one.production.js",
+      "node": "./dist/cjs/one.production.js",
+      "module": "./dist/es/one.production.js",
+      "default": "./dist/cjs/one.production.js"
     },
     "./none": {
       "production": {
@@ -105,35 +75,65 @@
       "module": "./dist/es/none.production.js",
       "default": "./dist/cjs/none.production.js"
     },
-    "./one": {
+    "./any": {
       "production": {
-        "types": "./types/one.d.ts",
-        "browser": "./dist/es/one.production.js",
-        "umd": "./dist/umd/one.production.js",
-        "import": "./dist/es/one.production.js",
-        "require": "./dist/cjs/one.production.js",
-        "node": "./dist/cjs/one.production.js",
-        "module": "./dist/es/one.production.js",
-        "default": "./dist/cjs/one.production.js"
+        "types": "./types/any.d.ts",
+        "browser": "./dist/es/any.production.js",
+        "umd": "./dist/umd/any.production.js",
+        "import": "./dist/es/any.production.js",
+        "require": "./dist/cjs/any.production.js",
+        "node": "./dist/cjs/any.production.js",
+        "module": "./dist/es/any.production.js",
+        "default": "./dist/cjs/any.production.js"
       },
       "development": {
-        "types": "./types/one.d.ts",
-        "browser": "./dist/es/one.development.js",
-        "umd": "./dist/umd/one.development.js",
-        "import": "./dist/es/one.development.js",
-        "require": "./dist/cjs/one.development.js",
-        "node": "./dist/cjs/one.development.js",
-        "module": "./dist/es/one.development.js",
-        "default": "./dist/cjs/one.development.js"
+        "types": "./types/any.d.ts",
+        "browser": "./dist/es/any.development.js",
+        "umd": "./dist/umd/any.development.js",
+        "import": "./dist/es/any.development.js",
+        "require": "./dist/cjs/any.development.js",
+        "node": "./dist/cjs/any.development.js",
+        "module": "./dist/es/any.development.js",
+        "default": "./dist/cjs/any.development.js"
       },
-      "types": "./types/one.d.ts",
-      "browser": "./dist/es/one.production.js",
-      "umd": "./dist/umd/one.production.js",
-      "import": "./dist/es/one.production.js",
-      "require": "./dist/cjs/one.production.js",
-      "node": "./dist/cjs/one.production.js",
-      "module": "./dist/es/one.production.js",
-      "default": "./dist/cjs/one.production.js"
+      "types": "./types/any.d.ts",
+      "browser": "./dist/es/any.production.js",
+      "umd": "./dist/umd/any.production.js",
+      "import": "./dist/es/any.production.js",
+      "require": "./dist/cjs/any.production.js",
+      "node": "./dist/cjs/any.production.js",
+      "module": "./dist/es/any.production.js",
+      "default": "./dist/cjs/any.production.js"
+    },
+    "./all": {
+      "production": {
+        "types": "./types/all.d.ts",
+        "browser": "./dist/es/all.production.js",
+        "umd": "./dist/umd/all.production.js",
+        "import": "./dist/es/all.production.js",
+        "require": "./dist/cjs/all.production.js",
+        "node": "./dist/cjs/all.production.js",
+        "module": "./dist/es/all.production.js",
+        "default": "./dist/cjs/all.production.js"
+      },
+      "development": {
+        "types": "./types/all.d.ts",
+        "browser": "./dist/es/all.development.js",
+        "umd": "./dist/umd/all.development.js",
+        "import": "./dist/es/all.development.js",
+        "require": "./dist/cjs/all.development.js",
+        "node": "./dist/cjs/all.development.js",
+        "module": "./dist/es/all.development.js",
+        "default": "./dist/cjs/all.development.js"
+      },
+      "types": "./types/all.d.ts",
+      "browser": "./dist/es/all.production.js",
+      "umd": "./dist/umd/all.production.js",
+      "import": "./dist/es/all.production.js",
+      "require": "./dist/cjs/all.production.js",
+      "node": "./dist/cjs/all.production.js",
+      "module": "./dist/es/all.production.js",
+      "default": "./dist/cjs/all.production.js"
     },
     ".": {
       "development": {

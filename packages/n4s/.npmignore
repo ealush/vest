@@ -4,8 +4,8 @@ src
 !types/
 !dist/
 tsconfig.json
-!compose/
-!compounds/
 !schema/
+!compounds/
+!compose/
 
 # Manual Section. Edit at will.

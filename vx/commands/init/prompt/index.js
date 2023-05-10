@@ -2,7 +2,7 @@
 import path from 'path';
 
 import fsExtra from 'fs-extra';
-import glob from 'glob';
+import * as glob from 'glob';
 import inquirer from 'inquirer';
 import exec from 'vx/exec.js';
 import logger from 'vx/logger.js';

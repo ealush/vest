@@ -24,125 +24,35 @@
     "vest-utils": "^0.2.0"
   },
   "exports": {
-    "./classnames": {
+    "./promisify": {
       "production": {
-        "types": "./types/classnames.d.ts",
-        "browser": "./dist/es/classnames.production.js",
-        "umd": "./dist/umd/classnames.production.js",
-        "import": "./dist/es/classnames.production.js",
-        "require": "./dist/cjs/classnames.production.js",
-        "node": "./dist/cjs/classnames.production.js",
-        "module": "./dist/es/classnames.production.js",
-        "default": "./dist/cjs/classnames.production.js"
+        "types": "./types/promisify.d.ts",
+        "browser": "./dist/es/promisify.production.js",
+        "umd": "./dist/umd/promisify.production.js",
+        "import": "./dist/es/promisify.production.js",
+        "require": "./dist/cjs/promisify.production.js",
+        "node": "./dist/cjs/promisify.production.js",
+        "module": "./dist/es/promisify.production.js",
+        "default": "./dist/cjs/promisify.production.js"
       },
       "development": {
-        "types": "./types/classnames.d.ts",
-        "browser": "./dist/es/classnames.development.js",
-        "umd": "./dist/umd/classnames.development.js",
-        "import": "./dist/es/classnames.development.js",
-        "require": "./dist/cjs/classnames.development.js",
-        "node": "./dist/cjs/classnames.development.js",
-        "module": "./dist/es/classnames.development.js",
-        "default": "./dist/cjs/classnames.development.js"
+        "types": "./types/promisify.d.ts",
+        "browser": "./dist/es/promisify.development.js",
+        "umd": "./dist/umd/promisify.development.js",
+        "import": "./dist/es/promisify.development.js",
+        "require": "./dist/cjs/promisify.development.js",
+        "node": "./dist/cjs/promisify.development.js",
+        "module": "./dist/es/promisify.development.js",
+        "default": "./dist/cjs/promisify.development.js"
       },
-      "types": "./types/classnames.d.ts",
-      "browser": "./dist/es/classnames.production.js",
-      "umd": "./dist/umd/classnames.production.js",
-      "import": "./dist/es/classnames.production.js",
-      "require": "./dist/cjs/classnames.production.js",
-      "node": "./dist/cjs/classnames.production.js",
-      "module": "./dist/es/classnames.production.js",
-      "default": "./dist/cjs/classnames.production.js"
-    },
-    "./enforce/compose": {
-      "production": {
-        "types": "./types/enforce/compose.d.ts",
-        "browser": "./dist/es/enforce/compose.production.js",
-        "umd": "./dist/umd/enforce/compose.production.js",
-        "import": "./dist/es/enforce/compose.production.js",
-        "require": "./dist/cjs/enforce/compose.production.js",
-        "node": "./dist/cjs/enforce/compose.production.js",
-        "module": "./dist/es/enforce/compose.production.js",
-        "default": "./dist/cjs/enforce/compose.production.js"
-      },
-      "development": {
-        "types": "./types/enforce/compose.d.ts",
-        "browser": "./dist/es/enforce/compose.development.js",
-        "umd": "./dist/umd/enforce/compose.development.js",
-        "import": "./dist/es/enforce/compose.development.js",
-        "require": "./dist/cjs/enforce/compose.development.js",
-        "node": "./dist/cjs/enforce/compose.development.js",
-        "module": "./dist/es/enforce/compose.development.js",
-        "default": "./dist/cjs/enforce/compose.development.js"
-      },
-      "types": "./types/enforce/compose.d.ts",
-      "browser": "./dist/es/enforce/compose.production.js",
-      "umd": "./dist/umd/enforce/compose.production.js",
-      "import": "./dist/es/enforce/compose.production.js",
-      "require": "./dist/cjs/enforce/compose.production.js",
-      "node": "./dist/cjs/enforce/compose.production.js",
-      "module": "./dist/es/enforce/compose.production.js",
-      "default": "./dist/cjs/enforce/compose.production.js"
-    },
-    "./enforce/compounds": {
-      "production": {
-        "types": "./types/enforce/compounds.d.ts",
-        "browser": "./dist/es/enforce/compounds.production.js",
-        "umd": "./dist/umd/enforce/compounds.production.js",
-        "import": "./dist/es/enforce/compounds.production.js",
-        "require": "./dist/cjs/enforce/compounds.production.js",
-        "node": "./dist/cjs/enforce/compounds.production.js",
-        "module": "./dist/es/enforce/compounds.production.js",
-        "default": "./dist/cjs/enforce/compounds.production.js"
-      },
-      "development": {
-        "types": "./types/enforce/compounds.d.ts",
-        "browser": "./dist/es/enforce/compounds.development.js",
-        "umd": "./dist/umd/enforce/compounds.development.js",
-        "import": "./dist/es/enforce/compounds.development.js",
-        "require": "./dist/cjs/enforce/compounds.development.js",
-        "node": "./dist/cjs/enforce/compounds.development.js",
-        "module": "./dist/es/enforce/compounds.development.js",
-        "default": "./dist/cjs/enforce/compounds.development.js"
-      },
-      "types": "./types/enforce/compounds.d.ts",
-      "browser": "./dist/es/enforce/compounds.production.js",
-      "umd": "./dist/umd/enforce/compounds.production.js",
-      "import": "./dist/es/enforce/compounds.production.js",
-      "require": "./dist/cjs/enforce/compounds.production.js",
-      "node": "./dist/cjs/enforce/compounds.production.js",
-      "module": "./dist/es/enforce/compounds.production.js",
-      "default": "./dist/cjs/enforce/compounds.production.js"
-    },
-    "./enforce/schema": {
-      "production": {
-        "types": "./types/enforce/schema.d.ts",
-        "browser": "./dist/es/enforce/schema.production.js",
-        "umd": "./dist/umd/enforce/schema.production.js",
-        "import": "./dist/es/enforce/schema.production.js",
-        "require": "./dist/cjs/enforce/schema.production.js",
-        "node": "./dist/cjs/enforce/schema.production.js",
-        "module": "./dist/es/enforce/schema.production.js",
-        "default": "./dist/cjs/enforce/schema.production.js"
-      },
-      "development": {
-        "types": "./types/enforce/schema.d.ts",
-        "browser": "./dist/es/enforce/schema.development.js",
-        "umd": "./dist/umd/enforce/schema.development.js",
-        "import": "./dist/es/enforce/schema.development.js",
-        "require": "./dist/cjs/enforce/schema.development.js",
-        "node": "./dist/cjs/enforce/schema.development.js",
-        "module": "./dist/es/enforce/schema.development.js",
-        "default": "./dist/cjs/enforce/schema.development.js"
-      },
-      "types": "./types/enforce/schema.d.ts",
-      "browser": "./dist/es/enforce/schema.production.js",
-      "umd": "./dist/umd/enforce/schema.production.js",
-      "import": "./dist/es/enforce/schema.production.js",
-      "require": "./dist/cjs/enforce/schema.production.js",
-      "node": "./dist/cjs/enforce/schema.production.js",
-      "module": "./dist/es/enforce/schema.production.js",
-      "default": "./dist/cjs/enforce/schema.production.js"
+      "types": "./types/promisify.d.ts",
+      "browser": "./dist/es/promisify.production.js",
+      "umd": "./dist/umd/promisify.production.js",
+      "import": "./dist/es/promisify.production.js",
+      "require": "./dist/cjs/promisify.production.js",
+      "node": "./dist/cjs/promisify.production.js",
+      "module": "./dist/es/promisify.production.js",
+      "default": "./dist/cjs/promisify.production.js"
     },
     "./parser": {
       "production": {
@@ -174,35 +84,125 @@
       "module": "./dist/es/parser.production.js",
       "default": "./dist/cjs/parser.production.js"
     },
-    "./promisify": {
+    "./enforce/schema": {
       "production": {
-        "types": "./types/promisify.d.ts",
-        "browser": "./dist/es/promisify.production.js",
-        "umd": "./dist/umd/promisify.production.js",
-        "import": "./dist/es/promisify.production.js",
-        "require": "./dist/cjs/promisify.production.js",
-        "node": "./dist/cjs/promisify.production.js",
-        "module": "./dist/es/promisify.production.js",
-        "default": "./dist/cjs/promisify.production.js"
+        "types": "./types/enforce/schema.d.ts",
+        "browser": "./dist/es/enforce/schema.production.js",
+        "umd": "./dist/umd/enforce/schema.production.js",
+        "import": "./dist/es/enforce/schema.production.js",
+        "require": "./dist/cjs/enforce/schema.production.js",
+        "node": "./dist/cjs/enforce/schema.production.js",
+        "module": "./dist/es/enforce/schema.production.js",
+        "default": "./dist/cjs/enforce/schema.production.js"
       },
       "development": {
-        "types": "./types/promisify.d.ts",
-        "browser": "./dist/es/promisify.development.js",
-        "umd": "./dist/umd/promisify.development.js",
-        "import": "./dist/es/promisify.development.js",
-        "require": "./dist/cjs/promisify.development.js",
-        "node": "./dist/cjs/promisify.development.js",
-        "module": "./dist/es/promisify.development.js",
-        "default": "./dist/cjs/promisify.development.js"
+        "types": "./types/enforce/schema.d.ts",
+        "browser": "./dist/es/enforce/schema.development.js",
+        "umd": "./dist/umd/enforce/schema.development.js",
+        "import": "./dist/es/enforce/schema.development.js",
+        "require": "./dist/cjs/enforce/schema.development.js",
+        "node": "./dist/cjs/enforce/schema.development.js",
+        "module": "./dist/es/enforce/schema.development.js",
+        "default": "./dist/cjs/enforce/schema.development.js"
       },
-      "types": "./types/promisify.d.ts",
-      "browser": "./dist/es/promisify.production.js",
-      "umd": "./dist/umd/promisify.production.js",
-      "import": "./dist/es/promisify.production.js",
-      "require": "./dist/cjs/promisify.production.js",
-      "node": "./dist/cjs/promisify.production.js",
-      "module": "./dist/es/promisify.production.js",
-      "default": "./dist/cjs/promisify.production.js"
+      "types": "./types/enforce/schema.d.ts",
+      "browser": "./dist/es/enforce/schema.production.js",
+      "umd": "./dist/umd/enforce/schema.production.js",
+      "import": "./dist/es/enforce/schema.production.js",
+      "require": "./dist/cjs/enforce/schema.production.js",
+      "node": "./dist/cjs/enforce/schema.production.js",
+      "module": "./dist/es/enforce/schema.production.js",
+      "default": "./dist/cjs/enforce/schema.production.js"
+    },
+    "./enforce/compounds": {
+      "production": {
+        "types": "./types/enforce/compounds.d.ts",
+        "browser": "./dist/es/enforce/compounds.production.js",
+        "umd": "./dist/umd/enforce/compounds.production.js",
+        "import": "./dist/es/enforce/compounds.production.js",
+        "require": "./dist/cjs/enforce/compounds.production.js",
+        "node": "./dist/cjs/enforce/compounds.production.js",
+        "module": "./dist/es/enforce/compounds.production.js",
+        "default": "./dist/cjs/enforce/compounds.production.js"
+      },
+      "development": {
+        "types": "./types/enforce/compounds.d.ts",
+        "browser": "./dist/es/enforce/compounds.development.js",
+        "umd": "./dist/umd/enforce/compounds.development.js",
+        "import": "./dist/es/enforce/compounds.development.js",
+        "require": "./dist/cjs/enforce/compounds.development.js",
+        "node": "./dist/cjs/enforce/compounds.development.js",
+        "module": "./dist/es/enforce/compounds.development.js",
+        "default": "./dist/cjs/enforce/compounds.development.js"
+      },
+      "types": "./types/enforce/compounds.d.ts",
+      "browser": "./dist/es/enforce/compounds.production.js",
+      "umd": "./dist/umd/enforce/compounds.production.js",
+      "import": "./dist/es/enforce/compounds.production.js",
+      "require": "./dist/cjs/enforce/compounds.production.js",
+      "node": "./dist/cjs/enforce/compounds.production.js",
+      "module": "./dist/es/enforce/compounds.production.js",
+      "default": "./dist/cjs/enforce/compounds.production.js"
+    },
+    "./enforce/compose": {
+      "production": {
+        "types": "./types/enforce/compose.d.ts",
+        "browser": "./dist/es/enforce/compose.production.js",
+        "umd": "./dist/umd/enforce/compose.production.js",
+        "import": "./dist/es/enforce/compose.production.js",
+        "require": "./dist/cjs/enforce/compose.production.js",
+        "node": "./dist/cjs/enforce/compose.production.js",
+        "module": "./dist/es/enforce/compose.production.js",
+        "default": "./dist/cjs/enforce/compose.production.js"
+      },
+      "development": {
+        "types": "./types/enforce/compose.d.ts",
+        "browser": "./dist/es/enforce/compose.development.js",
+        "umd": "./dist/umd/enforce/compose.development.js",
+        "import": "./dist/es/enforce/compose.development.js",
+        "require": "./dist/cjs/enforce/compose.development.js",
+        "node": "./dist/cjs/enforce/compose.development.js",
+        "module": "./dist/es/enforce/compose.development.js",
+        "default": "./dist/cjs/enforce/compose.development.js"
+      },
+      "types": "./types/enforce/compose.d.ts",
+      "browser": "./dist/es/enforce/compose.production.js",
+      "umd": "./dist/umd/enforce/compose.production.js",
+      "import": "./dist/es/enforce/compose.production.js",
+      "require": "./dist/cjs/enforce/compose.production.js",
+      "node": "./dist/cjs/enforce/compose.production.js",
+      "module": "./dist/es/enforce/compose.production.js",
+      "default": "./dist/cjs/enforce/compose.production.js"
+    },
+    "./classnames": {
+      "production": {
+        "types": "./types/classnames.d.ts",
+        "browser": "./dist/es/classnames.production.js",
+        "umd": "./dist/umd/classnames.production.js",
+        "import": "./dist/es/classnames.production.js",
+        "require": "./dist/cjs/classnames.production.js",
+        "node": "./dist/cjs/classnames.production.js",
+        "module": "./dist/es/classnames.production.js",
+        "default": "./dist/cjs/classnames.production.js"
+      },
+      "development": {
+        "types": "./types/classnames.d.ts",
+        "browser": "./dist/es/classnames.development.js",
+        "umd": "./dist/umd/classnames.development.js",
+        "import": "./dist/es/classnames.development.js",
+        "require": "./dist/cjs/classnames.development.js",
+        "node": "./dist/cjs/classnames.development.js",
+        "module": "./dist/es/classnames.development.js",
+        "default": "./dist/cjs/classnames.development.js"
+      },
+      "types": "./types/classnames.d.ts",
+      "browser": "./dist/es/classnames.production.js",
+      "umd": "./dist/umd/classnames.production.js",
+      "import": "./dist/es/classnames.production.js",
+      "require": "./dist/cjs/classnames.production.js",
+      "node": "./dist/cjs/classnames.production.js",
+      "module": "./dist/es/classnames.production.js",
+      "default": "./dist/cjs/classnames.production.js"
     },
     ".": {
       "development": {

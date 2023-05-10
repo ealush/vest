@@ -7,7 +7,8 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "vast": ["./src/vast.ts"]
+      "vast": ["./src/vast.ts"],
+      "vast.test": ["./src/__tests__/vast.test.ts"]
     }
   }
 }

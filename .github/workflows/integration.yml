@@ -27,17 +27,18 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Setup .yarnrc.yml
+        run: |
+          yarn config set npmAuthToken $NPM_TOKEN
+          yarn config set npmAlwaysAuth true
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Install
         run: yarn install --immutable
       - name: Test
         run: yarn test
       - name: Lint
         run: yarn lint
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: NPM Identity
-        run: |
-          echo "npmAuthToken: $NPM_TOKEN" >> ~/.yarnrc.yml
       - name: Release
         run: yarn release
         env:
@@ -50,3 +51,4 @@ jobs:
           PUBLIC_REPO_TOKEN: ${{secrets.PUBLIC_REPO_TOKEN}}
           EMAIL_ADDRESS: ${{secrets.EMAIL_ADDRESS}}
           GIT_NAME: ${{secrets.GIT_NAME}}
+          npmAuthToken: ${{secrets.NPM_TOKEN}}

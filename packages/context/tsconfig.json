@@ -7,7 +7,9 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "context": ["./src/context.ts"]
+      "context": ["./src/context.ts"],
+      "context.test": ["./src/__tests__/context.test.ts"],
+      "cascade.test": ["./src/__tests__/cascade.test.ts"]
     }
   }
 }

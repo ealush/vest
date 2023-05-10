@@ -8,11 +8,17 @@
     "outDir": "./dist",
     "paths": {
       "anyone": ["./src/anyone.ts"],
-      "all": ["./src/exports/all.ts"],
-      "any": ["./src/exports/any.ts"],
-      "none": ["./src/exports/none.ts"],
+      "runAnyoneMethods": ["./src/runner/runAnyoneMethods.ts"],
       "one": ["./src/exports/one.ts"],
-      "runAnyoneMethods": ["./src/runner/runAnyoneMethods.ts"]
+      "none": ["./src/exports/none.ts"],
+      "any": ["./src/exports/any.ts"],
+      "all": ["./src/exports/all.ts"],
+      "runAnyoneMethods.test": ["./src/__tests__/runAnyoneMethods.test.ts"],
+      "one.test": ["./src/__tests__/one.test.ts"],
+      "none.test": ["./src/__tests__/none.test.ts"],
+      "anyoneTestValues": ["./src/__tests__/anyoneTestValues.ts"],
+      "any.test": ["./src/__tests__/any.test.ts"],
+      "all.test": ["./src/__tests__/all.test.ts"]
     }
   }
 }

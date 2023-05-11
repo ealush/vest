@@ -5,22 +5,22 @@ exports[`group: base case Group validity 1`] = `
   "done": [Function],
   "errorCount": 4,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "field_2",
       "groupName": "group_1",
       "message": undefined,
     },
-    {
+    SummaryFailure {
       "fieldName": "field_1",
       "groupName": "group_2",
       "message": undefined,
     },
-    {
+    SummaryFailure {
       "fieldName": "field_1",
       "groupName": "group_3",
       "message": undefined,
     },
-    {
+    SummaryFailure {
       "fieldName": "field_2",
       "groupName": "group_3",
       "message": undefined,

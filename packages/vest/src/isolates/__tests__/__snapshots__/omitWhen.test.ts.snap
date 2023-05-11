@@ -226,7 +226,7 @@ exports[`omitWhen When conditional is truthy boolean conditional Should avoid ru
 SuiteSummary {
   "errorCount": 1,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "field_2",
       "groupName": undefined,
       "message": undefined,
@@ -291,7 +291,7 @@ exports[`omitWhen When conditional is truthy boolean conditional Should skip and
 SuiteSummary {
   "errorCount": 1,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "field_2",
       "groupName": undefined,
       "message": undefined,
@@ -356,7 +356,7 @@ exports[`omitWhen When conditional is truthy function conditional Should avoid r
 SuiteSummary {
   "errorCount": 1,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "field_2",
       "groupName": undefined,
       "message": undefined,
@@ -421,7 +421,7 @@ exports[`omitWhen When conditional is truthy function conditional Should skip an
 SuiteSummary {
   "errorCount": 1,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "field_2",
       "groupName": undefined,
       "message": undefined,

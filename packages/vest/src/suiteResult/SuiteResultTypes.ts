@@ -1,5 +1,5 @@
 import { Severity } from 'Severity';
-import { WithFieldName } from 'TestTypes';
+import { SummaryFailure } from 'SummaryFailure';
 import { Done } from 'suiteRunResult';
 import { SuiteSelectors } from 'suiteSelectors';
 
@@ -36,14 +36,6 @@ export type SingleTestSummary = SummaryBase & {
   errors: string[];
   warnings: string[];
   valid: boolean;
-};
-
-export type SummaryFailure<
-  F extends TFieldName,
-  G extends TGroupName
-> = WithFieldName<F> & {
-  groupName: G | undefined;
-  message: string | undefined;
 };
 
 export type GetFailuresResponse = FailureMessages | string[];

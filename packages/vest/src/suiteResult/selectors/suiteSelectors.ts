@@ -6,11 +6,11 @@ import {
   GetFailuresResponse,
   SuiteResult,
   SuiteSummary,
-  SummaryFailure,
   TFieldName,
   TGroupName,
   TestsContainer,
 } from 'SuiteResultTypes';
+import { SummaryFailure } from 'SummaryFailure';
 import { gatherFailures } from 'collectFailures';
 import matchingFieldName from 'matchingFieldName';
 

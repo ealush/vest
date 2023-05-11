@@ -5,12 +5,12 @@ exports[`Base behavior Should produce correct validation result 1`] = `
   "done": [Function],
   "errorCount": 2,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "field_1",
       "groupName": undefined,
       "message": "field_statement_1",
     },
-    {
+    SummaryFailure {
       "fieldName": "field_2",
       "groupName": undefined,
       "message": "field_statement_2",
@@ -82,7 +82,7 @@ exports[`Base behavior Should produce correct validation result 1`] = `
   "valid": false,
   "warnCount": 1,
   "warnings": [
-    {
+    SummaryFailure {
       "fieldName": "field_4",
       "groupName": undefined,
       "message": "field_statement_4",

@@ -30,7 +30,7 @@ exports[`skipWhen Should pass result draft to the functional condition 2`] = `
 SuiteSummary {
   "errorCount": 1,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "f1",
       "groupName": undefined,
       "message": "msg",
@@ -73,12 +73,12 @@ exports[`skipWhen Should pass result draft to the functional condition 3`] = `
 SuiteSummary {
   "errorCount": 2,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "f1",
       "groupName": undefined,
       "message": "msg",
     },
-    {
+    SummaryFailure {
       "fieldName": "f2",
       "groupName": undefined,
       "message": "msg",

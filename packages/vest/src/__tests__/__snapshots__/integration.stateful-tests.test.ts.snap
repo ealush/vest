@@ -5,7 +5,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 1`] 
   "done": [Function],
   "errorCount": 1,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "field_1",
       "groupName": undefined,
       "message": "field_statement_1",
@@ -81,17 +81,17 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
   "done": [Function],
   "errorCount": 3,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "field_1",
       "groupName": undefined,
       "message": "field_statement_1",
     },
-    {
+    SummaryFailure {
       "fieldName": "field_5",
       "groupName": undefined,
       "message": "field_statement_5",
     },
-    {
+    SummaryFailure {
       "fieldName": "field_5",
       "groupName": undefined,
       "message": "field_statement_6",
@@ -170,22 +170,22 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
   "done": [Function],
   "errorCount": 4,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "field_1",
       "groupName": undefined,
       "message": "field_statement_1",
     },
-    {
+    SummaryFailure {
       "fieldName": "field_2",
       "groupName": undefined,
       "message": "field_statement_2",
     },
-    {
+    SummaryFailure {
       "fieldName": "field_5",
       "groupName": undefined,
       "message": "field_statement_5",
     },
-    {
+    SummaryFailure {
       "fieldName": "field_5",
       "groupName": undefined,
       "message": "field_statement_6",
@@ -260,7 +260,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
   "valid": false,
   "warnCount": 1,
   "warnings": [
-    {
+    SummaryFailure {
       "fieldName": "field_4",
       "groupName": undefined,
       "message": "field_statement_4",
@@ -350,7 +350,7 @@ exports[`more complex Should run correctly 4`] = `
 SuiteSummary {
   "errorCount": 1,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "password",
       "groupName": undefined,
       "message": "password is required",
@@ -409,7 +409,7 @@ exports[`more complex Should run correctly 6`] = `
 SuiteSummary {
   "errorCount": 1,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "password",
       "groupName": undefined,
       "message": "password is required",

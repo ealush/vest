@@ -7,6 +7,7 @@ import {
   TestStatus,
   createTestStateMachine,
 } from 'IsolateTestStateMachine';
+import { TestSeverity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestFn, AsyncTest, TestResult } from 'TestTypes';
 import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
@@ -218,9 +219,4 @@ export class IsolateTest<
   static isX(value: any): asserts value is IsolateTest {
     invariant(this.is(value));
   }
-}
-
-enum TestSeverity {
-  Error = 'error',
-  Warning = 'warning',
 }

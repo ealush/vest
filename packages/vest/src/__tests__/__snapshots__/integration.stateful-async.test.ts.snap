@@ -5,7 +5,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
   "done": [Function],
   "errorCount": 1,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "field_1",
       "groupName": undefined,
       "message": "field_message_1",
@@ -91,12 +91,12 @@ exports[`Stateful async tests Merges skipped validations from previous suite 2`]
 SuiteSummary {
   "errorCount": 2,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "field_1",
       "groupName": undefined,
       "message": "field_message_1",
     },
-    {
+    SummaryFailure {
       "fieldName": "field_2",
       "groupName": undefined,
       "message": "rejection_message_1",
@@ -184,27 +184,27 @@ exports[`Stateful async tests Merges skipped validations from previous suite 3`]
 SuiteSummary {
   "errorCount": 5,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "field_1",
       "groupName": "group",
       "message": "field_1_group_message",
     },
-    {
+    SummaryFailure {
       "fieldName": "field_4",
       "groupName": "group",
       "message": "field_4_group_message",
     },
-    {
+    SummaryFailure {
       "fieldName": "field_1",
       "groupName": undefined,
       "message": "field_message_1",
     },
-    {
+    SummaryFailure {
       "fieldName": "field_2",
       "groupName": undefined,
       "message": "rejection_message_1",
     },
-    {
+    SummaryFailure {
       "fieldName": "field_3",
       "groupName": undefined,
       "message": "field_message_3",

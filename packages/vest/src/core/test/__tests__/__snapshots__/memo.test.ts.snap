@@ -5,7 +5,7 @@ exports[`test.memo cache hit Should produce correct initial result 1`] = `
   "done": [Function],
   "errorCount": 1,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "field1",
       "groupName": undefined,
       "message": "msg1",
@@ -57,7 +57,7 @@ exports[`test.memo cache hit Should produce correct initial result 1`] = `
   "valid": false,
   "warnCount": 1,
   "warnings": [
-    {
+    SummaryFailure {
       "fieldName": "field3",
       "groupName": undefined,
       "message": undefined,
@@ -71,7 +71,7 @@ exports[`test.memo cache hit sync Should restore previous result on re-run 1`] =
   "done": [Function],
   "errorCount": 1,
   "errors": [
-    {
+    SummaryFailure {
       "fieldName": "field1",
       "groupName": undefined,
       "message": "msg1",
@@ -123,7 +123,7 @@ exports[`test.memo cache hit sync Should restore previous result on re-run 1`] =
   "valid": false,
   "warnCount": 1,
   "warnings": [
-    {
+    SummaryFailure {
       "fieldName": "field3",
       "groupName": undefined,
       "message": undefined,

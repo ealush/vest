@@ -7,11 +7,11 @@ import {
   SingleTestSummary,
   SuiteSummary,
   SummaryBase,
-  SummaryFailure,
   TFieldName,
   TGroupName,
   Tests,
 } from 'SuiteResultTypes';
+import { SummaryFailure } from 'SummaryFailure';
 import { TestWalker } from 'TestWalker';
 import {
   useShouldAddValidProperty,
@@ -53,13 +53,8 @@ function appendFailures<F extends TFieldName, G extends TGroupName>(
     key === Severity.WARNINGS ? testObject.isWarning() : testObject.isFailing();
 
   if (shouldAppend) {
-    return failures.concat({
-      fieldName: testObject.fieldName,
-      groupName: testObject.groupName,
-      message: testObject.message,
-    });
+    return failures.concat(SummaryFailure.fromTestObject(testObject));
   }
-
   return failures;
 }
 

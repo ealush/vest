@@ -10,6 +10,7 @@
       "vest": ["./src/vest.ts"],
       "suiteRunResult": ["./src/suiteResult/suiteRunResult.ts"],
       "suiteResult": ["./src/suiteResult/suiteResult.ts"],
+      "SummaryFailure": ["./src/suiteResult/SummaryFailure.ts"],
       "SuiteResultTypes": ["./src/suiteResult/SuiteResultTypes.ts"],
       "Severity": ["./src/suiteResult/Severity.ts"],
       "suiteSelectors": ["./src/suiteResult/selectors/suiteSelectors.ts"],

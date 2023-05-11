@@ -13,3 +13,8 @@ export function countKeyBySeverity(severity: Severity): SeverityCount {
     ? SeverityCount.ERROR_COUNT
     : SeverityCount.WARN_COUNT;
 }
+
+export enum TestSeverity {
+  Error = 'error',
+  Warning = 'warning',
+}

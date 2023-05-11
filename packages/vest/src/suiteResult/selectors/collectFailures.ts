@@ -3,36 +3,38 @@ import { isPositive } from 'vest-utils';
 import { countKeyBySeverity, Severity } from 'Severity';
 import {
   FailureMessages,
+  GetFailuresResponse,
   TestsContainer,
   TFieldName,
   TGroupName,
 } from 'SuiteResultTypes';
+import { SummaryFailure } from 'SummaryFailure';
 
 // calls collectAll or getByFieldName depending on whether fieldName is provided
 
-export function gatherFailures(
-  testGroup: TestsContainer<TFieldName, TGroupName>,
+export function gatherFailures<F extends TFieldName, G extends TGroupName>(
+  testGroup: TestsContainer<F, G>,
   severityKey: Severity,
-  fieldName?: TFieldName
-): string[] | FailureMessages {
+  fieldName?: F
+): GetFailuresResponse<F, G> {
   return fieldName
-    ? getByFieldName(testGroup, severityKey, fieldName)
-    : collectAll(testGroup, severityKey);
+    ? getByFieldName<F, G>(testGroup, severityKey, fieldName)
+    : collectAll<F, G>(testGroup, severityKey);
 }
 
-function getByFieldName(
-  testGroup: TestsContainer<TFieldName, TGroupName>,
+function getByFieldName<F extends TFieldName, G extends TGroupName>(
+  testGroup: TestsContainer<F, G>,
   severityKey: Severity,
-  fieldName: TFieldName
-): string[] {
+  fieldName: F
+): SummaryFailure<F, G>[] {
   return testGroup?.[fieldName]?.[severityKey] || [];
 }
 
-function collectAll(
-  testGroup: TestsContainer<TFieldName, TGroupName>,
+function collectAll<F extends TFieldName, G extends TGroupName>(
+  testGroup: TestsContainer<F, G>,
   severityKey: Severity
-): FailureMessages {
-  const output: FailureMessages = {};
+): FailureMessages<F, G> {
+  const output: FailureMessages<F, G> = {};
 
   const countKey = countKeyBySeverity(severityKey);
 

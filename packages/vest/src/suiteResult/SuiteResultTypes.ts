@@ -16,31 +16,48 @@ export class SuiteSummary<
   public [Severity.ERRORS]: SummaryFailure<F, G>[] = [];
   public [Severity.WARNINGS]: SummaryFailure<F, G>[] = [];
   public groups: Groups<G, F> = {} as Groups<G, F>;
-  public tests: Tests<F> = {} as Tests<F>;
+  public tests: Tests<F, G> = {} as Tests<F, G>;
   public valid = false;
 }
 
 export type TestsContainer<F extends TFieldName, G extends TGroupName> =
-  | Group<G>
-  | Tests<F>;
-export type GroupTestSummary = SingleTestSummary;
+  | Group<F, G>
+  | Tests<F, G>;
+export type GroupTestSummary<
+  F extends TFieldName,
+  G extends TGroupName
+> = SingleTestSummary<F, G>;
 
 export type Groups<G extends TGroupName, F extends TFieldName> = Record<
   G,
-  Group<F>
+  Group<F, G>
 >;
-export type Group<F extends TFieldName> = Record<F, GroupTestSummary>;
-export type Tests<F extends TFieldName> = Record<F, SingleTestSummary>;
+export type Group<F extends TFieldName, G extends TGroupName> = Record<
+  F,
+  GroupTestSummary<F, G>
+>;
+export type Tests<F extends TFieldName, G extends TGroupName> = Record<
+  F,
+  SingleTestSummary<F, G>
+>;
 
-export type SingleTestSummary = SummaryBase & {
-  errors: string[];
-  warnings: string[];
+export type SingleTestSummary<
+  F extends TFieldName,
+  G extends TGroupName
+> = SummaryBase & {
+  errors: SummaryFailure<F, G>[];
+  warnings: SummaryFailure<F, G>[];
   valid: boolean;
 };
 
-export type GetFailuresResponse = FailureMessages | string[];
+export type GetFailuresResponse<F extends TFieldName, G extends TGroupName> =
+  | FailureMessages<F, G>
+  | SummaryFailure<F, G>[];
 
-export type FailureMessages = Record<string, string[]>;
+export type FailureMessages<
+  F extends TFieldName,
+  G extends TGroupName
+> = Record<string, SummaryFailure<F, G>[]>;
 
 export type SuiteResult<
   F extends TFieldName,

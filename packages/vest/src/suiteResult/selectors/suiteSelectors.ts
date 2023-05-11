@@ -130,53 +130,69 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
 
   // Responses
 
-  function getWarnings(): FailureMessages;
-  function getWarnings(fieldName: F): string[];
-  function getWarnings(fieldName?: F): GetFailuresResponse {
+  function getWarnings(): FailureMessages<F, G>;
+  function getWarnings(fieldName: F): SummaryFailure<F, G>[];
+  function getWarnings(fieldName?: F): GetFailuresResponse<F, G> {
     return getFailures(summary, Severity.WARNINGS, fieldName);
   }
 
-  function getWarning(fieldName?: F): void | string | SummaryFailure<F, G> {
+  function getWarning(fieldName?: F): void | SummaryFailure<F, G> {
     return getFailure<F, G>(Severity.WARNINGS, summary, fieldName as F);
   }
 
-  function getErrors(): FailureMessages;
-  function getErrors(fieldName: F): string[];
-  function getErrors(fieldName?: F): GetFailuresResponse {
+  function getErrors(): FailureMessages<F, G>;
+  function getErrors(fieldName: F): SummaryFailure<F, G>[];
+  function getErrors(fieldName?: F): GetFailuresResponse<F, G> {
     return getFailures(summary, Severity.ERRORS, fieldName);
   }
 
-  function getError(fieldName?: F): void | string | SummaryFailure<F, G> {
+  function getError(fieldName?: F): void | SummaryFailure<F, G> {
     return getFailure<F, G>(Severity.ERRORS, summary, fieldName as F);
   }
 
-  function getErrorsByGroup(groupName: G): FailureMessages;
-  function getErrorsByGroup(groupName: G, fieldName: F): string[];
-  function getErrorsByGroup(groupName: G, fieldName?: F): GetFailuresResponse {
-    return getFailuresByGroup(summary, Severity.ERRORS, groupName, fieldName);
+  function getErrorsByGroup(groupName: G): FailureMessages<F, G>;
+  function getErrorsByGroup(groupName: G, fieldName: F): SummaryFailure<F, G>[];
+  function getErrorsByGroup(
+    groupName: G,
+    fieldName?: F
+  ): GetFailuresResponse<F, G> {
+    return getFailuresByGroup<F, G>(
+      summary,
+      Severity.ERRORS,
+      groupName,
+      fieldName
+    );
   }
 
-  function getWarningsByGroup(groupName: G): FailureMessages;
-  function getWarningsByGroup(groupName: G, fieldName: F): string[];
+  function getWarningsByGroup(groupName: G): FailureMessages<F, G>;
+  function getWarningsByGroup(
+    groupName: G,
+    fieldName: F
+  ): SummaryFailure<F, G>[];
   function getWarningsByGroup(
     groupName: G,
     fieldName?: F
-  ): GetFailuresResponse {
-    return getFailuresByGroup(summary, Severity.WARNINGS, groupName, fieldName);
+  ): GetFailuresResponse<F, G> {
+    return getFailuresByGroup<F, G>(
+      summary,
+      Severity.WARNINGS,
+      groupName,
+      fieldName
+    );
   }
 }
 
 export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
   getWarning(fieldName?: F): void | string | SummaryFailure<F, G>;
   getError(fieldName?: F): void | string | SummaryFailure<F, G>;
-  getErrors(fieldName: F): string[];
-  getErrors(): FailureMessages;
-  getWarnings(): FailureMessages;
-  getWarnings(fieldName: F): string[];
-  getErrorsByGroup(groupName: G, fieldName: F): string[];
-  getErrorsByGroup(groupName: G): FailureMessages;
-  getWarningsByGroup(groupName: G): FailureMessages;
-  getWarningsByGroup(groupName: G, fieldName: F): string[];
+  getErrors(fieldName: F): SummaryFailure<F, G>[];
+  getErrors(): FailureMessages<F, G>;
+  getWarnings(): FailureMessages<F, G>;
+  getWarnings(fieldName: F): SummaryFailure<F, G>[];
+  getErrorsByGroup(groupName: G, fieldName: F): SummaryFailure<F, G>[];
+  getErrorsByGroup(groupName: G): FailureMessages<F, G>;
+  getWarningsByGroup(groupName: G): FailureMessages<F, G>;
+  getWarningsByGroup(groupName: G, fieldName: F): SummaryFailure<F, G>[];
   hasErrors(fieldName?: F): boolean;
   hasWarnings(fieldName?: F): boolean;
   hasErrorsByGroup(groupName: G, fieldName?: F): boolean;
@@ -190,29 +206,33 @@ export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
 function getFailures<F extends TFieldName, G extends TGroupName>(
   summary: SuiteSummary<F, G>,
   severityKey: Severity
-): FailureMessages;
+): FailureMessages<F, G>;
 function getFailures<F extends TFieldName, G extends TGroupName>(
   summary: SuiteSummary<F, G>,
   severityKey: Severity,
   fieldName?: TFieldName
-): string[];
+): SummaryFailure<F, G>[];
 function getFailures<F extends TFieldName, G extends TGroupName>(
   summary: SuiteSummary<F, G>,
   severityKey: Severity,
   fieldName?: TFieldName
-): GetFailuresResponse {
-  return gatherFailures(summary.tests, severityKey, fieldName);
+): GetFailuresResponse<F, G> {
+  return gatherFailures<F, G>(summary.tests, severityKey, fieldName);
 }
 
 // Gathers all failures of a given severity within a group
 // With a fieldName, it will only gather failures for that field
-function getFailuresByGroup(
-  summary: SuiteSummary<TFieldName, TGroupName>,
+function getFailuresByGroup<F extends TFieldName, G extends TGroupName>(
+  summary: SuiteSummary<F, G>,
   severityKey: Severity,
-  groupName: TGroupName,
-  fieldName?: TFieldName
-): GetFailuresResponse {
-  return gatherFailures(summary.groups[groupName], severityKey, fieldName);
+  groupName: G,
+  fieldName?: F
+): GetFailuresResponse<F, G> {
+  return gatherFailures<F, G>(
+    summary.groups[groupName],
+    severityKey,
+    fieldName
+  );
 }
 // Checks if a field is valid within a container object - can be within a group or top level
 function isFieldValid(
@@ -271,20 +291,19 @@ function getFailure<F extends TFieldName, G extends TGroupName>(
   severity: Severity,
   summary: SuiteSummary<F, G>,
   fieldName: F
-): string | undefined;
+): undefined;
 function getFailure<F extends TFieldName, G extends TGroupName>(
   severity: Severity,
   summary: SuiteSummary<F, G>,
   fieldName?: F
-): SummaryFailure<F, G> | string | undefined {
+): SummaryFailure<F, G> | undefined {
   const summaryKey = summary[severity];
 
   if (!fieldName) {
     return summaryKey[0];
   }
 
-  return summaryKey.find(
-    (summaryFailure: SummaryFailure<TFieldName, TGroupName>) =>
-      matchingFieldName(summaryFailure, fieldName)
-  )?.message;
+  return summaryKey.find((summaryFailure: SummaryFailure<F, G>) =>
+    matchingFieldName(summaryFailure, fieldName)
+  );
 }

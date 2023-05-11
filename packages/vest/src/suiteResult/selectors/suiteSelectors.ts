@@ -215,7 +215,7 @@ function getFailures<F extends TFieldName, G extends TGroupName>(
 function getFailures<F extends TFieldName, G extends TGroupName>(
   summary: SuiteSummary<F, G>,
   severityKey: Severity,
-  fieldName?: TFieldName
+  fieldName?: F
 ): GetFailuresResponse<F, G> {
   return gatherFailures<F, G>(summary.tests, severityKey, fieldName);
 }

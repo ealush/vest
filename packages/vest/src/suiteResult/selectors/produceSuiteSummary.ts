@@ -58,17 +58,17 @@ function appendFailures<F extends TFieldName, G extends TGroupName>(
   return failures;
 }
 
-function useAppendToTest<F extends TFieldName>(
-  tests: Tests<F>,
-  testObject: IsolateTest<F>
-): Tests<F> {
+function useAppendToTest<F extends TFieldName, G extends TGroupName>(
+  tests: Tests<F, G>,
+  testObject: IsolateTest<F, G>
+): Tests<F, G> {
   const { fieldName } = testObject;
 
   const newTests = {
     ...tests,
   };
 
-  newTests[fieldName] = appendTestObject(newTests[fieldName], testObject);
+  newTests[fieldName] = appendTestObject<F, G>(newTests[fieldName], testObject);
   // If `valid` is false to begin with, keep it that way. Otherwise, assess.
   newTests[fieldName].valid =
     newTests[fieldName].valid === false
@@ -81,10 +81,10 @@ function useAppendToTest<F extends TFieldName>(
 /**
  * Appends to a group object if within a group
  */
-function useAppendToGroup(
-  groups: Groups<TGroupName, TFieldName>,
-  testObject: IsolateTest
-): Groups<TGroupName, TFieldName> {
+function useAppendToGroup<F extends TFieldName, G extends TGroupName>(
+  groups: Groups<G, F>,
+  testObject: IsolateTest<F, G>
+): Groups<G, F> {
   const { groupName, fieldName } = testObject;
 
   if (!groupName) {
@@ -96,7 +96,7 @@ function useAppendToGroup(
   };
 
   newGroups[groupName] = newGroups[groupName] || {};
-  newGroups[groupName][fieldName] = appendTestObject(
+  newGroups[groupName][fieldName] = appendTestObject<F, G>(
     newGroups[groupName][fieldName],
     testObject
   );
@@ -128,13 +128,13 @@ function countFailures<F extends TFieldName, G extends TGroupName>(
  * Overload is only needed to satisfy typescript. No use in breaking it down to multiple
  * functions as it is really the same, with the difference of "valid" missing in groups
  */
-function appendTestObject(
-  summaryKey: SingleTestSummary | undefined,
-  testObject: IsolateTest
-): SingleTestSummary {
+function appendTestObject<F extends TFieldName, G extends TGroupName>(
+  summaryKey: SingleTestSummary<F, G> | undefined,
+  testObject: IsolateTest<F, G>
+): SingleTestSummary<F, G> {
   const { message } = testObject;
 
-  const nextSummaryKey = defaultTo<SingleTestSummary>(
+  const nextSummaryKey = defaultTo<SingleTestSummary<F, G>>(
     summaryKey ? { ...summaryKey } : null,
     baseTestStats
   );
@@ -155,9 +155,10 @@ function appendTestObject(
     const countKey = countKeyBySeverity(severity);
     nextSummaryKey[countKey]++;
     if (message) {
-      nextSummaryKey[severity] = (nextSummaryKey[severity] || []).concat(
-        message
-      );
+      nextSummaryKey[severity] = [
+        ...(nextSummaryKey[severity] || []),
+        SummaryFailure.fromTestObject<F, G>(testObject),
+      ];
     }
   }
 }

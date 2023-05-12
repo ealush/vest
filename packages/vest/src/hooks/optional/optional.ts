@@ -6,7 +6,7 @@ import {
 } from 'vest-utils';
 
 import type { IsolateSuite } from 'IsolateSuite';
-import { OptionalFieldTypes, OptionalsInput } from 'OptionalTypes';
+import { OptionalsInput } from 'OptionalTypes';
 import { useAvailableSuiteRoot, useRuntimeRoot } from 'PersistedContext';
 import { TFieldName } from 'SuiteResultTypes';
 
@@ -28,9 +28,8 @@ export function optional<F extends TFieldName>(
   if (isArray(optionals) || isStringValue(optionals)) {
     asArray(optionals).forEach(optionalField => {
       suiteRoot.setOptionalField(optionalField, () => ({
-        type: OptionalFieldTypes.Delayed,
-        applied: false,
-        rule: null,
+        applied: true,
+        rule: true,
       }));
     });
   } else {
@@ -39,7 +38,6 @@ export function optional<F extends TFieldName>(
       const value = optionals[field];
 
       suiteRoot.setOptionalField(field, () => ({
-        type: OptionalFieldTypes.Immediate,
         rule: value,
         applied: optionalFunctionValue(value),
       }));

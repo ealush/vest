@@ -1,7 +1,6 @@
-import { useIsOptionalFiedApplied } from 'optional';
+import { optionalFunctionValue } from 'vest-utils';
 
 import { IsolateTest } from 'IsolateTest';
-import { OptionalFieldTypes } from 'OptionalTypes';
 import { useAvailableSuiteRoot } from 'PersistedContext';
 import { Severity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
@@ -12,6 +11,7 @@ import {
 } from 'hasFailuresByTestObjects';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
+import { useIsOptionalFiedApplied } from 'optional';
 
 export function useShouldAddValidProperty(fieldName?: TFieldName): boolean {
   // Is the field optional, and the optional condition is applied
@@ -141,8 +141,10 @@ function useOptionalTestAwaitsResolution(testObject: IsolateTest): boolean {
   // Does the test belong to an optional field,
   // and the test itself is still in an indeterminate state?
 
-  return (
-    useAvailableSuiteRoot()?.getOptionalField(testObject.fieldName).type ===
-      OptionalFieldTypes.Delayed && testObject.awaitsResolution()
-  );
+  const optionalField =
+    useAvailableSuiteRoot()?.getOptionalField(testObject.fieldName) ?? null;
+
+  const ruleValue = optionalFunctionValue(optionalField?.rule);
+
+  return (optionalField?.applied || ruleValue) ?? false;
 }

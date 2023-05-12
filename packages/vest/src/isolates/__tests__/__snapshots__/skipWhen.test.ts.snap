@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`skipWhen Should pass result draft to the functional condition 1`] = `
-SuiteSummary {
+{
   "errorCount": 0,
   "errors": [],
   "getError": [Function],
@@ -27,7 +27,7 @@ SuiteSummary {
 `;
 
 exports[`skipWhen Should pass result draft to the functional condition 2`] = `
-SuiteSummary {
+{
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -70,7 +70,7 @@ SuiteSummary {
 `;
 
 exports[`skipWhen Should pass result draft to the functional condition 3`] = `
-SuiteSummary {
+{
   "errorCount": 2,
   "errors": [
     SummaryFailure {

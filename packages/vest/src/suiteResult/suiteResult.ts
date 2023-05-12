@@ -1,6 +1,6 @@
 import { assign } from 'vest-utils';
 
-import { useSuiteName, useSuiteResultCache } from 'PersistedContext';
+import { useSuiteName } from 'PersistedContext';
 import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { useProduceSuiteSummary } from 'produceSuiteSummary';
 import { suiteSelectors } from 'suiteSelectors';
@@ -12,10 +12,7 @@ export function useCreateSuiteResult<
   const summary = useProduceSuiteSummary<F, G>();
   const suiteName = useSuiteName();
 
-  return useSuiteResultCache<F, G>(
-    () =>
-      assign(summary, suiteSelectors<F, G>(summary), {
-        suiteName,
-      }) as SuiteResult<F, G>
+  return Object.freeze(
+    assign({ suiteName }, summary, suiteSelectors<F, G>(summary))
   );
 }

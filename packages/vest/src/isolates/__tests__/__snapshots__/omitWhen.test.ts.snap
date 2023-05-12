@@ -223,7 +223,7 @@ exports[`omitWhen When conditional is falsy function conditional Should run test
 `;
 
 exports[`omitWhen When conditional is truthy boolean conditional Should avoid running the omitted tests 1`] = `
-SuiteSummary {
+{
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -288,7 +288,7 @@ SuiteSummary {
 `;
 
 exports[`omitWhen When conditional is truthy boolean conditional Should skip and not run omitted fields when no filter provided 1`] = `
-SuiteSummary {
+{
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -353,7 +353,7 @@ SuiteSummary {
 `;
 
 exports[`omitWhen When conditional is truthy function conditional Should avoid running the omitted tests 1`] = `
-SuiteSummary {
+{
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -418,7 +418,7 @@ SuiteSummary {
 `;
 
 exports[`omitWhen When conditional is truthy function conditional Should skip and not run omitted fields when no filter provided 1`] = `
-SuiteSummary {
+{
   "errorCount": 1,
   "errors": [
     SummaryFailure {

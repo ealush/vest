@@ -270,7 +270,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
 `;
 
 exports[`more complex Should run correctly 1`] = `
-SuiteSummary {
+{
   "errorCount": 0,
   "errors": [],
   "getError": [Function],
@@ -296,7 +296,7 @@ SuiteSummary {
 `;
 
 exports[`more complex Should run correctly 2`] = `
-SuiteSummary {
+{
   "errorCount": 0,
   "errors": [],
   "getError": [Function],
@@ -347,7 +347,7 @@ SuiteSummary {
 `;
 
 exports[`more complex Should run correctly 4`] = `
-SuiteSummary {
+{
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -406,7 +406,7 @@ SuiteSummary {
 `;
 
 exports[`more complex Should run correctly 6`] = `
-SuiteSummary {
+{
   "errorCount": 1,
   "errors": [
     SummaryFailure {

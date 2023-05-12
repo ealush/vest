@@ -1,6 +1,7 @@
 import { assign, defaultTo } from 'vest-utils';
 
 import { IsolateTest } from 'IsolateTest';
+import { useSuiteSummaryCache } from 'PersistedContext';
 import { countKeyBySeverity, Severity } from 'Severity';
 import {
   Groups,
@@ -22,26 +23,28 @@ export function useProduceSuiteSummary<
   F extends TFieldName,
   G extends TGroupName
 >(): SuiteSummary<F, G> {
-  const summary: SuiteSummary<F, G> = new SuiteSummary();
+  return useSuiteSummaryCache<F, G>(() => {
+    const summary: SuiteSummary<F, G> = new SuiteSummary();
 
-  TestWalker.walkTests<F, G>(testObject => {
-    summary.tests = useAppendToTest(summary.tests, testObject);
-    summary.groups = useAppendToGroup(summary.groups, testObject);
-    summary.errors = appendFailures(
-      Severity.ERRORS,
-      summary.errors,
-      testObject
-    );
-    summary.warnings = appendFailures(
-      Severity.WARNINGS,
-      summary.warnings,
-      testObject
-    );
+    TestWalker.walkTests<F, G>(testObject => {
+      summary.tests = useAppendToTest(summary.tests, testObject);
+      summary.groups = useAppendToGroup(summary.groups, testObject);
+      summary.errors = appendFailures(
+        Severity.ERRORS,
+        summary.errors,
+        testObject
+      );
+      summary.warnings = appendFailures(
+        Severity.WARNINGS,
+        summary.warnings,
+        testObject
+      );
+    });
+
+    summary.valid = useShouldAddValidProperty();
+
+    return countFailures(summary);
   });
-
-  summary.valid = useShouldAddValidProperty();
-
-  return countFailures(summary);
 }
 
 function appendFailures<F extends TFieldName, G extends TGroupName>(

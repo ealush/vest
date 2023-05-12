@@ -31,9 +31,12 @@ describe('suite.resetField', () => {
 
   it('Should refresh the suite result', () => {
     const res = suite.get();
-    expect(res).toBe(suite.get());
+    // cheap checking that this is the same summary.
+    // it's going to be hard to check the entire object
+    // since we're assigning the methods on the fly.
+    expect(res.tests).toBe(suite.get().tests);
     suite.resetField('field1');
-    expect(res).not.toBe(suite.get());
+    expect(res).not.isDeepCopyOf(suite.get());
   });
 
   it('Should allow the field to keep updating (no final status)', () => {

@@ -3,7 +3,7 @@ import { bus } from 'vest-utils';
 import { Events } from 'BusEvents';
 import { IsolateTest } from 'IsolateTest';
 import {
-  useExpireSuiteResultCache,
+  useExpireSuiteSummaryCache,
   useResetCallbacks,
   useResetSuite,
 } from 'PersistedContext';
@@ -60,7 +60,7 @@ export function useInitVestBus() {
     VestBus.on(event, (...args: any[]) => {
       // This is more concise, but it might be an overkill
       // if we're adding events that don't need to invalidate the cache
-      useExpireSuiteResultCache();
+      useExpireSuiteSummaryCache();
       cb(...args);
     });
   }

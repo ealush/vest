@@ -82,8 +82,10 @@ describe('produce method Suite Result', () => {
         dummyTest.failing('field_1', 'message');
       });
       const res = suite();
-      expect(res).toMatchObject(suite.get());
-      expect(suite.get()).toBe(suite.get());
+      expect(res.tests).toBe(suite.get().tests);
+      expect(res.errors).toBe(suite.get().errors);
+      expect(res.warnings).toBe(suite.get().warnings);
+      expect(res.groups).toBe(suite.get().groups);
     });
 
     it('When changed, should produce a new result object', () => {
@@ -111,7 +113,7 @@ describe('suite.get()', () => {
     it('Should have all exposed methods', () => {
       const suite = vest.create(() => {});
       expect(suite.get()).toMatchInlineSnapshot(`
-        SuiteSummary {
+        {
           "errorCount": 0,
           "errors": [],
           "getError": [Function],

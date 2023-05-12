@@ -21,12 +21,13 @@ import type { IsolateSuite } from 'IsolateSuite';
 import {
   SuiteName,
   SuiteResult,
+  SuiteSummary,
   TFieldName,
   TGroupName,
 } from 'SuiteResultTypes';
 import { useInitVestBus } from 'VestBus';
 
-const suiteResultCache = cache<SuiteResult<TFieldName, TGroupName>>();
+const SuiteSummaryCache = cache<SuiteSummary<TFieldName, TGroupName>>();
 
 export const PersistedContext = createCascade<CTXType>(
   (vestState, parentContext) => {
@@ -66,7 +67,7 @@ export function useCreateVestState({
     historyRoot: tinyState.createTinyState<Isolate | null>(null),
     suiteId: seq(),
     suiteName,
-    suiteResultCache,
+    SuiteSummaryCache,
   };
 
   return stateRef;
@@ -81,17 +82,18 @@ export function persist<T extends CB>(cb: T): T {
   } as T;
 }
 
-export function useSuiteResultCache<F extends TFieldName, G extends TGroupName>(
-  action: () => SuiteResult<F, G>
-): SuiteResult<F, G> {
-  const suiteResultCache = useX().suiteResultCache;
+export function useSuiteSummaryCache<
+  F extends TFieldName,
+  G extends TGroupName
+>(action: () => SuiteSummary<F, G>): SuiteSummary<F, G> {
+  const SuiteSummaryCache = useX().SuiteSummaryCache;
 
-  return suiteResultCache([useSuiteId()], action) as SuiteResult<F, G>;
+  return SuiteSummaryCache([useSuiteId()], action) as SuiteSummary<F, G>;
 }
 
-export function useExpireSuiteResultCache() {
-  const suiteResultCache = useX().suiteResultCache;
-  suiteResultCache.invalidate([useSuiteId()]);
+export function useExpireSuiteSummaryCache() {
+  const SuiteSummaryCache = useX().SuiteSummaryCache;
+  SuiteSummaryCache.invalidate([useSuiteId()]);
 }
 
 export function useResetCallbacks() {
@@ -122,7 +124,7 @@ type StateType = {
   suiteName: string | undefined;
   suiteId: string;
   VestBus: BusType;
-  suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName>>;
+  SuiteSummaryCache: CacheApi<SuiteSummary<TFieldName, TGroupName>>;
 };
 
 type FieldCallbacks = Record<string, DoneCallbacks>;

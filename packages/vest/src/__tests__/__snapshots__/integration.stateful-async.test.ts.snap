@@ -88,7 +88,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
 `;
 
 exports[`Stateful async tests Merges skipped validations from previous suite 2`] = `
-SuiteSummary {
+{
   "errorCount": 2,
   "errors": [
     SummaryFailure {
@@ -181,7 +181,7 @@ SuiteSummary {
 `;
 
 exports[`Stateful async tests Merges skipped validations from previous suite 3`] = `
-SuiteSummary {
+{
   "errorCount": 5,
   "errors": [
     SummaryFailure {

@@ -16,9 +16,14 @@ export function useSuiteRunResult<
   F extends TFieldName,
   G extends TGroupName
 >(): SuiteRunResult<F, G> {
-  return assign({}, useCreateSuiteResult<F, G>(), {
-    done: persist(done),
-  });
+  return Object.freeze(
+    assign(
+      {
+        done: persist(done),
+      },
+      useCreateSuiteResult<F, G>()
+    )
+  );
 }
 
 /**

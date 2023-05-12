@@ -40,7 +40,7 @@ export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
     (item: FieldExclusion<F>): void;
     group(item: GroupExclusion<G>): void;
   };
-  optional: (optionals: OptionalsInput<F>) => void;
+  optional: (optionals: OptionalsInput<F, G>) => void;
   skip: {
     (item: FieldExclusion<F>): void;
     group(item: GroupExclusion<G>): void;

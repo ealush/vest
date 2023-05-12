@@ -12,6 +12,7 @@ import {
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
 import { useIsOptionalFiedApplied } from 'optional';
+import { useCreateSuiteResult } from 'suiteResult';
 
 export function useShouldAddValidProperty(fieldName?: TFieldName): boolean {
   // Is the field optional, and the optional condition is applied
@@ -92,29 +93,31 @@ function useIsTestObjectOptional(
 
 // Did all of the tests for the provided field run/omit?
 // This makes sure that the fields are not skipped or pending.
-function useNoMissingTests(fieldName?: string): boolean {
+function useNoMissingTests<F extends TFieldName, G extends TGroupName>(
+  fieldName?: F
+): boolean {
   return TestWalker.everyTest(testObject => {
-    return useNoMissingTestsLogic(testObject, fieldName);
+    return useNoMissingTestsLogic<F, G>(testObject, fieldName);
   });
 }
 
 // Does the group have no missing tests?
-function useNoMissingTestsByGroup(
-  groupName: TGroupName,
-  fieldName?: TFieldName
+function useNoMissingTestsByGroup<F extends TFieldName, G extends TGroupName>(
+  groupName: G,
+  fieldName?: F
 ): boolean {
   return TestWalker.everyTest(testObject => {
     if (nonMatchingGroupName(testObject, groupName)) {
       return true;
     }
 
-    return useNoMissingTestsLogic(testObject, fieldName);
+    return useNoMissingTestsLogic<F, G>(testObject, fieldName);
   });
 }
 
-function useNoMissingTestsLogic(
+function useNoMissingTestsLogic<F extends TFieldName, G extends TGroupName>(
   testObject: IsolateTest,
-  fieldName?: TFieldName
+  fieldName?: F
 ): boolean {
   if (nonMatchingFieldName(testObject, fieldName)) {
     return true;
@@ -131,20 +134,31 @@ function useNoMissingTestsLogic(
    */
 
   return (
-    useOptionalTestAwaitsResolution(testObject) ||
+    useOptionalTestAwaitsResolution<F, G>(testObject) ||
     testObject.isTested() ||
     testObject.isOmitted()
   );
 }
 
-function useOptionalTestAwaitsResolution(testObject: IsolateTest): boolean {
+function useOptionalTestAwaitsResolution<
+  F extends TFieldName,
+  G extends TGroupName
+>(testObject: IsolateTest): boolean {
+  if (!testObject.isNonActionable()) {
+    return false;
+  }
+
+  const suiteResult = useCreateSuiteResult<F, G>();
+
   // Does the test belong to an optional field,
   // and the test itself is still in an indeterminate state?
 
   const optionalField =
     useAvailableSuiteRoot()?.getOptionalField(testObject.fieldName) ?? null;
 
-  const ruleValue = optionalFunctionValue(optionalField?.rule);
-
-  return (optionalField?.applied || ruleValue) ?? false;
+  return (
+    (optionalField?.applied ||
+      optionalFunctionValue(optionalField?.rule, suiteResult)) ??
+    false
+  );
 }

@@ -1,13 +1,18 @@
 import { Isolate } from 'Isolate';
 import { OptionalFieldDeclaration, OptionalFields } from 'OptionalTypes';
-import { TFieldName } from 'SuiteResultTypes';
+import { TFieldName, TGroupName } from 'SuiteResultTypes';
 
 export class IsolateSuite extends Isolate {
-  optional: OptionalFields = {};
+  optional: OptionalFields<TFieldName, TGroupName> = {} as OptionalFields<
+    TFieldName,
+    TGroupName
+  >;
 
   setOptionalField(
     fieldName: TFieldName,
-    setter: (current: OptionalFieldDeclaration) => OptionalFieldDeclaration
+    setter: (
+      current: OptionalFieldDeclaration<TFieldName, TGroupName>
+    ) => OptionalFieldDeclaration<TFieldName, TGroupName>
   ): void {
     const current = this.optional;
     const currentField = current[fieldName];
@@ -17,7 +22,9 @@ export class IsolateSuite extends Isolate {
     });
   }
 
-  getOptionalField(fieldName: TFieldName): OptionalFieldDeclaration {
+  getOptionalField(
+    fieldName: TFieldName
+  ): OptionalFieldDeclaration<TFieldName, TGroupName> {
     return this.optional[fieldName] ?? {};
   }
 }

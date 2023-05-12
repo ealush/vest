@@ -6,13 +6,13 @@ import {
 } from 'vest-utils';
 
 import type { IsolateSuite } from 'IsolateSuite';
-import { OptionalsInput } from 'OptionalTypes';
+import { OptionalsInput, OptionalFieldRule } from 'OptionalTypes';
 import { useAvailableSuiteRoot, useRuntimeRoot } from 'PersistedContext';
-import { TFieldName } from 'SuiteResultTypes';
+import { TFieldName, TGroupName } from 'SuiteResultTypes';
 
 // @vx-allow use-use
-export function optional<F extends TFieldName>(
-  optionals: OptionalsInput<F>
+export function optional<F extends TFieldName, G extends TGroupName>(
+  optionals: OptionalsInput<F, G>
 ): void {
   const suiteRoot = useRuntimeRoot() as IsolateSuite;
 
@@ -38,7 +38,7 @@ export function optional<F extends TFieldName>(
       const value = optionals[field];
 
       suiteRoot.setOptionalField(field, () => ({
-        rule: value,
+        rule: value as OptionalFieldRule<TFieldName, TGroupName>,
         applied: optionalFunctionValue(value),
       }));
     }

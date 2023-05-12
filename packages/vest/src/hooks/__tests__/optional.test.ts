@@ -83,6 +83,7 @@ describe('optional hook', () => {
   });
 
   describe('Test example from the docs', () => {
+    type SuiteResult = vest.SuiteResult<string, string>;
     let suite: TTestSuite, res: vest.SuiteRunResult<string, string>;
 
     beforeEach(() => {
@@ -90,12 +91,12 @@ describe('optional hook', () => {
         vest.only(currentField);
 
         vest.optional({
-          chk_a: () =>
-            suite.get().isValid('chk_b') || suite.get().isValid('chk_c'),
-          chk_b: () =>
-            suite.get().isValid('chk_a') || suite.get().isValid('chk_c'),
-          chk_c: () =>
-            suite.get().isValid('chk_a') || suite.get().isValid('chk_b'),
+          chk_a: (res: SuiteResult) =>
+            Boolean(res.isValid('chk_b') || res.isValid('chk_c')),
+          chk_b: (res: SuiteResult) =>
+            Boolean(res.isValid('chk_a') || res.isValid('chk_c')),
+          chk_c: (res: SuiteResult) =>
+            Boolean(res.isValid('chk_a') || res.isValid('chk_b')),
         });
 
         vest.test('chk_a', () => {

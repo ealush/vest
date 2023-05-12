@@ -32,16 +32,16 @@ export function optional<F extends TFieldName, G extends TGroupName>(
         rule: true,
       }));
     });
-  } else {
-    // Immediately case (function or boolean)
-    for (const field in optionals) {
-      const value = optionals[field];
+    return;
+  }
+  // Immediately case (function or boolean)
+  for (const field in optionals) {
+    const value = optionals[field];
 
-      suiteRoot.setOptionalField(field, () => ({
-        rule: value as OptionalFieldRule<TFieldName, TGroupName>,
-        applied: optionalFunctionValue(value),
-      }));
-    }
+    suiteRoot.setOptionalField(field, () => ({
+      rule: value as OptionalFieldRule<TFieldName, TGroupName>,
+      applied: optionalFunctionValue(value),
+    }));
   }
 }
 

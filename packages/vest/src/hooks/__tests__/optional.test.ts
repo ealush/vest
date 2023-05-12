@@ -1,16 +1,17 @@
-import { optional, create, test } from 'vest';
+import { TTestSuite } from 'testUtils/TVestMock';
+import * as vest from 'vest';
 
 describe('optional hook', () => {
   describe('Functional Optional Interface', () => {
     it('Should omit test failures based on optional functions', () => {
-      const suite = create(() => {
-        optional({
+      const suite = vest.create(() => {
+        vest.optional({
           f1: () => true,
           f2: () => true,
         });
 
-        test('f1', () => false);
-        test('f2', () => false);
+        vest.test('f1', () => false);
+        vest.test('f2', () => false);
       });
 
       const res = suite();
@@ -24,14 +25,14 @@ describe('optional hook', () => {
 
     describe('example: "any of" test', () => {
       it('Should allow specifying custom optional based on other tests in the suite', () => {
-        const suite = create(() => {
-          optional({
+        const suite = vest.create(() => {
+          vest.optional({
             f1: () => !suite.get().hasErrors('f2'),
             f2: () => !suite.get().hasErrors('f1'),
           });
 
-          test('f1', () => false);
-          test('f2', () => true);
+          vest.test('f1', () => false);
+          vest.test('f2', () => true);
         });
 
         const res = suite();
@@ -48,11 +49,11 @@ describe('optional hook', () => {
   describe('boolean optional field indicator', () => {
     describe('When true', () => {
       it('Should omit field as optional', () => {
-        const suite = create(() => {
-          optional({
+        const suite = vest.create(() => {
+          vest.optional({
             field_1: true,
           });
-          test('field_1', () => false);
+          vest.test('field_1', () => false);
         });
 
         const res = suite();
@@ -65,11 +66,11 @@ describe('optional hook', () => {
 
     describe('When false', () => {
       it('Should fail the field normally', () => {
-        const suite = create(() => {
-          optional({
+        const suite = vest.create(() => {
+          vest.optional({
             field_1: false,
           });
-          test('field_1', () => false);
+          vest.test('field_1', () => false);
         });
 
         const res = suite();
@@ -78,6 +79,46 @@ describe('optional hook', () => {
         expect(res.isValid('field_1')).toBe(false);
         expect(res.isValid()).toBe(false);
       });
+    });
+  });
+
+  // this is the example from the docs so it better be working
+  describe('Getting suite result within the optional function', () => {
+    let suite: TTestSuite;
+
+    beforeEach(() => {
+      suite = vest.create((data = {}) => {
+        vest.optional({
+          a: () => suite.get().isValid('b') || suite.get().isValid('c'),
+          b: () => suite.get().isValid('a') || suite.get().isValid('c'),
+          c: () => suite.get().isValid('a') || suite.get().isValid('b'),
+        });
+
+        vest.test('a', () => {
+          vest.enforce(data.a).isTruthy();
+        });
+        vest.test('b', () => {
+          vest.enforce(data.b).isTruthy();
+        });
+        vest.test('c', () => {
+          vest.enforce(data.c).isTruthy();
+        });
+      });
+    });
+
+    it('Should omit tests based on other tests in the suite', () => {
+      expect(suite({ a: 1, b: 0, c: 0 }).isValid('a')).toBe(true);
+      expect(suite({ a: 1, b: 0, c: 0 }).isValid('b')).toBe(true);
+      expect(suite({ a: 1, b: 0, c: 0 }).isValid('c')).toBe(true);
+      expect(suite({ a: 1, b: 0, c: 0 }).isValid()).toBe(true);
+      expect(suite({ a: 0, b: 1, c: 0 }).isValid('a')).toBe(true);
+      expect(suite({ a: 0, b: 1, c: 0 }).isValid('b')).toBe(true);
+      expect(suite({ a: 0, b: 1, c: 0 }).isValid('c')).toBe(true);
+      expect(suite({ a: 0, b: 1, c: 0 }).isValid()).toBe(true);
+      expect(suite({ a: 0, b: 0, c: 1 }).isValid('a')).toBe(true);
+      expect(suite({ a: 0, b: 0, c: 1 }).isValid('b')).toBe(true);
+      expect(suite({ a: 0, b: 0, c: 1 }).isValid('c')).toBe(true);
+      expect(suite({ a: 0, b: 0, c: 1 }).isValid()).toBe(true);
     });
   });
 });

@@ -49,6 +49,10 @@ function appendFailures<F extends TFieldName, G extends TGroupName>(
   failures: SummaryFailure<F, G>[],
   testObject: IsolateTest<F, G>
 ): SummaryFailure<F, G>[] {
+  if (testObject.isOmitted()) {
+    return failures;
+  }
+
   const shouldAppend =
     key === Severity.WARNINGS ? testObject.isWarning() : testObject.isFailing();
 

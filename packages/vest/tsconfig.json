@@ -87,6 +87,7 @@
       "include": ["./src/hooks/include.ts"],
       "exclusive": ["./src/hooks/exclusive.ts"],
       "optional": ["./src/hooks/optional/optional.ts"],
+      "omitOptionalFields": ["./src/hooks/optional/omitOptionalFields.ts"],
       "OptionalTypes": ["./src/hooks/optional/OptionalTypes.ts"],
       "warn.test": ["./src/hooks/__tests__/warn.test.ts"],
       "optional.test": ["./src/hooks/__tests__/optional.test.ts"],

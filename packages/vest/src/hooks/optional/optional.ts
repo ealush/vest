@@ -1,9 +1,4 @@
-import {
-  isArray,
-  isStringValue,
-  asArray,
-  optionalFunctionValue,
-} from 'vest-utils';
+import { isArray, isStringValue, asArray } from 'vest-utils';
 
 import type { IsolateSuite } from 'IsolateSuite';
 import { OptionalFieldTypes, OptionalsInput } from 'OptionalTypes';
@@ -41,7 +36,7 @@ export function optional<F extends TFieldName>(
       suiteRoot.setOptionalField(field, () => ({
         type: OptionalFieldTypes.Immediate,
         rule: value,
-        applied: optionalFunctionValue(value),
+        applied: value === true,
       }));
     }
   }

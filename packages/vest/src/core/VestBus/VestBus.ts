@@ -1,3 +1,4 @@
+import { useOmitOptionalFields } from 'omitOptionalFields';
 import { bus } from 'vest-utils';
 
 import { Events } from 'BusEvents';
@@ -11,6 +12,7 @@ import { TFieldName } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
 import { useRunDoneCallbacks, useRunFieldCallbacks } from 'runCallbacks';
 
+// eslint-disable-next-line max-statements
 export function useInitVestBus() {
   const VestBus = bus.createBus();
 
@@ -33,6 +35,10 @@ export function useInitVestBus() {
     /* Let's just invalidate the suite cache for now */
   });
 
+  on(Events.DONE_TEST_OMISSION_PASS, () => {
+    /* We NEED to refresh the cache here. Don't ask */
+  });
+
   // Called when all the tests, including async, are done running
   on(Events.ALL_RUNNING_TESTS_FINISHED, () => {
     useRunDoneCallbacks();
@@ -44,6 +50,11 @@ export function useInitVestBus() {
 
   on(Events.SUITE_RUN_STARTED, () => {
     useResetCallbacks();
+  });
+
+  on(Events.SUITE_CALLBACK_RUN_FINISHED, () => {
+    useOmitOptionalFields();
+    VestBus.emit(Events.DONE_TEST_OMISSION_PASS);
   });
 
   on(Events.REMOVE_FIELD, (fieldName: TFieldName) => {

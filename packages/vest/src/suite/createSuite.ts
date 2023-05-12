@@ -87,8 +87,11 @@ function useRunSuiteCallback<
   F extends TFieldName,
   G extends TGroupName
 >(suiteCallback: T, ...args: Parameters<T>): () => SuiteRunResult<F, G> {
+  const emit = useEmit();
+
   return () => {
     suiteCallback(...args);
+    emit(Events.SUITE_CALLBACK_RUN_FINISHED);
     return useSuiteRunResult<F, G>();
   };
 }

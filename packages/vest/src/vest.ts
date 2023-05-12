@@ -1,4 +1,6 @@
 import { enforce } from 'n4s';
+
+// eslint-disable-next-line import/order -- will handle this circular dep issue later.
 import { optional } from 'optional';
 
 import type { IsolateTest } from 'IsolateTest';

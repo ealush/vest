@@ -131,9 +131,9 @@ function useNoMissingTestsLogic(
    */
 
   return (
-    useOptionalTestAwaitsResolution(testObject) ||
+    testObject.isOmitted() ||
     testObject.isTested() ||
-    testObject.isOmitted()
+    useOptionalTestAwaitsResolution(testObject)
   );
 }
 

@@ -20,4 +20,8 @@ export class IsolateSuite extends Isolate {
   getOptionalField(fieldName: TFieldName): OptionalFieldDeclaration {
     return this.optional[fieldName] ?? {};
   }
+
+  getOptionalFields(): OptionalFields {
+    return this.optional;
+  }
 }

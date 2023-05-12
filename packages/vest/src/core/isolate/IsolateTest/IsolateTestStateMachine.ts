@@ -39,6 +39,7 @@ const machine: TStateMachine<TestStatus, TAction> = {
     },
     [TestStatus.FAILED]: {
       [TestAction.RESET]: TestStatus.UNTESTED,
+      [TestStatus.OMITTED]: TestStatus.OMITTED,
     },
     [TestStatus.WARNING]: {
       [TestAction.RESET]: TestStatus.UNTESTED,

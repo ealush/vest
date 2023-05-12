@@ -112,10 +112,14 @@ const config = {
             type: 'docsVersionDropdown',
             position: 'left',
           },
+
           {
-            href: '/vest-5-is-ready',
-            label: '🎉 Vest 5 is ready! Try it out now!',
             position: 'right',
+            type: 'html',
+            value: badgeLink(
+              '/vest-5-is-ready',
+              'https://badgen.net/npm/v/vest/next?scale=1.2'
+            ),
           },
           {
             position: 'right',
@@ -192,14 +196,14 @@ const config = {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },
-      // announcementBar: {
-      //   id: 'vest-5-is-ready',
-      //   content:
-      //     '🎉 Vest 5 is ready! <a target="_blank" rel="noopener noreferrer" href="vest-5-is-ready">Try it out now!</a> 🎉',
-      //   backgroundColor: '#fafbfc',
-      //   textColor: '#091E42',
-      //   isCloseable: false,
-      // },
+      announcementBar: {
+        id: 'vest-5-is-ready',
+        content:
+          '🎉 Vest 5 is ready! <a target="_blank" rel="noopener noreferrer" href="vest-5-is-ready">Try it out now!</a> 🎉',
+        backgroundColor: '#fafbfc',
+        textColor: '#091E42',
+        isCloseable: false,
+      },
     }),
 };
 

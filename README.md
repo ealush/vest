@@ -90,10 +90,10 @@ By separating validation logic from feature logic, Vest makes it easier to test 
 
 Here are some code sandboxes to get you started:
 
-- [React](https://codesandbox.io/s/react-28jwx?file=/src/suite.js)
-- [Vue](https://codesandbox.io/s/vue-hsyt8?file=/src/suite.js)
-- [Svelte](https://codesandbox.io/s/svelte-tsfhx?file=/suite.js)
-- [Vanilla](https://codesandbox.io/s/vest-vanilla-js-35u8e?file=/src/suite.js)
+- [React](https://codesandbox.io/s/react-vest-5-gdc698?file=/src/suite.js)
+- [Vue](https://codesandbox.io/s/vue-vest-5-d1g236?file=/src/suite.js)
+- [Svelte](https://codesandbox.io/s/svelte-vest-5-imnq9z?file=/suite.js)
+- [Vanilla](https://codesandbox.io/s/vest-vanilla-js-vest-5-3v4pqk?file=/src/suite.js)
 
 # Contribute
 

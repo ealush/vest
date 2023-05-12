@@ -46,19 +46,19 @@ function Sandbox({ title, src }) {
 const embedLinks = [
   {
     title: 'React',
-    src: 'https://codesandbox.io/embed/react-28jwx?fontsize=14&hidenavigation=0&module=%2Fsrc%2Fsuite.js&theme=dark',
+    src: 'https://codesandbox.io/embed/react-vest-5-gdc698?fontsize=14&hidenavigation=0&module=%2Fsrc%2Fsuite.js&theme=dark',
   },
 
   {
     title: 'Vue',
-    src: 'https://codesandbox.io/embed/vue-hsyt8?fontsize=14&hidenavigation=0&module=%2Fsrc%2Fsuite.js&theme=dark',
+    src: 'https://codesandbox.io/embed/vue-vest-5-d1g236?fontsize=14&hidenavigation=0&module=%2Fsrc%2Fsuite.js&theme=dark',
   },
   {
     title: 'Svelte',
-    src: 'https://codesandbox.io/embed/svelte-tsfhx?fontsize=14&hidenavigation=1&module=suite.js&theme=dark',
+    src: 'https://codesandbox.io/embed/svelte-vest-5-imnq9z?fontsize=14&hidenavigation=1&module=suite.js&theme=dark',
   },
   {
     title: 'Vanilla',
-    src: 'https://codesandbox.io/embed/vest-vanilla-js-35u8e?fontsize=14&hidenavigation=1&module=%2Fsrc%2Fsuite.js&theme=dark',
+    src: 'https://codesandbox.io/embed/vest-vanilla-js-vest-5-3v4pqk?fontsize=14&hidenavigation=1&module=%2Fsrc%2Fsuite.js&theme=dark',
   },
 ];

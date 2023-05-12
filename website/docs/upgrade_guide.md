@@ -7,6 +7,16 @@ keywords: [Vest, Upgrade]
 
 # Upgrading from V4 to V5
 
+### Installation
+
+Vest@5 is currently in latest testing phase. To install it, use the `next` tag:
+
+```bash
+npm install vest@next
+```
+
+### Migration guide
+
 Vest 5 is mostly compatible with Vest 4, but some changes were made. In most cases, if you do not change anything, vest will keep working as it did before. However, to take advantage of the new features, you'll need to make some changes.
 
 ## Eager execution mode is now the default

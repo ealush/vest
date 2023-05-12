@@ -46,6 +46,20 @@ const config = {
             },
           },
         },
+        pages: {
+          path: 'src/pages',
+          include: ['**/*.{js,jsx,ts,tsx,md,mdx}'],
+          exclude: [
+            '**/_*.{js,jsx,ts,tsx,md,mdx}',
+            '**/_*/**',
+            '**/*.test.{js,jsx,ts,tsx}',
+            '**/__tests__/**',
+          ],
+          mdxPageComponent: '@theme/MDXPage',
+          rehypePlugins: [],
+          beforeDefaultRemarkPlugins: [],
+          beforeDefaultRehypePlugins: [],
+        },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
@@ -97,6 +111,11 @@ const config = {
           {
             type: 'docsVersionDropdown',
             position: 'left',
+          },
+          {
+            href: '/vest-5-is-ready',
+            label: '🎉 Vest 5 is ready! Try it out now!',
+            position: 'right',
           },
           {
             position: 'right',
@@ -173,6 +192,14 @@ const config = {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },
+      // announcementBar: {
+      //   id: 'vest-5-is-ready',
+      //   content:
+      //     '🎉 Vest 5 is ready! <a target="_blank" rel="noopener noreferrer" href="vest-5-is-ready">Try it out now!</a> 🎉',
+      //   backgroundColor: '#fafbfc',
+      //   textColor: '#091E42',
+      //   isCloseable: false,
+      // },
     }),
 };
 

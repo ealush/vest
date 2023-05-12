@@ -30,7 +30,11 @@ exports[`test.memo cache hit Should produce correct initial result 1`] = `
     "field1": {
       "errorCount": 1,
       "errors": [
-        "msg1",
+        SummaryFailure {
+          "fieldName": "field1",
+          "groupName": undefined,
+          "message": "msg1",
+        },
       ],
       "testCount": 2,
       "valid": false,
@@ -96,7 +100,11 @@ exports[`test.memo cache hit sync Should restore previous result on re-run 1`] =
     "field1": {
       "errorCount": 1,
       "errors": [
-        "msg1",
+        SummaryFailure {
+          "fieldName": "field1",
+          "groupName": undefined,
+          "message": "msg1",
+        },
       ],
       "testCount": 2,
       "valid": false,

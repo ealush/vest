@@ -49,7 +49,11 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
     "field_1": {
       "errorCount": 1,
       "errors": [
-        "field_message_1",
+        SummaryFailure {
+          "fieldName": "field_1",
+          "groupName": undefined,
+          "message": "field_message_1",
+        },
       ],
       "testCount": 1,
       "valid": false,
@@ -140,7 +144,11 @@ SuiteSummary {
     "field_1": {
       "errorCount": 1,
       "errors": [
-        "field_message_1",
+        SummaryFailure {
+          "fieldName": "field_1",
+          "groupName": undefined,
+          "message": "field_message_1",
+        },
       ],
       "testCount": 1,
       "valid": false,
@@ -150,7 +158,11 @@ SuiteSummary {
     "field_2": {
       "errorCount": 1,
       "errors": [
-        "rejection_message_1",
+        SummaryFailure {
+          "fieldName": "field_2",
+          "groupName": undefined,
+          "message": "rejection_message_1",
+        },
       ],
       "testCount": 2,
       "valid": false,
@@ -221,7 +233,11 @@ SuiteSummary {
       "field_1": SummaryBase {
         "errorCount": 1,
         "errors": [
-          "field_1_group_message",
+          SummaryFailure {
+            "fieldName": "field_1",
+            "groupName": "group",
+            "message": "field_1_group_message",
+          },
         ],
         "testCount": 1,
         "valid": false,
@@ -231,7 +247,11 @@ SuiteSummary {
       "field_4": SummaryBase {
         "errorCount": 1,
         "errors": [
-          "field_4_group_message",
+          SummaryFailure {
+            "fieldName": "field_4",
+            "groupName": "group",
+            "message": "field_4_group_message",
+          },
         ],
         "testCount": 1,
         "valid": false,
@@ -252,8 +272,16 @@ SuiteSummary {
     "field_1": {
       "errorCount": 2,
       "errors": [
-        "field_1_group_message",
-        "field_message_1",
+        SummaryFailure {
+          "fieldName": "field_1",
+          "groupName": "group",
+          "message": "field_1_group_message",
+        },
+        SummaryFailure {
+          "fieldName": "field_1",
+          "groupName": undefined,
+          "message": "field_message_1",
+        },
       ],
       "testCount": 2,
       "valid": false,
@@ -263,7 +291,11 @@ SuiteSummary {
     "field_2": {
       "errorCount": 1,
       "errors": [
-        "rejection_message_1",
+        SummaryFailure {
+          "fieldName": "field_2",
+          "groupName": undefined,
+          "message": "rejection_message_1",
+        },
       ],
       "testCount": 2,
       "valid": false,
@@ -273,7 +305,11 @@ SuiteSummary {
     "field_3": {
       "errorCount": 1,
       "errors": [
-        "field_message_3",
+        SummaryFailure {
+          "fieldName": "field_3",
+          "groupName": undefined,
+          "message": "field_message_3",
+        },
       ],
       "testCount": 2,
       "valid": false,
@@ -283,7 +319,11 @@ SuiteSummary {
     "field_4": SummaryBase {
       "errorCount": 1,
       "errors": [
-        "field_4_group_message",
+        SummaryFailure {
+          "fieldName": "field_4",
+          "groupName": "group",
+          "message": "field_4_group_message",
+        },
       ],
       "testCount": 1,
       "valid": false,

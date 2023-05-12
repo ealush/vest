@@ -51,7 +51,11 @@ describe('suite.resetField', () => {
         "field1": SummaryBase {
           "errorCount": 1,
           "errors": [
-            "f1 error",
+            SummaryFailure {
+              "fieldName": "field1",
+              "groupName": undefined,
+              "message": "f1 error",
+            },
           ],
           "testCount": 1,
           "valid": false,
@@ -61,7 +65,11 @@ describe('suite.resetField', () => {
         "field2": SummaryBase {
           "errorCount": 1,
           "errors": [
-            "f2 error",
+            SummaryFailure {
+              "fieldName": "field2",
+              "groupName": undefined,
+              "message": "f2 error",
+            },
           ],
           "testCount": 1,
           "valid": false,

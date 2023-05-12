@@ -30,7 +30,11 @@ exports[`Stateful behavior Should merge skipped fields with previous values 1`] 
     "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [
-        "field_statement_1",
+        SummaryFailure {
+          "fieldName": "field_1",
+          "groupName": undefined,
+          "message": "field_statement_1",
+        },
       ],
       "testCount": 1,
       "valid": false,
@@ -116,7 +120,11 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
     "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [
-        "field_statement_1",
+        SummaryFailure {
+          "fieldName": "field_1",
+          "groupName": undefined,
+          "message": "field_statement_1",
+        },
       ],
       "testCount": 1,
       "valid": false,
@@ -150,8 +158,16 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
     "field_5": {
       "errorCount": 2,
       "errors": [
-        "field_statement_5",
-        "field_statement_6",
+        SummaryFailure {
+          "fieldName": "field_5",
+          "groupName": undefined,
+          "message": "field_statement_5",
+        },
+        SummaryFailure {
+          "fieldName": "field_5",
+          "groupName": undefined,
+          "message": "field_statement_6",
+        },
       ],
       "testCount": 2,
       "valid": false,
@@ -210,7 +226,11 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
     "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [
-        "field_statement_1",
+        SummaryFailure {
+          "fieldName": "field_1",
+          "groupName": undefined,
+          "message": "field_statement_1",
+        },
       ],
       "testCount": 1,
       "valid": false,
@@ -220,7 +240,11 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
     "field_2": SummaryBase {
       "errorCount": 1,
       "errors": [
-        "field_statement_2",
+        SummaryFailure {
+          "fieldName": "field_2",
+          "groupName": undefined,
+          "message": "field_statement_2",
+        },
       ],
       "testCount": 1,
       "valid": false,
@@ -242,14 +266,26 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
       "valid": true,
       "warnCount": 1,
       "warnings": [
-        "field_statement_4",
+        SummaryFailure {
+          "fieldName": "field_4",
+          "groupName": undefined,
+          "message": "field_statement_4",
+        },
       ],
     },
     "field_5": {
       "errorCount": 2,
       "errors": [
-        "field_statement_5",
-        "field_statement_6",
+        SummaryFailure {
+          "fieldName": "field_5",
+          "groupName": undefined,
+          "message": "field_statement_5",
+        },
+        SummaryFailure {
+          "fieldName": "field_5",
+          "groupName": undefined,
+          "message": "field_statement_6",
+        },
       ],
       "testCount": 2,
       "valid": false,
@@ -383,7 +419,11 @@ SuiteSummary {
     "password": SummaryBase {
       "errorCount": 1,
       "errors": [
-        "password is required",
+        SummaryFailure {
+          "fieldName": "password",
+          "groupName": undefined,
+          "message": "password is required",
+        },
       ],
       "testCount": 1,
       "valid": false,
@@ -442,7 +482,11 @@ SuiteSummary {
     "password": SummaryBase {
       "errorCount": 1,
       "errors": [
-        "password is required",
+        SummaryFailure {
+          "fieldName": "password",
+          "groupName": undefined,
+          "message": "password is required",
+        },
       ],
       "testCount": 1,
       "valid": false,

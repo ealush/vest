@@ -54,7 +54,11 @@ describe('more complex', () => {
       SummaryBase {
         "errorCount": 1,
         "errors": [
-          "password is required",
+          SummaryFailure {
+            "fieldName": "password",
+            "groupName": undefined,
+            "message": "password is required",
+          },
         ],
         "testCount": 1,
         "valid": false,

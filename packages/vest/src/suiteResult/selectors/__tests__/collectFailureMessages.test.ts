@@ -12,19 +12,42 @@ describe('collectFailureMessages', () => {
 
   test('Result has an array of matching error messages', () => {
     const result = res.getErrors();
-    expect(result.field_1).toEqual([
-      'field_1_failure message 2',
-      'field_1_failure message 3',
-    ]);
+    expect(result.field_1).toMatchInlineSnapshot(`
+      [
+        SummaryFailure {
+          "fieldName": "field_1",
+          "groupName": undefined,
+          "message": "field_1_failure message 2",
+        },
+        SummaryFailure {
+          "fieldName": "field_1",
+          "groupName": undefined,
+          "message": "field_1_failure message 3",
+        },
+      ]
+    `);
   });
 
   it('Should return filtered messages by the selected group', () => {
     const result = res.getErrorsByGroup('group_1');
 
-    expect(result).toEqual({
-      field_1: [],
-      field_2: ['field_2_failure message 1', 'field_2_failure message 3'],
-    });
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "field_1": [],
+        "field_2": [
+          SummaryFailure {
+            "fieldName": "field_2",
+            "groupName": "group_1",
+            "message": "field_2_failure message 1",
+          },
+          SummaryFailure {
+            "fieldName": "field_2",
+            "groupName": "group_1",
+            "message": "field_2_failure message 3",
+          },
+        ],
+      }
+    `);
   });
 
   it('Should return an empty object when no options and no failures', () => {

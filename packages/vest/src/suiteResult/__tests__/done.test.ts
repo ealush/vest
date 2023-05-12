@@ -106,9 +106,17 @@ describe('done', () => {
 
         result
           .done('field_2', res => {
-            expect(res.getErrors()).toEqual({
-              field_1: ['error message'],
-            });
+            expect(res.getErrors()).toMatchInlineSnapshot(`
+              {
+                "field_1": [
+                  SummaryFailure {
+                    "fieldName": "field_1",
+                    "groupName": undefined,
+                    "message": "error message",
+                  },
+                ],
+              }
+            `);
             expect(res).toMatchObject({
               errorCount: 1,
               groups: {},
@@ -116,7 +124,13 @@ describe('done', () => {
               tests: {
                 field_1: {
                   errorCount: 1,
-                  errors: ['error message'],
+                  errors: [
+                    {
+                      fieldName: 'field_1',
+                      groupName: undefined,
+                      message: 'error message',
+                    },
+                  ],
                   testCount: 1,
                   warnCount: 0,
                 },
@@ -152,7 +166,13 @@ describe('done', () => {
               tests: {
                 field_1: {
                   errorCount: 1,
-                  errors: ['error message'],
+                  errors: [
+                    {
+                      fieldName: 'field_1',
+                      groupName: undefined,
+                      message: 'error_message',
+                    },
+                  ],
                   testCount: 1,
                   warnCount: 0,
                 },
@@ -182,8 +202,20 @@ describe('done', () => {
           })
           .done('field_4', res => {
             expect(res.getErrors()).toEqual({
-              field_1: ['error message'],
-              field_4: ['error_message'],
+              field_1: [
+                {
+                  fieldName: 'field_1',
+                  groupName: undefined,
+                  message: 'error_message',
+                },
+              ],
+              field_4: [
+                {
+                  fieldName: 'field_4',
+                  groupName: undefined,
+                  message: 'error_message',
+                },
+              ],
             });
             expect(res).toMatchObject({
               errorCount: 2,
@@ -192,7 +224,13 @@ describe('done', () => {
               tests: {
                 field_1: {
                   errorCount: 1,
-                  errors: ['error message'],
+                  errors: [
+                    {
+                      fieldName: 'field_1',
+                      groupName: undefined,
+                      message: 'error_message',
+                    },
+                  ],
                   testCount: 1,
                   warnCount: 0,
                 },
@@ -208,7 +246,13 @@ describe('done', () => {
                 },
                 field_4: {
                   errorCount: 1,
-                  errors: ['error_message'],
+                  errors: [
+                    {
+                      fieldName: 'field_4',
+                      groupName: undefined,
+                      message: 'error_message',
+                    },
+                  ],
                   testCount: 1,
                   warnCount: 0,
                 },
@@ -229,7 +273,13 @@ describe('done', () => {
               tests: {
                 field_1: {
                   errorCount: 1,
-                  errors: ['error message'],
+                  errors: [
+                    {
+                      fieldName: 'field_4',
+                      groupName: undefined,
+                      message: 'error_message',
+                    },
+                  ],
                   testCount: 1,
                   warnCount: 0,
                 },

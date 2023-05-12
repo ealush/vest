@@ -55,7 +55,11 @@ SuiteSummary {
     "f1": SummaryBase {
       "errorCount": 1,
       "errors": [
-        "msg",
+        SummaryFailure {
+          "fieldName": "f1",
+          "groupName": undefined,
+          "message": "msg",
+        },
       ],
       "testCount": 1,
       "valid": false,
@@ -103,7 +107,11 @@ SuiteSummary {
     "f1": SummaryBase {
       "errorCount": 1,
       "errors": [
-        "msg",
+        SummaryFailure {
+          "fieldName": "f1",
+          "groupName": undefined,
+          "message": "msg",
+        },
       ],
       "testCount": 1,
       "valid": false,
@@ -113,7 +121,11 @@ SuiteSummary {
     "f2": SummaryBase {
       "errorCount": 1,
       "errors": [
-        "msg",
+        SummaryFailure {
+          "fieldName": "f2",
+          "groupName": undefined,
+          "message": "msg",
+        },
       ],
       "testCount": 1,
       "valid": false,

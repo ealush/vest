@@ -94,12 +94,12 @@ describe.each(modes)('produce method: %s', mode => {
             vest.test('field_2', () => {});
             vest.test('field_3', () => {});
           });
-          expect(getRes().getErrorsByGroup('group_name', 'field_1')).toEqual([
-            'message_1',
-          ]);
-          expect(getRes().getErrorsByGroup('group_name', 'field_2')).toEqual([
-            'message_3',
-          ]);
+          expect(getRes().getErrorsByGroup('group_name', 'field_1')).toEqual(
+            {}
+          );
+          expect(getRes().getErrorsByGroup('group_name', 'field_2')).toEqual(
+            {}
+          );
         });
       });
     });
@@ -163,10 +163,18 @@ describe.each(modes)('produce method: %s', mode => {
             dummyTest.passing('field_2');
             dummyTest.passing('field_3');
           });
-          expect(getRes().getWarningsByGroup('group_name')).toEqual({
-            field_1: ['message_1'],
-            field_2: ['message_3', 'message_4'],
-          });
+          expect(getRes().getWarningsByGroup('group_name')).toEqual([
+            {
+              fieldName: 'field_2',
+              groupName: 'group_name',
+              message: 'message_3',
+            },
+            {
+              fieldName: 'field_2',
+              groupName: 'group_name',
+              message: 'message_4',
+            },
+          ]);
         });
       });
       describe('When fieldName passed', () => {
@@ -195,12 +203,12 @@ describe.each(modes)('produce method: %s', mode => {
             vest.test('field_2', () => {});
             vest.test('field_3', () => {});
           });
-          expect(getRes().getWarningsByGroup('group_name', 'field_1')).toEqual([
-            'message_1',
-          ]);
-          expect(getRes().getWarningsByGroup('group_name', 'field_2')).toEqual([
-            'message_3',
-          ]);
+          expect(getRes().getWarningsByGroup('group_name', 'field_1')).toEqual(
+            {}
+          );
+          expect(getRes().getWarningsByGroup('group_name', 'field_2')).toEqual(
+            {}
+          );
         });
       });
     });

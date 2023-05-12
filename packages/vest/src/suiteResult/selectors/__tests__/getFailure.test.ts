@@ -52,7 +52,13 @@ describe('->getFailure (singular form)', () => {
           vest.test('field_1', 'msg_1', () => false);
           vest.test('field_2', 'msg_2', () => false);
         });
-        expect(suite().getError('field_1')).toBe('msg_1');
+        expect(suite().getError('field_1')).toMatchInlineSnapshot(`
+          SummaryFailure {
+            "fieldName": "field_1",
+            "groupName": undefined,
+            "message": "msg_1",
+          }
+        `);
       });
     });
 
@@ -62,8 +68,20 @@ describe('->getFailure (singular form)', () => {
           const suite = vest.create(() => {
             vest.test('field_1', 'msg_1', () => false);
           });
-          expect(suite().getError('field_1')).toBe('msg_1');
-          expect(suite.get().getError('field_1')).toBe('msg_1');
+          expect(suite().getError('field_1')).toMatchInlineSnapshot(`
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": undefined,
+              "message": "msg_1",
+            }
+          `);
+          expect(suite.get().getError('field_1')).toMatchInlineSnapshot(`
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": undefined,
+              "message": "msg_1",
+            }
+          `);
         });
       });
 
@@ -73,8 +91,20 @@ describe('->getFailure (singular form)', () => {
             vest.test('field_1', 'msg_1', () => false);
             vest.test('field_1', 'msg_2', () => false);
           });
-          expect(suite().getError('field_1')).toBe('msg_1');
-          expect(suite.get().getError('field_1')).toBe('msg_1');
+          expect(suite().getError('field_1')).toMatchInlineSnapshot(`
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": undefined,
+              "message": "msg_1",
+            }
+          `);
+          expect(suite.get().getError('field_1')).toMatchInlineSnapshot(`
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": undefined,
+              "message": "msg_1",
+            }
+          `);
         });
       });
 
@@ -152,8 +182,20 @@ describe('->getFailure (singular form)', () => {
               return false;
             });
           });
-          expect(suite().getWarning('field_1')).toBe('msg_1');
-          expect(suite.get().getWarning('field_1')).toBe('msg_1');
+          expect(suite().getWarning('field_1')).toMatchInlineSnapshot(`
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": undefined,
+              "message": "msg_1",
+            }
+          `);
+          expect(suite.get().getWarning('field_1')).toMatchInlineSnapshot(`
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": undefined,
+              "message": "msg_1",
+            }
+          `);
         });
       });
 
@@ -169,8 +211,20 @@ describe('->getFailure (singular form)', () => {
               return false;
             });
           });
-          expect(suite().getWarning('field_1')).toBe('msg_1');
-          expect(suite.get().getWarning('field_1')).toBe('msg_1');
+          expect(suite().getWarning('field_1')).toMatchInlineSnapshot(`
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": undefined,
+              "message": "msg_1",
+            }
+          `);
+          expect(suite.get().getWarning('field_1')).toMatchInlineSnapshot(`
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": undefined,
+              "message": "msg_1",
+            }
+          `);
         });
       });
 

@@ -3,27 +3,59 @@
 exports[`collectFailureMessages getErrors When no options passed should match snapshot 1`] = `
 {
   "field_1": [
-    "field_1_failure message 2",
-    "field_1_failure message 3",
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": "field_1_failure message 2",
+    },
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": "field_1_failure message 3",
+    },
   ],
   "field_2": [
-    "field_2_failure message 1",
-    "field_2_failure message 3",
+    SummaryFailure {
+      "fieldName": "field_2",
+      "groupName": "group_1",
+      "message": "field_2_failure message 1",
+    },
+    SummaryFailure {
+      "fieldName": "field_2",
+      "groupName": "group_1",
+      "message": "field_2_failure message 3",
+    },
   ],
 }
 `;
 
 exports[`collectFailureMessages getErrors When specific field requested Should match snapshot 1`] = `
 [
-  "field_1_failure message 2",
-  "field_1_failure message 3",
+  SummaryFailure {
+    "fieldName": "field_1",
+    "groupName": undefined,
+    "message": "field_1_failure message 2",
+  },
+  SummaryFailure {
+    "fieldName": "field_1",
+    "groupName": undefined,
+    "message": "field_1_failure message 3",
+  },
 ]
 `;
 
 exports[`collectFailureMessages getErrors When specific field requested Should match snapshot 2`] = `
 [
-  "field_2_failure message 1",
-  "field_2_failure message 3",
+  SummaryFailure {
+    "fieldName": "field_2",
+    "groupName": "group_1",
+    "message": "field_2_failure message 1",
+  },
+  SummaryFailure {
+    "fieldName": "field_2",
+    "groupName": "group_1",
+    "message": "field_2_failure message 3",
+  },
 ]
 `;
 
@@ -33,8 +65,16 @@ exports[`collectFailureMessages getErrorsByGroup Should match snapshot 1`] = `
 {
   "field_1": [],
   "field_2": [
-    "field_2_failure message 1",
-    "field_2_failure message 3",
+    SummaryFailure {
+      "fieldName": "field_2",
+      "groupName": "group_1",
+      "message": "field_2_failure message 1",
+    },
+    SummaryFailure {
+      "fieldName": "field_2",
+      "groupName": "group_1",
+      "message": "field_2_failure message 3",
+    },
   ],
 }
 `;
@@ -43,8 +83,16 @@ exports[`collectFailureMessages getErrorsByGroup with field name Should match sn
 
 exports[`collectFailureMessages getErrorsByGroup with field name Should match snapshot 2`] = `
 [
-  "field_2_failure message 1",
-  "field_2_failure message 3",
+  SummaryFailure {
+    "fieldName": "field_2",
+    "groupName": "group_1",
+    "message": "field_2_failure message 1",
+  },
+  SummaryFailure {
+    "fieldName": "field_2",
+    "groupName": "group_1",
+    "message": "field_2_failure message 3",
+  },
 ]
 `;
 
@@ -53,8 +101,16 @@ exports[`collectFailureMessages getErrorsByGroup with field name Should match sn
 exports[`collectFailureMessages getWarnings When no options passed should match snapshot 1`] = `
 {
   "field_2": [
-    "field_2_warning message 2",
-    "field_2_warning message 3",
+    SummaryFailure {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": "field_2_warning message 2",
+    },
+    SummaryFailure {
+      "fieldName": "field_2",
+      "groupName": "group_1",
+      "message": "field_2_warning message 3",
+    },
   ],
 }
 `;
@@ -63,8 +119,16 @@ exports[`collectFailureMessages getWarnings When specific field requested Should
 
 exports[`collectFailureMessages getWarnings When specific field requested Should match snapshot 2`] = `
 [
-  "field_2_warning message 2",
-  "field_2_warning message 3",
+  SummaryFailure {
+    "fieldName": "field_2",
+    "groupName": undefined,
+    "message": "field_2_warning message 2",
+  },
+  SummaryFailure {
+    "fieldName": "field_2",
+    "groupName": "group_1",
+    "message": "field_2_warning message 3",
+  },
 ]
 `;
 
@@ -73,7 +137,11 @@ exports[`collectFailureMessages getWarnings When specific field requested Should
 exports[`collectFailureMessages getWarningsByGroup Should match snapshot 1`] = `
 {
   "field_2": [
-    "field_2_warning message 3",
+    SummaryFailure {
+      "fieldName": "field_2",
+      "groupName": "group_1",
+      "message": "field_2_warning message 3",
+    },
   ],
 }
 `;
@@ -82,7 +150,11 @@ exports[`collectFailureMessages getWarningsByGroup with field name Should match 
 
 exports[`collectFailureMessages getWarningsByGroup with field name Should match snapshot 2`] = `
 [
-  "field_2_warning message 3",
+  SummaryFailure {
+    "fieldName": "field_2",
+    "groupName": "group_1",
+    "message": "field_2_warning message 3",
+  },
 ]
 `;
 

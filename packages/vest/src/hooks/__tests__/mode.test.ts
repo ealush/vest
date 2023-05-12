@@ -30,9 +30,33 @@ describe('mode', () => {
         suite();
         expect(suite.get().testCount).toBe(3);
         expect(suite.get().errorCount).toBe(3);
-        expect(suite.get().getErrors('field_1')).toEqual(['first-of-field_1']);
-        expect(suite.get().getErrors('field_2')).toEqual(['first-of-field_2']);
-        expect(suite.get().getErrors('field_3')).toEqual(['first-of-field_3']);
+        expect(suite.get().getErrors('field_1')).toMatchInlineSnapshot(`
+          [
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": undefined,
+              "message": "first-of-field_1",
+            },
+          ]
+        `);
+        expect(suite.get().getErrors('field_2')).toMatchInlineSnapshot(`
+          [
+            SummaryFailure {
+              "fieldName": "field_2",
+              "groupName": undefined,
+              "message": "first-of-field_2",
+            },
+          ]
+        `);
+        expect(suite.get().getErrors('field_3')).toMatchInlineSnapshot(`
+          [
+            SummaryFailure {
+              "fieldName": "field_3",
+              "groupName": undefined,
+              "message": "first-of-field_3",
+            },
+          ]
+        `);
       });
 
       describe('async tests', () => {
@@ -49,9 +73,17 @@ describe('mode', () => {
                   });
                 });
                 suite().done(res => {
-                  expect(res.getErrors()).toEqual({
-                    t1: ['f1'],
-                  });
+                  expect(res.getErrors()).toMatchInlineSnapshot(`
+                    {
+                      "t1": [
+                        SummaryFailure {
+                          "fieldName": "t1",
+                          "groupName": undefined,
+                          "message": "f1",
+                        },
+                      ],
+                    }
+                  `);
                   resolve();
                 });
               }));
@@ -68,9 +100,22 @@ describe('mode', () => {
                   Vest.test('t1', 'f2', () => true);
                 });
                 suite().done(res => {
-                  expect(res.getErrors()).toEqual({
-                    t1: ['f0', 'f1'],
-                  });
+                  expect(res.getErrors()).toMatchInlineSnapshot(`
+                    {
+                      "t1": [
+                        SummaryFailure {
+                          "fieldName": "t1",
+                          "groupName": undefined,
+                          "message": "f0",
+                        },
+                        SummaryFailure {
+                          "fieldName": "t1",
+                          "groupName": undefined,
+                          "message": "f1",
+                        },
+                      ],
+                    }
+                  `);
                   resolve();
                 });
               }));
@@ -91,9 +136,22 @@ describe('mode', () => {
                 });
               });
               suite().done(res => {
-                expect(res.getErrors()).toEqual({
-                  async_1: ['f1', 'f2'],
-                });
+                expect(res.getErrors()).toMatchInlineSnapshot(`
+                  {
+                    "async_1": [
+                      SummaryFailure {
+                        "fieldName": "async_1",
+                        "groupName": undefined,
+                        "message": "f1",
+                      },
+                      SummaryFailure {
+                        "fieldName": "async_1",
+                        "groupName": undefined,
+                        "message": "f2",
+                      },
+                    ],
+                  }
+                `);
                 resolve();
               });
             }));
@@ -105,9 +163,15 @@ describe('mode', () => {
           suite('field_1');
           expect(suite.get().testCount).toBe(1);
           expect(suite.get().errorCount).toBe(1);
-          expect(suite.get().getErrors('field_1')).toEqual([
-            'first-of-field_1',
-          ]);
+          expect(suite.get().getErrors('field_1')).toMatchInlineSnapshot(`
+            [
+              SummaryFailure {
+                "fieldName": "field_1",
+                "groupName": undefined,
+                "message": "first-of-field_1",
+              },
+            ]
+          `);
         });
       });
 
@@ -124,9 +188,15 @@ describe('mode', () => {
           suite();
           expect(suite.get().testCount).toBe(1);
           expect(suite.get().errorCount).toBe(1);
-          expect(suite.get().getErrors('field_1')).toEqual([
-            'first-of-field_1',
-          ]);
+          expect(suite.get().getErrors('field_1')).toMatchInlineSnapshot(`
+            [
+              SummaryFailure {
+                "fieldName": "field_1",
+                "groupName": "group_1",
+                "message": "first-of-field_1",
+              },
+            ]
+          `);
         });
       });
     });
@@ -148,9 +218,33 @@ describe('mode', () => {
         suite();
         expect(suite.get().testCount).toBe(6);
         expect(suite.get().errorCount).toBe(3);
-        expect(suite.get().getErrors('field_1')).toEqual(['second-of-field_1']);
-        expect(suite.get().getErrors('field_2')).toEqual(['second-of-field_2']);
-        expect(suite.get().getErrors('field_3')).toEqual(['second-of-field_3']);
+        expect(suite.get().getErrors('field_1')).toMatchInlineSnapshot(`
+          [
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": undefined,
+              "message": "second-of-field_1",
+            },
+          ]
+        `);
+        expect(suite.get().getErrors('field_2')).toMatchInlineSnapshot(`
+          [
+            SummaryFailure {
+              "fieldName": "field_2",
+              "groupName": undefined,
+              "message": "second-of-field_2",
+            },
+          ]
+        `);
+        expect(suite.get().getErrors('field_3')).toMatchInlineSnapshot(`
+          [
+            SummaryFailure {
+              "fieldName": "field_3",
+              "groupName": undefined,
+              "message": "second-of-field_3",
+            },
+          ]
+        `);
       });
     });
 
@@ -172,7 +266,20 @@ describe('mode', () => {
       it('Should treat test as passing', () => {
         suite();
         expect(suite.get().hasErrors()).toBe(true);
-        expect(suite.get().getErrors('field_1')).toEqual(['second-of-field_1']);
+        expect(suite.get().getErrors('field_1')).toMatchInlineSnapshot(`
+          [
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": undefined,
+              "message": "first-of-field_1",
+            },
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": undefined,
+              "message": "second-of-field_1",
+            },
+          ]
+        `);
         suite();
         expect(suite.get().hasErrors()).toBe(false);
         expect(suite.get().getErrors('field_1')).toEqual([]);

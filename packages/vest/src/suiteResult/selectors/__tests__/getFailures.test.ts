@@ -56,14 +56,52 @@ describe('->getFailures', () => {
             dummyTest.passing('field_1', 'msg_4');
             dummyTest.failingWarning('field_1', 'msg_5');
           });
-          expect(suite().getErrors()).toEqual({
-            field_1: ['msg_1'],
-            field_2: ['msg_2', 'msg_3'],
-          });
-          expect(suite.get().getErrors()).toEqual({
-            field_1: ['msg_1'],
-            field_2: ['msg_2', 'msg_3'],
-          });
+          expect(suite().getErrors()).toMatchInlineSnapshot(`
+            {
+              "field_1": [
+                SummaryFailure {
+                  "fieldName": "field_1",
+                  "groupName": undefined,
+                  "message": "msg_1",
+                },
+              ],
+              "field_2": [
+                SummaryFailure {
+                  "fieldName": "field_2",
+                  "groupName": undefined,
+                  "message": "msg_2",
+                },
+                SummaryFailure {
+                  "fieldName": "field_2",
+                  "groupName": undefined,
+                  "message": "msg_3",
+                },
+              ],
+            }
+          `);
+          expect(suite.get().getErrors()).toMatchInlineSnapshot(`
+            {
+              "field_1": [
+                SummaryFailure {
+                  "fieldName": "field_1",
+                  "groupName": undefined,
+                  "message": "msg_1",
+                },
+              ],
+              "field_2": [
+                SummaryFailure {
+                  "fieldName": "field_2",
+                  "groupName": undefined,
+                  "message": "msg_2",
+                },
+                SummaryFailure {
+                  "fieldName": "field_2",
+                  "groupName": undefined,
+                  "message": "msg_3",
+                },
+              ],
+            }
+          `);
         });
       });
       describe('When requesting a fieldName', () => {
@@ -75,8 +113,24 @@ describe('->getFailures', () => {
             dummyTest.passing('field_1', 'msg_4');
             dummyTest.failingWarning('field_1', 'msg_5');
           });
-          expect(suite().getErrors('field_1')).toEqual(['msg_1']);
-          expect(suite.get().getErrors('field_1')).toEqual(['msg_1']);
+          expect(suite().getErrors('field_1')).toMatchInlineSnapshot(`
+            [
+              SummaryFailure {
+                "fieldName": "field_1",
+                "groupName": undefined,
+                "message": "msg_1",
+              },
+            ]
+          `);
+          expect(suite.get().getErrors('field_1')).toMatchInlineSnapshot(`
+            [
+              SummaryFailure {
+                "fieldName": "field_1",
+                "groupName": undefined,
+                "message": "msg_1",
+              },
+            ]
+          `);
         });
       });
     });
@@ -132,14 +186,52 @@ describe('->getFailures', () => {
             dummyTest.passingWarning('field_1', 'msg_4');
             dummyTest.failing('field_1', 'msg_5');
           });
-          expect(suite().getWarnings()).toEqual({
-            field_1: ['msg_1'],
-            field_2: ['msg_2', 'msg_3'],
-          });
-          expect(suite.get().getWarnings()).toEqual({
-            field_1: ['msg_1'],
-            field_2: ['msg_2', 'msg_3'],
-          });
+          expect(suite().getWarnings()).toMatchInlineSnapshot(`
+            {
+              "field_1": [
+                SummaryFailure {
+                  "fieldName": "field_1",
+                  "groupName": undefined,
+                  "message": "msg_1",
+                },
+              ],
+              "field_2": [
+                SummaryFailure {
+                  "fieldName": "field_2",
+                  "groupName": undefined,
+                  "message": "msg_2",
+                },
+                SummaryFailure {
+                  "fieldName": "field_2",
+                  "groupName": undefined,
+                  "message": "msg_3",
+                },
+              ],
+            }
+          `);
+          expect(suite.get().getWarnings()).toMatchInlineSnapshot(`
+            {
+              "field_1": [
+                SummaryFailure {
+                  "fieldName": "field_1",
+                  "groupName": undefined,
+                  "message": "msg_1",
+                },
+              ],
+              "field_2": [
+                SummaryFailure {
+                  "fieldName": "field_2",
+                  "groupName": undefined,
+                  "message": "msg_2",
+                },
+                SummaryFailure {
+                  "fieldName": "field_2",
+                  "groupName": undefined,
+                  "message": "msg_3",
+                },
+              ],
+            }
+          `);
         });
       });
       describe('When requesting a fieldName', () => {
@@ -151,8 +243,24 @@ describe('->getFailures', () => {
             dummyTest.passingWarning('field_1', 'msg_4');
             dummyTest.failing('field_1', 'msg_5');
           });
-          expect(suite().getWarnings('field_1')).toEqual(['msg_1']);
-          expect(suite.get().getWarnings('field_1')).toEqual(['msg_1']);
+          expect(suite().getWarnings('field_1')).toMatchInlineSnapshot(`
+            [
+              SummaryFailure {
+                "fieldName": "field_1",
+                "groupName": undefined,
+                "message": "msg_1",
+              },
+            ]
+          `);
+          expect(suite.get().getWarnings('field_1')).toMatchInlineSnapshot(`
+            [
+              SummaryFailure {
+                "fieldName": "field_1",
+                "groupName": undefined,
+                "message": "msg_1",
+              },
+            ]
+          `);
         });
       });
     });

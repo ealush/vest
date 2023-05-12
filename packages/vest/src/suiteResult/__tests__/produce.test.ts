@@ -50,18 +50,85 @@ describe('produce method Suite Result', () => {
       expect(res.hasWarnings('field_3')).toBe(false);
       expect(res.hasWarnings('field_4')).toBe(false);
       expect(res.hasWarnings('field_5')).toBe(true);
-      expect(res.getErrors()).toEqual({
-        field_1: ['message', 'failure_message', 'failure_message with group'],
-        field_3: ['msg'],
-      });
-      expect(res.getWarnings()).toEqual({
-        field_2: ['warning test', 'another warning test'],
-        field_5: ['warning message'],
-      });
-      expect(res.getErrors()).toEqual({
-        field_1: ['message', 'failure_message', 'failure_message with group'],
-        field_3: ['msg'],
-      });
+      expect(res.getErrors()).toMatchInlineSnapshot(`
+        {
+          "field_1": [
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": undefined,
+              "message": "message",
+            },
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": undefined,
+              "message": "failure_message",
+            },
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": "group_1",
+              "message": "failure_message with group",
+            },
+          ],
+          "field_3": [
+            SummaryFailure {
+              "fieldName": "field_3",
+              "groupName": undefined,
+              "message": "msg",
+            },
+          ],
+        }
+      `);
+      expect(res.getWarnings()).toMatchInlineSnapshot(`
+        {
+          "field_2": [
+            SummaryFailure {
+              "fieldName": "field_2",
+              "groupName": undefined,
+              "message": "warning test",
+            },
+            SummaryFailure {
+              "fieldName": "field_2",
+              "groupName": undefined,
+              "message": "another warning test",
+            },
+          ],
+          "field_5": [
+            SummaryFailure {
+              "fieldName": "field_5",
+              "groupName": "group_2",
+              "message": "warning message",
+            },
+          ],
+        }
+      `);
+      expect(res.getErrors()).toMatchInlineSnapshot(`
+        {
+          "field_1": [
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": undefined,
+              "message": "message",
+            },
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": undefined,
+              "message": "failure_message",
+            },
+            SummaryFailure {
+              "fieldName": "field_1",
+              "groupName": "group_1",
+              "message": "failure_message with group",
+            },
+          ],
+          "field_3": [
+            SummaryFailure {
+              "fieldName": "field_3",
+              "groupName": undefined,
+              "message": "msg",
+            },
+          ],
+        }
+      `);
       expect(res.hasErrorsByGroup('group_1')).toBe(true);
       expect(res.hasErrorsByGroup('group_1', 'field_1')).toBe(true);
       expect(res.hasErrorsByGroup('group_2')).toBe(false);

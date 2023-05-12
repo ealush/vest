@@ -35,7 +35,11 @@ exports[`Base behavior Should produce correct validation result 1`] = `
     "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [
-        "field_statement_1",
+        SummaryFailure {
+          "fieldName": "field_1",
+          "groupName": undefined,
+          "message": "field_statement_1",
+        },
       ],
       "testCount": 1,
       "valid": false,
@@ -45,7 +49,11 @@ exports[`Base behavior Should produce correct validation result 1`] = `
     "field_2": SummaryBase {
       "errorCount": 1,
       "errors": [
-        "field_statement_2",
+        SummaryFailure {
+          "fieldName": "field_2",
+          "groupName": undefined,
+          "message": "field_statement_2",
+        },
       ],
       "testCount": 1,
       "valid": false,
@@ -67,7 +75,11 @@ exports[`Base behavior Should produce correct validation result 1`] = `
       "valid": true,
       "warnCount": 1,
       "warnings": [
-        "field_statement_4",
+        SummaryFailure {
+          "fieldName": "field_4",
+          "groupName": undefined,
+          "message": "field_statement_4",
+        },
       ],
     },
     "field_5": {

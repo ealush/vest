@@ -68,18 +68,45 @@ describe("Test Vest's `test` function", () => {
               );
             })();
 
-            expect(res.getErrors('field_with_message')).toEqual([
-              'some_field_message',
-            ]);
-            expect(res.tests['field_with_message'].errors).toEqual([
-              'some_field_message',
-            ]);
-            expect(res.getWarnings('warning_field_with_message')).toEqual([
-              'some_field_message',
-            ]);
-            expect(res.tests['warning_field_with_message'].warnings).toEqual([
-              'some_field_message',
-            ]);
+            expect(res.getErrors('field_with_message')).toMatchInlineSnapshot(`
+              [
+                SummaryFailure {
+                  "fieldName": "field_with_message",
+                  "groupName": undefined,
+                  "message": "some_field_message",
+                },
+              ]
+            `);
+            expect(res.tests['field_with_message'].errors)
+              .toMatchInlineSnapshot(`
+              [
+                SummaryFailure {
+                  "fieldName": "field_with_message",
+                  "groupName": undefined,
+                  "message": "some_field_message",
+                },
+              ]
+            `);
+            expect(res.getWarnings('warning_field_with_message'))
+              .toMatchInlineSnapshot(`
+              [
+                SummaryFailure {
+                  "fieldName": "warning_field_with_message",
+                  "groupName": undefined,
+                  "message": "some_field_message",
+                },
+              ]
+            `);
+            expect(res.tests['warning_field_with_message'].warnings)
+              .toMatchInlineSnapshot(`
+              [
+                SummaryFailure {
+                  "fieldName": "warning_field_with_message",
+                  "groupName": undefined,
+                  "message": "some_field_message",
+                },
+              ]
+            `);
           });
         });
         describe('When field does not have a message', () => {
@@ -90,9 +117,16 @@ describe("Test Vest's `test` function", () => {
               });
             })();
 
-            expect(res.getErrors('field_without_message')).toEqual([
-              'some_field_message',
-            ]);
+            expect(res.getErrors('field_without_message'))
+              .toMatchInlineSnapshot(`
+              [
+                SummaryFailure {
+                  "fieldName": "field_without_message",
+                  "groupName": undefined,
+                  "message": "some_field_message",
+                },
+              ]
+            `);
           });
           it('Should use message from thrown error', () => {
             const res = vest.create(() => {
@@ -105,18 +139,46 @@ describe("Test Vest's `test` function", () => {
               });
             })();
 
-            expect(res.getErrors('field_without_message')).toEqual([
-              'I fail with a message',
-            ]);
-            expect(res.tests['field_without_message'].errors).toEqual([
-              'I fail with a message',
-            ]);
-            expect(res.getWarnings('warning_field_without_message')).toEqual([
-              'I fail with a message',
-            ]);
-            expect(res.tests['warning_field_without_message'].warnings).toEqual(
-              ['I fail with a message']
-            );
+            expect(res.getErrors('field_without_message'))
+              .toMatchInlineSnapshot(`
+              [
+                SummaryFailure {
+                  "fieldName": "field_without_message",
+                  "groupName": undefined,
+                  "message": "I fail with a message",
+                },
+              ]
+            `);
+            expect(res.tests['field_without_message'].errors)
+              .toMatchInlineSnapshot(`
+              [
+                SummaryFailure {
+                  "fieldName": "field_without_message",
+                  "groupName": undefined,
+                  "message": "I fail with a message",
+                },
+              ]
+            `);
+            expect(res.getWarnings('warning_field_without_message'))
+              .toMatchInlineSnapshot(`
+              [
+                SummaryFailure {
+                  "fieldName": "warning_field_without_message",
+                  "groupName": undefined,
+                  "message": "I fail with a message",
+                },
+              ]
+            `);
+            expect(res.tests['warning_field_without_message'].warnings)
+              .toMatchInlineSnapshot(`
+              [
+                SummaryFailure {
+                  "fieldName": "warning_field_without_message",
+                  "groupName": undefined,
+                  "message": "I fail with a message",
+                },
+              ]
+            `);
           });
         });
       });

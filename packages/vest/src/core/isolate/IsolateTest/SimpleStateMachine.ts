@@ -1,10 +1,13 @@
+const STATE_WILD_CARD = '*';
+type TStateWildCard = typeof STATE_WILD_CARD;
+
 export type TStateMachine<S extends string, A extends string> = {
   initial: S;
-  states: {
-    [key in S]: {
+  states: Partial<{
+    [key in S & TStateWildCard]: {
       [key in A]?: S | [S, (payload?: any) => boolean];
     };
-  };
+  }>;
 };
 
 export function StateMachine<S extends string, A extends string>(
@@ -20,8 +23,12 @@ export function StateMachine<S extends string, A extends string>(
     return state;
   }
 
+  // eslint-disable-next-line complexity
   function transition(action: A, payload?: any): void {
-    const transitionTo = machine.states[state][action];
+    const transitionTo =
+      machine.states[state]?.[action] ??
+      // @ts-expect-error - This is a valid state
+      machine.states[STATE_WILD_CARD]?.[action];
 
     let target = transitionTo;
 

@@ -144,10 +144,40 @@ describe('SimpleStateMachine', () => {
 
       expect(machine.getState()).toBe('loading');
 
-      // @ts-expect-error - intentionally invalid transition
       machine.transition('finish');
 
       expect(machine.getState()).toBe('loading');
+    });
+  });
+
+  describe('Catchall state', () => {
+    it('When a valid transition does not exist, should search in the search all state', () => {
+      const machine = StateMachine({
+        initial: 'idle',
+        states: {
+          '*': {
+            terminate: 'x_x',
+          },
+          error: {},
+          idle: {
+            click: 'loading',
+          },
+          loading: {
+            success: 'success',
+            error: 'error',
+          },
+          success: {},
+        },
+      });
+      expect(machine.getState()).toBe('idle');
+
+      machine.transition('click');
+
+      expect(machine.getState()).toBe('loading');
+
+      machine.transition('terminate');
+
+      expect(machine.getState()).toBe('x_x');
     });
   });
 });

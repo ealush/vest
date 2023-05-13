@@ -87,7 +87,8 @@ describe('optional hook', () => {
     let suite: TTestSuite;
 
     beforeEach(() => {
-      suite = vest.create((data = {}) => {
+      suite = vest.create((data = {}, currentField) => {
+        vest.only(currentField);
         vest.optional({
           a: () => suite.get().isValid('b') || suite.get().isValid('c'),
           b: () => suite.get().isValid('a') || suite.get().isValid('c'),
@@ -119,6 +120,16 @@ describe('optional hook', () => {
       expect(suite({ a: 0, b: 0, c: 1 }).isValid('b')).toBe(true);
       expect(suite({ a: 0, b: 0, c: 1 }).isValid('c')).toBe(true);
       expect(suite({ a: 0, b: 0, c: 1 }).isValid()).toBe(true);
+    });
+
+    describe('when focused with vest.only', () => {
+      it('Should keep optional fields even if not all tests ran yet', () => {
+        const res = suite({ a: 1, b: 0, c: 0 }, 'a');
+        expect(res.isValid('a')).toBe(true);
+        expect(res.isValid('b')).toBe(true);
+        expect(res.isValid('c')).toBe(true);
+        expect(res.isValid()).toBe(true);
+      });
     });
   });
 });

@@ -25,33 +25,23 @@ export function createTestStateMachine() {
 const machine: TStateMachine<TestStatus, TAction> = {
   initial: TestStatus.UNTESTED,
   states: {
+    '*': {
+      [TestStatus.OMITTED]: TestStatus.OMITTED,
+      [TestAction.RESET]: TestStatus.UNTESTED,
+    },
     [TestStatus.UNTESTED]: {
       [TestStatus.CANCELED]: TestStatus.CANCELED,
       [TestStatus.FAILED]: TestStatus.FAILED,
-      [TestStatus.OMITTED]: TestStatus.OMITTED,
+
       [TestStatus.PASSING]: TestStatus.PASSING,
       [TestStatus.PENDING]: TestStatus.PENDING,
       [TestStatus.SKIPPED]: TestStatus.SKIPPED,
       [TestStatus.WARNING]: TestStatus.WARNING,
     },
-    [TestStatus.SKIPPED]: {
-      [TestAction.RESET]: TestStatus.UNTESTED,
-    },
-    [TestStatus.FAILED]: {
-      [TestAction.RESET]: TestStatus.UNTESTED,
-      [TestStatus.OMITTED]: TestStatus.OMITTED,
-    },
-    [TestStatus.WARNING]: {
-      [TestAction.RESET]: TestStatus.UNTESTED,
-    },
-    [TestStatus.PASSING]: {
-      [TestAction.RESET]: TestStatus.UNTESTED,
-    },
     [TestStatus.PENDING]: {
-      [TestAction.RESET]: TestStatus.UNTESTED,
       [TestStatus.CANCELED]: TestStatus.CANCELED,
       [TestStatus.FAILED]: TestStatus.FAILED,
-      [TestStatus.OMITTED]: TestStatus.OMITTED,
+
       [TestStatus.PASSING]: TestStatus.PASSING,
       [TestStatus.SKIPPED]: [
         TestStatus.SKIPPED,
@@ -59,12 +49,12 @@ const machine: TStateMachine<TestStatus, TAction> = {
       ],
       [TestStatus.WARNING]: TestStatus.WARNING,
     },
-    [TestStatus.CANCELED]: {
-      [TestAction.RESET]: TestStatus.UNTESTED,
-    },
-    [TestStatus.OMITTED]: {
-      [TestAction.RESET]: TestStatus.UNTESTED,
-    },
+    [TestStatus.SKIPPED]: {},
+    [TestStatus.FAILED]: {},
+    [TestStatus.WARNING]: {},
+    [TestStatus.PASSING]: {},
+    [TestStatus.CANCELED]: {},
+    [TestStatus.OMITTED]: {},
   },
 };
 /* eslint-enable sort-keys */

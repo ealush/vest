@@ -130,6 +130,17 @@ describe('optional hook', () => {
         expect(res.isValid('c')).toBe(true);
         expect(res.isValid()).toBe(true);
       });
+
+      it('Should revert optional fields when none of the fields are valid anymore', () => {
+        let res = suite({ a: 1, b: 0, c: 0 }, 'a');
+        expect(res.isValid()).toBe(true);
+        res = suite({ a: 0, b: 0, c: 0 }, 'a');
+        expect(res.isValid()).toBe(false);
+        res = suite({ a: 0, b: 1, c: 0 }, 'b');
+        expect(res.isValid()).toBe(true);
+        res = suite({ a: 0, b: 0, c: 0 }, 'b');
+        expect(res.isValid()).toBe(false);
+      });
     });
   });
 });

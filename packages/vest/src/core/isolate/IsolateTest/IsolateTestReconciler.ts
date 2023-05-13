@@ -9,6 +9,7 @@ import { isSameProfileTest } from 'isSameProfileTest';
 import { useVerifyTestRun } from 'verifyTestRun';
 
 export class IsolateTestReconciler extends Reconciler {
+  // eslint-disable-next-line max-statements
   static reconciler(
     currentNode: Isolate,
     historyNode: Isolate | null
@@ -56,7 +57,21 @@ export class IsolateTestReconciler extends Reconciler {
       return this.onNodeReorder(newNode, prevNode);
     }
 
-    return IsolateTest.cast(prevNode ? prevNode : newNode);
+    if (!IsolateTest.is(prevNode)) {
+      return newNode;
+    }
+
+    // FIXME: May-13-2023
+    // This may not be the most ideal solution.
+    // In short: if the node was omitted in the previous run,
+    // we want to re-evaluate it. The reason is that we may incorrectly
+    // identify it is "optional" because it was omitted in the previous run.
+    // There may be a better way to handle this. Need to revisit this.
+    if (prevNode.isOmitted()) {
+      return newNode;
+    }
+
+    return prevNode;
   }
 
   static onNodeReorder(newNode: IsolateTest, prevNode?: Isolate): IsolateTest {

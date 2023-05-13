@@ -14,6 +14,7 @@ import { SuiteContext } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
 import { useVerifyTestRun } from 'verifyTestRun';
 
+// eslint-disable-next-line max-statements
 export function useAttemptRunTestObjectByTier(testObject: IsolateTest) {
   useVerifyTestRun(testObject);
 

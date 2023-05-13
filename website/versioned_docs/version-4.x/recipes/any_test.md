@@ -16,7 +16,7 @@ In our case, the following logic should apply - Each of the checkboxes can be op
 Vest has the [optional](./../writing_your_suite/optional_fields.md) function, which allows you to specify just that. You can specify a condition in which a test can be omitted from the results.
 
 Our code might look somewhat like this:
-[Live codesandbox](https://codesandbox.io/s/vest-4-any-test-optional-q8m67).
+[Live codesandbox](https://codesandbox.io/s/vest-5-any-test-optional-w1bwvm).
 
 ```js
 import { create, test, enforce, only, optional } from 'vest';

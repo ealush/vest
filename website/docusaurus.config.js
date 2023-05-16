@@ -16,12 +16,12 @@ const config = {
   onBrokenMarkdownLinks: 'warn',
   organizationName: 'ealush', // Usually your GitHub org/user name.
   plugins: [
-    [
-      require.resolve('@easyops-cn/docusaurus-search-local'),
-      {
-        indexBlog: false,
-      },
-    ],
+    // [
+    //   require.resolve('@easyops-cn/docusaurus-search-local'),
+    //   {
+    //     indexBlog: false,
+    //   },
+    // ],
     [
       '@docusaurus/plugin-google-gtag',
       {
@@ -203,6 +203,21 @@ const config = {
         backgroundColor: '#fafbfc',
         textColor: '#091E42',
         isCloseable: false,
+      },
+      algolia: {
+        // The application ID provided by Algolia
+        appId: '08EPW2MDNA',
+
+        // Public API key: it is safe to commit it
+        apiKey: '68ec0830ab24fde651af5d85e19dddfe',
+
+        indexName: 'vestjs',
+
+        // Optional: see doc section below
+        contextualSearch: true,
+
+        // Optional: Algolia search parameters
+        searchParameters: {},
       },
     }),
 };

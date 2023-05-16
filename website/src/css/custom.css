@@ -82,13 +82,6 @@ html[data-theme='dark'] .hero__title {
   color: var(--ifm-heading-color);
 }
 
-section {
-  display: flex;
-  align-items: center;
-  padding: 2rem 0;
-  width: 100%;
-}
-
 .header-badge {
   display: flex;
 }

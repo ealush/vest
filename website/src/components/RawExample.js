@@ -1,12 +1,14 @@
 import CodeBlock from '@theme/CodeBlock';
 import clsx from 'clsx';
 import React from 'react';
-
+import commonStyles from './Common.module.css';
 import styles from './RawExample.module.css';
 
 export default () => {
   return (
-    <section className={styles.section}>
+    <section
+      className={clsx(styles.section, commonStyles.main_section_centered)}
+    >
       <p className={styles.desc}>
         Vest looks and feels like a unit testing framework, but is fully
         optimized for production use.

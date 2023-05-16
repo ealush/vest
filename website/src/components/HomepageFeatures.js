@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React from 'react';
-
+import commonStyles from './Common.module.css';
 import styles from './HomepageFeatures.module.css';
 
 const FeatureList = [
@@ -83,7 +83,9 @@ function Feature({ emoji, title, description }) {
 export default function HomepageFeatures() {
   return (
     <>
-      <section className={styles.features}>
+      <section
+        className={clsx(styles.features, commonStyles.main_section_centered)}
+      >
         <div className="container">
           <div className="row">
             {FeatureList.map((props, idx) => (

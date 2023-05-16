@@ -2,12 +2,13 @@ import clsx from 'clsx';
 import React, { useState } from 'react';
 
 import styles from './Demo.module.css';
+import commonStyles from './Common.module.css';
 
 export default function Demo() {
   const [currentSandbox, setCurrentSandbox] = useState(0);
 
   return (
-    <section className={styles.demo}>
+    <section className={clsx(styles.demo, commonStyles.main_section_centered)}>
       <div className={clsx('container', styles.vestDemo)}>
         <h2>Try It Live</h2>
         <div className={styles.demoSwitchWrapper}>

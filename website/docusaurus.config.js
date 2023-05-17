@@ -7,8 +7,8 @@ const lightCodeTheme = require('prism-react-renderer/themes/github');
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   baseUrl: '/',
-  favicon: 'img/favicon.ico',
-  title: 'Vest',
+  favicon: 'favicon.ico',
+  title: 'Vest Validations Framework',
   tagline:
     'Declarative validations framework inspired by unit testing libraries',
   url: 'https://vestjs.dev',

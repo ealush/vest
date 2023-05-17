@@ -46,12 +46,12 @@ function useIsEager(): boolean {
   return useIsMode(Modes.EAGER);
 }
 
-function useIsAll(): boolean {
-  return useIsMode(Modes.ALL);
+function useIsOne(): boolean {
+  return useIsMode(Modes.ONE);
 }
 
 export function useShouldSkipBasedOnMode(testObject: WithFieldName): boolean {
-  if (useIsAll()) {
+  if (useIsOne()) {
     return hasErrorsByTestObjects();
   }
 

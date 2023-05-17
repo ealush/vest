@@ -202,4 +202,60 @@ describe('mode', () => {
       expect(suite.get().errorCount).toBe(6);
     });
   });
+
+  describe('ONE', () => {
+    describe('When there are no test failures', () => {
+      beforeEach(() => {
+        suite = create(() => {
+          mode(Modes.ONE);
+          dummyTest.passing('field_1', 'first-of-field_1');
+          dummyTest.passing('field_1', 'second-of-field_1'); // Should not run
+          dummyTest.passing('field_2', 'first-of-field_2');
+          dummyTest.passing('field_2', 'second-of-field_2'); // Should not run
+          dummyTest.passing('field_3', 'first-of-field_3');
+          dummyTest.passing('field_3', 'second-of-field_3'); // Should not run
+        });
+      });
+
+      it('Should run all tests', () => {
+        expect(suite.get().testCount).toBe(0); // sanity
+        suite();
+        expect(suite.get().testCount).toBe(6);
+        expect(suite.get().errorCount).toBe(0);
+      });
+    });
+
+    describe('When there are test failures', () => {
+      beforeEach(() => {
+        suite = create(() => {
+          mode(Modes.ONE);
+          dummyTest.passing('field_1', 'first-of-field_1');
+          dummyTest.passing('field_1', 'second-of-field_1');
+          dummyTest.failing('field_2', 'first-of-field_2');
+          dummyTest.passing('field_2', 'second-of-field_2'); // Should not run
+          dummyTest.passing('field_3', 'first-of-field_3'); // should not run
+          dummyTest.passing('field_3', 'second-of-field_3'); // Should not run
+        });
+      });
+
+      it('Should skip all tests after a failed tests', () => {
+        expect(suite.get().testCount).toBe(0); // sanity
+        suite();
+        expect(suite.get().testCount).toBe(3);
+        expect(suite.get().errorCount).toBe(1);
+        expect(suite.get().tests.field_1).toMatchObject({
+          errors: [],
+          valid: true,
+        });
+        expect(suite.get().tests.field_2).toMatchObject({
+          errors: ['first-of-field_2'],
+          valid: false,
+        });
+        expect(suite.get().tests.field_3).toMatchObject({
+          errors: [],
+          valid: false,
+        });
+      });
+    });
+  });
 });

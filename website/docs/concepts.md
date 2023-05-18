@@ -36,3 +36,19 @@ Since you write your validation suite outside of your feature code, and Vest ret
 ### Can I run Vest in my production app?
 
 Yes! Unlike testing libraries, Vest is designed to run in production. Although Vest looks like a testing framework, it is very conscious of your runtime in terms of performance and resources.
+
+### Does Vest support asynchronous validations?
+
+Yes, Vest supports asynchronous validations. It provides utilities and mechanisms to handle asynchronous validations using promises or async/await syntax. Users can include asynchronous logic within their validation rules. [Read more on asynchronous validations](./writing_tests/async_tests.md).
+
+### Can I customize the error messages in Vest?
+
+Yes, Vest allows customization of error messages. There are multiple ways you can customize error messages in Vest. [Read more on customizing error messages](./writing_tests/failing_with_a_custom_message.md).
+
+### Is Vest compatible with form libraries or UI frameworks?
+
+Yes, Vest is compatible with various form libraries and UI frameworks, including popular ones like React, Vue.js, and Angular. As a framework-agnostic validation library, Vest can be integrated into any JavaScript framework seamlessly. Developers can incorporate Vest's validation logic into their form components and leverage the benefits of Vest alongside their chosen form library or UI framework.
+
+### Does Vest support internationalization (i18n)?
+
+Yes, Vest supports internationalization. Developers can handle internationalization requirements by leveraging the existing localization mechanisms of their chosen framework or by implementing custom approaches. All you need to do is use your already localized/translated strings as your error messages.

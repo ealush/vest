@@ -78,10 +78,12 @@ You can easily add new kinds of validations to Vest according to your needs.
 
 Validation logic in Vest can be shared across multiple features in your app, making it easy to maintain and refactor your codebase.
 
-🧬 Supports Declarative Syntax
+### 🧬 Supports Declarative Syntax
+
 Vest's declarative syntax makes it easy to describe your form or feature structure and write clear, concise validations.
 
-🧪 Promotes Testing and Debugging
+### 🧪 Promotes Testing and Debugging
+
 By separating validation logic from feature logic, Vest makes it easier to test and debug your code, which can save you time and reduce errors.
 
 # Getting Started

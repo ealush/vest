@@ -4,6 +4,8 @@ sidebar_position: 2
 
 # Tutorials and learning resources
 
+- [Angular + Vest](https://www.youtube.com/watch?v=EMUAtQlh9Ko) = "Form validation Done Right" by Ward Bell in ng-cof 2022. [Github repo](https://github.com/wardbell/ngc-validate).
+
 - [AgnosticUI + Vest](https://developtodesign.com/agnosticui-examples) - Demo form using Svelte package of [AgnosticUI](https://agnosticui.com/) — a UI component library that works with React, Vue 3, and Svelte — with Vest for form validation.
 
 - [Svelte Forms: The Missing Manual](https://codechips.gumroad.com/l/svelte-forms) - An excellent book by [Ilia Mikhailov](https://twitter.com/codechips). The book contains several chapters of integration examples with Vest.

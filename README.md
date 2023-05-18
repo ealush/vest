@@ -96,6 +96,7 @@ Here are some code sandboxes to get you started:
 - [Vue](https://codesandbox.io/s/vue-vest-5-d1g236?file=/src/suite.js)
 - [Svelte](https://codesandbox.io/s/svelte-vest-5-imnq9z?file=/suite.js)
 - [Vanilla](https://codesandbox.io/s/vest-vanilla-js-vest-5-3v4pqk?file=/src/suite.js)
+- [Angular](https://github.com/wardbell/ngc-validate) (by @wardbell)
 
 # Contribute
 

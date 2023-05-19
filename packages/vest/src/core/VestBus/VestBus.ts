@@ -41,6 +41,13 @@ export function useInitVestBus() {
 
   // Called when all the tests, including async, are done running
   on(Events.ALL_RUNNING_TESTS_FINISHED, () => {
+    // Small optimization. We don't need to run this if there are no async tests
+    // The reason is that we run this function immediately after the suite callback
+    // is run, so if the suite is only comprised of sync tests, we don't need to
+    // run this function twice since we know for a fact the state is up to date
+    if (TestWalker.someTests(test => test.isAsyncTest())) {
+      useOmitOptionalFields();
+    }
     useRunDoneCallbacks();
   });
 
@@ -54,7 +61,6 @@ export function useInitVestBus() {
 
   on(Events.SUITE_CALLBACK_RUN_FINISHED, () => {
     useOmitOptionalFields();
-    VestBus.emit(Events.DONE_TEST_OMISSION_PASS);
   });
 
   on(Events.REMOVE_FIELD, (fieldName: TFieldName) => {

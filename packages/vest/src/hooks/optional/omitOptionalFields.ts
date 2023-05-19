@@ -5,8 +5,9 @@ import {
   isNullish,
 } from 'vest-utils';
 
+import { Events } from 'BusEvents';
 import { IsolateTest } from 'IsolateTest';
-import { useAvailableSuiteRoot } from 'PersistedContext';
+import { useAvailableSuiteRoot, useEmit } from 'PersistedContext';
 import { TestWalker } from 'TestWalker';
 
 /**
@@ -17,6 +18,7 @@ import { TestWalker } from 'TestWalker';
 
 export function useOmitOptionalFields(): void {
   const root = useAvailableSuiteRoot();
+  const emit = useEmit();
 
   const optionalFields = root?.getOptionalFields();
 
@@ -40,6 +42,8 @@ export function useOmitOptionalFields(): void {
       runOptionalConfig(testObject);
     }
   });
+
+  emit(Events.DONE_TEST_OMISSION_PASS);
 
   function verifyAndOmit(testObject: IsolateTest) {
     if (shouldOmit.has(testObject.fieldName)) {

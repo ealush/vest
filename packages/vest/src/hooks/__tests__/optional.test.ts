@@ -1,5 +1,9 @@
+import wait from 'wait';
+
 import { TTestSuite } from 'testUtils/TVestMock';
 import * as vest from 'vest';
+
+jest.useFakeTimers();
 
 describe('optional hook', () => {
   describe('Functional Optional Interface', () => {
@@ -140,6 +144,72 @@ describe('optional hook', () => {
         expect(res.isValid()).toBe(true);
         res = suite({ a: 0, b: 0, c: 0 }, 'b');
         expect(res.isValid()).toBe(false);
+      });
+    });
+  });
+
+  describe('Optional test is async', () => {
+    let suite: TTestSuite;
+    beforeEach(() => {
+      suite = vest.create(() => {
+        vest.optional('field_1');
+        vest.test('field_1', async () => {
+          await wait(100);
+          vest.enforce(1).equals(2);
+        });
+      });
+    });
+    describe('Before the test completed', () => {
+      it('Should be considered as valid', () => {
+        const res = suite();
+        expect(res.isValid()).toBe(true);
+        expect(res.isValid('field_1')).toBe(true);
+      });
+    });
+    describe('After the test completed', () => {
+      it('Should be considered as valid', () => {
+        const res = suite();
+        jest.runAllTimers();
+        expect(res.isValid()).toBe(true);
+        expect(res.isValid('field_1')).toBe(true);
+      });
+    });
+  });
+
+  describe('Optional Sync test depends on async tests', () => {
+    let suite: TTestSuite;
+
+    beforeEach(() => {
+      suite = vest.create(() => {
+        vest.optional({
+          field_1: () => suite.get().isValid('field_2'),
+        });
+        vest.test('field_1', () => {
+          vest.enforce(1).equals(2);
+        });
+        vest.test('field_2', async () => {
+          await wait(100);
+          vest.enforce(1).equals(1);
+        });
+      });
+    });
+
+    describe('Before the test completed', () => {
+      it('Should be considered as not valid', () => {
+        const res = suite();
+        expect(res.isValid()).toBe(false);
+        expect(res.isValid('field_1')).toBe(false);
+        expect(res.isValid('field_2')).toBe(false);
+      });
+    });
+
+    describe('After the test completed', () => {
+      it('Should be considered as valid', async () => {
+        suite();
+        await jest.runAllTimersAsync();
+        expect(suite.isValid('field_2')).toBe(true);
+        expect(suite.isValid()).toBe(true);
+        expect(suite.isValid('field_1')).toBe(true);
       });
     });
   });

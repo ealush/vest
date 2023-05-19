@@ -54,7 +54,7 @@ suite({ age: 'Five' }, 'pet_age').isValid(); // 🚨 When erroring, optional fie
 
 Since every app is different, your app's logic may require some other definition of optional. For example, the user may have typed inside a field and then removed its content. In such cases, you can provide `optional` with a custom omission rule.
 
-To provide a custom optional rule, you need to provide an object with the field names as its keys, and either a boolean or a function returning a boolean as its value. These rules will be evaluated immediately, and then again after your suite finishes its **synchronous** run. When true, Vest will omit _ALL_ failures your field might have from the suite. It is important to note that custom omission rules are not supported for asynchronous tests.
+To provide a custom optional rule, you need to provide an object with the field names as its keys, and either a boolean or a function returning a boolean as its value. These functions may be executed multiple times, at different stages of the suite run. When true, Vest will omit _ALL_ failures your field might have from the suite.
 
 The following code demonstrates an example of how to allow a field to be empty even if it's "touched" or "dirty":
 
@@ -96,10 +96,6 @@ const suite = create(data => {
   );
 });
 ```
-
-:::danger IMPORTANT - ASYNC TESTS ARE UNSUPPORTED WITH CUSTOM OPTIONAL RULES
-You should avoid using the custom omission rules along with async tests. This is unsupported and may cause unexpected behavior. The reason for this limitation is due to the fact that the omission conditionals are calculated at the end of the suite, while the async tests may keep running. Allowing it will require re-calculation for each async test that finishes, which could be expensive.
-:::
 
 ## Difference between `optional` and `warn`
 

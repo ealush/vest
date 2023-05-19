@@ -139,6 +139,12 @@ const config = {
               'https://badgen.net/discord/online-members/WmADZpJnSe?icon=discord&scale=1.2&label=Discord'
             ),
           },
+          {
+            href: 'https://github.com/ealush/vest',
+            position: 'right',
+            className: 'header-github-link',
+            'aria-label': 'GitHub repository',
+          },
         ],
       },
       footer: {

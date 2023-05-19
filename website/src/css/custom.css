@@ -25,7 +25,6 @@
 }
 
 html[data-theme='dark'] {
-  --main-content-background-color: #1b1e2a;
   --ifm-background-color: var(--darkest-alt);
   --announcement-bar-background: var(--ifm-color-primary-light);
   --announcement-bar-color: var(--ifm-color-primary-lightest);
@@ -51,7 +50,7 @@ h1 {
 }
 
 .footer {
-  background-color: var(--darkest-alt);
+  background-color: #272a36;
 }
 
 html[data-theme='dark'] .docusaurus-highlight-code-line {
@@ -88,4 +87,22 @@ html[data-theme='dark'] .hero__title {
 
 .header-badge {
   display: flex;
+}
+
+.header-github-link {
+  content: '';
+  background-color: var(--ifm-color-primary-darkest);
+  mask-image: url('/img/github.svg');
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+html[data-theme='dark'] {
+  .header-github-link {
+    background-color: var(--ifm-color-primary-lightest);
+  }
 }

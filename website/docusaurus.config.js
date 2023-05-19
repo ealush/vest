@@ -194,8 +194,8 @@ const config = {
         id: 'vest-5-is-ready',
         content:
           '🎉 Vest 5 is ready! <a target="_blank" rel="noopener noreferrer" href="vest-5-is-ready">Try it out now!</a> 🎉',
-        backgroundColor: '#fafbfc',
-        textColor: '#091E42',
+        backgroundColor: 'var(--announcement-bar-background)',
+        textColor: 'var(--announcement-bar-color)',
         isCloseable: false,
       },
       algolia: {

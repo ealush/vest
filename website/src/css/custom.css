@@ -20,11 +20,15 @@
   --ifm-heading-color: var(--ifm-font-color-base);
   --main-content-background-color: none;
   --darkest-alt: #171819;
+  --announcement-bar-background: var(--ifm-color-primary-lightest);
+  --announcement-bar-color: var(--darkest-alt);
 }
 
 html[data-theme='dark'] {
   --main-content-background-color: #1b1e2a;
   --ifm-background-color: var(--darkest-alt);
+  --announcement-bar-background: var(--ifm-color-primary-light);
+  --announcement-bar-color: var(--ifm-color-primary-lightest);
 }
 
 main {

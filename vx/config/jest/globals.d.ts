@@ -1,9 +1,6 @@
 declare global {
   namespace jest {
-    interface JestMatchers {
-      isDeepCopyOf(clone: any): CustomMatcherResult;
-    }
-    interface Matchers {
+    interface Matchers<R> {
       isDeepCopyOf(clone: any): CustomMatcherResult;
     }
   }

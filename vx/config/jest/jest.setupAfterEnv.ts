@@ -10,8 +10,7 @@ const isDeepCopyOf = (
   const queue = [[source, clone]];
 
   outer: while (queue.length) {
-    // @ts-expect-error - ts thinks it may be undefined, but it's unlikely, and will fail the tests anyway if it fails.
-    const [source, clone] = queue.shift();
+    const [source, clone] = (queue as any[]).shift();
 
     if (!source || typeof source !== 'object') {
       if (!isFunction(clone)) {

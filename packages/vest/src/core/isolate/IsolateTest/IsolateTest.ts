@@ -12,7 +12,7 @@ import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestFn, AsyncTest, TestResult } from 'TestTypes';
 import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
 
-export type IsolateTestInput = {
+type IsolateTestInput = {
   message?: string;
   groupName?: string;
   fieldName: TFieldName;

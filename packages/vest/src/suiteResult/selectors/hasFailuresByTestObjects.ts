@@ -15,7 +15,7 @@ export function hasErrorsByTestObjects(fieldName?: TFieldName): boolean {
   return hasFailuresByTestObjects(Severity.ERRORS, fieldName);
 }
 
-export function hasFailuresByTestObjects(
+function hasFailuresByTestObjects(
   severityKey: Severity,
   fieldName?: TFieldName
 ): boolean {

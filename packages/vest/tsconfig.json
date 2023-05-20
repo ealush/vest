@@ -119,7 +119,6 @@
       ],
       "matchingGroupName": ["./src/core/test/helpers/matchingGroupName.ts"],
       "matchingFieldName": ["./src/core/test/helpers/matchingFieldName.ts"],
-      "asVestTest": ["./src/core/test/helpers/asVestTest.ts"],
       "nonMatchingSeverityProfile.test": [
         "./src/core/test/helpers/__tests__/nonMatchingSeverityProfile.test.ts"
       ],

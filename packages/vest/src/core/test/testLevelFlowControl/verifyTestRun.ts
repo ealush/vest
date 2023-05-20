@@ -25,23 +25,23 @@ export function useVerifyTestRun(
   return testObject;
 }
 
-export function useShouldOmit(testObject: IsolateTest): boolean {
+function useShouldOmit(testObject: IsolateTest): boolean {
   return (
     useWithinActiveOmitWhen() || useIsOptionalFiedApplied(testObject.fieldName)
   );
 }
 
-export function skipTestAndReturn(testNode: IsolateTest): IsolateTest {
+function skipTestAndReturn(testNode: IsolateTest): IsolateTest {
   testNode.skip();
   return testNode;
 }
 
-export function omitTestAndReturn(testNode: IsolateTest): IsolateTest {
+function omitTestAndReturn(testNode: IsolateTest): IsolateTest {
   testNode.omit();
   return testNode;
 }
 
-export function useForceSkipIfInSkipWhen(testNode: IsolateTest): IsolateTest {
+function useForceSkipIfInSkipWhen(testNode: IsolateTest): IsolateTest {
   // We're forcing skipping the pending test
   // if we're directly within a skipWhen block
   // This mostly means that we're probably giving

@@ -1,13 +1,11 @@
 import { faker } from '@faker-js/faker';
 
+import { asVestTest } from '../../../testUtils/asVestTest';
+
 import { ErrorStrings } from 'ErrorStrings';
 import * as vest from 'vest';
 
 const { create, test, warn } = vest;
-
-function asVestTest(t: unknown): vest.IsolateTest {
-  return t as vest.IsolateTest;
-}
 
 describe('warn hook', () => {
   describe('When currentTest exists', () => {

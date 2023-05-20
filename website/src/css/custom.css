@@ -101,8 +101,6 @@ html[data-theme='dark'] .hero__title {
   margin-right: 0.5rem;
 }
 
-html[data-theme='dark'] {
-  .header-github-link {
-    background-color: var(--ifm-color-primary-lightest);
-  }
+html[data-theme='dark'] .header-github-link {
+  background-color: var(--ifm-color-primary-lightest);
 }

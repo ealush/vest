@@ -1,11 +1,30 @@
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import styles from './Demo.module.css';
 import commonStyles from './Common.module.css';
 
+// I only care of the initial load.  I don't want to kicks off the timeout if
+// the user navigates away and then back to the page.
+let initialized = false;
+
 export default function Demo() {
-  const [currentSandbox, setCurrentSandbox] = useState(0);
+  const [currentSandbox, setCurrentSandbox] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(initialized);
+
+  useEffect(() => {
+    if (isInitialized) {
+      return;
+    }
+
+    setTimeout(() => {
+      // Why state? along with the global flag?
+      // Because the state will trigger a re-render. The global flag will not.
+      setIsInitialized(true);
+      setCurrentSandbox(currentSandbox => currentSandbox ?? 0);
+      initialized = true;
+    }, 1500);
+  }, []);
 
   return (
     <section className={clsx(styles.demo, commonStyles.main_section_centered)}>
@@ -25,7 +44,11 @@ export default function Demo() {
           ))}
         </div>
         <div className={styles.demoWrapper}>
-          <Sandbox {...embedLinks[currentSandbox]} />
+          {isInitialized ? (
+            <Sandbox {...embedLinks[currentSandbox]} />
+          ) : (
+            <div className={styles.sandbox}></div>
+          )}
         </div>
       </div>
     </section>
@@ -36,7 +59,7 @@ function Sandbox({ title, src }) {
   return (
     <iframe
       src={src}
-      className={styles.sandboxIframe}
+      className={styles.sandbox}
       title={title}
       allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
       sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"

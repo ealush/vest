@@ -8,7 +8,7 @@ const lightCodeTheme = require('prism-react-renderer/themes/github');
 const config = {
   baseUrl: '/',
   favicon: 'favicon.ico',
-  title: 'Vest Validations Framework',
+  title: 'Vest',
   tagline:
     'Declarative validations framework inspired by unit testing libraries',
   url: 'https://vestjs.dev',

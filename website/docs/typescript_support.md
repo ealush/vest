@@ -22,7 +22,7 @@ import { create } from 'vest';
 
 type Callback = (data: {username: string, password: string}) => void;
 type FieldName = "username" | "password";
-type GroupName = "SignIn" | "ChangePassword;
+type GroupName = "SignIn" | "ChangePassword";
 
 const suite = create<Callback, FieldName, GroupName>((data) => { // data is now typed
   // ...
@@ -74,7 +74,7 @@ import { create } from 'vest';
 type TData = {username: string, password: string};
 type Callback = (data: TData) => void;
 type FieldName = keyof TData;
-type GroupName = "SignIn" | "ChangePassword;
+type GroupName = "SignIn" | "ChangePassword";
 
 const suite = create<Callback, FieldName, GroupName>((data) => {
   only('username');

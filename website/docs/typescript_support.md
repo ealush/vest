@@ -11,20 +11,23 @@ Vest is written fully in TypeScript, and as such, it provides extensive TypeScri
 
 ## Suite Generics
 
-The Suite's `create` function takes three generic types - `Callback`, `FieldName`, `GroupName`.
+The Suite's `create` function takes three **optional** generic types - `FieldName`, `GroupName` and `Callback`.
 
-- `Callback`: The type for the suite callback. This type is propagated into the suite callback, and can be used to defined the shape of the data for the suite callback.
-- `FieldName`: A union of the allowed field names in the suite. This type is propagated to all the suite and suite response methods.
-- `GroupName`: A union of the allowed group names in the suite. This type is propagated to all the suite and suite response methods.
+| Name        | Type       | Optional? | Default    | Description                                                                                                                                                |
+| ----------- | ---------- | --------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `FieldName` | `string`   | Yes       | `string`   | A union of the allowed field names in the suite. This type is propagated to all the suite and suite response methods.                                      |
+| `GroupName` | `string`   | Yes       | `string`   | A union of the allowed group names in the suite. This type is propagated to all the suite and suite response methods.                                      |
+| `Callback`  | `Function` | Yes       | `Function` | The type for the suite callback. This type is propagated into the suite callback, and can be used to defined the shape of the data for the suite callback. |
 
 ```typescript
 import { create } from 'vest';
 
-type Callback = (data: {username: string, password: string}) => void;
-type FieldName = "username" | "password";
-type GroupName = "SignIn" | "ChangePassword";
+type FieldName = 'username' | 'password';
+type GroupName = 'SignIn' | 'ChangePassword';
+type Callback = (data: { username: string; password: string }) => void;
 
-const suite = create<Callback, FieldName, GroupName>((data) => { // data is now typed
+const suite = create<FieldName, GroupName, Callback>(data => {
+  // data is now typed
   // ...
 });
 
@@ -71,18 +74,24 @@ To do so, you can type your suite as mentioned in the previous section, and dest
 ```typescript
 import { create } from 'vest';
 
-type TData = {username: string, password: string};
-type Callback = (data: TData) => void;
+type TData = { username: string; password: string };
 type FieldName = keyof TData;
-type GroupName = "SignIn" | "ChangePassword";
+type GroupName = 'SignIn' | 'ChangePassword';
+type Callback = (data: TData) => void;
 
-const suite = create<Callback, FieldName, GroupName>((data) => {
+const suite = create<FieldName, GroupName, Callback>(data => {
   only('username');
 
-  test('username', 'Password is required' ,() => {/*...*/}); // ✅
-  test('password', 'Password is too required' ,() => {/*...*/}); // ✅
+  test('username', 'Password is required', () => {
+    /*...*/
+  }); // ✅
+  test('password', 'Password is too required', () => {
+    /*...*/
+  }); // ✅
 
-  test('confirm', 'Passwords do not match' ,() => {/*...*/}); // 🚨 Will throw a compilation error
+  test('confirm', 'Passwords do not match', () => {
+    /*...*/
+  }); // 🚨 Will throw a compilation error
 });
 
 const { test, group, only } = suite;
@@ -92,7 +101,7 @@ const { test, group, only } = suite;
 
 Vest exports the following types so you can use them to annotate your functions and variables:
 
-- `Suite<Callback, FieldName, GroupName>`<br/>
+- `Suite<FieldName, GroupName, Callback>`<br/>
   A single suite instance.
 
 - `SuiteRunResult<FieldName, GroupName>`<br/>

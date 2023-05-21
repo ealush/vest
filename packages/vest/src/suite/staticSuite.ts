@@ -5,12 +5,12 @@ import { createSuite } from 'createSuite';
 import { TTypedMethods, getTypedMethods } from 'getTypedMethods';
 
 export function staticSuite<
-  T extends CB,
   F extends TFieldName = string,
-  G extends TGroupName = string
->(suiteCallback: T): StaticSuite<T, F, G> {
+  G extends TGroupName = string,
+  T extends CB = CB
+>(suiteCallback: T): StaticSuite<F, G, T> {
   return assign(
-    (...args: Parameters<T>) => createSuite<T, F, G>(suiteCallback)(...args),
+    (...args: Parameters<T>) => createSuite<F, G, T>(suiteCallback)(...args),
     {
       ...getTypedMethods<F, G>(),
     }
@@ -18,7 +18,7 @@ export function staticSuite<
 }
 
 type StaticSuite<
-  T extends CB,
   F extends TFieldName = string,
-  G extends TGroupName = string
+  G extends TGroupName = string,
+  T extends CB = CB
 > = ((...args: Parameters<T>) => SuiteRunResult<F, G>) & TTypedMethods<F, G>;

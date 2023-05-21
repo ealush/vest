@@ -1,11 +1,10 @@
-import { TTestSuiteCallback } from 'testUtils/TVestMock';
 import * as vest from 'vest';
 
 type TestFields = 'F1' | 'F2' | 'F3';
 type TestGroups = 'G1' | 'G2' | 'G3';
 
 describe('typed suite', () => {
-  let suite: vest.Suite<TTestSuiteCallback, TestFields, TestGroups>;
+  let suite: vest.Suite<TestFields, TestGroups>;
 
   beforeEach(() => {
     suite = vest.create(() => {});
@@ -70,7 +69,7 @@ describe('typed suite', () => {
 
 describe('typed methods', () => {
   it('should run the typed suite normally', () => {
-    const suite = vest.create<() => void, 'USERNAME' | 'PASSWORD'>(() => {
+    const suite = vest.create<'USERNAME' | 'PASSWORD'>(() => {
       only('PASSWORD');
 
       test('PASSWORD', 'password is too short', () => false);

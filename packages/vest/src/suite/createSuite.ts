@@ -24,23 +24,23 @@ import { bindSuiteSelectors } from 'suiteSelectors';
 import { validateSuiteCallback } from 'validateSuiteParams';
 
 function createSuite<
-  T extends CB,
   F extends TFieldName = string,
-  G extends TGroupName = string
->(suiteName: SuiteName, suiteCallback: T): Suite<T, F, G>;
+  G extends TGroupName = string,
+  T extends CB = CB
+>(suiteName: SuiteName, suiteCallback: T): Suite<F, G, T>;
 function createSuite<
-  T extends CB,
   F extends TFieldName = string,
-  G extends TGroupName = string
->(suiteCallback: T): Suite<T, F, G>;
+  G extends TGroupName = string,
+  T extends CB = CB
+>(suiteCallback: T): Suite<F, G, T>;
 // @vx-allow use-use
 function createSuite<
-  T extends CB,
   F extends TFieldName = string,
-  G extends TGroupName = string
+  G extends TGroupName = string,
+  T extends CB = CB
 >(
   ...args: [suiteName: SuiteName, suiteCallback: T] | [suiteCallback: T]
-): Suite<T, F, G> {
+): Suite<F, G, T> {
   const [suiteCallback, suiteName] = args.reverse() as [T, SuiteName];
 
   validateSuiteCallback(suiteCallback);

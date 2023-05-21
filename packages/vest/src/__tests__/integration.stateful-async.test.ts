@@ -34,9 +34,9 @@ const suite = () =>
   });
 
 let validate: vest.Suite<
-  ({ skip, skipGroup }: SuiteParams) => void,
   TFieldName,
-  TGroupName
+  TGroupName,
+  ({ skip, skipGroup }: SuiteParams) => void
 >;
 let callback_1 = jest.fn(),
   callback_2 = jest.fn(),

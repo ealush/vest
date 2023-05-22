@@ -10,13 +10,13 @@ type OptionalsObject<F extends TFieldName> = Record<
 >;
 
 type ImmediateOptionalFieldDeclaration = {
-  type: OptionalFieldTypes.Immediate;
+  type: OptionalFieldTypes.CUSTOM_LOGIC;
   rule: boolean | (() => boolean);
   applied: boolean;
 };
 
 type DelayedOptionalFieldDeclaration = {
-  type: OptionalFieldTypes.Delayed;
+  type: OptionalFieldTypes.AUTO;
   applied: boolean;
   rule: null;
 };
@@ -26,6 +26,6 @@ export type OptionalFieldDeclaration =
   | DelayedOptionalFieldDeclaration;
 
 export enum OptionalFieldTypes {
-  Immediate,
-  Delayed,
+  CUSTOM_LOGIC,
+  AUTO,
 }

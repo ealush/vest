@@ -13,28 +13,29 @@ export function optional<F extends TFieldName>(
 
   // There are two types of optional field declarations:
 
-  // 1. Delayed: A string, which is the name of the field to be optional.
-  // We will only determine whether to omit the test after the suite is done running
+  // 1 AUTO: Vest will automatically determine whether the field should be omitted
+  // Based on the current run. Vest will ommit "auto" added fields without any
+  // configuration if their tests did not run at all in the suite.
   //
-  // 2. Immediate: Either a boolean or a function, which is used to determine
-  // if the field should be optional.
+  // 2 Custom logic: Vest will determine whether they should fail based on the custom
+  // logic supplied by the user.
 
-  // Delayed case (field name)
+  // AUTO case (field name)
   if (isArray(optionals) || isStringValue(optionals)) {
     asArray(optionals).forEach(optionalField => {
       suiteRoot.setOptionalField(optionalField, () => ({
-        type: OptionalFieldTypes.Delayed,
+        type: OptionalFieldTypes.AUTO,
         applied: false,
         rule: null,
       }));
     });
   } else {
-    // Immediately case (function or boolean)
+    // CUSTOM_LOGIC case (function or boolean)
     for (const field in optionals) {
       const value = optionals[field];
 
       suiteRoot.setOptionalField(field, () => ({
-        type: OptionalFieldTypes.Immediate,
+        type: OptionalFieldTypes.CUSTOM_LOGIC,
         rule: value,
         applied: value === true,
       }));

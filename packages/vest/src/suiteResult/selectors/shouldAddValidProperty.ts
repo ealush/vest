@@ -143,6 +143,6 @@ function useOptionalTestAwaitsResolution(testObject: IsolateTest): boolean {
 
   return (
     useAvailableSuiteRoot()?.getOptionalField(testObject.fieldName).type ===
-      OptionalFieldTypes.Delayed && testObject.awaitsResolution()
+      OptionalFieldTypes.AUTO && testObject.awaitsResolution()
   );
 }

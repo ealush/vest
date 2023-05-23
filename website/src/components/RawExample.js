@@ -10,8 +10,8 @@ export default () => {
       className={clsx(styles.section, commonStyles.main_section_centered)}
     >
       <p className={styles.desc}>
-        Vest looks and feels like a unit testing framework, but is fully
-        optimized for production use.
+        Vest is a form validations framework that looks and feels like a unit
+        testing framework.
         <br />
         It allows you to express your validation logic in a simple and readable
         way that's also easy to maintain in the long run.

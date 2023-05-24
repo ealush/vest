@@ -112,7 +112,8 @@ const config = {
             type: 'html',
             value: badgeLink(
               '/vest-5-is-ready',
-              'https://badgen.net/npm/v/vest/next?scale=1.2'
+              'https://badgen.net/npm/v/vest/next?scale=1.2',
+              'next-badge'
             ),
           },
           {
@@ -120,7 +121,8 @@ const config = {
             type: 'html',
             value: badgeLink(
               'https://www.npmjs.com/package/vest',
-              'https://badgen.net/npm/v/vest?icon=npm&scale=1.2&color=red&label'
+              'https://badgen.net/npm/v/vest?icon=npm&scale=1.2&color=red&label',
+              'npm-badge'
             ),
           },
           {
@@ -128,7 +130,8 @@ const config = {
             type: 'html',
             value: badgeLink(
               'https://github.com/ealush/vest',
-              'https://badgen.net/github/stars/ealush/vest?scale=1.2&color=yellow&icon=github'
+              'https://badgen.net/github/stars/ealush/vest?scale=1.2&color=yellow&icon=github',
+              'github-badge'
             ),
           },
           {
@@ -136,7 +139,8 @@ const config = {
             type: 'html',
             value: badgeLink(
               'https://discord.gg/WmADZpJnSe',
-              'https://badgen.net/discord/online-members/WmADZpJnSe?icon=discord&scale=1.2&label=Discord'
+              'https://badgen.net/discord/online-members/WmADZpJnSe?icon=discord&scale=1.2&label=Discord',
+              'discord-badge'
             ),
           },
           {
@@ -218,8 +222,8 @@ const config = {
 
 module.exports = config;
 
-function badgeLink(url, badge) {
+function badgeLink(url, badge, name) {
   return `<a href="${url}" class="header-badge" target="_blank">
-    <img src="${badge}" />
+    <img src="${badge}" alt="${name}"/>
   </a>`;
 }

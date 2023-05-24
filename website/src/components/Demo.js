@@ -11,8 +11,13 @@ let initialized = false;
 export default function Demo() {
   const [currentSandbox, setCurrentSandbox] = useState(null);
   const [isInitialized, setIsInitialized] = useState(initialized);
+  const [shouldRender, setShouldRender] = useState(null);
 
   useEffect(() => {
+    if (shouldRender === null) {
+      setShouldRender(Boolean((window?.innerWidth ?? 0) > 500));
+    }
+
     if (isInitialized) {
       return;
     }
@@ -25,6 +30,10 @@ export default function Demo() {
       initialized = true;
     }, 1500);
   }, []);
+
+  if (!shouldRender) {
+    return null;
+  }
 
   return (
     <section className={clsx(styles.demo, commonStyles.main_section_centered)}>

@@ -1,9 +1,9 @@
 .sandbox {
-  width: 100%;
-  height: 500px;
   border: 0;
   border-radius: 4px;
   overflow: hidden;
+  width: 100%;
+  height: 100%;
 }
 
 .vestDemo {
@@ -11,6 +11,7 @@
 }
 
 .demoWrapper {
+  height: 500px;
   border: 1px solid var(--ifm-color-primary-lighter);
   border-radius: 4px;
   background: #191919;
@@ -51,4 +52,42 @@
   .demo {
     display: none;
   }
+}
+
+button.sandboxPlaceholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border: 0;
+  cursor: pointer;
+  background: none;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sandboxPlaceholderText {
+  color: var(--ifm-color-primary-lightest);
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.sandboxPlaceholderArrow {
+  mask-image: url(/img/play_arrow.svg);
+  mask-size: 2rem;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  background-color: var(--ifm-color-primary-lightest);
+  border-radius: 50%;
+  width: 4rem;
+  height: 4rem;
+  border: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.sandboxPlaceholder:hover .sandboxPlaceholderArrow {
+  background-color: var(--ifm-color-primary);
 }

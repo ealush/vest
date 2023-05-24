@@ -4,13 +4,9 @@ import React, { useEffect, useState } from 'react';
 import styles from './Demo.module.css';
 import commonStyles from './Common.module.css';
 
-// I only care of the initial load.  I don't want to kicks off the timeout if
-// the user navigates away and then back to the page.
-let initialized = false;
-
 export default function Demo() {
-  const [currentSandbox, setCurrentSandbox] = useState(null);
-  const [isInitialized, setIsInitialized] = useState(initialized);
+  const [currentSandbox, setCurrentSandbox] = useState(0);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [shouldRender, setShouldRender] = useState(null);
 
   useEffect(() => {
@@ -21,14 +17,6 @@ export default function Demo() {
     if (isInitialized) {
       return;
     }
-
-    setTimeout(() => {
-      // Why state? along with the global flag?
-      // Because the state will trigger a re-render. The global flag will not.
-      setIsInitialized(true);
-      setCurrentSandbox(currentSandbox => currentSandbox ?? 0);
-      initialized = true;
-    }, 1500);
   }, []);
 
   if (!shouldRender) {
@@ -56,11 +44,29 @@ export default function Demo() {
           {isInitialized ? (
             <Sandbox {...embedLinks[currentSandbox]} />
           ) : (
-            <div className={styles.sandbox}></div>
+            <PlaceHolder activate={activate} />
           )}
         </div>
       </div>
     </section>
+  );
+
+  function activate() {
+    setIsInitialized(true);
+  }
+}
+
+function PlaceHolder({ activate }) {
+  return (
+    <button
+      className={clsx(styles.sandbox, styles.sandboxPlaceholder)}
+      onClick={activate}
+    >
+      <span className={styles.sandboxPlaceholderText}>
+        Click to load sandbox...
+      </span>
+      <div className={styles.sandboxPlaceholderArrow} />
+    </button>
   );
 }
 

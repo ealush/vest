@@ -64,7 +64,7 @@ function useHasNonOptionalIncomplete(fieldName?: TFieldName) {
     if (nonMatchingFieldName(testObject, fieldName)) {
       return false;
     }
-    return !useIsTestObjectOptional(testObject, fieldName);
+    return !useIsOptionalFiedApplied(fieldName);
   });
 }
 
@@ -82,19 +82,8 @@ function useHasNonOptionalIncompleteByGroup(
       return false;
     }
 
-    return !useIsTestObjectOptional(testObject, fieldName);
+    return !useIsOptionalFiedApplied(fieldName);
   });
-}
-
-function useIsTestObjectOptional(
-  testObject: IsolateTest,
-  fieldName?: TFieldName
-): boolean {
-  if (nonMatchingFieldName(testObject, fieldName)) {
-    return false;
-  }
-
-  return useIsOptionalFiedApplied(fieldName);
 }
 
 // Did all of the tests for the provided field run/omit?

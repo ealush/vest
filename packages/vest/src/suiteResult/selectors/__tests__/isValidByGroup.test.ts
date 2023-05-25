@@ -168,10 +168,10 @@ describe('isValidByGroup', () => {
     });
 
     describe('When test is pending', () => {
-      it('Should return true', () => {
+      it('Should return false', () => {
         suite();
-        expect(suite.get().isValidByGroup(GROUP_NAME)).toBe(true);
-        expect(suite.get().isValidByGroup(GROUP_NAME, 'field_1')).toBe(true);
+        expect(suite.get().isValidByGroup(GROUP_NAME)).toBe(false);
+        expect(suite.get().isValidByGroup(GROUP_NAME, 'field_1')).toBe(false);
       });
     });
     describe('When test is passing', () => {

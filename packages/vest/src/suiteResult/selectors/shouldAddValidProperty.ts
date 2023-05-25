@@ -78,7 +78,11 @@ function useHasNonOptionalIncompleteByGroup(
       return false;
     }
 
-    return useIsTestObjectOptional(testObject, fieldName);
+    if (nonMatchingFieldName(testObject, fieldName)) {
+      return false;
+    }
+
+    return !useIsTestObjectOptional(testObject, fieldName);
   });
 }
 

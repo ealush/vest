@@ -15,16 +15,11 @@ import { TestResult } from 'TestTypes';
 import { useVerifyTestRun } from 'verifyTestRun';
 
 // eslint-disable-next-line max-statements
-export function useAttemptRunTestObjectByTier(testObject: IsolateTest) {
+export function useAttemptRunTest(testObject: IsolateTest) {
   useVerifyTestRun(testObject);
 
   if (testObject.isUntested()) {
     return useRunTest(testObject);
-  }
-
-  if (testObject.isAsyncTest()) {
-    testObject.setPending();
-    useRunAsyncTest(testObject);
   }
 
   if (!testObject.isNonActionable()) {
@@ -55,7 +50,6 @@ function useRunTest(testObject: IsolateTest): void {
     // in case object is an enforce chain
     if (isPromise(result)) {
       testObject.asyncTest = result;
-      testObject.setPending();
       useRunAsyncTest(testObject);
     } else {
       onTestCompleted(VestBus, testObject);
@@ -77,6 +71,7 @@ function useRunAsyncTest(testObject: IsolateTest): void {
   const { asyncTest, message } = testObject;
 
   if (!isPromise(asyncTest)) return;
+  testObject.setPending();
 
   const VestBus = useVestBus();
 

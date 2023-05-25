@@ -8,7 +8,7 @@ import { useEmit } from 'PersistedContext';
 import { useGroupName } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
-import { useAttemptRunTestObjectByTier } from 'runTest';
+import { useAttemptRunTest } from 'runTest';
 import { wrapTestMemo } from 'test.memo';
 
 function vestTest<F extends TFieldName>(
@@ -51,7 +51,7 @@ function vestTest<F extends TFieldName>(
   // This invalidates the suite cache.
   emit(Events.TEST_RUN_STARTED);
 
-  return IsolateTest.create(useAttemptRunTestObjectByTier, testObjectInput);
+  return IsolateTest.create(useAttemptRunTest, testObjectInput);
 }
 
 export const test = assign(vestTest, {

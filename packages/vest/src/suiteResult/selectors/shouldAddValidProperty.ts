@@ -61,7 +61,10 @@ export function useShouldAddValidPropertyInGroup(
 // Does the given field have any pending tests that are not optional?
 function useHasNonOptionalIncomplete(fieldName?: TFieldName) {
   return TestWalker.someIncompleteTests(testObject => {
-    return useIsTestObjectOptional(testObject, fieldName);
+    if (nonMatchingFieldName(testObject, fieldName)) {
+      return false;
+    }
+    return !useIsTestObjectOptional(testObject, fieldName);
   });
 }
 

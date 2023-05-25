@@ -150,28 +150,62 @@ describe('optional hook', () => {
 
   describe('Optional test is async', () => {
     let suite: TTestSuite;
-    beforeEach(() => {
-      suite = vest.create(() => {
-        vest.optional('field_1');
-        vest.test('field_1', async () => {
-          await wait(100);
-          vest.enforce(1).equals(2);
+
+    describe('auto', () => {
+      beforeEach(() => {
+        suite = vest.create(() => {
+          vest.optional('field_1');
+          vest.test('field_1', async () => {
+            await wait(100);
+            vest.enforce(1).equals(2);
+          });
+        });
+      });
+      describe('Before the test completed', () => {
+        it('Should be considered as non-valid', () => {
+          const res = suite();
+          expect(res.isValid()).toBe(false);
+          expect(res.isValid('field_1')).toBe(false);
+        });
+      });
+      describe('After the test completed', () => {
+        it('Should be considered as non-valid', () => {
+          const res = suite();
+          jest.runAllTimers();
+          expect(res.isValid()).toBe(false);
+          expect(res.isValid('field_1')).toBe(false);
         });
       });
     });
-    describe('Before the test completed', () => {
-      it('Should be considered as valid', () => {
-        const res = suite();
-        expect(res.isValid()).toBe(true);
-        expect(res.isValid('field_1')).toBe(true);
+
+    describe('custom', () => {
+      beforeEach(() => {
+        suite = vest.create(() => {
+          vest.optional({
+            field_1: () => true,
+          });
+          vest.test('field_1', async () => {
+            await wait(100);
+            vest.enforce(1).equals(2);
+          });
+        });
       });
-    });
-    describe('After the test completed', () => {
-      it('Should be considered as valid', () => {
-        const res = suite();
-        jest.runAllTimers();
-        expect(res.isValid()).toBe(true);
-        expect(res.isValid('field_1')).toBe(true);
+
+      describe('Before the test completed', () => {
+        it('Should be considered as non-valid', () => {
+          const res = suite();
+          expect(res.isValid('field_1')).toBe(false);
+          expect(res.isValid()).toBe(false);
+        });
+      });
+
+      describe('After the test completed', () => {
+        it('Should be considered as valid', async () => {
+          suite();
+          await jest.runAllTimersAsync();
+          expect(suite.isValid()).toBe(true);
+          expect(suite.isValid('field_1')).toBe(true);
+        });
       });
     });
   });

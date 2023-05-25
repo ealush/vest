@@ -133,14 +133,14 @@ describe('isValid', () => {
       });
     });
 
-    describe('When test is pending', () => {
-      it('Should return true', () => {
+    describe('When a test is pending', () => {
+      it('Should return false', () => {
         suite();
-        expect(suite.get().isValid()).toBe(true);
-        expect(suite.get().isValid('field_1')).toBe(true);
+        expect(suite.get().isValid()).toBe(false);
+        expect(suite.get().isValid('field_1')).toBe(false);
       });
     });
-    describe('When test is passing', () => {
+    describe('When the test is passing', () => {
       it('Should return true', async () => {
         suite();
         await wait(300);

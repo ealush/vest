@@ -32,6 +32,9 @@ export function useOmitOptionalFields(): void {
 
   // iterate over each of the tests in the state
   TestWalker.walkTests(testObject => {
+    if (testObject.isPending()) {
+      return;
+    }
     // If we already added the current field (not this test specifically)
     // no need for further checks, go and omit the test
     if (hasOwnProperty(shouldOmit, testObject.fieldName)) {

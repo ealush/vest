@@ -53,6 +53,8 @@ export class Reconciler {
     const historyNode = useHistoryNode();
 
     if (!historyNode || !testIsolate) {
+      // This is probably unreachable, but TS is not convinced.
+      // Let's play it safe.
       return;
     }
 

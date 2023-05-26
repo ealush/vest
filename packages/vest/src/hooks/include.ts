@@ -10,6 +10,24 @@ import { useExclusion, useInclusion } from 'SuiteContext';
 import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { useCreateSuiteResult } from 'suiteResult';
 
+/**
+ * Conditionally includes a field for testing, based on specified criteria.
+ *
+ * @param {string} fieldName - The name of the field to include for testing.
+ *
+ * @example
+ * include('confirm').when('password');
+ * // Includes the "confirm" field for testing when the "password" field is included
+ *
+ * include('confirm').when(someValue);
+ * // Includes the "confirm" field for testing when the value of `someValue` is true
+ *
+ * include('confirm').when(() => someValue);
+ * // Includes the "confirm" field for testing when the callback function returns true
+ *
+ * include('username').when(result => result.hasErrors('username'));
+ * // Includes the "username" field for testing when there are errors associated with it in the current suite result
+ */
 // @vx-allow use-use
 export function include<F extends TFieldName, G extends TGroupName>(
   fieldName: F
@@ -31,6 +49,9 @@ export function include<F extends TFieldName, G extends TGroupName>(
 
   return { when };
 
+  /**
+   * Specifies the inclusion criteria for the field in `include` function.
+   */
   function when(
     condition:
       | F

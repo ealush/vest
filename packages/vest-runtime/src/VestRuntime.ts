@@ -1,7 +1,4 @@
-// import type { Events } from 'BusEvents';
 import { ErrorStrings } from 'ErrorStrings';
-
-// import type { IsolateSuite } from 'IsolateSuite';
 import { createCascade } from 'context';
 import {
   invariant,
@@ -9,20 +6,11 @@ import {
   isNullish,
   CB,
   assign,
-  BusType,
   TinyState,
   text,
 } from 'vest-utils';
 
 import { Isolate } from 'Isolate';
-
-// import {
-//   SuiteName,
-//   SuiteResult,
-//   TFieldName,
-//   TGroupName,
-// } from 'SuiteResultTypes';
-// import { useInitVestBus } from 'VestBus';
 
 type CTXType = StateType & {
   historyNode: Isolate | null;
@@ -32,12 +20,6 @@ type CTXType = StateType & {
 
 type StateType = {
   historyRoot: TinyState<Isolate | null>;
-  Bus: BusType;
-  // doneCallbacks: TinyState<DoneCallbacks>;
-  // fieldCallbacks: TinyState<FieldCallbacks>;
-  // suiteName: string | undefined;
-  // suiteId: string;
-  // suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName>>;
 };
 
 export const PersistedContext = createCascade<CTXType>(
@@ -65,7 +47,7 @@ export const PersistedContext = createCascade<CTXType>(
     return ctxRef;
   }
 );
-function persist<T extends CB>(cb: T): T {
+export function persist<T extends CB>(cb: T): T {
   const prev = PersistedContext.useX();
 
   return ((...args: Parameters<T>): ReturnType<T> => {
@@ -76,17 +58,7 @@ function persist<T extends CB>(cb: T): T {
 export function useX<T = object>(): CTXType & T {
   return PersistedContext.useX() as CTXType & T;
 }
-function useBus() {
-  return useX().Bus;
-}
 
-/*
-  Returns an emitter, but it also has a shortcut for emitting an event immediately
-  by passing an event name.
-*/
-export function useEmit() {
-  return persist(useBus().emit);
-}
 export function useHistoryRoot() {
   return useX().historyRoot();
 }
@@ -152,23 +124,3 @@ export function useAvailableSuiteRoot(): Isolate | null {
 
   return historyRoot as Isolate;
 }
-
-// export function useCreatestate({
-//   suiteName,
-// }: {
-//   suiteName?: SuiteName;
-// } = {}): StateType {
-//   const stateRef: StateType = {
-//     historyRoot: tinyState.createTinyState<Isolate | null>(null),
-//     //Bus: useInitVestBus(),
-//     // doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
-//     // fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
-//     // suiteId: seq(),
-//     // suiteName,
-//     // suiteResultCache,
-//   };
-
-//   return stateRef;
-// }
-
-// ------------------

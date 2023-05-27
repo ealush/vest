@@ -132,13 +132,13 @@
       "IsolateTest.test": ["./src/core/test/__tests__/IsolateTest.test.ts"],
       "walker": ["./src/core/isolate/walker.ts"],
       "Isolate": ["./src/core/isolate/Isolate.ts"],
+      "Reconciler": ["./src/core/isolate/Reconciler/Reconciler.ts"],
       "isSameProfileTest": [
-        "./src/core/isolate/reconciler/isSameProfileTest.ts"
+        "./src/core/isolate/IsolateTest/isSameProfileTest.ts"
       ],
       "cancelOverriddenPendingTest": [
-        "./src/core/isolate/reconciler/cancelOverriddenPendingTest.ts"
+        "./src/core/isolate/IsolateTest/cancelOverriddenPendingTest.ts"
       ],
-      "Reconciler": ["./src/core/isolate/reconciler/Reconciler/Reconciler.ts"],
       "TestWalker": ["./src/core/isolate/IsolateTest/TestWalker.ts"],
       "IsolateTestStateMachine": [
         "./src/core/isolate/IsolateTest/IsolateTestStateMachine.ts"

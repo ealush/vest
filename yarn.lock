@@ -14010,9 +14010,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"vest-isolate@workspace:packages/vest-isolate":
+"vest-runtime@^0.0.0, vest-runtime@workspace:packages/vest-runtime":
   version: 0.0.0-use.local
-  resolution: "vest-isolate@workspace:packages/vest-isolate"
+  resolution: "vest-runtime@workspace:packages/vest-runtime"
   dependencies:
     context: ^3.0.8
     vest-utils: ^0.2.0
@@ -14039,6 +14039,7 @@ __metadata:
     context: ^3.0.8
     n4s: ^4.3.0
     vast: ^1.0.14
+    vest-runtime: ^0.0.0
     vest-utils: ^0.2.0
   languageName: unknown
   linkType: soft

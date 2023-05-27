@@ -26,8 +26,25 @@ import { Isolate } from 'Isolate';
 // } from 'SuiteResultTypes';
 // import { useInitVestBus } from 'VestBus';
 
-export const PersistedContext = createCascade<CTXType>(
-  (vestState, parentContext) => {
+type CTXType<T> = StateType<T> & {
+  historyNode: Isolate | null;
+  runtimeNode: Isolate | null;
+  runtimeRoot: Isolate | null;
+};
+
+type StateType<T> = T & {
+  historyRoot: TinyState<Isolate | null>;
+  Bus: BusType;
+  // doneCallbacks: TinyState<DoneCallbacks>;
+  // fieldCallbacks: TinyState<FieldCallbacks>;
+  // suiteName: string | undefined;
+  // suiteId: string;
+  // suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName>>;
+};
+
+// eslint-disable-next-line max-lines-per-function, max-statements
+export class VestRuntime<T extends Record<string, any>> {
+  PersistedContext = createCascade<CTXType<T>>((vestState, parentContext) => {
     if (parentContext) {
       return null;
     }
@@ -36,7 +53,7 @@ export const PersistedContext = createCascade<CTXType>(
 
     const [historyRootNode] = vestState.historyRoot();
 
-    const ctxRef = {} as CTXType;
+    const ctxRef = {} as CTXType<T>;
 
     assign(
       ctxRef,
@@ -49,8 +66,94 @@ export const PersistedContext = createCascade<CTXType>(
     );
 
     return ctxRef;
+  });
+  persist<T extends CB>(cb: T): T {
+    const prev = this.PersistedContext.useX();
+
+    return ((...args: Parameters<T>): ReturnType<T> => {
+      const ctxToUse = this.PersistedContext.use() ?? prev;
+      return this.PersistedContext.run(ctxToUse, () => cb(...args));
+    }) as T;
   }
-);
+  useX(): CTXType<T> {
+    return this.PersistedContext.useX();
+  }
+  useBus() {
+    return this.useX().Bus;
+  }
+
+  /*
+  Returns an emitter, but it also has a shortcut for emitting an event immediately
+  by passing an event name.
+*/ useEmit() {
+    return this.persist(this.useBus().emit);
+  }
+  useHistoryRoot() {
+    return this.useX().historyRoot();
+  }
+  useHistoryNode() {
+    return this.useX().historyNode;
+  }
+  useSetHistory(history: Isolate) {
+    const context = this.PersistedContext.useX();
+
+    const [, setHistoryRoot] = context.historyRoot();
+    setHistoryRoot(history);
+  }
+  useHistoryKey(key?: string | null): Isolate | null {
+    if (isNullish(key)) {
+      return null;
+    }
+
+    const historyNode = this.useX().historyNode;
+
+    return historyNode?.keys[key] ?? null;
+  }
+  useIsolate() {
+    return this.useX().runtimeNode ?? null;
+  }
+  useCurrentCursor() {
+    return this.useIsolate()?.cursor() ?? 0;
+  }
+  useRuntimeRoot() {
+    return this.useX().runtimeRoot;
+  }
+  useSetNextIsolateChild(child: Isolate): void {
+    const currentIsolate = this.useIsolate();
+
+    invariant(currentIsolate, ErrorStrings.NO_ACTIVE_ISOLATE);
+
+    currentIsolate.addChild(child);
+  }
+  useSetIsolateKey(key: string | null, value: Isolate): void {
+    if (!key) {
+      return;
+    }
+
+    const currentIsolate = this.useIsolate();
+
+    invariant(currentIsolate, ErrorStrings.NO_ACTIVE_ISOLATE);
+
+    if (isNullish(currentIsolate.keys[key])) {
+      currentIsolate.keys[key] = value;
+
+      return;
+    }
+
+    deferThrow(text(ErrorStrings.ENCOUNTERED_THE_SAME_KEY_TWICE, { key }));
+  }
+  useAvailableSuiteRoot(): Isolate | null {
+    const root = this.useRuntimeRoot();
+
+    if (root) {
+      return root as Isolate;
+    }
+
+    const [historyRoot] = this.useHistoryRoot();
+
+    return historyRoot as Isolate;
+  }
+}
 
 // export function useCreateVestState({
 //   suiteName,
@@ -69,122 +172,6 @@ export const PersistedContext = createCascade<CTXType>(
 
 //   return stateRef;
 // }
-
-export function persist<T extends CB>(cb: T): T {
-  const prev = PersistedContext.useX();
-
-  return function persisted(...args: Parameters<T>): ReturnType<T> {
-    const ctxToUse = PersistedContext.use() ?? prev;
-    return PersistedContext.run(ctxToUse, () => cb(...args));
-  } as T;
-}
-
-type CTXType = StateType & {
-  historyNode: Isolate | null;
-  runtimeNode: Isolate | null;
-  runtimeRoot: Isolate | null;
-};
-
-type StateType = {
-  historyRoot: TinyState<Isolate | null>;
-  Bus: BusType;
-  // doneCallbacks: TinyState<DoneCallbacks>;
-  // fieldCallbacks: TinyState<FieldCallbacks>;
-  // suiteName: string | undefined;
-  // suiteId: string;
-  // suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName>>;
-};
-
-function useX(): CTXType {
-  return PersistedContext.useX();
-}
-
-export function useBus() {
-  return useX().Bus;
-}
-
-/*
-  Returns an emitter, but it also has a shortcut for emitting an event immediately
-  by passing an event name.
-*/
-export function useEmit() {
-  return persist(useBus().emit);
-}
-
-export function useHistoryRoot() {
-  return useX().historyRoot();
-}
-
-export function useHistoryNode() {
-  return useX().historyNode;
-}
-
-export function useSetHistory(history: Isolate) {
-  const context = PersistedContext.useX();
-
-  const [, setHistoryRoot] = context.historyRoot();
-  setHistoryRoot(history);
-}
-
-export function useHistoryKey(key?: string | null): Isolate | null {
-  if (isNullish(key)) {
-    return null;
-  }
-
-  const historyNode = useX().historyNode;
-
-  return historyNode?.keys[key] ?? null;
-}
-
-export function useIsolate() {
-  return useX().runtimeNode ?? null;
-}
-
-export function useCurrentCursor() {
-  return useIsolate()?.cursor() ?? 0;
-}
-
-export function useRuntimeRoot() {
-  return useX().runtimeRoot;
-}
-
-export function useSetNextIsolateChild(child: Isolate): void {
-  const currentIsolate = useIsolate();
-
-  invariant(currentIsolate, ErrorStrings.NO_ACTIVE_ISOLATE);
-
-  currentIsolate.addChild(child);
-}
-
-export function useSetIsolateKey(key: string | null, value: Isolate): void {
-  if (!key) {
-    return;
-  }
-
-  const currentIsolate = useIsolate();
-
-  invariant(currentIsolate, ErrorStrings.NO_ACTIVE_ISOLATE);
-
-  if (isNullish(currentIsolate.keys[key])) {
-    currentIsolate.keys[key] = value;
-
-    return;
-  }
-
-  deferThrow(text(ErrorStrings.ENCOUNTERED_THE_SAME_KEY_TWICE, { key }));
-}
-
-export function useAvailableSuiteRoot(): Isolate | null {
-  const root = useRuntimeRoot();
-
-  if (root) {
-    return root as Isolate;
-  }
-
-  const [historyRoot] = useHistoryRoot();
-
-  return historyRoot as Isolate;
-}
 
 // ------------------
 

@@ -1,5 +1,5 @@
 import { BaseReconciler, IRecociler, Reconciler } from 'Reconciler';
-import { VestRuntime } from 'VestRuntime';
+import * as VestRuntime from 'VestRuntime';
 import { CB, invariant, isNotNullish, isNullish } from 'vest-utils';
 import { closest, closestExists } from 'walker';
 
@@ -81,7 +81,7 @@ export class Isolate<_D = any> {
     callback: Callback,
     data?: any
   ): Isolate {
-    const parent = useIsolate();
+    const parent = VestRuntime.useIsolate();
 
     const newCreatedNode = new this(data).setParent(parent);
 
@@ -99,11 +99,11 @@ export class Isolate<_D = any> {
   }
 
   static setNode(node: Isolate): void {
-    const parent = useIsolate();
+    const parent = VestRuntime.useIsolate();
     if (parent) {
-      useSetNextIsolateChild(node);
+      VestRuntime.useSetNextIsolateChild(node);
     } else {
-      useSetHistory(node);
+      VestRuntime.useSetHistory(node);
     }
 
     node.setParent(parent);

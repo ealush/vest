@@ -73,8 +73,8 @@ function persist<T extends CB>(cb: T): T {
     return PersistedContext.run(ctxToUse, () => cb(...args));
   }) as T;
 }
-function useX(): CTXType {
-  return PersistedContext.useX();
+export function useX<T = object>(): CTXType & T {
+  return PersistedContext.useX() as CTXType & T;
 }
 function useBus() {
   return useX().Bus;
@@ -94,7 +94,7 @@ export function useHistoryNode() {
   return useX().historyNode;
 }
 export function useSetHistory(history: Isolate) {
-  const context = PersistedContext.useX();
+  const context = useX();
 
   const [, setHistoryRoot] = context.historyRoot();
   setHistoryRoot(history);
@@ -172,60 +172,3 @@ export function useSetIsolateKey(key: string | null, value: Isolate): void {
 // }
 
 // ------------------
-
-// const suiteResultCache = cache<SuiteResult<TFieldName, TGroupName>>();
-
-// type FieldCallbacks = Record<string, DoneCallbacks>;
-// type DoneCallbacks = Array<DoneCallback>;
-
-// export function usePrepareEmitter<T = void>(event: Events): (arg: T) => void {
-//   const emit = useEmit();
-
-//   return (arg: T) => emit(event, arg);
-// }
-
-// export type DoneCallback = (res: SuiteResult<TFieldName, TGroupName>) => void;
-
-// export function useDoneCallbacks() {
-//   return useX().doneCallbacks();
-// }
-
-// export function useFieldCallbacks() {
-//   return useX().fieldCallbacks();
-// }
-
-// export function useSuiteName() {
-//   return useX().suiteName;
-// }
-
-// export function useSuiteId() {
-//   return useX().suiteId;
-// }
-
-// export function useSuiteResultCache<F extends TFieldName, G extends TGroupName>(
-//   action: () => SuiteResult<F, G>
-// ): SuiteResult<F, G> {
-//   const suiteResultCache = useX().suiteResultCache;
-
-//   return suiteResultCache([useSuiteId()], action) as SuiteResult<F, G>;
-// }
-
-// export function useExpireSuiteResultCache() {
-//   const suiteResultCache = useX().suiteResultCache;
-//   suiteResultCache.invalidate([useSuiteId()]);
-// }
-
-// export function useResetCallbacks() {
-//   const [, , resetDoneCallbacks] = useDoneCallbacks();
-//   const [, , resetFieldCallbacks] = useFieldCallbacks();
-
-//   resetDoneCallbacks();
-//   resetFieldCallbacks();
-// }
-
-// export function useResetSuite() {
-//   useResetCallbacks();
-//   const [, , resetHistoryRoot] = useHistoryRoot();
-
-//   resetHistoryRoot();
-// }

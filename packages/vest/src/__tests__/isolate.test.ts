@@ -266,7 +266,7 @@ describe('isolate', () => {
         );
       });
 
-      it('Should allow unordered tests when allowReorder is set to true', () => {
+      it.only('Should allow unordered tests when allowReorder is set to true', () => {
         class DIsolate extends Isolate {
           allowReorder = true;
         }

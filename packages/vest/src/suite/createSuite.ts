@@ -1,14 +1,9 @@
+import { VestRuntime } from 'vest-runtime';
 import { assign, CB } from 'vest-utils';
 
 import { Events } from 'BusEvents';
 import { IsolateSuite } from 'IsolateSuite';
-import {
-  useCreateVestState,
-  persist,
-  PersistedContext,
-  usePrepareEmitter,
-  useEmit,
-} from 'PersistedContext';
+import { useCreateVestState, useEmit, usePrepareEmitter } from 'Runtime';
 import { SuiteContext } from 'SuiteContext';
 import {
   SuiteName,
@@ -65,17 +60,19 @@ function createSuite<
   // Assign methods to the suite
   // We do this within the PersistedContext so that the suite methods
   // will be bound to the suite's stateRef and be able to access it.
-  return PersistedContext.run(stateRef, () => {
+  // @ts-ignore - TODO: FIXME:
+  return VestRuntime.PersistedContext.run(stateRef, () => {
     return assign(
       // We're also binding the suite to the stateRef, so that the suite
       // can access the stateRef when it's called.
-      PersistedContext.bind(stateRef, suite),
+      // @ts-ignore - TODO: FIXME:
+      VestRuntime.PersistedContext.bind(stateRef, suite),
       {
-        get: persist(useCreateSuiteResult),
+        get: VestRuntime.persist(useCreateSuiteResult),
         remove: usePrepareEmitter<string>(Events.REMOVE_FIELD),
         reset: usePrepareEmitter(Events.RESET_SUITE),
         resetField: usePrepareEmitter<string>(Events.RESET_FIELD),
-        ...bindSuiteSelectors<F, G>(persist(useCreateSuiteResult)),
+        ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
         ...getTypedMethods<F, G>(),
       }
     );

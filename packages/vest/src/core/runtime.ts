@@ -31,7 +31,7 @@ type StateExtra = {
 };
 const suiteResultCache = cache<SuiteResult<TFieldName, TGroupName>>();
 
-export function useCreatestate({
+export function useCreateVestState({
   suiteName,
 }: {
   suiteName?: SuiteName;
@@ -48,7 +48,7 @@ export function useCreatestate({
   return stateRef;
 }
 
-function useBus() {
+export function useBus() {
   return useX().Bus;
 }
 

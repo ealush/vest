@@ -1,8 +1,6 @@
-import * as walker from 'walker';
+import { walker, Isolate, VestRuntime } from 'vest-runtime';
 
-import { Isolate } from 'Isolate';
 import { IsolateTest } from 'IsolateTest';
-import { useAvailableSuiteRoot } from 'PersistedContext';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import matchingFieldName from 'matchingFieldName';
 
@@ -10,7 +8,7 @@ type MaybeRoot = Isolate | null;
 
 export class TestWalker {
   static defaultRoot() {
-    return useAvailableSuiteRoot();
+    return VestRuntime.useAvailableRoot();
   }
 
   static hasNoTests(root: MaybeRoot = TestWalker.defaultRoot()): boolean {

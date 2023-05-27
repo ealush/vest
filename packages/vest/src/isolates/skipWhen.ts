@@ -1,6 +1,6 @@
 import { CB, optionalFunctionValue } from 'vest-utils';
 
-import { Isolate } from 'Isolate';
+import { Isolate } from 'vest-runtime';
 import { SuiteContext, useSkipped } from 'SuiteContext';
 import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { useCreateSuiteResult } from 'suiteResult';

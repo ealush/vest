@@ -1,9 +1,9 @@
+import { Reconciler } from 'vest-runtime';
+import type { Isolate } from 'vest-runtime';
 import { deferThrow, isNullish, text } from 'vest-utils';
 
 import { ErrorStrings } from 'ErrorStrings';
-import type { Isolate } from 'Isolate';
 import { IsolateTest } from 'IsolateTest';
-import { Reconciler } from 'Reconciler';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isSameProfileTest } from 'isSameProfileTest';
 import { useVerifyTestRun } from 'verifyTestRun';

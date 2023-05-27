@@ -1,8 +1,9 @@
 import { useIsOptionalFiedApplied } from 'optional';
+import { VestRuntime } from 'vest-runtime';
 
+import type { IsolateSuite } from 'IsolateSuite';
 import { IsolateTest } from 'IsolateTest';
 import { OptionalFieldTypes } from 'OptionalTypes';
-import { useAvailableSuiteRoot } from 'PersistedContext';
 import { Severity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
@@ -138,7 +139,8 @@ function useOptionalTestAwaitsResolution(testObject: IsolateTest): boolean {
   // and the test itself is still in an indeterminate state?
 
   return (
-    useAvailableSuiteRoot()?.getOptionalField(testObject.fieldName).type ===
-      OptionalFieldTypes.AUTO && testObject.awaitsResolution()
+    VestRuntime.useAvailableRoot<IsolateSuite>()?.getOptionalField(
+      testObject.fieldName
+    ).type === OptionalFieldTypes.AUTO && testObject.awaitsResolution()
   );
 }

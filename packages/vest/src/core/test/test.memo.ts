@@ -1,7 +1,8 @@
+import { VestRuntime } from 'vest-runtime';
 import { isNull } from 'vest-utils';
 
 import { IsolateTest } from 'IsolateTest';
-import { useCurrentCursor, useSuiteId } from 'PersistedContext';
+import * as Runtime from 'Runtime';
 import { useTestMemoCache } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
@@ -27,9 +28,11 @@ export function wrapTestMemo<FN extends TFieldName>(test: VTest): TestMemo<FN> {
     const [deps, testFn, msg] = args.reverse() as [any[], TestFn, string];
 
     // Implicit dependency for better specificity
-    const dependencies = [useSuiteId(), fieldName, useCurrentCursor()].concat(
-      deps
-    );
+    const dependencies = [
+      Runtime.useSuiteId(),
+      fieldName,
+      VestRuntime.useCurrentCursor(),
+    ].concat(deps);
 
     return useGetTestFromCache(dependencies, cacheAction);
 

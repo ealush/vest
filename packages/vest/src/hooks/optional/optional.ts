@@ -1,15 +1,15 @@
+import { VestRuntime } from 'vest-runtime';
 import { isArray, isStringValue, asArray } from 'vest-utils';
 
 import type { IsolateSuite } from 'IsolateSuite';
 import { OptionalFieldTypes, OptionalsInput } from 'OptionalTypes';
-import { useAvailableSuiteRoot, useRuntimeRoot } from 'PersistedContext';
 import { TFieldName } from 'SuiteResultTypes';
 
 // @vx-allow use-use
 export function optional<F extends TFieldName>(
   optionals: OptionalsInput<F>
 ): void {
-  const suiteRoot = useRuntimeRoot() as IsolateSuite;
+  const suiteRoot = VestRuntime.useRuntimeRoot() as IsolateSuite;
 
   // There are two types of optional field declarations:
 
@@ -48,5 +48,8 @@ export function useIsOptionalFiedApplied(fieldName?: TFieldName) {
     return false;
   }
 
-  return useAvailableSuiteRoot()?.getOptionalField(fieldName)?.applied ?? false;
+  return (
+    VestRuntime.useAvailableRoot<IsolateSuite>()?.getOptionalField(fieldName)
+      ?.applied ?? false
+  );
 }

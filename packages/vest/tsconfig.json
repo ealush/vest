@@ -104,7 +104,7 @@
       "parser.test": ["./src/exports/__tests__/parser.test.ts"],
       "classnames.test": ["./src/exports/__tests__/classnames.test.ts"],
       "ErrorStrings": ["./src/errors/ErrorStrings.ts"],
-      "runtime": ["./src/core/runtime.ts"],
+      "Runtime": ["./src/core/Runtime.ts"],
       "test": ["./src/core/test/test.ts"],
       "test.memo": ["./src/core/test/test.memo.ts"],
       "TestTypes": ["./src/core/test/TestTypes.ts"],

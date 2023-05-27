@@ -6,7 +6,7 @@ import {
   useExpireSuiteResultCache,
   useResetCallbacks,
   useResetSuite,
-} from 'PersistedContext';
+} from 'Runtime';
 import { TFieldName } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
 import { useOmitOptionalFields } from 'omitOptionalFields';

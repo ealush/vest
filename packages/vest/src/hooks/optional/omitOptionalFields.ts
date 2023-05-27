@@ -1,3 +1,4 @@
+import { VestRuntime } from 'vest-runtime';
 import {
   isEmpty,
   hasOwnProperty,
@@ -6,8 +7,9 @@ import {
 } from 'vest-utils';
 
 import { Events } from 'BusEvents';
+import type { IsolateSuite } from 'IsolateSuite';
 import { IsolateTest } from 'IsolateTest';
-import { useAvailableSuiteRoot, useEmit } from 'PersistedContext';
+import { useEmit } from 'Runtime';
 import { TestWalker } from 'TestWalker';
 
 /**
@@ -17,7 +19,7 @@ import { TestWalker } from 'TestWalker';
  */
 
 export function useOmitOptionalFields(): void {
-  const root = useAvailableSuiteRoot();
+  const root = VestRuntime.useAvailableRoot<IsolateSuite>();
   const emit = useEmit();
 
   const optionalFields = root?.getOptionalFields();

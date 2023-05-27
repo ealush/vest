@@ -8,91 +8,97 @@ import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isSameProfileTest } from 'isSameProfileTest';
 import { useVerifyTestRun } from 'verifyTestRun';
 
-export class IsolateTestReconciler extends Reconciler {
-  // eslint-disable-next-line max-statements
-  static reconciler(
-    currentNode: Isolate,
-    historyNode: Isolate | null
-  ): Isolate {
-    // Start by verifying params
-    if (!IsolateTest.is(currentNode)) {
-      return currentNode;
-    }
-
-    if (isNullish(historyNode)) {
-      return this.handleNoHistoryNode(currentNode);
-    }
-
-    if (!IsolateTest.is(historyNode)) {
-      return currentNode;
-    }
-
-    const reconcilerOutput = this.pickNode(historyNode, currentNode);
-
-    cancelOverriddenPendingTestOnTestReRun(
-      reconcilerOutput,
-      currentNode,
-      historyNode
-    );
-
-    return reconcilerOutput;
+// @vx-allow use-use
+export function IsolateTestReconciler(
+  currentNode: Isolate,
+  historyNode: Isolate | null
+): Isolate {
+  // Start by verifying params
+  if (!IsolateTest.is(currentNode)) {
+    // This is unreachable, since this function should only be called with IsolateTest nodes
+    return currentNode;
   }
 
-  static nodeReorderDetected(
-    newNode: IsolateTest,
-    prevNode?: Isolate
-  ): boolean {
-    return !!IsolateTest.is(prevNode) && !isSameProfileTest(prevNode, newNode);
+  if (isNullish(historyNode)) {
+    return handleNoHistoryNode(currentNode);
   }
 
-  static handleCollision(
-    newNode: IsolateTest,
-    prevNode?: Isolate
-  ): IsolateTest {
-    if (newNode.usesKey()) {
-      return IsolateTest.cast(this.handleIsolateNodeWithKey(newNode));
-    }
-
-    if (this.nodeReorderDetected(newNode, prevNode)) {
-      return this.onNodeReorder(newNode, prevNode);
-    }
-
-    if (!IsolateTest.is(prevNode)) {
-      return newNode;
-    }
-
-    // FIXME: May-13-2023
-    // This may not be the most ideal solution.
-    // In short: if the node was omitted in the previous run,
-    // we want to re-evaluate it. The reason is that we may incorrectly
-    // identify it is "optional" because it was omitted in the previous run.
-    // There may be a better way to handle this. Need to revisit this.
-    if (prevNode.isOmitted()) {
-      return newNode;
-    }
-
-    return prevNode;
+  if (!IsolateTest.is(historyNode)) {
+    return currentNode;
   }
 
-  static onNodeReorder(newNode: IsolateTest, prevNode?: Isolate): IsolateTest {
-    throwTestOrderError(newNode, prevNode);
-    this.removeAllNextNodesInIsolate();
+  const reconcilerOutput = usePickNode(historyNode, currentNode);
+
+  cancelOverriddenPendingTestOnTestReRun(
+    reconcilerOutput,
+    currentNode,
+    historyNode
+  );
+
+  return reconcilerOutput;
+}
+
+// eslint-disable-next-line max-statements
+
+function nodeReorderDetected(
+  newNode: IsolateTest,
+  prevNode?: Isolate
+): boolean {
+  return !!IsolateTest.is(prevNode) && !isSameProfileTest(prevNode, newNode);
+}
+
+function handleCollision(
+  newNode: IsolateTest,
+  prevNode?: Isolate
+): IsolateTest {
+  if (newNode.usesKey()) {
+    return IsolateTest.cast(Reconciler.handleIsolateNodeWithKey(newNode));
+  }
+
+  if (nodeReorderDetected(newNode, prevNode)) {
+    return onNodeReorder(newNode, prevNode);
+  }
+
+  if (!IsolateTest.is(prevNode)) {
+    // I believe we cannot actually reach this point.
+    // Because it should already be handled by nodeReorderDetected.
     return newNode;
   }
 
-  static pickNode(historyNode: IsolateTest, currentNode: IsolateTest): Isolate {
-    const collisionResult = this.handleCollision(currentNode, historyNode);
-
-    return useVerifyTestRun(currentNode, collisionResult);
+  // FIXME: May-13-2023
+  // This may not be the most ideal solution.
+  // In short: if the node was omitted in the previous run,
+  // we want to re-evaluate it. The reason is that we may incorrectly
+  // identify it is "optional" because it was omitted in the previous run.
+  // There may be a better way to handle this. Need to revisit this.
+  if (prevNode.isOmitted()) {
+    return newNode;
   }
 
-  static handleNoHistoryNode(testNode: IsolateTest): IsolateTest {
-    if (testNode.usesKey()) {
-      return IsolateTest.cast(this.handleIsolateNodeWithKey(testNode));
-    }
+  return prevNode;
+}
 
-    return testNode;
+function onNodeReorder(newNode: IsolateTest, prevNode?: Isolate): IsolateTest {
+  throwTestOrderError(newNode, prevNode);
+  Reconciler.removeAllNextNodesInIsolate();
+  return newNode;
+}
+
+function usePickNode(
+  historyNode: IsolateTest,
+  currentNode: IsolateTest
+): Isolate {
+  const collisionResult = handleCollision(currentNode, historyNode);
+
+  return useVerifyTestRun(currentNode, collisionResult);
+}
+
+function handleNoHistoryNode(testNode: IsolateTest): IsolateTest {
+  if (testNode.usesKey()) {
+    return IsolateTest.cast(Reconciler.handleIsolateNodeWithKey(testNode));
   }
+
+  return testNode;
 }
 
 function cancelOverriddenPendingTestOnTestReRun(

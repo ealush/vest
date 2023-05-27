@@ -6,7 +6,7 @@ import {
   useSetHistory,
   useIsolate,
 } from 'PersistedContext';
-import { Reconciler } from 'Reconciler';
+import { BaseReconciler, IRecociler, Reconciler } from 'Reconciler';
 
 export type IsolateKey = null | string;
 
@@ -17,7 +17,7 @@ export class Isolate<_D = any> {
   output?: any;
   key: IsolateKey = null;
   allowReorder = false;
-  static reconciler = Reconciler;
+  static reconciler: IRecociler = BaseReconciler;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
   constructor(_data?: _D) {}
@@ -90,7 +90,8 @@ export class Isolate<_D = any> {
 
     const newCreatedNode = new this(data).setParent(parent);
 
-    const [nextIsolateChild, output] = this.reconciler.reconcile(
+    const [nextIsolateChild, output] = Reconciler.reconcile(
+      this.reconciler,
       newCreatedNode,
       callback
     );

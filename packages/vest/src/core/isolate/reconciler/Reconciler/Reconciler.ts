@@ -11,18 +11,23 @@ import {
   useRuntimeRoot,
 } from 'PersistedContext';
 
-export class Reconciler {
-  static reconciler(
-    currentNode: Isolate,
-    historicNode: Isolate | null
-  ): Isolate {
-    if (isNullish(historicNode)) {
-      return currentNode;
-    }
+export interface IRecociler {
+  (currentNode: Isolate, historicNode: Isolate | null): Isolate;
+}
+
+export function BaseReconciler(
+  currentNode: Isolate,
+  historicNode: Isolate | null
+): Isolate {
+  if (isNullish(historicNode)) {
     return currentNode;
   }
+  return currentNode;
+}
 
+export class Reconciler {
   static reconcile<Callback extends CB = CB>(
+    reconciler: IRecociler,
     node: Isolate,
     callback: Callback
   ): [Isolate, ReturnType<Callback>] {
@@ -37,7 +42,7 @@ export class Reconciler {
       localHistoryNode = historyNode?.at(useCurrentCursor()) ?? null;
     }
 
-    const nextNode = this.reconciler(node, localHistoryNode);
+    const nextNode = reconciler(node, localHistoryNode);
 
     invariant(nextNode);
 
@@ -59,30 +64,6 @@ export class Reconciler {
     }
 
     historyNode.slice(useCurrentCursor());
-  }
-
-  static handleCollision(newNode: Isolate, prevNode: Isolate): Isolate {
-    // we should base our calculation on the key property
-    if (newNode.usesKey()) {
-      return this.handleIsolateNodeWithKey(newNode);
-    }
-
-    if (this.nodeReorderDetected(newNode, prevNode)) {
-      this.onNodeReorder(newNode, prevNode);
-    }
-
-    return prevNode ? prevNode : newNode;
-  }
-
-  static nodeReorderDetected(newNode: Isolate, prevNode: Isolate): boolean {
-    // This is a dummy return just to satisfy the linter. Overrides will supply the real implementation.
-    return !(newNode ?? prevNode);
-  }
-
-  static onNodeReorder(newNode: Isolate, prevNode: Isolate): Isolate {
-    this.removeAllNextNodesInIsolate();
-    // This is a dummy return just to satisfy the linter. Overrides will supply the real implementation.
-    return newNode ?? prevNode;
   }
 
   static handleIsolateNodeWithKey(node: Isolate): Isolate {

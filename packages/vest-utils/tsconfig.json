@@ -43,6 +43,7 @@
       "bindNot": ["./src/bindNot.ts"],
       "assign": ["./src/assign.ts"],
       "asArray": ["./src/asArray.ts"],
+      "SimpleStateMachine": ["./src/SimpleStateMachine.ts"],
       "tinyState.test": ["./src/__tests__/tinyState.test.ts"],
       "text.test": ["./src/__tests__/text.test.ts"],
       "seq.test": ["./src/__tests__/seq.test.ts"],
@@ -63,7 +64,8 @@
       "defaultTo.test": ["./src/__tests__/defaultTo.test.ts"],
       "cache.test": ["./src/__tests__/cache.test.ts"],
       "bus.test": ["./src/__tests__/bus.test.ts"],
-      "bindNot.test": ["./src/__tests__/bindNot.test.ts"]
+      "bindNot.test": ["./src/__tests__/bindNot.test.ts"],
+      "SimpleStateMachine.test": ["./src/__tests__/SimpleStateMachine.test.ts"]
     }
   }
 }

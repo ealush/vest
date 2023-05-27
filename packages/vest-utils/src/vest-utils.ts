@@ -32,6 +32,7 @@ export { isArray, isNotArray } from 'isArrayValue';
 export { isEmpty, isNotEmpty } from 'isEmpty';
 export { isPositive } from 'isPositive';
 export { text } from 'text';
+export { TStateMachine, StateMachine } from 'SimpleStateMachine';
 export * as tinyState from 'tinyState';
 
 export type { DropFirst } from 'utilityTypes';

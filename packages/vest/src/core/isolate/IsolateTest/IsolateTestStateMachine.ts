@@ -1,4 +1,4 @@
-import { StateMachine, TStateMachine } from 'SimpleStateMachine';
+import { StateMachine, TStateMachine } from 'vest-utils';
 
 export enum TestStatus {
   UNTESTED = 'UNTESTED',

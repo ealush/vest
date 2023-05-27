@@ -1,6 +1,5 @@
-import { isNullish, optionalFunctionValue } from 'vest-utils';
-
 import type { Isolate } from 'Isolate';
+import { isNullish, optionalFunctionValue } from 'vest-utils';
 
 export type VisitOnlyPredicate = (isolate: Isolate) => boolean;
 

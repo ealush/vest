@@ -130,9 +130,6 @@
       "memo.test": ["./src/core/test/__tests__/memo.test.ts"],
       "key.test": ["./src/core/test/__tests__/key.test.ts"],
       "IsolateTest.test": ["./src/core/test/__tests__/IsolateTest.test.ts"],
-      "walker": ["./src/core/isolate/walker.ts"],
-      "Isolate": ["./src/core/isolate/Isolate.ts"],
-      "Reconciler": ["./src/core/isolate/Reconciler/Reconciler.ts"],
       "isSameProfileTest": [
         "./src/core/isolate/IsolateTest/isSameProfileTest.ts"
       ],

@@ -7,7 +7,9 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "vest-isolate": ["./src/vest-isolate.ts"]
+      "walker": ["./src/walker.ts"],
+      "vest-isolate": ["./src/vest-isolate.ts"],
+      "Reconciler": ["./src/Reconciler/Reconciler.ts"]
     }
   }
 }

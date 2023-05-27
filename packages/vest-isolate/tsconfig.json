@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "rootDir": ".",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declarationDir": "./types",
+    "declarationMap": true,
+    "outDir": "./dist",
+    "paths": {
+      "vest-isolate": ["./src/vest-isolate.ts"]
+    }
+  }
+}

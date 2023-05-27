@@ -14010,6 +14010,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"vest-isolate@workspace:packages/vest-isolate":
+  version: 0.0.0-use.local
+  resolution: "vest-isolate@workspace:packages/vest-isolate"
+  languageName: unknown
+  linkType: soft
+
 "vest-utils@^0.2.0, vest-utils@workspace:packages/vest-utils":
   version: 0.0.0-use.local
   resolution: "vest-utils@workspace:packages/vest-utils"

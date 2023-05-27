@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.json",
+  "rootDir": ".",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declarationDir": "./types",
+    "declarationMap": true,
+    "outDir": "./dist",
+    "paths": {
+      "walker": ["./src/walker.ts"],
+      "vest-runtime": ["./src/vest-runtime.ts"],
+      "Reconciler": ["./src/Reconciler.ts"],
+      "PersistedContext": ["./src/PersistedContext.ts"],
+      "Isolate": ["./src/Isolate.ts"],
+      "ErrorStrings": ["./src/errors/ErrorStrings.ts"]
+    }
+  }
+}

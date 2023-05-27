@@ -15,7 +15,6 @@ type StateExtra = {
   suiteId: string;
   suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName>>;
 };
-
 const suiteResultCache = cache<SuiteResult<TFieldName, TGroupName>>();
 
 export function usePrepareEmitter<T = void>(event: Events): (arg: T) => void {

@@ -141,17 +141,17 @@ export function useSetIsolateKey(key: string | null, value: Isolate): void {
 
   deferThrow(text(ErrorStrings.ENCOUNTERED_THE_SAME_KEY_TWICE, { key }));
 }
-// function useAvailableSuiteRoot(): Isolate | null {
-//   const root = useRuntimeRoot();
+export function useAvailableSuiteRoot(): Isolate | null {
+  const root = useRuntimeRoot();
 
-//   if (root) {
-//     return root as Isolate;
-//   }
+  if (root) {
+    return root as Isolate;
+  }
 
-//   const [historyRoot] = useHistoryRoot();
+  const [historyRoot] = useHistoryRoot();
 
-//   return historyRoot as Isolate;
-// }
+  return historyRoot as Isolate;
+}
 
 // export function useCreatestate({
 //   suiteName,

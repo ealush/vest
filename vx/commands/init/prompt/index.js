@@ -72,10 +72,12 @@ function scaffold(config) {
   writeEntryPoint(packagePath, config.name);
   updateValues(packagePath, config);
 
-  exec(['yarn', 'build', '-p', config.name]);
+  exec(['yarn']);
+  exec(['yarn', 'vx build', '-p', config.name]);
 }
 
 function writeEntryPoint(packagePath, packageName) {
+  fsExtra.ensureFileSync(vxPath.packageSrc(packageName, `${packageName}.ts`));
   fsExtra.writeFileSync(
     vxPath.packageSrc(packageName, `${packageName}.ts`),
     `export const main = () => "${packageName}";`,

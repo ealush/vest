@@ -9,7 +9,8 @@
     "paths": {
       "walker": ["./src/walker.ts"],
       "vest-isolate": ["./src/vest-isolate.ts"],
-      "Reconciler": ["./src/Reconciler/Reconciler.ts"]
+      "Reconciler": ["./src/Reconciler.ts"],
+      "Isolate": ["./src/Isolate.ts"]
     }
   }
 }

@@ -150,7 +150,6 @@
       "IsolateSuite": ["./src/core/isolate/IsolateSuite/IsolateSuite.ts"],
       "IsolateEach": ["./src/core/isolate/IsolateEach/IsolateEach.ts"],
       "SuiteContext": ["./src/core/context/SuiteContext.ts"],
-      "PersistedContext": ["./src/core/context/PersistedContext.ts"],
       "VestBus": ["./src/core/VestBus/VestBus.ts"],
       "BusEvents": ["./src/core/VestBus/BusEvents.ts"],
       "state_refill.test": ["./src/__tests__/state_refill.test.ts"],

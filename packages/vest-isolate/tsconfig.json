@@ -9,8 +9,11 @@
     "paths": {
       "walker": ["./src/walker.ts"],
       "vest-isolate": ["./src/vest-isolate.ts"],
+      "runtime": ["./src/runtime.ts"],
       "Reconciler": ["./src/Reconciler.ts"],
-      "Isolate": ["./src/Isolate.ts"]
+      "PersistedContext": ["./src/PersistedContext.ts"],
+      "Isolate": ["./src/Isolate.ts"],
+      "ErrorStrings": ["./src/errors/ErrorStrings.ts"]
     }
   }
 }

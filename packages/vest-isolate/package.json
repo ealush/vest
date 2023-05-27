@@ -18,6 +18,10 @@
   "bugs": {
     "url": "https://github.com/ealush/vest.git/issues"
   },
+  "dependencies": {
+    "context": "^3.0.8",
+    "vest-utils": "^0.2.0"
+  },
   "exports": {
     ".": {
       "development": {

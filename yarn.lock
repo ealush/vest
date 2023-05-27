@@ -14013,6 +14013,9 @@ __metadata:
 "vest-isolate@workspace:packages/vest-isolate":
   version: 0.0.0-use.local
   resolution: "vest-isolate@workspace:packages/vest-isolate"
+  dependencies:
+    context: ^3.0.8
+    vest-utils: ^0.2.0
   languageName: unknown
   linkType: soft
 

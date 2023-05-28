@@ -27,27 +27,23 @@ type StateRefType = {
 };
 
 export const PersistedContext = createCascade<CTXType>(
-  (state, parentContext) => {
+  (stateRef, parentContext) => {
     if (parentContext) {
       return null;
     }
 
-    invariant(state.historyRoot);
+    invariant(stateRef.historyRoot);
 
-    const [historyRootNode] = state.historyRoot();
+    const [historyRootNode] = stateRef.historyRoot();
 
     const ctxRef = {} as CTXType;
 
-    assign(
-      ctxRef,
-      {
-        historyNode: historyRootNode,
-        runtimeNode: null,
-        runtimeRoot: null,
-        stateRef: state,
-      },
-      state
-    );
+    assign(ctxRef, {
+      historyNode: historyRootNode,
+      runtimeNode: null,
+      runtimeRoot: null,
+      stateRef,
+    });
 
     return ctxRef;
   }
@@ -79,15 +75,13 @@ export function useX<T = object>(): CTXType & T {
 }
 
 export function useHistoryRoot() {
-  return useX().historyRoot();
+  return useX().stateRef.historyRoot();
 }
 export function useHistoryNode() {
   return useX().historyNode;
 }
 export function useSetHistory(history: Isolate) {
-  const context = useX();
-
-  const [, setHistoryRoot] = context.historyRoot();
+  const [, setHistoryRoot] = useHistoryRoot();
   setHistoryRoot(history);
 }
 export function useHistoryKey(key?: string | null): Isolate | null {

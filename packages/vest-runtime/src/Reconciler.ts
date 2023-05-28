@@ -85,7 +85,7 @@ function useRunAsNew<Callback extends CB = CB>(
 
   // We're creating a new child isolate context where the local history node
   // is the current history node, thus advancing the history cursor.
-  const output = VestRuntime.PersistedContext.run(
+  const output = VestRuntime.Run(
     {
       historyNode: localHistoryNode,
       runtimeNode: current,

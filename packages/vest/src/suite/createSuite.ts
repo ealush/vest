@@ -58,13 +58,13 @@ function createSuite<
   }
 
   // Assign methods to the suite
-  // We do this within the PersistedContext so that the suite methods
+  // We do this within the VestRuntime so that the suite methods
   // will be bound to the suite's stateRef and be able to access it.
-  return VestRuntime.PersistedContext.run(stateRef, () => {
+  return VestRuntime.Run(stateRef, () => {
     return assign(
       // We're also binding the suite to the stateRef, so that the suite
       // can access the stateRef when it's called.
-      VestRuntime.PersistedContext.bind(stateRef, suite),
+      VestRuntime.persist(suite),
       {
         get: VestRuntime.persist(useCreateSuiteResult),
         remove: usePrepareEmitter<string>(Events.REMOVE_FIELD),

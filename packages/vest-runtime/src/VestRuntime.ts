@@ -26,28 +26,28 @@ type StateRefType = {
   appData: Record<string, any>;
 };
 
-export const PersistedContext = createCascade<CTXType>(
-  (stateRef, parentContext) => {
-    if (parentContext) {
-      return null;
-    }
-
-    invariant(stateRef.historyRoot);
-
-    const [historyRootNode] = stateRef.historyRoot();
-
-    const ctxRef = {} as CTXType;
-
-    assign(ctxRef, {
-      historyNode: historyRootNode,
-      runtimeNode: null,
-      runtimeRoot: null,
-      stateRef,
-    });
-
-    return ctxRef;
+const PersistedContext = createCascade<CTXType>((stateRef, parentContext) => {
+  if (parentContext) {
+    return null;
   }
-);
+
+  invariant(stateRef.historyRoot);
+
+  const [historyRootNode] = stateRef.historyRoot();
+
+  const ctxRef = {} as CTXType;
+
+  assign(ctxRef, {
+    historyNode: historyRootNode,
+    runtimeNode: null,
+    runtimeRoot: null,
+    stateRef,
+  });
+
+  return ctxRef;
+});
+
+export const Run = PersistedContext.run;
 
 export function useXAppData<T = object>() {
   return useX().stateRef.appData as T;

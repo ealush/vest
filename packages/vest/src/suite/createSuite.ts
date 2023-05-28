@@ -60,12 +60,10 @@ function createSuite<
   // Assign methods to the suite
   // We do this within the PersistedContext so that the suite methods
   // will be bound to the suite's stateRef and be able to access it.
-  // @ts-ignore - TODO: FIXME:
   return VestRuntime.PersistedContext.run(stateRef, () => {
     return assign(
       // We're also binding the suite to the stateRef, so that the suite
       // can access the stateRef when it's called.
-      // @ts-ignore - TODO: FIXME:
       VestRuntime.PersistedContext.bind(stateRef, suite),
       {
         get: VestRuntime.persist(useCreateSuiteResult),

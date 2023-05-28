@@ -67,7 +67,7 @@ export function persist<T extends CB>(cb: T): T {
 
   return ((...args: Parameters<T>): ReturnType<T> => {
     const ctxToUse = PersistedContext.use() ?? prev;
-    return PersistedContext.run(ctxToUse, () => cb(...args));
+    return PersistedContext.run(ctxToUse.stateRef, () => cb(...args));
   }) as T;
 }
 export function useX<T = object>(): CTXType & T {

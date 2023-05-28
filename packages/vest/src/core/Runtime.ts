@@ -1,4 +1,4 @@
-import { Isolate, VestRuntime } from 'vest-runtime';
+import { VestRuntime } from 'vest-runtime';
 import {
   BusType,
   CacheApi,
@@ -23,7 +23,6 @@ type DoneCallbacks = Array<DoneCallback>;
 
 type StateExtra = {
   Bus: BusType;
-  historyRoot: TinyState<Isolate | null>;
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
   suiteName: string | undefined;
@@ -41,15 +40,6 @@ export function useCreateVestState({
     Bus: useInitVestBus(),
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
-    // TODO: Need to move this one directly to vest-runtime
-    // The reason that it is currently here is beacuse this vestState
-    // is the persistent reference, and this object is the actual
-    // object that persists between suite runs.
-    // What we need to do is define a new type of contract between
-    // vest-runtime and vest-core, where vest will pass the reference object
-    // to vest-runtime, and vest-runtime will seal it to prevent future
-    // modifications.
-    historyRoot: tinyState.createTinyState<Isolate | null>(null),
     suiteId: seq(),
     suiteName,
     suiteResultCache,

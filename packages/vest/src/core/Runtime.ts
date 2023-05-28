@@ -36,7 +36,7 @@ export function useCreateVestState({
   suiteName,
 }: {
   suiteName?: SuiteName;
-} = {}): StateExtra {
+} = {}) {
   const stateRef: StateExtra = {
     Bus: useInitVestBus(),
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
@@ -55,7 +55,7 @@ export function useCreateVestState({
     suiteResultCache,
   };
 
-  return stateRef;
+  return VestRuntime.createRef(stateRef);
 }
 
 export function useBus() {
@@ -77,7 +77,7 @@ export function usePrepareEmitter<T = void>(event: Events): (arg: T) => void {
 }
 
 function useX() {
-  return VestRuntime.useAppData<StateExtra>();
+  return VestRuntime.useXAppData<StateExtra>();
 }
 
 export function useDoneCallbacks() {

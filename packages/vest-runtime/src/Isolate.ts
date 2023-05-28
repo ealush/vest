@@ -1,6 +1,6 @@
-import { closest, closestExists } from 'IsolateWalker';
 import { CB, invariant, isNotNullish, isNullish } from 'vest-utils';
 
+import { closest, closestExists } from 'IsolateWalker';
 import { BaseReconciler, IRecociler, Reconciler } from 'Reconciler';
 import * as VestRuntime from 'VestRuntime';
 

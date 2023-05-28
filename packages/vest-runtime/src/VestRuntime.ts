@@ -161,7 +161,7 @@ export function useSetIsolateKey(key: string | null, value: Isolate): void {
 
   deferThrow(text(ErrorStrings.ENCOUNTERED_THE_SAME_KEY_TWICE, { key }));
 }
-export function useAvailableRoot<I extends Isolate = Isolate>(): I | null {
+export function useAvailableRoot<I extends Isolate = Isolate>(): I {
   const root = useRuntimeRoot();
 
   if (root) {

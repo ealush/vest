@@ -1,5 +1,5 @@
 import { VestRuntime } from 'vest-runtime';
-import { isArray, isStringValue, asArray, invariant } from 'vest-utils';
+import { isArray, isStringValue, asArray } from 'vest-utils';
 
 import type { IsolateSuite } from 'IsolateSuite';
 import { OptionalFieldTypes, OptionalsInput } from 'OptionalTypes';
@@ -10,9 +10,6 @@ export function optional<F extends TFieldName>(
   optionals: OptionalsInput<F>
 ): void {
   const suiteRoot = VestRuntime.useAvailableRoot<IsolateSuite>();
-
-  // TODO: Add an error message here
-  invariant(suiteRoot);
 
   // There are two types of optional field declarations:
 

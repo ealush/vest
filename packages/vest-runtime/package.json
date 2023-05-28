@@ -1,10 +1,9 @@
 {
   "name": "vest-runtime",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Internal runtime module used by Vest",
   "license": "MIT",
   "author": "ealush",
-  "private": true,
   "main": "./dist/cjs/vest-runtime.js",
   "module": "./dist/es/vest-runtime.production.js",
   "unpkg": "./dist/umd/vest-runtime.production.js",

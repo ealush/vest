@@ -1,8 +1,8 @@
+import { ErrorStrings } from 'ErrorStrings';
 import { IsolateKey, VestRuntime } from 'vest-runtime';
 import { assign, invariant, isFunction, isStringValue, text } from 'vest-utils';
 
 import { Events } from 'BusEvents';
-import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
 import { useGroupName } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';

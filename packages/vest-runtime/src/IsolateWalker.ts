@@ -127,7 +127,8 @@ export function every(
   return hasMatch;
 }
 
-// This function removes all Isolate objects in the tree that satisfy the given predicate function and have a parent.
+// This function removes all Isolate objects in the tree that
+// satisfy the given predicate function and have a parent.
 // If visitOnly is provided, only Isolate objects that satisfy the predicate are visited.
 export function pluck(
   startNode: Isolate,
@@ -145,7 +146,8 @@ export function pluck(
   );
 }
 
-// Returns the closest ancestor Isolate object of the given startNode that satisfies the given predicate function.
+// Returns the closest ancestor Isolate object of the given
+//startNode that satisfies the given predicate function.
 export function closest(
   startNode: Isolate,
   predicate: (node: Isolate) => boolean
@@ -160,7 +162,8 @@ export function closest(
   return null;
 }
 
-// This function returns true if the closest ancestor Isolate object of the given startNode that satisfies the given predicate function exists.
+// This function returns true if the closest ancestor Isolates of the
+// given startNode that satisfies the given predicate function exists.
 export function closestExists(
   startNode: Isolate,
   predicate: (node: Isolate) => boolean

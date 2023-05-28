@@ -3,13 +3,11 @@ export enum ErrorStrings {
   EXPECTED_VEST_TEST = 'Expected value to be an instance of IsolateTest',
   FIELD_NAME_REQUIRED = 'Field name must be passed',
   SUITE_MUST_BE_INITIALIZED_WITH_FUNCTION = 'Suite must be initialized with a function',
-  NO_ACTIVE_ISOLATE = 'Not within an active isolate',
   PROMISIFY_REQUIRE_FUNCTION = 'Vest.Promisify must be called with a function',
   PARSER_EXPECT_RESULT_OBJECT = "Vest parser: expected argument at position 0 to be Vest's result object.",
   WARN_MUST_BE_CALLED_FROM_TEST = 'Warn must be called from within the body of a test function',
   EACH_CALLBACK_MUST_BE_A_FUNCTION = 'Each must be called with a function',
   INVALID_PARAM_PASSED_TO_FUNCTION = 'Incompatible params passed to {fn_name} function. "{param}" must be of type {expected}',
-  ENCOUNTERED_THE_SAME_KEY_TWICE = `Encountered the same test key "{key}" twice. This may lead to tests overriding each other's results, or to tests being unexpectedly omitted.`,
   TESTS_CALLED_IN_DIFFERENT_ORDER = `Vest Critical Error: Tests called in different order than previous run.
     expected: {fieldName}
     received: {prevName}

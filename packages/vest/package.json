@@ -21,6 +21,7 @@
     "context": "^3.0.8",
     "n4s": "^4.3.0",
     "vast": "^1.0.14",
+    "vest-runtime": "^0.0.1",
     "vest-utils": "^0.2.0"
   },
   "exports": {

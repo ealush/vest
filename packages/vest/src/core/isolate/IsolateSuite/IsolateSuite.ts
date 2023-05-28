@@ -1,4 +1,5 @@
-import { Isolate } from 'Isolate';
+import { Isolate } from 'vest-runtime';
+
 import { OptionalFieldDeclaration, OptionalFields } from 'OptionalTypes';
 import { TFieldName } from 'SuiteResultTypes';
 

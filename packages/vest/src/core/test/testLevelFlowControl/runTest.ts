@@ -1,3 +1,5 @@
+import { ErrorStrings } from 'ErrorStrings';
+import { VestRuntime } from 'vest-runtime';
 import {
   isPromise,
   isStringValue,
@@ -7,9 +9,7 @@ import {
 } from 'vest-utils';
 
 import { Events } from 'BusEvents';
-import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
-import { persist, useVestBus } from 'PersistedContext';
 import { SuiteContext } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
 import { useVerifyTestRun } from 'verifyTestRun';
@@ -39,7 +39,7 @@ function runSyncTest(testObject: IsolateTest): TestResult {
  * runs test, if async - adds to pending array
  */
 function useRunTest(testObject: IsolateTest): void {
-  const VestBus = useVestBus();
+  const VestBus = VestRuntime.useBus();
 
   // Run test callback.
   // If a promise is returned, set as async and
@@ -73,12 +73,12 @@ function useRunAsyncTest(testObject: IsolateTest): void {
   if (!isPromise(asyncTest)) return;
   testObject.setPending();
 
-  const VestBus = useVestBus();
+  const VestBus = VestRuntime.useBus();
 
-  const done = persist(() => {
+  const done = VestRuntime.persist(() => {
     onTestCompleted(VestBus, testObject);
   });
-  const fail = persist((rejectionMessage?: string) => {
+  const fail = VestRuntime.persist((rejectionMessage?: string) => {
     if (testObject.isCanceled()) {
       return;
     }

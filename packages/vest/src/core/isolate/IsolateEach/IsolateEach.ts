@@ -1,4 +1,4 @@
-import { Isolate } from 'Isolate';
+import { Isolate } from 'vest-runtime';
 
 export class IsolateEach extends Isolate {
   allowReorder = true;

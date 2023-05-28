@@ -1,15 +1,7 @@
 import { CB, invariant, isNullish } from 'vest-utils';
 
 import type { Isolate } from 'Isolate';
-import {
-  useHistoryKey,
-  useSetIsolateKey,
-  useHistoryNode,
-  useIsolate,
-  useCurrentCursor,
-  PersistedContext,
-  useRuntimeRoot,
-} from 'PersistedContext';
+import * as VestRuntime from 'VestRuntime';
 
 export interface IRecociler {
   (currentNode: Isolate, historicNode: Isolate | null): Isolate;
@@ -31,15 +23,16 @@ export class Reconciler {
     node: Isolate,
     callback: Callback
   ): [Isolate, ReturnType<Callback>] {
-    const parent = useIsolate();
+    const parent = VestRuntime.useIsolate();
 
-    const historyNode = useHistoryNode();
+    const historyNode = VestRuntime.useHistoryNode();
     let localHistoryNode = historyNode;
 
     if (parent) {
       // If we have a parent, we need to get the history node from the parent's children
       // We take the history node from the cursor of the active node's children
-      localHistoryNode = historyNode?.at(useCurrentCursor()) ?? null;
+      localHistoryNode =
+        historyNode?.at(VestRuntime.useCurrentCursor()) ?? null;
     }
 
     const nextNode = reconciler(node, localHistoryNode);
@@ -54,8 +47,8 @@ export class Reconciler {
   }
 
   static removeAllNextNodesInIsolate() {
-    const testIsolate = useIsolate();
-    const historyNode = useHistoryNode();
+    const testIsolate = VestRuntime.useIsolate();
+    const historyNode = VestRuntime.useHistoryNode();
 
     if (!historyNode || !testIsolate) {
       // This is probably unreachable, but TS is not convinced.
@@ -63,13 +56,13 @@ export class Reconciler {
       return;
     }
 
-    historyNode.slice(useCurrentCursor());
+    historyNode.slice(VestRuntime.useCurrentCursor());
   }
 
   static handleIsolateNodeWithKey(node: Isolate): Isolate {
     invariant(node.usesKey());
 
-    const prevNodeByKey = useHistoryKey(node.key);
+    const prevNodeByKey = VestRuntime.useHistoryKey(node.key);
 
     let nextNode = node;
 
@@ -77,7 +70,7 @@ export class Reconciler {
       nextNode = prevNodeByKey;
     }
 
-    useSetIsolateKey(node.key, node);
+    VestRuntime.useSetIsolateKey(node.key, node);
 
     return nextNode;
   }
@@ -88,11 +81,11 @@ function useRunAsNew<Callback extends CB = CB>(
   current: Isolate,
   callback: CB
 ): ReturnType<Callback> {
-  const runtimeRoot = useRuntimeRoot();
+  const runtimeRoot = VestRuntime.useRuntimeRoot();
 
   // We're creating a new child isolate context where the local history node
   // is the current history node, thus advancing the history cursor.
-  const output = PersistedContext.run(
+  const output = VestRuntime.Run(
     {
       historyNode: localHistoryNode,
       runtimeNode: current,

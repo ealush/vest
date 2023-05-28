@@ -1,6 +1,6 @@
 import { assign } from 'vest-utils';
 
-import { useSuiteName, useSuiteResultCache } from 'PersistedContext';
+import { useSuiteName, useSuiteResultCache } from 'Runtime';
 import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { useProduceSuiteSummary } from 'produceSuiteSummary';
 import { suiteSelectors } from 'suiteSelectors';

@@ -1,4 +1,5 @@
-import { Isolate } from 'Isolate';
+import { Isolate } from 'vest-runtime';
+
 import { SuiteContext } from 'SuiteContext';
 import { TGroupName } from 'SuiteResultTypes';
 

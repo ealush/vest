@@ -1,14 +1,9 @@
+import { VestRuntime } from 'vest-runtime';
 import { assign, CB } from 'vest-utils';
 
 import { Events } from 'BusEvents';
 import { IsolateSuite } from 'IsolateSuite';
-import {
-  useCreateVestState,
-  persist,
-  PersistedContext,
-  usePrepareEmitter,
-  useEmit,
-} from 'PersistedContext';
+import { useCreateVestState } from 'Runtime';
 import { SuiteContext } from 'SuiteContext';
 import {
   SuiteName,
@@ -17,6 +12,7 @@ import {
   TGroupName,
 } from 'SuiteResultTypes';
 import { Suite } from 'SuiteTypes';
+import { useInitVestBus } from 'VestBus';
 import { getTypedMethods } from 'getTypedMethods';
 import { useCreateSuiteResult } from 'suiteResult';
 import { useSuiteRunResult } from 'suiteRunResult';
@@ -52,7 +48,7 @@ function createSuite<
   function suite(...args: Parameters<T>): SuiteRunResult<F, G> {
     return SuiteContext.run({}, () => {
       // eslint-disable-next-line vest-internal/use-use
-      const emit = useEmit();
+      const emit = VestRuntime.useEmit();
 
       emit(Events.SUITE_RUN_STARTED);
 
@@ -63,19 +59,21 @@ function createSuite<
   }
 
   // Assign methods to the suite
-  // We do this within the PersistedContext so that the suite methods
+  // We do this within the VestRuntime so that the suite methods
   // will be bound to the suite's stateRef and be able to access it.
-  return PersistedContext.run(stateRef, () => {
+  return VestRuntime.Run(stateRef, () => {
+    useInitVestBus();
+
     return assign(
       // We're also binding the suite to the stateRef, so that the suite
       // can access the stateRef when it's called.
-      PersistedContext.bind(stateRef, suite),
+      VestRuntime.persist(suite),
       {
-        get: persist(useCreateSuiteResult),
-        remove: usePrepareEmitter<string>(Events.REMOVE_FIELD),
-        reset: usePrepareEmitter(Events.RESET_SUITE),
-        resetField: usePrepareEmitter<string>(Events.RESET_FIELD),
-        ...bindSuiteSelectors<F, G>(persist(useCreateSuiteResult)),
+        get: VestRuntime.persist(useCreateSuiteResult),
+        remove: VestRuntime.usePrepareEmitter<string>(Events.REMOVE_FIELD),
+        reset: VestRuntime.usePrepareEmitter(Events.RESET_SUITE),
+        resetField: VestRuntime.usePrepareEmitter<string>(Events.RESET_FIELD),
+        ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
         ...getTypedMethods<F, G>(),
       }
     );
@@ -87,7 +85,7 @@ function useRunSuiteCallback<
   F extends TFieldName,
   G extends TGroupName
 >(suiteCallback: T, ...args: Parameters<T>): () => SuiteRunResult<F, G> {
-  const emit = useEmit();
+  const emit = VestRuntime.useEmit();
 
   return () => {
     suiteCallback(...args);

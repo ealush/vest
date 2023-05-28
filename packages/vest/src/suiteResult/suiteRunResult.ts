@@ -1,6 +1,6 @@
+import { VestRuntime } from 'vest-runtime';
 import { assign } from 'vest-utils';
 
-import { persist } from 'PersistedContext';
 import {
   SuiteResult,
   SuiteRunResult,
@@ -19,7 +19,7 @@ export function useSuiteRunResult<
   return Object.freeze(
     assign(
       {
-        done: persist(done),
+        done: VestRuntime.persist(done),
       },
       useCreateSuiteResult<F, G>()
     )

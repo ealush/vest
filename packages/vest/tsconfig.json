@@ -104,6 +104,7 @@
       "parser.test": ["./src/exports/__tests__/parser.test.ts"],
       "classnames.test": ["./src/exports/__tests__/classnames.test.ts"],
       "ErrorStrings": ["./src/errors/ErrorStrings.ts"],
+      "Runtime": ["./src/core/Runtime.ts"],
       "test": ["./src/core/test/test.ts"],
       "test.memo": ["./src/core/test/test.memo.ts"],
       "TestTypes": ["./src/core/test/TestTypes.ts"],
@@ -130,9 +131,6 @@
       "memo.test": ["./src/core/test/__tests__/memo.test.ts"],
       "key.test": ["./src/core/test/__tests__/key.test.ts"],
       "IsolateTest.test": ["./src/core/test/__tests__/IsolateTest.test.ts"],
-      "walker": ["./src/core/isolate/walker.ts"],
-      "Isolate": ["./src/core/isolate/Isolate.ts"],
-      "Reconciler": ["./src/core/isolate/Reconciler/Reconciler.ts"],
       "isSameProfileTest": [
         "./src/core/isolate/IsolateTest/isSameProfileTest.ts"
       ],
@@ -153,7 +151,6 @@
       "IsolateSuite": ["./src/core/isolate/IsolateSuite/IsolateSuite.ts"],
       "IsolateEach": ["./src/core/isolate/IsolateEach/IsolateEach.ts"],
       "SuiteContext": ["./src/core/context/SuiteContext.ts"],
-      "PersistedContext": ["./src/core/context/PersistedContext.ts"],
       "VestBus": ["./src/core/VestBus/VestBus.ts"],
       "BusEvents": ["./src/core/VestBus/BusEvents.ts"],
       "state_refill.test": ["./src/__tests__/state_refill.test.ts"],

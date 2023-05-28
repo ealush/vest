@@ -8,9 +8,9 @@
     "outDir": "./dist",
     "paths": {
       "vest-runtime": ["./src/vest-runtime.ts"],
-      "Walker": ["./src/Walker.ts"],
       "VestRuntime": ["./src/VestRuntime.ts"],
       "Reconciler": ["./src/Reconciler.ts"],
+      "IsolateWalker": ["./src/IsolateWalker.ts"],
       "Isolate": ["./src/Isolate.ts"],
       "ErrorStrings": ["./src/errors/ErrorStrings.ts"]
     }

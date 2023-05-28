@@ -1,4 +1,4 @@
-import { closest, closestExists } from 'Walker';
+import { closest, closestExists } from 'IsolateWalker';
 import { CB, invariant, isNotNullish, isNullish } from 'vest-utils';
 
 import { BaseReconciler, IRecociler, Reconciler } from 'Reconciler';

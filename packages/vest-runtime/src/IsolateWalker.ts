@@ -2,9 +2,9 @@ import { isNullish, optionalFunctionValue } from 'vest-utils';
 
 import type { Isolate } from 'Isolate';
 
-export type VisitOnlyPredicate = (isolate: Isolate) => boolean;
+type VisitOnlyPredicate = (isolate: Isolate) => boolean;
 
-// eslint-disable-next-line complexity, max-statements
+// eslint-disable-next-line
 export function walk(
   startNode: Isolate,
   callback: (isolate: Isolate, breakout: () => void) => void,

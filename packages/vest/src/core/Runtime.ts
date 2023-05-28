@@ -80,7 +80,5 @@ export function useResetCallbacks() {
 
 export function useResetSuite() {
   useResetCallbacks();
-  const [, , resetHistoryRoot] = VestRuntime.useHistoryRoot();
-
-  resetHistoryRoot();
+  VestRuntime.reset();
 }

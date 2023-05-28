@@ -52,6 +52,19 @@ const PersistedContext = createCascade<CTXType>((stateRef, parentContext) => {
 
 export const Run = PersistedContext.run;
 
+export const RuntimeApi = {
+  Run,
+  createRef,
+  persist,
+  reset,
+  useAvailableRoot,
+  useBus,
+  useCurrentCursor,
+  useEmit,
+  usePrepareEmitter,
+  useXAppData,
+};
+
 export function useBus() {
   return useX().stateRef.Bus;
 }
@@ -92,7 +105,7 @@ export function persist<T extends CB>(cb: T): T {
     return PersistedContext.run(ctxToUse.stateRef, () => cb(...args));
   }) as T;
 }
-export function useX<T = object>(): CTXType & T {
+function useX<T = object>(): CTXType & T {
   return PersistedContext.useX() as CTXType & T;
 }
 
@@ -158,4 +171,10 @@ export function useAvailableRoot<I extends Isolate = Isolate>(): I | null {
   const [historyRoot] = useHistoryRoot();
 
   return historyRoot as I;
+}
+
+export function reset() {
+  const [, , resetHistoryRoot] = useHistoryRoot();
+
+  resetHistoryRoot();
 }

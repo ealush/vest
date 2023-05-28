@@ -77,7 +77,7 @@ export function usePrepareEmitter<T = void>(event: Events): (arg: T) => void {
 }
 
 function useX() {
-  return VestRuntime.useX<StateExtra>();
+  return VestRuntime.useAppData<StateExtra>();
 }
 
 export function useDoneCallbacks() {

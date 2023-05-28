@@ -8,18 +8,22 @@ import {
   assign,
   TinyState,
   text,
+  optionalFunctionValue,
+  tinyState,
 } from 'vest-utils';
 
 import { Isolate } from 'Isolate';
 
-type CTXType = StateType & {
+type CTXType = StateRefType & {
   historyNode: Isolate | null;
   runtimeNode: Isolate | null;
   runtimeRoot: Isolate | null;
+  stateRef: StateRefType;
 };
 
-type StateType = {
+type StateRefType = {
   historyRoot: TinyState<Isolate | null>;
+  appData: Record<string, any>;
 };
 
 export const PersistedContext = createCascade<CTXType>(
@@ -40,6 +44,7 @@ export const PersistedContext = createCascade<CTXType>(
         historyNode: historyRootNode,
         runtimeNode: null,
         runtimeRoot: null,
+        stateRef: state,
       },
       state
     );
@@ -47,6 +52,16 @@ export const PersistedContext = createCascade<CTXType>(
     return ctxRef;
   }
 );
+
+export function createRef(
+  setter: Record<string, any> | (() => Record<string, any>)
+): StateRefType {
+  return Object.freeze({
+    historyRoot: tinyState.createTinyState<Isolate | null>(null),
+    appData: optionalFunctionValue(setter),
+  });
+}
+
 export function persist<T extends CB>(cb: T): T {
   const prev = PersistedContext.useX();
 

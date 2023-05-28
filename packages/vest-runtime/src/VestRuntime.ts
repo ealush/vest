@@ -53,6 +53,10 @@ export const PersistedContext = createCascade<CTXType>(
   }
 );
 
+export function useXAppData<T = object>() {
+  return useX().stateRef.appData as T;
+}
+
 export function createRef(
   setter: Record<string, any> | (() => Record<string, any>)
 ): StateRefType {

@@ -1,6 +1,6 @@
 import { enforce } from 'n4s';
 
-import { Modes } from 'mode';
+import { Modes } from 'Modes';
 import * as vest from 'vest';
 
 describe('Stateful behavior', () => {

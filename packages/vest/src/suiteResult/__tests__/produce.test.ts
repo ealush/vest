@@ -1,7 +1,7 @@
 import { ser } from '../../../testUtils/suiteDummy';
 import { dummyTest } from '../../../testUtils/testDummy';
 
-import { Modes } from 'mode';
+import { Modes } from 'Modes';
 import * as vest from 'vest';
 
 describe('produce method Suite Result', () => {

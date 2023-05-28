@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { Modes } from 'Modes';
 import _ from 'lodash';
 import { enforce } from 'n4s';
 
@@ -8,7 +9,6 @@ import { dummyTest } from '../../../testUtils/testDummy';
 import { IsolateTest } from 'IsolateTest';
 import { group } from 'group';
 import { matchingGroupName } from 'matchingGroupName';
-import { Modes } from 'mode';
 import { TTestSuite } from 'testUtils/TVestMock';
 import * as vest from 'vest';
 

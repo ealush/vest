@@ -1,8 +1,8 @@
 import { enforce } from 'n4s';
 // eslint-disable-next-line import/order -- will handle this circular dep issue later.
 import { optional } from 'optional';
-
 import type { IsolateTest } from 'IsolateTest';
+import { Modes } from 'Modes';
 import type {
   SuiteResult,
   SuiteRunResult,
@@ -14,7 +14,7 @@ import { each } from 'each';
 import { skip, only } from 'exclusive';
 import { group } from 'group';
 import { include } from 'include';
-import { mode, Modes } from 'mode';
+import { mode } from 'mode';
 import { omitWhen } from 'omitWhen';
 import { skipWhen } from 'skipWhen';
 import { staticSuite } from 'staticSuite';

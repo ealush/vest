@@ -1,8 +1,8 @@
+import { Modes } from 'Modes';
 import wait from 'wait';
 
 import { dummyTest } from '../../../testUtils/testDummy';
 
-import { Modes } from 'mode';
 import * as vest from 'vest';
 
 describe('suite.remove', () => {

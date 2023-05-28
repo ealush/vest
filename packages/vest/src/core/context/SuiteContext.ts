@@ -2,7 +2,7 @@ import { createCascade } from 'context';
 import { assign, TinyState, tinyState, cache, CacheApi } from 'vest-utils';
 
 import { IsolateTest } from 'IsolateTest';
-import { Modes } from 'mode';
+import { Modes } from 'Modes';
 
 export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
   if (parentContext) {

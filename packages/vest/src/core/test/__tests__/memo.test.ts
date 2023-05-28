@@ -2,7 +2,7 @@ import wait from 'wait';
 
 import { TestPromise } from '../../../../testUtils/testPromise';
 
-import { Modes } from 'mode';
+import { Modes } from 'Modes';
 import promisify from 'promisify';
 import * as vest from 'vest';
 import { test as vestTest, enforce } from 'vest';

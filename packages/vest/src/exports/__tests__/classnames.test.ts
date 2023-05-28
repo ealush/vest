@@ -1,8 +1,9 @@
+import { Modes } from 'Modes';
+
 import { dummyTest } from '../../../testUtils/testDummy';
 import classnames from '../classnames';
 import promisify from '../promisify';
 
-import { Modes } from 'mode';
 import * as vest from 'vest';
 
 describe('Utility: classnames', () => {

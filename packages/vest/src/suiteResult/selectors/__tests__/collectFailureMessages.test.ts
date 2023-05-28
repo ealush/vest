@@ -1,7 +1,7 @@
 import { dummyTest } from '../../../../testUtils/testDummy';
 
+import { Modes } from 'Modes';
 import { SuiteResult } from 'SuiteResultTypes';
-import { Modes } from 'mode';
 import { TTestSuite } from 'testUtils/TVestMock';
 import { create, group } from 'vest';
 import * as vest from 'vest';

@@ -1,12 +1,8 @@
+import { Modes } from 'Modes';
+
 import { useMode } from 'SuiteContext';
 import { WithFieldName } from 'TestTypes';
 import { hasErrorsByTestObjects } from 'hasFailuresByTestObjects';
-
-export enum Modes {
-  EAGER = 'EAGER',
-  ALL = 'ALL',
-  ONE = 'ONE',
-}
 
 /**
  * Sets the current execution mode for the current suite.

@@ -1,28 +1,18 @@
 import { VestRuntime } from 'vest-runtime';
-import {
-  BusType,
-  CacheApi,
-  TinyState,
-  cache,
-  seq,
-  tinyState,
-} from 'vest-utils';
+import { CacheApi, TinyState, cache, seq, tinyState } from 'vest-utils';
 
-import { Events } from 'BusEvents';
 import {
   SuiteName,
   SuiteResult,
   TFieldName,
   TGroupName,
 } from 'SuiteResultTypes';
-import { useInitVestBus } from 'VestBus';
 
 export type DoneCallback = (res: SuiteResult<TFieldName, TGroupName>) => void;
 type FieldCallbacks = Record<string, DoneCallbacks>;
 type DoneCallbacks = Array<DoneCallback>;
 
 type StateExtra = {
-  Bus: BusType;
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
   suiteName: string | undefined;
@@ -37,7 +27,6 @@ export function useCreateVestState({
   suiteName?: SuiteName;
 } = {}) {
   const stateRef: StateExtra = {
-    Bus: useInitVestBus(),
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
     suiteId: seq(),
@@ -46,24 +35,6 @@ export function useCreateVestState({
   };
 
   return VestRuntime.createRef(stateRef);
-}
-
-export function useBus() {
-  return useX().Bus;
-}
-
-/*
-  Returns an emitter, but it also has a shortcut for emitting an event immediately
-  by passing an event name.
-*/
-export function useEmit() {
-  return VestRuntime.persist(useBus().emit);
-}
-
-export function usePrepareEmitter<T = void>(event: Events): (arg: T) => void {
-  const emit = useEmit();
-
-  return (arg: T) => emit(event, arg);
 }
 
 function useX() {

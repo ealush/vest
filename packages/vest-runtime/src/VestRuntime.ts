@@ -10,6 +10,8 @@ import {
   text,
   optionalFunctionValue,
   tinyState,
+  BusType,
+  bus,
 } from 'vest-utils';
 
 import { Isolate } from 'Isolate';
@@ -23,6 +25,7 @@ type CTXType = StateRefType & {
 
 type StateRefType = {
   historyRoot: TinyState<Isolate | null>;
+  Bus: BusType;
   appData: Record<string, any>;
 };
 
@@ -49,6 +52,24 @@ const PersistedContext = createCascade<CTXType>((stateRef, parentContext) => {
 
 export const Run = PersistedContext.run;
 
+export function useBus() {
+  return useX().stateRef.Bus;
+}
+
+/*
+  Returns an emitter, but it also has a shortcut for emitting an event immediately
+  by passing an event name.
+*/
+export function useEmit() {
+  return persist(useBus().emit);
+}
+
+export function usePrepareEmitter<T = void>(event: string): (arg: T) => void {
+  const emit = useEmit();
+
+  return (arg: T) => emit(event, arg);
+}
+
 export function useXAppData<T = object>() {
   return useX().stateRef.appData as T;
 }
@@ -58,6 +79,7 @@ export function createRef(
 ): StateRefType {
   return Object.freeze({
     historyRoot: tinyState.createTinyState<Isolate | null>(null),
+    Bus: bus.createBus(),
     appData: optionalFunctionValue(setter),
   });
 }

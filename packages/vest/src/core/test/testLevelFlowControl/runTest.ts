@@ -10,7 +10,6 @@ import {
 import { Events } from 'BusEvents';
 import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
-import { useBus } from 'Runtime';
 import { SuiteContext } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
 import { useVerifyTestRun } from 'verifyTestRun';
@@ -40,7 +39,7 @@ function runSyncTest(testObject: IsolateTest): TestResult {
  * runs test, if async - adds to pending array
  */
 function useRunTest(testObject: IsolateTest): void {
-  const VestBus = useBus();
+  const VestBus = VestRuntime.useBus();
 
   // Run test callback.
   // If a promise is returned, set as async and
@@ -74,7 +73,7 @@ function useRunAsyncTest(testObject: IsolateTest): void {
   if (!isPromise(asyncTest)) return;
   testObject.setPending();
 
-  const VestBus = useBus();
+  const VestBus = VestRuntime.useBus();
 
   const done = VestRuntime.persist(() => {
     onTestCompleted(VestBus, testObject);

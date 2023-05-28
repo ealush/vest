@@ -2,7 +2,10 @@ const path = require('path');
 
 const glob = require('glob');
 
+const { sortDependencies } = require('./scripts/release/depsTree');
+
 const packageJson = require('vx/util/packageJson');
+const packageList = require('vx/util/packageList');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
@@ -16,27 +19,9 @@ module.exports = Object.defineProperty(
   }
 );
 
-const paths = glob.sync(vxPath.package('*'));
-
-paths.forEach(packagePath => {
-  const basename = path.basename(packagePath);
-
-  module.exports.paths[basename] = packagePath;
-  module.exports.names[basename] = basename;
-  module.exports.list.push(basename);
+packageList.pairs.forEach(([name, path]) => {
+  module.exports.paths[name] = path;
+  module.exports.names[name] = name;
 });
 
-// Cheap sync alternative to depsTree. Might end up using this in the future.
-module.exports.list = [
-  ...module.exports.list.sort((packageA, packageB) => {
-    const jsonA = packageJson(packageA);
-    const jsonB = packageJson(packageB);
-
-    if (jsonA?.dependencies?.[packageB]) {
-      return 1;
-    } else if (jsonB?.dependencies?.[packageA]) {
-      return -1;
-    }
-    return 0;
-  }),
-];
+module.exports.list = sortDependencies(packageList.names);

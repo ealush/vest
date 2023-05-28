@@ -1,7 +1,8 @@
+const { glob } = require('glob');
 const { memoize } = require('lodash');
 
-const packageNames = require('vx/packageNames');
 const packageJson = require('vx/util/packageJson');
+const packageList = require('vx/util/packageList');
 
 // Takes import map and turns it into a dependency map
 const buildDepsMemo = memoize(function (package, deps) {
@@ -22,7 +23,7 @@ const buildDepsMemo = memoize(function (package, deps) {
 });
 
 function buildDepsTree() {
-  return packageNames.list.reduce(
+  return packageList.names.reduce(
     (deps, packageName) => buildDepsMemo(packageName, deps),
     {}
   );

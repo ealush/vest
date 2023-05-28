@@ -33,6 +33,7 @@ export { isEmpty, isNotEmpty } from 'isEmpty';
 export { isPositive } from 'isPositive';
 export { text } from 'text';
 export { TStateMachine, StateMachine } from 'SimpleStateMachine';
+export { nonnullish } from 'nonnullish';
 export * as tinyState from 'tinyState';
 
 export type { DropFirst } from 'utilityTypes';

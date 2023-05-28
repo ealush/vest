@@ -1,5 +1,4 @@
 import { Modes } from 'Modes';
-
 import { useMode } from 'SuiteContext';
 import { WithFieldName } from 'TestTypes';
 import { hasErrorsByTestObjects } from 'hasFailuresByTestObjects';

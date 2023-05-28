@@ -1,3 +1,4 @@
+import { ErrorStrings } from 'ErrorStrings';
 import { createCascade } from 'context';
 import {
   invariant,
@@ -13,7 +14,6 @@ import {
   bus,
 } from 'vest-utils';
 
-import { ErrorStrings } from 'ErrorStrings';
 import { Isolate } from 'Isolate';
 
 type CTXType = StateRefType & {

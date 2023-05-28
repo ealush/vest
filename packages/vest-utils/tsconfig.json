@@ -15,6 +15,7 @@
       "seq": ["./src/seq.ts"],
       "optionalFunctionValue": ["./src/optionalFunctionValue.ts"],
       "numberEquals": ["./src/numberEquals.ts"],
+      "nonnullish": ["./src/nonnullish.ts"],
       "mapFirst": ["./src/mapFirst.ts"],
       "longerThan": ["./src/longerThan.ts"],
       "lengthEquals": ["./src/lengthEquals.ts"],
@@ -51,6 +52,7 @@
         "./src/__tests__/optionalFunctionValue.test.ts"
       ],
       "numberEquals.test": ["./src/__tests__/numberEquals.test.ts"],
+      "nonnullish.test": ["./src/__tests__/nonnullish.test.ts"],
       "mapFirst.test": ["./src/__tests__/mapFirst.test.ts"],
       "longerThan.test": ["./src/__tests__/longerThan.test.ts"],
       "lengthEquals.test": ["./src/__tests__/lengthEquals.test.ts"],

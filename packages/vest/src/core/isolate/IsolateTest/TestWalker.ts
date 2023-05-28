@@ -1,4 +1,4 @@
-import { walker, Isolate, VestRuntime } from 'vest-runtime';
+import { Walker, Isolate, VestRuntime } from 'vest-runtime';
 
 import { IsolateTest } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
@@ -13,7 +13,7 @@ export class TestWalker {
 
   static hasNoTests(root: MaybeRoot = TestWalker.defaultRoot()): boolean {
     if (!root) return true;
-    return !walker.has(root, IsolateTest.is);
+    return !Walker.has(root, IsolateTest.is);
   }
 
   static someIncompleteTests(
@@ -21,7 +21,7 @@ export class TestWalker {
     root: MaybeRoot = TestWalker.defaultRoot()
   ): boolean {
     if (!root) return false;
-    return walker.some(
+    return Walker.some(
       root,
       isolate => {
         IsolateTest.isX(isolate);
@@ -37,7 +37,7 @@ export class TestWalker {
     root: MaybeRoot = TestWalker.defaultRoot()
   ): boolean {
     if (!root) return false;
-    return walker.some(
+    return Walker.some(
       root,
       isolate => {
         IsolateTest.isX(isolate);
@@ -53,7 +53,7 @@ export class TestWalker {
     root: MaybeRoot = TestWalker.defaultRoot()
   ): boolean {
     if (!root) return false;
-    return walker.every(
+    return Walker.every(
       root,
       isolate => {
         IsolateTest.isX(isolate);
@@ -69,7 +69,7 @@ export class TestWalker {
     root: MaybeRoot = TestWalker.defaultRoot()
   ): void {
     if (!root) return;
-    walker.walk(
+    Walker.walk(
       root,
       (isolate, breakout) => {
         callback(IsolateTest.cast<F, G>(isolate), breakout);
@@ -92,7 +92,7 @@ export class TestWalker {
     root: MaybeRoot = TestWalker.defaultRoot()
   ): void {
     if (!root) return;
-    walker.pluck(
+    Walker.pluck(
       root,
       isolate => {
         IsolateTest.isX(isolate);

@@ -7,8 +7,8 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "walker": ["./src/walker.ts"],
       "vest-runtime": ["./src/vest-runtime.ts"],
+      "Walker": ["./src/Walker.ts"],
       "VestRuntime": ["./src/VestRuntime.ts"],
       "Reconciler": ["./src/Reconciler.ts"],
       "Isolate": ["./src/Isolate.ts"],

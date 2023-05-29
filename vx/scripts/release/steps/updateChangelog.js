@@ -13,7 +13,6 @@ const {
 
 const logger = require('vx/logger');
 const opts = require('vx/opts');
-const writeFileSync = require('vx/util/writeFileSync');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
@@ -81,7 +80,7 @@ function getChangelog() {
 }
 
 function writeChangelog(changelog) {
-  writeFileSync(changelogPath(), changelog);
+  fse.writeFileSync(changelogPath(), changelog);
 }
 
 const changelogTemplate = `# ${usePackage()} - Changelog

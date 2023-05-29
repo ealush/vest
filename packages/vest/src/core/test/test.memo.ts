@@ -1,5 +1,5 @@
-import { VestRuntime } from 'vest-runtime';
 import { isNull } from 'vest-utils';
+import { VestRuntime } from 'vestjs-runtime';
 
 import { IsolateTest } from 'IsolateTest';
 import * as Runtime from 'Runtime';

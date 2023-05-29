@@ -1,4 +1,4 @@
-import { VestRuntime } from 'vest-runtime';
+import { VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
 import { IsolateTest } from 'IsolateTest';

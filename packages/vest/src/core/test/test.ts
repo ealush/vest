@@ -1,5 +1,5 @@
-import { IsolateKey, VestRuntime } from 'vest-runtime';
 import { assign, invariant, isFunction, isStringValue, text } from 'vest-utils';
+import { IsolateKey, VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
 import { ErrorStrings } from 'ErrorStrings';

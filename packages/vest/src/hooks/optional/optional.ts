@@ -1,5 +1,5 @@
-import { VestRuntime } from 'vest-runtime';
 import { isArray, isStringValue, asArray } from 'vest-utils';
+import { VestRuntime } from 'vestjs-runtime';
 
 import type { IsolateSuite } from 'IsolateSuite';
 import { OptionalFieldTypes, OptionalsInput } from 'OptionalTypes';

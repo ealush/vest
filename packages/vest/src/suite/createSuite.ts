@@ -1,5 +1,5 @@
-import { VestRuntime } from 'vest-runtime';
 import { assign, CB } from 'vest-utils';
+import { VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
 import { IsolateSuite } from 'IsolateSuite';

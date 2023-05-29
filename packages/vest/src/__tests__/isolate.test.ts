@@ -10,7 +10,7 @@ describe('isolate', () => {
   let firstRun = true;
   // eslint-disable-next-line no-unused-expressions
   require('IsolateTest').IsolateTest;
-  let Isolate = require('vest-runtime').Isolate;
+  let Isolate = require('vestjs-runtime').Isolate;
   // eslint-disable-next-line no-unused-expressions
   require('IsolateEach').IsolateEach;
   let dummyTest: TDummyTest;
@@ -22,7 +22,7 @@ describe('isolate', () => {
     deferThrow = mock.deferThrow;
     // eslint-disable-next-line no-unused-expressions
     require('IsolateTest').IsolateTest;
-    Isolate = require('vest-runtime').Isolate;
+    Isolate = require('vestjs-runtime').Isolate;
     // eslint-disable-next-line no-unused-expressions
     require('IsolateEach').IsolateEach;
     vest = mock.vest;

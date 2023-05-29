@@ -1,6 +1,7 @@
 // import { optional, skipWhen, omitWhen, IsolateTest, group } from 'vest';
-import { Isolate, IsolateKey } from 'vest-runtime';
+import { optional } from 'optional';
 import { CB } from 'vest-utils';
+import { Isolate, IsolateKey } from 'vestjs-runtime';
 
 import { IsolateTest } from 'IsolateTest';
 import { OptionalsInput } from 'OptionalTypes';
@@ -10,7 +11,6 @@ import { FieldExclusion, GroupExclusion, only, skip } from 'exclusive';
 import { group } from 'group';
 import { include } from 'include';
 import { omitWhen } from 'omitWhen';
-import { optional } from 'optional';
 import { skipWhen } from 'skipWhen';
 import { test } from 'test';
 import { TestMemo } from 'test.memo';

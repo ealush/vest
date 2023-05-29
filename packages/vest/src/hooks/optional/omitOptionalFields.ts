@@ -1,10 +1,10 @@
-import { VestRuntime } from 'vest-runtime';
 import {
   isEmpty,
   hasOwnProperty,
   optionalFunctionValue,
   isNullish,
 } from 'vest-utils';
+import { VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
 import type { IsolateSuite } from 'IsolateSuite';

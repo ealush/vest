@@ -1,0 +1,48 @@
+{
+  "name": "vestjs-runtime",
+  "version": "0.0.1",
+  "description": "Internal runtime module used by Vest",
+  "license": "MIT",
+  "author": "ealush",
+  "main": "./dist/cjs/vestjs-runtime.js",
+  "module": "./dist/es/vestjs-runtime.production.js",
+  "unpkg": "./dist/umd/vestjs-runtime.production.js",
+  "jsdelivr": "./dist/umd/vestjs-runtime.production.js",
+  "types": "./types/vestjs-runtime.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ealush/vest.git",
+    "directory": "packages/vestjs-runtime"
+  },
+  "bugs": {
+    "url": "https://github.com/ealush/vest.git/issues"
+  },
+  "dependencies": {
+    "context": "^3.0.8",
+    "vest-utils": "^0.2.0"
+  },
+  "exports": {
+    ".": {
+      "development": {
+        "types": "./types/vestjs-runtime.d.ts",
+        "browser": "./dist/es/vestjs-runtime.development.js",
+        "umd": "./dist/umd/vestjs-runtime.development.js",
+        "import": "./dist/es/vestjs-runtime.development.js",
+        "require": "./dist/cjs/vestjs-runtime.development.js",
+        "node": "./dist/cjs/vestjs-runtime.development.js",
+        "module": "./dist/es/vestjs-runtime.development.js",
+        "default": "./dist/cjs/vestjs-runtime.development.js"
+      },
+      "types": "./types/vestjs-runtime.d.ts",
+      "browser": "./dist/es/vestjs-runtime.production.js",
+      "umd": "./dist/umd/vestjs-runtime.production.js",
+      "import": "./dist/es/vestjs-runtime.production.js",
+      "require": "./dist/cjs/vestjs-runtime.production.js",
+      "node": "./dist/cjs/vestjs-runtime.production.js",
+      "module": "./dist/es/vestjs-runtime.production.js",
+      "default": "./dist/cjs/vestjs-runtime.production.js"
+    },
+    "./package.json": "./package.json",
+    "./*": "./*"
+  }
+}

@@ -1,5 +1,5 @@
-import { VestRuntime } from 'vest-runtime';
 import { CacheApi, TinyState, cache, seq, tinyState } from 'vest-utils';
+import { VestRuntime } from 'vestjs-runtime';
 
 import {
   SuiteName,

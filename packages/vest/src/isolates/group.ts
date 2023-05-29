@@ -1,4 +1,4 @@
-import { Isolate } from 'vest-runtime';
+import { Isolate } from 'vestjs-runtime';
 
 import { SuiteContext } from 'SuiteContext';
 import { TGroupName } from 'SuiteResultTypes';

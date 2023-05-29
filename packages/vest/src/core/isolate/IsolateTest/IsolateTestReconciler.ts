@@ -1,6 +1,6 @@
 import { deferThrow, isNullish, text } from 'vest-utils';
-import { Reconciler } from 'vest-runtime';
-import type { Isolate } from 'vest-runtime';
+import { Reconciler } from 'vestjs-runtime';
+import type { Isolate } from 'vestjs-runtime';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';

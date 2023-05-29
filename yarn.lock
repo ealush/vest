@@ -14010,15 +14010,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"vest-runtime@^0.0.1, vest-runtime@workspace:packages/vest-runtime":
-  version: 0.0.0-use.local
-  resolution: "vest-runtime@workspace:packages/vest-runtime"
-  dependencies:
-    context: ^3.0.8
-    vest-utils: ^0.2.0
-  languageName: unknown
-  linkType: soft
-
 "vest-utils@^0.2.0, vest-utils@workspace:packages/vest-utils":
   version: 0.0.0-use.local
   resolution: "vest-utils@workspace:packages/vest-utils"
@@ -14039,7 +14030,16 @@ __metadata:
     context: ^3.0.8
     n4s: ^4.3.0
     vast: ^1.0.14
-    vest-runtime: ^0.0.1
+    vest-utils: ^0.2.0
+    vestjs-runtime: ^0.0.1
+  languageName: unknown
+  linkType: soft
+
+"vestjs-runtime@^0.0.1, vestjs-runtime@workspace:packages/vestjs-runtime":
+  version: 0.0.0-use.local
+  resolution: "vestjs-runtime@workspace:packages/vestjs-runtime"
+  dependencies:
+    context: ^3.0.8
     vest-utils: ^0.2.0
   languageName: unknown
   linkType: soft

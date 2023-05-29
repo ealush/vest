@@ -1,4 +1,4 @@
-import { Isolate } from 'vest-runtime';
+import { Isolate } from 'vestjs-runtime';
 
 import { OptionalFieldDeclaration, OptionalFields } from 'OptionalTypes';
 import { TFieldName } from 'SuiteResultTypes';

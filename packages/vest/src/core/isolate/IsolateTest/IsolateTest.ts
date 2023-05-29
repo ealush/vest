@@ -1,5 +1,5 @@
 import { CB, invariant, isPromise, seq } from 'vest-utils';
-import { Isolate, IsolateKey } from 'vest-runtime';
+import { Isolate, IsolateKey } from 'vestjs-runtime';
 
 import { IsolateTestReconciler } from 'IsolateTestReconciler';
 import {

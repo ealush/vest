@@ -1,5 +1,5 @@
-import { VestRuntime } from 'vest-runtime';
 import { assign } from 'vest-utils';
+import { VestRuntime } from 'vestjs-runtime';
 
 import {
   SuiteResult,

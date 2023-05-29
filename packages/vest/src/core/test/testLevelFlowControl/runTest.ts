@@ -1,4 +1,3 @@
-import { VestRuntime } from 'vest-runtime';
 import {
   isPromise,
   isStringValue,
@@ -6,6 +5,7 @@ import {
   text,
   deferThrow,
 } from 'vest-utils';
+import { VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
 import { ErrorStrings } from 'ErrorStrings';

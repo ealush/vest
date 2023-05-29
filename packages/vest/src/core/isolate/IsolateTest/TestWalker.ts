@@ -1,4 +1,4 @@
-import { Walker, Isolate, VestRuntime } from 'vest-runtime';
+import { Walker, Isolate, VestRuntime } from 'vestjs-runtime';
 
 import { IsolateTest } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';

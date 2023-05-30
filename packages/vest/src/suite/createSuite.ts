@@ -47,7 +47,6 @@ function createSuite<
 
   function suite(...args: Parameters<T>): SuiteRunResult<F, G> {
     return SuiteContext.run({}, () => {
-      // eslint-disable-next-line vest-internal/use-use
       const emit = VestRuntime.useEmit();
 
       emit(Events.SUITE_RUN_STARTED);

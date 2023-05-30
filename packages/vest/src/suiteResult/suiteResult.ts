@@ -10,9 +10,10 @@ export function useCreateSuiteResult<
   G extends TGroupName
 >(): SuiteResult<F, G> {
   return useSuiteResultCache<F, G>(() => {
-    // eslint-disable-next-line vest-internal/use-use
+    // @vx-allow use-use
     const summary = useProduceSuiteSummary<F, G>();
-    // eslint-disable-next-line vest-internal/use-use
+
+    // @vx-allow use-use
     const suiteName = useSuiteName();
     return Object.freeze(
       assign(summary, suiteSelectors<F, G>(summary), {

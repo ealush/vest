@@ -8,7 +8,12 @@ module.exports = {
   isAllowed,
 };
 
-function isAllowed(context, node, ruleName) {
+function isAllowed(context, node, id, ruleName) {
+  // This hnadles cases like: `const emit = useEmit();`
+  if (id.type === 'Identifier' && id.parent.type === 'VariableDeclarator') {
+    return isAllowed(context, id.parent, id.parent, ruleName);
+  }
+
   const nodeToCheckForComments =
     node.loc.start.column === 0 ? node : node.parent;
 

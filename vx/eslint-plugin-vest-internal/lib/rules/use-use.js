@@ -45,7 +45,7 @@ function matcher(type) {
 }
 
 function report(context, node, id) {
-  if (isAllowed(context, node, RULE_NAME)) {
+  if (isAllowed(context, node, id, RULE_NAME)) {
     return;
   }
   return context.report({

@@ -2477,7 +2477,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docusaurus/core@npm:2.4.0, @docusaurus/core@npm:^2.4.0":
+"@docusaurus/core@npm:2.4.0":
   version: 2.4.0
   resolution: "@docusaurus/core@npm:2.4.0"
   dependencies:
@@ -2561,7 +2561,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docusaurus/core@npm:2.4.1":
+"@docusaurus/core@npm:2.4.1, @docusaurus/core@npm:^2.4.1":
   version: 2.4.1
   resolution: "@docusaurus/core@npm:2.4.1"
   dependencies:
@@ -15595,7 +15595,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "website@workspace:website"
   dependencies:
-    "@docusaurus/core": ^2.4.0
+    "@docusaurus/core": ^2.4.1
     "@docusaurus/plugin-google-gtag": ^2.4.0
     "@docusaurus/preset-classic": ^2.4.1
     "@mdx-js/react": ^1.6.22

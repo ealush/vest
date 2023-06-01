@@ -581,4 +581,19 @@ describe('isExcluded', () => {
       );
     });
   });
+
+  describe('Invalid input', () => {
+    describe('ExclusionItem is not a string', () => {
+      it('Should skip registration', () => {
+        const suite = vest.create('suite', () => {
+          // @ts-ignore - Invalid input
+          vest.only(111);
+
+          vest.test('f1', () => false);
+        });
+
+        expect(suite().hasErrors('f1')).toBe(true);
+      });
+    });
+  });
 });

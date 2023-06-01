@@ -23,6 +23,9 @@ export function useAttemptRunTest(testObject: IsolateTest) {
   }
 
   if (!testObject.isNonActionable()) {
+    // Probably unreachable. If we get here, it means that
+    // something was really wrong and should be reported.
+    /* istanbul ignore next */
     deferThrow(
       text(ErrorStrings.UNEXPECTED_TEST_REGISTRATION_ERROR, {
         testObject: JSON.stringify(testObject),
@@ -55,6 +58,9 @@ function useRunTest(testObject: IsolateTest): void {
       onTestCompleted(VestBus, testObject);
     }
   } catch (e) {
+    // Probably unreachable. If we get here, it means that
+    // something was really wrong and should be reported.
+    /* istanbul ignore next */
     throw new Error(
       text(ErrorStrings.UNEXPECTED_TEST_REGISTRATION_ERROR, {
         testObject: JSON.stringify(testObject),

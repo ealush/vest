@@ -16,6 +16,7 @@ export function IsolateTestReconciler(
   // Start by verifying params
   if (!IsolateTest.is(currentNode)) {
     // This is unreachable, since this function should only be called with IsolateTest nodes
+    /* istanbul ignore next */
     return currentNode;
   }
 
@@ -62,6 +63,7 @@ function handleCollision(
   if (!IsolateTest.is(prevNode)) {
     // I believe we cannot actually reach this point.
     // Because it should already be handled by nodeReorderDetected.
+    /* istanbul ignore next */
     return newNode;
   }
 

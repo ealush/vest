@@ -68,6 +68,7 @@ export function include<F extends TFieldName, G extends TGroupName>(
         // I suspect this code is technically unreachable because
         // if there are any skip/only rules applied to the current
         // field, the "isExcluded" function will have already bailed
+        /* istanbul ignore next */
         return defaultTo(exclusion.tests[fieldName], true);
       }
 

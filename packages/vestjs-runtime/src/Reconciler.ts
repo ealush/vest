@@ -53,6 +53,7 @@ export class Reconciler {
     if (!historyNode || !testIsolate) {
       // This is probably unreachable, but TS is not convinced.
       // Let's play it safe.
+      /* istanbul ignore next */
       return;
     }
 

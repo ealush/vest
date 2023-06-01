@@ -6205,10 +6205,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^16.0.3":
-  version: 16.0.3
-  resolution: "dotenv@npm:16.0.3"
-  checksum: afcf03f373d7a6d62c7e9afea6328e62851d627a4e73f2e12d0a8deae1cd375892004f3021883f8aec85932cd2834b091f568ced92b4774625b321db83b827f8
+"dotenv@npm:^16.1.3":
+  version: 16.1.3
+  resolution: "dotenv@npm:16.1.3"
+  checksum: 8f73bae720161cf365b679de162fe79a05f5b7a21d0d2b8bf9fb0601a2ed30f7e9dc49fa8b752d93206e4b7d427eccea2f383a1622cd5da4a1824f43bf8f780b
   languageName: node
   linkType: hard
 
@@ -14104,7 +14104,7 @@ __metadata:
     "@rollup/plugin-replace": ^5.0.2
     context: 3.0.2
     date-fns: ^2.30.0
-    dotenv: ^16.0.3
+    dotenv: ^16.1.3
     fs-extra: ^11.1.1
     glob: ^10.2.3
     inquirer: ^9.2.2

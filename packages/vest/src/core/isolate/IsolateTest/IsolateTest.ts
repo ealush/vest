@@ -1,5 +1,5 @@
 import { CB, invariant, isPromise, seq } from 'vest-utils';
-import { Isolate, IsolateKey } from 'vestjs-runtime';
+import { Isolate, IsolateKey, IsolateMutator } from 'vestjs-runtime';
 
 import { IsolateTestReconciler } from 'IsolateTestReconciler';
 import {
@@ -56,7 +56,7 @@ export class IsolateTest<
       this.message = message;
     }
 
-    this.setKey(key);
+    IsolateMutator.setKey(this, key);
   }
 
   static create<Callback extends CB = CB>(

@@ -1,6 +1,6 @@
+import { ErrorStrings } from 'ErrorStrings';
 import { invariant } from 'vest-utils';
 
-import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
 
 export function asVestTest(value: any): IsolateTest {

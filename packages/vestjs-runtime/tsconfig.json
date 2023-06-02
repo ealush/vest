@@ -11,8 +11,11 @@
       "VestRuntime": ["./src/VestRuntime.ts"],
       "Reconciler": ["./src/Reconciler.ts"],
       "IsolateWalker": ["./src/IsolateWalker.ts"],
-      "Isolate": ["./src/Isolate.ts"],
-      "ErrorStrings": ["./src/errors/ErrorStrings.ts"]
+      "Bus": ["./src/Bus.ts"],
+      "ErrorStrings": ["./src/errors/ErrorStrings.ts"],
+      "IsolateMutator": ["./src/Isolate/IsolateMutator.ts"],
+      "IsolateInspector": ["./src/Isolate/IsolateInspector.ts"],
+      "Isolate": ["./src/Isolate/Isolate.ts"]
     }
   }
 }

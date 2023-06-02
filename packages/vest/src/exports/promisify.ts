@@ -1,6 +1,6 @@
+import { ErrorStrings } from 'ErrorStrings';
 import { invariant, isFunction } from 'vest-utils';
 
-import { ErrorStrings } from 'ErrorStrings';
 import {
   SuiteResult,
   SuiteRunResult,

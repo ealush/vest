@@ -1,10 +1,15 @@
 import { CB, invariant, isNullish } from 'vest-utils';
 
-import type { Isolate } from 'Isolate';
+import { type Isolate } from 'Isolate';
+import { IsolateInspector } from 'IsolateInspector';
+import { IsolateMutator } from 'IsolateMutator';
 import * as VestRuntime from 'VestRuntime';
 
-export interface IRecociler {
-  (currentNode: Isolate, historicNode: Isolate | null): Isolate;
+// I would rather not use `any` here, but instead use `Isolate`.
+// The problem is that it breaks the actual implementation of `Isolate` in `IsolateTest`
+// As it is not properly extending `Isolate`.
+export interface IRecociler<I = any> {
+  (currentNode: I, historicNode: Isolate | null): I;
 }
 
 export function BaseReconciler(
@@ -19,7 +24,7 @@ export function BaseReconciler(
 
 export class Reconciler {
   static reconcile<Callback extends CB = CB>(
-    reconciler: IRecociler,
+    reconciler: IRecociler<Isolate>,
     node: Isolate,
     callback: Callback
   ): [Isolate, ReturnType<Callback>] {
@@ -31,8 +36,10 @@ export class Reconciler {
     if (parent) {
       // If we have a parent, we need to get the history node from the parent's children
       // We take the history node from the cursor of the active node's children
-      localHistoryNode =
-        historyNode?.at(VestRuntime.useCurrentCursor()) ?? null;
+      localHistoryNode = IsolateInspector.at(
+        historyNode,
+        IsolateInspector.cursor(parent)
+      );
     }
 
     const nextNode = reconciler(node, localHistoryNode);
@@ -57,11 +64,11 @@ export class Reconciler {
       return;
     }
 
-    historyNode.slice(VestRuntime.useCurrentCursor());
+    IsolateMutator.slice(historyNode, IsolateInspector.cursor(testIsolate));
   }
 
   static handleIsolateNodeWithKey(node: Isolate): Isolate {
-    invariant(node.usesKey());
+    invariant(IsolateInspector.usesKey(node));
 
     const prevNodeByKey = VestRuntime.useHistoryKey(node.key);
 

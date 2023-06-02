@@ -65,7 +65,7 @@ function useGetTestFromCache(
     return cache(dependencies, cacheAction);
   }
 
-  IsolateTest.setNode(cachedValue);
+  VestRuntime.addNodeToHistory(cachedValue);
 
   return cachedValue;
 }

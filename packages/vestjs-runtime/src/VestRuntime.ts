@@ -1,4 +1,3 @@
-import { ErrorStrings } from 'ErrorStrings';
 import { createCascade } from 'context';
 import {
   invariant,
@@ -14,7 +13,10 @@ import {
   bus,
 } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { Isolate } from 'Isolate';
+import { IsolateInspector } from 'IsolateInspector';
+import { IsolateMutator } from 'IsolateMutator';
 
 type CTXType = StateRefType & {
   historyNode: Isolate | null;
@@ -54,34 +56,14 @@ export const Run = PersistedContext.run;
 
 export const RuntimeApi = {
   Run,
+  addNodeToHistory,
   createRef,
   persist,
   reset,
   useAvailableRoot,
-  useBus,
   useCurrentCursor,
-  useEmit,
-  usePrepareEmitter,
   useXAppData,
 };
-
-export function useBus() {
-  return useX().stateRef.Bus;
-}
-
-/*
-  Returns an emitter, but it also has a shortcut for emitting an event immediately
-  by passing an event name.
-*/
-export function useEmit() {
-  return persist(useBus().emit);
-}
-
-export function usePrepareEmitter<T = void>(event: string): (arg: T) => void {
-  const emit = useEmit();
-
-  return (arg: T) => emit(event, arg);
-}
 
 export function useXAppData<T = object>() {
   return useX().stateRef.appData as T;
@@ -105,7 +87,7 @@ export function persist<T extends CB>(cb: T): T {
     return PersistedContext.run(ctxToUse.stateRef, () => cb(...args));
   }) as T;
 }
-function useX<T = object>(): CTXType & T {
+export function useX<T = object>(): CTXType & T {
   return PersistedContext.useX() as CTXType & T;
 }
 
@@ -115,6 +97,18 @@ export function useHistoryRoot() {
 export function useHistoryNode() {
   return useX().historyNode;
 }
+
+export function addNodeToHistory(node: Isolate): void {
+  const parent = useIsolate();
+  if (parent) {
+    useSetNextIsolateChild(node);
+  } else {
+    useSetHistory(node);
+  }
+
+  IsolateMutator.setParent(node, parent);
+}
+
 export function useSetHistory(history: Isolate) {
   const [, setHistoryRoot] = useHistoryRoot();
   setHistoryRoot(history);
@@ -132,7 +126,8 @@ export function useIsolate() {
   return useX().runtimeNode ?? null;
 }
 export function useCurrentCursor() {
-  return useIsolate()?.cursor() ?? 0;
+  const isolate = useIsolate();
+  return isolate ? IsolateInspector.cursor(isolate) : 0;
 }
 export function useRuntimeRoot() {
   return useX().runtimeRoot;
@@ -142,7 +137,7 @@ export function useSetNextIsolateChild(child: Isolate): void {
 
   invariant(currentIsolate, ErrorStrings.NO_ACTIVE_ISOLATE);
 
-  currentIsolate.addChild(child);
+  IsolateMutator.addChild(currentIsolate, child);
 }
 export function useSetIsolateKey(key: string | null, value: Isolate): void {
   if (!key) {

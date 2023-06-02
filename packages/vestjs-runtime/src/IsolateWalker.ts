@@ -1,6 +1,7 @@
 import { isNullish, optionalFunctionValue } from 'vest-utils';
 
-import type { Isolate } from 'Isolate';
+import { type Isolate } from 'Isolate';
+import { IsolateMutator } from 'IsolateMutator';
 
 type VisitOnlyPredicate = (isolate: Isolate) => boolean;
 
@@ -139,7 +140,7 @@ export function pluck(
     startNode,
     node => {
       if (predicate(node) && node.parent) {
-        node.parent.removeChild(node);
+        IsolateMutator.removeChild(node.parent, node);
       }
     },
     visitOnly

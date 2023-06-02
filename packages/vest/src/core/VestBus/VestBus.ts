@@ -1,4 +1,4 @@
-import { VestRuntime } from 'vestjs-runtime';
+import { Bus } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
 import { IsolateTest } from 'IsolateTest';
@@ -14,7 +14,7 @@ import { useRunDoneCallbacks, useRunFieldCallbacks } from 'runCallbacks';
 
 // eslint-disable-next-line max-statements
 export function useInitVestBus() {
-  const VestBus = VestRuntime.useBus();
+  const VestBus = Bus.useBus();
 
   // Report a the completion of a test. There may be other tests with the same
   // name that are still running, or not yet started.

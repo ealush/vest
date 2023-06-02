@@ -1,6 +1,6 @@
 import { deferThrow, isNullish, text } from 'vest-utils';
-import { Reconciler } from 'vestjs-runtime';
-import type { Isolate } from 'vestjs-runtime';
+import { IsolateInspector, Reconciler } from 'vestjs-runtime';
+import type { Isolate, TIsolate } from 'vestjs-runtime';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
@@ -10,9 +10,9 @@ import { useVerifyTestRun } from 'verifyTestRun';
 
 // @vx-allow use-use
 export function IsolateTestReconciler(
-  currentNode: Isolate,
-  historyNode: Isolate | null
-): Isolate {
+  currentNode: TIsolate,
+  historyNode: TIsolate | null
+): TIsolate {
   // Start by verifying params
   if (!IsolateTest.is(currentNode)) {
     // This is unreachable, since this function should only be called with IsolateTest nodes
@@ -52,7 +52,7 @@ function handleCollision(
   newNode: IsolateTest,
   prevNode?: Isolate
 ): IsolateTest {
-  if (newNode.usesKey()) {
+  if (IsolateInspector.usesKey(newNode)) {
     return IsolateTest.cast(Reconciler.handleIsolateNodeWithKey(newNode));
   }
 
@@ -96,7 +96,7 @@ function usePickNode(
 }
 
 function handleNoHistoryNode(testNode: IsolateTest): IsolateTest {
-  if (testNode.usesKey()) {
+  if (IsolateInspector.usesKey(testNode)) {
     return IsolateTest.cast(Reconciler.handleIsolateNodeWithKey(testNode));
   }
 
@@ -117,7 +117,7 @@ function throwTestOrderError(
   newNode: IsolateTest,
   prevNode: Isolate | undefined
 ): void {
-  if (newNode.shouldAllowReorder()) {
+  if (IsolateInspector.shouldAllowReorder(newNode)) {
     return;
   }
 

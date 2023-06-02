@@ -30,5 +30,5 @@ type OnReturn = { off: () => void };
 
 export type BusType = {
   on: (event: string, handler: CB) => OnReturn;
-  emit: (event: string, ...args: any[]) => void;
+  emit: (event: string, data: any) => void;
 };

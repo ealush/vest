@@ -1,16 +1,18 @@
 import { CB, invariant, isNullish } from 'vest-utils';
 
-import type { Isolate } from 'Isolate';
+import { type TIsolate } from 'Isolate';
+import { IsolateInspector } from 'IsolateInspector';
+import { IsolateMutator } from 'IsolateMutator';
 import * as VestRuntime from 'VestRuntime';
 
 export interface IRecociler {
-  (currentNode: Isolate, historicNode: Isolate | null): Isolate;
+  (currentNode: TIsolate, historicNode: TIsolate | null): TIsolate;
 }
 
 export function BaseReconciler(
-  currentNode: Isolate,
-  historicNode: Isolate | null
-): Isolate {
+  currentNode: TIsolate,
+  historicNode: TIsolate | null
+): TIsolate {
   if (isNullish(historicNode)) {
     return currentNode;
   }
@@ -20,9 +22,9 @@ export function BaseReconciler(
 export class Reconciler {
   static reconcile<Callback extends CB = CB>(
     reconciler: IRecociler,
-    node: Isolate,
+    node: TIsolate,
     callback: Callback
-  ): [Isolate, ReturnType<Callback>] {
+  ): [TIsolate, ReturnType<Callback>] {
     const parent = VestRuntime.useIsolate();
 
     const historyNode = VestRuntime.useHistoryNode();
@@ -31,8 +33,10 @@ export class Reconciler {
     if (parent) {
       // If we have a parent, we need to get the history node from the parent's children
       // We take the history node from the cursor of the active node's children
-      localHistoryNode =
-        historyNode?.at(VestRuntime.useCurrentCursor()) ?? null;
+      localHistoryNode = IsolateInspector.at(
+        historyNode,
+        IsolateInspector.cursor(parent)
+      );
     }
 
     const nextNode = reconciler(node, localHistoryNode);
@@ -57,11 +61,11 @@ export class Reconciler {
       return;
     }
 
-    historyNode.slice(VestRuntime.useCurrentCursor());
+    IsolateMutator.slice(historyNode, IsolateInspector.cursor(testIsolate));
   }
 
-  static handleIsolateNodeWithKey(node: Isolate): Isolate {
-    invariant(node.usesKey());
+  static handleIsolateNodeWithKey(node: TIsolate): TIsolate {
+    invariant(IsolateInspector.usesKey(node));
 
     const prevNodeByKey = VestRuntime.useHistoryKey(node.key);
 
@@ -78,8 +82,8 @@ export class Reconciler {
 }
 
 function useRunAsNew<Callback extends CB = CB>(
-  localHistoryNode: Isolate | null,
-  current: Isolate,
+  localHistoryNode: TIsolate | null,
+  current: TIsolate,
   callback: CB
 ): ReturnType<Callback> {
   const runtimeRoot = VestRuntime.useRuntimeRoot();

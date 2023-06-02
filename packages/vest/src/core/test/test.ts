@@ -1,8 +1,8 @@
+import { ErrorStrings } from 'ErrorStrings';
 import { assign, invariant, isFunction, isStringValue, text } from 'vest-utils';
-import { IsolateKey, VestRuntime } from 'vestjs-runtime';
+import { Bus, IsolateKey } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
-import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
 import { useGroupName } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
@@ -43,7 +43,7 @@ function vestTest<F extends TFieldName>(
   validateTestParams(fieldName, testFn);
 
   const groupName = useGroupName();
-  const emit = VestRuntime.useEmit();
+  const emit = Bus.useEmit();
 
   const testObjectInput = { fieldName, groupName, key, message, testFn };
 

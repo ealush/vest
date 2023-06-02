@@ -1,5 +1,5 @@
 import { assign, CB } from 'vest-utils';
-import { VestRuntime } from 'vestjs-runtime';
+import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
 import { IsolateSuite } from 'IsolateSuite';
@@ -47,7 +47,7 @@ function createSuite<
 
   function suite(...args: Parameters<T>): SuiteRunResult<F, G> {
     return SuiteContext.run({}, () => {
-      const emit = VestRuntime.useEmit();
+      const emit = Bus.useEmit();
 
       emit(Events.SUITE_RUN_STARTED);
 
@@ -69,9 +69,9 @@ function createSuite<
       VestRuntime.persist(suite),
       {
         get: VestRuntime.persist(useCreateSuiteResult),
-        remove: VestRuntime.usePrepareEmitter<string>(Events.REMOVE_FIELD),
-        reset: VestRuntime.usePrepareEmitter(Events.RESET_SUITE),
-        resetField: VestRuntime.usePrepareEmitter<string>(Events.RESET_FIELD),
+        remove: Bus.usePrepareEmitter<string>(Events.REMOVE_FIELD),
+        reset: Bus.usePrepareEmitter(Events.RESET_SUITE),
+        resetField: Bus.usePrepareEmitter<string>(Events.RESET_FIELD),
         ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
         ...getTypedMethods<F, G>(),
       }
@@ -84,7 +84,7 @@ function useRunSuiteCallback<
   F extends TFieldName,
   G extends TGroupName
 >(suiteCallback: T, ...args: Parameters<T>): () => SuiteRunResult<F, G> {
-  const emit = VestRuntime.useEmit();
+  const emit = Bus.useEmit();
 
   return () => {
     suiteCallback(...args);

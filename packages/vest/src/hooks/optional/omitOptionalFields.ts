@@ -4,7 +4,7 @@ import {
   optionalFunctionValue,
   isNullish,
 } from 'vest-utils';
-import { VestRuntime } from 'vestjs-runtime';
+import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
 import type { IsolateSuite } from 'IsolateSuite';
@@ -19,7 +19,7 @@ import { TestWalker } from 'TestWalker';
 
 export function useOmitOptionalFields(): void {
   const root = VestRuntime.useAvailableRoot<IsolateSuite>();
-  const emit = VestRuntime.useEmit();
+  const emit = Bus.useEmit();
 
   const optionalFields = root?.getOptionalFields();
 

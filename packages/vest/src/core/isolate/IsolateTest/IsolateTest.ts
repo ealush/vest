@@ -1,4 +1,4 @@
-import { CB, invariant, isPromise, seq } from 'vest-utils';
+import { CB, isPromise, seq } from 'vest-utils';
 import { Isolate, IsolateKey, IsolateMutator } from 'vestjs-runtime';
 
 import { IsolateTestReconciler } from 'IsolateTestReconciler';
@@ -10,6 +10,8 @@ import {
 import { TestSeverity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestFn, AsyncTest, TestResult } from 'TestTypes';
+import { VestIsolateType } from 'VestIsolateType';
+import { castIsolateTest } from 'isIsolateTest';
 import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
 
 type IsolateTestInput = {
@@ -32,6 +34,7 @@ export class IsolateTest<
   asyncTest?: AsyncTest;
   id = seq();
   severity = TestSeverity.Error;
+  type: symbol = VestIsolateType.Test;
   private stateMachine = createTestStateMachine();
 
   static reconciler = IsolateTestReconciler;
@@ -63,15 +66,7 @@ export class IsolateTest<
     callback: Callback,
     data: IsolateTestInput
   ): IsolateTest {
-    return IsolateTest.cast(super.create(callback, data));
-  }
-
-  static cast<
-    F extends TFieldName = TFieldName,
-    G extends TGroupName = TGroupName
-  >(isolate: Isolate): IsolateTest<F, G> {
-    IsolateTest.isX(isolate);
-    return isolate as IsolateTest<F, G>;
+    return castIsolateTest(super.create(callback, data));
   }
 
   get status(): TestStatus {
@@ -210,13 +205,5 @@ export class IsolateTest<
 
   isAsyncTest(): boolean {
     return isPromise(this.asyncTest);
-  }
-
-  static is(value: any): value is IsolateTest {
-    return value instanceof IsolateTest;
-  }
-
-  static isX(value: any): asserts value is IsolateTest {
-    invariant(this.is(value));
   }
 }

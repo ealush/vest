@@ -3,8 +3,9 @@ import { IsolateInspector, Reconciler } from 'vestjs-runtime';
 import type { Isolate } from 'vestjs-runtime';
 
 import { ErrorStrings } from 'ErrorStrings';
-import { IsolateTest } from 'IsolateTest';
+import type { IsolateTest } from 'IsolateTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
+import { castIsolateTest, isIsolateTest } from 'isIsolateTest';
 import { isSameProfileTest } from 'isSameProfileTest';
 import { useVerifyTestRun } from 'verifyTestRun';
 
@@ -17,7 +18,7 @@ export function IsolateTestReconciler(
     return handleNoHistoryNode(currentNode);
   }
 
-  if (!IsolateTest.is(historyNode)) {
+  if (!isIsolateTest(historyNode)) {
     return currentNode;
   }
 
@@ -38,7 +39,7 @@ function nodeReorderDetected(
   newNode: IsolateTest,
   prevNode?: Isolate
 ): boolean {
-  return !!IsolateTest.is(prevNode) && !isSameProfileTest(prevNode, newNode);
+  return !!isIsolateTest(prevNode) && !isSameProfileTest(prevNode, newNode);
 }
 
 function handleCollision(
@@ -46,14 +47,14 @@ function handleCollision(
   prevNode?: Isolate
 ): IsolateTest {
   if (IsolateInspector.usesKey(newNode)) {
-    return IsolateTest.cast(Reconciler.handleIsolateNodeWithKey(newNode));
+    return castIsolateTest(Reconciler.handleIsolateNodeWithKey(newNode));
   }
 
   if (nodeReorderDetected(newNode, prevNode)) {
     return onNodeReorder(newNode, prevNode);
   }
 
-  if (!IsolateTest.is(prevNode)) {
+  if (!isIsolateTest(prevNode)) {
     // I believe we cannot actually reach this point.
     // Because it should already be handled by nodeReorderDetected.
     /* istanbul ignore next */
@@ -90,7 +91,7 @@ function usePickNode(
 
 function handleNoHistoryNode(testNode: IsolateTest): IsolateTest {
   if (IsolateInspector.usesKey(testNode)) {
-    return IsolateTest.cast(Reconciler.handleIsolateNodeWithKey(testNode));
+    return castIsolateTest(Reconciler.handleIsolateNodeWithKey(testNode));
   }
 
   return testNode;
@@ -101,7 +102,7 @@ function cancelOverriddenPendingTestOnTestReRun(
   currentNode: Isolate,
   prevTestObject: IsolateTest
 ) {
-  if (nextNode === currentNode && IsolateTest.is(currentNode)) {
+  if (nextNode === currentNode && isIsolateTest(currentNode)) {
     cancelOverriddenPendingTest(prevTestObject, currentNode);
   }
 }
@@ -117,7 +118,7 @@ function throwTestOrderError(
   deferThrow(
     text(ErrorStrings.TESTS_CALLED_IN_DIFFERENT_ORDER, {
       fieldName: newNode.fieldName,
-      prevName: IsolateTest.is(prevNode) ? prevNode.fieldName : undefined,
+      prevName: isIsolateTest(prevNode) ? prevNode.fieldName : undefined,
     })
   );
 }

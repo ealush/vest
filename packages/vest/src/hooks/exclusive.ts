@@ -1,4 +1,3 @@
-import { ErrorStrings } from 'ErrorStrings';
 import {
   isStringValue,
   asArray,
@@ -6,6 +5,7 @@ import {
   optionalFunctionValue,
 } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
 import { TExclusion, useExclusion, useInclusion } from 'SuiteContext';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';

@@ -2,6 +2,7 @@ import { Walker, VestRuntime, Isolate } from 'vestjs-runtime';
 
 import { IsolateTest } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { castIsolateTest, isIsolateTest, isIsolateTestX } from 'isIsolateTest';
 import matchingFieldName from 'matchingFieldName';
 
 type MaybeRoot = Isolate | null;
@@ -11,7 +12,7 @@ export class TestWalker {
 
   static hasNoTests(root: MaybeRoot = TestWalker.defaultRoot()): boolean {
     if (!root) return true;
-    return !Walker.has(root, IsolateTest.is);
+    return !Walker.has(root, isIsolateTest);
   }
 
   static someIncompleteTests(
@@ -22,11 +23,11 @@ export class TestWalker {
     return Walker.some(
       root,
       isolate => {
-        IsolateTest.isX(isolate);
+        isIsolateTestX(isolate);
 
         return isolate.isPending() && predicate(isolate);
       },
-      IsolateTest.is
+      isIsolateTest
     );
   }
 
@@ -38,11 +39,11 @@ export class TestWalker {
     return Walker.some(
       root,
       isolate => {
-        IsolateTest.isX(isolate);
+        isIsolateTestX(isolate);
 
         return predicate(isolate);
       },
-      IsolateTest.is
+      isIsolateTest
     );
   }
 
@@ -54,11 +55,11 @@ export class TestWalker {
     return Walker.every(
       root,
       isolate => {
-        IsolateTest.isX(isolate);
+        isIsolateTestX(isolate);
 
         return predicate(isolate);
       },
-      IsolateTest.is
+      isIsolateTest
     );
   }
 
@@ -70,9 +71,9 @@ export class TestWalker {
     Walker.walk(
       root,
       (isolate, breakout) => {
-        callback(IsolateTest.cast<F, G>(isolate), breakout);
+        callback(castIsolateTest(isolate), breakout);
       },
-      IsolateTest.is
+      isIsolateTest
     );
   }
 
@@ -93,11 +94,11 @@ export class TestWalker {
     Walker.pluck(
       root,
       isolate => {
-        IsolateTest.isX(isolate);
+        isIsolateTestX(isolate);
 
         return predicate(isolate);
       },
-      IsolateTest.is
+      isIsolateTest
     );
   }
 

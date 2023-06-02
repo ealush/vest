@@ -54,6 +54,7 @@ IsolateTest {
       "warnings": [],
     },
     "parent": null,
+    "type": Symbol(Suite),
   },
   "severity": "error",
   "stateMachine": {
@@ -61,6 +62,7 @@ IsolateTest {
     "transition": [Function],
   },
   "testFn": [Function],
+  "type": Symbol(Test),
 }
 `;
 
@@ -116,6 +118,7 @@ IsolateTest {
       "warnings": [],
     },
     "parent": null,
+    "type": Symbol(Suite),
   },
   "severity": "error",
   "stateMachine": {
@@ -123,6 +126,7 @@ IsolateTest {
     "transition": [Function],
   },
   "testFn": [Function],
+  "type": Symbol(Test),
 }
 `;
 
@@ -179,6 +183,7 @@ IsolateTest {
       "warnings": [],
     },
     "parent": null,
+    "type": Symbol(Suite),
   },
   "severity": "error",
   "stateMachine": {
@@ -186,6 +191,7 @@ IsolateTest {
     "transition": [Function],
   },
   "testFn": [Function],
+  "type": Symbol(Test),
 }
 `;
 
@@ -240,6 +246,7 @@ IsolateTest {
       "warnings": [],
     },
     "parent": null,
+    "type": Symbol(Suite),
   },
   "severity": "error",
   "stateMachine": {
@@ -247,5 +254,6 @@ IsolateTest {
     "transition": [Function],
   },
   "testFn": [Function],
+  "type": Symbol(Test),
 }
 `;

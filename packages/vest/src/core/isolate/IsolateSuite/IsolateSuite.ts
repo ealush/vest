@@ -2,8 +2,10 @@ import { Isolate } from 'vestjs-runtime';
 
 import { OptionalFieldDeclaration, OptionalFields } from 'OptionalTypes';
 import { TFieldName } from 'SuiteResultTypes';
+import { VestIsolateType } from 'VestIsolateType';
 
 export class IsolateSuite extends Isolate {
+  type: symbol = VestIsolateType.Suite;
   optional: OptionalFields = {};
 
   setOptionalField(

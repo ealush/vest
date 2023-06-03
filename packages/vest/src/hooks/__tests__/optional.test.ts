@@ -48,6 +48,25 @@ describe('optional hook', () => {
         expect(res.isValid()).toBe(true);
       });
     });
+
+    describe('When multiple tests of the same field are omitted', () => {
+      it('Should omit the field', () => {
+        const suite = vest.create(() => {
+          vest.optional({
+            f1: () => true,
+          });
+
+          vest.test('f1', () => false);
+          vest.test('f1', () => false);
+        });
+
+        const res = suite();
+
+        expect(res.hasErrors('f1')).toBe(false);
+        expect(res.isValid('f1')).toBe(true);
+        expect(res.isValid()).toBe(true);
+      });
+    });
   });
 
   describe('boolean optional field indicator', () => {

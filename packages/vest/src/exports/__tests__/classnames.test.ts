@@ -1,9 +1,8 @@
-import { Modes } from 'Modes';
-
 import { dummyTest } from '../../../testUtils/testDummy';
 import classnames from '../classnames';
 import promisify from '../promisify';
 
+import { Modes } from 'Modes';
 import * as vest from 'vest';
 
 describe('Utility: classnames', () => {
@@ -21,9 +20,19 @@ describe('Utility: classnames', () => {
 
   describe('When called with a vest result object', () => {
     it('Should return a function', async () => {
-      const validate = vest.create(jest.fn());
+      const validate = vest.create(
+        jest.fn(() => {
+          dummyTest.failing('field_0');
+        })
+      );
       expect(typeof classnames(validate())).toBe('function');
-      const promisifed = await promisify(vest.create(jest.fn()))();
+      const promisifed = await promisify(
+        vest.create(
+          jest.fn(() => {
+            dummyTest.failing('field_0');
+          })
+        )
+      )();
       expect(typeof classnames(promisifed)).toBe('function');
     });
   });

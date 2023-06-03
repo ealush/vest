@@ -23,6 +23,7 @@ export function shouldSkipDoneRegistration<
   // If we do not have any test runs for the current field
   return !!(
     !isFunction(callback) ||
-    (fieldName && numberEquals(output.tests[fieldName]?.testCount, 0))
+    numberEquals(output.testCount, 0) ||
+    (fieldName && numberEquals(output.tests[fieldName]?.testCount ?? 0, 0))
   );
 }

@@ -14,7 +14,13 @@ describe('Utility: promisify', () => {
   ) => Promise<vest.SuiteResult<string, TFieldName>>;
 
   beforeEach(() => {
-    validatorFn = jest.fn(vest.create(jest.fn()));
+    validatorFn = jest.fn(
+      vest.create(
+        jest.fn(() => {
+          dummyTest.failing('field_0');
+        })
+      )
+    );
     validateAsync = promisify(validatorFn);
   });
 
@@ -42,7 +48,12 @@ describe('Utility: promisify', () => {
   describe('When returned function is invoked', () => {
     it('Calls `validatorFn` argument', () =>
       TestPromise(done => {
-        const validateAsync = promisify(vest.create(() => done()));
+        const validateAsync = promisify(
+          vest.create(() => {
+            dummyTest.failing('field_0');
+            done();
+          })
+        );
         validateAsync();
       }));
 

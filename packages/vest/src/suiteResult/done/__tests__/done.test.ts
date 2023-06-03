@@ -1,7 +1,7 @@
 import wait from 'wait';
 
-import { dummyTest } from '../../../testUtils/testDummy';
-import { TestPromise } from '../../../testUtils/testPromise';
+import { dummyTest } from '../../../../testUtils/testDummy';
+import { TestPromise } from '../../../../testUtils/testPromise';
 
 import * as vest from 'vest';
 
@@ -319,7 +319,7 @@ describe('done', () => {
   });
 
   describe('Passing a field that does not exist', () => {
-    it('Should call the callback immedaitely', () => {
+    it('Should avoid calling the callback', () => {
       const cb = jest.fn();
 
       const suite = vest.create(() => {
@@ -328,7 +328,33 @@ describe('done', () => {
 
       suite().done('non-existent', cb);
 
-      expect(cb).toHaveBeenCalled();
+      expect(cb).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('When no tests are run', () => {
+    it('Should avoid calling the callback', () => {
+      const cb = jest.fn();
+
+      const suite = vest.create(() => {});
+
+      suite().done(cb);
+
+      expect(cb).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('When focused done call does not match executed tests', () => {
+    it('Should not call the callback', () => {
+      const cb = jest.fn();
+
+      const suite = vest.create(() => {
+        vest.test('test', () => false);
+      });
+
+      suite().done('non-existent', cb);
+
+      expect(cb).not.toHaveBeenCalled();
     });
   });
 });

@@ -56,8 +56,8 @@
         "./src/suiteResult/done/shouldSkipDoneRegistration.ts"
       ],
       "deferDoneCallback": ["./src/suiteResult/done/deferDoneCallback.ts"],
+      "done.test": ["./src/suiteResult/done/__tests__/done.test.ts"],
       "produce.test": ["./src/suiteResult/__tests__/produce.test.ts"],
-      "done.test": ["./src/suiteResult/__tests__/done.test.ts"],
       "staticSuite": ["./src/suite/staticSuite.ts"],
       "runCallbacks": ["./src/suite/runCallbacks.ts"],
       "getTypedMethods": ["./src/suite/getTypedMethods.ts"],

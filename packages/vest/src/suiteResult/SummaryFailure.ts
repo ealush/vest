@@ -20,8 +20,4 @@ export class SummaryFailure<F extends TFieldName, G extends TGroupName>
       testObject.groupName
     );
   }
-
-  toString() {
-    return this.message || '';
-  }
 }

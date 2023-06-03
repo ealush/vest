@@ -1,9 +1,4 @@
-import {
-  isEmpty,
-  hasOwnProperty,
-  optionalFunctionValue,
-  isNullish,
-} from 'vest-utils';
+import { isEmpty, optionalFunctionValue } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
@@ -37,7 +32,7 @@ export function useOmitOptionalFields(): void {
     }
     // If we already added the current field (not this test specifically)
     // no need for further checks, go and omit the test
-    if (hasOwnProperty(shouldOmit, testObject.fieldName)) {
+    if (shouldOmit.has(testObject.fieldName)) {
       verifyAndOmit(testObject);
     } else {
       // check if the field has an optional function
@@ -60,11 +55,7 @@ export function useOmitOptionalFields(): void {
 
   function runOptionalConfig(testObject: IsolateTest) {
     // Ge the optional configuration for the given field
-    const optionalConfig = root?.getOptionalField(testObject.fieldName);
-
-    if (isNullish(optionalConfig)) {
-      return;
-    }
+    const optionalConfig = root.getOptionalField(testObject.fieldName);
 
     // If the optional was set to a function or a boolean, run it and verify/omit the test
     if (optionalFunctionValue(optionalConfig.rule) === true) {

@@ -43,12 +43,11 @@ function vestTest<F extends TFieldName>(
   validateTestParams(fieldName, testFn);
 
   const groupName = useGroupName();
-  const emit = Bus.useEmit();
 
   const testObjectInput = { fieldName, groupName, key, message, testFn };
 
   // This invalidates the suite cache.
-  emit(Events.TEST_RUN_STARTED);
+  Bus.useEmit(Events.TEST_RUN_STARTED);
 
   return IsolateTest.create(useAttemptRunTest, testObjectInput);
 }

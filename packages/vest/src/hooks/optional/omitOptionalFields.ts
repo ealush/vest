@@ -19,7 +19,6 @@ import { TestWalker } from 'TestWalker';
 
 export function useOmitOptionalFields(): void {
   const root = VestRuntime.useAvailableRoot<IsolateSuite>();
-  const emit = Bus.useEmit();
 
   const optionalFields = root?.getOptionalFields();
 
@@ -47,7 +46,7 @@ export function useOmitOptionalFields(): void {
     }
   });
 
-  emit(Events.DONE_TEST_OMISSION_PASS);
+  Bus.useEmit(Events.DONE_TEST_OMISSION_PASS);
 
   function verifyAndOmit(testObject: IsolateTest) {
     if (shouldOmit.has(testObject.fieldName)) {

@@ -47,9 +47,7 @@ function createSuite<
 
   function suite(...args: Parameters<T>): SuiteRunResult<F, G> {
     return SuiteContext.run({}, () => {
-      const emit = Bus.useEmit();
-
-      emit(Events.SUITE_RUN_STARTED);
+      Bus.useEmit(Events.SUITE_RUN_STARTED);
 
       return IsolateSuite.create(
         useRunSuiteCallback<T, F, G>(suiteCallback, ...args)

@@ -10,7 +10,7 @@ export class Isolate<_D = any> {
   children: Isolate[] | null = [];
   keys: Record<string, Isolate> = {};
   parent: Isolate | null = null;
-  output?: any;
+  output: any;
   key: IsolateKey = null;
   allowReorder = false;
   type = Symbol('Isolate');

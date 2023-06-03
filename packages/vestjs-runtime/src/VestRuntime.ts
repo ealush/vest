@@ -25,7 +25,7 @@ type CTXType = StateRefType & {
   stateRef: StateRefType;
 };
 
-type StateRefType = {
+export type StateRefType = {
   historyRoot: TinyState<Isolate | null>;
   Bus: BusType;
   appData: Record<string, any>;

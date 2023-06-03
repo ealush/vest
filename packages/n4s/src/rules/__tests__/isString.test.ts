@@ -1,15 +1,12 @@
-import { isString } from 'isString';
+import { enforce } from 'n4s';
 
 describe('Tests isString rule', () => {
-  it('Should return false for a number', () => {
-    expect(isString(42)).toBe(false);
+  it('Should fail for non-string values', () => {
+    expect(() => enforce(42).isString()).toThrow();
+    expect(() => enforce([]).isString()).toThrow();
   });
 
-  it('Should return false for an array', () => {
-    expect(isString([])).toBe(false);
-  });
-
-  it('Should return true a string', () => {
-    expect(isString('I love you')).toBe(true);
+  it('Should pass for string values', () => {
+    enforce('I love you').isString();
   });
 });

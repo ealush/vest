@@ -1,37 +1,27 @@
-import { isPositive } from 'vest-utils';
+import { enforce } from 'n4s';
 
 describe('Test isPositive rule', () => {
-  it('Should return false for zero', () => {
-    expect(isPositive(0)).toBe(false);
+  it('Shiuld fail for non-numeric values', () => {
+    expect(() => enforce(false).isPositive()).toThrow();
+    expect(() => enforce([]).isPositive()).toThrow();
+    expect(() => enforce({}).isPositive()).toThrow();
   });
 
-  describe('When argument is a positive number', () => {
-    it('Should return true for positive number', () => {
-      expect(isPositive(10)).toBe(true);
-    });
-    it('should return true for positive desimal number', () => {
-      expect(isPositive(10.1)).toBe(true);
-    });
-    it('should return true for positive string number', () => {
-      expect(isPositive('10')).toBe(true);
-    });
-    it('should return true for positive decimal string number', () => {
-      expect(isPositive('10.10')).toBe(true);
-    });
+  it('Should fail for negative values', () => {
+    expect(() => enforce(-1).isPositive()).toThrow();
+    expect(() => enforce(-1.1).isPositive()).toThrow();
+    expect(() => enforce('-1').isPositive()).toThrow();
+    expect(() => enforce('-1.10').isPositive()).toThrow();
   });
 
-  describe('When argument is a negative number', () => {
-    it('Should return false for negative numer', () => {
-      expect(isPositive(-1)).toBe(false);
-    });
-    it('should return false for negative desimal number', () => {
-      expect(isPositive(-1.1)).toBe(false);
-    });
-    it('should return false for negative string number', () => {
-      expect(isPositive('-1')).toBe(false);
-    });
-    it('should return false for negative decimal string number', () => {
-      expect(isPositive('-1.10')).toBe(false);
-    });
+  it('Should pass for positive values', () => {
+    enforce(10).isPositive();
+    enforce(10.1).isPositive();
+    enforce('10').isPositive();
+    enforce('10.10').isPositive();
+  });
+
+  it('Should fail for zero', () => {
+    expect(() => enforce(0).isPositive()).toThrow();
   });
 });

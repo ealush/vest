@@ -20,11 +20,7 @@ export const ctx = createCascade<CTXType>((ctxRef, parentContext): CTXType => {
   return parentContext;
 });
 
-function stripContext(ctx: null | CTXType): EnforceContext {
-  if (!ctx) {
-    return null;
-  }
-
+function stripContext(ctx: CTXType): EnforceContext {
   return {
     value: ctx.value,
     meta: ctx.meta,

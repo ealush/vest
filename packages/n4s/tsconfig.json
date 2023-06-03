@@ -66,7 +66,6 @@
       "isNaN.test": ["./src/rules/__tests__/isNaN.test.ts"],
       "isKeyOf.test": ["./src/rules/__tests__/isKeyOf.test.ts"],
       "isEven.test": ["./src/rules/__tests__/isEven.test.ts"],
-      "isEmpty.test": ["./src/rules/__tests__/isEmpty.test.ts"],
       "isBoolean.test": ["./src/rules/__tests__/isBoolean.test.ts"],
       "isBlank.test": ["./src/rules/__tests__/isBlank.test.ts"],
       "isBetween.test": ["./src/rules/__tests__/isBetween.test.ts"],

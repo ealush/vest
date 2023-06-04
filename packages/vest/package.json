@@ -227,5 +227,6 @@
     },
     "./package.json": "./package.json",
     "./*": "./*"
-  }
+  },
+  "vxAllowResolve": []
 }

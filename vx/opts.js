@@ -36,4 +36,7 @@ module.exports = {
     CJS: 'cjs',
     ES: 'es',
   },
+  vx_config: {
+    VX_ALLOW_RESOLVE: 'vxAllowResolve',
+  },
 };

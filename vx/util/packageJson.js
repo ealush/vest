@@ -9,4 +9,9 @@ function packageJson(pkgName = usePackage()) {
   return JSON.parse(jsonString);
 }
 
+function getVxAllowResolve(pkgName = usePackage(), dep) {
+  return (packageJson(pkgName).vxAllowResolve || []).includes(dep);
+}
+
 module.exports = packageJson;
+module.exports.getVxAllowResolve = getVxAllowResolve;

@@ -167,5 +167,6 @@
     "url": "https://github.com/ealush/vest.git/issues"
   },
   "unpkg": "./dist/umd/anyone.production.js",
-  "jsdelivr": "./dist/umd/anyone.production.js"
+  "jsdelivr": "./dist/umd/anyone.production.js",
+  "vxAllowResolve": []
 }

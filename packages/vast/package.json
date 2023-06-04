@@ -46,5 +46,6 @@
     "./*": "./*"
   },
   "unpkg": "./dist/umd/vast.production.js",
-  "jsdelivr": "./dist/umd/vast.production.js"
+  "jsdelivr": "./dist/umd/vast.production.js",
+  "vxAllowResolve": []
 }

@@ -144,5 +144,6 @@
     "url": "https://github.com/ealush/vest.git/issues"
   },
   "unpkg": "./dist/umd/n4s.production.js",
-  "jsdelivr": "./dist/umd/n4s.production.js"
+  "jsdelivr": "./dist/umd/n4s.production.js",
+  "vxAllowResolve": []
 }

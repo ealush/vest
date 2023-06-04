@@ -61,7 +61,14 @@ function writePackageJson(name, exportPath, { namespace } = {}) {
   let pkgJson = generatePackageJson(name, namespace);
 
   if (isMainExport(name)) {
-    pkgJson = { ...packageJson(name), ...pkgJson };
+    const orig = packageJson(name);
+
+    const preserve = {
+      [opts.vx_config.VX_ALLOW_RESOLVE]:
+        orig[opts.vx_config.VX_ALLOW_RESOLVE] ?? [],
+    };
+
+    pkgJson = { ...orig, ...pkgJson, ...preserve };
   }
 
   fse.writeJSONSync(

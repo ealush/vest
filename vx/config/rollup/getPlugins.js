@@ -1,4 +1,5 @@
 // const compiler = require('@ampproject/rollup-plugin-closure-compiler');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const replace = require('@rollup/plugin-replace');
 const _ = require('lodash');
 const { terser } = require('rollup-plugin-terser');
@@ -21,6 +22,11 @@ module.exports = function getPlugins({
   namespace = undefined,
 } = {}) {
   const plugins = [
+    nodeResolve({
+      resolveOnly: dep => {
+        return packageJson.getVxAllowResolve(packageName, dep);
+      },
+    }),
     replace({
       preventAssignment: true,
       values: {

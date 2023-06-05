@@ -18,6 +18,7 @@ describe('deferThrow', () => {
 
   it('Should throw a timed out error with the provided message', () => {
     deferThrow('message');
+    // @ts-ignore
     const timeoutCB = global.setTimeout.mock.calls[0][0];
     expect(() => timeoutCB()).toThrow('message');
   });

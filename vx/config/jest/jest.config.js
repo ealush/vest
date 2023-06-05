@@ -54,15 +54,7 @@ function baseConfig() {
     ].concat(setupAfterEnvPerPackage),
     testEnvironment: 'node',
     transform: {
-      [`.+\\.(ts|tsx)$`]: [
-        'ts-jest',
-        {
-          diagnostics: {
-            // Property '__DEV__' does not exist on type 'typeof globalThis'
-            ignoreCodes: ['TS2339'],
-          },
-        },
-      ],
+      [`.+\\.(ts|tsx)$`]: ['ts-jest'],
     },
   };
 }

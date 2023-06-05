@@ -29,7 +29,9 @@ const projects = packageNames.list.map(packageName => ({
   displayName: packageName,
   moduleNameMapper: genNameMapper(pathsPerPackage.packages[packageName]),
   rootDir: vxPath.package(packageName),
-  testMatch: [`**/${opts.dir.TESTS}/*.(spec|test).ts`],
+  testMatch: [
+    vxPath.package(packageName, `**/${opts.dir.TESTS}/*.(spec|test).ts`),
+  ],
 }));
 
 module.exports = {
@@ -52,7 +54,7 @@ function baseConfig() {
     ].concat(setupAfterEnvPerPackage),
     testEnvironment: 'node',
     transform: {
-      '^.+\\.(ts|tsx)$': [
+      [`.+\\.(ts|tsx)$`]: [
         'ts-jest',
         {
           diagnostics: {

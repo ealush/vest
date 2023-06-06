@@ -25,25 +25,26 @@ module.exports = function handleExports({ namespace } = {}) {
         fse.ensureDirSync(exportPath);
       }
       writePackageJson(name, exportPath, { namespace });
-
-      writeEntry(name);
+      writeEntry(name, namespace);
     }),
   };
 };
 
-function writeEntry(name) {
+function writeEntry(name, namespace) {
   const pkgName = usePackage();
   const dist = (...args) =>
     vxPath.packageDist(pkgName, opts.format.CJS, ...args);
-  const content = `'use strict'
 
+  const prefix = namespace ? `./${namespace}` : '.';
+
+  const content = `'use strict'
 if (process.env.NODE_ENV === '${opts.env.PRODUCTION}') {
-  module.exports = require('./${path.relative(
+  module.exports = require('${prefix}/${path.relative(
     dist(),
     dist(exportName(name, opts.env.PRODUCTION))
   )}');
 } else {
-  module.exports = require('./${path.relative(
+  module.exports = require('${prefix}/${path.relative(
     dist(),
     dist(exportName(name, opts.env.DEVELOPMENT))
   )}');

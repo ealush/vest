@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 title: Schema Validation with Enforce
 description: While less common when using Vest, sometimes it might be useful to validate a value against a schema. Vest comes with some schema validation rules that are handy for data-shape validation.
 keywords:

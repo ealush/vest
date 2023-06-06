@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 3
 title: Compound Rules
 description: These are rules that accept other rules as their arguments. These rules let you validate more complex scenarios with the ergonomics of enforce.
 keywords: [Vest, compound, rules, compound rules, anyOf, allOf, oneOf, noneOf]

@@ -259,10 +259,12 @@ describe('isValidByGroup', () => {
 
     describe('When test is lagging', () => {
       it('Should return `false`', () => {
-        suite();
-        const result = suite('field_2');
+        return TestPromise(done => {
+          suite();
+          const result = suite('field_2').done(done);
 
-        expect(result.isValidByGroup(GROUP_NAME)).toBe(false);
+          expect(result.isValidByGroup(GROUP_NAME)).toBe(false);
+        });
       });
     });
   });

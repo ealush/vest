@@ -221,10 +221,12 @@ describe('isValid', () => {
 
     describe('When test is lagging', () => {
       it('Should return `false`', () => {
-        suite();
-        const result = suite('field_2');
+        return TestPromise(done => {
+          suite();
+          const result = suite('field_2').done(done);
 
-        expect(result.isValid()).toBe(false);
+          expect(result.isValid()).toBe(false);
+        });
       });
     });
   });

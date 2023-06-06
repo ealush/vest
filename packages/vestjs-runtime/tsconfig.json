@@ -15,8 +15,7 @@
       "ErrorStrings": ["./src/errors/ErrorStrings.ts"],
       "IsolateMutator": ["./src/Isolate/IsolateMutator.ts"],
       "IsolateInspector": ["./src/Isolate/IsolateInspector.ts"],
-      "Isolate": ["./src/Isolate/Isolate.ts"],
-      "Isolate.test": ["./src/Isolate/__tests__/Isolate.test.ts"]
+      "Isolate": ["./src/Isolate/Isolate.ts"]
     }
   }
 }

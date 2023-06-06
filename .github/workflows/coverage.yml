@@ -19,4 +19,4 @@ jobs:
         with:
           package-manager: yarn
           skip-step: install
-          test-script: yarn jest
+          test-script: yarn test

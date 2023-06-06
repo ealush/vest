@@ -24,40 +24,10 @@
         "./src/suiteResult/selectors/hasFailuresByTestObjects.ts"
       ],
       "collectFailures": ["./src/suiteResult/selectors/collectFailures.ts"],
-      "summaryFailures.test": [
-        "./src/suiteResult/selectors/__tests__/summaryFailures.test.ts"
-      ],
-      "isValidByGroup.test": [
-        "./src/suiteResult/selectors/__tests__/isValidByGroup.test.ts"
-      ],
-      "isValid.test": ["./src/suiteResult/selectors/__tests__/isValid.test.ts"],
-      "hasFailuresByTestObject.test": [
-        "./src/suiteResult/selectors/__tests__/hasFailuresByTestObject.test.ts"
-      ],
-      "hasFailuresByGroup.test": [
-        "./src/suiteResult/selectors/__tests__/hasFailuresByGroup.test.ts"
-      ],
-      "hasFailures.test": [
-        "./src/suiteResult/selectors/__tests__/hasFailures.test.ts"
-      ],
-      "getFailuresByGroup.test": [
-        "./src/suiteResult/selectors/__tests__/getFailuresByGroup.test.ts"
-      ],
-      "getFailures.test": [
-        "./src/suiteResult/selectors/__tests__/getFailures.test.ts"
-      ],
-      "getFailure.test": [
-        "./src/suiteResult/selectors/__tests__/getFailure.test.ts"
-      ],
-      "collectFailureMessages.test": [
-        "./src/suiteResult/selectors/__tests__/collectFailureMessages.test.ts"
-      ],
       "shouldSkipDoneRegistration": [
         "./src/suiteResult/done/shouldSkipDoneRegistration.ts"
       ],
       "deferDoneCallback": ["./src/suiteResult/done/deferDoneCallback.ts"],
-      "done.test": ["./src/suiteResult/done/__tests__/done.test.ts"],
-      "produce.test": ["./src/suiteResult/__tests__/produce.test.ts"],
       "staticSuite": ["./src/suite/staticSuite.ts"],
       "runCallbacks": ["./src/suite/runCallbacks.ts"],
       "getTypedMethods": ["./src/suite/getTypedMethods.ts"],
@@ -66,22 +36,10 @@
       "validateSuiteParams": [
         "./src/suite/validateParams/validateSuiteParams.ts"
       ],
-      "typedSuite.test": ["./src/suite/__tests__/typedSuite.test.ts"],
-      "suiteSelectorsOnSuite.test": [
-        "./src/suite/__tests__/suiteSelectorsOnSuite.test.ts"
-      ],
-      "staticSuite.test": ["./src/suite/__tests__/staticSuite.test.ts"],
-      "resetField.test": ["./src/suite/__tests__/resetField.test.ts"],
-      "remove.test": ["./src/suite/__tests__/remove.test.ts"],
-      "create.test": ["./src/suite/__tests__/create.test.ts"],
       "skipWhen": ["./src/isolates/skipWhen.ts"],
       "omitWhen": ["./src/isolates/omitWhen.ts"],
       "group": ["./src/isolates/group.ts"],
       "each": ["./src/isolates/each.ts"],
-      "skipWhen.test": ["./src/isolates/__tests__/skipWhen.test.ts"],
-      "omitWhen.test": ["./src/isolates/__tests__/omitWhen.test.ts"],
-      "group.test": ["./src/isolates/__tests__/group.test.ts"],
-      "each.test": ["./src/isolates/__tests__/each.test.ts"],
       "warn": ["./src/hooks/warn.ts"],
       "include": ["./src/hooks/include.ts"],
       "exclusive": ["./src/hooks/exclusive.ts"],
@@ -90,11 +48,6 @@
       "mode": ["./src/hooks/optional/mode.ts"],
       "OptionalTypes": ["./src/hooks/optional/OptionalTypes.ts"],
       "Modes": ["./src/hooks/optional/Modes.ts"],
-      "warn.test": ["./src/hooks/__tests__/warn.test.ts"],
-      "optional.test": ["./src/hooks/__tests__/optional.test.ts"],
-      "mode.test": ["./src/hooks/__tests__/mode.test.ts"],
-      "include.test": ["./src/hooks/__tests__/include.test.ts"],
-      "exclusive.test": ["./src/hooks/__tests__/exclusive.test.ts"],
       "promisify": ["./src/exports/promisify.ts"],
       "parser": ["./src/exports/parser.ts"],
       "enforce@schema": ["./src/exports/enforce@schema.ts"],
@@ -102,9 +55,6 @@
       "enforce@compounds": ["./src/exports/enforce@compounds.ts"],
       "enforce@compose": ["./src/exports/enforce@compose.ts"],
       "classnames": ["./src/exports/classnames.ts"],
-      "promisify.test": ["./src/exports/__tests__/promisify.test.ts"],
-      "parser.test": ["./src/exports/__tests__/parser.test.ts"],
-      "classnames.test": ["./src/exports/__tests__/classnames.test.ts"],
       "ErrorStrings": ["./src/errors/ErrorStrings.ts"],
       "Runtime": ["./src/core/Runtime.ts"],
       "test": ["./src/core/test/test.ts"],
@@ -122,17 +72,6 @@
       ],
       "matchingGroupName": ["./src/core/test/helpers/matchingGroupName.ts"],
       "matchingFieldName": ["./src/core/test/helpers/matchingFieldName.ts"],
-      "nonMatchingSeverityProfile.test": [
-        "./src/core/test/helpers/__tests__/nonMatchingSeverityProfile.test.ts"
-      ],
-      "test.test": ["./src/core/test/__tests__/test.test.ts"],
-      "runAsyncTest.test": ["./src/core/test/__tests__/runAsyncTest.test.ts"],
-      "merging_of_previous_test_runs.test": [
-        "./src/core/test/__tests__/merging_of_previous_test_runs.test.ts"
-      ],
-      "memo.test": ["./src/core/test/__tests__/memo.test.ts"],
-      "key.test": ["./src/core/test/__tests__/key.test.ts"],
-      "IsolateTest.test": ["./src/core/test/__tests__/IsolateTest.test.ts"],
       "VestIsolateType": ["./src/core/isolate/VestIsolateType.ts"],
       "isSameProfileTest": [
         "./src/core/isolate/IsolateTest/isSameProfileTest.ts"
@@ -149,29 +88,11 @@
         "./src/core/isolate/IsolateTest/IsolateTestReconciler.ts"
       ],
       "IsolateTest": ["./src/core/isolate/IsolateTest/IsolateTest.ts"],
-      "hasRemainingTests.test": [
-        "./src/core/isolate/IsolateTest/__tests__/hasRemainingTests.test.ts"
-      ],
       "IsolateSuite": ["./src/core/isolate/IsolateSuite/IsolateSuite.ts"],
       "IsolateEach": ["./src/core/isolate/IsolateEach/IsolateEach.ts"],
       "SuiteContext": ["./src/core/context/SuiteContext.ts"],
       "VestBus": ["./src/core/VestBus/VestBus.ts"],
-      "BusEvents": ["./src/core/VestBus/BusEvents.ts"],
-      "state_refill.test": ["./src/__tests__/state_refill.test.ts"],
-      "isolate.test": ["./src/__tests__/isolate.test.ts"],
-      "integration.stateful-tests.test": [
-        "./src/__tests__/integration.stateful-tests.test.ts"
-      ],
-      "integration.stateful-async.test": [
-        "./src/__tests__/integration.stateful-async.test.ts"
-      ],
-      "integration.exclusive.test": [
-        "./src/__tests__/integration.exclusive.test.ts"
-      ],
-      "integration.base.test": ["./src/__tests__/integration.base.test.ts"],
-      "integration.async-tests.test": [
-        "./src/__tests__/integration.async-tests.test.ts"
-      ]
+      "BusEvents": ["./src/core/VestBus/BusEvents.ts"]
     }
   }
 }

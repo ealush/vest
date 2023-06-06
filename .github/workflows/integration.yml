@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [18.16.0]
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -36,7 +36,7 @@ jobs:
       - name: Install
         run: yarn install --immutable
       - name: Test
-        run: yarn test -i
+        run: yarn test
       - name: Lint
         run: yarn lint
       - name: Release

@@ -10,7 +10,7 @@ const matches = glob.sync(vxPath.rel(vxPath.packageSrc('*', '**/*.ts')), {
   absolute: false,
   ignore: [
     vxPath.rel(vxPath.packageSrc('*', '**/*/index.ts')),
-    vxPath.rel(vxPath.packageSrc('*', `**/${opts.dir.TESTS}/**/*`)),
+    `**/${opts.dir.TESTS}/**`,
   ],
 });
 

@@ -44,39 +44,7 @@
       "assign": ["./src/assign.ts"],
       "asArray": ["./src/asArray.ts"],
       "StringObject": ["./src/StringObject.ts"],
-      "SimpleStateMachine": ["./src/SimpleStateMachine.ts"],
-      "tinyState.test": ["./src/__tests__/tinyState.test.ts"],
-      "text.test": ["./src/__tests__/text.test.ts"],
-      "seq.test": ["./src/__tests__/seq.test.ts"],
-      "optionalFunctionValue.test": [
-        "./src/__tests__/optionalFunctionValue.test.ts"
-      ],
-      "numberEquals.test": ["./src/__tests__/numberEquals.test.ts"],
-      "nonnullish.test": ["./src/__tests__/nonnullish.test.ts"],
-      "mapFirst.test": ["./src/__tests__/mapFirst.test.ts"],
-      "longerThan.test": ["./src/__tests__/longerThan.test.ts"],
-      "lengthEquals.test": ["./src/__tests__/lengthEquals.test.ts"],
-      "isUndefined.test": ["./src/__tests__/isUndefined.test.ts"],
-      "isString.test": ["./src/__tests__/isString.test.ts"],
-      "isPromise.test": ["./src/__tests__/isPromise.test.ts"],
-      "isPositive.test": ["./src/__tests__/isPositive.test.ts"],
-      "isNumeric.test": ["./src/__tests__/isNumeric.test.ts"],
-      "isNull.test": ["./src/__tests__/isNull.test.ts"],
-      "isEmpty.test": ["./src/__tests__/isEmpty.test.ts"],
-      "isBoolean.test": ["./src/__tests__/isBoolean.test.ts"],
-      "isArray.test": ["./src/__tests__/isArray.test.ts"],
-      "invariant.test": ["./src/__tests__/invariant.test.ts"],
-      "greaterThan.test": ["./src/__tests__/greaterThan.test.ts"],
-      "either.test": ["./src/__tests__/either.test.ts"],
-      "deferThrow.test": ["./src/__tests__/deferThrow.test.ts"],
-      "defaultTo.test": ["./src/__tests__/defaultTo.test.ts"],
-      "callEach.test": ["./src/__tests__/callEach.test.ts"],
-      "cache.test": ["./src/__tests__/cache.test.ts"],
-      "bus.test": ["./src/__tests__/bus.test.ts"],
-      "bindNot.test": ["./src/__tests__/bindNot.test.ts"],
-      "asArray.test": ["./src/__tests__/asArray.test.ts"],
-      "StringObject.test": ["./src/__tests__/StringObject.test.ts"],
-      "SimpleStateMachine.test": ["./src/__tests__/SimpleStateMachine.test.ts"]
+      "SimpleStateMachine": ["./src/SimpleStateMachine.ts"]
     }
   }
 }

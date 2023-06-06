@@ -43,7 +43,7 @@ function baseConfig(packageName) {
   const allowResolve = packageJson.getVxAllowResolve(packageName);
   return {
     clearMocks: true,
-    preset: 'ts-jest/presets/js-with-ts',
+    maxWorkers: 1,
     rootDir: vxPath.ROOT_PATH,
     roots: ['<rootDir>'],
     setupFiles: [
@@ -60,6 +60,7 @@ function baseConfig(packageName) {
       [`.+\\.(ts|tsx)$`]: [
         'ts-jest',
         {
+          isolatedModules: true,
           tsconfig: {
             // This is needed to allow jest to transform js files
             // That are originated in node_modules
@@ -68,9 +69,12 @@ function baseConfig(packageName) {
         },
       ],
     },
-    transformIgnorePatterns: [
-      `node_modules/(?!(${allowResolve.join('|')})/.*)`,
-    ],
+    ...(allowResolve.length > 0 && {
+      preset: 'ts-jest/presets/js-with-ts',
+      transformIgnorePatterns: [
+        `node_modules/(?!(${allowResolve.join('|')})/.*)`,
+      ],
+    }),
   };
 }
 

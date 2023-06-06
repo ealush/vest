@@ -14,8 +14,6 @@
       "enforceEager": ["./src/runtime/enforceEager.ts"],
       "enforceContext": ["./src/runtime/enforceContext.ts"],
       "enforce": ["./src/runtime/enforce.ts"],
-      "message.test": ["./src/runtime/__tests__/message.test.ts"],
-      "enforceContext.test": ["./src/runtime/__tests__/enforceContext.test.ts"],
       "startsWith": ["./src/rules/startsWith.ts"],
       "shorterThanOrEquals": ["./src/rules/shorterThanOrEquals.ts"],
       "shorterThan": ["./src/rules/shorterThan.ts"],
@@ -40,62 +38,16 @@
       "greaterThanOrEquals": ["./src/rules/greaterThanOrEquals.ts"],
       "equals": ["./src/rules/equals.ts"],
       "endsWith": ["./src/rules/endsWith.ts"],
-      "startsWith.test": ["./src/rules/__tests__/startsWith.test.ts"],
-      "shorterThanOrEquals.test": [
-        "./src/rules/__tests__/shorterThanOrEquals.test.ts"
-      ],
-      "shorterThan.test": ["./src/rules/__tests__/shorterThan.test.ts"],
-      "rules.test": ["./src/rules/__tests__/rules.test.ts"],
-      "ruleCondition.test": ["./src/rules/__tests__/ruleCondition.test.ts"],
-      "matches.test": ["./src/rules/__tests__/matches.test.ts"],
-      "longerThanOrEquals.test": [
-        "./src/rules/__tests__/longerThanOrEquals.test.ts"
-      ],
-      "lessThanOrEquals.test": [
-        "./src/rules/__tests__/lessThanOrEquals.test.ts"
-      ],
-      "lessThan.test": ["./src/rules/__tests__/lessThan.test.ts"],
-      "isValueOf.test": ["./src/rules/__tests__/isValueOf.test.ts"],
-      "isTruthy.test": ["./src/rules/__tests__/isTruthy.test.ts"],
-      "isString.test": ["./src/rules/__tests__/isString.test.ts"],
-      "isPositive.test": ["./src/rules/__tests__/isPositive.test.ts"],
-      "isOdd.test": ["./src/rules/__tests__/isOdd.test.ts"],
-      "isNumber.test": ["./src/rules/__tests__/isNumber.test.ts"],
-      "isNullish.test": ["./src/rules/__tests__/isNullish.test.ts"],
-      "isNegative.test": ["./src/rules/__tests__/isNegative.test.ts"],
-      "isNaN.test": ["./src/rules/__tests__/isNaN.test.ts"],
-      "isKeyOf.test": ["./src/rules/__tests__/isKeyOf.test.ts"],
-      "isEven.test": ["./src/rules/__tests__/isEven.test.ts"],
-      "isBoolean.test": ["./src/rules/__tests__/isBoolean.test.ts"],
-      "isBlank.test": ["./src/rules/__tests__/isBlank.test.ts"],
-      "isBetween.test": ["./src/rules/__tests__/isBetween.test.ts"],
-      "inside.test": ["./src/rules/__tests__/inside.test.ts"],
-      "greaterThanOrEquals.test": [
-        "./src/rules/__tests__/greaterThanOrEquals.test.ts"
-      ],
-      "equals.test": ["./src/rules/__tests__/equals.test.ts"],
-      "endsWith.test": ["./src/rules/__tests__/endsWith.test.ts"],
       "shape": ["./src/plugins/schema/shape.ts"],
       "schemaTypes": ["./src/plugins/schema/schemaTypes.ts"],
       "partial": ["./src/plugins/schema/partial.ts"],
       "optional": ["./src/plugins/schema/optional.ts"],
       "loose": ["./src/plugins/schema/loose.ts"],
       "isArrayOf": ["./src/plugins/schema/isArrayOf.ts"],
-      "shape.test": ["./src/plugins/schema/__tests__/shape.test.ts"],
-      "shape&loose.test": [
-        "./src/plugins/schema/__tests__/shape&loose.test.ts"
-      ],
-      "partial.test": ["./src/plugins/schema/__tests__/partial.test.ts"],
-      "optional.test": ["./src/plugins/schema/__tests__/optional.test.ts"],
-      "loose.test": ["./src/plugins/schema/__tests__/loose.test.ts"],
-      "isArrayOf.test": ["./src/plugins/schema/__tests__/isArrayOf.test.ts"],
       "oneOf": ["./src/plugins/compounds/oneOf.ts"],
       "noneOf": ["./src/plugins/compounds/noneOf.ts"],
       "anyOf": ["./src/plugins/compounds/anyOf.ts"],
       "allOf": ["./src/plugins/compounds/allOf.ts"],
-      "oneOf.test": ["./src/plugins/compounds/__tests__/oneOf.test.ts"],
-      "noneOf.test": ["./src/plugins/compounds/__tests__/noneOf.test.ts"],
-      "allOf.test": ["./src/plugins/compounds/__tests__/allOf.test.ts"],
       "transformResult": ["./src/lib/transformResult.ts"],
       "runLazyRule": ["./src/lib/runLazyRule.ts"],
       "ruleReturn": ["./src/lib/ruleReturn.ts"],
@@ -103,11 +55,7 @@
       "schema": ["./src/exports/schema.ts"],
       "isEmail": ["./src/exports/isEmail.ts"],
       "compounds": ["./src/exports/compounds.ts"],
-      "compose": ["./src/exports/compose.ts"],
-      "isEmail.test": ["./src/exports/__tests__/isEmail.test.ts"],
-      "compose.test": ["./src/exports/__tests__/compose.test.ts"],
-      "enforceEager.test": ["./src/__tests__/enforceEager.test.ts"],
-      "enforce.test": ["./src/__tests__/enforce.test.ts"]
+      "compose": ["./src/exports/compose.ts"]
     }
   }
 }

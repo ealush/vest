@@ -24,7 +24,7 @@ module.exports = function getPlugins({
   const plugins = [
     nodeResolve({
       resolveOnly: dep => {
-        return packageJson.getVxAllowResolve(packageName, dep);
+        return packageJson.getVxAllowResolve(packageName).includes(dep);
       },
     }),
     replace({

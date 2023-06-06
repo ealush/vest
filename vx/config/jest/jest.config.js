@@ -4,6 +4,7 @@ const glob = require('glob');
 
 const opts = require('vx/opts');
 const packageNames = require('vx/packageNames');
+const packageJson = require('vx/util/packageJson');
 const pathsPerPackage = require('vx/util/pathsPerPackage');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
@@ -25,7 +26,7 @@ const setupAfterEnvPerPackage = glob.sync(
 );
 
 const projects = packageNames.list.map(packageName => ({
-  ...baseConfig(),
+  ...baseConfig(packageName),
   displayName: packageName,
   moduleNameMapper: genNameMapper(pathsPerPackage.packages[packageName]),
   rootDir: vxPath.package(packageName),
@@ -38,9 +39,11 @@ module.exports = {
   projects,
 };
 
-function baseConfig() {
+function baseConfig(packageName) {
+  const allowResolve = packageJson.getVxAllowResolve(packageName);
   return {
     clearMocks: true,
+    preset: 'ts-jest/presets/js-with-ts',
     rootDir: vxPath.ROOT_PATH,
     roots: ['<rootDir>'],
     setupFiles: [
@@ -54,8 +57,20 @@ function baseConfig() {
     ].concat(setupAfterEnvPerPackage),
     testEnvironment: 'node',
     transform: {
-      [`.+\\.(ts|tsx)$`]: ['ts-jest'],
+      [`.+\\.(ts|tsx)$`]: [
+        'ts-jest',
+        {
+          tsconfig: {
+            // This is needed to allow jest to transform js files
+            // That are originated in node_modules
+            allowJs: true,
+          },
+        },
+      ],
     },
+    transformIgnorePatterns: [
+      `node_modules/(?!(${allowResolve.join('|')})/.*)`,
+    ],
   };
 }
 

@@ -98,6 +98,7 @@
       "promisify": ["./src/exports/promisify.ts"],
       "parser": ["./src/exports/parser.ts"],
       "enforce@schema": ["./src/exports/enforce@schema.ts"],
+      "enforce@isEmail": ["./src/exports/enforce@isEmail.ts"],
       "enforce@compounds": ["./src/exports/enforce@compounds.ts"],
       "enforce@compose": ["./src/exports/enforce@compose.ts"],
       "classnames": ["./src/exports/classnames.ts"],

@@ -101,8 +101,10 @@
       "ruleReturn": ["./src/lib/ruleReturn.ts"],
       "enforceUtilityTypes": ["./src/lib/enforceUtilityTypes.ts"],
       "schema": ["./src/exports/schema.ts"],
+      "isEmail": ["./src/exports/isEmail.ts"],
       "compounds": ["./src/exports/compounds.ts"],
       "compose": ["./src/exports/compose.ts"],
+      "isEmail.test": ["./src/exports/__tests__/isEmail.test.ts"],
       "compose.test": ["./src/exports/__tests__/compose.test.ts"],
       "enforceEager.test": ["./src/__tests__/enforceEager.test.ts"],
       "enforce.test": ["./src/__tests__/enforce.test.ts"]

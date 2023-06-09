@@ -20,8 +20,8 @@ export class IsolateMutator {
 
   static addChild(isolate: Isolate, child: Isolate): void {
     invariant(isolate.children);
-
     isolate.children.push(child);
+    IsolateMutator.setParent(child, isolate);
   }
 
   static removeChild(isolate: Isolate, node: Isolate): void {
@@ -33,7 +33,6 @@ export class IsolateMutator {
     if (isNullish(isolate.children)) {
       return;
     }
-
     isolate.children.length = at;
   }
 }

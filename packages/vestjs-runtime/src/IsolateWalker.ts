@@ -153,13 +153,13 @@ export function closest(
   startNode: Isolate,
   predicate: (node: Isolate) => boolean
 ): Isolate | null {
-  let current = startNode;
-  while (current.parent) {
+  let current: Isolate | null = startNode;
+  do {
     if (predicate(current)) {
       return current;
     }
     current = current.parent;
-  }
+  } while (current);
   return null;
 }
 

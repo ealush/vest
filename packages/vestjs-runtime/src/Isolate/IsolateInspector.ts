@@ -22,7 +22,7 @@ export class IsolateInspector {
     if (isNullish(isolate)) {
       return false;
     }
-    return closestExists(isolate, node => node.allowReorder) ?? false;
+    return closestExists(isolate, node => node.allowReorder);
   }
 
   static usesKey(isolate: Isolate | null): boolean {

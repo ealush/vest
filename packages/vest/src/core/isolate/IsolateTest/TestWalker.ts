@@ -1,3 +1,4 @@
+import { Nullable } from 'vest-utils';
 import { Walker, VestRuntime, Isolate } from 'vestjs-runtime';
 
 import { IsolateTest } from 'IsolateTest';
@@ -5,7 +6,7 @@ import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { castIsolateTest, isIsolateTest, isIsolateTestX } from 'isIsolateTest';
 import matchingFieldName from 'matchingFieldName';
 
-type MaybeRoot = Isolate | null;
+type MaybeRoot = Nullable<Isolate>;
 
 export class TestWalker {
   static defaultRoot = VestRuntime.useAvailableRoot;

@@ -1,16 +1,11 @@
 import { lengthEquals } from 'lengthEquals';
 import { longerThan } from 'longerThan';
+import { Nullable } from 'utilityTypes';
 
 /**
  * Creates a cache function
  */
-export default function createCache<T = unknown>(
-  maxSize = 1
-): {
-  (deps: unknown[], cacheAction: (...args: unknown[]) => T): T;
-  get(deps: unknown[]): [unknown[], T] | null;
-  invalidate(item: any): void;
-} {
+export default function createCache<T = unknown>(maxSize = 1): CacheApi<T> {
   const cacheStorage: Array<[unknown[], T]> = [];
 
   const cache = (
@@ -36,7 +31,7 @@ export default function createCache<T = unknown>(
   };
 
   // Retrieves an item from the cache.
-  cache.get = (deps: unknown[]): [unknown[], T] | null =>
+  cache.get = (deps: unknown[]): Nullable<[unknown[], T]> =>
     cacheStorage[findIndex(deps)] || null;
 
   return cache;
@@ -52,6 +47,6 @@ export default function createCache<T = unknown>(
 
 export type CacheApi<T = unknown> = {
   (deps: unknown[], cacheAction: (...args: unknown[]) => T): T;
-  get(deps: unknown[]): [unknown[], T] | null;
+  get(deps: unknown[]): Nullable<[unknown[], T]>;
   invalidate(item: any): void;
 };

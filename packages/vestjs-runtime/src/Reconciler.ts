@@ -1,4 +1,4 @@
-import { CB, invariant, isNullish } from 'vest-utils';
+import { CB, Nullable, invariant, isNullish } from 'vest-utils';
 
 import { type Isolate } from 'Isolate';
 import { IsolateInspector } from 'IsolateInspector';
@@ -9,12 +9,12 @@ import * as VestRuntime from 'VestRuntime';
 // The problem is that it breaks the actual implementation of `Isolate` in `IsolateTest`
 // As it is not properly extending `Isolate`.
 export interface IRecociler<I = any> {
-  (currentNode: I, historicNode: Isolate | null): I;
+  (currentNode: I, historicNode: Nullable<Isolate>): I;
 }
 
 export function BaseReconciler(
   currentNode: Isolate,
-  historicNode: Isolate | null
+  historicNode: Nullable<Isolate>
 ): Isolate {
   if (isNullish(historicNode)) {
     return currentNode;
@@ -85,7 +85,7 @@ export class Reconciler {
 }
 
 function useRunAsNew<Callback extends CB = CB>(
-  localHistoryNode: Isolate | null,
+  localHistoryNode: Nullable<Isolate>,
   current: Isolate,
   callback: CB
 ): ReturnType<Callback> {

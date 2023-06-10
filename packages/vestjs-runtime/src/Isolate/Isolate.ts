@@ -1,15 +1,15 @@
-import { CB } from 'vest-utils';
+import { CB, Nullable } from 'vest-utils';
 
 import { IsolateMutator } from 'IsolateMutator';
 import { BaseReconciler, IRecociler, Reconciler } from 'Reconciler';
 import * as VestRuntime from 'VestRuntime';
 
-export type IsolateKey = null | string;
+export type IsolateKey = Nullable<string>;
 
 export class Isolate<_D = any> {
-  children: Isolate[] | null = [];
+  children: Nullable<Isolate[]> = [];
   keys: Record<string, Isolate> = {};
-  parent: Isolate | null = null;
+  parent: Nullable<Isolate> = null;
   output: any;
   key: IsolateKey = null;
   allowReorder = false;

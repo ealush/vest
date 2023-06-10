@@ -1,5 +1,5 @@
 import { createCascade } from 'context';
-import { assign } from 'vest-utils';
+import { assign, Nullable } from 'vest-utils';
 
 export const ctx = createCascade<CTXType>((ctxRef, parentContext): CTXType => {
   const base = {
@@ -32,14 +32,14 @@ type CTXType = {
   meta: Record<string, any>;
   value: any;
   set?: boolean;
-  parent: () => CTXType | null;
+  parent: () => Nullable<CTXType>;
 };
 
-export type EnforceContext = null | {
+export type EnforceContext = Nullable<{
   meta: Record<string, any>;
   value: any;
   parent: () => EnforceContext;
-};
+}>;
 
 function emptyParent(): null {
   return null;

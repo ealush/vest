@@ -36,8 +36,11 @@ export { nonnullish } from 'nonnullish';
 export * as tinyState from 'tinyState';
 export { StringObject } from 'StringObject';
 
-export type { DropFirst } from 'utilityTypes';
-export type { Stringable } from 'utilityTypes';
-export type { CB } from 'utilityTypes';
-export type { ValueOf } from 'utilityTypes';
-export type { Nullish } from 'utilityTypes';
+export type {
+  DropFirst,
+  Stringable,
+  CB,
+  ValueOf,
+  Nullish,
+  Nullable,
+} from 'utilityTypes';

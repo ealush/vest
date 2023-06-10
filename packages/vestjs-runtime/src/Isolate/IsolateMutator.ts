@@ -1,9 +1,9 @@
-import { invariant, isNullish } from 'vest-utils';
+import { Nullable, invariant, isNullish } from 'vest-utils';
 
 import { Isolate } from 'Isolate';
 
 export class IsolateMutator {
-  static setParent(isolate: Isolate, parent: Isolate | null): Isolate {
+  static setParent(isolate: Isolate, parent: Nullable<Isolate>): Isolate {
     isolate.parent = parent;
     return isolate;
   }
@@ -13,7 +13,7 @@ export class IsolateMutator {
     return isolate;
   }
 
-  static setKey(isolate: Isolate, key: string | null): Isolate {
+  static setKey(isolate: Isolate, key: Nullable<string>): Isolate {
     isolate.key = key;
     return isolate;
   }

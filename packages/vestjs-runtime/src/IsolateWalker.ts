@@ -1,4 +1,4 @@
-import { isNullish, optionalFunctionValue } from 'vest-utils';
+import { Nullable, isNullish, optionalFunctionValue } from 'vest-utils';
 
 import { type Isolate } from 'Isolate';
 import { IsolateMutator } from 'IsolateMutator';
@@ -88,7 +88,7 @@ export function find(
   startNode: Isolate,
   predicate: (node: Isolate) => boolean,
   visitOnly?: VisitOnlyPredicate
-): Isolate | null {
+): Nullable<Isolate> {
   let found = null;
 
   // Call the walk function with a callback function that sets found to the current node if the predicate is satisfied.
@@ -152,8 +152,8 @@ export function pluck(
 export function closest(
   startNode: Isolate,
   predicate: (node: Isolate) => boolean
-): Isolate | null {
-  let current: Isolate | null = startNode;
+): Nullable<Isolate> {
+  let current: Nullable<Isolate> = startNode;
   do {
     if (predicate(current)) {
       return current;

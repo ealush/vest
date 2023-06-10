@@ -1,31 +1,31 @@
-import { isNotNullish, isNullish } from 'vest-utils';
+import { Nullable, isNotNullish, isNullish } from 'vest-utils';
 
 import { Isolate } from 'Isolate';
 import { closestExists } from 'IsolateWalker';
 
 export class IsolateInspector {
-  static at(isolate: Isolate | null, at: number): Isolate | null {
+  static at(isolate: Nullable<Isolate>, at: number): Nullable<Isolate> {
     if (isNullish(isolate)) {
       return null;
     }
     return isolate.children?.[at] ?? null;
   }
 
-  static cursor(isolate: Isolate | null): number {
+  static cursor(isolate: Nullable<Isolate>): number {
     if (isNullish(isolate)) {
       return 0;
     }
     return isolate.children?.length ?? 0;
   }
 
-  static shouldAllowReorder(isolate: Isolate | null): boolean {
+  static shouldAllowReorder(isolate: Nullable<Isolate>): boolean {
     if (isNullish(isolate)) {
       return false;
     }
     return closestExists(isolate, node => node.allowReorder);
   }
 
-  static usesKey(isolate: Isolate | null): boolean {
+  static usesKey(isolate: Nullable<Isolate>): boolean {
     if (isNullish(isolate)) {
       return false;
     }

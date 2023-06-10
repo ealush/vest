@@ -1,4 +1,3 @@
-import { ErrorStrings } from 'ErrorStrings';
 import { createCascade } from 'context';
 import {
   invariant,
@@ -12,21 +11,23 @@ import {
   tinyState,
   BusType,
   bus,
+  Nullable,
 } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { Isolate } from 'Isolate';
 import { IsolateInspector } from 'IsolateInspector';
 import { IsolateMutator } from 'IsolateMutator';
 
 type CTXType = StateRefType & {
-  historyNode: Isolate | null;
-  runtimeNode: Isolate | null;
-  runtimeRoot: Isolate | null;
+  historyNode: Nullable<Isolate>;
+  runtimeNode: Nullable<Isolate>;
+  runtimeRoot: Nullable<Isolate>;
   stateRef: StateRefType;
 };
 
 export type StateRefType = {
-  historyRoot: TinyState<Isolate | null>;
+  historyRoot: TinyState<Nullable<Isolate>>;
   Bus: BusType;
   appData: Record<string, any>;
 };
@@ -73,7 +74,7 @@ export function createRef(
   setter: Record<string, any> | (() => Record<string, any>)
 ): StateRefType {
   return Object.freeze({
-    historyRoot: tinyState.createTinyState<Isolate | null>(null),
+    historyRoot: tinyState.createTinyState<Nullable<Isolate>>(null),
     Bus: bus.createBus(),
     appData: optionalFunctionValue(setter),
   });
@@ -113,7 +114,7 @@ export function useSetHistory(history: Isolate) {
   const [, setHistoryRoot] = useHistoryRoot();
   setHistoryRoot(history);
 }
-export function useHistoryKey(key?: string | null): Isolate | null {
+export function useHistoryKey(key?: Nullable<string>): Nullable<Isolate> {
   if (isNullish(key)) {
     return null;
   }
@@ -139,7 +140,7 @@ export function useSetNextIsolateChild(child: Isolate): void {
 
   IsolateMutator.addChild(currentIsolate, child);
 }
-export function useSetIsolateKey(key: string | null, value: Isolate): void {
+export function useSetIsolateKey(key: Nullable<string>, value: Isolate): void {
   if (!key) {
     return;
   }

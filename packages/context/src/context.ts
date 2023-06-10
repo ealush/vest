@@ -4,6 +4,7 @@ import {
   defaultTo,
   invariant,
   optionalFunctionValue,
+  Nullable,
 } from 'vest-utils';
 
 const USEX_DEFAULT_ERROR_MESSAGE = 'Not inside of a running context.';
@@ -54,7 +55,7 @@ export function createContext<T>(defaultContextValue?: T): CtxApi<T> {
  * When nesting context runs, the the values of the current layer merges with the layers above it.
  */
 export function createCascade<T extends Record<string, unknown>>(
-  init?: (value: Partial<T>, parentContext: T | void) => T | null
+  init?: (value: Partial<T>, parentContext: T | void) => Nullable<T>
 ): CtxCascadeApi<T> {
   const ctx = createContext<T>();
 

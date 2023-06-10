@@ -1,5 +1,5 @@
 export const VestIsolateType = {
-  Each: Symbol('Each'),
-  Suite: Symbol('Suite'),
-  Test: Symbol('Test'),
+  Each: 'Each',
+  Suite: 'Suite',
+  Test: 'Test',
 };

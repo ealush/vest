@@ -5,7 +5,7 @@ import { TFieldName } from 'SuiteResultTypes';
 import { VestIsolateType } from 'VestIsolateType';
 
 export class IsolateSuite extends Isolate {
-  type: symbol = VestIsolateType.Suite;
+  type = VestIsolateType.Suite;
   optional: OptionalFields = {};
 
   setOptionalField(

@@ -13,7 +13,7 @@ export class Isolate<_D = any> {
   output: any;
   key: IsolateKey = null;
   allowReorder = false;
-  type = Symbol('Isolate');
+  type = 'Isolate';
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
   constructor(_data?: _D) {}

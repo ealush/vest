@@ -34,7 +34,7 @@ export class IsolateTest<
   asyncTest?: AsyncTest;
   id = seq();
   severity = TestSeverity.Error;
-  type: symbol = VestIsolateType.Test;
+  type = VestIsolateType.Test;
   private stateMachine = createTestStateMachine();
 
   static reconciler = IsolateTestReconciler;

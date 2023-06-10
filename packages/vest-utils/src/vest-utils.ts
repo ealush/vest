@@ -40,3 +40,4 @@ export type { DropFirst } from 'utilityTypes';
 export type { Stringable } from 'utilityTypes';
 export type { CB } from 'utilityTypes';
 export type { ValueOf } from 'utilityTypes';
+export type { Nullish } from 'utilityTypes';

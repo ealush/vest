@@ -7,3 +7,5 @@ export type Stringable = string | ((...args: any[]) => string);
 export type CB = (...args: any[]) => any;
 
 export type ValueOf<T> = T[keyof T];
+
+export type Nullish<T> = T | null | undefined;

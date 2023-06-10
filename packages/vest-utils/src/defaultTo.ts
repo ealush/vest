@@ -1,7 +1,8 @@
 import optionalFunctionValue from 'optionalFunctionValue';
+import { Nullish } from 'utilityTypes';
 
 export default function defaultTo<T>(
-  value: T | void | null | ((...args: any[]) => T | void | null),
+  value: Nullish<T> | ((...args: any[]) => Nullish<T>),
   defaultValue: T | (() => T)
 ): T {
   return optionalFunctionValue(value) ?? optionalFunctionValue(defaultValue);

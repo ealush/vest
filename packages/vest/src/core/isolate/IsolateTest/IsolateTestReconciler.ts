@@ -1,9 +1,10 @@
-import { ErrorStrings } from 'ErrorStrings';
 import { Nullable, deferThrow, isNullish, text } from 'vest-utils';
 import { IsolateInspector, Reconciler } from 'vestjs-runtime';
 import type { Isolate } from 'vestjs-runtime';
 
+import { ErrorStrings } from 'ErrorStrings';
 import type { IsolateTest } from 'IsolateTest';
+import { VestTestInspector } from 'VestTestInspector';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { castIsolateTest, isIsolateTest } from 'isIsolateTest';
 import { isSameProfileTest } from 'isSameProfileTest';
@@ -67,7 +68,7 @@ function handleCollision(
   // we want to re-evaluate it. The reason is that we may incorrectly
   // identify it is "optional" because it was omitted in the previous run.
   // There may be a better way to handle this. Need to revisit this.
-  if (prevNode.isOmitted()) {
+  if (VestTestInspector.isOmitted(prevNode)) {
     return newNode;
   }
 

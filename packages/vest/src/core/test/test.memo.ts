@@ -6,6 +6,7 @@ import * as Runtime from 'Runtime';
 import { useTestMemoCache } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
+import { VestTestInspector } from 'VestTestInspector';
 import { VTest } from 'test';
 
 // @vx-allow use-use
@@ -59,7 +60,7 @@ function useGetTestFromCache(
 
   const [, cachedValue] = cached;
 
-  if (cachedValue.isCanceled()) {
+  if (VestTestInspector.isCanceled(cachedValue)) {
     // cache hit, but test is canceled
     cache.invalidate(dependencies);
     return cache(dependencies, cacheAction);

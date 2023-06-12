@@ -13,6 +13,7 @@ import {
 } from 'SuiteResultTypes';
 import { SummaryFailure } from 'SummaryFailure';
 import { TestWalker } from 'TestWalker';
+import { VestTestInspector } from 'VestTestInspector';
 import {
   useShouldAddValidProperty,
   useShouldAddValidPropertyInGroup,
@@ -49,12 +50,14 @@ function appendFailures<F extends TFieldName, G extends TGroupName>(
   failures: SummaryFailure<F, G>[],
   testObject: IsolateTest<F, G>
 ): SummaryFailure<F, G>[] {
-  if (testObject.isOmitted()) {
+  if (VestTestInspector.isOmitted(testObject)) {
     return failures;
   }
 
   const shouldAppend =
-    key === Severity.WARNINGS ? testObject.isWarning() : testObject.isFailing();
+    key === Severity.WARNINGS
+      ? VestTestInspector.isWarning(testObject)
+      : VestTestInspector.isFailing(testObject);
 
   if (shouldAppend) {
     return failures.concat(SummaryFailure.fromTestObject(testObject));
@@ -143,13 +146,13 @@ function appendTestObject(
     baseTestStats
   );
 
-  if (testObject.isNonActionable()) return nextSummaryKey;
+  if (VestTestInspector.isNonActionable(testObject)) return nextSummaryKey;
 
   nextSummaryKey.testCount++;
 
-  if (testObject.isFailing()) {
+  if (VestTestInspector.isFailing(testObject)) {
     incrementFailures(Severity.ERRORS);
-  } else if (testObject.isWarning()) {
+  } else if (VestTestInspector.isWarning(testObject)) {
     incrementFailures(Severity.WARNINGS);
   }
 

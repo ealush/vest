@@ -7,6 +7,7 @@ import { OptionalFieldTypes } from 'OptionalTypes';
 import { Severity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
+import { VestTestInspector } from 'VestTestInspector';
 import {
   hasErrorsByTestObjects,
   hasGroupFailuresByTestObjects,
@@ -128,8 +129,8 @@ function useNoMissingTestsLogic(
    */
 
   return (
-    testObject.isOmitted() ||
-    testObject.isTested() ||
+    VestTestInspector.isOmitted(testObject) ||
+    VestTestInspector.isTested(testObject) ||
     useOptionalTestAwaitsResolution(testObject)
   );
 }
@@ -141,6 +142,7 @@ function useOptionalTestAwaitsResolution(testObject: IsolateTest): boolean {
   return (
     VestRuntime.useAvailableRoot<IsolateSuite>()?.getOptionalField(
       testObject.fieldName
-    ).type === OptionalFieldTypes.AUTO && testObject.awaitsResolution()
+    ).type === OptionalFieldTypes.AUTO &&
+    VestTestInspector.awaitsResolution(testObject)
   );
 }

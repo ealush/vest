@@ -3,6 +3,7 @@ import wait from 'wait';
 import { TestPromise } from '../../../../testUtils/testPromise';
 
 import { IsolateTest } from 'IsolateTest';
+import { VestTestInspector } from 'VestTestInspector';
 import * as vest from 'vest';
 
 const fieldName = 'unicycle';
@@ -41,9 +42,9 @@ describe('IsolateTest', () => {
 
   describe('testObject.warn', () => {
     it('Should mark the test as warning', () => {
-      expect(testObject.warns()).toBe(false);
+      expect(VestTestInspector.warns(testObject)).toBe(false);
       testObject.warn();
-      expect(testObject.warns()).toBe(true);
+      expect(VestTestInspector.warns(testObject)).toBe(true);
       expect(testObject).toMatchSnapshot();
     });
   });
@@ -61,9 +62,9 @@ describe('IsolateTest', () => {
     });
 
     it('Should set status to failed', () => {
-      expect(testObject.isFailing()).toBe(false);
+      expect(VestTestInspector.isFailing(testObject)).toBe(false);
       testObject.fail();
-      expect(testObject.isFailing()).toBe(true);
+      expect(VestTestInspector.isFailing(testObject)).toBe(true);
     });
   });
 
@@ -93,7 +94,7 @@ describe('IsolateTest', () => {
         });
         suite();
 
-        expect(testObject.isCanceled()).toBe(true);
+        expect(VestTestInspector.isCanceled(testObject)).toBe(true);
         done();
       });
     });
@@ -110,16 +111,16 @@ describe('IsolateTest', () => {
             await wait(100);
           });
           testObject.fail();
-          expect(testObject.isFailing()).toBe(true);
+          expect(VestTestInspector.isFailing(testObject)).toBe(true);
           testObject.skip();
-          expect(testObject.isSkipped()).toBe(false);
-          expect(testObject.isFailing()).toBe(true);
+          expect(VestTestInspector.isSkipped(testObject)).toBe(false);
+          expect(VestTestInspector.isFailing(testObject)).toBe(true);
           testObject.cancel();
-          expect(testObject.isCanceled()).toBe(false);
-          expect(testObject.isFailing()).toBe(true);
+          expect(VestTestInspector.isCanceled(testObject)).toBe(false);
+          expect(VestTestInspector.isFailing(testObject)).toBe(true);
           testObject.setPending();
-          expect(testObject.isPending()).toBe(false);
-          expect(testObject.isFailing()).toBe(true);
+          expect(VestTestInspector.isPending(testObject)).toBe(false);
+          expect(VestTestInspector.isFailing(testObject)).toBe(true);
           control();
         })();
         expect(control).toHaveBeenCalledTimes(1);
@@ -132,16 +133,16 @@ describe('IsolateTest', () => {
             await wait(100);
           });
           testObject.cancel();
-          expect(testObject.isCanceled()).toBe(true);
+          expect(VestTestInspector.isCanceled(testObject)).toBe(true);
           testObject.fail();
-          expect(testObject.isCanceled()).toBe(true);
-          expect(testObject.isFailing()).toBe(false);
+          expect(VestTestInspector.isCanceled(testObject)).toBe(true);
+          expect(VestTestInspector.isFailing(testObject)).toBe(false);
           testObject.skip();
-          expect(testObject.isSkipped()).toBe(false);
-          expect(testObject.isCanceled()).toBe(true);
+          expect(VestTestInspector.isSkipped(testObject)).toBe(false);
+          expect(VestTestInspector.isCanceled(testObject)).toBe(true);
           testObject.setPending();
-          expect(testObject.isPending()).toBe(false);
-          expect(testObject.isCanceled()).toBe(true);
+          expect(VestTestInspector.isPending(testObject)).toBe(false);
+          expect(VestTestInspector.isCanceled(testObject)).toBe(true);
           control();
         })();
         expect(control).toHaveBeenCalledTimes(1);

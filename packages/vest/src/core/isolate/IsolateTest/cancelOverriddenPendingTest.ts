@@ -1,4 +1,5 @@
 import { IsolateTest } from 'IsolateTest';
+import { VestTestInspector } from 'VestTestInspector';
 import { isSameProfileTest } from 'isSameProfileTest';
 
 export default function cancelOverriddenPendingTest(
@@ -8,7 +9,7 @@ export default function cancelOverriddenPendingTest(
   if (
     currentRunTestObject !== prevRunTestObject &&
     isSameProfileTest(prevRunTestObject, currentRunTestObject) &&
-    prevRunTestObject.isPending()
+    VestTestInspector.isPending(prevRunTestObject)
   ) {
     prevRunTestObject.cancel();
   }

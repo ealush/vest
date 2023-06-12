@@ -5,6 +5,7 @@ import { Events } from 'BusEvents';
 import type { IsolateSuite } from 'IsolateSuite';
 import { IsolateTest } from 'IsolateTest';
 import { TestWalker } from 'TestWalker';
+import { VestTestInspector } from 'VestTestInspector';
 
 /**
  * This module gets triggered once the suite is done running its sync tests.
@@ -27,7 +28,7 @@ export function useOmitOptionalFields(): void {
 
   // iterate over each of the tests in the state
   TestWalker.walkTests(testObject => {
-    if (testObject.isPending()) {
+    if (VestTestInspector.isPending(testObject)) {
       return;
     }
     // If we already added the current field (not this test specifically)

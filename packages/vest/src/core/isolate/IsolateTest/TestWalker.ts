@@ -3,6 +3,7 @@ import { Walker, VestRuntime, Isolate } from 'vestjs-runtime';
 
 import { IsolateTest } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { VestTestInspector } from 'VestTestInspector';
 import { castIsolateTest, isIsolateTest, isIsolateTestX } from 'isIsolateTest';
 import matchingFieldName from 'matchingFieldName';
 
@@ -26,7 +27,7 @@ export class TestWalker {
       isolate => {
         isIsolateTestX(isolate);
 
-        return isolate.isPending() && predicate(isolate);
+        return VestTestInspector.isPending(isolate) && predicate(isolate);
       },
       isIsolateTest
     );

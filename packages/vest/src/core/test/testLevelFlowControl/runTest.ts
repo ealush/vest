@@ -12,17 +12,18 @@ import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
 import { SuiteContext } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
+import { VestTestInspector } from 'VestTestInspector';
 import { useVerifyTestRun } from 'verifyTestRun';
 
 // eslint-disable-next-line max-statements
 export function useAttemptRunTest(testObject: IsolateTest) {
   useVerifyTestRun(testObject);
 
-  if (testObject.isUntested()) {
+  if (VestTestInspector.isUntested(testObject)) {
     return useRunTest(testObject);
   }
 
-  if (!testObject.isNonActionable()) {
+  if (!VestTestInspector.isNonActionable(testObject)) {
     // Probably unreachable. If we get here, it means that
     // something was really wrong and should be reported.
     /* istanbul ignore next */
@@ -85,7 +86,7 @@ function useRunAsyncTest(testObject: IsolateTest): void {
     onTestCompleted(VestBus, testObject);
   });
   const fail = VestRuntime.persist((rejectionMessage?: string) => {
-    if (testObject.isCanceled()) {
+    if (VestTestInspector.isCanceled(testObject)) {
       return;
     }
 

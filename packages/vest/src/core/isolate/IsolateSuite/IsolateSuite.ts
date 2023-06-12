@@ -1,3 +1,4 @@
+import { assign } from 'vest-utils';
 import { Isolate } from 'vestjs-runtime';
 
 import { OptionalFieldDeclaration, OptionalFields } from 'OptionalTypes';
@@ -15,8 +16,8 @@ export class IsolateSuite extends Isolate {
     const current = this.optional;
     const currentField = current[fieldName];
 
-    Object.assign(current, {
-      [fieldName]: Object.assign({}, currentField, setter(currentField)),
+    assign(current, {
+      [fieldName]: assign({}, currentField, setter(currentField)),
     });
   }
 

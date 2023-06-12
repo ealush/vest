@@ -4,6 +4,7 @@ import { text } from 'vest-utils';
 import { TestPromise } from '../../../../testUtils/testPromise';
 
 import { ErrorStrings } from 'ErrorStrings';
+import { VestTestInspector } from 'VestTestInspector';
 import { enforce, IsolateTest } from 'vest';
 import * as vest from 'vest';
 
@@ -22,7 +23,7 @@ describe("Test Vest's `test` function", () => {
             }
           );
         })();
-        expect(testObject.warns()).toBe(true);
+        expect(VestTestInspector.warns(testObject)).toBe(true);
       });
     });
 
@@ -37,7 +38,7 @@ describe("Test Vest's `test` function", () => {
             }
           );
         })();
-        expect(testObject.isFailing()).toBe(true);
+        expect(VestTestInspector.isFailing(testObject)).toBe(true);
         // @ts-ignore - very much intentional
         expect(testObject == false).toBe(true); //eslint-disable-line
       });
@@ -46,7 +47,7 @@ describe("Test Vest's `test` function", () => {
         vest.create(() => {
           vest.test(faker.random.word(), faker.lorem.sentence(), () => false);
         })();
-        expect(testObject.isFailing()).toBe(true);
+        expect(VestTestInspector.isFailing(testObject)).toBe(true);
         // @ts-ignore - very much intentional
         expect(testObject == false).toBe(true); //eslint-disable-line
       });
@@ -131,13 +132,13 @@ describe("Test Vest's `test` function", () => {
               faker.lorem.sentence(),
               () =>
                 new Promise((_, reject) => {
-                  expect(testObject.isFailing()).toBe(false);
+                  expect(VestTestInspector.isFailing(testObject)).toBe(false);
                   setTimeout(reject, 300);
                 })
             );
-            expect(testObject.isFailing()).toBe(false);
+            expect(VestTestInspector.isFailing(testObject)).toBe(false);
             setTimeout(() => {
-              expect(testObject.isFailing()).toBe(true);
+              expect(VestTestInspector.isFailing(testObject)).toBe(true);
               done();
             }, 310);
           })();

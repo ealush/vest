@@ -1,4 +1,4 @@
-import { CB, isPromise, seq } from 'vest-utils';
+import { CB, seq } from 'vest-utils';
 import { Isolate, IsolateKey, IsolateMutator } from 'vestjs-runtime';
 
 import { IsolateTestReconciler } from 'IsolateTestReconciler';
@@ -11,6 +11,7 @@ import { TestSeverity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestFn, AsyncTest, TestResult } from 'TestTypes';
 import { VestIsolateType } from 'VestIsolateType';
+import { VestTestInspector } from 'VestTestInspector';
 import { castIsolateTest } from 'isIsolateTest';
 import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
 
@@ -95,66 +96,6 @@ export class IsolateTest<
     return result;
   }
 
-  // Selectors
-
-  warns(): boolean {
-    return this.severity === TestSeverity.Warning;
-  }
-
-  isPending(): boolean {
-    return this.statusEquals(TestStatus.PENDING);
-  }
-
-  isOmitted(): boolean {
-    return this.statusEquals(TestStatus.OMITTED);
-  }
-
-  isUntested(): boolean {
-    return this.statusEquals(TestStatus.UNTESTED);
-  }
-
-  isFailing(): boolean {
-    return this.statusEquals(TestStatus.FAILED);
-  }
-
-  isCanceled(): boolean {
-    return this.statusEquals(TestStatus.CANCELED);
-  }
-
-  isSkipped(): boolean {
-    return this.statusEquals(TestStatus.SKIPPED);
-  }
-
-  isPassing(): boolean {
-    return this.statusEquals(TestStatus.PASSING);
-  }
-
-  isWarning(): boolean {
-    return this.statusEquals(TestStatus.WARNING);
-  }
-
-  hasFailures(): boolean {
-    return this.isFailing() || this.isWarning();
-  }
-
-  isNonActionable(): boolean {
-    return this.isSkipped() || this.isOmitted() || this.isCanceled();
-  }
-
-  isTested(): boolean {
-    return this.hasFailures() || this.isPassing();
-  }
-
-  awaitsResolution(): boolean {
-    // Is the test in a state where it can still be run, or complete running
-    // and its final status is indeterminate?
-    return this.isSkipped() || this.isUntested() || this.isPending();
-  }
-
-  statusEquals(status: TestStatus): boolean {
-    return this.status === status;
-  }
-
   // State modifiers
 
   setPending() {
@@ -162,7 +103,9 @@ export class IsolateTest<
   }
 
   fail(): void {
-    this.setStatus(this.warns() ? TestStatus.WARNING : TestStatus.FAILED);
+    this.setStatus(
+      VestTestInspector.warns(this) ? TestStatus.WARNING : TestStatus.FAILED
+    );
   }
 
   pass(): void {
@@ -200,10 +143,6 @@ export class IsolateTest<
   }
 
   valueOf(): boolean {
-    return !this.isFailing();
-  }
-
-  isAsyncTest(): boolean {
-    return isPromise(this.asyncTest);
+    return !VestTestInspector.isFailing(this);
   }
 }

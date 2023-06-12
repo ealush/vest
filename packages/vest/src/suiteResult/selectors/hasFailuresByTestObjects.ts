@@ -2,6 +2,7 @@ import { IsolateTest } from 'IsolateTest';
 import { Severity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
+import { VestTestInspector } from 'VestTestInspector';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
 import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
@@ -46,7 +47,7 @@ export function hasFailuresByTestObject(
   severityKey: Severity,
   fieldName?: TFieldName
 ): boolean {
-  if (!testObject.hasFailures()) {
+  if (!VestTestInspector.hasFailures(testObject)) {
     return false;
   }
 

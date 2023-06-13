@@ -1,9 +1,9 @@
-import { isStringValue, isUndefined } from 'vest-utils';
+import { Maybe, isStringValue, isUndefined } from 'vest-utils';
 
 export function shouldUseErrorAsMessage(
-  message: string | void,
+  message: Maybe<string>,
   error: unknown
-): error is string {
+): error is Maybe<string> {
   // kind of cheating with this safe guard, but it does the job
   return isUndefined(message) && isStringValue(error);
 }

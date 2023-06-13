@@ -1,4 +1,4 @@
-import { CacheApi, TinyState, cache, seq, tinyState } from 'vest-utils';
+import { CacheApi, Maybe, TinyState, cache, seq, tinyState } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
 import {
@@ -15,7 +15,7 @@ type DoneCallbacks = Array<DoneCallback>;
 type StateExtra = {
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
-  suiteName: string | undefined;
+  suiteName: Maybe<string>;
   suiteId: string;
   suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName>>;
 };

@@ -1,4 +1,4 @@
-import type { CB } from 'vest-utils';
+import type { CB, Maybe } from 'vest-utils';
 import {
   assign,
   defaultTo,
@@ -55,7 +55,7 @@ export function createContext<T>(defaultContextValue?: T): CtxApi<T> {
  * When nesting context runs, the the values of the current layer merges with the layers above it.
  */
 export function createCascade<T extends Record<string, unknown>>(
-  init?: (value: Partial<T>, parentContext: T | void) => Nullable<T>
+  init?: (value: Partial<T>, parentContext: Maybe<T>) => Nullable<T>
 ): CtxCascadeApi<T> {
   const ctx = createContext<T>();
 

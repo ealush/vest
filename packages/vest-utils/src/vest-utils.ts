@@ -43,4 +43,5 @@ export type {
   ValueOf,
   Nullish,
   Nullable,
+  Maybe,
 } from 'utilityTypes';

@@ -1,4 +1,4 @@
-import { invariant, StringObject, isNullish } from 'vest-utils';
+import { invariant, StringObject, isNullish, Maybe } from 'vest-utils';
 
 import { ctx } from 'enforceContext';
 import { getRule, RuleValue, Args, RuleBase } from 'runtimeRules';
@@ -16,7 +16,7 @@ export default function enforceEager(value: RuleValue): EnforceEagerReturn {
   const target = {
     message,
   } as EnforceEagerReturn;
-  let customMessage: string | undefined = undefined;
+  let customMessage: Maybe<string> = undefined;
 
   // We create a proxy intercepting access to the target object (which is empty).
   const proxy: EnforceEagerReturn = new Proxy(target, {

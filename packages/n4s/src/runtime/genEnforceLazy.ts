@@ -1,4 +1,10 @@
-import { mapFirst, optionalFunctionValue, CB, Stringable } from 'vest-utils';
+import {
+  mapFirst,
+  optionalFunctionValue,
+  CB,
+  Stringable,
+  Maybe,
+} from 'vest-utils';
 
 import { ctx } from 'enforceContext';
 import ruleReturn, { defaultToPassing, RuleDetailedResult } from 'ruleReturn';
@@ -8,7 +14,7 @@ import { transformResult } from 'transformResult';
 // eslint-disable-next-line max-lines-per-function
 export default function genEnforceLazy(key: string) {
   const registeredRules: RegisteredRules = [];
-  let lazyMessage: void | LazyMessage;
+  let lazyMessage: Maybe<LazyMessage>;
 
   return addLazyRule(key);
 

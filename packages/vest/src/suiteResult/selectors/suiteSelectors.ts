@@ -1,4 +1,4 @@
-import { isPositive } from 'vest-utils';
+import { Maybe, isPositive } from 'vest-utils';
 
 import { Severity, SeverityCount } from 'Severity';
 import {
@@ -47,7 +47,7 @@ export function bindSuiteSelectors<F extends TFieldName, G extends TGroupName>(
     isValidByGroup: (
       ...args: Parameters<SuiteSelectors<F, G>['isValidByGroup']>
     ) => get().isValidByGroup(...args),
-  } as unknown as SuiteSelectors<F, G>;
+  } as SuiteSelectors<F, G>;
 }
 
 // eslint-disable-next-line max-lines-per-function, max-statements
@@ -136,7 +136,7 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     return getFailures(summary, Severity.WARNINGS, fieldName);
   }
 
-  function getWarning(fieldName?: F): void | string | SummaryFailure<F, G> {
+  function getWarning(fieldName?: F): Maybe<string | SummaryFailure<F, G>> {
     return getFailure<F, G>(Severity.WARNINGS, summary, fieldName as F);
   }
 
@@ -146,7 +146,7 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     return getFailures(summary, Severity.ERRORS, fieldName);
   }
 
-  function getError(fieldName?: F): void | string | SummaryFailure<F, G> {
+  function getError(fieldName?: F): Maybe<string | SummaryFailure<F, G>> {
     return getFailure<F, G>(Severity.ERRORS, summary, fieldName as F);
   }
 
@@ -167,8 +167,8 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
 }
 
 export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
-  getWarning(fieldName?: F): void | string | SummaryFailure<F, G>;
-  getError(fieldName?: F): void | string | SummaryFailure<F, G>;
+  getWarning(fieldName?: F): Maybe<string | SummaryFailure<F, G>>;
+  getError(fieldName?: F): Maybe<string | SummaryFailure<F, G>>;
   getErrors(fieldName: F): string[];
   getErrors(): FailureMessages;
   getWarnings(): FailureMessages;
@@ -266,17 +266,17 @@ function hasFailures(
 function getFailure<F extends TFieldName, G extends TGroupName>(
   severity: Severity,
   summary: SuiteSummary<F, G>
-): SummaryFailure<F, G> | undefined;
+): Maybe<SummaryFailure<F, G>>;
 function getFailure<F extends TFieldName, G extends TGroupName>(
   severity: Severity,
   summary: SuiteSummary<F, G>,
   fieldName: F
-): string | undefined;
+): Maybe<string>;
 function getFailure<F extends TFieldName, G extends TGroupName>(
   severity: Severity,
   summary: SuiteSummary<F, G>,
   fieldName?: F
-): SummaryFailure<F, G> | string | undefined {
+): Maybe<SummaryFailure<F, G> | string> {
   const summaryKey = summary[severity];
 
   if (!fieldName) {

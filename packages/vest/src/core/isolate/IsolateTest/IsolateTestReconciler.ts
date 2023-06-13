@@ -1,4 +1,4 @@
-import { Nullable, deferThrow, isNullish, text } from 'vest-utils';
+import { Maybe, Nullable, deferThrow, isNullish, text } from 'vest-utils';
 import { IsolateInspector, Reconciler } from 'vestjs-runtime';
 import type { Isolate } from 'vestjs-runtime';
 
@@ -110,7 +110,7 @@ function cancelOverriddenPendingTestOnTestReRun(
 
 function throwTestOrderError(
   newNode: IsolateTest,
-  prevNode: Isolate | undefined
+  prevNode: Maybe<Isolate>
 ): void {
   if (IsolateInspector.shouldAllowReorder(newNode)) {
     return;

@@ -1,3 +1,5 @@
+import { Maybe } from 'vest-utils';
+
 import { Severity } from 'Severity';
 import { SummaryFailure } from 'SummaryFailure';
 import { Done } from 'suiteRunResult';
@@ -54,7 +56,7 @@ export type SuiteRunResult<
   done: Done<F, G>;
 };
 
-export type SuiteName = string | undefined;
+export type SuiteName = Maybe<string>;
 
 export type TFieldName<T extends string = string> = T;
 export type TGroupName<G extends string = string> = G;

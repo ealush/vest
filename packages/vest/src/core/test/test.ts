@@ -1,4 +1,11 @@
-import { assign, invariant, isFunction, isStringValue, text } from 'vest-utils';
+import {
+  Maybe,
+  assign,
+  invariant,
+  isFunction,
+  isStringValue,
+  text,
+} from 'vest-utils';
 import { Bus, IsolateKey } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
@@ -38,7 +45,7 @@ function vestTest<F extends TFieldName>(
 ): IsolateTest {
   const [message, testFn, key] = (
     isFunction(args[1]) ? args : [undefined, ...args]
-  ) as [string | undefined, TestFn, IsolateKey];
+  ) as [Maybe<string>, TestFn, IsolateKey];
 
   validateTestParams(fieldName, testFn);
 

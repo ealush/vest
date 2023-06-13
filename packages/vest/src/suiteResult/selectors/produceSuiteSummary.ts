@@ -1,4 +1,4 @@
-import { assign, defaultTo } from 'vest-utils';
+import { Maybe, assign, defaultTo } from 'vest-utils';
 
 import { IsolateTest } from 'IsolateTest';
 import { countKeyBySeverity, Severity } from 'Severity';
@@ -136,7 +136,7 @@ function countFailures<F extends TFieldName, G extends TGroupName>(
  * functions as it is really the same, with the difference of "valid" missing in groups
  */
 function appendTestObject(
-  summaryKey: SingleTestSummary | undefined,
+  summaryKey: Maybe<SingleTestSummary>,
   testObject: IsolateTest
 ): SingleTestSummary {
   const { message } = testObject;

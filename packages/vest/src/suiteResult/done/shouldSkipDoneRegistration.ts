@@ -2,7 +2,7 @@
  * DONE is here and not in its own module to prevent circular dependency issues.
  */
 
-import { isFunction, numberEquals } from 'vest-utils';
+import { Maybe, isFunction, numberEquals } from 'vest-utils';
 
 import {
   SuiteResult,
@@ -17,7 +17,7 @@ export function shouldSkipDoneRegistration<
 >(
   callback: (res: SuiteResult<F, G>) => void,
 
-  fieldName: F | undefined,
+  fieldName: Maybe<F>,
   output: SuiteRunResult<F, G>
 ): boolean {
   // If we do not have any test runs for the current field

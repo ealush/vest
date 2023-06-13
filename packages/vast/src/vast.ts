@@ -1,4 +1,4 @@
-import { isFunction, optionalFunctionValue } from 'vest-utils';
+import { Maybe, isFunction, optionalFunctionValue } from 'vest-utils';
 
 // eslint-disable-next-line max-lines-per-function
 export function createState(
@@ -53,7 +53,7 @@ export function createState(
   function initKey<S>(
     key: number,
     initialState?: StateInput<S>,
-    prevState?: S | undefined
+    prevState?: Maybe<S>
   ) {
     current().push();
     set(key, optionalFunctionValue(initialState, prevState));
@@ -97,7 +97,7 @@ export type UseState<S> = () => StateHandlerReturn<S>;
 type CreateStateReturn = {
   reset: () => void;
   registerStateKey: <S>(
-    initialState?: StateInput<S> | undefined,
-    onUpdate?: (() => void) | undefined
+    initialState?: Maybe<StateInput<S>>,
+    onUpdate?: Maybe<() => void>
   ) => () => StateHandlerReturn<S>;
 };

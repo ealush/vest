@@ -3,6 +3,7 @@ import {
   asArray,
   hasOwnProperty,
   optionalFunctionValue,
+  Maybe,
 } from 'vest-utils';
 
 import { ErrorStrings } from 'ErrorStrings';
@@ -11,9 +12,9 @@ import { TExclusion, useExclusion, useInclusion } from 'SuiteContext';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { useIsExcludedIndividually } from 'skipWhen';
 
-export type ExclusionItem = string | string[] | undefined;
-export type FieldExclusion<F extends TFieldName> = F | F[] | undefined;
-export type GroupExclusion<G extends TGroupName> = G | G[] | undefined;
+export type ExclusionItem = Maybe<string | string[]>;
+export type FieldExclusion<F extends TFieldName> = Maybe<F | F[]>;
+export type GroupExclusion<G extends TGroupName> = Maybe<G | G[]>;
 
 /**
  * Adds a field or a list of fields into the inclusion list

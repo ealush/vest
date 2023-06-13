@@ -1,4 +1,9 @@
-import { Maybe, isFunction, optionalFunctionValue } from 'vest-utils';
+import {
+  DynamicValue,
+  Maybe,
+  isFunction,
+  optionalFunctionValue,
+} from 'vest-utils';
 
 // eslint-disable-next-line max-lines-per-function
 export function createState(
@@ -87,8 +92,8 @@ export function createState(
   }
 }
 
-type StateInput<S> = S | ((prevState?: S) => S);
-type SetStateInput<S> = S | ((prevState: S) => S);
+type StateInput<S> = DynamicValue<S, [prevState?: S]>;
+type SetStateInput<S> = DynamicValue<S, [prevState: S]>;
 
 export type State = CreateStateReturn;
 export type StateHandlerReturn<S> = [S, (nextState: SetStateInput<S>) => void];

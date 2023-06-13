@@ -44,4 +44,6 @@ export type {
   Nullish,
   Nullable,
   Maybe,
+  OneOrMoreOf,
+  DynamicValue,
 } from 'utilityTypes';

@@ -4,6 +4,7 @@ import {
   hasOwnProperty,
   optionalFunctionValue,
   Maybe,
+  OneOrMoreOf,
 } from 'vest-utils';
 
 import { ErrorStrings } from 'ErrorStrings';
@@ -12,9 +13,9 @@ import { TExclusion, useExclusion, useInclusion } from 'SuiteContext';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { useIsExcludedIndividually } from 'skipWhen';
 
-export type ExclusionItem = Maybe<string | string[]>;
-export type FieldExclusion<F extends TFieldName> = Maybe<F | F[]>;
-export type GroupExclusion<G extends TGroupName> = Maybe<G | G[]>;
+export type ExclusionItem = Maybe<OneOrMoreOf<string>>;
+export type FieldExclusion<F extends TFieldName> = Maybe<OneOrMoreOf<F>>;
+export type GroupExclusion<G extends TGroupName> = Maybe<OneOrMoreOf<G>>;
 
 /**
  * Adds a field or a list of fields into the inclusion list

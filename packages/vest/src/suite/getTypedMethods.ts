@@ -1,6 +1,6 @@
 // import { optional, skipWhen, omitWhen, IsolateTest, group } from 'vest';
 import { optional } from 'optional';
-import { CB } from 'vest-utils';
+import { CB, DynamicValue } from 'vest-utils';
 import { Isolate, IsolateKey } from 'vestjs-runtime';
 
 import { IsolateTest } from 'IsolateTest';
@@ -33,14 +33,9 @@ export function getTypedMethods<
 
 export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
   include: (fieldName: F) => {
-    when: (
-      condition: boolean | F | ((draft: SuiteResult<F, G>) => boolean)
-    ) => void;
+    when: (condition: F | TDraftCondition<F, G>) => void;
   };
-  omitWhen: (
-    conditional: boolean | ((draft: SuiteResult<F, G>) => boolean),
-    callback: CB
-  ) => void;
+  omitWhen: (conditional: TDraftCondition<F, G>, callback: CB) => void;
   only: {
     (item: FieldExclusion<F>): void;
     group(item: GroupExclusion<G>): void;
@@ -50,10 +45,7 @@ export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
     (item: FieldExclusion<F>): void;
     group(item: GroupExclusion<G>): void;
   };
-  skipWhen: (
-    condition: boolean | ((draft: SuiteResult<F, G>) => boolean),
-    callback: CB
-  ) => void;
+  skipWhen: (condition: TDraftCondition<F, G>, callback: CB) => void;
   test: {
     (fieldName: F, message: string, cb: TestFn): IsolateTest;
     (fieldName: F, cb: TestFn): IsolateTest;
@@ -64,3 +56,8 @@ export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
   };
   group: (groupName: G, callback: () => void) => Isolate;
 };
+
+export type TDraftCondition<
+  F extends TFieldName,
+  G extends TGroupName
+> = DynamicValue<boolean, [draft: SuiteResult<F, G>]>;

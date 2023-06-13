@@ -4,6 +4,7 @@ import {
   CB,
   Stringable,
   Maybe,
+  DynamicValue,
 } from 'vest-utils';
 
 import { ctx } from 'enforceContext';
@@ -91,6 +92,7 @@ export type LazyRuleRunners = {
 export type ComposeResult = LazyRuleRunners & ((value: any) => void);
 
 type RegisteredRules = Array<(value: RuleValue) => RuleDetailedResult>;
-type LazyMessage =
-  | string
-  | ((value: unknown, originalMessage?: Stringable) => string);
+type LazyMessage = DynamicValue<
+  string,
+  [value: unknown, originalMessage?: Stringable]
+>;

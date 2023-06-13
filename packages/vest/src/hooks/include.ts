@@ -7,7 +7,8 @@ import {
 } from 'vest-utils';
 
 import { useExclusion, useInclusion } from 'SuiteContext';
-import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
+import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { TDraftCondition } from 'getTypedMethods';
 import { useCreateSuiteResult } from 'suiteResult';
 
 /**
@@ -32,13 +33,7 @@ import { useCreateSuiteResult } from 'suiteResult';
 export function include<F extends TFieldName, G extends TGroupName>(
   fieldName: F
 ): {
-  when: (
-    condition:
-      | F
-      | TFieldName
-      | boolean
-      | ((draft: SuiteResult<F, G>) => boolean)
-  ) => void;
+  when: (condition: F | TFieldName | TDraftCondition<F, G>) => void;
 } {
   const inclusion = useInclusion();
   const exclusion = useExclusion();
@@ -52,13 +47,7 @@ export function include<F extends TFieldName, G extends TGroupName>(
   /**
    * Specifies the inclusion criteria for the field in `include` function.
    */
-  function when(
-    condition:
-      | F
-      | TFieldName
-      | ((draft: SuiteResult<F, G>) => boolean)
-      | boolean
-  ): void {
+  function when(condition: F | TFieldName | TDraftCondition<F, G>): void {
     const inclusion = useInclusion();
     const exclusion = useExclusion();
 

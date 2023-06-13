@@ -1,5 +1,6 @@
 import { createCascade } from 'context';
 import { assign, TinyState, tinyState, cache, CacheApi } from 'vest-utils';
+import { DynamicValue } from 'vest-utils/src/utilityTypes';
 
 import { IsolateTest } from 'IsolateTest';
 import { Modes } from 'Modes';
@@ -25,7 +26,7 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
 
 type CTXType = {
   exclusion: TExclusion;
-  inclusion: Record<string, boolean | (() => boolean)>;
+  inclusion: Record<string, DynamicValue<boolean>>;
   currentTest?: IsolateTest;
   groupName?: string;
   skipped?: boolean;

@@ -136,7 +136,7 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     return getFailures(summary, Severity.WARNINGS, fieldName);
   }
 
-  function getWarning(fieldName?: F): Maybe<string | SummaryFailure<F, G>> {
+  function getWarning(fieldName?: F): GetSingularResponse<F, G> {
     return getFailure<F, G>(Severity.WARNINGS, summary, fieldName as F);
   }
 
@@ -146,7 +146,7 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     return getFailures(summary, Severity.ERRORS, fieldName);
   }
 
-  function getError(fieldName?: F): Maybe<string | SummaryFailure<F, G>> {
+  function getError(fieldName?: F): GetSingularResponse<F, G> {
     return getFailure<F, G>(Severity.ERRORS, summary, fieldName as F);
   }
 
@@ -167,8 +167,8 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
 }
 
 export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
-  getWarning(fieldName?: F): Maybe<string | SummaryFailure<F, G>>;
-  getError(fieldName?: F): Maybe<string | SummaryFailure<F, G>>;
+  getWarning(fieldName?: F): GetSingularResponse<F, G>;
+  getError(fieldName?: F): GetSingularResponse<F, G>;
   getErrors(fieldName: F): string[];
   getErrors(): FailureMessages;
   getWarnings(): FailureMessages;
@@ -288,3 +288,7 @@ function getFailure<F extends TFieldName, G extends TGroupName>(
       matchingFieldName(summaryFailure, fieldName)
   )?.message;
 }
+
+type GetSingularResponse<F extends TFieldName, G extends TGroupName> = Maybe<
+  string | SummaryFailure<F, G>
+>;

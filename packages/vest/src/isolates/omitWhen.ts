@@ -3,7 +3,8 @@ import { optionalFunctionValue } from 'vest-utils';
 import { Isolate } from 'vestjs-runtime';
 
 import { SuiteContext, useOmitted } from 'SuiteContext';
-import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
+import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { TDraftCondition } from 'getTypedMethods';
 import { useCreateSuiteResult } from 'suiteResult';
 
 /**
@@ -17,7 +18,7 @@ import { useCreateSuiteResult } from 'suiteResult';
  */
 // @vx-allow use-use
 export function omitWhen<F extends TFieldName, G extends TGroupName>(
-  conditional: boolean | ((draft: SuiteResult<F, G>) => boolean),
+  conditional: TDraftCondition<F, G>,
   callback: CB
 ): void {
   Isolate.create(() => {

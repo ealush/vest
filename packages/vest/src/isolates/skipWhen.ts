@@ -2,7 +2,8 @@ import { CB, optionalFunctionValue } from 'vest-utils';
 import { Isolate } from 'vestjs-runtime';
 
 import { SuiteContext, useSkipped } from 'SuiteContext';
-import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
+import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { TDraftCondition } from 'getTypedMethods';
 import { useCreateSuiteResult } from 'suiteResult';
 
 /**
@@ -16,7 +17,7 @@ import { useCreateSuiteResult } from 'suiteResult';
  */
 // @vx-allow use-use
 export function skipWhen<F extends TFieldName, G extends TGroupName>(
-  condition: boolean | ((draft: SuiteResult<F, G>) => boolean),
+  condition: TDraftCondition<F, G>,
   callback: CB
 ): void {
   Isolate.create(() => {

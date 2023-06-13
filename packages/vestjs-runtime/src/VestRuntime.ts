@@ -1,9 +1,10 @@
+import { ErrorStrings } from 'ErrorStrings';
 import { createCascade } from 'context';
 import {
   invariant,
   deferThrow,
   isNullish,
-  CB,
+  // CB,
   assign,
   TinyState,
   text,
@@ -12,9 +13,9 @@ import {
   BusType,
   bus,
   Nullable,
+  DynamicValue,
 } from 'vest-utils';
 
-import { ErrorStrings } from 'ErrorStrings';
 import { Isolate } from 'Isolate';
 import { IsolateInspector } from 'IsolateInspector';
 import { IsolateMutator } from 'IsolateMutator';
@@ -71,7 +72,7 @@ export function useXAppData<T = object>() {
 }
 
 export function createRef(
-  setter: Record<string, any> | (() => Record<string, any>)
+  setter: DynamicValue<Record<string, any>>
 ): StateRefType {
   return Object.freeze({
     historyRoot: tinyState.createTinyState<Nullable<Isolate>>(null),
@@ -80,7 +81,7 @@ export function createRef(
   });
 }
 
-export function persist<T extends CB>(cb: T): T {
+export function persist<T extends (...args: any[]) => any>(cb: T): T {
   const prev = PersistedContext.useX();
 
   return ((...args: Parameters<T>): ReturnType<T> => {

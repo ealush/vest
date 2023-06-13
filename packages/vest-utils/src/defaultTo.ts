@@ -1,9 +1,9 @@
 import optionalFunctionValue from 'optionalFunctionValue';
-import { Nullish } from 'utilityTypes';
+import { DynamicValue, Nullish } from 'utilityTypes';
 
 export default function defaultTo<T>(
-  value: Nullish<T> | ((...args: any[]) => Nullish<T>),
-  defaultValue: T | (() => T)
+  value: DynamicValue<Nullish<T>>,
+  defaultValue: DynamicValue<T>
 ): T {
   return optionalFunctionValue(value) ?? optionalFunctionValue(defaultValue);
 }

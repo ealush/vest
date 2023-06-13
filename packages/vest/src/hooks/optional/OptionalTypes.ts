@@ -1,17 +1,18 @@
+import { DynamicValue, OneOrMoreOf } from 'vest-utils';
+
 import { TFieldName } from 'SuiteResultTypes';
 
 export type OptionalFields = Record<string, OptionalFieldDeclaration>;
 
-export type OptionalsInput<F extends TFieldName> = F | F[] | OptionalsObject<F>;
+export type OptionalsInput<F extends TFieldName> =
+  | OneOrMoreOf<F>
+  | OptionalsObject<F>;
 
-type OptionalsObject<F extends TFieldName> = Record<
-  F,
-  (() => boolean) | boolean
->;
+type OptionalsObject<F extends TFieldName> = Record<F, TOptionalRule>;
 
 type ImmediateOptionalFieldDeclaration = {
   type: OptionalFieldTypes.CUSTOM_LOGIC;
-  rule: boolean | (() => boolean);
+  rule: TOptionalRule;
   applied: boolean;
 };
 
@@ -20,6 +21,8 @@ type DelayedOptionalFieldDeclaration = {
   applied: boolean;
   rule: null;
 };
+
+type TOptionalRule = DynamicValue<boolean>;
 
 export type OptionalFieldDeclaration =
   | ImmediateOptionalFieldDeclaration

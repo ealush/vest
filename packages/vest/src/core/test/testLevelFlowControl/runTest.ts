@@ -13,6 +13,8 @@ import { IsolateTest } from 'IsolateTest';
 import { SuiteContext } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
 import { VestTestInspector } from 'VestTestInspector';
+import { VestTestMutator } from 'VestTestMutator';
+import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
 import { useVerifyTestRun } from 'verifyTestRun';
 
 // eslint-disable-next-line max-statements
@@ -36,7 +38,23 @@ export function useAttemptRunTest(testObject: IsolateTest) {
 }
 
 function runSyncTest(testObject: IsolateTest): TestResult {
-  return SuiteContext.run({ currentTest: testObject }, () => testObject.run());
+  return SuiteContext.run({ currentTest: testObject }, () => {
+    let result: TestResult;
+    try {
+      result = testObject.testFn();
+    } catch (error) {
+      if (shouldUseErrorAsMessage(testObject.message, error)) {
+        testObject.message = error;
+      }
+      result = false;
+    }
+
+    if (result === false) {
+      VestTestMutator.fail(testObject);
+    }
+
+    return result;
+  });
 }
 
 /**
@@ -78,7 +96,7 @@ function useRunAsyncTest(testObject: IsolateTest): void {
   const { asyncTest, message } = testObject;
 
   if (!isPromise(asyncTest)) return;
-  testObject.setPending();
+  VestTestMutator.setPending(testObject);
 
   const VestBus = Bus.useBus();
 
@@ -93,7 +111,7 @@ function useRunAsyncTest(testObject: IsolateTest): void {
     testObject.message = isStringValue(rejectionMessage)
       ? rejectionMessage
       : message;
-    testObject.fail();
+    VestTestMutator.fail(testObject);
 
     done();
   });
@@ -104,7 +122,7 @@ function useRunAsyncTest(testObject: IsolateTest): void {
 function onTestCompleted(VestBus: BusType, testObject: IsolateTest) {
   // Attempts passing if the test is not already failed.
   // or is not canceled/omitted.
-  testObject.pass();
+  VestTestMutator.pass(testObject);
 
   VestBus.emit(Events.TEST_COMPLETED, testObject);
 }

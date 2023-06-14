@@ -1,3 +1,4 @@
+import { VestTestMutator } from 'VestTestMutator';
 import wait from 'wait';
 
 import { TestPromise } from '../../../../testUtils/testPromise';
@@ -43,7 +44,7 @@ describe('IsolateTest', () => {
   describe('testObject.warn', () => {
     it('Should mark the test as warning', () => {
       expect(VestTestInspector.warns(testObject)).toBe(false);
-      testObject.warn();
+      VestTestMutator.warn(testObject);
       expect(VestTestInspector.warns(testObject)).toBe(true);
       expect(testObject).toMatchSnapshot();
     });
@@ -63,7 +64,7 @@ describe('IsolateTest', () => {
 
     it('Should set status to failed', () => {
       expect(VestTestInspector.isFailing(testObject)).toBe(false);
-      testObject.fail();
+      VestTestMutator.fail(testObject);
       expect(VestTestInspector.isFailing(testObject)).toBe(true);
     });
   });
@@ -74,7 +75,7 @@ describe('IsolateTest', () => {
     });
 
     test('When test failed', () => {
-      testObject.fail();
+      VestTestMutator.fail(testObject);
       expect(testObject.valueOf()).toBe(false);
     });
   });
@@ -90,7 +91,7 @@ describe('IsolateTest', () => {
           vest.test('f2', async () => {
             await wait(100);
           });
-          testObject.cancel();
+          VestTestMutator.cancel(testObject);
         });
         suite();
 
@@ -110,15 +111,15 @@ describe('IsolateTest', () => {
           const testObject = vest.test('f1', async () => {
             await wait(100);
           });
-          testObject.fail();
+          VestTestMutator.fail(testObject);
           expect(VestTestInspector.isFailing(testObject)).toBe(true);
-          testObject.skip();
+          VestTestMutator.skip(testObject);
           expect(VestTestInspector.isSkipped(testObject)).toBe(false);
           expect(VestTestInspector.isFailing(testObject)).toBe(true);
-          testObject.cancel();
+          VestTestMutator.cancel(testObject);
           expect(VestTestInspector.isCanceled(testObject)).toBe(false);
           expect(VestTestInspector.isFailing(testObject)).toBe(true);
-          testObject.setPending();
+          VestTestMutator.setPending(testObject);
           expect(VestTestInspector.isPending(testObject)).toBe(false);
           expect(VestTestInspector.isFailing(testObject)).toBe(true);
           control();
@@ -132,15 +133,15 @@ describe('IsolateTest', () => {
           const testObject = vest.test('f1', async () => {
             await wait(100);
           });
-          testObject.cancel();
+          VestTestMutator.cancel(testObject);
           expect(VestTestInspector.isCanceled(testObject)).toBe(true);
-          testObject.fail();
+          VestTestMutator.fail(testObject);
           expect(VestTestInspector.isCanceled(testObject)).toBe(true);
           expect(VestTestInspector.isFailing(testObject)).toBe(false);
-          testObject.skip();
+          VestTestMutator.skip(testObject);
           expect(VestTestInspector.isSkipped(testObject)).toBe(false);
           expect(VestTestInspector.isCanceled(testObject)).toBe(true);
-          testObject.setPending();
+          VestTestMutator.setPending(testObject);
           expect(VestTestInspector.isPending(testObject)).toBe(false);
           expect(VestTestInspector.isCanceled(testObject)).toBe(true);
           control();

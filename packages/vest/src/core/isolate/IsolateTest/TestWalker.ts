@@ -4,6 +4,7 @@ import { Walker, VestRuntime, Isolate } from 'vestjs-runtime';
 import { IsolateTest } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { VestTestInspector } from 'VestTestInspector';
+import { VestTestMutator } from 'VestTestMutator';
 import { castIsolateTest, isIsolateTest, isIsolateTestX } from 'isIsolateTest';
 import matchingFieldName from 'matchingFieldName';
 
@@ -107,7 +108,7 @@ export class TestWalker {
   static resetField(fieldName: TFieldName): void {
     TestWalker.walkTests(testObject => {
       if (matchingFieldName(testObject, fieldName)) {
-        testObject.reset();
+        VestTestMutator.reset(testObject);
       }
     }, TestWalker.defaultRoot());
   }

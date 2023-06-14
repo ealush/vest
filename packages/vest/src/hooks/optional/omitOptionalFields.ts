@@ -6,6 +6,7 @@ import type { IsolateSuite } from 'IsolateSuite';
 import { IsolateTest } from 'IsolateTest';
 import { TestWalker } from 'TestWalker';
 import { VestTestInspector } from 'VestTestInspector';
+import { VestTestMutator } from 'VestTestMutator';
 
 /**
  * This module gets triggered once the suite is done running its sync tests.
@@ -46,7 +47,7 @@ export function useOmitOptionalFields(): void {
 
   function verifyAndOmit(testObject: IsolateTest) {
     if (shouldOmit.has(testObject.fieldName)) {
-      testObject.omit();
+      VestTestMutator.omit(testObject);
       root?.setOptionalField(testObject.fieldName, current => ({
         ...current,
         applied: true,

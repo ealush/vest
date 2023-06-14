@@ -1,9 +1,10 @@
-import { useIsOptionalFiedApplied } from 'optional';
 
 import { IsolateTest } from 'IsolateTest';
+import { VestTestMutator } from 'VestTestMutator';
 import { useIsExcluded } from 'exclusive';
 import { useShouldSkipBasedOnMode } from 'mode';
 import { useWithinActiveOmitWhen } from 'omitWhen';
+import { useIsOptionalFiedApplied } from 'optional';
 import { useIsExcludedIndividually } from 'skipWhen';
 
 export function useVerifyTestRun(
@@ -32,12 +33,12 @@ function useShouldOmit(testObject: IsolateTest): boolean {
 }
 
 function skipTestAndReturn(testNode: IsolateTest): IsolateTest {
-  testNode.skip();
+  VestTestMutator.skip(testNode);
   return testNode;
 }
 
 function omitTestAndReturn(testNode: IsolateTest): IsolateTest {
-  testNode.omit();
+  VestTestMutator.omit(testNode);
   return testNode;
 }
 
@@ -46,6 +47,6 @@ function useForceSkipIfInSkipWhen(testNode: IsolateTest): IsolateTest {
   // if we're directly within a skipWhen block
   // This mostly means that we're probably giving
   // up on this async test intentionally.
-  testNode.skip(useIsExcludedIndividually());
+  VestTestMutator.skip(testNode, useIsExcludedIndividually());
   return testNode;
 }

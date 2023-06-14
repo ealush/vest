@@ -1,3 +1,4 @@
+import { VestTestMutator } from 'VestTestMutator';
 import wait from 'wait';
 
 import { TestPromise } from '../../../../testUtils/testPromise';
@@ -132,7 +133,7 @@ describe('test.memo', () => {
           );
 
           if (count === 1) {
-            tests[0].cancel();
+            VestTestMutator.cancel(tests[0]);
           }
         });
 

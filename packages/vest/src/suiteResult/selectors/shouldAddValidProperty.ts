@@ -1,4 +1,3 @@
-import { useIsOptionalFiedApplied } from 'optional';
 import { VestRuntime } from 'vestjs-runtime';
 
 import type { IsolateSuite } from 'IsolateSuite';
@@ -14,6 +13,7 @@ import {
 } from 'hasFailuresByTestObjects';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingGroupName } from 'matchingGroupName';
+import { useIsOptionalFiedApplied } from 'optional';
 
 export function useShouldAddValidProperty(fieldName?: TFieldName): boolean {
   // Is the field optional, and the optional condition is applied

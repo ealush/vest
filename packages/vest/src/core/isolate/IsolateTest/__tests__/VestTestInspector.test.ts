@@ -1,6 +1,7 @@
+import { VestTestMutator } from 'VestTestMutator';
+
 import { IsolateTest } from 'IsolateTest';
 import { TestStatus } from 'IsolateTestStateMachine';
-import { TestSeverity } from 'Severity';
 import { VestTestInspector } from 'VestTestInspector';
 
 describe('VestTestInspector', () => {
@@ -14,7 +15,7 @@ describe('VestTestInspector', () => {
   });
   describe('warns', () => {
     it('Should return true when test severity is WARNING', () => {
-      testObject.warn();
+      VestTestMutator.warn(testObject);
 
       expect(VestTestInspector.warns(testObject)).toBe(true);
     });
@@ -26,7 +27,7 @@ describe('VestTestInspector', () => {
 
   describe('isPending', () => {
     it('Should return true when test status is PENDING', () => {
-      testObject.setPending();
+      VestTestMutator.setPending(testObject);
       expect(VestTestInspector.isPending(testObject)).toBe(true);
     });
 
@@ -37,7 +38,7 @@ describe('VestTestInspector', () => {
 
   describe('isOmitted', () => {
     it('Should return true when test status is OMITTED', () => {
-      testObject.omit();
+      VestTestMutator.omit(testObject);
       expect(VestTestInspector.isOmitted(testObject)).toBe(true);
     });
 
@@ -52,18 +53,18 @@ describe('VestTestInspector', () => {
     });
 
     it('Should return false when test is not untested', () => {
-      testObject.setPending();
+      VestTestMutator.setPending(testObject);
       expect(VestTestInspector.isUntested(testObject)).toBe(false);
-      testObject.skip();
+      VestTestMutator.skip(testObject);
       expect(VestTestInspector.isUntested(testObject)).toBe(false);
-      testObject.omit();
+      VestTestMutator.omit(testObject);
       expect(VestTestInspector.isUntested(testObject)).toBe(false);
     });
   });
 
   describe('isFailing', () => {
     it('Should return true when test status is FAIL', () => {
-      testObject.fail();
+      VestTestMutator.fail(testObject);
       expect(VestTestInspector.isFailing(testObject)).toBe(true);
     });
 
@@ -74,7 +75,7 @@ describe('VestTestInspector', () => {
 
   describe('isCanceled', () => {
     it('Should return true when test status is CANCELED', () => {
-      testObject.cancel();
+      VestTestMutator.cancel(testObject);
       expect(VestTestInspector.isCanceled(testObject)).toBe(true);
     });
 
@@ -85,7 +86,7 @@ describe('VestTestInspector', () => {
 
   describe('isSkipped', () => {
     it('Should return true when test status is SKIP', () => {
-      testObject.skip();
+      VestTestMutator.skip(testObject);
       expect(VestTestInspector.isSkipped(testObject)).toBe(true);
     });
 
@@ -96,7 +97,7 @@ describe('VestTestInspector', () => {
 
   describe('isPassing', () => {
     it('Should return true when test status is PASS', () => {
-      testObject.pass();
+      VestTestMutator.pass(testObject);
       expect(VestTestInspector.isPassing(testObject)).toBe(true);
     });
 
@@ -107,26 +108,26 @@ describe('VestTestInspector', () => {
 
   describe('isWarning', () => {
     it('Should return true when test severity is WARNING and the test is failing', () => {
-      testObject.warn();
-      testObject.fail();
+      VestTestMutator.warn(testObject);
+      VestTestMutator.fail(testObject);
       expect(VestTestInspector.isWarning(testObject)).toBe(true);
     });
 
     it('Should return false when test is not actively warning', () => {
-      testObject.warn();
+      VestTestMutator.warn(testObject);
       expect(VestTestInspector.isWarning(testObject)).toBe(false);
     });
   });
 
   describe('hasFailures', () => {
     it('Should return true when test has Error failures', () => {
-      testObject.fail();
+      VestTestMutator.fail(testObject);
       expect(VestTestInspector.hasFailures(testObject)).toBe(true);
     });
 
     it('Should return true when test has Warning failures', () => {
-      testObject.warn();
-      testObject.fail();
+      VestTestMutator.warn(testObject);
+      VestTestMutator.fail(testObject);
       expect(VestTestInspector.hasFailures(testObject)).toBe(true);
     });
 
@@ -137,47 +138,47 @@ describe('VestTestInspector', () => {
 
   describe('isNonActionable', () => {
     it('Should return true when the test is skipped', () => {
-      testObject.skip();
+      VestTestMutator.skip(testObject);
       expect(VestTestInspector.isNonActionable(testObject)).toBe(true);
     });
 
     it('Should return true when the test is omitted', () => {
-      testObject.omit();
+      VestTestMutator.omit(testObject);
       expect(VestTestInspector.isNonActionable(testObject)).toBe(true);
     });
 
     it('Should return true when the test is canceled', () => {
-      testObject.cancel();
+      VestTestMutator.cancel(testObject);
       expect(VestTestInspector.isNonActionable(testObject)).toBe(true);
     });
 
     it('Should return false when the test is not non-actionable', () => {
       expect(VestTestInspector.isNonActionable(testObject)).toBe(false);
-      testObject.setPending();
+      VestTestMutator.setPending(testObject);
       expect(VestTestInspector.isNonActionable(testObject)).toBe(false);
-      testObject.fail();
+      VestTestMutator.fail(testObject);
       expect(VestTestInspector.isNonActionable(testObject)).toBe(false);
     });
   });
 
   describe('isTested', () => {
     it('Should return true when the test has done testing', () => {
-      testObject.fail();
+      VestTestMutator.fail(testObject);
       expect(VestTestInspector.isTested(testObject)).toBe(true);
 
       testObject = new IsolateTest({
         fieldName: 'field_name',
         testFn: jest.fn(),
       });
-      testObject.warn();
-      testObject.fail();
+      VestTestMutator.warn(testObject);
+      VestTestMutator.fail(testObject);
       expect(VestTestInspector.isTested(testObject)).toBe(true);
 
       testObject = new IsolateTest({
         fieldName: 'field_name',
         testFn: jest.fn(),
       });
-      testObject.pass();
+      VestTestMutator.pass(testObject);
 
       expect(VestTestInspector.isTested(testObject)).toBe(true);
 
@@ -185,8 +186,8 @@ describe('VestTestInspector', () => {
         fieldName: 'field_name',
         testFn: jest.fn(),
       });
-      testObject.warn();
-      testObject.pass();
+      VestTestMutator.warn(testObject);
+      VestTestMutator.pass(testObject);
       expect(VestTestInspector.isTested(testObject)).toBe(true);
     });
 
@@ -196,35 +197,35 @@ describe('VestTestInspector', () => {
         fieldName: 'f',
         testFn: jest.fn(),
       });
-      testObject.omit();
+      VestTestMutator.omit(testObject);
       expect(VestTestInspector.isTested(testObject)).toBe(false);
 
       testObject = new IsolateTest({
         fieldName: 'f',
         testFn: jest.fn(),
       });
-      testObject.skip();
+      VestTestMutator.skip(testObject);
       expect(VestTestInspector.isTested(testObject)).toBe(false);
 
       testObject = new IsolateTest({
         fieldName: 'f',
         testFn: jest.fn(),
       });
-      testObject.setPending();
+      VestTestMutator.setPending(testObject);
       expect(VestTestInspector.isTested(testObject)).toBe(false);
 
       testObject = new IsolateTest({
         fieldName: 'f',
         testFn: jest.fn(),
       });
-      testObject.cancel();
+      VestTestMutator.cancel(testObject);
       expect(VestTestInspector.isTested(testObject)).toBe(false);
     });
   });
 
   describe('awaitsResolution', () => {
     it('Should return true for a skipped test', () => {
-      testObject.skip();
+      VestTestMutator.skip(testObject);
       expect(VestTestInspector.awaitsResolution(testObject)).toBe(true);
     });
 
@@ -237,35 +238,35 @@ describe('VestTestInspector', () => {
     });
 
     it('Should return true for a pending test', () => {
-      testObject.setPending();
+      VestTestMutator.setPending(testObject);
       expect(VestTestInspector.awaitsResolution(testObject)).toBe(true);
     });
 
     it('Should retrun false for a tested test', () => {
-      testObject.fail();
+      VestTestMutator.fail(testObject);
       expect(VestTestInspector.awaitsResolution(testObject)).toBe(false);
       testObject = new IsolateTest({
         fieldName: 'f',
         testFn: jest.fn(),
       });
-      testObject.pass();
+      VestTestMutator.pass(testObject);
       expect(VestTestInspector.awaitsResolution(testObject)).toBe(false);
     });
 
     it('Should return false for a canceled test', () => {
-      testObject.cancel();
+      VestTestMutator.cancel(testObject);
       expect(VestTestInspector.awaitsResolution(testObject)).toBe(false);
     });
 
     it('Should return false for an omitted test', () => {
-      testObject.omit();
+      VestTestMutator.omit(testObject);
       expect(VestTestInspector.awaitsResolution(testObject)).toBe(false);
     });
   });
 
   describe('statusEquals', () => {
     it('Should return true when test status equals the provided status', () => {
-      testObject.fail();
+      VestTestMutator.fail(testObject);
       expect(
         VestTestInspector.statusEquals(testObject, TestStatus.FAILED)
       ).toBe(true);
@@ -273,8 +274,8 @@ describe('VestTestInspector', () => {
         fieldName: 'f',
         testFn: jest.fn(),
       });
-      testObject.warn();
-      testObject.fail();
+      VestTestMutator.warn(testObject);
+      VestTestMutator.fail(testObject);
       expect(
         VestTestInspector.statusEquals(testObject, TestStatus.WARNING)
       ).toBe(true);
@@ -283,14 +284,14 @@ describe('VestTestInspector', () => {
         fieldName: 'f',
         testFn: jest.fn(),
       });
-      testObject.pass();
+      VestTestMutator.pass(testObject);
       expect(
         VestTestInspector.statusEquals(testObject, TestStatus.PASSING)
       ).toBe(true);
     });
 
     it('Should return false when test status does not equal the provided status', () => {
-      testObject.fail();
+      VestTestMutator.fail(testObject);
       expect(
         VestTestInspector.statusEquals(testObject, TestStatus.PASSING)
       ).toBe(false);

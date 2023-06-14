@@ -80,6 +80,7 @@
       "cancelOverriddenPendingTest": [
         "./src/core/isolate/IsolateTest/cancelOverriddenPendingTest.ts"
       ],
+      "VestTestMutator": ["./src/core/isolate/IsolateTest/VestTestMutator.ts"],
       "VestTestInspector": [
         "./src/core/isolate/IsolateTest/VestTestInspector.ts"
       ],

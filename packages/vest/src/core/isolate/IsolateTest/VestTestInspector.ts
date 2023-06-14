@@ -71,11 +71,11 @@ export class VestTestInspector {
     );
   }
 
-  static statusEquals(test: IsolateTest, status: TestStatus): boolean {
-    return test.status === status;
-  }
-
   static isAsyncTest(test: IsolateTest): boolean {
     return isPromise(test.asyncTest);
+  }
+
+  static statusEquals(test: IsolateTest, status: TestStatus): boolean {
+    return test.stateMachine.getState() === status;
   }
 }

@@ -31,4 +31,16 @@ export class IsolateInspector {
     }
     return isNotNullish(isolate.key);
   }
+
+  static dump(isolate: Isolate): string {
+    if (isNullish(isolate)) {
+      return '';
+    }
+    return JSON.stringify(isolate, (key, value) => {
+      if (key === 'parent') {
+        return undefined;
+      }
+      return value;
+    });
+  }
 }

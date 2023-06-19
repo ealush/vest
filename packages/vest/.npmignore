@@ -7,7 +7,7 @@ tsconfig.json
 !promisify/
 !parser/
 !enforce@schema/
-!enforce@isEmail/
+!enforce@email/
 !enforce@compounds/
 !enforce@compose/
 !classnames/

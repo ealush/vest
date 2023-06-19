@@ -5,7 +5,7 @@ src
 !dist/
 tsconfig.json
 !schema/
-!isEmail/
+!email/
 !compounds/
 !compose/
 

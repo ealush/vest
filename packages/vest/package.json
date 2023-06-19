@@ -115,35 +115,35 @@
       "module": "./dist/es/enforce/schema.production.js",
       "default": "./dist/cjs/enforce/schema.production.js"
     },
-    "./enforce/isEmail": {
+    "./enforce/email": {
       "production": {
-        "types": "./types/enforce/isEmail.d.ts",
-        "browser": "./dist/es/enforce/isEmail.production.js",
-        "umd": "./dist/umd/enforce/isEmail.production.js",
-        "import": "./dist/es/enforce/isEmail.production.js",
-        "require": "./dist/cjs/enforce/isEmail.production.js",
-        "node": "./dist/cjs/enforce/isEmail.production.js",
-        "module": "./dist/es/enforce/isEmail.production.js",
-        "default": "./dist/cjs/enforce/isEmail.production.js"
+        "types": "./types/enforce/email.d.ts",
+        "browser": "./dist/es/enforce/email.production.js",
+        "umd": "./dist/umd/enforce/email.production.js",
+        "import": "./dist/es/enforce/email.production.js",
+        "require": "./dist/cjs/enforce/email.production.js",
+        "node": "./dist/cjs/enforce/email.production.js",
+        "module": "./dist/es/enforce/email.production.js",
+        "default": "./dist/cjs/enforce/email.production.js"
       },
       "development": {
-        "types": "./types/enforce/isEmail.d.ts",
-        "browser": "./dist/es/enforce/isEmail.development.js",
-        "umd": "./dist/umd/enforce/isEmail.development.js",
-        "import": "./dist/es/enforce/isEmail.development.js",
-        "require": "./dist/cjs/enforce/isEmail.development.js",
-        "node": "./dist/cjs/enforce/isEmail.development.js",
-        "module": "./dist/es/enforce/isEmail.development.js",
-        "default": "./dist/cjs/enforce/isEmail.development.js"
+        "types": "./types/enforce/email.d.ts",
+        "browser": "./dist/es/enforce/email.development.js",
+        "umd": "./dist/umd/enforce/email.development.js",
+        "import": "./dist/es/enforce/email.development.js",
+        "require": "./dist/cjs/enforce/email.development.js",
+        "node": "./dist/cjs/enforce/email.development.js",
+        "module": "./dist/es/enforce/email.development.js",
+        "default": "./dist/cjs/enforce/email.development.js"
       },
-      "types": "./types/enforce/isEmail.d.ts",
-      "browser": "./dist/es/enforce/isEmail.production.js",
-      "umd": "./dist/umd/enforce/isEmail.production.js",
-      "import": "./dist/es/enforce/isEmail.production.js",
-      "require": "./dist/cjs/enforce/isEmail.production.js",
-      "node": "./dist/cjs/enforce/isEmail.production.js",
-      "module": "./dist/es/enforce/isEmail.production.js",
-      "default": "./dist/cjs/enforce/isEmail.production.js"
+      "types": "./types/enforce/email.d.ts",
+      "browser": "./dist/es/enforce/email.production.js",
+      "umd": "./dist/umd/enforce/email.production.js",
+      "import": "./dist/es/enforce/email.production.js",
+      "require": "./dist/cjs/enforce/email.production.js",
+      "node": "./dist/cjs/enforce/email.production.js",
+      "module": "./dist/es/enforce/email.production.js",
+      "default": "./dist/cjs/enforce/email.production.js"
     },
     "./enforce/compounds": {
       "production": {

@@ -1,5 +1,5 @@
 import { enforce } from 'n4s';
-import 'isEmail';
+import 'email';
 
 describe('isEmail', () => {
   it('Should pass for valid emails', () => {

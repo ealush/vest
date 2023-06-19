@@ -59,35 +59,35 @@
       "module": "./dist/es/schema.production.js",
       "default": "./dist/cjs/schema.production.js"
     },
-    "./isEmail": {
+    "./email": {
       "production": {
-        "types": "./types/isEmail.d.ts",
-        "browser": "./dist/es/isEmail.production.js",
-        "umd": "./dist/umd/isEmail.production.js",
-        "import": "./dist/es/isEmail.production.js",
-        "require": "./dist/cjs/isEmail.production.js",
-        "node": "./dist/cjs/isEmail.production.js",
-        "module": "./dist/es/isEmail.production.js",
-        "default": "./dist/cjs/isEmail.production.js"
+        "types": "./types/email.d.ts",
+        "browser": "./dist/es/email.production.js",
+        "umd": "./dist/umd/email.production.js",
+        "import": "./dist/es/email.production.js",
+        "require": "./dist/cjs/email.production.js",
+        "node": "./dist/cjs/email.production.js",
+        "module": "./dist/es/email.production.js",
+        "default": "./dist/cjs/email.production.js"
       },
       "development": {
-        "types": "./types/isEmail.d.ts",
-        "browser": "./dist/es/isEmail.development.js",
-        "umd": "./dist/umd/isEmail.development.js",
-        "import": "./dist/es/isEmail.development.js",
-        "require": "./dist/cjs/isEmail.development.js",
-        "node": "./dist/cjs/isEmail.development.js",
-        "module": "./dist/es/isEmail.development.js",
-        "default": "./dist/cjs/isEmail.development.js"
+        "types": "./types/email.d.ts",
+        "browser": "./dist/es/email.development.js",
+        "umd": "./dist/umd/email.development.js",
+        "import": "./dist/es/email.development.js",
+        "require": "./dist/cjs/email.development.js",
+        "node": "./dist/cjs/email.development.js",
+        "module": "./dist/es/email.development.js",
+        "default": "./dist/cjs/email.development.js"
       },
-      "types": "./types/isEmail.d.ts",
-      "browser": "./dist/es/isEmail.production.js",
-      "umd": "./dist/umd/isEmail.production.js",
-      "import": "./dist/es/isEmail.production.js",
-      "require": "./dist/cjs/isEmail.production.js",
-      "node": "./dist/cjs/isEmail.production.js",
-      "module": "./dist/es/isEmail.production.js",
-      "default": "./dist/cjs/isEmail.production.js"
+      "types": "./types/email.d.ts",
+      "browser": "./dist/es/email.production.js",
+      "umd": "./dist/umd/email.production.js",
+      "import": "./dist/es/email.production.js",
+      "require": "./dist/cjs/email.production.js",
+      "node": "./dist/cjs/email.production.js",
+      "module": "./dist/es/email.production.js",
+      "default": "./dist/cjs/email.production.js"
     },
     "./compounds": {
       "production": {

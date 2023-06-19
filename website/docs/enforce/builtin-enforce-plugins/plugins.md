@@ -14,5 +14,5 @@ The following documents in this section describe the builtin plugins that are in
 To consume any of these plugins, simply import them in your project:
 
 ```js
-import 'vest/enforce/isEmail';
+import 'vest/enforce/email';
 ```

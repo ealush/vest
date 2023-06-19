@@ -54,6 +54,7 @@
       "enforceUtilityTypes": ["./src/lib/enforceUtilityTypes.ts"],
       "schema": ["./src/exports/schema.ts"],
       "email": ["./src/exports/email.ts"],
+      "date": ["./src/exports/date.ts"],
       "compounds": ["./src/exports/compounds.ts"],
       "compose": ["./src/exports/compose.ts"]
     }

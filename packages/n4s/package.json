@@ -89,6 +89,36 @@
       "module": "./dist/es/email.production.js",
       "default": "./dist/cjs/email.production.js"
     },
+    "./date": {
+      "production": {
+        "types": "./types/date.d.ts",
+        "browser": "./dist/es/date.production.js",
+        "umd": "./dist/umd/date.production.js",
+        "import": "./dist/es/date.production.js",
+        "require": "./dist/cjs/date.production.js",
+        "node": "./dist/cjs/date.production.js",
+        "module": "./dist/es/date.production.js",
+        "default": "./dist/cjs/date.production.js"
+      },
+      "development": {
+        "types": "./types/date.d.ts",
+        "browser": "./dist/es/date.development.js",
+        "umd": "./dist/umd/date.development.js",
+        "import": "./dist/es/date.development.js",
+        "require": "./dist/cjs/date.development.js",
+        "node": "./dist/cjs/date.development.js",
+        "module": "./dist/es/date.development.js",
+        "default": "./dist/cjs/date.development.js"
+      },
+      "types": "./types/date.d.ts",
+      "browser": "./dist/es/date.production.js",
+      "umd": "./dist/umd/date.production.js",
+      "import": "./dist/es/date.production.js",
+      "require": "./dist/cjs/date.production.js",
+      "node": "./dist/cjs/date.production.js",
+      "module": "./dist/es/date.production.js",
+      "default": "./dist/cjs/date.production.js"
+    },
     "./compounds": {
       "production": {
         "types": "./types/compounds.d.ts",

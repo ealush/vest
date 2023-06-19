@@ -1,1 +1,1 @@
-export * as isEmail from 'n4s/email';
+export * as email from 'n4s/email';

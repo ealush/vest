@@ -6,6 +6,7 @@ src
 tsconfig.json
 !schema/
 !email/
+!date/
 !compounds/
 !compose/
 

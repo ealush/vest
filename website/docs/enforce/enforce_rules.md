@@ -122,6 +122,10 @@ Enforce rules are functions that allow you to test your data against different c
 - [isKeyOf](#iskeyof)
 - [isNotKeyOf](#isnotkeyof)
 - [isEmail](./builtin-enforce-plugins/email)
+- [isDate](./builtin-enforce-plugins/date)
+- [isAfter](./builtin-enforce-plugins/date)
+- [isBefore](./builtin-enforce-plugins/date)
+- [isISO8601](./builtin-enforce-plugins/date)
 
 ## equals
 

@@ -49,14 +49,18 @@ function pickTagId(nextVersion) {
     return nextVersion;
   }
 
-  const commitHash = GITHUB_SHA.substr(0, 6);
+  const commitHash = GITHUB_SHA.substr(0, 4);
+
+  // get the current date in the following format: YYYYMMDD
+  const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const nextHash = `${date}-${commitHash}`;
 
   if (isNextBranch) {
-    return getTag(nextVersion, TAG_NEXT, commitHash);
+    return getTag(nextVersion, TAG_NEXT, nextHash);
   }
 
   if (isIntegrationBranch) {
-    return getTag(nextVersion, TAG_DEV, commitHash);
+    return getTag(nextVersion, TAG_DEV, nextHash);
   }
 
   throw Error('pickTagId: Encountered an unexpected input.');

@@ -12,7 +12,7 @@ export type Nullish<T = void> = Nullable<T> | Maybe<T>;
 
 export type Nullable<T> = T | null;
 
-export type Maybe<T> = T | undefined;
+export type Maybe<T> = T | undefined | void;
 
 export type OneOrMoreOf<T> = T | T[];
 

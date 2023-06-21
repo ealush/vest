@@ -39,7 +39,7 @@ export function createState(
    * useColor()[0]; -> "green"
    */
   function registerStateKey<S>(
-    initialState?: StateInput<S>,
+    initialState?: Maybe<StateInput<S>>,
     onUpdate?: () => void
   ): () => StateHandlerReturn<S> {
     const key = registrations.length;
@@ -57,7 +57,7 @@ export function createState(
 
   function initKey<S>(
     key: number,
-    initialState?: StateInput<S>,
+    initialState?: Maybe<StateInput<S>>,
     prevState?: Maybe<S>
   ) {
     current().push();
@@ -103,6 +103,6 @@ type CreateStateReturn = {
   reset: () => void;
   registerStateKey: <S>(
     initialState?: Maybe<StateInput<S>>,
-    onUpdate?: Maybe<() => void>
+    onUpdate?: () => void
   ) => () => StateHandlerReturn<S>;
 };

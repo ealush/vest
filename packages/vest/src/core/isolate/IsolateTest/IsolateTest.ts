@@ -1,4 +1,4 @@
-import { CB, seq } from 'vest-utils';
+import { CB, Maybe, seq } from 'vest-utils';
 import { Isolate, IsolateKey, IsolateMutator } from 'vestjs-runtime';
 
 import { IsolateTestReconciler } from 'IsolateTestReconciler';
@@ -26,7 +26,7 @@ export class IsolateTest<
   fieldName: F;
   testFn: TestFn;
   groupName?: G;
-  message?: string;
+  message?: Maybe<string>;
   asyncTest?: AsyncTest;
   id = seq();
   severity = TestSeverity.Error;

@@ -52,7 +52,6 @@
       "parser": ["./src/exports/parser.ts"],
       "enforce@schema": ["./src/exports/enforce@schema.ts"],
       "enforce@email": ["./src/exports/enforce@email.ts"],
-      "enforce@date": ["./src/exports/enforce@date.ts"],
       "enforce@compounds": ["./src/exports/enforce@compounds.ts"],
       "enforce@compose": ["./src/exports/enforce@compose.ts"],
       "classnames": ["./src/exports/classnames.ts"],

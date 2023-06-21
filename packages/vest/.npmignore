@@ -8,7 +8,6 @@ tsconfig.json
 !parser/
 !enforce@schema/
 !enforce@email/
-!enforce@date/
 !enforce@compounds/
 !enforce@compose/
 !classnames/

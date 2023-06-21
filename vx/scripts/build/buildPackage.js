@@ -1,3 +1,5 @@
+const fse = require('fs-extra');
+
 const cleanupDistFiles = require('./cleanupDistFiles');
 
 const exec = require('vx/exec');
@@ -12,7 +14,6 @@ function buildPackage(options = {}) {
 
   cleanupDistFiles(name);
   process.env.VX_PACKAGE_NAME = name;
-  process.env.VX_BUILD_SINGLE = !!options.buildSingle;
 
   const format = [];
 
@@ -20,15 +21,45 @@ function buildPackage(options = {}) {
     format.push(opts.format.CJS);
   }
 
+  const baseOptions = {
+    cliOptions: options.cliOptions,
+    format,
+    buildSingle: options.buildSingle,
+  };
+
+  // BUILD MAIN
+  buildRollup({
+    ...baseOptions,
+    buildEntry: opts.vx_config.VX_ROLLUP_BUILD_ENTRY_MAIN,
+  });
+
+  const packageExportsPath = vxPath.packageSrcExports(name);
+
+  // BUILD EXPORTS
+  if (fse.existsSync(packageExportsPath)) {
+    buildRollup({
+      ...baseOptions,
+      buildEntry: opts.vx_config.VX_ROLLUP_BUILD_ENTRY_EXPORTS,
+    });
+  }
+
+  delete process.env.VX_PACKAGE_NAME;
+}
+
+function buildRollup({
+  cliOptions,
+  format = [],
+  buildSingle = false,
+  buildEntry,
+}) {
   exec([
     `yarn rollup -c`,
     vxPath.ROLLUP_CONFIG_PATH,
-    options.cliOptions,
+    cliOptions,
     format.length && `--format=${format}`,
+    `--${opts.vx_config.VX_ROLLUP_BUILD_SINGLE}=${buildSingle}`,
+    `--${opts.vx_config.VX_ROLLUP_BUILD_ENTRY}=${buildEntry}`,
   ]);
-
-  delete process.env.VX_PACKAGE_NAME;
-  delete process.env.VX_BUILD_SINGLE;
 }
 
 module.exports = buildPackage;

@@ -145,36 +145,6 @@
       "module": "./dist/es/enforce/email.production.js",
       "default": "./dist/cjs/enforce/email.production.js"
     },
-    "./enforce/date": {
-      "production": {
-        "types": "./types/enforce/date.d.ts",
-        "browser": "./dist/es/enforce/date.production.js",
-        "umd": "./dist/umd/enforce/date.production.js",
-        "import": "./dist/es/enforce/date.production.js",
-        "require": "./dist/cjs/enforce/date.production.js",
-        "node": "./dist/cjs/enforce/date.production.js",
-        "module": "./dist/es/enforce/date.production.js",
-        "default": "./dist/cjs/enforce/date.production.js"
-      },
-      "development": {
-        "types": "./types/enforce/date.d.ts",
-        "browser": "./dist/es/enforce/date.development.js",
-        "umd": "./dist/umd/enforce/date.development.js",
-        "import": "./dist/es/enforce/date.development.js",
-        "require": "./dist/cjs/enforce/date.development.js",
-        "node": "./dist/cjs/enforce/date.development.js",
-        "module": "./dist/es/enforce/date.development.js",
-        "default": "./dist/cjs/enforce/date.development.js"
-      },
-      "types": "./types/enforce/date.d.ts",
-      "browser": "./dist/es/enforce/date.production.js",
-      "umd": "./dist/umd/enforce/date.production.js",
-      "import": "./dist/es/enforce/date.production.js",
-      "require": "./dist/cjs/enforce/date.production.js",
-      "node": "./dist/cjs/enforce/date.production.js",
-      "module": "./dist/es/enforce/date.production.js",
-      "default": "./dist/cjs/enforce/date.production.js"
-    },
     "./enforce/compounds": {
       "production": {
         "types": "./types/enforce/compounds.d.ts",

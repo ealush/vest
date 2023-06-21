@@ -1,5 +1,8 @@
 const fs = require('fs');
 
+const { format, disallowExternals } = require('./format');
+const getPlugins = require('./getPlugins');
+
 const opts = require('vx/opts');
 const concatTruthy = require('vx/util/concatTruthy');
 const {
@@ -12,25 +15,38 @@ const pathsPerPackage = require('vx/util/pathsPerPackage');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
-const { format, disallowExternals } = require('./format');
-const getPlugins = require('./getPlugins');
-
 const buildSingle = JSON.parse(
   process.env.ROLLUP_WATCH ?? process.env.VX_BUILD_SINGLE ?? false
 );
 
-module.exports = cleanupConfig(
-  concatTruthy(opts.env.PRODUCTION, !buildSingle && opts.env.DEVELOPMENT).map(
-    env => {
-      const packageName = usePackage();
+module.exports = commandLineArgs => {
+  const {
+    [opts.vx_config.VX_ROLLUP_BUILD_SINGLE]: buildSingle,
+    [opts.vx_config.VX_ROLLUP_BUILD_ENTRY]: buildEntry,
+  } = commandLineArgs;
 
-      return [].concat(
-        genBaseConfig({ env, packageName }),
-        genExportsConfig(packageName, env)
-      );
-    }
-  )
-);
+  return cleanupConfig(
+    concatTruthy(opts.env.PRODUCTION, !buildSingle && opts.env.DEVELOPMENT).map(
+      env => {
+        const packageName = usePackage();
+
+        switch (buildEntry) {
+          case opts.vx_config.VX_ROLLUP_BUILD_ENTRY_MAIN:
+            return genBaseConfig({ env, packageName });
+          case opts.vx_config.VX_ROLLUP_BUILD_ENTRY_EXPORTS:
+            return genExportsConfig(packageName, env);
+          default:
+            throw new Error(
+              `Invalid build entry: ${buildEntry}. Must be one of: ${[
+                opts.vx_config.VX_ROLLUP_BUILD_ENTRY_MAIN,
+                opts.vx_config.VX_ROLLUP_BUILD_ENTRY_EXPORTS,
+              ].join(', ')}`
+            );
+        }
+      }
+    )
+  );
+};
 
 function cleanupConfig(configs) {
   return []

@@ -1,4 +1,3 @@
-// const compiler = require('@ampproject/rollup-plugin-closure-compiler');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const replace = require('@rollup/plugin-replace');
 const _ = require('lodash');

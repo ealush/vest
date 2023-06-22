@@ -1,7 +1,6 @@
 {
   "bin": "./cli.js",
   "dependencies": {
-    "@ampproject/rollup-plugin-closure-compiler": "^0.27.0",
     "@rollup/plugin-node-resolve": "^15.1.0",
     "@rollup/plugin-replace": "^5.0.2",
     "context": "3.0.2",

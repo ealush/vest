@@ -18,6 +18,7 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
       },
       inclusion: {},
       mode: tinyState.createTinyState<Modes>(Modes.EAGER),
+      suiteParams: [],
       testMemoCache,
     },
     ctxRef
@@ -27,12 +28,13 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
 type CTXType = {
   exclusion: TExclusion;
   inclusion: Record<string, DynamicValue<boolean>>;
+  mode: TinyState<Modes>;
+  suiteParams: any[];
+  testMemoCache: CacheApi<IsolateTest>;
   currentTest?: IsolateTest;
   groupName?: string;
   skipped?: boolean;
   omitted?: boolean;
-  mode: TinyState<Modes>;
-  testMemoCache: CacheApi<IsolateTest>;
 };
 
 export type TExclusion = {
@@ -72,4 +74,8 @@ const testMemoCache = cache<IsolateTest>(10);
 
 export function useTestMemoCache() {
   return SuiteContext.useX().testMemoCache;
+}
+
+export function useSuiteParams() {
+  return SuiteContext.useX().suiteParams;
 }

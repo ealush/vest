@@ -1,8 +1,10 @@
-import { isArray, isStringValue, asArray } from 'vest-utils';
+import { enforce } from 'n4s';
+import { isArray, isStringValue, asArray, hasOwnProperty } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
 import type { IsolateSuite } from 'IsolateSuite';
 import { OptionalFieldTypes, OptionalsInput } from 'OptionalTypes';
+import { useSuiteParams } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
 
 // @vx-allow use-use
@@ -11,11 +13,15 @@ export function optional<F extends TFieldName>(
 ): void {
   const suiteRoot = VestRuntime.useAvailableRoot<IsolateSuite>();
 
+  const suiteParams = useSuiteParams();
+  const dataObject = suiteParams?.[0] ?? {};
+
   // There are two types of optional field declarations:
 
   // 1 AUTO: Vest will automatically determine whether the field should be omitted
-  // Based on the current run. Vest will ommit "auto" added fields without any
-  // configuration if their tests did not run at all in the suite.
+  // Based on the current run. Vest will omit "auto" added fields without any
+  // configuration if their tests did not run at all in the suite, or if the data object
+  // contains a blank value for the field.
   //
   // 2 Custom logic: Vest will determine whether they should fail based on the custom
   // logic supplied by the user.
@@ -25,7 +31,9 @@ export function optional<F extends TFieldName>(
     asArray(optionals).forEach(optionalField => {
       suiteRoot.setOptionalField(optionalField, () => ({
         type: OptionalFieldTypes.AUTO,
-        applied: false,
+        applied: hasOwnProperty(dataObject, optionalField)
+          ? enforce.isBlank().test(dataObject?.[optionalField])
+          : false,
         rule: null,
       }));
     });

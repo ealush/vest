@@ -17,13 +17,19 @@ keywords:
 
 # Optional Fields
 
-By default, all tests inside Vest are required for the suite to be considered "valid". However, there may be situations in which some tests can be skipped, such as when dealing with optional fields in your application's logic. In such cases, Vest provides the `optional` function, which allows you to mark fields as optional, so that they are not accounted for in the suite's validity.
+By default, all tests inside Vest are required for the suite to be considered "valid". However, there may be situations in which some tests can be skipped, such as when dealing with optional fields in your application's logic. In such cases, Vest provides the optional function, which allows you to mark fields as optional, so that they can be skipped during validation without affecting the overall validity of the suite.
 
-Vest's definition of "optional" is that the field did not have any test runs in the lifetime of the suite. If your app requires custom logic, you can define your custom rules for omission.
+An optional field is a field that can be omitted or left empty during validation without causing the entire suite to be considered invalid. When a field is marked as optional using the optional function, Vest will exclude it from the validation process unless specified otherwise.
 
-## Basic Usage - Allowing Tests Not to Run
+Vest has a best-effort approach to determining whether an optional field should be applied.
 
-The `optional` function can take a field name as its argument or an array of field names. For example, the following code specifies that `pet_color` and `pet_age` fields are optional:
+## How Vest Determines Optional Fields
+
+When a field is marked as optional using the `optional` function, Vest will consider the following:
+
+## If the tests never ran
+
+If the field was skipped in all runs of the suite, it will be considered as optional.
 
 ```js
 import { create, optional, only, test, enforce } from 'vest';
@@ -48,6 +54,36 @@ const suite = create((data, currentField) => {
 
 suite({ name: 'Indie' }, 'pet_name').isValid(); // ✅ Since pet_color and pet_age are optional, the suite may still be valid
 suite({ age: 'Five' }, 'pet_age').isValid(); // 🚨 When erroring, optional fields still make the suite invalid
+```
+
+## If the field is empty in the data object
+
+If the first argument in the suite params is an object with the optional field as a key, and the value is `undefined`, `null`, or an empty string, it will be considered as optional.
+
+:::caution NOTE
+If the field is not present in the data object, or the first parameter is not the data object, Vest will default to the first option.
+:::
+
+```js
+const suite = create(data => {
+  optional('age');
+
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  test('age', 'Age is invalid', () => {
+    enforce(data.age).isNumber();
+  });
+});
+
+const result = suite({
+  username: 'John',
+  age: '', // age is empty
+});
+
+result.isValid();
+// ✅ Since we marked age as optional, the suite may still be valid
 ```
 
 ## Custom Omission Rules

@@ -46,13 +46,18 @@ function createSuite<
   const stateRef = useCreateVestState({ suiteName });
 
   function suite(...args: Parameters<T>): SuiteRunResult<F, G> {
-    return SuiteContext.run({}, () => {
-      Bus.useEmit(Events.SUITE_RUN_STARTED);
+    return SuiteContext.run(
+      {
+        suiteParams: args,
+      },
+      () => {
+        Bus.useEmit(Events.SUITE_RUN_STARTED);
 
-      return IsolateSuite.create(
-        useRunSuiteCallback<T, F, G>(suiteCallback, ...args)
-      );
-    }).output;
+        return IsolateSuite.create(
+          useRunSuiteCallback<T, F, G>(suiteCallback, ...args)
+        );
+      }
+    ).output;
   }
 
   // Assign methods to the suite

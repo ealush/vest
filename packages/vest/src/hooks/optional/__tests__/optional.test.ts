@@ -6,37 +6,113 @@ import * as vest from 'vest';
 jest.useFakeTimers();
 
 describe('optional hook', () => {
-  describe('Functional Optional Interface', () => {
-    it('Should omit test failures based on optional functions', () => {
-      const suite = vest.create(() => {
-        vest.optional({
-          f1: () => true,
-          f2: () => true,
+  describe('Auto Optional Interface', () => {
+    describe('When the optional value is blank in the data object', () => {
+      it('empty-string: Should omit the field as optional', () => {
+        const suite = vest.create(_ => {
+          vest.optional(['f1', 'f2']);
+
+          vest.test('f1', () => false);
+          vest.test('f2', () => false);
         });
 
-        vest.test('f1', () => false);
-        vest.test('f2', () => false);
+        const res = suite({ f1: '', f2: '' });
+
+        expect(res.hasErrors('f1')).toBe(false);
+        expect(res.hasErrors('f2')).toBe(false);
+        expect(res.isValid('f1')).toBe(true);
+        expect(res.isValid('f2')).toBe(true);
+        expect(res.isValid()).toBe(true);
       });
 
-      const res = suite();
+      it('null: Should omit the field as optional', () => {
+        const suite = vest.create(_ => {
+          vest.optional(['f1', 'f2']);
 
-      expect(res.hasErrors('f1')).toBe(false);
-      expect(res.hasErrors('f2')).toBe(false);
-      expect(res.isValid('f1')).toBe(true);
-      expect(res.isValid('f2')).toBe(true);
-      expect(res.isValid()).toBe(true);
+          vest.test('f1', () => false);
+          vest.test('f2', () => false);
+        });
+
+        const res = suite({ f1: null, f2: null });
+
+        expect(res.hasErrors('f1')).toBe(false);
+        expect(res.hasErrors('f2')).toBe(false);
+        expect(res.isValid('f1')).toBe(true);
+        expect(res.isValid('f2')).toBe(true);
+        expect(res.isValid()).toBe(true);
+      });
+
+      describe('When the test was skipped', () => {
+        it('Should omit the field as optional', () => {
+          const suite = vest.create(_ => {
+            vest.only('f5');
+            vest.optional('f1');
+
+            vest.test('f1', () => false);
+          });
+
+          const res = suite({ f1: 'foo' });
+
+          expect(res.hasErrors('f1')).toBe(false);
+          expect(res.isValid('f1')).toBe(true);
+          expect(res.isValid()).toBe(true);
+        });
+      });
     });
 
-    describe('example: "any of" test', () => {
-      it('Should allow specifying custom optional based on other tests in the suite', () => {
+    describe('When the optional value does not exist in the data object', () => {
+      describe('When the test ran', () => {
+        it('Should mark the field as failing', () => {
+          const suite = vest.create(_ => {
+            vest.optional(['f1', 'f2']);
+
+            vest.test('f1', () => false);
+            vest.test('f2', () => false);
+          });
+
+          const res = suite({});
+
+          expect(res.hasErrors('f1')).toBe(true);
+          expect(res.hasErrors('f2')).toBe(true);
+          expect(res.isValid('f1')).toBe(false);
+          expect(res.isValid('f2')).toBe(false);
+          expect(res.isValid()).toBe(false);
+        });
+      });
+
+      describe('When te test was skipped', () => {
+        it('Should omit the field as optional', () => {
+          const suite = vest.create(_ => {
+            vest.only('f1');
+            vest.optional(['f1', 'f2']);
+
+            vest.test('f1', () => false);
+            vest.test('f2', () => false);
+          });
+
+          const res = suite({});
+
+          expect(res.hasErrors('f1')).toBe(true);
+          expect(res.hasErrors('f2')).toBe(false);
+          expect(res.isValid('f1')).toBe(false);
+          expect(res.isValid('f2')).toBe(true);
+          expect(res.isValid()).toBe(false);
+        });
+      });
+    });
+  });
+
+  describe('Custom Logic Optional Interface', () => {
+    describe('Functional Optional Interface', () => {
+      it('Should omit test failures based on optional functions', () => {
         const suite = vest.create(() => {
           vest.optional({
-            f1: () => !suite.get().hasErrors('f2'),
-            f2: () => !suite.get().hasErrors('f1'),
+            f1: () => true,
+            f2: () => true,
           });
 
           vest.test('f1', () => false);
-          vest.test('f2', () => true);
+          vest.test('f2', () => false);
         });
 
         const res = suite();
@@ -47,60 +123,82 @@ describe('optional hook', () => {
         expect(res.isValid('f2')).toBe(true);
         expect(res.isValid()).toBe(true);
       });
-    });
 
-    describe('When multiple tests of the same field are omitted', () => {
-      it('Should omit the field', () => {
-        const suite = vest.create(() => {
-          vest.optional({
-            f1: () => true,
+      describe('example: "any of" test', () => {
+        it('Should allow specifying custom optional based on other tests in the suite', () => {
+          const suite = vest.create(() => {
+            vest.optional({
+              f1: () => !suite.get().hasErrors('f2'),
+              f2: () => !suite.get().hasErrors('f1'),
+            });
+
+            vest.test('f1', () => false);
+            vest.test('f2', () => true);
           });
 
-          vest.test('f1', () => false);
-          vest.test('f1', () => false);
+          const res = suite();
+
+          expect(res.hasErrors('f1')).toBe(false);
+          expect(res.hasErrors('f2')).toBe(false);
+          expect(res.isValid('f1')).toBe(true);
+          expect(res.isValid('f2')).toBe(true);
+          expect(res.isValid()).toBe(true);
         });
+      });
 
-        const res = suite();
+      describe('When multiple tests of the same field are omitted', () => {
+        it('Should omit the field', () => {
+          const suite = vest.create(() => {
+            vest.optional({
+              f1: () => true,
+            });
 
-        expect(res.hasErrors('f1')).toBe(false);
-        expect(res.isValid('f1')).toBe(true);
-        expect(res.isValid()).toBe(true);
+            vest.test('f1', () => false);
+            vest.test('f1', () => false);
+          });
+
+          const res = suite();
+
+          expect(res.hasErrors('f1')).toBe(false);
+          expect(res.isValid('f1')).toBe(true);
+          expect(res.isValid()).toBe(true);
+        });
       });
     });
-  });
 
-  describe('boolean optional field indicator', () => {
-    describe('When true', () => {
-      it('Should omit field as optional', () => {
-        const suite = vest.create(() => {
-          vest.optional({
-            field_1: true,
+    describe('boolean optional field indicator', () => {
+      describe('When true', () => {
+        it('Should omit field as optional', () => {
+          const suite = vest.create(() => {
+            vest.optional({
+              field_1: true,
+            });
+            vest.test('field_1', () => false);
           });
-          vest.test('field_1', () => false);
+
+          const res = suite();
+
+          expect(res.hasErrors('field_1')).toBe(false);
+          expect(res.isValid('field_1')).toBe(true);
+          expect(res.isValid()).toBe(true);
         });
-
-        const res = suite();
-
-        expect(res.hasErrors('field_1')).toBe(false);
-        expect(res.isValid('field_1')).toBe(true);
-        expect(res.isValid()).toBe(true);
       });
-    });
 
-    describe('When false', () => {
-      it('Should fail the field normally', () => {
-        const suite = vest.create(() => {
-          vest.optional({
-            field_1: false,
+      describe('When false', () => {
+        it('Should fail the field normally', () => {
+          const suite = vest.create(() => {
+            vest.optional({
+              field_1: false,
+            });
+            vest.test('field_1', () => false);
           });
-          vest.test('field_1', () => false);
+
+          const res = suite();
+
+          expect(res.hasErrors('field_1')).toBe(true);
+          expect(res.isValid('field_1')).toBe(false);
+          expect(res.isValid()).toBe(false);
         });
-
-        const res = suite();
-
-        expect(res.hasErrors('field_1')).toBe(true);
-        expect(res.isValid('field_1')).toBe(false);
-        expect(res.isValid()).toBe(false);
       });
     });
   });

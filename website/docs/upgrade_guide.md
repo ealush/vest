@@ -84,6 +84,12 @@ The result object has two new methods: hasError and hasWarning. They return a bo
 + res.hasError('username')
 ```
 
+## Optional fields now take into account the suite params
+
+In previous versions, optional fields only took into consideration whether the tests ran or not. In V5 optional fields also search the data object passed to the suite. If it has an object with the optional field in it, and the optional field is blank - the test will be considered valid even if it is not passing.
+
+[Read more on optional fields](./writing_your_suite/optional_fields.md).
+
 ## Server side validations are built-in
 
 In previous versions, as a user of Vest you had to set up your own state-reset mechanism. Vest now has a `staticSuite` export that does that for you. [Read more on Server Side Validations](./server_side_validations.md).

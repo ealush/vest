@@ -86,7 +86,7 @@ function useRunSuiteCallback<
   T extends CB,
   F extends TFieldName,
   G extends TGroupName
->(suiteCallback: T, ...args: Parameters<T>): () => SuiteRunResult<F, G> {
+>(suiteCallback: T, ...args: Parameters<T>): CB<SuiteRunResult<F, G>> {
   const emit = Bus.useEmit();
 
   return () => {

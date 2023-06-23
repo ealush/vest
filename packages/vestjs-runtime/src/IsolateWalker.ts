@@ -1,4 +1,4 @@
-import { Nullable, isNullish, optionalFunctionValue } from 'vest-utils';
+import { CB, Nullable, isNullish, optionalFunctionValue } from 'vest-utils';
 
 import { type Isolate } from 'Isolate';
 import { IsolateMutator } from 'IsolateMutator';
@@ -8,7 +8,7 @@ type VisitOnlyPredicate = (isolate: Isolate) => boolean;
 // eslint-disable-next-line
 export function walk(
   startNode: Isolate,
-  callback: (isolate: Isolate, breakout: () => void) => void,
+  callback: (isolate: Isolate, breakout: CB<void>) => void,
   visitOnly?: VisitOnlyPredicate
 ): void {
   // If the startNode has no children, there is nothing to walk.

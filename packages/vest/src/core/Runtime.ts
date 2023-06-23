@@ -1,4 +1,12 @@
-import { CacheApi, Maybe, TinyState, cache, seq, tinyState } from 'vest-utils';
+import {
+  CB,
+  CacheApi,
+  Maybe,
+  TinyState,
+  cache,
+  seq,
+  tinyState,
+} from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
 import {
@@ -58,7 +66,7 @@ export function useSuiteId() {
 }
 
 export function useSuiteResultCache<F extends TFieldName, G extends TGroupName>(
-  action: () => SuiteResult<F, G>
+  action: CB<SuiteResult<F, G>>
 ): SuiteResult<F, G> {
   const suiteResultCache = useX().suiteResultCache;
 

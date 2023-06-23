@@ -1,37 +1,37 @@
-import { asArray } from 'vest-utils';
+import { OneOrMoreOf, asArray, Maybe } from 'vest-utils';
 
 import { dummyTest } from './testDummy';
 
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { optional, create, skip, SuiteResult } from 'vest';
 
-export function failing(failingFields?: string | string[]) {
+export function failing(failingFields?: OneOrMoreOf<string>) {
   return createSuiteRunResult(failingFields, fieldName => {
     dummyTest.failing(fieldName);
   });
 }
 
-export function warning(failingFields?: string | string[]) {
+export function warning(failingFields?: OneOrMoreOf<string>) {
   return createSuiteRunResult(failingFields, fieldName => {
     dummyTest.failingWarning(fieldName);
   });
 }
 
-export function failingAsync(failingFields?: string | string[]) {
+export function failingAsync(failingFields?: OneOrMoreOf<string>) {
   return createSuiteRunResult(failingFields, fieldName => {
     dummyTest.failingAsync(fieldName);
   });
 }
 
-export function passing(fields?: string | string[]) {
+export function passing(fields?: OneOrMoreOf<string>) {
   return createSuiteRunResult(fields, fieldName => {
     dummyTest.passing(fieldName);
   });
 }
 
 export function passingWithUntestedOptional(
-  optionals: string | string[] = 'optional_field',
-  required: string | string[] = 'field_1'
+  optionals: OneOrMoreOf<string> = 'optional_field',
+  required: OneOrMoreOf<string> = 'field_1'
 ) {
   return create(() => {
     optional(optionals);
@@ -48,8 +48,8 @@ export function passingWithUntestedOptional(
 }
 
 export function passingWithOptional(
-  optionals: string | string[] = 'optional_field',
-  required: string | string[] = 'field_1'
+  optionals: OneOrMoreOf<string> = 'optional_field',
+  required: OneOrMoreOf<string> = 'field_1'
 ) {
   return create(() => {
     optional(optionals);
@@ -65,8 +65,8 @@ export function passingWithOptional(
 }
 
 export function failingOptional(
-  optionals: string | string[] = 'optional_field',
-  required: string | string[] = 'field_1'
+  optionals: OneOrMoreOf<string> = 'optional_field',
+  required: OneOrMoreOf<string> = 'field_1'
 ) {
   return create(() => {
     optional(optionals);
@@ -81,7 +81,7 @@ export function failingOptional(
   })();
 }
 
-export function untested(fields?: string | string[]) {
+export function untested(fields?: OneOrMoreOf<string>) {
   const suite = createSuite(fields, fieldName => {
     dummyTest.failing(fieldName);
   });
@@ -89,14 +89,14 @@ export function untested(fields?: string | string[]) {
 }
 
 function createSuiteRunResult(
-  fieldNames: string[] | string | undefined,
+  fieldNames: Maybe<string[] | string>,
   callback: (fieldName?: string) => void // eslint-disable-line no-unused-vars
 ) {
   return createSuite(fieldNames, callback)();
 }
 
 function createSuite(
-  fieldNames: string[] | string | undefined = 'field_1',
+  fieldNames: Maybe<string[] | string> = 'field_1',
   callback: (fieldName?: string) => void // eslint-disable-line no-unused-vars
 ) {
   return create(() => {

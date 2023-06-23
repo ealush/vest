@@ -1,4 +1,4 @@
-import { isNull } from 'vest-utils';
+import { CB, isNull } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
 import { IsolateTest } from 'IsolateTest';
@@ -47,7 +47,7 @@ export function wrapTestMemo<FN extends TFieldName>(test: VTest): TestMemo<FN> {
 
 function useGetTestFromCache(
   dependencies: any[],
-  cacheAction: () => IsolateTest
+  cacheAction: CB<IsolateTest>
 ): IsolateTest {
   const cache = useTestMemoCache();
 

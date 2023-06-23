@@ -1,4 +1,5 @@
 import {
+  CB,
   DynamicValue,
   Maybe,
   isFunction,
@@ -41,7 +42,7 @@ export function createState(
   function registerStateKey<S>(
     initialState?: Maybe<StateInput<S>>,
     onUpdate?: () => void
-  ): () => StateHandlerReturn<S> {
+  ): CB<StateHandlerReturn<S>> {
     const key = registrations.length;
     registrations.push([initialState, onUpdate]);
     return initKey(key, initialState);
@@ -97,12 +98,12 @@ type SetStateInput<S> = DynamicValue<S, [prevState: S]>;
 
 export type State = CreateStateReturn;
 export type StateHandlerReturn<S> = [S, (nextState: SetStateInput<S>) => void];
-export type UseState<S> = () => StateHandlerReturn<S>;
+export type UseState<S> = CB<StateHandlerReturn<S>>;
 
 type CreateStateReturn = {
   reset: () => void;
   registerStateKey: <S>(
     initialState?: Maybe<StateInput<S>>,
     onUpdate?: () => void
-  ) => () => StateHandlerReturn<S>;
+  ) => CB<StateHandlerReturn<S>>;
 };

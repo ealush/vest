@@ -1,3 +1,5 @@
+import { Maybe } from 'vest-utils';
+
 import { TTestSuite } from 'testUtils/TVestMock';
 import * as vest from 'vest';
 import { omitWhen, only } from 'vest';
@@ -9,7 +11,7 @@ describe('omitWhen', () => {
     cb3 = jest.fn(),
     cb4 = jest.fn(),
     cb5 = jest.fn(),
-    allFieldsPass: boolean | undefined;
+    allFieldsPass: Maybe<boolean>;
 
   beforeEach(() => {
     cb1 = jest.fn();

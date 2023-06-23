@@ -16,9 +16,9 @@ export type Suite<
 > = ((...args: Parameters<T>) => SuiteRunResult<F, G>) & SuiteMethods<F, G>;
 
 export type SuiteMethods<F extends TFieldName, G extends TGroupName> = {
-  get: () => SuiteResult<F, G>;
-  reset: () => void;
-  remove: (fieldName: F) => void;
-  resetField: (fieldName: F) => void;
+  get: CB<SuiteResult<F, G>>;
+  reset: CB<void>;
+  remove: CB<void, [fieldName: F]>;
+  resetField: CB<void, [fieldName: F]>;
 } & TTypedMethods<F, G> &
   SuiteSelectors<F, G>;

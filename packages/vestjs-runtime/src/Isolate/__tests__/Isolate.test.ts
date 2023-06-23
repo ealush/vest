@@ -1,3 +1,5 @@
+import { CB } from 'vest-utils';
+
 import { Isolate } from 'Isolate';
 import { StateRefType, useAvailableRoot } from 'VestRuntime';
 import { VestRuntime } from 'vestjs-runtime';
@@ -84,7 +86,7 @@ describe('Isolate', () => {
     });
   });
 
-  function withRunTime<T>(fn: () => T) {
+  function withRunTime<T>(fn: CB<T>) {
     return VestRuntime.Run(stateRef, () => {
       return fn();
     });

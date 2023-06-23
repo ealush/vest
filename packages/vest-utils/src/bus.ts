@@ -26,7 +26,7 @@ export function createBus(): BusType {
   }
 }
 
-type OnReturn = { off: () => void };
+type OnReturn = { off: CB<void> };
 
 export type BusType = {
   on: (event: string, handler: CB) => OnReturn;

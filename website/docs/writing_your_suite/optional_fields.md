@@ -88,23 +88,29 @@ result.isValid();
 
 ## Custom Omission Rules
 
-Since every app is different, your app's logic may require some other definition of optional. For example, the user may have typed inside a field and then removed its content. In such cases, you can provide `optional` with a custom omission rule.
+Since every app is different, your app's logic may require some other definition of optional. For example, the user may have typed inside a field and then removed its content. In such cases, you can provide `optional` with a custom optional logic.
 
-To provide a custom optional rule, you need to provide an object with the field names as its keys, and either a boolean or a function returning a boolean as its value. These functions may be executed multiple times, at different stages of the suite run. When true, Vest will omit _ALL_ failures your field might have from the suite.
+### Providing the field value for automatic omission
 
-The following code demonstrates an example of how to allow a field to be empty even if it's "touched" or "dirty":
+As mentioned in the previous section, Vest will try to determine whether a field should be omitted based on the value of the field in the data object. If the field value is coming from a different source, or is not the same key as its name in your tests (for example: `username` and `user_name`), you can supply the correct field value to Vest. If that value is blank (`''`, `null`, or `undefined`), the field will be omitted.
 
 ```js
 const suite = create(data => {
   optional({
-    pet_name: !data.pet_name,
+    // Here we tell vest to use the value of `user_name` instead of `username`
+    // to determine if the field should be omitted.
+    username: data.user_name,
   });
 
-  test('pet_name', 'Pet Name may be left empty', () => {
-    enforce(data.pet_name).isNotEmpty();
+  test('username', 'Username is too short', () => {
+    enforce(data.user_name).longerThanOrEquals(3);
   });
 });
 ```
+
+## Providing a function for custom omission
+
+Sometimes the logic for optional field is more complex, for example - whether some other field has errors, or based on some other computed logic. In such cases, you can provide a function to Vest, which will be called with the data object and the current field name, and should return a boolean value indicating whether the field should be omitted.
 
 The following code demonstrates how to allow a field to be empty if a different field is filled:
 

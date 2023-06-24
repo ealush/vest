@@ -8,7 +8,7 @@ export type OptionalsInput<F extends TFieldName> =
   | OneOrMoreOf<F>
   | OptionalsObject<F>;
 
-type OptionalsObject<F extends TFieldName> = Record<F, TOptionalRule>;
+type OptionalsObject<F extends TFieldName> = Record<F, TOptionalRule | any>;
 
 type ImmediateOptionalFieldDeclaration = {
   type: OptionalFieldTypes.CUSTOM_LOGIC;

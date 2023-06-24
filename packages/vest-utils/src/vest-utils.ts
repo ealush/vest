@@ -46,4 +46,5 @@ export type {
   Maybe,
   OneOrMoreOf,
   DynamicValue,
+  BlankValue,
 } from 'utilityTypes';

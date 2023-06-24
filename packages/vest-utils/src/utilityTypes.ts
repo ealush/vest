@@ -18,4 +18,6 @@ export type OneOrMoreOf<T> = T | T[];
 
 export type DynamicValue<T, Args extends TArgs = TArgs> = T | CB<T, Args>;
 
+export type BlankValue = Maybe<''>;
+
 type TArgs = any[];

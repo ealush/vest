@@ -24,7 +24,10 @@ export function optional<F extends TFieldName>(
   // contains a blank value for the field.
   //
   // 2 Custom logic: Vest will determine whether they should fail based on the custom
-  // logic supplied by the user.
+  // logic supplied by the developer.
+  // If the developer supplies a function - when the function returns true, the field will be omitted.
+  // If the developer supplies a boolean - the field will be omitted if the value is true.
+  // If the developer supplies a value - the field will be omitted if the value is blank.
 
   // AUTO case (field name)
   if (isArray(optionals) || isStringValue(optionals)) {
@@ -45,7 +48,7 @@ export function optional<F extends TFieldName>(
       suiteRoot.setOptionalField(field, () => ({
         type: OptionalFieldTypes.CUSTOM_LOGIC,
         rule: value,
-        applied: value === true,
+        applied: enforce.isBlank().test(value) || value === true,
       }));
     }
   }

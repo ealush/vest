@@ -1,3 +1,4 @@
+import { BlankValue } from 'vest-utils';
 import wait from 'wait';
 
 import { TTestSuite } from 'testUtils/TVestMock';
@@ -198,6 +199,81 @@ describe('optional hook', () => {
           expect(res.hasErrors('field_1')).toBe(true);
           expect(res.isValid('field_1')).toBe(false);
           expect(res.isValid()).toBe(false);
+        });
+      });
+    });
+
+    describe('Field value based optional', () => {
+      describe('When field is blank', () => {
+        it.each([undefined, null, ''] as BlankValue[])(
+          '%s: Should omit field as optional',
+          value => {
+            const suite = vest.create(() => {
+              vest.optional({
+                field_1: value,
+              });
+              vest.test('field_1', () => false);
+            });
+
+            const res = suite();
+
+            expect(res.hasErrors('field_1')).toBe(false);
+            expect(res.isValid('field_1')).toBe(true);
+            expect(res.isValid()).toBe(true);
+          }
+        );
+      });
+
+      describe('When the field is falsy but not blank', () => {
+        it.each([0, NaN])('%s: Should fail the field normally', value => {
+          const suite = vest.create(() => {
+            vest.optional({
+              field_1: value,
+            });
+            vest.test('field_1', () => false);
+          });
+
+          const res = suite();
+
+          expect(res.hasErrors('field_1')).toBe(true);
+          expect(res.isValid('field_1')).toBe(false);
+          expect(res.isValid()).toBe(false);
+        });
+      });
+
+      describe('When the field is boolean', () => {
+        describe('When true', () => {
+          it('Should omit field as optional', () => {
+            const suite = vest.create(() => {
+              vest.optional({
+                field_1: true,
+              });
+              vest.test('field_1', () => false);
+            });
+
+            const res = suite();
+
+            expect(res.hasErrors('field_1')).toBe(false);
+            expect(res.isValid('field_1')).toBe(true);
+            expect(res.isValid()).toBe(true);
+          });
+        });
+
+        describe('When false', () => {
+          it('Should fail the field normally', () => {
+            const suite = vest.create(() => {
+              vest.optional({
+                field_1: false,
+              });
+              vest.test('field_1', () => false);
+            });
+
+            const res = suite();
+
+            expect(res.hasErrors('field_1')).toBe(true);
+            expect(res.isValid('field_1')).toBe(false);
+            expect(res.isValid()).toBe(false);
+          });
         });
       });
     });

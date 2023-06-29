@@ -19,21 +19,26 @@ import { useSuiteRunResult } from 'suiteRunResult';
 import { bindSuiteSelectors } from 'suiteSelectors';
 import { validateSuiteCallback } from 'validateSuiteParams';
 
+type SuiteCB = <T extends Record<string, any>>(
+  formData: T,
+  ...rest: any[]
+) => void;
+
 function createSuite<
   F extends TFieldName = string,
   G extends TGroupName = string,
-  T extends CB = CB
+  T extends SuiteCB = SuiteCB
 >(suiteName: SuiteName, suiteCallback: T): Suite<F, G, T>;
 function createSuite<
   F extends TFieldName = string,
   G extends TGroupName = string,
-  T extends CB = CB
+  T extends SuiteCB = SuiteCB
 >(suiteCallback: T): Suite<F, G, T>;
 // @vx-allow use-use
 function createSuite<
   F extends TFieldName = string,
   G extends TGroupName = string,
-  T extends CB = CB
+  T extends SuiteCB = SuiteCB
 >(
   ...args: [suiteName: SuiteName, suiteCallback: T] | [suiteCallback: T]
 ): Suite<F, G, T> {
@@ -83,13 +88,14 @@ function createSuite<
 }
 
 function useRunSuiteCallback<
-  T extends CB,
+  T extends SuiteCB,
   F extends TFieldName,
   G extends TGroupName
 >(suiteCallback: T, ...args: Parameters<T>): CB<SuiteRunResult<F, G>> {
   const emit = Bus.useEmit();
 
   return () => {
+    // @ts-ignore
     suiteCallback(...args);
     emit(Events.SUITE_CALLBACK_RUN_FINISHED);
     return useSuiteRunResult<F, G>();

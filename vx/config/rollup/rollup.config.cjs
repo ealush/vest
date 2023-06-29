@@ -15,18 +15,20 @@ const pathsPerPackage = require('vx/util/pathsPerPackage');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
-const buildSingle = JSON.parse(
-  process.env.ROLLUP_WATCH ?? process.env.VX_BUILD_SINGLE ?? false
+const fastBuild = JSON.parse(
+  process.env.ROLLUP_WATCH ?? process.env.VX_FAST_BUILD ?? false
 );
 
 module.exports = commandLineArgs => {
   const {
-    [opts.vx_config.VX_ROLLUP_BUILD_SINGLE]: buildSingle,
+    [opts.vx_config.VX_ROLLUP_FAST_BUILD]: fastBuild,
     [opts.vx_config.VX_ROLLUP_BUILD_ENTRY]: buildEntry,
   } = commandLineArgs;
 
+  const fast = JSON.parse(fastBuild);
+
   return cleanupConfig(
-    concatTruthy(opts.env.PRODUCTION, !buildSingle && opts.env.DEVELOPMENT).map(
+    concatTruthy(opts.env.PRODUCTION, !fast && opts.env.DEVELOPMENT).map(
       env => {
         const packageName = usePackage();
 

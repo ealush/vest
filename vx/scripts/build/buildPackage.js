@@ -17,14 +17,14 @@ function buildPackage(options = {}) {
 
   const format = [];
 
-  if (options.buildSingle) {
+  if (options.fastBuild) {
     format.push(opts.format.CJS);
   }
 
   const baseOptions = {
     cliOptions: options.cliOptions,
     format,
-    buildSingle: options.buildSingle,
+    fastBuild: options.fastBuild,
   };
 
   // BUILD MAIN
@@ -49,7 +49,7 @@ function buildPackage(options = {}) {
 function buildRollup({
   cliOptions,
   format = [],
-  buildSingle = false,
+  fastBuild = false,
   buildEntry,
 }) {
   exec([
@@ -57,7 +57,7 @@ function buildRollup({
     vxPath.ROLLUP_CONFIG_PATH,
     cliOptions,
     format.length && `--format=${format}`,
-    `--${opts.vx_config.VX_ROLLUP_BUILD_SINGLE}=${buildSingle}`,
+    `--${opts.vx_config.VX_ROLLUP_FAST_BUILD}=${fastBuild}`,
     `--${opts.vx_config.VX_ROLLUP_BUILD_ENTRY}=${buildEntry}`,
   ]);
 }

@@ -47,13 +47,13 @@ const cli = yargs(argv)
     describe: 'Package to run against',
     ...(!!defaultPackage && { default: defaultPackage }),
   })
-  .option('buildSingle', {
+  .option('fastBuild', {
     demandOption: false,
     describe: 'build format',
   })
   .help().argv;
 
-const { package, command, buildSingle, _: cliOptions = [] } = cli;
+const { package, command, fastBuild, _: cliOptions = [] } = cli;
 
 // Prepare all packages before running any other command.
 if (command !== 'prepare') {
@@ -73,7 +73,7 @@ logger.info(
 
 ctx.withPackage(package, () =>
   commands[command]({
-    buildSingle,
+    fastBuild,
     cliOptions: cliOptions.join(' '),
   })
 );

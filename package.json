@@ -8,7 +8,7 @@
     "dev": "vx dev",
     "website:start": "yarn workspace website start",
     "website:build": "yarn workspace website build",
-    "postinstall": "vx build --buildSingle"
+    "postinstall": "vx build --fastBuild"
   },
   "prettier": {
     "arrowParens": "avoid",

@@ -41,6 +41,6 @@ module.exports = {
     VX_ROLLUP_BUILD_ENTRY: 'configbuildEntry',
     VX_ROLLUP_BUILD_ENTRY_EXPORTS: 'EXPORTS',
     VX_ROLLUP_BUILD_ENTRY_MAIN: 'MAIN',
-    VX_ROLLUP_BUILD_SINGLE: 'configbuildSingle',
+    VX_ROLLUP_FAST_BUILD: 'configfastBuild',
   },
 };

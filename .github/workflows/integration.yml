@@ -29,16 +29,18 @@ jobs:
           fetch-depth: 0
       - name: Setup .yarnrc.yml
         run: |
-          yarn config set npmAuthToken $NPM_TOKEN
-          yarn config set npmAlwaysAuth true
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          if [ "${{ secrets.NPM_TOKEN }}" != '' ]; then
+            yarn config set npmAuthToken $NPM_TOKEN
+            yarn config set npmAlwaysAuth true
+          fi
       - name: Install
         run: yarn install --immutable
       - name: Test
         run: yarn test
       - name: Lint
         run: yarn lint
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Release
         run: yarn release
         env:

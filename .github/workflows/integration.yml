@@ -31,6 +31,7 @@ jobs:
         run: |
           yarn config set npmAuthToken $NPM_TOKEN
           yarn config set npmAlwaysAuth true
+          echo //registry.npmjs.org/:_authToken=$NPM_TOKEN > ~/.npmrc
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Install

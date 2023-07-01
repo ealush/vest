@@ -22,7 +22,7 @@
     "./vx/eslint-plugin-vest-internal"
   ],
   "devDependencies": {
-    "@faker-js/faker": "^7.6.0",
+    "@faker-js/faker": "^8.0.2",
     "@types/jest": "^29.5.2",
     "@types/lodash": "^4.14.195",
     "@typescript-eslint/eslint-plugin": "^5.60.1",

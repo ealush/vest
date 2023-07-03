@@ -7,7 +7,7 @@ import { IsolateTest } from 'IsolateTest';
 import { OptionalsInput } from 'OptionalTypes';
 import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
-import { FieldExclusion, GroupExclusion, only, skip } from 'exclusive';
+import { FieldExclusion, GroupExclusion, only, skip } from 'focused';
 import { group } from 'group';
 import { include } from 'include';
 import { omitWhen } from 'omitWhen';

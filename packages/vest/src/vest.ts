@@ -12,7 +12,7 @@ import type {
 import type { Suite } from 'SuiteTypes';
 import { createSuite } from 'createSuite';
 import { each } from 'each';
-import { skip, only } from 'exclusive';
+import { skip, only } from 'focused';
 import { group } from 'group';
 import { include } from 'include';
 import { mode } from 'mode';

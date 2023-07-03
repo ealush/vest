@@ -1,18 +1,19 @@
 import { faker } from '@faker-js/faker';
 
-import { dummyTest } from '../../../testUtils/testDummy';
+import { dummyTest } from '../../../../testUtils/testDummy';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
 import { SuiteContext, TExclusion, useExclusion } from 'SuiteContext';
-import { useIsExcluded, useIsGroupExcluded, skip, only } from 'exclusive';
+import { skip, only } from 'focused';
 import { group } from 'group';
 import { TTestSuite } from 'testUtils/TVestMock';
+import { useIsExcluded, useIsGroupExcluded } from 'useIsExcluded';
 import * as vest from 'vest';
 
 let res: boolean, res1: boolean;
 
-describe('exclusive hooks', () => {
+describe('focused hooks', () => {
   let test1: vest.IsolateTest, test2: vest.IsolateTest, test3: vest.IsolateTest;
 
   beforeEach(() => {

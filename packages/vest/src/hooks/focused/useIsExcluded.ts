@@ -1,54 +1,9 @@
-import {
-  isStringValue,
-  asArray,
-  hasOwnProperty,
-  optionalFunctionValue,
-  Maybe,
-  OneOrMoreOf,
-} from 'vest-utils';
+import { hasOwnProperty, optionalFunctionValue } from 'vest-utils';
 
-import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';
-import { TExclusion, useExclusion, useInclusion } from 'SuiteContext';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { useExclusion, useInclusion } from 'SuiteContext';
+import { TGroupName } from 'SuiteResultTypes';
 import { useIsExcludedIndividually } from 'skipWhen';
-
-export type ExclusionItem = Maybe<OneOrMoreOf<string>>;
-export type FieldExclusion<F extends TFieldName> = Maybe<OneOrMoreOf<F>>;
-export type GroupExclusion<G extends TGroupName> = Maybe<OneOrMoreOf<G>>;
-
-/**
- * Adds a field or a list of fields into the inclusion list
- *
- * @example
- *
- * only('username');
- */
-// @vx-allow use-use
-export function only<F extends TFieldName>(item: FieldExclusion<F>): void {
-  return useAddTo(ExclusionGroup.ONLY, 'tests', item);
-}
-
-only.group = function group<G extends TGroupName>(item: GroupExclusion<G>) {
-  return useAddTo(ExclusionGroup.ONLY, 'groups', item);
-};
-
-/**
- * Adds a field or a list of fields into the exclusion list
- *
- * @example
- *
- * skip('username');
- */
-// @vx-allow use-use
-export function skip<F extends TFieldName>(item: FieldExclusion<F>): void {
-  return useAddTo(ExclusionGroup.SKIP, 'tests', item);
-}
-
-skip.group = function group<G extends TGroupName>(item: GroupExclusion<G>) {
-  return useAddTo(ExclusionGroup.SKIP, 'groups', item);
-};
-
 //Checks whether a certain test profile excluded by any of the exclusion groups.
 
 // eslint-disable-next-line complexity, max-statements
@@ -123,29 +78,6 @@ export function useIsGroupExcluded(groupName: TGroupName): boolean {
 }
 
 /**
- * Adds fields to a specified exclusion group.
- */
-function useAddTo(
-  exclusionGroup: ExclusionGroup,
-  itemType: keyof TExclusion,
-  item: ExclusionItem
-) {
-  const exclusion = useExclusion(ErrorStrings.HOOK_CALLED_OUTSIDE);
-
-  if (!item) {
-    return;
-  }
-
-  asArray(item).forEach((itemName: string): void => {
-    if (!isStringValue(itemName)) {
-      return;
-    }
-
-    exclusion[itemType][itemName] = exclusionGroup === ExclusionGroup.ONLY;
-  });
-}
-
-/**
  * Checks if context has included tests
  */
 function hasIncludedTests(keyTests: Record<string, boolean>): boolean {
@@ -176,9 +108,4 @@ function useHasIncludedGroups(): boolean {
     }
   }
   return false;
-}
-
-const enum ExclusionGroup {
-  ONLY,
-  SKIP,
 }

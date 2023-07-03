@@ -2,6 +2,7 @@ import { createCascade } from 'context';
 import { assign, TinyState, tinyState, cache, CacheApi } from 'vest-utils';
 import { DynamicValue } from 'vest-utils/src/utilityTypes';
 
+import { FocusKeys } from 'FocusedKeys';
 import { IsolateTest } from 'IsolateTest';
 import { Modes } from 'Modes';
 
@@ -13,8 +14,8 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
   return assign(
     {
       exclusion: {
-        tests: {},
-        groups: {},
+        [FocusKeys.tests]: {},
+        [FocusKeys.groups]: {},
       },
       inclusion: {},
       mode: tinyState.createTinyState<Modes>(Modes.EAGER),
@@ -38,8 +39,8 @@ type CTXType = {
 };
 
 export type TExclusion = {
-  tests: Record<string, boolean>;
-  groups: Record<string, boolean>;
+  [FocusKeys.tests]: Record<string, boolean>;
+  [FocusKeys.groups]: Record<string, boolean>;
 };
 
 export function useCurrentTest(msg?: string) {

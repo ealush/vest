@@ -82,11 +82,26 @@ export function has(startNode: Isolate, match: VisitOnlyPredicate): boolean {
   return some(startNode, () => true, match);
 }
 
-export function hasShallow(
+// traverses up to a parent node that satisfies the predicate
+// and returns the first direct descendant that satisfies the predicate
+export function findClosest<I extends Isolate = Isolate>(
   startNode: Isolate,
-  match: VisitOnlyPredicate
-): boolean {
-  return startNode?.children?.some(match) ?? false;
+  predicate: (node: Isolate) => boolean
+): Nullable<I> {
+  let found: Nullable<Isolate> = null;
+  let current: Nullable<Isolate> = startNode;
+
+  while (current) {
+    found = current.children?.find(predicate) ?? null;
+
+    if (found) {
+      break;
+    }
+
+    current = current.parent;
+  }
+
+  return found as Nullable<I>;
 }
 
 // This function returns the first Isolate object in the tree that satisfies the given predicate function.

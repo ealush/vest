@@ -1,10 +1,42 @@
-import { hasOwnProperty, optionalFunctionValue } from 'vest-utils';
+import {
+  Nullable,
+  hasOwnProperty,
+  isNotEmpty,
+  isNotNullish,
+  optionalFunctionValue,
+} from 'vest-utils';
+import { Isolate, Walker } from 'vestjs-runtime';
 
+import { FocusModes } from 'FocusedKeys';
 import { IsolateTest } from 'IsolateTest';
 import { useExclusion, useInclusion } from 'SuiteContext';
 import { TGroupName } from 'SuiteResultTypes';
+import { IsolateFocused } from 'focused';
+import { isIsolateFocused } from 'isIsolateFocused';
 import { useIsExcludedIndividually } from 'skipWhen';
 //Checks whether a certain test profile excluded by any of the exclusion groups.
+
+function useClosestMatchingFocus(
+  testObject: IsolateTest
+): Nullable<IsolateFocused> {
+  return Walker.findClosest(testObject, (child: Isolate) => {
+    if (!isIsolateFocused(child)) return false;
+
+    return child.fieldNames?.includes(testObject.fieldName);
+  });
+}
+
+function hasFocus(focus: Nullable<IsolateFocused>) {
+  return isNotEmpty(focus?.fieldNames);
+}
+
+function isSkipFocused(focus: Nullable<IsolateFocused>): boolean {
+  return focus?.focusMode === FocusModes.SKIP && hasFocus(focus);
+}
+
+function isOnlyFocused(focus: Nullable<IsolateFocused>): boolean {
+  return focus?.focusMode === FocusModes.ONLY && hasFocus(focus);
+}
 
 // eslint-disable-next-line complexity, max-statements
 export function useIsExcluded(testObject: IsolateTest): boolean {
@@ -15,13 +47,14 @@ export function useIsExcluded(testObject: IsolateTest): boolean {
   const exclusion = useExclusion();
   const inclusion = useInclusion();
   const keyTests = exclusion.tests;
-  const testValue = keyTests[fieldName];
+
+  const focusMatch = useClosestMatchingFocus(testObject);
 
   // if test is skipped
   // no need to proceed
-  if (testValue === false) return true;
+  if (isSkipFocused(focusMatch)) return true;
 
-  const isTestIncluded = testValue === true;
+  const isTestIncluded = isOnlyFocused(focusMatch);
 
   // If inside a group
   if (groupName) {
@@ -33,7 +66,7 @@ export function useIsExcluded(testObject: IsolateTest): boolean {
       if (isTestIncluded) return false;
 
       // If there is _ANY_ `only`ed test (and we already know this one isn't)
-      if (hasIncludedTests(keyTests)) return true; // Excluded implicitly
+      if (useHasIncludedTests(testObject)) return true; // Excluded implicitly
 
       return keyTests[fieldName] === false;
     }
@@ -47,7 +80,7 @@ export function useIsExcluded(testObject: IsolateTest): boolean {
   if (isTestIncluded) return false;
 
   // If there is _ANY_ `only`ed test (and we already know this one isn't) return true
-  if (hasIncludedTests(keyTests)) {
+  if (useHasIncludedTests(testObject)) {
     // Check if inclusion rules for this field (`include` hook)
     return !optionalFunctionValue(inclusion[fieldName]);
   }
@@ -80,13 +113,14 @@ export function useIsGroupExcluded(groupName: TGroupName): boolean {
 /**
  * Checks if context has included tests
  */
-function hasIncludedTests(keyTests: Record<string, boolean>): boolean {
-  for (const test in keyTests) {
-    if (keyTests[test] === true) {
-      return true; // excluded implicitly
-    }
-  }
-  return false;
+function useHasIncludedTests(testObject: IsolateTest): boolean {
+  return isNotNullish(
+    Walker.findClosest(testObject, (child: Isolate) => {
+      if (!isIsolateFocused(child)) return false;
+
+      return isOnlyFocused(child);
+    })
+  );
 }
 
 // are we not in a group and there is an included group?
@@ -98,6 +132,8 @@ function useIsTopLevelWhenThereIsAnIncludedGroup(groupName?: string): boolean {
   // Return whether there's an included group, and we're not inside a group
   return !groupName;
 }
+
+// are we not in a group and there is an included group?
 
 function useHasIncludedGroups(): boolean {
   const exclusion = useExclusion();

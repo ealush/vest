@@ -3,7 +3,7 @@ export enum FocusKeys {
   groups = 'groups',
 }
 
-export enum FocusTypes {
+export enum FocusModes {
   ONLY,
   SKIP,
 }

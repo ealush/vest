@@ -2,7 +2,7 @@ import { isStringValue, asArray, Maybe, OneOrMoreOf, noop } from 'vest-utils';
 import { Isolate } from 'vestjs-runtime';
 
 import { ErrorStrings } from 'ErrorStrings';
-import { FocusKeys, FocusTypes } from 'FocusedKeys';
+import { FocusKeys, FocusModes } from 'FocusedKeys';
 import { useExclusion } from 'SuiteContext';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { VestIsolateType } from 'VestIsolateType';
@@ -13,32 +13,32 @@ export type GroupExclusion<G extends TGroupName> = Maybe<OneOrMoreOf<G>>;
 
 type FocusedPayload = {
   fieldNames?: FieldExclusion<TFieldName>;
-  focusMode: FocusTypes;
+  focusMode: FocusModes;
 };
 
-class IsolateFocused extends Isolate<FocusedPayload> {
+export class IsolateFocused extends Isolate<FocusedPayload> {
   type = VestIsolateType.Focused;
-  focusMode: FocusTypes;
-  fieldNames: FieldExclusion<TFieldName>;
+  focusMode: FocusModes;
+  fieldNames: TFieldName[];
 
   constructor(payload: FocusedPayload) {
     super();
 
     this.focusMode = payload.focusMode;
-    this.fieldNames = payload.fieldNames;
+    this.fieldNames = asArray(payload.fieldNames ?? []);
   }
 
   static only(fieldNames: FieldExclusion<TFieldName>) {
     IsolateFocused.create(noop, {
       fieldNames,
-      focusMode: FocusTypes.ONLY,
+      focusMode: FocusModes.ONLY,
     });
   }
 
   static skip(fieldNames: FieldExclusion<TFieldName>) {
     IsolateFocused.create(noop, {
       fieldNames,
-      focusMode: FocusTypes.SKIP,
+      focusMode: FocusModes.SKIP,
     });
   }
 }
@@ -53,11 +53,11 @@ class IsolateFocused extends Isolate<FocusedPayload> {
 // @vx-allow use-use
 export function only<F extends TFieldName>(item: FieldExclusion<F>): void {
   IsolateFocused.only(item);
-  return useAddTo(FocusTypes.ONLY, FocusKeys.tests, item);
+  return useAddTo(FocusModes.ONLY, FocusKeys.tests, item);
 }
 
 only.group = function group<G extends TGroupName>(item: GroupExclusion<G>) {
-  return useAddTo(FocusTypes.ONLY, FocusKeys.groups, item);
+  return useAddTo(FocusModes.ONLY, FocusKeys.groups, item);
 };
 
 /**
@@ -70,18 +70,18 @@ only.group = function group<G extends TGroupName>(item: GroupExclusion<G>) {
 // @vx-allow use-use
 export function skip<F extends TFieldName>(item: FieldExclusion<F>): void {
   IsolateFocused.skip(item);
-  return useAddTo(FocusTypes.SKIP, FocusKeys.tests, item);
+  return useAddTo(FocusModes.SKIP, FocusKeys.tests, item);
 }
 
 skip.group = function group<G extends TGroupName>(item: GroupExclusion<G>) {
-  return useAddTo(FocusTypes.SKIP, FocusKeys.groups, item);
+  return useAddTo(FocusModes.SKIP, FocusKeys.groups, item);
 };
 
 /**
  * Adds fields to a specified exclusion group.
  */
 function useAddTo(
-  focusedGroup: FocusTypes,
+  focusedGroup: FocusModes,
   itemType: FocusKeys,
   item: ExclusionItem
 ) {
@@ -96,6 +96,6 @@ function useAddTo(
       return;
     }
 
-    exclusion[itemType][itemName] = focusedGroup === FocusTypes.ONLY;
+    exclusion[itemType][itemName] = focusedGroup === FocusModes.ONLY;
   });
 }

@@ -35,7 +35,7 @@ describe('TestWalker.hasRemainingTests', () => {
 
       it('lagging tests return true', () => {
         const suite = vest.create(() => {
-          if (count) vest.skip('f1');
+          vest.skip(count ? 'f1' : undefined);
           vest.test('f1', async () => {
             await wait(100);
           });
@@ -50,7 +50,7 @@ describe('TestWalker.hasRemainingTests', () => {
 
       it('lagging and pending tests return true', () => {
         const suite = vest.create(() => {
-          if (count) vest.skip('f1');
+          vest.skip(count ? 'f1' : undefined);
           vest.test('f1', async () => {
             await wait(100);
           });
@@ -92,7 +92,7 @@ describe('TestWalker.hasRemainingTests', () => {
 
       it('lagging tests return true', () => {
         const suite = vest.create(() => {
-          if (count) vest.skip('f1');
+          vest.skip(count ? 'f1' : undefined);
           vest.test('f1', async () => {
             await wait(100);
           });
@@ -107,7 +107,7 @@ describe('TestWalker.hasRemainingTests', () => {
 
       it('lagging and pending tests return true', () => {
         const suite = vest.create(() => {
-          if (count) vest.skip('f1');
+          vest.skip(count ? 'f1' : undefined);
           vest.test('f1', async () => {
             await wait(100);
           });

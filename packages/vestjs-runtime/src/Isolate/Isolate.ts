@@ -20,10 +20,10 @@ export class Isolate<_D = any> {
 
   static reconciler: IRecociler = BaseReconciler;
 
-  static create<Callback extends CB = CB>(
+  static create<I extends Isolate, Callback extends CB = CB>(
     callback: Callback,
     data?: any
-  ): Isolate {
+  ): I {
     const parent = VestRuntime.useIsolate();
 
     const newCreatedNode = IsolateMutator.setParent(new this(data), parent);
@@ -38,6 +38,6 @@ export class Isolate<_D = any> {
 
     VestRuntime.addNodeToHistory(nextIsolateChild);
 
-    return nextIsolateChild;
+    return nextIsolateChild as I;
   }
 }

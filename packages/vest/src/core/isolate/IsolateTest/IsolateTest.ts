@@ -1,4 +1,4 @@
-import { CB, Maybe, seq } from 'vest-utils';
+import { Maybe, seq } from 'vest-utils';
 import { Isolate, IsolateKey, IsolateMutator } from 'vestjs-runtime';
 
 import { IsolateTestReconciler } from 'IsolateTestReconciler';
@@ -8,7 +8,6 @@ import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestFn, AsyncTest } from 'TestTypes';
 import { VestIsolateType } from 'VestIsolateType';
 import { VestTestInspector } from 'VestTestInspector';
-import { castIsolateTest } from 'isIsolateTest';
 
 type IsolateTestInput = {
   message?: string;
@@ -56,13 +55,6 @@ export class IsolateTest<
     }
 
     IsolateMutator.setKey(this, key);
-  }
-
-  static create<Callback extends CB = CB>(
-    callback: Callback,
-    data: IsolateTestInput
-  ): IsolateTest {
-    return castIsolateTest(super.create(callback, data));
   }
 
   valueOf(): boolean {

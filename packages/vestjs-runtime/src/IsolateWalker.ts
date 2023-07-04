@@ -82,6 +82,13 @@ export function has(startNode: Isolate, match: VisitOnlyPredicate): boolean {
   return some(startNode, () => true, match);
 }
 
+export function hasShallow(
+  startNode: Isolate,
+  match: VisitOnlyPredicate
+): boolean {
+  return startNode?.children?.some(match) ?? false;
+}
+
 // This function returns the first Isolate object in the tree that satisfies the given predicate function.
 // If visitOnly is provided, only Isolate objects that satisfy the predicate are visited.
 export function find(

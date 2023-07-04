@@ -3,7 +3,6 @@ import { Isolate } from 'vestjs-runtime';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { FocusKeys, FocusModes } from 'FocusedKeys';
-import { useExclusion } from 'SuiteContext';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { VestIsolateType } from 'VestIsolateType';
 
@@ -53,13 +52,7 @@ export class IsolateFocused extends Isolate<FocusedPayload> {
 // @vx-allow use-use
 export function only<F extends TFieldName>(item: FieldExclusion<F>): void {
   IsolateFocused.only(item);
-  return useAddTo(FocusModes.ONLY, FocusKeys.tests, item);
 }
-
-only.group = function group<G extends TGroupName>(item: GroupExclusion<G>) {
-  return useAddTo(FocusModes.ONLY, FocusKeys.groups, item);
-};
-
 /**
  * Adds a field or a list of fields into the exclusion list
  *
@@ -70,32 +63,4 @@ only.group = function group<G extends TGroupName>(item: GroupExclusion<G>) {
 // @vx-allow use-use
 export function skip<F extends TFieldName>(item: FieldExclusion<F>): void {
   IsolateFocused.skip(item);
-  return useAddTo(FocusModes.SKIP, FocusKeys.tests, item);
-}
-
-skip.group = function group<G extends TGroupName>(item: GroupExclusion<G>) {
-  return useAddTo(FocusModes.SKIP, FocusKeys.groups, item);
-};
-
-/**
- * Adds fields to a specified exclusion group.
- */
-function useAddTo(
-  focusedGroup: FocusModes,
-  itemType: FocusKeys,
-  item: ExclusionItem
-) {
-  const exclusion = useExclusion(ErrorStrings.HOOK_CALLED_OUTSIDE);
-
-  if (!item) {
-    return;
-  }
-
-  asArray(item).forEach((itemName: string): void => {
-    if (!isStringValue(itemName)) {
-      return;
-    }
-
-    exclusion[itemType][itemName] = focusedGroup === FocusModes.ONLY;
-  });
 }

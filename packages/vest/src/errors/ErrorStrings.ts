@@ -20,4 +20,5 @@ export enum ErrorStrings {
       Error: {error}.`,
   UNEXPECTED_TEST_RUN_ERROR = `Unexpected error encountered during test run. Please report this issue to Vest's Github repository.
       Test Object: {testObject}.`,
+  INCLUDE_SELF = 'Trying to call include.when on the same field.',
 }

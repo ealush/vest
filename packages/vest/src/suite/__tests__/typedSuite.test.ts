@@ -87,9 +87,7 @@ describe('typed methods', () => {
     expect(typeof suite.test).toBe('function');
     expect(typeof suite.test.memo).toBe('function');
     expect(typeof suite.only).toBe('function');
-    expect(typeof suite.only.group).toBe('function');
     expect(typeof suite.skip).toBe('function');
-    expect(typeof suite.skip.group).toBe('function');
     expect(typeof suite.include).toBe('function');
     expect(typeof suite.skipWhen).toBe('function');
     expect(typeof suite.omitWhen).toBe('function');

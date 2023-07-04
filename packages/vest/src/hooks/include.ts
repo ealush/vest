@@ -6,10 +6,13 @@ import {
   optionalFunctionValue,
 } from 'vest-utils';
 
-import { useExclusion, useInclusion } from 'SuiteContext';
+import { ErrorStrings } from 'ErrorStrings';
+import { IsolateTest } from 'IsolateTest';
+import { useInclusion } from 'SuiteContext';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TDraftCondition } from 'getTypedMethods';
 import { useCreateSuiteResult } from 'suiteResult';
+import { useIsExcluded } from 'useIsExcluded';
 
 /**
  * Conditionally includes a field for testing, based on specified criteria.
@@ -35,12 +38,7 @@ export function include<F extends TFieldName, G extends TGroupName>(
 ): {
   when: (condition: F | TFieldName | TDraftCondition<F, G>) => void;
 } {
-  const inclusion = useInclusion();
-  const exclusion = useExclusion();
-
   invariant(isStringValue(fieldName));
-
-  inclusion[fieldName] = defaultTo(exclusion.tests[fieldName], true);
 
   return { when };
 
@@ -48,21 +46,16 @@ export function include<F extends TFieldName, G extends TGroupName>(
    * Specifies the inclusion criteria for the field in `include` function.
    */
   function when(condition: F | TFieldName | TDraftCondition<F, G>): void {
+    invariant(condition !== fieldName, ErrorStrings.INCLUDE_SELF);
+
     const inclusion = useInclusion();
-    const exclusion = useExclusion();
 
     // This callback will run as part of the "isExcluded" series of checks
-    inclusion[fieldName] = (): boolean => {
-      if (hasOwnProperty(exclusion.tests, fieldName)) {
-        // I suspect this code is technically unreachable because
-        // if there are any skip/only rules applied to the current
-        // field, the "isExcluded" function will have already bailed
-        /* istanbul ignore next */
-        return defaultTo(exclusion.tests[fieldName], true);
-      }
-
+    inclusion[fieldName] = function isIncluded(
+      currentNode: IsolateTest
+    ): boolean {
       if (isStringValue(condition)) {
-        return Boolean(exclusion.tests[condition]);
+        return !useIsExcluded(currentNode);
       }
 
       return optionalFunctionValue(

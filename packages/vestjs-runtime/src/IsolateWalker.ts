@@ -193,10 +193,3 @@ export function closestExists(
 ): boolean {
   return !!closest(startNode, predicate);
 }
-
-export function isDirectChildOf(
-  startNode: Isolate,
-  match: VisitOnlyPredicate
-): boolean {
-  return !!startNode.parent && match(startNode.parent);
-}

@@ -52,26 +52,6 @@ export function useIsExcluded(testObject: IsolateTest): boolean {
 
   const isTestIncluded = isOnlyFocused(focusMatch);
 
-  // // If inside a group
-  // if (groupName) {
-  //   if (useIsGroupExcluded(groupName)) {
-  //     return true; // field excluded by group
-
-  //     // if group is `only`ed
-  //   } else if (exclusion.groups[groupName] === true) {
-  //     if (isTestIncluded) return false;
-
-  //     // If there is _ANY_ `only`ed test (and we already know this one isn't)
-  //     if (useHasIncludedTests(testObject)) return true; // Excluded implicitly
-
-  //     return keyTests[fieldName] === false;
-  //   }
-  // }
-
-  // if (useIsTopLevelWhenThereIsAnIncludedGroup(groupName)) {
-  //   return true;
-  // }
-
   // if field is only'ed
   if (isTestIncluded) return false;
 
@@ -84,27 +64,6 @@ export function useIsExcluded(testObject: IsolateTest): boolean {
   // We're done here. This field is not excluded
   return false;
 }
-
-// /**
-//  * Checks whether a given group is excluded from running.
-//  */
-// export function useIsGroupExcluded(groupName: TGroupName): boolean {
-//   const exclusion = useExclusion();
-//   const keyGroups = exclusion.groups;
-
-//   const groupPresent = hasOwnProperty(keyGroups, groupName);
-
-//   // When group is either only'ed or skipped
-//   if (groupPresent) {
-//     // Return true if group is skipped and false if only'ed
-//     return keyGroups[groupName] === false;
-//   }
-
-//   // Group is not present
-
-//   // Return whether other groups are included
-//   return useHasIncludedGroups();
-// }
 
 /**
  * Checks if context has included tests

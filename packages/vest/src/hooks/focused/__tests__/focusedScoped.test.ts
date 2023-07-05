@@ -217,6 +217,7 @@ describe('Scoped Focus', () => {
       const result = testSuite(() => {
         vest.group('Group', () => {
           vest.only(Fields.F2);
+
           vest.test(Fields.F1, 'F1 error', () => false);
           vest.test(Fields.F2, 'F2 error', () => false);
           vest.test(Fields.F3, 'F3 error', () => false);
@@ -229,6 +230,191 @@ describe('Scoped Focus', () => {
       expect(result.hasErrors(Fields.F2)).toBe(true);
       expect(result.hasErrors(Fields.F3)).toBe(false);
       expect(result.hasErrors(Fields.F4)).toBe(true);
+      expect(result.tests.F1.testCount).toBe(0);
+      expect(result.tests.F2.testCount).toBe(1);
+      expect(result.tests.F3.testCount).toBe(0);
+    });
+
+    describe('When there are tests of the same field outside of the scope', () => {
+      it('Should only apply within the scope', () => {
+        const result = testSuite(() => {
+          vest.mode(vest.Modes.ALL); // This shows us that the test actually run outside of the scope
+          vest.group('Group', () => {
+            vest.only(Fields.F2);
+
+            vest.test(Fields.F1, 'F1 error', () => false);
+            vest.test(Fields.F2, 'F2 error', () => false);
+            vest.test(Fields.F3, 'F3 error', () => false);
+          });
+
+          vest.test(Fields.F1, 'F1 2nd error', () => false);
+          vest.test(Fields.F2, 'F2 2nd error', () => false);
+          vest.test(Fields.F3, 'F3 2nd error', () => false);
+        });
+        expect(result.hasErrors(Fields.F1)).toBe(true);
+        expect(result.hasErrors(Fields.F2)).toBe(true);
+        expect(result.hasErrors(Fields.F3)).toBe(true);
+        expect(result.tests.F1.testCount).toBe(1);
+        expect(result.tests.F2.testCount).toBe(2);
+        expect(result.tests.F3.testCount).toBe(1);
+      });
+    });
+  });
+
+  describe('Skip', () => {
+    it('Should apply only to the current scope', () => {
+      const result = testSuite(() => {
+        vest.group('Group', () => {
+          vest.skip(Fields.F2);
+
+          vest.test(Fields.F1, 'F1 error', () => false);
+          vest.test(Fields.F2, 'F2 error', () => false);
+          vest.test(Fields.F3, 'F3 error', () => false);
+        });
+
+        vest.test(Fields.F4, 'F4 error', () => false);
+      });
+
+      expect(result.hasErrors(Fields.F1)).toBe(true);
+      expect(result.hasErrors(Fields.F2)).toBe(false);
+      expect(result.hasErrors(Fields.F3)).toBe(true);
+      expect(result.hasErrors(Fields.F4)).toBe(true);
+      expect(result.tests.F1.testCount).toBe(1);
+      expect(result.tests.F2.testCount).toBe(0);
+      expect(result.tests.F3.testCount).toBe(1);
+      expect(result.tests.F4.testCount).toBe(1);
+    });
+
+    describe('When there are tests of the same field outside of the scope', () => {
+      it('Should only apply within the scope', () => {
+        const result = testSuite(() => {
+          vest.mode(vest.Modes.ALL); // This shows us that the tests actually run outside of the scope
+          vest.group('Group', () => {
+            vest.skip(Fields.F2);
+
+            vest.test(Fields.F1, 'F1 error', () => false);
+            vest.test(Fields.F2, 'F2 error', () => false);
+            vest.test(Fields.F3, 'F3 error', () => false);
+          });
+
+          vest.test(Fields.F1, 'F1 2nd error', () => false);
+          vest.test(Fields.F2, 'F2 2nd error', () => false);
+          vest.test(Fields.F3, 'F3 2nd error', () => false);
+        });
+        expect(result.hasErrors(Fields.F1)).toBe(true);
+        expect(result.hasErrors(Fields.F2)).toBe(true);
+        expect(result.hasErrors(Fields.F3)).toBe(true);
+        expect(result.tests.F1.testCount).toBe(2);
+        expect(result.tests.F2.testCount).toBe(1);
+        expect(result.tests.F3.testCount).toBe(2);
+      });
+    });
+  });
+
+  describe('Only and Skip', () => {
+    it('Should apply only to the current scope', () => {
+      const result = testSuite(() => {
+        vest.group('Group', () => {
+          vest.only(Fields.F2);
+          vest.skip(Fields.F3);
+
+          vest.test(Fields.F1, 'F1 error', () => false);
+          vest.test(Fields.F2, 'F2 error', () => false);
+          vest.test(Fields.F3, 'F3 error', () => false);
+        });
+
+        vest.test(Fields.F4, 'F4 error', () => false);
+      });
+
+      expect(result.hasErrors(Fields.F1)).toBe(false);
+      expect(result.hasErrors(Fields.F2)).toBe(true);
+      expect(result.hasErrors(Fields.F3)).toBe(false);
+      expect(result.hasErrors(Fields.F4)).toBe(true);
+      expect(result.tests.F1.testCount).toBe(0);
+      expect(result.tests.F2.testCount).toBe(1);
+      expect(result.tests.F3.testCount).toBe(0);
+      expect(result.tests.F4.testCount).toBe(1);
+    });
+
+    describe('When there are tests of the same field outside of the scope', () => {
+      it('Should only apply within the scope', () => {
+        const result = testSuite(() => {
+          vest.mode(vest.Modes.ALL); // This shows us that the tests actually run outside of the scope
+          vest.group('Group', () => {
+            vest.only(Fields.F2);
+            vest.skip(Fields.F3);
+
+            vest.test(Fields.F1, 'F1 error', () => false);
+            vest.test(Fields.F2, 'F2 error', () => false);
+            vest.test(Fields.F3, 'F3 error', () => false);
+          });
+
+          vest.test(Fields.F1, 'F1 2nd error', () => false);
+          vest.test(Fields.F2, 'F2 2nd error', () => false);
+          vest.test(Fields.F3, 'F3 2nd error', () => false);
+        });
+        expect(result.hasErrors(Fields.F1)).toBe(true);
+        expect(result.hasErrors(Fields.F2)).toBe(true);
+        expect(result.hasErrors(Fields.F3)).toBe(true);
+        expect(result.tests.F1.testCount).toBe(1);
+        expect(result.tests.F2.testCount).toBe(2);
+        expect(result.tests.F3.testCount).toBe(1);
+      });
+    });
+  });
+});
+
+describe('Multiple scopes', () => {
+  describe('Top and lower level scopes', () => {
+    describe('only>skip', () => {
+      it('Should include the field globally but skip in the scope', () => {
+        const result = testSuite(() => {
+          vest.mode(vest.Modes.ALL); // This shows us that the tests actually run outside of the scope
+
+          vest.only(Fields.F1);
+          vest.test(Fields.F1, 'F1 1st error', () => false);
+          vest.test(Fields.F2, 'F2 1st error', () => false);
+          vest.group('Group', () => {
+            vest.skip(Fields.F1);
+            vest.test(Fields.F1, 'F1 2nd error', () => false);
+            vest.test(Fields.F2, 'F2 2nd error', () => false);
+          });
+          vest.test(Fields.F1, 'F1 3rd error', () => false);
+          vest.test(Fields.F2, 'F2 3rd error', () => false);
+        });
+        expect(result.hasErrors(Fields.F1)).toBe(true);
+        expect(result.hasErrors(Fields.F2)).toBe(false);
+        expect(result.tests.F1.testCount).toBe(2);
+        expect(result.tests.F1.testCount).toBe(2);
+        expect(result.groups.Group.F1.testCount).toBe(0);
+        expect(result.tests.F2.testCount).toBe(0);
+        expect(result.tests.F2.testCount).toBe(0);
+      });
+    });
+
+    describe('skip>only', () => {
+      it('Should skip the field globally and include it in the scope', () => {
+        const result = testSuite(() => {
+          vest.mode(vest.Modes.ALL); // This shows us that the tests actually run outside of the scope
+
+          vest.skip(Fields.F1);
+          vest.test(Fields.F1, 'F1 1st error', () => false);
+          vest.test(Fields.F2, 'F2 1st error', () => false);
+          vest.group('Group', () => {
+            vest.only(Fields.F1);
+            vest.test(Fields.F1, 'F1 2nd error', () => false);
+            vest.test(Fields.F2, 'F2 2nd error', () => false);
+          });
+          vest.test(Fields.F1, 'F1 3rd error', () => false);
+          vest.test(Fields.F2, 'F2 3rd error', () => false);
+        });
+        expect(result.hasErrors(Fields.F1)).toBe(true);
+        expect(result.hasErrors(Fields.F2)).toBe(true);
+        expect(result.tests.F1.testCount).toBe(1);
+        expect(result.groups.Group.F1.testCount).toBe(1);
+        expect(result.tests.F2.testCount).toBe(2);
+        expect(result.groups.Group.F2.testCount).toBe(0);
+      });
     });
   });
 });

@@ -13,7 +13,7 @@ function testSuite(callback: CB) {
   return vest.staticSuite(callback)();
 }
 
-describe('Focused Scoped', () => {
+describe('Top Level Focus', () => {
   describe('Top Level Skip', () => {
     describe('Single field', () => {
       it('Should skip fields under `skip`', () => {
@@ -207,6 +207,28 @@ describe('Focused Scoped', () => {
         expect(result.tests.F2.testCount).toBe(0);
         expect(result.tests.F3.testCount).toBe(0);
       });
+    });
+  });
+});
+
+describe('Scoped Focus', () => {
+  describe('Only', () => {
+    it('Should apply only to the current scope', () => {
+      const result = testSuite(() => {
+        vest.group('Group', () => {
+          vest.only(Fields.F2);
+          vest.test(Fields.F1, 'F1 error', () => false);
+          vest.test(Fields.F2, 'F2 error', () => false);
+          vest.test(Fields.F3, 'F3 error', () => false);
+        });
+
+        vest.test(Fields.F4, 'F4 error', () => false);
+      });
+
+      expect(result.hasErrors(Fields.F1)).toBe(false);
+      expect(result.hasErrors(Fields.F2)).toBe(true);
+      expect(result.hasErrors(Fields.F3)).toBe(false);
+      expect(result.hasErrors(Fields.F4)).toBe(true);
     });
   });
 });

@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker';
+import { ErrorStrings } from 'ErrorStrings';
 
 import { dummyTest } from '../../../../testUtils/testDummy';
 
-import { ErrorStrings } from 'ErrorStrings';
 import { skip, only } from 'focused';
 import { group } from 'group';
 import { TTestSuite } from 'testUtils/TVestMock';
-import { useIsExcluded, useIsGroupExcluded } from 'useIsExcluded';
+import { useIsExcluded } from 'useIsExcluded';
 import * as vest from 'vest';
 
 let res: boolean, res1: boolean;
@@ -23,11 +23,10 @@ describe('focused hooks', () => {
     let testObject1: vest.IsolateTest;
 
     const validate = vest.create(() => {
-      vest.skip.group('group_1');
-
       testObject = dummyTest.failing();
 
       group('group_1', () => {
+        vest.skip(true);
         testObject1 = dummyTest.failing();
       });
 

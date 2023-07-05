@@ -1,5 +1,4 @@
 import { Modes } from 'Modes';
-
 import * as vest from 'vest';
 
 describe('include', () => {
@@ -303,8 +302,8 @@ describe('include', () => {
   describe('Test is excluded by being out of an included group', () => {
     it('Should disregard `include` and avoid running the test', () => {
       const suite = vest.create(() => {
-        vest.only.group('g1');
         vest.include('field_1');
+        vest.only.group('g1');
         vest.group('g1', () => {});
 
         vest.test('field_1', () => false);
@@ -322,10 +321,10 @@ describe('include', () => {
   describe('Test is excluded via `skip.group`', () => {
     it('Should disregard `include` and avoid running the test', () => {
       const suite = vest.create(() => {
-        vest.skip.group('g1');
         vest.include('field_1');
 
         vest.group('g1', () => {
+          vest.skip(true);
           vest.test('field_1', cb1);
           vest.test('field_2', () => false);
         });
@@ -343,10 +342,10 @@ describe('include', () => {
     });
     it('Should disregard `include.when` and avoid running the test', () => {
       const suite = vest.create(() => {
-        vest.skip.group('g1');
         vest.include('field_1').when(true);
 
         vest.group('g1', () => {
+          vest.skip(true);
           vest.test('field_1', cb1);
           vest.test('field_2', () => false);
         });

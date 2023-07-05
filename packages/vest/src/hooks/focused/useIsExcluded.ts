@@ -20,7 +20,7 @@ function useClosestMatchingFocus(
   return Walker.findClosest(testObject, (child: Isolate) => {
     if (!isIsolateFocused(child)) return false;
 
-    return child.match?.includes(testObject.fieldName);
+    return child.match?.includes(testObject.fieldName) || child.matchAll;
   });
 }
 
@@ -29,14 +29,14 @@ function hasFocus(focus: Nullable<IsolateFocused>) {
 }
 
 function isSkipFocused(focus: Nullable<IsolateFocused>): boolean {
-  return focus?.focusMode === FocusModes.SKIP && hasFocus(focus);
+  return (
+    focus?.focusMode === FocusModes.SKIP &&
+    (hasFocus(focus) || focus.matchAll === true)
+  );
 }
 
 function isOnlyFocused(focus: Nullable<IsolateFocused>): boolean {
-  return (
-    focus?.focusMode === FocusModes.ONLY &&
-    (hasFocus(focus) || focus?.matchAll === true)
-  );
+  return focus?.focusMode === FocusModes.ONLY && hasFocus(focus);
 }
 
 // eslint-disable-next-line complexity, max-statements
@@ -44,17 +44,12 @@ export function useIsExcluded(testObject: IsolateTest): boolean {
   const { fieldName } = testObject;
 
   if (useIsExcludedIndividually()) return true;
-
   const inclusion = useInclusion();
-
   const focusMatch = useClosestMatchingFocus(testObject);
-
   // if test is skipped
   // no need to proceed
   if (isSkipFocused(focusMatch)) return true;
-
   const isTestIncluded = isOnlyFocused(focusMatch);
-
   // if field is only'ed
   if (isTestIncluded) return false;
 

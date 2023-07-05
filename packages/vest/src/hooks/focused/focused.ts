@@ -1,4 +1,4 @@
-import { asArray, Maybe, OneOrMoreOf, noop, isArray } from 'vest-utils';
+import { asArray, Maybe, OneOrMoreOf, noop } from 'vest-utils';
 import { Isolate } from 'vestjs-runtime';
 
 import { FocusModes } from 'FocusedKeys';

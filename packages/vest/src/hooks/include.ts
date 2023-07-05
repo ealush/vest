@@ -1,10 +1,4 @@
-import {
-  isStringValue,
-  defaultTo,
-  hasOwnProperty,
-  invariant,
-  optionalFunctionValue,
-} from 'vest-utils';
+import { isStringValue, invariant, optionalFunctionValue } from 'vest-utils';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest } from 'IsolateTest';

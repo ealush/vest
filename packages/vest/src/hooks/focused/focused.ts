@@ -1,4 +1,4 @@
-import { asArray, Maybe, OneOrMoreOf, noop } from 'vest-utils';
+import { asArray, Maybe, OneOrMoreOf, noop, isArray } from 'vest-utils';
 import { Isolate } from 'vestjs-runtime';
 
 import { FocusModes } from 'FocusedKeys';
@@ -10,32 +10,39 @@ export type FieldExclusion<F extends TFieldName> = Maybe<OneOrMoreOf<F>>;
 export type GroupExclusion<G extends TGroupName> = Maybe<OneOrMoreOf<G>>;
 
 type FocusedPayload = {
-  fieldNames?: FieldExclusion<TFieldName>;
+  match?: true | FieldExclusion<TFieldName>;
   focusMode: FocusModes;
 };
 
 export class IsolateFocused extends Isolate<FocusedPayload> {
   type = VestIsolateType.Focused;
   focusMode: FocusModes;
-  fieldNames: TFieldName[];
+  match: TFieldName[] = [];
+  matchAll = false;
 
   constructor(payload: FocusedPayload) {
     super();
 
     this.focusMode = payload.focusMode;
-    this.fieldNames = asArray(payload.fieldNames ?? []);
+
+    if (payload.match === true) {
+      this.matchAll = true;
+      return;
+    }
+
+    this.match = asArray(payload.match ?? this.match);
   }
 
-  static only(fieldNames: FieldExclusion<TFieldName>) {
+  static only(match: FieldExclusion<TFieldName>) {
     IsolateFocused.create(noop, {
-      fieldNames,
+      match,
       focusMode: FocusModes.ONLY,
     });
   }
 
-  static skip(fieldNames: FieldExclusion<TFieldName>) {
+  static skip(match: FieldExclusion<TFieldName> | true) {
     IsolateFocused.create(noop, {
-      fieldNames,
+      match,
       focusMode: FocusModes.SKIP,
     });
   }
@@ -49,9 +56,7 @@ export class IsolateFocused extends Isolate<FocusedPayload> {
  * only('username');
  */
 // @vx-allow use-use
-export function only<F extends TFieldName>(item: FieldExclusion<F>): void {
-  IsolateFocused.only(item);
-}
+export const only = IsolateFocused.only;
 /**
  * Adds a field or a list of fields into the exclusion list
  *
@@ -60,6 +65,4 @@ export function only<F extends TFieldName>(item: FieldExclusion<F>): void {
  * skip('username');
  */
 // @vx-allow use-use
-export function skip<F extends TFieldName>(item: FieldExclusion<F>): void {
-  IsolateFocused.skip(item);
-}
+export const skip = IsolateFocused.skip;

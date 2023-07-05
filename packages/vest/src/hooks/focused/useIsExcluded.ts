@@ -20,12 +20,12 @@ function useClosestMatchingFocus(
   return Walker.findClosest(testObject, (child: Isolate) => {
     if (!isIsolateFocused(child)) return false;
 
-    return child.fieldNames?.includes(testObject.fieldName);
+    return child.match?.includes(testObject.fieldName);
   });
 }
 
 function hasFocus(focus: Nullable<IsolateFocused>) {
-  return isNotEmpty(focus?.fieldNames);
+  return isNotEmpty(focus?.match);
 }
 
 function isSkipFocused(focus: Nullable<IsolateFocused>): boolean {
@@ -33,7 +33,10 @@ function isSkipFocused(focus: Nullable<IsolateFocused>): boolean {
 }
 
 function isOnlyFocused(focus: Nullable<IsolateFocused>): boolean {
-  return focus?.focusMode === FocusModes.ONLY && hasFocus(focus);
+  return (
+    focus?.focusMode === FocusModes.ONLY &&
+    (hasFocus(focus) || focus?.matchAll === true)
+  );
 }
 
 // eslint-disable-next-line complexity, max-statements

@@ -418,3 +418,27 @@ describe('Multiple scopes', () => {
     });
   });
 });
+
+describe('skip(true)', () => {
+  it('Should skip all tests within the current scope and its children', () => {
+    const result = testSuite(() => {
+      vest.mode(vest.Modes.ALL); // This shows us that the tests actually run outside of the scope
+
+      vest.skip(true);
+      vest.test(Fields.F1, 'F1 1st error', () => false);
+      vest.test(Fields.F2, 'F2 1st error', () => false);
+      vest.group('Group', () => {
+        vest.test(Fields.F1, 'F1 2nd error', () => false);
+        vest.test(Fields.F2, 'F2 2nd error', () => false);
+      });
+      vest.test(Fields.F1, 'F1 3rd error', () => false);
+      vest.test(Fields.F2, 'F2 3rd error', () => false);
+    });
+    expect(result.hasErrors(Fields.F1)).toBe(false);
+    expect(result.hasErrors(Fields.F2)).toBe(false);
+    expect(result.tests.F1.testCount).toBe(0);
+    expect(result.tests.F2.testCount).toBe(0);
+    expect(result.groups.Group.F1.testCount).toBe(0);
+    expect(result.groups.Group.F2.testCount).toBe(0);
+  });
+});

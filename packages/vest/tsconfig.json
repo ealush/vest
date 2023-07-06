@@ -48,6 +48,8 @@
       "OptionalTypes": ["./src/hooks/optional/OptionalTypes.ts"],
       "Modes": ["./src/hooks/optional/Modes.ts"],
       "useIsExcluded": ["./src/hooks/focused/useIsExcluded.ts"],
+      "useHasOnliedTests": ["./src/hooks/focused/useHasOnliedTests.ts"],
+      "isIsolateFocused": ["./src/hooks/focused/isIsolateFocused.ts"],
       "focused": ["./src/hooks/focused/focused.ts"],
       "FocusedKeys": ["./src/hooks/focused/FocusedKeys.ts"],
       "promisify": ["./src/exports/promisify.ts"],

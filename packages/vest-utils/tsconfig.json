@@ -15,6 +15,7 @@
       "seq": ["./src/seq.ts"],
       "optionalFunctionValue": ["./src/optionalFunctionValue.ts"],
       "numberEquals": ["./src/numberEquals.ts"],
+      "noop": ["./src/noop.ts"],
       "nonnullish": ["./src/nonnullish.ts"],
       "mapFirst": ["./src/mapFirst.ts"],
       "longerThan": ["./src/longerThan.ts"],

@@ -8,15 +8,16 @@ import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { VestTestInspector } from 'VestTestInspector';
 import * as vest from 'vest';
 
-type SuiteParams = { skip?: string; skipGroup?: string };
+type SuiteParams = { skip?: string; skipGroup?: true };
 
 const suite = () =>
   vest.create(({ skip, skipGroup }: SuiteParams = {}) => {
     vest.mode(Modes.ALL);
     vest.skip(skip);
-    vest.skip.group(skipGroup);
 
     vest.group('group', () => {
+      vest.skip(skipGroup);
+
       dummyTest.failingAsync('field_1', { message: 'field_1_group_message' });
       dummyTest.failingAsync('field_4', { message: 'field_4_group_message' });
     });
@@ -81,7 +82,7 @@ describe('Stateful async tests', () => {
 
   it('Merges skipped validations from previous suite', () =>
     TestPromise(done => {
-      const res = validate({ skipGroup: 'group', skip: 'field_3' });
+      const res = validate({ skipGroup: true, skip: 'field_3' });
       expect(res.testCount).toBe(3);
       expect(res.errorCount).toBe(1);
       expect(res.warnCount).toBe(0);

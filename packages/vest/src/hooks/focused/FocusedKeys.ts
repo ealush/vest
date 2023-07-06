@@ -1,9 +1,4 @@
-export enum FocusKeys {
-  tests = 'tests',
-  groups = 'groups',
-}
-
-export enum FocusTypes {
+export enum FocusModes {
   ONLY,
   SKIP,
 }

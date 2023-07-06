@@ -84,6 +84,38 @@ The result object has two new methods: hasError and hasWarning. They return a bo
 + res.hasError('username')
 ```
 
+## Removed skip.group and only.group
+
+Vest 5 removes the dedicated group interface for skip and only, and instead allows you to call skip and only directly within the groups. [Read more](./writing_your_suite/including_and_excluding/skip_and_only.md).
+
+```diff
+const suite = create(() => {
+- skip.group('group1', 'username');
+
+  group('group1', () => {
++   skip('username');
+
+    test('username', 'message', () => {
+      // ...
+    });
+  });
+});
+```
+
+```diff
+const suite = create(() => {
+- skip.group('group1');
+
+  group('group1', () => {
++   skip(true);
+
+    test('field1', 'message', () => {
+      // ...
+    });
+  });
+});
+```
+
 ## Optional fields now take into account the suite params
 
 In previous versions, optional fields only took into consideration whether the tests ran or not. In V5 optional fields also search the data object passed to the suite. If it has an object with the optional field in it, and the optional field is blank - the test will be considered valid even if it is not passing.

@@ -35,6 +35,7 @@ export { TStateMachine, StateMachine } from 'SimpleStateMachine';
 export { nonnullish } from 'nonnullish';
 export * as tinyState from 'tinyState';
 export { StringObject } from 'StringObject';
+export { noop } from 'noop';
 
 export type {
   DropFirst,

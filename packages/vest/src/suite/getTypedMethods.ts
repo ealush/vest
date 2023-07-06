@@ -7,7 +7,7 @@ import { IsolateTest } from 'IsolateTest';
 import { OptionalsInput } from 'OptionalTypes';
 import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
-import { FieldExclusion, GroupExclusion, only, skip } from 'focused';
+import { FieldExclusion, only, skip } from 'focused';
 import { group } from 'group';
 import { include } from 'include';
 import { omitWhen } from 'omitWhen';
@@ -38,12 +38,10 @@ export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
   omitWhen: (conditional: TDraftCondition<F, G>, callback: CB) => void;
   only: {
     (item: FieldExclusion<F>): void;
-    group(item: GroupExclusion<G>): void;
   };
   optional: (optionals: OptionalsInput<F>) => void;
   skip: {
     (item: FieldExclusion<F>): void;
-    group(item: GroupExclusion<G>): void;
   };
   skipWhen: (condition: TDraftCondition<F, G>, callback: CB) => void;
   test: {

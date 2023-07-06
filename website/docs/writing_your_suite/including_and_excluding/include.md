@@ -38,7 +38,7 @@ include('confirm').when(() => someValue); // Will include "confirm" when the cal
 ```
 
 :::tip Note
-All these will only applied if the field is not skipped directly, or excluded because it is in a skipped group.
+All these will only applied if the field is not skipped directly, or excluded because it is in a skipped grouppkip.
 :::
 
 When using the function modifier, the function is evaluated each time a matching field is observed, so if we have multiple tests with the same name, the callback will be checked each time.

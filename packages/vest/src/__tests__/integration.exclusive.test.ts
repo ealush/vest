@@ -58,16 +58,16 @@ describe('skip', () => {
 });
 
 describe('Combined', () => {
-  test('Last declaration wins', () => {
+  test('First declaration wins', () => {
     const res = suite({
-      only: ['field_1', 'field_2', 'field_3'],
       skip: ['field_1'],
+      only: ['field_1', 'field_2', 'field_3'],
       skip_last: 'field_3',
     });
 
-    expect(res.tests.field_1.testCount).toBe(1);
+    expect(res.tests.field_1.testCount).toBe(0);
     expect(res.tests.field_2.testCount).toBe(1);
-    expect(res.tests.field_3.testCount).toBe(0);
+    expect(res.tests.field_3.testCount).toBe(1);
   });
 });
 

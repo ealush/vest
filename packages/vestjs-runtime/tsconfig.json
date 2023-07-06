@@ -13,6 +13,7 @@
       "IsolateWalker": ["./src/IsolateWalker.ts"],
       "Bus": ["./src/Bus.ts"],
       "ErrorStrings": ["./src/errors/ErrorStrings.ts"],
+      "isIsolateType": ["./src/Isolate/isIsolateType.ts"],
       "IsolateMutator": ["./src/Isolate/IsolateMutator.ts"],
       "IsolateInspector": ["./src/Isolate/IsolateInspector.ts"],
       "Isolate": ["./src/Isolate/Isolate.ts"]

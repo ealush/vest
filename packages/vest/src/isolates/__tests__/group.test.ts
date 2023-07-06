@@ -136,4 +136,264 @@ describe('group', () => {
       expect(suite.get()).toMatchSnapshot();
     });
   });
+
+  describe('Focus', () => {
+    describe('skip outside of group', () => {
+      it('Should skip `skipped` tests both inside and outside the group', () => {
+        const cb1 = jest.fn(() => false);
+        const cb2 = jest.fn(() => false);
+        const suite = vest.create(() => {
+          vest.mode(vest.Modes.ALL);
+
+          vest.skip(FieldNames.F1);
+          vest.test(FieldNames.F1, cb1);
+
+          vest.group(GroupNames.G1, () => {
+            vest.test(FieldNames.F1, cb1);
+            vest.test(FieldNames.F2, cb2);
+          });
+        });
+        const res = suite();
+        expect(cb1).not.toHaveBeenCalled();
+        expect(cb2).toHaveBeenCalledTimes(1);
+        expect(res.tests[FieldNames.F1].testCount).toBe(0);
+        expect(res.tests[FieldNames.F2].testCount).toBe(1);
+        expect(res.groups[GroupNames.G1][FieldNames.F1].testCount).toBe(0);
+        expect(res.groups[GroupNames.G1][FieldNames.F2].testCount).toBe(1);
+        expect(res.isValid()).toBe(false);
+        expect(res.isValidByGroup(GroupNames.G1)).toBe(false);
+        expect(res.isValidByGroup(GroupNames.G1, FieldNames.F1)).toBe(false);
+        expect(res.isValidByGroup(GroupNames.G1, FieldNames.F2)).toBe(false);
+        expect(res.hasErrors(FieldNames.F1)).toBe(false);
+        expect(res.hasErrors(FieldNames.F2)).toBe(true);
+        expect(suite.get()).toMatchSnapshot();
+      });
+    });
+
+    describe('skip inside the group', () => {
+      it('should skip only within the group', () => {
+        const cb1 = jest.fn(() => false);
+        const cb2 = jest.fn(() => false);
+        const cb3 = jest.fn(() => false);
+        const suite = vest.create(() => {
+          vest.mode(vest.Modes.ALL);
+
+          vest.test(FieldNames.F1, cb1);
+          vest.group(GroupNames.G1, () => {
+            vest.skip(FieldNames.F2);
+            vest.test(FieldNames.F1, cb1);
+            vest.test(FieldNames.F2, cb2);
+          });
+          vest.test(FieldNames.F2, cb3);
+        });
+        const res = suite();
+        expect(cb1).toHaveBeenCalledTimes(2);
+        expect(cb2).toHaveBeenCalledTimes(0);
+        expect(cb3).toHaveBeenCalledTimes(1);
+        expect(res.tests[FieldNames.F1].testCount).toBe(2);
+        expect(res.tests[FieldNames.F2].testCount).toBe(1);
+        expect(res.groups[GroupNames.G1][FieldNames.F1].testCount).toBe(1);
+        expect(res.groups[GroupNames.G1][FieldNames.F2].testCount).toBe(0);
+        expect(res.isValid()).toBe(false);
+        expect(res.isValidByGroup(GroupNames.G1)).toBe(false);
+        expect(res.isValidByGroup(GroupNames.G1, FieldNames.F1)).toBe(false);
+        expect(res.isValidByGroup(GroupNames.G1, FieldNames.F2)).toBe(false);
+        expect(res.hasErrors(FieldNames.F1)).toBe(true);
+        expect(res.hasErrors(FieldNames.F2)).toBe(true);
+        expect(suite.get()).toMatchSnapshot();
+      });
+
+      it('should skip only within the group, not the next group', () => {
+        const cb1 = jest.fn(() => false);
+        const cb2 = jest.fn(() => false);
+        const cb3 = jest.fn(() => false);
+        const suite = vest.create(() => {
+          vest.mode(vest.Modes.ALL);
+
+          vest.test(FieldNames.F1, cb1);
+          vest.group(GroupNames.G1, () => {
+            vest.skip(FieldNames.F2);
+            vest.test(FieldNames.F1, cb1);
+            vest.test(FieldNames.F2, cb2);
+          });
+          vest.group(GroupNames.G2, () => {
+            vest.test(FieldNames.F2, cb3);
+          });
+        });
+        const res = suite();
+        expect(cb1).toHaveBeenCalledTimes(2);
+        expect(cb2).toHaveBeenCalledTimes(0);
+        expect(cb3).toHaveBeenCalledTimes(1);
+        expect(res.tests[FieldNames.F1].testCount).toBe(2);
+        expect(res.tests[FieldNames.F2].testCount).toBe(1);
+        expect(res.groups[GroupNames.G1][FieldNames.F1].testCount).toBe(1);
+        expect(res.groups[GroupNames.G1][FieldNames.F2].testCount).toBe(0);
+        expect(res.groups[GroupNames.G2][FieldNames.F2].testCount).toBe(1);
+        expect(res.isValid()).toBe(false);
+        expect(res.isValidByGroup(GroupNames.G1)).toBe(false);
+        expect(res.isValidByGroup(GroupNames.G1, FieldNames.F1)).toBe(false);
+        expect(res.isValidByGroup(GroupNames.G1, FieldNames.F2)).toBe(false);
+        expect(res.isValidByGroup(GroupNames.G2)).toBe(false);
+        expect(res.isValidByGroup(GroupNames.G2, FieldNames.F2)).toBe(false);
+        expect(res.hasErrors(FieldNames.F1)).toBe(true);
+        expect(res.hasErrors(FieldNames.F2)).toBe(true);
+        expect(suite.get()).toMatchSnapshot();
+      });
+
+      describe('skip(true)', () => {
+        it('should skip only within the group', () => {
+          const cb1 = jest.fn(() => false);
+          const cb2 = jest.fn(() => false);
+          const cb3 = jest.fn(() => false);
+          const suite = vest.create(() => {
+            vest.mode(vest.Modes.ALL);
+
+            vest.group(GroupNames.G1, () => {
+              vest.skip(true);
+              vest.test(FieldNames.F1, cb1);
+              vest.test(FieldNames.F2, cb1);
+            });
+
+            vest.group(GroupNames.G2, () => {
+              vest.test(FieldNames.F2, cb3);
+              vest.test(FieldNames.F3, cb3);
+            });
+            vest.test(FieldNames.F1, cb2);
+            vest.test(FieldNames.F2, cb2);
+            vest.test(FieldNames.F3, cb3);
+          });
+          const res = suite();
+          expect(cb1).toHaveBeenCalledTimes(0);
+          expect(cb2).toHaveBeenCalledTimes(2);
+          expect(cb3).toHaveBeenCalledTimes(3);
+          expect(res.tests[FieldNames.F1].testCount).toBe(1);
+          expect(res.tests[FieldNames.F2].testCount).toBe(2);
+          expect(res.tests[FieldNames.F3].testCount).toBe(2);
+          expect(res.groups[GroupNames.G1][FieldNames.F1].testCount).toBe(0);
+          expect(res.groups[GroupNames.G1][FieldNames.F2].testCount).toBe(0);
+          expect(res.groups[GroupNames.G2][FieldNames.F2].testCount).toBe(1);
+          expect(res.groups[GroupNames.G2][FieldNames.F3].testCount).toBe(1);
+          expect(res.isValid()).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G1)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G1, FieldNames.F1)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G1, FieldNames.F2)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G2)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G2, FieldNames.F2)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G2, FieldNames.F3)).toBe(false);
+          expect(res.hasErrors(FieldNames.F1)).toBe(true);
+          expect(res.hasErrors(FieldNames.F2)).toBe(true);
+          expect(res.hasErrors(FieldNames.F3)).toBe(true);
+          expect(suite.get()).toMatchSnapshot();
+        });
+      });
+    });
+
+    describe('only', () => {
+      describe('top level only', () => {
+        it('should skip all tests except `only` tests', () => {
+          const cb1 = jest.fn(() => false);
+          const cb2 = jest.fn(() => false);
+          const cb3 = jest.fn(() => false);
+          const cb4 = jest.fn(() => false);
+          const suite = vest.create(() => {
+            vest.mode(vest.Modes.ALL);
+
+            vest.only(FieldNames.F1);
+            vest.test(FieldNames.F1, cb1);
+            vest.test(FieldNames.F2, cb4);
+            vest.test(FieldNames.F3, cb4);
+            vest.group(GroupNames.G1, () => {
+              vest.test(FieldNames.F1, cb2);
+              vest.test(FieldNames.F2, cb4);
+              vest.test(FieldNames.F3, cb4);
+            });
+
+            vest.group(GroupNames.G2, () => {
+              vest.test(FieldNames.F1, cb3);
+              vest.test(FieldNames.F2, cb4);
+              vest.test(FieldNames.F3, cb4);
+            });
+          });
+          const res = suite();
+          expect(cb1).toHaveBeenCalledTimes(1);
+          expect(cb2).toHaveBeenCalledTimes(1);
+          expect(cb3).toHaveBeenCalledTimes(1);
+          expect(cb4).toHaveBeenCalledTimes(0);
+          expect(res.tests[FieldNames.F1].testCount).toBe(3);
+          expect(res.tests[FieldNames.F2].testCount).toBe(0);
+          expect(res.tests[FieldNames.F3].testCount).toBe(0);
+          expect(res.groups[GroupNames.G1][FieldNames.F1].testCount).toBe(1);
+          expect(res.groups[GroupNames.G1][FieldNames.F2].testCount).toBe(0);
+          expect(res.groups[GroupNames.G1][FieldNames.F3].testCount).toBe(0);
+          expect(res.groups[GroupNames.G2][FieldNames.F1].testCount).toBe(1);
+          expect(res.groups[GroupNames.G2][FieldNames.F2].testCount).toBe(0);
+          expect(res.groups[GroupNames.G2][FieldNames.F3].testCount).toBe(0);
+          expect(res.isValid()).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G1)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G1, FieldNames.F1)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G1, FieldNames.F2)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G1, FieldNames.F3)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G2)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G2, FieldNames.F1)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G2, FieldNames.F2)).toBe(false);
+
+          expect(res.isValidByGroup(GroupNames.G2, FieldNames.F3)).toBe(false);
+          expect(res.hasErrors(FieldNames.F1)).toBe(true);
+          expect(res.hasErrors(FieldNames.F2)).toBe(false);
+          expect(res.hasErrors(FieldNames.F3)).toBe(false);
+          expect(suite.get()).toMatchSnapshot();
+        });
+      });
+
+      describe('group only', () => {
+        it('Should skip all tests except `only` tests within the group', () => {
+          const cb1 = jest.fn(() => false);
+          const cb2 = jest.fn(() => false);
+          const cb3 = jest.fn(() => false);
+          const suite = vest.create(() => {
+            vest.mode(vest.Modes.ALL);
+
+            vest.group(GroupNames.G1, () => {
+              vest.only(FieldNames.F1);
+              vest.test(FieldNames.F1, cb1);
+              vest.test(FieldNames.F2, cb2);
+              vest.test(FieldNames.F3, cb2);
+            });
+
+            vest.group(GroupNames.G2, () => {
+              vest.test(FieldNames.F1, cb3);
+              vest.test(FieldNames.F2, cb3);
+              vest.test(FieldNames.F3, cb3);
+            });
+          });
+          const res = suite();
+          expect(cb1).toHaveBeenCalledTimes(1);
+          expect(cb2).toHaveBeenCalledTimes(0);
+          expect(cb3).toHaveBeenCalledTimes(3);
+          expect(res.tests[FieldNames.F1].testCount).toBe(2);
+          expect(res.tests[FieldNames.F2].testCount).toBe(1);
+          expect(res.tests[FieldNames.F3].testCount).toBe(1);
+          expect(res.groups[GroupNames.G1][FieldNames.F1].testCount).toBe(1);
+          expect(res.groups[GroupNames.G1][FieldNames.F2].testCount).toBe(0);
+          expect(res.groups[GroupNames.G1][FieldNames.F3].testCount).toBe(0);
+          expect(res.groups[GroupNames.G2][FieldNames.F1].testCount).toBe(1);
+          expect(res.groups[GroupNames.G2][FieldNames.F2].testCount).toBe(1);
+          expect(res.groups[GroupNames.G2][FieldNames.F3].testCount).toBe(1);
+          expect(res.isValid()).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G1)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G1, FieldNames.F1)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G1, FieldNames.F2)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G1, FieldNames.F3)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G2)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G2, FieldNames.F1)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G2, FieldNames.F2)).toBe(false);
+          expect(res.isValidByGroup(GroupNames.G2, FieldNames.F3)).toBe(false);
+          expect(res.hasErrors(FieldNames.F1)).toBe(true);
+          expect(res.hasErrors(FieldNames.F2)).toBe(true);
+          expect(res.hasErrors(FieldNames.F3)).toBe(true);
+          expect(suite.get()).toMatchSnapshot();
+        });
+      });
+    });
+  });
 });

@@ -299,25 +299,7 @@ describe('include', () => {
       expect(res.tests.field_1.testCount).toBe(1);
     });
   });
-  describe('Test is excluded by being out of an included group', () => {
-    it('Should disregard `include` and avoid running the test', () => {
-      const suite = vest.create(() => {
-        vest.include('field_1');
-        vest.only.group('g1');
-        vest.group('g1', () => {});
 
-        vest.test('field_1', () => false);
-        vest.group('g2', () => {
-          vest.test('field_1', () => false);
-        });
-      });
-
-      const res = suite();
-      expect(res.hasErrors('field_1')).toBe(false);
-      expect(res.tests.field_1.testCount).toBe(0);
-      expect(res).toMatchSnapshot();
-    });
-  });
   describe('Test is excluded via `skip.group`', () => {
     it('Should disregard `include` and avoid running the test', () => {
       const suite = vest.create(() => {

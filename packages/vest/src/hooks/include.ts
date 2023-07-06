@@ -6,7 +6,7 @@ import { useInclusion } from 'SuiteContext';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TDraftCondition } from 'getTypedMethods';
 import { useCreateSuiteResult } from 'suiteResult';
-import { useIsExcluded } from 'useIsExcluded';
+import { useHasOnliedTests } from 'useHasOnliedTests';
 
 /**
  * Conditionally includes a field for testing, based on specified criteria.
@@ -33,6 +33,9 @@ export function include<F extends TFieldName, G extends TGroupName>(
   when: (condition: F | TFieldName | TDraftCondition<F, G>) => void;
 } {
   invariant(isStringValue(fieldName));
+  const inclusion = useInclusion();
+
+  inclusion[fieldName] = true;
 
   return { when };
 
@@ -49,7 +52,7 @@ export function include<F extends TFieldName, G extends TGroupName>(
       currentNode: IsolateTest
     ): boolean {
       if (isStringValue(condition)) {
-        return !useIsExcluded(currentNode);
+        return useHasOnliedTests(currentNode, condition);
       }
 
       return optionalFunctionValue(

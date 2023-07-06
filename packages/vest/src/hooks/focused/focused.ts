@@ -1,4 +1,11 @@
-import { asArray, Maybe, OneOrMoreOf, noop } from 'vest-utils';
+import {
+  asArray,
+  Maybe,
+  OneOrMoreOf,
+  noop,
+  Nullable,
+  isNotEmpty,
+} from 'vest-utils';
 import { Isolate } from 'vestjs-runtime';
 
 import { FocusModes } from 'FocusedKeys';
@@ -45,6 +52,36 @@ export class IsolateFocused extends Isolate<FocusedPayload> {
       match,
       focusMode: FocusModes.SKIP,
     });
+  }
+
+  private static hasFocus(
+    focus: Nullable<IsolateFocused>,
+    fieldName?: TFieldName
+  ) {
+    return (
+      isNotEmpty(focus?.match) &&
+      (fieldName ? focus?.match?.includes(fieldName) ?? true : true)
+    );
+  }
+
+  static isSkipFocused(
+    focus: Nullable<IsolateFocused>,
+    fieldName?: TFieldName
+  ): boolean {
+    return (
+      focus?.focusMode === FocusModes.SKIP &&
+      (IsolateFocused.hasFocus(focus, fieldName) || focus.matchAll === true)
+    );
+  }
+
+  static isOnlyFocused(
+    focus: Nullable<IsolateFocused>,
+    fieldName?: TFieldName
+  ): boolean {
+    return (
+      focus?.focusMode === FocusModes.ONLY &&
+      IsolateFocused.hasFocus(focus, fieldName)
+    );
   }
 }
 

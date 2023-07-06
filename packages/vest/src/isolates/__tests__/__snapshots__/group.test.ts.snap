@@ -1,5 +1,229 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`group Multiple groups Should run the tests within the groups 1`] = `
+SuiteSummary {
+  "errorCount": 5,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "f1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    SummaryFailure {
+      "fieldName": "f1",
+      "groupName": "g1",
+      "message": undefined,
+    },
+    SummaryFailure {
+      "fieldName": "f2",
+      "groupName": "g1",
+      "message": undefined,
+    },
+    SummaryFailure {
+      "fieldName": "f1",
+      "groupName": "g2",
+      "message": undefined,
+    },
+    SummaryFailure {
+      "fieldName": "f2",
+      "groupName": "g2",
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {
+    "g1": {
+      "f1": SummaryBase {
+        "errorCount": 1,
+        "errors": [],
+        "testCount": 1,
+        "valid": false,
+        "warnCount": 0,
+        "warnings": [],
+      },
+      "f2": SummaryBase {
+        "errorCount": 1,
+        "errors": [],
+        "testCount": 1,
+        "valid": false,
+        "warnCount": 0,
+        "warnings": [],
+      },
+      "f3": SummaryBase {
+        "errorCount": 0,
+        "errors": [],
+        "testCount": 1,
+        "valid": true,
+        "warnCount": 0,
+        "warnings": [],
+      },
+    },
+    "g2": {
+      "f1": SummaryBase {
+        "errorCount": 1,
+        "errors": [],
+        "testCount": 1,
+        "valid": false,
+        "warnCount": 0,
+        "warnings": [],
+      },
+      "f2": SummaryBase {
+        "errorCount": 1,
+        "errors": [],
+        "testCount": 1,
+        "valid": false,
+        "warnCount": 0,
+        "warnings": [],
+      },
+      "f3": SummaryBase {
+        "errorCount": 0,
+        "errors": [],
+        "testCount": 1,
+        "valid": true,
+        "warnCount": 0,
+        "warnings": [],
+      },
+    },
+  },
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "suiteName": undefined,
+  "testCount": 7,
+  "tests": {
+    "f1": {
+      "errorCount": 3,
+      "errors": [],
+      "testCount": 3,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "f2": {
+      "errorCount": 2,
+      "errors": [],
+      "testCount": 2,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "f3": {
+      "errorCount": 0,
+      "errors": [],
+      "testCount": 2,
+      "valid": true,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`group Should run the tests within the group 1`] = `
+SuiteSummary {
+  "errorCount": 3,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "f1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    SummaryFailure {
+      "fieldName": "f1",
+      "groupName": "g1",
+      "message": undefined,
+    },
+    SummaryFailure {
+      "fieldName": "f2",
+      "groupName": "g1",
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {
+    "g1": {
+      "f1": SummaryBase {
+        "errorCount": 1,
+        "errors": [],
+        "testCount": 1,
+        "valid": false,
+        "warnCount": 0,
+        "warnings": [],
+      },
+      "f2": SummaryBase {
+        "errorCount": 1,
+        "errors": [],
+        "testCount": 1,
+        "valid": false,
+        "warnCount": 0,
+        "warnings": [],
+      },
+      "f3": SummaryBase {
+        "errorCount": 0,
+        "errors": [],
+        "testCount": 1,
+        "valid": true,
+        "warnCount": 0,
+        "warnings": [],
+      },
+    },
+  },
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "suiteName": undefined,
+  "testCount": 4,
+  "tests": {
+    "f1": {
+      "errorCount": 2,
+      "errors": [],
+      "testCount": 2,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "f2": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "f3": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "testCount": 1,
+      "valid": true,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
 exports[`group: base case Group validity 1`] = `
 {
   "done": [Function],

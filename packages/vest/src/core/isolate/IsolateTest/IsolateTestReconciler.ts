@@ -1,4 +1,4 @@
-import { Maybe, Nullable, deferThrow, isNullish, text } from 'vest-utils';
+import { Maybe, deferThrow, text } from 'vest-utils';
 import { IsolateInspector, Reconciler } from 'vestjs-runtime';
 import type { Isolate } from 'vestjs-runtime';
 
@@ -13,16 +13,8 @@ import { useVerifyTestRun } from 'verifyTestRun';
 // @vx-allow use-use
 export function IsolateTestReconciler(
   currentNode: IsolateTest,
-  historyNode: Nullable<Isolate>
+  historyNode: IsolateTest
 ): IsolateTest {
-  if (isNullish(historyNode)) {
-    return handleNoHistoryNode(currentNode);
-  }
-
-  if (!isIsolateTest(historyNode)) {
-    return currentNode;
-  }
-
   const reconcilerOutput = usePickNode(historyNode, currentNode);
 
   cancelOverriddenPendingTestOnTestReRun(
@@ -88,14 +80,6 @@ function usePickNode(
   const collisionResult = handleCollision(currentNode, historyNode);
 
   return useVerifyTestRun(currentNode, collisionResult);
-}
-
-function handleNoHistoryNode(testNode: IsolateTest): IsolateTest {
-  if (IsolateInspector.usesKey(testNode)) {
-    return castIsolateTest(Reconciler.handleIsolateNodeWithKey(testNode));
-  }
-
-  return testNode;
 }
 
 function cancelOverriddenPendingTestOnTestReRun(

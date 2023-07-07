@@ -1,7 +1,6 @@
 import { Nullable, isNotNullish, isNullish } from 'vest-utils';
 
 import { Isolate } from 'Isolate';
-import { closestExists } from 'IsolateWalker';
 
 export class IsolateInspector {
   static at(isolate: Nullable<Isolate>, at: number): Nullable<Isolate> {
@@ -18,11 +17,12 @@ export class IsolateInspector {
     return isolate.children?.length ?? 0;
   }
 
-  static shouldAllowReorder(isolate: Nullable<Isolate>): boolean {
+  static allowsReorder(isolate: Nullable<Isolate>): boolean {
     if (isNullish(isolate)) {
       return false;
     }
-    return closestExists(isolate, node => node.allowReorder);
+
+    return isolate.parent?.allowReorder === true;
   }
 
   static usesKey(isolate: Nullable<Isolate>): boolean {

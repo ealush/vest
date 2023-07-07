@@ -12,7 +12,6 @@ export class Isolate<_D = any> {
   parent: Nullable<Isolate> = null;
   output: any;
   key: IsolateKey = null;
-  allowReorder = false;
   type = 'Isolate';
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function

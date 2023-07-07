@@ -63,10 +63,10 @@ describe('IsolateInspector', () => {
     });
   });
 
-  describe('allowsReorder', () => {
+  describe('canReorder', () => {
     describe('When the isolate is nullish', () => {
       it('Should return false', () => {
-        expect(IsolateInspector.allowsReorder(null)).toBe(false);
+        expect(IsolateInspector.canReorder(null)).toBe(false);
       });
     });
 
@@ -74,7 +74,7 @@ describe('IsolateInspector', () => {
       it('Should return false', () => {
         const isolate = { allowReorder: false } as unknown as Isolate;
 
-        expect(IsolateInspector.allowsReorder(isolate)).toBe(false);
+        expect(IsolateInspector.canReorder(isolate)).toBe(false);
       });
     });
 
@@ -87,7 +87,7 @@ describe('IsolateInspector', () => {
         } as unknown as Isolate;
         const isolate = { allowReorder: false, parent } as unknown as Isolate;
 
-        expect(IsolateInspector.allowsReorder(isolate)).toBe(true);
+        expect(IsolateInspector.canReorder(isolate)).toBe(true);
       });
 
       describe('When only the root allows reordering', () => {
@@ -99,7 +99,7 @@ describe('IsolateInspector', () => {
           } as unknown as Isolate;
           const isolate = { allowReorder: false, parent } as unknown as Isolate;
 
-          expect(IsolateInspector.allowsReorder(isolate)).toBe(false);
+          expect(IsolateInspector.canReorder(isolate)).toBe(false);
         });
       });
     });

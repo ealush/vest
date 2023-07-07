@@ -2,7 +2,6 @@
 
 exports[`Test Vest's \`test\` function test params creates a test with a message and with a key 1`] = `
 IsolateTest {
-  "allowReorder": false,
   "children": null,
   "fieldName": "field_name",
   "id": "23",
@@ -11,7 +10,6 @@ IsolateTest {
   "message": "failure message",
   "output": undefined,
   "parent": IsolateSuite {
-    "allowReorder": false,
     "children": [
       [Circular],
     ],
@@ -68,7 +66,6 @@ IsolateTest {
 
 exports[`Test Vest's \`test\` function test params creates a test without a key 1`] = `
 IsolateTest {
-  "allowReorder": false,
   "children": null,
   "fieldName": "field_name",
   "id": "19",
@@ -77,7 +74,6 @@ IsolateTest {
   "message": "failure message",
   "output": undefined,
   "parent": IsolateSuite {
-    "allowReorder": false,
     "children": [
       [Circular],
     ],
@@ -132,7 +128,6 @@ IsolateTest {
 
 exports[`Test Vest's \`test\` function test params creates a test without a message and with a key 1`] = `
 IsolateTest {
-  "allowReorder": false,
   "children": null,
   "fieldName": "field_name",
   "id": "21",
@@ -140,7 +135,6 @@ IsolateTest {
   "keys": {},
   "output": undefined,
   "parent": IsolateSuite {
-    "allowReorder": false,
     "children": [
       [Circular],
     ],
@@ -197,7 +191,6 @@ IsolateTest {
 
 exports[`Test Vest's \`test\` function test params creates a test without a message and without a key 1`] = `
 IsolateTest {
-  "allowReorder": false,
   "children": null,
   "fieldName": "field_name",
   "id": "17",
@@ -205,7 +198,6 @@ IsolateTest {
   "keys": {},
   "output": undefined,
   "parent": IsolateSuite {
-    "allowReorder": false,
     "children": [
       [Circular],
     ],

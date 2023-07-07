@@ -17,12 +17,18 @@ export class IsolateInspector {
     return isolate.children?.length ?? 0;
   }
 
-  static allowsReorder(isolate: Nullable<Isolate>): boolean {
+  static canReorder<I extends Isolate>(isolate: Nullable<I>): boolean {
     if (isNullish(isolate)) {
       return false;
     }
 
-    return isolate.parent?.allowReorder === true;
+    return IsolateInspector.allowsReorder(isolate.parent);
+  }
+
+  static allowsReorder<I extends Record<any, any>>(
+    isolate: Nullable<I>
+  ): boolean {
+    return isolate?.allowReorder === true;
   }
 
   static usesKey(isolate: Nullable<Isolate>): boolean {

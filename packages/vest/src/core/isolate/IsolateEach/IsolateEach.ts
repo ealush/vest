@@ -1,8 +1,11 @@
-import { Isolate } from 'vestjs-runtime';
+import { Isolate, isolateInterfaces } from 'vestjs-runtime';
 
 import { VestIsolateType } from 'VestIsolateType';
 
-export class IsolateEach extends Isolate {
+export class IsolateEach
+  extends Isolate
+  implements isolateInterfaces.IReorderable
+{
   type = VestIsolateType.Each;
-  allowReorder = true;
+  allowReorder = true as const;
 }

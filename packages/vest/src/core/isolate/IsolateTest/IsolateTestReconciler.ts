@@ -112,7 +112,7 @@ function throwTestOrderError(
   newNode: IsolateTest,
   prevNode: Maybe<Isolate>
 ): void {
-  if (IsolateInspector.allowsReorder(newNode)) {
+  if (IsolateInspector.canReorder(newNode)) {
     return;
   }
 

@@ -2,7 +2,6 @@
 
 exports[`IsolateTest TestObject constructor 1`] = `
 IsolateTest {
-  "allowReorder": false,
   "children": null,
   "fieldName": "unicycle",
   "id": "0",
@@ -22,7 +21,6 @@ IsolateTest {
 
 exports[`IsolateTest testObject.warn Should mark the test as warning 1`] = `
 IsolateTest {
-  "allowReorder": false,
   "children": null,
   "fieldName": "unicycle",
   "id": "102",

@@ -1,0 +1,149 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Top Level Focus Top Level Skip When passing false Should run all fields 1`] = `
+{
+  "done": [Function],
+  "errorCount": 3,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "F1",
+      "groupName": undefined,
+      "message": "F1 error",
+    },
+    SummaryFailure {
+      "fieldName": "F2",
+      "groupName": undefined,
+      "message": "F2 error",
+    },
+    SummaryFailure {
+      "fieldName": "F3",
+      "groupName": undefined,
+      "message": "F3 error",
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "suiteName": undefined,
+  "testCount": 3,
+  "tests": {
+    "F1": SummaryBase {
+      "errorCount": 1,
+      "errors": [
+        "F1 error",
+      ],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "F2": SummaryBase {
+      "errorCount": 1,
+      "errors": [
+        "F2 error",
+      ],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "F3": SummaryBase {
+      "errorCount": 1,
+      "errors": [
+        "F3 error",
+      ],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`Top Level Focus Top Level Skip When passing undefined Should run all fields 1`] = `
+{
+  "done": [Function],
+  "errorCount": 3,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "F1",
+      "groupName": undefined,
+      "message": "F1 error",
+    },
+    SummaryFailure {
+      "fieldName": "F2",
+      "groupName": undefined,
+      "message": "F2 error",
+    },
+    SummaryFailure {
+      "fieldName": "F3",
+      "groupName": undefined,
+      "message": "F3 error",
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "suiteName": undefined,
+  "testCount": 3,
+  "tests": {
+    "F1": SummaryBase {
+      "errorCount": 1,
+      "errors": [
+        "F1 error",
+      ],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "F2": SummaryBase {
+      "errorCount": 1,
+      "errors": [
+        "F2 error",
+      ],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "F3": SummaryBase {
+      "errorCount": 1,
+      "errors": [
+        "F3 error",
+      ],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;

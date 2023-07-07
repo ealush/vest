@@ -57,6 +57,54 @@ describe('Top Level Focus', () => {
       });
     });
 
+    describe('When passing false', () => {
+      it('Should run all fields', () => {
+        const result = testSuite(() => {
+          vest.skip(false);
+
+          vest.test(Fields.F1, 'F1 error', () => false);
+          vest.test(Fields.F2, 'F2 error', () => false);
+          vest.test(Fields.F3, 'F3 error', () => false);
+        });
+        expect(result.hasErrors(Fields.F1)).toBe(true);
+        expect(result.hasErrors(Fields.F2)).toBe(true);
+        expect(result.hasErrors(Fields.F3)).toBe(true);
+        expect(result.testCount).toBe(3);
+        expect(result.errorCount).toBe(3);
+        expect(result.tests.F1.errorCount).toBe(1);
+        expect(result.tests.F2.errorCount).toBe(1);
+        expect(result.tests.F3.errorCount).toBe(1);
+        expect(result.tests.F1.testCount).toBe(1);
+        expect(result.tests.F2.testCount).toBe(1);
+        expect(result.tests.F3.testCount).toBe(1);
+        expect(result).toMatchSnapshot();
+      });
+    });
+
+    describe('When passing undefined', () => {
+      it('Should run all fields', () => {
+        const result = testSuite(() => {
+          vest.skip(undefined);
+
+          vest.test(Fields.F1, 'F1 error', () => false);
+          vest.test(Fields.F2, 'F2 error', () => false);
+          vest.test(Fields.F3, 'F3 error', () => false);
+        });
+        expect(result.hasErrors(Fields.F1)).toBe(true);
+        expect(result.hasErrors(Fields.F2)).toBe(true);
+        expect(result.hasErrors(Fields.F3)).toBe(true);
+        expect(result.testCount).toBe(3);
+        expect(result.errorCount).toBe(3);
+        expect(result.tests.F1.errorCount).toBe(1);
+        expect(result.tests.F2.errorCount).toBe(1);
+        expect(result.tests.F3.errorCount).toBe(1);
+        expect(result.tests.F1.testCount).toBe(1);
+        expect(result.tests.F2.testCount).toBe(1);
+        expect(result.tests.F3.testCount).toBe(1);
+        expect(result).toMatchSnapshot();
+      });
+    });
+
     describe('Multiple Skip Calls', () => {
       it('Should skip fields under `skip`', () => {
         const result = testSuite(() => {
@@ -162,6 +210,52 @@ describe('Top Level Focus', () => {
         expect(result.tests.F1.testCount).toBe(1);
         expect(result.tests.F2.testCount).toBe(1);
         expect(result.tests.F3.testCount).toBe(0);
+      });
+    });
+
+    describe('When passing false', () => {
+      it('Should run all fields', () => {
+        const result = testSuite(() => {
+          vest.only(false);
+
+          vest.test(Fields.F1, 'F1 error', () => false);
+          vest.test(Fields.F2, 'F2 error', () => false);
+          vest.test(Fields.F3, 'F3 error', () => false);
+        });
+        expect(result.hasErrors(Fields.F1)).toBe(true);
+        expect(result.hasErrors(Fields.F2)).toBe(true);
+        expect(result.hasErrors(Fields.F3)).toBe(true);
+        expect(result.testCount).toBe(3);
+        expect(result.errorCount).toBe(3);
+        expect(result.tests.F1.errorCount).toBe(1);
+        expect(result.tests.F2.errorCount).toBe(1);
+        expect(result.tests.F3.errorCount).toBe(1);
+        expect(result.tests.F1.testCount).toBe(1);
+        expect(result.tests.F2.testCount).toBe(1);
+        expect(result.tests.F3.testCount).toBe(1);
+      });
+    });
+
+    describe('When passing undefined', () => {
+      it('Should run all fields', () => {
+        const result = testSuite(() => {
+          vest.only();
+
+          vest.test(Fields.F1, 'F1 error', () => false);
+          vest.test(Fields.F2, 'F2 error', () => false);
+          vest.test(Fields.F3, 'F3 error', () => false);
+        });
+        expect(result.hasErrors(Fields.F1)).toBe(true);
+        expect(result.hasErrors(Fields.F2)).toBe(true);
+        expect(result.hasErrors(Fields.F3)).toBe(true);
+        expect(result.testCount).toBe(3);
+        expect(result.errorCount).toBe(3);
+        expect(result.tests.F1.errorCount).toBe(1);
+        expect(result.tests.F2.errorCount).toBe(1);
+        expect(result.tests.F3.errorCount).toBe(1);
+        expect(result.tests.F1.testCount).toBe(1);
+        expect(result.tests.F2.testCount).toBe(1);
+        expect(result.tests.F3.testCount).toBe(1);
       });
     });
 

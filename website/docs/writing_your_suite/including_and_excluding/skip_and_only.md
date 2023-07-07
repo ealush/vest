@@ -13,6 +13,31 @@ In real-world scenarios, you may need to run tests only on a specific field or s
 
 Both skip and only can be used as many times as needed, and they can be nested within groups. skip and only will only take effect on the scope their declared in (and below), and only affect tests that are declared after their invocation.
 
+:::caution
+`skip()` and `only()` should not be called conditionally - i.e. inside of an if statement. Vest relies on the consistent execution of these functions in the suite to detect changes between runs.
+
+Instead, you can conditionally supply your skip and only arguments. For example:
+
+```js
+skip(shouldSkip ? 'field1' : false);
+```
+
+```diff
+- if (hasPromo) only('promo');
++ only(hasPromo && 'promo');
+```
+
+:::
+
+## Skip and Only Arguments
+
+Skip and Only take one argument, which can be one of the following:
+
+- A string representing a field name
+- An array of strings representing multiple field names
+- `undefined` or `false` to prevent execution of the function
+- **SKIP ONLY** `true` to skip or include all fields
+
 ## Only Running Specific Fields
 
 When validating user interactions, you usually want to validate only the field that the user is currently interacting with, to prevent errors appearing for untouched inputs. You can use `only()` with the name of the test currently being validated to achieve this.
@@ -51,7 +76,7 @@ There are cases when you may need to skip specific tests. For example, when you 
 import { create, test, skip } from 'vest';
 
 const suite = create(data => {
-  if (!data.promo) skip('promo');
+  skip(data.promo ? 'promo' : false); // will skip the promo test if data.promo is falsy
 
   // this test won't run when data.promo is falsy.
   test('promo', 'Promo code is invalid', () => {
@@ -139,7 +164,7 @@ const suite = create(() => {
   only('field1');
 
   test('field1', 'Field 1 is invalid', () => {
-    /_ ... _/;
+    /* ... */
   });
 
   group('nested-group', () => {

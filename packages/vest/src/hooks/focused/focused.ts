@@ -40,16 +40,16 @@ export class IsolateFocused extends Isolate<FocusedPayload> {
     this.match = asArray(payload.match ?? this.match);
   }
 
-  static only(match: FieldExclusion<TFieldName>) {
+  static only(match: FieldExclusion<TFieldName> | false) {
     IsolateFocused.create(noop, {
-      match,
+      match: match === false ? [] : match,
       focusMode: FocusModes.ONLY,
     });
   }
 
-  static skip(match: FieldExclusion<TFieldName> | true) {
+  static skip(match: FieldExclusion<TFieldName> | boolean) {
     IsolateFocused.create(noop, {
-      match,
+      match: match === false ? [] : match,
       focusMode: FocusModes.SKIP,
     });
   }

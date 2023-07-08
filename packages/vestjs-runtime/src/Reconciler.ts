@@ -3,9 +3,9 @@ import { CB, Nullable, invariant, isNullish } from 'vest-utils';
 import { type Isolate } from 'Isolate';
 import { IsolateInspector } from 'IsolateInspector';
 import { IsolateMutator } from 'IsolateMutator';
+import { isSameIsolateType } from 'IsolateSelectors';
 import * as VestRuntime from 'VestRuntime';
-import { isSameIsolateType } from 'isIsolateType';
-// import { isSameIsolateType } from 'isIsolateType';
+// import { isSameIsolateType } from 'IsolateSelectors';
 
 // I would rather not use `any` here, but instead use `Isolate`.
 // The problem is that it breaks the actual implementation of `Isolate` in `IsolateTest`

@@ -6,3 +6,4 @@ export { IsolateInspector } from 'IsolateInspector';
 export { IsolateMutator } from 'IsolateMutator';
 export * as Bus from 'Bus';
 export * as isolateInterfaces from 'isolateInterfaces';
+export * as IsolateSelectors from 'IsolateSelectors';

@@ -1,5 +1,5 @@
 import { Maybe, invariant } from 'vest-utils';
-import { Isolate } from 'vestjs-runtime';
+import { Isolate, IsolateSelectors } from 'vestjs-runtime';
 
 import type { IsolateTest } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
@@ -8,7 +8,10 @@ import { VestIsolateType } from 'VestIsolateType';
 export function isIsolateTest(
   isolate?: Maybe<Isolate>
 ): isolate is IsolateTest {
-  return isolate?.type === VestIsolateType.Test;
+  return IsolateSelectors.isIsolateType<IsolateTest>(
+    isolate,
+    VestIsolateType.Test
+  );
 }
 
 export function isIsolateTestX(

@@ -1,0 +1,28 @@
+name: Nightly
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Push To Nightly Branch
+        run: |
+          echo "Pushing to nightly branch"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git branch -D nightly || echo "No nightly branch"
+          git push origin --delete nightly || echo "No nightly branch"
+          git checkout -b nightly || git checkout nightly
+          git push origin nightly

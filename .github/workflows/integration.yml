@@ -9,6 +9,7 @@ on:
       - integration-*
       - next
       - next-*
+      - nightly
       - latest
   pull_request:
     branches: [latest]
@@ -43,6 +44,7 @@ jobs:
       - name: Release
         run: yarn release
         env:
+          NIGHTLY_BRANCH: nightly
           RELEASE_BRANCH: release
           RELEASE_KEEP_VERSION_BRANCH: release-keep-version
           INTEGRATION_BRANCH: integration

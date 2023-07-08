@@ -1,7 +1,7 @@
 const semver = require('semver');
 
 const determineChangeLevel = require('./determineChangeLevel');
-const { TAG_NEXT, TAG_DEV } = require('./releaseKeywords');
+const { TAG_NEXT, TAG_DEV, TAG_NIGHTLY } = require('./releaseKeywords');
 
 const logger = require('vx/logger');
 const packageJson = require('vx/util/packageJson');
@@ -10,6 +10,7 @@ const {
   isReleaseBranch,
   isNextBranch,
   isReleaseKeepVersionBranch,
+  isNightlyBranch,
 } = require('vx/util/taggedBranch');
 const { CURRENT_BRANCH } = require('vx/util/taggedBranch');
 const { usePackage } = require('vx/vxContext');
@@ -61,6 +62,10 @@ function pickTagId(nextVersion) {
 
   if (isIntegrationBranch) {
     return getTag(nextVersion, TAG_DEV, nextHash);
+  }
+
+  if (isNightlyBranch) {
+    return getTag(nextVersion, TAG_NIGHTLY, nextHash);
   }
 
   throw Error('pickTagId: Encountered an unexpected input.');

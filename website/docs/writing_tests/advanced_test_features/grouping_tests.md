@@ -8,16 +8,49 @@ keywords: [Vest, Test Groups]
 # Grouping tests
 
 In some cases it can be helpful to group tests together so you can include or exclude a portion of the suite with a single condition.
-Similar to the `describe` and `context` features provided by unit testing frameworks, Vest provides `group`.
+Similar to the `describe` and `context` features provided by unit testing frameworks, Vest provides `group()`.
 
-[Try on CodeSandbox (React)](https://codesandbox.io/s/vest-group-example-react-4i2ne)
+## Usage
+
+There are two ways to use `group()`:
+
+- **Named Groups** `group(name, callback)` - creates a new group with the given name and runs the tests inside the callback. Named groups are added to the result object, and can be queried for errors and warnings.
+- **Unnamed Groups** `group(callback)` - Runs the tests inside the callback without creating a new group. This is useful for skipping tests, without changing the result object.
+
+## Named Groups
+
+```js
+import { create, test, group, enforce } from 'vest';
+
+create('suite_name', data => {
+  group('group_name', () => {
+    test('field_name', 'error_message', () => {
+      enforce(data.field_name).equals('value');
+    });
+  });
+});
+```
+
+## Unnamed Groups
+
+```js
+import { create, test, group, enforce } from 'vest';
+
+create('suite_name', data => {
+  group(() => {
+    test('field_name', 'error_message', () => {
+      enforce(data.field_name).equals('value');
+    });
+  });
+});
+```
+
+# Full Example
 
 ```js
 import { create, test, group, enforce, skip } from 'vest';
 
 create(data => {
-  skip.group(data.userExists ? 'signUp' : 'signIn');
-
   test('userName', "Can't be empty", () => {
     enforce(data.username).isNotEmpty();
   });
@@ -26,6 +59,7 @@ create(data => {
   });
 
   group('signIn', () => {
+    skip(!data.userExists); // Skips the signin group if userExists is false
     test(
       'userName',
       'User not found. Please check if you typed it correctly.',
@@ -34,6 +68,8 @@ create(data => {
   });
 
   group('signUp', () => {
+    skip(!!data.userExists); // Skips the signup group if userExists is true
+
     test('email', 'Email already registered', isEmailRegistered(data.email));
 
     test('age', 'You must be at least 18 years old to join', () => {
@@ -91,30 +127,22 @@ suite(data, 'overview_tab'); // will only validate 'overview_tab' group
 suite(data, 'pricing_tab'); // will only validate 'pricing_tab' group
 ```
 
-### 2. Skipping tests with shared fields
+### 2. Skipping only some of the tests of a given field
 
-You sometimes want to skip some tests on a certain condition but still run other tests with the same field-name.
-
-In the example below, we don't mind skipping the `balance` field directly, but if we skip the `quantity` field directly, it won't be tested at all - even though it has one test outside of the group. That's why we skip the `used_promo`.
+If we want to conditionally skip a portion of our suite, we can use `skip()` within a group.
 
 ```js
 import { create, test, group, enforce, skip } from 'vest';
 
 const suite = create(data => {
-  if (!data.usedPromo) skip.group('used_promo');
-  if (!data.paysWithBalance) skip.group('balance');
-
-  test(
-    'balance',
-    'Balance is lower than product price',
-    hasSufficientFunds(data.productId)
-  );
-
+  // We want to always run this test, even if we skip the promo_code qauntity test
   test('quantity', `Quantity on this item is limited to ${data.limit}`, () => {
     enforce(data.quantity).lessThanOrEquals(data.limit);
   });
 
-  group('used_promo', () => {
+  group('promo_code', () => {
+    skip(!data.usedPromo); // Skips the group if usedPromo is false
+
     test(
       'quantity',
       'promo code purchases are limited to one item only',
@@ -134,12 +162,13 @@ const suite = create(data => {
 
 ## Querying the result object for groups
 
-Groups represent a portion of your validation suite, so when using `group`, you are likely to need to get the group-specific validation results.
+Named Groups represent a portion of your validation suite, so when using `group`, you are likely to need to get the group-specific validation results.
 Your result object exposes the following methods:
 
-- hasErrorsByGroup
-- hasWarningsByGroup
-- hasErrorsByGroup
-- hasWarningsByGroup
+- `hasErrorsByGroup(groupName, /*optional:*/ fieldName)`
+- `hasWarningsByGroup(groupName, /*optional:*/ fieldName)`
+- `hasErrorsByGroup(groupName, /*optional:*/ fieldName)`
+- `hasWarningsByGroup(groupName, /*optional:*/ fieldName)`
+- `isValidByGroup(groupName, /*optional:*/ fieldName)`
 
 Read more about these methods in [the result object](../../writing_your_suite/accessing_the_result.md).

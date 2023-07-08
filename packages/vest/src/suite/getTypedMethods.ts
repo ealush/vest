@@ -52,7 +52,10 @@ export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
   } & {
     memo: TestMemo<F>;
   };
-  group: (groupName: G, callback: () => void) => Isolate;
+  group: {
+    (callback: () => void): Isolate;
+    (groupName: G, callback: () => void): Isolate;
+  };
 };
 
 export type TDraftCondition<

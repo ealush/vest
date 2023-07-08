@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`group Focus only group only Should skip all tests except \`only\` tests within the group 1`] = `
+exports[`named group Focus only group only Should skip all tests except \`only\` tests within the group 1`] = `
 SuiteSummary {
   "errorCount": 4,
   "errors": [
@@ -125,7 +125,7 @@ SuiteSummary {
 }
 `;
 
-exports[`group Focus only top level only should skip all tests except \`only\` tests 1`] = `
+exports[`named group Focus only top level only should skip all tests except \`only\` tests 1`] = `
 SuiteSummary {
   "errorCount": 3,
   "errors": [
@@ -245,7 +245,7 @@ SuiteSummary {
 }
 `;
 
-exports[`group Focus skip inside the group should skip only within the group 1`] = `
+exports[`named group Focus skip inside the group should skip only within the group 1`] = `
 SuiteSummary {
   "errorCount": 3,
   "errors": [
@@ -323,7 +323,7 @@ SuiteSummary {
 }
 `;
 
-exports[`group Focus skip inside the group should skip only within the group, not the next group 1`] = `
+exports[`named group Focus skip inside the group should skip only within the group, not the next group 1`] = `
 SuiteSummary {
   "errorCount": 3,
   "errors": [
@@ -411,7 +411,7 @@ SuiteSummary {
 }
 `;
 
-exports[`group Focus skip inside the group skip(true) should skip only within the group 1`] = `
+exports[`named group Focus skip inside the group skip(true) should skip only within the group 1`] = `
 SuiteSummary {
   "errorCount": 5,
   "errors": [
@@ -525,7 +525,7 @@ SuiteSummary {
 }
 `;
 
-exports[`group Focus skip outside of group Should skip \`skipped\` tests both inside and outside the group 1`] = `
+exports[`named group Focus skip outside of group Should skip \`skipped\` tests both inside and outside the group 1`] = `
 SuiteSummary {
   "errorCount": 1,
   "errors": [
@@ -593,7 +593,7 @@ SuiteSummary {
 }
 `;
 
-exports[`group Multiple groups Should run the tests within the groups 1`] = `
+exports[`named group Multiple groups Should run the tests within the groups 1`] = `
 SuiteSummary {
   "errorCount": 5,
   "errors": [
@@ -723,7 +723,7 @@ SuiteSummary {
 }
 `;
 
-exports[`group Should run the tests within the group 1`] = `
+exports[`named group Should run the tests within the group 1`] = `
 SuiteSummary {
   "errorCount": 3,
   "errors": [
@@ -807,6 +807,310 @@ SuiteSummary {
       "errors": [],
       "testCount": 1,
       "valid": true,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`unnamed groups Should complete without adding the group to the results object 1`] = `
+SuiteSummary {
+  "errorCount": 3,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "f1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    SummaryFailure {
+      "fieldName": "f2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    SummaryFailure {
+      "fieldName": "f3",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "suiteName": undefined,
+  "testCount": 3,
+  "tests": {
+    "f1": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "f2": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "f3": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`unnamed groups Should run tests normally 1`] = `
+SuiteSummary {
+  "errorCount": 3,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "f1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    SummaryFailure {
+      "fieldName": "f2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    SummaryFailure {
+      "fieldName": "f3",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "suiteName": undefined,
+  "testCount": 3,
+  "tests": {
+    "f1": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "f2": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "f3": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`unnamed groups With skip(true) Should skip all tests in group 1`] = `
+SuiteSummary {
+  "errorCount": 0,
+  "errors": [],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "suiteName": undefined,
+  "testCount": 0,
+  "tests": {
+    "f1": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "f2": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "f3": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`unnamed groups with only Should only run the tests specified by only 1`] = `
+SuiteSummary {
+  "errorCount": 1,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "f1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "suiteName": undefined,
+  "testCount": 1,
+  "tests": {
+    "f1": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "f2": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "f3": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`unnamed groups with skip Should skip the tests specified by skip 1`] = `
+SuiteSummary {
+  "errorCount": 2,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "f2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    SummaryFailure {
+      "fieldName": "f3",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "suiteName": undefined,
+  "testCount": 2,
+  "tests": {
+    "f1": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "f2": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "f3": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "testCount": 1,
+      "valid": false,
       "warnCount": 0,
       "warnings": [],
     },

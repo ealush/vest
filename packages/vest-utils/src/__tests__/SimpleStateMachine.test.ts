@@ -296,7 +296,7 @@ describe('SimpleStateMachine', () => {
     });
   });
 
-  describe('transitionFrom', () => {
+  describe('staticTransition', () => {
     describe('When the transition is valid', () => {
       it('Should return the new state', () => {
         const machine = StateMachine({
@@ -314,7 +314,27 @@ describe('SimpleStateMachine', () => {
           },
         });
         expect(machine.getState()).toBe('idle');
-        expect(machine.transitionFrom('idle', 'click')).toBe('loading');
+        expect(machine.staticTransition('idle', 'click')).toBe('loading');
+      });
+
+      it('Should not modify the state', () => {
+        const machine = StateMachine({
+          initial: 'idle',
+          states: {
+            error: {},
+            idle: {
+              click: 'loading',
+            },
+            loading: {
+              success: 'success',
+              error: 'error',
+            },
+            success: {},
+          },
+        });
+        expect(machine.getState()).toBe('idle');
+        machine.staticTransition('idle', 'click');
+        expect(machine.getState()).toBe('idle');
       });
     });
 
@@ -335,7 +355,7 @@ describe('SimpleStateMachine', () => {
           },
         });
         expect(machine.getState()).toBe('idle');
-        expect(machine.transitionFrom('idle', 'finish')).toBe('idle');
+        expect(machine.staticTransition('idle', 'finish')).toBe('idle');
       });
     });
 
@@ -356,7 +376,7 @@ describe('SimpleStateMachine', () => {
           },
         });
         expect(machine.getState()).toBe('idle');
-        expect(machine.transitionFrom('idle', 'click')).toBe('idle');
+        expect(machine.staticTransition('idle', 'click')).toBe('idle');
       });
     });
 
@@ -377,7 +397,7 @@ describe('SimpleStateMachine', () => {
           },
         });
         expect(machine.getState()).toBe('idle');
-        expect(machine.transitionFrom('idle', 'click')).toBe('loading');
+        expect(machine.staticTransition('idle', 'click')).toBe('loading');
       });
     });
   });

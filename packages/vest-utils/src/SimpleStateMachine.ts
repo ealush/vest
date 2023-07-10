@@ -15,7 +15,7 @@ export type TStateMachine<S extends string, A extends string> = {
 export type TStateMachineApi<S extends string, A extends string> = {
   getState: CB<S>;
   transition: (action: A, payload?: any) => void;
-  transitionFrom: (from: S, action: A, payload?: any) => S;
+  staticTransition: (from: S, action: A, payload?: any) => S;
 };
 
 export function StateMachine<S extends string, A extends string>(
@@ -23,7 +23,7 @@ export function StateMachine<S extends string, A extends string>(
 ): TStateMachineApi<S, A> {
   let state = machine.initial;
 
-  const api = { getState, transition, transitionFrom };
+  const api = { getState, transition, staticTransition };
 
   return api;
 
@@ -32,11 +32,11 @@ export function StateMachine<S extends string, A extends string>(
   }
 
   function transition(action: A, payload?: any): S {
-    return (state = transitionFrom(state, action, payload));
+    return (state = staticTransition(state, action, payload));
   }
 
   // eslint-disable-next-line complexity
-  function transitionFrom(from: S, action: A, payload?: any): S {
+  function staticTransition(from: S, action: A, payload?: any): S {
     const transitionTo =
       machine.states[from]?.[action] ??
       // @ts-expect-error - This is a valid state

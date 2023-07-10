@@ -61,6 +61,10 @@ export class VestTestMutator {
     status: TestStateMachineAction,
     payload?: any
   ): void {
-    test.status = TestStateMachine.transitionFrom(test.status, status, payload);
+    test.status = TestStateMachine.staticTransition(
+      test.status,
+      status,
+      payload
+    );
   }
 }

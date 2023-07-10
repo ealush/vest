@@ -12,12 +12,18 @@ export type TStateMachine<S extends string, A extends string> = {
   }>;
 };
 
+export type TStateMachineApi<S extends string, A extends string> = {
+  getState: CB<S>;
+  transition: (action: A, payload?: any) => void;
+  transitionFrom: (from: S, action: A, payload?: any) => S;
+};
+
 export function StateMachine<S extends string, A extends string>(
   machine: TStateMachine<S, A>
-): { getState: CB<S>; transition: (action: A, payload?: any) => void } {
+): TStateMachineApi<S, A> {
   let state = machine.initial;
 
-  const api = { getState, transition };
+  const api = { getState, transition, transitionFrom };
 
   return api;
 
@@ -25,10 +31,14 @@ export function StateMachine<S extends string, A extends string>(
     return state;
   }
 
+  function transition(action: A, payload?: any): S {
+    return (state = transitionFrom(state, action, payload));
+  }
+
   // eslint-disable-next-line complexity
-  function transition(action: A, payload?: any): void {
+  function transitionFrom(from: S, action: A, payload?: any): S {
     const transitionTo =
-      machine.states[state]?.[action] ??
+      machine.states[from]?.[action] ??
       // @ts-expect-error - This is a valid state
       machine.states[STATE_WILD_CARD]?.[action];
 
@@ -37,16 +47,16 @@ export function StateMachine<S extends string, A extends string>(
     if (Array.isArray(target)) {
       const [, conditional] = target;
       if (!conditional(payload)) {
-        return;
+        return from;
       }
 
       target = target[0];
     }
 
-    if (!target || target === state) {
-      return;
+    if (!target || target === from) {
+      return from;
     }
 
-    state = target as S;
+    return target as S;
   }
 }

@@ -180,4 +180,205 @@ describe('SimpleStateMachine', () => {
       expect(machine.getState()).toBe('x_x');
     });
   });
+
+  describe('transition output value', () => {
+    describe('when transition is valid', () => {
+      it('Should return the new state', () => {
+        const machine = StateMachine({
+          initial: 'idle',
+          states: {
+            error: {},
+            idle: {
+              click: 'loading',
+            },
+            loading: {
+              success: 'success',
+              error: 'error',
+            },
+            success: {},
+          },
+        });
+        expect(machine.getState()).toBe('idle');
+
+        expect(machine.transition('click')).toBe('loading');
+      });
+    });
+
+    describe('When transitioning to the same state', () => {
+      it('Should return the same state', () => {
+        const machine = StateMachine({
+          initial: 'idle',
+          states: {
+            error: {},
+            idle: {
+              click: 'loading',
+            },
+            loading: {
+              success: 'success',
+              error: 'error',
+            },
+            success: {},
+          },
+        });
+        expect(machine.getState()).toBe('idle');
+
+        expect(machine.transition('click')).toBe('loading');
+        expect(machine.transition('click')).toBe('loading');
+      });
+    });
+
+    describe('When target state does not exist', () => {
+      it('Should return the previous state', () => {
+        const machine = StateMachine({
+          initial: 'idle',
+          states: {
+            error: {},
+            idle: {
+              click: 'loading',
+            },
+            loading: {
+              success: 'success',
+              error: 'error',
+            },
+            success: {},
+          },
+        });
+        expect(machine.getState()).toBe('idle');
+
+        expect(machine.transition('click')).toBe('loading');
+        expect(machine.transition('finish')).toBe('loading');
+      });
+    });
+
+    describe('When transition is invalid', () => {
+      it('Should return the previous state', () => {
+        const machine = StateMachine({
+          initial: 'idle',
+          states: {
+            error: {},
+            idle: {
+              click: 'loading',
+            },
+            loading: {
+              success: 'success',
+              error: 'error',
+            },
+            success: {},
+          },
+        });
+        expect(machine.getState()).toBe('idle');
+
+        expect(machine.transition('click')).toBe('loading');
+        expect(machine.transition('click')).toBe('loading');
+      });
+    });
+
+    describe('When the transition is disallowed by a conditional', () => {
+      it('Should return the previous state', () => {
+        const machine = StateMachine({
+          initial: 'idle',
+          states: {
+            error: {},
+            idle: {
+              click: ['loading', () => false],
+            },
+            loading: {
+              success: 'success',
+              error: 'error',
+            },
+            success: {},
+          },
+        });
+        expect(machine.getState()).toBe('idle');
+
+        expect(machine.transition('click')).toBe('idle');
+      });
+    });
+  });
+
+  describe('transitionFrom', () => {
+    describe('When the transition is valid', () => {
+      it('Should return the new state', () => {
+        const machine = StateMachine({
+          initial: 'idle',
+          states: {
+            error: {},
+            idle: {
+              click: 'loading',
+            },
+            loading: {
+              success: 'success',
+              error: 'error',
+            },
+            success: {},
+          },
+        });
+        expect(machine.getState()).toBe('idle');
+        expect(machine.transitionFrom('idle', 'click')).toBe('loading');
+      });
+    });
+
+    describe('When the transition is invalid', () => {
+      it('Should return the previous state', () => {
+        const machine = StateMachine({
+          initial: 'idle',
+          states: {
+            error: {},
+            idle: {
+              click: 'loading',
+            },
+            loading: {
+              success: 'success',
+              error: 'error',
+            },
+            success: {},
+          },
+        });
+        expect(machine.getState()).toBe('idle');
+        expect(machine.transitionFrom('idle', 'finish')).toBe('idle');
+      });
+    });
+
+    describe('When the transition is disallowed by a conditional', () => {
+      it('Should return the previous state', () => {
+        const machine = StateMachine({
+          initial: 'idle',
+          states: {
+            error: {},
+            idle: {
+              click: ['loading', () => false],
+            },
+            loading: {
+              success: 'success',
+              error: 'error',
+            },
+            success: {},
+          },
+        });
+        expect(machine.getState()).toBe('idle');
+        expect(machine.transitionFrom('idle', 'click')).toBe('idle');
+      });
+    });
+
+    describe('When the transition is allowed by a conditional', () => {
+      it('Should return the new state', () => {
+        const machine = StateMachine({
+          initial: 'idle',
+          states: {
+            error: {},
+            idle: {
+              click: ['loading', () => true],
+            },
+            loading: {
+              success: 'success',
+              error: 'error',
+            },
+            success: {},
+          },
+        });
+        expect(machine.getState()).toBe('idle');
+        expect(machine.transitionFrom('idle', 'click')).toBe('loading');
+      });
+    });
+  });
 });

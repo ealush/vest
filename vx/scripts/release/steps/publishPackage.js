@@ -2,7 +2,9 @@ const { TAG_NEXT, TAG_DEV } = require('../releaseKeywords');
 
 const exec = require('vx/exec');
 const logger = require('vx/logger');
+const opts = require('vx/opts');
 const joinTruthy = require('vx/util/joinTruthy');
+const taggedBranch = require('vx/util/taggedBranch');
 const { isReleaseBranch } = require('vx/util/taggedBranch');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
@@ -54,12 +56,6 @@ function genPublishCommand(tag) {
   return [`yarn workspace ${usePackage()} npm publish`, tag && `--tag ${tag}`];
 }
 
-function shouldPublishPreRelease(versionToUse) {
-  const [, tag] = versionToUse.split('-');
-
-  return [TAG_DEV, TAG_NEXT].includes(tag);
-}
-
 function shouldRelease(versionToUse) {
-  return isReleaseBranch || shouldPublishPreRelease(versionToUse);
+  return taggedBranch.branchAllowsRelease;
 }

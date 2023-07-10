@@ -18,7 +18,6 @@ module.exports = {
     DEVELOPMENT: 'development',
     TEST: 'test',
   },
-
   fileNames: {
     CHANGELOG: 'CHANGELOG.md',
     JEST_CONFIG: 'jest.config.js',
@@ -35,6 +34,11 @@ module.exports = {
     UMD: 'umd',
     CJS: 'cjs',
     ES: 'es',
+  },
+  release_tags: {
+    NIGHTLY: 'nightly',
+    NEXT: 'next',
+    DEV: 'dev',
   },
   vx_config: {
     VX_ALLOW_RESOLVE: 'vxAllowResolve',

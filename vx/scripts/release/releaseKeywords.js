@@ -1,7 +1,3 @@
-const TAG_NEXT = 'next';
-const TAG_DEV = 'dev';
-const TAG_NIGHTLY = 'nightly';
-
 const KEYWORD_PATCH = 'patch';
 const KEYWORD_MINOR = 'minor';
 const KEYWORD_FEAT = 'feat';
@@ -31,6 +27,4 @@ module.exports = {
   KEYWORD_PATCH,
   KEYWORDS_MAJOR,
   KEYWORDS_MINOR,
-  TAG_DEV,
-  TAG_NEXT,
 };

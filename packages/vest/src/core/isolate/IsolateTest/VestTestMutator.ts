@@ -1,21 +1,29 @@
 import { IsolateTest } from 'IsolateTest';
-import { TestAction, TestStatus } from 'IsolateTestStateMachine';
+import {
+  TestAction,
+  TestStateMachineAction,
+  TestStatus,
+  createTestStateMachine,
+} from 'IsolateTestStateMachine';
 import { TestSeverity } from 'Severity';
 import { VestTestInspector } from 'VestTestInspector';
 
+const TestStateMachine = createTestStateMachine();
+
 export class VestTestMutator {
   static setPending(test: IsolateTest) {
-    test.stateMachine.transition(TestStatus.PENDING);
+    VestTestMutator.setStatus(test, TestStatus.PENDING);
   }
 
   static fail(test: IsolateTest): void {
-    test.stateMachine.transition(
+    VestTestMutator.setStatus(
+      test,
       VestTestInspector.warns(test) ? TestStatus.WARNING : TestStatus.FAILED
     );
   }
 
   static pass(test: IsolateTest): void {
-    test.stateMachine.transition(TestStatus.PASSING);
+    VestTestMutator.setStatus(test, TestStatus.PASSING);
   }
 
   static warn(test: IsolateTest): void {
@@ -33,18 +41,26 @@ export class VestTestMutator {
     // is when we specifically skip a test with `skipWhen`, which is handled by the
     // "force" boolean flag.
     // I am not a fan of this flag, but it gets the job done.
-    test.stateMachine.transition(TestStatus.SKIPPED, force);
+    VestTestMutator.setStatus(test, TestStatus.SKIPPED, force);
   }
 
   static cancel(test: IsolateTest): void {
-    test.stateMachine.transition(TestStatus.CANCELED);
+    VestTestMutator.setStatus(test, TestStatus.CANCELED);
   }
 
   static omit(test: IsolateTest): void {
-    test.stateMachine.transition(TestStatus.OMITTED);
+    VestTestMutator.setStatus(test, TestStatus.OMITTED);
   }
 
   static reset(test: IsolateTest): void {
-    test.stateMachine.transition(TestAction.RESET);
+    VestTestMutator.setStatus(test, TestAction.RESET);
+  }
+
+  static setStatus(
+    test: IsolateTest,
+    status: TestStateMachineAction,
+    payload?: any
+  ): void {
+    test.status = TestStateMachine.transitionFrom(test.status, status, payload);
   }
 }

@@ -15,14 +15,14 @@ export enum TestAction {
   RESET = 'RESET',
 }
 
-type TAction = TestAction | TestStatus;
+export type TestStateMachineAction = TestAction | TestStatus;
 
 export function createTestStateMachine() {
-  return StateMachine<TestStatus, TAction>(machine);
+  return StateMachine<TestStatus, TestStateMachineAction>(machine);
 }
 
 /* eslint-disable sort-keys */
-const machine: TStateMachine<TestStatus, TAction> = {
+const machine: TStateMachine<TestStatus, TestStateMachineAction> = {
   initial: TestStatus.UNTESTED,
   states: {
     '*': {

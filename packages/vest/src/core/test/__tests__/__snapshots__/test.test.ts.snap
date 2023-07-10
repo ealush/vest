@@ -55,10 +55,7 @@ IsolateTest {
     "type": "Suite",
   },
   "severity": "error",
-  "stateMachine": {
-    "getState": [Function],
-    "transition": [Function],
-  },
+  "status": "PASSING",
   "testFn": [Function],
   "type": "Test",
 }
@@ -117,10 +114,7 @@ IsolateTest {
     "type": "Suite",
   },
   "severity": "error",
-  "stateMachine": {
-    "getState": [Function],
-    "transition": [Function],
-  },
+  "status": "PASSING",
   "testFn": [Function],
   "type": "Test",
 }
@@ -180,10 +174,7 @@ IsolateTest {
     "type": "Suite",
   },
   "severity": "error",
-  "stateMachine": {
-    "getState": [Function],
-    "transition": [Function],
-  },
+  "status": "PASSING",
   "testFn": [Function],
   "type": "Test",
 }
@@ -241,10 +232,7 @@ IsolateTest {
     "type": "Suite",
   },
   "severity": "error",
-  "stateMachine": {
-    "getState": [Function],
-    "transition": [Function],
-  },
+  "status": "PASSING",
   "testFn": [Function],
   "type": "Test",
 }

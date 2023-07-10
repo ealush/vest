@@ -1,7 +1,7 @@
 import { Maybe, seq } from 'vest-utils';
 import { Isolate, IsolateKey, IsolateMutator } from 'vestjs-runtime';
 
-import { createTestStateMachine } from 'IsolateTestStateMachine';
+import { TestStatus } from 'IsolateTestStateMachine';
 import { TestSeverity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestFn, AsyncTest } from 'TestTypes';
@@ -29,7 +29,7 @@ export class IsolateTest<
   id = seq();
   severity = TestSeverity.Error;
   type = VestIsolateType.Test;
-  stateMachine = createTestStateMachine();
+  status: TestStatus = TestStatus.UNTESTED;
 
   constructor({
     fieldName,

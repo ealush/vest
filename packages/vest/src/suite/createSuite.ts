@@ -13,6 +13,7 @@ import {
 } from 'SuiteResultTypes';
 import { Suite } from 'SuiteTypes';
 import { useInitVestBus } from 'VestBus';
+import { VestReconciler } from 'VestReconciler';
 import { getTypedMethods } from 'getTypedMethods';
 import { useCreateSuiteResult } from 'suiteResult';
 import { useSuiteRunResult } from 'suiteRunResult';
@@ -43,7 +44,7 @@ function createSuite<
 
   // Create a stateRef for the suite
   // It holds the suite's persisted values that may remain between runs.
-  const stateRef = useCreateVestState({ suiteName });
+  const stateRef = useCreateVestState({ suiteName, VestReconciler });
 
   function suite(...args: Parameters<T>): SuiteRunResult<F, G> {
     return SuiteContext.run(

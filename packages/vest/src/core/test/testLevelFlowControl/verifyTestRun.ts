@@ -1,9 +1,8 @@
-import { useIsOptionalFiedApplied } from 'optional';
-
 import { IsolateTest } from 'IsolateTest';
 import { VestTestMutator } from 'VestTestMutator';
 import { useShouldSkipBasedOnMode } from 'mode';
 import { useWithinActiveOmitWhen } from 'omitWhen';
+import { useIsOptionalFiedApplied } from 'optional';
 import { useIsExcludedIndividually } from 'skipWhen';
 import { useIsExcluded } from 'useIsExcluded';
 

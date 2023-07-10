@@ -1,4 +1,3 @@
-import { ErrorStrings } from 'ErrorStrings';
 import { createCascade } from 'context';
 import {
   invariant,
@@ -16,9 +15,11 @@ import {
   DynamicValue,
 } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { Isolate } from 'Isolate';
 import { IsolateInspector } from 'IsolateInspector';
 import { IsolateMutator } from 'IsolateMutator';
+import { IRecociler } from 'Reconciler';
 
 type CTXType = StateRefType & {
   historyNode: Nullable<Isolate>;
@@ -28,9 +29,10 @@ type CTXType = StateRefType & {
 };
 
 export type StateRefType = {
-  historyRoot: TinyState<Nullable<Isolate>>;
   Bus: BusType;
   appData: Record<string, any>;
+  historyRoot: TinyState<Nullable<Isolate>>;
+  Reconciler: IRecociler;
 };
 
 const PersistedContext = createCascade<CTXType>((stateRef, parentContext) => {
@@ -72,13 +74,19 @@ export function useXAppData<T = object>() {
 }
 
 export function createRef(
+  Reconciler: IRecociler,
   setter: DynamicValue<Record<string, any>>
 ): StateRefType {
   return Object.freeze({
-    historyRoot: tinyState.createTinyState<Nullable<Isolate>>(null),
     Bus: bus.createBus(),
+    Reconciler,
     appData: optionalFunctionValue(setter),
+    historyRoot: tinyState.createTinyState<Nullable<Isolate>>(null),
   });
+}
+
+export function useReconciler() {
+  return useX().stateRef.Reconciler;
 }
 
 export function persist<T extends (...args: any[]) => any>(cb: T): T {

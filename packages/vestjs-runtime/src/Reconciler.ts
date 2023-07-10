@@ -11,13 +11,10 @@ import * as VestRuntime from 'VestRuntime';
 // The problem is that it breaks the actual implementation of `Isolate` in `IsolateTest`
 // As it is not properly extending `Isolate`.
 export interface IRecociler<I = any> {
-  (currentNode: I, historyNode: I): I;
+  (currentNode: I, historyNode: I): Nullable<I>;
 }
 
-export function BaseReconciler(
-  currentNode: Isolate,
-  historyNode: Nullable<Isolate>
-): Isolate {
+function BaseReconciler(currentNode: Isolate, historyNode: Isolate): Isolate {
   if (isNullish(historyNode)) {
     return currentNode;
   }
@@ -26,7 +23,6 @@ export function BaseReconciler(
 
 export class Reconciler {
   static reconcile<Callback extends CB = CB>(
-    reconciler: IRecociler<Isolate>,
     node: Isolate,
     callback: Callback
   ): [Isolate, ReturnType<Callback>] {
@@ -45,7 +41,7 @@ export class Reconciler {
     }
 
     // const nextNode = reconciler(node, localHistoryNode);
-    const nextNode = pickNextNode(reconciler, node, localHistoryNode);
+    const nextNode = pickNextNode(node, localHistoryNode);
 
     invariant(nextNode);
 
@@ -110,7 +106,6 @@ function useRunAsNew<Callback extends CB = CB>(
 }
 
 function pickNextNode(
-  reconciler: IRecociler,
   currentNode: Isolate,
   historyNode: Nullable<Isolate>
 ): Isolate {
@@ -122,7 +117,12 @@ function pickNextNode(
     return currentNode;
   }
 
-  return reconciler(currentNode, historyNode);
+  const reconciler = VestRuntime.useReconciler();
+
+  return (
+    reconciler(currentNode, historyNode) ??
+    BaseReconciler(currentNode, historyNode)
+  );
 }
 
 function handleNoHistoryNode<I extends Isolate>(newNode: I): I {

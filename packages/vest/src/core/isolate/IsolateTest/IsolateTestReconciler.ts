@@ -1,8 +1,8 @@
+import { ErrorStrings } from 'ErrorStrings';
 import { Maybe, deferThrow, text } from 'vest-utils';
 import { IsolateInspector, Reconciler } from 'vestjs-runtime';
 import type { Isolate } from 'vestjs-runtime';
 
-import { ErrorStrings } from 'ErrorStrings';
 import type { IsolateTest } from 'IsolateTest';
 import { VestTestInspector } from 'VestTestInspector';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';

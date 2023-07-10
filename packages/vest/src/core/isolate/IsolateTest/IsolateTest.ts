@@ -1,7 +1,6 @@
 import { Maybe, seq } from 'vest-utils';
 import { Isolate, IsolateKey, IsolateMutator } from 'vestjs-runtime';
 
-import { IsolateTestReconciler } from 'IsolateTestReconciler';
 import { createTestStateMachine } from 'IsolateTestStateMachine';
 import { TestSeverity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
@@ -31,8 +30,6 @@ export class IsolateTest<
   severity = TestSeverity.Error;
   type = VestIsolateType.Test;
   stateMachine = createTestStateMachine();
-
-  static reconciler = IsolateTestReconciler;
 
   constructor({
     fieldName,

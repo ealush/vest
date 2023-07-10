@@ -1,7 +1,7 @@
 import { CB, Nullable } from 'vest-utils';
 
 import { IsolateMutator } from 'IsolateMutator';
-import { BaseReconciler, IRecociler, Reconciler } from 'Reconciler';
+import { Reconciler } from 'Reconciler';
 import * as VestRuntime from 'VestRuntime';
 
 export type IsolateKey = Nullable<string>;
@@ -17,8 +17,6 @@ export class Isolate<_D = any> {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
   constructor(_data?: _D) {}
 
-  static reconciler: IRecociler = BaseReconciler;
-
   static create<I extends Isolate, Callback extends CB = CB>(
     callback: Callback,
     data?: any
@@ -28,7 +26,6 @@ export class Isolate<_D = any> {
     const newCreatedNode = IsolateMutator.setParent(new this(data), parent);
 
     const [nextIsolateChild, output] = Reconciler.reconcile(
-      this.reconciler,
       newCreatedNode,
       callback
     );

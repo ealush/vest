@@ -7,7 +7,7 @@ import {
   seq,
   tinyState,
 } from 'vest-utils';
-import { VestRuntime } from 'vestjs-runtime';
+import { IRecociler, VestRuntime } from 'vestjs-runtime';
 
 import {
   SuiteName,
@@ -31,9 +31,11 @@ const suiteResultCache = cache<SuiteResult<TFieldName, TGroupName>>();
 
 export function useCreateVestState({
   suiteName,
+  VestReconciler,
 }: {
   suiteName?: SuiteName;
-} = {}) {
+  VestReconciler: IRecociler;
+}) {
   const stateRef: StateExtra = {
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
@@ -42,7 +44,7 @@ export function useCreateVestState({
     suiteResultCache,
   };
 
-  return VestRuntime.createRef(stateRef);
+  return VestRuntime.createRef(VestReconciler, stateRef);
 }
 
 function useX() {

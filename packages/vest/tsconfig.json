@@ -77,6 +77,7 @@
       ],
       "matchingGroupName": ["./src/core/test/helpers/matchingGroupName.ts"],
       "matchingFieldName": ["./src/core/test/helpers/matchingFieldName.ts"],
+      "VestReconciler": ["./src/core/isolate/VestReconciler.ts"],
       "VestIsolateType": ["./src/core/isolate/VestIsolateType.ts"],
       "isSameProfileTest": [
         "./src/core/isolate/IsolateTest/isSameProfileTest.ts"

@@ -17,7 +17,7 @@ export type TIsolate = {
 
 function baseIsolate(type: string, payload: Record<string, any>): TIsolate {
   return {
-    children: null,
+    children: [],
     key: null,
     keys: {},
     output: null,

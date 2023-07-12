@@ -1,8 +1,13 @@
 import { CB } from 'vest-utils';
 
-import { Isolate } from 'Isolate';
+import { TIsolate, createIsolate } from 'Isolate';
 import { StateRefType, useAvailableRoot } from 'VestRuntime';
 import { VestRuntime } from 'vestjs-runtime';
+
+enum IsolateType {
+  Isolate = 'Isolate',
+  Child = 'Child',
+}
 
 describe('Isolate', () => {
   let stateRef: StateRefType;
@@ -11,25 +16,25 @@ describe('Isolate', () => {
     stateRef = VestRuntime.createRef({});
   });
 
-  describe('Isolate.create', () => {
+  describe('createIsolate', () => {
     it('should return an instance of Isolate', () => {
       const isolate = withRunTime(() => {
-        return Isolate.create(() => {});
+        return createIsolate(IsolateType.Isolate, () => {});
       });
-      expect(isolate).toBeInstanceOf(Isolate);
+      expect(isolate).toBeInstanceOf(Object);
     });
 
     it('Should run the passed callback', () => {
       const spy = jest.fn();
       withRunTime(() => {
-        Isolate.create(spy);
+        createIsolate(IsolateType.Isolate, spy);
       });
       expect(spy).toHaveBeenCalled();
     });
 
     it('Should store the callback result in the output property', () => {
       const isolate = withRunTime(() => {
-        return Isolate.create(() => {
+        return createIsolate(IsolateType.Isolate, () => {
           return 'foo';
         });
       });
@@ -39,14 +44,14 @@ describe('Isolate', () => {
     describe('When there is no parent', () => {
       it('Parent should be null', () => {
         const isolate = withRunTime(() => {
-          return Isolate.create(() => {});
+          return createIsolate(IsolateType.Isolate, () => {});
         });
         expect(isolate.parent).toBeNull();
       });
 
       it('Should set the history root to the current isolate', () => {
         const isolate = withRunTime(() => {
-          const isolate = Isolate.create(() => {});
+          const isolate = createIsolate(IsolateType.Isolate, () => {});
 
           expect(useAvailableRoot()).toBe(isolate);
 
@@ -60,12 +65,12 @@ describe('Isolate', () => {
     describe('When there is a parent', () => {
       it('Should add the isolate to the parent children', () => {
         const [parent, children] = withRunTime(() => {
-          const children = [] as Isolate[];
-          const parent = Isolate.create(() => {
-            children.push(Isolate.create(() => {}));
-            children.push(Isolate.create(() => {}));
-            children.push(Isolate.create(() => {}));
-            children.push(Isolate.create(() => {}));
+          const children = [] as TIsolate[];
+          const parent = createIsolate(IsolateType.Isolate, () => {
+            children.push(createIsolate(IsolateType.Child, () => {}));
+            children.push(createIsolate(IsolateType.Child, () => {}));
+            children.push(createIsolate(IsolateType.Child, () => {}));
+            children.push(createIsolate(IsolateType.Child, () => {}));
           });
           return [parent, children];
         });
@@ -74,9 +79,9 @@ describe('Isolate', () => {
 
       it('Should set the parent property', () => {
         const [parent, child] = withRunTime(() => {
-          let child = {} as Isolate;
-          const parent = Isolate.create(() => {
-            child = Isolate.create(() => {});
+          let child = {} as TIsolate;
+          const parent = createIsolate(IsolateType.Isolate, () => {
+            child = createIsolate(IsolateType.Child, () => null);
           });
 
           return [parent, child];

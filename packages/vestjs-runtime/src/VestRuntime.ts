@@ -1,3 +1,4 @@
+import { ErrorStrings } from 'ErrorStrings';
 import { createCascade } from 'context';
 import {
   invariant,
@@ -15,23 +16,22 @@ import {
   DynamicValue,
 } from 'vest-utils';
 
-import { ErrorStrings } from 'ErrorStrings';
-import { Isolate } from 'Isolate';
+import { TIsolate } from 'Isolate';
 import { IsolateInspector } from 'IsolateInspector';
 import { IsolateMutator } from 'IsolateMutator';
 import { IRecociler } from 'Reconciler';
 
 type CTXType = StateRefType & {
-  historyNode: Nullable<Isolate>;
-  runtimeNode: Nullable<Isolate>;
-  runtimeRoot: Nullable<Isolate>;
+  historyNode: Nullable<TIsolate>;
+  runtimeNode: Nullable<TIsolate>;
+  runtimeRoot: Nullable<TIsolate>;
   stateRef: StateRefType;
 };
 
 export type StateRefType = {
   Bus: BusType;
   appData: Record<string, any>;
-  historyRoot: TinyState<Nullable<Isolate>>;
+  historyRoot: TinyState<Nullable<TIsolate>>;
   Reconciler: IRecociler;
 };
 
@@ -81,7 +81,7 @@ export function createRef(
     Bus: bus.createBus(),
     Reconciler,
     appData: optionalFunctionValue(setter),
-    historyRoot: tinyState.createTinyState<Nullable<Isolate>>(null),
+    historyRoot: tinyState.createTinyState<Nullable<TIsolate>>(null),
   });
 }
 
@@ -108,7 +108,7 @@ export function useHistoryNode() {
   return useX().historyNode;
 }
 
-export function addNodeToHistory(node: Isolate): void {
+export function addNodeToHistory(node: TIsolate): void {
   const parent = useIsolate();
   if (parent) {
     useSetNextIsolateChild(node);
@@ -119,11 +119,11 @@ export function addNodeToHistory(node: Isolate): void {
   IsolateMutator.setParent(node, parent);
 }
 
-export function useSetHistory(history: Isolate) {
+export function useSetHistory(history: TIsolate) {
   const [, setHistoryRoot] = useHistoryRoot();
   setHistoryRoot(history);
 }
-export function useHistoryKey(key?: Nullable<string>): Nullable<Isolate> {
+export function useHistoryKey(key?: Nullable<string>): Nullable<TIsolate> {
   if (isNullish(key)) {
     return null;
   }
@@ -142,14 +142,14 @@ export function useCurrentCursor() {
 export function useRuntimeRoot() {
   return useX().runtimeRoot;
 }
-export function useSetNextIsolateChild(child: Isolate): void {
+export function useSetNextIsolateChild(child: TIsolate): void {
   const currentIsolate = useIsolate();
 
   invariant(currentIsolate, ErrorStrings.NO_ACTIVE_ISOLATE);
 
   IsolateMutator.addChild(currentIsolate, child);
 }
-export function useSetIsolateKey(key: Nullable<string>, value: Isolate): void {
+export function useSetIsolateKey(key: Nullable<string>, value: TIsolate): void {
   if (!key) {
     return;
   }
@@ -166,7 +166,7 @@ export function useSetIsolateKey(key: Nullable<string>, value: Isolate): void {
 
   deferThrow(text(ErrorStrings.ENCOUNTERED_THE_SAME_KEY_TWICE, { key }));
 }
-export function useAvailableRoot<I extends Isolate = Isolate>(): I {
+export function useAvailableRoot<I extends TIsolate = TIsolate>(): I {
   const root = useRuntimeRoot();
 
   if (root) {

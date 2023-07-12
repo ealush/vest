@@ -1,6 +1,6 @@
 import wait from 'wait';
 
-import { asVestTest } from '../../../../testUtils/asVestTest';
+import { asVestTest } from '../../../testUtils/asVestTest';
 
 import { VestTestInspector } from 'VestTestInspector';
 import * as vest from 'vest';

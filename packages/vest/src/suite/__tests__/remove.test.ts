@@ -1,7 +1,7 @@
 import { Modes } from 'Modes';
 import wait from 'wait';
 
-import { dummyTest } from '../../../testUtils/testDummy';
+import { dummyTest } from '../../testUtils/testDummy';
 
 import * as vest from 'vest';
 

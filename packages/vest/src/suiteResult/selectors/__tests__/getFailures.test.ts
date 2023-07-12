@@ -1,4 +1,4 @@
-import { dummyTest } from '../../../../testUtils/testDummy';
+import { dummyTest } from '../../../testUtils/testDummy';
 
 import { Modes } from 'Modes';
 import * as vest from 'vest';

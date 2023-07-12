@@ -2,7 +2,7 @@ import { enforce } from 'n4s';
 import { isArray, isStringValue, asArray, hasOwnProperty } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
-import type { IsolateSuite } from 'IsolateSuite';
+import { SuiteOptionalFields, TIsolateSuite } from 'IsolateSuite';
 import { OptionalFieldTypes, OptionalsInput } from 'OptionalTypes';
 import { useSuiteParams } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
@@ -11,7 +11,7 @@ import { TFieldName } from 'SuiteResultTypes';
 export function optional<F extends TFieldName>(
   optionals: OptionalsInput<F>
 ): void {
-  const suiteRoot = VestRuntime.useAvailableRoot<IsolateSuite>();
+  const suiteRoot = VestRuntime.useAvailableRoot<TIsolateSuite>();
 
   const suiteParams = useSuiteParams();
   const dataObject = suiteParams?.[0] ?? {};
@@ -32,7 +32,7 @@ export function optional<F extends TFieldName>(
   // AUTO case (field name)
   if (isArray(optionals) || isStringValue(optionals)) {
     asArray(optionals).forEach(optionalField => {
-      suiteRoot.setOptionalField(optionalField, () => ({
+      SuiteOptionalFields.setOptionalField(suiteRoot, optionalField, () => ({
         type: OptionalFieldTypes.AUTO,
         applied: hasOwnProperty(dataObject, optionalField)
           ? enforce.isBlank().test(dataObject?.[optionalField])
@@ -45,7 +45,7 @@ export function optional<F extends TFieldName>(
     for (const field in optionals) {
       const value = optionals[field];
 
-      suiteRoot.setOptionalField(field, () => ({
+      SuiteOptionalFields.setOptionalField(suiteRoot, field, () => ({
         type: OptionalFieldTypes.CUSTOM_LOGIC,
         rule: value,
         applied: enforce.isBlank().test(value) || value === true,
@@ -59,8 +59,9 @@ export function useIsOptionalFiedApplied(fieldName?: TFieldName) {
     return false;
   }
 
+  const root = VestRuntime.useAvailableRoot<TIsolateSuite>();
+
   return (
-    VestRuntime.useAvailableRoot<IsolateSuite>()?.getOptionalField(fieldName)
-      ?.applied ?? false
+    SuiteOptionalFields.getOptionalField(root, fieldName)?.applied ?? false
   );
 }

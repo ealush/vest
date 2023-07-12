@@ -1,7 +1,7 @@
 import { isStringValue, invariant, optionalFunctionValue } from 'vest-utils';
 
 import { ErrorStrings } from 'ErrorStrings';
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import { useInclusion } from 'SuiteContext';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TDraftCondition } from 'getTypedMethods';
@@ -49,7 +49,7 @@ export function include<F extends TFieldName, G extends TGroupName>(
 
     // This callback will run as part of the "isExcluded" series of checks
     inclusion[fieldName] = function isIncluded(
-      currentNode: IsolateTest
+      currentNode: TIsolateTest
     ): boolean {
       if (isStringValue(condition)) {
         return useHasOnliedTests(currentNode, condition);

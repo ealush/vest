@@ -22,6 +22,36 @@
     "vest-utils": "^0.2.0"
   },
   "exports": {
+    "./test-utils": {
+      "production": {
+        "types": "./types/test-utils.d.ts",
+        "browser": "./dist/es/test-utils.production.js",
+        "umd": "./dist/umd/test-utils.production.js",
+        "import": "./dist/es/test-utils.production.js",
+        "require": "./dist/cjs/test-utils.production.js",
+        "node": "./dist/cjs/test-utils.production.js",
+        "module": "./dist/es/test-utils.production.js",
+        "default": "./dist/cjs/test-utils.production.js"
+      },
+      "development": {
+        "types": "./types/test-utils.d.ts",
+        "browser": "./dist/es/test-utils.development.js",
+        "umd": "./dist/umd/test-utils.development.js",
+        "import": "./dist/es/test-utils.development.js",
+        "require": "./dist/cjs/test-utils.development.js",
+        "node": "./dist/cjs/test-utils.development.js",
+        "module": "./dist/es/test-utils.development.js",
+        "default": "./dist/cjs/test-utils.development.js"
+      },
+      "types": "./types/test-utils.d.ts",
+      "browser": "./dist/es/test-utils.production.js",
+      "umd": "./dist/umd/test-utils.production.js",
+      "import": "./dist/es/test-utils.production.js",
+      "require": "./dist/cjs/test-utils.production.js",
+      "node": "./dist/cjs/test-utils.production.js",
+      "module": "./dist/es/test-utils.production.js",
+      "default": "./dist/cjs/test-utils.production.js"
+    },
     ".": {
       "development": {
         "types": "./types/vestjs-runtime.d.ts",

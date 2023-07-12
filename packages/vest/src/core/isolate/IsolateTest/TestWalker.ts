@@ -1,14 +1,14 @@
 import { Nullable } from 'vest-utils';
-import { Walker, VestRuntime, Isolate } from 'vestjs-runtime';
+import { Walker, VestRuntime, TIsolate } from 'vestjs-runtime';
 
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { VestTestInspector } from 'VestTestInspector';
 import { VestTestMutator } from 'VestTestMutator';
 import { castIsolateTest, isIsolateTest, isIsolateTestX } from 'isIsolateTest';
 import matchingFieldName from 'matchingFieldName';
 
-type MaybeRoot = Nullable<Isolate>;
+type MaybeRoot = Nullable<TIsolate>;
 
 export class TestWalker {
   static defaultRoot = VestRuntime.useAvailableRoot;
@@ -19,7 +19,7 @@ export class TestWalker {
   }
 
   static someIncompleteTests(
-    predicate: (test: IsolateTest) => boolean,
+    predicate: (test: TIsolateTest) => boolean,
     root: MaybeRoot = TestWalker.defaultRoot()
   ): boolean {
     if (!root) return false;
@@ -35,7 +35,7 @@ export class TestWalker {
   }
 
   static someTests(
-    predicate: (test: IsolateTest) => boolean,
+    predicate: (test: TIsolateTest) => boolean,
     root: MaybeRoot = TestWalker.defaultRoot()
   ): boolean {
     if (!root) return false;
@@ -51,7 +51,7 @@ export class TestWalker {
   }
 
   static everyTest(
-    predicate: (test: IsolateTest) => boolean,
+    predicate: (test: TIsolateTest) => boolean,
     root: MaybeRoot = TestWalker.defaultRoot()
   ): boolean {
     if (!root) return false;
@@ -67,7 +67,7 @@ export class TestWalker {
   }
 
   static walkTests<F extends TFieldName, G extends TGroupName>(
-    callback: (test: IsolateTest<F, G>, breakout: () => void) => void,
+    callback: (test: TIsolateTest<F, G>, breakout: () => void) => void,
     root: MaybeRoot = TestWalker.defaultRoot()
   ): void {
     if (!root) return;
@@ -90,7 +90,7 @@ export class TestWalker {
   }
 
   static pluckTests(
-    predicate: (test: IsolateTest) => boolean,
+    predicate: (test: TIsolateTest) => boolean,
     root: MaybeRoot = TestWalker.defaultRoot()
   ): void {
     if (!root) return;

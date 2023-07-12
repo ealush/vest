@@ -1,6 +1,6 @@
 import { either } from 'vest-utils';
 
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import { Severity } from 'Severity';
 import { VestTestInspector } from 'VestTestInspector';
 
@@ -9,7 +9,7 @@ import { VestTestInspector } from 'VestTestInspector';
  */
 export function nonMatchingSeverityProfile(
   severity: Severity,
-  testObject: IsolateTest
+  testObject: TIsolateTest
 ): boolean {
   return either(
     severity === Severity.WARNINGS,

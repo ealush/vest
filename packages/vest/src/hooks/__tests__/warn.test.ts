@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { asVestTest } from '../../../testUtils/asVestTest';
+import { asVestTest } from '../../testUtils/asVestTest';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { VestTestInspector } from 'VestTestInspector';

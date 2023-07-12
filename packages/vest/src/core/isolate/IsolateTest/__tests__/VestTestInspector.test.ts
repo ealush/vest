@@ -1,16 +1,15 @@
-import { VestTestMutator } from 'VestTestMutator';
-
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import { TestStatus } from 'IsolateTestStateMachine';
 import { VestTestInspector } from 'VestTestInspector';
+import { VestTestMutator } from 'VestTestMutator';
+import { mockIsolateTest } from 'vestMocks';
 
 describe('VestTestInspector', () => {
-  let testObject: IsolateTest;
+  let testObject: TIsolateTest;
 
   beforeEach(() => {
-    testObject = new IsolateTest({
+    testObject = mockIsolateTest({
       fieldName: 'field_name',
-      testFn: jest.fn(),
     });
   });
   describe('warns', () => {
@@ -166,26 +165,17 @@ describe('VestTestInspector', () => {
       VestTestMutator.fail(testObject);
       expect(VestTestInspector.isTested(testObject)).toBe(true);
 
-      testObject = new IsolateTest({
-        fieldName: 'field_name',
-        testFn: jest.fn(),
-      });
+      testObject = mockIsolateTest({ fieldName: 'f' });
       VestTestMutator.warn(testObject);
       VestTestMutator.fail(testObject);
       expect(VestTestInspector.isTested(testObject)).toBe(true);
 
-      testObject = new IsolateTest({
-        fieldName: 'field_name',
-        testFn: jest.fn(),
-      });
+      testObject = mockIsolateTest({ fieldName: 'f' });
       VestTestMutator.pass(testObject);
 
       expect(VestTestInspector.isTested(testObject)).toBe(true);
 
-      testObject = new IsolateTest({
-        fieldName: 'field_name',
-        testFn: jest.fn(),
-      });
+      testObject = mockIsolateTest({ fieldName: 'f' });
       VestTestMutator.warn(testObject);
       VestTestMutator.pass(testObject);
       expect(VestTestInspector.isTested(testObject)).toBe(true);
@@ -193,31 +183,19 @@ describe('VestTestInspector', () => {
 
     it('Should return false when the test is untested', () => {
       expect(VestTestInspector.isTested(testObject)).toBe(false);
-      testObject = new IsolateTest({
-        fieldName: 'f',
-        testFn: jest.fn(),
-      });
+      testObject = mockIsolateTest({ fieldName: 'f' });
       VestTestMutator.omit(testObject);
       expect(VestTestInspector.isTested(testObject)).toBe(false);
 
-      testObject = new IsolateTest({
-        fieldName: 'f',
-        testFn: jest.fn(),
-      });
+      testObject = mockIsolateTest({ fieldName: 'f' });
       VestTestMutator.skip(testObject);
       expect(VestTestInspector.isTested(testObject)).toBe(false);
 
-      testObject = new IsolateTest({
-        fieldName: 'f',
-        testFn: jest.fn(),
-      });
+      testObject = mockIsolateTest({ fieldName: 'f' });
       VestTestMutator.setPending(testObject);
       expect(VestTestInspector.isTested(testObject)).toBe(false);
 
-      testObject = new IsolateTest({
-        fieldName: 'f',
-        testFn: jest.fn(),
-      });
+      testObject = mockIsolateTest({ fieldName: 'f' });
       VestTestMutator.cancel(testObject);
       expect(VestTestInspector.isTested(testObject)).toBe(false);
     });
@@ -231,10 +209,7 @@ describe('VestTestInspector', () => {
 
     it('Should return true for an untetsted test', () => {
       expect(VestTestInspector.awaitsResolution(testObject)).toBe(true);
-      testObject = new IsolateTest({
-        fieldName: 'f',
-        testFn: jest.fn(),
-      });
+      testObject = mockIsolateTest({ fieldName: 'f' });
     });
 
     it('Should return true for a pending test', () => {
@@ -245,10 +220,7 @@ describe('VestTestInspector', () => {
     it('Should retrun false for a tested test', () => {
       VestTestMutator.fail(testObject);
       expect(VestTestInspector.awaitsResolution(testObject)).toBe(false);
-      testObject = new IsolateTest({
-        fieldName: 'f',
-        testFn: jest.fn(),
-      });
+      testObject = mockIsolateTest({ fieldName: 'f' });
       VestTestMutator.pass(testObject);
       expect(VestTestInspector.awaitsResolution(testObject)).toBe(false);
     });
@@ -270,20 +242,14 @@ describe('VestTestInspector', () => {
       expect(
         VestTestInspector.statusEquals(testObject, TestStatus.FAILED)
       ).toBe(true);
-      testObject = new IsolateTest({
-        fieldName: 'f',
-        testFn: jest.fn(),
-      });
+      testObject = mockIsolateTest({ fieldName: 'f' });
       VestTestMutator.warn(testObject);
       VestTestMutator.fail(testObject);
       expect(
         VestTestInspector.statusEquals(testObject, TestStatus.WARNING)
       ).toBe(true);
 
-      testObject = new IsolateTest({
-        fieldName: 'f',
-        testFn: jest.fn(),
-      });
+      testObject = mockIsolateTest({ fieldName: 'f' });
       VestTestMutator.pass(testObject);
       expect(
         VestTestInspector.statusEquals(testObject, TestStatus.PASSING)

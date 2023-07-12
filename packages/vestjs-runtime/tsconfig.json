@@ -12,6 +12,7 @@
       "Reconciler": ["./src/Reconciler.ts"],
       "IsolateWalker": ["./src/IsolateWalker.ts"],
       "Bus": ["./src/Bus.ts"],
+      "test-utils": ["./src/exports/test-utils.ts"],
       "ErrorStrings": ["./src/errors/ErrorStrings.ts"],
       "isolateInterfaces": ["./src/Isolate/isolateInterfaces.ts"],
       "IsolateSelectors": ["./src/Isolate/IsolateSelectors.ts"],

@@ -1,35 +1,35 @@
 import { Nullable, invariant, isNullish } from 'vest-utils';
 
-import { Isolate } from 'Isolate';
+import { TIsolate } from 'Isolate';
 
 export class IsolateMutator {
-  static setParent(isolate: Isolate, parent: Nullable<Isolate>): Isolate {
+  static setParent(isolate: TIsolate, parent: Nullable<TIsolate>): TIsolate {
     isolate.parent = parent;
     return isolate;
   }
 
-  static saveOutput(isolate: Isolate, output: any): Isolate {
+  static saveOutput(isolate: TIsolate, output: any): TIsolate {
     isolate.output = output;
     return isolate;
   }
 
-  static setKey(isolate: Isolate, key: Nullable<string>): Isolate {
+  static setKey(isolate: TIsolate, key: Nullable<string>): TIsolate {
     isolate.key = key;
     return isolate;
   }
 
-  static addChild(isolate: Isolate, child: Isolate): void {
+  static addChild(isolate: TIsolate, child: TIsolate): void {
     invariant(isolate.children);
     isolate.children.push(child);
     IsolateMutator.setParent(child, isolate);
   }
 
-  static removeChild(isolate: Isolate, node: Isolate): void {
+  static removeChild(isolate: TIsolate, node: TIsolate): void {
     isolate.children =
       isolate.children?.filter(child => child !== node) ?? null;
   }
 
-  static slice(isolate: Isolate, at: number): void {
+  static slice(isolate: TIsolate, at: number): void {
     if (isNullish(isolate.children)) {
       return;
     }

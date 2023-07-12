@@ -4,6 +4,7 @@ import { Isolate } from 'vestjs-runtime';
 
 import { SuiteContext, useOmitted } from 'SuiteContext';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { VestIsolateType } from 'VestIsolateType';
 import { TDraftCondition } from 'getTypedMethods';
 import { useCreateSuiteResult } from 'suiteResult';
 
@@ -21,7 +22,7 @@ export function omitWhen<F extends TFieldName, G extends TGroupName>(
   conditional: TDraftCondition<F, G>,
   callback: CB
 ): void {
-  Isolate.create(() => {
+  Isolate.create(VestIsolateType.OmitWhen, () => {
     SuiteContext.run(
       {
         omitted:

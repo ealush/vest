@@ -1,76 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test Vest's \`test\` function test params creates a test with a message and with a key 1`] = `
-IsolateTest {
-  "children": null,
-  "fieldName": "field_name",
-  "id": "23",
-  "key": "keyboardcat",
-  "keys": {},
-  "message": "failure message",
-  "output": undefined,
-  "parent": IsolateSuite {
-    "children": [
-      [Circular],
-    ],
-    "key": null,
-    "keys": {
-      "keyboardcat": [Circular],
-    },
-    "optional": {},
-    "output": {
-      "done": [Function],
-      "errorCount": 0,
-      "errors": [],
-      "getError": [Function],
-      "getErrors": [Function],
-      "getErrorsByGroup": [Function],
-      "getWarning": [Function],
-      "getWarnings": [Function],
-      "getWarningsByGroup": [Function],
-      "groups": {},
-      "hasErrors": [Function],
-      "hasErrorsByGroup": [Function],
-      "hasWarnings": [Function],
-      "hasWarningsByGroup": [Function],
-      "isValid": [Function],
-      "isValidByGroup": [Function],
-      "suiteName": undefined,
-      "testCount": 1,
-      "tests": {
-        "field_name": SummaryBase {
-          "errorCount": 0,
-          "errors": [],
-          "testCount": 1,
-          "valid": true,
-          "warnCount": 0,
-          "warnings": [],
-        },
-      },
-      "valid": true,
-      "warnCount": 0,
-      "warnings": [],
-    },
-    "parent": null,
-    "type": "Suite",
-  },
-  "severity": "error",
-  "status": "PASSING",
-  "testFn": [Function],
-  "type": "Test",
-}
-`;
-
 exports[`Test Vest's \`test\` function test params creates a test without a key 1`] = `
-IsolateTest {
-  "children": null,
+{
+  "children": [],
   "fieldName": "field_name",
   "id": "19",
   "key": null,
   "keys": {},
   "message": "failure message",
   "output": undefined,
-  "parent": IsolateSuite {
+  "parent": {
     "children": [
       [Circular],
     ],
@@ -117,18 +56,19 @@ IsolateTest {
   "status": "PASSING",
   "testFn": [Function],
   "type": "Test",
+  "valueOf": [Function],
 }
 `;
 
 exports[`Test Vest's \`test\` function test params creates a test without a message and with a key 1`] = `
-IsolateTest {
-  "children": null,
+{
+  "children": [],
   "fieldName": "field_name",
   "id": "21",
   "key": "keyboardcat",
   "keys": {},
   "output": undefined,
-  "parent": IsolateSuite {
+  "parent": {
     "children": [
       [Circular],
     ],
@@ -177,18 +117,19 @@ IsolateTest {
   "status": "PASSING",
   "testFn": [Function],
   "type": "Test",
+  "valueOf": [Function],
 }
 `;
 
 exports[`Test Vest's \`test\` function test params creates a test without a message and without a key 1`] = `
-IsolateTest {
-  "children": null,
+{
+  "children": [],
   "fieldName": "field_name",
   "id": "17",
   "key": null,
   "keys": {},
   "output": undefined,
-  "parent": IsolateSuite {
+  "parent": {
     "children": [
       [Circular],
     ],
@@ -235,5 +176,6 @@ IsolateTest {
   "status": "PASSING",
   "testFn": [Function],
   "type": "Test",
+  "valueOf": [Function],
 }
 `;

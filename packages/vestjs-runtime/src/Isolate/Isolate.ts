@@ -1,4 +1,4 @@
-import { CB, Nullable } from 'vest-utils';
+import { CB, Maybe, Nullable } from 'vest-utils';
 
 import { IsolateMutator } from 'IsolateMutator';
 import { Reconciler } from 'Reconciler';
@@ -6,24 +6,28 @@ import * as VestRuntime from 'VestRuntime';
 
 export type IsolateKey = Nullable<string>;
 
-export class Isolate<_D = any> {
-  children: Nullable<Isolate[]> = [];
-  keys: Record<string, Isolate> = {};
-  parent: Nullable<Isolate> = null;
+export type TIsolate = {
+  key: IsolateKey;
+  parent: Nullable<TIsolate>;
+  children: Nullable<TIsolate[]>;
   output: any;
-  key: IsolateKey = null;
-  type = 'Isolate';
+  type: string;
+  keys: Record<string, TIsolate>;
+};
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-  constructor(_data?: _D) {}
-
-  static create<I extends Isolate, Callback extends CB = CB>(
-    callback: Callback,
-    data?: any
-  ): I {
+export class Isolate {
+  static create<Payload extends Record<string, any>>(
+    type: string,
+    callback: CB,
+    payload?: Maybe<Payload>,
+    key?: IsolateKey
+  ): TIsolate & Payload {
     const parent = VestRuntime.useIsolate();
 
-    const newCreatedNode = IsolateMutator.setParent(new this(data), parent);
+    const newCreatedNode = IsolateMutator.setParent(
+      baseIsolate(type, payload, key),
+      parent
+    );
 
     const [nextIsolateChild, output] = Reconciler.reconcile(
       newCreatedNode,
@@ -34,6 +38,31 @@ export class Isolate<_D = any> {
 
     VestRuntime.addNodeToHistory(nextIsolateChild);
 
-    return nextIsolateChild as I;
+    return nextIsolateChild as TIsolate & Payload;
   }
+
+  static createWithKey<Payload extends Record<string, any>>(
+    type: string,
+    key: IsolateKey,
+    callback: CB,
+    payload?: Maybe<Payload>
+  ): TIsolate & Payload {
+    return Isolate.create(type, callback, payload, key);
+  }
+}
+
+function baseIsolate(
+  type: string,
+  payload: Maybe<Record<string, any>> = undefined,
+  key: IsolateKey = null
+): TIsolate {
+  return {
+    children: [],
+    keys: {},
+    output: null,
+    parent: null,
+    type,
+    ...payload,
+    key,
+  };
 }

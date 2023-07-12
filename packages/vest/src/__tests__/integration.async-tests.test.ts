@@ -1,9 +1,9 @@
+import { TTestSuite } from 'testUtils/TVestMock';
 import wait from 'wait';
 
-import { TestPromise } from '../../testUtils/testPromise';
+import { TestPromise } from '../testUtils/testPromise';
 
 import { Modes } from 'Modes';
-import { TTestSuite } from 'testUtils/TVestMock';
 import * as vest from 'vest';
 
 function genSuite() {

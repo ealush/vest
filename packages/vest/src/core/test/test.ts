@@ -3,7 +3,7 @@ import { Bus, IsolateKey } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
 import { ErrorStrings } from 'ErrorStrings';
-import { IsolateTest } from 'IsolateTest';
+import { IsolateTest, TIsolateTest } from 'IsolateTest';
 import { useGroupName } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
@@ -14,19 +14,19 @@ function vestTest<F extends TFieldName>(
   fieldName: F,
   message: string,
   cb: TestFn
-): IsolateTest;
-function vestTest<F extends TFieldName>(fieldName: F, cb: TestFn): IsolateTest;
+): TIsolateTest;
+function vestTest<F extends TFieldName>(fieldName: F, cb: TestFn): TIsolateTest;
 function vestTest<F extends TFieldName>(
   fieldName: F,
   message: string,
   cb: TestFn,
   key: IsolateKey
-): IsolateTest;
+): TIsolateTest;
 function vestTest<F extends TFieldName>(
   fieldName: F,
   cb: TestFn,
   key: IsolateKey
-): IsolateTest;
+): TIsolateTest;
 // @vx-allow use-use
 function vestTest<F extends TFieldName>(
   fieldName: F,
@@ -35,7 +35,7 @@ function vestTest<F extends TFieldName>(
     | [cb: TestFn]
     | [message: string, cb: TestFn, key: IsolateKey]
     | [cb: TestFn, key: IsolateKey]
-): IsolateTest {
+): TIsolateTest {
   const [message, testFn, key] = (
     isFunction(args[1]) ? args : [undefined, ...args]
   ) as [string, TestFn, IsolateKey];
@@ -49,7 +49,7 @@ function vestTest<F extends TFieldName>(
   // This invalidates the suite cache.
   Bus.useEmit(Events.TEST_RUN_STARTED);
 
-  return IsolateTest.create<IsolateTest>(useAttemptRunTest, testObjectInput);
+  return IsolateTest(useAttemptRunTest, testObjectInput);
 }
 
 export const test = assign(vestTest, {

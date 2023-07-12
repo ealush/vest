@@ -1,4 +1,4 @@
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import { Severity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
@@ -43,7 +43,7 @@ export function hasGroupFailuresByTestObjects(
  * Determines whether a certain test profile has failures.
  */
 export function hasFailuresByTestObject(
-  testObject: IsolateTest,
+  testObject: TIsolateTest,
   severityKey: Severity,
   fieldName?: TFieldName
 ): boolean {

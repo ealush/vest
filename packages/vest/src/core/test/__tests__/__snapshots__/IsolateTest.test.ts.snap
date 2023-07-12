@@ -1,33 +1,37 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`IsolateTest TestObject constructor 1`] = `
-IsolateTest {
-  "children": null,
+{
+  "children": [],
   "fieldName": "unicycle",
   "id": "0",
   "key": null,
   "keys": {},
   "message": "I am Root.",
+  "output": null,
   "parent": null,
   "severity": "error",
   "status": "UNTESTED",
   "testFn": [MockFunction],
   "type": "Test",
+  "valueOf": [Function],
 }
 `;
 
 exports[`IsolateTest testObject.warn Should mark the test as warning 1`] = `
-IsolateTest {
-  "children": null,
+{
+  "children": [],
   "fieldName": "unicycle",
   "id": "102",
   "key": null,
   "keys": {},
   "message": "I am Root.",
+  "output": null,
   "parent": null,
   "severity": "warning",
   "status": "UNTESTED",
   "testFn": [MockFunction],
   "type": "Test",
+  "valueOf": [Function],
 }
 `;

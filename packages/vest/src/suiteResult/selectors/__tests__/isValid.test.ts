@@ -1,8 +1,8 @@
+import { TTestSuite } from 'testUtils/TVestMock';
 import wait from 'wait';
 
-import { TestPromise } from '../../../../testUtils/testPromise';
+import { TestPromise } from '../../../testUtils/testPromise';
 
-import { TTestSuite } from 'testUtils/TVestMock';
 import { test, optional, create, skipWhen, warn, skip, only } from 'vest';
 
 describe('isValid', () => {

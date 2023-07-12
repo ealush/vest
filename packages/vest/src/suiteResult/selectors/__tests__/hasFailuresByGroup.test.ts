@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { dummyTest } from '../../../../testUtils/testDummy';
+import { dummyTest } from '../../../testUtils/testDummy';
 
 import { TTestSuite } from 'testUtils/TVestMock';
 import * as vest from 'vest';

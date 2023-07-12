@@ -1,6 +1,6 @@
 import { Maybe } from 'vest-utils';
 
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { WithFieldName } from 'TestTypes';
 
@@ -14,7 +14,7 @@ export class SummaryFailure<F extends TFieldName, G extends TGroupName>
   ) {}
 
   static fromTestObject<F extends TFieldName, G extends TGroupName>(
-    testObject: IsolateTest<F, G>
+    testObject: TIsolateTest<F, G>
   ) {
     return new SummaryFailure(
       testObject.fieldName,

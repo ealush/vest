@@ -1,7 +1,7 @@
 import wait from 'wait';
 
-import { dummyTest } from '../../../../testUtils/testDummy';
-import { TestPromise } from '../../../../testUtils/testPromise';
+import { dummyTest } from '../../../testUtils/testDummy';
+import { TestPromise } from '../../../testUtils/testPromise';
 
 import * as vest from 'vest';
 

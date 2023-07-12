@@ -1,11 +1,14 @@
-import { Isolate, isolateInterfaces } from 'vestjs-runtime';
+import { CB } from 'vest-utils';
+import { TIsolate, Isolate, isolateInterfaces } from 'vestjs-runtime';
 
 import { VestIsolateType } from 'VestIsolateType';
 
-export class IsolateEach
-  extends Isolate
-  implements isolateInterfaces.IReorderable
-{
-  type = VestIsolateType.Each;
-  allowReorder = true as const;
+type TIsolateEach = TIsolate & isolateInterfaces.IReorderable;
+
+export function IsolateEach<Callback extends CB = CB>(
+  callback: Callback
+): TIsolateEach {
+  return Isolate.create(VestIsolateType.Each, callback, {
+    allowReorder: true,
+  });
 }

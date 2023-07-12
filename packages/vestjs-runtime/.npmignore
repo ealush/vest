@@ -4,6 +4,6 @@ src
 !types/
 !dist/
 tsconfig.json
-
+!test-utils/
 
 # Manual Section. Edit at will.

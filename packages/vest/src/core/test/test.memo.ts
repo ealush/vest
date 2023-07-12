@@ -1,7 +1,7 @@
 import { CB, isNull } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import * as Runtime from 'Runtime';
 import { useTestMemoCache } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
@@ -17,15 +17,15 @@ export function wrapTestMemo<FN extends TFieldName>(test: VTest): TestMemo<FN> {
   function memo<F extends FN>(
     fieldName: F,
     ...args: ParametersWithoutMessage
-  ): IsolateTest;
+  ): TIsolateTest;
   function memo<F extends FN>(
     fieldName: F,
     ...args: ParametersWithMessage
-  ): IsolateTest;
+  ): TIsolateTest;
   function memo<F extends FN>(
     fieldName: F,
     ...args: ParamsOverload
-  ): IsolateTest {
+  ): TIsolateTest {
     const [deps, testFn, msg] = args.reverse() as [any[], TestFn, string];
 
     // Implicit dependency for better specificity
@@ -47,8 +47,8 @@ export function wrapTestMemo<FN extends TFieldName>(test: VTest): TestMemo<FN> {
 
 function useGetTestFromCache(
   dependencies: any[],
-  cacheAction: CB<IsolateTest>
-): IsolateTest {
+  cacheAction: CB<TIsolateTest>
+): TIsolateTest {
   const cache = useTestMemoCache();
 
   const cached = cache.get(dependencies);
@@ -72,8 +72,8 @@ function useGetTestFromCache(
 }
 
 export type TestMemo<F extends TFieldName> = {
-  (fieldName: F, ...args: ParametersWithoutMessage): IsolateTest;
-  (fieldName: F, ...args: ParametersWithMessage): IsolateTest;
+  (fieldName: F, ...args: ParametersWithoutMessage): TIsolateTest;
+  (fieldName: F, ...args: ParametersWithMessage): TIsolateTest;
 };
 
 type ParametersWithoutMessage = [test: TestFn, dependencies: unknown[]];

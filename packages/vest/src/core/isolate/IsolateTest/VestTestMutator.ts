@@ -1,4 +1,4 @@
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import {
   TestAction,
   TestStateMachineAction,
@@ -11,26 +11,26 @@ import { VestTestInspector } from 'VestTestInspector';
 const TestStateMachine = createTestStateMachine();
 
 export class VestTestMutator {
-  static setPending(test: IsolateTest) {
+  static setPending(test: TIsolateTest) {
     VestTestMutator.setStatus(test, TestStatus.PENDING);
   }
 
-  static fail(test: IsolateTest): void {
+  static fail(test: TIsolateTest): void {
     VestTestMutator.setStatus(
       test,
       VestTestInspector.warns(test) ? TestStatus.WARNING : TestStatus.FAILED
     );
   }
 
-  static pass(test: IsolateTest): void {
+  static pass(test: TIsolateTest): void {
     VestTestMutator.setStatus(test, TestStatus.PASSING);
   }
 
-  static warn(test: IsolateTest): void {
+  static warn(test: TIsolateTest): void {
     test.severity = TestSeverity.Warning;
   }
 
-  static skip(test: IsolateTest, force?: boolean): void {
+  static skip(test: TIsolateTest, force?: boolean): void {
     // Without this force flag, the test will be marked as skipped even if it is pending.
     // This means that it will not be counted in "allIncomplete" and its done callbacks
     // will not be called, or will be called prematurely.
@@ -44,20 +44,20 @@ export class VestTestMutator {
     VestTestMutator.setStatus(test, TestStatus.SKIPPED, force);
   }
 
-  static cancel(test: IsolateTest): void {
+  static cancel(test: TIsolateTest): void {
     VestTestMutator.setStatus(test, TestStatus.CANCELED);
   }
 
-  static omit(test: IsolateTest): void {
+  static omit(test: TIsolateTest): void {
     VestTestMutator.setStatus(test, TestStatus.OMITTED);
   }
 
-  static reset(test: IsolateTest): void {
+  static reset(test: TIsolateTest): void {
     VestTestMutator.setStatus(test, TestAction.RESET);
   }
 
   static setStatus(
-    test: IsolateTest,
+    test: TIsolateTest,
     status: TestStateMachineAction,
     payload?: any
   ): void {

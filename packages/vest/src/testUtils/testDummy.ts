@@ -6,6 +6,7 @@ import { test as vestTest, warn } from 'vest';
 /**
  * Generates dummy vest tests.
  */
+// eslint-disable-next-line max-lines-per-function
 const testDummy = () => {
   const failing = (
     name: string = faker.random.word(),

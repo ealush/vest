@@ -1,6 +1,7 @@
-import { dummyTest } from '../../../testUtils/testDummy';
-
 import { TTestSuite } from 'testUtils/TVestMock';
+
+import { dummyTest } from '../../testUtils/testDummy';
+
 import * as vest from 'vest';
 
 describe('skipWhen', () => {

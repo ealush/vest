@@ -2,8 +2,8 @@ import { isEmpty, optionalFunctionValue } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
-import type { IsolateSuite } from 'IsolateSuite';
-import { IsolateTest } from 'IsolateTest';
+import { SuiteOptionalFields, TIsolateSuite } from 'IsolateSuite';
+import { TIsolateTest } from 'IsolateTest';
 import { TestWalker } from 'TestWalker';
 import { VestTestInspector } from 'VestTestInspector';
 import { VestTestMutator } from 'VestTestMutator';
@@ -15,9 +15,9 @@ import { VestTestMutator } from 'VestTestMutator';
  */
 
 export function useOmitOptionalFields(): void {
-  const root = VestRuntime.useAvailableRoot<IsolateSuite>();
+  const root = VestRuntime.useAvailableRoot<TIsolateSuite>();
 
-  const optionalFields = root?.getOptionalFields();
+  const optionalFields = SuiteOptionalFields.getOptionalFields(root);
 
   // If there are no optional fields, we don't need to do anything
   if (isEmpty(optionalFields)) {
@@ -45,19 +45,26 @@ export function useOmitOptionalFields(): void {
 
   Bus.useEmit(Events.DONE_TEST_OMISSION_PASS);
 
-  function verifyAndOmit(testObject: IsolateTest) {
+  function verifyAndOmit(testObject: TIsolateTest) {
     if (shouldOmit.has(testObject.fieldName)) {
       VestTestMutator.omit(testObject);
-      root?.setOptionalField(testObject.fieldName, current => ({
-        ...current,
-        applied: true,
-      }));
+      SuiteOptionalFields.setOptionalField(
+        root,
+        testObject.fieldName,
+        current => ({
+          ...current,
+          applied: true,
+        })
+      );
     }
   }
 
-  function runOptionalConfig(testObject: IsolateTest) {
+  function runOptionalConfig(testObject: TIsolateTest) {
     // Ge the optional configuration for the given field
-    const optionalConfig = root.getOptionalField(testObject.fieldName);
+    const optionalConfig = SuiteOptionalFields.getOptionalField(
+      root,
+      testObject.fieldName
+    );
 
     // If the optional was set to a function or a boolean, run it and verify/omit the test
     if (optionalFunctionValue(optionalConfig.rule) === true) {

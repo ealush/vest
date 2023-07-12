@@ -1,9 +1,9 @@
-import { Modes } from 'Modes';
+import { TTestSuite } from 'testUtils/TVestMock';
 import wait from 'wait';
 
-import { dummyTest } from '../../../testUtils/testDummy';
+import { dummyTest } from '../../testUtils/testDummy';
 
-import { TTestSuite } from 'testUtils/TVestMock';
+import { Modes } from 'Modes';
 import { create, only, group, mode } from 'vest';
 import * as Vest from 'vest';
 

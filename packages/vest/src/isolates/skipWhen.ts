@@ -3,6 +3,7 @@ import { Isolate } from 'vestjs-runtime';
 
 import { SuiteContext, useSkipped } from 'SuiteContext';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { VestIsolateType } from 'VestIsolateType';
 import { TDraftCondition } from 'getTypedMethods';
 import { useCreateSuiteResult } from 'suiteResult';
 
@@ -20,7 +21,7 @@ export function skipWhen<F extends TFieldName, G extends TGroupName>(
   condition: TDraftCondition<F, G>,
   callback: CB
 ): void {
-  Isolate.create(() => {
+  Isolate.create(VestIsolateType.SkipWhen, () => {
     SuiteContext.run(
       {
         skipped:

@@ -1,9 +1,9 @@
-import { ErrorStrings } from 'ErrorStrings';
 import { Maybe, deferThrow, text } from 'vest-utils';
 import { IsolateInspector, Reconciler } from 'vestjs-runtime';
-import type { Isolate } from 'vestjs-runtime';
+import type { TIsolate } from 'vestjs-runtime';
 
-import type { IsolateTest } from 'IsolateTest';
+import { ErrorStrings } from 'ErrorStrings';
+import type { TIsolateTest } from 'IsolateTest';
 import { VestTestInspector } from 'VestTestInspector';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { castIsolateTest, isIsolateTest } from 'isIsolateTest';
@@ -12,9 +12,9 @@ import { useVerifyTestRun } from 'verifyTestRun';
 
 // @vx-allow use-use
 export function IsolateTestReconciler(
-  currentNode: IsolateTest,
-  historyNode: IsolateTest
-): IsolateTest {
+  currentNode: TIsolateTest,
+  historyNode: TIsolateTest
+): TIsolateTest {
   const reconcilerOutput = usePickNode(historyNode, currentNode);
 
   cancelOverriddenPendingTestOnTestReRun(
@@ -29,16 +29,16 @@ export function IsolateTestReconciler(
 // eslint-disable-next-line max-statements
 
 function nodeReorderDetected(
-  newNode: IsolateTest,
-  prevNode?: Isolate
+  newNode: TIsolateTest,
+  prevNode?: TIsolate
 ): boolean {
   return !!isIsolateTest(prevNode) && !isSameProfileTest(prevNode, newNode);
 }
 
 function handleCollision(
-  newNode: IsolateTest,
-  prevNode?: Isolate
-): IsolateTest {
+  newNode: TIsolateTest,
+  prevNode?: TIsolate
+): TIsolateTest {
   if (IsolateInspector.usesKey(newNode)) {
     return castIsolateTest(Reconciler.handleIsolateNodeWithKey(newNode));
   }
@@ -67,25 +67,28 @@ function handleCollision(
   return prevNode;
 }
 
-function onNodeReorder(newNode: IsolateTest, prevNode?: Isolate): IsolateTest {
+function onNodeReorder(
+  newNode: TIsolateTest,
+  prevNode?: TIsolate
+): TIsolateTest {
   throwTestOrderError(newNode, prevNode);
   Reconciler.removeAllNextNodesInIsolate();
   return newNode;
 }
 
 function usePickNode(
-  historyNode: IsolateTest,
-  currentNode: IsolateTest
-): IsolateTest {
+  historyNode: TIsolateTest,
+  currentNode: TIsolateTest
+): TIsolateTest {
   const collisionResult = handleCollision(currentNode, historyNode);
 
   return useVerifyTestRun(currentNode, collisionResult);
 }
 
 function cancelOverriddenPendingTestOnTestReRun(
-  nextNode: Isolate,
-  currentNode: Isolate,
-  prevTestObject: IsolateTest
+  nextNode: TIsolate,
+  currentNode: TIsolate,
+  prevTestObject: TIsolateTest
 ) {
   if (nextNode === currentNode && isIsolateTest(currentNode)) {
     cancelOverriddenPendingTest(prevTestObject, currentNode);
@@ -93,8 +96,8 @@ function cancelOverriddenPendingTestOnTestReRun(
 }
 
 function throwTestOrderError(
-  newNode: IsolateTest,
-  prevNode: Maybe<Isolate>
+  newNode: TIsolateTest,
+  prevNode: Maybe<TIsolate>
 ): void {
   if (IsolateInspector.canReorder(newNode)) {
     return;

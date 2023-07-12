@@ -25,7 +25,7 @@ export function each<T>(
     ErrorStrings.EACH_CALLBACK_MUST_BE_A_FUNCTION
   );
 
-  IsolateEach.create(() => {
+  IsolateEach(() => {
     list.forEach((arg, index) => {
       callback(arg, index);
     });

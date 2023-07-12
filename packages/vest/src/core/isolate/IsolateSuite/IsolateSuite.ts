@@ -1,19 +1,29 @@
-import { assign } from 'vest-utils';
-import { TIsolate } from 'vestjs-runtime';
+import { CB, assign } from 'vest-utils';
+import { TIsolate, createIsolate } from 'vestjs-runtime';
 
 import { OptionalFieldDeclaration, OptionalFields } from 'OptionalTypes';
 import { TFieldName } from 'SuiteResultTypes';
 import { VestIsolateType } from 'VestIsolateType';
 
-export class IsolateSuite extends Isolate {
-  type = VestIsolateType.Suite;
-  optional: OptionalFields = {};
+export type TIsolateSuite = TIsolate & {
+  optional: OptionalFields;
+};
 
-  setOptionalField(
+export function IsolateSuite<Callback extends CB = CB>(
+  callback: Callback
+): TIsolateSuite {
+  return createIsolate(VestIsolateType.Suite, callback, {
+    optional: {},
+  });
+}
+
+export class SuiteOptionalFields {
+  static setOptionalField(
+    suite: TIsolateSuite,
     fieldName: TFieldName,
     setter: (current: OptionalFieldDeclaration) => OptionalFieldDeclaration
   ): void {
-    const current = this.optional;
+    const current = suite.optional;
     const currentField = current[fieldName];
 
     assign(current, {
@@ -21,11 +31,14 @@ export class IsolateSuite extends Isolate {
     });
   }
 
-  getOptionalField(fieldName: TFieldName): OptionalFieldDeclaration {
-    return this.optional[fieldName] ?? {};
+  static getOptionalField(
+    suite: TIsolateSuite,
+    fieldName: TFieldName
+  ): OptionalFieldDeclaration {
+    return suite.optional[fieldName] ?? {};
   }
 
-  getOptionalFields(): OptionalFields {
-    return this.optional;
+  static getOptionalFields(suite: TIsolateSuite): OptionalFields {
+    return suite.optional;
   }
 }

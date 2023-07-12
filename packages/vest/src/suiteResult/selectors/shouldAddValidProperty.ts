@@ -1,7 +1,11 @@
 import { useIsOptionalFiedApplied } from 'optional';
 import { VestRuntime } from 'vestjs-runtime';
 
-import type { IsolateSuite } from 'IsolateSuite';
+import {
+  SuiteOptionalFields,
+  type IsolateSuite,
+  TIsolateSuite,
+} from 'IsolateSuite';
 import { IsolateTest } from 'IsolateTest';
 import { OptionalFieldTypes } from 'OptionalTypes';
 import { Severity } from 'Severity';
@@ -139,10 +143,10 @@ function useOptionalTestAwaitsResolution(testObject: IsolateTest): boolean {
   // Does the test belong to an optional field,
   // and the test itself is still in an indeterminate state?
 
+  const root = VestRuntime.useAvailableRoot<TIsolateSuite>();
+
   return (
-    VestRuntime.useAvailableRoot<IsolateSuite>()?.getOptionalField(
-      testObject.fieldName
-    ).type === OptionalFieldTypes.AUTO &&
-    VestTestInspector.awaitsResolution(testObject)
+    SuiteOptionalFields.getOptionalField(root, testObject.fieldName).type ===
+      OptionalFieldTypes.AUTO && VestTestInspector.awaitsResolution(testObject)
   );
 }

@@ -54,7 +54,7 @@ function createSuite<
       () => {
         Bus.useEmit(Events.SUITE_RUN_STARTED);
 
-        return IsolateSuite.create<IsolateSuite>(
+        return IsolateSuite(
           useRunSuiteCallback<T, F, G>(suiteCallback, ...args)
         );
       }

@@ -27,11 +27,11 @@ function baseIsolate(type: string, payload: Record<string, any>): TIsolate {
   };
 }
 
-export function createIsolate<I extends TIsolate, Callback extends CB = CB>(
+export function createIsolate<Payload extends Record<string, any>>(
   type: string,
-  callback: Callback,
-  payload: Record<string, any> = {}
-): TIsolate {
+  callback: CB,
+  payload: Payload = {} as Payload
+): TIsolate & Payload {
   const parent = VestRuntime.useIsolate();
 
   const newCreatedNode = IsolateMutator.setParent(
@@ -48,5 +48,5 @@ export function createIsolate<I extends TIsolate, Callback extends CB = CB>(
 
   VestRuntime.addNodeToHistory(nextIsolateChild);
 
-  return nextIsolateChild as I;
+  return nextIsolateChild as TIsolate & Payload;
 }

@@ -1,5 +1,5 @@
 import { assign } from 'vest-utils';
-import { Isolate } from 'vestjs-runtime';
+import { TIsolate } from 'vestjs-runtime';
 
 import { OptionalFieldDeclaration, OptionalFields } from 'OptionalTypes';
 import { TFieldName } from 'SuiteResultTypes';

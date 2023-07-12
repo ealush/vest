@@ -1,6 +1,6 @@
 import { CB, Nullable, invariant, isNullish } from 'vest-utils';
 
-import { type Isolate } from 'Isolate';
+import { type TIsolate } from 'Isolate';
 import { IsolateInspector } from 'IsolateInspector';
 import { IsolateMutator } from 'IsolateMutator';
 import { isSameIsolateType } from 'IsolateSelectors';
@@ -14,7 +14,10 @@ export interface IRecociler<I = any> {
   (currentNode: I, historyNode: I): Nullable<I>;
 }
 
-function BaseReconciler(currentNode: Isolate, historyNode: Isolate): Isolate {
+function BaseReconciler(
+  currentNode: TIsolate,
+  historyNode: TIsolate
+): TIsolate {
   if (isNullish(historyNode)) {
     return currentNode;
   }
@@ -23,9 +26,9 @@ function BaseReconciler(currentNode: Isolate, historyNode: Isolate): Isolate {
 
 export class Reconciler {
   static reconcile<Callback extends CB = CB>(
-    node: Isolate,
+    node: TIsolate,
     callback: Callback
-  ): [Isolate, ReturnType<Callback>] {
+  ): [TIsolate, ReturnType<Callback>] {
     const parent = VestRuntime.useIsolate();
 
     const historyNode = VestRuntime.useHistoryNode();
@@ -66,7 +69,7 @@ export class Reconciler {
     IsolateMutator.slice(historyNode, IsolateInspector.cursor(currentNode));
   }
 
-  static handleIsolateNodeWithKey(node: Isolate): Isolate {
+  static handleIsolateNodeWithKey(node: TIsolate): TIsolate {
     invariant(IsolateInspector.usesKey(node));
 
     const prevNodeByKey = VestRuntime.useHistoryKey(node.key);
@@ -84,8 +87,8 @@ export class Reconciler {
 }
 
 function useRunAsNew<Callback extends CB = CB>(
-  localHistoryNode: Nullable<Isolate>,
-  current: Isolate,
+  localHistoryNode: Nullable<TIsolate>,
+  current: TIsolate,
   callback: CB
 ): ReturnType<Callback> {
   const runtimeRoot = VestRuntime.useRuntimeRoot();
@@ -106,9 +109,9 @@ function useRunAsNew<Callback extends CB = CB>(
 }
 
 function pickNextNode(
-  currentNode: Isolate,
-  historyNode: Nullable<Isolate>
-): Isolate {
+  currentNode: TIsolate,
+  historyNode: Nullable<TIsolate>
+): TIsolate {
   if (isNullish(historyNode)) {
     return handleNoHistoryNode(currentNode);
   }
@@ -125,7 +128,7 @@ function pickNextNode(
   );
 }
 
-function handleNoHistoryNode<I extends Isolate>(newNode: I): I {
+function handleNoHistoryNode<I extends TIsolate>(newNode: I): I {
   if (IsolateInspector.usesKey(newNode)) {
     return Reconciler.handleIsolateNodeWithKey(newNode) as I;
   }

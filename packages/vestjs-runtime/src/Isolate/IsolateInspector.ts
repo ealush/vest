@@ -1,23 +1,23 @@
 import { Nullable, isNotNullish, isNullish } from 'vest-utils';
 
-import { Isolate } from 'Isolate';
+import { TIsolate } from 'Isolate';
 
 export class IsolateInspector {
-  static at(isolate: Nullable<Isolate>, at: number): Nullable<Isolate> {
+  static at(isolate: Nullable<TIsolate>, at: number): Nullable<TIsolate> {
     if (isNullish(isolate)) {
       return null;
     }
     return isolate.children?.[at] ?? null;
   }
 
-  static cursor(isolate: Nullable<Isolate>): number {
+  static cursor(isolate: Nullable<TIsolate>): number {
     if (isNullish(isolate)) {
       return 0;
     }
     return isolate.children?.length ?? 0;
   }
 
-  static canReorder<I extends Isolate>(isolate: Nullable<I>): boolean {
+  static canReorder<I extends TIsolate>(isolate: Nullable<I>): boolean {
     if (isNullish(isolate)) {
       return false;
     }
@@ -31,14 +31,14 @@ export class IsolateInspector {
     return isolate?.allowReorder === true;
   }
 
-  static usesKey(isolate: Nullable<Isolate>): boolean {
+  static usesKey(isolate: Nullable<TIsolate>): boolean {
     if (isNullish(isolate)) {
       return false;
     }
     return isNotNullish(isolate.key);
   }
 
-  static dump(isolate: Isolate): string {
+  static dump(isolate: TIsolate): string {
     if (isNullish(isolate)) {
       return '';
     }

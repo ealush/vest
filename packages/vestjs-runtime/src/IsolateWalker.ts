@@ -1,14 +1,14 @@
 import { CB, Nullable, isNullish, optionalFunctionValue } from 'vest-utils';
 
-import { type Isolate } from 'Isolate';
+import { type TIsolate } from 'Isolate';
 import { IsolateMutator } from 'IsolateMutator';
 
-type VisitOnlyPredicate = (isolate: Isolate) => boolean;
+type VisitOnlyPredicate = (isolate: TIsolate) => boolean;
 
 // eslint-disable-next-line
 export function walk(
-  startNode: Isolate,
-  callback: (isolate: Isolate, breakout: CB<void>) => void,
+  startNode: TIsolate,
+  callback: (isolate: TIsolate, breakout: CB<void>) => void,
   visitOnly?: VisitOnlyPredicate
 ): void {
   // If the startNode has no children, there is nothing to walk.
@@ -55,8 +55,8 @@ export function walk(
 // This function returns true if the given predicate function returns true for any Isolate object in the tree.
 // If visitOnly is provided, only Isolate objects that satisfy the predicate are visited.
 export function some(
-  startNode: Isolate,
-  predicate: (node: Isolate) => boolean,
+  startNode: TIsolate,
+  predicate: (node: TIsolate) => boolean,
   visitOnly?: VisitOnlyPredicate
 ): boolean {
   let hasMatch = false;
@@ -78,18 +78,18 @@ export function some(
 
 // This function returns true if the given predicate function returns true for any Isolate object in the tree.
 // If visitOnly is provided, only Isolate objects that satisfy the predicate are visited.
-export function has(startNode: Isolate, match: VisitOnlyPredicate): boolean {
+export function has(startNode: TIsolate, match: VisitOnlyPredicate): boolean {
   return some(startNode, () => true, match);
 }
 
 // traverses up to a parent node that satisfies the predicate
 // and returns the first direct descendant that satisfies the predicate
-export function findClosest<I extends Isolate = Isolate>(
-  startNode: Isolate,
-  predicate: (node: Isolate) => boolean
+export function findClosest<I extends TIsolate = TIsolate>(
+  startNode: TIsolate,
+  predicate: (node: TIsolate) => boolean
 ): Nullable<I> {
-  let found: Nullable<Isolate> = null;
-  let current: Nullable<Isolate> = startNode;
+  let found: Nullable<TIsolate> = null;
+  let current: Nullable<TIsolate> = startNode;
 
   while (current) {
     found = current.children?.find(predicate) ?? null;
@@ -107,10 +107,10 @@ export function findClosest<I extends Isolate = Isolate>(
 // This function returns the first Isolate object in the tree that satisfies the given predicate function.
 // If visitOnly is provided, only Isolate objects that satisfy the predicate are visited.
 export function find(
-  startNode: Isolate,
-  predicate: (node: Isolate) => boolean,
+  startNode: TIsolate,
+  predicate: (node: TIsolate) => boolean,
   visitOnly?: VisitOnlyPredicate
-): Nullable<Isolate> {
+): Nullable<TIsolate> {
   let found = null;
 
   // Call the walk function with a callback function that sets found to the current node if the predicate is satisfied.
@@ -131,8 +131,8 @@ export function find(
 // This function returns true if the given predicate function returns true for every Isolate object in the tree.
 // If visitOnly is provided, only Isolate objects that satisfy the predicate are visited.
 export function every(
-  startNode: Isolate,
-  predicate: (node: Isolate) => boolean,
+  startNode: TIsolate,
+  predicate: (node: TIsolate) => boolean,
   visitOnly?: VisitOnlyPredicate
 ): boolean {
   let hasMatch = true;
@@ -154,8 +154,8 @@ export function every(
 // satisfy the given predicate function and have a parent.
 // If visitOnly is provided, only Isolate objects that satisfy the predicate are visited.
 export function pluck(
-  startNode: Isolate,
-  predicate: (node: Isolate) => boolean,
+  startNode: TIsolate,
+  predicate: (node: TIsolate) => boolean,
   visitOnly?: VisitOnlyPredicate
 ): void {
   walk(
@@ -172,10 +172,10 @@ export function pluck(
 // Returns the closest ancestor Isolate object of the given
 //startNode that satisfies the given predicate function.
 export function closest(
-  startNode: Isolate,
-  predicate: (node: Isolate) => boolean
-): Nullable<Isolate> {
-  let current: Nullable<Isolate> = startNode;
+  startNode: TIsolate,
+  predicate: (node: TIsolate) => boolean
+): Nullable<TIsolate> {
+  let current: Nullable<TIsolate> = startNode;
   do {
     if (predicate(current)) {
       return current;
@@ -188,8 +188,8 @@ export function closest(
 // This function returns true if the closest ancestor Isolates of the
 // given startNode that satisfies the given predicate function exists.
 export function closestExists(
-  startNode: Isolate,
-  predicate: (node: Isolate) => boolean
+  startNode: TIsolate,
+  predicate: (node: TIsolate) => boolean
 ): boolean {
   return !!closest(startNode, predicate);
 }

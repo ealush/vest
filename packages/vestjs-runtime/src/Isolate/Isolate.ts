@@ -15,18 +15,6 @@ export type TIsolate = {
   keys: Record<string, TIsolate>;
 };
 
-function baseIsolate(type: string, payload: Record<string, any>): TIsolate {
-  return {
-    children: [],
-    key: null,
-    keys: {},
-    output: null,
-    parent: null,
-    type,
-    ...payload,
-  };
-}
-
 export function createIsolate<Payload extends Record<string, any>>(
   type: string,
   callback: CB,
@@ -49,4 +37,16 @@ export function createIsolate<Payload extends Record<string, any>>(
   VestRuntime.addNodeToHistory(nextIsolateChild);
 
   return nextIsolateChild as TIsolate & Payload;
+}
+
+function baseIsolate(type: string, payload: Record<string, any>): TIsolate {
+  return {
+    children: [],
+    key: null,
+    keys: {},
+    output: null,
+    parent: null,
+    type,
+    ...payload,
+  };
 }

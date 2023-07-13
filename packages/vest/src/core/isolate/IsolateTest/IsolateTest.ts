@@ -1,60 +1,66 @@
-import { Maybe, seq } from 'vest-utils';
-import { Isolate, IsolateKey, IsolateMutator } from 'vestjs-runtime';
+import { CB, seq } from 'vest-utils';
+import { IsolateKey, IsolateMutator, createIsolate } from 'vestjs-runtime';
 
 import { TestStatus } from 'IsolateTestStateMachine';
 import { TestSeverity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { TestFn, AsyncTest } from 'TestTypes';
+import { TestFn } from 'TestTypes';
 import { VestIsolateType } from 'VestIsolateType';
-import { VestTestInspector } from 'VestTestInspector';
 
-type IsolateTestInput = {
-  message?: string;
-  groupName?: string;
-  fieldName: TFieldName;
-  testFn: TestFn;
-  key?: IsolateKey;
-};
-
-export class IsolateTest<
+export type TIsolateTest<
   F extends TFieldName = TFieldName,
   G extends TGroupName = TGroupName
-> extends Isolate {
-  children = null;
+> = IsolateTestInput<F, G> & {
+  id: string;
+  severity: TestSeverity;
+  status: TestStatus;
+};
+
+export function IsolateTest<
+  F extends TFieldName = TFieldName,
+  G extends TGroupName = TGroupName
+>(callback: CB, input: IsolateTestInput): TIsolateTest<F, G> {
+  const payload: TIsolateTest = {
+    fieldName: input.fieldName,
+    id: seq(),
+    severity: TestSeverity.Error,
+    status: TestStatus.PENDING,
+    testFn: input.testFn,
+  };
+
+  if (input.groupName) {
+    payload.groupName = input.groupName;
+  }
+
+  if (input.message) {
+    payload.message = input.message;
+  }
+  const isolate = createIsolate<TIsolateTest<F, G>>(
+    VestIsolateType.Test,
+    callback
+  );
+
+  IsolateMutator.setKey(isolate, input.key ?? null);
+
+  return isolate;
+}
+// valueOf(): boolean {
+//   return !VestTestInspector.isFailing(this);
+// }
+
+type IsolateTestPayload<
+  F extends TFieldName = TFieldName,
+  G extends TGroupName = TGroupName
+> = {
+  message?: string;
+  groupName?: G;
   fieldName: F;
   testFn: TestFn;
-  groupName?: G;
-  message?: Maybe<string>;
-  asyncTest?: AsyncTest;
-  id = seq();
-  severity = TestSeverity.Error;
-  type = VestIsolateType.Test;
-  status: TestStatus = TestStatus.UNTESTED;
+};
 
-  constructor({
-    fieldName,
-    testFn,
-    message,
-    groupName,
-    key = null,
-  }: IsolateTestInput) {
-    super();
-
-    this.fieldName = fieldName as F;
-    this.testFn = testFn;
-
-    if (groupName) {
-      this.groupName = groupName as G;
-    }
-
-    if (message) {
-      this.message = message;
-    }
-
-    IsolateMutator.setKey(this, key);
-  }
-
-  valueOf(): boolean {
-    return !VestTestInspector.isFailing(this);
-  }
-}
+type IsolateTestInput<
+  F extends TFieldName = TFieldName,
+  G extends TGroupName = TGroupName
+> = IsolateTestPayload<F, G> & {
+  key?: IsolateKey;
+};

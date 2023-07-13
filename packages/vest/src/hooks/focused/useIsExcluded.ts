@@ -1,19 +1,18 @@
 import { Nullable, optionalFunctionValue } from 'vest-utils';
-import { Isolate, Walker } from 'vestjs-runtime';
+import { TIsolate, Walker } from 'vestjs-runtime';
 
 import { IsolateTest } from 'IsolateTest';
 import { useInclusion } from 'SuiteContext';
-import { IsolateFocused } from 'focused';
-import { isIsolateFocused } from 'isIsolateFocused';
+import { FocusSelectors, TIsolateFocused } from 'focused';
 import { useIsExcludedIndividually } from 'skipWhen';
 import { useHasOnliedTests } from 'useHasOnliedTests';
 //Checks whether a certain test profile excluded by any of the exclusion groups.
 
 function useClosestMatchingFocus(
   testObject: IsolateTest
-): Nullable<IsolateFocused> {
-  return Walker.findClosest(testObject, (child: Isolate) => {
-    if (!isIsolateFocused(child)) return false;
+): Nullable<TIsolateFocused> {
+  return Walker.findClosest(testObject, (child: TIsolate) => {
+    if (!FocusSelectors.isIsolateFocused(child)) return false;
 
     return child.match?.includes(testObject.fieldName) || child.matchAll;
   });
@@ -28,8 +27,8 @@ export function useIsExcluded(testObject: IsolateTest): boolean {
   const focusMatch = useClosestMatchingFocus(testObject);
   // if test is skipped
   // no need to proceed
-  if (IsolateFocused.isSkipFocused(focusMatch)) return true;
-  const isTestIncluded = IsolateFocused.isOnlyFocused(focusMatch);
+  if (FocusSelectors.isSkipFocused(focusMatch)) return true;
+  const isTestIncluded = FocusSelectors.isOnlyFocused(focusMatch);
   // if field is only'ed
   if (isTestIncluded) return false;
 

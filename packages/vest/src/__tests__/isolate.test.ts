@@ -1,5 +1,6 @@
 import { CB } from 'vest-utils';
 import { TDeferThrow } from 'vest-utils/src/deferThrow';
+import { createIsolate } from 'vestjs-runtime';
 
 import { TVestMock } from '../../testUtils/TVestMock';
 import mockThrowError from '../../testUtils/mockThrowError';
@@ -69,7 +70,7 @@ describe('isolate', () => {
       const suite = genSuite(() => {
         dummyTest.failing('f1');
 
-        Isolate.create(() => {
+        createIsolate('Unit', () => {
           dummyTest.failing('f2');
           if (!firstRun) {
             dummyTest.failing('f3');

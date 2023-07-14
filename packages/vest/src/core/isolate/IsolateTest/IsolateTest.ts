@@ -25,7 +25,7 @@ export function IsolateTest<
     fieldName: input.fieldName,
     id: seq(),
     severity: TestSeverity.Error,
-    status: TestStatus.PENDING,
+    status: TestStatus.UNTESTED,
     testFn: input.testFn,
   };
 

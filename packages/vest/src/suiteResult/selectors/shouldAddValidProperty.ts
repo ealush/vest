@@ -1,12 +1,8 @@
 import { useIsOptionalFiedApplied } from 'optional';
 import { VestRuntime } from 'vestjs-runtime';
 
-import {
-  SuiteOptionalFields,
-  type IsolateSuite,
-  TIsolateSuite,
-} from 'IsolateSuite';
-import { IsolateTest } from 'IsolateTest';
+import { SuiteOptionalFields, TIsolateSuite } from 'IsolateSuite';
+import { TIsolateTest } from 'IsolateTest';
 import { OptionalFieldTypes } from 'OptionalTypes';
 import { Severity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
@@ -115,7 +111,7 @@ function useNoMissingTestsByGroup(
 }
 
 function useNoMissingTestsLogic(
-  testObject: IsolateTest,
+  testObject: TIsolateTest,
   fieldName?: TFieldName
 ): boolean {
   if (nonMatchingFieldName(testObject, fieldName)) {
@@ -139,7 +135,7 @@ function useNoMissingTestsLogic(
   );
 }
 
-function useOptionalTestAwaitsResolution(testObject: IsolateTest): boolean {
+function useOptionalTestAwaitsResolution(testObject: TIsolateTest): boolean {
   // Does the test belong to an optional field,
   // and the test itself is still in an indeterminate state?
 

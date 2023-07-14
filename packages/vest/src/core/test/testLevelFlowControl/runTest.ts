@@ -9,7 +9,7 @@ import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
 import { ErrorStrings } from 'ErrorStrings';
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import { SuiteContext } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
 import { VestTestInspector } from 'VestTestInspector';
@@ -18,7 +18,7 @@ import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
 import { useVerifyTestRun } from 'verifyTestRun';
 
 // eslint-disable-next-line max-statements
-export function useAttemptRunTest(testObject: IsolateTest) {
+export function useAttemptRunTest(testObject: TIsolateTest) {
   useVerifyTestRun(testObject);
 
   if (VestTestInspector.isUntested(testObject)) {
@@ -37,7 +37,7 @@ export function useAttemptRunTest(testObject: IsolateTest) {
   }
 }
 
-function runSyncTest(testObject: IsolateTest): TestResult {
+function runSyncTest(testObject: TIsolateTest): TestResult {
   return SuiteContext.run({ currentTest: testObject }, () => {
     let result: TestResult;
     try {
@@ -60,7 +60,7 @@ function runSyncTest(testObject: IsolateTest): TestResult {
 /**
  * runs test, if async - adds to pending array
  */
-function useRunTest(testObject: IsolateTest): void {
+function useRunTest(testObject: TIsolateTest): void {
   const VestBus = Bus.useBus();
 
   // Run test callback.
@@ -92,7 +92,7 @@ function useRunTest(testObject: IsolateTest): void {
 /**
  * Runs async test.
  */
-function useRunAsyncTest(testObject: IsolateTest): void {
+function useRunAsyncTest(testObject: TIsolateTest): void {
   const { asyncTest, message } = testObject;
 
   if (!isPromise(asyncTest)) return;
@@ -119,7 +119,7 @@ function useRunAsyncTest(testObject: IsolateTest): void {
   asyncTest.then(done, fail);
 }
 
-function onTestCompleted(VestBus: BusType, testObject: IsolateTest) {
+function onTestCompleted(VestBus: BusType, testObject: TIsolateTest) {
   // Attempts passing if the test is not already failed.
   // or is not canceled/omitted.
   VestTestMutator.pass(testObject);

@@ -2,11 +2,7 @@ import { enforce } from 'n4s';
 import { isArray, isStringValue, asArray, hasOwnProperty } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
-import {
-  SuiteOptionalFields,
-  type IsolateSuite,
-  TIsolateSuite,
-} from 'IsolateSuite';
+import { SuiteOptionalFields, TIsolateSuite } from 'IsolateSuite';
 import { OptionalFieldTypes, OptionalsInput } from 'OptionalTypes';
 import { useSuiteParams } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
@@ -15,7 +11,7 @@ import { TFieldName } from 'SuiteResultTypes';
 export function optional<F extends TFieldName>(
   optionals: OptionalsInput<F>
 ): void {
-  const suiteRoot = VestRuntime.useAvailableRoot<IsolateSuite>();
+  const suiteRoot = VestRuntime.useAvailableRoot<TIsolateSuite>();
 
   const suiteParams = useSuiteParams();
   const dataObject = suiteParams?.[0] ?? {};

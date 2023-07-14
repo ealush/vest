@@ -1,7 +1,7 @@
 import { Bus } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import {
   useExpireSuiteResultCache,
   useResetCallbacks,
@@ -19,7 +19,7 @@ export function useInitVestBus() {
 
   // Report a the completion of a test. There may be other tests with the same
   // name that are still running, or not yet started.
-  on(Events.TEST_COMPLETED, (testObject: IsolateTest) => {
+  on(Events.TEST_COMPLETED, (testObject: TIsolateTest) => {
     if (VestTestInspector.isCanceled(testObject)) {
       return;
     }

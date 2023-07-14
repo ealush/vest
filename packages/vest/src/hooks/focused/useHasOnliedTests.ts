@@ -1,7 +1,7 @@
 import { isNotNullish } from 'vest-utils';
 import { TIsolate, Walker } from 'vestjs-runtime';
 
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import { TFieldName } from 'SuiteResultTypes';
 import { FocusSelectors } from 'focused';
 
@@ -9,7 +9,7 @@ import { FocusSelectors } from 'focused';
  * Checks if context has included tests
  */
 export function useHasOnliedTests(
-  testObject: IsolateTest,
+  testObject: TIsolateTest,
   fieldName?: TFieldName
 ): boolean {
   return isNotNullish(

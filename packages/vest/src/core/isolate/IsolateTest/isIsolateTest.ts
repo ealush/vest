@@ -1,30 +1,30 @@
 import { Maybe, invariant } from 'vest-utils';
-import { Isolate, IsolateSelectors } from 'vestjs-runtime';
+import { TIsolate, IsolateSelectors } from 'vestjs-runtime';
 
-import type { IsolateTest } from 'IsolateTest';
+import type { TIsolateTest } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { VestIsolateType } from 'VestIsolateType';
 
 export function isIsolateTest(
-  isolate?: Maybe<Isolate>
-): isolate is IsolateTest {
-  return IsolateSelectors.isIsolateType<IsolateTest>(
+  isolate?: Maybe<TIsolate>
+): isolate is TIsolateTest {
+  return IsolateSelectors.isIsolateType<TIsolateTest>(
     isolate,
     VestIsolateType.Test
   );
 }
 
 export function isIsolateTestX(
-  isolate: Isolate
-): asserts isolate is IsolateTest {
+  isolate: TIsolate
+): asserts isolate is TIsolateTest {
   invariant(isIsolateTest(isolate));
 }
 
 export function castIsolateTest<
   F extends TFieldName = TFieldName,
   G extends TGroupName = TGroupName
->(isolate: Isolate): IsolateTest<F, G> {
+>(isolate: TIsolate): TIsolateTest<F, G> {
   isIsolateTestX(isolate);
 
-  return isolate as IsolateTest<F, G>;
+  return isolate as TIsolateTest<F, G>;
 }

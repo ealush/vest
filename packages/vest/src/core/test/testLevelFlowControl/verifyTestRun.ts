@@ -1,15 +1,16 @@
-import { IsolateTest } from 'IsolateTest';
+import { useIsOptionalFiedApplied } from 'optional';
+
+import { TIsolateTest } from 'IsolateTest';
 import { VestTestMutator } from 'VestTestMutator';
 import { useShouldSkipBasedOnMode } from 'mode';
 import { useWithinActiveOmitWhen } from 'omitWhen';
-import { useIsOptionalFiedApplied } from 'optional';
 import { useIsExcludedIndividually } from 'skipWhen';
 import { useIsExcluded } from 'useIsExcluded';
 
 export function useVerifyTestRun(
-  testObject: IsolateTest,
-  collisionResult: IsolateTest = testObject
-): IsolateTest {
+  testObject: TIsolateTest,
+  collisionResult: TIsolateTest = testObject
+): TIsolateTest {
   if (useShouldSkipBasedOnMode(testObject)) {
     return skipTestAndReturn(testObject);
   }
@@ -25,23 +26,23 @@ export function useVerifyTestRun(
   return testObject;
 }
 
-function useShouldOmit(testObject: IsolateTest): boolean {
+function useShouldOmit(testObject: TIsolateTest): boolean {
   return (
     useWithinActiveOmitWhen() || useIsOptionalFiedApplied(testObject.fieldName)
   );
 }
 
-function skipTestAndReturn(testNode: IsolateTest): IsolateTest {
+function skipTestAndReturn(testNode: TIsolateTest): TIsolateTest {
   VestTestMutator.skip(testNode);
   return testNode;
 }
 
-function omitTestAndReturn(testNode: IsolateTest): IsolateTest {
+function omitTestAndReturn(testNode: TIsolateTest): TIsolateTest {
   VestTestMutator.omit(testNode);
   return testNode;
 }
 
-function useForceSkipIfInSkipWhen(testNode: IsolateTest): IsolateTest {
+function useForceSkipIfInSkipWhen(testNode: TIsolateTest): TIsolateTest {
   // We're forcing skipping the pending test
   // if we're directly within a skipWhen block
   // This mostly means that we're probably giving

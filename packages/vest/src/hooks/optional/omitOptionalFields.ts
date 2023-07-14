@@ -3,7 +3,7 @@ import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
 import { SuiteOptionalFields, TIsolateSuite } from 'IsolateSuite';
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import { TestWalker } from 'TestWalker';
 import { VestTestInspector } from 'VestTestInspector';
 import { VestTestMutator } from 'VestTestMutator';
@@ -45,7 +45,7 @@ export function useOmitOptionalFields(): void {
 
   Bus.useEmit(Events.DONE_TEST_OMISSION_PASS);
 
-  function verifyAndOmit(testObject: IsolateTest) {
+  function verifyAndOmit(testObject: TIsolateTest) {
     if (shouldOmit.has(testObject.fieldName)) {
       VestTestMutator.omit(testObject);
       SuiteOptionalFields.setOptionalField(
@@ -59,7 +59,7 @@ export function useOmitOptionalFields(): void {
     }
   }
 
-  function runOptionalConfig(testObject: IsolateTest) {
+  function runOptionalConfig(testObject: TIsolateTest) {
     // Ge the optional configuration for the given field
     const optionalConfig = SuiteOptionalFields.getOptionalField(
       root,

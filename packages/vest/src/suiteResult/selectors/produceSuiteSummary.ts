@@ -1,6 +1,6 @@
 import { Maybe, assign, defaultTo } from 'vest-utils';
 
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import { countKeyBySeverity, Severity } from 'Severity';
 import {
   Groups,
@@ -48,7 +48,7 @@ export function useProduceSuiteSummary<
 function appendFailures<F extends TFieldName, G extends TGroupName>(
   key: Severity,
   failures: SummaryFailure<F, G>[],
-  testObject: IsolateTest<F, G>
+  testObject: TIsolateTest<F, G>
 ): SummaryFailure<F, G>[] {
   if (VestTestInspector.isOmitted(testObject)) {
     return failures;
@@ -67,7 +67,7 @@ function appendFailures<F extends TFieldName, G extends TGroupName>(
 
 function useAppendToTest<F extends TFieldName>(
   tests: Tests<F>,
-  testObject: IsolateTest<F>
+  testObject: TIsolateTest<F>
 ): Tests<F> {
   const { fieldName } = testObject;
 
@@ -90,7 +90,7 @@ function useAppendToTest<F extends TFieldName>(
  */
 function useAppendToGroup(
   groups: Groups<TGroupName, TFieldName>,
-  testObject: IsolateTest
+  testObject: TIsolateTest
 ): Groups<TGroupName, TFieldName> {
   const { groupName, fieldName } = testObject;
 
@@ -137,7 +137,7 @@ function countFailures<F extends TFieldName, G extends TGroupName>(
  */
 function appendTestObject(
   summaryKey: Maybe<SingleTestSummary>,
-  testObject: IsolateTest
+  testObject: TIsolateTest
 ): SingleTestSummary {
   const { message } = testObject;
 

@@ -1,7 +1,7 @@
 import { Nullable, optionalFunctionValue } from 'vest-utils';
 import { TIsolate, Walker } from 'vestjs-runtime';
 
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import { useInclusion } from 'SuiteContext';
 import { FocusSelectors, TIsolateFocused } from 'focused';
 import { useIsExcludedIndividually } from 'skipWhen';
@@ -9,7 +9,7 @@ import { useHasOnliedTests } from 'useHasOnliedTests';
 //Checks whether a certain test profile excluded by any of the exclusion groups.
 
 function useClosestMatchingFocus(
-  testObject: IsolateTest
+  testObject: TIsolateTest
 ): Nullable<TIsolateFocused> {
   return Walker.findClosest(testObject, (child: TIsolate) => {
     if (!FocusSelectors.isIsolateFocused(child)) return false;
@@ -19,7 +19,7 @@ function useClosestMatchingFocus(
 }
 
 // eslint-disable-next-line complexity, max-statements
-export function useIsExcluded(testObject: IsolateTest): boolean {
+export function useIsExcluded(testObject: TIsolateTest): boolean {
   const { fieldName } = testObject;
 
   if (useIsExcludedIndividually()) return true;

@@ -1,9 +1,9 @@
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import matchingFieldName from 'matchingFieldName';
 
 export function isSameProfileTest(
-  testObject1: IsolateTest,
-  testObject2: IsolateTest
+  testObject1: TIsolateTest,
+  testObject2: TIsolateTest
 ): boolean {
   return (
     matchingFieldName(testObject1, testObject2.fieldName) &&

@@ -1,26 +1,27 @@
-import { CB, seq } from 'vest-utils';
-import { IsolateKey, IsolateMutator, createIsolate } from 'vestjs-runtime';
+import { CB, Maybe, seq } from 'vest-utils';
+import {
+  IsolateKey,
+  IsolateMutator,
+  TIsolate,
+  createIsolate,
+} from 'vestjs-runtime';
 
 import { TestStatus } from 'IsolateTestStateMachine';
 import { TestSeverity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { TestFn } from 'TestTypes';
+import { AsyncTest, TestFn } from 'TestTypes';
 import { VestIsolateType } from 'VestIsolateType';
 
 export type TIsolateTest<
   F extends TFieldName = TFieldName,
   G extends TGroupName = TGroupName
-> = IsolateTestInput<F, G> & {
-  id: string;
-  severity: TestSeverity;
-  status: TestStatus;
-};
+> = TIsolate & IsolateTestInput<F, G> & IsolateTestPayload;
 
 export function IsolateTest<
   F extends TFieldName = TFieldName,
   G extends TGroupName = TGroupName
 >(callback: CB, input: IsolateTestInput): TIsolateTest<F, G> {
-  const payload: TIsolateTest = {
+  const payload: IsolateTestPayload = {
     fieldName: input.fieldName,
     id: seq(),
     severity: TestSeverity.Error,
@@ -35,14 +36,15 @@ export function IsolateTest<
   if (input.message) {
     payload.message = input.message;
   }
-  const isolate = createIsolate<TIsolateTest<F, G>>(
+  const isolate = createIsolate<IsolateTestPayload>(
     VestIsolateType.Test,
-    callback
+    callback,
+    payload
   );
 
   IsolateMutator.setKey(isolate, input.key ?? null);
 
-  return isolate;
+  return isolate as TIsolateTest<F, G>;
 }
 // valueOf(): boolean {
 //   return !VestTestInspector.isFailing(this);
@@ -51,8 +53,18 @@ export function IsolateTest<
 type IsolateTestPayload<
   F extends TFieldName = TFieldName,
   G extends TGroupName = TGroupName
+> = CommonTestFields<F, G> & {
+  id: string;
+  severity: TestSeverity;
+  status: TestStatus;
+  asyncTest?: AsyncTest;
+};
+
+type CommonTestFields<
+  F extends TFieldName = TFieldName,
+  G extends TGroupName = TGroupName
 > = {
-  message?: string;
+  message?: Maybe<string>;
   groupName?: G;
   fieldName: F;
   testFn: TestFn;
@@ -61,6 +73,6 @@ type IsolateTestPayload<
 type IsolateTestInput<
   F extends TFieldName = TFieldName,
   G extends TGroupName = TGroupName
-> = IsolateTestPayload<F, G> & {
+> = CommonTestFields<F, G> & {
   key?: IsolateKey;
 };

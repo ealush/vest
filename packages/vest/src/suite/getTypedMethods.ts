@@ -1,9 +1,9 @@
 // import { optional, skipWhen, omitWhen, IsolateTest, group } from 'vest';
 import { optional } from 'optional';
 import { CB, DynamicValue } from 'vest-utils';
-import { Isolate, IsolateKey } from 'vestjs-runtime';
+import { TIsolate, IsolateKey } from 'vestjs-runtime';
 
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import { OptionalsInput } from 'OptionalTypes';
 import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
@@ -45,16 +45,16 @@ export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
   };
   skipWhen: (condition: TDraftCondition<F, G>, callback: CB) => void;
   test: {
-    (fieldName: F, message: string, cb: TestFn): IsolateTest;
-    (fieldName: F, cb: TestFn): IsolateTest;
-    (fieldName: F, message: string, cb: TestFn, key: IsolateKey): IsolateTest;
-    (fieldName: F, cb: TestFn, key: IsolateKey): IsolateTest;
+    (fieldName: F, message: string, cb: TestFn): TIsolateTest;
+    (fieldName: F, cb: TestFn): TIsolateTest;
+    (fieldName: F, message: string, cb: TestFn, key: IsolateKey): TIsolateTest;
+    (fieldName: F, cb: TestFn, key: IsolateKey): TIsolateTest;
   } & {
     memo: TestMemo<F>;
   };
   group: {
-    (callback: () => void): Isolate;
-    (groupName: G, callback: () => void): Isolate;
+    (callback: () => void): TIsolate;
+    (groupName: G, callback: () => void): TIsolate;
   };
 };
 

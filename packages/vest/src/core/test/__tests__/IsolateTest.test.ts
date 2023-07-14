@@ -1,20 +1,21 @@
-import { VestTestMutator } from 'VestTestMutator';
+import { noop } from 'vest-utils';
 import wait from 'wait';
 
 import { TestPromise } from '../../../../testUtils/testPromise';
 
-import { IsolateTest } from 'IsolateTest';
+import { IsolateTest, TIsolateTest } from 'IsolateTest';
 import { VestTestInspector } from 'VestTestInspector';
+import { VestTestMutator } from 'VestTestMutator';
 import * as vest from 'vest';
 
 const fieldName = 'unicycle';
 const message = 'I am Root.';
 
 describe('IsolateTest', () => {
-  let testObject: IsolateTest;
+  let testObject: TIsolateTest;
 
   beforeEach(() => {
-    testObject = new IsolateTest({
+    testObject = IsolateTest(noop, {
       fieldName,
       testFn: jest.fn(),
       message,
@@ -26,14 +27,12 @@ describe('IsolateTest', () => {
   });
 
   it('Should have a unique id', () => {
-    Array.from(
-      { length: 100 },
-      () =>
-        new IsolateTest({
-          fieldName,
-          testFn: jest.fn(),
-          message,
-        })
+    Array.from({ length: 100 }, () =>
+      IsolateTest(noop, {
+        fieldName,
+        testFn: jest.fn(),
+        message,
+      })
     ).reduce((existing, { id }) => {
       expect(existing.has(id)).toBe(false);
       existing.add(id);
@@ -55,7 +54,7 @@ describe('IsolateTest', () => {
       jest.resetModules();
 
       const { IsolateTest } = require('IsolateTest'); // eslint-disable-line @typescript-eslint/no-var-requires
-      testObject = new IsolateTest(fieldName, jest.fn(), { message });
+      testObject = IsolateTest(noop, fieldName, jest.fn(), { message });
     });
 
     afterEach(() => {

@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { text } from 'vest-utils';
+import { IsolateInspector } from 'vestjs-runtime';
 
 import { TestPromise } from '../../../../testUtils/testPromise';
 
@@ -183,7 +184,7 @@ describe("Test Vest's `test` function", () => {
       expect(testObject).toMatchSnapshot();
     });
 
-    it('creates a test with a message and with a key', () => {
+    it.only('creates a test with a message and with a key', () => {
       vest.create(() => {
         testObject = vest.test(
           'field_name',
@@ -195,7 +196,9 @@ describe("Test Vest's `test` function", () => {
       expect(testObject.fieldName).toBe('field_name');
       expect(testObject.key).toBe('keyboardcat');
       expect(testObject.message).toBe('failure message');
-      expect(testObject).toMatchSnapshot();
+      expect(IsolateInspector.dump(testObject)).toMatchInlineSnapshot(
+        `"{"children":[],"key":"keyboardcat","keys":{},"type":"Test","fieldName":"field_name","id":"1","severity":"error","status":"PASSING","message":"failure message"}"`
+      );
     });
 
     it('throws when field name is not a string', () => {

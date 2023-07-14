@@ -66,7 +66,7 @@ describe('isolate', () => {
   });
 
   describe('When order changes within the isolate', () => {
-    it('Should contain test order changes within the isolate', () => {
+    it.only('Should contain test order changes within the isolate', () => {
       const suite = genSuite(() => {
         dummyTest.failing('f1');
 

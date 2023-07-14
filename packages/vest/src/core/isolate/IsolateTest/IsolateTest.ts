@@ -42,9 +42,12 @@ export function IsolateTest<
     payload
   );
 
-  IsolateMutator.setKey(isolate, input.key ?? null);
+  const x = IsolateMutator.setKey(isolate, input.key ?? null) as TIsolateTest<
+    F,
+    G
+  >;
 
-  return isolate as TIsolateTest<F, G>;
+  return x;
 }
 // valueOf(): boolean {
 //   return !VestTestInspector.isFailing(this);

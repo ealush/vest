@@ -1,14 +1,15 @@
-import { VestTestMutator } from 'VestTestMutator';
+import { noop } from 'vest-utils';
 
-import { IsolateTest } from 'IsolateTest';
+import { IsolateTest, TIsolateTest } from 'IsolateTest';
 import { Severity } from 'Severity';
+import { VestTestMutator } from 'VestTestMutator';
 import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
 
 describe('nonMatchingSeverityProfile', () => {
-  let testObject: IsolateTest;
+  let testObject: TIsolateTest;
 
   beforeEach(() => {
-    testObject = new IsolateTest({
+    testObject = IsolateTest(noop, {
       fieldName: 'field',
       testFn: jest.fn(),
     });

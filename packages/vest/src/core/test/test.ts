@@ -49,7 +49,9 @@ function vestTest<F extends TFieldName>(
   // This invalidates the suite cache.
   Bus.useEmit(Events.TEST_RUN_STARTED);
 
-  return IsolateTest(useAttemptRunTest, testObjectInput);
+  const io = IsolateTest(useAttemptRunTest, testObjectInput);
+
+  return io;
 }
 
 export const test = assign(vestTest, {

@@ -1,6 +1,12 @@
 import { createCascade } from 'context';
-import { assign, TinyState, tinyState, cache, CacheApi } from 'vest-utils';
-import { DynamicValue } from 'vest-utils/src/utilityTypes';
+import {
+  assign,
+  TinyState,
+  tinyState,
+  cache,
+  CacheApi,
+  DynamicValue,
+} from 'vest-utils';
 
 import { TIsolateTest } from 'IsolateTest';
 import { Modes } from 'Modes';

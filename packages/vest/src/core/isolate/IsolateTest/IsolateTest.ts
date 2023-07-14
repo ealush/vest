@@ -4,6 +4,7 @@ import {
   IsolateMutator,
   TIsolate,
   createIsolate,
+  BaseIsolatePayload,
 } from 'vestjs-runtime';
 
 import { TestStatus } from 'IsolateTestStateMachine';
@@ -11,6 +12,7 @@ import { TestSeverity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { AsyncTest, TestFn } from 'TestTypes';
 import { VestIsolateType } from 'VestIsolateType';
+import { VestTestInspector } from 'VestTestInspector';
 
 export type TIsolateTest<
   F extends TFieldName = TFieldName,
@@ -22,10 +24,9 @@ export function IsolateTest<
   G extends TGroupName = TGroupName
 >(callback: CB, input: IsolateTestInput): TIsolateTest<F, G> {
   const payload: IsolateTestPayload = {
+    ...IsolateTestBase(),
     fieldName: input.fieldName,
-    id: seq(),
-    severity: TestSeverity.Error,
-    status: TestStatus.UNTESTED,
+    key: input.key ?? null,
     testFn: input.testFn,
   };
 
@@ -42,16 +43,29 @@ export function IsolateTest<
     payload
   );
 
-  const x = IsolateMutator.setKey(isolate, input.key ?? null) as TIsolateTest<
-    F,
-    G
-  >;
+  setIsolateTestValueOf(isolate);
 
-  return x;
+  const isolatek = IsolateMutator.setKey(
+    isolate,
+    input.key ?? null
+  ) as TIsolateTest<F, G>;
+
+  return isolatek;
 }
-// valueOf(): boolean {
-//   return !VestTestInspector.isFailing(this);
-// }
+
+export function IsolateTestBase() {
+  return {
+    id: seq(),
+    severity: TestSeverity.Error,
+    status: TestStatus.UNTESTED,
+  };
+}
+
+export function setIsolateTestValueOf(test: TIsolateTest) {
+  test.valueOf = () => {
+    return !VestTestInspector.isFailing(test);
+  };
+}
 
 export type IsolateTestPayload<
   F extends TFieldName = TFieldName,
@@ -61,7 +75,7 @@ export type IsolateTestPayload<
   severity: TestSeverity;
   status: TestStatus;
   asyncTest?: AsyncTest;
-};
+} & BaseIsolatePayload;
 
 type CommonTestFields<
   F extends TFieldName = TFieldName,

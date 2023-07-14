@@ -11,7 +11,6 @@ describe('isolate', () => {
   let firstRun = true;
   // eslint-disable-next-line no-unused-expressions
   require('IsolateTest').IsolateTest;
-  let Isolate = require('vestjs-runtime').Isolate;
   // eslint-disable-next-line no-unused-expressions
   require('IsolateEach').IsolateEach;
   let dummyTest: TDummyTest;
@@ -23,7 +22,6 @@ describe('isolate', () => {
     deferThrow = mock.deferThrow;
     // eslint-disable-next-line no-unused-expressions
     require('IsolateTest').IsolateTest;
-    Isolate = require('vestjs-runtime').Isolate;
     // eslint-disable-next-line no-unused-expressions
     require('IsolateEach').IsolateEach;
     vest = mock.vest;
@@ -37,6 +35,7 @@ describe('isolate', () => {
 
   describe('Base behavior', () => {
     it("Should throw an error if the callback isn't a function", () => {
+      // @ts-ignore - testing bad input
       expect(() => createIsolate('xx', {}, 'not a function')).toThrow();
     });
 
@@ -45,10 +44,8 @@ describe('isolate', () => {
       const f2 = jest.fn(() => false);
       const suite = genSuite(() => {
         vest.skipWhen(!firstRun, () => {
-          createIsolate('UT', () => {
-            vest.test('f1', f1);
-            vest.test('f2', f2);
-          });
+          vest.test('f1', f1);
+          vest.test('f2', f2);
         });
       });
 
@@ -66,11 +63,11 @@ describe('isolate', () => {
   });
 
   describe('When order changes within the isolate', () => {
-    it.only('Should contain test order changes within the isolate', () => {
+    it('Should contain test order changes within the isolate', () => {
       const suite = genSuite(() => {
         dummyTest.failing('f1');
 
-        createIsolate('Unit', () => {
+        vest.group(() => {
           dummyTest.failing('f2');
           if (!firstRun) {
             dummyTest.failing('f3');
@@ -114,7 +111,7 @@ describe('isolate', () => {
 
     it('Should only retain the state of the unmoved state before the order index', () => {
       const suite = genSuite(() => {
-        Isolate.create(() => {
+        vest.group(() => {
           vest.skipWhen(!firstRun, () => {
             dummyTest.failing('f1');
           });
@@ -157,7 +154,7 @@ describe('isolate', () => {
         // if the state is kept, they should be invalid. Otherwise
         // they should be untested.
         vest.skipWhen(!firstRun, () => {
-          Isolate.create(() => {
+          vest.group(() => {
             dummyTest.failing('f2');
             dummyTest.failing('f3');
             dummyTest.failing('f4');
@@ -201,11 +198,11 @@ describe('isolate', () => {
     it('Should replace isolate completely', () => {
       const suite = genSuite(() => {
         if (firstRun) {
-          Isolate.create(() => {
+          vest.group(() => {
             dummyTest.failing('f1');
           });
         } else {
-          Isolate.create(() => {
+          vest.group(() => {
             dummyTest.failing('f2');
           });
         }
@@ -230,7 +227,7 @@ describe('isolate', () => {
         if (firstRun) {
           dummyTest.failing('f1');
         } else {
-          Isolate.create(() => {
+          vest.group(() => {
             dummyTest.failing('f2');
           });
         }
@@ -251,7 +248,7 @@ describe('isolate', () => {
     describe('Errors', () => {
       it('should throw a deferred error when the tests are out of order', () => {
         const suite = genSuite(() => {
-          Isolate.create(() => {
+          vest.group(() => {
             dummyTest.failing(firstRun ? 'f1' : 'f2');
           });
         });
@@ -265,22 +262,6 @@ describe('isolate', () => {
             'Vest Critical Error: Tests called in different order than previous run'
           )
         );
-      });
-
-      it('Should allow unordered tests when allowReorder is set to true', () => {
-        class DIsolate extends Isolate {
-          allowReorder = true;
-        }
-        const suite = genSuite(() => {
-          DIsolate.create(() => {
-            dummyTest.failing(firstRun ? 'f1' : 'f2');
-          });
-        });
-
-        suite();
-        expect(deferThrow).toHaveBeenCalledTimes(0);
-        suite();
-        expect(deferThrow).toHaveBeenCalledTimes(0);
       });
     });
   });

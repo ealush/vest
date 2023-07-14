@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
-import { noop } from 'vest-utils';
 
-import { IsolateTest, TIsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import { Severity } from 'Severity';
 import { VestTestMutator } from 'VestTestMutator';
 import { hasFailuresByTestObject } from 'hasFailuresByTestObjects';
+import { mockIsolateTest } from 'vestMocks';
 
 const fieldName: string = faker.random.word();
 
@@ -13,9 +13,8 @@ describe('hasFailuresByTestObject', () => {
 
   beforeEach(() => {
     const fieldName: string = faker.random.word();
-    testObject = IsolateTest(noop, {
+    testObject = mockIsolateTest({
       fieldName,
-      testFn: jest.fn(),
     });
   });
 

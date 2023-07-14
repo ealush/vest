@@ -184,7 +184,7 @@ describe("Test Vest's `test` function", () => {
       expect(testObject).toMatchSnapshot();
     });
 
-    it.only('creates a test with a message and with a key', () => {
+    it('creates a test with a message and with a key', () => {
       vest.create(() => {
         testObject = vest.test(
           'field_name',
@@ -197,7 +197,7 @@ describe("Test Vest's `test` function", () => {
       expect(testObject.key).toBe('keyboardcat');
       expect(testObject.message).toBe('failure message');
       expect(IsolateInspector.dump(testObject)).toMatchInlineSnapshot(
-        `"{"children":[],"key":"keyboardcat","keys":{},"type":"Test","fieldName":"field_name","id":"1","severity":"error","status":"PASSING","message":"failure message"}"`
+        `"{"children":[],"key":"keyboardcat","keys":{},"type":"Test","id":"23","severity":"error","status":"PASSING","fieldName":"field_name","message":"failure message"}"`
       );
     });
 

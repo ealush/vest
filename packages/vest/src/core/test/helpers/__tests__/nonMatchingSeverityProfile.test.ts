@@ -1,17 +1,15 @@
-import { noop } from 'vest-utils';
-
-import { IsolateTest, TIsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import { Severity } from 'Severity';
 import { VestTestMutator } from 'VestTestMutator';
 import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
+import { mockIsolateTest } from 'vestMocks';
 
 describe('nonMatchingSeverityProfile', () => {
   let testObject: TIsolateTest;
 
   beforeEach(() => {
-    testObject = IsolateTest(noop, {
+    testObject = mockIsolateTest({
       fieldName: 'field',
-      testFn: jest.fn(),
     });
   });
   describe('When matching', () => {

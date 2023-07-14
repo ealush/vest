@@ -15,7 +15,11 @@ export type TIsolate = {
   keys: Record<string, TIsolate>;
 };
 
-export function createIsolate<Payload extends Record<string, any>>(
+export type BaseIsolatePayload = Record<string, any> & {
+  key?: IsolateKey;
+};
+
+export function createIsolate<Payload extends BaseIsolatePayload>(
   type: string,
   callback: CB,
   payload: Payload = {} as Payload

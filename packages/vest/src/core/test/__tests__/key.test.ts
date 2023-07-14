@@ -188,7 +188,7 @@ describe('key', () => {
         });
         suite();
         expect(deferThrow).toHaveBeenCalledWith(
-          `Encountered the same test key "key_1" twice. This may lead to tests overriding each other's results, or to tests being unexpectedly omitted.`
+          `Encountered the same key "key_1" twice. This may lead to inconsistent or overriding of results.`
         );
       });
     });

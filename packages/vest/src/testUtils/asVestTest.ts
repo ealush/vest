@@ -1,9 +1,10 @@
 import { invariant } from 'vest-utils';
 
 import { ErrorStrings } from 'ErrorStrings';
-import { IsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
+import { isIsolateTest } from 'isIsolateTest';
 
-export function asVestTest(value: any): IsolateTest {
-  invariant(value instanceof IsolateTest, ErrorStrings.EXPECTED_VEST_TEST);
+export function asVestTest(value: any): TIsolateTest {
+  invariant(isIsolateTest(value), ErrorStrings.EXPECTED_VEST_TEST);
   return value;
 }

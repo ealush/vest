@@ -1,12 +1,12 @@
-import { noop } from 'vest-utils';
 import wait from 'wait';
 
 import { TestPromise } from '../../../testUtils/testPromise';
 
-import { IsolateTest, TIsolateTest } from 'IsolateTest';
+import { TIsolateTest } from 'IsolateTest';
 import { VestTestInspector } from 'VestTestInspector';
 import { VestTestMutator } from 'VestTestMutator';
 import * as vest from 'vest';
+import { mockIsolateTest } from 'vestMocks';
 
 const fieldName = 'unicycle';
 const message = 'I am Root.';
@@ -15,9 +15,8 @@ describe('IsolateTest', () => {
   let testObject: TIsolateTest;
 
   beforeEach(() => {
-    testObject = IsolateTest(noop, {
+    testObject = mockIsolateTest({
       fieldName,
-      testFn: jest.fn(),
       message,
     });
   });
@@ -28,9 +27,8 @@ describe('IsolateTest', () => {
 
   it('Should have a unique id', () => {
     Array.from({ length: 100 }, () =>
-      IsolateTest(noop, {
+      mockIsolateTest({
         fieldName,
-        testFn: jest.fn(),
         message,
       })
     ).reduce((existing, { id }) => {
@@ -51,10 +49,7 @@ describe('IsolateTest', () => {
 
   describe('testObject.fail', () => {
     beforeEach(() => {
-      jest.resetModules();
-
-      const { IsolateTest } = require('IsolateTest'); // eslint-disable-line @typescript-eslint/no-var-requires
-      testObject = IsolateTest(noop, fieldName, jest.fn(), { message });
+      testObject = mockIsolateTest({ fieldName, message });
     });
 
     afterEach(() => {

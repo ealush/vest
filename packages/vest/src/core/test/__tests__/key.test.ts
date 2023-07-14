@@ -3,6 +3,7 @@ import { TDeferThrow } from 'vest-utils/src/deferThrow';
 import { TVestMock } from '../../../../testUtils/TVestMock';
 import mockThrowError from '../../../../testUtils/mockThrowError';
 
+import { TIsolateTest } from 'IsolateTest';
 import * as vest from 'vest';
 
 describe('key', () => {
@@ -47,9 +48,9 @@ describe('key', () => {
 
     describe('When two tests in two different isolates have the same key', () => {
       it('Should regarad each key as unique and retain each tests individual result', () => {
-        const calls: vest.IsolateTest[][] = [];
+        const calls: TIsolateTest[][] = [];
         const suite = vest.create(() => {
-          const currentCall: vest.IsolateTest[] = [];
+          const currentCall: TIsolateTest[] = [];
 
           vest.skipWhen(calls.length === 1, () => {
             vest.group('group_1', () => {
@@ -85,9 +86,9 @@ describe('key', () => {
         jest.resetAllMocks();
       });
       it('Should retain keyd tests', () => {
-        const calls: vest.IsolateTest[][] = [];
+        const calls: TIsolateTest[][] = [];
         const suite = vest.create(() => {
-          const currentCall: vest.IsolateTest[] = [];
+          const currentCall: TIsolateTest[] = [];
           vest.skipWhen(calls.length === 1, () => {
             if (calls.length === 1) {
               vest.test('reordered', () => false);

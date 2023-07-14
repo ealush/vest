@@ -37,7 +37,7 @@ describe('isolate', () => {
 
   describe('Base behavior', () => {
     it("Should throw an error if the callback isn't a function", () => {
-      expect(() => Isolate.create({}, 'not a function')).toThrow();
+      expect(() => createIsolate('xx', {}, 'not a function')).toThrow();
     });
 
     it('Should retain test results between runs', () => {
@@ -45,7 +45,7 @@ describe('isolate', () => {
       const f2 = jest.fn(() => false);
       const suite = genSuite(() => {
         vest.skipWhen(!firstRun, () => {
-          Isolate.create(() => {
+          createIsolate('UT', () => {
             vest.test('f1', f1);
             vest.test('f2', f2);
           });

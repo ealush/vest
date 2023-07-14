@@ -4,11 +4,12 @@ import { text } from 'vest-utils';
 import { TestPromise } from '../../../../testUtils/testPromise';
 
 import { ErrorStrings } from 'ErrorStrings';
+import { TIsolateTest } from 'IsolateTest';
 import { VestTestInspector } from 'VestTestInspector';
-import { enforce, IsolateTest } from 'vest';
+import { enforce } from 'vest';
 import * as vest from 'vest';
 
-let testObject: IsolateTest;
+let testObject: TIsolateTest;
 
 describe("Test Vest's `test` function", () => {
   describe('test callbacks', () => {
@@ -147,7 +148,7 @@ describe("Test Vest's `test` function", () => {
   });
 
   describe('test params', () => {
-    let testObject: IsolateTest;
+    let testObject: TIsolateTest;
     it('creates a test without a message and without a key', () => {
       vest.create(() => {
         testObject = vest.test('field_name', () => undefined);

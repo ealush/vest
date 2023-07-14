@@ -2,9 +2,9 @@ import { CB } from 'vest-utils';
 import { TDeferThrow } from 'vest-utils/src/deferThrow';
 import { createIsolate } from 'vestjs-runtime';
 
-import { TVestMock } from '../../testUtils/TVestMock';
-import mockThrowError from '../../testUtils/mockThrowError';
-import { TDummyTest } from '../../testUtils/testDummy';
+import { TVestMock } from '../testUtils/TVestMock';
+import mockThrowError from '../testUtils/mockThrowError';
+import { TDummyTest } from '../testUtils/testDummy';
 
 describe('isolate', () => {
   let vest: TVestMock;
@@ -27,7 +27,7 @@ describe('isolate', () => {
     // eslint-disable-next-line no-unused-expressions
     require('IsolateEach').IsolateEach;
     vest = mock.vest;
-    dummyTest = require('../../testUtils/testDummy').dummyTest;
+    dummyTest = require('../testUtils/testDummy').dummyTest;
   });
 
   afterEach(() => {

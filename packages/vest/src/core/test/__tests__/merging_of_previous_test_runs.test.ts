@@ -1,6 +1,6 @@
-import { TTestSuite, TVestMock } from '../../../../testUtils/TVestMock';
-import mockThrowError from '../../../../testUtils/mockThrowError';
-import { dummyTest } from '../../../../testUtils/testDummy';
+import { TTestSuite, TVestMock } from '../../../testUtils/TVestMock';
+import mockThrowError from '../../../testUtils/mockThrowError';
+import { dummyTest } from '../../../testUtils/testDummy';
 
 import { Modes } from 'Modes';
 import * as vest from 'vest';

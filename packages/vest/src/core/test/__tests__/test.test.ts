@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { text } from 'vest-utils';
 import { IsolateInspector } from 'vestjs-runtime';
 
-import { TestPromise } from '../../../../testUtils/testPromise';
+import { TestPromise } from '../../../testUtils/testPromise';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { TIsolateTest } from 'IsolateTest';

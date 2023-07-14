@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 
-import { dummyTest } from '../../../testUtils/testDummy';
-import { TestPromise } from '../../../testUtils/testPromise';
+import { dummyTest } from '../../testUtils/testDummy';
+import { TestPromise } from '../../testUtils/testPromise';
 import promisify from '../promisify';
 
 import { TFieldName } from 'SuiteResultTypes';

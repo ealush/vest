@@ -1,7 +1,7 @@
 import { TDeferThrow } from 'vest-utils/src/deferThrow';
 
-import { TVestMock } from '../../../testUtils/TVestMock';
-import mockThrowError from '../../../testUtils/mockThrowError';
+import { TVestMock } from '../../testUtils/TVestMock';
+import mockThrowError from '../../testUtils/mockThrowError';
 
 import * as vest from 'vest';
 

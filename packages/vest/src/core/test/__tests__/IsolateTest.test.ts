@@ -1,7 +1,7 @@
 import { noop } from 'vest-utils';
 import wait from 'wait';
 
-import { TestPromise } from '../../../../testUtils/testPromise';
+import { TestPromise } from '../../../testUtils/testPromise';
 
 import { IsolateTest, TIsolateTest } from 'IsolateTest';
 import { VestTestInspector } from 'VestTestInspector';

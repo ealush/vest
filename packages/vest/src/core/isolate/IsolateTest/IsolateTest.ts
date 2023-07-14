@@ -53,7 +53,7 @@ export function IsolateTest<
 //   return !VestTestInspector.isFailing(this);
 // }
 
-type IsolateTestPayload<
+export type IsolateTestPayload<
   F extends TFieldName = TFieldName,
   G extends TGroupName = TGroupName
 > = CommonTestFields<F, G> & {

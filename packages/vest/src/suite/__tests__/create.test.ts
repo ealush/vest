@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { noop } from 'lodash';
 
-import { dummyTest } from '../../../testUtils/testDummy';
-import { TestPromise } from '../../../testUtils/testPromise';
+import { dummyTest } from '../../testUtils/testDummy';
+import { TestPromise } from '../../testUtils/testPromise';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { create } from 'vest';

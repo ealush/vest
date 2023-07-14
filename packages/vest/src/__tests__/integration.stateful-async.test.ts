@@ -1,7 +1,7 @@
 import wait from 'wait';
 
-import { dummyTest } from '../../testUtils/testDummy';
-import { TestPromise } from '../../testUtils/testPromise';
+import { dummyTest } from '../testUtils/testDummy';
+import { TestPromise } from '../testUtils/testPromise';
 
 import { Modes } from 'Modes';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';

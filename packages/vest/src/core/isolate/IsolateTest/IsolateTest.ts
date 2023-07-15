@@ -1,11 +1,5 @@
 import { CB, Maybe, seq } from 'vest-utils';
-import {
-  IsolateKey,
-  IsolateMutator,
-  TIsolate,
-  Isolate,
-  BaseIsolatePayload,
-} from 'vestjs-runtime';
+import { IsolateKey, TIsolate, Isolate } from 'vestjs-runtime';
 
 import { TestStatus } from 'IsolateTestStateMachine';
 import { TestSeverity } from 'Severity';
@@ -26,7 +20,6 @@ export function IsolateTest<
   const payload: IsolateTestPayload = {
     ...IsolateTestBase(),
     fieldName: input.fieldName,
-    key: input.key ?? null,
     testFn: input.testFn,
   };
 
@@ -37,20 +30,16 @@ export function IsolateTest<
   if (input.message) {
     payload.message = input.message;
   }
-  const isolate = Isolate.create<IsolateTestPayload>(
+  const isolate = Isolate.createWithKey<IsolateTestPayload>(
     VestIsolateType.Test,
+    input.key ?? null,
     callback,
     payload
   );
 
   setIsolateTestValueOf(isolate);
 
-  const isolatek = IsolateMutator.setKey(
-    isolate,
-    input.key ?? null
-  ) as TIsolateTest<F, G>;
-
-  return isolatek;
+  return isolate as TIsolateTest<F, G>;
 }
 
 export function IsolateTestBase() {
@@ -75,7 +64,7 @@ export type IsolateTestPayload<
   severity: TestSeverity;
   status: TestStatus;
   asyncTest?: AsyncTest;
-} & BaseIsolatePayload;
+};
 
 type CommonTestFields<
   F extends TFieldName = TFieldName,

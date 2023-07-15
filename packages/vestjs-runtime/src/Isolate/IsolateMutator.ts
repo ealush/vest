@@ -19,7 +19,10 @@ export class IsolateMutator {
   }
 
   static addChild(isolate: TIsolate, child: TIsolate): void {
-    invariant(isolate.children);
+    invariant(isolate);
+
+    isolate.children = isolate.children ?? [];
+
     isolate.children.push(child);
     IsolateMutator.setParent(child, isolate);
   }
@@ -27,6 +30,14 @@ export class IsolateMutator {
   static removeChild(isolate: TIsolate, node: TIsolate): void {
     isolate.children =
       isolate.children?.filter(child => child !== node) ?? null;
+  }
+
+  static addChildKey(isolate: TIsolate, key: string, node: TIsolate): void {
+    invariant(isolate);
+
+    isolate.keys = isolate.keys ?? {};
+
+    isolate.keys[key] = node;
   }
 
   static slice(isolate: TIsolate, at: number): void {

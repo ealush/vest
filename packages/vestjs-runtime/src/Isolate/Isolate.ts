@@ -12,7 +12,7 @@ export type TIsolate = {
   children: Nullable<TIsolate[]>;
   output: any;
   type: string;
-  keys: Record<string, TIsolate>;
+  keys: Nullable<Record<string, TIsolate>>;
 };
 
 export class Isolate {
@@ -48,8 +48,8 @@ function baseIsolate(
   key: IsolateKey = null
 ): TIsolate {
   return {
-    children: [],
-    keys: {},
+    children: null,
+    keys: null,
     output: null,
     parent: null,
     type,

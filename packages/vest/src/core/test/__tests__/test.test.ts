@@ -193,7 +193,7 @@ describe("Test Vest's `test` function", () => {
       expect(testObject.key).toBe('keyboardcat');
       expect(testObject.message).toBe('failure message');
       expect(IsolateInspector.dump(testObject)).toMatchInlineSnapshot(
-        `"{"children":[],"keys":{},"type":"Test","severity":"error","status":"PASSING","fieldName":"field_name","message":"failure message","key":"keyboardcat"}"`
+        `"{"children":null,"keys":null,"type":"Test","severity":"error","status":"PASSING","fieldName":"field_name","message":"failure message","key":"keyboardcat"}"`
       );
     });
 

@@ -38,6 +38,16 @@ export class IsolateInspector {
     return isNotNullish(isolate.key);
   }
 
+  static getChildByKey(
+    isolate: Nullable<TIsolate>,
+    key: string
+  ): Nullable<TIsolate> {
+    if (isNullish(isolate)) {
+      return null;
+    }
+    return isolate.keys?.[key] ?? null;
+  }
+
   static dump(isolate: TIsolate): string {
     if (isNullish(isolate)) {
       return '';

@@ -2,10 +2,10 @@
 
 exports[`Test Vest's \`test\` function test params creates a test without a key 1`] = `
 {
-  "children": [],
+  "children": null,
   "fieldName": "field_name",
   "key": null,
-  "keys": {},
+  "keys": null,
   "message": "failure message",
   "output": undefined,
   "parent": {
@@ -13,7 +13,7 @@ exports[`Test Vest's \`test\` function test params creates a test without a key 
       [Circular],
     ],
     "key": null,
-    "keys": {},
+    "keys": null,
     "optional": {},
     "output": {
       "done": [Function],
@@ -60,10 +60,10 @@ exports[`Test Vest's \`test\` function test params creates a test without a key 
 
 exports[`Test Vest's \`test\` function test params creates a test without a message and with a key 1`] = `
 {
-  "children": [],
+  "children": null,
   "fieldName": "field_name",
   "key": "keyboardcat",
-  "keys": {},
+  "keys": null,
   "output": undefined,
   "parent": {
     "children": [
@@ -119,17 +119,17 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
 
 exports[`Test Vest's \`test\` function test params creates a test without a message and without a key 1`] = `
 {
-  "children": [],
+  "children": null,
   "fieldName": "field_name",
   "key": null,
-  "keys": {},
+  "keys": null,
   "output": undefined,
   "parent": {
     "children": [
       [Circular],
     ],
     "key": null,
-    "keys": {},
+    "keys": null,
     "optional": {},
     "output": {
       "done": [Function],

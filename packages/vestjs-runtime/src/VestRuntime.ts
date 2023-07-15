@@ -130,8 +130,9 @@ export function useHistoryKey(key?: Nullable<string>): Nullable<TIsolate> {
 
   const historyNode = useX().historyNode;
 
-  return historyNode?.keys[key] ?? null;
+  return IsolateInspector.getChildByKey(historyNode, key);
 }
+
 export function useIsolate() {
   return useX().runtimeNode ?? null;
 }
@@ -149,7 +150,7 @@ export function useSetNextIsolateChild(child: TIsolate): void {
 
   IsolateMutator.addChild(currentIsolate, child);
 }
-export function useSetIsolateKey(key: Nullable<string>, value: TIsolate): void {
+export function useSetIsolateKey(key: Nullable<string>, node: TIsolate): void {
   if (!key) {
     return;
   }
@@ -158,8 +159,8 @@ export function useSetIsolateKey(key: Nullable<string>, value: TIsolate): void {
 
   invariant(currentIsolate, ErrorStrings.NO_ACTIVE_ISOLATE);
 
-  if (isNullish(currentIsolate.keys[key])) {
-    currentIsolate.keys[key] = value;
+  if (isNullish(IsolateInspector.getChildByKey(currentIsolate, key))) {
+    IsolateMutator.addChildKey(currentIsolate, key, node);
 
     return;
   }

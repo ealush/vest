@@ -1,4 +1,4 @@
-import { CB, Maybe, Nullable } from 'vest-utils';
+import { CB, Nullable } from 'vest-utils';
 
 import { IsolateMutator } from 'IsolateMutator';
 import { Reconciler } from 'Reconciler';
@@ -19,7 +19,7 @@ export class Isolate {
   static create<Payload extends Record<string, any>>(
     type: string,
     callback: CB,
-    payload?: Maybe<Payload>,
+    payload: Nullable<Payload> = null,
     key?: IsolateKey
   ): TIsolate & Payload {
     const parent = VestRuntime.useIsolate();
@@ -40,20 +40,11 @@ export class Isolate {
 
     return nextIsolateChild as TIsolate & Payload;
   }
-
-  static createWithKey<Payload extends Record<string, any>>(
-    type: string,
-    key: IsolateKey,
-    callback: CB,
-    payload?: Maybe<Payload>
-  ): TIsolate & Payload {
-    return Isolate.create(type, callback, payload, key);
-  }
 }
 
 function baseIsolate(
   type: string,
-  payload: Maybe<Record<string, any>> = undefined,
+  payload: Nullable<IsolatePayload>,
   key: IsolateKey = null
 ): TIsolate {
   return {
@@ -66,3 +57,5 @@ function baseIsolate(
     key,
   };
 }
+
+type IsolatePayload = Record<string, any>;

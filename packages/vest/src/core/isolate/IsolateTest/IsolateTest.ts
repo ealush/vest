@@ -29,11 +29,11 @@ export function IsolateTest<
   if (input.message) {
     payload.message = input.message;
   }
-  const isolate = Isolate.createWithKey<IsolateTestPayload>(
+  const isolate = Isolate.create<IsolateTestPayload>(
     VestIsolateType.Test,
-    input.key ?? null,
     callback,
-    payload
+    payload,
+    input.key ?? null
   );
 
   return isolate as TIsolateTest<F, G>;

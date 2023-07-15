@@ -25,19 +25,6 @@ describe('IsolateTest', () => {
     expect(testObject).toMatchSnapshot();
   });
 
-  it('Should have a unique id', () => {
-    Array.from({ length: 100 }, () =>
-      mockIsolateTest({
-        fieldName,
-        message,
-      })
-    ).reduce((existing, { id }) => {
-      expect(existing.has(id)).toBe(false);
-      existing.add(id);
-      return existing;
-    }, new Set<string>());
-  });
-
   describe('testObject.warn', () => {
     it('Should mark the test as warning', () => {
       expect(VestTestInspector.warns(testObject)).toBe(false);
@@ -63,20 +50,9 @@ describe('IsolateTest', () => {
     });
   });
 
-  describe('testObject.valueOf', () => {
-    test('When test did not fail', () => {
-      expect(testObject.valueOf()).toBe(true);
-    });
-
-    test('When test failed', () => {
-      VestTestMutator.fail(testObject);
-      expect(testObject.valueOf()).toBe(false);
-    });
-  });
-
   describe('testObject.cancel', () => {
     it('Should set the testObject to cancel', () => {
-      let testObject: IsolateTest;
+      let testObject: TIsolateTest;
       return TestPromise(done => {
         const suite = vest.create(() => {
           testObject = vest.test('f1', async () => {

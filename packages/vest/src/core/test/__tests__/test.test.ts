@@ -41,8 +41,6 @@ describe("Test Vest's `test` function", () => {
           );
         })();
         expect(VestTestInspector.isFailing(testObject)).toBe(true);
-        // @ts-ignore - very much intentional
-        expect(testObject == false).toBe(true); //eslint-disable-line
       });
 
       it('Should be marked as failed for an explicit false return', () => {
@@ -50,8 +48,6 @@ describe("Test Vest's `test` function", () => {
           vest.test(faker.random.word(), faker.lorem.sentence(), () => false);
         })();
         expect(VestTestInspector.isFailing(testObject)).toBe(true);
-        // @ts-ignore - very much intentional
-        expect(testObject == false).toBe(true); //eslint-disable-line
       });
 
       describe('Thrown with a message', () => {
@@ -197,7 +193,7 @@ describe("Test Vest's `test` function", () => {
       expect(testObject.key).toBe('keyboardcat');
       expect(testObject.message).toBe('failure message');
       expect(IsolateInspector.dump(testObject)).toMatchInlineSnapshot(
-        `"{"children":[],"key":"keyboardcat","keys":{},"type":"Test","id":"23","severity":"error","status":"PASSING","fieldName":"field_name","message":"failure message"}"`
+        `"{"children":[],"keys":{},"type":"Test","severity":"error","status":"PASSING","fieldName":"field_name","message":"failure message","key":"keyboardcat"}"`
       );
     });
 

@@ -4,7 +4,6 @@ exports[`Test Vest's \`test\` function test params creates a test without a key 
 {
   "children": [],
   "fieldName": "field_name",
-  "id": "19",
   "key": null,
   "keys": {},
   "message": "failure message",
@@ -56,7 +55,6 @@ exports[`Test Vest's \`test\` function test params creates a test without a key 
   "status": "PASSING",
   "testFn": [Function],
   "type": "Test",
-  "valueOf": [Function],
 }
 `;
 
@@ -64,7 +62,6 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
 {
   "children": [],
   "fieldName": "field_name",
-  "id": "21",
   "key": "keyboardcat",
   "keys": {},
   "output": undefined,
@@ -117,7 +114,6 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
   "status": "PASSING",
   "testFn": [Function],
   "type": "Test",
-  "valueOf": [Function],
 }
 `;
 
@@ -125,7 +121,6 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
 {
   "children": [],
   "fieldName": "field_name",
-  "id": "17",
   "key": null,
   "keys": {},
   "output": undefined,
@@ -176,6 +171,5 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
   "status": "PASSING",
   "testFn": [Function],
   "type": "Test",
-  "valueOf": [Function],
 }
 `;

@@ -1,10 +1,21 @@
-import { Nullable, invariant, isNullish } from 'vest-utils';
+import {
+  Nullable,
+  invariant,
+  isNullish,
+  optionalFunctionValue,
+} from 'vest-utils';
 
 import { TIsolate } from 'Isolate';
+import { IsolateInspector } from 'IsolateInspector';
 
 export class IsolateMutator {
   static setParent(isolate: TIsolate, parent: Nullable<TIsolate>): TIsolate {
     isolate.parent = parent;
+    return isolate;
+  }
+
+  static allowReorder(isolate: TIsolate): TIsolate {
+    isolate.allowReorder = true;
     return isolate;
   }
 
@@ -34,5 +45,17 @@ export class IsolateMutator {
       return;
     }
     isolate.children.length = at;
+  }
+
+  static setData(
+    isolate: TIsolate,
+    key: string,
+    setter: ((currentValue: any) => any) | any
+  ): void {
+    isolate.data = isolate.data ?? {};
+    isolate.data[key] = optionalFunctionValue(
+      setter,
+      IsolateInspector.getData(isolate)
+    );
   }
 }

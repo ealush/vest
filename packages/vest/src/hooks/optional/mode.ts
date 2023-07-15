@@ -1,6 +1,6 @@
 import { Modes } from 'Modes';
 import { useMode } from 'SuiteContext';
-import { WithFieldName } from 'TestTypes';
+import { TFieldName } from 'SuiteResultTypes';
 import { hasErrorsByTestObjects } from 'hasFailuresByTestObjects';
 
 /**
@@ -45,13 +45,13 @@ function useIsOne(): boolean {
   return useIsMode(Modes.ONE);
 }
 
-export function useShouldSkipBasedOnMode(testObject: WithFieldName): boolean {
+export function useShouldSkipBasedOnMode(fieldName: TFieldName): boolean {
   if (useIsOne()) {
     return hasErrorsByTestObjects();
   }
 
   if (useIsEager()) {
-    return hasErrorsByTestObjects(testObject.fieldName);
+    return hasErrorsByTestObjects(fieldName);
   }
 
   return false;

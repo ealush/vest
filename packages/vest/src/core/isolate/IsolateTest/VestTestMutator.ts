@@ -1,3 +1,5 @@
+import { IsolateInspector, IsolateMutator } from 'vestjs-runtime';
+
 import { TIsolateTest } from 'IsolateTest';
 import {
   TestAction,
@@ -27,7 +29,7 @@ export class VestTestMutator {
   }
 
   static warn(test: TIsolateTest): void {
-    test.severity = TestSeverity.Warning;
+    IsolateMutator.setData(test, 'severity', TestSeverity.Warning);
   }
 
   static skip(test: TIsolateTest, force?: boolean): void {
@@ -61,10 +63,14 @@ export class VestTestMutator {
     status: TestStateMachineAction,
     payload?: any
   ): void {
-    test.status = TestStateMachine.staticTransition(
-      test.status,
-      status,
-      payload
+    IsolateMutator.setData(
+      test,
+      'status',
+      TestStateMachine.staticTransition(
+        IsolateInspector.getData(test).status,
+        status,
+        payload
+      )
     );
   }
 }

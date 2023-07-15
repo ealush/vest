@@ -83,7 +83,10 @@ export class TestWalker {
   static hasRemainingTests(fieldName?: TFieldName): boolean {
     return TestWalker.someIncompleteTests(testObject => {
       if (fieldName) {
-        return matchingFieldName(testObject, fieldName);
+        return matchingFieldName(
+          VestTestInspector.getData(testObject),
+          fieldName
+        );
       }
       return true;
     });
@@ -107,7 +110,7 @@ export class TestWalker {
 
   static resetField(fieldName: TFieldName): void {
     TestWalker.walkTests(testObject => {
-      if (matchingFieldName(testObject, fieldName)) {
+      if (matchingFieldName(VestTestInspector.getData(testObject), fieldName)) {
         VestTestMutator.reset(testObject);
       }
     }, TestWalker.defaultRoot());
@@ -118,7 +121,10 @@ export class TestWalker {
     root: MaybeRoot = TestWalker.defaultRoot()
   ): void {
     TestWalker.pluckTests(testObject => {
-      return matchingFieldName(testObject, fieldName);
+      return matchingFieldName(
+        VestTestInspector.getData(testObject),
+        fieldName
+      );
     }, root);
   }
 }

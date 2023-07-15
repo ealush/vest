@@ -105,8 +105,10 @@ function throwTestOrderError(
 
   deferThrow(
     text(ErrorStrings.TESTS_CALLED_IN_DIFFERENT_ORDER, {
-      fieldName: newNode.fieldName,
-      prevName: isIsolateTest(prevNode) ? prevNode.fieldName : undefined,
+      fieldName: VestTestInspector.getData(newNode).fieldName,
+      prevName: isIsolateTest(prevNode)
+        ? VestTestInspector.getData(prevNode).fieldName
+        : undefined,
     })
   );
 }

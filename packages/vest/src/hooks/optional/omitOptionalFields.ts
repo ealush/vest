@@ -32,9 +32,12 @@ export function useOmitOptionalFields(): void {
     if (VestTestInspector.isPending(testObject)) {
       return;
     }
+
+    const { fieldName } = VestTestInspector.getData(testObject);
+
     // If we already added the current field (not this test specifically)
     // no need for further checks, go and omit the test
-    if (shouldOmit.has(testObject.fieldName)) {
+    if (shouldOmit.has(fieldName)) {
       verifyAndOmit(testObject);
     } else {
       // check if the field has an optional function
@@ -46,29 +49,29 @@ export function useOmitOptionalFields(): void {
   Bus.useEmit(Events.DONE_TEST_OMISSION_PASS);
 
   function verifyAndOmit(testObject: TIsolateTest) {
-    if (shouldOmit.has(testObject.fieldName)) {
+    const { fieldName } = VestTestInspector.getData(testObject);
+
+    if (shouldOmit.has(fieldName)) {
       VestTestMutator.omit(testObject);
-      SuiteOptionalFields.setOptionalField(
-        root,
-        testObject.fieldName,
-        current => ({
-          ...current,
-          applied: true,
-        })
-      );
+      SuiteOptionalFields.setOptionalField(root, fieldName, current => ({
+        ...current,
+        applied: true,
+      }));
     }
   }
 
   function runOptionalConfig(testObject: TIsolateTest) {
+    const { fieldName } = VestTestInspector.getData(testObject);
+
     // Ge the optional configuration for the given field
     const optionalConfig = SuiteOptionalFields.getOptionalField(
       root,
-      testObject.fieldName
+      fieldName
     );
 
     // If the optional was set to a function or a boolean, run it and verify/omit the test
     if (optionalFunctionValue(optionalConfig.rule) === true) {
-      shouldOmit.add(testObject.fieldName);
+      shouldOmit.add(fieldName);
     }
 
     verifyAndOmit(testObject);

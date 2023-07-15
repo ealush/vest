@@ -6,26 +6,28 @@ import * as VestRuntime from 'VestRuntime';
 
 export type IsolateKey = Nullable<string>;
 
-export type TIsolate = {
+export type TIsolate<Data extends IsolateData = IsolateData> = {
   key: IsolateKey;
   parent: Nullable<TIsolate>;
   children: Nullable<TIsolate[]>;
   output: any;
   type: string;
   keys: Record<string, TIsolate>;
+  data: Data;
+  allowReorder?: boolean;
 };
 
 export class Isolate {
-  static create<Payload extends Record<string, any>>(
+  static create<Data extends IsolateData>(
     type: string,
     callback: CB,
-    payload: Nullable<Payload> = null,
+    data: Nullable<Data> = null,
     key?: IsolateKey
-  ): TIsolate & Payload {
+  ): TIsolate<Data> {
     const parent = VestRuntime.useIsolate();
 
     const newCreatedNode = IsolateMutator.setParent(
-      baseIsolate(type, payload, key),
+      baseIsolate(type, data, key),
       parent
     );
 
@@ -38,24 +40,24 @@ export class Isolate {
 
     VestRuntime.addNodeToHistory(nextIsolateChild);
 
-    return nextIsolateChild as TIsolate & Payload;
+    return nextIsolateChild as TIsolate<Data>;
   }
 }
 
 function baseIsolate(
   type: string,
-  payload: Nullable<IsolatePayload>,
+  data: Nullable<IsolateData>,
   key: IsolateKey = null
 ): TIsolate {
   return {
     children: [],
+    data,
+    key,
     keys: {},
     output: null,
     parent: null,
     type,
-    ...payload,
-    key,
   };
 }
 
-type IsolatePayload = Record<string, any>;
+type IsolateData = Nullable<Record<string, any>>;

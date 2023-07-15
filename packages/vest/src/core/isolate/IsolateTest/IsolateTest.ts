@@ -10,33 +10,35 @@ import { VestIsolateType } from 'VestIsolateType';
 export type TIsolateTest<
   F extends TFieldName = TFieldName,
   G extends TGroupName = TGroupName
-> = TIsolate & IsolateTestInput<F, G> & IsolateTestPayload;
+> = TIsolate<IsolateTestData<F, G>>;
 
-export function IsolateTest<
-  F extends TFieldName = TFieldName,
-  G extends TGroupName = TGroupName
->(callback: CB, input: IsolateTestInput): TIsolateTest<F, G> {
-  const payload: IsolateTestPayload = {
-    ...IsolateTestBase(),
-    fieldName: input.fieldName,
-    testFn: input.testFn,
-  };
+export class IsolateTest {
+  static create<
+    F extends TFieldName = TFieldName,
+    G extends TGroupName = TGroupName
+  >(callback: CB, input: IsolateTestInput): TIsolateTest<F, G> {
+    const payload: IsolateTestData = {
+      ...IsolateTestBase(),
+      fieldName: input.fieldName,
+      testFn: input.testFn,
+    };
 
-  if (input.groupName) {
-    payload.groupName = input.groupName;
+    if (input.groupName) {
+      payload.groupName = input.groupName;
+    }
+
+    if (input.message) {
+      payload.message = input.message;
+    }
+    const isolate = Isolate.create<IsolateTestData>(
+      VestIsolateType.Test,
+      callback,
+      payload,
+      input.key ?? null
+    );
+
+    return isolate as TIsolateTest<F, G>;
   }
-
-  if (input.message) {
-    payload.message = input.message;
-  }
-  const isolate = Isolate.create<IsolateTestPayload>(
-    VestIsolateType.Test,
-    callback,
-    payload,
-    input.key ?? null
-  );
-
-  return isolate as TIsolateTest<F, G>;
 }
 
 export function IsolateTestBase() {
@@ -46,7 +48,7 @@ export function IsolateTestBase() {
   };
 }
 
-export type IsolateTestPayload<
+export type IsolateTestData<
   F extends TFieldName = TFieldName,
   G extends TGroupName = TGroupName
 > = CommonTestFields<F, G> & {

@@ -1,6 +1,8 @@
 import { useIsOptionalFiedApplied } from 'optional';
 
 import { TIsolateTest } from 'IsolateTest';
+import { TFieldName } from 'SuiteResultTypes';
+import { VestTestInspector } from 'VestTestInspector';
 import { VestTestMutator } from 'VestTestMutator';
 import { useShouldSkipBasedOnMode } from 'mode';
 import { useWithinActiveOmitWhen } from 'omitWhen';
@@ -11,11 +13,13 @@ export function useVerifyTestRun(
   testObject: TIsolateTest,
   collisionResult: TIsolateTest = testObject
 ): TIsolateTest {
-  if (useShouldSkipBasedOnMode(testObject)) {
+  const { fieldName } = VestTestInspector.getData(testObject);
+
+  if (useShouldSkipBasedOnMode(fieldName)) {
     return skipTestAndReturn(testObject);
   }
 
-  if (useShouldOmit(testObject)) {
+  if (useShouldOmit(fieldName)) {
     return omitTestAndReturn(testObject);
   }
 
@@ -26,10 +30,8 @@ export function useVerifyTestRun(
   return testObject;
 }
 
-function useShouldOmit(testObject: TIsolateTest): boolean {
-  return (
-    useWithinActiveOmitWhen() || useIsOptionalFiedApplied(testObject.fieldName)
-  );
+function useShouldOmit(fieldName: TFieldName): boolean {
+  return useWithinActiveOmitWhen() || useIsOptionalFiedApplied(fieldName);
 }
 
 function skipTestAndReturn(testNode: TIsolateTest): TIsolateTest {

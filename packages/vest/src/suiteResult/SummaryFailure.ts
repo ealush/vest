@@ -3,6 +3,7 @@ import { Maybe } from 'vest-utils';
 import { TIsolateTest } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { WithFieldName } from 'TestTypes';
+import { VestTestInspector } from 'VestTestInspector';
 
 export class SummaryFailure<F extends TFieldName, G extends TGroupName>
   implements WithFieldName<F>
@@ -16,10 +17,10 @@ export class SummaryFailure<F extends TFieldName, G extends TGroupName>
   static fromTestObject<F extends TFieldName, G extends TGroupName>(
     testObject: TIsolateTest<F, G>
   ) {
-    return new SummaryFailure(
-      testObject.fieldName,
-      testObject.message,
-      testObject.groupName
+    const { fieldName, message, groupName } = VestTestInspector.getData<F, G>(
+      testObject
     );
+
+    return new SummaryFailure(fieldName, message, groupName);
   }
 }

@@ -7,7 +7,12 @@ import {
   isNotEmpty,
   isStringValue,
 } from 'vest-utils';
-import { IsolateSelectors, TIsolate, Isolate } from 'vestjs-runtime';
+import {
+  IsolateSelectors,
+  TIsolate,
+  Isolate,
+  IsolateInspector,
+} from 'vestjs-runtime';
 
 import { FocusModes } from 'FocusedKeys';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
@@ -17,11 +22,13 @@ export type ExclusionItem = Maybe<OneOrMoreOf<string>>;
 export type FieldExclusion<F extends TFieldName> = Maybe<OneOrMoreOf<F>>;
 export type GroupExclusion<G extends TGroupName> = Maybe<OneOrMoreOf<G>>;
 
-export type TIsolateFocused = TIsolate & {
+type IsolateFocusedData = {
   focusMode: FocusModes;
   match: FieldExclusion<TFieldName>;
   matchAll: boolean;
 };
+
+export type TIsolateFocused = TIsolate<IsolateFocusedData>;
 
 export function IsolateFocused(
   focusMode: FocusModes,
@@ -39,16 +46,20 @@ export class FocusSelectors {
     focus: Nullable<TIsolateFocused>,
     fieldName?: TFieldName
   ): boolean {
+    const { focusMode, matchAll } =
+      IsolateInspector.getData<TIsolateFocused>(focus);
+
     return (
-      focus?.focusMode === FocusModes.SKIP &&
-      (hasFocus(focus, fieldName) || focus.matchAll === true)
+      focusMode === FocusModes.SKIP &&
+      (hasFocus(focus, fieldName) || matchAll === true)
     );
   }
   static isOnlyFocused(
     focus: Nullable<TIsolateFocused>,
     fieldName?: TFieldName
   ): boolean {
-    return focus?.focusMode === FocusModes.ONLY && hasFocus(focus, fieldName);
+    const { focusMode } = IsolateInspector.getData<TIsolateFocused>(focus);
+    return focusMode === FocusModes.ONLY && hasFocus(focus, fieldName);
   }
 
   static isIsolateFocused(isolate: TIsolate): isolate is TIsolateFocused {
@@ -84,8 +95,8 @@ function defaultMatch(match: FieldExclusion<TFieldName> | boolean) {
 }
 
 function hasFocus(focus: Nullable<TIsolateFocused>, fieldName?: TFieldName) {
+  const { match } = IsolateInspector.getData<TIsolateFocused>(focus);
   return (
-    isNotEmpty(focus?.match) &&
-    (fieldName ? focus?.match?.includes(fieldName) ?? true : true)
+    isNotEmpty(match) && (fieldName ? match?.includes(fieldName) ?? true : true)
   );
 }

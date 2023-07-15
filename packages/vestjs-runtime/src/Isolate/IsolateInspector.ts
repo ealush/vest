@@ -38,6 +38,13 @@ export class IsolateInspector {
     return isNotNullish(isolate.key);
   }
 
+  static getData<I extends TIsolate>(isolate: Nullable<I>): any {
+    if (isNullish(isolate)) {
+      return null;
+    }
+    return isolate.data as I['data'];
+  }
+
   static dump(isolate: TIsolate): string {
     if (isNullish(isolate)) {
       return '';

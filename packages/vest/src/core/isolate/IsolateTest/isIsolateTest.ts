@@ -5,18 +5,20 @@ import type { TIsolateTest } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { VestIsolateType } from 'VestIsolateType';
 
-export function isIsolateTest(
-  isolate?: Maybe<TIsolate>
-): isolate is TIsolateTest {
-  return IsolateSelectors.isIsolateType<TIsolateTest>(
+export function isIsolateTest<
+  F extends TFieldName = TFieldName,
+  G extends TGroupName = TGroupName
+>(isolate?: Maybe<TIsolate>): isolate is TIsolateTest<F, G> {
+  return IsolateSelectors.isIsolateType<TIsolateTest<F, G>>(
     isolate,
     VestIsolateType.Test
   );
 }
 
-export function isIsolateTestX(
-  isolate: TIsolate
-): asserts isolate is TIsolateTest {
+export function isIsolateTestX<
+  F extends TFieldName = TFieldName,
+  G extends TGroupName = TGroupName
+>(isolate: TIsolate): asserts isolate is TIsolateTest<F, G> {
   invariant(isIsolateTest(isolate));
 }
 

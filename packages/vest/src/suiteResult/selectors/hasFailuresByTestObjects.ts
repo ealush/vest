@@ -51,7 +51,7 @@ export function hasFailuresByTestObject(
     return false;
   }
 
-  if (nonMatchingFieldName(testObject, fieldName)) {
+  if (nonMatchingFieldName(VestTestInspector.getData(testObject), fieldName)) {
     return false;
   }
 

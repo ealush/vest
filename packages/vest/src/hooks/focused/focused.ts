@@ -7,7 +7,7 @@ import {
   isNotEmpty,
   isStringValue,
 } from 'vest-utils';
-import { IsolateSelectors, TIsolate, createIsolate } from 'vestjs-runtime';
+import { IsolateSelectors, TIsolate, Isolate } from 'vestjs-runtime';
 
 import { FocusModes } from 'FocusedKeys';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
@@ -27,7 +27,7 @@ export function IsolateFocused(
   focusMode: FocusModes,
   match?: true | FieldExclusion<TFieldName>
 ): TIsolateFocused {
-  return createIsolate(VestIsolateType.Focused, noop, {
+  return Isolate.create(VestIsolateType.Focused, noop, {
     focusMode,
     match: asArray(match).filter(isStringValue),
     matchAll: match === true,

@@ -1,5 +1,5 @@
 import { CB, optionalFunctionValue } from 'vest-utils';
-import { createIsolate } from 'vestjs-runtime';
+import { Isolate } from 'vestjs-runtime';
 
 import { SuiteContext, useSkipped } from 'SuiteContext';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
@@ -21,7 +21,7 @@ export function skipWhen<F extends TFieldName, G extends TGroupName>(
   condition: TDraftCondition<F, G>,
   callback: CB
 ): void {
-  createIsolate(VestIsolateType.SkipWhen, () => {
+  Isolate.create(VestIsolateType.SkipWhen, () => {
     SuiteContext.run(
       {
         skipped:

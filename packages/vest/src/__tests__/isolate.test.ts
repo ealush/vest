@@ -1,6 +1,6 @@
 import { CB } from 'vest-utils';
 import { TDeferThrow } from 'vest-utils/src/deferThrow';
-import { createIsolate } from 'vestjs-runtime';
+import { Isolate } from 'vestjs-runtime';
 
 import { TVestMock } from '../testUtils/TVestMock';
 import mockThrowError from '../testUtils/mockThrowError';
@@ -36,7 +36,7 @@ describe('isolate', () => {
   describe('Base behavior', () => {
     it("Should throw an error if the callback isn't a function", () => {
       // @ts-ignore - testing bad input
-      expect(() => createIsolate('xx', {}, 'not a function')).toThrow();
+      expect(() => Isolate.create('xx', {}, 'not a function')).toThrow();
     });
 
     it('Should retain test results between runs', () => {

@@ -1,5 +1,5 @@
 import { CB, assign } from 'vest-utils';
-import { TIsolate, createIsolate } from 'vestjs-runtime';
+import { Isolate, TIsolate } from 'vestjs-runtime';
 
 import { OptionalFieldDeclaration, OptionalFields } from 'OptionalTypes';
 import { TFieldName } from 'SuiteResultTypes';
@@ -12,7 +12,7 @@ export type TIsolateSuite = TIsolate & {
 export function IsolateSuite<Callback extends CB = CB>(
   callback: Callback
 ): TIsolateSuite {
-  return createIsolate(VestIsolateType.Suite, callback, {
+  return Isolate.create(VestIsolateType.Suite, callback, {
     optional: {},
   });
 }

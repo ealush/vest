@@ -19,28 +19,30 @@ export type BaseIsolatePayload = Record<string, any> & {
   key?: IsolateKey;
 };
 
-export function createIsolate<Payload extends BaseIsolatePayload>(
-  type: string,
-  callback: CB,
-  payload: Payload = {} as Payload
-): TIsolate & Payload {
-  const parent = VestRuntime.useIsolate();
+export class Isolate {
+  static create<Payload extends BaseIsolatePayload>(
+    type: string,
+    callback: CB,
+    payload: Payload = {} as Payload
+  ): TIsolate & Payload {
+    const parent = VestRuntime.useIsolate();
 
-  const newCreatedNode = IsolateMutator.setParent(
-    baseIsolate(type, payload),
-    parent
-  );
+    const newCreatedNode = IsolateMutator.setParent(
+      baseIsolate(type, payload),
+      parent
+    );
 
-  const [nextIsolateChild, output] = Reconciler.reconcile(
-    newCreatedNode,
-    callback
-  );
+    const [nextIsolateChild, output] = Reconciler.reconcile(
+      newCreatedNode,
+      callback
+    );
 
-  IsolateMutator.saveOutput(nextIsolateChild, output);
+    IsolateMutator.saveOutput(nextIsolateChild, output);
 
-  VestRuntime.addNodeToHistory(nextIsolateChild);
+    VestRuntime.addNodeToHistory(nextIsolateChild);
 
-  return nextIsolateChild as TIsolate & Payload;
+    return nextIsolateChild as TIsolate & Payload;
+  }
 }
 
 function baseIsolate(type: string, payload: Record<string, any>): TIsolate {

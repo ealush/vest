@@ -1,5 +1,5 @@
 import { CB } from 'vest-utils';
-import { TIsolate, createIsolate } from 'vestjs-runtime';
+import { TIsolate, Isolate } from 'vestjs-runtime';
 
 import { SuiteContext } from 'SuiteContext';
 import { TGroupName } from 'SuiteResultTypes';
@@ -15,7 +15,7 @@ export function group<G extends TGroupName>(
 ): TIsolate {
   const [callback, groupName] = args.reverse() as [CB<void>, G];
 
-  return createIsolate(VestIsolateType.Group, () => {
-    SuiteContext.run({ ...(groupName && { groupName }) }, callback);
+  return Isolate.create(VestIsolateType.Group, () => {
+    return SuiteContext.run({ ...(groupName && { groupName }) }, callback);
   });
 }

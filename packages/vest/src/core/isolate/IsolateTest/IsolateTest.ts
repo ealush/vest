@@ -3,7 +3,7 @@ import {
   IsolateKey,
   IsolateMutator,
   TIsolate,
-  createIsolate,
+  Isolate,
   BaseIsolatePayload,
 } from 'vestjs-runtime';
 
@@ -37,7 +37,7 @@ export function IsolateTest<
   if (input.message) {
     payload.message = input.message;
   }
-  const isolate = createIsolate<IsolateTestPayload>(
+  const isolate = Isolate.create<IsolateTestPayload>(
     VestIsolateType.Test,
     callback,
     payload

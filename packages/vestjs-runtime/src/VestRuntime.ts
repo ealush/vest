@@ -66,6 +66,7 @@ export const RuntimeApi = {
   reset,
   useAvailableRoot,
   useCurrentCursor,
+  useLoadRootNode,
   useXAppData,
 };
 
@@ -183,4 +184,40 @@ export function reset() {
   const [, , resetHistoryRoot] = useHistoryRoot();
 
   resetHistoryRoot();
+}
+
+// eslint-disable-next-line max-statements, complexity
+export function useLoadRootNode(node: Record<string, any>): void {
+  // the  assumption is that the tree is built correctly,
+  // but the children are missing the parent property to
+  // avoid circular references during serialization.
+  // in the same way, the parents are missing the `keys` property
+  // to avoid circular references during serialization.
+  // we need to rebuild the tree and add back the parent property to the children
+  // and the keys property to the parents.
+
+  const queue = [{ ...node }];
+
+  while (queue.length) {
+    const current = queue.shift() as TIsolate;
+
+    const children = current.children ? [...current.children] : null;
+
+    if (children) {
+      for (const child of children) {
+        IsolateMutator.setParent(child, current);
+        queue.push(child);
+
+        const key = child.key;
+
+        // eslint-disable-next-line max-depth
+        if (key) {
+          current.keys = current.keys ?? {};
+          current.keys[key] = child;
+        }
+      }
+    }
+  }
+
+  useSetHistory(node as TIsolate);
 }

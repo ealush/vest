@@ -92,3 +92,8 @@ export function useResetSuite() {
   useResetCallbacks();
   VestRuntime.reset();
 }
+
+export function useLoadSuite(rootNode: Record<string, any>): void {
+  VestRuntime.useLoadRootNode(rootNode);
+  useExpireSuiteResultCache();
+}

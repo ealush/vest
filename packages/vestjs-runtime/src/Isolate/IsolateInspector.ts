@@ -53,7 +53,7 @@ export class IsolateInspector {
       return '';
     }
     return JSON.stringify(isolate, (key, value) => {
-      if (key === 'parent') {
+      if (key === 'parent' || key === 'keys') {
         return undefined;
       }
       return value;

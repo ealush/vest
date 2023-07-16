@@ -3,7 +3,7 @@ import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
 import { IsolateSuite } from 'IsolateSuite';
-import { useCreateVestState } from 'Runtime';
+import { useCreateVestState, useLoadSuite } from 'Runtime';
 import { SuiteContext } from 'SuiteContext';
 import {
   SuiteName,
@@ -73,6 +73,7 @@ function createSuite<
       VestRuntime.persist(suite),
       {
         get: VestRuntime.persist(useCreateSuiteResult),
+        load: VestRuntime.persist(useLoadSuite),
         remove: Bus.usePrepareEmitter<string>(Events.REMOVE_FIELD),
         reset: Bus.usePrepareEmitter(Events.RESET_SUITE),
         resetField: Bus.usePrepareEmitter<string>(Events.RESET_FIELD),

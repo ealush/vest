@@ -26,13 +26,13 @@ export function IsolateTestReconciler(
   return reconcilerOutput;
 }
 
-// eslint-disable-next-line max-statements
+function usePickNode(
+  historyNode: TIsolateTest,
+  currentNode: TIsolateTest
+): TIsolateTest {
+  const collisionResult = handleCollision(currentNode, historyNode);
 
-function nodeReorderDetected(
-  newNode: TIsolateTest,
-  prevNode?: TIsolate
-): boolean {
-  return !!isIsolateTest(prevNode) && !isSameProfileTest(prevNode, newNode);
+  return useVerifyTestRun(currentNode, collisionResult);
 }
 
 function handleCollision(
@@ -43,8 +43,11 @@ function handleCollision(
     return castIsolateTest(Reconciler.handleIsolateNodeWithKey(newNode));
   }
 
-  if (nodeReorderDetected(newNode, prevNode)) {
-    return onNodeReorder(newNode, prevNode);
+  if (
+    Reconciler.dropNextNodesOnReorder(nodeReorderDetected, newNode, prevNode)
+  ) {
+    throwTestOrderError(newNode, prevNode);
+    return newNode;
   }
 
   if (!isIsolateTest(prevNode)) {
@@ -67,24 +70,6 @@ function handleCollision(
   return prevNode;
 }
 
-function onNodeReorder(
-  newNode: TIsolateTest,
-  prevNode?: TIsolate
-): TIsolateTest {
-  throwTestOrderError(newNode, prevNode);
-  Reconciler.removeAllNextNodesInIsolate();
-  return newNode;
-}
-
-function usePickNode(
-  historyNode: TIsolateTest,
-  currentNode: TIsolateTest
-): TIsolateTest {
-  const collisionResult = handleCollision(currentNode, historyNode);
-
-  return useVerifyTestRun(currentNode, collisionResult);
-}
-
 function cancelOverriddenPendingTestOnTestReRun(
   nextNode: TIsolate,
   currentNode: TIsolate,
@@ -93,6 +78,13 @@ function cancelOverriddenPendingTestOnTestReRun(
   if (nextNode === currentNode && isIsolateTest(currentNode)) {
     cancelOverriddenPendingTest(prevTestObject, currentNode);
   }
+}
+
+function nodeReorderDetected(
+  newNode: TIsolateTest,
+  prevNode: Maybe<TIsolate>
+): boolean {
+  return isIsolateTest(prevNode) && !isSameProfileTest(prevNode, newNode);
 }
 
 function throwTestOrderError(

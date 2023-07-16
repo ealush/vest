@@ -1,4 +1,4 @@
-import { CB, Nullable, invariant, isNullish } from 'vest-utils';
+import { CB, Maybe, Nullable, invariant, isNullish } from 'vest-utils';
 
 import { type TIsolate } from 'Isolate';
 import { IsolateInspector } from 'IsolateInspector';
@@ -43,7 +43,6 @@ export class Reconciler {
       );
     }
 
-    // const nextNode = reconciler(node, localHistoryNode);
     const nextNode = pickNextNode(node, localHistoryNode);
 
     invariant(nextNode);
@@ -55,18 +54,18 @@ export class Reconciler {
     return [nextNode, nextNode.output];
   }
 
-  static removeAllNextNodesInIsolate() {
-    const currentNode = VestRuntime.useIsolate();
-    const historyNode = VestRuntime.useHistoryNode();
+  static dropNextNodesOnReorder<I extends TIsolate>(
+    reorderLogic: (newNode: I, prevNode: Maybe<TIsolate>) => boolean,
+    newNode: I,
+    prevNode: Maybe<TIsolate>
+  ): boolean {
+    const didReorder = reorderLogic(newNode, prevNode);
 
-    if (!historyNode || !currentNode) {
-      // This is probably unreachable, but TS is not convinced.
-      // Let's play it safe.
-      /* istanbul ignore next */
-      return;
+    if (didReorder) {
+      removeAllNextNodesInIsolate();
     }
 
-    IsolateMutator.slice(historyNode, IsolateInspector.cursor(currentNode));
+    return didReorder;
   }
 
   static handleIsolateNodeWithKey(node: TIsolate): TIsolate {
@@ -134,4 +133,18 @@ function handleNoHistoryNode<I extends TIsolate>(newNode: I): I {
   }
 
   return newNode;
+}
+
+function removeAllNextNodesInIsolate() {
+  const currentNode = VestRuntime.useIsolate();
+  const historyNode = VestRuntime.useHistoryNode();
+
+  if (!historyNode || !currentNode) {
+    // This is probably unreachable, but TS is not convinced.
+    // Let's play it safe.
+    /* istanbul ignore next */
+    return;
+  }
+
+  IsolateMutator.slice(historyNode, IsolateInspector.cursor(currentNode));
 }

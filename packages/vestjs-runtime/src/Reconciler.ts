@@ -1,3 +1,4 @@
+import { ErrorStrings } from 'ErrorStrings';
 import { CB, Maybe, Nullable, invariant, isNullish } from 'vest-utils';
 
 import { type TIsolate } from 'Isolate';
@@ -43,15 +44,15 @@ export class Reconciler {
       );
     }
 
-    const nextNode = pickNextNode(node, localHistoryNode);
+    const nextNodeResult = pickNextNode(node, localHistoryNode);
 
-    invariant(nextNode);
+    invariant(nextNodeResult, ErrorStrings.UNABLE_TO_PICK_NEXT_ISOLATE);
 
-    if (Object.is(nextNode, node)) {
+    if (Object.is(nextNodeResult, node)) {
       return [node, useRunAsNew(localHistoryNode, node, callback)];
     }
 
-    return [nextNode, nextNode.output];
+    return [nextNodeResult, nextNodeResult.output];
   }
 
   static dropNextNodesOnReorder<I extends TIsolate>(

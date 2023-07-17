@@ -1,5 +1,6 @@
 import { CB, Nullable } from 'vest-utils';
 
+import { IsolateKeys } from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';
 import { Reconciler } from 'Reconciler';
 import * as VestRuntime from 'VestRuntime';
@@ -11,7 +12,7 @@ export type TIsolate = {
   parent: Nullable<TIsolate>;
   children: Nullable<TIsolate[]>;
   output: any;
-  type: string;
+  [IsolateKeys.Type]: string;
   keys: Nullable<Record<string, TIsolate>>;
 };
 
@@ -49,10 +50,10 @@ function baseIsolate(
 ): TIsolate {
   return {
     children: null,
-    keys: null,
+    [IsolateKeys.Keys]: null,
     output: null,
-    parent: null,
-    type,
+    [IsolateKeys.Parent]: null,
+    [IsolateKeys.Type]: type,
     ...payload,
     key,
   };

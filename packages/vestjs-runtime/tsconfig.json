@@ -16,7 +16,9 @@
       "ErrorStrings": ["./src/errors/ErrorStrings.ts"],
       "isolateInterfaces": ["./src/Isolate/isolateInterfaces.ts"],
       "IsolateSelectors": ["./src/Isolate/IsolateSelectors.ts"],
+      "IsolateParser": ["./src/Isolate/IsolateParser.ts"],
       "IsolateMutator": ["./src/Isolate/IsolateMutator.ts"],
+      "IsolateKeys": ["./src/Isolate/IsolateKeys.ts"],
       "IsolateInspector": ["./src/Isolate/IsolateInspector.ts"],
       "Isolate": ["./src/Isolate/Isolate.ts"]
     }

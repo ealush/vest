@@ -2,6 +2,7 @@
 
 exports[`Test Vest's \`test\` function test params creates a test without a key 1`] = `
 {
+  "$type": "Test",
   "children": null,
   "fieldName": "field_name",
   "key": null,
@@ -9,6 +10,7 @@ exports[`Test Vest's \`test\` function test params creates a test without a key 
   "message": "failure message",
   "output": undefined,
   "parent": {
+    "$type": "Suite",
     "children": [
       [Circular],
     ],
@@ -49,23 +51,23 @@ exports[`Test Vest's \`test\` function test params creates a test without a key 
       "warnings": [],
     },
     "parent": null,
-    "type": "Suite",
   },
   "severity": "error",
   "status": "PASSING",
   "testFn": [Function],
-  "type": "Test",
 }
 `;
 
 exports[`Test Vest's \`test\` function test params creates a test without a message and with a key 1`] = `
 {
+  "$type": "Test",
   "children": null,
   "fieldName": "field_name",
   "key": "keyboardcat",
   "keys": null,
   "output": undefined,
   "parent": {
+    "$type": "Suite",
     "children": [
       [Circular],
     ],
@@ -108,23 +110,23 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
       "warnings": [],
     },
     "parent": null,
-    "type": "Suite",
   },
   "severity": "error",
   "status": "PASSING",
   "testFn": [Function],
-  "type": "Test",
 }
 `;
 
 exports[`Test Vest's \`test\` function test params creates a test without a message and without a key 1`] = `
 {
+  "$type": "Test",
   "children": null,
   "fieldName": "field_name",
   "key": null,
   "keys": null,
   "output": undefined,
   "parent": {
+    "$type": "Suite",
     "children": [
       [Circular],
     ],
@@ -165,11 +167,9 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
       "warnings": [],
     },
     "parent": null,
-    "type": "Suite",
   },
   "severity": "error",
   "status": "PASSING",
   "testFn": [Function],
-  "type": "Test",
 }
 `;

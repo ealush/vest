@@ -2,7 +2,7 @@ export const dump = {
   children: [
     {
       children: null,
-      type: 'Test',
+      $type: 'Test',
       severity: 'error',
       status: 'FAILED',
       fieldName: 't1',
@@ -12,7 +12,7 @@ export const dump = {
       children: [
         {
           children: null,
-          type: 'Test',
+          $type: 'Test',
           severity: 'error',
           status: 'FAILED',
           fieldName: 't2',
@@ -22,7 +22,7 @@ export const dump = {
         },
         {
           children: null,
-          type: 'Test',
+          $type: 'Test',
           severity: 'error',
           status: 'PASSING',
           fieldName: 't3',
@@ -32,7 +32,7 @@ export const dump = {
         },
         {
           children: null,
-          type: 'Test',
+          $type: 'Test',
           severity: 'warning',
           status: 'WARNING',
           fieldName: 't4',
@@ -40,14 +40,14 @@ export const dump = {
           key: null,
         },
       ],
-      type: 'Group',
+      $type: 'Group',
       key: null,
     },
     {
       children: [
         {
           children: null,
-          type: 'Focused',
+          $type: 'Focused',
           focusMode: 1,
           match: [],
           matchAll: true,
@@ -55,21 +55,21 @@ export const dump = {
         },
         {
           children: null,
-          type: 'Test',
+          $type: 'Test',
           severity: 'error',
           status: 'SKIPPED',
           fieldName: 't5',
           key: 'key1',
         },
       ],
-      type: 'Group',
+      $type: 'Group',
       key: null,
     },
     {
       children: [
         {
           children: null,
-          type: 'Test',
+          $type: 'Test',
           severity: 'error',
           status: 'FAILED',
           fieldName: 't6',
@@ -77,14 +77,14 @@ export const dump = {
         },
         {
           children: null,
-          type: 'Test',
+          $type: 'Test',
           severity: 'error',
           status: 'FAILED',
           fieldName: 't6',
           key: 'b',
         },
       ],
-      type: 'Each',
+      $type: 'Each',
       allowReorder: true,
       key: null,
     },
@@ -180,7 +180,7 @@ export const dump = {
     },
     valid: false,
   },
-  type: 'Suite',
+  $type: 'Suite',
   optional: {},
   key: null,
 };

@@ -21,6 +21,6 @@ export type SuiteMethods<F extends TFieldName, G extends TGroupName> = {
   reset: CB<void>;
   remove: CB<void, [fieldName: F]>;
   resetField: CB<void, [fieldName: F]>;
-  serialize: CB<Record<string, any>>;
+  serialize: CB<string>;
 } & TTypedMethods<F, G> &
   SuiteSelectors<F, G>;

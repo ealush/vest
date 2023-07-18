@@ -18,7 +18,7 @@ describe('useLoadSuite', () => {
     expect(suite.hasWarnings()).toBe(false);
     expect(suite.getErrors()).toEqual({});
 
-    suite.load(dump);
+    suite.resume(dump);
 
     expect(res).not.toEqual(suite.get());
     expect(suite.isValid()).toBe(false);

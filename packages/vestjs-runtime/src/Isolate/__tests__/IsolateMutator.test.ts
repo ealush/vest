@@ -1,11 +1,11 @@
-import { Isolate } from 'Isolate';
+import { TIsolate } from 'Isolate';
 import { IsolateMutator } from 'IsolateMutator';
 
 describe('IsolateMutator', () => {
   describe('setParent', () => {
     it('should set parent', () => {
-      const parent = {} as Isolate;
-      const isolate = {} as Isolate;
+      const parent = {} as TIsolate;
+      const isolate = {} as TIsolate;
 
       expect(isolate.parent).toBeUndefined();
       expect(IsolateMutator.setParent(isolate, parent)).toBe(isolate);
@@ -14,9 +14,9 @@ describe('IsolateMutator', () => {
 
     describe('When the child already has a parent', () => {
       it('Should set the new parent of the child', () => {
-        const parent1 = {} as Isolate;
-        const parent2 = {} as Isolate;
-        const isolate = {} as Isolate;
+        const parent1 = {} as TIsolate;
+        const parent2 = {} as TIsolate;
+        const isolate = {} as TIsolate;
 
         IsolateMutator.setParent(isolate, parent1);
         expect(isolate.parent).toBe(parent1);
@@ -28,7 +28,7 @@ describe('IsolateMutator', () => {
 
   describe('saveOutput', () => {
     it('should save output', () => {
-      const isolate = {} as Isolate;
+      const isolate = {} as TIsolate;
       const output = {};
 
       expect(isolate.output).toBeUndefined();
@@ -39,7 +39,7 @@ describe('IsolateMutator', () => {
 
   describe('setKey', () => {
     it('should set key', () => {
-      const isolate = {} as Isolate;
+      const isolate = {} as TIsolate;
       const key = 'foo';
 
       expect(isolate.key).toBeUndefined();
@@ -50,9 +50,9 @@ describe('IsolateMutator', () => {
 
   describe('addChild', () => {
     it('should add child', () => {
-      const isolate = { children: [] } as unknown as Isolate;
-      const child1 = {} as Isolate;
-      const child2 = {} as Isolate;
+      const isolate = { children: [] } as unknown as TIsolate;
+      const child1 = {} as TIsolate;
+      const child2 = {} as TIsolate;
 
       expect(isolate.children).toEqual([]);
       IsolateMutator.addChild(isolate, child1);
@@ -62,8 +62,8 @@ describe('IsolateMutator', () => {
     });
 
     it('should set parent of the child', () => {
-      const isolate = { children: [] } as unknown as Isolate;
-      const child = {} as Isolate;
+      const isolate = { children: [] } as unknown as TIsolate;
+      const child = {} as TIsolate;
 
       expect(child.parent).toBeUndefined();
       IsolateMutator.addChild(isolate, child);
@@ -73,9 +73,9 @@ describe('IsolateMutator', () => {
 
   describe('removeChild', () => {
     it('Should remove child', () => {
-      const child1 = {} as Isolate;
-      const child2 = {} as Isolate;
-      const isolate = { children: [child1, child2] } as unknown as Isolate;
+      const child1 = {} as TIsolate;
+      const child2 = {} as TIsolate;
+      const isolate = { children: [child1, child2] } as unknown as TIsolate;
 
       expect(isolate.children).toEqual([child1, child2]);
       IsolateMutator.removeChild(isolate, child1);
@@ -86,8 +86,8 @@ describe('IsolateMutator', () => {
 
     describe('When the child does not exist', () => {
       it('Should no-op', () => {
-        const child = {} as Isolate;
-        const isolate = { children: [] } as unknown as Isolate;
+        const child = {} as TIsolate;
+        const isolate = { children: [] } as unknown as TIsolate;
 
         expect(isolate.children).toEqual([]);
         IsolateMutator.removeChild(isolate, child);
@@ -98,9 +98,9 @@ describe('IsolateMutator', () => {
 
   describe('slice', () => {
     it('Should slice children', () => {
-      const child1 = {} as Isolate;
-      const child2 = {} as Isolate;
-      const isolate = { children: [child1, child2] } as unknown as Isolate;
+      const child1 = {} as TIsolate;
+      const child2 = {} as TIsolate;
+      const isolate = { children: [child1, child2] } as unknown as TIsolate;
 
       expect(isolate.children).toEqual([child1, child2]);
       IsolateMutator.slice(isolate, 1);
@@ -109,7 +109,7 @@ describe('IsolateMutator', () => {
 
     describe('When children are nullish', () => {
       it('Should no-op', () => {
-        const isolate = { children: null } as unknown as Isolate;
+        const isolate = { children: null } as unknown as TIsolate;
 
         expect(isolate.children).toBeNull();
         IsolateMutator.slice(isolate, 1);

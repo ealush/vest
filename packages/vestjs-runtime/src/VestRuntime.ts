@@ -68,6 +68,7 @@ export const RuntimeApi = {
   useAvailableRoot,
   useCurrentCursor,
   useLoadRootNode,
+  useSerializeHistoryRoot,
   useXAppData,
 };
 
@@ -187,7 +188,12 @@ export function reset() {
   resetHistoryRoot();
 }
 
-// eslint-disable-next-line max-statements, complexity
 export function useLoadRootNode(node: Record<string, any> | TIsolate): void {
   useSetHistory(IsolateParser.parse(node));
+}
+
+export function useSerializeHistoryRoot(): string {
+  const [historyRoot] = useHistoryRoot();
+
+  return IsolateInspector.dump(historyRoot);
 }

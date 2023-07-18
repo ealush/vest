@@ -73,10 +73,11 @@ function createSuite<
       VestRuntime.persist(suite),
       {
         get: VestRuntime.persist(useCreateSuiteResult),
-        load: VestRuntime.persist(useLoadSuite),
         remove: Bus.usePrepareEmitter<string>(Events.REMOVE_FIELD),
         reset: Bus.usePrepareEmitter(Events.RESET_SUITE),
         resetField: Bus.usePrepareEmitter<string>(Events.RESET_FIELD),
+        resume: VestRuntime.persist(useLoadSuite),
+        serialize: VestRuntime.persist(VestRuntime.useSerializeHistoryRoot),
         ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
         ...getTypedMethods<F, G>(),
       }

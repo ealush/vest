@@ -49,7 +49,11 @@ export class IsolateInspector {
     return isolate.keys?.[key] ?? null;
   }
 
-  static dump(isolate: TIsolate): string {
+  static dump(isolate: Nullable<TIsolate>): string {
+    if (isNullish(isolate)) {
+      return '';
+    }
+
     return JSON.stringify(isolate, (key, value) => {
       if (isKeyExcluededFromDump(key)) {
         return undefined;

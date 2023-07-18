@@ -1,5 +1,11 @@
 import { ErrorStrings } from 'ErrorStrings';
-import { Nullable, hasOwnProperty, invariant } from 'vest-utils';
+import {
+  Nullable,
+  hasOwnProperty,
+  invariant,
+  isStringValue,
+  text,
+} from 'vest-utils';
 
 import { TIsolate } from 'Isolate';
 import { IsolateKeys } from 'IsolateKeys';
@@ -16,9 +22,11 @@ export class IsolateParser {
     // we need to rebuild the tree and add back the parent property to the children
     // and the keys property to the parents.
 
-    IsolateParser.validateIsolate(node);
+    const root = isStringValue(node)
+      ? JSON.parse(node)
+      : ({ ...node } as TIsolate);
 
-    const root = { ...node } as TIsolate;
+    IsolateParser.validateIsolate(root);
 
     const queue = [root];
 
@@ -54,7 +62,7 @@ export class IsolateParser {
   static validateIsolate(node: Record<string, any> | TIsolate): void {
     invariant(
       hasOwnProperty(node, IsolateKeys.Type),
-      ErrorStrings.IVALID_ISOLATE_CANNOT_PARSE
+      text(ErrorStrings.IVALID_ISOLATE_CANNOT_PARSE)
     );
   }
 }

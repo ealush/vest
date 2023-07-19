@@ -20,6 +20,7 @@ export function useSuiteRunResult<
     assign(
       {
         done: VestRuntime.persist(done),
+        portal: VestRuntime.persist(portal),
       },
       useCreateSuiteResult<F, G>()
     )
@@ -49,6 +50,12 @@ function done<F extends TFieldName, G extends TGroupName>(
   }
   useDeferDoneCallback(useDoneCallback, fieldName);
   return output;
+}
+
+async function portal(callback: () => Promise<any>): Promise<void> {
+  const result = await callback();
+
+  // TODO: implement portal
 }
 
 export interface Done<F extends TFieldName, G extends TGroupName> {

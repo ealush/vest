@@ -20,7 +20,7 @@ describe('done', () => {
       const doneCallback = jest.fn();
       const fieldDoneCallback = jest.fn();
 
-      result.done(doneCallback).done('field_2', fieldDoneCallback);
+      result.done(doneCallback).done('field_2', fieldDoneCallback)
 
       expect(doneCallback).toHaveBeenCalled();
       expect(fieldDoneCallback).toHaveBeenCalled();

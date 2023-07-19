@@ -54,6 +54,7 @@ export type SuiteRunResult<
   G extends TGroupName
 > = SuiteResult<F, G> & {
   done: Done<F, G>;
+  portal(callback: () => Promise<any>): Promise<void>;
 };
 
 export type SuiteName = Maybe<string>;

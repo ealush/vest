@@ -16,6 +16,7 @@ import { group } from 'group';
 import { include } from 'include';
 import { mode } from 'mode';
 import { omitWhen } from 'omitWhen';
+import { portal } from 'portal';
 import { skipWhen } from 'skipWhen';
 import { staticSuite } from 'staticSuite';
 import { suiteSelectors } from 'suiteSelectors';
@@ -34,6 +35,7 @@ export {
   only,
   warn,
   include,
+  portal,
   suiteSelectors,
   each,
   mode,

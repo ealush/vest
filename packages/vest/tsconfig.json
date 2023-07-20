@@ -45,6 +45,7 @@
         "./src/suite/validateParams/validateSuiteParams.ts"
       ],
       "skipWhen": ["./src/isolates/skipWhen.ts"],
+      "portal": ["./src/isolates/portal.ts"],
       "omitWhen": ["./src/isolates/omitWhen.ts"],
       "group": ["./src/isolates/group.ts"],
       "each": ["./src/isolates/each.ts"],

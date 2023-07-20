@@ -7,7 +7,7 @@ import {
   seq,
   tinyState,
 } from 'vest-utils';
-import { IRecociler, VestRuntime } from 'vestjs-runtime';
+import { IRecociler, TIsolate, VestRuntime } from 'vestjs-runtime';
 
 import {
   SuiteName,
@@ -26,6 +26,10 @@ type StateExtra = {
   suiteName: Maybe<string>;
   suiteId: string;
   suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName>>;
+  portals: Array<{
+    parentNode: TIsolate;
+    callback: <D>(data: D) => void;
+  }>;
 };
 const suiteResultCache = cache<SuiteResult<TFieldName, TGroupName>>();
 
@@ -39,6 +43,7 @@ export function useCreateVestState({
   const stateRef: StateExtra = {
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
+    portals: [],
     suiteId: seq(),
     suiteName,
     suiteResultCache,

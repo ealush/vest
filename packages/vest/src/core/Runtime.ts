@@ -20,16 +20,17 @@ export type DoneCallback = (res: SuiteResult<TFieldName, TGroupName>) => void;
 type FieldCallbacks = Record<string, DoneCallbacks>;
 type DoneCallbacks = Array<DoneCallback>;
 
+type PortalState = Array<{
+  parentNode: TIsolate;
+  callback: <D>(data: D) => void;
+}>;
+
 type StateExtra = {
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
   suiteName: Maybe<string>;
   suiteId: string;
   suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName>>;
-  portals: Array<{
-    parentNode: TIsolate;
-    callback: <D>(data: D) => void;
-  }>;
 };
 const suiteResultCache = cache<SuiteResult<TFieldName, TGroupName>>();
 
@@ -43,7 +44,6 @@ export function useCreateVestState({
   const stateRef: StateExtra = {
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
-    portals: [],
     suiteId: seq(),
     suiteName,
     suiteResultCache,

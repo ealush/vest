@@ -2,7 +2,7 @@ import { Maybe } from 'vest-utils';
 
 import { Severity } from 'Severity';
 import { SummaryFailure } from 'SummaryFailure';
-import { Done } from 'suiteRunResult';
+import { Done, Portal } from 'suiteRunResult';
 import { SuiteSelectors } from 'suiteSelectors';
 
 export class SummaryBase {
@@ -54,7 +54,7 @@ export type SuiteRunResult<
   G extends TGroupName
 > = SuiteResult<F, G> & {
   done: Done<F, G>;
-  portal(callback: () => Promise<any>): Promise<void>;
+  portal: Portal;
 };
 
 export type SuiteName = Maybe<string>;

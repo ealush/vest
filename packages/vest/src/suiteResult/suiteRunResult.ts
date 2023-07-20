@@ -52,10 +52,14 @@ function done<F extends TFieldName, G extends TGroupName>(
   return output;
 }
 
-async function portal(callback: () => Promise<any>): Promise<void> {
+async function portal<D>(callback: () => Promise<D>): Promise<void> {
   const result = await callback();
 
   // TODO: implement portal
+}
+
+export interface Portal {
+  <D>(callback: () => Promise<D>): Promise<void>;
 }
 
 export interface Done<F extends TFieldName, G extends TGroupName> {

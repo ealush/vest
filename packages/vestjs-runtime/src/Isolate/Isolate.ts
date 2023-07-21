@@ -35,6 +35,7 @@ export class Isolate {
       callback
     );
 
+    IsolateMutator.setParent(nextIsolateChild, parent);
     IsolateMutator.saveOutput(nextIsolateChild, output);
 
     VestRuntime.addNodeToHistory(nextIsolateChild);

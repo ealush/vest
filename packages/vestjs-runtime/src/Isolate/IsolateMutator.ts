@@ -50,4 +50,8 @@ export class IsolateMutator {
   static setData(isolate: TIsolate, data: any): void {
     isolate.data = data;
   }
+
+  static allowReorder(isolate: TIsolate): void {
+    isolate.allowReorder = true;
+  }
 }

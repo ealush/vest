@@ -3,4 +3,5 @@ export enum IsolateKeys {
   Keys = 'keys',
   Parent = 'parent',
   Data = 'data',
+  AllowReorder = 'allowReorder',
 }

@@ -8,6 +8,7 @@ import * as VestRuntime from 'VestRuntime';
 export type IsolateKey = Nullable<string>;
 
 export type TIsolate<D = any> = {
+  allowReorder?: boolean;
   key: IsolateKey;
   parent: Nullable<TIsolate>;
   children: Nullable<TIsolate[]>;

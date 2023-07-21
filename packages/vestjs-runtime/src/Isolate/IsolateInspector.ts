@@ -63,9 +63,9 @@ export class IsolateInspector {
     });
   }
 
-  static getData<I extends TIsolate>(isolate: Nullable<TIsolate>): I['data'] {
+  static getData<I extends TIsolate>(isolate: Nullable<I>) {
     if (isNullish(isolate)) {
-      return null;
+      return undefined;
     }
     return isolate.data;
   }

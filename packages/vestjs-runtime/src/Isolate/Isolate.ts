@@ -4,31 +4,33 @@ import { IsolateKeys } from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';
 import { Reconciler } from 'Reconciler';
 import * as VestRuntime from 'VestRuntime';
-import { IReorderable } from 'isolateInterfaces';
 
 export type IsolateKey = Nullable<string>;
 
-export type TIsolate<D = IsolateData> = {
+export type TIsolate<P extends IsolatePayload = IsolatePayload> = {
   [IsolateKeys.AllowReorder]?: boolean;
   [IsolateKeys.Parent]: Nullable<TIsolate>;
   [IsolateKeys.Type]: string;
   [IsolateKeys.Keys]: Nullable<Record<string, TIsolate>>;
-  [IsolateKeys.Data]?: D;
+  [IsolateKeys.Data]?: DataOnly<P>;
   children: Nullable<TIsolate[]>;
   key: IsolateKey;
   output: any;
-};
+} & UsedFeaturesOnly<P>;
+
+type DataOnly<P extends IsolatePayload> = Omit<P, keyof IsolateFeatures>;
+type UsedFeaturesOnly<P extends IsolatePayload> = Pick<
+  P,
+  keyof IsolateFeatures
+>;
 
 export class Isolate {
-  static create<
-    Payload extends IsolatePayload,
-    Extra extends IsolateFeatures = Record<string, any>
-  >(
+  static create<Payload extends IsolatePayload>(
     type: string,
     callback: CB,
     payload: Payload,
     key?: IsolateKey
-  ): TIsolate<Payload> & Extra {
+  ): TIsolate<Payload> {
     const parent = VestRuntime.useIsolate();
 
     const newCreatedNode = IsolateMutator.setParent(
@@ -48,7 +50,7 @@ export class Isolate {
     IsolateMutator.saveOutput(nextIsolateChild, output);
     VestRuntime.addNodeToHistory(nextIsolateChild);
 
-    return nextIsolateChild as TIsolate<Payload> & Extra;
+    return nextIsolateChild as TIsolate<Payload>;
   }
 }
 
@@ -101,5 +103,7 @@ function baseIsolate(
 }
 
 type IsolateData = Record<string, any>;
-type IsolatePayload = IsolateData & Partial<IsolateFeatures>;
-type IsolateFeatures = Partial<IReorderable>;
+type IsolatePayload = IsolateData & IsolateFeatures;
+type IsolateFeatures = {
+  allowReorder?: boolean;
+};

@@ -7,13 +7,14 @@ import * as VestRuntime from 'VestRuntime';
 
 export type IsolateKey = Nullable<string>;
 
-export type TIsolate = {
+export type TIsolate<D = any> = {
   key: IsolateKey;
   parent: Nullable<TIsolate>;
   children: Nullable<TIsolate[]>;
   output: any;
   [IsolateKeys.Type]: string;
   keys: Nullable<Record<string, TIsolate>>;
+  data: D;
 };
 
 export class Isolate {
@@ -78,18 +79,16 @@ function useRunAsNew<Callback extends CB = CB>(
 
 function baseIsolate(
   type: string,
-  payload: Nullable<IsolatePayload>,
+  data: any,
   key: IsolateKey = null
 ): TIsolate {
   return {
-    children: null,
     [IsolateKeys.Keys]: null,
-    output: null,
     [IsolateKeys.Parent]: null,
     [IsolateKeys.Type]: type,
-    ...payload,
+    [IsolateKeys.Data]: data,
+    children: null,
     key,
+    output: null,
   };
 }
-
-type IsolatePayload = Record<string, any>;

@@ -30,18 +30,50 @@ export class Isolate {
       parent
     );
 
-    const [nextIsolateChild, output] = Reconciler.reconcile(
-      newCreatedNode,
-      callback
-    );
+    const nextIsolateChild = Reconciler.reconcile(newCreatedNode);
+
+    const localHistoryNode = VestRuntime.useHistoryIsolateAtCurrentPosition();
+
+    const output = Object.is(nextIsolateChild, newCreatedNode)
+      ? useRunAsNew(localHistoryNode, newCreatedNode, callback)
+      : nextIsolateChild.output;
 
     IsolateMutator.setParent(nextIsolateChild, parent);
     IsolateMutator.saveOutput(nextIsolateChild, output);
-
     VestRuntime.addNodeToHistory(nextIsolateChild);
 
     return nextIsolateChild as TIsolate & Payload;
   }
+}
+
+/**
+ * Creates a new child isolate context where the local history node is the current history node, thus advancing the history cursor.
+ * Runs the callback function and returns its output.
+ * @param localHistoryNode The local history node.
+ * @param current The current isolate.
+ * @param callback The callback function to execute.
+ * @returns The output of the callback function.
+ */
+function useRunAsNew<Callback extends CB = CB>(
+  localHistoryNode: Nullable<TIsolate>,
+  current: TIsolate,
+  callback: CB
+): ReturnType<Callback> {
+  const runtimeRoot = VestRuntime.useRuntimeRoot();
+
+  // We're creating a new child isolate context where the local history node
+  // is the current history node, thus advancing the history cursor.
+  const output = VestRuntime.Run(
+    {
+      historyNode: localHistoryNode,
+      runtimeNode: current,
+      ...(!runtimeRoot && { runtimeRoot: current }),
+    },
+    () => callback(current)
+  );
+
+  current.output = output;
+  return output;
 }
 
 function baseIsolate(

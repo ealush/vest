@@ -107,8 +107,30 @@ export function useX<T = object>(): CTXType & T {
 export function useHistoryRoot() {
   return useX().stateRef.historyRoot();
 }
-export function useHistoryNode() {
+export function useHistoryIsolate() {
   return useX().historyNode;
+}
+
+/**
+ * Returns the history isolate at the current position.
+ * If there is a parent isolate, it returns the history node from the parent's children.
+ * Otherwise, it returns the history node.
+ * @returns {Nullable<TIsolate>} The history isolate at the current position.
+ */
+export function useHistoryIsolateAtCurrentPosition() {
+  const parent = useIsolate();
+
+  // This is most likely the historic counterpart of the parent node
+
+  const historyNode = useHistoryIsolate();
+
+  if (parent) {
+    // If we have a parent, we need to get the history node from the parent's children
+    // We take the history node from the cursor of the active node's children
+    return IsolateInspector.at(historyNode, IsolateInspector.cursor(parent));
+  }
+
+  return historyNode;
 }
 
 export function addNodeToHistory(node: TIsolate): void {

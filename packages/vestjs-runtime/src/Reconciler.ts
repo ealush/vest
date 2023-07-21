@@ -1,5 +1,5 @@
 import { ErrorStrings } from 'ErrorStrings';
-import { CB, Maybe, Nullable, invariant, isNullish } from 'vest-utils';
+import { Maybe, Nullable, invariant, isNullish } from 'vest-utils';
 
 import { type TIsolate } from 'Isolate';
 import { IsolateInspector } from 'IsolateInspector';
@@ -26,33 +26,24 @@ function BaseReconciler(
 }
 
 export class Reconciler {
-  static reconcile<Callback extends CB = CB>(
-    node: TIsolate,
-    callback: Callback
-  ): [TIsolate, ReturnType<Callback>] {
-    const parent = VestRuntime.useIsolate();
-
-    const historyNode = VestRuntime.useHistoryNode();
-    let localHistoryNode = historyNode;
-
-    if (parent) {
-      // If we have a parent, we need to get the history node from the parent's children
-      // We take the history node from the cursor of the active node's children
-      localHistoryNode = IsolateInspector.at(
-        historyNode,
-        IsolateInspector.cursor(parent)
-      );
-    }
+  /**
+   * Reconciles the current isolate with the history isolate.
+   * If the current isolate is of a different type than the history isolate,
+   * the current isolate is returned.
+   * Otherwise, the reconciler function is called to determine the next isolate.
+   * If the reconciler function returns null or undefined, the base reconciler is used.
+   * If no history isolate exists, the current isolate is returned.
+   * @param node The current isolate to reconcile.
+   * @returns The next isolate after reconciliation.
+   */
+  static reconcile(node: TIsolate): TIsolate {
+    const localHistoryNode = VestRuntime.useHistoryIsolateAtCurrentPosition();
 
     const nextNodeResult = pickNextNode(node, localHistoryNode);
 
     invariant(nextNodeResult, ErrorStrings.UNABLE_TO_PICK_NEXT_ISOLATE);
 
-    if (Object.is(nextNodeResult, node)) {
-      return [node, useRunAsNew(localHistoryNode, node, callback)];
-    }
-
-    return [nextNodeResult, nextNodeResult.output];
+    return nextNodeResult;
   }
 
   static dropNextNodesOnReorder<I extends TIsolate>(
@@ -86,28 +77,6 @@ export class Reconciler {
   }
 }
 
-function useRunAsNew<Callback extends CB = CB>(
-  localHistoryNode: Nullable<TIsolate>,
-  current: TIsolate,
-  callback: CB
-): ReturnType<Callback> {
-  const runtimeRoot = VestRuntime.useRuntimeRoot();
-
-  // We're creating a new child isolate context where the local history node
-  // is the current history node, thus advancing the history cursor.
-  const output = VestRuntime.Run(
-    {
-      historyNode: localHistoryNode,
-      runtimeNode: current,
-      ...(!runtimeRoot && { runtimeRoot: current }),
-    },
-    () => callback(current)
-  );
-
-  current.output = output;
-  return output;
-}
-
 function pickNextNode(
   currentNode: TIsolate,
   historyNode: Nullable<TIsolate>
@@ -138,7 +107,7 @@ function handleNoHistoryNode<I extends TIsolate>(newNode: I): I {
 
 function removeAllNextNodesInIsolate() {
   const currentNode = VestRuntime.useIsolate();
-  const historyNode = VestRuntime.useHistoryNode();
+  const historyNode = VestRuntime.useHistoryIsolate();
 
   if (!historyNode || !currentNode) {
     // This is probably unreachable, but TS is not convinced.

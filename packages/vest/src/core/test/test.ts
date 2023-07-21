@@ -44,12 +44,12 @@ function vestTest<F extends TFieldName>(
 
   const groupName = useGroupName();
 
-  const testObjectInput = { fieldName, groupName, key, message, testFn };
+  const testObjectInput = { fieldName, groupName, message, testFn };
 
   // This invalidates the suite cache.
   Bus.useEmit(Events.TEST_RUN_STARTED);
 
-  return IsolateTest(useAttemptRunTest, testObjectInput);
+  return IsolateTest(useAttemptRunTest, testObjectInput, key);
 }
 
 export const test = assign(vestTest, {

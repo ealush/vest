@@ -105,5 +105,5 @@ function baseIsolate(
 type IsolateData = Record<string, any>;
 type IsolatePayload = IsolateData & IsolateFeatures;
 type IsolateFeatures = {
-  allowReorder?: boolean;
+  [IsolateKeys.AllowReorder]?: boolean;
 };

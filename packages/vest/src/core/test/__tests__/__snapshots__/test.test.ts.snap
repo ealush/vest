@@ -3,20 +3,29 @@
 exports[`Test Vest's \`test\` function test params creates a test without a key 1`] = `
 {
   "$type": "Test",
+  "allowReorder": undefined,
   "children": null,
-  "fieldName": "field_name",
+  "data": {
+    "fieldName": "field_name",
+    "message": "failure message",
+    "severity": "error",
+    "status": "PASSING",
+    "testFn": [Function],
+  },
   "key": null,
   "keys": null,
-  "message": "failure message",
   "output": undefined,
   "parent": {
     "$type": "Suite",
+    "allowReorder": undefined,
     "children": [
       [Circular],
     ],
+    "data": {
+      "optional": {},
+    },
     "key": null,
     "keys": null,
-    "optional": {},
     "output": {
       "done": [Function],
       "errorCount": 0,
@@ -52,30 +61,36 @@ exports[`Test Vest's \`test\` function test params creates a test without a key 
     },
     "parent": null,
   },
-  "severity": "error",
-  "status": "PASSING",
-  "testFn": [Function],
 }
 `;
 
 exports[`Test Vest's \`test\` function test params creates a test without a message and with a key 1`] = `
 {
   "$type": "Test",
+  "allowReorder": undefined,
   "children": null,
-  "fieldName": "field_name",
+  "data": {
+    "fieldName": "field_name",
+    "severity": "error",
+    "status": "PASSING",
+    "testFn": [Function],
+  },
   "key": "keyboardcat",
   "keys": null,
   "output": undefined,
   "parent": {
     "$type": "Suite",
+    "allowReorder": undefined,
     "children": [
       [Circular],
     ],
+    "data": {
+      "optional": {},
+    },
     "key": null,
     "keys": {
       "keyboardcat": [Circular],
     },
-    "optional": {},
     "output": {
       "done": [Function],
       "errorCount": 0,
@@ -111,28 +126,34 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
     },
     "parent": null,
   },
-  "severity": "error",
-  "status": "PASSING",
-  "testFn": [Function],
 }
 `;
 
 exports[`Test Vest's \`test\` function test params creates a test without a message and without a key 1`] = `
 {
   "$type": "Test",
+  "allowReorder": undefined,
   "children": null,
-  "fieldName": "field_name",
+  "data": {
+    "fieldName": "field_name",
+    "severity": "error",
+    "status": "PASSING",
+    "testFn": [Function],
+  },
   "key": null,
   "keys": null,
   "output": undefined,
   "parent": {
     "$type": "Suite",
+    "allowReorder": undefined,
     "children": [
       [Circular],
     ],
+    "data": {
+      "optional": {},
+    },
     "key": null,
     "keys": null,
-    "optional": {},
     "output": {
       "done": [Function],
       "errorCount": 0,
@@ -168,8 +189,5 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
     },
     "parent": null,
   },
-  "severity": "error",
-  "status": "PASSING",
-  "testFn": [Function],
 }
 `;

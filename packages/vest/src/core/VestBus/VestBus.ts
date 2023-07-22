@@ -24,7 +24,9 @@ export function useInitVestBus() {
       return;
     }
 
-    useRunFieldCallbacks(testObject.fieldName);
+    const { fieldName } = VestTestInspector.getData(testObject);
+
+    useRunFieldCallbacks(fieldName);
 
     if (!TestWalker.hasRemainingTests()) {
       // When no more tests are running, emit the done event

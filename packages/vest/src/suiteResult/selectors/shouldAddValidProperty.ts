@@ -63,7 +63,9 @@ export function useShouldAddValidPropertyInGroup(
 // Does the given field have any pending tests that are not optional?
 function useHasNonOptionalIncomplete(fieldName?: TFieldName) {
   return TestWalker.someIncompleteTests(testObject => {
-    if (nonMatchingFieldName(testObject, fieldName)) {
+    if (
+      nonMatchingFieldName(VestTestInspector.getData(testObject), fieldName)
+    ) {
       return false;
     }
     return !useIsOptionalFiedApplied(fieldName);
@@ -80,7 +82,9 @@ function useHasNonOptionalIncompleteByGroup(
       return false;
     }
 
-    if (nonMatchingFieldName(testObject, fieldName)) {
+    if (
+      nonMatchingFieldName(VestTestInspector.getData(testObject), fieldName)
+    ) {
       return false;
     }
 
@@ -114,7 +118,7 @@ function useNoMissingTestsLogic(
   testObject: TIsolateTest,
   fieldName?: TFieldName
 ): boolean {
-  if (nonMatchingFieldName(testObject, fieldName)) {
+  if (nonMatchingFieldName(VestTestInspector.getData(testObject), fieldName)) {
     return true;
   }
 
@@ -141,8 +145,10 @@ function useOptionalTestAwaitsResolution(testObject: TIsolateTest): boolean {
 
   const root = VestRuntime.useAvailableRoot<TIsolateSuite>();
 
+  const { fieldName } = VestTestInspector.getData(testObject);
+
   return (
-    SuiteOptionalFields.getOptionalField(root, testObject.fieldName).type ===
+    SuiteOptionalFields.getOptionalField(root, fieldName).type ===
       OptionalFieldTypes.AUTO && VestTestInspector.awaitsResolution(testObject)
   );
 }

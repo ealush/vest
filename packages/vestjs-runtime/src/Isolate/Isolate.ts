@@ -12,7 +12,7 @@ export type TIsolate<P extends IsolatePayload = IsolatePayload> = {
   [IsolateKeys.Parent]: Nullable<TIsolate>;
   [IsolateKeys.Type]: string;
   [IsolateKeys.Keys]: Nullable<Record<string, TIsolate>>;
-  [IsolateKeys.Data]?: DataOnly<P>;
+  [IsolateKeys.Data]: DataOnly<P>;
   children: Nullable<TIsolate[]>;
   key: IsolateKey;
   output: any;

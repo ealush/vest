@@ -45,13 +45,13 @@ function useIsOne(): boolean {
   return useIsMode(Modes.ONE);
 }
 
-export function useShouldSkipBasedOnMode(testObject: WithFieldName): boolean {
+export function useShouldSkipBasedOnMode(testData: WithFieldName): boolean {
   if (useIsOne()) {
     return hasErrorsByTestObjects();
   }
 
   if (useIsEager()) {
-    return hasErrorsByTestObjects(testObject.fieldName);
+    return hasErrorsByTestObjects(testData.fieldName);
   }
 
   return false;

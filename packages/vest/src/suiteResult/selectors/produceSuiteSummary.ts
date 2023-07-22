@@ -69,7 +69,7 @@ function useAppendToTest<F extends TFieldName>(
   tests: Tests<F>,
   testObject: TIsolateTest<F>
 ): Tests<F> {
-  const { fieldName } = testObject;
+  const fieldName = VestTestInspector.getData<F>(testObject).fieldName;
 
   const newTests = {
     ...tests,
@@ -92,7 +92,7 @@ function useAppendToGroup(
   groups: Groups<TGroupName, TFieldName>,
   testObject: TIsolateTest
 ): Groups<TGroupName, TFieldName> {
-  const { groupName, fieldName } = testObject;
+  const { groupName, fieldName } = VestTestInspector.getData(testObject);
 
   if (!groupName) {
     return groups;
@@ -139,7 +139,7 @@ function appendTestObject(
   summaryKey: Maybe<SingleTestSummary>,
   testObject: TIsolateTest
 ): SingleTestSummary {
-  const { message } = testObject;
+  const { message } = VestTestInspector.getData(testObject);
 
   const nextSummaryKey = defaultTo<SingleTestSummary>(
     summaryKey ? { ...summaryKey } : null,

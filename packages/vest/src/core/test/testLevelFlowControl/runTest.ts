@@ -40,11 +40,14 @@ export function useAttemptRunTest(testObject: TIsolateTest) {
 function runSyncTest(testObject: TIsolateTest): TestResult {
   return SuiteContext.run({ currentTest: testObject }, () => {
     let result: TestResult;
+
+    const { message, testFn } = VestTestInspector.getData(testObject);
+
     try {
-      result = testObject.testFn();
+      result = testFn();
     } catch (error) {
-      if (shouldUseErrorAsMessage(testObject.message, error)) {
-        testObject.message = error;
+      if (shouldUseErrorAsMessage(message, error)) {
+        testObject.data.message = error;
       }
       result = false;
     }
@@ -71,7 +74,7 @@ function useRunTest(testObject: TIsolateTest): void {
     // try catch for safe property access
     // in case object is an enforce chain
     if (isPromise(result)) {
-      testObject.asyncTest = result;
+      testObject.data.asyncTest = result;
       useRunAsyncTest(testObject);
     } else {
       onTestCompleted(VestBus, testObject);
@@ -93,7 +96,7 @@ function useRunTest(testObject: TIsolateTest): void {
  * Runs async test.
  */
 function useRunAsyncTest(testObject: TIsolateTest): void {
-  const { asyncTest, message } = testObject;
+  const { asyncTest, message } = VestTestInspector.getData(testObject);
 
   if (!isPromise(asyncTest)) return;
   VestTestMutator.setPending(testObject);
@@ -108,7 +111,7 @@ function useRunAsyncTest(testObject: TIsolateTest): void {
       return;
     }
 
-    testObject.message = isStringValue(rejectionMessage)
+    testObject.data.message = isStringValue(rejectionMessage)
       ? rejectionMessage
       : message;
     VestTestMutator.fail(testObject);

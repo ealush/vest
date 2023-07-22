@@ -5,9 +5,9 @@ import { OptionalFieldDeclaration, OptionalFields } from 'OptionalTypes';
 import { TFieldName } from 'SuiteResultTypes';
 import { VestIsolateType } from 'VestIsolateType';
 
-export type TIsolateSuite = TIsolate & {
+export type TIsolateSuite = TIsolate<{
   optional: OptionalFields;
-};
+}>;
 
 export function IsolateSuite<Callback extends CB = CB>(
   callback: Callback
@@ -23,7 +23,7 @@ export class SuiteOptionalFields {
     fieldName: TFieldName,
     setter: (current: OptionalFieldDeclaration) => OptionalFieldDeclaration
   ): void {
-    const current = suite.optional;
+    const current = suite.data.optional;
     const currentField = current[fieldName];
 
     assign(current, {
@@ -35,10 +35,10 @@ export class SuiteOptionalFields {
     suite: TIsolateSuite,
     fieldName: TFieldName
   ): OptionalFieldDeclaration {
-    return suite.optional[fieldName] ?? {};
+    return suite.data.optional[fieldName] ?? {};
   }
 
   static getOptionalFields(suite: TIsolateSuite): OptionalFields {
-    return suite.optional;
+    return suite.data.optional;
   }
 }

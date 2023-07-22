@@ -62,13 +62,6 @@ export class IsolateInspector {
       return isNullish(value) ? undefined : value;
     });
   }
-
-  static getData<I extends TIsolate>(isolate: Nullable<I>) {
-    if (isNullish(isolate)) {
-      return undefined;
-    }
-    return isolate.data;
-  }
 }
 
 function isKeyExcluededFromDump(key: string): boolean {

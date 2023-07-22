@@ -15,7 +15,11 @@ export function group<G extends TGroupName>(
 ): TIsolate {
   const [callback, groupName] = args.reverse() as [CB<void>, G];
 
-  return Isolate.create(VestIsolateType.Group, () => {
-    return SuiteContext.run({ ...(groupName && { groupName }) }, callback);
-  });
+  return Isolate.create(
+    VestIsolateType.Group,
+    () => {
+      return SuiteContext.run({ ...(groupName && { groupName }) }, callback);
+    },
+    {}
+  );
 }

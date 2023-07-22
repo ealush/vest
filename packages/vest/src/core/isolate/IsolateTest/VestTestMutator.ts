@@ -1,3 +1,5 @@
+import { optionalFunctionValue } from 'vest-utils';
+
 import { TIsolateTest } from 'IsolateTest';
 import {
   TestAction,
@@ -27,7 +29,19 @@ export class VestTestMutator {
   }
 
   static warn(test: TIsolateTest): void {
-    test.severity = TestSeverity.Warning;
+    VestTestMutator.setData(test, current => ({
+      ...current,
+      severity: TestSeverity.Warning,
+    }));
+  }
+
+  static setData(
+    test: TIsolateTest,
+    setter:
+      | ((current: TIsolateTest['data']) => TIsolateTest['data'])
+      | TIsolateTest['data']
+  ): void {
+    test.data = optionalFunctionValue(setter, VestTestInspector.getData(test));
   }
 
   static skip(test: TIsolateTest, force?: boolean): void {
@@ -61,10 +75,13 @@ export class VestTestMutator {
     status: TestStateMachineAction,
     payload?: any
   ): void {
-    test.status = TestStateMachine.staticTransition(
-      test.status,
-      status,
-      payload
-    );
+    VestTestMutator.setData(test, current => ({
+      ...current,
+      status: TestStateMachine.staticTransition(
+        current.status,
+        status,
+        payload
+      ),
+    }));
   }
 }

@@ -3,6 +3,7 @@ import { TIsolate, Walker } from 'vestjs-runtime';
 
 import { TIsolateTest } from 'IsolateTest';
 import { useInclusion } from 'SuiteContext';
+import { VestTestInspector } from 'VestTestInspector';
 import { FocusSelectors, TIsolateFocused } from 'focused';
 import { useIsExcludedIndividually } from 'skipWhen';
 import { useHasOnliedTests } from 'useHasOnliedTests';
@@ -14,13 +15,15 @@ function useClosestMatchingFocus(
   return Walker.findClosest(testObject, (child: TIsolate) => {
     if (!FocusSelectors.isIsolateFocused(child)) return false;
 
-    return child.match?.includes(testObject.fieldName) || child.matchAll;
+    const { fieldName } = VestTestInspector.getData(testObject);
+
+    return child.data.match?.includes(fieldName) || child.data.matchAll;
   });
 }
 
 // eslint-disable-next-line complexity, max-statements
 export function useIsExcluded(testObject: TIsolateTest): boolean {
-  const { fieldName } = testObject;
+  const { fieldName } = VestTestInspector.getData(testObject);
 
   if (useIsExcludedIndividually()) return true;
   const inclusion = useInclusion();

@@ -1,12 +1,21 @@
-import { isPromise } from 'vest-utils';
+import { invariant, isPromise } from 'vest-utils';
 
 import type { TIsolateTest } from 'IsolateTest';
 import { TestStatus } from 'IsolateTestStateMachine';
 import { TestSeverity } from 'Severity';
+import { TFieldName, TGroupName } from 'SuiteResultTypes';
 
 export class VestTestInspector {
+  static getData<
+    F extends TFieldName = TFieldName,
+    G extends TGroupName = TGroupName
+  >(test: TIsolateTest<F, G>) {
+    invariant(test.data);
+    return test.data;
+  }
+
   static warns(test: TIsolateTest): boolean {
-    return test.severity === TestSeverity.Warning;
+    return VestTestInspector.getData(test).severity === TestSeverity.Warning;
   }
 
   static isPending(test: TIsolateTest): boolean {
@@ -72,10 +81,10 @@ export class VestTestInspector {
   }
 
   static isAsyncTest(test: TIsolateTest): boolean {
-    return isPromise(test.asyncTest);
+    return isPromise(VestTestInspector.getData(test).asyncTest);
   }
 
   static statusEquals(test: TIsolateTest, status: TestStatus): boolean {
-    return test.status === status;
+    return VestTestInspector.getData(test).status === status;
   }
 }

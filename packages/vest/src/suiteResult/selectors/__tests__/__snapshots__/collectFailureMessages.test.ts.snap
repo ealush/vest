@@ -53,8 +53,8 @@ exports[`collectFailureMessages getErrorsByGroup with field name Should match sn
 exports[`collectFailureMessages getWarnings When no options passed should match snapshot 1`] = `
 {
   "field_2": [
-    "field_2_warning message 2",
     "field_2_warning message 3",
+    "field_2_warning message 2",
   ],
 }
 `;
@@ -63,8 +63,8 @@ exports[`collectFailureMessages getWarnings When specific field requested Should
 
 exports[`collectFailureMessages getWarnings When specific field requested Should match snapshot 2`] = `
 [
-  "field_2_warning message 2",
   "field_2_warning message 3",
+  "field_2_warning message 2",
 ]
 `;
 

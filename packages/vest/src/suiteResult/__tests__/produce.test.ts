@@ -24,15 +24,19 @@ describe('produce method Suite Result', () => {
         dummyTest.passing('field_1');
         dummyTest.failing('field_1', 'message');
         dummyTest.failing('field_1', 'failure_message');
-        dummyTest.failing('field_1', 'failure_message with group', 'group_1');
+        vest.group('group_1', () => {
+          dummyTest.failing('field_1', 'failure_message with group');
+          dummyTest.passing('field_3', '');
+        });
         dummyTest.failingWarning('field_2', 'warning test');
         dummyTest.failingWarning('field_2', 'another warning test');
         dummyTest.passing('field_2');
-        dummyTest.passing('field_3', '', 'group_1');
         dummyTest.failing('field_3', 'msg');
         dummyTest.passing('field_4');
-        dummyTest.passing('field_5', '', 'group_2');
-        dummyTest.failingWarning('field_5', 'warning message', 'group_2');
+        vest.group('group_2', () => {
+          dummyTest.passing('field_5', '');
+          dummyTest.failingWarning('field_5', 'warning message');
+        });
       });
 
       const res = suite();

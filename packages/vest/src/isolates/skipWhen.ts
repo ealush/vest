@@ -21,26 +21,22 @@ export function skipWhen<F extends TFieldName, G extends TGroupName>(
   condition: TDraftCondition<F, G>,
   callback: CB
 ): void {
-  Isolate.create(
-    VestIsolateType.SkipWhen,
-    () => {
-      SuiteContext.run(
-        {
-          skipped:
-            // Checking for nested conditional. If we're in a nested skipWhen,
-            // we should skip the test if the parent conditional is true.
-            useIsExcludedIndividually() ||
-            // Otherwise, we should skip the test if the conditional is true.
-            optionalFunctionValue(
-              condition,
-              optionalFunctionValue(useCreateSuiteResult)
-            ),
-        },
-        callback
-      );
-    },
-    {}
-  );
+  Isolate.create(VestIsolateType.SkipWhen, () => {
+    SuiteContext.run(
+      {
+        skipped:
+          // Checking for nested conditional. If we're in a nested skipWhen,
+          // we should skip the test if the parent conditional is true.
+          useIsExcludedIndividually() ||
+          // Otherwise, we should skip the test if the conditional is true.
+          optionalFunctionValue(
+            condition,
+            optionalFunctionValue(useCreateSuiteResult)
+          ),
+      },
+      callback
+    );
+  });
 }
 
 export function useIsExcludedIndividually(): boolean {

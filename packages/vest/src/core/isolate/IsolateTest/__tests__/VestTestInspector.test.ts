@@ -266,7 +266,7 @@ describe('VestTestInspector', () => {
 
   describe('isAsyncTest', () => {
     it('Should return true when test is async', () => {
-      testObject.asyncTest = new Promise(() => {});
+      testObject.data.asyncTest = new Promise(() => {});
       expect(VestTestInspector.isAsyncTest(testObject)).toBe(true);
     });
 

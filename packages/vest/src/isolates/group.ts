@@ -20,6 +20,5 @@ export function group<G extends TGroupName>(
     () => {
       return SuiteContext.run({ ...(groupName && { groupName }) }, callback);
     },
-    {}
   );
 }

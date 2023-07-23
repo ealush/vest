@@ -34,9 +34,13 @@ describe('Isolate', () => {
 
     it('Should store the callback result in the output property', () => {
       const isolate = withRunTime(() => {
-        return Isolate.create(IsolateType.Isolate, () => {
-          return 'foo';
-        });
+        return Isolate.create(
+          IsolateType.Isolate,
+          () => {
+            return 'foo';
+          },
+          {}
+        );
       });
       expect(isolate.output).toBe('foo');
     });

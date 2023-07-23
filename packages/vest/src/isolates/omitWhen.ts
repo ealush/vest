@@ -22,23 +22,19 @@ export function omitWhen<F extends TFieldName, G extends TGroupName>(
   conditional: TDraftCondition<F, G>,
   callback: CB
 ): void {
-  Isolate.create(
-    VestIsolateType.OmitWhen,
-    () => {
-      SuiteContext.run(
-        {
-          omitted:
-            useWithinActiveOmitWhen() ||
-            optionalFunctionValue(
-              conditional,
-              optionalFunctionValue(useCreateSuiteResult)
-            ),
-        },
-        callback
-      );
-    },
-    {}
-  );
+  Isolate.create(VestIsolateType.OmitWhen, () => {
+    SuiteContext.run(
+      {
+        omitted:
+          useWithinActiveOmitWhen() ||
+          optionalFunctionValue(
+            conditional,
+            optionalFunctionValue(useCreateSuiteResult)
+          ),
+      },
+      callback
+    );
+  });
 }
 
 // Checks that we're currently in an active omitWhen block

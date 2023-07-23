@@ -1,4 +1,4 @@
-import { CB, Nullable } from 'vest-utils';
+import { CB, Maybe, Nullable } from 'vest-utils';
 
 import { IsolateKeys } from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';
@@ -28,7 +28,7 @@ export class Isolate {
   static create<Payload extends IsolatePayload>(
     type: string,
     callback: CB,
-    payload: Payload,
+    payload: Maybe<Payload> = undefined,
     key?: IsolateKey
   ): TIsolate<Payload> {
     const parent = VestRuntime.useIsolate();
@@ -86,10 +86,10 @@ function useRunAsNew<Callback extends CB = CB>(
 
 function baseIsolate(
   type: string,
-  payload: Record<string, any>,
+  payload: Maybe<IsolatePayload> = undefined,
   key: IsolateKey = null
 ): TIsolate {
-  const { allowReorder, ...data } = payload;
+  const { allowReorder, ...data } = payload ?? {};
   return {
     [IsolateKeys.AllowReorder]: allowReorder,
     [IsolateKeys.Keys]: null,

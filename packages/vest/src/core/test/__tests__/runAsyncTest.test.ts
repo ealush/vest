@@ -1,8 +1,8 @@
+import { VestTest } from 'VestTest';
 import wait from 'wait';
 
 import { asVestTest } from '../../../testUtils/asVestTest';
 
-import { VestTestInspector } from 'VestTestInspector';
 import * as vest from 'vest';
 
 describe('runAsyncTest', () => {
@@ -18,9 +18,9 @@ describe('runAsyncTest', () => {
 
       testObject = asVestTest(testObject);
 
-      expect(VestTestInspector.isPending(testObject)).toBe(true);
+      expect(VestTest.isPending(testObject)).toBe(true);
       await wait(100);
-      expect(VestTestInspector.isPending(testObject)).toBe(false);
+      expect(VestTest.isPending(testObject)).toBe(false);
     });
   });
 
@@ -133,9 +133,9 @@ describe('runAsyncTest', () => {
 
         testObject = asVestTest(testObject);
 
-        expect(VestTestInspector.isPassing(testObject)).toBe(false);
+        expect(VestTest.isPassing(testObject)).toBe(false);
         await wait(100);
-        expect(VestTestInspector.isPassing(testObject)).toBe(true);
+        expect(VestTest.isPassing(testObject)).toBe(true);
       });
     });
     describe('When failing', () => {
@@ -150,9 +150,9 @@ describe('runAsyncTest', () => {
 
         testObject = asVestTest(testObject);
 
-        expect(VestTestInspector.isFailing(testObject)).toBe(false);
+        expect(VestTest.isFailing(testObject)).toBe(false);
         await wait(100);
-        expect(VestTestInspector.isFailing(testObject)).toBe(true);
+        expect(VestTest.isFailing(testObject)).toBe(true);
       });
     });
     describe('When warning', () => {
@@ -168,9 +168,9 @@ describe('runAsyncTest', () => {
 
         testObject = asVestTest(testObject);
 
-        expect(VestTestInspector.isWarning(testObject)).toBe(false);
+        expect(VestTest.isWarning(testObject)).toBe(false);
         await wait(100);
-        expect(VestTestInspector.isWarning(testObject)).toBe(true);
+        expect(VestTest.isWarning(testObject)).toBe(true);
       });
     });
   });

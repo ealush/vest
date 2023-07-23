@@ -2,7 +2,7 @@ import { Maybe, bindNot } from 'vest-utils';
 
 import { TIsolateTest } from 'IsolateTest';
 import { TGroupName } from 'SuiteResultTypes';
-import { VestTestInspector } from 'VestTestInspector';
+import { VestTest } from 'VestTest';
 
 export const nonMatchingGroupName = bindNot(matchingGroupName);
 
@@ -10,5 +10,5 @@ export function matchingGroupName(
   testObject: TIsolateTest,
   groupName: Maybe<TGroupName>
 ): boolean {
-  return VestTestInspector.getData(testObject).groupName === groupName;
+  return VestTest.getData(testObject).groupName === groupName;
 }

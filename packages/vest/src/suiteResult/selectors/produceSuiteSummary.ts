@@ -13,7 +13,7 @@ import {
 } from 'SuiteResultTypes';
 import { SummaryFailure } from 'SummaryFailure';
 import { TestWalker } from 'TestWalker';
-import { VestTestInspector } from 'VestTestInspector';
+import { VestTest } from 'VestTest';
 import {
   useShouldAddValidProperty,
   useShouldAddValidPropertyInGroup,
@@ -50,14 +50,14 @@ function appendFailures<F extends TFieldName, G extends TGroupName>(
   failures: SummaryFailure<F, G>[],
   testObject: TIsolateTest<F, G>
 ): SummaryFailure<F, G>[] {
-  if (VestTestInspector.isOmitted(testObject)) {
+  if (VestTest.isOmitted(testObject)) {
     return failures;
   }
 
   const shouldAppend =
     key === Severity.WARNINGS
-      ? VestTestInspector.isWarning(testObject)
-      : VestTestInspector.isFailing(testObject);
+      ? VestTest.isWarning(testObject)
+      : VestTest.isFailing(testObject);
 
   if (shouldAppend) {
     return failures.concat(SummaryFailure.fromTestObject(testObject));
@@ -69,7 +69,7 @@ function useAppendToTest<F extends TFieldName>(
   tests: Tests<F>,
   testObject: TIsolateTest<F>
 ): Tests<F> {
-  const fieldName = VestTestInspector.getData<F>(testObject).fieldName;
+  const fieldName = VestTest.getData<F>(testObject).fieldName;
 
   const newTests = {
     ...tests,
@@ -92,7 +92,7 @@ function useAppendToGroup(
   groups: Groups<TGroupName, TFieldName>,
   testObject: TIsolateTest
 ): Groups<TGroupName, TFieldName> {
-  const { groupName, fieldName } = VestTestInspector.getData(testObject);
+  const { groupName, fieldName } = VestTest.getData(testObject);
 
   if (!groupName) {
     return groups;
@@ -139,20 +139,20 @@ function appendTestObject(
   summaryKey: Maybe<SingleTestSummary>,
   testObject: TIsolateTest
 ): SingleTestSummary {
-  const { message } = VestTestInspector.getData(testObject);
+  const { message } = VestTest.getData(testObject);
 
   const nextSummaryKey = defaultTo<SingleTestSummary>(
     summaryKey ? { ...summaryKey } : null,
     baseTestStats
   );
 
-  if (VestTestInspector.isNonActionable(testObject)) return nextSummaryKey;
+  if (VestTest.isNonActionable(testObject)) return nextSummaryKey;
 
   nextSummaryKey.testCount++;
 
-  if (VestTestInspector.isFailing(testObject)) {
+  if (VestTest.isFailing(testObject)) {
     incrementFailures(Severity.ERRORS);
-  } else if (VestTestInspector.isWarning(testObject)) {
+  } else if (VestTest.isWarning(testObject)) {
     incrementFailures(Severity.WARNINGS);
   }
 

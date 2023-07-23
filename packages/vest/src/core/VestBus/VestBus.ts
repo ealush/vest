@@ -9,7 +9,7 @@ import {
 } from 'Runtime';
 import { TFieldName } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
-import { VestTestInspector } from 'VestTestInspector';
+import { VestTest } from 'VestTest';
 import { useOmitOptionalFields } from 'omitOptionalFields';
 import { useRunDoneCallbacks, useRunFieldCallbacks } from 'runCallbacks';
 
@@ -20,11 +20,11 @@ export function useInitVestBus() {
   // Report a the completion of a test. There may be other tests with the same
   // name that are still running, or not yet started.
   on(Events.TEST_COMPLETED, (testObject: TIsolateTest) => {
-    if (VestTestInspector.isCanceled(testObject)) {
+    if (VestTest.isCanceled(testObject)) {
       return;
     }
 
-    const { fieldName } = VestTestInspector.getData(testObject);
+    const { fieldName } = VestTest.getData(testObject);
 
     useRunFieldCallbacks(fieldName);
 
@@ -48,7 +48,7 @@ export function useInitVestBus() {
     // The reason is that we run this function immediately after the suite callback
     // is run, so if the suite is only comprised of sync tests, we don't need to
     // run this function twice since we know for a fact the state is up to date
-    if (TestWalker.someTests(VestTestInspector.isAsyncTest)) {
+    if (TestWalker.someTests(VestTest.isAsyncTest)) {
       useOmitOptionalFields();
     }
     useRunDoneCallbacks();

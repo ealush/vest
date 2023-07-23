@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
+import { VestTest } from 'VestTest';
 
 import { TIsolateTest } from 'IsolateTest';
 import { Severity } from 'Severity';
-import { VestTestMutator } from 'VestTestMutator';
 import { hasFailuresByTestObject } from 'hasFailuresByTestObjects';
 import { mockIsolateTest } from 'vestMocks';
 
@@ -32,7 +32,7 @@ describe('hasFailuresByTestObject', () => {
 
   describe('When the test did fail', () => {
     beforeEach(() => {
-      VestTestMutator.fail(testObject);
+      VestTest.fail(testObject);
     });
     describe('When field name is not provided', () => {
       describe('When non matching severity profile', () => {
@@ -40,7 +40,7 @@ describe('hasFailuresByTestObject', () => {
           expect(hasFailuresByTestObject(testObject, Severity.WARNINGS)).toBe(
             false
           );
-          VestTestMutator.warn(testObject);
+          VestTest.warn(testObject);
           expect(hasFailuresByTestObject(testObject, Severity.ERRORS)).toBe(
             false
           );
@@ -52,7 +52,7 @@ describe('hasFailuresByTestObject', () => {
           expect(hasFailuresByTestObject(testObject, Severity.ERRORS)).toBe(
             true
           );
-          VestTestMutator.warn(testObject);
+          VestTest.warn(testObject);
           expect(hasFailuresByTestObject(testObject, Severity.WARNINGS)).toBe(
             true
           );
@@ -73,11 +73,11 @@ describe('hasFailuresByTestObject', () => {
           expect(hasFailuresByTestObject(testObject, Severity.WARNINGS)).toBe(
             false
           );
-          VestTestMutator.warn(testObject);
+          VestTest.warn(testObject);
           expect(hasFailuresByTestObject(testObject, Severity.ERRORS)).toBe(
             false
           );
-          VestTestMutator.fail(testObject);
+          VestTest.fail(testObject);
           expect(hasFailuresByTestObject(testObject, Severity.WARNINGS)).toBe(
             true
           );

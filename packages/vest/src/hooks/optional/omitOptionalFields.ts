@@ -5,8 +5,7 @@ import { Events } from 'BusEvents';
 import { SuiteOptionalFields, TIsolateSuite } from 'IsolateSuite';
 import { TIsolateTest } from 'IsolateTest';
 import { TestWalker } from 'TestWalker';
-import { VestTestInspector } from 'VestTestInspector';
-import { VestTestMutator } from 'VestTestMutator';
+import { VestTest, VestTest } from 'VestTest';
 
 /**
  * This module gets triggered once the suite is done running its sync tests.
@@ -29,10 +28,10 @@ export function useOmitOptionalFields(): void {
 
   // iterate over each of the tests in the state
   TestWalker.walkTests(testObject => {
-    if (VestTestInspector.isPending(testObject)) {
+    if (VestTest.isPending(testObject)) {
       return;
     }
-    const { fieldName } = VestTestInspector.getData(testObject);
+    const { fieldName } = VestTest.getData(testObject);
 
     // If we already added the current field (not this test specifically)
     // no need for further checks, go and omit the test
@@ -48,9 +47,9 @@ export function useOmitOptionalFields(): void {
   Bus.useEmit(Events.DONE_TEST_OMISSION_PASS);
 
   function verifyAndOmit(testObject: TIsolateTest) {
-    const { fieldName } = VestTestInspector.getData(testObject);
+    const { fieldName } = VestTest.getData(testObject);
     if (shouldOmit.has(fieldName)) {
-      VestTestMutator.omit(testObject);
+      VestTest.omit(testObject);
       SuiteOptionalFields.setOptionalField(root, fieldName, current => ({
         ...current,
         applied: true,
@@ -59,7 +58,7 @@ export function useOmitOptionalFields(): void {
   }
 
   function runOptionalConfig(testObject: TIsolateTest) {
-    const { fieldName } = VestTestInspector.getData(testObject);
+    const { fieldName } = VestTest.getData(testObject);
 
     // Ge the optional configuration for the given field
     const optionalConfig = SuiteOptionalFields.getOptionalField(

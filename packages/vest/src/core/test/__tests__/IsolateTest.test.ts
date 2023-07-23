@@ -3,8 +3,7 @@ import wait from 'wait';
 import { TestPromise } from '../../../testUtils/testPromise';
 
 import { TIsolateTest } from 'IsolateTest';
-import { VestTestInspector } from 'VestTestInspector';
-import { VestTestMutator } from 'VestTestMutator';
+import { VestTest } from 'VestTest';
 import * as vest from 'vest';
 import { mockIsolateTest } from 'vestMocks';
 
@@ -27,9 +26,9 @@ describe('IsolateTest', () => {
 
   describe('testObject.warn', () => {
     it('Should mark the test as warning', () => {
-      expect(VestTestInspector.warns(testObject)).toBe(false);
-      VestTestMutator.warn(testObject);
-      expect(VestTestInspector.warns(testObject)).toBe(true);
+      expect(VestTest.warns(testObject)).toBe(false);
+      VestTest.warn(testObject);
+      expect(VestTest.warns(testObject)).toBe(true);
       expect(testObject).toMatchSnapshot();
     });
   });
@@ -44,9 +43,9 @@ describe('IsolateTest', () => {
     });
 
     it('Should set status to failed', () => {
-      expect(VestTestInspector.isFailing(testObject)).toBe(false);
-      VestTestMutator.fail(testObject);
-      expect(VestTestInspector.isFailing(testObject)).toBe(true);
+      expect(VestTest.isFailing(testObject)).toBe(false);
+      VestTest.fail(testObject);
+      expect(VestTest.isFailing(testObject)).toBe(true);
     });
   });
 
@@ -61,11 +60,11 @@ describe('IsolateTest', () => {
           vest.test('f2', async () => {
             await wait(100);
           });
-          VestTestMutator.cancel(testObject);
+          VestTest.cancel(testObject);
         });
         suite();
 
-        expect(VestTestInspector.isCanceled(testObject)).toBe(true);
+        expect(VestTest.isCanceled(testObject)).toBe(true);
         done();
       });
     });
@@ -81,17 +80,17 @@ describe('IsolateTest', () => {
           const testObject = vest.test('f1', async () => {
             await wait(100);
           });
-          VestTestMutator.fail(testObject);
-          expect(VestTestInspector.isFailing(testObject)).toBe(true);
-          VestTestMutator.skip(testObject);
-          expect(VestTestInspector.isSkipped(testObject)).toBe(false);
-          expect(VestTestInspector.isFailing(testObject)).toBe(true);
-          VestTestMutator.cancel(testObject);
-          expect(VestTestInspector.isCanceled(testObject)).toBe(false);
-          expect(VestTestInspector.isFailing(testObject)).toBe(true);
-          VestTestMutator.setPending(testObject);
-          expect(VestTestInspector.isPending(testObject)).toBe(false);
-          expect(VestTestInspector.isFailing(testObject)).toBe(true);
+          VestTest.fail(testObject);
+          expect(VestTest.isFailing(testObject)).toBe(true);
+          VestTest.skip(testObject);
+          expect(VestTest.isSkipped(testObject)).toBe(false);
+          expect(VestTest.isFailing(testObject)).toBe(true);
+          VestTest.cancel(testObject);
+          expect(VestTest.isCanceled(testObject)).toBe(false);
+          expect(VestTest.isFailing(testObject)).toBe(true);
+          VestTest.setPending(testObject);
+          expect(VestTest.isPending(testObject)).toBe(false);
+          expect(VestTest.isFailing(testObject)).toBe(true);
           control();
         })();
         expect(control).toHaveBeenCalledTimes(1);
@@ -103,17 +102,17 @@ describe('IsolateTest', () => {
           const testObject = vest.test('f1', async () => {
             await wait(100);
           });
-          VestTestMutator.cancel(testObject);
-          expect(VestTestInspector.isCanceled(testObject)).toBe(true);
-          VestTestMutator.fail(testObject);
-          expect(VestTestInspector.isCanceled(testObject)).toBe(true);
-          expect(VestTestInspector.isFailing(testObject)).toBe(false);
-          VestTestMutator.skip(testObject);
-          expect(VestTestInspector.isSkipped(testObject)).toBe(false);
-          expect(VestTestInspector.isCanceled(testObject)).toBe(true);
-          VestTestMutator.setPending(testObject);
-          expect(VestTestInspector.isPending(testObject)).toBe(false);
-          expect(VestTestInspector.isCanceled(testObject)).toBe(true);
+          VestTest.cancel(testObject);
+          expect(VestTest.isCanceled(testObject)).toBe(true);
+          VestTest.fail(testObject);
+          expect(VestTest.isCanceled(testObject)).toBe(true);
+          expect(VestTest.isFailing(testObject)).toBe(false);
+          VestTest.skip(testObject);
+          expect(VestTest.isSkipped(testObject)).toBe(false);
+          expect(VestTest.isCanceled(testObject)).toBe(true);
+          VestTest.setPending(testObject);
+          expect(VestTest.isPending(testObject)).toBe(false);
+          expect(VestTest.isCanceled(testObject)).toBe(true);
           control();
         })();
         expect(control).toHaveBeenCalledTimes(1);

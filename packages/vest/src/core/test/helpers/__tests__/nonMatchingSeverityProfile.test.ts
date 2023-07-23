@@ -1,6 +1,7 @@
+import { VestTest } from 'VestTest';
+
 import { TIsolateTest } from 'IsolateTest';
 import { Severity } from 'Severity';
-import { VestTestMutator } from 'VestTestMutator';
 import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
 import { mockIsolateTest } from 'vestMocks';
 
@@ -15,7 +16,7 @@ describe('nonMatchingSeverityProfile', () => {
   describe('When matching', () => {
     describe('When both are warning', () => {
       it('should return false', () => {
-        VestTestMutator.warn(testObject);
+        VestTest.warn(testObject);
         expect(nonMatchingSeverityProfile(Severity.WARNINGS, testObject)).toBe(
           false
         );
@@ -34,7 +35,7 @@ describe('nonMatchingSeverityProfile', () => {
   describe('When non matching', () => {
     describe('When test is warning', () => {
       it('should return true', () => {
-        VestTestMutator.warn(testObject);
+        VestTest.warn(testObject);
         expect(nonMatchingSeverityProfile(Severity.ERRORS, testObject)).toBe(
           true
         );

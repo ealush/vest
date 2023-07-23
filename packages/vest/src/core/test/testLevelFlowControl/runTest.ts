@@ -12,8 +12,7 @@ import { ErrorStrings } from 'ErrorStrings';
 import { TIsolateTest } from 'IsolateTest';
 import { SuiteContext } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
-import { VestTestInspector } from 'VestTestInspector';
-import { VestTestMutator } from 'VestTestMutator';
+import { VestTest, VestTest } from 'VestTest';
 import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
 import { useVerifyTestRun } from 'verifyTestRun';
 
@@ -21,11 +20,11 @@ import { useVerifyTestRun } from 'verifyTestRun';
 export function useAttemptRunTest(testObject: TIsolateTest) {
   useVerifyTestRun(testObject);
 
-  if (VestTestInspector.isUntested(testObject)) {
+  if (VestTest.isUntested(testObject)) {
     return useRunTest(testObject);
   }
 
-  if (!VestTestInspector.isNonActionable(testObject)) {
+  if (!VestTest.isNonActionable(testObject)) {
     // Probably unreachable. If we get here, it means that
     // something was really wrong and should be reported.
     /* istanbul ignore next */
@@ -41,19 +40,19 @@ function runSyncTest(testObject: TIsolateTest): TestResult {
   return SuiteContext.run({ currentTest: testObject }, () => {
     let result: TestResult;
 
-    const { message, testFn } = VestTestInspector.getData(testObject);
+    const { message, testFn } = VestTest.getData(testObject);
 
     try {
       result = testFn();
     } catch (error) {
       if (shouldUseErrorAsMessage(message, error)) {
-        testObject.data.message = error;
+        VestTest.getData(testObject).message = error;
       }
       result = false;
     }
 
     if (result === false) {
-      VestTestMutator.fail(testObject);
+      VestTest.fail(testObject);
     }
 
     return result;
@@ -74,7 +73,7 @@ function useRunTest(testObject: TIsolateTest): void {
     // try catch for safe property access
     // in case object is an enforce chain
     if (isPromise(result)) {
-      testObject.data.asyncTest = result;
+      VestTest.getData(testObject).asyncTest = result;
       useRunAsyncTest(testObject);
     } else {
       onTestCompleted(VestBus, testObject);
@@ -96,10 +95,10 @@ function useRunTest(testObject: TIsolateTest): void {
  * Runs async test.
  */
 function useRunAsyncTest(testObject: TIsolateTest): void {
-  const { asyncTest, message } = VestTestInspector.getData(testObject);
+  const { asyncTest, message } = VestTest.getData(testObject);
 
   if (!isPromise(asyncTest)) return;
-  VestTestMutator.setPending(testObject);
+  VestTest.setPending(testObject);
 
   const VestBus = Bus.useBus();
 
@@ -107,14 +106,14 @@ function useRunAsyncTest(testObject: TIsolateTest): void {
     onTestCompleted(VestBus, testObject);
   });
   const fail = VestRuntime.persist((rejectionMessage?: string) => {
-    if (VestTestInspector.isCanceled(testObject)) {
+    if (VestTest.isCanceled(testObject)) {
       return;
     }
 
-    testObject.data.message = isStringValue(rejectionMessage)
+    VestTest.getData(testObject).message = isStringValue(rejectionMessage)
       ? rejectionMessage
       : message;
-    VestTestMutator.fail(testObject);
+    VestTest.fail(testObject);
 
     done();
   });
@@ -125,7 +124,7 @@ function useRunAsyncTest(testObject: TIsolateTest): void {
 function onTestCompleted(VestBus: BusType, testObject: TIsolateTest) {
   // Attempts passing if the test is not already failed.
   // or is not canceled/omitted.
-  VestTestMutator.pass(testObject);
+  VestTest.pass(testObject);
 
   VestBus.emit(Events.TEST_COMPLETED, testObject);
 }

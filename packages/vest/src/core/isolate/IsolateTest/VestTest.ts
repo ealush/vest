@@ -94,6 +94,7 @@ export class VestTest {
   }
 
   // Mutate
+
   static setPending(test: TIsolateTest) {
     VestTest.setStatus(test, TestStatus.PENDING);
   }

@@ -1,29 +1,29 @@
 ---
 sidebar_position: 4
-title: isUrl enforce Rule
-description: isUrl enforce rule for validating url addresses.
-keywords: [Vest, enforce, plugin, isUrl, n4s, url]
+title: isURL enforce Rule
+description: isURL enforce rule for validating url addresses.
+keywords: [Vest, enforce, plugin, isURL, n4s, url]
 ---
 
-# isUrl Enforce Rule
+# isURL Enforce Rule
 
 ## Description
 
-The isUrl enforce rule provides functionality to validate URL values. This documentation covers the `isUrl` rule, along with its options and configurations.
+The isURL enforce rule provides functionality to validate URL values. This documentation covers the `isUrl` rule, along with its options and configurations.
 
-These rule exposes the [`validator.js`](https://www.npmjs.com/package/validator) isUrl rule, and accepts the same options.
+These rule exposes the [`validator.js`](https://www.npmjs.com/package/validator) isURL rule, and accepts the same options.
 
-## isUrl Rule
+## isURL Rule
 
-The `isUrl` rule checks whether a given value is a valid URL. It accepts various options to customize the validation behavior.
+The `isURL` rule checks whether a given value is a valid URL. It accepts various options to customize the validation behavior.
 
 ```javascript
-enforce(value).isUrl(options);
+enforce(value).isURL(options);
 ```
 
 ### Options
 
-The isUrl rule accepts an optional options object to customize the validation behavior. The available options are as follows:
+The isURL rule accepts an optional options object to customize the validation behavior. The available options are as follows:
 
 The `isUrl` rule accepts an optional `options` object to customize the validation behavior. The available options are as follows:
 
@@ -43,7 +43,7 @@ The `isUrl` rule accepts an optional `options` object to customize the validatio
 
 ```javascript
 // Usage with options
-enforce(url).isUrl({
+enforce(url).isURL({
   protocols: ['http', 'https', 'ftp'],
   require_tld: true,
   require_protocol: false,

@@ -59,35 +59,35 @@
       "module": "./dist/es/schema.production.js",
       "default": "./dist/cjs/schema.production.js"
     },
-    "./isUrl": {
+    "./isURL": {
       "production": {
-        "types": "./types/isUrl.d.ts",
-        "browser": "./dist/es/isUrl.production.js",
-        "umd": "./dist/umd/isUrl.production.js",
-        "import": "./dist/es/isUrl.production.js",
-        "require": "./dist/cjs/isUrl.production.js",
-        "node": "./dist/cjs/isUrl.production.js",
-        "module": "./dist/es/isUrl.production.js",
-        "default": "./dist/cjs/isUrl.production.js"
+        "types": "./types/isURL.d.ts",
+        "browser": "./dist/es/isURL.production.js",
+        "umd": "./dist/umd/isURL.production.js",
+        "import": "./dist/es/isURL.production.js",
+        "require": "./dist/cjs/isURL.production.js",
+        "node": "./dist/cjs/isURL.production.js",
+        "module": "./dist/es/isURL.production.js",
+        "default": "./dist/cjs/isURL.production.js"
       },
       "development": {
-        "types": "./types/isUrl.d.ts",
-        "browser": "./dist/es/isUrl.development.js",
-        "umd": "./dist/umd/isUrl.development.js",
-        "import": "./dist/es/isUrl.development.js",
-        "require": "./dist/cjs/isUrl.development.js",
-        "node": "./dist/cjs/isUrl.development.js",
-        "module": "./dist/es/isUrl.development.js",
-        "default": "./dist/cjs/isUrl.development.js"
+        "types": "./types/isURL.d.ts",
+        "browser": "./dist/es/isURL.development.js",
+        "umd": "./dist/umd/isURL.development.js",
+        "import": "./dist/es/isURL.development.js",
+        "require": "./dist/cjs/isURL.development.js",
+        "node": "./dist/cjs/isURL.development.js",
+        "module": "./dist/es/isURL.development.js",
+        "default": "./dist/cjs/isURL.development.js"
       },
-      "types": "./types/isUrl.d.ts",
-      "browser": "./dist/es/isUrl.production.js",
-      "umd": "./dist/umd/isUrl.production.js",
-      "import": "./dist/es/isUrl.production.js",
-      "require": "./dist/cjs/isUrl.production.js",
-      "node": "./dist/cjs/isUrl.production.js",
-      "module": "./dist/es/isUrl.production.js",
-      "default": "./dist/cjs/isUrl.production.js"
+      "types": "./types/isURL.d.ts",
+      "browser": "./dist/es/isURL.production.js",
+      "umd": "./dist/umd/isURL.production.js",
+      "import": "./dist/es/isURL.production.js",
+      "require": "./dist/cjs/isURL.production.js",
+      "node": "./dist/cjs/isURL.production.js",
+      "module": "./dist/es/isURL.production.js",
+      "default": "./dist/cjs/isURL.production.js"
     },
     "./email": {
       "production": {

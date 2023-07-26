@@ -53,7 +53,7 @@
       "ruleReturn": ["./src/lib/ruleReturn.ts"],
       "enforceUtilityTypes": ["./src/lib/enforceUtilityTypes.ts"],
       "schema": ["./src/exports/schema.ts"],
-      "isUrl": ["./src/exports/isUrl.ts"],
+      "isURL": ["./src/exports/isURL.ts"],
       "email": ["./src/exports/email.ts"],
       "date": ["./src/exports/date.ts"],
       "compounds": ["./src/exports/compounds.ts"],

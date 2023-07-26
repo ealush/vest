@@ -59,6 +59,36 @@
       "module": "./dist/es/schema.production.js",
       "default": "./dist/cjs/schema.production.js"
     },
+    "./isUrl": {
+      "production": {
+        "types": "./types/isUrl.d.ts",
+        "browser": "./dist/es/isUrl.production.js",
+        "umd": "./dist/umd/isUrl.production.js",
+        "import": "./dist/es/isUrl.production.js",
+        "require": "./dist/cjs/isUrl.production.js",
+        "node": "./dist/cjs/isUrl.production.js",
+        "module": "./dist/es/isUrl.production.js",
+        "default": "./dist/cjs/isUrl.production.js"
+      },
+      "development": {
+        "types": "./types/isUrl.d.ts",
+        "browser": "./dist/es/isUrl.development.js",
+        "umd": "./dist/umd/isUrl.development.js",
+        "import": "./dist/es/isUrl.development.js",
+        "require": "./dist/cjs/isUrl.development.js",
+        "node": "./dist/cjs/isUrl.development.js",
+        "module": "./dist/es/isUrl.development.js",
+        "default": "./dist/cjs/isUrl.development.js"
+      },
+      "types": "./types/isUrl.d.ts",
+      "browser": "./dist/es/isUrl.production.js",
+      "umd": "./dist/umd/isUrl.production.js",
+      "import": "./dist/es/isUrl.production.js",
+      "require": "./dist/cjs/isUrl.production.js",
+      "node": "./dist/cjs/isUrl.production.js",
+      "module": "./dist/es/isUrl.production.js",
+      "default": "./dist/cjs/isUrl.production.js"
+    },
     "./email": {
       "production": {
         "types": "./types/email.d.ts",

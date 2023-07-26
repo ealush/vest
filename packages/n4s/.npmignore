@@ -5,6 +5,7 @@ src
 !dist/
 tsconfig.json
 !schema/
+!isUrl/
 !email/
 !date/
 !compounds/

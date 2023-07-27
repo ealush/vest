@@ -4,16 +4,18 @@ exports[`IsolateTest TestObject constructor 1`] = `
 {
   "$type": "UnitTest",
   "children": [],
-  "fieldName": "unicycle",
+  "data": {
+    "fieldName": "unicycle",
+    "message": "I am Root.",
+    "severity": "error",
+    "status": "UNTESTED",
+    "testFn": [MockFunction],
+    "type": "Test",
+  },
   "key": null,
   "keys": {},
-  "message": "I am Root.",
   "output": null,
   "parent": null,
-  "severity": "error",
-  "status": "UNTESTED",
-  "testFn": [MockFunction],
-  "type": "Test",
 }
 `;
 
@@ -21,15 +23,17 @@ exports[`IsolateTest testObject.warn Should mark the test as warning 1`] = `
 {
   "$type": "UnitTest",
   "children": [],
-  "fieldName": "unicycle",
+  "data": {
+    "fieldName": "unicycle",
+    "message": "I am Root.",
+    "severity": "warning",
+    "status": "UNTESTED",
+    "testFn": [MockFunction],
+    "type": "Test",
+  },
   "key": null,
   "keys": {},
-  "message": "I am Root.",
   "output": null,
   "parent": null,
-  "severity": "warning",
-  "status": "UNTESTED",
-  "testFn": [MockFunction],
-  "type": "Test",
 }
 `;

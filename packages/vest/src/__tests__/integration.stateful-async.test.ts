@@ -5,7 +5,7 @@ import { TestPromise } from '../testUtils/testPromise';
 
 import { Modes } from 'Modes';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { VestTestInspector } from 'VestTestInspector';
+import { VestTest } from 'VestTest';
 import * as vest from 'vest';
 
 type SuiteParams = { skip?: string; skipGroup?: true };
@@ -140,7 +140,7 @@ describe('Stateful async tests', () => {
     expect(control).toHaveBeenCalledTimes(1);
     expect(control).toHaveBeenCalledWith(1);
 
-    expect(VestTestInspector.isCanceled(tests[0])).toBe(true);
-    expect(VestTestInspector.isFailing(tests[1])).toBe(true);
+    expect(VestTest.isCanceled(tests[0])).toBe(true);
+    expect(VestTest.isFailing(tests[1])).toBe(true);
   });
 });

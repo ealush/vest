@@ -14,7 +14,6 @@
       "Bus": ["./src/Bus.ts"],
       "test-utils": ["./src/exports/test-utils.ts"],
       "ErrorStrings": ["./src/errors/ErrorStrings.ts"],
-      "isolateInterfaces": ["./src/Isolate/isolateInterfaces.ts"],
       "IsolateSelectors": ["./src/Isolate/IsolateSelectors.ts"],
       "IsolateParser": ["./src/Isolate/IsolateParser.ts"],
       "IsolateMutator": ["./src/Isolate/IsolateMutator.ts"],

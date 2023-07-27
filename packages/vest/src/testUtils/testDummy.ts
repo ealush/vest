@@ -10,8 +10,7 @@ import { test as vestTest, warn } from 'vest';
 const testDummy = () => {
   const failing = (
     name: string = faker.random.word(),
-    message: string = faker.random.words(),
-    groupName?: string
+    message: string = faker.random.words()
   ) => {
     const to = vestTest(
       name,
@@ -20,18 +19,13 @@ const testDummy = () => {
         throw new Error();
       })
     );
-
-    if (groupName) {
-      to.groupName = groupName;
-    }
 
     return to;
   };
 
   const failingWarning = (
     name = faker.random.word(),
-    message = faker.random.words(),
-    groupName?: string
+    message = faker.random.words()
   ) => {
     const to = vestTest(
       name,
@@ -42,31 +36,21 @@ const testDummy = () => {
       })
     );
 
-    if (groupName) {
-      to.groupName = groupName;
-    }
-
     return to;
   };
 
   const passing = (
     name = faker.random.word(),
-    message = faker.random.words(),
-    groupName?: string
+    message = faker.random.words()
   ) => {
     const to = vestTest(name, message, jest.fn());
-
-    if (groupName) {
-      to.groupName = groupName;
-    }
 
     return to;
   };
 
   const passingWarning = (
     name = faker.random.word(),
-    message = faker.random.words(),
-    groupName?: string
+    message = faker.random.words()
   ) => {
     const to = vestTest(
       name,
@@ -75,9 +59,6 @@ const testDummy = () => {
         warn();
       })
     );
-    if (groupName) {
-      to.groupName = groupName;
-    }
     return to;
   };
 

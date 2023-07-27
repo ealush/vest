@@ -3,8 +3,7 @@ import { Walker, VestRuntime, TIsolate } from 'vestjs-runtime';
 
 import { TIsolateTest } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { VestTestInspector } from 'VestTestInspector';
-import { VestTestMutator } from 'VestTestMutator';
+import { VestTest } from 'VestTest';
 import { castIsolateTest, isIsolateTest, isIsolateTestX } from 'isIsolateTest';
 import matchingFieldName from 'matchingFieldName';
 
@@ -28,7 +27,7 @@ export class TestWalker {
       isolate => {
         isIsolateTestX(isolate);
 
-        return VestTestInspector.isPending(isolate) && predicate(isolate);
+        return VestTest.isPending(isolate) && predicate(isolate);
       },
       isIsolateTest
     );
@@ -83,7 +82,7 @@ export class TestWalker {
   static hasRemainingTests(fieldName?: TFieldName): boolean {
     return TestWalker.someIncompleteTests(testObject => {
       if (fieldName) {
-        return matchingFieldName(testObject, fieldName);
+        return matchingFieldName(VestTest.getData(testObject), fieldName);
       }
       return true;
     });
@@ -107,8 +106,8 @@ export class TestWalker {
 
   static resetField(fieldName: TFieldName): void {
     TestWalker.walkTests(testObject => {
-      if (matchingFieldName(testObject, fieldName)) {
-        VestTestMutator.reset(testObject);
+      if (matchingFieldName(VestTest.getData(testObject), fieldName)) {
+        VestTest.reset(testObject);
       }
     }, TestWalker.defaultRoot());
   }
@@ -118,7 +117,7 @@ export class TestWalker {
     root: MaybeRoot = TestWalker.defaultRoot()
   ): void {
     TestWalker.pluckTests(testObject => {
-      return matchingFieldName(testObject, fieldName);
+      return matchingFieldName(VestTest.getData(testObject), fieldName);
     }, root);
   }
 }

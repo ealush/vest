@@ -1,4 +1,3 @@
-import { ErrorStrings } from 'ErrorStrings';
 import {
   Nullable,
   hasOwnProperty,
@@ -7,6 +6,7 @@ import {
   text,
 } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { TIsolate } from 'Isolate';
 import { IsolateKeys } from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';

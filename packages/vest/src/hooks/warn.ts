@@ -1,8 +1,8 @@
+import { ErrorStrings } from 'ErrorStrings';
 import { invariant } from 'vest-utils';
 
-import { ErrorStrings } from 'ErrorStrings';
 import { useCurrentTest } from 'SuiteContext';
-import { VestTestMutator } from 'VestTestMutator';
+import { VestTest } from 'VestTest';
 
 const ERROR_OUTSIDE_OF_TEST = ErrorStrings.WARN_MUST_BE_CALLED_FROM_TEST;
 
@@ -30,5 +30,5 @@ export function warn(): void {
 
   invariant(currentTest, ERROR_OUTSIDE_OF_TEST);
 
-  VestTestMutator.warn(currentTest);
+  VestTest.warn(currentTest);
 }

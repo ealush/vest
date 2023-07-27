@@ -1,7 +1,8 @@
+import { TTestSuite } from 'testUtils/TVestMock';
+
 import { dummyTest } from '../../../testUtils/testDummy';
 
 import { Modes } from 'Modes';
-import { TTestSuite } from 'testUtils/TVestMock';
 import { create, group } from 'vest';
 import * as vest from 'vest';
 
@@ -39,7 +40,9 @@ describe.each(modes)('produce method: %s', mode => {
         it('Should return an object with empty message arrays', () => {
           suite = create(() => {
             vest.mode(Modes.ALL);
-            dummyTest.passing('field_1', 'message', 'group_name');
+            vest.group('group_name', () => {
+              dummyTest.passing('field_1', 'message');
+            });
             dummyTest.passing('f2');
           });
           expect(getRes().getErrorsByGroup('group_name')).toEqual({});
@@ -49,7 +52,10 @@ describe.each(modes)('produce method: %s', mode => {
         it('Should return an empty array', () => {
           suite = create(() => {
             vest.mode(Modes.ALL);
-            dummyTest.passing('field_1', 'message', 'group_name');
+            vest.group('group_name', () => {
+              dummyTest.passing('field_1', 'message');
+            });
+
             dummyTest.passing();
           });
           expect(getRes().getErrorsByGroup('group_name', 'field_name')).toEqual(
@@ -64,12 +70,17 @@ describe.each(modes)('produce method: %s', mode => {
         it('Should return an object containing the error messages of each group', () => {
           suite = create(() => {
             vest.mode(Modes.ALL);
-            dummyTest.failing('field_1', 'message_1', 'group_name');
             dummyTest.failing('field_1', 'message_2');
             dummyTest.failing('field_2');
-            dummyTest.failing('field_2', 'message_3', 'group_name');
-            dummyTest.failing('field_2', 'message_4', 'group_name');
-            dummyTest.failing('field_2', 'message_4', 'group_name_2');
+            vest.group('group_name', () => {
+              dummyTest.failing('field_1', 'message_1');
+              dummyTest.failing('field_2', 'message_3');
+              dummyTest.failing('field_2', 'message_4');
+            });
+            dummyTest.passing('field_1', 'message');
+            vest.group('group_name_2', () => {
+              dummyTest.failing('field_2', 'message_4');
+            });
             dummyTest.passing('field_1');
             dummyTest.passing('field_2');
             dummyTest.passing('field_3');
@@ -128,7 +139,10 @@ describe.each(modes)('produce method: %s', mode => {
         it('Should return an object with no message arrays', () => {
           suite = create(() => {
             vest.mode(Modes.ALL);
-            dummyTest.passing('field_1', 'message', 'group_name');
+
+            vest.group('group_name', () => {
+              dummyTest.passing('field_1', 'message');
+            });
             dummyTest.passing();
           });
           expect(getRes().getWarningsByGroup('group_name')).toEqual({});
@@ -138,7 +152,9 @@ describe.each(modes)('produce method: %s', mode => {
         it('Should return an empty array', () => {
           suite = create(() => {
             vest.mode(Modes.ALL);
-            dummyTest.passing('field_1', 'message', 'group_name');
+            vest.group('group_name', () => {
+              dummyTest.passing('field_1', 'message');
+            });
             dummyTest.passing();
           });
           expect(
@@ -153,12 +169,18 @@ describe.each(modes)('produce method: %s', mode => {
         it('Should return an object containing the warning messages of each group', () => {
           suite = create(() => {
             vest.mode(Modes.ALL);
-            dummyTest.failingWarning('field_1', 'message_1', 'group_name');
+
+            vest.group('group_name', () => {
+              dummyTest.failingWarning('field_1', 'message_1');
+              dummyTest.failingWarning('field_2', 'message_3');
+              dummyTest.failingWarning('field_2', 'message_4');
+            });
             dummyTest.failingWarning('field_1', 'message_2');
             dummyTest.failingWarning('field_2');
-            dummyTest.failingWarning('field_2', 'message_3', 'group_name');
-            dummyTest.failingWarning('field_2', 'message_4', 'group_name');
-            dummyTest.failingWarning('field_2', 'message_4', 'group_name_2');
+
+            group('group_name_2', () => {
+              dummyTest.failingWarning('field_2', 'message_4');
+            });
             dummyTest.passing('field_1');
             dummyTest.passing('field_2');
             dummyTest.passing('field_3');

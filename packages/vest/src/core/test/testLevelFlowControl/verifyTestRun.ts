@@ -2,7 +2,7 @@ import { useIsOptionalFiedApplied } from 'optional';
 
 import { TIsolateTest } from 'IsolateTest';
 import { TFieldName } from 'SuiteResultTypes';
-import { VestTest, VestTest } from 'VestTest';
+import { VestTest } from 'VestTest';
 import { useShouldSkipBasedOnMode } from 'mode';
 import { useWithinActiveOmitWhen } from 'omitWhen';
 import { useIsExcludedIndividually } from 'skipWhen';

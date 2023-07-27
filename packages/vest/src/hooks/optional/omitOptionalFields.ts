@@ -5,7 +5,7 @@ import { Events } from 'BusEvents';
 import { SuiteOptionalFields, TIsolateSuite } from 'IsolateSuite';
 import { TIsolateTest } from 'IsolateTest';
 import { TestWalker } from 'TestWalker';
-import { VestTest, VestTest } from 'VestTest';
+import { VestTest } from 'VestTest';
 
 /**
  * This module gets triggered once the suite is done running its sync tests.

@@ -1,5 +1,5 @@
 import { TIsolateTest } from 'IsolateTest';
-import { VestTest, VestTest } from 'VestTest';
+import { VestTest } from 'VestTest';
 import { isSameProfileTest } from 'isSameProfileTest';
 
 export default function cancelOverriddenPendingTest(

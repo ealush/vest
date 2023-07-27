@@ -1,3 +1,4 @@
+import { ErrorStrings } from 'ErrorStrings';
 import {
   isPromise,
   isStringValue,
@@ -8,11 +9,10 @@ import {
 import { Bus, IsolateInspector, VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
-import { ErrorStrings } from 'ErrorStrings';
 import { TIsolateTest } from 'IsolateTest';
 import { SuiteContext } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
-import { VestTest, VestTest } from 'VestTest';
+import { VestTest } from 'VestTest';
 import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
 import { useVerifyTestRun } from 'verifyTestRun';
 

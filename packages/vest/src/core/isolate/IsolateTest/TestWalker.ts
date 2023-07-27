@@ -3,7 +3,7 @@ import { Walker, VestRuntime, TIsolate } from 'vestjs-runtime';
 
 import { TIsolateTest } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { VestTest, VestTest } from 'VestTest';
+import { VestTest } from 'VestTest';
 import { castIsolateTest, isIsolateTest, isIsolateTestX } from 'isIsolateTest';
 import matchingFieldName from 'matchingFieldName';
 

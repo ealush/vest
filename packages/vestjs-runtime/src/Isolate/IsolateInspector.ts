@@ -48,22 +48,4 @@ export class IsolateInspector {
     }
     return isolate.keys?.[key] ?? null;
   }
-
-  static dump(isolate: Nullable<TIsolate>): string {
-    if (isNullish(isolate)) {
-      return '';
-    }
-
-    return JSON.stringify(isolate, (key, value) => {
-      if (isKeyExcluededFromDump(key)) {
-        return undefined;
-      }
-      // Remove nullish values from dump
-      return isNullish(value) ? undefined : value;
-    });
-  }
-}
-
-function isKeyExcluededFromDump(key: string): boolean {
-  return [IsolateKeys.Parent, IsolateKeys.Keys].includes(key as IsolateKeys);
 }

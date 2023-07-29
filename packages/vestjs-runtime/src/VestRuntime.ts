@@ -4,7 +4,6 @@ import {
   invariant,
   deferThrow,
   isNullish,
-  // CB,
   assign,
   TinyState,
   text,
@@ -19,7 +18,7 @@ import {
 import { TIsolate } from 'Isolate';
 import { IsolateInspector } from 'IsolateInspector';
 import { IsolateMutator } from 'IsolateMutator';
-import { IsolateParser } from 'IsolateParser';
+import { IsolateSerializer } from 'IsolateSerializer';
 import { IRecociler } from 'Reconciler';
 
 type CTXType = StateRefType & {
@@ -211,11 +210,11 @@ export function reset() {
 }
 
 export function useLoadRootNode(node: Record<string, any> | TIsolate): void {
-  useSetHistory(IsolateParser.parse(node));
+  useSetHistory(IsolateSerializer.parse(node));
 }
 
 export function useSerializeHistoryRoot(): string {
   const [historyRoot] = useHistoryRoot();
 
-  return IsolateInspector.dump(historyRoot);
+  return IsolateSerializer.serialize(historyRoot);
 }

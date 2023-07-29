@@ -3,6 +3,7 @@ import {
   Nullable,
   hasOwnProperty,
   invariant,
+  isNullish,
   isStringValue,
   text,
 } from 'vest-utils';
@@ -11,9 +12,9 @@ import { TIsolate } from 'Isolate';
 import { IsolateKeys } from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';
 
-export class IsolateParser {
+export class IsolateSerializer {
   // eslint-disable-next-line max-statements, complexity
-  static parse(node: Record<string, any> | TIsolate): TIsolate {
+  static deserialize(node: Record<string, any> | TIsolate): TIsolate {
     // the  assumption is that the tree is built correctly,
     // but the children are missing the parent property to
     // avoid circular references during serialization.
@@ -26,14 +27,14 @@ export class IsolateParser {
       ? JSON.parse(node)
       : ({ ...node } as TIsolate);
 
-    IsolateParser.validateIsolate(root);
+    IsolateSerializer.validateIsolate(root);
 
     const queue = [root];
 
     while (queue.length) {
       const current = queue.shift() as TIsolate;
 
-      const children = IsolateParser.getChildren(current);
+      const children = IsolateSerializer.getChildren(current);
 
       if (!children) {
         continue;
@@ -55,6 +56,20 @@ export class IsolateParser {
     return root;
   }
 
+  static serialize(isolate: Nullable<TIsolate>): string {
+    if (isNullish(isolate)) {
+      return '';
+    }
+
+    return JSON.stringify(isolate, (key, value) => {
+      if (isKeyExcluededFromDump(key)) {
+        return undefined;
+      }
+      // Remove nullish values from dump
+      return isNullish(value) ? undefined : value;
+    });
+  }
+
   static getChildren(node: TIsolate): Nullable<TIsolate[]> {
     return node.children ? [...node.children] : null;
   }
@@ -65,4 +80,8 @@ export class IsolateParser {
       text(ErrorStrings.IVALID_ISOLATE_CANNOT_PARSE)
     );
   }
+}
+
+function isKeyExcluededFromDump(key: string): boolean {
+  return [IsolateKeys.Parent, IsolateKeys.Keys].includes(key as IsolateKeys);
 }

@@ -9,7 +9,7 @@ import {
 } from 'vest-utils';
 
 import { TIsolate } from 'Isolate';
-import { IsolateKeys } from 'IsolateKeys';
+import { IsolateKeys, KeyToMinified, MinifiedToKey } from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';
 
 export class IsolateSerializer {
@@ -32,9 +32,16 @@ export class IsolateSerializer {
     const queue = [root];
 
     while (queue.length) {
-      const current = queue.shift() as TIsolate;
+      const current = { ...queue.shift() } as TIsolate;
 
       const children = IsolateSerializer.getChildren(current);
+
+      for (const key in MinifiedToKey) {
+        if (hasOwnProperty(current, key)) {
+          current[MinifiedToKey[key]] = current[key];
+          delete current[key];
+        }
+      }
 
       if (!children) {
         continue;
@@ -61,13 +68,7 @@ export class IsolateSerializer {
       return '';
     }
 
-    return JSON.stringify(isolate, (key, value) => {
-      if (isKeyExcluededFromDump(key)) {
-        return undefined;
-      }
-      // Remove nullish values from dump
-      return isNullish(value) ? undefined : value;
-    });
+    return JSON.stringify(transformIsolate(isolate));
   }
 
   static getChildren(node: TIsolate): Nullable<TIsolate[]> {
@@ -80,6 +81,35 @@ export class IsolateSerializer {
       text(ErrorStrings.IVALID_ISOLATE_CANNOT_PARSE)
     );
   }
+}
+
+// eslint-disable-next-line complexity, max-statements
+function transformIsolate(isolate: TIsolate): Record<string, any> {
+  const next: Record<string, any> = {};
+
+  if (isolate.children) {
+    next.children = isolate.children.map(transformIsolate);
+  }
+
+  for (const key in isolate) {
+    if (key === 'children') {
+      continue;
+    }
+
+    if (isKeyExcluededFromDump(key)) {
+      continue;
+    }
+
+    if (isNullish(isolate[key as keyof TIsolate])) {
+      continue;
+    }
+
+    if (hasOwnProperty(KeyToMinified, key)) {
+      next[KeyToMinified[key]] = isolate[key];
+    }
+  }
+
+  return next;
 }
 
 function isKeyExcluededFromDump(key: string): boolean {

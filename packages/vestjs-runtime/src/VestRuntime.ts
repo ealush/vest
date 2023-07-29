@@ -210,7 +210,7 @@ export function reset() {
 }
 
 export function useLoadRootNode(node: Record<string, any> | TIsolate): void {
-  useSetHistory(IsolateSerializer.parse(node));
+  useSetHistory(IsolateSerializer.deserialize(node));
 }
 
 export function useSerializeHistoryRoot(): string {

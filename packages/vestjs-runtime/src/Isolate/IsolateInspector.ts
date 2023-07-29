@@ -1,7 +1,6 @@
 import { Nullable, isNotNullish, isNullish } from 'vest-utils';
 
 import { TIsolate } from 'Isolate';
-import { IsolateKeys } from 'IsolateKeys';
 
 export class IsolateInspector {
   static at(isolate: Nullable<TIsolate>, at: number): Nullable<TIsolate> {

@@ -3,6 +3,7 @@ import {
   Nullable,
   hasOwnProperty,
   invariant,
+  isNotNullish,
   isNullish,
   isStringValue,
   text,
@@ -32,13 +33,14 @@ export class IsolateSerializer {
     const queue = [root];
 
     while (queue.length) {
-      const current = { ...queue.shift() } as TIsolate;
+      const current = { ...queue.shift() };
 
       const children = IsolateSerializer.getChildren(current);
 
       for (const key in MinifiedToKey) {
-        if (hasOwnProperty(current, key)) {
-          current[MinifiedToKey[key]] = current[key];
+        const value = current[key];
+        if (isNotNullish(value)) {
+          current[MinifiedToKey[key]] = value;
           delete current[key];
         }
       }
@@ -60,7 +62,7 @@ export class IsolateSerializer {
       }
     }
 
-    return root;
+    return root as TIsolate;
   }
 
   static serialize(isolate: Nullable<TIsolate>): string {
@@ -77,7 +79,8 @@ export class IsolateSerializer {
 
   static validateIsolate(node: Record<string, any> | TIsolate): void {
     invariant(
-      hasOwnProperty(node, IsolateKeys.Type),
+      hasOwnProperty(node, IsolateKeys.Type) ||
+        hasOwnProperty(node, KeyToMinified[IsolateKeys.Type]),
       text(ErrorStrings.IVALID_ISOLATE_CANNOT_PARSE)
     );
   }
@@ -99,13 +102,16 @@ function transformIsolate(isolate: TIsolate): Record<string, any> {
     if (isKeyExcluededFromDump(key)) {
       continue;
     }
+    const value = isolate[key as keyof TIsolate];
 
-    if (isNullish(isolate[key as keyof TIsolate])) {
+    if (isNullish(value)) {
       continue;
     }
 
     if (hasOwnProperty(KeyToMinified, key)) {
-      next[KeyToMinified[key]] = isolate[key];
+      next[KeyToMinified[key]] = value;
+    } else {
+      next[key] = value;
     }
   }
 

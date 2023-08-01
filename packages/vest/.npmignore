@@ -4,6 +4,7 @@ src
 !types/
 !dist/
 tsconfig.json
+!suiteSerializer/
 !promisify/
 !parser/
 !enforce@schema/

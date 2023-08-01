@@ -5,7 +5,7 @@ import {
   text,
   deferThrow,
 } from 'vest-utils';
-import { Bus, IsolateSerializer, VestRuntime } from 'vestjs-runtime';
+import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
 import { ErrorStrings } from 'ErrorStrings';
@@ -31,7 +31,7 @@ export function useAttemptRunTest(testObject: TIsolateTest) {
     /* istanbul ignore next */
     deferThrow(
       text(ErrorStrings.UNEXPECTED_TEST_REGISTRATION_ERROR, {
-        testObject: IsolateSerializer.serialize(testObject),
+        testObject: JSON.stringify(testObject),
       })
     );
   }

@@ -59,6 +59,7 @@
       "useHasOnliedTests": ["./src/hooks/focused/useHasOnliedTests.ts"],
       "focused": ["./src/hooks/focused/focused.ts"],
       "FocusedKeys": ["./src/hooks/focused/FocusedKeys.ts"],
+      "suiteSerializer": ["./src/exports/suiteSerializer.ts"],
       "promisify": ["./src/exports/promisify.ts"],
       "parser": ["./src/exports/parser.ts"],
       "enforce@schema": ["./src/exports/enforce@schema.ts"],

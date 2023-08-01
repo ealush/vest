@@ -5,5 +5,6 @@ src
 !dist/
 tsconfig.json
 !test-utils/
+!IsolateSerializer/
 
 # Manual Section. Edit at will.

@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`IsolateSerializer serialize Should produce serialized dump 1`] = `"{"children":[{"$":"UChild_1","some_data":true},{"$":"UChild_2"},{"$":"UChild_3"}],"$":"URoot","some_data":true}"`;

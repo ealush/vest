@@ -1,27 +1,46 @@
-import { Isolate } from 'Isolate';
+import { ser } from 'vest/src/testUtils/suiteDummy';
+
+import { Isolate, TIsolate } from 'Isolate';
 import { IsolateSerializer } from 'IsolateSerializer';
 import { VestRuntime } from 'vestjs-runtime';
 
 describe('IsolateSerializer', () => {
-  it('Should produce serialized dump', () => {
-    let serialized;
-    withRunTime(() => {
-      const root = Isolate.create(
-        'URoot',
-        () => {
-          Isolate.create('UChild_1', () => {});
-          Isolate.create('UChild_2', () => {});
-          Isolate.create('UChild_3', () => {});
-        },
-        {
-          some_data: true,
-        }
-      );
+  describe('serialize', () => {
+    it('Should produce serialized dump', () => {
+      const { serialized } = createSerialized();
 
-      serialized = IsolateSerializer.serialize(root);
+      expect(serialized).toMatchSnapshot();
     });
+  });
 
-    expect(serialized).toMatchSnapshot();
+  describe('deserialize', () => {
+    it('Should fully inflate the tree', () => {
+      const { root, serialized } = createSerialized();
+
+      const inflated = IsolateSerializer.deserialize(serialized);
+
+      expect(inflated).toMatchInlineSnapshot(`
+        {
+          "$type": "URoot",
+          "children": [
+            {
+              "$type": "UChild_1",
+              "parent": [Circular],
+              "some_data": true,
+            },
+            {
+              "$type": "UChild_2",
+              "parent": [Circular],
+            },
+            {
+              "$type": "UChild_3",
+              "parent": [Circular],
+            },
+          ],
+          "some_data": true,
+        }
+      `);
+    });
   });
 });
 
@@ -29,4 +48,27 @@ function withRunTime<T>(fn: CB<T>) {
   return VestRuntime.Run(VestRuntime.createRef({}), () => {
     return fn();
   });
+}
+
+function createSerialized() {
+  let serialized: string, root: TIsolate;
+
+  withRunTime(() => {
+    root = Isolate.create(
+      'URoot',
+      () => {
+        Isolate.create('UChild_1', () => {}, { some_data: true });
+        Isolate.create('UChild_2', () => {});
+        Isolate.create('UChild_3', () => {});
+      },
+      {
+        some_data: true,
+      }
+    );
+
+    serialized = IsolateSerializer.serialize(root);
+  });
+
+  // @ts-ignore
+  return { root, serialized };
 }

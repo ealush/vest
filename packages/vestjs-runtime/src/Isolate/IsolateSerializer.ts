@@ -15,7 +15,7 @@ import { IsolateMutator } from 'IsolateMutator';
 
 export class IsolateSerializer {
   // eslint-disable-next-line max-statements, complexity
-  static deserialize(node: Record<string, any> | TIsolate): TIsolate {
+  static deserialize(node: Record<string, any> | TIsolate | string): TIsolate {
     // the  assumption is that the tree is built correctly,
     // but the children are missing the parent property to
     // avoid circular references during serialization.
@@ -33,7 +33,7 @@ export class IsolateSerializer {
     const queue = [root];
 
     while (queue.length) {
-      const current = { ...queue.shift() };
+      const current = queue.shift();
 
       const children = IsolateSerializer.getChildren(current);
 
@@ -49,17 +49,21 @@ export class IsolateSerializer {
         continue;
       }
 
-      for (const child of children) {
-        IsolateMutator.setParent(child, current);
-        queue.push(child);
+      current.children = children.map(child => {
+        const nextChild = { ...child };
 
-        const key = child.key;
+        IsolateMutator.setParent(nextChild, current);
+        queue.push(nextChild);
+
+        const key = nextChild.key;
 
         if (key) {
           current.keys = current.keys ?? {};
-          current.keys[key] = child;
+          current.keys[key] = nextChild;
         }
-      }
+
+        return nextChild;
+      });
     }
 
     return root as TIsolate;

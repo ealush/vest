@@ -9,6 +9,7 @@ import {
 } from 'vest-utils';
 import { IRecociler, VestRuntime } from 'vestjs-runtime';
 
+import { TIsolateSuite } from 'IsolateSuite';
 import {
   SuiteName,
   SuiteResult,
@@ -93,7 +94,7 @@ export function useResetSuite() {
   VestRuntime.reset();
 }
 
-export function useLoadSuite(rootNode: Record<string, any>): void {
+export function useLoadSuite(rootNode: TIsolateSuite): void {
   VestRuntime.useLoadRootNode(rootNode);
   useExpireSuiteResultCache();
 }

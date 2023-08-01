@@ -2,7 +2,7 @@ import { assign, CB } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
-import { IsolateSuite } from 'IsolateSuite';
+import { IsolateSuite, TIsolateSuite } from 'IsolateSuite';
 import { useCreateVestState, useLoadSuite } from 'Runtime';
 import { SuiteContext } from 'SuiteContext';
 import {
@@ -72,12 +72,14 @@ function createSuite<
       // can access the stateRef when it's called.
       VestRuntime.persist(suite),
       {
+        dump: VestRuntime.persist(
+          () => VestRuntime.useHistoryRoot()[0] as TIsolateSuite
+        ),
         get: VestRuntime.persist(useCreateSuiteResult),
         remove: Bus.usePrepareEmitter<string>(Events.REMOVE_FIELD),
         reset: Bus.usePrepareEmitter(Events.RESET_SUITE),
         resetField: Bus.usePrepareEmitter<string>(Events.RESET_FIELD),
         resume: VestRuntime.persist(useLoadSuite),
-        serialize: VestRuntime.persist(VestRuntime.useSerializeHistoryRoot),
         ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
         ...getTypedMethods<F, G>(),
       }

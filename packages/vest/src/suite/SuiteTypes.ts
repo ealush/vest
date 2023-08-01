@@ -1,5 +1,6 @@
 import { CB } from 'vest-utils';
 
+import { TIsolateSuite } from 'IsolateSuite';
 import {
   SuiteResult,
   SuiteRunResult,
@@ -16,11 +17,11 @@ export type Suite<
 > = ((...args: Parameters<T>) => SuiteRunResult<F, G>) & SuiteMethods<F, G>;
 
 export type SuiteMethods<F extends TFieldName, G extends TGroupName> = {
+  dump: CB<TIsolateSuite>;
   get: CB<SuiteResult<F, G>>;
-  resume: CB<void, [Record<string, any>]>;
+  resume: CB<void, [TIsolateSuite]>;
   reset: CB<void>;
   remove: CB<void, [fieldName: F]>;
   resetField: CB<void, [fieldName: F]>;
-  serialize: CB<string>;
 } & TTypedMethods<F, G> &
   SuiteSelectors<F, G>;

@@ -18,7 +18,6 @@ import {
 import { TIsolate } from 'Isolate';
 import { IsolateInspector } from 'IsolateInspector';
 import { IsolateMutator } from 'IsolateMutator';
-import { IsolateSerializer } from 'IsolateSerializer';
 import { IRecociler } from 'Reconciler';
 
 type CTXType = StateRefType & {
@@ -66,8 +65,8 @@ export const RuntimeApi = {
   reset,
   useAvailableRoot,
   useCurrentCursor,
+  useHistoryRoot,
   useLoadRootNode,
-  useSerializeHistoryRoot,
   useXAppData,
 };
 
@@ -209,12 +208,6 @@ export function reset() {
   resetHistoryRoot();
 }
 
-export function useLoadRootNode(node: Record<string, any> | TIsolate): void {
-  useSetHistory(IsolateSerializer.deserialize(node));
-}
-
-export function useSerializeHistoryRoot(): string {
-  const [historyRoot] = useHistoryRoot();
-
-  return IsolateSerializer.serialize(historyRoot);
+export function useLoadRootNode(root: TIsolate): void {
+  useSetHistory(root);
 }

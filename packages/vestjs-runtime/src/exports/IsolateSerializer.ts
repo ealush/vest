@@ -90,6 +90,7 @@ export class IsolateSerializer {
   }
 }
 
+// eslint-disable-next-line max-statements, complexity
 function transformIsolate(isolate: TIsolate): Record<string, any> {
   const next: Record<string, any> = {};
 

@@ -13,7 +13,8 @@ export const KeyToMinified = {
 export const MinifiedToKey = Object.keys(IsolateKeys).reduce(
   (acc, key: string) =>
     Object.assign(acc, {
-      // @ts-ignore - Let's have copilot fix this when I am online
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - let's ignore for now
       [KeyToMinified[IsolateKeys[key]]]: IsolateKeys[key],
     }),
   {} as Record<string, IsolateKeys>

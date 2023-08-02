@@ -1,3 +1,4 @@
+import { VestIsolateType } from 'VestIsolateType';
 import * as vest from 'vest';
 import { staticSuite } from 'vest';
 
@@ -66,6 +67,40 @@ describe('staticSuite', () => {
       res.done(() => {
         resolve();
       });
+    });
+  });
+
+  describe('dump', () => {
+    it('should output a dump of the suite', () => {
+      const suite = staticSuite(() => {
+        vest.test('t1', () => false);
+        vest.test('t2', () => false);
+
+        vest.group('g1', () => {
+          vest.test('t1', () => false);
+          vest.test('t3', () => false);
+        });
+      });
+
+      const res = suite();
+
+      expect(res.dump()).toHaveProperty('$type', VestIsolateType.Suite);
+      expect(res.dump()).toHaveProperty('children');
+      expect(res.dump().children).toHaveLength(3);
+      expect(res.dump().children?.[0]).toHaveProperty(
+        '$type',
+        VestIsolateType.Test
+      );
+      expect(res.dump().children?.[1]).toHaveProperty(
+        '$type',
+        VestIsolateType.Test
+      );
+      expect(res.dump().children?.[2]).toHaveProperty(
+        '$type',
+        VestIsolateType.Group
+      );
+
+      expect(res.dump()).toMatchSnapshot();
     });
   });
 });

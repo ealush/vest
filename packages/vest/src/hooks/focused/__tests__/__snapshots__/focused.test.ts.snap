@@ -3,6 +3,7 @@
 exports[`Top Level Focus Top Level Skip When passing false Should run all fields 1`] = `
 {
   "done": [Function],
+  "dump": [Function],
   "errorCount": 3,
   "errors": [
     SummaryFailure {
@@ -77,6 +78,7 @@ exports[`Top Level Focus Top Level Skip When passing false Should run all fields
 exports[`Top Level Focus Top Level Skip When passing undefined Should run all fields 1`] = `
 {
   "done": [Function],
+  "dump": [Function],
   "errorCount": 3,
   "errors": [
     SummaryFailure {

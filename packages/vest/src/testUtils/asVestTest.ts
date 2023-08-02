@@ -1,6 +1,6 @@
-import { ErrorStrings } from 'ErrorStrings';
 import { invariant } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { TIsolateTest } from 'IsolateTest';
 import { isIsolateTest } from 'isIsolateTest';
 

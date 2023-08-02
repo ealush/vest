@@ -1,7 +1,6 @@
 import { Nullable, isNotNullish, isNullish } from 'vest-utils';
 
 import { TIsolate } from 'Isolate';
-import { IsolateKeys } from 'IsolateKeys';
 
 export class IsolateInspector {
   static at(isolate: Nullable<TIsolate>, at: number): Nullable<TIsolate> {
@@ -48,22 +47,4 @@ export class IsolateInspector {
     }
     return isolate.keys?.[key] ?? null;
   }
-
-  static dump(isolate: Nullable<TIsolate>): string {
-    if (isNullish(isolate)) {
-      return '';
-    }
-
-    return JSON.stringify(isolate, (key, value) => {
-      if (isKeyExcluededFromDump(key)) {
-        return undefined;
-      }
-      // Remove nullish values from dump
-      return isNullish(value) ? undefined : value;
-    });
-  }
-}
-
-function isKeyExcluededFromDump(key: string): boolean {
-  return [IsolateKeys.Parent, IsolateKeys.Keys].includes(key as IsolateKeys);
 }

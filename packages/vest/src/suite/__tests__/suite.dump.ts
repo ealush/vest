@@ -1,6 +1,6 @@
 import * as vest from 'vest';
 
-describe('suite.serialize', () => {
+describe('SuiteSerializer', () => {
   it('Should produce a valid serialized dump', () => {
     const suite = vest.create('suite_serialize_test', () => {
       vest.only('field_1');
@@ -20,8 +20,8 @@ describe('suite.serialize', () => {
     });
     suite();
 
-    const serialized = suite.serialize();
-    expect(serialized).toMatchSnapshot();
+    const dump = suite.dump();
+    expect(dump).toMatchSnapshot();
   });
 });
 
@@ -47,7 +47,7 @@ describe('suite.resume', () => {
     suite();
     suite.get();
 
-    const serialized = suite.serialize();
+    const dump = suite.dump();
 
     const suite2 = vest.create(() => {});
 
@@ -55,7 +55,8 @@ describe('suite.resume', () => {
 
     expect(suite.get()).not.toEqual(suite2.get());
 
-    suite2.resume(serialized);
+    suite2.resume(dump);
+
     expect(suite.get()).isDeepCopyOf(suite2.get());
 
     suite2();

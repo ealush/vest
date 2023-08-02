@@ -1,6 +1,6 @@
+import { ErrorStrings } from 'ErrorStrings';
 import { Maybe, Nullable, invariant, isNullish } from 'vest-utils';
 
-import { ErrorStrings } from 'ErrorStrings';
 import { type TIsolate } from 'Isolate';
 import { IsolateInspector } from 'IsolateInspector';
 import { IsolateMutator } from 'IsolateMutator';

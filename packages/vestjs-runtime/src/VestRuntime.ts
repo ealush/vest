@@ -1,9 +1,9 @@
+import { ErrorStrings } from 'ErrorStrings';
 import { createCascade } from 'context';
 import {
   invariant,
   deferThrow,
   isNullish,
-  // CB,
   assign,
   TinyState,
   text,
@@ -15,11 +15,9 @@ import {
   DynamicValue,
 } from 'vest-utils';
 
-import { ErrorStrings } from 'ErrorStrings';
 import { TIsolate } from 'Isolate';
 import { IsolateInspector } from 'IsolateInspector';
 import { IsolateMutator } from 'IsolateMutator';
-import { IsolateParser } from 'IsolateParser';
 import { IRecociler } from 'Reconciler';
 
 type CTXType = StateRefType & {
@@ -67,8 +65,8 @@ export const RuntimeApi = {
   reset,
   useAvailableRoot,
   useCurrentCursor,
+  useHistoryRoot,
   useLoadRootNode,
-  useSerializeHistoryRoot,
   useXAppData,
 };
 
@@ -210,12 +208,6 @@ export function reset() {
   resetHistoryRoot();
 }
 
-export function useLoadRootNode(node: Record<string, any> | TIsolate): void {
-  useSetHistory(IsolateParser.parse(node));
-}
-
-export function useSerializeHistoryRoot(): string {
-  const [historyRoot] = useHistoryRoot();
-
-  return IsolateInspector.dump(historyRoot);
+export function useLoadRootNode(root: TIsolate): void {
+  useSetHistory(root);
 }

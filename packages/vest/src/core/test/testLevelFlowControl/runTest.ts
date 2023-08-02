@@ -1,4 +1,3 @@
-import { ErrorStrings } from 'ErrorStrings';
 import {
   isPromise,
   isStringValue,
@@ -6,9 +5,10 @@ import {
   text,
   deferThrow,
 } from 'vest-utils';
-import { Bus, IsolateInspector, VestRuntime } from 'vestjs-runtime';
+import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
+import { ErrorStrings } from 'ErrorStrings';
 import { TIsolateTest } from 'IsolateTest';
 import { SuiteContext } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
@@ -30,7 +30,7 @@ export function useAttemptRunTest(testObject: TIsolateTest) {
     /* istanbul ignore next */
     deferThrow(
       text(ErrorStrings.UNEXPECTED_TEST_REGISTRATION_ERROR, {
-        testObject: IsolateInspector.dump(testObject),
+        testObject: JSON.stringify(testObject),
       })
     );
   }

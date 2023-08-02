@@ -52,6 +52,36 @@
       "module": "./dist/es/test-utils.production.js",
       "default": "./dist/cjs/test-utils.production.js"
     },
+    "./IsolateSerializer": {
+      "production": {
+        "types": "./types/IsolateSerializer.d.ts",
+        "browser": "./dist/es/IsolateSerializer.production.js",
+        "umd": "./dist/umd/IsolateSerializer.production.js",
+        "import": "./dist/es/IsolateSerializer.production.js",
+        "require": "./dist/cjs/IsolateSerializer.production.js",
+        "node": "./dist/cjs/IsolateSerializer.production.js",
+        "module": "./dist/es/IsolateSerializer.production.js",
+        "default": "./dist/cjs/IsolateSerializer.production.js"
+      },
+      "development": {
+        "types": "./types/IsolateSerializer.d.ts",
+        "browser": "./dist/es/IsolateSerializer.development.js",
+        "umd": "./dist/umd/IsolateSerializer.development.js",
+        "import": "./dist/es/IsolateSerializer.development.js",
+        "require": "./dist/cjs/IsolateSerializer.development.js",
+        "node": "./dist/cjs/IsolateSerializer.development.js",
+        "module": "./dist/es/IsolateSerializer.development.js",
+        "default": "./dist/cjs/IsolateSerializer.development.js"
+      },
+      "types": "./types/IsolateSerializer.d.ts",
+      "browser": "./dist/es/IsolateSerializer.production.js",
+      "umd": "./dist/umd/IsolateSerializer.production.js",
+      "import": "./dist/es/IsolateSerializer.production.js",
+      "require": "./dist/cjs/IsolateSerializer.production.js",
+      "node": "./dist/cjs/IsolateSerializer.production.js",
+      "module": "./dist/es/IsolateSerializer.production.js",
+      "default": "./dist/cjs/IsolateSerializer.production.js"
+    },
     ".": {
       "development": {
         "types": "./types/vestjs-runtime.d.ts",

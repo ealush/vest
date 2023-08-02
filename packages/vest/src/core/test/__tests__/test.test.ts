@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { VestTest } from 'VestTest';
 import { text } from 'vest-utils';
-import { IsolateInspector } from 'vestjs-runtime';
+import { IsolateSerializer } from 'vestjs-runtime';
 
 import { TestPromise } from '../../../testUtils/testPromise';
 
@@ -192,8 +192,8 @@ describe("Test Vest's `test` function", () => {
       expect(testObject.data.fieldName).toBe('field_name');
       expect(testObject.key).toBe('keyboardcat');
       expect(testObject.data.message).toBe('failure message');
-      expect(IsolateInspector.dump(testObject)).toMatchInlineSnapshot(
-        `"{"$type":"Test","data":{"severity":"error","status":"PASSING","fieldName":"field_name","message":"failure message"},"key":"keyboardcat"}"`
+      expect(IsolateSerializer.serialize(testObject)).toMatchInlineSnapshot(
+        `"{"$":"Test","D":{"severity":"error","status":"PASSING","fieldName":"field_name","message":"failure message"},"k":"keyboardcat"}"`
       );
     });
 

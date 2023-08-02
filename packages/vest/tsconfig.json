@@ -67,6 +67,7 @@
       "enforce@compounds": ["./src/exports/enforce@compounds.ts"],
       "enforce@compose": ["./src/exports/enforce@compose.ts"],
       "classnames": ["./src/exports/classnames.ts"],
+      "SuiteSerializer": ["./src/exports/SuiteSerializer.ts"],
       "ErrorStrings": ["./src/errors/ErrorStrings.ts"],
       "Runtime": ["./src/core/Runtime.ts"],
       "test": ["./src/core/test/test.ts"],

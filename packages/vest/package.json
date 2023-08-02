@@ -25,6 +25,36 @@
     "vestjs-runtime": "^0.0.1"
   },
   "exports": {
+    "./suiteSerializer": {
+      "production": {
+        "types": "./types/suiteSerializer.d.ts",
+        "browser": "./dist/es/suiteSerializer.production.js",
+        "umd": "./dist/umd/suiteSerializer.production.js",
+        "import": "./dist/es/suiteSerializer.production.js",
+        "require": "./dist/cjs/suiteSerializer.production.js",
+        "node": "./dist/cjs/suiteSerializer.production.js",
+        "module": "./dist/es/suiteSerializer.production.js",
+        "default": "./dist/cjs/suiteSerializer.production.js"
+      },
+      "development": {
+        "types": "./types/suiteSerializer.d.ts",
+        "browser": "./dist/es/suiteSerializer.development.js",
+        "umd": "./dist/umd/suiteSerializer.development.js",
+        "import": "./dist/es/suiteSerializer.development.js",
+        "require": "./dist/cjs/suiteSerializer.development.js",
+        "node": "./dist/cjs/suiteSerializer.development.js",
+        "module": "./dist/es/suiteSerializer.development.js",
+        "default": "./dist/cjs/suiteSerializer.development.js"
+      },
+      "types": "./types/suiteSerializer.d.ts",
+      "browser": "./dist/es/suiteSerializer.production.js",
+      "umd": "./dist/umd/suiteSerializer.production.js",
+      "import": "./dist/es/suiteSerializer.production.js",
+      "require": "./dist/cjs/suiteSerializer.production.js",
+      "node": "./dist/cjs/suiteSerializer.production.js",
+      "module": "./dist/es/suiteSerializer.production.js",
+      "default": "./dist/cjs/suiteSerializer.production.js"
+    },
     "./promisify": {
       "production": {
         "types": "./types/promisify.d.ts",

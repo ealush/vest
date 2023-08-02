@@ -191,9 +191,9 @@ describe("Test Vest's `test` function", () => {
       })();
       expect(testObject.data.fieldName).toBe('field_name');
       expect(testObject.key).toBe('keyboardcat');
-      expect(testObject.message).toBe('failure message');
+      expect(testObject.data.message).toBe('failure message');
       expect(IsolateSerializer.serialize(testObject)).toMatchInlineSnapshot(
-        `"{"$":"Test","severity":"error","status":"PASSING","fieldName":"field_name","message":"failure message","key":"keyboardcat"}"`
+        `"{"$":"Test","data":{"severity":"error","status":"PASSING","fieldName":"field_name","message":"failure message"},"key":"keyboardcat"}"`
       );
     });
 

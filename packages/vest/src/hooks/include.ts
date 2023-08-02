@@ -1,6 +1,6 @@
-import { ErrorStrings } from 'ErrorStrings';
 import { isStringValue, invariant, optionalFunctionValue } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { TIsolateTest } from 'IsolateTest';
 import { useInclusion } from 'SuiteContext';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';

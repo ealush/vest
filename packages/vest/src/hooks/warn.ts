@@ -1,6 +1,6 @@
-import { ErrorStrings } from 'ErrorStrings';
 import { invariant } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { useCurrentTest } from 'SuiteContext';
 import { VestTest } from 'VestTest';
 

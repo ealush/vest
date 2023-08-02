@@ -13,6 +13,13 @@ export const KeyToMinified = {
   [IsolateKeys.Parent]: 'P',
 };
 
+// This const is an object that looks like this:
+// {
+//   '$': '$type',
+//   'K': 'keys',
+//   'P': 'parent',
+//   ...
+// }
 export const MinifiedToKey = Object.keys(IsolateKeys).reduce(
   (acc, key: string) =>
     Object.assign(acc, {

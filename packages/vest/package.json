@@ -265,6 +265,36 @@
       "module": "./dist/es/classnames.production.js",
       "default": "./dist/cjs/classnames.production.js"
     },
+    "./SuiteSerializer": {
+      "production": {
+        "types": "./types/SuiteSerializer.d.ts",
+        "browser": "./dist/es/SuiteSerializer.production.js",
+        "umd": "./dist/umd/SuiteSerializer.production.js",
+        "import": "./dist/es/SuiteSerializer.production.js",
+        "require": "./dist/cjs/SuiteSerializer.production.js",
+        "node": "./dist/cjs/SuiteSerializer.production.js",
+        "module": "./dist/es/SuiteSerializer.production.js",
+        "default": "./dist/cjs/SuiteSerializer.production.js"
+      },
+      "development": {
+        "types": "./types/SuiteSerializer.d.ts",
+        "browser": "./dist/es/SuiteSerializer.development.js",
+        "umd": "./dist/umd/SuiteSerializer.development.js",
+        "import": "./dist/es/SuiteSerializer.development.js",
+        "require": "./dist/cjs/SuiteSerializer.development.js",
+        "node": "./dist/cjs/SuiteSerializer.development.js",
+        "module": "./dist/es/SuiteSerializer.development.js",
+        "default": "./dist/cjs/SuiteSerializer.development.js"
+      },
+      "types": "./types/SuiteSerializer.d.ts",
+      "browser": "./dist/es/SuiteSerializer.production.js",
+      "umd": "./dist/umd/SuiteSerializer.production.js",
+      "import": "./dist/es/SuiteSerializer.production.js",
+      "require": "./dist/cjs/SuiteSerializer.production.js",
+      "node": "./dist/cjs/SuiteSerializer.production.js",
+      "module": "./dist/es/SuiteSerializer.production.js",
+      "default": "./dist/cjs/SuiteSerializer.production.js"
+    },
     ".": {
       "development": {
         "types": "./types/vest.d.ts",

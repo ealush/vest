@@ -11,6 +11,9 @@ export const KeyToMinified = {
   [IsolateKeys.Type]: '$',
   [IsolateKeys.Keys]: 'K',
   [IsolateKeys.Parent]: 'P',
+  [IsolateKeys.Data]: 'D',
+  [IsolateKeys.Key]: 'k',
+  [IsolateKeys.AllowReorder]: 'aR',
 };
 
 // This const is an object that looks like this:

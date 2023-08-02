@@ -1,4 +1,3 @@
-import { ErrorStrings } from 'ErrorStrings';
 import { createCascade } from 'context';
 import {
   invariant,
@@ -15,6 +14,7 @@ import {
   DynamicValue,
 } from 'vest-utils';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { TIsolate } from 'Isolate';
 import { IsolateInspector } from 'IsolateInspector';
 import { IsolateMutator } from 'IsolateMutator';

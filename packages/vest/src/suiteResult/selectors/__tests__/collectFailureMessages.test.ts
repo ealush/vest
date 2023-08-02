@@ -1,8 +1,9 @@
+import { TTestSuite } from 'testUtils/TVestMock';
+
 import { dummyTest } from '../../../testUtils/testDummy';
 
 import { Modes } from 'Modes';
 import { SuiteResult } from 'SuiteResultTypes';
-import { TTestSuite } from 'testUtils/TVestMock';
 import { create, group } from 'vest';
 import * as vest from 'vest';
 
@@ -103,16 +104,12 @@ describe('collectFailureMessages', () => {
       group('group_1', () => {
         vest.test('field_1', () => false);
         vest.test('field_3', () => {});
+        dummyTest.failing('field_2', 'field_2_failure message 1');
+        dummyTest.failingWarning('field_2', 'field_2_warning message 3');
+        dummyTest.failing('field_2', 'field_2_failure message 3');
       });
-      dummyTest.failing('field_2', 'field_2_failure message 1', 'group_1');
       dummyTest.passingWarning('field_2', 'field_2_warning message 1');
       dummyTest.failingWarning('field_2', 'field_2_warning message 2');
-      dummyTest.failingWarning(
-        'field_2',
-        'field_2_warning message 3',
-        'group_1'
-      );
-      dummyTest.failing('field_2', 'field_2_failure message 3', 'group_1');
       dummyTest.passing('v');
 
       group('group_2', () => {

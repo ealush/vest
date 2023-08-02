@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { VestTest } from 'VestTest';
 import { text } from 'vest-utils';
 import { IsolateSerializer } from 'vestjs-runtime';
 
@@ -6,7 +7,6 @@ import { TestPromise } from '../../../testUtils/testPromise';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { TIsolateTest } from 'IsolateTest';
-import { VestTestInspector } from 'VestTestInspector';
 import { enforce } from 'vest';
 import * as vest from 'vest';
 
@@ -25,7 +25,7 @@ describe("Test Vest's `test` function", () => {
             }
           );
         })();
-        expect(VestTestInspector.warns(testObject)).toBe(true);
+        expect(VestTest.warns(testObject)).toBe(true);
       });
     });
 
@@ -40,14 +40,14 @@ describe("Test Vest's `test` function", () => {
             }
           );
         })();
-        expect(VestTestInspector.isFailing(testObject)).toBe(true);
+        expect(VestTest.isFailing(testObject)).toBe(true);
       });
 
       it('Should be marked as failed for an explicit false return', () => {
         vest.create(() => {
           vest.test(faker.random.word(), faker.lorem.sentence(), () => false);
         })();
-        expect(VestTestInspector.isFailing(testObject)).toBe(true);
+        expect(VestTest.isFailing(testObject)).toBe(true);
       });
 
       describe('Thrown with a message', () => {
@@ -130,13 +130,13 @@ describe("Test Vest's `test` function", () => {
               faker.lorem.sentence(),
               () =>
                 new Promise((_, reject) => {
-                  expect(VestTestInspector.isFailing(testObject)).toBe(false);
+                  expect(VestTest.isFailing(testObject)).toBe(false);
                   setTimeout(reject, 300);
                 })
             );
-            expect(VestTestInspector.isFailing(testObject)).toBe(false);
+            expect(VestTest.isFailing(testObject)).toBe(false);
             setTimeout(() => {
-              expect(VestTestInspector.isFailing(testObject)).toBe(true);
+              expect(VestTest.isFailing(testObject)).toBe(true);
               done();
             }, 310);
           })();
@@ -150,9 +150,9 @@ describe("Test Vest's `test` function", () => {
       vest.create(() => {
         testObject = vest.test('field_name', () => undefined);
       })();
-      expect(testObject.fieldName).toBe('field_name');
+      expect(testObject.data.fieldName).toBe('field_name');
       expect(testObject.key).toBeNull();
-      expect(testObject.message).toBeUndefined();
+      expect(testObject.data.message).toBeUndefined();
       expect(testObject).toMatchSnapshot();
     });
 
@@ -164,9 +164,9 @@ describe("Test Vest's `test` function", () => {
           () => undefined
         );
       })();
-      expect(testObject.fieldName).toBe('field_name');
+      expect(testObject.data.fieldName).toBe('field_name');
       expect(testObject.key).toBeNull();
-      expect(testObject.message).toBe('failure message');
+      expect(testObject.data.message).toBe('failure message');
       expect(testObject).toMatchSnapshot();
     });
 
@@ -174,9 +174,9 @@ describe("Test Vest's `test` function", () => {
       vest.create(() => {
         testObject = vest.test('field_name', () => undefined, 'keyboardcat');
       })();
-      expect(testObject.fieldName).toBe('field_name');
+      expect(testObject.data.fieldName).toBe('field_name');
       expect(testObject.key).toBe('keyboardcat');
-      expect(testObject.message).toBeUndefined();
+      expect(testObject.data.message).toBeUndefined();
       expect(testObject).toMatchSnapshot();
     });
 
@@ -189,7 +189,7 @@ describe("Test Vest's `test` function", () => {
           'keyboardcat'
         );
       })();
-      expect(testObject.fieldName).toBe('field_name');
+      expect(testObject.data.fieldName).toBe('field_name');
       expect(testObject.key).toBe('keyboardcat');
       expect(testObject.message).toBe('failure message');
       expect(IsolateSerializer.serialize(testObject)).toMatchInlineSnapshot(

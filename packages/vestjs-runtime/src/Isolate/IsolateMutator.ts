@@ -46,4 +46,8 @@ export class IsolateMutator {
     }
     isolate.children.length = at;
   }
+
+  static setData(isolate: TIsolate, data: any): void {
+    isolate.data = data;
+  }
 }

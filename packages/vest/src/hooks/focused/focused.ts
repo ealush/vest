@@ -17,11 +17,11 @@ export type ExclusionItem = Maybe<OneOrMoreOf<string>>;
 export type FieldExclusion<F extends TFieldName> = Maybe<OneOrMoreOf<F>>;
 export type GroupExclusion<G extends TGroupName> = Maybe<OneOrMoreOf<G>>;
 
-export type TIsolateFocused = TIsolate & {
+export type TIsolateFocused = TIsolate<{
   focusMode: FocusModes;
   match: FieldExclusion<TFieldName>;
   matchAll: boolean;
-};
+}>;
 
 export function IsolateFocused(
   focusMode: FocusModes,
@@ -40,15 +40,17 @@ export class FocusSelectors {
     fieldName?: TFieldName
   ): boolean {
     return (
-      focus?.focusMode === FocusModes.SKIP &&
-      (hasFocus(focus, fieldName) || focus.matchAll === true)
+      focus?.data.focusMode === FocusModes.SKIP &&
+      (hasFocus(focus, fieldName) || focus.data.matchAll === true)
     );
   }
   static isOnlyFocused(
     focus: Nullable<TIsolateFocused>,
     fieldName?: TFieldName
   ): boolean {
-    return focus?.focusMode === FocusModes.ONLY && hasFocus(focus, fieldName);
+    return (
+      focus?.data.focusMode === FocusModes.ONLY && hasFocus(focus, fieldName)
+    );
   }
 
   static isIsolateFocused(isolate: TIsolate): isolate is TIsolateFocused {
@@ -85,7 +87,7 @@ function defaultMatch(match: FieldExclusion<TFieldName> | boolean) {
 
 function hasFocus(focus: Nullable<TIsolateFocused>, fieldName?: TFieldName) {
   return (
-    isNotEmpty(focus?.match) &&
-    (fieldName ? focus?.match?.includes(fieldName) ?? true : true)
+    isNotEmpty(focus?.data.match) &&
+    (fieldName ? focus?.data.match?.includes(fieldName) ?? true : true)
   );
 }

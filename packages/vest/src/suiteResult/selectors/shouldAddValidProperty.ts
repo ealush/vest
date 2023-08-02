@@ -7,7 +7,7 @@ import { OptionalFieldTypes } from 'OptionalTypes';
 import { Severity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
-import { VestTestInspector } from 'VestTestInspector';
+import { VestTest } from 'VestTest';
 import {
   hasErrorsByTestObjects,
   hasGroupFailuresByTestObjects,
@@ -63,7 +63,7 @@ export function useShouldAddValidPropertyInGroup(
 // Does the given field have any pending tests that are not optional?
 function useHasNonOptionalIncomplete(fieldName?: TFieldName) {
   return TestWalker.someIncompleteTests(testObject => {
-    if (nonMatchingFieldName(testObject, fieldName)) {
+    if (nonMatchingFieldName(VestTest.getData(testObject), fieldName)) {
       return false;
     }
     return !useIsOptionalFiedApplied(fieldName);
@@ -80,7 +80,7 @@ function useHasNonOptionalIncompleteByGroup(
       return false;
     }
 
-    if (nonMatchingFieldName(testObject, fieldName)) {
+    if (nonMatchingFieldName(VestTest.getData(testObject), fieldName)) {
       return false;
     }
 
@@ -114,7 +114,7 @@ function useNoMissingTestsLogic(
   testObject: TIsolateTest,
   fieldName?: TFieldName
 ): boolean {
-  if (nonMatchingFieldName(testObject, fieldName)) {
+  if (nonMatchingFieldName(VestTest.getData(testObject), fieldName)) {
     return true;
   }
 
@@ -129,8 +129,8 @@ function useNoMissingTestsLogic(
    */
 
   return (
-    VestTestInspector.isOmitted(testObject) ||
-    VestTestInspector.isTested(testObject) ||
+    VestTest.isOmitted(testObject) ||
+    VestTest.isTested(testObject) ||
     useOptionalTestAwaitsResolution(testObject)
   );
 }
@@ -141,8 +141,10 @@ function useOptionalTestAwaitsResolution(testObject: TIsolateTest): boolean {
 
   const root = VestRuntime.useAvailableRoot<TIsolateSuite>();
 
+  const { fieldName } = VestTest.getData(testObject);
+
   return (
-    SuiteOptionalFields.getOptionalField(root, testObject.fieldName).type ===
-      OptionalFieldTypes.AUTO && VestTestInspector.awaitsResolution(testObject)
+    SuiteOptionalFields.getOptionalField(root, fieldName).type ===
+      OptionalFieldTypes.AUTO && VestTest.awaitsResolution(testObject)
   );
 }

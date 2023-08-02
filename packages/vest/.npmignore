@@ -4,6 +4,7 @@ src
 !types/
 !dist/
 tsconfig.json
+!suiteSerializer/
 !promisify/
 !parser/
 !enforce@schema/
@@ -12,6 +13,5 @@ tsconfig.json
 !enforce@compounds/
 !enforce@compose/
 !classnames/
-!SuiteSerializer/
 
 # Manual Section. Edit at will.

@@ -1,4 +1,4 @@
-import { CB, Nullable } from 'vest-utils';
+import { CB, Maybe, Nullable } from 'vest-utils';
 
 import { IsolateKeys } from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';
@@ -7,22 +7,30 @@ import * as VestRuntime from 'VestRuntime';
 
 export type IsolateKey = Nullable<string>;
 
-export type TIsolate = {
-  key: IsolateKey;
-  parent: Nullable<TIsolate>;
-  children: Nullable<TIsolate[]>;
-  output: any;
+export type TIsolate<P extends IsolatePayload = IsolatePayload> = {
+  [IsolateKeys.AllowReorder]?: boolean;
+  [IsolateKeys.Parent]: Nullable<TIsolate>;
   [IsolateKeys.Type]: string;
-  keys: Nullable<Record<string, TIsolate>>;
-};
+  [IsolateKeys.Keys]: Nullable<Record<string, TIsolate>>;
+  [IsolateKeys.Data]: DataOnly<P>;
+  children: Nullable<TIsolate[]>;
+  key: IsolateKey;
+  output: any;
+} & UsedFeaturesOnly<P>;
+
+type DataOnly<P extends IsolatePayload> = Omit<P, keyof IsolateFeatures>;
+type UsedFeaturesOnly<P extends IsolatePayload> = Pick<
+  P,
+  keyof IsolateFeatures
+>;
 
 export class Isolate {
-  static create<Payload extends Record<string, any>>(
+  static create<Payload extends IsolatePayload>(
     type: string,
     callback: CB,
-    payload: Nullable<Payload> = null,
+    payload: Maybe<Payload> = undefined,
     key?: IsolateKey
-  ): TIsolate & Payload {
+  ): TIsolate<Payload> {
     const parent = VestRuntime.useIsolate();
 
     const newCreatedNode = IsolateMutator.setParent(
@@ -42,7 +50,7 @@ export class Isolate {
     IsolateMutator.saveOutput(nextIsolateChild, output);
     VestRuntime.addNodeToHistory(nextIsolateChild);
 
-    return nextIsolateChild as TIsolate & Payload;
+    return nextIsolateChild as TIsolate<Payload>;
   }
 }
 
@@ -78,18 +86,24 @@ function useRunAsNew<Callback extends CB = CB>(
 
 function baseIsolate(
   type: string,
-  payload: Nullable<IsolatePayload>,
+  payload: Maybe<IsolatePayload> = undefined,
   key: IsolateKey = null
 ): TIsolate {
+  const { allowReorder, ...data } = payload ?? {};
   return {
-    children: null,
+    [IsolateKeys.AllowReorder]: allowReorder,
     [IsolateKeys.Keys]: null,
-    output: null,
     [IsolateKeys.Parent]: null,
     [IsolateKeys.Type]: type,
-    ...payload,
+    [IsolateKeys.Data]: data as IsolateData,
+    children: null,
     key,
+    output: null,
   };
 }
 
-type IsolatePayload = Record<string, any>;
+type IsolateData = Record<string, any>;
+type IsolatePayload = IsolateData & IsolateFeatures;
+type IsolateFeatures = {
+  [IsolateKeys.AllowReorder]?: boolean;
+};

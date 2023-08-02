@@ -1,5 +1,5 @@
 import { CB, Maybe } from 'vest-utils';
-import { IsolateKey, TIsolate, Isolate } from 'vestjs-runtime';
+import { TIsolate, Isolate, IsolateKey } from 'vestjs-runtime';
 
 import { TestStatus } from 'IsolateTestStateMachine';
 import { TestSeverity } from 'Severity';
@@ -10,12 +10,16 @@ import { VestIsolateType } from 'VestIsolateType';
 export type TIsolateTest<
   F extends TFieldName = TFieldName,
   G extends TGroupName = TGroupName
-> = TIsolate & IsolateTestInput<F, G> & IsolateTestPayload;
+> = TIsolate<CommonTestFields<F, G> & IsolateTestPayload>;
 
 export function IsolateTest<
   F extends TFieldName = TFieldName,
   G extends TGroupName = TGroupName
->(callback: CB, input: IsolateTestInput): TIsolateTest<F, G> {
+>(
+  callback: CB,
+  input: CommonTestFields<F, G>,
+  key?: IsolateKey
+): TIsolateTest<F, G> {
   const payload: IsolateTestPayload = {
     ...IsolateTestBase(),
     fieldName: input.fieldName,
@@ -33,7 +37,7 @@ export function IsolateTest<
     VestIsolateType.Test,
     callback,
     payload,
-    input.key ?? null
+    key ?? null
   );
 
   return isolate as TIsolateTest<F, G>;
@@ -63,11 +67,4 @@ type CommonTestFields<
   groupName?: G;
   fieldName: F;
   testFn: TestFn;
-};
-
-type IsolateTestInput<
-  F extends TFieldName = TFieldName,
-  G extends TGroupName = TGroupName
-> = CommonTestFields<F, G> & {
-  key?: IsolateKey;
 };

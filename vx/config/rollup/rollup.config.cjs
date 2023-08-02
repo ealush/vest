@@ -23,30 +23,29 @@ module.exports = commandLineArgs => {
   const {
     [opts.vx_config.VX_ROLLUP_FAST_BUILD]: fastBuild,
     [opts.vx_config.VX_ROLLUP_BUILD_ENTRY]: buildEntry,
+    [opts.vx_config.VX_ROLLUP_ENV]: env,
   } = commandLineArgs;
 
   const fast = JSON.parse(fastBuild);
 
   return cleanupConfig(
-    concatTruthy(opts.env.PRODUCTION, !fast && opts.env.DEVELOPMENT).map(
-      env => {
-        const packageName = usePackage();
+    concatTruthy(env).map(env => {
+      const packageName = usePackage();
 
-        switch (buildEntry) {
-          case opts.vx_config.VX_ROLLUP_BUILD_ENTRY_MAIN:
-            return genBaseConfig({ env, packageName });
-          case opts.vx_config.VX_ROLLUP_BUILD_ENTRY_EXPORTS:
-            return genExportsConfig(packageName, env);
-          default:
-            throw new Error(
-              `Invalid build entry: ${buildEntry}. Must be one of: ${[
-                opts.vx_config.VX_ROLLUP_BUILD_ENTRY_MAIN,
-                opts.vx_config.VX_ROLLUP_BUILD_ENTRY_EXPORTS,
-              ].join(', ')}`
-            );
-        }
+      switch (buildEntry) {
+        case opts.vx_config.VX_ROLLUP_BUILD_ENTRY_MAIN:
+          return genBaseConfig({ env, packageName });
+        case opts.vx_config.VX_ROLLUP_BUILD_ENTRY_EXPORTS:
+          return genExportsConfig(packageName, env);
+        default:
+          throw new Error(
+            `Invalid build entry: ${buildEntry}. Must be one of: ${[
+              opts.vx_config.VX_ROLLUP_BUILD_ENTRY_MAIN,
+              opts.vx_config.VX_ROLLUP_BUILD_ENTRY_EXPORTS,
+            ].join(', ')}`
+          );
       }
-    )
+    })
   );
 };
 

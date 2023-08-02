@@ -31,7 +31,16 @@ function buildPackage(options = {}) {
   buildRollup({
     ...baseOptions,
     buildEntry: opts.vx_config.VX_ROLLUP_BUILD_ENTRY_MAIN,
+    env: opts.env.PRODUCTION,
   });
+
+  if (!options.fastBuild) {
+    buildRollup({
+      ...baseOptions,
+      buildEntry: opts.vx_config.VX_ROLLUP_BUILD_ENTRY_MAIN,
+      env: opts.env.DEVELOPMENT,
+    });
+  }
 
   const packageExportsPath = vxPath.packageSrcExports(name);
 
@@ -40,7 +49,16 @@ function buildPackage(options = {}) {
     buildRollup({
       ...baseOptions,
       buildEntry: opts.vx_config.VX_ROLLUP_BUILD_ENTRY_EXPORTS,
+      env: opts.env.PRODUCTION,
     });
+
+    if (!options.fastBuild) {
+      buildRollup({
+        ...baseOptions,
+        buildEntry: opts.vx_config.VX_ROLLUP_BUILD_ENTRY_EXPORTS,
+        env: opts.env.DEVELOPMENT,
+      });
+    }
   }
 
   delete process.env.VX_PACKAGE_NAME;
@@ -51,12 +69,14 @@ function buildRollup({
   format = [],
   fastBuild = false,
   buildEntry,
+  env = opts.env.PRODUCTION,
 }) {
   exec([
     `yarn rollup -c`,
     vxPath.ROLLUP_CONFIG_PATH,
     cliOptions,
     format.length && `--format=${format}`,
+    `--${opts.vx_config.VX_ROLLUP_ENV}=${env}`,
     `--${opts.vx_config.VX_ROLLUP_FAST_BUILD}=${fastBuild}`,
     `--${opts.vx_config.VX_ROLLUP_BUILD_ENTRY}=${buildEntry}`,
   ]);

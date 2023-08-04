@@ -6,7 +6,9 @@ import { Suite } from 'SuiteTypes';
 
 export class SuiteSerializer {
   static serialize(suite: Suite<TFieldName, TGroupName>) {
-    return IsolateSerializer.serialize(suite.dump());
+    const dump = { ...suite.dump(), output: undefined };
+
+    return IsolateSerializer.serialize(dump);
   }
 
   static deserialize(

@@ -7,13 +7,22 @@ export enum IsolateKeys {
   AllowReorder = 'allowReorder',
 }
 
+enum MinifiedKeys {
+  Type = '$',
+  Keys = 'K',
+  Key = 'k',
+  Parent = 'P',
+  Data = 'D',
+  AllowReorder = 'aR',
+}
+
 export const KeyToMinified = {
-  [IsolateKeys.Type]: '$',
-  [IsolateKeys.Keys]: 'K',
-  [IsolateKeys.Parent]: 'P',
-  [IsolateKeys.Data]: 'D',
-  [IsolateKeys.Key]: 'k',
-  [IsolateKeys.AllowReorder]: 'aR',
+  [IsolateKeys.Type]: MinifiedKeys.Type,
+  [IsolateKeys.Keys]: MinifiedKeys.Keys,
+  [IsolateKeys.Parent]: MinifiedKeys.Parent,
+  [IsolateKeys.Data]: MinifiedKeys.Data,
+  [IsolateKeys.Key]: MinifiedKeys.Key,
+  [IsolateKeys.AllowReorder]: MinifiedKeys.AllowReorder,
 };
 
 // This const is an object that looks like this:
@@ -23,12 +32,10 @@ export const KeyToMinified = {
 //   'P': 'parent',
 //   ...
 // }
-export const MinifiedToKey = Object.keys(IsolateKeys).reduce(
-  (acc, key: string) =>
+export const MinifiedToKey = Object.entries(KeyToMinified).reduce(
+  (acc, [key, minified]) =>
     Object.assign(acc, {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore - let's ignore for now
-      [KeyToMinified[IsolateKeys[key]]]: IsolateKeys[key],
+      [minified]: key,
     }),
   {} as Record<string, IsolateKeys>
 );

@@ -62,6 +62,7 @@
       "promisify": ["./src/exports/promisify.ts"],
       "parser": ["./src/exports/parser.ts"],
       "enforce@schema": ["./src/exports/enforce@schema.ts"],
+      "enforce@isURL": ["./src/exports/enforce@isURL.ts"],
       "enforce@email": ["./src/exports/enforce@email.ts"],
       "enforce@date": ["./src/exports/enforce@date.ts"],
       "enforce@compounds": ["./src/exports/enforce@compounds.ts"],

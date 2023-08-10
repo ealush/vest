@@ -115,6 +115,36 @@
       "module": "./dist/es/enforce/schema.production.js",
       "default": "./dist/cjs/enforce/schema.production.js"
     },
+    "./enforce/isURL": {
+      "production": {
+        "types": "./types/enforce/isURL.d.ts",
+        "browser": "./dist/es/enforce/isURL.production.js",
+        "umd": "./dist/umd/enforce/isURL.production.js",
+        "import": "./dist/es/enforce/isURL.production.js",
+        "require": "./dist/cjs/enforce/isURL.production.js",
+        "node": "./dist/cjs/enforce/isURL.production.js",
+        "module": "./dist/es/enforce/isURL.production.js",
+        "default": "./dist/cjs/enforce/isURL.production.js"
+      },
+      "development": {
+        "types": "./types/enforce/isURL.d.ts",
+        "browser": "./dist/es/enforce/isURL.development.js",
+        "umd": "./dist/umd/enforce/isURL.development.js",
+        "import": "./dist/es/enforce/isURL.development.js",
+        "require": "./dist/cjs/enforce/isURL.development.js",
+        "node": "./dist/cjs/enforce/isURL.development.js",
+        "module": "./dist/es/enforce/isURL.development.js",
+        "default": "./dist/cjs/enforce/isURL.development.js"
+      },
+      "types": "./types/enforce/isURL.d.ts",
+      "browser": "./dist/es/enforce/isURL.production.js",
+      "umd": "./dist/umd/enforce/isURL.production.js",
+      "import": "./dist/es/enforce/isURL.production.js",
+      "require": "./dist/cjs/enforce/isURL.production.js",
+      "node": "./dist/cjs/enforce/isURL.production.js",
+      "module": "./dist/es/enforce/isURL.production.js",
+      "default": "./dist/cjs/enforce/isURL.production.js"
+    },
     "./enforce/email": {
       "production": {
         "types": "./types/enforce/email.d.ts",

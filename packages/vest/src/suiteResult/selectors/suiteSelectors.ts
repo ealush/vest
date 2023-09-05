@@ -171,8 +171,8 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
 
   function isPending(fieldName?: F): boolean {
     return fieldName
-      ? greaterThan(summary.tests[fieldName]?.testCount, 0)
-      : greaterThan(summary.testCount, 0);
+      ? greaterThan(summary.tests[fieldName]?.pendingCount, 0)
+      : greaterThan(summary.pendingCount, 0);
   }
 }
 

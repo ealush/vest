@@ -9,6 +9,7 @@ export class SummaryBase {
   public errorCount = 0;
   public warnCount = 0;
   public testCount = 0;
+  public pendingCount = 0;
 }
 
 export class SuiteSummary<
@@ -38,6 +39,7 @@ export type SingleTestSummary = SummaryBase & {
   errors: string[];
   warnings: string[];
   valid: boolean;
+  pendingCount: number;
 };
 
 export type GetFailuresResponse = FailureMessages | string[];

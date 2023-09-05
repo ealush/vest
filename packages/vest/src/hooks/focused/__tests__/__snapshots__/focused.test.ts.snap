@@ -35,6 +35,7 @@ exports[`Top Level Focus Top Level Skip When passing false Should run all fields
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 3,
   "tests": {
@@ -43,6 +44,7 @@ exports[`Top Level Focus Top Level Skip When passing false Should run all fields
       "errors": [
         "F1 error",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -53,6 +55,7 @@ exports[`Top Level Focus Top Level Skip When passing false Should run all fields
       "errors": [
         "F2 error",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -63,6 +66,7 @@ exports[`Top Level Focus Top Level Skip When passing false Should run all fields
       "errors": [
         "F3 error",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -110,6 +114,7 @@ exports[`Top Level Focus Top Level Skip When passing undefined Should run all fi
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 3,
   "tests": {
@@ -118,6 +123,7 @@ exports[`Top Level Focus Top Level Skip When passing undefined Should run all fi
       "errors": [
         "F1 error",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -128,6 +134,7 @@ exports[`Top Level Focus Top Level Skip When passing undefined Should run all fi
       "errors": [
         "F2 error",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -138,6 +145,7 @@ exports[`Top Level Focus Top Level Skip When passing undefined Should run all fi
       "errors": [
         "F3 error",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,

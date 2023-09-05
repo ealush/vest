@@ -24,6 +24,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 1`] 
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 1,
   "tests": {
@@ -32,6 +33,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 1`] 
       "errors": [
         "field_statement_1",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -40,6 +42,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 1`] 
     "field_2": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -48,6 +51,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 1`] 
     "field_3": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -56,6 +60,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 1`] 
     "field_4": {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -64,6 +69,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 1`] 
     "field_5": {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -110,6 +116,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 3,
   "tests": {
@@ -118,6 +125,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
       "errors": [
         "field_statement_1",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -126,6 +134,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
     "field_2": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -134,6 +143,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
     "field_3": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -142,6 +152,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
     "field_4": {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -153,6 +164,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 2`] 
         "field_statement_5",
         "field_statement_6",
       ],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -204,6 +216,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 7,
   "tests": {
@@ -212,6 +225,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
       "errors": [
         "field_statement_1",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -222,6 +236,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
       "errors": [
         "field_statement_2",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -230,6 +245,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
     "field_3": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": true,
       "warnCount": 0,
@@ -238,6 +254,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
     "field_4": {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": true,
       "warnCount": 1,
@@ -251,6 +268,7 @@ exports[`Stateful behavior Should merge skipped fields with previous values 3`] 
         "field_statement_5",
         "field_statement_6",
       ],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -286,6 +304,7 @@ SuiteSummary {
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 0,
   "tests": {},
@@ -312,12 +331,14 @@ SuiteSummary {
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 2,
   "tests": {
     "confirm": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -326,6 +347,7 @@ SuiteSummary {
     "password": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -334,6 +356,7 @@ SuiteSummary {
     "username": {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": true,
       "warnCount": 0,
@@ -369,12 +392,14 @@ SuiteSummary {
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 3,
   "tests": {
     "confirm": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -385,6 +410,7 @@ SuiteSummary {
       "errors": [
         "password is required",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -393,6 +419,7 @@ SuiteSummary {
     "username": {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": true,
       "warnCount": 0,
@@ -428,12 +455,14 @@ SuiteSummary {
   "hasWarningsByGroup": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 3,
   "tests": {
     "confirm": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -444,6 +473,7 @@ SuiteSummary {
       "errors": [
         "password is required",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -452,6 +482,7 @@ SuiteSummary {
     "username": {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": true,
       "warnCount": 0,

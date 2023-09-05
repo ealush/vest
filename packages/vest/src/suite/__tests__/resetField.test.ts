@@ -53,6 +53,7 @@ describe('suite.resetField', () => {
           "errors": [
             "f1 error",
           ],
+          "pendingCount": 0,
           "testCount": 1,
           "valid": false,
           "warnCount": 0,
@@ -63,6 +64,7 @@ describe('suite.resetField', () => {
           "errors": [
             "f2 error",
           ],
+          "pendingCount": 0,
           "testCount": 1,
           "valid": false,
           "warnCount": 0,

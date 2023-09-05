@@ -111,28 +111,56 @@ describe('key', () => {
         expect(calls[0][0]).toBe(calls[1][0]);
         expect(calls[0][1]).toBe(calls[1][1]);
         expect(calls[0][2]).toBe(calls[1][2]);
-        expect(res1.tests.reordered).toEqual({
-          errorCount: 1,
-          errors: [],
-          testCount: 1,
-          valid: false,
-          warnCount: 0,
-          warnings: [],
-        });
-        expect(res2.tests.reordered).toEqual({
-          errorCount: 0,
-          errors: [],
-          testCount: 0,
-          valid: false,
-          warnCount: 0,
-          warnings: [],
-        });
+        expect(res1.tests.reordered).toMatchInlineSnapshot(
+          {
+            errorCount: 1,
+            errors: [],
+            pendingCount: 0,
+            testCount: 1,
+            valid: false,
+            warnCount: 0,
+            warnings: [],
+          },
+          `
+          {
+            "errorCount": 1,
+            "errors": [],
+            "pendingCount": 0,
+            "testCount": 1,
+            "valid": false,
+            "warnCount": 0,
+            "warnings": [],
+          }
+        `
+        );
+        expect(res2.tests.reordered).toMatchInlineSnapshot(
+          {
+            errorCount: 0,
+            errors: [],
+            testCount: 0,
+            valid: false,
+            warnCount: 0,
+            warnings: [],
+          },
+          `
+          {
+            "errorCount": 0,
+            "errors": [],
+            "pendingCount": 0,
+            "testCount": 0,
+            "valid": false,
+            "warnCount": 0,
+            "warnings": [],
+          }
+        `
+        );
         expect(res1.tests).not.toEqual(res2.tests);
         expect(res2.tests).toMatchInlineSnapshot(`
           {
             "field1": SummaryBase {
               "errorCount": 1,
               "errors": [],
+              "pendingCount": 0,
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
@@ -141,6 +169,7 @@ describe('key', () => {
             "field2": SummaryBase {
               "errorCount": 1,
               "errors": [],
+              "pendingCount": 0,
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
@@ -149,6 +178,7 @@ describe('key', () => {
             "field3": SummaryBase {
               "errorCount": 1,
               "errors": [],
+              "pendingCount": 0,
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
@@ -157,6 +187,7 @@ describe('key', () => {
             "reordered": SummaryBase {
               "errorCount": 0,
               "errors": [],
+              "pendingCount": 0,
               "testCount": 0,
               "valid": false,
               "warnCount": 0,

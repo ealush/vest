@@ -43,12 +43,14 @@ exports[`Test Vest's \`test\` function test params creates a test without a key 
       "hasWarningsByGroup": [Function],
       "isValid": [Function],
       "isValidByGroup": [Function],
+      "pendingCount": 0,
       "suiteName": undefined,
       "testCount": 1,
       "tests": {
         "field_name": SummaryBase {
           "errorCount": 0,
           "errors": [],
+          "pendingCount": 0,
           "testCount": 1,
           "valid": true,
           "warnCount": 0,
@@ -108,12 +110,14 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
       "hasWarningsByGroup": [Function],
       "isValid": [Function],
       "isValidByGroup": [Function],
+      "pendingCount": 0,
       "suiteName": undefined,
       "testCount": 1,
       "tests": {
         "field_name": SummaryBase {
           "errorCount": 0,
           "errors": [],
+          "pendingCount": 0,
           "testCount": 1,
           "valid": true,
           "warnCount": 0,
@@ -171,12 +175,14 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
       "hasWarningsByGroup": [Function],
       "isValid": [Function],
       "isValidByGroup": [Function],
+      "pendingCount": 0,
       "suiteName": undefined,
       "testCount": 1,
       "tests": {
         "field_name": SummaryBase {
           "errorCount": 0,
           "errors": [],
+          "pendingCount": 0,
           "testCount": 1,
           "valid": true,
           "warnCount": 0,

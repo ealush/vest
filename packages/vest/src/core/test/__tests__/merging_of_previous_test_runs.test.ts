@@ -129,6 +129,7 @@ describe('Merging of previous test runs', () => {
             "f1": SummaryBase {
               "errorCount": 1,
               "errors": [],
+              "pendingCount": 0,
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
@@ -137,6 +138,7 @@ describe('Merging of previous test runs', () => {
             "f2": SummaryBase {
               "errorCount": 1,
               "errors": [],
+              "pendingCount": 0,
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
@@ -145,6 +147,7 @@ describe('Merging of previous test runs', () => {
             "f3": SummaryBase {
               "errorCount": 1,
               "errors": [],
+              "pendingCount": 0,
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
@@ -163,6 +166,7 @@ describe('Merging of previous test runs', () => {
             "f1": SummaryBase {
               "errorCount": 1,
               "errors": [],
+              "pendingCount": 0,
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
@@ -171,6 +175,7 @@ describe('Merging of previous test runs', () => {
             "f3": SummaryBase {
               "errorCount": 1,
               "errors": [],
+              "pendingCount": 0,
               "testCount": 1,
               "valid": false,
               "warnCount": 0,
@@ -217,6 +222,7 @@ describe('Merging of previous test runs', () => {
               "f1": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
+                "pendingCount": 0,
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
@@ -225,6 +231,7 @@ describe('Merging of previous test runs', () => {
               "f2": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
+                "pendingCount": 0,
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
@@ -233,6 +240,7 @@ describe('Merging of previous test runs', () => {
               "f3": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
+                "pendingCount": 0,
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
@@ -241,6 +249,7 @@ describe('Merging of previous test runs', () => {
               "f4": {
                 "errorCount": 2,
                 "errors": [],
+                "pendingCount": 0,
                 "testCount": 2,
                 "valid": false,
                 "warnCount": 0,
@@ -249,6 +258,7 @@ describe('Merging of previous test runs', () => {
               "f5": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
+                "pendingCount": 0,
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
@@ -257,6 +267,7 @@ describe('Merging of previous test runs', () => {
               "f6": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
+                "pendingCount": 0,
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
@@ -265,6 +276,7 @@ describe('Merging of previous test runs', () => {
               "f7": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
+                "pendingCount": 0,
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
@@ -290,6 +302,7 @@ describe('Merging of previous test runs', () => {
               "f1": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
+                "pendingCount": 0,
                 "testCount": 1,
                 "valid": false,
                 "warnCount": 0,
@@ -298,6 +311,7 @@ describe('Merging of previous test runs', () => {
               "f4": {
                 "errorCount": 2,
                 "errors": [],
+                "pendingCount": 0,
                 "testCount": 2,
                 "valid": false,
                 "warnCount": 0,

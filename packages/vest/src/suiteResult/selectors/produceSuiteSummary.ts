@@ -42,7 +42,7 @@ export function useProduceSuiteSummary<
 
   summary.valid = useShouldAddValidProperty();
 
-  return countFailures(summary);
+  return countOverallStates(summary);
 }
 
 function appendFailures<F extends TFieldName, G extends TGroupName>(
@@ -119,7 +119,7 @@ function useAppendToGroup(
 /**
  * Counts the failed tests and adds global counters
  */
-function countFailures<F extends TFieldName, G extends TGroupName>(
+function countOverallStates<F extends TFieldName, G extends TGroupName>(
   summary: SuiteSummary<F, G>
 ): SuiteSummary<F, G> {
   for (const test in summary.tests) {
@@ -132,15 +132,12 @@ function countFailures<F extends TFieldName, G extends TGroupName>(
 
 /**
  * Appends the test to a results object.
- * Overload is only needed to satisfy typescript. No use in breaking it down to multiple
- * functions as it is really the same, with the difference of "valid" missing in groups
  */
 function appendTestObject(
   summaryKey: Maybe<SingleTestSummary>,
   testObject: TIsolateTest
 ): SingleTestSummary {
   const { message } = VestTest.getData(testObject);
-
   const nextSummaryKey = defaultTo<SingleTestSummary>(
     summaryKey ? { ...summaryKey } : null,
     baseTestStats
@@ -149,6 +146,10 @@ function appendTestObject(
   if (VestTest.isNonActionable(testObject)) return nextSummaryKey;
 
   nextSummaryKey.testCount++;
+
+  if (VestTest.isPending(testObject)) {
+    nextSummaryKey.pendingCount++;
+  }
 
   if (VestTest.isFailing(testObject)) {
     incrementFailures(Severity.ERRORS);
@@ -169,10 +170,11 @@ function appendTestObject(
   }
 }
 
+
 function baseTestStats() {
   return assign(new SummaryBase(), {
     errors: [],
-    warnings: [],
     valid: true,
+    warnings: [],
   });
 }

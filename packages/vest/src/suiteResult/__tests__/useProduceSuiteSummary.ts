@@ -4,7 +4,7 @@ import { dummyTest } from '../../testUtils/testDummy';
 import { Modes } from 'Modes';
 import * as vest from 'vest';
 
-describe('produce method Suite Result', () => {
+describe('useProduceSuiteSummary', () => {
   describe('Base structure', () => {
     it('Should match snapshot', () => {
       const suite = vest.create(() => {});

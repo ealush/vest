@@ -136,6 +136,7 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
     "hasErrorsByGroup": [Function],
     "hasWarnings": [Function],
     "hasWarningsByGroup": [Function],
+    "isPending": [Function],
     "isValid": [Function],
     "isValidByGroup": [Function],
     "pendingCount": 0,

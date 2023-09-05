@@ -1,7 +1,7 @@
 import { isFunction } from 'vest-utils';
 
 import { SuiteSummary, TFieldName, TGroupName } from 'SuiteResultTypes';
-import { parse } from 'parser';
+import { ParsedVestObject, parse } from 'parser';
 
 /**
  * Creates a function that returns class names that match the validation result
@@ -27,9 +27,5 @@ export default function classnames<F extends TFieldName, G extends TGroupName>(
 }
 
 type SupportedClasses = {
-  valid?: string;
-  tested?: string;
-  invalid?: string;
-  warning?: string;
-  untested?: string;
+  [K in keyof ParsedVestObject<TFieldName>]?: string;
 };

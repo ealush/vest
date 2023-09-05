@@ -430,6 +430,32 @@ describe('parser.parse', () => {
     });
   });
 
+  describe('parse().pending', () => {
+    it('Should return true when the suite has pending tests', () => {
+      const suite = vest.create(() => {
+        vest.test('f1', async () => {});
+        vest.test('f2', async () => {});
+        vest.test('f3', async () => {});
+      });
+      suite();
+      expect(parse(suite.get()).pending()).toBe(true);
+    });
+
+    it('Should return true for a pending test', () => {
+      const suite = vest.create(() => {
+        vest.test('f1', async () => {});
+        vest.test('f2', async () => {});
+        vest.test('f3', async () => {});
+      });
+      suite();
+      expect(parse(suite.get()).pending('f1')).toBe(true);
+    });
+
+    it('Should return false when the suite has no pending tests', () => {
+      expect(parse(suiteDummy.failing()).pending()).toBe(false);
+    });
+  });
+
   describe('When input is not a Vest object', () => {
     it('Should throw an error', () => {
       expect(() => {

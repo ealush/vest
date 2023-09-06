@@ -54,17 +54,23 @@ describe('named group', () => {
     expect(res.isValidByGroup(GroupNames.G1, FieldNames.F2)).toBe(false);
     expect(res.isValidByGroup(GroupNames.G1, FieldNames.F3)).toBe(true);
     expect(res.tests[FieldNames.F1].testCount).toBe(2);
+    expect(res.tests[FieldNames.F1].pendingCount).toBe(0);
     expect(res.tests[FieldNames.F2].testCount).toBe(1);
     expect(res.tests[FieldNames.F3].testCount).toBe(1);
+    expect(res.tests[FieldNames.F2].pendingCount).toBe(0);
     expect(res.tests[FieldNames.F1].errorCount).toBe(2);
     expect(res.tests[FieldNames.F2].errorCount).toBe(1);
     expect(res.tests[FieldNames.F3].errorCount).toBe(0);
+    expect(res.tests[FieldNames.F3].pendingCount).toBe(0);
     expect(res.groups[GroupNames.G1][FieldNames.F1].errorCount).toBe(1);
     expect(res.groups[GroupNames.G1][FieldNames.F1].testCount).toBe(1);
+    expect(res.groups[GroupNames.G1][FieldNames.F1].pendingCount).toBe(0);
     expect(res.groups[GroupNames.G1][FieldNames.F2].errorCount).toBe(1);
     expect(res.groups[GroupNames.G1][FieldNames.F2].testCount).toBe(1);
+    expect(res.groups[GroupNames.G1][FieldNames.F2].pendingCount).toBe(0);
     expect(res.groups[GroupNames.G1][FieldNames.F3].errorCount).toBe(0);
     expect(res.groups[GroupNames.G1][FieldNames.F3].testCount).toBe(1);
+    expect(res.groups[GroupNames.G1][FieldNames.F3].pendingCount).toBe(0);
     expect(suite.get()).toMatchSnapshot();
   });
 
@@ -528,5 +534,28 @@ describe('unnamed groups', () => {
       expect(res.hasErrors(FieldNames.F3)).toBe(false);
       expect(suite.get()).toMatchSnapshot();
     });
+  });
+});
+
+describe('pendingCount within group', () => {
+  it('Should count pending tests within group', () => {
+    const suite = vest.create(() => {
+      vest.test(FieldNames.F1, () => {});
+      vest.group(GroupNames.G1, () => {
+        vest.test(FieldNames.F1, async () => {});
+        vest.test(FieldNames.F2, async () => {});
+        vest.test(FieldNames.F2, async () => {});
+        vest.test(FieldNames.F3, () => {});
+      });
+    });
+
+    const res = suite();
+
+    expect(res.tests[FieldNames.F1].pendingCount).toBe(1);
+    expect(res.tests[FieldNames.F2].pendingCount).toBe(2);
+    expect(res.tests[FieldNames.F3].pendingCount).toBe(0);
+    expect(res.groups[GroupNames.G1][FieldNames.F1].pendingCount).toBe(1);
+    expect(res.groups[GroupNames.G1][FieldNames.F2].pendingCount).toBe(2);
+    expect(res.groups[GroupNames.G1][FieldNames.F3].pendingCount).toBe(0);
   });
 });

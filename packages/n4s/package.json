@@ -21,8 +21,8 @@
     "vest-utils": "^1.0.0"
   },
   "devDependencies": {
-    "@types/validator": "^13.7.17",
-    "validator": "^13.9.0"
+    "@types/validator": "^13.11.1",
+    "validator": "^13.11.0"
   },
   "vxAllowResolve": [
     "validator"

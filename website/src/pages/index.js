@@ -27,8 +27,8 @@ function HomepageHeader() {
       </div>
       <div className={styles.buttons}>
         <Link
-          className={clsx('button', styles.btn, styles.btnQuickStart)}
-          to="/docs/get_started"
+          className={clsx('button', styles.btn, styles.btnPromote)}
+          to="/vest-5-is-ready"
         >
           Quick Start Guide
         </Link>
@@ -44,10 +44,10 @@ function HomepageHeader() {
       </div>
       <div className={styles.buttons}>
         <Link
-          className={clsx('button', styles.btn, styles.btnPromote)}
-          to="/vest-5-is-ready"
+          className={clsx('button', styles.btn, styles.btnQuickStart)}
+          to="/docs/upgrade_guide"
         >
-          Try The New Version!
+          V5 Upgrade Guide
         </Link>
       </div>
     </header>

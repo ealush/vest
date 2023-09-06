@@ -33,10 +33,13 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl: 'https://github.com/ealush/vest/edit/latest/website/',
-          lastVersion: '4.x',
+          lastVersion: 'current',
           versions: {
             '4.x': {
               label: '4.x',
+            },
+            current: {
+              label: '5.x',
             },
           },
         },
@@ -105,16 +108,6 @@ const config = {
           {
             type: 'docsVersionDropdown',
             position: 'left',
-          },
-
-          {
-            position: 'right',
-            type: 'html',
-            value: badgeLink(
-              '/vest-5-is-ready',
-              'https://badgen.net/npm/v/vest/next?scale=1.2',
-              'next-badge'
-            ),
           },
           {
             position: 'right',

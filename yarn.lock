@@ -5108,7 +5108,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "anyone@workspace:packages/anyone"
   dependencies:
-    vest-utils: ^0.2.0
+    vest-utils: ^1.0.0
   languageName: unknown
   linkType: soft
 
@@ -6326,11 +6326,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"context@^3.0.8, context@workspace:packages/context":
+"context@^3.0.7, context@^3.0.8, context@workspace:packages/context":
   version: 0.0.0-use.local
   resolution: "context@workspace:packages/context"
   dependencies:
-    vest-utils: ^0.2.0
+    vest-utils: ^1.0.0
   languageName: unknown
   linkType: soft
 
@@ -11063,14 +11063,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"n4s@^4.3.0, n4s@workspace:packages/n4s":
+"n4s@^5.0.1, n4s@workspace:packages/n4s":
   version: 0.0.0-use.local
   resolution: "n4s@workspace:packages/n4s"
   dependencies:
     "@types/validator": ^13.7.17
-    context: ^3.0.8
+    context: ^3.0.7
     validator: ^13.9.0
-    vest-utils: ^0.2.0
+    vest-utils: ^1.0.0
   languageName: unknown
   linkType: soft
 
@@ -14877,11 +14877,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "vast@workspace:packages/vast"
   dependencies:
-    vest-utils: ^0.2.0
+    vest-utils: ^1.0.0
   languageName: unknown
   linkType: soft
 
-"vest-utils@^0.2.0, vest-utils@workspace:packages/vest-utils":
+"vest-utils@^1.0.0, vest-utils@workspace:packages/vest-utils":
   version: 0.0.0-use.local
   resolution: "vest-utils@workspace:packages/vest-utils"
   languageName: unknown
@@ -14899,19 +14899,19 @@ __metadata:
   resolution: "vest@workspace:packages/vest"
   dependencies:
     context: ^3.0.8
-    n4s: ^4.3.0
+    n4s: ^5.0.1
     vast: ^1.0.14
-    vest-utils: ^0.2.0
-    vestjs-runtime: ^0.0.1
+    vest-utils: ^1.0.0
+    vestjs-runtime: ^1.0.0
   languageName: unknown
   linkType: soft
 
-"vestjs-runtime@^0.0.1, vestjs-runtime@workspace:packages/vestjs-runtime":
+"vestjs-runtime@^1.0.0, vestjs-runtime@workspace:packages/vestjs-runtime":
   version: 0.0.0-use.local
   resolution: "vestjs-runtime@workspace:packages/vestjs-runtime"
   dependencies:
     context: ^3.0.8
-    vest-utils: ^0.2.0
+    vest-utils: ^1.0.0
   languageName: unknown
   linkType: soft
 

@@ -2,8 +2,8 @@ import { assign } from 'vest-utils';
 
 import { useSuiteName, useSuiteResultCache } from 'Runtime';
 import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
-import { useProduceSuiteSummary } from 'produceSuiteSummary';
 import { suiteSelectors } from 'suiteSelectors';
+import { useProduceSuiteSummary } from 'useProduceSuiteSummary';
 
 export function useCreateSuiteResult<
   F extends TFieldName,

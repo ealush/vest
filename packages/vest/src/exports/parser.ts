@@ -18,6 +18,7 @@ export function parse<F extends TFieldName, G extends TGroupName>(
 
   const selectors = {
     invalid: sel.hasErrors,
+    pending: sel.isPending,
     tested: isTested,
     untested: isUntested,
     valid: sel.isValid,
@@ -52,10 +53,11 @@ export function parse<F extends TFieldName, G extends TGroupName>(
   }
 }
 
-interface ParsedVestObject<F extends TFieldName> {
+export type ParsedVestObject<F extends TFieldName> = {
   valid(fieldName?: F): boolean;
   tested(fieldName?: F): boolean;
   invalid(fieldName?: F): boolean;
   untested(fieldName?: F): boolean;
   warning(fieldName?: F): boolean;
-}
+  pending(fieldName?: F): boolean;
+};

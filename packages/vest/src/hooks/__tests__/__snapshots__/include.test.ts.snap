@@ -22,14 +22,17 @@ exports[`include Field is excluded via \`skip\` Should disregard \`include.when\
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 1,
   "tests": {
     "field_1": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -38,6 +41,7 @@ exports[`include Field is excluded via \`skip\` Should disregard \`include.when\
     "field_2": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -72,14 +76,17 @@ exports[`include Field is excluded via \`skip\` Should disregard \`include\` and
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 1,
   "tests": {
     "field_1": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -88,6 +95,7 @@ exports[`include Field is excluded via \`skip\` Should disregard \`include\` and
     "field_2": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -122,6 +130,7 @@ exports[`include Test is excluded via \`skip.group\` Should disregard \`include.
       "field_1": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -130,6 +139,7 @@ exports[`include Test is excluded via \`skip.group\` Should disregard \`include.
       "field_2": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -141,14 +151,17 @@ exports[`include Test is excluded via \`skip.group\` Should disregard \`include.
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 1,
   "tests": {
     "field_1": {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -157,6 +170,7 @@ exports[`include Test is excluded via \`skip.group\` Should disregard \`include.
     "field_2": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -191,6 +205,7 @@ exports[`include Test is excluded via \`skip.group\` Should disregard \`include\
       "field_1": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -199,6 +214,7 @@ exports[`include Test is excluded via \`skip.group\` Should disregard \`include\
       "field_2": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -210,14 +226,17 @@ exports[`include Test is excluded via \`skip.group\` Should disregard \`include\
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 1,
   "tests": {
     "field_1": {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -226,6 +245,7 @@ exports[`include Test is excluded via \`skip.group\` Should disregard \`include\
     "field_2": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -260,14 +280,17 @@ exports[`include Test is excluded via \`skipWhen\` Should disregard \`include.wh
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 1,
   "tests": {
     "field_1": {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -302,14 +325,17 @@ exports[`include Test is excluded via \`skipWhen\` Should disregard \`include\` 
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 1,
   "tests": {
     "field_1": {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -349,14 +375,17 @@ exports[`include There is an \`onlyd\` field \`include\` is run as-is without mo
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 2,
   "tests": {
     "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -365,6 +394,7 @@ exports[`include There is an \`onlyd\` field \`include\` is run as-is without mo
     "field_2": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -399,14 +429,17 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 1,
   "tests": {
     "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -415,6 +448,7 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
     "field_2": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -423,6 +457,7 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
     "field_3": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -462,14 +497,17 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 2,
   "tests": {
     "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -478,6 +516,7 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
     "field_2": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -486,6 +525,7 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
     "field_3": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -525,14 +565,17 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 2,
   "tests": {
     "field_1": {
       "errorCount": 2,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -567,14 +610,17 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 1,
   "tests": {
     "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -583,6 +629,7 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
     "field_2": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -591,6 +638,7 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
     "field_3": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -630,14 +678,17 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 2,
   "tests": {
     "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -646,6 +697,7 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
     "field_2": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -654,6 +706,7 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
     "field_3": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -688,14 +741,17 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 1,
   "tests": {
     "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -704,6 +760,7 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
     "field_2": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -712,6 +769,7 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
     "field_3": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -746,14 +804,17 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 1,
   "tests": {
     "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -762,6 +823,7 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
     "field_2": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -770,6 +832,7 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
     "field_3": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -809,14 +872,17 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 2,
   "tests": {
     "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -825,6 +891,7 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
     "field_2": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -833,6 +900,7 @@ exports[`include There is an \`onlyd\` field include().when() \`when\` param is 
     "field_3": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -872,14 +940,17 @@ exports[`include When no \`skip\` or \`only\` include has no effect 1`] = `
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 2,
   "tests": {
     "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -888,6 +959,7 @@ exports[`include When no \`skip\` or \`only\` include has no effect 1`] = `
     "field_2": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -927,14 +999,17 @@ exports[`include When no \`skip\` or \`only\` include().when has no effect 1`] =
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 2,
   "tests": {
     "field_1": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -943,6 +1018,7 @@ exports[`include When no \`skip\` or \`only\` include().when has no effect 1`] =
     "field_2": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,

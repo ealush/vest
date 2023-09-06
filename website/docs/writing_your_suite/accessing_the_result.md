@@ -30,6 +30,7 @@ A result object would look somewhat like this:
   'errorCount': 0,          // Overall count of errors in the suite
   'warnCount': 0,           // Overall count of warnings in the suite
   'testCount': 0,           // Overall test count for the suite (passing, failing and warning)
+  'pendingCount': 0,        // Overall count of unresolved async tests in the suite
   'tests': {                // An object containing all non-skipped tests
     ['fieldName']: {        // Name of each field
       'errorCount': 0,      // Error count per field
@@ -37,6 +38,7 @@ A result object would look somewhat like this:
       'warnings': [],       // Array of warning messages fer field (may be undefined)
       'warnCount': 0,       // Warning count per field
       'testCount': 0,       // Overall test count for the field (passing, failing and warning)
+      'pendingCount': 0,    // Overall count of unresolved async tests in the current field
       'valid': false,       // Field specific validity
     },
     'groups': {             // An object containing groups declared in the suite
@@ -362,4 +364,30 @@ result.done(() => {
     /*do something*/
   }
 });
+```
+
+## isPending
+
+Returns whether the suite, or a specific field are pending or not. A suite is considered pending if it has unresolved [async tests](../writing_tests/async_tests.md).
+
+Returns `true` if the suite is pending, `false` otherwise.
+
+```js
+const suite = vest.create(() => {
+  test('username', 'Username is already taken', async () => {
+    await someServerCall();
+  });
+});
+
+result.isPending();
+
+suite.isPending();
+
+suite.get().isPending();
+
+result.isPending('username');
+
+suite.isPending('username');
+
+suite.get().isPending('username');
 ```

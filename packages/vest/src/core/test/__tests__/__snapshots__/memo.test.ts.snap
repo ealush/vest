@@ -22,8 +22,10 @@ exports[`test.memo cache hit Should produce correct initial result 1`] = `
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 4,
   "tests": {
@@ -32,6 +34,7 @@ exports[`test.memo cache hit Should produce correct initial result 1`] = `
       "errors": [
         "msg1",
       ],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -40,6 +43,7 @@ exports[`test.memo cache hit Should produce correct initial result 1`] = `
     "field2": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": true,
       "warnCount": 0,
@@ -48,6 +52,7 @@ exports[`test.memo cache hit Should produce correct initial result 1`] = `
     "field3": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": true,
       "warnCount": 1,
@@ -88,8 +93,10 @@ exports[`test.memo cache hit sync Should restore previous result on re-run 1`] =
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 4,
   "tests": {
@@ -98,6 +105,7 @@ exports[`test.memo cache hit sync Should restore previous result on re-run 1`] =
       "errors": [
         "msg1",
       ],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -106,6 +114,7 @@ exports[`test.memo cache hit sync Should restore previous result on re-run 1`] =
     "field2": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": true,
       "warnCount": 0,
@@ -114,6 +123,7 @@ exports[`test.memo cache hit sync Should restore previous result on re-run 1`] =
     "field3": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": true,
       "warnCount": 1,

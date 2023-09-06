@@ -1,4 +1,4 @@
-import { Maybe, isPositive } from 'vest-utils';
+import { Maybe, greaterThan, isPositive } from 'vest-utils';
 
 import { Severity, SeverityCount } from 'Severity';
 import {
@@ -42,6 +42,9 @@ export function bindSuiteSelectors<F extends TFieldName, G extends TGroupName>(
     hasWarningsByGroup: (
       ...args: Parameters<SuiteSelectors<F, G>['hasWarningsByGroup']>
     ) => get().hasWarningsByGroup(...args),
+    isPending: (...args: Parameters<SuiteSelectors<F, G>['isPending']>) => {
+      return get().isPending(...args);
+    },
     isValid: (...args: Parameters<SuiteSelectors<F, G>['isValid']>) =>
       get().isValid(...args),
     isValidByGroup: (
@@ -65,6 +68,7 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     hasErrorsByGroup,
     hasWarnings,
     hasWarningsByGroup,
+    isPending,
     isValid,
     isValidByGroup,
   };
@@ -164,6 +168,12 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
   ): GetFailuresResponse {
     return getFailuresByGroup(summary, Severity.WARNINGS, groupName, fieldName);
   }
+
+  function isPending(fieldName?: F): boolean {
+    return fieldName
+      ? greaterThan(summary.tests[fieldName]?.pendingCount, 0)
+      : greaterThan(summary.pendingCount, 0);
+  }
 }
 
 export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
@@ -181,6 +191,7 @@ export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
   hasWarnings(fieldName?: F): boolean;
   hasErrorsByGroup(groupName: G, fieldName?: F): boolean;
   hasWarningsByGroup(groupName: G, fieldName?: F): boolean;
+  isPending(fieldName?: F): boolean;
   isValid(fieldName?: F): boolean;
   isValidByGroup(groupName: G, fieldName?: F): boolean;
 }

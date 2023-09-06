@@ -36,6 +36,7 @@ SuiteSummary {
       "f1": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -44,6 +45,7 @@ SuiteSummary {
       "f2": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -52,6 +54,7 @@ SuiteSummary {
       "f3": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -62,6 +65,7 @@ SuiteSummary {
       "f1": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -70,6 +74,7 @@ SuiteSummary {
       "f2": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -78,6 +83,7 @@ SuiteSummary {
       "f3": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -89,14 +95,17 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 4,
   "tests": {
     "f1": {
       "errorCount": 2,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -105,6 +114,7 @@ SuiteSummary {
     "f2": {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -113,6 +123,7 @@ SuiteSummary {
     "f3": {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -156,6 +167,7 @@ SuiteSummary {
       "f1": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -164,6 +176,7 @@ SuiteSummary {
       "f2": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -172,6 +185,7 @@ SuiteSummary {
       "f3": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -182,6 +196,7 @@ SuiteSummary {
       "f1": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -190,6 +205,7 @@ SuiteSummary {
       "f2": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -198,6 +214,7 @@ SuiteSummary {
       "f3": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -209,14 +226,17 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 3,
   "tests": {
     "f1": {
       "errorCount": 3,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 3,
       "valid": false,
       "warnCount": 0,
@@ -225,6 +245,7 @@ SuiteSummary {
     "f2": {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -233,6 +254,7 @@ SuiteSummary {
     "f3": {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -276,6 +298,7 @@ SuiteSummary {
       "f1": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -284,6 +307,7 @@ SuiteSummary {
       "f2": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -295,14 +319,17 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 3,
   "tests": {
     "f1": {
       "errorCount": 2,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -311,6 +338,7 @@ SuiteSummary {
     "f2": {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -354,6 +382,7 @@ SuiteSummary {
       "f1": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -362,6 +391,7 @@ SuiteSummary {
       "f2": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -372,6 +402,7 @@ SuiteSummary {
       "f2": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -383,14 +414,17 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 3,
   "tests": {
     "f1": {
       "errorCount": 2,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -399,6 +433,7 @@ SuiteSummary {
     "f2": {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -452,6 +487,7 @@ SuiteSummary {
       "f1": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -460,6 +496,7 @@ SuiteSummary {
       "f2": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -470,6 +507,7 @@ SuiteSummary {
       "f2": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -478,6 +516,7 @@ SuiteSummary {
       "f3": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -489,14 +528,17 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 5,
   "tests": {
     "f1": {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -505,6 +547,7 @@ SuiteSummary {
     "f2": {
       "errorCount": 2,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -513,6 +556,7 @@ SuiteSummary {
     "f3": {
       "errorCount": 2,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -546,6 +590,7 @@ SuiteSummary {
       "f1": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -554,6 +599,7 @@ SuiteSummary {
       "f2": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -565,14 +611,17 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 1,
   "tests": {
     "f1": {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -581,6 +630,7 @@ SuiteSummary {
     "f2": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -634,6 +684,7 @@ SuiteSummary {
       "f1": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -642,6 +693,7 @@ SuiteSummary {
       "f2": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -650,6 +702,7 @@ SuiteSummary {
       "f3": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": true,
         "warnCount": 0,
@@ -660,6 +713,7 @@ SuiteSummary {
       "f1": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -668,6 +722,7 @@ SuiteSummary {
       "f2": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -676,6 +731,7 @@ SuiteSummary {
       "f3": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": true,
         "warnCount": 0,
@@ -687,14 +743,17 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 7,
   "tests": {
     "f1": {
       "errorCount": 3,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 3,
       "valid": false,
       "warnCount": 0,
@@ -703,6 +762,7 @@ SuiteSummary {
     "f2": {
       "errorCount": 2,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -711,6 +771,7 @@ SuiteSummary {
     "f3": {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": true,
       "warnCount": 0,
@@ -754,6 +815,7 @@ SuiteSummary {
       "f1": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -762,6 +824,7 @@ SuiteSummary {
       "f2": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -770,6 +833,7 @@ SuiteSummary {
       "f3": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": true,
         "warnCount": 0,
@@ -781,14 +845,17 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 4,
   "tests": {
     "f1": {
       "errorCount": 2,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -797,6 +864,7 @@ SuiteSummary {
     "f2": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -805,6 +873,7 @@ SuiteSummary {
     "f3": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": true,
       "warnCount": 0,
@@ -848,14 +917,17 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 3,
   "tests": {
     "f1": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -864,6 +936,7 @@ SuiteSummary {
     "f2": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -872,6 +945,7 @@ SuiteSummary {
     "f3": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -915,14 +989,17 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 3,
   "tests": {
     "f1": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -931,6 +1008,7 @@ SuiteSummary {
     "f2": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -939,6 +1017,7 @@ SuiteSummary {
     "f3": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -966,14 +1045,17 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 0,
   "tests": {
     "f1": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -982,6 +1064,7 @@ SuiteSummary {
     "f2": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -990,6 +1073,7 @@ SuiteSummary {
     "f3": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -1023,14 +1107,17 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 1,
   "tests": {
     "f1": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -1039,6 +1126,7 @@ SuiteSummary {
     "f2": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -1047,6 +1135,7 @@ SuiteSummary {
     "f3": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -1085,14 +1174,17 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 2,
   "tests": {
     "f1": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -1101,6 +1193,7 @@ SuiteSummary {
     "f2": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -1109,6 +1202,7 @@ SuiteSummary {
     "f3": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,

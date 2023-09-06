@@ -1,10 +1,12 @@
+import wait from 'wait';
+
 import { ser } from '../../testUtils/suiteDummy';
 import { dummyTest } from '../../testUtils/testDummy';
 
 import { Modes } from 'Modes';
 import * as vest from 'vest';
 
-describe('produce method Suite Result', () => {
+describe('useProduceSuiteSummary', () => {
   describe('Base structure', () => {
     it('Should match snapshot', () => {
       const suite = vest.create(() => {});
@@ -129,8 +131,10 @@ describe('suite.get()', () => {
           "hasErrorsByGroup": [Function],
           "hasWarnings": [Function],
           "hasWarningsByGroup": [Function],
+          "isPending": [Function],
           "isValid": [Function],
           "isValidByGroup": [Function],
+          "pendingCount": 0,
           "suiteName": undefined,
           "testCount": 0,
           "tests": {},
@@ -162,8 +166,10 @@ describe('suite()', () => {
           "hasErrorsByGroup": [Function],
           "hasWarnings": [Function],
           "hasWarningsByGroup": [Function],
+          "isPending": [Function],
           "isValid": [Function],
           "isValidByGroup": [Function],
+          "pendingCount": 0,
           "suiteName": undefined,
           "testCount": 0,
           "tests": {},
@@ -173,5 +179,55 @@ describe('suite()', () => {
         }
       `);
     });
+  });
+});
+
+describe('pendingCount', () => {
+  it('Should default to zero, both in the general summary and per test', () => {
+    const suite = vest.create(() => {
+      vest.test('f1', () => {});
+      vest.test('f2', () => {});
+    });
+    expect(suite().pendingCount).toBe(0);
+    expect(suite().tests.f1.pendingCount).toBe(0);
+    expect(suite().tests.f2.pendingCount).toBe(0);
+  });
+
+  it('Should increment when a test is pending', () => {
+    const suite = vest.create(() => {
+      vest.test('f1', async () => {});
+      vest.test('f2', async () => {});
+    });
+    suite();
+    expect(suite().pendingCount).toBe(2);
+    expect(suite().tests.f1.pendingCount).toBe(1);
+    expect(suite().tests.f2.pendingCount).toBe(1);
+  });
+
+  it('Should increment per multiple pending tests of the same field', () => {
+    const suite = vest.create(() => {
+      vest.test('f1', async () => {});
+      vest.test('f1', async () => {});
+      vest.test('f2', async () => {});
+    });
+    suite();
+    expect(suite().pendingCount).toBe(3);
+    expect(suite().tests.f1.pendingCount).toBe(2);
+    expect(suite().tests.f2.pendingCount).toBe(1);
+  });
+
+  it('Should decrement when a test is done', async () => {
+    const suite = vest.create(() => {
+      vest.test('f1', async () => {});
+      vest.test('f2', async () => {});
+    });
+    suite();
+    expect(suite().pendingCount).toBe(2);
+    expect(suite().tests.f1.pendingCount).toBe(1);
+    expect(suite().tests.f2.pendingCount).toBe(1);
+    await wait(0);
+    expect(suite.get().pendingCount).toBe(0);
+    expect(suite.get().tests.f1.pendingCount).toBe(0);
+    expect(suite.get().tests.f2.pendingCount).toBe(0);
   });
 });

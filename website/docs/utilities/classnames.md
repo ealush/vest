@@ -39,6 +39,7 @@ const cn = classnames(res, {
   invalid: 'my_invalid_class', // will only be applied if the provided field ran at least once and has an error
   valid: 'my_valid_class', // will only be applied if the provided field ran at least once does not have errors or warnings
   warning: 'my_warning_class', // will only be applied if the provided field ran at least once and has a warning
+  pending: 'my_pending_class', // will only be applied if the provided field has pending async tests
 });
 
 const fieldOneClasses = cn('field_1'); // "is-untested"

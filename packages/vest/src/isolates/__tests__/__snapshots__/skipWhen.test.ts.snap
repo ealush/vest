@@ -15,8 +15,10 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 0,
   "tests": {},
@@ -47,8 +49,10 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 1,
   "tests": {
@@ -57,6 +61,7 @@ SuiteSummary {
       "errors": [
         "msg",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -95,8 +100,10 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 2,
   "tests": {
@@ -105,6 +112,7 @@ SuiteSummary {
       "errors": [
         "msg",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -115,6 +123,7 @@ SuiteSummary {
       "errors": [
         "msg",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,

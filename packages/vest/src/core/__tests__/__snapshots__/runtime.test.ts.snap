@@ -38,6 +38,7 @@ SuiteSummary {
         "errors": [
           "t2 message",
         ],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -46,6 +47,7 @@ SuiteSummary {
       "t3": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": true,
         "warnCount": 0,
@@ -54,6 +56,7 @@ SuiteSummary {
       "t4": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": true,
         "warnCount": 1,
@@ -65,14 +68,17 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 6,
   "tests": {
     "t1": SummaryBase {
       "errorCount": 1,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -83,6 +89,7 @@ SuiteSummary {
       "errors": [
         "t2 message",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -91,6 +98,7 @@ SuiteSummary {
     "t3": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": true,
       "warnCount": 0,
@@ -99,6 +107,7 @@ SuiteSummary {
     "t4": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": true,
       "warnCount": 1,
@@ -107,6 +116,7 @@ SuiteSummary {
     "t5": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -115,6 +125,7 @@ SuiteSummary {
     "t6": {
       "errorCount": 2,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,

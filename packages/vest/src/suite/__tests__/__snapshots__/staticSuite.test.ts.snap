@@ -115,6 +115,7 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
         "t1": SummaryBase {
           "errorCount": 0,
           "errors": [],
+          "pendingCount": 0,
           "testCount": 0,
           "valid": false,
           "warnCount": 0,
@@ -123,6 +124,7 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
         "t3": SummaryBase {
           "errorCount": 1,
           "errors": [],
+          "pendingCount": 0,
           "testCount": 1,
           "valid": false,
           "warnCount": 0,
@@ -134,14 +136,17 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
     "hasErrorsByGroup": [Function],
     "hasWarnings": [Function],
     "hasWarningsByGroup": [Function],
+    "isPending": [Function],
     "isValid": [Function],
     "isValidByGroup": [Function],
+    "pendingCount": 0,
     "suiteName": undefined,
     "testCount": 3,
     "tests": {
       "t1": {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -150,6 +155,7 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
       "t2": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -158,6 +164,7 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
       "t3": SummaryBase {
         "errorCount": 1,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,

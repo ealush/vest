@@ -54,6 +54,7 @@ describe('Utility: classnames', () => {
   describe('when all keys are provided', () => {
     const genClass = classnames(res, {
       invalid: 'invalid_string',
+      pending: 'pending_string',
       tested: 'tested_string',
       untested: 'untested_string',
       valid: 'valid_string',
@@ -95,6 +96,31 @@ describe('Utility: classnames', () => {
       // splitting and sorting to not rely on object order which is unspecified in the language
       expect(genClass('field_2').split(' ').sort()).toEqual(
         'invalid_string'.split(' ').sort()
+      );
+      expect(genClass('field_3').split(' ').sort()).toEqual(
+        ''.split(' ').sort()
+      );
+    });
+  });
+
+  describe('pending', () => {
+    it('Should add pending classname when a test is pending', () => {
+      const suite = vest.create(() => {
+        vest.test('field_1', 'msg', async () => {});
+        vest.test('field_2', 'msg', () => {});
+        vest.test('field_3', 'msg', () => {});
+      });
+
+      const res = suite();
+
+      const genClass = classnames(res, {
+        pending: 'pending_string',
+      });
+      expect(genClass('field_1')).toBe('pending_string');
+
+      // splitting and sorting to not rely on object order which is unspecified in the language
+      expect(genClass('field_2').split(' ').sort()).toEqual(
+        ''.split(' ').sort()
       );
       expect(genClass('field_3').split(' ').sort()).toEqual(
         ''.split(' ').sort()

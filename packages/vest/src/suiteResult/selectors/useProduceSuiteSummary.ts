@@ -42,7 +42,7 @@ export function useProduceSuiteSummary<
 
   summary.valid = useShouldAddValidProperty();
 
-  return countFailures(summary);
+  return countOverallStates(summary);
 }
 
 function appendFailures<F extends TFieldName, G extends TGroupName>(
@@ -119,45 +119,56 @@ function useAppendToGroup(
 /**
  * Counts the failed tests and adds global counters
  */
-function countFailures<F extends TFieldName, G extends TGroupName>(
+function countOverallStates<F extends TFieldName, G extends TGroupName>(
   summary: SuiteSummary<F, G>
 ): SuiteSummary<F, G> {
   for (const test in summary.tests) {
     summary.errorCount += summary.tests[test].errorCount;
     summary.warnCount += summary.tests[test].warnCount;
     summary.testCount += summary.tests[test].testCount;
+    summary.pendingCount += summary.tests[test].pendingCount;
   }
   return summary;
 }
 
 /**
  * Appends the test to a results object.
- * Overload is only needed to satisfy typescript. No use in breaking it down to multiple
- * functions as it is really the same, with the difference of "valid" missing in groups
  */
+// eslint-disable-next-line max-statements, complexity
 function appendTestObject(
   summaryKey: Maybe<SingleTestSummary>,
   testObject: TIsolateTest
 ): SingleTestSummary {
   const { message } = VestTest.getData(testObject);
 
+  // Let's first create a new object, so we don't mutate the original.
   const nextSummaryKey = defaultTo<SingleTestSummary>(
     summaryKey ? { ...summaryKey } : null,
     baseTestStats
   );
 
+  // If the test is not actionable, we don't need to append it to the summary.
   if (VestTest.isNonActionable(testObject)) return nextSummaryKey;
 
-  nextSummaryKey.testCount++;
+  // Increment the pending count if the test is pending.
+  if (VestTest.isPending(testObject)) {
+    nextSummaryKey.pendingCount++;
+  }
 
+  // Increment the error count if the test is failing.
   if (VestTest.isFailing(testObject)) {
     incrementFailures(Severity.ERRORS);
   } else if (VestTest.isWarning(testObject)) {
+    // Increment the warning count if the test is warning.
     incrementFailures(Severity.WARNINGS);
   }
 
+  // Increment the test count.
+  nextSummaryKey.testCount++;
+
   return nextSummaryKey;
 
+  // Helper function to increment the failure count.
   function incrementFailures(severity: Severity) {
     const countKey = countKeyBySeverity(severity);
     nextSummaryKey[countKey]++;
@@ -172,7 +183,7 @@ function appendTestObject(
 function baseTestStats() {
   return assign(new SummaryBase(), {
     errors: [],
-    warnings: [],
     valid: true,
+    warnings: [],
   });
 }

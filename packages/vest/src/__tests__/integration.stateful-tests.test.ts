@@ -56,6 +56,7 @@ describe('more complex', () => {
         "errors": [
           "password is required",
         ],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -69,6 +70,7 @@ describe('more complex', () => {
       SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -85,6 +87,7 @@ describe('more complex', () => {
       SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -99,6 +102,7 @@ describe('more complex', () => {
       SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": true,
         "warnCount": 0,

@@ -22,6 +22,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
       "field_1": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -30,6 +31,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
       "field_4": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -41,8 +43,10 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 1,
   "suiteName": undefined,
   "testCount": 3,
   "tests": {
@@ -51,6 +55,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
       "errors": [
         "field_message_1",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -59,6 +64,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
     "field_2": {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 1,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -67,6 +73,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
     "field_3": {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -75,6 +82,7 @@ exports[`Stateful async tests Merges skipped validations from previous suite 1`]
     "field_4": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -113,6 +121,7 @@ SuiteSummary {
       "field_1": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -121,6 +130,7 @@ SuiteSummary {
       "field_4": SummaryBase {
         "errorCount": 0,
         "errors": [],
+        "pendingCount": 0,
         "testCount": 0,
         "valid": false,
         "warnCount": 0,
@@ -132,8 +142,10 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 3,
   "tests": {
@@ -142,6 +154,7 @@ SuiteSummary {
       "errors": [
         "field_message_1",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -152,6 +165,7 @@ SuiteSummary {
       "errors": [
         "rejection_message_1",
       ],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -160,6 +174,7 @@ SuiteSummary {
     "field_3": {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -168,6 +183,7 @@ SuiteSummary {
     "field_4": SummaryBase {
       "errorCount": 0,
       "errors": [],
+      "pendingCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -223,6 +239,7 @@ SuiteSummary {
         "errors": [
           "field_1_group_message",
         ],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -233,6 +250,7 @@ SuiteSummary {
         "errors": [
           "field_4_group_message",
         ],
+        "pendingCount": 0,
         "testCount": 1,
         "valid": false,
         "warnCount": 0,
@@ -244,8 +262,10 @@ SuiteSummary {
   "hasErrorsByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
+  "isPending": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 7,
   "tests": {
@@ -255,6 +275,7 @@ SuiteSummary {
         "field_1_group_message",
         "field_message_1",
       ],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -265,6 +286,7 @@ SuiteSummary {
       "errors": [
         "rejection_message_1",
       ],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -275,6 +297,7 @@ SuiteSummary {
       "errors": [
         "field_message_3",
       ],
+      "pendingCount": 0,
       "testCount": 2,
       "valid": false,
       "warnCount": 0,
@@ -285,6 +308,7 @@ SuiteSummary {
       "errors": [
         "field_4_group_message",
       ],
+      "pendingCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,

@@ -21,12 +21,12 @@
       "SummaryFailure": ["./src/suiteResult/SummaryFailure.ts"],
       "SuiteResultTypes": ["./src/suiteResult/SuiteResultTypes.ts"],
       "Severity": ["./src/suiteResult/Severity.ts"],
+      "useProduceSuiteSummary": [
+        "./src/suiteResult/selectors/useProduceSuiteSummary.ts"
+      ],
       "suiteSelectors": ["./src/suiteResult/selectors/suiteSelectors.ts"],
       "shouldAddValidProperty": [
         "./src/suiteResult/selectors/shouldAddValidProperty.ts"
-      ],
-      "produceSuiteSummary": [
-        "./src/suiteResult/selectors/produceSuiteSummary.ts"
       ],
       "hasFailuresByTestObjects": [
         "./src/suiteResult/selectors/hasFailuresByTestObjects.ts"

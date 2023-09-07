@@ -28,7 +28,7 @@ function HomepageHeader() {
       <div className={styles.buttons}>
         <Link
           className={clsx('button', styles.btn, styles.btnPromote)}
-          to="/vest-5-is-ready"
+          to="/docs/get_started"
         >
           Quick Start Guide
         </Link>

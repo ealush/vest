@@ -17,6 +17,12 @@ const config = {
   organizationName: 'ealush', // Usually your GitHub org/user name.
   plugins: [
     [
+      require.resolve('@easyops-cn/docusaurus-search-local'),
+      {
+        indexBlog: false,
+      },
+    ],
+    [
       '@docusaurus/plugin-google-gtag',
       {
         trackingID: 'G-M420W03G2K',
@@ -201,7 +207,8 @@ const config = {
         textColor: 'var(--announcement-bar-color)',
         isCloseable: false,
       },
-      algolia: {
+      _algolia: {
+        // temporary disabled until the index gets updated
         // The application ID provided by Algolia
         appId: '08EPW2MDNA',
 

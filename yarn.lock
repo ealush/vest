@@ -2637,7 +2637,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docusaurus/plugin-content-docs@npm:2.4.1":
+"@docusaurus/plugin-content-docs@npm:2.4.1, @docusaurus/plugin-content-docs@npm:^2.0.0-rc.1":
   version: 2.4.1
   resolution: "@docusaurus/plugin-content-docs@npm:2.4.1"
   dependencies:
@@ -2891,7 +2891,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docusaurus/theme-translations@npm:2.4.1":
+"@docusaurus/theme-translations@npm:2.4.1, @docusaurus/theme-translations@npm:^2.0.0-rc.1":
   version: 2.4.1
   resolution: "@docusaurus/theme-translations@npm:2.4.1"
   dependencies:
@@ -2920,7 +2920,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docusaurus/utils-common@npm:2.4.1":
+"@docusaurus/utils-common@npm:2.4.1, @docusaurus/utils-common@npm:^2.0.0-rc.1":
   version: 2.4.1
   resolution: "@docusaurus/utils-common@npm:2.4.1"
   dependencies:
@@ -2934,7 +2934,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docusaurus/utils-validation@npm:2.4.1":
+"@docusaurus/utils-validation@npm:2.4.1, @docusaurus/utils-validation@npm:^2.0.0-rc.1":
   version: 2.4.1
   resolution: "@docusaurus/utils-validation@npm:2.4.1"
   dependencies:
@@ -2947,7 +2947,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docusaurus/utils@npm:2.4.1":
+"@docusaurus/utils@npm:2.4.1, @docusaurus/utils@npm:^2.0.0-rc.1":
   version: 2.4.1
   resolution: "@docusaurus/utils@npm:2.4.1"
   dependencies:
@@ -2973,6 +2973,44 @@ __metadata:
     "@docusaurus/types":
       optional: true
   checksum: 4c7e49cabe6650b027c0f698344532fb81c8aaf912f17a287fad986e008ce7c6d34d372b44974488ce160ae43ef6aad4ac7b2790bc3fe2ab05ef5fa7b9506ce9
+  languageName: node
+  linkType: hard
+
+"@easyops-cn/autocomplete.js@npm:^0.38.1":
+  version: 0.38.1
+  resolution: "@easyops-cn/autocomplete.js@npm:0.38.1"
+  dependencies:
+    cssesc: ^3.0.0
+    immediate: ^3.2.3
+  checksum: d88b61f12c383856b8d5cedf176a6d07a21e013dc2c78be029af81e2e026ece2bb988c6ea7f9951a2759c2e6f806ea1d1c9627bf36d9cbe376e897a94ce5da09
+  languageName: node
+  linkType: hard
+
+"@easyops-cn/docusaurus-search-local@npm:^0.35.0":
+  version: 0.35.0
+  resolution: "@easyops-cn/docusaurus-search-local@npm:0.35.0"
+  dependencies:
+    "@docusaurus/plugin-content-docs": ^2.0.0-rc.1
+    "@docusaurus/theme-translations": ^2.0.0-rc.1
+    "@docusaurus/utils": ^2.0.0-rc.1
+    "@docusaurus/utils-common": ^2.0.0-rc.1
+    "@docusaurus/utils-validation": ^2.0.0-rc.1
+    "@easyops-cn/autocomplete.js": ^0.38.1
+    "@node-rs/jieba": ^1.6.0
+    cheerio: ^1.0.0-rc.3
+    clsx: ^1.1.1
+    debug: ^4.2.0
+    fs-extra: ^10.0.0
+    klaw-sync: ^6.0.0
+    lunr: ^2.3.9
+    lunr-languages: ^1.4.0
+    mark.js: ^8.11.1
+    tslib: ^2.4.0
+  peerDependencies:
+    "@docusaurus/theme-common": ^2.0.0-rc.1
+    react: ^16.14.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
+  checksum: 726b7b5d52f3fd01286e5a97bb2f5d27ae0ace2be7a7742c92b0bf11d56f2f44a16f6b7af556f5676ffa2a3b94c244d17ea9804894553f94ba66b98249e1e10f
   languageName: node
   linkType: hard
 
@@ -3513,6 +3551,145 @@ __metadata:
   version: 1.6.22
   resolution: "@mdx-js/util@npm:1.6.22"
   checksum: 4b393907e39a1a75214f0314bf72a0adfa5e5adffd050dd5efe9c055b8549481a3cfc9f308c16dfb33311daf3ff63added7d5fd1fe52db614c004f886e0e559a
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-android-arm-eabi@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@node-rs/jieba-android-arm-eabi@npm:1.7.2"
+  conditions: os=android & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-android-arm64@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@node-rs/jieba-android-arm64@npm:1.7.2"
+  conditions: os=android & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-darwin-arm64@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@node-rs/jieba-darwin-arm64@npm:1.7.2"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-darwin-x64@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@node-rs/jieba-darwin-x64@npm:1.7.2"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-freebsd-x64@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@node-rs/jieba-freebsd-x64@npm:1.7.2"
+  conditions: os=freebsd & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-linux-arm-gnueabihf@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@node-rs/jieba-linux-arm-gnueabihf@npm:1.7.2"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-linux-arm64-gnu@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@node-rs/jieba-linux-arm64-gnu@npm:1.7.2"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-linux-arm64-musl@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@node-rs/jieba-linux-arm64-musl@npm:1.7.2"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-linux-x64-gnu@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@node-rs/jieba-linux-x64-gnu@npm:1.7.2"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-linux-x64-musl@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@node-rs/jieba-linux-x64-musl@npm:1.7.2"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-win32-arm64-msvc@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@node-rs/jieba-win32-arm64-msvc@npm:1.7.2"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-win32-ia32-msvc@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@node-rs/jieba-win32-ia32-msvc@npm:1.7.2"
+  conditions: os=win32 & cpu=ia32
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-win32-x64-msvc@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@node-rs/jieba-win32-x64-msvc@npm:1.7.2"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba@npm:^1.6.0":
+  version: 1.7.2
+  resolution: "@node-rs/jieba@npm:1.7.2"
+  dependencies:
+    "@node-rs/jieba-android-arm-eabi": 1.7.2
+    "@node-rs/jieba-android-arm64": 1.7.2
+    "@node-rs/jieba-darwin-arm64": 1.7.2
+    "@node-rs/jieba-darwin-x64": 1.7.2
+    "@node-rs/jieba-freebsd-x64": 1.7.2
+    "@node-rs/jieba-linux-arm-gnueabihf": 1.7.2
+    "@node-rs/jieba-linux-arm64-gnu": 1.7.2
+    "@node-rs/jieba-linux-arm64-musl": 1.7.2
+    "@node-rs/jieba-linux-x64-gnu": 1.7.2
+    "@node-rs/jieba-linux-x64-musl": 1.7.2
+    "@node-rs/jieba-win32-arm64-msvc": 1.7.2
+    "@node-rs/jieba-win32-ia32-msvc": 1.7.2
+    "@node-rs/jieba-win32-x64-msvc": 1.7.2
+  dependenciesMeta:
+    "@node-rs/jieba-android-arm-eabi":
+      optional: true
+    "@node-rs/jieba-android-arm64":
+      optional: true
+    "@node-rs/jieba-darwin-arm64":
+      optional: true
+    "@node-rs/jieba-darwin-x64":
+      optional: true
+    "@node-rs/jieba-freebsd-x64":
+      optional: true
+    "@node-rs/jieba-linux-arm-gnueabihf":
+      optional: true
+    "@node-rs/jieba-linux-arm64-gnu":
+      optional: true
+    "@node-rs/jieba-linux-arm64-musl":
+      optional: true
+    "@node-rs/jieba-linux-x64-gnu":
+      optional: true
+    "@node-rs/jieba-linux-x64-musl":
+      optional: true
+    "@node-rs/jieba-win32-arm64-msvc":
+      optional: true
+    "@node-rs/jieba-win32-ia32-msvc":
+      optional: true
+    "@node-rs/jieba-win32-x64-msvc":
+      optional: true
+  checksum: 47108c5e84993ba2ddbc1d922ecb840b74668d61ff8ec83137a300c02e6c97748e64d98f23484dce7d1aee9d00dcf3d1921ccb5375b83ed8474650d0fc1e7e60
   languageName: node
   linkType: hard
 
@@ -6036,7 +6213,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cheerio@npm:^1.0.0-rc.12":
+"cheerio@npm:^1.0.0-rc.12, cheerio@npm:^1.0.0-rc.3":
   version: 1.0.0-rc.12
   resolution: "cheerio@npm:1.0.0-rc.12"
   dependencies:
@@ -6209,7 +6386,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:^1.2.1":
+"clsx@npm:^1.1.1, clsx@npm:^1.2.1":
   version: 1.2.1
   resolution: "clsx@npm:1.2.1"
   checksum: 30befca8019b2eb7dbad38cff6266cf543091dae2825c856a62a8ccf2c3ab9c2907c4d12b288b73101196767f66812365400a227581484a05f968b0307cfaf12
@@ -6882,7 +7059,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4":
+"debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.2.0, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4":
   version: 4.3.4
   resolution: "debug@npm:4.3.4"
   dependencies:
@@ -8363,7 +8540,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:^10.1.0":
+"fs-extra@npm:^10.0.0, fs-extra@npm:^10.1.0":
   version: 10.1.0
   resolution: "fs-extra@npm:10.1.0"
   dependencies:
@@ -8757,7 +8934,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graceful-fs@npm:^4.1.2, graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.4, graceful-fs@npm:^4.2.6, graceful-fs@npm:^4.2.9":
+"graceful-fs@npm:^4.1.11, graceful-fs@npm:^4.1.2, graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.4, graceful-fs@npm:^4.2.6, graceful-fs@npm:^4.2.9":
   version: 4.2.11
   resolution: "graceful-fs@npm:4.2.11"
   checksum: ac85f94da92d8eb6b7f5a8b20ce65e43d66761c55ce85ac96df6865308390da45a8d3f0296dd3a663de65d30ba497bd46c696cc1e248c72b13d6d567138a4fc7
@@ -9274,6 +9451,13 @@ __metadata:
   bin:
     image-size: bin/image-size.js
   checksum: 01745fdb47f87cecf538e69c63f9adc5bfab30a345345c2de91105f3afbd1bfcfba1256af02bf3323077b33b0004469a837e077bf0cbb9c907e9c1e9e7547585
+  languageName: node
+  linkType: hard
+
+"immediate@npm:^3.2.3":
+  version: 3.3.0
+  resolution: "immediate@npm:3.3.0"
+  checksum: 634b4305101e2452eba6c07d485bf3e415995e533c94b9c3ffbc37026fa1be34def6e4f2276b0dc2162a3f91628564a4bfb26280278b89d3ee54624e854d2f5f
   languageName: node
   linkType: hard
 
@@ -10694,6 +10878,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"klaw-sync@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "klaw-sync@npm:6.0.0"
+  dependencies:
+    graceful-fs: ^4.1.11
+  checksum: 0da397f8961313c3ef8f79fb63af9002cde5a8fb2aeb1a37351feff0dd6006129c790400c3f5c3b4e757bedcabb13d21ec0a5eaef5a593d59515d4f2c291e475
+  languageName: node
+  linkType: hard
+
 "kleur@npm:^3.0.3":
   version: 3.0.3
   resolution: "kleur@npm:3.0.3"
@@ -10936,6 +11129,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lunr-languages@npm:^1.4.0":
+  version: 1.13.0
+  resolution: "lunr-languages@npm:1.13.0"
+  checksum: 2572437606228bc73d6a65b192265fc1459d93dd45e0cad9fe9a0dc152ffadf758ce402268cfbcd185e5776a86b6afc6e191c1ff469e30445337572af8223740
+  languageName: node
+  linkType: hard
+
+"lunr@npm:^2.3.9":
+  version: 2.3.9
+  resolution: "lunr@npm:2.3.9"
+  checksum: 176719e24fcce7d3cf1baccce9dd5633cd8bdc1f41ebe6a180112e5ee99d80373fe2454f5d4624d437e5a8319698ca6837b9950566e15d2cae5f2a543a3db4b8
+  languageName: node
+  linkType: hard
+
 "magic-string@npm:^0.27.0":
   version: 0.27.0
   resolution: "magic-string@npm:0.27.0"
@@ -11000,6 +11207,13 @@ __metadata:
   dependencies:
     tmpl: 1.0.5
   checksum: b38a025a12c8146d6eeea5a7f2bf27d51d8ad6064da8ca9405fcf7bf9b54acd43e3b30ddd7abb9b1bfa4ddb266019133313482570ddb207de568f71ecfcf6060
+  languageName: node
+  linkType: hard
+
+"mark.js@npm:^8.11.1":
+  version: 8.11.1
+  resolution: "mark.js@npm:8.11.1"
+  checksum: aa6b9ae1c67245348d5b7abd253ef2acd6bb05c6be358d7d192416d964e42665fc10e0e865591c6f93ab9b57e8da1f23c23216e8ebddb580905ea7a0c0df15d4
   languageName: node
   linkType: hard
 
@@ -15643,6 +15857,7 @@ __metadata:
     "@docusaurus/core": ^2.4.1
     "@docusaurus/plugin-google-gtag": ^2.4.1
     "@docusaurus/preset-classic": ^2.4.1
+    "@easyops-cn/docusaurus-search-local": ^0.35.0
     "@mdx-js/react": ^1.6.22
     "@svgr/webpack": ^8.1.0
     clsx: ^1.2.1

@@ -28,6 +28,12 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Install
+        run: yarn install --immutable
+      - name: Test
+        run: yarn test
+      - name: Lint
+        run: yarn lint
       - name: Setup .yarnrc.yml
         run: |
           yarn config set npmAuthToken $NPM_TOKEN
@@ -35,12 +41,6 @@ jobs:
           echo //registry.npmjs.org/:_authToken=$NPM_TOKEN > ~/.npmrc
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Install
-        run: yarn install --immutable
-      - name: Test
-        run: yarn test
-      - name: Lint
-        run: yarn lint
       - name: Release
         run: yarn release
         env:

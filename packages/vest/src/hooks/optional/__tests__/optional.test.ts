@@ -1,7 +1,7 @@
+import { TTestSuite } from 'testUtils/TVestMock';
 import { BlankValue } from 'vest-utils';
 import wait from 'wait';
 
-import { TTestSuite } from 'testUtils/TVestMock';
 import * as vest from 'vest';
 
 jest.useFakeTimers();
@@ -125,6 +125,22 @@ describe('optional hook', () => {
         expect(res.isValid()).toBe(true);
       });
 
+      it('Should run the test but omit anyway', () => {
+        const fn = jest.fn(() => false);
+        const suite = vest.create(() => {
+          vest.optional({
+            f1: () => true,
+          });
+
+          vest.test('f1', fn);
+        });
+
+        suite();
+
+        expect(fn).toHaveBeenCalled();
+        expect(suite.hasErrors('f1')).toBe(false);
+      });
+
       describe('example: "any of" test', () => {
         it('Should allow specifying custom optional based on other tests in the suite', () => {
           const suite = vest.create(() => {
@@ -182,6 +198,20 @@ describe('optional hook', () => {
           expect(res.hasErrors('field_1')).toBe(false);
           expect(res.isValid('field_1')).toBe(true);
           expect(res.isValid()).toBe(true);
+        });
+
+        it('Should avoid running the test to begin with', () => {
+          const fn = jest.fn();
+          const suite = vest.create(() => {
+            vest.optional({
+              field_1: true,
+            });
+            vest.test('field_1', fn);
+          });
+
+          suite();
+
+          expect(fn).not.toHaveBeenCalled();
         });
       });
 

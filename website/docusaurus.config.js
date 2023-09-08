@@ -199,14 +199,12 @@ const config = {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },
-      announcementBar: {
-        id: 'vest-5-is-ready',
-        content:
-          '🎉 Vest 5 is ready! <a target="_blank" rel="noopener noreferrer" href="vest-5-is-ready">Try it out now!</a> 🎉',
-        backgroundColor: 'var(--announcement-bar-background)',
-        textColor: 'var(--announcement-bar-color)',
-        isCloseable: false,
-      },
+      // announcementBar: {
+      //   id: 'announcementBar-1',
+      //   content: '',
+      //   textColor: 'var(--announcement-bar-color)',
+      //   isCloseable: false,
+      // },
       _algolia: {
         // temporary disabled until the index gets updated
         // The application ID provided by Algolia

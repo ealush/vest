@@ -16,7 +16,7 @@ echo "Checking out new local stable branch"
 git checkout -b $STABLE_BRANCH
 
 echo "Commiting"
-git add .
+git add -A
 git commit -m "$1" -m "$2"
 
 echo "Pushing to $STABLE_BRANCH"

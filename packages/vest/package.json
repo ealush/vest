@@ -9,6 +9,23 @@
   "unpkg": "./dist/umd/vest.production.js",
   "jsdelivr": "./dist/umd/vest.production.js",
   "types": "./types/vest.d.ts",
+  "keywords": [
+    "Form validation",
+    "Unit testing",
+    "Framework-agnostic",
+    "Validation",
+    "Declarative",
+    "Asynchronous validations",
+    "Async validations",
+    "Testing",
+    "Data validation",
+    "Form validation",
+    "React Validation",
+    "Angular Validation",
+    "Vue Validation",
+    "Svelte Validation",
+    "nodejs Validation"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ealush/vest.git",

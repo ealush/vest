@@ -140,6 +140,8 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     return getFailures(summary, Severity.WARNINGS, fieldName);
   }
 
+  function getWarning(): Maybe<SummaryFailure<F, G>>;
+  function getWarning(fieldName: F): Maybe<string>;
   function getWarning(fieldName?: F): GetSingularResponse<F, G> {
     return getFailure<F, G>(Severity.WARNINGS, summary, fieldName as F);
   }
@@ -150,6 +152,8 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     return getFailures(summary, Severity.ERRORS, fieldName);
   }
 
+  function getError(): Maybe<SummaryFailure<F, G>>;
+  function getError(fieldName: F): Maybe<string>;
   function getError(fieldName?: F): GetSingularResponse<F, G> {
     return getFailure<F, G>(Severity.ERRORS, summary, fieldName as F);
   }
@@ -177,16 +181,24 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
 }
 
 export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
+  getWarning(): Maybe<SummaryFailure<F, G>>;
+  getWarning(fieldName: F): Maybe<string>;
   getWarning(fieldName?: F): GetSingularResponse<F, G>;
+  getError(): Maybe<SummaryFailure<F, G>>;
+  getError(fieldName: F): Maybe<string>;
   getError(fieldName?: F): GetSingularResponse<F, G>;
-  getErrors(fieldName: F): string[];
   getErrors(): FailureMessages;
+  getErrors(fieldName: F): string[];
+  getErrors(fieldName?: F): string[] | FailureMessages;
   getWarnings(): FailureMessages;
   getWarnings(fieldName: F): string[];
-  getErrorsByGroup(groupName: G, fieldName: F): string[];
+  getWarnings(fieldName?: F): string[] | FailureMessages;
   getErrorsByGroup(groupName: G): FailureMessages;
+  getErrorsByGroup(groupName: G, fieldName: F): string[];
+  getErrorsByGroup(groupName: G, fieldName?: F): string[] | FailureMessages;
   getWarningsByGroup(groupName: G): FailureMessages;
   getWarningsByGroup(groupName: G, fieldName: F): string[];
+  getWarningsByGroup(groupName: G, fieldName?: F): string[] | FailureMessages;
   hasErrors(fieldName?: F): boolean;
   hasWarnings(fieldName?: F): boolean;
   hasErrorsByGroup(groupName: G, fieldName?: F): boolean;

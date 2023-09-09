@@ -1,5 +1,5 @@
 {
-  "version": "5.0.1",
+  "version": "5.0.2",
   "license": "MIT",
   "main": "./dist/cjs/n4s.js",
   "types": "./types/n4s.d.ts",
@@ -10,7 +10,11 @@
     "vest",
     "enforce",
     "n4s",
-    "validation"
+    "validation",
+    "assertion",
+    "schema validation",
+    "form validation",
+    "validation library"
   ],
   "scripts": {
     "test": "vx test",

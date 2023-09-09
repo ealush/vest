@@ -1,6 +1,6 @@
 {
   "name": "vest",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "Declarative Form Validations Framework",
   "license": "MIT",
   "author": "ealush",
@@ -24,7 +24,8 @@
     "Angular Validation",
     "Vue Validation",
     "Svelte Validation",
-    "nodejs Validation"
+    "nodejs Validation",
+    "enforce"
   ],
   "repository": {
     "type": "git",

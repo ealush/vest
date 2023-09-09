@@ -3,6 +3,7 @@
 git config --global user.email $EMAIL_ADDRESS --replace-all
 git config --global user.name $GIT_NAME
 
+
 echo "Fetching stable for reference"
 git fetch https://$PUBLIC_REPO_TOKEN@github.com/$GITHUB_REPOSITORY.git $STABLE_BRANCH
 
@@ -11,6 +12,9 @@ git rebase $STABLE_BRANCH
 
 echo "Deleting local stable branch"
 git branch -D $STABLE_BRANCH || echo "Failed to delete $STABLE_BRANCH. Continuing..."
+
+echo "Rebuilding yarn.lock"
+yarn
 
 echo "Checking out new local stable branch"
 git checkout -b $STABLE_BRANCH

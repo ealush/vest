@@ -102,6 +102,7 @@ function genOutput({
   const base = {
     exports: 'auto',
     name: moduleName,
+    sourcemap: true,
   };
 
   // creates "globals" from the installed internal packages

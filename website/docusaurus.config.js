@@ -16,12 +16,12 @@ const config = {
   onBrokenMarkdownLinks: 'warn',
   organizationName: 'ealush', // Usually your GitHub org/user name.
   plugins: [
-    [
-      require.resolve('@easyops-cn/docusaurus-search-local'),
-      {
-        indexBlog: false,
-      },
-    ],
+    // [
+    //   require.resolve('@easyops-cn/docusaurus-search-local'),
+    //   {
+    //     indexBlog: false,
+    //   },
+    // ],
     [
       '@docusaurus/plugin-google-gtag',
       {
@@ -205,7 +205,7 @@ const config = {
       //   textColor: 'var(--announcement-bar-color)',
       //   isCloseable: false,
       // },
-      _algolia: {
+      algolia: {
         // temporary disabled until the index gets updated
         // The application ID provided by Algolia
         appId: '08EPW2MDNA',

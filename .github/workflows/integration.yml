@@ -40,7 +40,7 @@ jobs:
           yarn config set npmAlwaysAuth true
           echo //registry.npmjs.org/:_authToken=$NPM_TOKEN > ~/.npmrc
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
       - name: Release
         run: yarn release
         env:
@@ -54,4 +54,4 @@ jobs:
           PUBLIC_REPO_TOKEN: ${{secrets.PUBLIC_REPO_TOKEN}}
           EMAIL_ADDRESS: ${{secrets.EMAIL_ADDRESS}}
           GIT_NAME: ${{secrets.GIT_NAME}}
-          npmAuthToken: ${{secrets.NPM_TOKEN}}
+          npmAuthToken: ${{secrets.NPM_PUBLISH_TOKEN}}

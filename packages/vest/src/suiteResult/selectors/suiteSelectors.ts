@@ -149,7 +149,7 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
 
   function getWarning(): Maybe<SummaryFailure<F, G>>;
   function getWarning(fieldName: F): Maybe<string>;
-  function getWarning(fieldName?: F): GetSingularResponse<F, G> {
+  function getWarning(fieldName?: F): Maybe<SummaryFailure<F, G> | string> {
     return getFailure<F, G>(Severity.WARNINGS, summary, fieldName as F);
   }
 
@@ -161,7 +161,7 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
 
   function getError(): Maybe<SummaryFailure<F, G>>;
   function getError(fieldName: F): Maybe<string>;
-  function getError(fieldName?: F): GetSingularResponse<F, G> {
+  function getError(fieldName?: F): Maybe<SummaryFailure<F, G> | string> {
     return getFailure<F, G>(Severity.ERRORS, summary, fieldName as F);
   }
 
@@ -188,12 +188,12 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
 }
 
 export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
-  getWarning(): Maybe<SummaryFailure<F, G>>;
-  getWarning(fieldName: F): Maybe<string>;
-  getWarning(fieldName?: F): GetSingularResponse<F, G>;
-  getError(): Maybe<SummaryFailure<F, G>>;
-  getError(fieldName: F): Maybe<string>;
-  getError(fieldName?: F): GetSingularResponse<F, G>;
+  getWarning(): SummaryFailure<F, G> | undefined;
+  getWarning(fieldName: F): string | undefined;
+  getWarning(fieldName?: F): SummaryFailure<F, G> | string | undefined;
+  getError(): SummaryFailure<F, G> | undefined;
+  getError(fieldName: F): string | undefined;
+  getError(fieldName?: F): SummaryFailure<F, G> | string | undefined;
   getErrors(): FailureMessages;
   getErrors(fieldName: F): string[];
   getErrors(fieldName?: F): string[] | FailureMessages;
@@ -319,7 +319,3 @@ function getFailure<F extends TFieldName, G extends TGroupName>(
       matchingFieldName(summaryFailure, fieldName)
   )?.message;
 }
-
-type GetSingularResponse<F extends TFieldName, G extends TGroupName> = Maybe<
-  string | SummaryFailure<F, G>
->;

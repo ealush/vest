@@ -1,5 +1,3 @@
-import { Maybe } from 'vest-utils';
-
 import { TIsolateTest } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { WithFieldName } from 'TestTypes';
@@ -10,8 +8,8 @@ export class SummaryFailure<F extends TFieldName, G extends TGroupName>
 {
   constructor(
     public fieldName: F,
-    public message: Maybe<string>,
-    public groupName: Maybe<G>
+    public message: string | undefined,
+    public groupName: G | undefined
   ) {}
 
   static fromTestObject<F extends TFieldName, G extends TGroupName>(

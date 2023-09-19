@@ -33,7 +33,7 @@ To bring back the previous behavior, use the `mode` function that alters the exe
 + import {create, test, mode, Modes} from 'vest';
 
 const suite = create(() => {
-+ eager(Modes.ALL);
++ mode(Modes.ALL);
 
   test(/*...*/);
 });

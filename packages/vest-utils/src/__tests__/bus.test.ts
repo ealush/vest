@@ -78,4 +78,50 @@ describe('bus', () => {
     expect(spy1).not.toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
   });
+
+  describe('"ANY" wildcard (*)', () => {
+    it('Should run the wildcard handler on any event', () => {
+      const bus = createBus();
+      const spy1 = jest.fn();
+      const spy2 = jest.fn();
+      const spy3 = jest.fn();
+      bus.on('t1', spy1);
+      bus.on('t2', spy2);
+      bus.on('*', spy3);
+      expect(spy1).not.toHaveBeenCalled();
+      expect(spy2).not.toHaveBeenCalled();
+      expect(spy3).not.toHaveBeenCalled();
+      bus.emit('t1');
+      expect(spy1).toHaveBeenCalledTimes(1);
+      expect(spy2).toHaveBeenCalledTimes(0);
+      expect(spy3).toHaveBeenCalledTimes(1);
+      bus.emit('t2');
+      expect(spy1).toHaveBeenCalledTimes(1);
+      expect(spy2).toHaveBeenCalledTimes(1);
+      expect(spy3).toHaveBeenCalledTimes(2);
+    });
+
+    it('Should call the wildcard last, regardless of when it was defined', () => {
+      const bus = createBus();
+      const spy1 = jest.fn();
+      const spy2 = jest.fn();
+      const spy3 = jest.fn();
+      const spy4 = jest.fn();
+      bus.on('t1', spy1);
+      bus.on('*', spy4);
+      bus.on('t1', spy2);
+      bus.on('t1', spy3);
+      bus.emit('t1');
+      const invocations = [spy1, spy2, spy3, spy4]
+        .map(i => i.mock.invocationCallOrder[0])
+        .sort();
+
+      expect(invocations).toEqual([
+        spy1.mock.invocationCallOrder[0],
+        spy2.mock.invocationCallOrder[0],
+        spy3.mock.invocationCallOrder[0],
+        spy4.mock.invocationCallOrder[0],
+      ]);
+    });
+  });
 });

@@ -65,7 +65,8 @@ function createSuite<
   // We do this within the VestRuntime so that the suite methods
   // will be bound to the suite's stateRef and be able to access it.
   return VestRuntime.Run(stateRef, () => {
-    useInitVestBus();
+    // @vx-allow use-use
+    const VestBus = useInitVestBus();
 
     return assign(
       // We're also binding the suite to the stateRef, so that the suite
@@ -80,6 +81,7 @@ function createSuite<
         reset: Bus.usePrepareEmitter(Events.RESET_SUITE),
         resetField: Bus.usePrepareEmitter<string>(Events.RESET_FIELD),
         resume: VestRuntime.persist(useLoadSuite),
+        subscribe: VestBus.subscribe,
         ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
         ...getTypedMethods<F, G>(),
       }

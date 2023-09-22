@@ -44,6 +44,7 @@ keywords:
     promisify,
     compose,
     staticSuite,
+    subscrib,
   ]
 ---
 
@@ -59,6 +60,7 @@ Below is a list of all the API functions exposed by Vest.
   - [suite.remove](./writing_your_suite/vests_suite.md#removing-a-single-field-from-the-suite-state) - Removes a single field from the suite.
   - [suite.reset](./writing_your_suite/vests_suite.md#cleaning-up-our-validation-state) - Resets the suite to its initial state.
   - [suite.resetField](./writing_your_suite/vests_suite.md#cleaning-up-our-validation-state) - Resets a single field to an untested state.
+  - [suite.subscribe](./writing_your_suite/vests_suite.md#subscribing-to-suite-state-changes) - Subscribes to suite state changes.
 
 - [staticSuite](./server_side_validations.md) - creates a stateless suite that is used for server side validations.
 

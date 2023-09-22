@@ -1,3 +1,4 @@
+import { CB } from 'vest-utils';
 import { Bus } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
@@ -13,7 +14,7 @@ import { VestTest } from 'VestTest';
 import { useOmitOptionalFields } from 'omitOptionalFields';
 import { useRunDoneCallbacks, useRunFieldCallbacks } from 'runCallbacks';
 
-// eslint-disable-next-line max-statements
+// eslint-disable-next-line max-statements, max-lines-per-function
 export function useInitVestBus() {
   const VestBus = Bus.useBus();
 
@@ -74,9 +75,17 @@ export function useInitVestBus() {
     useResetSuite();
   });
 
-  return VestBus;
+  return {
+    subscribe,
+  };
 
-  function on(event: Events, cb: (...args: any[]) => void) {
+  function subscribe(cb: CB) {
+    return VestBus.on('*', () => {
+      cb();
+    }).off;
+  }
+
+  function on(event: Events | '*', cb: (...args: any[]) => void) {
     VestBus.on(event, (...args: any[]) => {
       // This is more concise, but it might be an overkill
       // if we're adding events that don't need to invalidate the cache

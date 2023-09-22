@@ -1,27 +1,31 @@
 import type { CB } from 'utilityTypes';
 
+const EVENT_WILDCARD = '*';
+
 export function createBus(): BusType {
   const listeners: Record<string, CB[]> = {};
 
   return {
     emit(event: string, data?: any) {
-      listener(event).forEach(handler => {
-        handler(data);
-      });
+      getListeners(event)
+        .concat(getListeners(EVENT_WILDCARD))
+        .forEach(handler => {
+          handler(data);
+        });
     },
 
     on(event: string, handler: CB): OnReturn {
-      listeners[event] = listener(event).concat(handler);
+      listeners[event] = getListeners(event).concat(handler);
 
       return {
         off() {
-          listeners[event] = listener(event).filter(h => h !== handler);
+          listeners[event] = getListeners(event).filter(h => h !== handler);
         },
       };
     },
   };
 
-  function listener(event: string): CB[] {
+  function getListeners(event: string): CB[] {
     return listeners[event] || [];
   }
 }

@@ -39,6 +39,17 @@ describe('Test Function Payload', () => {
         await expect(callPayload(testFn).signal.aborted).toBe(true);
         await expect(callPayload(testFn, 1, 0).signal.aborted).toBe(false);
       });
+
+      it('Should set the reason to `canceled`', async () => {
+        const testFn = jest.fn().mockResolvedValue(undefined);
+        const suite = vest.create(() => {
+          vest.test('field_1', testFn);
+        });
+        suite();
+        suite();
+
+        await expect(callPayload(testFn).signal.reason).toBe('CANCELED');
+      });
     });
 
     describe('Multiple async tests', () => {

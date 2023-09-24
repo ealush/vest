@@ -142,7 +142,7 @@ export class VestTest {
 
   static cancel(test: TIsolateTest): void {
     VestTest.setStatus(test, TestStatus.CANCELED);
-    VestTest.getData(test).abortController.abort();
+    VestTest.getData(test).abortController.abort(TestStatus.CANCELED);
   }
 
   static omit(test: TIsolateTest): void {

@@ -3,6 +3,7 @@ import wait from 'wait';
 import { dummyTest } from '../testUtils/testDummy';
 import { TestPromise } from '../testUtils/testPromise';
 
+import { TIsolateTest } from 'IsolateTest';
 import { Modes } from 'Modes';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { VestTest } from 'VestTest';
@@ -119,7 +120,7 @@ describe('Stateful async tests', () => {
     }));
 
   it('Should discard of re-tested async tests', async () => {
-    const tests: Array<vest.IsolateTest> = [];
+    const tests: Array<TIsolateTest> = [];
     const control = jest.fn();
     const suite = vest.create(() => {
       tests.push(

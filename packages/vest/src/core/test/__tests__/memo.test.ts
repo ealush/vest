@@ -1,9 +1,10 @@
-import { VestTest } from 'VestTest';
 import wait from 'wait';
 
 import { TestPromise } from '../../../testUtils/testPromise';
 
+import { TIsolateTest } from 'IsolateTest';
 import { Modes } from 'Modes';
+import { VestTest } from 'VestTest';
 import promisify from 'promisify';
 import * as vest from 'vest';
 import { test as vestTest, enforce } from 'vest';
@@ -118,7 +119,7 @@ describe('test.memo', () => {
     describe('Test is canceled', () => {
       it('Should refresh', async () => {
         let count = 0;
-        const tests: vest.IsolateTest[] = [];
+        const tests: TIsolateTest[] = [];
         const suite = vest.create(() => {
           count++;
 

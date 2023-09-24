@@ -2,13 +2,14 @@ import { TTestSuite, TVestMock } from '../../../testUtils/TVestMock';
 import mockThrowError from '../../../testUtils/mockThrowError';
 import { dummyTest } from '../../../testUtils/testDummy';
 
+import { TIsolateTest } from 'IsolateTest';
 import { Modes } from 'Modes';
 import * as vest from 'vest';
 
 describe('Merging of previous test runs', () => {
   let suite: TTestSuite;
   let counter = 0;
-  let testContainer: vest.IsolateTest[][] = [];
+  let testContainer: TIsolateTest[][] = [];
 
   beforeEach(() => {
     counter = 0;

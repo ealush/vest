@@ -47,6 +47,7 @@ export function IsolateTestBase() {
   return {
     severity: TestSeverity.Error,
     status: TestStatus.UNTESTED,
+    abortController: new AbortController(),
   };
 }
 
@@ -57,6 +58,7 @@ export type IsolateTestPayload<
   severity: TestSeverity;
   status: TestStatus;
   asyncTest?: AsyncTest;
+  abortController: AbortController;
 };
 
 type CommonTestFields<

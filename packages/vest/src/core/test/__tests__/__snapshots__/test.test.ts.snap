@@ -6,6 +6,15 @@ exports[`Test Vest's \`test\` function test params creates a test without a key 
   "allowReorder": undefined,
   "children": null,
   "data": {
+    "abortController": AbortController {
+      Symbol(signal): AbortSignal {
+        Symbol(kEvents): Map {},
+        Symbol(events.maxEventTargetListeners): 10,
+        Symbol(events.maxEventTargetListenersWarned): false,
+        Symbol(kAborted): false,
+        Symbol(kReason): undefined,
+      },
+    },
     "fieldName": "field_name",
     "message": "failure message",
     "severity": "error",
@@ -73,6 +82,15 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
   "allowReorder": undefined,
   "children": null,
   "data": {
+    "abortController": AbortController {
+      Symbol(signal): AbortSignal {
+        Symbol(kEvents): Map {},
+        Symbol(events.maxEventTargetListeners): 10,
+        Symbol(events.maxEventTargetListenersWarned): false,
+        Symbol(kAborted): false,
+        Symbol(kReason): undefined,
+      },
+    },
     "fieldName": "field_name",
     "severity": "error",
     "status": "PASSING",
@@ -141,6 +159,15 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
   "allowReorder": undefined,
   "children": null,
   "data": {
+    "abortController": AbortController {
+      Symbol(signal): AbortSignal {
+        Symbol(kEvents): Map {},
+        Symbol(events.maxEventTargetListeners): 10,
+        Symbol(events.maxEventTargetListenersWarned): false,
+        Symbol(kAborted): false,
+        Symbol(kReason): undefined,
+      },
+    },
     "fieldName": "field_name",
     "severity": "error",
     "status": "PASSING",

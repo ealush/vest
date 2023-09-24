@@ -40,10 +40,10 @@ function runSyncTest(testObject: TIsolateTest): TestResult {
   return SuiteContext.run({ currentTest: testObject }, () => {
     let result: TestResult;
 
-    const { message, testFn } = VestTest.getData(testObject);
+    const { message, testFn, abortController } = VestTest.getData(testObject);
 
     try {
-      result = testFn();
+      result = testFn(abortController.signal);
     } catch (error) {
       if (shouldUseErrorAsMessage(message, error)) {
         VestTest.getData(testObject).message = error;

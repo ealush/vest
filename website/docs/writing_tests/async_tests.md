@@ -20,3 +20,21 @@ test('name', 'Already Taken', async () => {
   return await doesUserExist(user);
 });
 ```
+
+## Using AbortSignal
+
+> Since 5.1.0
+
+Each Vest test is passed as an argument an `AbortSignal` object. Vest internally sets the AbortSignal `aborted` property to true when the test is canceled.
+
+A test is canceled when running the same test again before its previous run has completed.
+
+You can use the AbortSignal to stop the execution of your async test, or pass it to your fetch request.
+
+[Read more on AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal).
+
+```js
+test('name', 'Already Taken', async signal => {
+  // ...
+});
+```

@@ -1,6 +1,6 @@
 import * as vest from 'vest';
 
-describe('AsyncTests', () => {
+describe('Test Function Payload', () => {
   describe('AbortSignal', () => {
     it('Should pass abort signal to test functions', () => {
       const testFnSync = jest.fn();
@@ -11,8 +11,8 @@ describe('AsyncTests', () => {
       });
       suite();
 
-      expect(testFnSync.mock.calls[0][0]).toBeInstanceOf(AbortSignal);
-      expect(testFnAsync.mock.calls[0][0]).toBeInstanceOf(AbortSignal);
+      expect(callPayload(testFnSync).signal).toBeInstanceOf(AbortSignal);
+      expect(callPayload(testFnAsync).signal).toBeInstanceOf(AbortSignal);
     });
 
     describe('When test is not canceled', () => {
@@ -23,7 +23,7 @@ describe('AsyncTests', () => {
         });
         suite();
 
-        await expect(testFn.mock.calls[0][0].aborted).toBe(false);
+        await expect(callPayload(testFn).signal.aborted).toBe(false);
       });
     });
 
@@ -36,8 +36,8 @@ describe('AsyncTests', () => {
         suite();
         suite();
 
-        await expect(testFn.mock.calls[0][0].aborted).toBe(true);
-        await expect(testFn.mock.calls[1][0].aborted).toBe(false);
+        await expect(callPayload(testFn).signal.aborted).toBe(true);
+        await expect(callPayload(testFn, 1, 0).signal.aborted).toBe(false);
       });
     });
 
@@ -56,9 +56,17 @@ describe('AsyncTests', () => {
         suite();
         suite('field_1');
 
-        await expect(testFn1.mock.calls[0][0].aborted).toBe(true);
-        expect(testFn2.mock.calls[0][0].aborted).toBe(false);
+        await expect(callPayload(testFn1).signal.aborted).toBe(true);
+        expect(callPayload(testFn2).signal.aborted).toBe(false);
       });
     });
   });
 });
+
+function callPayload(
+  fn: jest.Mock<any, any, any>,
+  call: number = 0,
+  arg: number = 0
+) {
+  return fn.mock.calls[call][arg];
+}

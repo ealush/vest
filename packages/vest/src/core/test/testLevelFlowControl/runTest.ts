@@ -43,7 +43,7 @@ function runSyncTest(testObject: TIsolateTest): TestResult {
     const { message, testFn, abortController } = VestTest.getData(testObject);
 
     try {
-      result = testFn(abortController.signal);
+      result = testFn({ signal: abortController.signal });
     } catch (error) {
       if (shouldUseErrorAsMessage(message, error)) {
         VestTest.getData(testObject).message = error;

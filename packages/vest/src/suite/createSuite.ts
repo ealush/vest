@@ -73,7 +73,7 @@ function createSuite<
       VestRuntime.persist(suite),
       {
         dump: VestRuntime.persist(
-          () => VestRuntime.useHistoryRoot()[0] as TIsolateSuite
+          () => VestRuntime.useAvailableRoot() as TIsolateSuite
         ),
         get: VestRuntime.persist(useCreateSuiteResult),
         remove: Bus.usePrepareEmitter<string>(Events.REMOVE_FIELD),

@@ -5,10 +5,10 @@ git config --global user.name $GIT_NAME
 
 
 echo "Fetching stable for reference"
-git fetch https://$PUBLIC_REPO_TOKEN@github.com/$GITHUB_REPOSITORY.git $STABLE_BRANCH
+git fetch https://$PUBLIC_REPO_TOKEN@github.com/$GITHUB_REPOSITORY.git $STABLE_BRANCH || echo "Stable branch doesn't exist"
 
 echo "Rebasing hotfixes"
-git rebase $STABLE_BRANCH
+git rebase $STABLE_BRANCH || echo "No hotfixes to rebase"
 
 echo "Deleting local stable branch"
 git branch -D $STABLE_BRANCH || echo "Failed to delete $STABLE_BRANCH. Continuing..."

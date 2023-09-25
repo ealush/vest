@@ -1,5 +1,5 @@
 {
-  "version": "5.0.5",
+  "version": "5.0.6",
   "license": "MIT",
   "main": "./dist/cjs/n4s.js",
   "types": "./types/n4s.d.ts",
@@ -21,8 +21,8 @@
     "release": "vx release"
   },
   "dependencies": {
-    "context": "^3.0.12",
-    "vest-utils": "^1.0.3"
+    "context": "^3.0.13",
+    "vest-utils": "^1.1.0"
   },
   "devDependencies": {
     "@types/validator": "^13.11.1",

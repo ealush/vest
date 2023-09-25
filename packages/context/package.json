@@ -1,5 +1,5 @@
 {
-  "version": "3.0.12",
+  "version": "3.0.13",
   "license": "MIT",
   "main": "./dist/cjs/context.js",
   "types": "./types/context.d.ts",
@@ -11,7 +11,7 @@
     "release": "vx release"
   },
   "dependencies": {
-    "vest-utils": "^1.0.3"
+    "vest-utils": "^1.1.0"
   },
   "module": "./dist/es/context.production.js",
   "exports": {

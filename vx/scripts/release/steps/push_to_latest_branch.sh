@@ -13,11 +13,11 @@ git rebase $STABLE_BRANCH || echo "No hotfixes to rebase"
 echo "Deleting local stable branch"
 git branch -D $STABLE_BRANCH || echo "Failed to delete $STABLE_BRANCH. Continuing..."
 
-echo "Rebuilding yarn.lock"
-yarn
-
 echo "Checking out new local stable branch"
 git checkout -b $STABLE_BRANCH
+
+echo "Rebuilding yarn.lock"
+yarn
 
 echo "Commiting"
 git add -A

@@ -3,6 +3,8 @@
 git config --global user.email $EMAIL_ADDRESS --replace-all
 git config --global user.name $GIT_NAME
 
+echo "Going back to root folder"
+cd $GITHUB_WORKSPACE
 
 echo "Fetching stable for reference"
 git fetch https://$PUBLIC_REPO_TOKEN@github.com/$GITHUB_REPOSITORY.git $STABLE_BRANCH || echo "Stable branch doesn't exist"

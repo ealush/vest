@@ -52,3 +52,14 @@ export default create((data = {}) => {
 In this example, we first validate that the `username` field is not empty. If it's empty, we report an error. Next, we use `skipWhen` to skip the verification of the username on the server-side if the `username` field has an error. If the `username` field does not have an error, we perform the server-side verification using a function called `doesUserExist`, which returns a promise that resolves to `true` if the username already exists, or `false` otherwise.
 
 Using `skipWhen` allows us to conditionally skip tests, depending on the state of the validation result. In this case, it helps us avoid unnecessary server-side requests if the `username` field is empty, or if it already has an error.
+
+:::caution IMPORTANT
+The code within skipWhen will always run, regardless of whether the condition is met or not. `skipWhen` only affects the validation result, but if you call a function within `skipWhen`, it will run regardless of the condition.
+
+```js
+skipWhen(true, () => {
+  console.log('This will always run');
+});
+```
+
+:::

@@ -75,3 +75,36 @@ omitWhen(
   }
 );
 ```
+
+```js
+omitWhen(
+  (value, values) => {
+    if (!values) {
+      return false;
+    }
+    return values.length === 1;
+  },
+  ({ value, values, field }) => {
+    if (!values) {
+      return false;
+    }
+
+    if (values.length === 1 && values[0] === value) {
+      return true;
+    }
+
+    return false;
+  },
+  'You need at least one option',
+);
+```
+:::caution IMPORTANT
+The code within omitWhen will always run, regardless of whether the condition is met or not. `omitWhen` only affects the validation result, but if you call a function within `omitWhen`, it will run regardless of the condition.
+
+```js
+omitWhen(true, () => {
+  console.log('This will always run');
+});
+```
+
+:::

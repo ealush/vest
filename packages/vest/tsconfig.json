@@ -88,6 +88,7 @@
       "matchingFieldName": ["./src/core/test/helpers/matchingFieldName.ts"],
       "VestReconciler": ["./src/core/isolate/VestReconciler.ts"],
       "VestIsolateType": ["./src/core/isolate/VestIsolateType.ts"],
+      "IsolateReconciler": ["./src/core/isolate/IsolateReconciler.ts"],
       "isSameProfileTest": [
         "./src/core/isolate/IsolateTest/isSameProfileTest.ts"
       ],

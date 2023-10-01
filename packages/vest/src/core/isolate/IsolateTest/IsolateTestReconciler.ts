@@ -1,3 +1,4 @@
+import { IsolateReconciler } from 'IsolateReconciler';
 import { Maybe, deferThrow, text } from 'vest-utils';
 import { IsolateInspector, Reconciler } from 'vestjs-runtime';
 import type { TIsolate } from 'vestjs-runtime';
@@ -10,20 +11,25 @@ import { castIsolateTest, isIsolateTest } from 'isIsolateTest';
 import { isSameProfileTest } from 'isSameProfileTest';
 import { useVerifyTestRun } from 'verifyTestRun';
 
-// @vx-allow use-use
-export function IsolateTestReconciler(
-  currentNode: TIsolateTest,
-  historyNode: TIsolateTest
-): TIsolateTest {
-  const reconcilerOutput = usePickNode(historyNode, currentNode);
+export class IsolateTestReconciler extends IsolateReconciler {
+  static match(currentNode: TIsolate, historyNode: TIsolate): boolean {
+    return isIsolateTest(currentNode) && isIsolateTest(historyNode);
+  }
 
-  cancelOverriddenPendingTestOnTestReRun(
-    reconcilerOutput,
-    currentNode,
-    historyNode
-  );
+  static reconcile(
+    currentNode: TIsolateTest,
+    historyNode: TIsolateTest
+  ): TIsolateTest {
+    const reconcilerOutput = usePickNode(historyNode, currentNode);
 
-  return reconcilerOutput;
+    cancelOverriddenPendingTestOnTestReRun(
+      reconcilerOutput,
+      currentNode,
+      historyNode
+    );
+
+    return reconcilerOutput;
+  }
 }
 
 function usePickNode(

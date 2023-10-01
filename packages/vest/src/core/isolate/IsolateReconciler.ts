@@ -1,7 +1,7 @@
 import { TIsolate } from 'vestjs-runtime';
 
 export abstract class IsolateReconciler {
-  static match(currentNode: TIsolate, historyNode: TIsolate): boolean {
+  static match(_currentNode: TIsolate, _historyNode: TIsolate): boolean {
     return false;
   }
 

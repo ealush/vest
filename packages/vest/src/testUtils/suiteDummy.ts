@@ -90,14 +90,14 @@ export function untested(fields?: OneOrMoreOf<string>) {
 
 function createSuiteRunResult(
   fieldNames: Maybe<string[] | string>,
-  callback: (fieldName?: string) => void // eslint-disable-line no-unused-vars
+  callback: (_fieldName?: string) => void
 ) {
   return createSuite(fieldNames, callback)();
 }
 
 function createSuite(
   fieldNames: Maybe<string[] | string> = 'field_1',
-  callback: (fieldName?: string) => void // eslint-disable-line no-unused-vars
+  callback: (_fieldName?: string) => void
 ) {
   return create(() => {
     asArray(fieldNames).forEach(fieldName => callback(fieldName));

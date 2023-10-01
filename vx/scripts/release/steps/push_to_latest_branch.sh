@@ -21,6 +21,10 @@ git checkout -b $STABLE_BRANCH
 echo "Rebuilding yarn.lock"
 yarn
 
+echo "Cleaning up auth token"
+yarn config unset npmAuthToken
+yarn config unset npmAlwaysAuth
+
 echo "Commiting"
 git add -A
 git commit -m "$1" -m "$2"

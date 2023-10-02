@@ -2,7 +2,7 @@
 sidebar_position: 2
 title: Async Validations
 description: Here's how to write async tests.
-keywords: [Vest, Async, Validations]
+keywords: [Vest, Async, Validations, AbortSignal, AbortController, lazy]
 ---
 
 # Writing Asynchronous Tests
@@ -25,7 +25,7 @@ test('name', 'Already Taken', async () => {
 
 > Since 5.1.0
 
-Each test function is passed an object with a `signal` property. This signal is an [AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) which can be used to terminate your async operations once a test is canceled.
+Each test function is passed an object with a `signal` property. This signal is an [AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) which can be used to terminate your async operations once a test is canceled. Vest creates an AbortController for each test, and passes its signal to the test function.
 
 The AbortSignal has a boolean `aborted` property, by which you can determine whether the test was canceled or not.
 

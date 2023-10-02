@@ -333,14 +333,30 @@ describe('done', () => {
   });
 
   describe('When no tests are run', () => {
-    it('Should avoid calling the callback', () => {
+    it('Should run the callback', () => {
       const cb = jest.fn();
 
       const suite = vest.create(() => {});
 
       suite().done(cb);
 
-      expect(cb).not.toHaveBeenCalled();
+      expect(cb).toHaveBeenCalled();
+    });
+
+    describe('When tests are omitted', () => {
+      it('Should run the callback', () => {
+        const cb = jest.fn();
+
+        const suite = vest.create(() => {
+          vest.optional({ f1: true });
+
+          vest.test('f1', () => {});
+        });
+
+        suite().done(cb);
+        expect(suite.get().tests.f1.testCount).toBe(0);
+        expect(cb).toHaveBeenCalled();
+      });
     });
   });
 

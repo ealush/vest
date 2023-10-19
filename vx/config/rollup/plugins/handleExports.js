@@ -84,7 +84,7 @@ function writePackageJson(name, exportPath, { namespace } = {}) {
 function generatePackageJson(moduleName, namespace) {
   if (!isMainExport(moduleName)) {
     return {
-      ...genPackgeJsonBase(moduleName, {
+      ...genPackageJsonBase(moduleName, {
         namespace,
         isNested: true,
       }),
@@ -93,7 +93,7 @@ function generatePackageJson(moduleName, namespace) {
   }
 
   return {
-    ...genPackgeJsonBase(moduleName, { namespace }),
+    ...genPackageJsonBase(moduleName, { namespace }),
     ...genRepoDetails(moduleName),
     exports: {
       ...genExportedFilesInMainPackageJson(),
@@ -102,7 +102,7 @@ function generatePackageJson(moduleName, namespace) {
   };
 }
 
-function genPackgeJsonBase(moduleName, { namespace, isNested = false }) {
+function genPackageJsonBase(moduleName, { namespace, isNested = false }) {
   let prefix = '.';
   if (isNested) {
     prefix = namespace ? '../..' : '..';

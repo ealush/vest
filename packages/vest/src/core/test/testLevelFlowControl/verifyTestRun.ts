@@ -1,4 +1,4 @@
-import { useIsOptionalFiedApplied } from 'optional';
+import { useIsOptionalFieldApplied } from 'optional';
 
 import { TIsolateTest } from 'IsolateTest';
 import { TFieldName } from 'SuiteResultTypes';
@@ -30,7 +30,7 @@ export function useVerifyTestRun(
 }
 
 function useShouldOmit(fieldName: TFieldName): boolean {
-  return useWithinActiveOmitWhen() || useIsOptionalFiedApplied(fieldName);
+  return useWithinActiveOmitWhen() || useIsOptionalFieldApplied(fieldName);
 }
 
 function skipTestAndReturn(testNode: TIsolateTest): TIsolateTest {

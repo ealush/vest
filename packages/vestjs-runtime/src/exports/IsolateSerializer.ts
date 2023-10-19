@@ -85,7 +85,7 @@ export class IsolateSerializer {
     invariant(
       hasOwnProperty(node, IsolateKeys.Type) ||
         hasOwnProperty(node, KeyToMinified[IsolateKeys.Type]),
-      text(ErrorStrings.IVALID_ISOLATE_CANNOT_PARSE)
+      text(ErrorStrings.INVALID_ISOLATE_CANNOT_PARSE)
     );
   }
 }

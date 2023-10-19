@@ -24,24 +24,24 @@ The context package exports these two functions:
 
 Create context is the minimal implementation of context. It allows propagation of values down in your function call.
 
-createContext takes a single argument - defaultContextValue. This value is used when not withing a running context.
+createContext takes a single argument - defaultContextValue. This value is used when not within a running context.
 
 ### Arguments
 
-| Argument            | Type  | Optional? | Description                                                  |
-| ------------------- | ----- | --------- | ------------------------------------------------------------ |
-| defaultContextValue | `any` | Yes       | The default value to use when not withing a running context. |
+| Argument            | Type  | Optional? | Description                                                 |
+| ------------------- | ----- | --------- | ----------------------------------------------------------- |
+| defaultContextValue | `any` | Yes       | The default value to use when not within a running context. |
 
 ### Returned object
 
 `createContext` returns an object containing the following functions:
 
-- `use`: Returns the current context value, or the default value when not withing a running context.
+- `use`: Returns the current context value, or the default value when not within a running context.
 - `useX`: Returns the current context, throws an error if not within a running context or the context is undefined. `useX` will throw even if a default value is provided.
 - `run`: Runs the context, passing the given value into the context.
 
 **Note About Typescript Usage**
-For convenience, `use` assumes we're alwyas inside a context. If you want to have runtime safety, you can use `useX` instead to make sure you're excplicitly using a defined context.
+For convenience, `use` assumes we're always inside a context. If you want to have runtime safety, you can use `useX` instead to make sure you're explicitly using a defined context.
 
 ### Usage Example
 

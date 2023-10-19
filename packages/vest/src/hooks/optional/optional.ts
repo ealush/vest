@@ -54,7 +54,7 @@ export function optional<F extends TFieldName>(
   }
 }
 
-export function useIsOptionalFiedApplied(fieldName?: TFieldName) {
+export function useIsOptionalFieldApplied(fieldName?: TFieldName) {
   if (!fieldName) {
     return false;
   }

@@ -1,4 +1,4 @@
-import { useIsOptionalFiedApplied } from 'optional';
+import { useIsOptionalFieldApplied } from 'optional';
 import { VestRuntime } from 'vestjs-runtime';
 
 import { SuiteOptionalFields, TIsolateSuite } from 'IsolateSuite';
@@ -17,7 +17,7 @@ import { nonMatchingGroupName } from 'matchingGroupName';
 
 export function useShouldAddValidProperty(fieldName?: TFieldName): boolean {
   // Is the field optional, and the optional condition is applied
-  if (useIsOptionalFiedApplied(fieldName)) {
+  if (useIsOptionalFieldApplied(fieldName)) {
     return true;
   }
 
@@ -44,7 +44,7 @@ export function useShouldAddValidPropertyInGroup(
   groupName: TGroupName,
   fieldName: TFieldName
 ): boolean {
-  if (useIsOptionalFiedApplied(fieldName)) {
+  if (useIsOptionalFieldApplied(fieldName)) {
     return true;
   }
 
@@ -66,7 +66,7 @@ function useHasNonOptionalIncomplete(fieldName?: TFieldName) {
     if (nonMatchingFieldName(VestTest.getData(testObject), fieldName)) {
       return false;
     }
-    return !useIsOptionalFiedApplied(fieldName);
+    return !useIsOptionalFieldApplied(fieldName);
   });
 }
 
@@ -84,7 +84,7 @@ function useHasNonOptionalIncompleteByGroup(
       return false;
     }
 
-    return !useIsOptionalFiedApplied(fieldName);
+    return !useIsOptionalFieldApplied(fieldName);
   });
 }
 
@@ -121,7 +121,7 @@ function useNoMissingTestsLogic(
   /**
    * The reason we're checking for the optional field here and not in "omitOptionalFields"
    * is because that unlike the bool/function check we do there, here it only depends on
-   * whether the field was tested alredy or not.
+   * whether the field was tested already or not.
    *
    * We qualify the test as not missing only if it was already run, if it is omitted,
    * or if it is marked as optional, even if the optional check did not apply yet -

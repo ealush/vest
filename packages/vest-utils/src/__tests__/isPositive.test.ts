@@ -21,7 +21,7 @@ describe('Test isPositive rule', () => {
   });
 
   describe('When argument is a negative number', () => {
-    it('Should return false for negative numer', () => {
+    it('Should return false for negative number', () => {
       expect(isPositive(-1)).toBe(false);
     });
     it('should return false for negative desimal number', () => {

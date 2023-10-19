@@ -13,7 +13,7 @@ describe('enforce.loose for loose matching', () => {
     });
   });
   describe('eager interface', () => {
-    it('Should return sliently return when value has non-enforced keys', () => {
+    it('Should return silently return when value has non-enforced keys', () => {
       enforce({ username: 'ealush', age: 31, foo: 'bar' }).loose({
         username: enforce.isString(),
         age: enforce.isNumber(),

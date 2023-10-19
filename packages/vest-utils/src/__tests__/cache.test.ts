@@ -102,7 +102,7 @@ describe('lib: cache', () => {
   });
 
   describe('cache.invalidate', () => {
-    it('Should remove cached item from cache storage by its dependcies', () => {
+    it('Should remove cached item from cache storage by its dependencies', () => {
       const deps = [1, 2, 3];
       c(deps, Math.random);
       expect(c.get(deps)).not.toBeNull();

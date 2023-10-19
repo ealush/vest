@@ -5,7 +5,7 @@ describe('Tests isNegative rule', () => {
     expect(isNegative(0)).toBe(false);
   });
   describe('When argument is a negative number', () => {
-    it('Should return true for negative numer', () => {
+    it('Should return true for negative number', () => {
       expect(isNegative(-1)).toBe(true);
     });
     it('should return true for negative desimal number', () => {

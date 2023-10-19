@@ -78,7 +78,7 @@ describe('hasErrorsByGroup', () => {
             dummyTest.failing('field_1', 'msg');
           });
         });
-        expect(suite().hasErrorsByGroup(groupName, 'non_matcing_field')).toBe(
+        expect(suite().hasErrorsByGroup(groupName, 'non_matching_field')).toBe(
           false
         );
       });
@@ -166,7 +166,7 @@ describe('hasWarningsByGroup', () => {
             dummyTest.failingWarning(fieldName, 'msg');
           });
         });
-        expect(suite().hasWarningsByGroup(groupName, 'non_matcing_field')).toBe(
+        expect(suite().hasWarningsByGroup(groupName, 'non_matching_field')).toBe(
           false
         );
       });

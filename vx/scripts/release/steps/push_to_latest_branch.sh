@@ -25,7 +25,7 @@ echo "Cleaning up auth token"
 yarn config unset npmAuthToken
 yarn config unset npmAlwaysAuth
 
-echo "Commiting"
+echo "Committing"
 git add -A
 git commit -m "$1" -m "$2"
 

@@ -1,4 +1,4 @@
-import { CB, Maybe, Nullable } from 'vest-utils';
+import { CB, Maybe, Nullable, isPromise } from 'vest-utils';
 
 import { IsolateKeys } from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';
@@ -77,7 +77,17 @@ function useRunAsNew<Callback extends CB = CB>(
       runtimeNode: current,
       ...(!runtimeRoot && { runtimeRoot: current }),
     },
-    () => callback(current)
+    () => {
+      const output = callback(current);
+
+      if (isPromise(output)) {
+        output.then(iso => {
+          current.children = (iso as TIsolate).children;
+        });
+      }
+
+      return output;
+    }
   );
 
   current.output = output;

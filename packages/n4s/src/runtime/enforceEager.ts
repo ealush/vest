@@ -4,7 +4,7 @@ import { ctx } from 'enforceContext';
 import { getRule, RuleValue, Args, RuleBase } from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
-type IRules = n4s.IRules<Record<string, any>>;
+type IRules = n4s.IRules<Record<string, any> & EnforceEagerReturn>;
 type TModifiers = {
   message: (input: string) => EnforceEagerReturn;
 };
@@ -73,4 +73,4 @@ export default function enforceEager(value: RuleValue): EnforceEagerReturn {
   }
 }
 
-export type EnforceEager = (value: RuleValue) => EnforceEagerReturn;
+export type EnforceEager = typeof enforceEager;

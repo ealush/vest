@@ -1,6 +1,6 @@
 {
   "name": "vest",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Declarative Form Validations Framework",
   "license": "MIT",
   "author": "ealush",
@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "context": "^3.0.13",
-    "n4s": "^5.0.6",
+    "n4s": "^5.0.7",
     "vast": "^1.0.22",
     "vest-utils": "^1.1.0",
     "vestjs-runtime": "^1.0.4"

@@ -29,6 +29,7 @@ export {
   group,
   optional,
   enforce,
+  IsolateAsync,
   skip,
   skipWhen,
   omitWhen,

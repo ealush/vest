@@ -2,7 +2,6 @@ import { enforce } from 'n4s';
 
 // eslint-disable-next-line import/order -- will handle this circular dep issue later.
 import { optional } from 'optional';
-import { IsolateAsync } from 'IsolateAsync';
 import { Modes } from 'Modes';
 import type {
   SuiteResult,
@@ -29,7 +28,6 @@ export {
   group,
   optional,
   enforce,
-  IsolateAsync,
   skip,
   skipWhen,
   omitWhen,

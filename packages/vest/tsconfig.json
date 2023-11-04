@@ -89,7 +89,6 @@
       "VestReconciler": ["./src/core/isolate/VestReconciler.ts"],
       "VestIsolateType": ["./src/core/isolate/VestIsolateType.ts"],
       "IsolateReconciler": ["./src/core/isolate/IsolateReconciler.ts"],
-      "IsolateAsync": ["./src/core/isolate/IsolateAsync.ts"],
       "isSameProfileTest": [
         "./src/core/isolate/IsolateTest/isSameProfileTest.ts"
       ],

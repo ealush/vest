@@ -11630,7 +11630,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"n4s@^5.0.6, n4s@workspace:packages/n4s":
+"n4s@^5.0.7, n4s@workspace:packages/n4s":
   version: 0.0.0-use.local
   resolution: "n4s@workspace:packages/n4s"
   dependencies:
@@ -15570,7 +15570,7 @@ __metadata:
   resolution: "vest@workspace:packages/vest"
   dependencies:
     context: ^3.0.13
-    n4s: ^5.0.6
+    n4s: ^5.0.7
     vast: ^1.0.22
     vest-utils: ^1.1.0
     vestjs-runtime: ^1.0.4

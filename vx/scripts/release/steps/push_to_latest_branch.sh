@@ -3,6 +3,10 @@
 git config --global user.email $EMAIL_ADDRESS --replace-all
 git config --global user.name $GIT_NAME
 
+echo "Running Script push_to_latest_branch.sh"
+echo "Current directory: $(pwd)"
+echo "Workspace directory: $GITHUB_WORKSPACE"
+
 echo "Going back to root folder"
 cd $GITHUB_WORKSPACE
 

@@ -135,7 +135,7 @@ If we want to conditionally skip a portion of our suite, we can use `skip()` wit
 import { create, test, group, enforce, skip } from 'vest';
 
 const suite = create(data => {
-  // We want to always run this test, even if we skip the promo_code qauntity test
+  // We want to always run this test, even if we skip the promo_code quantity test
   test('quantity', `Quantity on this item is limited to ${data.limit}`, () => {
     enforce(data.quantity).lessThanOrEquals(data.limit);
   });

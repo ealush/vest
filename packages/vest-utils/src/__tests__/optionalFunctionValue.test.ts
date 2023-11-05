@@ -17,7 +17,7 @@ describe('optionalFunctionValue', () => {
       expect(optionalFunctionValue(value)).toBe('return value');
       expect(value).toHaveBeenCalled();
     });
-    it('Should run with arguments arry', () => {
+    it('Should run with arguments array', () => {
       const value = jest.fn((...args) => args.join('|'));
       const args = [1, 2, 3, 4];
       expect(optionalFunctionValue(value, ...args)).toBe('1|2|3|4');

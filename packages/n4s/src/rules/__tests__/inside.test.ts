@@ -33,7 +33,7 @@ describe('Inside rule', () => {
     expect(inside(false, [true, 'one', 'two'])).toBe(false);
   });
 
-  it('Should fail to find array elemets in another array in which they do not exist', () => {
+  it('Should fail to find array elements in another array in which they do not exist', () => {
     expect(inside(['no', 'treble'], ['all', 'about', 'the', 'bass'])).toBe(
       false
     );
@@ -48,7 +48,7 @@ describe('Inside rule', () => {
     expect(inside('Kenny', 'You Killed Kenny!')).toBe(true);
   });
 
-  it('Should failt to find a string inside another string in which it does not exist', () => {
+  it('Should fail to find a string inside another string in which it does not exist', () => {
     expect(inside('mugs', "I'm gonna pop some tags")).toBe(false);
   });
 

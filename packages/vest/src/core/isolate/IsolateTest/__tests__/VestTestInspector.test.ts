@@ -216,7 +216,7 @@ describe('VestTest', () => {
       expect(VestTest.awaitsResolution(testObject)).toBe(true);
     });
 
-    it('Should retrun false for a tested test', () => {
+    it('Should return false for a tested test', () => {
       VestTest.fail(testObject);
       expect(VestTest.awaitsResolution(testObject)).toBe(false);
       testObject = mockIsolateTest({ fieldName: 'f' });

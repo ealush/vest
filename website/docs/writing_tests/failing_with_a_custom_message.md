@@ -18,7 +18,7 @@ Vest allows you to provide custom messages within the test body itself. There ar
 
 The `enforce` function in Vest allows you to pass a custom message using the `message` modifier. This can be useful if you have multiple failure conditions.
 
-The message must be specified before the rule it refers to, because once the rule failes, enforce throws immediately.
+The message must be specified before the rule it refers to, because once the rule fails, enforce throws immediately.
 
 ```js
 test('username', () => {

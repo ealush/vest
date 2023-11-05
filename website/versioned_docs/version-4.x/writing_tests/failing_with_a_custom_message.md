@@ -13,7 +13,7 @@ Sometimes your validation logic might result in different failure reasons that a
 
 A custom message can ban passed to enforce via the `message` modifier. Multiple messages can be passed as well in case you have multiple failure conditions.
 
-The message must be specified before the rule it refers to, because once the rule failes, enforce throws immediately.
+The message must be specified before the rule it refers to, because once the rule fails, enforce throws immediately.
 
 ```js
 test('username', () => {

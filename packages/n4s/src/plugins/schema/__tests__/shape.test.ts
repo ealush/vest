@@ -3,7 +3,7 @@ import * as ruleReturn from 'ruleReturn';
 import 'schema';
 import 'compounds';
 
-describe('enforce.shape excact matching', () => {
+describe('enforce.shape exact matching', () => {
   describe('lazy interface', () => {
     it('Should return a failing return when value has non-enforced keys', () => {
       expect(

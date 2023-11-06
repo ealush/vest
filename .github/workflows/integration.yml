@@ -29,6 +29,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup .yarnrc.yml
+        if: github.actor != 'dependabot[bot]'
         run: |
           yarn config set npmAuthToken $NPM_TOKEN || echo "No NPM_TOKEN found"
           yarn config set npmAlwaysAuth true

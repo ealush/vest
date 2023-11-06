@@ -1,6 +1,7 @@
 import { Nullable, invariant, isNullish } from 'vest-utils';
 
 import { TIsolate } from 'Isolate';
+import { IsolateStatus } from 'IsolateStatus';
 
 export class IsolateMutator {
   static setParent(isolate: TIsolate, parent: Nullable<TIsolate>): TIsolate {
@@ -49,5 +50,13 @@ export class IsolateMutator {
 
   static setData(isolate: TIsolate, data: any): void {
     isolate.data = data;
+  }
+
+  static setPending(isolate: TIsolate): void {
+    isolate.status = IsolateStatus.PENDING;
+  }
+
+  static setDone(isolate: TIsolate): void {
+    isolate.status = IsolateStatus.DONE;
   }
 }

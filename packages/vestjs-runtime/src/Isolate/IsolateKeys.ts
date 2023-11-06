@@ -5,6 +5,7 @@ export enum IsolateKeys {
   Parent = 'parent',
   Data = 'data',
   AllowReorder = 'allowReorder',
+  Status = 'status',
 }
 
 enum MinifiedKeys {
@@ -14,6 +15,7 @@ enum MinifiedKeys {
   Parent = 'P',
   Data = 'D',
   AllowReorder = 'aR',
+  Status = 'S',
 }
 
 export const KeyToMinified = {
@@ -23,6 +25,7 @@ export const KeyToMinified = {
   [IsolateKeys.Data]: MinifiedKeys.Data,
   [IsolateKeys.Key]: MinifiedKeys.Key,
   [IsolateKeys.AllowReorder]: MinifiedKeys.AllowReorder,
+  [IsolateKeys.Status]: MinifiedKeys.Status,
 };
 
 // This const is an object that looks like this:

@@ -15,6 +15,7 @@
       "test-utils": ["./src/exports/test-utils.ts"],
       "IsolateSerializer": ["./src/exports/IsolateSerializer.ts"],
       "ErrorStrings": ["./src/errors/ErrorStrings.ts"],
+      "IsolateStatus": ["./src/Isolate/IsolateStatus.ts"],
       "IsolateSelectors": ["./src/Isolate/IsolateSelectors.ts"],
       "IsolateMutator": ["./src/Isolate/IsolateMutator.ts"],
       "IsolateKeys": ["./src/Isolate/IsolateKeys.ts"],

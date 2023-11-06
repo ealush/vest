@@ -25,6 +25,7 @@ exports[`IsolateTest TestObject constructor 1`] = `
   "keys": {},
   "output": null,
   "parent": null,
+  "status": "INITIAL",
 }
 `;
 
@@ -53,5 +54,6 @@ exports[`IsolateTest testObject.warn Should mark the test as warning 1`] = `
   "keys": {},
   "output": null,
   "parent": null,
+  "status": "INITIAL",
 }
 `;

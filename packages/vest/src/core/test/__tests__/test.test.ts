@@ -193,7 +193,7 @@ describe("Test Vest's `test` function", () => {
       expect(testObject.key).toBe('keyboardcat');
       expect(testObject.data.message).toBe('failure message');
       expect(IsolateSerializer.serialize(testObject)).toMatchInlineSnapshot(
-        `"{"$":"Test","D":{"severity":"error","status":"PASSING","abortController":{},"fieldName":"field_name","message":"failure message"},"k":"keyboardcat"}"`
+        `"{"$":"Test","D":{"severity":"error","status":"PASSING","abortController":{},"fieldName":"field_name","message":"failure message"},"S":"DONE","k":"keyboardcat"}"`
       );
     });
 

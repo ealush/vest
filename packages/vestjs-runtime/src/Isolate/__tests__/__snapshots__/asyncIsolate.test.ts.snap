@@ -18,6 +18,7 @@ exports[`AsyncIsolate It should resolve async isolate into the parent 2`] = `
           "keys": null,
           "output": undefined,
           "parent": [Circular],
+          "status": "DONE",
         },
         {
           "$type": "UGrandChild_2",
@@ -28,6 +29,7 @@ exports[`AsyncIsolate It should resolve async isolate into the parent 2`] = `
           "keys": null,
           "output": undefined,
           "parent": [Circular],
+          "status": "DONE",
         },
         {
           "$type": "UGrandChild_3",
@@ -38,6 +40,7 @@ exports[`AsyncIsolate It should resolve async isolate into the parent 2`] = `
           "keys": null,
           "output": undefined,
           "parent": [Circular],
+          "status": "DONE",
         },
       ],
       "data": {},
@@ -45,6 +48,7 @@ exports[`AsyncIsolate It should resolve async isolate into the parent 2`] = `
       "keys": null,
       "output": undefined,
       "parent": [Circular],
+      "status": "DONE",
     },
   ],
   "data": {},
@@ -52,5 +56,20 @@ exports[`AsyncIsolate It should resolve async isolate into the parent 2`] = `
   "keys": null,
   "output": Promise {},
   "parent": null,
+  "status": "DONE",
+}
+`;
+
+exports[`AsyncIsolate It should set the isolate state to pending 1`] = `
+{
+  "$type": "URoot",
+  "allowReorder": undefined,
+  "children": null,
+  "data": {},
+  "key": null,
+  "keys": null,
+  "output": Promise {},
+  "parent": null,
+  "status": "PENDING",
 }
 `;

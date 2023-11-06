@@ -93,6 +93,26 @@ describe('Isolate', () => {
         expect(child.parent).toBe(parent);
       });
     });
+
+    test('Isolate status is INITIAL before running', () => {
+      const control = jest.fn();
+      withRunTime(() => {
+        return Isolate.create(IsolateType.Isolate, () => {
+          expect(useAvailableRoot().status).toBe('INITIAL');
+          control();
+        });
+      });
+
+      expect(control).toHaveBeenCalled();
+    });
+
+    test('Isolate status is DONE after running', () => {
+      const isolate = withRunTime(() => {
+        return Isolate.create(IsolateType.Isolate, () => {});
+      });
+
+      expect(isolate.status).toBe('DONE');
+    });
   });
 
   function withRunTime<T>(fn: CB<T>) {

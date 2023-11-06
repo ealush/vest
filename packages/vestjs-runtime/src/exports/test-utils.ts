@@ -1,5 +1,6 @@
 import { TIsolate } from 'Isolate';
 import { IsolateKeys } from 'IsolateKeys';
+import { IsolateStatus } from 'IsolateStatus';
 
 export function genTestIsolate(data: Record<string, any> = {}): TIsolate {
   return {
@@ -9,6 +10,7 @@ export function genTestIsolate(data: Record<string, any> = {}): TIsolate {
     keys: {},
     output: null,
     parent: null,
+    status: IsolateStatus.INITIAL,
     [IsolateKeys.Type]: 'UnitTest',
   };
 }

@@ -29,21 +29,25 @@ describe('IsolateSerializer', () => {
                 "some_data": true,
               },
               "parent": [Circular],
+              "status": "DONE",
             },
             {
               "$type": "UChild_2",
               "data": {},
               "parent": [Circular],
+              "status": "DONE",
             },
             {
               "$type": "UChild_3",
               "data": {},
               "parent": [Circular],
+              "status": "DONE",
             },
           ],
           "data": {
             "some_data": true,
           },
+          "status": "DONE",
         }
       `);
     });

@@ -2,6 +2,7 @@ import { CB, Maybe, Nullable, isNotNullish, isPromise } from 'vest-utils';
 
 import { IsolateKeys } from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';
+import { IsolateStatus } from 'IsolateStatus';
 import { Reconciler } from 'Reconciler';
 import * as VestRuntime from 'VestRuntime';
 
@@ -13,6 +14,7 @@ export type TIsolate<P extends IsolatePayload = IsolatePayload> = {
   [IsolateKeys.Type]: string;
   [IsolateKeys.Keys]: Nullable<Record<string, TIsolate>>;
   [IsolateKeys.Data]: DataOnly<P>;
+  [IsolateKeys.Status]: IsolateStatus;
   children: Nullable<TIsolate[]>;
   key: IsolateKey;
   output: any;
@@ -85,11 +87,17 @@ function useRunAsNew<Callback extends CB = CB>(
       const output = callback(current);
 
       if (isPromise(output)) {
+        IsolateMutator.setPending(current);
+
         output.then(iso => {
           if (Isolate.isIsolate(iso)) {
             IsolateMutator.addChild(current, iso);
           }
+
+          IsolateMutator.setDone(current);
         });
+      } else {
+        IsolateMutator.setDone(current);
       }
 
       return output;
@@ -112,6 +120,7 @@ function baseIsolate(
     [IsolateKeys.Parent]: null,
     [IsolateKeys.Type]: type,
     [IsolateKeys.Data]: data as IsolateData,
+    [IsolateKeys.Status]: IsolateStatus.INITIAL,
     children: null,
     key,
     output: null,

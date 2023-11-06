@@ -8,12 +8,10 @@ describe('AsyncIsolate', () => {
   test('It should resolve async isolate into the parent', () => {
     return new Promise<void>(async done => {
       let root = {} as TIsolate;
-      const control = jest.fn();
       withRunTime(() => {
         // Create root isolate from which all others will be created
         root = Isolate.create('URoot', genChildren);
       });
-      expect(control).not.toHaveBeenCalled();
       expect(root).toMatchInlineSnapshot(`
         {
           "$type": "URoot",
@@ -24,6 +22,7 @@ describe('AsyncIsolate', () => {
           "keys": null,
           "output": Promise {},
           "parent": null,
+          "status": "PENDING",
         }
       `);
       await wait(10);
@@ -43,6 +42,32 @@ describe('AsyncIsolate', () => {
       );
       expect(root).toMatchSnapshot();
 
+      done();
+    });
+  });
+
+  test('It should set the isolate state to pending', () => {
+    return new Promise<void>(done => {
+      let root = {} as TIsolate;
+      withRunTime(() => {
+        // Create root isolate from which all others will be created
+        root = Isolate.create('URoot', genChildren);
+      });
+      expect(root).toMatchSnapshot();
+      expect(root?.status).toBe('PENDING');
+      done();
+    });
+  });
+
+  it('should set the isolate state to done when complete', () => {
+    return new Promise<void>(async done => {
+      let root = {} as TIsolate;
+      withRunTime(() => {
+        // Create root isolate from which all others will be created
+        root = Isolate.create('URoot', genChildren);
+      });
+      await wait(10);
+      expect(root?.status).toBe('DONE');
       done();
     });
   });

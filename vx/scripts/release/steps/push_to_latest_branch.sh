@@ -23,7 +23,7 @@ echo "Checking out new local stable branch"
 git checkout -b $STABLE_BRANCH
 
 echo "Rebuilding yarn.lock"
-yarn
+yarn install --no-immutable
 
 echo "Cleaning up auth token"
 yarn config unset npmAuthToken

@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AsyncIsolate It should resolve async isolate into the parent 2`] = `
+{
+  "$type": "URoot",
+  "allowReorder": undefined,
+  "children": [
+    {
+      "$type": "UChild_1",
+      "allowReorder": undefined,
+      "children": [
+        {
+          "$type": "UGrandChild_1",
+          "allowReorder": undefined,
+          "children": null,
+          "data": {},
+          "key": null,
+          "keys": null,
+          "output": undefined,
+          "parent": [Circular],
+        },
+        {
+          "$type": "UGrandChild_2",
+          "allowReorder": undefined,
+          "children": null,
+          "data": {},
+          "key": null,
+          "keys": null,
+          "output": undefined,
+          "parent": [Circular],
+        },
+        {
+          "$type": "UGrandChild_3",
+          "allowReorder": undefined,
+          "children": null,
+          "data": {},
+          "key": null,
+          "keys": null,
+          "output": undefined,
+          "parent": [Circular],
+        },
+      ],
+      "data": {},
+      "key": null,
+      "keys": null,
+      "output": undefined,
+      "parent": [Circular],
+    },
+  ],
+  "data": {},
+  "key": null,
+  "keys": null,
+  "output": Promise {},
+  "parent": null,
+}
+`;

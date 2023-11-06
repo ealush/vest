@@ -1,4 +1,4 @@
-import { CB, Maybe, Nullable } from 'vest-utils';
+import { CB, Maybe, Nullable, isNotNullish, isPromise } from 'vest-utils';
 
 import { IsolateKeys } from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';
@@ -52,6 +52,10 @@ export class Isolate {
 
     return nextIsolateChild as TIsolate<Payload>;
   }
+
+  static isIsolate(node: any): node is TIsolate {
+    return isNotNullish(node) && node[IsolateKeys.Type];
+  }
 }
 
 /**
@@ -77,7 +81,19 @@ function useRunAsNew<Callback extends CB = CB>(
       runtimeNode: current,
       ...(!runtimeRoot && { runtimeRoot: current }),
     },
-    () => callback(current)
+    () => {
+      const output = callback(current);
+
+      if (isPromise(output)) {
+        output.then(iso => {
+          if (Isolate.isIsolate(iso)) {
+            IsolateMutator.addChild(current, iso);
+          }
+        });
+      }
+
+      return output;
+    }
   );
 
   current.output = output;

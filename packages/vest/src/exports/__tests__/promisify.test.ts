@@ -60,9 +60,9 @@ describe('Utility: promisify', () => {
     it('Passes all arguments over to tests callback', async () => {
       const params = [
         1,
-        { [faker.random.word()]: [1, 2, 3] },
+        { [faker.lorem.word()]: [1, 2, 3] },
         false,
-        [faker.random.word()],
+        [faker.lorem.word()],
       ];
 
       await validateAsync(...params);

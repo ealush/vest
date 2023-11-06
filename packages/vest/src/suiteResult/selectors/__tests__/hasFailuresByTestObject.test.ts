@@ -6,13 +6,13 @@ import { Severity } from 'Severity';
 import { hasFailuresByTestObject } from 'hasFailuresByTestObjects';
 import { mockIsolateTest } from 'vestMocks';
 
-const fieldName: string = faker.random.word();
+const fieldName: string = faker.lorem.word();
 
 describe('hasFailuresByTestObject', () => {
   let testObject: TIsolateTest;
 
   beforeEach(() => {
-    const fieldName: string = faker.random.word();
+    const fieldName: string = faker.lorem.word();
     testObject = mockIsolateTest({
       fieldName,
     });

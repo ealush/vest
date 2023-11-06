@@ -17,7 +17,7 @@ describe('Test createSuite module', () => {
       expect(create(jest.fn()).get()).toMatchSnapshot();
     });
 
-    it.each([faker.random.word(), null, undefined, 0, 1, true, false, NaN, ''])(
+    it.each([faker.lorem.word(), null, undefined, 0, 1, true, false, NaN, ''])(
       'Throws an error when `tests` callback is not a function',
       value => {
         // @ts-expect-error - testing invalid input
@@ -57,9 +57,9 @@ describe('Test createSuite module', () => {
         1,
         2,
         3,
-        { [faker.random.word()]: [1, 2, 3] },
+        { [faker.lorem.word()]: [1, 2, 3] },
         false,
-        [faker.random.word()],
+        [faker.lorem.word()],
       ];
       const validate = create(testsCallback);
       validate(...params);

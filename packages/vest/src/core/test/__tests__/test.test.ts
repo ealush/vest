@@ -18,7 +18,7 @@ describe("Test Vest's `test` function", () => {
       it('Should be marked as warning when the warn hook gets called', () => {
         vest.create(() => {
           testObject = vest.test(
-            faker.random.word(),
+            faker.lorem.word(),
             faker.lorem.sentence(),
             () => {
               vest.warn();
@@ -33,7 +33,7 @@ describe("Test Vest's `test` function", () => {
       it('Should be marked as failed after a thrown error', () => {
         vest.create(() => {
           testObject = vest.test(
-            faker.random.word(),
+            faker.lorem.word(),
             faker.lorem.sentence(),
             () => {
               throw new Error();
@@ -45,7 +45,7 @@ describe("Test Vest's `test` function", () => {
 
       it('Should be marked as failed for an explicit false return', () => {
         vest.create(() => {
-          vest.test(faker.random.word(), faker.lorem.sentence(), () => false);
+          vest.test(faker.lorem.word(), faker.lorem.sentence(), () => false);
         })();
         expect(VestTest.isFailing(testObject)).toBe(true);
       });
@@ -126,7 +126,7 @@ describe("Test Vest's `test` function", () => {
         TestPromise(done => {
           vest.create(() => {
             testObject = vest.test(
-              faker.random.word(),
+              faker.lorem.word(),
               faker.lorem.sentence(),
               () =>
                 new Promise((_, reject) => {

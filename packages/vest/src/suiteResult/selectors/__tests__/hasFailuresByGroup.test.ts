@@ -5,7 +5,7 @@ import { dummyTest } from '../../../testUtils/testDummy';
 import { TTestSuite } from 'testUtils/TVestMock';
 import * as vest from 'vest';
 
-const fieldName = faker.random.word();
+const fieldName = faker.lorem.word();
 const groupName = faker.lorem.word();
 
 let suite: TTestSuite;
@@ -166,9 +166,9 @@ describe('hasWarningsByGroup', () => {
             dummyTest.failingWarning(fieldName, 'msg');
           });
         });
-        expect(suite().hasWarningsByGroup(groupName, 'non_matching_field')).toBe(
-          false
-        );
+        expect(
+          suite().hasWarningsByGroup(groupName, 'non_matching_field')
+        ).toBe(false);
       });
     });
 

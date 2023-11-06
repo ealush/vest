@@ -3,8 +3,8 @@ import { faker } from '@faker-js/faker';
 import { shorterThan } from 'shorterThan';
 
 describe('Tests shorterThan rule', () => {
-  const length = faker.datatype.number();
-  const word = faker.random.word();
+  const length = 10;
+  const word = faker.lorem.word();
   const boolean = faker.datatype.boolean();
 
   describe('First argument is array or string', () => {

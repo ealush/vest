@@ -2,13 +2,11 @@ import { faker } from '@faker-js/faker';
 
 import { lessThanOrEquals } from 'lessThanOrEquals';
 
-const { random, datatype } = faker;
-
 describe('Tests lessThanOrEquals rule', () => {
   describe('Arguments are numbers', () => {
     let arg0: number;
     beforeEach(() => {
-      arg0 = datatype.number();
+      arg0 = faker.number.int();
     });
 
     describe('When first argument is larger', () => {
@@ -33,7 +31,7 @@ describe('Tests lessThanOrEquals rule', () => {
   describe('Arguments are numeric strings', () => {
     let arg0: string;
     beforeEach(() => {
-      arg0 = datatype.number().toString();
+      arg0 = faker.number.int().toString();
     });
     describe('When first argument is larger', () => {
       it('Should return true', () => {
@@ -55,11 +53,13 @@ describe('Tests lessThanOrEquals rule', () => {
   });
 
   describe('Arguments are non numeric', () => {
-    [random.word(), `${datatype.number()}`.split(''), {}].forEach(element => {
-      it('Should return false', () => {
-        // @ts-expect-error - Testing invalid input
-        expect(lessThanOrEquals(element, 0)).toBe(false);
-      });
-    });
+    [faker.lorem.word(), `${faker.number.int()}`.split(''), {}].forEach(
+      element => {
+        it('Should return false', () => {
+          // @ts-expect-error - Testing invalid input
+          expect(lessThanOrEquals(element, 0)).toBe(false);
+        });
+      }
+    );
   });
 });

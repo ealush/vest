@@ -60,7 +60,7 @@ describe('Tests isEven rule', () => {
   describe('When value is non numeric', () => {
     it('Should return false', () => {
       [
-        faker.random.word(),
+        faker.lorem.word(),
         [],
         new Function(),
         new Object(),

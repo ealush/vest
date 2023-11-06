@@ -3,14 +3,12 @@ import { sample } from 'lodash';
 
 import { equals } from 'equals';
 
-const { random, datatype } = faker;
-
 const VALUES = [
-  random.word(),
-  datatype.number(),
-  { [random.alpha()]: random.word() },
-  [datatype.number()],
-  datatype.boolean(),
+  faker.lorem.word(),
+  faker.number.int(),
+  { [faker.lorem.slug()]: faker.lorem.word() },
+  [faker.number.int()],
+  faker.datatype.boolean(),
 ];
 
 const LOOSE_PAIRS = [

@@ -2,13 +2,11 @@ import { faker } from '@faker-js/faker';
 
 import { numberEquals } from 'numberEquals';
 
-const { random, datatype } = faker;
-
 describe('Tests numberEquals rule', () => {
   describe('Arguments are numbers', () => {
     let arg0: number;
     beforeEach(() => {
-      arg0 = datatype.number();
+      arg0 = faker.number.int();
     });
 
     describe('When first argument is larger', () => {
@@ -34,7 +32,7 @@ describe('Tests numberEquals rule', () => {
     let arg0: string;
 
     beforeEach(() => {
-      arg0 = datatype.number().toString();
+      arg0 = faker.number.int().toString();
     });
 
     describe('When first argument is larger', () => {
@@ -57,11 +55,13 @@ describe('Tests numberEquals rule', () => {
   });
 
   describe('Arguments are non numeric', () => {
-    [random.word(), `${datatype.number()}`.split(''), {}].forEach(element => {
-      it('Should return false', () => {
-        // @ts-expect-error - testing invalid input
-        expect(numberEquals(element, 0)).toBe(false);
-      });
-    });
+    [faker.lorem.word(), `${faker.number.int()}`.split(''), {}].forEach(
+      element => {
+        it('Should return false', () => {
+          // @ts-expect-error - testing invalid input
+          expect(numberEquals(element, 0)).toBe(false);
+        });
+      }
+    );
   });
 });

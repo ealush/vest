@@ -5,7 +5,7 @@ import { dummyTest } from '../../../testUtils/testDummy';
 import * as vest from 'vest';
 
 describe('produce method: hasFailures', () => {
-  const fieldName = faker.random.word();
+  const fieldName = faker.lorem.word();
 
   describe(`hasErrors`, () => {
     describe('When no test objects', () => {

@@ -9,8 +9,8 @@ import { test as vestTest, warn } from 'vest';
 // eslint-disable-next-line max-lines-per-function
 const testDummy = () => {
   const failing = (
-    name: string = faker.random.word(),
-    message: string = faker.random.words()
+    name: string = faker.lorem.word(),
+    message: string = faker.lorem.words()
   ) => {
     const to = vestTest(
       name,
@@ -24,8 +24,8 @@ const testDummy = () => {
   };
 
   const failingWarning = (
-    name = faker.random.word(),
-    message = faker.random.words()
+    name = faker.lorem.word(),
+    message = faker.lorem.words()
   ) => {
     const to = vestTest(
       name,
@@ -40,8 +40,8 @@ const testDummy = () => {
   };
 
   const passing = (
-    name = faker.random.word(),
-    message = faker.random.words()
+    name = faker.lorem.word(),
+    message = faker.lorem.words()
   ) => {
     const to = vestTest(name, message, jest.fn());
 
@@ -49,8 +49,8 @@ const testDummy = () => {
   };
 
   const passingWarning = (
-    name = faker.random.word(),
-    message = faker.random.words()
+    name = faker.lorem.word(),
+    message = faker.lorem.words()
   ) => {
     const to = vestTest(
       name,
@@ -63,8 +63,8 @@ const testDummy = () => {
   };
 
   const failingAsync = (
-    name = faker.random.word(),
-    { message = faker.random.words(), time = 0 } = {}
+    name = faker.lorem.word(),
+    { message = faker.lorem.words(), time = 0 } = {}
   ) =>
     vestTest(
       name,
@@ -78,8 +78,8 @@ const testDummy = () => {
     );
 
   const failingWarningAsync = (
-    name = faker.random.word(),
-    { message = faker.random.words(), time = 0 } = {}
+    name = faker.lorem.word(),
+    { message = faker.lorem.words(), time = 0 } = {}
   ) =>
     vestTest(
       name,
@@ -93,8 +93,8 @@ const testDummy = () => {
     );
 
   const passingAsync = (
-    name = faker.random.word(),
-    { message = faker.random.words(), time = 0 } = {}
+    name = faker.lorem.word(),
+    { message = faker.lorem.words(), time = 0 } = {}
   ) =>
     vestTest(
       name,
@@ -108,8 +108,8 @@ const testDummy = () => {
     );
 
   const passingWarningAsync = (
-    name = faker.random.word(),
-    { message = faker.random.words(), time = 0 } = {}
+    name = faker.lorem.word(),
+    { message = faker.lorem.words(), time = 0 } = {}
   ) =>
     vestTest(
       name,

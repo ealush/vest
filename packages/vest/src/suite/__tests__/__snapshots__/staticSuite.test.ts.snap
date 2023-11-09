@@ -10,15 +10,7 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
       "allowReorder": undefined,
       "children": null,
       "data": {
-        "abortController": AbortController {
-          Symbol(signal): AbortSignal {
-            Symbol(kEvents): Map {},
-            Symbol(events.maxEventTargetListeners): 10,
-            Symbol(events.maxEventTargetListenersWarned): false,
-            Symbol(kAborted): false,
-            Symbol(kReason): undefined,
-          },
-        },
+        "abortController": AbortController {},
         "fieldName": "t1",
         "severity": "error",
         "status": "FAILED",
@@ -35,15 +27,7 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
       "allowReorder": undefined,
       "children": null,
       "data": {
-        "abortController": AbortController {
-          Symbol(signal): AbortSignal {
-            Symbol(kEvents): Map {},
-            Symbol(events.maxEventTargetListeners): 10,
-            Symbol(events.maxEventTargetListenersWarned): false,
-            Symbol(kAborted): false,
-            Symbol(kReason): undefined,
-          },
-        },
+        "abortController": AbortController {},
         "fieldName": "t2",
         "severity": "error",
         "status": "FAILED",
@@ -64,15 +48,7 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
           "allowReorder": undefined,
           "children": null,
           "data": {
-            "abortController": AbortController {
-              Symbol(signal): AbortSignal {
-                Symbol(kEvents): Map {},
-                Symbol(events.maxEventTargetListeners): 10,
-                Symbol(events.maxEventTargetListenersWarned): false,
-                Symbol(kAborted): false,
-                Symbol(kReason): undefined,
-              },
-            },
+            "abortController": AbortController {},
             "fieldName": "t1",
             "groupName": "g1",
             "severity": "error",
@@ -90,15 +66,7 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
           "allowReorder": undefined,
           "children": null,
           "data": {
-            "abortController": AbortController {
-              Symbol(signal): AbortSignal {
-                Symbol(kEvents): Map {},
-                Symbol(events.maxEventTargetListeners): 10,
-                Symbol(events.maxEventTargetListenersWarned): false,
-                Symbol(kAborted): false,
-                Symbol(kReason): undefined,
-              },
-            },
+            "abortController": AbortController {},
             "fieldName": "t3",
             "groupName": "g1",
             "severity": "error",

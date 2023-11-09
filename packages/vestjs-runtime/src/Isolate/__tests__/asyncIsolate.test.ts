@@ -1,7 +1,9 @@
 import { CB } from 'vest-utils';
 import wait from 'wait';
 
+import { useBus } from 'Bus';
 import { Isolate, TIsolate } from 'Isolate';
+import { RuntimeEvents } from 'RuntimeEvents';
 import { VestRuntime } from 'vestjs-runtime';
 
 describe('AsyncIsolate', () => {
@@ -68,6 +70,33 @@ describe('AsyncIsolate', () => {
       });
       await wait(10);
       expect(root?.status).toBe('DONE');
+      done();
+    });
+  });
+
+  it('Should emit an event when an async isolate is done running', () => {
+    const cb = jest.fn();
+    return new Promise<void>(async done => {
+      let root = {} as TIsolate;
+      withRunTime(() => {
+        // Create root isolate from which all others will be created
+        root = Isolate.create('URoot', () => {
+          const bus = useBus();
+          bus.on(RuntimeEvents.ASYNC_ISOLATE_DONE, cb);
+
+          expect(cb).not.toHaveBeenCalled();
+          Isolate.create('UChild_1', async () => {
+            await wait(10);
+            expect(cb).not.toHaveBeenCalled();
+          });
+          expect(cb).not.toHaveBeenCalled();
+        });
+      });
+      expect(cb).not.toHaveBeenCalled();
+      expect(root?.children?.[0].status).not.toBe('DONE');
+      await wait(10);
+      expect(cb).toHaveBeenCalled();
+      expect(root?.children?.[0].status).toBe('DONE');
       done();
     });
   });

@@ -9,6 +9,7 @@
     "paths": {
       "vestjs-runtime": ["./src/vestjs-runtime.ts"],
       "VestRuntime": ["./src/VestRuntime.ts"],
+      "RuntimeEvents": ["./src/RuntimeEvents.ts"],
       "Reconciler": ["./src/Reconciler.ts"],
       "IsolateWalker": ["./src/IsolateWalker.ts"],
       "Bus": ["./src/Bus.ts"],

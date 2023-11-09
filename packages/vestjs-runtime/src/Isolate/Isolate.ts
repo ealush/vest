@@ -1,9 +1,11 @@
 import { CB, Maybe, Nullable, isNotNullish, isPromise } from 'vest-utils';
 
+import { useEmit } from 'Bus';
 import { IsolateKeys } from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';
 import { IsolateStatus } from 'IsolateStatus';
 import { Reconciler } from 'Reconciler';
+import { RuntimeEvents } from 'RuntimeEvents';
 import * as VestRuntime from 'VestRuntime';
 
 export type IsolateKey = Nullable<string>;
@@ -74,6 +76,7 @@ function useRunAsNew<Callback extends CB = CB>(
   callback: CB
 ): ReturnType<Callback> {
   const runtimeRoot = VestRuntime.useRuntimeRoot();
+  const emit = useEmit();
 
   // We're creating a new child isolate context where the local history node
   // is the current history node, thus advancing the history cursor.
@@ -95,6 +98,7 @@ function useRunAsNew<Callback extends CB = CB>(
           }
 
           IsolateMutator.setDone(current);
+          emit(RuntimeEvents.ASYNC_ISOLATE_DONE, current);
         });
       } else {
         IsolateMutator.setDone(current);

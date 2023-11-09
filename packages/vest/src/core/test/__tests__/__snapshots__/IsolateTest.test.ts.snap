@@ -5,15 +5,7 @@ exports[`IsolateTest TestObject constructor 1`] = `
   "$type": "UnitTest",
   "children": [],
   "data": {
-    "abortController": AbortController {
-      Symbol(signal): AbortSignal {
-        Symbol(kEvents): Map {},
-        Symbol(events.maxEventTargetListeners): 10,
-        Symbol(events.maxEventTargetListenersWarned): false,
-        Symbol(kAborted): false,
-        Symbol(kReason): undefined,
-      },
-    },
+    "abortController": AbortController {},
     "fieldName": "unicycle",
     "message": "I am Root.",
     "severity": "error",
@@ -34,15 +26,7 @@ exports[`IsolateTest testObject.warn Should mark the test as warning 1`] = `
   "$type": "UnitTest",
   "children": [],
   "data": {
-    "abortController": AbortController {
-      Symbol(signal): AbortSignal {
-        Symbol(kEvents): Map {},
-        Symbol(events.maxEventTargetListeners): 10,
-        Symbol(events.maxEventTargetListenersWarned): false,
-        Symbol(kAborted): false,
-        Symbol(kReason): undefined,
-      },
-    },
+    "abortController": AbortController {},
     "fieldName": "unicycle",
     "message": "I am Root.",
     "severity": "warning",

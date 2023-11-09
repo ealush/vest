@@ -1,6 +1,6 @@
 {
   "name": "vestjs-runtime",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Internal runtime module used by Vest",
   "license": "MIT",
   "author": "ealush",
@@ -18,8 +18,8 @@
     "url": "https://github.com/ealush/vest.git/issues"
   },
   "dependencies": {
-    "context": "^3.0.14",
-    "vest-utils": "^1.1.1"
+    "context": "^3.0.15",
+    "vest-utils": "^1.1.2"
   },
   "exports": {
     "./test-utils": {

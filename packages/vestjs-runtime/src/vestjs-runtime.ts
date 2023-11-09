@@ -1,3 +1,4 @@
+export { RuntimeEvents } from 'RuntimeEvents';
 export { IsolateKey, TIsolate, Isolate } from 'Isolate';
 export { IsolateStatus } from 'IsolateStatus';
 export { Reconciler, IRecociler } from 'Reconciler';

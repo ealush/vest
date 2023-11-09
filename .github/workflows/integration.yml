@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.16.0]
+        node-version: [20]
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3

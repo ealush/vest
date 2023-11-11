@@ -3,7 +3,6 @@ import { CB, Maybe, Nullable, isNotNullish, isPromise } from 'vest-utils';
 import { useEmit } from 'Bus';
 import { IsolateKeys } from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';
-import { IsolateStatus } from 'IsolateStatus';
 import { Reconciler } from 'Reconciler';
 import { RuntimeEvents } from 'RuntimeEvents';
 import * as VestRuntime from 'VestRuntime';
@@ -16,7 +15,7 @@ export type TIsolate<P extends IsolatePayload = IsolatePayload> = {
   [IsolateKeys.Type]: string;
   [IsolateKeys.Keys]: Nullable<Record<string, TIsolate>>;
   [IsolateKeys.Data]: DataOnly<P>;
-  [IsolateKeys.Status]: IsolateStatus;
+  [IsolateKeys.Status]?: string;
   children: Nullable<TIsolate[]>;
   key: IsolateKey;
   output: any;
@@ -87,21 +86,20 @@ function useRunAsNew<Callback extends CB = CB>(
       ...(!runtimeRoot && { runtimeRoot: current }),
     },
     () => {
+      emit(RuntimeEvents.ISOLATE_ENTER, current);
       const output = callback(current);
 
       if (isPromise(output)) {
-        IsolateMutator.setPending(current);
-
+        emit(RuntimeEvents.ISOLATE_PENDING, current);
         output.then(iso => {
           if (Isolate.isIsolate(iso)) {
             IsolateMutator.addChild(current, iso);
           }
 
-          IsolateMutator.setDone(current);
-          emit(RuntimeEvents.ASYNC_ISOLATE_DONE, current);
+          emit(RuntimeEvents.ISOLATE_DONE, current);
         });
       } else {
-        IsolateMutator.setDone(current);
+        emit(RuntimeEvents.ISOLATE_DONE, current);
       }
 
       return output;
@@ -124,7 +122,6 @@ function baseIsolate(
     [IsolateKeys.Parent]: null,
     [IsolateKeys.Type]: type,
     [IsolateKeys.Data]: data as IsolateData,
-    [IsolateKeys.Status]: IsolateStatus.INITIAL,
     children: null,
     key,
     output: null,

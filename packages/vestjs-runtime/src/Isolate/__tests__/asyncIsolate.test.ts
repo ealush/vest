@@ -24,7 +24,6 @@ describe('AsyncIsolate', () => {
           "keys": null,
           "output": Promise {},
           "parent": null,
-          "status": "PENDING",
         }
       `);
       await wait(10);
@@ -48,55 +47,26 @@ describe('AsyncIsolate', () => {
     });
   });
 
-  test('It should set the isolate state to pending', () => {
-    return new Promise<void>(done => {
-      let root = {} as TIsolate;
-      withRunTime(() => {
-        // Create root isolate from which all others will be created
-        root = Isolate.create('URoot', genChildren);
-      });
-      expect(root).toMatchSnapshot();
-      expect(root?.status).toBe('PENDING');
-      done();
-    });
-  });
-
-  it('should set the isolate state to done when complete', () => {
-    return new Promise<void>(async done => {
-      let root = {} as TIsolate;
-      withRunTime(() => {
-        // Create root isolate from which all others will be created
-        root = Isolate.create('URoot', genChildren);
-      });
-      await wait(10);
-      expect(root?.status).toBe('DONE');
-      done();
-    });
-  });
-
   it('Should emit an event when an async isolate is done running', () => {
     const cb = jest.fn();
     return new Promise<void>(async done => {
-      let root = {} as TIsolate;
+      let child = {} as TIsolate;
       withRunTime(() => {
         // Create root isolate from which all others will be created
-        root = Isolate.create('URoot', () => {
+        Isolate.create('URoot', () => {
           const bus = useBus();
-          bus.on(RuntimeEvents.ASYNC_ISOLATE_DONE, cb);
+          bus.on(RuntimeEvents.ISOLATE_DONE, cb);
 
           expect(cb).not.toHaveBeenCalled();
-          Isolate.create('UChild_1', async () => {
+          child = Isolate.create('UChild_1', async () => {
             await wait(10);
-            expect(cb).not.toHaveBeenCalled();
           });
           expect(cb).not.toHaveBeenCalled();
         });
       });
-      expect(cb).not.toHaveBeenCalled();
-      expect(root?.children?.[0].status).not.toBe('DONE');
+      expect(cb).not.toHaveBeenCalledWith(child);
       await wait(10);
-      expect(cb).toHaveBeenCalled();
-      expect(root?.children?.[0].status).toBe('DONE');
+      expect(cb).toHaveBeenCalledWith(child);
       done();
     });
   });

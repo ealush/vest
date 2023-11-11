@@ -20,7 +20,6 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
       "keys": null,
       "output": undefined,
       "parent": [Circular],
-      "status": "DONE",
     },
     {
       "$type": "Test",
@@ -37,7 +36,6 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
       "keys": null,
       "output": undefined,
       "parent": [Circular],
-      "status": "DONE",
     },
     {
       "$type": "Group",
@@ -59,7 +57,6 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
           "keys": null,
           "output": undefined,
           "parent": [Circular],
-          "status": "DONE",
         },
         {
           "$type": "Test",
@@ -77,7 +74,6 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
           "keys": null,
           "output": undefined,
           "parent": [Circular],
-          "status": "DONE",
         },
       ],
       "data": {},
@@ -85,7 +81,6 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
       "keys": null,
       "output": undefined,
       "parent": [Circular],
-      "status": "DONE",
     },
   ],
   "data": {
@@ -185,6 +180,5 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
     "warnings": [],
   },
   "parent": null,
-  "status": "DONE",
 }
 `;

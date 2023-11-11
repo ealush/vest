@@ -62,7 +62,7 @@ function runSyncTest(testObject: TIsolateTest): TestResult {
 /**
  * runs test, if async - adds to pending array
  */
-function useRunTest(testObject: TIsolateTest): void {
+function useRunTest(testObject: TIsolateTest): Promise<void> | undefined {
   const VestBus = Bus.useBus();
 
   // Run test callback.
@@ -74,10 +74,10 @@ function useRunTest(testObject: TIsolateTest): void {
     // in case object is an enforce chain
     if (isPromise(result)) {
       VestTest.getData(testObject).asyncTest = result;
-      useRunAsyncTest(testObject);
-    } else {
-      onTestCompleted(VestBus, testObject);
+      return useRunAsyncTest(testObject);
     }
+
+    onTestCompleted(VestBus, testObject);
   } catch (e) {
     // Probably unreachable. If we get here, it means that
     // something was really wrong and should be reported.
@@ -94,7 +94,7 @@ function useRunTest(testObject: TIsolateTest): void {
 /**
  * Runs async test.
  */
-function useRunAsyncTest(testObject: TIsolateTest): void {
+function useRunAsyncTest(testObject: TIsolateTest): Promise<void> | undefined {
   const { asyncTest, message } = VestTest.getData(testObject);
 
   if (!isPromise(asyncTest)) return;
@@ -118,7 +118,7 @@ function useRunAsyncTest(testObject: TIsolateTest): void {
     done();
   });
 
-  asyncTest.then(done, fail);
+  return asyncTest.then(done, fail);
 }
 
 function onTestCompleted(VestBus: BusType, testObject: TIsolateTest) {

@@ -17,7 +17,7 @@ const isDeepCopyOf = (
         if (clone !== source) {
           return {
             pass: false,
-            message: () => 'Source and clone are not identical',
+            message: () => `Source and clone are not identical`,
           };
         }
       }

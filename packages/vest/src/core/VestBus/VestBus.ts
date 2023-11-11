@@ -1,5 +1,5 @@
-import { CB } from 'vest-utils';
-import { Bus } from 'vestjs-runtime';
+import { CB, ValueOf } from 'vest-utils';
+import { Bus, RuntimeEvents, TIsolate } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
 import { TIsolateTest } from 'IsolateTest';
@@ -11,6 +11,7 @@ import {
 import { TFieldName } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
 import { VestTest } from 'VestTest';
+import { isIsolateTest } from 'isIsolateTest';
 import { useOmitOptionalFields } from 'omitOptionalFields';
 import { useRunDoneCallbacks, useRunFieldCallbacks } from 'runCallbacks';
 
@@ -37,6 +38,18 @@ export function useInitVestBus() {
 
   on(Events.TEST_RUN_STARTED, () => {
     /* Let's just invalidate the suite cache for now */
+  });
+
+  on(RuntimeEvents.ISOLATE_PENDING, (isolate: TIsolate) => {
+    if (isIsolateTest(isolate)) {
+      VestTest.setPending(isolate);
+    }
+  });
+
+  on(RuntimeEvents.ISOLATE_DONE, (isolate: TIsolate) => {
+    if (isIsolateTest(isolate)) {
+      VestBus.emit(Events.TEST_COMPLETED, isolate);
+    }
   });
 
   on(Events.DONE_TEST_OMISSION_PASS, () => {
@@ -85,7 +98,7 @@ export function useInitVestBus() {
     }).off;
   }
 
-  function on(event: Events | '*', cb: (...args: any[]) => void) {
+  function on(event: VestEvents, cb: (...args: any[]) => void) {
     VestBus.on(event, (...args: any[]) => {
       // This is more concise, but it might be an overkill
       // if we're adding events that don't need to invalidate the cache
@@ -94,3 +107,5 @@ export function useInitVestBus() {
     });
   }
 }
+
+type VestEvents = Events | ValueOf<typeof RuntimeEvents> | '*';

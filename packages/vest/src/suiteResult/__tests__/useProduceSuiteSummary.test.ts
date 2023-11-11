@@ -88,7 +88,7 @@ describe('useProduceSuiteSummary', () => {
         dummyTest.failing('field_1', 'message');
       });
       const res = suite();
-      expect(res).toMatchObject(suite.get());
+      expect(ser(res)).toEqual(ser(suite.get()));
       expect(suite.get()).toBe(suite.get());
     });
 

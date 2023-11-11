@@ -98,7 +98,7 @@ function useRunAsyncTest(testObject: TIsolateTest): Promise<void> | undefined {
   const { asyncTest, message } = VestTest.getData(testObject);
 
   if (!isPromise(asyncTest)) return;
-  VestTest.setPending(testObject);
+  // VestTest.setPending(testObject);
 
   const VestBus = Bus.useBus();
 
@@ -125,6 +125,4 @@ function onTestCompleted(VestBus: BusType, testObject: TIsolateTest) {
   // Attempts passing if the test is not already failed.
   // or is not canceled/omitted.
   VestTest.pass(testObject);
-
-  VestBus.emit(Events.TEST_COMPLETED, testObject);
 }

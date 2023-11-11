@@ -10,7 +10,6 @@ exports[`Test Vest's \`test\` function test params creates a test without a key 
     "fieldName": "field_name",
     "message": "failure message",
     "severity": "error",
-    "status": "PASSING",
     "testFn": [Function],
   },
   "key": null,
@@ -65,6 +64,7 @@ exports[`Test Vest's \`test\` function test params creates a test without a key 
     },
     "parent": null,
   },
+  "status": "PASSING",
 }
 `;
 
@@ -77,7 +77,6 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
     "abortController": AbortController {},
     "fieldName": "field_name",
     "severity": "error",
-    "status": "PASSING",
     "testFn": [Function],
   },
   "key": "keyboardcat",
@@ -134,6 +133,7 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
     },
     "parent": null,
   },
+  "status": "PASSING",
 }
 `;
 
@@ -146,7 +146,6 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
     "abortController": AbortController {},
     "fieldName": "field_name",
     "severity": "error",
-    "status": "PASSING",
     "testFn": [Function],
   },
   "key": null,
@@ -201,5 +200,6 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
     },
     "parent": null,
   },
+  "status": "PASSING",
 }
 `;

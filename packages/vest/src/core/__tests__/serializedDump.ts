@@ -1,51 +1,51 @@
 export const dump = {
   children: [
     {
-      children: null,
       $type: 'Test',
+      children: null,
       data: {
         severity: 'error',
-        status: 'FAILED',
         fieldName: 't1',
       },
       key: null,
+      status: 'FAILED',
     },
     {
       children: [
         {
-          children: null,
           $type: 'Test',
+          children: null,
           data: {
-            severity: 'error',
-            status: 'FAILED',
             fieldName: 't2',
             groupName: 'g1',
             message: 't2 message',
+            severity: 'error',
           },
           key: null,
+          status: 'FAILED',
         },
         {
-          children: null,
           $type: 'Test',
+          children: null,
           data: {
-            severity: 'error',
-            status: 'PASSING',
             fieldName: 't3',
             groupName: 'g1',
             message: 't3 message',
+            severity: 'error',
           },
           key: null,
+          status: 'PASSING',
         },
         {
-          children: null,
           $type: 'Test',
+          children: null,
           data: {
             severity: 'warning',
-            status: 'WARNING',
             fieldName: 't4',
             groupName: 'g1',
           },
           key: null,
+          status: 'WARNING',
         },
       ],
       $type: 'Group',
@@ -54,8 +54,8 @@ export const dump = {
     {
       children: [
         {
-          children: null,
           $type: 'Focused',
+          children: null,
           data: {
             focusMode: 1,
             match: [],
@@ -64,44 +64,44 @@ export const dump = {
           key: null,
         },
         {
-          children: null,
           $type: 'Test',
+          children: null,
           data: {
             severity: 'error',
-            status: 'SKIPPED',
             fieldName: 't5',
           },
           key: 'key1',
+          status: 'SKIPPED',
         },
       ],
       $type: 'Group',
       key: null,
     },
     {
+      $type: 'Each',
+      allowReorder: true,
       children: [
         {
-          children: null,
           $type: 'Test',
+          children: null,
           data: {
             severity: 'error',
-            status: 'FAILED',
             fieldName: 't6',
           },
           key: 'a',
+          status: 'FAILED',
         },
         {
-          children: null,
           $type: 'Test',
+          children: null,
           data: {
             severity: 'error',
-            status: 'FAILED',
             fieldName: 't6',
           },
           key: 'b',
+          status: 'FAILED',
         },
       ],
-      $type: 'Each',
-      allowReorder: true,
       key: null,
     },
   ],

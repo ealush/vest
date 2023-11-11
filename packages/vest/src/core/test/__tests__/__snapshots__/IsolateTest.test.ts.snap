@@ -9,7 +9,6 @@ exports[`IsolateTest TestObject constructor 1`] = `
     "fieldName": "unicycle",
     "message": "I am Root.",
     "severity": "error",
-    "status": "UNTESTED",
     "testFn": [MockFunction],
     "type": "Test",
   },
@@ -17,6 +16,7 @@ exports[`IsolateTest TestObject constructor 1`] = `
   "keys": {},
   "output": null,
   "parent": null,
+  "status": "UNTESTED",
 }
 `;
 
@@ -29,7 +29,6 @@ exports[`IsolateTest testObject.warn Should mark the test as warning 1`] = `
     "fieldName": "unicycle",
     "message": "I am Root.",
     "severity": "warning",
-    "status": "UNTESTED",
     "testFn": [MockFunction],
     "type": "Test",
   },
@@ -37,5 +36,6 @@ exports[`IsolateTest testObject.warn Should mark the test as warning 1`] = `
   "keys": {},
   "output": null,
   "parent": null,
+  "status": "UNTESTED",
 }
 `;

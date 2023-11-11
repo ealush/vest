@@ -115,13 +115,14 @@ function baseIsolate(
   payload: Maybe<IsolatePayload> = undefined,
   key: IsolateKey = null
 ): TIsolate {
-  const { allowReorder, ...data } = payload ?? {};
+  const { allowReorder, status, ...data } = payload ?? {};
   return {
     [IsolateKeys.AllowReorder]: allowReorder,
     [IsolateKeys.Keys]: null,
     [IsolateKeys.Parent]: null,
     [IsolateKeys.Type]: type,
     [IsolateKeys.Data]: data as IsolateData,
+    ...(status && { [IsolateKeys.Status]: status }),
     children: null,
     key,
     output: null,
@@ -132,4 +133,5 @@ type IsolateData = Record<string, any>;
 type IsolatePayload = IsolateData & IsolateFeatures;
 type IsolateFeatures = {
   [IsolateKeys.AllowReorder]?: boolean;
+  [IsolateKeys.Status]?: string;
 };

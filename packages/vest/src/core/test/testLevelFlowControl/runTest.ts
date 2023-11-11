@@ -1,13 +1,6 @@
-import {
-  isPromise,
-  isStringValue,
-  BusType,
-  text,
-  deferThrow,
-} from 'vest-utils';
-import { Bus, VestRuntime } from 'vestjs-runtime';
+import { isPromise, isStringValue, text, deferThrow } from 'vest-utils';
+import { VestRuntime } from 'vestjs-runtime';
 
-import { Events } from 'BusEvents';
 import { ErrorStrings } from 'ErrorStrings';
 import { TIsolateTest } from 'IsolateTest';
 import { SuiteContext } from 'SuiteContext';
@@ -63,8 +56,6 @@ function runSyncTest(testObject: TIsolateTest): TestResult {
  * runs test, if async - adds to pending array
  */
 function useRunTest(testObject: TIsolateTest): Promise<void> | undefined {
-  const VestBus = Bus.useBus();
-
   // Run test callback.
   // If a promise is returned, set as async and
   // Move to pending list.
@@ -77,7 +68,7 @@ function useRunTest(testObject: TIsolateTest): Promise<void> | undefined {
       return useRunAsyncTest(testObject);
     }
 
-    onTestCompleted(VestBus, testObject);
+    onTestCompleted(testObject);
   } catch (e) {
     // Probably unreachable. If we get here, it means that
     // something was really wrong and should be reported.
@@ -100,10 +91,8 @@ function useRunAsyncTest(testObject: TIsolateTest): Promise<void> | undefined {
   if (!isPromise(asyncTest)) return;
   // VestTest.setPending(testObject);
 
-  const VestBus = Bus.useBus();
-
   const done = VestRuntime.persist(() => {
-    onTestCompleted(VestBus, testObject);
+    onTestCompleted(testObject);
   });
   const fail = VestRuntime.persist((rejectionMessage?: string) => {
     if (VestTest.isCanceled(testObject)) {
@@ -121,7 +110,7 @@ function useRunAsyncTest(testObject: TIsolateTest): Promise<void> | undefined {
   return asyncTest.then(done, fail);
 }
 
-function onTestCompleted(VestBus: BusType, testObject: TIsolateTest) {
+function onTestCompleted(testObject: TIsolateTest) {
   // Attempts passing if the test is not already failed.
   // or is not canceled/omitted.
   VestTest.pass(testObject);

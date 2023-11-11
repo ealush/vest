@@ -90,7 +90,7 @@ export class VestTest {
   }
 
   static statusEquals(test: TIsolateTest, status: TestStatus): boolean {
-    return VestTest.getData(test).status === status;
+    return test.status === status;
   }
 
   // Mutate
@@ -158,13 +158,10 @@ export class VestTest {
     status: TestStateMachineAction,
     payload?: any
   ): void {
-    VestTest.setData(test, current => ({
-      ...current,
-      status: TestStateMachine.staticTransition(
-        current.status,
-        status,
-        payload
-      ),
-    }));
+    test.status = TestStateMachine.staticTransition(
+      test.status,
+      status,
+      payload
+    );
   }
 }

@@ -1,11 +1,13 @@
 import { StateMachine, TStateMachine, ValueOf } from 'vest-utils';
 
+import { CommonStates } from 'CommonStateMachine';
+
 export const TestStatus = {
+  [CommonStates.PENDING]: CommonStates.PENDING,
   CANCELED: 'CANCELED',
   FAILED: 'FAILED',
   OMITTED: 'OMITTED',
   PASSING: 'PASSING',
-  PENDING: 'PENDING',
   SKIPPED: 'SKIPPED',
   UNTESTED: 'UNTESTED',
   WARNING: 'WARNING',

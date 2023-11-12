@@ -109,7 +109,8 @@
       "IsolateEach": ["./src/core/isolate/IsolateEach/IsolateEach.ts"],
       "SuiteContext": ["./src/core/context/SuiteContext.ts"],
       "VestBus": ["./src/core/VestBus/VestBus.ts"],
-      "BusEvents": ["./src/core/VestBus/BusEvents.ts"]
+      "BusEvents": ["./src/core/VestBus/BusEvents.ts"],
+      "CommonStateMachine": ["./src/core/StateMachines/CommonStateMachine.ts"]
     }
   }
 }

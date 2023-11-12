@@ -98,9 +98,6 @@
       ],
       "VestTest": ["./src/core/isolate/IsolateTest/VestTest.ts"],
       "TestWalker": ["./src/core/isolate/IsolateTest/TestWalker.ts"],
-      "IsolateTestStateMachine": [
-        "./src/core/isolate/IsolateTest/IsolateTestStateMachine.ts"
-      ],
       "IsolateTestReconciler": [
         "./src/core/isolate/IsolateTest/IsolateTestReconciler.ts"
       ],
@@ -110,6 +107,9 @@
       "SuiteContext": ["./src/core/context/SuiteContext.ts"],
       "VestBus": ["./src/core/VestBus/VestBus.ts"],
       "BusEvents": ["./src/core/VestBus/BusEvents.ts"],
+      "IsolateTestStateMachine": [
+        "./src/core/StateMachines/IsolateTestStateMachine.ts"
+      ],
       "CommonStateMachine": ["./src/core/StateMachines/CommonStateMachine.ts"]
     }
   }

@@ -81,6 +81,7 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
       "keys": null,
       "output": undefined,
       "parent": [Circular],
+      "status": "DONE",
     },
   ],
   "data": {
@@ -180,5 +181,6 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
     "warnings": [],
   },
   "parent": null,
+  "status": "DONE",
 }
 `;

@@ -1,4 +1,5 @@
 import { StateMachine, TStateMachine, ValueOf } from 'vest-utils';
+import { TIsolate } from 'vestjs-runtime';
 
 export const CommonStates = {
   PENDING: 'PENDING',
@@ -25,5 +26,17 @@ const machine: TStateMachine<State> = {
     },
   },
 };
+
+function transition(from: State | undefined, to: State) {
+  return CommonStateMachine.staticTransition(from ?? State.INITIAL, to);
+}
+
+export function setDone(isolate: TIsolate) {
+  isolate.status = transition(isolate.status, State.DONE);
+}
+
+export function setPending(isolate: TIsolate) {
+  isolate.status = transition(isolate.status, State.PENDING);
+}
 
 export const CommonStateMachine = StateMachine<State>(machine);

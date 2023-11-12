@@ -63,6 +63,7 @@ exports[`Test Vest's \`test\` function test params creates a test without a key 
       "warnings": [],
     },
     "parent": null,
+    "status": "DONE",
   },
   "status": "PASSING",
 }
@@ -132,6 +133,7 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
       "warnings": [],
     },
     "parent": null,
+    "status": "DONE",
   },
   "status": "PASSING",
 }
@@ -199,6 +201,7 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
       "warnings": [],
     },
     "parent": null,
+    "status": "DONE",
   },
   "status": "PASSING",
 }

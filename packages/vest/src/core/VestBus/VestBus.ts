@@ -2,6 +2,7 @@ import { CB, ValueOf } from 'vest-utils';
 import { Bus, RuntimeEvents, TIsolate } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
+import * as CommonStateMachine from 'CommonStateMachine';
 import { TIsolateTest } from 'IsolateTest';
 import {
   useExpireSuiteResultCache,
@@ -44,12 +45,16 @@ export function useInitVestBus() {
     if (isIsolateTest(isolate)) {
       VestTest.setPending(isolate);
     }
+
+    CommonStateMachine.setPending(isolate);
   });
 
   on(RuntimeEvents.ISOLATE_DONE, (isolate: TIsolate) => {
     if (isIsolateTest(isolate)) {
       VestBus.emit(Events.TEST_COMPLETED, isolate);
     }
+
+    CommonStateMachine.setDone(isolate);
   });
 
   on(Events.DONE_TEST_OMISSION_PASS, () => {

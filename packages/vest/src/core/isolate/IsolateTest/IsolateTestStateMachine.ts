@@ -1,19 +1,22 @@
-import { StateMachine, TStateMachine } from 'vest-utils';
+import { StateMachine, TStateMachine, ValueOf } from 'vest-utils';
 
-export enum TestStatus {
-  UNTESTED = 'UNTESTED',
-  SKIPPED = 'SKIPPED',
-  FAILED = 'FAILED',
-  WARNING = 'WARNING',
-  PASSING = 'PASSING',
-  PENDING = 'PENDING',
-  CANCELED = 'CANCELED',
-  OMITTED = 'OMITTED',
-}
+export const TestStatus = {
+  CANCELED: 'CANCELED',
+  FAILED: 'FAILED',
+  OMITTED: 'OMITTED',
+  PASSING: 'PASSING',
+  PENDING: 'PENDING',
+  SKIPPED: 'SKIPPED',
+  UNTESTED: 'UNTESTED',
+  WARNING: 'WARNING',
+};
 
-export enum TestAction {
-  RESET = 'RESET',
-}
+export const TestAction = {
+  RESET: 'RESET',
+};
+
+export type TestStatus = ValueOf<typeof TestStatus>;
+export type TestAction = ValueOf<typeof TestAction>;
 
 export type TestStateMachineAction = TestAction | TestStatus;
 

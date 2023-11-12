@@ -401,4 +401,25 @@ describe('SimpleStateMachine', () => {
       });
     });
   });
+
+  describe('iniitial', () => {
+    it('Should return the initial state', () => {
+      const machine = StateMachine({
+        initial: 'idle',
+        states: {
+          error: {},
+          idle: {
+            click: 'loading',
+          },
+          loading: {
+            success: 'success',
+            error: 'error',
+          },
+          success: {},
+        },
+      });
+      expect(machine.getState()).toBe('idle');
+      expect(machine.initial()).toBe('idle');
+    });
+  });
 });

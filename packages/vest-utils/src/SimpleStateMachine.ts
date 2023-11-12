@@ -14,8 +14,9 @@ export type TStateMachine<S extends string, A extends string> = {
 
 export type TStateMachineApi<S extends string, A extends string> = {
   getState: CB<S>;
-  transition: (action: A, payload?: any) => void;
+  initial: CB<S>;
   staticTransition: (from: S, action: A, payload?: any) => S;
+  transition: (action: A, payload?: any) => void;
 };
 
 export function StateMachine<S extends string, A extends string>(
@@ -23,12 +24,16 @@ export function StateMachine<S extends string, A extends string>(
 ): TStateMachineApi<S, A> {
   let state = machine.initial;
 
-  const api = { getState, transition, staticTransition };
+  const api = { getState, initial, staticTransition, transition };
 
   return api;
 
   function getState(): S {
     return state;
+  }
+
+  function initial(): S {
+    return machine.initial;
   }
 
   function transition(action: A, payload?: any): S {

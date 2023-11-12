@@ -12,7 +12,6 @@ import {
 import { TFieldName } from 'SuiteResultTypes';
 import { TestWalker } from 'TestWalker';
 import { VestTest } from 'VestTest';
-import { isIsolateTest } from 'isIsolateTest';
 import { useOmitOptionalFields } from 'omitOptionalFields';
 import { useRunDoneCallbacks, useRunFieldCallbacks } from 'runCallbacks';
 
@@ -42,7 +41,7 @@ export function useInitVestBus() {
   });
 
   on(RuntimeEvents.ISOLATE_PENDING, (isolate: TIsolate) => {
-    if (isIsolateTest(isolate)) {
+    if (VestTest.is(isolate)) {
       VestTest.setPending(isolate);
     }
 
@@ -50,7 +49,7 @@ export function useInitVestBus() {
   });
 
   on(RuntimeEvents.ISOLATE_DONE, (isolate: TIsolate) => {
-    if (isIsolateTest(isolate)) {
+    if (VestTest.is(isolate)) {
       VestBus.emit(Events.TEST_COMPLETED, isolate);
     }
 

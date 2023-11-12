@@ -1,7 +1,5 @@
 import wait from 'wait';
 
-import { asVestTest } from '../../../testUtils/asVestTest';
-
 import { TIsolateTest } from 'IsolateTest';
 import { VestTest } from 'VestTest';
 import * as vest from 'vest';
@@ -17,7 +15,7 @@ describe('runAsyncTest', () => {
       });
       suite();
 
-      testObject = asVestTest(testObject);
+      testObject = VestTest.cast(testObject);
 
       expect(VestTest.isPending(testObject)).toBe(true);
       await wait(100);
@@ -132,7 +130,7 @@ describe('runAsyncTest', () => {
         });
         suite();
 
-        testObject = asVestTest(testObject);
+        testObject = VestTest.cast(testObject);
 
         expect(VestTest.isPassing(testObject)).toBe(false);
         await wait(100);
@@ -149,7 +147,7 @@ describe('runAsyncTest', () => {
         });
         suite();
 
-        testObject = asVestTest(testObject);
+        testObject = VestTest.cast(testObject);
 
         expect(VestTest.isFailing(testObject)).toBe(false);
         await wait(100);
@@ -167,7 +165,7 @@ describe('runAsyncTest', () => {
         });
         suite();
 
-        testObject = asVestTest(testObject);
+        testObject = VestTest.cast(testObject);
 
         expect(VestTest.isWarning(testObject)).toBe(false);
         await wait(100);

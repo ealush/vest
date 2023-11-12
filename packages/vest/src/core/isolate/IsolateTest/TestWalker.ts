@@ -4,7 +4,6 @@ import { Walker, VestRuntime, TIsolate } from 'vestjs-runtime';
 import { TIsolateTest } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { VestTest } from 'VestTest';
-import { castIsolateTest, isIsolateTest, isIsolateTestX } from 'isIsolateTest';
 import matchingFieldName from 'matchingFieldName';
 
 type MaybeRoot = Nullable<TIsolate>;
@@ -14,7 +13,7 @@ export class TestWalker {
 
   static hasNoTests(root: MaybeRoot = TestWalker.defaultRoot()): boolean {
     if (!root) return true;
-    return !Walker.has(root, isIsolateTest);
+    return !Walker.has(root, VestTest.is);
   }
 
   static someIncompleteTests(
@@ -25,11 +24,11 @@ export class TestWalker {
     return Walker.some(
       root,
       isolate => {
-        isIsolateTestX(isolate);
+        VestTest.isX(isolate);
 
         return VestTest.isPending(isolate) && predicate(isolate);
       },
-      isIsolateTest
+      VestTest.is
     );
   }
 
@@ -41,11 +40,11 @@ export class TestWalker {
     return Walker.some(
       root,
       isolate => {
-        isIsolateTestX(isolate);
+        VestTest.isX(isolate);
 
         return predicate(isolate);
       },
-      isIsolateTest
+      VestTest.is
     );
   }
 
@@ -57,11 +56,11 @@ export class TestWalker {
     return Walker.every(
       root,
       isolate => {
-        isIsolateTestX(isolate);
+        VestTest.isX(isolate);
 
         return predicate(isolate);
       },
-      isIsolateTest
+      VestTest.is
     );
   }
 
@@ -73,9 +72,9 @@ export class TestWalker {
     Walker.walk(
       root,
       (isolate, breakout) => {
-        callback(castIsolateTest(isolate), breakout);
+        callback(VestTest.cast<F, G>(isolate), breakout);
       },
-      isIsolateTest
+      VestTest.is
     );
   }
 
@@ -96,11 +95,11 @@ export class TestWalker {
     Walker.pluck(
       root,
       isolate => {
-        isIsolateTestX(isolate);
+        VestTest.isX(isolate);
 
         return predicate(isolate);
       },
-      isIsolateTest
+      VestTest.is
     );
   }
 

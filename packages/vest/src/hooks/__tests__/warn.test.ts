@@ -1,9 +1,7 @@
 import { faker } from '@faker-js/faker';
-import { VestTest } from 'VestTest';
-
-import { asVestTest } from '../../testUtils/asVestTest';
 
 import { ErrorStrings } from 'ErrorStrings';
+import { VestTest } from 'VestTest';
 import * as vest from 'vest';
 
 const { create, test, warn } = vest;
@@ -18,7 +16,7 @@ describe('warn hook', () => {
         });
       })();
 
-      expect(VestTest.warns(asVestTest(t))).toBe(true);
+      expect(VestTest.warns(VestTest.cast(t))).toBe(true);
     });
   });
 

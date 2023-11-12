@@ -7,13 +7,12 @@ import { IsolateReconciler } from 'IsolateReconciler';
 import type { TIsolateTest } from 'IsolateTest';
 import { VestTest } from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
-import { castIsolateTest, isIsolateTest } from 'isIsolateTest';
 import { isSameProfileTest } from 'isSameProfileTest';
 import { useVerifyTestRun } from 'verifyTestRun';
 
 export class IsolateTestReconciler extends IsolateReconciler {
   static match(currentNode: TIsolate, historyNode: TIsolate): boolean {
-    return isIsolateTest(currentNode) && isIsolateTest(historyNode);
+    return VestTest.is(currentNode) && VestTest.is(historyNode);
   }
 
   static reconcile(
@@ -46,7 +45,7 @@ function handleCollision(
   prevNode?: TIsolate
 ): TIsolateTest {
   if (IsolateInspector.usesKey(newNode)) {
-    return castIsolateTest(Reconciler.handleIsolateNodeWithKey(newNode));
+    return VestTest.cast(Reconciler.handleIsolateNodeWithKey(newNode));
   }
 
   if (
@@ -56,7 +55,7 @@ function handleCollision(
     return newNode;
   }
 
-  if (!isIsolateTest(prevNode)) {
+  if (!VestTest.is(prevNode)) {
     // I believe we cannot actually reach this point.
     // Because it should already be handled by nodeReorderDetected.
     /* istanbul ignore next */
@@ -81,7 +80,7 @@ function cancelOverriddenPendingTestOnTestReRun(
   currentNode: TIsolate,
   prevTestObject: TIsolateTest
 ) {
-  if (nextNode === currentNode && isIsolateTest(currentNode)) {
+  if (nextNode === currentNode && VestTest.is(currentNode)) {
     cancelOverriddenPendingTest(prevTestObject, currentNode);
   }
 }
@@ -90,7 +89,7 @@ function nodeReorderDetected(
   newNode: TIsolateTest,
   prevNode: Maybe<TIsolate>
 ): boolean {
-  return isIsolateTest(prevNode) && !isSameProfileTest(prevNode, newNode);
+  return VestTest.is(prevNode) && !isSameProfileTest(prevNode, newNode);
 }
 
 function throwTestOrderError(
@@ -104,7 +103,7 @@ function throwTestOrderError(
   deferThrow(
     text(ErrorStrings.TESTS_CALLED_IN_DIFFERENT_ORDER, {
       fieldName: VestTest.getData(newNode).fieldName,
-      prevName: isIsolateTest(prevNode)
+      prevName: VestTest.is(prevNode)
         ? VestTest.getData(prevNode).fieldName
         : undefined,
     })

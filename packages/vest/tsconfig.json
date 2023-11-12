@@ -14,7 +14,6 @@
       "suiteDummy": ["./src/testUtils/suiteDummy.ts"],
       "partition": ["./src/testUtils/partition.ts"],
       "mockThrowError": ["./src/testUtils/mockThrowError.ts"],
-      "asVestTest": ["./src/testUtils/asVestTest.ts"],
       "TVestMock": ["./src/testUtils/TVestMock.ts"],
       "suiteRunResult": ["./src/suiteResult/suiteRunResult.ts"],
       "suiteResult": ["./src/suiteResult/suiteResult.ts"],
@@ -92,7 +91,6 @@
       "isSameProfileTest": [
         "./src/core/isolate/IsolateTest/isSameProfileTest.ts"
       ],
-      "isIsolateTest": ["./src/core/isolate/IsolateTest/isIsolateTest.ts"],
       "cancelOverriddenPendingTest": [
         "./src/core/isolate/IsolateTest/cancelOverriddenPendingTest.ts"
       ],

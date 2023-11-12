@@ -1,5 +1,7 @@
-import { invariant, isPromise, optionalFunctionValue } from 'vest-utils';
+import { Maybe, invariant, isPromise, optionalFunctionValue } from 'vest-utils';
+import { IsolateSelectors, TIsolate } from 'vestjs-runtime';
 
+import { ErrorStrings } from 'ErrorStrings';
 import type { TIsolateTest } from 'IsolateTest';
 import {
   IsolateTestStateMachine,
@@ -9,6 +11,7 @@ import {
 } from 'IsolateTestStateMachine';
 import { TestSeverity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { VestIsolateType } from 'VestIsolateType';
 
 export class VestTest {
   // Read
@@ -19,6 +22,24 @@ export class VestTest {
   >(test: TIsolateTest<F, G>) {
     invariant(test.data);
     return test.data;
+  }
+
+  static is(isolate?: Maybe<TIsolate>): isolate is TIsolateTest {
+    return IsolateSelectors.isIsolateType<TIsolateTest>(
+      isolate,
+      VestIsolateType.Test
+    );
+  }
+
+  static isX(isolate?: Maybe<TIsolate>): asserts isolate is TIsolateTest {
+    invariant(VestTest.is(isolate), ErrorStrings.EXPECTED_VEST_TEST);
+  }
+
+  static cast<F extends TFieldName = string, G extends TGroupName = string>(
+    isolate?: Maybe<TIsolate>
+  ): TIsolateTest<F, G> {
+    VestTest.isX(isolate);
+    return isolate as TIsolateTest<F, G>;
   }
 
   static warns(test: TIsolateTest): boolean {

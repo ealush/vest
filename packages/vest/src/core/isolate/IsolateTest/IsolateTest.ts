@@ -1,7 +1,7 @@
 import { CB, Maybe } from 'vest-utils';
 import { TIsolate, Isolate, IsolateKey } from 'vestjs-runtime';
 
-import { TestStatus } from 'IsolateTestStateMachine';
+import { IsolateTestStateMachine, TestStatus } from 'IsolateTestStateMachine';
 import { TestSeverity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { AsyncTest, TestFn } from 'TestTypes';
@@ -46,7 +46,7 @@ export function IsolateTest<
 export function IsolateTestBase() {
   return {
     severity: TestSeverity.Error,
-    status: TestStatus.UNTESTED,
+    status: IsolateTestStateMachine.initial(),
     abortController: new AbortController(),
   };
 }

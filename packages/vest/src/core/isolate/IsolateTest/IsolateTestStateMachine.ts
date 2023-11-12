@@ -20,11 +20,6 @@ export type TestAction = ValueOf<typeof TestAction>;
 
 export type TestStateMachineAction = TestAction | TestStatus;
 
-export function createTestStateMachine() {
-  return StateMachine<TestStatus, TestStateMachineAction>(machine);
-}
-
-/* eslint-disable sort-keys */
 const machine: TStateMachine<TestStatus, TestStateMachineAction> = {
   initial: TestStatus.UNTESTED,
   states: {
@@ -60,4 +55,8 @@ const machine: TStateMachine<TestStatus, TestStateMachineAction> = {
     [TestStatus.OMITTED]: {},
   },
 };
-/* eslint-enable sort-keys */
+
+export const IsolateTestStateMachine = StateMachine<
+  TestStatus,
+  TestStateMachineAction
+>(machine);

@@ -2,15 +2,13 @@ import { invariant, isPromise, optionalFunctionValue } from 'vest-utils';
 
 import type { TIsolateTest } from 'IsolateTest';
 import {
+  IsolateTestStateMachine,
   TestAction,
   TestStateMachineAction,
   TestStatus,
-  createTestStateMachine,
 } from 'IsolateTestStateMachine';
 import { TestSeverity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
-
-const TestStateMachine = createTestStateMachine();
 
 export class VestTest {
   // Read
@@ -158,7 +156,7 @@ export class VestTest {
     status: TestStateMachineAction,
     payload?: any
   ): void {
-    test.status = TestStateMachine.staticTransition(
+    test.status = IsolateTestStateMachine.staticTransition(
       test.status,
       status,
       payload

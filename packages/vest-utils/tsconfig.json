@@ -45,7 +45,8 @@
       "assign": ["./src/assign.ts"],
       "asArray": ["./src/asArray.ts"],
       "StringObject": ["./src/StringObject.ts"],
-      "SimpleStateMachine": ["./src/SimpleStateMachine.ts"]
+      "SimpleStateMachine": ["./src/SimpleStateMachine.ts"],
+      "Predicates": ["./src/Predicates.ts"]
     }
   }
 }

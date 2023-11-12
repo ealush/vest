@@ -1,4 +1,4 @@
-         export { default as cache, CacheApi } from 'cache';
+export { default as cache, CacheApi } from 'cache';
 export { BusType } from 'bus';
 export { TinyState } from 'tinyState';
 export { isNullish, isNotNullish } from 'isNullish';
@@ -36,6 +36,9 @@ export { nonnullish } from 'nonnullish';
 export * as tinyState from 'tinyState';
 export { StringObject } from 'StringObject';
 export { noop } from 'noop';
+export * as Predicates from 'Predicates';
+
+export type { Predicate } from 'Predicates';
 
 export type {
   DropFirst,

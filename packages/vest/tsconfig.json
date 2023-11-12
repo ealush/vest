@@ -7,108 +7,243 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "vest": ["./src/vest.ts"],
-      "vestMocks": ["./src/testUtils/vestMocks.ts"],
-      "testPromise": ["./src/testUtils/testPromise.ts"],
-      "testDummy": ["./src/testUtils/testDummy.ts"],
-      "suiteDummy": ["./src/testUtils/suiteDummy.ts"],
-      "partition": ["./src/testUtils/partition.ts"],
-      "mockThrowError": ["./src/testUtils/mockThrowError.ts"],
-      "TVestMock": ["./src/testUtils/TVestMock.ts"],
-      "suiteRunResult": ["./src/suiteResult/suiteRunResult.ts"],
-      "suiteResult": ["./src/suiteResult/suiteResult.ts"],
-      "SummaryFailure": ["./src/suiteResult/SummaryFailure.ts"],
-      "SuiteResultTypes": ["./src/suiteResult/SuiteResultTypes.ts"],
-      "Severity": ["./src/suiteResult/Severity.ts"],
+      "vest": [
+        "./src/vest.ts"
+      ],
+      "vestMocks": [
+        "./src/testUtils/vestMocks.ts"
+      ],
+      "testPromise": [
+        "./src/testUtils/testPromise.ts"
+      ],
+      "testDummy": [
+        "./src/testUtils/testDummy.ts"
+      ],
+      "suiteDummy": [
+        "./src/testUtils/suiteDummy.ts"
+      ],
+      "partition": [
+        "./src/testUtils/partition.ts"
+      ],
+      "mockThrowError": [
+        "./src/testUtils/mockThrowError.ts"
+      ],
+      "TVestMock": [
+        "./src/testUtils/TVestMock.ts"
+      ],
+      "suiteRunResult": [
+        "./src/suiteResult/suiteRunResult.ts"
+      ],
+      "suiteResult": [
+        "./src/suiteResult/suiteResult.ts"
+      ],
+      "SummaryFailure": [
+        "./src/suiteResult/SummaryFailure.ts"
+      ],
+      "SuiteResultTypes": [
+        "./src/suiteResult/SuiteResultTypes.ts"
+      ],
+      "Severity": [
+        "./src/suiteResult/Severity.ts"
+      ],
       "useProduceSuiteSummary": [
         "./src/suiteResult/selectors/useProduceSuiteSummary.ts"
       ],
-      "suiteSelectors": ["./src/suiteResult/selectors/suiteSelectors.ts"],
+      "suiteSelectors": [
+        "./src/suiteResult/selectors/suiteSelectors.ts"
+      ],
       "shouldAddValidProperty": [
         "./src/suiteResult/selectors/shouldAddValidProperty.ts"
       ],
       "hasFailuresByTestObjects": [
         "./src/suiteResult/selectors/hasFailuresByTestObjects.ts"
       ],
-      "collectFailures": ["./src/suiteResult/selectors/collectFailures.ts"],
+      "collectFailures": [
+        "./src/suiteResult/selectors/collectFailures.ts"
+      ],
       "shouldSkipDoneRegistration": [
         "./src/suiteResult/done/shouldSkipDoneRegistration.ts"
       ],
-      "deferDoneCallback": ["./src/suiteResult/done/deferDoneCallback.ts"],
-      "staticSuite": ["./src/suite/staticSuite.ts"],
-      "runCallbacks": ["./src/suite/runCallbacks.ts"],
-      "getTypedMethods": ["./src/suite/getTypedMethods.ts"],
-      "createSuite": ["./src/suite/createSuite.ts"],
-      "SuiteTypes": ["./src/suite/SuiteTypes.ts"],
+      "deferDoneCallback": [
+        "./src/suiteResult/done/deferDoneCallback.ts"
+      ],
+      "staticSuite": [
+        "./src/suite/staticSuite.ts"
+      ],
+      "runCallbacks": [
+        "./src/suite/runCallbacks.ts"
+      ],
+      "getTypedMethods": [
+        "./src/suite/getTypedMethods.ts"
+      ],
+      "createSuite": [
+        "./src/suite/createSuite.ts"
+      ],
+      "SuiteWalker": [
+        "./src/suite/SuiteWalker.ts"
+      ],
+      "SuiteTypes": [
+        "./src/suite/SuiteTypes.ts"
+      ],
       "validateSuiteParams": [
         "./src/suite/validateParams/validateSuiteParams.ts"
       ],
-      "skipWhen": ["./src/isolates/skipWhen.ts"],
-      "omitWhen": ["./src/isolates/omitWhen.ts"],
-      "group": ["./src/isolates/group.ts"],
-      "each": ["./src/isolates/each.ts"],
-      "warn": ["./src/hooks/warn.ts"],
-      "include": ["./src/hooks/include.ts"],
-      "optional": ["./src/hooks/optional/optional.ts"],
-      "omitOptionalFields": ["./src/hooks/optional/omitOptionalFields.ts"],
-      "mode": ["./src/hooks/optional/mode.ts"],
-      "OptionalTypes": ["./src/hooks/optional/OptionalTypes.ts"],
-      "Modes": ["./src/hooks/optional/Modes.ts"],
-      "useIsExcluded": ["./src/hooks/focused/useIsExcluded.ts"],
-      "useHasOnliedTests": ["./src/hooks/focused/useHasOnliedTests.ts"],
-      "focused": ["./src/hooks/focused/focused.ts"],
-      "FocusedKeys": ["./src/hooks/focused/FocusedKeys.ts"],
-      "promisify": ["./src/exports/promisify.ts"],
-      "parser": ["./src/exports/parser.ts"],
-      "enforce@schema": ["./src/exports/enforce@schema.ts"],
-      "enforce@isURL": ["./src/exports/enforce@isURL.ts"],
-      "enforce@email": ["./src/exports/enforce@email.ts"],
-      "enforce@date": ["./src/exports/enforce@date.ts"],
-      "enforce@compounds": ["./src/exports/enforce@compounds.ts"],
-      "enforce@compose": ["./src/exports/enforce@compose.ts"],
-      "classnames": ["./src/exports/classnames.ts"],
-      "SuiteSerializer": ["./src/exports/SuiteSerializer.ts"],
-      "ErrorStrings": ["./src/errors/ErrorStrings.ts"],
-      "Runtime": ["./src/core/Runtime.ts"],
-      "test": ["./src/core/test/test.ts"],
-      "test.memo": ["./src/core/test/test.memo.ts"],
-      "TestTypes": ["./src/core/test/TestTypes.ts"],
+      "skipWhen": [
+        "./src/isolates/skipWhen.ts"
+      ],
+      "omitWhen": [
+        "./src/isolates/omitWhen.ts"
+      ],
+      "group": [
+        "./src/isolates/group.ts"
+      ],
+      "each": [
+        "./src/isolates/each.ts"
+      ],
+      "warn": [
+        "./src/hooks/warn.ts"
+      ],
+      "include": [
+        "./src/hooks/include.ts"
+      ],
+      "optional": [
+        "./src/hooks/optional/optional.ts"
+      ],
+      "omitOptionalFields": [
+        "./src/hooks/optional/omitOptionalFields.ts"
+      ],
+      "mode": [
+        "./src/hooks/optional/mode.ts"
+      ],
+      "OptionalTypes": [
+        "./src/hooks/optional/OptionalTypes.ts"
+      ],
+      "Modes": [
+        "./src/hooks/optional/Modes.ts"
+      ],
+      "useIsExcluded": [
+        "./src/hooks/focused/useIsExcluded.ts"
+      ],
+      "useHasOnliedTests": [
+        "./src/hooks/focused/useHasOnliedTests.ts"
+      ],
+      "focused": [
+        "./src/hooks/focused/focused.ts"
+      ],
+      "FocusedKeys": [
+        "./src/hooks/focused/FocusedKeys.ts"
+      ],
+      "promisify": [
+        "./src/exports/promisify.ts"
+      ],
+      "parser": [
+        "./src/exports/parser.ts"
+      ],
+      "enforce@schema": [
+        "./src/exports/enforce@schema.ts"
+      ],
+      "enforce@isURL": [
+        "./src/exports/enforce@isURL.ts"
+      ],
+      "enforce@email": [
+        "./src/exports/enforce@email.ts"
+      ],
+      "enforce@date": [
+        "./src/exports/enforce@date.ts"
+      ],
+      "enforce@compounds": [
+        "./src/exports/enforce@compounds.ts"
+      ],
+      "enforce@compose": [
+        "./src/exports/enforce@compose.ts"
+      ],
+      "classnames": [
+        "./src/exports/classnames.ts"
+      ],
+      "SuiteSerializer": [
+        "./src/exports/SuiteSerializer.ts"
+      ],
+      "ErrorStrings": [
+        "./src/errors/ErrorStrings.ts"
+      ],
+      "Runtime": [
+        "./src/core/Runtime.ts"
+      ],
+      "test": [
+        "./src/core/test/test.ts"
+      ],
+      "test.memo": [
+        "./src/core/test/test.memo.ts"
+      ],
+      "TestTypes": [
+        "./src/core/test/TestTypes.ts"
+      ],
       "verifyTestRun": [
         "./src/core/test/testLevelFlowControl/verifyTestRun.ts"
       ],
-      "runTest": ["./src/core/test/testLevelFlowControl/runTest.ts"],
+      "runTest": [
+        "./src/core/test/testLevelFlowControl/runTest.ts"
+      ],
       "shouldUseErrorMessage": [
         "./src/core/test/helpers/shouldUseErrorMessage.ts"
       ],
       "nonMatchingSeverityProfile": [
         "./src/core/test/helpers/nonMatchingSeverityProfile.ts"
       ],
-      "matchingGroupName": ["./src/core/test/helpers/matchingGroupName.ts"],
-      "matchingFieldName": ["./src/core/test/helpers/matchingFieldName.ts"],
-      "VestReconciler": ["./src/core/isolate/VestReconciler.ts"],
-      "VestIsolateType": ["./src/core/isolate/VestIsolateType.ts"],
-      "IsolateReconciler": ["./src/core/isolate/IsolateReconciler.ts"],
+      "matchingGroupName": [
+        "./src/core/test/helpers/matchingGroupName.ts"
+      ],
+      "matchingFieldName": [
+        "./src/core/test/helpers/matchingFieldName.ts"
+      ],
+      "VestReconciler": [
+        "./src/core/isolate/VestReconciler.ts"
+      ],
+      "VestIsolateType": [
+        "./src/core/isolate/VestIsolateType.ts"
+      ],
+      "IsolateReconciler": [
+        "./src/core/isolate/IsolateReconciler.ts"
+      ],
       "isSameProfileTest": [
         "./src/core/isolate/IsolateTest/isSameProfileTest.ts"
       ],
       "cancelOverriddenPendingTest": [
         "./src/core/isolate/IsolateTest/cancelOverriddenPendingTest.ts"
       ],
-      "VestTest": ["./src/core/isolate/IsolateTest/VestTest.ts"],
-      "TestWalker": ["./src/core/isolate/IsolateTest/TestWalker.ts"],
+      "VestTest": [
+        "./src/core/isolate/IsolateTest/VestTest.ts"
+      ],
+      "TestWalker": [
+        "./src/core/isolate/IsolateTest/TestWalker.ts"
+      ],
       "IsolateTestReconciler": [
         "./src/core/isolate/IsolateTest/IsolateTestReconciler.ts"
       ],
-      "IsolateTest": ["./src/core/isolate/IsolateTest/IsolateTest.ts"],
-      "IsolateSuite": ["./src/core/isolate/IsolateSuite/IsolateSuite.ts"],
-      "IsolateEach": ["./src/core/isolate/IsolateEach/IsolateEach.ts"],
-      "SuiteContext": ["./src/core/context/SuiteContext.ts"],
-      "VestBus": ["./src/core/VestBus/VestBus.ts"],
-      "BusEvents": ["./src/core/VestBus/BusEvents.ts"],
+      "IsolateTest": [
+        "./src/core/isolate/IsolateTest/IsolateTest.ts"
+      ],
+      "IsolateSuite": [
+        "./src/core/isolate/IsolateSuite/IsolateSuite.ts"
+      ],
+      "IsolateEach": [
+        "./src/core/isolate/IsolateEach/IsolateEach.ts"
+      ],
+      "SuiteContext": [
+        "./src/core/context/SuiteContext.ts"
+      ],
+      "VestBus": [
+        "./src/core/VestBus/VestBus.ts"
+      ],
+      "BusEvents": [
+        "./src/core/VestBus/BusEvents.ts"
+      ],
       "IsolateTestStateMachine": [
         "./src/core/StateMachines/IsolateTestStateMachine.ts"
       ],
-      "CommonStateMachine": ["./src/core/StateMachines/CommonStateMachine.ts"]
+      "CommonStateMachine": [
+        "./src/core/StateMachines/CommonStateMachine.ts"
+      ]
     }
   }
 }

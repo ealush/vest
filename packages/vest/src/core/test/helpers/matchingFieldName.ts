@@ -16,3 +16,13 @@ export default function matchingFieldName(
 ): boolean {
   return !!(fieldName && WithFieldName.fieldName === fieldName);
 }
+
+export function matchesOrHasNoFieldName(
+  WithFieldName: WithFieldName<TFieldName>,
+  fieldName?: Maybe<TFieldName>
+): boolean {
+  if (fieldName) {
+    return matchingFieldName(WithFieldName, fieldName);
+  }
+  return true;
+}

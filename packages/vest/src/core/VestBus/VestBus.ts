@@ -1,3 +1,4 @@
+import { SuiteWalker } from 'SuiteWalker';
 import { CB, ValueOf } from 'vest-utils';
 import { Bus, RuntimeEvents, TIsolate } from 'vestjs-runtime';
 
@@ -29,11 +30,6 @@ export function useInitVestBus() {
     const { fieldName } = VestTest.getData(testObject);
 
     useRunFieldCallbacks(fieldName);
-
-    if (!TestWalker.hasRemainingTests()) {
-      // When no more tests are running, emit the done event
-      VestBus.emit(Events.ALL_RUNNING_TESTS_FINISHED);
-    }
   });
 
   on(Events.TEST_RUN_STARTED, () => {
@@ -54,6 +50,11 @@ export function useInitVestBus() {
     }
 
     CommonStateMachine.setDone(isolate);
+
+    if (!SuiteWalker.hasPending()) {
+      // When no more tests are running, emit the done event
+      VestBus.emit(Events.ALL_RUNNING_TESTS_FINISHED);
+    }
   });
 
   on(Events.DONE_TEST_OMISSION_PASS, () => {

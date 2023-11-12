@@ -1,3 +1,4 @@
+import { SuiteWalker } from 'SuiteWalker';
 import { assign } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
@@ -7,7 +8,6 @@ import {
   TFieldName,
   TGroupName,
 } from 'SuiteResultTypes';
-import { TestWalker } from 'TestWalker';
 import { useDeferDoneCallback } from 'deferDoneCallback';
 import { shouldSkipDoneRegistration } from 'shouldSkipDoneRegistration';
 import { useCreateSuiteResult } from 'suiteResult';
@@ -43,7 +43,7 @@ function done<F extends TFieldName, G extends TGroupName>(
     return output;
   }
   const useDoneCallback = () => callback(useCreateSuiteResult());
-  if (!TestWalker.hasRemainingTests(fieldName)) {
+  if (!SuiteWalker.hasRemainingTests(fieldName)) {
     useDoneCallback();
     return output;
   }

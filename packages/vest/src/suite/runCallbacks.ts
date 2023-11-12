@@ -2,7 +2,7 @@ import { isArray, callEach } from 'vest-utils';
 
 import { useDoneCallbacks, useFieldCallbacks } from 'Runtime';
 import { TFieldName } from 'SuiteResultTypes';
-import { TestWalker } from 'TestWalker';
+import { SuiteWalker } from 'SuiteWalker';
 
 /**
  * Runs done callback per field when async tests are finished running.
@@ -12,7 +12,7 @@ export function useRunFieldCallbacks(fieldName?: TFieldName): void {
 
   if (
     fieldName &&
-    !TestWalker.hasRemainingTests(fieldName) &&
+    !SuiteWalker.hasRemainingTests(fieldName) &&
     isArray(fieldCallbacks[fieldName])
   ) {
     callEach(fieldCallbacks[fieldName]);

@@ -1,4 +1,6 @@
+import { SuiteWalker } from 'SuiteWalker';
 import { useIsOptionalFieldApplied } from 'optional';
+import { Predicates } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
 import { SuiteOptionalFields, TIsolateSuite } from 'IsolateSuite';
@@ -62,12 +64,14 @@ export function useShouldAddValidPropertyInGroup(
 
 // Does the given field have any pending tests that are not optional?
 function useHasNonOptionalIncomplete(fieldName?: TFieldName) {
-  return TestWalker.someIncompleteTests(testObject => {
-    if (nonMatchingFieldName(VestTest.getData(testObject), fieldName)) {
-      return false;
-    }
-    return !useIsOptionalFieldApplied(fieldName);
-  });
+  return SuiteWalker.hasPending(
+    Predicates.all(
+      VestTest.is,
+      (testObject: TIsolateTest) =>
+        !nonMatchingFieldName(VestTest.getData(testObject), fieldName),
+      () => !useIsOptionalFieldApplied(fieldName)
+    )
+  );
 }
 
 // Do the given group/field have any pending tests that are not optional?
@@ -75,17 +79,16 @@ function useHasNonOptionalIncompleteByGroup(
   groupName: TGroupName,
   fieldName: TFieldName
 ): boolean {
-  return TestWalker.someIncompleteTests(testObject => {
-    if (nonMatchingGroupName(testObject, groupName)) {
-      return false;
-    }
-
-    if (nonMatchingFieldName(VestTest.getData(testObject), fieldName)) {
-      return false;
-    }
-
-    return !useIsOptionalFieldApplied(fieldName);
-  });
+  return SuiteWalker.hasPending(
+    Predicates.all(
+      VestTest.is,
+      (testObject: TIsolateTest) =>
+        !nonMatchingGroupName(testObject, groupName),
+      (testObject: TIsolateTest) =>
+        !nonMatchingFieldName(VestTest.getData(testObject), fieldName),
+      () => !useIsOptionalFieldApplied(fieldName)
+    )
+  );
 }
 
 // Did all of the tests for the provided field run/omit?

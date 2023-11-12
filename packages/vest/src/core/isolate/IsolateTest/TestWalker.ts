@@ -16,22 +16,6 @@ export class TestWalker {
     return !Walker.has(root, VestTest.is);
   }
 
-  static someIncompleteTests(
-    predicate: (test: TIsolateTest) => boolean,
-    root: MaybeRoot = TestWalker.defaultRoot()
-  ): boolean {
-    if (!root) return false;
-    return Walker.some(
-      root,
-      isolate => {
-        VestTest.isX(isolate);
-
-        return VestTest.isPending(isolate) && predicate(isolate);
-      },
-      VestTest.is
-    );
-  }
-
   static someTests(
     predicate: (test: TIsolateTest) => boolean,
     root: MaybeRoot = TestWalker.defaultRoot()
@@ -76,15 +60,6 @@ export class TestWalker {
       },
       VestTest.is
     );
-  }
-
-  static hasRemainingTests(fieldName?: TFieldName): boolean {
-    return TestWalker.someIncompleteTests(testObject => {
-      if (fieldName) {
-        return matchingFieldName(VestTest.getData(testObject), fieldName);
-      }
-      return true;
-    });
   }
 
   static pluckTests(

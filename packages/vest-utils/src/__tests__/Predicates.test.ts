@@ -1,4 +1,4 @@
-import { all } from 'Predicates';
+import { all, any } from 'Predicates';
 
 describe('Predicates', () => {
   describe('all', () => {
@@ -51,6 +51,51 @@ describe('Predicates', () => {
 
       expect(spy1).toHaveBeenCalledWith(5);
       expect(spy2).toHaveBeenCalledWith(5);
+    });
+  });
+
+  describe('any', () => {
+    it('Shold return a predicate function', () => {
+      expect(typeof any()).toBe('function');
+    });
+
+    it('Should return true if any predicate returns true', () => {
+      expect(
+        any(
+          value => value > 0,
+          value => value === 10
+        )(5)
+      ).toBe(true);
+      expect(
+        any(
+          value => value === 10,
+          value => value > 0
+        )(5)
+      ).toBe(true);
+    });
+
+    it('Should return true if all predicates return true', () => {
+      const predicate = any(
+        value => value > 0,
+        value => value === 10
+      );
+
+      expect(predicate(10)).toBe(true);
+    });
+
+    it('Should return false if all predicates return false', () => {
+      const predicate = any(
+        value => value > 0,
+        value => value === 10
+      );
+
+      expect(predicate(-5)).toBe(false);
+    });
+
+    it('Should return false if no predicates are passed', () => {
+      const predicate = any();
+
+      expect(predicate(15)).toBe(false);
     });
   });
 });

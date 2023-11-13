@@ -52,6 +52,14 @@ describe('Predicates', () => {
       expect(spy1).toHaveBeenCalledWith(5);
       expect(spy2).toHaveBeenCalledWith(5);
     });
+
+    it('When passing explicit true as a predicate, should return true', () => {
+      expect(all(true, true, true)(5)).toBe(true);
+    });
+
+    it('When passing explicit false as a predicate, should return false', () => {
+      expect(all(true, false, false)(5)).toBe(false);
+    });
   });
 
   describe('any', () => {
@@ -96,6 +104,14 @@ describe('Predicates', () => {
       const predicate = any();
 
       expect(predicate(15)).toBe(false);
+    });
+
+    it('When passing explicit true as a predicate, should return true', () => {
+      expect(any(true, false, false)(5)).toBe(true);
+    });
+
+    it('When passing explicit false as a predicate, should return false', () => {
+      expect(any(false, false, false)(5)).toBe(false);
     });
   });
 });

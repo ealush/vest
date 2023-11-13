@@ -1,4 +1,4 @@
-import { Predicates, type Predicate } from 'vest-utils';
+import { Predicates, type Predicate, isNullish } from 'vest-utils';
 import { TIsolate, VestRuntime, Walker } from 'vestjs-runtime';
 
 import { CommonStates } from 'CommonStateMachine';
@@ -17,19 +17,29 @@ export class SuiteWalker {
       return false;
     }
 
-    return Walker.some(root, (isolate: TIsolate) => {
-      return (
-        (isolate.status === CommonStates.PENDING && predicate?.(isolate)) ??
-        true
-      );
-    });
-  }
-
-  static hasRemainingTests(fieldName?: TFieldName): boolean {
-    return SuiteWalker.hasPending(
-      Predicates.all(VestTest.is, (testObject: TIsolateTest) => {
-        return matchesOrHasNoFieldName(VestTest.getData(testObject), fieldName);
-      })
+    return Walker.some(
+      root,
+      Predicates.all(isPendingStatus, predicate ?? true)
     );
   }
+
+  // Checks whether there are pending isolates in the tree.
+  // If a fieldname is provided, will only check tests with a matching fieldname.
+  static hasRemainingWithTestNameMatching(fieldName?: TFieldName): boolean {
+    return SuiteWalker.hasPending(
+      Predicates.any(
+        isNullish(fieldName),
+        Predicates.all(VestTest.is, (testObject: TIsolateTest) => {
+          return matchesOrHasNoFieldName(
+            VestTest.getData(testObject),
+            fieldName
+          );
+        })
+      )
+    );
+  }
+}
+
+function isPendingStatus(isolate: TIsolate) {
+  return isolate.status === CommonStates.PENDING;
 }

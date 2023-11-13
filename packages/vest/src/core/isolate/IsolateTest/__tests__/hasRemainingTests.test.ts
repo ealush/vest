@@ -3,7 +3,7 @@ import wait from 'wait';
 import { SuiteWalker } from 'SuiteWalker';
 import * as vest from 'vest';
 
-describe('SuiteWalker.hasRemainingTests', () => {
+describe('SuiteWalker.hasRemainingWithTestNameMatching', () => {
   let hasRemaining: boolean | null = null;
   let count = 0;
 
@@ -15,7 +15,7 @@ describe('SuiteWalker.hasRemainingTests', () => {
     describe('When no remaining tests', () => {
       it('should return false', () => {
         vest.create(() => {
-          hasRemaining = SuiteWalker.hasRemainingTests();
+          hasRemaining = SuiteWalker.hasRemainingWithTestNameMatching();
         })();
         expect(hasRemaining).toBe(false);
       });
@@ -27,7 +27,7 @@ describe('SuiteWalker.hasRemainingTests', () => {
           vest.test('f1', async () => {
             await wait(100);
           });
-          hasRemaining = SuiteWalker.hasRemainingTests();
+          hasRemaining = SuiteWalker.hasRemainingWithTestNameMatching();
         })();
 
         expect(hasRemaining).toBe(true);
@@ -40,7 +40,7 @@ describe('SuiteWalker.hasRemainingTests', () => {
             await wait(100);
           });
           count++;
-          hasRemaining = SuiteWalker.hasRemainingTests();
+          hasRemaining = SuiteWalker.hasRemainingWithTestNameMatching();
         });
         suite();
         suite();
@@ -58,7 +58,7 @@ describe('SuiteWalker.hasRemainingTests', () => {
             await wait(100);
           });
           count++;
-          hasRemaining = SuiteWalker.hasRemainingTests();
+          hasRemaining = SuiteWalker.hasRemainingWithTestNameMatching();
         });
 
         suite();
@@ -73,7 +73,7 @@ describe('SuiteWalker.hasRemainingTests', () => {
     describe('When no remaining tests', () => {
       it('Should return false', () => {
         vest.create(() => {
-          hasRemaining = SuiteWalker.hasRemainingTests('f1');
+          hasRemaining = SuiteWalker.hasRemainingWithTestNameMatching('f1');
         })();
         expect(hasRemaining).toBe(false);
       });
@@ -85,7 +85,7 @@ describe('SuiteWalker.hasRemainingTests', () => {
           vest.test('f1', async () => {
             await wait(100);
           });
-          hasRemaining = SuiteWalker.hasRemainingTests('f1');
+          hasRemaining = SuiteWalker.hasRemainingWithTestNameMatching('f1');
         })();
         expect(hasRemaining).toBe(true);
       });
@@ -97,7 +97,7 @@ describe('SuiteWalker.hasRemainingTests', () => {
             await wait(100);
           });
           count++;
-          hasRemaining = SuiteWalker.hasRemainingTests('f1');
+          hasRemaining = SuiteWalker.hasRemainingWithTestNameMatching('f1');
         });
         suite();
         suite();
@@ -116,8 +116,8 @@ describe('SuiteWalker.hasRemainingTests', () => {
           });
           count++;
           hasRemaining =
-            SuiteWalker.hasRemainingTests('f1') &&
-            SuiteWalker.hasRemainingTests('f2');
+            SuiteWalker.hasRemainingWithTestNameMatching('f1') &&
+            SuiteWalker.hasRemainingWithTestNameMatching('f2');
         });
 
         suite();

@@ -3,14 +3,17 @@
 exports[`AsyncIsolate It should resolve async isolate into the parent 2`] = `
 {
   "$type": "URoot",
+  "abortController": AbortController {},
   "allowReorder": undefined,
   "children": [
     {
       "$type": "UChild_1",
+      "abortController": AbortController {},
       "allowReorder": undefined,
       "children": [
         {
           "$type": "UGrandChild_1",
+          "abortController": AbortController {},
           "allowReorder": undefined,
           "children": null,
           "data": {},
@@ -21,6 +24,7 @@ exports[`AsyncIsolate It should resolve async isolate into the parent 2`] = `
         },
         {
           "$type": "UGrandChild_2",
+          "abortController": AbortController {},
           "allowReorder": undefined,
           "children": null,
           "data": {},
@@ -31,6 +35,7 @@ exports[`AsyncIsolate It should resolve async isolate into the parent 2`] = `
         },
         {
           "$type": "UGrandChild_3",
+          "abortController": AbortController {},
           "allowReorder": undefined,
           "children": null,
           "data": {},

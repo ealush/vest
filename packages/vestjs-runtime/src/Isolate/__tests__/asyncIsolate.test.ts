@@ -17,6 +17,7 @@ describe('AsyncIsolate', () => {
       expect(root).toMatchInlineSnapshot(`
         {
           "$type": "URoot",
+          "abortController": AbortController {},
           "allowReorder": undefined,
           "children": null,
           "data": {},

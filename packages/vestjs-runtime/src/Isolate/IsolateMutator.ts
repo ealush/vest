@@ -50,4 +50,11 @@ export class IsolateMutator {
   static setData(isolate: TIsolate, data: any): void {
     isolate.data = data;
   }
+
+  static abort(isolate: TIsolate, reason?: string): void {
+    if (isNullish(isolate.abortController)) {
+      return;
+    }
+    isolate.abortController.abort(reason);
+  }
 }

@@ -2,7 +2,7 @@ import { CB } from 'vest-utils';
 
 import { TIsolate, Isolate } from 'Isolate';
 import { StateRefType, useAvailableRoot } from 'VestRuntime';
-import { VestRuntime } from 'vestjs-runtime';
+import { IsolateMutator, VestRuntime } from 'vestjs-runtime';
 
 enum IsolateType {
   Isolate = 'Isolate',
@@ -92,6 +92,25 @@ describe('Isolate', () => {
         });
         expect(child.parent).toBe(parent);
       });
+    });
+  });
+
+  describe('AbortController', () => {
+    it('Should create an AbortController', () => {
+      const isolate = withRunTime(() => {
+        return Isolate.create(IsolateType.Isolate, () => {});
+      });
+      expect(isolate.abortController).toBeDefined();
+      expect(isolate.abortController).toBeInstanceOf(AbortController);
+    });
+
+    it('Should abort the controller with the passed reason', () => {
+      const isolate = withRunTime(() => {
+        return Isolate.create(IsolateType.Isolate, () => {});
+      });
+      const spy = jest.spyOn(isolate.abortController, 'abort');
+      IsolateMutator.abort(isolate, 'foo');
+      expect(spy).toHaveBeenCalledWith('foo');
     });
   });
 

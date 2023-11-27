@@ -6,6 +6,7 @@ export enum IsolateKeys {
   Data = 'data',
   AllowReorder = 'allowReorder',
   Status = 'status',
+  AbortController = 'abortController',
 }
 
 enum MinifiedKeys {
@@ -42,3 +43,9 @@ export const MinifiedToKey = Object.entries(KeyToMinified).reduce(
     }),
   {} as Record<string, IsolateKeys>
 );
+
+export const ExcludedFromDump = [
+  IsolateKeys.AbortController,
+  IsolateKeys.Parent,
+  IsolateKeys.Keys,
+];

@@ -10,7 +10,12 @@ import {
 } from 'vest-utils';
 
 import { TIsolate } from 'Isolate';
-import { IsolateKeys, KeyToMinified, MinifiedToKey } from 'IsolateKeys';
+import {
+  ExcludedFromDump,
+  IsolateKeys,
+  KeyToMinified,
+  MinifiedToKey,
+} from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';
 
 export class IsolateSerializer {
@@ -123,5 +128,5 @@ function transformIsolate(isolate: TIsolate): Record<string, any> {
 }
 
 function isKeyExcluededFromDump(key: string): boolean {
-  return [IsolateKeys.Parent, IsolateKeys.Keys].includes(key as IsolateKeys);
+  return ExcludedFromDump.includes(key as IsolateKeys);
 }

@@ -3,10 +3,10 @@
 exports[`Test Vest's \`test\` function test params creates a test without a key 1`] = `
 {
   "$type": "Test",
+  "abortController": AbortController {},
   "allowReorder": undefined,
   "children": null,
   "data": {
-    "abortController": AbortController {},
     "fieldName": "field_name",
     "message": "failure message",
     "severity": "error",
@@ -17,6 +17,7 @@ exports[`Test Vest's \`test\` function test params creates a test without a key 
   "output": undefined,
   "parent": {
     "$type": "Suite",
+    "abortController": AbortController {},
     "allowReorder": undefined,
     "children": [
       [Circular],
@@ -72,10 +73,10 @@ exports[`Test Vest's \`test\` function test params creates a test without a key 
 exports[`Test Vest's \`test\` function test params creates a test without a message and with a key 1`] = `
 {
   "$type": "Test",
+  "abortController": AbortController {},
   "allowReorder": undefined,
   "children": null,
   "data": {
-    "abortController": AbortController {},
     "fieldName": "field_name",
     "severity": "error",
     "testFn": [Function],
@@ -85,6 +86,7 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
   "output": undefined,
   "parent": {
     "$type": "Suite",
+    "abortController": AbortController {},
     "allowReorder": undefined,
     "children": [
       [Circular],
@@ -142,10 +144,10 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
 exports[`Test Vest's \`test\` function test params creates a test without a message and without a key 1`] = `
 {
   "$type": "Test",
+  "abortController": AbortController {},
   "allowReorder": undefined,
   "children": null,
   "data": {
-    "abortController": AbortController {},
     "fieldName": "field_name",
     "severity": "error",
     "testFn": [Function],
@@ -155,6 +157,7 @@ exports[`Test Vest's \`test\` function test params creates a test without a mess
   "output": undefined,
   "parent": {
     "$type": "Suite",
+    "abortController": AbortController {},
     "allowReorder": undefined,
     "children": [
       [Circular],

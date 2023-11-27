@@ -16,6 +16,7 @@ export type TIsolate<P extends IsolatePayload = IsolatePayload> = {
   [IsolateKeys.Keys]: Nullable<Record<string, TIsolate>>;
   [IsolateKeys.Data]: DataOnly<P>;
   [IsolateKeys.Status]?: string;
+  [IsolateKeys.AbortController]: AbortController;
   children: Nullable<TIsolate[]>;
   key: IsolateKey;
   output: any;
@@ -118,6 +119,7 @@ function baseIsolate(
   const { allowReorder, status, ...data } = payload ?? {};
   return {
     [IsolateKeys.AllowReorder]: allowReorder,
+    [IsolateKeys.AbortController]: new AbortController(),
     [IsolateKeys.Keys]: null,
     [IsolateKeys.Parent]: null,
     [IsolateKeys.Type]: type,

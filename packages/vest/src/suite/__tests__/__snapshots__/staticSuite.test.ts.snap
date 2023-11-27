@@ -3,14 +3,15 @@
 exports[`staticSuite dump should output a dump of the suite 1`] = `
 {
   "$type": "Suite",
+  "abortController": AbortController {},
   "allowReorder": undefined,
   "children": [
     {
       "$type": "Test",
+      "abortController": AbortController {},
       "allowReorder": undefined,
       "children": null,
       "data": {
-        "abortController": AbortController {},
         "fieldName": "t1",
         "severity": "error",
         "testFn": [Function],
@@ -23,10 +24,10 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
     },
     {
       "$type": "Test",
+      "abortController": AbortController {},
       "allowReorder": undefined,
       "children": null,
       "data": {
-        "abortController": AbortController {},
         "fieldName": "t2",
         "severity": "error",
         "testFn": [Function],
@@ -39,14 +40,15 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
     },
     {
       "$type": "Group",
+      "abortController": AbortController {},
       "allowReorder": undefined,
       "children": [
         {
           "$type": "Test",
+          "abortController": AbortController {},
           "allowReorder": undefined,
           "children": null,
           "data": {
-            "abortController": AbortController {},
             "fieldName": "t1",
             "groupName": "g1",
             "severity": "error",
@@ -60,10 +62,10 @@ exports[`staticSuite dump should output a dump of the suite 1`] = `
         },
         {
           "$type": "Test",
+          "abortController": AbortController {},
           "allowReorder": undefined,
           "children": null,
           "data": {
-            "abortController": AbortController {},
             "fieldName": "t3",
             "groupName": "g1",
             "severity": "error",

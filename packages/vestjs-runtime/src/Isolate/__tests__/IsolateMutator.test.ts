@@ -117,4 +117,36 @@ describe('IsolateMutator', () => {
       });
     });
   });
+
+  describe('abort', () => {
+    it('Should abort the controller', () => {
+      const isolate = {
+        abortController: { abort: jest.fn() },
+      } as unknown as TIsolate;
+
+      expect(isolate.abortController.abort).not.toHaveBeenCalled();
+      IsolateMutator.abort(isolate);
+      expect(isolate.abortController.abort).toHaveBeenCalled();
+    });
+
+    describe('When the controller is nullish', () => {
+      it('Should no-op', () => {
+        const isolate = { abortController: null } as unknown as TIsolate;
+
+        expect(isolate.abortController).toBeNull();
+        IsolateMutator.abort(isolate);
+        expect(isolate.abortController).toBeNull();
+      });
+    });
+
+    it('Should abort the controller with the passed reason', () => {
+      const isolate = {
+        abortController: { abort: jest.fn() },
+      } as unknown as TIsolate;
+
+      expect(isolate.abortController.abort).not.toHaveBeenCalled();
+      IsolateMutator.abort(isolate, 'foo');
+      expect(isolate.abortController.abort).toHaveBeenCalledWith('foo');
+    });
+  });
 });

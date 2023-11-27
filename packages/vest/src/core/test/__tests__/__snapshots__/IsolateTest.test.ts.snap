@@ -5,7 +5,6 @@ exports[`IsolateTest TestObject constructor 1`] = `
   "$type": "UnitTest",
   "children": [],
   "data": {
-    "abortController": AbortController {},
     "fieldName": "unicycle",
     "message": "I am Root.",
     "severity": "error",
@@ -25,7 +24,6 @@ exports[`IsolateTest testObject.warn Should mark the test as warning 1`] = `
   "$type": "UnitTest",
   "children": [],
   "data": {
-    "abortController": AbortController {},
     "fieldName": "unicycle",
     "message": "I am Root.",
     "severity": "warning",

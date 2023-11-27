@@ -1,5 +1,5 @@
 import { Maybe, invariant, isPromise, optionalFunctionValue } from 'vest-utils';
-import { IsolateSelectors, TIsolate } from 'vestjs-runtime';
+import { IsolateMutator, IsolateSelectors, TIsolate } from 'vestjs-runtime';
 
 import { ErrorStrings } from 'ErrorStrings';
 import type { TIsolateTest } from 'IsolateTest';
@@ -161,7 +161,7 @@ export class VestTest {
 
   static cancel(test: TIsolateTest): void {
     VestTest.setStatus(test, TestStatus.CANCELED);
-    VestTest.getData(test).abortController.abort(TestStatus.CANCELED);
+    IsolateMutator.abort(test, TestStatus.CANCELED);
   }
 
   static omit(test: TIsolateTest): void {

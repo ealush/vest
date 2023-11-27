@@ -373,4 +373,42 @@ describe('done', () => {
       expect(cb).not.toHaveBeenCalled();
     });
   });
+
+  describe('Async Isolate', () => {
+    describe('When async isolate is pending', () => {
+      it('Should not call the callback', () => {
+        const cb = jest.fn();
+
+        const suite = vest.create(() => {
+          vest.test('test', () => false);
+
+          vest.group('group', async () => {
+            await wait(1000);
+          });
+        });
+
+        suite().done(cb);
+
+        expect(cb).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('When async isolate is completed', () => {
+      it('Should call the callback', async () => {
+        const cb = jest.fn();
+
+        const suite = vest.create(() => {
+          vest.test('test', () => false);
+
+          vest.group('group', async () => {
+            await wait(1000);
+          });
+        });
+
+        suite().done(cb);
+        await wait(1000);
+        expect(cb).toHaveBeenCalled();
+      });
+    });
+  });
 });

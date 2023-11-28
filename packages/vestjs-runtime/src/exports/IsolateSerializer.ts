@@ -14,6 +14,7 @@ import {
   ExcludedFromDump,
   IsolateKeys,
   KeyToMinified,
+  MinifiedKeys,
   MinifiedToKey,
 } from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';
@@ -40,7 +41,7 @@ export class IsolateSerializer {
     while (queue.length) {
       const current = queue.shift();
 
-      const children = IsolateSerializer.getChildren(current);
+      const children = IsolateSerializer.expandChildren(current);
 
       for (const key in MinifiedToKey) {
         const value = current[key];
@@ -82,8 +83,10 @@ export class IsolateSerializer {
     return JSON.stringify(transformIsolate(isolate));
   }
 
-  static getChildren(node: TIsolate): Nullable<TIsolate[]> {
-    return node.children ? [...node.children] : null;
+  static expandChildren(node: Record<string, any>): Nullable<TIsolate[]> {
+    return node[MinifiedKeys.Children]
+      ? [...node[MinifiedKeys.Children]]
+      : null;
   }
 
   static validateIsolate(node: Record<string, any> | TIsolate): void {
@@ -100,14 +103,14 @@ function transformIsolate(isolate: TIsolate): Record<string, any> {
   const next: Record<string, any> = {};
 
   if (isolate.children) {
-    next.children = isolate.children.map(transformIsolate);
+    next[MinifiedKeys.Children] = isolate.children.map(transformIsolate);
   }
 
   for (const key in isolate) {
-    if (key === 'children') {
-      continue;
-    }
-
+    // Skip keys that should be excluded from the dump.
+    // While we're excluding children from the dump, they'll actually remain there
+    // due to the fact that we've already transformed them recursively beforehand
+    // thus renaming them to the minified key.
     if (isKeyExcluededFromDump(key)) {
       continue;
     }

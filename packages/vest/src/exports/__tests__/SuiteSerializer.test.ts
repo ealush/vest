@@ -57,7 +57,6 @@ describe('suite.resume', () => {
     expect(suite.get()).not.toEqual(suite2.get());
 
     SuiteSerializer.resume(suite2, serialized);
-
     expect(suite.get()).isDeepCopyOf(suite2.get());
 
     suite2();

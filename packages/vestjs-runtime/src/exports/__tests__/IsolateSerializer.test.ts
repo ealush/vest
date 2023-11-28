@@ -22,6 +22,22 @@ describe('IsolateSerializer', () => {
       expect(inflated).toMatchInlineSnapshot(`
         {
           "$type": "URoot",
+          "C": [
+            {
+              "$": "UChild_1",
+              "D": {
+                "some_data": true,
+              },
+            },
+            {
+              "$": "UChild_2",
+              "D": {},
+            },
+            {
+              "$": "UChild_3",
+              "D": {},
+            },
+          ],
           "children": [
             {
               "$type": "UChild_1",

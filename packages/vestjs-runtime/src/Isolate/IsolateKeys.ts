@@ -7,16 +7,18 @@ export enum IsolateKeys {
   AllowReorder = 'allowReorder',
   Status = 'status',
   AbortController = 'abortController',
+  Children = 'children',
 }
 
-enum MinifiedKeys {
+export enum MinifiedKeys {
   Type = '$',
-  Keys = 'K',
-  Key = 'k',
+  Keys = 'Ks',
+  Key = 'ky',
   Parent = 'P',
   Data = 'D',
-  AllowReorder = 'aR',
+  AllowReorder = 'AR',
   Status = 'S',
+  Children = 'C',
 }
 
 export const KeyToMinified = {
@@ -48,4 +50,5 @@ export const ExcludedFromDump = [
   IsolateKeys.AbortController,
   IsolateKeys.Parent,
   IsolateKeys.Keys,
+  IsolateKeys.Children,
 ];

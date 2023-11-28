@@ -1,5 +1,3 @@
-import { dump } from './serializedDump';
-
 import * as vest from 'vest';
 
 describe('useLoadSuite', () => {
@@ -17,6 +15,10 @@ describe('useLoadSuite', () => {
     expect(suite.hasErrors()).toBe(false);
     expect(suite.hasWarnings()).toBe(false);
     expect(suite.getErrors()).toEqual({});
+
+    const dump = genDump();
+
+    expect(dump).toMatchSnapshot();
 
     suite.resume(dump);
 
@@ -60,3 +62,27 @@ describe('useLoadSuite', () => {
     expect(suite.get()).toMatchSnapshot();
   });
 });
+
+function genDump() {
+  const suite = vest.create(() => {
+    vest.skip('t5');
+
+    vest.test('t1', () => false);
+    vest.group('g1', () => {
+      vest.test('t2', 't2 message', () => false);
+      vest.test('t3', () => {});
+      vest.test('t4', () => {
+        vest.warn();
+        return false;
+      });
+    });
+    vest.test('t5', () => false);
+    vest.each(['a', 'b'], key => {
+      vest.test('t6', () => false, key);
+    });
+  });
+
+  suite();
+
+  return suite.dump();
+}

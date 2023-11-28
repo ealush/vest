@@ -1,9 +1,9 @@
 import { Predicate, Predicates, isNullish } from 'vest-utils';
-import { TIsolate, VestRuntime, Walker } from 'vestjs-runtime';
+import { VestRuntime, Walker } from 'vestjs-runtime';
 
-import { CommonStates } from 'CommonStateMachine';
 import { TIsolateTest } from 'IsolateTest';
 import { TFieldName } from 'SuiteResultTypes';
+import { VestIsolate } from 'VestIsolate';
 import { VestTest } from 'VestTest';
 import { matchesOrHasNoFieldName } from 'matchingFieldName';
 
@@ -19,7 +19,7 @@ export class SuiteWalker {
 
     return Walker.some(
       root,
-      Predicates.all(isPendingStatus, predicate ?? true)
+      Predicates.all(VestIsolate.isPending, predicate ?? true)
     );
   }
 
@@ -38,8 +38,4 @@ export class SuiteWalker {
       )
     );
   }
-}
-
-function isPendingStatus(isolate: TIsolate) {
-  return isolate.status === CommonStates.PENDING;
 }

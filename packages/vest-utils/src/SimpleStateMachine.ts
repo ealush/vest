@@ -3,7 +3,7 @@ import { CB } from 'utilityTypes';
 const STATE_WILD_CARD = '*';
 type TStateWildCard = typeof STATE_WILD_CARD;
 
-export type TStateMachine<S extends string, A extends S = S> = {
+export type TStateMachine<S extends string = string, A extends S = S> = {
   initial: S;
   states: Partial<{
     [key in S & TStateWildCard]: {
@@ -12,14 +12,14 @@ export type TStateMachine<S extends string, A extends S = S> = {
   }>;
 };
 
-export type TStateMachineApi<S extends string, A extends S = S> = {
+export type TStateMachineApi<S extends string = string, A extends S = S> = {
   getState: CB<S>;
   initial: CB<S>;
   staticTransition: (from: S, action: A, payload?: any) => S;
   transition: (action: A, payload?: any) => void;
 };
 
-export function StateMachine<S extends string, A extends S = S>(
+export function StateMachine<S extends string = string, A extends S = S>(
   machine: TStateMachine<S, A>
 ): TStateMachineApi<S, A> {
   let state = machine.initial;

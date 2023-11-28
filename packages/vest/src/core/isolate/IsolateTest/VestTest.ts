@@ -6,14 +6,16 @@ import type { TIsolateTest } from 'IsolateTest';
 import {
   IsolateTestStateMachine,
   TestAction,
-  TestStateMachineAction,
   TestStatus,
 } from 'IsolateTestStateMachine';
 import { TestSeverity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { VestIsolate } from 'VestIsolate';
 import { VestIsolateType } from 'VestIsolateType';
 
-export class VestTest {
+export class VestTest extends VestIsolate {
+  static stateMachine = IsolateTestStateMachine;
+
   // Read
 
   static getData<
@@ -44,10 +46,6 @@ export class VestTest {
 
   static warns(test: TIsolateTest): boolean {
     return VestTest.getData(test).severity === TestSeverity.Warning;
-  }
-
-  static isPending(test: TIsolateTest): boolean {
-    return VestTest.statusEquals(test, TestStatus.PENDING);
   }
 
   static isOmitted(test: TIsolateTest): boolean {
@@ -108,15 +106,11 @@ export class VestTest {
     return isPromise(VestTest.getData(test).asyncTest);
   }
 
-  static statusEquals(test: TIsolateTest, status: TestStatus): boolean {
-    return test.status === status;
-  }
-
   // Mutate
 
-  static setPending(test: TIsolateTest) {
-    VestTest.setStatus(test, TestStatus.PENDING);
-  }
+  // static setPending(test: TIsolateTest) {
+  //   this.setStatus(test, TestStatus.PENDING);
+  // }
 
   static fail(test: TIsolateTest): void {
     VestTest.setStatus(
@@ -170,17 +164,5 @@ export class VestTest {
 
   static reset(test: TIsolateTest): void {
     VestTest.setStatus(test, TestAction.RESET);
-  }
-
-  static setStatus(
-    test: TIsolateTest,
-    status: TestStateMachineAction,
-    payload?: any
-  ): void {
-    test.status = IsolateTestStateMachine.staticTransition(
-      test.status,
-      status,
-      payload
-    );
   }
 }

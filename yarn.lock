@@ -5484,7 +5484,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "anyone@workspace:packages/anyone"
   dependencies:
-    vest-utils: ^1.2.0
+    vest-utils: ^1.2.1
   languageName: unknown
   linkType: soft
 
@@ -6768,11 +6768,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"context@^3.0.16, context@workspace:packages/context":
+"context@^3.0.17, context@workspace:packages/context":
   version: 0.0.0-use.local
   resolution: "context@workspace:packages/context"
   dependencies:
-    vest-utils: ^1.2.0
+    vest-utils: ^1.2.1
   languageName: unknown
   linkType: soft
 
@@ -11781,14 +11781,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"n4s@^5.0.10, n4s@workspace:packages/n4s":
+"n4s@^5.0.11, n4s@workspace:packages/n4s":
   version: 0.0.0-use.local
   resolution: "n4s@workspace:packages/n4s"
   dependencies:
     "@types/validator": ^13.11.1
-    context: ^3.0.16
+    context: ^3.0.17
     validator: 13.9.0
-    vest-utils: ^1.2.0
+    vest-utils: ^1.2.1
   languageName: unknown
   linkType: soft
 
@@ -15733,15 +15733,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vast@^1.0.25, vast@workspace:packages/vast":
+"vast@^1.0.26, vast@workspace:packages/vast":
   version: 0.0.0-use.local
   resolution: "vast@workspace:packages/vast"
   dependencies:
-    vest-utils: ^1.2.0
+    vest-utils: ^1.2.1
   languageName: unknown
   linkType: soft
 
-"vest-utils@^1.2.0, vest-utils@workspace:packages/vest-utils":
+"vest-utils@^1.2.1, vest-utils@workspace:packages/vest-utils":
   version: 0.0.0-use.local
   resolution: "vest-utils@workspace:packages/vest-utils"
   languageName: unknown
@@ -15758,20 +15758,20 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "vest@workspace:packages/vest"
   dependencies:
-    context: ^3.0.16
-    n4s: ^5.0.10
-    vast: ^1.0.25
-    vest-utils: ^1.2.0
-    vestjs-runtime: ^1.1.0
+    context: ^3.0.17
+    n4s: ^5.0.11
+    vast: ^1.0.26
+    vest-utils: ^1.2.1
+    vestjs-runtime: ^1.2.0
   languageName: unknown
   linkType: soft
 
-"vestjs-runtime@^1.1.0, vestjs-runtime@workspace:packages/vestjs-runtime":
+"vestjs-runtime@^1.2.0, vestjs-runtime@workspace:packages/vestjs-runtime":
   version: 0.0.0-use.local
   resolution: "vestjs-runtime@workspace:packages/vestjs-runtime"
   dependencies:
-    context: ^3.0.16
-    vest-utils: ^1.2.0
+    context: ^3.0.17
+    vest-utils: ^1.2.1
   languageName: unknown
   linkType: soft
 

@@ -38,8 +38,6 @@ export { StringObject } from 'StringObject';
 export { noop } from 'noop';
 export * as Predicates from 'Predicates';
 
-export type { Predicate } from 'Predicates';
-
 export type {
   DropFirst,
   Stringable,
@@ -51,4 +49,5 @@ export type {
   OneOrMoreOf,
   DynamicValue,
   BlankValue,
+  Predicate,
 } from 'utilityTypes';

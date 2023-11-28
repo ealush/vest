@@ -1,4 +1,4 @@
-import { Predicates, type Predicate, isNullish } from 'vest-utils';
+import { Predicate, Predicates, isNullish } from 'vest-utils';
 import { TIsolate, VestRuntime, Walker } from 'vestjs-runtime';
 
 import { CommonStates } from 'CommonStateMachine';

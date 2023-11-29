@@ -1,3 +1,5 @@
+import { assign } from 'vest-utils';
+
 export enum IsolateKeys {
   Type = '$type',
   Keys = 'keys',
@@ -29,6 +31,7 @@ export const KeyToMinified = {
   [IsolateKeys.Key]: MinifiedKeys.Key,
   [IsolateKeys.AllowReorder]: MinifiedKeys.AllowReorder,
   [IsolateKeys.Status]: MinifiedKeys.Status,
+  [IsolateKeys.Children]: MinifiedKeys.Children,
 };
 
 // This const is an object that looks like this:
@@ -38,17 +41,22 @@ export const KeyToMinified = {
 //   'P': 'parent',
 //   ...
 // }
-export const MinifiedToKey = Object.entries(KeyToMinified).reduce(
-  (acc, [key, minified]) =>
-    Object.assign(acc, {
-      [minified]: key,
-    }),
-  {} as Record<string, IsolateKeys>
-);
+export const MinifiedToKey = invertKeyMap(KeyToMinified);
+
+export function invertKeyMap(miniMap: Record<string, string>) {
+  return Object.entries(miniMap).reduce(
+    (acc, [key, minified]) =>
+      assign(acc, {
+        [minified]: key,
+      }),
+    {} as Record<string, string>
+  );
+}
 
 export const ExcludedFromDump = [
   IsolateKeys.AbortController,
   IsolateKeys.Parent,
   IsolateKeys.Keys,
   IsolateKeys.Children,
+  IsolateKeys.Data,
 ];

@@ -1,8 +1,10 @@
 import { ErrorStrings } from 'ErrorStrings';
 import {
+  Maybe,
   Nullable,
   hasOwnProperty,
   invariant,
+  isEmpty,
   isNotNullish,
   isNullish,
   isStringValue,
@@ -16,12 +18,16 @@ import {
   KeyToMinified,
   MinifiedKeys,
   MinifiedToKey,
+  invertKeyMap,
 } from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';
 
 export class IsolateSerializer {
   // eslint-disable-next-line max-statements, complexity
-  static deserialize(node: Record<string, any> | TIsolate | string): TIsolate {
+  static deserialize(
+    node: Record<string, any> | TIsolate | string,
+    payloadMiniMap: Maybe<MiniMap>
+  ): TIsolate {
     // the  assumption is that the tree is built correctly,
     // but the children are missing the parent property to
     // avoid circular references during serialization.
@@ -29,7 +35,9 @@ export class IsolateSerializer {
     // to avoid circular references during serialization.
     // we need to rebuild the tree and add back the parent property to the children
     // and the keys property to the parents.
+    const inverseMinimap = invertKeyMap(payloadMiniMap ?? {});
 
+    // Validate the root object
     const root = isStringValue(node)
       ? JSON.parse(node)
       : ({ ...node } as TIsolate);
@@ -38,29 +46,51 @@ export class IsolateSerializer {
 
     const queue = [root];
 
+    // Iterate over the queue until it's empty
     while (queue.length) {
+      // Get the next item from the queue
       const current = queue.shift();
 
+      // Get the children of the current item
       const children = IsolateSerializer.expandChildren(current);
 
+      // Iterate over the minified keys
       for (const key in MinifiedToKey) {
+        // Get the value for the current key
         const value = current[key];
+
+        // If the value is not null or undefined
         if (isNotNullish(value)) {
-          current[MinifiedToKey[key]] = value;
+          // Get the key to use
+          const keyToUse = MinifiedToKey[key];
+
+          // If the key is data, then we may need to transform the keys
+          if (keyToUse === IsolateKeys.Data) {
+            // Transform the keys
+            current[keyToUse] = transformKeys(value, inverseMinimap);
+          } else {
+            // Otherwise, just set the key
+            current[keyToUse] = value;
+          }
+
+          // Remove the old key
           delete current[key];
         }
       }
 
+      // If there are no children, nothing to do.
       if (!children) {
         continue;
       }
 
+      // Copy the children and set their parent to the current node.
       current.children = children.map(child => {
         const nextChild = { ...child };
 
         IsolateMutator.setParent(nextChild, current);
         queue.push(nextChild);
 
+        // If the child has a key, add it to the parent's keys.
         const key = nextChild.key;
 
         if (key) {
@@ -75,12 +105,15 @@ export class IsolateSerializer {
     return root as TIsolate;
   }
 
-  static serialize(isolate: Nullable<TIsolate>): string {
+  static serialize(
+    isolate: Nullable<TIsolate>,
+    miniMap: Maybe<MiniMap>
+  ): string {
     if (isNullish(isolate)) {
       return '';
     }
 
-    return JSON.stringify(transformIsolate(isolate));
+    return JSON.stringify(transformIsolate(isolate, miniMap));
   }
 
   static expandChildren(node: Record<string, any>): Nullable<TIsolate[]> {
@@ -99,11 +132,20 @@ export class IsolateSerializer {
 }
 
 // eslint-disable-next-line max-statements, complexity
-function transformIsolate(isolate: TIsolate): Record<string, any> {
+function transformIsolate(
+  isolate: TIsolate,
+  miniMap: Maybe<MiniMap>
+): Record<string, any> {
   const next: Record<string, any> = {};
 
   if (isolate.children) {
-    next[MinifiedKeys.Children] = isolate.children.map(transformIsolate);
+    next[MinifiedKeys.Children] = isolate.children.map(isolate =>
+      transformIsolate(isolate, miniMap)
+    );
+  }
+
+  if (!isEmpty(isolate.data)) {
+    next[MinifiedKeys.Data] = transformKeys(isolate.data, miniMap);
   }
 
   for (const key in isolate) {
@@ -120,11 +162,8 @@ function transformIsolate(isolate: TIsolate): Record<string, any> {
       continue;
     }
 
-    if (hasOwnProperty(KeyToMinified, key)) {
-      next[KeyToMinified[key]] = value;
-    } else {
-      next[key] = value;
-    }
+    const keyToUse = minifyKey(key);
+    next[keyToUse] = value;
   }
 
   return next;
@@ -133,3 +172,30 @@ function transformIsolate(isolate: TIsolate): Record<string, any> {
 function isKeyExcluededFromDump(key: string): boolean {
   return ExcludedFromDump.includes(key as IsolateKeys);
 }
+
+function minifyKey(key: string): string {
+  return KeyToMinified[key as keyof typeof KeyToMinified] ?? key;
+}
+
+function transformKeys(
+  data: Record<string, any>,
+  keyMap: Maybe<MiniMap>
+): Record<string, any> {
+  const next: Record<string, any> = {};
+
+  // Loop over each key in the data.
+  for (const key in data) {
+    // Find the key to use for the next object.
+    // If there is no key map, use the original key.
+    // If there is a key map, use the key map entry for the current key.
+    const keyToUse = (keyMap ? keyMap[key] : key) ?? key;
+
+    // Add the key and value to the next object.
+    next[keyToUse] = data[key];
+  }
+
+  // Return the next object.
+  return next;
+}
+
+type MiniMap = Record<string, string>;

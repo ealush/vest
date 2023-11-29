@@ -1,6 +1,7 @@
 import { IsolateSerializer } from 'vestjs-runtime';
 
 import { TIsolateSuite } from 'IsolateSuite';
+import { IsolateTestPayload } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { Suite } from 'SuiteTypes';
 
@@ -8,13 +9,13 @@ export class SuiteSerializer {
   static serialize(suite: Suite<TFieldName, TGroupName>) {
     const dump = { ...suite.dump(), output: undefined };
 
-    return IsolateSerializer.serialize(dump);
+    return IsolateSerializer.serialize(dump, miniMap);
   }
 
   static deserialize(
     serialized: string | TIsolateSuite | Record<string, any>
   ): TIsolateSuite {
-    return IsolateSerializer.deserialize(serialized) as TIsolateSuite;
+    return IsolateSerializer.deserialize(serialized, miniMap) as TIsolateSuite;
   }
 
   static resume(
@@ -26,3 +27,13 @@ export class SuiteSerializer {
     suite.resume(suiteRoot);
   }
 }
+
+const miniMap: Record<keyof IsolateTestPayload, string> = {
+  asyncTest: '_at', // asyncTest is not serialized
+  fieldName: 'fN',
+  groupName: 'gN',
+  message: 'msg',
+  severity: 'sv',
+  status: 'st',
+  testFn: '_tf', // testFn is not serialized
+};

@@ -1,21 +1,23 @@
+import { assign } from 'vest-utils';
 import { IsolateSerializer } from 'vestjs-runtime';
 
 import { TIsolateSuite } from 'IsolateSuite';
 import { IsolateTestPayload } from 'IsolateTest';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { Suite } from 'SuiteTypes';
+import { IsolateFocusedPayload } from 'focused';
 
 export class SuiteSerializer {
   static serialize(suite: Suite<TFieldName, TGroupName>) {
     const dump = { ...suite.dump(), output: undefined };
 
-    return IsolateSerializer.serialize(dump, miniMap);
+    return IsolateSerializer.serialize(dump, MiniMap);
   }
 
   static deserialize(
     serialized: string | TIsolateSuite | Record<string, any>
   ): TIsolateSuite {
-    return IsolateSerializer.deserialize(serialized, miniMap) as TIsolateSuite;
+    return IsolateSerializer.deserialize(serialized, MiniMap) as TIsolateSuite;
   }
 
   static resume(
@@ -28,7 +30,7 @@ export class SuiteSerializer {
   }
 }
 
-const miniMap: Record<keyof IsolateTestPayload, string> = {
+const testMiniMap: Record<keyof IsolateTestPayload, string> = {
   asyncTest: '_at', // asyncTest is not serialized
   fieldName: 'fN',
   groupName: 'gN',
@@ -37,3 +39,11 @@ const miniMap: Record<keyof IsolateTestPayload, string> = {
   status: 'st',
   testFn: '_tf', // testFn is not serialized
 };
+
+const focusMiniMap: Record<keyof IsolateFocusedPayload, string> = {
+  focusMode: 'fM',
+  match: 'm',
+  matchAll: 'mA',
+};
+
+const MiniMap = assign({}, testMiniMap, focusMiniMap);

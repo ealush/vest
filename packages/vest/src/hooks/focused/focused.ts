@@ -17,11 +17,13 @@ export type ExclusionItem = Maybe<OneOrMoreOf<string>>;
 export type FieldExclusion<F extends TFieldName> = Maybe<OneOrMoreOf<F>>;
 export type GroupExclusion<G extends TGroupName> = Maybe<OneOrMoreOf<G>>;
 
-export type TIsolateFocused = TIsolate<{
+export type TIsolateFocused = TIsolate<IsolateFocusedPayload>;
+
+export type IsolateFocusedPayload = {
   focusMode: FocusModes;
   match: FieldExclusion<TFieldName>;
   matchAll: boolean;
-}>;
+};
 
 export function IsolateFocused(
   focusMode: FocusModes,

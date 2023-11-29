@@ -44,16 +44,16 @@ Notable libraries in this category include **Formik**, **Vuelidate**, **vee-vali
 
 **How does Vest compare to them?**
 
-| Features                         | Vest                      | Functional Matchers | Schema Validation   | Framework-Specific Form State Managers       |
-| -------------------------------- | ------------------------- | ------------------- | ------------------- | -------------------------------------------- |
-| Stateful                         | Stateful                  | Manual              | Manual              | Stateful                                     |
-| Per Field Validation             | Supported                 | Not supported       | Not supported       | Supported                                    |
-| Syntax                           | Declarative               | Function calls      | Declarative         | Declarative                                  |
-| Code Organization                | Separate validation suite | Manual organization | Manual organization | Depends on library                           |
-| Framework Agnostic               | Yes                       | Yes                 | Yes                 | No                                           |
-| Flexibility for Framework Switch | High                      | High                | High                | Limited                                      |
-| Code Reusability                 |                           | It's functions...   | Requires effort     | Within the UI Framework                      |
-| Libraries                        | -                         | v8n, validatorjs    | yup, joi, zod       | Formik, Vuelidate, vee-validate, redux-forms |
+| Features                             | Vest                      | Functional Matchers        | Schema Validation        | Framework-Specific Form State Managers       |
+| ------------------------------------ | ------------------------- | -------------------------- | ------------------------ | -------------------------------------------- |
+| **State Management**                 | Stateful                  | Manual                     | Manual                   | Stateful                                     |
+| **Per Field Validation**             | Supported                 | Not supported              | Not supported            | Supported                                    |
+| **Syntax Style**                     | Declarative               | Function calls             | Declarative              | Declarative                                  |
+| **Code Organization**                | Separate validation suite | Manual organization        | Manual organization      | Depends on library                           |
+| **Framework Agnostic**               | Yes                       | Yes                        | Yes                      | No                                           |
+| **Flexibility for Framework Switch** | High                      | High                       | High                     | Limited                                      |
+| **Code Reusability**                 | High                      | Medium (It's functions...) | Medium (Requires effort) | Low (Within the UI Framework)                |
+| **Example Libraries**                | -                         | v8n, validatorjs           | yup, joi, zod            | Formik, Vuelidate, vee-validate, redux-forms |
 
 Vest is a new breed of form validation library that tries to answer the shortcomings of existing solutions, while not compromising on developer experience, user experience and performance. Here's how Vest stands out:
 

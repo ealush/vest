@@ -2,6 +2,7 @@ import { ErrorStrings } from 'ErrorStrings';
 import {
   Maybe,
   Nullable,
+  assign,
   hasOwnProperty,
   invariant,
   isEmpty,
@@ -18,12 +19,11 @@ import {
   KeyToMinified,
   MinifiedKeys,
   MinifiedToKey,
-  invertKeyMap,
 } from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';
 
 export class IsolateSerializer {
-  // eslint-disable-next-line max-statements, complexity
+  // eslint-disable-next-line max-statements, complexity, max-lines-per-function
   static deserialize(
     node: Record<string, any> | TIsolate | string,
     miniMaps: Maybe<MiniMaps>
@@ -35,7 +35,7 @@ export class IsolateSerializer {
     // to avoid circular references during serialization.
     // we need to rebuild the tree and add back the parent property to the children
     // and the keys property to the parents.
-    const inverseMinimap = invertKeyMap(miniMaps?.keys?.data);
+    const inverseMinimap = deeplyInvertKeyMap(miniMaps);
 
     // Validate the root object
     const root = isStringValue(node)
@@ -65,12 +65,20 @@ export class IsolateSerializer {
           const keyToUse = MinifiedToKey[key];
 
           // If the key is data, then we may need to transform the keys
+          // eslint-disable-next-line max-depth
           if (keyToUse === IsolateKeys.Data) {
             // Transform the keys
-            current[keyToUse] = transformKeys(value, inverseMinimap);
+            current[keyToUse] = transformKeys(
+              value,
+              inverseMinimap?.keys?.data
+            );
           } else {
             // Otherwise, just set the key
-            current[keyToUse] = value;
+            current[keyToUse] = transformValueByKey(
+              keyToUse,
+              value,
+              inverseMinimap
+            );
           }
 
           // Remove the old key
@@ -163,7 +171,7 @@ function transformIsolate(
     }
 
     const keyToUse = minifyKey(key);
-    next[keyToUse] = minifyValueByKey(key, value, miniMaps);
+    next[keyToUse] = transformValueByKey(key, value, miniMaps);
   }
 
   return next;
@@ -177,7 +185,7 @@ function minifyKey(key: string): string {
   return KeyToMinified[key as keyof typeof KeyToMinified] ?? key;
 }
 
-function minifyValueByKey(
+function transformValueByKey(
   key: string,
   value: any,
   miniMaps: Maybe<MiniMaps>
@@ -223,3 +231,16 @@ type MiniMaps = Partial<{
     [IsolateKeys.Type]: MiniMap;
   }>;
 }>;
+
+export function deeplyInvertKeyMap(miniMaps: Maybe<MiniMaps> = {}): MiniMaps {
+  return Object.entries(miniMaps).reduce((acc, [key, value]) => {
+    if (typeof value === 'object') {
+      return assign(acc, {
+        [key]: deeplyInvertKeyMap(value as MiniMaps),
+      });
+    }
+    return assign(acc, {
+      [value]: key,
+    });
+  }, {} as MiniMaps);
+}

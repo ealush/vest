@@ -112,6 +112,69 @@ describe('IsolateSerializer', () => {
           `"{"C":[{"D":{"some_data":true},"$":"UC1","S":"d"},{"$":"UC2","S":"f"},{"$":"UC3"}],"D":{"some_data":true},"$":"UR","S":"p"}"`
         );
       });
+
+      it('Should correctly expand values', () => {
+        const { root } = createRoot();
+
+        root.status = 'pending';
+        // @ts-ignore
+        root.children[0].status = 'done';
+        // @ts-ignore
+        root.children[1].status = 'failed';
+
+        const minimap = {
+          values: {
+            status: {
+              pending: 'p',
+              done: 'd',
+              failed: 'f',
+            },
+            $type: {
+              URoot: 'UR',
+              UChild_1: 'UC1',
+              UChild_2: 'UC2',
+              UChild_3: 'UC3',
+            },
+          },
+        };
+
+        const serialized = IsolateSerializer.serialize(root, minimap);
+        const inflated = IsolateSerializer.deserialize(serialized, minimap);
+
+        expect(inflated.status).toBe('pending');
+        // @ts-ignore
+        expect(inflated.children[0].status).toBe('done');
+        // @ts-ignore
+        expect(inflated.children[1].status).toBe('failed');
+        expect(inflated).toMatchInlineSnapshot(`
+          {
+            "$type": "URoot",
+            "children": [
+              {
+                "$type": "UChild_1",
+                "data": {
+                  "some_data": true,
+                },
+                "parent": [Circular],
+                "status": "done",
+              },
+              {
+                "$type": "UChild_2",
+                "parent": [Circular],
+                "status": "failed",
+              },
+              {
+                "$type": "UChild_3",
+                "parent": [Circular],
+              },
+            ],
+            "data": {
+              "some_data": true,
+            },
+            "status": "pending",
+          }
+        `);
+      });
     });
 
     it('Should inflate with correct keys', () => {

@@ -26,7 +26,7 @@ export class IsolateSerializer {
   // eslint-disable-next-line max-statements, complexity
   static deserialize(
     node: Record<string, any> | TIsolate | string,
-    payloadMiniMap: Maybe<MiniMap>
+    miniMaps: Maybe<MiniMaps>
   ): TIsolate {
     // the  assumption is that the tree is built correctly,
     // but the children are missing the parent property to
@@ -35,7 +35,7 @@ export class IsolateSerializer {
     // to avoid circular references during serialization.
     // we need to rebuild the tree and add back the parent property to the children
     // and the keys property to the parents.
-    const inverseMinimap = invertKeyMap(payloadMiniMap ?? {});
+    const inverseMinimap = invertKeyMap(miniMaps?.keys?.data);
 
     // Validate the root object
     const root = isStringValue(node)
@@ -107,13 +107,13 @@ export class IsolateSerializer {
 
   static serialize(
     isolate: Nullable<TIsolate>,
-    miniMap: Maybe<MiniMap>
+    miniMaps: Maybe<MiniMaps>
   ): string {
     if (isNullish(isolate)) {
       return '';
     }
 
-    return JSON.stringify(transformIsolate(isolate, miniMap));
+    return JSON.stringify(transformIsolate(isolate, miniMaps));
   }
 
   static expandChildren(node: Record<string, any>): Nullable<TIsolate[]> {
@@ -134,18 +134,18 @@ export class IsolateSerializer {
 // eslint-disable-next-line max-statements, complexity
 function transformIsolate(
   isolate: TIsolate,
-  miniMap: Maybe<MiniMap>
+  miniMaps: Maybe<MiniMaps>
 ): Record<string, any> {
   const next: Record<string, any> = {};
 
   if (isolate.children) {
     next[MinifiedKeys.Children] = isolate.children.map(isolate =>
-      transformIsolate(isolate, miniMap)
+      transformIsolate(isolate, miniMaps)
     );
   }
 
   if (!isEmpty(isolate.data)) {
-    next[MinifiedKeys.Data] = transformKeys(isolate.data, miniMap);
+    next[MinifiedKeys.Data] = transformKeys(isolate.data, miniMaps?.keys?.data);
   }
 
   for (const key in isolate) {
@@ -163,7 +163,7 @@ function transformIsolate(
     }
 
     const keyToUse = minifyKey(key);
-    next[keyToUse] = value;
+    next[keyToUse] = minifyValueByKey(key, value, miniMaps);
   }
 
   return next;
@@ -175,6 +175,20 @@ function isKeyExcluededFromDump(key: string): boolean {
 
 function minifyKey(key: string): string {
   return KeyToMinified[key as keyof typeof KeyToMinified] ?? key;
+}
+
+function minifyValueByKey(
+  key: string,
+  value: any,
+  miniMaps: Maybe<MiniMaps>
+): any {
+  if (isNullish(value)) {
+    return value;
+  }
+
+  const keyMap = miniMaps?.values?.[key as keyof MiniMaps['values']];
+
+  return keyMap ? keyMap[value] ?? value : value;
 }
 
 function transformKeys(
@@ -199,3 +213,13 @@ function transformKeys(
 }
 
 type MiniMap = Record<string, string>;
+
+type MiniMaps = Partial<{
+  keys: Partial<{
+    [IsolateKeys.Data]: MiniMap;
+  }>;
+  values: Partial<{
+    [IsolateKeys.Status]: MiniMap;
+    [IsolateKeys.Type]: MiniMap;
+  }>;
+}>;

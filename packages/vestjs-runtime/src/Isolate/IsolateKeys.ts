@@ -43,7 +43,7 @@ export const KeyToMinified = {
 // }
 export const MinifiedToKey = invertKeyMap(KeyToMinified);
 
-export function invertKeyMap(miniMap: Record<string, string>) {
+export function invertKeyMap(miniMap: Record<string, string> = {}) {
   return Object.entries(miniMap).reduce(
     (acc, [key, minified]) =>
       assign(acc, {

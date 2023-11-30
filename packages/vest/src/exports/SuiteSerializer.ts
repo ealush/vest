@@ -46,4 +46,8 @@ const focusMiniMap: Record<keyof IsolateFocusedPayload, string> = {
   matchAll: 'mA',
 };
 
-const MiniMap = assign({}, testMiniMap, focusMiniMap);
+const MiniMap = {
+  keys: {
+    data: assign({}, testMiniMap, focusMiniMap),
+  },
+};

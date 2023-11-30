@@ -3,12 +3,12 @@ import { Maybe } from 'vest-utils';
 import { Isolate, TIsolate } from 'Isolate';
 import { MinifiedKeys } from 'IsolateKeys';
 import { IsolateSerializer } from 'IsolateSerializer';
-import { VestRuntime } from 'vestjs-runtime';
+import { IsolateMutator, VestRuntime } from 'vestjs-runtime';
 
 describe('IsolateSerializer', () => {
   describe('serialize', () => {
     it('Should produce serialized dump', () => {
-      const { serialized } = createSerialized();
+      const { serialized } = createRoot();
 
       expect(serialized).toMatchSnapshot();
     });
@@ -16,7 +16,7 @@ describe('IsolateSerializer', () => {
 
   describe('deserialize', () => {
     it('Should fully inflate the tree', () => {
-      const { root, serialized } = createSerialized();
+      const { root, serialized } = createRoot();
 
       const inflated = IsolateSerializer.deserialize(serialized);
 
@@ -48,7 +48,7 @@ describe('IsolateSerializer', () => {
     });
 
     test('When data is empty, should not add data property', () => {
-      const { serialized } = createSerialized();
+      const { serialized } = createRoot();
       const inflated = IsolateSerializer.deserialize(serialized);
 
       expect(inflated?.children?.[0]).toHaveProperty('data');
@@ -59,8 +59,12 @@ describe('IsolateSerializer', () => {
 
   describe('Custom Data Serialization', () => {
     it('Should serialize data with custom keys', () => {
-      const { serialized } = createSerialized({
-        some_data: 'sd',
+      const { serialized } = createRoot({
+        keys: {
+          data: {
+            some_data: 'sd',
+          },
+        },
       });
 
       const parsed = JSON.parse(serialized);
@@ -70,19 +74,67 @@ describe('IsolateSerializer', () => {
       );
     });
 
+    describe('value serialization', () => {
+      it('Should serialize values with shorthand values', () => {
+        const { root } = createRoot();
+
+        root.status = 'pending';
+        // @ts-ignore
+        root.children[0].status = 'done';
+        // @ts-ignore
+        root.children[1].status = 'failed';
+
+        const serialized = IsolateSerializer.serialize(root, {
+          values: {
+            status: {
+              pending: 'p',
+              done: 'd',
+              failed: 'f',
+            },
+            $type: {
+              URoot: 'UR',
+              UChild_1: 'UC1',
+              UChild_2: 'UC2',
+              UChild_3: 'UC3',
+            },
+          },
+        });
+
+        const parsed = JSON.parse(serialized);
+        expect(parsed[MinifiedKeys.Status]).toBe('p');
+        expect(parsed.C[0][MinifiedKeys.Status]).toBe('d');
+        expect(parsed.C[1][MinifiedKeys.Status]).toBe('f');
+        expect(parsed[MinifiedKeys.Type]).toBe('UR');
+        expect(parsed.C[0][MinifiedKeys.Type]).toBe('UC1');
+        expect(parsed.C[1][MinifiedKeys.Type]).toBe('UC2');
+        expect(parsed.C[2][MinifiedKeys.Type]).toBe('UC3');
+        expect(serialized).toMatchInlineSnapshot(
+          `"{"C":[{"D":{"some_data":true},"$":"UC1","S":"d"},{"$":"UC2","S":"f"},{"$":"UC3"}],"D":{"some_data":true},"$":"UR","S":"p"}"`
+        );
+      });
+    });
+
     it('Should inflate with correct keys', () => {
-      const { serialized } = createSerialized({
-        some_data: 'sd',
+      const { serialized } = createRoot({
+        keys: {
+          data: {
+            some_data: 'sd',
+          },
+        },
       });
 
       const inflated = IsolateSerializer.deserialize(serialized, {
-        some_data: 'sd',
+        keys: {
+          data: {
+            some_data: 'sd',
+          },
+        },
       });
 
       expect(inflated.data.some_data).toBe(true);
       expect(inflated).not.toHaveProperty('sd');
       expect(inflated).toEqual(
-        IsolateSerializer.deserialize(createSerialized().serialized)
+        IsolateSerializer.deserialize(createRoot().serialized)
       );
       expect(inflated).toMatchInlineSnapshot(`
         {
@@ -119,7 +171,7 @@ function withRunTime<T>(fn: CB<T>) {
   });
 }
 
-function createSerialized(miniMap: Maybe<Record<string, string>>) {
+function createRoot(miniMap: Maybe<Record<string, any>>) {
   let serialized: string, root: TIsolate;
 
   withRunTime(() => {

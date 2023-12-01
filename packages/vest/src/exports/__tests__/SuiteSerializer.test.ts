@@ -1,4 +1,5 @@
 import { SuiteSerializer } from 'SuiteSerializer';
+import { parse } from 'parser';
 import * as vest from 'vest';
 
 describe('SuiteSerializer', () => {
@@ -38,8 +39,36 @@ it('Should minify test payload', () => {
 
   expect(parsed['C'][0]['D']).toBeDefined();
   expect(parsed['C'][0]['D']['fN']).toBe('field_1');
-  expect(parsed['C'][0]['D']['msg']).toBe('field_1_message');
+  expect(parsed['C'][0]['D']['ms']).toBe('field_1_message');
   expect(parsed['C'][0]['D']['sv']).toBe('error');
+});
+
+it('Should minify statuses', () => {
+  const suite = vest.create('suite_serialize_test', () => {
+    vest.test('field_1', 'field_1_message', () => false);
+  });
+
+  suite();
+  const serialized = SuiteSerializer.serialize(suite);
+
+  const parsed = JSON.parse(serialized);
+
+  expect(parsed['S']).toBe('D');
+  expect(parsed['C'][0]['S']).toBe('F');
+});
+
+it('Should minify isolate types', () => {
+  const suite = vest.create('suite_serialize_test', () => {
+    vest.test('field_1', 'field_1_message', () => false);
+  });
+
+  suite();
+  const serialized = SuiteSerializer.serialize(suite);
+
+  const parsed = JSON.parse(serialized);
+
+  expect(parsed['$']).toBe('S');
+  expect(parsed['C'][0]['$']).toBe('T');
 });
 
 describe('suite.resume', () => {

@@ -1,10 +1,13 @@
 import { assign } from 'vest-utils';
 import { IsolateSerializer } from 'vestjs-runtime';
 
+import { CommonStates } from 'CommonStateMachine';
 import { TIsolateSuite } from 'IsolateSuite';
 import { IsolateTestPayload } from 'IsolateTest';
+import { TestStatus } from 'IsolateTestStateMachine';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { Suite } from 'SuiteTypes';
+import { VestIsolateType } from 'VestIsolateType';
 import { IsolateFocusedPayload } from 'focused';
 
 export class SuiteSerializer {
@@ -34,7 +37,7 @@ const testMiniMap: Record<keyof IsolateTestPayload, string> = {
   asyncTest: '_at', // asyncTest is not serialized
   fieldName: 'fN',
   groupName: 'gN',
-  message: 'msg',
+  message: 'ms',
   severity: 'sv',
   status: 'st',
   testFn: '_tf', // testFn is not serialized
@@ -46,8 +49,43 @@ const focusMiniMap: Record<keyof IsolateFocusedPayload, string> = {
   matchAll: 'mA',
 };
 
-const MiniMap = {
+const MiniMap: MiniMap = {
   keys: {
     data: assign({}, testMiniMap, focusMiniMap),
   },
+  values: {
+    status: {
+      CANCELED: 'C',
+      DONE: 'D',
+      FAILED: 'F',
+      INITIAL: 'I',
+      OMITTED: 'O',
+      PASSING: 'P',
+      PENDING: 'PE',
+      SKIPPED: 'S',
+      UNTESTED: 'U',
+      WARNING: 'W',
+    },
+    $type: {
+      Each: 'E',
+      Focused: 'F',
+      Group: 'G',
+      OmitWhen: 'OW',
+      SkipWhen: 'SW',
+      Suite: 'S',
+      Test: 'T',
+    },
+  },
+};
+
+type MiniMap = {
+  keys: {
+    data: Record<keyof IsolateTestPayload, string> &
+      Record<keyof IsolateFocusedPayload, string>;
+  };
+  values: {
+    status: Record<keyof typeof TestStatus, string> &
+      Record<keyof typeof CommonStates, string>;
+    $type: Record<keyof typeof VestIsolateType, string>;
+  };
 };

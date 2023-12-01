@@ -135,6 +135,6 @@ In previous versions, as a user of Vest you had to set up your own state-reset m
 
 All of Vest's methods are now typed and make use of generics to enforce correct usage throughout your suite. [Read More on TypeScript support](./typescript_support.md).
 
-## Dropped support for <ES2015
+## Dropped support for \<ES2015
 
 Vest 5 uses Javascript Proxies, which were introduced in ES2015. Therefore, Vest 5 no longer supports pre-ES2015 versions of Javascript. If you need to support older browsers, you can still use Vest 4.

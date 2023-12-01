@@ -28,6 +28,7 @@ exports[`Base behavior Should produce correct validation result 1`] = `
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isPending": [Function],
+  "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,

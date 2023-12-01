@@ -45,6 +45,8 @@ export function bindSuiteSelectors<F extends TFieldName, G extends TGroupName>(
     isPending: (...args: Parameters<SuiteSelectors<F, G>['isPending']>) => {
       return get().isPending(...args);
     },
+    isTested: (...args: Parameters<SuiteSelectors<F, G>['isTested']>) =>
+      get().isTested(...args),
     isValid: (...args: Parameters<SuiteSelectors<F, G>['isValid']>) =>
       get().isValid(...args),
     isValidByGroup: (
@@ -69,6 +71,7 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     hasWarnings,
     hasWarningsByGroup,
     isPending,
+    isTested,
     isValid,
     isValidByGroup,
   };
@@ -106,6 +109,10 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
 
   function hasErrors(fieldName?: F): boolean {
     return hasFailures(summary, SeverityCount.ERROR_COUNT, fieldName);
+  }
+
+  function isTested(fieldName: F): boolean {
+    return isPositive(summary.tests[fieldName]?.testCount);
   }
 
   function hasWarningsByGroup<G extends TGroupName>(
@@ -203,6 +210,7 @@ export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
   hasWarnings(fieldName?: F): boolean;
   hasErrorsByGroup(groupName: G, fieldName?: F): boolean;
   hasWarningsByGroup(groupName: G, fieldName?: F): boolean;
+  isTested(fieldName: F): boolean;
   isPending(fieldName?: F): boolean;
   isValid(fieldName?: F): boolean;
   isValidByGroup(groupName: G, fieldName?: F): boolean;

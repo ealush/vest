@@ -1,4 +1,4 @@
-import { assign } from 'lodash';
+import { assign } from 'vest-utils';
 
 export enum IsolateKeys {
   Type = '$type',

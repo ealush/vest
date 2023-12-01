@@ -217,7 +217,7 @@ The `getError()` function allows you to retrieve the first error message of a gi
 
 If a field name is provided, it returns the first error message for that field, or `undefined` if there were no errors for that field. If no field name is provided, it returns the first error object in the `errors` array, or `undefined` if there were no errors.
 
-#### Example:
+#### Example
 
 ```js
 const error = result.getError(); // get first error object
@@ -390,4 +390,20 @@ result.isPending('username');
 suite.isPending('username');
 
 suite.get().isPending('username');
+```
+
+## isTested
+
+Returns whether a given field has been tested or not. A field is considered tested if it has at least one test that ran.
+
+Returns `true` if the field is tested, `false` otherwise.
+
+```js
+const suite = vest.create(() => {
+  test("username", "Username is required", () => {
+    enforce(username).isNotBlank();
+  });
+});
+
+suite.isTested("username"); // true if username has been tested
 ```

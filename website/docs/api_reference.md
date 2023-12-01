@@ -37,6 +37,7 @@ keywords:
     getErrorsByGroup,
     getWarningsByGroup,
     isPending,
+    isTested,
     isValid,
     isValidByGroup,
     done,
@@ -101,6 +102,7 @@ After running your suite, the results object is returned. It has the following f
 - [getErrorsByGroup](./writing_your_suite/accessing_the_result.md#geterrorsbygroup-and-getwarningsbygroup) - Returns an object with errors in the provided group.
 - [getWarningsByGroup](./writing_your_suite/accessing_the_result.md#geterrorsbygroup-and-getwarningsbygroup) - Returns an object with warnings in the provided group.
 - [isPending](./writing_your_suite/accessing_the_result.md#ispending) - Returns true if the suite has pending async tests.
+- [isTested](./writing_your_suite/accessing_the_result.md#istested) - Returns true if the provided field has been tested.
 - [isValid](./writing_your_suite/accessing_the_result.md#isvalid) - Returns true if the suite or the provided field is valid.
 - [isValidByGroup](./writing_your_suite/accessing_the_result.md#isvalidbygroup) - Returns true if a certain group or a field in a group is valid or not.
 - [done](./writing_your_suite/accessing_the_result.md#done) - Accepts a callback that will run when the suite is done running.

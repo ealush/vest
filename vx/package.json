@@ -2,7 +2,7 @@
   "bin": "./cli.js",
   "dependencies": {
     "@rollup/plugin-node-resolve": "^15.2.1",
-    "@rollup/plugin-replace": "^5.0.2",
+    "@rollup/plugin-replace": "^5.0.5",
     "context": "3.0.2",
     "date-fns": "^2.30.0",
     "dotenv": "^16.3.1",

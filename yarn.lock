@@ -3547,6 +3547,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mdx-js/react@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@mdx-js/react@npm:3.0.0"
+  dependencies:
+    "@types/mdx": ^2.0.0
+  peerDependencies:
+    "@types/react": ">=16"
+    react: ">=16"
+  checksum: a780cff9d7f7639d6fc21c9d4e0a6ac1370c3209ea0db176923df7f9145785309591cf871f227f5135d1fe2accce0d5df9a22fc0530e5dda0c7b4b105705f20d
+  languageName: node
+  linkType: hard
+
 "@mdx-js/util@npm:1.6.22":
   version: 1.6.22
   resolution: "@mdx-js/util@npm:1.6.22"
@@ -4544,6 +4556,13 @@ __metadata:
   dependencies:
     "@types/unist": "*"
   checksum: 3b04cf465535553b47a1811c247668bd6cfeb54d99a2c9dbb82ccd0f5145d271d10c3169f929701d8cd55fd569f0d2e459a50845813ba3261f1fb0395a288cea
+  languageName: node
+  linkType: hard
+
+"@types/mdx@npm:^2.0.0":
+  version: 2.0.10
+  resolution: "@types/mdx@npm:2.0.10"
+  checksum: 3e2fb24b7bfae739a59573344171292b6c31256ad9afddc00232e9de4fbc97b270e1a11d13cb935cba0d9bbb9bc7348793eda82ee752233c5d2289f4b897f719
   languageName: node
   linkType: hard
 
@@ -16063,7 +16082,7 @@ __metadata:
     "@docusaurus/plugin-google-gtag": ^2.4.1
     "@docusaurus/preset-classic": ^2.4.1
     "@easyops-cn/docusaurus-search-local": ^0.35.0
-    "@mdx-js/react": ^1.6.22
+    "@mdx-js/react": ^3.0.0
     "@svgr/webpack": ^8.1.0
     clsx: ^2.0.0
     file-loader: ^6.2.0

@@ -17,6 +17,7 @@
       "numberEquals": ["./src/numberEquals.ts"],
       "noop": ["./src/noop.ts"],
       "nonnullish": ["./src/nonnullish.ts"],
+      "minifyObject": ["./src/minifyObject.ts"],
       "mapFirst": ["./src/mapFirst.ts"],
       "longerThan": ["./src/longerThan.ts"],
       "lengthEquals": ["./src/lengthEquals.ts"],

@@ -21,6 +21,36 @@
     "url": "https://github.com/ealush/vest.git/issues"
   },
   "exports": {
+    "./minifyObject": {
+      "production": {
+        "types": "./types/minifyObject.d.ts",
+        "browser": "./dist/es/minifyObject.production.js",
+        "umd": "./dist/umd/minifyObject.production.js",
+        "import": "./dist/es/minifyObject.production.js",
+        "require": "./dist/cjs/minifyObject.production.js",
+        "node": "./dist/cjs/minifyObject.production.js",
+        "module": "./dist/es/minifyObject.production.js",
+        "default": "./dist/cjs/minifyObject.production.js"
+      },
+      "development": {
+        "types": "./types/minifyObject.d.ts",
+        "browser": "./dist/es/minifyObject.development.js",
+        "umd": "./dist/umd/minifyObject.development.js",
+        "import": "./dist/es/minifyObject.development.js",
+        "require": "./dist/cjs/minifyObject.development.js",
+        "node": "./dist/cjs/minifyObject.development.js",
+        "module": "./dist/es/minifyObject.development.js",
+        "default": "./dist/cjs/minifyObject.development.js"
+      },
+      "types": "./types/minifyObject.d.ts",
+      "browser": "./dist/es/minifyObject.production.js",
+      "umd": "./dist/umd/minifyObject.production.js",
+      "import": "./dist/es/minifyObject.production.js",
+      "require": "./dist/cjs/minifyObject.production.js",
+      "node": "./dist/cjs/minifyObject.production.js",
+      "module": "./dist/es/minifyObject.production.js",
+      "default": "./dist/cjs/minifyObject.production.js"
+    },
     ".": {
       "development": {
         "types": "./types/vest-utils.d.ts",

@@ -46,7 +46,8 @@
       "asArray": ["./src/asArray.ts"],
       "StringObject": ["./src/StringObject.ts"],
       "SimpleStateMachine": ["./src/SimpleStateMachine.ts"],
-      "Predicates": ["./src/Predicates.ts"]
+      "Predicates": ["./src/Predicates.ts"],
+      "minifyObject": ["./src/exports/minifyObject.ts"]
     }
   }
 }

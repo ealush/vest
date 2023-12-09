@@ -4,6 +4,6 @@ src
 !types/
 !dist/
 tsconfig.json
-
+!minifyObject/
 
 # Manual Section. Edit at will.

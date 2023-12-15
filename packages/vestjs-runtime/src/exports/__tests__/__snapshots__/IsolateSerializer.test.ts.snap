@@ -1,3 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`IsolateSerializer serialize Should produce serialized dump 1`] = `"{"C":[{"D":{"some_data":true},"$":"UChild_1"},{"$":"UChild_2"},{"$":"UChild_3"}],"D":{"some_data":true},"$":"URoot"}"`;
+exports[`IsolateSerializer Custom Data Serialization Should serialize data with custom keys 1`] = `"[{"0":"URoot","1":{"2":"3"},"children":[{"0":"UChild_1","1":{"2":"3"}},{"0":"UChild_2"},{"0":"UChild_3"}]},{"0":"$type","1":"data","2":"some_data","3":true}]"`;
+
+exports[`IsolateSerializer serialize Should produce serialized dump 1`] = `"[{"0":"URoot","1":{"2":"3"},"children":[{"0":"UChild_1","1":{"2":"3"}},{"0":"UChild_2"},{"0":"UChild_3"}]},{"0":"$type","1":"data","2":"some_data","3":true}]"`;

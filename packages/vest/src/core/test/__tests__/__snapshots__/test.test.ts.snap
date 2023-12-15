@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Test Vest's \`test\` function test params creates a test with a message and with a key 1`] = `"[{"$type":"Test","data":{"severity":"error","fieldName":"field_name","message":"failure message"},"status":"PASSING","key":"keyboardcat"},{}]"`;
+
 exports[`Test Vest's \`test\` function test params creates a test without a key 1`] = `
 {
   "$type": "Test",

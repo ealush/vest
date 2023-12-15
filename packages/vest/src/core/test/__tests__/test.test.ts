@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker';
-import { VestTest } from 'VestTest';
 import { text } from 'vest-utils';
 import { IsolateSerializer } from 'vestjs-runtime';
 
@@ -7,6 +6,7 @@ import { TestPromise } from '../../../testUtils/testPromise';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { TIsolateTest } from 'IsolateTest';
+import { VestTest } from 'VestTest';
 import { enforce } from 'vest';
 import * as vest from 'vest';
 
@@ -22,7 +22,7 @@ describe("Test Vest's `test` function", () => {
             faker.lorem.sentence(),
             () => {
               vest.warn();
-            }
+            },
           );
         })();
         expect(VestTest.warns(testObject)).toBe(true);
@@ -37,7 +37,7 @@ describe("Test Vest's `test` function", () => {
             faker.lorem.sentence(),
             () => {
               throw new Error();
-            }
+            },
           );
         })();
         expect(VestTest.isFailing(testObject)).toBe(true);
@@ -63,7 +63,7 @@ describe("Test Vest's `test` function", () => {
                 () => {
                   vest.warn();
                   failWithString();
-                }
+                },
               );
             })();
 
@@ -114,7 +114,7 @@ describe("Test Vest's `test` function", () => {
               'I fail with a message',
             ]);
             expect(res.tests['warning_field_without_message'].warnings).toEqual(
-              ['I fail with a message']
+              ['I fail with a message'],
             );
           });
         });
@@ -132,7 +132,7 @@ describe("Test Vest's `test` function", () => {
                 new Promise((_, reject) => {
                   expect(VestTest.isFailing(testObject)).toBe(false);
                   setTimeout(reject, 300);
-                })
+                }),
             );
             expect(VestTest.isFailing(testObject)).toBe(false);
             setTimeout(() => {
@@ -161,7 +161,7 @@ describe("Test Vest's `test` function", () => {
         testObject = vest.test(
           'field_name',
           'failure message',
-          () => undefined
+          () => undefined,
         );
       })();
       expect(testObject.data.fieldName).toBe('field_name');
@@ -186,15 +186,13 @@ describe("Test Vest's `test` function", () => {
           'field_name',
           'failure message',
           () => undefined,
-          'keyboardcat'
+          'keyboardcat',
         );
       })();
       expect(testObject.data.fieldName).toBe('field_name');
       expect(testObject.key).toBe('keyboardcat');
       expect(testObject.data.message).toBe('failure message');
-      expect(IsolateSerializer.serialize(testObject)).toMatchInlineSnapshot(
-        `"{"D":{"severity":"error","fieldName":"field_name","message":"failure message"},"$":"Test","S":"PASSING","ky":"keyboardcat"}"`
-      );
+      expect(IsolateSerializer.serialize(testObject)).toMatchSnapshot();
     });
 
     it('throws when field name is not a string', () => {
@@ -206,7 +204,7 @@ describe("Test Vest's `test` function", () => {
             fn_name: 'test',
             param: 'fieldName',
             expected: 'string',
-          })
+          }),
         );
         // @ts-expect-error
         expect(() => vest.test(null, 'error message', () => undefined)).toThrow(
@@ -214,17 +212,17 @@ describe("Test Vest's `test` function", () => {
             fn_name: 'test',
             param: 'fieldName',
             expected: 'string',
-          })
+          }),
         );
         expect(() =>
           // @ts-expect-error
-          vest.test(null, 'error message', () => undefined, 'key')
+          vest.test(null, 'error message', () => undefined, 'key'),
         ).toThrow(
           text(ErrorStrings.INVALID_PARAM_PASSED_TO_FUNCTION, {
             fn_name: 'test',
             param: 'fieldName',
             expected: 'string',
-          })
+          }),
         );
         control();
       })();
@@ -240,7 +238,7 @@ describe("Test Vest's `test` function", () => {
             fn_name: 'test',
             param: 'callback',
             expected: 'function',
-          })
+          }),
         );
         // @ts-expect-error
         expect(() => vest.test('x', 'msg', undefined)).toThrow(
@@ -248,7 +246,7 @@ describe("Test Vest's `test` function", () => {
             fn_name: 'test',
             param: 'callback',
             expected: 'function',
-          })
+          }),
         );
         // @ts-expect-error
         expect(() => vest.test('x', 'msg', undefined, 'key')).toThrow(
@@ -256,7 +254,7 @@ describe("Test Vest's `test` function", () => {
             fn_name: 'test',
             param: 'callback',
             expected: 'function',
-          })
+          }),
         );
         control();
       })();

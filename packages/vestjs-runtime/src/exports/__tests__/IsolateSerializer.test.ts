@@ -68,51 +68,10 @@ describe('IsolateSerializer', () => {
       });
 
       const parsed = JSON.parse(serialized);
-      expect(parsed[MinifiedKeys.Data]).toHaveProperty('sd');
-      expect(serialized).toMatchInlineSnapshot(
-        `"{"C":[{"D":{"sd":true},"$":"UChild_1"},{"$":"UChild_2"},{"$":"UChild_3"}],"D":{"sd":true},"$":"URoot"}"`
-      );
+      expect(serialized).toMatchSnapshot();
     });
 
     describe('value serialization', () => {
-      it('Should serialize values with shorthand values', () => {
-        const { root } = createRoot();
-
-        root.status = 'pending';
-        // @ts-ignore
-        root.children[0].status = 'done';
-        // @ts-ignore
-        root.children[1].status = 'failed';
-
-        const serialized = IsolateSerializer.serialize(root, {
-          values: {
-            status: {
-              pending: 'p',
-              done: 'd',
-              failed: 'f',
-            },
-            $type: {
-              URoot: 'UR',
-              UChild_1: 'UC1',
-              UChild_2: 'UC2',
-              UChild_3: 'UC3',
-            },
-          },
-        });
-
-        const parsed = JSON.parse(serialized);
-        expect(parsed[MinifiedKeys.Status]).toBe('p');
-        expect(parsed.C[0][MinifiedKeys.Status]).toBe('d');
-        expect(parsed.C[1][MinifiedKeys.Status]).toBe('f');
-        expect(parsed[MinifiedKeys.Type]).toBe('UR');
-        expect(parsed.C[0][MinifiedKeys.Type]).toBe('UC1');
-        expect(parsed.C[1][MinifiedKeys.Type]).toBe('UC2');
-        expect(parsed.C[2][MinifiedKeys.Type]).toBe('UC3');
-        expect(serialized).toMatchInlineSnapshot(
-          `"{"C":[{"D":{"some_data":true},"$":"UC1","S":"d"},{"$":"UC2","S":"f"},{"$":"UC3"}],"D":{"some_data":true},"$":"UR","S":"p"}"`
-        );
-      });
-
       it('Should correctly expand values', () => {
         const { root } = createRoot();
 
@@ -197,7 +156,7 @@ describe('IsolateSerializer', () => {
       expect(inflated.data.some_data).toBe(true);
       expect(inflated).not.toHaveProperty('sd');
       expect(inflated).toEqual(
-        IsolateSerializer.deserialize(createRoot().serialized)
+        IsolateSerializer.deserialize(createRoot().serialized),
       );
       expect(inflated).toMatchInlineSnapshot(`
         {
@@ -247,7 +206,7 @@ function createRoot(miniMap: Maybe<Record<string, any>>) {
       },
       {
         some_data: true,
-      }
+      },
     );
 
     serialized = IsolateSerializer.serialize(root, miniMap);

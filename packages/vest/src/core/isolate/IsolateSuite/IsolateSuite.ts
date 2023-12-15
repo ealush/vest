@@ -10,7 +10,7 @@ export type TIsolateSuite = TIsolate<{
 }>;
 
 export function IsolateSuite<Callback extends CB = CB>(
-  callback: Callback
+  callback: Callback,
 ): TIsolateSuite {
   return Isolate.create(VestIsolateType.Suite, callback, {
     optional: {},
@@ -21,7 +21,7 @@ export class SuiteOptionalFields {
   static setOptionalField(
     suite: TIsolateSuite,
     fieldName: TFieldName,
-    setter: (current: OptionalFieldDeclaration) => OptionalFieldDeclaration
+    setter: (current: OptionalFieldDeclaration) => OptionalFieldDeclaration,
   ): void {
     const current = suite.data.optional;
     const currentField = current[fieldName];
@@ -33,12 +33,12 @@ export class SuiteOptionalFields {
 
   static getOptionalField(
     suite: TIsolateSuite,
-    fieldName: TFieldName
+    fieldName: TFieldName,
   ): OptionalFieldDeclaration {
-    return suite.data.optional[fieldName] ?? {};
+    return SuiteOptionalFields.getOptionalFields(suite)[fieldName] ?? {};
   }
 
   static getOptionalFields(suite: TIsolateSuite): OptionalFields {
-    return suite.data.optional;
+    return suite.data?.optional ?? {};
   }
 }

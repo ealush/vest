@@ -9,12 +9,16 @@ type TModifiers = {
   message: (input: string) => EnforceEagerReturn;
 };
 
-type EnforceEagerReturn = IRules & TModifiers;
+type EnforceEagerReturn = IRules &
+  TModifiers & {
+    pass: boolean;
+  };
 
 // eslint-disable-next-line max-lines-per-function
 export default function enforceEager(value: RuleValue): EnforceEagerReturn {
   const target = {
     message,
+    pass: false,
   } as EnforceEagerReturn;
   let customMessage: Maybe<string> = undefined;
 
@@ -40,9 +44,9 @@ export default function enforceEager(value: RuleValue): EnforceEagerReturn {
   function genRuleCall(
     target: EnforceEagerReturn,
     rule: RuleBase,
-    ruleName: string
+    ruleName: string,
   ) {
-    return function ruleCall(...args: Args) {
+    return function ruleCall(...args: Args): EnforceEagerReturn {
       // Order of operation:
       // 1. Create a context with the value being enforced
       // 2. Call the rule within the context, and pass over the arguments passed to it
@@ -62,6 +66,12 @@ export default function enforceEager(value: RuleValue): EnforceEagerReturn {
       // On rule failure (the result is false), we either throw an error
       // or throw a string value if the rule has a message defined in it.
       invariant(transformedResult.pass, enforceMessage());
+
+      // This is not really needed because it will always be true
+      // As we're throwing an error on failure
+      // but it is here so that users have a sense of what is happening
+      // when they try to log the result of enforce and not just see a proxy object
+      target.pass = transformedResult.pass;
 
       return target;
     };

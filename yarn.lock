@@ -4193,9 +4193,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@easyops-cn/docusaurus-search-local@npm:^0.38.1":
-  version: 0.38.1
-  resolution: "@easyops-cn/docusaurus-search-local@npm:0.38.1"
+"@easyops-cn/docusaurus-search-local@npm:^0.40.1":
+  version: 0.40.1
+  resolution: "@easyops-cn/docusaurus-search-local@npm:0.40.1"
   dependencies:
     "@docusaurus/plugin-content-docs": ^2 || ^3
     "@docusaurus/theme-translations": ^2 || ^3
@@ -4217,7 +4217,7 @@ __metadata:
     "@docusaurus/theme-common": ^2 || ^3
     react: ^16.14.0 || ^17 || ^18
     react-dom: ^16.14.0 || 17 || ^18
-  checksum: 1e3d382cdeaa04caaa86ecf7553b3f3dccab1b0db681ff86c3d345075cda8a7ce7a3ed9e5fc77ae4fb61336533585d5c2cacb5ca752261ee2283d19cb6d017ac
+  checksum: 9f109c9ff3216f840bf42ae859bca8d94441945915ceef6a73596091da27c3b766e786456fc47929204fdac385e992ba4673bc2f76323368a64c830e121e4c83
   languageName: node
   linkType: hard
 
@@ -18342,7 +18342,7 @@ __metadata:
     "@docusaurus/core": ^3.0.1
     "@docusaurus/plugin-google-gtag": ^3.0.1
     "@docusaurus/preset-classic": ^3.0.1
-    "@easyops-cn/docusaurus-search-local": ^0.38.1
+    "@easyops-cn/docusaurus-search-local": ^0.40.1
     "@mdx-js/react": ^3.0.0
     "@svgr/webpack": ^8.1.0
     clsx: ^2.0.0

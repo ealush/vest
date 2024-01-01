@@ -15318,6 +15318,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"prism-react-renderer@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "prism-react-renderer@npm:2.3.1"
+  dependencies:
+    "@types/prismjs": ^1.26.0
+    clsx: ^2.0.0
+  peerDependencies:
+    react: ">=16.0.0"
+  checksum: b12a7d502c1e764d94f7d3c84aee9cd6fccc676bb7e21dee94d37eb2e7e62e097a343999e1979887cb83a57cbdea48d2046aa74d07bce05caa25f4c296df30b6
+  languageName: node
+  linkType: hard
+
 "prismjs@npm:^1.29.0":
   version: 1.29.0
   resolution: "prismjs@npm:1.29.0"
@@ -18347,7 +18359,7 @@ __metadata:
     "@svgr/webpack": ^8.1.0
     clsx: ^2.0.0
     file-loader: ^6.2.0
-    prism-react-renderer: ^2.3.0
+    prism-react-renderer: ^2.3.1
     react: ^18.2.0
     react-dom: ^18.2.0
     url-loader: ^4.1.1

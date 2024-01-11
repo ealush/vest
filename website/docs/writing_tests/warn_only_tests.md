@@ -57,14 +57,14 @@ test('password', () => {
   return anAsyncFunction();
 });
 
-// 🚨 This will result in an your warn() call not taking effect
+// 🚨 This will result in your warn() call not taking effect
 test('password', async () => {
   await someAsyncFunction();
 
   warn(); // 🚨
 });
 
-// 🚨 This will result in an your warn() call not taking effect
+// 🚨 This will result in your warn() call not taking effect
 test('password', () => {
   return anAsyncFunction().then(() => {
     warn(); // 🚨

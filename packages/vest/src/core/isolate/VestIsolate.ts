@@ -7,7 +7,7 @@ export class VestIsolate {
   static stateMachine: TStateMachineApi = CommonStateMachine;
 
   static getStatus(isolate: TIsolate): string {
-    return isolate.status ?? CommonStateMachine.initial();
+    return isolate.status ?? CommonStates.INITIAL;
   }
 
   static setStatus(isolate: TIsolate, status: string, payload?: any): void {

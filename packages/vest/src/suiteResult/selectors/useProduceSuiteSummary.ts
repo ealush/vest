@@ -21,7 +21,7 @@ import {
 
 export function useProduceSuiteSummary<
   F extends TFieldName,
-  G extends TGroupName
+  G extends TGroupName,
 >(): SuiteSummary<F, G> {
   const summary: SuiteSummary<F, G> = new SuiteSummary();
 
@@ -31,12 +31,12 @@ export function useProduceSuiteSummary<
     summary.errors = appendFailures(
       Severity.ERRORS,
       summary.errors,
-      testObject
+      testObject,
     );
     summary.warnings = appendFailures(
       Severity.WARNINGS,
       summary.warnings,
-      testObject
+      testObject,
     );
   });
 
@@ -48,7 +48,7 @@ export function useProduceSuiteSummary<
 function appendFailures<F extends TFieldName, G extends TGroupName>(
   key: Severity,
   failures: SummaryFailure<F, G>[],
-  testObject: TIsolateTest<F, G>
+  testObject: TIsolateTest<F, G>,
 ): SummaryFailure<F, G>[] {
   if (VestTest.isOmitted(testObject)) {
     return failures;
@@ -67,7 +67,7 @@ function appendFailures<F extends TFieldName, G extends TGroupName>(
 
 function useAppendToTest<F extends TFieldName>(
   tests: Tests<F>,
-  testObject: TIsolateTest<F>
+  testObject: TIsolateTest<F>,
 ): Tests<F> {
   const fieldName = VestTest.getData<F>(testObject).fieldName;
 
@@ -90,7 +90,7 @@ function useAppendToTest<F extends TFieldName>(
  */
 function useAppendToGroup(
   groups: Groups<TGroupName, TFieldName>,
-  testObject: TIsolateTest
+  testObject: TIsolateTest,
 ): Groups<TGroupName, TFieldName> {
   const { groupName, fieldName } = VestTest.getData(testObject);
 
@@ -105,7 +105,7 @@ function useAppendToGroup(
   newGroups[groupName] = newGroups[groupName] || {};
   newGroups[groupName][fieldName] = appendTestObject(
     newGroups[groupName][fieldName],
-    testObject
+    testObject,
   );
 
   newGroups[groupName][fieldName].valid =
@@ -120,7 +120,7 @@ function useAppendToGroup(
  * Counts the failed tests and adds global counters
  */
 function countOverallStates<F extends TFieldName, G extends TGroupName>(
-  summary: SuiteSummary<F, G>
+  summary: SuiteSummary<F, G>,
 ): SuiteSummary<F, G> {
   for (const test in summary.tests) {
     summary.errorCount += summary.tests[test].errorCount;
@@ -137,14 +137,14 @@ function countOverallStates<F extends TFieldName, G extends TGroupName>(
 // eslint-disable-next-line max-statements, complexity
 function appendTestObject(
   summaryKey: Maybe<SingleTestSummary>,
-  testObject: TIsolateTest
+  testObject: TIsolateTest,
 ): SingleTestSummary {
   const { message } = VestTest.getData(testObject);
 
   // Let's first create a new object, so we don't mutate the original.
   const nextSummaryKey = defaultTo<SingleTestSummary>(
     summaryKey ? { ...summaryKey } : null,
-    baseTestStats
+    baseTestStats,
   );
 
   // If the test is not actionable, we don't need to append it to the summary.
@@ -174,7 +174,7 @@ function appendTestObject(
     nextSummaryKey[countKey]++;
     if (message) {
       nextSummaryKey[severity] = (nextSummaryKey[severity] || []).concat(
-        message
+        message,
       );
     }
   }

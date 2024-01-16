@@ -194,7 +194,6 @@ describe('mode', () => {
         expect(suite.get().testCount).toBe(0); // sanity
         suite();
 
-        // FIXME: Should be 6
         expect(suite.get().testCount).toBe(3);
         expect(suite.get().errorCount).toBe(3);
         expect(suite.get().getErrors('field_1')).toEqual(['first-of-field_1']);

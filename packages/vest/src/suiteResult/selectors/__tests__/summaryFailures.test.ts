@@ -1,4 +1,5 @@
 import { TTestSuite } from 'testUtils/TVestMock';
+
 import * as vest from 'vest';
 
 describe('summaryFailures', () => {
@@ -68,6 +69,7 @@ describe('summaryFailures', () => {
 
     test('Should add the test group into the error object', () => {
       suite = vest.create(() => {
+        vest.mode(vest.Modes.ALL);
         vest.group('user', () => {
           vest.test('username', 'uxsername is required', () => false);
           vest.test('username', 'username is too short', () => false);

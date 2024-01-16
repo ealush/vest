@@ -1,4 +1,3 @@
-import { SuiteWalker } from 'SuiteWalker';
 import { CB, ValueOf } from 'vest-utils';
 import { Bus, RuntimeEvents, TIsolate } from 'vestjs-runtime';
 
@@ -11,6 +10,7 @@ import {
   useResetSuite,
 } from 'Runtime';
 import { TFieldName } from 'SuiteResultTypes';
+import { SuiteWalker } from 'SuiteWalker';
 import { TestWalker } from 'TestWalker';
 import { VestTest } from 'VestTest';
 import { useOmitOptionalFields } from 'omitOptionalFields';

@@ -33,26 +33,28 @@ export class Isolate {
     type: string,
     callback: CB,
     payload: Maybe<Payload> = undefined,
-    key?: IsolateKey
+    key?: IsolateKey,
   ): TIsolate<Payload> {
     const parent = VestRuntime.useIsolate();
 
     const newCreatedNode = IsolateMutator.setParent(
       baseIsolate(type, payload, key),
-      parent
+      parent,
     );
 
     const nextIsolateChild = Reconciler.reconcile(newCreatedNode);
 
     const localHistoryNode = VestRuntime.useHistoryIsolateAtCurrentPosition();
 
-    const output = Object.is(nextIsolateChild, newCreatedNode)
+    const shouldRunNew = Object.is(nextIsolateChild, newCreatedNode);
+
+    VestRuntime.addNodeToHistory(nextIsolateChild);
+
+    const output = shouldRunNew
       ? useRunAsNew(localHistoryNode, newCreatedNode, callback)
       : nextIsolateChild.output;
 
-    IsolateMutator.setParent(nextIsolateChild, parent);
     IsolateMutator.saveOutput(nextIsolateChild, output);
-    VestRuntime.addNodeToHistory(nextIsolateChild);
 
     return nextIsolateChild as TIsolate<Payload>;
   }
@@ -73,7 +75,7 @@ export class Isolate {
 function useRunAsNew<Callback extends CB = CB>(
   localHistoryNode: Nullable<TIsolate>,
   current: TIsolate,
-  callback: CB
+  callback: CB,
 ): ReturnType<Callback> {
   const runtimeRoot = VestRuntime.useRuntimeRoot();
   const emit = useEmit();
@@ -104,7 +106,7 @@ function useRunAsNew<Callback extends CB = CB>(
       }
 
       return output;
-    }
+    },
   );
 
   current.output = output;
@@ -114,7 +116,7 @@ function useRunAsNew<Callback extends CB = CB>(
 function baseIsolate(
   type: string,
   payload: Maybe<IsolatePayload> = undefined,
-  key: IsolateKey = null
+  key: IsolateKey = null,
 ): TIsolate {
   const { allowReorder, status, ...data } = payload ?? {};
   return {

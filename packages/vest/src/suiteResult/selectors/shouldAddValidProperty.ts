@@ -1,4 +1,3 @@
-import { SuiteWalker } from 'SuiteWalker';
 import { useIsOptionalFieldApplied } from 'optional';
 import { Predicates } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
@@ -8,6 +7,7 @@ import { TIsolateTest } from 'IsolateTest';
 import { OptionalFieldTypes } from 'OptionalTypes';
 import { Severity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { SuiteWalker } from 'SuiteWalker';
 import { TestWalker } from 'TestWalker';
 import { VestTest } from 'VestTest';
 import {

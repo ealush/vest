@@ -10,7 +10,7 @@ import { useHasOnliedTests } from 'useHasOnliedTests';
 //Checks whether a certain test profile excluded by any of the exclusion groups.
 
 function useClosestMatchingFocus(
-  testObject: TIsolateTest
+  testObject: TIsolateTest,
 ): Nullable<TIsolateFocused> {
   return Walker.findClosest(testObject, (child: TIsolate) => {
     if (!FocusSelectors.isIsolateFocused(child)) return false;
@@ -21,7 +21,6 @@ function useClosestMatchingFocus(
   });
 }
 
-// eslint-disable-next-line complexity, max-statements
 export function useIsExcluded(testObject: TIsolateTest): boolean {
   const { fieldName } = VestTest.getData(testObject);
 

@@ -9,7 +9,7 @@ type VisitOnlyPredicate = (isolate: TIsolate) => boolean;
 export function walk(
   startNode: TIsolate,
   callback: (isolate: TIsolate, breakout: CB<void>) => void,
-  visitOnly?: VisitOnlyPredicate
+  visitOnly?: VisitOnlyPredicate,
 ): void {
   // If the startNode has no children, there is nothing to walk.
   if (isNullish(startNode.children)) {
@@ -43,7 +43,7 @@ export function walk(
           breakout();
         });
       },
-      visitOnly
+      visitOnly,
     );
   }
 
@@ -57,7 +57,7 @@ export function walk(
 export function some(
   startNode: TIsolate,
   predicate: (node: TIsolate) => boolean,
-  visitOnly?: VisitOnlyPredicate
+  visitOnly?: VisitOnlyPredicate,
 ): boolean {
   let hasMatch = false;
 
@@ -70,7 +70,7 @@ export function some(
         hasMatch = true;
       }
     },
-    visitOnly
+    visitOnly,
   );
 
   return hasMatch;
@@ -86,7 +86,7 @@ export function has(startNode: TIsolate, match: VisitOnlyPredicate): boolean {
 // and returns the first direct descendant that satisfies the predicate
 export function findClosest<I extends TIsolate = TIsolate>(
   startNode: TIsolate,
-  predicate: (node: TIsolate) => boolean
+  predicate: (node: TIsolate) => boolean,
 ): Nullable<I> {
   let found: Nullable<TIsolate> = null;
   let current: Nullable<TIsolate> = startNode;
@@ -109,7 +109,7 @@ export function findClosest<I extends TIsolate = TIsolate>(
 export function find(
   startNode: TIsolate,
   predicate: (node: TIsolate) => boolean,
-  visitOnly?: VisitOnlyPredicate
+  visitOnly?: VisitOnlyPredicate,
 ): Nullable<TIsolate> {
   let found = null;
 
@@ -122,7 +122,7 @@ export function find(
         found = node;
       }
     },
-    visitOnly
+    visitOnly,
   );
 
   return found;
@@ -133,7 +133,7 @@ export function find(
 export function every(
   startNode: TIsolate,
   predicate: (node: TIsolate) => boolean,
-  visitOnly?: VisitOnlyPredicate
+  visitOnly?: VisitOnlyPredicate,
 ): boolean {
   let hasMatch = true;
   walk(
@@ -144,7 +144,7 @@ export function every(
         hasMatch = false;
       }
     },
-    visitOnly
+    visitOnly,
   );
 
   return hasMatch;
@@ -156,7 +156,7 @@ export function every(
 export function pluck(
   startNode: TIsolate,
   predicate: (node: TIsolate) => boolean,
-  visitOnly?: VisitOnlyPredicate
+  visitOnly?: VisitOnlyPredicate,
 ): void {
   walk(
     startNode,
@@ -165,7 +165,7 @@ export function pluck(
         IsolateMutator.removeChild(node.parent, node);
       }
     },
-    visitOnly
+    visitOnly,
   );
 }
 
@@ -173,7 +173,7 @@ export function pluck(
 //startNode that satisfies the given predicate function.
 export function closest(
   startNode: TIsolate,
-  predicate: (node: TIsolate) => boolean
+  predicate: (node: TIsolate) => boolean,
 ): Nullable<TIsolate> {
   let current: Nullable<TIsolate> = startNode;
   do {
@@ -189,7 +189,7 @@ export function closest(
 // given startNode that satisfies the given predicate function exists.
 export function closestExists(
   startNode: TIsolate,
-  predicate: (node: TIsolate) => boolean
+  predicate: (node: TIsolate) => boolean,
 ): boolean {
   return !!closest(startNode, predicate);
 }

@@ -3,11 +3,12 @@ import { TIsolate } from 'vestjs-runtime';
 
 export const CommonStates = {
   PENDING: 'PENDING',
+  INITIAL: 'INITIAL',
 };
 
-export const State = {
+const State = {
   [CommonStates.PENDING]: CommonStates.PENDING,
-  INITIAL: 'INITIAL',
+  [CommonStates.INITIAL]: CommonStates.INITIAL,
   DONE: 'DONE',
 };
 

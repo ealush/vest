@@ -65,6 +65,7 @@ describe('useLoadSuite', () => {
 
 function genDump() {
   const suite = vest.create(() => {
+    vest.mode(vest.Modes.ALL);
     vest.skip('t5');
 
     vest.test('t1', () => false);

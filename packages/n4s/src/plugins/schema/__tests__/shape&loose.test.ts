@@ -14,7 +14,7 @@ describe.each(['loose', 'shape'])('enforce.%s', (methodName: string) => {
         enforce[methodName]({
           username: enforce.isString(),
           age: enforce.isNumber().gt(18),
-        }).run({ username: 'ealush', age: 31 })
+        }).run({ username: 'ealush', age: 31 }),
       ).toEqual(ruleReturn.passing());
     });
 
@@ -23,7 +23,7 @@ describe.each(['loose', 'shape'])('enforce.%s', (methodName: string) => {
         enforce[methodName]({
           username: enforce.isString(),
           age: enforce.isNumber().gt(18),
-        }).run({ username: null, age: 0 })
+        }).run({ username: null, age: 0 }),
       ).toEqual(ruleReturn.failing());
     });
 
@@ -48,7 +48,7 @@ describe.each(['loose', 'shape'])('enforce.%s', (methodName: string) => {
               state: 'NY',
               zip: 12345,
             },
-          })
+          }),
         ).toEqual(ruleReturn.passing());
       });
       it('Should return a failing return when tests are invalid', () => {
@@ -69,7 +69,7 @@ describe.each(['loose', 'shape'])('enforce.%s', (methodName: string) => {
               street: '123 Main St',
               city: null,
             },
-          })
+          }),
         ).toEqual(ruleReturn.failing());
       });
     });

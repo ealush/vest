@@ -29,7 +29,6 @@ type UsedFeaturesOnly<P extends IsolatePayload> = Pick<
 >;
 
 export class Isolate {
-  // eslint-disable-next-line max-statements
   static create<Payload extends IsolatePayload>(
     type: string,
     callback: CB,
@@ -49,15 +48,11 @@ export class Isolate {
 
     const shouldRunNew = Object.is(nextIsolateChild, newCreatedNode);
 
-    let output: any;
-
     VestRuntime.addNodeToHistory(nextIsolateChild);
 
-    if (shouldRunNew) {
-      output = useRunAsNew(localHistoryNode, newCreatedNode, callback);
-    } else {
-      output = nextIsolateChild.output;
-    }
+    const output = shouldRunNew
+      ? useRunAsNew(localHistoryNode, newCreatedNode, callback)
+      : nextIsolateChild.output;
 
     IsolateMutator.saveOutput(nextIsolateChild, output);
 

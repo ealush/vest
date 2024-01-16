@@ -29,30 +29,37 @@ type UsedFeaturesOnly<P extends IsolatePayload> = Pick<
 >;
 
 export class Isolate {
+  // eslint-disable-next-line max-statements
   static create<Payload extends IsolatePayload>(
     type: string,
     callback: CB,
     payload: Maybe<Payload> = undefined,
-    key?: IsolateKey
+    key?: IsolateKey,
   ): TIsolate<Payload> {
     const parent = VestRuntime.useIsolate();
 
     const newCreatedNode = IsolateMutator.setParent(
       baseIsolate(type, payload, key),
-      parent
+      parent,
     );
 
     const nextIsolateChild = Reconciler.reconcile(newCreatedNode);
 
     const localHistoryNode = VestRuntime.useHistoryIsolateAtCurrentPosition();
 
-    const output = Object.is(nextIsolateChild, newCreatedNode)
-      ? useRunAsNew(localHistoryNode, newCreatedNode, callback)
-      : nextIsolateChild.output;
+    const shouldRunNew = Object.is(nextIsolateChild, newCreatedNode);
 
-    IsolateMutator.setParent(nextIsolateChild, parent);
-    IsolateMutator.saveOutput(nextIsolateChild, output);
+    let output: any;
+
     VestRuntime.addNodeToHistory(nextIsolateChild);
+
+    if (shouldRunNew) {
+      output = useRunAsNew(localHistoryNode, newCreatedNode, callback);
+    } else {
+      output = nextIsolateChild.output;
+    }
+
+    IsolateMutator.saveOutput(nextIsolateChild, output);
 
     return nextIsolateChild as TIsolate<Payload>;
   }
@@ -73,7 +80,7 @@ export class Isolate {
 function useRunAsNew<Callback extends CB = CB>(
   localHistoryNode: Nullable<TIsolate>,
   current: TIsolate,
-  callback: CB
+  callback: CB,
 ): ReturnType<Callback> {
   const runtimeRoot = VestRuntime.useRuntimeRoot();
   const emit = useEmit();
@@ -104,7 +111,7 @@ function useRunAsNew<Callback extends CB = CB>(
       }
 
       return output;
-    }
+    },
   );
 
   current.output = output;
@@ -114,7 +121,7 @@ function useRunAsNew<Callback extends CB = CB>(
 function baseIsolate(
   type: string,
   payload: Maybe<IsolatePayload> = undefined,
-  key: IsolateKey = null
+  key: IsolateKey = null,
 ): TIsolate {
   const { allowReorder, status, ...data } = payload ?? {};
   return {

@@ -178,6 +178,30 @@ describe('mode', () => {
         expect(suite.get().getErrors('field_1')).toEqual([]);
       });
     });
+
+    describe('When in a nested block', () => {
+      it('Should follow the same behavior as if it was not nested', () => {
+        const suite = create(() => {
+          group('group_1', () => {
+            dummyTest.failing('field_1', 'first-of-field_1');
+            dummyTest.failing('field_1', 'second-of-field_1');
+            dummyTest.failing('field_2', 'first-of-field_2');
+            dummyTest.failing('field_2', 'second-of-field_2');
+            dummyTest.failing('field_3', 'first-of-field_3');
+            dummyTest.failing('field_3', 'second-of-field_3');
+          });
+        });
+        expect(suite.get().testCount).toBe(0); // sanity
+        suite();
+
+        // FIXME: Should be 6
+        expect(suite.get().testCount).toBe(3);
+        expect(suite.get().errorCount).toBe(3);
+        expect(suite.get().getErrors('field_1')).toEqual(['first-of-field_1']);
+        expect(suite.get().getErrors('field_2')).toEqual(['first-of-field_2']);
+        expect(suite.get().getErrors('field_3')).toEqual(['first-of-field_3']);
+      });
+    });
   });
 
   describe('All', () => {

@@ -25,7 +25,7 @@ import { TTypedMethods, getTypedMethods } from 'getTypedMethods';
 export function staticSuite<
   F extends TFieldName = string,
   G extends TGroupName = string,
-  T extends CB = CB
+  T extends CB = CB,
 >(suiteCallback: T): StaticSuite<F, G, T> {
   return assign(
     (...args: Parameters<T>) => {
@@ -38,20 +38,20 @@ export function staticSuite<
           {
             dump: suite.dump,
           },
-          result
-        )
+          result,
+        ),
       );
     },
     {
       ...getTypedMethods<F, G>(),
-    }
+    },
   );
 }
 
-type StaticSuite<
+export type StaticSuite<
   F extends TFieldName = string,
   G extends TGroupName = string,
-  T extends CB = CB
+  T extends CB = CB,
 > = ((...args: Parameters<T>) => SuiteRunResult<F, G> & {
   dump: CB<TIsolateSuite>;
 }) &

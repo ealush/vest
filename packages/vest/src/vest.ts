@@ -16,7 +16,7 @@ import { include } from 'include';
 import { mode } from 'mode';
 import { omitWhen } from 'omitWhen';
 import { skipWhen } from 'skipWhen';
-import { staticSuite } from 'staticSuite';
+import { staticSuite, StaticSuite } from 'staticSuite';
 import { suiteSelectors } from 'suiteSelectors';
 import { test } from 'test';
 import { warn } from 'warn';
@@ -40,4 +40,4 @@ export {
   Modes,
 };
 
-export type { SuiteResult, SuiteRunResult, SuiteSummary, Suite };
+export type { SuiteResult, SuiteRunResult, SuiteSummary, Suite, StaticSuite };

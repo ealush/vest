@@ -6081,10 +6081,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/validator@npm:^13.11.7":
-  version: 13.11.7
-  resolution: "@types/validator@npm:13.11.7"
-  checksum: 975ad31728f3e32278f090545b879453d5d2b26dd159c6b632efb79e748711bca15e6339b93e85c33b48208b1aee262d3043246118aa3c67a74fb0f89700b1d5
+"@types/validator@npm:^13.11.8":
+  version: 13.11.8
+  resolution: "@types/validator@npm:13.11.8"
+  checksum: 9e8e8a0e95c3acac60e740d10729076e810350a5975523560c0232bb3c414f381fb7f246405fda3454db694fa5a1c0f00d7e9070023a078abee036b8d7b67770
   languageName: node
   linkType: hard
 
@@ -14058,9 +14058,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "n4s@workspace:packages/n4s"
   dependencies:
-    "@types/validator": ^13.11.7
+    "@types/validator": ^13.11.8
     context: ^3.0.25
-    validator: 13.9.0
+    validator: 13.11.0
     vest-utils: ^1.2.9
   languageName: unknown
   linkType: soft
@@ -18008,10 +18008,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"validator@npm:13.9.0":
-  version: 13.9.0
-  resolution: "validator@npm:13.9.0"
-  checksum: e2c936f041f61faa42bafd17c6faddf939498666cd82e88d733621c286893730b008959f4cb12ab3e236148a4f3805c30b85e3dcf5e0efd8b0cbcd36c02bfc0c
+"validator@npm:13.11.0":
+  version: 13.11.0
+  resolution: "validator@npm:13.11.0"
+  checksum: d1e0c27022681420756da25bc03eb08d5f0c66fb008f8ff02ebc95812b77c6be6e03d3bd05cf80ca702e23eeb73dadd66b4b3683173ea2a0bc7cc72820bee131
   languageName: node
   linkType: hard
 

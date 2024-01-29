@@ -1,6 +1,6 @@
 {
   "name": "vest",
-  "version": "5.2.7",
+  "version": "5.2.8",
   "description": "Declarative Form Validations Framework",
   "license": "MIT",
   "author": "ealush",
@@ -36,11 +36,11 @@
     "url": "https://github.com/ealush/vest.git/issues"
   },
   "dependencies": {
-    "context": "^3.0.24",
-    "n4s": "^5.0.18",
-    "vast": "^1.0.33",
-    "vest-utils": "^1.2.8",
-    "vestjs-runtime": "^1.2.7"
+    "context": "^3.0.25",
+    "n4s": "^5.0.19",
+    "vast": "^1.0.34",
+    "vest-utils": "^1.2.9",
+    "vestjs-runtime": "^1.2.8"
   },
   "exports": {
     "./promisify": {

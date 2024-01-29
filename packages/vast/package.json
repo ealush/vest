@@ -1,5 +1,5 @@
 {
-  "version": "1.0.33",
+  "version": "1.0.34",
   "license": "MIT",
   "main": "./dist/cjs/vast.js",
   "types": "./types/vast.d.ts",
@@ -19,7 +19,7 @@
     "url": "https://github.com/ealush/vest.git/issues"
   },
   "dependencies": {
-    "vest-utils": "^1.2.8"
+    "vest-utils": "^1.2.9"
   },
   "exports": {
     ".": {

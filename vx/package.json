@@ -4,7 +4,7 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
     "context": "3.0.2",
-    "date-fns": "^2.30.0",
+    "date-fns": "^3.3.1",
     "dotenv": "^16.3.1",
     "fs-extra": "^11.2.0",
     "glob": "^10.3.10",

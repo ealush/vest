@@ -17,14 +17,14 @@ export class IsolateTestReconciler extends IsolateReconciler {
 
   static reconcile(
     currentNode: TIsolateTest,
-    historyNode: TIsolateTest
+    historyNode: TIsolateTest,
   ): TIsolateTest {
     const reconcilerOutput = usePickNode(historyNode, currentNode);
 
     cancelOverriddenPendingTestOnTestReRun(
       reconcilerOutput,
       currentNode,
-      historyNode
+      historyNode,
     );
 
     return reconcilerOutput;
@@ -33,7 +33,7 @@ export class IsolateTestReconciler extends IsolateReconciler {
 
 function usePickNode(
   historyNode: TIsolateTest,
-  currentNode: TIsolateTest
+  currentNode: TIsolateTest,
 ): TIsolateTest {
   const collisionResult = handleCollision(currentNode, historyNode);
 
@@ -42,7 +42,7 @@ function usePickNode(
 
 function handleCollision(
   newNode: TIsolateTest,
-  prevNode?: TIsolate
+  prevNode?: TIsolate,
 ): TIsolateTest {
   if (IsolateInspector.usesKey(newNode)) {
     return VestTest.cast(Reconciler.handleIsolateNodeWithKey(newNode));
@@ -78,7 +78,7 @@ function handleCollision(
 function cancelOverriddenPendingTestOnTestReRun(
   nextNode: TIsolate,
   currentNode: TIsolate,
-  prevTestObject: TIsolateTest
+  prevTestObject: TIsolateTest,
 ) {
   if (nextNode === currentNode && VestTest.is(currentNode)) {
     cancelOverriddenPendingTest(prevTestObject, currentNode);
@@ -87,14 +87,14 @@ function cancelOverriddenPendingTestOnTestReRun(
 
 function nodeReorderDetected(
   newNode: TIsolateTest,
-  prevNode: Maybe<TIsolate>
+  prevNode: Maybe<TIsolate>,
 ): boolean {
   return VestTest.is(prevNode) && !isSameProfileTest(prevNode, newNode);
 }
 
 function throwTestOrderError(
   newNode: TIsolateTest,
-  prevNode: Maybe<TIsolate>
+  prevNode: Maybe<TIsolate>,
 ): void {
   if (IsolateInspector.canReorder(newNode)) {
     return;
@@ -106,6 +106,6 @@ function throwTestOrderError(
       prevName: VestTest.is(prevNode)
         ? VestTest.getData(prevNode).fieldName
         : undefined,
-    })
+    }),
   );
 }

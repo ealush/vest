@@ -69,4 +69,50 @@ describe('suite.resume', () => {
     expect(suite2.hasWarnings()).toBe(false);
     expect(suite2.get().tests.field_1).toBeUndefined();
   });
+
+  describe('Running the suite after resuming', () => {
+    function cb(data: Record<string, any>, only?: string) {
+      vest.only(only);
+
+      vest.test('field_1', 'field_1_message', () => {
+        vest.enforce(data.field_1).isNotBlank();
+      });
+      vest.test('field_2', 'field_2_message', () => {
+        vest.enforce(data.field_2).isNotBlank();
+      });
+    }
+
+    it('Should continue with resumed state if matching', () => {
+      const suite = vest.create('suite_resume_test', cb);
+
+      suite({});
+
+      const serialized = SuiteSerializer.serialize(suite);
+
+      const suite2 = vest.create(cb);
+      SuiteSerializer.resume(suite2, serialized);
+      suite2({}, 'field_1');
+      expect(suite2.getError('field_1')).toBe('field_1_message');
+      expect(suite2.getError('field_2')).toBe('field_2_message');
+    });
+
+    describe('Sanity - suite should run as expected', () => {
+      it('Should have correct state after resuming', () => {
+        const suite = vest.create('suite_resume_test', cb);
+
+        suite({});
+
+        const serialized = SuiteSerializer.serialize(suite);
+
+        const suite2 = vest.create(cb);
+
+        SuiteSerializer.resume(suite2, serialized);
+
+        expect(suite2.getError('field_1')).toBe('field_1_message');
+        expect(suite2.getError('field_2')).toBe('field_2_message');
+
+        expect(suite2.getErrors()).toMatchSnapshot();
+      });
+    });
+  });
 });

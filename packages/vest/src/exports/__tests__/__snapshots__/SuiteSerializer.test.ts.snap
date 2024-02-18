@@ -1,3 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`SuiteSerializer Should produce a valid serialized dump 1`] = `"[{"0":"Suite","1":"9","2":{},"a":[{"0":"Focused","1":"9","2":{"focusMode":0,"match":["d"],"matchAll":false}},{"0":"3","1":"FAILED","2":{"4":"5","6":"d","7":"field_1_message"}},{"0":"3","1":"8","2":{"4":"5","6":"field_2","7":"field_2_message"}},{"0":"Group","1":"9","a":[{"0":"3","1":"8","2":{"4":"5","6":"e","7":"field_3_message_1","b":"c"}},{"0":"3","1":"8","2":{"4":"5","6":"e","7":"field_3_message_2","b":"c"}},{"0":"3","1":"8","2":{"4":"5","6":"field_4","7":"field_4_message","b":"c"}}]},{"0":"SkipWhen","1":"9","a":[{"0":"3","1":"8","2":{"4":"5","6":"field_5","7":"field_5_message"}}]}]},{"0":"$type","1":"status","2":"data","3":"Test","4":"severity","5":"error","6":"fieldName","7":"message","8":"SKIPPED","9":"DONE","a":"children","b":"groupName","c":"group_1","d":"field_1","e":"field_3"}]"`;
+
+exports[`suite.resume Running the suite after resuming Sanity - suite should run as expected Should have correct state after resuming 1`] = `
+{
+  "field_1": [
+    "field_1_message",
+  ],
+  "field_2": [
+    "field_2_message",
+  ],
+}
+`;

@@ -8,7 +8,7 @@ import type {
   SuiteSummary,
 } from 'SuiteResultTypes';
 import type { Suite } from 'SuiteTypes';
-import { createSuite } from 'createSuite';
+import { createSuite, staticSuite, StaticSuite } from 'createSuite';
 import { each } from 'each';
 import { skip, only } from 'focused';
 import { group } from 'group';
@@ -16,7 +16,6 @@ import { include } from 'include';
 import { mode } from 'mode';
 import { omitWhen } from 'omitWhen';
 import { skipWhen } from 'skipWhen';
-import { staticSuite, StaticSuite } from 'staticSuite';
 import { suiteSelectors } from 'suiteSelectors';
 import { test } from 'test';
 import { warn } from 'warn';

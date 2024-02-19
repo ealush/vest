@@ -89,18 +89,33 @@ describe('staticSuite', () => {
       expect(res.dump().children).toHaveLength(3);
       expect(res.dump().children?.[0]).toHaveProperty(
         '$type',
-        VestIsolateType.Test
+        VestIsolateType.Test,
       );
       expect(res.dump().children?.[1]).toHaveProperty(
         '$type',
-        VestIsolateType.Test
+        VestIsolateType.Test,
       );
       expect(res.dump().children?.[2]).toHaveProperty(
         '$type',
-        VestIsolateType.Group
+        VestIsolateType.Group,
       );
 
       expect(res.dump()).toMatchSnapshot();
     });
+  });
+});
+
+describe('runStatic', () => {
+  it('Should run a static suite', () => {
+    const suite = vest.create(() => {
+      vest.test('t1', () => false);
+      vest.test('t2', () => false);
+    });
+
+    const res = suite.runStatic();
+    expect(suite.runStatic()).not.toBe(suite.runStatic());
+
+    expect(res.hasErrors('t1')).toBe(true);
+    expect(res.hasErrors('t2')).toBe(true);
   });
 });

@@ -35,7 +35,6 @@
         "./src/suiteResult/done/shouldSkipDoneRegistration.ts"
       ],
       "deferDoneCallback": ["./src/suiteResult/done/deferDoneCallback.ts"],
-      "staticSuite": ["./src/suite/staticSuite.ts"],
       "runCallbacks": ["./src/suite/runCallbacks.ts"],
       "getTypedMethods": ["./src/suite/getTypedMethods.ts"],
       "createSuite": ["./src/suite/createSuite.ts"],

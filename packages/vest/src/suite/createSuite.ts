@@ -1,6 +1,8 @@
 import { assign, CB } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
+import { TTypedMethods, getTypedMethods } from './getTypedMethods';
+
 import { Events } from 'BusEvents';
 import { IsolateSuite, TIsolateSuite } from 'IsolateSuite';
 import { useCreateVestState, useLoadSuite } from 'Runtime';
@@ -14,7 +16,6 @@ import {
 import { Suite } from 'SuiteTypes';
 import { useInitVestBus } from 'VestBus';
 import { VestReconciler } from 'VestReconciler';
-import { getTypedMethods } from 'getTypedMethods';
 import { useCreateSuiteResult } from 'suiteResult';
 import { useSuiteRunResult } from 'suiteRunResult';
 import { bindSuiteSelectors } from 'suiteSelectors';
@@ -23,18 +24,19 @@ import { validateSuiteCallback } from 'validateSuiteParams';
 function createSuite<
   F extends TFieldName = string,
   G extends TGroupName = string,
-  T extends CB = CB
+  T extends CB = CB,
 >(suiteName: SuiteName, suiteCallback: T): Suite<F, G, T>;
 function createSuite<
   F extends TFieldName = string,
   G extends TGroupName = string,
-  T extends CB = CB
+  T extends CB = CB,
 >(suiteCallback: T): Suite<F, G, T>;
 // @vx-allow use-use
+// eslint-disable-next-line max-lines-per-function
 function createSuite<
   F extends TFieldName = string,
   G extends TGroupName = string,
-  T extends CB = CB
+  T extends CB = CB,
 >(
   ...args: [suiteName: SuiteName, suiteCallback: T] | [suiteCallback: T]
 ): Suite<F, G, T> {
@@ -55,11 +57,13 @@ function createSuite<
         Bus.useEmit(Events.SUITE_RUN_STARTED);
 
         return IsolateSuite(
-          useRunSuiteCallback<T, F, G>(suiteCallback, ...args)
+          useRunSuiteCallback<T, F, G>(suiteCallback, ...args),
         );
-      }
+      },
     ).output;
   }
+
+  const mountedStatic = staticSuite<F, G, T>(...(args as [T]));
 
   // Assign methods to the suite
   // We do this within the VestRuntime so that the suite methods
@@ -74,17 +78,18 @@ function createSuite<
       VestRuntime.persist(suite),
       {
         dump: VestRuntime.persist(
-          () => VestRuntime.useAvailableRoot() as TIsolateSuite
+          () => VestRuntime.useAvailableRoot() as TIsolateSuite,
         ),
         get: VestRuntime.persist(useCreateSuiteResult),
         remove: Bus.usePrepareEmitter<string>(Events.REMOVE_FIELD),
         reset: Bus.usePrepareEmitter(Events.RESET_SUITE),
         resetField: Bus.usePrepareEmitter<string>(Events.RESET_FIELD),
         resume: VestRuntime.persist(useLoadSuite),
+        runStatic: (...args: Parameters<T>): SuiteRunResult<F, G> => mountedStatic(...args) as SuiteRunResult<F, G>,
         subscribe: VestBus.subscribe,
         ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
         ...getTypedMethods<F, G>(),
-      }
+      },
     );
   });
 }
@@ -92,7 +97,7 @@ function createSuite<
 function useRunSuiteCallback<
   T extends CB,
   F extends TFieldName,
-  G extends TGroupName
+  G extends TGroupName,
 >(suiteCallback: T, ...args: Parameters<T>): CB<SuiteRunResult<F, G>> {
   const emit = Bus.useEmit();
 
@@ -103,4 +108,56 @@ function useRunSuiteCallback<
   };
 }
 
-export { createSuite };
+/**
+ * Creates a static suite for server-side validation.
+ *
+ * @param {Function} validationFn - The validation function that defines the suite's tests.
+ * @returns {Function} - A function that runs the validations defined in the suite.
+ *
+ * @example
+ * import { staticSuite, test, enforce } from 'vest';
+ *
+ * const suite = staticSuite(data => {
+ *   test('username', 'username is required', () => {
+ *     enforce(data.username).isNotEmpty();
+ *   });
+ * });
+ *
+ * suite(data);
+ */
+function staticSuite<
+  F extends TFieldName = string,
+  G extends TGroupName = string,
+  T extends CB = CB,
+>(suiteCallback: T): StaticSuite<F, G, T> {
+  return assign(
+    (...args: Parameters<T>) => {
+      const suite = createSuite<F, G, T>(suiteCallback);
+
+      const result = suite(...args);
+
+      return Object.freeze(
+        assign(
+          {
+            dump: suite.dump,
+          },
+          result,
+        ),
+      );
+    },
+    {
+      ...getTypedMethods<F, G>(),
+    },
+  );
+}
+
+export type StaticSuite<
+  F extends TFieldName = string,
+  G extends TGroupName = string,
+  T extends CB = CB,
+> = ((...args: Parameters<T>) => SuiteRunResult<F, G> & {
+  dump: CB<TIsolateSuite>;
+}) &
+  TTypedMethods<F, G>;
+
+export { createSuite, staticSuite };

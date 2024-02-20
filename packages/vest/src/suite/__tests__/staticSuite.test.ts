@@ -1,3 +1,4 @@
+import { SuiteSerializer } from 'SuiteSerializer';
 import { VestIsolateType } from 'VestIsolateType';
 import * as vest from 'vest';
 import { staticSuite } from 'vest';
@@ -117,5 +118,25 @@ describe('runStatic', () => {
 
     expect(res.hasErrors('t1')).toBe(true);
     expect(res.hasErrors('t2')).toBe(true);
+  });
+
+  it('Should serialize and resume a static suite', () => {
+    const suite = vest.create(() => {
+      vest.test('t1', () => false);
+      vest.test('t2', () => false);
+    });
+
+    const serialized = SuiteSerializer.serialize(suite.runStatic());
+    const suite2 = vest.create(() => {
+      vest.test('t3', () => false);
+      vest.test('t4', () => false);
+    });
+
+    SuiteSerializer.resume(suite2, serialized);
+
+    expect(suite2.hasErrors('t1')).toBe(true);
+    expect(suite2.hasErrors('t2')).toBe(true);
+    expect(suite2.hasErrors('t3')).toBe(false);
+    expect(suite2.hasErrors('t4')).toBe(false);
   });
 });

@@ -85,7 +85,8 @@ function createSuite<
         reset: Bus.usePrepareEmitter(Events.RESET_SUITE),
         resetField: Bus.usePrepareEmitter<string>(Events.RESET_FIELD),
         resume: VestRuntime.persist(useLoadSuite),
-        runStatic: (...args: Parameters<T>): SuiteRunResult<F, G> => mountedStatic(...args) as SuiteRunResult<F, G>,
+        runStatic: (...args: Parameters<T>): StaticSuiteRunResult<F, G> =>
+          mountedStatic(...args) as StaticSuiteRunResult<F, G>,
         subscribe: VestBus.subscribe,
         ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
         ...getTypedMethods<F, G>(),
@@ -125,14 +126,31 @@ function useRunSuiteCallback<
  *
  * suite(data);
  */
+
 function staticSuite<
   F extends TFieldName = string,
   G extends TGroupName = string,
   T extends CB = CB,
->(suiteCallback: T): StaticSuite<F, G, T> {
+>(suiteName: SuiteName, suiteCallback: T): StaticSuite<F, G, T>;
+function staticSuite<
+  F extends TFieldName = string,
+  G extends TGroupName = string,
+  T extends CB = CB,
+>(suiteCallback: T): StaticSuite<F, G, T>;
+// @vx-allow use-use
+// eslint-disable-next-line max-lines-per-function
+function staticSuite<
+  F extends TFieldName = string,
+  G extends TGroupName = string,
+  T extends CB = CB,
+>(
+  ...createArgs: [suiteName: SuiteName, suiteCallback: T] | [suiteCallback: T]
+): StaticSuite<F, G, T> {
   return assign(
-    (...args: Parameters<T>) => {
-      const suite = createSuite<F, G, T>(suiteCallback);
+    (...args: Parameters<T>): StaticSuiteRunResult<F, G> => {
+      const suite = createSuite<F, G, T>(
+        ...(createArgs as unknown as [SuiteName, T]),
+      );
 
       const result = suite(...args);
 
@@ -143,7 +161,7 @@ function staticSuite<
           },
           result,
         ),
-      );
+      ) as StaticSuiteRunResult<F, G>;
     },
     {
       ...getTypedMethods<F, G>(),
@@ -155,9 +173,13 @@ export type StaticSuite<
   F extends TFieldName = string,
   G extends TGroupName = string,
   T extends CB = CB,
-> = ((...args: Parameters<T>) => SuiteRunResult<F, G> & {
+> = (...args: Parameters<T>) => StaticSuiteRunResult<F, G>;
+
+export type StaticSuiteRunResult<
+  F extends TFieldName = string,
+  G extends TGroupName = string,
+> = SuiteRunResult<F, G> & {
   dump: CB<TIsolateSuite>;
-}) &
-  TTypedMethods<F, G>;
+} & TTypedMethods<F, G>;
 
 export { createSuite, staticSuite };

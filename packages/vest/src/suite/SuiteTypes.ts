@@ -7,6 +7,7 @@ import {
   TFieldName,
   TGroupName,
 } from 'SuiteResultTypes';
+import { StaticSuiteRunResult } from 'createSuite';
 import { TTypedMethods } from 'getTypedMethods';
 import { SuiteSelectors } from 'suiteSelectors';
 
@@ -27,7 +28,7 @@ export type SuiteMethods<
   reset: CB<void>;
   remove: CB<void, [fieldName: F]>;
   resetField: CB<void, [fieldName: F]>;
-  runStatic: CB<SuiteRunResult<F, G>, Parameters<T>>;
+  runStatic: CB<StaticSuiteRunResult<F, G>, Parameters<T>>;
   subscribe: (cb: CB) => CB<void>;
 } & TTypedMethods<F, G> &
   SuiteSelectors<F, G>;

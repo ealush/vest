@@ -1,5 +1,11 @@
 import { ErrorStrings } from 'ErrorStrings';
-import { Maybe, Nullable, invariant, isNullish } from 'vest-utils';
+import {
+  Maybe,
+  Nullable,
+  invariant,
+  isNullish,
+  optionalFunctionValue,
+} from 'vest-utils';
 
 import { type TIsolate } from 'Isolate';
 import { IsolateInspector } from 'IsolateInspector';
@@ -17,7 +23,7 @@ export interface IRecociler<I = any> {
 
 function BaseReconciler(
   currentNode: TIsolate,
-  historyNode: TIsolate
+  historyNode: TIsolate,
 ): TIsolate {
   if (isNullish(historyNode)) {
     return currentNode;
@@ -49,7 +55,7 @@ export class Reconciler {
   static dropNextNodesOnReorder<I extends TIsolate>(
     reorderLogic: (newNode: I, prevNode: Maybe<TIsolate>) => boolean,
     newNode: I,
-    prevNode: Maybe<TIsolate>
+    prevNode: Maybe<TIsolate>,
   ): boolean {
     const didReorder = reorderLogic(newNode, prevNode);
 
@@ -60,18 +66,25 @@ export class Reconciler {
     return didReorder;
   }
 
-  static handleIsolateNodeWithKey(node: TIsolate): TIsolate {
+  static handleIsolateNodeWithKey<I extends TIsolate>(
+    node: TIsolate,
+
+    // The revoke function allows the caller to revoke the previous node
+    revoke: ((node: I) => boolean) | false,
+  ): TIsolate {
     invariant(IsolateInspector.usesKey(node));
 
     const prevNodeByKey = VestRuntime.useHistoryKey(node.key);
-
     let nextNode = node;
 
-    if (!isNullish(prevNodeByKey)) {
+    if (
+      !isNullish(prevNodeByKey) &&
+      !optionalFunctionValue(revoke, prevNodeByKey)
+    ) {
       nextNode = prevNodeByKey;
     }
 
-    VestRuntime.useSetIsolateKey(node.key, node);
+    VestRuntime.useSetIsolateKey(node.key, nextNode);
 
     return nextNode;
   }
@@ -79,7 +92,7 @@ export class Reconciler {
 
 function pickNextNode(
   currentNode: TIsolate,
-  historyNode: Nullable<TIsolate>
+  historyNode: Nullable<TIsolate>,
 ): TIsolate {
   if (isNullish(historyNode)) {
     return handleNoHistoryNode(currentNode);
@@ -99,7 +112,7 @@ function pickNextNode(
 
 function handleNoHistoryNode<I extends TIsolate>(newNode: I): I {
   if (IsolateInspector.usesKey(newNode)) {
-    return Reconciler.handleIsolateNodeWithKey(newNode) as I;
+    return Reconciler.handleIsolateNodeWithKey(newNode, false) as I;
   }
 
   return newNode;

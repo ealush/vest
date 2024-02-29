@@ -81,4 +81,35 @@ describe('each', () => {
       });
     });
   });
+
+  it('Should retain failed/passing tests even after skipping', () => {
+    let run = 0;
+    const suite = vest.create((data: number[], only: number) => {
+      vest.only(`item.${only}`);
+
+      vest.each(data, item => {
+        vest.test(
+          `item.${item}`,
+          () => {
+            vest.enforce(item).isOdd();
+          },
+          item.toString(),
+        );
+      });
+      run++;
+    });
+    const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    data.forEach((_, idx) => suite(data, idx + 1));
+    expect(suite.get().errors).toHaveLength(5);
+    expect(suite.hasErrors('item.1')).toBe(false);
+    expect(suite.hasErrors('item.2')).toBe(true);
+    expect(suite.hasErrors('item.3')).toBe(false);
+    expect(suite.hasErrors('item.4')).toBe(true);
+    expect(suite.hasErrors('item.5')).toBe(false);
+    expect(suite.hasErrors('item.6')).toBe(true);
+    expect(suite.hasErrors('item.7')).toBe(false);
+    expect(suite.hasErrors('item.8')).toBe(true);
+    expect(suite.hasErrors('item.9')).toBe(false);
+    expect(suite.hasErrors('item.10')).toBe(true);
+  });
 });

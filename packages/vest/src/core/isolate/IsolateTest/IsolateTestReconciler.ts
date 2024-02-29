@@ -45,7 +45,9 @@ function handleCollision(
   prevNode?: TIsolate,
 ): TIsolateTest {
   if (IsolateInspector.usesKey(newNode)) {
-    return VestTest.cast(Reconciler.handleIsolateNodeWithKey(newNode));
+    return VestTest.cast(
+      Reconciler.handleIsolateNodeWithKey(newNode, VestTest.isNonActionable),
+    );
   }
 
   if (

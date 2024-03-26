@@ -10,7 +10,7 @@ import { useIsExcluded } from 'useIsExcluded';
 
 export function useVerifyTestRun(
   testObject: TIsolateTest,
-  collisionResult: TIsolateTest = testObject
+  collisionResult: TIsolateTest = testObject,
 ): TIsolateTest {
   const testData = VestTest.getData(testObject);
 

@@ -8,6 +8,7 @@ import type { TIsolateTest } from 'IsolateTest';
 import { VestTest } from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isSameProfileTest } from 'isSameProfileTest';
+import { useIsExcluded } from 'useIsExcluded';
 import { useVerifyTestRun } from 'verifyTestRun';
 
 export class IsolateTestReconciler extends IsolateReconciler {
@@ -19,35 +20,22 @@ export class IsolateTestReconciler extends IsolateReconciler {
     currentNode: TIsolateTest,
     historyNode: TIsolateTest,
   ): TIsolateTest {
-    const reconcilerOutput = usePickNode(historyNode, currentNode);
+    const reconcilerOutput = usePickNode(currentNode, historyNode);
 
-    cancelOverriddenPendingTestOnTestReRun(
-      reconcilerOutput,
-      currentNode,
-      historyNode,
-    );
+    const nextNode = useVerifyTestRun(currentNode, reconcilerOutput);
 
-    return reconcilerOutput;
+    cancelOverriddenPendingTestOnTestReRun(nextNode, currentNode, historyNode);
+
+    return nextNode;
   }
 }
 
 function usePickNode(
-  historyNode: TIsolateTest,
-  currentNode: TIsolateTest,
-): TIsolateTest {
-  const collisionResult = handleCollision(currentNode, historyNode);
-
-  return useVerifyTestRun(currentNode, collisionResult);
-}
-
-function handleCollision(
   newNode: TIsolateTest,
-  prevNode?: TIsolate,
+  prevNode: TIsolateTest,
 ): TIsolateTest {
   if (IsolateInspector.usesKey(newNode)) {
-    return VestTest.cast(
-      Reconciler.handleIsolateNodeWithKey(newNode, VestTest.isNonActionable),
-    );
+    return useHandleTestWithKey(newNode);
   }
 
   if (
@@ -75,6 +63,23 @@ function handleCollision(
   }
 
   return prevNode;
+}
+
+function useHandleTestWithKey(newNode: TIsolateTest): TIsolateTest {
+  return VestTest.cast(
+    Reconciler.handleIsolateNodeWithKey(newNode, (prevNode: TIsolateTest) => {
+      // This is the revoke callback. it determines whether we should revoke the previous node and use the new one.
+      if (VestTest.isNonActionable(prevNode)) {
+        return true;
+      }
+
+      if (useIsExcluded(newNode)) {
+        return false;
+      }
+
+      return true;
+    }),
+  );
 }
 
 function cancelOverriddenPendingTestOnTestReRun(

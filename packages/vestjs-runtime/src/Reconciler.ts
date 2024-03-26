@@ -1,4 +1,9 @@
 import { ErrorStrings } from 'ErrorStrings';
+import { type TIsolate } from 'Isolate';
+import { IsolateInspector } from 'IsolateInspector';
+import { IsolateMutator } from 'IsolateMutator';
+import { isSameIsolateType } from 'IsolateSelectors';
+import * as VestRuntime from 'VestRuntime';
 import {
   Maybe,
   Nullable,
@@ -6,12 +11,6 @@ import {
   isNullish,
   optionalFunctionValue,
 } from 'vest-utils';
-
-import { type TIsolate } from 'Isolate';
-import { IsolateInspector } from 'IsolateInspector';
-import { IsolateMutator } from 'IsolateMutator';
-import { isSameIsolateType } from 'IsolateSelectors';
-import * as VestRuntime from 'VestRuntime';
 // import { isSameIsolateType } from 'IsolateSelectors';
 
 // I would rather not use `any` here, but instead use `Isolate`.

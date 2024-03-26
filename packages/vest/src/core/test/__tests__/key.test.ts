@@ -131,7 +131,7 @@ describe('key', () => {
             "warnCount": 0,
             "warnings": [],
           }
-        `
+        `,
         );
         expect(res2.tests.reordered).toMatchInlineSnapshot(
           {
@@ -152,7 +152,7 @@ describe('key', () => {
             "warnCount": 0,
             "warnings": [],
           }
-        `
+        `,
         );
         expect(res1.tests).not.toEqual(res2.tests);
         expect(res2.tests).toMatchInlineSnapshot(`
@@ -219,8 +219,73 @@ describe('key', () => {
         });
         suite();
         expect(deferThrow).toHaveBeenCalledWith(
-          `Encountered the same key "key_1" twice. This may lead to inconsistent or overriding of results.`
+          `Encountered the same key "key_1" twice. This may lead to inconsistent or overriding of results.`,
         );
+      });
+    });
+  });
+
+  describe('Special combinations', () => {
+    describe('Key with only', () => {
+      it('Should return or revoke previous test result normally', () => {
+        const suite = vest.create((data, fields?: string[]) => {
+          vest.only(fields);
+          vest.test(
+            'test_a',
+            'Enter a value',
+            () => {
+              vest.enforce(data.a).isNotEmpty();
+            },
+            'a',
+          );
+          vest.test(
+            'test_b',
+            'Enter a value',
+            () => {
+              vest.enforce(data.b).isNotEmpty();
+            },
+            'b',
+          );
+        });
+
+        suite({ a: '', b: '' }).done(() => {
+          expect(suite.hasErrors('test_a')).toBe(true);
+          expect(suite.hasErrors('test_b')).toBe(true);
+        });
+        suite({ a: 's', b: '' }, ['test_a']).done(() => {
+          expect(suite.hasErrors('test_a')).toBe(false);
+          expect(suite.hasErrors('test_b')).toBe(true);
+        });
+        suite({ a: 's', b: 's' }, ['test_b']).done(() => {
+          expect(suite.hasErrors('test_a')).toBe(false);
+          expect(suite.hasErrors('test_b')).toBe(false);
+        });
+      });
+    });
+    describe('Key with omitWhen', () => {
+      it('Should return or revoke previous test result normally', () => {
+        const suite = vest.create((data, omit: boolean) => {
+          vest.omitWhen(omit, () => {
+            vest.test(
+              'test_a',
+              'Enter a value',
+              () => {
+                vest.enforce(data.a).isNotEmpty();
+              },
+              'a',
+            );
+          });
+        });
+
+        suite({ a: '' }, false).done(() => {
+          expect(suite.hasErrors('test_a')).toBe(true);
+        });
+        suite({ a: '' }, false).done(() => {
+          expect(suite.hasErrors('test_a')).toBe(true);
+        });
+        suite({ a: 's' }, true).done(() => {
+          expect(suite.hasErrors('test_a')).toBe(false);
+        });
       });
     });
   });

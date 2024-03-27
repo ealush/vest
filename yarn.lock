@@ -7865,6 +7865,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"clsx@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "clsx@npm:2.1.0"
+  checksum: 43fefc29b6b49c9476fbce4f8b1cc75c27b67747738e598e6651dd40d63692135dc60b18fa1c5b78a2a9ba8ae6fd2055a068924b94e20b42039bd53b78b98e1d
+  languageName: node
+  linkType: hard
+
 "co@npm:^4.6.0":
   version: 4.6.0
   resolution: "co@npm:4.6.0"
@@ -18345,7 +18352,7 @@ __metadata:
     "@easyops-cn/docusaurus-search-local": ^0.38.1
     "@mdx-js/react": ^3.0.0
     "@svgr/webpack": ^8.1.0
-    clsx: ^2.0.0
+    clsx: ^2.1.0
     file-loader: ^6.2.0
     prism-react-renderer: ^2.3.0
     react: ^18.2.0

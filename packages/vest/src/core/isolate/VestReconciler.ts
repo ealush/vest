@@ -3,13 +3,28 @@ import { TIsolate } from 'vestjs-runtime';
 
 import { IsolateTestReconciler } from 'IsolateTestReconciler';
 
+const reconcilers: IsolateReconciler[] = [IsolateTestReconciler];
+
+export function registerIsolateReconciler(reconciler: IsolateReconciler) {
+  if (reconcilers.includes(reconciler)) {
+    return;
+  }
+
+  reconcilers.push(reconciler);
+}
+
 export function VestReconciler(
   currentNode: TIsolate,
-  historyNode: TIsolate
+  historyNode: TIsolate,
 ): Nullable<TIsolate> {
   return (
-    [IsolateTestReconciler]
+    reconcilers
       .find(reconciler => reconciler.match(currentNode, historyNode))
       ?.reconcile(currentNode as any, historyNode as any) ?? null
   );
 }
+
+export type IsolateReconciler = {
+  match(currentNode: TIsolate, historyNode: TIsolate): boolean;
+  reconcile(elecurrentNode: TIsolate, historyNode: TIsolate): TIsolate;
+};

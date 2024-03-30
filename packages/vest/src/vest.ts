@@ -8,6 +8,7 @@ import type {
   SuiteSummary,
 } from 'SuiteResultTypes';
 import type { Suite } from 'SuiteTypes';
+import { registerIsolateReconciler } from 'VestReconciler';
 import { createSuite, staticSuite, StaticSuite } from 'createSuite';
 import { each } from 'each';
 import { skip, only } from 'focused';
@@ -37,6 +38,7 @@ export {
   mode,
   staticSuite,
   Modes,
+  registerIsolateReconciler,
 };
 
 export type { SuiteResult, SuiteRunResult, SuiteSummary, Suite, StaticSuite };

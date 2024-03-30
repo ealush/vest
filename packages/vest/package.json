@@ -283,6 +283,36 @@
       "module": "./dist/es/enforce/compose.production.js",
       "default": "./dist/cjs/enforce/compose.production.js"
     },
+    "./debounce": {
+      "production": {
+        "types": "./types/debounce.d.ts",
+        "browser": "./dist/es/debounce.production.js",
+        "umd": "./dist/umd/debounce.production.js",
+        "import": "./dist/es/debounce.production.js",
+        "require": "./dist/cjs/debounce.production.js",
+        "node": "./dist/cjs/debounce.production.js",
+        "module": "./dist/es/debounce.production.js",
+        "default": "./dist/cjs/debounce.production.js"
+      },
+      "development": {
+        "types": "./types/debounce.d.ts",
+        "browser": "./dist/es/debounce.development.js",
+        "umd": "./dist/umd/debounce.development.js",
+        "import": "./dist/es/debounce.development.js",
+        "require": "./dist/cjs/debounce.development.js",
+        "node": "./dist/cjs/debounce.development.js",
+        "module": "./dist/es/debounce.development.js",
+        "default": "./dist/cjs/debounce.development.js"
+      },
+      "types": "./types/debounce.d.ts",
+      "browser": "./dist/es/debounce.production.js",
+      "umd": "./dist/umd/debounce.production.js",
+      "import": "./dist/es/debounce.production.js",
+      "require": "./dist/cjs/debounce.production.js",
+      "node": "./dist/cjs/debounce.production.js",
+      "module": "./dist/es/debounce.production.js",
+      "default": "./dist/cjs/debounce.production.js"
+    },
     "./classnames": {
       "production": {
         "types": "./types/classnames.d.ts",

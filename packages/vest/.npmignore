@@ -12,6 +12,7 @@ tsconfig.json
 !enforce@date/
 !enforce@compounds/
 !enforce@compose/
+!debounce/
 !classnames/
 !SuiteSerializer/
 

@@ -3,7 +3,6 @@ import { IsolateInspector, Reconciler } from 'vestjs-runtime';
 import type { TIsolate } from 'vestjs-runtime';
 
 import { ErrorStrings } from 'ErrorStrings';
-import { IsolateReconciler } from 'IsolateReconciler';
 import type { TIsolateTest } from 'IsolateTest';
 import { VestTest } from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
@@ -11,7 +10,7 @@ import { isSameProfileTest } from 'isSameProfileTest';
 import { useIsExcluded } from 'useIsExcluded';
 import { useVerifyTestRun } from 'verifyTestRun';
 
-export class IsolateTestReconciler extends IsolateReconciler {
+export class IsolateTestReconciler {
   static match(currentNode: TIsolate, historyNode: TIsolate): boolean {
     return VestTest.is(currentNode) && VestTest.is(historyNode);
   }

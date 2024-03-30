@@ -66,6 +66,7 @@
       "enforce@date": ["./src/exports/enforce@date.ts"],
       "enforce@compounds": ["./src/exports/enforce@compounds.ts"],
       "enforce@compose": ["./src/exports/enforce@compose.ts"],
+      "debounce": ["./src/exports/debounce.ts"],
       "classnames": ["./src/exports/classnames.ts"],
       "SuiteSerializer": ["./src/exports/SuiteSerializer.ts"],
       "ErrorStrings": ["./src/errors/ErrorStrings.ts"],

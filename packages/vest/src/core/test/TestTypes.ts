@@ -2,7 +2,7 @@ import { Maybe } from 'vest-utils';
 
 import { TFieldName } from 'SuiteResultTypes';
 
-type TestFnPayload = { signal: AbortSignal };
+export type TestFnPayload = { signal: AbortSignal };
 
 export type TestFn = (payload: TestFnPayload) => TestResult;
 export type AsyncTest = Promise<void>;

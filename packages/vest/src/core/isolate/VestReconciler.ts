@@ -5,7 +5,7 @@ import { IsolateTestReconciler } from 'IsolateTestReconciler';
 
 const reconcilers: IsolateReconciler[] = [IsolateTestReconciler];
 
-export function registerIsolateReconciler(reconciler: IsolateReconciler) {
+export function registerReconciler(reconciler: IsolateReconciler) {
   if (reconcilers.includes(reconciler)) {
     return;
   }

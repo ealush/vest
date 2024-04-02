@@ -1,4 +1,4 @@
-import { registerIsolateReconciler } from 'vest';
+import { registerReconciler } from 'vest';
 import { CB, isPromise, Nullable } from 'vest-utils';
 import { Isolate, TIsolate, IsolateSelectors } from 'vestjs-runtime';
 
@@ -62,4 +62,4 @@ export type IsolateDebouncePayload = {
   clearTimeout: () => void;
 };
 
-registerIsolateReconciler(IsolateDebounceReconciler);
+registerReconciler(IsolateDebounceReconciler);

@@ -24,16 +24,6 @@ export function walk(
       return;
     }
 
-    // If visitOnly is not provided or the predicate is satisfied, call the callback function.
-    if (isNullish(visitOnly) || optionalFunctionValue(visitOnly, isolate)) {
-      callback(isolate, breakout);
-    }
-
-    // If the breakout function has been called, stop the walk.
-    if (broke) {
-      return;
-    }
-
     // Recursively walk through the child Isolate object.
     walk(
       isolate,
@@ -45,11 +35,42 @@ export function walk(
       },
       visitOnly,
     );
+
+    // If the breakout function has been called, stop the walk.
+    if (broke) {
+      return;
+    }
+    // If visitOnly is not provided or the predicate is satisfied, call the callback function.
+    if (isNullish(visitOnly) || optionalFunctionValue(visitOnly, isolate)) {
+      callback(isolate, breakout);
+    }
   }
 
   function breakout() {
     broke = true;
   }
+}
+
+// This function is a combination of walk and reduce. It traverses the tree and calls the callback function for each Isolate object.
+// It then returns the accumulated/processed value.
+
+export function reduce<T>(
+  startNode: TIsolate,
+  callback: (acc: T, isolate: TIsolate, breakout: CB<void>) => T,
+  initialValue: T,
+  visitOnly?: VisitOnlyPredicate,
+): T {
+  let acc = initialValue;
+
+  walk(
+    startNode,
+    (node, breakout) => {
+      acc = callback(acc, node, breakout);
+    },
+    visitOnly,
+  );
+
+  return acc;
 }
 
 // This function returns true if the given predicate function returns true for any Isolate object in the tree.

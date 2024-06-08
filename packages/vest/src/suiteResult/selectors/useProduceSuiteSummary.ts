@@ -23,66 +23,64 @@ export function useProduceSuiteSummary<
   F extends TFieldName,
   G extends TGroupName,
 >(): SuiteSummary<F, G> {
-  const summary: SuiteSummary<F, G> = new SuiteSummary();
-
-  TestWalker.walkTests<F, G>(testObject => {
-    summary.tests = useAppendToTest(summary.tests, testObject);
+  // @vx-allow use-use (TODO: fix this. the error is in the lint rule)
+  const summary = TestWalker.reduceTests<
+    SuiteSummary<F, G>,
+    TIsolateTest<F, G>
+  >((summary, testObject) => {
+    const fieldName = VestTest.getData<F>(testObject).fieldName;
+    summary.tests[fieldName] = useAppendToTest(summary.tests, testObject);
     summary.groups = useAppendToGroup(summary.groups, testObject);
-    summary.errors = appendFailures(
-      Severity.ERRORS,
-      summary.errors,
-      testObject,
-    );
-    summary.warnings = appendFailures(
-      Severity.WARNINGS,
-      summary.warnings,
-      testObject,
-    );
-  });
 
-  summary.valid = useShouldAddValidProperty();
+    if (VestTest.isOmitted(testObject)) {
+      return summary;
+    }
+    if (summary.tests[fieldName].valid === false) {
+      summary.valid = false;
+    }
+    return addSummaryStats(testObject, summary);
+  }, new SuiteSummary());
 
-  return countOverallStates(summary);
+  summary.valid = summary.valid === false ? false : useShouldAddValidProperty();
+
+  return summary;
 }
 
-function appendFailures<F extends TFieldName, G extends TGroupName>(
-  key: Severity,
-  failures: SummaryFailure<F, G>[],
+function addSummaryStats<F extends TFieldName, G extends TGroupName>(
   testObject: TIsolateTest<F, G>,
-): SummaryFailure<F, G>[] {
-  if (VestTest.isOmitted(testObject)) {
-    return failures;
+  summary: SuiteSummary<F, G>,
+): SuiteSummary<F, G> {
+  if (VestTest.isWarning(testObject)) {
+    summary.warnCount++;
+    summary.warnings.push(SummaryFailure.fromTestObject(testObject));
+  } else if (VestTest.isFailing(testObject)) {
+    summary.errorCount++;
+    summary.errors.push(SummaryFailure.fromTestObject(testObject));
   }
 
-  const shouldAppend =
-    key === Severity.WARNINGS
-      ? VestTest.isWarning(testObject)
-      : VestTest.isFailing(testObject);
-
-  if (shouldAppend) {
-    return failures.concat(SummaryFailure.fromTestObject(testObject));
+  if (VestTest.isPending(testObject)) {
+    summary.pendingCount++;
   }
-  return failures;
+
+  if (!VestTest.isNonActionable(testObject)) {
+    summary.testCount++;
+  }
+
+  return summary;
 }
 
 function useAppendToTest<F extends TFieldName>(
   tests: Tests<F>,
   testObject: TIsolateTest<F>,
-): Tests<F> {
+): SingleTestSummary {
   const fieldName = VestTest.getData<F>(testObject).fieldName;
 
-  const newTests = {
-    ...tests,
-  };
-
-  newTests[fieldName] = appendTestObject(newTests[fieldName], testObject);
+  const test = appendTestObject(tests[fieldName], testObject);
   // If `valid` is false to begin with, keep it that way. Otherwise, assess.
-  newTests[fieldName].valid =
-    newTests[fieldName].valid === false
-      ? false
-      : useShouldAddValidProperty(fieldName);
+  test.valid =
+    test.valid === false ? false : useShouldAddValidProperty(fieldName);
 
-  return newTests;
+  return test;
 }
 
 /**
@@ -98,37 +96,16 @@ function useAppendToGroup(
     return groups;
   }
 
-  const newGroups = {
-    ...groups,
-  };
+  groups[groupName] = groups[groupName] || {};
+  const group = groups[groupName];
+  group[fieldName] = appendTestObject(group[fieldName], testObject);
 
-  newGroups[groupName] = newGroups[groupName] || {};
-  newGroups[groupName][fieldName] = appendTestObject(
-    newGroups[groupName][fieldName],
-    testObject,
-  );
-
-  newGroups[groupName][fieldName].valid =
-    newGroups[groupName][fieldName].valid === false
+  group[fieldName].valid =
+    group[fieldName].valid === false
       ? false
       : useShouldAddValidPropertyInGroup(groupName, fieldName);
 
-  return newGroups;
-}
-
-/**
- * Counts the failed tests and adds global counters
- */
-function countOverallStates<F extends TFieldName, G extends TGroupName>(
-  summary: SuiteSummary<F, G>,
-): SuiteSummary<F, G> {
-  for (const test in summary.tests) {
-    summary.errorCount += summary.tests[test].errorCount;
-    summary.warnCount += summary.tests[test].warnCount;
-    summary.testCount += summary.tests[test].testCount;
-    summary.pendingCount += summary.tests[test].pendingCount;
-  }
-  return summary;
+  return groups;
 }
 
 /**

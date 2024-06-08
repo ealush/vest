@@ -1,4 +1,4 @@
-import { Maybe } from 'vest-utils';
+import { Maybe, Nullable } from 'vest-utils';
 
 import { Severity } from 'Severity';
 import { SummaryFailure } from 'SummaryFailure';
@@ -14,13 +14,13 @@ export class SummaryBase {
 
 export class SuiteSummary<
   F extends TFieldName,
-  G extends TGroupName
+  G extends TGroupName,
 > extends SummaryBase {
   public [Severity.ERRORS]: SummaryFailure<F, G>[] = [];
   public [Severity.WARNINGS]: SummaryFailure<F, G>[] = [];
   public groups: Groups<G, F> = {} as Groups<G, F>;
   public tests: Tests<F> = {} as Tests<F>;
-  public valid = false;
+  public valid: Nullable<boolean> = null;
 }
 
 export type TestsContainer<F extends TFieldName, G extends TGroupName> =
@@ -38,7 +38,7 @@ export type Tests<F extends TFieldName> = Record<F, SingleTestSummary>;
 export type SingleTestSummary = SummaryBase & {
   errors: string[];
   warnings: string[];
-  valid: boolean;
+  valid: Nullable<boolean>;
   pendingCount: number;
 };
 
@@ -48,12 +48,12 @@ export type FailureMessages = Record<string, string[]>;
 
 export type SuiteResult<
   F extends TFieldName,
-  G extends TGroupName
+  G extends TGroupName,
 > = SuiteSummary<F, G> & SuiteSelectors<F, G> & { suiteName: SuiteName };
 
 export type SuiteRunResult<
   F extends TFieldName,
-  G extends TGroupName
+  G extends TGroupName,
 > = SuiteResult<F, G> & {
   done: Done<F, G>;
 };

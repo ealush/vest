@@ -1,4 +1,5 @@
-import { Maybe, Nullable } from 'vest-utils';
+import { isFunction } from 'lodash';
+import { hasOwnProperty, isArray, Maybe, Nullable } from 'vest-utils';
 
 import { Severity } from 'Severity';
 import { SummaryFailure } from 'SummaryFailure';
@@ -21,6 +22,72 @@ export class SuiteSummary<
   public groups: Groups<G, F> = {} as Groups<G, F>;
   public tests: Tests<F> = {} as Tests<F>;
   public valid: Nullable<boolean> = null;
+
+  // eslint-disable-next-line max-statements, complexity, max-lines-per-function
+  static equals<F extends TFieldName, G extends TGroupName>(
+    a: SuiteSummary<F, G>,
+    b: SuiteSummary<F, G>,
+  ): boolean {
+    // cheap comparison
+    if (
+      !(
+        a.errorCount === b.errorCount &&
+        a.warnCount === b.warnCount &&
+        a.testCount === b.testCount &&
+        a.pendingCount === b.pendingCount &&
+        a.valid === b.valid &&
+        a[Severity.ERRORS].length === b[Severity.ERRORS].length &&
+        a[Severity.WARNINGS].length === b[Severity.WARNINGS].length
+      )
+    ) {
+      return false;
+    }
+
+    const queue = [[a, b]];
+
+    while (queue.length) {
+      const [a, b] = queue.shift() as [any, any];
+
+      const aKeys = Object.keys(a);
+      const bKeys = Object.keys(b);
+
+      if (aKeys.length !== bKeys.length) {
+        return false;
+      }
+
+      const merged = new Set([...aKeys, ...bKeys]);
+
+      if (merged.size !== aKeys.length) {
+        return false;
+      }
+
+      for (const key of aKeys) {
+        if (key === 'VERSION') {
+          continue;
+        }
+
+        if (!hasOwnProperty(b, key)) {
+          return false;
+        }
+
+        if (isFunction(a[key])) {
+          continue;
+        }
+
+        if (isArray(a[key]) || typeof a[key] === 'object') {
+          queue.push([a[key], b[key]]);
+
+          continue;
+        }
+
+        if (a[key] !== b[key]) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
 }
 
 export type TestsContainer<F extends TFieldName, G extends TGroupName> =

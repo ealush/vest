@@ -1,4 +1,5 @@
 import { Maybe, assign, defaultTo } from 'vest-utils';
+import { VestRuntime } from 'vestjs-runtime';
 
 import { TIsolateTest } from 'IsolateTest';
 import { countKeyBySeverity, Severity } from 'Severity';
@@ -23,6 +24,12 @@ export function useProduceSuiteSummary<
   F extends TFieldName,
   G extends TGroupName,
 >(): SuiteSummary<F, G> {
+  const [historyRoot] = VestRuntime.useHistoryRoot();
+
+  const historyOutput = historyRoot?.output as Maybe<TIsolateTest<F, G>>;
+
+  console.log('historyOutput', historyOutput);
+
   // @vx-allow use-use (TODO: fix this. the error is in the lint rule)
   const summary = TestWalker.reduceTests<
     SuiteSummary<F, G>,

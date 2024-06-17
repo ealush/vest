@@ -35,6 +35,7 @@
       "hasOwnProperty": ["./src/hasOwnProperty.ts"],
       "greaterThan": ["./src/greaterThan.ts"],
       "globals.d": ["./src/globals.d.ts"],
+      "freezeAssign": ["./src/freezeAssign.ts"],
       "either": ["./src/either.ts"],
       "deferThrow": ["./src/deferThrow.ts"],
       "defaultTo": ["./src/defaultTo.ts"],

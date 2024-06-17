@@ -1,3 +1,5 @@
+import wait from 'wait';
+
 import { SuiteSerializer } from 'SuiteSerializer';
 import { VestIsolateType } from 'VestIsolateType';
 import * as vest from 'vest';
@@ -138,5 +140,36 @@ describe('runStatic', () => {
     expect(suite2.hasErrors('t2')).toBe(true);
     expect(suite2.hasErrors('t3')).toBe(false);
     expect(suite2.hasErrors('t4')).toBe(false);
+  });
+
+  describe('runStatic.resolve', () => {
+    it("Should resolve with the suite's result", async () => {
+      const suite = vest.create(() => {
+        vest.test('t1', async () => {
+          await wait(100);
+          throw new Error();
+        });
+      });
+
+      const res = suite.runStatic();
+      expect(res.errorCount).toBe(0);
+      expect(res).toHaveProperty('resolve');
+      const result = await res.resolve();
+      expect(result.errorCount).toBe(1);
+    });
+
+    it("Should have a dump method on the resolved suite's result", async () => {
+      const suite = vest.create(() => {
+        vest.test('t1', async () => {
+          await wait(100);
+          throw new Error();
+        });
+      });
+
+      const res = suite.runStatic();
+      const result = await res.resolve();
+      expect(result).toHaveProperty('dump');
+      expect(result.dump()).toHaveProperty('$type', VestIsolateType.Suite);
+    });
   });
 });

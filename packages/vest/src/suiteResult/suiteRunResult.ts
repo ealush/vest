@@ -1,4 +1,4 @@
-import { assign } from 'vest-utils';
+import { freezeAssign } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
 import {
@@ -14,15 +14,13 @@ import { useCreateSuiteResult } from 'suiteResult';
 
 export function useSuiteRunResult<
   F extends TFieldName,
-  G extends TGroupName
+  G extends TGroupName,
 >(): SuiteRunResult<F, G> {
-  return Object.freeze(
-    assign(
-      {
-        done: VestRuntime.persist(done),
-      },
-      useCreateSuiteResult<F, G>()
-    )
+  return freezeAssign<SuiteRunResult<F, G>>(
+    {
+      done: VestRuntime.persist(done) as Done<F, G>,
+    },
+    useCreateSuiteResult<F, G>(),
   );
 }
 
@@ -36,7 +34,7 @@ function done<F extends TFieldName, G extends TGroupName>(
 ): SuiteRunResult<F, G> {
   const [callback, fieldName] = args.reverse() as [
     (res: SuiteResult<F, G>) => void,
-    F
+    F,
   ];
   const output = useSuiteRunResult<F, G>();
   if (shouldSkipDoneRegistration<F, G>(callback, fieldName, output)) {

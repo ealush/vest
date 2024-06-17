@@ -41,6 +41,7 @@ export * as tinyState from 'tinyState';
 export { StringObject } from 'StringObject';
 export { noop } from 'noop';
 export * as Predicates from 'Predicates';
+export { freezeAssign } from 'freezeAssign';
 
 export type {
   DropFirst,

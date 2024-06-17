@@ -1,15 +1,15 @@
-import { suiteSelectors } from 'vest';
 import { hasOwnProperty, invariant, isNullish, isPositive } from 'vest-utils';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { SuiteSummary, TFieldName, TGroupName } from 'SuiteResultTypes';
+import { suiteSelectors } from 'vest';
 
 export function parse<F extends TFieldName, G extends TGroupName>(
-  summary: SuiteSummary<F, G>
+  summary: SuiteSummary<F, G>,
 ): ParsedVestObject<F> {
   invariant(
     summary && hasOwnProperty(summary, 'valid'),
-    ErrorStrings.PARSER_EXPECT_RESULT_OBJECT
+    ErrorStrings.PARSER_EXPECT_RESULT_OBJECT,
   );
 
   const sel = suiteSelectors(summary);

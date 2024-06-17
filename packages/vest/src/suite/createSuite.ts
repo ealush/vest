@@ -1,4 +1,4 @@
-import { assign, CB } from 'vest-utils';
+import { assign, CB, freezeAssign } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { TTypedMethods, getTypedMethods } from './getTypedMethods';
@@ -9,6 +9,7 @@ import { useCreateVestState, useLoadSuite } from 'Runtime';
 import { SuiteContext } from 'SuiteContext';
 import {
   SuiteName,
+  SuiteResult,
   SuiteRunResult,
   TFieldName,
   TGroupName,
@@ -154,14 +155,22 @@ function staticSuite<
 
       const result = suite(...args);
 
-      return Object.freeze(
-        assign(
-          {
-            dump: suite.dump,
-          },
-          result,
-        ),
-      ) as StaticSuiteRunResult<F, G>;
+      const resolve = new Promise<SuiteWithDump<F, G>>(resolve => {
+        result.done(res => {
+          resolve(withDump(res) as SuiteWithDump<F, G>);
+        });
+      });
+
+      return freezeAssign<StaticSuiteRunResult<F, G>>(
+        withDump({
+          resolve: () => resolve,
+        }),
+        result,
+      );
+
+      function withDump(o: any) {
+        return assign({ dump: suite.dump }, o);
+      }
     },
     {
       ...getTypedMethods<F, G>(),
@@ -178,8 +187,15 @@ export type StaticSuite<
 export type StaticSuiteRunResult<
   F extends TFieldName = string,
   G extends TGroupName = string,
-> = SuiteRunResult<F, G> & {
-  dump: CB<TIsolateSuite>;
-} & TTypedMethods<F, G>;
+> = WithDump<
+  SuiteRunResult<F, G> & {
+    resolve: () => Promise<SuiteWithDump<F, G>>;
+  } & TTypedMethods<F, G>
+>;
+
+type WithDump<T> = T & { dump: CB<TIsolateSuite> };
+type SuiteWithDump<F extends TFieldName, G extends TGroupName> = WithDump<
+  SuiteResult<F, G>
+>;
 
 export { createSuite, staticSuite };

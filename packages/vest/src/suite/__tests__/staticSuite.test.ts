@@ -142,7 +142,7 @@ describe('runStatic', () => {
     expect(suite2.hasErrors('t4')).toBe(false);
   });
 
-  describe('runStatic.resolve', () => {
+  describe('runStatic (promise)', () => {
     it("Should resolve with the suite's result", async () => {
       const suite = vest.create(() => {
         vest.test('t1', async () => {
@@ -153,8 +153,7 @@ describe('runStatic', () => {
 
       const res = suite.runStatic();
       expect(res.errorCount).toBe(0);
-      expect(res).toHaveProperty('resolve');
-      const result = await res.resolve();
+      const result = await res;
       expect(result.errorCount).toBe(1);
     });
 
@@ -167,7 +166,7 @@ describe('runStatic', () => {
       });
 
       const res = suite.runStatic();
-      const result = await res.resolve();
+      const result = await res;
       expect(result).toHaveProperty('dump');
       expect(result.dump()).toHaveProperty('$type', VestIsolateType.Suite);
     });

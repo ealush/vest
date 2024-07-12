@@ -155,17 +155,13 @@ function staticSuite<
 
       const result = suite(...args);
 
-      const resolve = new Promise<SuiteWithDump<F, G>>(resolve => {
-        result.done(res => {
-          resolve(withDump(res) as SuiteWithDump<F, G>);
-        });
-      });
-
-      return freezeAssign<StaticSuiteRunResult<F, G>>(
-        withDump({
-          resolve: () => resolve,
+      return assign(
+        new Promise<SuiteWithDump<F, G>>(resolve => {
+          result.done(res => {
+            resolve(withDump(res) as SuiteWithDump<F, G>);
+          });
         }),
-        result,
+        withDump(result),
       );
 
       function withDump(o: any) {
@@ -187,11 +183,8 @@ export type StaticSuite<
 export type StaticSuiteRunResult<
   F extends TFieldName = string,
   G extends TGroupName = string,
-> = WithDump<
-  SuiteRunResult<F, G> & {
-    resolve: () => Promise<SuiteWithDump<F, G>>;
-  } & TTypedMethods<F, G>
->;
+> = Promise<SuiteWithDump<F, G>> &
+  WithDump<SuiteRunResult<F, G> & TTypedMethods<F, G>>;
 
 type WithDump<T> = T & { dump: CB<TIsolateSuite> };
 type SuiteWithDump<F extends TFieldName, G extends TGroupName> = WithDump<

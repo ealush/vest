@@ -1,4 +1,4 @@
-import { assign, CB, freezeAssign } from 'vest-utils';
+import { assign, CB } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { TTypedMethods, getTypedMethods } from './getTypedMethods';

@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Top Level Focus Top Level Skip When passing false Should run all fields 1`] = `
-{
+Promise {
   "done": [Function],
   "dump": [Function],
   "errorCount": 3,
@@ -39,7 +39,6 @@ exports[`Top Level Focus Top Level Skip When passing false Should run all fields
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "resolve": [Function],
   "suiteName": undefined,
   "testCount": 3,
   "tests": {
@@ -84,7 +83,7 @@ exports[`Top Level Focus Top Level Skip When passing false Should run all fields
 `;
 
 exports[`Top Level Focus Top Level Skip When passing undefined Should run all fields 1`] = `
-{
+Promise {
   "done": [Function],
   "dump": [Function],
   "errorCount": 3,
@@ -122,7 +121,6 @@ exports[`Top Level Focus Top Level Skip When passing undefined Should run all fi
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "resolve": [Function],
   "suiteName": undefined,
   "testCount": 3,
   "tests": {

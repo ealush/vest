@@ -2,7 +2,7 @@ import { CB, ValueOf } from 'vest-utils';
 import { Bus, RuntimeEvents, TIsolate } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
-import { TIsolateTest } from 'IsolateTest';
+// import { TIsolateTest } from 'IsolateTest';
 import {
   useExpireSuiteResultCache,
   useResetCallbacks,
@@ -22,15 +22,7 @@ export function useInitVestBus() {
 
   // Report a the completion of a test. There may be other tests with the same
   // name that are still running, or not yet started.
-  on(Events.TEST_COMPLETED, (testObject: TIsolateTest) => {
-    if (VestTest.isCanceled(testObject)) {
-      return;
-    }
-
-    const { fieldName } = VestTest.getData(testObject);
-
-    useRunFieldCallbacks(fieldName);
-  });
+  on(Events.TEST_COMPLETED, () => {});
 
   on(Events.TEST_RUN_STARTED, () => {
     /* Let's just invalidate the suite cache for now */
@@ -50,9 +42,19 @@ export function useInitVestBus() {
     }
 
     VestIsolate.setDone(isolate);
+  });
+
+  on(RuntimeEvents.ASYNC_ISOLATE_DONE, (isolate: TIsolate) => {
+    if (VestTest.is(isolate)) {
+      if (!VestTest.isCanceled(isolate)) {
+        const { fieldName } = VestTest.getData(isolate);
+
+        useRunFieldCallbacks(fieldName);
+      }
+    }
 
     if (!SuiteWalker.hasPending()) {
-      // When no more tests are running, emit the done event
+      // When no more async tests are running, emit the done event
       VestBus.emit(Events.ALL_RUNNING_TESTS_FINISHED);
     }
   });
@@ -82,6 +84,11 @@ export function useInitVestBus() {
   });
 
   on(Events.SUITE_CALLBACK_RUN_FINISHED, () => {
+    if (!SuiteWalker.hasPending()) {
+      // When no more async tests are running, emit the done event
+      VestBus.emit(Events.ALL_RUNNING_TESTS_FINISHED);
+    }
+
     useOmitOptionalFields();
   });
 

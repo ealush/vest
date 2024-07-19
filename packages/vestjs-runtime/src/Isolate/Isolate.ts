@@ -100,6 +100,7 @@ function useRunAsNew<Callback extends CB = CB>(
           }
 
           emit(RuntimeEvents.ISOLATE_DONE, current);
+          emit(RuntimeEvents.ASYNC_ISOLATE_DONE, current);
         });
       } else {
         emit(RuntimeEvents.ISOLATE_DONE, current);

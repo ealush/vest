@@ -142,6 +142,27 @@ export function find(
   return found;
 }
 
+// this function acts like find, but returns an array of all matching nodes
+export function findAll(
+  startNode: TIsolate,
+  predicate: (node: TIsolate) => boolean,
+  visitOnly?: VisitOnlyPredicate,
+): TIsolate[] {
+  const found: TIsolate[] = [];
+
+  walk(
+    startNode,
+    node => {
+      if (predicate(node)) {
+        found.push(node);
+      }
+    },
+    visitOnly,
+  );
+
+  return found;
+}
+
 // This function returns true if the given predicate function returns true for every Isolate object in the tree.
 // If visitOnly is provided, only Isolate objects that satisfy the predicate are visited.
 export function every(

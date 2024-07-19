@@ -1,5 +1,5 @@
 import { TIsolate } from 'Isolate';
-import { walk, reduce } from 'IsolateWalker';
+import { walk, reduce, findAll } from 'IsolateWalker';
 
 type WalkedNode = TIsolate<{ id: string }>;
 
@@ -169,5 +169,38 @@ describe('reduce', () => {
 
       expect(output).toBe(2);
     });
+  });
+});
+
+describe('findAll', () => {
+  let node = {} as unknown as TIsolate<{ value: number }>;
+  beforeEach(() => {
+    node = {
+      data: { value: 100 },
+      children: [
+        {
+          data: { value: 2 },
+          children: [
+            { data: { value: 100 }, $type: 's' },
+            {
+              data: { value: 2 },
+              children: [{ data: { value: 0 } }, { data: { value: 100 } }],
+            },
+            { data: { value: 1 }, $type: 's' },
+          ],
+        },
+        { data: { value: 0 } },
+      ],
+    } as unknown as TIsolate<{ value: number }>;
+  });
+
+  it('Should return all nodes that satisfy the predicate', () => {
+    const output = findAll(node, isolate => isolate.data.value === 100);
+
+    expect(output).toEqual([
+      node.children?.[0]?.children?.[0],
+      node.children?.[0]?.children?.[1]?.children?.[1],
+      node,
+    ]);
   });
 });

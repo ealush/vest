@@ -10,6 +10,7 @@ import {
 import { IRecociler, TIsolate, VestRuntime } from 'vestjs-runtime';
 
 import { TIsolateSuite } from 'IsolateSuite';
+import { Severity } from 'Severity';
 import {
   SuiteName,
   SuiteResult,
@@ -20,6 +21,14 @@ import {
 export type DoneCallback = (res: SuiteResult<TFieldName, TGroupName>) => void;
 type FieldCallbacks = Record<string, DoneCallbacks>;
 type DoneCallbacks = Array<DoneCallback>;
+type FailuresCache = {
+  [Severity.ERRORS]: Record<TFieldName, TIsolate[]>;
+  [Severity.WARNINGS]: Record<TFieldName, TIsolate[]>;
+};
+export type PreAggCache = {
+  pending: TIsolate[];
+  failures: FailuresCache;
+};
 
 type StateExtra = {
   doneCallbacks: TinyState<DoneCallbacks>;
@@ -27,10 +36,10 @@ type StateExtra = {
   suiteName: Maybe<string>;
   suiteId: string;
   suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName>>;
-  pendingCache: CacheApi<TIsolate[]>;
+  preAggCache: CacheApi<PreAggCache>;
 };
 const suiteResultCache = cache<SuiteResult<TFieldName, TGroupName>>();
-const pendingCache = cache<TIsolate[]>();
+const preAggCache = cache<PreAggCache>();
 
 export function useCreateVestState({
   suiteName,
@@ -42,7 +51,7 @@ export function useCreateVestState({
   const stateRef: StateExtra = {
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
-    pendingCache,
+    preAggCache,
     suiteId: seq(),
     suiteName,
     suiteResultCache,
@@ -79,20 +88,20 @@ export function useSuiteResultCache<F extends TFieldName, G extends TGroupName>(
   return suiteResultCache([useSuiteId()], action) as SuiteResult<F, G>;
 }
 
-export function usePendingCache(action: CB<TIsolate[]>) {
-  const pendingCache = useX().pendingCache;
+export function usePreAggCache(action: CB<PreAggCache>) {
+  const preAggCache = useX().preAggCache;
 
-  return pendingCache([useSuiteId()], action);
+  return preAggCache([useSuiteId()], action);
 }
 
 export function useExpireSuiteResultCache() {
   const suiteResultCache = useX().suiteResultCache;
   suiteResultCache.invalidate([useSuiteId()]);
 
-  // whenever we invalidate the entire result, we also want to invalidate the pending cache
+  // whenever we invalidate the entire result, we also want to invalidate the preagg cache
   // so that we do not get stale results there.
   // there may be a better place to do this, but for now, this should work.
-  pendingCache.invalidate([useSuiteId()]);
+  preAggCache.invalidate([useSuiteId()]);
 }
 
 export function useResetCallbacks() {

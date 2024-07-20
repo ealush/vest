@@ -1,7 +1,9 @@
+import { isEmpty } from 'vest-utils';
 
 import { TIsolateTest } from 'IsolateTest';
 import { Severity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { SuiteWalker } from 'SuiteWalker';
 import { TestWalker } from 'TestWalker';
 import { VestTest } from 'VestTest';
 import { nonMatchingFieldName } from 'matchingFieldName';
@@ -19,17 +21,25 @@ export function hasErrorsByTestObjects(fieldName?: TFieldName): boolean {
 
 function hasFailuresByTestObjects(
   severityKey: Severity,
-  fieldName?: TFieldName
+  fieldName?: TFieldName,
 ): boolean {
-  return TestWalker.someTests(testObject => {
-    return hasFailuresByTestObject(testObject, severityKey, fieldName);
-  });
+  const allFailures = SuiteWalker.usePreAggs().failures;
+
+  if (isEmpty(allFailures[severityKey])) {
+    return false;
+  }
+
+  if (fieldName) {
+    return !isEmpty(allFailures[severityKey][fieldName]);
+  }
+
+  return true;
 }
 
 export function hasGroupFailuresByTestObjects(
   severityKey: Severity,
   groupName: TGroupName,
-  fieldName?: TFieldName
+  fieldName?: TFieldName,
 ): boolean {
   return TestWalker.someTests(testObject => {
     if (nonMatchingGroupName(testObject, groupName)) {
@@ -46,7 +56,7 @@ export function hasGroupFailuresByTestObjects(
 export function hasFailuresByTestObject(
   testObject: TIsolateTest,
   severityKey: Severity,
-  fieldName?: TFieldName
+  fieldName?: TFieldName,
 ): boolean {
   if (!VestTest.hasFailures(testObject)) {
     return false;

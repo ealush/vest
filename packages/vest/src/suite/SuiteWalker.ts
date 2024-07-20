@@ -1,8 +1,8 @@
-import { Predicate, Predicates, isNullish } from 'vest-utils';
+import { Predicate, Predicates, isEmpty, isNullish } from 'vest-utils';
 import { TIsolate, VestRuntime, Walker } from 'vestjs-runtime';
 
 import { TIsolateTest } from 'IsolateTest';
-import { usePendingCache } from 'Runtime';
+import { PreAggCache, usePreAggCache } from 'Runtime';
 import { TFieldName } from 'SuiteResultTypes';
 import { VestIsolate } from 'VestIsolate';
 import { VestTest } from 'VestTest';
@@ -18,23 +18,17 @@ export class SuiteWalker {
       return false;
     }
 
-    const allPending = usePendingCache(this.findAllPending);
+    const allPending = SuiteWalker.usePreAggs().pending;
 
-    if (!allPending.length) {
+    if (isEmpty(allPending)) {
       return false;
     }
 
     return allPending.some(Predicates.all(predicate ?? true));
   }
 
-  static findAllPending(): TIsolate[] {
-    const root = SuiteWalker.defaultRoot();
-
-    if (!root) {
-      return [];
-    }
-
-    return Walker.findAll(root, VestIsolate.isPending);
+  static usePreAggs() {
+    return usePreAggCache(buildPreAggCache);
   }
 
   // Checks whether there are pending isolates in the tree.
@@ -52,4 +46,48 @@ export class SuiteWalker {
       ),
     );
   }
+}
+
+function buildPreAggCache(): PreAggCache {
+  const root = SuiteWalker.defaultRoot();
+
+  const base: PreAggCache = {
+    pending: [],
+    failures: {
+      errors: {},
+      warnings: {},
+    },
+  };
+
+  if (!root) {
+    return base;
+  }
+
+  return Walker.reduce(
+    root,
+    // eslint-disable-next-line complexity, max-statements
+    (agg, isolate: TIsolate) => {
+      if (VestIsolate.isPending(isolate)) {
+        agg.pending.push(isolate);
+      }
+
+      if (VestTest.is(isolate)) {
+        const fieldName = VestTest.getData(isolate).fieldName;
+
+        if (VestTest.isWarning(isolate)) {
+          agg.failures.warnings[fieldName] =
+            agg.failures.warnings[fieldName] ?? [];
+          agg.failures.warnings[fieldName].push(isolate);
+        }
+
+        if (VestTest.isFailing(isolate)) {
+          agg.failures.errors[fieldName] = agg.failures.errors[fieldName] ?? [];
+          agg.failures.errors[fieldName].push(isolate);
+        }
+      }
+
+      return agg;
+    },
+    base,
+  );
 }

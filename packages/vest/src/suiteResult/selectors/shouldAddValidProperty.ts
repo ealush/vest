@@ -44,7 +44,7 @@ export function useShouldAddValidProperty(fieldName?: TFieldName): boolean {
 
 export function useShouldAddValidPropertyInGroup(
   groupName: TGroupName,
-  fieldName: TFieldName
+  fieldName: TFieldName,
 ): boolean {
   if (useIsOptionalFieldApplied(fieldName)) {
     return true;
@@ -64,30 +64,30 @@ export function useShouldAddValidPropertyInGroup(
 
 // Does the given field have any pending tests that are not optional?
 function useHasNonOptionalIncomplete(fieldName?: TFieldName) {
-  return SuiteWalker.hasPending(
+  return SuiteWalker.useHasPending(
     Predicates.all(
       VestTest.is,
       (testObject: TIsolateTest) =>
         !nonMatchingFieldName(VestTest.getData(testObject), fieldName),
-      () => !useIsOptionalFieldApplied(fieldName)
-    )
+      () => !useIsOptionalFieldApplied(fieldName),
+    ),
   );
 }
 
 // Do the given group/field have any pending tests that are not optional?
 function useHasNonOptionalIncompleteByGroup(
   groupName: TGroupName,
-  fieldName: TFieldName
+  fieldName: TFieldName,
 ): boolean {
-  return SuiteWalker.hasPending(
+  return SuiteWalker.useHasPending(
     Predicates.all(
       VestTest.is,
       (testObject: TIsolateTest) =>
         !nonMatchingGroupName(testObject, groupName),
       (testObject: TIsolateTest) =>
         !nonMatchingFieldName(VestTest.getData(testObject), fieldName),
-      () => !useIsOptionalFieldApplied(fieldName)
-    )
+      () => !useIsOptionalFieldApplied(fieldName),
+    ),
   );
 }
 
@@ -102,7 +102,7 @@ function useNoMissingTests(fieldName?: string): boolean {
 // Does the group have no missing tests?
 function useNoMissingTestsByGroup(
   groupName: TGroupName,
-  fieldName?: TFieldName
+  fieldName?: TFieldName,
 ): boolean {
   return TestWalker.everyTest(testObject => {
     if (nonMatchingGroupName(testObject, groupName)) {
@@ -115,7 +115,7 @@ function useNoMissingTestsByGroup(
 
 function useNoMissingTestsLogic(
   testObject: TIsolateTest,
-  fieldName?: TFieldName
+  fieldName?: TFieldName,
 ): boolean {
   if (nonMatchingFieldName(VestTest.getData(testObject), fieldName)) {
     return true;

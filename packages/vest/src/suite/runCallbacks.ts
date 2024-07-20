@@ -12,7 +12,7 @@ export function useRunFieldCallbacks(fieldName?: TFieldName): void {
 
   if (
     fieldName &&
-    !SuiteWalker.hasRemainingWithTestNameMatching(fieldName) &&
+    !SuiteWalker.useHasRemainingWithTestNameMatching(fieldName) &&
     isArray(fieldCallbacks[fieldName])
   ) {
     callEach(fieldCallbacks[fieldName]);

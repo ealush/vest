@@ -53,7 +53,7 @@ export function useInitVestBus() {
       }
     }
 
-    if (!SuiteWalker.hasPending()) {
+    if (!SuiteWalker.useHasPending()) {
       // When no more async tests are running, emit the done event
       VestBus.emit(Events.ALL_RUNNING_TESTS_FINISHED);
     }
@@ -84,7 +84,7 @@ export function useInitVestBus() {
   });
 
   on(Events.SUITE_CALLBACK_RUN_FINISHED, () => {
-    if (!SuiteWalker.hasPending()) {
+    if (!SuiteWalker.useHasPending()) {
       // When no more async tests are running, emit the done event
       VestBus.emit(Events.ALL_RUNNING_TESTS_FINISHED);
     }

@@ -3,7 +3,7 @@ import wait from 'wait';
 import { SuiteWalker } from 'SuiteWalker';
 import * as vest from 'vest';
 
-describe('SuiteWalker.hasRemainingWithTestNameMatching', () => {
+describe('SuiteWalker.useHasRemainingWithTestNameMatching', () => {
   let hasRemaining: boolean | null = null;
   let count = 0;
 
@@ -15,7 +15,7 @@ describe('SuiteWalker.hasRemainingWithTestNameMatching', () => {
     describe('When no remaining tests', () => {
       it('should return false', () => {
         vest.create(() => {
-          hasRemaining = SuiteWalker.hasRemainingWithTestNameMatching();
+          hasRemaining = SuiteWalker.useHasRemainingWithTestNameMatching();
         })();
         expect(hasRemaining).toBe(false);
       });
@@ -27,7 +27,7 @@ describe('SuiteWalker.hasRemainingWithTestNameMatching', () => {
           vest.test('f1', async () => {
             await wait(100);
           });
-          hasRemaining = SuiteWalker.hasRemainingWithTestNameMatching();
+          hasRemaining = SuiteWalker.useHasRemainingWithTestNameMatching();
         })();
 
         expect(hasRemaining).toBe(true);
@@ -40,7 +40,7 @@ describe('SuiteWalker.hasRemainingWithTestNameMatching', () => {
             await wait(100);
           });
           count++;
-          hasRemaining = SuiteWalker.hasRemainingWithTestNameMatching();
+          hasRemaining = SuiteWalker.useHasRemainingWithTestNameMatching();
         });
         suite();
         suite();
@@ -58,7 +58,7 @@ describe('SuiteWalker.hasRemainingWithTestNameMatching', () => {
             await wait(100);
           });
           count++;
-          hasRemaining = SuiteWalker.hasRemainingWithTestNameMatching();
+          hasRemaining = SuiteWalker.useHasRemainingWithTestNameMatching();
         });
 
         suite();
@@ -73,7 +73,7 @@ describe('SuiteWalker.hasRemainingWithTestNameMatching', () => {
     describe('When no remaining tests', () => {
       it('Should return false', () => {
         vest.create(() => {
-          hasRemaining = SuiteWalker.hasRemainingWithTestNameMatching('f1');
+          hasRemaining = SuiteWalker.useHasRemainingWithTestNameMatching('f1');
         })();
         expect(hasRemaining).toBe(false);
       });
@@ -85,7 +85,7 @@ describe('SuiteWalker.hasRemainingWithTestNameMatching', () => {
           vest.test('f1', async () => {
             await wait(100);
           });
-          hasRemaining = SuiteWalker.hasRemainingWithTestNameMatching('f1');
+          hasRemaining = SuiteWalker.useHasRemainingWithTestNameMatching('f1');
         })();
         expect(hasRemaining).toBe(true);
       });
@@ -97,7 +97,7 @@ describe('SuiteWalker.hasRemainingWithTestNameMatching', () => {
             await wait(100);
           });
           count++;
-          hasRemaining = SuiteWalker.hasRemainingWithTestNameMatching('f1');
+          hasRemaining = SuiteWalker.useHasRemainingWithTestNameMatching('f1');
         });
         suite();
         suite();
@@ -116,8 +116,8 @@ describe('SuiteWalker.hasRemainingWithTestNameMatching', () => {
           });
           count++;
           hasRemaining =
-            SuiteWalker.hasRemainingWithTestNameMatching('f1') &&
-            SuiteWalker.hasRemainingWithTestNameMatching('f2');
+            SuiteWalker.useHasRemainingWithTestNameMatching('f1') &&
+            SuiteWalker.useHasRemainingWithTestNameMatching('f2');
         });
 
         suite();

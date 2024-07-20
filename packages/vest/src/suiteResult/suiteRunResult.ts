@@ -41,7 +41,7 @@ function done<F extends TFieldName, G extends TGroupName>(
     return output;
   }
   const useDoneCallback = () => callback(useCreateSuiteResult());
-  if (!SuiteWalker.hasRemainingWithTestNameMatching(fieldName)) {
+  if (!SuiteWalker.useHasRemainingWithTestNameMatching(fieldName)) {
     useDoneCallback();
     return output;
   }

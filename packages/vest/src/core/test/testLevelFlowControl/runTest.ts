@@ -24,7 +24,7 @@ export function useAttemptRunTest(testObject: TIsolateTest) {
     deferThrow(
       text(ErrorStrings.UNEXPECTED_TEST_REGISTRATION_ERROR, {
         testObject: JSON.stringify(testObject),
-      })
+      }),
     );
   }
 }
@@ -77,7 +77,7 @@ function useRunTest(testObject: TIsolateTest): Promise<void> | undefined {
       text(ErrorStrings.UNEXPECTED_TEST_REGISTRATION_ERROR, {
         testObject: JSON.stringify(testObject),
         error: e,
-      })
+      }),
     );
   }
 }

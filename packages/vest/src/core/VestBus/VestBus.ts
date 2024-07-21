@@ -20,15 +20,10 @@ import { useRunDoneCallbacks, useRunFieldCallbacks } from 'runCallbacks';
 export function useInitVestBus() {
   const VestBus = Bus.useBus();
 
-  // Report a the completion of a test. There may be other tests with the same
-  // name that are still running, or not yet started.
   on(Events.TEST_COMPLETED, () => {});
+  // on(Events.TEST_RUN_STARTED, () => {});
 
-  on(Events.TEST_RUN_STARTED, () => {
-    /* Let's just invalidate the suite cache for now */
-  });
-
-  on(RuntimeEvents.ISOLATE_PENDING, (isolate: TIsolate) => {
+  VestBus.on(RuntimeEvents.ISOLATE_PENDING, (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
       VestTest.setPending(isolate);
     }
@@ -36,7 +31,7 @@ export function useInitVestBus() {
     VestIsolate.setPending(isolate);
   });
 
-  on(RuntimeEvents.ISOLATE_DONE, (isolate: TIsolate) => {
+  VestBus.on(RuntimeEvents.ISOLATE_DONE, (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
       VestBus.emit(Events.TEST_COMPLETED, isolate);
     }
@@ -44,7 +39,7 @@ export function useInitVestBus() {
     VestIsolate.setDone(isolate);
   });
 
-  on(RuntimeEvents.ASYNC_ISOLATE_DONE, (isolate: TIsolate) => {
+  VestBus.on(RuntimeEvents.ASYNC_ISOLATE_DONE, (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
       if (!VestTest.isCanceled(isolate)) {
         const { fieldName } = VestTest.getData(isolate);
@@ -64,7 +59,7 @@ export function useInitVestBus() {
   });
 
   // Called when all the tests, including async, are done running
-  on(Events.ALL_RUNNING_TESTS_FINISHED, () => {
+  VestBus.on(Events.ALL_RUNNING_TESTS_FINISHED, () => {
     // Small optimization. We don't need to run this if there are no async tests
     // The reason is that we run this function immediately after the suite callback
     // is run, so if the suite is only comprised of sync tests, we don't need to

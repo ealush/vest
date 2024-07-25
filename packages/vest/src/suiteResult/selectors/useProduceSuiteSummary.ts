@@ -28,22 +28,32 @@ export function useProduceSuiteSummary<
     SuiteSummary<F, G>,
     TIsolateTest<F, G>
   >((summary, testObject) => {
-    const fieldName = VestTest.getData<F>(testObject).fieldName;
-    summary.tests[fieldName] = useAppendToTest(summary.tests, testObject);
-    summary.groups = useAppendToGroup(summary.groups, testObject);
-
-    if (VestTest.isOmitted(testObject)) {
-      return summary;
-    }
-    if (summary.tests[fieldName].valid === false) {
-      summary.valid = false;
-    }
-    return addSummaryStats(testObject, summary);
+    return useAppendToSumaryByTestObject(summary, testObject);
   }, new SuiteSummary());
 
   summary.valid = summary.valid === false ? false : useShouldAddValidProperty();
 
   return summary;
+}
+
+export function useAppendToSumaryByTestObject<
+  F extends TFieldName,
+  G extends TGroupName,
+>(
+  summary: SuiteSummary<F, G>,
+  testObject: TIsolateTest<F, G>,
+): SuiteSummary<F, G> {
+  const fieldName = VestTest.getData<F>(testObject).fieldName;
+  summary.tests[fieldName] = useAppendToTest(summary.tests, testObject);
+  summary.groups = useAppendToGroup(summary.groups, testObject);
+
+  if (VestTest.isOmitted(testObject)) {
+    return summary;
+  }
+  if (summary.tests[fieldName].valid === false) {
+    summary.valid = false;
+  }
+  return addSummaryStats(testObject, summary);
 }
 
 function addSummaryStats<F extends TFieldName, G extends TGroupName>(

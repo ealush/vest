@@ -1,6 +1,6 @@
-import { lengthEquals } from 'lengthEquals';
-import { longerThan } from 'longerThan';
-import { Nullable } from 'utilityTypes';
+import { lengthEquals } from '@/lengthEquals';
+import { longerThan } from '@/longerThan';
+import { Nullable } from '@/utilityTypes';
 
 /**
  * Creates a cache function
@@ -10,7 +10,7 @@ export default function createCache<T = unknown>(maxSize = 1): CacheApi<T> {
 
   const cache = (
     deps: unknown[],
-    cacheAction: (...args: unknown[]) => T
+    cacheAction: (...args: unknown[]) => T,
   ): T => {
     const cacheHit = cache.get(deps);
     // cache hit is not null
@@ -40,7 +40,7 @@ export default function createCache<T = unknown>(maxSize = 1): CacheApi<T> {
     return cacheStorage.findIndex(
       ([cachedDeps]) =>
         lengthEquals(deps, cachedDeps.length) &&
-        deps.every((dep, i) => dep === cachedDeps[i])
+        deps.every((dep, i) => dep === cachedDeps[i]),
     );
   }
 }

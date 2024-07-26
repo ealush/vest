@@ -1,4 +1,4 @@
-import { isUndefined } from 'isUndefined';
+import { isUndefined } from '@/isUndefined';
 
 describe('Tests isUndefined rule', () => {
   it('Should return true for `undefined` value', () => {

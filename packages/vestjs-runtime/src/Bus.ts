@@ -1,6 +1,6 @@
 import { isNullish } from 'vest-utils';
 
-import { persist, useX } from 'VestRuntime';
+import { persist, useX } from '@/VestRuntime';
 
 export function useBus() {
   return useX().stateRef.Bus;

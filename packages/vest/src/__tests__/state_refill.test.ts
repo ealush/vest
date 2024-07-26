@@ -1,4 +1,4 @@
-import { Modes } from 'Modes';
+import { Modes } from '@/hooks/optional/Modes';
 import * as vest from 'vest';
 
 describe('state refill', () => {

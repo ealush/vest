@@ -1,4 +1,4 @@
-import { matches } from 'matches';
+import { matches } from '../matches';
 
 const URL =
     /(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.(?=.*[a-z]){1,24}\b([-a-zA-Z0-9@:%_+.~#?&//=()]*)/,

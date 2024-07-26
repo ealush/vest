@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { numberEquals } from 'numberEquals';
+import { numberEquals } from '@/numberEquals';
 
 describe('Tests numberEquals rule', () => {
   describe('Arguments are numbers', () => {
@@ -61,7 +61,7 @@ describe('Tests numberEquals rule', () => {
           // @ts-expect-error - testing invalid input
           expect(numberEquals(element, 0)).toBe(false);
         });
-      }
+      },
     );
   });
 });

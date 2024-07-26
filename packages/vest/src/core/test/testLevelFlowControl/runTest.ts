@@ -1,13 +1,15 @@
 import { isPromise, isStringValue, text, deferThrow } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
-import { ErrorStrings } from 'ErrorStrings';
-import { TIsolateTest } from 'IsolateTest';
-import { SuiteContext } from 'SuiteContext';
-import { TestResult } from 'TestTypes';
-import { VestTest } from 'VestTest';
-import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
-import { useVerifyTestRun } from 'verifyTestRun';
+import { shouldUseErrorAsMessage } from '../helpers/shouldUseErrorMessage';
+
+import { useVerifyTestRun } from './verifyTestRun';
+
+import { SuiteContext } from '@/core/context/SuiteContext';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
+import { TestResult } from '@/core/test/TestTypes';
+import { ErrorStrings } from '@/errors/ErrorStrings';
 
 // eslint-disable-next-line max-statements
 export function useAttemptRunTest(testObject: TIsolateTest) {

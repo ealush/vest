@@ -1,4 +1,4 @@
-import run from 'runAnyoneMethods';
+import run from '../runner/runAnyoneMethods';
 
 /**
  * Checks that at all passed arguments evaluate to a truthy value.

@@ -1,19 +1,19 @@
 import { isPositive } from 'vest-utils';
 
-import { countKeyBySeverity, Severity } from 'Severity';
+import { countKeyBySeverity, Severity } from '@/suiteResult/Severity';
 import {
   FailureMessages,
   TestsContainer,
   TFieldName,
   TGroupName,
-} from 'SuiteResultTypes';
+} from '@/suiteResult/SuiteResultTypes';
 
 // calls collectAll or getByFieldName depending on whether fieldName is provided
 
 export function gatherFailures(
   testGroup: TestsContainer<TFieldName, TGroupName>,
   severityKey: Severity,
-  fieldName?: TFieldName
+  fieldName?: TFieldName,
 ): string[] | FailureMessages {
   return fieldName
     ? getByFieldName(testGroup, severityKey, fieldName)
@@ -23,14 +23,14 @@ export function gatherFailures(
 function getByFieldName(
   testGroup: TestsContainer<TFieldName, TGroupName>,
   severityKey: Severity,
-  fieldName: TFieldName
+  fieldName: TFieldName,
 ): string[] {
   return testGroup?.[fieldName]?.[severityKey] || [];
 }
 
 function collectAll(
   testGroup: TestsContainer<TFieldName, TGroupName>,
-  severityKey: Severity
+  severityKey: Severity,
 ): FailureMessages {
   const output: FailureMessages = {};
 

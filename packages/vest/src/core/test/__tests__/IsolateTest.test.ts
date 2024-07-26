@@ -2,10 +2,10 @@ import wait from 'wait';
 
 import { TestPromise } from '../../../testUtils/testPromise';
 
-import { TIsolateTest } from 'IsolateTest';
-import { VestTest } from 'VestTest';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
 import * as vest from 'vest';
-import { mockIsolateTest } from 'vestMocks';
+import { mockIsolateTest } from '@/testUtils/vestMocks';
 
 const fieldName = 'unicycle';
 const message = 'I am Root.';

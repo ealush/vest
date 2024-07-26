@@ -1,7 +1,7 @@
 import * as suiteDummy from '../../testUtils/suiteDummy';
 import { ser } from '../../testUtils/suiteDummy';
+import { parse } from '../parser';
 
-import { parse } from 'parser';
 import * as vest from 'vest';
 
 describe('parser.parse', () => {
@@ -16,13 +16,13 @@ describe('parser.parse', () => {
 
     it('Should return true when provided field is failing', () => {
       expect(parse(suiteDummy.failing('username')).invalid('username')).toBe(
-        true
+        true,
       );
     });
 
     it('Should return false when provided field is passing', () => {
       expect(parse(suiteDummy.passing('username')).invalid('username')).toBe(
-        false
+        false,
       );
     });
 
@@ -37,13 +37,13 @@ describe('parser.parse', () => {
 
       it('Should return true when provided field is failing', () => {
         expect(
-          parse(ser(suiteDummy.failing('username'))).invalid('username')
+          parse(ser(suiteDummy.failing('username'))).invalid('username'),
         ).toBe(true);
       });
 
       it('Should return false when provided field is passing', () => {
         expect(
-          parse(ser(suiteDummy.passing('username'))).invalid('username')
+          parse(ser(suiteDummy.passing('username'))).invalid('username'),
         ).toBe(false);
       });
     });
@@ -59,10 +59,10 @@ describe('parser.parse', () => {
     });
     it('Should return true if provided field is tested', () => {
       expect(parse(suiteDummy.passing('username')).tested('username')).toBe(
-        true
+        true,
       );
       expect(parse(suiteDummy.failing('username')).tested('username')).toBe(
-        true
+        true,
       );
     });
 
@@ -76,10 +76,10 @@ describe('parser.parse', () => {
       });
       it('Should return true if provided field is tested', () => {
         expect(
-          parse(ser(suiteDummy.passing('username'))).tested('username')
+          parse(ser(suiteDummy.passing('username'))).tested('username'),
         ).toBe(true);
         expect(
-          parse(ser(suiteDummy.failing('username'))).tested('username')
+          parse(ser(suiteDummy.failing('username'))).tested('username'),
         ).toBe(true);
       });
     });
@@ -99,8 +99,8 @@ describe('parser.parse', () => {
             vest.skipWhen(true, () => {
               vest.test('untested', () => {});
             });
-          })()
-        ).untested('untested')
+          })(),
+        ).untested('untested'),
       ).toBe(true);
     });
 
@@ -110,7 +110,7 @@ describe('parser.parse', () => {
 
     it('Should return false if provided field is tested', () => {
       expect(parse(suiteDummy.passing('username')).untested('username')).toBe(
-        false
+        false,
       );
     });
 
@@ -128,21 +128,21 @@ describe('parser.parse', () => {
                 vest.skipWhen(true, () => {
                   vest.test('untested', () => {});
                 });
-              })()
-            )
-          ).untested('untested')
+              })(),
+            ),
+          ).untested('untested'),
         ).toBe(true);
       });
 
       it('Should return false if any field is tested', () => {
         expect(parse(ser(suiteDummy.passing('username'))).untested()).toBe(
-          false
+          false,
         );
       });
 
       it('Should return false if provided field is tested', () => {
         expect(
-          parse(ser(suiteDummy.passing('username'))).untested('username')
+          parse(ser(suiteDummy.passing('username'))).untested('username'),
         ).toBe(false);
       });
     });
@@ -152,19 +152,19 @@ describe('parser.parse', () => {
     it('Should return true if all fields are passing', () => {
       expect(parse(suiteDummy.passing(['f1', 'f2', 'f3'])).valid()).toBe(true);
       expect(parse(suiteDummy.passing(['f1', 'f2', 'f3'])).valid('f2')).toBe(
-        true
+        true,
       );
     });
 
     it('Should return true if all required fields have been tested and are passing', () => {
       expect(
-        parse(suiteDummy.passingWithUntestedOptional('optional')).valid()
+        parse(suiteDummy.passingWithUntestedOptional('optional')).valid(),
       ).toBe(true);
     });
 
     it('Should return true if all fields, including optional, pass', () => {
       expect(parse(suiteDummy.passingWithOptional('optional')).valid()).toBe(
-        true
+        true,
       );
     });
 
@@ -193,8 +193,8 @@ describe('parser.parse', () => {
             vest.skipWhen(true, () => {
               vest.test('untested', () => {});
             });
-          })()
-        ).valid()
+          })(),
+        ).valid(),
       ).toBe(false);
     });
 
@@ -206,8 +206,8 @@ describe('parser.parse', () => {
               vest.skipWhen(true, () => {
                 vest.test('f1', () => {});
               });
-            })()
-          ).valid('f1')
+            })(),
+          ).valid('f1'),
         ).toBe(false);
       });
 
@@ -219,8 +219,8 @@ describe('parser.parse', () => {
               vest.skipWhen(true, () => {
                 vest.test('f1', () => {});
               });
-            })()
-          ).valid('f1')
+            })(),
+          ).valid('f1'),
         ).toBe(true);
       });
 
@@ -230,8 +230,8 @@ describe('parser.parse', () => {
             vest.create(() => {
               vest.test('f1', () => {});
               vest.test('f2', () => false);
-            })()
-          ).valid('f1')
+            })(),
+          ).valid('f1'),
         ).toBe(true);
       });
 
@@ -241,8 +241,8 @@ describe('parser.parse', () => {
             vest.create(() => {
               vest.test('f1', () => {});
               vest.test('f2', () => false);
-            })()
-          ).valid('f2')
+            })(),
+          ).valid('f2'),
         ).toBe(false);
         expect(
           parse(
@@ -250,8 +250,8 @@ describe('parser.parse', () => {
               vest.test('f1', () => {});
               vest.test('f2', () => {});
               vest.test('f2', () => false);
-            })()
-          ).valid('f2')
+            })(),
+          ).valid('f2'),
         ).toBe(false);
       });
 
@@ -263,8 +263,8 @@ describe('parser.parse', () => {
                 vest.warn();
                 return false;
               });
-            })()
-          ).valid('f1')
+            })(),
+          ).valid('f1'),
         ).toBe(true);
       });
     });
@@ -272,22 +272,24 @@ describe('parser.parse', () => {
     describe('Serialized Result', () => {
       it('Should return true if all fields are passing', () => {
         expect(parse(ser(suiteDummy.passing(['f1', 'f2', 'f3']))).valid()).toBe(
-          true
+          true,
         );
         expect(
-          parse(ser(suiteDummy.passing(['f1', 'f2', 'f3']))).valid('f2')
+          parse(ser(suiteDummy.passing(['f1', 'f2', 'f3']))).valid('f2'),
         ).toBe(true);
       });
 
       it('Should return true if all required fields have been tested and are passing', () => {
         expect(
-          parse(ser(suiteDummy.passingWithUntestedOptional('optional'))).valid()
+          parse(
+            ser(suiteDummy.passingWithUntestedOptional('optional')),
+          ).valid(),
         ).toBe(true);
       });
 
       it('Should return true if all fields, including optional, pass', () => {
         expect(
-          parse(ser(suiteDummy.passingWithOptional('optional'))).valid()
+          parse(ser(suiteDummy.passingWithOptional('optional'))).valid(),
         ).toBe(true);
       });
 
@@ -301,7 +303,7 @@ describe('parser.parse', () => {
 
       it('Should return true if suite only has warnings', () => {
         expect(parse(ser(suiteDummy.warning(['f1', 'f2', 'f3']))).valid()).toBe(
-          true
+          true,
         );
       });
 
@@ -319,9 +321,9 @@ describe('parser.parse', () => {
                 vest.skipWhen(true, () => {
                   vest.test('untested', () => {});
                 });
-              })()
-            )
-          ).valid()
+              })(),
+            ),
+          ).valid(),
         ).toBe(false);
       });
 
@@ -334,9 +336,9 @@ describe('parser.parse', () => {
                   vest.skipWhen(true, () => {
                     vest.test('f1', () => {});
                   });
-                })()
-              )
-            ).valid('f1')
+                })(),
+              ),
+            ).valid('f1'),
           ).toBe(false);
         });
 
@@ -349,9 +351,9 @@ describe('parser.parse', () => {
                   vest.skipWhen(true, () => {
                     vest.test('f1', () => {});
                   });
-                })()
-              )
-            ).valid('f1')
+                })(),
+              ),
+            ).valid('f1'),
           ).toBe(true);
         });
 
@@ -362,9 +364,9 @@ describe('parser.parse', () => {
                 vest.create(() => {
                   vest.test('f1', () => {});
                   vest.test('f2', () => false);
-                })()
-              )
-            ).valid('f1')
+                })(),
+              ),
+            ).valid('f1'),
           ).toBe(true);
         });
 
@@ -375,9 +377,9 @@ describe('parser.parse', () => {
                 vest.create(() => {
                   vest.test('f1', () => {});
                   vest.test('f2', () => false);
-                })()
-              )
-            ).valid('f2')
+                })(),
+              ),
+            ).valid('f2'),
           ).toBe(false);
           expect(
             parse(
@@ -386,9 +388,9 @@ describe('parser.parse', () => {
                   vest.test('f1', () => {});
                   vest.test('f2', () => {});
                   vest.test('f2', () => false);
-                })()
-              )
-            ).valid('f2')
+                })(),
+              ),
+            ).valid('f2'),
           ).toBe(false);
         });
 
@@ -401,9 +403,9 @@ describe('parser.parse', () => {
                     vest.warn();
                     return false;
                   });
-                })()
-              )
-            ).valid('f1')
+                })(),
+              ),
+            ).valid('f1'),
           ).toBe(true);
         });
       });

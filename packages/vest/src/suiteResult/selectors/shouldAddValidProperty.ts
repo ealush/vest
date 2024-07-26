@@ -1,21 +1,24 @@
-import { useIsOptionalFieldApplied } from 'optional';
 import { Predicates } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
-import { SuiteOptionalFields, TIsolateSuite } from 'IsolateSuite';
-import { TIsolateTest } from 'IsolateTest';
-import { OptionalFieldTypes } from 'OptionalTypes';
-import { Severity } from 'Severity';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { SuiteWalker } from 'SuiteWalker';
-import { TestWalker } from 'TestWalker';
-import { VestTest } from 'VestTest';
+import {
+  SuiteOptionalFields,
+  TIsolateSuite,
+} from '@/core/isolate/IsolateSuite/IsolateSuite';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { TestWalker } from '@/core/isolate/IsolateTest/TestWalker';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
+import { nonMatchingFieldName } from '@/core/test/helpers/matchingFieldName';
+import { nonMatchingGroupName } from '@/core/test/helpers/matchingGroupName';
+import { OptionalFieldTypes } from '@/hooks/optional/OptionalTypes';
+import { useIsOptionalFieldApplied } from '@/hooks/optional/optional';
+import { SuiteWalker } from '@/suite/SuiteWalker';
+import { Severity } from '@/suiteResult/Severity';
+import { TFieldName, TGroupName } from '@/suiteResult/SuiteResultTypes';
 import {
   hasErrorsByTestObjects,
   hasGroupFailuresByTestObjects,
-} from 'hasFailuresByTestObjects';
-import { nonMatchingFieldName } from 'matchingFieldName';
-import { nonMatchingGroupName } from 'matchingGroupName';
+} from '@/suiteResult/selectors/hasFailuresByTestObjects';
 
 export function useShouldAddValidProperty(fieldName?: TFieldName): boolean {
   // Is the field optional, and the optional condition is applied

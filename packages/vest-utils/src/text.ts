@@ -1,5 +1,5 @@
-import { isEmpty } from 'isEmpty';
-import { isObject } from 'valueIsObject';
+import { isEmpty } from '@/isEmpty';
+import { isObject } from '@/valueIsObject';
 
 const regexp = /{(.*?)}/g;
 

@@ -1,4 +1,4 @@
-import { Modes } from 'Modes';
+import { Modes } from '@/hooks/optional/Modes';
 import wait from 'wait';
 
 import { dummyTest } from '../../testUtils/testDummy';

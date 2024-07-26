@@ -1,4 +1,4 @@
-import { LazyRuleRunners } from 'genEnforceLazy';
+import { LazyRuleRunners } from '@/runtime/genEnforceLazy';
 
 export interface ShapeObject
   extends Record<string, any>,

@@ -1,4 +1,4 @@
-import { createTinyState } from 'tinyState';
+import { createTinyState } from '../tinyState';
 
 describe('tinyTest', () => {
   it('Should be a function', () => {

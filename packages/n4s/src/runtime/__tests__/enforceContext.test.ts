@@ -1,5 +1,5 @@
-import { enforce } from 'enforce';
-import * as ruleReturn from 'ruleReturn';
+import { enforce } from '@/runtime/enforce';
+import * as ruleReturn from '@/lib/ruleReturn';
 import 'schema';
 import 'compounds';
 
@@ -56,12 +56,12 @@ describe('enforce.context', () => {
 
       // first.parent() === name
       expect(keepContext.mock.calls[0][0].parent()).toEqual(
-        keepContext.mock.calls[1][0]
+        keepContext.mock.calls[1][0],
       );
 
       // siblings[0].parent() === siblings
       expect(keepContext.mock.calls[2][0].parent()).toEqual(
-        keepContext.mock.calls[3][0]
+        keepContext.mock.calls[3][0],
       );
     });
 
@@ -85,7 +85,7 @@ describe('enforce.context', () => {
         .someCustomRule();
 
       expect(
-        keepContext.mock.calls[0][0].parent().parent().parent()
+        keepContext.mock.calls[0][0].parent().parent().parent(),
       ).toBeNull();
       expect(keepContext.mock.calls[1][0].parent().parent()).toBeNull();
       expect(keepContext.mock.calls[4][0].parent()).toBeNull();
@@ -152,7 +152,7 @@ describe('enforce.context', () => {
     describe('enforce.isArrayOf', () => {
       it('passes the current value into the context', () => {
         enforce(['Elle', 'Tester', 'Sophie']).isArrayOf(
-          enforce.isString().someCustomRule()
+          enforce.isString().someCustomRule(),
         );
 
         expect(keepContext.mock.calls[0][0].value).toBe('Elle');
@@ -162,7 +162,7 @@ describe('enforce.context', () => {
 
       it('passes the current index into the context meta field', () => {
         enforce(['Elle', 'Tester', 'Sophie']).isArrayOf(
-          enforce.isString().someCustomRule()
+          enforce.isString().someCustomRule(),
         );
         expect(keepContext.mock.calls[0][0].meta).toEqual({ index: 0 });
         expect(keepContext.mock.calls[1][0].meta).toEqual({ index: 1 });
@@ -180,9 +180,9 @@ describe('enforce.context', () => {
         }).shape({
           username: enforce.isString(),
           friends: enforce.isArrayOf(
-            enforce.isString().isFriendTheSameAsUser()
+            enforce.isString().isFriendTheSameAsUser(),
           ),
-        })
+        }),
       ).toThrow();
     });
 

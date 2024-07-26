@@ -1,16 +1,17 @@
 import { freezeAssign } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
+import { useDeferDoneCallback } from './done/deferDoneCallback';
+import { shouldSkipDoneRegistration } from './done/shouldSkipDoneRegistration';
+
+import { SuiteWalker } from '@/suite/SuiteWalker';
 import {
   SuiteResult,
   SuiteRunResult,
   TFieldName,
   TGroupName,
-} from 'SuiteResultTypes';
-import { SuiteWalker } from 'SuiteWalker';
-import { useDeferDoneCallback } from 'deferDoneCallback';
-import { shouldSkipDoneRegistration } from 'shouldSkipDoneRegistration';
-import { useCreateSuiteResult } from 'suiteResult';
+} from '@/suiteResult/SuiteResultTypes';
+import { useCreateSuiteResult } from '@/suiteResult/suiteResult';
 
 export function useSuiteRunResult<
   F extends TFieldName,

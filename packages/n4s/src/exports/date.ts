@@ -4,7 +4,7 @@ import isBefore from 'validator/es/lib/isBefore';
 import isDate from 'validator/es/lib/isDate';
 import isISO8601 from 'validator/es/lib/isISO8601';
 
-import { EnforceCustomMatcher } from 'enforceUtilityTypes';
+import { EnforceCustomMatcher } from '../lib/enforceUtilityTypes';
 
 enforce.extend({ isAfter, isBefore, isDate, isISO8601 });
 

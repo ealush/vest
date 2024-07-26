@@ -1,9 +1,9 @@
-import { VestTest } from 'VestTest';
+import { nonMatchingSeverityProfile } from '../nonMatchingSeverityProfile';
 
-import { TIsolateTest } from 'IsolateTest';
-import { Severity } from 'Severity';
-import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
-import { mockIsolateTest } from 'vestMocks';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
+import { Severity } from '@/suiteResult/Severity';
+import { mockIsolateTest } from '@/testUtils/vestMocks';
 
 describe('nonMatchingSeverityProfile', () => {
   let testObject: TIsolateTest;
@@ -18,7 +18,7 @@ describe('nonMatchingSeverityProfile', () => {
       it('should return false', () => {
         VestTest.warn(testObject);
         expect(nonMatchingSeverityProfile(Severity.WARNINGS, testObject)).toBe(
-          false
+          false,
         );
       });
     });
@@ -26,7 +26,7 @@ describe('nonMatchingSeverityProfile', () => {
     describe('When both are not warning', () => {
       it('should return false', () => {
         expect(nonMatchingSeverityProfile(Severity.ERRORS, testObject)).toBe(
-          false
+          false,
         );
       });
     });
@@ -37,7 +37,7 @@ describe('nonMatchingSeverityProfile', () => {
       it('should return true', () => {
         VestTest.warn(testObject);
         expect(nonMatchingSeverityProfile(Severity.ERRORS, testObject)).toBe(
-          true
+          true,
         );
       });
     });
@@ -45,7 +45,7 @@ describe('nonMatchingSeverityProfile', () => {
     describe('When severity is warning', () => {
       it('should return true', () => {
         expect(nonMatchingSeverityProfile(Severity.WARNINGS, testObject)).toBe(
-          true
+          true,
         );
       });
     });

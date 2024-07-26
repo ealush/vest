@@ -1,5 +1,5 @@
-export { enforce } from 'enforce';
-export { ctx } from 'enforceContext';
+export { enforce } from '@/runtime/enforce';
+export { ctx } from '@/runtime/enforceContext';
 
 /* eslint-disable @typescript-eslint/no-namespace, @typescript-eslint/no-empty-interface, @typescript-eslint/no-unused-vars */
 declare global {

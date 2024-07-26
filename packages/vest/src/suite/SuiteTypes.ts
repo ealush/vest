@@ -1,15 +1,16 @@
 import { CB } from 'vest-utils';
 
-import { TIsolateSuite } from 'IsolateSuite';
+import { StaticSuiteRunResult } from './createSuite';
+import { TTypedMethods } from './getTypedMethods';
+
+import { TIsolateSuite } from '@/core/isolate/IsolateSuite/IsolateSuite';
 import {
   SuiteResult,
   SuiteRunResult,
   TFieldName,
   TGroupName,
-} from 'SuiteResultTypes';
-import { StaticSuiteRunResult } from 'createSuite';
-import { TTypedMethods } from 'getTypedMethods';
-import { SuiteSelectors } from 'suiteSelectors';
+} from '@/suiteResult/SuiteResultTypes';
+import { SuiteSelectors } from '@/suiteResult/selectors/suiteSelectors';
 
 export type Suite<
   F extends TFieldName,

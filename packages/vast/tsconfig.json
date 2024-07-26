@@ -7,7 +7,8 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "vast": ["./src/vast.ts"]
+      "@exports/*": ["src/exports/*"],
+      "@/*": ["src/*"]
     }
   }
 }

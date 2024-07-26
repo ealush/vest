@@ -1,5 +1,6 @@
-import { enforce } from 'enforce';
-import { isKeyOf, isNotKeyOf } from 'isKeyOf';
+import { isKeyOf, isNotKeyOf } from '../isKeyOf';
+
+import { enforce } from '@/runtime/enforce';
 
 const FRUITES = {
   apples: 5,
@@ -38,7 +39,7 @@ describe('Tests isKeyOf rule', () => {
       'Should throw when %s is an object',
       v => {
         expect(() => enforce(DUMMY_KEY).isKeyOf({ v })).toThrow();
-      }
+      },
     );
   });
 });

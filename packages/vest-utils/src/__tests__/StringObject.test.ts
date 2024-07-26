@@ -1,4 +1,4 @@
-import { StringObject } from 'StringObject';
+import { StringObject } from '../StringObject';
 
 describe('StringObject', () => {
   test('returns an instance of String', () => {

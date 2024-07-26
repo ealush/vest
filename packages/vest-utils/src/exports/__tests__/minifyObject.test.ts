@@ -1,4 +1,4 @@
-import { expandObject, minifyObject } from 'minifyObject';
+import { expandObject, minifyObject } from '../minifyObject';
 
 describe('minifyObject', () => {
   it('should be a function', () => {

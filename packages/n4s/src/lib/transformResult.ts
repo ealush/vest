@@ -1,7 +1,7 @@
 import { invariant, optionalFunctionValue, isBoolean } from 'vest-utils';
 
-import ruleReturn, { RuleReturn, RuleDetailedResult } from 'ruleReturn';
-import type { RuleValue, Args } from 'runtimeRules';
+import ruleReturn, { RuleReturn, RuleDetailedResult } from '@/lib/ruleReturn';
+import type { RuleValue, Args } from '@/runtime/runtimeRules';
 
 /**
  * Transform the result of a rule into a standard format
@@ -20,7 +20,7 @@ export function transformResult(
   }
   return ruleReturn(
     result.pass,
-    optionalFunctionValue(result.message, ruleName, value, ...args)
+    optionalFunctionValue(result.message, ruleName, value, ...args),
   );
 }
 
@@ -28,6 +28,6 @@ function validateResult(result: RuleReturn): void {
   // if result is boolean, or if result.pass is boolean
   invariant(
     isBoolean(result) || (result && isBoolean(result.pass)),
-    'Incorrect return value for rule: ' + JSON.stringify(result)
+    'Incorrect return value for rule: ' + JSON.stringify(result),
   );
 }

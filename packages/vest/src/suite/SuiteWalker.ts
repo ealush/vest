@@ -1,12 +1,12 @@
 import { Predicate, Predicates, isEmpty, isNullish } from 'vest-utils';
 import { TIsolate, VestRuntime, Walker } from 'vestjs-runtime';
 
-import { TIsolateTest } from 'IsolateTest';
-import { PreAggCache, usePreAggCache } from 'Runtime';
-import { TFieldName } from 'SuiteResultTypes';
-import { VestIsolate } from 'VestIsolate';
-import { VestTest } from 'VestTest';
-import { matchesOrHasNoFieldName } from 'matchingFieldName';
+import { PreAggCache, usePreAggCache } from '../core/Runtime';
+import { TIsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
+import { VestTest } from '../core/isolate/IsolateTest/VestTest';
+import { VestIsolate } from '../core/isolate/VestIsolate';
+import { matchesOrHasNoFieldName } from '../core/test/helpers/matchingFieldName';
+import { TFieldName } from '../suiteResult/SuiteResultTypes';
 
 export class SuiteWalker {
   static defaultRoot = VestRuntime.useAvailableRoot;

@@ -1,4 +1,4 @@
-import type { CB } from 'utilityTypes';
+import type { CB } from '@/utilityTypes';
 
 const EVENT_WILDCARD = '*';
 

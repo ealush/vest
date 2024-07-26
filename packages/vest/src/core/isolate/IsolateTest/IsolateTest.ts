@@ -1,24 +1,27 @@
 import { CB, Maybe } from 'vest-utils';
 import { TIsolate, Isolate, IsolateKey } from 'vestjs-runtime';
 
-import { IsolateTestStateMachine, TestStatus } from 'IsolateTestStateMachine';
-import { TestSeverity } from 'Severity';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { AsyncTest, TestFn } from 'TestTypes';
-import { VestIsolateType } from 'VestIsolateType';
+import {
+  IsolateTestStateMachine,
+  TestStatus,
+} from '@/core/StateMachines/IsolateTestStateMachine';
+import { VestIsolateType } from '@/core/isolate/VestIsolateType';
+import { AsyncTest, TestFn } from '@/core/test/TestTypes';
+import { TestSeverity } from '@/suiteResult/Severity';
+import { TFieldName, TGroupName } from '@/suiteResult/SuiteResultTypes';
 
 export type TIsolateTest<
   F extends TFieldName = TFieldName,
-  G extends TGroupName = TGroupName
+  G extends TGroupName = TGroupName,
 > = TIsolate<CommonTestFields<F, G> & IsolateTestPayload>;
 
 export function IsolateTest<
   F extends TFieldName = TFieldName,
-  G extends TGroupName = TGroupName
+  G extends TGroupName = TGroupName,
 >(
   callback: CB,
   input: CommonTestFields<F, G>,
-  key?: IsolateKey
+  key?: IsolateKey,
 ): TIsolateTest<F, G> {
   const payload: IsolateTestPayload = {
     ...IsolateTestBase(),
@@ -37,7 +40,7 @@ export function IsolateTest<
     VestIsolateType.Test,
     callback,
     payload,
-    key ?? null
+    key ?? null,
   );
 
   return isolate as TIsolateTest<F, G>;
@@ -52,7 +55,7 @@ export function IsolateTestBase() {
 
 export type IsolateTestPayload<
   F extends TFieldName = TFieldName,
-  G extends TGroupName = TGroupName
+  G extends TGroupName = TGroupName,
 > = CommonTestFields<F, G> & {
   severity: TestSeverity;
   status: TestStatus;
@@ -61,7 +64,7 @@ export type IsolateTestPayload<
 
 type CommonTestFields<
   F extends TFieldName = TFieldName,
-  G extends TGroupName = TGroupName
+  G extends TGroupName = TGroupName,
 > = {
   message?: Maybe<string>;
   groupName?: G;

@@ -1,10 +1,10 @@
-import { TIsolateTest } from 'IsolateTest';
-import { VestTest } from 'VestTest';
-import { isSameProfileTest } from 'isSameProfileTest';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
+import { isSameProfileTest } from './isSameProfileTest';
 
 export default function cancelOverriddenPendingTest(
   prevRunTestObject: TIsolateTest,
-  currentRunTestObject: TIsolateTest
+  currentRunTestObject: TIsolateTest,
 ): void {
   if (
     currentRunTestObject !== prevRunTestObject &&

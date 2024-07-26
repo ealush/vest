@@ -1,26 +1,27 @@
 import { assign, CB } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
-import { TTypedMethods, getTypedMethods } from './getTypedMethods';
-
-import { Events } from 'BusEvents';
-import { IsolateSuite, TIsolateSuite } from 'IsolateSuite';
-import { useCreateVestState, useLoadSuite } from 'Runtime';
-import { SuiteContext } from 'SuiteContext';
+import { SuiteResult, SuiteRunResult } from '../../types/vest';
+import { useCreateVestState, useLoadSuite } from '../core/Runtime';
+import { Events } from '../core/VestBus/BusEvents';
+import { useInitVestBus } from '../core/VestBus/VestBus';
+import { SuiteContext } from '../core/context/SuiteContext';
+import {
+  IsolateSuite,
+  TIsolateSuite,
+} from '../core/isolate/IsolateSuite/IsolateSuite';
 import {
   SuiteName,
-  SuiteResult,
-  SuiteRunResult,
   TFieldName,
   TGroupName,
-} from 'SuiteResultTypes';
-import { Suite } from 'SuiteTypes';
-import { useInitVestBus } from 'VestBus';
-import { VestReconciler } from 'VestReconciler';
-import { useCreateSuiteResult } from 'suiteResult';
-import { useSuiteRunResult } from 'suiteRunResult';
-import { bindSuiteSelectors } from 'suiteSelectors';
-import { validateSuiteCallback } from 'validateSuiteParams';
+} from '../suiteResult/SuiteResultTypes';
+import { bindSuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
+import { useCreateSuiteResult } from '../suiteResult/suiteResult';
+import { useSuiteRunResult } from '../suiteResult/suiteRunResult';
+
+import { Suite } from './SuiteTypes';
+import { TTypedMethods, getTypedMethods } from './getTypedMethods';
+import { validateSuiteCallback } from './validateParams/validateSuiteParams';
 
 function createSuite<
   F extends TFieldName = string,

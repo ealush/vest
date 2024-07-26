@@ -1,25 +1,25 @@
 import { enforce } from 'n4s';
-import { optional } from 'optional';
 
-import { Modes } from 'Modes';
+import { registerReconciler } from '@/core/isolate/VestReconciler';
+import { test } from '@/core/test/test';
+import { skip, only } from '@/hooks/focused/focused';
+import { include } from '@/hooks/include';
+import { Modes } from '@/hooks/optional/Modes';
+import { mode } from '@/hooks/optional/mode';
+import { optional } from '@/hooks/optional/optional';
+import { warn } from '@/hooks/warn';
+import { each } from '@/isolates/each';
+import { group } from '@/isolates/group';
+import { omitWhen } from '@/isolates/omitWhen';
+import { skipWhen } from '@/isolates/skipWhen';
+import type { Suite } from '@/suite/SuiteTypes';
+import { createSuite, staticSuite, StaticSuite } from '@/suite/createSuite';
 import type {
   SuiteResult,
   SuiteRunResult,
   SuiteSummary,
-} from 'SuiteResultTypes';
-import type { Suite } from 'SuiteTypes';
-import { registerReconciler } from 'VestReconciler';
-import { createSuite, staticSuite, StaticSuite } from 'createSuite';
-import { each } from 'each';
-import { skip, only } from 'focused';
-import { group } from 'group';
-import { include } from 'include';
-import { mode } from 'mode';
-import { omitWhen } from 'omitWhen';
-import { skipWhen } from 'skipWhen';
-import { suiteSelectors } from 'suiteSelectors';
-import { test } from 'test';
-import { warn } from 'warn';
+} from '@/suiteResult/SuiteResultTypes';
+import { suiteSelectors } from '@/suiteResult/selectors/suiteSelectors';
 
 export {
   createSuite as create,

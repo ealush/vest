@@ -1,8 +1,8 @@
-import compose from 'compose';
+import * as ruleReturn from '@/lib/ruleReturn';
+import compose from '@exports/compose';
 import { enforce } from 'n4s';
-import * as ruleReturn from 'ruleReturn';
-import 'schema';
-import 'compounds';
+import '@exports/schema';
+import '@exports/compounds';
 
 describe('compose', () => {
   it('Should create "and" relationship between composed rules', () => {
@@ -19,17 +19,17 @@ describe('compose', () => {
       enforce.isNumeric(),
       enforce.isString(),
       enforce.greaterThan(3),
-      enforce.lessThan(5)
+      enforce.lessThan(5),
     );
 
     expect(NumericStringBetweenThreeAndFive.run('4')).toEqual(
-      ruleReturn.passing()
+      ruleReturn.passing(),
     );
     expect(NumericStringBetweenThreeAndFive.run('3')).toEqual(
-      ruleReturn.failing()
+      ruleReturn.failing(),
     );
     expect(NumericStringBetweenThreeAndFive.run(5)).toEqual(
-      ruleReturn.failing()
+      ruleReturn.failing(),
     );
     expect(NumericStringBetweenThreeAndFive.test('4')).toBe(true);
     expect(NumericStringBetweenThreeAndFive.test('3')).toBe(false);
@@ -42,7 +42,7 @@ describe('compose', () => {
         first: enforce.isString().isNotEmpty(),
         last: enforce.isString().isNotEmpty(),
         middle: enforce.optional(enforce.isString().isNotEmpty()),
-      })
+      }),
     );
 
     expect(
@@ -55,7 +55,7 @@ describe('compose', () => {
             first: 'John',
             last: 'Doe',
           },
-        })
+        }),
     ).toEqual(ruleReturn.passing());
 
     expect(
@@ -69,7 +69,7 @@ describe('compose', () => {
             last: 'Doe',
             middle: '',
           },
-        })
+        }),
     ).toEqual(ruleReturn.failing());
   });
   it('Should allow composing compositions', () => {
@@ -80,13 +80,13 @@ describe('compose', () => {
           last: enforce.isString().isNotEmpty(),
           middle: enforce.optional(enforce.isString().isNotEmpty()),
         }),
-      })
+      }),
     );
 
     const Entity = compose(
       enforce.loose({
         id: enforce.isNumeric(),
-      })
+      }),
     );
 
     const User = compose(Name, Entity);
@@ -99,7 +99,7 @@ describe('compose', () => {
           middle: 'M',
           last: 'Doe',
         },
-      })
+      }),
     ).toEqual(ruleReturn.passing());
     User({
       id: '1',
@@ -117,7 +117,7 @@ describe('compose', () => {
         name: {
           first: 'John',
         },
-      })
+      }),
     ).toEqual(ruleReturn.failing());
 
     expect(() =>
@@ -126,7 +126,7 @@ describe('compose', () => {
           first: 'John',
         },
         id: '__',
-      })
+      }),
     ).toThrow();
   });
 });

@@ -1,4 +1,4 @@
-import either from 'either';
+import either from '@/either';
 
 describe('either', () => {
   it('returns true if one argument is truthy and the other is falsy', () => {

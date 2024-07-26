@@ -1,9 +1,12 @@
 import { CB, assign } from 'vest-utils';
 import { Isolate, TIsolate } from 'vestjs-runtime';
 
-import { OptionalFieldDeclaration, OptionalFields } from 'OptionalTypes';
-import { TFieldName } from 'SuiteResultTypes';
-import { VestIsolateType } from 'VestIsolateType';
+import {
+  OptionalFieldDeclaration,
+  OptionalFields,
+} from '@/hooks/optional/OptionalTypes';
+import { TFieldName } from '@/suiteResult/SuiteResultTypes';
+import { VestIsolateType } from '@/core/isolate/VestIsolateType';
 
 export type TIsolateSuite = TIsolate<{
   optional: OptionalFields;

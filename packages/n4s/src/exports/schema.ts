@@ -1,13 +1,10 @@
 import { enforce } from 'n4s';
 
-
-import { EnforceCustomMatcher } from 'enforceUtilityTypes';
-import { isArrayOf } from 'isArrayOf';
-import { loose } from 'loose';
-import { optional } from 'optional';
-import { shape } from 'shape';
-
-export { partial } from 'partial';
+import { EnforceCustomMatcher } from '../lib/enforceUtilityTypes';
+import { isArrayOf } from '../plugins/schema/isArrayOf';
+import { loose } from '../plugins/schema/loose';
+import { optional } from '../plugins/schema/optional';
+import { shape } from '../plugins/schema/shape';
 
 enforce.extend({ isArrayOf, loose, optional, shape });
 

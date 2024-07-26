@@ -9,9 +9,10 @@ import {
 } from 'vest-utils';
 import { IsolateSelectors, TIsolate, Isolate } from 'vestjs-runtime';
 
-import { FocusModes } from 'FocusedKeys';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { VestIsolateType } from 'VestIsolateType';
+import { FocusModes } from './FocusedKeys';
+
+import { VestIsolateType } from '@/core/isolate/VestIsolateType';
+import { TFieldName, TGroupName } from '@/suiteResult/SuiteResultTypes';
 
 export type ExclusionItem = Maybe<OneOrMoreOf<string>>;
 export type FieldExclusion<F extends TFieldName> = Maybe<OneOrMoreOf<F>>;
@@ -27,7 +28,7 @@ export type IsolateFocusedPayload = {
 
 export function IsolateFocused(
   focusMode: FocusModes,
-  match?: true | FieldExclusion<TFieldName>
+  match?: true | FieldExclusion<TFieldName>,
 ): TIsolateFocused {
   return Isolate.create(VestIsolateType.Focused, noop, {
     focusMode,
@@ -39,7 +40,7 @@ export function IsolateFocused(
 export class FocusSelectors {
   static isSkipFocused(
     focus: Nullable<TIsolateFocused>,
-    fieldName?: TFieldName
+    fieldName?: TFieldName,
   ): boolean {
     return (
       focus?.data.focusMode === FocusModes.SKIP &&
@@ -48,7 +49,7 @@ export class FocusSelectors {
   }
   static isOnlyFocused(
     focus: Nullable<TIsolateFocused>,
-    fieldName?: TFieldName
+    fieldName?: TFieldName,
   ): boolean {
     return (
       focus?.data.focusMode === FocusModes.ONLY && hasFocus(focus, fieldName)

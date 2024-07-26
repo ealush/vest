@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { lengthEquals } from 'lengthEquals';
+import { lengthEquals } from '@/lengthEquals';
 
 describe('Tests lengthEquals rule', () => {
   const length = 10;

@@ -1,3 +1,4 @@
+import { ctx } from '@/runtime/enforceContext';
 import {
   mapFirst,
   optionalFunctionValue,
@@ -7,10 +8,12 @@ import {
   DynamicValue,
 } from 'vest-utils';
 
-import { ctx } from 'enforceContext';
-import ruleReturn, { defaultToPassing, RuleDetailedResult } from 'ruleReturn';
-import { RuleValue, Args, getRule } from 'runtimeRules';
-import { transformResult } from 'transformResult';
+import ruleReturn, {
+  defaultToPassing,
+  RuleDetailedResult,
+} from '@/lib/ruleReturn';
+import { transformResult } from '@/lib/transformResult';
+import { RuleValue, Args, getRule } from '@/runtime/runtimeRules';
 
 // eslint-disable-next-line max-lines-per-function
 export default function genEnforceLazy(key: string) {
@@ -26,7 +29,7 @@ export default function genEnforceLazy(key: string) {
       const rule = getRule(ruleName);
 
       registeredRules.push((value: RuleValue) =>
-        transformResult(rule(value, ...args), ruleName, value, ...args)
+        transformResult(rule(value, ...args), ruleName, value, ...args),
       );
 
       let proxy = {
@@ -40,10 +43,10 @@ export default function genEnforceLazy(key: string) {
                 ruleReturn(
                   !!res.pass,
                   optionalFunctionValue(lazyMessage, value, res.message) ??
-                    res.message
-                )
+                    res.message,
+                ),
               );
-            })
+            }),
           );
         },
         test: (value: RuleValue): boolean => proxy.run(value).pass,

@@ -4,7 +4,7 @@ import { dummyTest } from '../../testUtils/testDummy';
 import { TestPromise } from '../../testUtils/testPromise';
 import promisify from '../promisify';
 
-import { TFieldName } from 'SuiteResultTypes';
+import { TFieldName } from '@/suiteResult/SuiteResultTypes';
 import * as vest from 'vest';
 
 describe('Utility: promisify', () => {
@@ -18,8 +18,8 @@ describe('Utility: promisify', () => {
       vest.create(
         jest.fn(() => {
           dummyTest.failing('field_0');
-        })
-      )
+        }),
+      ),
     );
     validateAsync = promisify(validatorFn);
   });
@@ -52,7 +52,7 @@ describe('Utility: promisify', () => {
           vest.create(() => {
             dummyTest.failing('field_0');
             done();
-          })
+          }),
         );
         validateAsync();
       }));

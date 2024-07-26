@@ -1,4 +1,4 @@
-import { TTestSuite } from 'testUtils/TVestMock';
+import { TTestSuite } from '@/testUtils/TVestMock';
 
 import { dummyTest } from '../../testUtils/testDummy';
 

@@ -1,8 +1,8 @@
-import optionalFunctionValue from 'optionalFunctionValue';
-import { DynamicValue } from 'utilityTypes';
+import optionalFunctionValue from './optionalFunctionValue';
+import { DynamicValue } from './utilityTypes';
 
 export function createTinyState<S>(
-  initialValue: SetValueInput<S>
+  initialValue: SetValueInput<S>,
 ): TinyState<S> {
   let value: S;
 
@@ -22,7 +22,7 @@ export function createTinyState<S>(
 export type TinyState<S> = () => [
   value: S,
   setValue: (next: SetValueInput<S>) => void,
-  resetValue: () => void
+  resetValue: () => void,
 ];
 
 type SetValueInput<S> = DynamicValue<S, [prev: S]>;

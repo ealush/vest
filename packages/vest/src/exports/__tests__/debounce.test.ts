@@ -1,6 +1,6 @@
 import wait from 'wait';
 
-import { TestFnPayload } from 'TestTypes';
+import { TestFnPayload } from '@/core/test/TestTypes';
 import * as vest from 'vest';
 import debounce from 'vest/debounce';
 

@@ -7,12 +7,8 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "anyone": ["./src/anyone.ts"],
-      "runAnyoneMethods": ["./src/runner/runAnyoneMethods.ts"],
-      "one": ["./src/exports/one.ts"],
-      "none": ["./src/exports/none.ts"],
-      "any": ["./src/exports/any.ts"],
-      "all": ["./src/exports/all.ts"]
+      "@exports/*": ["src/exports/*"],
+      "@/*": ["src/*"]
     }
   }
 }

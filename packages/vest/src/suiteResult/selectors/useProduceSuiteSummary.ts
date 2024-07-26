@@ -1,7 +1,7 @@
 import { Maybe, assign, defaultTo } from 'vest-utils';
 
-import { TIsolateTest } from 'IsolateTest';
-import { countKeyBySeverity, Severity } from 'Severity';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { countKeyBySeverity, Severity } from '@/suiteResult/Severity';
 import {
   Groups,
   SingleTestSummary,
@@ -10,10 +10,10 @@ import {
   TFieldName,
   TGroupName,
   Tests,
-} from 'SuiteResultTypes';
-import { SummaryFailure } from 'SummaryFailure';
-import { TestWalker } from 'TestWalker';
-import { VestTest } from 'VestTest';
+} from '@/suiteResult/SuiteResultTypes';
+import { SummaryFailure } from '@/suiteResult/SummaryFailure';
+import { TestWalker } from '@/core/isolate/IsolateTest/TestWalker';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
 import {
   useShouldAddValidProperty,
   useShouldAddValidPropertyInGroup,

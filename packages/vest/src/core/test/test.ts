@@ -1,31 +1,35 @@
 import { assign, invariant, isFunction, isStringValue, text } from 'vest-utils';
 import { Bus, IsolateKey } from 'vestjs-runtime';
 
-import { Events } from 'BusEvents';
-import { ErrorStrings } from 'ErrorStrings';
-import { IsolateTest, TIsolateTest } from 'IsolateTest';
-import { useGroupName } from 'SuiteContext';
-import { TFieldName } from 'SuiteResultTypes';
-import { TestFn } from 'TestTypes';
-import { useAttemptRunTest } from 'runTest';
-import { wrapTestMemo } from 'test.memo';
+import { wrapTestMemo } from './test.memo';
+import { useAttemptRunTest } from './testLevelFlowControl/runTest';
+
+import { Events } from '@/core/VestBus/BusEvents';
+import { useGroupName } from '@/core/context/SuiteContext';
+import {
+  IsolateTest,
+  TIsolateTest,
+} from '@/core/isolate/IsolateTest/IsolateTest';
+import { TestFn } from '@/core/test/TestTypes';
+import { ErrorStrings } from '@/errors/ErrorStrings';
+import { TFieldName } from '@/suiteResult/SuiteResultTypes';
 
 function vestTest<F extends TFieldName>(
   fieldName: F,
   message: string,
-  cb: TestFn
+  cb: TestFn,
 ): TIsolateTest;
 function vestTest<F extends TFieldName>(fieldName: F, cb: TestFn): TIsolateTest;
 function vestTest<F extends TFieldName>(
   fieldName: F,
   message: string,
   cb: TestFn,
-  key: IsolateKey
+  key: IsolateKey,
 ): TIsolateTest;
 function vestTest<F extends TFieldName>(
   fieldName: F,
   cb: TestFn,
-  key: IsolateKey
+  key: IsolateKey,
 ): TIsolateTest;
 // @vx-allow use-use
 function vestTest<F extends TFieldName>(
@@ -66,7 +70,7 @@ function validateTestParams(fieldName: string, testFn: TestFn): void {
       fn_name: fnName,
       param: 'fieldName',
       expected: 'string',
-    })
+    }),
   );
   invariant(
     isFunction(testFn),
@@ -74,6 +78,6 @@ function validateTestParams(fieldName: string, testFn: TestFn): void {
       fn_name: fnName,
       param: 'callback',
       expected: 'function',
-    })
+    }),
   );
 }

@@ -2,8 +2,8 @@ import { TTestSuite, TVestMock } from '../../../testUtils/TVestMock';
 import mockThrowError from '../../../testUtils/mockThrowError';
 import { dummyTest } from '../../../testUtils/testDummy';
 
-import { TIsolateTest } from 'IsolateTest';
-import { Modes } from 'Modes';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { Modes } from '@/hooks/optional/Modes';
 import * as vest from 'vest';
 
 describe('Merging of previous test runs', () => {
@@ -104,8 +104,8 @@ describe('Merging of previous test runs', () => {
 
       expect(deferThrow).toHaveBeenCalledWith(
         expect.stringContaining(
-          'Vest Critical Error: Tests called in different order than previous run.'
-        )
+          'Vest Critical Error: Tests called in different order than previous run.',
+        ),
       );
     });
 
@@ -337,7 +337,7 @@ describe('Merging of previous test runs', () => {
               () => {
                 vest.test('f4', () => false);
                 vest.test('f5', () => false);
-              }
+              },
             );
             counter++;
           });

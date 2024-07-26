@@ -1,4 +1,4 @@
-import enforceEager from 'enforceEager';
+import enforceEager from '../runtime/enforceEager';
 
 describe(`enforce eager`, () => {
   it('should throw when rule fails', () => {

@@ -1,13 +1,13 @@
 import { CB, isNull } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
-import { TIsolateTest } from 'IsolateTest';
-import * as Runtime from 'Runtime';
-import { useTestMemoCache } from 'SuiteContext';
-import { TFieldName } from 'SuiteResultTypes';
-import { TestFn } from 'TestTypes';
-import { VestTest } from 'VestTest';
-import { VTest } from 'test';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import * as Runtime from '@/core/Runtime';
+import { useTestMemoCache } from '@/core/context/SuiteContext';
+import { TFieldName } from '@/suiteResult/SuiteResultTypes';
+import { TestFn } from '@/core/test/TestTypes';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
+import { VTest } from '@/core/test/test';
 
 // @vx-allow use-use
 export function wrapTestMemo<FN extends TFieldName>(test: VTest): TestMemo<FN> {
@@ -47,7 +47,7 @@ export function wrapTestMemo<FN extends TFieldName>(test: VTest): TestMemo<FN> {
 
 function useGetTestFromCache(
   dependencies: any[],
-  cacheAction: CB<TIsolateTest>
+  cacheAction: CB<TIsolateTest>,
 ): TIsolateTest {
   const cache = useTestMemoCache();
 
@@ -80,7 +80,7 @@ type ParametersWithoutMessage = [test: TestFn, dependencies: unknown[]];
 type ParametersWithMessage = [
   message: string,
   test: TestFn,
-  dependencies: unknown[]
+  dependencies: unknown[],
 ];
 
 type ParamsOverload = ParametersWithoutMessage | ParametersWithMessage;

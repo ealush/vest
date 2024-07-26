@@ -1,7 +1,7 @@
 import { CB, Nullable, isNullish, optionalFunctionValue } from 'vest-utils';
 
-import { type TIsolate } from 'Isolate';
-import { IsolateMutator } from 'IsolateMutator';
+import { type TIsolate } from '@/Isolate/Isolate';
+import { IsolateMutator } from '@/Isolate/IsolateMutator';
 
 type VisitOnlyPredicate = (isolate: TIsolate) => boolean;
 

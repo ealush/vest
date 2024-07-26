@@ -1,4 +1,4 @@
-import seq, { genSeq } from 'seq';
+import seq, { genSeq } from '@/seq';
 
 describe('lib:seq', () => {
   it('Should return a new id on each run', () => {

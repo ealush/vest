@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { longerThan } from 'longerThan';
+import { longerThan } from '@/longerThan';
 
 describe('Tests longerThan rule', () => {
   const length = 10;

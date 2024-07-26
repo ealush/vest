@@ -1,6 +1,6 @@
 import { Nullable, isNotNullish, isNullish } from 'vest-utils';
 
-import { TIsolate } from 'Isolate';
+import { TIsolate } from './Isolate';
 
 export class IsolateInspector {
   static at(isolate: Nullable<TIsolate>, at: number): Nullable<TIsolate> {
@@ -26,7 +26,7 @@ export class IsolateInspector {
   }
 
   static allowsReorder<I extends Record<any, any>>(
-    isolate: Nullable<I>
+    isolate: Nullable<I>,
   ): boolean {
     return isolate?.allowReorder === true;
   }
@@ -40,7 +40,7 @@ export class IsolateInspector {
 
   static getChildByKey(
     isolate: Nullable<TIsolate>,
-    key: string
+    key: string,
   ): Nullable<TIsolate> {
     if (isNullish(isolate)) {
       return null;

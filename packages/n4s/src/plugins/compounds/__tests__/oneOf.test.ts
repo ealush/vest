@@ -1,5 +1,5 @@
-import { enforce } from 'enforce';
-import * as ruleReturn from 'ruleReturn';
+import { enforce } from '@/runtime/enforce';
+import * as ruleReturn from '@/lib/ruleReturn';
 
 import 'schema';
 import 'compounds';
@@ -7,7 +7,7 @@ import 'compounds';
 describe('enforce.oneOf', () => {
   it('Should fail when multiple enforcements are met', () => {
     expect(
-      enforce.oneOf(enforce.isNumber(), enforce.greaterThan(2)).run(3)
+      enforce.oneOf(enforce.isNumber(), enforce.greaterThan(2)).run(3),
     ).toEqual(ruleReturn.failing());
   });
 
@@ -18,7 +18,7 @@ describe('enforce.oneOf', () => {
           first: 'John',
           last: 'Doe',
         },
-      })
+      }),
     ).toEqual(ruleReturn.passing());
     expect(User.run({ id: 11 })).toEqual(ruleReturn.passing());
   });

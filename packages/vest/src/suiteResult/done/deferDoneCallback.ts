@@ -1,11 +1,15 @@
 import { assign } from 'vest-utils';
 
-import { DoneCallback, useDoneCallbacks, useFieldCallbacks } from 'Runtime';
-import { TFieldName } from 'SuiteResultTypes';
+import {
+  DoneCallback,
+  useDoneCallbacks,
+  useFieldCallbacks,
+} from '@/core/Runtime';
+import { TFieldName } from '@/suiteResult/SuiteResultTypes';
 
 export function useDeferDoneCallback(
   doneCallback: DoneCallback,
-  fieldName?: TFieldName
+  fieldName?: TFieldName,
 ): void {
   const [, setFieldCallbacks] = useFieldCallbacks();
   const [, setDoneCallbacks] = useDoneCallbacks();
@@ -14,7 +18,7 @@ export function useDeferDoneCallback(
     setFieldCallbacks(fieldCallbacks =>
       assign(fieldCallbacks, {
         [fieldName]: (fieldCallbacks[fieldName] || []).concat(doneCallback),
-      })
+      }),
     );
 
     return;

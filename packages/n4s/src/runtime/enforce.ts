@@ -1,9 +1,10 @@
 import { assign } from 'vest-utils';
 
-import { ctx, EnforceContext } from 'enforceContext';
-import enforceEager, { EnforceEager } from 'enforceEager';
-import genEnforceLazy, { LazyRules } from 'genEnforceLazy';
-import { Rule, baseRules, getRule } from 'runtimeRules';
+import enforceEager, { EnforceEager } from './enforceEager';
+
+import { ctx, EnforceContext } from '@/runtime/enforceContext';
+import genEnforceLazy, { LazyRules } from '@/runtime/genEnforceLazy';
+import { Rule, baseRules, getRule } from '@/runtime/runtimeRules';
 /**
  * Enforce is quite complicated, I want to explain it in detail.
  * It is dynamic in nature, so a lot of proxy objects are involved.

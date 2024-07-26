@@ -1,4 +1,4 @@
-import { isBetween } from 'isBetween';
+import { isBetween } from '../isBetween';
 
 describe('Tests isBetween rule', () => {
   it('Should return true for 5 between 0 and 10', () => {

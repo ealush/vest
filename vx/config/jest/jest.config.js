@@ -13,16 +13,16 @@ const setupPerPackage = glob.sync(
   vxPath.packageConfigPath(
     usePackage() ?? '*',
     opts.dir.JEST,
-    opts.fileNames.JEST_SETUP
-  )
+    opts.fileNames.JEST_SETUP,
+  ),
 );
 
 const setupAfterEnvPerPackage = glob.sync(
   vxPath.packageConfigPath(
     usePackage() ?? '*',
     opts.dir.JEST,
-    opts.fileNames.JEST_SETUP_AFTER_ENV
-  )
+    opts.fileNames.JEST_SETUP_AFTER_ENV,
+  ),
 );
 
 const projects = packageNames.list.map(packageName => ({
@@ -34,6 +34,8 @@ const projects = packageNames.list.map(packageName => ({
     vxPath.package(packageName, `**/${opts.dir.TESTS}/*.(spec|test).ts`),
   ],
 }));
+
+console.log(projects);
 
 module.exports = {
   projects,
@@ -52,7 +54,7 @@ function baseConfig(packageName) {
     setupFilesAfterEnv: [
       path.resolve(
         vxPath.JEST_CONFIG_PATH,
-        opts.fileNames.JEST_SETUP_AFTER_ENV
+        opts.fileNames.JEST_SETUP_AFTER_ENV,
       ),
     ].concat(setupAfterEnvPerPackage),
     testEnvironment: 'node',
@@ -84,6 +86,6 @@ function genNameMapper(modules) {
       Object.assign(aliases, {
         [`^${name}$`]: absolute,
       }),
-    {}
+    {},
   );
 }

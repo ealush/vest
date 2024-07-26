@@ -1,4 +1,4 @@
-import { createBus } from 'bus';
+import { createBus } from '@/bus';
 
 describe('bus', () => {
   it('should be a function', () => {

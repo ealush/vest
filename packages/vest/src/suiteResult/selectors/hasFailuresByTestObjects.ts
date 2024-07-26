@@ -1,14 +1,14 @@
 import { isEmpty } from 'vest-utils';
 
-import { TIsolateTest } from 'IsolateTest';
-import { Severity } from 'Severity';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { SuiteWalker } from 'SuiteWalker';
-import { TestWalker } from 'TestWalker';
-import { VestTest } from 'VestTest';
-import { nonMatchingFieldName } from 'matchingFieldName';
-import { nonMatchingGroupName } from 'matchingGroupName';
-import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { TestWalker } from '@/core/isolate/IsolateTest/TestWalker';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
+import { nonMatchingFieldName } from '@/core/test/helpers/matchingFieldName';
+import { nonMatchingGroupName } from '@/core/test/helpers/matchingGroupName';
+import { nonMatchingSeverityProfile } from '@/core/test/helpers/nonMatchingSeverityProfile';
+import { SuiteWalker } from '@/suite/SuiteWalker';
+import { Severity } from '@/suiteResult/Severity';
+import { TFieldName, TGroupName } from '@/suiteResult/SuiteResultTypes';
 
 /**
  * The difference between this file and hasFailures is that hasFailures uses the static

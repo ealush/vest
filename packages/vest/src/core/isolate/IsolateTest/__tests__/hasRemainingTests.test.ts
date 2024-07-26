@@ -1,6 +1,6 @@
 import wait from 'wait';
 
-import { SuiteWalker } from 'SuiteWalker';
+import { SuiteWalker } from '@/suite/SuiteWalker';
 import * as vest from 'vest';
 
 describe('SuiteWalker.useHasRemainingWithTestNameMatching', () => {

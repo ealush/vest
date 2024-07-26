@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { dummyTest } from '../../../testUtils/testDummy';
 
-import { TTestSuite } from 'testUtils/TVestMock';
+import { TTestSuite } from '@/testUtils/TVestMock';
 import * as vest from 'vest';
 
 const fieldName = faker.lorem.word();
@@ -79,7 +79,7 @@ describe('hasErrorsByGroup', () => {
           });
         });
         expect(suite().hasErrorsByGroup(groupName, 'non_matching_field')).toBe(
-          false
+          false,
         );
       });
     });
@@ -167,7 +167,7 @@ describe('hasWarningsByGroup', () => {
           });
         });
         expect(
-          suite().hasWarningsByGroup(groupName, 'non_matching_field')
+          suite().hasWarningsByGroup(groupName, 'non_matching_field'),
         ).toBe(false);
       });
     });

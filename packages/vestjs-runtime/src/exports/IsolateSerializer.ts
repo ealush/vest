@@ -1,4 +1,3 @@
-import { ErrorStrings } from 'ErrorStrings';
 import {
   Nullable,
   hasOwnProperty,
@@ -7,11 +6,15 @@ import {
   isStringValue,
   text,
 } from 'vest-utils';
-import { expandObject, minifyObject } from 'vest-utils/minifyObject';
+import {
+  expandObject,
+  minifyObject,
+} from 'vest-utils/src/exports/minifyObject';
 
-import { TIsolate } from 'Isolate';
-import { ExcludedFromDump, IsolateKeys } from 'IsolateKeys';
-import { IsolateMutator } from 'IsolateMutator';
+import { TIsolate } from '../../types/vestjs-runtime';
+import { ExcludedFromDump, IsolateKeys } from '../Isolate/IsolateKeys';
+import { ErrorStrings } from '../errors/ErrorStrings';
+import { IsolateMutator } from '../vestjs-runtime';
 
 export class IsolateSerializer {
   // eslint-disable-next-line max-statements, complexity, max-lines-per-function

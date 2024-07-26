@@ -1,4 +1,4 @@
-import { isNumeric } from 'isNumeric';
+import { isNumeric } from '@/isNumeric';
 
 const NUMERICS = ['-10', '0', 0xff, '0xFF', '8e5', '3.1415', +10, '0144'];
 

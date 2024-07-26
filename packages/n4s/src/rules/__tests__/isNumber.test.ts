@@ -1,4 +1,4 @@
-import { isNumber } from 'isNumber';
+import { isNumber } from '../isNumber';
 
 describe('Tests isNumber rule', () => {
   it('Should return true for a number', () => {

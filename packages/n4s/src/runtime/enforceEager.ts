@@ -1,8 +1,8 @@
 import { invariant, StringObject, isNullish, Maybe } from 'vest-utils';
 
-import { ctx } from 'enforceContext';
-import { getRule, RuleValue, Args, RuleBase } from 'runtimeRules';
-import { transformResult } from 'transformResult';
+import { transformResult } from '@/lib/transformResult';
+import { ctx } from '@/runtime/enforceContext';
+import { getRule, RuleValue, Args, RuleBase } from '@/runtime/runtimeRules';
 
 type IRules = n4s.IRules<Record<string, any> & EnforceEagerReturn>;
 type TModifiers = {

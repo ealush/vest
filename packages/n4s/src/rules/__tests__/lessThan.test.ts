@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { lessThan } from 'lessThan';
+import { lessThan } from '@/rules/lessThan';
 
 describe('Tests lessThan rule', () => {
   describe('Arguments are numbers', () => {
@@ -59,7 +59,7 @@ describe('Tests lessThan rule', () => {
           // @ts-expect-error - Testing invalid input
           expect(lessThan(element, 0)).toBe(false);
         });
-      }
+      },
     );
   });
 });

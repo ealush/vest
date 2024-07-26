@@ -1,4 +1,4 @@
-import { TTestSuite } from 'testUtils/TVestMock';
+import { TTestSuite } from '@/testUtils/TVestMock';
 import * as vest from 'vest';
 
 describe('Suite Selectors on Suite', () => {
@@ -79,29 +79,29 @@ describe('Suite Selectors on Suite', () => {
     expect(res.hasWarnings('f4')).toEqual(suite.hasWarnings('f4'));
     expect(res.hasErrorsByGroup('g1')).toEqual(suite.hasErrorsByGroup('g1'));
     expect(res.hasErrorsByGroup('g1', 'f1')).toEqual(
-      suite.hasErrorsByGroup('g1', 'f1')
+      suite.hasErrorsByGroup('g1', 'f1'),
     );
     expect(res.hasErrorsByGroup('g1', 'f2')).toEqual(
-      suite.hasErrorsByGroup('g1', 'f2')
+      suite.hasErrorsByGroup('g1', 'f2'),
     );
     expect(res.hasErrorsByGroup('g1', 'f3')).toEqual(
-      suite.hasErrorsByGroup('g1', 'f3')
+      suite.hasErrorsByGroup('g1', 'f3'),
     );
     expect(res.hasErrorsByGroup('g1', 'f4')).toEqual(
-      suite.hasErrorsByGroup('g1', 'f4')
+      suite.hasErrorsByGroup('g1', 'f4'),
     );
     expect(res.getErrorsByGroup('g1')).toEqual(suite.getErrorsByGroup('g1'));
     expect(res.getErrorsByGroup('g1, f1')).toEqual(
-      suite.getErrorsByGroup('g1, f1')
+      suite.getErrorsByGroup('g1, f1'),
     );
     expect(res.getErrorsByGroup('g1, f2')).toEqual(
-      suite.getErrorsByGroup('g1, f2')
+      suite.getErrorsByGroup('g1, f2'),
     );
     expect(res.getErrorsByGroup('g1, f3')).toEqual(
-      suite.getErrorsByGroup('g1, f3')
+      suite.getErrorsByGroup('g1, f3'),
     );
     expect(res.getErrorsByGroup('g1, f4')).toEqual(
-      suite.getErrorsByGroup('g1, f4')
+      suite.getErrorsByGroup('g1, f4'),
     );
     expect(res.isValid()).toEqual(suite.isValid());
     expect(res.isValid('f1')).toEqual(suite.isValid('f1'));

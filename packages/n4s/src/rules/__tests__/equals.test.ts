@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { sample } from 'lodash';
 
-import { equals } from 'equals';
+import { equals } from '../equals';
 
 const VALUES = [
   faker.lorem.word(),

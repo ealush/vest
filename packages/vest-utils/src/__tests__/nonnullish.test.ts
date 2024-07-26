@@ -1,4 +1,4 @@
-import { nonnullish } from 'nonnullish';
+import { nonnullish } from '../nonnullish';
 
 describe('nonnullish', () => {
   it('should return the value if it is not null or undefined', () => {

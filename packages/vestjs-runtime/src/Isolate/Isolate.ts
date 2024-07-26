@@ -1,11 +1,10 @@
 import { CB, Maybe, Nullable, isNotNullish, isPromise } from 'vest-utils';
 
-import { useEmit } from 'Bus';
-import { IsolateKeys } from 'IsolateKeys';
-import { IsolateMutator } from 'IsolateMutator';
-import { Reconciler } from 'Reconciler';
-import { RuntimeEvents } from 'RuntimeEvents';
-import * as VestRuntime from 'VestRuntime';
+import { useEmit } from '../Bus';
+import { RuntimeEvents } from '../RuntimeEvents';
+import { IsolateMutator, Reconciler, VestRuntime } from '../vestjs-runtime';
+
+import { IsolateKeys } from './IsolateKeys';
 
 export type IsolateKey = Nullable<string>;
 

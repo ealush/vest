@@ -1,20 +1,23 @@
+// import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
 import { CB, ValueOf } from 'vest-utils';
 import { Bus, RuntimeEvents, TIsolate } from 'vestjs-runtime';
 
-import { Events } from 'BusEvents';
-// import { TIsolateTest } from 'IsolateTest';
 import {
   useExpireSuiteResultCache,
   useResetCallbacks,
   useResetSuite,
-} from 'Runtime';
-import { TFieldName } from 'SuiteResultTypes';
-import { SuiteWalker } from 'SuiteWalker';
-import { TestWalker } from 'TestWalker';
-import { VestIsolate } from 'VestIsolate';
-import { VestTest } from 'VestTest';
-import { useOmitOptionalFields } from 'omitOptionalFields';
-import { useRunDoneCallbacks, useRunFieldCallbacks } from 'runCallbacks';
+} from '@/core/Runtime';
+import { Events } from '@/core/VestBus/BusEvents';
+import { TestWalker } from '@/core/isolate/IsolateTest/TestWalker';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
+import { VestIsolate } from '@/core/isolate/VestIsolate';
+import { useOmitOptionalFields } from '@/hooks/optional/omitOptionalFields';
+import { SuiteWalker } from '@/suite/SuiteWalker';
+import {
+  useRunDoneCallbacks,
+  useRunFieldCallbacks,
+} from '@/suite/runCallbacks';
+import { TFieldName } from '@/suiteResult/SuiteResultTypes';
 
 // eslint-disable-next-line max-statements, max-lines-per-function
 export function useInitVestBus() {

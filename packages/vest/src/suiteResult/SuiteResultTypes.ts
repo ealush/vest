@@ -1,9 +1,9 @@
 import { Maybe, Nullable } from 'vest-utils';
 
-import { Severity } from 'Severity';
-import { SummaryFailure } from 'SummaryFailure';
-import { Done } from 'suiteRunResult';
-import { SuiteSelectors } from 'suiteSelectors';
+import { Severity } from '@/suiteResult/Severity';
+import { SummaryFailure } from '@/suiteResult/SummaryFailure';
+import { SuiteSelectors } from '@/suiteResult/selectors/suiteSelectors';
+import { Done } from '@/suiteResult/suiteRunResult';
 
 export class SummaryBase {
   public errorCount = 0;

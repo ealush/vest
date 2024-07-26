@@ -1,9 +1,9 @@
 import { greaterThan } from 'vest-utils';
 
-import { equals } from 'equals';
-import type { Lazy } from 'genEnforceLazy';
-import ruleReturn, { RuleDetailedResult } from 'ruleReturn';
-import runLazyRule from 'runLazyRule';
+import ruleReturn, { RuleDetailedResult } from '@/lib/ruleReturn';
+import runLazyRule from '@/lib/runLazyRule';
+import { equals } from '@/rules/equals';
+import type { Lazy } from '@/runtime/genEnforceLazy';
 
 const REQUIRED_COUNT = 1;
 

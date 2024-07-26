@@ -1,4 +1,4 @@
-import { isNull } from 'isNull';
+import { isNull } from '@/isNull';
 
 describe('Tests isNull rule', () => {
   it('Should return true for `null` value', () => {

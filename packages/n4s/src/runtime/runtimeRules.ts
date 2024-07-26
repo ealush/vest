@@ -1,7 +1,7 @@
 import type { DropFirst } from 'vest-utils';
 
-import type { RuleReturn } from 'ruleReturn';
-import rules from 'rules';
+import type { RuleReturn } from '@/lib/ruleReturn';
+import rules from '@/runtime/rules';
 
 export type Args = any[];
 

@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { isEven } from 'isEven';
+import { isEven } from '../isEven';
 
 describe('Tests isEven rule', () => {
   describe('When value is an even number', () => {

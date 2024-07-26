@@ -2,10 +2,10 @@ import wait from 'wait';
 
 import { TestPromise } from '../../../testUtils/testPromise';
 
-import { TIsolateTest } from 'IsolateTest';
-import { Modes } from 'Modes';
-import { VestTest } from 'VestTest';
-import promisify from 'promisify';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
+import { Modes } from '@/hooks/optional/Modes';
+import promisify from '@exports/promisify';
 import * as vest from 'vest';
 import { test as vestTest, enforce } from 'vest';
 
@@ -39,7 +39,7 @@ describe('test.memo', () => {
             vest.warn();
             return false;
           },
-          [{}]
+          [{}],
         );
       })();
 
@@ -61,7 +61,7 @@ describe('test.memo', () => {
               vest.warn();
               return false;
             },
-            [4]
+            [4],
           );
         });
 
@@ -90,7 +90,7 @@ describe('test.memo', () => {
                 await wait(500);
                 enforce(1).equals(2);
               },
-              [1]
+              [1],
             );
             vestTest.memo(
               'field2',
@@ -98,7 +98,7 @@ describe('test.memo', () => {
                 await wait(500);
                 enforce(1).equals(2);
               },
-              [2]
+              [2],
             );
           });
 
@@ -129,8 +129,8 @@ describe('test.memo', () => {
               async () => {
                 await wait(10);
               },
-              [true]
-            )
+              [true],
+            ),
           );
 
           if (count === 1) {
@@ -152,7 +152,7 @@ describe('test.memo', () => {
     it('Should run test normally', () => {
       const cb1 = jest.fn(res => res);
       const cb2 = jest.fn(
-        res => new Promise<void>((resolve, rej) => (res ? resolve() : rej()))
+        res => new Promise<void>((resolve, rej) => (res ? resolve() : rej())),
       );
       const suite = vest.create((key, res) => {
         vestTest.memo('f1', () => cb1(res), [1, key]);

@@ -1,9 +1,11 @@
-import { Maybe } from 'vest-utils';
+import { CB, Maybe } from 'vest-utils';
 
-import { Isolate, TIsolate } from 'Isolate';
-import { MinifiedKeys } from 'IsolateKeys';
-import { IsolateSerializer } from 'IsolateSerializer';
-import { IsolateMutator, VestRuntime } from 'vestjs-runtime';
+import {
+  Isolate,
+  IsolateSerializer,
+  TIsolate,
+  VestRuntime,
+} from 'vestjs-runtime';
 
 describe('IsolateSerializer', () => {
   describe('serialize', () => {
@@ -16,7 +18,7 @@ describe('IsolateSerializer', () => {
 
   describe('deserialize', () => {
     it('Should fully inflate the tree', () => {
-      const { root, serialized } = createRoot();
+      const { serialized } = createRoot();
 
       const inflated = IsolateSerializer.deserialize(serialized);
 
@@ -67,7 +69,6 @@ describe('IsolateSerializer', () => {
         },
       });
 
-      const parsed = JSON.parse(serialized);
       expect(serialized).toMatchSnapshot();
     });
 
@@ -97,8 +98,8 @@ describe('IsolateSerializer', () => {
           },
         };
 
-        const serialized = IsolateSerializer.serialize(root, minimap);
-        const inflated = IsolateSerializer.deserialize(serialized, minimap);
+        const serialized = IsolateSerializer.serialize(root);
+        const inflated = IsolateSerializer.deserialize(serialized);
 
         expect(inflated.status).toBe('pending');
         // @ts-ignore
@@ -193,7 +194,7 @@ function withRunTime<T>(fn: CB<T>) {
   });
 }
 
-function createRoot(miniMap: Maybe<Record<string, any>>) {
+function createRoot(miniMap?: Maybe<Record<string, any>>) {
   let serialized: string, root: TIsolate;
 
   withRunTime(() => {
@@ -209,7 +210,7 @@ function createRoot(miniMap: Maybe<Record<string, any>>) {
       },
     );
 
-    serialized = IsolateSerializer.serialize(root, miniMap);
+    serialized = IsolateSerializer.serialize(root);
   });
 
   // @ts-ignore

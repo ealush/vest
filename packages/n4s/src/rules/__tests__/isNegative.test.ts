@@ -1,4 +1,4 @@
-import { isNegative } from 'isNegative';
+import { isNegative } from '../isNegative';
 
 describe('Tests isNegative rule', () => {
   it('Should return false for zero', () => {

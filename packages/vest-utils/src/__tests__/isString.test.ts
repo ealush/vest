@@ -1,4 +1,4 @@
-import isStringValue from 'isStringValue';
+import isStringValue from '@/isStringValue';
 
 describe('Tests isString rule', () => {
   it('Should return false for non-string values', () => {

@@ -1,4 +1,4 @@
-import asArray from 'asArray';
+import asArray from '@/asArray';
 
 describe('asArray', () => {
   it('should return an array', () => {

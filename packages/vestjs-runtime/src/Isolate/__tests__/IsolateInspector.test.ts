@@ -1,5 +1,5 @@
-import { TIsolate } from 'Isolate';
-import { IsolateInspector } from 'IsolateInspector';
+import { IsolateInspector } from '../../vestjs-runtime';
+import { TIsolate } from '../Isolate';
 
 describe('IsolateInspector', () => {
   describe('at', () => {

@@ -1,11 +1,14 @@
 import { isEmpty, optionalFunctionValue } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
-import { Events } from 'BusEvents';
-import { SuiteOptionalFields, TIsolateSuite } from 'IsolateSuite';
-import { TIsolateTest } from 'IsolateTest';
-import { TestWalker } from 'TestWalker';
-import { VestTest } from 'VestTest';
+import { Events } from '../../core/VestBus/BusEvents';
+import {
+  SuiteOptionalFields,
+  TIsolateSuite,
+} from '../../core/isolate/IsolateSuite/IsolateSuite';
+import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
+import { TestWalker } from '../../core/isolate/IsolateTest/TestWalker';
+import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
 
 /**
  * This module gets triggered once the suite is done running its sync tests.
@@ -63,7 +66,7 @@ export function useOmitOptionalFields(): void {
     // Ge the optional configuration for the given field
     const optionalConfig = SuiteOptionalFields.getOptionalField(
       root,
-      fieldName
+      fieldName,
     );
 
     // If the optional was set to a function or a boolean, run it and verify/omit the test

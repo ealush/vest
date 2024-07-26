@@ -1,5 +1,6 @@
-import { enforce } from 'enforce';
-import { isValueOf, isNotValueOf } from 'isValueOf';
+import { isValueOf, isNotValueOf } from '../isValueOf';
+
+import { enforce } from '@/runtime/enforce';
 
 const testObject = {
   a: 'Bravo',

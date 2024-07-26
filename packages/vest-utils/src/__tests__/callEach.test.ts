@@ -1,4 +1,4 @@
-import callEach from 'callEach';
+import callEach from '@/callEach';
 
 describe('callEach', () => {
   it('should call all functions in the array', () => {

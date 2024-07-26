@@ -1,12 +1,11 @@
-import { useIsOptionalFieldApplied } from 'optional';
-
-import { TIsolateTest } from 'IsolateTest';
-import { TFieldName } from 'SuiteResultTypes';
-import { VestTest } from 'VestTest';
-import { useShouldSkipBasedOnMode } from 'mode';
-import { useWithinActiveOmitWhen } from 'omitWhen';
-import { useIsExcludedIndividually } from 'skipWhen';
-import { useIsExcluded } from 'useIsExcluded';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
+import { useIsExcluded } from '@/hooks/focused/useIsExcluded';
+import { useShouldSkipBasedOnMode } from '@/hooks/optional/mode';
+import { useIsOptionalFieldApplied } from '@/hooks/optional/optional';
+import { useWithinActiveOmitWhen } from '@/isolates/omitWhen';
+import { useIsExcludedIndividually } from '@/isolates/skipWhen';
+import { TFieldName } from '@/suiteResult/SuiteResultTypes';
 
 export function useVerifyTestRun(
   testObject: TIsolateTest,

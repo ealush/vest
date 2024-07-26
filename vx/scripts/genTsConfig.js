@@ -27,7 +27,7 @@ module.exports = function genTsConfig() {
 
     if (isConfigEqual(tsConfigPath, tsConfig)) {
       logger.log(
-        `✅ tsConfig for package '${packageName}' is up to date. Skipping.`
+        `✅ tsConfig for package '${packageName}' is up to date. Skipping.`,
       );
       return;
     }
@@ -66,7 +66,10 @@ function packageTsConfigTemplate(paths = []) {
       declarationDir: './types',
       declarationMap: true,
       outDir: './dist',
-      paths,
+      paths: {
+        '@exports/*': ['src/exports/*'],
+        '@/*': ['src/*'],
+      },
     },
   };
 }
@@ -75,7 +78,7 @@ function rootTsConfigTemplate() {
   return {
     compilerOptions: {
       allowJs: false,
-      baseUrl: '.',
+      // baseUrl: '.',
       declaration: true,
       esModuleInterop: true,
       forceConsistentCasingInFileNames: true,

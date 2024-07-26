@@ -1,7 +1,7 @@
 import { Nullable } from 'vest-utils';
 import { TIsolate } from 'vestjs-runtime';
 
-import { IsolateTestReconciler } from 'IsolateTestReconciler';
+import { IsolateTestReconciler } from './IsolateTest/IsolateTestReconciler';
 
 const reconcilers: IsolateReconciler[] = [IsolateTestReconciler];
 

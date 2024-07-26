@@ -1,5 +1,5 @@
-import { TIsolate } from 'Isolate';
-import { walk, reduce, findAll } from 'IsolateWalker';
+import { TIsolate } from '@/Isolate/Isolate';
+import { walk, reduce, findAll } from '@/IsolateWalker';
 
 type WalkedNode = TIsolate<{ id: string }>;
 

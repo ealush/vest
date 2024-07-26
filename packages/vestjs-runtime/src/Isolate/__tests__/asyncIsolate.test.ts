@@ -1,10 +1,10 @@
 import { CB } from 'vest-utils';
 import wait from 'wait';
 
-import { useBus } from 'Bus';
-import { Isolate, TIsolate } from 'Isolate';
-import { RuntimeEvents } from 'RuntimeEvents';
-import { VestRuntime } from 'vestjs-runtime';
+import { useBus } from '../../Bus';
+import { RuntimeEvents } from '../../RuntimeEvents';
+import { Isolate, VestRuntime } from '../../vestjs-runtime';
+import { TIsolate } from '../Isolate';
 
 describe('AsyncIsolate', () => {
   test('It should resolve async isolate into the parent', () => {
@@ -32,15 +32,15 @@ describe('AsyncIsolate', () => {
       expect(root?.children?.[0].parent).toBe(root);
       expect(root?.children?.[0]?.children?.[0]?.$type).toBe('UGrandChild_1');
       expect(root?.children?.[0]?.children?.[0].parent).toBe(
-        root?.children?.[0]
+        root?.children?.[0],
       );
       expect(root?.children?.[0]?.children?.[1]?.$type).toBe('UGrandChild_2');
       expect(root?.children?.[0]?.children?.[1].parent).toBe(
-        root?.children?.[0]
+        root?.children?.[0],
       );
       expect(root?.children?.[0]?.children?.[2]?.$type).toBe('UGrandChild_3');
       expect(root?.children?.[0]?.children?.[2].parent).toBe(
-        root?.children?.[0]
+        root?.children?.[0],
       );
       expect(root).toMatchSnapshot();
 
@@ -88,6 +88,6 @@ async function genChildren() {
       Isolate.create('UGrandChild_1', () => {});
       Isolate.create('UGrandChild_2', () => {});
       Isolate.create('UGrandChild_3', () => {});
-    })
+    }),
   );
 }

@@ -1,7 +1,7 @@
 import wait from 'wait';
 
-import { TIsolateTest } from 'IsolateTest';
-import { VestTest } from 'VestTest';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
 import * as vest from 'vest';
 
 describe('runAsyncTest', () => {
@@ -99,7 +99,7 @@ describe('runAsyncTest', () => {
           testObject.push(
             vest.test('field_1', async () => {
               await wait(10);
-            })
+            }),
           );
           vest.test('field_2', () => {});
         });

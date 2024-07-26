@@ -1,4 +1,4 @@
-import { startsWith } from 'startsWith';
+import { startsWith } from '../startsWith';
 
 describe('Tests isArray rule', () => {
   const word = 'meow';

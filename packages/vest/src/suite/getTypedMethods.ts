@@ -1,23 +1,26 @@
-// import { optional, skipWhen, omitWhen, IsolateTest, group } from 'vest';
-import { optional } from 'optional';
 import { CB, DynamicValue } from 'vest-utils';
 import { TIsolate, IsolateKey } from 'vestjs-runtime';
 
-import { TIsolateTest } from 'IsolateTest';
-import { OptionalsInput } from 'OptionalTypes';
-import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
-import { TestFn } from 'TestTypes';
-import { FieldExclusion, only, skip } from 'focused';
-import { group } from 'group';
-import { include } from 'include';
-import { omitWhen } from 'omitWhen';
-import { skipWhen } from 'skipWhen';
-import { test } from 'test';
-import { TestMemo } from 'test.memo';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { TestFn } from '@/core/test/TestTypes';
+import { test } from '@/core/test/test';
+import { TestMemo } from '@/core/test/test.memo';
+import { FieldExclusion, only, skip } from '@/hooks/focused/focused';
+import { include } from '@/hooks/include';
+import { OptionalsInput } from '@/hooks/optional/OptionalTypes';
+import { optional } from '@/hooks/optional/optional';
+import { group } from '@/isolates/group';
+import { omitWhen } from '@/isolates/omitWhen';
+import { skipWhen } from '@/isolates/skipWhen';
+import {
+  SuiteResult,
+  TFieldName,
+  TGroupName,
+} from '@/suiteResult/SuiteResultTypes';
 
 export function getTypedMethods<
   F extends TFieldName,
-  G extends TGroupName
+  G extends TGroupName,
 >(): TTypedMethods<F, G> {
   return {
     group,
@@ -60,5 +63,5 @@ export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
 
 export type TDraftCondition<
   F extends TFieldName,
-  G extends TGroupName
+  G extends TGroupName,
 > = DynamicValue<boolean, [draft: SuiteResult<F, G>]>;

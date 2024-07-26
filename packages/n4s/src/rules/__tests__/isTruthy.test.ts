@@ -1,4 +1,4 @@
-import { isTruthy } from 'isTruthy';
+import { isTruthy } from '../isTruthy';
 
 describe('Tests isTruthy rule', () => {
   const values = [

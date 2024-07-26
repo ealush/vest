@@ -1,6 +1,6 @@
-import { isEmpty } from 'isEmpty';
-import optionalFunctionValue from 'optionalFunctionValue';
-import { Predicate } from 'utilityTypes';
+import { isEmpty } from '@/isEmpty';
+import optionalFunctionValue from '@/optionalFunctionValue';
+import { Predicate } from '@/utilityTypes';
 
 export function all<T = any>(...p: Predicate<T>[]): (value: T) => boolean {
   return (value: T) =>

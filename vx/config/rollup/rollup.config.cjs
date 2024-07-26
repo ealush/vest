@@ -16,7 +16,7 @@ const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
 const fastBuild = JSON.parse(
-  process.env.ROLLUP_WATCH ?? process.env.VX_FAST_BUILD ?? false
+  process.env.ROLLUP_WATCH ?? process.env.VX_FAST_BUILD ?? false,
 );
 
 module.exports = commandLineArgs => {
@@ -42,10 +42,10 @@ module.exports = commandLineArgs => {
             `Invalid build entry: ${buildEntry}. Must be one of: ${[
               opts.vx_config.VX_ROLLUP_BUILD_ENTRY_MAIN,
               opts.vx_config.VX_ROLLUP_BUILD_ENTRY_EXPORTS,
-            ].join(', ')}`
+            ].join(', ')}`,
           );
       }
-    })
+    }),
   );
 };
 
@@ -72,14 +72,14 @@ function genBaseConfig({
     // This turns the installed "internal" dependencies into external dependencies
     external: [
       ...Object.keys(
-        disallowExternals ? {} : packageJson()?.dependencies ?? {}
+        disallowExternals ? {} : packageJson()?.dependencies ?? {},
       ),
       moduleName === usePackage() ? null : usePackage(),
     ].filter(Boolean),
 
     input: getInputFile(packageName, moduleName, namespace),
     output: format.map(format =>
-      genOutput({ env, format, moduleName, namespace })
+      genOutput({ env, format, moduleName, namespace }),
     ),
     plugins: getPlugins({ env, moduleName, namespace, packageName }),
   };
@@ -89,7 +89,7 @@ function genBaseConfig({
 
 function genExportsConfig(pkgName, env) {
   return listExportedModules(pkgName).map(([moduleName, namespace]) =>
-    genBaseConfig({ env, moduleName, namespace })
+    genBaseConfig({ env, moduleName, namespace }),
   );
 }
 
@@ -107,7 +107,7 @@ function genOutput({
 
   // creates "globals" from the installed internal packages
   const globals = Object.keys(
-    disallowExternals ? {} : packageJson()?.dependencies ?? {}
+    disallowExternals ? {} : packageJson()?.dependencies ?? {},
   ).reduce((g, c) => Object.assign(g, { [c]: c }), {
     ...{ [usePackage()]: usePackage() },
   });
@@ -118,7 +118,7 @@ function genOutput({
       usePackage(),
       format,
       namespace,
-      joinTruthy([moduleName, env, 'js'], '.')
+      joinTruthy([moduleName, env, 'js'], '.'),
     ),
     format,
     globals,
@@ -128,7 +128,7 @@ function genOutput({
 function getInputFile(
   packageName = usePackage(),
   moduleName = usePackage(),
-  namespace
+  namespace,
 ) {
   const moduleToResolve = getExportedModuleNames(namespace, moduleName);
   const packageModules = pathsPerPackage.packages[packageName];

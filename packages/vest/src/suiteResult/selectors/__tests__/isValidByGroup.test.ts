@@ -2,8 +2,8 @@ import wait from 'wait';
 
 import { TestPromise } from '../../../testUtils/testPromise';
 
-import { Modes } from 'Modes';
-import { TTestSuite } from 'testUtils/TVestMock';
+import { Modes } from '@/hooks/optional/Modes';
+import { TTestSuite } from '@/testUtils/TVestMock';
 import {
   test,
   optional,
@@ -50,19 +50,19 @@ describe('isValidByGroup', () => {
     it('Should return false when an optional test has errors', () => {
       expect(suite('field_2').isValidByGroup(GROUP_NAME)).toBe(false);
       expect(suite('field_2').isValidByGroup(GROUP_NAME, 'field_1')).toBe(
-        false
+        false,
       );
     });
     it('Should return false when a required test has errors', () => {
       expect(suite('field_1').isValidByGroup(GROUP_NAME)).toBe(false);
       expect(suite('field_1').isValidByGroup(GROUP_NAME, 'field_2')).toBe(
-        false
+        false,
       );
     });
 
     it('Should return false when the queried field is not optional and has errors', () => {
       expect(suite('field_2').isValidByGroup(GROUP_NAME, 'field_2')).toBe(
-        false
+        false,
       );
     });
 
@@ -147,7 +147,7 @@ describe('isValidByGroup', () => {
     });
     it('Should return false', () => {
       expect(suite(['field_2', 'field_3']).isValidByGroup(GROUP_NAME)).toBe(
-        false
+        false,
       );
     });
   });
@@ -310,7 +310,7 @@ describe('isValidByGroup', () => {
               });
             });
           });
-        })().isValidByGroup(GROUP_NAME)
+        })().isValidByGroup(GROUP_NAME),
       ).toBe(false);
     });
   });
@@ -323,7 +323,7 @@ describe('isValidByGroup', () => {
           group(GROUP_NAME, () => {
             test('field_1', () => true);
           });
-        })().isValidByGroup(GROUP_NAME, 'field_1')
+        })().isValidByGroup(GROUP_NAME, 'field_1'),
       ).toBe(false);
     });
 
@@ -333,7 +333,7 @@ describe('isValidByGroup', () => {
           group(GROUP_NAME, () => {
             test('field_1', () => {});
           });
-        })().isValidByGroup(GROUP_NAME, 'field 2')
+        })().isValidByGroup(GROUP_NAME, 'field 2'),
       ).toBe(false);
     });
 
@@ -350,7 +350,7 @@ describe('isValidByGroup', () => {
               });
             });
           });
-        })().isValidByGroup(GROUP_NAME, 'field_1')
+        })().isValidByGroup(GROUP_NAME, 'field_1'),
       ).toBe(false);
     });
 
@@ -360,7 +360,7 @@ describe('isValidByGroup', () => {
           group(GROUP_NAME, () => {
             test('field_1', () => false);
           });
-        })().isValidByGroup(GROUP_NAME, 'field_1')
+        })().isValidByGroup(GROUP_NAME, 'field_1'),
       ).toBe(false);
     });
 
@@ -370,7 +370,7 @@ describe('isValidByGroup', () => {
           group(GROUP_NAME, () => {
             test('field_1', () => {});
           });
-        })().isValidByGroup(GROUP_NAME, 'field_1')
+        })().isValidByGroup(GROUP_NAME, 'field_1'),
       ).toBe(true);
     });
 
@@ -383,7 +383,7 @@ describe('isValidByGroup', () => {
               return false;
             });
           });
-        })().isValidByGroup(GROUP_NAME, 'field_1')
+        })().isValidByGroup(GROUP_NAME, 'field_1'),
       ).toBe(true);
     });
 
@@ -396,7 +396,7 @@ describe('isValidByGroup', () => {
               test('field_1', () => false);
             });
           });
-        })().isValidByGroup(GROUP_NAME, 'field_1')
+        })().isValidByGroup(GROUP_NAME, 'field_1'),
       ).toBe(true);
     });
   });
@@ -408,7 +408,7 @@ describe('isValidByGroup', () => {
           group(GROUP_NAME, () => {
             test('field_1', () => true);
           });
-        })().isValidByGroup(GROUP_NAME, 'field_2')
+        })().isValidByGroup(GROUP_NAME, 'field_2'),
       ).toBe(false);
     });
   });
@@ -435,7 +435,7 @@ describe('isValidByGroup', () => {
           group(GROUP_NAME, () => {
             test('field_1', () => false);
           });
-        })().isValidByGroup(GROUP_NAME)
+        })().isValidByGroup(GROUP_NAME),
       ).toBe(true);
     });
   });

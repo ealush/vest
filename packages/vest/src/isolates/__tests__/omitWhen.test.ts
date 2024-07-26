@@ -1,6 +1,6 @@
 import { Maybe } from 'vest-utils';
 
-import { TTestSuite } from 'testUtils/TVestMock';
+import { TTestSuite } from '@/testUtils/TVestMock';
 import * as vest from 'vest';
 import { omitWhen, only } from 'vest';
 

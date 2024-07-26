@@ -4,7 +4,7 @@ import { noop } from 'lodash';
 import { dummyTest } from '../../testUtils/testDummy';
 import { TestPromise } from '../../testUtils/testPromise';
 
-import { ErrorStrings } from 'ErrorStrings';
+import { ErrorStrings } from '@/errors/ErrorStrings';
 import { create } from 'vest';
 
 describe('Test createSuite module', () => {
@@ -22,9 +22,9 @@ describe('Test createSuite module', () => {
       value => {
         // @ts-expect-error - testing invalid input
         expect(() => create(value)).toThrow(
-          ErrorStrings.SUITE_MUST_BE_INITIALIZED_WITH_FUNCTION
+          ErrorStrings.SUITE_MUST_BE_INITIALIZED_WITH_FUNCTION,
         );
-      }
+      },
     );
 
     describe('When suite name is provided', () => {

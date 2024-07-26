@@ -1,4 +1,4 @@
-import { TTestSuite } from 'testUtils/TVestMock';
+import { TTestSuite } from '@/testUtils/TVestMock';
 import wait from 'wait';
 
 import { TestPromise } from '../../../testUtils/testPromise';
@@ -268,7 +268,7 @@ describe('isValid', () => {
               return true;
             });
           });
-        })().isValid()
+        })().isValid(),
       ).toBe(false);
     });
   });
@@ -279,7 +279,7 @@ describe('isValid', () => {
         create(() => {
           skip('field_1');
           test('field_1', () => true);
-        })().isValid('field_1')
+        })().isValid('field_1'),
       ).toBe(false);
     });
 
@@ -287,7 +287,7 @@ describe('isValid', () => {
       expect(
         create(() => {
           test('field_1', () => {});
-        })().isValid('field 2')
+        })().isValid('field 2'),
       ).toBe(false);
     });
 
@@ -302,7 +302,7 @@ describe('isValid', () => {
               return true;
             });
           });
-        })().isValid('field_1')
+        })().isValid('field_1'),
       ).toBe(false);
     });
 
@@ -312,7 +312,7 @@ describe('isValid', () => {
           test('field_1', () => {
             return false;
           });
-        })().isValid('field_1')
+        })().isValid('field_1'),
       ).toBe(false);
     });
 
@@ -322,7 +322,7 @@ describe('isValid', () => {
           test('field_1', () => {
             return true;
           });
-        })().isValid('field_1')
+        })().isValid('field_1'),
       ).toBe(true);
     });
 
@@ -333,7 +333,7 @@ describe('isValid', () => {
             warn();
             return false;
           });
-        })().isValid('field_1')
+        })().isValid('field_1'),
       ).toBe(true);
     });
 
@@ -344,7 +344,7 @@ describe('isValid', () => {
           skipWhen(true, () => {
             test('field_1', () => false);
           });
-        })().isValid('field_1')
+        })().isValid('field_1'),
       ).toBe(true);
     });
   });
@@ -354,7 +354,7 @@ describe('isValid', () => {
       expect(
         create(() => {
           test('field_1', () => true);
-        })().isValid('field_2')
+        })().isValid('field_2'),
       ).toBe(false);
     });
   });

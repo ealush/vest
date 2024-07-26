@@ -1,8 +1,8 @@
-import { TTestSuite } from 'testUtils/TVestMock';
+import { TTestSuite } from '@/testUtils/TVestMock';
 
 import { dummyTest } from '../../../testUtils/testDummy';
 
-import { Modes } from 'Modes';
+import { Modes } from '@/hooks/optional/Modes';
 import { create, group } from 'vest';
 import * as vest from 'vest';
 
@@ -29,7 +29,7 @@ describe.each(modes)('produce method: %s', mode => {
       describe('When fieldName passed', () => {
         it('Should return an empty array', () => {
           expect(getRes().getErrorsByGroup('group_name', 'field_name')).toEqual(
-            []
+            [],
           );
         });
       });
@@ -59,7 +59,7 @@ describe.each(modes)('produce method: %s', mode => {
             dummyTest.passing();
           });
           expect(getRes().getErrorsByGroup('group_name', 'field_name')).toEqual(
-            []
+            [],
           );
         });
       });
@@ -128,7 +128,7 @@ describe.each(modes)('produce method: %s', mode => {
       describe('When fieldName passed', () => {
         it('Should return an empty array', () => {
           expect(
-            getRes().getWarningsByGroup('group_name', 'field_name')
+            getRes().getWarningsByGroup('group_name', 'field_name'),
           ).toEqual([]);
         });
       });
@@ -158,7 +158,7 @@ describe.each(modes)('produce method: %s', mode => {
             dummyTest.passing();
           });
           expect(
-            getRes().getWarningsByGroup('group_name', 'field_name')
+            getRes().getWarningsByGroup('group_name', 'field_name'),
           ).toEqual([]);
         });
       });

@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { longerThanOrEquals } from 'longerThanOrEquals';
+import { longerThanOrEquals } from '../longerThanOrEquals';
 
 describe('Tests longerThanOrEquals rule', () => {
   const length = 10;

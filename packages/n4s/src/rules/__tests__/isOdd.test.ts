@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { isOdd } from 'isOdd';
+import { isOdd } from '../isOdd';
 
 describe('Tests isOdd rule', () => {
   describe('When value is an odd number', () => {

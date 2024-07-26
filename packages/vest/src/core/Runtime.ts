@@ -1,4 +1,10 @@
 import {
+  SuiteName,
+  SuiteResult,
+  TFieldName,
+  TGroupName,
+} from '@/suiteResult/SuiteResultTypes';
+import {
   CB,
   CacheApi,
   Maybe,
@@ -9,14 +15,9 @@ import {
 } from 'vest-utils';
 import { IRecociler, TIsolate, VestRuntime } from 'vestjs-runtime';
 
-import { TIsolateSuite } from 'IsolateSuite';
-import { Severity } from 'Severity';
-import {
-  SuiteName,
-  SuiteResult,
-  TFieldName,
-  TGroupName,
-} from 'SuiteResultTypes';
+import { Severity } from '../suiteResult/Severity';
+
+import { TIsolateSuite } from './isolate/IsolateSuite/IsolateSuite';
 
 export type DoneCallback = (res: SuiteResult<TFieldName, TGroupName>) => void;
 type FieldCallbacks = Record<string, DoneCallbacks>;

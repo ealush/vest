@@ -1,4 +1,4 @@
-import { enforce } from 'enforce';
+import { enforce } from '@/runtime/enforce';
 
 describe('isBoolean', () => {
   it('Should pass for a boolean value', () => {

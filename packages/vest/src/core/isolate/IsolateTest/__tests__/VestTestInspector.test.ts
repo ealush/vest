@@ -1,7 +1,7 @@
-import { TIsolateTest } from 'IsolateTest';
-import { TestStatus } from 'IsolateTestStateMachine';
-import { VestTest } from 'VestTest';
-import { mockIsolateTest } from 'vestMocks';
+import { TestStatus } from '@/core/StateMachines/IsolateTestStateMachine';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
+import { mockIsolateTest } from '@/testUtils/vestMocks';
 
 describe('VestTest', () => {
   let testObject: TIsolateTest;

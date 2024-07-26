@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { greaterThanOrEquals } from 'greaterThanOrEquals';
+import { greaterThanOrEquals } from '@/rules/greaterThanOrEquals';
 
 describe('Tests greaterThanOrEquals rule', () => {
   describe('Arguments are numbers', () => {
@@ -55,7 +55,7 @@ describe('Tests greaterThanOrEquals rule', () => {
           // @ts-expect-error - Testing invalid input
           expect(greaterThanOrEquals(element, 0)).toBe(false);
         });
-      }
+      },
     );
   });
 });

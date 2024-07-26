@@ -1,6 +1,6 @@
 import { enforce } from 'n4s';
 
-import { Modes } from 'Modes';
+import { Modes } from '@/hooks/optional/Modes';
 import * as vest from 'vest';
 
 describe('Stateful behavior', () => {
@@ -133,9 +133,9 @@ describe('more complex', () => {
           vest.test('confirm', 'passwords do not match', () => {
             enforce(data.confirm).equals(data.password);
           });
-        }
+        },
       );
-    }
+    },
   );
 });
 

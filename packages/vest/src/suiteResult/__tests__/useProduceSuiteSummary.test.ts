@@ -3,7 +3,7 @@ import wait from 'wait';
 import { ser } from '../../testUtils/suiteDummy';
 import { dummyTest } from '../../testUtils/testDummy';
 
-import { Modes } from 'Modes';
+import { Modes } from '@/hooks/optional/Modes';
 import * as vest from 'vest';
 
 describe('useProduceSuiteSummary', () => {

@@ -1,25 +1,25 @@
-import { enforce } from 'enforce';
+import { enforce } from '@/runtime/enforce';
 import 'schema';
 import 'compounds';
-import * as ruleReturn from 'ruleReturn';
+import * as ruleReturn from '@/lib/ruleReturn';
 
 describe('enforce.isArrayOf', () => {
   describe('lazy interface', () => {
     it('Should return a passing return for an empty array', () => {
       expect(enforce.isArrayOf(enforce.isString()).run([])).toEqual(
-        ruleReturn.passing()
+        ruleReturn.passing(),
       );
     });
 
     it('Should return a passing return for valid arrays', () => {
       expect(
-        enforce.isArrayOf(enforce.isString()).run(['a', 'b', 'c'])
+        enforce.isArrayOf(enforce.isString()).run(['a', 'b', 'c']),
       ).toEqual(ruleReturn.passing());
 
       expect(
         enforce
           .isArrayOf(enforce.anyOf(enforce.isString(), enforce.isNumber()))
-          .run([1, 'b', 'c'])
+          .run([1, 'b', 'c']),
       ).toEqual(ruleReturn.passing());
 
       expect(
@@ -28,24 +28,24 @@ describe('enforce.isArrayOf', () => {
             enforce.shape({
               id: enforce.isNumber(),
               username: enforce.isString(),
-            })
+            }),
           )
           .run([
             { id: 1, username: 'b' },
             { id: 2, username: 'c' },
-          ])
+          ]),
       ).toEqual(ruleReturn.passing());
     });
 
     it('Should return a failing return for invalid arrays', () => {
       expect(enforce.isArrayOf(enforce.isString()).run([1, 2, 3])).toEqual(
-        ruleReturn.failing()
+        ruleReturn.failing(),
       );
 
       expect(
         enforce
           .isArrayOf(enforce.allOf(enforce.isString(), enforce.isNumber()))
-          .run([1, 2, 3])
+          .run([1, 2, 3]),
       ).toEqual(ruleReturn.failing());
 
       expect(
@@ -54,13 +54,13 @@ describe('enforce.isArrayOf', () => {
             enforce.shape({
               id: enforce.isNumber(),
               username: enforce.isString(),
-            })
+            }),
           )
           .run([
             { id: '1', username: 'b' },
             { id: '2', username: 'c' },
             { id: '3', username: 'd' },
-          ])
+          ]),
       ).toEqual(ruleReturn.failing());
     });
   });
@@ -74,7 +74,7 @@ describe('enforce.isArrayOf', () => {
       enforce(['a', 'b', 'c']).isArrayOf(enforce.isString());
 
       enforce([1, 'b', 'c']).isArrayOf(
-        enforce.anyOf(enforce.isString(), enforce.isNumber())
+        enforce.anyOf(enforce.isString(), enforce.isNumber()),
       );
 
       enforce([
@@ -84,7 +84,7 @@ describe('enforce.isArrayOf', () => {
         enforce.shape({
           id: enforce.isNumber(),
           username: enforce.isString(),
-        })
+        }),
       );
     });
 
@@ -93,8 +93,8 @@ describe('enforce.isArrayOf', () => {
 
       expect(() =>
         enforce([1, 2, 3]).isArrayOf(
-          enforce.allOf(enforce.isString(), enforce.isNumber())
-        )
+          enforce.allOf(enforce.isString(), enforce.isNumber()),
+        ),
       ).toThrow();
 
       expect(() =>
@@ -106,8 +106,8 @@ describe('enforce.isArrayOf', () => {
           enforce.shape({
             id: enforce.isNumber(),
             username: enforce.isString(),
-          })
-        )
+          }),
+        ),
       ).toThrow();
     });
   });

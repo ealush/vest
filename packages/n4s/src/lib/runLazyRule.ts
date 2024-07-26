@@ -1,10 +1,10 @@
-import type { LazyRuleRunners } from 'genEnforceLazy';
-import type { RuleDetailedResult } from 'ruleReturn';
-import * as ruleReturn from 'ruleReturn';
+import type { RuleDetailedResult } from '@/lib/ruleReturn';
+import * as ruleReturn from '@/lib/ruleReturn';
+import type { LazyRuleRunners } from '@/runtime/genEnforceLazy';
 
 export default function runLazyRule(
   lazyRule: LazyRuleRunners,
-  currentValue: any
+  currentValue: any,
 ): RuleDetailedResult {
   try {
     return lazyRule.run(currentValue);

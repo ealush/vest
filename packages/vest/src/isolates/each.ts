@@ -1,7 +1,7 @@
 import { invariant, isFunction } from 'vest-utils';
 
-import { ErrorStrings } from 'ErrorStrings';
-import { IsolateEach } from 'IsolateEach';
+import { IsolateEach } from '@/core/isolate/IsolateEach/IsolateEach';
+import { ErrorStrings } from '@/errors/ErrorStrings';
 
 /**
  * Iterates over an array of items, allowing to run tests individually per item.
@@ -18,11 +18,11 @@ import { IsolateEach } from 'IsolateEach';
  */
 export function each<T>(
   list: T[],
-  callback: (arg: T, index: number) => void
+  callback: (arg: T, index: number) => void,
 ): void {
   invariant(
     isFunction(callback),
-    ErrorStrings.EACH_CALLBACK_MUST_BE_A_FUNCTION
+    ErrorStrings.EACH_CALLBACK_MUST_BE_A_FUNCTION,
   );
 
   IsolateEach(() => {

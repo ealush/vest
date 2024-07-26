@@ -1,9 +1,14 @@
 import { freezeAssign } from 'vest-utils';
 
-import { useSuiteName, useSuiteResultCache } from 'Runtime';
-import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
-import { suiteSelectors } from 'suiteSelectors';
-import { useProduceSuiteSummary } from 'useProduceSuiteSummary';
+import { useProduceSuiteSummary } from './selectors/useProduceSuiteSummary';
+
+import { useSuiteName, useSuiteResultCache } from '@/core/Runtime';
+import {
+  SuiteResult,
+  TFieldName,
+  TGroupName,
+} from '@/suiteResult/SuiteResultTypes';
+import { suiteSelectors } from '@/suiteResult/selectors/suiteSelectors';
 
 export function useCreateSuiteResult<
   F extends TFieldName,

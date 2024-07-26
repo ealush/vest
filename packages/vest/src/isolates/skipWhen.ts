@@ -1,11 +1,11 @@
 import { CB, optionalFunctionValue } from 'vest-utils';
 import { Isolate } from 'vestjs-runtime';
 
-import { SuiteContext, useSkipped } from 'SuiteContext';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { VestIsolateType } from 'VestIsolateType';
-import { TDraftCondition } from 'getTypedMethods';
-import { useCreateSuiteResult } from 'suiteResult';
+import { SuiteContext, useSkipped } from '../core/context/SuiteContext';
+import { VestIsolateType } from '../core/isolate/VestIsolateType';
+import { TDraftCondition } from '../suite/getTypedMethods';
+import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';
+import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
 /**
  * Conditionally skips running tests within the callback.
@@ -19,7 +19,7 @@ import { useCreateSuiteResult } from 'suiteResult';
 // @vx-allow use-use
 export function skipWhen<F extends TFieldName, G extends TGroupName>(
   condition: TDraftCondition<F, G>,
-  callback: CB
+  callback: CB,
 ): void {
   Isolate.create(VestIsolateType.SkipWhen, () => {
     SuiteContext.run(
@@ -31,10 +31,10 @@ export function skipWhen<F extends TFieldName, G extends TGroupName>(
           // Otherwise, we should skip the test if the conditional is true.
           optionalFunctionValue(
             condition,
-            optionalFunctionValue(useCreateSuiteResult)
+            optionalFunctionValue(useCreateSuiteResult),
           ),
       },
-      callback
+      callback,
     );
   });
 }

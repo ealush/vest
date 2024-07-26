@@ -3,10 +3,10 @@ import wait from 'wait';
 import { dummyTest } from '../testUtils/testDummy';
 import { TestPromise } from '../testUtils/testPromise';
 
-import { TIsolateTest } from 'IsolateTest';
-import { Modes } from 'Modes';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { VestTest } from 'VestTest';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { Modes } from '@/hooks/optional/Modes';
+import { TFieldName, TGroupName } from '@/suiteResult/SuiteResultTypes';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
 import * as vest from 'vest';
 
 type SuiteParams = { skip?: string; skipGroup?: true };
@@ -127,7 +127,7 @@ describe('Stateful async tests', () => {
         vest.test('field_1', tests.length.toString(), async () => {
           await wait(100);
           throw new Error();
-        })
+        }),
       );
     });
     suite().done(() => {

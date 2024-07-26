@@ -1,4 +1,4 @@
-import rules from 'rules';
+import rules from '@/runtime/rules';
 
 describe('Tests enforce rules API', () => {
   it('Should expose all enforce rules', () => {

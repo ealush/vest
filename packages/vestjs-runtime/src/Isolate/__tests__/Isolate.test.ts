@@ -1,8 +1,8 @@
 import { CB } from 'vest-utils';
 
-import { TIsolate, Isolate } from 'Isolate';
-import { StateRefType, useAvailableRoot } from 'VestRuntime';
-import { IsolateMutator, VestRuntime } from 'vestjs-runtime';
+import { StateRefType, useAvailableRoot } from '../../VestRuntime';
+import { Isolate, IsolateMutator, VestRuntime } from '../../vestjs-runtime';
+import { TIsolate } from '../Isolate';
 
 enum IsolateType {
   Isolate = 'Isolate',
@@ -39,7 +39,7 @@ describe('Isolate', () => {
           () => {
             return 'foo';
           },
-          {}
+          {},
         );
       });
       expect(isolate.output).toBe('foo');

@@ -3,7 +3,7 @@ import { TDeferThrow } from 'vest-utils/src/deferThrow';
 import { TVestMock } from '../../../testUtils/TVestMock';
 import mockThrowError from '../../../testUtils/mockThrowError';
 
-import { TIsolateTest } from 'IsolateTest';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
 import * as vest from 'vest';
 
 describe('key', () => {

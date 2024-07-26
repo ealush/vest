@@ -1,4 +1,4 @@
-import isBoolean from 'isBooleanValue';
+import isBoolean from '@/isBooleanValue';
 
 describe('isBoolean', () => {
   it('Should pass for a boolean value', () => {

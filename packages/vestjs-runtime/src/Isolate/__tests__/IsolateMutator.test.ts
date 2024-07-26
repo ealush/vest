@@ -1,5 +1,5 @@
-import { TIsolate } from 'Isolate';
-import { IsolateMutator } from 'IsolateMutator';
+import { IsolateMutator } from '../../vestjs-runtime';
+import { TIsolate } from '../Isolate';
 
 describe('IsolateMutator', () => {
   describe('setParent', () => {

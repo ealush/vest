@@ -2,11 +2,11 @@ import type { CB } from 'vest-utils';
 import { optionalFunctionValue } from 'vest-utils';
 import { Isolate } from 'vestjs-runtime';
 
-import { SuiteContext, useOmitted } from 'SuiteContext';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { VestIsolateType } from 'VestIsolateType';
-import { TDraftCondition } from 'getTypedMethods';
-import { useCreateSuiteResult } from 'suiteResult';
+import { SuiteContext, useOmitted } from '../core/context/SuiteContext';
+import { VestIsolateType } from '../core/isolate/VestIsolateType';
+import { TDraftCondition } from '../suite/getTypedMethods';
+import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';
+import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
 /**
  * Conditionally omits tests from the suite.
@@ -20,7 +20,7 @@ import { useCreateSuiteResult } from 'suiteResult';
 // @vx-allow use-use
 export function omitWhen<F extends TFieldName, G extends TGroupName>(
   conditional: TDraftCondition<F, G>,
-  callback: CB
+  callback: CB,
 ): void {
   Isolate.create(VestIsolateType.OmitWhen, () => {
     SuiteContext.run(
@@ -29,10 +29,10 @@ export function omitWhen<F extends TFieldName, G extends TGroupName>(
           useWithinActiveOmitWhen() ||
           optionalFunctionValue(
             conditional,
-            optionalFunctionValue(useCreateSuiteResult)
+            optionalFunctionValue(useCreateSuiteResult),
           ),
       },
-      callback
+      callback,
     );
   });
 }

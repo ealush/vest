@@ -1,4 +1,4 @@
-import * as NaNRule from 'isNaN';
+import * as NaNRule from '../isNaN';
 
 describe('Tests isNaN rule', () => {
   it('Should return true for `NaN` value', () => {

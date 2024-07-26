@@ -1,10 +1,14 @@
 import { genTestIsolate } from 'vestjs-runtime/test-utils';
 
-import { IsolateTestBase, IsolateTestPayload, TIsolateTest } from 'IsolateTest';
-import { VestIsolateType } from 'VestIsolateType';
+import {
+  IsolateTestBase,
+  IsolateTestPayload,
+  TIsolateTest,
+} from '@/core/isolate/IsolateTest/IsolateTest';
+import { VestIsolateType } from '@/core/isolate/VestIsolateType';
 
 export function mockIsolateTest(
-  payload: Partial<IsolateTestPayload> = {}
+  payload: Partial<IsolateTestPayload> = {},
 ): TIsolateTest {
   const isolate = genTestIsolate({
     ...IsolateTestBase(),

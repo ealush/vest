@@ -1,6 +1,6 @@
-import { TIsolateTest } from 'IsolateTest';
-import { VestTest } from 'VestTest';
-import matchingFieldName from 'matchingFieldName';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
+import matchingFieldName from '@/core/test/helpers/matchingFieldName';
 
 export function isSameProfileTest(
   testObject1: TIsolateTest,

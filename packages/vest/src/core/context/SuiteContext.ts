@@ -8,8 +8,8 @@ import {
   DynamicValue,
 } from 'vest-utils';
 
-import { TIsolateTest } from 'IsolateTest';
-import { Modes } from 'Modes';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { Modes } from '@/hooks/optional/Modes';
 
 export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
   if (parentContext) {
@@ -23,7 +23,7 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
       suiteParams: [],
       testMemoCache,
     },
-    ctxRef
+    ctxRef,
   );
 });
 

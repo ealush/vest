@@ -1,9 +1,9 @@
 import { CB } from 'vest-utils';
 import { IsolateSerializer } from 'vestjs-runtime';
 
-import { TIsolateSuite } from 'IsolateSuite';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { Suite } from 'SuiteTypes';
+import { TIsolateSuite } from '@/core/isolate/IsolateSuite/IsolateSuite';
+import { Suite } from '@/suite/SuiteTypes';
+import { TFieldName, TGroupName } from '@/suiteResult/SuiteResultTypes';
 
 export type Dumpable = {
   dump: CB<TIsolateSuite>;

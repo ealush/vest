@@ -1,4 +1,4 @@
-import { isBlank, isNotBlank } from 'isBlank';
+import { isBlank, isNotBlank } from '../isBlank';
 
 describe('isBlank', () => {
   it('Should return true for a string of white spaces', () => {

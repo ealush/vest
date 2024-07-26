@@ -9,16 +9,16 @@ import {
   SuiteRunResult,
   TFieldName,
   TGroupName,
-} from 'SuiteResultTypes';
+} from '@/suiteResult/SuiteResultTypes';
 
 export function shouldSkipDoneRegistration<
   F extends TFieldName,
-  G extends TGroupName
+  G extends TGroupName,
 >(
   callback: (res: SuiteResult<F, G>) => void,
 
   fieldName: Maybe<F>,
-  output: SuiteRunResult<F, G>
+  output: SuiteRunResult<F, G>,
 ): boolean {
   // If we do not have any test runs for the current field
   return !!(

@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker';
 import { text } from 'vest-utils';
-import { IsolateSerializer } from 'vestjs-runtime';
+import { IsolateSerializer } from 'vestjs-runtime/IsolateSerializer';
 
 import { TestPromise } from '../../../testUtils/testPromise';
 
-import { ErrorStrings } from 'ErrorStrings';
-import { TIsolateTest } from 'IsolateTest';
-import { VestTest } from 'VestTest';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
+import { ErrorStrings } from '@/errors/ErrorStrings';
 import { enforce } from 'vest';
 import * as vest from 'vest';
 

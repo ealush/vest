@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { greaterThan } from 'greaterThan';
+import { greaterThan } from '@/greaterThan';
 
 describe('Tests greaterThan rule', () => {
   describe('Arguments are numbers', () => {
@@ -62,7 +62,7 @@ describe('Tests greaterThan rule', () => {
           // @ts-expect-error - testing invalid input
           expect(greaterThan(element, 0)).toBe(false);
         });
-      }
+      },
     );
   });
 });

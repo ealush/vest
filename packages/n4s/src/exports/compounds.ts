@@ -1,12 +1,12 @@
 import { enforce } from 'n4s';
 
-import { allOf } from 'allOf';
-import { anyOf } from 'anyOf';
-import { EnforceCustomMatcher } from 'enforceUtilityTypes';
-import { Lazy } from 'genEnforceLazy';
-import { noneOf } from 'noneOf';
-import { oneOf } from 'oneOf';
-import { RuleDetailedResult } from 'ruleReturn';
+import { EnforceCustomMatcher } from '@/lib/enforceUtilityTypes';
+import { RuleDetailedResult } from '@/lib/ruleReturn';
+import { allOf } from '@/plugins/compounds/allOf';
+import { anyOf } from '@/plugins/compounds/anyOf';
+import { noneOf } from '@/plugins/compounds/noneOf';
+import { oneOf } from '@/plugins/compounds/oneOf';
+import { Lazy } from '@/runtime/genEnforceLazy';
 
 enforce.extend({ allOf, anyOf, noneOf, oneOf });
 

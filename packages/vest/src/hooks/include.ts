@@ -1,12 +1,13 @@
 import { isStringValue, invariant, optionalFunctionValue } from 'vest-utils';
 
-import { ErrorStrings } from 'ErrorStrings';
-import { TIsolateTest } from 'IsolateTest';
-import { useInclusion } from 'SuiteContext';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { TDraftCondition } from 'getTypedMethods';
-import { useCreateSuiteResult } from 'suiteResult';
-import { useHasOnliedTests } from 'useHasOnliedTests';
+import { useHasOnliedTests } from './focused/useHasOnliedTests';
+
+import { useInclusion } from '@/core/context/SuiteContext';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { ErrorStrings } from '@/errors/ErrorStrings';
+import { TDraftCondition } from '@/suite/getTypedMethods';
+import { TFieldName, TGroupName } from '@/suiteResult/SuiteResultTypes';
+import { useCreateSuiteResult } from '@/suiteResult/suiteResult';
 
 /**
  * Conditionally includes a field for testing, based on specified criteria.
@@ -28,7 +29,7 @@ import { useHasOnliedTests } from 'useHasOnliedTests';
  */
 // @vx-allow use-use
 export function include<F extends TFieldName, G extends TGroupName>(
-  fieldName: F
+  fieldName: F,
 ): {
   when: (condition: F | TFieldName | TDraftCondition<F, G>) => void;
 } {
@@ -49,7 +50,7 @@ export function include<F extends TFieldName, G extends TGroupName>(
 
     // This callback will run as part of the "isExcluded" series of checks
     inclusion[fieldName] = function isIncluded(
-      currentNode: TIsolateTest
+      currentNode: TIsolateTest,
     ): boolean {
       if (isStringValue(condition)) {
         return useHasOnliedTests(currentNode, condition);
@@ -57,7 +58,7 @@ export function include<F extends TFieldName, G extends TGroupName>(
 
       return optionalFunctionValue(
         condition,
-        optionalFunctionValue(useCreateSuiteResult)
+        optionalFunctionValue(useCreateSuiteResult),
       );
     };
   }

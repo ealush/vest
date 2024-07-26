@@ -20,30 +20,30 @@ import {
   isNotEmpty,
 } from 'vest-utils';
 
-import { endsWith, doesNotEndWith } from 'endsWith';
-import { equals, notEquals } from 'equals';
-import { greaterThanOrEquals } from 'greaterThanOrEquals';
-import { inside, notInside } from 'inside';
-import { isBetween, isNotBetween } from 'isBetween';
-import { isBlank, isNotBlank } from 'isBlank';
-import { isBoolean, isNotBoolean } from 'isBoolean';
-import { isEven } from 'isEven';
-import { isKeyOf, isNotKeyOf } from 'isKeyOf';
-import { isNaN, isNotNaN } from 'isNaN';
-import { isNegative } from 'isNegative';
-import { isNumber, isNotNumber } from 'isNumber';
-import { isOdd } from 'isOdd';
-import { isString, isNotString } from 'isString';
-import { isTruthy, isFalsy } from 'isTruthy';
-import { isValueOf, isNotValueOf } from 'isValueOf';
-import { lessThan } from 'lessThan';
-import { lessThanOrEquals } from 'lessThanOrEquals';
-import { longerThanOrEquals } from 'longerThanOrEquals';
-import { matches, notMatches } from 'matches';
-import { condition } from 'ruleCondition';
-import { shorterThan } from 'shorterThan';
-import { shorterThanOrEquals } from 'shorterThanOrEquals';
-import { startsWith, doesNotStartWith } from 'startsWith';
+import { endsWith, doesNotEndWith } from '@/rules/endsWith';
+import { equals, notEquals } from '@/rules/equals';
+import { greaterThanOrEquals } from '@/rules/greaterThanOrEquals';
+import { inside, notInside } from '@/rules/inside';
+import { isBetween, isNotBetween } from '@/rules/isBetween';
+import { isBlank, isNotBlank } from '@/rules/isBlank';
+import { isBoolean, isNotBoolean } from '@/rules/isBoolean';
+import { isEven } from '@/rules/isEven';
+import { isKeyOf, isNotKeyOf } from '@/rules/isKeyOf';
+import { isNaN, isNotNaN } from '@/rules/isNaN';
+import { isNegative } from '@/rules/isNegative';
+import { isNumber, isNotNumber } from '@/rules/isNumber';
+import { isOdd } from '@/rules/isOdd';
+import { isString, isNotString } from '@/rules/isString';
+import { isTruthy, isFalsy } from '@/rules/isTruthy';
+import { isValueOf, isNotValueOf } from '@/rules/isValueOf';
+import { lessThan } from '@/rules/lessThan';
+import { lessThanOrEquals } from '@/rules/lessThanOrEquals';
+import { longerThanOrEquals } from '@/rules/longerThanOrEquals';
+import { matches, notMatches } from '@/rules/matches';
+import { condition } from '@/rules/ruleCondition';
+import { shorterThan } from '@/rules/shorterThan';
+import { shorterThanOrEquals } from '@/rules/shorterThanOrEquals';
+import { startsWith, doesNotStartWith } from '@/rules/startsWith';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, max-lines-per-function
 export default function rules() {

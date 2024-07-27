@@ -3,8 +3,8 @@ export default function mapFirst<T>(
   callback: (
     item: T,
     breakout: (conditional: boolean, value: unknown) => void,
-    index: number
-  ) => unknown
+    index: number,
+  ) => unknown,
 ): any {
   let broke = false;
   let breakoutValue = null;

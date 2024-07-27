@@ -1,4 +1,3 @@
-import { ctx } from '@/runtime/enforceContext';
 import {
   mapFirst,
   optionalFunctionValue,
@@ -13,6 +12,7 @@ import ruleReturn, {
   RuleDetailedResult,
 } from '@/lib/ruleReturn';
 import { transformResult } from '@/lib/transformResult';
+import { ctx } from '@/runtime/enforceContext';
 import { RuleValue, Args, getRule } from '@/runtime/runtimeRules';
 
 // eslint-disable-next-line max-lines-per-function

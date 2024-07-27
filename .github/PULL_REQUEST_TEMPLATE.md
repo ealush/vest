@@ -6,8 +6,8 @@ CONTRIBUTING.md
 Please fill the following form (leave what's relevant)
 -->
 
-| Q                | A   |
-| ---------------- | --- |
+| Q                | A     |
+| ---------------- | ----- |
 | Bug fix?         | ✔/✖ |
 | New feature?     | ✔/✖ |
 | Breaking change? | ✔/✖ |
@@ -15,6 +15,6 @@ Please fill the following form (leave what's relevant)
 | Documentation?   | ✔/✖ |
 | Tests added?     | ✔/✖ |
 | Types added?     | ✔/✖ |
-| Related issues   |     |
+| Related issues   |       |
 
 <!-- Describe your changes below in detail. -->

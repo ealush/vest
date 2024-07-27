@@ -31,7 +31,7 @@ if (one(var1, var2, var3)) {
 all(
   validateInput1, // returns true
   validateInput2, // returns false
-  validateInput3 // no need to run this, we already know our validation failed
+  validateInput3, // no need to run this, we already know our validation failed
 );
 ```
 
@@ -60,7 +60,7 @@ import all from 'anyone/all';
 any(
   someFunction, // evaluates to false
   1,
-  someVar // truthy
+  someVar, // truthy
 );
 // true
 
@@ -69,7 +69,7 @@ any(
 any(
   someFunction, // evaluates to false
   0,
-  someVar // falsy
+  someVar, // falsy
 );
 // false
 
@@ -78,7 +78,7 @@ any(
 one(
   someFunction, // evaluates to false
   0,
-  someVar // truthy
+  someVar, // truthy
 );
 // true
 
@@ -87,7 +87,7 @@ one(
 none(
   someFunction, // evaluates to false
   1,
-  someVar // truthy
+  someVar, // truthy
 );
 // false
 
@@ -96,7 +96,7 @@ none(
 none(
   someFunction, // evaluates to false
   0,
-  someVar // falsy
+  someVar, // falsy
 );
 // true
 
@@ -105,7 +105,7 @@ none(
 all(
   someFunction, // evaluates to false
   0,
-  someVar // truthy
+  someVar, // truthy
 );
 // false
 
@@ -114,7 +114,7 @@ all(
 all(
   someFunction, // evaluates to true
   1,
-  someVar // truthy
+  someVar, // truthy
 );
 // true
 ```

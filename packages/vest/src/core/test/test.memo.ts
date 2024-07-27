@@ -1,13 +1,13 @@
 import { CB, isNull } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
-import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
 import * as Runtime from '@/core/Runtime';
 import { useTestMemoCache } from '@/core/context/SuiteContext';
-import { TFieldName } from '@/suiteResult/SuiteResultTypes';
-import { TestFn } from '@/core/test/TestTypes';
+import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
+import { TestFn } from '@/core/test/TestTypes';
 import { VTest } from '@/core/test/test';
+import { TFieldName } from '@/suiteResult/SuiteResultTypes';
 
 // @vx-allow use-use
 export function wrapTestMemo<FN extends TFieldName>(test: VTest): TestMemo<FN> {

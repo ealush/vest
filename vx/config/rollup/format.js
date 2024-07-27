@@ -7,7 +7,7 @@ const format = [].concat(
     opts.format.CJS,
     opts.format.ES,
     opts.format.UMD,
-  ]
+  ],
 );
 
 const disallowExternals = format === opts.format.UMD;

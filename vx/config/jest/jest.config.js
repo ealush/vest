@@ -35,8 +35,6 @@ const projects = packageNames.list.map(packageName => ({
   ],
 }));
 
-console.log(projects);
-
 module.exports = {
   projects,
 };

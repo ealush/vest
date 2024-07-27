@@ -72,7 +72,7 @@ omitWhen(
       // this is an example for a server call
       return doesUserExist(data.username);
     });
-  }
+  },
 );
 ```
 
@@ -98,6 +98,7 @@ omitWhen(
   'You need at least one option',
 );
 ```
+
 :::caution IMPORTANT
 The code within omitWhen will always run, regardless of whether the condition is met or not. `omitWhen` only affects the validation result, but if you call a function within `omitWhen`, it will run regardless of the condition.
 

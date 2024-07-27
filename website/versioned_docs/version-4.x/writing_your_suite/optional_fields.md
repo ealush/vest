@@ -96,7 +96,7 @@ const suite = create(data => {
     'Pet Name may be left empty only if owner name is supplied',
     () => {
       enforce(data.pet_name).isNotEmpty();
-    }
+    },
   );
 
   test(
@@ -104,7 +104,7 @@ const suite = create(data => {
     'Owner Name may be left empty only if pet name is supplied',
     () => {
       enforce(data.owner_name).isNotEmpty();
-    }
+    },
   );
 });
 ```

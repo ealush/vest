@@ -1,9 +1,9 @@
 import { mapFirst } from 'vest-utils';
 
-import type { Lazy } from '@/runtime/genEnforceLazy';
 import * as ruleReturn from '@/lib/ruleReturn';
 import type { RuleDetailedResult } from '@/lib/ruleReturn';
 import runLazyRule from '@/lib/runLazyRule';
+import type { Lazy } from '@/runtime/genEnforceLazy';
 
 export function anyOf(value: unknown, ...rules: Lazy[]): RuleDetailedResult {
   return ruleReturn.defaultToFailing(

@@ -17,7 +17,7 @@ const isLatestBranch = CURRENT_BRANCH.startsWith(LATEST_BRANCH);
 const isStableBranch = CURRENT_BRANCH.startsWith(STABLE_BRANCH);
 const isReleaseBranch = CURRENT_BRANCH.startsWith(RELEASE_BRANCH);
 const isReleaseKeepVersionBranch = CURRENT_BRANCH.startsWith(
-  RELEASE_KEEP_VERSION_BRANCH
+  RELEASE_KEEP_VERSION_BRANCH,
 );
 const [, target = undefined] =
   isIntegrationBranch || isNextBranch || isNightlyBranch

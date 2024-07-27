@@ -6,7 +6,7 @@ describe('optionalFunctionValue', () => {
       'Should return the same value',
       value => {
         expect(optionalFunctionValue(value)).toBe(value);
-      }
+      },
     );
   });
 

@@ -27,7 +27,7 @@ vxPath.packageNameFromPath = pathSegment => {
 
   const packagesPosition = pathSegment.indexOf(opts.dir.PACKAGES); // 2
   const withoutDir = pathSegment.substring(
-    packagesPosition + opts.dir.PACKAGES.length
+    packagesPosition + opts.dir.PACKAGES.length,
   ); // /vest/src/core/isolate/isolates/skipWhen.ts
   return withoutDir.split(path.sep)[1]; //vest
 };
@@ -106,19 +106,19 @@ vxPath.VX_COMMANDS_PATH = path.resolve(vxPath.VX_ROOT_PATH, opts.dir.COMMANDS);
 vxPath.ROLLUP_CONFIG_PATH = path.resolve(
   vxPath.VX_CONFIG_PATH,
   opts.dir.ROLLUP,
-  opts.fileNames.ROLLUP_CONFIG
+  opts.fileNames.ROLLUP_CONFIG,
 );
 
 vxPath.JEST_CONFIG_PATH = path.resolve(vxPath.VX_CONFIG_PATH, opts.dir.JEST);
 
 vxPath.JEST_CONFIG_FILE_PATH = path.resolve(
   vxPath.JEST_CONFIG_PATH,
-  opts.fileNames.JEST_CONFIG
+  opts.fileNames.JEST_CONFIG,
 );
 
 vxPath.TSCONFIG_PATH = path.resolve(
   vxPath.ROOT_PATH,
-  opts.fileNames.TSCONFIG_JSON
+  opts.fileNames.TSCONFIG_JSON,
 );
 
 vxPath.PACKAGES_PATH = path.resolve(vxPath.ROOT_PATH, opts.dir.PACKAGES);

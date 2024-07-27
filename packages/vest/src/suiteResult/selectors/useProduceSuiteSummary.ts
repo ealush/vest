@@ -1,6 +1,8 @@
 import { Maybe, assign, defaultTo } from 'vest-utils';
 
 import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
+import { TestWalker } from '@/core/isolate/IsolateTest/TestWalker';
+import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
 import { countKeyBySeverity, Severity } from '@/suiteResult/Severity';
 import {
   Groups,
@@ -12,12 +14,10 @@ import {
   Tests,
 } from '@/suiteResult/SuiteResultTypes';
 import { SummaryFailure } from '@/suiteResult/SummaryFailure';
-import { TestWalker } from '@/core/isolate/IsolateTest/TestWalker';
-import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
 import {
   useShouldAddValidProperty,
   useShouldAddValidPropertyInGroup,
-} from 'shouldAddValidProperty';
+} from '@/suiteResult/selectors/shouldAddValidProperty';
 
 export function useProduceSuiteSummary<
   F extends TFieldName,

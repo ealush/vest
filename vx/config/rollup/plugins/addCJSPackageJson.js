@@ -16,7 +16,7 @@ function addEsPackageJson() {
 
       const packageJsonPath = path.join(
         path.dirname(file),
-        opts.fileNames.PACKAGE_JSON
+        opts.fileNames.PACKAGE_JSON,
       );
 
       if (fse.existsSync(packageJsonPath)) {

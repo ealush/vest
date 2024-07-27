@@ -41,12 +41,12 @@ function writeEntry(name, namespace) {
 if (process.env.NODE_ENV === '${opts.env.PRODUCTION}') {
   module.exports = require('${prefix}/${path.relative(
     dist(),
-    dist(exportName(name, opts.env.PRODUCTION))
+    dist(exportName(name, opts.env.PRODUCTION)),
   )}');
 } else {
   module.exports = require('${prefix}/${path.relative(
     dist(),
-    dist(exportName(name, opts.env.DEVELOPMENT))
+    dist(exportName(name, opts.env.DEVELOPMENT)),
   )}');
 }`;
 
@@ -77,7 +77,7 @@ function writePackageJson(name, exportPath, { namespace } = {}) {
     pkgJson,
     {
       spaces: 2,
-    }
+    },
   );
 }
 
@@ -183,7 +183,7 @@ function genExportedFilesInMainPackageJson() {
       currentModule,
       genMainPackageJSONFileExports(moduleName, {
         namespace,
-      })
+      }),
     );
 
     return modules;
@@ -192,7 +192,7 @@ function genExportedFilesInMainPackageJson() {
 
 function genMainPackageJSONFileExports(
   moduleName,
-  { env = opts.env.PRODUCTION, namespace = undefined }
+  { env = opts.env.PRODUCTION, namespace = undefined },
 ) {
   const prefix = '.';
   const cjsPath = genDistPath(moduleName, {
@@ -261,7 +261,7 @@ function genDistPath(
     env = opts.env.PRODUCTION,
     format = opts.format.CJS,
     prefix,
-  }
+  },
 ) {
   return joinPath(
     // add nesting level
@@ -271,7 +271,7 @@ function genDistPath(
       format,
       namespace,
       exportName(moduleName, env),
-    ])
+    ]),
   );
 }
 
@@ -283,7 +283,7 @@ function genTypesPath(moduleName, { namespace = undefined, prefix }) {
       opts.dir.TYPES,
       namespace,
       fileName(moduleName, 'd.ts'),
-    ])
+    ]),
   );
 }
 

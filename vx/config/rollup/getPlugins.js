@@ -42,7 +42,7 @@ module.exports = function getPlugins({
             packageName,
             opts.dir.TYPES,
             namespace,
-            moduleName + '.d.ts'
+            moduleName + '.d.ts',
           );
 
           if (kind === 'declaration') return basePath;
@@ -82,7 +82,7 @@ module.exports = function getPlugins({
       terser(),
       handleExports({ namespace }),
       addModulePackageJson(),
-      addCJSPackageJson()
+      addCJSPackageJson(),
     );
   }
 

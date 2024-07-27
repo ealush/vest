@@ -59,7 +59,7 @@ describe('lib: cache', () => {
       Array.from({ length: callCount }, (_, i) => {
         const c = cache(/*maxSize*/ cacheSize);
         const results = Array.from({ length: callCount }, (_, j) =>
-          c([j], Math.random)
+          c([j], Math.random),
         );
 
         if (i < diff) {
@@ -74,7 +74,7 @@ describe('lib: cache', () => {
   });
   it('Should take into account the deps array in its entirety', () => {
     const deps = Array.from({ length: 100 }, () =>
-      _.sample([{}, false, Math.random(), true, () => null])
+      _.sample([{}, false, Math.random(), true, () => null]),
     );
     const c = cache();
     const res = c([...deps], Math.random);

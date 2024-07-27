@@ -7,7 +7,7 @@ const vxPath = require('vx/vxPath');
 
 const configOpt = `--config ${path.resolve(
   vxPath.JEST_CONFIG_PATH,
-  opts.fileNames.JEST_CONFIG
+  opts.fileNames.JEST_CONFIG,
 )}`;
 
 function test({ cliOptions }) {

@@ -40,7 +40,7 @@ describe('Cascading Context', () => {
         () => {
           expect(ctx.use().id).toBe(55);
           expect(ctx.use().user).toBe('boomsa');
-        }
+        },
       );
     });
 
@@ -52,7 +52,7 @@ describe('Cascading Context', () => {
         () => {
           expect(ctx.use().id).toBe(55);
           expect(ctx.use().user).toBeUndefined();
-        }
+        },
       );
     });
 
@@ -93,9 +93,9 @@ describe('Cascading Context', () => {
                   expect(ctx.use().name).toBe('Emanuelle');
                   expect(ctx.use().color).toBe('blue');
                 });
-              }
+              },
             );
-          }
+          },
         );
       });
 
@@ -123,7 +123,7 @@ describe('Cascading Context', () => {
                     "name": "Emanuelle",
                   }
                 `);
-              }
+              },
             );
             expect(ctx.use().id).toBe(99);
             expect(ctx.use().name).toBe('watermelonbunny');
@@ -133,7 +133,7 @@ describe('Cascading Context', () => {
                 "name": "watermelonbunny",
               }
             `);
-          }
+          },
         );
       });
     });
@@ -244,7 +244,7 @@ describe('Cascading Context', () => {
 
         it('Should allow a custom context message', () => {
           expect(() => ctx.useX('Custom Failure Message')).toThrow(
-            'Custom Failure Message'
+            'Custom Failure Message',
           );
         });
       });
@@ -260,7 +260,7 @@ describe('Cascading Context', () => {
 
         it('Should allow a custom context message', () => {
           expect(() => ctx.useX('Custom Failure Message')).toThrow(
-            'Custom Failure Message'
+            'Custom Failure Message',
           );
         });
       });

@@ -12,7 +12,7 @@ function exec(
     throwOnFailure = false,
     silent = false,
     raw = false,
-  } = {}
+  } = {},
 ) {
   const cmd = joinTruthy(command?.flat?.() ?? command, ' ');
 

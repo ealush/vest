@@ -34,7 +34,7 @@ describe('defaultTo', () => {
         'Should return the same value',
         value => {
           expect(defaultTo(value, 'fallback value')).toBe(value);
-        }
+        },
       );
     });
   });

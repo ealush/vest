@@ -6,10 +6,7 @@ import {
   isStringValue,
   text,
 } from 'vest-utils';
-import {
-  expandObject,
-  minifyObject,
-} from 'vest-utils/src/exports/minifyObject';
+import { expandObject, minifyObject } from 'vest-utils/minifyObject';
 
 import { TIsolate } from '../../types/vestjs-runtime';
 import { ExcludedFromDump, IsolateKeys } from '../Isolate/IsolateKeys';

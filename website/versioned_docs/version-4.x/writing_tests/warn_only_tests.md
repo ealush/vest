@@ -23,7 +23,7 @@ const suite = create(data => {
     warn();
 
     enforce(data.password).matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]$/
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]$/,
     );
   }); // this test has a severity level of `warn`
 
@@ -31,7 +31,7 @@ const suite = create(data => {
     warn();
 
     enforce(data.password).matches(
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]$/
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]$/,
     );
   }); // this test has a severity level of `warn`
 });

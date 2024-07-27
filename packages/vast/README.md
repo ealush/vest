@@ -58,7 +58,7 @@ const useColor = state.registerStateKey(
   'red',
   (currentState, previousState) => {
     console.log(`the color changed from ${previousState} to ${currentState}!`);
-  }
+  },
 );
 ```
 

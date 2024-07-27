@@ -2,9 +2,9 @@ import { Nullable } from 'vest-utils';
 import { Walker, VestRuntime, TIsolate } from 'vestjs-runtime';
 
 import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
-import { TFieldName, TGroupName } from '@/suiteResult/SuiteResultTypes';
 import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
 import matchingFieldName from '@/core/test/helpers/matchingFieldName';
+import { TFieldName, TGroupName } from '@/suiteResult/SuiteResultTypes';
 
 type MaybeRoot = Nullable<TIsolate>;
 

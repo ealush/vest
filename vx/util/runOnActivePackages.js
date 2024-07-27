@@ -10,6 +10,6 @@ module.exports = (callback, ...args) => {
     return callback(...args);
   }
   packages.list.forEach(packageName =>
-    ctx.withPackage(packageName, () => callback(...args))
+    ctx.withPackage(packageName, () => callback(...args)),
   );
 };

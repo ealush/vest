@@ -16,7 +16,7 @@ module.exports = Object.defineProperty(
     get: () => {
       return usePackage();
     },
-  }
+  },
 );
 
 packageList.pairs.forEach(([name, path]) => {

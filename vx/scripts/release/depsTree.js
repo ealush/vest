@@ -25,7 +25,7 @@ const buildDepsMemo = memoize(function (package, deps) {
 function buildDepsTree() {
   return packageList.names.reduce(
     (deps, packageName) => buildDepsMemo(packageName, deps),
-    {}
+    {},
   );
 }
 
@@ -34,7 +34,7 @@ function sortDependencies(packagesList) {
   const deps = buildDepsTree();
 
   return packagesList.sort(
-    (a, b) => countMaxDepth(deps[b]) - countMaxDepth(deps[a])
+    (a, b) => countMaxDepth(deps[b]) - countMaxDepth(deps[a]),
   );
 }
 

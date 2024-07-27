@@ -48,7 +48,7 @@ enforce.oneOf can be used to determine if _exactly_ one of the rules applies. It
 enforce(value).oneOf(
   enforce.isString(),
   enforce.isNumber(),
-  enforce.longerThan(1)
+  enforce.longerThan(1),
 );
 
 /*

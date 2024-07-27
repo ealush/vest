@@ -30,8 +30,8 @@ function packagesToRelease() {
   } else {
     logger.info(
       `💡 The following packages were changed: \n  - ${changedPackagesArray.join(
-        '\n  - '
-      )}\n`
+        '\n  - ',
+      )}\n`,
     );
   }
 
@@ -59,7 +59,7 @@ function packagesToRelease() {
     logger.info(
       `🧱 The following packages did not change, but will be released because they are indirectly impacted by changes: \n  - ${[
         ...unchangedDependents,
-      ].join('\n  - ')} \n`
+      ].join('\n  - ')} \n`,
     );
   }
 
@@ -67,8 +67,8 @@ function packagesToRelease() {
 
   logger.info(
     `✅ The packages will be released in the following order: \n  - ${allPackagesToRelease.join(
-      '\n  - '
-    )}\n`
+      '\n  - ',
+    )}\n`,
   );
 
   return {

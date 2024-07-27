@@ -8,7 +8,7 @@ describe('isEmail', () => {
     expect(() => enforce('user@mail.example.com').isEmail()).not.toThrow();
     expect(() => enforce('user+tag@mail.example.com').isEmail()).not.toThrow();
     expect(() =>
-      enforce('verylongemailaddress1234567890@mail.example.com').isEmail()
+      enforce('verylongemailaddress1234567890@mail.example.com').isEmail(),
     ).not.toThrow();
     expect(() => enforce('user@example.co').isEmail()).not.toThrow();
     expect(() => enforce('user@example.io').isEmail()).not.toThrow();
@@ -30,19 +30,19 @@ describe('isEmail', () => {
       expect(() =>
         enforce('Display Name <user@example.com>').isEmail({
           allow_display_name: true,
-        })
+        }),
       ).not.toThrow();
       expect(() =>
         enforce('Display Name <user@example.com>').isEmail({
           allow_display_name: true,
           require_display_name: true,
-        })
+        }),
       ).not.toThrow();
       expect(() =>
-        enforce('user@192.168.0.1').isEmail({ allow_ip_domain: true })
+        enforce('user@192.168.0.1').isEmail({ allow_ip_domain: true }),
       ).not.toThrow();
       expect(() =>
-        enforce('user@example').isEmail({ require_tld: false })
+        enforce('user@example').isEmail({ require_tld: false }),
       ).not.toThrow();
     });
 
@@ -51,10 +51,10 @@ describe('isEmail', () => {
         enforce('Display Name user@example.com').isEmail({
           allow_display_name: true,
           require_display_name: true,
-        })
+        }),
       ).toThrow();
       expect(() =>
-        enforce('user@192.168.0.1').isEmail({ allow_ip_domain: false })
+        enforce('user@192.168.0.1').isEmail({ allow_ip_domain: false }),
       ).toThrow();
     });
   });

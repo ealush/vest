@@ -62,6 +62,6 @@ omitWhen(
       // this is an example for a server call
       return doesUserExist(data.username);
     });
-  }
+  },
 );
 ```

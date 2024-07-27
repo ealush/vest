@@ -48,7 +48,7 @@ const suite = create((data = {}) => {
       () => {
         enforce(field.price).isNumeric().greaterThan(0);
       },
-      field.id // the key is used to guarantee state persistence on reordering
+      field.id, // the key is used to guarantee state persistence on reordering
     );
   });
 });

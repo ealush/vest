@@ -27,7 +27,7 @@ function setNextVersion({
       changeLevel: ${changeLevel}
       tagId: ${tagId}
       tag: ${tag}
-      versionToPublish: ${versionToPublish}`
+      versionToPublish: ${versionToPublish}`,
     );
     return;
   }
@@ -39,7 +39,7 @@ function setNextVersion({
   existingPkgJson.version = versionToPublish;
 
   logger.info(
-    `🔢 Setting next version for ${usePackage()}. From ${prevVersion} to ${versionToPublish}`
+    `🔢 Setting next version for ${usePackage()}. From ${prevVersion} to ${versionToPublish}`,
   );
 
   writeJSONSync(vxPath.packageJson(packageName), nextPackageJson, {
@@ -50,7 +50,7 @@ function setNextVersion({
 
   if (updated.version !== versionToPublish) {
     logger.error(
-      `🚨 Failed to update ${usePackage()} version to: ` + versionToPublish
+      `🚨 Failed to update ${usePackage()} version to: ` + versionToPublish,
     );
     return process.exit(1);
   }

@@ -259,8 +259,8 @@ describe('isolate', () => {
         expect(deferThrow).toHaveBeenCalledTimes(1);
         expect(deferThrow).toHaveBeenCalledWith(
           expect.stringContaining(
-            'Vest Critical Error: Tests called in different order than previous run'
-          )
+            'Vest Critical Error: Tests called in different order than previous run',
+          ),
         );
       });
     });

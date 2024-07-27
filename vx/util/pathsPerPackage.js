@@ -65,11 +65,11 @@ function findDuplicates() {
   const duplicatesPerPackage = [];
 
   for (const [packageName, { duplicates }] of Object.entries(
-    duplicatesContainer
+    duplicatesContainer,
   )) {
     if (duplicates.size > 0) {
       duplicatesPerPackage.push(
-        `${packageName}: ${[...duplicates].map(dup => `\n   -${dup}`).join('')}`
+        `${packageName}: ${[...duplicates].map(dup => `\n   -${dup}`).join('')}`,
       );
     }
   }
@@ -77,8 +77,8 @@ function findDuplicates() {
   if (duplicatesPerPackage.length > 0) {
     throw new Error(
       `VX: Duplicates found in the following packages:\n\n${duplicatesPerPackage.join(
-        '\n'
-      )}\n`
+        '\n',
+      )}\n`,
     );
   }
 }

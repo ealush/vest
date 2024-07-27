@@ -26,12 +26,12 @@ describe('vast state', () => {
     it('Should append another state key on each call', () => {
       const stateValues = Array.from({ length: 100 }, () => Math.random());
       const stateGetters = stateValues.map(value =>
-        state.registerStateKey(value)
+        state.registerStateKey(value),
       );
       expect(
         stateGetters.every(
-          (stateGetter, i) => stateGetter()[0] === stateValues[i]
-        )
+          (stateGetter, i) => stateGetter()[0] === stateValues[i],
+        ),
       ).toBe(true);
       expect(stateGetters).toHaveLength(100);
     });
@@ -165,7 +165,7 @@ describe('vast state', () => {
 
       state.registerStateKey('v1', onUpdate);
       expect(onUpdate.mock.invocationCallOrder[0]).toBeLessThan(
-        onChange.mock.invocationCallOrder[0]
+        onChange.mock.invocationCallOrder[0],
       );
     });
   });

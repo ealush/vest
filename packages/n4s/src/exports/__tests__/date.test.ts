@@ -42,34 +42,34 @@ describe('date', () => {
          */
         it('Should pass for valid dates', () => {
           expect(() =>
-            enforce('2002-07-15').isDate({ format: 'YYYY-MM-DD' })
+            enforce('2002-07-15').isDate({ format: 'YYYY-MM-DD' }),
           ).not.toThrow();
           expect(() =>
-            enforce('2002/07/15').isDate({ format: 'YYYY/MM/DD' })
+            enforce('2002/07/15').isDate({ format: 'YYYY/MM/DD' }),
           ).not.toThrow();
           expect(() =>
-            enforce('07/15/2002').isDate({ format: 'MM/DD/YYYY' })
+            enforce('07/15/2002').isDate({ format: 'MM/DD/YYYY' }),
           ).not.toThrow();
           expect(() =>
-            enforce('07-15-2002').isDate({ format: 'MM-DD-YYYY' })
+            enforce('07-15-2002').isDate({ format: 'MM-DD-YYYY' }),
           ).not.toThrow();
           expect(() =>
-            enforce('15/07/2002').isDate({ format: 'DD/MM/YYYY' })
+            enforce('15/07/2002').isDate({ format: 'DD/MM/YYYY' }),
           ).not.toThrow();
           expect(() =>
-            enforce('15-07-2002').isDate({ format: 'DD-MM-YYYY' })
+            enforce('15-07-2002').isDate({ format: 'DD-MM-YYYY' }),
           ).not.toThrow();
           expect(() =>
-            enforce('02-07-15').isDate({ format: 'YY-MM-DD' })
+            enforce('02-07-15').isDate({ format: 'YY-MM-DD' }),
           ).not.toThrow();
           expect(() =>
-            enforce('02/07/15').isDate({ format: 'YY/MM/DD' })
+            enforce('02/07/15').isDate({ format: 'YY/MM/DD' }),
           ).not.toThrow();
           expect(() =>
-            enforce('07/15/02').isDate({ format: 'MM/DD/YY' })
+            enforce('07/15/02').isDate({ format: 'MM/DD/YY' }),
           ).not.toThrow();
           expect(() =>
-            enforce('07-15-02').isDate({ format: 'MM-DD-YY' })
+            enforce('07-15-02').isDate({ format: 'MM-DD-YY' }),
           ).not.toThrow();
         });
 
@@ -77,7 +77,7 @@ describe('date', () => {
           expect(() =>
             enforce('2002-07-15').isDate({
               format: 'YYYY-MM-DDTHH:mm:ss.SSSZ',
-            })
+            }),
           ).toThrow();
         });
       });
@@ -87,7 +87,7 @@ describe('date', () => {
             enforce('2002-07-15').isDate({
               strictMode: true,
               format: 'YYYY-MM-DD',
-            })
+            }),
           ).not.toThrow();
         });
 
@@ -96,7 +96,7 @@ describe('date', () => {
             enforce('2002-07-15').isDate({
               strictMode: true,
               format: 'YYYY/MM/DD',
-            })
+            }),
           ).toThrow();
         });
       });
@@ -157,19 +157,19 @@ describe('date', () => {
 
     it('Should pass for valid ISO8601 dates', () => {
       expect(() =>
-        enforce('2020-07-10 15:00:00.000').isISO8601()
+        enforce('2020-07-10 15:00:00.000').isISO8601(),
       ).not.toThrow();
 
       expect(() => enforce('2020-07-10').isISO8601()).not.toThrow();
 
       expect(() =>
-        enforce('2020-07-10T15:00:00.000').isISO8601()
+        enforce('2020-07-10T15:00:00.000').isISO8601(),
       ).not.toThrow();
 
       expect(() => enforce('2020-07-10T15:00:00Z').isISO8601()).not.toThrow();
 
       expect(() =>
-        enforce('2020-07-10T15:00:00+05:00').isISO8601()
+        enforce('2020-07-10T15:00:00+05:00').isISO8601(),
       ).not.toThrow();
     });
 
@@ -182,23 +182,23 @@ describe('date', () => {
     describe('strict', () => {
       it('Should pass for valid ISO8601 dates', () => {
         expect(() =>
-          enforce('2020-07-10 15:00:00.000').isISO8601({ strict: true })
+          enforce('2020-07-10 15:00:00.000').isISO8601({ strict: true }),
         ).not.toThrow();
 
         expect(() =>
-          enforce('2020-07-10').isISO8601({ strict: true })
+          enforce('2020-07-10').isISO8601({ strict: true }),
         ).not.toThrow();
 
         expect(() =>
-          enforce('2020-07-10T15:00:00.000').isISO8601({ strict: true })
+          enforce('2020-07-10T15:00:00.000').isISO8601({ strict: true }),
         ).not.toThrow();
 
         expect(() =>
-          enforce('2020-07-10T15:00:00Z').isISO8601({ strict: true })
+          enforce('2020-07-10T15:00:00Z').isISO8601({ strict: true }),
         ).not.toThrow();
 
         expect(() =>
-          enforce('2020-07-10T15:00:00+05:00').isISO8601({ strict: true })
+          enforce('2020-07-10T15:00:00+05:00').isISO8601({ strict: true }),
         ).not.toThrow();
       });
 
@@ -206,7 +206,7 @@ describe('date', () => {
         expect(() => enforce(0).isISO8601({ strict: true })).toThrow();
         expect(() => enforce(new Date()).isISO8601({ strict: true })).toThrow();
         expect(() =>
-          enforce('2020/07/10T15:00:00.000Z').isISO8601({ strict: true })
+          enforce('2020/07/10T15:00:00.000Z').isISO8601({ strict: true }),
         ).toThrow();
       });
     });
@@ -216,29 +216,29 @@ describe('date', () => {
         expect(() =>
           enforce('2002-07-15T00:00:00.000Z').isISO8601({
             strictSeparator: true,
-          })
+          }),
         ).not.toThrow();
 
         expect(() =>
-          enforce('2020-07-10').isISO8601({ strictSeparator: true })
+          enforce('2020-07-10').isISO8601({ strictSeparator: true }),
         ).not.toThrow();
 
         expect(() =>
           enforce('2020-07-10T15:00:00.000').isISO8601({
             strictSeparator: true,
-          })
+          }),
         ).not.toThrow();
 
         expect(() =>
           enforce('2020-07-10T15:00:00Z').isISO8601({
             strictSeparator: true,
-          })
+          }),
         ).not.toThrow();
 
         expect(() =>
           enforce('2020-07-10T15:00:00+05:00').isISO8601({
             strictSeparator: true,
-          })
+          }),
         ).not.toThrow();
       });
 
@@ -246,7 +246,7 @@ describe('date', () => {
         expect(() =>
           enforce('2020/07/10T15:00:00.000Z').isISO8601({
             strictSeparator: true,
-          })
+          }),
         ).toThrow();
       });
     });

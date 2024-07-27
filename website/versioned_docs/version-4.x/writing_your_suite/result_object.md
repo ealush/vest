@@ -230,13 +230,13 @@ const suite = create(data => {
   test(
     'UserEmail',
     'Marked as spam address',
-    async () => await isKnownSpammer(data.address)
+    async () => await isKnownSpammer(data.address),
   );
 
   test(
     'UserName',
     'must not be blacklisted',
-    async () => await isBlacklistedUser(data.username)
+    async () => await isBlacklistedUser(data.username),
   );
 });
 

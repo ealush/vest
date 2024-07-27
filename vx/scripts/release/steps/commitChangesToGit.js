@@ -15,12 +15,12 @@ const vxPath = require('vx/vxPath');
 const RELEASE_SCRIPTS = path.resolve(
   vxPath.VX_SCRIPTS_PATH,
   'release',
-  'steps'
+  'steps',
 );
 
 const PUSH_TO_LATEST_BRANCH = path.resolve(
   RELEASE_SCRIPTS,
-  'push_to_latest_branch.sh'
+  'push_to_latest_branch.sh',
 );
 
 const CREATE_GIT_TAG = path.resolve(RELEASE_SCRIPTS, 'create_git_tag.sh');
@@ -66,7 +66,7 @@ function filterChangedPackages(commits) {
 function createCommitMessage(changedPackages) {
   const msg = changedPackages
     .map(
-      packageName => `[${packageName}]: (${packageJson(packageName).version})`
+      packageName => `[${packageName}]: (${packageJson(packageName).version})`,
     )
     .join(', ');
 

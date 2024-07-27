@@ -81,7 +81,7 @@ function writeEntryPoint(packagePath, packageName) {
   fsExtra.writeFileSync(
     vxPath.packageSrc(packageName, `${packageName}.ts`),
     `export const main = () => "${packageName}";`,
-    'utf8'
+    'utf8',
   );
 }
 
@@ -93,7 +93,7 @@ function updateValues(packagePath, config) {
       Object.keys(configMapping).forEach(key => {
         content = content.replace(
           new RegExp(`{{${key}}}`, 'g'),
-          config[configMapping[key]] ?? configMapping[key]
+          config[configMapping[key]] ?? configMapping[key],
         );
       });
 

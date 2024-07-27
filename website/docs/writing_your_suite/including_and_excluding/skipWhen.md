@@ -44,7 +44,7 @@ export default create((data = {}) => {
         // this is an example for a server call
         return doesUserExist(data.username);
       });
-    }
+    },
   );
 });
 ```

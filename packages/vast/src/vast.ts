@@ -8,7 +8,7 @@ import {
 
 // eslint-disable-next-line max-lines-per-function
 export function createState(
-  onStateChange?: (...args: unknown[]) => unknown
+  onStateChange?: (...args: unknown[]) => unknown,
 ): CreateStateReturn {
   const state: {
     references: unknown[];
@@ -18,7 +18,7 @@ export function createState(
 
   const registrations: [
     unknown,
-    (<S>(currentState: S, prevState: S) => void)?
+    (<S>(currentState: S, prevState: S) => void)?,
   ][] = [];
 
   return {
@@ -41,7 +41,7 @@ export function createState(
    */
   function registerStateKey<S>(
     initialState?: Maybe<StateInput<S>>,
-    onUpdate?: () => void
+    onUpdate?: () => void,
   ): CB<StateHandlerReturn<S>> {
     const key = registrations.length;
     registrations.push([initialState, onUpdate]);
@@ -52,14 +52,14 @@ export function createState(
     const prev = current();
     state.references = [];
     registrations.forEach(([initialValue], index) =>
-      initKey(index, initialValue, prev[index])
+      initKey(index, initialValue, prev[index]),
     );
   }
 
   function initKey<S>(
     key: number,
     initialState?: Maybe<StateInput<S>>,
-    prevState?: Maybe<S>
+    prevState?: Maybe<S>,
   ) {
     current().push();
     set(key, optionalFunctionValue(initialState, prevState));
@@ -104,6 +104,6 @@ type CreateStateReturn = {
   reset: () => void;
   registerStateKey: <S>(
     initialState?: Maybe<StateInput<S>>,
-    onUpdate?: () => void
+    onUpdate?: () => void,
   ) => CB<StateHandlerReturn<S>>;
 };

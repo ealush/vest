@@ -146,7 +146,7 @@ import ctx from './ctx';
 
 function handleCart() {
   const context = ctx.useX(
-    'handleCart was called outside of a running context'
+    'handleCart was called outside of a running context',
   ); // { cart: { items: [ 'foo', 'bar' ] } }
   // This throws an error if we're not within a `run` call.
   // You should catch this error and handle it somewhere above this function.

@@ -12,5 +12,5 @@ module.exports = packageNames.list.reduce(
         .sync(vxPath.packageSrcExports(packageName, '*.ts'))
         .map(packageExport => path.basename(packageExport, '.ts')),
     }),
-  {}
+  {},
 );

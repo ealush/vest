@@ -3,7 +3,7 @@ import { defaultTo } from 'vest-utils';
 
 export default function ruleReturn(
   pass: boolean,
-  message?: string
+  message?: string,
 ): RuleDetailedResult {
   const output: RuleDetailedResult = { pass };
 
@@ -23,13 +23,13 @@ export function passing(): RuleDetailedResult {
 }
 
 export function defaultToFailing(
-  callback: (...args: any[]) => RuleDetailedResult
+  callback: (...args: any[]) => RuleDetailedResult,
 ): RuleDetailedResult {
   return defaultTo(callback, failing());
 }
 
 export function defaultToPassing(
-  callback: (...args: any[]) => RuleDetailedResult
+  callback: (...args: any[]) => RuleDetailedResult,
 ): RuleDetailedResult {
   return defaultTo(callback, passing());
 }

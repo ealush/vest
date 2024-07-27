@@ -38,8 +38,8 @@ module.exports = function updateLocalDepsToLatest() {
         deps[name] = isNextBranch
           ? TAG_NEXT
           : isIntegrationBranch
-          ? TAG_DEV
-          : depPkgJson.version;
+            ? TAG_DEV
+            : depPkgJson.version;
       } else {
         deps[name] =
           isNextBranch || isIntegrationBranch

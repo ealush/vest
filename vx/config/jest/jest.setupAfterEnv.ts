@@ -5,7 +5,7 @@ import './globals.d';
 // eslint-disable-next-line complexity
 const isDeepCopyOf = (
   source: any,
-  clone: any
+  clone: any,
 ): { pass: boolean; message: () => string } => {
   const queue = [[source, clone]];
 
@@ -29,7 +29,7 @@ const isDeepCopyOf = (
         pass: false,
         message: () =>
           `Source and clone are the same object. Expected a deep copy. ${JSON.stringify(
-            source
+            source,
           )}===${JSON.stringify(clone)}`,
       };
     }
@@ -44,7 +44,7 @@ const isDeepCopyOf = (
         pass: false,
         message: () =>
           `Source and clone are not of the same type: ${JSON.stringify(
-            source
+            source,
           )} does not equal ${JSON.stringify(clone)}`,
       };
     }
@@ -56,7 +56,7 @@ const isDeepCopyOf = (
           pass: false,
           message: () =>
             `source and clone arrays are not identical. ${JSON.stringify(
-              source
+              source,
             )} does not equal ${JSON.stringify(clone)}`,
         };
       }

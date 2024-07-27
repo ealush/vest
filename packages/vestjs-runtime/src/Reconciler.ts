@@ -7,14 +7,12 @@ import {
 } from 'vest-utils';
 
 import { ErrorStrings } from './errors/ErrorStrings';
-import {
-  IsolateInspector,
-  IsolateMutator,
-  VestRuntime,
-} from './vestjs-runtime';
 
 import { type TIsolate } from '@/Isolate/Isolate';
+import { IsolateInspector } from '@/Isolate/IsolateInspector';
+import { IsolateMutator } from '@/Isolate/IsolateMutator';
 import { isSameIsolateType } from '@/Isolate/IsolateSelectors';
+import * as VestRuntime from '@/VestRuntime';
 
 // I would rather not use `any` here, but instead use `Isolate`.
 // The problem is that it breaks the actual implementation of `Isolate` in `IsolateTest`

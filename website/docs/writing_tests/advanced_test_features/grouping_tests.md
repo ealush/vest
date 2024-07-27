@@ -63,7 +63,7 @@ create(data => {
     test(
       'userName',
       'User not found. Please check if you typed it correctly.',
-      findUserName(data.username)
+      findUserName(data.username),
     );
   });
 
@@ -150,13 +150,13 @@ const suite = create(data => {
       'promo code purchases are limited to one item only',
       () => {
         enforce(data.quantity).equals(1);
-      }
+      },
     );
 
     test(
       'promoCode',
       'Promo code can only be used once',
-      isPromoCodeUsed(data.usedPromo)
+      isPromoCodeUsed(data.usedPromo),
     );
   });
 });

@@ -36,8 +36,8 @@ function genDiffData(commits) {
     versionToPublish: isReleaseKeepVersionBranch
       ? version
       : tag
-      ? tagId
-      : nextVersion,
+        ? tagId
+        : nextVersion,
   };
 }
 

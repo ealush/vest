@@ -41,14 +41,14 @@ function execCommandWithGitConfig(command) {
   logger.info(
     `Setting git config:
     Email "${EMAIL_ADDRESS}"
-    Name "${GIT_NAME}"`
+    Name "${GIT_NAME}"`,
   );
 
   exec(
     `git config --global user.email "${EMAIL_ADDRESS}"
 git config --global user.name "${GIT_NAME}"
 ${joinTruthy(command, ' ')}`,
-    { exitOnFailure: false }
+    { exitOnFailure: false },
   );
 }
 

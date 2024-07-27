@@ -1,10 +1,10 @@
 import { ctx } from 'n4s';
 import { mapFirst } from 'vest-utils';
 
-import type { LazyRuleRunners } from '@/runtime/genEnforceLazy';
 import type { RuleDetailedResult } from '@/lib/ruleReturn';
 import * as ruleReturn from '@/lib/ruleReturn';
 import runLazyRule from '@/lib/runLazyRule';
+import type { LazyRuleRunners } from '@/runtime/genEnforceLazy';
 
 export function isArrayOf(
   inputArray: any[],

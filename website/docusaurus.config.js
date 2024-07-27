@@ -124,7 +124,7 @@ const config = {
             value: badgeLink(
               'https://www.npmjs.com/package/vest',
               'https://badgen.net/npm/v/vest?icon=npm&scale=1.2&color=red&label',
-              'npm-badge'
+              'npm-badge',
             ),
           },
           {
@@ -133,7 +133,7 @@ const config = {
             value: badgeLink(
               'https://github.com/ealush/vest',
               'https://badgen.net/github/stars/ealush/vest?scale=1.2&color=yellow&icon=github',
-              'github-badge'
+              'github-badge',
             ),
           },
           {
@@ -142,7 +142,7 @@ const config = {
             value: badgeLink(
               'https://discord.gg/WmADZpJnSe',
               'https://badgen.net/discord/online-members/WmADZpJnSe?icon=discord&scale=1.2&label=Discord',
-              'discord-badge'
+              'discord-badge',
             ),
           },
           {

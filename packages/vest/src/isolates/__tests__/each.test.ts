@@ -1,4 +1,4 @@
-import { TDeferThrow } from 'vest-utils/src/deferThrow';
+import { TDeferThrow } from 'vest-utils/deferThrow';
 
 import { TVestMock } from '../../testUtils/TVestMock';
 import mockThrowError from '../../testUtils/mockThrowError';

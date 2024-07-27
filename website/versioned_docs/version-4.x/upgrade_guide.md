@@ -72,7 +72,7 @@ skipWhen(
     test('confirm', 'passwords do not match', () => {
       /*...*/
     });
-  }
+  },
 );
 
 // ...
@@ -104,7 +104,7 @@ each(fields, field => {
     () => {
       enforce(field.value).isNotEmpty();
     },
-    field.id
+    field.id,
   );
 });
 ```
@@ -191,7 +191,7 @@ const suite = create('user_form', () => {
     res => res.hasErrors('username'),
     () => {
       /* ... */
-    }
+    },
   );
 });
 ```

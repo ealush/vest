@@ -29,7 +29,7 @@ export function createContext<T>(defaultContextValue?: T): CtxApi<T> {
   function useX(errorMessage?: string): T {
     invariant(
       isInsideContext(),
-      defaultTo(errorMessage, USEX_DEFAULT_ERROR_MESSAGE)
+      defaultTo(errorMessage, USEX_DEFAULT_ERROR_MESSAGE),
     );
     return contextValue as T;
   }
@@ -55,7 +55,7 @@ export function createContext<T>(defaultContextValue?: T): CtxApi<T> {
  * When nesting context runs, the the values of the current layer merges with the layers above it.
  */
 export function createCascade<T extends Record<string, unknown>>(
-  init?: (value: Partial<T>, parentContext: Maybe<T>) => Nullable<T>
+  init?: (value: Partial<T>, parentContext: Maybe<T>) => Nullable<T>,
 ): CtxCascadeApi<T> {
   const ctx = createContext<T>();
 
@@ -72,7 +72,7 @@ export function createCascade<T extends Record<string, unknown>>(
     const out = assign(
       {},
       parentContext ? parentContext : {},
-      optionalFunctionValue(init, value, parentContext) ?? value
+      optionalFunctionValue(init, value, parentContext) ?? value,
     ) as T;
 
     return ctx.run(Object.freeze(out), fn) as R;

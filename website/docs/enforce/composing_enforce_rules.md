@@ -45,8 +45,8 @@ enforce(userObj).shape({
           middle: enforce.optional(enforce.string()),
           last: enforce.string(),
         }),
-      })
-    )
+      }),
+    ),
   ),
 });
 ```
@@ -60,7 +60,7 @@ import 'vest/enforce/schema'; // for the schema rules
 const Entity = compose(
   enforce.loose({
     id: enforce.number(),
-  })
+  }),
 );
 
 const Person = compose(
@@ -70,7 +70,7 @@ const Person = compose(
       middle: enforce.optional(enforce.string()),
       last: enforce.string(),
     }),
-  })
+  }),
 );
 
 const User = compose(
@@ -79,7 +79,7 @@ const User = compose(
   enforce.loose({
     username: enforce.string(),
     friends: enforce.optional(enforce.arrayOf(User)),
-  })
+  }),
 );
 ```
 

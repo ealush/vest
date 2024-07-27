@@ -105,7 +105,7 @@ enforce({}).shape(
   partial({
     firstName: enforce.isString(),
     lastName: enforce.isString(),
-  })
+  }),
 );
 ```
 

@@ -28,7 +28,7 @@ export default create(data => {
     'username',
     'username already exists',
     () => doesUserExist(data.username),
-    [data.username]
+    [data.username],
   );
 });
 ```

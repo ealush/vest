@@ -68,14 +68,14 @@ logger.info(
   joinTruthy([
     `Running command ${command}`,
     package && `for package ${package}`,
-  ])
+  ]),
 );
 
 ctx.withPackage(package, () =>
   commands[command]({
     fastBuild,
     cliOptions: cliOptions.join(' '),
-  })
+  }),
 );
 
 function insidePackageDir() {

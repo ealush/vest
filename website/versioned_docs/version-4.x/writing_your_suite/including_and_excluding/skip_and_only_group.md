@@ -28,7 +28,7 @@ create(data => {
     test(
       'userName',
       'User not found. Please check if you typed it correctly.',
-      findUserName(data.username)
+      findUserName(data.username),
     );
   });
 

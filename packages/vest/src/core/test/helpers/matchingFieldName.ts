@@ -1,7 +1,7 @@
 import { Maybe } from 'vest-utils';
 
-import { TFieldName } from '@/suiteResult/SuiteResultTypes';
 import { WithFieldName } from '@/core/test/TestTypes';
+import { TFieldName } from '@/suiteResult/SuiteResultTypes';
 
 export function nonMatchingFieldName(
   WithFieldName: WithFieldName<TFieldName>,

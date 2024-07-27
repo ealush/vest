@@ -7,12 +7,12 @@ let enforce: TEnforceMock;
 
 describe(`enforce`, () => {
   beforeEach(() => {
-    jest.resetModules();
+    vi.resetModules();
     enforce = require('enforce').enforce as TEnforceMock;
   });
 
   afterEach(() => {
-    jest.resetModules();
+    vi.resetModules();
     global.Proxy = _proxy;
   });
 

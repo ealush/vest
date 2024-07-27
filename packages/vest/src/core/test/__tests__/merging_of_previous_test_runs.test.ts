@@ -84,7 +84,7 @@ describe('Merging of previous test runs', () => {
     });
 
     afterAll(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it('Should defer-throw an error', () => {

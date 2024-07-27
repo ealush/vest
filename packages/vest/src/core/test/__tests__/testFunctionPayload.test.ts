@@ -75,7 +75,7 @@ describe('Test Function Payload', () => {
 });
 
 function callPayload(
-  fn: jest.Mock<any, any, any>,
+  fn: vi.Mock<any, any, any>,
   call: number = 0,
   arg: number = 0,
 ) {

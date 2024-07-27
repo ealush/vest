@@ -39,7 +39,7 @@ describe('IsolateTest', () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it('Should set status to failed', () => {

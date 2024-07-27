@@ -82,8 +82,8 @@ describe('key', () => {
         vest = mockThrowError().vest;
       });
       afterEach(() => {
-        jest.resetModules();
-        jest.resetAllMocks();
+        vi.resetModules();
+        vi.resetAllMocks();
       });
       it('Should retain keyd tests', () => {
         const calls: TIsolateTest[][] = [];
@@ -208,8 +208,8 @@ describe('key', () => {
       });
 
       afterEach(() => {
-        jest.resetAllMocks();
-        jest.resetModules();
+        vi.resetAllMocks();
+        vi.resetModules();
       });
 
       it('Should throw a deferred error', () => {

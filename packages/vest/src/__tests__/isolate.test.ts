@@ -29,8 +29,8 @@ describe('isolate', () => {
   });
 
   afterEach(() => {
-    jest.resetModules();
-    jest.resetAllMocks();
+    vi.resetModules();
+    vi.resetAllMocks();
   });
 
   describe('Base behavior', () => {

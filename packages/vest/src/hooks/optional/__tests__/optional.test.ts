@@ -4,7 +4,7 @@ import wait from 'wait';
 
 import * as vest from 'vest';
 
-jest.useFakeTimers();
+vi.useFakeTimers();
 
 describe('optional hook', () => {
   describe('Auto Optional Interface', () => {
@@ -394,7 +394,7 @@ describe('optional hook', () => {
       describe('After the test completed', () => {
         it('Should be considered as non-valid', () => {
           const res = suite();
-          jest.runAllTimers();
+          vi.runAllTimers();
           expect(res.isValid()).toBe(false);
           expect(res.isValid('field_1')).toBe(false);
         });
@@ -425,7 +425,7 @@ describe('optional hook', () => {
       describe('After the test completed', () => {
         it('Should be considered as valid', async () => {
           suite();
-          await jest.runAllTimersAsync();
+          await vi.runAllTimersAsync();
           expect(suite.isValid()).toBe(true);
           expect(suite.isValid('field_1')).toBe(true);
         });
@@ -463,7 +463,7 @@ describe('optional hook', () => {
     describe('After the test completed', () => {
       it('Should be considered as valid', async () => {
         suite();
-        await jest.runAllTimersAsync();
+        await vi.runAllTimersAsync();
         expect(suite.isValid('field_2')).toBe(true);
         expect(suite.isValid()).toBe(true);
         expect(suite.isValid('field_1')).toBe(true);

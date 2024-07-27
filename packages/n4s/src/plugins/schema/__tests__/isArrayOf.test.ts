@@ -1,6 +1,6 @@
 import { enforce } from '@/runtime/enforce';
-import 'schema';
-import 'compounds';
+import '../../../exports/schema';
+import '../../../exports/compounds';
 import * as ruleReturn from '@/lib/ruleReturn';
 
 describe('enforce.isArrayOf', () => {

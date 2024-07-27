@@ -6,7 +6,6 @@ import { loose } from '../plugins/schema/loose';
 import { optional } from '../plugins/schema/optional';
 import { shape } from '../plugins/schema/shape';
 
-
 enforce.extend({ isArrayOf, loose, optional, shape });
 
 /* eslint-disable @typescript-eslint/no-namespace */

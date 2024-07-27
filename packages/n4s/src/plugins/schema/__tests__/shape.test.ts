@@ -1,7 +1,7 @@
 import * as ruleReturn from '@/lib/ruleReturn';
 import { enforce } from '@/runtime/enforce';
-import 'schema';
-import 'compounds';
+import '../../../exports/schema';
+import '../../../exports/compounds';
 
 describe('enforce.shape exact matching', () => {
   describe('lazy interface', () => {

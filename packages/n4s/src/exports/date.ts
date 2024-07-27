@@ -6,7 +6,6 @@ import isISO8601 from 'validator/es/lib/isISO8601';
 
 import { EnforceCustomMatcher } from '../lib/enforceUtilityTypes';
 
-
 enforce.extend({ isAfter, isBefore, isDate, isISO8601 });
 
 /* eslint-disable @typescript-eslint/no-namespace */

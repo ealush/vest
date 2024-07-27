@@ -1,7 +1,7 @@
-import { enforce } from '@/runtime/enforce';
 import * as ruleReturn from '@/lib/ruleReturn';
-import 'schema';
-import 'compounds';
+import { enforce } from '@/runtime/enforce';
+import '../../../exports/schema';
+import '../../../exports/compounds';
 
 describe('enforce.optional', () => {
   describe('lazy interface', () => {

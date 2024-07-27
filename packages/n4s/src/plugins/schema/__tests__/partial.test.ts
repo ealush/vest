@@ -1,7 +1,8 @@
 import * as ruleReturn from '@/lib/ruleReturn';
-import { enforce } from '@/runtime/enforce';
+import { enforce } from 'n4s';
 
-import 'compounds';
+import '../../../exports/schema';
+import '../../../exports/compounds';
 import { partial } from '../partial';
 
 describe('partial', () => {

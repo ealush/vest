@@ -1,6 +1,6 @@
-import { enforce } from '@/runtime/enforce';
 import * as ruleReturn from '@/lib/ruleReturn';
-import 'schema';
+import { enforce } from '@/runtime/enforce';
+import '../../../exports/schema';
 
 describe('enforce.loose for loose matching', () => {
   describe('lazy interface', () => {

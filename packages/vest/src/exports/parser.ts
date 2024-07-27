@@ -4,7 +4,6 @@ import { hasOwnProperty, invariant, isNullish, isPositive } from 'vest-utils';
 import { ErrorStrings } from '../errors/ErrorStrings';
 import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';
 
-
 export function parse<F extends TFieldName, G extends TGroupName>(
   summary: SuiteSummary<F, G>,
 ): ParsedVestObject<F> {

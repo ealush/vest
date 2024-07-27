@@ -70,9 +70,9 @@ describe('IsolateTest', () => {
     });
 
     describe('final statuses', () => {
-      let control = jest.fn();
+      let control = vi.fn();
       beforeEach(() => {
-        control = jest.fn();
+        control = vi.fn();
       });
       it('keep status unchanged when `failed`', () => {
         vest.create(() => {

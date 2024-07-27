@@ -2,12 +2,12 @@ import { Modes } from '@/hooks/optional/Modes';
 import * as vest from 'vest';
 
 describe('include', () => {
-  let cb1 = jest.fn(),
-    cb2 = jest.fn();
+  let cb1 = vi.fn(),
+    cb2 = vi.fn();
 
   beforeEach(() => {
-    cb1 = jest.fn(() => false);
-    cb2 = jest.fn(() => false);
+    cb1 = vi.fn(() => false);
+    cb2 = vi.fn(() => false);
   });
 
   describe('When not passing a string fieldName', () => {
@@ -196,7 +196,7 @@ describe('include', () => {
 
         describe('Callback evaluation', () => {
           it('Should run the callback for each matching test', () => {
-            const cb = jest.fn(() => true);
+            const cb = vi.fn(() => true);
             const suite = vest.create(() => {
               vest.mode(Modes.ALL);
               vest.only('field_1');
@@ -216,10 +216,10 @@ describe('include', () => {
             expect(cb).toHaveBeenCalledTimes(2);
           });
           it('Should evaluate per test run', () => {
-            const cb1 = jest.fn(() => false);
-            const cb2 = jest.fn(() => false);
-            const cb3 = jest.fn(() => false);
-            const cb4 = jest.fn(() => false);
+            const cb1 = vi.fn(() => false);
+            const cb2 = vi.fn(() => false);
+            const cb3 = vi.fn(() => false);
+            const cb4 = vi.fn(() => false);
 
             const suite = vest.create(() => {
               let shouldRun = false;

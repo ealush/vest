@@ -40,8 +40,8 @@ describe('isolate', () => {
     });
 
     it('Should retain test results between runs', () => {
-      const f1 = jest.fn(() => false);
-      const f2 = jest.fn(() => false);
+      const f1 = vi.fn(() => false);
+      const f2 = vi.fn(() => false);
       const suite = genSuite(() => {
         vest.skipWhen(!firstRun, () => {
           vest.test('f1', f1);

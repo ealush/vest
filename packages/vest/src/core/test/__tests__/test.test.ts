@@ -196,7 +196,7 @@ describe("Test Vest's `test` function", () => {
     });
 
     it('throws when field name is not a string', () => {
-      const control = jest.fn();
+      const control = vi.fn();
       vest.create(() => {
         // @ts-ignore
         expect(() => vest.test(undefined, () => undefined)).toThrow(
@@ -230,7 +230,7 @@ describe("Test Vest's `test` function", () => {
     });
 
     it('throws when callback is not a function', () => {
-      const control = jest.fn();
+      const control = vi.fn();
       vest.create(() => {
         // @ts-expect-error
         expect(() => vest.test('x')).toThrow(

@@ -49,7 +49,7 @@ describe('AsyncIsolate', () => {
   });
 
   it('Should emit an event when an async isolate is done running', () => {
-    const cb = jest.fn();
+    const cb = vi.fn();
     return new Promise<void>(async done => {
       let child = {} as TIsolate;
       withRunTime(() => {

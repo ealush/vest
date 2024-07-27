@@ -147,7 +147,7 @@ function genSuite() {
     vest.test('field_2', 'field_statement_2', () => {
       enforce(2).equals(3);
     });
-    vest.test('field_3', 'field_statement_3', jest.fn());
+    vest.test('field_3', 'field_statement_3', vi.fn());
     vest.test('field_4', 'field_statement_4', () => {
       vest.warn();
       throw new Error();

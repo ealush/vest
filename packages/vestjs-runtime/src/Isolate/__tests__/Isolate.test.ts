@@ -25,7 +25,7 @@ describe('Isolate', () => {
     });
 
     it('Should run the passed callback', () => {
-      const spy = jest.fn();
+      const spy = vi.fn();
       withRunTime(() => {
         Isolate.create(IsolateType.Isolate, spy);
       });

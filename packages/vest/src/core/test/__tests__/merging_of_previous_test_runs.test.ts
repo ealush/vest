@@ -91,7 +91,7 @@ describe('Merging of previous test runs', () => {
       suite = vest.create(() => {
         testContainer.push([
           counter === 0
-            ? vest.test('f1', jest.fn())
+            ? vest.test('f1', vi.fn())
             : vest.test('f2', () => false),
         ]);
         counter++;

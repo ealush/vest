@@ -17,8 +17,8 @@ describe('done', () => {
         dummyTest.failingWarning('field_2');
       })();
 
-      const doneCallback = jest.fn();
-      const fieldDoneCallback = jest.fn();
+      const doneCallback = vi.fn();
+      const fieldDoneCallback = vi.fn();
 
       result.done(doneCallback).done('field_2', fieldDoneCallback);
 
@@ -34,10 +34,10 @@ describe('done', () => {
         test.push(dummyTest.failingAsync('test', { time: 100 }));
       });
 
-      const doneCallback1 = jest.fn();
-      const fieldDoneCallback1 = jest.fn();
-      const doneCallback2 = jest.fn();
-      const fieldDoneCallback2 = jest.fn();
+      const doneCallback1 = vi.fn();
+      const fieldDoneCallback1 = vi.fn();
+      const doneCallback2 = vi.fn();
+      const fieldDoneCallback2 = vi.fn();
 
       suite().done(doneCallback1).done('test', fieldDoneCallback1);
       await wait(10);
@@ -53,11 +53,11 @@ describe('done', () => {
   describe('When there are async tests', () => {
     describe('When field name is not passed', () => {
       it('Should run the done callback after all the fields finished running', () => {
-        const check1 = jest.fn();
-        const check2 = jest.fn();
-        const check3 = jest.fn();
+        const check1 = vi.fn();
+        const check2 = vi.fn();
+        const check3 = vi.fn();
         return TestPromise(done => {
-          const doneCallback = jest.fn(() => {
+          const doneCallback = vi.fn(() => {
             expect(check1).toHaveBeenCalled();
             expect(check2).toHaveBeenCalled();
             expect(check3).toHaveBeenCalled();
@@ -289,8 +289,8 @@ describe('done', () => {
 
   describe('When suite re-runs and a pending test is now skipped', () => {
     it('Should immediately call the second done callback, omit the first', async () => {
-      const done_0 = jest.fn();
-      const done_1 = jest.fn();
+      const done_0 = vi.fn();
+      const done_1 = vi.fn();
 
       const suite = vest.create(username => {
         vest.test('username', () => {
@@ -320,7 +320,7 @@ describe('done', () => {
 
   describe('Passing a field that does not exist', () => {
     it('Should avoid calling the callback', () => {
-      const cb = jest.fn();
+      const cb = vi.fn();
 
       const suite = vest.create(() => {
         vest.test('test', () => {});
@@ -334,7 +334,7 @@ describe('done', () => {
 
   describe('When no tests are run', () => {
     it('Should run the callback', () => {
-      const cb = jest.fn();
+      const cb = vi.fn();
 
       const suite = vest.create(() => {});
 
@@ -345,7 +345,7 @@ describe('done', () => {
 
     describe('When tests are omitted', () => {
       it('Should run the callback', () => {
-        const cb = jest.fn();
+        const cb = vi.fn();
 
         const suite = vest.create(() => {
           vest.optional({ f1: true });
@@ -362,7 +362,7 @@ describe('done', () => {
 
   describe('When focused done call does not match executed tests', () => {
     it('Should not call the callback', () => {
-      const cb = jest.fn();
+      const cb = vi.fn();
 
       const suite = vest.create(() => {
         vest.test('test', () => false);
@@ -377,7 +377,7 @@ describe('done', () => {
   describe('Async Isolate', () => {
     describe('When async isolate is pending', () => {
       it('Should not call the callback', () => {
-        const cb = jest.fn();
+        const cb = vi.fn();
 
         const suite = vest.create(() => {
           vest.test('test', () => false);
@@ -395,7 +395,7 @@ describe('done', () => {
 
     describe('When async isolate is completed', () => {
       it('Should call the callback', async () => {
-        const cb = jest.fn();
+        const cb = vi.fn();
 
         const suite = vest.create(() => {
           vest.test('test', () => false);

@@ -3,8 +3,8 @@ import * as vest from 'vest';
 describe('Test Function Payload', () => {
   describe('AbortSignal', () => {
     it('Should pass abort signal to test functions', () => {
-      const testFnSync = jest.fn();
-      const testFnAsync = jest.fn().mockResolvedValue(undefined);
+      const testFnSync = vi.fn();
+      const testFnAsync = vi.fn().mockResolvedValue(undefined);
       const suite = vest.create(() => {
         vest.test('field_1', testFnSync);
         vest.test('field_2', testFnAsync);
@@ -17,7 +17,7 @@ describe('Test Function Payload', () => {
 
     describe('When test is not canceled', () => {
       it('Should proceed without aborting the test', async () => {
-        const testFn = jest.fn().mockResolvedValue(undefined);
+        const testFn = vi.fn().mockResolvedValue(undefined);
         const suite = vest.create(() => {
           vest.test('field_1', testFn);
         });
@@ -29,7 +29,7 @@ describe('Test Function Payload', () => {
 
     describe('When test is canceled', () => {
       it('Should abort the test', async () => {
-        const testFn = jest.fn().mockResolvedValue(undefined);
+        const testFn = vi.fn().mockResolvedValue(undefined);
         const suite = vest.create(() => {
           vest.test('field_1', testFn);
         });
@@ -41,7 +41,7 @@ describe('Test Function Payload', () => {
       });
 
       it('Should set the reason to `canceled`', async () => {
-        const testFn = jest.fn().mockResolvedValue(undefined);
+        const testFn = vi.fn().mockResolvedValue(undefined);
         const suite = vest.create(() => {
           vest.test('field_1', testFn);
         });
@@ -54,8 +54,8 @@ describe('Test Function Payload', () => {
 
     describe('Multiple async tests', () => {
       it('Should abort only the canceled test', async () => {
-        const testFn1 = jest.fn().mockResolvedValue(undefined);
-        const testFn2 = jest.fn().mockResolvedValue(undefined);
+        const testFn1 = vi.fn().mockResolvedValue(undefined);
+        const testFn2 = vi.fn().mockResolvedValue(undefined);
 
         const suite = vest.create((only?: string) => {
           vest.only(only);

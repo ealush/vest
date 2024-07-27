@@ -41,19 +41,19 @@ let validate: vest.Suite<
   TGroupName,
   ({ skip, skipGroup }: SuiteParams) => void
 >;
-let callback_1 = jest.fn(),
-  callback_2 = jest.fn(),
-  callback_3 = jest.fn(),
-  callback_4 = jest.fn(),
-  control = jest.fn();
+let callback_1 = vi.fn(),
+  callback_2 = vi.fn(),
+  callback_3 = vi.fn(),
+  callback_4 = vi.fn(),
+  control = vi.fn();
 
 describe('Stateful async tests', () => {
   beforeEach(() => {
-    callback_1 = jest.fn();
-    callback_2 = jest.fn();
-    callback_3 = jest.fn();
-    callback_4 = jest.fn();
-    control = jest.fn();
+    callback_1 = vi.fn();
+    callback_2 = vi.fn();
+    callback_3 = vi.fn();
+    callback_4 = vi.fn();
+    control = vi.fn();
     validate = suite();
   });
 
@@ -121,7 +121,7 @@ describe('Stateful async tests', () => {
 
   it('Should discard of re-tested async tests', async () => {
     const tests: Array<TIsolateTest> = [];
-    const control = jest.fn();
+    const control = vi.fn();
     const suite = vest.create(() => {
       tests.push(
         vest.test('field_1', tests.length.toString(), async () => {

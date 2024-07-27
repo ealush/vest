@@ -126,7 +126,7 @@ describe('optional hook', () => {
       });
 
       it('Should run the test but omit anyway', () => {
-        const fn = jest.fn(() => false);
+        const fn = vi.fn(() => false);
         const suite = vest.create(() => {
           vest.optional({
             f1: () => true,
@@ -201,7 +201,7 @@ describe('optional hook', () => {
         });
 
         it('Should avoid running the test to begin with', () => {
-          const fn = jest.fn();
+          const fn = vi.fn();
           const suite = vest.create(() => {
             vest.optional({
               field_1: true,

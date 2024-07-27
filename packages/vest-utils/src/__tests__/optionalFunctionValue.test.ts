@@ -1,4 +1,4 @@
-import { optionalFunctionValue } from 'vest-utils';
+import { optionalFunctionValue } from '@/vest-utils';
 
 describe('optionalFunctionValue', () => {
   describe('When not a function', () => {
@@ -12,13 +12,13 @@ describe('optionalFunctionValue', () => {
 
   describe('When value is a function', () => {
     it('Should call the function and return its return value', () => {
-      const value = jest.fn(() => 'return value');
+      const value = vi.fn(() => 'return value');
 
       expect(optionalFunctionValue(value)).toBe('return value');
       expect(value).toHaveBeenCalled();
     });
     it('Should run with arguments array', () => {
-      const value = jest.fn((...args) => args.join('|'));
+      const value = vi.fn((...args) => args.join('|'));
       const args = [1, 2, 3, 4];
       expect(optionalFunctionValue(value, ...args)).toBe('1|2|3|4');
       expect(value).toHaveBeenCalledWith(...args);

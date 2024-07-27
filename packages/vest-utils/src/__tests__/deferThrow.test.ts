@@ -1,11 +1,11 @@
-import { deferThrow } from 'vest-utils';
+import { deferThrow } from '@/vest-utils';
 
 // @ts-ignore
 const _to = global.setTimeout;
 describe('deferThrow', () => {
   beforeEach(() => {
     // @ts-ignore
-    global.setTimeout = jest.fn();
+    global.setTimeout = vi.fn();
   });
 
   afterEach(() => {

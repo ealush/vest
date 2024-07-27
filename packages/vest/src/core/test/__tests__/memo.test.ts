@@ -12,8 +12,8 @@ import { test as vestTest, enforce } from 'vest';
 describe('test.memo', () => {
   describe('cache hit', () => {
     it('Should return without calling callback', () => {
-      const cb1 = jest.fn();
-      const cb2 = jest.fn(() => TestPromise(() => undefined));
+      const cb1 = vi.fn();
+      const cb2 = vi.fn(() => TestPromise(() => undefined));
       const suite = vest.create(() => {
         vestTest.memo('f1', cb1, [1]);
         vestTest.memo('f1', cb2, [2]);
@@ -150,8 +150,8 @@ describe('test.memo', () => {
 
   describe('cache miss', () => {
     it('Should run test normally', () => {
-      const cb1 = jest.fn(res => res);
-      const cb2 = jest.fn(
+      const cb1 = vi.fn(res => res);
+      const cb2 = vi.fn(
         res => new Promise<void>((resolve, rej) => (res ? resolve() : rej())),
       );
       const suite = vest.create((key, res) => {

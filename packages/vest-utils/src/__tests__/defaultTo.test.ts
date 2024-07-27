@@ -1,9 +1,9 @@
-import { defaultTo } from 'vest-utils';
+import { defaultTo } from '@/vest-utils';
 
 describe('defaultTo', () => {
   describe('When value is a function', () => {
     it('Should call the function', () => {
-      const value = jest.fn(() => 'return value');
+      const value = vi.fn(() => 'return value');
 
       expect(defaultTo(value, 'fallback value')).toBe('return value');
       expect(value).toHaveBeenCalled();
@@ -41,7 +41,7 @@ describe('defaultTo', () => {
 
   describe('When the fallback value is a function', () => {
     it('Should call the function and return its return value', () => {
-      const fallbackValue = jest.fn(() => 'fallback value');
+      const fallbackValue = vi.fn(() => 'fallback value');
 
       expect(defaultTo(null, fallbackValue)).toBe('fallback value');
       expect(fallbackValue).toHaveBeenCalled();

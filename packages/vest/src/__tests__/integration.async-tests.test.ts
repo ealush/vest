@@ -13,7 +13,7 @@ function genSuite() {
     vest.test('field_2', 'field_statement_2', () => {
       vest.enforce(2).equals(3);
     });
-    vest.test('field_3', 'field_statement_3', jest.fn());
+    vest.test('field_3', 'field_statement_3', vi.fn());
     vest.test('field_4', 'field_statement_4', () => {
       vest.warn();
       throw new Error();
@@ -33,20 +33,20 @@ function genSuite() {
 let suite: TTestSuite;
 describe('Stateful behavior', () => {
   let result,
-    callback_1 = jest.fn(),
-    callback_2 = jest.fn(),
-    callback_3 = jest.fn(),
-    control = jest.fn();
+    callback_1 = vi.fn(),
+    callback_2 = vi.fn(),
+    callback_3 = vi.fn(),
+    control = vi.fn();
 
   beforeEach(() => {
     suite = genSuite();
   });
 
   beforeAll(() => {
-    callback_1 = jest.fn();
-    callback_2 = jest.fn();
-    callback_3 = jest.fn();
-    control = jest.fn();
+    callback_1 = vi.fn();
+    callback_2 = vi.fn();
+    callback_3 = vi.fn();
+    control = vi.fn();
   });
 
   test('Should have all fields', () =>

@@ -3,7 +3,7 @@ import ruleReturn, { failing, passing } from '@/lib/ruleReturn';
 
 describe('enforce.condition', () => {
   it('Should pass down enforced value to condition as the first argument', () => {
-    const condition = jest.fn(() => true);
+    const condition = vi.fn(() => true);
 
     enforce(1).condition(condition);
     expect(condition).toHaveBeenCalledWith(1);

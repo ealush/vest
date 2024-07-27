@@ -7,7 +7,7 @@ const suite = () =>
     vest.test('field_2', 'field_statement_2', () => {
       expect(2).toBe(3);
     });
-    vest.test('field_3', 'field_statement_3', jest.fn());
+    vest.test('field_3', 'field_statement_3', vi.fn());
     vest.test('field_4', 'field_statement_4', () => {
       vest.warn();
       throw new Error();
@@ -37,7 +37,7 @@ describe('Base behavior', () => {
   });
 
   it('Should run done callbacks immediately', () => {
-    const callback = jest.fn();
+    const callback = vi.fn();
     res.done(callback);
 
     expect(callback).toHaveBeenCalled();

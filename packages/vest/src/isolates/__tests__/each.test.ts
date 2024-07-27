@@ -8,7 +8,7 @@ import * as vest from 'vest';
 describe('each', () => {
   describe('When callback is not a function', () => {
     it('should throw', () => {
-      const control = jest.fn();
+      const control = vi.fn();
       const suite = vest.create(() => {
         expect(() => {
           // @ts-expect-error
@@ -23,7 +23,7 @@ describe('each', () => {
   });
 
   it('Should pass to callback the current list item and index', () => {
-    const cb = jest.fn();
+    const cb = vi.fn();
     const suite = vest.create(() => {
       vest.each([1, 2, 3, 'str'], cb);
     });

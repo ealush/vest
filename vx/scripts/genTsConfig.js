@@ -97,6 +97,7 @@ function rootTsConfigTemplate() {
       sourceMap: true,
       strict: true,
       target: 'ES2015',
+      types: ['vitest/globals'],
     },
     files: [`${vxPath.rel(vxPath.JEST_CONFIG_PATH)}/globals.d.ts`],
     include: [vxPath.rel(vxPath.packageSrc('*', '**/*.ts'))],

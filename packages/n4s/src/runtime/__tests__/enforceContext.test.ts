@@ -3,11 +3,11 @@ import * as ruleReturn from '@/lib/ruleReturn';
 import 'schema';
 import 'compounds';
 
-let keepContext = jest.fn();
+let keepContext = vi.fn();
 
 describe('enforce.context', () => {
   beforeEach(() => {
-    keepContext = jest.fn();
+    keepContext = vi.fn();
   });
 
   describe('base structure', () => {

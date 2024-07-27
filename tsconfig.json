@@ -18,7 +18,8 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "ES2015"
+    "target": "ES2015",
+    "types": ["vitest/globals"]
   },
   "files": ["./vx/config/jest/globals.d.ts"],
   "include": ["./packages/*/src/**/*.ts"]

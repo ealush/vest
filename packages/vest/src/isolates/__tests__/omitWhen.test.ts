@@ -6,19 +6,19 @@ import { omitWhen, only } from 'vest';
 
 describe('omitWhen', () => {
   let suite: TTestSuite;
-  let cb1 = jest.fn(),
-    cb2 = jest.fn(),
-    cb3 = jest.fn(),
-    cb4 = jest.fn(),
-    cb5 = jest.fn(),
+  let cb1 = vi.fn(),
+    cb2 = vi.fn(),
+    cb3 = vi.fn(),
+    cb4 = vi.fn(),
+    cb5 = vi.fn(),
     allFieldsPass: Maybe<boolean>;
 
   beforeEach(() => {
-    cb1 = jest.fn();
-    cb2 = jest.fn(() => (allFieldsPass ? undefined : false));
-    cb3 = jest.fn(() => (allFieldsPass ? undefined : false));
-    cb4 = jest.fn(() => (allFieldsPass ? undefined : false));
-    cb5 = jest.fn();
+    cb1 = vi.fn();
+    cb2 = vi.fn(() => (allFieldsPass ? undefined : false));
+    cb3 = vi.fn(() => (allFieldsPass ? undefined : false));
+    cb4 = vi.fn(() => (allFieldsPass ? undefined : false));
+    cb5 = vi.fn();
 
     suite = vest.create((omitConditional, currentField) => {
       only(currentField);

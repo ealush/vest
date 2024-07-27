@@ -5,9 +5,9 @@ import { dummyTest } from '../../testUtils/testDummy';
 import * as vest from 'vest';
 
 describe('skipWhen', () => {
-  let fn = jest.fn();
+  let fn = vi.fn();
   beforeEach(() => {
-    fn = jest.fn();
+    fn = vi.fn();
     suite.reset();
   });
   it('Should run callback both when condition is true or false', () => {
@@ -38,8 +38,8 @@ describe('skipWhen', () => {
   });
 
   it('Should pass result draft to the functional condition', () => {
-    const f = jest.fn();
-    const control = jest.fn();
+    const f = vi.fn();
+    const control = vi.fn();
 
     vest.create(() => {
       vest.skipWhen(draft => {

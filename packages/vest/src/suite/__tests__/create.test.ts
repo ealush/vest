@@ -10,11 +10,11 @@ import { create } from 'vest';
 describe('Test createSuite module', () => {
   describe('Test suite Arguments', () => {
     it('allows omitting suite name', () => {
-      expect(typeof create(jest.fn())).toBe('function');
-      expect(typeof create(jest.fn()).get).toBe('function');
-      expect(typeof create(jest.fn()).reset).toBe('function');
-      expect(typeof create(jest.fn()).remove).toBe('function');
-      expect(create(jest.fn()).get()).toMatchSnapshot();
+      expect(typeof create(vi.fn())).toBe('function');
+      expect(typeof create(vi.fn()).get).toBe('function');
+      expect(typeof create(vi.fn()).reset).toBe('function');
+      expect(typeof create(vi.fn()).remove).toBe('function');
+      expect(create(vi.fn()).get()).toMatchSnapshot();
     });
 
     it.each([faker.lorem.word(), null, undefined, 0, 1, true, false, NaN, ''])(
@@ -52,7 +52,7 @@ describe('Test createSuite module', () => {
       }));
 
     it('Passes all arguments over to tests callback', () => {
-      const testsCallback = jest.fn();
+      const testsCallback = vi.fn();
       const params = [
         1,
         2,
@@ -68,7 +68,7 @@ describe('Test createSuite module', () => {
   });
 
   describe('Initial run', () => {
-    const testsCb = jest.fn();
+    const testsCb = vi.fn();
     const genValidate = () => create(testsCb);
 
     it('Should initialize with an empty result object', () => {
@@ -84,7 +84,7 @@ describe('Test createSuite module', () => {
     });
 
     it('Should be able to get the suite from the result of createSuite', () => {
-      const testsCb = jest.fn();
+      const testsCb = vi.fn();
       expect(create(testsCb).get()).toMatchSnapshot();
     });
 

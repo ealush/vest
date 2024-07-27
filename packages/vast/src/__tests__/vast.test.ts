@@ -120,7 +120,7 @@ describe('vast state', () => {
 
   describe('onStateChange and onUpdate handlers', () => {
     it('Should run onStateChange handler when updating the state', () => {
-      const onStateChange = jest.fn();
+      const onStateChange = vi.fn();
       state = createState(onStateChange);
 
       const useKey1 = state.registerStateKey('v1');
@@ -134,8 +134,8 @@ describe('vast state', () => {
     });
 
     it('Should run onUpdate handler when updating the key', () => {
-      const onUpdate1 = jest.fn();
-      const onUpdate2 = jest.fn();
+      const onUpdate1 = vi.fn();
+      const onUpdate2 = vi.fn();
       state = createState();
 
       const useKey1 = state.registerStateKey('v1', onUpdate1);
@@ -159,8 +159,8 @@ describe('vast state', () => {
     });
 
     it('Should first run onUpdate and then onStateChange', () => {
-      const onUpdate = jest.fn();
-      const onChange = jest.fn();
+      const onUpdate = vi.fn();
+      const onChange = vi.fn();
       state = createState(onChange);
 
       state.registerStateKey('v1', onUpdate);

@@ -1,12 +1,12 @@
-import { bindNot } from 'vest-utils';
+import { bindNot } from '@/vest-utils';
 
 describe('bindNot', () => {
   it('Should return return a function', () => {
-    expect(typeof bindNot(jest.fn())).toBe('function');
+    expect(typeof bindNot(vi.fn())).toBe('function');
   });
 
   test('calling returned function runs accepted function', () => {
-    const fn = jest.fn();
+    const fn = vi.fn();
 
     expect(fn).not.toHaveBeenCalled();
     const not = bindNot(fn);
@@ -16,7 +16,7 @@ describe('bindNot', () => {
   });
 
   it('Should pass arguments to accepted function', () => {
-    const fn = jest.fn();
+    const fn = vi.fn();
 
     const not = bindNot(fn);
     not(1, 2, 3, 4);

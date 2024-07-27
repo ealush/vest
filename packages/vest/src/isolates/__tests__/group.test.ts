@@ -15,7 +15,7 @@ enum FieldNames {
 describe('named group', () => {
   it('should run group callback', () => {
     const groupName = 'groupName';
-    const callback = jest.fn();
+    const callback = vi.fn();
     vest.create(() => {
       vest.group(groupName, callback);
     })();
@@ -23,9 +23,9 @@ describe('named group', () => {
   });
 
   it('Should run the tests within the group', () => {
-    const cb1 = jest.fn(() => false);
-    const cb2 = jest.fn(() => false);
-    const cb3 = jest.fn(() => {});
+    const cb1 = vi.fn(() => false);
+    const cb2 = vi.fn(() => false);
+    const cb3 = vi.fn(() => {});
     const suite = vest.create(() => {
       vest.mode(vest.Modes.ALL);
       vest.test(FieldNames.F1, () => false);
@@ -76,9 +76,9 @@ describe('named group', () => {
 
   describe('Multiple groups', () => {
     it('Should run the tests within the groups', () => {
-      const cb1 = jest.fn(() => false);
-      const cb2 = jest.fn(() => false);
-      const cb3 = jest.fn(() => {});
+      const cb1 = vi.fn(() => false);
+      const cb2 = vi.fn(() => false);
+      const cb3 = vi.fn(() => {});
       const suite = vest.create(() => {
         vest.mode(vest.Modes.ALL);
         vest.test(FieldNames.F1, () => false);
@@ -146,8 +146,8 @@ describe('named group', () => {
   describe('Focus', () => {
     describe('skip outside of group', () => {
       it('Should skip `skipped` tests both inside and outside the group', () => {
-        const cb1 = jest.fn(() => false);
-        const cb2 = jest.fn(() => false);
+        const cb1 = vi.fn(() => false);
+        const cb2 = vi.fn(() => false);
         const suite = vest.create(() => {
           vest.mode(vest.Modes.ALL);
 
@@ -178,9 +178,9 @@ describe('named group', () => {
 
     describe('skip inside the group', () => {
       it('should skip only within the group', () => {
-        const cb1 = jest.fn(() => false);
-        const cb2 = jest.fn(() => false);
-        const cb3 = jest.fn(() => false);
+        const cb1 = vi.fn(() => false);
+        const cb2 = vi.fn(() => false);
+        const cb3 = vi.fn(() => false);
         const suite = vest.create(() => {
           vest.mode(vest.Modes.ALL);
 
@@ -210,9 +210,9 @@ describe('named group', () => {
       });
 
       it('should skip only within the group, not the next group', () => {
-        const cb1 = jest.fn(() => false);
-        const cb2 = jest.fn(() => false);
-        const cb3 = jest.fn(() => false);
+        const cb1 = vi.fn(() => false);
+        const cb2 = vi.fn(() => false);
+        const cb3 = vi.fn(() => false);
         const suite = vest.create(() => {
           vest.mode(vest.Modes.ALL);
 
@@ -248,9 +248,9 @@ describe('named group', () => {
 
       describe('skip(true)', () => {
         it('should skip only within the group', () => {
-          const cb1 = jest.fn(() => false);
-          const cb2 = jest.fn(() => false);
-          const cb3 = jest.fn(() => false);
+          const cb1 = vi.fn(() => false);
+          const cb2 = vi.fn(() => false);
+          const cb3 = vi.fn(() => false);
           const suite = vest.create(() => {
             vest.mode(vest.Modes.ALL);
 
@@ -297,10 +297,10 @@ describe('named group', () => {
     describe('only', () => {
       describe('top level only', () => {
         it('should skip all tests except `only` tests', () => {
-          const cb1 = jest.fn(() => false);
-          const cb2 = jest.fn(() => false);
-          const cb3 = jest.fn(() => false);
-          const cb4 = jest.fn(() => false);
+          const cb1 = vi.fn(() => false);
+          const cb2 = vi.fn(() => false);
+          const cb3 = vi.fn(() => false);
+          const cb4 = vi.fn(() => false);
           const suite = vest.create(() => {
             vest.mode(vest.Modes.ALL);
 
@@ -353,9 +353,9 @@ describe('named group', () => {
 
       describe('group only', () => {
         it('Should skip all tests except `only` tests within the group', () => {
-          const cb1 = jest.fn(() => false);
-          const cb2 = jest.fn(() => false);
-          const cb3 = jest.fn(() => false);
+          const cb1 = vi.fn(() => false);
+          const cb2 = vi.fn(() => false);
+          const cb3 = vi.fn(() => false);
           const suite = vest.create(() => {
             vest.mode(vest.Modes.ALL);
 
@@ -406,9 +406,9 @@ describe('named group', () => {
 
 describe('unnamed groups', () => {
   it('Should run tests normally', () => {
-    const cb1 = jest.fn(() => false);
-    const cb2 = jest.fn(() => false);
-    const cb3 = jest.fn(() => false);
+    const cb1 = vi.fn(() => false);
+    const cb2 = vi.fn(() => false);
+    const cb3 = vi.fn(() => false);
     const suite = vest.create(() => {
       vest.mode(vest.Modes.ALL);
 
@@ -448,9 +448,9 @@ describe('unnamed groups', () => {
 
   describe('with only', () => {
     it('Should only run the tests specified by only', () => {
-      const cb1 = jest.fn(() => false);
-      const cb2 = jest.fn(() => false);
-      const cb3 = jest.fn(() => false);
+      const cb1 = vi.fn(() => false);
+      const cb2 = vi.fn(() => false);
+      const cb3 = vi.fn(() => false);
       const suite = vest.create(() => {
         vest.mode(vest.Modes.ALL);
 
@@ -478,9 +478,9 @@ describe('unnamed groups', () => {
 
   describe('with skip', () => {
     it('Should skip the tests specified by skip', () => {
-      const cb1 = jest.fn(() => false);
-      const cb2 = jest.fn(() => false);
-      const cb3 = jest.fn(() => false);
+      const cb1 = vi.fn(() => false);
+      const cb2 = vi.fn(() => false);
+      const cb3 = vi.fn(() => false);
       const suite = vest.create(() => {
         vest.mode(vest.Modes.ALL);
 
@@ -508,9 +508,9 @@ describe('unnamed groups', () => {
 
   describe('With skip(true)', () => {
     it('Should skip all tests in group', () => {
-      const cb1 = jest.fn(() => false);
-      const cb2 = jest.fn(() => false);
-      const cb3 = jest.fn(() => false);
+      const cb1 = vi.fn(() => false);
+      const cb2 = vi.fn(() => false);
+      const cb3 = vi.fn(() => false);
       const suite = vest.create(() => {
         vest.mode(vest.Modes.ALL);
 

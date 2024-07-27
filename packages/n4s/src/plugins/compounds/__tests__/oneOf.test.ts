@@ -1,8 +1,8 @@
-import { enforce } from '@/runtime/enforce';
 import * as ruleReturn from '@/lib/ruleReturn';
+import { enforce } from '@/runtime/enforce';
 
-import 'schema';
-import 'compounds';
+import '../../../exports/schema';
+import '../../../exports/compounds';
 
 describe('enforce.oneOf', () => {
   it('Should fail when multiple enforcements are met', () => {

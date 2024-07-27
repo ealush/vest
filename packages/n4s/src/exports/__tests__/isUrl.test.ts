@@ -1,5 +1,5 @@
 import { enforce } from 'n4s';
-import 'isURL';
+import '../isURL';
 
 describe('isURL', () => {
   it('Should pass for valid URLs', () => {

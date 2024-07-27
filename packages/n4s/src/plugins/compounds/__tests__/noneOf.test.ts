@@ -1,7 +1,7 @@
 import * as ruleReturn from '@/lib/ruleReturn';
 import { enforce } from '@/runtime/enforce';
 
-import 'compounds';
+import '../../../exports/compounds';
 
 describe('noneOf', () => {
   describe('Lazy Assertions', () => {

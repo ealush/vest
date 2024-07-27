@@ -1,6 +1,6 @@
-import { enforce } from '@/runtime/enforce';
 import * as ruleReturn from '@/lib/ruleReturn';
-import 'compounds';
+import { enforce } from '@/runtime/enforce';
+import '../../../exports/compounds';
 
 describe('allOf', () => {
   describe('Lazy Assertions', () => {

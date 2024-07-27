@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { dummyTest } from '../../../testUtils/testDummy';
 
-import * as vest from '@/vest';
+import * as vest from 'vest';
 
 describe('produce method: hasFailures', () => {
   const fieldName = faker.lorem.word();

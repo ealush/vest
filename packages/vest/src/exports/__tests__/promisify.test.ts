@@ -6,7 +6,7 @@ import { TestPromise } from '../../testUtils/testPromise';
 import promisify from '../promisify';
 
 import { TFieldName } from '@/suiteResult/SuiteResultTypes';
-import * as vest from '@/vest';
+import * as vest from 'vest';
 
 describe('Utility: promisify', () => {
   let validatorFn: Mock;

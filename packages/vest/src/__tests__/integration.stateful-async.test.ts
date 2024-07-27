@@ -7,7 +7,7 @@ import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
 import { Modes } from '@/hooks/optional/Modes';
 import { TFieldName, TGroupName } from '@/suiteResult/SuiteResultTypes';
 import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
-import * as vest from '@/vest';
+import * as vest from 'vest';
 
 type SuiteParams = { skip?: string; skipGroup?: true };
 

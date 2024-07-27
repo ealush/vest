@@ -1,5 +1,5 @@
 import { TTestSuite } from '@/testUtils/TVestMock';
-import * as vest from '@/vest';
+import * as vest from 'vest';
 
 describe('Suite Selectors on Suite', () => {
   let suite: TTestSuite;

@@ -2,8 +2,8 @@ import wait from 'wait';
 
 import { VestIsolateType } from '@/core/isolate/VestIsolateType';
 import { SuiteSerializer } from '@exports/SuiteSerializer';
-import * as vest from '@/vest';
-import { staticSuite } from '@/vest';
+import * as vest from 'vest';
+import { staticSuite } from 'vest';
 
 describe('staticSuite', () => {
   it('Should return a function', () => {

@@ -1,4 +1,4 @@
-import * as vest from '@/vest';
+import * as vest from 'vest';
 
 describe('->getFailure (singular form)', () => {
   describe('getError', () => {

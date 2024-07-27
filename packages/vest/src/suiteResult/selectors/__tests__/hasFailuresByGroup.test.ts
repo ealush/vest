@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import { dummyTest } from '../../../testUtils/testDummy';
 
 import { TTestSuite } from '@/testUtils/TVestMock';
-import * as vest from '@/vest';
+import * as vest from 'vest';
 
 const fieldName = faker.lorem.word();
 const groupName = faker.lorem.word();

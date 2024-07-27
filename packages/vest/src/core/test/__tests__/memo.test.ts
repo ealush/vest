@@ -6,8 +6,8 @@ import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
 import { Modes } from '@/hooks/optional/Modes';
 import promisify from '@exports/promisify';
-import * as vest from '@/vest';
-import { test as vestTest, enforce } from '@/vest';
+import * as vest from 'vest';
+import { test as vestTest, enforce } from 'vest';
 
 describe('test.memo', () => {
   describe('cache hit', () => {

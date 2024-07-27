@@ -1,4 +1,4 @@
-import * as vest from '@/vest';
+import * as vest from 'vest';
 
 enum GroupNames {
   G1 = 'g1',

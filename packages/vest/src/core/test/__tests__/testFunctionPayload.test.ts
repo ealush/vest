@@ -1,4 +1,4 @@
-import * as vest from '@/vest';
+import * as vest from 'vest';
 
 describe('Test Function Payload', () => {
   describe('AbortSignal', () => {

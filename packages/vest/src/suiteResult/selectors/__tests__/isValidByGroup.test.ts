@@ -13,8 +13,8 @@ import {
   skip,
   only,
   group,
-} from '@/vest';
-import * as vest from '@/vest';
+} from 'vest';
+import * as vest from 'vest';
 
 const GROUP_NAME = 'group_1';
 

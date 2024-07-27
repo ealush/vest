@@ -1,9 +1,9 @@
+import { suiteSelectors, SuiteSummary } from 'vest';
 import { hasOwnProperty, invariant, isNullish, isPositive } from 'vest-utils';
 
 import { ErrorStrings } from '../errors/ErrorStrings';
 import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';
 
-import { suiteSelectors, SuiteSummary } from '@/vest';
 
 export function parse<F extends TFieldName, G extends TGroupName>(
   summary: SuiteSummary<F, G>,

@@ -1,6 +1,6 @@
 import { SuiteSerializer } from '../SuiteSerializer';
 
-import * as vest from '@/vest';
+import * as vest from 'vest';
 
 describe('SuiteSerializer', () => {
   it('Should produce a valid serialized dump', () => {

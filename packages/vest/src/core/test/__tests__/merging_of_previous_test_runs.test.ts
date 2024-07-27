@@ -4,7 +4,7 @@ import { dummyTest } from '../../../testUtils/testDummy';
 
 import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
 import { Modes } from '@/hooks/optional/Modes';
-import * as vest from '@/vest';
+import * as vest from 'vest';
 
 describe('Merging of previous test runs', () => {
   let suite: TTestSuite;

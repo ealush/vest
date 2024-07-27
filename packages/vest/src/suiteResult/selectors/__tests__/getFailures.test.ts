@@ -1,7 +1,7 @@
 import { dummyTest } from '../../../testUtils/testDummy';
 
 import { Modes } from '@/hooks/optional/Modes';
-import * as vest from '@/vest';
+import * as vest from 'vest';
 
 describe('->getFailures', () => {
   describe(`getErrors`, () => {

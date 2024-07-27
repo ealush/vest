@@ -1,6 +1,7 @@
+import { enforce } from 'n4s';
+
 import { EnforceCustomMatcher } from '@/lib/enforceUtilityTypes';
 import { RuleDetailedResult } from '@/lib/ruleReturn';
-import { enforce } from '@/n4s';
 import { allOf } from '@/plugins/compounds/allOf';
 import { anyOf } from '@/plugins/compounds/anyOf';
 import { noneOf } from '@/plugins/compounds/noneOf';

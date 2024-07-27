@@ -1,5 +1,5 @@
 import { TFieldName, TGroupName } from '@/suiteResult/SuiteResultTypes';
-import * as vest from '@/vest';
+import * as vest from 'vest';
 
 export type TVestMock = typeof vest;
 

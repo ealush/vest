@@ -7,11 +7,12 @@ import {
   text,
 } from 'vest-utils';
 import { expandObject, minifyObject } from 'vest-utils/minifyObject';
+import { IsolateMutator } from 'vestjs-runtime';
 
-import { TIsolate } from '../../types/vestjs-runtime';
 import { ExcludedFromDump, IsolateKeys } from '../Isolate/IsolateKeys';
 import { ErrorStrings } from '../errors/ErrorStrings';
-import { IsolateMutator } from '../vestjs-runtime';
+
+import { TIsolate } from '@/Isolate/Isolate';
 
 export class IsolateSerializer {
   // eslint-disable-next-line max-statements, complexity, max-lines-per-function

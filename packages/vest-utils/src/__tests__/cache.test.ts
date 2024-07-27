@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { cache } from '@/vest-utils';
+import { cache } from 'vest-utils';
 
 describe('lib: cache', () => {
   let c: ReturnType<typeof cache>;

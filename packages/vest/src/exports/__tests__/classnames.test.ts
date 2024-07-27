@@ -3,7 +3,7 @@ import classnames from '../classnames';
 import promisify from '../promisify';
 
 import { Modes } from '@/hooks/optional/Modes';
-import * as vest from '@/vest';
+import * as vest from 'vest';
 
 describe('Utility: classnames', () => {
   describe('When called without a vest result object', () => {

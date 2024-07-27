@@ -1,6 +1,6 @@
 import wait from 'wait';
 
-import * as vest from '@/vest';
+import * as vest from 'vest';
 
 describe('isPending()', () => {
   describe('base case', () => {

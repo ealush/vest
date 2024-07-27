@@ -5,7 +5,7 @@ import {
   isObject,
   isFunction,
   isStringValue,
-} from '@/vest-utils';
+} from 'vest-utils';
 
 // Basic key generator that generates keys like a, b, c, ... aa, ab, ac, ...
 function genMinifiedKey() {

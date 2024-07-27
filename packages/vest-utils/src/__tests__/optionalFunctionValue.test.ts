@@ -1,4 +1,4 @@
-import { optionalFunctionValue } from '@/vest-utils';
+import { optionalFunctionValue } from 'vest-utils';
 
 describe('optionalFunctionValue', () => {
   describe('When not a function', () => {

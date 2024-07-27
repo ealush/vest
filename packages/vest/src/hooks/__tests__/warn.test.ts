@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { ErrorStrings } from '@/errors/ErrorStrings';
 import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
-import * as vest from '@/vest';
+import * as vest from 'vest';
 
 const { create, test, warn } = vest;
 

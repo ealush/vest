@@ -1,7 +1,7 @@
+import * as ruleReturn from '@/lib/ruleReturn';
 import { enforce } from '@/runtime/enforce';
 import '../../../exports/schema';
 import '../../../exports/compounds';
-import * as ruleReturn from '@/lib/ruleReturn';
 
 describe('enforce.isArrayOf', () => {
   describe('lazy interface', () => {

@@ -1,9 +1,10 @@
+import { partial } from '../partial';
+
 import * as ruleReturn from '@/lib/ruleReturn';
 import { enforce } from 'n4s';
 
 import '../../../exports/schema';
 import '../../../exports/compounds';
-import { partial } from '../partial';
 
 describe('partial', () => {
   describe('Lazy Interface', () => {

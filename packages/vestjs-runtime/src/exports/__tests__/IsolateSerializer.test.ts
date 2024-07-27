@@ -1,4 +1,4 @@
-import { CB, Maybe } from 'vest-utils';
+import { CB } from 'vest-utils';
 
 import { IsolateSerializer } from '../IsolateSerializer';
 
@@ -78,22 +78,6 @@ describe('IsolateSerializer', () => {
         root.children[0].status = 'done';
         // @ts-ignore
         root.children[1].status = 'failed';
-
-        const minimap = {
-          values: {
-            status: {
-              pending: 'p',
-              done: 'd',
-              failed: 'f',
-            },
-            $type: {
-              URoot: 'UR',
-              UChild_1: 'UC1',
-              UChild_2: 'UC2',
-              UChild_3: 'UC3',
-            },
-          },
-        };
 
         const serialized = IsolateSerializer.serialize(root);
         const inflated = IsolateSerializer.deserialize(serialized);
@@ -191,7 +175,7 @@ function withRunTime<T>(fn: CB<T>) {
   });
 }
 
-function createRoot(miniMap?: Maybe<Record<string, any>>) {
+function createRoot() {
   let serialized: string, root: TIsolate;
 
   withRunTime(() => {

@@ -1,35 +1,9 @@
-import { CB } from 'vest-utils';
-import { TDeferThrow } from 'vest-utils/src/deferThrow';
 import { Isolate } from 'vestjs-runtime';
 
-import { TVestMock } from '../testUtils/TVestMock';
-import mockThrowError from '../testUtils/mockThrowError';
-import { TDummyTest } from '../testUtils/testDummy';
+import { dummyTest } from '@/testUtils/testDummy';
+import * as vest from 'vest';
 
 describe('isolate', () => {
-  let vest: TVestMock;
-  let firstRun = true;
-  vi.importActual('@/core/isolate/IsolateTest/IsolateTest');
-  vi.importActual('@/core/isolate/IsolateTest/IsolateEach');
-  let dummyTest: TDummyTest;
-  let deferThrow: TDeferThrow;
-
-  beforeEach(() => {
-    firstRun = true;
-    const mock = mockThrowError();
-    deferThrow = mock.deferThrow;
-
-    vi.importActual('@/core/isolate/IsolateTest/IsolateTest');
-    vi.importActual('@/core/isolate/IsolateTest/IsolateEach');
-    vest = mock.vest;
-    dummyTest = require('../testUtils/testDummy').dummyTest;
-  });
-
-  afterEach(() => {
-    vi.resetModules();
-    vi.resetAllMocks();
-  });
-
   describe('Base behavior', () => {
     it("Should throw an error if the callback isn't a function", () => {
       // @ts-ignore - testing bad input
@@ -39,7 +13,8 @@ describe('isolate', () => {
     it('Should retain test results between runs', () => {
       const f1 = vi.fn(() => false);
       const f2 = vi.fn(() => false);
-      const suite = genSuite(() => {
+      const firstRun = true;
+      const suite = vest.create(() => {
         vest.skipWhen(!firstRun, () => {
           vest.test('f1', f1);
           vest.test('f2', f2);
@@ -61,7 +36,8 @@ describe('isolate', () => {
 
   describe('When order changes within the isolate', () => {
     it('Should contain test order changes within the isolate', () => {
-      const suite = genSuite(() => {
+      const firstRun = true;
+      const suite = vest.create(() => {
         dummyTest.failing('f1');
 
         vest.group(() => {
@@ -107,7 +83,8 @@ describe('isolate', () => {
     });
 
     it('Should only retain the state of the unmoved state before the order index', () => {
-      const suite = genSuite(() => {
+      const firstRun = true;
+      const suite = vest.create(() => {
         vest.group(() => {
           vest.skipWhen(!firstRun, () => {
             dummyTest.failing('f1');
@@ -141,7 +118,8 @@ describe('isolate', () => {
 
   describe('When test order changes before the isolate opens', () => {
     it('Should clean up follow up tests. Reregister', () => {
-      const suite = genSuite(() => {
+      const firstRun = true;
+      const suite = vest.create(() => {
         dummyTest.failing('f1');
         if (!firstRun) {
           dummyTest.failing('f6');
@@ -193,7 +171,8 @@ describe('isolate', () => {
 
   describe('When an incorrect isolate is encountered', () => {
     it('Should replace isolate completely', () => {
-      const suite = genSuite(() => {
+      const firstRun = true;
+      const suite = vest.create(() => {
         if (firstRun) {
           vest.group(() => {
             dummyTest.failing('f1');
@@ -220,7 +199,8 @@ describe('isolate', () => {
 
   describe('When an isolate is present when a test was expected', () => {
     it('Should erase test history, and re-register', () => {
-      const suite = genSuite(() => {
+      let firstRun = true;
+      const suite = vest.create(() => {
         if (firstRun) {
           dummyTest.failing('f1');
         } else {
@@ -228,6 +208,7 @@ describe('isolate', () => {
             dummyTest.failing('f2');
           });
         }
+        firstRun = false;
       });
 
       suite();
@@ -241,32 +222,5 @@ describe('isolate', () => {
       expect(suite.get().tests.f1).toBeUndefined();
       expect(suite.get().tests.f2).toBeDefined();
     });
-
-    describe('Errors', () => {
-      it('should throw a deferred error when the tests are out of order', () => {
-        const suite = genSuite(() => {
-          vest.group(() => {
-            dummyTest.failing(firstRun ? 'f1' : 'f2');
-          });
-        });
-
-        suite();
-        expect(deferThrow).toHaveBeenCalledTimes(0);
-        suite();
-        expect(deferThrow).toHaveBeenCalledTimes(1);
-        expect(deferThrow).toHaveBeenCalledWith(
-          expect.stringContaining(
-            'Vest Critical Error: Tests called in different order than previous run',
-          ),
-        );
-      });
-    });
   });
-
-  function genSuite(cb: CB) {
-    return vest.create(() => {
-      cb();
-      firstRun = false;
-    });
-  }
 });

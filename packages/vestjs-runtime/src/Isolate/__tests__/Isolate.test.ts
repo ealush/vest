@@ -13,7 +13,7 @@ describe('Isolate', () => {
   let stateRef: StateRefType;
 
   beforeEach(() => {
-    stateRef = VestRuntime.createRef({});
+    stateRef = VestRuntime.createRef({}, v => v);
   });
 
   describe('Isolate.create', () => {
@@ -108,7 +108,7 @@ describe('Isolate', () => {
       const isolate = withRunTime(() => {
         return Isolate.create(IsolateType.Isolate, () => {});
       });
-      const spy = jest.spyOn(isolate.abortController, 'abort');
+      const spy = vi.spyOn(isolate.abortController, 'abort');
       IsolateMutator.abort(isolate, 'foo');
       expect(spy).toHaveBeenCalledWith('foo');
     });

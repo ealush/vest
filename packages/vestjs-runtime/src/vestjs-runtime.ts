@@ -7,4 +7,3 @@ export { IsolateInspector } from '@/Isolate/IsolateInspector';
 export { IsolateMutator } from '@/Isolate/IsolateMutator';
 export * as Bus from '@/Bus';
 export * as IsolateSelectors from '@/Isolate/IsolateSelectors';
-export { IsolateSerializer } from '@exports/IsolateSerializer';

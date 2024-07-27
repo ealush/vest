@@ -1,5 +1,5 @@
-import { enforce } from 'n4s';
-import 'date';
+import { enforce } from '@/n4s';
+import '../date';
 
 describe('date', () => {
   describe('isDate', () => {

@@ -1,8 +1,9 @@
 import wait from 'wait';
 
+import debounce from '../debounce';
+
 import { TestFnPayload } from '@/core/test/TestTypes';
 import * as vest from 'vest';
-import debounce from '@exports/debounce';
 
 describe('debounce', () => {
   describe('Sync test', () => {

@@ -1,11 +1,11 @@
 import wait from 'wait';
 
+import promisify from '../../../exports/promisify';
 import { TestPromise } from '../../../testUtils/testPromise';
 
 import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
 import { Modes } from '@/hooks/optional/Modes';
-import promisify from '@exports/promisify';
 import * as vest from 'vest';
 import { test as vestTest, enforce } from 'vest';
 

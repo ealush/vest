@@ -1,6 +1,6 @@
 import { Maybe } from 'vest-utils';
 
-import { TFieldName } from '@/suiteResult/SuiteResultTypes';
+import type { TFieldName } from '@/suiteResult/SuiteResultTypes';
 
 export type TestFnPayload = { signal: AbortSignal };
 

@@ -1,6 +1,7 @@
 import { CB, Maybe } from 'vest-utils';
 
-import { IsolateSerializer } from '@exports/IsolateSerializer';
+import { IsolateSerializer } from '../IsolateSerializer';
+
 import { Isolate, TIsolate, VestRuntime } from 'vestjs-runtime';
 
 describe('IsolateSerializer', () => {

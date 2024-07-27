@@ -7,9 +7,7 @@ export default defineConfig({
   test: {
     globals: true,
     include: ['packages/*/**/__tests__/*.test.ts'],
-    setupFiles: [
-      path.resolve(__dirname, './vx/config/vitest/customMatchers.ts'),
-    ],
+    setupFiles: ['./vx/config/vitest/customMatchers'],
   },
   root: __dirname,
   plugins: [

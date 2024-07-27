@@ -1,4 +1,4 @@
-import { CB, Maybe } from 'vest-utils';
+import type { CB, Maybe } from 'vest-utils';
 import { TIsolate, Isolate, IsolateKey } from 'vestjs-runtime';
 
 import {
@@ -6,9 +6,9 @@ import {
   TestStatus,
 } from '@/core/StateMachines/IsolateTestStateMachine';
 import { VestIsolateType } from '@/core/isolate/VestIsolateType';
-import { AsyncTest, TestFn } from '@/core/test/TestTypes';
+import type { AsyncTest, TestFn } from '@/core/test/TestTypes';
 import { TestSeverity } from '@/suiteResult/Severity';
-import { TFieldName, TGroupName } from '@/suiteResult/SuiteResultTypes';
+import type { TFieldName, TGroupName } from '@/suiteResult/SuiteResultTypes';
 
 export type TIsolateTest<
   F extends TFieldName = TFieldName,

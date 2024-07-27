@@ -8,7 +8,7 @@ let enforce: TEnforceMock;
 describe(`enforce`, () => {
   beforeEach(() => {
     vi.resetModules();
-    enforce = require('enforce').enforce as TEnforceMock;
+    enforce = require('n4s').enforce as TEnforceMock;
   });
 
   afterEach(() => {

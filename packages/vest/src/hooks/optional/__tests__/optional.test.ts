@@ -2,7 +2,7 @@ import { TTestSuite } from '@/testUtils/TVestMock';
 import { BlankValue } from 'vest-utils';
 import wait from 'wait';
 
-import * as vest from 'vest';
+import * as vest from '@/vest';
 
 vi.useFakeTimers();
 

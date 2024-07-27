@@ -4,7 +4,7 @@ import { TestPromise } from '../testUtils/testPromise';
 
 import { Modes } from '@/hooks/optional/Modes';
 import { TTestSuite } from '@/testUtils/TVestMock';
-import * as vest from 'vest';
+import * as vest from '@/vest';
 
 function genSuite() {
   return vest.create(() => {

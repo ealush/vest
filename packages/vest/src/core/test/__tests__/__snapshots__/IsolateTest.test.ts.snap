@@ -1,4 +1,42 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`IsolateTest > TestObject constructor 1`] = `
+{
+  "$type": "UnitTest",
+  "children": [],
+  "data": {
+    "fieldName": "unicycle",
+    "message": "I am Root.",
+    "severity": "error",
+    "testFn": [MockFunction spy],
+    "type": "Test",
+  },
+  "key": null,
+  "keys": {},
+  "output": null,
+  "parent": null,
+  "status": "UNTESTED",
+}
+`;
+
+exports[`IsolateTest > testObject.warn > Should mark the test as warning 1`] = `
+{
+  "$type": "UnitTest",
+  "children": [],
+  "data": {
+    "fieldName": "unicycle",
+    "message": "I am Root.",
+    "severity": "warning",
+    "testFn": [MockFunction spy],
+    "type": "Test",
+  },
+  "key": null,
+  "keys": {},
+  "output": null,
+  "parent": null,
+  "status": "UNTESTED",
+}
+`;
 
 exports[`IsolateTest TestObject constructor 1`] = `
 {

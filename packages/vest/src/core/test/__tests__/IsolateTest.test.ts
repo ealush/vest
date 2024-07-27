@@ -4,7 +4,7 @@ import { TestPromise } from '../../../testUtils/testPromise';
 
 import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
-import * as vest from 'vest';
+import * as vest from '@/vest';
 import { mockIsolateTest } from '@/testUtils/vestMocks';
 
 const fieldName = 'unicycle';

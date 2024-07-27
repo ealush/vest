@@ -4,8 +4,8 @@ import { dummyTest } from '../../../testUtils/testDummy';
 
 import { Modes } from '@/hooks/optional/Modes';
 import { SuiteResult } from '@/suiteResult/SuiteResultTypes';
-import { create, group } from 'vest';
-import * as vest from 'vest';
+import { create, group } from '@/vest';
+import * as vest from '@/vest';
 
 describe('collectFailureMessages', () => {
   let suite: TTestSuite;

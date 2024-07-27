@@ -3,7 +3,7 @@ import { TDeferThrow } from 'vest-utils/deferThrow';
 import { TVestMock } from '../../testUtils/TVestMock';
 import mockThrowError from '../../testUtils/mockThrowError';
 
-import * as vest from 'vest';
+import * as vest from '@/vest';
 
 describe('each', () => {
   describe('When callback is not a function', () => {

@@ -4,7 +4,7 @@ import { TVestMock } from '../../../testUtils/TVestMock';
 import mockThrowError from '../../../testUtils/mockThrowError';
 
 import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
-import * as vest from 'vest';
+import * as vest from '@/vest';
 
 describe('key', () => {
   describe('When key is provided', () => {

@@ -3,7 +3,7 @@ import wait from 'wait';
 
 import { TestPromise } from '../../../testUtils/testPromise';
 
-import { test, optional, create, skipWhen, warn, skip, only } from 'vest';
+import { test, optional, create, skipWhen, warn, skip, only } from '@/vest';
 
 describe('isValid', () => {
   describe('Before any test ran', () => {

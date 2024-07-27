@@ -7,8 +7,8 @@ import { TestPromise } from '../../../testUtils/testPromise';
 import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
 import { ErrorStrings } from '@/errors/ErrorStrings';
-import { enforce } from 'vest';
-import * as vest from 'vest';
+import { enforce } from '@/vest';
+import * as vest from '@/vest';
 
 let testObject: TIsolateTest;
 

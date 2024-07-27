@@ -1,6 +1,6 @@
 import { CB } from 'vest-utils';
 
-import * as vest from 'vest';
+import * as vest from '@/vest';
 
 enum Fields {
   F1 = 'F1',

@@ -3,8 +3,8 @@ import { TTestSuite } from '@/testUtils/TVestMock';
 import { dummyTest } from '../../../testUtils/testDummy';
 
 import { Modes } from '@/hooks/optional/Modes';
-import { create, group } from 'vest';
-import * as vest from 'vest';
+import { create, group } from '@/vest';
+import * as vest from '@/vest';
 
 const modes = ['SuiteRunResult', 'SuiteResult'];
 

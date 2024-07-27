@@ -1,5 +1,5 @@
 import { Modes } from '@/hooks/optional/Modes';
-import * as vest from 'vest';
+import * as vest from '@/vest';
 
 describe('include', () => {
   let cb1 = vi.fn(),

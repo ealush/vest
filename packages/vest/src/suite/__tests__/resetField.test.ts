@@ -1,5 +1,5 @@
 import { TTestSuite } from '@/testUtils/TVestMock';
-import { create, test } from 'vest';
+import { create, test } from '@/vest';
 
 describe('suite.resetField', () => {
   let suite: TTestSuite;

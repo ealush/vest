@@ -2,7 +2,7 @@ import { TTestSuite } from '@/testUtils/TVestMock';
 
 import { dummyTest } from '../../testUtils/testDummy';
 
-import * as vest from 'vest';
+import * as vest from '@/vest';
 
 describe('skipWhen', () => {
   let fn = vi.fn();

@@ -1,7 +1,7 @@
 /* eslint-disable jest/valid-title */
 import { faker } from '@faker-js/faker';
 
-import { test as vestTest, warn } from 'vest';
+import { test as vestTest, warn } from '@/vest';
 
 /**
  * Generates dummy vest tests.
@@ -15,7 +15,7 @@ const testDummy = () => {
     const to = vestTest(
       name,
       message,
-      jest.fn(() => {
+      vi.fn(() => {
         throw new Error();
       }),
     );
@@ -30,7 +30,7 @@ const testDummy = () => {
     const to = vestTest(
       name,
       message,
-      jest.fn(() => {
+      vi.fn(() => {
         warn();
         throw new Error();
       }),
@@ -43,7 +43,7 @@ const testDummy = () => {
     name = faker.lorem.word(),
     message = faker.lorem.words(),
   ) => {
-    const to = vestTest(name, message, jest.fn());
+    const to = vestTest(name, message, vi.fn());
 
     return to;
   };
@@ -55,7 +55,7 @@ const testDummy = () => {
     const to = vestTest(
       name,
       message,
-      jest.fn(() => {
+      vi.fn(() => {
         warn();
       }),
     );
@@ -69,7 +69,7 @@ const testDummy = () => {
     vestTest(
       name,
       message,
-      jest.fn(
+      vi.fn(
         () =>
           new Promise((_, reject) => {
             setTimeout(reject, time);
@@ -84,7 +84,7 @@ const testDummy = () => {
     vestTest(
       name,
       message,
-      jest.fn(() => {
+      vi.fn(() => {
         warn();
         return new Promise((_, reject) => {
           setTimeout(reject, time);
@@ -99,7 +99,7 @@ const testDummy = () => {
     vestTest(
       name,
       message,
-      jest.fn(
+      vi.fn(
         () =>
           new Promise(resolve => {
             setTimeout(resolve, time);
@@ -114,7 +114,7 @@ const testDummy = () => {
     vestTest(
       name,
       message,
-      jest.fn(() => {
+      vi.fn(() => {
         warn();
         return new Promise(resolve => {
           setTimeout(resolve, time);

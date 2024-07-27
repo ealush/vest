@@ -1,4 +1,81 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Stateful behavior > Should have all fields 1`] = `
+{
+  "field_1": SummaryBase {
+    "errorCount": 1,
+    "errors": [
+      "field_statement_1",
+    ],
+    "pendingCount": 0,
+    "testCount": 1,
+    "valid": false,
+    "warnCount": 0,
+    "warnings": [],
+  },
+  "field_2": SummaryBase {
+    "errorCount": 1,
+    "errors": [
+      "field_statement_2",
+    ],
+    "pendingCount": 0,
+    "testCount": 1,
+    "valid": false,
+    "warnCount": 0,
+    "warnings": [],
+  },
+  "field_3": SummaryBase {
+    "errorCount": 0,
+    "errors": [],
+    "pendingCount": 0,
+    "testCount": 1,
+    "valid": true,
+    "warnCount": 0,
+    "warnings": [],
+  },
+  "field_4": {
+    "errorCount": 0,
+    "errors": [],
+    "pendingCount": 0,
+    "testCount": 2,
+    "valid": true,
+    "warnCount": 1,
+    "warnings": [
+      "field_statement_4",
+    ],
+  },
+  "field_5": {
+    "errorCount": 2,
+    "errors": [
+      "field_statement_5",
+      "field_statement_6",
+    ],
+    "pendingCount": 0,
+    "testCount": 2,
+    "valid": false,
+    "warnCount": 0,
+    "warnings": [],
+  },
+  "field_6": SummaryBase {
+    "errorCount": 0,
+    "errors": [],
+    "pendingCount": 1,
+    "testCount": 1,
+    "valid": false,
+    "warnCount": 0,
+    "warnings": [],
+  },
+  "field_7": SummaryBase {
+    "errorCount": 0,
+    "errors": [],
+    "pendingCount": 1,
+    "testCount": 1,
+    "valid": false,
+    "warnCount": 0,
+    "warnings": [],
+  },
+}
+`;
 
 exports[`Stateful behavior Should have all fields 1`] = `
 {

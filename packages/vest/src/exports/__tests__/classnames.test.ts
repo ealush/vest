@@ -3,7 +3,7 @@ import classnames from '../classnames';
 import promisify from '../promisify';
 
 import { Modes } from '@/hooks/optional/Modes';
-import * as vest from 'vest';
+import * as vest from '@/vest';
 
 describe('Utility: classnames', () => {
   describe('When called without a vest result object', () => {
@@ -21,14 +21,14 @@ describe('Utility: classnames', () => {
   describe('When called with a vest result object', () => {
     it('Should return a function', async () => {
       const validate = vest.create(
-        jest.fn(() => {
+        vi.fn(() => {
           dummyTest.failing('field_0');
         }),
       );
       expect(typeof classnames(validate())).toBe('function');
       const promisifed = await promisify(
         vest.create(
-          jest.fn(() => {
+          vi.fn(() => {
             dummyTest.failing('field_0');
           }),
         ),

@@ -12,7 +12,7 @@ export function mockIsolateTest(
 ): TIsolateTest {
   const isolate = genTestIsolate({
     ...IsolateTestBase(),
-    testFn: jest.fn(),
+    testFn: vi.fn(),
     ...payload,
     type: VestIsolateType.Test,
   }) as TIsolateTest;

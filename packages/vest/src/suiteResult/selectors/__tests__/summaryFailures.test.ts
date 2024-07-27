@@ -1,6 +1,6 @@
 import { TTestSuite } from '@/testUtils/TVestMock';
 
-import * as vest from 'vest';
+import * as vest from '@/vest';
 
 describe('summaryFailures', () => {
   let suite: TTestSuite = vest.create(() => {});

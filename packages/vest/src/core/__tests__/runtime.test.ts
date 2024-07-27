@@ -1,4 +1,4 @@
-import * as vest from 'vest';
+import * as vest from '@/vest';
 
 describe('useLoadSuite', () => {
   it('Calling useLoadSuite should resume from loaded state', () => {

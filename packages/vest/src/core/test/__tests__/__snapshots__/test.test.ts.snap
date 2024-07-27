@@ -1,4 +1,222 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Test Vest's \`test\` function > test params > creates a test with a message and with a key 1`] = `"[{"$type":"Test","data":{"severity":"error","fieldName":"field_name","message":"failure message"},"status":"PASSING","key":"keyboardcat"},{}]"`;
+
+exports[`Test Vest's \`test\` function > test params > creates a test without a key 1`] = `
+{
+  "$type": "Test",
+  "abortController": AbortController {},
+  "allowReorder": undefined,
+  "children": null,
+  "data": {
+    "fieldName": "field_name",
+    "message": "failure message",
+    "severity": "error",
+    "testFn": [Function],
+  },
+  "key": null,
+  "keys": null,
+  "output": undefined,
+  "parent": {
+    "$type": "Suite",
+    "abortController": AbortController {},
+    "allowReorder": undefined,
+    "children": [
+      [Circular],
+    ],
+    "data": {
+      "optional": {},
+    },
+    "key": null,
+    "keys": null,
+    "output": {
+      "done": [Function],
+      "errorCount": 0,
+      "errors": [],
+      "getError": [Function],
+      "getErrors": [Function],
+      "getErrorsByGroup": [Function],
+      "getMessage": [Function],
+      "getWarning": [Function],
+      "getWarnings": [Function],
+      "getWarningsByGroup": [Function],
+      "groups": {},
+      "hasErrors": [Function],
+      "hasErrorsByGroup": [Function],
+      "hasWarnings": [Function],
+      "hasWarningsByGroup": [Function],
+      "isPending": [Function],
+      "isTested": [Function],
+      "isValid": [Function],
+      "isValidByGroup": [Function],
+      "pendingCount": 0,
+      "suiteName": undefined,
+      "testCount": 1,
+      "tests": {
+        "field_name": SummaryBase {
+          "errorCount": 0,
+          "errors": [],
+          "pendingCount": 0,
+          "testCount": 1,
+          "valid": true,
+          "warnCount": 0,
+          "warnings": [],
+        },
+      },
+      "valid": true,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "parent": null,
+    "status": "DONE",
+  },
+  "status": "PASSING",
+}
+`;
+
+exports[`Test Vest's \`test\` function > test params > creates a test without a message and with a key 1`] = `
+{
+  "$type": "Test",
+  "abortController": AbortController {},
+  "allowReorder": undefined,
+  "children": null,
+  "data": {
+    "fieldName": "field_name",
+    "severity": "error",
+    "testFn": [Function],
+  },
+  "key": "keyboardcat",
+  "keys": null,
+  "output": undefined,
+  "parent": {
+    "$type": "Suite",
+    "abortController": AbortController {},
+    "allowReorder": undefined,
+    "children": [
+      [Circular],
+    ],
+    "data": {
+      "optional": {},
+    },
+    "key": null,
+    "keys": {
+      "keyboardcat": [Circular],
+    },
+    "output": {
+      "done": [Function],
+      "errorCount": 0,
+      "errors": [],
+      "getError": [Function],
+      "getErrors": [Function],
+      "getErrorsByGroup": [Function],
+      "getMessage": [Function],
+      "getWarning": [Function],
+      "getWarnings": [Function],
+      "getWarningsByGroup": [Function],
+      "groups": {},
+      "hasErrors": [Function],
+      "hasErrorsByGroup": [Function],
+      "hasWarnings": [Function],
+      "hasWarningsByGroup": [Function],
+      "isPending": [Function],
+      "isTested": [Function],
+      "isValid": [Function],
+      "isValidByGroup": [Function],
+      "pendingCount": 0,
+      "suiteName": undefined,
+      "testCount": 1,
+      "tests": {
+        "field_name": SummaryBase {
+          "errorCount": 0,
+          "errors": [],
+          "pendingCount": 0,
+          "testCount": 1,
+          "valid": true,
+          "warnCount": 0,
+          "warnings": [],
+        },
+      },
+      "valid": true,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "parent": null,
+    "status": "DONE",
+  },
+  "status": "PASSING",
+}
+`;
+
+exports[`Test Vest's \`test\` function > test params > creates a test without a message and without a key 1`] = `
+{
+  "$type": "Test",
+  "abortController": AbortController {},
+  "allowReorder": undefined,
+  "children": null,
+  "data": {
+    "fieldName": "field_name",
+    "severity": "error",
+    "testFn": [Function],
+  },
+  "key": null,
+  "keys": null,
+  "output": undefined,
+  "parent": {
+    "$type": "Suite",
+    "abortController": AbortController {},
+    "allowReorder": undefined,
+    "children": [
+      [Circular],
+    ],
+    "data": {
+      "optional": {},
+    },
+    "key": null,
+    "keys": null,
+    "output": {
+      "done": [Function],
+      "errorCount": 0,
+      "errors": [],
+      "getError": [Function],
+      "getErrors": [Function],
+      "getErrorsByGroup": [Function],
+      "getMessage": [Function],
+      "getWarning": [Function],
+      "getWarnings": [Function],
+      "getWarningsByGroup": [Function],
+      "groups": {},
+      "hasErrors": [Function],
+      "hasErrorsByGroup": [Function],
+      "hasWarnings": [Function],
+      "hasWarningsByGroup": [Function],
+      "isPending": [Function],
+      "isTested": [Function],
+      "isValid": [Function],
+      "isValidByGroup": [Function],
+      "pendingCount": 0,
+      "suiteName": undefined,
+      "testCount": 1,
+      "tests": {
+        "field_name": SummaryBase {
+          "errorCount": 0,
+          "errors": [],
+          "pendingCount": 0,
+          "testCount": 1,
+          "valid": true,
+          "warnCount": 0,
+          "warnings": [],
+        },
+      },
+      "valid": true,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "parent": null,
+    "status": "DONE",
+  },
+  "status": "PASSING",
+}
+`;
 
 exports[`Test Vest's \`test\` function test params creates a test with a message and with a key 1`] = `"[{"$type":"Test","data":{"severity":"error","fieldName":"field_name","message":"failure message"},"status":"PASSING","key":"keyboardcat"},{}]"`;
 

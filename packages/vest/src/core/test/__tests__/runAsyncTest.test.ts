@@ -2,7 +2,7 @@ import wait from 'wait';
 
 import { TIsolateTest } from '@/core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '@/core/isolate/IsolateTest/VestTest';
-import * as vest from 'vest';
+import * as vest from '@/vest';
 
 describe('runAsyncTest', () => {
   describe('State Updates', () => {

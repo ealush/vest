@@ -9,10 +9,8 @@ import { TDummyTest } from '../testUtils/testDummy';
 describe('isolate', () => {
   let vest: TVestMock;
   let firstRun = true;
-  // eslint-disable-next-line no-unused-expressions
-  require('IsolateTest').IsolateTest;
-  // eslint-disable-next-line no-unused-expressions
-  require('IsolateEach').IsolateEach;
+  vi.importActual('@/core/isolate/IsolateTest/IsolateTest');
+  vi.importActual('@/core/isolate/IsolateTest/IsolateEach');
   let dummyTest: TDummyTest;
   let deferThrow: TDeferThrow;
 
@@ -20,10 +18,9 @@ describe('isolate', () => {
     firstRun = true;
     const mock = mockThrowError();
     deferThrow = mock.deferThrow;
-    // eslint-disable-next-line no-unused-expressions
-    require('IsolateTest').IsolateTest;
-    // eslint-disable-next-line no-unused-expressions
-    require('IsolateEach').IsolateEach;
+
+    vi.importActual('@/core/isolate/IsolateTest/IsolateTest');
+    vi.importActual('@/core/isolate/IsolateTest/IsolateEach');
     vest = mock.vest;
     dummyTest = require('../testUtils/testDummy').dummyTest;
   });

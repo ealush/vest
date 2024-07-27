@@ -1,5 +1,5 @@
-import { enforce } from '@/runtime/enforce';
 import * as ruleReturn from '@/lib/ruleReturn';
+import { enforce } from '@/runtime/enforce';
 import 'schema';
 import 'compounds';
 

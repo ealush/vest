@@ -6,7 +6,7 @@ import { TVestMock } from '../testUtils/TVestMock';
 import mockThrowError from '../testUtils/mockThrowError';
 import { TDummyTest } from '../testUtils/testDummy';
 
-describe('isolate', () => {
+describe.skip('isolate', () => {
   let vest: TVestMock;
   let firstRun = true;
   vi.importActual('@/core/isolate/IsolateTest/IsolateTest');

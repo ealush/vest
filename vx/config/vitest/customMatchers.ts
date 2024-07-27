@@ -1,12 +1,14 @@
 import { isFunction } from 'vest-utils';
 
-import './globals.d';
+expect.extend({
+  isDeepCopyOf,
+});
 
 // eslint-disable-next-line complexity
-const isDeepCopyOf = (
+function isDeepCopyOf(
   source: any,
   clone: any,
-): { pass: boolean; message: () => string } => {
+): { pass: boolean; message: () => string } {
   const queue = [[source, clone]];
 
   outer: while (queue.length) {
@@ -71,8 +73,4 @@ const isDeepCopyOf = (
   }
 
   return { pass: true, message: () => 'success' };
-};
-
-expect.extend({
-  isDeepCopyOf,
-});
+}

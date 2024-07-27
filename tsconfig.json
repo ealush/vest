@@ -21,6 +21,6 @@
     "target": "ES2015",
     "types": ["vitest/globals"]
   },
-  "files": ["./vx/config/jest/globals.d.ts"],
+  "files": ["./vx/config/vitest/vitest.d.ts"],
   "include": ["./packages/*/src/**/*.ts"]
 }

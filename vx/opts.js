@@ -11,6 +11,7 @@ module.exports = {
     SRC: 'src',
     TESTS: '__tests__',
     TYPES: 'types',
+    VITEST: 'vitest',
     VX: 'vx',
   },
   env: {

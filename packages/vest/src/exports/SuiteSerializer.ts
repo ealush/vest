@@ -1,5 +1,5 @@
 import { CB } from 'vest-utils';
-import { IsolateSerializer } from 'vestjs-runtime';
+import { IsolateSerializer } from 'vestjs-runtime/IsolateSerializer';
 
 import { TIsolateSuite } from '@/core/isolate/IsolateSuite/IsolateSuite';
 import { Suite } from '@/suite/SuiteTypes';

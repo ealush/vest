@@ -110,6 +110,10 @@ vxPath.ROLLUP_CONFIG_PATH = path.resolve(
 );
 
 vxPath.JEST_CONFIG_PATH = path.resolve(vxPath.VX_CONFIG_PATH, opts.dir.JEST);
+vxPath.VITEST_CONFIG_PATH = path.resolve(
+  vxPath.VX_CONFIG_PATH,
+  opts.dir.VITEST,
+);
 
 vxPath.JEST_CONFIG_FILE_PATH = path.resolve(
   vxPath.JEST_CONFIG_PATH,

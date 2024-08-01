@@ -8,6 +8,14 @@ import { TIsolateTest } from 'IsolateTest';
 import { Modes } from 'Modes';
 import * as vest from 'vest';
 
+vi.mock('vest-utils', async () => {
+  const vu = await vi.importActual('vest-utils');
+  return {
+    ...vu,
+    deferThrow: vi.fn(),
+  };
+});
+
 describe('Merging of previous test runs', () => {
   let suite: TTestSuite;
   let counter = 0;
@@ -16,19 +24,8 @@ describe('Merging of previous test runs', () => {
   beforeEach(() => {
     counter = 0;
     testContainer = [];
-
-    vi.mock('vest-utils', async () => {
-      const vu = await vi.importActual('vest-utils');
-      return {
-        ...vu,
-        deferThrow: vi.fn(),
-      };
-    });
   });
 
-  afterEach(() => {
-    vi.resetAllMocks();
-  });
   describe('When test skipped in subsequent run', () => {
     it('Should merge its result from previous runs', () => {
       suite = vest.create(() => {

@@ -1,24 +1,18 @@
 import { deferThrow } from 'vest-utils';
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 import { TIsolateTest } from 'IsolateTest';
 import * as vest from 'vest';
 
+vi.mock('vest-utils', async () => {
+  const vu = await vi.importActual('vest-utils');
+  return {
+    ...vu,
+    deferThrow: vi.fn(),
+  };
+});
+
 describe('key', () => {
-  beforeEach(() => {
-    vi.mock('vest-utils', async () => {
-      const vu = await vi.importActual('vest-utils');
-      return {
-        ...vu,
-        deferThrow: vi.fn(),
-      };
-    });
-  });
-
-  afterEach(() => {
-    vi.resetAllMocks();
-  });
-
   describe('When key is provided', () => {
     describe('When tests change their order between runs', () => {
       it('Should retain test results', () => {
@@ -89,9 +83,6 @@ describe('key', () => {
     });
 
     describe('When tests without a key reorder get added above a test with a key', () => {
-      afterEach(() => {
-        vi.resetModules();
-      });
       it('Should retain keyd tests', () => {
         const calls: TIsolateTest[][] = [];
         const suite = vest.create(() => {
@@ -218,8 +209,6 @@ describe('key', () => {
         expect(deferThrow).toHaveBeenCalledWith(
           `Encountered the same key "key_1" twice. This may lead to inconsistent or overriding of results.`,
         );
-
-        vi.resetAllMocks();
       });
     });
   });

@@ -1,22 +1,17 @@
 import { deferThrow } from 'vest-utils';
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 import * as vest from 'vest';
 
-describe('each', () => {
-  beforeEach(() => {
-    vi.mock('vest-utils', async () => {
-      const vu = await vi.importActual('vest-utils');
-      return {
-        ...vu,
-        deferThrow: vi.fn(),
-      };
-    });
-  });
+vi.mock('vest-utils', async () => {
+  const vu = await vi.importActual('vest-utils');
+  return {
+    ...vu,
+    deferThrow: vi.fn(),
+  };
+});
 
-  afterEach(() => {
-    vi.resetAllMocks();
-  });
+describe('each', () => {
   describe('When callback is not a function', () => {
     it('should throw', () => {
       const control = vi.fn();

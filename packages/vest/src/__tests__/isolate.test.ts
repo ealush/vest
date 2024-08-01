@@ -1,27 +1,23 @@
 import { CB, deferThrow } from 'vest-utils';
 import { Isolate } from 'vestjs-runtime';
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { dummyTest } from 'testDummy';
 import * as vest from 'vest';
+
+vi.mock('vest-utils', async () => {
+  const vu = await vi.importActual('vest-utils');
+  return {
+    ...vu,
+    deferThrow: vi.fn(),
+  };
+});
 
 describe('isolate', () => {
   let firstRun = true;
 
   beforeEach(() => {
     firstRun = true;
-    vi.mock('vest-utils', async () => {
-      const vu = await vi.importActual('vest-utils');
-      return {
-        ...vu,
-        deferThrow: vi.fn(),
-      };
-    });
-  });
-
-  afterEach(() => {
-    vi.resetModules();
-    vi.resetAllMocks();
   });
 
   describe('Base behavior', () => {

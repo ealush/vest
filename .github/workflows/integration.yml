@@ -36,6 +36,8 @@ jobs:
         run: yarn build
       - name: Test
         run: yarn test
+      - name: Format
+        run: yarn format
       - name: Lint
         run: yarn lint
       - name: Release

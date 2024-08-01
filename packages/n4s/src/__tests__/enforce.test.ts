@@ -1,24 +1,10 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 
-import { TEnforceMock } from '../../testUtils/TEnforceMock';
+import { enforce } from 'enforce';
 
 import * as ruleReturn from 'ruleReturn';
 
-const _proxy = global.Proxy;
-let enforce: TEnforceMock;
-
 describe(`enforce`, () => {
-  beforeEach(async () => {
-    vi.resetModules();
-    const enforceModule = await import('enforce');
-    enforce = enforceModule.enforce;
-  });
-
-  afterEach(() => {
-    vi.resetModules();
-    global.Proxy = _proxy;
-  });
-
   describe('eager assertions', () => {
     it('Should throw an error when invalid', () => {
       expect(() => enforce('4').isNumber()).toThrow();

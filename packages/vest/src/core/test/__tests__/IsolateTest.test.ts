@@ -1,7 +1,7 @@
 import { TIsolateTest } from 'IsolateTest';
 import { VestTest } from 'VestTest';
 import { mockIsolateTest } from 'vestMocks';
-import { describe, it, expect, beforeEach, test, vi, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, test, vi } from 'vitest';
 import wait from 'wait';
 
 import { TestPromise } from '../../../testUtils/testPromise';
@@ -39,10 +39,6 @@ describe('IsolateTest', () => {
       testObject = mockIsolateTest({ fieldName, message });
     });
 
-    afterEach(() => {
-      vi.resetAllMocks();
-    });
-
     it('Should set status to failed', () => {
       expect(VestTest.isFailing(testObject)).toBe(false);
       VestTest.fail(testObject);
@@ -71,9 +67,9 @@ describe('IsolateTest', () => {
     });
 
     describe('final statuses', () => {
-      let control = vi.fn();
+      const control = vi.fn();
       beforeEach(() => {
-        control = vi.fn();
+        vi.resetAllMocks();
       });
       it('keep status unchanged when `failed`', () => {
         vest.create(() => {

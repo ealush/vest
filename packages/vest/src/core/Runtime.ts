@@ -14,6 +14,7 @@ import { Severity } from 'Severity';
 import {
   SuiteName,
   SuiteResult,
+  SuiteSummary,
   TFieldName,
   TGroupName,
 } from 'SuiteResultTypes';
@@ -33,6 +34,7 @@ export type PreAggCache = {
 type StateExtra = {
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
+  suiteSummary: TinyState<SuiteSummary<TFieldName, TGroupName>>;
   suiteName: Maybe<string>;
   suiteId: string;
   suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName>>;
@@ -51,6 +53,9 @@ export function useCreateVestState({
   const stateRef: StateExtra = {
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
+    suiteSummary: tinyState.createTinyState<
+      SuiteSummary<TFieldName, TGroupName>
+    >(() => new SuiteSummary()),
     preAggCache,
     suiteId: seq(),
     suiteName,
@@ -62,6 +67,10 @@ export function useCreateVestState({
 
 function useX() {
   return VestRuntime.useXAppData<StateExtra>();
+}
+
+export function useSuiteSummary() {
+  return useX().suiteSummary();
 }
 
 export function useDoneCallbacks() {

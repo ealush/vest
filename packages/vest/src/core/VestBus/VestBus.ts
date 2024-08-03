@@ -7,6 +7,7 @@ import {
   useExpireSuiteResultCache,
   useResetCallbacks,
   useResetSuite,
+  useSuiteSummary,
 } from 'Runtime';
 import { TFieldName } from 'SuiteResultTypes';
 import { SuiteWalker } from 'SuiteWalker';
@@ -15,12 +16,20 @@ import { VestIsolate } from 'VestIsolate';
 import { VestTest } from 'VestTest';
 import { useOmitOptionalFields } from 'omitOptionalFields';
 import { useRunDoneCallbacks, useRunFieldCallbacks } from 'runCallbacks';
+import { useAppendToSumaryByTestObject } from 'useProduceSuiteSummary';
+import { TIsolateTest } from 'IsolateTest';
 
 // eslint-disable-next-line max-statements, max-lines-per-function
 export function useInitVestBus() {
   const VestBus = Bus.useBus();
 
-  on(Events.TEST_COMPLETED, () => {});
+  on(Events.TEST_COMPLETED, (test: TIsolateTest) => {
+    const [summary, setSuiteSummary] = useSuiteSummary();
+
+    const newSummary = useAppendToSumaryByTestObject(summary, test);
+
+    setSuiteSummary(newSummary);
+  });
   // on(Events.TEST_RUN_STARTED, () => {});
 
   VestBus.on(RuntimeEvents.ISOLATE_PENDING, (isolate: TIsolate) => {

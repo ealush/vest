@@ -5,7 +5,6 @@ import {
   deferThrow,
   isNullish,
   assign,
-  TinyState,
   text,
   optionalFunctionValue,
   tinyState,
@@ -30,7 +29,7 @@ type CTXType = StateRefType & {
 export type StateRefType = {
   Bus: BusType;
   appData: Record<string, any>;
-  historyRoot: TinyState<Nullable<TIsolate>>;
+  historyRoot: Nullable<TIsolate>;
   Reconciler: IRecociler;
 };
 
@@ -41,7 +40,7 @@ const PersistedContext = createCascade<CTXType>((stateRef, parentContext) => {
 
   invariant(stateRef.historyRoot);
 
-  const [historyRootNode] = stateRef.historyRoot();
+  const historyRootNode = stateRef.historyRoot;
 
   const ctxRef = {} as CTXType;
 
@@ -49,6 +48,7 @@ const PersistedContext = createCascade<CTXType>((stateRef, parentContext) => {
     historyNode: historyRootNode,
     runtimeNode: null,
     runtimeRoot: null,
+    historyRootNode: null,
     stateRef,
   });
 
@@ -82,7 +82,7 @@ export function createRef(
     Bus: bus.createBus(),
     Reconciler,
     appData: optionalFunctionValue(setter),
-    historyRoot: tinyState.createTinyState<Nullable<TIsolate>>(null),
+    historyRoot: null,
   });
 }
 
@@ -103,7 +103,7 @@ export function useX<T = object>(): CTXType & T {
 }
 
 export function useHistoryRoot() {
-  return useX().stateRef.historyRoot();
+  return useX().stateRef.historyRoot;
 }
 export function useHistoryIsolate() {
   return useX().historyNode;
@@ -135,17 +135,11 @@ export function addNodeToHistory(node: TIsolate): void {
   const parent = useIsolate();
   if (parent) {
     useSetNextIsolateChild(node);
-  } else {
-    useSetHistoryRoot(node);
   }
 
   IsolateMutator.setParent(node, parent);
 }
 
-export function useSetHistoryRoot(history: TIsolate) {
-  const [, setHistoryRoot] = useHistoryRoot();
-  setHistoryRoot(history);
-}
 export function useHistoryKey(key?: Nullable<string>): Nullable<TIsolate> {
   if (isNullish(key)) {
     return null;
@@ -197,13 +191,11 @@ export function useAvailableRoot<I extends TIsolate = TIsolate>(): I {
     return root as I;
   }
 
-  const [historyRoot] = useHistoryRoot();
+  const historyRoot = useHistoryRoot();
 
   return historyRoot as I;
 }
 
 export function reset() {
-  const [, , resetHistoryRoot] = useHistoryRoot();
-
-  resetHistoryRoot();
+  useX().historyNode = null;
 }

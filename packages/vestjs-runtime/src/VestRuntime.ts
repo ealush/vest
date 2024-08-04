@@ -66,7 +66,7 @@ export const RuntimeApi = {
   useAvailableRoot,
   useCurrentCursor,
   useHistoryRoot,
-  useLoadRootNode,
+  useSetHistoryRoot,
   useXAppData,
 };
 
@@ -136,13 +136,13 @@ export function addNodeToHistory(node: TIsolate): void {
   if (parent) {
     useSetNextIsolateChild(node);
   } else {
-    useSetHistory(node);
+    useSetHistoryRoot(node);
   }
 
   IsolateMutator.setParent(node, parent);
 }
 
-export function useSetHistory(history: TIsolate) {
+export function useSetHistoryRoot(history: TIsolate) {
   const [, setHistoryRoot] = useHistoryRoot();
   setHistoryRoot(history);
 }
@@ -206,8 +206,4 @@ export function reset() {
   const [, , resetHistoryRoot] = useHistoryRoot();
 
   resetHistoryRoot();
-}
-
-export function useLoadRootNode(root: TIsolate): void {
-  useSetHistory(root);
 }

@@ -118,6 +118,6 @@ export function useResetSuite() {
 }
 
 export function useLoadSuite(rootNode: TIsolateSuite): void {
-  VestRuntime.useLoadRootNode(rootNode);
+  VestRuntime.useSetHistoryRoot(rootNode);
   useExpireSuiteResultCache();
 }

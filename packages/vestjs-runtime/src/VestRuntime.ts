@@ -59,14 +59,14 @@ export const Run = PersistedContext.run;
 
 export const RuntimeApi = {
   Run,
-  addNodeToHistory,
   createRef,
   persist,
   reset,
   useAvailableRoot,
   useCurrentCursor,
   useHistoryRoot,
-  useLoadRootNode,
+  useSetHistoryRoot,
+  useSetNextIsolateChild,
   useXAppData,
 };
 
@@ -131,18 +131,7 @@ export function useHistoryIsolateAtCurrentPosition() {
   return historyNode;
 }
 
-export function addNodeToHistory(node: TIsolate): void {
-  const parent = useIsolate();
-  if (parent) {
-    useSetNextIsolateChild(node);
-  } else {
-    useSetHistory(node);
-  }
-
-  IsolateMutator.setParent(node, parent);
-}
-
-export function useSetHistory(history: TIsolate) {
+export function useSetHistoryRoot(history: TIsolate) {
   const [, setHistoryRoot] = useHistoryRoot();
   setHistoryRoot(history);
 }
@@ -172,6 +161,7 @@ export function useSetNextIsolateChild(child: TIsolate): void {
   invariant(currentIsolate, ErrorStrings.NO_ACTIVE_ISOLATE);
 
   IsolateMutator.addChild(currentIsolate, child);
+  IsolateMutator.setParent(child, currentIsolate);
 }
 export function useSetIsolateKey(key: Nullable<string>, node: TIsolate): void {
   if (!key) {
@@ -206,8 +196,4 @@ export function reset() {
   const [, , resetHistoryRoot] = useHistoryRoot();
 
   resetHistoryRoot();
-}
-
-export function useLoadRootNode(root: TIsolate): void {
-  useSetHistory(root);
 }

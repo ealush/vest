@@ -29,6 +29,7 @@ type UsedFeaturesOnly<P extends IsolatePayload> = Pick<
 >;
 
 export class Isolate {
+  // eslint-disable-next-line max-statements
   static create<Payload extends IsolatePayload>(
     type: string,
     callback: CB,
@@ -48,13 +49,24 @@ export class Isolate {
 
     const shouldRunNew = Object.is(nextIsolateChild, newCreatedNode);
 
-    VestRuntime.addNodeToHistory(nextIsolateChild);
+    if (parent) {
+      // We are within an isolate context. This means that
+      // we need to set the new node to be the child of this parent node.
+      VestRuntime.useSetNextIsolateChild(nextIsolateChild);
+    }
 
     const output = shouldRunNew
       ? useRunAsNew(localHistoryNode, newCreatedNode, callback)
       : nextIsolateChild.output;
 
     IsolateMutator.saveOutput(nextIsolateChild, output);
+
+    if (!parent) {
+      // We're exiting the node, and there is no parent. This means
+      // that we're at the top level and this node should be set
+      // as the new root of the history tree.
+      VestRuntime.useSetHistoryRoot(nextIsolateChild);
+    }
 
     return nextIsolateChild as TIsolate<Payload>;
   }

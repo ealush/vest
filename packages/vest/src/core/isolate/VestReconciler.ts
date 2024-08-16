@@ -1,9 +1,14 @@
 import { Nullable } from 'vest-utils';
 import { TIsolate } from 'vestjs-runtime';
 
+import { SkipWhenReconciler } from '../../isolates/skipWhen';
+
 import { IsolateTestReconciler } from 'IsolateTestReconciler';
 
-const reconcilers: IsolateReconciler[] = [IsolateTestReconciler];
+const reconcilers: IsolateReconciler[] = [
+  IsolateTestReconciler,
+  SkipWhenReconciler,
+];
 
 export function registerReconciler(reconciler: IsolateReconciler) {
   if (reconcilers.includes(reconciler)) {

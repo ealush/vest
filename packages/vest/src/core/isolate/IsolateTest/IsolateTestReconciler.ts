@@ -4,18 +4,19 @@ import type { TIsolate } from 'vestjs-runtime';
 
 import { ErrorStrings } from 'ErrorStrings';
 import type { TIsolateTest } from 'IsolateTest';
+import type { IsolateReconciler } from 'VestReconciler';
 import { VestTest } from 'VestTest';
 import cancelOverriddenPendingTest from 'cancelOverriddenPendingTest';
 import { isSameProfileTest } from 'isSameProfileTest';
 import { useIsExcluded } from 'useIsExcluded';
 import { useVerifyTestRun } from 'verifyTestRun';
 
-export class IsolateTestReconciler {
-  static match(currentNode: TIsolate, historyNode: TIsolate): boolean {
+export const IsolateTestReconciler: IsolateReconciler = {
+  match(currentNode: TIsolate, historyNode: TIsolate): boolean {
     return VestTest.is(currentNode) && VestTest.is(historyNode);
-  }
+  },
 
-  static reconcile(
+  reconcile(
     currentNode: TIsolateTest,
     historyNode: TIsolateTest,
   ): TIsolateTest {
@@ -26,8 +27,8 @@ export class IsolateTestReconciler {
     cancelOverriddenPendingTestOnTestReRun(nextNode, currentNode, historyNode);
 
     return nextNode;
-  }
-}
+  },
+};
 
 function usePickNode(
   newNode: TIsolateTest,

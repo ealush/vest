@@ -1,6 +1,7 @@
 import { Nullable, isNotNullish, isNullish } from 'vest-utils';
 
 import { TIsolate } from 'Isolate';
+import { IsolateKeys } from 'IsolateKeys';
 
 export class IsolateInspector {
   static at(isolate: Nullable<TIsolate>, at: number): Nullable<TIsolate> {
@@ -46,5 +47,14 @@ export class IsolateInspector {
       return null;
     }
     return isolate.keys?.[key] ?? null;
+  }
+
+  static getData<I extends TIsolate>(
+    isolate: Nullable<I>,
+  ): Nullable<I[IsolateKeys.Data]> {
+    if (isNullish(isolate)) {
+      return null;
+    }
+    return isolate[IsolateKeys.Data];
   }
 }

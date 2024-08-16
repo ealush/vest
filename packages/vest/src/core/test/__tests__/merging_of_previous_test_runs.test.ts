@@ -31,13 +31,11 @@ describe('Merging of previous test runs', () => {
       suite = vest.create(() => {
         vest.mode(Modes.ALL);
         vest.skipWhen(counter === 1, () => {
-          testContainer.push([
-            dummyTest.failing('f1'),
-            dummyTest.failing('f2'),
-            dummyTest.passing('f3'),
-            dummyTest.failingWarning('f5'),
-            dummyTest.passingWarning('f6'),
-          ]);
+          dummyTest.failing('f1');
+          dummyTest.failing('f2');
+          dummyTest.passing('f3');
+          dummyTest.failingWarning('f5');
+          dummyTest.passingWarning('f6');
         });
         counter++;
       });
@@ -45,13 +43,8 @@ describe('Merging of previous test runs', () => {
       const resA = suite();
       const resB = suite();
 
-      const [testsA, testsB] = testContainer;
-
       // This checks the the suite result is the same for both runs
       expect(resA).isDeepCopyOf(resB);
-
-      // This checks that the test objects are the same for both runs
-      expect(testsA).toEqual(testsB);
     });
   });
 

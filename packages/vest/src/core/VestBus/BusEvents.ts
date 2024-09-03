@@ -1,11 +1,10 @@
-export enum Events {
-  TEST_RUN_STARTED = 'test_run_started',
-  TEST_COMPLETED = 'test_completed',
-  ALL_RUNNING_TESTS_FINISHED = 'all_running_tests_finished',
-  REMOVE_FIELD = 'remove_field',
-  RESET_FIELD = 'reset_field',
-  RESET_SUITE = 'reset_suite',
-  SUITE_RUN_STARTED = 'suite_run_started',
-  SUITE_CALLBACK_RUN_FINISHED = 'SUITE_CALLBACK_RUN_FINISHED',
-  DONE_TEST_OMISSION_PASS = 'DONE_TEST_OMISSION_PASS',
-}
+export type Events =
+  | 'TEST_RUN_STARTED'
+  | 'TEST_COMPLETED'
+  | 'ALL_RUNNING_TESTS_FINISHED'
+  | 'REMOVE_FIELD'
+  | 'RESET_FIELD'
+  | 'RESET_SUITE'
+  | 'SUITE_RUN_STARTED'
+  | 'SUITE_CALLBACK_RUN_FINISHED'
+  | 'DONE_TEST_OMISSION_PASS';

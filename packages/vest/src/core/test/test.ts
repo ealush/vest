@@ -1,7 +1,6 @@
 import { assign, invariant, isFunction, isStringValue, text } from 'vest-utils';
 import { Bus, IsolateKey } from 'vestjs-runtime';
 
-import { Events } from 'BusEvents';
 import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest, TIsolateTest } from 'IsolateTest';
 import { useGroupName } from 'SuiteContext';
@@ -47,7 +46,7 @@ function vestTest<F extends TFieldName>(
   const testObjectInput = { fieldName, groupName, message, testFn };
 
   // This invalidates the suite cache.
-  Bus.useEmit(Events.TEST_RUN_STARTED);
+  Bus.useEmit('TEST_RUN_STARTED');
 
   return IsolateTest(useAttemptRunTest, testObjectInput, key);
 }

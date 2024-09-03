@@ -20,8 +20,8 @@ import { useRunDoneCallbacks, useRunFieldCallbacks } from 'runCallbacks';
 export function useInitVestBus() {
   const VestBus = Bus.useBus();
 
-  on(Events.TEST_COMPLETED, () => {});
-  // on(Events.TEST_RUN_STARTED, () => {});
+  on('TEST_COMPLETED', () => {});
+  // on("TEST_RUN_STARTED", () => {});
 
   VestBus.on(RuntimeEvents.ISOLATE_PENDING, (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
@@ -33,7 +33,7 @@ export function useInitVestBus() {
 
   VestBus.on(RuntimeEvents.ISOLATE_DONE, (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
-      VestBus.emit(Events.TEST_COMPLETED, isolate);
+      VestBus.emit('TEST_COMPLETED', isolate);
     }
 
     VestIsolate.setDone(isolate);
@@ -50,16 +50,16 @@ export function useInitVestBus() {
 
     if (!SuiteWalker.useHasPending()) {
       // When no more async tests are running, emit the done event
-      VestBus.emit(Events.ALL_RUNNING_TESTS_FINISHED);
+      VestBus.emit('ALL_RUNNING_TESTS_FINISHED');
     }
   });
 
-  on(Events.DONE_TEST_OMISSION_PASS, () => {
+  on('DONE_TEST_OMISSION_PASS', () => {
     /* We NEED to refresh the cache here. Don't ask */
   });
 
   // Called when all the tests, including async, are done running
-  VestBus.on(Events.ALL_RUNNING_TESTS_FINISHED, () => {
+  VestBus.on('ALL_RUNNING_TESTS_FINISHED', () => {
     // Small optimization. We don't need to run this if there are no async tests
     // The reason is that we run this function immediately after the suite callback
     // is run, so if the suite is only comprised of sync tests, we don't need to
@@ -70,28 +70,28 @@ export function useInitVestBus() {
     useRunDoneCallbacks();
   });
 
-  on(Events.RESET_FIELD, (fieldName: TFieldName) => {
+  on('RESET_FIELD', (fieldName: TFieldName) => {
     TestWalker.resetField(fieldName);
   });
 
-  on(Events.SUITE_RUN_STARTED, () => {
+  on('SUITE_RUN_STARTED', () => {
     useResetCallbacks();
   });
 
-  on(Events.SUITE_CALLBACK_RUN_FINISHED, () => {
+  on('SUITE_CALLBACK_RUN_FINISHED', () => {
     if (!SuiteWalker.useHasPending()) {
       // When no more async tests are running, emit the done event
-      VestBus.emit(Events.ALL_RUNNING_TESTS_FINISHED);
+      VestBus.emit('ALL_RUNNING_TESTS_FINISHED');
     }
 
     useOmitOptionalFields();
   });
 
-  on(Events.REMOVE_FIELD, (fieldName: TFieldName) => {
+  on('REMOVE_FIELD', (fieldName: TFieldName) => {
     TestWalker.removeTestByFieldName(fieldName);
   });
 
-  on(Events.RESET_SUITE, () => {
+  on('RESET_SUITE', () => {
     useResetSuite();
   });
 
@@ -99,8 +99,11 @@ export function useInitVestBus() {
     subscribe,
   };
 
-  function subscribe(cb: CB) {
-    return VestBus.on('*', () => {
+  function subscribe(event: Events, cb: CB): CB<void>;
+  function subscribe(cb: CB): CB<void>;
+  function subscribe(...args: [event: Events, cb: CB] | [cb: CB]): CB<void> {
+    const [cb, event] = args.reverse() as [CB, Events];
+    return VestBus.on(event ?? '*', () => {
       cb();
     }).off;
   }
@@ -116,3 +119,8 @@ export function useInitVestBus() {
 }
 
 type VestEvents = Events | ValueOf<typeof RuntimeEvents> | '*';
+
+export type Subscribe = {
+  (event: Events, cb: CB): CB<void>;
+  (cb: CB): CB<void>;
+};

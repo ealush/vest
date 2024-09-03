@@ -3,7 +3,6 @@ import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { TTypedMethods, getTypedMethods } from './getTypedMethods';
 
-import { Events } from 'BusEvents';
 import { IsolateSuite, TIsolateSuite } from 'IsolateSuite';
 import { useCreateVestState, useLoadSuite } from 'Runtime';
 import { SuiteContext } from 'SuiteContext';
@@ -55,7 +54,7 @@ function createSuite<
         suiteParams: args,
       },
       () => {
-        Bus.useEmit(Events.SUITE_RUN_STARTED);
+        Bus.useEmit('SUITE_RUN_STARTED');
 
         return IsolateSuite(
           useRunSuiteCallback<T, F, G>(suiteCallback, ...args),
@@ -82,9 +81,9 @@ function createSuite<
           () => VestRuntime.useAvailableRoot() as TIsolateSuite,
         ),
         get: VestRuntime.persist(useCreateSuiteResult),
-        remove: Bus.usePrepareEmitter<string>(Events.REMOVE_FIELD),
-        reset: Bus.usePrepareEmitter(Events.RESET_SUITE),
-        resetField: Bus.usePrepareEmitter<string>(Events.RESET_FIELD),
+        remove: Bus.usePrepareEmitter<string>('REMOVE_FIELD'),
+        reset: Bus.usePrepareEmitter('RESET_SUITE'),
+        resetField: Bus.usePrepareEmitter<string>('RESET_FIELD'),
         resume: VestRuntime.persist(useLoadSuite),
         runStatic: (...args: Parameters<T>): StaticSuiteRunResult<F, G> =>
           mountedStatic(...args) as StaticSuiteRunResult<F, G>,
@@ -105,7 +104,7 @@ function useRunSuiteCallback<
 
   return () => {
     suiteCallback(...args);
-    emit(Events.SUITE_CALLBACK_RUN_FINISHED);
+    emit('SUITE_CALLBACK_RUN_FINISHED');
     return useSuiteRunResult<F, G>();
   };
 }

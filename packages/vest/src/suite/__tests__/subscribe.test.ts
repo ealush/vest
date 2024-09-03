@@ -1,8 +1,8 @@
-import { SuiteSerializer } from 'SuiteSerializer';
 import { enforce } from 'n4s';
 import { describe, it, expect, vi } from 'vitest';
 import wait from 'wait';
 
+import { SuiteSerializer } from 'SuiteSerializer';
 import * as vest from 'vest';
 
 describe('suite.subscribe', () => {
@@ -50,6 +50,32 @@ describe('suite.subscribe', () => {
 
     // now also after resolving the async test
     expect(cb.mock.calls.length).toBeGreaterThan(callCount);
+  });
+
+  describe('Subscribe with event name', () => {
+    it('Should only call the callback on the specified event', () => {
+      const cbAllDone = vi.fn();
+      const testDone = vi.fn();
+      const testStarted = vi.fn();
+      const suiteStart = vi.fn();
+
+      const suite = vest.create('suite', () => {
+        vest.test('field1', () => false);
+        vest.test('field2', () => true);
+        vest.test('field3', () => false);
+      });
+
+      suite.subscribe('ALL_RUNNING_TESTS_FINISHED', cbAllDone);
+      suite.subscribe('TEST_COMPLETED', testDone);
+      suite.subscribe('TEST_RUN_STARTED', testStarted);
+      suite.subscribe('SUITE_RUN_STARTED', suiteStart);
+
+      suite();
+      expect(cbAllDone).toHaveBeenCalledTimes(1);
+      expect(testDone).toHaveBeenCalledTimes(3);
+      expect(testStarted).toHaveBeenCalledTimes(3);
+      expect(suiteStart).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('unsubscribe', () => {

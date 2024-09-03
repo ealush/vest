@@ -1,7 +1,6 @@
 import { isEmpty, optionalFunctionValue } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
-import { Events } from 'BusEvents';
 import { SuiteOptionalFields, TIsolateSuite } from 'IsolateSuite';
 import { TIsolateTest } from 'IsolateTest';
 import { TestWalker } from 'TestWalker';
@@ -44,7 +43,7 @@ export function useOmitOptionalFields(): void {
     }
   });
 
-  Bus.useEmit(Events.DONE_TEST_OMISSION_PASS);
+  Bus.useEmit('DONE_TEST_OMISSION_PASS');
 
   function verifyAndOmit(testObject: TIsolateTest) {
     const { fieldName } = VestTest.getData(testObject);

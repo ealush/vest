@@ -206,6 +206,8 @@ exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 1`]
   "key": null,
   "keys": null,
   "output": {
+    "after": [Function],
+    "afterEach": [Function],
     "done": [Function],
     "errorCount": 4,
     "errors": [

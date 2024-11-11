@@ -2,6 +2,8 @@
 
 exports[`test.memo > cache hit > Should produce correct initial result 1`] = `
 {
+  "after": [Function],
+  "afterEach": [Function],
   "done": [Function],
   "errorCount": 1,
   "errors": [
@@ -75,6 +77,8 @@ exports[`test.memo > cache hit > Should produce correct initial result 1`] = `
 
 exports[`test.memo > cache hit > sync > Should restore previous result on re-run 1`] = `
 {
+  "after": [Function],
+  "afterEach": [Function],
   "done": [Function],
   "errorCount": 1,
   "errors": [

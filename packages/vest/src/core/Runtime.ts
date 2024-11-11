@@ -21,6 +21,7 @@ import {
 export type DoneCallback = (res: SuiteResult<TFieldName, TGroupName>) => void;
 type FieldCallbacks = Record<string, DoneCallbacks>;
 type DoneCallbacks = Array<DoneCallback>;
+type AfterEachCallbaks = Array<DoneCallback>;
 type FailuresCache = {
   [Severity.ERRORS]: Record<TFieldName, TIsolate[]>;
   [Severity.WARNINGS]: Record<TFieldName, TIsolate[]>;
@@ -33,6 +34,7 @@ export type PreAggCache = {
 type StateExtra = {
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
+  afterEachCallbacks: TinyState<AfterEachCallbaks>;
   suiteName: Maybe<string>;
   suiteId: string;
   suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName>>;
@@ -49,6 +51,7 @@ export function useCreateVestState({
   VestReconciler: IRecociler;
 }) {
   const stateRef: StateExtra = {
+    afterEachCallbacks: tinyState.createTinyState<AfterEachCallbaks>(() => []),
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
     preAggCache,
@@ -70,6 +73,10 @@ export function useDoneCallbacks() {
 
 export function useFieldCallbacks() {
   return useX().fieldCallbacks();
+}
+
+export function useAfterEachCallbacks() {
+  return useX().afterEachCallbacks();
 }
 
 export function useSuiteName() {
@@ -107,9 +114,11 @@ export function useExpireSuiteResultCache() {
 export function useResetCallbacks() {
   const [, , resetDoneCallbacks] = useDoneCallbacks();
   const [, , resetFieldCallbacks] = useFieldCallbacks();
+  const [, , resetAfterEachCallbacks] = useAfterEachCallbacks();
 
   resetDoneCallbacks();
   resetFieldCallbacks();
+  resetAfterEachCallbacks();
 }
 
 export function useResetSuite() {

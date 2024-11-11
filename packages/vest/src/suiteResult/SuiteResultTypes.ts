@@ -1,4 +1,4 @@
-import { Maybe, Nullable } from 'vest-utils';
+import { CB, Maybe, Nullable } from 'vest-utils';
 
 import { Severity } from 'Severity';
 import { SummaryFailure } from 'SummaryFailure';
@@ -55,6 +55,8 @@ export type SuiteRunResult<
   F extends TFieldName,
   G extends TGroupName,
 > = SuiteResult<F, G> & {
+  after: Done<F, G>;
+  afterEach: CB;
   done: Done<F, G>;
 };
 

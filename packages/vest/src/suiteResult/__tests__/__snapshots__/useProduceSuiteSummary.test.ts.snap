@@ -2,6 +2,8 @@
 
 exports[`suite() > exposed methods > Should have all exposed methods 1`] = `
 {
+  "after": [Function],
+  "afterEach": [Function],
   "done": [Function],
   "errorCount": 0,
   "errors": [],

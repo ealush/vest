@@ -30,6 +30,8 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     "key": null,
     "keys": null,
     "output": {
+      "after": [Function],
+      "afterEach": [Function],
       "done": [Function],
       "errorCount": 0,
       "errors": [],
@@ -103,6 +105,8 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
       "keyboardcat": [Circular],
     },
     "output": {
+      "after": [Function],
+      "afterEach": [Function],
       "done": [Function],
       "errorCount": 0,
       "errors": [],
@@ -174,6 +178,8 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     "key": null,
     "keys": null,
     "output": {
+      "after": [Function],
+      "afterEach": [Function],
       "done": [Function],
       "errorCount": 0,
       "errors": [],

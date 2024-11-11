@@ -14,7 +14,11 @@ import { TestWalker } from 'TestWalker';
 import { VestIsolate } from 'VestIsolate';
 import { VestTest } from 'VestTest';
 import { useOmitOptionalFields } from 'omitOptionalFields';
-import { useRunDoneCallbacks, useRunFieldCallbacks } from 'runCallbacks';
+import {
+  useRunAfterEachCallbacks,
+  useRunDoneCallbacks,
+  useRunFieldCallbacks,
+} from 'runCallbacks';
 
 // eslint-disable-next-line max-statements, max-lines-per-function
 export function useInitVestBus() {
@@ -45,6 +49,7 @@ export function useInitVestBus() {
         const { fieldName } = VestTest.getData(isolate);
 
         useRunFieldCallbacks(fieldName);
+        useRunAfterEachCallbacks(fieldName);
       }
     }
 

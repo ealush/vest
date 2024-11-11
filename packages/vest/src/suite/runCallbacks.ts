@@ -1,6 +1,10 @@
 import { isArray, callEach } from 'vest-utils';
 
-import { useDoneCallbacks, useFieldCallbacks } from 'Runtime';
+import {
+  useAfterEachCallbacks,
+  useDoneCallbacks,
+  useFieldCallbacks,
+} from 'Runtime';
 import { TFieldName } from 'SuiteResultTypes';
 import { SuiteWalker } from 'SuiteWalker';
 
@@ -25,4 +29,13 @@ export function useRunFieldCallbacks(fieldName?: TFieldName): void {
 export function useRunDoneCallbacks() {
   const [doneCallbacks] = useDoneCallbacks();
   callEach(doneCallbacks);
+}
+
+export function useRunAfterEachCallbacks(fieldName: TFieldName) {
+  if (SuiteWalker.useHasRemainingWithTestNameMatching(fieldName)) {
+    return;
+  }
+
+  const [afterEachCallbacks] = useAfterEachCallbacks();
+  callEach(afterEachCallbacks);
 }

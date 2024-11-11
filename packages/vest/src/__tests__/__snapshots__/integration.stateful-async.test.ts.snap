@@ -2,6 +2,8 @@
 
 exports[`Stateful async tests > Merges skipped validations from previous suite 1`] = `
 {
+  "after": [Function],
+  "afterEach": [Function],
   "done": [Function],
   "errorCount": 1,
   "errors": [

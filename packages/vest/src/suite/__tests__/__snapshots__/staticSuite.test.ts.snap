@@ -92,6 +92,8 @@ exports[`staticSuite > dump > should output a dump of the suite 1`] = `
   "key": null,
   "keys": null,
   "output": {
+    "after": [Function],
+    "afterEach": [Function],
     "done": [Function],
     "errorCount": 3,
     "errors": [

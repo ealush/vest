@@ -413,3 +413,448 @@ describe('done', () => {
     });
   });
 });
+
+describe('after', () => {
+  describe('When no async tests', () => {
+    it('Should call done callback immediately', () => {
+      const result = vest.create(() => {
+        dummyTest.passing();
+        dummyTest.passing();
+        dummyTest.failing();
+        dummyTest.failing();
+        dummyTest.passing();
+        dummyTest.failingWarning('field_2');
+      })();
+
+      const doneCallback = vi.fn();
+      const fieldDoneCallback = vi.fn();
+
+      result.after(doneCallback).after('field_2', fieldDoneCallback);
+
+      expect(doneCallback).toHaveBeenCalled();
+      expect(fieldDoneCallback).toHaveBeenCalled();
+    });
+  });
+
+  describe('When suite lags and callbacks are registered again', () => {
+    it('should only run most recent registered callbacks', async () => {
+      const test = [];
+      const suite = vest.create(() => {
+        test.push(dummyTest.failingAsync('test', { time: 100 }));
+      });
+
+      const doneCallback1 = vi.fn();
+      const fieldDoneCallback1 = vi.fn();
+      const doneCallback2 = vi.fn();
+      const fieldDoneCallback2 = vi.fn();
+
+      suite().after(doneCallback1).after('test', fieldDoneCallback1);
+      await wait(10);
+      suite().after(doneCallback2).after('test', fieldDoneCallback2);
+      await wait(100);
+      expect(doneCallback2).toHaveBeenCalledTimes(1);
+      expect(fieldDoneCallback2).toHaveBeenCalledTimes(1);
+      expect(doneCallback1).toHaveBeenCalledTimes(0);
+      expect(fieldDoneCallback1).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe('When there are async tests', () => {
+    describe('When field name is not passed', () => {
+      it('Should run the done callback after all the fields finished running', () => {
+        const check1 = vi.fn();
+        const check2 = vi.fn();
+        const check3 = vi.fn();
+        return TestPromise(done => {
+          const doneCallback = vi.fn(() => {
+            expect(check1).toHaveBeenCalled();
+            expect(check2).toHaveBeenCalled();
+            expect(check3).toHaveBeenCalled();
+            done();
+          });
+          const result = vest.create(() => {
+            dummyTest.passingAsync('field_1', { time: 1000 });
+            dummyTest.failingAsync('field_2', { time: 100 });
+            dummyTest.passingAsync('field_3', { time: 0 });
+            dummyTest.failing();
+            dummyTest.passing();
+          })();
+
+          result.after(doneCallback);
+
+          setTimeout(() => {
+            expect(doneCallback).not.toHaveBeenCalled();
+            check1();
+          });
+          setTimeout(() => {
+            expect(doneCallback).not.toHaveBeenCalled();
+            check2();
+          }, 150);
+          setTimeout(() => {
+            expect(doneCallback).not.toHaveBeenCalled();
+            check3();
+          }, 900);
+        });
+      });
+    });
+  });
+
+  describe('done arguments', () => {
+    it('Should pass down the up to date validation result', () => {
+      return TestPromise(done => {
+        const result = vest.create(() => {
+          dummyTest.failing('field_1', 'error message');
+          dummyTest.passing('field_2');
+          dummyTest.passingAsync('field_3', { time: 0 });
+          dummyTest.failingAsync('field_4', {
+            message: 'error_message',
+            time: 100,
+          });
+          dummyTest.passingAsync('field_5', { time: 1000 });
+        })();
+
+        result
+          .after('field_2', res => {
+            expect(res.getErrors()).toEqual({
+              field_1: ['error message'],
+            });
+            expect(res).toMatchObject({
+              errorCount: 1,
+              groups: {},
+              testCount: 5,
+              tests: {
+                field_1: {
+                  errorCount: 1,
+                  errors: ['error message'],
+                  testCount: 1,
+                  warnCount: 0,
+                },
+                field_2: {
+                  errorCount: 0,
+                  testCount: 1,
+                  warnCount: 0,
+                },
+                field_3: {
+                  errorCount: 0,
+                  testCount: 1,
+                  warnCount: 0,
+                },
+                field_4: {
+                  errorCount: 0,
+                  testCount: 1,
+                  warnCount: 0,
+                },
+                field_5: {
+                  errorCount: 0,
+                  testCount: 1,
+                  warnCount: 0,
+                },
+              },
+              warnCount: 0,
+            });
+          })
+          .after('field_3', res => {
+            expect(res).toMatchObject({
+              errorCount: 1,
+              groups: {},
+              testCount: 5,
+              tests: {
+                field_1: {
+                  errorCount: 1,
+                  errors: ['error message'],
+                  testCount: 1,
+                  warnCount: 0,
+                },
+                field_2: {
+                  errorCount: 0,
+                  testCount: 1,
+                  warnCount: 0,
+                },
+                field_3: {
+                  errorCount: 0,
+                  testCount: 1,
+                  warnCount: 0,
+                },
+                field_4: {
+                  errorCount: 0,
+                  testCount: 1,
+                  warnCount: 0,
+                },
+                field_5: {
+                  errorCount: 0,
+                  testCount: 1,
+                  warnCount: 0,
+                },
+              },
+              warnCount: 0,
+            });
+          })
+          .after('field_4', res => {
+            expect(res.getErrors()).toEqual({
+              field_1: ['error message'],
+              field_4: ['error_message'],
+            });
+            expect(res).toMatchObject({
+              errorCount: 2,
+              groups: {},
+              testCount: 5,
+              tests: {
+                field_1: {
+                  errorCount: 1,
+                  errors: ['error message'],
+                  testCount: 1,
+                  warnCount: 0,
+                },
+                field_2: {
+                  errorCount: 0,
+                  testCount: 1,
+                  warnCount: 0,
+                },
+                field_3: {
+                  errorCount: 0,
+                  testCount: 1,
+                  warnCount: 0,
+                },
+                field_4: {
+                  errorCount: 1,
+                  errors: ['error_message'],
+                  testCount: 1,
+                  warnCount: 0,
+                },
+                field_5: {
+                  errorCount: 0,
+                  testCount: 1,
+                  warnCount: 0,
+                },
+              },
+              warnCount: 0,
+            });
+          })
+          .after(res => {
+            expect(res).toMatchObject({
+              errorCount: 2,
+              groups: {},
+              testCount: 5,
+              tests: {
+                field_1: {
+                  errorCount: 1,
+                  errors: ['error message'],
+                  testCount: 1,
+                  warnCount: 0,
+                },
+                field_2: {
+                  errorCount: 0,
+                  testCount: 1,
+                  warnCount: 0,
+                },
+                field_3: {
+                  errorCount: 0,
+                  testCount: 1,
+                  warnCount: 0,
+                },
+                field_4: {
+                  errorCount: 1,
+                  errors: ['error_message'],
+                  testCount: 1,
+                  warnCount: 0,
+                },
+                field_5: {
+                  errorCount: 0,
+                  testCount: 1,
+                  warnCount: 0,
+                },
+              },
+              warnCount: 0,
+            });
+            done();
+          });
+      });
+    });
+  });
+
+  describe('When a different field is run while a field is pending', () => {
+    it('Should wait running done callbacks until all tests complete', () => {
+      const suite = vest.create(only => {
+        vest.only(only);
+
+        vest.test('async_1', async () => {
+          await wait(1000);
+          throw new Error();
+        });
+
+        vest.test('sync_2', () => false);
+      });
+
+      suite('async_1');
+
+      return TestPromise(done => {
+        suite('sync_2').after(res => {
+          expect(res.hasErrors('async_1')).toBe(true);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('When suite re-runs and a pending test is now skipped', () => {
+    it('Should immediately call the second done callback, omit the first', async () => {
+      const done_0 = vi.fn();
+      const done_1 = vi.fn();
+
+      const suite = vest.create(username => {
+        vest.test('username', () => {
+          vest.enforce(username).isNotBlank();
+        });
+
+        vest.skipWhen(suite.get().hasErrors('username'), () => {
+          vest.test('username', async () => {
+            await wait(1000);
+            if (username === 'ealush') {
+              throw new Error();
+            }
+          });
+        });
+      });
+
+      suite('ealush').after(done_0);
+      await wait(0);
+      expect(done_0).not.toHaveBeenCalled();
+      suite('').after(done_1);
+      expect(done_0).not.toHaveBeenCalled();
+      expect(done_1).toHaveBeenCalled();
+      await wait(1000);
+      expect(done_0).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Passing a field that does not exist', () => {
+    it('Should avoid calling the callback', () => {
+      const cb = vi.fn();
+
+      const suite = vest.create(() => {
+        vest.test('test', () => {});
+      });
+
+      suite().after('non-existent', cb);
+
+      expect(cb).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('When no tests are run', () => {
+    it('Should run the callback', () => {
+      const cb = vi.fn();
+
+      const suite = vest.create(() => {});
+
+      suite().after(cb);
+
+      expect(cb).toHaveBeenCalled();
+    });
+
+    describe('When tests are omitted', () => {
+      it('Should run the callback', () => {
+        const cb = vi.fn();
+
+        const suite = vest.create(() => {
+          vest.optional({ f1: true });
+
+          vest.test('f1', () => {});
+        });
+
+        suite().after(cb);
+        expect(suite.get().tests.f1.testCount).toBe(0);
+        expect(cb).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('When focused done call does not match executed tests', () => {
+    it('Should not call the callback', () => {
+      const cb = vi.fn();
+
+      const suite = vest.create(() => {
+        vest.test('test', () => false);
+      });
+
+      suite().after('non-existent', cb);
+
+      expect(cb).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Async Isolate', () => {
+    describe('When async isolate is pending', () => {
+      it('Should not call the callback', () => {
+        const cb = vi.fn();
+
+        const suite = vest.create(() => {
+          vest.test('test', () => false);
+
+          vest.group('group', async () => {
+            await wait(1000);
+          });
+        });
+
+        suite().after(cb);
+
+        expect(cb).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('When async isolate is completed', () => {
+      it('Should call the callback', async () => {
+        const cb = vi.fn();
+
+        const suite = vest.create(() => {
+          vest.test('test', () => false);
+
+          vest.group('group', async () => {
+            await wait(1000);
+          });
+        });
+
+        suite().after(cb);
+        await wait(1000);
+        expect(cb).toHaveBeenCalled();
+      });
+    });
+  });
+});
+
+describe('afterEach', () => {
+  it('Should run once for each of the async fields', async () => {
+    const fn = vi.fn();
+    const suite = vest.create(() => {
+      vest.test('async_1', async () => {
+        await wait(10);
+      });
+      vest.test('async_2', async () => {
+        await wait(20);
+      });
+      vest.test('async_2', async () => {
+        await wait(200);
+      });
+      vest.test('async_3', async () => {
+        await wait(100);
+      });
+      vest.test('async_3', async () => {
+        await wait(1);
+      });
+      vest.test('async_3', async () => {
+        await wait(1);
+      });
+      vest.test('async_3', async () => {
+        await wait(1);
+      });
+    });
+
+    suite().afterEach(() => {
+      fn();
+    });
+
+    await wait(300);
+
+    expect(fn).toHaveBeenCalledTimes(3);
+  });
+});

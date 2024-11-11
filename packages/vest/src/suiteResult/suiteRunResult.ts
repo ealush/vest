@@ -1,6 +1,7 @@
-import { freezeAssign } from 'vest-utils';
+import { CB, freezeAssign } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
+import { useAfterEachCallbacks } from 'Runtime';
 import {
   SuiteResult,
   SuiteRunResult,
@@ -16,12 +17,29 @@ export function useSuiteRunResult<
   F extends TFieldName,
   G extends TGroupName,
 >(): SuiteRunResult<F, G> {
+  const persistedDone = VestRuntime.persist(done) as Done<F, G>;
+
   return freezeAssign<SuiteRunResult<F, G>>(
     {
-      done: VestRuntime.persist(done) as Done<F, G>,
+      afterEach: VestRuntime.persist(afterEach),
+      done: persistedDone,
+      after: persistedDone,
     },
     useCreateSuiteResult<F, G>(),
   );
+}
+
+// @vx-allow use-use
+function afterEach<F extends TFieldName, G extends TGroupName>(
+  callback: CB,
+): SuiteRunResult<F, G> {
+  const output = useSuiteRunResult<F, G>();
+
+  const [, setAfterEachCallbacks] = useAfterEachCallbacks();
+
+  setAfterEachCallbacks(prev => [...prev, callback]);
+
+  return output;
 }
 
 /**

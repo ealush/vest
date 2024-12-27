@@ -52,8 +52,8 @@ const suite = create((data, currentField) => {
   });
 });
 
-suite({ name: 'Indie' }, 'pet_name').isValid(); // ✅ Since pet_color and pet_age are optional, the suite may still be valid
-suite({ age: 'Five' }, 'pet_age').isValid(); // 🚨 When erroring, optional fields still make the suite invalid
+suite.run({ name: 'Indie' }, 'pet_name').isValid(); // ✅ Since pet_color and pet_age are optional, the suite may still be valid
+suite.run({ age: 'Five' }, 'pet_age').isValid(); // 🚨 When erroring, optional fields still make the suite invalid
 ```
 
 ## If the field is empty in the data object
@@ -77,7 +77,7 @@ const suite = create(data => {
   });
 });
 
-const result = suite({
+const result = suite.run({
   username: 'John',
   age: '', // age is empty
 });

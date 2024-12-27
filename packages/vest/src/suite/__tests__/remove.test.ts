@@ -17,7 +17,7 @@ describe('suite.remove', () => {
       dummyTest.passing('field2');
       dummyTest.passing('field1');
     });
-    suite();
+    suite.run();
     expect(suite.get().testCount).toBe(6);
     expect(suite.get().tests.field1.testCount).toBe(4);
     expect(suite.get().tests.field2.testCount).toBe(2);
@@ -34,7 +34,7 @@ describe('suite.remove', () => {
       dummyTest.failing('field1');
       dummyTest.failing('field2');
     });
-    suite();
+    suite.run();
     const res = suite.get();
     suite.remove('field2');
     expect(suite.get()).not.toBe(res);
@@ -45,7 +45,7 @@ describe('suite.remove', () => {
       dummyTest.failing('field1');
       dummyTest.passing('field2');
     });
-    suite();
+    suite.run();
     const res = suite.get();
     suite.remove('field3');
     expect(suite.get()).isDeepCopyOf(res);

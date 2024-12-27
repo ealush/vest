@@ -18,7 +18,7 @@ describe('summaryFailures', () => {
         });
       });
 
-      suite();
+      suite.run();
     });
     test('Summary has an errors array', () => {
       expect(suite.get().errors).toBeInstanceOf(Array);
@@ -46,7 +46,7 @@ describe('summaryFailures', () => {
         vest.test('username', 'username is too short', () => false);
       });
 
-      suite();
+      suite.run();
 
       expect(suite.get().errors).toHaveLength(3);
       expect(suite.get().errors).toEqual([
@@ -78,7 +78,7 @@ describe('summaryFailures', () => {
         vest.test('confirm', 'passwords do not match', () => false);
       });
 
-      suite();
+      suite.run();
 
       expect(suite.get().errors).toHaveLength(3);
       expect(suite.get().errors).toEqual([
@@ -116,7 +116,7 @@ describe('summaryFailures', () => {
         vest.test('email', 'email was not provided', () => false);
       });
 
-      suite();
+      suite.run();
     });
 
     test('Summary has a warnings array', () => {
@@ -154,7 +154,7 @@ describe('summaryFailures', () => {
         });
       });
 
-      suite();
+      suite.run();
 
       expect(suite.get().warnings).toHaveLength(3);
       expect(suite.get().warnings).toEqual([
@@ -194,7 +194,7 @@ describe('summaryFailures', () => {
         });
       });
 
-      suite();
+      suite.run();
 
       expect(suite.get().warnings).toHaveLength(3);
       expect(suite.get().warnings).toEqual([

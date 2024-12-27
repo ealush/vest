@@ -1,9 +1,9 @@
-import { parse } from 'parser';
 import { describe, it, expect } from 'vitest';
 
 import * as suiteDummy from '../../testUtils/suiteDummy';
 import { ser } from '../../testUtils/suiteDummy';
 
+import { parse } from 'parser';
 import * as vest from 'vest';
 
 describe('parser.parse', () => {
@@ -96,12 +96,14 @@ describe('parser.parse', () => {
     it('Should return true if provided field is untested while others are', () => {
       expect(
         parse(
-          vest.create(() => {
-            vest.test('x', () => {});
-            vest.skipWhen(true, () => {
-              vest.test('untested', () => {});
-            });
-          })(),
+          vest
+            .create(() => {
+              vest.test('x', () => {});
+              vest.skipWhen(true, () => {
+                vest.test('untested', () => {});
+              });
+            })
+            .run(),
         ).untested('untested'),
       ).toBe(true);
     });
@@ -125,12 +127,14 @@ describe('parser.parse', () => {
         expect(
           parse(
             ser(
-              vest.create(() => {
-                vest.test('x', () => {});
-                vest.skipWhen(true, () => {
-                  vest.test('untested', () => {});
-                });
-              })(),
+              vest
+                .create(() => {
+                  vest.test('x', () => {});
+                  vest.skipWhen(true, () => {
+                    vest.test('untested', () => {});
+                  });
+                })
+                .run(),
             ),
           ).untested('untested'),
         ).toBe(true);
@@ -189,13 +193,15 @@ describe('parser.parse', () => {
     it('should return false if not all required fields ran', () => {
       expect(
         parse(
-          vest.create(() => {
-            vest.test('x', () => {});
-            vest.test('untested', () => {});
-            vest.skipWhen(true, () => {
+          vest
+            .create(() => {
+              vest.test('x', () => {});
               vest.test('untested', () => {});
-            });
-          })(),
+              vest.skipWhen(true, () => {
+                vest.test('untested', () => {});
+              });
+            })
+            .run(),
         ).valid(),
       ).toBe(false);
     });
@@ -204,11 +210,13 @@ describe('parser.parse', () => {
       it('Should return false when field is untested', () => {
         expect(
           parse(
-            vest.create(() => {
-              vest.skipWhen(true, () => {
-                vest.test('f1', () => {});
-              });
-            })(),
+            vest
+              .create(() => {
+                vest.skipWhen(true, () => {
+                  vest.test('f1', () => {});
+                });
+              })
+              .run(),
           ).valid('f1'),
         ).toBe(false);
       });
@@ -216,12 +224,14 @@ describe('parser.parse', () => {
       it('Should return true if optional field is untested', () => {
         expect(
           parse(
-            vest.create(() => {
-              vest.optional('f1');
-              vest.skipWhen(true, () => {
-                vest.test('f1', () => {});
-              });
-            })(),
+            vest
+              .create(() => {
+                vest.optional('f1');
+                vest.skipWhen(true, () => {
+                  vest.test('f1', () => {});
+                });
+              })
+              .run(),
           ).valid('f1'),
         ).toBe(true);
       });
@@ -229,10 +239,12 @@ describe('parser.parse', () => {
       it('Should return true if field is passing', () => {
         expect(
           parse(
-            vest.create(() => {
-              vest.test('f1', () => {});
-              vest.test('f2', () => false);
-            })(),
+            vest
+              .create(() => {
+                vest.test('f1', () => {});
+                vest.test('f2', () => false);
+              })
+              .run(),
           ).valid('f1'),
         ).toBe(true);
       });
@@ -240,19 +252,23 @@ describe('parser.parse', () => {
       it('Should return false if field is failing', () => {
         expect(
           parse(
-            vest.create(() => {
-              vest.test('f1', () => {});
-              vest.test('f2', () => false);
-            })(),
+            vest
+              .create(() => {
+                vest.test('f1', () => {});
+                vest.test('f2', () => false);
+              })
+              .run(),
           ).valid('f2'),
         ).toBe(false);
         expect(
           parse(
-            vest.create(() => {
-              vest.test('f1', () => {});
-              vest.test('f2', () => {});
-              vest.test('f2', () => false);
-            })(),
+            vest
+              .create(() => {
+                vest.test('f1', () => {});
+                vest.test('f2', () => {});
+                vest.test('f2', () => false);
+              })
+              .run(),
           ).valid('f2'),
         ).toBe(false);
       });
@@ -260,12 +276,14 @@ describe('parser.parse', () => {
       it('Should return true if field is warning', () => {
         expect(
           parse(
-            vest.create(() => {
-              vest.test('f1', () => {
-                vest.warn();
-                return false;
-              });
-            })(),
+            vest
+              .create(() => {
+                vest.test('f1', () => {
+                  vest.warn();
+                  return false;
+                });
+              })
+              .run(),
           ).valid('f1'),
         ).toBe(true);
       });
@@ -317,13 +335,15 @@ describe('parser.parse', () => {
         expect(
           parse(
             ser(
-              vest.create(() => {
-                vest.test('x', () => {});
-                vest.test('untested', () => {});
-                vest.skipWhen(true, () => {
+              vest
+                .create(() => {
+                  vest.test('x', () => {});
                   vest.test('untested', () => {});
-                });
-              })(),
+                  vest.skipWhen(true, () => {
+                    vest.test('untested', () => {});
+                  });
+                })
+                .run(),
             ),
           ).valid(),
         ).toBe(false);
@@ -334,11 +354,13 @@ describe('parser.parse', () => {
           expect(
             parse(
               ser(
-                vest.create(() => {
-                  vest.skipWhen(true, () => {
-                    vest.test('f1', () => {});
-                  });
-                })(),
+                vest
+                  .create(() => {
+                    vest.skipWhen(true, () => {
+                      vest.test('f1', () => {});
+                    });
+                  })
+                  .run(),
               ),
             ).valid('f1'),
           ).toBe(false);
@@ -348,12 +370,14 @@ describe('parser.parse', () => {
           expect(
             parse(
               ser(
-                vest.create(() => {
-                  vest.optional('f1');
-                  vest.skipWhen(true, () => {
-                    vest.test('f1', () => {});
-                  });
-                })(),
+                vest
+                  .create(() => {
+                    vest.optional('f1');
+                    vest.skipWhen(true, () => {
+                      vest.test('f1', () => {});
+                    });
+                  })
+                  .run(),
               ),
             ).valid('f1'),
           ).toBe(true);
@@ -363,10 +387,12 @@ describe('parser.parse', () => {
           expect(
             parse(
               ser(
-                vest.create(() => {
-                  vest.test('f1', () => {});
-                  vest.test('f2', () => false);
-                })(),
+                vest
+                  .create(() => {
+                    vest.test('f1', () => {});
+                    vest.test('f2', () => false);
+                  })
+                  .run(),
               ),
             ).valid('f1'),
           ).toBe(true);
@@ -376,21 +402,25 @@ describe('parser.parse', () => {
           expect(
             parse(
               ser(
-                vest.create(() => {
-                  vest.test('f1', () => {});
-                  vest.test('f2', () => false);
-                })(),
+                vest
+                  .create(() => {
+                    vest.test('f1', () => {});
+                    vest.test('f2', () => false);
+                  })
+                  .run(),
               ),
             ).valid('f2'),
           ).toBe(false);
           expect(
             parse(
               ser(
-                vest.create(() => {
-                  vest.test('f1', () => {});
-                  vest.test('f2', () => {});
-                  vest.test('f2', () => false);
-                })(),
+                vest
+                  .create(() => {
+                    vest.test('f1', () => {});
+                    vest.test('f2', () => {});
+                    vest.test('f2', () => false);
+                  })
+                  .run(),
               ),
             ).valid('f2'),
           ).toBe(false);
@@ -400,12 +430,14 @@ describe('parser.parse', () => {
           expect(
             parse(
               ser(
-                vest.create(() => {
-                  vest.test('f1', () => {
-                    vest.warn();
-                    return false;
-                  });
-                })(),
+                vest
+                  .create(() => {
+                    vest.test('f1', () => {
+                      vest.warn();
+                      return false;
+                    });
+                  })
+                  .run(),
               ),
             ).valid('f1'),
           ).toBe(true);
@@ -441,7 +473,7 @@ describe('parser.parse', () => {
         vest.test('f2', async () => {});
         vest.test('f3', async () => {});
       });
-      suite();
+      suite.run();
       expect(parse(suite.get()).pending()).toBe(true);
     });
 
@@ -451,7 +483,7 @@ describe('parser.parse', () => {
         vest.test('f2', async () => {});
         vest.test('f3', async () => {});
       });
-      suite();
+      suite.run();
       expect(parse(suite.get()).pending('f1')).toBe(true);
     });
 

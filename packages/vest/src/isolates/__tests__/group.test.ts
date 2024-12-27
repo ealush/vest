@@ -18,9 +18,11 @@ describe('named group', () => {
   it('should run group callback', () => {
     const groupName = 'groupName';
     const callback = vi.fn();
-    vest.create(() => {
-      vest.group(groupName, callback);
-    })();
+    vest
+      .create(() => {
+        vest.group(groupName, callback);
+      })
+      .run();
     expect(callback).toHaveBeenCalled();
   });
 
@@ -39,7 +41,7 @@ describe('named group', () => {
       });
     });
 
-    const res = suite();
+    const res = suite.run();
     expect(res.hasErrors(FieldNames.F1)).toBe(true);
     expect(res.hasErrors(FieldNames.F2)).toBe(true);
     expect(res.hasErrors(FieldNames.F3)).toBe(false);
@@ -98,7 +100,7 @@ describe('named group', () => {
         });
       });
 
-      const res = suite();
+      const res = suite.run();
       expect(res.hasErrors(FieldNames.F1)).toBe(true);
       expect(res.hasErrors(FieldNames.F2)).toBe(true);
       expect(res.hasErrors(FieldNames.F3)).toBe(false);
@@ -161,7 +163,7 @@ describe('named group', () => {
             vest.test(FieldNames.F2, cb2);
           });
         });
-        const res = suite();
+        const res = suite.run();
         expect(cb1).not.toHaveBeenCalled();
         expect(cb2).toHaveBeenCalledTimes(1);
         expect(res.tests[FieldNames.F1].testCount).toBe(0);
@@ -194,7 +196,7 @@ describe('named group', () => {
           });
           vest.test(FieldNames.F2, cb3);
         });
-        const res = suite();
+        const res = suite.run();
         expect(cb1).toHaveBeenCalledTimes(2);
         expect(cb2).toHaveBeenCalledTimes(0);
         expect(cb3).toHaveBeenCalledTimes(1);
@@ -228,7 +230,7 @@ describe('named group', () => {
             vest.test(FieldNames.F2, cb3);
           });
         });
-        const res = suite();
+        const res = suite.run();
         expect(cb1).toHaveBeenCalledTimes(2);
         expect(cb2).toHaveBeenCalledTimes(0);
         expect(cb3).toHaveBeenCalledTimes(1);
@@ -270,7 +272,7 @@ describe('named group', () => {
             vest.test(FieldNames.F2, cb2);
             vest.test(FieldNames.F3, cb3);
           });
-          const res = suite();
+          const res = suite.run();
           expect(cb1).toHaveBeenCalledTimes(0);
           expect(cb2).toHaveBeenCalledTimes(2);
           expect(cb3).toHaveBeenCalledTimes(3);
@@ -322,7 +324,7 @@ describe('named group', () => {
               vest.test(FieldNames.F3, cb4);
             });
           });
-          const res = suite();
+          const res = suite.run();
           expect(cb1).toHaveBeenCalledTimes(1);
           expect(cb2).toHaveBeenCalledTimes(1);
           expect(cb3).toHaveBeenCalledTimes(1);
@@ -374,7 +376,7 @@ describe('named group', () => {
               vest.test(FieldNames.F3, cb3);
             });
           });
-          const res = suite();
+          const res = suite.run();
           expect(cb1).toHaveBeenCalledTimes(1);
           expect(cb2).toHaveBeenCalledTimes(0);
           expect(cb3).toHaveBeenCalledTimes(3);
@@ -420,7 +422,7 @@ describe('unnamed groups', () => {
         vest.test(FieldNames.F3, cb3);
       });
     });
-    const res = suite();
+    const res = suite.run();
     expect(cb1).toHaveBeenCalledTimes(1);
     expect(cb2).toHaveBeenCalledTimes(1);
     expect(cb3).toHaveBeenCalledTimes(1);
@@ -442,7 +444,7 @@ describe('unnamed groups', () => {
         vest.test(FieldNames.F3, () => false);
       });
     });
-    const res = suite();
+    const res = suite.run();
     expect(res.groups).toEqual({});
     expect(res.isValid()).toBe(false);
     expect(suite.get()).toMatchSnapshot();
@@ -463,7 +465,7 @@ describe('unnamed groups', () => {
           vest.test(FieldNames.F3, cb3);
         });
       });
-      const res = suite();
+      const res = suite.run();
       expect(cb1).toHaveBeenCalledTimes(1);
       expect(cb2).toHaveBeenCalledTimes(0);
       expect(cb3).toHaveBeenCalledTimes(0);
@@ -493,7 +495,7 @@ describe('unnamed groups', () => {
           vest.test(FieldNames.F3, cb3);
         });
       });
-      const res = suite();
+      const res = suite.run();
       expect(cb1).toHaveBeenCalledTimes(0);
       expect(cb2).toHaveBeenCalledTimes(1);
       expect(cb3).toHaveBeenCalledTimes(1);
@@ -523,7 +525,7 @@ describe('unnamed groups', () => {
           vest.test(FieldNames.F3, cb3);
         });
       });
-      const res = suite();
+      const res = suite.run();
       expect(cb1).toHaveBeenCalledTimes(0);
       expect(cb2).toHaveBeenCalledTimes(0);
       expect(cb3).toHaveBeenCalledTimes(0);
@@ -551,7 +553,7 @@ describe('pendingCount within group', () => {
       });
     });
 
-    const res = suite();
+    const res = suite.run();
 
     expect(res.tests[FieldNames.F1].pendingCount).toBe(1);
     expect(res.tests[FieldNames.F2].pendingCount).toBe(2);

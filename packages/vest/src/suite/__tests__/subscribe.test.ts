@@ -39,7 +39,7 @@ describe('suite.subscribe', () => {
 
     suite.subscribe(cb);
     expect(cb.mock.calls).toHaveLength(0);
-    suite();
+    suite.run();
     expect(cb.mock.calls.length).toBeGreaterThan(callCount);
     callCount = cb.mock.calls.length;
 
@@ -70,7 +70,7 @@ describe('suite.subscribe', () => {
       suite.subscribe('TEST_RUN_STARTED', testStarted);
       suite.subscribe('SUITE_RUN_STARTED', suiteStart);
 
-      suite();
+      suite.run();
       expect(cbAllDone).toHaveBeenCalledTimes(1);
       expect(testDone).toHaveBeenCalledTimes(3);
       expect(testStarted).toHaveBeenCalledTimes(3);
@@ -86,14 +86,14 @@ describe('suite.subscribe', () => {
       });
 
       const unsubscribe = suite.subscribe(cb);
-      suite();
+      suite.run();
       let callCount = cb.mock.calls.length;
       enforce(callCount).greaterThan(1);
-      suite();
+      suite.run();
       enforce(cb.mock.calls.length).greaterThan(callCount);
       callCount = cb.mock.calls.length;
       unsubscribe();
-      suite();
+      suite.run();
       enforce(cb.mock.calls.length).equals(callCount);
     });
   });
@@ -115,9 +115,9 @@ describe('#1157 (@codrin-iftimie) suite.get() in subscribe() skips the first val
       suite.get();
     });
 
-    suite({ a: '' });
+    suite.run({ a: '' });
     expect(suite.getErrors('a')).toEqual(['Enter a value']);
-    suite({ a: '' });
+    suite.run({ a: '' });
     expect(suite.getErrors('a')).toEqual(['Enter a value']);
   });
 });

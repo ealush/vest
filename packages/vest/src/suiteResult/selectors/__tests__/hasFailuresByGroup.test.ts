@@ -15,7 +15,7 @@ describe('hasErrorsByGroup', () => {
     it('Should return false', () => {
       suite = vest.create(() => undefined);
 
-      expect(suite().hasErrorsByGroup(groupName)).toBe(false);
+      expect(suite.run().hasErrorsByGroup(groupName)).toBe(false);
     });
   });
 
@@ -24,7 +24,7 @@ describe('hasErrorsByGroup', () => {
       suite = vest.create(() => {
         dummyTest.passing();
       });
-      expect(suite().hasErrorsByGroup(groupName)).toBe(false);
+      expect(suite.run().hasErrorsByGroup(groupName)).toBe(false);
     });
   });
 
@@ -33,7 +33,7 @@ describe('hasErrorsByGroup', () => {
       suite = vest.create(() => {
         dummyTest.failing();
       });
-      expect(suite().hasErrorsByGroup(groupName)).toBe(false);
+      expect(suite.run().hasErrorsByGroup(groupName)).toBe(false);
     });
   });
 
@@ -45,7 +45,7 @@ describe('hasErrorsByGroup', () => {
         });
       });
 
-      expect(suite().hasErrorsByGroup(groupName)).toBe(false);
+      expect(suite.run().hasErrorsByGroup(groupName)).toBe(false);
     });
   });
 
@@ -56,7 +56,7 @@ describe('hasErrorsByGroup', () => {
           dummyTest.failingWarning('field_1', 'msg');
         });
       });
-      expect(suite().hasErrorsByGroup(groupName)).toBe(false);
+      expect(suite.run().hasErrorsByGroup(groupName)).toBe(false);
     });
   });
 
@@ -67,7 +67,7 @@ describe('hasErrorsByGroup', () => {
           dummyTest.failing('field_1', 'msg');
         });
       });
-      expect(suite().hasErrorsByGroup(groupName)).toBe(true);
+      expect(suite.run().hasErrorsByGroup(groupName)).toBe(true);
     });
   });
 
@@ -79,9 +79,9 @@ describe('hasErrorsByGroup', () => {
             dummyTest.failing('field_1', 'msg');
           });
         });
-        expect(suite().hasErrorsByGroup(groupName, 'non_matching_field')).toBe(
-          false,
-        );
+        expect(
+          suite.run().hasErrorsByGroup(groupName, 'non_matching_field'),
+        ).toBe(false);
       });
     });
 
@@ -92,7 +92,7 @@ describe('hasErrorsByGroup', () => {
             dummyTest.failing(fieldName, 'msg');
           });
         });
-        expect(suite().hasErrorsByGroup(groupName, fieldName)).toBe(true);
+        expect(suite.run().hasErrorsByGroup(groupName, fieldName)).toBe(true);
       });
     });
   });
@@ -102,7 +102,7 @@ describe('hasWarningsByGroup', () => {
   describe('When no tests', () => {
     it('Should return false', () => {
       suite = vest.create(() => undefined);
-      expect(suite().hasWarningsByGroup(groupName)).toBe(false);
+      expect(suite.run().hasWarningsByGroup(groupName)).toBe(false);
     });
   });
 
@@ -113,7 +113,7 @@ describe('hasWarningsByGroup', () => {
           dummyTest.passingWarning(fieldName, 'msg');
         });
       });
-      expect(suite().hasWarningsByGroup(groupName)).toBe(false);
+      expect(suite.run().hasWarningsByGroup(groupName)).toBe(false);
     });
   });
 
@@ -122,7 +122,7 @@ describe('hasWarningsByGroup', () => {
       suite = vest.create(() => {
         dummyTest.failingWarning();
       });
-      expect(suite().hasWarningsByGroup(groupName)).toBe(false);
+      expect(suite.run().hasWarningsByGroup(groupName)).toBe(false);
     });
   });
 
@@ -133,7 +133,7 @@ describe('hasWarningsByGroup', () => {
           dummyTest.failingWarning('field_1', 'msg');
         });
       });
-      expect(suite().hasWarningsByGroup(groupName)).toBe(false);
+      expect(suite.run().hasWarningsByGroup(groupName)).toBe(false);
     });
   });
 
@@ -144,7 +144,7 @@ describe('hasWarningsByGroup', () => {
           dummyTest.failing('field_1', 'msg');
         });
       });
-      expect(suite().hasWarningsByGroup(groupName)).toBe(false);
+      expect(suite.run().hasWarningsByGroup(groupName)).toBe(false);
     });
   });
 
@@ -155,7 +155,7 @@ describe('hasWarningsByGroup', () => {
           dummyTest.failingWarning(fieldName, 'msg');
         });
       });
-      expect(suite().hasWarningsByGroup(groupName)).toBe(true);
+      expect(suite.run().hasWarningsByGroup(groupName)).toBe(true);
     });
   });
 
@@ -168,7 +168,7 @@ describe('hasWarningsByGroup', () => {
           });
         });
         expect(
-          suite().hasWarningsByGroup(groupName, 'non_matching_field'),
+          suite.run().hasWarningsByGroup(groupName, 'non_matching_field'),
         ).toBe(false);
       });
     });
@@ -180,7 +180,7 @@ describe('hasWarningsByGroup', () => {
             dummyTest.failingWarning(fieldName, 'msg');
           });
         });
-        expect(suite().hasWarningsByGroup(groupName, fieldName)).toBe(true);
+        expect(suite.run().hasWarningsByGroup(groupName, fieldName)).toBe(true);
       });
     });
   });

@@ -32,18 +32,18 @@ describe('isValid', () => {
     });
 
     it('Should return false when an optional test has errors', () => {
-      expect(suite('field_2').isValid()).toBe(false);
+      expect(suite.run('field_2').isValid()).toBe(false);
     });
     it('Should return false when a required test has errors', () => {
-      expect(suite('field_1').isValid()).toBe(false);
+      expect(suite.run('field_1').isValid()).toBe(false);
     });
 
     it('Should return false when the queried field is not optional and has errors', () => {
-      expect(suite('field_2').isValid('field_2')).toBe(false);
+      expect(suite.run('field_2').isValid('field_2')).toBe(false);
     });
 
     it('Should return true when the queried field is optional and has errors', () => {
-      expect(suite('field_1').isValid('field_1')).toBe(true);
+      expect(suite.run('field_1').isValid('field_1')).toBe(true);
     });
   });
 
@@ -59,8 +59,8 @@ describe('isValid', () => {
       });
     });
     it('Should return true when a required test has warnings', () => {
-      expect(suite().isValid()).toBe(true);
-      expect(suite().isValid('field_1')).toBe(true);
+      expect(suite.run().isValid()).toBe(true);
+      expect(suite.run().isValid('field_1')).toBe(true);
     });
 
     describe('When some of the tests for the required field are warnings', () => {
@@ -74,7 +74,7 @@ describe('isValid', () => {
         });
       });
       it('Should return true when a required test has warnings', () => {
-        expect(suite().isValid()).toBe(true);
+        expect(suite.run().isValid()).toBe(true);
       });
     });
 
@@ -92,7 +92,7 @@ describe('isValid', () => {
         });
       });
       it('Should return false even when the skipped field is warning', () => {
-        expect(suite().isValid()).toBe(false);
+        expect(suite.run().isValid()).toBe(false);
       });
     });
   });
@@ -115,10 +115,10 @@ describe('isValid', () => {
       });
     });
     it('Should return false', () => {
-      expect(suite('field_1').isValid()).toBe(false);
+      expect(suite.run('field_1').isValid()).toBe(false);
     });
     it('Should return false', () => {
-      expect(suite(['field_2', 'field_3']).isValid()).toBe(false);
+      expect(suite.run(['field_2', 'field_3']).isValid()).toBe(false);
     });
   });
 
@@ -136,14 +136,14 @@ describe('isValid', () => {
 
     describe('When a test is pending', () => {
       it('Should return false', () => {
-        suite();
+        suite.run();
         expect(suite.get().isValid()).toBe(false);
         expect(suite.get().isValid('field_1')).toBe(false);
       });
     });
     describe('When the test is passing', () => {
       it('Should return true', async () => {
-        suite();
+        suite.run();
         await wait(300);
         expect(suite.get().isValid()).toBe(true);
         expect(suite.get().isValid('field_1')).toBe(true);
@@ -168,14 +168,14 @@ describe('isValid', () => {
     });
 
     it('Should return false as long as the test is pending', async () => {
-      suite();
+      suite.run();
       expect(suite.get().isValid()).toBe(false);
       await wait(300);
       expect(suite.get().isValid()).toBe(true);
     });
 
     it('Should return false as long as the test is pending when querying a specific field', async () => {
-      suite();
+      suite.run();
       expect(suite.get().isValid('field_1')).toBe(false);
       await wait(300);
       expect(suite.get().isValid('field_1')).toBe(true);
@@ -200,7 +200,7 @@ describe('isValid', () => {
 
     describe('When test is pending', () => {
       it('Should return `false` for a required field', () => {
-        const result = suite();
+        const result = suite.run();
 
         expect(result.isValid()).toBe(false);
         expect(result.isValid('field_1')).toBe(false);
@@ -210,7 +210,7 @@ describe('isValid', () => {
     describe('When async test is passing', () => {
       it('Should return `true`', () => {
         return TestPromise(done => {
-          suite().done(result => {
+          suite.run().done(result => {
             expect(result.isValid()).toBe(true);
             expect(result.isValid('field_1')).toBe(true);
             expect(result.isValid('field_2')).toBe(true);
@@ -223,8 +223,8 @@ describe('isValid', () => {
     describe('When test is lagging', () => {
       it('Should return `false`', () => {
         return TestPromise(done => {
-          suite();
-          const result = suite('field_2').done(done);
+          suite.run();
+          const result = suite.run('field_2').done(done);
 
           expect(result.isValid()).toBe(false);
         });
@@ -252,10 +252,10 @@ describe('isValid', () => {
       });
     });
     it('Should return true', () => {
-      expect(suite().isValid()).toBe(true);
-      expect(suite().isValid('field_1')).toBe(true);
-      expect(suite().isValid('field_2')).toBe(true);
-      expect(suite().isValid('field_3')).toBe(true);
+      expect(suite.run().isValid()).toBe(true);
+      expect(suite.run().isValid('field_1')).toBe(true);
+      expect(suite.run().isValid('field_2')).toBe(true);
+      expect(suite.run().isValid('field_3')).toBe(true);
     });
   });
 
@@ -269,7 +269,9 @@ describe('isValid', () => {
               return true;
             });
           });
-        })().isValid(),
+        })
+          .run()
+          .isValid(),
       ).toBe(false);
     });
   });
@@ -280,7 +282,9 @@ describe('isValid', () => {
         create(() => {
           skip('field_1');
           test('field_1', () => true);
-        })().isValid('field_1'),
+        })
+          .run()
+          .isValid('field_1'),
       ).toBe(false);
     });
 
@@ -288,7 +292,9 @@ describe('isValid', () => {
       expect(
         create(() => {
           test('field_1', () => {});
-        })().isValid('field 2'),
+        })
+          .run()
+          .isValid('field 2'),
       ).toBe(false);
     });
 
@@ -303,7 +309,9 @@ describe('isValid', () => {
               return true;
             });
           });
-        })().isValid('field_1'),
+        })
+          .run()
+          .isValid('field_1'),
       ).toBe(false);
     });
 
@@ -313,7 +321,9 @@ describe('isValid', () => {
           test('field_1', () => {
             return false;
           });
-        })().isValid('field_1'),
+        })
+          .run()
+          .isValid('field_1'),
       ).toBe(false);
     });
 
@@ -323,7 +333,9 @@ describe('isValid', () => {
           test('field_1', () => {
             return true;
           });
-        })().isValid('field_1'),
+        })
+          .run()
+          .isValid('field_1'),
       ).toBe(true);
     });
 
@@ -334,7 +346,9 @@ describe('isValid', () => {
             warn();
             return false;
           });
-        })().isValid('field_1'),
+        })
+          .run()
+          .isValid('field_1'),
       ).toBe(true);
     });
 
@@ -345,7 +359,9 @@ describe('isValid', () => {
           skipWhen(true, () => {
             test('field_1', () => false);
           });
-        })().isValid('field_1'),
+        })
+          .run()
+          .isValid('field_1'),
       ).toBe(true);
     });
   });
@@ -355,7 +371,9 @@ describe('isValid', () => {
       expect(
         create(() => {
           test('field_1', () => true);
-        })().isValid('field_2'),
+        })
+          .run()
+          .isValid('field_2'),
       ).toBe(false);
     });
   });

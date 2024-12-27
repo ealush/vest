@@ -8,7 +8,7 @@ describe('isTested', () => {
     describe('When suite has no tests', () => {
       it('Should return false', () => {
         const suite = vest.create(() => {});
-        suite();
+        suite.run();
         // @ts-ignore - invalid input
         expect(suite.isTested()).toBe(false);
       });
@@ -19,7 +19,7 @@ describe('isTested', () => {
         const suite = vest.create(() => {
           vest.test('f1', () => {});
         });
-        suite();
+        suite.run();
         // @ts-ignore - invalid input
         expect(suite.isTested()).toBe(false);
       });
@@ -29,7 +29,7 @@ describe('isTested', () => {
   describe('When suite has no tests', () => {
     it('Should return false', () => {
       const suite = vest.create(() => {});
-      suite();
+      suite.run();
       expect(suite.isTested('f1')).toBe(false);
     });
   });
@@ -40,7 +40,7 @@ describe('isTested', () => {
         const suite = vest.create(() => {
           vest.test('f1', () => {});
         });
-        suite();
+        suite.run();
         expect(suite.isTested('f2')).toBe(false);
       });
     });
@@ -50,7 +50,7 @@ describe('isTested', () => {
         const suite = vest.create(() => {
           vest.test('f1', () => {});
         });
-        suite();
+        suite.run();
         expect(suite.isTested('f1')).toBe(true);
       });
     });
@@ -63,7 +63,7 @@ describe('isTested', () => {
           await wait(100);
         });
       });
-      suite();
+      suite.run();
       expect(suite.isTested('f1')).toBe(true);
     });
   });

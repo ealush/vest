@@ -54,7 +54,7 @@ describe('Stateful behavior', () => {
     TestPromise(done => {
       // ❗️Why is this test async? Because of the `resetState` beforeEach.
       // We must not clean up before the suite is actually done.
-      result = suite().done(done);
+      result = suite.run().done(done);
       expect(result.tests).toHaveProperty('field_1');
       expect(result.tests).toHaveProperty('field_2');
       expect(result.tests).toHaveProperty('field_4');
@@ -67,7 +67,7 @@ describe('Stateful behavior', () => {
 
   it('Should invoke done callback specified with sync field immediately, and the others after finishing', () =>
     TestPromise(done => {
-      result = suite();
+      result = suite.run();
       result
         .done('field_1', callback_1)
         .done('field_6', callback_2)

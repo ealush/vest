@@ -1,24 +1,24 @@
-import { Modes } from 'Modes';
 import { describe, it, expect } from 'vitest';
 import wait from 'wait';
 
 import { ser } from '../../testUtils/suiteDummy';
 import { dummyTest } from '../../testUtils/testDummy';
 
+import { Modes } from 'Modes';
 import * as vest from 'vest';
 
 describe('useProduceSuiteSummary', () => {
   describe('Base structure', () => {
     it('Should match snapshot', () => {
       const suite = vest.create(() => {});
-      expect(suite()).toMatchObject({
+      expect(suite.run()).toMatchObject({
         errorCount: 0,
         groups: {},
         testCount: 0,
         tests: {},
         warnCount: 0,
       });
-      expect(ser(suite())).toEqual(ser(suite.get()));
+      expect(ser(suite.run())).toEqual(ser(suite.get()));
     });
 
     it('Its methods should reflect the correct test data', () => {
@@ -42,7 +42,7 @@ describe('useProduceSuiteSummary', () => {
         });
       });
 
-      const res = suite();
+      const res = suite.run();
 
       expect(ser(suite.get())).toEqual(ser(res));
 
@@ -88,7 +88,7 @@ describe('useProduceSuiteSummary', () => {
         dummyTest.passing('field_1');
         dummyTest.failing('field_1', 'message');
       });
-      const res = suite();
+      const res = suite.run();
       expect(ser(res)).toEqual(ser(suite.get()));
       expect(suite.get()).toBe(suite.get());
     });
@@ -102,9 +102,9 @@ describe('useProduceSuiteSummary', () => {
           vest.enforce(v2).equals(2);
         });
       });
-      const res1 = suite(1, 2);
-      const res2 = suite(1, 1);
-      suite(2, 1);
+      const res1 = suite.run(1, 2);
+      const res2 = suite.run(1, 1);
+      suite.run(2, 1);
       expect(res1).not.toMatchObject(suite.get());
       expect(res1).not.toBe(suite.get());
       expect(res2).not.toMatchObject(suite.get());
@@ -122,10 +122,10 @@ describe('suite.get()', () => {
   });
 });
 
-describe('suite()', () => {
+describe('suite.run()', () => {
   describe('exposed methods', () => {
     it('Should have all exposed methods', () => {
-      expect(vest.create(() => {})()).toMatchSnapshot();
+      expect(vest.create(() => {}).run()).toMatchSnapshot();
     });
   });
 });
@@ -136,9 +136,9 @@ describe('pendingCount', () => {
       vest.test('f1', () => {});
       vest.test('f2', () => {});
     });
-    expect(suite().pendingCount).toBe(0);
-    expect(suite().tests.f1.pendingCount).toBe(0);
-    expect(suite().tests.f2.pendingCount).toBe(0);
+    expect(suite.run().pendingCount).toBe(0);
+    expect(suite.run().tests.f1.pendingCount).toBe(0);
+    expect(suite.run().tests.f2.pendingCount).toBe(0);
   });
 
   it('Should increment when a test is pending', () => {
@@ -146,10 +146,10 @@ describe('pendingCount', () => {
       vest.test('f1', async () => {});
       vest.test('f2', async () => {});
     });
-    suite();
-    expect(suite().pendingCount).toBe(2);
-    expect(suite().tests.f1.pendingCount).toBe(1);
-    expect(suite().tests.f2.pendingCount).toBe(1);
+    suite.run();
+    expect(suite.run().pendingCount).toBe(2);
+    expect(suite.run().tests.f1.pendingCount).toBe(1);
+    expect(suite.run().tests.f2.pendingCount).toBe(1);
   });
 
   it('Should increment per multiple pending tests of the same field', () => {
@@ -158,10 +158,10 @@ describe('pendingCount', () => {
       vest.test('f1', async () => {});
       vest.test('f2', async () => {});
     });
-    suite();
-    expect(suite().pendingCount).toBe(3);
-    expect(suite().tests.f1.pendingCount).toBe(2);
-    expect(suite().tests.f2.pendingCount).toBe(1);
+    suite.run();
+    expect(suite.run().pendingCount).toBe(3);
+    expect(suite.run().tests.f1.pendingCount).toBe(2);
+    expect(suite.run().tests.f2.pendingCount).toBe(1);
   });
 
   it('Should decrement when a test is done', async () => {
@@ -169,10 +169,10 @@ describe('pendingCount', () => {
       vest.test('f1', async () => {});
       vest.test('f2', async () => {});
     });
-    suite();
-    expect(suite().pendingCount).toBe(2);
-    expect(suite().tests.f1.pendingCount).toBe(1);
-    expect(suite().tests.f2.pendingCount).toBe(1);
+    suite.run();
+    expect(suite.run().pendingCount).toBe(2);
+    expect(suite.run().tests.f1.pendingCount).toBe(1);
+    expect(suite.run().tests.f2.pendingCount).toBe(1);
     await wait(0);
     expect(suite.get().pendingCount).toBe(0);
     expect(suite.get().tests.f1.pendingCount).toBe(0);

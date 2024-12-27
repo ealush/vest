@@ -28,7 +28,7 @@ describe('mode', () => {
 
       it('Should fail fast for every failing field', () => {
         expect(suite.get().testCount).toBe(0); // sanity
-        suite();
+        suite.run();
         expect(suite.get().testCount).toBe(3);
         expect(suite.get().errorCount).toBe(3);
         expect(suite.get().getErrors('field_1')).toEqual(['first-of-field_1']);
@@ -49,7 +49,7 @@ describe('mode', () => {
                     throw new Error();
                   });
                 });
-                suite().done(res => {
+                suite.run().done(res => {
                   expect(res.getErrors()).toEqual({
                     t1: ['f1'],
                   });
@@ -68,7 +68,7 @@ describe('mode', () => {
                   Vest.test('t1', 'f1', () => false);
                   Vest.test('t1', 'f2', () => true);
                 });
-                suite().done(res => {
+                suite.run().done(res => {
                   expect(res.getErrors()).toEqual({
                     t1: ['f0', 'f1'],
                   });
@@ -91,7 +91,7 @@ describe('mode', () => {
                   throw new Error();
                 });
               });
-              suite().done(res => {
+              suite.run().done(res => {
                 expect(res.getErrors()).toEqual({
                   async_1: ['f1', 'f2'],
                 });
@@ -103,7 +103,7 @@ describe('mode', () => {
 
       describe('When test is `only`ed', () => {
         it('Should fail fast for failing field', () => {
-          suite('field_1');
+          suite.run('field_1');
           expect(suite.get().testCount).toBe(1);
           expect(suite.get().errorCount).toBe(1);
           expect(suite.get().getErrors('field_1')).toEqual([
@@ -122,7 +122,7 @@ describe('mode', () => {
           });
         });
         it('Should fail fast for failing field', () => {
-          suite();
+          suite.run();
           expect(suite.get().testCount).toBe(1);
           expect(suite.get().errorCount).toBe(1);
           expect(suite.get().getErrors('field_1')).toEqual([
@@ -146,7 +146,7 @@ describe('mode', () => {
 
       it('Should fail fast for every failing field', () => {
         expect(suite.get().testCount).toBe(0); // sanity
-        suite();
+        suite.run();
         expect(suite.get().testCount).toBe(6);
         expect(suite.get().errorCount).toBe(3);
         expect(suite.get().getErrors('field_1')).toEqual(['second-of-field_1']);
@@ -171,10 +171,10 @@ describe('mode', () => {
       });
 
       it('Should treat test as passing', () => {
-        suite();
+        suite.run();
         expect(suite.get().hasErrors()).toBe(true);
         expect(suite.get().getErrors('field_1')).toEqual(['second-of-field_1']);
-        suite();
+        suite.run();
         expect(suite.get().hasErrors()).toBe(false);
         expect(suite.get().getErrors('field_1')).toEqual([]);
       });
@@ -193,7 +193,7 @@ describe('mode', () => {
           });
         });
         expect(suite.get().testCount).toBe(0); // sanity
-        suite();
+        suite.run();
 
         expect(suite.get().testCount).toBe(3);
         expect(suite.get().errorCount).toBe(3);
@@ -221,7 +221,7 @@ describe('mode', () => {
 
     it('Should run all tests', () => {
       expect(suite.get().testCount).toBe(0); // sanity
-      suite();
+      suite.run();
       expect(suite.get().testCount).toBe(6);
       expect(suite.get().errorCount).toBe(6);
     });
@@ -243,7 +243,7 @@ describe('mode', () => {
 
       it('Should run all tests', () => {
         expect(suite.get().testCount).toBe(0); // sanity
-        suite();
+        suite.run();
         expect(suite.get().testCount).toBe(6);
         expect(suite.get().errorCount).toBe(0);
       });
@@ -264,7 +264,7 @@ describe('mode', () => {
 
       it('Should skip all tests after a failed tests', () => {
         expect(suite.get().testCount).toBe(0); // sanity
-        suite();
+        suite.run();
         expect(suite.get().testCount).toBe(3);
         expect(suite.get().errorCount).toBe(1);
         expect(suite.get().tests.field_1).toMatchObject({

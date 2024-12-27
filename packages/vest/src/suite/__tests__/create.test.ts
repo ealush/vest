@@ -1,17 +1,17 @@
 import { faker } from '@faker-js/faker';
-import { ErrorStrings } from 'ErrorStrings';
 import { noop } from 'lodash';
 import { describe, it, expect, vi } from 'vitest';
 
 import { dummyTest } from '../../testUtils/testDummy';
 import { TestPromise } from '../../testUtils/testPromise';
 
+import { ErrorStrings } from 'ErrorStrings';
 import { create } from 'vest';
 
 describe('Test createSuite module', () => {
   describe('Test suite Arguments', () => {
     it('allows omitting suite name', () => {
-      expect(typeof create(vi.fn())).toBe('function');
+      expect(typeof create(vi.fn()).run).toBe('function');
       expect(typeof create(vi.fn()).get).toBe('function');
       expect(typeof create(vi.fn()).reset).toBe('function');
       expect(typeof create(vi.fn()).remove).toBe('function');
@@ -30,7 +30,7 @@ describe('Test createSuite module', () => {
 
     describe('When suite name is provided', () => {
       it('Should add suite name to suite result', () => {
-        const res = create('form_name', () => {})();
+        const res = create('form_name', () => {}).run();
 
         expect(res.suiteName).toBe('form_name');
       });
@@ -38,18 +38,18 @@ describe('Test createSuite module', () => {
   });
 
   describe('Return value', () => {
-    it('should be a function', () => {
-      expect(typeof create(noop)).toBe('function');
+    it('Suite.run should be a function', () => {
+      expect(typeof create(noop).run).toBe('function');
     });
   });
 
   describe('When returned function is invoked', () => {
     it('Calls `tests` argument', () =>
       TestPromise(done => {
-        const validate = create(() => {
+        const suite = create(() => {
           done();
         });
-        validate();
+        suite.run();
       }));
 
     it('Passes all arguments over to tests callback', () => {
@@ -62,26 +62,26 @@ describe('Test createSuite module', () => {
         false,
         [faker.lorem.word()],
       ];
-      const validate = create(testsCallback);
-      validate(...params);
+      const suite = create(testsCallback);
+      suite.run(...params);
       expect(testsCallback).toHaveBeenCalledWith(...params);
     });
   });
 
   describe('Initial run', () => {
     const testsCb = vi.fn();
-    const genValidate = () => create(testsCb);
+    const genSuite = () => create(testsCb);
 
     it('Should initialize with an empty result object', () => {
-      const validate = genValidate();
-      expect(Object.keys(validate.get().tests)).toHaveLength(0);
-      expect(Object.keys(validate.get().groups)).toHaveLength(0);
+      const suite = genSuite();
+      expect(Object.keys(suite.get().tests)).toHaveLength(0);
+      expect(Object.keys(suite.get().groups)).toHaveLength(0);
 
-      expect(validate.get().errorCount).toBe(0);
-      expect(validate.get().warnCount).toBe(0);
-      expect(validate.get().testCount).toBe(0);
+      expect(suite.get().errorCount).toBe(0);
+      expect(suite.get().warnCount).toBe(0);
+      expect(suite.get().testCount).toBe(0);
 
-      expect(validate.get()).toMatchSnapshot();
+      expect(suite.get()).toMatchSnapshot();
     });
 
     it('Should be able to get the suite from the result of createSuite', () => {
@@ -93,7 +93,7 @@ describe('Test createSuite module', () => {
       const testSuite = create(() => {
         dummyTest.failing('f1', 'm1');
       });
-      testSuite();
+      testSuite.run();
       expect(testSuite.get().hasErrors()).toBe(true);
       expect(testSuite.get().testCount).toBe(1);
       testSuite.reset();
@@ -102,9 +102,9 @@ describe('Test createSuite module', () => {
     });
 
     it('Should return without calling tests callback', () => {
-      const validate = create(testsCb);
+      const suite = create(testsCb);
       expect(testsCb).not.toHaveBeenCalled();
-      validate();
+      suite.run();
       expect(testsCb).toHaveBeenCalled();
     });
   });

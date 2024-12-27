@@ -42,8 +42,8 @@ describe('Merging of previous test runs', () => {
         counter++;
       });
 
-      const resA = suite();
-      const resB = suite();
+      const resA = suite.run();
+      const resB = suite.run();
 
       const [testsA, testsB] = testContainer;
 
@@ -66,12 +66,12 @@ describe('Merging of previous test runs', () => {
         counter++;
       });
 
-      const resA = suite();
+      const resA = suite.run();
 
       // Checking that the result is correct
       expect(resA.isValid('f1')).toBe(true);
       expect(resA.isValid('f2')).toBe(false);
-      const resB = suite();
+      const resB = suite.run();
       // Checking that the result is correct
       expect(resB.isValid('f1')).toBe(false);
       expect(resA.isValid('f2')).toBe(false);
@@ -97,10 +97,10 @@ describe('Merging of previous test runs', () => {
         counter++;
       });
 
-      suite();
+      suite.run();
       expect(deferThrow).not.toHaveBeenCalled();
 
-      suite();
+      suite.run();
       expect(deferThrow).toHaveBeenCalledWith(
         expect.stringContaining(
           'Vest Critical Error: Tests called in different order than previous run.',
@@ -119,7 +119,7 @@ describe('Merging of previous test runs', () => {
           counter++;
         });
 
-        const resA = suite();
+        const resA = suite.run();
         expect(resA.tests.f2).toBeDefined();
         expect(resA.hasErrors('f1')).toBe(true);
         expect(resA.hasErrors('f2')).toBe(true);
@@ -156,7 +156,7 @@ describe('Merging of previous test runs', () => {
           }
         `);
 
-        const resB = suite();
+        const resB = suite.run();
         expect(resB.tests.f2).toBeUndefined();
         expect(resB.hasErrors('f1')).toBe(true);
         expect(resB.hasErrors('f2')).toBe(false);
@@ -204,7 +204,7 @@ describe('Merging of previous test runs', () => {
             counter++;
           });
 
-          const resA = suite();
+          const resA = suite.run();
           expect(resA.tests.f2).toBeDefined();
           expect(resA.tests.f3).toBeDefined();
           expect(resA.tests.f5).toBeDefined();
@@ -284,7 +284,7 @@ describe('Merging of previous test runs', () => {
               },
             }
           `);
-          const resB = suite();
+          const resB = suite.run();
           expect(resB.tests.f2).toBeUndefined();
           expect(resB.tests.f3).toBeUndefined();
           expect(resB.tests.f5).toBeUndefined();
@@ -341,14 +341,14 @@ describe('Merging of previous test runs', () => {
             counter++;
           });
 
-          const resA = suite();
+          const resA = suite.run();
           expect(resA.hasErrors('f4')).toBe(true);
           expect(resA.hasErrors('f5')).toBe(true);
 
           // This is testing that fact that the next test in line after f2 and f3
           // got removed. We can see it because in normal situation, the test result is
           // merged into the next test result.
-          const resB = suite();
+          const resB = suite.run();
           expect(resB.hasErrors('f4')).toBe(false);
           expect(resB.hasErrors('f5')).toBe(false);
         });

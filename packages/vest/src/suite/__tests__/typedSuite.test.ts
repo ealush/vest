@@ -58,14 +58,14 @@ describe('typed suite', () => {
     // @ts-expect-error
     res.hasWarnings('F10');
 
-    suite().done('F1', res => {
+    suite.run().done('F1', res => {
       expect(res.tests.F1).toBeUndefined();
       // @ts-expect-error
       expect(res.tests.F14).toBeUndefined();
     });
 
     // @ts-expect-error
-    suite().done('F10', () => {});
+    suite.run().done('F10', () => {});
   });
 });
 
@@ -78,7 +78,7 @@ describe('typed methods', () => {
     });
     const { test, only } = suite;
 
-    suite();
+    suite.run();
 
     expect(suite.get().hasErrors('PASSWORD')).toBe(true);
   });

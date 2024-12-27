@@ -1,6 +1,6 @@
-import { Modes } from 'Modes';
 import { describe, it, expect } from 'vitest';
 
+import { Modes } from 'Modes';
 import * as vest from 'vest';
 
 describe('state refill', () => {
@@ -37,7 +37,7 @@ describe('state refill', () => {
       suiteStates.push(currentRun);
     });
 
-    expect(suite()).isDeepCopyOf(suite());
+    expect(suite.run()).isDeepCopyOf(suite.run());
     suiteStates[0].forEach((suiteState, i) => {
       expect(suiteState).isDeepCopyOf(suiteStates[1][i]);
     });

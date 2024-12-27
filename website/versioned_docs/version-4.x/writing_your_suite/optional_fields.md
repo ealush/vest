@@ -42,10 +42,12 @@ const suite = create((data, currentField) => {
   });
 });
 
-suite({ name: 'Indie' }, /* -> only validate pet_name */ 'pet_name').isValid();
+suite
+  .run({ name: 'Indie' }, /* -> only validate pet_name */ 'pet_name')
+  .isValid();
 // ✅ Since pet_color and pet_age are optional, the suite may still be valid
 
-suite({ age: 'Five' }, /* -> only validate pet_age */ 'pet_age').isValid();
+suite.run({ age: 'Five' }, /* -> only validate pet_age */ 'pet_age').isValid();
 // 🚨 When erroring, optional fields still make the suite invalid
 ```
 

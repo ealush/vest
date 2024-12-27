@@ -8,7 +8,7 @@ describe('->getFailure (singular form)', () => {
       describe('When there are no errors', () => {
         it('Should return undefined', () => {
           const suite = vest.create(() => {});
-          expect(suite().getErrors()).toEqual({});
+          expect(suite.run().getErrors()).toEqual({});
           expect(suite.get().getError()).toBeUndefined();
         });
       });
@@ -19,7 +19,7 @@ describe('->getFailure (singular form)', () => {
             vest.test('field_1', 'msg_1', () => false);
             vest.test('field_2', 'msg_2', () => false);
           });
-          expect(suite().getError()).toEqual({
+          expect(suite.run().getError()).toEqual({
             fieldName: 'field_1',
             message: 'msg_1',
             groupName: undefined,
@@ -32,7 +32,7 @@ describe('->getFailure (singular form)', () => {
       describe('When requesting a fieldName', () => {
         it('Should return undefined', () => {
           const suite = vest.create(() => {});
-          expect(suite().getErrors()).toEqual({});
+          expect(suite.run().getErrors()).toEqual({});
           expect(suite.get().getError('field_2')).toBeUndefined();
         });
       });
@@ -43,7 +43,7 @@ describe('->getFailure (singular form)', () => {
         const suite = vest.create(() => {
           vest.test('field_1', 'msg_1', () => {});
         });
-        expect(suite().getError('field_1')).toBeUndefined();
+        expect(suite.run().getError('field_1')).toBeUndefined();
         expect(suite.get().getError('field_1')).toBeUndefined();
       });
     });
@@ -54,7 +54,7 @@ describe('->getFailure (singular form)', () => {
           vest.test('field_1', 'msg_1', () => false);
           vest.test('field_2', 'msg_2', () => false);
         });
-        expect(suite().getError('field_1')).toBe('msg_1');
+        expect(suite.run().getError('field_1')).toBe('msg_1');
       });
     });
 
@@ -64,7 +64,7 @@ describe('->getFailure (singular form)', () => {
           const suite = vest.create(() => {
             vest.test('field_1', 'msg_1', () => false);
           });
-          expect(suite().getError('field_1')).toBe('msg_1');
+          expect(suite.run().getError('field_1')).toBe('msg_1');
           expect(suite.get().getError('field_1')).toBe('msg_1');
         });
       });
@@ -75,7 +75,7 @@ describe('->getFailure (singular form)', () => {
             vest.test('field_1', 'msg_1', () => false);
             vest.test('field_1', 'msg_2', () => false);
           });
-          expect(suite().getError('field_1')).toBe('msg_1');
+          expect(suite.run().getError('field_1')).toBe('msg_1');
           expect(suite.get().getError('field_1')).toBe('msg_1');
         });
       });
@@ -85,7 +85,7 @@ describe('->getFailure (singular form)', () => {
           const suite = vest.create(() => {
             vest.test('field_1', 'msg_1', () => false);
           });
-          expect(suite().getError('field_2')).toBeUndefined();
+          expect(suite.run().getError('field_2')).toBeUndefined();
           expect(suite.get().getError('field_2')).toBeUndefined();
         });
       });
@@ -97,7 +97,7 @@ describe('->getFailure (singular form)', () => {
       describe('When there are no warnings', () => {
         it('Should return undefined', () => {
           const suite = vest.create(() => {});
-          expect(suite().getWarnings()).toEqual({});
+          expect(suite.run().getWarnings()).toEqual({});
           expect(suite.get().getWarning()).toBeUndefined();
         });
       });
@@ -116,7 +116,7 @@ describe('->getFailure (singular form)', () => {
             });
           });
 
-          expect(suite().getWarning()).toEqual({
+          expect(suite.run().getWarning()).toEqual({
             fieldName: 't1',
             message: 't1 message',
             groupName: undefined,
@@ -129,7 +129,7 @@ describe('->getFailure (singular form)', () => {
       describe('When requesting a fieldName', () => {
         it('Should return undefined', () => {
           const suite = vest.create(() => {});
-          expect(suite().getWarnings()).toEqual({});
+          expect(suite.run().getWarnings()).toEqual({});
           expect(suite.get().getWarning('field_2')).toBeUndefined();
         });
       });
@@ -140,7 +140,7 @@ describe('->getFailure (singular form)', () => {
         const suite = vest.create(() => {
           vest.test('field_1', 'msg_1', () => {});
         });
-        expect(suite().getWarning('field_1')).toBeUndefined();
+        expect(suite.run().getWarning('field_1')).toBeUndefined();
         expect(suite.get().getWarning('field_1')).toBeUndefined();
       });
     });
@@ -154,7 +154,7 @@ describe('->getFailure (singular form)', () => {
               return false;
             });
           });
-          expect(suite().getWarning('field_1')).toBe('msg_1');
+          expect(suite.run().getWarning('field_1')).toBe('msg_1');
           expect(suite.get().getWarning('field_1')).toBe('msg_1');
         });
       });
@@ -171,7 +171,7 @@ describe('->getFailure (singular form)', () => {
               return false;
             });
           });
-          expect(suite().getWarning('field_1')).toBe('msg_1');
+          expect(suite.run().getWarning('field_1')).toBe('msg_1');
           expect(suite.get().getWarning('field_1')).toBe('msg_1');
         });
       });
@@ -184,7 +184,7 @@ describe('->getFailure (singular form)', () => {
               return false;
             });
           });
-          expect(suite().getWarning('field_2')).toBeUndefined();
+          expect(suite.run().getWarning('field_2')).toBeUndefined();
           expect(suite.get().getWarning('field_2')).toBeUndefined();
         });
       });
@@ -197,7 +197,7 @@ describe('->getFailure (singular form)', () => {
         const suite = vest.create(() => {
           vest.test('field_1', 'msg_1', () => false);
         });
-        expect(suite().getMessage('field_1')).toBe('msg_1');
+        expect(suite.run().getMessage('field_1')).toBe('msg_1');
         expect(suite.get().getMessage('field_1')).toBe('msg_1');
       });
     });
@@ -210,7 +210,7 @@ describe('->getFailure (singular form)', () => {
             return false;
           });
         });
-        expect(suite().getMessage('field_1')).toBe('msg_1');
+        expect(suite.run().getMessage('field_1')).toBe('msg_1');
         expect(suite.get().getMessage('field_1')).toBe('msg_1');
       });
     });
@@ -220,7 +220,7 @@ describe('->getFailure (singular form)', () => {
         const suite = vest.create(() => {
           vest.test('field_1', 'msg_1', () => {});
         });
-        expect(suite().getMessage('field_1')).toBeUndefined();
+        expect(suite.run().getMessage('field_1')).toBeUndefined();
         expect(suite.get().getMessage('field_1')).toBeUndefined();
       });
     });
@@ -234,7 +234,7 @@ describe('->getFailure (singular form)', () => {
             return false;
           });
         });
-        expect(suite().getMessage('field_1')).toBe('msg_1');
+        expect(suite.run().getMessage('field_1')).toBe('msg_1');
         expect(suite.get().getMessage('field_1')).toBe('msg_1');
       });
     });
@@ -245,7 +245,7 @@ describe('->getFailure (singular form)', () => {
           vest.test('field_1', 'msg_1', () => false);
           vest.test('field_1', 'msg_2', () => false);
         });
-        expect(suite().getMessage('field_1')).toBe('msg_1');
+        expect(suite.run().getMessage('field_1')).toBe('msg_1');
         expect(suite.get().getMessage('field_1')).toBe('msg_1');
       });
     });
@@ -262,7 +262,7 @@ describe('->getFailure (singular form)', () => {
             return false;
           });
         });
-        expect(suite().getMessage('field_1')).toBe('msg_1');
+        expect(suite.run().getMessage('field_1')).toBe('msg_1');
         expect(suite.get().getMessage('field_1')).toBe('msg_1');
       });
     });
@@ -270,7 +270,7 @@ describe('->getFailure (singular form)', () => {
     describe('When the field does not exist', () => {
       it('Should return undefined', () => {
         const suite = vest.create(() => {});
-        expect(suite().getMessage('field_1')).toBeUndefined();
+        expect(suite.run().getMessage('field_1')).toBeUndefined();
         expect(suite.get().getMessage('field_1')).toBeUndefined();
       });
     });

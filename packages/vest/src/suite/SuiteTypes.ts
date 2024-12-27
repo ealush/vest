@@ -16,7 +16,7 @@ export type Suite<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB = CB,
-> = ((...args: Parameters<T>) => SuiteRunResult<F, G>) & SuiteMethods<F, G, T>;
+> = SuiteMethods<F, G, T>;
 
 export type SuiteMethods<
   F extends TFieldName,
@@ -29,6 +29,7 @@ export type SuiteMethods<
   reset: CB<void>;
   remove: CB<void, [fieldName: F]>;
   resetField: CB<void, [fieldName: F]>;
+  run: (...args: Parameters<T>) => SuiteRunResult<F, G>;
   runStatic: CB<StaticSuiteRunResult<F, G>, Parameters<T>>;
   subscribe: Subscribe;
 } & TTypedMethods<F, G> &

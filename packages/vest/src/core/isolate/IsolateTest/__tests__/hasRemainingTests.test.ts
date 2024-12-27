@@ -12,18 +12,20 @@ describe('SuiteWalker.useHasRemainingWithTestNameMatching', () => {
   describe('When no field specified', () => {
     describe('When no remaining tests', () => {
       it('should return false', () => {
-        const suite = vest.create(() => {})();
+        const suite = vest.create(() => {}).run();
         expect(suite.isPending()).toBe(false);
       });
     });
 
     describe('When there are remaining tests', () => {
       it('pending tests return true', () => {
-        const suite = vest.create(() => {
-          vest.test('f1', async () => {
-            await wait(100);
-          });
-        })();
+        const suite = vest
+          .create(() => {
+            vest.test('f1', async () => {
+              await wait(100);
+            });
+          })
+          .run();
 
         expect(suite.isPending()).toBe(true);
       });
@@ -36,8 +38,8 @@ describe('SuiteWalker.useHasRemainingWithTestNameMatching', () => {
           });
           count++;
         });
-        suite();
-        suite();
+        suite.run();
+        suite.run();
 
         expect(suite.isPending()).toBe(true);
       });
@@ -54,8 +56,8 @@ describe('SuiteWalker.useHasRemainingWithTestNameMatching', () => {
           count++;
         });
 
-        suite();
-        suite();
+        suite.run();
+        suite.run();
 
         expect(suite.isPending()).toBe(true);
       });
@@ -65,18 +67,20 @@ describe('SuiteWalker.useHasRemainingWithTestNameMatching', () => {
   describe('When field specified', () => {
     describe('When no remaining tests', () => {
       it('Should return false', () => {
-        const suite = vest.create(() => {})();
+        const suite = vest.create(() => {}).run();
         expect(suite.isPending('f1')).toBe(false);
       });
     });
 
     describe('When remaining tests', () => {
       it('pending tests return true', () => {
-        const suite = vest.create(() => {
-          vest.test('f1', async () => {
-            await wait(100);
-          });
-        })();
+        const suite = vest
+          .create(() => {
+            vest.test('f1', async () => {
+              await wait(100);
+            });
+          })
+          .run();
         expect(suite.isPending('f1')).toBe(true);
       });
 
@@ -88,8 +92,8 @@ describe('SuiteWalker.useHasRemainingWithTestNameMatching', () => {
           });
           count++;
         });
-        suite();
-        suite();
+        suite.run();
+        suite.run();
 
         expect(suite.isPending('f1')).toBe(true);
       });
@@ -106,8 +110,8 @@ describe('SuiteWalker.useHasRemainingWithTestNameMatching', () => {
           count++;
         });
 
-        suite();
-        suite();
+        suite.run();
+        suite.run();
 
         expect(suite.isPending('f1')).toBe(true);
         expect(suite.isPending('f2')).toBe(true);

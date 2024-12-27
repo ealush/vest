@@ -21,7 +21,7 @@ describe('SuiteSerializer', () => {
         vest.test('field_5', 'field_5_message', () => false);
       });
     });
-    suite();
+    suite.run();
 
     const serialized = SuiteSerializer.serialize(suite);
     expect(serialized).toMatchSnapshot();
@@ -47,13 +47,13 @@ describe('suite.resume', () => {
       });
     });
 
-    suite();
+    suite.run();
 
     const serialized = SuiteSerializer.serialize(suite);
 
     const suite2 = vest.create(() => {});
 
-    suite2();
+    suite2.run();
 
     expect(suite.get()).not.toEqual(suite2.get());
 
@@ -64,7 +64,7 @@ describe('suite.resume', () => {
     expect(suite2.hasWarnings()).toBe(false);
     expect(suite2.get().tests.field_1).toBeDefined();
 
-    suite2();
+    suite2.run();
     expect(suite.get()).not.toEqual(suite2.get());
     expect(suite2.hasErrors()).toBe(false);
     expect(suite2.hasWarnings()).toBe(false);
@@ -86,13 +86,13 @@ describe('suite.resume', () => {
     it('Should continue with resumed state if matching', () => {
       const suite = vest.create('suite_resume_test', cb);
 
-      suite({});
+      suite.run({});
 
       const serialized = SuiteSerializer.serialize(suite);
 
       const suite2 = vest.create(cb);
       SuiteSerializer.resume(suite2, serialized);
-      suite2({}, 'field_1');
+      suite2.run({}, 'field_1');
       expect(suite2.getError('field_1')).toBe('field_1_message');
       expect(suite2.getError('field_2')).toBe('field_2_message');
     });
@@ -101,7 +101,7 @@ describe('suite.resume', () => {
       it('Should have correct state after resuming', () => {
         const suite = vest.create('suite_resume_test', cb);
 
-        suite({});
+        suite.run({});
 
         const serialized = SuiteSerializer.serialize(suite);
 

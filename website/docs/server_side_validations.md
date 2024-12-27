@@ -61,7 +61,7 @@ function serversideCheck(data) {
     });
   });
 
-  suite();
+  suite.run();
   suite.reset();
 }
 ```

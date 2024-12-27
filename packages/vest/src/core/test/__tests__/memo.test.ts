@@ -1,12 +1,12 @@
-import { TIsolateTest } from 'IsolateTest';
-import { Modes } from 'Modes';
-import { VestTest } from 'VestTest';
-import promisify from 'promisify';
 import { describe, it, expect, vi } from 'vitest';
 import wait from 'wait';
 
 import { TestPromise } from '../../../testUtils/testPromise';
 
+import { TIsolateTest } from 'IsolateTest';
+import { Modes } from 'Modes';
+import { VestTest } from 'VestTest';
+import promisify from 'promisify';
 import * as vest from 'vest';
 import { test as vestTest, enforce } from 'vest';
 
@@ -20,29 +20,31 @@ describe('test.memo', () => {
         vestTest.memo('f1', cb2, [2]);
       });
 
-      suite();
+      suite.run();
       expect(cb1).toHaveBeenCalledTimes(1);
       expect(cb2).toHaveBeenCalledTimes(1);
-      suite();
+      suite.run();
       expect(cb1).toHaveBeenCalledTimes(1);
       expect(cb2).toHaveBeenCalledTimes(1);
     });
 
     it('Should produce correct initial result', () => {
-      const res = vest.create(() => {
-        vest.mode(Modes.ALL);
-        vestTest.memo('field1', 'msg1', () => false, [{}]);
-        vestTest.memo('field1', 'msg2', () => undefined, [{}]);
-        vestTest.memo('field2', () => undefined, [{}]);
-        vestTest.memo(
-          'field3',
-          () => {
-            vest.warn();
-            return false;
-          },
-          [{}],
-        );
-      })();
+      const res = vest
+        .create(() => {
+          vest.mode(Modes.ALL);
+          vestTest.memo('field1', 'msg1', () => false, [{}]);
+          vestTest.memo('field1', 'msg2', () => undefined, [{}]);
+          vestTest.memo('field2', () => undefined, [{}]);
+          vestTest.memo(
+            'field3',
+            () => {
+              vest.warn();
+              return false;
+            },
+            [{}],
+          );
+        })
+        .run();
 
       expect(res.hasErrors('field1')).toBe(true);
       expect(res.hasErrors('field2')).toBe(false);
@@ -66,14 +68,14 @@ describe('test.memo', () => {
           );
         });
 
-        const res = suite();
+        const res = suite.run();
 
         expect(res.hasErrors('field1')).toBe(true);
         expect(res.hasErrors('field2')).toBe(false);
         expect(res.hasWarnings('field3')).toBe(true);
         expect(res).toMatchSnapshot();
 
-        const res2 = suite();
+        const res2 = suite.run();
         expect(res2.hasErrors('field1')).toBe(true);
         expect(res2.hasErrors('field2')).toBe(false);
         expect(res2.hasWarnings('field3')).toBe(true);
@@ -103,14 +105,14 @@ describe('test.memo', () => {
             );
           });
 
-          const asyncSuite = promisify(suite);
+          const asyncSuite = promisify(suite.run);
 
           let start = Date.now();
           const res1 = await asyncSuite();
           enforce(Date.now() - start).gte(500);
 
           start = Date.now();
-          const res2 = suite();
+          const res2 = suite.run();
 
           expect(res1).isDeepCopyOf(res2);
         }
@@ -139,9 +141,9 @@ describe('test.memo', () => {
           }
         });
 
-        suite();
-        suite();
-        suite();
+        suite.run();
+        suite.run();
+        suite.run();
 
         expect(tests[0]).not.toBe(tests[1]);
         expect(tests[1]).toBe(tests[2]);
@@ -162,11 +164,11 @@ describe('test.memo', () => {
 
       expect(cb1).toHaveBeenCalledTimes(0);
       expect(cb2).toHaveBeenCalledTimes(0);
-      suite('a', false);
+      suite.run('a', false);
       expect(cb1).toHaveBeenCalledTimes(1);
       expect(cb2).toHaveBeenCalledTimes(1);
       expect(suite.get().hasErrors()).toBe(true);
-      suite('b', true);
+      suite.run('b', true);
       expect(cb1).toHaveBeenCalledTimes(2);
       expect(cb2).toHaveBeenCalledTimes(2);
       expect(suite.get().hasErrors()).toBe(false);
@@ -181,8 +183,8 @@ describe('test.memo', () => {
           vestTest.memo('f2', () => true, [1]);
         });
 
-        suite();
-        suite();
+        suite.run();
+        suite.run();
         expect(suite.get().hasErrors('f1')).toBe(true);
         expect(suite.get().hasErrors('f2')).toBe(false);
       });
@@ -195,8 +197,8 @@ describe('test.memo', () => {
           vestTest.memo('f1', () => true, [1]);
         });
 
-        suite();
-        suite();
+        suite.run();
+        suite.run();
         expect(suite.get().hasErrors('f1')).toBe(true);
         expect(suite.get().errorCount).toBe(1);
       });
@@ -212,8 +214,8 @@ describe('test.memo', () => {
           vestTest.memo('f2', () => false, [1]);
         });
 
-        suite1();
-        suite2();
+        suite1.run();
+        suite2.run();
         expect(suite1.get().hasErrors('f1')).toBe(true);
         expect(suite1.get().hasErrors('f2')).toBe(false);
         expect(suite2.get().hasErrors('f1')).toBe(false);

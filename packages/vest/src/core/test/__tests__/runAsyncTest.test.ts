@@ -14,7 +14,7 @@ describe('runAsyncTest', () => {
           await wait(100);
         });
       });
-      suite();
+      suite.run();
 
       testObject = VestTest.cast(testObject);
 
@@ -41,7 +41,7 @@ describe('runAsyncTest', () => {
           });
         });
 
-        suite().done(cb1).done(cb2).done('field_1', cb3);
+        suite.run().done(cb1).done(cb2).done('field_1', cb3);
 
         expect(cb1).not.toHaveBeenCalled();
         expect(cb2).not.toHaveBeenCalled();
@@ -73,7 +73,7 @@ describe('runAsyncTest', () => {
           });
         });
 
-        suite().done(cb1).done('field_2', cb2).done('field_3', cb3);
+        suite.run().done(cb1).done('field_2', cb2).done('field_3', cb3);
 
         expect(cb1).not.toHaveBeenCalled();
         expect(cb2).toHaveBeenCalled();
@@ -105,13 +105,13 @@ describe('runAsyncTest', () => {
           vest.test('field_2', () => {});
         });
 
-        suite().done(cb1).done(cb2).done('field_1', cb3);
+        suite.run().done(cb1).done(cb2).done('field_1', cb3);
 
         expect(cb1).not.toHaveBeenCalled();
         expect(cb2).not.toHaveBeenCalled();
         expect(cb3).not.toHaveBeenCalled();
 
-        suite();
+        suite.run();
 
         await wait(10);
         expect(cb1).not.toHaveBeenCalled();
@@ -129,7 +129,7 @@ describe('runAsyncTest', () => {
             await wait(100);
           });
         });
-        suite();
+        suite.run();
 
         testObject = VestTest.cast(testObject);
 
@@ -146,7 +146,7 @@ describe('runAsyncTest', () => {
             throw new Error('');
           });
         });
-        suite();
+        suite.run();
 
         testObject = VestTest.cast(testObject);
 
@@ -164,7 +164,7 @@ describe('runAsyncTest', () => {
             throw new Error('');
           });
         });
-        suite();
+        suite.run();
 
         testObject = VestTest.cast(testObject);
 

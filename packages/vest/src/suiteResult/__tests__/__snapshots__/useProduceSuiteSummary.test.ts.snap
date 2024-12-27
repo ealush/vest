@@ -60,3 +60,34 @@ SuiteSummary {
   "warnings": [],
 }
 `;
+
+exports[`suite.run() > exposed methods > Should have all exposed methods 1`] = `
+{
+  "done": [Function],
+  "errorCount": 0,
+  "errors": [],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 0,
+  "tests": {},
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;

@@ -1,22 +1,22 @@
-import { Modes } from 'Modes';
 import { enforce } from 'n4s';
 import { describe, it, expect, test } from 'vitest';
 
+import { Modes } from 'Modes';
 import * as vest from 'vest';
 
 describe('Stateful behavior', () => {
   let result;
-  const validate = genSuite();
+  const suite = genSuite();
 
   test('Should merge skipped fields with previous values', () => {
-    result = validate({ only: 'field_1' });
+    result = suite.run({ only: 'field_1' });
     expect(result.tests.field_1.errorCount).toBe(1);
     expect(result.errorCount).toBe(1);
     expect(Object.keys(result.tests)).toHaveLength(5); // including 4 skipped tests
     expect(result.tests).toHaveProperty('field_1');
     expect(result).toMatchSnapshot();
 
-    result = validate({ only: 'field_5' });
+    result = suite.run({ only: 'field_5' });
     expect(result.errorCount).toBe(3);
     expect(result.tests.field_1.errorCount).toBe(1);
     expect(result.tests.field_5.errorCount).toBe(2);
@@ -25,7 +25,7 @@ describe('Stateful behavior', () => {
     expect(result.tests).toHaveProperty('field_5');
     expect(result).toMatchSnapshot();
 
-    result = validate();
+    result = suite.run();
     expect(result.errorCount).toBe(4);
     expect(result.tests.field_1.errorCount).toBe(1);
     expect(result.tests.field_2.errorCount).toBe(1);
@@ -44,12 +44,12 @@ describe('more complex', () => {
     expect(suite.get()).toMatchSnapshot();
 
     data.username = 'user_1';
-    suite(data, 'username');
+    suite.run(data, 'username');
 
     expect(suite.get().hasErrors()).toBe(false);
     expect(suite.get()).toMatchSnapshot();
 
-    suite(data, 'password');
+    suite.run(data, 'password');
     expect(suite.get().hasErrors()).toBe(true);
     expect(suite.get().tests.password).toMatchInlineSnapshot(`
       SummaryBase {
@@ -66,7 +66,7 @@ describe('more complex', () => {
     `);
     expect(suite.get()).toMatchSnapshot();
 
-    suite(data, 'confirm');
+    suite.run(data, 'confirm');
     expect(suite.get().tests.confirm).toMatchInlineSnapshot(`
       SummaryBase {
         "errorCount": 0,
@@ -83,7 +83,7 @@ describe('more complex', () => {
     expect(suite.get().hasErrors('confirm')).toBe(false);
 
     data.password = '123456';
-    suite(data, 'password');
+    suite.run(data, 'password');
     expect(suite.get().tests.confirm).toMatchInlineSnapshot(`
       SummaryBase {
         "errorCount": 0,
@@ -96,7 +96,7 @@ describe('more complex', () => {
       }
     `);
     data.confirm = '123456';
-    suite(data, 'confirm');
+    suite.run(data, 'confirm');
     expect(suite.get().hasErrors('password')).toBe(false);
     expect(suite.get().hasErrors('confirm')).toBe(false);
     expect(suite.get().tests.confirm).toMatchInlineSnapshot(`

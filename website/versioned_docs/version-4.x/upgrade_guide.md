@@ -221,5 +221,5 @@ const suite = data =>
     /* ... */
   })();
 
-const result = suite({ username: 'example' });
+const result = suite.run({ username: 'example' });
 ```

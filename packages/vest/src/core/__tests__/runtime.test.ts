@@ -7,7 +7,7 @@ describe('useLoadSuite', () => {
     const suite = vest.create(() => {
       vest.test('some_test', () => {});
     });
-    const res = suite();
+    const res = suite.run();
     expect(suite.isValid()).toBe(true);
     expect(res.testCount).toBe(1);
     expect(res.errorCount).toBe(0);
@@ -85,7 +85,7 @@ function genDump() {
     });
   });
 
-  suite();
+  suite.run();
 
   return suite.dump();
 }

@@ -9,14 +9,16 @@ import * as vest from 'vest';
 describe('done', () => {
   describe('When no async tests', () => {
     it('Should call done callback immediately', () => {
-      const result = vest.create(() => {
-        dummyTest.passing();
-        dummyTest.passing();
-        dummyTest.failing();
-        dummyTest.failing();
-        dummyTest.passing();
-        dummyTest.failingWarning('field_2');
-      })();
+      const result = vest
+        .create(() => {
+          dummyTest.passing();
+          dummyTest.passing();
+          dummyTest.failing();
+          dummyTest.failing();
+          dummyTest.passing();
+          dummyTest.failingWarning('field_2');
+        })
+        .run();
 
       const doneCallback = vi.fn();
       const fieldDoneCallback = vi.fn();
@@ -40,9 +42,9 @@ describe('done', () => {
       const doneCallback2 = vi.fn();
       const fieldDoneCallback2 = vi.fn();
 
-      suite().done(doneCallback1).done('test', fieldDoneCallback1);
+      suite.run().done(doneCallback1).done('test', fieldDoneCallback1);
       await wait(10);
-      suite().done(doneCallback2).done('test', fieldDoneCallback2);
+      suite.run().done(doneCallback2).done('test', fieldDoneCallback2);
       await wait(100);
       expect(doneCallback2).toHaveBeenCalledTimes(1);
       expect(fieldDoneCallback2).toHaveBeenCalledTimes(1);
@@ -64,13 +66,15 @@ describe('done', () => {
             expect(check3).toHaveBeenCalled();
             done();
           });
-          const result = vest.create(() => {
-            dummyTest.passingAsync('field_1', { time: 1000 });
-            dummyTest.failingAsync('field_2', { time: 100 });
-            dummyTest.passingAsync('field_3', { time: 0 });
-            dummyTest.failing();
-            dummyTest.passing();
-          })();
+          const result = vest
+            .create(() => {
+              dummyTest.passingAsync('field_1', { time: 1000 });
+              dummyTest.failingAsync('field_2', { time: 100 });
+              dummyTest.passingAsync('field_3', { time: 0 });
+              dummyTest.failing();
+              dummyTest.passing();
+            })
+            .run();
 
           result.done(doneCallback);
 
@@ -94,16 +98,18 @@ describe('done', () => {
   describe('done arguments', () => {
     it('Should pass down the up to date validation result', () => {
       return TestPromise(done => {
-        const result = vest.create(() => {
-          dummyTest.failing('field_1', 'error message');
-          dummyTest.passing('field_2');
-          dummyTest.passingAsync('field_3', { time: 0 });
-          dummyTest.failingAsync('field_4', {
-            message: 'error_message',
-            time: 100,
-          });
-          dummyTest.passingAsync('field_5', { time: 1000 });
-        })();
+        const result = vest
+          .create(() => {
+            dummyTest.failing('field_1', 'error message');
+            dummyTest.passing('field_2');
+            dummyTest.passingAsync('field_3', { time: 0 });
+            dummyTest.failingAsync('field_4', {
+              message: 'error_message',
+              time: 100,
+            });
+            dummyTest.passingAsync('field_5', { time: 1000 });
+          })
+          .run();
 
         result
           .done('field_2', res => {
@@ -277,10 +283,10 @@ describe('done', () => {
         vest.test('sync_2', () => false);
       });
 
-      suite('async_1');
+      suite.run('async_1');
 
       return TestPromise(done => {
-        suite('sync_2').done(res => {
+        suite.run('sync_2').done(res => {
           expect(res.hasErrors('async_1')).toBe(true);
           done();
         });
@@ -308,10 +314,10 @@ describe('done', () => {
         });
       });
 
-      suite('ealush').done(done_0);
+      suite.run('ealush').done(done_0);
       await wait(0);
       expect(done_0).not.toHaveBeenCalled();
-      suite('').done(done_1);
+      suite.run('').done(done_1);
       expect(done_0).not.toHaveBeenCalled();
       expect(done_1).toHaveBeenCalled();
       await wait(1000);
@@ -327,7 +333,7 @@ describe('done', () => {
         vest.test('test', () => {});
       });
 
-      suite().done('non-existent', cb);
+      suite.run().done('non-existent', cb);
 
       expect(cb).not.toHaveBeenCalled();
     });
@@ -339,7 +345,7 @@ describe('done', () => {
 
       const suite = vest.create(() => {});
 
-      suite().done(cb);
+      suite.run().done(cb);
 
       expect(cb).toHaveBeenCalled();
     });
@@ -354,7 +360,7 @@ describe('done', () => {
           vest.test('f1', () => {});
         });
 
-        suite().done(cb);
+        suite.run().done(cb);
         expect(suite.get().tests.f1.testCount).toBe(0);
         expect(cb).toHaveBeenCalled();
       });
@@ -369,7 +375,7 @@ describe('done', () => {
         vest.test('test', () => false);
       });
 
-      suite().done('non-existent', cb);
+      suite.run().done('non-existent', cb);
 
       expect(cb).not.toHaveBeenCalled();
     });
@@ -388,7 +394,7 @@ describe('done', () => {
           });
         });
 
-        suite().done(cb);
+        suite.run().done(cb);
 
         expect(cb).not.toHaveBeenCalled();
       });
@@ -406,7 +412,7 @@ describe('done', () => {
           });
         });
 
-        suite().done(cb);
+        suite.run().done(cb);
         await wait(1000);
         expect(cb).toHaveBeenCalled();
       });

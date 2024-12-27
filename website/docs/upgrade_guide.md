@@ -127,7 +127,7 @@ In previous versions, as a user of Vest you had to set up your own state-reset m
 
 - function ServerValidation() {
 -  suite.reset();
--  suite();
+-  suite.run();
 - }
 ```
 

@@ -1,18 +1,19 @@
-import { TIsolateTest } from 'IsolateTest';
-import { Modes } from 'Modes';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { VestTest } from 'VestTest';
+import { CB } from 'vest-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import wait from 'wait';
 
 import { dummyTest } from '../testUtils/testDummy';
 import { TestPromise } from '../testUtils/testPromise';
 
+import { TIsolateTest } from 'IsolateTest';
+import { Modes } from 'Modes';
+import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { VestTest } from 'VestTest';
 import * as vest from 'vest';
 
 type SuiteParams = { skip?: string; skipGroup?: true };
 
-const suite = () =>
+const genSuite = () =>
   vest.create(({ skip, skipGroup }: SuiteParams = {}) => {
     vest.mode(Modes.ALL);
     vest.skip(skip);
@@ -37,11 +38,7 @@ const suite = () =>
     dummyTest.failingAsync('field_3', { message: 'field_message_3' });
   });
 
-let validate: vest.Suite<
-  TFieldName,
-  TGroupName,
-  ({ skip, skipGroup }: SuiteParams) => void
->;
+let suite: vest.Suite<TFieldName, TGroupName, CB>;
 let callback_1 = vi.fn(),
   callback_2 = vi.fn(),
   callback_3 = vi.fn(),
@@ -55,15 +52,15 @@ describe('Stateful async tests', () => {
     callback_3 = vi.fn();
     callback_4 = vi.fn();
     control = vi.fn();
-    validate = suite();
+    suite = genSuite();
   });
 
   it('Should only run callbacks for last suite run', () =>
     TestPromise(done => {
-      validate({}).done(callback_1).done('field_3', callback_2);
+      suite.run({}).done(callback_1).done('field_3', callback_2);
       expect(callback_1).not.toHaveBeenCalled();
       expect(callback_2).not.toHaveBeenCalled();
-      validate({}).done(callback_3).done('field_3', callback_4);
+      suite.run({}).done(callback_3).done('field_3', callback_4);
       expect(callback_3).not.toHaveBeenCalled();
       expect(callback_4).not.toHaveBeenCalled();
       setTimeout(() => {
@@ -84,7 +81,7 @@ describe('Stateful async tests', () => {
 
   it('Merges skipped validations from previous suite', () =>
     TestPromise(done => {
-      const res = validate({ skipGroup: true, skip: 'field_3' });
+      const res = suite.run({ skipGroup: true, skip: 'field_3' });
       expect(res.testCount).toBe(3);
       expect(res.errorCount).toBe(1);
       expect(res.warnCount).toBe(0);
@@ -95,7 +92,7 @@ describe('Stateful async tests', () => {
       expect(res.hasErrors('field_4')).toBe(false);
       expect(res).toMatchSnapshot();
       setTimeout(() => {
-        const res = validate.get();
+        const res = suite.get();
 
         expect(res.testCount).toBe(3);
         expect(res.errorCount).toBe(2);
@@ -106,7 +103,7 @@ describe('Stateful async tests', () => {
         expect(res.hasErrors('field_4')).toBe(false);
         expect(res).toMatchSnapshot();
 
-        validate({ skip: 'field_2' }).done(res => {
+        suite.run({ skip: 'field_2' }).done(res => {
           expect(res.testCount).toBe(7);
           expect(res.errorCount).toBe(5);
           expect(res.warnCount).toBe(0);
@@ -131,11 +128,11 @@ describe('Stateful async tests', () => {
         }),
       );
     });
-    suite().done(() => {
+    suite.run().done(() => {
       control(0);
     });
     await wait(5);
-    suite().done(() => {
+    suite.run().done(() => {
       control(1);
     });
     await wait(100);

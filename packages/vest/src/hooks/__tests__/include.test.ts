@@ -32,7 +32,7 @@ describe('include', () => {
           vest.test('field_2', () => false);
         });
 
-        const res = suite();
+        const res = suite.run();
         expect(res.hasErrors('field_1')).toBe(true);
         expect(res.tests.field_1.testCount).toBe(1);
         expect(res.hasErrors('field_2')).toBe(true);
@@ -54,7 +54,7 @@ describe('include', () => {
               vest.test('field_3', () => false);
             });
 
-            const res = suite();
+            const res = suite.run();
             expect(res.hasErrors('field_1')).toBe(true);
             expect(res.tests.field_1.testCount).toBe(1);
             expect(res.hasErrors('field_2')).toBe(true);
@@ -75,7 +75,7 @@ describe('include', () => {
               vest.test('field_3', () => false);
             });
 
-            const res = suite();
+            const res = suite.run();
             expect(res.hasErrors('field_1')).toBe(true);
             expect(res.tests.field_1.testCount).toBe(1);
             expect(res.hasErrors('field_2')).toBe(false);
@@ -97,7 +97,7 @@ describe('include', () => {
               vest.test('field_3', () => false);
             });
 
-            const res = suite();
+            const res = suite.run();
             expect(res.hasErrors('field_1')).toBe(true);
             expect(res.tests.field_1.testCount).toBe(1);
             expect(res.hasErrors('field_2')).toBe(false);
@@ -120,7 +120,7 @@ describe('include', () => {
               vest.test('field_3', () => false);
             });
 
-            const res = suite();
+            const res = suite.run();
             expect(res.hasErrors('field_1')).toBe(true);
             expect(res.tests.field_1.testCount).toBe(1);
             expect(res.hasErrors('field_2')).toBe(true);
@@ -141,7 +141,7 @@ describe('include', () => {
               vest.test('field_3', () => false);
             });
 
-            const res = suite();
+            const res = suite.run();
             expect(res.hasErrors('field_1')).toBe(true);
             expect(res.tests.field_1.testCount).toBe(1);
             expect(res.hasErrors('field_2')).toBe(false);
@@ -164,7 +164,7 @@ describe('include', () => {
               vest.test('field_3', () => false);
             });
 
-            const res = suite();
+            const res = suite.run();
             expect(res.hasErrors('field_1')).toBe(true);
             expect(res.tests.field_1.testCount).toBe(1);
             expect(res.hasErrors('field_2')).toBe(true);
@@ -185,7 +185,7 @@ describe('include', () => {
               vest.test('field_3', () => false);
             });
 
-            const res = suite();
+            const res = suite.run();
             expect(res.hasErrors('field_1')).toBe(true);
             expect(res.tests.field_1.testCount).toBe(1);
             expect(res.hasErrors('field_2')).toBe(false);
@@ -214,7 +214,7 @@ describe('include', () => {
               expect(cb).toHaveBeenCalledTimes(2);
             });
 
-            suite();
+            suite.run();
             expect(cb).toHaveBeenCalledTimes(2);
           });
           it('Should evaluate per test run', () => {
@@ -238,7 +238,7 @@ describe('include', () => {
               vest.test('field_1', cb4);
             });
 
-            const res = suite();
+            const res = suite.run();
             expect(cb1).toHaveBeenCalledTimes(0);
             expect(cb2).toHaveBeenCalledTimes(1);
             expect(cb3).toHaveBeenCalledTimes(0);
@@ -262,7 +262,7 @@ describe('include', () => {
         vest.test('field_2', () => false);
       });
 
-      const res = suite();
+      const res = suite.run();
       expect(res.hasErrors('field_1')).toBe(false);
       expect(res.tests.field_1.testCount).toBe(0);
       expect(res.hasErrors('field_2')).toBe(true);
@@ -278,7 +278,7 @@ describe('include', () => {
         vest.test('field_2', () => false);
       });
 
-      const res = suite();
+      const res = suite.run();
       expect(res.hasErrors('field_1')).toBe(false);
       expect(res.tests.field_1.testCount).toBe(0);
       expect(res.hasErrors('field_2')).toBe(true);
@@ -296,7 +296,7 @@ describe('include', () => {
         vest.test('field_1', () => false);
       });
 
-      const res = suite();
+      const res = suite.run();
       expect(res.hasErrors('field_1')).toBe(true);
       expect(res.tests.field_1.testCount).toBe(1);
     });
@@ -315,7 +315,7 @@ describe('include', () => {
         vest.test('field_1', cb2);
       });
 
-      const res = suite();
+      const res = suite.run();
       expect(res.hasErrors('field_1')).toBe(true);
       expect(res.tests.field_1.testCount).toBe(1);
       expect(cb1).toHaveBeenCalledTimes(0);
@@ -336,7 +336,7 @@ describe('include', () => {
         vest.test('field_1', cb2);
       });
 
-      const res = suite();
+      const res = suite.run();
       expect(res.hasErrors('field_1')).toBe(true);
       expect(res.tests.field_1.testCount).toBe(1);
       expect(cb1).toHaveBeenCalledTimes(0);
@@ -357,7 +357,7 @@ describe('include', () => {
         vest.test('field_1', cb2);
       });
 
-      const res = suite();
+      const res = suite.run();
       expect(res.hasErrors('field_1')).toBe(true);
       expect(res.tests.field_1.testCount).toBe(1);
       expect(cb1).not.toHaveBeenCalled();
@@ -374,7 +374,7 @@ describe('include', () => {
         vest.test('field_1', cb2);
       });
 
-      const res = suite();
+      const res = suite.run();
       expect(res.hasErrors('field_1')).toBe(true);
       expect(res.tests.field_1.testCount).toBe(1);
       expect(cb1).not.toHaveBeenCalled();
@@ -391,7 +391,7 @@ describe('include', () => {
         vest.test('field_1', () => false);
         vest.test('field_2', () => false);
       });
-      const res = suite();
+      const res = suite.run();
 
       expect(res.hasErrors('field_1')).toBe(true);
       expect(res.tests.field_1.testCount).toBe(1);
@@ -408,7 +408,7 @@ describe('include', () => {
         vest.test('field_1', () => false);
         vest.test('field_2', () => false);
       });
-      const res = suite();
+      const res = suite.run();
 
       expect(res.hasErrors('field_1')).toBe(true);
       expect(res.tests.field_1.testCount).toBe(1);

@@ -1,8 +1,8 @@
-import { describe, test, beforeEach, it, expect } from 'vitest';
+import { describe, test, beforeEach, it, expect, vi } from 'vitest';
 
 import * as vest from 'vest';
 
-const suite = () =>
+const genSuite = () =>
   vest.create(() => {
     vest.skip('field_5');
     vest.test('field_1', 'field_statement_1', () => false);
@@ -20,13 +20,13 @@ const suite = () =>
     });
     vest.test('field_5', 'field_statement_5', () => false);
     vest.test('field_5', 'field_statement_6', () => false);
-  })();
+  });
 
 describe('Base behavior', () => {
   let res: vest.SuiteRunResult<string, string>;
 
   beforeEach(() => {
-    res = suite();
+    res = genSuite().run();
   });
 
   test('Should produce correct validation result', () => {
@@ -35,7 +35,7 @@ describe('Base behavior', () => {
     expect(res.tests).toHaveProperty('field_3');
     expect(res.tests).toHaveProperty('field_4');
     expect(res.tests.field_5.testCount).toBe(0);
-    expect(suite()).toMatchSnapshot();
+    expect(genSuite().run()).toMatchSnapshot();
   });
 
   it('Should run done callbacks immediately', () => {

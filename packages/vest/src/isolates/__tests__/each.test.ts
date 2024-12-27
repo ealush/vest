@@ -23,7 +23,7 @@ describe('each', () => {
         control();
       });
 
-      suite();
+      suite.run();
       expect(control).toHaveBeenCalledTimes(1);
     });
   });
@@ -34,7 +34,7 @@ describe('each', () => {
       vest.each([1, 2, 3, 'str'], cb);
     });
 
-    suite();
+    suite.run();
 
     expect(cb).toHaveBeenCalledTimes(4);
 
@@ -52,9 +52,9 @@ describe('each', () => {
         });
       });
 
-      suite();
+      suite.run();
 
-      expect(() => suite()).not.toThrow();
+      expect(() => suite.run()).not.toThrow();
     });
 
     describe('Sanity', () => {
@@ -69,8 +69,8 @@ describe('each', () => {
           firstRun = false;
         });
 
-        suite();
-        suite();
+        suite.run();
+        suite.run();
         expect(deferThrow).toHaveBeenCalled();
       });
     });
@@ -93,7 +93,7 @@ describe('each', () => {
       run++;
     });
     const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    data.forEach((_, idx) => suite(data, idx + 1));
+    data.forEach((_, idx) => suite.run(data, idx + 1));
     expect(suite.get().errors).toHaveLength(5);
     expect(suite.hasErrors('item.1')).toBe(false);
     expect(suite.hasErrors('item.2')).toBe(true);

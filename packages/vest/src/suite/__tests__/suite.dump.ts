@@ -18,7 +18,7 @@ describe('SuiteSerializer', () => {
         vest.test('field_5', 'field_5_message', () => false);
       });
     });
-    suite();
+    suite.run();
 
     const dump = suite.dump();
     expect(dump).toMatchSnapshot();
@@ -44,14 +44,14 @@ describe('suite.resume', () => {
       });
     });
 
-    suite();
+    suite.run();
     suite.get();
 
     const dump = suite.dump();
 
     const suite2 = vest.create(() => {});
 
-    suite2();
+    suite2.run();
 
     expect(suite.get()).not.toEqual(suite2.get());
 
@@ -59,7 +59,7 @@ describe('suite.resume', () => {
 
     expect(suite.get()).isDeepCopyOf(suite2.get());
 
-    suite2();
+    suite2.run();
     expect(suite.get()).not.toEqual(suite2.get());
   });
 });

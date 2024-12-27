@@ -1,10 +1,10 @@
-import { Modes } from 'Modes';
 import { describe, it, expect, vi } from 'vitest';
 
 import { dummyTest } from '../../testUtils/testDummy';
 import classnames from '../classnames';
 import promisify from '../promisify';
 
+import { Modes } from 'Modes';
 import * as vest from 'vest';
 
 describe('Utility: classnames', () => {
@@ -22,24 +22,24 @@ describe('Utility: classnames', () => {
 
   describe('When called with a vest result object', () => {
     it('Should return a function', async () => {
-      const validate = vest.create(
+      const suite = vest.create(
         vi.fn(() => {
           dummyTest.failing('field_0');
         }),
       );
-      expect(typeof classnames(validate())).toBe('function');
+      expect(typeof classnames(suite.run())).toBe('function');
       const promisifed = await promisify(
         vest.create(
           vi.fn(() => {
             dummyTest.failing('field_0');
           }),
-        ),
+        ).run,
       )();
       expect(typeof classnames(promisifed)).toBe('function');
     });
   });
 
-  const validate = vest.create(() => {
+  const suite = vest.create(() => {
     vest.mode(Modes.ALL);
     vest.skip('field_1');
 
@@ -51,7 +51,7 @@ describe('Utility: classnames', () => {
     dummyTest.failing('field_5');
   });
 
-  const res = validate();
+  const res = suite.run();
 
   describe('when all keys are provided', () => {
     const genClass = classnames(res, {
@@ -113,7 +113,7 @@ describe('Utility: classnames', () => {
         vest.test('field_3', 'msg', () => {});
       });
 
-      const res = suite();
+      const res = suite.run();
 
       const genClass = classnames(res, {
         pending: 'pending_string',

@@ -117,7 +117,7 @@ describe('collectFailureMessages', () => {
         dummyTest.passing('x');
       });
     });
-    suite();
+    suite.run();
     res = suite.get();
   });
 });

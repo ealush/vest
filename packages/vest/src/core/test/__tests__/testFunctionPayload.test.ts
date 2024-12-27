@@ -11,7 +11,7 @@ describe('Test Function Payload', () => {
         vest.test('field_1', testFnSync);
         vest.test('field_2', testFnAsync);
       });
-      suite();
+      suite.run();
 
       expect(callPayload(testFnSync).signal).toBeInstanceOf(AbortSignal);
       expect(callPayload(testFnAsync).signal).toBeInstanceOf(AbortSignal);
@@ -23,7 +23,7 @@ describe('Test Function Payload', () => {
         const suite = vest.create(() => {
           vest.test('field_1', testFn);
         });
-        suite();
+        suite.run();
 
         await expect(callPayload(testFn).signal.aborted).toBe(false);
       });
@@ -35,8 +35,8 @@ describe('Test Function Payload', () => {
         const suite = vest.create(() => {
           vest.test('field_1', testFn);
         });
-        suite();
-        suite();
+        suite.run();
+        suite.run();
 
         await expect(callPayload(testFn).signal.aborted).toBe(true);
         await expect(callPayload(testFn, 1, 0).signal.aborted).toBe(false);
@@ -47,8 +47,8 @@ describe('Test Function Payload', () => {
         const suite = vest.create(() => {
           vest.test('field_1', testFn);
         });
-        suite();
-        suite();
+        suite.run();
+        suite.run();
 
         await expect(callPayload(testFn).signal.reason).toBe('CANCELED');
       });
@@ -66,8 +66,8 @@ describe('Test Function Payload', () => {
           vest.test('field_2', testFn2);
         });
 
-        suite();
-        suite('field_1');
+        suite.run();
+        suite.run('field_1');
 
         await expect(callPayload(testFn1).signal.aborted).toBe(true);
         expect(callPayload(testFn2).signal.aborted).toBe(false);

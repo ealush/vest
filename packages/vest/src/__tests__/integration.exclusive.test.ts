@@ -11,7 +11,7 @@ beforeEach(() => {
 
 describe('only', () => {
   it('Should only count included fields', () => {
-    const res = suite({
+    const res = suite.run({
       only: ['field_1', 'field_2'],
     });
 
@@ -22,7 +22,7 @@ describe('only', () => {
     expect(res.tests.field_5.testCount).toBe(0);
   });
   it('Should only count included field', () => {
-    const res = suite({
+    const res = suite.run({
       only: 'field_1',
     });
 
@@ -35,7 +35,7 @@ describe('only', () => {
 });
 describe('skip', () => {
   it('Should count all but excluded fields', () => {
-    const res = suite({
+    const res = suite.run({
       skip: ['field_1', 'field_2'],
     });
 
@@ -47,7 +47,7 @@ describe('skip', () => {
   });
 
   it('Should count all but excluded field', () => {
-    const res = suite({
+    const res = suite.run({
       skip: 'field_1',
     });
 
@@ -61,7 +61,7 @@ describe('skip', () => {
 
 describe('Combined', () => {
   test('First declaration wins', () => {
-    const res = suite({
+    const res = suite.run({
       skip: ['field_1'],
       only: ['field_1', 'field_2', 'field_3'],
       skip_last: 'field_3',

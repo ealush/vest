@@ -1,8 +1,8 @@
-import { Modes } from 'Modes';
 import { describe, it, expect } from 'vitest';
 
 import { dummyTest } from '../../../testUtils/testDummy';
 
+import { Modes } from 'Modes';
 import * as vest from 'vest';
 
 describe('->getFailures', () => {
@@ -12,14 +12,14 @@ describe('->getFailures', () => {
         it('Should return an empty object', () => {
           const suite = vest.create(() => {});
 
-          expect(suite().getErrors()).toEqual({});
+          expect(suite.run().getErrors()).toEqual({});
           expect(suite.get().getErrors()).toEqual({});
         });
       });
       describe('When requesting a fieldName', () => {
         it('Should return an empty array', () => {
           const suite = vest.create(() => {});
-          expect(suite().getErrors()).toEqual({});
+          expect(suite.run().getErrors()).toEqual({});
           expect(suite.get().getErrors('field_2')).toEqual([]);
         });
       });
@@ -31,7 +31,7 @@ describe('->getFailures', () => {
             dummyTest.passing('f1');
             dummyTest.passing('f2');
           });
-          expect(suite().getErrors()).toEqual({});
+          expect(suite.run().getErrors()).toEqual({});
           expect(suite.get().getErrors()).toEqual({});
         });
       });
@@ -41,7 +41,7 @@ describe('->getFailures', () => {
             dummyTest.passing('field_1');
             dummyTest.passing();
           });
-          expect(suite().getErrors('field_1')).toEqual([]);
+          expect(suite.run().getErrors('field_1')).toEqual([]);
           expect(suite.get().getErrors('field_1')).toEqual([]);
         });
       });
@@ -58,7 +58,7 @@ describe('->getFailures', () => {
             dummyTest.passing('field_1', 'msg_4');
             dummyTest.failingWarning('field_1', 'msg_5');
           });
-          expect(suite().getErrors()).toEqual({
+          expect(suite.run().getErrors()).toEqual({
             field_1: ['msg_1'],
             field_2: ['msg_2', 'msg_3'],
           });
@@ -77,7 +77,7 @@ describe('->getFailures', () => {
             dummyTest.passing('field_1', 'msg_4');
             dummyTest.failingWarning('field_1', 'msg_5');
           });
-          expect(suite().getErrors('field_1')).toEqual(['msg_1']);
+          expect(suite.run().getErrors('field_1')).toEqual(['msg_1']);
           expect(suite.get().getErrors('field_1')).toEqual(['msg_1']);
         });
       });
@@ -89,14 +89,14 @@ describe('->getFailures', () => {
       describe('When no parameters passed', () => {
         it('Should return an empty object', () => {
           const suite = vest.create(() => {});
-          expect(suite().getWarnings()).toEqual({});
+          expect(suite.run().getWarnings()).toEqual({});
           expect(suite.get().getWarnings()).toEqual({});
         });
       });
       describe('When requesting a fieldName', () => {
         it('Should return an empty array', () => {
           const suite = vest.create(() => {});
-          expect(suite().getWarnings('field_1')).toEqual([]);
+          expect(suite.run().getWarnings('field_1')).toEqual([]);
           expect(suite.get().getWarnings('field_1')).toEqual([]);
         });
       });
@@ -108,7 +108,7 @@ describe('->getFailures', () => {
             dummyTest.passing('x');
             dummyTest.passing('y');
           });
-          expect(suite().getWarnings()).toEqual({});
+          expect(suite.run().getWarnings()).toEqual({});
           expect(suite.get().getWarnings()).toEqual({});
         });
       });
@@ -118,7 +118,7 @@ describe('->getFailures', () => {
             dummyTest.passing('field_1');
             dummyTest.passing();
           });
-          expect(suite().getWarnings('field_1')).toEqual([]);
+          expect(suite.run().getWarnings('field_1')).toEqual([]);
           expect(suite.get().getWarnings('field_1')).toEqual([]);
         });
       });
@@ -134,7 +134,7 @@ describe('->getFailures', () => {
             dummyTest.passingWarning('field_1', 'msg_4');
             dummyTest.failing('field_1', 'msg_5');
           });
-          expect(suite().getWarnings()).toEqual({
+          expect(suite.run().getWarnings()).toEqual({
             field_1: ['msg_1'],
             field_2: ['msg_2', 'msg_3'],
           });
@@ -153,7 +153,7 @@ describe('->getFailures', () => {
             dummyTest.passingWarning('field_1', 'msg_4');
             dummyTest.failing('field_1', 'msg_5');
           });
-          expect(suite().getWarnings('field_1')).toEqual(['msg_1']);
+          expect(suite.run().getWarnings('field_1')).toEqual(['msg_1']);
           expect(suite.get().getWarnings('field_1')).toEqual(['msg_1']);
         });
       });

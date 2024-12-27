@@ -45,8 +45,8 @@ describe('key', () => {
           count++;
         });
 
-        const res1 = suite();
-        const res2 = suite();
+        const res1 = suite.run();
+        const res2 = suite.run();
 
         expect(res1.tests).toEqual(res2.tests);
       });
@@ -71,8 +71,8 @@ describe('key', () => {
           calls.push(currentCall);
         });
 
-        const res1 = suite();
-        const res2 = suite();
+        const res1 = suite.run();
+        const res2 = suite.run();
 
         expect(calls[0][0]).toBe(calls[1][0]);
         expect(calls[0][1]).toBe(calls[1][1]);
@@ -103,8 +103,8 @@ describe('key', () => {
           calls.push(currentCall);
         });
 
-        const res1 = suite();
-        const res2 = suite();
+        const res1 = suite.run();
+        const res2 = suite.run();
 
         expect(deferThrow).toHaveBeenCalled();
 
@@ -205,7 +205,7 @@ describe('key', () => {
           vest.test('field2', () => false, 'key_1');
         });
 
-        suite();
+        suite.run();
         expect(deferThrow).toHaveBeenCalledWith(
           `Encountered the same key "key_1" twice. This may lead to inconsistent or overriding of results.`,
         );
@@ -236,15 +236,15 @@ describe('key', () => {
           );
         });
 
-        suite({ a: '', b: '' }).done(() => {
+        suite.run({ a: '', b: '' }).done(() => {
           expect(suite.hasErrors('test_a')).toBe(true);
           expect(suite.hasErrors('test_b')).toBe(true);
         });
-        suite({ a: 's', b: '' }, ['test_a']).done(() => {
+        suite.run({ a: 's', b: '' }, ['test_a']).done(() => {
           expect(suite.hasErrors('test_a')).toBe(false);
           expect(suite.hasErrors('test_b')).toBe(true);
         });
-        suite({ a: 's', b: 's' }, ['test_b']).done(() => {
+        suite.run({ a: 's', b: 's' }, ['test_b']).done(() => {
           expect(suite.hasErrors('test_a')).toBe(false);
           expect(suite.hasErrors('test_b')).toBe(false);
         });
@@ -265,13 +265,13 @@ describe('key', () => {
           });
         });
 
-        suite({ a: '' }, false).done(() => {
+        suite.run({ a: '' }, false).done(() => {
           expect(suite.hasErrors('test_a')).toBe(true);
         });
-        suite({ a: '' }, false).done(() => {
+        suite.run({ a: '' }, false).done(() => {
           expect(suite.hasErrors('test_a')).toBe(true);
         });
-        suite({ a: 's' }, true).done(() => {
+        suite.run({ a: 's' }, true).done(() => {
           expect(suite.hasErrors('test_a')).toBe(false);
         });
       });

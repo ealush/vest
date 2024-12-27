@@ -11,7 +11,7 @@ describe('suite.resetField', () => {
       test('field1', 'f1 error', () => false);
       test('field2', 'f2 error', () => false);
     });
-    suite();
+    suite.run();
   });
 
   it('Should reset the validity state of a field', () => {
@@ -42,7 +42,7 @@ describe('suite.resetField', () => {
     suite.resetField('field1');
     expect(suite.get().hasErrors('field1')).toBe(false);
     expect(suite.get().hasErrors('field2')).toBe(true);
-    suite();
+    suite.run();
     expect(suite.get().hasErrors('field1')).toBe(true);
     expect(suite.get().hasErrors('field2')).toBe(true);
   });

@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
-import { ErrorStrings } from 'ErrorStrings';
-import { VestTest } from 'VestTest';
 import { describe, it, expect, vi } from 'vitest';
 
+import { ErrorStrings } from 'ErrorStrings';
+import { VestTest } from 'VestTest';
 import * as vest from 'vest';
 
 const { create, test, warn } = vest;
@@ -15,7 +15,7 @@ describe('warn hook', () => {
         t = test(faker.lorem.word(), faker.lorem.sentence(), () => {
           warn();
         });
-      })();
+      }).run();
 
       expect(VestTest.warns(VestTest.cast(t))).toBe(true);
     });
@@ -27,7 +27,7 @@ describe('warn hook', () => {
       create(() => {
         expect(warn).toThrow(ErrorStrings.WARN_MUST_BE_CALLED_FROM_TEST);
         done();
-      })();
+      }).run();
       expect(done).toHaveBeenCalled();
     });
 

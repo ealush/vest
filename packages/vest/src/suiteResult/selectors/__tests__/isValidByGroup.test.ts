@@ -1,10 +1,10 @@
-import { Modes } from 'Modes';
 import { TTestSuite } from 'testUtils/TVestMock';
 import { describe, it, expect, beforeEach } from 'vitest';
 import wait from 'wait';
 
 import { TestPromise } from '../../../testUtils/testPromise';
 
+import { Modes } from 'Modes';
 import {
   test,
   optional,
@@ -49,26 +49,28 @@ describe('isValidByGroup', () => {
     });
 
     it('Should return false when an optional test has errors', () => {
-      expect(suite('field_2').isValidByGroup(GROUP_NAME)).toBe(false);
-      expect(suite('field_2').isValidByGroup(GROUP_NAME, 'field_1')).toBe(
+      expect(suite.run('field_2').isValidByGroup(GROUP_NAME)).toBe(false);
+      expect(suite.run('field_2').isValidByGroup(GROUP_NAME, 'field_1')).toBe(
         false,
       );
     });
     it('Should return false when a required test has errors', () => {
-      expect(suite('field_1').isValidByGroup(GROUP_NAME)).toBe(false);
-      expect(suite('field_1').isValidByGroup(GROUP_NAME, 'field_2')).toBe(
+      expect(suite.run('field_1').isValidByGroup(GROUP_NAME)).toBe(false);
+      expect(suite.run('field_1').isValidByGroup(GROUP_NAME, 'field_2')).toBe(
         false,
       );
     });
 
     it('Should return false when the queried field is not optional and has errors', () => {
-      expect(suite('field_2').isValidByGroup(GROUP_NAME, 'field_2')).toBe(
+      expect(suite.run('field_2').isValidByGroup(GROUP_NAME, 'field_2')).toBe(
         false,
       );
     });
 
     it('Should return true when the queried field is optional and has errors', () => {
-      expect(suite('field_1').isValidByGroup(GROUP_NAME, 'field_1')).toBe(true);
+      expect(suite.run('field_1').isValidByGroup(GROUP_NAME, 'field_1')).toBe(
+        true,
+      );
     });
   });
 
@@ -86,8 +88,8 @@ describe('isValidByGroup', () => {
       });
     });
     it('Should return true when a required test has warnings', () => {
-      expect(suite().isValidByGroup(GROUP_NAME)).toBe(true);
-      expect(suite().isValidByGroup(GROUP_NAME, 'field_1')).toBe(true);
+      expect(suite.run().isValidByGroup(GROUP_NAME)).toBe(true);
+      expect(suite.run().isValidByGroup(GROUP_NAME, 'field_1')).toBe(true);
     });
 
     describe('When some of the tests for the required field are warnings', () => {
@@ -101,7 +103,7 @@ describe('isValidByGroup', () => {
         });
       });
       it('Should return true when a required test has warnings', () => {
-        expect(suite().isValid()).toBe(true);
+        expect(suite.run().isValid()).toBe(true);
       });
     });
 
@@ -119,7 +121,7 @@ describe('isValidByGroup', () => {
         });
       });
       it('Should return false even when the skipped field is warning', () => {
-        expect(suite().isValid()).toBe(false);
+        expect(suite.run().isValid()).toBe(false);
       });
     });
   });
@@ -144,10 +146,10 @@ describe('isValidByGroup', () => {
       });
     });
     it('Should return false', () => {
-      expect(suite('field_1').isValidByGroup(GROUP_NAME)).toBe(false);
+      expect(suite.run('field_1').isValidByGroup(GROUP_NAME)).toBe(false);
     });
     it('Should return false', () => {
-      expect(suite(['field_2', 'field_3']).isValidByGroup(GROUP_NAME)).toBe(
+      expect(suite.run(['field_2', 'field_3']).isValidByGroup(GROUP_NAME)).toBe(
         false,
       );
     });
@@ -170,14 +172,14 @@ describe('isValidByGroup', () => {
 
     describe('When test is pending', () => {
       it('Should return false', () => {
-        suite();
+        suite.run();
         expect(suite.get().isValidByGroup(GROUP_NAME)).toBe(false);
         expect(suite.get().isValidByGroup(GROUP_NAME, 'field_1')).toBe(false);
       });
     });
     describe('When test is passing', () => {
       it('Should return true', async () => {
-        suite();
+        suite.run();
         await wait(300);
         expect(suite.get().isValidByGroup(GROUP_NAME)).toBe(true);
         expect(suite.get().isValidByGroup(GROUP_NAME, 'field_1')).toBe(true);
@@ -204,14 +206,14 @@ describe('isValidByGroup', () => {
     });
 
     it('Should return false as long as the test is pending', async () => {
-      suite();
+      suite.run();
       expect(suite.get().isValidByGroup(GROUP_NAME)).toBe(false);
       await wait(300);
       expect(suite.get().isValidByGroup(GROUP_NAME)).toBe(true);
     });
 
     it('Should return false as long as the test is pending when querying a specific field', async () => {
-      suite();
+      suite.run();
       expect(suite.get().isValidByGroup(GROUP_NAME, 'field_1')).toBe(false);
       await wait(300);
       expect(suite.get().isValidByGroup(GROUP_NAME, 'field_1')).toBe(true);
@@ -238,7 +240,7 @@ describe('isValidByGroup', () => {
 
     describe('When test is pending', () => {
       it('Should return `false` for a required field', () => {
-        const result = suite();
+        const result = suite.run();
 
         expect(result.isValidByGroup(GROUP_NAME)).toBe(false);
         expect(result.isValidByGroup(GROUP_NAME, 'field_1')).toBe(false);
@@ -248,7 +250,7 @@ describe('isValidByGroup', () => {
     describe('When async test is passing', () => {
       it('Should return `true`', () => {
         return TestPromise(done => {
-          suite().done(result => {
+          suite.run().done(result => {
             expect(result.isValidByGroup(GROUP_NAME)).toBe(true);
             expect(result.isValidByGroup(GROUP_NAME, 'field_1')).toBe(true);
             expect(result.isValidByGroup(GROUP_NAME, 'field_2')).toBe(true);
@@ -261,8 +263,8 @@ describe('isValidByGroup', () => {
     describe('When test is lagging', () => {
       it('Should return `false`', () => {
         return TestPromise(done => {
-          suite();
-          const result = suite('field_2').done(done);
+          suite.run();
+          const result = suite.run('field_2').done(done);
 
           expect(result.isValidByGroup(GROUP_NAME)).toBe(false);
         });
@@ -292,10 +294,10 @@ describe('isValidByGroup', () => {
       });
     });
     it('Should return true', () => {
-      expect(suite().isValidByGroup(GROUP_NAME)).toBe(true);
-      expect(suite().isValidByGroup(GROUP_NAME, 'field_1')).toBe(true);
-      expect(suite().isValidByGroup(GROUP_NAME, 'field_2')).toBe(true);
-      expect(suite().isValidByGroup(GROUP_NAME, 'field_3')).toBe(true);
+      expect(suite.run().isValidByGroup(GROUP_NAME)).toBe(true);
+      expect(suite.run().isValidByGroup(GROUP_NAME, 'field_1')).toBe(true);
+      expect(suite.run().isValidByGroup(GROUP_NAME, 'field_2')).toBe(true);
+      expect(suite.run().isValidByGroup(GROUP_NAME, 'field_3')).toBe(true);
     });
   });
 
@@ -311,7 +313,9 @@ describe('isValidByGroup', () => {
               });
             });
           });
-        })().isValidByGroup(GROUP_NAME),
+        })
+          .run()
+          .isValidByGroup(GROUP_NAME),
       ).toBe(false);
     });
   });
@@ -324,7 +328,9 @@ describe('isValidByGroup', () => {
           group(GROUP_NAME, () => {
             test('field_1', () => true);
           });
-        })().isValidByGroup(GROUP_NAME, 'field_1'),
+        })
+          .run()
+          .isValidByGroup(GROUP_NAME, 'field_1'),
       ).toBe(false);
     });
 
@@ -334,7 +340,9 @@ describe('isValidByGroup', () => {
           group(GROUP_NAME, () => {
             test('field_1', () => {});
           });
-        })().isValidByGroup(GROUP_NAME, 'field 2'),
+        })
+          .run()
+          .isValidByGroup(GROUP_NAME, 'field 2'),
       ).toBe(false);
     });
 
@@ -351,7 +359,9 @@ describe('isValidByGroup', () => {
               });
             });
           });
-        })().isValidByGroup(GROUP_NAME, 'field_1'),
+        })
+          .run()
+          .isValidByGroup(GROUP_NAME, 'field_1'),
       ).toBe(false);
     });
 
@@ -361,7 +371,9 @@ describe('isValidByGroup', () => {
           group(GROUP_NAME, () => {
             test('field_1', () => false);
           });
-        })().isValidByGroup(GROUP_NAME, 'field_1'),
+        })
+          .run()
+          .isValidByGroup(GROUP_NAME, 'field_1'),
       ).toBe(false);
     });
 
@@ -371,7 +383,9 @@ describe('isValidByGroup', () => {
           group(GROUP_NAME, () => {
             test('field_1', () => {});
           });
-        })().isValidByGroup(GROUP_NAME, 'field_1'),
+        })
+          .run()
+          .isValidByGroup(GROUP_NAME, 'field_1'),
       ).toBe(true);
     });
 
@@ -384,7 +398,9 @@ describe('isValidByGroup', () => {
               return false;
             });
           });
-        })().isValidByGroup(GROUP_NAME, 'field_1'),
+        })
+          .run()
+          .isValidByGroup(GROUP_NAME, 'field_1'),
       ).toBe(true);
     });
 
@@ -397,7 +413,9 @@ describe('isValidByGroup', () => {
               test('field_1', () => false);
             });
           });
-        })().isValidByGroup(GROUP_NAME, 'field_1'),
+        })
+          .run()
+          .isValidByGroup(GROUP_NAME, 'field_1'),
       ).toBe(true);
     });
   });
@@ -409,7 +427,9 @@ describe('isValidByGroup', () => {
           group(GROUP_NAME, () => {
             test('field_1', () => true);
           });
-        })().isValidByGroup(GROUP_NAME, 'field_2'),
+        })
+          .run()
+          .isValidByGroup(GROUP_NAME, 'field_2'),
       ).toBe(false);
     });
   });
@@ -421,8 +441,10 @@ describe('isValidByGroup', () => {
       });
     });
     it('Should return false', () => {
-      expect(suite().isValidByGroup('does-not-exist')).toBe(false);
-      expect(suite().isValidByGroup('does-not-exist', 'field_1')).toBe(false);
+      expect(suite.run().isValidByGroup('does-not-exist')).toBe(false);
+      expect(suite.run().isValidByGroup('does-not-exist', 'field_1')).toBe(
+        false,
+      );
     });
   });
 
@@ -436,7 +458,9 @@ describe('isValidByGroup', () => {
           group(GROUP_NAME, () => {
             test('field_1', () => false);
           });
-        })().isValidByGroup(GROUP_NAME),
+        })
+          .run()
+          .isValidByGroup(GROUP_NAME),
       ).toBe(true);
     });
   });
@@ -452,8 +476,8 @@ describe('isValidByGroup', () => {
     });
 
     it('Should return false', () => {
-      expect(suite().isValidByGroup('group_1', 'field_2')).toBe(false);
-      expect(suite().isValidByGroup('group_2', 'field_1')).toBe(false);
+      expect(suite.run().isValidByGroup('group_1', 'field_2')).toBe(false);
+      expect(suite.run().isValidByGroup('group_2', 'field_1')).toBe(false);
     });
   });
 
@@ -466,7 +490,7 @@ describe('isValidByGroup', () => {
     });
 
     it('Should return false', () => {
-      expect(suite().isValidByGroup('group_1', 'field_1')).toBe(false);
+      expect(suite.run().isValidByGroup('group_1', 'field_1')).toBe(false);
     });
   });
 
@@ -480,7 +504,7 @@ describe('isValidByGroup', () => {
     });
 
     it('Should return the result of what is inside the group', () => {
-      expect(suite().isValidByGroup('group_1', 'field_1')).toBe(true);
+      expect(suite.run().isValidByGroup('group_1', 'field_1')).toBe(true);
     });
   });
 });

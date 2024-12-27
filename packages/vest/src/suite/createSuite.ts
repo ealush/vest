@@ -48,7 +48,7 @@ function createSuite<
   // It holds the suite's persisted values that may remain between runs.
   const stateRef = useCreateVestState({ suiteName, VestReconciler });
 
-  function suite(...args: Parameters<T>): SuiteRunResult<F, G> {
+  function runSuite(...args: Parameters<T>): SuiteRunResult<F, G> {
     return SuiteContext.run(
       {
         suiteParams: args,
@@ -72,26 +72,22 @@ function createSuite<
     // @vx-allow use-use
     const VestBus = useInitVestBus();
 
-    return assign(
+    return {
+      dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
+      get: VestRuntime.persist(useCreateSuiteResult<F, G>),
+      remove: Bus.usePrepareEmitter<string>('REMOVE_FIELD'),
+      reset: Bus.usePrepareEmitter('RESET_SUITE'),
+      resetField: Bus.usePrepareEmitter<string>('RESET_FIELD'),
+      resume: VestRuntime.persist(useLoadSuite),
       // We're also binding the suite to the stateRef, so that the suite
       // can access the stateRef when it's called.
-      VestRuntime.persist(suite),
-      {
-        dump: VestRuntime.persist(
-          () => VestRuntime.useAvailableRoot() as TIsolateSuite,
-        ),
-        get: VestRuntime.persist(useCreateSuiteResult),
-        remove: Bus.usePrepareEmitter<string>('REMOVE_FIELD'),
-        reset: Bus.usePrepareEmitter('RESET_SUITE'),
-        resetField: Bus.usePrepareEmitter<string>('RESET_FIELD'),
-        resume: VestRuntime.persist(useLoadSuite),
-        runStatic: (...args: Parameters<T>): StaticSuiteRunResult<F, G> =>
-          mountedStatic(...args) as StaticSuiteRunResult<F, G>,
-        subscribe: VestBus.subscribe,
-        ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
-        ...getTypedMethods<F, G>(),
-      },
-    );
+      run: VestRuntime.persist(runSuite),
+      runStatic: (...args: Parameters<T>): StaticSuiteRunResult<F, G> =>
+        mountedStatic(...args) as StaticSuiteRunResult<F, G>,
+      subscribe: VestBus.subscribe,
+      ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
+      ...getTypedMethods<F, G>(),
+    };
   });
 }
 
@@ -152,7 +148,7 @@ function staticSuite<
         ...(createArgs as unknown as [SuiteName, T]),
       );
 
-      const result = suite(...args);
+      const result = suite.run(...args);
 
       return assign(
         new Promise<SuiteWithDump<F, G>>(resolve => {

@@ -18,13 +18,13 @@ describe('debounce', () => {
             vest.test('test', 'message', debounce(test, 1500));
           });
 
-          suite();
-          suite();
-          suite();
-          suite();
-          suite();
-          suite();
-          suite().done(() => {
+          suite.run();
+          suite.run();
+          suite.run();
+          suite.run();
+          suite.run();
+          suite.run();
+          suite.run().done(() => {
             expect(test).toHaveBeenCalledTimes(1);
             expect(suite.isValid()).toBe(false);
             done();
@@ -44,13 +44,13 @@ describe('debounce', () => {
             vest.test('test', 'message', debounce(test, 1500));
           });
 
-          suite();
-          suite();
-          suite();
-          suite();
-          suite();
-          suite();
-          suite().done(() => {
+          suite.run();
+          suite.run();
+          suite.run();
+          suite.run();
+          suite.run();
+          suite.run();
+          suite.run().done(() => {
             expect(test).toHaveBeenCalledTimes(1);
             expect(suite.isValid()).toBe(false);
             done();
@@ -71,7 +71,7 @@ describe('debounce', () => {
         vest.test('test', 'message', debounce(t, 1500));
       });
 
-      suite();
+      suite.run();
       expect(t).toHaveBeenCalledTimes(0);
       expect(suite.isPending()).toBe(true);
       await wait(2000);
@@ -94,22 +94,22 @@ describe('debounce', () => {
         vest.test('test', 'message', debounce(test, 1000));
       });
 
-      suite();
+      suite.run();
       await wait(1000);
       expect(suite.get().hasErrors('test')).toBe(true);
       expect(test).toHaveBeenCalledTimes(1);
 
-      suite();
-      suite();
-      suite();
+      suite.run();
+      suite.run();
+      suite.run();
       expect(test).toHaveBeenCalledTimes(1);
       await wait(1000);
       expect(suite.get().hasErrors('test')).toBe(true);
       expect(test).toHaveBeenCalledTimes(2);
 
-      suite();
-      suite();
-      suite();
+      suite.run();
+      suite.run();
+      suite.run();
       expect(test).toHaveBeenCalledTimes(2);
       await wait(1000);
     });
@@ -127,7 +127,7 @@ describe('debounce', () => {
       });
 
       return new Promise<void>(done => {
-        suite().done(() => {
+        suite.run().done(() => {
           expect(test).toHaveBeenCalledTimes(2);
           expect(suite.get().hasErrors('test')).toBe(true);
           expect(suite.get().hasErrors('test2')).toBe(true);
@@ -155,9 +155,10 @@ describe('debounce', () => {
       const control = vi.fn();
 
       return new Promise<void>(done => {
-        suite();
-        suite();
-        suite()
+        suite.run();
+        suite.run();
+        suite
+          .run()
           .done('test', () => {
             expect(control).toHaveBeenCalledTimes(0);
             expect(t).toHaveBeenCalledTimes(1);
@@ -218,10 +219,10 @@ describe('debounce', () => {
 
         // eslint-disable-next-line no-async-promise-executor
         return new Promise<void>(async done => {
-          suite();
+          suite.run();
           await wait(200);
           // This cancels the first run
-          suite().done(() => {
+          suite.run().done(() => {
             expect(suite.hasErrors('test')).toBe(false);
             expect(test).toHaveBeenCalledTimes(2);
             expect(control).toHaveBeenCalledTimes(1);

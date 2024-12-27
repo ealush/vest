@@ -31,7 +31,7 @@ Instead of dirty checking, Vest provides the `isTested` method. This method can 
 The following code will only display validation errors for the username field if it has been tested:
 
 ```js
-const result = suite({ username: '' });
+const result = suite.run({ username: '' });
 
 if (result.isTested('username')) {
   // Display validation errors for the username field

@@ -31,7 +31,7 @@ const suite = create<FieldName, GroupName, Callback>(data => {
   // ...
 });
 
-const res = suite();
+const res = suite.run();
 
 res.getErrors('username');
 res.getErrors('full_name'); // 🚨 Throws a compilation error

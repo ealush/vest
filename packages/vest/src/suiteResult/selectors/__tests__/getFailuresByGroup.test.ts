@@ -13,7 +13,7 @@ describe.each(modes)('produce method: %s', mode => {
   let suite: TTestSuite;
 
   function getRes(...args: any[]) {
-    const res = suite(...args);
+    const res = suite.run(...args);
     return mode === 'SuiteRunResult' ? res : suite.get();
   }
 

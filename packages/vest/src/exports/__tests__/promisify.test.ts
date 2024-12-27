@@ -1,28 +1,28 @@
 import { faker } from '@faker-js/faker';
-import { TFieldName } from 'SuiteResultTypes';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { dummyTest } from '../../testUtils/testDummy';
 import { TestPromise } from '../../testUtils/testPromise';
 import promisify from '../promisify';
 
+import { TFieldName } from 'SuiteResultTypes';
 import * as vest from 'vest';
 
 describe('Utility: promisify', () => {
-  let validatorFn: vi.Mock<vest.SuiteRunResult<string, TFieldName>, any>;
+  let suite: vi.Mock<vest.SuiteRunResult<string, TFieldName>, any>;
   let validateAsync: (
     ...args: any[]
   ) => Promise<vest.SuiteResult<string, TFieldName>>;
 
   beforeEach(() => {
-    validatorFn = vi.fn(
+    suite = vi.fn(
       vest.create(
         vi.fn(() => {
           dummyTest.failing('field_0');
         }),
-      ),
+      ).run,
     );
-    validateAsync = promisify(validatorFn);
+    validateAsync = promisify(suite);
   });
 
   describe('Test arguments', () => {
@@ -47,13 +47,13 @@ describe('Utility: promisify', () => {
   });
 
   describe('When returned function is invoked', () => {
-    it('Calls `validatorFn` argument', () =>
+    it('Calls `suite` argument', () =>
       TestPromise(done => {
         const validateAsync = promisify(
           vest.create(() => {
             dummyTest.failing('field_0');
             done();
-          }),
+          }).run,
         );
         validateAsync();
       }));
@@ -67,19 +67,19 @@ describe('Utility: promisify', () => {
       ];
 
       await validateAsync(...params);
-      expect(validatorFn).toHaveBeenCalledWith(...params);
+      expect(suite).toHaveBeenCalledWith(...params);
     });
   });
 
   describe('Initial run', () => {
     it('Produces correct validation', () =>
       TestPromise(done => {
-        const validate = vest.create(() => {
+        const suite = vest.create(() => {
           dummyTest.failing('field_0');
           dummyTest.failingAsync('field_1');
-        });
+        }).run;
 
-        const validatorAsync = promisify(validate);
+        const validatorAsync = promisify(suite);
         const p = validatorAsync('me');
 
         p.then(result => {

@@ -19,9 +19,9 @@ describe('skipWhen', () => {
       counter++;
     });
     expect(fn).toHaveBeenCalledTimes(0);
-    suite();
+    suite.run();
     expect(fn).toHaveBeenCalledTimes(1);
-    suite();
+    suite.run();
     expect(fn).toHaveBeenCalledTimes(2);
   });
 
@@ -33,7 +33,7 @@ describe('skipWhen', () => {
       vest.skipWhen(() => true, fn);
     });
 
-    suite();
+    suite.run();
 
     expect(fn).toHaveBeenCalledTimes(4);
   });
@@ -42,53 +42,55 @@ describe('skipWhen', () => {
     const f = vi.fn();
     const control = vi.fn();
 
-    vest.create(() => {
-      vest.skipWhen(draft => {
-        expect(draft.hasErrors()).toBe(false);
-        expect(draft).toMatchSnapshot();
-        control();
-        return false;
-      }, f);
-      dummyTest.failing('f1', 'msg');
-      vest.skipWhen(draft => {
-        expect(draft.hasErrors()).toBe(true);
-        expect(draft.hasErrors('f1')).toBe(true);
-        expect(draft.hasErrors('f2')).toBe(false);
-        expect(draft.hasErrors('f3')).toBe(false);
-        expect(draft).toMatchSnapshot();
-        control();
-        return false;
-      }, f);
-      dummyTest.failing('f2', 'msg');
-      vest.skipWhen(draft => {
-        expect(draft.hasErrors()).toBe(true);
-        expect(draft.hasErrors('f1')).toBe(true);
-        expect(draft.hasErrors('f2')).toBe(true);
-        expect(draft.hasErrors('f3')).toBe(false);
-        expect(draft).toMatchSnapshot();
-        control();
-        return false;
-      }, f);
-      dummyTest.failing('f3', 'msg');
-    })();
+    vest
+      .create(() => {
+        vest.skipWhen(draft => {
+          expect(draft.hasErrors()).toBe(false);
+          expect(draft).toMatchSnapshot();
+          control();
+          return false;
+        }, f);
+        dummyTest.failing('f1', 'msg');
+        vest.skipWhen(draft => {
+          expect(draft.hasErrors()).toBe(true);
+          expect(draft.hasErrors('f1')).toBe(true);
+          expect(draft.hasErrors('f2')).toBe(false);
+          expect(draft.hasErrors('f3')).toBe(false);
+          expect(draft).toMatchSnapshot();
+          control();
+          return false;
+        }, f);
+        dummyTest.failing('f2', 'msg');
+        vest.skipWhen(draft => {
+          expect(draft.hasErrors()).toBe(true);
+          expect(draft.hasErrors('f1')).toBe(true);
+          expect(draft.hasErrors('f2')).toBe(true);
+          expect(draft.hasErrors('f3')).toBe(false);
+          expect(draft).toMatchSnapshot();
+          control();
+          return false;
+        }, f);
+        dummyTest.failing('f3', 'msg');
+      })
+      .run();
 
     expect(control).toHaveBeenCalledTimes(3);
   });
 
   it('Should skip tests when the condition is truthy', () => {
-    const res = suite(true);
+    const res = suite.run(true);
     expect(res.tests.username.testCount).toBe(0);
   });
 
   it('Should run tests when the condition is falsy', () => {
-    const res = suite(false);
+    const res = suite.run(false);
     expect(res.tests.username.testCount).toBe(1);
   });
 
   it('Should correctly refill the state when field is skipped', () => {
-    const res = suite(false);
+    const res = suite.run(false);
     expect(res.tests.username.testCount).toBe(1);
-    suite(true);
+    suite.run(true);
 
     expect(suite.get().tests.username.testCount).toBe(1);
   });
@@ -107,7 +109,7 @@ describe('skipWhen', () => {
             });
           });
         });
-        suite();
+        suite.run();
       });
       it('Should run `outer` and skip `inner`', () => {
         expect(suite.get().testCount).toBe(1);
@@ -127,7 +129,7 @@ describe('skipWhen', () => {
             });
           });
         });
-        suite();
+        suite.run();
       });
       it('Should skip both `outer` and `inner`', () => {
         expect(suite.get().testCount).toBe(0);
@@ -146,7 +148,7 @@ describe('skipWhen', () => {
             });
           });
         });
-        suite();
+        suite.run();
       });
       it('Should skip both', () => {
         expect(suite.get().testCount).toBe(0);

@@ -9,7 +9,7 @@ describe('isPending()', () => {
       const suite = vest.create(() => {
         vest.test('f1', () => {});
       });
-      suite();
+      suite.run();
       expect(suite.isPending()).toBe(false);
       expect(suite.isPending('f1')).toBe(false);
     });
@@ -19,7 +19,7 @@ describe('isPending()', () => {
         vest.test('f1', () => {});
         vest.test('f2', async () => {});
       });
-      suite();
+      suite.run();
       expect(suite.isPending()).toBe(true);
       expect(suite.isPending('f1')).toBe(false);
     });
@@ -29,7 +29,7 @@ describe('isPending()', () => {
         vest.test('f1', () => {});
         vest.test('f2', async () => {});
       });
-      suite();
+      suite.run();
       expect(suite.isPending()).toBe(true);
       expect(suite.isPending('f2')).toBe(true);
     });
@@ -41,7 +41,7 @@ describe('isPending()', () => {
         vest.test('f1', () => {});
         vest.test('f2', async () => {});
       });
-      suite();
+      suite.run();
       await wait(0);
       expect(suite.isPending()).toBe(false);
       expect(suite.isPending('f2')).toBe(false);
@@ -55,7 +55,7 @@ describe('isPending()', () => {
         vest.test('f2', async () => {});
         vest.test('f3', async () => {});
       });
-      suite();
+      suite.run();
       await wait(0);
       expect(suite.isPending()).toBe(false);
       expect(suite.isPending('f2')).toBe(false);
@@ -70,7 +70,7 @@ describe('isPending()', () => {
         });
         vest.test('f3', async () => {});
       });
-      suite();
+      suite.run();
       await wait(0);
       expect(suite.isPending()).toBe(true);
       expect(suite.isPending('f2')).toBe(true);
@@ -85,7 +85,7 @@ describe('isPending()', () => {
         vest.test('f1', async () => {});
         vest.test('f1', async () => {});
       });
-      suite();
+      suite.run();
       expect(suite.isPending()).toBe(true);
       expect(suite.isPending('f1')).toBe(true);
     });

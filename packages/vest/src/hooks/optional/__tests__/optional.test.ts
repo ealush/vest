@@ -18,7 +18,7 @@ describe('optional hook', () => {
           vest.test('f2', () => false);
         });
 
-        const res = suite({ f1: '', f2: '' });
+        const res = suite.run({ f1: '', f2: '' });
 
         expect(res.hasErrors('f1')).toBe(false);
         expect(res.hasErrors('f2')).toBe(false);
@@ -35,7 +35,7 @@ describe('optional hook', () => {
           vest.test('f2', () => false);
         });
 
-        const res = suite({ f1: null, f2: null });
+        const res = suite.run({ f1: null, f2: null });
 
         expect(res.hasErrors('f1')).toBe(false);
         expect(res.hasErrors('f2')).toBe(false);
@@ -53,7 +53,7 @@ describe('optional hook', () => {
             vest.test('f1', () => false);
           });
 
-          const res = suite({ f1: 'foo' });
+          const res = suite.run({ f1: 'foo' });
 
           expect(res.hasErrors('f1')).toBe(false);
           expect(res.isValid('f1')).toBe(true);
@@ -72,7 +72,7 @@ describe('optional hook', () => {
             vest.test('f2', () => false);
           });
 
-          const res = suite({});
+          const res = suite.run({});
 
           expect(res.hasErrors('f1')).toBe(true);
           expect(res.hasErrors('f2')).toBe(true);
@@ -92,7 +92,7 @@ describe('optional hook', () => {
             vest.test('f2', () => false);
           });
 
-          const res = suite({});
+          const res = suite.run({});
 
           expect(res.hasErrors('f1')).toBe(true);
           expect(res.hasErrors('f2')).toBe(false);
@@ -117,7 +117,7 @@ describe('optional hook', () => {
           vest.test('f2', () => false);
         });
 
-        const res = suite();
+        const res = suite.run();
 
         expect(res.hasErrors('f1')).toBe(false);
         expect(res.hasErrors('f2')).toBe(false);
@@ -136,7 +136,7 @@ describe('optional hook', () => {
           vest.test('f1', fn);
         });
 
-        suite();
+        suite.run();
 
         expect(fn).toHaveBeenCalled();
         expect(suite.hasErrors('f1')).toBe(false);
@@ -154,7 +154,7 @@ describe('optional hook', () => {
             vest.test('f2', () => true);
           });
 
-          const res = suite();
+          const res = suite.run();
 
           expect(res.hasErrors('f1')).toBe(false);
           expect(res.hasErrors('f2')).toBe(false);
@@ -175,7 +175,7 @@ describe('optional hook', () => {
             vest.test('f1', () => false);
           });
 
-          const res = suite();
+          const res = suite.run();
 
           expect(res.hasErrors('f1')).toBe(false);
           expect(res.isValid('f1')).toBe(true);
@@ -194,7 +194,7 @@ describe('optional hook', () => {
             vest.test('field_1', () => false);
           });
 
-          const res = suite();
+          const res = suite.run();
 
           expect(res.hasErrors('field_1')).toBe(false);
           expect(res.isValid('field_1')).toBe(true);
@@ -210,7 +210,7 @@ describe('optional hook', () => {
             vest.test('field_1', fn);
           });
 
-          suite();
+          suite.run();
 
           expect(fn).not.toHaveBeenCalled();
         });
@@ -225,7 +225,7 @@ describe('optional hook', () => {
             vest.test('field_1', () => false);
           });
 
-          const res = suite();
+          const res = suite.run();
 
           expect(res.hasErrors('field_1')).toBe(true);
           expect(res.isValid('field_1')).toBe(false);
@@ -246,7 +246,7 @@ describe('optional hook', () => {
               vest.test('field_1', () => false);
             });
 
-            const res = suite();
+            const res = suite.run();
 
             expect(res.hasErrors('field_1')).toBe(false);
             expect(res.isValid('field_1')).toBe(true);
@@ -264,7 +264,7 @@ describe('optional hook', () => {
             vest.test('field_1', () => false);
           });
 
-          const res = suite();
+          const res = suite.run();
 
           expect(res.hasErrors('field_1')).toBe(true);
           expect(res.isValid('field_1')).toBe(false);
@@ -282,7 +282,7 @@ describe('optional hook', () => {
               vest.test('field_1', () => false);
             });
 
-            const res = suite();
+            const res = suite.run();
 
             expect(res.hasErrors('field_1')).toBe(false);
             expect(res.isValid('field_1')).toBe(true);
@@ -299,7 +299,7 @@ describe('optional hook', () => {
               vest.test('field_1', () => false);
             });
 
-            const res = suite();
+            const res = suite.run();
 
             expect(res.hasErrors('field_1')).toBe(true);
             expect(res.isValid('field_1')).toBe(false);
@@ -336,23 +336,23 @@ describe('optional hook', () => {
     });
 
     it('Should omit tests based on other tests in the suite', () => {
-      expect(suite({ a: 1, b: 0, c: 0 }).isValid('a')).toBe(true);
-      expect(suite({ a: 1, b: 0, c: 0 }).isValid('b')).toBe(true);
-      expect(suite({ a: 1, b: 0, c: 0 }).isValid('c')).toBe(true);
-      expect(suite({ a: 1, b: 0, c: 0 }).isValid()).toBe(true);
-      expect(suite({ a: 0, b: 1, c: 0 }).isValid('a')).toBe(true);
-      expect(suite({ a: 0, b: 1, c: 0 }).isValid('b')).toBe(true);
-      expect(suite({ a: 0, b: 1, c: 0 }).isValid('c')).toBe(true);
-      expect(suite({ a: 0, b: 1, c: 0 }).isValid()).toBe(true);
-      expect(suite({ a: 0, b: 0, c: 1 }).isValid('a')).toBe(true);
-      expect(suite({ a: 0, b: 0, c: 1 }).isValid('b')).toBe(true);
-      expect(suite({ a: 0, b: 0, c: 1 }).isValid('c')).toBe(true);
-      expect(suite({ a: 0, b: 0, c: 1 }).isValid()).toBe(true);
+      expect(suite.run({ a: 1, b: 0, c: 0 }).isValid('a')).toBe(true);
+      expect(suite.run({ a: 1, b: 0, c: 0 }).isValid('b')).toBe(true);
+      expect(suite.run({ a: 1, b: 0, c: 0 }).isValid('c')).toBe(true);
+      expect(suite.run({ a: 1, b: 0, c: 0 }).isValid()).toBe(true);
+      expect(suite.run({ a: 0, b: 1, c: 0 }).isValid('a')).toBe(true);
+      expect(suite.run({ a: 0, b: 1, c: 0 }).isValid('b')).toBe(true);
+      expect(suite.run({ a: 0, b: 1, c: 0 }).isValid('c')).toBe(true);
+      expect(suite.run({ a: 0, b: 1, c: 0 }).isValid()).toBe(true);
+      expect(suite.run({ a: 0, b: 0, c: 1 }).isValid('a')).toBe(true);
+      expect(suite.run({ a: 0, b: 0, c: 1 }).isValid('b')).toBe(true);
+      expect(suite.run({ a: 0, b: 0, c: 1 }).isValid('c')).toBe(true);
+      expect(suite.run({ a: 0, b: 0, c: 1 }).isValid()).toBe(true);
     });
 
     describe('when focused with vest.only', () => {
       it('Should keep optional fields even if not all tests ran yet', () => {
-        const res = suite({ a: 1, b: 0, c: 0 }, 'a');
+        const res = suite.run({ a: 1, b: 0, c: 0 }, 'a');
         expect(res.isValid('a')).toBe(true);
         expect(res.isValid('b')).toBe(true);
         expect(res.isValid('c')).toBe(true);
@@ -360,13 +360,13 @@ describe('optional hook', () => {
       });
 
       it('Should revert optional fields when none of the fields are valid anymore', () => {
-        let res = suite({ a: 1, b: 0, c: 0 }, 'a');
+        let res = suite.run({ a: 1, b: 0, c: 0 }, 'a');
         expect(res.isValid()).toBe(true);
-        res = suite({ a: 0, b: 0, c: 0 }, 'a');
+        res = suite.run({ a: 0, b: 0, c: 0 }, 'a');
         expect(res.isValid()).toBe(false);
-        res = suite({ a: 0, b: 1, c: 0 }, 'b');
+        res = suite.run({ a: 0, b: 1, c: 0 }, 'b');
         expect(res.isValid()).toBe(true);
-        res = suite({ a: 0, b: 0, c: 0 }, 'b');
+        res = suite.run({ a: 0, b: 0, c: 0 }, 'b');
         expect(res.isValid()).toBe(false);
       });
     });
@@ -387,14 +387,14 @@ describe('optional hook', () => {
       });
       describe('Before the test completed', () => {
         it('Should be considered as non-valid', () => {
-          const res = suite();
+          const res = suite.run();
           expect(res.isValid()).toBe(false);
           expect(res.isValid('field_1')).toBe(false);
         });
       });
       describe('After the test completed', () => {
         it('Should be considered as non-valid', () => {
-          const res = suite();
+          const res = suite.run();
           vi.runAllTimers();
           expect(res.isValid()).toBe(false);
           expect(res.isValid('field_1')).toBe(false);
@@ -417,7 +417,7 @@ describe('optional hook', () => {
 
       describe('Before the test completed', () => {
         it('Should be considered as non-valid', () => {
-          const res = suite();
+          const res = suite.run();
           expect(res.isValid('field_1')).toBe(false);
           expect(res.isValid()).toBe(false);
         });
@@ -425,7 +425,7 @@ describe('optional hook', () => {
 
       describe('After the test completed', () => {
         it('Should be considered as valid', async () => {
-          suite();
+          suite.run();
           await vi.runAllTimersAsync();
           expect(suite.isValid()).toBe(true);
           expect(suite.isValid('field_1')).toBe(true);
@@ -454,7 +454,7 @@ describe('optional hook', () => {
 
     describe('Before the test completed', () => {
       it('Should be considered as not valid', () => {
-        const res = suite();
+        const res = suite.run();
         expect(res.isValid()).toBe(false);
         expect(res.isValid('field_1')).toBe(false);
         expect(res.isValid('field_2')).toBe(false);
@@ -463,7 +463,7 @@ describe('optional hook', () => {
 
     describe('After the test completed', () => {
       it('Should be considered as valid', async () => {
-        suite();
+        suite.run();
         await vi.runAllTimersAsync();
         expect(suite.isValid('field_2')).toBe(true);
         expect(suite.isValid()).toBe(true);

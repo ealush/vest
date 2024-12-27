@@ -36,12 +36,12 @@ describe('isolate', () => {
         });
       });
 
-      suite();
+      suite.run();
       expect(suite.get().hasErrors('f1')).toBe(true);
       expect(suite.get().hasErrors('f2')).toBe(true);
       expect(f1).toHaveBeenCalledTimes(1);
       expect(f2).toHaveBeenCalledTimes(1);
-      suite();
+      suite.run();
       expect(suite.get().hasErrors('f1')).toBe(true);
       expect(suite.get().hasErrors('f2')).toBe(true);
       expect(f1).toHaveBeenCalledTimes(1);
@@ -67,7 +67,7 @@ describe('isolate', () => {
         });
       });
 
-      suite();
+      suite.run();
       expect(suite.get().hasErrors('f1')).toBe(true);
       expect(suite.get().hasErrors('f2')).toBe(true);
       expect(suite.get().hasErrors('f3')).toBe(false);
@@ -79,7 +79,7 @@ describe('isolate', () => {
       expect(suite.get().tests.f4).toBeUndefined();
       expect(suite.get().tests.f5).toBeDefined();
 
-      suite();
+      suite.run();
       expect(suite.get().hasErrors('f1')).toBe(true);
       expect(suite.get().hasErrors('f2')).toBe(true);
       expect(suite.get().hasErrors('f3')).toBe(true);
@@ -110,7 +110,7 @@ describe('isolate', () => {
           });
         });
 
-        suite();
+        suite.run();
         expect(suite.get().hasErrors('f1')).toBe(true);
         expect(suite.get().hasErrors('f2')).toBe(false);
         expect(suite.get().hasErrors('f3')).toBe(true);
@@ -118,7 +118,7 @@ describe('isolate', () => {
         expect(suite.get().tests.f2).toBeUndefined();
         expect(suite.get().tests.f3).toBeDefined();
 
-        suite();
+        suite.run();
         expect(suite.get().hasErrors('f1')).toBe(true);
         expect(suite.get().hasErrors('f2')).toBe(true);
         expect(suite.get().hasErrors('f3')).toBe(false);
@@ -151,7 +151,7 @@ describe('isolate', () => {
         });
       });
 
-      suite();
+      suite.run();
       expect(suite.get().hasErrors('f1')).toBe(true);
       expect(suite.get().hasErrors('f2')).toBe(true);
       expect(suite.get().hasErrors('f3')).toBe(true);
@@ -165,7 +165,7 @@ describe('isolate', () => {
       expect(suite.get().tests.f5).toBeDefined();
       expect(suite.get().tests.f6).toBeUndefined();
 
-      suite();
+      suite.run();
       expect(suite.get().hasErrors('f1')).toBe(true);
       expect(suite.get().hasErrors('f2')).toBe(false);
       expect(suite.get().hasErrors('f3')).toBe(false);
@@ -195,12 +195,12 @@ describe('isolate', () => {
         }
       });
 
-      suite();
+      suite.run();
       expect(suite.get().hasErrors('f1')).toBe(true);
       expect(suite.get().hasErrors('f2')).toBe(false);
       expect(suite.get().tests.f1).toBeDefined();
       expect(suite.get().tests.f2).toBeUndefined();
-      suite();
+      suite.run();
       expect(suite.get().hasErrors('f1')).toBe(false);
       expect(suite.get().hasErrors('f2')).toBe(true);
       expect(suite.get().tests.f1).toBeUndefined();
@@ -220,12 +220,12 @@ describe('isolate', () => {
         }
       });
 
-      suite();
+      suite.run();
       expect(suite.get().hasErrors('f1')).toBe(true);
       expect(suite.get().hasErrors('f2')).toBe(false);
       expect(suite.get().tests.f1).toBeDefined();
       expect(suite.get().tests.f2).toBeUndefined();
-      suite();
+      suite.run();
       expect(suite.get().hasErrors('f1')).toBe(false);
       expect(suite.get().hasErrors('f2')).toBe(true);
       expect(suite.get().tests.f1).toBeUndefined();
@@ -240,8 +240,8 @@ describe('isolate', () => {
           });
         });
 
-        suite();
-        suite();
+        suite.run();
+        suite.run();
         expect(deferThrow).toHaveBeenCalledWith(
           expect.stringContaining(
             'Vest Critical Error: Tests called in different order than previous run',

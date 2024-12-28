@@ -1,11 +1,11 @@
-import { asArray, CB } from 'vest-utils';
+import { asArray, CB, assign, noop } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { getTypedMethods } from './getTypedMethods';
 
 import { IsolateSuite, TIsolateSuite } from 'IsolateSuite';
 import { useCreateVestState, useLoadSuite } from 'Runtime';
-import { SuiteContext, useRunId } from 'SuiteContext';
+import { SuiteContext } from 'SuiteContext';
 import {
   SuiteName,
   SuiteResult,
@@ -48,20 +48,31 @@ function createSuite<
   const stateRef = useCreateVestState({ suiteName, VestReconciler });
 
   function runSuite(...args: Parameters<T>): SuiteResult<F, G> {
-    return SuiteContext.run(
-      {
-        suiteParams: args,
-      },
-      () => {
-        Bus.useEmit('SUITE_RUN_STARTED');
+    let resolver: CB = noop;
+    const promise = new Promise<SuiteResult<F, G>>(resolve => {
+      resolver = resolve;
+    });
+    return assign(
+      promise,
+      SuiteContext.run(
+        {
+          suiteParams: args,
+        },
+        () => {
+          Bus.useEmit('SUITE_RUN_STARTED');
 
-        return IsolateSuite(() => {
-          suiteCallback(...args);
-          Bus.useEmit('SUITE_CALLBACK_RUN_FINISHED');
-          return useCreateSuiteResult<F, G>();
-        });
-      },
-    ).output;
+          function resolve() {
+            return resolver(useCreateSuiteResult<F, G>());
+          }
+
+          return IsolateSuite(() => {
+            suiteCallback(...args);
+            Bus.useEmit('SUITE_CALLBACK_RUN_FINISHED');
+            return useCreateSuiteResult<F, G>();
+          }, resolve);
+        },
+      ).output,
+    );
   }
 
   // Assign methods to the suite

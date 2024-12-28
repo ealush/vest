@@ -6,13 +6,10 @@ import {
   cache,
   CacheApi,
   DynamicValue,
-  genSeq,
 } from 'vest-utils';
 
 import { TIsolateTest } from 'IsolateTest';
 import { Modes } from 'Modes';
-
-const runId = genSeq('runId');
 
 export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
   if (parentContext) {
@@ -63,10 +60,6 @@ export function useSkipped() {
 
 export function useOmitted() {
   return SuiteContext.useX().omitted ?? false;
-}
-
-export function genRunId() {
-  return runId();
 }
 
 const testMemoCache = cache<TIsolateTest>(10);

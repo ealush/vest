@@ -202,6 +202,7 @@ exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 1`]
   ],
   "data": {
     "optional": {},
+    "resolver": [Function],
   },
   "key": null,
   "keys": null,

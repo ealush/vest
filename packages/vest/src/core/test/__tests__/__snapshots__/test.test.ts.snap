@@ -29,8 +29,7 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     },
     "key": null,
     "keys": null,
-    "output": {
-      "done": [Function],
+    "output": SuiteSummary {
       "errorCount": 0,
       "errors": [],
       "getError": [Function],
@@ -102,8 +101,7 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     "keys": {
       "keyboardcat": [Circular],
     },
-    "output": {
-      "done": [Function],
+    "output": SuiteSummary {
       "errorCount": 0,
       "errors": [],
       "getError": [Function],
@@ -173,8 +171,7 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     },
     "key": null,
     "keys": null,
-    "output": {
-      "done": [Function],
+    "output": SuiteSummary {
       "errorCount": 0,
       "errors": [],
       "getError": [Function],

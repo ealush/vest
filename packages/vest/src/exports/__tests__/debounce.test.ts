@@ -148,7 +148,9 @@ describe('debounce', () => {
 
   describe('Multiple debounced fields', () => {
     it('Should conclude them on their own time', () => {
+      const calls: number[] = [];
       const t = vi.fn(() => {
+        calls.push(Date.now());
         return false;
       });
 
@@ -158,45 +160,18 @@ describe('debounce', () => {
         vest.test('test3', 'message', debounce(t, 2000));
       });
 
-      const control = vi.fn();
-
       return new Promise<void>(done => {
-        suite.run();
-        suite.run();
         suite
-          .run()
-          .after('test', () => {
-            expect(control).toHaveBeenCalledTimes(0);
-            expect(t).toHaveBeenCalledTimes(1);
-            expect(suite.get().hasErrors('test')).toBe(true);
-            expect(suite.get().hasErrors('test2')).toBe(false);
-            expect(suite.get().hasErrors('test3')).toBe(false);
-            control();
-          })
-          .after('test2', () => {
-            expect(control).toHaveBeenCalledTimes(1);
-            expect(t).toHaveBeenCalledTimes(2);
-            expect(suite.get().hasErrors('test')).toBe(true);
-            expect(suite.get().hasErrors('test2')).toBe(true);
-            expect(suite.get().hasErrors('test3')).toBe(false);
-            control();
-          })
-          .after('test3', () => {
-            expect(control).toHaveBeenCalledTimes(2);
-            expect(t).toHaveBeenCalledTimes(3);
-            expect(suite.get().hasErrors('test')).toBe(true);
-            expect(suite.get().hasErrors('test2')).toBe(true);
-            expect(suite.get().hasErrors('test3')).toBe(true);
-            control();
-          })
           .after(() => {
-            expect(control).toHaveBeenCalledTimes(3);
             expect(t).toHaveBeenCalledTimes(3);
+            expect(calls[1] - calls[0]).toBeGreaterThanOrEqual(500);
+            expect(calls[2] - calls[1]).toBeGreaterThanOrEqual(500);
             expect(suite.get().hasErrors('test')).toBe(true);
             expect(suite.get().hasErrors('test2')).toBe(true);
             expect(suite.get().hasErrors('test3')).toBe(true);
             done();
-          });
+          })
+          .run();
       });
     });
   });

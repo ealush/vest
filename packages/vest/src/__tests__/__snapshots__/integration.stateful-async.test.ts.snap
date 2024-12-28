@@ -1,8 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Stateful async tests > Merges skipped validations from previous suite 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 1,
   "errors": [
     SummaryFailure {

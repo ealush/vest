@@ -1,8 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`include > Field is excluded via \`skip\` > Should disregard \`include.when\` and avoid running the test 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -57,8 +56,7 @@ exports[`include > Field is excluded via \`skip\` > Should disregard \`include.w
 `;
 
 exports[`include > Field is excluded via \`skip\` > Should disregard \`include\` and avoid running the test 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -113,8 +111,7 @@ exports[`include > Field is excluded via \`skip\` > Should disregard \`include\`
 `;
 
 exports[`include > Test is excluded via \`skip.group\` > Should disregard \`include.when\` and avoid running the test 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -190,8 +187,7 @@ exports[`include > Test is excluded via \`skip.group\` > Should disregard \`incl
 `;
 
 exports[`include > Test is excluded via \`skip.group\` > Should disregard \`include\` and avoid running the test 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -267,8 +263,7 @@ exports[`include > Test is excluded via \`skip.group\` > Should disregard \`incl
 `;
 
 exports[`include > Test is excluded via \`skipWhen\` > Should disregard \`include.when\` and avoid running the matching tests 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -314,8 +309,7 @@ exports[`include > Test is excluded via \`skipWhen\` > Should disregard \`includ
 `;
 
 exports[`include > Test is excluded via \`skipWhen\` > Should disregard \`include\` and avoid running the matching tests 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -361,8 +355,7 @@ exports[`include > Test is excluded via \`skipWhen\` > Should disregard \`includ
 `;
 
 exports[`include > There is an \`onlyd\` field > \`include\` is run as-is without modifiers > Should run the included test along with the onlyd test 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 2,
   "errors": [
     SummaryFailure {
@@ -422,8 +415,7 @@ exports[`include > There is an \`onlyd\` field > \`include\` is run as-is withou
 `;
 
 exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a boolean > when \`false\` > Should skip run included field 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -487,8 +479,7 @@ exports[`include > There is an \`onlyd\` field > include().when() > \`when\` par
 `;
 
 exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a boolean > when \`true\` > Should run included field 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 2,
   "errors": [
     SummaryFailure {
@@ -557,8 +548,7 @@ exports[`include > There is an \`onlyd\` field > include().when() > \`when\` par
 `;
 
 exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a function > Callback evaluation > Should evaluate per test run 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 2,
   "errors": [
     SummaryFailure {
@@ -609,8 +599,7 @@ exports[`include > There is an \`onlyd\` field > include().when() > \`when\` par
 `;
 
 exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a function > when  returning\`false\` > Should skip run included field 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -674,8 +663,7 @@ exports[`include > There is an \`onlyd\` field > include().when() > \`when\` par
 `;
 
 exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a function > when returning \`true\` > Should run included field 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 2,
   "errors": [
     SummaryFailure {
@@ -744,8 +732,7 @@ exports[`include > There is an \`onlyd\` field > include().when() > \`when\` par
 `;
 
 exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a string > \`when\` param is a name of a non-included field > Should avoid running the included field 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -809,8 +796,7 @@ exports[`include > There is an \`onlyd\` field > include().when() > \`when\` par
 `;
 
 exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a string > \`when\` param is a name of a skipped field > Should avoid running the included field 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -874,8 +860,7 @@ exports[`include > There is an \`onlyd\` field > include().when() > \`when\` par
 `;
 
 exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a string > \`when\` param is a name of an onlyd field > Should run included field along with the onlyd field 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 2,
   "errors": [
     SummaryFailure {
@@ -944,8 +929,7 @@ exports[`include > There is an \`onlyd\` field > include().when() > \`when\` par
 `;
 
 exports[`include > When no \`skip\` or \`only\` > include has no effect 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 2,
   "errors": [
     SummaryFailure {
@@ -1005,8 +989,7 @@ exports[`include > When no \`skip\` or \`only\` > include has no effect 1`] = `
 `;
 
 exports[`include > When no \`skip\` or \`only\` > include().when has no effect 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 2,
   "errors": [
     SummaryFailure {

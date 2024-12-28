@@ -16,6 +16,7 @@ import {
 import { Suite } from 'SuiteTypes';
 import { useInitVestBus } from 'VestBus';
 import { VestReconciler } from 'VestReconciler';
+import { useDeferDoneCallback } from 'deferDoneCallback';
 import { useCreateSuiteResult } from 'suiteResult';
 import { useSuiteRunResult } from 'suiteRunResult';
 import { bindSuiteSelectors } from 'suiteSelectors';
@@ -69,10 +70,13 @@ function createSuite<
   // We do this within the VestRuntime so that the suite methods
   // will be bound to the suite's stateRef and be able to access it.
   return VestRuntime.Run(stateRef, () => {
+    const persistedRun = VestRuntime.persist(runSuite);
+
     // @vx-allow use-use
     const VestBus = useInitVestBus();
 
     return {
+      after: addAfter,
       dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
       get: VestRuntime.persist(useCreateSuiteResult<F, G>),
       remove: Bus.usePrepareEmitter<string>('REMOVE_FIELD'),
@@ -81,13 +85,29 @@ function createSuite<
       resume: VestRuntime.persist(useLoadSuite),
       // We're also binding the suite to the stateRef, so that the suite
       // can access the stateRef when it's called.
-      run: VestRuntime.persist(runSuite),
+      run: persistedRun,
       runStatic: (...args: Parameters<T>): StaticSuiteRunResult<F, G> =>
         mountedStatic(...args) as StaticSuiteRunResult<F, G>,
       subscribe: VestBus.subscribe,
       ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
       ...getTypedMethods<F, G>(),
     };
+
+    function addAfter(cb: CB) {
+      const returnValue = {
+        run: persistedRun,
+        after: VestRuntime.persist(add),
+      };
+
+      add(cb);
+
+      return returnValue;
+
+      function add(cb: CB) {
+        useDeferDoneCallback(cb);
+        return returnValue;
+      }
+    }
   });
 }
 

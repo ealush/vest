@@ -3,18 +3,14 @@ import { Bus, RuntimeEvents, TIsolate } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
 // import { TIsolateTest } from 'IsolateTest';
-import {
-  useExpireSuiteResultCache,
-  useResetCallbacks,
-  useResetSuite,
-} from 'Runtime';
+import { useExpireSuiteResultCache, useResetSuite } from 'Runtime';
 import { TFieldName } from 'SuiteResultTypes';
 import { SuiteWalker } from 'SuiteWalker';
 import { TestWalker } from 'TestWalker';
 import { VestIsolate } from 'VestIsolate';
 import { VestTest } from 'VestTest';
 import { useOmitOptionalFields } from 'omitOptionalFields';
-import { useRunDoneCallbacks, useRunFieldCallbacks } from 'runCallbacks';
+import { useRunDoneCallbacks } from 'runCallbacks';
 
 // eslint-disable-next-line max-statements, max-lines-per-function
 export function useInitVestBus() {
@@ -52,15 +48,7 @@ export function useInitVestBus() {
     VestIsolate.setDone(isolate);
   });
 
-  VestBus.on(RuntimeEvents.ASYNC_ISOLATE_DONE, (isolate: TIsolate) => {
-    if (VestTest.is(isolate)) {
-      if (!VestTest.isCanceled(isolate)) {
-        const { fieldName } = VestTest.getData(isolate);
-
-        useRunFieldCallbacks(fieldName);
-      }
-    }
-
+  VestBus.on(RuntimeEvents.ASYNC_ISOLATE_DONE, () => {
     if (!SuiteWalker.useHasPending()) {
       // When no more async tests are running, emit the done event
       VestBus.emit('ALL_RUNNING_TESTS_FINISHED');
@@ -88,7 +76,7 @@ export function useInitVestBus() {
   });
 
   on('SUITE_RUN_STARTED', () => {
-    useResetCallbacks();
+    // useResetCallbacks();
   });
 
   on('SUITE_CALLBACK_RUN_FINISHED', () => {

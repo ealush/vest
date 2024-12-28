@@ -40,7 +40,7 @@ describe('Base behavior', () => {
 
   it('Should run done callbacks immediately', () => {
     const callback = vi.fn();
-    res.after(callback);
+    genSuite().after(callback).run();
 
     expect(callback).toHaveBeenCalled();
   });

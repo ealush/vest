@@ -57,10 +57,10 @@ describe('Stateful async tests', () => {
 
   it('Should only run callbacks for last suite run', () =>
     TestPromise(done => {
-      suite.after(callback_1).after('field_3', callback_2).run({});
+      suite.after(callback_1).after(callback_2).run({});
       expect(callback_1).not.toHaveBeenCalled();
       expect(callback_2).not.toHaveBeenCalled();
-      suite.after(callback_3).after('field_3', callback_4).run({});
+      suite.after(callback_3).after(callback_4).run({});
       expect(callback_3).not.toHaveBeenCalled();
       expect(callback_4).not.toHaveBeenCalled();
       setTimeout(() => {

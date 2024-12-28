@@ -1,8 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Stateful behavior > Should merge skipped fields with previous values 1`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -86,8 +85,7 @@ exports[`Stateful behavior > Should merge skipped fields with previous values 1`
 `;
 
 exports[`Stateful behavior > Should merge skipped fields with previous values 2`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 3,
   "errors": [
     SummaryFailure {
@@ -184,8 +182,7 @@ exports[`Stateful behavior > Should merge skipped fields with previous values 2`
 `;
 
 exports[`Stateful behavior > Should merge skipped fields with previous values 3`] = `
-{
-  "done": [Function],
+SuiteSummary {
   "errorCount": 4,
   "errors": [
     SummaryFailure {

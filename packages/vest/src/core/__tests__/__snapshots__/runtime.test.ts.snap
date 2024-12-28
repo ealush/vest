@@ -205,8 +205,7 @@ exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 1`]
   },
   "key": null,
   "keys": null,
-  "output": {
-    "done": [Function],
+  "output": SuiteSummary {
     "errorCount": 4,
     "errors": [
       SummaryFailure {

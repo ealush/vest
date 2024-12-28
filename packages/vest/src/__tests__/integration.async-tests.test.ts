@@ -65,13 +65,13 @@ describe('Stateful behavior', () => {
       expect(result.tests).toMatchSnapshot();
     }));
 
-  it('Should invoke done callback specified with sync field immediately, and the others after finishing', () =>
+  it('Should invoke after callback specified with sync field immediately, and the others after finishing', () =>
     TestPromise(done => {
-      result = suite.run();
-      result
-        .after('field_1', callback_1)
-        .after('field_6', callback_2)
-        .after(callback_3);
+      result = suite
+        .after(callback_1)
+        .after(callback_2)
+        .after(callback_3)
+        .run();
       expect(callback_1).toHaveBeenCalled();
       expect(callback_2).not.toHaveBeenCalled();
       expect(callback_3).not.toHaveBeenCalled();

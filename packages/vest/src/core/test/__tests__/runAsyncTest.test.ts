@@ -41,7 +41,7 @@ describe('runAsyncTest', () => {
           });
         });
 
-        suite.after(cb1).after(cb2).after('field_1', cb3).run();
+        suite.after(cb1).after(cb2).after(cb3).run();
 
         expect(cb1).not.toHaveBeenCalled();
         expect(cb2).not.toHaveBeenCalled();
@@ -73,7 +73,7 @@ describe('runAsyncTest', () => {
           });
         });
 
-        suite.after(cb1).after('field_2', cb2).after('field_3', cb3).run();
+        suite.after(cb1).after(cb2).after(cb3).run();
 
         expect(cb1).not.toHaveBeenCalled();
         expect(cb2).toHaveBeenCalled();
@@ -105,7 +105,7 @@ describe('runAsyncTest', () => {
           vest.test('field_2', () => {});
         });
 
-        suite.after(cb1).after(cb2).after('field_1', cb3).run();
+        suite.after(cb1).after(cb2).after(cb3).run();
 
         expect(cb1).not.toHaveBeenCalled();
         expect(cb2).not.toHaveBeenCalled();

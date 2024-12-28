@@ -6,7 +6,7 @@ import { TestPromise } from '../../../testUtils/testPromise';
 
 import * as vest from 'vest';
 
-describe('done', () => {
+describe('after', () => {
   describe('When no async tests', () => {
     it('Should call done callback immediately', () => {
       const doneCallback = vi.fn();
@@ -220,6 +220,53 @@ describe('done', () => {
         await wait(1000);
         expect(cb).toHaveBeenCalled();
       });
+    });
+  });
+});
+
+describe('suite resolve', () => {
+  it('Should immediately return all sync fields', () => {
+    const suite = vest.create(() => {
+      vest.test('field_1', 'field_statement_1', () => false);
+      vest.test('field_2', 'field_statement_2', () => false);
+      vest.test('field_3', 'field_statement_3', () => false);
+    });
+
+    const result = suite.run();
+
+    expect(result.tests).toHaveProperty('field_1');
+    expect(result.tests).toHaveProperty('field_2');
+    expect(result.tests).toHaveProperty('field_3');
+    expect(result.hasErrors('field_1')).toBe(true);
+    expect(result.hasErrors('field_2')).toBe(true);
+    expect(result.hasErrors('field_3')).toBe(true);
+    expect(result.tests).toMatchSnapshot();
+  });
+  describe('awaiting suite', () => {
+    it('Should return a promise that resolves when all tests are done, and the done callback is called', async () => {
+      const suite = vest.create(() => {
+        vest.test('field_1', 'field_statement_1', async () => {
+          await wait(100);
+          throw new Error();
+        });
+        vest.test('field_2', 'field_statement_2', async () => {
+          await wait(100);
+        });
+        vest.test('field_3', 'field_statement_3', async () => {
+          await wait(100);
+          throw new Error();
+        });
+      });
+
+      const result = await suite.run();
+
+      expect(result.tests).toHaveProperty('field_1');
+      expect(result.tests).toHaveProperty('field_2');
+      expect(result.tests).toHaveProperty('field_3');
+      expect(result.hasErrors('field_1')).toBe(true);
+      expect(result.hasErrors('field_2')).toBe(false);
+      expect(result.hasErrors('field_3')).toBe(true);
+      expect(result.tests).toMatchSnapshot();
     });
   });
 });

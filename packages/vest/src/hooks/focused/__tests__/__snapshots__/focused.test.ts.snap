@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Top Level Focus > Top Level Skip > When passing false > Should run all fields 1`] = `
-SuiteSummary {
+Promise {
   "errorCount": 3,
   "errors": [
     SummaryFailure {
@@ -81,7 +81,7 @@ SuiteSummary {
 `;
 
 exports[`Top Level Focus > Top Level Skip > When passing undefined > Should run all fields 1`] = `
-SuiteSummary {
+Promise {
   "errorCount": 3,
   "errors": [
     SummaryFailure {

@@ -2,7 +2,6 @@ import { CB, ValueOf } from 'vest-utils';
 import { Bus, RuntimeEvents, TIsolate } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
-// import { TIsolateTest } from 'IsolateTest';
 import {
   useExpireSuiteResultCache,
   useResetCallbacks,
@@ -73,6 +72,7 @@ export function useInitVestBus() {
       useOmitOptionalFields();
     }
 
+    SuiteWalker.useResolve();
     useRunDoneCallbacks();
   });
 

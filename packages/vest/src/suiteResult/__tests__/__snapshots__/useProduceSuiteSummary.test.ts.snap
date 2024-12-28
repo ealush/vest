@@ -31,7 +31,7 @@ SuiteSummary {
 `;
 
 exports[`suite.run() > exposed methods > Should have all exposed methods 1`] = `
-SuiteSummary {
+Promise {
   "errorCount": 0,
   "errors": [],
   "getError": [Function],

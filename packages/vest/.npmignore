@@ -4,7 +4,6 @@ src
 !types/
 !dist/
 tsconfig.json
-!promisify/
 !parser/
 !enforce@schema/
 !enforce@isURL/

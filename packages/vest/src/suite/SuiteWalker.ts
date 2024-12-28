@@ -1,6 +1,7 @@
 import { Predicate, Predicates, isEmpty, isNullish } from 'vest-utils';
 import { TIsolate, VestRuntime, Walker } from 'vestjs-runtime';
 
+import { TIsolateSuite } from 'IsolateSuite';
 import { TIsolateTest } from 'IsolateTest';
 import { PreAggCache, usePreAggCache } from 'Runtime';
 import { TFieldName } from 'SuiteResultTypes';
@@ -29,6 +30,16 @@ export class SuiteWalker {
 
   static usePreAggs() {
     return usePreAggCache(buildPreAggCache);
+  }
+
+  static useResolve() {
+    const root = SuiteWalker.defaultRoot() as TIsolateSuite;
+
+    if (!root) {
+      return;
+    }
+
+    root.data.resolver();
   }
 
   // Checks whether there are pending isolates in the tree.

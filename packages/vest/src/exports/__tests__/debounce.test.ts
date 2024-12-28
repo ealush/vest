@@ -24,11 +24,13 @@ describe('debounce', () => {
           suite.run();
           suite.run();
           suite.run();
-          suite.run().done(() => {
-            expect(test).toHaveBeenCalledTimes(1);
-            expect(suite.isValid()).toBe(false);
-            done();
-          });
+          suite
+            .after(() => {
+              expect(test).toHaveBeenCalledTimes(1);
+              expect(suite.isValid()).toBe(false);
+              done();
+            })
+            .run();
         });
       });
     });
@@ -50,11 +52,13 @@ describe('debounce', () => {
           suite.run();
           suite.run();
           suite.run();
-          suite.run().done(() => {
-            expect(test).toHaveBeenCalledTimes(1);
-            expect(suite.isValid()).toBe(false);
-            done();
-          });
+          suite
+            .after(() => {
+              expect(test).toHaveBeenCalledTimes(1);
+              expect(suite.isValid()).toBe(false);
+              done();
+            })
+            .run();
         });
       });
     });
@@ -127,12 +131,14 @@ describe('debounce', () => {
       });
 
       return new Promise<void>(done => {
-        suite.run().done(() => {
-          expect(test).toHaveBeenCalledTimes(2);
-          expect(suite.get().hasErrors('test')).toBe(true);
-          expect(suite.get().hasErrors('test2')).toBe(true);
-          done();
-        });
+        suite
+          .after(() => {
+            expect(test).toHaveBeenCalledTimes(2);
+            expect(suite.get().hasErrors('test')).toBe(true);
+            expect(suite.get().hasErrors('test2')).toBe(true);
+            done();
+          })
+          .run();
         expect(test).toHaveBeenCalledTimes(1);
         expect(suite.get().hasErrors('test')).toBe(false);
         expect(suite.get().hasErrors('test2')).toBe(true);
@@ -159,7 +165,7 @@ describe('debounce', () => {
         suite.run();
         suite
           .run()
-          .done('test', () => {
+          .after('test', () => {
             expect(control).toHaveBeenCalledTimes(0);
             expect(t).toHaveBeenCalledTimes(1);
             expect(suite.get().hasErrors('test')).toBe(true);
@@ -167,7 +173,7 @@ describe('debounce', () => {
             expect(suite.get().hasErrors('test3')).toBe(false);
             control();
           })
-          .done('test2', () => {
+          .after('test2', () => {
             expect(control).toHaveBeenCalledTimes(1);
             expect(t).toHaveBeenCalledTimes(2);
             expect(suite.get().hasErrors('test')).toBe(true);
@@ -175,7 +181,7 @@ describe('debounce', () => {
             expect(suite.get().hasErrors('test3')).toBe(false);
             control();
           })
-          .done('test3', () => {
+          .after('test3', () => {
             expect(control).toHaveBeenCalledTimes(2);
             expect(t).toHaveBeenCalledTimes(3);
             expect(suite.get().hasErrors('test')).toBe(true);
@@ -183,7 +189,7 @@ describe('debounce', () => {
             expect(suite.get().hasErrors('test3')).toBe(true);
             control();
           })
-          .done(() => {
+          .after(() => {
             expect(control).toHaveBeenCalledTimes(3);
             expect(t).toHaveBeenCalledTimes(3);
             expect(suite.get().hasErrors('test')).toBe(true);
@@ -222,12 +228,14 @@ describe('debounce', () => {
           suite.run();
           await wait(200);
           // This cancels the first run
-          suite.run().done(() => {
-            expect(suite.hasErrors('test')).toBe(false);
-            expect(test).toHaveBeenCalledTimes(2);
-            expect(control).toHaveBeenCalledTimes(1);
-            done();
-          });
+          suite
+            .after(() => {
+              expect(suite.hasErrors('test')).toBe(false);
+              expect(test).toHaveBeenCalledTimes(2);
+              expect(control).toHaveBeenCalledTimes(1);
+              done();
+            })
+            .run();
         });
       });
     });

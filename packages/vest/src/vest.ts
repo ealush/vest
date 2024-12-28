@@ -2,14 +2,10 @@ import { enforce } from 'n4s';
 import { optional } from 'optional';
 
 import { Modes } from 'Modes';
-import type {
-  SuiteResult,
-  SuiteRunResult,
-  SuiteSummary,
-} from 'SuiteResultTypes';
+import type { SuiteResult, SuiteSummary } from 'SuiteResultTypes';
 import type { Suite } from 'SuiteTypes';
 import { registerReconciler } from 'VestReconciler';
-import { createSuite, staticSuite, StaticSuite } from 'createSuite';
+import { createSuite } from 'createSuite';
 import { each } from 'each';
 import { skip, only } from 'focused';
 import { group } from 'group';
@@ -36,9 +32,8 @@ export {
   suiteSelectors,
   each,
   mode,
-  staticSuite,
   Modes,
   registerReconciler,
 };
 
-export type { SuiteResult, SuiteRunResult, SuiteSummary, Suite, StaticSuite };
+export type { SuiteResult, SuiteSummary, Suite };

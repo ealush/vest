@@ -236,18 +236,24 @@ describe('key', () => {
           );
         });
 
-        suite.run({ a: '', b: '' }).done(() => {
-          expect(suite.hasErrors('test_a')).toBe(true);
-          expect(suite.hasErrors('test_b')).toBe(true);
-        });
-        suite.run({ a: 's', b: '' }, ['test_a']).done(() => {
-          expect(suite.hasErrors('test_a')).toBe(false);
-          expect(suite.hasErrors('test_b')).toBe(true);
-        });
-        suite.run({ a: 's', b: 's' }, ['test_b']).done(() => {
-          expect(suite.hasErrors('test_a')).toBe(false);
-          expect(suite.hasErrors('test_b')).toBe(false);
-        });
+        suite
+          .after(() => {
+            expect(suite.hasErrors('test_a')).toBe(true);
+            expect(suite.hasErrors('test_b')).toBe(true);
+          })
+          .run({ a: '', b: '' });
+        suite
+          .after(() => {
+            expect(suite.hasErrors('test_a')).toBe(false);
+            expect(suite.hasErrors('test_b')).toBe(true);
+          })
+          .run({ a: 's', b: '' }, ['test_a']);
+        suite
+          .after(() => {
+            expect(suite.hasErrors('test_a')).toBe(false);
+            expect(suite.hasErrors('test_b')).toBe(false);
+          })
+          .run({ a: 's', b: 's' }, ['test_b']);
       });
     });
     describe('Key with omitWhen', () => {
@@ -265,15 +271,21 @@ describe('key', () => {
           });
         });
 
-        suite.run({ a: '' }, false).done(() => {
-          expect(suite.hasErrors('test_a')).toBe(true);
-        });
-        suite.run({ a: '' }, false).done(() => {
-          expect(suite.hasErrors('test_a')).toBe(true);
-        });
-        suite.run({ a: 's' }, true).done(() => {
-          expect(suite.hasErrors('test_a')).toBe(false);
-        });
+        suite
+          .after(() => {
+            expect(suite.hasErrors('test_a')).toBe(true);
+          })
+          .run({ a: '' }, false);
+        suite
+          .after(() => {
+            expect(suite.hasErrors('test_a')).toBe(true);
+          })
+          .run({ a: '' }, false);
+        suite
+          .after(() => {
+            expect(suite.hasErrors('test_a')).toBe(false);
+          })
+          .run({ a: 's' }, true);
       });
     });
   });

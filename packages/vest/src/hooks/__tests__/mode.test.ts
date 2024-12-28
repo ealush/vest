@@ -49,12 +49,14 @@ describe('mode', () => {
                     throw new Error();
                   });
                 });
-                suite.run().done(res => {
-                  expect(res.getErrors()).toEqual({
-                    t1: ['f1'],
-                  });
-                  resolve();
-                });
+                suite
+                  .after(() => {
+                    expect(suite.getErrors()).toEqual({
+                      t1: ['f1'],
+                    });
+                    resolve();
+                  })
+                  .run();
               }));
           });
           describe('Failing async test before the sync tests', () => {
@@ -68,12 +70,14 @@ describe('mode', () => {
                   Vest.test('t1', 'f1', () => false);
                   Vest.test('t1', 'f2', () => true);
                 });
-                suite.run().done(res => {
-                  expect(res.getErrors()).toEqual({
-                    t1: ['f0', 'f1'],
-                  });
-                  resolve();
-                });
+                suite
+                  .after(() => {
+                    expect(suite.getErrors()).toEqual({
+                      t1: ['f0', 'f1'],
+                    });
+                    resolve();
+                  })
+                  .run();
               }));
           });
         });
@@ -91,12 +95,14 @@ describe('mode', () => {
                   throw new Error();
                 });
               });
-              suite.run().done(res => {
-                expect(res.getErrors()).toEqual({
-                  async_1: ['f1', 'f2'],
-                });
-                resolve();
-              });
+              suite
+                .after(() => {
+                  expect(suite.getErrors()).toEqual({
+                    async_1: ['f1', 'f2'],
+                  });
+                  resolve();
+                })
+                .run();
             }));
         });
       });

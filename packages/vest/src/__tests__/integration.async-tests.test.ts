@@ -1,10 +1,10 @@
-import { Modes } from 'Modes';
 import { TTestSuite } from 'testUtils/TVestMock';
 import { describe, it, expect, beforeEach, beforeAll, test, vi } from 'vitest';
 import wait from 'wait';
 
 import { TestPromise } from '../testUtils/testPromise';
 
+import { Modes } from 'Modes';
 import * as vest from 'vest';
 
 function genSuite() {
@@ -54,7 +54,7 @@ describe('Stateful behavior', () => {
     TestPromise(done => {
       // ❗️Why is this test async? Because of the `resetState` beforeEach.
       // We must not clean up before the suite is actually done.
-      result = suite.run().done(done);
+      result = suite.after(done).run();
       expect(result.tests).toHaveProperty('field_1');
       expect(result.tests).toHaveProperty('field_2');
       expect(result.tests).toHaveProperty('field_4');
@@ -69,9 +69,9 @@ describe('Stateful behavior', () => {
     TestPromise(done => {
       result = suite.run();
       result
-        .done('field_1', callback_1)
-        .done('field_6', callback_2)
-        .done(callback_3);
+        .after('field_1', callback_1)
+        .after('field_6', callback_2)
+        .after(callback_3);
       expect(callback_1).toHaveBeenCalled();
       expect(callback_2).not.toHaveBeenCalled();
       expect(callback_3).not.toHaveBeenCalled();

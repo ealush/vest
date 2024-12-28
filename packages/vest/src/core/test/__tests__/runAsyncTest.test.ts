@@ -1,8 +1,8 @@
-import { TIsolateTest } from 'IsolateTest';
-import { VestTest } from 'VestTest';
 import { describe, it, expect, vi } from 'vitest';
 import wait from 'wait';
 
+import { TIsolateTest } from 'IsolateTest';
+import { VestTest } from 'VestTest';
 import * as vest from 'vest';
 
 describe('runAsyncTest', () => {
@@ -41,7 +41,7 @@ describe('runAsyncTest', () => {
           });
         });
 
-        suite.run().done(cb1).done(cb2).done('field_1', cb3);
+        suite.after(cb1).after(cb2).after('field_1', cb3).run();
 
         expect(cb1).not.toHaveBeenCalled();
         expect(cb2).not.toHaveBeenCalled();
@@ -73,7 +73,7 @@ describe('runAsyncTest', () => {
           });
         });
 
-        suite.run().done(cb1).done('field_2', cb2).done('field_3', cb3);
+        suite.after(cb1).after('field_2', cb2).after('field_3', cb3).run();
 
         expect(cb1).not.toHaveBeenCalled();
         expect(cb2).toHaveBeenCalled();
@@ -105,7 +105,7 @@ describe('runAsyncTest', () => {
           vest.test('field_2', () => {});
         });
 
-        suite.run().done(cb1).done(cb2).done('field_1', cb3);
+        suite.after(cb1).after(cb2).after('field_1', cb3).run();
 
         expect(cb1).not.toHaveBeenCalled();
         expect(cb2).not.toHaveBeenCalled();

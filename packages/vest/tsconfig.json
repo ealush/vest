@@ -14,7 +14,6 @@
       "suiteDummy": ["./src/testUtils/suiteDummy.ts"],
       "partition": ["./src/testUtils/partition.ts"],
       "TVestMock": ["./src/testUtils/TVestMock.ts"],
-      "suiteRunResult": ["./src/suiteResult/suiteRunResult.ts"],
       "suiteResult": ["./src/suiteResult/suiteResult.ts"],
       "SummaryFailure": ["./src/suiteResult/SummaryFailure.ts"],
       "SuiteResultTypes": ["./src/suiteResult/SuiteResultTypes.ts"],

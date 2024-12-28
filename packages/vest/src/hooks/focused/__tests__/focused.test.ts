@@ -11,7 +11,7 @@ enum Fields {
 }
 
 function testSuite(callback: CB) {
-  return vest.staticSuite(callback)();
+  return vest.create(callback).run();
 }
 
 describe('Top Level Focus', () => {

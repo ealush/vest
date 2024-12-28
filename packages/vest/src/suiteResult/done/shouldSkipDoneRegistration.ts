@@ -6,7 +6,7 @@ import { Maybe, isFunction, numberEquals } from 'vest-utils';
 
 import {
   SuiteResult,
-  SuiteRunResult,
+  SuiteResult,
   TFieldName,
   TGroupName,
 } from 'SuiteResultTypes';
@@ -18,7 +18,7 @@ export function shouldSkipDoneRegistration<
   callback: (res: SuiteResult<F, G>) => void,
 
   fieldName: Maybe<F>,
-  output: SuiteRunResult<F, G>,
+  output: SuiteResult<F, G>,
 ): boolean {
   // If we do not have any test runs for the current field
   return !!(

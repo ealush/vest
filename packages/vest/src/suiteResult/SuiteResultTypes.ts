@@ -2,7 +2,6 @@ import { Maybe, Nullable } from 'vest-utils';
 
 import { Severity } from 'Severity';
 import { SummaryFailure } from 'SummaryFailure';
-import { Done } from 'suiteRunResult';
 import { SuiteSelectors } from 'suiteSelectors';
 
 export class SummaryBase {
@@ -50,13 +49,6 @@ export type SuiteResult<
   F extends TFieldName,
   G extends TGroupName,
 > = SuiteSummary<F, G> & SuiteSelectors<F, G> & { suiteName: SuiteName };
-
-export type SuiteRunResult<
-  F extends TFieldName,
-  G extends TGroupName,
-> = SuiteResult<F, G> & {
-  done: Done<F, G>;
-};
 
 export type SuiteName = Maybe<string>;
 

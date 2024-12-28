@@ -210,12 +210,14 @@ describe('isValid', () => {
     describe('When async test is passing', () => {
       it('Should return `true`', () => {
         return TestPromise(done => {
-          suite.run().done(result => {
-            expect(result.isValid()).toBe(true);
-            expect(result.isValid('field_1')).toBe(true);
-            expect(result.isValid('field_2')).toBe(true);
-            done();
-          });
+          suite
+            .after(() => {
+              expect(suite.isValid()).toBe(true);
+              expect(suite.isValid('field_1')).toBe(true);
+              expect(suite.isValid('field_2')).toBe(true);
+              done();
+            })
+            .run();
         });
       });
     });
@@ -224,7 +226,7 @@ describe('isValid', () => {
       it('Should return `false`', () => {
         return TestPromise(done => {
           suite.run();
-          const result = suite.run('field_2').done(done);
+          const result = suite.after(done).run('field_2');
 
           expect(result.isValid()).toBe(false);
         });

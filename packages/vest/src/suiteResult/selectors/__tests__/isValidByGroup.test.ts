@@ -250,12 +250,14 @@ describe('isValidByGroup', () => {
     describe('When async test is passing', () => {
       it('Should return `true`', () => {
         return TestPromise(done => {
-          suite.run().done(result => {
-            expect(result.isValidByGroup(GROUP_NAME)).toBe(true);
-            expect(result.isValidByGroup(GROUP_NAME, 'field_1')).toBe(true);
-            expect(result.isValidByGroup(GROUP_NAME, 'field_2')).toBe(true);
-            done();
-          });
+          suite
+            .after(() => {
+              expect(suite.isValidByGroup(GROUP_NAME)).toBe(true);
+              expect(suite.isValidByGroup(GROUP_NAME, 'field_1')).toBe(true);
+              expect(suite.isValidByGroup(GROUP_NAME, 'field_2')).toBe(true);
+              done();
+            })
+            .run();
         });
       });
     });
@@ -264,7 +266,7 @@ describe('isValidByGroup', () => {
       it('Should return `false`', () => {
         return TestPromise(done => {
           suite.run();
-          const result = suite.run('field_2').done(done);
+          const result = suite.after(done).run('field_2');
 
           expect(result.isValidByGroup(GROUP_NAME)).toBe(false);
         });

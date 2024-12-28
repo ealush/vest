@@ -23,7 +23,7 @@ const genSuite = () =>
   });
 
 describe('Base behavior', () => {
-  let res: vest.SuiteRunResult<string, string>;
+  let res: vest.SuiteResult<string, string>;
 
   beforeEach(() => {
     res = genSuite().run();
@@ -40,7 +40,7 @@ describe('Base behavior', () => {
 
   it('Should run done callbacks immediately', () => {
     const callback = vi.fn();
-    res.done(callback);
+    res.after(callback);
 
     expect(callback).toHaveBeenCalled();
   });

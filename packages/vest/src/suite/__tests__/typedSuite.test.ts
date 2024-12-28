@@ -58,14 +58,15 @@ describe('typed suite', () => {
     // @ts-expect-error
     res.hasWarnings('F10');
 
-    suite.run().done('F1', res => {
-      expect(res.tests.F1).toBeUndefined();
-      // @ts-expect-error
-      expect(res.tests.F14).toBeUndefined();
-    });
+    suite
+      .after('F1', () => {
+        expect(suite.get().tests.F1).toBeUndefined();
+        // @ts-expect-error
+        expect(suite.get().tests.F14).toBeUndefined();
+      })
+      .run();
 
-    // @ts-expect-error
-    suite.run().done('F10', () => {});
+    suite.after('F10', () => {}).run();
   });
 });
 

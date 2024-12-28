@@ -57,10 +57,10 @@ describe('Stateful async tests', () => {
 
   it('Should only run callbacks for last suite run', () =>
     TestPromise(done => {
-      suite.run({}).done(callback_1).done('field_3', callback_2);
+      suite.after(callback_1).after('field_3', callback_2).run({});
       expect(callback_1).not.toHaveBeenCalled();
       expect(callback_2).not.toHaveBeenCalled();
-      suite.run({}).done(callback_3).done('field_3', callback_4);
+      suite.after(callback_3).after('field_3', callback_4).run({});
       expect(callback_3).not.toHaveBeenCalled();
       expect(callback_4).not.toHaveBeenCalled();
       setTimeout(() => {
@@ -103,17 +103,19 @@ describe('Stateful async tests', () => {
         expect(res.hasErrors('field_4')).toBe(false);
         expect(res).toMatchSnapshot();
 
-        suite.run({ skip: 'field_2' }).done(res => {
-          expect(res.testCount).toBe(7);
-          expect(res.errorCount).toBe(5);
-          expect(res.warnCount).toBe(0);
-          expect(res.tests.field_1.errorCount).toBe(2);
-          expect(res.hasErrors('field_2')).toBe(true);
-          expect(res.hasErrors('field_3')).toBe(true);
-          expect(res.hasErrors('field_4')).toBe(true);
-          expect(res).toMatchSnapshot();
-          done();
-        });
+        suite
+          .after(() => {
+            expect(suite.get().testCount).toBe(7);
+            expect(suite.get().errorCount).toBe(5);
+            expect(suite.get().warnCount).toBe(0);
+            expect(suite.get().tests.field_1.errorCount).toBe(2);
+            expect(suite.hasErrors('field_2')).toBe(true);
+            expect(suite.hasErrors('field_3')).toBe(true);
+            expect(suite.hasErrors('field_4')).toBe(true);
+            expect(suite.get()).toMatchSnapshot();
+            done();
+          })
+          .run({ skip: 'field_2' });
       }, 50);
     }));
 
@@ -128,13 +130,17 @@ describe('Stateful async tests', () => {
         }),
       );
     });
-    suite.run().done(() => {
-      control(0);
-    });
+    suite
+      .after(() => {
+        control(0);
+      })
+      .run();
     await wait(5);
-    suite.run().done(() => {
-      control(1);
-    });
+    suite
+      .after(() => {
+        control(1);
+      })
+      .run();
     await wait(100);
     expect(control).toHaveBeenCalledTimes(1);
     expect(control).toHaveBeenCalledWith(1);

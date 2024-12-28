@@ -108,7 +108,7 @@ Vest exports the following types so you can use them to annotate your functions 
   The immediate output of a suite invocation - `suite()`, including the `done()` function.
 
 - `SuiteResult<FieldName, GroupName>`<br/>
-  Non-actionable suite result, meaning - the same as SuiteRunResult, but without the `done()` function. The return type of `suite.get()`.
+  Non-actionable suite result, meaning - the same as SuiteResult, but without the `done()` function. The return type of `suite.get()`.
 
 - `SuiteSummary<FieldName, GroupName>`<br/>
   The static suite summary, all test results defined in the result object.

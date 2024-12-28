@@ -9,7 +9,7 @@ import { TFieldName } from 'SuiteResultTypes';
 import * as vest from 'vest';
 
 describe('Utility: promisify', () => {
-  let suite: vi.Mock<vest.SuiteRunResult<string, TFieldName>, any>;
+  let suite: vi.Mock<vest.SuiteResult<string, TFieldName>, any>;
   let validateAsync: (
     ...args: any[]
   ) => Promise<vest.SuiteResult<string, TFieldName>>;

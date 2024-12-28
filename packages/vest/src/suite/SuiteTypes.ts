@@ -32,5 +32,11 @@ export type SuiteMethods<
   run: (...args: Parameters<T>) => SuiteRunResult<F, G>;
   runStatic: CB<StaticSuiteRunResult<F, G>, Parameters<T>>;
   subscribe: Subscribe;
-} & TTypedMethods<F, G> &
+} & AfterMethods<F, G, T> &
+  TTypedMethods<F, G> &
   SuiteSelectors<F, G>;
+
+type AfterMethods<F extends TFieldName, G extends TGroupName, T extends CB> = {
+  after: (cb: CB<void>) => AfterMethods<F, G, T>;
+  run: (...args: Parameters<T>) => SuiteRunResult<F, G>;
+};

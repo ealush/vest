@@ -1,4 +1,4 @@
-import { TTestSuite } from 'testUtils/TVestMock';
+import { TTestSuite } from 'TVestMock';
 import { describe, test, expect, beforeEach } from 'vitest';
 
 import * as vest from 'vest';

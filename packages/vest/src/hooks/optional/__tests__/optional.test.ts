@@ -1,4 +1,4 @@
-import { TTestSuite } from 'testUtils/TVestMock';
+import { TTestSuite } from 'TVestMock';
 import { BlankValue } from 'vest-utils';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import wait from 'wait';

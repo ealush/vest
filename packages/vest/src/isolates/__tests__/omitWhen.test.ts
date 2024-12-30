@@ -1,4 +1,4 @@
-import { TTestSuite } from 'testUtils/TVestMock';
+import { TTestSuite } from 'TVestMock';
 import { Maybe } from 'vest-utils';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 

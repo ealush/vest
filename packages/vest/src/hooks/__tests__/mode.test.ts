@@ -1,10 +1,10 @@
-import { TTestSuite } from 'testUtils/TVestMock';
 import { describe, it, expect, beforeEach } from 'vitest';
 import wait from 'wait';
 
 import { dummyTest } from '../../testUtils/testDummy';
 
 import { Modes } from 'Modes';
+import { TTestSuite } from 'TVestMock';
 import { create, only, group, mode } from 'vest';
 import * as Vest from 'vest';
 

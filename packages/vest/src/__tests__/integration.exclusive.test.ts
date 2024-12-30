@@ -1,6 +1,6 @@
-import { TTestSuite } from 'testUtils/TVestMock';
 import { describe, it, expect, beforeEach, test } from 'vitest';
 
+import { TTestSuite } from 'TVestMock';
 import * as vest from 'vest';
 
 let suite: TTestSuite;

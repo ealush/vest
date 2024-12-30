@@ -29,7 +29,12 @@ export type SuiteMethods<
   TTypedMethods<F, G> &
   SuiteSelectors<F, G>;
 
-type AfterMethods<F extends TFieldName, G extends TGroupName, T extends CB> = {
-  after: CB<AfterMethods<F, G, T>>;
+export type AfterMethods<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB,
+> = {
+  after: CB<AfterMethods<F, G, T>, [callback: CB]>;
+  afterField: CB<AfterMethods<F, G, T>, [fieldName: F, callback: CB]>;
   run: (...args: Parameters<T>) => SuiteResult<F, G>;
 };

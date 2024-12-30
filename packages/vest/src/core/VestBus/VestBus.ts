@@ -13,7 +13,7 @@ import { TestWalker } from 'TestWalker';
 import { VestIsolate } from 'VestIsolate';
 import { VestTest } from 'VestTest';
 import { useOmitOptionalFields } from 'omitOptionalFields';
-import { useRunDoneCallbacks } from 'runCallbacks';
+import { useRunDoneCallbacks, useRunFieldCallbacks } from 'runCallbacks';
 
 // eslint-disable-next-line max-statements, max-lines-per-function
 export function useInitVestBus() {
@@ -52,6 +52,14 @@ export function useInitVestBus() {
   });
 
   VestBus.on(RuntimeEvents.ASYNC_ISOLATE_DONE, (isolate: TIsolate) => {
+    if (VestTest.is(isolate)) {
+      if (!VestTest.isCanceled(isolate)) {
+        const { fieldName } = VestTest.getData(isolate);
+
+        useRunFieldCallbacks(fieldName);
+      }
+    }
+
     if (!SuiteWalker.useHasPending()) {
       // When no more async tests are running, emit the done event
       VestBus.emit('ALL_RUNNING_TESTS_FINISHED', isolate);

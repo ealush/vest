@@ -12,7 +12,7 @@ import {
   TFieldName,
   TGroupName,
 } from 'SuiteResultTypes';
-import { Suite } from 'SuiteTypes';
+import { AfterMethods, Suite } from 'SuiteTypes';
 import { useInitVestBus } from 'VestBus';
 import { VestReconciler } from 'VestReconciler';
 import { useDeferDoneCallback } from 'deferDoneCallback';
@@ -85,7 +85,8 @@ function createSuite<
     const VestBus = useInitVestBus();
 
     return {
-      after: VestRuntime.persist(addAfter),
+      after: VestRuntime.persist(after),
+      afterField: VestRuntime.persist(afterField),
       dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
       get: VestRuntime.persist(useCreateSuiteResult<F, G>),
       remove: Bus.usePrepareEmitter<string>('REMOVE_FIELD'),
@@ -100,19 +101,28 @@ function createSuite<
       ...getTypedMethods<F, G>(),
     };
 
-    function addAfter(cb: CB) {
+    function afterField(fieldName: F, cb: CB) {
+      return addAfter(cb, fieldName);
+    }
+
+    function after(cb: CB) {
+      return addAfter(cb);
+    }
+
+    function addAfter(cb: CB, fieldName?: F) {
       Bus.useEmit('INITIALIZING_CALLBACKS');
       const returnValue = {
         run: persistedRun,
-        after: VestRuntime.persist(add),
+        after: VestRuntime.persist(after),
+        afterField: VestRuntime.persist(afterField),
       };
 
-      add(cb);
+      add(cb, fieldName);
 
       return returnValue;
 
-      function add(cb: CB) {
-        useDeferDoneCallback(cb);
+      function add(cb: CB, fieldName?: F) {
+        useDeferDoneCallback(cb, fieldName);
         return returnValue;
       }
     }

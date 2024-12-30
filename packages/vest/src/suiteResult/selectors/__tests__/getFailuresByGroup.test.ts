@@ -1,5 +1,5 @@
 import { Modes } from 'Modes';
-import { TTestSuite } from 'testUtils/TVestMock';
+import { TTestSuite } from 'TVestMock';
 import { describe, it, expect, beforeEach } from 'vitest';
 
 import { dummyTest } from '../../../testUtils/testDummy';

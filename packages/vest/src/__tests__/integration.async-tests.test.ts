@@ -1,10 +1,10 @@
-import { TTestSuite } from 'testUtils/TVestMock';
 import { describe, it, expect, beforeEach, beforeAll, test, vi } from 'vitest';
 import wait from 'wait';
 
 import { TestPromise } from '../testUtils/testPromise';
 
 import { Modes } from 'Modes';
+import { TTestSuite } from 'TVestMock';
 import * as vest from 'vest';
 
 function genSuite() {
@@ -68,10 +68,11 @@ describe('Stateful behavior', () => {
   it('Should invoke after callback specified with sync field immediately, and the others after finishing', () =>
     TestPromise(done => {
       result = suite
-        .after(callback_1)
+        .afterField('field_1', callback_1)
         .after(callback_2)
         .after(callback_3)
         .run();
+
       expect(callback_1).toHaveBeenCalled();
       expect(callback_2).not.toHaveBeenCalled();
       expect(callback_3).not.toHaveBeenCalled();

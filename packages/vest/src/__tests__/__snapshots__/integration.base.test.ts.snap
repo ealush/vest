@@ -2,6 +2,7 @@
 
 exports[`Base behavior > Should produce correct validation result 1`] = `
 Promise {
+  "dump": [Function],
   "errorCount": 2,
   "errors": [
     SummaryFailure {

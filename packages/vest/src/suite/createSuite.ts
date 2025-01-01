@@ -1,3 +1,4 @@
+import { create } from 'lodash';
 import { asArray, CB, assign, noop } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
@@ -47,38 +48,10 @@ function createSuite<
   // It holds the suite's persisted values that may remain between runs.
   const stateRef = useCreateVestState({ suiteName, VestReconciler });
 
-  function runSuite(...args: Parameters<T>): SuiteResult<F, G> {
-    let resolver: CB = noop;
-    const promise = new Promise<SuiteResult<F, G>>(resolve => {
-      resolver = resolve;
-    });
-    return assign(
-      promise,
-      SuiteContext.run(
-        {
-          suiteParams: args,
-        },
-        () => {
-          Bus.useEmit('SUITE_RUN_STARTED');
-
-          function resolve() {
-            return resolver(useCreateSuiteResult<F, G>());
-          }
-
-          return IsolateSuite(() => {
-            suiteCallback(...args);
-            Bus.useEmit('SUITE_CALLBACK_RUN_FINISHED');
-            return useCreateSuiteResult<F, G>();
-          }, resolve);
-        },
-      ).output,
-    );
-  }
-
   // Assign methods to the suite
   // We do this within the VestRuntime so that the suite methods
   // will be bound to the suite's stateRef and be able to access it.
-  // eslint-disable-next-line max-lines-per-function
+  // eslint-disable-next-line max-lines-per-function, max-statements
   return VestRuntime.Run(stateRef, () => {
     const persistedRun = VestRuntime.persist(runSuite);
 
@@ -95,27 +68,43 @@ function createSuite<
       resetField: Bus.usePrepareEmitter<string>('RESET_FIELD'),
       resume: VestRuntime.persist(useLoadSuite),
       run: VestRuntime.persist(initRun),
+      runStatic: VestRuntime.persist(runStatic),
       subscribe: VestBus.subscribe,
       ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
       ...getTypedMethods<F, G>(),
     };
 
-    function initAfter(cb: CB) {
-      // FIXME: This is a suboptimal solution.
-      Bus.useEmit('INITIALIZING_CALLBACKS');
-      return after(cb);
+    function runSuite(...args: Parameters<T>): SuiteResult<F, G> {
+      let resolver: CB = noop;
+      const promise = new Promise<SuiteResult<F, G>>(resolve => {
+        resolver = resolve;
+      });
+      return assign(
+        promise,
+        SuiteContext.run(
+          {
+            suiteParams: args,
+          },
+          () => {
+            Bus.useEmit('SUITE_RUN_STARTED');
+
+            function resolve() {
+              return resolver(useCreateSuiteResult<F, G>());
+            }
+
+            return IsolateSuite(() => {
+              suiteCallback(...args);
+              Bus.useEmit('SUITE_CALLBACK_RUN_FINISHED');
+              return useCreateSuiteResult<F, G>();
+            }, resolve);
+          },
+        ).output,
+      );
     }
 
-    function initAfterField(fieldName: F, cb: CB) {
-      // FIXME: This is a suboptimal solution.
-      Bus.useEmit('INITIALIZING_CALLBACKS');
-      return afterField(fieldName, cb);
-    }
-
-    function initRun(...args: Parameters<T>) {
-      // FIXME: This is a suboptimal solution.
-      Bus.useEmit('INITIALIZING_CALLBACKS');
-      return persistedRun(...args);
+    function runStatic(...runArgs: Parameters<T>) {
+      const suite = createSuite<F, G, T>(suiteName, suiteCallback);
+      return suite.run(...runArgs);
     }
 
     function afterField(fieldName: F, cb: CB) {
@@ -141,6 +130,24 @@ function createSuite<
         useDeferDoneCallback(cb, fieldName);
         return returnValue;
       }
+    }
+
+    function initAfter(cb: CB) {
+      // FIXME: This is a suboptimal solution.
+      Bus.useEmit('INITIALIZING_CALLBACKS');
+      return after(cb);
+    }
+
+    function initAfterField(fieldName: F, cb: CB) {
+      // FIXME: This is a suboptimal solution.
+      Bus.useEmit('INITIALIZING_CALLBACKS');
+      return afterField(fieldName, cb);
+    }
+
+    function initRun(...args: Parameters<T>) {
+      // FIXME: This is a suboptimal solution.
+      Bus.useEmit('INITIALIZING_CALLBACKS');
+      return persistedRun(...args);
     }
   });
 }

@@ -1,5 +1,7 @@
-import { assign, Maybe } from 'vest-utils';
+import { assign, freezeAssign, Maybe } from 'vest-utils';
+import { VestRuntime } from 'vestjs-runtime';
 
+import { TIsolateSuite } from 'IsolateSuite';
 import { useSuiteName, useSuiteResultCache } from 'Runtime';
 import {
   SuiteResult,
@@ -21,7 +23,9 @@ export function useCreateSuiteResult<
     // @vx-allow use-use
     const suiteName = useSuiteName();
 
-    return Object.freeze(constructSuiteResultObject<F, G>(summary, suiteName));
+    return freezeAssign(constructSuiteResultObject<F, G>(summary, suiteName), {
+      dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
+    }) as SuiteResult<F, G>;
   });
 }
 

@@ -24,6 +24,7 @@ export type SuiteMethods<
   remove: CB<void, [fieldName: F]>;
   resetField: CB<void, [fieldName: F]>;
   run: (...args: Parameters<T>) => SuiteResult<F, G>;
+  runStatic: (...args: Parameters<T>) => SuiteResult<F, G>;
   subscribe: Subscribe;
 } & AfterMethods<F, G, T> &
   TTypedMethods<F, G> &

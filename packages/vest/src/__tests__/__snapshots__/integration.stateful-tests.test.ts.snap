@@ -2,6 +2,7 @@
 
 exports[`Stateful behavior > Should merge skipped fields with previous values 1`] = `
 Promise {
+  "dump": [Function],
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -86,6 +87,7 @@ Promise {
 
 exports[`Stateful behavior > Should merge skipped fields with previous values 2`] = `
 Promise {
+  "dump": [Function],
   "errorCount": 3,
   "errors": [
     SummaryFailure {
@@ -183,6 +185,7 @@ Promise {
 
 exports[`Stateful behavior > Should merge skipped fields with previous values 3`] = `
 Promise {
+  "dump": [Function],
   "errorCount": 4,
   "errors": [
     SummaryFailure {
@@ -295,6 +298,7 @@ Promise {
 
 exports[`more complex > Should run correctly 1`] = `
 SuiteSummary {
+  "dump": [Function],
   "errorCount": 0,
   "errors": [],
   "getError": [Function],
@@ -325,6 +329,7 @@ SuiteSummary {
 
 exports[`more complex > Should run correctly 2`] = `
 SuiteSummary {
+  "dump": [Function],
   "errorCount": 0,
   "errors": [],
   "getError": [Function],
@@ -383,6 +388,7 @@ SuiteSummary {
 
 exports[`more complex > Should run correctly 4`] = `
 SuiteSummary {
+  "dump": [Function],
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -449,6 +455,7 @@ SuiteSummary {
 
 exports[`more complex > Should run correctly 6`] = `
 SuiteSummary {
+  "dump": [Function],
   "errorCount": 1,
   "errors": [
     SummaryFailure {

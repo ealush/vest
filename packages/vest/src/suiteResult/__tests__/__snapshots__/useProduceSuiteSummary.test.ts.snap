@@ -2,6 +2,7 @@
 
 exports[`suite.get() > exposed methods > Should have all exposed methods 1`] = `
 SuiteSummary {
+  "dump": [Function],
   "errorCount": 0,
   "errors": [],
   "getError": [Function],
@@ -32,6 +33,7 @@ SuiteSummary {
 
 exports[`suite.run() > exposed methods > Should have all exposed methods 1`] = `
 Promise {
+  "dump": [Function],
   "errorCount": 0,
   "errors": [],
   "getError": [Function],

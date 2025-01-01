@@ -2,6 +2,7 @@
 
 exports[`Stateful async tests > Merges skipped validations from previous suite 1`] = `
 Promise {
+  "dump": [Function],
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -98,6 +99,7 @@ Promise {
 
 exports[`Stateful async tests > Merges skipped validations from previous suite 2`] = `
 SuiteSummary {
+  "dump": [Function],
   "errorCount": 2,
   "errors": [
     SummaryFailure {
@@ -201,6 +203,7 @@ SuiteSummary {
 
 exports[`Stateful async tests > Merges skipped validations from previous suite 3`] = `
 SuiteSummary {
+  "dump": [Function],
   "errorCount": 5,
   "errors": [
     SummaryFailure {

@@ -2,6 +2,7 @@
 
 exports[`test.memo > cache hit > Should produce correct initial result 1`] = `
 Promise {
+  "dump": [Function],
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -74,6 +75,7 @@ Promise {
 
 exports[`test.memo > cache hit > sync > Should restore previous result on re-run 1`] = `
 Promise {
+  "dump": [Function],
   "errorCount": 1,
   "errors": [
     SummaryFailure {

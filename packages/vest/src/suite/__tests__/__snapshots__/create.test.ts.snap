@@ -2,6 +2,7 @@
 
 exports[`Test createSuite module > Initial run > Should be able to get the suite from the result of createSuite 1`] = `
 SuiteSummary {
+  "dump": [Function],
   "errorCount": 0,
   "errors": [],
   "getError": [Function],
@@ -32,6 +33,7 @@ SuiteSummary {
 
 exports[`Test createSuite module > Initial run > Should initialize with an empty result object 1`] = `
 SuiteSummary {
+  "dump": [Function],
   "errorCount": 0,
   "errors": [],
   "getError": [Function],
@@ -62,6 +64,7 @@ SuiteSummary {
 
 exports[`Test createSuite module > Test suite Arguments > allows omitting suite name 1`] = `
 SuiteSummary {
+  "dump": [Function],
   "errorCount": 0,
   "errors": [],
   "getError": [Function],

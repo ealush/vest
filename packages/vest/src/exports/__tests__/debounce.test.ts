@@ -155,17 +155,19 @@ describe('debounce', () => {
       });
 
       const suite = vest.create('suite', () => {
-        vest.test('test', 'message', debounce(t, 1000));
-        vest.test('test2', 'message', debounce(t, 1500));
-        vest.test('test3', 'message', debounce(t, 2000));
+        vest.test('test', 'message', debounce(t, 100));
+        vest.test('test2', 'message', debounce(t, 200));
+        vest.test('test3', 'message', debounce(t, 300));
       });
 
       return new Promise<void>(done => {
         suite
           .after(() => {
             expect(t).toHaveBeenCalledTimes(3);
-            expect(calls[1] - calls[0]).toBeGreaterThanOrEqual(500);
-            expect(calls[2] - calls[1]).toBeGreaterThanOrEqual(500);
+            expect(calls[0]).toBeLessThan(calls[1]);
+            expect(calls[1]).toBeLessThan(calls[2]);
+            expect(calls[1] - calls[0]).toBeGreaterThanOrEqual(90);
+            expect(calls[2] - calls[1]).toBeGreaterThanOrEqual(90);
             expect(suite.get().hasErrors('test')).toBe(true);
             expect(suite.get().hasErrors('test2')).toBe(true);
             expect(suite.get().hasErrors('test3')).toBe(true);

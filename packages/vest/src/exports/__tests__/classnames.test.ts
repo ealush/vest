@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from 'vitest';
 
 import { dummyTest } from '../../testUtils/testDummy';
 import classnames from '../classnames';
-import promisify from '../promisify';
 
 import { Modes } from 'Modes';
 import * as vest from 'vest';
@@ -28,13 +27,13 @@ describe('Utility: classnames', () => {
         }),
       );
       expect(typeof classnames(suite.run())).toBe('function');
-      const promisifed = await promisify(
-        vest.create(
+      const promisifed = await vest
+        .create(
           vi.fn(() => {
             dummyTest.failing('field_0');
           }),
-        ).run,
-      )();
+        )
+        .run();
       expect(typeof classnames(promisifed)).toBe('function');
     });
   });

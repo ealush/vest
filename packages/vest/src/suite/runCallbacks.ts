@@ -7,15 +7,28 @@ import { SuiteWalker } from 'SuiteWalker';
 /**
  * Runs done callback per field when async tests are finished running.
  */
-export function useRunFieldCallbacks(fieldName?: TFieldName): void {
+export function useRunFieldCallbacks(fieldName: TFieldName): void {
   const [fieldCallbacks] = useFieldCallbacks();
 
   if (
-    fieldName &&
     !SuiteWalker.useHasRemainingWithTestNameMatching(fieldName) &&
     isArray(fieldCallbacks[fieldName])
   ) {
     callEach(fieldCallbacks[fieldName]);
+  }
+}
+
+export function useRunSyncFieldCallbacks(): void {
+  const [fieldCallbacks] = useFieldCallbacks();
+
+  for (const fieldName in fieldCallbacks) {
+    if (SuiteWalker.useHasRemainingWithTestNameMatching(fieldName)) {
+      continue;
+    }
+
+    if (isArray(fieldCallbacks[fieldName])) {
+      callEach(fieldCallbacks[fieldName]);
+    }
   }
 }
 

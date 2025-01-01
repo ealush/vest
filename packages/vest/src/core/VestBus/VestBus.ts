@@ -13,7 +13,11 @@ import { TestWalker } from 'TestWalker';
 import { VestIsolate } from 'VestIsolate';
 import { VestTest } from 'VestTest';
 import { useOmitOptionalFields } from 'omitOptionalFields';
-import { useRunDoneCallbacks, useRunFieldCallbacks } from 'runCallbacks';
+import {
+  useRunDoneCallbacks,
+  useRunFieldCallbacks,
+  useRunSyncFieldCallbacks,
+} from 'runCallbacks';
 
 // eslint-disable-next-line max-statements, max-lines-per-function
 export function useInitVestBus() {
@@ -101,6 +105,7 @@ export function useInitVestBus() {
     }
 
     useOmitOptionalFields();
+    useRunSyncFieldCallbacks();
   });
 
   on('REMOVE_FIELD', (fieldName: TFieldName) => {

@@ -4,7 +4,7 @@ import { Bus, VestRuntime } from 'vestjs-runtime';
 import { getTypedMethods } from './getTypedMethods';
 
 import { IsolateSuite, TIsolateSuite } from 'IsolateSuite';
-import { useCreateVestState, useLoadSuite } from 'Runtime';
+import { useCreateVestState, useLoadSuite, useO } from 'Runtime';
 import { SuiteContext } from 'SuiteContext';
 import {
   SuiteName,
@@ -12,7 +12,7 @@ import {
   TFieldName,
   TGroupName,
 } from 'SuiteResultTypes';
-import { AfterMethods, Suite } from 'SuiteTypes';
+import { Suite } from 'SuiteTypes';
 import { useInitVestBus } from 'VestBus';
 import { VestReconciler } from 'VestReconciler';
 import { useDeferDoneCallback } from 'deferDoneCallback';
@@ -78,6 +78,7 @@ function createSuite<
   // Assign methods to the suite
   // We do this within the VestRuntime so that the suite methods
   // will be bound to the suite's stateRef and be able to access it.
+  // eslint-disable-next-line max-lines-per-function
   return VestRuntime.Run(stateRef, () => {
     const persistedRun = VestRuntime.persist(runSuite);
 
@@ -85,21 +86,37 @@ function createSuite<
     const VestBus = useInitVestBus();
 
     return {
-      after: VestRuntime.persist(after),
-      afterField: VestRuntime.persist(afterField),
+      after: VestRuntime.persist(initAfter),
+      afterField: VestRuntime.persist(initAfterField),
       dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
       get: VestRuntime.persist(useCreateSuiteResult<F, G>),
       remove: Bus.usePrepareEmitter<string>('REMOVE_FIELD'),
       reset: Bus.usePrepareEmitter('RESET_SUITE'),
       resetField: Bus.usePrepareEmitter<string>('RESET_FIELD'),
       resume: VestRuntime.persist(useLoadSuite),
-      // We're also binding the suite to the stateRef, so that the suite
-      // can access the stateRef when it's called.
-      run: persistedRun,
+      run: VestRuntime.persist(initRun),
       subscribe: VestBus.subscribe,
       ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
       ...getTypedMethods<F, G>(),
     };
+
+    function initAfter(cb: CB) {
+      // FIXME: This is a suboptimal solution.
+      Bus.useEmit('INITIALIZING_CALLBACKS');
+      return after(cb);
+    }
+
+    function initAfterField(fieldName: F, cb: CB) {
+      // FIXME: This is a suboptimal solution.
+      Bus.useEmit('INITIALIZING_CALLBACKS');
+      return afterField(fieldName, cb);
+    }
+
+    function initRun(...args: Parameters<T>) {
+      // FIXME: This is a suboptimal solution.
+      Bus.useEmit('INITIALIZING_CALLBACKS');
+      return persistedRun(...args);
+    }
 
     function afterField(fieldName: F, cb: CB) {
       return addAfter(cb, fieldName);
@@ -110,7 +127,6 @@ function createSuite<
     }
 
     function addAfter(cb: CB, fieldName?: F) {
-      Bus.useEmit('INITIALIZING_CALLBACKS');
       const returnValue = {
         run: persistedRun,
         after: VestRuntime.persist(after),

@@ -11,15 +11,7 @@ export default defineConfig({
   plugins: [
     tsconfigPaths({
       loose: true,
-      projects: [
-        'packages/vest-utils',
-        'packages/context',
-        'packages/vestjs-runtime',
-        'packages/vast',
-        'packages/n4s',
-        'packages/vest',
-        'packages/anyone',
-      ],
+      projects: ["packages/vest-utils","packages/context","packages/vestjs-runtime","packages/vast","packages/n4s","packages/vest","packages/anyone"],
     }),
   ],
 });

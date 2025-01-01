@@ -73,7 +73,11 @@ describe('runAsyncTest', () => {
           });
         });
 
-        suite.after(cb1).after(cb2).after(cb3).run();
+        suite
+          .after(cb1)
+          .afterField('field_2', cb2)
+          .afterField('field_3', cb3)
+          .run();
 
         expect(cb1).not.toHaveBeenCalled();
         expect(cb2).toHaveBeenCalled();

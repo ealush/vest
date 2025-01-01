@@ -6,7 +6,6 @@ import { TestPromise } from '../../../testUtils/testPromise';
 import { TIsolateTest } from 'IsolateTest';
 import { Modes } from 'Modes';
 import { VestTest } from 'VestTest';
-import promisify from 'promisify';
 import * as vest from 'vest';
 import { test as vestTest, enforce } from 'vest';
 
@@ -105,10 +104,8 @@ describe('test.memo', () => {
             );
           });
 
-          const asyncSuite = promisify(suite.run);
-
           let start = Date.now();
-          const res1 = await asyncSuite();
+          const res1 = await suite.run();
           enforce(Date.now() - start).gte(500);
 
           start = Date.now();

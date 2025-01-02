@@ -1,8 +1,8 @@
+import { registerReconciler } from 'vest';
 import { CB, isPromise, Nullable } from 'vest-utils';
 import { Isolate, TIsolate, IsolateSelectors } from 'vestjs-runtime';
 
 import { TestFn, TestFnPayload } from 'TestTypes';
-import { registerReconciler } from 'vest';
 
 const isolateType = 'Debounce';
 

@@ -1,11 +1,10 @@
-import { create } from 'lodash';
 import { asArray, CB, assign, noop } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { getTypedMethods } from './getTypedMethods';
 
 import { IsolateSuite, TIsolateSuite } from 'IsolateSuite';
-import { useCreateVestState, useLoadSuite, useO } from 'Runtime';
+import { useCreateVestState, useLoadSuite } from 'Runtime';
 import { SuiteContext } from 'SuiteContext';
 import {
   SuiteName,
@@ -59,15 +58,15 @@ function createSuite<
     const VestBus = useInitVestBus();
 
     return {
-      after: VestRuntime.persist(initAfter),
-      afterField: VestRuntime.persist(initAfterField),
+      after: VestRuntime.persist(initCallback(after)),
+      afterField: VestRuntime.persist(initCallback(afterField)),
       dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
       get: VestRuntime.persist(useCreateSuiteResult<F, G>),
       remove: Bus.usePrepareEmitter<string>('REMOVE_FIELD'),
       reset: Bus.usePrepareEmitter('RESET_SUITE'),
       resetField: Bus.usePrepareEmitter<string>('RESET_FIELD'),
       resume: VestRuntime.persist(useLoadSuite),
-      run: VestRuntime.persist(initRun),
+      run: VestRuntime.persist(initCallback(persistedRun)),
       runStatic: VestRuntime.persist(runStatic),
       subscribe: VestBus.subscribe,
       ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
@@ -132,22 +131,11 @@ function createSuite<
       }
     }
 
-    function initAfter(cb: CB) {
-      // FIXME: This is a suboptimal solution.
-      Bus.useEmit('INITIALIZING_CALLBACKS');
-      return after(cb);
-    }
-
-    function initAfterField(fieldName: F, cb: CB) {
-      // FIXME: This is a suboptimal solution.
-      Bus.useEmit('INITIALIZING_CALLBACKS');
-      return afterField(fieldName, cb);
-    }
-
-    function initRun(...args: Parameters<T>) {
-      // FIXME: This is a suboptimal solution.
-      Bus.useEmit('INITIALIZING_CALLBACKS');
-      return persistedRun(...args);
+    function initCallback<T extends CB>(cb: T) {
+      return (...args: Parameters<T>) => {
+        Bus.useEmit('INITIALIZING_CALLBACKS');
+        return cb(...args);
+      };
     }
   });
 }

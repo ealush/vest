@@ -43,36 +43,6 @@
     "vestjs-runtime": "^1.5.1"
   },
   "exports": {
-    "./promisify": {
-      "production": {
-        "types": "./types/promisify.d.ts",
-        "browser": "./dist/es/promisify.production.js",
-        "umd": "./dist/umd/promisify.production.js",
-        "import": "./dist/es/promisify.production.js",
-        "require": "./dist/cjs/promisify.production.js",
-        "node": "./dist/cjs/promisify.production.js",
-        "module": "./dist/es/promisify.production.js",
-        "default": "./dist/cjs/promisify.production.js"
-      },
-      "development": {
-        "types": "./types/promisify.d.ts",
-        "browser": "./dist/es/promisify.development.js",
-        "umd": "./dist/umd/promisify.development.js",
-        "import": "./dist/es/promisify.development.js",
-        "require": "./dist/cjs/promisify.development.js",
-        "node": "./dist/cjs/promisify.development.js",
-        "module": "./dist/es/promisify.development.js",
-        "default": "./dist/cjs/promisify.development.js"
-      },
-      "types": "./types/promisify.d.ts",
-      "browser": "./dist/es/promisify.production.js",
-      "umd": "./dist/umd/promisify.production.js",
-      "import": "./dist/es/promisify.production.js",
-      "require": "./dist/cjs/promisify.production.js",
-      "node": "./dist/cjs/promisify.production.js",
-      "module": "./dist/es/promisify.production.js",
-      "default": "./dist/cjs/promisify.production.js"
-    },
     "./parser": {
       "production": {
         "types": "./types/parser.d.ts",

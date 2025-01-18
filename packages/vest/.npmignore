@@ -5,6 +5,7 @@ src
 !dist/
 tsconfig.json
 !parser/
+!memo/
 !enforce@schema/
 !enforce@isURL/
 !enforce@email/

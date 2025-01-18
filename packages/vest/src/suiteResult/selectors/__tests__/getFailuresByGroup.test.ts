@@ -1,23 +1,20 @@
-import { Modes } from 'Modes';
-import { TTestSuite } from 'TVestMock';
 import { describe, it, expect, beforeEach } from 'vitest';
 
 import { dummyTest } from '../../../testUtils/testDummy';
 
+import { Modes } from 'Modes';
+import { TTestSuite } from 'TVestMock';
 import { create, group } from 'vest';
 import * as vest from 'vest';
 
-const modes = ['SuiteRunResult', 'SuiteResult'];
-
-describe.each(modes)('produce method: %s', mode => {
+describe('SuiteResult', () => {
   let suite: TTestSuite;
 
   function getRes(...args: any[]) {
-    const res = suite.run(...args);
-    return mode === 'SuiteRunResult' ? res : suite.get();
+    return suite.run(...args);
   }
 
-  describe(`${mode}->getErrorsByGroup`, () => {
+  describe(`SuiteResult->getErrorsByGroup`, () => {
     describe('When no tests', () => {
       beforeEach(() => {
         suite = create(() => {});
@@ -116,7 +113,7 @@ describe.each(modes)('produce method: %s', mode => {
       });
     });
   });
-  describe(`${mode}->getWarningsByGroup`, () => {
+  describe(`SuiteResult->getWarningsByGroup`, () => {
     describe('When no tests', () => {
       beforeEach(() => {
         suite = create(() => {});

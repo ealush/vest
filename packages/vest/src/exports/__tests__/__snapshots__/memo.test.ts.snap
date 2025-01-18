@@ -1,0 +1,147 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`memo > cache hit > Should produce correct initial result 1`] = `
+Promise {
+  "dump": [Function],
+  "errorCount": 1,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field1",
+      "groupName": undefined,
+      "message": "msg1",
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 4,
+  "tests": {
+    "field1": {
+      "errorCount": 1,
+      "errors": [
+        "msg1",
+      ],
+      "pendingCount": 0,
+      "testCount": 2,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field2": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": true,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field3": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": true,
+      "warnCount": 1,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 1,
+  "warnings": [
+    SummaryFailure {
+      "fieldName": "field3",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+}
+`;
+
+exports[`memo > cache hit > sync > Should restore previous result on re-run 1`] = `
+Promise {
+  "dump": [Function],
+  "errorCount": 1,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field1",
+      "groupName": undefined,
+      "message": "msg1",
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 4,
+  "tests": {
+    "field1": {
+      "errorCount": 1,
+      "errors": [
+        "msg1",
+      ],
+      "pendingCount": 0,
+      "testCount": 2,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field2": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": true,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field3": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": true,
+      "warnCount": 1,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 1,
+  "warnings": [
+    SummaryFailure {
+      "fieldName": "field3",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+}
+`;

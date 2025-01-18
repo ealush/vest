@@ -58,6 +58,7 @@
       "focused": ["./src/hooks/focused/focused.ts"],
       "FocusedKeys": ["./src/hooks/focused/FocusedKeys.ts"],
       "parser": ["./src/exports/parser.ts"],
+      "memo": ["./src/exports/memo.ts"],
       "enforce@schema": ["./src/exports/enforce@schema.ts"],
       "enforce@isURL": ["./src/exports/enforce@isURL.ts"],
       "enforce@email": ["./src/exports/enforce@email.ts"],

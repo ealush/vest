@@ -30,7 +30,7 @@ export default function debounce<Callback extends CB = CB>(
       }, delay);
     });
 
-  const i = Isolate.create(isolateType, f, {
+  const i = Isolate.create<IsolateDebouncePayload>(isolateType, f, {
     clearTimeout: () => {
       if (timeout) {
         clearTimeout(timeout);

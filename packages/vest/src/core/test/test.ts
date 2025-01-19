@@ -7,7 +7,6 @@ import { useGroupName } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
 import { useAttemptRunTest } from 'runTest';
-import { wrapTestMemo } from 'test.memo';
 
 function vestTest<F extends TFieldName>(
   fieldName: F,
@@ -51,9 +50,7 @@ function vestTest<F extends TFieldName>(
   return IsolateTest(useAttemptRunTest, testObjectInput, key);
 }
 
-export const test = assign(vestTest, {
-  memo: wrapTestMemo(vestTest),
-});
+export const test = vestTest;
 
 export type VTest = typeof vestTest;
 

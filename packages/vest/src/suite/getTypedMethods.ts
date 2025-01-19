@@ -13,7 +13,6 @@ import { include } from 'include';
 import { omitWhen } from 'omitWhen';
 import { skipWhen } from 'skipWhen';
 import { test } from 'test';
-import { TestMemo } from 'test.memo';
 
 export function getTypedMethods<
   F extends TFieldName,
@@ -49,8 +48,6 @@ export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
     (fieldName: F, cb: TestFn): TIsolateTest;
     (fieldName: F, message: string, cb: TestFn, key: IsolateKey): TIsolateTest;
     (fieldName: F, cb: TestFn, key: IsolateKey): TIsolateTest;
-  } & {
-    memo: TestMemo<F>;
   };
   group: {
     (callback: () => void): TIsolate;

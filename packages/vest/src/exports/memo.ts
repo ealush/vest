@@ -1,5 +1,12 @@
 import { registerReconciler } from 'vest';
-import { CB, lengthEquals } from 'vest-utils';
+import {
+  cache,
+  CacheApi,
+  CB,
+  Nullable,
+  isNullish,
+  invariant,
+} from 'vest-utils';
 import { Isolate, TIsolate, IsolateSelectors, Walker } from 'vestjs-runtime';
 
 import { TIsolateTest } from 'IsolateTest';
@@ -11,7 +18,7 @@ export function memo<Callback extends CB = CB>(
   callback: Callback,
   dependencies: unknown[],
 ) {
-  return Isolate.create(isolateType, callback, { dependencies });
+  return Isolate.create(isolateType, callback, { dependencies, cache: null });
 }
 
 export class IsolateMemoReconciler {
@@ -22,34 +29,63 @@ export class IsolateMemoReconciler {
     );
   }
 
-  static reconcile(current: TIsolateMemo, history: TIsolateMemo) {
-    const shouldUseHistory =
-      lengthEquals(
-        current.data.dependencies,
-        history.data.dependencies.length,
-      ) &&
-      current.data.dependencies.every(
-        (dep, i) => dep === history.data.dependencies[i],
-      );
+  static reconcile(current: TIsolateMemo, history: TIsolateMemo): TIsolateMemo {
+    initializeCache(history);
 
-    if (!shouldUseHistory) {
-      return current;
+    const hit = history.data.cache.get(current.data.dependencies);
+    current.data.cache = history.data.cache;
+
+    if (isNullish(hit)) {
+      return handleCacheMiss(current, history);
     }
 
-    const isCanceled = Walker.some(
-      history,
-      i => VestTest.isCanceled(i as TIsolateTest),
-      VestTest.is,
-    );
+    const historicHit = hit[1];
 
-    return isCanceled ? current : history;
+    if (isCanceledTest(historicHit)) {
+      history.data.cache.invalidate(current.data.dependencies);
+      return handleCacheMiss(current, history);
+    }
+
+    return historicHit;
   }
 }
 
 export type TIsolateMemo = TIsolate<IsolateMemoPayload>;
 
+type TIsolateMemoWithCache = TIsolateMemo & {
+  data: { cache: CacheApi<TIsolateMemo> };
+};
+
 export type IsolateMemoPayload = {
   dependencies: unknown[];
+  cache: Nullable<CacheApi<TIsolateMemo>>;
 };
 
 registerReconciler(IsolateMemoReconciler);
+
+function initializeCache(
+  history: TIsolateMemo,
+): asserts history is TIsolateMemoWithCache {
+  if (isNullish(history.data.cache)) {
+    history.data.cache = cache<TIsolateMemo>(5);
+    history.data.cache(history.data.dependencies, () => history);
+  }
+  invariant(history.data.cache);
+}
+
+function handleCacheMiss(
+  current: TIsolateMemo,
+  history: TIsolateMemo,
+): TIsolateMemo {
+  invariant(history.data.cache);
+  history.data.cache(current.data.dependencies, () => current);
+  return current;
+}
+
+function isCanceledTest(historicHit: TIsolateMemo): boolean {
+  return Walker.some(
+    historicHit,
+    i => VestTest.isCanceled(i as TIsolateTest),
+    VestTest.is,
+  );
+}

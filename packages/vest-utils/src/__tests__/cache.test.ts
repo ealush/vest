@@ -17,6 +17,13 @@ describe('lib: cache', () => {
     expect(cache()).not.toBe(cache());
   });
 
+  describe('when cacheaction is a value rather than a function', () => {
+    it('should store the value if no hit', () => {
+      const res = c([1, 2, 3], 123);
+      expect(res).toBe(123);
+    });
+  });
+
   describe('on cache miss', () => {
     it('Should call passed cache action function and return its value', () => {
       const cacheAction = vi.fn(() => ({}));
@@ -99,6 +106,24 @@ describe('lib: cache', () => {
         expect(c.get([1, 2, 3])?.[0]).toEqual([1, 2, 3]);
         expect(c.get([1, 2, 3])?.[1]).toEqual(res);
       });
+    });
+  });
+
+  describe('cache.set', () => {
+    it('Should set a value to the cache storage by its dependencies', () => {
+      const deps = [1, 2, 3];
+      const res = Math.random();
+      c.set(deps, res);
+      expect(c.get(deps)?.[1]).toBe(res);
+    });
+
+    it('Should update an existing value in the cache storage by its dependencies', () => {
+      const deps = [1, 2, 3];
+      const res = Math.random();
+      c.set(deps, res);
+      const updatedRes = Math.random();
+      c.set(deps, updatedRes);
+      expect(c.get(deps)?.[1]).toBe(updatedRes);
     });
   });
 

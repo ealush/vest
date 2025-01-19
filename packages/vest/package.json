@@ -73,6 +73,36 @@
       "module": "./dist/es/parser.production.js",
       "default": "./dist/cjs/parser.production.js"
     },
+    "./memo": {
+      "production": {
+        "types": "./types/memo.d.ts",
+        "browser": "./dist/es/memo.production.js",
+        "umd": "./dist/umd/memo.production.js",
+        "import": "./dist/es/memo.production.js",
+        "require": "./dist/cjs/memo.production.js",
+        "node": "./dist/cjs/memo.production.js",
+        "module": "./dist/es/memo.production.js",
+        "default": "./dist/cjs/memo.production.js"
+      },
+      "development": {
+        "types": "./types/memo.d.ts",
+        "browser": "./dist/es/memo.development.js",
+        "umd": "./dist/umd/memo.development.js",
+        "import": "./dist/es/memo.development.js",
+        "require": "./dist/cjs/memo.development.js",
+        "node": "./dist/cjs/memo.development.js",
+        "module": "./dist/es/memo.development.js",
+        "default": "./dist/cjs/memo.development.js"
+      },
+      "types": "./types/memo.d.ts",
+      "browser": "./dist/es/memo.production.js",
+      "umd": "./dist/umd/memo.production.js",
+      "import": "./dist/es/memo.production.js",
+      "require": "./dist/cjs/memo.production.js",
+      "node": "./dist/cjs/memo.production.js",
+      "module": "./dist/es/memo.production.js",
+      "default": "./dist/cjs/memo.production.js"
+    },
     "./enforce/schema": {
       "production": {
         "types": "./types/enforce/schema.d.ts",

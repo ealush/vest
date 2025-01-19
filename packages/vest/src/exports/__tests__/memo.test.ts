@@ -238,4 +238,46 @@ describe('memo', () => {
       });
     });
   });
+
+  describe('hit is older than most recent run', () => {
+    it('should restore from cache only within last five', () => {
+      const suite = vest.create(
+        ({ cacheKey, index }: { cacheKey: string; index: number }) => {
+          memo(() => {
+            vestTest(
+              'f1',
+              `CacheKey is ${cacheKey}, index is: ${index}`,
+              () => false,
+            );
+          }, [cacheKey]);
+        },
+      );
+
+      suite.run({ cacheKey: 'a', index: 0 });
+      expect(suite.getError('f1')).toBe('CacheKey is a, index is: 0');
+      suite.run({ cacheKey: 'a', index: 100 });
+      expect(suite.getError('f1')).toBe('CacheKey is a, index is: 0');
+      suite.run({ cacheKey: 'b', index: 1 });
+      expect(suite.getError('f1')).toBe('CacheKey is b, index is: 1');
+      suite.run({ cacheKey: 'a', index: 200 });
+      expect(suite.getError('f1')).toBe('CacheKey is a, index is: 0');
+      suite.run({ cacheKey: 'c', index: 2 });
+      expect(suite.getError('f1')).toBe('CacheKey is c, index is: 2');
+      suite.run({ cacheKey: 'a', index: 300 });
+      expect(suite.getError('f1')).toBe('CacheKey is a, index is: 0');
+      suite.run({ cacheKey: 'd', index: 3 });
+      expect(suite.getError('f1')).toBe('CacheKey is d, index is: 3');
+      suite.run({ cacheKey: 'a', index: 400 });
+      expect(suite.getError('f1')).toBe('CacheKey is a, index is: 0');
+      suite.run({ cacheKey: 'e', index: 4 });
+      expect(suite.getError('f1')).toBe('CacheKey is e, index is: 4');
+      suite.run({ cacheKey: 'a', index: 500 });
+      expect(suite.getError('f1')).toBe('CacheKey is a, index is: 0');
+      suite.run({ cacheKey: 'f', index: 5 });
+      expect(suite.getError('f1')).toBe('CacheKey is f, index is: 5');
+      suite.run({ cacheKey: 'a', index: 600 });
+      // this is the 6th run, so the cache should finally be updated
+      expect(suite.getError('f1')).toBe('CacheKey is a, index is: 600');
+    });
+  });
 });

@@ -279,5 +279,26 @@ describe('memo', () => {
       // this is the 6th run, so the cache should finally be updated
       expect(suite.getError('f1')).toBe('CacheKey is a, index is: 600');
     });
+
+    it('Should correctly restore async tests', async () => {
+      const tests = [];
+      const suite = vest.create(({ key, index }) => {
+        memo(() => {
+          tests.push(
+            vestTest('f1', `key: ${key}, index: ${index}`, async () => {
+              await wait(10);
+              throw new Error(`key: ${key}, index: ${index}`);
+            }),
+          );
+        }, [key]);
+      });
+
+      let res = await suite.run({ key: 'a', index: 0 });
+      expect(res.getError('f1')).toBe('key: a, index: 0');
+      res = suite.run({ key: 'b', index: 1 });
+      expect(res.getError('f1')).toBe(undefined);
+      res = await suite.run({ key: 'b', index: 2 });
+      expect(res.getError('f1')).toBe('key: b, index: 1');
+    });
   });
 });

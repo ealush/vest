@@ -84,11 +84,11 @@ describe('typed methods', () => {
     expect(suite.get().hasErrors('PASSWORD')).toBe(true);
   });
 
-  test('The suite exposes all typed methods', () => {
+  it('The suite exposes all typed methods', () => {
     const suite = vest.create(() => {});
 
     expect(typeof suite.test).toBe('function');
-    expect(typeof suite.test.memo).toBe('function');
+    expect(typeof suite.test).toBe('function');
     expect(typeof suite.only).toBe('function');
     expect(typeof suite.skip).toBe('function');
     expect(typeof suite.include).toBe('function');

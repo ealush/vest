@@ -71,7 +71,6 @@
       "ErrorStrings": ["./src/errors/ErrorStrings.ts"],
       "Runtime": ["./src/core/Runtime.ts"],
       "test": ["./src/core/test/test.ts"],
-      "test.memo": ["./src/core/test/test.memo.ts"],
       "TestTypes": ["./src/core/test/TestTypes.ts"],
       "verifyTestRun": [
         "./src/core/test/testLevelFlowControl/verifyTestRun.ts"

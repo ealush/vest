@@ -131,11 +131,11 @@ function createSuite<
       }
     }
 
-    function initCallback<T extends CB>(cb: T) {
-      return (...args: Parameters<T>) => {
+    function initCallback<U extends (...args: any[]) => any>(cb: U): U {
+      return ((...args: Parameters<U>) => {
         Bus.useEmit('INITIALIZING_CALLBACKS');
         return cb(...args);
-      };
+      }) as U;
     }
   });
 }

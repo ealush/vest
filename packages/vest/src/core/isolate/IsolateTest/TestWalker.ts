@@ -2,7 +2,7 @@ import { Nullable } from 'vest-utils';
 import { Walker, VestRuntime, TIsolate } from 'vestjs-runtime';
 
 import { TIsolateTest } from 'IsolateTest';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { TFieldName } from 'SuiteResultTypes';
 import { VestTest } from 'VestTest';
 import matchingFieldName from 'matchingFieldName';
 
@@ -48,15 +48,15 @@ export class TestWalker {
     );
   }
 
-  static walkTests<F extends TFieldName, G extends TGroupName>(
-    callback: (test: TIsolateTest<F, G>, breakout: () => void) => void,
+  static walkTests<F extends TFieldName>(
+    callback: (test: TIsolateTest<F>, breakout: () => void) => void,
     root: MaybeRoot = TestWalker.defaultRoot(),
   ): void {
     if (!root) return;
     Walker.walk(
       root,
       (isolate, breakout) => {
-        callback(VestTest.cast<F, G>(isolate), breakout);
+        callback(VestTest.cast<F>(isolate), breakout);
       },
       VestTest.is,
     );

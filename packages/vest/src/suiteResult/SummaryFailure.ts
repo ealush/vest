@@ -13,10 +13,11 @@ export class SummaryFailure<F extends TFieldName, G extends TGroupName>
   ) {}
 
   static fromTestObject<F extends TFieldName, G extends TGroupName>(
-    testObject: TIsolateTest<F, G>,
-  ) {
-    const { fieldName, message, groupName } = VestTest.getData(testObject);
+    testObject: TIsolateTest<F>,
+  ): SummaryFailure<F, G> {
+    const { fieldName, message } = VestTest.getData(testObject);
+    const groupName = VestTest.getGroupName<G>(testObject);
 
-    return new SummaryFailure(fieldName, message, groupName);
+    return new SummaryFailure<F, G>(fieldName, message, groupName);
   }
 }

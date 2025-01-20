@@ -24,22 +24,22 @@ export function useProduceSuiteSummary<
   G extends TGroupName,
 >(): SuiteSummary<F, G> {
   // @vx-allow use-use (TODO: fix this. the error is in the lint rule)
-  const summary = TestWalker.reduceTests<
-    SuiteSummary<F, G>,
-    TIsolateTest<F, G>
-  >((summary, testObject) => {
-    const fieldName = VestTest.getData<F>(testObject).fieldName;
-    summary.tests[fieldName] = useAppendToTest(summary.tests, testObject);
-    summary.groups = useAppendToGroup(summary.groups, testObject);
+  const summary = TestWalker.reduceTests<SuiteSummary<F, G>, TIsolateTest<F>>(
+    (summary, testObject) => {
+      const fieldName = VestTest.getData<F>(testObject).fieldName;
+      summary.tests[fieldName] = useAppendToTest(summary.tests, testObject);
+      summary.groups = useAppendToGroup(summary.groups, testObject);
 
-    if (VestTest.isOmitted(testObject)) {
-      return summary;
-    }
-    if (summary.tests[fieldName].valid === false) {
-      summary.valid = false;
-    }
-    return addSummaryStats(testObject, summary);
-  }, new SuiteSummary());
+      if (VestTest.isOmitted(testObject)) {
+        return summary;
+      }
+      if (summary.tests[fieldName].valid === false) {
+        summary.valid = false;
+      }
+      return addSummaryStats(testObject, summary);
+    },
+    new SuiteSummary(),
+  );
 
   summary.valid = summary.valid === false ? false : useShouldAddValidProperty();
 
@@ -47,7 +47,7 @@ export function useProduceSuiteSummary<
 }
 
 function addSummaryStats<F extends TFieldName, G extends TGroupName>(
-  testObject: TIsolateTest<F, G>,
+  testObject: TIsolateTest<F>,
   summary: SuiteSummary<F, G>,
 ): SuiteSummary<F, G> {
   if (VestTest.isWarning(testObject)) {
@@ -90,7 +90,8 @@ function useAppendToGroup(
   groups: Groups<TGroupName, TFieldName>,
   testObject: TIsolateTest,
 ): Groups<TGroupName, TFieldName> {
-  const { groupName, fieldName } = VestTest.getData(testObject);
+  const { fieldName } = VestTest.getData(testObject);
+  const groupName = VestTest.getGroupName(testObject);
 
   if (!groupName) {
     return groups;
@@ -167,8 +168,8 @@ function baseTestStats() {
   });
 }
 
-function shouldCountTestRun<F extends TFieldName, G extends TGroupName>(
-  testObject: TIsolateTest<F, G>,
+function shouldCountTestRun<F extends TFieldName>(
+  testObject: TIsolateTest<F>,
 ): boolean {
   return VestTest.isTested(testObject) || VestTest.isPending(testObject);
 }

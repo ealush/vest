@@ -301,4 +301,27 @@ describe('memo', () => {
       expect(res.getError('f1')).toBe('key: b, index: 1');
     });
   });
+
+  it('should be restored into the new tree', () => {
+    let runCount = 1;
+    const cb = vi.fn(() => false);
+    const suite = vest.create(() => {
+      vest.group(`g${runCount}`, () => {
+        memo(() => {
+          vestTest('f1', cb);
+        }, [1]);
+      });
+
+      runCount++;
+    });
+
+    let res = suite.run();
+    expect(cb).toHaveBeenCalledTimes(1);
+    expect(res.groups.g1.f1.errorCount).toBe(1);
+    // expect(res.groups.g1.tests.f1).;
+    res = suite.run();
+    expect(cb).toHaveBeenCalledTimes(1);
+    expect(res.groups.g2.f1.errorCount).toBe(1);
+    expect(res.groups.g1).toBeUndefined();
+  });
 });

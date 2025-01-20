@@ -6,8 +6,9 @@ export function isSameProfileTest(
   testObject1: TIsolateTest,
   testObject2: TIsolateTest,
 ): boolean {
-  const { groupName: gn1 } = VestTest.getData(testObject1);
-  const { groupName: gn2, fieldName: fn2 } = VestTest.getData(testObject2);
+  const gn1 = VestTest.getGroupName(testObject1);
+  const { fieldName: fn2 } = VestTest.getData(testObject2);
+  const gn2 = VestTest.getGroupName(testObject2);
   return (
     matchingFieldName(VestTest.getData(testObject1), fn2) &&
     gn1 === gn2 &&

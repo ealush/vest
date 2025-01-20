@@ -12,10 +12,16 @@ export function group<G extends TGroupName>(
 export function group(callback: CB<void>): TIsolate;
 export function group<G extends TGroupName>(
   ...args: [groupName: G, callback: CB<void>] | [callback: CB<void>]
-): TIsolate {
+): TIsolateGroup<G> {
   const [callback, groupName] = args.reverse() as [CB<void>, G];
 
-  return Isolate.create(VestIsolateType.Group, () => {
-    return SuiteContext.run({ ...(groupName && { groupName }) }, callback);
-  });
+  return Isolate.create(
+    VestIsolateType.Group,
+    () => {
+      return SuiteContext.run({ ...(groupName && { groupName }) }, callback);
+    },
+    { groupName },
+  );
 }
+
+export type TIsolateGroup<G extends TGroupName> = TIsolate<{ groupName: G }>;

@@ -1,12 +1,5 @@
 import { createCascade } from 'context';
-import {
-  assign,
-  TinyState,
-  tinyState,
-  cache,
-  CacheApi,
-  DynamicValue,
-} from 'vest-utils';
+import { assign, TinyState, tinyState, DynamicValue } from 'vest-utils';
 
 import { TIsolateTest } from 'IsolateTest';
 import { Modes } from 'Modes';
@@ -21,7 +14,6 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
       inclusion: {},
       mode: tinyState.createTinyState<Modes>(Modes.EAGER),
       suiteParams: [],
-      testMemoCache,
     },
     ctxRef,
   );
@@ -31,7 +23,6 @@ type CTXType = {
   inclusion: Record<string, DynamicValue<boolean>>;
   mode: TinyState<Modes>;
   suiteParams: any[];
-  testMemoCache: CacheApi<TIsolateTest>;
   currentTest?: TIsolateTest;
   groupName?: string;
   skipped?: boolean;
@@ -60,12 +51,6 @@ export function useSkipped() {
 
 export function useOmitted() {
   return SuiteContext.useX().omitted ?? false;
-}
-
-const testMemoCache = cache<TIsolateTest>(10);
-
-export function useTestMemoCache() {
-  return SuiteContext.useX().testMemoCache;
 }
 
 export function useSuiteParams() {

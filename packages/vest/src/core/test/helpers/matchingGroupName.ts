@@ -10,5 +10,5 @@ export function matchingGroupName(
   testObject: TIsolateTest,
   groupName: Maybe<TGroupName>,
 ): boolean {
-  return VestTest.getData(testObject).groupName === groupName;
+  return VestTest.getGroupName(testObject) === groupName;
 }

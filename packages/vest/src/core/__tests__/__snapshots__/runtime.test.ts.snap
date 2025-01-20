@@ -52,7 +52,6 @@ exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 1`]
           "children": null,
           "data": {
             "fieldName": "t2",
-            "groupName": "g1",
             "message": "t2 message",
             "severity": "error",
             "testFn": [Function],
@@ -70,7 +69,6 @@ exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 1`]
           "children": null,
           "data": {
             "fieldName": "t3",
-            "groupName": "g1",
             "severity": "error",
             "testFn": [Function],
           },
@@ -87,7 +85,6 @@ exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 1`]
           "children": null,
           "data": {
             "fieldName": "t4",
-            "groupName": "g1",
             "severity": "warning",
             "testFn": [Function],
           },
@@ -98,7 +95,9 @@ exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 1`]
           "status": "WARNING",
         },
       ],
-      "data": {},
+      "data": {
+        "groupName": "g1",
+      },
       "key": null,
       "keys": null,
       "output": undefined,

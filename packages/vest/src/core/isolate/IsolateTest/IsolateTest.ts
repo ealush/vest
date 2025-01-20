@@ -3,32 +3,24 @@ import { TIsolate, Isolate, IsolateKey } from 'vestjs-runtime';
 
 import { IsolateTestStateMachine, TestStatus } from 'IsolateTestStateMachine';
 import { TestSeverity } from 'Severity';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { TFieldName } from 'SuiteResultTypes';
 import { AsyncTest, TestFn } from 'TestTypes';
 import { VestIsolateType } from 'VestIsolateType';
 
-export type TIsolateTest<
-  F extends TFieldName = TFieldName,
-  G extends TGroupName = TGroupName,
-> = TIsolate<CommonTestFields<F, G> & IsolateTestPayload>;
+export type TIsolateTest<F extends TFieldName = TFieldName> = TIsolate<
+  CommonTestFields<F> & IsolateTestPayload
+>;
 
-export function IsolateTest<
-  F extends TFieldName = TFieldName,
-  G extends TGroupName = TGroupName,
->(
+export function IsolateTest<F extends TFieldName = TFieldName>(
   callback: CB,
-  input: CommonTestFields<F, G>,
+  input: CommonTestFields<F>,
   key?: IsolateKey,
-): TIsolateTest<F, G> {
+): TIsolateTest<F> {
   const payload: IsolateTestPayload = {
     ...IsolateTestBase(),
     fieldName: input.fieldName,
     testFn: input.testFn,
   };
-
-  if (input.groupName) {
-    payload.groupName = input.groupName;
-  }
 
   if (input.message) {
     payload.message = input.message;
@@ -40,7 +32,7 @@ export function IsolateTest<
     key ?? null,
   );
 
-  return isolate as TIsolateTest<F, G>;
+  return isolate as TIsolateTest<F>;
 }
 
 export function IsolateTestBase() {
@@ -50,21 +42,15 @@ export function IsolateTestBase() {
   };
 }
 
-export type IsolateTestPayload<
-  F extends TFieldName = TFieldName,
-  G extends TGroupName = TGroupName,
-> = CommonTestFields<F, G> & {
-  severity: TestSeverity;
-  status: TestStatus;
-  asyncTest?: AsyncTest;
-};
+export type IsolateTestPayload<F extends TFieldName = TFieldName> =
+  CommonTestFields<F> & {
+    severity: TestSeverity;
+    status: TestStatus;
+    asyncTest?: AsyncTest;
+  };
 
-type CommonTestFields<
-  F extends TFieldName = TFieldName,
-  G extends TGroupName = TGroupName,
-> = {
+type CommonTestFields<F extends TFieldName = TFieldName> = {
   message?: Maybe<string>;
-  groupName?: G;
   fieldName: F;
   testFn: TestFn;
 };

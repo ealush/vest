@@ -206,14 +206,14 @@ export function pluck(
 
 // Returns the closest ancestor Isolate object of the given
 //startNode that satisfies the given predicate function.
-export function closest(
+export function closest<I extends TIsolate = TIsolate>(
   startNode: TIsolate,
   predicate: (node: TIsolate) => boolean,
-): Nullable<TIsolate> {
+): Nullable<I> {
   let current: Nullable<TIsolate> = startNode;
   do {
     if (predicate(current)) {
-      return current;
+      return current as I;
     }
     current = current.parent;
   } while (current);

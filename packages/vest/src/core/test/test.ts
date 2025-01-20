@@ -1,9 +1,8 @@
-import { assign, invariant, isFunction, isStringValue, text } from 'vest-utils';
+import { invariant, isFunction, isStringValue, text } from 'vest-utils';
 import { Bus, IsolateKey } from 'vestjs-runtime';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { IsolateTest, TIsolateTest } from 'IsolateTest';
-import { useGroupName } from 'SuiteContext';
 import { TFieldName } from 'SuiteResultTypes';
 import { TestFn } from 'TestTypes';
 import { useAttemptRunTest } from 'runTest';
@@ -40,9 +39,7 @@ function vestTest<F extends TFieldName>(
 
   validateTestParams(fieldName, testFn);
 
-  const groupName = useGroupName();
-
-  const testObjectInput = { fieldName, groupName, message, testFn };
+  const testObjectInput = { fieldName, message, testFn };
 
   // This invalidates the suite cache.
   Bus.useEmit('TEST_RUN_STARTED');

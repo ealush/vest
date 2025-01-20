@@ -1,5 +1,16 @@
-import { Maybe, invariant, isPromise, optionalFunctionValue } from 'vest-utils';
-import { IsolateMutator, IsolateSelectors, TIsolate } from 'vestjs-runtime';
+import {
+  Maybe,
+  Nullable,
+  invariant,
+  isPromise,
+  optionalFunctionValue,
+} from 'vest-utils';
+import {
+  IsolateMutator,
+  IsolateSelectors,
+  TIsolate,
+  Walker,
+} from 'vestjs-runtime';
 
 import { ErrorStrings } from 'ErrorStrings';
 import type { TIsolateTest } from 'IsolateTest';
@@ -12,18 +23,24 @@ import { TestSeverity } from 'Severity';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { VestIsolate } from 'VestIsolate';
 import { VestIsolateType } from 'VestIsolateType';
+import { TIsolateGroup } from 'group';
 
 export class VestTest extends VestIsolate {
   static stateMachine = IsolateTestStateMachine;
 
   // Read
 
-  static getData<
-    F extends TFieldName = TFieldName,
-    G extends TGroupName = TGroupName,
-  >(test: TIsolateTest<F, G>) {
+  static getData<F extends TFieldName = TFieldName>(test: TIsolateTest<F>) {
     invariant(test.data);
     return test.data;
+  }
+
+  static getGroupName<G extends TGroupName>(test: TIsolateTest): Maybe<G> {
+    // FIXME: Do not require casting. allow to pass the type as a generic to closest
+    const group = Walker.closest(test, i =>
+      IsolateSelectors.isIsolateType(i, VestIsolateType.Group),
+    ) as Nullable<TIsolateGroup<G>>;
+    return group?.data.groupName;
   }
 
   static is(isolate?: Maybe<TIsolate>): isolate is TIsolateTest {
@@ -37,11 +54,11 @@ export class VestTest extends VestIsolate {
     invariant(VestTest.is(isolate), ErrorStrings.EXPECTED_VEST_TEST);
   }
 
-  static cast<F extends TFieldName = string, G extends TGroupName = string>(
+  static cast<F extends TFieldName = string>(
     isolate?: Maybe<TIsolate>,
-  ): TIsolateTest<F, G> {
+  ): TIsolateTest<F> {
     VestTest.isX(isolate);
-    return isolate as TIsolateTest<F, G>;
+    return isolate as TIsolateTest<F>;
   }
 
   static warns(test: TIsolateTest): boolean {

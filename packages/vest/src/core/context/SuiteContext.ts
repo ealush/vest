@@ -24,17 +24,12 @@ type CTXType = {
   mode: TinyState<Modes>;
   suiteParams: any[];
   currentTest?: TIsolateTest;
-  groupName?: string;
   skipped?: boolean;
   omitted?: boolean;
 };
 
 export function useCurrentTest(msg?: string) {
   return SuiteContext.useX(msg).currentTest;
-}
-
-export function useGroupName() {
-  return SuiteContext.useX().groupName;
 }
 
 export function useInclusion() {

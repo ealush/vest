@@ -1,10 +1,4 @@
-import {
-  Maybe,
-  Nullable,
-  invariant,
-  isPromise,
-  optionalFunctionValue,
-} from 'vest-utils';
+import { Maybe, invariant, isPromise, optionalFunctionValue } from 'vest-utils';
 import {
   IsolateMutator,
   IsolateSelectors,
@@ -36,10 +30,9 @@ export class VestTest extends VestIsolate {
   }
 
   static getGroupName<G extends TGroupName>(test: TIsolateTest): Maybe<G> {
-    // FIXME: Do not require casting. allow to pass the type as a generic to closest
-    const group = Walker.closest(test, i =>
+    const group = Walker.closest<TIsolateGroup<G>>(test, i =>
       IsolateSelectors.isIsolateType(i, VestIsolateType.Group),
-    ) as Nullable<TIsolateGroup<G>>;
+    );
     return group?.data.groupName;
   }
 

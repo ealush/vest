@@ -1,4 +1,4 @@
-import { Maybe, invariant, isPromise, optionalFunctionValue } from 'vest-utils';
+import { Maybe, invariant, isPromise, dynamicValue } from 'vest-utils';
 import {
   IsolateMutator,
   IsolateSelectors,
@@ -146,7 +146,7 @@ export class VestTest extends VestIsolate {
       | ((current: TIsolateTest['data']) => TIsolateTest['data'])
       | TIsolateTest['data'],
   ): void {
-    test.data = optionalFunctionValue(setter, VestTest.getData(test));
+    test.data = dynamicValue(setter, VestTest.getData(test));
   }
 
   static skip(test: TIsolateTest, force?: boolean): void {

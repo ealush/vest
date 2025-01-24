@@ -1,6 +1,6 @@
 import {
   mapFirst,
-  optionalFunctionValue,
+  dynamicValue,
   CB,
   Stringable,
   Maybe,
@@ -39,8 +39,7 @@ export default function genEnforceLazy(key: string) {
                 !res.pass,
                 ruleReturn(
                   !!res.pass,
-                  optionalFunctionValue(lazyMessage, value, res.message) ??
-                    res.message,
+                  dynamicValue(lazyMessage, value, res.message) ?? res.message,
                 ),
               );
             }),

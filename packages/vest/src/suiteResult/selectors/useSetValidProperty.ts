@@ -5,19 +5,14 @@ import { VestRuntime } from 'vestjs-runtime';
 import { SuiteOptionalFields, TIsolateSuite } from 'IsolateSuite';
 import { TIsolateTest } from 'IsolateTest';
 import { OptionalFieldTypes } from 'OptionalTypes';
-import { Severity } from 'Severity';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { TFieldName } from 'SuiteResultTypes';
 import { SuiteWalker } from 'SuiteWalker';
 import { TestWalker } from 'TestWalker';
 import { VestTest } from 'VestTest';
-import {
-  hasErrorsByTestObjects,
-  hasGroupFailuresByTestObjects,
-} from 'hasFailuresByTestObjects';
+import { hasErrorsByTestObjects } from 'hasFailuresByTestObjects';
 import { nonMatchingFieldName } from 'matchingFieldName';
-import { nonMatchingGroupName } from 'matchingGroupName';
 
-export function useShouldAddValidProperty(fieldName?: TFieldName): boolean {
+export function useSetValidProperty(fieldName?: TFieldName): boolean {
   // Is the field optional, and the optional condition is applied
   if (useIsOptionalFieldApplied(fieldName)) {
     return true;
@@ -42,26 +37,6 @@ export function useShouldAddValidProperty(fieldName?: TFieldName): boolean {
   return useNoMissingTests(fieldName);
 }
 
-export function useShouldAddValidPropertyInGroup(
-  groupName: TGroupName,
-  fieldName: TFieldName,
-): boolean {
-  if (useIsOptionalFieldApplied(fieldName)) {
-    return true;
-  }
-
-  if (hasGroupFailuresByTestObjects(Severity.ERRORS, groupName, fieldName)) {
-    return false;
-  }
-
-  // Do the given group/field have any pending tests that are not optional?
-  if (useHasNonOptionalIncompleteByGroup(groupName, fieldName)) {
-    return false;
-  }
-
-  return useNoMissingTestsByGroup(groupName, fieldName);
-}
-
 // Does the given field have any pending tests that are not optional?
 function useHasNonOptionalIncomplete(fieldName?: TFieldName) {
   return SuiteWalker.useHasPending(
@@ -74,41 +49,10 @@ function useHasNonOptionalIncomplete(fieldName?: TFieldName) {
   );
 }
 
-// Do the given group/field have any pending tests that are not optional?
-function useHasNonOptionalIncompleteByGroup(
-  groupName: TGroupName,
-  fieldName: TFieldName,
-): boolean {
-  return SuiteWalker.useHasPending(
-    Predicates.all(
-      VestTest.is,
-      (testObject: TIsolateTest) =>
-        !nonMatchingGroupName(testObject, groupName),
-      (testObject: TIsolateTest) =>
-        !nonMatchingFieldName(VestTest.getData(testObject), fieldName),
-      () => !useIsOptionalFieldApplied(fieldName),
-    ),
-  );
-}
-
 // Did all of the tests for the provided field run/omit?
 // This makes sure that the fields are not skipped or pending.
 function useNoMissingTests(fieldName?: string): boolean {
   return TestWalker.everyTest(testObject => {
-    return useNoMissingTestsLogic(testObject, fieldName);
-  });
-}
-
-// Does the group have no missing tests?
-function useNoMissingTestsByGroup(
-  groupName: TGroupName,
-  fieldName?: TFieldName,
-): boolean {
-  return TestWalker.everyTest(testObject => {
-    if (nonMatchingGroupName(testObject, groupName)) {
-      return true;
-    }
-
     return useNoMissingTestsLogic(testObject, fieldName);
   });
 }

@@ -47,7 +47,6 @@ describe('typed suite', () => {
     res.hasWarningsByGroup('G2');
     res.hasWarningsByGroup('G3', 'F1');
     res.isValid('F1');
-    res.isValidByGroup('G2', 'F1');
 
     // @ts-expect-error
     res.hasErrors('F5');

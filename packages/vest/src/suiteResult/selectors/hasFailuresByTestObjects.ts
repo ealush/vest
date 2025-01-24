@@ -2,12 +2,10 @@ import { isEmpty } from 'vest-utils';
 
 import { TIsolateTest } from 'IsolateTest';
 import { Severity } from 'Severity';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { TFieldName } from 'SuiteResultTypes';
 import { SuiteWalker } from 'SuiteWalker';
-import { TestWalker } from 'TestWalker';
 import { VestTest } from 'VestTest';
 import { nonMatchingFieldName } from 'matchingFieldName';
-import { nonMatchingGroupName } from 'matchingGroupName';
 import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
 
 /**
@@ -34,20 +32,6 @@ function hasFailuresByTestObjects(
   }
 
   return true;
-}
-
-export function hasGroupFailuresByTestObjects(
-  severityKey: Severity,
-  groupName: TGroupName,
-  fieldName?: TFieldName,
-): boolean {
-  return TestWalker.someTests(testObject => {
-    if (nonMatchingGroupName(testObject, groupName)) {
-      return false;
-    }
-
-    return hasFailuresByTestObject(testObject, severityKey, fieldName);
-  });
 }
 
 /**

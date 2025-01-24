@@ -1,8 +1,8 @@
-import { TTestSuite } from 'TVestMock';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { dummyTest } from '../../testUtils/testDummy';
 
+import { TTestSuite } from 'TVestMock';
 import * as vest from 'vest';
 
 describe('skipWhen', () => {

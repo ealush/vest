@@ -26,20 +26,25 @@ export class SuiteSummary<
 export type TestsContainer<F extends TFieldName, G extends TGroupName> =
   | Group<G>
   | Tests<F>;
-export type GroupTestSummary = SingleTestSummary;
 
 export type Groups<G extends TGroupName, F extends TFieldName> = Record<
   G,
   Group<F>
 >;
-export type Group<F extends TFieldName> = Record<F, GroupTestSummary>;
+export type Group<F extends TFieldName> = Record<F, CommonSummaryProperties>;
 export type Tests<F extends TFieldName> = Record<F, SingleTestSummary>;
 
-export type SingleTestSummary = SummaryBase & {
+export type SingleTestSummary = SummaryBase &
+  CommonSummaryProperties &
+  ValidProperty;
+
+type ValidProperty = {
+  valid: Nullable<boolean>;
+};
+
+export type CommonSummaryProperties = SummaryBase & {
   errors: string[];
   warnings: string[];
-  valid: Nullable<boolean>;
-  pendingCount: number;
 };
 
 export type GetFailuresResponse = FailureMessages | string[];

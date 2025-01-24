@@ -53,10 +53,6 @@ describe('named group', () => {
     expect(cb2).toHaveBeenCalled();
     expect(cb3).toHaveBeenCalled();
     expect(res.isValid()).toBe(false);
-    expect(res.isValidByGroup(GroupNames.G1)).toBe(false);
-    expect(res.isValidByGroup(GroupNames.G1, FieldNames.F1)).toBe(false);
-    expect(res.isValidByGroup(GroupNames.G1, FieldNames.F2)).toBe(false);
-    expect(res.isValidByGroup(GroupNames.G1, FieldNames.F3)).toBe(true);
     expect(res.tests[FieldNames.F1].testCount).toBe(2);
     expect(res.tests[FieldNames.F1].pendingCount).toBe(0);
     expect(res.tests[FieldNames.F2].testCount).toBe(1);
@@ -116,15 +112,7 @@ describe('named group', () => {
       expect(cb2).toHaveBeenCalledTimes(2);
       expect(cb3).toHaveBeenCalledTimes(2);
       expect(res.isValid()).toBe(false);
-      expect(res.isValidByGroup(GroupNames.G1)).toBe(false);
-      expect(res.isValidByGroup(GroupNames.G1, FieldNames.F1)).toBe(false);
-      expect(res.isValidByGroup(GroupNames.G1, FieldNames.F2)).toBe(false);
-      expect(res.isValidByGroup(GroupNames.G1, FieldNames.F3)).toBe(true);
-      expect(res.isValidByGroup(GroupNames.G2)).toBe(false);
 
-      expect(res.isValidByGroup(GroupNames.G2, FieldNames.F1)).toBe(false);
-      expect(res.isValidByGroup(GroupNames.G2, FieldNames.F2)).toBe(false);
-      expect(res.isValidByGroup(GroupNames.G2, FieldNames.F3)).toBe(true);
       expect(res.tests[FieldNames.F1].testCount).toBe(3);
       expect(res.tests[FieldNames.F2].testCount).toBe(2);
       expect(res.tests[FieldNames.F3].testCount).toBe(2);
@@ -171,9 +159,6 @@ describe('named group', () => {
         expect(res.groups[GroupNames.G1][FieldNames.F1].testCount).toBe(0);
         expect(res.groups[GroupNames.G1][FieldNames.F2].testCount).toBe(1);
         expect(res.isValid()).toBe(false);
-        expect(res.isValidByGroup(GroupNames.G1)).toBe(false);
-        expect(res.isValidByGroup(GroupNames.G1, FieldNames.F1)).toBe(false);
-        expect(res.isValidByGroup(GroupNames.G1, FieldNames.F2)).toBe(false);
         expect(res.hasErrors(FieldNames.F1)).toBe(false);
         expect(res.hasErrors(FieldNames.F2)).toBe(true);
         expect(suite.get()).toMatchSnapshot();
@@ -205,9 +190,6 @@ describe('named group', () => {
         expect(res.groups[GroupNames.G1][FieldNames.F1].testCount).toBe(1);
         expect(res.groups[GroupNames.G1][FieldNames.F2].testCount).toBe(0);
         expect(res.isValid()).toBe(false);
-        expect(res.isValidByGroup(GroupNames.G1)).toBe(false);
-        expect(res.isValidByGroup(GroupNames.G1, FieldNames.F1)).toBe(false);
-        expect(res.isValidByGroup(GroupNames.G1, FieldNames.F2)).toBe(false);
         expect(res.hasErrors(FieldNames.F1)).toBe(true);
         expect(res.hasErrors(FieldNames.F2)).toBe(true);
         expect(suite.get()).toMatchSnapshot();
@@ -240,11 +222,6 @@ describe('named group', () => {
         expect(res.groups[GroupNames.G1][FieldNames.F2].testCount).toBe(0);
         expect(res.groups[GroupNames.G2][FieldNames.F2].testCount).toBe(1);
         expect(res.isValid()).toBe(false);
-        expect(res.isValidByGroup(GroupNames.G1)).toBe(false);
-        expect(res.isValidByGroup(GroupNames.G1, FieldNames.F1)).toBe(false);
-        expect(res.isValidByGroup(GroupNames.G1, FieldNames.F2)).toBe(false);
-        expect(res.isValidByGroup(GroupNames.G2)).toBe(false);
-        expect(res.isValidByGroup(GroupNames.G2, FieldNames.F2)).toBe(false);
         expect(res.hasErrors(FieldNames.F1)).toBe(true);
         expect(res.hasErrors(FieldNames.F2)).toBe(true);
         expect(suite.get()).toMatchSnapshot();
@@ -284,12 +261,6 @@ describe('named group', () => {
           expect(res.groups[GroupNames.G2][FieldNames.F2].testCount).toBe(1);
           expect(res.groups[GroupNames.G2][FieldNames.F3].testCount).toBe(1);
           expect(res.isValid()).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G1)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G1, FieldNames.F1)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G1, FieldNames.F2)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G2)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G2, FieldNames.F2)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G2, FieldNames.F3)).toBe(false);
           expect(res.hasErrors(FieldNames.F1)).toBe(true);
           expect(res.hasErrors(FieldNames.F2)).toBe(true);
           expect(res.hasErrors(FieldNames.F3)).toBe(true);
@@ -339,15 +310,7 @@ describe('named group', () => {
           expect(res.groups[GroupNames.G2][FieldNames.F2].testCount).toBe(0);
           expect(res.groups[GroupNames.G2][FieldNames.F3].testCount).toBe(0);
           expect(res.isValid()).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G1)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G1, FieldNames.F1)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G1, FieldNames.F2)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G1, FieldNames.F3)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G2)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G2, FieldNames.F1)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G2, FieldNames.F2)).toBe(false);
 
-          expect(res.isValidByGroup(GroupNames.G2, FieldNames.F3)).toBe(false);
           expect(res.hasErrors(FieldNames.F1)).toBe(true);
           expect(res.hasErrors(FieldNames.F2)).toBe(false);
           expect(res.hasErrors(FieldNames.F3)).toBe(false);
@@ -390,14 +353,6 @@ describe('named group', () => {
           expect(res.groups[GroupNames.G2][FieldNames.F2].testCount).toBe(1);
           expect(res.groups[GroupNames.G2][FieldNames.F3].testCount).toBe(1);
           expect(res.isValid()).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G1)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G1, FieldNames.F1)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G1, FieldNames.F2)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G1, FieldNames.F3)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G2)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G2, FieldNames.F1)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G2, FieldNames.F2)).toBe(false);
-          expect(res.isValidByGroup(GroupNames.G2, FieldNames.F3)).toBe(false);
           expect(res.hasErrors(FieldNames.F1)).toBe(true);
           expect(res.hasErrors(FieldNames.F2)).toBe(true);
           expect(res.hasErrors(FieldNames.F3)).toBe(true);

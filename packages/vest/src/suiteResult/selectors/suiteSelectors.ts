@@ -8,7 +8,6 @@ import {
   SuiteSummary,
   TFieldName,
   TGroupName,
-  TestsContainer,
 } from 'SuiteResultTypes';
 import { SummaryFailure } from 'SummaryFailure';
 import { gatherFailures } from 'collectFailures';
@@ -51,9 +50,6 @@ export function bindSuiteSelectors<F extends TFieldName, G extends TGroupName>(
       get().isTested(...args),
     isValid: (...args: Parameters<SuiteSelectors<F, G>['isValid']>) =>
       get().isValid(...args),
-    isValidByGroup: (
-      ...args: Parameters<SuiteSelectors<F, G>['isValidByGroup']>
-    ) => get().isValidByGroup(...args),
   } as SuiteSelectors<F, G>;
 }
 
@@ -76,7 +72,6 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     isPending,
     isTested,
     isValid,
-    isValidByGroup,
   };
 
   return selectors;
@@ -85,25 +80,6 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
 
   function isValid(fieldName?: F): boolean {
     return Boolean(fieldName ? summary.tests[fieldName]?.valid : summary.valid);
-  }
-
-  function isValidByGroup(groupName: G, fieldName?: F): boolean {
-    const group = summary.groups[groupName];
-
-    if (!group) {
-      return false;
-    }
-
-    if (fieldName) {
-      return isFieldValid(group, fieldName);
-    }
-    for (const fieldName in group) {
-      if (!isFieldValid(group, fieldName)) {
-        return false;
-      }
-    }
-
-    return true;
   }
 
   function hasWarnings(fieldName?: F): boolean {
@@ -221,7 +197,6 @@ export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
   isTested(fieldName: F): boolean;
   isPending(fieldName?: F): boolean;
   isValid(fieldName?: F): boolean;
-  isValidByGroup(groupName: G, fieldName?: F): boolean;
 }
 
 // Gathers all failures of a given severity
@@ -252,13 +227,6 @@ function getFailuresByGroup(
   fieldName?: TFieldName,
 ): GetFailuresResponse {
   return gatherFailures(summary.groups[groupName], severityKey, fieldName);
-}
-// Checks if a field is valid within a container object - can be within a group or top level
-function isFieldValid(
-  testContainer: TestsContainer<TFieldName, TGroupName>,
-  fieldName: TFieldName,
-): boolean {
-  return !!testContainer[fieldName]?.valid;
 }
 
 // Checks if a there are any failures of a given severity within a group

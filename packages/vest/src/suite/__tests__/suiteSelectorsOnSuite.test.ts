@@ -1,6 +1,6 @@
-import { TTestSuite } from 'TVestMock';
 import { describe, test, expect, beforeEach } from 'vitest';
 
+import { TTestSuite } from 'TVestMock';
 import * as vest from 'vest';
 
 describe('Suite Selectors on Suite', () => {
@@ -108,6 +108,5 @@ describe('Suite Selectors on Suite', () => {
     expect(res.isValid('f2')).toEqual(suite.isValid('f2'));
     expect(res.isValid('f3')).toEqual(suite.isValid('f3'));
     expect(res.isValid('f4')).toEqual(suite.isValid('f4'));
-    expect(res.isValidByGroup('g1')).toEqual(suite.isValidByGroup('g1'));
   });
 });

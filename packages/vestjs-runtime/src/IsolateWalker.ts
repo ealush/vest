@@ -1,4 +1,4 @@
-import { CB, Nullable, isNullish, optionalFunctionValue } from 'vest-utils';
+import { CB, Nullable, isNullish, dynamicValue } from 'vest-utils';
 
 import { type TIsolate } from 'Isolate';
 import { IsolateMutator } from 'IsolateMutator';
@@ -38,7 +38,7 @@ export function walk(
   }
 
   // If visitOnly is not provided or the predicate is satisfied, call the callback function.
-  if (isNullish(visitOnly) || optionalFunctionValue(visitOnly, startNode)) {
+  if (isNullish(visitOnly) || dynamicValue(visitOnly, startNode)) {
     callback(startNode, breakout);
   }
 

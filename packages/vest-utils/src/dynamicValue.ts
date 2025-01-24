@@ -1,7 +1,7 @@
 import isFunction from 'isFunction';
 import { DynamicValue } from 'utilityTypes';
 
-export default function optionalFunctionValue<T>(
+export default function dynamicValue<T>(
   value: DynamicValue<T>,
   ...args: unknown[]
 ): T {

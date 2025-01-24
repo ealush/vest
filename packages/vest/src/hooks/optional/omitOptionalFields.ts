@@ -1,4 +1,4 @@
-import { isEmpty, optionalFunctionValue } from 'vest-utils';
+import { isEmpty, dynamicValue } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { SuiteOptionalFields, TIsolateSuite } from 'IsolateSuite';
@@ -66,7 +66,7 @@ export function useOmitOptionalFields(): void {
     );
 
     // If the optional was set to a function or a boolean, run it and verify/omit the test
-    if (optionalFunctionValue(optionalConfig.rule) === true) {
+    if (dynamicValue(optionalConfig.rule) === true) {
       shouldOmit.add(fieldName);
     }
 

@@ -4,7 +4,7 @@ import {
   Nullable,
   invariant,
   isNullish,
-  optionalFunctionValue,
+  dynamicValue,
 } from 'vest-utils';
 
 import { type TIsolate } from 'Isolate';
@@ -77,10 +77,7 @@ export class Reconciler {
     const prevNodeByKey = VestRuntime.useHistoryKey(node.key);
     let nextNode = node;
 
-    if (
-      !isNullish(prevNodeByKey) &&
-      !optionalFunctionValue(revoke, prevNodeByKey)
-    ) {
+    if (!isNullish(prevNodeByKey) && !dynamicValue(revoke, prevNodeByKey)) {
       nextNode = prevNodeByKey;
     }
 

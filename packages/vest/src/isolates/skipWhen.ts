@@ -1,4 +1,4 @@
-import { CB, optionalFunctionValue } from 'vest-utils';
+import { CB, dynamicValue } from 'vest-utils';
 import { Isolate } from 'vestjs-runtime';
 
 import { LazyDraft } from 'LazyDraft';
@@ -29,7 +29,7 @@ export function skipWhen<F extends TFieldName, G extends TGroupName>(
           // we should skip the test if the parent conditional is true.
           useIsExcludedIndividually() ||
           // Otherwise, we should skip the test if the conditional is true.
-          optionalFunctionValue(condition, LazyDraft<F, G>()),
+          dynamicValue(condition, LazyDraft<F, G>()),
       },
       callback,
     );

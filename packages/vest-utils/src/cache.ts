@@ -1,4 +1,4 @@
-import { optionalFunctionValue } from 'vest-utils';
+import { dynamicValue } from 'vest-utils';
 
 import { lengthEquals } from 'lengthEquals';
 import { longerThan } from 'longerThan';
@@ -15,7 +15,7 @@ export default function createCache<T = unknown>(maxSize = 1): CacheApi<T> {
     // cache hit is not null
     if (cacheHit) return cacheHit[1];
 
-    const result = optionalFunctionValue(cacheAction);
+    const result = dynamicValue(cacheAction);
     cacheStorage.unshift([deps.concat(), result]);
 
     trimToSize();

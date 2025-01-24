@@ -6,7 +6,7 @@ export { default as asArray } from 'asArray';
 export { default as callEach } from 'callEach';
 export { default as hasOwnProperty } from 'hasOwnProperty';
 export { default as isPromise } from 'isPromise';
-export { default as optionalFunctionValue } from 'optionalFunctionValue';
+export { default as dynamicValue } from 'dynamicValue';
 export { default as assign } from 'assign';
 export { default as defaultTo } from 'defaultTo';
 export { default as invariant } from 'invariant';

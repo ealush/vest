@@ -1,4 +1,4 @@
-import optionalFunctionValue from 'optionalFunctionValue';
+import dynamicValue from 'dynamicValue';
 import { DynamicValue } from 'utilityTypes';
 
 export function createTinyState<S>(
@@ -11,11 +11,11 @@ export function createTinyState<S>(
   return () => [value, setValue, resetValue];
 
   function setValue(nextValue: SetValueInput<S>) {
-    value = optionalFunctionValue(nextValue, value);
+    value = dynamicValue(nextValue, value);
   }
 
   function resetValue() {
-    setValue(optionalFunctionValue(initialValue));
+    setValue(dynamicValue(initialValue));
   }
 }
 

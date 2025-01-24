@@ -1,4 +1,4 @@
-import { isStringValue, invariant, optionalFunctionValue } from 'vest-utils';
+import { isStringValue, invariant, dynamicValue } from 'vest-utils';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { TIsolateTest } from 'IsolateTest';
@@ -55,10 +55,7 @@ export function include<F extends TFieldName, G extends TGroupName>(
         return useHasOnliedTests(currentNode, condition);
       }
 
-      return optionalFunctionValue(
-        condition,
-        optionalFunctionValue(useCreateSuiteResult),
-      );
+      return dynamicValue(condition, dynamicValue(useCreateSuiteResult));
     };
   }
 }

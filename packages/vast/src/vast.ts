@@ -1,10 +1,4 @@
-import {
-  CB,
-  DynamicValue,
-  Maybe,
-  isFunction,
-  optionalFunctionValue,
-} from 'vest-utils';
+import { CB, DynamicValue, Maybe, isFunction, dynamicValue } from 'vest-utils';
 
 // eslint-disable-next-line max-lines-per-function
 export function createState(
@@ -62,13 +56,13 @@ export function createState(
     prevState?: Maybe<S>,
   ) {
     current().push();
-    set(key, optionalFunctionValue(initialState, prevState));
+    set(key, dynamicValue(initialState, prevState));
 
     return function useStateKey(): StateHandlerReturn<S> {
       return [
         current()[key],
         (nextState: SetStateInput<S>) =>
-          set(key, optionalFunctionValue(nextState, current()[key])),
+          set(key, dynamicValue(nextState, current()[key])),
       ];
     };
   }

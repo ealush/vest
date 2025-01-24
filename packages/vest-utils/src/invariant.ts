@@ -1,4 +1,4 @@
-import optionalFunctionValue from 'optionalFunctionValue';
+import dynamicValue from 'dynamicValue';
 import type { Stringable } from 'utilityTypes';
 
 export default function invariant(
@@ -15,5 +15,5 @@ export default function invariant(
   // Alternatively, throw an error with the message
   throw message instanceof String
     ? message.valueOf()
-    : new Error(message ? optionalFunctionValue(message) : message);
+    : new Error(message ? dynamicValue(message) : message);
 }

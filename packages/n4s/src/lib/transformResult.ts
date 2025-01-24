@@ -1,4 +1,4 @@
-import { invariant, optionalFunctionValue, isBoolean } from 'vest-utils';
+import { invariant, dynamicValue, isBoolean } from 'vest-utils';
 
 import ruleReturn, { RuleReturn, RuleDetailedResult } from 'ruleReturn';
 import type { RuleValue, Args } from 'runtimeRules';
@@ -20,7 +20,7 @@ export function transformResult(
   }
   return ruleReturn(
     result.pass,
-    optionalFunctionValue(result.message, ruleName, value, ...args),
+    dynamicValue(result.message, ruleName, value, ...args),
   );
 }
 

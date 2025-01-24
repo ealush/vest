@@ -1,5 +1,5 @@
 import type { CB } from 'vest-utils';
-import { optionalFunctionValue } from 'vest-utils';
+import { dynamicValue } from 'vest-utils';
 import { Isolate } from 'vestjs-runtime';
 
 import { LazyDraft } from 'LazyDraft';
@@ -27,7 +27,7 @@ export function omitWhen<F extends TFieldName, G extends TGroupName>(
       {
         omitted:
           useWithinActiveOmitWhen() ||
-          optionalFunctionValue(conditional, LazyDraft<F, G>()),
+          dynamicValue(conditional, LazyDraft<F, G>()),
       },
       callback,
     );

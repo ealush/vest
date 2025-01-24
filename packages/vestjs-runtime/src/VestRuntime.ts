@@ -7,7 +7,7 @@ import {
   assign,
   TinyState,
   text,
-  optionalFunctionValue,
+  dynamicValue,
   tinyState,
   BusType,
   bus,
@@ -81,7 +81,7 @@ export function createRef(
   return Object.freeze({
     Bus: bus.createBus(),
     Reconciler,
-    appData: optionalFunctionValue(setter),
+    appData: dynamicValue(setter),
     historyRoot: tinyState.createTinyState<Nullable<TIsolate>>(null),
   });
 }

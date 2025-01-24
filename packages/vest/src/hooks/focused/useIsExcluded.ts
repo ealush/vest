@@ -1,4 +1,4 @@
-import { Nullable, optionalFunctionValue } from 'vest-utils';
+import { Nullable, dynamicValue } from 'vest-utils';
 import { TIsolate, Walker } from 'vestjs-runtime';
 
 import { TIsolateTest } from 'IsolateTest';
@@ -37,7 +37,7 @@ export function useIsExcluded(testObject: TIsolateTest): boolean {
   // If there is _ANY_ `only`ed test (and we already know this one isn't) return true
   if (useHasOnliedTests(testObject)) {
     // Check if inclusion rules for this field (`include` hook)
-    return !optionalFunctionValue(inclusion[fieldName], testObject);
+    return !dynamicValue(inclusion[fieldName], testObject);
   }
 
   // We're done here. This field is not excluded

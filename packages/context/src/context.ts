@@ -3,7 +3,7 @@ import {
   assign,
   defaultTo,
   invariant,
-  optionalFunctionValue,
+  dynamicValue,
   Nullable,
 } from 'vest-utils';
 
@@ -72,7 +72,7 @@ export function createCascade<T extends Record<string, unknown>>(
     const out = assign(
       {},
       parentContext ? parentContext : {},
-      optionalFunctionValue(init, value, parentContext) ?? value,
+      dynamicValue(init, value, parentContext) ?? value,
     ) as T;
 
     return ctx.run(Object.freeze(out), fn) as R;

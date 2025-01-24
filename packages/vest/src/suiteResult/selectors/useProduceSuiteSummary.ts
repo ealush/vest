@@ -3,6 +3,7 @@ import { Maybe, assign, defaultTo } from 'vest-utils';
 import { TIsolateTest } from 'IsolateTest';
 import { countKeyBySeverity, Severity } from 'Severity';
 import {
+  CommonSummaryProperties,
   Groups,
   SingleTestSummary,
   SuiteSummary,
@@ -14,10 +15,7 @@ import {
 import { SummaryFailure } from 'SummaryFailure';
 import { TestWalker } from 'TestWalker';
 import { VestTest } from 'VestTest';
-import {
-  useShouldAddValidProperty,
-  useShouldAddValidPropertyInGroup,
-} from 'shouldAddValidProperty';
+import { useSetValidProperty } from 'useSetValidProperty';
 
 export function useProduceSuiteSummary<
   F extends TFieldName,
@@ -41,7 +39,9 @@ export function useProduceSuiteSummary<
     new SuiteSummary(),
   );
 
-  summary.valid = summary.valid === false ? false : useShouldAddValidProperty();
+  if (summary.valid !== false) {
+    summary.valid = useSetValidProperty();
+  }
 
   return summary;
 }
@@ -75,17 +75,19 @@ function useAppendToTest<F extends TFieldName>(
 ): SingleTestSummary {
   const fieldName = VestTest.getData<F>(testObject).fieldName;
 
-  const test = appendTestObject(tests[fieldName], testObject);
+  const test = appendTestSummaryObject<SingleTestSummary>(
+    tests[fieldName],
+    testObject,
+  );
+
   // If `valid` is false to begin with, keep it that way. Otherwise, assess.
-  test.valid =
-    test.valid === false ? false : useShouldAddValidProperty(fieldName);
+  if (test.valid !== false) {
+    test.valid = useSetValidProperty(fieldName);
+  }
 
   return test;
 }
 
-/**
- * Appends to a group object if within a group
- */
 function useAppendToGroup(
   groups: Groups<TGroupName, TFieldName>,
   testObject: TIsolateTest,
@@ -99,12 +101,11 @@ function useAppendToGroup(
 
   groups[groupName] = groups[groupName] || {};
   const group = groups[groupName];
-  group[fieldName] = appendTestObject(group[fieldName], testObject);
 
-  group[fieldName].valid =
-    group[fieldName].valid === false
-      ? false
-      : useShouldAddValidPropertyInGroup(groupName, fieldName);
+  group[fieldName] = appendTestSummaryObject<CommonSummaryProperties>(
+    group[fieldName],
+    testObject,
+  );
 
   return groups;
 }
@@ -113,14 +114,14 @@ function useAppendToGroup(
  * Appends the test to a results object.
  */
 // eslint-disable-next-line max-statements, complexity
-function appendTestObject(
-  summaryKey: Maybe<SingleTestSummary>,
+function appendTestSummaryObject<S extends CommonSummaryProperties>(
+  summaryKey: Maybe<S>,
   testObject: TIsolateTest,
-): SingleTestSummary {
+): S {
   const { message } = VestTest.getData(testObject);
 
   // Let's first create a new object, so we don't mutate the original.
-  const nextSummaryKey = defaultTo<SingleTestSummary>(
+  const nextSummaryKey = defaultTo<S>(
     summaryKey ? { ...summaryKey } : null,
     baseTestStats,
   );
@@ -160,12 +161,11 @@ function appendTestObject(
   }
 }
 
-function baseTestStats() {
+function baseTestStats<S extends CommonSummaryProperties>(): S {
   return assign(new SummaryBase(), {
     errors: [],
-    valid: true,
     warnings: [],
-  });
+  }) as unknown as S;
 }
 
 function shouldCountTestRun<F extends TFieldName>(

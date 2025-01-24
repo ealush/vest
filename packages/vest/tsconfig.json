@@ -18,13 +18,13 @@
       "SummaryFailure": ["./src/suiteResult/SummaryFailure.ts"],
       "SuiteResultTypes": ["./src/suiteResult/SuiteResultTypes.ts"],
       "Severity": ["./src/suiteResult/Severity.ts"],
+      "useSetValidProperty": [
+        "./src/suiteResult/selectors/useSetValidProperty.ts"
+      ],
       "useProduceSuiteSummary": [
         "./src/suiteResult/selectors/useProduceSuiteSummary.ts"
       ],
       "suiteSelectors": ["./src/suiteResult/selectors/suiteSelectors.ts"],
-      "shouldAddValidProperty": [
-        "./src/suiteResult/selectors/shouldAddValidProperty.ts"
-      ],
       "hasFailuresByTestObjects": [
         "./src/suiteResult/selectors/hasFailuresByTestObjects.ts"
       ],

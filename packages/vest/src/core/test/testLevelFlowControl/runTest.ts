@@ -3,6 +3,7 @@ import { VestRuntime } from 'vestjs-runtime';
 
 import { ErrorStrings } from 'ErrorStrings';
 import { TIsolateTest } from 'IsolateTest';
+import { useAddTestThatRan } from 'Runtime';
 import { SuiteContext } from 'SuiteContext';
 import { TestResult } from 'TestTypes';
 import { VestTest } from 'VestTest';
@@ -56,10 +57,13 @@ function runSyncTest(testObject: TIsolateTest): TestResult {
  * runs test, if async - adds to pending array
  */
 function useRunTest(testObject: TIsolateTest): Promise<void> | undefined {
+  const { fieldName } = VestTest.getData(testObject);
   // Run test callback.
   // If a promise is returned, set as async and
   // Move to pending list.
   const result = runSyncTest(testObject);
+
+  useAddTestThatRan(fieldName);
   try {
     // try catch for safe property access
     // in case object is an enforce chain

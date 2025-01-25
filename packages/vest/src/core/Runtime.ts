@@ -38,6 +38,7 @@ type StateExtra = {
   suiteId: string;
   suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName>>;
   preAggCache: CacheApi<PreAggCache>;
+  fieldsThanRan: Set<TFieldName>;
 };
 const suiteResultCache = cache<SuiteResult<TFieldName, TGroupName>>();
 const preAggCache = cache<PreAggCache>();
@@ -52,6 +53,7 @@ export function useCreateVestState({
   const stateRef: StateExtra = {
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
+    fieldsThanRan: new Set<TFieldName>(),
     preAggCache,
     suiteId: seq(),
     suiteName,
@@ -67,6 +69,21 @@ function useX() {
 
 export function useDoneCallbacks() {
   return useX().doneCallbacks();
+}
+
+function useFieldsThatRan(): Set<TFieldName> {
+  return useX().fieldsThanRan;
+}
+
+export function useDidFieldRun<F extends TFieldName>(fieldName: F): boolean {
+  const fieldsThatRan = useFieldsThatRan();
+
+  return fieldsThatRan.has(fieldName);
+}
+
+export function useAddTestThatRan<F extends TFieldName>(fieldName: F): void {
+  const fieldsThatRan = useFieldsThatRan();
+  fieldsThatRan.add(fieldName);
 }
 
 export function useFieldCallbacks() {

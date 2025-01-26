@@ -15,6 +15,7 @@ import {
 import { SummaryFailure } from 'SummaryFailure';
 import { TestWalker } from 'TestWalker';
 import { VestTest } from 'VestTest';
+import { hasInvalidDependencies } from 'src/isolates/dependsOn';
 import { useSetValidProperty } from 'useSetValidProperty';
 
 export function useProduceSuiteSummary<
@@ -30,6 +31,9 @@ export function useProduceSuiteSummary<
 
       if (VestTest.isOmitted(testObject)) {
         return summary;
+      }
+      if (hasInvalidDependencies(testObject, summary)) {
+        summary.tests[fieldName].valid = false;
       }
       if (summary.tests[fieldName].valid === false) {
         summary.valid = false;

@@ -46,6 +46,7 @@
       "omitWhen": ["./src/isolates/omitWhen.ts"],
       "group": ["./src/isolates/group.ts"],
       "each": ["./src/isolates/each.ts"],
+      "dependsOn": ["./src/isolates/dependsOn.ts"],
       "warn": ["./src/hooks/warn.ts"],
       "include": ["./src/hooks/include.ts"],
       "optional": ["./src/hooks/optional/optional.ts"],

@@ -2,6 +2,7 @@ import { Nullable, dynamicValue } from 'vest-utils';
 import { TIsolate, Walker } from 'vestjs-runtime';
 
 import { TIsolateTest } from 'IsolateTest';
+import { useDidFieldRun } from 'Runtime';
 import { useInclusion } from 'SuiteContext';
 import { VestTest } from 'VestTest';
 import { FocusSelectors, TIsolateFocused } from 'focused';
@@ -21,6 +22,7 @@ function useClosestMatchingFocus(
   });
 }
 
+// eslint-disable-next-line max-statements, complexity
 export function useIsExcluded(testObject: TIsolateTest): boolean {
   const { fieldName } = VestTest.getData(testObject);
 

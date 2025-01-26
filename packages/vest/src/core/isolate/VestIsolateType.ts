@@ -1,5 +1,4 @@
 export const VestIsolateType = {
-  DependsOn: 'DependsOn',
   Each: 'Each',
   Focused: 'Focused',
   Group: 'Group',

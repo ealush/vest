@@ -9,7 +9,6 @@ import { VestTest } from 'VestTest';
 import { shouldUseErrorAsMessage } from 'shouldUseErrorMessage';
 import { useVerifyTestRun } from 'verifyTestRun';
 
-// eslint-disable-next-line max-statements
 export function useAttemptRunTest(testObject: TIsolateTest) {
   useVerifyTestRun(testObject);
 

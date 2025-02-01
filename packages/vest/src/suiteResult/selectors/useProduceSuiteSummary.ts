@@ -113,51 +113,55 @@ function useAppendToGroup(
 /**
  * Appends the test to a results object.
  */
-// eslint-disable-next-line max-statements, complexity
 function appendTestSummaryObject<S extends CommonSummaryProperties>(
   summaryKey: Maybe<S>,
   testObject: TIsolateTest,
 ): S {
-  const { message } = VestTest.getData(testObject);
+  const nextSummaryKey = createNewSummaryKey(summaryKey);
 
-  // Let's first create a new object, so we don't mutate the original.
-  const nextSummaryKey = defaultTo<S>(
-    summaryKey ? { ...summaryKey } : null,
-    baseTestStats,
-  );
-
-  // If the test is not actionable, we don't need to append it to the summary.
   if (VestTest.isNonActionable(testObject)) return nextSummaryKey;
 
-  // Increment the pending count if the test is pending.
+  return updateSummaryWithTestResults(nextSummaryKey, testObject);
+}
+
+function createNewSummaryKey<S extends CommonSummaryProperties>(
+  summaryKey: Maybe<S>,
+): S {
+  return defaultTo<S>(summaryKey ? { ...summaryKey } : null, baseTestStats);
+}
+
+function updateSummaryWithTestResults<S extends CommonSummaryProperties>(
+  nextSummaryKey: S,
+  testObject: TIsolateTest,
+): S {
+  const { message } = VestTest.getData(testObject);
+
   if (VestTest.isPending(testObject)) {
     nextSummaryKey.pendingCount++;
   }
 
-  // Increment the error count if the test is failing.
   if (VestTest.isFailing(testObject)) {
-    incrementFailures(Severity.ERRORS);
+    incrementFailures(nextSummaryKey, Severity.ERRORS, message);
   } else if (VestTest.isWarning(testObject)) {
-    // Increment the warning count if the test is warning.
-    incrementFailures(Severity.WARNINGS);
+    incrementFailures(nextSummaryKey, Severity.WARNINGS, message);
   }
 
-  // Increment the test count.
   if (shouldCountTestRun(testObject)) {
     nextSummaryKey.testCount++;
   }
 
   return nextSummaryKey;
+}
 
-  // Helper function to increment the failure count.
-  function incrementFailures(severity: Severity) {
-    const countKey = countKeyBySeverity(severity);
-    nextSummaryKey[countKey]++;
-    if (message) {
-      nextSummaryKey[severity] = (nextSummaryKey[severity] || []).concat(
-        message,
-      );
-    }
+function incrementFailures<S extends CommonSummaryProperties>(
+  summaryKey: S,
+  severity: Severity,
+  message?: string,
+): void {
+  const countKey = countKeyBySeverity(severity);
+  summaryKey[countKey]++;
+  if (message) {
+    summaryKey[severity] = (summaryKey[severity] || []).concat(message);
   }
 }
 

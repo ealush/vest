@@ -1,5 +1,5 @@
-import { isEmpty } from 'isEmpty';
 import dynamicValue from 'dynamicValue';
+import { isEmpty } from 'isEmpty';
 import { Predicate } from 'utilityTypes';
 
 export function all<T = any>(...p: Predicate<T>[]): (value: T) => boolean {

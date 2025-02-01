@@ -50,30 +50,67 @@ function createSuite<
   // Assign methods to the suite
   // We do this within the VestRuntime so that the suite methods
   // will be bound to the suite's stateRef and be able to access it.
-  // eslint-disable-next-line max-lines-per-function, max-statements
   return VestRuntime.Run(stateRef, () => {
-    const persistedRun = VestRuntime.persist(runSuite);
-
     // @vx-allow use-use
     const VestBus = useInitVestBus();
+    return createSuiteInstance();
 
-    return {
-      after: VestRuntime.persist(initCallback(after)),
-      afterField: VestRuntime.persist(initCallback(afterField)),
-      dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
-      get: VestRuntime.persist(useCreateSuiteResult<F, G>),
-      remove: Bus.usePrepareEmitter<string>('REMOVE_FIELD'),
-      reset: Bus.usePrepareEmitter('RESET_SUITE'),
-      resetField: Bus.usePrepareEmitter<string>('RESET_FIELD'),
-      resume: VestRuntime.persist(useLoadSuite),
-      run: VestRuntime.persist(initCallback(persistedRun)),
-      runStatic: VestRuntime.persist(runStatic),
-      subscribe: VestBus.subscribe,
-      ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
-      ...getTypedMethods<F, G>(),
+    function createSuiteInstance() {
+      const persistedRun = VestRuntime.persist(createSuiteRunner());
+
+      return {
+        after: VestRuntime.persist(initCallback(after)),
+        afterField: VestRuntime.persist(initCallback(afterField)),
+        dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
+        get: VestRuntime.persist(useCreateSuiteResult<F, G>),
+        remove: Bus.usePrepareEmitter<string>('REMOVE_FIELD'),
+        reset: Bus.usePrepareEmitter('RESET_SUITE'),
+        resetField: Bus.usePrepareEmitter<string>('RESET_FIELD'),
+        resume: VestRuntime.persist(useLoadSuite),
+        run: VestRuntime.persist(initCallback(persistedRun)),
+        runStatic: VestRuntime.persist(createStaticRunner()),
+        subscribe: VestBus.subscribe,
+        ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
+        ...getTypedMethods<F, G>(),
+      };
+
+      function after(cb: CB) {
+        return addAfter(cb);
+      }
+
+      function afterField(fieldName: F, cb: CB) {
+        return addAfter(cb, fieldName);
+      }
+
+      function addAfter(cb: CB, fieldName?: F) {
+        const returnValue = {
+          run: persistedRun,
+          after: VestRuntime.persist(after),
+          afterField: VestRuntime.persist(afterField),
+        };
+
+        useDeferDoneCallback(cb, fieldName);
+        return returnValue;
+      }
+
+      function initCallback<U extends (...args: any[]) => any>(cb: U): U {
+        return ((...args: Parameters<U>) => {
+          Bus.useEmit('INITIALIZING_CALLBACKS');
+          return cb(...args);
+        }) as U;
+      }
+    }
+  });
+
+  function createStaticRunner() {
+    return function runStatic(...runArgs: Parameters<T>) {
+      const suite = createSuite<F, G, T>(suiteName, suiteCallback);
+      return suite.run(...runArgs);
     };
+  }
 
-    function runSuite(...args: Parameters<T>): SuiteResult<F, G> {
+  function createSuiteRunner() {
+    return function runSuite(...args: Parameters<T>): SuiteResult<F, G> {
       let resolver: CB = noop;
       const promise = new Promise<SuiteResult<F, G>>(resolve => {
         resolver = resolve;
@@ -99,45 +136,8 @@ function createSuite<
           },
         ).output,
       );
-    }
-
-    function runStatic(...runArgs: Parameters<T>) {
-      const suite = createSuite<F, G, T>(suiteName, suiteCallback);
-      return suite.run(...runArgs);
-    }
-
-    function afterField(fieldName: F, cb: CB) {
-      return addAfter(cb, fieldName);
-    }
-
-    function after(cb: CB) {
-      return addAfter(cb);
-    }
-
-    function addAfter(cb: CB, fieldName?: F) {
-      const returnValue = {
-        run: persistedRun,
-        after: VestRuntime.persist(after),
-        afterField: VestRuntime.persist(afterField),
-      };
-
-      add(cb, fieldName);
-
-      return returnValue;
-
-      function add(cb: CB, fieldName?: F) {
-        useDeferDoneCallback(cb, fieldName);
-        return returnValue;
-      }
-    }
-
-    function initCallback<U extends (...args: any[]) => any>(cb: U): U {
-      return ((...args: Parameters<U>) => {
-        Bus.useEmit('INITIALIZING_CALLBACKS');
-        return cb(...args);
-      }) as U;
-    }
-  });
+    };
+  }
 }
 
 export { createSuite };

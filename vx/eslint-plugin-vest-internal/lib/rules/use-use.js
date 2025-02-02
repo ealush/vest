@@ -41,6 +41,9 @@ module.exports = {
 };
 
 function matcher(type) {
+  if (type === VAR_DEC) {
+    return `${type}${ID_NAME_MATCHER} > ArrowFunctionExpression ${CALL_EXPRESSION_MATCHER}`;
+  }
   return `${type}${ID_NAME_MATCHER} ${CALL_EXPRESSION_MATCHER}`;
 }
 
@@ -75,5 +78,5 @@ const suggest = "Rename function to start with 'use'";
 const message =
   "Function {{ identifier }} does not start with 'use' but contains a call to function that starts with 'use'";
 
-const CALL_EXPRESSION_MATCHER = `CallExpression:matches([callee.name=${USE_MATCHER}])`;
+const CALL_EXPRESSION_MATCHER = `CallExpression:matches([callee.name=/^use[A-Z]/])`;
 const ID_NAME_MATCHER = `:not([id.name=${USE_MATCHER}])`;

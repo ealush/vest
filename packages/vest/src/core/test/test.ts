@@ -24,7 +24,6 @@ function vestTest<F extends TFieldName>(
   cb: TestFn,
   key: IsolateKey,
 ): TIsolateTest;
-// @vx-allow use-use
 function vestTest<F extends TFieldName>(
   fieldName: F,
   ...args:

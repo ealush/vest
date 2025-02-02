@@ -60,50 +60,40 @@ describe('mode', () => {
               }));
           });
           describe('Failing async test before the sync tests', () => {
-            it('should stop execution after the first failing sync test', () =>
-              new Promise<void>(resolve => {
-                const suite = Vest.create(() => {
-                  Vest.test('t1', 'f0', async () => {
-                    await wait(150);
-                    throw new Error();
-                  });
-                  Vest.test('t1', 'f1', () => false);
-                  Vest.test('t1', 'f2', () => true);
+            it('should stop execution after the first failing sync test', async () => {
+              const suite = Vest.create(() => {
+                Vest.test('t1', 'f0', async () => {
+                  await wait(150);
+                  throw new Error();
                 });
-                suite
-                  .after(() => {
-                    expect(suite.getErrors()).toEqual({
-                      t1: ['f0', 'f1'],
-                    });
-                    resolve();
-                  })
-                  .run();
-              }));
+                Vest.test('t1', 'f1', () => false);
+                Vest.test('t1', 'f2', () => true);
+              });
+              await suite.run();
+              expect(suite.getErrors()).toEqual({
+                t1: ['f0', 'f1'],
+              });
+            });
           });
         });
 
         describe('Only async tests', () => {
-          it('should run all tests', () =>
-            new Promise<void>(resolve => {
-              const suite = Vest.create(() => {
-                Vest.test('async_1', 'f1', async () => {
-                  await wait(100);
-                  throw new Error();
-                });
-                Vest.test('async_1', 'f2', async () => {
-                  await wait(150);
-                  throw new Error();
-                });
+          it('should run all tests', async () => {
+            const suite = Vest.create(() => {
+              Vest.test('async_1', 'f1', async () => {
+                await wait(100);
+                throw new Error();
               });
-              suite
-                .after(() => {
-                  expect(suite.getErrors()).toEqual({
-                    async_1: ['f1', 'f2'],
-                  });
-                  resolve();
-                })
-                .run();
-            }));
+              Vest.test('async_1', 'f2', async () => {
+                await wait(150);
+                throw new Error();
+              });
+            });
+            await suite.run();
+            expect(suite.getErrors()).toEqual({
+              async_1: ['f1', 'f2'],
+            });
+          });
         });
       });
 

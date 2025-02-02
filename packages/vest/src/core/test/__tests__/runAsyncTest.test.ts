@@ -33,22 +33,26 @@ describe('runAsyncTest', () => {
 
         const suite = vest.create(() => {
           vest.test('field_1', async () => {
-            await wait(100);
+            await wait(50);
           });
           vest.test('field_2', () => {});
           vest.test('field_3', async () => {
-            await wait(50);
+            await wait(100);
           });
         });
 
-        suite.after(cb1).after(cb2).after(cb3).run();
+        suite
+          .after(cb1)
+          .afterField('field_1', cb2)
+          .afterField('field_3', cb3)
+          .run();
 
-        expect(cb1).not.toHaveBeenCalled();
+        expect(cb1).toHaveBeenCalled();
         expect(cb2).not.toHaveBeenCalled();
         expect(cb3).not.toHaveBeenCalled();
         await wait(50);
-        expect(cb1).not.toHaveBeenCalled();
-        expect(cb2).not.toHaveBeenCalled();
+        expect(cb1).toHaveBeenCalled();
+        expect(cb2).toHaveBeenCalled();
         expect(cb3).not.toHaveBeenCalled();
         await wait(50);
         expect(cb1).toHaveBeenCalled();
@@ -58,7 +62,7 @@ describe('runAsyncTest', () => {
     });
 
     describe('When there are remaining pending tests', () => {
-      it('Should only run callbacks for completed tests', async () => {
+      it('Should only run field callbacks for completed tests', async () => {
         const cb1 = vi.fn();
         const cb2 = vi.fn();
         const cb3 = vi.fn();
@@ -79,11 +83,11 @@ describe('runAsyncTest', () => {
           .afterField('field_3', cb3)
           .run();
 
-        expect(cb1).not.toHaveBeenCalled();
+        expect(cb1).toHaveBeenCalled();
         expect(cb2).toHaveBeenCalled();
         expect(cb3).not.toHaveBeenCalled();
         await wait(50);
-        expect(cb1).not.toHaveBeenCalled();
+        expect(cb1).toHaveBeenCalled();
         expect(cb3).toHaveBeenCalled();
         await wait(50);
         expect(cb1).toHaveBeenCalled();
@@ -93,7 +97,7 @@ describe('runAsyncTest', () => {
     });
 
     describe('When the test run was canceled', () => {
-      it('Should not run the callbacks', async () => {
+      it('Should not run the field callbacks', async () => {
         const cb1 = vi.fn();
         const cb2 = vi.fn();
         const cb3 = vi.fn();
@@ -109,7 +113,11 @@ describe('runAsyncTest', () => {
           vest.test('field_2', () => {});
         });
 
-        suite.after(cb1).after(cb2).after(cb3).run();
+        suite
+          .afterField('field_1', cb1)
+          .afterField('field_1', cb2)
+          .afterField('field_1', cb3)
+          .run();
 
         expect(cb1).not.toHaveBeenCalled();
         expect(cb2).not.toHaveBeenCalled();
@@ -117,7 +125,6 @@ describe('runAsyncTest', () => {
 
         suite.run();
 
-        await wait(10);
         expect(cb1).not.toHaveBeenCalled();
         expect(cb2).not.toHaveBeenCalled();
         expect(cb3).not.toHaveBeenCalled();

@@ -8,58 +8,46 @@ import * as vest from 'vest';
 describe('debounce', () => {
   describe('Sync test', () => {
     describe('Returning false', () => {
-      it('Should debounce test function calls when used', () => {
+      it('Should debounce test function calls when used', async () => {
         const test = vi.fn(() => {
           return false;
         });
 
-        return new Promise<void>(done => {
-          const suite = vest.create('suite', () => {
-            vest.test('test', 'message', debounce(test, 1500));
-          });
-
-          suite.run();
-          suite.run();
-          suite.run();
-          suite.run();
-          suite.run();
-          suite.run();
-          suite
-            .after(() => {
-              expect(test).toHaveBeenCalledTimes(1);
-              expect(suite.isValid()).toBe(false);
-              done();
-            })
-            .run();
+        const suite = vest.create('suite', () => {
+          vest.test('test', 'message', debounce(test, 1500));
         });
+
+        suite.run();
+        suite.run();
+        suite.run();
+        suite.run();
+        suite.run();
+        suite.run();
+        await suite.run();
+        expect(test).toHaveBeenCalledTimes(1);
+        expect(suite.isValid()).toBe(false);
       });
     });
 
     describe('Throwing an error', () => {
-      it('Should debounce test function calls when used', () => {
+      it('Should debounce test function calls when used', async () => {
         const test = vi.fn(() => {
           throw new Error();
         });
 
-        return new Promise<void>(done => {
-          const suite = vest.create('suite', () => {
-            vest.test('test', 'message', debounce(test, 1500));
-          });
-
-          suite.run();
-          suite.run();
-          suite.run();
-          suite.run();
-          suite.run();
-          suite.run();
-          suite
-            .after(() => {
-              expect(test).toHaveBeenCalledTimes(1);
-              expect(suite.isValid()).toBe(false);
-              done();
-            })
-            .run();
+        const suite = vest.create('suite', () => {
+          vest.test('test', 'message', debounce(test, 1500));
         });
+
+        suite.run();
+        suite.run();
+        suite.run();
+        suite.run();
+        suite.run();
+        suite.run();
+        await suite.run();
+        expect(test).toHaveBeenCalledTimes(1);
+        expect(suite.isValid()).toBe(false);
       });
     });
   });
@@ -120,34 +108,29 @@ describe('debounce', () => {
   });
 
   describe('Debounced tests with non-debounced tests', () => {
-    it('Should complete non-debounced tests immediately', () => {
+    it('Should complete non-debounced tests immediately', async () => {
       const test = vi.fn(() => {
         return false;
       });
 
       const suite = vest.create('suite', () => {
-        vest.test('test', 'message', debounce(test, 1000));
+        vest.test('test', 'message', debounce(test, 100));
         vest.test('test2', 'message', test);
       });
 
-      return new Promise<void>(done => {
-        suite
-          .after(() => {
-            expect(test).toHaveBeenCalledTimes(2);
-            expect(suite.get().hasErrors('test')).toBe(true);
-            expect(suite.get().hasErrors('test2')).toBe(true);
-            done();
-          })
-          .run();
-        expect(test).toHaveBeenCalledTimes(1);
-        expect(suite.get().hasErrors('test')).toBe(false);
-        expect(suite.get().hasErrors('test2')).toBe(true);
-      });
+      const suitePromise = suite.run();
+      expect(test).toHaveBeenCalledTimes(1);
+      expect(suite.get().hasErrors('test')).toBe(false);
+      expect(suite.get().hasErrors('test2')).toBe(true);
+      await suitePromise;
+      expect(test).toHaveBeenCalledTimes(2);
+      expect(suite.get().hasErrors('test')).toBe(true);
+      expect(suite.get().hasErrors('test2')).toBe(true);
     });
   });
 
   describe('Multiple debounced fields', () => {
-    it('Should conclude them on their own time', () => {
+    it('Should conclude them on their own time', async () => {
       const calls: number[] = [];
       const t = vi.fn(() => {
         calls.push(Date.now());
@@ -160,21 +143,15 @@ describe('debounce', () => {
         vest.test('test3', 'message', debounce(t, 300));
       });
 
-      return new Promise<void>(done => {
-        suite
-          .after(() => {
-            expect(t).toHaveBeenCalledTimes(3);
-            expect(calls[0]).toBeLessThan(calls[1]);
-            expect(calls[1]).toBeLessThan(calls[2]);
-            expect(calls[1] - calls[0]).toBeGreaterThanOrEqual(90);
-            expect(calls[2] - calls[1]).toBeGreaterThanOrEqual(90);
-            expect(suite.get().hasErrors('test')).toBe(true);
-            expect(suite.get().hasErrors('test2')).toBe(true);
-            expect(suite.get().hasErrors('test3')).toBe(true);
-            done();
-          })
-          .run();
-      });
+      await suite.run();
+      expect(t).toHaveBeenCalledTimes(3);
+      expect(calls[0]).toBeLessThan(calls[1]);
+      expect(calls[1]).toBeLessThan(calls[2]);
+      expect(calls[1] - calls[0]).toBeGreaterThanOrEqual(90);
+      expect(calls[2] - calls[1]).toBeGreaterThanOrEqual(90);
+      expect(suite.get().hasErrors('test')).toBe(true);
+      expect(suite.get().hasErrors('test2')).toBe(true);
+      expect(suite.get().hasErrors('test3')).toBe(true);
     });
   });
 
@@ -200,20 +177,13 @@ describe('debounce', () => {
           run++;
         });
 
-        // eslint-disable-next-line no-async-promise-executor
-        return new Promise<void>(async done => {
-          suite.run();
-          await wait(200);
-          // This cancels the first run
-          suite
-            .after(() => {
-              expect(suite.hasErrors('test')).toBe(false);
-              expect(test).toHaveBeenCalledTimes(2);
-              expect(control).toHaveBeenCalledTimes(1);
-              done();
-            })
-            .run();
-        });
+        suite.run();
+        await wait(200);
+        // This cancels the first run
+        await suite.run();
+        expect(suite.hasErrors('test')).toBe(false);
+        expect(test).toHaveBeenCalledTimes(2);
+        expect(control).toHaveBeenCalledTimes(1);
       });
     });
   });

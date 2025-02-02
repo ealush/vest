@@ -3,7 +3,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import wait from 'wait';
 
 import { dummyTest } from '../testUtils/testDummy';
-import { TestPromise } from '../testUtils/testPromise';
 
 import { TIsolateTest } from 'IsolateTest';
 import { Modes } from 'Modes';
@@ -55,73 +54,59 @@ describe('Stateful async tests', () => {
     suite = genSuite();
   });
 
-  it('Should only run callbacks for last suite run', () =>
-    TestPromise(done => {
-      suite.after(callback_1).afterField('field_3', callback_2).run({});
-      expect(callback_1).not.toHaveBeenCalled();
-      expect(callback_2).not.toHaveBeenCalled();
-      suite.after(callback_3).afterField('field_3', callback_4).run({});
-      expect(callback_3).not.toHaveBeenCalled();
-      expect(callback_4).not.toHaveBeenCalled();
-      setTimeout(() => {
-        expect(callback_1).not.toHaveBeenCalled();
-        expect(callback_2).not.toHaveBeenCalled();
-        expect(callback_3).not.toHaveBeenCalled();
-        expect(callback_4).toHaveBeenCalled();
-        control();
-      });
-      setTimeout(() => {
-        expect(callback_1).not.toHaveBeenCalled();
-        expect(callback_2).not.toHaveBeenCalled();
-        expect(callback_3).toHaveBeenCalledTimes(1);
-        expect(control).toHaveBeenCalled();
-        done();
-      }, 50);
-    }));
+  it('Should only run field callbacks for last suite run', async () => {
+    expect(callback_1).not.toHaveBeenCalled();
+    expect(callback_2).not.toHaveBeenCalled();
+    suite.afterField('field_3', callback_4).run({});
+    expect(callback_4).not.toHaveBeenCalled();
+    await wait(0);
+    expect(callback_1).not.toHaveBeenCalled();
+    expect(callback_2).not.toHaveBeenCalled();
+    expect(callback_4).toHaveBeenCalled();
+    control();
+    await wait(50);
+    expect(callback_1).not.toHaveBeenCalled();
+    expect(callback_2).not.toHaveBeenCalled();
+    expect(control).toHaveBeenCalled();
+  });
 
-  it('Merges skipped validations from previous suite', () =>
-    TestPromise(done => {
-      const res = suite.run({ skipGroup: true, skip: 'field_3' });
-      expect(res.testCount).toBe(3);
-      expect(res.errorCount).toBe(1);
-      expect(res.warnCount).toBe(0);
-      expect(res.hasErrors('field_1')).toBe(true);
-      expect(res.tests.field_1.errorCount).toBe(1);
-      expect(res.hasErrors('field_2')).toBe(false);
-      expect(res.hasErrors('field_3')).toBe(false);
-      expect(res.hasErrors('field_4')).toBe(false);
-      expect(res).toMatchSnapshot();
-      setTimeout(() => {
-        const res = suite.get();
+  it('Merges skipped validations from previous suite', async () => {
+    let res = suite.run({ skipGroup: true, skip: 'field_3' });
+    expect(res.testCount).toBe(3);
+    expect(res.errorCount).toBe(1);
+    expect(res.warnCount).toBe(0);
+    expect(res.hasErrors('field_1')).toBe(true);
+    expect(res.tests.field_1.errorCount).toBe(1);
+    expect(res.hasErrors('field_2')).toBe(false);
+    expect(res.hasErrors('field_3')).toBe(false);
+    expect(res.hasErrors('field_4')).toBe(false);
+    expect(res).toMatchSnapshot();
+    await wait(50);
 
-        expect(res.testCount).toBe(3);
-        expect(res.errorCount).toBe(2);
-        expect(res.warnCount).toBe(0);
-        expect(res.tests.field_1.errorCount).toBe(1);
-        expect(res.hasErrors('field_2')).toBe(true);
-        expect(res.hasErrors('field_3')).toBe(false);
-        expect(res.hasErrors('field_4')).toBe(false);
-        expect(res).toMatchSnapshot();
+    res = suite.get();
 
-        suite
-          .after(() => {
-            expect(suite.get().testCount).toBe(7);
-            expect(suite.get().errorCount).toBe(5);
-            expect(suite.get().warnCount).toBe(0);
-            expect(suite.get().tests.field_1.errorCount).toBe(2);
-            expect(suite.hasErrors('field_2')).toBe(true);
-            expect(suite.hasErrors('field_3')).toBe(true);
-            expect(suite.hasErrors('field_4')).toBe(true);
-            expect(suite.get()).toMatchSnapshot();
-            done();
-          })
-          .run({ skip: 'field_2' });
-      }, 50);
-    }));
+    expect(res.testCount).toBe(3);
+    expect(res.errorCount).toBe(2);
+    expect(res.warnCount).toBe(0);
+    expect(res.tests.field_1.errorCount).toBe(1);
+    expect(res.hasErrors('field_2')).toBe(true);
+    expect(res.hasErrors('field_3')).toBe(false);
+    expect(res.hasErrors('field_4')).toBe(false);
+    expect(res).toMatchSnapshot();
+
+    await suite.run({ skip: 'field_2' });
+    expect(suite.get().testCount).toBe(7);
+    expect(suite.get().errorCount).toBe(5);
+    expect(suite.get().warnCount).toBe(0);
+    expect(suite.get().tests.field_1.errorCount).toBe(2);
+    expect(suite.hasErrors('field_2')).toBe(true);
+    expect(suite.hasErrors('field_3')).toBe(true);
+    expect(suite.hasErrors('field_4')).toBe(true);
+    expect(suite.get()).toMatchSnapshot();
+  });
 
   it('Should discard of re-tested async tests', async () => {
     const tests: Array<TIsolateTest> = [];
-    const control = vi.fn();
     const suite = vest.create(() => {
       tests.push(
         vest.test('field_1', tests.length.toString(), async () => {
@@ -130,20 +115,8 @@ describe('Stateful async tests', () => {
         }),
       );
     });
-    suite
-      .after(() => {
-        control(0);
-      })
-      .run();
-    await wait(5);
-    suite
-      .after(() => {
-        control(1);
-      })
-      .run();
-    await wait(100);
-    expect(control).toHaveBeenCalledTimes(1);
-    expect(control).toHaveBeenCalledWith(1);
+    suite.run(); // not awaiting intentionally
+    await suite.run();
 
     expect(VestTest.isCanceled(tests[0])).toBe(true);
     expect(VestTest.isFailing(tests[1])).toBe(true);

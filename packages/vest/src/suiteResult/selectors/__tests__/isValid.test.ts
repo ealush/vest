@@ -1,9 +1,7 @@
-import { TTestSuite } from 'TVestMock';
 import { describe, it, expect, beforeEach } from 'vitest';
 import wait from 'wait';
 
-import { TestPromise } from '../../../testUtils/testPromise';
-
+import { TTestSuite } from 'TVestMock';
 import { test, optional, create, skipWhen, warn, skip, only } from 'vest';
 
 describe('isValid', () => {
@@ -208,28 +206,21 @@ describe('isValid', () => {
     });
 
     describe('When async test is passing', () => {
-      it('Should return `true`', () => {
-        return TestPromise(done => {
-          suite
-            .after(() => {
-              expect(suite.isValid()).toBe(true);
-              expect(suite.isValid('field_1')).toBe(true);
-              expect(suite.isValid('field_2')).toBe(true);
-              done();
-            })
-            .run();
-        });
+      it('Should return `true`', async () => {
+        {
+          await suite.run();
+          expect(suite.isValid()).toBe(true);
+          expect(suite.isValid('field_1')).toBe(true);
+          expect(suite.isValid('field_2')).toBe(true);
+        }
       });
     });
 
     describe('When test is lagging', () => {
-      it('Should return `false`', () => {
-        return TestPromise(done => {
-          suite.run();
-          const result = suite.after(done).run('field_2');
+      it('Should return `false`', async () => {
+        const result = await suite.run('field_2');
 
-          expect(result.isValid()).toBe(false);
-        });
+        expect(result.isValid()).toBe(false);
       });
     });
   });

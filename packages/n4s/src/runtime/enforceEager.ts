@@ -14,7 +14,6 @@ type EnforceEagerReturn = IRules &
     pass: boolean;
   };
 
-// eslint-disable-next-line max-lines-per-function
 export default function enforceEager(value: RuleValue): EnforceEagerReturn {
   const target = {
     message,

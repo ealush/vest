@@ -5,8 +5,6 @@ import type { ComposeResult, LazyRuleRunners } from 'genEnforceLazy';
 import { defaultToPassing, RuleDetailedResult } from 'ruleReturn';
 import runLazyRule from 'runLazyRule';
 
-/* eslint-disable max-lines-per-function */
-
 export default function compose(
   ...composites: LazyRuleRunners[]
 ): ComposeResult {

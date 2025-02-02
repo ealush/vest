@@ -14,52 +14,15 @@ import { ExcludedFromDump, IsolateKeys } from 'IsolateKeys';
 import { IsolateMutator } from 'IsolateMutator';
 
 export class IsolateSerializer {
-  // eslint-disable-next-line max-statements, complexity, max-lines-per-function
   static deserialize(node: Record<string, any> | TIsolate | string): TIsolate {
-    // Validate the root object
-    const root = (
-      isStringValue(node) ? JSON.parse(node) : ({ ...node } as TIsolate)
-    ) as [any, any];
-
-    const expanded = expandObject(...root);
-
-    IsolateSerializer.validateIsolate(expanded);
-
+    const expanded = expandNode(node);
     const queue = [expanded];
 
-    // Iterate over the queue until it's empty
     while (queue.length) {
-      // Get the next item from the queue
       const current = queue.shift();
-
-      if (!current) {
-        continue;
+      if (current) {
+        processChildren(current, queue);
       }
-
-      const children = current.children;
-
-      // If there are no children, nothing to do.
-      if (!children) {
-        continue;
-      }
-
-      // Copy the children and set their parent to the current node.
-      current.children = children.map(child => {
-        const nextChild = { ...child };
-
-        IsolateMutator.setParent(nextChild, current);
-        queue.push(nextChild);
-
-        // If the child has a key, add it to the parent's keys.
-        const key = nextChild.key;
-
-        if (key) {
-          current.keys = current.keys ?? {};
-          current.keys[key] = nextChild;
-        }
-
-        return nextChild;
-      });
     }
 
     return expanded;
@@ -91,4 +54,37 @@ export class IsolateSerializer {
       text(ErrorStrings.INVALID_ISOLATE_CANNOT_PARSE),
     );
   }
+}
+
+function processChildren(current: TIsolate, queue: TIsolate[]): void {
+  const children = current.children;
+
+  if (!children) {
+    return;
+  }
+
+  current.children = children.map(child => {
+    const nextChild = { ...child };
+
+    IsolateMutator.setParent(nextChild, current);
+    queue.push(nextChild);
+
+    if (nextChild.key) {
+      current.keys = current.keys ?? {};
+      current.keys[nextChild.key] = nextChild;
+    }
+
+    return nextChild;
+  });
+}
+
+function expandNode(node: Record<string, any> | TIsolate | string): TIsolate {
+  const root = (
+    isStringValue(node) ? JSON.parse(node) : ({ ...node } as TIsolate)
+  ) as [any, any];
+
+  const expanded = expandObject(...root);
+  IsolateSerializer.validateIsolate(expanded);
+
+  return expanded;
 }

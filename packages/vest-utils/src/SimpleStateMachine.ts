@@ -6,7 +6,7 @@ type TStateWildCard = typeof STATE_WILD_CARD;
 export type TStateMachine<S extends string = string, A extends S = S> = {
   initial: S;
   states: Partial<{
-    [key in S & TStateWildCard]: {
+    [key in S | TStateWildCard]: {
       [key in A]?: S | [S, CB<boolean, [payload?: any]>];
     };
   }>;
@@ -40,28 +40,31 @@ export function StateMachine<S extends string = string, A extends S = S>(
     return (state = staticTransition(state, action, payload));
   }
 
-  // eslint-disable-next-line complexity
-  function staticTransition(from: S, action: A, payload?: any): S {
-    const transitionTo =
+  function getTransitionTarget(
+    from: S,
+    action: A,
+  ): S | [S, CB<boolean, [payload?: any]>] | undefined {
+    return (
       machine.states[from]?.[action] ??
-      // @ts-expect-error - This is a valid state
-      machine.states[STATE_WILD_CARD]?.[action];
+      machine.states[STATE_WILD_CARD]?.[action]
+    );
+  }
 
-    let target = transitionTo;
+  function evaluateConditionalTarget(
+    target: [S, CB<boolean, [payload?: any]>],
+    from: S,
+    payload?: any,
+  ): S {
+    const [nextState, conditional] = target;
+    return conditional(payload) ? nextState : from;
+  }
 
-    if (Array.isArray(target)) {
-      const [, conditional] = target;
-      if (!conditional(payload)) {
-        return from;
-      }
+  function staticTransition(from: S, action: A, payload?: any): S {
+    const transitionTo = getTransitionTarget(from, action);
+    const target = Array.isArray(transitionTo)
+      ? evaluateConditionalTarget(transitionTo, from, payload)
+      : transitionTo;
 
-      target = target[0];
-    }
-
-    if (!target || target === from) {
-      return from;
-    }
-
-    return target as S;
+    return !target || target === from ? from : (target as S);
   }
 }

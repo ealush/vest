@@ -16,6 +16,7 @@ import { Suite } from 'SuiteTypes';
 import { useInitVestBus } from 'VestBus';
 import { VestReconciler } from 'VestReconciler';
 import { useDeferDoneCallback } from 'deferDoneCallback';
+import { FieldExclusion } from 'focused';
 import { useCreateSuiteResult } from 'suiteResult';
 import { bindSuiteSelectors } from 'suiteSelectors';
 import { validateSuiteCallback } from 'validateSuiteParams';
@@ -50,6 +51,7 @@ function createSuite<
   // Assign methods to the suite
   // We do this within the VestRuntime so that the suite methods
   // will be bound to the suite's stateRef and be able to access it.
+  // eslint-disable-next-line max-lines-per-function
   return VestRuntime.Run(stateRef, () => {
     // @vx-allow use-use
     const VestBus = useInitVestBus();
@@ -111,10 +113,7 @@ function createSuite<
 
   function createSuiteRunner() {
     return function runSuite(...args: Parameters<T>): SuiteResult<F, G> {
-      let resolver: CB = noop;
-      const promise = new Promise<SuiteResult<F, G>>(resolve => {
-        resolver = resolve;
-      });
+      const { resolve, promise } = Promise.withResolvers<SuiteResult<F, G>>();
       return assign(
         promise,
         SuiteContext.run(
@@ -124,15 +123,18 @@ function createSuite<
           () => {
             Bus.useEmit('SUITE_RUN_STARTED');
 
-            function resolve() {
-              return resolver(useCreateSuiteResult<F, G>());
+            function resolver() {
+              // @vx-allow use-use
+              const result = useCreateSuiteResult<F, G>();
+              resolve(result);
+              return result;
             }
 
             return IsolateSuite(() => {
               suiteCallback(...args);
               Bus.useEmit('SUITE_CALLBACK_RUN_FINISHED');
               return useCreateSuiteResult<F, G>();
-            }, resolve);
+            }, resolver);
           },
         ).output,
       );

@@ -1,3 +1,4 @@
+import { useDeferDoneCallback } from 'deferDoneCallback';
 import { asArray, CB, assign } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
@@ -12,29 +13,29 @@ import {
   TFieldName,
   TGroupName,
 } from 'SuiteResultTypes';
-import { Suite } from 'SuiteTypes';
+import { Suite, SuiteModifiers } from 'SuiteTypes';
 import { useInitVestBus } from 'VestBus';
 import { VestReconciler } from 'VestReconciler';
-import { useDeferDoneCallback } from 'deferDoneCallback';
+import { only } from 'focused';
 import { useCreateSuiteResult } from 'suiteResult';
 import { bindSuiteSelectors } from 'suiteSelectors';
 import { validateSuiteCallback } from 'validateSuiteParams';
 
 function createSuite<
-  F extends TFieldName = string,
-  G extends TGroupName = string,
+  F extends TFieldName,
+  G extends TGroupName,
   T extends CB = CB,
 >(suiteName: SuiteName, suiteCallback: T): Suite<F, G, T>;
 function createSuite<
-  F extends TFieldName = string,
-  G extends TGroupName = string,
+  F extends TFieldName,
+  G extends TGroupName,
   T extends CB = CB,
 >(suiteCallback: T): Suite<F, G, T>;
 // @vx-allow use-use
 // eslint-disable-next-line max-lines-per-function
 function createSuite<
-  F extends TFieldName = string,
-  G extends TGroupName = string,
+  F extends TFieldName,
+  G extends TGroupName,
   T extends CB = CB,
 >(
   ...args: [suiteName: SuiteName, suiteCallback: T] | [suiteCallback: T]
@@ -55,13 +56,19 @@ function createSuite<
     const VestBus = useInitVestBus();
     return createSuiteInstance();
 
-    function createSuiteInstance() {
-      const persistedRun = VestRuntime.persist(createSuiteRunner());
+    // eslint-disable-next-line max-lines-per-function
+    function createSuiteInstance(): Suite<F, G, T> {
+      const modifiers: SuiteModifiers<F> = { only: undefined };
+
+      const persistedRun = VestRuntime.persist(
+        useCreateSuiteRunner<F, G, T>(suiteCallback, modifiers),
+      );
 
       return {
         after: VestRuntime.persist(initCallback(after)),
         afterField: VestRuntime.persist(initCallback(afterField)),
         dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
+        focus: VestRuntime.persist(focus),
         get: VestRuntime.persist(useCreateSuiteResult<F, G>),
         remove: Bus.usePrepareEmitter<string>('REMOVE_FIELD'),
         reset: Bus.usePrepareEmitter('RESET_SUITE'),
@@ -82,15 +89,26 @@ function createSuite<
         return addAfter(cb, fieldName);
       }
 
+      function focus(config: SuiteModifiers<F>) {
+        modifiers.only = config.only;
+
+        return getPreRunMethods();
+      }
+
       function addAfter(cb: CB, fieldName?: F) {
-        const returnValue = {
-          run: persistedRun,
-          after: VestRuntime.persist(after),
-          afterField: VestRuntime.persist(afterField),
-        };
+        const returnValue = getPreRunMethods();
 
         useDeferDoneCallback(cb, fieldName);
         return returnValue;
+      }
+
+      function getPreRunMethods() {
+        return {
+          after: VestRuntime.persist(after),
+          afterField: VestRuntime.persist(afterField),
+          focus,
+          run: persistedRun,
+        };
       }
 
       function initCallback<U extends (...args: any[]) => any>(cb: U): U {
@@ -108,35 +126,40 @@ function createSuite<
       return suite.run(...runArgs);
     };
   }
+}
 
-  function createSuiteRunner() {
-    return function runSuite(...args: Parameters<T>): SuiteResult<F, G> {
-      const { resolve, promise } = Promise.withResolvers<SuiteResult<F, G>>();
-      return assign(
-        promise,
-        SuiteContext.run(
-          {
-            suiteParams: args,
-          },
-          () => {
-            Bus.useEmit('SUITE_RUN_STARTED');
+function useCreateSuiteRunner<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB = CB,
+>(suiteCallback: CB, modifiers: SuiteModifiers<F>) {
+  return function runSuite(...args: Parameters<T>): SuiteResult<F, G> {
+    const { resolve, promise } = Promise.withResolvers<SuiteResult<F, G>>();
+    return assign(
+      promise,
+      SuiteContext.run(
+        {
+          suiteParams: args,
+        },
+        () => {
+          Bus.useEmit('SUITE_RUN_STARTED');
 
-            function resolver() {
-              const result = useCreateSuiteResult<F, G>();
-              resolve(result);
-              return result;
-            }
+          function resolver() {
+            const result = useCreateSuiteResult<F, G>();
+            resolve(result);
+            return result;
+          }
 
-            return IsolateSuite(() => {
-              suiteCallback(...args);
-              Bus.useEmit('SUITE_CALLBACK_RUN_FINISHED');
-              return useCreateSuiteResult<F, G>();
-            }, resolver);
-          },
-        ).output,
-      );
-    };
-  }
+          return IsolateSuite(() => {
+            only(modifiers.only);
+            suiteCallback(...args);
+            Bus.useEmit('SUITE_CALLBACK_RUN_FINISHED');
+            return useCreateSuiteResult<F, G>();
+          }, resolver);
+        },
+      ).output,
+    );
+  };
 }
 
 export { createSuite };

@@ -22,6 +22,22 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     "abortController": AbortController {},
     "allowReorder": undefined,
     "children": [
+      {
+        "$type": "Focused",
+        "abortController": AbortController {},
+        "allowReorder": undefined,
+        "children": null,
+        "data": {
+          "focusMode": 0,
+          "match": [],
+          "matchAll": false,
+        },
+        "key": null,
+        "keys": null,
+        "output": undefined,
+        "parent": [Circular],
+        "status": "DONE",
+      },
       [Circular],
     ],
     "data": {
@@ -93,6 +109,22 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     "abortController": AbortController {},
     "allowReorder": undefined,
     "children": [
+      {
+        "$type": "Focused",
+        "abortController": AbortController {},
+        "allowReorder": undefined,
+        "children": null,
+        "data": {
+          "focusMode": 0,
+          "match": [],
+          "matchAll": false,
+        },
+        "key": null,
+        "keys": null,
+        "output": undefined,
+        "parent": [Circular],
+        "status": "DONE",
+      },
       [Circular],
     ],
     "data": {
@@ -166,6 +198,22 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     "abortController": AbortController {},
     "allowReorder": undefined,
     "children": [
+      {
+        "$type": "Focused",
+        "abortController": AbortController {},
+        "allowReorder": undefined,
+        "children": null,
+        "data": {
+          "focusMode": 0,
+          "match": [],
+          "matchAll": false,
+        },
+        "key": null,
+        "keys": null,
+        "output": undefined,
+        "parent": [Circular],
+        "status": "DONE",
+      },
       [Circular],
     ],
     "data": {

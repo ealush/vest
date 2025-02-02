@@ -12,6 +12,22 @@ exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 1`]
       "allowReorder": undefined,
       "children": null,
       "data": {
+        "focusMode": 0,
+        "match": [],
+        "matchAll": false,
+      },
+      "key": null,
+      "keys": null,
+      "output": undefined,
+      "parent": [Circular],
+      "status": "DONE",
+    },
+    {
+      "$type": "Focused",
+      "abortController": AbortController {},
+      "allowReorder": undefined,
+      "children": null,
+      "data": {
         "focusMode": 1,
         "match": [
           "t5",

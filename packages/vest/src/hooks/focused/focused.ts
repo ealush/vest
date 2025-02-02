@@ -67,7 +67,6 @@ export class FocusSelectors {
  *
  * only('username');
  */
-// @vx-allow use-use
 export function only(match: FieldExclusion<TFieldName> | false) {
   return IsolateFocused(FocusModes.ONLY, defaultMatch(match));
 }
@@ -78,7 +77,6 @@ export function only(match: FieldExclusion<TFieldName> | false) {
  *
  * skip('username');
  */
-// @vx-allow use-use
 export function skip(match: FieldExclusion<TFieldName> | boolean) {
   return IsolateFocused(FocusModes.SKIP, defaultMatch(match));
 }

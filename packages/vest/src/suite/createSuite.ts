@@ -1,4 +1,4 @@
-import { asArray, CB, assign, noop } from 'vest-utils';
+import { asArray, CB, assign } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { getTypedMethods } from './getTypedMethods';
@@ -16,7 +16,6 @@ import { Suite } from 'SuiteTypes';
 import { useInitVestBus } from 'VestBus';
 import { VestReconciler } from 'VestReconciler';
 import { useDeferDoneCallback } from 'deferDoneCallback';
-import { FieldExclusion } from 'focused';
 import { useCreateSuiteResult } from 'suiteResult';
 import { bindSuiteSelectors } from 'suiteSelectors';
 import { validateSuiteCallback } from 'validateSuiteParams';
@@ -53,7 +52,6 @@ function createSuite<
   // will be bound to the suite's stateRef and be able to access it.
   // eslint-disable-next-line max-lines-per-function
   return VestRuntime.Run(stateRef, () => {
-    // @vx-allow use-use
     const VestBus = useInitVestBus();
     return createSuiteInstance();
 
@@ -124,7 +122,6 @@ function createSuite<
             Bus.useEmit('SUITE_RUN_STARTED');
 
             function resolver() {
-              // @vx-allow use-use
               const result = useCreateSuiteResult<F, G>();
               resolve(result);
               return result;

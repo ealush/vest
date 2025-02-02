@@ -12,16 +12,13 @@ import ruleReturn, { defaultToPassing, RuleDetailedResult } from 'ruleReturn';
 import { RuleValue, Args, getRule } from 'runtimeRules';
 import { transformResult } from 'transformResult';
 
-// eslint-disable-next-line max-lines-per-function
 export default function genEnforceLazy(key: string) {
   const registeredRules: RegisteredRules = [];
   let lazyMessage: Maybe<LazyMessage>;
 
   return addLazyRule(key);
 
-  // eslint-disable-next-line max-lines-per-function
   function addLazyRule(ruleName: string) {
-    // eslint-disable-next-line max-lines-per-function
     return (...args: Args): Lazy => {
       const rule = getRule(ruleName);
 

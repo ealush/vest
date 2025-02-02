@@ -111,17 +111,12 @@ function isNonSerializable(value: any): boolean {
   return isNullish(value) || isFunction(value) || typeof value === 'symbol';
 }
 
-// eslint-disable-next-line complexity
 function shouldMinify(value: any): boolean {
   if (isObject(value) && isEmpty(value)) {
     return false;
   }
 
   if (isNonSerializable(value)) {
-    return false;
-  }
-
-  if (isObject(value) && isEmpty(value)) {
     return false;
   }
 

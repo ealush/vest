@@ -74,31 +74,31 @@ function buildPreAggCache(): PreAggCache {
     return base;
   }
 
-  return Walker.reduce(
-    root,
-    // eslint-disable-next-line complexity, max-statements
-    (agg, isolate: TIsolate) => {
-      if (VestIsolate.isPending(isolate)) {
-        agg.pending.push(isolate);
-      }
+  return Walker.reduce(root, aggregateIsolate, base);
+}
 
-      if (VestTest.is(isolate)) {
-        const fieldName = VestTest.getData(isolate).fieldName;
+function aggregateIsolate(agg: PreAggCache, isolate: TIsolate): PreAggCache {
+  if (VestIsolate.isPending(isolate)) {
+    agg.pending.push(isolate);
+  }
 
-        if (VestTest.isWarning(isolate)) {
-          agg.failures.warnings[fieldName] =
-            agg.failures.warnings[fieldName] ?? [];
-          agg.failures.warnings[fieldName].push(isolate);
-        }
+  if (VestTest.is(isolate)) {
+    aggregateTestFailures(agg, isolate);
+  }
 
-        if (VestTest.isFailing(isolate)) {
-          agg.failures.errors[fieldName] = agg.failures.errors[fieldName] ?? [];
-          agg.failures.errors[fieldName].push(isolate);
-        }
-      }
+  return agg;
+}
 
-      return agg;
-    },
-    base,
-  );
+function aggregateTestFailures(agg: PreAggCache, isolate: TIsolateTest): void {
+  const fieldName = VestTest.getData(isolate).fieldName;
+
+  if (VestTest.isWarning(isolate)) {
+    agg.failures.warnings[fieldName] = agg.failures.warnings[fieldName] ?? [];
+    agg.failures.warnings[fieldName].push(isolate);
+  }
+
+  if (VestTest.isFailing(isolate)) {
+    agg.failures.errors[fieldName] = agg.failures.errors[fieldName] ?? [];
+    agg.failures.errors[fieldName].push(isolate);
+  }
 }

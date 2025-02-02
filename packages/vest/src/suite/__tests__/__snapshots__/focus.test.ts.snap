@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`suite.focus > focus return value > should be the rest of the suite methods 1`] = `
+{
+  "after": [Function],
+  "afterField": [Function],
+  "focus": [Function],
+  "run": [Function],
+}
+`;
+
+exports[`suite.focus: only > focus return value > should be the rest of the suite methods 1`] = `
+{
+  "after": [Function],
+  "afterField": [Function],
+  "focus": [Function],
+  "run": [Function],
+}
+`;

@@ -30,10 +30,6 @@
       ],
       "collectFailures": ["./src/suiteResult/selectors/collectFailures.ts"],
       "LazyDraft": ["./src/suiteResult/selectors/LazyDraft.ts"],
-      "shouldSkipDoneRegistration": [
-        "./src/suiteResult/done/shouldSkipDoneRegistration.ts"
-      ],
-      "deferDoneCallback": ["./src/suiteResult/done/deferDoneCallback.ts"],
       "runCallbacks": ["./src/suite/runCallbacks.ts"],
       "getTypedMethods": ["./src/suite/getTypedMethods.ts"],
       "createSuite": ["./src/suite/createSuite.ts"],
@@ -42,6 +38,10 @@
       "validateSuiteParams": [
         "./src/suite/validateParams/validateSuiteParams.ts"
       ],
+      "shouldSkipDoneRegistration": [
+        "./src/suite/after/shouldSkipDoneRegistration.ts"
+      ],
+      "deferDoneCallback": ["./src/suite/after/deferDoneCallback.ts"],
       "skipWhen": ["./src/isolates/skipWhen.ts"],
       "omitWhen": ["./src/isolates/omitWhen.ts"],
       "group": ["./src/isolates/group.ts"],

@@ -21,7 +21,6 @@ export function useProduceSuiteSummary<
   F extends TFieldName,
   G extends TGroupName,
 >(): SuiteSummary<F, G> {
-  // @vx-allow use-use (TODO: fix this. the error is in the lint rule)
   const summary = TestWalker.reduceTests<SuiteSummary<F, G>, TIsolateTest<F>>(
     (summary, testObject) => {
       const fieldName = VestTest.getData<F>(testObject).fieldName;

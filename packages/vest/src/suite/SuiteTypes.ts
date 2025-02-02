@@ -3,6 +3,7 @@ import { CB } from 'vest-utils';
 import { TIsolateSuite } from 'IsolateSuite';
 import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { Subscribe } from 'VestBus';
+import { FieldExclusion } from 'focused';
 import { TTypedMethods } from 'getTypedMethods';
 import { SuiteSelectors } from 'suiteSelectors';
 
@@ -18,6 +19,7 @@ export type SuiteMethods<
   T extends CB,
 > = {
   dump: CB<TIsolateSuite>;
+
   get: CB<SuiteResult<F, G>>;
   resume: CB<void, [TIsolateSuite]>;
   reset: CB<void>;
@@ -37,5 +39,10 @@ export type AfterMethods<
 > = {
   after: CB<AfterMethods<F, G, T>, [callback: CB]>;
   afterField: CB<AfterMethods<F, G, T>, [fieldName: F, callback: CB]>;
+  focus: CB<AfterMethods<F, G, T>, [config: SuiteModifiers<F>]>;
   run: (...args: Parameters<T>) => SuiteResult<F, G>;
+};
+
+export type SuiteModifiers<F extends TFieldName> = {
+  only?: FieldExclusion<F>;
 };

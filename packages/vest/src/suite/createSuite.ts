@@ -1,4 +1,3 @@
-import { useDeferDoneCallback } from 'deferDoneCallback';
 import { asArray, CB, assign } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
@@ -16,6 +15,7 @@ import {
 import { Suite, SuiteModifiers } from 'SuiteTypes';
 import { useInitVestBus } from 'VestBus';
 import { VestReconciler } from 'VestReconciler';
+import { useDeferDoneCallback } from 'deferDoneCallback';
 import { only } from 'focused';
 import { useCreateSuiteResult } from 'suiteResult';
 import { bindSuiteSelectors } from 'suiteSelectors';
@@ -51,17 +51,20 @@ function createSuite<
   // Assign methods to the suite
   // We do this within the VestRuntime so that the suite methods
   // will be bound to the suite's stateRef and be able to access it.
-  // eslint-disable-next-line max-lines-per-function
   return VestRuntime.Run(stateRef, () => {
     const VestBus = useInitVestBus();
     return createSuiteInstance();
 
-    // eslint-disable-next-line max-lines-per-function
     function createSuiteInstance(): Suite<F, G, T> {
       const modifiers: SuiteModifiers<F> = { only: undefined };
 
       const persistedRun = VestRuntime.persist(
         useCreateSuiteRunner<F, G, T>(suiteCallback, modifiers),
+      );
+
+      const { after, afterField, focus } = useCreateSuiteMethods<F, G, T>(
+        persistedRun,
+        modifiers,
       );
 
       return {
@@ -81,36 +84,6 @@ function createSuite<
         ...getTypedMethods<F, G>(),
       };
 
-      function after(cb: CB) {
-        return addAfter(cb);
-      }
-
-      function afterField(fieldName: F, cb: CB) {
-        return addAfter(cb, fieldName);
-      }
-
-      function focus(config: SuiteModifiers<F>) {
-        modifiers.only = config.only;
-
-        return getPreRunMethods();
-      }
-
-      function addAfter(cb: CB, fieldName?: F) {
-        const returnValue = getPreRunMethods();
-
-        useDeferDoneCallback(cb, fieldName);
-        return returnValue;
-      }
-
-      function getPreRunMethods() {
-        return {
-          after: VestRuntime.persist(after),
-          afterField: VestRuntime.persist(afterField),
-          focus,
-          run: persistedRun,
-        };
-      }
-
       function initCallback<U extends (...args: any[]) => any>(cb: U): U {
         return ((...args: Parameters<U>) => {
           Bus.useEmit('INITIALIZING_CALLBACKS');
@@ -124,6 +97,47 @@ function createSuite<
     return function runStatic(...runArgs: Parameters<T>) {
       const suite = createSuite<F, G, T>(suiteName, suiteCallback);
       return suite.run(...runArgs);
+    };
+  }
+}
+
+function useCreateSuiteMethods<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB = CB,
+>(
+  persistedRun: (...args: Parameters<T>) => SuiteResult<F, G>,
+  modifiers: SuiteModifiers<F>,
+) {
+  return getPreRunMethods();
+
+  function after(cb: CB) {
+    return addAfter(cb);
+  }
+
+  function afterField(fieldName: F, cb: CB) {
+    return addAfter(cb, fieldName);
+  }
+
+  function focus(config: SuiteModifiers<F>) {
+    modifiers.only = config.only;
+
+    return getPreRunMethods();
+  }
+
+  function addAfter(cb: CB, fieldName?: F) {
+    const returnValue = getPreRunMethods();
+
+    useDeferDoneCallback(cb, fieldName);
+    return returnValue;
+  }
+
+  function getPreRunMethods() {
+    return {
+      after: VestRuntime.persist(after),
+      afterField: VestRuntime.persist(afterField),
+      focus,
+      run: persistedRun,
     };
   }
 }

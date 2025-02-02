@@ -15,7 +15,6 @@ export function LazyDraft<
 
   return new Proxy(emptySummary, {
     get: (_, prop) => {
-      // @vx-allow use-use
       const result = useCreateSuiteResult<F, G>();
 
       return result[prop as keyof SuiteResult<F, G>];

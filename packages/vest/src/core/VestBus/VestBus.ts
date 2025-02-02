@@ -61,6 +61,7 @@ export function useInitVestBus() {
         const { fieldName } = VestTest.getData(isolate);
 
         useRunFieldCallbacks(fieldName);
+        useRunDoneCallbacks();
       }
     }
 
@@ -84,8 +85,8 @@ export function useInitVestBus() {
       useOmitOptionalFields();
     }
 
+    // resolve the suite's promise
     SuiteWalker.useResolve();
-    useRunDoneCallbacks();
   });
 
   on('RESET_FIELD', (fieldName: TFieldName) => {
@@ -106,6 +107,7 @@ export function useInitVestBus() {
 
     useOmitOptionalFields();
     useRunSyncFieldCallbacks();
+    useRunDoneCallbacks();
   });
 
   on('REMOVE_FIELD', (fieldName: TFieldName) => {

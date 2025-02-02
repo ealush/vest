@@ -36,8 +36,7 @@ describe('Stateful behavior', () => {
   let result,
     callback_1 = vi.fn(),
     callback_2 = vi.fn(),
-    callback_3 = vi.fn(),
-    control = vi.fn();
+    callback_3 = vi.fn();
 
   beforeEach(() => {
     suite = genSuite();
@@ -47,7 +46,6 @@ describe('Stateful behavior', () => {
     callback_1 = vi.fn();
     callback_2 = vi.fn();
     callback_3 = vi.fn();
-    control = vi.fn();
   });
 
   test('Should have all fields', () =>
@@ -65,30 +63,25 @@ describe('Stateful behavior', () => {
       expect(result.tests).toMatchSnapshot();
     }));
 
-  it('Should invoke after callback specified with sync field immediately, and the others after finishing', () =>
-    TestPromise(done => {
-      result = suite
-        .afterField('field_1', callback_1)
-        .after(callback_2)
-        .after(callback_3)
-        .run();
+  it('Should invoke after callback specified with sync field immediately, and the others after finishing', async () => {
+    result = suite
+      .afterField('field_1', callback_1)
+      .after(callback_2)
+      .after(callback_3)
+      .run();
 
-      expect(callback_1).toHaveBeenCalled();
-      expect(callback_2).not.toHaveBeenCalled();
-      expect(callback_3).not.toHaveBeenCalled();
+    expect(callback_1).toHaveBeenCalled();
+    expect(callback_2).toHaveBeenCalledOnce();
+    expect(callback_3).toHaveBeenCalledOnce();
 
-      setTimeout(() => {
-        expect(callback_2).not.toHaveBeenCalled();
-        expect(callback_3).not.toHaveBeenCalled();
-        expect(suite.get().hasErrors('field_7')).toBe(true);
-        control();
-      });
+    await wait(0);
+    expect(callback_2).toHaveBeenCalledTimes(2);
+    expect(callback_3).toHaveBeenCalledTimes(2);
+    expect(suite.get().hasErrors('field_7')).toBe(true);
 
-      setTimeout(() => {
-        expect(callback_2).toHaveBeenCalled();
-        expect(callback_3).toHaveBeenCalled();
-        expect(control).toHaveBeenCalled();
-        done();
-      }, 250);
-    }));
+    await result;
+
+    expect(callback_2).toHaveBeenCalledTimes(3);
+    expect(callback_3).toHaveBeenCalledTimes(3);
+  });
 });

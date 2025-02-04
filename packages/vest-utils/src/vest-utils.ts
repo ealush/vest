@@ -1,3 +1,4 @@
+export { withResolvers } from 'withResolvers';
 export { default as cache, CacheApi } from 'cache';
 export { BusType } from 'bus';
 export { TinyState } from 'tinyState';

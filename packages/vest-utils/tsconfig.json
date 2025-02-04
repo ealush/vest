@@ -7,6 +7,7 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
+      "withResolvers": ["./src/withResolvers.ts"],
       "vest-utils": ["./src/vest-utils.ts"],
       "valueIsObject": ["./src/valueIsObject.ts"],
       "utilityTypes": ["./src/utilityTypes.ts"],

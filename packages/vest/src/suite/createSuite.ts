@@ -1,4 +1,4 @@
-import { asArray, CB, assign } from 'vest-utils';
+import { asArray, CB, assign, withResolvers } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { getTypedMethods } from './getTypedMethods';
@@ -148,7 +148,7 @@ function useCreateSuiteRunner<
   T extends CB = CB,
 >(suiteCallback: CB, modifiers: SuiteModifiers<F>) {
   return function runSuite(...args: Parameters<T>): SuiteResult<F, G> {
-    const { resolve, promise } = Promise.withResolvers<SuiteResult<F, G>>();
+    const { resolve, promise } = withResolvers<SuiteResult<F, G>>();
     return assign(
       promise,
       SuiteContext.run(

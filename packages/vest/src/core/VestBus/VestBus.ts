@@ -2,6 +2,7 @@ import { CB, ValueOf } from 'vest-utils';
 import { Bus, RuntimeEvents, TIsolate } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
+import { TIsolateTest } from 'IsolateTest';
 import {
   useExpireSuiteResultCache,
   useResetCallbacks,
@@ -18,12 +19,21 @@ import {
   useRunFieldCallbacks,
   useRunSyncFieldCallbacks,
 } from 'runCallbacks';
+import { useUpdateSuiteSummary } from 'src/suiteResult/selectors/useUpdateSuiteSummary';
 
 // eslint-disable-next-line max-statements, max-lines-per-function
 export function useInitVestBus() {
   const VestBus = Bus.useBus();
 
-  on('TEST_COMPLETED', () => {});
+  on('TEST_COMPLETED', (test: TIsolateTest) => {
+    useUpdateSuiteSummary(test);
+  });
+
+  on(RuntimeEvents.ISOLATE_RESTORED, (isolate: TIsolate) => {
+    if (VestTest.is(isolate)) {
+      VestBus.emit('TEST_COMPLETED', isolate);
+    }
+  });
 
   on('TEST_RUN_STARTED', () => {
     // Bringin this back due to https://github.com/ealush/vest/issues/1157
@@ -42,6 +52,7 @@ export function useInitVestBus() {
   VestBus.on(RuntimeEvents.ISOLATE_PENDING, (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
       VestTest.setPending(isolate);
+      useUpdateSuiteSummary(isolate);
     }
 
     VestIsolate.setPending(isolate);
@@ -49,7 +60,7 @@ export function useInitVestBus() {
 
   VestBus.on(RuntimeEvents.ISOLATE_DONE, (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
-      VestBus.emit('TEST_COMPLETED');
+      VestBus.emit('TEST_COMPLETED', isolate);
     }
 
     VestIsolate.setDone(isolate);

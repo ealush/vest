@@ -2,6 +2,7 @@ import { Maybe, assign, defaultTo } from 'vest-utils';
 
 import { TIsolateTest } from 'IsolateTest';
 import { countKeyBySeverity, Severity } from 'Severity';
+import { useSummary } from 'SuiteContext';
 import {
   CommonSummaryProperties,
   Groups,
@@ -13,7 +14,7 @@ import {
   Tests,
 } from 'SuiteResultTypes';
 import { SummaryFailure } from 'SummaryFailure';
-import { TestWalker } from 'TestWalker';
+// import { TestWalker } from 'TestWalker';
 import { VestTest } from 'VestTest';
 import { useSetValidProperty } from 'useSetValidProperty';
 
@@ -21,28 +22,27 @@ export function useProduceSuiteSummary<
   F extends TFieldName,
   G extends TGroupName,
 >(): SuiteSummary<F, G> {
-  const summary = TestWalker.reduceTests<SuiteSummary<F, G>, TIsolateTest<F>>(
-    (summary, testObject) => {
-      const fieldName = VestTest.getData<F>(testObject).fieldName;
-      summary.tests[fieldName] = useAppendToTest(summary.tests, testObject);
-      summary.groups = useAppendToGroup(summary.groups, testObject);
+  // const summary = TestWalker.reduceTests<SuiteSummary<F, G>, TIsolateTest<F>>(
+  //   (summary, testObject) => {
+  //     const fieldName = VestTest.getData<F>(testObject).fieldName;
+  //     summary.tests[fieldName] = useAppendToTest(summary.tests, testObject);
+  //     summary.groups = useAppendToGroup(summary.groups, testObject);
+  //     if (VestTest.isOmitted(testObject)) {
+  //       return summary;
+  //     }
+  //     if (summary.tests[fieldName].valid === false) {
+  //       summary.valid = false;
+  //     }
+  //     return addSummaryStats(testObject, summary);
+  //   },
+  //   new SuiteSummary(),
+  // );
+  // if (summary.valid !== false) {
+  //   summary.valid = useSetValidProperty();
+  // }
+  // return summary;
 
-      if (VestTest.isOmitted(testObject)) {
-        return summary;
-      }
-      if (summary.tests[fieldName].valid === false) {
-        summary.valid = false;
-      }
-      return addSummaryStats(testObject, summary);
-    },
-    new SuiteSummary(),
-  );
-
-  if (summary.valid !== false) {
-    summary.valid = useSetValidProperty();
-  }
-
-  return summary;
+  return useSummary<F, G>();
 }
 
 function addSummaryStats<F extends TFieldName, G extends TGroupName>(
@@ -164,14 +164,14 @@ function incrementFailures<S extends CommonSummaryProperties>(
   }
 }
 
-function baseTestStats<S extends CommonSummaryProperties>(): S {
+export function baseTestStats<S extends CommonSummaryProperties>(): S {
   return assign(new SummaryBase(), {
     errors: [],
     warnings: [],
   }) as unknown as S;
 }
 
-function shouldCountTestRun<F extends TFieldName>(
+export function shouldCountTestRun<F extends TFieldName>(
   testObject: TIsolateTest<F>,
 ): boolean {
   return VestTest.isTested(testObject) || VestTest.isPending(testObject);

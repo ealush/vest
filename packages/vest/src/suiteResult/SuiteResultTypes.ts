@@ -1,6 +1,7 @@
 import { CB, Maybe, Nullable } from 'vest-utils';
 
 import { TIsolateSuite } from 'IsolateSuite';
+import { TIsolateTest } from 'IsolateTest';
 import { Severity } from 'Severity';
 import { SummaryFailure } from 'SummaryFailure';
 import { SuiteSelectors } from 'suiteSelectors';
@@ -21,6 +22,7 @@ export class SuiteSummary<
   public groups: Groups<G, F> = {} as Groups<G, F>;
   public tests: Tests<F> = {} as Tests<F>;
   public valid: Nullable<boolean> = null;
+  public knownTests: Set<TIsolateTest> = new Set();
 }
 
 export type TestsContainer<F extends TFieldName, G extends TGroupName> =

@@ -55,9 +55,15 @@ export class Isolate {
       VestRuntime.useSetNextIsolateChild(nextIsolateChild);
     }
 
-    const output = shouldRunNew
-      ? useRunAsNew(localHistoryNode, newCreatedNode, callback)
-      : nextIsolateChild.output;
+    let output: any = null;
+
+    if (shouldRunNew) {
+      output = useRunAsNew(localHistoryNode, newCreatedNode, callback);
+    } else {
+      const emit = useEmit();
+      emit(RuntimeEvents.ISOLATE_RESTORED, nextIsolateChild);
+      output = nextIsolateChild.output;
+    }
 
     IsolateMutator.saveOutput(nextIsolateChild, output);
 

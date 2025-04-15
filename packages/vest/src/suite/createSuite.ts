@@ -128,7 +128,7 @@ function useCreateSuiteMethods<
   function addAfter(cb: CB, fieldName?: F) {
     const returnValue = getPreRunMethods();
 
-    useDeferDoneCallback(cb, fieldName);
+    useDeferDoneCallback(withCatch(cb), fieldName);
     return returnValue;
   }
 
@@ -140,6 +140,16 @@ function useCreateSuiteMethods<
       run: persistedRun,
     };
   }
+}
+
+function withCatch<T>(cb: CB<T>): () => T | unknown {
+  return () => {
+    try {
+      cb();
+    } catch (error) {
+      return error;
+    }
+  };
 }
 
 function useCreateSuiteRunner<

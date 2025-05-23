@@ -164,7 +164,7 @@ function incrementFailures<S extends CommonSummaryProperties>(
   }
 }
 
-function baseTestStats<S extends CommonSummaryProperties>(): S {
+export function baseTestStats<S extends CommonSummaryProperties>(): S {
   return assign(new SummaryBase(), {
     errors: [],
     warnings: [],

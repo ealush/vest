@@ -41,7 +41,7 @@ function vestTest<F extends TFieldName>(
   const testObjectInput = { fieldName, message, testFn };
 
   // This invalidates the suite cache.
-  Bus.useEmit('TEST_RUN_STARTED');
+  Bus.useEmit('TEST_RUN_STARTED', testObjectInput);
 
   return IsolateTest(useAttemptRunTest, testObjectInput, key);
 }
@@ -69,3 +69,9 @@ function validateTestParams(fieldName: string, testFn: TestFn): void {
     }),
   );
 }
+
+export type TestObjectInput = {
+  fieldName: string;
+  message: string;
+  testFn: TestFn;
+};

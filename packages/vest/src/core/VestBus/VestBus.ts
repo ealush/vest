@@ -2,10 +2,12 @@ import { CB, ValueOf } from 'vest-utils';
 import { Bus, RuntimeEvents, TIsolate } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
+import { TIsolateTest } from 'IsolateTest';
 import {
   useExpireSuiteResultCache,
   useResetCallbacks,
   useResetSuite,
+  useResetSuiteSummary,
 } from 'Runtime';
 import { TFieldName } from 'SuiteResultTypes';
 import { SuiteWalker } from 'SuiteWalker';
@@ -18,14 +20,22 @@ import {
   useRunFieldCallbacks,
   useRunSyncFieldCallbacks,
 } from 'runCallbacks';
+import {
+  useAddPendingTestToSummary,
+  useAddTestToSummary,
+  useMarkCompletedTestInSummary,
+} from 'src/suiteResult/fillSuiteSummary';
+import { TestObjectInput } from 'test';
 
 // eslint-disable-next-line max-statements, max-lines-per-function
 export function useInitVestBus() {
   const VestBus = Bus.useBus();
 
-  on('TEST_COMPLETED', () => {});
+  on('TEST_COMPLETED', (testObject: TIsolateTest) => {
+    useMarkCompletedTestInSummary(testObject);
+  });
 
-  on('TEST_RUN_STARTED', () => {
+  on('TEST_RUN_STARTED', (testInput: TestObjectInput) => {
     // Bringin this back due to https://github.com/ealush/vest/issues/1157
     // This is a very pecluiar bug in which we're seeing vest behaving differently between
     // runs when suite.get() is called.
@@ -37,11 +47,13 @@ export function useInitVestBus() {
     // but this requires some rearchitecting within Vest.
     // This is an easy enough solution - we just reset the cache before the test run, let's hope we don't see
     // any performance issues.
+    useAddTestToSummary(testInput.fieldName);
   });
 
   VestBus.on(RuntimeEvents.ISOLATE_PENDING, (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
       VestTest.setPending(isolate);
+      useAddPendingTestToSummary(isolate);
     }
 
     VestIsolate.setPending(isolate);
@@ -49,7 +61,7 @@ export function useInitVestBus() {
 
   VestBus.on(RuntimeEvents.ISOLATE_DONE, (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
-      VestBus.emit('TEST_COMPLETED');
+      VestBus.emit('TEST_COMPLETED', isolate);
     }
 
     VestIsolate.setDone(isolate);
@@ -93,7 +105,9 @@ export function useInitVestBus() {
     TestWalker.resetField(fieldName);
   });
 
-  on('SUITE_RUN_STARTED', () => {});
+  on('SUITE_RUN_STARTED', () => {
+    useResetSuiteSummary();
+  });
 
   on('INITIALIZING_CALLBACKS', () => {
     useResetCallbacks();

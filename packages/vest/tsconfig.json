@@ -15,6 +15,7 @@
       "partition": ["./src/testUtils/partition.ts"],
       "TVestMock": ["./src/testUtils/TVestMock.ts"],
       "suiteResult": ["./src/suiteResult/suiteResult.ts"],
+      "fillSuiteSummary": ["./src/suiteResult/fillSuiteSummary.ts"],
       "SummaryFailure": ["./src/suiteResult/SummaryFailure.ts"],
       "SuiteResultTypes": ["./src/suiteResult/SuiteResultTypes.ts"],
       "Severity": ["./src/suiteResult/Severity.ts"],

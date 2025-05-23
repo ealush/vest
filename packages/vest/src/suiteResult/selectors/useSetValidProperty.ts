@@ -38,7 +38,7 @@ export function useSetValidProperty(fieldName?: TFieldName): boolean {
 }
 
 // Does the given field have any pending tests that are not optional?
-function useHasNonOptionalIncomplete(fieldName?: TFieldName) {
+export function useHasNonOptionalIncomplete(fieldName?: TFieldName) {
   return SuiteWalker.useHasPending(
     Predicates.all(
       VestTest.is,
@@ -51,7 +51,7 @@ function useHasNonOptionalIncomplete(fieldName?: TFieldName) {
 
 // Did all of the tests for the provided field run/omit?
 // This makes sure that the fields are not skipped or pending.
-function useNoMissingTests(fieldName?: string): boolean {
+export function useNoMissingTests(fieldName?: string): boolean {
   return TestWalker.everyTest(testObject => {
     return useNoMissingTestsLogic(testObject, fieldName);
   });

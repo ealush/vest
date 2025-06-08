@@ -7,24 +7,23 @@ import {
   useExpireSuiteResultCache,
   useResetCallbacks,
   useResetSuite,
-  useResetSuiteSummary,
 } from 'Runtime';
 import { TFieldName } from 'SuiteResultTypes';
 import { SuiteWalker } from 'SuiteWalker';
 import { TestWalker } from 'TestWalker';
 import { VestIsolate } from 'VestIsolate';
 import { VestTest } from 'VestTest';
+import {
+  useAddPendingTestToSummary,
+  useAddTestToSummary,
+  useMarkCompletedTestInSummary,
+} from 'fillSuiteSummary';
 import { useOmitOptionalFields } from 'omitOptionalFields';
 import {
   useRunDoneCallbacks,
   useRunFieldCallbacks,
   useRunSyncFieldCallbacks,
 } from 'runCallbacks';
-import {
-  useAddPendingTestToSummary,
-  useAddTestToSummary,
-  useMarkCompletedTestInSummary,
-} from 'src/suiteResult/fillSuiteSummary';
 import { TestObjectInput } from 'test';
 
 // eslint-disable-next-line max-statements, max-lines-per-function
@@ -105,9 +104,7 @@ export function useInitVestBus() {
     TestWalker.resetField(fieldName);
   });
 
-  on('SUITE_RUN_STARTED', () => {
-    useResetSuiteSummary();
-  });
+  on('SUITE_RUN_STARTED', () => {});
 
   on('INITIALIZING_CALLBACKS', () => {
     useResetCallbacks();

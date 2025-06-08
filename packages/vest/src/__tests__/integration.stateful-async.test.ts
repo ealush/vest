@@ -40,7 +40,6 @@ const genSuite = () =>
 let suite: vest.Suite<TFieldName, TGroupName, CB>;
 let callback_1 = vi.fn(),
   callback_2 = vi.fn(),
-  callback_3 = vi.fn(),
   callback_4 = vi.fn(),
   control = vi.fn();
 
@@ -48,7 +47,6 @@ describe('Stateful async tests', () => {
   beforeEach(() => {
     callback_1 = vi.fn();
     callback_2 = vi.fn();
-    callback_3 = vi.fn();
     callback_4 = vi.fn();
     control = vi.fn();
     suite = genSuite();

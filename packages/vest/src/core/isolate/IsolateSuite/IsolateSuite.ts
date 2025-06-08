@@ -1,5 +1,5 @@
 import { CB, assign } from 'vest-utils';
-import { Isolate, TIsolate } from 'vestjs-runtime';
+import { Isolate, TIsolate, VestRuntime } from 'vestjs-runtime';
 
 import { OptionalFieldDeclaration, OptionalFields } from 'OptionalTypes';
 import {
@@ -51,4 +51,10 @@ export class SuiteOptionalFields {
   static getOptionalFields(suite: TIsolateSuite): OptionalFields {
     return suite.data?.optional ?? {};
   }
+}
+
+export function useGetSuiteSummary() {
+  const suite = VestRuntime.useAvailableRoot<TIsolateSuite>();
+
+  return suite.data.summary;
 }

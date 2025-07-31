@@ -1,5 +1,7 @@
-import { Maybe, assign, defaultTo } from 'vest-utils';
+import { defaultTo, isEmpty, Maybe, assign } from 'vest-utils';
+import { VestRuntime } from 'vestjs-runtime';
 
+import { TIsolateSuite } from 'IsolateSuite';
 import { TIsolateTest } from 'IsolateTest';
 import { countKeyBySeverity, Severity } from 'Severity';
 import {
@@ -8,12 +10,12 @@ import {
   SingleTestSummary,
   SuiteSummary,
   SummaryBase,
+  Tests,
   TFieldName,
   TGroupName,
-  Tests,
 } from 'SuiteResultTypes';
 import { SummaryFailure } from 'SummaryFailure';
-import { TestWalker } from 'TestWalker';
+import { isVestIsolate } from 'VestIsolateType';
 import { VestTest } from 'VestTest';
 import { useSetValidProperty } from 'useSetValidProperty';
 
@@ -21,28 +23,88 @@ export function useProduceSuiteSummary<
   F extends TFieldName,
   G extends TGroupName,
 >(): SuiteSummary<F, G> {
-  const summary = TestWalker.reduceTests<SuiteSummary<F, G>, TIsolateTest<F>>(
-    (summary, testObject) => {
-      const fieldName = VestTest.getData<F>(testObject).fieldName;
-      summary.tests[fieldName] = useAppendToTest(summary.tests, testObject);
-      summary.groups = useAppendToGroup(summary.groups, testObject);
+  const root = VestRuntime.useAvailableRoot<TIsolateSuite>();
 
-      if (VestTest.isOmitted(testObject)) {
-        return summary;
-      }
-      if (summary.tests[fieldName].valid === false) {
-        summary.valid = false;
-      }
-      return addSummaryStats(testObject, summary);
-    },
-    new SuiteSummary(),
-  );
+  const summary = new SuiteSummary<F, G>();
+
+  if (isVestIsolate(root)) {
+    useProcessTests(root.data.tests, summary);
+  }
 
   if (summary.valid !== false) {
     summary.valid = useSetValidProperty();
   }
 
   return summary;
+}
+
+function useProcessTests<F extends TFieldName, G extends TGroupName>(
+  tests: TIsolateTest<F>[],
+  summary: SuiteSummary<F, G>,
+): SuiteSummary<F, G> {
+  if (isEmpty(tests)) {
+    // early bail for empty test arrays
+    summary.valid = false;
+    return summary;
+  }
+
+  tests.reduce((summary, testObject) => {
+    const { fieldName } = VestTest.getData(testObject);
+
+    summary.tests[fieldName] = appendToTest(summary.tests, testObject);
+    summary.groups = appendToGroup(summary.groups, testObject);
+
+    if (summary.tests[fieldName].valid !== false) {
+      summary.tests[fieldName].valid = useSetValidProperty(fieldName);
+    }
+
+    if (VestTest.isOmitted(testObject)) {
+      return summary;
+    }
+
+    if (summary.tests[fieldName].valid === false) {
+      summary.valid = false;
+    }
+
+    return addSummaryStats(testObject, summary);
+  }, summary);
+
+  return summary;
+}
+
+function appendToGroup(
+  groups: Groups<TGroupName, TFieldName>,
+  testObject: TIsolateTest,
+): Groups<TGroupName, TFieldName> {
+  const { fieldName } = VestTest.getData(testObject);
+  const groupName = VestTest.getGroupName(testObject);
+
+  if (!groupName) {
+    return groups;
+  }
+
+  groups[groupName] = groups[groupName] || {};
+  const group = groups[groupName];
+
+  group[fieldName] = appendTestSummaryObject<CommonSummaryProperties>(
+    group[fieldName],
+    testObject,
+  );
+
+  return groups;
+}
+
+function appendToTest<F extends TFieldName>(
+  tests: Tests<F>,
+  testObject: TIsolateTest<F>,
+): SingleTestSummary {
+  const fieldName = VestTest.getData<F>(testObject).fieldName;
+
+  const test = appendTestSummaryObject<SingleTestSummary>(
+    tests[fieldName],
+    testObject,
+  );
+  return test;
 }
 
 function addSummaryStats<F extends TFieldName, G extends TGroupName>(
@@ -68,50 +130,6 @@ function addSummaryStats<F extends TFieldName, G extends TGroupName>(
   return summary;
 }
 
-function useAppendToTest<F extends TFieldName>(
-  tests: Tests<F>,
-  testObject: TIsolateTest<F>,
-): SingleTestSummary {
-  const fieldName = VestTest.getData<F>(testObject).fieldName;
-
-  const test = appendTestSummaryObject<SingleTestSummary>(
-    tests[fieldName],
-    testObject,
-  );
-
-  // If `valid` is false to begin with, keep it that way. Otherwise, assess.
-  if (test.valid !== false) {
-    test.valid = useSetValidProperty(fieldName);
-  }
-
-  return test;
-}
-
-function useAppendToGroup(
-  groups: Groups<TGroupName, TFieldName>,
-  testObject: TIsolateTest,
-): Groups<TGroupName, TFieldName> {
-  const { fieldName } = VestTest.getData(testObject);
-  const groupName = VestTest.getGroupName(testObject);
-
-  if (!groupName) {
-    return groups;
-  }
-
-  groups[groupName] = groups[groupName] || {};
-  const group = groups[groupName];
-
-  group[fieldName] = appendTestSummaryObject<CommonSummaryProperties>(
-    group[fieldName],
-    testObject,
-  );
-
-  return groups;
-}
-
-/**
- * Appends the test to a results object.
- */
 function appendTestSummaryObject<S extends CommonSummaryProperties>(
   summaryKey: Maybe<S>,
   testObject: TIsolateTest,

@@ -55,9 +55,15 @@ export class Isolate {
       VestRuntime.useSetNextIsolateChild(nextIsolateChild);
     }
 
-    const output = shouldRunNew
-      ? useRunAsNew(localHistoryNode, newCreatedNode, callback)
-      : nextIsolateChild.output;
+    let output;
+
+    if (shouldRunNew) {
+      output = useRunAsNew(localHistoryNode, newCreatedNode, callback);
+    } else {
+      const emit = useEmit();
+      output = nextIsolateChild.output;
+      emit(RuntimeEvents.ISOLATE_RECONCILED, nextIsolateChild);
+    }
 
     IsolateMutator.saveOutput(nextIsolateChild, output);
 
@@ -138,7 +144,7 @@ function baseIsolate(
     [IsolateKeys.Keys]: null,
     [IsolateKeys.Parent]: null,
     [IsolateKeys.Type]: type,
-    [IsolateKeys.Data]: data as IsolateData,
+    [IsolateKeys.Data]: data,
     ...(status && { [IsolateKeys.Status]: status }),
     children: null,
     key,
@@ -146,8 +152,7 @@ function baseIsolate(
   };
 }
 
-type IsolateData = Record<string, any>;
-type IsolatePayload = IsolateData & IsolateFeatures;
+type IsolatePayload<P = Record<string, any>> = P & IsolateFeatures;
 type IsolateFeatures = {
   [IsolateKeys.AllowReorder]?: boolean;
   [IsolateKeys.Status]?: string;

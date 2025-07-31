@@ -38,9 +38,6 @@
       "validateSuiteParams": [
         "./src/suite/validateParams/validateSuiteParams.ts"
       ],
-      "shouldSkipDoneRegistration": [
-        "./src/suite/after/shouldSkipDoneRegistration.ts"
-      ],
       "deferDoneCallback": ["./src/suite/after/deferDoneCallback.ts"],
       "skipWhen": ["./src/isolates/skipWhen.ts"],
       "omitWhen": ["./src/isolates/omitWhen.ts"],
@@ -82,8 +79,8 @@
       "nonMatchingSeverityProfile": [
         "./src/core/test/helpers/nonMatchingSeverityProfile.ts"
       ],
-      "matchingGroupName": ["./src/core/test/helpers/matchingGroupName.ts"],
       "matchingFieldName": ["./src/core/test/helpers/matchingFieldName.ts"],
+      "registerTests": ["./src/core/isolate/registerTests.ts"],
       "VestReconciler": ["./src/core/isolate/VestReconciler.ts"],
       "VestIsolateType": ["./src/core/isolate/VestIsolateType.ts"],
       "VestIsolate": ["./src/core/isolate/VestIsolate.ts"],

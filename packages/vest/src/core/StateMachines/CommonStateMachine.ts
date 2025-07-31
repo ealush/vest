@@ -12,7 +12,7 @@ const State = {
   [CommonStates.DONE]: CommonStates.DONE,
 };
 
-export type State = ValueOf<typeof State>;
+type State = ValueOf<typeof State>;
 
 const machine: TStateMachine<State> = {
   initial: State.INITIAL,

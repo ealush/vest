@@ -14,26 +14,29 @@ import { nonMatchingFieldName } from 'matchingFieldName';
 
 export function useSetValidProperty(fieldName?: TFieldName): boolean {
   // Is the field optional, and the optional condition is applied
+  // #FIXME: Reimplement this check with the new top level tests key
   if (useIsOptionalFieldApplied(fieldName)) {
     return true;
   }
 
-  // Are there no tests?
-  if (TestWalker.hasNoTests()) {
+  if (hasErrorsByTestObjects(fieldName)) {
     return false;
   }
 
-  // // Does the field have any tests with errors?
+  // Does the field have any tests with errors?
+  // #FIXME: Reimplement this check with the new top level tests key
   if (hasErrorsByTestObjects(fieldName)) {
     return false;
   }
 
   // Does the given field have any pending tests that are not optional?
+  // #FIXME: Reimplement this check with the new top level tests key
   if (useHasNonOptionalIncomplete(fieldName)) {
     return false;
   }
 
   // Does the field have no missing tests?
+  // #FIXME: Reimplement this check with the new top level tests key
   return useNoMissingTests(fieldName);
 }
 

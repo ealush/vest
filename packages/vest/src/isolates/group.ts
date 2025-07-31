@@ -1,8 +1,12 @@
 import { CB } from 'vest-utils';
-import { TIsolate, Isolate } from 'vestjs-runtime';
+import { TIsolate } from 'vestjs-runtime';
 
 import { TGroupName } from 'SuiteResultTypes';
-import { VestIsolateType } from 'VestIsolateType';
+import {
+  createVestIsolate,
+  TVestIsolate,
+  VestIsolateType,
+} from 'VestIsolateType';
 
 export function group<G extends TGroupName>(
   groupName: G,
@@ -14,7 +18,11 @@ export function group<G extends TGroupName>(
 ): TIsolateGroup<G> {
   const [callback, groupName] = args.reverse() as [CB<void>, G];
 
-  return Isolate.create(VestIsolateType.Group, callback, { groupName });
+  return createVestIsolate(VestIsolateType.Group, callback, {
+    groupName,
+  });
 }
 
-export type TIsolateGroup<G extends TGroupName> = TIsolate<{ groupName: G }>;
+export type TIsolateGroup<G extends TGroupName> = TVestIsolate<{
+  groupName: G;
+}>;

@@ -31,7 +31,7 @@ export type Groups<G extends TGroupName, F extends TFieldName> = Record<
   G,
   Group<F>
 >;
-export type Group<F extends TFieldName> = Record<F, CommonSummaryProperties>;
+type Group<F extends TFieldName> = Record<F, CommonSummaryProperties>;
 export type Tests<F extends TFieldName> = Record<F, SingleTestSummary>;
 
 export type SingleTestSummary = SummaryBase &

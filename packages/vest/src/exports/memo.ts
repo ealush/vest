@@ -7,9 +7,10 @@ import {
   isNullish,
   invariant,
 } from 'vest-utils';
-import { Isolate, TIsolate, IsolateSelectors, Walker } from 'vestjs-runtime';
+import { TIsolate, IsolateSelectors, Walker } from 'vestjs-runtime';
 
 import { TIsolateTest } from 'IsolateTest';
+import { createVestIsolate, TVestIsolate } from 'VestIsolateType';
 import { VestTest } from 'VestTest';
 
 const isolateType = 'Memo';
@@ -17,11 +18,14 @@ const isolateType = 'Memo';
 export function memo<Callback extends CB = CB>(
   callback: Callback,
   dependencies: unknown[],
-) {
-  return Isolate.create(isolateType, callback, { dependencies, cache: null });
+): TIsolateMemo {
+  return createVestIsolate(isolateType, callback, {
+    dependencies,
+    cache: null,
+  });
 }
 
-export class IsolateMemoReconciler {
+class IsolateMemoReconciler {
   static match(currentNode: TIsolate, historyNode: TIsolate): boolean {
     return (
       IsolateSelectors.isIsolateType(currentNode, isolateType) &&
@@ -50,13 +54,13 @@ export class IsolateMemoReconciler {
   }
 }
 
-export type TIsolateMemo = TIsolate<IsolateMemoPayload>;
+type TIsolateMemo = TVestIsolate<IsolateMemoPayload>;
 
 type TIsolateMemoWithCache = TIsolateMemo & {
   data: { cache: CacheApi<TIsolateMemo> };
 };
 
-export type IsolateMemoPayload = {
+type IsolateMemoPayload = {
   dependencies: unknown[];
   cache: Nullable<CacheApi<TIsolateMemo>>;
 };

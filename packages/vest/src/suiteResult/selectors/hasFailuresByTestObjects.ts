@@ -1,9 +1,9 @@
-import { isEmpty } from 'vest-utils';
+import { VestRuntime } from 'vestjs-runtime';
 
 import { TIsolateTest } from 'IsolateTest';
 import { Severity } from 'Severity';
 import { TFieldName } from 'SuiteResultTypes';
-import { SuiteWalker } from 'SuiteWalker';
+import { isVestIsolate } from 'VestIsolateType';
 import { VestTest } from 'VestTest';
 import { nonMatchingFieldName } from 'matchingFieldName';
 import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
@@ -21,17 +21,17 @@ function hasFailuresByTestObjects(
   severityKey: Severity,
   fieldName?: TFieldName,
 ): boolean {
-  const allFailures = SuiteWalker.usePreAggs().failures;
+  const root = VestRuntime.useAvailableRoot();
 
-  if (isEmpty(allFailures[severityKey])) {
+  if (!isVestIsolate(root)) {
     return false;
   }
 
-  if (fieldName) {
-    return !isEmpty(allFailures[severityKey][fieldName]);
-  }
+  const tests = root.data.tests;
 
-  return true;
+  return tests.some(testObject => {
+    return hasFailuresByTestObject(testObject, severityKey, fieldName);
+  });
 }
 
 /**

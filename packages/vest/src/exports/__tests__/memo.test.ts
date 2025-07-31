@@ -318,7 +318,6 @@ describe('memo', () => {
     let res = suite.run();
     expect(cb).toHaveBeenCalledTimes(1);
     expect(res.groups.g1.f1.errorCount).toBe(1);
-    // expect(res.groups.g1.tests.f1).;
     res = suite.run();
     expect(cb).toHaveBeenCalledTimes(1);
     expect(res.groups.g2.f1.errorCount).toBe(1);

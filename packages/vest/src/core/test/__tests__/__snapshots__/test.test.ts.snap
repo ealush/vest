@@ -43,6 +43,9 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     "data": {
       "optional": {},
       "resolver": [Function],
+      "tests": [
+        [Circular],
+      ],
     },
     "key": null,
     "keys": null,
@@ -130,6 +133,9 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     "data": {
       "optional": {},
       "resolver": [Function],
+      "tests": [
+        [Circular],
+      ],
     },
     "key": null,
     "keys": {
@@ -219,6 +225,9 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     "data": {
       "optional": {},
       "resolver": [Function],
+      "tests": [
+        [Circular],
+      ],
     },
     "key": null,
     "keys": null,

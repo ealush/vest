@@ -440,7 +440,9 @@ describe('optional hook', () => {
     beforeEach(() => {
       suite = vest.create(() => {
         vest.optional({
-          field_1: () => suite.get().isValid('field_2'),
+          field_1: () => {
+            return suite.get().isValid('field_2');
+          },
         });
         vest.test('field_1', () => {
           vest.enforce(1).equals(2);

@@ -48,8 +48,6 @@ function vestTest<F extends TFieldName>(
 
 export const test = vestTest;
 
-export type VTest = typeof vestTest;
-
 function validateTestParams(fieldName: string, testFn: TestFn): void {
   const fnName = 'test';
   invariant(

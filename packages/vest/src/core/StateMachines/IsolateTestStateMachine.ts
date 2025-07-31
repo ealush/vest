@@ -20,7 +20,7 @@ export const TestAction = {
 export type TestStatus = ValueOf<typeof TestStatus>;
 export type TestAction = ValueOf<typeof TestAction>;
 
-export type TestStateMachineAction = TestAction | TestStatus;
+type TestStateMachineAction = TestAction | TestStatus;
 
 const machine: TStateMachine<TestStatus, TestStateMachineAction> = {
   initial: TestStatus.UNTESTED,

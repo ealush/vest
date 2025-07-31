@@ -7,7 +7,7 @@ import { TestStatus } from 'IsolateTestStateMachine';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
 import { Suite } from 'SuiteTypes';
 
-export type Dumpable = {
+type Dumpable = {
   dump: CB<TIsolateSuite>;
 };
 
@@ -60,4 +60,10 @@ const AllowedStatuses = new Set([
   TestStatus.WARNING,
 ]);
 
-const DisallowedKeys = new Set(['focusMode', 'match', 'matchAll', 'severity']);
+const DisallowedKeys = new Set([
+  'focusMode',
+  'match',
+  'matchAll',
+  'severity',
+  'tests',
+]);

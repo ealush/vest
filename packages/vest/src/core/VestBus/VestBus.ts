@@ -1,5 +1,11 @@
+import {
+  registerTestsTraverseUp,
+  registerTestNodes,
+  onTestStart,
+  reprocessTree,
+} from 'registerTests';
 import { CB, ValueOf } from 'vest-utils';
-import { Bus, RuntimeEvents, TIsolate } from 'vestjs-runtime';
+import { Bus, RuntimeEvents, TIsolate, VestRuntime } from 'vestjs-runtime';
 
 import { Events } from 'BusEvents';
 import {
@@ -23,7 +29,15 @@ import {
 export function useInitVestBus() {
   const VestBus = Bus.useBus();
 
-  on('TEST_COMPLETED', () => {});
+  on('TEST_COMPLETED', (isolate: TIsolate) => {
+    // #FIXME: This is not ideal as it traverses up all the way on every test
+    // but for now it should be ok. O(n)
+    // The reason we're doing this is that whenever tests are declared anywhere that's not the top level
+    // we still need them to be accessible from the root level tests[] array.
+    // This is becaue all of the runtime checks related to execution mode and early exit (eager, one, lazy)
+    // occur and are based on the top level registry instead of needing to always traverse all the way down.
+    registerTestsTraverseUp(isolate);
+  });
 
   on('TEST_RUN_STARTED', () => {
     // Bringin this back due to https://github.com/ealush/vest/issues/1157
@@ -39,6 +53,16 @@ export function useInitVestBus() {
     // any performance issues.
   });
 
+  VestBus.on(RuntimeEvents.ISOLATE_ENTER, (isolate: TIsolate) => {
+    if (VestTest.is(isolate)) {
+      onTestStart(isolate);
+    }
+  });
+
+  VestBus.on(RuntimeEvents.ISOLATE_RECONCILED, (isolate: TIsolate) => {
+    registerTestNodes(isolate);
+  });
+
   VestBus.on(RuntimeEvents.ISOLATE_PENDING, (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
       VestTest.setPending(isolate);
@@ -49,7 +73,9 @@ export function useInitVestBus() {
 
   VestBus.on(RuntimeEvents.ISOLATE_DONE, (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
-      VestBus.emit('TEST_COMPLETED');
+      VestBus.emit('TEST_COMPLETED', isolate);
+    } else {
+      registerTestNodes(isolate);
     }
 
     VestIsolate.setDone(isolate);
@@ -112,6 +138,7 @@ export function useInitVestBus() {
 
   on('REMOVE_FIELD', (fieldName: TFieldName) => {
     TestWalker.removeTestByFieldName(fieldName);
+    reprocessTree(VestRuntime.useAvailableRoot());
   });
 
   on('RESET_SUITE', () => {

@@ -13,11 +13,7 @@ export type Suite<
   T extends CB = CB,
 > = SuiteMethods<F, G, T>;
 
-export type SuiteMethods<
-  F extends TFieldName,
-  G extends TGroupName,
-  T extends CB,
-> = {
+type SuiteMethods<F extends TFieldName, G extends TGroupName, T extends CB> = {
   dump: CB<TIsolateSuite>;
 
   get: CB<SuiteResult<F, G>>;
@@ -32,11 +28,7 @@ export type SuiteMethods<
   TTypedMethods<F, G> &
   SuiteSelectors<F, G>;
 
-export type AfterMethods<
-  F extends TFieldName,
-  G extends TGroupName,
-  T extends CB,
-> = {
+type AfterMethods<F extends TFieldName, G extends TGroupName, T extends CB> = {
   after: CB<AfterMethods<F, G, T>, [callback: CB]>;
   afterField: CB<AfterMethods<F, G, T>, [fieldName: F, callback: CB]>;
   focus: CB<AfterMethods<F, G, T>, [config: SuiteModifiers<F>]>;

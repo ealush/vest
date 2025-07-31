@@ -113,5 +113,3 @@ const testDummy = () => ({
 });
 
 export const dummyTest = testDummy();
-
-export type TDummyTest = typeof dummyTest;

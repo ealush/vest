@@ -41,7 +41,7 @@ export default function debounce<Callback extends CB = CB>(
   return i.output;
 }
 
-export class IsolateDebounceReconciler {
+class IsolateDebounceReconciler {
   static match(currentNode: TIsolate, historyNode: TIsolate): boolean {
     return (
       IsolateSelectors.isIsolateType(currentNode, isolateType) &&
@@ -56,9 +56,9 @@ export class IsolateDebounceReconciler {
   }
 }
 
-export type TIsolateDebounce = TIsolate<IsolateDebouncePayload>;
+type TIsolateDebounce = TIsolate<IsolateDebouncePayload>;
 
-export type IsolateDebouncePayload = {
+type IsolateDebouncePayload = {
   clearTimeout: () => void;
 };
 

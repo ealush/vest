@@ -1,4 +1,4 @@
-import { TStateMachineApi } from 'vest-utils';
+import { Nullable, TStateMachineApi } from 'vest-utils';
 import { TIsolate } from 'vestjs-runtime';
 
 import { CommonStateMachine, CommonStates } from 'CommonStateMachine';
@@ -32,5 +32,9 @@ export class VestIsolate {
 
   static isPending(isolate: TIsolate): boolean {
     return VestIsolate.statusEquals(isolate, CommonStates.PENDING);
+  }
+
+  static getParent(isolate: TIsolate): Nullable<TIsolate> {
+    return isolate.parent;
   }
 }

@@ -1,11 +1,10 @@
 import type { CB } from 'vest-utils';
 import { dynamicValue } from 'vest-utils';
-import { Isolate } from 'vestjs-runtime';
 
 import { LazyDraft } from 'LazyDraft';
 import { SuiteContext, useOmitted } from 'SuiteContext';
 import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { VestIsolateType } from 'VestIsolateType';
+import { createVestIsolate, VestIsolateType } from 'VestIsolateType';
 import { TDraftCondition } from 'getTypedMethods';
 
 /**
@@ -22,16 +21,22 @@ export function omitWhen<F extends TFieldName, G extends TGroupName>(
   conditional: TDraftCondition<F, G>,
   callback: CB,
 ): void {
-  Isolate.create(VestIsolateType.OmitWhen, () => {
-    SuiteContext.run(
-      {
-        omitted:
-          useWithinActiveOmitWhen() ||
-          dynamicValue(conditional, LazyDraft<F, G>()),
-      },
-      callback,
-    );
-  });
+  createVestIsolate(
+    VestIsolateType.OmitWhen,
+    () => {
+      SuiteContext.run(
+        {
+          omitted:
+            useWithinActiveOmitWhen() ||
+            dynamicValue(conditional, LazyDraft<F, G>()),
+        },
+        callback,
+      );
+    },
+    {
+      tests: [],
+    },
+  );
 }
 
 // Checks that we're currently in an active omitWhen block

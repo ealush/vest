@@ -10,16 +10,14 @@ import {
 import { IsolateSelectors, TIsolate, Isolate } from 'vestjs-runtime';
 
 import { FocusModes } from 'FocusedKeys';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
+import { TFieldName } from 'SuiteResultTypes';
 import { VestIsolateType } from 'VestIsolateType';
 
-export type ExclusionItem = Maybe<OneOrMoreOf<string>>;
 export type FieldExclusion<F extends TFieldName> = Maybe<OneOrMoreOf<F>>;
-export type GroupExclusion<G extends TGroupName> = Maybe<OneOrMoreOf<G>>;
 
 export type TIsolateFocused = TIsolate<IsolateFocusedPayload>;
 
-export type IsolateFocusedPayload = {
+type IsolateFocusedPayload = {
   focusMode: FocusModes;
   match: FieldExclusion<TFieldName>;
   matchAll: boolean;

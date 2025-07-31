@@ -1,11 +1,10 @@
 import { Predicate, Predicates, isEmpty, isNullish } from 'vest-utils';
-import { TIsolate, VestRuntime, Walker } from 'vestjs-runtime';
+import { VestRuntime } from 'vestjs-runtime';
 
 import { TIsolateSuite } from 'IsolateSuite';
 import { TIsolateTest } from 'IsolateTest';
-import { PreAggCache, usePreAggCache } from 'Runtime';
 import { TFieldName } from 'SuiteResultTypes';
-import { VestIsolate } from 'VestIsolate';
+import { isVestIsolate } from 'VestIsolateType';
 import { VestTest } from 'VestTest';
 import { matchesOrHasNoFieldName } from 'matchingFieldName';
 
@@ -15,21 +14,17 @@ export class SuiteWalker {
   static useHasPending(predicate?: Predicate): boolean {
     const root = SuiteWalker.defaultRoot();
 
-    if (!root) {
+    if (!isVestIsolate(root)) {
       return false;
     }
 
-    const allPending = SuiteWalker.usePreAggs().pending;
+    const allPending = root.data.tests.filter(VestTest.isPending);
 
     if (isEmpty(allPending)) {
       return false;
     }
 
     return allPending.some(Predicates.all(predicate ?? true));
-  }
-
-  static usePreAggs() {
-    return usePreAggCache(buildPreAggCache);
   }
 
   static useResolve() {
@@ -56,49 +51,5 @@ export class SuiteWalker {
         }),
       ),
     );
-  }
-}
-
-function buildPreAggCache(): PreAggCache {
-  const root = SuiteWalker.defaultRoot();
-
-  const base: PreAggCache = {
-    pending: [],
-    failures: {
-      errors: {},
-      warnings: {},
-    },
-  };
-
-  if (!root) {
-    return base;
-  }
-
-  return Walker.reduce(root, aggregateIsolate, base);
-}
-
-function aggregateIsolate(agg: PreAggCache, isolate: TIsolate): PreAggCache {
-  if (VestIsolate.isPending(isolate)) {
-    agg.pending.push(isolate);
-  }
-
-  if (VestTest.is(isolate)) {
-    aggregateTestFailures(agg, isolate);
-  }
-
-  return agg;
-}
-
-function aggregateTestFailures(agg: PreAggCache, isolate: TIsolateTest): void {
-  const fieldName = VestTest.getData(isolate).fieldName;
-
-  if (VestTest.isWarning(isolate)) {
-    agg.failures.warnings[fieldName] = agg.failures.warnings[fieldName] ?? [];
-    agg.failures.warnings[fieldName].push(isolate);
-  }
-
-  if (VestTest.isFailing(isolate)) {
-    agg.failures.errors[fieldName] = agg.failures.errors[fieldName] ?? [];
-    agg.failures.errors[fieldName].push(isolate);
   }
 }

@@ -11,6 +11,8 @@
     "website:build": "yarn workspace website build",
     "build:fast": "vx build --fastBuild"
   },
+  "homepage": "https://vestjs.dev",
+  "name": "vest",
   "prettier": {
     "arrowParens": "avoid",
     "singleQuote": true

@@ -10656,6 +10656,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"n4s-schema@workspace:packages/n4s-schema":
+  version: 0.0.0-use.local
+  resolution: "n4s-schema@workspace:packages/n4s-schema"
+  languageName: unknown
+  linkType: soft
+
 "n4s@^5.0.28, n4s@workspace:packages/n4s":
   version: 0.0.0-use.local
   resolution: "n4s@workspace:packages/n4s"

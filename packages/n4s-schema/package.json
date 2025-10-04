@@ -1,0 +1,46 @@
+{
+  "name": "n4s-schema",
+  "version": "0.0.0",
+  "description": "typed schema validation version of enforce",
+  "license": "MIT",
+  "author": "ealush",
+  "private": true,
+  "main": "./dist/cjs/n4s-schema.js",
+  "module": "./dist/es/n4s-schema.production.js",
+  "unpkg": "./dist/umd/n4s-schema.production.js",
+  "jsdelivr": "./dist/umd/n4s-schema.production.js",
+  "types": "./types/n4s-schema.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ealush/vest.git",
+    "directory": "packages/n4s-schema"
+  },
+  "bugs": {
+    "url": "https://github.com/ealush/vest.git/issues"
+  },
+  "exports": {
+    ".": {
+      "development": {
+        "types": "./types/n4s-schema.d.ts",
+        "browser": "./dist/es/n4s-schema.development.js",
+        "umd": "./dist/umd/n4s-schema.development.js",
+        "import": "./dist/es/n4s-schema.development.js",
+        "require": "./dist/cjs/n4s-schema.development.js",
+        "node": "./dist/cjs/n4s-schema.development.js",
+        "module": "./dist/es/n4s-schema.development.js",
+        "default": "./dist/cjs/n4s-schema.development.js"
+      },
+      "types": "./types/n4s-schema.d.ts",
+      "browser": "./dist/es/n4s-schema.production.js",
+      "umd": "./dist/umd/n4s-schema.production.js",
+      "import": "./dist/es/n4s-schema.production.js",
+      "require": "./dist/cjs/n4s-schema.production.js",
+      "node": "./dist/cjs/n4s-schema.production.js",
+      "module": "./dist/es/n4s-schema.production.js",
+      "default": "./dist/cjs/n4s-schema.production.js"
+    },
+    "./package.json": "./package.json",
+    "./*": "./*"
+  },
+  "vxAllowResolve": []
+}

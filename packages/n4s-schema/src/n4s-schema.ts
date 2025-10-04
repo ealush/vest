@@ -1,0 +1,1 @@
+export const main = () => "n4s-schema";

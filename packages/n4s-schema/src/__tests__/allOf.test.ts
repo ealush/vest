@@ -1,6 +1,8 @@
+import { isArray } from 'vest-utils';
 import { describe, it, expect } from 'vitest';
-import { allOf } from '../schemaRules';
+
 import { RuleInstance } from '../enforce';
+import { allOf } from '../schemaRules';
 
 const isNumber: RuleInstance<number> = {
   run: (v: any) => ({ passes: typeof v === 'number', type: v }),
@@ -11,6 +13,11 @@ const isGreaterThan = (n: number): RuleInstance<number> => ({
   run: (v: number) => ({ passes: v > n, type: v }),
   infer: {} as number,
 });
+
+const isArray: RuleInstance<any[]> = {
+  run: (v: any) => ({ passes: Array.isArray(v), type: v }),
+  infer: {} as any[],
+};
 
 describe('allOf', () => {
   it('should return a rule instance', () => {
@@ -41,5 +48,13 @@ describe('allOf', () => {
     const rule = allOf();
     const result = rule.run('any value');
     expect(result.passes).toBe(true);
+  });
+
+  describe('When all rules  are satisfied', () => {
+    it('Should return a passing result', () => {
+      const rule = allOf(isArray);
+      const result = rule.run([1, 2, 3]);
+      expect(result).toEqual({ passes: true, type: [1, 2, 3] });
+    });
   });
 });

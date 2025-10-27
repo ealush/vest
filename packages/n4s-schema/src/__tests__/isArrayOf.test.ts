@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { isArrayOf } from '../schemaRules';
+
 import { RuleInstance } from '../enforce';
+import { isArrayOf } from '../schemaRules';
 
 const isNumber: RuleInstance<number> = {
   run: (v: any) => ({ passes: typeof v === 'number', type: v }),
@@ -27,6 +28,7 @@ describe('isArrayOf', () => {
 
   it('should fail for an array with mixed types', () => {
     const rule = isArrayOf(isNumber);
+    // @ts-ignore
     const result = rule.run([1, '2', 3]);
     expect(result.passes).toBe(false);
   });
@@ -39,6 +41,7 @@ describe('isArrayOf', () => {
 
   it('should fail if not an array', () => {
     const rule = isArrayOf(isNumber);
+    // @ts-ignore
     const result = rule.run({ not: 'an array' });
     expect(result.passes).toBe(false);
   });

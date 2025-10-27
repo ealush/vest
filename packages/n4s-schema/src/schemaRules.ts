@@ -30,22 +30,22 @@ export function loose<T extends Record<string, RuleInstance<any>>>(
   };
 }
 
-export function isArrayOf<T>(
-  ...rules: RuleInstance<T, any>[]
-): RuleInstance<T[], [T[]]> {
+export function isArrayOf<T extends RuleInstance<any, any>[]>(
+  ...rules: T
+): RuleInstance<InferShape<T[number]>[], [InferShape<T[number]>[]]> {
   return {
-    run: (value: T[]) => {
+    run: (value: InferShape<T[number]>[]) => {
       if (!Array.isArray(value)) {
         return { passes: false, type: value };
       }
 
       const passes = value.every(item =>
-        rules.some(rule => rule.run(item).passes),
+        (rules as RuleInstance<any, any>[]).some(rule => rule.run(item).passes),
       );
 
       return { passes, type: value };
     },
-    infer: [] as T[],
+    infer: [] as InferShape<T[number]>[],
   };
 }
 

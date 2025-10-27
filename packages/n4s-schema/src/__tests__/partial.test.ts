@@ -48,8 +48,11 @@ describe('partial', () => {
     const partialSchema = partial(schema);
     const shapeRule = shape(partialSchema);
 
+    // @ts-expect-error
     expect(shapeRule.run({ name: 123 }).passes).toBe(false);
+    // @ts-expect-error
     expect(shapeRule.run({ age: '30' }).passes).toBe(false);
+    // @ts-expect-error
     expect(shapeRule.run({ name: 'John', age: '30' }).passes).toBe(false);
   });
 

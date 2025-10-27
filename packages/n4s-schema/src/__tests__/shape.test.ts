@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { shape } from '../schemaRules';
+
 import { RuleInstance } from '../enforce';
+import { shape } from '../schemaRules';
 
 const isNumber: RuleInstance<number> = {
   run: (v: any) => ({ passes: typeof v === 'number', type: v }),
@@ -32,24 +33,28 @@ describe('shape', () => {
 
   it('should fail with extra properties', () => {
     const rule = shape(schema);
+    // @ts-expect-error
     const result = rule.run({ name: 'John', age: 30, extra: 'property' });
     expect(result.passes).toBe(false);
   });
 
   it('should fail if a property is missing', () => {
     const rule = shape(schema);
+    // @ts-expect-error
     const result = rule.run({ name: 'John' });
     expect(result.passes).toBe(false);
   });
 
   it('should fail if a property has wrong type', () => {
     const rule = shape(schema);
+    // @ts-expect-error
     const result = rule.run({ name: 'John', age: '30' });
     expect(result.passes).toBe(false);
   });
 
   it('should fail with empty object', () => {
     const rule = shape(schema);
+    // @ts-expect-error
     const result = rule.run({});
     expect(result.passes).toBe(false);
   });

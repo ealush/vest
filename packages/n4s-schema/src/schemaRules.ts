@@ -3,7 +3,13 @@ import { RuleInstance } from './enforce';
 export type InferShape<T> = T extends RuleInstance<infer R, any> ? R : never;
 
 export type SchemaInfer<T extends Record<string, RuleInstance<any>>> = {
-  [K in keyof T]: InferShape<T[K]>;
+  [K in keyof T as undefined extends InferShape<T[K]> ? never : K]: InferShape<
+    T[K]
+  >;
+} & {
+  [K in keyof T as undefined extends InferShape<T[K]> ? K : never]?: InferShape<
+    T[K]
+  >;
 };
 
 export type ShapeType<T extends Record<string, RuleInstance<any>>> =

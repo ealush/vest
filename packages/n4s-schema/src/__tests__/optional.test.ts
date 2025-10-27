@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { optional } from '../schemaRules';
+
 import { RuleInstance } from '../enforce';
+import { optional } from '../schemaRules';
 
 const isNumber: RuleInstance<number> = {
   run: (v: any) => ({ passes: typeof v === 'number', type: v }),
@@ -34,6 +35,7 @@ describe('optional', () => {
 
   it('should fail for an invalid value', () => {
     const rule = optional(isNumber);
+    // @ts-expect-error
     const result = rule.run('not a number');
     expect(result.passes).toBe(false);
   });

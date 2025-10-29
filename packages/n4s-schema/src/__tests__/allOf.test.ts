@@ -1,4 +1,3 @@
-import { isArray } from 'vest-utils';
 import { describe, it, expect } from 'vitest';
 
 import { RuleInstance } from '../enforce';

@@ -26,7 +26,8 @@ export function loose<T extends Record<string, RuleInstance<any>>>(
     run: (v: ShapeType<T> & Record<string, unknown>) => {
       // Check that each schema field passes its rule
       for (const key in schema) {
-        if (!(key in v) || !schema[key].run(v[key]).passes) {
+        const value = key in v ? v[key] : undefined;
+        if (!schema[key].run(value).passes) {
           return { passes: false, type: v };
         }
       }

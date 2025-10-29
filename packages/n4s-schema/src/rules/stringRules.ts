@@ -1,15 +1,14 @@
-import { RuleRunReturn, ruleRunReturn } from '../enforce';
+import { RuleInstance, RuleRunReturn, ruleRunReturn } from '../enforce';
 
 type Predicate = (value: string) => boolean;
 
-type Chain = {
-  startsWith(start: string): Chain;
-  endsWith(ending: string): Chain;
-  matches(regex: RegExp): Chain;
-  minLength(n: number): Chain;
-  maxLength(n: number): Chain;
-  run(value: any): RuleRunReturn<string>;
-};
+export interface StringRuleInstance extends RuleInstance<string, [any]> {
+  startsWith(start: string): StringRuleInstance;
+  endsWith(ending: string): StringRuleInstance;
+  matches(regex: RegExp): StringRuleInstance;
+  minLength(n: number): StringRuleInstance;
+  maxLength(n: number): StringRuleInstance;
+}
 
 function startsWith(str: string, start: string): boolean {
   return str.startsWith(start);
@@ -40,30 +39,36 @@ const rules = {
   startsWith,
 };
 
-export function isString() {
+export function isString(): StringRuleInstance {
   const chain: Predicate[] = [];
 
-  const proxy = new Proxy({} as Chain, {
-    get(_, prop: keyof Chain) {
+  const target: Partial<StringRuleInstance> = {
+    infer: '' as any as string,
+  };
+
+  const proxy = new Proxy(target as StringRuleInstance, {
+    get(target, prop: keyof StringRuleInstance) {
       if (prop === 'run') {
         return run;
       }
 
-      if (rules.hasOwnProperty(prop)) {
+      if (Object.prototype.hasOwnProperty.call(rules, prop as any)) {
         return (...args: any[]) => {
           return add((value: any) => (rules as any)[prop](value, ...args));
         };
       }
+
+      return (target as any)[prop];
     },
   });
 
   add((value: any) => typeof value === 'string');
 
-  return proxy;
+  return proxy as StringRuleInstance;
 
-  function add(p: Predicate): Chain {
+  function add(p: Predicate) {
     chain.push(p);
-    return proxy;
+    return proxy as StringRuleInstance;
   }
 
   function run(value: any): RuleRunReturn<string> {

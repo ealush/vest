@@ -1,18 +1,9 @@
 import { BuildRule, RuleRunReturn, ruleRunReturn } from './enforce';
 
-function isString(value: any): RuleRunReturn<string> {
-  return ruleRunReturn(typeof value === 'string', '');
-}
-export const isStringRule = BuildRule(isString);
-
-function endsWith(value: string, ending: string): RuleRunReturn<boolean> {
-  return ruleRunReturn(value.endsWith(ending), value.endsWith(ending));
-}
-export const endsWithRule = BuildRule(endsWith);
-
 function equals<T>(a: T, b: T): RuleRunReturn<boolean> {
   return ruleRunReturn(a === b, a === b);
 }
+
 export const equalsRule = BuildRule(equals);
 
 function greaterThanOrEquals(a: number, b: number): RuleRunReturn<boolean> {
@@ -36,11 +27,6 @@ function isBetween(
   );
 }
 export const isBetweenRule = BuildRule(isBetween);
-
-function isBlank(value: string): RuleRunReturn<boolean> {
-  return ruleRunReturn(value.trim() === '', value.trim() === '');
-}
-export const isBlankRule = BuildRule(isBlank);
 
 function isBoolean(value: any): RuleRunReturn<boolean> {
   return ruleRunReturn(typeof value === 'boolean', typeof value === 'boolean');
@@ -107,32 +93,7 @@ function lessThanOrEquals(a: number, b: number): RuleRunReturn<boolean> {
 }
 export const lessThanOrEqualsRule = BuildRule(lessThanOrEquals);
 
-function longerThanOrEquals(a: string, b: number): RuleRunReturn<boolean> {
-  return ruleRunReturn(a.length >= b, a.length >= b);
-}
-export const longerThanOrEqualsRule = BuildRule(longerThanOrEquals);
-
-function matches(value: string, regex: RegExp): RuleRunReturn<boolean> {
-  return ruleRunReturn(regex.test(value), regex.test(value));
-}
-export const matchesRule = BuildRule(matches);
-
 function ruleCondition(condition: boolean): RuleRunReturn<boolean> {
   return ruleRunReturn(condition, condition);
 }
 export const ruleConditionRule = BuildRule(ruleCondition);
-
-function shorterThan(a: string, b: number): RuleRunReturn<boolean> {
-  return ruleRunReturn(a.length < b, a.length < b);
-}
-export const shorterThanRule = BuildRule(shorterThan);
-
-function shorterThanOrEquals(a: string, b: number): RuleRunReturn<boolean> {
-  return ruleRunReturn(a.length <= b, a.length <= b);
-}
-export const shorterThanOrEqualsRule = BuildRule(shorterThanOrEquals);
-
-function startsWith(value: string, start: string): RuleRunReturn<string> {
-  return ruleRunReturn(value.startsWith(start), value);
-}
-export const startsWithRule = BuildRule(startsWith);

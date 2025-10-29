@@ -1,10 +1,12 @@
-export function BuildRule<T, Args extends any[]>(
-  rule: (...args: Args) => RuleRunReturn<T>,
-): RuleInstance<T, Args> {
+export function BuildRule<
+  R extends RuleInstance<T, Args>,
+  T,
+  Args extends any[],
+>(rule: (...args: Args) => RuleRunReturn<T>): R {
   return {
     run: (...args: Args) => rule(...args),
     infer: {} as T,
-  };
+  } as R;
 }
 
 export function ruleRunReturn<T>(passes: boolean, type: T): RuleRunReturn<T> {
@@ -19,7 +21,7 @@ export interface RuleRunReturn<T> {
   type: T;
 }
 
-export type RuleInstance<T, Args extends any[] = any[]> = {
+export interface RuleInstance<T, Args extends any[] = any[]> {
   run: (...args: Args) => RuleRunReturn<T>;
   infer: T;
-};
+}

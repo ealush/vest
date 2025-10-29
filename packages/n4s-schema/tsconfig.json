@@ -7,7 +7,13 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "n4s-schema": ["./src/n4s-schema.ts"]
+      "schemaRules": ["./src/schemaRules.ts"],
+      "rules": ["./src/rules.ts"],
+      "n4s-schema": ["./src/n4s-schema.ts"],
+      "example": ["./src/example.ts"],
+      "enforce": ["./src/enforce.ts"],
+      "eager": ["./src/eager.ts"],
+      "stringRules": ["./src/rules/stringRules.ts"]
     }
   }
 }

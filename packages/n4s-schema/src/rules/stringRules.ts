@@ -1,6 +1,8 @@
-import { RuleInstance, RuleRunReturn, ruleRunReturn } from '../enforce';
+import { isStringValue } from 'vest-utils';
 
-type Predicate = (value: string) => boolean;
+import { RuleInstance } from '../enforce';
+
+import { genRuleChain } from './genRuleChain';
 
 export interface StringRuleInstance extends RuleInstance<string, [any]> {
   startsWith(start: string): StringRuleInstance;
@@ -40,48 +42,6 @@ const rules = {
 };
 
 export function isString(): StringRuleInstance {
-  const chain: Predicate[] = [];
-
-  const target: Partial<StringRuleInstance> = {
-    infer: '' as any as string,
-  };
-
-  const proxy = new Proxy(target as StringRuleInstance, {
-    get(target, prop: keyof StringRuleInstance) {
-      if (prop === 'run') {
-        return run;
-      }
-
-      if (Object.prototype.hasOwnProperty.call(rules, prop as any)) {
-        return (...args: any[]) => {
-          return add((value: any) => (rules as any)[prop](value, ...args));
-        };
-      }
-
-      return (target as any)[prop];
-    },
-  });
-
-  add((value: any) => typeof value === 'string');
-
-  return proxy as StringRuleInstance;
-
-  function add(p: Predicate) {
-    chain.push(p);
-    return proxy as StringRuleInstance;
-  }
-
-  function run(value: any): RuleRunReturn<string> {
-    if (chain.length === 0) {
-      return ruleRunReturn(true, value);
-    }
-
-    for (let i = 0; i < chain.length; i++) {
-      const p = chain[i];
-      if (!p(value)) {
-        return ruleRunReturn(false, value);
-      }
-    }
-    return ruleRunReturn(true, value);
-  }
+  const add = genRuleChain<StringRuleInstance>(rules);
+  return add(value => isStringValue(value));
 }

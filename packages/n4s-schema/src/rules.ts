@@ -1,99 +1,46 @@
-import { BuildRule, RuleRunReturn, ruleRunReturn } from './enforce';
+/**
+ * Re-exports of all rules from categorical files.
+ * This file serves as a central export point for backward compatibility.
+ * All rule implementations are now organized by category.
+ */
 
-function equals<T>(a: T, b: T): RuleRunReturn<boolean> {
-  return ruleRunReturn(a === b, a === b);
-}
+// String rules
+export { isString } from './rules/stringRules';
 
-export const equalsRule = BuildRule(equals);
+// Number rules
+export { isNumber } from './rules/numberRules';
 
-function greaterThanOrEquals(a: number, b: number): RuleRunReturn<boolean> {
-  return ruleRunReturn(a >= b, a >= b);
-}
-export const greaterThanOrEqualsRule = BuildRule(greaterThanOrEquals);
+// Numeric rules (accepts numbers or numeric strings)
+export { isNumeric } from './rules/numericRules';
 
-function inside<T>(value: T, arr: T[]): RuleRunReturn<boolean> {
-  return ruleRunReturn(arr.includes(value), arr.includes(value));
-}
-export const insideRule = BuildRule(inside);
+// Boolean rules
+export { isBoolean } from './rules/booleanRules';
 
-function isBetween(
-  value: number,
-  min: number,
-  max: number,
-): RuleRunReturn<boolean> {
-  return ruleRunReturn(
-    value >= min && value <= max,
-    value >= min && value <= max,
-  );
-}
-export const isBetweenRule = BuildRule(isBetween);
+// Array rules
+export { isArray } from './rules/arrayRules';
 
-function isBoolean(value: any): RuleRunReturn<boolean> {
-  return ruleRunReturn(typeof value === 'boolean', typeof value === 'boolean');
-}
+// Nullish rules
+export {
+  isNull,
+  isNotNull,
+  isUndefined,
+  isNotUndefined,
+  isNullish,
+  isNotNullish,
+} from './rules/nullishRules';
 
-export const isBooleanRule = BuildRule(isBoolean);
+// Object rules
+export { checkKey, checkValue } from './rules/objectRules';
 
-function isEven(value: number): RuleRunReturn<boolean> {
-  return ruleRunReturn(value % 2 === 0, value % 2 === 0);
-}
-export const isEvenRule = BuildRule(isEven);
-
-function isKeyOf<T extends object>(
-  key: string,
-  obj: T,
-): RuleRunReturn<boolean> {
-  return ruleRunReturn(key in obj, key in obj);
-}
-export const isKeyOfRule = BuildRule(isKeyOf);
-
-function isNaN(value: any): RuleRunReturn<boolean> {
-  return ruleRunReturn(Number.isNaN(value), Number.isNaN(value));
-}
-export const isNaNRule = BuildRule(isNaN);
-
-function isNegative(value: number): RuleRunReturn<boolean> {
-  return ruleRunReturn(value < 0, value < 0);
-}
-export const isNegativeRule = BuildRule(isNegative);
-
-function isNumber(value: any): RuleRunReturn<number> {
-  return ruleRunReturn(typeof value === 'number', value);
-}
-export const isNumberRule = BuildRule(isNumber);
-
-function isOdd(value: number): RuleRunReturn<boolean> {
-  return ruleRunReturn(value % 2 !== 0, value % 2 !== 0);
-}
-export const isOddRule = BuildRule(isOdd);
-
-function isTruthy(value: any): RuleRunReturn<boolean> {
-  return ruleRunReturn(!!value, !!value);
-}
-export const isTruthyRule = BuildRule(isTruthy);
-
-function isValueOf<T>(
-  value: T,
-  obj: Record<string, T>,
-): RuleRunReturn<boolean> {
-  return ruleRunReturn(
-    Object.values(obj).includes(value),
-    Object.values(obj).includes(value),
-  );
-}
-export const isValueOfRule = BuildRule(isValueOf);
-
-function lessThan(a: number, b: number): RuleRunReturn<boolean> {
-  return ruleRunReturn(a < b, a < b);
-}
-export const lessThanRule = BuildRule(lessThan);
-
-function lessThanOrEquals(a: number, b: number): RuleRunReturn<boolean> {
-  return ruleRunReturn(a <= b, a <= b);
-}
-export const lessThanOrEqualsRule = BuildRule(lessThanOrEquals);
-
-function ruleCondition(condition: boolean): RuleRunReturn<boolean> {
-  return ruleRunReturn(condition, condition);
-}
-export const ruleConditionRule = BuildRule(ruleCondition);
+// General rules
+export {
+  isTruthy,
+  isFalsy,
+  isEmpty,
+  isNotEmpty,
+  isBlank,
+  isNotBlank,
+  isNaN,
+  isNotNaN,
+  condition,
+} from './rules/generalRules';

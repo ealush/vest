@@ -25,6 +25,12 @@ describe('stringRules', () => {
       false,
     );
     expect(isString().minLength(3).maxLength(5).run('a').passes).toBe(false);
+    expect(isString().lengthEquals(4).run('four').passes).toBe(true);
+    expect(isString().lengthNotEquals(4).run('four').passes).toBe(false);
+    expect(isString().longerThan(3).run('four').passes).toBe(true);
+    expect(isString().longerThanOrEquals(4).run('four').passes).toBe(true);
+    expect(isString().shorterThan(5).run('four').passes).toBe(true);
+    expect(isString().shorterThanOrEquals(4).run('four').passes).toBe(true);
   });
 
   it('should handle regex matching', () => {
@@ -38,6 +44,8 @@ describe('stringRules', () => {
         .matches(/^[a-z]+$/)
         .run('ab1c').passes,
     ).toBe(false);
+    expect(isString().matches('[a-z]+').run('abc').passes).toBe(true);
+    expect(isString().notMatches('[0-9]+').run('abc').passes).toBe(true);
   });
 
   it('should handle complex chaining', () => {

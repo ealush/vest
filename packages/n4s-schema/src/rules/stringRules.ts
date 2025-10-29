@@ -3,41 +3,76 @@
 type Predicate = (value: string) => boolean;
 
 type Chain = {
-  // guards
-  isString(): Chain;
-
-  // string predicates
   startsWith(start: string): Chain;
   endsWith(ending: string): Chain;
   matches(regex: RegExp): Chain;
   minLength(n: number): Chain;
   maxLength(n: number): Chain;
-
-  // executor
   run(value: any): boolean;
 };
 
-function makeChain(predicates: Predicate[] = []): Chain {
-  const add = (p: Predicate) => makeChain([...predicates, p]);
-
-  return {
-    isString: () => add((v: string) => typeof v === 'string'),
-    startsWith: (start: string) => add((v: string) => v.startsWith(start)),
-    endsWith: (ending: string) => add((v: string) => v.endsWith(ending)),
-    matches: (regex: RegExp) => add((v: string) => regex.test(v)),
-    minLength: (n: number) => add((v: string) => v.length >= n),
-    // NOTE: Tests expect equality to fail when at the limit (exclusive upper bound)
-    maxLength: (n: number) => add((v: string) => v.length < n),
-    run: (value: any) => {
-      if (predicates.length === 0) return true;
-      // First guard: if first predicate is isString, enforce type early
-      for (let i = 0; i < predicates.length; i++) {
-        const p = predicates[i];
-        if (!p(value)) return false;
-      }
-      return true;
-    },
-  };
+function startsWith(str: string, start: string): boolean {
+  return str.startsWith(start);
 }
 
-export const stringRules: Chain = makeChain();
+function endsWith(str: string, ending: string): boolean {
+  return str.endsWith(ending);
+}
+
+function matches(str: string, regex: RegExp): boolean {
+  return regex.test(str);
+}
+
+function minLength(str: string, n: number): boolean {
+  return str.length >= n;
+}
+
+function maxLength(str: string, n: number): boolean {
+  return str.length < n;
+}
+
+const rules = {
+  endsWith,
+  isString,
+  matches,
+  maxLength,
+  minLength,
+  startsWith,
+};
+
+export function isString() {
+  const chain: Predicate[] = [];
+
+  const proxy = new Proxy({} as Chain, {
+    get(_, prop: keyof Chain) {
+      if (prop === 'run') {
+        return run;
+      }
+
+      if (rules.hasOwnProperty(prop)) {
+        return (...args: any[]) => {
+          return add((value: any) => (rules as any)[prop](value, ...args));
+        };
+      }
+    },
+  });
+
+  add((value: any) => typeof value === 'string');
+
+  return proxy;
+
+  function add(p: Predicate): Chain {
+    chain.push(p);
+    return proxy;
+  }
+
+  function run(value: any): boolean {
+    if (chain.length === 0) return true;
+
+    for (let i = 0; i < chain.length; i++) {
+      const p = chain[i];
+      if (!p(value)) return false;
+    }
+    return true;
+  }
+}

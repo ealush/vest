@@ -1,4 +1,4 @@
-// A small, self-contained chainable string rules builder.
+import { RuleRunReturn, ruleRunReturn } from '../enforce';
 
 type Predicate = (value: string) => boolean;
 
@@ -8,7 +8,7 @@ type Chain = {
   matches(regex: RegExp): Chain;
   minLength(n: number): Chain;
   maxLength(n: number): Chain;
-  run(value: any): boolean;
+  run(value: any): RuleRunReturn<string>;
 };
 
 function startsWith(str: string, start: string): boolean {
@@ -66,13 +66,17 @@ export function isString() {
     return proxy;
   }
 
-  function run(value: any): boolean {
-    if (chain.length === 0) return true;
+  function run(value: any): RuleRunReturn<string> {
+    if (chain.length === 0) {
+      return ruleRunReturn(true, value);
+    }
 
     for (let i = 0; i < chain.length; i++) {
       const p = chain[i];
-      if (!p(value)) return false;
+      if (!p(value)) {
+        return ruleRunReturn(false, value);
+      }
     }
-    return true;
+    return ruleRunReturn(true, value);
   }
 }

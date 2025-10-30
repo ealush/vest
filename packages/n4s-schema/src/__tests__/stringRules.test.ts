@@ -48,6 +48,27 @@ describe('stringRules', () => {
     expect(isString().notMatches('[0-9]+').run('abc').passes).toBe(true);
   });
 
+  it('should handle doesNotStartWith / doesNotEndWith', () => {
+    expect(isString().doesNotStartWith('dog').run('catalog').passes).toBe(true);
+    expect(isString().doesNotStartWith('cat').run('catalog').passes).toBe(
+      false,
+    );
+    expect(isString().doesNotEndWith('dog').run('catalog').passes).toBe(true);
+    expect(isString().doesNotEndWith('log').run('catalog').passes).toBe(false);
+  });
+
+  it('inside / notInside with string and array containers', () => {
+    // string container
+    expect(isString().inside('hello world').run('world').passes).toBe(true);
+    expect(isString().notInside('hello world').run('mars').passes).toBe(true);
+
+    // array-of-strings container
+    expect(isString().inside(['red', 'green']).run('red').passes).toBe(true);
+    expect(isString().notInside(['red', 'green']).run('blue').passes).toBe(
+      true,
+    );
+  });
+
   it('should handle complex chaining', () => {
     expect(
       isString()

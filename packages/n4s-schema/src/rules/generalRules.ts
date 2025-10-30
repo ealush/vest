@@ -1,6 +1,7 @@
 import {
   isEmpty as isEmptyValue,
   isNotEmpty as isNotEmptyValue,
+  isNumeric as isNumericValue,
 } from 'vest-utils';
 
 import { RuleInstance } from '../enforce';
@@ -16,6 +17,11 @@ export interface NotBlankRuleInstance extends RuleInstance<any, [any]> {}
 export interface NaNRuleInstance extends RuleInstance<any, [any]> {}
 export interface NotNaNRuleInstance extends RuleInstance<any, [any]> {}
 export interface ConditionRuleInstance extends RuleInstance<boolean, [any]> {}
+export interface NotArrayRuleInstance extends RuleInstance<any, [any]> {}
+export interface NotBooleanRuleInstance extends RuleInstance<any, [any]> {}
+export interface NotNumberRuleInstance extends RuleInstance<any, [any]> {}
+export interface NotStringRuleInstance extends RuleInstance<any, [any]> {}
+export interface NotNumericRuleInstance extends RuleInstance<any, [any]> {}
 
 const truthyRules = {};
 const falsyRules = {};
@@ -26,6 +32,11 @@ const notBlankRules = {};
 const nanRules = {};
 const notNanRules = {};
 const conditionRules = {};
+const notArrayRules = {};
+const notBooleanRules = {};
+const notNumberRules = {};
+const notStringRules = {};
+const notNumericRules = {};
 
 export function isTruthy(): TruthyRuleInstance {
   const add = genRuleChain<TruthyRuleInstance>(truthyRules);
@@ -79,4 +90,29 @@ export function isNotNaN(): NotNaNRuleInstance {
 export function condition(cond: boolean): ConditionRuleInstance {
   const add = genRuleChain<ConditionRuleInstance>(conditionRules);
   return add(() => cond);
+}
+
+export function isNotArray(): NotArrayRuleInstance {
+  const add = genRuleChain<NotArrayRuleInstance>(notArrayRules);
+  return add(value => !Array.isArray(value));
+}
+
+export function isNotBoolean(): NotBooleanRuleInstance {
+  const add = genRuleChain<NotBooleanRuleInstance>(notBooleanRules);
+  return add(value => typeof value !== 'boolean');
+}
+
+export function isNotNumber(): NotNumberRuleInstance {
+  const add = genRuleChain<NotNumberRuleInstance>(notNumberRules);
+  return add(value => typeof value !== 'number' || Number.isNaN(value));
+}
+
+export function isNotString(): NotStringRuleInstance {
+  const add = genRuleChain<NotStringRuleInstance>(notStringRules);
+  return add(value => typeof value !== 'string');
+}
+
+export function isNotNumeric(): NotNumericRuleInstance {
+  const add = genRuleChain<NotNumericRuleInstance>(notNumericRules);
+  return add(value => !isNumericValue(value));
 }

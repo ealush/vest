@@ -43,4 +43,9 @@ export {
   isNaN,
   isNotNaN,
   condition,
+  isNotArray,
+  isNotBoolean,
+  isNotNumber,
+  isNotString,
+  isNotNumeric,
 } from './rules/generalRules';

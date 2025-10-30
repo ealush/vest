@@ -23,4 +23,28 @@ describe('numberRules', () => {
     // @ts-expect-error testing runtime behavior
     expect(isNumber().run('4' as any).passes).toBe(false);
   });
+
+  it('numberEquals / numberNotEquals', () => {
+    expect(isNumber().numberEquals(4).run(4).passes).toBe(true);
+    // @ts-expect-error runtime path: string is not a number entry
+    expect(
+      isNumber()
+        .numberEquals('4' as any)
+        .run(4 as any).passes,
+    ).toBe(true);
+    expect(isNumber().numberNotEquals(5).run(4).passes).toBe(true);
+    expect(isNumber().numberNotEquals(4).run(4).passes).toBe(false);
+  });
+
+  it('isNaN / isNotNaN / isNegative', () => {
+    // @ts-expect-error runtime path only
+    expect(
+      isNumber()
+        .isNaN()
+        .run(NaN as any).passes,
+    ).toBe(true);
+    expect(isNumber().isNotNaN().run(1).passes).toBe(true);
+    expect(isNumber().isNegative().run(-1).passes).toBe(true);
+    expect(isNumber().isPositive().run(-1).passes).toBe(false);
+  });
 });

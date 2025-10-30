@@ -25,8 +25,8 @@ export interface StringRuleInstance extends RuleInstance<string, [any]> {
   notMatches(regex: RegExp | string): StringRuleInstance;
   doesNotStartWith(start: string): StringRuleInstance;
   doesNotEndWith(ending: string): StringRuleInstance;
-  inside(container: string): StringRuleInstance;
-  notInside(container: string): StringRuleInstance;
+  inside(container: string | string[]): StringRuleInstance;
+  notInside(container: string | string[]): StringRuleInstance;
   minLength(n: number): StringRuleInstance; // alias for length >= n
   maxLength(n: number): StringRuleInstance; // alias for length <= n
   lengthEquals(n: number): StringRuleInstance;

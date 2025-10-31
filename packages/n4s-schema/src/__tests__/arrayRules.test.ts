@@ -26,7 +26,6 @@ describe('arrayRules', () => {
   });
 
   it('fails when not an array', () => {
-    // @ts-expect-error runtime check only
-    expect(isArray().run('not array' as any).passes).toBe(false);
+    expect(isArray().run('not array').passes).toBe(false);
   });
 });

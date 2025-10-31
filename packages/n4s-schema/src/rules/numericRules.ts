@@ -59,22 +59,30 @@ function adapt1<A extends any[]>(
   };
 }
 
+function notBetweenNum(v: number, min: number, max: number): boolean {
+  return v < min || v > max;
+}
+
+function isNaNNum(v: number): boolean {
+  return Number.isNaN(v);
+}
+
+function isNotNaNNum(v: number): boolean {
+  return !Number.isNaN(v);
+}
+
 const rules = {
   between: adapt1(betweenBase),
-  notBetween: adapt1(
-    (v: number, min: number, max: number) => v < min || v > max,
-  ),
+  notBetween: adapt1(notBetweenNum),
   isBetween: adapt1(betweenBase),
-  isNotBetween: adapt1(
-    (v: number, min: number, max: number) => v < min || v > max,
-  ),
-  equals: adapt1(equalsBase),
-  notEquals: adapt1(notEqualsBase),
+  isNotBetween: adapt1(notBetweenNum),
+  equals: adapt1((a: number, b: number) => equalsBase(a, b)),
+  notEquals: adapt1((a: number, b: number) => notEqualsBase(a, b)),
   greaterThan: adapt1(greaterThanBase),
   greaterThanOrEquals: adapt1(greaterThanOrEqualsBase),
   isEven: adapt1(isEvenBase),
-  isNaN: adapt1((v: number) => Number.isNaN(v)),
-  isNotNaN: adapt1((v: number) => !Number.isNaN(v)),
+  isNaN: adapt1(isNaNNum),
+  isNotNaN: adapt1(isNotNaNNum),
   isNegative: adapt1(isNegativeBase),
   isOdd: adapt1(isOddBase),
   isPositive: adapt1(isPositiveBase),
@@ -88,5 +96,8 @@ const rules = {
 
 export function isNumeric(): NumericRuleInstance {
   const add = genRuleChain<NumericRuleInstance>(rules);
-  return add(value => isNumericValue(value));
+  function isNumericPredicate(value: any): boolean {
+    return isNumericValue(value);
+  }
+  return add(isNumericPredicate);
 }

@@ -1,0 +1,5 @@
+
+
+const enforceLazy = new Proxy() {
+
+}

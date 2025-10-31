@@ -48,6 +48,15 @@ describe('stringRules', () => {
     expect(isString().notMatches('[0-9]+').run('abc').passes).toBe(true);
   });
 
+  it('should handle isBlank / isNotBlank for strings', () => {
+    expect(isString().isBlank().run('   ').passes).toBe(true);
+    expect(isString().isBlank().run('').passes).toBe(true);
+    expect(isString().isBlank().run(' a ').passes).toBe(false);
+
+    expect(isString().isNotBlank().run('a').passes).toBe(true);
+    expect(isString().isNotBlank().run('   ').passes).toBe(false);
+  });
+
   it('should handle doesNotStartWith / doesNotEndWith', () => {
     expect(isString().doesNotStartWith('dog').run('catalog').passes).toBe(true);
     expect(isString().doesNotStartWith('cat').run('catalog').passes).toBe(

@@ -25,12 +25,23 @@ function equals(value: boolean, v: boolean): boolean {
 const rules = {
   equals,
   isFalse,
-  isFalsy: (value: boolean) => !value,
+  isFalsy: isFalsyRule,
   isTrue,
-  isTruthy: (value: boolean) => !!value,
+  isTruthy: isTruthyRule,
 };
 
 export function isBoolean(): BooleanRuleInstance {
   const add = genRuleChain<BooleanRuleInstance>(rules);
-  return add(value => typeof value === 'boolean');
+  function isBooleanPredicate(value: any): boolean {
+    return typeof value === 'boolean';
+  }
+  return add(isBooleanPredicate);
+}
+
+function isFalsyRule(value: boolean): boolean {
+  return !value;
+}
+
+function isTruthyRule(value: boolean): boolean {
+  return !!value;
 }

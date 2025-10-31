@@ -42,30 +42,53 @@ export interface NumberRuleInstance extends RuleInstance<number, [any]> {
 
 const rules = {
   between,
-  notBetween: (value: number, min: number, max: number) =>
-    value < min || value > max,
+  notBetween: notBetweenRule,
   isBetween: between,
-  isNotBetween: (value: number, min: number, max: number) =>
-    value < min || value > max,
+  isNotBetween: isNotBetweenRule,
   equals,
   notEquals,
   greaterThan,
   greaterThanOrEquals,
   isEven,
-  isNaN: (value: number) => Number.isNaN(value),
-  isNotNaN: (value: number) => !Number.isNaN(value),
+  isNaN: isNaNNumberRule,
+  isNotNaN: isNotNaNNumberRule,
   isNegative,
   isOdd,
   isPositive,
   lessThan,
   lessThanOrEquals,
-  numberEquals: (value: number, n: number | string) =>
-    numberEqualsValue(value, n as any),
-  numberNotEquals: (value: number, n: number | string) =>
-    numberNotEqualsValue(value, n as any),
+  numberEquals: numberEqualsRule,
+  numberNotEquals: numberNotEqualsRule,
 };
 
 export function isNumber(): NumberRuleInstance {
   const add = genRuleChain<NumberRuleInstance>(rules);
-  return add(value => typeof value === 'number' && !Number.isNaN(value));
+  function isNumberPredicate(value: any): boolean {
+    return typeof value === 'number' && !Number.isNaN(value);
+  }
+  return add(isNumberPredicate);
+}
+
+function notBetweenRule(value: number, min: number, max: number): boolean {
+  return value < min || value > max;
+}
+
+function isNotBetweenRule(value: number, min: number, max: number): boolean {
+  return value < min || value > max;
+}
+
+function isNaNNumberRule(value: number): boolean {
+  return Number.isNaN(value);
+}
+
+function isNotNaNNumberRule(value: number): boolean {
+  return !Number.isNaN(value);
+}
+
+function numberEqualsRule(value: number, n: number | string): boolean {
+  return numberEqualsValue(value, n as any);
+}
+
+function numberNotEqualsRule(value: number, n: number | string): boolean {
+  return numberNotEqualsValue(value, n as any);
 }

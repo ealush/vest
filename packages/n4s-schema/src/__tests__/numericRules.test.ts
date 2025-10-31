@@ -9,8 +9,7 @@ describe('numericRules', () => {
   });
 
   it('fails on non-numeric values', () => {
-    // @ts-expect-error runtime check only
-    expect(isNumeric().run('abc' as any).passes).toBe(false);
+    expect(isNumeric().run('abc').passes).toBe(false);
   });
 
   it('applies chained predicates after numeric coercion', () => {

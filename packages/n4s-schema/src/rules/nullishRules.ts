@@ -29,30 +29,48 @@ const notNullishRules = {};
 
 export function isNull(): NullRuleInstance {
   const add = genRuleChain<NullRuleInstance>(nullRules);
-  return add(value => isNullValue(value));
+  function isNullPredicate(value: any): boolean {
+    return isNullValue(value);
+  }
+  return add(isNullPredicate);
 }
 
 export function isNotNull(): NotNullRuleInstance {
   const add = genRuleChain<NotNullRuleInstance>(notNullRules);
-  return add(value => isNotNullValue(value));
+  function isNotNullPredicate(value: any): boolean {
+    return isNotNullValue(value);
+  }
+  return add(isNotNullPredicate);
 }
 
 export function isUndefined(): UndefinedRuleInstance {
   const add = genRuleChain<UndefinedRuleInstance>(undefinedRules);
-  return add(value => isUndefinedValue(value));
+  function isUndefinedPredicate(value: any): boolean {
+    return isUndefinedValue(value);
+  }
+  return add(isUndefinedPredicate);
 }
 
 export function isNotUndefined(): NotUndefinedRuleInstance {
   const add = genRuleChain<NotUndefinedRuleInstance>(notUndefinedRules);
-  return add(value => isNotUndefinedValue(value));
+  function isNotUndefinedPredicate(value: any): boolean {
+    return isNotUndefinedValue(value);
+  }
+  return add(isNotUndefinedPredicate);
 }
 
 export function isNullish(): NullishRuleInstance {
   const add = genRuleChain<NullishRuleInstance>(nullishRules);
-  return add(value => isNullishValue(value));
+  function isNullishPredicate(value: any): boolean {
+    return isNullishValue(value);
+  }
+  return add(isNullishPredicate);
 }
 
 export function isNotNullish(): NotNullishRuleInstance {
   const add = genRuleChain<NotNullishRuleInstance>(notNullishRules);
-  return add(value => isNotNullishValue(value));
+  function isNotNullishPredicate(value: any): boolean {
+    return isNotNullishValue(value);
+  }
+  return add(isNotNullishPredicate);
 }

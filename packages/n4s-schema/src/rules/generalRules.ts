@@ -12,8 +12,6 @@ export interface TruthyRuleInstance extends RuleInstance<any, [any]> {}
 export interface FalsyRuleInstance extends RuleInstance<any, [any]> {}
 export interface EmptyRuleInstance extends RuleInstance<any, [any]> {}
 export interface NotEmptyRuleInstance extends RuleInstance<any, [any]> {}
-export interface BlankRuleInstance extends RuleInstance<any, [any]> {}
-export interface NotBlankRuleInstance extends RuleInstance<any, [any]> {}
 export interface NaNRuleInstance extends RuleInstance<any, [any]> {}
 export interface NotNaNRuleInstance extends RuleInstance<any, [any]> {}
 export interface ConditionRuleInstance extends RuleInstance<boolean, [any]> {}
@@ -27,8 +25,6 @@ const truthyRules = {};
 const falsyRules = {};
 const emptyRules = {};
 const notEmptyRules = {};
-const blankRules = {};
-const notBlankRules = {};
 const nanRules = {};
 const notNanRules = {};
 const conditionRules = {};
@@ -40,79 +36,96 @@ const notNumericRules = {};
 
 export function isTruthy(): TruthyRuleInstance {
   const add = genRuleChain<TruthyRuleInstance>(truthyRules);
-  return add(value => !!value);
+  function truthyPredicate(value: any): boolean {
+    return !!value;
+  }
+  return add(truthyPredicate);
 }
 
 export function isFalsy(): FalsyRuleInstance {
   const add = genRuleChain<FalsyRuleInstance>(falsyRules);
-  return add(value => !value);
+  function falsyPredicate(value: any): boolean {
+    return !value;
+  }
+  return add(falsyPredicate);
 }
 
 export function isEmpty(): EmptyRuleInstance {
   const add = genRuleChain<EmptyRuleInstance>(emptyRules);
-  return add(value => isEmptyValue(value));
+  function emptyPredicate(value: any): boolean {
+    return isEmptyValue(value);
+  }
+  return add(emptyPredicate);
 }
 
 export function isNotEmpty(): NotEmptyRuleInstance {
   const add = genRuleChain<NotEmptyRuleInstance>(notEmptyRules);
-  return add(value => isNotEmptyValue(value));
-}
-
-export function isBlank(): BlankRuleInstance {
-  const add = genRuleChain<BlankRuleInstance>(blankRules);
-  return add(
-    value =>
-      value == null || (typeof value === 'string' && value.trim().length === 0),
-  );
-}
-
-export function isNotBlank(): NotBlankRuleInstance {
-  const add = genRuleChain<NotBlankRuleInstance>(notBlankRules);
-  return add(
-    value =>
-      !(
-        value == null ||
-        (typeof value === 'string' && value.trim().length === 0)
-      ),
-  );
+  function notEmptyPredicate(value: any): boolean {
+    return isNotEmptyValue(value);
+  }
+  return add(notEmptyPredicate);
 }
 
 export function isNaN(): NaNRuleInstance {
   const add = genRuleChain<NaNRuleInstance>(nanRules);
-  return add(value => Number.isNaN(value));
+  function isNaNPredicate(value: any): boolean {
+    return Number.isNaN(value);
+  }
+  return add(isNaNPredicate);
 }
 
 export function isNotNaN(): NotNaNRuleInstance {
   const add = genRuleChain<NotNaNRuleInstance>(notNanRules);
-  return add(value => !Number.isNaN(value));
+  function isNotNaNPredicate(value: any): boolean {
+    return !Number.isNaN(value);
+  }
+  return add(isNotNaNPredicate);
 }
 
 export function condition(cond: boolean): ConditionRuleInstance {
   const add = genRuleChain<ConditionRuleInstance>(conditionRules);
-  return add(() => cond);
+  function conditionPredicate(): boolean {
+    return cond;
+  }
+  return add(conditionPredicate);
 }
 
 export function isNotArray(): NotArrayRuleInstance {
   const add = genRuleChain<NotArrayRuleInstance>(notArrayRules);
-  return add(value => !Array.isArray(value));
+  function notArrayPredicate(value: any): boolean {
+    return !Array.isArray(value);
+  }
+  return add(notArrayPredicate);
 }
 
 export function isNotBoolean(): NotBooleanRuleInstance {
   const add = genRuleChain<NotBooleanRuleInstance>(notBooleanRules);
-  return add(value => typeof value !== 'boolean');
+  function notBooleanPredicate(value: any): boolean {
+    return typeof value !== 'boolean';
+  }
+  return add(notBooleanPredicate);
 }
 
 export function isNotNumber(): NotNumberRuleInstance {
   const add = genRuleChain<NotNumberRuleInstance>(notNumberRules);
-  return add(value => typeof value !== 'number' || Number.isNaN(value));
+  function notNumberPredicate(value: any): boolean {
+    return typeof value !== 'number' || Number.isNaN(value);
+  }
+  return add(notNumberPredicate);
 }
 
 export function isNotString(): NotStringRuleInstance {
   const add = genRuleChain<NotStringRuleInstance>(notStringRules);
-  return add(value => typeof value !== 'string');
+  function notStringPredicate(value: any): boolean {
+    return typeof value !== 'string';
+  }
+  return add(notStringPredicate);
 }
 
 export function isNotNumeric(): NotNumericRuleInstance {
   const add = genRuleChain<NotNumericRuleInstance>(notNumericRules);
-  return add(value => !isNumericValue(value));
+  function notNumericPredicate(value: any): boolean {
+    return !isNumericValue(value);
+  }
+  return add(notNumericPredicate);
 }

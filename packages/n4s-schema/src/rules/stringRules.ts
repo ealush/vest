@@ -27,6 +27,8 @@ export interface StringRuleInstance extends RuleInstance<string, [any]> {
   doesNotEndWith(ending: string): StringRuleInstance;
   inside(container: string | string[]): StringRuleInstance;
   notInside(container: string | string[]): StringRuleInstance;
+  isBlank(): StringRuleInstance;
+  isNotBlank(): StringRuleInstance;
   minLength(n: number): StringRuleInstance; // alias for length >= n
   maxLength(n: number): StringRuleInstance; // alias for length <= n
   lengthEquals(n: number): StringRuleInstance;
@@ -60,11 +62,29 @@ function notMatches(str: string, regex: RegExp | string): boolean {
   return !!r && !r.test(str);
 }
 
+function doesNotEndWith(str: string, ending: string): boolean {
+  return !endsWith(str, ending);
+}
+
+function doesNotStartWith(str: string, start: string): boolean {
+  return !startsWith(str, start);
+}
+
+function isBlankRule(str: string): boolean {
+  return str.trim().length === 0;
+}
+
+function isNotBlankRule(str: string): boolean {
+  return str.trim().length > 0;
+}
+
 const rules = {
-  doesNotEndWith: (str: string, ending: string) => !endsWith(str, ending),
-  doesNotStartWith: (str: string, start: string) => !startsWith(str, start),
+  doesNotEndWith,
+  doesNotStartWith,
   endsWith,
   equals,
+  isBlank: isBlankRule,
+  isNotBlank: isNotBlankRule,
   inside,
   matches,
   notEquals,
@@ -83,5 +103,8 @@ const rules = {
 
 export function isString(): StringRuleInstance {
   const add = genRuleChain<StringRuleInstance>(rules);
-  return add(value => isStringValue(value));
+  function isStringPredicate(value: any): boolean {
+    return isStringValue(value);
+  }
+  return add(isStringPredicate);
 }

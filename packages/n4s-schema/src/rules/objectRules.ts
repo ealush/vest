@@ -40,10 +40,16 @@ const valueRules = {
 
 export function checkKey(): ObjectRuleInstance {
   const add = genRuleChain<ObjectRuleInstance>(keyRules);
-  return add(() => true); // Pass through, actual check happens in methods
+  function passThrough(): boolean {
+    return true;
+  }
+  return add(passThrough); // Pass through, actual check happens in methods
 }
 
 export function checkValue<T = any>(): ValueRuleInstance<T> {
   const add = genRuleChain<ValueRuleInstance<T>>(valueRules as any);
-  return add(() => true); // Pass through, actual check happens in methods
+  function passThrough(): boolean {
+    return true;
+  }
+  return add(passThrough); // Pass through, actual check happens in methods
 }

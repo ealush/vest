@@ -1,10 +1,8 @@
 import {
   condition,
-  isBlank,
   isEmpty,
   isFalsy,
   isNaN,
-  isNotBlank,
   isNotEmpty,
   isNotNaN,
   isNotArray,
@@ -29,12 +27,7 @@ describe('generalRules', () => {
     expect(isNotEmpty().run([1]).passes).toBe(true);
   });
 
-  it('blank/notBlank checks', () => {
-    expect(isBlank().run('   ').passes).toBe(true);
-    expect(isBlank().run(null).passes).toBe(true);
-    expect(isNotBlank().run('a').passes).toBe(true);
-    expect(isNotBlank().run('   ').passes).toBe(false);
-  });
+  // isBlank / isNotBlank were moved to string rules
 
   it('NaN checks', () => {
     // @ts-expect-error runtime only
@@ -96,17 +89,7 @@ describe('generalRules', () => {
     expect(isNotEmpty().run(1).passes).toBe(true);
   });
 
-  it('isBlank / isNotBlank', () => {
-    expect(isBlank().run(undefined).passes).toBe(true);
-    expect(isBlank().run(null).passes).toBe(true);
-    expect(isBlank().run('   ').passes).toBe(true);
-    expect(isBlank().run('').passes).toBe(true);
-    expect(isBlank().run(' a ').passes).toBe(false);
-
-    expect(isNotBlank().run(' a ').passes).toBe(true);
-    expect(isNotBlank().run('a').passes).toBe(true);
-    expect(isNotBlank().run(undefined).passes).toBe(false);
-  });
+  // isBlank / isNotBlank moved to stringRules and now apply only to strings
 
   it('isNaN / isNotNaN', () => {
     expect(isNaN().run(NaN).passes).toBe(true);

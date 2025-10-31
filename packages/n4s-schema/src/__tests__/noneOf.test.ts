@@ -1,16 +1,16 @@
 import { describe, it, expect } from 'vitest';
-import { noneOf } from '../schemaRules';
+
 import { enforceLazy } from '../lazy';
 
 describe('noneOf', () => {
   it('should return a rule instance', () => {
-    const rule = noneOf(enforceLazy.isNumber());
+    const rule = enforceLazy.noneOf(enforceLazy.isNumber());
     expect(rule).toHaveProperty('run');
     expect(rule).toHaveProperty('infer');
   });
 
   it('should pass if no rules pass', () => {
-    const rule = noneOf(
+    const rule = enforceLazy.noneOf(
       enforceLazy.isNumber(),
       enforceLazy.isNumber().greaterThan(10),
     );
@@ -19,7 +19,7 @@ describe('noneOf', () => {
   });
 
   it('should fail if any rule passes', () => {
-    const rule = noneOf(
+    const rule = enforceLazy.noneOf(
       enforceLazy.isNumber(),
       enforceLazy.isNumber().greaterThan(10),
     );
@@ -29,7 +29,7 @@ describe('noneOf', () => {
   });
 
   it('should pass with no rules', () => {
-    const rule = noneOf();
+    const rule = enforceLazy.noneOf();
     const result = rule.run('any value');
     expect(result.passes).toBe(true);
   });

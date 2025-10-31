@@ -2,34 +2,24 @@ import { describe, expect, it } from 'vitest';
 
 import { enforceLazy } from '../lazy';
 
-import {
-  allOf,
-  anyOf,
-  isArrayOf,
-  loose,
-  noneOf,
-  oneOf,
-  optional,
-  partial,
-  shape,
-} from 'schemaRules';
+// schema combinators are consumed via enforceLazy
 
 describe('integration: extensive schema + combinators', () => {
   it('deep object: user profile with addresses, contacts and preferences', () => {
     const Roles = { admin: 'admin', user: 'user', guest: 'guest' } as const;
     const Envs = { dev: 1, prod: 2, stage: 3 } as const;
 
-    const addressSchema = shape({
+    const addressSchema = enforceLazy.shape({
       city: enforceLazy.isString().isNotBlank(),
       country: enforceLazy.isString().longerThan(1),
       street: enforceLazy.isString().isNotBlank(),
       // zip can be a numeric string of 5 chars OR a 5-digit number
-      zip: anyOf(
-        allOf(
+      zip: enforceLazy.anyOf(
+        enforceLazy.allOf(
           enforceLazy.isString(),
           enforceLazy.isString().matches(/^\d{5}$/),
         ),
-        allOf(
+        enforceLazy.allOf(
           enforceLazy.isNumber(),
           enforceLazy.isNumber().greaterThanOrEquals(10000),
           enforceLazy.isNumber().lessThanOrEquals(99999),
@@ -37,35 +27,42 @@ describe('integration: extensive schema + combinators', () => {
       ),
     });
 
-    const contactSchema = shape({
+    const contactSchema = enforceLazy.shape({
       // object key/value checks
       metaEnvKey: enforceLazy.checkKey().isKeyOf(Envs),
       metaRoleValue: enforceLazy.checkValue<string>().isValueOf(Roles as any),
       // exactly one of email or phone must be present
-      method: oneOf(
+      method: enforceLazy.oneOf(
         enforceLazy.isString().equals('email'),
         enforceLazy.isString().equals('phone'),
       ),
       // email must be non-blank string; phone must be numeric (string or number) with >= 10 digits/value
-      value: anyOf(
-        allOf(enforceLazy.isString(), enforceLazy.isString().isNotBlank()),
-        allOf(enforceLazy.isNumeric().greaterThanOrEquals(1_000_000_000)),
-        allOf(enforceLazy.isNumber().greaterThanOrEquals(1_000_000_000)),
+      value: enforceLazy.anyOf(
+        enforceLazy.allOf(
+          enforceLazy.isString(),
+          enforceLazy.isString().isNotBlank(),
+        ),
+        enforceLazy.allOf(
+          enforceLazy.isNumeric().greaterThanOrEquals(1_000_000_000),
+        ),
+        enforceLazy.allOf(
+          enforceLazy.isNumber().greaterThanOrEquals(1_000_000_000),
+        ),
       ),
     });
 
-    const preferencesSchema = loose({
+    const preferencesSchema = enforceLazy.loose({
       darkMode: enforceLazy.isBoolean(),
-      language: optional(
-        anyOf(
+      language: enforceLazy.optional(
+        enforceLazy.anyOf(
           enforceLazy.isString().inside(['en', 'es', 'he', 'fr']),
           enforceLazy.isString().matches(/^[a-z]{2}$/),
         ),
       ),
       // nested arrays: list of lists of numeric or numeric-string thresholds
-      thresholds: optional(
-        isArrayOf(
-          isArrayOf(
+      thresholds: enforceLazy.optional(
+        enforceLazy.isArrayOf(
+          enforceLazy.isArrayOf(
             enforceLazy.isNumeric().greaterThanOrEquals(0),
             enforceLazy.isNumber().greaterThanOrEquals(0),
           ),
@@ -73,27 +70,27 @@ describe('integration: extensive schema + combinators', () => {
       ),
     });
 
-    const userSchema = shape({
-      addresses: isArrayOf(addressSchema),
-      contacts: isArrayOf(contactSchema),
+    const userSchema = enforceLazy.shape({
+      addresses: enforceLazy.isArrayOf(addressSchema),
+      contacts: enforceLazy.isArrayOf(contactSchema),
       // array that accepts numbers or numeric strings per element
-      favoriteNumbers: isArrayOf(
+      favoriteNumbers: enforceLazy.isArrayOf(
         enforceLazy.isNumeric(),
         enforceLazy.isNumber(),
       ),
       // accept id as number > 0 OR numeric-string of digits (no leading +, must be > 0)
-      id: anyOf(
+      id: enforceLazy.anyOf(
         enforceLazy.isNumber().greaterThan(0),
-        allOf(
+        enforceLazy.allOf(
           enforceLazy.isString(),
           enforceLazy.isString().matches(/^[1-9]\d*$/),
         ),
       ),
       // preferences object may contain more keys than declared (loose)
-      preferences: optional(preferencesSchema),
-      username: allOf(
+      preferences: enforceLazy.optional(preferencesSchema),
+      username: enforceLazy.allOf(
         enforceLazy.isString().minLength(3),
-        noneOf(
+        enforceLazy.noneOf(
           enforceLazy.isString().equals('admin'),
           enforceLazy.isString().equals('root'),
         ),
@@ -218,43 +215,45 @@ describe('integration: extensive schema + combinators', () => {
   });
 
   it('partial nested object with optional children and nested arrays of shapes', () => {
-    const itemSchema = shape({
-      price: anyOf(
+    const itemSchema = enforceLazy.shape({
+      price: enforceLazy.anyOf(
         enforceLazy.isNumber(),
-        allOf(
+        enforceLazy.allOf(
           enforceLazy.isString(),
           enforceLazy.isString().matches(/^\d+(?:\.\d+)?$/),
         ),
       ),
       qty: enforceLazy.isNumber().greaterThan(0),
       sku: enforceLazy.isString().minLength(3),
-      tags: optional(isArrayOf(enforceLazy.isString().isNotBlank())),
+      tags: enforceLazy.optional(
+        enforceLazy.isArrayOf(enforceLazy.isString().isNotBlank()),
+      ),
     });
 
     const orderBase = {
-      id: anyOf(
+      id: enforceLazy.anyOf(
         enforceLazy.isNumber(),
-        allOf(
+        enforceLazy.allOf(
           enforceLazy.isString(),
           enforceLazy.isString().matches(/^[+-]?\d+(?:\.\d+)?$/),
         ),
       ),
-      items: isArrayOf(itemSchema),
-      shipping: optional(
-        shape({
-          address: shape({
+      items: enforceLazy.isArrayOf(itemSchema),
+      shipping: enforceLazy.optional(
+        enforceLazy.shape({
+          address: enforceLazy.shape({
             line1: enforceLazy.isString().isNotBlank(),
-            line2: optional(enforceLazy.isString()),
-            zip: anyOf(
+            line2: enforceLazy.optional(enforceLazy.isString()),
+            zip: enforceLazy.anyOf(
               enforceLazy.isNumber().between(10000, 99999),
               enforceLazy.isString().matches(/^\d{5}$/),
             ),
           }),
         }),
       ),
-      totals: loose({
-        discounts: optional(
-          isArrayOf(
+      totals: enforceLazy.loose({
+        discounts: enforceLazy.optional(
+          enforceLazy.isArrayOf(
             enforceLazy.isNumber().greaterThanOrEquals(0),
             enforceLazy.isNumeric().greaterThanOrEquals(0),
           ),
@@ -264,7 +263,7 @@ describe('integration: extensive schema + combinators', () => {
       }),
     } as const;
 
-    const orderSchema = shape(partial(orderBase));
+    const orderSchema = enforceLazy.shape(enforceLazy.partial(orderBase));
 
     // Valid order with many optional parts missing
     expect(

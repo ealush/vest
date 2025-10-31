@@ -1,17 +1,16 @@
 import { describe, it, expect, expectTypeOf } from 'vitest';
 
 import { enforceLazy } from '../lazy';
-import { anyOf } from '../schemaRules';
 
 describe('anyOf', () => {
   it('should return a rule instance', () => {
-    const rule = anyOf(enforceLazy.isNumber());
+    const rule = enforceLazy.anyOf(enforceLazy.isNumber());
     expect(rule).toHaveProperty('run');
     expect(rule).toHaveProperty('infer');
   });
 
   it('should pass if at least one rule passes', () => {
-    const rule = anyOf(
+    const rule = enforceLazy.anyOf(
       enforceLazy.isString(),
       enforceLazy.isNumber().greaterThan(10),
     );
@@ -21,7 +20,7 @@ describe('anyOf', () => {
   });
 
   it('should infer a union of rule input types', () => {
-    const rule = anyOf(
+    const rule = enforceLazy.anyOf(
       enforceLazy.isString(),
       enforceLazy.isNumber().greaterThan(10),
     );
@@ -32,7 +31,7 @@ describe('anyOf', () => {
   });
 
   it('should fail if all rules fail', () => {
-    const rule = anyOf(
+    const rule = enforceLazy.anyOf(
       enforceLazy.isString(),
       enforceLazy.isNumber().greaterThan(10),
     );
@@ -41,7 +40,7 @@ describe('anyOf', () => {
   });
 
   it('should fail with no rules', () => {
-    const rule = anyOf();
+    const rule = enforceLazy.anyOf();
     const result = rule.run('any value');
     expect(result.passes).toBe(false);
   });

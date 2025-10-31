@@ -16,7 +16,7 @@ import {
 } from './commonLength';
 import { genRuleChain } from './genRuleChain';
 
-export interface StringRuleInstance extends RuleInstance<string, [any]> {
+export interface StringRuleInstance extends RuleInstance<string, [string]> {
   equals(s: string): StringRuleInstance;
   notEquals(s: string): StringRuleInstance;
   startsWith(start: string): StringRuleInstance;

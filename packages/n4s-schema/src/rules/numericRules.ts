@@ -24,7 +24,7 @@ import {
 import { genRuleChain } from './genRuleChain';
 
 export interface NumericRuleInstance
-  extends RuleInstance<number, [number | string]> {
+  extends RuleInstance<number | string, [number | string]> {
   equals(n: number): NumericRuleInstance;
   notEquals(n: number): NumericRuleInstance;
   greaterThan(n: number): NumericRuleInstance;

@@ -19,7 +19,7 @@ import {
 } from './commonLength';
 import { genRuleChain } from './genRuleChain';
 
-export interface ArrayRuleInstance<T = any> extends RuleInstance<T[], [any]> {
+export interface ArrayRuleInstance<T = any> extends RuleInstance<T[], [T[]]> {
   equals(arr: T[]): ArrayRuleInstance<T>;
   notEquals(arr: T[]): ArrayRuleInstance<T>;
   minLength(n: number): ArrayRuleInstance<T>;

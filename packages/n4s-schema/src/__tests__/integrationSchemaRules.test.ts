@@ -2,12 +2,10 @@ import { describe, expect, it } from 'vitest';
 
 import { enforceLazy } from '../lazy';
 
-import { allOf, anyOf, isArrayOf, loose, optional, shape } from 'schemaRules';
-
 describe('integration: rules with schema combinators', () => {
   it('shape: combine isString with notBlank and length', () => {
-    const userSchema = shape({
-      name: allOf(
+    const userSchema = enforceLazy.shape({
+      name: enforceLazy.allOf(
         enforceLazy.isString(),
         enforceLazy.isString().isNotBlank(),
         enforceLazy.isString().minLength(2),
@@ -25,9 +23,9 @@ describe('integration: rules with schema combinators', () => {
   });
 
   it('optional + nullish with numbers', () => {
-    const schema = shape({
+    const schema = enforceLazy.shape({
       id: enforceLazy.isNumber().greaterThan(0),
-      deletedAt: optional(enforceLazy.isNullish()),
+      deletedAt: enforceLazy.optional(enforceLazy.isNullish()),
     });
 
     expect(schema.run({ id: 1 }).passes).toBe(true);
@@ -37,14 +35,17 @@ describe('integration: rules with schema combinators', () => {
   });
 
   it('isArrayOf with numeric acceptance (numbers or numeric strings)', () => {
-    const arrRule = isArrayOf(enforceLazy.isNumeric(), enforceLazy.isNumber());
+    const arrRule = enforceLazy.isArrayOf(
+      enforceLazy.isNumeric(),
+      enforceLazy.isNumber(),
+    );
     expect(arrRule.run([1, '2', 3]).passes).toBe(true);
     expect(arrRule.run([1, 'two']).passes).toBe(false);
   });
 
   it('anyOf mixing negative and positive rules', () => {
     // accept values that are not numeric, or numeric >= 10
-    const rule = anyOf(
+    const rule = enforceLazy.anyOf(
       enforceLazy.isNotNumeric(),
       // numbers only chain
       enforceLazy.isNumeric().greaterThanOrEquals(10),
@@ -58,14 +59,16 @@ describe('integration: rules with schema combinators', () => {
   it('checkKey / checkValue inside shape fields', () => {
     const ENV = { dev: 1, prod: 2 } as const;
 
-    const schema = loose({
+    const schema = enforceLazy.loose({
       envKey: enforceLazy.checkKey().isKeyOf(ENV),
       envValue: enforceLazy
         .checkValue<number>()
         .isValueOf({ a: 1, b: 2, c: 3 }),
     });
 
-    expect(schema.run({ en–vKey: 'dev', envValue: 2 }).passes).toBe(true);
-    expect(schema.run({ envKey: 'stage', envValue: 4 }).passes).toBe(false);
+    expect(schema.run({ envKey: 'dev', envValue: 2 } as any).passes).toBe(true);
+    expect(schema.run({ envKey: 'stage', envValue: 4 } as any).passes).toBe(
+      false,
+    );
   });
 });

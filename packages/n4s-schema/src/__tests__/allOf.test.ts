@@ -1,17 +1,16 @@
 import { describe, it, expect } from 'vitest';
 
 import { enforceLazy } from '../lazy';
-import { allOf } from '../schemaRules';
 
 describe('allOf', () => {
   it('should return a rule instance', () => {
-    const rule = allOf(enforceLazy.isNumber());
+    const rule = enforceLazy.allOf(enforceLazy.isNumber());
     expect(rule).toHaveProperty('run');
     expect(rule).toHaveProperty('infer');
   });
 
   it('should pass if all rules pass', () => {
-    const rule = allOf(
+    const rule = enforceLazy.allOf(
       enforceLazy.isNumber(),
       enforceLazy.isNumber().greaterThan(5),
     );
@@ -20,7 +19,7 @@ describe('allOf', () => {
   });
 
   it('should fail if one rule fails', () => {
-    const rule = allOf(
+    const rule = enforceLazy.allOf(
       enforceLazy.isNumber(),
       enforceLazy.isNumber().greaterThan(10),
     );
@@ -29,7 +28,7 @@ describe('allOf', () => {
   });
 
   it('should fail if value is of wrong type', () => {
-    const rule = allOf(
+    const rule = enforceLazy.allOf(
       enforceLazy.isNumber(),
       enforceLazy.isNumber().greaterThan(5),
     );
@@ -38,14 +37,14 @@ describe('allOf', () => {
   });
 
   it('should pass with no rules', () => {
-    const rule = allOf();
+    const rule = enforceLazy.allOf();
     const result = rule.run('any value');
     expect(result.passes).toBe(true);
   });
 
   describe('When all rules  are satisfied', () => {
     it('Should return a passing result', () => {
-      const rule = allOf(enforceLazy.isArray());
+      const rule = enforceLazy.allOf(enforceLazy.isArray());
       const result = rule.run([1, 2, 3]);
       expect(result).toEqual({ passes: true, type: [1, 2, 3] });
     });

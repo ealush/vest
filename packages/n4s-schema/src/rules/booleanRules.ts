@@ -2,7 +2,7 @@ import { RuleInstance } from '../enforce';
 
 import { genRuleChain } from './genRuleChain';
 
-export interface BooleanRuleInstance extends RuleInstance<boolean, [any]> {
+export interface BooleanRuleInstance extends RuleInstance<boolean, [boolean]> {
   isTrue(): BooleanRuleInstance;
   isFalse(): BooleanRuleInstance;
   isTruthy(): BooleanRuleInstance;

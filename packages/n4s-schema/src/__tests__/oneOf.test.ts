@@ -1,17 +1,16 @@
 import { describe, it, expect } from 'vitest';
 
 import { enforceLazy } from '../lazy';
-import { oneOf } from '../schemaRules';
 
 describe('oneOf', () => {
   it('should return a rule instance', () => {
-    const rule = oneOf(enforceLazy.isNumber());
+    const rule = enforceLazy.oneOf(enforceLazy.isNumber());
     expect(rule).toHaveProperty('run');
     expect(rule).toHaveProperty('infer');
   });
 
   it('should pass if exactly one rule passes', () => {
-    const rule = oneOf(
+    const rule = enforceLazy.oneOf(
       enforceLazy.isNumber().greaterThan(10),
       enforceLazy.isNumber().lessThan(5),
     );
@@ -20,7 +19,7 @@ describe('oneOf', () => {
   });
 
   it('should fail if more than one rule passes', () => {
-    const rule = oneOf(
+    const rule = enforceLazy.oneOf(
       enforceLazy.isNumber().greaterThan(5),
       enforceLazy.isNumber().greaterThan(10),
     );
@@ -29,7 +28,7 @@ describe('oneOf', () => {
   });
 
   it('should fail if no rules pass', () => {
-    const rule = oneOf(
+    const rule = enforceLazy.oneOf(
       enforceLazy.isNumber().greaterThan(10),
       enforceLazy.isNumber().lessThan(5),
     );
@@ -38,7 +37,7 @@ describe('oneOf', () => {
   });
 
   it('should fail with no rules', () => {
-    const rule = oneOf();
+    const rule = enforceLazy.oneOf();
     const result = rule.run('any value');
     expect(result.passes).toBe(false);
   });

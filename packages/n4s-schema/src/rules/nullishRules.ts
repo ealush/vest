@@ -12,12 +12,13 @@ import { RuleInstance } from '../enforce';
 import { genRuleChain } from './genRuleChain';
 
 // Type guard rule instances
-export interface NullRuleInstance extends RuleInstance<null, [any]> {}
+export interface NullRuleInstance extends RuleInstance<null, [null]> {}
 export interface NotNullRuleInstance extends RuleInstance<any, [any]> {}
-export interface UndefinedRuleInstance extends RuleInstance<undefined, [any]> {}
+export interface UndefinedRuleInstance
+  extends RuleInstance<undefined, [undefined]> {}
 export interface NotUndefinedRuleInstance extends RuleInstance<any, [any]> {}
 export interface NullishRuleInstance
-  extends RuleInstance<null | undefined, [any]> {}
+  extends RuleInstance<null | undefined, [null | undefined]> {}
 export interface NotNullishRuleInstance extends RuleInstance<any, [any]> {}
 
 const nullRules = {};

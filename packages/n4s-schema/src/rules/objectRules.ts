@@ -2,7 +2,7 @@ import { RuleInstance } from '../enforce';
 
 import { genRuleChain } from './genRuleChain';
 
-export interface ObjectRuleInstance extends RuleInstance<object, [any]> {
+export interface ObjectRuleInstance extends RuleInstance<object, [object]> {
   isKeyOf(obj: object): ObjectRuleInstance;
   isNotKeyOf(obj: object): ObjectRuleInstance;
 }

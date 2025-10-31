@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { anyOf } from '../schemaRules';
+import { describe, it, expect, expectTypeOf } from 'vitest';
+
 import { enforceLazy } from '../lazy';
+import { anyOf } from '../schemaRules';
 
 describe('anyOf', () => {
   it('should return a rule instance', () => {
@@ -17,6 +18,17 @@ describe('anyOf', () => {
     expect(rule.run(5).passes).toBe(false);
     expect(rule.run(15).passes).toBe(true);
     expect(rule.run('hello').passes).toBe(true);
+  });
+
+  it('should infer a union of rule input types', () => {
+    const rule = anyOf(
+      enforceLazy.isString(),
+      enforceLazy.isNumber().greaterThan(10),
+    );
+
+    expectTypeOf(rule.infer).toEqualTypeOf<string | number>();
+    expectTypeOf(rule.run).parameter(0).toEqualTypeOf<string | number>();
+    expect(rule).toBeDefined();
   });
 
   it('should fail if all rules fail', () => {

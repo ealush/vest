@@ -23,7 +23,8 @@ import {
 } from './commonNumeric';
 import { genRuleChain } from './genRuleChain';
 
-export interface NumericRuleInstance extends RuleInstance<number, [any]> {
+export interface NumericRuleInstance
+  extends RuleInstance<number, [number | string]> {
   equals(n: number): NumericRuleInstance;
   notEquals(n: number): NumericRuleInstance;
   greaterThan(n: number): NumericRuleInstance;
@@ -73,21 +74,21 @@ function isNotNaNNum(v: number): boolean {
 
 const rules = {
   between: adapt1(betweenBase),
-  notBetween: adapt1(notBetweenNum),
-  isBetween: adapt1(betweenBase),
-  isNotBetween: adapt1(notBetweenNum),
   equals: adapt1((a: number, b: number) => equalsBase(a, b)),
-  notEquals: adapt1((a: number, b: number) => notEqualsBase(a, b)),
   greaterThan: adapt1(greaterThanBase),
   greaterThanOrEquals: adapt1(greaterThanOrEqualsBase),
+  isBetween: adapt1(betweenBase),
   isEven: adapt1(isEvenBase),
   isNaN: adapt1(isNaNNum),
-  isNotNaN: adapt1(isNotNaNNum),
   isNegative: adapt1(isNegativeBase),
+  isNotBetween: adapt1(notBetweenNum),
+  isNotNaN: adapt1(isNotNaNNum),
   isOdd: adapt1(isOddBase),
   isPositive: adapt1(isPositiveBase),
   lessThan: adapt1(lessThanBase),
   lessThanOrEquals: adapt1(lessThanOrEqualsBase),
+  notBetween: adapt1(notBetweenNum),
+  notEquals: adapt1((a: number, b: number) => notEqualsBase(a, b)),
   numberEquals: (value: unknown, n: number | string) =>
     numberEqualsValue(value as any, n as any),
   numberNotEquals: (value: unknown, n: number | string) =>
@@ -95,7 +96,7 @@ const rules = {
 };
 
 export function isNumeric(): NumericRuleInstance {
-  const add = genRuleChain<NumericRuleInstance>(rules);
+  const add = genRuleChain<Omit<NumericRuleInstance, '__accepts'>>(rules);
   function isNumericPredicate(value: any): boolean {
     return isNumericValue(value);
   }

@@ -15,6 +15,21 @@ export type SchemaInfer<T extends Record<string, RuleInstance<any>>> = {
 export type ShapeType<T extends Record<string, RuleInstance<any>>> =
   SchemaInfer<T>;
 
+type MultiTypeInput<T extends RuleInstance<any, any>[]> =
+  InferShape<T[number]> extends never ? unknown : InferShape<T[number]>;
+
+// Extract the single input argument type from a RuleInstance (the value passed into run)
+type RuleArgOf<R extends RuleInstance<any, any>> =
+  R extends RuleInstance<any, infer Args>
+    ? Args extends [infer A]
+      ? A
+      : never
+    : never;
+
+// Union of input argument types across multiple rules
+type MultiTypeArg<T extends RuleInstance<any, any>[]> =
+  RuleArgOf<T[number]> extends never ? unknown : RuleArgOf<T[number]>;
+
 export function loose<T extends Record<string, RuleInstance<any>>>(
   schema: T,
   _value?: ShapeType<T> & Record<string, unknown>,
@@ -39,20 +54,22 @@ export function loose<T extends Record<string, RuleInstance<any>>>(
 
 export function isArrayOf<T extends RuleInstance<any, any>[]>(
   ...rules: T
-): RuleInstance<InferShape<T[number]>[], [InferShape<T[number]>[]]> {
+): RuleInstance<MultiTypeArg<T>[], [MultiTypeArg<T>[]]> {
   return {
-    run: (value: InferShape<T[number]>[]) => {
+    run: (value: MultiTypeArg<T>[]) => {
       if (!Array.isArray(value)) {
         return { passes: false, type: value };
       }
 
       const passes = value.every(item =>
-        (rules as RuleInstance<any, any>[]).some(rule => rule.run(item).passes),
+        (rules as RuleInstance<any, any>[]).some(
+          rule => rule.run(item as any).passes,
+        ),
       );
 
       return { passes, type: value };
     },
-    infer: [] as InferShape<T[number]>[],
+    infer: [] as MultiTypeArg<T>[],
   };
 }
 
@@ -126,35 +143,39 @@ export function allOf<T>(...rules: RuleInstance<T, any>[]): RuleInstance<T> {
   };
 }
 
-export function anyOf<T>(...rules: RuleInstance<T, any>[]): RuleInstance<T> {
+export function anyOf<T extends RuleInstance<any, any>[]>(
+  ...rules: T
+): RuleInstance<MultiTypeInput<T>, [MultiTypeInput<T>]> {
   return {
-    run: (value: T) => {
+    run: (value: MultiTypeInput<T>) => {
       for (const rule of rules) {
-        if (rule.run(value).passes) {
+        if (rule.run(value as any).passes) {
           return { passes: true, type: value };
         }
       }
       return { passes: false, type: value };
     },
-    infer: {} as T,
+    infer: {} as MultiTypeInput<T>,
   };
 }
 
-export function oneOf<T>(...rules: RuleInstance<T, any>[]): RuleInstance<T> {
+export function oneOf<T extends RuleInstance<any, any>[]>(
+  ...rules: T
+): RuleInstance<MultiTypeInput<T>> {
   return {
-    run: (value: T) => {
+    run: (value: MultiTypeArg<T>) => {
       let passingCount = 0;
-      for (const rule of rules) {
-        if (rule.run(value).passes) {
+      for (const rule of rules as RuleInstance<any, any>[]) {
+        if (rule.run(value as any).passes) {
           passingCount++;
           if (passingCount > 1) {
-            return { passes: false, type: value };
+            return { passes: false, type: value as any };
           }
         }
       }
-      return { passes: passingCount === 1, type: value };
+      return { passes: passingCount === 1, type: value as any };
     },
-    infer: {} as T,
+    infer: {} as MultiTypeInput<T>,
   };
 }
 

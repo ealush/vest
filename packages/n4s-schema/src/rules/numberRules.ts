@@ -19,7 +19,7 @@ import {
 } from './commonNumeric';
 import { genRuleChain } from './genRuleChain';
 
-export interface NumberRuleInstance extends RuleInstance<number, [any]> {
+export interface NumberRuleInstance extends RuleInstance<number, [number]> {
   equals(n: number): NumberRuleInstance;
   notEquals(n: number): NumberRuleInstance;
   greaterThan(n: number): NumberRuleInstance;
@@ -40,19 +40,19 @@ export interface NumberRuleInstance extends RuleInstance<number, [any]> {
 
 const rules = {
   between,
-  notBetween: notBetweenRule,
-  isBetween: between,
-  isNotBetween: isNotBetweenRule,
   equals,
-  notEquals,
   greaterThan,
   greaterThanOrEquals,
+  isBetween: between,
   isEven,
   isNegative,
+  isNotBetween: isNotBetweenRule,
   isOdd,
   isPositive,
   lessThan,
   lessThanOrEquals,
+  notBetween: notBetweenRule,
+  notEquals,
   numberEquals: numberEqualsRule,
   numberNotEquals: numberNotEqualsRule,
 };

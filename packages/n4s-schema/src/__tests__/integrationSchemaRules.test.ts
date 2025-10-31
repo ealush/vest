@@ -65,7 +65,7 @@ describe('integration: rules with schema combinators', () => {
         .isValueOf({ a: 1, b: 2, c: 3 }),
     });
 
-    expect(schema.run({ envKey: 'dev', envValue: 2 }).passes).toBe(true);
+    expect(schema.run({ en–vKey: 'dev', envValue: 2 }).passes).toBe(true);
     expect(schema.run({ envKey: 'stage', envValue: 4 }).passes).toBe(false);
   });
 });

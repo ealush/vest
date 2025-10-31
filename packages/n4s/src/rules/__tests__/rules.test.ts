@@ -1,4 +1,4 @@
-import rules from 'rules';
+import rules from 'src/lazy';
 import { describe, it, expect } from 'vitest';
 
 describe('Tests enforce rules API', () => {

@@ -1,17 +1,8 @@
 import { describe, it, expect } from 'vitest';
 
+import { enforceLazy } from '../lazy';
 import { RuleInstance } from '../enforce';
 import { loose, partial, shape } from '../schemaRules';
-
-const isNumber: RuleInstance<number> = {
-  run: (v: any) => ({ passes: typeof v === 'number', type: v }),
-  infer: {} as number,
-};
-
-const isString: RuleInstance<string> = {
-  run: (v: any) => ({ passes: typeof v === 'string', type: v }),
-  infer: {} as string,
-};
 
 const longerThan = (n: number): RuleInstance<string> => ({
   run: (v: any) => ({ passes: typeof v === 'string' && v.length > n, type: v }),
@@ -20,8 +11,8 @@ const longerThan = (n: number): RuleInstance<string> => ({
 
 describe('partial', () => {
   const schema = {
-    name: isString,
-    age: isNumber,
+    name: enforceLazy.isString(),
+    age: enforceLazy.isNumber(),
   };
 
   it('should return a schema with optional rules', () => {
@@ -60,7 +51,7 @@ describe('partial', () => {
     const shapeRule = shape(
       partial({
         username: longerThan(3),
-        id: isNumber,
+        id: enforceLazy.isNumber(),
       }),
     );
 
@@ -72,7 +63,7 @@ describe('partial', () => {
     const shapeRule = shape(
       partial({
         username: longerThan(3),
-        id: isNumber,
+        id: enforceLazy.isNumber(),
       }),
     );
     expect(shapeRule.run({ username: 'foobar', id: 1 }).passes).toBe(true);
@@ -82,7 +73,7 @@ describe('partial', () => {
     const shapeRule = shape(
       partial({
         username: longerThan(3),
-        id: isNumber,
+        id: enforceLazy.isNumber(),
       }),
     );
     expect(shapeRule.run({ username: 'foobar' }).passes).toBe(true);
@@ -92,7 +83,7 @@ describe('partial', () => {
     const shapeRule = shape(
       partial({
         username: longerThan(3),
-        id: isNumber,
+        id: enforceLazy.isNumber(),
       }),
     );
     // @ts-expect-error
@@ -102,7 +93,7 @@ describe('partial', () => {
   it("Should retain rule's original constraints", () => {
     const partialSchema = partial({
       username: longerThan(3),
-      id: isNumber,
+      id: enforceLazy.isNumber(),
     });
     const shapeRule = shape(partialSchema);
     const looseRule = loose(partialSchema);

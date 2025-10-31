@@ -8,24 +8,24 @@
     "outDir": "./dist",
     "paths": {
       "schemaRules": ["./src/schemaRules.ts"],
-      "rules": ["./src/rules.ts"],
       "n4s-schema": ["./src/n4s-schema.ts"],
+      "lazy": ["./src/lazy.ts"],
       "example": ["./src/example.ts"],
       "enforce": ["./src/enforce.ts"],
       "eager": ["./src/eager.ts"],
       "stringRules": ["./src/rules/stringRules.ts"],
+      "objectRules": ["./src/rules/objectRules.ts"],
       "numericRules": ["./src/rules/numericRules.ts"],
       "numberRules": ["./src/rules/numberRules.ts"],
-      "booleanRules": ["./src/rules/booleanRules.ts"],
-      "arrayRules": ["./src/rules/arrayRules.ts"],
       "nullishRules": ["./src/rules/nullishRules.ts"],
-      "objectRules": ["./src/rules/objectRules.ts"],
       "generalRules": ["./src/rules/generalRules.ts"],
       "genRuleChain": ["./src/rules/genRuleChain.ts"],
       "commonNumeric": ["./src/rules/commonNumeric.ts"],
       "commonLength": ["./src/rules/commonLength.ts"],
+      "commonContainer": ["./src/rules/commonContainer.ts"],
       "commonComparison": ["./src/rules/commonComparison.ts"],
-      "commonContainer": ["./src/rules/commonContainer.ts"]
+      "booleanRules": ["./src/rules/booleanRules.ts"],
+      "arrayRules": ["./src/rules/arrayRules.ts"]
     }
   }
 }

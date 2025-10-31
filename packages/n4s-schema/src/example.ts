@@ -1,4 +1,4 @@
-import { isNumberRule, isStringRule, startsWithRule } from './rules';
+import { isNumberRule, isStringRule, startsWithRule } from './lazy';
 import { loose, shape } from './schemaRules';
 
 const addressShape = {

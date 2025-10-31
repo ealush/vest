@@ -1,22 +1,12 @@
 import { describe, it, expect } from 'vitest';
 
-import { RuleInstance } from '../enforce';
+import { enforceLazy } from '../lazy';
 import { shape } from '../schemaRules';
-
-const isNumber: RuleInstance<number> = {
-  run: (v: any) => ({ passes: typeof v === 'number', type: v }),
-  infer: {} as number,
-};
-
-const isString: RuleInstance<string> = {
-  run: (v: any) => ({ passes: typeof v === 'string', type: v }),
-  infer: {} as string,
-};
 
 describe('shape', () => {
   const schema = {
-    name: isString,
-    age: isNumber,
+    name: enforceLazy.isString(),
+    age: enforceLazy.isNumber(),
   };
 
   it('should return a rule instance', () => {

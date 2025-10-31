@@ -1,7 +1,7 @@
 import type { DropFirst } from 'vest-utils';
 
 import type { RuleReturn } from 'ruleReturn';
-import rules from 'rules';
+import rules from 'src/lazy';
 
 export type Args = any[];
 

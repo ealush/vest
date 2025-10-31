@@ -36,8 +36,6 @@ export interface NumberRuleInstance extends RuleInstance<number, [any]> {
   isOdd(): NumberRuleInstance;
   isPositive(): NumberRuleInstance;
   isNegative(): NumberRuleInstance;
-  isNaN(): NumberRuleInstance;
-  isNotNaN(): NumberRuleInstance;
 }
 
 const rules = {
@@ -50,8 +48,6 @@ const rules = {
   greaterThan,
   greaterThanOrEquals,
   isEven,
-  isNaN: isNaNNumberRule,
-  isNotNaN: isNotNaNNumberRule,
   isNegative,
   isOdd,
   isPositive,
@@ -75,14 +71,6 @@ function notBetweenRule(value: number, min: number, max: number): boolean {
 
 function isNotBetweenRule(value: number, min: number, max: number): boolean {
   return value < min || value > max;
-}
-
-function isNaNNumberRule(value: number): boolean {
-  return Number.isNaN(value);
-}
-
-function isNotNaNNumberRule(value: number): boolean {
-  return !Number.isNaN(value);
 }
 
 function numberEqualsRule(value: number, n: number | string): boolean {

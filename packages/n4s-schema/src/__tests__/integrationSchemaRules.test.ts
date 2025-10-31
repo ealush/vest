@@ -1,22 +1,18 @@
-import {
-  checkKey,
-  checkValue,
-  isArray,
-  isNotNumeric,
-  isNullish,
-  isNumber,
-  isNumeric,
-  isString,
-} from 'rules';
 import { describe, expect, it } from 'vitest';
+
+import { enforceLazy } from '../lazy';
 
 import { allOf, anyOf, isArrayOf, loose, optional, shape } from 'schemaRules';
 
 describe('integration: rules with schema combinators', () => {
   it('shape: combine isString with notBlank and length', () => {
     const userSchema = shape({
-      name: allOf(isString(), isString().isNotBlank(), isString().minLength(2)),
-      tags: isArray<string>().isNotEmpty(),
+      name: allOf(
+        enforceLazy.isString(),
+        enforceLazy.isString().isNotBlank(),
+        enforceLazy.isString().minLength(2),
+      ),
+      tags: enforceLazy.isArray<string>().isNotEmpty(),
     });
 
     expect(userSchema.run({ name: 'Alice', tags: ['dev'] }).passes).toBe(true);
@@ -30,8 +26,8 @@ describe('integration: rules with schema combinators', () => {
 
   it('optional + nullish with numbers', () => {
     const schema = shape({
-      id: isNumber().greaterThan(0),
-      deletedAt: optional(isNullish()),
+      id: enforceLazy.isNumber().greaterThan(0),
+      deletedAt: optional(enforceLazy.isNullish()),
     });
 
     expect(schema.run({ id: 1 }).passes).toBe(true);
@@ -41,7 +37,7 @@ describe('integration: rules with schema combinators', () => {
   });
 
   it('isArrayOf with numeric acceptance (numbers or numeric strings)', () => {
-    const arrRule = isArrayOf(isNumeric(), isNumber());
+    const arrRule = isArrayOf(enforceLazy.isNumeric(), enforceLazy.isNumber());
     expect(arrRule.run([1, '2', 3]).passes).toBe(true);
     expect(arrRule.run([1, 'two']).passes).toBe(false);
   });
@@ -49,9 +45,9 @@ describe('integration: rules with schema combinators', () => {
   it('anyOf mixing negative and positive rules', () => {
     // accept values that are not numeric, or numeric >= 10
     const rule = anyOf(
-      isNotNumeric(),
+      enforceLazy.isNotNumeric(),
       // numbers only chain
-      isNumeric().greaterThanOrEquals(10),
+      enforceLazy.isNumeric().greaterThanOrEquals(10),
     );
 
     expect(rule.run('abc').passes).toBe(true); // not numeric
@@ -63,8 +59,10 @@ describe('integration: rules with schema combinators', () => {
     const ENV = { dev: 1, prod: 2 } as const;
 
     const schema = loose({
-      envKey: checkKey().isKeyOf(ENV),
-      envValue: checkValue<number>().isValueOf({ a: 1, b: 2, c: 3 }),
+      envKey: enforceLazy.checkKey().isKeyOf(ENV),
+      envValue: enforceLazy
+        .checkValue<number>()
+        .isValueOf({ a: 1, b: 2, c: 3 }),
     });
 
     expect(schema.run({ envKey: 'dev', envValue: 2 }).passes).toBe(true);

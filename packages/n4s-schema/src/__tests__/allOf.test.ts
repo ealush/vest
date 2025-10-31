@@ -1,44 +1,38 @@
 import { describe, it, expect } from 'vitest';
 
-import { RuleInstance } from '../enforce';
+import { enforceLazy } from '../lazy';
 import { allOf } from '../schemaRules';
-
-const isNumber: RuleInstance<number> = {
-  run: (v: any) => ({ passes: typeof v === 'number', type: v }),
-  infer: {} as number,
-};
-
-const isGreaterThan = (n: number): RuleInstance<number> => ({
-  run: (v: number) => ({ passes: v > n, type: v }),
-  infer: {} as number,
-});
-
-const isArray: RuleInstance<any[]> = {
-  run: (v: any) => ({ passes: Array.isArray(v), type: v }),
-  infer: {} as any[],
-};
 
 describe('allOf', () => {
   it('should return a rule instance', () => {
-    const rule = allOf(isNumber);
+    const rule = allOf(enforceLazy.isNumber());
     expect(rule).toHaveProperty('run');
     expect(rule).toHaveProperty('infer');
   });
 
   it('should pass if all rules pass', () => {
-    const rule = allOf(isNumber, isGreaterThan(5));
+    const rule = allOf(
+      enforceLazy.isNumber(),
+      enforceLazy.isNumber().greaterThan(5),
+    );
     const result = rule.run(10);
     expect(result.passes).toBe(true);
   });
 
   it('should fail if one rule fails', () => {
-    const rule = allOf(isNumber, isGreaterThan(10));
+    const rule = allOf(
+      enforceLazy.isNumber(),
+      enforceLazy.isNumber().greaterThan(10),
+    );
     const result = rule.run(5);
     expect(result.passes).toBe(false);
   });
 
   it('should fail if value is of wrong type', () => {
-    const rule = allOf(isNumber, isGreaterThan(5));
+    const rule = allOf(
+      enforceLazy.isNumber(),
+      enforceLazy.isNumber().greaterThan(5),
+    );
     const result = rule.run('10');
     expect(result.passes).toBe(false);
   });
@@ -51,7 +45,7 @@ describe('allOf', () => {
 
   describe('When all rules  are satisfied', () => {
     it('Should return a passing result', () => {
-      const rule = allOf(isArray);
+      const rule = allOf(enforceLazy.isArray());
       const result = rule.run([1, 2, 3]);
       expect(result).toEqual({ passes: true, type: [1, 2, 3] });
     });

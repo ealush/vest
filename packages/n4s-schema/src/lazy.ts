@@ -21,7 +21,7 @@ import {
   isNotUndefined,
   isNullish,
   isNotNullish,
-} from './rules/nullishRules';
+} from './rules/nullish';
 import { isNumber } from './rules/numberRules';
 import { isNumeric } from './rules/numericRules';
 import { checkKey, checkValue } from './rules/objectRules';
@@ -39,21 +39,13 @@ import {
 } from './schemaRules';
 
 export const enforceLazy = {
-  // Schema combinators (sorted)
   allOf,
   anyOf,
-  isArrayOf,
-  loose,
-  noneOf,
-  oneOf,
-  optional,
-  partial,
-  shape,
-  // Rule factories (sorted)
   checkKey,
   checkValue,
   condition,
   isArray,
+  isArrayOf,
   isBoolean,
   isEmpty,
   isFalsy,
@@ -75,4 +67,10 @@ export const enforceLazy = {
   isString,
   isTruthy,
   isUndefined,
+  loose,
+  noneOf,
+  oneOf,
+  optional,
+  partial,
+  shape,
 };

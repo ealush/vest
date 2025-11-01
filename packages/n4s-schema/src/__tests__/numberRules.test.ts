@@ -7,10 +7,10 @@ describe('numberRules', () => {
     expect(
       enforceLazy.isNumber().greaterThan(3).lessThanOrEquals(5).run(4).passes,
     ).toBe(true);
-    expect(enforceLazy.isNumber().between(1, 10).isEven().run(4).passes).toBe(
+    expect(enforceLazy.isNumber().isBetween(1, 10).isEven().run(4).passes).toBe(
       true,
     );
-    expect(enforceLazy.isNumber().notBetween(100, 200).run(4).passes).toBe(
+    expect(enforceLazy.isNumber().isNotBetween(100, 200).run(4).passes).toBe(
       true,
     );
     expect(enforceLazy.isNumber().isPositive().run(1).passes).toBe(true);
@@ -18,8 +18,8 @@ describe('numberRules', () => {
 
   it('fails when any number predicate fails', () => {
     expect(enforceLazy.isNumber().greaterThan(3).run(3).passes).toBe(false);
-    expect(enforceLazy.isNumber().between(1, 2).run(3).passes).toBe(false);
-    expect(enforceLazy.isNumber().notBetween(0, 4).run(4).passes).toBe(false);
+    expect(enforceLazy.isNumber().isBetween(1, 2).run(3).passes).toBe(false);
+    expect(enforceLazy.isNumber().isNotBetween(0, 4).run(4).passes).toBe(false);
     expect(enforceLazy.isNumber().isOdd().run(4).passes).toBe(false);
   });
 

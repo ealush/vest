@@ -4,7 +4,7 @@ import { enforceLazy } from 'lazy';
 
 describe('numericRules', () => {
   it('accepts numeric strings and numbers', () => {
-    expect(enforceLazy.isNumeric().between(1, 5).run('3').passes).toBe(true);
+    expect(enforceLazy.isNumeric().isBetween(1, 5).run('3').passes).toBe(true);
     expect(enforceLazy.isNumeric().greaterThan(2).run(3).passes).toBe(true);
   });
 
@@ -17,10 +17,10 @@ describe('numericRules', () => {
       true,
     );
     expect(enforceLazy.isNumeric().isOdd().run('8').passes).toBe(false);
-    expect(enforceLazy.isNumeric().notBetween(1, 8).run('8').passes).toBe(
+    expect(enforceLazy.isNumeric().isNotBetween(1, 8).run('8').passes).toBe(
       false,
     ); // edge excluded for notBetween
-    expect(enforceLazy.isNumeric().notBetween(9, 100).run('8').passes).toBe(
+    expect(enforceLazy.isNumeric().isNotBetween(9, 100).run('8').passes).toBe(
       true,
     );
   });

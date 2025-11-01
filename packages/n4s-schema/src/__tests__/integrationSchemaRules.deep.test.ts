@@ -245,7 +245,7 @@ describe('integration: extensive schema + combinators', () => {
             line1: enforceLazy.isString().isNotBlank(),
             line2: enforceLazy.optional(enforceLazy.isString()),
             zip: enforceLazy.anyOf(
-              enforceLazy.isNumber().between(10000, 99999),
+              enforceLazy.isNumber().isBetween(10000, 99999),
               enforceLazy.isString().matches(/^\d{5}$/),
             ),
           }),

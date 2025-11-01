@@ -1,4 +1,4 @@
-export { between } from 'between';
+export { isBetween } from 'isBetween';
 export { greaterThan } from 'greaterThan';
 export { greaterThanOrEquals } from 'greaterThanOrEquals';
 export { isEven } from 'isEven';
@@ -9,6 +9,6 @@ export { isOdd } from 'isOdd';
 export { isPositive } from 'isPositive';
 export { lessThan } from 'lessThan';
 export { lessThanOrEquals } from 'lessThanOrEquals';
-export { notBetween } from 'notBetween';
+export { isNotBetween } from 'isNotBetween';
 export { numberEquals } from 'numberEquals';
 export { numberNotEquals } from 'numberNotEquals';

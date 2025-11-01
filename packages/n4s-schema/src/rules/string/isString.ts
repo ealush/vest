@@ -13,7 +13,6 @@ import {
   shorterThan,
   shorterThanOrEquals,
 } from '../commonLength';
-import { genRuleChain } from '../genRuleChain';
 
 import { doesNotEndWith } from './doesNotEndWith';
 import { doesNotStartWith } from './doesNotStartWith';
@@ -47,7 +46,7 @@ export interface StringRuleInstance extends RuleInstance<string, [string]> {
   shorterThanOrEquals(n: number): StringRuleInstance; // length <= n
 }
 
-const rules = {
+export const stringRules = {
   doesNotEndWith,
   doesNotStartWith,
   endsWith,
@@ -70,11 +69,6 @@ const rules = {
   startsWith,
 };
 
-function isStringPredicate(value: any): boolean {
+export function isString(value: any): boolean {
   return isStringValue(value);
-}
-
-export function isString(): StringRuleInstance {
-  const add = genRuleChain<StringRuleInstance>(rules);
-  return add(isStringPredicate);
 }

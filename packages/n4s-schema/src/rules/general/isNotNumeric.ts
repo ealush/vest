@@ -1,13 +1,10 @@
 import { isNumeric as isNumericValue } from 'vest-utils';
 
 import { RuleInstance } from '../../enforce';
-import { genRuleChain } from '../genRuleChain';
 
 export interface NotNumericRuleInstance extends RuleInstance<any, [any]> {}
 
-const rules = {};
-
-function notNumericPredicate(value: any): boolean {
+export function isNotNumeric(value: any): boolean {
   // Accept numbers (including Infinity) and numeric strings as numeric
   if (typeof value === 'number') {
     // Only NaN is not numeric among numbers
@@ -15,9 +12,4 @@ function notNumericPredicate(value: any): boolean {
   }
   // For strings, use the vest-utils isNumeric which excludes Infinity strings
   return !isNumericValue(value);
-}
-
-export function isNotNumeric(): NotNumericRuleInstance {
-  const add = genRuleChain<NotNumericRuleInstance>(rules);
-  return add(notNumericPredicate);
 }

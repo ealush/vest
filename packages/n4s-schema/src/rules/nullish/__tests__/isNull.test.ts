@@ -1,16 +1,16 @@
 import { describe, it, expect } from 'vitest';
 
-import { isNull } from '../isNull';
+import { enforceLazy } from '../../../lazy';
 
 describe('isNull', () => {
   it('passes only for null', () => {
-    expect(isNull().run(null).passes).toBe(true);
+    expect(enforceLazy.isNull().run(null).passes).toBe(true);
   });
 
   it('fails for undefined', () => {
     const value: null | undefined = undefined;
     // @ts-expect-error - testing that undefined is rejected by isNull
-    expect(isNull().run(value).passes).toBe(false);
+    expect(enforceLazy.isNull().run(value).passes).toBe(false);
   });
 
   it('fails for falsy primitives', () => {
@@ -20,13 +20,13 @@ describe('isNull', () => {
     const nanValue: null | number = NaN;
 
     // @ts-expect-error - testing that non-null values are rejected
-    expect(isNull().run(zero).passes).toBe(false);
+    expect(enforceLazy.isNull().run(zero).passes).toBe(false);
     // @ts-expect-error - testing that non-null values are rejected
-    expect(isNull().run(emptyString).passes).toBe(false);
+    expect(enforceLazy.isNull().run(emptyString).passes).toBe(false);
     // @ts-expect-error - testing that non-null values are rejected
-    expect(isNull().run(falseBool).passes).toBe(false);
+    expect(enforceLazy.isNull().run(falseBool).passes).toBe(false);
     // @ts-expect-error - testing that non-null values are rejected
-    expect(isNull().run(nanValue).passes).toBe(false);
+    expect(enforceLazy.isNull().run(nanValue).passes).toBe(false);
   });
 
   it('fails for truthy values', () => {
@@ -37,14 +37,14 @@ describe('isNull', () => {
     const arr: null | any[] = [];
 
     // @ts-expect-error - testing that non-null values are rejected
-    expect(isNull().run(num).passes).toBe(false);
+    expect(enforceLazy.isNull().run(num).passes).toBe(false);
     // @ts-expect-error - testing that non-null values are rejected
-    expect(isNull().run(str).passes).toBe(false);
+    expect(enforceLazy.isNull().run(str).passes).toBe(false);
     // @ts-expect-error - testing that non-null values are rejected
-    expect(isNull().run(bool).passes).toBe(false);
+    expect(enforceLazy.isNull().run(bool).passes).toBe(false);
     // @ts-expect-error - testing that non-null values are rejected
-    expect(isNull().run(obj).passes).toBe(false);
+    expect(enforceLazy.isNull().run(obj).passes).toBe(false);
     // @ts-expect-error - testing that non-null values are rejected
-    expect(isNull().run(arr).passes).toBe(false);
+    expect(enforceLazy.isNull().run(arr).passes).toBe(false);
   });
 });

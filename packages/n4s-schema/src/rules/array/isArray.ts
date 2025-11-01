@@ -6,7 +6,6 @@ import {
 import { RuleInstance } from '../../enforce';
 import { equals, notEquals } from '../commonComparison';
 import { inside, notInside } from '../commonContainer';
-import { genRuleChain } from '../genRuleChain';
 
 import { includes } from './includes';
 import { lengthEquals } from './lengthEquals';
@@ -44,7 +43,7 @@ function isNotEmpty(arr: any[]): boolean {
   return Array.isArray(arr) && isNotEmptyValue(arr);
 }
 
-const rules = {
+export const arrayRules = {
   equals,
   includes,
   inside,
@@ -62,11 +61,6 @@ const rules = {
   shorterThanOrEquals,
 };
 
-function isArrayPredicate(value: any): boolean {
+export function isArray(value: any): boolean {
   return Array.isArray(value);
-}
-
-export function isArray<T = []>(): ArrayRuleInstance<T> {
-  const add = genRuleChain<ArrayRuleInstance<T>>(rules as any);
-  return add(isArrayPredicate);
 }

@@ -1,3 +1,5 @@
+import { addToChain } from './genRuleChain';
+
 export { condition } from './general/condition';
 export type { ConditionRuleInstance } from './general/condition';
 

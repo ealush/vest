@@ -1,6 +1,5 @@
 import { RuleInstance } from '../../enforce';
 import { equals, notEquals } from '../commonComparison';
-import { genRuleChain } from '../genRuleChain';
 
 import { between } from './between';
 import { greaterThan } from './greaterThan';
@@ -34,7 +33,7 @@ export interface NumberRuleInstance extends RuleInstance<number, [number]> {
   numberNotEquals(n: number | string): NumberRuleInstance;
 }
 
-const rules = {
+export const numberRules = {
   between,
   equals,
   greaterThan,
@@ -53,11 +52,6 @@ const rules = {
   numberNotEquals,
 };
 
-function isNumberPredicate(value: any): boolean {
+export function isNumber(value: any): boolean {
   return typeof value === 'number' && !Number.isNaN(value);
-}
-
-export function isNumber(): NumberRuleInstance {
-  const add = genRuleChain<NumberRuleInstance>(rules);
-  return add(isNumberPredicate);
 }

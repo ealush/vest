@@ -3,7 +3,7 @@ export { greaterThan } from './number/greaterThan';
 export { greaterThanOrEquals } from './number/greaterThanOrEquals';
 export { isEven } from './number/isEven';
 export { isNegative } from './number/isNegative';
-export { isNumber } from './number/isNumber';
+export { isNumber, numberRules } from './number/isNumber';
 export type { NumberRuleInstance } from './number/isNumber';
 export { isOdd } from './number/isOdd';
 export { isPositive } from './number/isPositive';

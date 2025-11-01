@@ -1,2 +1,2 @@
-export { isArray } from './array/isArray.ts';
-export type { ArrayRuleInstance } from './array/isArray.ts';
+export { isArray, arrayRules } from './array/isArray';
+export type { ArrayRuleInstance } from './array/isArray';

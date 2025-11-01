@@ -1,7 +1,6 @@
 import { isNumeric as isNumericValue } from 'vest-utils';
 
 import { RuleInstance } from '../../enforce';
-import { genRuleChain } from '../genRuleChain';
 import { between as numberBetween } from '../number/between';
 import { greaterThan as numberGreaterThan } from '../number/greaterThan';
 import { greaterThanOrEquals as numberGreaterThanOrEquals } from '../number/greaterThanOrEquals';
@@ -122,7 +121,7 @@ function numberNotEquals(value: number | string, n: number | string): boolean {
   return v !== null && nVal !== null && numberNumberNotEquals(v, nVal);
 }
 
-const rules = {
+export const numericRules = {
   between,
   equals: numericEquals,
   greaterThan,
@@ -143,16 +142,11 @@ const rules = {
   numberNotEquals,
 };
 
-function isNumericPredicate(value: any): boolean {
+export function isNumeric(value: any): boolean {
   // Accept numbers (including Infinity) and numeric strings
   if (typeof value === 'number') {
     return !Number.isNaN(value);
   }
   // For strings, use the vest-utils isNumeric which excludes Infinity strings
   return isNumericValue(value);
-}
-
-export function isNumeric(): NumericRuleInstance {
-  const add = genRuleChain<NumericRuleInstance>(rules);
-  return add(isNumericPredicate);
 }

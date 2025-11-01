@@ -1,18 +1,18 @@
 import { describe, it, expect } from 'vitest';
 
-import { isNullish } from '../isNullish';
+import { enforceLazy } from '../../../lazy';
 
 describe('isNullish', () => {
   it('passes for null', () => {
-    expect(isNullish().run(null).passes).toBe(true);
+    expect(enforceLazy.isNullish().run(null).passes).toBe(true);
   });
 
   it('passes for undefined', () => {
-    expect(isNullish().run(undefined).passes).toBe(true);
+    expect(enforceLazy.isNullish().run(undefined).passes).toBe(true);
 
     let uninitialized: null | undefined | number;
     // @ts-expect-error - uninitialized may be number | null | undefined
-    expect(isNullish().run(uninitialized).passes).toBe(true);
+    expect(enforceLazy.isNullish().run(uninitialized).passes).toBe(true);
   });
 
   it('fails for falsy non-nullish primitives', () => {
@@ -22,13 +22,13 @@ describe('isNullish', () => {
     const nanValue: null | undefined | number = NaN;
 
     // @ts-expect-error - testing that non-nullish values are rejected
-    expect(isNullish().run(zero).passes).toBe(false);
+    expect(enforceLazy.isNullish().run(zero).passes).toBe(false);
     // @ts-expect-error - testing that non-nullish values are rejected
-    expect(isNullish().run(emptyString).passes).toBe(false);
+    expect(enforceLazy.isNullish().run(emptyString).passes).toBe(false);
     // @ts-expect-error - testing that non-nullish values are rejected
-    expect(isNullish().run(falseBool).passes).toBe(false);
+    expect(enforceLazy.isNullish().run(falseBool).passes).toBe(false);
     // @ts-expect-error - testing that non-nullish values are rejected
-    expect(isNullish().run(nanValue).passes).toBe(false);
+    expect(enforceLazy.isNullish().run(nanValue).passes).toBe(false);
   });
 
   it('fails for truthy values', () => {
@@ -39,14 +39,14 @@ describe('isNullish', () => {
     const arr: null | undefined | any[] = [];
 
     // @ts-expect-error - testing that non-nullish values are rejected
-    expect(isNullish().run(num).passes).toBe(false);
+    expect(enforceLazy.isNullish().run(num).passes).toBe(false);
     // @ts-expect-error - testing that non-nullish values are rejected
-    expect(isNullish().run(str).passes).toBe(false);
+    expect(enforceLazy.isNullish().run(str).passes).toBe(false);
     // @ts-expect-error - testing that non-nullish values are rejected
-    expect(isNullish().run(bool).passes).toBe(false);
+    expect(enforceLazy.isNullish().run(bool).passes).toBe(false);
     // @ts-expect-error - testing that non-nullish values are rejected
-    expect(isNullish().run(obj).passes).toBe(false);
+    expect(enforceLazy.isNullish().run(obj).passes).toBe(false);
     // @ts-expect-error - testing that non-nullish values are rejected
-    expect(isNullish().run(arr).passes).toBe(false);
+    expect(enforceLazy.isNullish().run(arr).passes).toBe(false);
   });
 });

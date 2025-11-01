@@ -1,13 +1,9 @@
-function _enforce(_value: any) {
-  const _proxy = new Proxy(
-    {},
-    {
-      get(_, _prop) {
-        return undefined;
-      },
-    },
-  );
-  return _proxy;
+function enforce() {
+  const proxy = new Proxy({}, {
+    get(target: any, rule: string | symbol, receiver: any) { }
+  })
 }
 
-export { _enforce };
+function runRule() {
+
+}

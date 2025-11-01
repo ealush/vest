@@ -1,17 +1,10 @@
 import { RuleInstance } from '../../enforce';
-import { genRuleChain } from '../genRuleChain';
 
 import { equals } from './equals';
+import { falsy } from './falsy';
 import { isFalse } from './isFalse';
 import { isTrue } from './isTrue';
-
-function isTruthy(value: boolean): boolean {
-  return !!value;
-}
-
-function isFalsy(value: boolean): boolean {
-  return !value;
-}
+import { truthy } from './truthy';
 
 export interface BooleanRuleInstance extends RuleInstance<boolean, [boolean]> {
   isTrue(): BooleanRuleInstance;
@@ -20,11 +13,15 @@ export interface BooleanRuleInstance extends RuleInstance<boolean, [boolean]> {
   isFalsy(): BooleanRuleInstance;
   equals(v: boolean): BooleanRuleInstance;
 }
-const rules = { equals, isFalse, isFalsy, isTrue, isTruthy };
-function isBooleanPredicate(value: any): boolean {
+
+export const booleanRules = {
+  equals,
+  isFalse,
+  isFalsy: falsy,
+  isTrue,
+  isTruthy: truthy,
+};
+
+export function isBoolean(value: any): boolean {
   return typeof value === 'boolean';
-}
-export function isBoolean(): BooleanRuleInstance {
-  const add = genRuleChain<BooleanRuleInstance>(rules);
-  return add(isBooleanPredicate);
 }

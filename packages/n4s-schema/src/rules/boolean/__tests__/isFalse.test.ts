@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 
-import { isBoolean } from '../isBoolean';
 
 describe('isFalse', () => {
   it('passes only for false', () => {

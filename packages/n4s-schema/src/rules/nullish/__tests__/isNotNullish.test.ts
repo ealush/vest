@@ -1,13 +1,13 @@
 import { describe, it, expect } from 'vitest';
 
-import { isNotNullish } from '../isNotNullish';
+import { enforceLazy } from '../../../lazy';
 
 describe('isNotNullish', () => {
   it('passes for falsy non-nullish values', () => {
     const values: any[] = [0, '', false, NaN];
 
     values.forEach(value => {
-      expect(isNotNullish().run(value).passes).toBe(true);
+      expect(enforceLazy.isNotNullish().run(value).passes).toBe(true);
     });
   });
 
@@ -15,18 +15,18 @@ describe('isNotNullish', () => {
     const values: any[] = [1, 'text', true, {}, [], () => {}];
 
     values.forEach(value => {
-      expect(isNotNullish().run(value).passes).toBe(true);
+      expect(enforceLazy.isNotNullish().run(value).passes).toBe(true);
     });
   });
 
   it('fails for null', () => {
-    expect(isNotNullish().run(null).passes).toBe(false);
+    expect(enforceLazy.isNotNullish().run(null).passes).toBe(false);
   });
 
   it('fails for undefined', () => {
-    expect(isNotNullish().run(undefined).passes).toBe(false);
+    expect(enforceLazy.isNotNullish().run(undefined).passes).toBe(false);
 
     let uninitialized: any;
-    expect(isNotNullish().run(uninitialized).passes).toBe(false);
+    expect(enforceLazy.isNotNullish().run(uninitialized).passes).toBe(false);
   });
 });

@@ -1,5 +1,4 @@
 import { RuleInstance } from '../../enforce';
-import { genRuleChain } from '../genRuleChain';
 
 export interface ObjectRuleInstance extends RuleInstance<object, [object]> {
   isKeyOf(obj: object): ObjectRuleInstance;
@@ -28,16 +27,11 @@ function isNotKeyOf<T extends object>(
   );
 }
 
-const keyRules = {
+export const keyRules = {
   isKeyOf,
   isNotKeyOf,
 };
 
-function passThrough(): boolean {
+export function checkKey(): boolean {
   return true;
-}
-
-export function checkKey(): ObjectRuleInstance {
-  const add = genRuleChain<ObjectRuleInstance>(keyRules);
-  return add(passThrough);
 }

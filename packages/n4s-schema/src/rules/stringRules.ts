@@ -1,2 +1,2 @@
-export { isString } from './string/isString.ts';
-export type { StringRuleInstance } from './string/isString.ts';
+export { isString, stringRules } from './string/isString';
+export type { StringRuleInstance } from './string/isString';

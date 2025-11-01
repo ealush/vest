@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from '../../../lazy';
+import { enforceLazy } from 'lazy';
 
 describe('minLength', () => {
   it('passes when string length is greater than or equal to minimum', () => {

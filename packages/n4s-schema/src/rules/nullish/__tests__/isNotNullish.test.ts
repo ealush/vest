@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from '../../../lazy';
+import { enforceLazy } from 'lazy';
 
 describe('isNotNullish', () => {
   it('passes for falsy non-nullish values', () => {

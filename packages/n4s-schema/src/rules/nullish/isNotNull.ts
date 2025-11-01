@@ -1,6 +1,5 @@
+import { RuleInstance } from 'enforce';
 import { isNotNull as isNotNullValue } from 'vest-utils';
-
-import { RuleInstance } from '../../enforce';
 
 // Type guard rule instance
 export interface NotNullRuleInstance extends RuleInstance<any, [any]> {}

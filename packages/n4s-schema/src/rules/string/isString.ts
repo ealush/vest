@@ -1,8 +1,12 @@
+import { endsWith } from 'endsWith';
+import { RuleInstance } from 'enforce';
+import { isBlank } from 'isBlank';
+import { matches } from 'matches';
+import { startsWith } from 'startsWith';
 import { isStringValue } from 'vest-utils';
 
-import { RuleInstance } from '../../enforce';
-import { equals, notEquals } from '../commonComparison';
-import { inside, notInside } from '../commonContainer';
+import { equals, notEquals } from 'commonComparison';
+import { inside, notInside } from 'commonContainer';
 import {
   lengthEquals,
   lengthNotEquals,
@@ -12,16 +16,11 @@ import {
   minLength,
   shorterThan,
   shorterThanOrEquals,
-} from '../commonLength';
-
-import { doesNotEndWith } from './doesNotEndWith';
-import { doesNotStartWith } from './doesNotStartWith';
-import { endsWith } from './endsWith';
-import { isBlank } from './isBlank';
-import { isNotBlank } from './isNotBlank';
-import { matches } from './matches';
-import { notMatches } from './notMatches';
-import { startsWith } from './startsWith';
+} from 'commonLength';
+import { doesNotEndWith } from 'doesNotEndWith';
+import { doesNotStartWith } from 'doesNotStartWith';
+import { isNotBlank } from 'isNotBlank';
+import { notMatches } from 'notMatches';
 
 export interface StringRuleInstance extends RuleInstance<string, [string]> {
   equals(s: string): StringRuleInstance;

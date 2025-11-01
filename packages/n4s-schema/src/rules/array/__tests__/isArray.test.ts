@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from '../../../lazy';
+import { enforceLazy } from 'lazy';
 
 describe('isArray', () => {
   it('passes for empty arrays', () => {

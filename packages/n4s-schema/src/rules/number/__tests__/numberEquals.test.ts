@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from '../../../lazy';
+import { enforceLazy } from 'lazy';
 
 describe('numberEquals', () => {
   it('passes when numbers are equal', () => {

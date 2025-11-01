@@ -1,18 +1,17 @@
-import { RuleInstance } from '../../enforce';
-import { equals, notEquals } from '../commonComparison';
+import { RuleInstance } from 'enforce';
+import { greaterThanOrEquals } from 'greaterThanOrEquals';
+import { isEven } from 'isEven';
+import { isNegative } from 'isNegative';
+import { isOdd } from 'isOdd';
+import { lessThan } from 'lessThan';
+import { lessThanOrEquals } from 'lessThanOrEquals';
 
-import { between } from './between';
-import { greaterThan } from './greaterThan';
-import { greaterThanOrEquals } from './greaterThanOrEquals';
-import { isEven } from './isEven';
-import { isNegative } from './isNegative';
-import { isOdd } from './isOdd';
-import { isPositive } from './isPositive';
-import { lessThan } from './lessThan';
-import { lessThanOrEquals } from './lessThanOrEquals';
-import { notBetween } from './notBetween';
-import { numberEquals } from './numberEquals';
-import { numberNotEquals } from './numberNotEquals';
+import { between } from 'between';
+import { greaterThan } from 'greaterThan';
+import { isPositive } from 'isPositive';
+import { notBetween } from 'notBetween';
+import { numberEquals } from 'numberEquals';
+import { numberNotEquals } from 'numberNotEquals';
 
 export interface NumberRuleInstance extends RuleInstance<number, [number]> {
   between(min: number, max: number): NumberRuleInstance;
@@ -35,7 +34,7 @@ export interface NumberRuleInstance extends RuleInstance<number, [number]> {
 
 export const numberRules = {
   between,
-  equals,
+  equals: numberEquals,
   greaterThan,
   greaterThanOrEquals,
   isBetween: between,
@@ -47,7 +46,7 @@ export const numberRules = {
   lessThan,
   lessThanOrEquals,
   notBetween,
-  notEquals,
+  notEquals: numberNotEquals,
   numberEquals,
   numberNotEquals,
 };

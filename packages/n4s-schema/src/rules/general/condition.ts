@@ -1,4 +1,4 @@
-import { RuleInstance } from '../../enforce';
+import { RuleInstance } from 'enforce';
 
 export interface ConditionRuleInstance extends RuleInstance<boolean, [any]> {}
 

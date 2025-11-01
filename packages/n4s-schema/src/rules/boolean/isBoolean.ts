@@ -1,10 +1,10 @@
-import { RuleInstance } from '../../enforce';
+import { RuleInstance } from 'enforce';
+import { equals } from 'equals';
 
-import { equals } from './equals';
-import { falsy } from './falsy';
-import { isFalse } from './isFalse';
-import { isTrue } from './isTrue';
-import { truthy } from './truthy';
+import { falsy } from 'falsy';
+import { isFalse } from 'isFalse';
+import { isTrue } from 'isTrue';
+import { truthy } from 'truthy';
 
 export interface BooleanRuleInstance extends RuleInstance<boolean, [boolean]> {
   isTrue(): BooleanRuleInstance;

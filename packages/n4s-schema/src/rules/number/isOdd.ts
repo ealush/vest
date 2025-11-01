@@ -1,5 +1,3 @@
-import { isOdd as isOddBase } from '../commonNumeric';
-
 export function isOdd(value: number): boolean {
-  return isOddBase(value);
+  return Number.isFinite(value) && Math.abs(value % 2) === 1;
 }

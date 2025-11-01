@@ -1,4 +1,4 @@
-import { RuleInstance } from '../../enforce';
+import { RuleInstance } from 'enforce';
 
 export interface ValueRuleInstance<T = any> extends RuleInstance<T, [any]> {
   isValueOf(obj: Record<string, T>): ValueRuleInstance<T>;

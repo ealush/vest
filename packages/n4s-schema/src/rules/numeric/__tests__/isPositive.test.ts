@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from '../../../lazy';
+import { enforceLazy } from 'lazy';
 
 describe('isPositive (numeric)', () => {
   it('passes for positive numeric strings', () => {
@@ -12,7 +12,9 @@ describe('isPositive (numeric)', () => {
   it('passes for positive numbers', () => {
     expect(enforceLazy.isNumeric().isPositive().run(1).passes).toBe(true);
     expect(enforceLazy.isNumeric().isPositive().run(42).passes).toBe(true);
-    expect(enforceLazy.isNumeric().isPositive().run(Infinity).passes).toBe(true);
+    expect(enforceLazy.isNumeric().isPositive().run(Infinity).passes).toBe(
+      true,
+    );
   });
 
   it('fails for zero and negative values', () => {

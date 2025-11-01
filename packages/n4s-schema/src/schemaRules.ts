@@ -1,4 +1,4 @@
-import { RuleInstance } from './enforce';
+import { RuleInstance } from 'enforce';
 
 export type InferShape<T> = T extends RuleInstance<infer R, any> ? R : never;
 

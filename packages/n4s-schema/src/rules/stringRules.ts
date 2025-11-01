@@ -1,2 +1,2 @@
-export { isString, stringRules } from './string/isString';
-export type { StringRuleInstance } from './string/isString';
+export { isString, stringRules } from 'isString';
+export type { StringRuleInstance } from 'isString';

@@ -1,6 +1,6 @@
 import { describe, it, expect, expectTypeOf } from 'vitest';
 
-import { enforceLazy } from '../lazy';
+import { enforceLazy } from 'lazy';
 
 describe('anyOf', () => {
   it('should return a rule instance', () => {

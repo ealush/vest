@@ -1,18 +1,18 @@
 // Backward-compatible re-exports to avoid breaking existing imports
-export { isNull } from './nullish/isNull';
-export type { NullRuleInstance } from './nullish/isNull';
+export { isNull } from 'isNull';
+export type { NullRuleInstance } from 'isNull';
 
-export { isNotNull } from './nullish/isNotNull';
-export type { NotNullRuleInstance } from './nullish/isNotNull';
+export { isNotNull } from 'isNotNull';
+export type { NotNullRuleInstance } from 'isNotNull';
 
-export { isUndefined } from './nullish/isUndefined';
-export type { UndefinedRuleInstance } from './nullish/isUndefined';
+export { isUndefined } from 'isUndefined';
+export type { UndefinedRuleInstance } from 'isUndefined';
 
-export { isNotUndefined } from './nullish/isNotUndefined';
-export type { NotUndefinedRuleInstance } from './nullish/isNotUndefined';
+export { isNotUndefined } from 'isNotUndefined';
+export type { NotUndefinedRuleInstance } from 'isNotUndefined';
 
-export { isNullish } from './nullish/isNullish';
-export type { NullishRuleInstance } from './nullish/isNullish';
+export { isNullish } from 'isNullish';
+export type { NullishRuleInstance } from 'isNullish';
 
-export { isNotNullish } from './nullish/isNotNullish';
-export type { NotNullishRuleInstance } from './nullish/isNotNullish';
+export { isNotNullish } from 'isNotNullish';
+export type { NotNullishRuleInstance } from 'isNotNullish';

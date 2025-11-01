@@ -20,7 +20,6 @@
       "nullishRules": ["./src/rules/nullishRules.ts"],
       "generalRules": ["./src/rules/generalRules.ts"],
       "genRuleChain": ["./src/rules/genRuleChain.ts"],
-      "commonNumeric": ["./src/rules/commonNumeric.ts"],
       "commonLength": ["./src/rules/commonLength.ts"],
       "commonContainer": ["./src/rules/commonContainer.ts"],
       "commonComparison": ["./src/rules/commonComparison.ts"],

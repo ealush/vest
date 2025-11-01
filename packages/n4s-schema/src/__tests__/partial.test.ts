@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from '../lazy';
-import { RuleInstance } from '../enforce';
+import { enforceLazy } from 'lazy';
+import { RuleInstance } from 'enforce';
 
 const longerThan = (n: number): RuleInstance<string> => ({
   run: (v: any) => ({ passes: typeof v === 'string' && v.length > n, type: v }),

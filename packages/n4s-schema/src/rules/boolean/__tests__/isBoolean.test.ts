@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from '../../../lazy';
+import { enforceLazy } from 'lazy';
 
 describe('isBoolean', () => {
   it('passes for true', () => {
@@ -67,29 +67,21 @@ describe('isBoolean', () => {
 
   describe('chain: isTruthy', () => {
     it('passes for true', () => {
-      expect(
-        enforceLazy.isBoolean().enforceLazy.isTruthy().run(true).passes,
-      ).toBe(true);
+      expect(enforceLazy.isBoolean().isTruthy().run(true).passes).toBe(true);
     });
 
     it('fails for false', () => {
-      expect(
-        enforceLazy.isBoolean().enforceLazy.isTruthy().run(false).passes,
-      ).toBe(false);
+      expect(enforceLazy.isBoolean().isTruthy().run(false).passes).toBe(false);
     });
   });
 
   describe('chain: isFalsy', () => {
     it('passes for false', () => {
-      expect(
-        enforceLazy.isBoolean().enforceLazy.isFalsy().run(false).passes,
-      ).toBe(true);
+      expect(enforceLazy.isBoolean().isFalsy().run(false).passes).toBe(true);
     });
 
     it('fails for true', () => {
-      expect(
-        enforceLazy.isBoolean().enforceLazy.isFalsy().run(true).passes,
-      ).toBe(false);
+      expect(enforceLazy.isBoolean().isFalsy().run(true).passes).toBe(false);
     });
   });
 });

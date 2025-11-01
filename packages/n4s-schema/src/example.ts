@@ -1,5 +1,5 @@
-import { isNumberRule, isStringRule, startsWithRule } from './lazy';
-import { loose, shape } from './schemaRules';
+import { isNumberRule, isStringRule, startsWithRule } from 'lazy';
+import { loose, shape } from 'schemaRules';
 
 const addressShape = {
   city: isStringRule,

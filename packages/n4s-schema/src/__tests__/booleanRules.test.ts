@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { enforceLazy } from '../lazy';
+import { enforceLazy } from 'lazy';
 
 describe('booleanRules', () => {
   it('supports isTrue and isFalse', () => {

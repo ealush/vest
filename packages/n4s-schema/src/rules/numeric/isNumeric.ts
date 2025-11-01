@@ -1,20 +1,19 @@
+import { RuleInstance } from 'enforce';
+import { greaterThanOrEquals as numberGreaterThanOrEquals } from 'greaterThanOrEquals';
+import { isEven as numberIsEven } from 'isEven';
+import { isNegative as numberIsNegative } from 'isNegative';
+import { isOdd as numberIsOdd } from 'isOdd';
+import { lessThan as numberLessThan } from 'lessThan';
+import { lessThanOrEquals as numberLessThanOrEquals } from 'lessThanOrEquals';
 import { isNumeric as isNumericValue } from 'vest-utils';
 
-import { RuleInstance } from '../../enforce';
-import { between as numberBetween } from '../number/between';
-import { greaterThan as numberGreaterThan } from '../number/greaterThan';
-import { greaterThanOrEquals as numberGreaterThanOrEquals } from '../number/greaterThanOrEquals';
-import { isEven as numberIsEven } from '../number/isEven';
-import { isNegative as numberIsNegative } from '../number/isNegative';
-import { isOdd as numberIsOdd } from '../number/isOdd';
-import { isPositive as numberIsPositive } from '../number/isPositive';
-import { lessThan as numberLessThan } from '../number/lessThan';
-import { lessThanOrEquals as numberLessThanOrEquals } from '../number/lessThanOrEquals';
-import { notBetween as numberNotBetween } from '../number/notBetween';
-import { numberEquals as numberNumberEquals } from '../number/numberEquals';
-import { numberNotEquals as numberNumberNotEquals } from '../number/numberNotEquals';
-
-import { toNumber } from './toNumber';
+import { between as numberBetween } from 'between';
+import { greaterThan as numberGreaterThan } from 'greaterThan';
+import { isPositive as numberIsPositive } from 'isPositive';
+import { notBetween as numberNotBetween } from 'notBetween';
+import { numberEquals as numberNumberEquals } from 'numberEquals';
+import { numberNotEquals as numberNumberNotEquals } from 'numberNotEquals';
+import { toNumber } from 'toNumber';
 
 export interface NumericRuleInstance
   extends RuleInstance<number | string, [number | string]> {

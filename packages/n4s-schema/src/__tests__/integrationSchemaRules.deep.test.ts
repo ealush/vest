@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { enforceLazy } from '../lazy';
+import { enforceLazy } from 'lazy';
 
 // schema combinators are consumed via enforceLazy
 

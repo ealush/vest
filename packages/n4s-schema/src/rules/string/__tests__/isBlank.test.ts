@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from '../../../lazy';
+import { enforceLazy } from 'lazy';
 
 describe('isBlank', () => {
   it('passes for empty strings', () => {
@@ -13,7 +13,9 @@ describe('isBlank', () => {
     expect(enforceLazy.isString().isBlank().run('\t').passes).toBe(true);
     expect(enforceLazy.isString().isBlank().run('\n').passes).toBe(true);
     expect(enforceLazy.isString().isBlank().run('\r\n').passes).toBe(true);
-    expect(enforceLazy.isString().isBlank().run('   \t  \n  ').passes).toBe(true);
+    expect(enforceLazy.isString().isBlank().run('   \t  \n  ').passes).toBe(
+      true,
+    );
   });
 
   it('fails for strings with content', () => {

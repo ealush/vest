@@ -1,14 +1,10 @@
-import {
-  isArray,
-  arrayRules,
-  type ArrayRuleInstance,
-} from './rules/arrayRules';
+import { isArray, arrayRules, type ArrayRuleInstance } from 'arrayRules';
 import {
   isBoolean,
   booleanRules,
   type BooleanRuleInstance,
-} from './rules/booleanRules';
-import { addToChain } from './rules/genRuleChain';
+} from 'booleanRules';
+import { addToChain } from 'genRuleChain';
 import {
   isTruthy,
   isFalsy,
@@ -34,7 +30,7 @@ import {
   type NotNumberRuleInstance,
   type NotStringRuleInstance,
   type NotNumericRuleInstance,
-} from './rules/generalRules';
+} from 'generalRules';
 import {
   isNull,
   isNotNull,
@@ -48,17 +44,13 @@ import {
   type NotUndefinedRuleInstance,
   type NullishRuleInstance,
   type NotNullishRuleInstance,
-} from './rules/nullishRules';
-import {
-  isNumber,
-  numberRules,
-  type NumberRuleInstance,
-} from './rules/numberRules';
+} from 'nullishRules';
+import { isNumber, numberRules, type NumberRuleInstance } from 'numberRules';
 import {
   isNumeric,
   numericRules,
   type NumericRuleInstance,
-} from './rules/numericRules';
+} from 'numericRules';
 import {
   checkKey,
   checkValue,
@@ -66,12 +58,7 @@ import {
   valueRules,
   type ObjectRuleInstance,
   type ValueRuleInstance,
-} from './rules/objectRules';
-import {
-  isString,
-  stringRules,
-  type StringRuleInstance,
-} from './rules/stringRules';
+} from 'objectRules';
 import {
   allOf,
   anyOf,
@@ -82,7 +69,8 @@ import {
   optional,
   partial,
   shape,
-} from './schemaRules';
+} from 'schemaRules';
+import { isString, stringRules, type StringRuleInstance } from 'stringRules';
 
 export const enforceLazy = {
   allOf,

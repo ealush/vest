@@ -1,4 +1,4 @@
-import { RuleInstance } from '../../enforce';
+import { RuleInstance } from 'enforce';
 
 export interface ObjectRuleInstance extends RuleInstance<object, [object]> {
   isKeyOf(obj: object): ObjectRuleInstance;

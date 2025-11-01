@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from '../../../lazy';
+import { enforceLazy } from 'lazy';
 
 describe('isNumeric', () => {
   describe('base predicate', () => {
@@ -56,8 +56,12 @@ describe('isNumeric', () => {
     });
 
     it('fails when value is not greater', () => {
-      expect(enforceLazy.isNumeric().greaterThan(5).run('5').passes).toBe(false);
-      expect(enforceLazy.isNumeric().greaterThan(5).run('3').passes).toBe(false);
+      expect(enforceLazy.isNumeric().greaterThan(5).run('5').passes).toBe(
+        false,
+      );
+      expect(enforceLazy.isNumeric().greaterThan(5).run('3').passes).toBe(
+        false,
+      );
       expect(enforceLazy.isNumeric().greaterThan(5).run(3).passes).toBe(false);
     });
   });
@@ -83,7 +87,9 @@ describe('isNumeric', () => {
     it('passes when numeric string is between', () => {
       expect(enforceLazy.isNumeric().between(0, 10).run('5').passes).toBe(true);
       expect(enforceLazy.isNumeric().between(0, 10).run('0').passes).toBe(true);
-      expect(enforceLazy.isNumeric().between(0, 10).run('10').passes).toBe(true);
+      expect(enforceLazy.isNumeric().between(0, 10).run('10').passes).toBe(
+        true,
+      );
     });
 
     it('passes when number is between', () => {
@@ -91,24 +97,38 @@ describe('isNumeric', () => {
     });
 
     it('fails when value is outside range', () => {
-      expect(enforceLazy.isNumeric().between(0, 10).run('-1').passes).toBe(false);
-      expect(enforceLazy.isNumeric().between(0, 10).run('11').passes).toBe(false);
+      expect(enforceLazy.isNumeric().between(0, 10).run('-1').passes).toBe(
+        false,
+      );
+      expect(enforceLazy.isNumeric().between(0, 10).run('11').passes).toBe(
+        false,
+      );
     });
   });
 
   describe('numberEquals', () => {
     it('passes when numeric strings are equal', () => {
-      expect(enforceLazy.isNumeric().numberEquals('2').run('2').passes).toBe(true);
-      expect(enforceLazy.isNumeric().numberEquals(5).run('5').passes).toBe(true);
+      expect(enforceLazy.isNumeric().numberEquals('2').run('2').passes).toBe(
+        true,
+      );
+      expect(enforceLazy.isNumeric().numberEquals(5).run('5').passes).toBe(
+        true,
+      );
     });
 
     it('passes when number matches', () => {
-      expect(enforceLazy.isNumeric().numberEquals('2').run(2).passes).toBe(true);
+      expect(enforceLazy.isNumeric().numberEquals('2').run(2).passes).toBe(
+        true,
+      );
     });
 
     it('fails when values are not equal', () => {
-      expect(enforceLazy.isNumeric().numberEquals('2').run('3').passes).toBe(false);
-      expect(enforceLazy.isNumeric().numberEquals(5).run('4').passes).toBe(false);
+      expect(enforceLazy.isNumeric().numberEquals('2').run('3').passes).toBe(
+        false,
+      );
+      expect(enforceLazy.isNumeric().numberEquals(5).run('4').passes).toBe(
+        false,
+      );
     });
   });
 

@@ -1,21 +1,20 @@
+import { RuleInstance } from 'enforce';
+import { longerThanOrEquals } from 'longerThanOrEquals';
+import { shorterThan } from 'shorterThan';
+import { shorterThanOrEquals } from 'shorterThanOrEquals';
 import {
   isEmpty as isEmptyValue,
   isNotEmpty as isNotEmptyValue,
 } from 'vest-utils';
 
-import { RuleInstance } from '../../enforce';
-import { equals, notEquals } from '../commonComparison';
-import { inside, notInside } from '../commonContainer';
-
-import { includes } from './includes';
-import { lengthEquals } from './lengthEquals';
-import { lengthNotEquals } from './lengthNotEquals';
-import { longerThan } from './longerThan';
-import { longerThanOrEquals } from './longerThanOrEquals';
-import { maxLength } from './maxLength';
-import { minLength } from './minLength';
-import { shorterThan } from './shorterThan';
-import { shorterThanOrEquals } from './shorterThanOrEquals';
+import { equals, notEquals } from 'commonComparison';
+import { inside, notInside } from 'commonContainer';
+import { includes } from 'includes';
+import { lengthEquals } from 'lengthEquals';
+import { lengthNotEquals } from 'lengthNotEquals';
+import { longerThan } from 'longerThan';
+import { maxLength } from 'maxLength';
+import { minLength } from 'minLength';
 
 export interface ArrayRuleInstance<T = any> extends RuleInstance<T[], [T[]]> {
   equals(arr: T[]): ArrayRuleInstance<T>;

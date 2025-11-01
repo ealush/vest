@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from '../../../lazy';
+import { enforceLazy } from 'lazy';
 
 describe('isNumber', () => {
   describe('base predicate', () => {
@@ -46,14 +46,24 @@ describe('isNumber', () => {
 
   describe('greaterThanOrEquals', () => {
     it('passes when number is greater or equal', () => {
-      expect(enforceLazy.isNumber().greaterThanOrEquals(0).run(1).passes).toBe(true);
-      expect(enforceLazy.isNumber().greaterThanOrEquals(5).run(5).passes).toBe(true);
-      expect(enforceLazy.isNumber().greaterThanOrEquals(5).run(10).passes).toBe(true);
+      expect(enforceLazy.isNumber().greaterThanOrEquals(0).run(1).passes).toBe(
+        true,
+      );
+      expect(enforceLazy.isNumber().greaterThanOrEquals(5).run(5).passes).toBe(
+        true,
+      );
+      expect(enforceLazy.isNumber().greaterThanOrEquals(5).run(10).passes).toBe(
+        true,
+      );
     });
 
     it('fails when number is less', () => {
-      expect(enforceLazy.isNumber().greaterThanOrEquals(5).run(4).passes).toBe(false);
-      expect(enforceLazy.isNumber().greaterThanOrEquals(0).run(-1).passes).toBe(false);
+      expect(enforceLazy.isNumber().greaterThanOrEquals(5).run(4).passes).toBe(
+        false,
+      );
+      expect(enforceLazy.isNumber().greaterThanOrEquals(0).run(-1).passes).toBe(
+        false,
+      );
     });
   });
 
@@ -72,14 +82,24 @@ describe('isNumber', () => {
 
   describe('lessThanOrEquals', () => {
     it('passes when number is less or equal', () => {
-      expect(enforceLazy.isNumber().lessThanOrEquals(5).run(4).passes).toBe(true);
-      expect(enforceLazy.isNumber().lessThanOrEquals(5).run(5).passes).toBe(true);
-      expect(enforceLazy.isNumber().lessThanOrEquals(1).run(1).passes).toBe(true);
+      expect(enforceLazy.isNumber().lessThanOrEquals(5).run(4).passes).toBe(
+        true,
+      );
+      expect(enforceLazy.isNumber().lessThanOrEquals(5).run(5).passes).toBe(
+        true,
+      );
+      expect(enforceLazy.isNumber().lessThanOrEquals(1).run(1).passes).toBe(
+        true,
+      );
     });
 
     it('fails when number is greater', () => {
-      expect(enforceLazy.isNumber().lessThanOrEquals(5).run(6).passes).toBe(false);
-      expect(enforceLazy.isNumber().lessThanOrEquals(0).run(1).passes).toBe(false);
+      expect(enforceLazy.isNumber().lessThanOrEquals(5).run(6).passes).toBe(
+        false,
+      );
+      expect(enforceLazy.isNumber().lessThanOrEquals(0).run(1).passes).toBe(
+        false,
+      );
     });
   });
 
@@ -105,20 +125,32 @@ describe('isNumber', () => {
 
     it('fails when numbers are not equal', () => {
       expect(enforceLazy.isNumber().numberEquals(5).run(4).passes).toBe(false);
-      expect(enforceLazy.isNumber().numberEquals('2').run(3).passes).toBe(false);
+      expect(enforceLazy.isNumber().numberEquals('2').run(3).passes).toBe(
+        false,
+      );
     });
   });
 
   describe('numberNotEquals', () => {
     it('passes when numbers are not equal', () => {
-      expect(enforceLazy.isNumber().numberNotEquals(5).run(4).passes).toBe(true);
-      expect(enforceLazy.isNumber().numberNotEquals('2').run(3).passes).toBe(true);
-      expect(enforceLazy.isNumber().numberNotEquals(0).run(1).passes).toBe(true);
+      expect(enforceLazy.isNumber().numberNotEquals(5).run(4).passes).toBe(
+        true,
+      );
+      expect(enforceLazy.isNumber().numberNotEquals('2').run(3).passes).toBe(
+        true,
+      );
+      expect(enforceLazy.isNumber().numberNotEquals(0).run(1).passes).toBe(
+        true,
+      );
     });
 
     it('fails when numbers are equal', () => {
-      expect(enforceLazy.isNumber().numberNotEquals(5).run(5).passes).toBe(false);
-      expect(enforceLazy.isNumber().numberNotEquals('2').run(2).passes).toBe(false);
+      expect(enforceLazy.isNumber().numberNotEquals(5).run(5).passes).toBe(
+        false,
+      );
+      expect(enforceLazy.isNumber().numberNotEquals('2').run(2).passes).toBe(
+        false,
+      );
     });
   });
 
@@ -156,7 +188,9 @@ describe('isNumber', () => {
     it('passes for negative numbers', () => {
       expect(enforceLazy.isNumber().isNegative().run(-1).passes).toBe(true);
       expect(enforceLazy.isNumber().isNegative().run(-42).passes).toBe(true);
-      expect(enforceLazy.isNumber().isNegative().run(-Infinity).passes).toBe(true);
+      expect(enforceLazy.isNumber().isNegative().run(-Infinity).passes).toBe(
+        true,
+      );
     });
 
     it('fails for positive numbers and zero', () => {
@@ -170,7 +204,9 @@ describe('isNumber', () => {
     it('passes for positive numbers', () => {
       expect(enforceLazy.isNumber().isPositive().run(1).passes).toBe(true);
       expect(enforceLazy.isNumber().isPositive().run(42).passes).toBe(true);
-      expect(enforceLazy.isNumber().isPositive().run(Infinity).passes).toBe(true);
+      expect(enforceLazy.isNumber().isPositive().run(Infinity).passes).toBe(
+        true,
+      );
     });
 
     it('fails for zero and negative numbers', () => {

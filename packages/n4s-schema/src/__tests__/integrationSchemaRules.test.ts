@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { enforceLazy } from '../lazy';
+import { enforceLazy } from 'lazy';
 
 describe('integration: rules with schema combinators', () => {
   it('shape: combine isString with notBlank and length', () => {

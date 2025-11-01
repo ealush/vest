@@ -1,37 +1,35 @@
-import { addToChain } from './genRuleChain';
+export { condition } from 'condition';
+export type { ConditionRuleInstance } from 'condition';
 
-export { condition } from './general/condition';
-export type { ConditionRuleInstance } from './general/condition';
+export { isEmpty } from 'isEmpty';
+export type { EmptyRuleInstance } from 'isEmpty';
 
-export { isEmpty } from './general/isEmpty';
-export type { EmptyRuleInstance } from './general/isEmpty';
+export { isFalsy } from 'isFalsy';
+export type { FalsyRuleInstance } from 'isFalsy';
 
-export { isFalsy } from './general/isFalsy';
-export type { FalsyRuleInstance } from './general/isFalsy';
+export { isNaN } from 'isNaN';
+export type { NaNRuleInstance } from 'isNaN';
 
-export { isNaN } from './general/isNaN';
-export type { NaNRuleInstance } from './general/isNaN';
+export { isNotArray } from 'isNotArray';
+export type { NotArrayRuleInstance } from 'isNotArray';
 
-export { isNotArray } from './general/isNotArray';
-export type { NotArrayRuleInstance } from './general/isNotArray';
+export { isNotBoolean } from 'isNotBoolean';
+export type { NotBooleanRuleInstance } from 'isNotBoolean';
 
-export { isNotBoolean } from './general/isNotBoolean';
-export type { NotBooleanRuleInstance } from './general/isNotBoolean';
+export { isNotEmpty } from 'isNotEmpty';
+export type { NotEmptyRuleInstance } from 'isNotEmpty';
 
-export { isNotEmpty } from './general/isNotEmpty';
-export type { NotEmptyRuleInstance } from './general/isNotEmpty';
+export { isNotNaN } from 'isNotNaN';
+export type { NotNaNRuleInstance } from 'isNotNaN';
 
-export { isNotNaN } from './general/isNotNaN';
-export type { NotNaNRuleInstance } from './general/isNotNaN';
+export { isNotNumber } from 'isNotNumber';
+export type { NotNumberRuleInstance } from 'isNotNumber';
 
-export { isNotNumber } from './general/isNotNumber';
-export type { NotNumberRuleInstance } from './general/isNotNumber';
+export { isNotNumeric } from 'isNotNumeric';
+export type { NotNumericRuleInstance } from 'isNotNumeric';
 
-export { isNotNumeric } from './general/isNotNumeric';
-export type { NotNumericRuleInstance } from './general/isNotNumeric';
+export { isNotString } from 'isNotString';
+export type { NotStringRuleInstance } from 'isNotString';
 
-export { isNotString } from './general/isNotString';
-export type { NotStringRuleInstance } from './general/isNotString';
-
-export { isTruthy } from './general/isTruthy';
-export type { TruthyRuleInstance } from './general/isTruthy';
+export { isTruthy } from 'isTruthy';
+export type { TruthyRuleInstance } from 'isTruthy';

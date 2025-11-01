@@ -1,5 +1,5 @@
-export { checkKey, keyRules } from './object/checkKey';
-export type { ObjectRuleInstance } from './object/checkKey';
+export { checkKey, keyRules } from 'checkKey';
+export type { ObjectRuleInstance } from 'checkKey';
 
-export { checkValue, valueRules } from './object/checkValue';
-export type { ValueRuleInstance } from './object/checkValue';
+export { checkValue, valueRules } from 'checkValue';
+export type { ValueRuleInstance } from 'checkValue';

@@ -1,2 +1,2 @@
-export { isBoolean, booleanRules } from './boolean/isBoolean';
-export type { BooleanRuleInstance } from './boolean/isBoolean';
+export { isBoolean, booleanRules } from 'isBoolean';
+export type { BooleanRuleInstance } from 'isBoolean';

@@ -1,4 +1,4 @@
-import { RuleInstance } from '../../enforce';
+import { RuleInstance } from 'enforce';
 
 export interface NotArrayRuleInstance extends RuleInstance<any, [any]> {}
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from '../../../lazy';
+import { enforceLazy } from 'lazy';
 
 describe('longerThan', () => {
   it('passes when string length is greater than specified value', () => {
@@ -10,7 +10,9 @@ describe('longerThan', () => {
   });
 
   it('fails when string length is not greater', () => {
-    expect(enforceLazy.isString().longerThan(5).run('hello').passes).toBe(false);
+    expect(enforceLazy.isString().longerThan(5).run('hello').passes).toBe(
+      false,
+    );
     expect(enforceLazy.isString().longerThan(5).run('hi').passes).toBe(false);
     expect(enforceLazy.isString().longerThan(0).run('').passes).toBe(false);
   });

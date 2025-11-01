@@ -1,4 +1,4 @@
-import { RuleInstance } from '../../enforce';
+import { RuleInstance } from 'enforce';
 
 export interface NotBooleanRuleInstance extends RuleInstance<any, [any]> {}
 

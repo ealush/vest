@@ -15,6 +15,15 @@ import {
 } from '../commonLength';
 import { genRuleChain } from '../genRuleChain';
 
+import { doesNotEndWith } from './doesNotEndWith';
+import { doesNotStartWith } from './doesNotStartWith';
+import { endsWith } from './endsWith';
+import { isBlank } from './isBlank';
+import { isNotBlank } from './isNotBlank';
+import { matches } from './matches';
+import { notMatches } from './notMatches';
+import { startsWith } from './startsWith';
+
 export interface StringRuleInstance extends RuleInstance<string, [string]> {
   equals(s: string): StringRuleInstance;
   notEquals(s: string): StringRuleInstance;
@@ -38,53 +47,14 @@ export interface StringRuleInstance extends RuleInstance<string, [string]> {
   shorterThanOrEquals(n: number): StringRuleInstance; // length <= n
 }
 
-function startsWith(str: string, start: string): boolean {
-  return str.startsWith(start);
-}
-
-function endsWith(str: string, ending: string): boolean {
-  return str.endsWith(ending);
-}
-
-function toRegExp(regex: RegExp | string): RegExp | null {
-  if (regex instanceof RegExp) return regex;
-  if (typeof regex === 'string') return new RegExp(regex);
-  return null;
-}
-
-function matches(str: string, regex: RegExp | string): boolean {
-  const r = toRegExp(regex);
-  return !!r && r.test(str);
-}
-function notMatches(str: string, regex: RegExp | string): boolean {
-  const r = toRegExp(regex);
-  return !!r && !r.test(str);
-}
-
-function doesNotEndWith(str: string, ending: string): boolean {
-  return !endsWith(str, ending);
-}
-
-function doesNotStartWith(str: string, start: string): boolean {
-  return !startsWith(str, start);
-}
-
-function isBlankRule(str: string): boolean {
-  return str.trim().length === 0;
-}
-
-function isNotBlankRule(str: string): boolean {
-  return str.trim().length > 0;
-}
-
 const rules = {
   doesNotEndWith,
   doesNotStartWith,
   endsWith,
   equals,
   inside,
-  isBlank: isBlankRule,
-  isNotBlank: isNotBlankRule,
+  isBlank,
+  isNotBlank,
   lengthEquals,
   lengthNotEquals,
   longerThan,

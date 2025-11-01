@@ -8,6 +8,12 @@ export interface NotNumericRuleInstance extends RuleInstance<any, [any]> {}
 const rules = {};
 
 function notNumericPredicate(value: any): boolean {
+  // Accept numbers (including Infinity) and numeric strings as numeric
+  if (typeof value === 'number') {
+    // Only NaN is not numeric among numbers
+    return Number.isNaN(value);
+  }
+  // For strings, use the vest-utils isNumeric which excludes Infinity strings
   return !isNumericValue(value);
 }
 

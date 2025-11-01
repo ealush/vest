@@ -6,12 +6,26 @@ export interface ObjectRuleInstance extends RuleInstance<object, [object]> {
   isNotKeyOf(obj: object): ObjectRuleInstance;
 }
 
-function isKeyOf<T extends object>(key: string | number, obj: T): boolean {
-  return obj != null && typeof obj === 'object' && String(key) in obj;
+function isKeyOf<T extends object>(
+  key: string | number | symbol,
+  obj: T,
+): boolean {
+  return (
+    obj != null &&
+    typeof obj === 'object' &&
+    Object.prototype.hasOwnProperty.call(obj, key)
+  );
 }
 
-function isNotKeyOf<T extends object>(key: string | number, obj: T): boolean {
-  return !(obj != null && typeof obj === 'object' && String(key) in obj);
+function isNotKeyOf<T extends object>(
+  key: string | number | symbol,
+  obj: T,
+): boolean {
+  return !(
+    obj != null &&
+    typeof obj === 'object' &&
+    Object.prototype.hasOwnProperty.call(obj, key)
+  );
 }
 
 const keyRules = {

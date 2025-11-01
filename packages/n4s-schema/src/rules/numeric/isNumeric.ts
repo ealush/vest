@@ -1,104 +1,158 @@
-import {
-  isNumeric as isNumericValue,
-  numberEquals as numberEqualsValue,
-  numberNotEquals as numberNotEqualsValue,
-} from 'vest-utils';
+import { isNumeric as isNumericValue } from 'vest-utils';
 
 import { RuleInstance } from '../../enforce';
-import {
-  equals as equalsBase,
-  notEquals as notEqualsBase,
-} from '../commonComparison';
-import {
-  between as betweenBase,
-  greaterThan as greaterThanBase,
-  greaterThanOrEquals as greaterThanOrEqualsBase,
-  isEven as isEvenBase,
-  isNegative as isNegativeBase,
-  isOdd as isOddBase,
-  isPositive as isPositiveBase,
-  lessThan as lessThanBase,
-  lessThanOrEquals as lessThanOrEqualsBase,
-} from '../commonNumeric';
 import { genRuleChain } from '../genRuleChain';
+import { between as numberBetween } from '../number/between';
+import { greaterThan as numberGreaterThan } from '../number/greaterThan';
+import { greaterThanOrEquals as numberGreaterThanOrEquals } from '../number/greaterThanOrEquals';
+import { isEven as numberIsEven } from '../number/isEven';
+import { isNegative as numberIsNegative } from '../number/isNegative';
+import { isOdd as numberIsOdd } from '../number/isOdd';
+import { isPositive as numberIsPositive } from '../number/isPositive';
+import { lessThan as numberLessThan } from '../number/lessThan';
+import { lessThanOrEquals as numberLessThanOrEquals } from '../number/lessThanOrEquals';
+import { notBetween as numberNotBetween } from '../number/notBetween';
+import { numberEquals as numberNumberEquals } from '../number/numberEquals';
+import { numberNotEquals as numberNumberNotEquals } from '../number/numberNotEquals';
+
+import { toNumber } from './toNumber';
 
 export interface NumericRuleInstance
   extends RuleInstance<number | string, [number | string]> {
+  between(min: number, max: number): NumericRuleInstance;
   equals(n: number): NumericRuleInstance;
-  notEquals(n: number): NumericRuleInstance;
   greaterThan(n: number): NumericRuleInstance;
   greaterThanOrEquals(n: number): NumericRuleInstance;
-  lessThan(n: number): NumericRuleInstance;
-  lessThanOrEquals(n: number): NumericRuleInstance;
-  between(min: number, max: number): NumericRuleInstance;
-  notBetween(min: number, max: number): NumericRuleInstance;
   isBetween(min: number, max: number): NumericRuleInstance;
-  isNotBetween(min: number, max: number): NumericRuleInstance;
-  numberEquals(n: number | string): NumericRuleInstance;
-  numberNotEquals(n: number | string): NumericRuleInstance;
   isEven(): NumericRuleInstance;
+  isNaN(): NumericRuleInstance;
+  isNegative(): NumericRuleInstance;
+  isNotBetween(min: number, max: number): NumericRuleInstance;
+  isNotNaN(): NumericRuleInstance;
   isOdd(): NumericRuleInstance;
   isPositive(): NumericRuleInstance;
-  isNegative(): NumericRuleInstance;
-  isNaN(): NumericRuleInstance;
-  isNotNaN(): NumericRuleInstance;
+  lessThan(n: number): NumericRuleInstance;
+  lessThanOrEquals(n: number): NumericRuleInstance;
+  notBetween(min: number, max: number): NumericRuleInstance;
+  notEquals(n: number): NumericRuleInstance;
+  numberEquals(n: number | string): NumericRuleInstance;
+  numberNotEquals(n: number | string): NumericRuleInstance;
 }
 
-function toNumber(value: unknown): number | null {
-  if (typeof value === 'number') return value;
-  const n = Number(value);
-  return Number.isNaN(n) ? null : n;
+function numericEquals(value: number | string, n: number): boolean {
+  const v = toNumber(value);
+  return v === n;
 }
 
-function adapt1<A extends any[]>(
-  fn: (value: number, ...args: A) => boolean,
-): (value: unknown, ...args: A) => boolean {
-  return (value: unknown, ...args: A) => {
-    const v = toNumber(value);
-    return v !== null && fn(v, ...args);
-  };
+function numericNotEquals(value: number | string, n: number): boolean {
+  const v = toNumber(value);
+  return v !== n;
 }
 
-function notBetweenNum(v: number, min: number, max: number): boolean {
-  return v < min || v > max;
+function isNaNNum(value: number | string): boolean {
+  const v = toNumber(value);
+  return v !== null && Number.isNaN(v);
 }
 
-function isNaNNum(v: number): boolean {
-  return Number.isNaN(v);
+function isNotNaNNum(value: number | string): boolean {
+  const v = toNumber(value);
+  return v !== null && !Number.isNaN(v);
 }
 
-function isNotNaNNum(v: number): boolean {
-  return !Number.isNaN(v);
+// Wrapper functions that convert string to number then call number predicates
+function between(value: number | string, min: number, max: number): boolean {
+  const v = toNumber(value);
+  return v !== null && numberBetween(v, min, max);
+}
+
+function greaterThan(value: number | string, n: number): boolean {
+  const v = toNumber(value);
+  return v !== null && numberGreaterThan(v, n);
+}
+
+function greaterThanOrEquals(value: number | string, n: number): boolean {
+  const v = toNumber(value);
+  return v !== null && numberGreaterThanOrEquals(v, n);
+}
+
+function lessThan(value: number | string, n: number): boolean {
+  const v = toNumber(value);
+  return v !== null && numberLessThan(v, n);
+}
+
+function lessThanOrEquals(value: number | string, n: number): boolean {
+  const v = toNumber(value);
+  return v !== null && numberLessThanOrEquals(v, n);
+}
+
+function notBetween(value: number | string, min: number, max: number): boolean {
+  const v = toNumber(value);
+  return v !== null && numberNotBetween(v, min, max);
+}
+
+function isEven(value: number | string): boolean {
+  const v = toNumber(value);
+  return v !== null && numberIsEven(v);
+}
+
+function isOdd(value: number | string): boolean {
+  const v = toNumber(value);
+  return v !== null && numberIsOdd(v);
+}
+
+function isPositive(value: number | string): boolean {
+  const v = toNumber(value);
+  return v !== null && numberIsPositive(v);
+}
+
+function isNegative(value: number | string): boolean {
+  const v = toNumber(value);
+  return v !== null && numberIsNegative(v);
+}
+
+function numberEquals(value: number | string, n: number | string): boolean {
+  const v = toNumber(value);
+  const nVal = toNumber(n);
+  return v !== null && nVal !== null && numberNumberEquals(v, nVal);
+}
+
+function numberNotEquals(value: number | string, n: number | string): boolean {
+  const v = toNumber(value);
+  const nVal = toNumber(n);
+  return v !== null && nVal !== null && numberNumberNotEquals(v, nVal);
 }
 
 const rules = {
-  between: adapt1(betweenBase),
-  equals: adapt1((a: number, b: number) => equalsBase(a, b)),
-  greaterThan: adapt1(greaterThanBase),
-  greaterThanOrEquals: adapt1(greaterThanOrEqualsBase),
-  isBetween: adapt1(betweenBase),
-  isEven: adapt1(isEvenBase),
-  isNaN: adapt1(isNaNNum),
-  isNegative: adapt1(isNegativeBase),
-  isNotBetween: adapt1(notBetweenNum),
-  isNotNaN: adapt1(isNotNaNNum),
-  isOdd: adapt1(isOddBase),
-  isPositive: adapt1(isPositiveBase),
-  lessThan: adapt1(lessThanBase),
-  lessThanOrEquals: adapt1(lessThanOrEqualsBase),
-  notBetween: adapt1(notBetweenNum),
-  notEquals: adapt1((a: number, b: number) => notEqualsBase(a, b)),
-  numberEquals: (value: unknown, n: number | string) =>
-    numberEqualsValue(value as any, n as any),
-  numberNotEquals: (value: unknown, n: number | string) =>
-    numberNotEqualsValue(value as any, n as any),
+  between,
+  equals: numericEquals,
+  greaterThan,
+  greaterThanOrEquals,
+  isBetween: between,
+  isEven,
+  isNaN: isNaNNum,
+  isNegative,
+  isNotBetween: notBetween,
+  isNotNaN: isNotNaNNum,
+  isOdd,
+  isPositive,
+  lessThan,
+  lessThanOrEquals,
+  notBetween,
+  notEquals: numericNotEquals,
+  numberEquals,
+  numberNotEquals,
 };
 
 function isNumericPredicate(value: any): boolean {
+  // Accept numbers (including Infinity) and numeric strings
+  if (typeof value === 'number') {
+    return !Number.isNaN(value);
+  }
+  // For strings, use the vest-utils isNumeric which excludes Infinity strings
   return isNumericValue(value);
 }
 
 export function isNumeric(): NumericRuleInstance {
-  const add = genRuleChain<Omit<NumericRuleInstance, '__accepts'>>(rules);
+  const add = genRuleChain<NumericRuleInstance>(rules);
   return add(isNumericPredicate);
 }

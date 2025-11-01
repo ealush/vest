@@ -1,2 +1,14 @@
+export { between } from './number/between';
+export { greaterThan } from './number/greaterThan';
+export { greaterThanOrEquals } from './number/greaterThanOrEquals';
+export { isEven } from './number/isEven';
+export { isNegative } from './number/isNegative';
 export { isNumber } from './number/isNumber';
 export type { NumberRuleInstance } from './number/isNumber';
+export { isOdd } from './number/isOdd';
+export { isPositive } from './number/isPositive';
+export { lessThan } from './number/lessThan';
+export { lessThanOrEquals } from './number/lessThanOrEquals';
+export { notBetween } from './number/notBetween';
+export { numberEquals } from './number/numberEquals';
+export { numberNotEquals } from './number/numberNotEquals';

@@ -21,7 +21,7 @@ import {
   isNotUndefined,
   isNullish,
   isNotNullish,
-} from './rules/nullish';
+} from './rules/nullishRules';
 import { isNumber } from './rules/numberRules';
 import { isNumeric } from './rules/numericRules';
 import { checkKey, checkValue } from './rules/objectRules';

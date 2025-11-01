@@ -1,56 +1,37 @@
-import {
-  numberEquals as numberEqualsValue,
-  numberNotEquals as numberNotEqualsValue,
-} from 'vest-utils';
-
 import { RuleInstance } from '../../enforce';
 import { equals, notEquals } from '../commonComparison';
-import {
-  between,
-  greaterThan,
-  greaterThanOrEquals,
-  isEven,
-  isNegative,
-  isOdd,
-  isPositive,
-  lessThan,
-  lessThanOrEquals,
-} from '../commonNumeric';
 import { genRuleChain } from '../genRuleChain';
 
+import { between } from './between';
+import { greaterThan } from './greaterThan';
+import { greaterThanOrEquals } from './greaterThanOrEquals';
+import { isEven } from './isEven';
+import { isNegative } from './isNegative';
+import { isOdd } from './isOdd';
+import { isPositive } from './isPositive';
+import { lessThan } from './lessThan';
+import { lessThanOrEquals } from './lessThanOrEquals';
+import { notBetween } from './notBetween';
+import { numberEquals } from './numberEquals';
+import { numberNotEquals } from './numberNotEquals';
+
 export interface NumberRuleInstance extends RuleInstance<number, [number]> {
+  between(min: number, max: number): NumberRuleInstance;
   equals(n: number): NumberRuleInstance;
-  notEquals(n: number): NumberRuleInstance;
   greaterThan(n: number): NumberRuleInstance;
   greaterThanOrEquals(n: number): NumberRuleInstance;
-  lessThan(n: number): NumberRuleInstance;
-  lessThanOrEquals(n: number): NumberRuleInstance;
-  between(min: number, max: number): NumberRuleInstance;
-  notBetween(min: number, max: number): NumberRuleInstance;
   isBetween(min: number, max: number): NumberRuleInstance;
-  isNotBetween(min: number, max: number): NumberRuleInstance;
-  numberEquals(n: number | string): NumberRuleInstance;
-  numberNotEquals(n: number | string): NumberRuleInstance;
   isEven(): NumberRuleInstance;
+  isNegative(): NumberRuleInstance;
+  isNotBetween(min: number, max: number): NumberRuleInstance;
   isOdd(): NumberRuleInstance;
   isPositive(): NumberRuleInstance;
-  isNegative(): NumberRuleInstance;
-}
-
-function notBetweenRule(value: number, min: number, max: number): boolean {
-  return value < min || value > max;
-}
-
-function isNotBetweenRule(value: number, min: number, max: number): boolean {
-  return value < min || value > max;
-}
-
-function numberEqualsRule(value: number, n: number | string): boolean {
-  return numberEqualsValue(value, n as any);
-}
-
-function numberNotEqualsRule(value: number, n: number | string): boolean {
-  return numberNotEqualsValue(value, n as any);
+  lessThan(n: number): NumberRuleInstance;
+  lessThanOrEquals(n: number): NumberRuleInstance;
+  notBetween(min: number, max: number): NumberRuleInstance;
+  notEquals(n: number): NumberRuleInstance;
+  numberEquals(n: number | string): NumberRuleInstance;
+  numberNotEquals(n: number | string): NumberRuleInstance;
 }
 
 const rules = {
@@ -61,15 +42,15 @@ const rules = {
   isBetween: between,
   isEven,
   isNegative,
-  isNotBetween: isNotBetweenRule,
+  isNotBetween: notBetween,
   isOdd,
   isPositive,
   lessThan,
   lessThanOrEquals,
-  notBetween: notBetweenRule,
+  notBetween,
   notEquals,
-  numberEquals: numberEqualsRule,
-  numberNotEquals: numberNotEqualsRule,
+  numberEquals,
+  numberNotEquals,
 };
 
 function isNumberPredicate(value: any): boolean {

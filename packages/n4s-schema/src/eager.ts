@@ -1,8 +1,13 @@
-function enforce(value: any) {
-  const proxy = new Proxy(
+function _enforce(_value: any) {
+  const _proxy = new Proxy(
     {},
     {
-      get(_, prop) {},
+      get(_, _prop) {
+        return undefined;
+      },
     },
   );
+  return _proxy;
 }
+
+export { _enforce };

@@ -41,7 +41,7 @@ describe('loose', () => {
   });
 
   it('should fail with empty object', () => {
-    const rule = loose(schema);
+    const rule = enforceLazy.loose(schema);
     // @ts-expect-error
     const result = rule.run({});
     expect(result.passes).toBe(false);

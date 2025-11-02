@@ -1,10 +1,7 @@
 export { longerThanOrEquals } from 'longerThanOrEquals';
 export { shorterThan } from 'shorterThan';
 export { shorterThanOrEquals } from 'shorterThanOrEquals';
-export {
-  isEmpty as isEmptyValue,
-  isNotEmpty as isNotEmptyValue,
-} from 'vest-utils';
+export { isEmpty, isNotEmpty } from 'vest-utils';
 
 export { equals, notEquals } from 'commonComparison';
 export { inside, notInside } from 'commonContainer';

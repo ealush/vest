@@ -16,20 +16,20 @@ import * as stringRules from 'stringRules';
 
 const message = 'message';
 
-function isMessageKey(key: keyof EnforceBase): boolean {
+function isMessageKey<T>(key: keyof EnforceBase<T>): boolean {
   return key === message;
 }
 
 // eslint-disable-next-line max-lines-per-function
-export function enforce(value: any): EnforceEagerReturn {
+export function enforce<T>(value: T): EnforceEagerReturn<T> {
   let customMessage: Maybe<string> = undefined;
 
   const proxy = new Proxy(
     {},
     {
-      get(target: any, key: keyof EnforceBase) {
+      get(target: any, key: string) {
         // Handle special .message() method
-        if (isMessageKey(key)) {
+        if (isMessageKey<T>(key as keyof EnforceBase<T>)) {
           return setMessage;
         }
 
@@ -45,18 +45,14 @@ export function enforce(value: any): EnforceEagerReturn {
     },
   );
 
-  return proxy as EnforceEagerReturn;
+  return proxy as EnforceEagerReturn<T>;
 
   function setMessage(msg?: string) {
     customMessage = msg;
     return proxy;
   }
-  function genRuleCall(
-    target: EnforceEagerReturn,
-    rule: UnmodifiedRules,
-    ruleName: string,
-  ) {
-    return function ruleCall(...args: Args): EnforceEagerReturn {
+  function genRuleCall(target: any, rule: UnmodifiedRules, ruleName: string) {
+    return function ruleCall(...args: Args): any {
       // Order of operation:
       // 1. Create a context with the value being enforced
       // 2. Call the rule within the context, and pass over the arguments passed to it
@@ -150,32 +146,80 @@ const allRules = {
   ...stringRules,
 };
 
-function getRule(ruleName: keyof EnforceBase): UnmodifiedRules | null {
+function getRule(ruleName: string): UnmodifiedRules | null {
   return allRules[ruleName as UnmodifiedRuleKeys];
 }
 
 type UnmodifiedRuleKeys = keyof typeof allRules;
 type UnmodifiedRules = (typeof allRules)[UnmodifiedRuleKeys];
 
-type TRules = {
-  // Only include keys where the value is a function
+// Get all rule names from each module
+type NumberRuleNames = keyof typeof numberRules;
+type StringRuleNames = keyof typeof stringRules;
+type ArrayRuleNames = keyof typeof arrayRules;
+type BooleanRuleNames = keyof typeof booleanRules;
+type NumericRuleNames = keyof typeof numericRules;
+type LengthRuleNames = keyof typeof commonLength;
+
+// Map rule name to required input type
+type RuleRequiresType<RuleName extends keyof typeof allRules> =
+  RuleName extends LengthRuleNames
+    ? string | any[]
+    : RuleName extends ArrayRuleNames
+      ? any[]
+      : RuleName extends NumberRuleNames
+        ? number
+        : RuleName extends StringRuleNames
+          ? string
+          : RuleName extends BooleanRuleNames
+            ? boolean
+            : RuleName extends NumericRuleNames
+              ? number | string
+              : any;
+
+// Map rule name to output type after execution
+type RuleReturnsType<
+  T,
+  RuleName extends keyof typeof allRules,
+> = RuleName extends NumberRuleNames
+  ? number
+  : RuleName extends StringRuleNames
+    ? string
+    : RuleName extends BooleanRuleNames
+      ? boolean
+      : RuleName extends NumericRuleNames
+        ? number | string
+        : RuleName extends ArrayRuleNames
+          ? T extends any[]
+            ? T
+            : any[]
+          : T;
+
+// Check if value type is compatible with rule
+type AcceptsValue<T, RuleName extends keyof typeof allRules> =
+  T extends RuleRequiresType<RuleName> ? true : never;
+
+// Generate typed rule methods
+type TRules<T> = {
   [K in keyof typeof allRules as (typeof allRules)[K] extends (
     ...args: any
   ) => any
     ? K
-    : never]: (
-    ...args: DropFirst<
-      Parameters<Extract<(typeof allRules)[K], (...args: any) => any>>
-    >
-  ) => EnforceEagerReturn;
+    : never]: AcceptsValue<T, K> extends never
+    ? never
+    : (
+        ...args: DropFirst<
+          Parameters<Extract<(typeof allRules)[K], (...args: any) => any>>
+        >
+      ) => EnforceEagerReturn<RuleReturnsType<T, K>>;
 };
 
-type TModifiers = {
-  message: (input: string) => EnforceEagerReturn;
+type TModifiers<T> = {
+  message: (input: string) => EnforceEagerReturn<T>;
 };
 
-type EnforceBase = TModifiers & TRules;
+type EnforceBase<T = any> = TModifiers<T> & TRules<T>;
 
-type EnforceEagerReturn = EnforceBase & {
+type EnforceEagerReturn<T = any> = EnforceBase<T> & {
   pass: boolean;
 };

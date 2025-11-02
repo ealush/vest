@@ -1,7 +1,7 @@
-export { checkKey } from 'checkKey';
-export type { ObjectRuleInstance } from 'checkKey';
-export { isKeyOf, isNotKeyOf } from 'checkKey';
+import { RuleInstance } from 'enforce';
 
-export { checkValue } from 'checkValue';
-export type { ValueRuleInstance } from 'checkValue';
-export { isValueOf, isNotValueOf } from 'checkValue';
+export interface ObjectRuleInstance extends RuleInstance<object, [object]> {}
+
+export { isKeyOf, isNotKeyOf } from 'isKeyOf';
+
+export { isValueOf, isNotValueOf } from 'isValueOf';

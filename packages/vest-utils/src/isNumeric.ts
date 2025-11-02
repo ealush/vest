@@ -1,6 +1,13 @@
 import bindNot from 'bindNot';
+import isStringValue from 'isStringValue';
 
 export function isNumeric(value: string | number): boolean {
+  // Verify value is actually a string or number to prevent coercion
+
+  if (!isStringValue(value) && typeof value !== 'number') {
+    return false;
+  }
+
   const str = String(value);
   const num = Number(value);
   const result =

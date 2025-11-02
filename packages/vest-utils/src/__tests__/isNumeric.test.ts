@@ -13,6 +13,9 @@ const NON_NUMERICS = [
   true,
   Infinity,
   undefined,
+  [100], // Should not coerce array to string
+  ['100'],
+  [1, 2, 3],
 ];
 
 describe('Tests isNumeric rule', () => {

@@ -14,6 +14,13 @@ import * as numericRules from 'numericRules';
 import * as objectRules from 'objectRules';
 import * as stringRules from 'stringRules';
 
+const message = 'message';
+
+function isMessageKey(key: keyof EnforceBase): boolean {
+  return key === message;
+}
+
+// eslint-disable-next-line max-lines-per-function
 export function enforce(value: any): EnforceEagerReturn {
   let customMessage: Maybe<string> = undefined;
 
@@ -22,11 +29,8 @@ export function enforce(value: any): EnforceEagerReturn {
     {
       get(target: any, key: keyof EnforceBase) {
         // Handle special .message() method
-        if (key === 'message') {
-          return (msg: string) => {
-            customMessage = msg;
-            return proxy;
-          };
+        if (isMessageKey(key)) {
+          return setMessage;
         }
 
         // On property access, we identify if it is a rule or not.
@@ -42,6 +46,11 @@ export function enforce(value: any): EnforceEagerReturn {
   );
 
   return proxy as EnforceEagerReturn;
+
+  function setMessage(msg: string) {
+    customMessage = msg;
+    return proxy;
+  }
 
   function genRuleCall(
     target: EnforceEagerReturn,
@@ -60,17 +69,12 @@ export function enforce(value: any): EnforceEagerReturn {
         ...args,
       );
 
-      function enforceMessage() {
-        if (!isNullish(customMessage)) return StringObject(customMessage);
-        if (isNullish(transformedResult.message)) {
-          return `enforce/${ruleName} failed with ${JSON.stringify(value)}`;
-        }
-        return StringObject(transformedResult.message);
-      }
-
       // On rule failure (the result is false), we either throw an error
       // or throw a string value if the rule has a message defined in it.
-      invariant(transformedResult.pass, enforceMessage());
+      invariant(
+        transformedResult.pass,
+        enforceMessage(ruleName, transformedResult, value, customMessage),
+      );
 
       // Reset the custom message after rule execution
       customMessage = undefined;
@@ -86,6 +90,19 @@ export function enforce(value: any): EnforceEagerReturn {
   }
 }
 
+// add the missing parameters to enforceMessage
+function enforceMessage(
+  ruleName: string,
+  transformedResult: RuleDetailedResult,
+  value: RuleValue,
+  customMessage?: string,
+) {
+  if (!isNullish(customMessage)) return StringObject(customMessage);
+  if (isNullish(transformedResult.message)) {
+    return `enforce/${ruleName} failed with ${JSON.stringify(value)}`;
+  }
+  return StringObject(transformedResult.message);
+}
 type RuleValue = unknown;
 type Args = any[];
 type RuleDetailedResult = { pass: boolean; message?: Stringable };
@@ -137,8 +154,7 @@ const allRules = {
 function getRule(ruleName: keyof EnforceBase): RuleBase {
   // TODO: Fix typing by supporting message
 
-  // @ts-ignore
-  return allRules[ruleName];
+  return allRules[ruleName as keyof typeof allRules];
 }
 
 type TRules = {

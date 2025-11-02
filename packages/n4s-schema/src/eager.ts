@@ -1,4 +1,5 @@
 import { ruleRunReturn, RuleRunReturn } from 'enforce';
+import { set } from 'lodash';
 import { dynamicValue, invariant, isNullish, StringObject } from 'vest-utils';
 import type { DropFirst, Maybe, Stringable } from 'vest-utils';
 
@@ -47,14 +48,13 @@ export function enforce(value: any): EnforceEagerReturn {
 
   return proxy as EnforceEagerReturn;
 
-  function setMessage(msg: string) {
+  function setMessage(msg?: string) {
     customMessage = msg;
     return proxy;
   }
-
   function genRuleCall(
     target: EnforceEagerReturn,
-    rule: RuleBase,
+    rule: UnmodifiedRules,
     ruleName: string,
   ) {
     return function ruleCall(...args: Args): EnforceEagerReturn {
@@ -77,7 +77,7 @@ export function enforce(value: any): EnforceEagerReturn {
       );
 
       // Reset the custom message after rule execution
-      customMessage = undefined;
+      setMessage(undefined);
 
       // This is not really needed because it will always be true
       // As we're throwing an error on failure
@@ -151,11 +151,12 @@ const allRules = {
   ...stringRules,
 };
 
-function getRule(ruleName: keyof EnforceBase): RuleBase {
-  // TODO: Fix typing by supporting message
-
-  return allRules[ruleName as keyof typeof allRules];
+function getRule(ruleName: keyof EnforceBase): UnmodifiedRules | null {
+  return allRules[ruleName as UnmodifiedRuleKeys];
 }
+
+type UnmodifiedRuleKeys = keyof typeof allRules;
+type UnmodifiedRules = (typeof allRules)[UnmodifiedRuleKeys];
 
 type TRules = {
   // Only include keys where the value is a function

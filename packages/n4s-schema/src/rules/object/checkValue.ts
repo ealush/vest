@@ -13,11 +13,6 @@ export function isNotValueOf<T>(value: T, obj: Record<string, T>): boolean {
   return !Object.values(obj).includes(value);
 }
 
-export const valueRules = {
-  isNotValueOf,
-  isValueOf,
-};
-
 export function checkValue(): boolean {
   return true;
 }

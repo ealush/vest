@@ -27,11 +27,6 @@ export function isNotKeyOf<T extends object>(
   );
 }
 
-export const keyRules = {
-  isKeyOf,
-  isNotKeyOf,
-};
-
 export function checkKey(): boolean {
   return true;
 }

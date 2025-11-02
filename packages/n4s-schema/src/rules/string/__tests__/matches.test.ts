@@ -3,25 +3,19 @@ import { describe, it, expect } from 'vitest';
 import { enforceLazy } from 'lazy';
 
 describe('matches', () => {
-  it('passes when string matches regex', () => {
-    expect(enforceLazy.isString().matches(/^h/).run('hello').passes).toBe(true);
-    expect(enforceLazy.isString().matches(/o$/).run('hello').passes).toBe(true);
-    expect(enforceLazy.isString().matches(/\d+/).run('abc123').passes).toBe(
-      true,
-    );
+  it('pass when string matches regex', () => {
+    expect(enforceLazy.isString().matches(/^h/).run('hello').pass).toBe(true);
+    expect(enforceLazy.isString().matches(/o$/).run('hello').pass).toBe(true);
+    expect(enforceLazy.isString().matches(/\d+/).run('abc123').pass).toBe(true);
   });
 
-  it('passes with string pattern', () => {
-    expect(enforceLazy.isString().matches('^h').run('hello').passes).toBe(true);
-    expect(enforceLazy.isString().matches('o$').run('hello').passes).toBe(true);
+  it('pass with string pattern', () => {
+    expect(enforceLazy.isString().matches('^h').run('hello').pass).toBe(true);
+    expect(enforceLazy.isString().matches('o$').run('hello').pass).toBe(true);
   });
 
   it('fails when string does not match', () => {
-    expect(enforceLazy.isString().matches(/^x/).run('hello').passes).toBe(
-      false,
-    );
-    expect(enforceLazy.isString().matches(/\d+/).run('hello').passes).toBe(
-      false,
-    );
+    expect(enforceLazy.isString().matches(/^x/).run('hello').pass).toBe(false);
+    expect(enforceLazy.isString().matches(/\d+/).run('hello').pass).toBe(false);
   });
 });

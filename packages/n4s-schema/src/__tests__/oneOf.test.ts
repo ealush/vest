@@ -9,22 +9,22 @@ describe('oneOf', () => {
     expect(rule).toHaveProperty('infer');
   });
 
-  it('should pass if exactly one rule passes', () => {
+  it('should pass if exactly one rule pass', () => {
     const rule = enforceLazy.oneOf(
       enforceLazy.isNumber().greaterThan(10),
       enforceLazy.isNumber().lessThan(5),
     );
-    expect(rule.run(12).passes).toBe(true);
-    expect(rule.run(3).passes).toBe(true);
+    expect(rule.run(12).pass).toBe(true);
+    expect(rule.run(3).pass).toBe(true);
   });
 
-  it('should fail if more than one rule passes', () => {
+  it('should fail if more than one rule pass', () => {
     const rule = enforceLazy.oneOf(
       enforceLazy.isNumber().greaterThan(5),
       enforceLazy.isNumber().greaterThan(10),
     );
     const result = rule.run(12);
-    expect(result.passes).toBe(false);
+    expect(result.pass).toBe(false);
   });
 
   it('should fail if no rules pass', () => {
@@ -33,12 +33,12 @@ describe('oneOf', () => {
       enforceLazy.isNumber().lessThan(5),
     );
     const result = rule.run(7);
-    expect(result.passes).toBe(false);
+    expect(result.pass).toBe(false);
   });
 
   it('should fail with no rules', () => {
     const rule = enforceLazy.oneOf();
     const result = rule.run('any value');
-    expect(result.passes).toBe(false);
+    expect(result.pass).toBe(false);
   });
 });

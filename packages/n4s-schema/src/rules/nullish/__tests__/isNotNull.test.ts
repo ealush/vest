@@ -3,12 +3,12 @@ import { describe, it, expect } from 'vitest';
 import { enforceLazy } from 'lazy';
 
 describe('isNotNull', () => {
-  it('passes for undefined', () => {
+  it('pass for undefined', () => {
     const value: any = undefined;
-    expect(enforceLazy.isNotNull().run(value).passes).toBe(true);
+    expect(enforceLazy.isNotNull().run(value).pass).toBe(true);
   });
 
-  it('passes for all non-null values', () => {
+  it('pass for all non-null values', () => {
     const values: any[] = [
       0,
       '',
@@ -24,11 +24,11 @@ describe('isNotNull', () => {
     ];
 
     values.forEach(value => {
-      expect(enforceLazy.isNotNull().run(value).passes).toBe(true);
+      expect(enforceLazy.isNotNull().run(value).pass).toBe(true);
     });
   });
 
   it('fails only for null', () => {
-    expect(enforceLazy.isNotNull().run(null).passes).toBe(false);
+    expect(enforceLazy.isNotNull().run(null).pass).toBe(false);
   });
 });

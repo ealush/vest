@@ -14,13 +14,21 @@ import * as numericRules from 'numericRules';
 import * as objectRules from 'objectRules';
 import * as stringRules from 'stringRules';
 
-function enforce(value: any): EnforceEagerReturn {
-  const customMessage: Maybe<string> = undefined;
+export function enforce(value: any): EnforceEagerReturn {
+  let customMessage: Maybe<string> = undefined;
 
   const proxy = new Proxy(
     {},
     {
       get(target: any, key: keyof EnforceBase) {
+        // Handle special .message() method
+        if (key === 'message') {
+          return (msg: string) => {
+            customMessage = msg;
+            return proxy;
+          };
+        }
+
         // On property access, we identify if it is a rule or not.
         const rule = getRule(key);
 
@@ -63,6 +71,9 @@ function enforce(value: any): EnforceEagerReturn {
       // On rule failure (the result is false), we either throw an error
       // or throw a string value if the rule has a message defined in it.
       invariant(transformedResult.pass, enforceMessage());
+
+      // Reset the custom message after rule execution
+      customMessage = undefined;
 
       // This is not really needed because it will always be true
       // As we're throwing an error on failure

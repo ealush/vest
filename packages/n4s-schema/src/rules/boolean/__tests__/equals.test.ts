@@ -3,13 +3,13 @@ import { describe, it, expect } from 'vitest';
 import { enforceLazy } from 'lazy';
 
 describe('equals', () => {
-  it('passes when values match', () => {
-    expect(enforceLazy.isBoolean().equals(true).run(true).passes).toBe(true);
-    expect(enforceLazy.isBoolean().equals(false).run(false).passes).toBe(true);
+  it('pass when values match', () => {
+    expect(enforceLazy.isBoolean().equals(true).run(true).pass).toBe(true);
+    expect(enforceLazy.isBoolean().equals(false).run(false).pass).toBe(true);
   });
 
   it('fails when values differ', () => {
-    expect(enforceLazy.isBoolean().equals(true).run(false).passes).toBe(false);
-    expect(enforceLazy.isBoolean().equals(false).run(true).passes).toBe(false);
+    expect(enforceLazy.isBoolean().equals(true).run(false).pass).toBe(false);
+    expect(enforceLazy.isBoolean().equals(false).run(true).pass).toBe(false);
   });
 });

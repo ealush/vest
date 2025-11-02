@@ -5,7 +5,7 @@ export interface ObjectRuleInstance extends RuleInstance<object, [object]> {
   isNotKeyOf(obj: object): ObjectRuleInstance;
 }
 
-function isKeyOf<T extends object>(
+export function isKeyOf<T extends object>(
   key: string | number | symbol,
   obj: T,
 ): boolean {
@@ -16,7 +16,7 @@ function isKeyOf<T extends object>(
   );
 }
 
-function isNotKeyOf<T extends object>(
+export function isNotKeyOf<T extends object>(
   key: string | number | symbol,
   obj: T,
 ): boolean {

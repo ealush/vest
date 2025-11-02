@@ -5,11 +5,11 @@ export interface ValueRuleInstance<T = any> extends RuleInstance<T, [any]> {
   isNotValueOf(obj: Record<string, T>): ValueRuleInstance<T>;
 }
 
-function isValueOf<T>(value: T, obj: Record<string, T>): boolean {
+export function isValueOf<T>(value: T, obj: Record<string, T>): boolean {
   return Object.values(obj).includes(value);
 }
 
-function isNotValueOf<T>(value: T, obj: Record<string, T>): boolean {
+export function isNotValueOf<T>(value: T, obj: Record<string, T>): boolean {
   return !Object.values(obj).includes(value);
 }
 

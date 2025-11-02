@@ -9,14 +9,14 @@ describe('anyOf', () => {
     expect(rule).toHaveProperty('infer');
   });
 
-  it('should pass if at least one rule passes', () => {
+  it('should pass if at least one rule pass', () => {
     const rule = enforceLazy.anyOf(
       enforceLazy.isString(),
       enforceLazy.isNumber().greaterThan(10),
     );
-    expect(rule.run(5).passes).toBe(false);
-    expect(rule.run(15).passes).toBe(true);
-    expect(rule.run('hello').passes).toBe(true);
+    expect(rule.run(5).pass).toBe(false);
+    expect(rule.run(15).pass).toBe(true);
+    expect(rule.run('hello').pass).toBe(true);
   });
 
   it('should infer a union of rule input types', () => {
@@ -36,12 +36,12 @@ describe('anyOf', () => {
       enforceLazy.isNumber().greaterThan(10),
     );
     const result = rule.run(5);
-    expect(result.passes).toBe(false);
+    expect(result.pass).toBe(false);
   });
 
   it('should fail with no rules', () => {
     const rule = enforceLazy.anyOf();
     const result = rule.run('any value');
-    expect(result.passes).toBe(false);
+    expect(result.pass).toBe(false);
   });
 });

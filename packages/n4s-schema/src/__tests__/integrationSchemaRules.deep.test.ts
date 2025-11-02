@@ -135,7 +135,7 @@ describe('integration: extensive schema + combinators', () => {
         favoriteNumbers: ['1', 2, '3'],
         id: '100',
         username: 'jane_doe',
-      }).passes,
+      }).pass,
     ).toBe(true);
 
     // Failures
@@ -154,7 +154,7 @@ describe('integration: extensive schema + combinators', () => {
         favoriteNumbers: [1],
         id: 1,
         username: 'root',
-      } as any).passes,
+      } as any).pass,
     ).toBe(false);
 
     // - contact.method invalid (neither email nor phone)
@@ -172,7 +172,7 @@ describe('integration: extensive schema + combinators', () => {
         favoriteNumbers: [1],
         id: 2,
         username: 'ok_user',
-      } as any).passes,
+      } as any).pass,
     ).toBe(false);
 
     // - addresses exact shape: extra field should fail
@@ -192,7 +192,7 @@ describe('integration: extensive schema + combinators', () => {
         favoriteNumbers: [1],
         id: 3,
         username: 'user3',
-      } as any).passes,
+      } as any).pass,
     ).toBe(false);
 
     // - favoriteNumbers: heterogeneous but must be numeric or number
@@ -210,7 +210,7 @@ describe('integration: extensive schema + combinators', () => {
         favoriteNumbers: [1, 'two'],
         id: 4,
         username: 'user4',
-      } as any).passes,
+      } as any).pass,
     ).toBe(false);
   });
 
@@ -274,7 +274,7 @@ describe('integration: extensive schema + combinators', () => {
           { sku: 'BBB', qty: 2, price: 5 },
         ],
         totals: { discounts: undefined, subtotal: 10, tax: 0.5 },
-      }).passes,
+      }).pass,
     ).toBe(true);
 
     // Valid order with deep optional shipping
@@ -286,7 +286,7 @@ describe('integration: extensive schema + combinators', () => {
           address: { line1: 'Somewhere', line2: '', zip: '12345' },
         },
         totals: { discounts: ['1', 2, 0], subtotal: 9, tax: 1 },
-      }).passes,
+      }).pass,
     ).toBe(true);
 
     // Failure: item tag blank, and shipping.zip wrong
@@ -298,7 +298,7 @@ describe('integration: extensive schema + combinators', () => {
           address: { line1: 'X', zip: 'ABCDE' },
         },
         totals: { subtotal: 1, tax: 0 },
-      } as any).passes,
+      } as any).pass,
     ).toBe(false);
   });
 });

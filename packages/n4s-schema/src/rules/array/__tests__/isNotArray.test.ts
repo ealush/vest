@@ -4,50 +4,50 @@ import { enforceLazy } from 'lazy';
 
 describe('isNotArray', () => {
   it('fails for arrays', () => {
-    expect(enforceLazy.isNotArray().run([]).passes).toBe(false);
-    expect(enforceLazy.isNotArray().run([1, 2, 3]).passes).toBe(false);
-    expect(enforceLazy.isNotArray().run([null, undefined]).passes).toBe(false);
+    expect(enforceLazy.isNotArray().run([]).pass).toBe(false);
+    expect(enforceLazy.isNotArray().run([1, 2, 3]).pass).toBe(false);
+    expect(enforceLazy.isNotArray().run([null, undefined]).pass).toBe(false);
   });
 
-  describe('passes for non-array types', () => {
-    it('passes for objects', () => {
-      expect(enforceLazy.isNotArray().run({}).passes).toBe(true);
-      expect(enforceLazy.isNotArray().run({ a: 1 }).passes).toBe(true);
-      expect(enforceLazy.isNotArray().run({ length: 3 }).passes).toBe(true);
+  describe('pass for non-array types', () => {
+    it('pass for objects', () => {
+      expect(enforceLazy.isNotArray().run({}).pass).toBe(true);
+      expect(enforceLazy.isNotArray().run({ a: 1 }).pass).toBe(true);
+      expect(enforceLazy.isNotArray().run({ length: 3 }).pass).toBe(true);
     });
 
-    it('passes for numbers', () => {
-      expect(enforceLazy.isNotArray().run(0).passes).toBe(true);
-      expect(enforceLazy.isNotArray().run(42).passes).toBe(true);
-      expect(enforceLazy.isNotArray().run(-1).passes).toBe(true);
-      expect(enforceLazy.isNotArray().run(NaN).passes).toBe(true);
+    it('pass for numbers', () => {
+      expect(enforceLazy.isNotArray().run(0).pass).toBe(true);
+      expect(enforceLazy.isNotArray().run(42).pass).toBe(true);
+      expect(enforceLazy.isNotArray().run(-1).pass).toBe(true);
+      expect(enforceLazy.isNotArray().run(NaN).pass).toBe(true);
     });
 
-    it('passes for strings', () => {
+    it('pass for strings', () => {
       const str: any = 'text';
       const empty: any = '';
-      expect(enforceLazy.isNotArray().run(str).passes).toBe(true);
-      expect(enforceLazy.isNotArray().run(empty).passes).toBe(true);
+      expect(enforceLazy.isNotArray().run(str).pass).toBe(true);
+      expect(enforceLazy.isNotArray().run(empty).pass).toBe(true);
     });
 
-    it('passes for booleans', () => {
-      expect(enforceLazy.isNotArray().run(true).passes).toBe(true);
-      expect(enforceLazy.isNotArray().run(false).passes).toBe(true);
+    it('pass for booleans', () => {
+      expect(enforceLazy.isNotArray().run(true).pass).toBe(true);
+      expect(enforceLazy.isNotArray().run(false).pass).toBe(true);
     });
 
-    it('passes for null', () => {
+    it('pass for null', () => {
       const value: any = null;
-      expect(enforceLazy.isNotArray().run(value).passes).toBe(true);
+      expect(enforceLazy.isNotArray().run(value).pass).toBe(true);
     });
 
-    it('passes for undefined', () => {
+    it('pass for undefined', () => {
       const value: any = undefined;
-      expect(enforceLazy.isNotArray().run(value).passes).toBe(true);
+      expect(enforceLazy.isNotArray().run(value).pass).toBe(true);
     });
 
-    it('passes for functions', () => {
+    it('pass for functions', () => {
       const fn: any = () => {};
-      expect(enforceLazy.isNotArray().run(fn).passes).toBe(true);
+      expect(enforceLazy.isNotArray().run(fn).pass).toBe(true);
     });
   });
 });

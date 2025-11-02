@@ -13,12 +13,12 @@ describe('integration: rules with schema combinators', () => {
       tags: enforceLazy.isArray<string>().isNotEmpty(),
     });
 
-    expect(userSchema.run({ name: 'Alice', tags: ['dev'] }).passes).toBe(true);
-    expect(userSchema.run({ name: ' ', tags: ['dev'] }).passes).toBe(false);
-    expect(userSchema.run({ name: 'A', tags: ['dev'] }).passes).toBe(false);
+    expect(userSchema.run({ name: 'Alice', tags: ['dev'] }).pass).toBe(true);
+    expect(userSchema.run({ name: ' ', tags: ['dev'] }).pass).toBe(false);
+    expect(userSchema.run({ name: 'A', tags: ['dev'] }).pass).toBe(false);
     // extra field should fail shape
     expect(
-      userSchema.run({ name: 'Alice', tags: ['dev'], extra: 1 } as any).passes,
+      userSchema.run({ name: 'Alice', tags: ['dev'], extra: 1 } as any).pass,
     ).toBe(false);
   });
 
@@ -28,10 +28,10 @@ describe('integration: rules with schema combinators', () => {
       deletedAt: enforceLazy.optional(enforceLazy.isNullish()),
     });
 
-    expect(schema.run({ id: 1 }).passes).toBe(true);
-    expect(schema.run({ id: 1, deletedAt: null }).passes).toBe(true);
+    expect(schema.run({ id: 1 }).pass).toBe(true);
+    expect(schema.run({ id: 1, deletedAt: null }).pass).toBe(true);
     // non-nullish value fails optional(isNullish())
-    expect(schema.run({ id: 1, deletedAt: 'now' as any }).passes).toBe(false);
+    expect(schema.run({ id: 1, deletedAt: 'now' as any }).pass).toBe(false);
   });
 
   it('isArrayOf with numeric acceptance (numbers or numeric strings)', () => {
@@ -39,8 +39,8 @@ describe('integration: rules with schema combinators', () => {
       enforceLazy.isNumeric(),
       enforceLazy.isNumber(),
     );
-    expect(arrRule.run([1, '2', 3]).passes).toBe(true);
-    expect(arrRule.run([1, 'two']).passes).toBe(false);
+    expect(arrRule.run([1, '2', 3]).pass).toBe(true);
+    expect(arrRule.run([1, 'two']).pass).toBe(false);
   });
 
   it('anyOf mixing negative and positive rules', () => {
@@ -51,9 +51,9 @@ describe('integration: rules with schema combinators', () => {
       enforceLazy.isNumeric().greaterThanOrEquals(10),
     );
 
-    expect(rule.run('abc').passes).toBe(true); // not numeric
-    expect(rule.run('9').passes).toBe(false);
-    expect(rule.run('10').passes).toBe(true);
+    expect(rule.run('abc').pass).toBe(true); // not numeric
+    expect(rule.run('9').pass).toBe(false);
+    expect(rule.run('10').pass).toBe(true);
   });
 
   it('checkKey / checkValue inside shape fields', () => {
@@ -66,8 +66,8 @@ describe('integration: rules with schema combinators', () => {
         .isValueOf({ a: 1, b: 2, c: 3 }),
     });
 
-    expect(schema.run({ envKey: 'dev', envValue: 2 } as any).passes).toBe(true);
-    expect(schema.run({ envKey: 'stage', envValue: 4 } as any).passes).toBe(
+    expect(schema.run({ envKey: 'dev', envValue: 2 } as any).pass).toBe(true);
+    expect(schema.run({ envKey: 'stage', envValue: 4 } as any).pass).toBe(
       false,
     );
   });

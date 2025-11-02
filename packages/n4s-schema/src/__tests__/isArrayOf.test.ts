@@ -12,27 +12,27 @@ describe('isArrayOf', () => {
   it('should pass for an array of numbers', () => {
     const rule = enforceLazy.isArrayOf(enforceLazy.isNumber());
     const result = rule.run([1, 2, 3]);
-    expect(result.passes).toBe(true);
+    expect(result.pass).toBe(true);
   });
 
   it('should fail for an array with mixed types', () => {
     const rule = enforceLazy.isArrayOf(enforceLazy.isNumber());
     // @ts-expect-error
     const result = rule.run([1, '2', 3]);
-    expect(result.passes).toBe(false);
+    expect(result.pass).toBe(false);
   });
 
   it('should pass for an empty array', () => {
     const rule = enforceLazy.isArrayOf(enforceLazy.isNumber());
     const result = rule.run([]);
-    expect(result.passes).toBe(true);
+    expect(result.pass).toBe(true);
   });
 
   it('should fail if not an array', () => {
     const rule = enforceLazy.isArrayOf(enforceLazy.isNumber());
     // @ts-expect-error
     const result = rule.run({ not: 'an array' });
-    expect(result.passes).toBe(false);
+    expect(result.pass).toBe(false);
   });
 
   it('should pass for an array of mixed types when multiple rules are provided', () => {
@@ -41,7 +41,7 @@ describe('isArrayOf', () => {
       enforceLazy.isString(),
     );
     const result = rule.run([1, '2', 3]);
-    expect(result.passes).toBe(true);
+    expect(result.pass).toBe(true);
   });
 
   it('should fail for an array of mixed types when a type is not in the rules', () => {
@@ -51,6 +51,6 @@ describe('isArrayOf', () => {
     );
     // @ts-expect-error
     const result = rule.run([1, '2', true]);
-    expect(result.passes).toBe(false);
+    expect(result.pass).toBe(false);
   });
 });

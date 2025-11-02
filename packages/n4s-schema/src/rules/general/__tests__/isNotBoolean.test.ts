@@ -4,52 +4,52 @@ import { enforceLazy } from 'lazy';
 
 describe('isNotBoolean', () => {
   it('fails for booleans', () => {
-    expect(enforceLazy.isNotBoolean().run(true).passes).toBe(false);
-    expect(enforceLazy.isNotBoolean().run(false).passes).toBe(false);
+    expect(enforceLazy.isNotBoolean().run(true).pass).toBe(false);
+    expect(enforceLazy.isNotBoolean().run(false).pass).toBe(false);
   });
 
-  describe('passes for non-boolean types', () => {
-    it('passes for numbers', () => {
-      expect(enforceLazy.isNotBoolean().run(0).passes).toBe(true);
-      expect(enforceLazy.isNotBoolean().run(1).passes).toBe(true);
-      expect(enforceLazy.isNotBoolean().run(42).passes).toBe(true);
-      expect(enforceLazy.isNotBoolean().run(NaN).passes).toBe(true);
+  describe('pass for non-boolean types', () => {
+    it('pass for numbers', () => {
+      expect(enforceLazy.isNotBoolean().run(0).pass).toBe(true);
+      expect(enforceLazy.isNotBoolean().run(1).pass).toBe(true);
+      expect(enforceLazy.isNotBoolean().run(42).pass).toBe(true);
+      expect(enforceLazy.isNotBoolean().run(NaN).pass).toBe(true);
     });
 
-    it('passes for strings', () => {
+    it('pass for strings', () => {
       const text: any = 'a';
       const empty: any = '';
       const truthy: any = 'true';
       const falsy: any = 'false';
-      expect(enforceLazy.isNotBoolean().run(text).passes).toBe(true);
-      expect(enforceLazy.isNotBoolean().run(empty).passes).toBe(true);
-      expect(enforceLazy.isNotBoolean().run(truthy).passes).toBe(true);
-      expect(enforceLazy.isNotBoolean().run(falsy).passes).toBe(true);
+      expect(enforceLazy.isNotBoolean().run(text).pass).toBe(true);
+      expect(enforceLazy.isNotBoolean().run(empty).pass).toBe(true);
+      expect(enforceLazy.isNotBoolean().run(truthy).pass).toBe(true);
+      expect(enforceLazy.isNotBoolean().run(falsy).pass).toBe(true);
     });
 
-    it('passes for objects', () => {
-      expect(enforceLazy.isNotBoolean().run({}).passes).toBe(true);
-      expect(enforceLazy.isNotBoolean().run({ a: 1 }).passes).toBe(true);
+    it('pass for objects', () => {
+      expect(enforceLazy.isNotBoolean().run({}).pass).toBe(true);
+      expect(enforceLazy.isNotBoolean().run({ a: 1 }).pass).toBe(true);
     });
 
-    it('passes for arrays', () => {
-      expect(enforceLazy.isNotBoolean().run([]).passes).toBe(true);
-      expect(enforceLazy.isNotBoolean().run([true, false]).passes).toBe(true);
+    it('pass for arrays', () => {
+      expect(enforceLazy.isNotBoolean().run([]).pass).toBe(true);
+      expect(enforceLazy.isNotBoolean().run([true, false]).pass).toBe(true);
     });
 
-    it('passes for null', () => {
+    it('pass for null', () => {
       const value: any = null;
-      expect(enforceLazy.isNotBoolean().run(value).passes).toBe(true);
+      expect(enforceLazy.isNotBoolean().run(value).pass).toBe(true);
     });
 
-    it('passes for undefined', () => {
+    it('pass for undefined', () => {
       const value: any = undefined;
-      expect(enforceLazy.isNotBoolean().run(value).passes).toBe(true);
+      expect(enforceLazy.isNotBoolean().run(value).pass).toBe(true);
     });
 
-    it('passes for functions', () => {
+    it('pass for functions', () => {
       const fn: any = () => true;
-      expect(enforceLazy.isNotBoolean().run(fn).passes).toBe(true);
+      expect(enforceLazy.isNotBoolean().run(fn).pass).toBe(true);
     });
   });
 });

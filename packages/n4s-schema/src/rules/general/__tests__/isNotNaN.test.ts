@@ -4,62 +4,62 @@ import { enforceLazy } from 'lazy';
 
 describe('isNotNaN', () => {
   it('fails for NaN', () => {
-    expect(enforceLazy.isNotNaN().run(NaN).passes).toBe(false);
+    expect(enforceLazy.isNotNaN().run(NaN).pass).toBe(false);
   });
 
-  describe('passes for numbers', () => {
-    it('passes for zero', () => {
-      expect(enforceLazy.isNotNaN().run(0).passes).toBe(true);
+  describe('pass for numbers', () => {
+    it('pass for zero', () => {
+      expect(enforceLazy.isNotNaN().run(0).pass).toBe(true);
     });
 
-    it('passes for positive numbers', () => {
-      expect(enforceLazy.isNotNaN().run(1).passes).toBe(true);
-      expect(enforceLazy.isNotNaN().run(42).passes).toBe(true);
-      expect(enforceLazy.isNotNaN().run(3.14).passes).toBe(true);
+    it('pass for positive numbers', () => {
+      expect(enforceLazy.isNotNaN().run(1).pass).toBe(true);
+      expect(enforceLazy.isNotNaN().run(42).pass).toBe(true);
+      expect(enforceLazy.isNotNaN().run(3.14).pass).toBe(true);
     });
 
-    it('passes for negative numbers', () => {
-      expect(enforceLazy.isNotNaN().run(-1).passes).toBe(true);
-      expect(enforceLazy.isNotNaN().run(-42).passes).toBe(true);
+    it('pass for negative numbers', () => {
+      expect(enforceLazy.isNotNaN().run(-1).pass).toBe(true);
+      expect(enforceLazy.isNotNaN().run(-42).pass).toBe(true);
     });
 
-    it('passes for Infinity', () => {
-      expect(enforceLazy.isNotNaN().run(Infinity).passes).toBe(true);
-      expect(enforceLazy.isNotNaN().run(-Infinity).passes).toBe(true);
+    it('pass for Infinity', () => {
+      expect(enforceLazy.isNotNaN().run(Infinity).pass).toBe(true);
+      expect(enforceLazy.isNotNaN().run(-Infinity).pass).toBe(true);
     });
   });
 
-  describe('passes for non-number types', () => {
-    it('passes for strings', () => {
+  describe('pass for non-number types', () => {
+    it('pass for strings', () => {
       const text: any = 'text';
       const numStr: any = '123';
-      expect(enforceLazy.isNotNaN().run(text).passes).toBe(true);
-      expect(enforceLazy.isNotNaN().run(numStr).passes).toBe(true);
+      expect(enforceLazy.isNotNaN().run(text).pass).toBe(true);
+      expect(enforceLazy.isNotNaN().run(numStr).pass).toBe(true);
     });
 
-    it('passes for booleans', () => {
-      expect(enforceLazy.isNotNaN().run(true).passes).toBe(true);
-      expect(enforceLazy.isNotNaN().run(false).passes).toBe(true);
+    it('pass for booleans', () => {
+      expect(enforceLazy.isNotNaN().run(true).pass).toBe(true);
+      expect(enforceLazy.isNotNaN().run(false).pass).toBe(true);
     });
 
-    it('passes for objects', () => {
-      expect(enforceLazy.isNotNaN().run({}).passes).toBe(true);
-      expect(enforceLazy.isNotNaN().run({ a: 1 }).passes).toBe(true);
+    it('pass for objects', () => {
+      expect(enforceLazy.isNotNaN().run({}).pass).toBe(true);
+      expect(enforceLazy.isNotNaN().run({ a: 1 }).pass).toBe(true);
     });
 
-    it('passes for arrays', () => {
-      expect(enforceLazy.isNotNaN().run([]).passes).toBe(true);
-      expect(enforceLazy.isNotNaN().run([1, 2]).passes).toBe(true);
+    it('pass for arrays', () => {
+      expect(enforceLazy.isNotNaN().run([]).pass).toBe(true);
+      expect(enforceLazy.isNotNaN().run([1, 2]).pass).toBe(true);
     });
 
-    it('passes for null', () => {
+    it('pass for null', () => {
       const value: any = null;
-      expect(enforceLazy.isNotNaN().run(value).passes).toBe(true);
+      expect(enforceLazy.isNotNaN().run(value).pass).toBe(true);
     });
 
-    it('passes for undefined', () => {
+    it('pass for undefined', () => {
       const value: any = undefined;
-      expect(enforceLazy.isNotNaN().run(value).passes).toBe(true);
+      expect(enforceLazy.isNotNaN().run(value).pass).toBe(true);
     });
   });
 });

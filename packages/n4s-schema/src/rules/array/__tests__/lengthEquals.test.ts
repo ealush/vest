@@ -3,27 +3,27 @@ import { describe, it, expect } from 'vitest';
 import { enforceLazy } from 'lazy';
 
 describe('lengthEquals', () => {
-  it('passes when length matches exactly', () => {
-    expect(
-      enforceLazy.isArray<number>().lengthEquals(2).run([1, 2]).passes,
-    ).toBe(true);
-    expect(enforceLazy.isArray<number>().lengthEquals(0).run([]).passes).toBe(
+  it('pass when length matches exactly', () => {
+    expect(enforceLazy.isArray<number>().lengthEquals(2).run([1, 2]).pass).toBe(
+      true,
+    );
+    expect(enforceLazy.isArray<number>().lengthEquals(0).run([]).pass).toBe(
       true,
     );
     expect(
-      enforceLazy.isArray<string>().lengthEquals(3).run(['a', 'b', 'c']).passes,
+      enforceLazy.isArray<string>().lengthEquals(3).run(['a', 'b', 'c']).pass,
     ).toBe(true);
   });
 
   it('fails when length differs', () => {
-    expect(enforceLazy.isArray<number>().lengthEquals(1).run([]).passes).toBe(
+    expect(enforceLazy.isArray<number>().lengthEquals(1).run([]).pass).toBe(
+      false,
+    );
+    expect(enforceLazy.isArray<number>().lengthEquals(1).run([1, 2]).pass).toBe(
       false,
     );
     expect(
-      enforceLazy.isArray<number>().lengthEquals(1).run([1, 2]).passes,
-    ).toBe(false);
-    expect(
-      enforceLazy.isArray<string>().lengthEquals(5).run(['a', 'b']).passes,
+      enforceLazy.isArray<string>().lengthEquals(5).run(['a', 'b']).pass,
     ).toBe(false);
   });
 });

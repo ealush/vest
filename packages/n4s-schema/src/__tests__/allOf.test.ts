@@ -15,7 +15,7 @@ describe('allOf', () => {
       enforceLazy.isNumber().greaterThan(5),
     );
     const result = rule.run(10);
-    expect(result.passes).toBe(true);
+    expect(result.pass).toBe(true);
   });
 
   it('should fail if one rule fails', () => {
@@ -24,7 +24,7 @@ describe('allOf', () => {
       enforceLazy.isNumber().greaterThan(10),
     );
     const result = rule.run(5);
-    expect(result.passes).toBe(false);
+    expect(result.pass).toBe(false);
   });
 
   it('should fail if value is of wrong type', () => {
@@ -33,20 +33,20 @@ describe('allOf', () => {
       enforceLazy.isNumber().greaterThan(5),
     );
     const result = rule.run('10');
-    expect(result.passes).toBe(false);
+    expect(result.pass).toBe(false);
   });
 
   it('should pass with no rules', () => {
     const rule = enforceLazy.allOf();
     const result = rule.run('any value');
-    expect(result.passes).toBe(true);
+    expect(result.pass).toBe(true);
   });
 
   describe('When all rules  are satisfied', () => {
     it('Should return a passing result', () => {
       const rule = enforceLazy.allOf(enforceLazy.isArray());
       const result = rule.run([1, 2, 3]);
-      expect(result).toEqual({ passes: true, type: [1, 2, 3] });
+      expect(result).toEqual({ pass: true, type: [1, 2, 3] });
     });
   });
 });

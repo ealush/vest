@@ -17,46 +17,46 @@ describe('shape', () => {
   it('should pass with exact matching object', () => {
     const rule = enforceLazy.shape(schema);
     const result = rule.run({ name: 'John', age: 30 });
-    expect(result.passes).toBe(true);
+    expect(result.pass).toBe(true);
   });
 
   it('should fail with extra properties', () => {
     const rule = enforceLazy.shape(schema);
     // @ts-expect-error
     const result = rule.run({ name: 'John', age: 30, extra: 'property' });
-    expect(result.passes).toBe(false);
+    expect(result.pass).toBe(false);
   });
 
   it('should fail if a property is missing', () => {
     const rule = enforceLazy.shape(schema);
     // @ts-expect-error
     const result = rule.run({ name: 'John' });
-    expect(result.passes).toBe(false);
+    expect(result.pass).toBe(false);
   });
 
   it('should fail if a property has wrong type', () => {
     const rule = enforceLazy.shape(schema);
     // @ts-expect-error
     const result = rule.run({ name: 'John', age: '30' });
-    expect(result.passes).toBe(false);
+    expect(result.pass).toBe(false);
   });
 
   it('should fail with empty object', () => {
     const rule = enforceLazy.shape(schema);
     // @ts-expect-error
     const result = rule.run({});
-    expect(result.passes).toBe(false);
+    expect(result.pass).toBe(false);
   });
 
   it('should pass with an empty schema and empty object', () => {
     const rule = enforceLazy.shape({});
     const result = rule.run({});
-    expect(result.passes).toBe(true);
+    expect(result.pass).toBe(true);
   });
 
   it('should fail with an empty schema and non-empty object', () => {
     const rule = enforceLazy.shape({});
     const result = rule.run({ any: 'value' });
-    expect(result.passes).toBe(false);
+    expect(result.pass).toBe(false);
   });
 });

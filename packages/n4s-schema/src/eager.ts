@@ -1,5 +1,4 @@
 import { ruleRunReturn, RuleRunReturn } from 'enforce';
-import { set } from 'lodash';
 import { dynamicValue, invariant, isNullish, StringObject } from 'vest-utils';
 import type { DropFirst, Maybe, Stringable } from 'vest-utils';
 
@@ -63,7 +62,7 @@ export function enforce(value: any): EnforceEagerReturn {
       // 2. Call the rule within the context, and pass over the arguments passed to it
       // 3. Transform the result to the correct output format
       const transformedResult = transformResult(
-        rule(value, ...args),
+        (rule as (...args: any[]) => any)(value, ...args),
         ruleName,
         value,
         ...args,
@@ -180,5 +179,3 @@ type EnforceBase = TModifiers & TRules;
 type EnforceEagerReturn = EnforceBase & {
   pass: boolean;
 };
-
-type RuleBase = (value: any, ...args: Args) => RuleRunReturn<any>;

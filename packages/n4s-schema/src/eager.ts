@@ -1,4 +1,4 @@
-import { ruleRunReturn, RuleRunReturn } from 'enforce';
+import { ruleRunReturn, RuleRunReturn } from 'enforceUtil';
 import { dynamicValue, invariant, isNullish, StringObject } from 'vest-utils';
 import type { DropFirst, Maybe, Stringable } from 'vest-utils';
 
@@ -21,7 +21,7 @@ function isMessageKey<T>(key: keyof EnforceBase<T>): boolean {
 }
 
 // eslint-disable-next-line max-lines-per-function
-export function enforce<T>(value: T): EnforceEagerReturn<T> {
+export function enforceEager<T>(value: T): EnforceEagerReturn<T> {
   let customMessage: Maybe<string> = undefined;
 
   const proxy = new Proxy(

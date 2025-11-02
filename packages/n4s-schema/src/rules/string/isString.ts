@@ -1,4 +1,4 @@
-import { RuleInstance } from 'enforce';
+import { RuleInstance } from 'enforceUtil';
 
 export { isStringValue as isString } from 'vest-utils';
 

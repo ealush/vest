@@ -1,4 +1,4 @@
-import { RuleInstance } from 'enforce';
+import { RuleInstance } from 'enforceUtil';
 
 export interface ObjectRuleInstance extends RuleInstance<object, [object]> {}
 

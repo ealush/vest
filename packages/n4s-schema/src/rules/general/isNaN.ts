@@ -1,4 +1,4 @@
-import { RuleInstance } from 'enforce';
+import { RuleInstance } from 'enforceUtil';
 
 import { toNumber } from 'toNumber';
 

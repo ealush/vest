@@ -1,4 +1,4 @@
-import { RuleInstance } from 'enforce';
+import { RuleInstance } from 'enforceUtil';
 import { isNull as isNullValue } from 'vest-utils';
 
 // Type guard rule instance

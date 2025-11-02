@@ -11,6 +11,7 @@
       "n4s-schema": ["./src/n4s-schema.ts"],
       "lazy": ["./src/lazy.ts"],
       "example": ["./src/example.ts"],
+      "enforceUtil": ["./src/enforceUtil.ts"],
       "enforce": ["./src/enforce.ts"],
       "eager": ["./src/eager.ts"],
       "stringRules": ["./src/rules/stringRules.ts"],

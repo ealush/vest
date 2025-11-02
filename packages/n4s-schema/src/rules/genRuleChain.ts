@@ -1,6 +1,6 @@
-import { RuleInstance, ruleRunReturn, RuleRunReturn } from 'enforce';
+import { RuleInstance, ruleRunReturn, RuleRunReturn } from 'enforceUtil';
 
-type Predicate = (value: any) => boolean;
+type Predicate = (...args: any[]) => boolean;
 
 export function addToChain<T extends RuleInstance<any, any>>(
   rules: Record<keyof Omit<T, 'run' | 'infer'>, (...args: any[]) => boolean>,

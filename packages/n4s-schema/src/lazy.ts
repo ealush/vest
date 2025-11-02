@@ -33,6 +33,14 @@ import { isNumber, type NumberRuleInstance } from 'numberRules';
 import * as numberRules from 'numberRules';
 import { isNumeric, type NumericRuleInstance } from 'numericRules';
 import * as numericRules from 'numericRules';
+import {
+  isKeyOf,
+  isNotKeyOf,
+  isValueOf,
+  isNotValueOf,
+  ObjectRuleInstance,
+} from 'objectRules';
+import * as objectRules from 'objectRules';
 import * as schemaRules from 'schemaRules';
 import { isString, type StringRuleInstance } from 'stringRules';
 import * as stringRules from 'stringRules';
@@ -41,11 +49,18 @@ export const enforceLazy = {
   ...schemaRules,
   condition: (cond: boolean): ConditionRuleInstance =>
     addToChain({}, () => condition(cond)),
-  isArray: <T = any>(): ArrayRuleInstance<T> =>
-    addToChain(arrayRules as any, isArray),
+  isArray: (): ArrayRuleInstance => addToChain(arrayRules, isArray),
   isBoolean: (): BooleanRuleInstance => addToChain(booleanRules, isBoolean),
   isNumber: (): NumberRuleInstance => addToChain(numberRules, isNumber),
   isNumeric: (): NumericRuleInstance => addToChain(numericRules, isNumeric),
+  isValueOf: (obj: object): ObjectRuleInstance =>
+    addToChain(objectRules, isValueOf(obj)),
+  isKeyOf: (obj: object): ObjectRuleInstance =>
+    addToChain(objectRules, isKeyOf(obj)),
+  isNotKeyOf: (obj: object): ObjectRuleInstance =>
+    addToChain(objectRules, isNotKeyOf(obj)),
+  isNotValueOf: (obj: object): ObjectRuleInstance =>
+    addToChain(objectRules, isNotValueOf(obj)),
   isString: (): StringRuleInstance => addToChain(stringRules, isString),
   isEmpty: (): AnyRuleInstance => addToChain({}, isEmpty),
   isFalsy: (): AnyRuleInstance => addToChain({}, isFalsy),

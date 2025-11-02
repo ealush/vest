@@ -1,4 +1,4 @@
-import { RuleInstance } from 'enforce';
+import { RuleInstance } from 'enforceUtil';
 import { isUndefined as isUndefinedValue } from 'vest-utils';
 
 // Type guard rule instance

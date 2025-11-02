@@ -1,4 +1,4 @@
-import { RuleInstance } from 'enforce';
+import { RuleInstance } from 'enforceUtil';
 
 export interface ArrayRuleInstance<T = any> extends RuleInstance<T[], [T[]]> {
   equals(arr: T[]): ArrayRuleInstance<T>;

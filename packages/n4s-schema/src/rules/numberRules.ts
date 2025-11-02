@@ -1,4 +1,4 @@
-export { greaterThan } from 'vest-utils';
+export { greaterThan, numberEquals } from 'vest-utils';
 
 export { isBetween } from 'isBetween';
 export { greaterThanOrEquals } from 'greaterThanOrEquals';
@@ -11,5 +11,4 @@ export { isPositive } from 'isPositive';
 export { lessThan } from 'lessThan';
 export { lessThanOrEquals } from 'lessThanOrEquals';
 export { isNotBetween } from 'isNotBetween';
-export { numberEquals } from 'numberEquals';
 export { numberNotEquals } from 'numberNotEquals';

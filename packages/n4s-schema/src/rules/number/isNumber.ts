@@ -1,7 +1,6 @@
 import { RuleInstance } from 'enforce';
-import { greaterThan } from 'greaterThan';
 import { isNegative } from 'isNegative';
-import { numberEquals } from 'numberEquals';
+import { greaterThan, numberEquals } from 'vest-utils';
 
 import { greaterThanOrEquals } from 'greaterThanOrEquals';
 import { isBetween } from 'isBetween';

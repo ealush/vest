@@ -1,5 +1,6 @@
+export { greaterThan } from 'vest-utils';
+
 export { isBetween } from 'isBetween';
-export { greaterThan } from 'greaterThan';
 export { greaterThanOrEquals } from 'greaterThanOrEquals';
 export { isEven } from 'isEven';
 export { isNegative } from 'isNegative';

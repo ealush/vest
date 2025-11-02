@@ -1,16 +1,16 @@
 import { RuleInstance } from 'enforce';
+import { greaterThan } from 'greaterThan';
+import { isNegative } from 'isNegative';
+import { numberEquals } from 'numberEquals';
+
 import { greaterThanOrEquals } from 'greaterThanOrEquals';
 import { isBetween } from 'isBetween';
 import { isEven } from 'isEven';
-import { isNegative } from 'isNegative';
+import { isNotBetween } from 'isNotBetween';
 import { isOdd } from 'isOdd';
+import { isPositive } from 'isPositive';
 import { lessThan } from 'lessThan';
 import { lessThanOrEquals } from 'lessThanOrEquals';
-
-import { greaterThan } from 'greaterThan';
-import { isNotBetween } from 'isNotBetween';
-import { isPositive } from 'isPositive';
-import { numberEquals } from 'numberEquals';
 import { numberNotEquals } from 'numberNotEquals';
 
 export interface NumberRuleInstance extends RuleInstance<number, [number]> {
@@ -18,7 +18,6 @@ export interface NumberRuleInstance extends RuleInstance<number, [number]> {
   equals(n: number): NumberRuleInstance;
   greaterThan(n: number): NumberRuleInstance;
   greaterThanOrEquals(n: number): NumberRuleInstance;
-  isBetween(min: number, max: number): NumberRuleInstance;
   isEven(): NumberRuleInstance;
   isNegative(): NumberRuleInstance;
   isNotBetween(min: number, max: number): NumberRuleInstance;
@@ -26,8 +25,6 @@ export interface NumberRuleInstance extends RuleInstance<number, [number]> {
   isPositive(): NumberRuleInstance;
   lessThan(n: number): NumberRuleInstance;
   lessThanOrEquals(n: number): NumberRuleInstance;
-  notBetween(min: number, max: number): NumberRuleInstance;
-  notEquals(n: number): NumberRuleInstance;
   numberEquals(n: number | string): NumberRuleInstance;
   numberNotEquals(n: number | string): NumberRuleInstance;
 }

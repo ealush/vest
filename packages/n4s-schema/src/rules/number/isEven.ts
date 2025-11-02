@@ -1,3 +1,13 @@
-export function isEven(value: number): boolean {
-  return Number.isFinite(value) && value % 2 === 0;
-}
+import { isNumeric } from 'vest-utils';
+
+import { toNumberStrict } from 'toNumber';
+
+/**
+ * Validates that a given value is an even number
+ */
+export const isEven = (value: string | number): boolean => {
+  if (isNumeric(value)) {
+    return toNumberStrict(value) % 2 === 0;
+  }
+  return false;
+};

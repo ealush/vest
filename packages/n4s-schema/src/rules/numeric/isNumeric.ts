@@ -1,40 +1,39 @@
 import { RuleInstance } from 'enforce';
 import { equals } from 'equals';
+import { isNaN } from 'isNaN';
+import { isNegative } from 'isNegative';
+import {
+  greaterThan,
+  numberEquals,
+  isNumeric as isNumericValue,
+} from 'vest-utils';
+
 import { greaterThanOrEquals } from 'greaterThanOrEquals';
 import { isBetween } from 'isBetween';
 import { isEven } from 'isEven';
-import { isNaN } from 'isNaN';
-import { isNegative } from 'isNegative';
-import { isOdd } from 'isOdd';
-import { lessThan } from 'lessThan';
-import { lessThanOrEquals } from 'lessThanOrEquals';
-import { isNumeric as isNumericValue } from 'vest-utils';
-
-import { greaterThan } from 'greaterThan';
 import { isNotBetween } from 'isNotBetween';
 import { isNotNaN } from 'isNotNaN';
+import { isOdd } from 'isOdd';
 import { isPositive } from 'isPositive';
-import { numberEquals } from 'numberEquals';
+import { lessThan } from 'lessThan';
+import { lessThanOrEquals } from 'lessThanOrEquals';
 import { numberNotEquals } from 'numberNotEquals';
 
 export interface NumericRuleInstance
   extends RuleInstance<number | string, [number | string]> {
-  between(min: number, max: number): NumericRuleInstance;
+  isBetween(min: number, max: number): NumericRuleInstance;
   equals(n: number): NumericRuleInstance;
   greaterThan(n: number): NumericRuleInstance;
   greaterThanOrEquals(n: number): NumericRuleInstance;
-  isBetween(min: number, max: number): NumericRuleInstance;
   isEven(): NumericRuleInstance;
   isNaN(): NumericRuleInstance;
   isNegative(): NumericRuleInstance;
-  isNotBetween(min: number, max: number): NumericRuleInstance;
   isNotNaN(): NumericRuleInstance;
   isOdd(): NumericRuleInstance;
   isPositive(): NumericRuleInstance;
   lessThan(n: number): NumericRuleInstance;
   lessThanOrEquals(n: number): NumericRuleInstance;
-  notBetween(min: number, max: number): NumericRuleInstance;
-  notEquals(n: number): NumericRuleInstance;
+  isNotBetween(min: number, max: number): NumericRuleInstance;
   numberEquals(n: number | string): NumericRuleInstance;
   numberNotEquals(n: number | string): NumericRuleInstance;
 }

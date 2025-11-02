@@ -1,3 +1,5 @@
-export function lessThan(value: number, n: number): boolean {
-  return value < n;
+import { isNumeric } from 'vest-utils';
+
+export function lessThan(value: string | number, lt: string | number): boolean {
+  return isNumeric(value) && isNumeric(lt) && Number(value) < Number(lt);
 }

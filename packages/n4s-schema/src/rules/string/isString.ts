@@ -1,26 +1,6 @@
-import { endsWith } from 'endsWith';
 import { RuleInstance } from 'enforce';
-import { isBlank } from 'isBlank';
-import { matches } from 'matches';
-import { startsWith } from 'startsWith';
-import { isStringValue } from 'vest-utils';
 
-import { equals, notEquals } from 'commonComparison';
-import { inside, notInside } from 'commonContainer';
-import {
-  lengthEquals,
-  lengthNotEquals,
-  longerThan,
-  longerThanOrEquals,
-  maxLength,
-  minLength,
-  shorterThan,
-  shorterThanOrEquals,
-} from 'commonLength';
-import { doesNotEndWith } from 'doesNotEndWith';
-import { doesNotStartWith } from 'doesNotStartWith';
-import { isNotBlank } from 'isNotBlank';
-import { notMatches } from 'notMatches';
+export { isStringValue as isString } from 'vest-utils';
 
 export interface StringRuleInstance extends RuleInstance<string, [string]> {
   equals(s: string): StringRuleInstance;
@@ -43,31 +23,4 @@ export interface StringRuleInstance extends RuleInstance<string, [string]> {
   longerThanOrEquals(n: number): StringRuleInstance; // length >= n
   shorterThan(n: number): StringRuleInstance; // length < n
   shorterThanOrEquals(n: number): StringRuleInstance; // length <= n
-}
-
-export const stringRules = {
-  doesNotEndWith,
-  doesNotStartWith,
-  endsWith,
-  equals,
-  inside,
-  isBlank,
-  isNotBlank,
-  lengthEquals,
-  lengthNotEquals,
-  longerThan,
-  longerThanOrEquals,
-  matches,
-  maxLength,
-  minLength,
-  notEquals,
-  notInside,
-  notMatches,
-  shorterThan,
-  shorterThanOrEquals,
-  startsWith,
-};
-
-export function isString(value: any): boolean {
-  return isStringValue(value);
 }

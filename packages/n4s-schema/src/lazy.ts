@@ -1,9 +1,7 @@
-import { isArray, arrayRules, type ArrayRuleInstance } from 'arrayRules';
-import {
-  isBoolean,
-  booleanRules,
-  type BooleanRuleInstance,
-} from 'booleanRules';
+import { isArray, type ArrayRuleInstance } from 'arrayRules';
+import * as arrayRules from 'arrayRules';
+import { isBoolean, type BooleanRuleInstance } from 'booleanRules';
+import * as booleanRules from 'booleanRules';
 import { addToChain } from 'genRuleChain';
 import {
   isTruthy,
@@ -45,12 +43,10 @@ import {
   type NullishRuleInstance,
   type NotNullishRuleInstance,
 } from 'nullishRules';
-import { isNumber, numberRules, type NumberRuleInstance } from 'numberRules';
-import {
-  isNumeric,
-  numericRules,
-  type NumericRuleInstance,
-} from 'numericRules';
+import { isNumber, type NumberRuleInstance } from 'numberRules';
+import * as numberRules from 'numberRules';
+import { isNumeric, type NumericRuleInstance } from 'numericRules';
+import * as numericRules from 'numericRules';
 import {
   checkKey,
   checkValue,
@@ -70,7 +66,8 @@ import {
   partial,
   shape,
 } from 'schemaRules';
-import { isString, stringRules, type StringRuleInstance } from 'stringRules';
+import { isString, type StringRuleInstance } from 'stringRules';
+import * as stringRules from 'stringRules';
 
 export const enforceLazy = {
   allOf,

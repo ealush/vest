@@ -1,20 +1,5 @@
 import { RuleInstance } from 'enforce';
-import { longerThanOrEquals } from 'longerThanOrEquals';
-import { shorterThan } from 'shorterThan';
-import { shorterThanOrEquals } from 'shorterThanOrEquals';
-import {
-  isEmpty as isEmptyValue,
-  isNotEmpty as isNotEmptyValue,
-} from 'vest-utils';
 
-import { equals, notEquals } from 'commonComparison';
-import { inside, notInside } from 'commonContainer';
-import { includes } from 'includes';
-import { lengthEquals } from 'lengthEquals';
-import { lengthNotEquals } from 'lengthNotEquals';
-import { longerThan } from 'longerThan';
-import { maxLength } from 'maxLength';
-import { minLength } from 'minLength';
 
 export interface ArrayRuleInstance<T = any> extends RuleInstance<T[], [T[]]> {
   equals(arr: T[]): ArrayRuleInstance<T>;
@@ -33,32 +18,6 @@ export interface ArrayRuleInstance<T = any> extends RuleInstance<T[], [T[]]> {
   isEmpty(): ArrayRuleInstance<T>;
   isNotEmpty(): ArrayRuleInstance<T>;
 }
-
-function isEmpty(arr: any[]): boolean {
-  return Array.isArray(arr) && isEmptyValue(arr);
-}
-
-function isNotEmpty(arr: any[]): boolean {
-  return Array.isArray(arr) && isNotEmptyValue(arr);
-}
-
-export const arrayRules = {
-  equals,
-  includes,
-  inside,
-  isEmpty,
-  isNotEmpty,
-  lengthEquals,
-  lengthNotEquals,
-  longerThan,
-  longerThanOrEquals,
-  maxLength,
-  minLength,
-  notEquals,
-  notInside,
-  shorterThan,
-  shorterThanOrEquals,
-};
 
 export function isArray(value: any): boolean {
   return Array.isArray(value);

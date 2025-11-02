@@ -9,16 +9,27 @@ export function BuildRule<
   } as R;
 }
 
-export function ruleRunReturn<T>(passes: boolean, type: T): RuleRunReturn<T> {
-  return {
-    passes,
+export function ruleRunReturn<T>(
+  pass: boolean,
+  type: T,
+  message?: string,
+): RuleRunReturn<T> {
+  const out: RuleRunReturn<T> = {
+    pass,
     type,
   };
+
+  if (message) {
+    out.message = message;
+  }
+
+  return out;
 }
 
 export interface RuleRunReturn<T> {
-  passes: boolean;
+  pass: boolean;
   type: T;
+  message?: string;
 }
 
 export interface RuleInstance<T, Args extends any[] = any[]> {

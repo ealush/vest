@@ -1,1 +1,1 @@
-export const main = () => "n4s-schema";
+export const main = () => 'n4s-schema';

@@ -30,7 +30,7 @@ describe('enforce.extend', () => {
         expect(enforce.isValidEmail().run('invalid-email').pass).toBe(false);
       });
 
-      it('Should work in lazy mode with .run()', () => {
+      it('Should work in lazy mode with .run() returning full result', () => {
         expect(enforce.isValidEmail().run('test@example.com')).toEqual({
           pass: true,
           type: 'test@example.com',
@@ -84,7 +84,7 @@ describe('enforce.extend', () => {
         expect(enforce.isValidEmail().run('invalid').pass).toBe(false);
       });
 
-      it('Should work in lazy mode with .run()', () => {
+      it('Should work in lazy mode with .run() returning full result', () => {
         expect(enforce.isValidEmail().run('test@example.com')).toEqual({
           pass: true,
           type: 'test@example.com',

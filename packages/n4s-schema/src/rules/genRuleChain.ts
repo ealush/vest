@@ -1,4 +1,4 @@
-import { RuleInstance, ruleRunReturn, RuleRunReturn } from 'enforceUtil';
+import { RuleInstance, Passing, Failing, RuleRunReturn } from 'enforceUtil';
 
 type Predicate = (value: any) => boolean;
 
@@ -46,16 +46,16 @@ export function addToChain<T extends RuleInstance<any, any>>(
 
   function run(value: any): RuleRunReturn<T['infer']> {
     if (chain.length === 0) {
-      return ruleRunReturn(true, value);
+      return Passing(value);
     }
 
     for (let i = 0; i < chain.length; i++) {
       const p = chain[i];
       if (!p(value)) {
-        return ruleRunReturn(false, value);
+        return Failing(value);
       }
     }
-    return ruleRunReturn(true, value);
+    return Passing(value);
   }
 
   return proxy as T;
@@ -97,15 +97,15 @@ export function genRuleChain<T extends RuleInstance<any, any>>(
 
   function run(value: any): RuleRunReturn<T['infer']> {
     if (chain.length === 0) {
-      return ruleRunReturn(true, value);
+      return Passing(value);
     }
 
     for (let i = 0; i < chain.length; i++) {
       const p = chain[i];
       if (!p(value)) {
-        return ruleRunReturn(false, value);
+        return Failing(value);
       }
     }
-    return ruleRunReturn(true, value);
+    return Passing(value);
   }
 }

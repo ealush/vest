@@ -1,4 +1,4 @@
-import { RuleInstance } from 'enforceUtil';
+import { RuleInstance, Passing, Failing } from 'enforceUtil';
 
 export type InferShape<T> = T extends RuleInstance<infer R, any> ? R : never;
 
@@ -31,10 +31,10 @@ export function loose<T extends Record<string, RuleInstance<any>>>(
       for (const key in schema) {
         const value = key in v ? v[key] : undefined;
         if (!schema[key].run(value).pass) {
-          return { pass: false, type: v };
+          return Failing(v);
         }
       }
-      return { pass: true, type: v };
+      return Passing(v);
     },
     infer: {} as ShapeType<T>,
   };
@@ -46,7 +46,7 @@ export function isArrayOf<T extends RuleInstance<any, any>[]>(
   return {
     run: (value: MultiTypeInput<T>[]) => {
       if (!Array.isArray(value)) {
-        return { pass: false, type: value };
+        return Failing(value);
       }
 
       const pass = value.every(item =>
@@ -55,7 +55,7 @@ export function isArrayOf<T extends RuleInstance<any, any>[]>(
         ),
       );
 
-      return { pass, type: value };
+      return pass ? Passing(value) : Failing(value);
     },
     infer: [] as MultiTypeInput<T>[],
   };
@@ -67,7 +67,7 @@ export function optional<T>(
   return {
     run: (value: T | undefined | null) => {
       if (value === undefined || value === null) {
-        return { pass: true, type: value };
+        return Passing(value);
       }
       return rule.run(value);
     },
@@ -106,11 +106,11 @@ export function shape<T extends Record<string, RuleInstance<any>>>(
       // Then verify no extra fields (exact match)
       for (const key in v) {
         if (!(key in schema)) {
-          return { pass: false, type: v };
+          return Failing(v);
         }
       }
 
-      return { pass: true, type: v };
+      return Passing(v);
     },
     infer: {} as ShapeType<T>,
   };
@@ -122,10 +122,10 @@ export function allOf<T>(...rules: RuleInstance<T, any>[]): RuleInstance<T> {
       for (const rule of rules) {
         const result = rule.run(value);
         if (!result.pass) {
-          return { pass: false, type: value };
+          return Failing(value);
         }
       }
-      return { pass: true, type: value };
+      return Passing(value);
     },
     infer: {} as T,
   };
@@ -138,10 +138,10 @@ export function anyOf<T extends RuleInstance<any, any>[]>(
     run: (value: MultiTypeInput<T>) => {
       for (const rule of rules) {
         if (rule.run(value as any).pass) {
-          return { pass: true, type: value };
+          return Passing(value);
         }
       }
-      return { pass: false, type: value };
+      return Failing(value);
     },
     infer: {} as MultiTypeInput<T>,
   };
@@ -157,11 +157,11 @@ export function oneOf<T extends RuleInstance<any, any>[]>(
         if (rule.run(value as any).pass) {
           passingCount++;
           if (passingCount > 1) {
-            return { pass: false, type: value as any };
+            return Failing(value as any);
           }
         }
       }
-      return { pass: passingCount === 1, type: value as any };
+      return passingCount === 1 ? Passing(value as any) : Failing(value as any);
     },
     infer: {} as MultiTypeInput<T>,
   };
@@ -172,10 +172,10 @@ export function noneOf<T>(...rules: RuleInstance<T, any>[]): RuleInstance<T> {
     run: (value: T) => {
       for (const rule of rules) {
         if (rule.run(value).pass) {
-          return { pass: false, type: value };
+          return Failing(value);
         }
       }
-      return { pass: true, type: value };
+      return Passing(value);
     },
     infer: {} as T,
   };

@@ -26,6 +26,14 @@ export function ruleRunReturn<T>(
   return out;
 }
 
+export function Passing<T>(type: T, message?: string): RuleRunReturn<T> {
+  return ruleRunReturn(true, type, message);
+}
+
+export function Failing<T>(type: T, message?: string): RuleRunReturn<T> {
+  return ruleRunReturn(false, type, message);
+}
+
 export interface RuleRunReturn<T> {
   pass: boolean;
   type: T;

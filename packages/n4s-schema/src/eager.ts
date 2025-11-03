@@ -169,7 +169,7 @@ const allRules = {
   ...numericRules,
   ...objectEager,
   ...stringRules,
-};
+} as const;
 
 function getRule(ruleName: string): UnmodifiedRules | null {
   // Prefer user-defined rules when present

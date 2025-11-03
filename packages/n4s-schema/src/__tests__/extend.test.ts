@@ -1,5 +1,5 @@
 import { enforce } from 'enforce';
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('enforce.extend', () => {
   describe('Basic functionality', () => {
@@ -649,6 +649,671 @@ describe('enforce.extend', () => {
 
       expect(enforce.condition(true).run(4).pass).toBe(true);
       expect(enforce.condition(false).run(3).pass).toBe(false);
+    });
+  });
+
+  describe('Comprehensive Lazy API tests', () => {
+    describe('Boolean return values with lazy API', () => {
+      beforeEach(() => {
+        enforce.extend({
+          isValidEmail: (value: string) => value.indexOf('@') > -1,
+          hasKey: (value: Record<string, any>, key: string) =>
+            value.hasOwnProperty(key),
+          isPositive: (value: number) => value > 0,
+          isEven: (value: number) => value % 2 === 0,
+          isLengthBetween: (value: string, min: number, max: number) =>
+            value.length >= min && value.length <= max,
+        });
+      });
+
+      it('Should work with single argument - passing case', () => {
+        const result = enforce.isValidEmail().run('test@example.com');
+        expect(result).toEqual({
+          pass: true,
+          type: 'test@example.com',
+        });
+      });
+
+      it('Should work with single argument - failing case', () => {
+        const result = enforce.isValidEmail().run('invalid-email');
+        expect(result).toEqual({
+          pass: false,
+          type: 'invalid-email',
+        });
+      });
+
+      it('Should work with multiple arguments - passing case', () => {
+        const result = enforce.hasKey('name').run({ name: 'John', age: 30 });
+        expect(result).toEqual({
+          pass: true,
+          type: { name: 'John', age: 30 },
+        });
+      });
+
+      it('Should work with multiple arguments - failing case', () => {
+        const result = enforce.hasKey('email').run({ name: 'John', age: 30 });
+        expect(result).toEqual({
+          pass: false,
+          type: { name: 'John', age: 30 },
+        });
+      });
+
+      it('Should work with numeric validations', () => {
+        expect(enforce.isPositive().run(5)).toEqual({
+          pass: true,
+          type: 5,
+        });
+        expect(enforce.isPositive().run(-5)).toEqual({
+          pass: false,
+          type: -5,
+        });
+        expect(enforce.isEven().run(4)).toEqual({
+          pass: true,
+          type: 4,
+        });
+        expect(enforce.isEven().run(3)).toEqual({
+          pass: false,
+          type: 3,
+        });
+      });
+
+      it('Should work with multiple arguments and complex types', () => {
+        expect(enforce.isLengthBetween(3, 10).run('hello')).toEqual({
+          pass: true,
+          type: 'hello',
+        });
+        expect(enforce.isLengthBetween(3, 10).run('hi')).toEqual({
+          pass: false,
+          type: 'hi',
+        });
+        expect(enforce.isLengthBetween(3, 10).run('this is too long')).toEqual({
+          pass: false,
+          type: 'this is too long',
+        });
+      });
+
+      it('Should handle different data types', () => {
+        enforce.extend({
+          alwaysTrue: () => true,
+          alwaysFalse: () => false,
+        });
+
+        // String
+        expect(enforce.alwaysTrue().run('string')).toEqual({
+          pass: true,
+          type: 'string',
+        });
+
+        // Number
+        expect(enforce.alwaysTrue().run(42)).toEqual({
+          pass: true,
+          type: 42,
+        });
+
+        // Boolean
+        expect(enforce.alwaysTrue().run(true)).toEqual({
+          pass: true,
+          type: true,
+        });
+
+        // Object
+        const obj = { key: 'value' };
+        expect(enforce.alwaysTrue().run(obj)).toEqual({
+          pass: true,
+          type: obj,
+        });
+
+        // Array
+        const arr = [1, 2, 3];
+        expect(enforce.alwaysTrue().run(arr)).toEqual({
+          pass: true,
+          type: arr,
+        });
+
+        // Null
+        expect(enforce.alwaysTrue().run(null)).toEqual({
+          pass: true,
+          type: null,
+        });
+
+        // Undefined
+        expect(enforce.alwaysTrue().run(undefined)).toEqual({
+          pass: true,
+          type: undefined,
+        });
+      });
+    });
+
+    describe('Object return values with lazy API', () => {
+      beforeEach(() => {
+        enforce.extend({
+          isValidEmailWithMessage: (value: string) => ({
+            pass: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value),
+            message: () => `${value} is not a valid email address`,
+          }),
+          isWithinRange: (value: number, floor: number, ceiling: number) => {
+            const pass = value >= floor && value <= ceiling;
+            return {
+              pass,
+              message: () =>
+                pass
+                  ? `expected ${value} not to be within range ${floor} - ${ceiling}`
+                  : `expected ${value} to be within range ${floor} - ${ceiling}`,
+            };
+          },
+          hasExactLength: (value: string, length: number) => ({
+            pass: value.length === length,
+            message: () => `Expected length ${length}, got ${value.length}`,
+          }),
+        });
+      });
+
+      it('Should work with object return - passing case', () => {
+        const result = enforce
+          .isValidEmailWithMessage()
+          .run('test@example.com');
+        expect(result).toEqual({
+          pass: true,
+          type: 'test@example.com',
+        });
+      });
+
+      it('Should work with object return - failing case', () => {
+        const result = enforce.isValidEmailWithMessage().run('invalid');
+        expect(result).toEqual({
+          pass: false,
+          type: 'invalid',
+        });
+      });
+
+      it('Should work with multiple arguments and object return', () => {
+        expect(enforce.isWithinRange(1, 10).run(5)).toEqual({
+          pass: true,
+          type: 5,
+        });
+        expect(enforce.isWithinRange(1, 10).run(15)).toEqual({
+          pass: false,
+          type: 15,
+        });
+      });
+
+      it('Should work with complex validation scenarios', () => {
+        expect(enforce.hasExactLength(5).run('hello')).toEqual({
+          pass: true,
+          type: 'hello',
+        });
+        expect(enforce.hasExactLength(5).run('hi')).toEqual({
+          pass: false,
+          type: 'hi',
+        });
+      });
+    });
+
+    describe('Chaining with lazy API', () => {
+      beforeEach(() => {
+        enforce.extend({
+          startsWithUnderscore: (value: string) => value.startsWith('_'),
+          hasMinLength: (value: string, length: number) =>
+            value.length >= length,
+          isLowerCase: (value: string) => value === value.toLowerCase(),
+          isAlphanumeric: (value: string) => /^[a-zA-Z0-9]+$/.test(value),
+        });
+      });
+
+      it('Should work with chained custom rules', () => {
+        const result = enforce
+          .startsWithUnderscore()
+          .hasMinLength(5)
+          .isLowerCase()
+          .run('_test');
+        expect(result).toEqual({
+          pass: true,
+          type: '_test',
+        });
+      });
+
+      it('Should fail on first failed rule in chain', () => {
+        const result = enforce
+          .startsWithUnderscore()
+          .hasMinLength(5)
+          .isLowerCase()
+          .run('test');
+        expect(result).toEqual({
+          pass: false,
+          type: 'test',
+        });
+      });
+
+      it('Should work with mix of custom and built-in rules', () => {
+        const result = enforce
+          .isString()
+          .startsWithUnderscore()
+          .hasMinLength(3)
+          .run('_ab');
+        expect(result).toEqual({
+          pass: true,
+          type: '_ab',
+        });
+      });
+
+      it('Should work with complex chaining scenarios', () => {
+        expect(
+          enforce.isString().hasMinLength(1).isAlphanumeric().run('test123'),
+        ).toEqual({
+          pass: true,
+          type: 'test123',
+        });
+
+        expect(
+          enforce.isString().hasMinLength(1).isAlphanumeric().run('test-123'),
+        ).toEqual({
+          pass: false,
+          type: 'test-123',
+        });
+      });
+    });
+
+    describe('Error handling in lazy API', () => {
+      beforeEach(() => {
+        enforce.extend({
+          throwsError: () => {
+            throw new Error('Custom validation error');
+          },
+          returnsUndefined: () => undefined as any,
+          returnsNull: () => null as any,
+          returnsInvalidObject: () => ({ invalid: true }) as any,
+        });
+      });
+
+      it('Should handle rules that throw errors', () => {
+        expect(() => enforce.throwsError().run('test')).toThrow(
+          'Custom validation error',
+        );
+      });
+
+      it('Should handle rules that return undefined', () => {
+        const result = enforce.returnsUndefined().run('test');
+        expect(result).toEqual({
+          pass: false,
+          type: 'test',
+        });
+      });
+
+      it('Should handle rules that return null', () => {
+        const result = enforce.returnsNull().run('test');
+        expect(result).toEqual({
+          pass: false,
+          type: 'test',
+        });
+      });
+
+      it('Should handle rules that return invalid objects', () => {
+        const result = enforce.returnsInvalidObject().run('test');
+        expect(result).toEqual({
+          pass: false,
+          type: 'test',
+        });
+      });
+    });
+
+    describe('Type coercion and edge cases in lazy API', () => {
+      beforeEach(() => {
+        enforce.extend({
+          strictEquals: (value: any, expected: any) => value === expected,
+          looseEquals: (value: any, expected: any) => value == expected,
+          isTruthy: (value: any) => !!value,
+          isFalsy: (value: any) => !value,
+          typeCheck: (value: any, expectedType: string) =>
+            typeof value === expectedType,
+        });
+      });
+
+      it('Should handle strict equality comparisons', () => {
+        expect(enforce.strictEquals(1).run(1)).toEqual({
+          pass: true,
+          type: 1,
+        });
+        expect(enforce.strictEquals(1).run('1')).toEqual({
+          pass: false,
+          type: '1',
+        });
+        expect(enforce.strictEquals(true).run(1)).toEqual({
+          pass: false,
+          type: 1,
+        });
+      });
+
+      it('Should handle loose equality comparisons', () => {
+        expect(enforce.looseEquals(1).run('1')).toEqual({
+          pass: true,
+          type: '1',
+        });
+        expect(enforce.looseEquals(true).run(1)).toEqual({
+          pass: true,
+          type: 1,
+        });
+        expect(enforce.looseEquals(null).run(undefined)).toEqual({
+          pass: true,
+          type: undefined,
+        });
+      });
+
+      it('Should handle truthy/falsy checks', () => {
+        // Truthy values
+        expect(enforce.isTruthy().run(1)).toEqual({ pass: true, type: 1 });
+        expect(enforce.isTruthy().run('text')).toEqual({
+          pass: true,
+          type: 'text',
+        });
+        expect(enforce.isTruthy().run(true)).toEqual({
+          pass: true,
+          type: true,
+        });
+        expect(enforce.isTruthy().run({})).toEqual({ pass: true, type: {} });
+        expect(enforce.isTruthy().run([])).toEqual({ pass: true, type: [] });
+
+        // Falsy values
+        expect(enforce.isFalsy().run(0)).toEqual({ pass: true, type: 0 });
+        expect(enforce.isFalsy().run('')).toEqual({ pass: true, type: '' });
+        expect(enforce.isFalsy().run(false)).toEqual({
+          pass: true,
+          type: false,
+        });
+        expect(enforce.isFalsy().run(null)).toEqual({ pass: true, type: null });
+        expect(enforce.isFalsy().run(undefined)).toEqual({
+          pass: true,
+          type: undefined,
+        });
+      });
+
+      it('Should handle type checking', () => {
+        expect(enforce.typeCheck('string').run('hello')).toEqual({
+          pass: true,
+          type: 'hello',
+        });
+        expect(enforce.typeCheck('number').run(42)).toEqual({
+          pass: true,
+          type: 42,
+        });
+        expect(enforce.typeCheck('boolean').run(true)).toEqual({
+          pass: true,
+          type: true,
+        });
+        expect(enforce.typeCheck('object').run({})).toEqual({
+          pass: true,
+          type: {},
+        });
+        expect(enforce.typeCheck('object').run(null)).toEqual({
+          pass: true,
+          type: null,
+        });
+        expect(enforce.typeCheck('undefined').run(undefined)).toEqual({
+          pass: true,
+          type: undefined,
+        });
+
+        // Type mismatches
+        expect(enforce.typeCheck('string').run(42)).toEqual({
+          pass: false,
+          type: 42,
+        });
+        expect(enforce.typeCheck('number').run('hello')).toEqual({
+          pass: false,
+          type: 'hello',
+        });
+      });
+    });
+
+    describe('Complex scenarios with lazy API', () => {
+      beforeEach(() => {
+        enforce.extend({
+          isEmail: (value: string) =>
+            /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value),
+          isStrongPassword: (value: string) => {
+            const hasLength = value.length >= 8;
+            const hasUpper = /[A-Z]/.test(value);
+            const hasLower = /[a-z]/.test(value);
+            const hasNumber = /[0-9]/.test(value);
+            const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+            return hasLength && hasUpper && hasLower && hasNumber && hasSpecial;
+          },
+          isPhoneNumber: (value: string) =>
+            /^\+?[\d\s\-\(\)]{10,}$/.test(value),
+          isValidAge: (value: number) => value >= 0 && value <= 150,
+          isValidDate: (value: Date) =>
+            value instanceof Date && !isNaN(value.getTime()),
+        });
+      });
+
+      it('Should work with email validation', () => {
+        expect(enforce.isEmail().run('test@example.com')).toEqual({
+          pass: true,
+          type: 'test@example.com',
+        });
+        expect(enforce.isEmail().run('invalid-email')).toEqual({
+          pass: false,
+          type: 'invalid-email',
+        });
+      });
+
+      it('Should work with password validation', () => {
+        expect(enforce.isStrongPassword().run('StrongP@ss123')).toEqual({
+          pass: true,
+          type: 'StrongP@ss123',
+        });
+        expect(enforce.isStrongPassword().run('weak')).toEqual({
+          pass: false,
+          type: 'weak',
+        });
+      });
+
+      it('Should work with phone number validation', () => {
+        expect(enforce.isPhoneNumber().run('+1234567890')).toEqual({
+          pass: true,
+          type: '+1234567890',
+        });
+        expect(enforce.isPhoneNumber().run('123')).toEqual({
+          pass: false,
+          type: '123',
+        });
+      });
+
+      it('Should work with age validation', () => {
+        expect(enforce.isValidAge().run(25)).toEqual({
+          pass: true,
+          type: 25,
+        });
+        expect(enforce.isValidAge().run(-5)).toEqual({
+          pass: false,
+          type: -5,
+        });
+        expect(enforce.isValidAge().run(200)).toEqual({
+          pass: false,
+          type: 200,
+        });
+      });
+
+      it('Should work with date validation', () => {
+        const validDate = new Date('2023-01-01');
+        const invalidDate = new Date('invalid');
+
+        expect(enforce.isValidDate().run(validDate)).toEqual({
+          pass: true,
+          type: validDate,
+        });
+        expect(enforce.isValidDate().run(invalidDate)).toEqual({
+          pass: false,
+          type: invalidDate,
+        });
+      });
+    });
+
+    describe('Integration with schema rules in lazy API', () => {
+      beforeEach(() => {
+        enforce.extend({
+          isEmail: (value: string) =>
+            /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value),
+          isAdult: (value: number) => value >= 18,
+          hasValidPassword: (value: string) => {
+            return (
+              value.length >= 8 && /[A-Z]/.test(value) && /[0-9]/.test(value)
+            );
+          },
+        });
+      });
+
+      it('Should work within shape() using lazy API', () => {
+        const schema = enforce.shape({
+          email: enforce.isString().isEmail(),
+          age: enforce.isNumber().isAdult(),
+          password: enforce.isString().hasValidPassword(),
+        });
+
+        const validData = {
+          email: 'test@example.com',
+          age: 25,
+          password: 'SecurePass123',
+        };
+
+        const invalidData = {
+          email: 'invalid-email',
+          age: 16,
+          password: 'weak',
+        };
+
+        expect(schema.run(validData)).toEqual({
+          pass: true,
+          type: validData,
+        });
+        expect(schema.run(invalidData)).toEqual({
+          pass: false,
+          type: invalidData,
+        });
+      });
+
+      it('Should work within isArrayOf() using lazy API', () => {
+        const emailArrayRule = enforce.isArrayOf(enforce.isString().isEmail());
+
+        const validEmails = ['test@example.com', 'another@example.com'];
+        const invalidEmails = ['test@example.com', 'invalid-email'];
+
+        expect(emailArrayRule.run(validEmails)).toEqual({
+          pass: true,
+          type: validEmails,
+        });
+        expect(emailArrayRule.run(invalidEmails)).toEqual({
+          pass: false,
+          type: invalidEmails,
+        });
+      });
+
+      it('Should work within optional() using lazy API', () => {
+        const schema = enforce.shape({
+          email: enforce.optional(enforce.isString().isEmail()),
+          age: enforce.optional(enforce.isNumber().isAdult()),
+        });
+
+        expect(schema.run({ email: 'test@example.com', age: 25 })).toEqual({
+          pass: true,
+          type: { email: 'test@example.com', age: 25 },
+        });
+        expect(schema.run({ email: 'test@example.com' })).toEqual({
+          pass: true,
+          type: { email: 'test@example.com' },
+        });
+        expect(schema.run({})).toEqual({
+          pass: true,
+          type: {},
+        });
+      });
+    });
+
+    describe('Performance and edge cases in lazy API', () => {
+      it('Should handle many custom rules with lazy API', () => {
+        const rules: Record<string, () => boolean> = {};
+        for (let i = 0; i < 50; i++) {
+          rules[`rule${i}`] = () => true;
+        }
+        enforce.extend(rules);
+
+        const result = enforce.rule0().rule25().rule49().run('test');
+        expect(result).toEqual({
+          pass: true,
+          type: 'test',
+        });
+      });
+
+      it('Should handle rules with many arguments in lazy API', () => {
+        enforce.extend({
+          sumEquals: (value: number, ...args: number[]) =>
+            value === args.reduce((sum, n) => sum + n, 0),
+          concatenatesTo: (value: string, ...parts: string[]) =>
+            value === parts.join(''),
+        });
+
+        expect(enforce.sumEquals(1, 2, 3, 4).run(10)).toEqual({
+          pass: true,
+          type: 10,
+        });
+        expect(enforce.sumEquals(1, 2, 3).run(10)).toEqual({
+          pass: false,
+          type: 10,
+        });
+
+        expect(
+          enforce.concatenatesTo('hello', 'world').run('helloworld'),
+        ).toEqual({
+          pass: true,
+          type: 'helloworld',
+        });
+        expect(
+          enforce.concatenatesTo('hello', 'world').run('hello world'),
+        ).toEqual({
+          pass: false,
+          type: 'hello world',
+        });
+      });
+
+      it('Should handle complex nested objects and arrays', () => {
+        enforce.extend({
+          hasProperty: (value: any, prop: string) =>
+            value && value.hasOwnProperty(prop),
+          arrayContains: (value: any[], item: any) =>
+            value.some((v) =>
+              v && item && typeof v === 'object' && typeof item === 'object'
+                ? JSON.stringify(v) === JSON.stringify(item)
+                : v === item,
+            ),
+          objectDeepEquals: (value: any, expected: any) =>
+            JSON.stringify(value) === JSON.stringify(expected),
+        });
+
+        const complexObject = {
+          nested: { deep: { value: 'test' } },
+          array: [1, 2, 3],
+          mixed: [{ id: 1 }, { id: 2 }],
+        };
+
+        expect(enforce.hasProperty('nested').run(complexObject)).toEqual({
+          pass: true,
+          type: complexObject,
+        });
+
+        expect(
+          enforce.arrayContains({ id: 1 }).run(complexObject.mixed),
+        ).toEqual({
+          pass: true,
+          type: complexObject.mixed,
+        });
+
+        const expectedObject = { a: 1, b: 2 };
+        expect(
+          enforce.objectDeepEquals(expectedObject).run({ a: 1, b: 2 }),
+        ).toEqual({
+          pass: true,
+          type: { a: 1, b: 2 },
+        });
+      });
     });
   });
 });

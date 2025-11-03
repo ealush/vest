@@ -1,3 +1,5 @@
+import { assign } from 'vest-utils';
+
 import { enforceEager, extendEager } from 'eager';
 import { addToChain, registerLazyRule } from 'genRuleChain';
 import { enforceLazy } from 'lazy';
@@ -8,7 +10,7 @@ type CustomRule = (
 ) => boolean | { pass: boolean; message?: string | (() => string) };
 
 // Build the base enforce object
-export const enforce: any = Object.assign(enforceEager, enforceLazy);
+export const enforce: any = assign(enforceEager, enforceLazy);
 
 // TODO: IMPROVE this API, add type support
 // Extend API: adds custom rules to both eager and lazy interfaces

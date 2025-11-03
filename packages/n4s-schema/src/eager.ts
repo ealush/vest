@@ -1,4 +1,10 @@
-import { dynamicValue, invariant, isNullish, StringObject } from 'vest-utils';
+import {
+  assign,
+  dynamicValue,
+  invariant,
+  isNullish,
+  StringObject,
+} from 'vest-utils';
 import type { DropFirst, Maybe, Stringable } from 'vest-utils';
 
 import * as arrayRules from 'arrayRules';
@@ -25,7 +31,7 @@ function isMessageKey<T>(key: keyof EnforceBase<T>): boolean {
 const customRules: Record<string, (...args: any[]) => any> = {};
 
 export function extendEager(rules: Record<string, (...args: any[]) => any>) {
-  Object.assign(customRules, rules);
+  assign(customRules, rules);
 }
 
 export function enforceEager<T>(value: T): EnforceEagerReturn<T> {

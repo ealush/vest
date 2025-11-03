@@ -35,4 +35,8 @@ export interface RuleRunReturn<T> {
 export interface RuleInstance<T, Args extends any[] = any[]> {
   run: (...args: Args) => RuleRunReturn<T>;
   infer: T;
+  // Custom lazy rule methods are dynamically attached via registerLazyRule.
+  // We expose a permissive index signature to allow chaining custom rules in TS.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
 }

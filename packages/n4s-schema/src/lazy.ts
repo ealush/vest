@@ -18,6 +18,8 @@ import {
   type ConditionRuleInstance,
   AnyRuleInstance,
 } from 'generalRules';
+import type { DropFirst } from 'vest-utils';
+import type { RuleInstance } from 'enforceUtil';
 import {
   isNull,
   isNotNull,
@@ -45,7 +47,22 @@ import * as schemaRules from 'schemaRules';
 import { isString, type StringRuleInstance } from 'stringRules';
 import * as stringRules from 'stringRules';
 
-export const enforceLazy = {
+// Helpers for deriving types from value-first custom rules
+type FirstArg<F> = F extends (arg: infer A, ...rest: any[]) => any ? A : never;
+
+// Map custom rules (value-first) to their lazy builder signatures
+type TCustomLazyRules = {
+  [K in keyof n4s.ValueFirstRules]: (
+    ...args: DropFirst<
+      Parameters<Extract<n4s.ValueFirstRules[K], (...args: any) => any>>
+    >
+  ) => RuleInstance<
+    FirstArg<n4s.ValueFirstRules[K]>,
+    [FirstArg<n4s.ValueFirstRules[K]>]
+  >;
+};
+
+const baseEnforceLazy = {
   ...schemaRules,
   condition: (cond: boolean): ConditionRuleInstance =>
     addToChain({}, () => condition(cond)),
@@ -79,3 +96,6 @@ export const enforceLazy = {
   isTruthy: (): AnyRuleInstance => addToChain({}, isTruthy),
   isUndefined: (): UndefinedRuleInstance => addToChain({}, isUndefined),
 };
+
+export const enforceLazy = baseEnforceLazy as TCustomLazyRules &
+  typeof baseEnforceLazy;

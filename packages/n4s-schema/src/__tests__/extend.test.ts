@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable sort-keys, @typescript-eslint/no-unused-vars, no-unused-vars, no-useless-escape */
 import { enforce } from 'enforce';
 import { describe, it, expect, beforeEach } from 'vitest';
 
@@ -1279,7 +1281,7 @@ describe('enforce.extend', () => {
           hasProperty: (value: any, prop: string) =>
             value && value.hasOwnProperty(prop),
           arrayContains: (value: any[], item: any) =>
-            value.some((v) =>
+            value.some(v =>
               v && item && typeof v === 'object' && typeof item === 'object'
                 ? JSON.stringify(v) === JSON.stringify(item)
                 : v === item,

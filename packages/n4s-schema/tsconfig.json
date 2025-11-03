@@ -14,6 +14,7 @@
       "enforceUtil": ["./src/enforceUtil.ts"],
       "enforce": ["./src/enforce.ts"],
       "eager": ["./src/eager.ts"],
+      "n4sTypes": ["./src/n4sTypes.ts"],
       "stringRules": ["./src/rules/stringRules.ts"],
       "objectRules": ["./src/rules/objectRules.ts"],
       "numericRules": ["./src/rules/numericRules.ts"],

@@ -3,18 +3,21 @@ import { assign } from 'vest-utils';
 import { enforceEager, extendEager } from 'eager';
 import { addToChain, registerLazyRule } from 'genRuleChain';
 import { enforceLazy } from 'lazy';
+// n4s.ValueFirstRules is declared globally for typing custom rules
 
-type CustomRule = (
-  value: any,
-  ...args: any[]
-) => boolean | { pass: boolean; message?: string | (() => string) };
+// Note: runtime accepts any value-first function; types are derived via n4s.ValueFirstRules
 
-// Build the base enforce object
-export const enforce: any = assign(enforceEager, enforceLazy);
+type ExtendFn = (rules: Record<string, (...args: any[]) => any>) => void;
+type Enforce = typeof enforceEager & typeof enforceLazy & { extend: ExtendFn };
 
-// TODO: IMPROVE this API, add type support
+// Build the base enforce object (callable + lazy builders)
+export const enforce = assign(enforceEager, enforceLazy) as Enforce;
+
+// Type-safe extend function
 // Extend API: adds custom rules to both eager and lazy interfaces
-enforce.extend = function extend(rules: Record<string, CustomRule>) {
+enforce.extend = function extend(
+  rules: Record<string, (...args: any[]) => any>,
+) {
   // Register for eager path
   extendEager(rules);
 
@@ -22,7 +25,7 @@ enforce.extend = function extend(rules: Record<string, CustomRule>) {
   Object.keys(rules).forEach(ruleName => {
     const rule = rules[ruleName];
     // Attach as lazy builder on enforce
-    enforce[ruleName] = (...args: any[]) =>
+    (enforce as Record<string, any>)[ruleName] = (...args: any[]) =>
       addToChain({}, (value: any) => normalizeResult(rule(value, ...args)));
 
     // Also register for chaining on any lazy rule instance

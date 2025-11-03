@@ -118,7 +118,7 @@ type RuleDetailedResult = { pass: boolean; message?: Stringable };
 /**
  * Transform the result of a rule into a standard format
  */
-function transformResult<T>(
+function transformResult(
   result: any,
   ruleName: string,
   value: RuleValue,
@@ -189,22 +189,39 @@ type ArrayRuleNames = keyof typeof arrayRules;
 type BooleanRuleNames = keyof typeof booleanRules;
 type NumericRuleNames = keyof typeof numericRules;
 type LengthRuleNames = keyof typeof commonLength;
+// Numeric comparisons from commonComparison that require number|string
+type NumericComparisonNames =
+  | 'greaterThan'
+  | 'greaterThanOrEquals'
+  | 'lessThan'
+  | 'lessThanOrEquals';
+// Guard rules allowed on any input type
+type GuardRuleNames =
+  | 'isNumber'
+  | 'isString'
+  | 'isBoolean'
+  | 'isArray'
+  | 'isNumeric';
 
 // Map rule name to required input type
 type RuleRequiresType<RuleName extends keyof typeof allRules> =
-  RuleName extends LengthRuleNames
-    ? string | any[]
-    : RuleName extends ArrayRuleNames
-      ? any[]
-      : RuleName extends NumberRuleNames
-        ? number
-        : RuleName extends StringRuleNames
-          ? string
-          : RuleName extends BooleanRuleNames
-            ? boolean
-            : RuleName extends NumericRuleNames
-              ? number | string
-              : any;
+  RuleName extends GuardRuleNames
+    ? any
+    : RuleName extends NumericComparisonNames
+      ? number | string
+      : RuleName extends LengthRuleNames
+        ? string | any[]
+        : RuleName extends ArrayRuleNames
+          ? any[]
+          : RuleName extends NumberRuleNames
+            ? number
+            : RuleName extends StringRuleNames
+              ? string
+              : RuleName extends BooleanRuleNames
+                ? boolean
+                : RuleName extends NumericRuleNames
+                  ? number | string
+                  : any;
 
 // Map rule name to output type after execution
 type RuleReturnsType<
@@ -233,21 +250,34 @@ type TRules<T> = {
   [K in keyof typeof allRules as (typeof allRules)[K] extends (
     ...args: any
   ) => any
-    ? K
-    : never]: AcceptsValue<T, K> extends never
-    ? never
-    : (
-        ...args: DropFirst<
-          Parameters<Extract<(typeof allRules)[K], (...args: any) => any>>
-        >
-      ) => EnforceEagerReturn<RuleReturnsType<T, K>>;
+    ? AcceptsValue<T, K> extends never
+      ? never
+      : K
+    : never]: (
+    ...args: DropFirst<
+      Parameters<Extract<(typeof allRules)[K], (...args: any) => any>>
+    >
+  ) => EnforceEagerReturn<RuleReturnsType<T, K>>;
 };
 
 type TModifiers<T> = {
   message: (input: string) => EnforceEagerReturn<T>;
 };
 
-type EnforceBase<T = any> = TModifiers<T> & TRules<T>;
+// Helper to extract first argument of a function
+type FirstArg<F> = F extends (arg: infer A, ...rest: any[]) => any ? A : never;
+// Map custom rules (value-first) to their eager signatures by dropping the value
+type TCustomRules<T> = {
+  [K in keyof n4s.ValueFirstRules as T extends FirstArg<n4s.ValueFirstRules[K]>
+    ? K
+    : never]: (
+    ...args: DropFirst<
+      Parameters<Extract<n4s.ValueFirstRules[K], (...args: any) => any>>
+    >
+  ) => EnforceEagerReturn<T>;
+};
+
+type EnforceBase<T = any> = TModifiers<T> & TRules<T> & TCustomRules<T>;
 
 type EnforceEagerReturn<T = any> = EnforceBase<T> & {
   pass: boolean;

@@ -60,10 +60,8 @@ describe('integration: rules with schema combinators', () => {
     const ENV = { dev: 1, prod: 2 } as const;
 
     const schema = enforceLazy.loose({
-      envKey: enforceLazy.checkKey().isKeyOf(ENV),
-      envValue: enforceLazy
-        .checkValue<number>()
-        .isValueOf({ a: 1, b: 2, c: 3 }),
+      envKey: enforceLazy.isKeyOf(ENV),
+      envValue: enforceLazy.isValueOf({ a: 1, b: 2, c: 3 }),
     });
 
     expect(schema.run({ envKey: 'dev', envValue: 2 } as any).pass).toBe(true);

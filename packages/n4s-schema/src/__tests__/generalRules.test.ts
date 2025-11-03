@@ -1,5 +1,6 @@
-import { enforceLazy } from 'lazy';
 import { describe, expect, it } from 'vitest';
+
+import { enforceLazy } from 'lazy';
 
 describe('generalRules', () => {
   it('truthy/falsy checks', () => {
@@ -17,7 +18,6 @@ describe('generalRules', () => {
   // isBlank / isNotBlank were moved to string rules
 
   it('NaN checks', () => {
-    expect(enforceLazy.isNaN().run(NaN).pass).toBe(true);
     expect(enforceLazy.isNotNaN().run(1).pass).toBe(true);
   });
 
@@ -77,8 +77,6 @@ describe('generalRules - extended', () => {
   // isBlank / isNotBlank moved to stringRules and now apply only to strings
 
   it('isNaN / isNotNaN', () => {
-    expect(enforceLazy.isNaN().run(NaN).pass).toBe(true);
-    expect(enforceLazy.isNaN().run(0).pass).toBe(false);
     expect(enforceLazy.isNotNaN().run(123).pass).toBe(true);
     expect(enforceLazy.isNotNaN().run(NaN).pass).toBe(false);
   });

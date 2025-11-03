@@ -1,4 +1,3 @@
-import { ruleRunReturn, RuleRunReturn } from 'enforceUtil';
 import { dynamicValue, invariant, isNullish, StringObject } from 'vest-utils';
 import type { DropFirst, Maybe, Stringable } from 'vest-utils';
 
@@ -7,6 +6,7 @@ import * as booleanRules from 'booleanRules';
 import * as commonComparison from 'commonComparison';
 import * as commonContainer from 'commonContainer';
 import * as commonLength from 'commonLength';
+import { RuleRunReturn } from 'enforceUtil';
 import * as generalRules from 'generalRules';
 import * as nullishRules from 'nullishRules';
 import * as numberRules from 'numberRules';
@@ -21,6 +21,13 @@ function isMessageKey<T>(key: keyof EnforceBase<T>): boolean {
 }
 
 // eslint-disable-next-line max-lines-per-function
+// storage for user-extended custom rules (value-first signature)
+const customRules: Record<string, (...args: any[]) => any> = {};
+
+export function extendEager(rules: Record<string, (...args: any[]) => any>) {
+  Object.assign(customRules, rules);
+}
+
 export function enforceEager<T>(value: T): EnforceEagerReturn<T> {
   let customMessage: Maybe<string> = undefined;
 
@@ -106,7 +113,7 @@ type RuleDetailedResult = { pass: boolean; message?: Stringable };
  * Transform the result of a rule into a standard format
  */
 function transformResult<T>(
-  result: RuleRunReturn<T>,
+  result: any,
   ruleName: string,
   value: RuleValue,
   ...args: Args
@@ -115,12 +122,12 @@ function transformResult<T>(
 
   // if result is boolean
   if (booleanRules.isBoolean(result)) {
-    return ruleRunReturn(result, value);
+    return { pass: result };
   }
-  return ruleRunReturn(
-    result.pass,
-    dynamicValue(result.message, ruleName, value, ...args),
-  );
+  return {
+    pass: !!result.pass,
+    message: dynamicValue(result.message, ruleName, value, ...args),
+  };
 }
 
 function validateResult<T>(result: RuleRunReturn<T>): void {
@@ -132,6 +139,18 @@ function validateResult<T>(result: RuleRunReturn<T>): void {
   );
 }
 
+// Eager wrappers for object membership (value-first)
+const objectEager = {
+  isKeyOf: (value: string | number | symbol, obj: object) =>
+    objectRules.isKeyOf(obj)(value),
+  isNotKeyOf: (value: string | number | symbol, obj: object) =>
+    objectRules.isNotKeyOf(obj)(value),
+  isValueOf: (value: unknown, obj: Record<string, unknown>) =>
+    objectRules.isValueOf(obj)(value),
+  isNotValueOf: (value: unknown, obj: Record<string, unknown>) =>
+    objectRules.isNotValueOf(obj)(value),
+};
+
 const allRules = {
   ...arrayRules,
   ...booleanRules,
@@ -142,12 +161,16 @@ const allRules = {
   ...nullishRules,
   ...numberRules,
   ...numericRules,
-  ...objectRules,
+  ...objectEager,
   ...stringRules,
 };
 
 function getRule(ruleName: string): UnmodifiedRules | null {
-  return allRules[ruleName as UnmodifiedRuleKeys];
+  // Prefer user-defined rules when present
+  return (
+    (customRules[ruleName] as UnmodifiedRules | undefined) ??
+    allRules[ruleName as UnmodifiedRuleKeys]
+  );
 }
 
 type UnmodifiedRuleKeys = keyof typeof allRules;

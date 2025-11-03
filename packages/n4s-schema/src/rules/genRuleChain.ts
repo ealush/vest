@@ -1,6 +1,16 @@
 import { RuleInstance, ruleRunReturn, RuleRunReturn } from 'enforceUtil';
 
-type Predicate = (...args: any[]) => boolean;
+type Predicate = (value: any) => boolean;
+
+// Global registry for custom lazy rules so they can be chained on any rule set
+const lazyRegistry: Record<string, (...args: any[]) => Predicate> = {};
+
+export function registerLazyRule(
+  name: string,
+  builder: (...args: any[]) => Predicate,
+) {
+  lazyRegistry[name] = builder;
+}
 
 export function addToChain<T extends RuleInstance<any, any>>(
   rules: Record<keyof Omit<T, 'run' | 'infer'>, (...args: any[]) => boolean>,
@@ -19,6 +29,13 @@ export function addToChain<T extends RuleInstance<any, any>>(
       if (Object.prototype.hasOwnProperty.call(rules, prop as any)) {
         return (...args: any[]) => {
           chain.push((value: any) => (rules as any)[prop](value, ...args));
+          return proxy as T;
+        };
+      }
+
+      if (Object.prototype.hasOwnProperty.call(lazyRegistry, prop as any)) {
+        return (...args: any[]) => {
+          chain.push(lazyRegistry[prop as any](...args));
           return proxy as T;
         };
       }
@@ -61,6 +78,10 @@ export function genRuleChain<T extends RuleInstance<any, any>>(
         return (...args: any[]) => {
           return add((value: any) => (rules as any)[prop](value, ...args));
         };
+      }
+
+      if (Object.prototype.hasOwnProperty.call(lazyRegistry, prop as any)) {
+        return (...args: any[]) => add(lazyRegistry[prop as any](...args));
       }
 
       return Reflect.get(target as object, prop, receiver);

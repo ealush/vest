@@ -29,8 +29,8 @@ describe('integration: extensive schema + combinators', () => {
 
     const contactSchema = enforceLazy.shape({
       // object key/value checks
-      metaEnvKey: enforceLazy.checkKey().isKeyOf(Envs),
-      metaRoleValue: enforceLazy.checkValue<string>().isValueOf(Roles as any),
+      metaEnvKey: enforceLazy.isKeyOf(Envs),
+      metaRoleValue: enforceLazy.isValueOf(Roles as any),
       // exactly one of email or phone must be present
       method: enforceLazy.oneOf(
         enforceLazy.isString().equals('email'),

@@ -7,14 +7,12 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "schemaRules": ["./src/schemaRules.ts"],
+      "n4sTypes": ["./src/n4sTypes.ts"],
       "n4s-schema": ["./src/n4s-schema.ts"],
       "lazy": ["./src/lazy.ts"],
-      "example": ["./src/example.ts"],
       "enforceUtil": ["./src/enforceUtil.ts"],
       "enforce": ["./src/enforce.ts"],
       "eager": ["./src/eager.ts"],
-      "n4sTypes": ["./src/n4sTypes.ts"],
       "stringRules": ["./src/rules/stringRules.ts"],
       "objectRules": ["./src/rules/objectRules.ts"],
       "numericRules": ["./src/rules/numericRules.ts"],
@@ -36,6 +34,17 @@
       "endsWith": ["./src/rules/string/endsWith.ts"],
       "doesNotStartWith": ["./src/rules/string/doesNotStartWith.ts"],
       "doesNotEndWith": ["./src/rules/string/doesNotEndWith.ts"],
+      "types": ["./src/rules/schema/types.ts"],
+      "shape": ["./src/rules/schema/shape.ts"],
+      "schemaRules": ["./src/rules/schema/schemaRules.ts"],
+      "partial": ["./src/rules/schema/partial.ts"],
+      "optional": ["./src/rules/schema/optional.ts"],
+      "oneOf": ["./src/rules/schema/oneOf.ts"],
+      "noneOf": ["./src/rules/schema/noneOf.ts"],
+      "loose": ["./src/rules/schema/loose.ts"],
+      "isArrayOf": ["./src/rules/schema/isArrayOf.ts"],
+      "anyOf": ["./src/rules/schema/anyOf.ts"],
+      "allOf": ["./src/rules/schema/allOf.ts"],
       "isValueOf": ["./src/rules/object/isValueOf.ts"],
       "isKeyOf": ["./src/rules/object/isKeyOf.ts"],
       "toNumber": ["./src/rules/numeric/toNumber.ts"],
@@ -84,7 +93,8 @@
       "lengthEquals": ["./src/rules/array/lengthEquals.ts"],
       "isArray": ["./src/rules/array/isArray.ts"],
       "includes": ["./src/rules/array/includes.ts"],
-      "empty": ["./src/rules/array/empty.ts"]
+      "empty": ["./src/rules/array/empty.ts"],
+      "customRules.example": ["./src/examples/customRules.example.ts"]
     }
   }
 }

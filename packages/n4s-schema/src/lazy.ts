@@ -1,3 +1,4 @@
+import * as schemaRules from 'schemaRules';
 import type { DropFirst } from 'vest-utils';
 
 import { isArray, type ArrayRuleInstance } from 'arrayRules';
@@ -44,7 +45,6 @@ import {
   ObjectRuleInstance,
 } from 'objectRules';
 import * as objectRules from 'objectRules';
-import * as schemaRules from 'schemaRules';
 import { isString, type StringRuleInstance } from 'stringRules';
 import * as stringRules from 'stringRules';
 

@@ -1,79 +1,68 @@
-import { describe, it, expect } from 'vitest';
+import { enforce } from 'enforce';
+import { describe, it, expect, vi } from 'vitest';
 
-import { enforceLazy } from 'lazy';
+describe('enforce.condition', () => {
+  it('Should pass down enforced value to condition as the first argument', () => {
+    const condition = vi.fn(() => true);
 
-describe('condition', () => {
-  describe('when condition is true', () => {
-    it('pass with null input', () => {
-      const value: any = null;
-      expect(enforceLazy.condition(true).run(value).pass).toBe(true);
+    enforce(1).condition(condition);
+    expect(condition).toHaveBeenCalledWith(1);
+
+    enforce.condition(condition).run(2);
+    expect(condition).toHaveBeenCalledWith(2);
+
+    expect(enforce.condition((v: boolean) => v).run(true)).toEqual({
+      pass: true,
+      type: true,
     });
-
-    it('pass with undefined input', () => {
-      const value: any = undefined;
-      expect(enforceLazy.condition(true).run(value).pass).toBe(true);
-    });
-
-    it('pass with number input', () => {
-      expect(enforceLazy.condition(true).run(42).pass).toBe(true);
-      expect(enforceLazy.condition(true).run(0).pass).toBe(true);
-    });
-
-    it('pass with string input', () => {
-      expect(enforceLazy.condition(true).run('test').pass).toBe(true);
-      expect(enforceLazy.condition(true).run('').pass).toBe(true);
-    });
-
-    it('pass with boolean input', () => {
-      expect(enforceLazy.condition(true).run(true).pass).toBe(true);
-      expect(enforceLazy.condition(true).run(false).pass).toBe(true);
-    });
-
-    it('pass with object input', () => {
-      expect(enforceLazy.condition(true).run({}).pass).toBe(true);
-      expect(enforceLazy.condition(true).run({ a: 1 }).pass).toBe(true);
-    });
-
-    it('pass with array input', () => {
-      expect(enforceLazy.condition(true).run([]).pass).toBe(true);
-      expect(enforceLazy.condition(true).run([1, 2]).pass).toBe(true);
+    expect(enforce.condition((v: boolean) => v).run(false)).toEqual({
+      pass: false,
+      type: false,
     });
   });
 
-  describe('when condition is false', () => {
-    it('fails with null input', () => {
-      const value: any = null;
-      expect(enforceLazy.condition(false).run(value).pass).toBe(false);
+  describe('Lazy interface', () => {
+    it('Should return a failing result if condition is failing', () => {
+      expect(enforce.condition(() => false).run(1)).toEqual({
+        pass: false,
+        type: 1,
+      });
     });
 
-    it('fails with undefined input', () => {
-      const value: any = undefined;
-      expect(enforceLazy.condition(false).run(value).pass).toBe(false);
+    it('Should return a passing result if condition is passing', () => {
+      expect(enforce.condition(() => true).run(1)).toEqual({
+        pass: true,
+        type: 1,
+      });
+    });
+  });
+
+  describe('Eager interface', () => {
+    it('Should throw an error if condition is failing', () => {
+      expect(() => enforce(1).condition(() => false)).toThrow();
+
+      expect(() => enforce(1).condition(() => false)).toThrow();
+
+      expect(() => enforce(1).condition(() => false)).toThrow();
     });
 
-    it('fails with number input', () => {
-      expect(enforceLazy.condition(false).run(42).pass).toBe(false);
-      expect(enforceLazy.condition(false).run(0).pass).toBe(false);
-    });
+    it('Should return silently if condition is passing', () => {
+      expect(() => enforce(1).condition(() => true)).not.toThrow();
 
-    it('fails with string input', () => {
-      expect(enforceLazy.condition(false).run('test').pass).toBe(false);
-      expect(enforceLazy.condition(false).run('').pass).toBe(false);
-    });
+      expect(() => enforce(1).condition(() => true)).not.toThrow();
 
-    it('fails with boolean input', () => {
-      expect(enforceLazy.condition(false).run(true).pass).toBe(false);
-      expect(enforceLazy.condition(false).run(false).pass).toBe(false);
+      expect(() => enforce(1).condition(() => true)).not.toThrow();
     });
+  });
 
-    it('fails with object input', () => {
-      expect(enforceLazy.condition(false).run({}).pass).toBe(false);
-      expect(enforceLazy.condition(false).run({ a: 1 }).pass).toBe(false);
-    });
-
-    it('fails with array input', () => {
-      expect(enforceLazy.condition(false).run([]).pass).toBe(false);
-      expect(enforceLazy.condition(false).run([1, 2]).pass).toBe(false);
+  describe('Error handling', () => {
+    it('Should fail if not a function', () => {
+      // @ts-expect-error - testing bad usage
+      expect(() => enforce().condition('not a function')).toThrow();
+      expect(enforce.condition('not a function').run(1)).toEqual({
+        pass: false,
+        type: 1,
+      });
     });
   });
 });

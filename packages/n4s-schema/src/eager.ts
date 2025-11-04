@@ -145,18 +145,6 @@ function validateResult<T>(result: RuleRunReturn<T>): void {
   );
 }
 
-// Eager wrappers for object membership (value-first)
-const objectEager = {
-  isKeyOf: (value: string | number | symbol, obj: object) =>
-    objectRules.isKeyOf(obj)(value),
-  isNotKeyOf: (value: string | number | symbol, obj: object) =>
-    objectRules.isNotKeyOf(obj)(value),
-  isValueOf: (value: unknown, obj: Record<string, unknown>) =>
-    objectRules.isValueOf(obj)(value),
-  isNotValueOf: (value: unknown, obj: Record<string, unknown>) =>
-    objectRules.isNotValueOf(obj)(value),
-};
-
 const allRules = {
   ...arrayRules,
   ...booleanRules,
@@ -167,7 +155,7 @@ const allRules = {
   ...nullishRules,
   ...numberRules,
   ...numericRules,
-  ...objectEager,
+  ...objectRules,
   ...stringRules,
 } as const;
 

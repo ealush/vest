@@ -63,13 +63,13 @@
       "isUndefined": ["./src/rules/nullish/isUndefined.ts"],
       "isNullish": ["./src/rules/nullish/isNullish.ts"],
       "isNull": ["./src/rules/nullish/isNull.ts"],
-      "isNotUndefined": ["./src/rules/nullish/isNotUndefined.ts"],
-      "isNotNullish": ["./src/rules/nullish/isNotNullish.ts"],
-      "isNotNull": ["./src/rules/nullish/isNotNull.ts"],
       "isTruthy": ["./src/rules/general/isTruthy.ts"],
+      "isNotUndefined": ["./src/rules/general/isNotUndefined.ts"],
       "isNotString": ["./src/rules/general/isNotString.ts"],
       "isNotNumeric": ["./src/rules/general/isNotNumeric.ts"],
       "isNotNumber": ["./src/rules/general/isNotNumber.ts"],
+      "isNotNullish": ["./src/rules/general/isNotNullish.ts"],
+      "isNotNull": ["./src/rules/general/isNotNull.ts"],
       "isNotNaN": ["./src/rules/general/isNotNaN.ts"],
       "isNotEmpty": ["./src/rules/general/isNotEmpty.ts"],
       "isNotBoolean": ["./src/rules/general/isNotBoolean.ts"],
@@ -93,8 +93,7 @@
       "lengthEquals": ["./src/rules/array/lengthEquals.ts"],
       "isArray": ["./src/rules/array/isArray.ts"],
       "includes": ["./src/rules/array/includes.ts"],
-      "empty": ["./src/rules/array/empty.ts"],
-      "customRules.example": ["./src/examples/customRules.example.ts"]
+      "empty": ["./src/rules/array/empty.ts"]
     }
   }
 }

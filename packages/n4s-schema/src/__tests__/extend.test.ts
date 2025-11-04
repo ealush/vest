@@ -649,8 +649,8 @@ describe('enforce.extend', () => {
         isEven: (value: number) => value % 2 === 0,
       });
 
-      expect(enforce.condition(true).run(4).pass).toBe(true);
-      expect(enforce.condition(false).run(3).pass).toBe(false);
+      expect(enforce.condition(() => true).run(4).pass).toBe(true);
+      expect(enforce.condition(() => false).run(3).pass).toBe(false);
     });
   });
 

@@ -1,4 +1,3 @@
-import * as schemaRules from 'schemaRules';
 import type { DropFirst } from 'vest-utils';
 
 import { isArray, type ArrayRuleInstance } from 'arrayRules';
@@ -7,28 +6,12 @@ import { isBoolean, type BooleanRuleInstance } from 'booleanRules';
 import * as booleanRules from 'booleanRules';
 import type { RuleInstance } from 'enforceUtil';
 import { addToChain } from 'genRuleChain';
-import {
-  isTruthy,
-  isFalsy,
-  isEmpty,
-  isNotEmpty,
-  isNotNaN,
-  condition,
-  isNotArray,
-  isNotBoolean,
-  isNotNumber,
-  isNotString,
-  isNotNumeric,
-  type ConditionRuleInstance,
-  AnyRuleInstance,
-} from 'generalRules';
+import { AnyRuleInstance } from 'generalRules';
+import * as generalRules from 'generalRules';
 import {
   isNull,
-  isNotNull,
   isUndefined,
-  isNotUndefined,
   isNullish,
-  isNotNullish,
   type NullRuleInstance,
   type UndefinedRuleInstance,
   type NullishRuleInstance,
@@ -37,14 +20,9 @@ import { isNumber, type NumberRuleInstance } from 'numberRules';
 import * as numberRules from 'numberRules';
 import { isNumeric, type NumericRuleInstance } from 'numericRules';
 import * as numericRules from 'numericRules';
-import {
-  isKeyOf,
-  isNotKeyOf,
-  isValueOf,
-  isNotValueOf,
-  ObjectRuleInstance,
-} from 'objectRules';
+import { ObjectRuleInstance } from 'objectRules';
 import * as objectRules from 'objectRules';
+import * as schemaRules from 'schemaRules';
 import { isString, type StringRuleInstance } from 'stringRules';
 import * as stringRules from 'stringRules';
 
@@ -63,60 +41,32 @@ type TCustomLazyRules = {
   >;
 };
 
-// Omit non-boolean helpers from numericRules when building chains
-const { toNumber: _omitToNumber, ...numericRuleFns } = numericRules as any;
-
-// Adapt object rules (curried by object-first) to value-first boolean predicates
-const objectRuleFns = {
-  isKeyOf: (value: string | number | symbol, obj: object) =>
-    objectRules.isKeyOf(obj)(value),
-  isNotKeyOf: (value: string | number | symbol, obj: object) =>
-    objectRules.isNotKeyOf(obj)(value),
-  isNotValueOf: (value: any, obj: Record<string, any>) =>
-    objectRules.isNotValueOf(obj)(value),
-  isValueOf: (value: any, obj: Record<string, any>) =>
-    objectRules.isValueOf(obj)(value),
-} as const;
+function adaptDynamicRules<
+  T extends RuleInstance<any, [any]>,
+  O extends Record<string, (...args: any[]) => any>,
+>(container: O): Record<keyof typeof container, (...args: any[]) => T> {
+  return Object.keys(container).reduce(
+    (acc, key) => {
+      (acc as any)[key] = (...args: any[]) =>
+        addToChain({}, (value: any) => (container as any)[key](value, ...args));
+      return acc;
+    },
+    {} as Record<keyof typeof container, (...args: any[]) => T>,
+  );
+}
 
 const baseEnforceLazy = {
   ...schemaRules,
-  condition: (cond: boolean): ConditionRuleInstance =>
-    addToChain({}, () => condition(cond)),
+  ...adaptDynamicRules<AnyRuleInstance, typeof generalRules>(generalRules),
+  ...adaptDynamicRules<ObjectRuleInstance, typeof objectRules>(objectRules),
   isArray: (): ArrayRuleInstance => addToChain(arrayRules, isArray),
   isBoolean: (): BooleanRuleInstance => addToChain(booleanRules, isBoolean),
-  isEmpty: (): AnyRuleInstance => addToChain({}, isEmpty),
-  isFalsy: (): AnyRuleInstance => addToChain({}, isFalsy),
-  isKeyOf: (obj: object): ObjectRuleInstance =>
-    addToChain(objectRuleFns, isKeyOf(obj)),
-  isNotArray: (): AnyRuleInstance => addToChain({}, isNotArray),
-  isNotBoolean: (): AnyRuleInstance => addToChain({}, isNotBoolean),
-  isNotEmpty: (): AnyRuleInstance => addToChain({}, isNotEmpty),
-  isNotKeyOf: (obj: object): ObjectRuleInstance =>
-    addToChain(objectRuleFns, isNotKeyOf(obj)),
-  isNotNaN: (): AnyRuleInstance => addToChain({}, isNotNaN),
-  isNotNull: (): AnyRuleInstance => addToChain({}, isNotNull),
-  isNotNullish: (): AnyRuleInstance => addToChain({}, isNotNullish),
-  isNotNumber: (): AnyRuleInstance => addToChain({}, isNotNumber),
-  isNotNumeric: (): AnyRuleInstance => addToChain({}, isNotNumeric),
-  isNotString: (): AnyRuleInstance => addToChain({}, isNotString),
-  isNotUndefined: (): AnyRuleInstance => addToChain({}, isNotUndefined),
-  isNotValueOf: (obj: object): ObjectRuleInstance =>
-    addToChain(objectRuleFns, isNotValueOf(obj)),
   isNull: (): NullRuleInstance => addToChain({}, isNull),
   isNullish: (): NullishRuleInstance => addToChain({}, isNullish),
   isNumber: (): NumberRuleInstance => addToChain(numberRules, isNumber),
-  // numericRules also exports helpers like `toNumber` that are not boolean predicates,
-  // so omit them when passing the rule map into addToChain.
-  isNumeric: (): NumericRuleInstance =>
-    addToChain(
-      numericRuleFns as Record<string, (...args: any[]) => boolean>,
-      isNumeric,
-    ),
+  isNumeric: (): NumericRuleInstance => addToChain(numericRules, isNumeric),
   isString: (): StringRuleInstance => addToChain(stringRules, isString),
-  isTruthy: (): AnyRuleInstance => addToChain({}, isTruthy),
   isUndefined: (): UndefinedRuleInstance => addToChain({}, isUndefined),
-  isValueOf: (obj: object): ObjectRuleInstance =>
-    addToChain(objectRuleFns, isValueOf(obj)),
 };
 
 export const enforceLazy = baseEnforceLazy as TCustomLazyRules &

@@ -1,7 +1,10 @@
-import { RuleInstance } from 'enforceUtil';
-
-export interface ConditionRuleInstance extends RuleInstance<boolean, [any]> {}
-
-export function condition(cond: boolean): boolean {
-  return cond;
+export function condition(
+  value: any,
+  callback: (value: any) => boolean,
+): boolean {
+  try {
+    return callback(value);
+  } catch {
+    return false;
+  }
 }

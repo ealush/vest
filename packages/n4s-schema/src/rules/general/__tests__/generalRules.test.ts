@@ -22,8 +22,8 @@ describe('generalRules', () => {
   });
 
   it('condition check', () => {
-    expect(enforceLazy.condition(true).run('anything').pass).toBe(true);
-    expect(enforceLazy.condition(false).run('anything').pass).toBe(false);
+    expect(enforceLazy.condition(() => true).run('anything').pass).toBe(true);
+    expect(enforceLazy.condition(() => false).run('anything').pass).toBe(false);
   });
 
   it('negative type checks', () => {
@@ -82,7 +82,7 @@ describe('generalRules - extended', () => {
   });
 
   it('condition', () => {
-    expect(enforceLazy.condition(true).run('anything').pass).toBe(true);
-    expect(enforceLazy.condition(false).run('anything').pass).toBe(false);
+    expect(enforceLazy.condition(() => true).run('anything').pass).toBe(true);
+    expect(enforceLazy.condition(() => false).run('anything').pass).toBe(false);
   });
 });

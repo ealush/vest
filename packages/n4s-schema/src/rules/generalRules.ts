@@ -4,7 +4,6 @@ import { RuleInstance } from 'enforceUtil';
 export interface AnyRuleInstance extends RuleInstance<any, [any]> {}
 
 export { condition } from 'condition';
-export type { ConditionRuleInstance } from 'condition';
 
 export { isEmpty } from 'isEmpty';
 export { isFalsy } from 'isFalsy';
@@ -18,3 +17,6 @@ export { isNotNumber } from 'isNotNumber';
 export { isNotNumeric } from 'isNotNumeric';
 export { isNotString } from 'isNotString';
 export { isTruthy } from 'isTruthy';
+export { isNotNull } from 'isNotNull';
+export { isNotUndefined } from 'isNotUndefined';
+export { isNotNullish } from 'isNotNullish';

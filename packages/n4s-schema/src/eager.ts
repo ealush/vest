@@ -1,3 +1,5 @@
+import { ctx } from 'enforceContext';
+import type { ShapeType, MultiTypeInput } from 'schemaTypes';
 import { assign, invariant } from 'vest-utils';
 import type { DropFirst, Maybe } from 'vest-utils';
 
@@ -6,12 +8,14 @@ import * as booleanRules from 'booleanRules';
 import * as commonComparison from 'commonComparison';
 import * as commonContainer from 'commonContainer';
 import * as commonLength from 'commonLength';
+import type { RuleInstance } from 'enforceUtil';
 import * as generalRules from 'generalRules';
 import * as nullishRules from 'nullishRules';
 import * as numberRules from 'numberRules';
 import * as numericRules from 'numericRules';
 import * as objectRules from 'objectRules';
 import { enforceMessage, transformResult } from 'ruleResult';
+import * as schemaRules from 'schemaRules';
 import * as stringRules from 'stringRules';
 import type { FirstArg } from 'typeUtils';
 
@@ -37,6 +41,12 @@ export function enforceEager<T>(value: T): EnforceEagerReturn<T> {
           return setMessage;
         }
 
+        // Check if it's a schema rule (returns RuleInstance)
+        const schemaRule = getSchemaRule(key);
+        if (schemaRule) {
+          return genSchemaRuleCall(proxy, schemaRule, key);
+        }
+
         // On property access, we identify if it is a rule or not.
         const rule = getRule(key);
 
@@ -55,17 +65,48 @@ export function enforceEager<T>(value: T): EnforceEagerReturn<T> {
     customMessage = msg;
     return proxy;
   }
+  function genSchemaRuleCall(
+    target: any,
+    schemaRule: SchemaRules,
+    ruleName: string,
+  ) {
+    return function schemaRuleCall(...args: Args): any {
+      // Schema rules return RuleInstance objects
+      // We need to call the rule to get a RuleInstance, then run it with the value
+      const ruleInstance = ctx.run({ value }, () =>
+        (schemaRule as (...args: any[]) => any)(...args),
+      );
+
+      // Run the rule instance with the value
+      const result = ctx.run({ value }, () => ruleInstance.run(value));
+
+      // Check if the rule passed
+      invariant(
+        result.pass,
+        enforceMessage(ruleName, result, value, customMessage),
+      );
+
+      // Reset the custom message after rule execution
+      setMessage(undefined);
+
+      target.pass = result.pass;
+
+      return target;
+    };
+  }
   function genRuleCall(target: any, rule: UnmodifiedRules, ruleName: string) {
     return function ruleCall(...args: Args): any {
       // Order of operation:
       // 1. Create a context with the value being enforced
       // 2. Call the rule within the context, and pass over the arguments passed to it
       // 3. Transform the result to the correct output format
-      const transformedResult = transformResult(
-        (rule as (...args: any[]) => any)(value, ...args),
-        ruleName,
-        value,
-        ...args,
+      const transformedResult = ctx.run({ value }, () =>
+        transformResult(
+          (rule as (...args: any[]) => any)(value, ...args),
+          ruleName,
+          value,
+          ...args,
+        ),
       );
 
       // On rule failure (the result is false), we either throw an error
@@ -105,6 +146,15 @@ const allRules = {
   ...stringRules,
 } as const;
 
+// Schema rules that return RuleInstance objects
+const schemaRulesMap = {
+  ...schemaRules,
+} as const;
+
+function getSchemaRule(ruleName: string): SchemaRules | null {
+  return schemaRulesMap[ruleName as SchemaRuleKeys] ?? null;
+}
+
 function getRule(ruleName: string): UnmodifiedRules | null {
   // Prefer user-defined rules when present
   return (
@@ -115,6 +165,8 @@ function getRule(ruleName: string): UnmodifiedRules | null {
 
 type UnmodifiedRuleKeys = keyof typeof allRules;
 type UnmodifiedRules = (typeof allRules)[UnmodifiedRuleKeys];
+type SchemaRuleKeys = keyof typeof schemaRulesMap;
+type SchemaRules = (typeof schemaRulesMap)[SchemaRuleKeys];
 
 // Get all rule names from each module
 type NumberRuleNames = keyof typeof numberRules;
@@ -229,7 +281,33 @@ type TCustomRules<T> = {
   ) => EnforceEagerReturn<T>;
 };
 
-type EnforceBase<T = any> = TModifiers<T> & TRules<T> & TCustomRules<T>;
+// Schema rules for object validation
+type TSchemaRules<T> =
+  T extends Record<string, any>
+    ? {
+        shape<S extends Record<string, RuleInstance<any>>>(
+          schema: S,
+        ): EnforceEagerReturn<ShapeType<S>>;
+        loose<S extends Record<string, RuleInstance<any>>>(
+          schema: S,
+        ): EnforceEagerReturn<ShapeType<S> & Record<string, unknown>>;
+      }
+    : {};
+
+// Schema rules for array validation
+type TArraySchemaRules<T> = T extends any[]
+  ? {
+      isArrayOf<R extends RuleInstance<any, any>[]>(
+        ...rules: R
+      ): EnforceEagerReturn<MultiTypeInput<R>[]>;
+    }
+  : {};
+
+type EnforceBase<T = any> = TModifiers<T> &
+  TRules<T> &
+  TCustomRules<T> &
+  TSchemaRules<T> &
+  TArraySchemaRules<T>;
 
 type EnforceEagerReturn<T = any> = EnforceBase<T> & {
   pass: boolean;

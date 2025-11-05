@@ -1,3 +1,4 @@
+import { ctx } from 'enforceContext';
 import { isArray } from 'isArray';
 import type { DropFirst } from 'vest-utils';
 
@@ -47,7 +48,9 @@ function adaptDynamicRules<
   return Object.keys(container).reduce(
     (acc, key) => {
       (acc as any)[key] = (...args: any[]) =>
-        addToChain({}, (value: any) => (container as any)[key](value, ...args));
+        addToChain({}, (value: any) =>
+          ctx.run({ value }, () => (container as any)[key](value, ...args)),
+        );
       return acc;
     },
     {} as Record<keyof typeof container, (...args: any[]) => T>,

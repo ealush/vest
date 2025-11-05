@@ -1,18 +1,29 @@
+import { ctx } from 'enforceContext';
+import type { EnforceContext } from 'enforceContext';
 import { assign } from 'vest-utils';
 
 import { enforceEager, extendEager } from 'eager';
 import { addToChain, registerLazyRule } from 'genRuleChain';
 import { enforceLazy } from 'lazy';
 import { normalizeResult } from 'ruleResult';
+
+export { ctx } from 'enforceContext';
 // n4s.ValueFirstRules is declared globally for typing custom rules
 
 // Note: runtime accepts any value-first function; types are derived via n4s.ValueFirstRules
 
 type ExtendFn = (rules: Record<string, (...args: any[]) => any>) => void;
-type Enforce = typeof enforceEager & typeof enforceLazy & { extend: ExtendFn };
+type ContextFn = () => EnforceContext;
+type Enforce = typeof enforceEager &
+  typeof enforceLazy & { extend: ExtendFn; context: ContextFn };
 
 // Build the base enforce object (callable + lazy builders)
 export const enforce = assign(enforceEager, enforceLazy) as Enforce;
+
+// Context access function
+enforce.context = function context(): EnforceContext {
+  return ctx.use();
+};
 
 // Type-safe extend function
 // Extend API: adds custom rules to both eager and lazy interfaces

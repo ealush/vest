@@ -1,7 +1,8 @@
 // @ts-nocheck
 /* eslint-disable sort-keys, @typescript-eslint/no-unused-vars, no-unused-vars, no-useless-escape */
-import { enforce } from 'n4s-schema';
 import { describe, it, expect, beforeEach } from 'vitest';
+
+import { enforce } from 'n4s-schema';
 
 describe('enforce.extend', () => {
   describe('Basic functionality', () => {
@@ -343,7 +344,7 @@ describe('enforce.extend', () => {
     });
   });
 
-  describe.skip('Custom rules with enforce.context()', () => {
+  describe('Custom rules with enforce.context()', () => {
     beforeEach(() => {
       enforce.extend({
         contextAware: (value: string) => {
@@ -593,7 +594,7 @@ describe('enforce.extend', () => {
       );
     });
 
-    it.skip('Should support error messages with context', () => {
+    it('Should support error messages with context', () => {
       enforce.extend({
         notSameAsField: (value: string, fieldName: string) => {
           const context = enforce.context();

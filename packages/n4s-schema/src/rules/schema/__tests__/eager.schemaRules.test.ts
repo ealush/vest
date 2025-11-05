@@ -632,7 +632,7 @@ describe('Schema Rules - Eager Notation', () => {
     });
 
     // Note: Context traversal in nested schema rules (shape/isArrayOf) is not yet fully implemented
-    it.skip('should fail when context-aware custom rule fails', () => {
+    it('should fail when context-aware custom rule fails', () => {
       expect(() =>
         enforce({
           username: 'johndoe',

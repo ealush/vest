@@ -1,5 +1,6 @@
-import { RuleInstance } from 'enforceUtil';
 import { isNullish as isNullishValue } from 'vest-utils';
+
+import { RuleInstance } from 'enforceUtil';
 
 // Type guard rule instance
 export interface NullishRuleInstance

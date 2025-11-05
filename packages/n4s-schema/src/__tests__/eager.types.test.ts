@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars, @typescript-eslint/ban-ts-comment */
-import { enforce } from 'enforce';
+import { enforce } from 'n4s-schema';
 
 // Provide a trivial test so Vitest treats this file as a suite
 import { describe, it, expect } from 'vitest';

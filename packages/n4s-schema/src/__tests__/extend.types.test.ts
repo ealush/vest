@@ -4,7 +4,7 @@
  */
 
 /* eslint-disable sort-keys, @typescript-eslint/no-namespace, @typescript-eslint/no-unused-vars, no-unused-vars */
-import { enforce } from 'enforce';
+import { enforce } from 'n4s-schema';
 import { describe, it, expect, beforeEach } from 'vitest';
 
 // Declare custom rules in the n4s namespace

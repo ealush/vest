@@ -1,7 +1,8 @@
-import { dynamicValue } from 'vest-utils';
 
 import { lengthEquals } from 'lengthEquals';
 import { longerThan } from 'longerThan';
+import { dynamicValue } from 'vest-utils';
+
 import { DynamicValue, Nullable } from 'utilityTypes';
 
 /**

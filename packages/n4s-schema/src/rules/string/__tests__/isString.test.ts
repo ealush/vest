@@ -1,14 +1,14 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from 'lazy';
+import { enforce } from 'n4s-schema';
 
 describe('isString', () => {
   describe('base predicate', () => {
     it('pass for strings', () => {
-      expect(enforceLazy.isString().run('a').pass).toBe(true);
-      expect(enforceLazy.isString().run('').pass).toBe(true);
-      expect(enforceLazy.isString().run('hello').pass).toBe(true);
-      expect(enforceLazy.isString().run('123').pass).toBe(true);
+      expect(enforce.isString().run('a').pass).toBe(true);
+      expect(enforce.isString().run('').pass).toBe(true);
+      expect(enforce.isString().run('hello').pass).toBe(true);
+      expect(enforce.isString().run('123').pass).toBe(true);
     });
 
     it('fails for non-strings', () => {
@@ -18,238 +18,200 @@ describe('isString', () => {
       const arr: any = [];
       const nul: any = null;
       const undef: any = undefined;
-      expect(enforceLazy.isString().run(num).pass).toBe(false);
-      expect(enforceLazy.isString().run(bool).pass).toBe(false);
-      expect(enforceLazy.isString().run(obj).pass).toBe(false);
-      expect(enforceLazy.isString().run(arr).pass).toBe(false);
-      expect(enforceLazy.isString().run(nul).pass).toBe(false);
-      expect(enforceLazy.isString().run(undef).pass).toBe(false);
+      expect(enforce.isString().run(num).pass).toBe(false);
+      expect(enforce.isString().run(bool).pass).toBe(false);
+      expect(enforce.isString().run(obj).pass).toBe(false);
+      expect(enforce.isString().run(arr).pass).toBe(false);
+      expect(enforce.isString().run(nul).pass).toBe(false);
+      expect(enforce.isString().run(undef).pass).toBe(false);
     });
   });
 
   describe('startsWith', () => {
     it('pass when string starts with prefix', () => {
-      expect(enforceLazy.isString().startsWith('he').run('hello').pass).toBe(
-        true,
-      );
-      expect(enforceLazy.isString().startsWith('').run('hello').pass).toBe(
-        true,
-      );
-      expect(enforceLazy.isString().startsWith('hel').run('hello').pass).toBe(
-        true,
-      );
+      expect(enforce.isString().startsWith('he').run('hello').pass).toBe(true);
+      expect(enforce.isString().startsWith('').run('hello').pass).toBe(true);
+      expect(enforce.isString().startsWith('hel').run('hello').pass).toBe(true);
     });
 
     it('fails when string does not start with prefix', () => {
-      expect(enforceLazy.isString().startsWith('x').run('hello').pass).toBe(
-        false,
-      );
-      expect(enforceLazy.isString().startsWith('lo').run('hello').pass).toBe(
-        false,
-      );
+      expect(enforce.isString().startsWith('x').run('hello').pass).toBe(false);
+      expect(enforce.isString().startsWith('lo').run('hello').pass).toBe(false);
     });
   });
 
   describe('doesNotStartWith', () => {
     it('pass when string does not start with prefix', () => {
-      expect(
-        enforceLazy.isString().doesNotStartWith('x').run('hello').pass,
-      ).toBe(true);
-      expect(
-        enforceLazy.isString().doesNotStartWith('lo').run('hello').pass,
-      ).toBe(true);
+      expect(enforce.isString().doesNotStartWith('x').run('hello').pass).toBe(
+        true,
+      );
+      expect(enforce.isString().doesNotStartWith('lo').run('hello').pass).toBe(
+        true,
+      );
     });
 
     it('fails when string starts with prefix', () => {
-      expect(
-        enforceLazy.isString().doesNotStartWith('he').run('hello').pass,
-      ).toBe(false);
-      expect(
-        enforceLazy.isString().doesNotStartWith('hel').run('hello').pass,
-      ).toBe(false);
+      expect(enforce.isString().doesNotStartWith('he').run('hello').pass).toBe(
+        false,
+      );
+      expect(enforce.isString().doesNotStartWith('hel').run('hello').pass).toBe(
+        false,
+      );
     });
   });
 
   describe('endsWith', () => {
     it('pass when string ends with suffix', () => {
-      expect(enforceLazy.isString().endsWith('lo').run('hello').pass).toBe(
-        true,
-      );
-      expect(enforceLazy.isString().endsWith('').run('hello').pass).toBe(true);
-      expect(enforceLazy.isString().endsWith('llo').run('hello').pass).toBe(
-        true,
-      );
+      expect(enforce.isString().endsWith('lo').run('hello').pass).toBe(true);
+      expect(enforce.isString().endsWith('').run('hello').pass).toBe(true);
+      expect(enforce.isString().endsWith('llo').run('hello').pass).toBe(true);
     });
 
     it('fails when string does not end with suffix', () => {
-      expect(enforceLazy.isString().endsWith('x').run('hello').pass).toBe(
-        false,
-      );
-      expect(enforceLazy.isString().endsWith('he').run('hello').pass).toBe(
-        false,
-      );
+      expect(enforce.isString().endsWith('x').run('hello').pass).toBe(false);
+      expect(enforce.isString().endsWith('he').run('hello').pass).toBe(false);
     });
   });
 
   describe('doesNotEndWith', () => {
     it('pass when string does not end with suffix', () => {
-      expect(enforceLazy.isString().doesNotEndWith('x').run('hello').pass).toBe(
+      expect(enforce.isString().doesNotEndWith('x').run('hello').pass).toBe(
         true,
       );
-      expect(
-        enforceLazy.isString().doesNotEndWith('he').run('hello').pass,
-      ).toBe(true);
+      expect(enforce.isString().doesNotEndWith('he').run('hello').pass).toBe(
+        true,
+      );
     });
 
     it('fails when string ends with suffix', () => {
-      expect(
-        enforceLazy.isString().doesNotEndWith('lo').run('hello').pass,
-      ).toBe(false);
-      expect(
-        enforceLazy.isString().doesNotEndWith('llo').run('hello').pass,
-      ).toBe(false);
+      expect(enforce.isString().doesNotEndWith('lo').run('hello').pass).toBe(
+        false,
+      );
+      expect(enforce.isString().doesNotEndWith('llo').run('hello').pass).toBe(
+        false,
+      );
     });
   });
 
   describe('matches', () => {
     it('pass when string matches regex', () => {
-      expect(enforceLazy.isString().matches(/^h/).run('hello').pass).toBe(true);
-      expect(enforceLazy.isString().matches(/o$/).run('hello').pass).toBe(true);
-      expect(enforceLazy.isString().matches(/\d+/).run('abc123').pass).toBe(
-        true,
-      );
+      expect(enforce.isString().matches(/^h/).run('hello').pass).toBe(true);
+      expect(enforce.isString().matches(/o$/).run('hello').pass).toBe(true);
+      expect(enforce.isString().matches(/\d+/).run('abc123').pass).toBe(true);
     });
 
     it('pass with string pattern', () => {
-      expect(enforceLazy.isString().matches('^h').run('hello').pass).toBe(true);
-      expect(enforceLazy.isString().matches('o$').run('hello').pass).toBe(true);
+      expect(enforce.isString().matches('^h').run('hello').pass).toBe(true);
+      expect(enforce.isString().matches('o$').run('hello').pass).toBe(true);
     });
 
     it('fails when string does not match', () => {
-      expect(enforceLazy.isString().matches(/^x/).run('hello').pass).toBe(
-        false,
-      );
-      expect(enforceLazy.isString().matches(/\d+/).run('hello').pass).toBe(
-        false,
-      );
+      expect(enforce.isString().matches(/^x/).run('hello').pass).toBe(false);
+      expect(enforce.isString().matches(/\d+/).run('hello').pass).toBe(false);
     });
   });
 
   describe('notMatches', () => {
     it('pass when string does not match regex', () => {
-      expect(enforceLazy.isString().notMatches(/^x/).run('hello').pass).toBe(
-        true,
-      );
-      expect(enforceLazy.isString().notMatches(/\d+/).run('hello').pass).toBe(
-        true,
-      );
+      expect(enforce.isString().notMatches(/^x/).run('hello').pass).toBe(true);
+      expect(enforce.isString().notMatches(/\d+/).run('hello').pass).toBe(true);
     });
 
     it('fails when string matches', () => {
-      expect(enforceLazy.isString().notMatches(/^h/).run('hello').pass).toBe(
-        false,
-      );
-      expect(enforceLazy.isString().notMatches(/o$/).run('hello').pass).toBe(
-        false,
-      );
+      expect(enforce.isString().notMatches(/^h/).run('hello').pass).toBe(false);
+      expect(enforce.isString().notMatches(/o$/).run('hello').pass).toBe(false);
     });
   });
 
   describe('isBlank', () => {
     it('pass for empty strings', () => {
-      expect(enforceLazy.isString().isBlank().run('').pass).toBe(true);
+      expect(enforce.isString().isBlank().run('').pass).toBe(true);
     });
 
     it('pass for whitespace-only strings', () => {
-      expect(enforceLazy.isString().isBlank().run(' ').pass).toBe(true);
-      expect(enforceLazy.isString().isBlank().run('  ').pass).toBe(true);
-      expect(enforceLazy.isString().isBlank().run('\t').pass).toBe(true);
-      expect(enforceLazy.isString().isBlank().run('\n').pass).toBe(true);
+      expect(enforce.isString().isBlank().run(' ').pass).toBe(true);
+      expect(enforce.isString().isBlank().run('  ').pass).toBe(true);
+      expect(enforce.isString().isBlank().run('\t').pass).toBe(true);
+      expect(enforce.isString().isBlank().run('\n').pass).toBe(true);
     });
 
     it('fails for strings with content', () => {
-      expect(enforceLazy.isString().isBlank().run('x').pass).toBe(false);
-      expect(enforceLazy.isString().isBlank().run(' x ').pass).toBe(false);
-      expect(enforceLazy.isString().isBlank().run('hello').pass).toBe(false);
+      expect(enforce.isString().isBlank().run('x').pass).toBe(false);
+      expect(enforce.isString().isBlank().run(' x ').pass).toBe(false);
+      expect(enforce.isString().isBlank().run('hello').pass).toBe(false);
     });
   });
 
   describe('isNotBlank', () => {
     it('pass for strings with content', () => {
-      expect(enforceLazy.isString().isNotBlank().run('x').pass).toBe(true);
-      expect(enforceLazy.isString().isNotBlank().run('hello').pass).toBe(true);
-      expect(enforceLazy.isString().isNotBlank().run(' x ').pass).toBe(true);
+      expect(enforce.isString().isNotBlank().run('x').pass).toBe(true);
+      expect(enforce.isString().isNotBlank().run('hello').pass).toBe(true);
+      expect(enforce.isString().isNotBlank().run(' x ').pass).toBe(true);
     });
 
     it('fails for empty strings', () => {
-      expect(enforceLazy.isString().isNotBlank().run('').pass).toBe(false);
+      expect(enforce.isString().isNotBlank().run('').pass).toBe(false);
     });
 
     it('fails for whitespace-only strings', () => {
-      expect(enforceLazy.isString().isNotBlank().run(' ').pass).toBe(false);
-      expect(enforceLazy.isString().isNotBlank().run('  ').pass).toBe(false);
-      expect(enforceLazy.isString().isNotBlank().run('\t').pass).toBe(false);
+      expect(enforce.isString().isNotBlank().run(' ').pass).toBe(false);
+      expect(enforce.isString().isNotBlank().run('  ').pass).toBe(false);
+      expect(enforce.isString().isNotBlank().run('\t').pass).toBe(false);
     });
   });
 
   describe('minLength', () => {
     it('pass when string length is greater than or equal to minimum', () => {
-      expect(enforceLazy.isString().minLength(2).run('hi').pass).toBe(true);
-      expect(enforceLazy.isString().minLength(2).run('hello').pass).toBe(true);
-      expect(enforceLazy.isString().minLength(0).run('').pass).toBe(true);
+      expect(enforce.isString().minLength(2).run('hi').pass).toBe(true);
+      expect(enforce.isString().minLength(2).run('hello').pass).toBe(true);
+      expect(enforce.isString().minLength(0).run('').pass).toBe(true);
     });
 
     it('fails when string length is less than minimum', () => {
-      expect(enforceLazy.isString().minLength(3).run('hi').pass).toBe(false);
-      expect(enforceLazy.isString().minLength(1).run('').pass).toBe(false);
+      expect(enforce.isString().minLength(3).run('hi').pass).toBe(false);
+      expect(enforce.isString().minLength(1).run('').pass).toBe(false);
     });
   });
 
   describe('maxLength', () => {
     it('pass when string length is less than or equal to maximum', () => {
-      expect(enforceLazy.isString().maxLength(2).run('hi').pass).toBe(true);
-      expect(enforceLazy.isString().maxLength(5).run('hi').pass).toBe(true);
-      expect(enforceLazy.isString().maxLength(0).run('').pass).toBe(true);
+      expect(enforce.isString().maxLength(2).run('hi').pass).toBe(true);
+      expect(enforce.isString().maxLength(5).run('hi').pass).toBe(true);
+      expect(enforce.isString().maxLength(0).run('').pass).toBe(true);
     });
 
     it('fails when string length is greater than maximum', () => {
-      expect(enforceLazy.isString().maxLength(1).run('hi').pass).toBe(false);
-      expect(enforceLazy.isString().maxLength(2).run('hello').pass).toBe(false);
+      expect(enforce.isString().maxLength(1).run('hi').pass).toBe(false);
+      expect(enforce.isString().maxLength(2).run('hello').pass).toBe(false);
     });
   });
 
   describe('lengthEquals', () => {
     it('pass when string length equals the specified value', () => {
-      expect(enforceLazy.isString().lengthEquals(5).run('hello').pass).toBe(
-        true,
-      );
-      expect(enforceLazy.isString().lengthEquals(0).run('').pass).toBe(true);
-      expect(enforceLazy.isString().lengthEquals(3).run('abc').pass).toBe(true);
+      expect(enforce.isString().lengthEquals(5).run('hello').pass).toBe(true);
+      expect(enforce.isString().lengthEquals(0).run('').pass).toBe(true);
+      expect(enforce.isString().lengthEquals(3).run('abc').pass).toBe(true);
     });
 
     it('fails when string length does not equal the specified value', () => {
-      expect(enforceLazy.isString().lengthEquals(3).run('hello').pass).toBe(
-        false,
-      );
-      expect(enforceLazy.isString().lengthEquals(1).run('').pass).toBe(false);
+      expect(enforce.isString().lengthEquals(3).run('hello').pass).toBe(false);
+      expect(enforce.isString().lengthEquals(1).run('').pass).toBe(false);
     });
   });
 
   describe('lengthNotEquals', () => {
     it('pass when string length does not equal the specified value', () => {
-      expect(enforceLazy.isString().lengthNotEquals(3).run('hello').pass).toBe(
+      expect(enforce.isString().lengthNotEquals(3).run('hello').pass).toBe(
         true,
       );
-      expect(enforceLazy.isString().lengthNotEquals(1).run('').pass).toBe(true);
+      expect(enforce.isString().lengthNotEquals(1).run('').pass).toBe(true);
     });
 
     it('fails when string length equals the specified value', () => {
-      expect(enforceLazy.isString().lengthNotEquals(5).run('hello').pass).toBe(
+      expect(enforce.isString().lengthNotEquals(5).run('hello').pass).toBe(
         false,
       );
-      expect(enforceLazy.isString().lengthNotEquals(0).run('').pass).toBe(
-        false,
-      );
+      expect(enforce.isString().lengthNotEquals(0).run('').pass).toBe(false);
     });
   });
 });

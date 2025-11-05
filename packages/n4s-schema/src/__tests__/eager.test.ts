@@ -1,5 +1,6 @@
-import { enforce } from 'enforce';
 import { describe, it, expect } from 'vitest';
+
+import { enforce } from 'n4s-schema';
 
 // This suite validates the eager assertion API against the documented rules
 // and mirrors behaviors covered by existing enforce tests in n4s (throw on fail,

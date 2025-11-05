@@ -1,30 +1,21 @@
-import {
-  assign,
-  dynamicValue,
-  invariant,
-  isNullish,
-  StringObject,
-} from 'vest-utils';
-import type { DropFirst, Maybe, Stringable } from 'vest-utils';
+import { assign, invariant } from 'vest-utils';
+import type { DropFirst, Maybe } from 'vest-utils';
 
 import * as arrayRules from 'arrayRules';
 import * as booleanRules from 'booleanRules';
 import * as commonComparison from 'commonComparison';
 import * as commonContainer from 'commonContainer';
 import * as commonLength from 'commonLength';
-import { RuleRunReturn } from 'enforceUtil';
 import * as generalRules from 'generalRules';
 import * as nullishRules from 'nullishRules';
 import * as numberRules from 'numberRules';
 import * as numericRules from 'numericRules';
 import * as objectRules from 'objectRules';
+import { enforceMessage, transformResult } from 'ruleResult';
 import * as stringRules from 'stringRules';
+import type { FirstArg } from 'typeUtils';
 
-const message = 'message';
-
-function isMessageKey<T>(key: keyof EnforceBase<T>): boolean {
-  return key === message;
-}
+const messageKey = 'message';
 
 // eslint-disable-next-line max-lines-per-function
 // storage for user-extended custom rules (value-first signature)
@@ -42,7 +33,7 @@ export function enforceEager<T>(value: T): EnforceEagerReturn<T> {
     {
       get(target: any, key: string) {
         // Handle special .message() method
-        if (isMessageKey<T>(key as keyof EnforceBase<T>)) {
+        if ((key as string) === messageKey) {
           return setMessage;
         }
 
@@ -98,52 +89,7 @@ export function enforceEager<T>(value: T): EnforceEagerReturn<T> {
   }
 }
 
-// add the missing parameters to enforceMessage
-function enforceMessage(
-  ruleName: string,
-  transformedResult: RuleDetailedResult,
-  value: RuleValue,
-  customMessage?: string,
-) {
-  if (!isNullish(customMessage)) return StringObject(customMessage);
-  if (isNullish(transformedResult.message)) {
-    return `enforce/${ruleName} failed with ${JSON.stringify(value)}`;
-  }
-  return StringObject(transformedResult.message);
-}
-type RuleValue = unknown;
 type Args = any[];
-type RuleDetailedResult = { pass: boolean; message?: Stringable };
-
-/**
- * Transform the result of a rule into a standard format
- */
-function transformResult(
-  result: any,
-  ruleName: string,
-  value: RuleValue,
-  ...args: Args
-): RuleDetailedResult {
-  validateResult(result);
-
-  // if result is boolean
-  if (booleanRules.isBoolean(result)) {
-    return { pass: result };
-  }
-  return {
-    pass: !!result.pass,
-    message: dynamicValue(result.message, ruleName, value, ...args),
-  };
-}
-
-function validateResult<T>(result: RuleRunReturn<T>): void {
-  // if result is boolean, or if result.pass is boolean
-  invariant(
-    booleanRules.isBoolean(result) ||
-      (result && booleanRules.isBoolean(result.pass)),
-    'Incorrect return value for rule: ' + JSON.stringify(result),
-  );
-}
 
 const allRules = {
   ...arrayRules,
@@ -252,8 +198,6 @@ type TModifiers<T> = {
   message: (input: string) => EnforceEagerReturn<T>;
 };
 
-// Helper to extract first argument of a function
-type FirstArg<F> = F extends (arg: infer A, ...rest: any[]) => any ? A : never;
 // Map custom rules (value-first) to their eager signatures by dropping the value
 type TCustomRules<T> = {
   [K in keyof n4s.ValueFirstRules as T extends FirstArg<n4s.ValueFirstRules[K]>

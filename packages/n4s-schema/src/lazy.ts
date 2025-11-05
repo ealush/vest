@@ -1,6 +1,7 @@
+import { isArray } from 'isArray';
 import type { DropFirst } from 'vest-utils';
 
-import { isArray, type ArrayRuleInstance } from 'arrayRules';
+import type { ArrayRuleInstance } from 'arrayRules';
 import * as arrayRules from 'arrayRules';
 import { isBoolean, type BooleanRuleInstance } from 'booleanRules';
 import * as booleanRules from 'booleanRules';
@@ -25,9 +26,7 @@ import * as objectRules from 'objectRules';
 import * as schemaRules from 'schemaRules';
 import { isString, type StringRuleInstance } from 'stringRules';
 import * as stringRules from 'stringRules';
-
-// Helpers for deriving types from value-first custom rules
-type FirstArg<F> = F extends (arg: infer A, ...rest: any[]) => any ? A : never;
+import type { FirstArg } from 'typeUtils';
 
 // Map custom rules (value-first) to their lazy builder signatures
 type TCustomLazyRules = {

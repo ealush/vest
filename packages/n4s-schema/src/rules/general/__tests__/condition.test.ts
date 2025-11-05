@@ -1,4 +1,4 @@
-import { enforce } from 'enforce';
+import { enforce } from 'n4s-schema';
 import { describe, it, expect, vi } from 'vitest';
 
 describe('enforce.condition', () => {

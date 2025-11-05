@@ -1,3 +1,9 @@
+import { greaterThanOrEquals } from 'greaterThanOrEquals';
+import { isBetween, isNotBetween } from 'isBetween';
+import { isEven } from 'isEven';
+import { isOdd } from 'isOdd';
+import { lessThan } from 'lessThan';
+import { lessThanOrEquals } from 'lessThanOrEquals';
 import {
   greaterThan,
   isNull,
@@ -22,22 +28,16 @@ import {
 
 import { endsWith, doesNotEndWith } from 'endsWith';
 import { equals, notEquals } from 'equals';
-import { greaterThanOrEquals } from 'greaterThanOrEquals';
 import { inside, notInside } from 'inside';
-import { isBetween, isNotBetween } from 'isBetween';
 import { isBlank, isNotBlank } from 'isBlank';
 import { isBoolean, isNotBoolean } from 'isBoolean';
-import { isEven } from 'isEven';
 import { isKeyOf, isNotKeyOf } from 'isKeyOf';
 import { isNaN, isNotNaN } from 'isNaN';
 import { isNegative } from 'isNegative';
 import { isNumber, isNotNumber } from 'isNumber';
-import { isOdd } from 'isOdd';
 import { isString, isNotString } from 'isString';
 import { isTruthy, isFalsy } from 'isTruthy';
 import { isValueOf, isNotValueOf } from 'isValueOf';
-import { lessThan } from 'lessThan';
-import { lessThanOrEquals } from 'lessThanOrEquals';
 import { longerThanOrEquals } from 'longerThanOrEquals';
 import { matches, notMatches } from 'matches';
 import { condition } from 'ruleCondition';

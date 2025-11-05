@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from 'lazy';
+import { enforce } from 'n4s-schema';
 
 describe('isNotNull', () => {
   it('pass for undefined', () => {
     const value: any = undefined;
-    expect(enforceLazy.isNotNull().run(value).pass).toBe(true);
+    expect(enforce.isNotNull().run(value).pass).toBe(true);
   });
 
   it('pass for all non-null values', () => {
@@ -24,11 +24,11 @@ describe('isNotNull', () => {
     ];
 
     values.forEach(value => {
-      expect(enforceLazy.isNotNull().run(value).pass).toBe(true);
+      expect(enforce.isNotNull().run(value).pass).toBe(true);
     });
   });
 
   it('fails only for null', () => {
-    expect(enforceLazy.isNotNull().run(null).pass).toBe(false);
+    expect(enforce.isNotNull().run(null).pass).toBe(false);
   });
 });

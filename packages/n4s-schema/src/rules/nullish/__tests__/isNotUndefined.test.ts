@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from 'lazy';
+import { enforce } from 'n4s-schema';
 
 describe('isNotUndefined', () => {
   it('pass for null', () => {
     const value: any = null;
-    expect(enforceLazy.isNotUndefined().run(value).pass).toBe(true);
+    expect(enforce.isNotUndefined().run(value).pass).toBe(true);
   });
 
   it('pass for all defined values', () => {
@@ -24,14 +24,14 @@ describe('isNotUndefined', () => {
     ];
 
     values.forEach(value => {
-      expect(enforceLazy.isNotUndefined().run(value).pass).toBe(true);
+      expect(enforce.isNotUndefined().run(value).pass).toBe(true);
     });
   });
 
   it('fails only for undefined', () => {
-    expect(enforceLazy.isNotUndefined().run(undefined).pass).toBe(false);
+    expect(enforce.isNotUndefined().run(undefined).pass).toBe(false);
 
     let uninitialized: any;
-    expect(enforceLazy.isNotUndefined().run(uninitialized).pass).toBe(false);
+    expect(enforce.isNotUndefined().run(uninitialized).pass).toBe(false);
   });
 });

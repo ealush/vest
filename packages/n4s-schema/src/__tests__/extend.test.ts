@@ -1,6 +1,6 @@
 // @ts-nocheck
 /* eslint-disable sort-keys, @typescript-eslint/no-unused-vars, no-unused-vars, no-useless-escape */
-import { enforce } from 'enforce';
+import { enforce } from 'n4s-schema';
 import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('enforce.extend', () => {

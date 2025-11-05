@@ -1,43 +1,43 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from 'lazy';
+import { enforce } from 'n4s-schema';
 
 describe('oneOf', () => {
   it('should return a rule instance', () => {
-    const rule = enforceLazy.oneOf(enforceLazy.isNumber());
+    const rule = enforce.oneOf(enforce.isNumber());
     expect(rule).toHaveProperty('run');
     expect(rule).toHaveProperty('infer');
   });
 
   it('should pass if exactly one rule pass', () => {
-    const rule = enforceLazy.oneOf(
-      enforceLazy.isNumber().greaterThan(10),
-      enforceLazy.isNumber().lessThan(5),
+    const rule = enforce.oneOf(
+      enforce.isNumber().greaterThan(10),
+      enforce.isNumber().lessThan(5),
     );
     expect(rule.run(12).pass).toBe(true);
     expect(rule.run(3).pass).toBe(true);
   });
 
   it('should fail if more than one rule pass', () => {
-    const rule = enforceLazy.oneOf(
-      enforceLazy.isNumber().greaterThan(5),
-      enforceLazy.isNumber().greaterThan(10),
+    const rule = enforce.oneOf(
+      enforce.isNumber().greaterThan(5),
+      enforce.isNumber().greaterThan(10),
     );
     const result = rule.run(12);
     expect(result.pass).toBe(false);
   });
 
   it('should fail if no rules pass', () => {
-    const rule = enforceLazy.oneOf(
-      enforceLazy.isNumber().greaterThan(10),
-      enforceLazy.isNumber().lessThan(5),
+    const rule = enforce.oneOf(
+      enforce.isNumber().greaterThan(10),
+      enforce.isNumber().lessThan(5),
     );
     const result = rule.run(7);
     expect(result.pass).toBe(false);
   });
 
   it('should fail with no rules', () => {
-    const rule = enforceLazy.oneOf();
+    const rule = enforce.oneOf();
     const result = rule.run('any value');
     expect(result.pass).toBe(false);
   });

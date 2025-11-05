@@ -1,18 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
-import { enforceLazy } from 'lazy';
+import { enforce } from 'n4s-schema';
 
-// schema combinators are consumed via enforceLazy
+// schema combinators are consumed via enforce
 
 // This suite focuses on compile-time type checks using @ts-expect-error to ensure
 // incorrect types produce red squigglies when using the rules and combinators.
 
 describe('types: compile-time mismatches across rules and composed schemas', () => {
   it('primitive rule unions and arrays (number | numeric-string)', () => {
-    const arrRule = enforceLazy.isArrayOf(
-      enforceLazy.isNumeric(),
-      enforceLazy.isNumber(),
-    );
+    const arrRule = enforce.isArrayOf(enforce.isNumeric(), enforce.isNumber());
     type Arr = typeof arrRule.infer;
 
     const ok1: Arr = [1, '2', 3];
@@ -29,19 +26,19 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
   });
 
   it('shape: exact fields and correct types', () => {
-    const addrSchema = enforceLazy.shape({
-      city: enforceLazy.isString(),
-      country: enforceLazy.isString(),
-      street: enforceLazy.isString(),
-      zip: enforceLazy.anyOf(
-        enforceLazy.allOf(
-          enforceLazy.isString(),
-          enforceLazy.isString().matches(/^\d{5}$/),
+    const addrSchema = enforce.shape({
+      city: enforce.isString(),
+      country: enforce.isString(),
+      street: enforce.isString(),
+      zip: enforce.anyOf(
+        enforce.allOf(
+          enforce.isString(),
+          enforce.isString().matches(/^\d{5}$/),
         ),
-        enforceLazy.allOf(
-          enforceLazy.isNumber(),
-          enforceLazy.isNumber().greaterThanOrEquals(10000),
-          enforceLazy.isNumber().lessThanOrEquals(99999),
+        enforce.allOf(
+          enforce.isNumber(),
+          enforce.isNumber().greaterThanOrEquals(10000),
+          enforce.isNumber().lessThanOrEquals(99999),
         ),
       ),
     });
@@ -74,15 +71,15 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
 
   it('optional + partial: wrong inner types should error', () => {
     const base = {
-      count: enforceLazy.isNumber(),
-      maybeName: enforceLazy.optional(enforceLazy.isString()),
-      totals: enforceLazy.shape({
-        subtotal: enforceLazy.isNumber(),
-        tax: enforceLazy.isNumber(),
+      count: enforce.isNumber(),
+      maybeName: enforce.optional(enforce.isString()),
+      totals: enforce.shape({
+        subtotal: enforce.isNumber(),
+        tax: enforce.isNumber(),
       }),
     } as const;
 
-    const schema = enforceLazy.shape(enforceLazy.partial(base));
+    const schema = enforce.shape(enforce.partial(base));
 
     type T = typeof schema.infer;
 
@@ -117,10 +114,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
   });
 
   it('anyOf/noneOf: union types vs mismatches', () => {
-    const strOrNum = enforceLazy.anyOf(
-      enforceLazy.isString(),
-      enforceLazy.isNumber(),
-    );
+    const strOrNum = enforce.anyOf(enforce.isString(), enforce.isNumber());
     type SOrN = typeof strOrNum.infer; // string | number
 
     const okA: SOrN = 'a';
@@ -132,7 +126,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     const badC: SOrN = true;
     void badC;
 
-    const notString = enforceLazy.noneOf(enforceLazy.isString());
+    const notString = enforce.noneOf(enforce.isString());
     type NotStr = typeof notString.infer; // string (by design of combinator typing)
 
     // @ts-expect-error expects string inferred type, assigning number
@@ -142,13 +136,13 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
   });
 
   it('composed shapes with nested arrays: incorrect element type', () => {
-    const lineItem = enforceLazy.shape({
-      price: enforceLazy.anyOf(enforceLazy.isNumber(), enforceLazy.isNumeric()),
-      qty: enforceLazy.isNumber().greaterThan(0),
-      sku: enforceLazy.isString(),
+    const lineItem = enforce.shape({
+      price: enforce.anyOf(enforce.isNumber(), enforce.isNumeric()),
+      qty: enforce.isNumber().greaterThan(0),
+      sku: enforce.isString(),
     });
-    const cart = enforceLazy.shape({
-      items: enforceLazy.isArrayOf(lineItem),
+    const cart = enforce.shape({
+      items: enforce.isArrayOf(lineItem),
     });
 
     type Cart = typeof cart.infer;

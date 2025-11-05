@@ -1,7 +1,8 @@
-import { isArray } from 'isArrayValue';
 import { isEmpty } from 'isEmpty';
-import isFunction from 'isFunction';
 import { isNullish } from 'isNullish';
+
+import { isArray } from 'isArrayValue';
+import isFunction from 'isFunction';
 import isStringValue from 'isStringValue';
 import { isObject } from 'valueIsObject';
 

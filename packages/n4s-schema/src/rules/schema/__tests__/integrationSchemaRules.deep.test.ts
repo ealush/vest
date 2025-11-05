@@ -1,98 +1,91 @@
 import { describe, expect, it } from 'vitest';
 
-import { enforceLazy } from 'lazy';
+import { enforce } from 'n4s-schema';
 
-// schema combinators are consumed via enforceLazy
+// schema combinators are consumed via enforce
 
 describe('integration: extensive schema + combinators', () => {
   it('deep object: user profile with addresses, contacts and preferences', () => {
     const Roles = { admin: 'admin', user: 'user', guest: 'guest' } as const;
     const Envs = { dev: 1, prod: 2, stage: 3 } as const;
 
-    const addressSchema = enforceLazy.shape({
-      city: enforceLazy.isString().isNotBlank(),
-      country: enforceLazy.isString().longerThan(1),
-      street: enforceLazy.isString().isNotBlank(),
+    const addressSchema = enforce.shape({
+      city: enforce.isString().isNotBlank(),
+      country: enforce.isString().longerThan(1),
+      street: enforce.isString().isNotBlank(),
       // zip can be a numeric string of 5 chars OR a 5-digit number
-      zip: enforceLazy.anyOf(
-        enforceLazy.allOf(
-          enforceLazy.isString(),
-          enforceLazy.isString().matches(/^\d{5}$/),
+      zip: enforce.anyOf(
+        enforce.allOf(
+          enforce.isString(),
+          enforce.isString().matches(/^\d{5}$/),
         ),
-        enforceLazy.allOf(
-          enforceLazy.isNumber(),
-          enforceLazy.isNumber().greaterThanOrEquals(10000),
-          enforceLazy.isNumber().lessThanOrEquals(99999),
+        enforce.allOf(
+          enforce.isNumber(),
+          enforce.isNumber().greaterThanOrEquals(10000),
+          enforce.isNumber().lessThanOrEquals(99999),
         ),
       ),
     });
 
-    const contactSchema = enforceLazy.shape({
+    const contactSchema = enforce.shape({
       // object key/value checks
-      metaEnvKey: enforceLazy.isKeyOf(Envs),
-      metaRoleValue: enforceLazy.isValueOf(Roles as any),
+      metaEnvKey: enforce.isKeyOf(Envs),
+      metaRoleValue: enforce.isValueOf(Roles as any),
       // exactly one of email or phone must be present
-      method: enforceLazy.oneOf(
-        enforceLazy.isString().equals('email'),
-        enforceLazy.isString().equals('phone'),
+      method: enforce.oneOf(
+        enforce.isString().equals('email'),
+        enforce.isString().equals('phone'),
       ),
       // email must be non-blank string; phone must be numeric (string or number) with >= 10 digits/value
-      value: enforceLazy.anyOf(
-        enforceLazy.allOf(
-          enforceLazy.isString(),
-          enforceLazy.isString().isNotBlank(),
-        ),
-        enforceLazy.allOf(
-          enforceLazy.isNumeric().greaterThanOrEquals(1_000_000_000),
-        ),
-        enforceLazy.allOf(
-          enforceLazy.isNumber().greaterThanOrEquals(1_000_000_000),
-        ),
+      value: enforce.anyOf(
+        enforce.allOf(enforce.isString(), enforce.isString().isNotBlank()),
+        enforce.allOf(enforce.isNumeric().greaterThanOrEquals(1_000_000_000)),
+        enforce.allOf(enforce.isNumber().greaterThanOrEquals(1_000_000_000)),
       ),
     });
 
-    const preferencesSchema = enforceLazy.loose({
-      darkMode: enforceLazy.isBoolean(),
-      language: enforceLazy.optional(
-        enforceLazy.anyOf(
-          enforceLazy.isString().inside(['en', 'es', 'he', 'fr']),
-          enforceLazy.isString().matches(/^[a-z]{2}$/),
+    const preferencesSchema = enforce.loose({
+      darkMode: enforce.isBoolean(),
+      language: enforce.optional(
+        enforce.anyOf(
+          enforce.isString().inside(['en', 'es', 'he', 'fr']),
+          enforce.isString().matches(/^[a-z]{2}$/),
         ),
       ),
       // nested arrays: list of lists of numeric or numeric-string thresholds
-      thresholds: enforceLazy.optional(
-        enforceLazy.isArrayOf(
-          enforceLazy.isArrayOf(
-            enforceLazy.isNumeric().greaterThanOrEquals(0),
-            enforceLazy.isNumber().greaterThanOrEquals(0),
+      thresholds: enforce.optional(
+        enforce.isArrayOf(
+          enforce.isArrayOf(
+            enforce.isNumeric().greaterThanOrEquals(0),
+            enforce.isNumber().greaterThanOrEquals(0),
           ),
         ),
       ),
     });
 
-    const userSchema = enforceLazy.shape({
-      addresses: enforceLazy.isArrayOf(addressSchema),
-      contacts: enforceLazy.isArrayOf(contactSchema),
+    const userSchema = enforce.shape({
+      addresses: enforce.isArrayOf(addressSchema),
+      contacts: enforce.isArrayOf(contactSchema),
       // array that accepts numbers or numeric strings per element
-      favoriteNumbers: enforceLazy.isArrayOf(
-        enforceLazy.isNumeric(),
-        enforceLazy.isNumber(),
+      favoriteNumbers: enforce.isArrayOf(
+        enforce.isNumeric(),
+        enforce.isNumber(),
       ),
       // accept id as number > 0 OR numeric-string of digits (no leading +, must be > 0)
-      id: enforceLazy.anyOf(
-        enforceLazy.isNumber().greaterThan(0),
-        enforceLazy.allOf(
-          enforceLazy.isString(),
-          enforceLazy.isString().matches(/^[1-9]\d*$/),
+      id: enforce.anyOf(
+        enforce.isNumber().greaterThan(0),
+        enforce.allOf(
+          enforce.isString(),
+          enforce.isString().matches(/^[1-9]\d*$/),
         ),
       ),
       // preferences object may contain more keys than declared (loose)
-      preferences: enforceLazy.optional(preferencesSchema),
-      username: enforceLazy.allOf(
-        enforceLazy.isString().minLength(3),
-        enforceLazy.noneOf(
-          enforceLazy.isString().equals('admin'),
-          enforceLazy.isString().equals('root'),
+      preferences: enforce.optional(preferencesSchema),
+      username: enforce.allOf(
+        enforce.isString().minLength(3),
+        enforce.noneOf(
+          enforce.isString().equals('admin'),
+          enforce.isString().equals('root'),
         ),
       ),
     });
@@ -215,55 +208,55 @@ describe('integration: extensive schema + combinators', () => {
   });
 
   it('partial nested object with optional children and nested arrays of shapes', () => {
-    const itemSchema = enforceLazy.shape({
-      price: enforceLazy.anyOf(
-        enforceLazy.isNumber(),
-        enforceLazy.allOf(
-          enforceLazy.isString(),
-          enforceLazy.isString().matches(/^\d+(?:\.\d+)?$/),
+    const itemSchema = enforce.shape({
+      price: enforce.anyOf(
+        enforce.isNumber(),
+        enforce.allOf(
+          enforce.isString(),
+          enforce.isString().matches(/^\d+(?:\.\d+)?$/),
         ),
       ),
-      qty: enforceLazy.isNumber().greaterThan(0),
-      sku: enforceLazy.isString().minLength(3),
-      tags: enforceLazy.optional(
-        enforceLazy.isArrayOf(enforceLazy.isString().isNotBlank()),
+      qty: enforce.isNumber().greaterThan(0),
+      sku: enforce.isString().minLength(3),
+      tags: enforce.optional(
+        enforce.isArrayOf(enforce.isString().isNotBlank()),
       ),
     });
 
     const orderBase = {
-      id: enforceLazy.anyOf(
-        enforceLazy.isNumber(),
-        enforceLazy.allOf(
-          enforceLazy.isString(),
-          enforceLazy.isString().matches(/^[+-]?\d+(?:\.\d+)?$/),
+      id: enforce.anyOf(
+        enforce.isNumber(),
+        enforce.allOf(
+          enforce.isString(),
+          enforce.isString().matches(/^[+-]?\d+(?:\.\d+)?$/),
         ),
       ),
-      items: enforceLazy.isArrayOf(itemSchema),
-      shipping: enforceLazy.optional(
-        enforceLazy.shape({
-          address: enforceLazy.shape({
-            line1: enforceLazy.isString().isNotBlank(),
-            line2: enforceLazy.optional(enforceLazy.isString()),
-            zip: enforceLazy.anyOf(
-              enforceLazy.isNumber().isBetween(10000, 99999),
-              enforceLazy.isString().matches(/^\d{5}$/),
+      items: enforce.isArrayOf(itemSchema),
+      shipping: enforce.optional(
+        enforce.shape({
+          address: enforce.shape({
+            line1: enforce.isString().isNotBlank(),
+            line2: enforce.optional(enforce.isString()),
+            zip: enforce.anyOf(
+              enforce.isNumber().isBetween(10000, 99999),
+              enforce.isString().matches(/^\d{5}$/),
             ),
           }),
         }),
       ),
-      totals: enforceLazy.loose({
-        discounts: enforceLazy.optional(
-          enforceLazy.isArrayOf(
-            enforceLazy.isNumber().greaterThanOrEquals(0),
-            enforceLazy.isNumeric().greaterThanOrEquals(0),
+      totals: enforce.loose({
+        discounts: enforce.optional(
+          enforce.isArrayOf(
+            enforce.isNumber().greaterThanOrEquals(0),
+            enforce.isNumeric().greaterThanOrEquals(0),
           ),
         ),
-        subtotal: enforceLazy.isNumber().greaterThanOrEquals(0),
-        tax: enforceLazy.isNumber().greaterThanOrEquals(0),
+        subtotal: enforce.isNumber().greaterThanOrEquals(0),
+        tax: enforce.isNumber().greaterThanOrEquals(0),
       }),
     } as const;
 
-    const orderSchema = enforceLazy.shape(enforceLazy.partial(orderBase));
+    const orderSchema = enforce.shape(enforce.partial(orderBase));
 
     // Valid order with many optional parts missing
     expect(

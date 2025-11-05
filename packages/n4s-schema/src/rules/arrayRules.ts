@@ -11,5 +11,4 @@ export { lengthNotEquals } from 'lengthNotEquals';
 export { longerThan } from 'longerThan';
 export { maxLength } from 'maxLength';
 export { minLength } from 'minLength';
-export { isArray } from 'isArray';
 export type { ArrayRuleInstance } from 'isArray';

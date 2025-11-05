@@ -1,5 +1,4 @@
 import { RuleInstance } from 'enforceUtil';
-
 import { toNumber } from 'toNumber';
 
 export interface NaNRuleInstance extends RuleInstance<number | string, [any]> {}

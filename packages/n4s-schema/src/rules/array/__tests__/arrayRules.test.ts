@@ -1,45 +1,43 @@
 import { describe, expect, it } from 'vitest';
 
-import { enforceLazy } from 'lazy';
+import { enforce } from 'n4s-schema';
 
 describe('arrayRules', () => {
   it('length predicates', () => {
-    expect(
-      enforceLazy.isArray<string>().minLength(2).run(['a', 'b']).pass,
-    ).toBe(true);
-    expect(enforceLazy.isArray<number>().maxLength(2).run([1, 2]).pass).toBe(
+    expect(enforce.isArray<string>().minLength(2).run(['a', 'b']).pass).toBe(
+      true,
+    );
+    expect(enforce.isArray<number>().maxLength(2).run([1, 2]).pass).toBe(true);
+    expect(enforce.isArray<number>().lengthEquals(3).run([1, 2, 3]).pass).toBe(
       true,
     );
     expect(
-      enforceLazy.isArray<number>().lengthEquals(3).run([1, 2, 3]).pass,
+      enforce.isArray<number>().lengthNotEquals(2).run([1, 2, 3]).pass,
     ).toBe(true);
+    expect(enforce.isArray<number>().longerThan(2).run([1, 2, 3]).pass).toBe(
+      true,
+    );
     expect(
-      enforceLazy.isArray<number>().lengthNotEquals(2).run([1, 2, 3]).pass,
+      enforce.isArray<number>().longerThanOrEquals(3).run([1, 2, 3]).pass,
     ).toBe(true);
+    expect(enforce.isArray<number>().shorterThan(4).run([1, 2, 3]).pass).toBe(
+      true,
+    );
     expect(
-      enforceLazy.isArray<number>().longerThan(2).run([1, 2, 3]).pass,
-    ).toBe(true);
-    expect(
-      enforceLazy.isArray<number>().longerThanOrEquals(3).run([1, 2, 3]).pass,
-    ).toBe(true);
-    expect(
-      enforceLazy.isArray<number>().shorterThan(4).run([1, 2, 3]).pass,
-    ).toBe(true);
-    expect(
-      enforceLazy.isArray<number>().shorterThanOrEquals(3).run([1, 2, 3]).pass,
+      enforce.isArray<number>().shorterThanOrEquals(3).run([1, 2, 3]).pass,
     ).toBe(true);
   });
 
   it('includes predicate', () => {
-    expect(
-      enforceLazy.isArray<string>().includes('x').run(['x', 'y']).pass,
-    ).toBe(true);
-    expect(
-      enforceLazy.isArray<string>().includes('z').run(['x', 'y']).pass,
-    ).toBe(false);
+    expect(enforce.isArray<string>().includes('x').run(['x', 'y']).pass).toBe(
+      true,
+    );
+    expect(enforce.isArray<string>().includes('z').run(['x', 'y']).pass).toBe(
+      false,
+    );
   });
 
   it('fails when not an array', () => {
-    expect(enforceLazy.isArray().run('not array').pass).toBe(false);
+    expect(enforce.isArray().run('not array').pass).toBe(false);
   });
 });

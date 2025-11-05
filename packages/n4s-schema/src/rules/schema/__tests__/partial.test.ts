@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from 'lazy';
+import { enforce } from 'n4s-schema';
 import { RuleInstance } from 'enforceUtil';
 
 const longerThan = (n: number): RuleInstance<string> => ({
@@ -10,12 +10,12 @@ const longerThan = (n: number): RuleInstance<string> => ({
 
 describe('partial', () => {
   const schema = {
-    name: enforceLazy.isString(),
-    age: enforceLazy.isNumber(),
+    name: enforce.isString(),
+    age: enforce.isNumber(),
   };
 
   it('should return a schema with optional rules', () => {
-    const partialSchema = enforceLazy.partial(schema);
+    const partialSchema = enforce.partial(schema);
     expect(partialSchema.name).toHaveProperty('run');
     expect(partialSchema.age).toHaveProperty('run');
 
@@ -25,8 +25,8 @@ describe('partial', () => {
   });
 
   it('should work with shape to validate partial objects', () => {
-    const partialSchema = enforceLazy.partial(schema);
-    const shapeRule = enforceLazy.shape(partialSchema);
+    const partialSchema = enforce.partial(schema);
+    const shapeRule = enforce.shape(partialSchema);
 
     expect(shapeRule.run({ name: 'John' }).pass).toBe(true);
     expect(shapeRule.run({ age: 30 }).pass).toBe(true);
@@ -35,8 +35,8 @@ describe('partial', () => {
   });
 
   it('should fail if a property has wrong type', () => {
-    const partialSchema = enforceLazy.partial(schema);
-    const shapeRule = enforceLazy.shape(partialSchema);
+    const partialSchema = enforce.partial(schema);
+    const shapeRule = enforce.shape(partialSchema);
 
     // @ts-expect-error
     expect(shapeRule.run({ name: 123 }).pass).toBe(false);
@@ -47,10 +47,10 @@ describe('partial', () => {
   });
 
   it('Should pass when wrapped fields are undefined or null', () => {
-    const shapeRule = enforceLazy.shape(
-      enforceLazy.partial({
+    const shapeRule = enforce.shape(
+      enforce.partial({
         username: longerThan(3),
-        id: enforceLazy.isNumber(),
+        id: enforce.isNumber(),
       }),
     );
 
@@ -59,30 +59,30 @@ describe('partial', () => {
   });
 
   it('Should pass when wrapped fields are valid', () => {
-    const shapeRule = enforceLazy.shape(
-      enforceLazy.partial({
+    const shapeRule = enforce.shape(
+      enforce.partial({
         username: longerThan(3),
-        id: enforceLazy.isNumber(),
+        id: enforce.isNumber(),
       }),
     );
     expect(shapeRule.run({ username: 'foobar', id: 1 }).pass).toBe(true);
   });
 
   it('Should pass when some wrapped fields are missing', () => {
-    const shapeRule = enforceLazy.shape(
-      enforceLazy.partial({
+    const shapeRule = enforce.shape(
+      enforce.partial({
         username: longerThan(3),
-        id: enforceLazy.isNumber(),
+        id: enforce.isNumber(),
       }),
     );
     expect(shapeRule.run({ username: 'foobar' }).pass).toBe(true);
   });
 
   it('Should fail when wrapped fields are invalid', () => {
-    const shapeRule = enforceLazy.shape(
-      enforceLazy.partial({
+    const shapeRule = enforce.shape(
+      enforce.partial({
         username: longerThan(3),
-        id: enforceLazy.isNumber(),
+        id: enforce.isNumber(),
       }),
     );
     // @ts-expect-error
@@ -90,12 +90,12 @@ describe('partial', () => {
   });
 
   it("Should retain rule's original constraints", () => {
-    const partialSchema = enforceLazy.partial({
+    const partialSchema = enforce.partial({
       username: longerThan(3),
-      id: enforceLazy.isNumber(),
+      id: enforce.isNumber(),
     });
-    const shapeRule = enforceLazy.shape(partialSchema);
-    const looseRule = enforceLazy.loose(partialSchema);
+    const shapeRule = enforce.shape(partialSchema);
+    const looseRule = enforce.loose(partialSchema);
 
     // shape is strict and fails on extra properties
     expect(

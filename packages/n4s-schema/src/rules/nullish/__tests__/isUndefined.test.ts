@@ -1,20 +1,20 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforceLazy } from 'lazy';
+import { enforce } from 'n4s-schema';
 
 describe('isUndefined', () => {
   it('pass only for undefined', () => {
-    expect(enforceLazy.isUndefined().run(undefined).pass).toBe(true);
+    expect(enforce.isUndefined().run(undefined).pass).toBe(true);
 
     let uninitialized: undefined | number;
     // @ts-expect-error - uninitialized may be number | undefined
-    expect(enforceLazy.isUndefined().run(uninitialized).pass).toBe(true);
+    expect(enforce.isUndefined().run(uninitialized).pass).toBe(true);
   });
 
   it('fails for null', () => {
     const value: undefined | null = null;
     // @ts-expect-error - testing that null is rejected by isUndefined
-    expect(enforceLazy.isUndefined().run(value).pass).toBe(false);
+    expect(enforce.isUndefined().run(value).pass).toBe(false);
   });
 
   it('fails for falsy primitives', () => {
@@ -24,13 +24,13 @@ describe('isUndefined', () => {
     const nanValue: undefined | number = NaN;
 
     // @ts-expect-error - testing that non-undefined values are rejected
-    expect(enforceLazy.isUndefined().run(zero).pass).toBe(false);
+    expect(enforce.isUndefined().run(zero).pass).toBe(false);
     // @ts-expect-error - testing that non-undefined values are rejected
-    expect(enforceLazy.isUndefined().run(emptyString).pass).toBe(false);
+    expect(enforce.isUndefined().run(emptyString).pass).toBe(false);
     // @ts-expect-error - testing that non-undefined values are rejected
-    expect(enforceLazy.isUndefined().run(falseBool).pass).toBe(false);
+    expect(enforce.isUndefined().run(falseBool).pass).toBe(false);
     // @ts-expect-error - testing that non-undefined values are rejected
-    expect(enforceLazy.isUndefined().run(nanValue).pass).toBe(false);
+    expect(enforce.isUndefined().run(nanValue).pass).toBe(false);
   });
 
   it('fails for truthy values', () => {
@@ -41,14 +41,14 @@ describe('isUndefined', () => {
     const arr: undefined | any[] = [];
 
     // @ts-expect-error - testing that non-undefined values are rejected
-    expect(enforceLazy.isUndefined().run(num).pass).toBe(false);
+    expect(enforce.isUndefined().run(num).pass).toBe(false);
     // @ts-expect-error - testing that non-undefined values are rejected
-    expect(enforceLazy.isUndefined().run(str).pass).toBe(false);
+    expect(enforce.isUndefined().run(str).pass).toBe(false);
     // @ts-expect-error - testing that non-undefined values are rejected
-    expect(enforceLazy.isUndefined().run(bool).pass).toBe(false);
+    expect(enforce.isUndefined().run(bool).pass).toBe(false);
     // @ts-expect-error - testing that non-undefined values are rejected
-    expect(enforceLazy.isUndefined().run(obj).pass).toBe(false);
+    expect(enforce.isUndefined().run(obj).pass).toBe(false);
     // @ts-expect-error - testing that non-undefined values are rejected
-    expect(enforceLazy.isUndefined().run(arr).pass).toBe(false);
+    expect(enforce.isUndefined().run(arr).pass).toBe(false);
   });
 });

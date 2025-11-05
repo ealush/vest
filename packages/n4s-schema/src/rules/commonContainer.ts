@@ -7,11 +7,16 @@ export function inside<T>(value: T, container: T[] | string): boolean {
     return container.includes(value);
   }
   if (Array.isArray(container)) {
-    // If value is an array, check if all its items are in the container
+    // Optimize membership checks using a Set for O(1) lookups
+    const set = new Set(container as T[]);
     if (Array.isArray(value)) {
-      return value.every(item => container.includes(item));
+      // All items must be present in container
+      for (const item of value) {
+        if (!set.has(item)) return false;
+      }
+      return true;
     }
-    return container.includes(value);
+    return set.has(value as T);
   }
   return false;
 }
@@ -21,11 +26,15 @@ export function notInside<T>(value: T, container: T[] | string): boolean {
     return !container.includes(value);
   }
   if (Array.isArray(container)) {
-    // If value is an array, check if at least one item is not in the container
+    const set = new Set(container as T[]);
     if (Array.isArray(value)) {
-      return value.some(item => !container.includes(item));
+      // At least one item must be absent from container
+      for (const item of value) {
+        if (!set.has(item)) return true;
+      }
+      return false;
     }
-    return !container.includes(value);
+    return !set.has(value as T);
   }
   return true;
 }

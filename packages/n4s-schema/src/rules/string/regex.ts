@@ -1,0 +1,1 @@
+export { toRegExp } from 'regex';

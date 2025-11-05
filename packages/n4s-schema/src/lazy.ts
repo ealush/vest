@@ -58,7 +58,8 @@ const baseEnforceLazy = {
   ...schemaRules,
   ...adaptDynamicRules<AnyRuleInstance, typeof generalRules>(generalRules),
   ...adaptDynamicRules<ObjectRuleInstance, typeof objectRules>(objectRules),
-  isArray: (): ArrayRuleInstance => addToChain(arrayRules, isArray),
+  isArray: <T = any>(): ArrayRuleInstance<T> =>
+    addToChain<ArrayRuleInstance<T>>(arrayRules as any, isArray),
   isBoolean: (): BooleanRuleInstance => addToChain(booleanRules, isBoolean),
   isNull: (): NullRuleInstance => addToChain({}, isNull),
   isNullish: (): NullishRuleInstance => addToChain({}, isNullish),

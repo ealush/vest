@@ -139,23 +139,43 @@ type GuardRuleNames =
 
 // Map rule name to required input type
 type RuleRequiresType<RuleName extends keyof typeof allRules> =
-  RuleName extends GuardRuleNames
+  // Universally applicable comparisons
+  RuleName extends 'equals' | 'notEquals'
     ? any
-    : RuleName extends NumericComparisonNames
+    : // Pattern matching works on numbers (coerced) and strings
+      RuleName extends 'matches' | 'notMatches'
       ? number | string
-      : RuleName extends LengthRuleNames
+      : // Container membership works on strings and arrays
+        RuleName extends 'inside' | 'notInside'
         ? string | any[]
-        : RuleName extends ArrayRuleNames
-          ? any[]
-          : RuleName extends NumberRuleNames
-            ? number
-            : RuleName extends StringRuleNames
-              ? string
-              : RuleName extends BooleanRuleNames
-                ? boolean
-                : RuleName extends NumericRuleNames
-                  ? number | string
-                  : any;
+        : // Emptiness checks are broadly applicable (strings, arrays, objects, nullish handling)
+          RuleName extends 'isEmpty' | 'isNotEmpty'
+          ? any
+          : // NaN checks applicable to numeric-like inputs
+            RuleName extends 'isNaN' | 'isNotNaN'
+            ? number | string
+            : // Built-in guards always available
+              RuleName extends GuardRuleNames
+              ? any
+              : // Numeric comparisons allow number|string
+                RuleName extends NumericComparisonNames
+                ? number | string
+                : // Length-based rules on strings and arrays
+                  RuleName extends LengthRuleNames
+                  ? string | any[]
+                  : // Array-only rules
+                    RuleName extends ArrayRuleNames
+                    ? any[]
+                    : // Type-specific rule groups
+                      RuleName extends NumberRuleNames
+                      ? number
+                      : RuleName extends StringRuleNames
+                        ? string
+                        : RuleName extends BooleanRuleNames
+                          ? boolean
+                          : RuleName extends NumericRuleNames
+                            ? number | string
+                            : any;
 
 // Map rule name to output type after execution
 type RuleReturnsType<

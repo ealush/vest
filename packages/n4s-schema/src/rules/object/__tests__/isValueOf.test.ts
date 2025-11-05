@@ -2,8 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { enforce } from 'n4s-schema';
 
-// moved: cases relocated to isValueOf.test.ts
-describe.skip('object: isValueOf / isNotValueOf (moved)', () => {
+describe('object: isValueOf / isNotValueOf', () => {
   describe('isValueOf', () => {
     it('pass when value exists in object', () => {
       const obj = { a: 1, b: 2, c: 3 };

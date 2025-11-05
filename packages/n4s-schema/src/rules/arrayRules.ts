@@ -1,3 +1,5 @@
+import { isNotArray } from 'isNotArray';
+
 export { longerThanOrEquals } from 'longerThanOrEquals';
 export { shorterThan } from 'shorterThan';
 export { shorterThanOrEquals } from 'shorterThanOrEquals';
@@ -11,4 +13,6 @@ export { lengthNotEquals } from 'lengthNotEquals';
 export { longerThan } from 'longerThan';
 export { maxLength } from 'maxLength';
 export { minLength } from 'minLength';
+export { isArray } from 'isArray';
 export type { ArrayRuleInstance } from 'isArray';
+export { isNotArray } from 'isNotArray';

@@ -1,16 +1,16 @@
-import { RuleInstance, Passing, Failing } from 'enforceUtil';
+import { mapFirst } from 'vest-utils';
 
-export function allOf<T>(...rules: RuleInstance<T, any>[]): RuleInstance<T> {
-  return {
-    run: (value: T) => {
-      for (const rule of rules) {
-        const result = rule.run(value);
-        if (!result.pass) {
-          return Failing(value);
-        }
-      }
-      return Passing(value);
-    },
-    infer: {} as T,
-  };
+import { BuildRule, Passing, RuleInstance } from 'enforceUtil';
+
+export function allOf<T>(
+  ...rules: RuleInstance<T, any>[]
+): RuleInstance<T, [T]> {
+  return BuildRule<RuleInstance<T, [T]>, T, [T]>((value: T) => {
+    return (
+      mapFirst(rules, (rule, breakout) => {
+        const res = rule.run(value);
+        breakout(!res.pass, res);
+      }) || Passing(value)
+    );
+  });
 }

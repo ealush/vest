@@ -1,19 +1,21 @@
-import { MultiTypeInput } from './types';
+import { MultiTypeInput } from 'types';
+import { mapFirst } from 'vest-utils';
 
-import { RuleInstance, Passing, Failing } from 'enforceUtil';
+import { BuildRule, Failing, RuleInstance } from 'enforceUtil';
 
 export function anyOf<T extends RuleInstance<any, any>[]>(
   ...rules: T
 ): RuleInstance<MultiTypeInput<T>, [MultiTypeInput<T>]> {
-  return {
-    run: (value: MultiTypeInput<T>) => {
-      for (const rule of rules) {
-        if (rule.run(value as any).pass) {
-          return Passing(value);
-        }
-      }
-      return Failing(value);
-    },
-    infer: {} as MultiTypeInput<T>,
-  };
+  return BuildRule<
+    RuleInstance<MultiTypeInput<T>, [MultiTypeInput<T>]>,
+    MultiTypeInput<T>,
+    [MultiTypeInput<T>]
+  >((value: MultiTypeInput<T>) => {
+    return (
+      mapFirst(rules as RuleInstance<any, any>[], (rule, breakout) => {
+        const res = rule.run(value as any);
+        breakout(res.pass, res);
+      }) || Failing(value)
+    );
+  });
 }

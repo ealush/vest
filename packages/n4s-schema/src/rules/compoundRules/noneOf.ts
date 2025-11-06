@@ -1,15 +1,16 @@
-import { RuleInstance, Passing, Failing } from 'enforceUtil';
+import { mapFirst } from 'vest-utils';
 
-export function noneOf<T>(...rules: RuleInstance<T, any>[]): RuleInstance<T> {
-  return {
-    run: (value: T) => {
-      for (const rule of rules) {
-        if (rule.run(value).pass) {
-          return Failing(value);
-        }
-      }
-      return Passing(value);
-    },
-    infer: {} as T,
-  };
+import { BuildRule, Failing, Passing, RuleInstance } from 'enforceUtil';
+
+export function noneOf<T>(
+  ...rules: RuleInstance<T, any>[]
+): RuleInstance<T, [T]> {
+  return BuildRule<RuleInstance<T, [T]>, T, [T]>((value: T) => {
+    return (
+      mapFirst(rules, (rule, breakout) => {
+        const res = rule.run(value);
+        breakout(res.pass, Failing(value));
+      }) || Passing(value)
+    );
+  });
 }

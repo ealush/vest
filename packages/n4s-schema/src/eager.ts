@@ -42,7 +42,7 @@ export function enforceEager<T>(value: T): EnforceEagerReturn<T> {
           return setMessage;
         }
 
-        // Check if it's a schema rule (returns RuleInstance)
+        // Check if it's a schema or compound rule (returns RuleInstance)
         const schemaRule = getSchemaRule(key);
         if (schemaRule) {
           return genSchemaRuleCall(proxy, schemaRule, key);
@@ -72,7 +72,7 @@ export function enforceEager<T>(value: T): EnforceEagerReturn<T> {
     ruleName: string,
   ) {
     return function schemaRuleCall(...args: Args): any {
-      // Schema rules return RuleInstance objects
+      // Schema/compound rules return RuleInstance objects
       // We need to call the rule to get a RuleInstance, then run it with the value
       const ruleInstance = ctx.run({ value }, () =>
         (schemaRule as (...args: any[]) => any)(...args),
@@ -147,7 +147,7 @@ const allRules = {
   ...stringRules,
 } as const;
 
-// Schema rules that return RuleInstance objects
+// Schema and compound rules that return RuleInstance objects
 const schemaRulesMap = {
   ...compoundRules,
   ...schemaRules,

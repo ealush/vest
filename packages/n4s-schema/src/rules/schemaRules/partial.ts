@@ -1,20 +1,26 @@
-import { optional } from './optional';
-import { InferShape } from './types';
+import { isNullish } from 'vest-utils';
 
-import { RuleInstance } from 'enforceUtil';
+import { Passing, RuleInstance } from 'enforceUtil';
 
 export function partial<T extends Record<string, RuleInstance<any>>>(
   schema: T,
-): { [K in keyof T]: RuleInstance<InferShape<T[K]> | undefined | null> } {
-  const result: { [key: string]: RuleInstance<any> } = {};
+): Record<string, RuleInstance<any>> {
+  const result: Record<string, RuleInstance<any>> = {};
 
   for (const key in schema) {
     if (Object.prototype.hasOwnProperty.call(schema, key)) {
-      result[key] = optional(schema[key]);
+      const originalRule = schema[key];
+      result[key] = {
+        run: (value: any) => {
+          if (isNullish(value)) {
+            return Passing(value);
+          }
+          return originalRule.run(value);
+        },
+        infer: originalRule.infer,
+      };
     }
   }
 
-  return result as {
-    [K in keyof T]: RuleInstance<InferShape<T[K]> | undefined | null>;
-  };
+  return result;
 }

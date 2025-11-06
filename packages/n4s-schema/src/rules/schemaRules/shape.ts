@@ -1,29 +1,30 @@
+import { hasOwnProperty } from 'vest-utils';
+
 import { loose } from './loose';
 import { ShapeType } from './types';
 
-import { RuleInstance, Passing, Failing } from 'enforceUtil';
+import { BuildRule, Failing, Passing, RuleInstance } from 'enforceUtil';
 
 export function shape<T extends Record<string, RuleInstance<any>>>(
   schema: T,
   _value?: ShapeType<T>,
 ): RuleInstance<ShapeType<T>, [ShapeType<T>]> {
-  return {
-    run: (v: ShapeType<T>) => {
-      // First check loose match (all schema fields exist and pass)
-      const looseResult = loose(schema).run(v);
-      if (!looseResult.pass) {
-        return looseResult;
-      }
+  return BuildRule<
+    RuleInstance<ShapeType<T>, [ShapeType<T>]>,
+    ShapeType<T>,
+    [ShapeType<T>]
+  >((v: ShapeType<T>) => {
+    const baseRes = loose(schema).run(v);
+    if (!baseRes.pass) {
+      return baseRes;
+    }
 
-      // Then verify no extra fields (exact match)
-      for (const key in v) {
-        if (!(key in schema)) {
-          return Failing(v);
-        }
+    for (const key in v) {
+      if (!hasOwnProperty(schema, key)) {
+        return Failing(v);
       }
+    }
 
-      return Passing(v);
-    },
-    infer: {} as ShapeType<T>,
-  };
+    return Passing(v);
+  });
 }

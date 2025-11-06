@@ -1,6 +1,8 @@
+import { ctx } from 'enforceContext';
+
 import { ShapeType } from './types';
 
-import { RuleInstance, Passing, Failing } from 'enforceUtil';
+import { BuildRule, Passing, RuleInstance } from 'enforceUtil';
 
 export function loose<T extends Record<string, RuleInstance<any>>>(
   schema: T,
@@ -9,17 +11,23 @@ export function loose<T extends Record<string, RuleInstance<any>>>(
   ShapeType<T> & Record<string, unknown>,
   [ShapeType<T> & Record<string, unknown>]
 > {
-  return {
-    run: (v: ShapeType<T> & Record<string, unknown>) => {
-      // Check that each schema field pass its rule
-      for (const key in schema) {
-        const value = key in v ? v[key] : undefined;
-        if (!schema[key].run(value).pass) {
-          return Failing(v);
-        }
+  return BuildRule<
+    RuleInstance<
+      ShapeType<T> & Record<string, unknown>,
+      [ShapeType<T> & Record<string, unknown>]
+    >,
+    ShapeType<T> & Record<string, unknown>,
+    [ShapeType<T> & Record<string, unknown>]
+  >((v: ShapeType<T> & Record<string, unknown>) => {
+    for (const key in schema) {
+      const fieldValue = key in v ? v[key] : undefined;
+      const res = ctx.run({ value: fieldValue, set: true, meta: { key } }, () =>
+        schema[key].run(fieldValue),
+      );
+      if (!res.pass) {
+        return res;
       }
-      return Passing(v);
-    },
-    infer: {} as ShapeType<T>,
-  };
+    }
+    return Passing(v);
+  });
 }

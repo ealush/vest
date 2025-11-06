@@ -1,11 +1,11 @@
 import { ctx } from 'enforceContext';
 import type { EnforceContext } from 'enforceContext';
+import { partial } from 'partial';
 import { assign } from 'vest-utils';
 
 import { enforceEager, extendEager } from 'eager';
 import { addToChain, registerLazyRule } from 'genRuleChain';
 import { enforceLazy } from 'lazy';
-import { partial } from 'partial';
 import { normalizeResult } from 'ruleResult';
 
 export { ctx } from 'enforceContext';

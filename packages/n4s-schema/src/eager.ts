@@ -30,6 +30,7 @@ export function extendEager(rules: Record<string, (...args: any[]) => any>) {
   assign(customRules, rules);
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function enforceEager<T>(value: T): EnforceEagerReturn<T> {
   let customMessage: Maybe<string> = undefined;
 
@@ -42,14 +43,8 @@ export function enforceEager<T>(value: T): EnforceEagerReturn<T> {
           return setMessage;
         }
 
-        // Check if it's a schema or compound rule
-        const schemaRule = getSchemaRule(key);
-        if (schemaRule) {
-          return genRuleCall(proxy, schemaRule, key);
-        }
-
         // On property access, we identify if it is a rule or not.
-        const rule = getRule(key);
+        const rule = getRule(key) ?? getSchemaRule(key);
 
         // If it is a rule, we wrap it with `genRuleCall` that adds the base enforce behavior
         if (rule) {
@@ -261,7 +256,7 @@ type TSchemaRules<T> =
           schema: S,
         ): EnforceEagerReturn<ShapeType<S> & Record<string, unknown>>;
       }
-    : {};
+    : Record<string, never>;
 
 // Schema rules for array validation
 type TArraySchemaRules<T> = T extends any[]
@@ -270,7 +265,7 @@ type TArraySchemaRules<T> = T extends any[]
         ...rules: R
       ): EnforceEagerReturn<MultiTypeInput<R>[]>;
     }
-  : {};
+  : Record<string, never>;
 
 type EnforceBase<T = any> = TModifiers<T> &
   TRules<T> &

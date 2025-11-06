@@ -1,11 +1,12 @@
 import * as compoundRules from 'compoundRules';
 import { ctx } from 'enforceContext';
-import { isArray } from 'isArray';
+import { isArray } from 'isArrayRule';
 import * as schemaRules from 'schemaRules';
 import type { DropFirst } from 'vest-utils';
 
 import type { ArrayRuleInstance } from 'arrayRules';
 import * as arrayRules from 'arrayRules';
+// eslint-disable-next-line import/no-unresolved
 import { isBoolean, type BooleanRuleInstance } from 'booleanRules';
 import * as booleanRules from 'booleanRules';
 import type { RuleInstance } from 'enforceUtil';
@@ -42,6 +43,7 @@ type TCustomLazyRules = {
   >;
 };
 
+// eslint-disable-next-line max-nested-callbacks
 function adaptDynamicRules<
   T extends RuleInstance<any, [any]>,
   O extends Record<string, (...args: any[]) => any>,

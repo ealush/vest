@@ -1,3 +1,5 @@
+import { hasOwnProperty } from 'vest-utils';
+
 import { RuleInstance, Passing, Failing, RuleRunReturn } from 'enforceUtil';
 
 type Predicate = (value: any) => boolean;
@@ -12,6 +14,7 @@ export function registerLazyRule(
   lazyRegistry[name] = builder;
 }
 
+// eslint-disable-next-line max-lines-per-function
 function createChainBuilder<T extends RuleInstance<any, any>>(
   rules: Record<keyof Omit<T, 'run' | 'infer'>, (...args: any[]) => boolean>,
 ) {
@@ -24,12 +27,12 @@ function createChainBuilder<T extends RuleInstance<any, any>>(
         return run;
       }
 
-      if (Object.prototype.hasOwnProperty.call(rules, prop as any)) {
+      if (hasOwnProperty(rules, prop as any)) {
         return (...args: any[]) =>
           add((value: any) => (rules as any)[prop](value, ...args));
       }
 
-      if (Object.prototype.hasOwnProperty.call(lazyRegistry, prop as any)) {
+      if (hasOwnProperty(lazyRegistry, prop as any)) {
         return (...args: any[]) => add(lazyRegistry[prop as any](...args));
       }
 
@@ -39,10 +42,10 @@ function createChainBuilder<T extends RuleInstance<any, any>>(
       if (prop === 'run' || prop === 'infer') {
         return true;
       }
-      if (Object.prototype.hasOwnProperty.call(rules, prop as any)) {
+      if (hasOwnProperty(rules, prop as any)) {
         return true;
       }
-      if (Object.prototype.hasOwnProperty.call(lazyRegistry, prop as any)) {
+      if (hasOwnProperty(lazyRegistry, prop as any)) {
         return true;
       }
       return Reflect.has(target as object, prop);

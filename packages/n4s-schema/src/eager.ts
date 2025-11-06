@@ -15,6 +15,7 @@ import * as numberRules from 'numberRules';
 import * as numericRules from 'numericRules';
 import * as objectRules from 'objectRules';
 import { enforceMessage, transformResult } from 'ruleResult';
+import * as compoundRules from 'compoundRules';
 import * as schemaRules from 'schemaRules';
 import * as stringRules from 'stringRules';
 import type { FirstArg } from 'typeUtils';
@@ -148,6 +149,7 @@ const allRules = {
 
 // Schema rules that return RuleInstance objects
 const schemaRulesMap = {
+  ...compoundRules,
   ...schemaRules,
 } as const;
 

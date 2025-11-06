@@ -1,5 +1,7 @@
+import * as compoundRules from 'compoundRules';
 import { ctx } from 'enforceContext';
 import { isArray } from 'isArray';
+import * as schemaRules from 'schemaRules';
 import type { DropFirst } from 'vest-utils';
 
 import type { ArrayRuleInstance } from 'arrayRules';
@@ -24,7 +26,6 @@ import { isNumeric, type NumericRuleInstance } from 'numericRules';
 import * as numericRules from 'numericRules';
 import { ObjectRuleInstance } from 'objectRules';
 import * as objectRules from 'objectRules';
-import * as schemaRules from 'schemaRules';
 import { isString, type StringRuleInstance } from 'stringRules';
 import * as stringRules from 'stringRules';
 import type { FirstArg } from 'typeUtils';
@@ -58,6 +59,7 @@ function adaptDynamicRules<
 }
 
 const baseEnforceLazy = {
+  ...compoundRules,
   ...schemaRules,
   ...adaptDynamicRules<AnyRuleInstance, typeof generalRules>(generalRules),
   ...adaptDynamicRules<ObjectRuleInstance, typeof objectRules>(objectRules),

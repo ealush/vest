@@ -1,9 +1,5 @@
-export { allOf } from 'allOf';
-export { anyOf } from 'anyOf';
 export { isArrayOf } from 'isArrayOf';
 export { loose } from 'loose';
-export { noneOf } from 'noneOf';
-export { oneOf } from 'oneOf';
 export { optional } from 'optional';
 export { partial } from 'partial';
 export { shape } from 'shape';

@@ -1,4 +1,4 @@
-import { RuleInstance } from 'enforceUtil';
+import { RuleInstance } from 'RuleInstance';
 
 // Common type for rules that accept any value
 export interface AnyRuleInstance extends RuleInstance<any, [any]> {}

@@ -1,4 +1,4 @@
-import { RuleInstance } from 'enforceUtil';
+import { RuleInstance } from 'RuleInstance';
 
 export interface NumberRuleInstance extends RuleInstance<number, [number]> {
   isBetween(min: number, max: number): NumberRuleInstance;

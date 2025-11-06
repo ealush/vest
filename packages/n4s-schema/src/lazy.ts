@@ -1,3 +1,4 @@
+import { type RuleInstance } from 'RuleInstance';
 import { ctx } from 'enforceContext';
 import type { DropFirst } from 'vest-utils';
 
@@ -7,7 +8,6 @@ import * as arrayRules from 'arrayRules';
 import { isBoolean, type BooleanRuleInstance } from 'booleanRules';
 import * as booleanRules from 'booleanRules';
 import * as compoundRules from 'compoundRules';
-import { type RuleInstance } from 'enforceUtil';
 import { addToChain } from 'genRuleChain';
 import { AnyRuleInstance } from 'generalRules';
 import * as generalRules from 'generalRules';

@@ -2,7 +2,7 @@ import { loose } from 'loose';
 import { hasOwnProperty } from 'vest-utils';
 
 import { RuleRunReturn } from 'RuleRunReturn';
-import type { RuleInstance } from 'enforceUtil';
+import type { RuleInstance } from 'RuleInstance';
 
 export function shape<T extends Record<string, any>>(
   value: T,

@@ -1,21 +1,3 @@
-import { RuleRunReturn } from "RuleRunReturn";
-
-export function BuildRule<
-  R extends RuleInstance<T, Args>,
-  T,
-  Args extends any[],
->(rule: (...args: Args) => RuleRunReturn<T>): R {
-  return {
-    run: (...args: Args) => rule(...args),
-    infer: {} as T,
-  } as R;
-}
-
-export interface RuleInstance<T, Args extends any[] = any[]> {
-  run: (...args: Args) => RuleRunReturn<T>;
-  infer: T;
-  // Custom lazy rule methods are dynamically attached via registerLazyRule.
-  // We expose a permissive index signature to allow chaining custom rules in TS.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
-}
+// Deprecated: BuildRule and the RuleInstance interface were moved.
+// Re-export the new class to keep existing imports working.
+export { RuleInstance } from './utils/RuleInstance';

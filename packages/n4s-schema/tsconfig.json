@@ -17,6 +17,7 @@
       "eager": ["./src/eager.ts"],
       "toNumber": ["./src/utils/toNumber.ts"],
       "regex": ["./src/utils/regex.ts"],
+      "RuleInstance": ["./src/utils/RuleInstance.ts"],
       "RuleRunReturn": ["./src/utils/RuleRunReturn.ts"],
       "stringRules": ["./src/rules/stringRules.ts"],
       "objectRules": ["./src/rules/objectRules.ts"],

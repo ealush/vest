@@ -2,7 +2,7 @@ import { ctx } from 'enforceContext';
 import type { ShapeType } from 'shape';
 
 import { RuleRunReturn } from 'RuleRunReturn';
-import type { RuleInstance } from 'enforceUtil';
+import type { RuleInstance } from 'RuleInstance';
 
 // partial(value, schema) validates that:
 // 1. value's keys are a subset of schema's keys (no extras)

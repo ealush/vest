@@ -1,7 +1,7 @@
+import { RuleInstance } from 'RuleInstance';
 import { describe, it, expect } from 'vitest';
 
 import { enforce } from 'n4s-schema';
-import { RuleInstance } from 'enforceUtil';
 
 const longerThan = (n: number): RuleInstance<string> => ({
   run: (v: any) => ({ pass: typeof v === 'string' && v.length > n, type: v }),

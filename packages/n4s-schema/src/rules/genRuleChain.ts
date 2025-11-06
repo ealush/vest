@@ -1,7 +1,7 @@
 import { hasOwnProperty } from 'vest-utils';
 
 import { RuleRunReturn } from 'RuleRunReturn';
-import { RuleInstance } from 'enforceUtil';
+import { RuleInstance } from 'RuleInstance';
 
 type Predicate = (value: any) => boolean | RuleRunReturn<any>;
 

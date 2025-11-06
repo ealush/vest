@@ -1,6 +1,6 @@
 import { isNull as isNullValue } from 'vest-utils';
 
-import { RuleInstance } from 'enforceUtil';
+import { RuleInstance } from 'RuleInstance';
 
 // Type guard rule instance
 export interface NullRuleInstance extends RuleInstance<null, [null]> {}

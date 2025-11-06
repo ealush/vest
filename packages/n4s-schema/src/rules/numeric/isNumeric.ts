@@ -1,6 +1,6 @@
 import { isNumeric as isNumericValue } from 'vest-utils';
 
-import { RuleInstance } from 'enforceUtil';
+import { RuleInstance } from 'RuleInstance';
 
 export interface NumericRuleInstance
   extends RuleInstance<number | string, [number | string]> {

@@ -2,7 +2,7 @@ import type { LooseShapeValue } from 'loose';
 import type { PartialShapeValue } from 'partial';
 import type { ShapeValue } from 'shape';
 
-import { RuleInstance } from 'enforceUtil';
+import { RuleInstance } from 'RuleInstance';
 
 export type InferShape<T> = T extends RuleInstance<infer R, any> ? R : never;
 

@@ -1,3 +1,4 @@
+import type { RuleInstance } from 'RuleInstance';
 import { ctx } from 'enforceContext';
 import { assign, invariant } from 'vest-utils';
 import type { Maybe } from 'vest-utils';
@@ -8,7 +9,6 @@ import * as commonComparison from 'commonComparison';
 import * as commonContainer from 'commonContainer';
 import * as commonLength from 'commonLength';
 import * as compoundRules from 'compoundRules';
-import type { RuleInstance } from 'enforceUtil';
 import * as generalRules from 'generalRules';
 import { TCustomRules } from 'n4sTypes';
 import * as nullishRules from 'nullishRules';

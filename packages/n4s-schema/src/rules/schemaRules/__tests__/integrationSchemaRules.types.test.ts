@@ -1,6 +1,7 @@
+import type { ShapeType } from 'shape';
 import { describe, expect, it } from 'vitest';
 
-import { enforce } from 'n4s-schema';
+import { enforce } from 'n4s-schem';
 
 // schema combinators are consumed via enforce
 
@@ -69,7 +70,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     expect(true).toBe(true);
   });
 
-  it('optional + partial: wrong inner types should error', () => {
+  it('optional + base shape: wrong inner types should error', () => {
     const base = {
       count: enforce.isNumber(),
       maybeName: enforce.optional(enforce.isString()),
@@ -79,9 +80,8 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
       }),
     } as const;
 
-    const schema = enforce.shape(enforce.partial(base));
-
-    type T = typeof schema.infer;
+    // Use shape-inferred type for compile-time checks
+    type T = ShapeType<typeof base>;
 
     const good: T = {
       count: 1,

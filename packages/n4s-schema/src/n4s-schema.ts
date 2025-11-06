@@ -1,6 +1,5 @@
 import { ctx } from 'enforceContext';
 import type { EnforceContext } from 'enforceContext';
-import { partial } from 'partial';
 import { assign } from 'vest-utils';
 
 import { enforceEager, extendEager } from 'eager';
@@ -9,6 +8,7 @@ import { enforceLazy } from 'lazy';
 import { normalizeResult } from 'ruleResult';
 
 export { ctx } from 'enforceContext';
+// No central barrel for schema rule types; import from colocated files as needed.
 // n4s.ValueFirstRules is declared globally for typing custom rules
 
 // Note: runtime accepts any value-first function; types are derived via n4s.ValueFirstRules
@@ -26,8 +26,7 @@ enforce.context = function context(): EnforceContext {
   return ctx.use();
 };
 
-// partial is a schema transformer utility, not a validator rule
-enforce.partial = partial;
+// partial is provided via eager/lazy rule maps (validator rule)
 
 // Type-safe extend function
 // Extend API: adds custom rules to both eager and lazy interfaces

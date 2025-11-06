@@ -38,7 +38,6 @@
       "endsWith": ["./src/rules/string/endsWith.ts"],
       "doesNotStartWith": ["./src/rules/string/doesNotStartWith.ts"],
       "doesNotEndWith": ["./src/rules/string/doesNotEndWith.ts"],
-      "types": ["./src/rules/schemaRules/types.ts"],
       "shape": ["./src/rules/schemaRules/shape.ts"],
       "schemaRules": ["./src/rules/schemaRules/schemaRules.ts"],
       "partial": ["./src/rules/schemaRules/partial.ts"],

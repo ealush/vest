@@ -374,23 +374,19 @@ describe('Schema Rules - Eager Notation', () => {
       expect(() =>
         enforce({
           firstName: 'John',
-        }).shape(
-          enforce.partial({
-            firstName: enforce.isString(),
-            lastName: enforce.isString(),
-          }),
-        ),
+        }).partial({
+          firstName: enforce.isString(),
+          lastName: enforce.isString(),
+        }),
       ).not.toThrow();
     });
 
-    it('should pass with empty object', () => {
+    it('should pass with empty object (Partial semantics)', () => {
       expect(() =>
-        enforce({}).shape(
-          enforce.partial({
-            firstName: enforce.isString(),
-            lastName: enforce.isString(),
-          }),
-        ),
+        enforce({}).partial({
+          firstName: enforce.isString(),
+          lastName: enforce.isString(),
+        }),
       ).not.toThrow();
     });
 
@@ -399,25 +395,22 @@ describe('Schema Rules - Eager Notation', () => {
         enforce({
           firstName: 'John',
           lastName: 'Doe',
-        }).shape(
-          enforce.partial({
-            firstName: enforce.isString(),
-            lastName: enforce.isString(),
-          }),
-        ),
+        }).partial({
+          firstName: enforce.isString(),
+          lastName: enforce.isString(),
+        }),
       ).not.toThrow();
     });
 
     it('should fail with wrong type for provided property', () => {
       expect(() =>
         enforce({
+          // @ts-expect-error
           firstName: 123,
-        }).shape(
-          enforce.partial({
-            firstName: enforce.isString(),
-            lastName: enforce.isString(),
-          }),
-        ),
+        }).partial({
+          firstName: enforce.isString(),
+          lastName: enforce.isString(),
+        }),
       ).toThrow();
     });
 
@@ -425,12 +418,12 @@ describe('Schema Rules - Eager Notation', () => {
       expect(() =>
         enforce({
           age: 25,
-        }).shape(
-          enforce.partial({
+        })
+          .partial({
             age: enforce.isNumber().greaterThan(18),
             name: enforce.isString().longerThan(2),
-          }),
-        ),
+          })
+          .isNotEmpty(),
       ).not.toThrow();
     });
 
@@ -438,12 +431,12 @@ describe('Schema Rules - Eager Notation', () => {
       expect(() =>
         enforce({
           age: 15,
-        }).shape(
-          enforce.partial({
+        })
+          .partial({
             age: enforce.isNumber().greaterThan(18),
             name: enforce.isString(),
-          }),
-        ),
+          })
+          .isEmpty(),
       ).toThrow();
     });
   });

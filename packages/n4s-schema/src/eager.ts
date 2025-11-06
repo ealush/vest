@@ -1,7 +1,10 @@
 import * as compoundRules from 'compoundRules';
 import { ctx } from 'enforceContext';
+import type { MultiTypeInput } from 'isArrayOf';
+import type { LooseShapeValue } from 'loose';
+import type { PartialShapeValue } from 'partial';
 import * as schemaRules from 'schemaRules';
-import type { ShapeType, MultiTypeInput } from 'schemaTypes';
+import type { ShapeValue } from 'shape';
 import { assign, invariant } from 'vest-utils';
 import type { DropFirst, Maybe } from 'vest-utils';
 
@@ -108,11 +111,9 @@ const allRules = {
 } as const;
 
 // Schema and compound rules that return RuleInstance objects
-// Note: partial is excluded as it's a schema transformer, not a validator
-const { partial: _partial, ...schemaRulesWithoutPartial } = schemaRules;
 const schemaRulesMap = {
   ...compoundRules,
-  ...schemaRulesWithoutPartial,
+  ...schemaRules,
 } as const;
 
 function getSchemaRule(ruleName: string): SchemaRules | null {
@@ -246,15 +247,26 @@ type TCustomRules<T> = {
 };
 
 // Schema rules for object validation
+// Aliases for eager schema rule return typing to centralize shape forms.
+type ShapeResult<S extends Record<string, RuleInstance<any>>> =
+  EnforceEagerReturn<ShapeValue<S>>;
+type LooseResult<S extends Record<string, RuleInstance<any>>> =
+  EnforceEagerReturn<LooseShapeValue<S>>;
+type PartialResult<S extends Record<string, RuleInstance<any>>> =
+  EnforceEagerReturn<PartialShapeValue<S>>;
+
 type TSchemaRules<T> =
   T extends Record<string, any>
     ? {
         shape<S extends Record<string, RuleInstance<any>>>(
           schema: S,
-        ): EnforceEagerReturn<ShapeType<S>>;
+        ): ShapeResult<S>;
         loose<S extends Record<string, RuleInstance<any>>>(
           schema: S,
-        ): EnforceEagerReturn<ShapeType<S> & Record<string, unknown>>;
+        ): LooseResult<S>;
+        partial<S extends Record<string, RuleInstance<any>>>(
+          schema: S,
+        ): PartialResult<S>;
       }
     : Record<string, never>;
 

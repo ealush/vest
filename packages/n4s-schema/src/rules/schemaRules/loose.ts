@@ -1,5 +1,7 @@
 import { ctx } from 'enforceContext';
+import type { ShapeType } from 'shape';
 
+import type { RuleInstance } from 'enforceUtil';
 import { Passing, RuleRunReturn } from 'enforceUtil';
 
 export function loose<T extends Record<string, any>>(
@@ -17,3 +19,13 @@ export function loose<T extends Record<string, any>>(
   }
   return Passing(value);
 }
+
+// Types colocated with loose rule
+export type LooseRuleInstance<S extends Record<string, RuleInstance<any>>> =
+  RuleInstance<
+    ShapeType<S> & Record<string, unknown>,
+    [ShapeType<S> & Record<string, unknown>]
+  >;
+
+export type LooseShapeValue<S extends Record<string, RuleInstance<any>>> =
+  ShapeType<S> & Record<string, unknown>;

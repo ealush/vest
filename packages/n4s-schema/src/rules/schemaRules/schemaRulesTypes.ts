@@ -22,22 +22,22 @@ export type MultiTypeInput<T extends RuleInstance<any, any>[]> =
 // These make it easier to evolve schema rule output typing without
 // touching every usage site. They are consumed by the lazy API to
 // provide precise inference for shape/loose/partial.
-export type ShapeRuleInstance<S extends Record<string, RuleInstance<any>>> =
-  RuleInstance<ShapeType<S>, [ShapeType<S>]>;
+export type ShapeRuleInstance<S extends Record<string, RuleInstance<any>>> = RuleInstance<
+  ShapeType<S>,
+  [ShapeType<S>]
+>;
 
-export type LooseRuleInstance<S extends Record<string, RuleInstance<any>>> =
-  RuleInstance<
-    ShapeType<S> & Record<string, unknown>,
-    [ShapeType<S> & Record<string, unknown>]
-  >;
+export type LooseRuleInstance<S extends Record<string, RuleInstance<any>>> = RuleInstance<
+  ShapeType<S> & Record<string, unknown>,
+  [ShapeType<S> & Record<string, unknown>]
+>;
 
-export type PartialRuleInstance<S extends Record<string, RuleInstance<any>>> =
-  RuleInstance<Partial<ShapeType<S>>, [Partial<ShapeType<S>>]>;
+export type PartialRuleInstance<S extends Record<string, RuleInstance<any>>> = RuleInstance<
+  Partial<ShapeType<S>>,
+  [Partial<ShapeType<S>>]
+>;
 
 // Value shape aliases (shared by eager and lazy for consistency)
-export type ShapeValue<S extends Record<string, RuleInstance<any>>> =
-  ShapeType<S>;
-export type LooseShapeValue<S extends Record<string, RuleInstance<any>>> =
-  ShapeType<S> & Record<string, unknown>;
-export type PartialShapeValue<S extends Record<string, RuleInstance<any>>> =
-  Partial<ShapeType<S>>;
+export type ShapeValue<S extends Record<string, RuleInstance<any>>> = ShapeType<S>;
+export type LooseShapeValue<S extends Record<string, RuleInstance<any>>> = ShapeType<S> & Record<string, unknown>;
+export type PartialShapeValue<S extends Record<string, RuleInstance<any>>> = Partial<ShapeType<S>>;

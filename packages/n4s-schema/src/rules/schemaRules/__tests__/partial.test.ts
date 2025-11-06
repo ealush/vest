@@ -14,98 +14,46 @@ describe('partial', () => {
     age: enforce.isNumber(),
   };
 
-  it('should return a schema with optional rules', () => {
-    const partialSchema = enforce.partial(schema);
-    expect(partialSchema.name).toHaveProperty('run');
-    expect(partialSchema.age).toHaveProperty('run');
+  it('validates subset; empty object is allowed', () => {
+    const rule = enforce.partial(schema);
 
-    // Test if they are actually optional
-    expect(partialSchema.name.run(undefined).pass).toBe(true);
-    expect(partialSchema.age.run(undefined).pass).toBe(true);
+    expect(rule.run({ name: 'John' }).pass).toBe(true);
+    expect(rule.run({ age: 30 }).pass).toBe(true);
+    expect(rule.run({ name: 'John', age: 30 }).pass).toBe(true);
+    expect(rule.run({}).pass).toBe(true);
   });
 
-  it('should work with shape to validate partial objects', () => {
-    const partialSchema = enforce.partial(schema);
-    const shapeRule = enforce.shape(partialSchema);
-
-    expect(shapeRule.run({ name: 'John' }).pass).toBe(true);
-    expect(shapeRule.run({ age: 30 }).pass).toBe(true);
-    expect(shapeRule.run({}).pass).toBe(true);
-    expect(shapeRule.run({ name: 'John', age: 30 }).pass).toBe(true);
+  it('disallows extra properties', () => {
+    const rule = enforce.partial(schema);
+    // @ts-expect-error runtime check for extra property
+    expect(rule.run({ name: 'John', extra: true }).pass).toBe(false);
   });
 
-  it('should fail if a property has wrong type', () => {
-    const partialSchema = enforce.partial(schema);
-    const shapeRule = enforce.shape(partialSchema);
-
-    // @ts-expect-error
-    expect(shapeRule.run({ name: 123 }).pass).toBe(false);
-    // @ts-expect-error
-    expect(shapeRule.run({ age: '30' }).pass).toBe(false);
-    // @ts-expect-error
-    expect(shapeRule.run({ name: 'John', age: '30' }).pass).toBe(false);
+  it('fails when object has none of the original fields', () => {
+    const rule = enforce.partial(schema);
+    // none of the keys match schema, should fail
+    // @ts-expect-error runtime check for unrelated fields
+    expect(rule.run({ foo: 'bar' }).pass).toBe(false);
   });
 
-  it('Should pass when wrapped fields are undefined or null', () => {
-    const shapeRule = enforce.shape(
-      enforce.partial({
-        username: longerThan(3),
-        id: enforce.isNumber(),
-      }),
-    );
-
-    expect(shapeRule.run({}).pass).toBe(true);
-    expect(shapeRule.run({ username: undefined, id: null }).pass).toBe(true);
+  it('fails when provided field has wrong type', () => {
+    const rule = enforce.partial(schema);
+    // @ts-expect-error runtime check for wrong type
+    expect(rule.run({ name: 123 }).pass).toBe(false);
+    // @ts-expect-error runtime check for wrong type
+    expect(rule.run({ age: '30' }).pass).toBe(false);
   });
 
-  it('Should pass when wrapped fields are valid', () => {
-    const shapeRule = enforce.shape(
-      enforce.partial({
-        username: longerThan(3),
-        id: enforce.isNumber(),
-      }),
-    );
-    expect(shapeRule.run({ username: 'foobar', id: 1 }).pass).toBe(true);
-  });
-
-  it('Should pass when some wrapped fields are missing', () => {
-    const shapeRule = enforce.shape(
-      enforce.partial({
-        username: longerThan(3),
-        id: enforce.isNumber(),
-      }),
-    );
-    expect(shapeRule.run({ username: 'foobar' }).pass).toBe(true);
-  });
-
-  it('Should fail when wrapped fields are invalid', () => {
-    const shapeRule = enforce.shape(
-      enforce.partial({
-        username: longerThan(3),
-        id: enforce.isNumber(),
-      }),
-    );
-    // @ts-expect-error
-    expect(shapeRule.run({ username: 'foo', id: '1' }).pass).toBe(false);
-  });
-
-  it("Should retain rule's original constraints", () => {
-    const partialSchema = enforce.partial({
+  it('works with custom rules', () => {
+    const rule = enforce.partial({
       username: longerThan(3),
       id: enforce.isNumber(),
     });
-    const shapeRule = enforce.shape(partialSchema);
-    const looseRule = enforce.loose(partialSchema);
 
-    // shape is strict and fails on extra properties
-    expect(
-      // @ts-expect-error
-      shapeRule.run({ username: 'foobar', id: 1, foo: 'bar' }).pass,
-    ).toBe(false);
-
-    // loose allows extra properties
-    expect(looseRule.run({ username: 'foobar', id: 1, foo: 'bar' }).pass).toBe(
-      true,
-    );
+    expect(rule.run({ username: 'foobar' }).pass).toBe(true);
+    expect(rule.run({ id: 1 }).pass).toBe(true);
+    expect(rule.run({ username: 'foo' }).pass).toBe(false);
+    // @ts-expect-error
+    expect(rule.run({ id: '1' }).pass).toBe(false);
   });
 });

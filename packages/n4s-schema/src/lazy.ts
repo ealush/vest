@@ -1,12 +1,14 @@
 import * as compoundRules from 'compoundRules';
 import { ctx } from 'enforceContext';
 import { isArray } from 'isArrayRule';
+import type { LooseRuleInstance } from 'loose';
+import type { PartialRuleInstance } from 'partial';
 import * as schemaRules from 'schemaRules';
+import type { ShapeRuleInstance } from 'shape';
 import type { DropFirst } from 'vest-utils';
 
 import type { ArrayRuleInstance } from 'arrayRules';
 import * as arrayRules from 'arrayRules';
-// eslint-disable-next-line import/no-unresolved
 import { isBoolean, type BooleanRuleInstance } from 'booleanRules';
 import * as booleanRules from 'booleanRules';
 import type { RuleInstance } from 'enforceUtil';
@@ -43,7 +45,6 @@ type TCustomLazyRules = {
   >;
 };
 
-// eslint-disable-next-line max-nested-callbacks
 function adaptDynamicRules<
   T extends RuleInstance<any, [any]>,
   O extends Record<string, (...args: any[]) => any>,
@@ -52,6 +53,7 @@ function adaptDynamicRules<
     (acc, key) => {
       (acc as any)[key] = (...args: any[]) =>
         addToChain({}, (value: any) => {
+          // eslint-disable-next-line max-nested-callbacks
           const result = ctx.run({ value }, () =>
             (container as any)[key](value, ...args),
           );
@@ -68,18 +70,14 @@ function adaptDynamicRules<
   );
 }
 
-const { partial: _partial, ...schemaRulesWithoutPartial } = schemaRules;
-
 const baseEnforceLazy = {
   // Schema and compound rules need to be adapted to lazy API
   ...adaptDynamicRules<RuleInstance<any, [any]>, typeof compoundRules>(
     compoundRules,
   ),
-  // partial is excluded as it's a schema transformer, not a validator
-  ...adaptDynamicRules<
-    RuleInstance<any, [any]>,
-    typeof schemaRulesWithoutPartial
-  >(schemaRulesWithoutPartial),
+  ...adaptDynamicRules<RuleInstance<any, [any]>, typeof schemaRules>(
+    schemaRules,
+  ),
   ...adaptDynamicRules<AnyRuleInstance, typeof generalRules>(generalRules),
   ...adaptDynamicRules<ObjectRuleInstance, typeof objectRules>(objectRules),
   isArray: <T = any>(): ArrayRuleInstance<T> =>
@@ -91,6 +89,35 @@ const baseEnforceLazy = {
   isNumeric: (): NumericRuleInstance => addToChain(numericRules, isNumeric),
   isString: (): StringRuleInstance => addToChain(stringRules, isString),
   isUndefined: (): UndefinedRuleInstance => addToChain({}, isUndefined),
+};
+
+// Override schema-specific builders with specialized typed instances.
+// We keep runtime identical; only inference changes.
+(baseEnforceLazy as any).shape = function <
+  S extends Record<string, RuleInstance<any>>,
+>(schema: S): ShapeRuleInstance<S> {
+  return addToChain<ShapeRuleInstance<S>>({}, (value: any) => {
+    const res = schemaRules.shape(value, schema as any);
+    return res.pass;
+  });
+};
+
+(baseEnforceLazy as any).loose = function <
+  S extends Record<string, RuleInstance<any>>,
+>(schema: S): LooseRuleInstance<S> {
+  return addToChain<LooseRuleInstance<S>>({}, (value: any) => {
+    const res = schemaRules.loose(value, schema as any);
+    return res.pass;
+  });
+};
+
+(baseEnforceLazy as any).partial = function <
+  S extends Record<string, RuleInstance<any>>,
+>(schema: S): PartialRuleInstance<S> {
+  return addToChain<PartialRuleInstance<S>>({}, (value: any) => {
+    const res = schemaRules.partial(value, schema as any);
+    return res.pass;
+  });
 };
 
 export const enforceLazy = baseEnforceLazy as TCustomLazyRules &

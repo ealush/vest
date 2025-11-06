@@ -13,7 +13,6 @@ describe('integration: extensive schema + combinators', () => {
       city: enforce.isString().isNotBlank(),
       country: enforce.isString().longerThan(1),
       street: enforce.isString().isNotBlank(),
-      // zip can be a numeric string of 5 chars OR a 5-digit number
       zip: enforce.anyOf(
         enforce.allOf(
           enforce.isString(),
@@ -28,15 +27,12 @@ describe('integration: extensive schema + combinators', () => {
     });
 
     const contactSchema = enforce.shape({
-      // object key/value checks
       metaEnvKey: enforce.isKeyOf(Envs),
       metaRoleValue: enforce.isValueOf(Roles as any),
-      // exactly one of email or phone must be present
       method: enforce.oneOf(
         enforce.isString().equals('email'),
         enforce.isString().equals('phone'),
       ),
-      // email must be non-blank string; phone must be numeric (string or number) with >= 10 digits/value
       value: enforce.anyOf(
         enforce.allOf(enforce.isString(), enforce.isString().isNotBlank()),
         enforce.allOf(enforce.isNumeric().greaterThanOrEquals(1_000_000_000)),
@@ -52,7 +48,6 @@ describe('integration: extensive schema + combinators', () => {
           enforce.isString().matches(/^[a-z]{2}$/),
         ),
       ),
-      // nested arrays: list of lists of numeric or numeric-string thresholds
       thresholds: enforce.optional(
         enforce.isArrayOf(
           enforce.isArrayOf(
@@ -66,12 +61,10 @@ describe('integration: extensive schema + combinators', () => {
     const userSchema = enforce.shape({
       addresses: enforce.isArrayOf(addressSchema),
       contacts: enforce.isArrayOf(contactSchema),
-      // array that accepts numbers or numeric strings per element
       favoriteNumbers: enforce.isArrayOf(
         enforce.isNumeric(),
         enforce.isNumber(),
       ),
-      // accept id as number > 0 OR numeric-string of digits (no leading +, must be > 0)
       id: enforce.anyOf(
         enforce.isNumber().greaterThan(0),
         enforce.allOf(
@@ -79,7 +72,6 @@ describe('integration: extensive schema + combinators', () => {
           enforce.isString().matches(/^[1-9]\d*$/),
         ),
       ),
-      // preferences object may contain more keys than declared (loose)
       preferences: enforce.optional(preferencesSchema),
       username: enforce.allOf(
         enforce.isString().minLength(3),
@@ -90,10 +82,6 @@ describe('integration: extensive schema + combinators', () => {
       ),
     });
 
-    // (intentionally skipping compile-time type assertion: some rules (e.g., checkKey/checkValue)
-    // intentionally widen the inferred type making runtime checks more valuable here)
-
-    // Happy path
     expect(
       userSchema.run({
         addresses: [
@@ -131,8 +119,6 @@ describe('integration: extensive schema + combinators', () => {
       }).pass,
     ).toBe(true);
 
-    // Failures
-    // - username is forbidden
     expect(
       userSchema.run({
         addresses: [{ city: 'b', country: 'US', street: 'a', zip: '12345' }],
@@ -150,7 +136,6 @@ describe('integration: extensive schema + combinators', () => {
       } as any).pass,
     ).toBe(false);
 
-    // - contact.method invalid (neither email nor phone)
     expect(
       userSchema.run({
         addresses: [{ city: 'b', country: 'US', street: 'a', zip: '12345' }],
@@ -168,11 +153,16 @@ describe('integration: extensive schema + combinators', () => {
       } as any).pass,
     ).toBe(false);
 
-    // - addresses exact shape: extra field should fail
     expect(
       userSchema.run({
         addresses: [
-          { city: 'b', country: 'US', extra: true, street: 'a', zip: '12345' },
+          {
+            city: 'b',
+            country: 'US',
+            extra: true,
+            street: 'a',
+            zip: '12345',
+          } as any,
         ],
         contacts: [
           {
@@ -188,7 +178,6 @@ describe('integration: extensive schema + combinators', () => {
       } as any).pass,
     ).toBe(false);
 
-    // - favoriteNumbers: heterogeneous but must be numeric or number
     expect(
       userSchema.run({
         addresses: [{ city: 'b', country: 'US', street: 'a', zip: '12345' }],
@@ -256,9 +245,8 @@ describe('integration: extensive schema + combinators', () => {
       }),
     } as const;
 
-    const orderSchema = enforce.shape(enforce.partial(orderBase));
+    const orderSchema = enforce.partial(orderBase);
 
-    // Valid order with many optional parts missing
     expect(
       orderSchema.run({
         id: '1001',
@@ -270,26 +258,20 @@ describe('integration: extensive schema + combinators', () => {
       }).pass,
     ).toBe(true);
 
-    // Valid order with deep optional shipping
     expect(
       orderSchema.run({
         id: 1002,
         items: [{ price: 3, qty: 3, sku: 'CCC', tags: ['sale', 'new'] }],
-        shipping: {
-          address: { line1: 'Somewhere', line2: '', zip: '12345' },
-        },
+        shipping: { address: { line1: 'Somewhere', line2: '', zip: '12345' } },
         totals: { discounts: ['1', 2, 0], subtotal: 9, tax: 1 },
       }).pass,
     ).toBe(true);
 
-    // Failure: item tag blank, and shipping.zip wrong
     expect(
       orderSchema.run({
         id: 1003,
         items: [{ price: 1, qty: 1, sku: 'DDD', tags: [''] }],
-        shipping: {
-          address: { line1: 'X', zip: 'ABCDE' },
-        },
+        shipping: { address: { line1: 'X', zip: 'ABCDE' } },
         totals: { subtotal: 1, tax: 0 },
       } as any).pass,
     ).toBe(false);

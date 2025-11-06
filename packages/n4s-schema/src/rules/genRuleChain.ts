@@ -35,6 +35,18 @@ function createChainBuilder<T extends RuleInstance<any, any>>(
 
       return Reflect.get(target as object, prop, receiver);
     },
+    has(target: T, prop: string | symbol) {
+      if (prop === 'run' || prop === 'infer') {
+        return true;
+      }
+      if (Object.prototype.hasOwnProperty.call(rules, prop as any)) {
+        return true;
+      }
+      if (Object.prototype.hasOwnProperty.call(lazyRegistry, prop as any)) {
+        return true;
+      }
+      return Reflect.has(target as object, prop);
+    },
   });
 
   function add(p: Predicate) {

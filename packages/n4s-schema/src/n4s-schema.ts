@@ -5,6 +5,7 @@ import { assign } from 'vest-utils';
 import { enforceEager, extendEager } from 'eager';
 import { addToChain, registerLazyRule } from 'genRuleChain';
 import { enforceLazy } from 'lazy';
+import { partial } from 'partial';
 import { normalizeResult } from 'ruleResult';
 
 export { ctx } from 'enforceContext';
@@ -24,6 +25,9 @@ export const enforce = assign(enforceEager, enforceLazy) as Enforce;
 enforce.context = function context(): EnforceContext {
   return ctx.use();
 };
+
+// partial is a schema transformer utility, not a validator rule
+enforce.partial = partial;
 
 // Type-safe extend function
 // Extend API: adds custom rules to both eager and lazy interfaces

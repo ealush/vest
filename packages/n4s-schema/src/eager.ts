@@ -1,4 +1,6 @@
+import * as compoundRules from 'compoundRules';
 import { ctx } from 'enforceContext';
+import * as schemaRules from 'schemaRules';
 import type { ShapeType, MultiTypeInput } from 'schemaTypes';
 import { assign, invariant } from 'vest-utils';
 import type { DropFirst, Maybe } from 'vest-utils';
@@ -15,8 +17,6 @@ import * as numberRules from 'numberRules';
 import * as numericRules from 'numericRules';
 import * as objectRules from 'objectRules';
 import { enforceMessage, transformResult } from 'ruleResult';
-import * as compoundRules from 'compoundRules';
-import * as schemaRules from 'schemaRules';
 import * as stringRules from 'stringRules';
 import type { FirstArg } from 'typeUtils';
 
@@ -42,10 +42,10 @@ export function enforceEager<T>(value: T): EnforceEagerReturn<T> {
           return setMessage;
         }
 
-        // Check if it's a schema or compound rule (returns RuleInstance)
+        // Check if it's a schema or compound rule
         const schemaRule = getSchemaRule(key);
         if (schemaRule) {
-          return genSchemaRuleCall(proxy, schemaRule, key);
+          return genRuleCall(proxy, schemaRule, key);
         }
 
         // On property access, we identify if it is a rule or not.
@@ -66,41 +66,14 @@ export function enforceEager<T>(value: T): EnforceEagerReturn<T> {
     customMessage = msg;
     return proxy;
   }
-  function genSchemaRuleCall(
+
+  function genRuleCall(
     target: any,
-    schemaRule: SchemaRules,
+    rule: UnmodifiedRules | SchemaRules,
     ruleName: string,
   ) {
-    return function schemaRuleCall(...args: Args): any {
-      // Schema/compound rules return RuleInstance objects
-      // We need to call the rule to get a RuleInstance, then run it with the value
-      const ruleInstance = ctx.run({ value }, () =>
-        (schemaRule as (...args: any[]) => any)(...args),
-      );
-
-      // Run the rule instance with the value
-      const result = ctx.run({ value }, () => ruleInstance.run(value));
-
-      // Check if the rule passed
-      invariant(
-        result.pass,
-        enforceMessage(ruleName, result, value, customMessage),
-      );
-
-      // Reset the custom message after rule execution
-      setMessage(undefined);
-
-      target.pass = result.pass;
-
-      return target;
-    };
-  }
-  function genRuleCall(target: any, rule: UnmodifiedRules, ruleName: string) {
     return function ruleCall(...args: Args): any {
-      // Order of operation:
-      // 1. Create a context with the value being enforced
-      // 2. Call the rule within the context, and pass over the arguments passed to it
-      // 3. Transform the result to the correct output format
+      // All rules are now value-first: call with value, then args
       const transformedResult = ctx.run({ value }, () =>
         transformResult(
           (rule as (...args: any[]) => any)(value, ...args),
@@ -110,20 +83,12 @@ export function enforceEager<T>(value: T): EnforceEagerReturn<T> {
         ),
       );
 
-      // On rule failure (the result is false), we either throw an error
-      // or throw a string value if the rule has a message defined in it.
       invariant(
         transformedResult.pass,
         enforceMessage(ruleName, transformedResult, value, customMessage),
       );
 
-      // Reset the custom message after rule execution
       setMessage(undefined);
-
-      // This is not really needed because it will always be true
-      // As we're throwing an error on failure
-      // but it is here so that users have a sense of what is happening
-      // when they try to log the result of enforce and not just see a proxy object
       target.pass = transformedResult.pass;
 
       return target;
@@ -148,9 +113,11 @@ const allRules = {
 } as const;
 
 // Schema and compound rules that return RuleInstance objects
+// Note: partial is excluded as it's a schema transformer, not a validator
+const { partial: _partial, ...schemaRulesWithoutPartial } = schemaRules;
 const schemaRulesMap = {
   ...compoundRules,
-  ...schemaRules,
+  ...schemaRulesWithoutPartial,
 } as const;
 
 function getSchemaRule(ruleName: string): SchemaRules | null {

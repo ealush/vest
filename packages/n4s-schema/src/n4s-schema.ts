@@ -2,10 +2,10 @@ import { ctx } from 'enforceContext';
 import type { EnforceContext } from 'enforceContext';
 import { assign } from 'vest-utils';
 
+import { RuleRunReturn } from 'RuleRunReturn';
 import { enforceEager, extendEager } from 'eager';
 import { addToChain, registerLazyRule } from 'genRuleChain';
 import { enforceLazy } from 'lazy';
-import { normalizeResult } from 'ruleResult';
 
 export { ctx } from 'enforceContext';
 // No central barrel for schema rule types; import from colocated files as needed.
@@ -41,16 +41,15 @@ enforce.extend = function extend(
     const rule = rules[ruleName];
     // Attach as lazy builder on enforce
     (enforce as Record<string, any>)[ruleName] = (...args: any[]) =>
-      addToChain({}, (value: any) => normalizeResult(rule(value, ...args)));
+      addToChain({}, (value: any) => {
+        const res = ctx.run({ value }, () => rule(value, ...args));
+        return RuleRunReturn.create(res, value);
+      });
 
     // Also register for chaining on any lazy rule instance
-    registerLazyRule(
-      ruleName,
-      (...args: any[]) =>
-        (value: any) =>
-          normalizeResult(rule(value, ...args)),
-    );
+    registerLazyRule(ruleName, (...args: any[]) => (value: any) => {
+      const res = ctx.run({ value }, () => rule(value, ...args));
+      return RuleRunReturn.create(res, value);
+    });
   });
 };
-
-// normalizeResult is imported from 'ruleResult'

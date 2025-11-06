@@ -1,3 +1,7 @@
+import type { DropFirst } from 'vest-utils';
+
+import { EnforceEagerReturn } from 'eager';
+import type { FirstArg } from 'typeUtils';
 /**
  * Global namespace for n4s custom rules.
  * Users should extend ValueFirstRules with value-first rule signatures.
@@ -28,3 +32,14 @@ export type ValueFirstRules = n4s.ValueFirstRules;
 // Note: We don't augment RuleInstance here with mapped types, because TS disallows
 // interfaces extending mapped/conditional types. Instead, eager.ts and lazy.ts
 // each map n4s.ValueFirstRules into their respective APIs explicitly.
+
+// Map custom rules (value-first) to their eager signatures by dropping the value
+export type TCustomRules<T> = {
+  [K in keyof n4s.ValueFirstRules as T extends FirstArg<n4s.ValueFirstRules[K]>
+    ? K
+    : never]: (
+    ...args: DropFirst<
+      Parameters<Extract<n4s.ValueFirstRules[K], (...args: any) => any>>
+    >
+  ) => EnforceEagerReturn<T>;
+};

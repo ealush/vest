@@ -4,7 +4,6 @@ import {
   transformResult,
   enforceMessage,
   validateResult,
-  normalizeResult,
   type RuleDetailedResult,
 } from 'ruleResult';
 
@@ -77,23 +76,6 @@ describe('ruleResult helpers', () => {
       expect(() => validateResult(null)).toThrow();
       expect(() => validateResult({})).toThrow();
       expect(() => validateResult({ pass: 'nope' })).toThrow();
-    });
-  });
-
-  describe('normalizeResult', () => {
-    it('returns boolean as-is', () => {
-      expect(normalizeResult(true)).toBe(true);
-      expect(normalizeResult(false)).toBe(false);
-    });
-
-    it('extracts pass property from object', () => {
-      expect(normalizeResult({ pass: true })).toBe(true);
-      expect(normalizeResult({ pass: false })).toBe(false);
-    });
-
-    it('returns false for invalid inputs', () => {
-      expect(normalizeResult(undefined)).toBe(false);
-      expect(normalizeResult({})).toBe(false);
     });
   });
 });

@@ -1,7 +1,5 @@
-import type { MultiTypeInput } from 'isArrayOf';
 import type { LooseShapeValue } from 'loose';
 import type { PartialShapeValue } from 'partial';
-import { ShapeValue } from 'shape';
 import type { ShapeValue } from 'shape';
 
 import { RuleInstance } from 'enforceUtil';

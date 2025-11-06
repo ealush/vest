@@ -1,6 +1,6 @@
 import { greaterThan } from 'vest-utils';
 
-import { RuleRunReturn, ruleRunReturn } from 'enforceUtil';
+import { RuleRunReturn } from 'RuleRunReturn';
 
 const REQUIRED_COUNT = 1;
 
@@ -14,9 +14,9 @@ export function oneOf<T>(value: T, ...rules: any[]): RuleRunReturn<T> {
     }
 
     if (greaterThan(passingCount, REQUIRED_COUNT)) {
-      return false;
+      return RuleRunReturn.Failing(value);
     }
   });
 
-  return ruleRunReturn(passingCount === REQUIRED_COUNT, value);
+  return RuleRunReturn.create(passingCount === REQUIRED_COUNT, value);
 }

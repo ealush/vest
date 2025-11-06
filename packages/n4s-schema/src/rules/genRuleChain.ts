@@ -1,8 +1,9 @@
 import { hasOwnProperty } from 'vest-utils';
 
-import { RuleInstance, Passing, Failing, RuleRunReturn } from 'enforceUtil';
+import { RuleRunReturn } from 'RuleRunReturn';
+import { RuleInstance } from 'enforceUtil';
 
-type Predicate = (value: any) => boolean;
+type Predicate = (value: any) => boolean | RuleRunReturn<any>;
 
 // Global registry for custom lazy rules so they can be chained on any rule set
 const lazyRegistry: Record<string, (...args: any[]) => Predicate> = {};
@@ -57,18 +58,32 @@ function createChainBuilder<T extends RuleInstance<any, any>>(
     return proxy as T;
   }
 
+  // eslint-disable-next-line max-statements, complexity
   function run(value: any): RuleRunReturn<T['infer']> {
     if (chain.length === 0) {
-      return Passing(value);
+      return RuleRunReturn.Passing(value);
     }
 
     for (let i = 0; i < chain.length; i++) {
       const p = chain[i];
-      if (!p(value)) {
-        return Failing(value);
+      const res = p(value);
+      if (typeof res === 'object' && res !== null) {
+        if ('pass' in res) {
+          if (!(res as RuleRunReturn<any>).pass) {
+            // Preserve original detailed result (including message)
+            return res as RuleRunReturn<T['infer']>;
+          }
+          // continue when pass === true
+        } else {
+          // Invalid object predicate result counts as failure
+          return RuleRunReturn.Failing(value);
+        }
+      } else if (!res) {
+        // boolean false
+        return RuleRunReturn.Failing(value);
       }
     }
-    return Passing(value);
+    return RuleRunReturn.Passing(value);
   }
 
   return { add, proxy } as const;

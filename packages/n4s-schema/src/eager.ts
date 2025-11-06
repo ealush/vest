@@ -1,6 +1,6 @@
 import { ctx } from 'enforceContext';
 import { assign, invariant } from 'vest-utils';
-import type { DropFirst, Maybe } from 'vest-utils';
+import type { Maybe } from 'vest-utils';
 
 import * as arrayRules from 'arrayRules';
 import * as booleanRules from 'booleanRules';
@@ -10,6 +10,7 @@ import * as commonLength from 'commonLength';
 import * as compoundRules from 'compoundRules';
 import type { RuleInstance } from 'enforceUtil';
 import * as generalRules from 'generalRules';
+import { TCustomRules } from 'n4sTypes';
 import * as nullishRules from 'nullishRules';
 import * as numberRules from 'numberRules';
 import * as numericRules from 'numericRules';
@@ -18,7 +19,6 @@ import { enforceMessage, transformResult } from 'ruleResult';
 import * as schemaRules from 'schemaRules';
 import { ArraySchemaResultMap } from 'schemaRulesTypes';
 import * as stringRules from 'stringRules';
-import type { FirstArg } from 'typeUtils';
 
 const messageKey = 'message';
 
@@ -34,7 +34,7 @@ export function extendEager(rules: Record<string, (...args: any[]) => any>) {
 export function enforceEager<T>(value: T): EnforceEagerReturn<T> {
   let customMessage: Maybe<string> = undefined;
 
-  const proxy = new Proxy(
+  const proxy: EnforceEagerReturn<T> = new Proxy(
     {},
     {
       get(target: any, key: string) {
@@ -182,17 +182,6 @@ type TModifiers<T> = {
   message: (input: string) => EnforceEagerReturn<T>;
 };
 
-// Map custom rules (value-first) to their eager signatures by dropping the value
-type TCustomRules<T> = {
-  [K in keyof n4s.ValueFirstRules as T extends FirstArg<n4s.ValueFirstRules[K]>
-    ? K
-    : never]: (
-    ...args: DropFirst<
-      Parameters<Extract<n4s.ValueFirstRules[K], (...args: any) => any>>
-    >
-  ) => EnforceEagerReturn<T>;
-};
-
 // Build schema rule signatures generically from the result map, avoiding repetition.
 // Schema rules inferred from implementation signatures (drop value param, unwrap RuleInstance)
 type DropFirstFn<F> = F extends (arg: any, ...rest: infer R) => infer Ret
@@ -227,6 +216,6 @@ type EnforceBase<T = any> = TModifiers<T> &
   TSchemaRules<T> &
   TArraySchemaRules<T>;
 
-type EnforceEagerReturn<T = any> = EnforceBase<T> & {
+export type EnforceEagerReturn<T = any> = EnforceBase<T> & {
   pass: boolean;
 };

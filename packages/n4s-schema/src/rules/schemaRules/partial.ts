@@ -1,8 +1,8 @@
 import { ctx } from 'enforceContext';
 import type { ShapeType } from 'shape';
 
+import { RuleRunReturn } from 'RuleRunReturn';
 import type { RuleInstance } from 'enforceUtil';
-import { Failing, Passing, RuleRunReturn } from 'enforceUtil';
 
 // partial(value, schema) validates that:
 // 1. value's keys are a subset of schema's keys (no extras)
@@ -16,7 +16,7 @@ export function partial<T extends Record<string, any>>(
   // Fail fast on extra properties
   for (const key in value) {
     if (!(key in schema)) {
-      return Failing(value);
+      return RuleRunReturn.Failing(value);
     }
   }
 
@@ -33,7 +33,7 @@ export function partial<T extends Record<string, any>>(
     }
   }
 
-  return Passing(value);
+  return RuleRunReturn.Passing(value);
 }
 
 // Types colocated with partial rule

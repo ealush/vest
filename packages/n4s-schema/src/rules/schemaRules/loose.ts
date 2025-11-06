@@ -1,8 +1,8 @@
 import { ctx } from 'enforceContext';
 import type { ShapeType } from 'shape';
 
+import { RuleRunReturn } from 'RuleRunReturn';
 import type { RuleInstance } from 'enforceUtil';
-import { Passing, RuleRunReturn } from 'enforceUtil';
 
 export function loose<T extends Record<string, any>>(
   value: T,
@@ -17,7 +17,7 @@ export function loose<T extends Record<string, any>>(
       return res as RuleRunReturn<T>;
     }
   }
-  return Passing(value);
+  return RuleRunReturn.Passing(value);
 }
 
 // Types colocated with loose rule

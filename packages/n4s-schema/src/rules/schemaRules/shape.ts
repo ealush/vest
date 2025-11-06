@@ -1,8 +1,8 @@
 import { loose } from 'loose';
 import { hasOwnProperty } from 'vest-utils';
 
+import { RuleRunReturn } from 'RuleRunReturn';
 import type { RuleInstance } from 'enforceUtil';
-import { Failing, Passing, RuleRunReturn } from 'enforceUtil';
 
 export function shape<T extends Record<string, any>>(
   value: T,
@@ -15,11 +15,11 @@ export function shape<T extends Record<string, any>>(
 
   for (const key in value) {
     if (!hasOwnProperty(schema, key)) {
-      return Failing(value);
+      return RuleRunReturn.Failing(value);
     }
   }
 
-  return Passing(value);
+  return RuleRunReturn.Passing(value);
 }
 
 // Types colocated with shape rule

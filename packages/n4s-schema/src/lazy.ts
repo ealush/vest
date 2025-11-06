@@ -1,12 +1,13 @@
 import { ctx } from 'enforceContext';
 import type { DropFirst } from 'vest-utils';
 
+import { RuleRunReturn } from 'RuleRunReturn';
 import type { ArrayRuleInstance } from 'arrayRules';
 import * as arrayRules from 'arrayRules';
 import { isBoolean, type BooleanRuleInstance } from 'booleanRules';
 import * as booleanRules from 'booleanRules';
 import * as compoundRules from 'compoundRules';
-import type { RuleInstance } from 'enforceUtil';
+import { type RuleInstance } from 'enforceUtil';
 import { addToChain } from 'genRuleChain';
 import { AnyRuleInstance } from 'generalRules';
 import * as generalRules from 'generalRules';
@@ -50,16 +51,11 @@ function adaptDynamicRules<
     (acc, key) => {
       (acc as any)[key] = (...args: any[]) =>
         addToChain({}, (value: any) => {
-          // eslint-disable-next-line max-nested-callbacks
           const result = ctx.run({ value }, () =>
             (container as any)[key](value, ...args),
           );
-          // If result has a .pass property, it's a RuleRunReturn, otherwise it's a boolean
-          return typeof result === 'object' &&
-            result !== null &&
-            'pass' in result
-            ? result.pass
-            : result;
+          // Normalize to detailed result then use its boolean pass
+          return RuleRunReturn.create(result, value);
         });
       return acc;
     },

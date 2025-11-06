@@ -45,10 +45,3 @@ export function validateResult(result: any): void {
     'Incorrect return value for rule: ' + JSON.stringify(result),
   );
 }
-
-// Normalizes a custom rule result (boolean or {pass}) into a boolean
-export function normalizeResult(res: any): boolean {
-  if (typeof res === 'boolean') return res;
-  if (res && typeof res.pass === 'boolean') return !!res.pass;
-  return false;
-}

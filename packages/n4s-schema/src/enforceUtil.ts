@@ -1,3 +1,5 @@
+import { RuleRunReturn } from "RuleRunReturn";
+
 export function BuildRule<
   R extends RuleInstance<T, Args>,
   T,
@@ -7,37 +9,6 @@ export function BuildRule<
     run: (...args: Args) => rule(...args),
     infer: {} as T,
   } as R;
-}
-
-export function ruleRunReturn<T>(
-  pass: boolean,
-  type: T,
-  message?: string,
-): RuleRunReturn<T> {
-  const out: RuleRunReturn<T> = {
-    pass,
-    type,
-  };
-
-  if (message) {
-    out.message = message;
-  }
-
-  return out;
-}
-
-export function Passing<T>(type: T, message?: string): RuleRunReturn<T> {
-  return ruleRunReturn(true, type, message);
-}
-
-export function Failing<T>(type: T, message?: string): RuleRunReturn<T> {
-  return ruleRunReturn(false, type, message);
-}
-
-export interface RuleRunReturn<T> {
-  pass: boolean;
-  type: T;
-  message?: string;
 }
 
 export interface RuleInstance<T, Args extends any[] = any[]> {

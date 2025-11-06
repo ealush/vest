@@ -1,20 +1,16 @@
-import * as compoundRules from 'compoundRules';
 import { ctx } from 'enforceContext';
-import { isArray } from 'isArrayRule';
-import type { LooseRuleInstance } from 'loose';
-import type { PartialRuleInstance } from 'partial';
-import * as schemaRules from 'schemaRules';
-import type { ShapeRuleInstance } from 'shape';
 import type { DropFirst } from 'vest-utils';
 
 import type { ArrayRuleInstance } from 'arrayRules';
 import * as arrayRules from 'arrayRules';
 import { isBoolean, type BooleanRuleInstance } from 'booleanRules';
 import * as booleanRules from 'booleanRules';
+import * as compoundRules from 'compoundRules';
 import type { RuleInstance } from 'enforceUtil';
 import { addToChain } from 'genRuleChain';
 import { AnyRuleInstance } from 'generalRules';
 import * as generalRules from 'generalRules';
+import { isArray } from 'isArrayRule';
 import {
   isNull,
   isUndefined,
@@ -29,6 +25,7 @@ import { isNumeric, type NumericRuleInstance } from 'numericRules';
 import * as numericRules from 'numericRules';
 import { ObjectRuleInstance } from 'objectRules';
 import * as objectRules from 'objectRules';
+import * as schemaRules from 'schemaRules';
 import { isString, type StringRuleInstance } from 'stringRules';
 import * as stringRules from 'stringRules';
 import type { FirstArg } from 'typeUtils';
@@ -89,35 +86,6 @@ const baseEnforceLazy = {
   isNumeric: (): NumericRuleInstance => addToChain(numericRules, isNumeric),
   isString: (): StringRuleInstance => addToChain(stringRules, isString),
   isUndefined: (): UndefinedRuleInstance => addToChain({}, isUndefined),
-};
-
-// Override schema-specific builders with specialized typed instances.
-// We keep runtime identical; only inference changes.
-(baseEnforceLazy as any).shape = function <
-  S extends Record<string, RuleInstance<any>>,
->(schema: S): ShapeRuleInstance<S> {
-  return addToChain<ShapeRuleInstance<S>>({}, (value: any) => {
-    const res = schemaRules.shape(value, schema as any);
-    return res.pass;
-  });
-};
-
-(baseEnforceLazy as any).loose = function <
-  S extends Record<string, RuleInstance<any>>,
->(schema: S): LooseRuleInstance<S> {
-  return addToChain<LooseRuleInstance<S>>({}, (value: any) => {
-    const res = schemaRules.loose(value, schema as any);
-    return res.pass;
-  });
-};
-
-(baseEnforceLazy as any).partial = function <
-  S extends Record<string, RuleInstance<any>>,
->(schema: S): PartialRuleInstance<S> {
-  return addToChain<PartialRuleInstance<S>>({}, (value: any) => {
-    const res = schemaRules.partial(value, schema as any);
-    return res.pass;
-  });
 };
 
 export const enforceLazy = baseEnforceLazy as TCustomLazyRules &

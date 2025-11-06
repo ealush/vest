@@ -1,10 +1,4 @@
-import * as compoundRules from 'compoundRules';
 import { ctx } from 'enforceContext';
-import type { MultiTypeInput } from 'isArrayOf';
-import type { LooseShapeValue } from 'loose';
-import type { PartialShapeValue } from 'partial';
-import * as schemaRules from 'schemaRules';
-import type { ShapeValue } from 'shape';
 import { assign, invariant } from 'vest-utils';
 import type { DropFirst, Maybe } from 'vest-utils';
 
@@ -13,6 +7,7 @@ import * as booleanRules from 'booleanRules';
 import * as commonComparison from 'commonComparison';
 import * as commonContainer from 'commonContainer';
 import * as commonLength from 'commonLength';
+import * as compoundRules from 'compoundRules';
 import type { RuleInstance } from 'enforceUtil';
 import * as generalRules from 'generalRules';
 import * as nullishRules from 'nullishRules';
@@ -20,6 +15,8 @@ import * as numberRules from 'numberRules';
 import * as numericRules from 'numericRules';
 import * as objectRules from 'objectRules';
 import { enforceMessage, transformResult } from 'ruleResult';
+import * as schemaRules from 'schemaRules';
+import { ArraySchemaResultMap } from 'schemaRulesTypes';
 import * as stringRules from 'stringRules';
 import type { FirstArg } from 'typeUtils';
 
@@ -133,102 +130,52 @@ type UnmodifiedRules = (typeof allRules)[UnmodifiedRuleKeys];
 type SchemaRuleKeys = keyof typeof schemaRulesMap;
 type SchemaRules = (typeof schemaRulesMap)[SchemaRuleKeys];
 
-// Get all rule names from each module
-type NumberRuleNames = keyof typeof numberRules;
-type StringRuleNames = keyof typeof stringRules;
-type ArrayRuleNames = keyof typeof arrayRules;
-type BooleanRuleNames = keyof typeof booleanRules;
-type NumericRuleNames = keyof typeof numericRules;
-type LengthRuleNames = keyof typeof commonLength;
-// Numeric comparisons from commonComparison that require number|string
-type NumericComparisonNames =
-  | 'greaterThan'
-  | 'greaterThanOrEquals'
-  | 'lessThan'
-  | 'lessThanOrEquals';
-// Guard rules allowed on any input type
-type GuardRuleNames =
-  | 'isNumber'
-  | 'isString'
-  | 'isBoolean'
-  | 'isArray'
-  | 'isNumeric';
+// Get all rule names from each module (kept for potential future use)
+// Note: previously used for manual typing; inference now derives directly.
 
 // Map rule name to required input type
-type RuleRequiresType<RuleName extends keyof typeof allRules> =
-  // Universally applicable comparisons
-  RuleName extends 'equals' | 'notEquals'
-    ? any
-    : // Pattern matching works on numbers (coerced) and strings
-      RuleName extends 'matches' | 'notMatches'
-      ? number | string
-      : // Container membership works on strings and arrays
-        RuleName extends 'inside' | 'notInside'
-        ? string | any[]
-        : // Emptiness checks are broadly applicable (strings, arrays, objects, nullish handling)
-          RuleName extends 'isEmpty' | 'isNotEmpty'
-          ? any
-          : // NaN checks applicable to numeric-like inputs
-            RuleName extends 'isNaN' | 'isNotNaN'
-            ? number | string
-            : // Built-in guards always available
-              RuleName extends GuardRuleNames
-              ? any
-              : // Numeric comparisons allow number|string
-                RuleName extends NumericComparisonNames
-                ? number | string
-                : // Length-based rules on strings and arrays
-                  RuleName extends LengthRuleNames
-                  ? string | any[]
-                  : // Array-only rules
-                    RuleName extends ArrayRuleNames
-                    ? any[]
-                    : // Type-specific rule groups
-                      RuleName extends NumberRuleNames
-                      ? number
-                      : RuleName extends StringRuleNames
-                        ? string
-                        : RuleName extends BooleanRuleNames
-                          ? boolean
-                          : RuleName extends NumericRuleNames
-                            ? number | string
-                            : any;
+// Utility type helpers to infer directly from function signatures
+type AnyFn = (...args: any[]) => any;
+type FirstParam<F extends AnyFn> = F extends (arg: infer A, ...rest: any) => any
+  ? A
+  : never;
+type TailParams<F extends AnyFn> = F extends (arg: any, ...rest: infer R) => any
+  ? R
+  : never;
 
-// Map rule name to output type after execution
-type RuleReturnsType<
-  T,
-  RuleName extends keyof typeof allRules,
-> = RuleName extends NumberRuleNames
-  ? number
-  : RuleName extends StringRuleNames
-    ? string
-    : RuleName extends BooleanRuleNames
-      ? boolean
-      : RuleName extends NumericRuleNames
-        ? number | string
-        : RuleName extends ArrayRuleNames
-          ? T extends any[]
-            ? T
-            : any[]
-          : T;
+// Infer the next value type after rule application.
+// Heuristics:
+// 1. Type predicates narrow (value is Narrowed)
+// 2. RuleInstance unwraps its inner value type
+// 3. boolean/void returns keep original value (guards)
+// 4. Otherwise if return type is assignable to current value, keep T; else use return type
+type InferNextValue<T, F extends AnyFn> = F extends (
+  arg: any,
+  ...rest: any
+) => arg is infer Narrowed
+  ? Narrowed
+  : ReturnType<F> extends RuleInstance<infer Inner>
+    ? Inner
+    : ReturnType<F> extends boolean | void
+      ? T
+      : ReturnType<F> extends T
+        ? T
+        : ReturnType<F>;
 
-// Check if value type is compatible with rule
-type AcceptsValue<T, RuleName extends keyof typeof allRules> =
-  T extends RuleRequiresType<RuleName> ? true : never;
-
-// Generate typed rule methods
+// Generate typed rule methods directly from implementation signatures.
+// Filter out rules whose first parameter type is not compatible with T.
 type TRules<T> = {
   [K in keyof typeof allRules as (typeof allRules)[K] extends (
     ...args: any
   ) => any
-    ? AcceptsValue<T, K> extends never
-      ? never
-      : K
+    ? T extends FirstParam<Extract<(typeof allRules)[K], AnyFn>>
+      ? K
+      : never
     : never]: (
-    ...args: DropFirst<
-      Parameters<Extract<(typeof allRules)[K], (...args: any) => any>>
-    >
-  ) => EnforceEagerReturn<RuleReturnsType<T, K>>;
+    ...args: TailParams<Extract<(typeof allRules)[K], AnyFn>>
+  ) => EnforceEagerReturn<
+    InferNextValue<T, Extract<(typeof allRules)[K], AnyFn>>
+  >;
 };
 
 type TModifiers<T> = {
@@ -246,36 +193,31 @@ type TCustomRules<T> = {
   ) => EnforceEagerReturn<T>;
 };
 
-// Schema rules for object validation
-// Aliases for eager schema rule return typing to centralize shape forms.
-type ShapeResult<S extends Record<string, RuleInstance<any>>> =
-  EnforceEagerReturn<ShapeValue<S>>;
-type LooseResult<S extends Record<string, RuleInstance<any>>> =
-  EnforceEagerReturn<LooseShapeValue<S>>;
-type PartialResult<S extends Record<string, RuleInstance<any>>> =
-  EnforceEagerReturn<PartialShapeValue<S>>;
+// Build schema rule signatures generically from the result map, avoiding repetition.
+// Schema rules inferred from implementation signatures (drop value param, unwrap RuleInstance)
+type DropFirstFn<F> = F extends (arg: any, ...rest: infer R) => infer Ret
+  ? (...args: R) => Ret
+  : never;
+type UnwrapRuleInstance<R> = R extends RuleInstance<infer V> ? V : R;
 
 type TSchemaRules<T> =
   T extends Record<string, any>
     ? {
-        shape<S extends Record<string, RuleInstance<any>>>(
-          schema: S,
-        ): ShapeResult<S>;
-        loose<S extends Record<string, RuleInstance<any>>>(
-          schema: S,
-        ): LooseResult<S>;
-        partial<S extends Record<string, RuleInstance<any>>>(
-          schema: S,
-        ): PartialResult<S>;
+        [K in keyof typeof schemaRulesMap]: DropFirstFn<
+          (typeof schemaRulesMap)[K]
+        > extends (...args: infer A) => infer R
+          ? (...args: A) => EnforceEagerReturn<UnwrapRuleInstance<R>>
+          : never;
       }
     : Record<string, never>;
 
-// Schema rules for array validation
-type TArraySchemaRules<T> = T extends any[]
+export type TArraySchemaRules<T> = T extends any[]
   ? {
-      isArrayOf<R extends RuleInstance<any, any>[]>(
-        ...rules: R
-      ): EnforceEagerReturn<MultiTypeInput<R>[]>;
+      [K in keyof ArraySchemaResultMap<any>]: <
+        S extends RuleInstance<any, any>[],
+      >(
+        ...rules: S
+      ) => EnforceEagerReturn<ArraySchemaResultMap<S>[K]>;
     }
   : Record<string, never>;
 

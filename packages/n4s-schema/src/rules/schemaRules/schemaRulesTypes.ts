@@ -1,3 +1,9 @@
+import type { MultiTypeInput } from 'isArrayOf';
+import type { LooseShapeValue } from 'loose';
+import type { PartialShapeValue } from 'partial';
+import { ShapeValue } from 'shape';
+import type { ShapeValue } from 'shape';
+
 import { RuleInstance } from 'enforceUtil';
 
 export type InferShape<T> = T extends RuleInstance<infer R, any> ? R : never;
@@ -18,26 +24,15 @@ export type ShapeType<T extends Record<string, RuleInstance<any>>> =
 export type MultiTypeInput<T extends RuleInstance<any, any>[]> =
   InferShape<T[number]> extends never ? unknown : InferShape<T[number]>;
 
-// Specialized schema rule instance types (lazy builders)
-// These make it easier to evolve schema rule output typing without
-// touching every usage site. They are consumed by the lazy API to
-// provide precise inference for shape/loose/partial.
-export type ShapeRuleInstance<S extends Record<string, RuleInstance<any>>> = RuleInstance<
-  ShapeType<S>,
-  [ShapeType<S>]
->;
+// Schema rules for object validation
+// Centralized mapping of schema rule names to their result value forms.
+export type SchemaResultMap<S extends Record<string, RuleInstance<any>>> = {
+  shape: ShapeValue<S>;
+  loose: LooseShapeValue<S>;
+  partial: PartialShapeValue<S>;
+};
 
-export type LooseRuleInstance<S extends Record<string, RuleInstance<any>>> = RuleInstance<
-  ShapeType<S> & Record<string, unknown>,
-  [ShapeType<S> & Record<string, unknown>]
->;
-
-export type PartialRuleInstance<S extends Record<string, RuleInstance<any>>> = RuleInstance<
-  Partial<ShapeType<S>>,
-  [Partial<ShapeType<S>>]
->;
-
-// Value shape aliases (shared by eager and lazy for consistency)
-export type ShapeValue<S extends Record<string, RuleInstance<any>>> = ShapeType<S>;
-export type LooseShapeValue<S extends Record<string, RuleInstance<any>>> = ShapeType<S> & Record<string, unknown>;
-export type PartialShapeValue<S extends Record<string, RuleInstance<any>>> = Partial<ShapeType<S>>;
+// Schema rules for array validation
+export type ArraySchemaResultMap<S extends RuleInstance<any, any>[]> = {
+  isArrayOf: MultiTypeInput<S>[];
+};

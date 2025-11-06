@@ -1,7 +1,7 @@
 import type { ShapeType } from 'shape';
 import { describe, expect, it } from 'vitest';
 
-import { enforce } from 'n4s-schem';
+import { enforce } from 'n4s-schema';
 
 // schema combinators are consumed via enforce
 

@@ -8,6 +8,7 @@ import { Failing, Passing, RuleRunReturn } from 'enforceUtil';
 // 1. value's keys are a subset of schema's keys (no extras)
 // 2. Zero or more keys may be present (empty object is allowed)
 // 3. For each provided key, the corresponding rule passes
+// eslint-disable-next-line complexity
 export function partial<T extends Record<string, any>>(
   value: T,
   schema: Record<string, any>,

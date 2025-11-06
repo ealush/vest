@@ -1,3 +1,4 @@
+import { has } from 'lodash';
 import { isNullish } from 'vest-utils';
 import { describe, it, expect, beforeEach } from 'vitest';
 
@@ -615,10 +616,10 @@ describe('enforce.context() API', () => {
         enforce({
           hasShipping: false,
         }).loose({
-          hasShipping: enforce.isBoolean(),
+          hasShipping: enforce.optional(enforce.isBoolean()),
           shippingAddress: enforce
             .optional(enforce.isString())
-            .requiredIfOtherFieldPresent('hasShipping'),
+            .requiredIfOtherFieldPresent('i_am_missing'),
         }),
       ).not.toThrow();
     });

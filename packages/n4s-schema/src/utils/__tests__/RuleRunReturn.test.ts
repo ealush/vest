@@ -30,14 +30,14 @@ describe('RuleRunReturn', () => {
   });
 
   describe('create with RuleRunReturn input', () => {
-    it('uses pass/type from provided object and keeps its string message', () => {
+    it('uses pass from inner; explicit type/message take precedence', () => {
       const inner = RuleRunReturn.Failing('INNER', 'inner');
       const res = RuleRunReturn.create(inner, 'OUTER', 'outer');
 
       expect(res.pass).toBe(false);
-      expect(res.type).toBe('INNER');
-      // when inner has its own message, it is preferred over provided one
-      expect(res.message).toBe('inner');
+      expect(res.type).toBe('OUTER');
+      // explicit message is preferred over inner
+      expect(res.message).toBe('outer');
     });
 
     it('falls back to provided type when inner type is undefined', () => {
@@ -50,8 +50,8 @@ describe('RuleRunReturn', () => {
       const res = RuleRunReturn.create(inner, 'FALLBACK', 'outer');
       expect(res.pass).toBe(false);
       expect(res.type).toBe('FALLBACK');
-      // message comes from inner and remains unchanged
-      expect(res.message).toBe('m');
+      // explicit message is used when provided
+      expect(res.message).toBe('outer');
     });
 
     it('invokes provided message function with provided type argument', () => {
@@ -59,8 +59,8 @@ describe('RuleRunReturn', () => {
       const msgFn = vi.fn((t: string) => `outer:${t}`);
       const res = RuleRunReturn.create(inner, 'OUTER', msgFn);
 
-      // final type prefers inner.type
-      expect(res.type).toBe('INNER');
+      // final type prefers explicit type
+      expect(res.type).toBe('OUTER');
       // message function receives the second arg to create (OUTER)
       expect(res.message).toBe('outer:OUTER');
       expect(msgFn).toHaveBeenCalledTimes(1);

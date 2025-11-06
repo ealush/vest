@@ -31,11 +31,24 @@ export class RuleRunReturn<T> {
     if (isBoolean(pass)) {
       return new RuleRunReturn(!!pass, type, dynamicValue(message, type));
     }
+    return RuleRunReturn.createFromObject(pass, type, message);
+  }
+
+  private static createFromObject<T>(
+    pass: any,
+    type: T,
+    message?: Stringable,
+  ): RuleRunReturn<T> {
+    const hasValidObject = pass && isBoolean(pass.pass);
+
+    if (!hasValidObject) {
+      return new RuleRunReturn(false, type, dynamicValue(message, type));
+    }
 
     return new RuleRunReturn(
       !!pass.pass,
-      pass.type ?? type,
-      dynamicValue(pass.message ?? message, type),
+      type ?? pass.type,
+      dynamicValue(message ?? pass.message, type),
     );
   }
 

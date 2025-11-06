@@ -4,8 +4,9 @@
  */
 
 /* eslint-disable sort-keys, @typescript-eslint/no-namespace, @typescript-eslint/no-unused-vars, no-unused-vars */
-import { enforce } from 'n4s-schema';
 import { describe, it, expect, beforeEach } from 'vitest';
+
+import { enforce } from 'n4s-schema';
 
 // Declare custom rules in the n4s namespace
 declare global {
@@ -87,7 +88,11 @@ describe('enforce.extend with n4s namespace typing', () => {
         pass: true,
         type: 'user@example.com',
       });
-      expect(rule.run('invalid')).toEqual({ pass: false, type: 'invalid' });
+      expect(rule.run('invalid')).toEqual({
+        pass: false,
+        type: 'invalid',
+        message: 'Invalid email format',
+      });
     });
 
     it('Should work with isBetween', () => {

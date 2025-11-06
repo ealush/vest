@@ -29,13 +29,13 @@ export class RuleRunReturn<T> {
     message?: Stringable,
   ): RuleRunReturn<T> {
     if (isBoolean(pass)) {
-      return new RuleRunReturn(pass, type, dynamicValue(message));
+      return new RuleRunReturn(!!pass, type, dynamicValue(message, type));
     }
 
     return new RuleRunReturn(
-      pass.pass,
+      !!pass.pass,
       pass.type ?? type,
-      dynamicValue(pass.message ?? message),
+      dynamicValue(pass.message ?? message, type),
     );
   }
 

@@ -1,8 +1,7 @@
-import { executeChain, type Predicate } from './chainBuilder/chainExecutor';
-import { registerLazyRule } from './chainBuilder/lazyRegistry';
-import { createChainProxyHandlers } from './chainBuilder/proxyHandlers';
-
 import { RuleInstance } from 'RuleInstance';
+import { executeChain, type Predicate } from 'chainExecutor';
+import { registerLazyRule } from 'lazyRegistry';
+import { createChainProxyHandlers } from 'proxyHandlers';
 
 export { registerLazyRule };
 

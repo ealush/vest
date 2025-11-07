@@ -1,4 +1,4 @@
-import type { Predicate } from './chainExecutor';
+import type { Predicate } from 'chainExecutor';
 
 const lazyRegistry: Record<string, (...args: any[]) => Predicate> = {};
 
@@ -9,6 +9,8 @@ export function registerLazyRule(
   lazyRegistry[name] = builder;
 }
 
-export function getLazyRule(name: string): ((...args: any[]) => Predicate) | undefined {
+export function getLazyRule(
+  name: string,
+): ((...args: any[]) => Predicate) | undefined {
   return lazyRegistry[name];
 }

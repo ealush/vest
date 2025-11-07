@@ -1,8 +1,5 @@
 import type { DropFirst } from 'vest-utils';
 
-import { adaptDynamicRules } from './lazy/ruleAdapter';
-import { typeRules } from './lazy/typeRules';
-
 import { type RuleInstance } from 'RuleInstance';
 import * as compoundRules from 'compoundRules';
 import type { CompoundRuleLazyTypes } from 'compoundRules';
@@ -10,8 +7,10 @@ import { AnyRuleInstance } from 'generalRules';
 import * as generalRules from 'generalRules';
 import { ObjectRuleInstance } from 'objectRules';
 import * as objectRules from 'objectRules';
+import { adaptDynamicRules } from 'ruleAdapter';
 import * as schemaRules from 'schemaRules';
 import type { SchemaRuleLazyTypes } from 'schemaRules';
+import { typeRules } from 'typeRules';
 import { FirstParam } from 'typeUtils';
 
 type TCustomLazyRules = {

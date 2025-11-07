@@ -1,10 +1,10 @@
 import type { Maybe } from 'vest-utils';
 
-import { createRuleCall } from './eager/ruleCallGenerator';
-import { extendEager, getRule, getSchemaRule } from './eager/ruleRegistry';
+import { createRuleCall } from 'ruleCallGenerator';
+import { extendEager, getRule, getSchemaRule } from 'ruleRegistry';
 
 export { extendEager };
-export type { EnforceEagerReturn, TArraySchemaRules } from './eager/eagerTypes';
+export type { EnforceEagerReturn, TArraySchemaRules } from 'eagerTypes';
 
 const MESSAGE_KEY = 'message';
 

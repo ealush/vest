@@ -1,9 +1,8 @@
 import { hasOwnProperty } from 'vest-utils';
 
-import type { Predicate } from './chainExecutor';
-import { getLazyRule } from './lazyRegistry';
-
 import { RuleInstance } from 'RuleInstance';
+import type { Predicate } from 'chainExecutor';
+import { getLazyRule } from 'lazyRegistry';
 
 export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
   rules: Record<keyof Omit<T, 'run' | 'infer'>, (...args: any[]) => boolean>,

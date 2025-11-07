@@ -1,6 +1,6 @@
 import { assign } from 'vest-utils';
 
-import { allRules, schemaRulesMap } from './allRules';
+import { allRules, schemaRulesMap } from 'allRules';
 
 const customRules: Record<string, (...args: any[]) => any> = {};
 

@@ -1,7 +1,7 @@
-import { enforce } from 'n4s';
 import isURL from 'validator/es/lib/isURL';
 
 import { EnforceCustomMatcher } from 'enforceUtilityTypes';
+import { enforce } from 'n4s';
 
 enforce.extend({ isURL });
 

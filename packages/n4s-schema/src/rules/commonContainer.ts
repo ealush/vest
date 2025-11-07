@@ -2,7 +2,7 @@
  * Common container predicates for arrays and strings
  */
 
-// eslint-disable-next-line complexity, max-depth
+// eslint-disable-next-line complexity
 export function inside<T>(value: T, container: T[] | string): boolean {
   if (typeof container === 'string' && typeof value === 'string') {
     return container.includes(value);
@@ -13,6 +13,7 @@ export function inside<T>(value: T, container: T[] | string): boolean {
     if (Array.isArray(value)) {
       // All items must be present in container
       for (const item of value) {
+        // eslint-disable-next-line max-depth
         if (!set.has(item)) return false;
       }
       return true;
@@ -22,7 +23,7 @@ export function inside<T>(value: T, container: T[] | string): boolean {
   return false;
 }
 
-// eslint-disable-next-line complexity, max-depth
+// eslint-disable-next-line complexity
 export function notInside<T>(value: T, container: any): boolean {
   if (typeof container === 'string' && typeof value === 'string') {
     return !container.includes(value);
@@ -32,6 +33,7 @@ export function notInside<T>(value: T, container: any): boolean {
     if (Array.isArray(value)) {
       // At least one item must be absent from container
       for (const item of value) {
+        // eslint-disable-next-line max-depth
         if (!set.has(item)) return true;
       }
       return false;

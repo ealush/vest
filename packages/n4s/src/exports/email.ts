@@ -1,7 +1,7 @@
-import { enforce } from 'n4s';
 import isEmail from 'validator/es/lib/isEmail';
 
 import { EnforceCustomMatcher } from 'enforceUtilityTypes';
+import { enforce } from 'n4s';
 
 enforce.extend({ isEmail });
 

@@ -12,6 +12,7 @@ export function adaptDynamicRules<
     (acc, key) => {
       (acc as any)[key] = (...args: any[]) =>
         addToChain({}, (value: any) => {
+          // eslint-disable-next-line max-nested-callbacks
           const result = ctx.run({ value }, () =>
             (container as any)[key](value, ...args),
           );

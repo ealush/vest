@@ -10,10 +10,6 @@ export function executeChain(
   chain: Predicate[],
   value: any,
 ): RuleRunReturn<any> {
-  if (chain.length === 0) {
-    return RuleRunReturn.Passing(value);
-  }
-
   for (const predicate of chain) {
     const result = predicate(value);
 

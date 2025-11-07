@@ -27,12 +27,12 @@ export function enforceEager<T>(value: T) {
         const rule = getRule(key) ?? getSchemaRule(key);
         if (rule) {
           return createRuleCall({
-            target: proxy,
+            clearMessage,
+            customMessage,
             rule,
             ruleName: key,
+            target: proxy,
             value,
-            customMessage,
-            clearMessage,
           });
         }
 

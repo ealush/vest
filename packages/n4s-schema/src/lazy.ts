@@ -1,4 +1,3 @@
-import { FirstParam } from 'typeUtils';
 import type { DropFirst } from 'vest-utils';
 
 import { adaptDynamicRules } from './lazy/ruleAdapter';
@@ -11,6 +10,7 @@ import * as generalRules from 'generalRules';
 import { ObjectRuleInstance } from 'objectRules';
 import * as objectRules from 'objectRules';
 import * as schemaRules from 'schemaRules';
+import { FirstParam } from 'typeUtils';
 
 type TCustomLazyRules = {
   [K in keyof n4s.ValueFirstRules]: (

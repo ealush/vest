@@ -1,5 +1,6 @@
 import { mapFirst } from 'vest-utils';
 
+import { RuleInstance } from 'RuleInstance';
 import { RuleRunReturn } from 'RuleRunReturn';
 
 export function noneOf<T>(value: T, ...rules: any[]): RuleRunReturn<T> {
@@ -9,4 +10,19 @@ export function noneOf<T>(value: T, ...rules: any[]): RuleRunReturn<T> {
       breakout(res.pass, RuleRunReturn.Failing(value));
     }) || RuleRunReturn.Passing(value)
   );
+}
+
+// Type for noneOf rule instance
+export type NoneOfRuleInstance<T> = RuleInstance<T, [T]>;
+
+/* eslint-disable @typescript-eslint/no-namespace */
+declare global {
+  namespace n4s {
+    interface ValueFirstRules {
+      noneOf: <T>(
+        value: T,
+        ...rules: RuleInstance<T, any>[]
+      ) => RuleRunReturn<T>;
+    }
+  }
 }

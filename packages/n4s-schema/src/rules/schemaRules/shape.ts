@@ -43,3 +43,15 @@ export type ShapeRuleInstance<S extends Record<string, RuleInstance<any>>> =
 
 export type ShapeValue<S extends Record<string, RuleInstance<any>>> =
   ShapeType<S>;
+
+/* eslint-disable @typescript-eslint/no-namespace */
+declare global {
+  namespace n4s {
+    interface ValueFirstRules {
+      shape: <T extends Record<string, any>>(
+        value: T,
+        schema: Record<string, RuleInstance<any>>,
+      ) => RuleRunReturn<T>;
+    }
+  }
+}

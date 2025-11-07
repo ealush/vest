@@ -1,5 +1,6 @@
 import { greaterThan } from 'vest-utils';
 
+import { RuleInstance } from 'RuleInstance';
 import { RuleRunReturn } from 'RuleRunReturn';
 
 const REQUIRED_COUNT = 1;
@@ -19,4 +20,19 @@ export function oneOf<T>(value: T, ...rules: any[]): RuleRunReturn<T> {
   });
 
   return RuleRunReturn.create(passingCount === REQUIRED_COUNT, value);
+}
+
+// Type for oneOf rule instance
+export type OneOfRuleInstance<T> = RuleInstance<T, [T]>;
+
+/* eslint-disable @typescript-eslint/no-namespace */
+declare global {
+  namespace n4s {
+    interface ValueFirstRules {
+      oneOf: <T>(
+        value: T,
+        ...rules: RuleInstance<T, any>[]
+      ) => RuleRunReturn<T>;
+    }
+  }
 }

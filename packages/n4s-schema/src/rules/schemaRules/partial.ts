@@ -42,3 +42,15 @@ export type PartialRuleInstance<S extends Record<string, RuleInstance<any>>> =
 
 export type PartialShapeValue<S extends Record<string, RuleInstance<any>>> =
   Partial<ShapeType<S>>;
+
+/* eslint-disable @typescript-eslint/no-namespace */
+declare global {
+  namespace n4s {
+    interface ValueFirstRules {
+      partial: <T extends Record<string, any>>(
+        value: T,
+        schema: Record<string, RuleInstance<any>>,
+      ) => RuleRunReturn<T>;
+    }
+  }
+}

@@ -5,11 +5,13 @@ import { typeRules } from './lazy/typeRules';
 
 import { type RuleInstance } from 'RuleInstance';
 import * as compoundRules from 'compoundRules';
+import type { CompoundRuleLazyTypes } from 'compoundRules';
 import { AnyRuleInstance } from 'generalRules';
 import * as generalRules from 'generalRules';
 import { ObjectRuleInstance } from 'objectRules';
 import * as objectRules from 'objectRules';
 import * as schemaRules from 'schemaRules';
+import type { SchemaRuleLazyTypes } from 'schemaRules';
 import { FirstParam } from 'typeUtils';
 
 type TCustomLazyRules = {
@@ -36,4 +38,6 @@ const baseEnforceLazy = {
 };
 
 export const enforceLazy = baseEnforceLazy as TCustomLazyRules &
-  typeof baseEnforceLazy;
+  typeof baseEnforceLazy &
+  CompoundRuleLazyTypes &
+  SchemaRuleLazyTypes;

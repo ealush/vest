@@ -2,6 +2,7 @@
 import { ctx } from 'enforceContext';
 import { mapFirst } from 'vest-utils';
 
+import { RuleInstance } from 'RuleInstance';
 import { RuleRunReturn } from 'RuleRunReturn';
 
 // eslint-disable-next-line max-nested-callbacks
@@ -22,4 +23,19 @@ export function isArrayOf<T>(value: T[], ...rules: any[]): RuleRunReturn<T[]> {
       breakout(!res.pass, res);
     }) || RuleRunReturn.Passing(value)
   );
+}
+
+// Type for isArrayOf rule instance
+export type IsArrayOfRuleInstance<T> = RuleInstance<T[], [T[]]>;
+
+/* eslint-disable @typescript-eslint/no-namespace */
+declare global {
+  namespace n4s {
+    interface ValueFirstRules {
+      isArrayOf: <T>(
+        value: T[],
+        ...rules: RuleInstance<T, any>[]
+      ) => RuleRunReturn<T[]>;
+    }
+  }
 }

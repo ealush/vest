@@ -1,5 +1,8 @@
-export { isArrayOf } from 'isArrayOf';
-export { loose } from 'loose';
-export { optional } from 'optional';
-export { partial } from 'partial';
-export { shape } from 'shape';
+import 'schemaRulesLazyTypes';
+
+export { isArrayOf, type IsArrayOfRuleInstance } from 'isArrayOf';
+export { loose, type LooseRuleInstance } from 'loose';
+export { optional, type OptionalRuleInstance } from 'optional';
+export { partial, type PartialRuleInstance } from 'partial';
+export { shape, type ShapeRuleInstance } from 'shape';
+export type { SchemaRuleLazyTypes } from 'schemaRulesLazyTypes';

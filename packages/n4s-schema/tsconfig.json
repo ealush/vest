@@ -42,6 +42,9 @@
       "doesNotEndWith": ["./src/rules/string/doesNotEndWith.ts"],
       "shape": ["./src/rules/schemaRules/shape.ts"],
       "schemaRulesTypes": ["./src/rules/schemaRules/schemaRulesTypes.ts"],
+      "schemaRulesLazyTypes": [
+        "./src/rules/schemaRules/schemaRulesLazyTypes.ts"
+      ],
       "schemaRules": ["./src/rules/schemaRules/schemaRules.ts"],
       "partial": ["./src/rules/schemaRules/partial.ts"],
       "optional": ["./src/rules/schemaRules/optional.ts"],
@@ -81,6 +84,7 @@
       "condition": ["./src/rules/general/condition.ts"],
       "oneOf": ["./src/rules/compoundRules/oneOf.ts"],
       "noneOf": ["./src/rules/compoundRules/noneOf.ts"],
+      "compoundRulesTypes": ["./src/rules/compoundRules/compoundRulesTypes.ts"],
       "compoundRules": ["./src/rules/compoundRules/compoundRules.ts"],
       "anyOf": ["./src/rules/compoundRules/anyOf.ts"],
       "allOf": ["./src/rules/compoundRules/allOf.ts"],

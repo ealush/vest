@@ -3,9 +3,9 @@ import { describe, it, expect, vi } from 'vitest';
 import { RuleRunReturn } from '../RuleRunReturn';
 
 describe('RuleRunReturn', () => {
-  describe('fromBoolean', () => {
+  describe('create with boolean', () => {
     it('returns pass/type/message when message is string', () => {
-      const res = RuleRunReturn.fromBoolean(true, 'TYPE', 'ok');
+      const res = RuleRunReturn.create(true, 'TYPE', 'ok');
       expect(res.pass).toBe(true);
       expect(res.type).toBe('TYPE');
       expect(res.message).toBe('ok');
@@ -13,7 +13,7 @@ describe('RuleRunReturn', () => {
 
     it('invokes message function with type and sets pass=false', () => {
       const msgFn = vi.fn((t: number) => `msg:${t}`);
-      const res = RuleRunReturn.fromBoolean<number>(false, 123, msgFn);
+      const res = RuleRunReturn.create<number>(false, 123, msgFn);
       expect(res.pass).toBe(false);
       expect(res.type).toBe(123);
       expect(res.message).toBe('msg:123');
@@ -22,14 +22,23 @@ describe('RuleRunReturn', () => {
     });
 
     it('keeps message undefined when not provided', () => {
-      const res = RuleRunReturn.fromBoolean(true, 'TYP');
+      const res = RuleRunReturn.create(true, 'TYP');
       expect(res.pass).toBe(true);
       expect(res.type).toBe('TYP');
       expect(res.message).toBeUndefined();
     });
   });
 
-  describe('create with RuleRunReturn input', () => {
+  describe('create with RuleRunReturn', () => {
+    it('clones values and invokes message function with the original type', () => {
+      const base = RuleRunReturn.Failing('T', (t: string) => `fail:${t}`);
+      const cloned = RuleRunReturn.create(base, 'T');
+
+      expect(cloned.pass).toBe(false);
+      expect(cloned.type).toBe('T');
+      expect(cloned.message).toBe('fail:T');
+    });
+
     it('uses pass from inner; explicit type/message take precedence', () => {
       const inner = RuleRunReturn.Failing('INNER', 'inner');
       const res = RuleRunReturn.create(inner, 'OUTER', 'outer');
@@ -65,17 +74,6 @@ describe('RuleRunReturn', () => {
       expect(res.message).toBe('outer:OUTER');
       expect(msgFn).toHaveBeenCalledTimes(1);
       expect(msgFn).toHaveBeenCalledWith('OUTER');
-    });
-  });
-
-  describe('fromRuleRunReturn', () => {
-    it('clones values and invokes message function with the original type', () => {
-      const base = RuleRunReturn.Failing('T', (t: string) => `fail:${t}`);
-      const cloned = RuleRunReturn.fromRuleRunReturn(base);
-
-      expect(cloned.pass).toBe(false);
-      expect(cloned.type).toBe('T');
-      expect(cloned.message).toBe('fail:T');
     });
   });
 

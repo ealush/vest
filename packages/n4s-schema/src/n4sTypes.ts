@@ -1,7 +1,7 @@
+import type { FirstParam } from 'typeUtils';
 import type { DropFirst } from 'vest-utils';
 
 import { EnforceEagerReturn } from 'eager';
-import type { FirstArg } from 'typeUtils';
 /**
  * Global namespace for n4s custom rules.
  * Users should extend ValueFirstRules with value-first rule signatures.
@@ -35,7 +35,9 @@ export type ValueFirstRules = n4s.ValueFirstRules;
 
 // Map custom rules (value-first) to their eager signatures by dropping the value
 export type TCustomRules<T> = {
-  [K in keyof n4s.ValueFirstRules as T extends FirstArg<n4s.ValueFirstRules[K]>
+  [K in keyof n4s.ValueFirstRules as T extends FirstParam<
+    n4s.ValueFirstRules[K]
+  >
     ? K
     : never]: (
     ...args: DropFirst<

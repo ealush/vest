@@ -1,8 +1,8 @@
 import { ctx } from 'enforceContext';
 import type { ShapeType } from 'shape';
 
-import { RuleRunReturn } from 'RuleRunReturn';
 import type { RuleInstance } from 'RuleInstance';
+import { RuleRunReturn } from 'RuleRunReturn';
 
 export function loose<T extends Record<string, any>>(
   value: T,

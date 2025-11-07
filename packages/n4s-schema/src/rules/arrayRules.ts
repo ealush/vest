@@ -13,8 +13,6 @@ export { lengthNotEquals } from 'lengthNotEquals';
 export { longerThan } from 'longerThan';
 export { maxLength } from 'maxLength';
 export { minLength } from 'minLength';
-// eslint-disable-next-line import/no-unresolved
 export { isArray } from 'isArrayRule';
-// eslint-disable-next-line import/no-unresolved
 export type { ArrayRuleInstance } from 'isArrayRule';
 export { isNotArray } from 'isNotArray';

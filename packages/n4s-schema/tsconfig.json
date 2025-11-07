@@ -7,18 +7,18 @@
     "declarationMap": true,
     "outDir": "./dist",
     "paths": {
-      "typeUtils": ["./src/typeUtils.ts"],
       "ruleResult": ["./src/ruleResult.ts"],
       "n4sTypes": ["./src/n4sTypes.ts"],
       "n4s-schema": ["./src/n4s-schema.ts"],
       "lazy": ["./src/lazy.ts"],
+      "extendLogic": ["./src/extendLogic.ts"],
       "enforceUtil": ["./src/enforceUtil.ts"],
       "enforceContext": ["./src/enforceContext.ts"],
       "eager": ["./src/eager.ts"],
       "toNumber": ["./src/utils/toNumber.ts"],
       "regex": ["./src/utils/regex.ts"],
-      "RuleInstance": ["./src/utils/RuleInstance.ts"],
       "RuleRunReturn": ["./src/utils/RuleRunReturn.ts"],
+      "RuleInstance": ["./src/utils/RuleInstance.ts"],
       "stringRules": ["./src/rules/stringRules.ts"],
       "objectRules": ["./src/rules/objectRules.ts"],
       "numericRules": ["./src/rules/numericRules.ts"],
@@ -84,6 +84,9 @@
       "compoundRules": ["./src/rules/compoundRules/compoundRules.ts"],
       "anyOf": ["./src/rules/compoundRules/anyOf.ts"],
       "allOf": ["./src/rules/compoundRules/allOf.ts"],
+      "proxyHandlers": ["./src/rules/chainBuilder/proxyHandlers.ts"],
+      "lazyRegistry": ["./src/rules/chainBuilder/lazyRegistry.ts"],
+      "chainExecutor": ["./src/rules/chainBuilder/chainExecutor.ts"],
       "isTrue": ["./src/rules/boolean/isTrue.ts"],
       "isFalse": ["./src/rules/boolean/isFalse.ts"],
       "isBoolean": ["./src/rules/boolean/isBoolean.ts"],
@@ -99,7 +102,14 @@
       "lengthEquals": ["./src/rules/array/lengthEquals.ts"],
       "isArrayRule": ["./src/rules/array/isArrayRule.ts"],
       "includes": ["./src/rules/array/includes.ts"],
-      "empty": ["./src/rules/array/empty.ts"]
+      "empty": ["./src/rules/array/empty.ts"],
+      "typeRules": ["./src/lazy/typeRules.ts"],
+      "ruleAdapter": ["./src/lazy/ruleAdapter.ts"],
+      "typeUtils": ["./src/eager/typeUtils.ts"],
+      "ruleRegistry": ["./src/eager/ruleRegistry.ts"],
+      "ruleCallGenerator": ["./src/eager/ruleCallGenerator.ts"],
+      "eagerTypes": ["./src/eager/eagerTypes.ts"],
+      "allRules": ["./src/eager/allRules.ts"]
     }
   }
 }

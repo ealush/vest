@@ -11,18 +11,6 @@ export class RuleRunReturn<T> {
     this.message = message;
   }
 
-  static fromBoolean<T>(
-    pass: boolean,
-    type: T,
-    message?: Stringable,
-  ): RuleRunReturn<T> {
-    return RuleRunReturn.create(pass, type, message);
-  }
-
-  static fromRuleRunReturn<T>(res: RuleRunReturn<T>): RuleRunReturn<T> {
-    return RuleRunReturn.create(res.pass, res.type, res.message);
-  }
-
   static create<T>(
     pass: boolean | RuleRunReturn<T>,
     type: T,
@@ -31,10 +19,10 @@ export class RuleRunReturn<T> {
     if (isBoolean(pass)) {
       return new RuleRunReturn(!!pass, type, dynamicValue(message, type));
     }
-    return RuleRunReturn.createFromObject(pass, type, message);
+    return RuleRunReturn.fromObject(pass, type, message);
   }
 
-  private static createFromObject<T>(
+  private static fromObject<T>(
     pass: any,
     type: T,
     message?: Stringable,

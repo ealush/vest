@@ -22,18 +22,17 @@ export type TRules<T, A, S> = {
   ) => EnforceEagerReturn<InferNextValue<T, Extract<A[K], AnyFn>>, A, S>;
 };
 
-export type TSchemaRules<T, S, A> =
-  T extends any[]
-    ? Record<string, never>
-    : T extends Record<string, any>
-      ? {
-          [K in keyof S]: DropFirstFn<S[K]> extends (
-            ...args: infer Args
-          ) => infer R
-            ? (...args: Args) => EnforceEagerReturn<UnwrapRuleInstance<R>, A, S>
-            : never;
-        }
-      : Record<string, never>;
+export type TSchemaRules<T, S, A> = T extends any[]
+  ? Record<string, never>
+  : T extends Record<string, any>
+    ? {
+        [K in keyof S]: DropFirstFn<S[K]> extends (
+          ...args: infer Args
+        ) => infer R
+          ? (...args: Args) => EnforceEagerReturn<UnwrapRuleInstance<R>, A, S>
+          : never;
+      }
+    : Record<string, never>;
 
 export type TArraySchemaRules<T, A, S> = T extends any[]
   ? {

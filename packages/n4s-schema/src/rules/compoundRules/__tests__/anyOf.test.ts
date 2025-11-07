@@ -49,10 +49,7 @@ describe('anyOf', () => {
 describe('anyOf - eager API', () => {
   it('should pass if at least one rule passes (eager)', () => {
     expect(() => {
-      enforce(15).anyOf(
-        enforce.isString(),
-        enforce.isNumber().greaterThan(10),
-      );
+      enforce(15).anyOf(enforce.isString(), enforce.isNumber().greaterThan(10));
     }).not.toThrow();
 
     expect(() => {
@@ -65,10 +62,7 @@ describe('anyOf - eager API', () => {
 
   it('should fail if all rules fail (eager)', () => {
     expect(() => {
-      enforce(5).anyOf(
-        enforce.isString(),
-        enforce.isNumber().greaterThan(10),
-      );
+      enforce(5).anyOf(enforce.isString(), enforce.isNumber().greaterThan(10));
     }).toThrow();
   });
 

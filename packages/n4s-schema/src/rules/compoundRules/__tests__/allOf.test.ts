@@ -54,19 +54,13 @@ describe('allOf', () => {
 describe('allOf - eager API', () => {
   it('should pass if all rules pass (eager)', () => {
     expect(() => {
-      enforce(10).allOf(
-        enforce.isNumber(),
-        enforce.isNumber().greaterThan(5),
-      );
+      enforce(10).allOf(enforce.isNumber(), enforce.isNumber().greaterThan(5));
     }).not.toThrow();
   });
 
   it('should fail if one rule fails (eager)', () => {
     expect(() => {
-      enforce(5).allOf(
-        enforce.isNumber(),
-        enforce.isNumber().greaterThan(10),
-      );
+      enforce(5).allOf(enforce.isNumber(), enforce.isNumber().greaterThan(10));
     }).toThrow();
   });
 

@@ -47,10 +47,7 @@ describe('noneOf - eager API', () => {
 
   it('should fail if any rule passes (eager)', () => {
     expect(() => {
-      enforce(5).noneOf(
-        enforce.isNumber(),
-        enforce.isNumber().greaterThan(10),
-      );
+      enforce(5).noneOf(enforce.isNumber(), enforce.isNumber().greaterThan(10));
     }).toThrow();
 
     expect(() => {

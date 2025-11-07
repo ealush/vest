@@ -1,15 +1,15 @@
+import { ctx } from 'enforceContext';
 import type { DropFirst } from 'vest-utils';
 
-import type { ArrayRuleInstance } from 'arrayRules';
-import * as arrayRules from 'arrayRules';
 import { type RuleInstance } from 'RuleInstance';
 import { RuleRunReturn } from 'RuleRunReturn';
+import type { ArrayRuleInstance } from 'arrayRules';
+import * as arrayRules from 'arrayRules';
 import * as compoundRules from 'compoundRules';
 import type { CompoundRuleLazyTypes } from 'compoundRules';
-import { ctx } from 'enforceContext';
+import { addToChain } from 'genRuleChain';
 import { AnyRuleInstance } from 'generalRules';
 import * as generalRules from 'generalRules';
-import { addToChain } from 'genRuleChain';
 import { ObjectRuleInstance } from 'objectRules';
 import * as objectRules from 'objectRules';
 import { adaptDynamicRules } from 'ruleAdapter';

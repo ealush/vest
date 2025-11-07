@@ -29,10 +29,7 @@ export type InferNextValue<T, F extends AnyFn> = F extends (
         ? T
         : ReturnType<F>;
 
-export type DropFirstFn<F> = F extends (
-  arg: any,
-  ...rest: infer R
-) => infer Ret
+export type DropFirstFn<F> = F extends (arg: any, ...rest: infer R) => infer Ret
   ? (...args: R) => Ret
   : never;
 

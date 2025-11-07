@@ -1,20 +1,20 @@
+import { isNaN } from 'isNaN';
+import { isNegative } from 'isNegative';
 import { type DropFirst } from 'vest-utils';
 import { greaterThan, numberEquals } from 'vest-utils';
 
 import { RuleInstance } from 'RuleInstance';
-import { isNumeric } from 'isNumeric';
-import { isBetween } from 'isBetween';
 import { greaterThanOrEquals } from 'greaterThanOrEquals';
+import { isBetween } from 'isBetween';
 import { isEven } from 'isEven';
-import { isNegative } from 'isNegative';
+import { isNotBetween } from 'isNotBetween';
+import { isNotNaN } from 'isNotNaN';
+import { isNumeric } from 'isNumeric';
 import { isOdd } from 'isOdd';
 import { isPositive } from 'isPositive';
 import { lessThan } from 'lessThan';
 import { lessThanOrEquals } from 'lessThanOrEquals';
-import { isNotBetween } from 'isNotBetween';
 import { numberNotEquals } from 'numberNotEquals';
-import { isNaN } from 'isNaN';
-import { isNotNaN } from 'isNotNaN';
 
 export {
   isNumeric,

@@ -1,5 +1,3 @@
-import { type DropFirst } from 'vest-utils';
-
 import { RuleInstance } from 'RuleInstance';
 
 // Backward-compatible re-exports to avoid breaking existing imports

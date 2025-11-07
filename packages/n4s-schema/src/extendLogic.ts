@@ -22,7 +22,9 @@ export function extendEnforce(
 
     registerLazyRule(
       ruleName,
-      (...args: any[]) => (value: any) => ruleWrapper(value, ...args),
+      (...args: any[]) =>
+        (value: any) =>
+          ruleWrapper(value, ...args),
     );
   });
 }

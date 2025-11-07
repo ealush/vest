@@ -2,7 +2,6 @@ import { ctx } from 'enforceContext';
 import { invariant } from 'vest-utils';
 
 import type { UnmodifiedRules, SchemaRules } from 'ruleRegistry';
-
 import { enforceMessage, transformResult } from 'ruleResult';
 
 type RuleCallConfig = {

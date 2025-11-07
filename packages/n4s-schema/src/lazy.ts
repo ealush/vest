@@ -1,10 +1,15 @@
 import type { DropFirst } from 'vest-utils';
 
+import type { ArrayRuleInstance } from 'arrayRules';
+import * as arrayRules from 'arrayRules';
 import { type RuleInstance } from 'RuleInstance';
+import { RuleRunReturn } from 'RuleRunReturn';
 import * as compoundRules from 'compoundRules';
 import type { CompoundRuleLazyTypes } from 'compoundRules';
+import { ctx } from 'enforceContext';
 import { AnyRuleInstance } from 'generalRules';
 import * as generalRules from 'generalRules';
+import { addToChain } from 'genRuleChain';
 import { ObjectRuleInstance } from 'objectRules';
 import * as objectRules from 'objectRules';
 import { adaptDynamicRules } from 'ruleAdapter';
@@ -28,13 +33,29 @@ type TCustomLazyRules = {
   >;
 };
 
+// Create schema rules with isArrayOf handled specially
+const adaptedSchemaRules = adaptDynamicRules<
+  RuleInstance<any, [any]>,
+  typeof schemaRules
+>(schemaRules);
+
+// Override isArrayOf to chain array rules
+const schemaRulesWithArrayChaining = {
+  ...adaptedSchemaRules,
+  isArrayOf: <T>(...rules: any[]): ArrayRuleInstance<T> =>
+    addToChain<ArrayRuleInstance<T>>(arrayRules as any, (value: any) => {
+      const result = ctx.run({ value }, () =>
+        schemaRules.isArrayOf(value, ...rules),
+      );
+      return RuleRunReturn.create(result, value);
+    }),
+};
+
 const baseEnforceLazy = {
   ...(adaptDynamicRules<RuleInstance<any, [any]>, typeof compoundRules>(
     compoundRules,
   ) as unknown as CompoundRuleLazyTypes),
-  ...(adaptDynamicRules<RuleInstance<any, [any]>, typeof schemaRules>(
-    schemaRules,
-  ) as unknown as SchemaRuleLazyTypes),
+  ...(schemaRulesWithArrayChaining as unknown as SchemaRuleLazyTypes),
   ...adaptDynamicRules<AnyRuleInstance, typeof generalRules>(generalRules),
   ...adaptDynamicRules<ObjectRuleInstance, typeof objectRules>(objectRules),
   ...typeRules,

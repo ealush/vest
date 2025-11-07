@@ -57,3 +57,46 @@ describe('partial', () => {
     expect(rule.run({ id: '1' }).pass).toBe(false);
   });
 });
+
+describe('partial - eager API', () => {
+  const schema = {
+    name: enforce.isString(),
+    age: enforce.isNumber(),
+  };
+
+  it('should pass with subset of properties (eager)', () => {
+    expect(() => {
+      enforce({ name: 'John' }).partial(schema);
+    }).not.toThrow();
+
+    expect(() => {
+      enforce({ age: 30 }).partial(schema);
+    }).not.toThrow();
+
+    expect(() => {
+      enforce({ name: 'John', age: 30 }).partial(schema);
+    }).not.toThrow();
+  });
+
+  it('should pass with empty object (eager)', () => {
+    expect(() => {
+      enforce({}).partial(schema);
+    }).not.toThrow();
+  });
+
+  it('should fail with extra properties (eager)', () => {
+    expect(() => {
+      enforce({ name: 'John', extra: true }).partial(schema);
+    }).toThrow();
+  });
+
+  it('should fail when provided field has wrong type (eager)', () => {
+    expect(() => {
+      enforce({ name: 123 }).partial(schema);
+    }).toThrow();
+
+    expect(() => {
+      enforce({ age: '30' }).partial(schema);
+    }).toThrow();
+  });
+});

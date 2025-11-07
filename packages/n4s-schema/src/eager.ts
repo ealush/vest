@@ -1,5 +1,7 @@
 import type { Maybe } from 'vest-utils';
 
+import { allRules, schemaRulesMap } from 'allRules';
+import type { EnforceEagerReturn } from 'eagerTypes';
 import { createRuleCall } from 'ruleCallGenerator';
 import { extendEager, getRule, getSchemaRule } from 'ruleRegistry';
 
@@ -8,7 +10,9 @@ export type { EnforceEagerReturn, TArraySchemaRules } from 'eagerTypes';
 
 const MESSAGE_KEY = 'message';
 
-export function enforceEager<T>(value: T) {
+export function enforceEager<T>(
+  value: T,
+): EnforceEagerReturn<T, typeof allRules, typeof schemaRulesMap> {
   let customMessage: Maybe<string> = undefined;
 
   const setMessage = (msg?: string) => {

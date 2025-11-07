@@ -34,3 +34,36 @@ describe('noneOf', () => {
     expect(result.pass).toBe(true);
   });
 });
+
+describe('noneOf - eager API', () => {
+  it('should pass if no rules pass (eager)', () => {
+    expect(() => {
+      enforce('a string').noneOf(
+        enforce.isNumber(),
+        enforce.isNumber().greaterThan(10),
+      );
+    }).not.toThrow();
+  });
+
+  it('should fail if any rule passes (eager)', () => {
+    expect(() => {
+      enforce(5).noneOf(
+        enforce.isNumber(),
+        enforce.isNumber().greaterThan(10),
+      );
+    }).toThrow();
+
+    expect(() => {
+      enforce(12).noneOf(
+        enforce.isNumber(),
+        enforce.isNumber().greaterThan(10),
+      );
+    }).toThrow();
+  });
+
+  it('should pass with no rules (eager)', () => {
+    expect(() => {
+      enforce('any value').noneOf();
+    }).not.toThrow();
+  });
+});

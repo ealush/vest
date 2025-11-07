@@ -42,3 +42,45 @@ describe('oneOf', () => {
     expect(result.pass).toBe(false);
   });
 });
+
+describe('oneOf - eager API', () => {
+  it('should pass if exactly one rule passes (eager)', () => {
+    expect(() => {
+      enforce(12).oneOf(
+        enforce.isNumber().greaterThan(10),
+        enforce.isNumber().lessThan(5),
+      );
+    }).not.toThrow();
+
+    expect(() => {
+      enforce(3).oneOf(
+        enforce.isNumber().greaterThan(10),
+        enforce.isNumber().lessThan(5),
+      );
+    }).not.toThrow();
+  });
+
+  it('should fail if more than one rule passes (eager)', () => {
+    expect(() => {
+      enforce(12).oneOf(
+        enforce.isNumber().greaterThan(5),
+        enforce.isNumber().greaterThan(10),
+      );
+    }).toThrow();
+  });
+
+  it('should fail if no rules pass (eager)', () => {
+    expect(() => {
+      enforce(7).oneOf(
+        enforce.isNumber().greaterThan(10),
+        enforce.isNumber().lessThan(5),
+      );
+    }).toThrow();
+  });
+
+  it('should fail with no rules (eager)', () => {
+    expect(() => {
+      enforce('any value').oneOf();
+    }).toThrow();
+  });
+});

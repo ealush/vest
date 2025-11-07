@@ -19,11 +19,8 @@ describe('object: isValueOf / isNotValueOf', () => {
       expect(enforce.isValueOf(obj).run(false).pass).toBe(true);
       const nul: any = null;
       const undef: any = undefined;
-      // @ts-expect-error - testing mixed-type object
       expect(enforce.isValueOf(obj).run(nul).pass).toBe(true);
-      // @ts-expect-error - testing mixed-type object
       expect(enforce.isValueOf(obj).run(undef).pass).toBe(true);
-      // @ts-expect-error - testing mixed-type object
       expect(enforce.isValueOf(obj).run('').pass).toBe(true);
     });
 

@@ -53,3 +53,34 @@ describe('loose', () => {
     expect(result.pass).toBe(true);
   });
 });
+
+describe('loose - eager API', () => {
+  const schema = {
+    name: enforce.isString(),
+    age: enforce.isNumber(),
+  };
+
+  it('should pass with exact matching object (eager)', () => {
+    expect(() => {
+      enforce({ name: 'John', age: 30 }).loose(schema);
+    }).not.toThrow();
+  });
+
+  it('should pass with extra properties (eager)', () => {
+    expect(() => {
+      enforce({ name: 'John', age: 30, extra: 'property' }).loose(schema);
+    }).not.toThrow();
+  });
+
+  it('should fail if a property is missing (eager)', () => {
+    expect(() => {
+      enforce({ name: 'John' }).loose(schema);
+    }).toThrow();
+  });
+
+  it('should fail if a property has wrong type (eager)', () => {
+    expect(() => {
+      enforce({ name: 'John', age: '30' }).loose(schema);
+    }).toThrow();
+  });
+});

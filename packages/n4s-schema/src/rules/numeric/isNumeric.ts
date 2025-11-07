@@ -1,6 +1,6 @@
 import { isNumeric as isNumericValue } from 'vest-utils';
 
-export function isNumeric(value: any): boolean {
+export function isNumeric(value: any): value is number | string {
   // Accept numbers (including Infinity) and numeric strings
   if (typeof value === 'number') {
     return !Number.isNaN(value);

@@ -45,3 +45,36 @@ describe('anyOf', () => {
     expect(result.pass).toBe(false);
   });
 });
+
+describe('anyOf - eager API', () => {
+  it('should pass if at least one rule passes (eager)', () => {
+    expect(() => {
+      enforce(15).anyOf(
+        enforce.isString(),
+        enforce.isNumber().greaterThan(10),
+      );
+    }).not.toThrow();
+
+    expect(() => {
+      enforce('hello').anyOf(
+        enforce.isString(),
+        enforce.isNumber().greaterThan(10),
+      );
+    }).not.toThrow();
+  });
+
+  it('should fail if all rules fail (eager)', () => {
+    expect(() => {
+      enforce(5).anyOf(
+        enforce.isString(),
+        enforce.isNumber().greaterThan(10),
+      );
+    }).toThrow();
+  });
+
+  it('should fail with no rules (eager)', () => {
+    expect(() => {
+      enforce('any value').anyOf();
+    }).toThrow();
+  });
+});

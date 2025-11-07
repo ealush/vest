@@ -30,8 +30,33 @@ describe('optional', () => {
 
   it('should fail for an invalid value', () => {
     const rule = enforce.optional(enforce.isNumber());
-    // @ts-expect-error
     const result = rule.run('not a number');
     expect(result.pass).toBe(false);
+  });
+});
+
+describe('optional - eager API', () => {
+  it('should pass for null (eager)', () => {
+    expect(() => {
+      enforce(null).optional(enforce.isNumber());
+    }).not.toThrow();
+  });
+
+  it('should pass for undefined (eager)', () => {
+    expect(() => {
+      enforce(undefined).optional(enforce.isNumber());
+    }).not.toThrow();
+  });
+
+  it('should pass for a valid value (eager)', () => {
+    expect(() => {
+      enforce(123).optional(enforce.isNumber());
+    }).not.toThrow();
+  });
+
+  it('should fail for an invalid value (eager)', () => {
+    expect(() => {
+      enforce('not a number').optional(enforce.isNumber());
+    }).toThrow();
   });
 });

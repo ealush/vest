@@ -34,7 +34,7 @@ export type ValueFirstRules = n4s.ValueFirstRules;
 // each map n4s.ValueFirstRules into their respective APIs explicitly.
 
 // Map custom rules (value-first) to their eager signatures by dropping the value
-export type TCustomRules<T> = {
+export type TCustomRules<T, A, S> = {
   [K in keyof n4s.ValueFirstRules as T extends FirstParam<
     n4s.ValueFirstRules[K]
   >
@@ -43,5 +43,5 @@ export type TCustomRules<T> = {
     ...args: DropFirst<
       Parameters<Extract<n4s.ValueFirstRules[K], (...args: any) => any>>
     >
-  ) => EnforceEagerReturn<T>;
+  ) => import('eager').EnforceEagerReturn<T, A, S>;
 };

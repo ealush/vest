@@ -60,3 +60,34 @@ describe('shape', () => {
     expect(result.pass).toBe(false);
   });
 });
+
+describe('shape - eager API', () => {
+  const schema = {
+    name: enforce.isString(),
+    age: enforce.isNumber(),
+  };
+
+  it('should pass with exact matching object (eager)', () => {
+    expect(() => {
+      enforce({ name: 'John', age: 30 }).shape(schema);
+    }).not.toThrow();
+  });
+
+  it('should fail with extra properties (eager)', () => {
+    expect(() => {
+      enforce({ name: 'John', age: 30, extra: 'property' }).shape(schema);
+    }).toThrow();
+  });
+
+  it('should fail if a property is missing (eager)', () => {
+    expect(() => {
+      enforce({ name: 'John' }).shape(schema);
+    }).toThrow();
+  });
+
+  it('should fail if a property has wrong type (eager)', () => {
+    expect(() => {
+      enforce({ name: 'John', age: '30' }).shape(schema);
+    }).toThrow();
+  });
+});

@@ -47,4 +47,37 @@ describe('isArrayOf', () => {
     const result = rule.run([1, '2', true]);
     expect(result.pass).toBe(false);
   });
+
+  it('should chain array methods after isArrayOf (lazy API)', () => {
+    const rule = enforce
+      .isArrayOf(enforce.isNumber())
+      .minLength(1)
+      .maxLength(10);
+    
+    expect(rule.run([1, 2, 3])).toMatchObject({ pass: true });
+    expect(rule.run([])).toMatchObject({ pass: false }); // fails minLength
+    expect(rule.run([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])).toMatchObject({ pass: false }); // fails maxLength
+  });
+});
+
+describe('isArrayOf - eager API', () => {
+  it('should chain array methods after isArrayOf (eager API)', () => {
+    expect(() => {
+      enforce([1, 2, 3])
+        .isArrayOf(enforce.isNumber())
+        .minLength(1);
+    }).not.toThrow();
+
+    expect(() => {
+      enforce([])
+        .isArrayOf(enforce.isNumber())
+        .minLength(1);
+    }).toThrow();
+
+    expect(() => {
+      enforce([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+        .isArrayOf(enforce.isNumber())
+        .maxLength(10);
+    }).toThrow();
+  });
 });

@@ -15,7 +15,11 @@ import type { SchemaRuleLazyTypes } from 'schemaRules';
 import { FirstParam } from 'typeUtils';
 
 type TCustomLazyRules = {
-  [K in keyof n4s.ValueFirstRules]: (
+  [K in keyof n4s.ValueFirstRules as K extends keyof SchemaRuleLazyTypes
+    ? never
+    : K extends keyof CompoundRuleLazyTypes
+      ? never
+      : K]: (
     ...args: DropFirst<
       Parameters<Extract<n4s.ValueFirstRules[K], (...args: any) => any>>
     >
@@ -26,18 +30,16 @@ type TCustomLazyRules = {
 };
 
 const baseEnforceLazy = {
-  ...adaptDynamicRules<RuleInstance<any, [any]>, typeof compoundRules>(
+  ...(adaptDynamicRules<RuleInstance<any, [any]>, typeof compoundRules>(
     compoundRules,
-  ),
-  ...adaptDynamicRules<RuleInstance<any, [any]>, typeof schemaRules>(
+  ) as unknown as CompoundRuleLazyTypes),
+  ...(adaptDynamicRules<RuleInstance<any, [any]>, typeof schemaRules>(
     schemaRules,
-  ),
+  ) as unknown as SchemaRuleLazyTypes),
   ...adaptDynamicRules<AnyRuleInstance, typeof generalRules>(generalRules),
   ...adaptDynamicRules<ObjectRuleInstance, typeof objectRules>(objectRules),
   ...typeRules,
 };
 
-export const enforceLazy = baseEnforceLazy as TCustomLazyRules &
-  typeof baseEnforceLazy &
-  CompoundRuleLazyTypes &
-  SchemaRuleLazyTypes;
+export const enforceLazy = baseEnforceLazy as unknown as TCustomLazyRules &
+  typeof baseEnforceLazy;

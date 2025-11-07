@@ -1,4 +1,3 @@
-
 import { executeChain, type Predicate } from './chainBuilder/chainExecutor';
 import { registerLazyRule } from './chainBuilder/lazyRegistry';
 import { createChainProxyHandlers } from './chainBuilder/proxyHandlers';
@@ -13,14 +12,15 @@ function createChainBuilder<T extends RuleInstance<any, any>>(
   const chain: Predicate[] = [];
   const target: Partial<T> = {};
 
-  const add = (p: Predicate) => {
+  const add = (p: Predicate): T => {
     chain.push(p);
-    return proxy as T;
+    return proxy;
   };
 
-  const run = (value: any) => executeChain(chain, value);
+  const run: T['run'] = ((...args: any[]) =>
+    executeChain(chain, args[0])) as T['run'];
 
-  const proxy = new Proxy(
+  const proxy: T = new Proxy(
     target as T,
     createChainProxyHandlers(rules, add, run),
   );

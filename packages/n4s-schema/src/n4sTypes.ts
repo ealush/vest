@@ -1,6 +1,5 @@
 import type { DropFirst } from 'vest-utils';
 
-import { EnforceEagerReturn } from 'eager';
 import type { FirstParam } from 'typeUtils';
 /**
  * Global namespace for n4s custom rules.

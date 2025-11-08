@@ -10,9 +10,13 @@ export type { EnforceEagerReturn, TArraySchemaRules } from 'eagerTypes';
 
 const MESSAGE_KEY = 'message';
 
-export function enforceEager<T>(
-  value: T,
-): EnforceEagerReturn<T, typeof allRules, typeof schemaRulesMap> {
+type EagerReturn<T> = EnforceEagerReturn<
+  T,
+  typeof allRules,
+  typeof schemaRulesMap
+>;
+
+export function enforceEager<T>(value: T): EagerReturn<T> {
   let customMessage: Maybe<string> = undefined;
 
   const setMessage = (msg?: string) => {
@@ -22,7 +26,7 @@ export function enforceEager<T>(
 
   const clearMessage = () => setMessage(undefined);
 
-  const proxy = new Proxy(
+  const proxy: EagerReturn<T> = new Proxy(
     {},
     {
       get(_target: any, key: string) {

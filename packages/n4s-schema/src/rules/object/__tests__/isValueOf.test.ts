@@ -13,9 +13,7 @@ describe('object: isValueOf / isNotValueOf', () => {
 
     it('pass for falsy values', () => {
       const obj = { a: 0, b: false, c: null, d: undefined, e: '' };
-      // @ts-expect-error - testing mixed-type object
       expect(enforce.isValueOf(obj).run(0).pass).toBe(true);
-      // @ts-expect-error - testing mixed-type object
       expect(enforce.isValueOf(obj).run(false).pass).toBe(true);
       const nul: any = null;
       const undef: any = undefined;
@@ -91,7 +89,6 @@ describe('object: isValueOf / isNotValueOf', () => {
       const valStr: any = 'test';
       expect(enforce.isNotValueOf(obj).run(val3).pass).toBe(true);
       expect(enforce.isNotValueOf(obj).run(val5).pass).toBe(true);
-      // @ts-expect-error - testing mixed-type object
       expect(enforce.isNotValueOf(obj).run(valStr).pass).toBe(true);
     });
 
@@ -112,12 +109,9 @@ describe('object: isValueOf / isNotValueOf', () => {
 
     it('fails for falsy values that exist', () => {
       const obj = { a: 0, b: false, c: null };
-      // @ts-expect-error - testing mixed-type object
       expect(enforce.isNotValueOf(obj).run(0).pass).toBe(false);
-      // @ts-expect-error - testing mixed-type object
       expect(enforce.isNotValueOf(obj).run(false).pass).toBe(false);
       const nul: any = null;
-      // @ts-expect-error - testing mixed-type object
       expect(enforce.isNotValueOf(obj).run(nul).pass).toBe(false);
     });
 

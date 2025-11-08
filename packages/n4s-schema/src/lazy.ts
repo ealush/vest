@@ -10,7 +10,7 @@ import type { CompoundRuleLazyTypes } from 'compoundRules';
 import { addToChain } from 'genRuleChain';
 import { AnyRuleInstance } from 'generalRules';
 import * as generalRules from 'generalRules';
-import { ObjectRuleInstance } from 'objectRules';
+import type { ObjectRulesUnion } from 'objectRules';
 import * as objectRules from 'objectRules';
 import { adaptDynamicRules } from 'ruleAdapter';
 import * as schemaRules from 'schemaRules';
@@ -57,7 +57,7 @@ const baseEnforceLazy = {
   ) as unknown as CompoundRuleLazyTypes),
   ...(schemaRulesWithArrayChaining as unknown as SchemaRuleLazyTypes),
   ...adaptDynamicRules<AnyRuleInstance, typeof generalRules>(generalRules),
-  ...adaptDynamicRules<ObjectRuleInstance, typeof objectRules>(objectRules),
+  ...adaptDynamicRules<ObjectRulesUnion, typeof objectRules>(objectRules),
   ...typeRules,
 };
 

@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;700&display=swap');
+
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary-lightest: #fdfdfd;
+  --ifm-color-primary-lighter: #4b6889;
+  --ifm-color-primary-light: #486383;
+  --ifm-color-primary: #697098;
+  --ifm-color-primary-dark: #3b516b;
+  --ifm-color-primary-darker: #374d65;
+  --ifm-color-primary-darkest: #212432;
+  --ifm-font-family-base: 'Rubik', sans-serif;
+  --ifm-code-font-size: 95%;
+  --ifm-heading-color: var(--ifm-font-color-base);
+  --main-content-background-color: none;
+  --darkest-alt: #171819;
+  --announcement-bar-background: var(--ifm-color-primary-lightest);
+  --announcement-bar-color: var(--darkest-alt);
+}
+
+html[data-theme='dark'] {
+  --ifm-background-color: var(--darkest-alt);
+  --announcement-bar-background: var(--ifm-color-primary-light);
+  --announcement-bar-color: var(--ifm-color-primary-lightest);
+}
+
+main {
+  background-color: var(--main-content-background-color);
+}
+
+.aa-DetachedSearchButton {
+  color: blue;
+}
+
+h1 {
+  padding-bottom: 1rem;
+}
+
+.docusaurus-highlight-code-line {
+  background-color: rgba(0, 0, 0, 0.1);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+}
+
+.footer {
+  background-color: #272a36;
+}
+
+html[data-theme='dark'] .docusaurus-highlight-code-line {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme='dark'] .navbar {
+  background-color: var(--ifm-background-color);
+  border-bottom: 1px solid var(--ifm-color-primary-darker);
+}
+
+html[data-theme='light'] .hero__primary.hero {
+  background-color: var(--ifm-color-primary-lightest);
+  color: var(--ifm-color-primary-darkest);
+}
+
+html[data-theme='dark'] .hero__primary.hero {
+  background-color: var(--ifm-background-color);
+  color: var(--ifm-color-primary-darkest);
+}
+
+html[data-theme='dark'] .hero__title {
+  color: var(--ifm-color-primary-lightest);
+}
+
+.hero__title {
+  text-transform: uppercase;
+  color: var(--ifm-heading-color);
+}
+
+.hero__subtitle {
+  color: var(--ifm-heading-color);
+}
+
+.header-badge {
+  display: flex;
+}
+
+.header-github-link {
+  content: '';
+  background-color: var(--ifm-color-primary-darkest);
+  mask-image: url('/img/github.svg');
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+html[data-theme='dark'] .header-github-link {
+  background-color: var(--ifm-color-primary-lightest);
+}

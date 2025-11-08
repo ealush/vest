@@ -1,0 +1,30 @@
+import { isNumeric } from 'isNumeric';
+import { describe, it, expect } from 'vitest';
+
+const NUMERICS = ['-10', '0', 0xff, '0xFF', '8e5', '3.1415', +10, '0144'];
+
+const NON_NUMERICS = [
+  '-0x42',
+  '7.2acdgs',
+  '',
+  {},
+  NaN,
+  null,
+  true,
+  Infinity,
+  undefined,
+  [100], // Should not coerce array to string
+  ['100'],
+  [1, 2, 3],
+];
+
+describe('Tests isNumeric rule', () => {
+  it('Should return true for numeric values', () => {
+    NUMERICS.forEach(value => expect(isNumeric(value)).toBe(true));
+  });
+
+  it('Should return false for non numeric values', () => {
+    // @ts-expect-error - testing bad usage
+    NON_NUMERICS.forEach(value => expect(isNumeric(value)).toBe(false));
+  });
+});

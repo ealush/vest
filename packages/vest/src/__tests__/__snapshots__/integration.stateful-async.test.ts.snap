@@ -1,0 +1,321 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Stateful async tests > Merges skipped validations from previous suite 1`] = `
+Promise {
+  "dump": [Function],
+  "errorCount": 1,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": "field_message_1",
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {
+    "group": {
+      "field_1": SummaryBase {
+        "errorCount": 0,
+        "errors": [],
+        "pendingCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+        "warnings": [],
+      },
+      "field_4": SummaryBase {
+        "errorCount": 0,
+        "errors": [],
+        "pendingCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+        "warnings": [],
+      },
+    },
+  },
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "pendingCount": 1,
+  "suiteName": undefined,
+  "testCount": 3,
+  "tests": {
+    "field_1": {
+      "errorCount": 1,
+      "errors": [
+        "field_message_1",
+      ],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_2": {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 1,
+      "testCount": 2,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_3": {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_4": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`Stateful async tests > Merges skipped validations from previous suite 2`] = `
+SuiteSummary {
+  "dump": [Function],
+  "errorCount": 2,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": "field_message_1",
+    },
+    SummaryFailure {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": "rejection_message_1",
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {
+    "group": {
+      "field_1": SummaryBase {
+        "errorCount": 0,
+        "errors": [],
+        "pendingCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+        "warnings": [],
+      },
+      "field_4": SummaryBase {
+        "errorCount": 0,
+        "errors": [],
+        "pendingCount": 0,
+        "testCount": 0,
+        "warnCount": 0,
+        "warnings": [],
+      },
+    },
+  },
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 3,
+  "tests": {
+    "field_1": {
+      "errorCount": 1,
+      "errors": [
+        "field_message_1",
+      ],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_2": {
+      "errorCount": 1,
+      "errors": [
+        "rejection_message_1",
+      ],
+      "pendingCount": 0,
+      "testCount": 2,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_3": {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_4": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`Stateful async tests > Merges skipped validations from previous suite 3`] = `
+SuiteSummary {
+  "dump": [Function],
+  "errorCount": 5,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": "group",
+      "message": "field_1_group_message",
+    },
+    SummaryFailure {
+      "fieldName": "field_4",
+      "groupName": "group",
+      "message": "field_4_group_message",
+    },
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": "field_message_1",
+    },
+    SummaryFailure {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": "rejection_message_1",
+    },
+    SummaryFailure {
+      "fieldName": "field_3",
+      "groupName": undefined,
+      "message": "field_message_3",
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {
+    "group": {
+      "field_1": SummaryBase {
+        "errorCount": 1,
+        "errors": [
+          "field_1_group_message",
+        ],
+        "pendingCount": 0,
+        "testCount": 1,
+        "warnCount": 0,
+        "warnings": [],
+      },
+      "field_4": SummaryBase {
+        "errorCount": 1,
+        "errors": [
+          "field_4_group_message",
+        ],
+        "pendingCount": 0,
+        "testCount": 1,
+        "warnCount": 0,
+        "warnings": [],
+      },
+    },
+  },
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 7,
+  "tests": {
+    "field_1": {
+      "errorCount": 2,
+      "errors": [
+        "field_1_group_message",
+        "field_message_1",
+      ],
+      "pendingCount": 0,
+      "testCount": 2,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_2": {
+      "errorCount": 1,
+      "errors": [
+        "rejection_message_1",
+      ],
+      "pendingCount": 0,
+      "testCount": 2,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_3": {
+      "errorCount": 1,
+      "errors": [
+        "field_message_3",
+      ],
+      "pendingCount": 0,
+      "testCount": 2,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_4": SummaryBase {
+      "errorCount": 1,
+      "errors": [
+        "field_4_group_message",
+      ],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;

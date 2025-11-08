@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Cascading Context > context.run > Should clear context after callback run 1`] = `
+{
+  "a": 1,
+}
+`;
+
+exports[`Cascading Context > context.run > Should clear context after callback run 2`] = `
+{
+  "a": 1,
+  "b": 2,
+}
+`;
+
+exports[`Cascading Context > createCascade > Should return all methods 1`] = `
+{
+  "bind": [Function],
+  "run": [Function],
+  "use": [Function],
+  "useX": [Function],
+}
+`;

@@ -1,0 +1,140 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`skipWhen > Should pass result draft to the functional condition 1`] = `
+SuiteSummary {
+  "errorCount": 0,
+  "errors": [],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 0,
+  "tests": {},
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`skipWhen > Should pass result draft to the functional condition 2`] = `
+SuiteSummary {
+  "errorCount": 1,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "f1",
+      "groupName": undefined,
+      "message": "msg",
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 1,
+  "tests": {
+    "f1": SummaryBase {
+      "errorCount": 1,
+      "errors": [
+        "msg",
+      ],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`skipWhen > Should pass result draft to the functional condition 3`] = `
+SuiteSummary {
+  "errorCount": 2,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "f1",
+      "groupName": undefined,
+      "message": "msg",
+    },
+    SummaryFailure {
+      "fieldName": "f2",
+      "groupName": undefined,
+      "message": "msg",
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 2,
+  "tests": {
+    "f1": SummaryBase {
+      "errorCount": 1,
+      "errors": [
+        "msg",
+      ],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "f2": SummaryBase {
+      "errorCount": 1,
+      "errors": [
+        "msg",
+      ],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;

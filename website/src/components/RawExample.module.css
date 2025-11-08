@@ -1,0 +1,31 @@
+.code {
+  margin-left: 4rem;
+}
+
+.section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+}
+
+.desc {
+  max-width: 400px;
+  jusify-self: flex-end;
+}
+
+@media screen and (max-width: 966px) {
+  .code {
+    margin-left: 0;
+  }
+
+  .section {
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .code {
+    display: none;
+  }
+}

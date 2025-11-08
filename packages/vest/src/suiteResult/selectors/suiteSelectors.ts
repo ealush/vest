@@ -1,0 +1,297 @@
+import { Maybe, greaterThan, isPositive } from 'vest-utils';
+
+import { Severity, SeverityCount } from 'Severity';
+import {
+  FailureMessages,
+  GetFailuresResponse,
+  SuiteResult,
+  SuiteSummary,
+  TFieldName,
+  TGroupName,
+} from 'SuiteResultTypes';
+import { SummaryFailure } from 'SummaryFailure';
+import { gatherFailures } from 'collectFailures';
+import matchingFieldName from 'matchingFieldName';
+
+export function bindSuiteSelectors<F extends TFieldName, G extends TGroupName>(
+  get: <F extends string, G extends string>() => SuiteResult<F, G>,
+): SuiteSelectors<F, G> {
+  return {
+    getError: (...args: Parameters<SuiteSelectors<F, G>['getError']>) =>
+      get().getError(...args),
+    getErrors: (...args: Parameters<SuiteSelectors<F, G>['getErrors']>) =>
+      get().getErrors(...args),
+    getErrorsByGroup: (
+      ...args: Parameters<SuiteSelectors<F, G>['getErrorsByGroup']>
+    ) => get().getErrorsByGroup(...args),
+    getMessage: (...args: Parameters<SuiteSelectors<F, G>['getMessage']>) =>
+      get().getMessage(...args),
+    getWarning: (...args: Parameters<SuiteSelectors<F, G>['getWarning']>) =>
+      get().getWarning(...args),
+    getWarnings: (...args: Parameters<SuiteSelectors<F, G>['getWarnings']>) =>
+      get().getWarnings(...args),
+    getWarningsByGroup: (
+      ...args: Parameters<SuiteSelectors<F, G>['getWarningsByGroup']>
+    ) => get().getWarningsByGroup(...args),
+    hasErrors: (...args: Parameters<SuiteSelectors<F, G>['hasErrors']>) =>
+      get().hasErrors(...args),
+    hasErrorsByGroup: (
+      ...args: Parameters<SuiteSelectors<F, G>['hasErrorsByGroup']>
+    ) => get().hasErrorsByGroup(...args),
+    hasWarnings: (...args: Parameters<SuiteSelectors<F, G>['hasWarnings']>) =>
+      get().hasWarnings(...args),
+    hasWarningsByGroup: (
+      ...args: Parameters<SuiteSelectors<F, G>['hasWarningsByGroup']>
+    ) => get().hasWarningsByGroup(...args),
+    isPending: (...args: Parameters<SuiteSelectors<F, G>['isPending']>) => {
+      return get().isPending(...args);
+    },
+    isTested: (...args: Parameters<SuiteSelectors<F, G>['isTested']>) =>
+      get().isTested(...args),
+    isValid: (...args: Parameters<SuiteSelectors<F, G>['isValid']>) =>
+      get().isValid(...args),
+  } as SuiteSelectors<F, G>;
+}
+
+// eslint-disable-next-line max-lines-per-function, max-statements
+export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
+  summary: SuiteSummary<F, G>,
+): SuiteSelectors<F, G> {
+  const selectors = {
+    getError,
+    getErrors,
+    getErrorsByGroup,
+    getMessage,
+    getWarning,
+    getWarnings,
+    getWarningsByGroup,
+    hasErrors,
+    hasErrorsByGroup,
+    hasWarnings,
+    hasWarningsByGroup,
+    isPending,
+    isTested,
+    isValid,
+  };
+
+  return selectors;
+
+  // Booleans
+
+  function isValid(fieldName?: F): boolean {
+    return Boolean(fieldName ? summary.tests[fieldName]?.valid : summary.valid);
+  }
+
+  function hasWarnings(fieldName?: F): boolean {
+    return hasFailures(summary, SeverityCount.WARN_COUNT, fieldName);
+  }
+
+  function hasErrors(fieldName?: F): boolean {
+    return hasFailures(summary, SeverityCount.ERROR_COUNT, fieldName);
+  }
+
+  function isTested(fieldName: F): boolean {
+    return isPositive(summary.tests[fieldName]?.testCount);
+  }
+
+  function hasWarningsByGroup<G extends TGroupName>(
+    groupName: G,
+    fieldName?: F,
+  ): boolean {
+    return hasFailuresByGroup(
+      summary,
+      SeverityCount.WARN_COUNT,
+      groupName,
+      fieldName,
+    );
+  }
+
+  function hasErrorsByGroup<G extends TGroupName>(
+    groupName: G,
+    fieldName?: F,
+  ): boolean {
+    return hasFailuresByGroup(
+      summary,
+      SeverityCount.ERROR_COUNT,
+      groupName,
+      fieldName,
+    );
+  }
+
+  // Responses
+
+  function getWarnings(): FailureMessages;
+  function getWarnings(fieldName: F): string[];
+  function getWarnings(fieldName?: F): GetFailuresResponse {
+    return getFailures(summary, Severity.WARNINGS, fieldName);
+  }
+
+  function getWarning(): Maybe<SummaryFailure<F, G>>;
+  function getWarning(fieldName: F): Maybe<string>;
+  function getWarning(fieldName?: F): Maybe<SummaryFailure<F, G> | string> {
+    return getFailure<F, G>(Severity.WARNINGS, summary, fieldName as F);
+  }
+
+  function getErrors(): FailureMessages;
+  function getErrors(fieldName: F): string[];
+  function getErrors(fieldName?: F): GetFailuresResponse {
+    return getFailures(summary, Severity.ERRORS, fieldName);
+  }
+
+  function getError(): Maybe<SummaryFailure<F, G>>;
+  function getError(fieldName: F): Maybe<string>;
+  function getError(fieldName?: F): Maybe<SummaryFailure<F, G> | string> {
+    return getFailure<F, G>(Severity.ERRORS, summary, fieldName as F);
+  }
+
+  function getErrorsByGroup(groupName: G): FailureMessages;
+  function getErrorsByGroup(groupName: G, fieldName: F): string[];
+  function getErrorsByGroup(groupName: G, fieldName?: F): GetFailuresResponse {
+    return getFailuresByGroup(summary, Severity.ERRORS, groupName, fieldName);
+  }
+
+  function getMessage(fieldName: F): Maybe<string> {
+    return getError(fieldName) || getWarning(fieldName);
+  }
+
+  function getWarningsByGroup(groupName: G): FailureMessages;
+  function getWarningsByGroup(groupName: G, fieldName: F): string[];
+  function getWarningsByGroup(
+    groupName: G,
+    fieldName?: F,
+  ): GetFailuresResponse {
+    return getFailuresByGroup(summary, Severity.WARNINGS, groupName, fieldName);
+  }
+
+  function isPending(fieldName?: F): boolean {
+    return fieldName
+      ? greaterThan(summary.tests[fieldName]?.pendingCount, 0)
+      : greaterThan(summary.pendingCount, 0);
+  }
+}
+
+export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
+  getWarning(): SummaryFailure<F, G> | undefined;
+  getWarning(fieldName: F): string | undefined;
+  getWarning(fieldName?: F): SummaryFailure<F, G> | string | undefined;
+  getError(): SummaryFailure<F, G> | undefined;
+  getError(fieldName: F): string | undefined;
+  getError(fieldName?: F): SummaryFailure<F, G> | string | undefined;
+  getMessage(fieldName: F): string | undefined;
+  getErrors(): FailureMessages;
+  getErrors(fieldName: F): string[];
+  getErrors(fieldName?: F): string[] | FailureMessages;
+  getWarnings(): FailureMessages;
+  getWarnings(fieldName: F): string[];
+  getWarnings(fieldName?: F): string[] | FailureMessages;
+  getErrorsByGroup(groupName: G): FailureMessages;
+  getErrorsByGroup(groupName: G, fieldName: F): string[];
+  getErrorsByGroup(groupName: G, fieldName?: F): string[] | FailureMessages;
+  getWarningsByGroup(groupName: G): FailureMessages;
+  getWarningsByGroup(groupName: G, fieldName: F): string[];
+  getWarningsByGroup(groupName: G, fieldName?: F): string[] | FailureMessages;
+  hasErrors(fieldName?: F): boolean;
+  hasWarnings(fieldName?: F): boolean;
+  hasErrorsByGroup(groupName: G, fieldName?: F): boolean;
+  hasWarningsByGroup(groupName: G, fieldName?: F): boolean;
+  isTested(fieldName: F): boolean;
+  isPending(fieldName?: F): boolean;
+  isValid(fieldName?: F): boolean;
+}
+
+// Gathers all failures of a given severity
+// With a fieldName, it will only gather failures for that field
+function getFailures<F extends TFieldName, G extends TGroupName>(
+  summary: SuiteSummary<F, G>,
+  severityKey: Severity,
+): FailureMessages;
+function getFailures<F extends TFieldName, G extends TGroupName>(
+  summary: SuiteSummary<F, G>,
+  severityKey: Severity,
+  fieldName?: TFieldName,
+): string[];
+function getFailures<F extends TFieldName, G extends TGroupName>(
+  summary: SuiteSummary<F, G>,
+  severityKey: Severity,
+  fieldName?: TFieldName,
+): GetFailuresResponse {
+  return gatherFailures(summary.tests, severityKey, fieldName);
+}
+
+// Gathers all failures of a given severity within a group
+// With a fieldName, it will only gather failures for that field
+function getFailuresByGroup(
+  summary: SuiteSummary<TFieldName, TGroupName>,
+  severityKey: Severity,
+  groupName: TGroupName,
+  fieldName?: TFieldName,
+): GetFailuresResponse {
+  return gatherFailures(summary.groups[groupName], severityKey, fieldName);
+}
+
+// Checks if a there are any failures of a given severity within a group
+// If a fieldName is provided, it will only check for failures within that field
+function hasFailuresByGroup(
+  summary: SuiteSummary<TFieldName, TGroupName>,
+  severityCount: SeverityCount,
+  groupName: TGroupName,
+  fieldName?: TFieldName,
+): boolean {
+  const group = summary.groups[groupName];
+
+  if (!group) {
+    return false;
+  }
+
+  if (fieldName) {
+    return isPositive(group[fieldName]?.[severityCount]);
+  }
+
+  for (const field in group) {
+    if (isPositive(group[field]?.[severityCount])) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// Checks if there are any failures of a given severity
+// If a fieldName is provided, it will only check for failures within that field
+function hasFailures(
+  summary: SuiteSummary<TFieldName, TGroupName>,
+  countKey: SeverityCount,
+  fieldName?: TFieldName,
+): boolean {
+  const failureCount = fieldName
+    ? summary.tests[fieldName]?.[countKey]
+    : summary[countKey] || 0;
+
+  return isPositive(failureCount);
+}
+
+function getFailure<F extends TFieldName, G extends TGroupName>(
+  severity: Severity,
+  summary: SuiteSummary<F, G>,
+): Maybe<SummaryFailure<F, G>>;
+function getFailure<F extends TFieldName, G extends TGroupName>(
+  severity: Severity,
+  summary: SuiteSummary<F, G>,
+  fieldName: F,
+): Maybe<string>;
+function getFailure<F extends TFieldName, G extends TGroupName>(
+  severity: Severity,
+  summary: SuiteSummary<F, G>,
+  fieldName?: F,
+): Maybe<SummaryFailure<F, G> | string> {
+  const summaryKey = summary[severity];
+
+  if (!fieldName) {
+    return summaryKey[0];
+  }
+
+  return summaryKey.find(
+    (summaryFailure: SummaryFailure<TFieldName, TGroupName>) =>
+      matchingFieldName(summaryFailure, fieldName),
+  )?.message;
+}

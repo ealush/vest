@@ -1,0 +1,109 @@
+{
+  "name": "vestjs-runtime",
+  "version": "1.5.1",
+  "description": "Internal runtime module used by Vest",
+  "license": "MIT",
+  "author": "ealush",
+  "main": "./dist/cjs/vestjs-runtime.js",
+  "module": "./dist/es/vestjs-runtime.production.js",
+  "unpkg": "./dist/umd/vestjs-runtime.production.js",
+  "jsdelivr": "./dist/umd/vestjs-runtime.production.js",
+  "types": "./types/vestjs-runtime.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ealush/vest.git",
+    "directory": "packages/vestjs-runtime"
+  },
+  "bugs": {
+    "url": "https://github.com/ealush/vest.git/issues"
+  },
+  "dependencies": {
+    "context": "^3.0.33",
+    "vest-utils": "^1.3.3"
+  },
+  "exports": {
+    "./test-utils": {
+      "production": {
+        "types": "./types/test-utils.d.ts",
+        "browser": "./dist/es/test-utils.production.js",
+        "umd": "./dist/umd/test-utils.production.js",
+        "import": "./dist/es/test-utils.production.js",
+        "require": "./dist/cjs/test-utils.production.js",
+        "node": "./dist/cjs/test-utils.production.js",
+        "module": "./dist/es/test-utils.production.js",
+        "default": "./dist/cjs/test-utils.production.js"
+      },
+      "development": {
+        "types": "./types/test-utils.d.ts",
+        "browser": "./dist/es/test-utils.development.js",
+        "umd": "./dist/umd/test-utils.development.js",
+        "import": "./dist/es/test-utils.development.js",
+        "require": "./dist/cjs/test-utils.development.js",
+        "node": "./dist/cjs/test-utils.development.js",
+        "module": "./dist/es/test-utils.development.js",
+        "default": "./dist/cjs/test-utils.development.js"
+      },
+      "types": "./types/test-utils.d.ts",
+      "browser": "./dist/es/test-utils.production.js",
+      "umd": "./dist/umd/test-utils.production.js",
+      "import": "./dist/es/test-utils.production.js",
+      "require": "./dist/cjs/test-utils.production.js",
+      "node": "./dist/cjs/test-utils.production.js",
+      "module": "./dist/es/test-utils.production.js",
+      "default": "./dist/cjs/test-utils.production.js"
+    },
+    "./IsolateSerializer": {
+      "production": {
+        "types": "./types/IsolateSerializer.d.ts",
+        "browser": "./dist/es/IsolateSerializer.production.js",
+        "umd": "./dist/umd/IsolateSerializer.production.js",
+        "import": "./dist/es/IsolateSerializer.production.js",
+        "require": "./dist/cjs/IsolateSerializer.production.js",
+        "node": "./dist/cjs/IsolateSerializer.production.js",
+        "module": "./dist/es/IsolateSerializer.production.js",
+        "default": "./dist/cjs/IsolateSerializer.production.js"
+      },
+      "development": {
+        "types": "./types/IsolateSerializer.d.ts",
+        "browser": "./dist/es/IsolateSerializer.development.js",
+        "umd": "./dist/umd/IsolateSerializer.development.js",
+        "import": "./dist/es/IsolateSerializer.development.js",
+        "require": "./dist/cjs/IsolateSerializer.development.js",
+        "node": "./dist/cjs/IsolateSerializer.development.js",
+        "module": "./dist/es/IsolateSerializer.development.js",
+        "default": "./dist/cjs/IsolateSerializer.development.js"
+      },
+      "types": "./types/IsolateSerializer.d.ts",
+      "browser": "./dist/es/IsolateSerializer.production.js",
+      "umd": "./dist/umd/IsolateSerializer.production.js",
+      "import": "./dist/es/IsolateSerializer.production.js",
+      "require": "./dist/cjs/IsolateSerializer.production.js",
+      "node": "./dist/cjs/IsolateSerializer.production.js",
+      "module": "./dist/es/IsolateSerializer.production.js",
+      "default": "./dist/cjs/IsolateSerializer.production.js"
+    },
+    ".": {
+      "development": {
+        "types": "./types/vestjs-runtime.d.ts",
+        "browser": "./dist/es/vestjs-runtime.development.js",
+        "umd": "./dist/umd/vestjs-runtime.development.js",
+        "import": "./dist/es/vestjs-runtime.development.js",
+        "require": "./dist/cjs/vestjs-runtime.development.js",
+        "node": "./dist/cjs/vestjs-runtime.development.js",
+        "module": "./dist/es/vestjs-runtime.development.js",
+        "default": "./dist/cjs/vestjs-runtime.development.js"
+      },
+      "types": "./types/vestjs-runtime.d.ts",
+      "browser": "./dist/es/vestjs-runtime.production.js",
+      "umd": "./dist/umd/vestjs-runtime.production.js",
+      "import": "./dist/es/vestjs-runtime.production.js",
+      "require": "./dist/cjs/vestjs-runtime.production.js",
+      "node": "./dist/cjs/vestjs-runtime.production.js",
+      "module": "./dist/es/vestjs-runtime.production.js",
+      "default": "./dist/cjs/vestjs-runtime.production.js"
+    },
+    "./package.json": "./package.json",
+    "./*": "./*"
+  },
+  "vxAllowResolve": []
+}

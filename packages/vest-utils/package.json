@@ -1,0 +1,79 @@
+{
+  "version": "1.3.3",
+  "name": "vest-utils",
+  "author": "ealush",
+  "scripts": {
+    "test": "vx test",
+    "build": "vx build",
+    "release": "vx release"
+  },
+  "main": "./dist/cjs/vest-utils.js",
+  "module": "./dist/es/vest-utils.production.js",
+  "unpkg": "./dist/umd/vest-utils.production.js",
+  "jsdelivr": "./dist/umd/vest-utils.production.js",
+  "types": "./types/vest-utils.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ealush/vest.git",
+    "directory": "packages/vest-utils"
+  },
+  "bugs": {
+    "url": "https://github.com/ealush/vest.git/issues"
+  },
+  "exports": {
+    "./minifyObject": {
+      "production": {
+        "types": "./types/minifyObject.d.ts",
+        "browser": "./dist/es/minifyObject.production.js",
+        "umd": "./dist/umd/minifyObject.production.js",
+        "import": "./dist/es/minifyObject.production.js",
+        "require": "./dist/cjs/minifyObject.production.js",
+        "node": "./dist/cjs/minifyObject.production.js",
+        "module": "./dist/es/minifyObject.production.js",
+        "default": "./dist/cjs/minifyObject.production.js"
+      },
+      "development": {
+        "types": "./types/minifyObject.d.ts",
+        "browser": "./dist/es/minifyObject.development.js",
+        "umd": "./dist/umd/minifyObject.development.js",
+        "import": "./dist/es/minifyObject.development.js",
+        "require": "./dist/cjs/minifyObject.development.js",
+        "node": "./dist/cjs/minifyObject.development.js",
+        "module": "./dist/es/minifyObject.development.js",
+        "default": "./dist/cjs/minifyObject.development.js"
+      },
+      "types": "./types/minifyObject.d.ts",
+      "browser": "./dist/es/minifyObject.production.js",
+      "umd": "./dist/umd/minifyObject.production.js",
+      "import": "./dist/es/minifyObject.production.js",
+      "require": "./dist/cjs/minifyObject.production.js",
+      "node": "./dist/cjs/minifyObject.production.js",
+      "module": "./dist/es/minifyObject.production.js",
+      "default": "./dist/cjs/minifyObject.production.js"
+    },
+    ".": {
+      "development": {
+        "types": "./types/vest-utils.d.ts",
+        "browser": "./dist/es/vest-utils.development.js",
+        "umd": "./dist/umd/vest-utils.development.js",
+        "import": "./dist/es/vest-utils.development.js",
+        "require": "./dist/cjs/vest-utils.development.js",
+        "node": "./dist/cjs/vest-utils.development.js",
+        "module": "./dist/es/vest-utils.development.js",
+        "default": "./dist/cjs/vest-utils.development.js"
+      },
+      "types": "./types/vest-utils.d.ts",
+      "browser": "./dist/es/vest-utils.production.js",
+      "umd": "./dist/umd/vest-utils.production.js",
+      "import": "./dist/es/vest-utils.production.js",
+      "require": "./dist/cjs/vest-utils.production.js",
+      "node": "./dist/cjs/vest-utils.production.js",
+      "module": "./dist/es/vest-utils.production.js",
+      "default": "./dist/cjs/vest-utils.production.js"
+    },
+    "./package.json": "./package.json",
+    "./*": "./*"
+  },
+  "vxAllowResolve": [],
+  "license": "MIT"
+}

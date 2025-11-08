@@ -1,0 +1,181 @@
+import { describe, it, expect } from 'vitest';
+import wait from 'wait';
+
+import { ser } from '../../testUtils/suiteDummy';
+import { dummyTest } from '../../testUtils/testDummy';
+
+import { Modes } from 'Modes';
+import * as vest from 'vest';
+
+describe('useProduceSuiteSummary', () => {
+  describe('Base structure', () => {
+    it('Should match snapshot', () => {
+      const suite = vest.create(() => {});
+      expect(suite.run()).toMatchObject({
+        errorCount: 0,
+        groups: {},
+        testCount: 0,
+        tests: {},
+        warnCount: 0,
+      });
+      expect(ser(suite.run())).toEqual(ser(suite.get()));
+    });
+
+    it('Its methods should reflect the correct test data', () => {
+      const suite = vest.create(() => {
+        vest.mode(Modes.ALL);
+        dummyTest.passing('field_1');
+        dummyTest.failing('field_1', 'message');
+        dummyTest.failing('field_1', 'failure_message');
+        vest.group('group_1', () => {
+          dummyTest.failing('field_1', 'failure_message with group');
+          dummyTest.passing('field_3', '');
+        });
+        dummyTest.failingWarning('field_2', 'warning test');
+        dummyTest.failingWarning('field_2', 'another warning test');
+        dummyTest.passing('field_2');
+        dummyTest.failing('field_3', 'msg');
+        dummyTest.passing('field_4');
+        vest.group('group_2', () => {
+          dummyTest.passing('field_5', '');
+          dummyTest.failingWarning('field_5', 'warning message');
+        });
+      });
+
+      const res = suite.run();
+
+      expect(ser(suite.get())).toEqual(ser(res));
+
+      expect(res.hasErrors()).toBe(true);
+      expect(res.hasErrors('field_1')).toBe(true);
+      expect(res.hasErrors('field_2')).toBe(false);
+      expect(res.hasErrors('field_3')).toBe(true);
+      expect(res.hasErrors('field_4')).toBe(false);
+      expect(res.hasErrors('field_5')).toBe(false);
+      expect(res.hasWarnings('field_1')).toBe(false);
+      expect(res.hasWarnings('field_2')).toBe(true);
+      expect(res.hasWarnings('field_3')).toBe(false);
+      expect(res.hasWarnings('field_4')).toBe(false);
+      expect(res.hasWarnings('field_5')).toBe(true);
+      expect(res.getErrors()).toEqual({
+        field_1: ['message', 'failure_message', 'failure_message with group'],
+        field_3: ['msg'],
+      });
+      expect(res.getWarnings()).toEqual({
+        field_2: ['warning test', 'another warning test'],
+        field_5: ['warning message'],
+      });
+      expect(res.getErrors()).toEqual({
+        field_1: ['message', 'failure_message', 'failure_message with group'],
+        field_3: ['msg'],
+      });
+      expect(res.hasErrorsByGroup('group_1')).toBe(true);
+      expect(res.hasErrorsByGroup('group_1', 'field_1')).toBe(true);
+      expect(res.hasErrorsByGroup('group_2')).toBe(false);
+      expect(res.hasErrorsByGroup('group_1', 'field_2')).toBe(false);
+      expect(res.hasErrorsByGroup('group_3')).toBe(false);
+      expect(res.hasWarningsByGroup('group_1')).toBe(false);
+      expect(res.hasWarningsByGroup('group_1', 'field_1')).toBe(false);
+      expect(res.hasWarningsByGroup('group_2')).toBe(true);
+      expect(res.hasWarningsByGroup('group_1', 'field_2')).toBe(false);
+      expect(res.hasWarningsByGroup('group_2', 'field_5')).toBe(true);
+    });
+  });
+
+  describe('Value memoization', () => {
+    it('When unchanged, should produce a memoized result', () => {
+      const suite = vest.create(() => {
+        dummyTest.passing('field_1');
+        dummyTest.failing('field_1', 'message');
+      });
+      const res = suite.run();
+      expect(ser(res)).toEqual(ser(suite.get()));
+      expect(suite.get()).toBe(suite.get());
+    });
+
+    it('When changed, should produce a new result object', () => {
+      const suite = vest.create((v1, v2) => {
+        vest.test('f1', () => {
+          vest.enforce(v1).equals(1);
+        });
+        vest.test('f2', () => {
+          vest.enforce(v2).equals(2);
+        });
+      });
+      const res1 = suite.run(1, 2);
+      const res2 = suite.run(1, 1);
+      suite.run(2, 1);
+      expect(res1).not.toMatchObject(suite.get());
+      expect(res1).not.toBe(suite.get());
+      expect(res2).not.toMatchObject(suite.get());
+      expect(res2).not.toBe(suite.get());
+    });
+  });
+});
+
+describe('suite.get()', () => {
+  describe('exposed methods', () => {
+    it('Should have all exposed methods', () => {
+      const suite = vest.create(() => {});
+      expect(suite.get()).toMatchSnapshot();
+    });
+  });
+});
+
+describe('suite.run()', () => {
+  describe('exposed methods', () => {
+    it('Should have all exposed methods', () => {
+      expect(vest.create(() => {}).run()).toMatchSnapshot();
+    });
+  });
+});
+
+describe('pendingCount', () => {
+  it('Should default to zero, both in the general summary and per test', () => {
+    const suite = vest.create(() => {
+      vest.test('f1', () => {});
+      vest.test('f2', () => {});
+    });
+    expect(suite.run().pendingCount).toBe(0);
+    expect(suite.run().tests.f1.pendingCount).toBe(0);
+    expect(suite.run().tests.f2.pendingCount).toBe(0);
+  });
+
+  it('Should increment when a test is pending', () => {
+    const suite = vest.create(() => {
+      vest.test('f1', async () => {});
+      vest.test('f2', async () => {});
+    });
+    suite.run();
+    expect(suite.run().pendingCount).toBe(2);
+    expect(suite.run().tests.f1.pendingCount).toBe(1);
+    expect(suite.run().tests.f2.pendingCount).toBe(1);
+  });
+
+  it('Should increment per multiple pending tests of the same field', () => {
+    const suite = vest.create(() => {
+      vest.test('f1', async () => {});
+      vest.test('f1', async () => {});
+      vest.test('f2', async () => {});
+    });
+    suite.run();
+    expect(suite.run().pendingCount).toBe(3);
+    expect(suite.run().tests.f1.pendingCount).toBe(2);
+    expect(suite.run().tests.f2.pendingCount).toBe(1);
+  });
+
+  it('Should decrement when a test is done', async () => {
+    const suite = vest.create(() => {
+      vest.test('f1', async () => {});
+      vest.test('f2', async () => {});
+    });
+    suite.run();
+    expect(suite.run().pendingCount).toBe(2);
+    expect(suite.run().tests.f1.pendingCount).toBe(1);
+    expect(suite.run().tests.f2.pendingCount).toBe(1);
+    await wait(0);
+    expect(suite.get().pendingCount).toBe(0);
+    expect(suite.get().tests.f1.pendingCount).toBe(0);
+    expect(suite.get().tests.f2.pendingCount).toBe(0);
+  });
+});

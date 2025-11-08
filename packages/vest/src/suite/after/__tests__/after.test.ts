@@ -1,0 +1,225 @@
+import { describe, it, expect, vi } from 'vitest';
+import wait from 'wait';
+
+import { dummyTest } from '../../../testUtils/testDummy';
+
+import * as vest from 'vest';
+
+describe('after', () => {
+  describe('When no async tests', () => {
+    it('Should call after callback immediately, once', async () => {
+      const afterCallback = vi.fn();
+
+      const res = vest
+        .create(() => {
+          dummyTest.passing();
+          dummyTest.passing();
+          dummyTest.failing();
+          dummyTest.failing();
+          dummyTest.passing();
+          dummyTest.failingWarning('field_2');
+        })
+        .after(afterCallback)
+        .run();
+
+      expect(afterCallback).toHaveBeenCalledOnce();
+
+      await res;
+      expect(afterCallback).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe('When both sync and async tests', () => {
+    it('should call the `after` callback once when the sync tests are done and again for each async test', async () => {
+      const afterCallback = vi.fn();
+      const suite = vest.create(() => {
+        dummyTest.passing();
+        dummyTest.failingAsync('field_1', { time: 10 });
+        dummyTest.failingAsync('field_2', { time: 15 });
+      });
+      suite.after(afterCallback).run();
+      expect(afterCallback).toHaveBeenCalledTimes(1);
+      await wait(10);
+      expect(afterCallback).toHaveBeenCalledTimes(2);
+      await wait(10);
+      expect(afterCallback).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  describe('When suite lags and callbacks are registered again', () => {
+    it('should cancel any pending callback runs and only conclude the most recent ones', async () => {
+      const test = [];
+      let count = 0;
+      const suite = vest.create(() => {
+        test.push(
+          dummyTest.failingAsync('test', {
+            time: 100,
+            message: 'run ' + count++,
+          }),
+        );
+      });
+
+      const firstCall_1 = vi.fn(() => 'a');
+      const firstCall_2 = vi.fn(() => 'b');
+      const secondCall_1 = vi.fn(() => 'c');
+      const secondCall_2 = vi.fn(() => 'd');
+
+      suite.after(firstCall_1).after(firstCall_2).run();
+
+      await suite.after(secondCall_1).after(secondCall_2).run();
+      // the second run canceled the first run callbacks so they only ran once
+      expect(firstCall_1).toHaveBeenCalledTimes(1);
+      expect(firstCall_2).toHaveBeenCalledTimes(1);
+
+      // the second run callbacks ran twice because they also ran for the async tests
+      expect(secondCall_1).toHaveBeenCalledTimes(2);
+      expect(secondCall_2).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('When there are async tests', () => {
+    it('Should run after each async test is finished running', async () => {
+      const afterCallback = vi.fn();
+      expect(afterCallback).toHaveBeenCalledTimes(0);
+      const res = vest
+        .create(() => {
+          dummyTest.passingAsync('field_1', { time: 0 });
+          dummyTest.failingAsync('field_2', { time: 20 });
+          dummyTest.passingAsync('field_3', { time: 40 });
+          dummyTest.failing();
+          dummyTest.passing();
+        })
+        .after(afterCallback)
+        .run();
+
+      expect(afterCallback).toHaveBeenCalledTimes(1);
+      await wait(0);
+      expect(afterCallback).toHaveBeenCalledTimes(2);
+      await wait(20);
+      expect(afterCallback).toHaveBeenCalledTimes(3);
+
+      await wait(40);
+      expect(afterCallback).toHaveBeenCalledTimes(4);
+
+      await res;
+      expect(afterCallback).toHaveBeenCalledTimes(4);
+    });
+  });
+
+  describe('When no tests are run', () => {
+    it('Should run the callback', () => {
+      const cb = vi.fn();
+
+      const suite = vest.create(() => {});
+
+      suite.after(cb).run();
+
+      expect(cb).toHaveBeenCalled();
+    });
+
+    describe('When tests are omitted', () => {
+      it('Should run the callback', () => {
+        const cb = vi.fn();
+
+        const suite = vest.create(() => {
+          vest.optional({ f1: true });
+
+          vest.test('f1', () => {});
+        });
+
+        suite.after(cb).run();
+        expect(suite.get().tests.f1.testCount).toBe(0);
+        expect(cb).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Async Isolate', () => {
+    describe('When async isolate is pending', () => {
+      it('Should call the callback only for the sync run completion', async () => {
+        const cb = vi.fn();
+
+        const suite = vest.create(() => {
+          vest.test('f1', () => false);
+
+          vest.test('f2', async () => {
+            await wait(100);
+            throw new Error();
+          });
+        });
+
+        const res = suite.after(cb).run();
+
+        expect(cb).toHaveBeenCalledOnce();
+
+        await res;
+        expect(cb).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    describe('When async isolate is completed', () => {
+      it('Should call the callback', async () => {
+        const cb = vi.fn();
+
+        const suite = vest.create(() => {
+          vest.test('test', () => false);
+
+          vest.group('group', async () => {
+            await wait(1000);
+          });
+        });
+
+        suite.after(cb).run();
+        await wait(1000);
+        expect(cb).toHaveBeenCalled();
+      });
+    });
+  });
+});
+
+describe('suite resolve', () => {
+  it('Should immediately return all sync fields', () => {
+    const suite = vest.create(() => {
+      vest.test('field_1', 'field_statement_1', () => false);
+      vest.test('field_2', 'field_statement_2', () => false);
+      vest.test('field_3', 'field_statement_3', () => false);
+    });
+
+    const result = suite.run();
+
+    expect(result.tests).toHaveProperty('field_1');
+    expect(result.tests).toHaveProperty('field_2');
+    expect(result.tests).toHaveProperty('field_3');
+    expect(result.hasErrors('field_1')).toBe(true);
+    expect(result.hasErrors('field_2')).toBe(true);
+    expect(result.hasErrors('field_3')).toBe(true);
+    expect(result.tests).toMatchSnapshot();
+  });
+  describe('awaiting suite', () => {
+    it('Should return a promise that resolves when all tests are done, and the after callback is called', async () => {
+      const suite = vest.create(() => {
+        vest.test('field_1', 'field_statement_1', async () => {
+          await wait(100);
+          throw new Error();
+        });
+        vest.test('field_2', 'field_statement_2', async () => {
+          await wait(100);
+        });
+        vest.test('field_3', 'field_statement_3', async () => {
+          await wait(100);
+          throw new Error();
+        });
+      });
+
+      const result = await suite.run();
+
+      expect(result.tests).toHaveProperty('field_1');
+      expect(result.tests).toHaveProperty('field_2');
+      expect(result.tests).toHaveProperty('field_3');
+      expect(result.hasErrors('field_1')).toBe(true);
+      expect(result.hasErrors('field_2')).toBe(false);
+      expect(result.hasErrors('field_3')).toBe(true);
+      expect(result.tests).toMatchSnapshot();
+    });
+  });
+});

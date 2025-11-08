@@ -1,0 +1,26 @@
+{
+  "extends": "../../tsconfig.json",
+  "rootDir": ".",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declarationDir": "./types",
+    "declarationMap": true,
+    "outDir": "./dist",
+    "paths": {
+      "vestjs-runtime": ["./src/vestjs-runtime.ts"],
+      "VestRuntime": ["./src/VestRuntime.ts"],
+      "RuntimeEvents": ["./src/RuntimeEvents.ts"],
+      "Reconciler": ["./src/Reconciler.ts"],
+      "IsolateWalker": ["./src/IsolateWalker.ts"],
+      "Bus": ["./src/Bus.ts"],
+      "test-utils": ["./src/exports/test-utils.ts"],
+      "IsolateSerializer": ["./src/exports/IsolateSerializer.ts"],
+      "ErrorStrings": ["./src/errors/ErrorStrings.ts"],
+      "IsolateSelectors": ["./src/Isolate/IsolateSelectors.ts"],
+      "IsolateMutator": ["./src/Isolate/IsolateMutator.ts"],
+      "IsolateKeys": ["./src/Isolate/IsolateKeys.ts"],
+      "IsolateInspector": ["./src/Isolate/IsolateInspector.ts"],
+      "Isolate": ["./src/Isolate/Isolate.ts"]
+    }
+  }
+}

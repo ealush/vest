@@ -1,0 +1,51 @@
+{
+  "version": "1.0.42",
+  "license": "MIT",
+  "main": "./dist/cjs/vast.js",
+  "types": "./types/vast.d.ts",
+  "name": "vast",
+  "author": "ealush",
+  "scripts": {
+    "test": "vx test",
+    "release": "vx release"
+  },
+  "module": "./dist/es/vast.production.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ealush/vest.git",
+    "directory": "packages/vast"
+  },
+  "bugs": {
+    "url": "https://github.com/ealush/vest.git/issues"
+  },
+  "dependencies": {
+    "vest-utils": "^1.3.3"
+  },
+  "exports": {
+    ".": {
+      "development": {
+        "types": "./types/vast.d.ts",
+        "browser": "./dist/es/vast.development.js",
+        "umd": "./dist/umd/vast.development.js",
+        "import": "./dist/es/vast.development.js",
+        "require": "./dist/cjs/vast.development.js",
+        "node": "./dist/cjs/vast.development.js",
+        "module": "./dist/es/vast.development.js",
+        "default": "./dist/cjs/vast.development.js"
+      },
+      "types": "./types/vast.d.ts",
+      "browser": "./dist/es/vast.production.js",
+      "umd": "./dist/umd/vast.production.js",
+      "import": "./dist/es/vast.production.js",
+      "require": "./dist/cjs/vast.production.js",
+      "node": "./dist/cjs/vast.production.js",
+      "module": "./dist/es/vast.production.js",
+      "default": "./dist/cjs/vast.production.js"
+    },
+    "./package.json": "./package.json",
+    "./*": "./*"
+  },
+  "unpkg": "./dist/umd/vast.production.js",
+  "jsdelivr": "./dist/umd/vast.production.js",
+  "vxAllowResolve": []
+}

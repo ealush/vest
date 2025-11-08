@@ -1,0 +1,56 @@
+import { CB, Maybe } from 'vest-utils';
+import { TIsolate, Isolate, IsolateKey } from 'vestjs-runtime';
+
+import { IsolateTestStateMachine, TestStatus } from 'IsolateTestStateMachine';
+import { TestSeverity } from 'Severity';
+import { TFieldName } from 'SuiteResultTypes';
+import { AsyncTest, TestFn } from 'TestTypes';
+import { VestIsolateType } from 'VestIsolateType';
+
+export type TIsolateTest<F extends TFieldName = TFieldName> = TIsolate<
+  CommonTestFields<F> & IsolateTestPayload
+>;
+
+export function IsolateTest<F extends TFieldName = TFieldName>(
+  callback: CB,
+  input: CommonTestFields<F>,
+  key?: IsolateKey,
+): TIsolateTest<F> {
+  const payload: IsolateTestPayload = {
+    ...IsolateTestBase(),
+    fieldName: input.fieldName,
+    testFn: input.testFn,
+  };
+
+  if (input.message) {
+    payload.message = input.message;
+  }
+  const isolate = Isolate.create<IsolateTestPayload>(
+    VestIsolateType.Test,
+    callback,
+    payload,
+    key ?? null,
+  );
+
+  return isolate as TIsolateTest<F>;
+}
+
+export function IsolateTestBase() {
+  return {
+    severity: TestSeverity.Error,
+    status: IsolateTestStateMachine.initial(),
+  };
+}
+
+export type IsolateTestPayload<F extends TFieldName = TFieldName> =
+  CommonTestFields<F> & {
+    severity: TestSeverity;
+    status: TestStatus;
+    asyncTest?: AsyncTest;
+  };
+
+type CommonTestFields<F extends TFieldName = TFieldName> = {
+  message?: Maybe<string>;
+  fieldName: F;
+  testFn: TestFn;
+};

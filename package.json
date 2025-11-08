@@ -1,0 +1,53 @@
+{
+  "scripts": {
+    "build": "vx build",
+    "test": "vx test",
+    "release": "vx release",
+    "format": "prettier -c .",
+    "lint": "eslint . --ignore-path .gitignore",
+    "prepare": "husky install",
+    "dev": "vx dev",
+    "website:start": "yarn workspace website start",
+    "website:build": "yarn workspace website build",
+    "build:fast": "vx build --fastBuild"
+  },
+  "prettier": {
+    "arrowParens": "avoid",
+    "singleQuote": true
+  },
+  "vx": {},
+  "workspaces": [
+    "website",
+    "packages/*",
+    "./vx/",
+    "./vx/eslint-plugin-vest-internal"
+  ],
+  "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "@types/lodash": "^4.17.5",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "@vitest/coverage-v8": "^2.1.9",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-vitest": "^0.5.4",
+    "husky": "^8.0.3",
+    "lodash": "^4.17.21",
+    "prettier": "^3.3.1",
+    "pretty-quick": "^3.3.1",
+    "tsc": "^2.0.4",
+    "tslib": "^2.6.3",
+    "typescript": "^4.9.5",
+    "vx": "workspace:*",
+    "wait": "^0.4.2"
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ealush/vest.git"
+  },
+  "version": "0.0.0",
+  "packageManager": "yarn@3.5.1"
+}

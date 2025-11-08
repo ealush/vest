@@ -1,0 +1,52 @@
+{
+  "name": "n4s",
+  "version": "0.0.0",
+  "description": "typed schema validation version of enforce",
+  "license": "MIT",
+  "author": "ealush",
+  "private": true,
+  "main": "./dist/cjs/n4s.js",
+  "module": "./dist/es/n4s.production.js",
+  "unpkg": "./dist/umd/n4s.production.js",
+  "jsdelivr": "./dist/umd/n4s.production.js",
+  "types": "./types/n4s.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ealush/vest.git",
+    "directory": "packages/n4s"
+  },
+  "bugs": {
+    "url": "https://github.com/ealush/vest.git/issues"
+  },
+  "exports": {
+    ".": {
+      "development": {
+        "types": "./types/n4s.d.ts",
+        "browser": "./dist/es/n4s.development.js",
+        "umd": "./dist/umd/n4s.development.js",
+        "import": "./dist/es/n4s.development.js",
+        "require": "./dist/cjs/n4s.development.js",
+        "node": "./dist/cjs/n4s.development.js",
+        "module": "./dist/es/n4s.development.js",
+        "default": "./dist/cjs/n4s.development.js"
+      },
+      "types": "./types/n4s.d.ts",
+      "browser": "./dist/es/n4s.production.js",
+      "umd": "./dist/umd/n4s.production.js",
+      "import": "./dist/es/n4s.production.js",
+      "require": "./dist/cjs/n4s.production.js",
+      "node": "./dist/cjs/n4s.production.js",
+      "module": "./dist/es/n4s.production.js",
+      "default": "./dist/cjs/n4s.production.js"
+    },
+    "./package.json": "./package.json",
+    "./*": "./*"
+  },
+  "devDependencies": {
+    "@types/validator": "^13.11.10",
+    "validator": "13.9.0"
+  },
+  "vxAllowResolve": [
+    "validator"
+  ]
+}

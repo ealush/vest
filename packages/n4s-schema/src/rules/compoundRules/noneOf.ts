@@ -14,15 +14,3 @@ export function noneOf<T>(value: T, ...rules: any[]): RuleRunReturn<T> {
 
 // Type for noneOf rule instance
 export type NoneOfRuleInstance<T> = RuleInstance<T, [T]>;
-
-/* eslint-disable @typescript-eslint/no-namespace */
-declare global {
-  namespace n4s {
-    interface ValueFirstRules {
-      noneOf: <T>(
-        value: T,
-        ...rules: RuleInstance<T, any>[]
-      ) => RuleRunReturn<T>;
-    }
-  }
-}

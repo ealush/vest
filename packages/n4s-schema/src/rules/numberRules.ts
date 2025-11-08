@@ -1,11 +1,10 @@
+import { BuildRuleInstance, ExtractRuleFunctions } from 'RuleInstanceBuilder';
 import { equals } from 'equals';
 import { isNaN } from 'isNaN';
 import { isNegative } from 'isNegative';
 import { isNumber } from 'isNumber';
-import { type DropFirst } from 'vest-utils';
 import { greaterThan, numberEquals } from 'vest-utils';
 
-import { RuleInstance } from 'RuleInstance';
 import { greaterThanOrEquals } from 'greaterThanOrEquals';
 import { isBetween } from 'isBetween';
 import { isEven } from 'isEven';
@@ -20,57 +19,43 @@ import { numberNotEquals } from 'numberNotEquals';
 export {
   equals,
   greaterThan,
-  numberEquals,
-  isBetween,
   greaterThanOrEquals,
+  isBetween,
   isEven,
+  isNaN,
   isNegative,
+  isNotBetween,
+  isNotNaN,
   isNumber,
   isOdd,
   isPositive,
   lessThan,
   lessThanOrEquals,
-  isNotBetween,
+  numberEquals,
   numberNotEquals,
-  isNaN,
-  isNotNaN,
 };
 
-export interface NumberRuleInstance extends RuleInstance<number, [number]> {
-  equals(
-    ...args: DropFirst<Parameters<typeof equals<number>>>
-  ): NumberRuleInstance;
-  isBetween(
-    ...args: DropFirst<Parameters<typeof isBetween>>
-  ): NumberRuleInstance;
-  greaterThan(
-    ...args: DropFirst<Parameters<typeof greaterThan>>
-  ): NumberRuleInstance;
-  greaterThanOrEquals(
-    ...args: DropFirst<Parameters<typeof greaterThanOrEquals>>
-  ): NumberRuleInstance;
-  lessThan(...args: DropFirst<Parameters<typeof lessThan>>): NumberRuleInstance;
-  lessThanOrEquals(
-    ...args: DropFirst<Parameters<typeof lessThanOrEquals>>
-  ): NumberRuleInstance;
-  isEven(...args: DropFirst<Parameters<typeof isEven>>): NumberRuleInstance;
-  isOdd(...args: DropFirst<Parameters<typeof isOdd>>): NumberRuleInstance;
-  isPositive(
-    ...args: DropFirst<Parameters<typeof isPositive>>
-  ): NumberRuleInstance;
-  isNegative(
-    ...args: DropFirst<Parameters<typeof isNegative>>
-  ): NumberRuleInstance;
-  isNotBetween(
-    ...args: DropFirst<Parameters<typeof isNotBetween>>
-  ): NumberRuleInstance;
-  numberEquals(
-    ...args: DropFirst<Parameters<typeof numberEquals>>
-  ): NumberRuleInstance;
-  numberNotEquals(
-    ...args: DropFirst<Parameters<typeof numberNotEquals>>
-  ): NumberRuleInstance;
-  isNumber(...args: DropFirst<Parameters<typeof isNumber>>): NumberRuleInstance;
-  isNaN(...args: DropFirst<Parameters<typeof isNaN>>): NumberRuleInstance;
-  isNotNaN(...args: DropFirst<Parameters<typeof isNotNaN>>): NumberRuleInstance;
-}
+const numberRules = {
+  equals,
+  greaterThan,
+  greaterThanOrEquals,
+  isBetween,
+  isEven,
+  isNaN,
+  isNegative,
+  isNotBetween,
+  isNotNaN,
+  isNumber,
+  isOdd,
+  isPositive,
+  lessThan,
+  lessThanOrEquals,
+  numberEquals,
+  numberNotEquals,
+} as const;
+
+export type NumberRuleInstance = BuildRuleInstance<
+  number,
+  [number],
+  ExtractRuleFunctions<typeof numberRules>
+>;

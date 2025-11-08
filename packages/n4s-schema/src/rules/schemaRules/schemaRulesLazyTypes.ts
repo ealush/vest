@@ -1,7 +1,5 @@
 /**
  * Schema rules type declarations.
- * The actual ValueFirstRules declarations are colocated with each rule implementation.
- * This file just imports them to ensure they're included in the type system.
  */
 import 'isArrayOf';
 import 'loose';

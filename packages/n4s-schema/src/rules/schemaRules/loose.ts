@@ -29,15 +29,3 @@ export type LooseRuleInstance<S extends Record<string, RuleInstance<any>>> =
 
 export type LooseShapeValue<S extends Record<string, RuleInstance<any>>> =
   ShapeType<S> & Record<string, unknown>;
-
-/* eslint-disable @typescript-eslint/no-namespace */
-declare global {
-  namespace n4s {
-    interface ValueFirstRules {
-      loose: <T extends Record<string, any>>(
-        value: T,
-        schema: Record<string, RuleInstance<any>>,
-      ) => RuleRunReturn<T>;
-    }
-  }
-}

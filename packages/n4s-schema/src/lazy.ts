@@ -1,5 +1,4 @@
 import { ctx } from 'enforceContext';
-import type { DropFirst } from 'vest-utils';
 
 import { type RuleInstance } from 'RuleInstance';
 import { RuleRunReturn } from 'RuleRunReturn';
@@ -10,6 +9,7 @@ import type { CompoundRuleLazyTypes } from 'compoundRules';
 import { addToChain } from 'genRuleChain';
 import { AnyRuleInstance } from 'generalRules';
 import * as generalRules from 'generalRules';
+import type { CustomMatcherArgs } from 'n4sTypes';
 import type { ObjectRulesUnion } from 'objectRules';
 import * as objectRules from 'objectRules';
 import { adaptDynamicRules } from 'ruleAdapter';
@@ -18,18 +18,20 @@ import type { SchemaRuleLazyTypes } from 'schemaRules';
 import { typeRules } from 'typeRules';
 import { FirstParam } from 'typeUtils';
 
+/**
+ * Maps custom rules to lazy API signatures (builder pattern).
+ * Excludes schema and compound rules (they have special handling).
+ */
 type TCustomLazyRules = {
-  [K in keyof n4s.ValueFirstRules as K extends keyof SchemaRuleLazyTypes
+  [K in keyof n4s.EnforceMatchers as K extends keyof SchemaRuleLazyTypes
     ? never
     : K extends keyof CompoundRuleLazyTypes
       ? never
       : K]: (
-    ...args: DropFirst<
-      Parameters<Extract<n4s.ValueFirstRules[K], (...args: any) => any>>
-    >
+    ...args: CustomMatcherArgs<K>
   ) => RuleInstance<
-    FirstParam<n4s.ValueFirstRules[K]>,
-    [FirstParam<n4s.ValueFirstRules[K]>]
+    FirstParam<n4s.EnforceMatchers[K]>,
+    [FirstParam<n4s.EnforceMatchers[K]>]
   >;
 };
 

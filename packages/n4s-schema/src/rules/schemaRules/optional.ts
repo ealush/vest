@@ -18,15 +18,3 @@ export type OptionalRuleInstance<T> = RuleInstance<
   T | undefined | null,
   [T | undefined | null]
 >;
-
-/* eslint-disable @typescript-eslint/no-namespace */
-declare global {
-  namespace n4s {
-    interface ValueFirstRules {
-      optional: <T>(
-        value: T | undefined | null,
-        rule: RuleInstance<T, any>,
-      ) => RuleRunReturn<T | undefined | null>;
-    }
-  }
-}

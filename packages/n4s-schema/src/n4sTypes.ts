@@ -3,7 +3,7 @@ import type { DropFirst } from 'vest-utils';
 import type { FirstParam } from 'typeUtils';
 /**
  * Global namespace for n4s custom rules.
- * Users should extend ValueFirstRules with value-first rule signatures.
+ * Users should extend EnforceMatchers with value-first rule signatures.
  * These will be used to type both eager (value-first drop) and lazy (builder) APIs.
  *
  * Each rule is a function whose FIRST parameter is the value being validated.
@@ -12,7 +12,7 @@ import type { FirstParam } from 'typeUtils';
  * Example:
  * declare global {
  *   namespace n4s {
- *     interface ValueFirstRules {
+ *     interface EnforceMatchers {
  *       isPositive: (value: number) => boolean;
  *       isBetween: (value: number, min: number, max: number) => boolean;
  *     }
@@ -23,24 +23,33 @@ import type { FirstParam } from 'typeUtils';
 declare global {
   namespace n4s {
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface ValueFirstRules {}
+    interface EnforceMatchers {}
   }
 }
 
-export type ValueFirstRules = n4s.ValueFirstRules;
+export type EnforceMatchers = n4s.EnforceMatchers;
 // Note: We don't augment RuleInstance here with mapped types, because TS disallows
 // interfaces extending mapped/conditional types. Instead, eager.ts and lazy.ts
-// each map n4s.ValueFirstRules into their respective APIs explicitly.
+// each map n4s.EnforceMatchers into their respective APIs explicitly.
 
-// Map custom rules (value-first) to their eager signatures by dropping the value
+/**
+ * Base type for mapping custom matcher functions.
+ * Drops the first parameter (value) and maps remaining args.
+ */
+export type CustomMatcherArgs<K extends keyof n4s.EnforceMatchers> = DropFirst<
+  Parameters<Extract<n4s.EnforceMatchers[K], (...args: any) => any>>
+>;
+
+/**
+ * Maps custom rules to eager API signatures (drops the value parameter).
+ * Only includes rules where T matches the first parameter type.
+ */
 export type TCustomRules<T, A, S> = {
-  [K in keyof n4s.ValueFirstRules as T extends FirstParam<
-    n4s.ValueFirstRules[K]
+  [K in keyof n4s.EnforceMatchers as T extends FirstParam<
+    n4s.EnforceMatchers[K]
   >
     ? K
     : never]: (
-    ...args: DropFirst<
-      Parameters<Extract<n4s.ValueFirstRules[K], (...args: any) => any>>
-    >
+    ...args: CustomMatcherArgs<K>
   ) => import('eager').EnforceEagerReturn<T, A, S>;
 };

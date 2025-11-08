@@ -4,23 +4,29 @@ import type { ShapeType } from 'shape';
 import type { RuleInstance } from 'RuleInstance';
 import { RuleRunReturn } from 'RuleRunReturn';
 
-// partial(value, schema) validates that:
-// 1. value's keys are a subset of schema's keys (no extras)
-// 2. Zero or more keys may be present (empty object is allowed)
-// 3. For each provided key, the corresponding rule passes
-// eslint-disable-next-line complexity
-export function partial<T extends Record<string, any>>(
+/**
+ * Checks if value has any keys not present in schema.
+ */
+function hasExtraKeys<T extends Record<string, any>>(
   value: T,
   schema: Record<string, any>,
-): RuleRunReturn<T> {
-  // Fail fast on extra properties
+): boolean {
   for (const key in value) {
     if (!(key in schema)) {
-      return RuleRunReturn.Failing(value);
+      return true;
     }
   }
+  return false;
+}
 
-  // Validate provided keys; missing keys are allowed
+/**
+ * Validates provided keys against their schema rules.
+ * Missing keys are allowed (partial validation).
+ */
+function validateProvidedKeys<T extends Record<string, any>>(
+  value: T,
+  schema: Record<string, any>,
+): RuleRunReturn<T> | null {
   for (const key in schema) {
     if (key in value) {
       const fieldValue = value[key];
@@ -32,6 +38,27 @@ export function partial<T extends Record<string, any>>(
       }
     }
   }
+  return null;
+}
+
+/**
+ * partial(value, schema) validates that:
+ * 1. value's keys are a subset of schema's keys (no extras)
+ * 2. Zero or more keys may be present (empty object is allowed)
+ * 3. For each provided key, the corresponding rule passes
+ */
+export function partial<T extends Record<string, any>>(
+  value: T,
+  schema: Record<string, any>,
+): RuleRunReturn<T> {
+  if (hasExtraKeys(value, schema)) {
+    return RuleRunReturn.Failing(value);
+  }
+
+  const validationResult = validateProvidedKeys(value, schema);
+  if (validationResult) {
+    return validationResult;
+  }
 
   return RuleRunReturn.Passing(value);
 }
@@ -42,15 +69,3 @@ export type PartialRuleInstance<S extends Record<string, RuleInstance<any>>> =
 
 export type PartialShapeValue<S extends Record<string, RuleInstance<any>>> =
   Partial<ShapeType<S>>;
-
-/* eslint-disable @typescript-eslint/no-namespace */
-declare global {
-  namespace n4s {
-    interface ValueFirstRules {
-      partial: <T extends Record<string, any>>(
-        value: T,
-        schema: Record<string, RuleInstance<any>>,
-      ) => RuleRunReturn<T>;
-    }
-  }
-}

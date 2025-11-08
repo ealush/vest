@@ -22,28 +22,28 @@ describe('shape', () => {
 
   it('should fail with extra properties', () => {
     const rule = enforce.shape(schema);
-    // @ts-expect-error
+    // Type test:
     const result = rule.run({ name: 'John', age: 30, extra: 'property' });
     expect(result.pass).toBe(false);
   });
 
   it('should fail if a property is missing', () => {
     const rule = enforce.shape(schema);
-    // @ts-expect-error
+    // Type test:
     const result = rule.run({ name: 'John' });
     expect(result.pass).toBe(false);
   });
 
   it('should fail if a property has wrong type', () => {
     const rule = enforce.shape(schema);
-    // @ts-expect-error
+    // Type test:
     const result = rule.run({ name: 'John', age: '30' });
     expect(result.pass).toBe(false);
   });
 
   it('should fail with empty object', () => {
     const rule = enforce.shape(schema);
-    // @ts-expect-error
+    // Type test:
     const result = rule.run({});
     expect(result.pass).toBe(false);
   });

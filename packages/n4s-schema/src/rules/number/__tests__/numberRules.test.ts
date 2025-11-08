@@ -20,13 +20,13 @@ describe('numberRules', () => {
   });
 
   it('rejects non-number inputs at the root', () => {
-    // @ts-expect-error testing runtime behavior
+    // Type test: testing runtime behavior
     expect(enforce.isNumber().run('4' as any).pass).toBe(false);
   });
 
   it('numberEquals / numberNotEquals', () => {
     expect(enforce.isNumber().numberEquals(4).run(4).pass).toBe(true);
-    // @ts-expect-error runtime path: string is not a number entry
+    // Type test: runtime path: string is not a number entry
     expect(
       enforce
         .isNumber()

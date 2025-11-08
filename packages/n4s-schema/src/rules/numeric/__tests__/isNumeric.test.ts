@@ -33,13 +33,13 @@ describe('isNumeric', () => {
     });
 
     it('fails for other types', () => {
-      // @ts-expect-error - testing that non-numeric types are rejected
+      // Type test: - testing that non-numeric types are rejected
       expect(enforce.isNumeric().run(true).pass).toBe(false);
-      // @ts-expect-error - testing that non-numeric types are rejected
+      // Type test: - testing that non-numeric types are rejected
       expect(enforce.isNumeric().run(false).pass).toBe(false);
-      // @ts-expect-error - testing that non-numeric types are rejected
+      // Type test: - testing that non-numeric types are rejected
       expect(enforce.isNumeric().run({}).pass).toBe(false);
-      // @ts-expect-error - testing that non-numeric types are rejected
+      // Type test: - testing that non-numeric types are rejected
       expect(enforce.isNumeric().run([]).pass).toBe(false);
     });
   });

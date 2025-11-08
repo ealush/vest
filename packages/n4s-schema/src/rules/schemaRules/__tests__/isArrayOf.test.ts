@@ -17,7 +17,7 @@ describe('isArrayOf', () => {
 
   it('should fail for an array with mixed types', () => {
     const rule = enforce.isArrayOf(enforce.isNumber());
-    // @ts-expect-error
+    // Type test:
     const result = rule.run([1, '2', 3]);
     expect(result.pass).toBe(false);
   });
@@ -30,7 +30,7 @@ describe('isArrayOf', () => {
 
   it('should fail if not an array', () => {
     const rule = enforce.isArrayOf(enforce.isNumber());
-    // @ts-expect-error
+    // Type test:
     const result = rule.run({ not: 'an array' });
     expect(result.pass).toBe(false);
   });
@@ -43,7 +43,7 @@ describe('isArrayOf', () => {
 
   it('should fail for an array of mixed types when a type is not in the rules', () => {
     const rule = enforce.isArrayOf(enforce.isNumber(), enforce.isString());
-    // @ts-expect-error
+    // Type test:
     const result = rule.run([1, '2', true]);
     expect(result.pass).toBe(false);
   });

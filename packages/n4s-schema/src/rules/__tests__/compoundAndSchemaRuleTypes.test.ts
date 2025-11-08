@@ -17,7 +17,7 @@ describe('Compound and Schema Rule Types', () => {
     const value: InferredType = 5;
     void value;
 
-    // @ts-expect-error string is not assignable to number
+    // Type test: string is not assignable to number
     const badValue: InferredType = 'test';
     void badValue;
 
@@ -34,7 +34,7 @@ describe('Compound and Schema Rule Types', () => {
     void str;
     void num;
 
-    // @ts-expect-error boolean is not string | number
+    // Type test: boolean is not string | number
     const badValue: InferredType = true;
     void badValue;
 
@@ -84,7 +84,7 @@ describe('Compound and Schema Rule Types', () => {
     void undef;
     void nul;
 
-    // @ts-expect-error number is not string | undefined | null
+    // Type test: number is not string | undefined | null
     const badValue: InferredType = 123;
     void badValue;
 
@@ -101,7 +101,7 @@ describe('Compound and Schema Rule Types', () => {
     const arr: InferredType = ['a', 'b', 'c'];
     void arr;
 
-    // @ts-expect-error number[] is not string[]
+    // Type test: number[] is not string[]
     const badArr: InferredType = [1, 2, 3];
     void badArr;
 
@@ -119,7 +119,7 @@ describe('Compound and Schema Rule Types', () => {
     const obj: InferredType = { name: 'John', age: 30 };
     void obj;
 
-    // @ts-expect-error age must be number
+    // Type test: age must be number
     const badObj: InferredType = { name: 'John', age: 'thirty' };
     void badObj;
 

@@ -16,11 +16,11 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     const ok1: Arr = [1, '2', 3];
     void ok1;
 
-    // @ts-expect-error boolean is not allowed in (number | string)[]
+    // Type test: boolean is not allowed in (number | string)[]
     const badArr1: Arr = [true];
     void badArr1;
 
-    // @ts-expect-error object is not allowed in (number | string)[]
+    // Type test: object is not allowed in (number | string)[]
     const badArr2: Arr = [{}];
     void badArr2;
     expect(true).toBe(true);
@@ -52,7 +52,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     const extra1 = {
       city: 'a',
       country: 'US',
-      // @ts-expect-error extra property not allowed by exact shape
+      // Type test: extra property not allowed by exact shape
       extra: true,
       street: 'x',
       zip: '12345',
@@ -63,7 +63,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
       city: 'a',
       country: 'US',
       street: 'x',
-      // @ts-expect-error boolean is not assignable to string
+      // Type test: boolean is not assignable to string
       zip: true,
     } satisfies Addr;
     void badZip;
@@ -90,7 +90,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     void good;
 
     const badCount = {
-      // @ts-expect-error count must be number
+      // Type test: count must be number
       count: '1',
       totals: { subtotal: 1, tax: 0 },
     } satisfies T;
@@ -98,14 +98,14 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
 
     const badTotals = {
       count: 1,
-      // @ts-expect-error totals.tax must be number
+      // Type test: totals.tax must be number
       totals: { subtotal: 1, tax: '0' },
     } satisfies T;
     void badTotals;
 
     const badMaybe = {
       count: 1,
-      // @ts-expect-error maybeName may be string | null | undefined, not boolean
+      // Type test: maybeName may be string | null | undefined, not boolean
       maybeName: false,
       totals: { subtotal: 1, tax: 0 },
     } satisfies T;
@@ -122,14 +122,14 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     void okA;
     void okB;
 
-    // @ts-expect-error boolean is not string | number
+    // Type test: boolean is not string | number
     const badC: SOrN = true;
     void badC;
 
     const notString = enforce.noneOf(enforce.isString());
     type NotStr = typeof notString.infer; // string (by design of combinator typing)
 
-    // @ts-expect-error expects string inferred type, assigning number
+    // Type test: expects string inferred type, assigning number
     const badNotStr: NotStr = 1;
     void badNotStr;
     expect(true).toBe(true);
@@ -150,12 +150,12 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     const ok: Cart = { items: [{ price: 1, qty: 1, sku: 'x' }] };
     void ok;
 
-    // @ts-expect-error items must be array of lineItem
+    // Type test: items must be array of lineItem
     const badCart1 = { items: ['x'] } satisfies Cart;
     void badCart1;
 
     const badCart2 = {
-      // @ts-expect-error qty must be number > 0 (type-wise: number, so boolean is invalid)
+      // Type test: qty must be number > 0 (type-wise: number, so boolean is invalid)
       items: [{ price: 1, qty: true, sku: 'x' }],
     } satisfies Cart;
     void badCart2;

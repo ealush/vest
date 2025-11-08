@@ -11,7 +11,7 @@ describe('isNullish', () => {
     expect(enforce.isNullish().run(undefined).pass).toBe(true);
 
     let uninitialized: null | undefined | number;
-    // @ts-expect-error - uninitialized may be number | null | undefined
+    // Type test: - uninitialized may be number | null | undefined
     expect(enforce.isNullish().run(uninitialized).pass).toBe(true);
   });
 
@@ -21,13 +21,13 @@ describe('isNullish', () => {
     const falseBool: null | undefined | boolean = false;
     const nanValue: null | undefined | number = NaN;
 
-    // @ts-expect-error - testing that non-nullish values are rejected
+    // Type test: - testing that non-nullish values are rejected
     expect(enforce.isNullish().run(zero).pass).toBe(false);
-    // @ts-expect-error - testing that non-nullish values are rejected
+    // Type test: - testing that non-nullish values are rejected
     expect(enforce.isNullish().run(emptyString).pass).toBe(false);
-    // @ts-expect-error - testing that non-nullish values are rejected
+    // Type test: - testing that non-nullish values are rejected
     expect(enforce.isNullish().run(falseBool).pass).toBe(false);
-    // @ts-expect-error - testing that non-nullish values are rejected
+    // Type test: - testing that non-nullish values are rejected
     expect(enforce.isNullish().run(nanValue).pass).toBe(false);
   });
 
@@ -38,15 +38,15 @@ describe('isNullish', () => {
     const obj: null | undefined | object = {};
     const arr: null | undefined | any[] = [];
 
-    // @ts-expect-error - testing that non-nullish values are rejected
+    // Type test: - testing that non-nullish values are rejected
     expect(enforce.isNullish().run(num).pass).toBe(false);
-    // @ts-expect-error - testing that non-nullish values are rejected
+    // Type test: - testing that non-nullish values are rejected
     expect(enforce.isNullish().run(str).pass).toBe(false);
-    // @ts-expect-error - testing that non-nullish values are rejected
+    // Type test: - testing that non-nullish values are rejected
     expect(enforce.isNullish().run(bool).pass).toBe(false);
-    // @ts-expect-error - testing that non-nullish values are rejected
+    // Type test: - testing that non-nullish values are rejected
     expect(enforce.isNullish().run(obj).pass).toBe(false);
-    // @ts-expect-error - testing that non-nullish values are rejected
+    // Type test: - testing that non-nullish values are rejected
     expect(enforce.isNullish().run(arr).pass).toBe(false);
   });
 });

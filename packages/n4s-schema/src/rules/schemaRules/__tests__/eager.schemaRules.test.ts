@@ -209,7 +209,7 @@ describe('Schema Rules - Eager Notation', () => {
 
     it('should fail if not an array', () => {
       expect(() =>
-        // @ts-expect-error - intentionally testing invalid input
+        // Type test: - intentionally testing invalid input
         enforce({ not: 'an array' }).isArrayOf(enforce.isNumber()),
       ).toThrow();
     });
@@ -405,7 +405,7 @@ describe('Schema Rules - Eager Notation', () => {
     it('should fail with wrong type for provided property', () => {
       expect(() =>
         enforce({
-          // @ts-expect-error
+          // Type test:
           firstName: 123,
         }).partial({
           firstName: enforce.isString(),

@@ -9,7 +9,7 @@ describe('isNull', () => {
 
   it('fails for undefined', () => {
     const value: null | undefined = undefined;
-    // @ts-expect-error - testing that undefined is rejected by isNull
+    // Type test: - testing that undefined is rejected by isNull
     expect(enforce.isNull().run(value).pass).toBe(false);
   });
 
@@ -19,13 +19,13 @@ describe('isNull', () => {
     const falseBool: null | boolean = false;
     const nanValue: null | number = NaN;
 
-    // @ts-expect-error - testing that non-null values are rejected
+    // Type test: - testing that non-null values are rejected
     expect(enforce.isNull().run(zero).pass).toBe(false);
-    // @ts-expect-error - testing that non-null values are rejected
+    // Type test: - testing that non-null values are rejected
     expect(enforce.isNull().run(emptyString).pass).toBe(false);
-    // @ts-expect-error - testing that non-null values are rejected
+    // Type test: - testing that non-null values are rejected
     expect(enforce.isNull().run(falseBool).pass).toBe(false);
-    // @ts-expect-error - testing that non-null values are rejected
+    // Type test: - testing that non-null values are rejected
     expect(enforce.isNull().run(nanValue).pass).toBe(false);
   });
 
@@ -36,15 +36,15 @@ describe('isNull', () => {
     const obj: null | object = {};
     const arr: null | any[] = [];
 
-    // @ts-expect-error - testing that non-null values are rejected
+    // Type test: - testing that non-null values are rejected
     expect(enforce.isNull().run(num).pass).toBe(false);
-    // @ts-expect-error - testing that non-null values are rejected
+    // Type test: - testing that non-null values are rejected
     expect(enforce.isNull().run(str).pass).toBe(false);
-    // @ts-expect-error - testing that non-null values are rejected
+    // Type test: - testing that non-null values are rejected
     expect(enforce.isNull().run(bool).pass).toBe(false);
-    // @ts-expect-error - testing that non-null values are rejected
+    // Type test: - testing that non-null values are rejected
     expect(enforce.isNull().run(obj).pass).toBe(false);
-    // @ts-expect-error - testing that non-null values are rejected
+    // Type test: - testing that non-null values are rejected
     expect(enforce.isNull().run(arr).pass).toBe(false);
   });
 });

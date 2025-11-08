@@ -57,7 +57,7 @@ describe('enforce.condition', () => {
 
   describe('Error handling', () => {
     it('Should fail if not a function', () => {
-      // @ts-expect-error - testing bad usage
+      // Type test: - testing bad usage
       expect(() => enforce().condition('not a function')).toThrow();
       expect(enforce.condition('not a function').run(1)).toEqual({
         pass: false,

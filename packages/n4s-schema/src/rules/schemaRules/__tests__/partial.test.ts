@@ -25,22 +25,22 @@ describe('partial', () => {
 
   it('disallows extra properties', () => {
     const rule = enforce.partial(schema);
-    // @ts-expect-error runtime check for extra property
+    // Type test: runtime check for extra property
     expect(rule.run({ name: 'John', extra: true }).pass).toBe(false);
   });
 
   it('fails when object has none of the original fields', () => {
     const rule = enforce.partial(schema);
     // none of the keys match schema, should fail
-    // @ts-expect-error runtime check for unrelated fields
+    // Type test: runtime check for unrelated fields
     expect(rule.run({ foo: 'bar' }).pass).toBe(false);
   });
 
   it('fails when provided field has wrong type', () => {
     const rule = enforce.partial(schema);
-    // @ts-expect-error runtime check for wrong type
+    // Type test: runtime check for wrong type
     expect(rule.run({ name: 123 }).pass).toBe(false);
-    // @ts-expect-error runtime check for wrong type
+    // Type test: runtime check for wrong type
     expect(rule.run({ age: '30' }).pass).toBe(false);
   });
 
@@ -53,7 +53,7 @@ describe('partial', () => {
     expect(rule.run({ username: 'foobar' }).pass).toBe(true);
     expect(rule.run({ id: 1 }).pass).toBe(true);
     expect(rule.run({ username: 'foo' }).pass).toBe(false);
-    // @ts-expect-error
+    // Type test:
     expect(rule.run({ id: '1' }).pass).toBe(false);
   });
 });

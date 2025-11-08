@@ -19,13 +19,13 @@ function typeChecks() {
   const test4 = enforce(true).isBoolean();
 
   // These should cause type errors
-  // @ts-expect-error - greaterThan should not be available on boolean
+  // Type test: - greaterThan should not be available on boolean
   const test5 = enforce(true).greaterThan(5);
 
-  // @ts-expect-error - startsWith should not be available on number
+  // Type test: - startsWith should not be available on number
   const test6 = enforce(123).startsWith('1');
 
-  // @ts-expect-error - array includes() takes single value, not available on string
+  // Type test: - array includes() takes single value, not available on string
   const test7 = enforce('hello').includes('h');
 
   // ===== TYPE GUARDS =====

@@ -7,13 +7,13 @@ describe('isUndefined', () => {
     expect(enforce.isUndefined().run(undefined).pass).toBe(true);
 
     let uninitialized: undefined | number;
-    // @ts-expect-error - uninitialized may be number | undefined
+    // Type test: - uninitialized may be number | undefined
     expect(enforce.isUndefined().run(uninitialized).pass).toBe(true);
   });
 
   it('fails for null', () => {
     const value: undefined | null = null;
-    // @ts-expect-error - testing that null is rejected by isUndefined
+    // Type test: - testing that null is rejected by isUndefined
     expect(enforce.isUndefined().run(value).pass).toBe(false);
   });
 
@@ -23,13 +23,13 @@ describe('isUndefined', () => {
     const falseBool: undefined | boolean = false;
     const nanValue: undefined | number = NaN;
 
-    // @ts-expect-error - testing that non-undefined values are rejected
+    // Type test: - testing that non-undefined values are rejected
     expect(enforce.isUndefined().run(zero).pass).toBe(false);
-    // @ts-expect-error - testing that non-undefined values are rejected
+    // Type test: - testing that non-undefined values are rejected
     expect(enforce.isUndefined().run(emptyString).pass).toBe(false);
-    // @ts-expect-error - testing that non-undefined values are rejected
+    // Type test: - testing that non-undefined values are rejected
     expect(enforce.isUndefined().run(falseBool).pass).toBe(false);
-    // @ts-expect-error - testing that non-undefined values are rejected
+    // Type test: - testing that non-undefined values are rejected
     expect(enforce.isUndefined().run(nanValue).pass).toBe(false);
   });
 
@@ -40,15 +40,15 @@ describe('isUndefined', () => {
     const obj: undefined | object = {};
     const arr: undefined | any[] = [];
 
-    // @ts-expect-error - testing that non-undefined values are rejected
+    // Type test: - testing that non-undefined values are rejected
     expect(enforce.isUndefined().run(num).pass).toBe(false);
-    // @ts-expect-error - testing that non-undefined values are rejected
+    // Type test: - testing that non-undefined values are rejected
     expect(enforce.isUndefined().run(str).pass).toBe(false);
-    // @ts-expect-error - testing that non-undefined values are rejected
+    // Type test: - testing that non-undefined values are rejected
     expect(enforce.isUndefined().run(bool).pass).toBe(false);
-    // @ts-expect-error - testing that non-undefined values are rejected
+    // Type test: - testing that non-undefined values are rejected
     expect(enforce.isUndefined().run(obj).pass).toBe(false);
-    // @ts-expect-error - testing that non-undefined values are rejected
+    // Type test: - testing that non-undefined values are rejected
     expect(enforce.isUndefined().run(arr).pass).toBe(false);
   });
 });

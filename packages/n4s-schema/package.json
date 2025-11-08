@@ -42,5 +42,11 @@
     "./package.json": "./package.json",
     "./*": "./*"
   },
-  "vxAllowResolve": []
+  "devDependencies": {
+    "@types/validator": "^13.11.10",
+    "validator": "13.9.0"
+  },
+  "vxAllowResolve": [
+    "validator"
+  ]
 }

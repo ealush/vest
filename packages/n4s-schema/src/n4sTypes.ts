@@ -1,6 +1,7 @@
-import type { DropFirst } from 'vest-utils';
-
+import { RuleRunReturn } from 'RuleRunReturn';
 import type { FirstParam } from 'typeUtils';
+import type { CB, DropFirst } from 'vest-utils';
+
 /**
  * Global namespace for n4s custom rules.
  * Users should extend EnforceMatchers with value-first rule signatures.
@@ -37,8 +38,12 @@ export type EnforceMatchers = n4s.EnforceMatchers;
  * Drops the first parameter (value) and maps remaining args.
  */
 export type CustomMatcherArgs<K extends keyof n4s.EnforceMatchers> = DropFirst<
-  Parameters<Extract<n4s.EnforceMatchers[K], (...args: any) => any>>
+  Parameters<Extract<n4s.EnforceMatchers[K], CB>>
 >;
+
+export type EnforceCustomMatcher<F extends CB> = (
+  ...args: CustomMatcherArgs<F extends keyof n4s.EnforceMatchers ? F : never>
+) => boolean | RuleRunReturn<any>;
 
 /**
  * Maps custom rules to eager API signatures (drops the value parameter).

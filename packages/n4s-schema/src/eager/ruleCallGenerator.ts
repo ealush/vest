@@ -31,6 +31,7 @@ export function createRuleCall(config: RuleCallConfig) {
       enforceMessage(ruleName, transformedResult, value, customMessage),
     );
 
+    // Clear message after each rule - it only applies to the next rule
     clearMessage();
     target.pass = transformedResult.pass;
 

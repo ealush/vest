@@ -286,7 +286,7 @@ describe('enforce().message() - Eager API', () => {
       }).toThrow('Username must be at least 3 characters');
     });
 
-    it.skip('Should validate form data with descriptive errors (requires lazy API .message())', () => {
+    it('Should validate form data with descriptive errors (requires lazy API .message())', () => {
       const formData = {
         email: 'notanemail',
         age: -5,
@@ -308,7 +308,7 @@ describe('enforce().message() - Eager API', () => {
       }).toThrow('Invalid form data');
     });
 
-    it.skip('Should validate nested objects with specific error messages (requires lazy API .message())', () => {
+    it('Should validate nested objects with specific error messages (requires lazy API .message())', () => {
       expect(() => {
         enforce({
           user: {
@@ -331,7 +331,7 @@ describe('enforce().message() - Eager API', () => {
       }).toThrow('Invalid user profile');
     });
 
-    it.skip('Should validate API responses with clear errors (requires lazy API .message())', () => {
+    it('Should validate API responses with clear errors (requires lazy API .message())', () => {
       const apiResponse = {
         status: 404,
         data: null,

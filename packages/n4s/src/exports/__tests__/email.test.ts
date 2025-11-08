@@ -4,6 +4,44 @@ import { enforce } from 'n4s';
 import 'email';
 
 describe('isEmail', () => {
+  describe('Type compatibility', () => {
+    it('Should work in eager mode (value-first)', () => {
+      // Type test: these should compile without errors
+      enforce('abc@xyz.com').isEmail();
+      enforce('user.name@mail.example.com').isEmail();
+      enforce('Display Name <user@example.com>').isEmail({
+        allow_display_name: true,
+      });
+      enforce('user@192.168.0.1').isEmail({ allow_ip_domain: true });
+    });
+
+    it('Should work in lazy mode (builder pattern)', () => {
+      // Type test: these should compile without errors
+      const emailRule = enforce.isEmail();
+      expect(emailRule.test('abc@xyz.com')).toBe(true);
+      expect(emailRule.run('abc@xyz.com').pass).toBe(true);
+      expect(emailRule.test('abc@xyz')).toBe(false);
+      expect(emailRule.run('abc@xyz').pass).toBe(false);
+
+      const emailWithOptionsRule = enforce.isEmail({
+        allow_display_name: true,
+      });
+      expect(emailWithOptionsRule.test('Display Name <user@example.com>')).toBe(
+        true,
+      );
+      expect(
+        emailWithOptionsRule.run('Display Name <user@example.com>').pass,
+      ).toBe(true);
+      expect(emailWithOptionsRule.test('user@example.com')).toBe(true);
+      expect(emailWithOptionsRule.run('user@example.com').pass).toBe(true);
+
+      const emailWithIPRule = enforce.isEmail({ allow_ip_domain: true });
+      expect(emailWithIPRule.test('user@192.168.0.1')).toBe(true);
+      expect(emailWithIPRule.run('user@192.168.0.1').pass).toBe(true);
+      expect(emailWithIPRule.test('user@example.com')).toBe(true);
+      expect(emailWithIPRule.run('user@example.com').pass).toBe(true);
+    });
+  });
   it('Should pass for valid emails', () => {
     expect(() => enforce('abc@xyz.com').isEmail()).not.toThrow();
     expect(() => enforce('user.name@mail.example.com').isEmail()).not.toThrow();

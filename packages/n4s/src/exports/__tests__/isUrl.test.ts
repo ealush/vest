@@ -4,6 +4,45 @@ import { enforce } from 'n4s';
 import 'isURL';
 
 describe('isURL', () => {
+  describe('Type compatibility', () => {
+    it('Should work in eager mode (value-first)', () => {
+      // Type test: these should compile without errors
+      enforce('http://www.google.com').isURL();
+      enforce('https://google.com').isURL();
+      enforce('google.com').isURL();
+      enforce('myprotocol://customdomain.com').isURL({
+        protocols: ['myprotocol'],
+      });
+      enforce('http://localhost:8080').isURL({ require_tld: false });
+    });
+
+    it('Should work in lazy mode (builder pattern)', () => {
+      // Type test: these should compile without errors
+      const urlRule = enforce.isURL();
+      expect(urlRule.test('http://www.google.com')).toBe(true);
+      expect(urlRule.run('http://www.google.com').pass).toBe(true);
+      expect(urlRule.test('google')).toBe(false);
+      expect(urlRule.run('google').pass).toBe(false);
+
+      const urlWithProtocolRule = enforce.isURL({
+        protocols: ['myprotocol'],
+      });
+      expect(urlWithProtocolRule.test('myprotocol://customdomain.com')).toBe(
+        true,
+      );
+      expect(
+        urlWithProtocolRule.run('myprotocol://customdomain.com').pass,
+      ).toBe(true);
+      expect(urlWithProtocolRule.test('http://www.google.com')).toBe(false);
+      expect(urlWithProtocolRule.run('http://www.google.com').pass).toBe(false);
+
+      const urlWithoutTLDRule = enforce.isURL({ require_tld: false });
+      expect(urlWithoutTLDRule.test('http://localhost:8080')).toBe(true);
+      expect(urlWithoutTLDRule.run('http://localhost:8080').pass).toBe(true);
+      expect(urlWithoutTLDRule.test('http://localhost')).toBe(true);
+      expect(urlWithoutTLDRule.run('http://localhost').pass).toBe(true);
+    });
+  });
   it('Should pass for valid URLs', () => {
     expect(() => enforce('http://www.google.com').isURL()).not.toThrow();
     expect(() => enforce('https://google.com').isURL()).not.toThrow();

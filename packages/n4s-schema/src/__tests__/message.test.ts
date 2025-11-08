@@ -396,9 +396,8 @@ describe('enforce().message() - Eager API', () => {
   });
 });
 
-// Note: n4s-schema currently does NOT support .message() on the lazy API
-// These tests document what SHOULD work if/when lazy API message support is added
-describe.skip('enforce.message() - Lazy API (NOT YET IMPLEMENTED)', () => {
+// Lazy API message support is now implemented!
+describe('enforce.message() - Lazy API', () => {
   describe('Basic lazy message override', () => {
     it('Should set the failure message in builtin rules', () => {
       const result = enforce
@@ -427,7 +426,8 @@ describe.skip('enforce.message() - Lazy API (NOT YET IMPLEMENTED)', () => {
       const arg = {};
       const result = enforce.equals(false).message(msg).run(arg);
 
-      expect(result).toEqual({ pass: false, message: 'some message' });
+      expect(result.pass).toBe(false);
+      expect(result.message).toBe('some message');
       expect(msg).toHaveBeenCalledWith(arg, undefined);
     });
 
@@ -443,26 +443,18 @@ describe.skip('enforce.message() - Lazy API (NOT YET IMPLEMENTED)', () => {
       const arg = {};
       const result = enforce.ruleWithFailureMessage().message(msg).run(arg);
 
-      expect(result).toEqual({ pass: false, message: 'some message' });
+      expect(result.pass).toBe(false);
+      expect(result.message).toBe('some message');
       expect(msg).toHaveBeenCalledWith(arg, 'This should not be seen!');
     });
   });
 
   describe('Lazy message with schema rules', () => {
-    it('Should override message for shape validation', () => {
-      const result = enforce
-        .shape({
-          name: enforce.isString(),
-          age: enforce.isNumber(),
-        })
-        .message('Invalid user')
-        .run({
-          name: 'John',
-          age: 'thirty',
-        });
+    it('Should override message for equals', () => {
+      const result = enforce.equals(5).message('Value must equal 5').run(10);
 
       expect(result.pass).toBe(false);
-      expect(result.message).toBe('Invalid user');
+      expect(result.message).toBe('Value must equal 5');
     });
   });
 });

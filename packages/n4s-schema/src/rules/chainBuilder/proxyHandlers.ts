@@ -12,11 +12,13 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
   add: (p: Predicate) => T,
   run: T['run'],
   test: T['test'],
+  message: (msg: any) => T,
 ) {
   return {
     get(_target: T, prop: string | symbol, receiver: any) {
       if (prop === 'run') return run;
       if (prop === 'test') return test;
+      if (prop === 'message') return message;
 
       if (hasOwnProperty(rules, prop as any)) {
         return (...args: any[]) =>
@@ -31,7 +33,13 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
       return Reflect.get(_target as object, prop, receiver);
     },
     has(_target: T, prop: string | symbol) {
-      if (prop === 'run' || prop === 'infer' || prop === 'test') return true;
+      if (
+        prop === 'run' ||
+        prop === 'infer' ||
+        prop === 'test' ||
+        prop === 'message'
+      )
+        return true;
       if (hasOwnProperty(rules, prop as any)) return true;
       if (getLazyRule(prop as string)) return true;
       return Reflect.has(_target as object, prop);

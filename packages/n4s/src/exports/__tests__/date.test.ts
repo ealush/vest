@@ -4,6 +4,70 @@ import { enforce } from 'n4s';
 import 'date';
 
 describe('date', () => {
+  describe('Type compatibility', () => {
+    it('Should work in eager mode (value-first)', () => {
+      // Type test: these should compile without errors
+      enforce('2002-07-15').isDate();
+      enforce('2002-07-15').isDate({ format: 'YYYY-MM-DD' });
+      enforce('2100-07-15').isAfter();
+      enforce('2002-07-15').isAfter('2002-07-14');
+      enforce('1900-07-15').isBefore();
+      enforce('2002-07-15').isBefore('2002-07-16');
+      enforce('2020-07-10T15:00:00Z').isISO8601();
+      enforce('2020-07-10').isISO8601({ strict: true });
+    });
+
+    it('Should work in lazy mode (builder pattern)', () => {
+      // Type test: these should compile without errors
+      const dateRule = enforce.isDate();
+      expect(dateRule.test('2002-07-15')).toBe(true);
+      expect(dateRule.run('2002-07-15').pass).toBe(true);
+      expect(dateRule.test('not-a-date')).toBe(false);
+      expect(dateRule.run('not-a-date').pass).toBe(false);
+
+      const dateWithOptionsRule = enforce.isDate({ format: 'YYYY-MM-DD' });
+      expect(dateWithOptionsRule.test('2002-07-15')).toBe(true);
+      expect(dateWithOptionsRule.run('2002-07-15').pass).toBe(true);
+      expect(dateWithOptionsRule.test('07/15/2002')).toBe(false);
+      expect(dateWithOptionsRule.run('07/15/2002').pass).toBe(false);
+
+      const isAfterRule = enforce.isAfter();
+      expect(isAfterRule.test('2100-07-15')).toBe(true);
+      expect(isAfterRule.run('2100-07-15').pass).toBe(true);
+      expect(isAfterRule.test('1900-07-15')).toBe(false);
+      expect(isAfterRule.run('1900-07-15').pass).toBe(false);
+
+      const isAfterWithDateRule = enforce.isAfter('2002-07-14');
+      expect(isAfterWithDateRule.test('2002-07-15')).toBe(true);
+      expect(isAfterWithDateRule.run('2002-07-15').pass).toBe(true);
+      expect(isAfterWithDateRule.test('2002-07-13')).toBe(false);
+      expect(isAfterWithDateRule.run('2002-07-13').pass).toBe(false);
+
+      const isBeforeRule = enforce.isBefore();
+      expect(isBeforeRule.test('1900-07-15')).toBe(true);
+      expect(isBeforeRule.run('1900-07-15').pass).toBe(true);
+      expect(isBeforeRule.test('2100-07-15')).toBe(false);
+      expect(isBeforeRule.run('2100-07-15').pass).toBe(false);
+
+      const isBeforeWithDateRule = enforce.isBefore('2002-07-16');
+      expect(isBeforeWithDateRule.test('2002-07-15')).toBe(true);
+      expect(isBeforeWithDateRule.run('2002-07-15').pass).toBe(true);
+      expect(isBeforeWithDateRule.test('2002-07-17')).toBe(false);
+      expect(isBeforeWithDateRule.run('2002-07-17').pass).toBe(false);
+
+      const isISO8601Rule = enforce.isISO8601();
+      expect(isISO8601Rule.test('2020-07-10T15:00:00Z')).toBe(true);
+      expect(isISO8601Rule.run('2020-07-10T15:00:00Z').pass).toBe(true);
+      expect(isISO8601Rule.test('not-iso')).toBe(false);
+      expect(isISO8601Rule.run('not-iso').pass).toBe(false);
+
+      const isISO8601StrictRule = enforce.isISO8601({ strict: true });
+      expect(isISO8601StrictRule.test('2020-07-10')).toBe(true);
+      expect(isISO8601StrictRule.run('2020-07-10').pass).toBe(true);
+      expect(isISO8601StrictRule.test('invalid')).toBe(false);
+      expect(isISO8601StrictRule.run('invalid').pass).toBe(false);
+    });
+  });
   describe('isDate', () => {
     /** enforce(value).isDate()
      * check if the string is a valid date. e.g. [2002-07-15, new Date()].

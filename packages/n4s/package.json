@@ -1,68 +1,24 @@
 {
-  "version": "5.0.28",
-  "license": "MIT",
-  "main": "./dist/cjs/n4s.js",
-  "types": "./types/n4s.d.ts",
   "name": "n4s",
+  "version": "5.10.10",
+  "description": "typed schema validation version of enforce",
+  "license": "MIT",
   "author": "ealush",
-  "description": "Assertion library for form validations",
-  "keywords": [
-    "vest",
-    "enforce",
-    "n4s",
-    "validation",
-    "assertion",
-    "schema validation",
-    "form validation",
-    "validation library"
-  ],
-  "scripts": {
-    "test": "vx test",
-    "release": "vx release"
-  },
-  "dependencies": {
-    "context": "^3.0.33",
-    "vest-utils": "^1.3.3"
-  },
-  "devDependencies": {
-    "@types/validator": "^13.11.10",
-    "validator": "13.9.0"
-  },
-  "vxAllowResolve": [
-    "validator"
-  ],
+  "private": true,
+  "main": "./dist/cjs/n4s.js",
   "module": "./dist/es/n4s.production.js",
+  "unpkg": "./dist/umd/n4s.production.js",
+  "jsdelivr": "./dist/umd/n4s.production.js",
+  "types": "./types/n4s.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ealush/vest.git",
+    "directory": "packages/n4s"
+  },
+  "bugs": {
+    "url": "https://github.com/ealush/vest.git/issues"
+  },
   "exports": {
-    "./schema": {
-      "production": {
-        "types": "./types/schema.d.ts",
-        "browser": "./dist/es/schema.production.js",
-        "umd": "./dist/umd/schema.production.js",
-        "import": "./dist/es/schema.production.js",
-        "require": "./dist/cjs/schema.production.js",
-        "node": "./dist/cjs/schema.production.js",
-        "module": "./dist/es/schema.production.js",
-        "default": "./dist/cjs/schema.production.js"
-      },
-      "development": {
-        "types": "./types/schema.d.ts",
-        "browser": "./dist/es/schema.development.js",
-        "umd": "./dist/umd/schema.development.js",
-        "import": "./dist/es/schema.development.js",
-        "require": "./dist/cjs/schema.development.js",
-        "node": "./dist/cjs/schema.development.js",
-        "module": "./dist/es/schema.development.js",
-        "default": "./dist/cjs/schema.development.js"
-      },
-      "types": "./types/schema.d.ts",
-      "browser": "./dist/es/schema.production.js",
-      "umd": "./dist/umd/schema.production.js",
-      "import": "./dist/es/schema.production.js",
-      "require": "./dist/cjs/schema.production.js",
-      "node": "./dist/cjs/schema.production.js",
-      "module": "./dist/es/schema.production.js",
-      "default": "./dist/cjs/schema.production.js"
-    },
     "./isURL": {
       "production": {
         "types": "./types/isURL.d.ts",
@@ -153,66 +109,6 @@
       "module": "./dist/es/date.production.js",
       "default": "./dist/cjs/date.production.js"
     },
-    "./compounds": {
-      "production": {
-        "types": "./types/compounds.d.ts",
-        "browser": "./dist/es/compounds.production.js",
-        "umd": "./dist/umd/compounds.production.js",
-        "import": "./dist/es/compounds.production.js",
-        "require": "./dist/cjs/compounds.production.js",
-        "node": "./dist/cjs/compounds.production.js",
-        "module": "./dist/es/compounds.production.js",
-        "default": "./dist/cjs/compounds.production.js"
-      },
-      "development": {
-        "types": "./types/compounds.d.ts",
-        "browser": "./dist/es/compounds.development.js",
-        "umd": "./dist/umd/compounds.development.js",
-        "import": "./dist/es/compounds.development.js",
-        "require": "./dist/cjs/compounds.development.js",
-        "node": "./dist/cjs/compounds.development.js",
-        "module": "./dist/es/compounds.development.js",
-        "default": "./dist/cjs/compounds.development.js"
-      },
-      "types": "./types/compounds.d.ts",
-      "browser": "./dist/es/compounds.production.js",
-      "umd": "./dist/umd/compounds.production.js",
-      "import": "./dist/es/compounds.production.js",
-      "require": "./dist/cjs/compounds.production.js",
-      "node": "./dist/cjs/compounds.production.js",
-      "module": "./dist/es/compounds.production.js",
-      "default": "./dist/cjs/compounds.production.js"
-    },
-    "./compose": {
-      "production": {
-        "types": "./types/compose.d.ts",
-        "browser": "./dist/es/compose.production.js",
-        "umd": "./dist/umd/compose.production.js",
-        "import": "./dist/es/compose.production.js",
-        "require": "./dist/cjs/compose.production.js",
-        "node": "./dist/cjs/compose.production.js",
-        "module": "./dist/es/compose.production.js",
-        "default": "./dist/cjs/compose.production.js"
-      },
-      "development": {
-        "types": "./types/compose.d.ts",
-        "browser": "./dist/es/compose.development.js",
-        "umd": "./dist/umd/compose.development.js",
-        "import": "./dist/es/compose.development.js",
-        "require": "./dist/cjs/compose.development.js",
-        "node": "./dist/cjs/compose.development.js",
-        "module": "./dist/es/compose.development.js",
-        "default": "./dist/cjs/compose.development.js"
-      },
-      "types": "./types/compose.d.ts",
-      "browser": "./dist/es/compose.production.js",
-      "umd": "./dist/umd/compose.production.js",
-      "import": "./dist/es/compose.production.js",
-      "require": "./dist/cjs/compose.production.js",
-      "node": "./dist/cjs/compose.production.js",
-      "module": "./dist/es/compose.production.js",
-      "default": "./dist/cjs/compose.production.js"
-    },
     ".": {
       "development": {
         "types": "./types/n4s.d.ts",
@@ -236,14 +132,15 @@
     "./package.json": "./package.json",
     "./*": "./*"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ealush/vest.git",
-    "directory": "packages/n4s"
+  "dependencies": {
+    "context": "^3.0.33",
+    "vest-utils": "^1.3.3"
   },
-  "bugs": {
-    "url": "https://github.com/ealush/vest.git/issues"
+  "devDependencies": {
+    "@types/validator": "^13.11.10",
+    "validator": "13.9.0"
   },
-  "unpkg": "./dist/umd/n4s.production.js",
-  "jsdelivr": "./dist/umd/n4s.production.js"
+  "vxAllowResolve": [
+    "validator"
+  ]
 }

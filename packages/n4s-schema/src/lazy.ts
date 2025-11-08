@@ -19,8 +19,8 @@ import { typeRules } from 'typeRules';
 import { FirstParam } from 'typeUtils';
 
 /**
- * Maps custom rules to lazy API signatures (builder pattern).
- * Excludes schema and compound rules (they have special handling).
+ * Type mapping for custom rules in the lazy (builder) API.
+ * Excludes schema and compound rules as they have special handling.
  */
 type TCustomLazyRules = {
   [K in keyof n4s.EnforceMatchers as K extends keyof SchemaRuleLazyTypes
@@ -63,5 +63,40 @@ const baseEnforceLazy = {
   ...typeRules,
 };
 
+/**
+ * Lazy (builder) API for creating reusable validation rules.
+ * Rules are created without a value and can be executed later with `run()` or `test()`.
+ * 
+ * This is the builder pattern side of the enforce API - rules are chainable and reusable.
+ * 
+ * @example
+ * ```typescript
+ * // Create reusable rules
+ * const stringRule = enforce.isString();
+ * const emailRule = enforce.isString().matches(/@/);
+ * 
+ * // Test with values
+ * stringRule.test('hello'); // true
+ * stringRule.test(123); // false
+ * 
+ * // Run for detailed results
+ * const result = emailRule.run('user@example.com');
+ * console.log(result.pass); // true
+ * 
+ * // Chain type-specific rules
+ * const ageRule = enforce.isNumber()
+ *   .greaterThanOrEquals(18)
+ *   .lessThan(150);
+ * 
+ * // Schema validation
+ * const userSchema = enforce.shape({
+ *   name: enforce.isString(),
+ *   email: enforce.isString().matches(/@/),
+ *   age: ageRule
+ * });
+ * 
+ * userSchema.test({ name: 'John', email: 'john@example.com', age: 25 }); // true
+ * ```
+ */
 export const enforceLazy = baseEnforceLazy as unknown as TCustomLazyRules &
   typeof baseEnforceLazy;

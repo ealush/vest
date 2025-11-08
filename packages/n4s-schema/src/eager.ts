@@ -16,6 +16,50 @@ type EagerReturn<T> = EnforceEagerReturn<
   typeof schemaRulesMap
 >;
 
+/**
+ * Eager (imperative) validation API - validates a value immediately with chainable assertions.
+ * Each chained rule executes synchronously and the chain breaks on the first failure.
+ * 
+ * @template T - The type of value being validated
+ * @param value - The value to validate
+ * @returns A proxy object with chainable validation methods and a `pass` property
+ * 
+ * @example
+ * ```typescript
+ * // Simple validation
+ * enforce('hello').isString(); // passes
+ * 
+ * // Chained validation
+ * enforce(25)
+ *   .isNumber()
+ *   .greaterThan(18)
+ *   .lessThan(100);
+ * 
+ * // Custom error messages
+ * enforce('')
+ *   .isNotEmpty()
+ *   .message('Field is required');
+ * 
+ * // Type narrowing
+ * enforce(value)
+ *   .isString()
+ *   .longerThan(5);
+ * // value is now known to be a string
+ * 
+ * // Schema validation
+ * enforce({ name: 'John', age: 30 })
+ *   .shape({
+ *     name: enforce.isString(),
+ *     age: enforce.isNumber()
+ *   });
+ * 
+ * // Check pass status without throwing
+ * const result = enforce(value).isString();
+ * if (result.pass) {
+ *   // validation passed
+ * }
+ * ```
+ */
 export function enforceEager<T>(value: T): EagerReturn<T> {
   let customMessage: Maybe<string> = undefined;
 

@@ -11716,22 +11716,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"n4s@npm:^5.0.28":
-  version: 5.0.28
-  resolution: "n4s@npm:5.0.28"
-  dependencies:
-    context: ^3.0.33
-    vest-utils: ^1.3.3
-  checksum: db82b5e51063c9c305cdb70bd5d0ad7f4ab67375cda6e2b80fcf1fecefefe4f46ecd66ca3378c52ad1efd9b73741e0de07bcbc088e45053c6b0a8b757450a14f
-  languageName: node
-  linkType: hard
-
-"n4s@workspace:packages/n4s-schema":
+"n4s@^5.0.28, n4s@workspace:packages/n4s":
   version: 0.0.0-use.local
-  resolution: "n4s@workspace:packages/n4s-schema"
+  resolution: "n4s@workspace:packages/n4s"
   dependencies:
     "@types/validator": ^13.11.10
+    context: ^3.0.33
     validator: 13.9.0
+    vest-utils: ^1.3.3
   languageName: unknown
   linkType: soft
 

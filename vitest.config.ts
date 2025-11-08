@@ -18,7 +18,6 @@ export default defineConfig({
         'packages/vast',
         'packages/n4s',
         'packages/vest',
-        'packages/n4s',
         'packages/anyone',
       ],
     }),

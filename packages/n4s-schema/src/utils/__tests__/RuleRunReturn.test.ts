@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import { RuleRunReturn } from '../RuleRunReturn';
+import { RuleRunReturn } from 'RuleRunReturn';
 
 describe('RuleRunReturn', () => {
   describe('create with boolean', () => {

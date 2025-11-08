@@ -4,11 +4,8 @@ src
 !types/
 !dist/
 tsconfig.json
-!schema/
 !isURL/
 !email/
 !date/
-!compounds/
-!compose/
 
 # Manual Section. Edit at will.

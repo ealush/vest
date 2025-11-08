@@ -3,10 +3,10 @@ import { isNumeric as isNumericValue } from 'vest-utils';
 /**
  * Validates that a value is not numeric (not a number or numeric string).
  * Inverse of isNumeric.
- * 
+ *
  * @param value - Value to validate
  * @returns True if value is not numeric
- * 
+ *
  * @example
  * ```typescript
  * enforce('hello').isNotNumeric(); // passes

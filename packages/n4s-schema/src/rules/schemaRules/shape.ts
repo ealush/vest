@@ -7,12 +7,12 @@ import { RuleRunReturn } from 'RuleRunReturn';
 /**
  * Validates that an object matches a schema exactly - all keys required, no extra keys allowed.
  * Each field value is validated against its corresponding RuleInstance in the schema.
- * 
+ *
  * @template T - The object type to validate
  * @param value - The object to validate
  * @param schema - Schema mapping keys to validation rules
  * @returns RuleRunReturn indicating success or failure
- * 
+ *
  * @example
  * ```typescript
  * // Eager API
@@ -21,14 +21,14 @@ import { RuleRunReturn } from 'RuleRunReturn';
  *     name: enforce.isString(),
  *     age: enforce.isNumber().greaterThan(0)
  *   }); // passes
- * 
+ *
  * // Lazy API
  * const userSchema = enforce.shape({
  *   name: enforce.isString(),
  *   email: enforce.isString().matches(/@/),
  *   age: enforce.isNumber().greaterThanOrEquals(18)
  * });
- * 
+ *
  * userSchema.test({ name: 'Jane', email: 'jane@example.com', age: 25 }); // true
  * userSchema.test({ name: 'Jane', age: 25 }); // false (missing email)
  * userSchema.test({ name: 'Jane', email: 'jane@example.com', age: 25, extra: 'x' }); // false (extra key)

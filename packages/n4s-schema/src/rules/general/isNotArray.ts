@@ -1,10 +1,10 @@
 /**
  * Validates that a value is not an array.
  * Inverse of isArray.
- * 
+ *
  * @param value - Value to validate
  * @returns True if value is not an array
- * 
+ *
  * @example
  * ```typescript
  * enforce({}).isNotArray(); // passes

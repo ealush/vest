@@ -1,10 +1,10 @@
 /**
  * Validates that a value is not a boolean.
  * Inverse of isBoolean.
- * 
+ *
  * @param value - Value to validate
  * @returns True if value is not a boolean
- * 
+ *
  * @example
  * ```typescript
  * enforce(1).isNotBoolean(); // passes

@@ -3,10 +3,10 @@ import { isNullish as isNullishValue } from 'vest-utils';
 /**
  * Validates that a value is null or undefined (nullish).
  * Type guard that narrows the type to null | undefined.
- * 
+ *
  * @param value - Value to validate
  * @returns True if value is null or undefined
- * 
+ *
  * @example
  * ```typescript
  * // Eager API
@@ -15,7 +15,7 @@ import { isNullish as isNullishValue } from 'vest-utils';
  * enforce(0).isNullish(); // fails
  * enforce('').isNullish(); // fails
  * enforce(false).isNullish(); // fails
- * 
+ *
  * // Lazy API
  * const nullishRule = enforce.isNullish();
  * nullishRule.test(null); // true

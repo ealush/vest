@@ -7,12 +7,12 @@ import { RuleRunReturn } from 'RuleRunReturn';
  * Validates that a value passes none of the provided rules.
  * All rules must fail for the validation to succeed.
  * Evaluation stops at the first passing rule.
- * 
+ *
  * @template T - The value type to validate
  * @param value - The value to validate
  * @param rules - One or more RuleInstances that must all fail
  * @returns RuleRunReturn indicating success or failure
- * 
+ *
  * @example
  * ```typescript
  * // Eager API
@@ -21,14 +21,14 @@ import { RuleRunReturn } from 'RuleRunReturn';
  *     enforce.greaterThan(0),
  *     enforce.lessThan(0)
  *   ); // passes (neither rule passes)
- * 
+ *
  * // Lazy API - exclude reserved usernames
  * const notReservedRule = enforce.noneOf(
  *   enforce.equals('admin'),
  *   enforce.equals('root'),
  *   enforce.equals('system')
  * );
- * 
+ *
  * notReservedRule.test('john'); // true
  * notReservedRule.test('admin'); // false
  * notReservedRule.test('root'); // false

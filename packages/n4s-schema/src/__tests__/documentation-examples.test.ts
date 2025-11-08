@@ -1,14 +1,16 @@
 import { describe, it, expect } from 'vitest';
+
 import { enforce, compose, ctx } from '../n4s-schema';
 
 describe('Documentation Examples', () => {
   describe('compose examples', () => {
     it('should validate username with composed rule', () => {
       const isValidUsername = compose(
-        enforce.isString()
+        enforce
+          .isString()
           .longerThan(3)
           .shorterThan(20)
-          .matches(/^[a-zA-Z0-9_]+$/)
+          .matches(/^[a-zA-Z0-9_]+$/),
       );
 
       expect(isValidUsername.test('john_doe')).toBe(true);
@@ -18,14 +20,15 @@ describe('Documentation Examples', () => {
 
     it('should use composed rule in schema validation', () => {
       const isValidUsername = compose(
-        enforce.isString()
+        enforce
+          .isString()
           .longerThan(3)
           .shorterThan(20)
-          .matches(/^[a-zA-Z0-9_]+$/)
+          .matches(/^[a-zA-Z0-9_]+$/),
       );
 
       const result = enforce({ username: 'john_doe' }).shape({
-        username: isValidUsername
+        username: isValidUsername,
       });
 
       expect(result.pass).toBe(true);
@@ -46,7 +49,7 @@ describe('Documentation Examples', () => {
     it('should validate with lazy API', () => {
       const stringRule = enforce.isString();
       expect(stringRule.test('hello')).toBe(true);
-      
+
       const result = stringRule.run('hello');
       expect(result.pass).toBe(true);
       expect(result.type).toBe('hello');
@@ -61,7 +64,7 @@ describe('Documentation Examples', () => {
     it('should validate with schema', () => {
       const result = enforce({ name: 'John', age: 30 }).shape({
         name: enforce.isString(),
-        age: enforce.isNumber()
+        age: enforce.isNumber(),
       });
 
       expect(result.pass).toBe(true);
@@ -72,7 +75,7 @@ describe('Documentation Examples', () => {
     it('should access validation context', () => {
       const stringRule = enforce.isString();
       const result = stringRule.run('test');
-      
+
       // Context is only available during rule execution
       expect(result.pass).toBe(true);
     });
@@ -82,8 +85,8 @@ describe('Documentation Examples', () => {
     it('should extend with custom rules', () => {
       enforce.extend({
         isPositive: (value: number) => value > 0,
-        isBetween: (value: number, min: number, max: number) => 
-          value >= min && value <= max
+        isBetween: (value: number, min: number, max: number) =>
+          value >= min && value <= max,
       });
 
       // Eager API
@@ -105,11 +108,11 @@ describe('Documentation Examples', () => {
   describe('RuleInstance examples', () => {
     it('should work with RuleInstance', () => {
       const stringRule = enforce.isString();
-      
+
       // test method returns boolean
       expect(stringRule.test('hello')).toBe(true);
       expect(stringRule.test(123)).toBe(false);
-      
+
       // run method returns RuleRunReturn
       const result = stringRule.run('hello');
       expect(result.pass).toBe(true);
@@ -127,7 +130,7 @@ describe('Documentation Examples', () => {
     it('should create passing result', () => {
       const rule = enforce.isString();
       const result = rule.run('hello');
-      
+
       expect(result.pass).toBe(true);
       expect(result.type).toBe('hello');
       expect(result.message).toBeUndefined();
@@ -136,7 +139,7 @@ describe('Documentation Examples', () => {
     it('should create failing result with message', () => {
       const rule = enforce.isString().message('Must be a string');
       const result = rule.run(123);
-      
+
       expect(result.pass).toBe(false);
       expect(result.message).toBe('Must be a string');
     });
@@ -147,40 +150,46 @@ describe('Documentation Examples', () => {
       const userSchema = enforce.shape({
         name: enforce.isString(),
         age: enforce.isNumber(),
-        email: enforce.isString()
+        email: enforce.isString(),
       });
 
-      expect(userSchema.test({
-        name: 'John',
-        age: 30,
-        email: 'john@example.com'
-      })).toBe(true);
+      expect(
+        userSchema.test({
+          name: 'John',
+          age: 30,
+          email: 'john@example.com',
+        }),
+      ).toBe(true);
 
-      expect(userSchema.test({
-        name: 'John',
-        age: 'thirty', // wrong type
-        email: 'john@example.com'
-      })).toBe(false);
+      expect(
+        userSchema.test({
+          name: 'John',
+          age: 'thirty', // wrong type
+          email: 'john@example.com',
+        }),
+      ).toBe(false);
     });
 
     it('should validate with loose', () => {
       const schema = enforce.loose({
         name: enforce.isString(),
-        age: enforce.isNumber()
+        age: enforce.isNumber(),
       });
 
       // Allows extra properties
-      expect(schema.test({
-        name: 'John',
-        age: 30,
-        extra: 'allowed'
-      })).toBe(true);
+      expect(
+        schema.test({
+          name: 'John',
+          age: 30,
+          extra: 'allowed',
+        }),
+      ).toBe(true);
     });
 
     it('should validate with partial', () => {
       const schema = enforce.partial({
         name: enforce.isString(),
-        age: enforce.isNumber()
+        age: enforce.isNumber(),
       });
 
       // All properties optional
@@ -192,7 +201,7 @@ describe('Documentation Examples', () => {
     it('should validate with optional', () => {
       const schema = enforce.shape({
         name: enforce.isString(),
-        age: enforce.optional(enforce.isNumber())
+        age: enforce.optional(enforce.isNumber()),
       });
 
       expect(schema.test({ name: 'John' })).toBe(true);
@@ -211,7 +220,7 @@ describe('Documentation Examples', () => {
   describe('compound rule examples', () => {
     it('should validate with allOf', () => {
       const rule = enforce.allOf(
-        enforce.isNumber().greaterThan(0).lessThan(100)
+        enforce.isNumber().greaterThan(0).lessThan(100),
       );
 
       expect(rule.test(50)).toBe(true);
@@ -219,10 +228,7 @@ describe('Documentation Examples', () => {
     });
 
     it('should validate with anyOf', () => {
-      const rule = enforce.anyOf(
-        enforce.isString(),
-        enforce.isNumber()
-      );
+      const rule = enforce.anyOf(enforce.isString(), enforce.isNumber());
 
       expect(rule.test('hello')).toBe(true);
       expect(rule.test(123)).toBe(true);
@@ -230,10 +236,7 @@ describe('Documentation Examples', () => {
     });
 
     it('should validate with noneOf', () => {
-      const rule = enforce.noneOf(
-        enforce.isNull(),
-        enforce.isUndefined()
-      );
+      const rule = enforce.noneOf(enforce.isNull(), enforce.isUndefined());
 
       expect(rule.test('hello')).toBe(true);
       expect(rule.test(null)).toBe(false);
@@ -241,10 +244,7 @@ describe('Documentation Examples', () => {
     });
 
     it('should validate with oneOf', () => {
-      const rule = enforce.oneOf(
-        enforce.isString(),
-        enforce.isNumber()
-      );
+      const rule = enforce.oneOf(enforce.isString(), enforce.isNumber());
 
       expect(rule.test('hello')).toBe(true);
       expect(rule.test(123)).toBe(true);
@@ -306,7 +306,7 @@ describe('Documentation Examples', () => {
   describe('extendEnforce examples', () => {
     it('should extend with custom rules and use in both APIs', () => {
       enforce.extend({
-        isEven: (value: number) => value % 2 === 0
+        isEven: (value: number) => value % 2 === 0,
       });
 
       // Eager API
@@ -327,13 +327,16 @@ describe('Documentation Examples', () => {
     it('should combine custom rules with built-in rules', () => {
       enforce.extend({
         isPositiveNumber: (value: number) => value > 0,
-        isBetweenRange: (value: number, min: number, max: number) => 
-          value >= min && value <= max
+        isBetweenRange: (value: number, min: number, max: number) =>
+          value >= min && value <= max,
       });
 
       const schema = enforce.shape({
-        age: (enforce as any).isNumber().isPositiveNumber().isBetweenRange(18, 100),
-        score: (enforce as any).isNumber().isEven()
+        age: (enforce as any)
+          .isNumber()
+          .isPositiveNumber()
+          .isBetweenRange(18, 100),
+        score: (enforce as any).isNumber().isEven(),
       });
 
       expect(schema.test({ age: 25, score: 100 })).toBe(true);

@@ -7,12 +7,12 @@ import { RuleRunReturn } from 'RuleRunReturn';
 /**
  * Validates that an object matches a schema loosely - all schema keys required, extra keys allowed.
  * Like shape() but permits additional properties not defined in the schema.
- * 
+ *
  * @template T - The object type to validate
  * @param value - The object to validate
  * @param schema - Schema mapping keys to validation rules
  * @returns RuleRunReturn indicating success or failure
- * 
+ *
  * @example
  * ```typescript
  * // Eager API
@@ -21,13 +21,13 @@ import { RuleRunReturn } from 'RuleRunReturn';
  *     name: enforce.isString(),
  *     age: enforce.isNumber()
  *   }); // passes (extra key is ok)
- * 
+ *
  * // Lazy API
  * const partialUserSchema = enforce.loose({
  *   name: enforce.isString(),
  *   email: enforce.isString()
  * });
- * 
+ *
  * // All schema keys must be present and valid
  * partialUserSchema.test({ name: 'Jane', email: 'jane@example.com' }); // true
  * partialUserSchema.test({ name: 'Jane', email: 'jane@example.com', age: 30 }); // true (extra ok)

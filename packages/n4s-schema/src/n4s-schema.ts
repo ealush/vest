@@ -1,10 +1,9 @@
+import { enforceEager } from 'eager';
 import { ctx } from 'enforceContext';
 import type { EnforceContext } from 'enforceContext';
-import { assign } from 'vest-utils';
-
-import { enforceEager } from 'eager';
 import { extendEnforce } from 'extendLogic';
 import { enforceLazy } from 'lazy';
+import { assign } from 'vest-utils';
 
 /**
  * Context API for accessing validation context.
@@ -15,7 +14,7 @@ export { ctx } from 'enforceContext';
 /**
  * Compose multiple validation rules into a single reusable rule.
  * Returns a composed rule that can be used in both eager and lazy validation.
- * 
+ *
  * @example
  * ```typescript
  * // Compose separate rules that apply to the same value
@@ -25,11 +24,11 @@ export { ctx } from 'enforceContext';
  *     .shorterThan(20)
  *     .matches(/^[a-zA-Z0-9_]+$/)
  * );
- * 
+ *
  * isValidUsername.test('john_doe'); // true
  * isValidUsername.test('ab'); // false (too short)
  * isValidUsername.test('john doe'); // false (contains space)
- * 
+ *
  * // Use in schema validation
  * enforce({ username: 'john_doe' }).shape({
  *   username: isValidUsername
@@ -45,26 +44,26 @@ type Enforce = typeof enforceEager &
 
 /**
  * Main validation function supporting both eager (imperative) and lazy (builder) APIs.
- * 
+ *
  * **Eager API (Imperative):**
  * Immediately validates a value with chainable assertions that execute on call.
- * 
+ *
  * **Lazy API (Builder Pattern):**
  * Builds a reusable validation rule without a value, returns a RuleInstance.
- * 
+ *
  * @example
  * ```typescript
  * // Eager API - validates immediately
  * enforce('hello').isString().longerThan(3);
- * 
+ *
  * // Lazy API - builds a reusable rule
  * const stringRule = enforce.isString();
  * stringRule.test('hello'); // true
  * stringRule.run('hello'); // RuleRunReturn { pass: true, type: 'hello' }
- * 
+ *
  * // Custom messages
  * enforce('').message('Field is required').isNotEmpty();
- * 
+ *
  * // Schema validation
  * enforce({ name: 'John', age: 30 }).shape({
  *   name: enforce.isString(),
@@ -77,9 +76,9 @@ export const enforce = assign(enforceEager, enforceLazy) as Enforce;
 /**
  * Access the current validation context.
  * Returns metadata and parent context information during rule execution.
- * 
+ *
  * @returns The current EnforceContext or null if not in validation context
- * 
+ *
  * @example
  * ```typescript
  * const context = enforce.context();
@@ -94,21 +93,21 @@ enforce.context = function context(): EnforceContext {
 /**
  * Extend enforce with custom validation rules.
  * Custom rules become available on both eager and lazy APIs.
- * 
+ *
  * @param rules - Object mapping rule names to validation functions
- * 
+ *
  * @example
  * ```typescript
  * enforce.extend({
  *   isPositive: (value: number) => value > 0,
- *   isBetween: (value: number, min: number, max: number) => 
+ *   isBetween: (value: number, min: number, max: number) =>
  *     value >= min && value <= max
  * });
- * 
+ *
  * // Now use your custom rules
  * enforce(5).isPositive(); // eager API
  * const rule = enforce.isPositive(); // lazy API
- * 
+ *
  * // With TypeScript, declare types:
  * declare global {
  *   namespace n4s {

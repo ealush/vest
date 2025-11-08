@@ -5,7 +5,7 @@ import { assign, Nullable } from 'vest-utils';
  * Context API for accessing validation state during rule execution.
  * Provides access to the current value being validated, metadata, and parent context.
  * Used internally by rules to track nested validation (e.g., in shape, isArrayOf).
- * 
+ *
  * @example
  * ```typescript
  * // Access context in custom rules
@@ -17,7 +17,7 @@ import { assign, Nullable } from 'vest-utils';
  *     return true;
  *   }
  * });
- * 
+ *
  * // Context is automatically set in nested validations
  * enforce({ user: { name: 'John' } }).shape({
  *   user: enforce.shape({

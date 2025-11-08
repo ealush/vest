@@ -1,38 +1,37 @@
-import { ctx } from 'enforceContext';
-
 import { RuleRunReturn } from 'RuleRunReturn';
 import { extendEager } from 'eager';
+import { ctx } from 'enforceContext';
 import { addToChain, registerLazyRule } from 'genRuleChain';
 
 /**
  * Extends the enforce API with custom validation rules.
  * Custom rules are added to both eager and lazy APIs automatically.
- * 
+ *
  * Rules receive the value as the first parameter, followed by any additional arguments.
  * They should return a boolean or RuleRunReturn.
- * 
+ *
  * @param enforce - The enforce object to extend
  * @param rules - Object mapping rule names to validation functions
- * 
+ *
  * @example
  * ```typescript
  * // Add custom rules
  * extendEnforce(enforce, {
  *   isPositive: (value: number) => value > 0,
- *   isBetween: (value: number, min: number, max: number) => 
+ *   isBetween: (value: number, min: number, max: number) =>
  *     value >= min && value <= max,
  *   isEven: (value: number) => value % 2 === 0
  * });
- * 
+ *
  * // Use in eager API
  * enforce(10).isPositive().isEven();
  * enforce(5).isBetween(1, 10);
- * 
+ *
  * // Use in lazy API
  * const positiveRule = enforce.isPositive();
  * positiveRule.test(5); // true
  * positiveRule.test(-3); // false
- * 
+ *
  * // Combine with built-in rules
  * const schema = enforce.shape({
  *   age: enforce.isNumber().isPositive().isBetween(18, 100),

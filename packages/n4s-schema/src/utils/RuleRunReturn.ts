@@ -3,15 +3,15 @@ import { isBoolean, Stringable, dynamicValue } from 'vest-utils';
 /**
  * Represents the result of a validation rule execution.
  * Contains the pass/fail status, the validated type, and an optional error message.
- * 
+ *
  * @template T - The type of value that was validated
- * 
+ *
  * @example
  * ```typescript
  * const result = RuleRunReturn.Passing('hello');
  * console.log(result.pass); // true
  * console.log(result.type); // 'hello'
- * 
+ *
  * const failed = RuleRunReturn.Failing(123, 'Must be positive');
  * console.log(failed.pass); // false
  * console.log(failed.message); // 'Must be positive'
@@ -34,7 +34,7 @@ export class RuleRunReturn<T> {
   /**
    * Creates a RuleRunReturn from a boolean or existing RuleRunReturn.
    * Handles message resolution and type coercion.
-   * 
+   *
    * @param pass - Boolean indicating success, or existing RuleRunReturn
    * @param type - The type of the validated value
    * @param message - Optional error message (can be string or function)
@@ -71,11 +71,11 @@ export class RuleRunReturn<T> {
 
   /**
    * Creates a passing RuleRunReturn.
-   * 
+   *
    * @param type - The validated value's type
    * @param message - Optional success message
    * @returns A RuleRunReturn with pass=true
-   * 
+   *
    * @example
    * ```typescript
    * const result = RuleRunReturn.Passing('valid');
@@ -88,11 +88,11 @@ export class RuleRunReturn<T> {
 
   /**
    * Creates a failing RuleRunReturn.
-   * 
+   *
    * @param type - The validated value's type
    * @param message - Optional error message
    * @returns A RuleRunReturn with pass=false
-   * 
+   *
    * @example
    * ```typescript
    * const result = RuleRunReturn.Failing(123, 'Number must be positive');

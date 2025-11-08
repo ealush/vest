@@ -1,11 +1,10 @@
-import { ctx } from 'enforceContext';
-
 import { type RuleInstance } from 'RuleInstance';
 import { RuleRunReturn } from 'RuleRunReturn';
 import type { ArrayRuleInstance } from 'arrayRules';
 import * as arrayRules from 'arrayRules';
 import * as compoundRules from 'compoundRules';
 import type { CompoundRuleLazyTypes } from 'compoundRules';
+import { ctx } from 'enforceContext';
 import { addToChain } from 'genRuleChain';
 import { AnyRuleInstance } from 'generalRules';
 import * as generalRules from 'generalRules';
@@ -66,35 +65,35 @@ const baseEnforceLazy = {
 /**
  * Lazy (builder) API for creating reusable validation rules.
  * Rules are created without a value and can be executed later with `run()` or `test()`.
- * 
+ *
  * This is the builder pattern side of the enforce API - rules are chainable and reusable.
- * 
+ *
  * @example
  * ```typescript
  * // Create reusable rules
  * const stringRule = enforce.isString();
  * const emailRule = enforce.isString().matches(/@/);
- * 
+ *
  * // Test with values
  * stringRule.test('hello'); // true
  * stringRule.test(123); // false
- * 
+ *
  * // Run for detailed results
  * const result = emailRule.run('user@example.com');
  * console.log(result.pass); // true
- * 
+ *
  * // Chain type-specific rules
  * const ageRule = enforce.isNumber()
  *   .greaterThanOrEquals(18)
  *   .lessThan(150);
- * 
+ *
  * // Schema validation
  * const userSchema = enforce.shape({
  *   name: enforce.isString(),
  *   email: enforce.isString().matches(/@/),
  *   age: ageRule
  * });
- * 
+ *
  * userSchema.test({ name: 'John', email: 'john@example.com', age: 25 }); // true
  * ```
  */

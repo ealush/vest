@@ -51,12 +51,12 @@ function validateProvidedKeys<T extends Record<string, any>>(
  * Validates that an object partially matches a schema - schema keys are optional, no extra keys allowed.
  * All provided keys must exist in schema and pass their validation rules.
  * Missing keys are allowed (making all fields optional).
- * 
+ *
  * @template T - The object type to validate
  * @param value - The object to validate
  * @param schema - Schema mapping keys to validation rules
  * @returns RuleRunReturn indicating success or failure
- * 
+ *
  * @example
  * ```typescript
  * // Eager API
@@ -66,14 +66,14 @@ function validateProvidedKeys<T extends Record<string, any>>(
  *     age: enforce.isNumber(),
  *     email: enforce.isString()
  *   }); // passes (age and email are optional)
- * 
+ *
  * // Lazy API
  * const updateSchema = enforce.partial({
  *   name: enforce.isString(),
  *   email: enforce.isString().matches(/@/),
  *   age: enforce.isNumber()
  * });
- * 
+ *
  * updateSchema.test({}); // true (all fields optional)
  * updateSchema.test({ name: 'Jane' }); // true (partial update)
  * updateSchema.test({ name: 'Jane', email: 'jane@example.com' }); // true

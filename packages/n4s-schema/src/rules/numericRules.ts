@@ -1,3 +1,4 @@
+import { equals } from 'equals';
 import { isNaN } from 'isNaN';
 import { isNegative } from 'isNegative';
 import { type DropFirst } from 'vest-utils';
@@ -17,6 +18,7 @@ import { lessThanOrEquals } from 'lessThanOrEquals';
 import { numberNotEquals } from 'numberNotEquals';
 
 export {
+  equals,
   isNumeric,
   greaterThan,
   numberEquals,
@@ -36,6 +38,9 @@ export {
 
 export interface NumericRuleInstance
   extends RuleInstance<string | number, [string | number]> {
+  equals(
+    ...args: DropFirst<Parameters<typeof equals<string | number>>>
+  ): NumericRuleInstance;
   isBetween(
     ...args: DropFirst<Parameters<typeof isBetween>>
   ): NumericRuleInstance;

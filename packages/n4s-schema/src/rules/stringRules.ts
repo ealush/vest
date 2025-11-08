@@ -1,4 +1,3 @@
-
 import { endsWith } from 'endsWith';
 import { isBlank } from 'isBlank';
 import { isString } from 'isString';
@@ -25,12 +24,12 @@ import { isNotBlank } from 'isNotBlank';
 import { notMatches } from 'notMatches';
 
 export {
+  equals,
   isString,
   endsWith,
   isBlank,
   matches,
   startsWith,
-  equals,
   notEquals,
   inside,
   notInside,
@@ -49,7 +48,9 @@ export {
 };
 
 export interface StringRuleInstance extends RuleInstance<string, [string]> {
-  equals(...args: DropFirst<Parameters<typeof equals>>): StringRuleInstance;
+  equals(
+    ...args: DropFirst<Parameters<typeof equals<string>>>
+  ): StringRuleInstance;
   notEquals(
     ...args: DropFirst<Parameters<typeof notEquals>>
   ): StringRuleInstance;

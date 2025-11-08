@@ -6,7 +6,10 @@ import { createChainProxyHandlers } from 'proxyHandlers';
 export { registerLazyRule };
 
 function createChainBuilder<T extends RuleInstance<any, any>>(
-  rules: Record<keyof Omit<T, 'run' | 'infer'>, (...args: any[]) => boolean>,
+  rules: Record<
+    keyof Omit<T, 'run' | 'infer' | 'test'>,
+    (...args: any[]) => boolean
+  >,
 ) {
   const chain: Predicate[] = [];
   const target: Partial<T> = {};
@@ -19,16 +22,22 @@ function createChainBuilder<T extends RuleInstance<any, any>>(
   const run: T['run'] = ((...args: any[]) =>
     executeChain(chain, args[0])) as T['run'];
 
+  const test: T['test'] = ((...args: any[]) =>
+    executeChain(chain, args[0]).pass) as T['test'];
+
   const proxy: T = new Proxy(
     target as T,
-    createChainProxyHandlers(rules, add, run),
+    createChainProxyHandlers(rules, add, run, test),
   );
 
   return { add, proxy } as const;
 }
 
 export function addToChain<T extends RuleInstance<any, any>>(
-  rules: Record<keyof Omit<T, 'run' | 'infer'>, (...args: any[]) => boolean>,
+  rules: Record<
+    keyof Omit<T, 'run' | 'infer' | 'test'>,
+    (...args: any[]) => boolean
+  >,
   predicate: Predicate,
 ): T {
   const { add, proxy } = createChainBuilder<T>(rules);
@@ -37,7 +46,10 @@ export function addToChain<T extends RuleInstance<any, any>>(
 }
 
 export function genRuleChain<T extends RuleInstance<any, any>>(
-  rules: Record<keyof Omit<T, 'run' | 'infer'>, (...args: any[]) => boolean>,
+  rules: Record<
+    keyof Omit<T, 'run' | 'infer' | 'test'>,
+    (...args: any[]) => boolean
+  >,
 ): (p: Predicate) => T {
   const { add } = createChainBuilder<T>(rules);
   return add;

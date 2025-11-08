@@ -1,3 +1,4 @@
+import { equals } from 'equals';
 import { isNaN } from 'isNaN';
 import { isNegative } from 'isNegative';
 import { isNumber } from 'isNumber';
@@ -17,6 +18,7 @@ import { lessThanOrEquals } from 'lessThanOrEquals';
 import { numberNotEquals } from 'numberNotEquals';
 
 export {
+  equals,
   greaterThan,
   numberEquals,
   isBetween,
@@ -35,6 +37,9 @@ export {
 };
 
 export interface NumberRuleInstance extends RuleInstance<number, [number]> {
+  equals(
+    ...args: DropFirst<Parameters<typeof equals<number>>>
+  ): NumberRuleInstance;
   isBetween(
     ...args: DropFirst<Parameters<typeof isBetween>>
   ): NumberRuleInstance;

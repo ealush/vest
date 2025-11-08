@@ -5,13 +5,18 @@ import type { Predicate } from 'chainExecutor';
 import { getLazyRule } from 'lazyRegistry';
 
 export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
-  rules: Record<keyof Omit<T, 'run' | 'infer'>, (...args: any[]) => boolean>,
+  rules: Record<
+    keyof Omit<T, 'run' | 'infer' | 'test'>,
+    (...args: any[]) => boolean
+  >,
   add: (p: Predicate) => T,
   run: T['run'],
+  test: T['test'],
 ) {
   return {
     get(_target: T, prop: string | symbol, receiver: any) {
       if (prop === 'run') return run;
+      if (prop === 'test') return test;
 
       if (hasOwnProperty(rules, prop as any)) {
         return (...args: any[]) =>
@@ -26,7 +31,7 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
       return Reflect.get(_target as object, prop, receiver);
     },
     has(_target: T, prop: string | symbol) {
-      if (prop === 'run' || prop === 'infer') return true;
+      if (prop === 'run' || prop === 'infer' || prop === 'test') return true;
       if (hasOwnProperty(rules, prop as any)) return true;
       if (getLazyRule(prop as string)) return true;
       return Reflect.has(_target as object, prop);

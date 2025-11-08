@@ -12,6 +12,9 @@ export class RuleInstance<T, Args extends any[] = any[]> {
   // Type-only declaration for the run function shape
   run!: (...args: Args) => RuleRunReturn<T>;
 
+  // Type-only declaration for the test function shape (returns boolean)
+  test!: (...args: Args) => boolean;
+
   private constructor() {}
 
   static create<R extends RuleInstance<T, Args>, T, Args extends any[]>(
@@ -19,6 +22,7 @@ export class RuleInstance<T, Args extends any[] = any[]> {
   ): R {
     return {
       run: (...args: Args) => rule(...args),
+      test: (...args: Args) => rule(...args).pass,
       infer: {} as T,
     } as R;
   }

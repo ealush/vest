@@ -4,7 +4,8 @@ import { RuleInstance } from 'RuleInstance';
 export interface AnyRuleInstance extends RuleInstance<any, [any]> {}
 
 export { condition } from 'condition';
-
+export { equals } from 'equals';
+export { notEquals } from 'notEquals';
 export { isEmpty } from 'isEmpty';
 export { isFalsy } from 'isFalsy';
 export { isNaN } from 'isNaN';

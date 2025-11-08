@@ -2,11 +2,14 @@ import { ctx } from 'enforceContext';
 import type { EnforceContext } from 'enforceContext';
 import { assign } from 'vest-utils';
 
+import { compose } from './compose';
+
 import { enforceEager } from 'eager';
 import { extendEnforce } from 'extendLogic';
 import { enforceLazy } from 'lazy';
 
 export { ctx } from 'enforceContext';
+export { compose } from './compose';
 
 type ExtendFn = (rules: Record<string, (...args: any[]) => any>) => void;
 type ContextFn = () => EnforceContext;

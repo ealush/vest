@@ -17,7 +17,10 @@ import {
 import { SummaryFailure } from 'SummaryFailure';
 import { isVestIsolate } from 'VestIsolateType';
 import { VestTest } from 'VestTest';
-import { useSetValidProperty } from 'useSetValidProperty';
+import {
+  useSetValidProperty,
+  useSetValidPropertyImpl,
+} from 'useSetValidProperty';
 
 export function useProduceSuiteSummary<
   F extends TFieldName,
@@ -90,6 +93,9 @@ function appendToGroup(
     group[fieldName],
     testObject,
   );
+
+  // Always re-evaluate validity to account for optional fields
+  group[fieldName].valid = useSetValidPropertyImpl(fieldName, groupName);
 
   return groups;
 }

@@ -31,6 +31,7 @@ Promise {
   "isPending": [Function],
   "isTested": [Function],
   "isValid": [Function],
+  "isValidByGroup": [Function],
   "pendingCount": 0,
   "suiteName": undefined,
   "testCount": 5,

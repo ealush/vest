@@ -27,11 +27,10 @@ export type TestsContainer<F extends TFieldName, G extends TGroupName> =
   | Group<G>
   | Tests<F>;
 
-export type Groups<G extends TGroupName, F extends TFieldName> = Record<
-  G,
-  Group<F>
->;
-type Group<F extends TFieldName> = Record<F, CommonSummaryProperties>;
+export type Groups<G extends TGroupName, F extends TFieldName> = {
+  [key in G]: Group<F>;
+};
+type Group<F extends TFieldName> = Record<F, SingleTestSummary> & ValidProperty;
 export type Tests<F extends TFieldName> = Record<F, SingleTestSummary>;
 
 export type SingleTestSummary = SummaryBase &

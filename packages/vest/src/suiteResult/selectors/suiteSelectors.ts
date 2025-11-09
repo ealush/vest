@@ -50,6 +50,9 @@ export function bindSuiteSelectors<F extends TFieldName, G extends TGroupName>(
       get().isTested(...args),
     isValid: (...args: Parameters<SuiteSelectors<F, G>['isValid']>) =>
       get().isValid(...args),
+    isValidByGroup: (
+      ...args: Parameters<SuiteSelectors<F, G>['isValidByGroup']>
+    ) => get().isValidByGroup(...args),
   } as SuiteSelectors<F, G>;
 }
 
@@ -72,6 +75,7 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     isPending,
     isTested,
     isValid,
+    isValidByGroup,
   };
 
   return selectors;
@@ -82,12 +86,43 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     return Boolean(fieldName ? summary.tests[fieldName]?.valid : summary.valid);
   }
 
-  function hasWarnings(fieldName?: F): boolean {
-    return hasFailures(summary, SeverityCount.WARN_COUNT, fieldName);
+  // eslint-disable-next-line max-statements, complexity
+  function isValidByGroup(groupName: G, fieldName?: F): boolean {
+    const group = summary.groups[groupName];
+
+    // If the group doesn't exist, it's vacuously valid (can't fail tests that don't exist)
+    if (!group) {
+      return true;
+    }
+
+    // If checking a specific field within the group
+    if (fieldName) {
+      const fieldSummary = group[fieldName];
+      // If field doesn't exist in group, it's invalid (test was never run)
+      if (!fieldSummary) {
+        return false;
+      }
+      return !!fieldSummary.valid;
+    }
+
+    // Check all fields in the group
+    let hasAnyFields = false;
+    for (const fieldName of Object.keys(group) as F[]) {
+      hasAnyFields = true;
+      if (!group[fieldName]?.valid) {
+        return false;
+      }
+    }
+
+    return hasAnyFields;
   }
 
   function hasErrors(fieldName?: F): boolean {
     return hasFailures(summary, SeverityCount.ERROR_COUNT, fieldName);
+  }
+
+  function hasWarnings(fieldName?: F): boolean {
+    return hasFailures(summary, SeverityCount.WARN_COUNT, fieldName);
   }
 
   function isTested(fieldName: F): boolean {
@@ -197,6 +232,7 @@ export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
   isTested(fieldName: F): boolean;
   isPending(fieldName?: F): boolean;
   isValid(fieldName?: F): boolean;
+  isValidByGroup(groupName: G, fieldName?: F): boolean;
 }
 
 // Gathers all failures of a given severity

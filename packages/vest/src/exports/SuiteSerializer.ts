@@ -1,6 +1,5 @@
 import { CB } from 'vest-utils';
-import { IsolateSerializer } from 'vestjs-runtime';
-import { IsolateKeys } from 'vestjs-runtime/src/Isolate/IsolateKeys';
+import { IsolateSerializer, IsolateKeys } from 'vestjs-runtime';
 
 import { TIsolateSuite } from 'IsolateSuite';
 import { TestStatus } from 'IsolateTestStateMachine';

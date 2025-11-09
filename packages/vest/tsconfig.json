@@ -18,6 +18,9 @@
       "SummaryFailure": ["./src/suiteResult/SummaryFailure.ts"],
       "SuiteResultTypes": ["./src/suiteResult/SuiteResultTypes.ts"],
       "Severity": ["./src/suiteResult/Severity.ts"],
+      "useShouldAddValidPropertyInGroup": [
+        "./src/suiteResult/selectors/useShouldAddValidPropertyInGroup.ts"
+      ],
       "useSetValidProperty": [
         "./src/suiteResult/selectors/useSetValidProperty.ts"
       ],

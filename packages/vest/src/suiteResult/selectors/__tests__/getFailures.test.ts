@@ -9,7 +9,7 @@ describe('->getFailures', () => {
   describe(`getErrors`, () => {
     describe('When no tests', () => {
       describe('When no parameters passed', () => {
-        it('Should return an empty object', () => {
+        it('should return an empty object', () => {
           const suite = vest.create(() => {});
 
           expect(suite.run().getErrors()).toEqual({});
@@ -17,7 +17,7 @@ describe('->getFailures', () => {
         });
       });
       describe('When requesting a fieldName', () => {
-        it('Should return an empty array', () => {
+        it('should return an empty array', () => {
           const suite = vest.create(() => {});
           expect(suite.run().getErrors()).toEqual({});
           expect(suite.get().getErrors('field_2')).toEqual([]);
@@ -26,7 +26,7 @@ describe('->getFailures', () => {
     });
     describe('When no errors', () => {
       describe('When no parameters passed', () => {
-        it('Should return an object no errors', () => {
+        it('should return an empty object (no errors)', () => {
           const suite = vest.create(() => {
             dummyTest.passing('f1');
             dummyTest.passing('f2');
@@ -36,7 +36,7 @@ describe('->getFailures', () => {
         });
       });
       describe('When requesting a fieldName', () => {
-        it('Should return an empty array', () => {
+        it('should return an empty array', () => {
           const suite = vest.create(() => {
             dummyTest.passing('field_1');
             dummyTest.passing();
@@ -49,7 +49,7 @@ describe('->getFailures', () => {
 
     describe('When there are errors', () => {
       describe('When no parameters passed', () => {
-        it('Should return an object with an array per field', () => {
+        it('should return an object mapping each field to its error messages', () => {
           const suite = vest.create(() => {
             vest.mode(Modes.ALL);
             dummyTest.failing('field_1', 'msg_1');
@@ -69,7 +69,7 @@ describe('->getFailures', () => {
         });
       });
       describe('When requesting a fieldName', () => {
-        it('Should return an empty array', () => {
+        it('should return an array with the field error messages', () => {
           const suite = vest.create(() => {
             dummyTest.failing('field_1', 'msg_1');
             dummyTest.failing('field_2', 'msg_2');
@@ -87,14 +87,14 @@ describe('->getFailures', () => {
   describe(`getWarnings`, () => {
     describe('When no testObjects', () => {
       describe('When no parameters passed', () => {
-        it('Should return an empty object', () => {
+        it('should return an empty object', () => {
           const suite = vest.create(() => {});
           expect(suite.run().getWarnings()).toEqual({});
           expect(suite.get().getWarnings()).toEqual({});
         });
       });
       describe('When requesting a fieldName', () => {
-        it('Should return an empty array', () => {
+        it('should return an empty array', () => {
           const suite = vest.create(() => {});
           expect(suite.run().getWarnings('field_1')).toEqual([]);
           expect(suite.get().getWarnings('field_1')).toEqual([]);
@@ -103,7 +103,7 @@ describe('->getFailures', () => {
     });
     describe('When no warnings', () => {
       describe('When no parameters passed', () => {
-        it('Should return an empty object', () => {
+        it('should return an empty object', () => {
           const suite = vest.create(() => {
             dummyTest.passing('x');
             dummyTest.passing('y');
@@ -113,7 +113,7 @@ describe('->getFailures', () => {
         });
       });
       describe('When requesting a fieldName', () => {
-        it('Should return an empty array', () => {
+        it('should return an empty array', () => {
           const suite = vest.create(() => {
             dummyTest.passing('field_1');
             dummyTest.passing();
@@ -126,7 +126,7 @@ describe('->getFailures', () => {
 
     describe('When there are warnings', () => {
       describe('When no parameters passed', () => {
-        it('Should return an object with an array per field', () => {
+        it('should return an object mapping each field to its warning messages', () => {
           const suite = vest.create(() => {
             dummyTest.failingWarning('field_1', 'msg_1');
             dummyTest.failingWarning('field_2', 'msg_2');
@@ -145,7 +145,7 @@ describe('->getFailures', () => {
         });
       });
       describe('When requesting a fieldName', () => {
-        it('Should return an empty array', () => {
+        it('should return an array with the field warning messages', () => {
           const suite = vest.create(() => {
             dummyTest.failingWarning('field_1', 'msg_1');
             dummyTest.failingWarning('field_2', 'msg_2');

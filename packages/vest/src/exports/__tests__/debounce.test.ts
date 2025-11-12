@@ -8,7 +8,7 @@ import * as vest from 'vest';
 describe('debounce', () => {
   describe('Sync test', () => {
     describe('Returning false', () => {
-      it('Should debounce test function calls when used', async () => {
+      it('should debounce test function calls when returning false', async () => {
         const test = vi.fn(() => {
           return false;
         });
@@ -30,7 +30,7 @@ describe('debounce', () => {
     });
 
     describe('Throwing an error', () => {
-      it('Should debounce test function calls when used', async () => {
+      it('should debounce test function calls when throwing an error', async () => {
         const test = vi.fn(() => {
           throw new Error();
         });
@@ -53,7 +53,7 @@ describe('debounce', () => {
   });
 
   describe('Async test', () => {
-    it('Should complete the async test after the delay', async () => {
+    it('should start the async test only after the debounce delay', async () => {
       const t = vi.fn(async () => {
         await wait(1000);
         vest.enforce(1).equals(2);
@@ -77,7 +77,7 @@ describe('debounce', () => {
   });
 
   describe('When delay met multiple times', () => {
-    it('Should call once per completed delay', async () => {
+    it('should call the test once per completed delay window', async () => {
       const test = vi.fn(() => {
         return false;
       });
@@ -108,7 +108,7 @@ describe('debounce', () => {
   });
 
   describe('Debounced tests with non-debounced tests', () => {
-    it('Should complete non-debounced tests immediately', async () => {
+    it('should complete non-debounced tests immediately', async () => {
       const test = vi.fn(() => {
         return false;
       });
@@ -130,7 +130,7 @@ describe('debounce', () => {
   });
 
   describe('Multiple debounced fields', () => {
-    it('Should conclude them on their own time', async () => {
+    it('should conclude each debounced field on its own schedule', async () => {
       const calls: number[] = [];
       const t = vi.fn(() => {
         calls.push(Date.now());
@@ -157,7 +157,7 @@ describe('debounce', () => {
 
   describe('Test payload', () => {
     describe('AbortSignal', () => {
-      it('Should abort the test when signal is aborted', async () => {
+      it('should abort the test when the abort signal is triggered', async () => {
         const control = vi.fn();
 
         let run = 0;

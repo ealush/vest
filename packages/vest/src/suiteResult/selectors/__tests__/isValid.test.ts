@@ -6,7 +6,7 @@ import { test, optional, create, skipWhen, warn, skip, only } from 'vest';
 
 describe('isValid', () => {
   describe('Before any test ran', () => {
-    it('Should return false', () => {
+    it('should return false', () => {
       const suite = create(() => {
         test('field_1', () => false);
       });
@@ -29,18 +29,18 @@ describe('isValid', () => {
       });
     });
 
-    it('Should return false when an optional test has errors', () => {
+    it('should return false when an optional test has errors', () => {
       expect(suite.run('field_2').isValid()).toBe(false);
     });
-    it('Should return false when a required test has errors', () => {
+    it('should return false when a required test has errors', () => {
       expect(suite.run('field_1').isValid()).toBe(false);
     });
 
-    it('Should return false when the queried field is not optional and has errors', () => {
+    it('should return false when the queried field is not optional and has errors', () => {
       expect(suite.run('field_2').isValid('field_2')).toBe(false);
     });
 
-    it('Should return true when the queried field is optional and has errors', () => {
+    it('should return true when the queried field is optional and has errors', () => {
       expect(suite.run('field_1').isValid('field_1')).toBe(true);
     });
   });
@@ -56,7 +56,7 @@ describe('isValid', () => {
         });
       });
     });
-    it('Should return true when a required test has warnings', () => {
+    it('should return true when a required test has warnings', () => {
       expect(suite.run().isValid()).toBe(true);
       expect(suite.run().isValid('field_1')).toBe(true);
     });
@@ -71,7 +71,7 @@ describe('isValid', () => {
           test('field_1', () => true);
         });
       });
-      it('Should return true when a required test has warnings', () => {
+      it('should return true when a required test has warnings', () => {
         expect(suite.run().isValid()).toBe(true);
       });
     });
@@ -89,7 +89,7 @@ describe('isValid', () => {
           });
         });
       });
-      it('Should return false even when the skipped field is warning', () => {
+      it('should return false even when the skipped field is warning', () => {
         expect(suite.run().isValid()).toBe(false);
       });
     });
@@ -112,10 +112,10 @@ describe('isValid', () => {
         });
       });
     });
-    it('Should return false', () => {
+    it('should return false', () => {
       expect(suite.run('field_1').isValid()).toBe(false);
     });
-    it('Should return false', () => {
+    it('should return false', () => {
       expect(suite.run(['field_2', 'field_3']).isValid()).toBe(false);
     });
   });
@@ -133,7 +133,7 @@ describe('isValid', () => {
     });
 
     describe('When a test is pending', () => {
-      it('Should return false', () => {
+      it('should return false', () => {
         suite.run();
         expect(suite.get().isValid()).toBe(false);
         expect(suite.get().isValid('field_1')).toBe(false);
@@ -206,7 +206,7 @@ describe('isValid', () => {
     });
 
     describe('When async test is passing', () => {
-      it('Should return `true`', async () => {
+      it('should return `true`', async () => {
         {
           await suite.run();
           expect(suite.isValid()).toBe(true);
@@ -217,7 +217,7 @@ describe('isValid', () => {
     });
 
     describe('When test is lagging', () => {
-      it('Should return `false`', async () => {
+      it('should return `false`', async () => {
         const result = await suite.run('field_2');
 
         expect(result.isValid()).toBe(false);
@@ -244,7 +244,7 @@ describe('isValid', () => {
         });
       });
     });
-    it('Should return true', () => {
+    it('should return true', () => {
       expect(suite.run().isValid()).toBe(true);
       expect(suite.run().isValid('field_1')).toBe(true);
       expect(suite.run().isValid('field_2')).toBe(true);
@@ -253,7 +253,7 @@ describe('isValid', () => {
   });
 
   describe('When a required field has some passing tests', () => {
-    it('Should return false', () => {
+    it('should return false', () => {
       expect(
         create(() => {
           test('field_1', () => true);
@@ -270,7 +270,7 @@ describe('isValid', () => {
   });
 
   describe('When field name is specified', () => {
-    it('Should return false when field did not run yet', () => {
+    it('should return false when field did not run yet', () => {
       expect(
         create(() => {
           skip('field_1');
@@ -281,7 +281,7 @@ describe('isValid', () => {
       ).toBe(false);
     });
 
-    it('Should return false when testing for a field that does not exist', () => {
+    it('should return false when testing for a field that does not exist', () => {
       expect(
         create(() => {
           test('field_1', () => {});
@@ -291,7 +291,7 @@ describe('isValid', () => {
       ).toBe(false);
     });
 
-    it("Should return false when some of the field's tests ran", () => {
+    it("should return false when only some of the field's tests ran", () => {
       expect(
         create(() => {
           test('field_1', () => {
@@ -308,7 +308,7 @@ describe('isValid', () => {
       ).toBe(false);
     });
 
-    it('Should return false when the field has errors', () => {
+    it('should return false when the field has errors', () => {
       expect(
         create(() => {
           test('field_1', () => {
@@ -320,7 +320,7 @@ describe('isValid', () => {
       ).toBe(false);
     });
 
-    it('Should return true when all the tests are passing', () => {
+    it('should return true when all the tests are passing', () => {
       expect(
         create(() => {
           test('field_1', () => {
@@ -332,7 +332,7 @@ describe('isValid', () => {
       ).toBe(true);
     });
 
-    it('Should return true when the field only has warnings', () => {
+    it('should return true when the field only has warnings', () => {
       expect(
         create(() => {
           test('field_1', () => {
@@ -345,7 +345,7 @@ describe('isValid', () => {
       ).toBe(true);
     });
 
-    it('Should return true if field is optional and did not run', () => {
+    it('should return true if field is optional and did not run', () => {
       expect(
         create(() => {
           optional('field_1');
@@ -360,7 +360,7 @@ describe('isValid', () => {
   });
 
   describe('When querying a non existing field', () => {
-    it('Should return false', () => {
+    it('should return false', () => {
       expect(
         create(() => {
           test('field_1', () => true);

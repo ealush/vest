@@ -26,7 +26,7 @@ describe('mode', () => {
         });
       });
 
-      it('Should fail fast for every failing field', () => {
+      it('should stop after the first failing test in each field', () => {
         expect(suite.get().testCount).toBe(0); // sanity
         suite.run();
         expect(suite.get().testCount).toBe(3);
@@ -39,7 +39,7 @@ describe('mode', () => {
       describe('async tests', () => {
         describe('When mixed', () => {
           describe('Failing sync test before the async tests', () => {
-            it('should stop execution after the first failing sync test', () =>
+            it('should stop after the first failing sync test before pending async tests', () =>
               new Promise<void>(resolve => {
                 const suite = Vest.create(() => {
                   Vest.test('t1', 'f0', () => true);
@@ -60,7 +60,7 @@ describe('mode', () => {
               }));
           });
           describe('Failing async test before the sync tests', () => {
-            it('should stop execution after the first failing sync test', async () => {
+            it('should include earlier failing async test and then stop on first failing sync test', async () => {
               const suite = Vest.create(() => {
                 Vest.test('t1', 'f0', async () => {
                   await wait(150);
@@ -78,7 +78,7 @@ describe('mode', () => {
         });
 
         describe('Only async tests', () => {
-          it('should run all tests', async () => {
+          it('should run all async tests', async () => {
             const suite = Vest.create(() => {
               Vest.test('async_1', 'f1', async () => {
                 await wait(100);
@@ -98,7 +98,7 @@ describe('mode', () => {
       });
 
       describe('When test is `only`ed', () => {
-        it('Should fail fast for failing field', () => {
+        it('should stop after the first failing test in the focused field', () => {
           suite.run('field_1');
           expect(suite.get().testCount).toBe(1);
           expect(suite.get().errorCount).toBe(1);
@@ -117,7 +117,7 @@ describe('mode', () => {
             dummyTest.failing('field_1', 'second-of-field_1');
           });
         });
-        it('Should fail fast for failing field', () => {
+        it('should stop after the first failing test inside the group', () => {
           suite.run();
           expect(suite.get().testCount).toBe(1);
           expect(suite.get().errorCount).toBe(1);
@@ -140,7 +140,7 @@ describe('mode', () => {
         });
       });
 
-      it('Should fail fast for every failing field', () => {
+      it('should stop after the first failing test per field (passing tests before failure counted)', () => {
         expect(suite.get().testCount).toBe(0); // sanity
         suite.run();
         expect(suite.get().testCount).toBe(6);
@@ -166,7 +166,7 @@ describe('mode', () => {
         });
       });
 
-      it('Should treat test as passing', () => {
+      it('should treat previously failing test as passing after it no longer fails', () => {
         suite.run();
         expect(suite.get().hasErrors()).toBe(true);
         expect(suite.get().getErrors('field_1')).toEqual(['second-of-field_1']);
@@ -177,7 +177,7 @@ describe('mode', () => {
     });
 
     describe('When in a nested block', () => {
-      it('Should follow the same behavior as if it was not nested', () => {
+      it('should apply fail-fast behavior even when tests are nested', () => {
         const suite = create(() => {
           group('group_1', () => {
             Vest.test('field_1', 'first-of-field_1', () => false);
@@ -215,7 +215,7 @@ describe('mode', () => {
       });
     });
 
-    it('Should run all tests', () => {
+    it('should run all tests (ALL mode runs every test)', () => {
       expect(suite.get().testCount).toBe(0); // sanity
       suite.run();
       expect(suite.get().testCount).toBe(6);
@@ -237,7 +237,7 @@ describe('mode', () => {
         });
       });
 
-      it('Should run all tests', () => {
+      it('should run all tests when none fail', () => {
         expect(suite.get().testCount).toBe(0); // sanity
         suite.run();
         expect(suite.get().testCount).toBe(6);
@@ -258,7 +258,7 @@ describe('mode', () => {
         });
       });
 
-      it('Should skip all tests after a failed tests', () => {
+      it('should stop running further tests after the first failure', () => {
         expect(suite.get().testCount).toBe(0); // sanity
         suite.run();
         expect(suite.get().testCount).toBe(3);

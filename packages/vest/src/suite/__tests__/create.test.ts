@@ -29,7 +29,7 @@ describe('Test createSuite module', () => {
     );
 
     describe('When suite name is provided', () => {
-      it('Should add suite name to suite result', () => {
+      it('should add the suite name to the suite result', () => {
         const res = create('form_name', () => {}).run();
 
         expect(res.suiteName).toBe('form_name');
@@ -38,7 +38,7 @@ describe('Test createSuite module', () => {
   });
 
   describe('Return value', () => {
-    it('Suite.run should be a function', () => {
+    it('should expose Suite.run as a function', () => {
       expect(typeof create(noop).run).toBe('function');
     });
   });
@@ -72,7 +72,7 @@ describe('Test createSuite module', () => {
     const testsCb = vi.fn();
     const genSuite = () => create(testsCb);
 
-    it('Should initialize with an empty result object', () => {
+    it('should initialize with an empty result object', () => {
       const suite = genSuite();
       expect(Object.keys(suite.get().tests)).toHaveLength(0);
       expect(Object.keys(suite.get().groups)).toHaveLength(0);
@@ -84,12 +84,12 @@ describe('Test createSuite module', () => {
       expect(suite.get()).toMatchSnapshot();
     });
 
-    it('Should be able to get the suite from the result of createSuite', () => {
+    it('should be able to get the suite from the result of createSuite', () => {
       const testsCb = vi.fn();
       expect(create(testsCb).get()).toMatchSnapshot();
     });
 
-    it('Should be able to reset the suite from the result of createSuite', () => {
+    it('should be able to reset the suite from the result of createSuite', () => {
       const testSuite = create(() => {
         dummyTest.failing('f1', 'm1');
       });
@@ -101,7 +101,7 @@ describe('Test createSuite module', () => {
       expect(testSuite.get().testCount).toBe(0);
     });
 
-    it('Should return without calling tests callback', () => {
+    it('should return without calling the tests callback', () => {
       const suite = create(testsCb);
       expect(testsCb).not.toHaveBeenCalled();
       suite.run();

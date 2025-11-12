@@ -8,7 +8,7 @@ import * as vest from 'vest';
 
 describe('Utility: classnames', () => {
   describe('When called without a vest result object', () => {
-    it('Should throw an error', () => {
+    it('should throw an error', () => {
       expect(classnames).toThrow();
       // @ts-expect-error - testing invalid input
       expect(() => classnames({})).toThrow();
@@ -20,7 +20,7 @@ describe('Utility: classnames', () => {
   });
 
   describe('When called with a vest result object', () => {
-    it('Should return a function', async () => {
+    it('should return a function', async () => {
       const suite = vest.create(
         vi.fn(() => {
           dummyTest.failing('field_0');
@@ -62,7 +62,7 @@ describe('Utility: classnames', () => {
       warning: 'warning_string',
     });
 
-    it('Should produce a string matching the classnames object for each field', () => {
+    it('should produce a string matching the classnames object for each field', () => {
       expect(genClass('field_1')).toBe('untested_string');
 
       // splitting and sorting to not rely on object order which is unspecified in the language
@@ -91,7 +91,7 @@ describe('Utility: classnames', () => {
       invalid: 'invalid_string',
     });
 
-    it('Should produce a string matching the classnames object for each field', () => {
+    it('should produce a string matching the classnames object for each field', () => {
       expect(genClass('field_1')).toBe('');
 
       // splitting and sorting to not rely on object order which is unspecified in the language
@@ -105,7 +105,7 @@ describe('Utility: classnames', () => {
   });
 
   describe('pending', () => {
-    it('Should add pending classname when a test is pending', () => {
+    it('should add the pending classname when a test is pending', () => {
       const suite = vest.create(() => {
         vest.test('field_1', 'msg', async () => {});
         vest.test('field_2', 'msg', () => {});

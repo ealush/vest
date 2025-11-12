@@ -6,13 +6,13 @@ import { SuiteSerializer } from 'SuiteSerializer';
 import * as vest from 'vest';
 
 describe('suite.subscribe', () => {
-  it('Should be a function', () => {
+  it('should be a function', () => {
     const suite = vest.create('suite', () => {});
 
     expect(typeof suite.subscribe).toBe('function');
   });
 
-  it('Should call the callback on suite updates', async () => {
+  it('should call the callback on suite updates', async () => {
     const cb = vi.fn(() => {
       dumps.push(SuiteSerializer.serialize(suite));
     });
@@ -53,7 +53,7 @@ describe('suite.subscribe', () => {
   });
 
   describe('Subscribe with event name', () => {
-    it('Should only call the callback on the specified event', () => {
+    it('should only call the callback on the specified event', () => {
       const cbAllDone = vi.fn();
       const testDone = vi.fn();
       const testStarted = vi.fn();
@@ -79,7 +79,7 @@ describe('suite.subscribe', () => {
   });
 
   describe('unsubscribe', () => {
-    it('Should unsubscribe future events', () => {
+    it('should unsubscribe future events', () => {
       const cb = vi.fn();
       const suite = vest.create('suite', () => {
         vest.test('field', () => {});
@@ -100,7 +100,7 @@ describe('suite.subscribe', () => {
 });
 
 describe('#1157 (@codrin-iftimie) suite.get() in subscribe() skips the first validation of the field', () => {
-  it('Should fail for the first field in both runs', () => {
+  it('should fail for the first field in both runs', () => {
     const suite = vest.create(data => {
       vest.test('a', 'Enter a value', () => {
         enforce(data.a).isNotEmpty();

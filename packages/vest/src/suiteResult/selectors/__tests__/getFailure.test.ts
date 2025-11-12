@@ -4,17 +4,17 @@ import * as vest from 'vest';
 
 describe('->getFailure (singular form)', () => {
   describe('getError', () => {
-    describe('When not passing a field name', () => {
-      describe('When there are no errors', () => {
-        it('Should return undefined', () => {
+    describe('when not passing a field name', () => {
+      describe('when there are no errors', () => {
+        it('should return undefined', () => {
           const suite = vest.create(() => {});
           expect(suite.run().getErrors()).toEqual({});
           expect(suite.get().getError()).toBeUndefined();
         });
       });
 
-      describe('When there are errors', () => {
-        it('Should return the first error object', () => {
+      describe('when there are errors', () => {
+        it('should return the first error object', () => {
           const suite = vest.create(() => {
             vest.test('field_1', 'msg_1', () => false);
             vest.test('field_2', 'msg_2', () => false);
@@ -28,9 +28,9 @@ describe('->getFailure (singular form)', () => {
       });
     });
 
-    describe('When no tests', () => {
-      describe('When requesting a fieldName', () => {
-        it('Should return undefined', () => {
+    describe('when no tests', () => {
+      describe('when requesting a fieldName', () => {
+        it('should return undefined', () => {
           const suite = vest.create(() => {});
           expect(suite.run().getErrors()).toEqual({});
           expect(suite.get().getError('field_2')).toBeUndefined();
@@ -38,8 +38,8 @@ describe('->getFailure (singular form)', () => {
       });
     });
 
-    describe('When no errors', () => {
-      it('Should return undefined', () => {
+    describe('when no errors', () => {
+      it('should return undefined', () => {
         const suite = vest.create(() => {
           vest.test('field_1', 'msg_1', () => {});
         });
@@ -48,8 +48,8 @@ describe('->getFailure (singular form)', () => {
       });
     });
 
-    describe('When there are errors', () => {
-      it('Should return the first error', () => {
+    describe('when there are errors', () => {
+      it('should return the first error', () => {
         const suite = vest.create(() => {
           vest.test('field_1', 'msg_1', () => false);
           vest.test('field_2', 'msg_2', () => false);
@@ -58,9 +58,9 @@ describe('->getFailure (singular form)', () => {
       });
     });
 
-    describe('When there are errors', () => {
-      describe('When there is only one error', () => {
-        it('Should return the error', () => {
+    describe('when there are errors', () => {
+      describe('when there is only one error', () => {
+        it('should return the error', () => {
           const suite = vest.create(() => {
             vest.test('field_1', 'msg_1', () => false);
           });
@@ -69,8 +69,8 @@ describe('->getFailure (singular form)', () => {
         });
       });
 
-      describe('When there are multiple errors', () => {
-        it('Should return the first error', () => {
+      describe('when there are multiple errors', () => {
+        it('should return the first error', () => {
           const suite = vest.create(() => {
             vest.test('field_1', 'msg_1', () => false);
             vest.test('field_1', 'msg_2', () => false);
@@ -80,8 +80,8 @@ describe('->getFailure (singular form)', () => {
         });
       });
 
-      describe('When checking the incorrect field', () => {
-        it('Should return undefined', () => {
+      describe('when checking an incorrect field', () => {
+        it('should return undefined', () => {
           const suite = vest.create(() => {
             vest.test('field_1', 'msg_1', () => false);
           });
@@ -93,17 +93,17 @@ describe('->getFailure (singular form)', () => {
   });
 
   describe('getWarning', () => {
-    describe('When not passing a field name', () => {
-      describe('When there are no warnings', () => {
-        it('Should return undefined', () => {
+    describe('when not passing a field name', () => {
+      describe('when there are no warnings', () => {
+        it('should return undefined', () => {
           const suite = vest.create(() => {});
           expect(suite.run().getWarnings()).toEqual({});
           expect(suite.get().getWarning()).toBeUndefined();
         });
       });
 
-      describe('When there are warnings', () => {
-        it('Should return the first warning object', () => {
+      describe('when there are warnings', () => {
+        it('should return the first warning object', () => {
           const suite = vest.create(() => {
             vest.test('t1', 't1 message', () => {
               vest.warn();
@@ -125,9 +125,9 @@ describe('->getFailure (singular form)', () => {
       });
     });
 
-    describe('When no tests', () => {
-      describe('When requesting a fieldName', () => {
-        it('Should return undefined', () => {
+    describe('when no tests', () => {
+      describe('when requesting a fieldName', () => {
+        it('should return undefined', () => {
           const suite = vest.create(() => {});
           expect(suite.run().getWarnings()).toEqual({});
           expect(suite.get().getWarning('field_2')).toBeUndefined();
@@ -135,8 +135,8 @@ describe('->getFailure (singular form)', () => {
       });
     });
 
-    describe('When no warnings', () => {
-      it('Should return undefined', () => {
+    describe('when there are no warnings', () => {
+      it('should return undefined', () => {
         const suite = vest.create(() => {
           vest.test('field_1', 'msg_1', () => {});
         });
@@ -145,9 +145,9 @@ describe('->getFailure (singular form)', () => {
       });
     });
 
-    describe('When there are warnings', () => {
-      describe('When there is only one warning', () => {
-        it('Should return the warning', () => {
+    describe('when there are warnings', () => {
+      describe('when there is only one warning', () => {
+        it('should return the warning', () => {
           const suite = vest.create(() => {
             vest.test('field_1', 'msg_1', () => {
               vest.warn();
@@ -159,8 +159,8 @@ describe('->getFailure (singular form)', () => {
         });
       });
 
-      describe('When there are multiple warnings', () => {
-        it('Should return the first warning', () => {
+      describe('when there are multiple warnings', () => {
+        it('should return the first warning', () => {
           const suite = vest.create(() => {
             vest.test('field_1', 'msg_1', () => {
               vest.warn();
@@ -176,8 +176,8 @@ describe('->getFailure (singular form)', () => {
         });
       });
 
-      describe('When checking the incorrect field', () => {
-        it('Should return undefined', () => {
+      describe('when checking an incorrect field', () => {
+        it('should return undefined', () => {
           const suite = vest.create(() => {
             vest.test('field_1', 'msg_1', () => {
               vest.warn();
@@ -192,8 +192,8 @@ describe('->getFailure (singular form)', () => {
   });
 
   describe('getMessage', () => {
-    describe('When the field has an error', () => {
-      it('Should return the error message', () => {
+    describe('when the field has an error', () => {
+      it('should return the error message', () => {
         const suite = vest.create(() => {
           vest.test('field_1', 'msg_1', () => false);
         });
@@ -202,8 +202,8 @@ describe('->getFailure (singular form)', () => {
       });
     });
 
-    describe('When the field has a warning', () => {
-      it('Should return the warning message', () => {
+    describe('when the field has a warning', () => {
+      it('should return the warning message', () => {
         const suite = vest.create(() => {
           vest.test('field_1', 'msg_1', () => {
             vest.warn();
@@ -215,8 +215,8 @@ describe('->getFailure (singular form)', () => {
       });
     });
 
-    describe('When the field has no errors or warnings', () => {
-      it('Should return undefined', () => {
+    describe('when the field has no errors or warnings', () => {
+      it('should return undefined', () => {
         const suite = vest.create(() => {
           vest.test('field_1', 'msg_1', () => {});
         });
@@ -225,8 +225,8 @@ describe('->getFailure (singular form)', () => {
       });
     });
 
-    describe('When the field has both an error and a warning', () => {
-      it('Should return the error message', () => {
+    describe('when the field has both an error and a warning', () => {
+      it('should return the error message', () => {
         const suite = vest.create(() => {
           vest.test('field_1', 'msg_1', () => false);
           vest.test('field_1', 'msg_2', () => {
@@ -239,8 +239,8 @@ describe('->getFailure (singular form)', () => {
       });
     });
 
-    describe('When the field has multiple errors', () => {
-      it('Should return the first error message', () => {
+    describe('when the field has multiple errors', () => {
+      it('should return the first error message', () => {
         const suite = vest.create(() => {
           vest.test('field_1', 'msg_1', () => false);
           vest.test('field_1', 'msg_2', () => false);
@@ -250,8 +250,8 @@ describe('->getFailure (singular form)', () => {
       });
     });
 
-    describe('When the field has multiple warnings', () => {
-      it('Should return the first warning message', () => {
+    describe('when the field has multiple warnings', () => {
+      it('should return the first warning message', () => {
         const suite = vest.create(() => {
           vest.test('field_1', 'msg_1', () => {
             vest.warn();
@@ -267,8 +267,8 @@ describe('->getFailure (singular form)', () => {
       });
     });
 
-    describe('When the field does not exist', () => {
-      it('Should return undefined', () => {
+    describe('when the field does not exist', () => {
+      it('should return undefined', () => {
         const suite = vest.create(() => {});
         expect(suite.run().getMessage('field_1')).toBeUndefined();
         expect(suite.get().getMessage('field_1')).toBeUndefined();

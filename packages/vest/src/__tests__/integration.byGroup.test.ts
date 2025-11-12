@@ -1,6 +1,7 @@
-import { TTestSuite } from 'testUtils/TVestMock';
 import { describe, it, expect, beforeEach } from 'vitest';
 import wait from 'wait';
+
+import { TTestSuite } from '../testUtils/TVestMock';
 
 import { Modes } from 'Modes';
 import { create, group, test, warn, skip, optional, only } from 'vest';
@@ -11,7 +12,7 @@ import * as vest from 'vest';
  * These tests cover edge cases and integration scenarios across multiple selectors
  */
 describe('Integration: byGroup selectors', () => {
-  describe('Multiple groups with the same field names', () => {
+  describe('Multiple groups share field names', () => {
     let suite: TTestSuite;
 
     beforeEach(() => {
@@ -28,7 +29,7 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('hasErrorsByGroup should isolate errors by group', () => {
+    it('should report errors only from the queried group in hasErrorsByGroup', () => {
       const result = suite.run();
       expect(result.hasErrorsByGroup('group_1')).toBe(true);
       expect(result.hasErrorsByGroup('group_1', 'field_1')).toBe(true);
@@ -38,7 +39,7 @@ describe('Integration: byGroup selectors', () => {
       expect(result.hasErrorsByGroup('group_2', 'field_2')).toBe(true);
     });
 
-    it('getErrorsByGroup should isolate errors by group', () => {
+    it('should return only errors from the queried group in getErrorsByGroup', () => {
       const result = suite.run();
       expect(result.getErrorsByGroup('group_1')).toEqual({
         field_1: ['error in g1'],
@@ -54,7 +55,7 @@ describe('Integration: byGroup selectors', () => {
       ]);
     });
 
-    it('isValidByGroup should isolate validity by group', () => {
+    it('should evaluate validity separately per group in isValidByGroup', () => {
       const result = suite.run();
       expect(result.isValidByGroup('group_1')).toBe(false);
       expect(result.isValidByGroup('group_2')).toBe(false);
@@ -79,7 +80,7 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('Should handle nested groups correctly', () => {
+    it('should keep errors separate between nested groups', () => {
       const result = suite.run();
       expect(result.hasErrorsByGroup('outer')).toBe(true);
       expect(result.hasErrorsByGroup('inner')).toBe(true);
@@ -109,7 +110,7 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('Should correctly separate errors and warnings', () => {
+    it('should separate errors from warnings', () => {
       const result = suite.run();
       expect(result.hasErrorsByGroup('mixed_group')).toBe(true);
       expect(result.hasWarningsByGroup('mixed_group')).toBe(true);
@@ -119,7 +120,7 @@ describe('Integration: byGroup selectors', () => {
       expect(result.hasWarningsByGroup('mixed_group', 'field_2')).toBe(true);
     });
 
-    it('Should get errors and warnings separately', () => {
+    it('should return separate maps from getErrorsByGroup and getWarningsByGroup', () => {
       const result = suite.run();
       expect(result.getErrorsByGroup('mixed_group')).toEqual({
         field_1: ['error_msg'],
@@ -150,7 +151,7 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('Should collect all errors for the same field', () => {
+    it('should collect all errors from repeated tests of the same field', () => {
       const result = suite.run();
       expect(result.hasErrorsByGroup('group_1', 'field_1')).toBe(true);
       expect(result.getErrorsByGroup('group_1', 'field_1')).toEqual([
@@ -172,7 +173,7 @@ describe('Integration: byGroup selectors', () => {
         });
       });
 
-      it('Should only collect failing tests', () => {
+      it('should ignore passing tests when collecting errors', () => {
         const result = suite.run();
         expect(result.getErrorsByGroup('group_1', 'field_1')).toEqual([
           'error 1',
@@ -196,7 +197,7 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('Should handle empty groups', () => {
+    it('should treat an empty group as valid with no errors or warnings', () => {
       const result = suite.run();
       expect(result.hasErrorsByGroup('empty_group')).toBe(false);
       expect(result.hasWarningsByGroup('empty_group')).toBe(false);
@@ -228,7 +229,7 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('Should return false for validity while tests are pending', () => {
+    it('should mark group invalid while async tests are pending', () => {
       const result = suite.run();
       expect(result.isValidByGroup('async_group')).toBe(false);
       expect(result.isValidByGroup('async_group', 'field_1')).toBe(false);
@@ -236,7 +237,7 @@ describe('Integration: byGroup selectors', () => {
       expect(result.isValidByGroup('async_group', 'field_3')).toBe(false);
     });
 
-    it('Should return correct results after async tests complete', async () => {
+    it('should update errors, warnings and validity after async tests finish', async () => {
       await suite.run();
       const result = suite.get();
       expect(result.hasErrorsByGroup('async_group')).toBe(true);
@@ -266,21 +267,21 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('Should not consider skipped tests in hasErrorsByGroup', () => {
+    it('should not count skipped tests as errors', () => {
       const result = suite.run('field_1');
       expect(result.hasErrorsByGroup('skip_group')).toBe(true);
       expect(result.hasErrorsByGroup('skip_group', 'field_1')).toBe(false);
       expect(result.hasErrorsByGroup('skip_group', 'field_2')).toBe(true);
     });
 
-    it('Should not include skipped tests in getErrorsByGroup', () => {
+    it('should exclude skipped tests from getErrorsByGroup', () => {
       const result = suite.run('field_1');
       const errors = result.getErrorsByGroup('skip_group');
       expect(errors).not.toHaveProperty('field_1');
       expect(errors).toHaveProperty('field_2');
     });
 
-    it('Should consider skipped tests when checking validity', () => {
+    it('should mark group invalid when required tests are skipped', () => {
       const result = suite.run('field_1');
       expect(result.isValidByGroup('skip_group')).toBe(false);
       expect(result.isValidByGroup('skip_group', 'field_1')).toBe(false);
@@ -300,7 +301,7 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('Should detect errors when optional is not applied', () => {
+    it('should report errors for non-optional fields', () => {
       const result = suite.run();
       expect(result.hasErrorsByGroup('optional_group')).toBe(true);
       expect(result.hasErrorsByGroup('optional_group', 'field_1')).toBe(true);
@@ -310,7 +311,7 @@ describe('Integration: byGroup selectors', () => {
       ]);
     });
 
-    it('Should fail group validity when optional is not applied', () => {
+    it('should mark group invalid when non-optional fields fail', () => {
       const result = suite.run();
       expect(result.isValidByGroup('optional_group')).toBe(false);
       expect(result.isValidByGroup('optional_group', 'field_1')).toBe(false);
@@ -332,7 +333,7 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('Should only run the specified field in the group', () => {
+    it('should run tests only for the field focused by only()', () => {
       const result = suite.run('field_1');
       expect(result.hasErrorsByGroup('only_group')).toBe(true);
       expect(result.hasErrorsByGroup('only_group', 'field_1')).toBe(true);
@@ -357,14 +358,14 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('Should detect errors even without messages', () => {
+    it('should detect errors even when tests have no messages', () => {
       const result = suite.run();
       expect(result.hasErrorsByGroup('no_message_group')).toBe(true);
       expect(result.hasErrorsByGroup('no_message_group', 'field_1')).toBe(true);
       expect(result.hasErrorsByGroup('no_message_group', 'field_2')).toBe(true);
     });
 
-    it('Should return empty arrays for fields without messages', () => {
+    it('should return an empty array for errors without messages in getErrorsByGroup', () => {
       const result = suite.run();
       expect(result.getErrorsByGroup('no_message_group', 'field_1')).toEqual(
         [],
@@ -378,7 +379,7 @@ describe('Integration: byGroup selectors', () => {
     });
   });
 
-  describe('OmitWhen in groups', () => {
+  describe('omitWhen in groups', () => {
     let suite: TTestSuite;
 
     beforeEach(() => {
@@ -392,21 +393,21 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('Should omit tests when condition is true', () => {
+    it('should exclude the test from running and from errors when omitWhen(true)', () => {
       const result = suite.run(true);
       expect(result.hasErrorsByGroup('omit_group', 'field_1')).toBe(false);
       expect(result.hasErrorsByGroup('omit_group', 'field_2')).toBe(true);
       expect(result.isValidByGroup('omit_group', 'field_1')).toBe(true);
     });
 
-    it('Should include tests when condition is false', () => {
+    it('should run the test and report its errors when omitWhen(false)', () => {
       const result = suite.run(false);
       expect(result.hasErrorsByGroup('omit_group', 'field_1')).toBe(true);
       expect(result.hasErrorsByGroup('omit_group', 'field_2')).toBe(true);
     });
   });
 
-  describe('SkipWhen in groups', () => {
+  describe('skipWhen in groups', () => {
     let suite: TTestSuite;
 
     beforeEach(() => {
@@ -420,14 +421,14 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('Should skip tests when condition is true', () => {
+    it('should skip the test when skipWhen(true); skipped test still affects validity', () => {
       const result = suite.run(true);
       expect(result.hasErrorsByGroup('skip_group', 'field_1')).toBe(false);
       expect(result.hasErrorsByGroup('skip_group', 'field_2')).toBe(true);
       expect(result.isValidByGroup('skip_group', 'field_1')).toBe(false);
     });
 
-    it('Should run tests when condition is false', () => {
+    it('should run the test and collect errors when skipWhen(false)', () => {
       const result = suite.run(false);
       expect(result.hasErrorsByGroup('skip_group', 'field_1')).toBe(true);
       expect(result.hasErrorsByGroup('skip_group', 'field_2')).toBe(true);
@@ -450,7 +451,7 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('Should have consistent results between run result and get()', () => {
+    it('should return consistent group data from run() and get()', () => {
       const runResult = suite.run();
       const getResult = suite.get();
 
@@ -487,7 +488,7 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('Should handle special characters in names', () => {
+    it('should handle dashes, spaces, dots and underscores in names', () => {
       const result = suite.run();
       expect(result.hasErrorsByGroup('group-with-dashes')).toBe(true);
       expect(
@@ -514,7 +515,7 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('Should handle large number of fields', () => {
+    it('should handle large groups and report errors only for failing fields', () => {
       const result = suite.run();
       expect(result.hasErrorsByGroup('large_group')).toBe(true);
       const errors = result.getErrorsByGroup('large_group');
@@ -540,7 +541,7 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('Should return valid for group with all passing tests', () => {
+    it('should be valid when all tests in the group pass', () => {
       const result = suite.run();
       expect(result.hasErrorsByGroup('passing_group')).toBe(false);
       expect(result.hasWarningsByGroup('passing_group')).toBe(false);
@@ -565,7 +566,7 @@ describe('Integration: byGroup selectors', () => {
       });
     });
 
-    it('Should immediately show sync errors', () => {
+    it('should show sync errors immediately; pending async tests are not errors yet', () => {
       const result = suite.run();
       expect(result.hasErrorsByGroup('mixed_async_group', 'sync_field')).toBe(
         true,
@@ -575,7 +576,7 @@ describe('Integration: byGroup selectors', () => {
       );
     });
 
-    it('Should show async errors after completion', async () => {
+    it('should show async errors after the async test finishes', async () => {
       suite.run();
       await wait(150);
       const result = suite.get();

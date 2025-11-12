@@ -4,7 +4,7 @@ import { SuiteSerializer } from 'SuiteSerializer';
 import * as vest from 'vest';
 
 describe('SuiteSerializer', () => {
-  it('Should produce a valid serialized dump', () => {
+  it('should produce a valid serialized dump', () => {
     const suite = vest.create('suite_serialize_test', () => {
       vest.only('field_1');
 
@@ -29,7 +29,7 @@ describe('SuiteSerializer', () => {
 });
 
 describe('suite.resume', () => {
-  it('Should resume a suite from a serialized dump', () => {
+  it('should resume a suite from a serialized dump', () => {
     const suite = vest.create(() => {
       vest.only('field_1');
 
@@ -83,7 +83,7 @@ describe('suite.resume', () => {
       });
     }
 
-    it('Should continue with resumed state if matching', () => {
+    it('should continue with resumed state if the data matches', () => {
       const suite = vest.create('suite_resume_test', cb);
 
       suite.run({});
@@ -97,8 +97,8 @@ describe('suite.resume', () => {
       expect(suite2.getError('field_2')).toBe('field_2_message');
     });
 
-    describe('Sanity - suite should run as expected', () => {
-      it('Should have correct state after resuming', () => {
+    describe('sanity - suite should run as expected', () => {
+      it('should have the correct state after resuming', () => {
         const suite = vest.create('suite_resume_test', cb);
 
         suite.run({});

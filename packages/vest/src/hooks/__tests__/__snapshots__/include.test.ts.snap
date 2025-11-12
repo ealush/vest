@@ -112,6 +112,118 @@ Promise {
 }
 `;
 
+exports[`include > Field is excluded via \`skip\` > should disregard \`include.when\` and avoid running the test 1`] = `
+Promise {
+  "dump": [Function],
+  "errorCount": 1,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 1,
+  "tests": {
+    "field_1": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_2": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`include > Field is excluded via \`skip\` > should disregard \`include\` and avoid running the test 1`] = `
+Promise {
+  "dump": [Function],
+  "errorCount": 1,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 1,
+  "tests": {
+    "field_1": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_2": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
 exports[`include > Test is excluded via \`skip.group\` > Should disregard \`include.when\` and avoid running the test 1`] = `
 Promise {
   "dump": [Function],
@@ -190,6 +302,160 @@ Promise {
 `;
 
 exports[`include > Test is excluded via \`skip.group\` > Should disregard \`include\` and avoid running the test 1`] = `
+Promise {
+  "dump": [Function],
+  "errorCount": 1,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {
+    "g1": {
+      "field_1": SummaryBase {
+        "errorCount": 0,
+        "errors": [],
+        "pendingCount": 0,
+        "testCount": 0,
+        "valid": false,
+        "warnCount": 0,
+        "warnings": [],
+      },
+      "field_2": SummaryBase {
+        "errorCount": 0,
+        "errors": [],
+        "pendingCount": 0,
+        "testCount": 0,
+        "valid": false,
+        "warnCount": 0,
+        "warnings": [],
+      },
+    },
+  },
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 1,
+  "tests": {
+    "field_1": {
+      "errorCount": 1,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_2": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`include > Test is excluded via \`skip.group\` > should disregard \`include.when\` and avoid running the test 1`] = `
+Promise {
+  "dump": [Function],
+  "errorCount": 1,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {
+    "g1": {
+      "field_1": SummaryBase {
+        "errorCount": 0,
+        "errors": [],
+        "pendingCount": 0,
+        "testCount": 0,
+        "valid": false,
+        "warnCount": 0,
+        "warnings": [],
+      },
+      "field_2": SummaryBase {
+        "errorCount": 0,
+        "errors": [],
+        "pendingCount": 0,
+        "testCount": 0,
+        "valid": false,
+        "warnCount": 0,
+        "warnings": [],
+      },
+    },
+  },
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 1,
+  "tests": {
+    "field_1": {
+      "errorCount": 1,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_2": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`include > Test is excluded via \`skip.group\` > should disregard \`include\` and avoid running the test 1`] = `
 Promise {
   "dump": [Function],
   "errorCount": 1,
@@ -421,7 +687,133 @@ Promise {
 }
 `;
 
+exports[`include > There is an \`onlyd\` field > \`include\` is run as-is without modifiers > should run the included test along with the field focused by only() 1`] = `
+Promise {
+  "dump": [Function],
+  "errorCount": 2,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    SummaryFailure {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 2,
+  "tests": {
+    "field_1": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_2": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
 exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a boolean > when \`false\` > Should skip run included field 1`] = `
+Promise {
+  "dump": [Function],
+  "errorCount": 1,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 1,
+  "tests": {
+    "field_1": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_2": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_3": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a boolean > when \`false\` > should not run the included field 1`] = `
 Promise {
   "dump": [Function],
   "errorCount": 1,
@@ -556,6 +948,76 @@ Promise {
 }
 `;
 
+exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a boolean > when \`true\` > should run the included field 1`] = `
+Promise {
+  "dump": [Function],
+  "errorCount": 2,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    SummaryFailure {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 2,
+  "tests": {
+    "field_1": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_2": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_3": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
 exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a function > Callback evaluation > Should evaluate per test run 1`] = `
 Promise {
   "dump": [Function],
@@ -608,7 +1070,124 @@ Promise {
 }
 `;
 
+exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a function > Callback evaluation > should evaluate per test run 1`] = `
+Promise {
+  "dump": [Function],
+  "errorCount": 2,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 2,
+  "tests": {
+    "field_1": {
+      "errorCount": 2,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 2,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
 exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a function > when  returning\`false\` > Should skip run included field 1`] = `
+Promise {
+  "dump": [Function],
+  "errorCount": 1,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 1,
+  "tests": {
+    "field_1": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_2": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_3": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a function > when  returning\`false\` > should not run the included field 1`] = `
 Promise {
   "dump": [Function],
   "errorCount": 1,
@@ -743,7 +1322,142 @@ Promise {
 }
 `;
 
+exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a function > when returning \`true\` > should run the included field 1`] = `
+Promise {
+  "dump": [Function],
+  "errorCount": 2,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    SummaryFailure {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 2,
+  "tests": {
+    "field_1": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_2": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_3": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
 exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a string > \`when\` param is a name of a non-included field > Should avoid running the included field 1`] = `
+Promise {
+  "dump": [Function],
+  "errorCount": 1,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 1,
+  "tests": {
+    "field_1": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_2": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_3": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a string > \`when\` param is a name of a non-included field > should not run the included field 1`] = `
 Promise {
   "dump": [Function],
   "errorCount": 1,
@@ -853,6 +1567,141 @@ Promise {
       "errors": [],
       "pendingCount": 0,
       "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_3": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a string > \`when\` param is a name of a skipped field > should not run the included field 1`] = `
+Promise {
+  "dump": [Function],
+  "errorCount": 1,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 1,
+  "tests": {
+    "field_1": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_2": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_3": SummaryBase {
+      "errorCount": 0,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 0,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+  },
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`include > There is an \`onlyd\` field > include().when() > \`when\` param is a string > \`when\` param is a name of an only() field > should run the included field along with the only() field 1`] = `
+Promise {
+  "dump": [Function],
+  "errorCount": 2,
+  "errors": [
+    SummaryFailure {
+      "fieldName": "field_1",
+      "groupName": undefined,
+      "message": undefined,
+    },
+    SummaryFailure {
+      "fieldName": "field_2",
+      "groupName": undefined,
+      "message": undefined,
+    },
+  ],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 2,
+  "tests": {
+    "field_1": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
+      "valid": false,
+      "warnCount": 0,
+      "warnings": [],
+    },
+    "field_2": SummaryBase {
+      "errorCount": 1,
+      "errors": [],
+      "pendingCount": 0,
+      "testCount": 1,
       "valid": false,
       "warnCount": 0,
       "warnings": [],

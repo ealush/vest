@@ -50,7 +50,7 @@ describe('produce method: hasFailures', () => {
     });
 
     describe('When field has an error', () => {
-      it('Should return true when some of the tests of the field are erroring', () => {
+      it('should return true when the field has at least one failing test', () => {
         const suite = vest.create(() => {
           dummyTest.passing();
           dummyTest.failing(fieldName);
@@ -115,7 +115,7 @@ describe('produce method: hasFailures', () => {
     });
 
     describe('When field is warning', () => {
-      it('Should return true when some of the tests of the field are warning', () => {
+      it('should return true when the field has at least one warning', () => {
         const suite = vest.create(() => {
           dummyTest.passingWarning();
           dummyTest.failingWarning(fieldName);
@@ -127,7 +127,7 @@ describe('produce method: hasFailures', () => {
         expect(suite.get().hasWarnings()).toBe(true);
       });
 
-      it('should return false', () => {
+      it('should return true', () => {
         const suite = vest.create(() => {
           dummyTest.failingWarning(fieldName);
         });

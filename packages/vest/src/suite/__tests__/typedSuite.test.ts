@@ -12,7 +12,7 @@ describe('typed suite', () => {
     suite = vest.create(() => {});
   });
 
-  it('Should support typed field names and group names', () => {
+  it('should support typed field names and group names', () => {
     const result = suite.get();
     // Checking that TS doesn't hiccup
     expect(result.tests.F1).toBeUndefined();
@@ -34,7 +34,7 @@ describe('typed suite', () => {
     expect(result.groups.G100?.F1).toBeUndefined();
   });
 
-  it('Should only support annotated group and field names in the suite methods', () => {
+  it('should only support annotated group and field names in the suite methods', () => {
     const res = suite.get();
 
     res.hasErrors('F1');
@@ -83,7 +83,7 @@ describe('typed methods', () => {
     expect(suite.get().hasErrors('PASSWORD')).toBe(true);
   });
 
-  it('The suite exposes all typed methods', () => {
+  it('should expose all typed methods', () => {
     const suite = vest.create(() => {});
 
     expect(typeof suite.test).toBe('function');

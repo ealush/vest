@@ -6,7 +6,7 @@ import { VestIsolateType } from 'VestIsolateType';
 import * as vest from 'vest';
 
 describe('runStatic', () => {
-  it('Should run a static suite', () => {
+  it('should run a static suite', () => {
     const suite = vest.create(() => {
       vest.test('t1', () => false);
       vest.test('t2', () => false);
@@ -19,7 +19,7 @@ describe('runStatic', () => {
     expect(res.hasErrors('t2')).toBe(true);
   });
 
-  it('Should serialize and resume a static suite', () => {
+  it('should serialize and resume a static suite', () => {
     const suite = vest.create(() => {
       vest.test('t1', () => false);
       vest.test('t2', () => false);
@@ -40,7 +40,7 @@ describe('runStatic', () => {
   });
 
   describe('runStatic (promise)', () => {
-    it("Should resolve with the suite's result", async () => {
+    it("should resolve with the suite's result", async () => {
       const suite = vest.create(() => {
         vest.test('t1', async () => {
           await wait(100);
@@ -54,7 +54,7 @@ describe('runStatic', () => {
       expect(result.errorCount).toBe(1);
     });
 
-    it("Should have a dump method on the resolved suite's result", async () => {
+    it("should have a dump method on the resolved suite's result", async () => {
       const suite = vest.create(() => {
         vest.test('t1', async () => {
           await wait(100);
@@ -69,7 +69,7 @@ describe('runStatic', () => {
     });
   });
   describe('When creating the suite with a name', () => {
-    it("Should set the suite's name", () => {
+    it("should set the suite's name", () => {
       const suite = vest.create('user_form', () => {
         vest.test('t1', () => false);
       });

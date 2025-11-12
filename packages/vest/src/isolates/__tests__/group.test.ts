@@ -15,7 +15,7 @@ enum FieldNames {
 }
 
 describe('named group', () => {
-  it('should run group callback', () => {
+  it('should run the group callback', () => {
     const groupName = 'groupName';
     const callback = vi.fn();
     vest
@@ -26,7 +26,7 @@ describe('named group', () => {
     expect(callback).toHaveBeenCalled();
   });
 
-  it('Should run the tests within the group', () => {
+  it('should run the tests inside the named group', () => {
     const cb1 = vi.fn(() => false);
     const cb2 = vi.fn(() => false);
     const cb3 = vi.fn(() => {});
@@ -74,8 +74,8 @@ describe('named group', () => {
     expect(suite.get()).toMatchSnapshot();
   });
 
-  describe('Multiple groups', () => {
-    it('Should run the tests within the groups', () => {
+  describe('multiple named groups', () => {
+    it('should run the tests inside each named group', () => {
       const cb1 = vi.fn(() => false);
       const cb2 = vi.fn(() => false);
       const cb3 = vi.fn(() => {});
@@ -135,9 +135,9 @@ describe('named group', () => {
     });
   });
 
-  describe('Focus', () => {
+  describe('focus behavior', () => {
     describe('skip outside of group', () => {
-      it('Should skip `skipped` tests both inside and outside the group', () => {
+      it('should skip tests for a field both inside and outside the group when skipped before grouping', () => {
         const cb1 = vi.fn(() => false);
         const cb2 = vi.fn(() => false);
         const suite = vest.create(() => {
@@ -166,7 +166,7 @@ describe('named group', () => {
     });
 
     describe('skip inside the group', () => {
-      it('should skip only within the group', () => {
+      it('should skip the field only within the current group', () => {
         const cb1 = vi.fn(() => false);
         const cb2 = vi.fn(() => false);
         const cb3 = vi.fn(() => false);
@@ -195,7 +195,7 @@ describe('named group', () => {
         expect(suite.get()).toMatchSnapshot();
       });
 
-      it('should skip only within the group, not the next group', () => {
+      it('should skip the field only within the current group and not affect the next group', () => {
         const cb1 = vi.fn(() => false);
         const cb2 = vi.fn(() => false);
         const cb3 = vi.fn(() => false);
@@ -228,7 +228,7 @@ describe('named group', () => {
       });
 
       describe('skip(true)', () => {
-        it('should skip only within the group', () => {
+        it('should skip all tests in the current group only', () => {
           const cb1 = vi.fn(() => false);
           const cb2 = vi.fn(() => false);
           const cb3 = vi.fn(() => false);
@@ -271,7 +271,7 @@ describe('named group', () => {
 
     describe('only', () => {
       describe('top level only', () => {
-        it('should skip all tests except `only` tests', () => {
+        it('should run only tests for the focused field across all groups', () => {
           const cb1 = vi.fn(() => false);
           const cb2 = vi.fn(() => false);
           const cb3 = vi.fn(() => false);
@@ -319,7 +319,7 @@ describe('named group', () => {
       });
 
       describe('group only', () => {
-        it('Should skip all tests except `only` tests within the group', () => {
+        it('should run only tests for the focused field within the group and run everything in other groups', () => {
           const cb1 = vi.fn(() => false);
           const cb2 = vi.fn(() => false);
           const cb3 = vi.fn(() => false);
@@ -364,7 +364,7 @@ describe('named group', () => {
 });
 
 describe('unnamed groups', () => {
-  it('Should run tests normally', () => {
+  it('should run tests inside the unnamed group normally', () => {
     const cb1 = vi.fn(() => false);
     const cb2 = vi.fn(() => false);
     const cb3 = vi.fn(() => false);
@@ -391,7 +391,7 @@ describe('unnamed groups', () => {
     expect(suite.get()).toMatchSnapshot();
   });
 
-  it('Should complete without adding the group to the results object', () => {
+  it('should not add the unnamed group to the results object', () => {
     const suite = vest.create(() => {
       vest.group(() => {
         vest.test(FieldNames.F1, () => false);
@@ -406,7 +406,7 @@ describe('unnamed groups', () => {
   });
 
   describe('with only', () => {
-    it('Should only run the tests specified by only', () => {
+    it('should run only tests for the focused field inside the unnamed group', () => {
       const cb1 = vi.fn(() => false);
       const cb2 = vi.fn(() => false);
       const cb3 = vi.fn(() => false);
@@ -436,7 +436,7 @@ describe('unnamed groups', () => {
   });
 
   describe('with skip', () => {
-    it('Should skip the tests specified by skip', () => {
+    it('should skip tests for the specified field only', () => {
       const cb1 = vi.fn(() => false);
       const cb2 = vi.fn(() => false);
       const cb3 = vi.fn(() => false);
@@ -465,8 +465,8 @@ describe('unnamed groups', () => {
     });
   });
 
-  describe('With skip(true)', () => {
-    it('Should skip all tests in group', () => {
+  describe('with skip(true)', () => {
+    it('should skip all tests inside the unnamed group', () => {
       const cb1 = vi.fn(() => false);
       const cb2 = vi.fn(() => false);
       const cb3 = vi.fn(() => false);
@@ -496,8 +496,8 @@ describe('unnamed groups', () => {
   });
 });
 
-describe('pendingCount within group', () => {
-  it('Should count pending tests within group', () => {
+describe('pending count within group', () => {
+  it('should count pending tests within the group', () => {
     const suite = vest.create(() => {
       vest.test(FieldNames.F1, () => {});
       vest.group(GroupNames.G1, () => {

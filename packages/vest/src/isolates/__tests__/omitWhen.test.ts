@@ -38,12 +38,12 @@ describe('omitWhen', () => {
     allFieldsPass = undefined;
   });
 
-  describe('When conditional is falsy', () => {
+  describe('when conditional is falsy', () => {
     describe.each([
       ['boolean conditional', false],
       ['function conditional', () => false],
     ])('%s', (_, omitConditional) => {
-      it('Should run tests normally', () => {
+      it('should run tests normally', () => {
         suite.run(omitConditional, 'field_1');
         expect(cb1).toHaveBeenCalledTimes(1);
         expect(cb2).not.toHaveBeenCalled();
@@ -74,7 +74,7 @@ describe('omitWhen', () => {
         expect(suite.get().tests).toMatchSnapshot();
       });
 
-      it('Should have all tests within the omit block referenced in the result', () => {
+      it('should include all fields inside the omitWhen block in the result object', () => {
         suite.run(omitConditional, 'field_1');
         expect(suite.get().tests.field_1).toBeDefined();
         expect(suite.get().tests.field_3).toBeDefined();
@@ -82,7 +82,7 @@ describe('omitWhen', () => {
         expect(suite.get().tests).toMatchSnapshot();
       });
 
-      it('Should retain normal `isValid` functionality', () => {
+      it('should retain normal isValid functionality', () => {
         expect(suite.get().isValid()).toBe(false);
         suite.run(omitConditional, 'field_1');
         expect(suite.get().isValid()).toBe(false);
@@ -93,12 +93,12 @@ describe('omitWhen', () => {
     });
   });
 
-  describe('When conditional is truthy', () => {
+  describe('when conditional is truthy', () => {
     describe.each([
       ['boolean conditional', true],
       ['function conditional', () => true],
     ])('%s', (_, omitConditional) => {
-      it('Should avoid running the omitted tests', () => {
+      it('should avoid running the omitted tests', () => {
         suite.run(omitConditional, 'field_1');
         expect(suite.get().tests.field_1.testCount).toBe(1);
         suite.run(omitConditional, 'field_2');
@@ -121,7 +121,7 @@ describe('omitWhen', () => {
         expect(suite.get()).toMatchSnapshot();
       });
 
-      it('Should consider the suite as valid even without the omitted tests', () => {
+      it('should consider the suite valid even without the omitted tests', () => {
         expect(suite.get().isValid()).toBe(false);
         suite.run(omitConditional, 'field_1');
         expect(suite.get().isValid()).toBe(false);
@@ -137,7 +137,7 @@ describe('omitWhen', () => {
         expect(suite.get().isValid()).toBe(true);
       });
 
-      it('Should skip and not run omitted fields when no filter provided', () => {
+      it('should skip and not run omitted fields when no field filter is provided', () => {
         suite.run(omitConditional);
         expect(suite.get().tests.field_1.testCount).toBe(1);
         expect(suite.get().tests.field_2.testCount).toBe(1);
@@ -148,8 +148,8 @@ describe('omitWhen', () => {
     });
   });
 
-  describe('When the conditional changes between runs', () => {
-    it('Should omit previously run fields if changes to `true`', () => {
+  describe('when the conditional changes between runs', () => {
+    it('should omit previously run fields when changing to true', () => {
       suite.run(false, 'field_1');
       expect(suite.get().tests.field_1.testCount).toBe(2);
       expect(cb1).toHaveBeenCalledTimes(1);
@@ -160,7 +160,7 @@ describe('omitWhen', () => {
       expect(cb3).toHaveBeenCalledTimes(1);
     });
 
-    it('Should run fields that were previously omitted when changing to `false`', () => {
+    it('should run fields that were previously omitted when changing to false', () => {
       suite.run(true, 'field_3');
       expect(suite.get().tests.field_3.testCount).toBe(0);
       expect(cb4).toHaveBeenCalledTimes(0);
@@ -173,7 +173,7 @@ describe('omitWhen', () => {
   describe('nested calls', () => {
     let suite: TTestSuite;
 
-    describe('omitted in non-omitted', () => {
+    describe('omitted inside non-omitted', () => {
       beforeEach(() => {
         suite = vest.create(() => {
           vest.omitWhen(false, () => {
@@ -186,14 +186,14 @@ describe('omitWhen', () => {
         });
         suite.run();
       });
-      it('Should run `outer` and omit `inner`', () => {
+      it('should run outer and omit inner', () => {
         expect(suite.get().testCount).toBe(1);
         expect(suite.get().hasErrors('outer')).toBe(true);
         expect(suite.get().hasErrors('inner')).toBe(false);
       });
     });
 
-    describe('omitted in omitted', () => {
+    describe('omitted inside omitted', () => {
       beforeEach(() => {
         suite = vest.create(() => {
           vest.omitWhen(true, () => {
@@ -206,13 +206,13 @@ describe('omitWhen', () => {
         });
         suite.run();
       });
-      it('Should omit both `outer` and `inner`', () => {
+      it('should omit both outer and inner', () => {
         expect(suite.get().testCount).toBe(0);
         expect(suite.get().hasErrors('outer')).toBe(false);
         expect(suite.get().hasErrors('inner')).toBe(false);
       });
     });
-    describe('non-omitted in omitted', () => {
+    describe('non-omitted inside omitted', () => {
       beforeEach(() => {
         suite = vest.create(() => {
           vest.omitWhen(true, () => {
@@ -225,7 +225,7 @@ describe('omitWhen', () => {
         });
         suite.run();
       });
-      it('Should omit both', () => {
+      it('should omit both outer and inner tests', () => {
         expect(suite.get().testCount).toBe(0);
         expect(suite.get().hasErrors('outer')).toBe(false);
         expect(suite.get().hasErrors('inner')).toBe(false);
@@ -233,8 +233,8 @@ describe('omitWhen', () => {
     });
   });
 
-  describe('When some tests of the same field are inside omitWhen and some not', () => {
-    it('Should mark the field as invalid when failing', () => {
+  describe('mixed: some tests of a field are inside omitWhen and some not', () => {
+    it('should mark the field invalid when any test fails even if others are omitted', () => {
       const res = vest
         .create(() => {
           vest.test('f1', () => false);

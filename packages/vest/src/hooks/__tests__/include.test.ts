@@ -13,7 +13,7 @@ describe('include', () => {
   });
 
   describe('When not passing a string fieldName', () => {
-    it('Should throw an error', () => {
+    it('should throw an error', () => {
       // @ts-ignore
       expect(() => vest.include({})).toThrow();
       // @ts-ignore
@@ -23,7 +23,7 @@ describe('include', () => {
 
   describe('There is an `onlyd` field', () => {
     describe('`include` is run as-is without modifiers', () => {
-      it('Should run the included test along with the onlyd test', () => {
+      it('should run the included test along with the field focused by only()', () => {
         const suite = vest.create(() => {
           vest.only('field_1');
           vest.include('field_2');
@@ -43,8 +43,8 @@ describe('include', () => {
 
     describe('include().when()', () => {
       describe('`when` param is a string', () => {
-        describe('`when` param is a name of an onlyd field', () => {
-          it('Should run included field along with the onlyd field', () => {
+        describe('`when` param is a name of an only() field', () => {
+          it('should run the included field along with the only() field', () => {
             const suite = vest.create(() => {
               vest.only('field_1');
               vest.include('field_2').when('field_1');
@@ -65,7 +65,7 @@ describe('include', () => {
           });
         });
         describe('`when` param is a name of a non-included field', () => {
-          it('Should avoid running the included field', () => {
+          it('should not run the included field', () => {
             const suite = vest.create(() => {
               vest.only('field_1');
               vest.include('field_2').when('field_3');
@@ -86,7 +86,7 @@ describe('include', () => {
           });
         });
         describe('`when` param is a name of a skipped field', () => {
-          it('Should avoid running the included field', () => {
+          it('should not run the included field', () => {
             const suite = vest.create(() => {
               vest.only('field_1');
               vest.skip('field_3');
@@ -110,7 +110,7 @@ describe('include', () => {
       });
       describe('`when` param is a boolean', () => {
         describe('when `true`', () => {
-          it('Should run included field', () => {
+          it('should run the included field', () => {
             const suite = vest.create(() => {
               vest.only('field_1');
               vest.include('field_2').when(true);
@@ -131,7 +131,7 @@ describe('include', () => {
           });
         });
         describe('when `false`', () => {
-          it('Should skip run included field', () => {
+          it('should not run the included field', () => {
             const suite = vest.create(() => {
               vest.only('field_1');
               vest.include('field_2').when(false);
@@ -154,7 +154,7 @@ describe('include', () => {
       });
       describe('`when` param is a function', () => {
         describe('when returning `true`', () => {
-          it('Should run included field', () => {
+          it('should run the included field', () => {
             const suite = vest.create(() => {
               vest.only('field_1');
               vest.include('field_2').when(() => true);
@@ -175,7 +175,7 @@ describe('include', () => {
           });
         });
         describe('when  returning`false`', () => {
-          it('Should skip run included field', () => {
+          it('should not run the included field', () => {
             const suite = vest.create(() => {
               vest.only('field_1');
               vest.include('field_2').when(() => false);
@@ -197,7 +197,7 @@ describe('include', () => {
         });
 
         describe('Callback evaluation', () => {
-          it('Should run the callback for each matching test', () => {
+          it('should run the callback for each matching test', () => {
             const cb = vi.fn(() => true);
             const suite = vest.create(() => {
               vest.mode(Modes.ALL);
@@ -217,7 +217,7 @@ describe('include', () => {
             suite.run();
             expect(cb).toHaveBeenCalledTimes(2);
           });
-          it('Should evaluate per test run', () => {
+          it('should evaluate per test run', () => {
             const cb1 = vi.fn(() => false);
             const cb2 = vi.fn(() => false);
             const cb3 = vi.fn(() => false);
@@ -253,7 +253,7 @@ describe('include', () => {
   });
 
   describe('Field is excluded via `skip`', () => {
-    it('Should disregard `include` and avoid running the test', () => {
+    it('should disregard `include` and avoid running the test', () => {
       const suite = vest.create(() => {
         vest.skip('field_1');
         vest.include('field_1');
@@ -269,7 +269,7 @@ describe('include', () => {
       expect(res.tests.field_2.testCount).toBe(1);
       expect(res).toMatchSnapshot();
     });
-    it('Should disregard `include.when` and avoid running the test', () => {
+    it('should disregard `include.when` and avoid running the test', () => {
       const suite = vest.create(() => {
         vest.skip('field_1');
         vest.include('field_1').when(true);
@@ -288,7 +288,7 @@ describe('include', () => {
   });
 
   describe('Field is included via `only`', () => {
-    it('Should disregard `when` condition and test the field anyway', () => {
+    it('should disregard `when` condition and test the field anyway', () => {
       const suite = vest.create(() => {
         vest.only('field_1');
         vest.include('field_1').when(false);
@@ -303,7 +303,7 @@ describe('include', () => {
   });
 
   describe('Test is excluded via `skip.group`', () => {
-    it('Should disregard `include` and avoid running the test', () => {
+    it('should disregard `include` and avoid running the test', () => {
       const suite = vest.create(() => {
         vest.include('field_1');
 
@@ -324,7 +324,7 @@ describe('include', () => {
       expect(res.tests.field_2.testCount).toBe(0);
       expect(res).toMatchSnapshot();
     });
-    it('Should disregard `include.when` and avoid running the test', () => {
+    it('should disregard `include.when` and avoid running the test', () => {
       const suite = vest.create(() => {
         vest.include('field_1').when(true);
 

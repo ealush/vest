@@ -12,8 +12,8 @@ vi.mock('vest-utils', async () => {
 });
 
 describe('each', () => {
-  describe('When callback is not a function', () => {
-    it('should throw', () => {
+  describe('when callback is not a function', () => {
+    it('should throw an error', () => {
       const control = vi.fn();
       const suite = vest.create(() => {
         expect(() => {
@@ -28,7 +28,7 @@ describe('each', () => {
     });
   });
 
-  it('Should pass to callback the current list item and index', () => {
+  it('should pass the current list item and index to the callback', () => {
     const cb = vi.fn();
     const suite = vest.create(() => {
       vest.each([1, 2, 3, 'str'], cb);
@@ -44,8 +44,8 @@ describe('each', () => {
     expect(cb).toHaveBeenNthCalledWith(4, 'str', 3);
   });
 
-  describe('Test Reorder', () => {
-    it('Should allow reorder', () => {
+  describe('test reorder', () => {
+    it('should allow reordering within each()', () => {
       const suite = vest.create(() => {
         vest.each([0, 1], v => {
           vest.test(v === 0 ? 'a' : 'b', 'test', () => false);
@@ -57,8 +57,8 @@ describe('each', () => {
       expect(() => suite.run()).not.toThrow();
     });
 
-    describe('Sanity', () => {
-      it('Should disallow reorder outside of each', () => {
+    describe('sanity', () => {
+      it('should disallow reordering outside of each()', () => {
         let firstRun = true;
         const suite = vest.create(() => {
           if (firstRun) {
@@ -76,7 +76,7 @@ describe('each', () => {
     });
   });
 
-  it('Should retain failed/passing tests even after skipping', () => {
+  it('should retain failed/passing tests even after skipping runs', () => {
     let run = 0;
     const suite = vest.create((data: number[], only: number) => {
       vest.only(`item.${only}`);

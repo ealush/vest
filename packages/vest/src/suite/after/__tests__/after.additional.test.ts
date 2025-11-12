@@ -7,7 +7,7 @@ import * as vest from 'vest';
 
 describe('after - additional test coverage', () => {
   describe('Chaining multiple after callbacks', () => {
-    it('Should execute multiple chained after callbacks in the order they were added', () => {
+    it('should execute multiple chained after callbacks in the order they were added', () => {
       const executionOrder: number[] = [];
       const callback1 = vi.fn(() => {
         executionOrder.push(1);
@@ -34,7 +34,7 @@ describe('after - additional test coverage', () => {
   });
 
   describe('Return value of after', () => {
-    it('Should return a runnable', () => {
+    it('should return a runnable', () => {
       const suite = vest.create(() => {
         dummyTest.passing();
       });
@@ -49,7 +49,7 @@ describe('after - additional test coverage', () => {
   });
 
   describe('Error handling in after callbacks', () => {
-    it('Should not prevent other callbacks from running when one throws an error', () => {
+    it('should not prevent other callbacks from running when one throws an error', () => {
       const callback1 = vi.fn(() => {
         throw new Error('Test error');
       });
@@ -68,7 +68,7 @@ describe('after - additional test coverage', () => {
   });
 
   describe('Different types of callbacks', () => {
-    it('Should work with arrow functions', () => {
+    it('should work with arrow functions', () => {
       const callback = vi.fn(() => 'arrow');
 
       const suite = vest.create(() => {
@@ -81,7 +81,7 @@ describe('after - additional test coverage', () => {
       expect(callback).toHaveReturnedWith('arrow');
     });
 
-    it('Should work with regular functions', () => {
+    it('should work with regular functions', () => {
       function regularCallback() {
         return 'regular';
       }
@@ -99,7 +99,7 @@ describe('after - additional test coverage', () => {
   });
 
   describe('after with async tests and multiple callbacks', () => {
-    it('Should call all callbacks after each async test completes', async () => {
+    it('should call all callbacks after each async test completes', async () => {
       const callback1 = vi.fn();
       const callback2 = vi.fn();
 
@@ -129,7 +129,7 @@ describe('after - additional test coverage', () => {
   });
 
   describe('after callback parameters', () => {
-    test('After callback does not receive any callbacks', () => {
+    test('should not receive any arguments', () => {
       const callback = vi.fn();
 
       const suite = vest.create(() => {

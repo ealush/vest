@@ -9,7 +9,7 @@ const { create, test, warn } = vest;
 
 describe('warn hook', () => {
   describe('When currentTest exists', () => {
-    it('Should set warns to true', () => {
+    it('should set warns to true for the current test', () => {
       let t;
       create(() => {
         t = test(faker.lorem.word(), faker.lorem.sentence(), () => {
@@ -22,7 +22,7 @@ describe('warn hook', () => {
   });
 
   describe('Error handling', () => {
-    it('Should throw error when currentTest is not present', () => {
+    it('should throw when called outside a test body', () => {
       const done = vi.fn();
       create(() => {
         expect(warn).toThrow(ErrorStrings.WARN_MUST_BE_CALLED_FROM_TEST);
@@ -31,7 +31,7 @@ describe('warn hook', () => {
       expect(done).toHaveBeenCalled();
     });
 
-    it('Should throw error when no suite present', () => {
+    it('should throw when called without an active suite', () => {
       expect(warn).toThrow(ErrorStrings.HOOK_CALLED_OUTSIDE);
     });
   });

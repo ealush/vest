@@ -20,7 +20,7 @@ const GROUP_NAME = 'group_1';
 
 describe('isValidByGroup', () => {
   describe('Before any test ran', () => {
-    it('Returns true because no tests have run yet (empty group is valid)', () => {
+    it('should treat an empty group as valid (no tests ran)', () => {
       const suite = create(() => {
         group(GROUP_NAME, () => {
           test('field_1', () => {});
@@ -47,26 +47,26 @@ describe('isValidByGroup', () => {
       });
     });
 
-    it('Returns false when both required and optional fields have errors', () => {
+    it('should be invalid when both required and optional fields have errors', () => {
       expect(suite.run('field_2').isValidByGroup(GROUP_NAME)).toBe(false);
       expect(suite.run('field_2').isValidByGroup(GROUP_NAME, 'field_1')).toBe(
         false,
       );
     });
-    it('Returns false when a required field has errors', () => {
+    it('should be invalid when a required field has errors', () => {
       expect(suite.run('field_1').isValidByGroup(GROUP_NAME)).toBe(false);
       expect(suite.run('field_1').isValidByGroup(GROUP_NAME, 'field_2')).toBe(
         false,
       );
     });
 
-    it('Returns false when checking a specific required field that has errors', () => {
+    it('should report the field invalid when it has errors', () => {
       expect(suite.run('field_2').isValidByGroup(GROUP_NAME, 'field_2')).toBe(
         false,
       );
     });
 
-    it('Returns true when checking an optional field with errors (optional fields can be skipped)', () => {
+    it('should report an optional field as valid even if it has errors', () => {
       expect(suite.run('field_1').isValidByGroup(GROUP_NAME, 'field_1')).toBe(
         true,
       );
@@ -86,7 +86,7 @@ describe('isValidByGroup', () => {
         });
       });
     });
-    it('Returns true because warnings do not make the group invalid', () => {
+    it('should remain valid when there are only warnings', () => {
       expect(suite.run().isValidByGroup(GROUP_NAME)).toBe(true);
       expect(suite.run().isValidByGroup(GROUP_NAME, 'field_1')).toBe(true);
     });
@@ -101,7 +101,7 @@ describe('isValidByGroup', () => {
           test('field_1', () => true);
         });
       });
-      it('Returns true when field has both warnings and passing tests', () => {
+      it('should be valid when a field has warnings but also passes', () => {
         expect(suite.run().isValid()).toBe(true);
       });
     });
@@ -119,7 +119,7 @@ describe('isValidByGroup', () => {
           });
         });
       });
-      it('Returns false when a test is skipped (even if the test was only a warning)', () => {
+      it('should be invalid when a test is skipped (even if it was only a warning)', () => {
         expect(suite.run().isValid()).toBe(false);
       });
     });
@@ -144,10 +144,10 @@ describe('isValidByGroup', () => {
         });
       });
     });
-    it('Returns false when a required field is skipped', () => {
+    it('should be invalid when a required field is skipped', () => {
       expect(suite.run('field_1').isValidByGroup(GROUP_NAME)).toBe(false);
     });
-    it('Returns false when skipping some tests means not all tests ran', () => {
+    it('should be invalid when some required tests did not run', () => {
       expect(suite.run(['field_2', 'field_3']).isValidByGroup(GROUP_NAME)).toBe(
         false,
       );
@@ -170,14 +170,14 @@ describe('isValidByGroup', () => {
     });
 
     describe('When test is pending', () => {
-      it('Returns false while async test is still running', () => {
+      it('should be invalid while an async optional test is pending', () => {
         suite.run();
         expect(suite.get().isValidByGroup(GROUP_NAME)).toBe(false);
         expect(suite.get().isValidByGroup(GROUP_NAME, 'field_1')).toBe(false);
       });
     });
     describe('When test is passing', () => {
-      it('Returns true after async test completes successfully', async () => {
+      it('should be valid after the async optional test completes', async () => {
         suite.run();
         await wait(300);
         expect(suite.get().isValidByGroup(GROUP_NAME)).toBe(true);
@@ -204,14 +204,14 @@ describe('isValidByGroup', () => {
       });
     });
 
-    it('Returns false while warning async test is pending, then true after completion', async () => {
+    it('should be invalid while a warning async test is pending, then valid after it finishes', async () => {
       suite.run();
       expect(suite.get().isValidByGroup(GROUP_NAME)).toBe(false);
       await wait(300);
       expect(suite.get().isValidByGroup(GROUP_NAME)).toBe(true);
     });
 
-    it('Returns false for specific field while async warning test is pending', async () => {
+    it('should report the field invalid while its warning async test is pending, then valid after it finishes', async () => {
       suite.run();
       expect(suite.get().isValidByGroup(GROUP_NAME, 'field_1')).toBe(false);
       await wait(300);
@@ -238,7 +238,7 @@ describe('isValidByGroup', () => {
     });
 
     describe('When test is pending', () => {
-      it('Returns false for required field while async test is still running', () => {
+      it('should report a required field invalid while its async test is pending', () => {
         const result = suite.run();
 
         expect(result.isValidByGroup(GROUP_NAME)).toBe(false);
@@ -247,7 +247,7 @@ describe('isValidByGroup', () => {
     });
 
     describe('When async test is passing', () => {
-      it('Returns true after async test completes', async () => {
+      it('should be valid after the required async test completes', async () => {
         await suite.run();
         const result = suite.get();
         expect(result.isValidByGroup(GROUP_NAME)).toBe(true);
@@ -257,7 +257,7 @@ describe('isValidByGroup', () => {
     });
 
     describe('When test is lagging', () => {
-      it('Returns false when previous async test is still running', async () => {
+      it('should be invalid if a previous async test is still running', async () => {
         suite.run();
         const result = suite.run('field_2');
         expect(result.isValidByGroup(GROUP_NAME)).toBe(false);
@@ -266,7 +266,7 @@ describe('isValidByGroup', () => {
     });
   });
 
-  describe('When a all required fields are passing', () => {
+  describe('When all required fields are passing', () => {
     let suite: TTestSuite;
 
     beforeEach(() => {
@@ -287,7 +287,7 @@ describe('isValidByGroup', () => {
         });
       });
     });
-    it('Returns true when all required fields pass their tests', () => {
+    it('should be valid when all required fields pass', () => {
       expect(suite.run().isValidByGroup(GROUP_NAME)).toBe(true);
       expect(suite.run().isValidByGroup(GROUP_NAME, 'field_1')).toBe(true);
       expect(suite.run().isValidByGroup(GROUP_NAME, 'field_2')).toBe(true);
@@ -296,7 +296,7 @@ describe('isValidByGroup', () => {
   });
 
   describe('When a required field has some passing tests', () => {
-    it('Returns false when not all tests for the field have run', () => {
+    it('should be invalid when not all tests for a field ran', () => {
       expect(
         create(() => {
           group(GROUP_NAME, () => {
@@ -315,7 +315,7 @@ describe('isValidByGroup', () => {
   });
 
   describe('When field name is specified', () => {
-    it('Returns false when checking a field that was skipped', () => {
+    it('should report a skipped field as invalid', () => {
       expect(
         create(() => {
           skip('field_1');
@@ -328,7 +328,7 @@ describe('isValidByGroup', () => {
       ).toBe(false);
     });
 
-    it('Returns false when checking a field that does not exist in the group', () => {
+    it('should return false for a field that does not exist in the group', () => {
       expect(
         create(() => {
           group(GROUP_NAME, () => {
@@ -340,7 +340,7 @@ describe('isValidByGroup', () => {
       ).toBe(false);
     });
 
-    it("Returns false when only some of the field's tests have run", () => {
+    it("should be invalid when only some of the field's tests ran", () => {
       expect(
         create(() => {
           group(GROUP_NAME, () => {
@@ -359,7 +359,7 @@ describe('isValidByGroup', () => {
       ).toBe(false);
     });
 
-    it('Returns false when the checked field has failing tests', () => {
+    it('should be invalid when the field has failing tests', () => {
       expect(
         create(() => {
           group(GROUP_NAME, () => {
@@ -371,7 +371,7 @@ describe('isValidByGroup', () => {
       ).toBe(false);
     });
 
-    it('Returns true when the checked field passes all its tests', () => {
+    it('should be valid when the field passes all its tests', () => {
       expect(
         create(() => {
           group(GROUP_NAME, () => {
@@ -383,7 +383,7 @@ describe('isValidByGroup', () => {
       ).toBe(true);
     });
 
-    it("Returns true when the checked field only has warnings (warnings don't affect validity)", () => {
+    it('should be valid when the field only has warnings', () => {
       expect(
         create(() => {
           group(GROUP_NAME, () => {
@@ -398,7 +398,7 @@ describe('isValidByGroup', () => {
       ).toBe(true);
     });
 
-    it('Returns true when checking an optional field that did not run', () => {
+    it('should be valid when the optional field did not run', () => {
       expect(
         create(() => {
           optional('field_1');
@@ -415,7 +415,7 @@ describe('isValidByGroup', () => {
   });
 
   describe('When querying a non existing field', () => {
-    it('Returns false because the field does not exist in the group', () => {
+    it('should return false for a field that does not exist in the group', () => {
       expect(
         create(() => {
           group(GROUP_NAME, () => {
@@ -434,7 +434,7 @@ describe('isValidByGroup', () => {
         test('field_1', () => true);
       });
     });
-    it('Returns true because a non-existing group has no tests to fail', () => {
+    it('should be valid for a non-existent group (no tests)', () => {
       expect(suite.run().isValidByGroup('does-not-exist')).toBe(true);
       expect(suite.run().isValidByGroup('does-not-exist', 'field_1')).toBe(
         true,
@@ -443,7 +443,7 @@ describe('isValidByGroup', () => {
   });
 
   describe('When queried field is omitted', () => {
-    it('Returns true when optional field is omitted (custom rule makes it optional)', () => {
+    it('should be valid when an optional field is omitted by a custom rule', () => {
       expect(
         create(() => {
           optional({
@@ -460,7 +460,7 @@ describe('isValidByGroup', () => {
   });
 
   describe('When the only field in the group is optional', () => {
-    it('Returns true when optional field is blank (empty string makes it optional)', () => {
+    it('should be valid when the optional field is blank', () => {
       expect(
         create((data: any) => {
           optional('field_1');
@@ -473,7 +473,7 @@ describe('isValidByGroup', () => {
       ).toBe(true);
     });
 
-    it('Returns false when optional field has a value (not blank, so not optional)', () => {
+    it('should be invalid when the optional field has a value', () => {
       expect(
         create((data: any) => {
           optional('field_1');
@@ -486,7 +486,7 @@ describe('isValidByGroup', () => {
       ).toBe(false);
     });
 
-    it('Returns true when checking specific optional field with null value (null is blank)', () => {
+    it('should be valid when an optional field has a null value', () => {
       expect(
         create((data: any) => {
           optional('field_1');
@@ -499,7 +499,7 @@ describe('isValidByGroup', () => {
       ).toBe(true);
     });
 
-    it('Returns true when all optional fields are blank (empty, null, or undefined)', () => {
+    it('should be valid when all optional fields are blank', () => {
       expect(
         create((data: any) => {
           optional(['field_1', 'field_2', 'field_3']);
@@ -514,7 +514,7 @@ describe('isValidByGroup', () => {
       ).toBe(true);
     });
 
-    it('Returns false when only some optional fields are blank (one has value)', () => {
+    it('should be invalid when only some optional fields are blank', () => {
       expect(
         create((data: any) => {
           optional(['field_1', 'field_2']);
@@ -529,7 +529,7 @@ describe('isValidByGroup', () => {
     });
 
     describe('With functional optional API', () => {
-      it('Returns true when custom optional rule returns true', () => {
+      it('should be valid when the custom optional rule returns true', () => {
         expect(
           create(() => {
             optional({ field_1: () => true });
@@ -542,7 +542,7 @@ describe('isValidByGroup', () => {
         ).toBe(true);
       });
 
-      it('Returns false when custom optional rule returns false', () => {
+      it('should be invalid when the custom optional rule returns false', () => {
         expect(
           create(() => {
             optional({ field_1: () => false });
@@ -555,7 +555,7 @@ describe('isValidByGroup', () => {
         ).toBe(false);
       });
 
-      it('Returns true when optional is set to boolean true', () => {
+      it('should be valid when optional is set to true', () => {
         expect(
           create(() => {
             optional({ field_1: true });
@@ -568,7 +568,7 @@ describe('isValidByGroup', () => {
         ).toBe(true);
       });
 
-      it('Returns false when optional is set to boolean false', () => {
+      it('should be invalid when optional is set to false', () => {
         expect(
           create(() => {
             optional({ field_1: false });
@@ -581,7 +581,7 @@ describe('isValidByGroup', () => {
         ).toBe(false);
       });
 
-      it('Handles multiple fields with different custom optional rules', () => {
+      it('should evaluate each field by its custom optional rule', () => {
         const suite = create((shouldOptionalField2: boolean) => {
           optional({
             field_1: () => true,
@@ -602,7 +602,7 @@ describe('isValidByGroup', () => {
         expect(suite.run(false).isValidByGroup(GROUP_NAME)).toBe(false);
       });
 
-      it('Returns true when checking specific field with custom optional rule', () => {
+      it('should be valid when checking a field made optional by a custom rule', () => {
         expect(
           create(() => {
             optional({ field_1: () => true });
@@ -627,7 +627,7 @@ describe('isValidByGroup', () => {
       });
     });
 
-    it('Returns false when checking for a field that belongs to a different group', () => {
+    it('should return false when checking for a field that belongs to a different group', () => {
       expect(suite.run().isValidByGroup('group_1', 'field_2')).toBe(false);
       expect(suite.run().isValidByGroup('group_2', 'field_1')).toBe(false);
     });
@@ -641,7 +641,7 @@ describe('isValidByGroup', () => {
       });
     });
 
-    it('Returns false when checking for a field that is outside the group', () => {
+    it('should return false when checking for a field that is outside the group', () => {
       expect(suite.run().isValidByGroup('group_1', 'field_1')).toBe(false);
     });
   });
@@ -655,7 +655,7 @@ describe('isValidByGroup', () => {
       });
     });
 
-    it('Returns the result for the field inside the group only (ignores field outside group)', () => {
+    it('should ignore the same field defined outside the group and use the in-group result', () => {
       expect(suite.run().isValidByGroup('group_1', 'field_1')).toBe(true);
     });
   });

@@ -62,6 +62,68 @@ SuiteSummary {
 }
 `;
 
+exports[`Test createSuite module > Initial run > should be able to get the suite from the result of createSuite 1`] = `
+SuiteSummary {
+  "dump": [Function],
+  "errorCount": 0,
+  "errors": [],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 0,
+  "tests": {},
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
+exports[`Test createSuite module > Initial run > should initialize with an empty result object 1`] = `
+SuiteSummary {
+  "dump": [Function],
+  "errorCount": 0,
+  "errors": [],
+  "getError": [Function],
+  "getErrors": [Function],
+  "getErrorsByGroup": [Function],
+  "getMessage": [Function],
+  "getWarning": [Function],
+  "getWarnings": [Function],
+  "getWarningsByGroup": [Function],
+  "groups": {},
+  "hasErrors": [Function],
+  "hasErrorsByGroup": [Function],
+  "hasWarnings": [Function],
+  "hasWarningsByGroup": [Function],
+  "isPending": [Function],
+  "isTested": [Function],
+  "isValid": [Function],
+  "isValidByGroup": [Function],
+  "pendingCount": 0,
+  "suiteName": undefined,
+  "testCount": 0,
+  "tests": {},
+  "valid": false,
+  "warnCount": 0,
+  "warnings": [],
+}
+`;
+
 exports[`Test createSuite module > Test suite Arguments > allows omitting suite name 1`] = `
 SuiteSummary {
   "dump": [Function],

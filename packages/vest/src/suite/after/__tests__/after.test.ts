@@ -7,7 +7,7 @@ import * as vest from 'vest';
 
 describe('after', () => {
   describe('When no async tests', () => {
-    it('Should call after callback immediately, once', async () => {
+    it('should call the after callback immediately once', async () => {
       const afterCallback = vi.fn();
 
       const res = vest
@@ -78,7 +78,7 @@ describe('after', () => {
   });
 
   describe('When there are async tests', () => {
-    it('Should run after each async test is finished running', async () => {
+    it('should run after each async test finishes', async () => {
       const afterCallback = vi.fn();
       expect(afterCallback).toHaveBeenCalledTimes(0);
       const res = vest
@@ -107,7 +107,7 @@ describe('after', () => {
   });
 
   describe('When no tests are run', () => {
-    it('Should run the callback', () => {
+    it('should run the callback', () => {
       const cb = vi.fn();
 
       const suite = vest.create(() => {});
@@ -118,7 +118,7 @@ describe('after', () => {
     });
 
     describe('When tests are omitted', () => {
-      it('Should run the callback', () => {
+      it('should run the callback', () => {
         const cb = vi.fn();
 
         const suite = vest.create(() => {
@@ -136,7 +136,7 @@ describe('after', () => {
 
   describe('Async Isolate', () => {
     describe('When async isolate is pending', () => {
-      it('Should call the callback only for the sync run completion', async () => {
+      it('should call the callback for the sync run completion only', async () => {
         const cb = vi.fn();
 
         const suite = vest.create(() => {
@@ -158,7 +158,7 @@ describe('after', () => {
     });
 
     describe('When async isolate is completed', () => {
-      it('Should call the callback', async () => {
+      it('should call the callback', async () => {
         const cb = vi.fn();
 
         const suite = vest.create(() => {
@@ -178,7 +178,7 @@ describe('after', () => {
 });
 
 describe('suite resolve', () => {
-  it('Should immediately return all sync fields', () => {
+  it('should immediately return all sync fields', () => {
     const suite = vest.create(() => {
       vest.test('field_1', 'field_statement_1', () => false);
       vest.test('field_2', 'field_statement_2', () => false);
@@ -196,7 +196,7 @@ describe('suite resolve', () => {
     expect(result.tests).toMatchSnapshot();
   });
   describe('awaiting suite', () => {
-    it('Should return a promise that resolves when all tests are done, and the after callback is called', async () => {
+    it('should resolve when all tests finish and after() runs', async () => {
       const suite = vest.create(() => {
         vest.test('field_1', 'field_statement_1', async () => {
           await wait(100);

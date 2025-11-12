@@ -1,6 +1,6 @@
-import { TTestSuite } from 'TVestMock';
 import { describe, it, expect, beforeEach } from 'vitest';
 
+import { TTestSuite } from 'TVestMock';
 import { create, test } from 'vest';
 
 describe('suite.resetField', () => {
@@ -14,7 +14,7 @@ describe('suite.resetField', () => {
     suite.run();
   });
 
-  it('Should reset the validity state of a field', () => {
+  it('should reset the validity state of a field', () => {
     expect(suite.get().hasErrors('field1')).toBe(true);
     expect(suite.get().hasErrors('field2')).toBe(true);
     expect(suite.get().getErrors('field1')).toEqual(['f1 error']);
@@ -31,14 +31,14 @@ describe('suite.resetField', () => {
     expect(suite.get().getErrors('field2')).toEqual([]);
   });
 
-  it('Should refresh the suite result', () => {
+  it('should refresh the suite result', () => {
     const res = suite.get();
     expect(res).toBe(suite.get());
     suite.resetField('field1');
     expect(res).not.toBe(suite.get());
   });
 
-  it('Should allow the field to keep updating (no final status)', () => {
+  it('should allow the field to keep updating (no final status)', () => {
     suite.resetField('field1');
     expect(suite.get().hasErrors('field1')).toBe(false);
     expect(suite.get().hasErrors('field2')).toBe(true);

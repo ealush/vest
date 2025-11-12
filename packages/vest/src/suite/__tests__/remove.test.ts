@@ -7,7 +7,7 @@ import { dummyTest } from '../../testUtils/testDummy';
 import * as vest from 'vest';
 
 describe('suite.remove', () => {
-  it('Should remove field from validation result', async () => {
+  it('should remove the field from the validation result', async () => {
     const suite = vest.create(() => {
       vest.mode(Modes.ALL);
       dummyTest.failing('field1');
@@ -29,7 +29,7 @@ describe('suite.remove', () => {
     expect(suite.get().tests.field1).toBeUndefined();
   });
 
-  it('Should clear the cache when removing a field', () => {
+  it('should clear the cache when removing a field', () => {
     const suite = vest.create(() => {
       dummyTest.failing('field1');
       dummyTest.failing('field2');
@@ -40,7 +40,7 @@ describe('suite.remove', () => {
     expect(suite.get()).not.toBe(res);
   });
 
-  it('Should return silently when removing a field that does not exist', () => {
+  it('should return silently when removing a field that does not exist', () => {
     const suite = vest.create(() => {
       dummyTest.failing('field1');
       dummyTest.passing('field2');

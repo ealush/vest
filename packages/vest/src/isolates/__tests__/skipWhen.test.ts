@@ -11,7 +11,7 @@ describe('skipWhen', () => {
     fn = vi.fn();
     suite.reset();
   });
-  it('Should run callback both when condition is true or false', () => {
+  it('should run the callback whether condition is true or false', () => {
     let counter = 0;
     const suite = vest.create(() => {
       vest.skipWhen(counter === 1, fn);
@@ -25,7 +25,7 @@ describe('skipWhen', () => {
     expect(fn).toHaveBeenCalledTimes(2);
   });
 
-  it('Should respect both boolean and function conditions', () => {
+  it('should accept both boolean and function conditions', () => {
     const suite = vest.create(() => {
       vest.skipWhen(false, fn);
       vest.skipWhen(true, fn);
@@ -38,7 +38,7 @@ describe('skipWhen', () => {
     expect(fn).toHaveBeenCalledTimes(4);
   });
 
-  it('Should pass result draft to the functional condition', () => {
+  it('should pass the current result draft to the functional condition', () => {
     const f = vi.fn();
     const control = vi.fn();
 
@@ -77,17 +77,17 @@ describe('skipWhen', () => {
     expect(control).toHaveBeenCalledTimes(3);
   });
 
-  it('Should skip tests when the condition is truthy', () => {
+  it('should skip tests when the condition is truthy', () => {
     const res = suite.run(true);
     expect(res.tests.username.testCount).toBe(0);
   });
 
-  it('Should run tests when the condition is falsy', () => {
+  it('should run tests when the condition is falsy', () => {
     const res = suite.run(false);
     expect(res.tests.username.testCount).toBe(1);
   });
 
-  it('Should correctly refill the state when field is skipped', () => {
+  it('should keep previous test state when field is later skipped', () => {
     const res = suite.run(false);
     expect(res.tests.username.testCount).toBe(1);
     suite.run(true);
@@ -98,7 +98,7 @@ describe('skipWhen', () => {
   describe('nested calls', () => {
     let suite: TTestSuite;
 
-    describe('skipped in non-skipped', () => {
+    describe('skipped inside non-skipped', () => {
       beforeEach(() => {
         suite = vest.create(() => {
           vest.skipWhen(false, () => {
@@ -111,14 +111,14 @@ describe('skipWhen', () => {
         });
         suite.run();
       });
-      it('Should run `outer` and skip `inner`', () => {
+      it('should run outer and skip inner', () => {
         expect(suite.get().testCount).toBe(1);
         expect(suite.get().hasErrors('outer')).toBe(true);
         expect(suite.get().hasErrors('inner')).toBe(false);
       });
     });
 
-    describe('skipped in skipped', () => {
+    describe('skipped inside skipped', () => {
       beforeEach(() => {
         suite = vest.create(() => {
           vest.skipWhen(true, () => {
@@ -131,13 +131,13 @@ describe('skipWhen', () => {
         });
         suite.run();
       });
-      it('Should skip both `outer` and `inner`', () => {
+      it('should skip both outer and inner', () => {
         expect(suite.get().testCount).toBe(0);
         expect(suite.get().hasErrors('outer')).toBe(false);
         expect(suite.get().hasErrors('inner')).toBe(false);
       });
     });
-    describe('non-skipped in skipped', () => {
+    describe('non-skipped inside skipped', () => {
       beforeEach(() => {
         suite = vest.create(() => {
           vest.skipWhen(true, () => {
@@ -150,7 +150,7 @@ describe('skipWhen', () => {
         });
         suite.run();
       });
-      it('Should skip both', () => {
+      it('should skip both outer and inner tests', () => {
         expect(suite.get().testCount).toBe(0);
         expect(suite.get().hasErrors('outer')).toBe(false);
         expect(suite.get().hasErrors('inner')).toBe(false);

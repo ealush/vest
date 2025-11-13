@@ -1,6 +1,6 @@
-import { ctx } from 'enforceContext';
 import { invariant } from 'vest-utils';
 
+import { ctx } from 'enforceContext';
 import type { UnmodifiedRules, SchemaRules } from 'ruleRegistry';
 import { enforceMessage, transformResult } from 'ruleResult';
 

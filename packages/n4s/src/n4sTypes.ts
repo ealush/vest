@@ -1,6 +1,7 @@
+import type { CB, DropFirst } from 'vest-utils';
+
 import { RuleRunReturn } from 'RuleRunReturn';
 import type { FirstParam } from 'typeUtils';
-import type { CB, DropFirst } from 'vest-utils';
 
 /**
  * Global namespace for n4s custom rules.

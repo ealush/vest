@@ -1,4 +1,4 @@
-import { asArray, CB, assign, withResolvers } from 'vest-utils';
+import { CB, assign, withResolvers } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { getTypedMethods } from './getTypedMethods';
@@ -7,7 +7,6 @@ import { IsolateSuite, TIsolateSuite } from 'IsolateSuite';
 import { useCreateVestState, useLoadSuite } from 'Runtime';
 import { SuiteContext } from 'SuiteContext';
 import {
-  SuiteName,
   SuiteResult,
   TFieldName,
   TGroupName,
@@ -21,32 +20,59 @@ import { useCreateSuiteResult } from 'suiteResult';
 import { bindSuiteSelectors } from 'suiteSelectors';
 import { validateSuiteCallback } from 'validateSuiteParams';
 
+// Import schema-related types from n4s
+import type { RuleInstance } from 'n4s';
+
+// New signature: callback first, optional schema second
 function createSuite<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB = CB,
->(suiteName: SuiteName, suiteCallback: T): Suite<F, G, T>;
+  S extends RuleInstance<any> | undefined = undefined,
+>(suiteCallback: T, schema?: S): Suite<F, G, T, S>;
+
+// Legacy signature: suite name first, callback second (deprecated)
 function createSuite<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB = CB,
->(suiteCallback: T): Suite<F, G, T>;
+>(suiteName: string, suiteCallback: T): Suite<F, G, T, undefined>;
+
+// Implementation
 // @vx-allow use-use
-// eslint-disable-next-line max-lines-per-function
+// eslint-disable-line max-lines-per-function
 function createSuite<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB = CB,
->(
-  ...args: [suiteName: SuiteName, suiteCallback: T] | [suiteCallback: T]
-): Suite<F, G, T> {
-  const [suiteCallback, suiteName] = asArray(args).reverse() as [T, SuiteName];
+  S extends RuleInstance<any> | undefined = undefined,
+>(...args: any[]): Suite<F, G, T, S> {
+  // Determine which signature was used
+  let suiteName: string | undefined;
+  let suiteCallback: T;
+  let schema: S | undefined;
+
+  if (typeof args[0] === 'string') {
+    // Legacy signature: createSuite(suiteName, callback)
+    suiteName = args[0];
+    suiteCallback = args[1];
+    schema = undefined;
+  } else {
+    // New signature: createSuite(callback, schema)
+    suiteName = undefined;
+    suiteCallback = args[0];
+    schema = args[1] as S | undefined;
+  }
 
   validateSuiteCallback(suiteCallback);
 
   // Create a stateRef for the suite
   // It holds the suite's persisted values that may remain between runs.
-  const stateRef = useCreateVestState({ suiteName, VestReconciler });
+  const stateRef = useCreateVestState({
+    suiteName,
+    VestReconciler,
+    suiteSchema: schema,
+  });
 
   // Assign methods to the suite
   // We do this within the VestRuntime so that the suite methods
@@ -55,14 +81,14 @@ function createSuite<
     const VestBus = useInitVestBus();
     return createSuiteInstance();
 
-    function createSuiteInstance(): Suite<F, G, T> {
+    function createSuiteInstance(): Suite<F, G, T, S> {
       const modifiers: SuiteModifiers<F> = { only: undefined };
 
       const persistedRun = VestRuntime.persist(
-        useCreateSuiteRunner<F, G, T>(suiteCallback, modifiers),
+        useCreateSuiteRunner<F, G, T, S>(suiteCallback, modifiers, schema),
       );
 
-      const { after, afterField, focus } = useCreateSuiteMethods<F, G, T>(
+      const { after, afterField, focus } = useCreateSuiteMethods<F, G, T, S>(
         persistedRun,
         modifiers,
       );
@@ -72,7 +98,7 @@ function createSuite<
         afterField: VestRuntime.persist(initCallback(afterField)),
         dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
         focus: VestRuntime.persist(focus),
-        get: VestRuntime.persist(useCreateSuiteResult<F, G>),
+        get: VestRuntime.persist(useCreateSuiteResult<F, G, S>),
         remove: Bus.usePrepareEmitter<string>('REMOVE_FIELD'),
         reset: Bus.usePrepareEmitter('RESET_SUITE'),
         resetField: Bus.usePrepareEmitter<string>('RESET_FIELD'),
@@ -95,7 +121,7 @@ function createSuite<
 
   function createStaticRunner() {
     return function runStatic(...runArgs: Parameters<T>) {
-      const suite = createSuite<F, G, T>(suiteName, suiteCallback);
+      const suite = createSuite<F, G, T, S>(suiteCallback, schema);
       return suite.run(...runArgs);
     };
   }
@@ -105,8 +131,9 @@ function useCreateSuiteMethods<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB = CB,
+  S extends RuleInstance<any> | undefined = undefined,
 >(
-  persistedRun: (...args: Parameters<T>) => SuiteResult<F, G>,
+  persistedRun: (...args: Parameters<T>) => SuiteResult<F, G, S>,
   modifiers: SuiteModifiers<F>,
 ) {
   return getPreRunMethods();
@@ -156,9 +183,14 @@ function useCreateSuiteRunner<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB = CB,
->(suiteCallback: CB, modifiers: SuiteModifiers<F>) {
-  return function runSuite(...args: Parameters<T>): SuiteResult<F, G> {
-    const { resolve, promise } = withResolvers<SuiteResult<F, G>>();
+  S extends RuleInstance<any> | undefined = undefined,
+>(
+  suiteCallback: CB,
+  modifiers: SuiteModifiers<F>,
+  _schema?: S, // Used only for type inference
+) {
+  return function runSuite(...args: Parameters<T>): SuiteResult<F, G, S> {
+    const { resolve, promise } = withResolvers<SuiteResult<F, G, S>>();
     return assign(
       promise,
       SuiteContext.run(
@@ -169,7 +201,7 @@ function useCreateSuiteRunner<
           Bus.useEmit('SUITE_RUN_STARTED');
 
           function resolver() {
-            const result = useCreateSuiteResult<F, G>();
+            const result = useCreateSuiteResult<F, G, S>();
             resolve(result);
             return result;
           }
@@ -178,7 +210,7 @@ function useCreateSuiteRunner<
             only(modifiers.only);
             suiteCallback(...args);
             Bus.useEmit('SUITE_CALLBACK_RUN_FINISHED');
-            return useCreateSuiteResult<F, G>();
+            return useCreateSuiteResult<F, G, S>();
           }, resolver);
         },
       ).output,

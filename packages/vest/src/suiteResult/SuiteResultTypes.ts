@@ -5,6 +5,9 @@ import { Severity } from 'Severity';
 import { SummaryFailure } from 'SummaryFailure';
 import { SuiteSelectors } from 'suiteSelectors';
 
+// Import schema-related types from n4s
+import type { RuleInstance } from 'n4s';
+
 export class SummaryBase {
   public errorCount = 0;
   public warnCount = 0;
@@ -53,8 +56,13 @@ export type FailureMessages = Record<string, string[]>;
 export type SuiteResult<
   F extends TFieldName,
   G extends TGroupName,
+  S extends RuleInstance<any> | undefined = undefined,
 > = SuiteSummary<F, G> &
-  SuiteSelectors<F, G> & { suiteName: SuiteName; dump: CB<TIsolateSuite> };
+  SuiteSelectors<F, G> & {
+    suiteName: SuiteName;
+    dump: CB<TIsolateSuite>;
+    types: S extends RuleInstance<infer D, any> ? D : undefined;
+  };
 
 export type SuiteName = Maybe<string>;
 

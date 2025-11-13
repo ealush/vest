@@ -1,3 +1,5 @@
+import { greaterThan, numberEquals } from 'vest-utils';
+
 import { BuildRuleInstance, ExtractRuleFunctions } from 'RuleInstanceBuilder';
 import { equals } from 'equals';
 import { greaterThanOrEquals } from 'greaterThanOrEquals';
@@ -13,7 +15,6 @@ import { isPositive } from 'isPositive';
 import { lessThan } from 'lessThan';
 import { lessThanOrEquals } from 'lessThanOrEquals';
 import { numberNotEquals } from 'numberNotEquals';
-import { greaterThan, numberEquals } from 'vest-utils';
 
 const gt = greaterThan;
 const gte = greaterThanOrEquals;

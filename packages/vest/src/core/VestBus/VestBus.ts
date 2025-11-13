@@ -1,9 +1,3 @@
-import {
-  registerTestsTraverseUp,
-  registerTestNodes,
-  onTestStart,
-  reprocessTree,
-} from 'registerTests';
 import { CB, ValueOf } from 'vest-utils';
 import { Bus, RuntimeEvents, TIsolate, VestRuntime } from 'vestjs-runtime';
 
@@ -19,6 +13,12 @@ import { TestWalker } from 'TestWalker';
 import { VestIsolate } from 'VestIsolate';
 import { VestTest } from 'VestTest';
 import { useOmitOptionalFields } from 'omitOptionalFields';
+import {
+  registerTestsTraverseUp,
+  registerTestNodes,
+  onTestStart,
+  reprocessTree,
+} from 'registerTests';
 import {
   useRunDoneCallbacks,
   useRunFieldCallbacks,

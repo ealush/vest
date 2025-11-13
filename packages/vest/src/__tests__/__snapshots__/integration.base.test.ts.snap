@@ -88,6 +88,7 @@ Promise {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 1,
   "warnings": [

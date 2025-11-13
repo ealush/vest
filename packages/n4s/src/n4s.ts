@@ -1,9 +1,10 @@
+import { assign } from 'vest-utils';
+
 import { enforceEager } from 'eager';
 import { ctx } from 'enforceContext';
 import type { EnforceContext } from 'enforceContext';
 import { extendEnforce } from 'extendLogic';
 import { enforceLazy } from 'lazy';
-import { assign } from 'vest-utils';
 
 /**
  * Context API for accessing validation context.
@@ -36,6 +37,25 @@ export { ctx } from 'enforceContext';
  * ```
  */
 export { compose } from 'compose';
+
+/**
+ * RuleInstance represents a lazy validation rule that can be executed with a value.
+ * Supports both test() and run() methods, and provides type inference via the infer property.
+ *
+ * @template T - The type of value this rule validates
+ * @template Args - The argument types for this rule
+ */
+export { RuleInstance } from 'RuleInstance';
+
+/**
+ * Schema-related type utilities for type inference and composition.
+ * These types enable TypeScript to infer correct types from enforce schemas.
+ */
+export type {
+  InferShape,
+  SchemaInfer,
+  ShapeType,
+} from 'schemaRulesTypes';
 
 type ExtendFn = (rules: Record<string, (...args: any[]) => any>) => void;
 type ContextFn = () => EnforceContext;

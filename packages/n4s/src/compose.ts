@@ -1,7 +1,8 @@
+import { StringObject, assign, invariant, mapFirst } from 'vest-utils';
+
 import { RuleInstance } from 'RuleInstance';
 import { RuleRunReturn } from 'RuleRunReturn';
 import { ctx } from 'enforceContext';
-import { StringObject, assign, invariant, mapFirst } from 'vest-utils';
 
 type ComposeResult<T = any> = RuleInstance<T, [T]> & {
   (value: T): void;

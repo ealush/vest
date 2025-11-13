@@ -1,6 +1,6 @@
-import { BuildRuleInstance, ExtractRuleFunctions } from 'RuleInstanceBuilder';
 import { isEmpty, isNotEmpty } from 'vest-utils';
 
+import { BuildRuleInstance, ExtractRuleFunctions } from 'RuleInstanceBuilder';
 import { equals, notEquals } from 'commonComparison';
 import { inside, notInside } from 'commonContainer';
 import {

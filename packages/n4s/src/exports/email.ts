@@ -1,6 +1,6 @@
+import { enforce } from 'n4s';
 import isEmail from 'validator/es/lib/isEmail';
 
-import { enforce } from 'n4s';
 
 enforce.extend({ isEmail });
 

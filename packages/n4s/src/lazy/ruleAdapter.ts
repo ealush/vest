@@ -1,7 +1,7 @@
-import { ctx } from 'enforceContext';
 
 import { RuleInstance } from 'RuleInstance';
 import { RuleRunReturn } from 'RuleRunReturn';
+import { ctx } from 'enforceContext';
 import { addToChain } from 'genRuleChain';
 
 export function adaptDynamicRules<

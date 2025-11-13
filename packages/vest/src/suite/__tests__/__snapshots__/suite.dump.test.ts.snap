@@ -728,6 +728,7 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
         "warnings": [],
       },
     },
+    "types": undefined,
     "valid": false,
     "warnCount": 0,
     "warnings": [],

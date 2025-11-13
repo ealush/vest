@@ -1,8 +1,8 @@
+import type { RuleInstance } from 'RuleInstance';
+import { RuleRunReturn } from 'RuleRunReturn';
 import { ctx } from 'enforceContext';
 import type { ShapeType } from 'shape';
 
-import type { RuleInstance } from 'RuleInstance';
-import { RuleRunReturn } from 'RuleRunReturn';
 
 /**
  * Validates that an object matches a schema loosely - all schema keys required, extra keys allowed.

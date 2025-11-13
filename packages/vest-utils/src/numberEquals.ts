@@ -1,5 +1,6 @@
-import bindNot from 'bindNot';
 import { isNumeric } from 'isNumeric';
+
+import bindNot from 'bindNot';
 
 export function numberEquals(
   value: string | number,

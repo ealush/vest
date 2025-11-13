@@ -1,8 +1,8 @@
 /* eslint-disable max-nested-callbacks */
-import { ctx } from 'enforceContext';
 import { mapFirst } from 'vest-utils';
 
 import { RuleRunReturn } from 'RuleRunReturn';
+import { ctx } from 'enforceContext';
 
 /**
  * Validates that a value is an array and all elements match at least one of the provided rules.

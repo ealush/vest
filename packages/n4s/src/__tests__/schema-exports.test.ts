@@ -4,7 +4,7 @@ import { enforce } from 'n4s';
 
 /**
  * Phase 1 Tests: Verify n4s schema types are properly exported
- * 
+ *
  * These tests ensure that:
  * 1. RuleInstance type is accessible from n4s
  * 2. typeof schema.infer works with schema rules
@@ -17,7 +17,7 @@ describe('Phase 1: n4s schema type exports', () => {
       // This test verifies that RuleInstance is exported and can be used in type annotations
       // @ts-expect-error - RuleInstance should be exported but currently is not
       type TestImport = import('n4s').RuleInstance<string>;
-      
+
       // Runtime check that the type exists
       const stringRule = enforce.isString();
       expect(stringRule).toHaveProperty('run');
@@ -28,7 +28,7 @@ describe('Phase 1: n4s schema type exports', () => {
     it('should allow RuleInstance to be used as a type constraint', () => {
       // @ts-expect-error - RuleInstance should be exported but currently is not
       type RuleInstanceType = import('n4s').RuleInstance<any>;
-      
+
       function acceptsRule(rule: RuleInstanceType) {
         return rule.test('test');
       }
@@ -87,7 +87,7 @@ describe('Phase 1: n4s schema type exports', () => {
     it('should infer union types from anyOf', () => {
       const flexibleIdSchema = enforce.anyOf(
         enforce.isString(),
-        enforce.isNumber()
+        enforce.isNumber(),
       );
 
       type FlexibleId = typeof flexibleIdSchema.infer;

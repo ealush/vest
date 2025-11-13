@@ -106,3 +106,106 @@ The `subscribe` method returns a function that you can call to unsubscribe from 
 ```js
 const unsubscribe = suite.subscribe();
 ```
+
+## Using Schemas for Type Safety
+
+Vest allows you to pass an [enforce schema](../enforce/builtin-enforce-plugins/schema_rules) as the second parameter to `create()`. This provides both runtime validation and TypeScript type inference for your validation data.
+
+### Basic Schema Usage
+
+```typescript
+import { create, test, enforce } from 'vest';
+
+const schema = enforce.shape({
+  username: enforce.string(),
+  email: enforce.string(),
+  age: enforce.number(),
+});
+
+const suite = create(schema, data => {
+  // data is automatically typed based on the schema
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotEmpty();
+  });
+
+  test('email', 'Must be a valid email', () => {
+    enforce(data.email).isEmail();
+  });
+
+  test('age', 'Must be 18 or older', () => {
+    enforce(data.age).greaterThanOrEquals(18);
+  });
+});
+```
+
+### Schema Type Inference
+
+When you provide a schema, Vest automatically infers the TypeScript types for your data parameter. This works with different schema types:
+
+**Strict Schemas with `enforce.shape()`**
+
+```typescript
+const schema = enforce.shape({
+  username: enforce.string(),
+  email: enforce.string(),
+});
+
+const suite = create(schema, data => {
+  // data: { username: string; email: string }
+  // TypeScript will error if you try to access properties not in the schema
+});
+```
+
+**Loose Schemas with `enforce.loose()`**
+
+```typescript
+const schema = enforce.loose({
+  username: enforce.string(),
+  email: enforce.string(),
+});
+
+const suite = create(schema, data => {
+  // data: { username: string; email: string; [key: string]: unknown }
+  // Can access additional properties not defined in the schema
+});
+```
+
+**Partial Schemas with `enforce.partial()`**
+
+```typescript
+const schema = enforce.partial({
+  username: enforce.string(),
+  email: enforce.string(),
+});
+
+const suite = create(schema, data => {
+  // data: { username?: string; email?: string }
+  // All properties are optional
+});
+```
+
+### Runtime Type Information
+
+When using schemas, the suite result includes a `types` property that provides runtime type information about your data:
+
+```typescript
+const result = suite(formData);
+
+// Access the runtime type information
+console.log(result.types);
+// Output: { username: 'string', email: 'string', age: 'number' }
+```
+
+This is particularly useful for dynamic forms or when you need to validate the shape of data at runtime.
+
+### Backward Compatibility
+
+For backward compatibility, you can still pass a suite name as the first parameter. The schema would then be the second parameter, and the callback the third:
+
+```typescript
+const suite = create('suite_name', schema, data => {
+  // ...
+});
+```
+
+However, it is recommended to omit the suite name and use the schema-first approach for cleaner code.

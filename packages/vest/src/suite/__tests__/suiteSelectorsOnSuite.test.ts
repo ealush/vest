@@ -7,7 +7,7 @@ describe('Suite Selectors on Suite', () => {
   let suite: TTestSuite;
 
   beforeEach(() => {
-    suite = vest.create('suite_name', () => {
+    suite = vest.create(() => {
       // failing
       vest.test('f1', 'f1_message', () => false);
       // passing

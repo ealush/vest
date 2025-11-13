@@ -51,11 +51,7 @@ export { RuleInstance } from 'RuleInstance';
  * Schema-related type utilities for type inference and composition.
  * These types enable TypeScript to infer correct types from enforce schemas.
  */
-export type {
-  InferShape,
-  SchemaInfer,
-  ShapeType,
-} from 'schemaRulesTypes';
+export type { InferShape, SchemaInfer, ShapeType } from 'schemaRulesTypes';
 
 type ExtendFn = (rules: Record<string, (...args: any[]) => any>) => void;
 type ContextFn = () => EnforceContext;

@@ -11,16 +11,19 @@ Add the ability to pass an enforce schema (from `enforce.shape()`, `enforce.loos
 **Objective:** Ensure n4s schema types are properly exported and available for vest to use
 
 **Files/Functions to Modify/Create:**
+
 - `/Users/ealush/dev/vest/packages/n4s/src/rules/schemaRules/shape.ts` - Verify exports
 - `/Users/ealush/dev/vest/packages/n4s/src/n4s.ts` - Ensure schema types are exported
 - `/Users/ealush/dev/vest/packages/n4s/src/utils/RuleInstance.ts` - Verify RuleInstance exports
 
 **Tests to Write:**
+
 - Test that `RuleInstance` type is accessible from n4s
 - Test that `typeof schema.infer` works with schema rules
 - Test that schema types can be imported in other packages
 
 **Steps:**
+
 1. Write tests to verify schema type exports work correctly
 2. Run tests with `yarn test run` to see them fail (if any issues)
 3. Update exports if needed to expose `RuleInstance` and schema types
@@ -36,14 +39,16 @@ Add the ability to pass an enforce schema (from `enforce.shape()`, `enforce.loos
 **Objective:** Add schema generic parameter to Suite types and extract inferred data type. Add `types` property to SuiteResult for runtime type information.
 
 **Files/Functions to Modify/Create:**
+
 - `/Users/ealush/dev/vest/packages/vest/src/suite/SuiteTypes.ts` - Add schema generic, conditional data type
 - `/Users/ealush/dev/vest/packages/vest/src/suiteResult/SuiteResultTypes.ts` - Add `types` property to SuiteResult
 - `/Users/ealush/dev/vest/packages/vest/src/suiteResult/suiteResult.ts` - Add `types` to result object
 - Create: `/Users/ealush/dev/vest/packages/vest/src/suite/__tests__/schema.types.test.ts` - Type tests
 
 **Tests to Write:**
+
 - Test suite with `enforce.shape()` schema infers correct data type
-- Test suite with `enforce.loose()` schema infers correct data type  
+- Test suite with `enforce.loose()` schema infers correct data type
 - Test suite with `enforce.partial()` schema infers correct data type
 - Test suite without schema accepts any data type (backward compatibility)
 - Test schema type is properly reflected in callback parameters
@@ -51,6 +56,7 @@ Add the ability to pass an enforce schema (from `enforce.shape()`, `enforce.loos
 - Test `types` property contains the inferred type information
 
 **Steps:**
+
 1. Write type tests for schema-based type inference (will fail compilation initially)
 2. Add schema generic parameter `S extends RuleInstance<any> | undefined = undefined` to `Suite` type
 3. Add conditional type helper: `type InferSchemaData<S> = S extends RuleInstance<infer D> ? D : any`
@@ -67,11 +73,13 @@ Add the ability to pass an enforce schema (from `enforce.shape()`, `enforce.loos
 **Objective:** Remove suite name parameter, add schema parameter, store schema for future validation (with TODO comment)
 
 **Files/Functions to Modify/Create:**
+
 - `/Users/ealush/dev/vest/packages/vest/src/suite/createSuite.ts` - Update signature and implementation
 - `/Users/ealush/dev/vest/packages/vest/src/suite/__tests__/create.test.ts` - Update tests
 - Create: `/Users/ealush/dev/vest/packages/vest/src/suite/__tests__/createWithSchema.test.ts` - Schema-specific tests
 
 **Tests to Write:**
+
 - Test suite creation without schema (backward compatibility)
 - Test suite creation with `enforce.shape()` schema
 - Test suite creation with `enforce.loose()` schema
@@ -81,6 +89,7 @@ Add the ability to pass an enforce schema (from `enforce.shape()`, `enforce.loos
 - Test suite result `types` property is undefined when no schema
 
 **Steps:**
+
 1. Write failing tests for new schema parameter API
 2. Remove suite name function overload from `createSuite`
 3. Add new signature: `createSuite<F, G, T, S>(callback: T, schema?: S): Suite<F, G, T, S>`
@@ -100,14 +109,17 @@ Add the ability to pass an enforce schema (from `enforce.shape()`, `enforce.loos
 **Objective:** Update all vest test files and examples to remove suite name parameter
 
 **Files/Functions to Modify/Create:**
+
 - All test files in `/Users/ealush/dev/vest/packages/vest/**/__tests__/**/*.test.ts`
 - All test files in `/Users/ealush/dev/vest/packages/*/src/**/__tests__/**/*.test.ts`
 - Example files and integration tests throughout the codebase
 
 **Tests to Write:**
+
 - No new tests, but verify all existing tests still pass after updates
 
 **Steps:**
+
 1. Search for all occurrences of `create(` or `createSuite(` in packages directory
 2. Use grep to find: `grep -r "create\s*\(\s*['\"]" packages/`
 3. Identify calls with suite name as first string parameter
@@ -126,6 +138,7 @@ Add the ability to pass an enforce schema (from `enforce.shape()`, `enforce.loos
 **Objective:** Document new schema parameter and remove suite name from all documentation
 
 **Files/Functions to Modify/Create:**
+
 - `/Users/ealush/dev/vest/website/docs/writing_your_suite/vests_suite.md` - Update createSuite API
 - `/Users/ealush/dev/vest/website/docs/typescript_support.md` - Add schema type inference examples
 - `/Users/ealush/dev/vest/website/docs/enforce/builtin-enforce-plugins/schema_rules.md` - Add vest integration note
@@ -134,9 +147,11 @@ Add the ability to pass an enforce schema (from `enforce.shape()`, `enforce.loos
 - Any versioned docs that need updating
 
 **Tests to Write:**
+
 - No tests, but manually verify documentation examples are correct
 
 **Steps:**
+
 1. Search for suite name references: `grep -r "create\s*\(\s*['\"]" website/docs/`
 2. Remove suite name from all code examples in docs
 3. Add new section in `vests_suite.md`: "Using Schemas for Type Safety"
@@ -158,5 +173,5 @@ Add the ability to pass an enforce schema (from `enforce.shape()`, `enforce.loos
 ## Open Questions: RESOLVED
 
 1. **Schema validation** → Add TODO comment for future implementation
-2. **Error reporting** → TypeScript handles type safety at compile time  
+2. **Error reporting** → TypeScript handles type safety at compile time
 3. **Schema access** → Not exposed, but `types` property added to `SuiteResult` for runtime type information

@@ -1,3 +1,4 @@
+import type { RuleInstance } from 'n4s';
 import {
   CB,
   CacheApi,
@@ -19,7 +20,6 @@ import {
 import { reprocessTree } from 'registerTests';
 
 // Import schema-related types from n4s
-import type { RuleInstance } from 'n4s';
 
 export type DoneCallback = (res: SuiteResult<TFieldName, TGroupName>) => void;
 type FieldCallbacks = Record<string, DoneCallbacks>;

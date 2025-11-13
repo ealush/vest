@@ -3,13 +3,15 @@
 Successfully implemented the core schema functionality in createSuite, allowing users to pass a schema as the second parameter and get automatic type inference for the suite callback's data parameter. The implementation stores the schema in runtime state and makes it available in the SuiteResult via the `types` property. Maintained backward compatibility with the legacy API.
 
 **Files created/changed:**
+
 - packages/vest/src/suite/createSuite.ts
 - packages/vest/src/core/Runtime.ts
 - packages/vest/src/suiteResult/suiteResult.ts
-- packages/vest/src/suite/__tests__/schema.types.test.ts
+- packages/vest/src/suite/**tests**/schema.types.test.ts
 - Multiple snapshot files updated with new `types` property
 
 **Functions created/changed:**
+
 - createSuite<F, G, T, S>() - Added schema as optional second parameter, maintained backward compatibility with legacy suite name signature
 - useCreateVestState() - Added suiteSchema parameter to store schema in runtime state
 - useSuiteSchema() - New function to retrieve schema from runtime state
@@ -20,6 +22,7 @@ Successfully implemented the core schema functionality in createSuite, allowing 
 - useSuiteResultCache<F, G, S>() - Added schema generic parameter
 
 **Tests created/changed:**
+
 - schema.types.test.ts (11 tests) - Comprehensive test coverage for schema functionality
   - Type inference from shape/loose/partial schemas
   - Backward compatibility without schema
@@ -31,11 +34,13 @@ Successfully implemented the core schema functionality in createSuite, allowing 
 **Review Status:** APPROVED
 
 **Backward Compatibility:**
+
 - Legacy API: `createSuite(suiteName, callback)` still works (deprecated)
 - New API: `createSuite(callback, schema)` for schema support
 - Runtime detection based on first argument type (string vs function)
 
 **Git Commit Message:**
+
 ```
 feat: Add schema support to createSuite for typed validation
 

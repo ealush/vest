@@ -9,6 +9,114 @@ keywords: [Vest, Typescript, Typescript support]
 
 Vest is written fully in TypeScript, and as such, it provides extensive TypeScript support.
 
+## Schema-Based Type Inference
+
+The recommended way to get TypeScript support in Vest is to use [enforce schemas](./enforce/builtin-enforce-plugins/schema_rules). When you pass a schema to `create()`, Vest automatically infers the TypeScript types for your data parameter.
+
+### Basic Schema Type Inference
+
+```typescript
+import { create, test, enforce } from 'vest';
+
+const schema = enforce.shape({
+  username: enforce.string(),
+  email: enforce.string(),
+  age: enforce.number(),
+});
+
+const suite = create(schema, data => {
+  // data is automatically typed as: { username: string; email: string; age: number }
+
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotEmpty();
+  });
+
+  test('email', 'Must be a valid email', () => {
+    enforce(data.email).isEmail();
+  });
+
+  test('age', 'Must be 18 or older', () => {
+    enforce(data.age).greaterThanOrEquals(18);
+  });
+});
+
+// The suite result is also fully typed
+const result = suite({ username: 'john', email: 'john@example.com', age: 25 });
+
+result.getErrors('username'); // ✅ Valid
+result.getErrors('unknown'); // 🚨 TypeScript error
+```
+
+### Schema Type Variants
+
+Different schema types provide different type inference behaviors:
+
+**Strict Shape (`enforce.shape()`)** - Only allows defined properties:
+
+```typescript
+const schema = enforce.shape({
+  username: enforce.string(),
+  email: enforce.string(),
+});
+
+const suite = create(schema, data => {
+  // data: { username: string; email: string }
+  data.username; // ✅ Valid
+  data.password; // 🚨 TypeScript error - property doesn't exist
+});
+```
+
+**Loose Shape (`enforce.loose()`)** - Allows additional properties:
+
+```typescript
+const schema = enforce.loose({
+  username: enforce.string(),
+  email: enforce.string(),
+});
+
+const suite = create(schema, data => {
+  // data: { username: string; email: string; [key: string]: unknown }
+  data.username; // ✅ Valid
+  data.password; // ✅ Valid - returns unknown
+});
+```
+
+**Partial Schema (`enforce.partial()`)** - Makes all properties optional:
+
+```typescript
+const schema = enforce.partial({
+  username: enforce.string(),
+  email: enforce.string(),
+});
+
+const suite = create(schema, data => {
+  // data: { username?: string; email?: string }
+  data.username?.toLowerCase(); // ✅ Need to check for undefined
+});
+```
+
+### Runtime Type Information
+
+When using schemas, the suite result includes a `types` property with runtime type information:
+
+```typescript
+const schema = enforce.shape({
+  username: enforce.string(),
+  email: enforce.string(),
+  age: enforce.number(),
+});
+
+const suite = create(schema, data => {
+  // ...
+});
+
+const result = suite({ username: 'john', email: 'john@example.com', age: 25 });
+
+// Access runtime type information
+console.log(result.types);
+// Output: { username: 'string', email: 'string', age: 'number' }
+```
+
 ## Suite Generics
 
 The Suite's `create` function takes three **optional** generic types - `FieldName`, `GroupName` and `Callback`.

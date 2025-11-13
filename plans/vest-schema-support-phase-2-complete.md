@@ -3,12 +3,14 @@
 Successfully added schema generic parameter to Suite types with type inference from n4s schemas. Added `types` property to SuiteResult for runtime type information.
 
 **Files created/changed:**
+
 - `/Users/ealush/dev/vest/packages/vest/src/suite/SuiteTypes.ts` - Added schema generic S and InferSchemaData helper
 - `/Users/ealush/dev/vest/packages/vest/src/suiteResult/SuiteResultTypes.ts` - Added schema generic S and types property
 - `/Users/ealush/dev/vest/packages/vest/src/suiteResult/suiteResult.ts` - Updated to include types in result object
 - `/Users/ealush/dev/vest/packages/vest/src/suite/__tests__/schema.types.test.ts` - Comprehensive test suite for schema support
 
 **Functions created/changed:**
+
 - `InferSchemaData<S>` - Helper type to extract data type from RuleInstance schema
 - `Suite<F, G, T, S>` - Added schema generic parameter S
 - `SuiteMethods<F, G, T, S>` - Added schema generic parameter S
@@ -18,6 +20,7 @@ Successfully added schema generic parameter to Suite types with type inference f
 - `constructSuiteResultObject<F, G, S>()` - Added schema parameter and types property logic
 
 **Tests created/changed:**
+
 - 11 tests in `schema.types.test.ts` (currently failing as expected - TDD red phase):
   - Type inference from schema (3 tests) - FAIL (schema param not yet supported)
   - Backward compatibility (2 tests) - PASS
@@ -28,6 +31,7 @@ Successfully added schema generic parameter to Suite types with type inference f
 **Review Status:** APPROVED (TDD red phase complete - tests written and failing as expected)
 
 **Git Commit Message:**
+
 ```
 feat: Add schema support to Suite types with type inference
 

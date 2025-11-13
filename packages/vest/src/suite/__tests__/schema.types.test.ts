@@ -1,6 +1,6 @@
+import { enforce } from 'n4s';
 import { describe, it, expect } from 'vitest';
 
-import { enforce } from 'n4s';
 import { create, test } from 'vest';
 
 /**

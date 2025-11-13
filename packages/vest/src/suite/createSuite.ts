@@ -1,3 +1,4 @@
+import type { RuleInstance } from 'n4s';
 import { CB, assign, withResolvers } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
@@ -6,11 +7,7 @@ import { getTypedMethods } from './getTypedMethods';
 import { IsolateSuite, TIsolateSuite } from 'IsolateSuite';
 import { useCreateVestState, useLoadSuite } from 'Runtime';
 import { SuiteContext } from 'SuiteContext';
-import {
-  SuiteResult,
-  TFieldName,
-  TGroupName,
-} from 'SuiteResultTypes';
+import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { Suite, SuiteModifiers } from 'SuiteTypes';
 import { useInitVestBus } from 'VestBus';
 import { VestReconciler } from 'VestReconciler';
@@ -21,7 +18,6 @@ import { bindSuiteSelectors } from 'suiteSelectors';
 import { validateSuiteCallback } from 'validateSuiteParams';
 
 // Import schema-related types from n4s
-import type { RuleInstance } from 'n4s';
 
 // New signature: callback first, optional schema second
 function createSuite<

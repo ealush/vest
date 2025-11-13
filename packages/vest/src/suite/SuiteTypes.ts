@@ -11,9 +11,7 @@ import { SuiteSelectors } from 'suiteSelectors';
 import type { RuleInstance } from 'n4s';
 
 // Helper type to extract data type from schema
-export type InferSchemaData<S> = S extends RuleInstance<infer D, any>
-  ? D
-  : any;
+export type InferSchemaData<S> = S extends RuleInstance<infer D, any> ? D : any;
 
 export type Suite<
   F extends TFieldName,

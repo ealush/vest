@@ -52,7 +52,7 @@ const formData = {
   password: '',
 };
 
-const validationResult = suite(formData);
+const validationResult = suite.run(formData);
 
 if (validationResult.isValid()) {
   // Submit the form

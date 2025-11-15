@@ -1,4 +1,4 @@
-import { CB, Maybe, Nullable } from 'vest-utils';
+import { CB, Nullable } from 'vest-utils';
 
 import { TIsolateSuite } from 'IsolateSuite';
 import { Severity } from 'Severity';
@@ -53,10 +53,7 @@ export type FailureMessages = Record<string, string[]>;
 export type SuiteResult<
   F extends TFieldName,
   G extends TGroupName,
-> = SuiteSummary<F, G> &
-  SuiteSelectors<F, G> & { suiteName: SuiteName; dump: CB<TIsolateSuite> };
-
-export type SuiteName = Maybe<string>;
+> = SuiteSummary<F, G> & SuiteSelectors<F, G> & { dump: CB<TIsolateSuite> };
 
 export type TFieldName<T extends string = string> = T;
 export type TGroupName<G extends string = string> = G;

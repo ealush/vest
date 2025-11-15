@@ -31,7 +31,7 @@ const suite = create(data => {
   // ... your validation tests ...
 });
 
-suite(formData); // Run the suite with some data
+suite.run(formData); // Run the suite with some data
 
 const serializedSuite = SuiteSerializer.serialize(suite);
 ```
@@ -59,7 +59,7 @@ SuiteSerializer.resume(suite, serializedSuite);
 import { create } from 'vest';
 import { SuiteSerializer } from 'vest';
 
-const suite = create(data => {
+const suite = create(() => {
   test('username', 'Username is required', () => {
     enforce(data.username).isNotBlank();
   });
@@ -76,7 +76,7 @@ const suite = create(data => {
 app.post('/submit', (req, res) => {
   const formData = req.body;
 
-  suite(formData);
+  suite.run();
 
   const serializedSuite = SuiteSerializer.serialize(suite);
 

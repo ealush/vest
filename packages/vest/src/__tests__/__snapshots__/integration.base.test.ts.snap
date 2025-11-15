@@ -33,7 +33,6 @@ Promise {
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "suiteName": undefined,
   "testCount": 5,
   "tests": {
     "field_1": SummaryBase {

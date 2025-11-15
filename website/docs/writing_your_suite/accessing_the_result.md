@@ -1,93 +1,80 @@
 ---
+
 sidebar_position: 2
 title: Accessing Vest's Result
 description: Vest validations return a results object that holds all the information regarding the current run and methods to interact with the data.
 keywords:
-  [
-    Vest,
-    Results object,
-    methods,
-    selectors,
-    hasErrors,
-    isValid,
-    getErrors,
-    hasWarnings,
-    getWarnings,
-    getError,
-    getWarning,
-  ]
----
+[
+Vest,
+Results object,
+methods,
+selectors,
+hasErrors,
+isValid,
 
-# Accessing Vest's Result
-
-Vest validations return a results object that holds all the information regarding the current run and methods to interact with the data.
-
-A result object would look somewhat like this:
-
-```js
+````js
 {
   'valid': false,           // Whether the suite as a whole is valid or not
-  'errorCount': 0,          // Overall count of errors in the suite
-  'warnCount': 0,           // Overall count of warnings in the suite
-  'testCount': 0,           // Overall test count for the suite (passing, failing and warning)
-  'pendingCount': 0,        // Overall count of unresolved async tests in the suite
-  'tests': {                // An object containing all non-skipped tests
-    ['fieldName']: {        // Name of each field
-      'errorCount': 0,      // Error count per field
-      'errors': [],         // Array of error messages fer field (may be undefined)
-      'warnings': [],       // Array of warning messages fer field (may be undefined)
-      'warnCount': 0,       // Warning count per field
-      'testCount': 0,       // Overall test count for the field (passing, failing and warning)
-      'pendingCount': 0,    // Overall count of unresolved async tests in the current field
-      'valid': false,       // Field specific validity
-    },
-    'groups': {             // An object containing groups declared in the suite
-      ['fieldName']: {      // Subset of res.tests[fieldName]
-        /*... */            // only containing tests that ran within the group
+// Directly via the result object
+    ## `.after()` and `await suite.run()`
+
+    Use `.after()` to register a callback that will be called when the suite finishes running. This is the recommended way to handle completion logic, including async suites. You can also use `await suite.run()` to get the result when all tests are finished.
+
+    If you need to check for completion of specific fields, do so inside your callback logic.
+
+    `.after()` can be chained before calling `.run()`, and multiple callbacks can be registered if needed.
+
+    Example:
+
+    ```js
+    import { create, test, enforce } from 'vest';
+
+    const suite = create(data => {
+      test(
+        'UserEmail',
+        'Marked as spam address',
+        async () => await isKnownSpammer(data.address),
+      );
+
+      test(
+        'UserName',
+        'must not be blacklisted',
+        async () => await isBlacklistedUser(data.username),
+      );
+    });
+
+    suite.after(res => {
+      if (res.hasErrors('UserName')) {
+        showUserNameErrors(res.errors);
       }
+      reportToServer(res);
+      promptUserQuestionnaire(res);
+    }).run();
+    ```
+
+    :::danger IMPORTANT
+    Do not use `.after()` conditionally, especially with async tests. This might cause unexpected behavior or missed callbacks. Instead, perform your conditional logic within your callback.
+    :::
+
+    ```js
+    // 🚨 This might not work as expected when working with async validations
+
+    if (field === 'username') {
+      suite.after(result => {
+        /*do something*/
+      }).run();
     }
-  }
-  'errors': [               // An array containing all the errors occurred in order
-    {
-      fieldName: "fieldname",
-      groupName: undefined, // or whatever group we're in
-      message: "validation message"
-    },
-  ],
-  'warnings': [{            // An array containing all the warnings occurred in order
-      fieldName: "fieldname",
-      groupName: undefined, // or whatever group we're in
-      message: "validation message"
-    }]
-}
-```
+    ```
 
-# Suite Result Methods
-
-Along with this data, our result object also contains a few other methods that can be used to interact with the data. All these methods can be accessed in the following ways:
-
-1. Directly via the result object returned by the suite.
-2. Calling the method on the suite itself.
-3. Via the `suite.get()` method.
-
-All the following examples are valid and equivalent:
-
-```js
-const result = suite(formData);
-
-// 1 - Directly via the result object
-result.hasErrors();
-
-// 2 - Calling the method on the suite itself
-suite.hasErrors();
-
-// 3 - Via the `suite.get()` method
-suite.get().hasErrors();
-```
-
-## `isValid`
+    ```js
+    // ✅ Instead, perform your checks within your after callback
 
 `isValid` returns whether the validation suite as a whole or a single field is valid or not.
+      if (field === 'username') {
+        /*do something*/
+      }
+    }).run();
+    ```
 
 ### Suite validity
 
@@ -98,12 +85,10 @@ A _suite_ is considered valid if the following conditions are met:
 - There are no pending async tests.
 
 ```js
-result.isValid();
-
 suite.isValid();
-
 suite.get().isValid();
-```
+result.isValid();
+````
 
 ### Field validity
 
@@ -114,11 +99,9 @@ A _field_ is considered valid if the following conditions are met:
 - The field has no pending tests.
 
 ```js
-result.isValid('username');
-
 suite.isValid('username');
-
 suite.get().isValid('username');
+result.isValid('username');
 ```
 
 :::tip NOTE
@@ -296,24 +279,19 @@ resultObject.getWarningsByGroup('groupName');
 
 [Read more about groups](../writing_tests/advanced_test_features/grouping_tests.md).
 
-## `.done()`
-
-Done is a function that can be chained to your validation suite, and allows invoking callbacks whenever one, or all fields, are finished running - regardless of the validation result.
-
-If we specify a field name in our `done` call, Vest will not wait for the whole suite to finish before running our callback. It will invoke immediately when all tests with that given name finish running.
-
-`.done()` calls can be infinitely chained after one another, and as the validation suite completes - they will all run immediately.
-
-`done` takes one or two arguments:
-
-| Name        | Type       | Optional | Description                                                                                                                     |
 | ----------- | ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `fieldName` | `String`   | Yes      | If passed, the current done call will not wait for the whole suite to complete, but instead wait for a certain field to finish. |
-| `callback`  | `Function` | No       | A callback to be run when either the whole suite or the specified field finished running.                                       |
+| `callback` | `Function` | Yes | A callback to be run when the suite finishes running. Use with `.after(callback).run()` for completion logic. |
+| `await suite.run()` | `Promise` | No | Returns a promise that resolves when the suite is done running. Use with async/await for modern async handling. |
 
-The result object is being passed down to the `done` object as an argument.
+## `.after()` and `await suite.run()`
 
-In the below example, the `done` callback for `UserName` may run before the whole suite finishes. Only when the rest of the suite finishes, it will call the other two done callbacks that do not have a field name specified.
+Use `.after()` to register a callback that will be called when the suite finishes running. This is the recommended way to handle completion logic, including async suites. You can also use `await suite.run()` to get the result when all tests are finished.
+
+If you need to check for completion of specific fields, do so inside your callback logic.
+
+`.after()` can be chained before calling `.run()`, and multiple callbacks can be registered if needed.
+
+Example:
 
 ```js
 import { create, test, enforce } from 'vest';
@@ -332,42 +310,43 @@ const suite = create(data => {
   );
 });
 
-const validationResult = suite(data)
-  .done('UserName', res => {
+suite
+  .after(res => {
     if (res.hasErrors('UserName')) {
       showUserNameErrors(res.errors);
     }
+    reportToServer(res);
+    promptUserQuestionnaire(res);
   })
-  .done(output => {
-    reportToServer(output);
-  })
-  .done(output => {
-    promptUserQuestionnaire(output);
-  });
+  .run();
 ```
 
 :::danger IMPORTANT
-.done calls must not be used conditionally - especially when involving async tests. This might cause unexpected behavior or missed callbacks. Instead, if needed, perform your conditional logic within your callback.
+Do not use `.after()` conditionally, especially with async tests. This might cause unexpected behavior or missed callbacks. Instead, perform your conditional logic within your callback.
 :::
 
 ```js
 // 🚨 This might not work as expected when working with async validations
 
 if (field === 'username') {
-  result.done(() => {
-    /*do something*/
-  });
+  suite
+    .after(result => {
+      /*do something*/
+    })
+    .run();
 }
 ```
 
 ```js
-// ✅ Instead, perform your checks within your done callback
+// ✅ Instead, perform your checks within your after callback
 
-result.done(() => {
-  if (field === 'username') {
-    /*do something*/
-  }
-});
+suite
+  .after(result => {
+    if (field === 'username') {
+      /*do something*/
+    }
+  })
+  .run();
 ```
 
 ## isPending
@@ -377,23 +356,16 @@ Returns whether the suite, or a specific field are pending or not. A suite is co
 Returns `true` if the suite is pending, `false` otherwise.
 
 ```js
-const suite = vest.create(() => {
+const suite = vest.create((data = {}) => {
   test('username', 'Username is already taken', async () => {
     await someServerCall();
   });
 });
 
-result.isPending();
-
-suite.isPending();
-
-suite.get().isPending();
-
+await suite.run(); // For async suites
+const result = suite.run(); // For sync suites
+result.isPending(); // Use result object
 result.isPending('username');
-
-suite.isPending('username');
-
-suite.get().isPending('username');
 ```
 
 ## isTested
@@ -403,11 +375,11 @@ Returns whether a given field has been tested or not. A field is considered test
 Returns `true` if the field is tested, `false` otherwise.
 
 ```js
-const suite = vest.create(() => {
+const suite = vest.create((data = {}) => {
   test('username', 'Username is required', () => {
     enforce(username).isNotBlank();
   });
 });
 
-suite.isTested('username'); // true if username has been tested
+result.isTested('username'); // true if username has been tested
 ```

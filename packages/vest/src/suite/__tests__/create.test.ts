@@ -10,14 +10,6 @@ import { create } from 'vest';
 
 describe('Test createSuite module', () => {
   describe('Test suite Arguments', () => {
-    it('allows omitting suite name', () => {
-      expect(typeof create(vi.fn()).run).toBe('function');
-      expect(typeof create(vi.fn()).get).toBe('function');
-      expect(typeof create(vi.fn()).reset).toBe('function');
-      expect(typeof create(vi.fn()).remove).toBe('function');
-      expect(create(vi.fn()).get()).toMatchSnapshot();
-    });
-
     it.each([faker.lorem.word(), null, undefined, 0, 1, true, false, NaN, ''])(
       'Throws an error when `tests` callback is not a function',
       value => {
@@ -27,14 +19,6 @@ describe('Test createSuite module', () => {
         );
       },
     );
-
-    describe('When suite name is provided', () => {
-      it('should add the suite name to the suite result', () => {
-        const res = create('form_name', () => {}).run();
-
-        expect(res.suiteName).toBe('form_name');
-      });
-    });
   });
 
   describe('Return value', () => {

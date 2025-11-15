@@ -49,7 +49,6 @@ Promise {
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 1,
-  "suiteName": undefined,
   "testCount": 3,
   "tests": {
     "field_1": {
@@ -151,7 +150,6 @@ SuiteSummary {
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "suiteName": undefined,
   "testCount": 3,
   "tests": {
     "field_1": {
@@ -274,7 +272,6 @@ SuiteSummary {
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "suiteName": undefined,
   "testCount": 7,
   "tests": {
     "field_1": {

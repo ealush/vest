@@ -1,8 +1,7 @@
-import { ctx } from 'enforceContext';
-import type { ShapeType } from 'shape';
-
 import type { RuleInstance } from 'RuleInstance';
 import { RuleRunReturn } from 'RuleRunReturn';
+import { ctx } from 'enforceContext';
+import type { ShapeType } from 'schemaRulesTypes'; // [FIXED] Import from centralized types
 
 /**
  * Validates that an object matches a schema loosely - all schema keys required, extra keys allowed.
@@ -17,15 +16,15 @@ import { RuleRunReturn } from 'RuleRunReturn';
  * ```typescript
  * // Eager API
  * enforce({ name: 'John', age: 30, extra: 'allowed' })
- *   .loose({
- *     name: enforce.isString(),
- *     age: enforce.isNumber()
- *   }); // passes (extra key is ok)
+ * .loose({
+ * name: enforce.isString(),
+ * age: enforce.isNumber()
+ * }); // passes (extra key is ok)
  *
  * // Lazy API
  * const partialUserSchema = enforce.loose({
- *   name: enforce.isString(),
- *   email: enforce.isString()
+ * name: enforce.isString(),
+ * email: enforce.isString()
  * });
  *
  * // All schema keys must be present and valid
@@ -36,7 +35,7 @@ import { RuleRunReturn } from 'RuleRunReturn';
  */
 export function loose<T extends Record<string, any>>(
   value: T,
-  schema: Record<string, any>,
+  schema: Record<string, RuleInstance<any, any[]>>, // [FIXED]
 ): RuleRunReturn<T> {
   for (const key in schema) {
     const fieldValue = key in value ? value[key] : undefined;
@@ -51,11 +50,13 @@ export function loose<T extends Record<string, any>>(
 }
 
 // Types colocated with loose rule
-export type LooseRuleInstance<S extends Record<string, RuleInstance<any>>> =
-  RuleInstance<
-    ShapeType<S> & Record<string, unknown>,
-    [ShapeType<S> & Record<string, unknown>]
-  >;
+export type LooseRuleInstance<
+  S extends Record<string, RuleInstance<any, any[]>>, // [FIXED]
+> = RuleInstance<
+  ShapeType<S> & Record<string, unknown>,
+  [ShapeType<S> & Record<string, unknown>]
+>;
 
-export type LooseShapeValue<S extends Record<string, RuleInstance<any>>> =
-  ShapeType<S> & Record<string, unknown>;
+export type LooseShapeValue<
+  S extends Record<string, RuleInstance<any, any[]>>, // [FIXED]
+> = ShapeType<S> & Record<string, unknown>;

@@ -1,8 +1,9 @@
-import { loose } from 'loose';
 import { hasOwnProperty } from 'vest-utils';
 
 import type { RuleInstance } from 'RuleInstance';
 import { RuleRunReturn } from 'RuleRunReturn';
+import { loose } from 'loose';
+import type { ShapeType } from 'schemaRulesTypes'; // [FIXED] Import, don't redeclare
 
 /**
  * Validates that an object matches a schema exactly - all keys required, no extra keys allowed.
@@ -17,16 +18,16 @@ import { RuleRunReturn } from 'RuleRunReturn';
  * ```typescript
  * // Eager API
  * enforce({ name: 'John', age: 30 })
- *   .shape({
- *     name: enforce.isString(),
- *     age: enforce.isNumber().greaterThan(0)
- *   }); // passes
+ * .shape({
+ * name: enforce.isString(),
+ * age: enforce.isNumber().greaterThan(0)
+ * }); // passes
  *
  * // Lazy API
  * const userSchema = enforce.shape({
- *   name: enforce.isString(),
- *   email: enforce.isString().matches(/@/),
- *   age: enforce.isNumber().greaterThanOrEquals(18)
+ * name: enforce.isString(),
+ * email: enforce.isString().matches(/@/),
+ * age: enforce.isNumber().greaterThanOrEquals(18)
  * });
  *
  * userSchema.test({ name: 'Jane', email: 'jane@example.com', age: 25 }); // true
@@ -36,7 +37,7 @@ import { RuleRunReturn } from 'RuleRunReturn';
  */
 export function shape<T extends Record<string, any>>(
   value: T,
-  schema: Record<string, any>,
+  schema: Record<string, RuleInstance<any, any[]>>, // [FIXED]
 ): RuleRunReturn<T> {
   const baseRes = loose(value, schema);
   if (!baseRes.pass) {
@@ -53,28 +54,17 @@ export function shape<T extends Record<string, any>>(
 }
 
 // Types colocated with shape rule
-export type InferShape<T> = T extends RuleInstance<infer R, any> ? R : never;
+// [FIXED] Removed duplicated InferShape, SchemaInfer, and ShapeType
 
-export type SchemaInfer<T extends Record<string, RuleInstance<any>>> = {
-  [K in keyof T as undefined extends InferShape<T[K]> ? never : K]: InferShape<
-    T[K]
-  >;
-} & {
-  [K in keyof T as undefined extends InferShape<T[K]> ? K : never]?: InferShape<
-    T[K]
-  >;
-};
+export type ShapeRuleInstance<
+  S extends Record<string, RuleInstance<any, any[]>>, // [FIXED]
+> = RuleInstance<ShapeType<S>, [ShapeType<S>]>;
 
-export type ShapeType<T extends Record<string, RuleInstance<any>>> =
-  SchemaInfer<T>;
-
-export type ShapeRuleInstance<S extends Record<string, RuleInstance<any>>> =
-  RuleInstance<ShapeType<S>, [ShapeType<S>]>;
-
-export type ShapeValue<S extends Record<string, RuleInstance<any>>> =
-  ShapeType<S>;
+export type ShapeValue<
+  S extends Record<string, RuleInstance<any, any[]>>, // [FIXED]
+> = ShapeType<S>;
 
 export type SchemaValidationRule = <T extends Record<string, any>>(
   value: T,
-  schema: Record<string, RuleInstance<any>>,
+  schema: Record<string, RuleInstance<any, any[]>>, // [FIXED]
 ) => RuleRunReturn<T>;

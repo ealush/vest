@@ -36,7 +36,7 @@ type TCustomLazyRules = {
 
 // Create schema rules with isArrayOf handled specially
 const adaptedSchemaRules = adaptDynamicRules<
-  RuleInstance<any, [any]>,
+  RuleInstance<any, any[]>, // [FIXED]
   typeof schemaRules
 >(schemaRules);
 
@@ -53,7 +53,7 @@ const schemaRulesWithArrayChaining = {
 };
 
 const baseEnforceLazy = {
-  ...(adaptDynamicRules<RuleInstance<any, [any]>, typeof compoundRules>(
+  ...(adaptDynamicRules<RuleInstance<any, any[]>, typeof compoundRules>( // [FIXED]
     compoundRules,
   ) as unknown as CompoundRuleLazyTypes),
   ...(schemaRulesWithArrayChaining as unknown as SchemaRuleLazyTypes),
@@ -84,14 +84,14 @@ const baseEnforceLazy = {
  *
  * // Chain type-specific rules
  * const ageRule = enforce.isNumber()
- *   .greaterThanOrEquals(18)
- *   .lessThan(150);
+ * .greaterThanOrEquals(18)
+ * .lessThan(150);
  *
  * // Schema validation
  * const userSchema = enforce.shape({
- *   name: enforce.isString(),
- *   email: enforce.isString().matches(/@/),
- *   age: ageRule
+ * name: enforce.isString(),
+ * email: enforce.isString().matches(/@/),
+ * age: ageRule
  * });
  *
  * userSchema.test({ name: 'John', email: 'john@example.com', age: 25 }); // true

@@ -1,7 +1,7 @@
-import type { ShapeType } from 'shape';
 import { describe, expect, it } from 'vitest';
 
 import { enforce } from 'n4s';
+import type { ShapeType } from 'schemaRulesTypes'; // [FIXED]
 
 // schema combinators are consumed via enforce
 
@@ -17,10 +17,12 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     void ok1;
 
     // Type test: boolean is not allowed in (number | string)[]
+    // @ts-expect-error
     const badArr1: Arr = [true];
     void badArr1;
 
     // Type test: object is not allowed in (number | string)[]
+    // @ts-expect-error
     const badArr2: Arr = [{}];
     void badArr2;
     expect(true).toBe(true);
@@ -53,6 +55,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
       city: 'a',
       country: 'US',
       // Type test: extra property not allowed by exact shape
+      // @ts-expect-error
       extra: true,
       street: 'x',
       zip: '12345',
@@ -64,6 +67,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
       country: 'US',
       street: 'x',
       // Type test: boolean is not assignable to string
+      // @ts-expect-error
       zip: true,
     } satisfies Addr;
     void badZip;
@@ -91,6 +95,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
 
     const badCount = {
       // Type test: count must be number
+      // @ts-expect-error
       count: '1',
       totals: { subtotal: 1, tax: 0 },
     } satisfies T;
@@ -99,6 +104,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     const badTotals = {
       count: 1,
       // Type test: totals.tax must be number
+      // @ts-expect-error
       totals: { subtotal: 1, tax: '0' },
     } satisfies T;
     void badTotals;
@@ -106,6 +112,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     const badMaybe = {
       count: 1,
       // Type test: maybeName may be string | null | undefined, not boolean
+      // @ts-expect-error
       maybeName: false,
       totals: { subtotal: 1, tax: 0 },
     } satisfies T;
@@ -123,6 +130,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     void okB;
 
     // Type test: boolean is not string | number
+    // @ts-expect-error
     const badC: SOrN = true;
     void badC;
 
@@ -130,6 +138,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     type NotStr = typeof notString.infer; // string (by design of combinator typing)
 
     // Type test: expects string inferred type, assigning number
+    // @ts-expect-error
     const badNotStr: NotStr = 1;
     void badNotStr;
     expect(true).toBe(true);
@@ -151,11 +160,13 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     void ok;
 
     // Type test: items must be array of lineItem
+    // @ts-expect-error
     const badCart1 = { items: ['x'] } satisfies Cart;
     void badCart1;
 
     const badCart2 = {
       // Type test: qty must be number > 0 (type-wise: number, so boolean is invalid)
+      // @ts-expect-error
       items: [{ price: 1, qty: true, sku: 'x' }],
     } satisfies Cart;
     void badCart2;

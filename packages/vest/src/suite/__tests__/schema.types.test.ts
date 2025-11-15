@@ -102,6 +102,13 @@ describe.skip('schema driven suite types', () => {
       age: enforce.isNumber(),
     });
 
+    type i = typeof schema.infer;
+    /* INCORRECT!
+     type i = {} & {
+      name?: unknown;
+      age?: unknown;
+    } */
+
     const suite = create(data => {
       void (0 as unknown as AssertTrue<
         IsEqual<typeof data, { name: string; age: number }>

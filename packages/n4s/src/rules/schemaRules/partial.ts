@@ -1,8 +1,7 @@
-import { ctx } from 'enforceContext';
-import type { ShapeType } from 'shape';
-
 import type { RuleInstance } from 'RuleInstance';
 import { RuleRunReturn } from 'RuleRunReturn';
+import { ctx } from 'enforceContext';
+import type { ShapeType } from 'schemaRulesTypes'; // [FIXED] Import from centralized types
 
 /**
  * Checks if value has any keys not present in schema.
@@ -25,7 +24,7 @@ function hasExtraKeys<T extends Record<string, any>>(
  */
 function validateProvidedKeys<T extends Record<string, any>>(
   value: T,
-  schema: Record<string, any>,
+  schema: Record<string, RuleInstance<any, any[]>>, // [FIXED]
 ): RuleRunReturn<T> | null {
   for (const key in schema) {
     if (key in value) {
@@ -61,17 +60,17 @@ function validateProvidedKeys<T extends Record<string, any>>(
  * ```typescript
  * // Eager API
  * enforce({ name: 'John' })
- *   .partial({
- *     name: enforce.isString(),
- *     age: enforce.isNumber(),
- *     email: enforce.isString()
- *   }); // passes (age and email are optional)
+ * .partial({
+ * name: enforce.isString(),
+ * age: enforce.isNumber(),
+ * email: enforce.isString()
+ * }); // passes (age and email are optional)
  *
  * // Lazy API
  * const updateSchema = enforce.partial({
- *   name: enforce.isString(),
- *   email: enforce.isString().matches(/@/),
- *   age: enforce.isNumber()
+ * name: enforce.isString(),
+ * email: enforce.isString().matches(/@/),
+ * age: enforce.isNumber()
  * });
  *
  * updateSchema.test({}); // true (all fields optional)
@@ -82,7 +81,7 @@ function validateProvidedKeys<T extends Record<string, any>>(
  */
 export function partial<T extends Record<string, any>>(
   value: T,
-  schema: Record<string, any>,
+  schema: Record<string, RuleInstance<any, any[]>>, // [FIXED]
 ): RuleRunReturn<T> {
   if (hasExtraKeys(value, schema)) {
     return RuleRunReturn.Failing(value);
@@ -97,8 +96,10 @@ export function partial<T extends Record<string, any>>(
 }
 
 // Types colocated with partial rule
-export type PartialRuleInstance<S extends Record<string, RuleInstance<any>>> =
-  RuleInstance<Partial<ShapeType<S>>, [Partial<ShapeType<S>>]>;
+export type PartialRuleInstance<
+  S extends Record<string, RuleInstance<any, any[]>>, // [FIXED]
+> = RuleInstance<Partial<ShapeType<S>>, [Partial<ShapeType<S>>]>;
 
-export type PartialShapeValue<S extends Record<string, RuleInstance<any>>> =
-  Partial<ShapeType<S>>;
+export type PartialShapeValue<
+  S extends Record<string, RuleInstance<any, any[]>>, // [FIXED]
+> = Partial<ShapeType<S>>;

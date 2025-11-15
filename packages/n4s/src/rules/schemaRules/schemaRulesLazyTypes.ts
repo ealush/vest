@@ -21,14 +21,14 @@ import type {
  */
 export type SchemaRuleLazyTypes = {
   isArrayOf: <T>(...rules: any[]) => IsArrayOfRuleInstance<T>;
-  loose: <S extends Record<string, RuleInstance<any>>>(
+  loose: <S extends Record<string, RuleInstance<any, any[]>>>( // [FIXED]
     schema: S,
   ) => LooseRuleInstance<S>;
   optional: <T>(rule: any) => OptionalRuleInstance<T>;
-  partial: <S extends Record<string, RuleInstance<any>>>(
+  partial: <S extends Record<string, RuleInstance<any, any[]>>>( // [FIXED]
     schema: S,
   ) => PartialRuleInstance<S>;
-  shape: <S extends Record<string, RuleInstance<any>>>(
+  shape: <S extends Record<string, RuleInstance<any, any[]>>>( // [FIXED]
     schema: S,
   ) => ShapeRuleInstance<S>;
 };

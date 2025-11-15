@@ -1,3 +1,4 @@
+import type { RuleInstance } from 'n4s';
 import { Maybe, greaterThan, isPositive } from 'vest-utils';
 
 import { Severity, SeverityCount } from 'Severity';
@@ -13,8 +14,12 @@ import { SummaryFailure } from 'SummaryFailure';
 import { gatherFailures } from 'collectFailures';
 import matchingFieldName from 'matchingFieldName';
 
-export function bindSuiteSelectors<F extends TFieldName, G extends TGroupName>(
-  get: <F extends string, G extends string>() => SuiteResult<F, G>,
+export function bindSuiteSelectors<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends RuleInstance<any, any> | undefined = undefined,
+>(
+  get: <F extends string, G extends string>() => SuiteResult<F, G, S>,
 ): SuiteSelectors<F, G> {
   return {
     getError: (...args: Parameters<SuiteSelectors<F, G>['getError']>) =>

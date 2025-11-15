@@ -22,7 +22,7 @@ There are two ways to use `group()`:
 ```js
 import { create, test, group, enforce } from 'vest';
 
-create('suite_name', data => {
+create(data => {
   group('group_name', () => {
     test('field_name', 'error_message', () => {
       enforce(data.field_name).equals('value');
@@ -36,7 +36,7 @@ create('suite_name', data => {
 ```js
 import { create, test, group, enforce } from 'vest';
 
-create('suite_name', data => {
+create(data => {
   group(() => {
     test('field_name', 'error_message', () => {
       enforce(data.field_name).equals('value');

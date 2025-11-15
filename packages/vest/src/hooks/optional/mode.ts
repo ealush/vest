@@ -15,7 +15,7 @@ import { hasErrorsByTestObjects } from 'hasFailuresByTestObjects';
  * ```js
  * import {Modes, create} from 'vest';
  *
- * const suite = create('suite_name', () => {
+ * const suite = create(() => {
  *  vest.mode(Modes.ALL);
  *
  *  // ...

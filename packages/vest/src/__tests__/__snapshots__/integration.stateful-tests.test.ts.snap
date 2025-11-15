@@ -321,6 +321,7 @@ SuiteSummary {
   "suiteName": undefined,
   "testCount": 0,
   "tests": {},
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],

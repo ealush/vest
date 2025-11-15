@@ -68,15 +68,15 @@ describe('runStatic', () => {
       expect(result.dump()).toHaveProperty('$type', VestIsolateType.Suite);
     });
   });
-  describe('When creating the suite with a name', () => {
-    it("should set the suite's name", () => {
-      const suite = vest.create('user_form', () => {
+  describe('suite metadata defaults', () => {
+    it('should keep suiteName undefined by default', () => {
+      const suite = vest.create(() => {
         vest.test('t1', () => false);
       });
 
       const res = suite.runStatic();
 
-      expect(res.suiteName).toBe('user_form');
+      expect(res.suiteName).toBeUndefined();
     });
   });
 });

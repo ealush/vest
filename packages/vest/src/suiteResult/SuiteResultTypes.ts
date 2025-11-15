@@ -1,3 +1,4 @@
+import type { RuleInstance } from 'n4s';
 import { CB, Maybe, Nullable } from 'vest-utils';
 
 import { TIsolateSuite } from 'IsolateSuite';
@@ -50,11 +51,22 @@ export type GetFailuresResponse = FailureMessages | string[];
 
 export type FailureMessages = Record<string, string[]>;
 
+export type SuiteSchemaTypes<
+  S extends RuleInstance<any, any> | undefined,
+> = S extends RuleInstance<infer Data, any>
+  ? { data: Data; schema: S }
+  : undefined;
+
 export type SuiteResult<
   F extends TFieldName,
   G extends TGroupName,
+  S extends RuleInstance<any, any> | undefined = undefined,
 > = SuiteSummary<F, G> &
-  SuiteSelectors<F, G> & { suiteName: SuiteName; dump: CB<TIsolateSuite> };
+  SuiteSelectors<F, G> & {
+    suiteName: SuiteName;
+    dump: CB<TIsolateSuite>;
+    types: SuiteSchemaTypes<S>;
+  };
 
 export type SuiteName = Maybe<string>;
 

@@ -13,7 +13,7 @@ describe('debounce', () => {
           return false;
         });
 
-        const suite = vest.create('suite', () => {
+        const suite = vest.create(() => {
           vest.test('test', 'message', debounce(test, 1500));
         });
 
@@ -35,7 +35,7 @@ describe('debounce', () => {
           throw new Error();
         });
 
-        const suite = vest.create('suite', () => {
+        const suite = vest.create(() => {
           vest.test('test', 'message', debounce(test, 1500));
         });
 
@@ -59,7 +59,7 @@ describe('debounce', () => {
         vest.enforce(1).equals(2);
       });
 
-      const suite = vest.create('suite', () => {
+      const suite = vest.create(() => {
         vest.test('test', 'message', debounce(t, 1500));
       });
 
@@ -82,7 +82,7 @@ describe('debounce', () => {
         return false;
       });
 
-      const suite = vest.create('suite', () => {
+      const suite = vest.create(() => {
         vest.test('test', 'message', debounce(test, 1000));
       });
 
@@ -113,7 +113,7 @@ describe('debounce', () => {
         return false;
       });
 
-      const suite = vest.create('suite', () => {
+      const suite = vest.create(() => {
         vest.test('test', 'message', debounce(test, 100));
         vest.test('test2', 'message', test);
       });
@@ -137,7 +137,7 @@ describe('debounce', () => {
         return false;
       });
 
-      const suite = vest.create('suite', () => {
+      const suite = vest.create(() => {
         vest.test('test', 'message', debounce(t, 100));
         vest.test('test2', 'message', debounce(t, 200));
         vest.test('test3', 'message', debounce(t, 300));
@@ -172,7 +172,7 @@ describe('debounce', () => {
           return true;
         });
 
-        const suite = vest.create('suite', () => {
+        const suite = vest.create(() => {
           vest.test('test', 'message', debounce(test, 200));
           run++;
         });

@@ -37,6 +37,28 @@ res.getErrors('username');
 res.getErrors('full_name'); // 🚨 Throws a compilation error
 ```
 
+### Schema-Based Type Inference
+
+Instead of annotating the callback manually, you can provide a schema created with `enforce.shape`, `enforce.loose`, or `enforce.partial`. Vest will infer the data type from the schema and enforce it throughout the suite:
+
+```ts
+import { create, enforce } from 'vest';
+
+const suite = create((data, currentField) => {
+  // data is typed as { username: string; password: string }
+}, enforce.shape({
+  username: enforce.isString(),
+  password: enforce.isString(),
+}));
+
+suite.run({ username: 'vest', password: 'secret' });
+// suite.run({ username: 'vest' }); // 🚨 missing password
+
+const result = suite.get();
+result.types.schema; // the schema instance passed to `create`
+type SuiteData = typeof result.types.data; // { username: string; password: string }
+```
+
 The following methods are typed:
 
 - `getError`
@@ -112,6 +134,9 @@ Vest exports the following types so you can use them to annotate your functions 
 
 - `SuiteSummary<FieldName, GroupName>`<br/>
   The static suite summary, all test results defined in the result object.
+
+- `SuiteSchemaTypes<RuleInstance>`<br/>
+  Metadata exposed on `suite.get().types` when a schema is provided. Includes the schema instance and the inferred data type.
 
 - `IsolateTest<FieldName, GroupName>`<br/>
   Rperesents a Vest test.

@@ -44,7 +44,7 @@ To set the mode to `All`, you can use the `mode()` function within the `create()
 ```js
 import { create, test, mode, Modes } from 'vest';
 
-const suite = create('suite_name', () => {
+const suite = create(() => {
   mode(Modes.ALL); // set the mode to All
 
   test('field_name', 'error_message_1', () => {
@@ -70,7 +70,7 @@ To set the mode to `One`, you can use the `mode()` function within the `create()
 ```js
 import { create, test, mode, Modes } from 'vest';
 
-const suite = create('suite_name', () => {
+const suite = create(() => {
   mode(Modes.ONE); // set the mode to One
 
   // 🚨 If this test fails, all next tests will be skipped

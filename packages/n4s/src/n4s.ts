@@ -37,6 +37,22 @@ export { ctx } from 'enforceContext';
  */
 export { compose } from 'compose';
 
+export type { RuleInstance } from 'RuleInstance';
+
+export type {
+  ArraySchemaResultMap,
+  MultiTypeInput,
+  SchemaInfer,
+  SchemaResultMap,
+  ShapeType,
+} from 'schemaRulesTypes';
+
+export type { ShapeRuleInstance, ShapeValue } from 'shape';
+export type { LooseRuleInstance, LooseShapeValue } from 'loose';
+export type { PartialRuleInstance, PartialShapeValue } from 'partial';
+export type { OptionalRuleInstance } from 'optional';
+export type { IsArrayOfRuleInstance } from 'isArrayOf';
+
 type ExtendFn = (rules: Record<string, (...args: any[]) => any>) => void;
 type ContextFn = () => EnforceContext;
 type Enforce = typeof enforceEager &

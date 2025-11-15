@@ -6,7 +6,7 @@ import { dummyTest } from '../../testUtils/testDummy';
 import { TestPromise } from '../../testUtils/testPromise';
 
 import { ErrorStrings } from 'ErrorStrings';
-import { create } from 'vest';
+import { create, enforce } from 'vest';
 
 describe('Test createSuite module', () => {
   describe('Test suite Arguments', () => {
@@ -28,12 +28,11 @@ describe('Test createSuite module', () => {
       },
     );
 
-    describe('When suite name is provided', () => {
-      it('should add the suite name to the suite result', () => {
-        const res = create('form_name', () => {}).run();
+    it('initializes with an undefined suite name and no types metadata', () => {
+      const res = create(() => {}).run();
 
-        expect(res.suiteName).toBe('form_name');
-      });
+      expect(res.suiteName).toBeUndefined();
+      expect(res.types).toBeUndefined();
     });
   });
 
@@ -84,9 +83,13 @@ describe('Test createSuite module', () => {
       expect(suite.get()).toMatchSnapshot();
     });
 
-    it('should be able to get the suite from the result of createSuite', () => {
-      const testsCb = vi.fn();
-      expect(create(testsCb).get()).toMatchSnapshot();
+    it('should include types metadata when schema is provided', () => {
+      const schema = enforce.shape({
+        username: enforce.isString(),
+      });
+
+      const suite = create(() => {}, schema);
+      expect(suite.get().types?.schema).toBe(schema);
     });
 
     it('should be able to reset the suite from the result of createSuite', () => {

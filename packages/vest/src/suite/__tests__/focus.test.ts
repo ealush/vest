@@ -6,14 +6,14 @@ import * as vest from 'vest';
 
 describe('suite.focus: only', () => {
   it('focus should be a function', () => {
-    const suite = vest.create('suite_name', () => {});
+    const suite = vest.create(() => {});
 
     expect(suite.focus).toBeTypeOf('function');
   });
 
   describe('focus return value', () => {
     it('should be the rest of the suite methods', () => {
-      const suite = vest.create('suite_name', () => {});
+      const suite = vest.create(() => {});
 
       const focused = suite.focus({ only: ['field_1'] });
 
@@ -27,7 +27,7 @@ describe('suite.focus: only', () => {
 
   describe('behavior', () => {
     it('should focus on the specified field when a single field is provided', () => {
-      const suite = vest.create('suite_name', () => {
+      const suite = vest.create(() => {
         dummyTest.failing('field_1');
         dummyTest.failing('field_2');
         dummyTest.failing('field_3');
@@ -45,7 +45,7 @@ describe('suite.focus: only', () => {
     });
 
     it('should focus on the specified fields when multiple fields are provided', () => {
-      const suite = vest.create('suite_name', () => {
+      const suite = vest.create(() => {
         dummyTest.failing('field_1');
         dummyTest.failing('field_2');
         dummyTest.failing('field_3');
@@ -64,7 +64,7 @@ describe('suite.focus: only', () => {
 
     describe('multiple runs', () => {
       it('should reevaluate the focused fields on each run', () => {
-        const suite = vest.create('suite_name', () => {
+        const suite = vest.create(() => {
           dummyTest.failing('field_1');
           dummyTest.failing('field_2');
           dummyTest.failing('field_3');

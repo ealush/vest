@@ -3,7 +3,7 @@ import { hasOwnProperty } from 'vest-utils';
 import type { RuleInstance } from 'RuleInstance';
 import { RuleRunReturn } from 'RuleRunReturn';
 import { loose } from 'loose';
-import type { ShapeType } from 'schemaRulesTypes'; // [FIXED] Import, don't redeclare
+import type { ShapeType } from 'schemaRulesTypes';
 
 /**
  * Validates that an object matches a schema exactly - all keys required, no extra keys allowed.
@@ -37,7 +37,7 @@ import type { ShapeType } from 'schemaRulesTypes'; // [FIXED] Import, don't rede
  */
 export function shape<T extends Record<string, any>>(
   value: T,
-  schema: Record<string, RuleInstance<any, any[]>>, // [FIXED]
+  schema: Record<string, RuleInstance<any, any[]>>,
 ): RuleRunReturn<T> {
   const baseRes = loose(value, schema);
   if (!baseRes.pass) {
@@ -54,17 +54,16 @@ export function shape<T extends Record<string, any>>(
 }
 
 // Types colocated with shape rule
-// [FIXED] Removed duplicated InferShape, SchemaInfer, and ShapeType
 
 export type ShapeRuleInstance<
-  S extends Record<string, RuleInstance<any, any[]>>, // [FIXED]
+  S extends Record<string, RuleInstance<any, any[]>>,
 > = RuleInstance<ShapeType<S>, [ShapeType<S>]>;
 
 export type ShapeValue<
-  S extends Record<string, RuleInstance<any, any[]>>, // [FIXED]
+  S extends Record<string, RuleInstance<any, any[]>>,
 > = ShapeType<S>;
 
 export type SchemaValidationRule = <T extends Record<string, any>>(
   value: T,
-  schema: Record<string, RuleInstance<any, any[]>>, // [FIXED]
+  schema: Record<string, RuleInstance<any, any[]>>,
 ) => RuleRunReturn<T>;

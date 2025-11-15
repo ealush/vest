@@ -36,7 +36,7 @@ type TCustomLazyRules = {
 
 // Create schema rules with isArrayOf handled specially
 const adaptedSchemaRules = adaptDynamicRules<
-  RuleInstance<any, any[]>, // [FIXED]
+  RuleInstance<any, any[]>,
   typeof schemaRules
 >(schemaRules);
 
@@ -53,7 +53,7 @@ const schemaRulesWithArrayChaining = {
 };
 
 const baseEnforceLazy = {
-  ...(adaptDynamicRules<RuleInstance<any, any[]>, typeof compoundRules>( // [FIXED]
+  ...(adaptDynamicRules<RuleInstance<any, any[]>, typeof compoundRules>(
     compoundRules,
   ) as unknown as CompoundRuleLazyTypes),
   ...(schemaRulesWithArrayChaining as unknown as SchemaRuleLazyTypes),

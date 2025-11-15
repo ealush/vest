@@ -1,7 +1,7 @@
 import type { RuleInstance } from 'RuleInstance';
 import { RuleRunReturn } from 'RuleRunReturn';
 import { ctx } from 'enforceContext';
-import type { ShapeType } from 'schemaRulesTypes'; // [FIXED] Import from centralized types
+import type { ShapeType } from 'schemaRulesTypes';
 
 /**
  * Validates that an object matches a schema loosely - all schema keys required, extra keys allowed.
@@ -35,7 +35,7 @@ import type { ShapeType } from 'schemaRulesTypes'; // [FIXED] Import from centra
  */
 export function loose<T extends Record<string, any>>(
   value: T,
-  schema: Record<string, RuleInstance<any, any[]>>, // [FIXED]
+  schema: Record<string, RuleInstance<any, any[]>>,
 ): RuleRunReturn<T> {
   for (const key in schema) {
     const fieldValue = key in value ? value[key] : undefined;
@@ -51,12 +51,12 @@ export function loose<T extends Record<string, any>>(
 
 // Types colocated with loose rule
 export type LooseRuleInstance<
-  S extends Record<string, RuleInstance<any, any[]>>, // [FIXED]
+  S extends Record<string, RuleInstance<any, any[]>>,
 > = RuleInstance<
   ShapeType<S> & Record<string, unknown>,
   [ShapeType<S> & Record<string, unknown>]
 >;
 
 export type LooseShapeValue<
-  S extends Record<string, RuleInstance<any, any[]>>, // [FIXED]
+  S extends Record<string, RuleInstance<any, any[]>>,
 > = ShapeType<S> & Record<string, unknown>;

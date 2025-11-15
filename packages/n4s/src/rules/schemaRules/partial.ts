@@ -1,7 +1,7 @@
 import type { RuleInstance } from 'RuleInstance';
 import { RuleRunReturn } from 'RuleRunReturn';
 import { ctx } from 'enforceContext';
-import type { ShapeType } from 'schemaRulesTypes'; // [FIXED] Import from centralized types
+import type { ShapeType } from 'schemaRulesTypes';
 
 /**
  * Checks if value has any keys not present in schema.
@@ -24,7 +24,7 @@ function hasExtraKeys<T extends Record<string, any>>(
  */
 function validateProvidedKeys<T extends Record<string, any>>(
   value: T,
-  schema: Record<string, RuleInstance<any, any[]>>, // [FIXED]
+  schema: Record<string, RuleInstance<any, any[]>>,
 ): RuleRunReturn<T> | null {
   for (const key in schema) {
     if (key in value) {
@@ -81,7 +81,7 @@ function validateProvidedKeys<T extends Record<string, any>>(
  */
 export function partial<T extends Record<string, any>>(
   value: T,
-  schema: Record<string, RuleInstance<any, any[]>>, // [FIXED]
+  schema: Record<string, RuleInstance<any, any[]>>,
 ): RuleRunReturn<T> {
   if (hasExtraKeys(value, schema)) {
     return RuleRunReturn.Failing(value);
@@ -97,9 +97,9 @@ export function partial<T extends Record<string, any>>(
 
 // Types colocated with partial rule
 export type PartialRuleInstance<
-  S extends Record<string, RuleInstance<any, any[]>>, // [FIXED]
+  S extends Record<string, RuleInstance<any, any[]>>,
 > = RuleInstance<Partial<ShapeType<S>>, [Partial<ShapeType<S>>]>;
 
 export type PartialShapeValue<
-  S extends Record<string, RuleInstance<any, any[]>>, // [FIXED]
+  S extends Record<string, RuleInstance<any, any[]>>,
 > = Partial<ShapeType<S>>;

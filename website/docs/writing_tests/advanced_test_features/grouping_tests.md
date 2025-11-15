@@ -22,7 +22,7 @@ There are two ways to use `group()`:
 ```js
 import { create, test, group, enforce } from 'vest';
 
-create('suite_name', data => {
+create(data => {
   group('group_name', () => {
     test('field_name', 'error_message', () => {
       enforce(data.field_name).equals('value');
@@ -36,7 +36,7 @@ create('suite_name', data => {
 ```js
 import { create, test, group, enforce } from 'vest';
 
-create('suite_name', data => {
+create(data => {
   group(() => {
     test('field_name', 'error_message', () => {
       enforce(data.field_name).equals('value');
@@ -125,8 +125,8 @@ export default suite;
 ```js
 // myFeature.js
 
-suite(data, 'overview_tab'); // will only validate 'overview_tab' group
-suite(data, 'pricing_tab'); // will only validate 'pricing_tab' group
+suite.run(data, 'overview_tab'); // will only validate 'overview_tab' group
+suite.run(data, 'pricing_tab'); // will only validate 'pricing_tab' group
 ```
 
 ### 2. Skipping only some of the tests of a given field

@@ -70,7 +70,6 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
       "isValid": [Function],
       "isValidByGroup": [Function],
       "pendingCount": 0,
-      "suiteName": undefined,
       "testCount": 1,
       "tests": {
         "field_name": SummaryBase {
@@ -163,7 +162,6 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
       "isValid": [Function],
       "isValidByGroup": [Function],
       "pendingCount": 0,
-      "suiteName": undefined,
       "testCount": 1,
       "tests": {
         "field_name": SummaryBase {
@@ -254,7 +252,6 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
       "isValid": [Function],
       "isValidByGroup": [Function],
       "pendingCount": 0,
-      "suiteName": undefined,
       "testCount": 1,
       "tests": {
         "field_name": SummaryBase {

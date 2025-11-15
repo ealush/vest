@@ -55,16 +55,16 @@ const suite = create(() => {
 });
 ```
 
-## All result methods are now available directly on the suite object
+## All result methods are now available directly on the result object
 
-In previous versions, you had to call `suite.get()` to access the different methods, such as `getErrors` and `isValid`. In V5, these methods are available directly on the suite object. [Read more](./writing_your_suite/accessing_the_result.md).
+In previous versions, you had to call `suite.get()` to access the different methods, such as `getErrors` and `isValid`. In V5, these methods are available directly on the result object returned from `suite.run()`. [Read more](./writing_your_suite/accessing_the_result.md).
 
 ```diff
 - suite.get().getErrors('username');
-+ suite.getErrors('username')
++ result.getErrors('username');
 
 - suite.get().isValid();
-+ suite.isValid()
++ result.isValid();
 ```
 
 ## Added `hasError` and `hasWarning` methods

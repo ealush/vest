@@ -36,13 +36,13 @@ Another option is to use a `staticSuite` instead of a regular suite. A `staticSu
 ```js
 import { staticSuite, test, enforce } from 'vest';
 
-const suite = staticSuite(data => {
+const suite = staticSuite.runStatic(data => {
   test('username', 'username is required', () => {
     enforce(data.username).isNotEmpty();
   });
 });
 
-suite(data);
+suite.run(data);
 ```
 
 In the example above, `suite` is a function that runs the validations, similar to the output of `vest.create`. Note that since the `staticSuite` creates a new result instance each time it's called, there's no need to reset the suite between runs.
@@ -55,7 +55,7 @@ One option is to reset the entire suite before each run:
 import { create } from 'vest';
 
 function serversideCheck(data) {
-  const suite = create(() => {
+  const suite = create((data = {}) => {
     test('username', 'username is required', () => {
       enforce(data.username).isNotEmpty();
     });

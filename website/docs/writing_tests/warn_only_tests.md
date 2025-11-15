@@ -36,7 +36,7 @@ const suite = create(data => {
   }); // this test has a severity level of `warn`
 });
 
-const validationResult = suite(data);
+const validationResult = suite.run(data);
 ```
 
 **Limitations when using warn()**

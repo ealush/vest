@@ -28,7 +28,6 @@ Promise {
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "suiteName": undefined,
   "testCount": 1,
   "tests": {
     "field_1": SummaryBase {
@@ -123,7 +122,6 @@ Promise {
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "suiteName": undefined,
   "testCount": 3,
   "tests": {
     "field_1": SummaryBase {
@@ -226,7 +224,6 @@ Promise {
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "suiteName": undefined,
   "testCount": 7,
   "tests": {
     "field_1": SummaryBase {
@@ -318,7 +315,6 @@ SuiteSummary {
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "suiteName": undefined,
   "testCount": 0,
   "tests": {},
   "valid": false,
@@ -349,7 +345,6 @@ SuiteSummary {
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "suiteName": undefined,
   "testCount": 2,
   "tests": {
     "confirm": SummaryBase {
@@ -414,7 +409,6 @@ SuiteSummary {
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "suiteName": undefined,
   "testCount": 3,
   "tests": {
     "confirm": SummaryBase {
@@ -481,7 +475,6 @@ SuiteSummary {
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "suiteName": undefined,
   "testCount": 3,
   "tests": {
     "confirm": SummaryBase {

@@ -22,7 +22,7 @@ function createSuite<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB = CB,
->(suiteCallback: T): Suite<F, G, T> {
+>(suiteCallback: T, schema?: unknown): Suite<F, G, T> {
   validateSuiteCallback(suiteCallback);
 
   // Create a stateRef for the suite
@@ -76,7 +76,7 @@ function createSuite<
 
   function createStaticRunner() {
     return function runStatic(...runArgs: Parameters<T>) {
-      const suite = createSuite<F, G, T>(suiteCallback);
+      const suite = createSuite<F, G, T>(suiteCallback, schema);
       return suite.run(...runArgs);
     };
   }

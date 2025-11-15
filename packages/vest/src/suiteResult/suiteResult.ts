@@ -29,8 +29,7 @@ export function constructSuiteResultObject<
   F extends TFieldName,
   G extends TGroupName,
 >(summary: SuiteSummary<F, G>): SuiteResult<F, G> {
-  return assign(summary, suiteSelectors<F, G>(summary), {}) as SuiteResult<
-    F,
-    G
-  >;
+  return assign(summary, suiteSelectors<F, G>(summary), {
+    // types: {}, TODO: Add this
+  }) as SuiteResult<F, G>;
 }

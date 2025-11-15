@@ -53,7 +53,11 @@ export type FailureMessages = Record<string, string[]>;
 export type SuiteResult<
   F extends TFieldName,
   G extends TGroupName,
-> = SuiteSummary<F, G> & SuiteSelectors<F, G> & { dump: CB<TIsolateSuite> };
+> = SuiteSummary<F, G> &
+  SuiteSelectors<F, G> & {
+    dump: CB<TIsolateSuite>;
+    // types: SuiteSchemaTypes<S>; TODO: Add this
+  };
 
 export type TFieldName<T extends string = string> = T;
 export type TGroupName<G extends string = string> = G;

@@ -38,7 +38,6 @@ Promise {
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "suiteName": undefined,
   "testCount": 3,
   "tests": {
     "F1": SummaryBase {
@@ -119,7 +118,6 @@ Promise {
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "suiteName": undefined,
   "testCount": 3,
   "tests": {
     "F1": SummaryBase {

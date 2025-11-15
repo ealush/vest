@@ -22,6 +22,7 @@ The Promise is resolved when all tests finish running.
 import { create, test, skipWhen } from "vest";
 import promisify from "vest/promisify";
 
+suite(data).then((res) => {
 const suite = promisify(
   create((data) => {
     test("email", "The email already exists", () => doesEmailExist(data.email));
@@ -31,13 +32,11 @@ const suite = promisify(
   })
 );
 
-suite(data).then((res) => {
-  if(res.hasErrors("email")) {
-    /* ... */
-  });
-
-  if(res.hasErrors("username")) {
-    /* ... */
-  });
-});
+const res = await suite.run(data);
+if (res.hasErrors("email")) {
+  /* ... */
+}
+if (res.hasErrors("username")) {
+  // ...
+}
 ```

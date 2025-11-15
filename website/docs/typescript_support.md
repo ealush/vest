@@ -51,8 +51,7 @@ The following methods are typed:
 - `hasWarningsByGroup`
 - `isValid`
 - `isValidByGroup`
-- `res.done`
-- `suite.get`
+- `suite.after`
 
 ## Typing Runtime Functions
 
@@ -105,10 +104,10 @@ Vest exports the following types so you can use them to annotate your functions 
   A single suite instance.
 
 - `SuiteRunResult<FieldName, GroupName>`<br/>
-  The immediate output of a suite invocation - `suite()`, including the `done()` function.
+  The immediate output of a suite invocation - `suite.run()`, including the `after()` function.
 
 - `SuiteResult<FieldName, GroupName>`<br/>
-  Non-actionable suite result, meaning - the same as SuiteResult, but without the `done()` function. The return type of `suite.get()`.
+  Non-actionable suite result, meaning - the same as SuiteResult, but without the `after()` function. The return type of the result object from `suite.run()`.
 
 - `SuiteSummary<FieldName, GroupName>`<br/>
   The static suite summary, all test results defined in the result object.

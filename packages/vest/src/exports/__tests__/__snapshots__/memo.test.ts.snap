@@ -28,7 +28,6 @@ Promise {
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "suiteName": undefined,
   "testCount": 4,
   "tests": {
     "field1": {
@@ -101,7 +100,6 @@ Promise {
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "suiteName": undefined,
   "testCount": 4,
   "tests": {
     "field1": {

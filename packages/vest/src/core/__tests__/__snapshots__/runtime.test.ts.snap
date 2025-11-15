@@ -880,7 +880,6 @@ exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 1`]
     "isValid": [Function],
     "isValidByGroup": [Function],
     "pendingCount": 0,
-    "suiteName": undefined,
     "testCount": 6,
     "tests": {
       "t1": SummaryBase {
@@ -1030,7 +1029,6 @@ SuiteSummary {
   "isValid": [Function],
   "isValidByGroup": [Function],
   "pendingCount": 0,
-  "suiteName": undefined,
   "testCount": 6,
   "tests": {
     "t1": SummaryBase {

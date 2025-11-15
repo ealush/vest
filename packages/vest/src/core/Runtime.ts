@@ -1,21 +1,8 @@
-import {
-  CB,
-  CacheApi,
-  Maybe,
-  TinyState,
-  cache,
-  seq,
-  tinyState,
-} from 'vest-utils';
+import { CB, CacheApi, TinyState, cache, seq, tinyState } from 'vest-utils';
 import { IRecociler, VestRuntime } from 'vestjs-runtime';
 
 import { TIsolateSuite } from 'IsolateSuite';
-import {
-  SuiteName,
-  SuiteResult,
-  TFieldName,
-  TGroupName,
-} from 'SuiteResultTypes';
+import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { reprocessTree } from 'registerTests';
 
 export type DoneCallback = (res: SuiteResult<TFieldName, TGroupName>) => void;
@@ -26,24 +13,20 @@ type DoneCallbacks = Array<DoneCallback>;
 type StateExtra = {
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
-  suiteName: Maybe<string>;
   suiteId: string;
   suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName>>;
 };
 const suiteResultCache = cache<SuiteResult<TFieldName, TGroupName>>();
 
 export function useCreateVestState({
-  suiteName,
   VestReconciler,
 }: {
-  suiteName?: SuiteName;
   VestReconciler: IRecociler;
 }) {
   const stateRef: StateExtra = {
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
     suiteId: seq(),
-    suiteName,
     suiteResultCache,
   };
 
@@ -60,10 +43,6 @@ export function useDoneCallbacks() {
 
 export function useFieldCallbacks() {
   return useX().fieldCallbacks();
-}
-
-export function useSuiteName() {
-  return useX().suiteName;
 }
 
 function useSuiteId() {

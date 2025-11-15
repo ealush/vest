@@ -7,7 +7,7 @@ import * as vest from 'vest';
 
 describe('suite.subscribe', () => {
   it('should be a function', () => {
-    const suite = vest.create('suite', () => {});
+    const suite = vest.create(() => {});
 
     expect(typeof suite.subscribe).toBe('function');
   });
@@ -18,7 +18,7 @@ describe('suite.subscribe', () => {
     });
     let callCount = cb.mock.calls.length;
 
-    const suite = vest.create('suite', () => {
+    const suite = vest.create(() => {
       expect(cb.mock.calls.length).toBeGreaterThan(callCount);
       callCount = cb.mock.calls.length;
       vest.test('field', () => {});
@@ -59,7 +59,7 @@ describe('suite.subscribe', () => {
       const testStarted = vi.fn();
       const suiteStart = vi.fn();
 
-      const suite = vest.create('suite', () => {
+      const suite = vest.create(() => {
         vest.test('field1', () => false);
         vest.test('field2', () => true);
         vest.test('field3', () => false);
@@ -81,7 +81,7 @@ describe('suite.subscribe', () => {
   describe('unsubscribe', () => {
     it('should unsubscribe future events', () => {
       const cb = vi.fn();
-      const suite = vest.create('suite', () => {
+      const suite = vest.create(() => {
         vest.test('field', () => {});
       });
 

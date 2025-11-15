@@ -1,3 +1,4 @@
+import type { RuleInstance } from 'n4s';
 import { createCascade } from 'context';
 import { assign, TinyState, tinyState, DynamicValue } from 'vest-utils';
 
@@ -14,6 +15,7 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
       inclusion: {},
       mode: tinyState.createTinyState<Modes>(Modes.EAGER),
       suiteParams: [],
+      schema: undefined,
     },
     ctxRef,
   );
@@ -23,6 +25,7 @@ type CTXType = {
   inclusion: Record<string, DynamicValue<boolean>>;
   mode: TinyState<Modes>;
   suiteParams: any[];
+  schema?: RuleInstance<any, any>;
   currentTest?: TIsolateTest;
   skipped?: boolean;
   omitted?: boolean;
@@ -50,4 +53,8 @@ export function useOmitted() {
 
 export function useSuiteParams() {
   return SuiteContext.useX().suiteParams;
+}
+
+export function useSuiteSchema() {
+  return SuiteContext.useX().schema;
 }

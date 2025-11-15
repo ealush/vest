@@ -940,6 +940,7 @@ exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 1`]
         "warnings": [],
       },
     },
+    "types": undefined,
     "valid": false,
     "warnCount": 1,
     "warnings": [
@@ -1090,6 +1091,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 1,
   "warnings": [

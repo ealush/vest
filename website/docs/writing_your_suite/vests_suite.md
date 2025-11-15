@@ -38,6 +38,32 @@ const suite = create((data = {}) => {
 
 You pass a callback function to the `create` function, which takes the form data as its first argument, and any other arguments you might want to pass. You can then define your validations inside this function.
 
+### Optional: Add a Schema for Type Inference
+
+When using TypeScript, you can provide an optional schema created with [`enforce`](../enforce/builtin-enforce-plugins/schema_rules.md) to get full type inference for your suite data:
+
+```ts
+import { create, enforce } from 'vest';
+
+const userSchema = enforce.shape({
+  email: enforce.isString(),
+  password: enforce.isString(),
+});
+
+const suite = create((data, currentField) => {
+  // `data` is typed as { email: string; password: string }
+}, userSchema);
+```
+
+The inferred type is also exposed at runtime through `suite.get().types`, which contains the schema instance for reference:
+
+```ts
+const result = suite.run(formData);
+
+result.types?.schema; // === userSchema
+type UserData = typeof result.types?.data; // { email: string; password: string }
+```
+
 ## Running the Suite
 
 You can run your suite by calling it with the form data and any additional arguments you want to pass:

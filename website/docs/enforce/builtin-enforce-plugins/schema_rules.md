@@ -22,8 +22,25 @@ These rules will then become available in `enforce`:
   - [enforce.shape() - Lean schema validation.](#enforceshape---lean-schema-validation)
     - [enforce.optional() - nullable values](#enforceoptional---nullable-values)
     - [partial() - allows supplying a subset of keys](#partial---allows-supplying-a-subset-of-keys)
-    - [enforce.loose() - loose shape matching](#enforceloose---loose-shape-matching)
+  - [enforce.loose() - loose shape matching](#enforceloose---loose-shape-matching)
   - [enforce.isArrayOf() - array shape matching](#enforceisarrayof---array-shape-matching)
+
+### Using Schema Rules with Vest Suites
+
+Schemas created with these rules can be passed to [`create`](../../writing_your_suite/vests_suite.md) for automatic TypeScript inference:
+
+```ts
+import { create, enforce } from 'vest';
+
+const suite = create((data) => {
+  // data is typed as { email: string; age?: number }
+}, enforce.partial({
+  email: enforce.isString(),
+  age: enforce.optional(enforce.isNumber()),
+}));
+
+suite.get().types.schema; // => the schema instance provided above
+```
 
 ## enforce.shape() - Lean schema validation.
 

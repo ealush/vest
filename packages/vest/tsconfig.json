@@ -65,6 +65,9 @@
       "debounce": ["./src/exports/debounce.ts"],
       "classnames": ["./src/exports/classnames.ts"],
       "SuiteSerializer": ["./src/exports/SuiteSerializer.ts"],
+      "schemaTypeEnforcement.examples": [
+        "./src/examples/schemaTypeEnforcement.examples.ts"
+      ],
       "ErrorStrings": ["./src/errors/ErrorStrings.ts"],
       "Runtime": ["./src/core/Runtime.ts"],
       "test": ["./src/core/test/test.ts"],

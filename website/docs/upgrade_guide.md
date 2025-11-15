@@ -131,6 +131,10 @@ In previous versions, as a user of Vest you had to set up your own state-reset m
 - }
 ```
 
+## Suite names are no longer accepted
+
+The optional suite name parameter has been removed. Calls such as `create('form', () => {})` should be updated to `create(() => {})`. The `suiteName` property on the result now defaults to `undefined`.
+
 ## First-Class-Citizen typescript support
 
 All of Vest's methods are now typed and make use of generics to enforce correct usage throughout your suite. [Read More on TypeScript support](./typescript_support.md).

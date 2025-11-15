@@ -1,3 +1,4 @@
+import type { RuleInstance } from 'n4s';
 import {
   CB,
   CacheApi,
@@ -28,9 +29,9 @@ type StateExtra = {
   fieldCallbacks: TinyState<FieldCallbacks>;
   suiteName: Maybe<string>;
   suiteId: string;
-  suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName>>;
+  suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName, any>>;
 };
-const suiteResultCache = cache<SuiteResult<TFieldName, TGroupName>>();
+const suiteResultCache = cache<SuiteResult<TFieldName, TGroupName, any>>();
 
 export function useCreateVestState({
   suiteName,
@@ -70,12 +71,14 @@ function useSuiteId() {
   return useX().suiteId;
 }
 
-export function useSuiteResultCache<F extends TFieldName, G extends TGroupName>(
-  action: CB<SuiteResult<F, G>>,
-): SuiteResult<F, G> {
+export function useSuiteResultCache<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends RuleInstance<any, any> | undefined = undefined,
+>(action: CB<SuiteResult<F, G, S>>): SuiteResult<F, G, S> {
   const suiteResultCache = useX().suiteResultCache;
 
-  return suiteResultCache([useSuiteId()], action) as SuiteResult<F, G>;
+  return suiteResultCache([useSuiteId()], action) as SuiteResult<F, G, S>;
 }
 
 export function useExpireSuiteResultCache() {

@@ -677,7 +677,7 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
     "isValid": [Function],
     "isValidByGroup": [Function],
     "pendingCount": 0,
-    "suiteName": "suite_serialize_test",
+    "suiteName": undefined,
     "testCount": 1,
     "tests": {
       "field_1": SummaryBase {
@@ -728,6 +728,7 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
         "warnings": [],
       },
     },
+    "types": undefined,
     "valid": false,
     "warnCount": 0,
     "warnings": [],

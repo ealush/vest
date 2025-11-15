@@ -11,7 +11,7 @@ export function useDeferDoneCallback(
   const [, setDoneCallbacks] = useDoneCallbacks();
 
   if (fieldName) {
-    setFieldCallbacks(fieldCallbacks =>
+    setFieldCallbacks((fieldCallbacks: Record<string, DoneCallback[]>) =>
       assign(fieldCallbacks, {
         [fieldName]: (fieldCallbacks[fieldName] || []).concat(doneCallback),
       }),
@@ -20,5 +20,7 @@ export function useDeferDoneCallback(
     return;
   }
 
-  setDoneCallbacks(doneCallbacks => doneCallbacks.concat(doneCallback));
+  setDoneCallbacks((doneCallbacks: DoneCallback[]) =>
+    doneCallbacks.concat(doneCallback),
+  );
 }

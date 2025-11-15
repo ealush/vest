@@ -62,6 +62,23 @@ A result object would look somewhat like this:
 }
 ```
 
+# Schema Metadata
+
+When your suite is created with an enforce schema, the result also contains a `types` object with runtime references that help with TypeScript inference:
+
+```ts
+const suite = create((data) => {
+  // ...
+}, enforce.shape({
+  email: enforce.isString(),
+  password: enforce.isString(),
+}));
+
+const result = suite.get();
+result.types.schema; // the schema instance passed to `create`
+type SuiteData = typeof result.types.data; // { email: string; password: string }
+```
+
 # Suite Result Methods
 
 Along with this data, our result object also contains a few other methods that can be used to interact with the data. All these methods can be accessed in the following ways:
@@ -73,7 +90,7 @@ Along with this data, our result object also contains a few other methods that c
 All the following examples are valid and equivalent:
 
 ```js
-const result = suite(formData);
+const result = suite.run(formData);
 
 // 1 - Directly via the result object
 result.hasErrors();

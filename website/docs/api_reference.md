@@ -56,9 +56,9 @@ Below is a list of all the API functions exposed by Vest.
 
 ## Vest's main export API
 
-- [create](./writing_your_suite/vests_suite.md#basic-suite-structure) - Creates a new Vest suite. Returns a function that runs your validations.
+- [create](./writing_your_suite/vests_suite.md#basic-suite-structure) - Creates a new Vest suite. Returns an object with suite helpers and `run`. Accepts an optional enforce schema for TypeScript inference.
 
-  - [suite.get](./writing_your_suite/vests_suite.md#using-suiteget) - Returns the current validation state of the suite.
+  - [suite.get](./writing_your_suite/vests_suite.md#using-suiteget) - Returns the current validation state of the suite, including `types` metadata when a schema is provided.
   - [suite.remove](./writing_your_suite/vests_suite.md#removing-a-single-field-from-the-suite-state) - Removes a single field from the suite.
   - [suite.reset](./writing_your_suite/vests_suite.md#cleaning-up-our-validation-state) - Resets the suite to its initial state.
   - [suite.resetField](./writing_your_suite/vests_suite.md#cleaning-up-our-validation-state) - Resets a single field to an untested state.

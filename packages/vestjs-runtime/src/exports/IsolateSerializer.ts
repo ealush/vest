@@ -7,7 +7,7 @@ import {
   isStringValue,
   text,
 } from 'vest-utils';
-import { expandObject, minifyObject } from 'minifyObject';
+import { expandObject, minifyObject } from 'vest-utils/minifyObject';
 
 import { TIsolate } from 'Isolate';
 import { ExcludedFromDump, IsolateKeys } from 'IsolateKeys';

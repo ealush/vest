@@ -12,7 +12,7 @@ keywords:
     suite callback,
     result object,
     hasErrors,
-    suite.get(),
+    result,
     suite.reset(),
     suite.resetField(),
     suite.remove(),
@@ -47,7 +47,7 @@ const suite = create((data = {}, currentField) => {
   // ... Your validations go here
 });
 
-suite(formData, fieldName);
+suite.run(formData, fieldName);
 ```
 
 You can pass as many arguments as you need to the suite function, and they will be available inside the callback function.
@@ -61,16 +61,16 @@ There are two main ways of getting the current state of our suite:
 When you run the suite, it returns a result object that contains the validation state:
 
 ```js
-const result = suite(formData, fieldName);
+const result = suite.run(formData, fieldName);
 
 result.hasErrors(); // boolean
 ```
 
-The result object is similar to the one you define in your suite function, except that it does not have the `done` property that allows you to set callbacks for async validations.
+The result object is similar to the one you define in your suite function. To handle async completion, use `.after(callback).run()` or `await suite.run()` instead of the deprecated `done` property.
 
-### Using `suite.get()`
+### Using the result object
 
-You can also get the current state of your suite by calling `suite.get()` at any time, even within the suite itself. This method returns the current validation state, which may be partial if called within a running suite.
+You can get the current state of your suite by using the result object returned from `suite.run()`. This object contains the current validation state.
 
 This method is especially useful if we want to access our suite state from within a running suite, or when out of context - for example, from a different UI component than our form.
 
@@ -94,7 +94,7 @@ You can subscribe to changes in the suite state by calling `suite.subscribe(call
 
 ```js
 suite.subscribe(() => {
-  const result = suite.get();
+  const result = suite.run();
   // ... Do something with the result
 });
 ```

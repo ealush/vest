@@ -108,7 +108,8 @@ After running your suite, the results object is returned. It has the following f
 - [isTested](./writing_your_suite/accessing_the_result.md#istested) - Returns true if the provided field has been tested.
 - [isValid](./writing_your_suite/accessing_the_result.md#isvalid) - Returns true if the suite or the provided field is valid.
 - [isValidByGroup](./writing_your_suite/accessing_the_result.md#isvalidbygroup) - Returns true if a certain group or a field in a group is valid or not.
-- [done](./writing_your_suite/accessing_the_result.md#done) - Accepts a callback that will run when the suite is done running.
+- [after(callback).run()](./writing_your_suite/accessing_the_result.md#after) - Accepts a callback that will run after the suite is done running. Recommended for handling async completion.
+- [await suite.run()](./writing_your_suite/accessing_the_result.md#await-suite-run) - Returns a promise that resolves when the suite is done running. Use with async/await for modern async handling.
 
 ## Vest's external exports
 

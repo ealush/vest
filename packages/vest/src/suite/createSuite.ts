@@ -1,4 +1,5 @@
-import { asArray, CB, assign, withResolvers } from 'vest-utils';
+/* eslint-disable max-lines-per-function */
+import { CB, assign, withResolvers } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { getTypedMethods } from './getTypedMethods';
@@ -6,12 +7,7 @@ import { getTypedMethods } from './getTypedMethods';
 import { IsolateSuite, TIsolateSuite } from 'IsolateSuite';
 import { useCreateVestState, useLoadSuite } from 'Runtime';
 import { SuiteContext } from 'SuiteContext';
-import {
-  SuiteName,
-  SuiteResult,
-  TFieldName,
-  TGroupName,
-} from 'SuiteResultTypes';
+import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
 import { Suite, SuiteModifiers } from 'SuiteTypes';
 import { useInitVestBus } from 'VestBus';
 import { VestReconciler } from 'VestReconciler';
@@ -21,32 +17,17 @@ import { useCreateSuiteResult } from 'suiteResult';
 import { bindSuiteSelectors } from 'suiteSelectors';
 import { validateSuiteCallback } from 'validateSuiteParams';
 
-function createSuite<
-  F extends TFieldName,
-  G extends TGroupName,
-  T extends CB = CB,
->(suiteName: SuiteName, suiteCallback: T): Suite<F, G, T>;
-function createSuite<
-  F extends TFieldName,
-  G extends TGroupName,
-  T extends CB = CB,
->(suiteCallback: T): Suite<F, G, T>;
 // @vx-allow use-use
-// eslint-disable-next-line max-lines-per-function
 function createSuite<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB = CB,
->(
-  ...args: [suiteName: SuiteName, suiteCallback: T] | [suiteCallback: T]
-): Suite<F, G, T> {
-  const [suiteCallback, suiteName] = asArray(args).reverse() as [T, SuiteName];
-
+>(suiteCallback: T): Suite<F, G, T> {
   validateSuiteCallback(suiteCallback);
 
   // Create a stateRef for the suite
   // It holds the suite's persisted values that may remain between runs.
-  const stateRef = useCreateVestState({ suiteName, VestReconciler });
+  const stateRef = useCreateVestState({ VestReconciler });
 
   // Assign methods to the suite
   // We do this within the VestRuntime so that the suite methods
@@ -95,7 +76,7 @@ function createSuite<
 
   function createStaticRunner() {
     return function runStatic(...runArgs: Parameters<T>) {
-      const suite = createSuite<F, G, T>(suiteName, suiteCallback);
+      const suite = createSuite<F, G, T>(suiteCallback);
       return suite.run(...runArgs);
     };
   }

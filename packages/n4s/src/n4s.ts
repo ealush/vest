@@ -1,9 +1,26 @@
+import { assign } from 'vest-utils';
+
 import { enforceEager } from 'eager';
 import { ctx } from 'enforceContext';
 import type { EnforceContext } from 'enforceContext';
 import { extendEnforce } from 'extendLogic';
 import { enforceLazy } from 'lazy';
-import { assign } from 'vest-utils';
+
+export type { RuleInstance } from 'RuleInstance';
+
+export type {
+  ArraySchemaResultMap,
+  MultiTypeInput,
+  SchemaInfer,
+  SchemaResultMap,
+  ShapeType,
+} from 'schemaRulesTypes';
+
+export type { ShapeRuleInstance, ShapeValue } from 'shape';
+export type { LooseRuleInstance, LooseShapeValue } from 'loose';
+export type { PartialRuleInstance, PartialShapeValue } from 'partial';
+export type { OptionalRuleInstance } from 'optional';
+export type { IsArrayOfRuleInstance } from 'isArrayOf';
 
 /**
  * Context API for accessing validation context.

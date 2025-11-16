@@ -7,6 +7,10 @@ const packageNames = require('vx/packageNames');
 const { genPathsPerPackage } = require('vx/util/pathsPerPackage');
 const vxPath = require('vx/vxPath');
 
+/**
+ * Generates tsconfig files for the workspace and each package.
+ * @returns {void}
+ */
 module.exports = function genTsConfig() {
   const mainTsConfig = rootTsConfigTemplate();
 
@@ -36,6 +40,12 @@ module.exports = function genTsConfig() {
   logger.info('👌 Done generating tsconfig files.\n');
 };
 
+/**
+ * Compares an existing tsconfig file against the provided config object.
+ * @param {string} path Path to tsconfig.json.
+ * @param {object} tsConfig Expected configuration object.
+ * @returns {boolean} True when the file content matches the object.
+ */
 function isConfigEqual(path, tsConfig) {
   let prev;
 
@@ -48,6 +58,11 @@ function isConfigEqual(path, tsConfig) {
   return lodash.isEqual(prev, tsConfig);
 }
 
+/**
+ * Writes a tsconfig file and formats it.
+ * @param {string} path Destination path.
+ * @param {object} tsConfig Configuration to serialize.
+ */
 function writeTsConfig(path, tsConfig) {
   logger.log(`📝 Writing ts config to ${path}`);
 
@@ -55,12 +70,16 @@ function writeTsConfig(path, tsConfig) {
   exec(`yarn prettier ${path} -w`);
 }
 
+/**
+ * Builds the per-package tsconfig template.
+ * @param {Record<string, string[]>} paths Path mappings for the package.
+ * @returns {object} tsconfig JSON object.
+ */
 function packageTsConfigTemplate(paths = []) {
   return {
     extends: '../../tsconfig.json',
     rootDir: '.',
     compilerOptions: {
-      baseUrl: '.',
       declarationDir: './types',
       declarationMap: true,
       outDir: './dist',
@@ -69,11 +88,14 @@ function packageTsConfigTemplate(paths = []) {
   };
 }
 
+/**
+ * Builds the root tsconfig template.
+ * @returns {object} tsconfig JSON object.
+ */
 function rootTsConfigTemplate() {
   return {
     compilerOptions: {
       allowJs: false,
-      baseUrl: '.',
       declaration: true,
       esModuleInterop: true,
       forceConsistentCasingInFileNames: true,

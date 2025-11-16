@@ -1,3 +1,4 @@
+/** @type {RegExp} */
 const USE_MATCHER = /use.*/;
 const FUNC_DEC = 'FunctionDeclaration';
 const VAR_DEC = 'VariableDeclarator';

@@ -3,6 +3,11 @@ const { sortDependencies } = require('./scripts/release/depsTree');
 const packageList = require('vx/util/packageList');
 const { usePackage } = require('vx/vxContext');
 
+/**
+ * @typedef {{ paths: Record<string, string>, list: string[], names: Record<string, string>, current?: string }} PackageNames
+ */
+
+/** @type {PackageNames} */
 module.exports = Object.defineProperty(
   { paths: {}, list: [], names: {} },
   'current',

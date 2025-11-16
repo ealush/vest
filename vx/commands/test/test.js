@@ -6,6 +6,10 @@ const vxPath = require('vx/vxPath');
 
 const configOpt = `--config ${path.resolve(vxPath.VITEST_CONFIG_FILE_PATH)}`;
 
+/**
+ * Runs vitest scoped to the active package when available.
+ * @param {{ cliOptions?: string }} param0 Additional CLI options for vitest.
+ */
 function test({ cliOptions }) {
   const pkgName = usePackage();
 

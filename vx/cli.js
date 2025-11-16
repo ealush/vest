@@ -47,13 +47,9 @@ const cli = yargs(argv)
     describe: 'Package to run against',
     ...(!!defaultPackage && { default: defaultPackage }),
   })
-  .option('fastBuild', {
-    demandOption: false,
-    describe: 'build format',
-  })
   .help().argv;
 
-const { package, command, fastBuild, _: cliOptions = [] } = cli;
+const { package, command, _: cliOptions = [] } = cli;
 
 // Prepare all packages before running any other command.
 if (command !== 'prepare' && command !== 'dev') {
@@ -78,6 +74,10 @@ ctx.withPackage(package, () =>
   }),
 );
 
+/**
+ * Infers the package name from the current working directory if inside packages/.
+ * @returns {string | undefined}
+ */
 function insidePackageDir() {
   if (!process.cwd().includes(vxPath.PACKAGES_PATH)) {
     return;

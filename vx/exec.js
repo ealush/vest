@@ -5,6 +5,12 @@ const vxPath = require('./vxPath');
 const logger = require('vx/logger');
 const joinTruthy = require('vx/util/joinTruthy');
 
+/**
+ * Executes a shell command from the repository root.
+ * @param {string | string[]} command Command or arguments to execute.
+ * @param {{ exitOnFailure?: boolean, throwOnFailure?: boolean, silent?: boolean, raw?: boolean }} [options] Execution options.
+ * @returns {void}
+ */
 function exec(
   command,
   {
@@ -25,6 +31,11 @@ function exec(
 
 module.exports = exec;
 
+/**
+ * Executes command and handles failures based on options.
+ * @param {string} command Command string to execute.
+ * @param {{ silent?: boolean, throwOnFailure?: boolean, exitOnFailure?: boolean }} options Control logging and failure behavior.
+ */
 function execCommand(command, { silent, throwOnFailure, exitOnFailure }) {
   try {
     run(command, silent);

@@ -18,6 +18,11 @@ const { usePackage } = require('vx/vxContext');
 const { GITHUB_SHA } = process.env;
 
 // commits: [{title: "...", files: ["..."]}]
+/**
+ * Generates release metadata for the current package based on commit history.
+ * @param {{ title: string, files?: string[] }[]} commits Commits affecting the package.
+ * @returns {{ changeLevel: string, messages: string[], nextVersion: string, packageName: string | undefined, tag: string | undefined, tagId: string, version: string, versionToPublish: string }} Computed diff data.
+ */
 function genDiffData(commits) {
   const version = packageJson().version;
   const messages = commits.map(({ title }) => title);
@@ -43,6 +48,11 @@ function genDiffData(commits) {
 
 module.exports = genDiffData;
 
+/**
+ * Determines a tag identifier based on branch and version.
+ * @param {string} nextVersion Proposed next version.
+ * @returns {string} Tag identifier or version string.
+ */
 function pickTagId(nextVersion) {
   logger.log(`Picking tag id. Current branch: ${CURRENT_BRANCH}`);
 
@@ -71,6 +81,11 @@ function pickTagId(nextVersion) {
   throw Error('pickTagId: Encountered an unexpected input.');
 }
 
+/**
+ * Joins tag keywords with hyphens while skipping falsy values.
+ * @param {...string | undefined} keywords Tag parts.
+ * @returns {string}
+ */
 function getTag(...keywords) {
   return keywords.filter(Boolean).join('-');
 }

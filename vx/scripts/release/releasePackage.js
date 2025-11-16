@@ -10,6 +10,10 @@ const updateLocalDepsToLatest = require('./steps/updateLocalDepsToLatest');
 const logger = require('vx/logger');
 const { usePackage } = require('vx/vxContext');
 
+/**
+ * Releases the currently scoped package, performing build and publish steps.
+ * @param {{ isTopLevelChange?: boolean }} param0 Flag indicating workspace-level changes.
+ */
 function releasePackage({ isTopLevelChange }) {
   const pkgName = usePackage();
 

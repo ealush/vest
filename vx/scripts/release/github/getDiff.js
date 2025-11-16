@@ -7,6 +7,11 @@ const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
 // [{title: "...", files: ["..."]}] ...
+/**
+ * Returns commits that impact a package and whether dependency changes affected it.
+ * @param {string} [packageName=usePackage()] Package name to check.
+ * @returns {{ changesToPackage: { title: string, files: string[] }[], changedByDependency: boolean }}
+ */
 function getDiff(packageName = usePackage()) {
   const allChanges = listAllChangesSinceStableBranch();
   const changesToPackage = filterCommitByPackage(packageName, allChanges);
@@ -17,6 +22,12 @@ function getDiff(packageName = usePackage()) {
 
 module.exports = getDiff;
 
+/**
+ * Filters commit list to only those that reference the package.
+ * @param {string} packageName Package to match.
+ * @param {{ title: string, files: string[] }[]} commits Commits to filter.
+ * @returns {{ title: string, files: string[] }[]}
+ */
 function filterCommitByPackage(packageName, commits) {
   return commits.filter(({ title, files }) => {
     if (title.match(matchPackageNameInCommit(packageName))) {
@@ -27,6 +38,12 @@ function filterCommitByPackage(packageName, commits) {
   });
 }
 
+/**
+ * Determines if any dependency change affected the package.
+ * @param {string} packageName Package to check.
+ * @param {{ files: string[] }[]} commits Commit list.
+ * @returns {boolean}
+ */
 function didChangeByDependency(packageName, commits) {
   return commits.some(({ files }) => {
     return files.some(file => {

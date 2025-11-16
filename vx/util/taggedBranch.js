@@ -10,15 +10,23 @@ const {
 } = process.env;
 const packageNames = require('vx/packageNames');
 
+/** @type {boolean} */
 const isIntegrationBranch = CURRENT_BRANCH.startsWith(INTEGRATION_BRANCH);
+/** @type {boolean} */
 const isNextBranch = CURRENT_BRANCH.startsWith(NEXT_BRANCH);
+/** @type {boolean} */
 const isNightlyBranch = CURRENT_BRANCH.startsWith(NIGHTLY_BRANCH);
+/** @type {boolean} */
 const isLatestBranch = CURRENT_BRANCH.startsWith(LATEST_BRANCH);
+/** @type {boolean} */
 const isStableBranch = CURRENT_BRANCH.startsWith(STABLE_BRANCH);
+/** @type {boolean} */
 const isReleaseBranch = CURRENT_BRANCH.startsWith(RELEASE_BRANCH);
+/** @type {boolean} */
 const isReleaseKeepVersionBranch = CURRENT_BRANCH.startsWith(
   RELEASE_KEEP_VERSION_BRANCH,
 );
+/** @type {[string | undefined, string | undefined]} */
 const [, target = undefined] =
   isIntegrationBranch || isNextBranch || isNightlyBranch
     ? CURRENT_BRANCH.split('-')

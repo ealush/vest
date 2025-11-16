@@ -8,6 +8,10 @@ const listAllChangedPackages = require('vx/scripts/release/github/listAllChanged
 
 // Gets all the packages that need to be released in the correct order
 // eslint-disable-next-line complexity
+/**
+ * Produces the list of packages to release in dependency-safe order.
+ * @returns {{ packageListToRelease: string[], isTopLevelChange: boolean }}
+ */
 function packagesToRelease() {
   const deps = buildDepsTree();
 

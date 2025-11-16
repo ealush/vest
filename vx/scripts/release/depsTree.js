@@ -4,6 +4,12 @@ const packageJson = require('vx/util/packageJson');
 const packageList = require('vx/util/packageList');
 
 // Takes import map and turns it into a dependency map
+/**
+ * Builds dependency entries for a given package.
+ * @param {string} package Package name to process.
+ * @param {Record<string, Record<string, any>>} deps Accumulator dependency tree.
+ * @returns {Record<string, Record<string, any>>}
+ */
 const buildDepsMemo = memoize(function (package, deps) {
   const pkgJson = packageJson(package);
 
@@ -21,6 +27,10 @@ const buildDepsMemo = memoize(function (package, deps) {
   return deps;
 });
 
+/**
+ * Builds a dependency tree keyed by package names.
+ * @returns {Record<string, Record<string, any>>}
+ */
 function buildDepsTree() {
   return packageList.names.reduce(
     (deps, packageName) => buildDepsMemo(packageName, deps),
@@ -29,6 +39,11 @@ function buildDepsTree() {
 }
 
 // Sorts an array of packages by their dependency depth
+/**
+ * Sorts packages by dependency depth (dependents later in the array).
+ * @param {string[]} packagesList List of package names.
+ * @returns {string[]} Sorted packages.
+ */
 function sortDependencies(packagesList) {
   const deps = buildDepsTree();
 
@@ -38,6 +53,14 @@ function sortDependencies(packagesList) {
 }
 
 // eslint-disable-next-line complexity
+/**
+ * Checks whether package `a` depends (directly or indirectly) on package `b`.
+ * @param {string} a Package to check.
+ * @param {string} b Potential dependency.
+ * @param {Record<string, Record<string, any>>} [tree=buildDepsTree()] Dependency tree.
+ * @param {boolean} [foundB=false] Internal flag used during traversal.
+ * @returns {boolean}
+ */
 function dependsOn(a, b, tree = buildDepsTree(), foundB = false) {
   if (a === b) {
     return false;
@@ -65,6 +88,11 @@ module.exports = {
 };
 
 // Counts max dependency depth
+/**
+ * Counts the maximum dependency depth for a node in the dependency tree.
+ * @param {Record<string, any>} node Dependency subtree.
+ * @returns {number}
+ */
 const countMaxDepth = memoize(function countMaxDepth(node) {
   const keys = Object.keys(node);
   if (keys.length === 0) {

@@ -3,6 +3,10 @@ const listAllChangesSinceStableBranch = require('./listAllChangesSinceStableBran
 const packageNames = require('vx/packageNames');
 const vxPath = require('vx/vxPath');
 
+/**
+ * Lists all packages that have changed since the stable branch.
+ * @returns {Set<string>} Set of package names to release.
+ */
 function listAllChangedPackages() {
   const changes = listAllChangesSinceStableBranch();
 

@@ -13,6 +13,10 @@ const ctx = require('vx/vxContext');
 
 require('vx/scripts/genTsConfig');
 
+/**
+ * Releases a specific package when scoped or the full set when not.
+ * @param {{ isTopLevelChange?: boolean }} param0 Flag for workspace-level changes.
+ */
 function release({ isTopLevelChange }) {
   if (!branchAllowsRelease) {
     logger.info(`❌  Branch ${CURRENT_BRANCH} does not allow release. Exiting`);
@@ -28,6 +32,9 @@ function release({ isTopLevelChange }) {
 
 module.exports = release;
 
+/**
+ * Releases all packages in dependency order.
+ */
 function releaseAll() {
   logger.info('🏃 Running release script.');
 

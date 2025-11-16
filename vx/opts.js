@@ -23,13 +23,15 @@ module.exports = {
     NPM_IGNORE: '.npmignore',
     PACKAGE_JSON: 'package.json',
     TSCONFIG_JSON: 'tsconfig.json',
+    TSDOWN_CONFIG: 'tsdown.config.ts',
     VITEST_CONFIG: 'vitest.config.ts',
     VX_BUILD: 'vx.build.js',
   },
   format: {
-    UMD: 'umd',
     CJS: 'cjs',
     ES: 'es',
+    MJS: 'mjs',
+    UMD: 'umd',
   },
   release_tags: {
     NIGHTLY: 'nightly',

@@ -40,6 +40,11 @@ module.exports = {
   },
 };
 
+/**
+ * Builds a selector for the rule to match specific nodes.
+ * @param {string} type AST node type.
+ * @returns {string}
+ */
 function matcher(type) {
   if (type === VAR_DEC) {
     return `${type}${ID_NAME_MATCHER} > ArrowFunctionExpression ${CALL_EXPRESSION_MATCHER}`;
@@ -47,6 +52,12 @@ function matcher(type) {
   return `${type}${ID_NAME_MATCHER} ${CALL_EXPRESSION_MATCHER}`;
 }
 
+/**
+ * Reports a rule violation with a suggestion.
+ * @param {import('eslint').Rule.RuleContext} context ESLint rule context.
+ * @param {any} node Node to highlight.
+ * @param {any} id Identifier node to rename.
+ */
 function report(context, node, id) {
   if (isAllowed(context, node, id, RULE_NAME)) {
     return;
@@ -69,6 +80,11 @@ function report(context, node, id) {
   });
 }
 
+/**
+ * Prefixes an identifier with "use" while preserving casing.
+ * @param {string} name Identifier name.
+ * @returns {string}
+ */
 function addUseToName(name) {
   return `use${name[0].toUpperCase()}${name.slice(1)}`;
 }

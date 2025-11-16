@@ -10,6 +10,7 @@ const { STABLE_BRANCH, CURRENT_BRANCH } = require('vx/util/taggedBranch');
  * Returns an array of objects that look like this:
  *
  * [{title: "...", files: ["..."]}]
+ * @returns {{ title: string, files: string[] }[]} Commits from stable to current branch.
  */
 function listAllChangesSinceStableBranch() {
   exec(`git fetch origin ${STABLE_BRANCH}`);

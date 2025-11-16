@@ -16,6 +16,11 @@ const opts = require('vx/opts');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
+/**
+ * Appends a changelog entry for the current package.
+ * @param {{ messages: string[], nextVersion: string }} param0 Release data.
+ * @returns {{ title: string, body: string }} Rendered changelog content.
+ */
 function updateChangelog({ messages, nextVersion }) {
   logger.info('📝 Updating changelog.');
 
@@ -42,6 +47,11 @@ function updateChangelog({ messages, nextVersion }) {
 
 module.exports = updateChangelog;
 
+/**
+ * Generates a changelog title for the provided version.
+ * @param {string} version Next version number.
+ * @returns {string}
+ */
 function changelogTitle(version) {
   return `## ${version} - ${format(new Date(), 'yyyy-MM-dd')}`;
 }

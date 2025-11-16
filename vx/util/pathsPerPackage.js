@@ -5,6 +5,16 @@ const glob = require('glob');
 const opts = require('vx/opts');
 const vxPath = require('vx/vxPath');
 
+/**
+ * @typedef {Object} PackageModule
+ * @property {string} absolute Absolute path to the module file.
+ * @property {string} name Module name without extension.
+ * @property {string} package Owning package name.
+ * @property {string} relative Relative path from repository root.
+ */
+
+/** @typedef {{ packageName: string, modules: PackageModule[] }} PackageModulesEntry */
+
 const matches = glob.sync(vxPath.rel(vxPath.packageSrc('*', '**/*.ts')), {
   cwd: vxPath.ROOT_PATH,
   absolute: false,
@@ -19,6 +29,7 @@ const groupedMatches = matches.reduce((acc, relative) => {
   const package = vxPath.packageNameFromPath(relative);
   const absolute = path.join(vxPath.ROOT_PATH, relative);
 
+  /** @type {PackageModule} */
   const moduleData = {
     absolute,
     name,
@@ -43,6 +54,10 @@ module.exports = {
   genPathsPerPackage,
 };
 
+/**
+ * Ensures there are no duplicate module names within a package.
+ * @throws {Error} When duplicates are detected.
+ */
 function findDuplicates() {
   const duplicatesContainer = list.reduce((acc, package) => {
     const baseline = new Set();
@@ -84,6 +99,12 @@ function findDuplicates() {
   }
 }
 
+/**
+ * Creates a paths map for the requested package.
+ * @param {string} packageName Target package name.
+ * @param {{ addPathToArray?: boolean }} options Whether to wrap each path in an array (tsconfig `paths` format).
+ * @returns {Record<string, string | string[]>} Map of module names to relative paths.
+ */
 function genPathsPerPackage(packageName, { addPathToArray = false }) {
   const packageData = groupedMatches[packageName];
 

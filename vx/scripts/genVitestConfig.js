@@ -10,6 +10,10 @@ const vxPath = require('vx/vxPath');
 
 const VITEST_CONFIG_PATH = 'vx/config/vitest/customMatchers.ts';
 
+/**
+ * Generates vitest configuration files for the workspace and each package.
+ * @returns {void}
+ */
 module.exports = function genVitestConfig() {
   logger.info('Generating vitest.config.ts files...');
 
@@ -21,6 +25,10 @@ module.exports = function genVitestConfig() {
   logger.info('👌 Done generating vitest.config files.\n');
 };
 
+/**
+ * Writes a per-package vitest config when content changed.
+ * @param {string} packageName Target package name.
+ */
 function perPackageConfig(packageName) {
   const configPath = vxPath.packageVitestConfig(packageName);
 
@@ -55,6 +63,9 @@ function perPackageConfig(packageName) {
   fs.writeFileSync(configPath, next, 'utf8');
 }
 
+/**
+ * Writes the top-level vitest configuration when content changed.
+ */
 function mainConfig() {
   const configPath = vxPath.VITEST_CONFIG_FILE_PATH;
 
@@ -77,6 +88,10 @@ function mainConfig() {
   exec(`yarn prettier ${configPath} -w`);
 }
 
+/**
+ * Template for the root vitest config file.
+ * @returns {string} Serialized config source.
+ */
 function mainConfigTemplate() {
   return `import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
@@ -98,6 +113,11 @@ export default defineConfig({
 `;
 }
 
+/**
+ * Template for per-package vitest config files.
+ * @param {string} [alias=''] Alias map content for Vite resolve.
+ * @returns {string} Serialized config source.
+ */
 function genConfig(alias = {}) {
   return `import { defineConfig } from 'vitest/config';
 import { resolve } from 'path';

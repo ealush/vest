@@ -8,6 +8,14 @@ module.exports = {
   isAllowed,
 };
 
+/**
+ * Checks whether an identifier is allowed by vx directive comments.
+ * @param {import('eslint').Rule.RuleContext} context ESLint rule context.
+ * @param {any} node AST node associated with the call.
+ * @param {any} id Identifier node to check.
+ * @param {string} ruleName Rule identifier to whitelist.
+ * @returns {boolean}
+ */
 function isAllowed(context, node, id, ruleName) {
   // This hnadles cases like: `const emit = useEmit();`
   if (id.type === 'Identifier' && id.parent.type === 'VariableDeclarator') {
@@ -39,6 +47,12 @@ function isAllowed(context, node, id, ruleName) {
   });
 }
 
+/**
+ * Validates a directive name and optional target.
+ * @param {string} name Directive name (e.g. "@vx-allow").
+ * @param {string} [target] Directive type to enforce.
+ * @returns {boolean}
+ */
 function isDirective(name, target) {
   const [prefix, directiveName] = name.split(DIRECTIVE_NAME_DELIMITER);
 

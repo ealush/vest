@@ -3,6 +3,9 @@ import path from 'path';
 
 import { defineConfig, type UserConfig } from 'tsdown';
 
+import opts from '../../opts';
+import vxPath from '../../vxPath';
+
 type PackageConfigOptions = {
   packageDir: string;
   devExports?: boolean | string;
@@ -45,9 +48,10 @@ function addExportsAliases(exportsMap: Record<string, any>): Record<string, any>
   return exportsMap;
 }
 
-function readPackageName(packageDir: string): string {
-  const pkgJsonPath = path.join(packageDir, 'package.json');
-  const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
+async function readPackageName(packageDir: string): Promise<string> {
+  const packageName = path.basename(packageDir);
+  const pkgJsonPath = vxPath.packageJson(packageName);
+  const pkgJson = JSON.parse(await fsPromises.readFile(pkgJsonPath, 'utf8'));
 
   return pkgJson.name;
 }
@@ -142,7 +146,7 @@ async function updatePackageJsonTypes(
   const packageJsonPath = path.join(packageDir, 'package.json');
   const pkg = JSON.parse(await fsPromises.readFile(packageJsonPath, 'utf8'));
 
-  const distBasePath = `./dist/${packageName}`;
+  const distBasePath = `./${opts.dir.DIST}/${packageName}`;
 
   pkg.main = `${distBasePath}.cjs`;
   pkg.module = `${distBasePath}.mjs`;
@@ -183,27 +187,27 @@ async function updatePackageJsonTypes(
   );
 }
 
-export function createPackageConfig({
+export async function createPackageConfig({
   packageDir,
   devExports = false,
-}: PackageConfigOptions): UserConfig {
-  const packageName = readPackageName(packageDir);
-  const mainEntry = `src/${packageName}.ts`;
+}: PackageConfigOptions): Promise<UserConfig> {
+  const packageName = await readPackageName(packageDir);
+  const mainEntry = `${opts.dir.SRC}/${packageName}.ts`;
 
   return defineConfig({
     name: packageName,
     cwd: packageDir,
-    entry: [mainEntry, 'src/exports/*.ts'],
+    entry: [mainEntry, `${opts.dir.SRC}/${opts.dir.EXPORTS}/*.ts`],
     tsconfig: './tsconfig.json',
-    outDir: 'dist',
-    clean: ['dist', 'types'],
+    outDir: opts.dir.DIST,
+    clean: [opts.dir.DIST, opts.dir.TYPES],
     sourcemap: true,
     format: ['esm', 'cjs'],
     platform: 'node',
     shims: true,
     hash: true,
     dts: {
-      outDir: 'types',
+      outDir: opts.dir.TYPES,
       sourcemap: true,
       resolver: 'oxc',
     },
@@ -215,13 +219,13 @@ export function createPackageConfig({
       },
     },
     alias: {
-      [`@${packageName}`]: './src',
-      '@exports': './src/exports',
+      [`@${packageName}`]: `./${opts.dir.SRC}`,
+      '@exports': `./${opts.dir.SRC}/${opts.dir.EXPORTS}`,
     },
     hooks: {
       async 'build:done'({ options }) {
         const distDir = options.outDir;
-        const typesDir = path.join(packageDir, 'types');
+        const typesDir = path.join(packageDir, opts.dir.TYPES);
 
         if (processedOutDirs.has(distDir)) {
           return;

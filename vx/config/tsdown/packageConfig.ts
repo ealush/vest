@@ -8,6 +8,8 @@ type PackageConfigOptions = {
   devExports?: boolean | string;
 };
 
+const processedOutDirs = new Set<string>();
+
 function addRootExports(
   exportsMap: Record<string, any>,
   packageName: string,
@@ -203,7 +205,7 @@ export function createPackageConfig({
     dts: {
       outDir: 'types',
       sourcemap: true,
-      resolver: 'tsc',
+      resolver: 'oxc',
     },
     exports: {
       all: true,
@@ -220,6 +222,11 @@ export function createPackageConfig({
       async 'build:done'({ options }) {
         const distDir = options.outDir;
         const typesDir = path.join(packageDir, 'types');
+
+        if (processedOutDirs.has(distDir)) {
+          return;
+        }
+        processedOutDirs.add(distDir);
 
         const movedDts = await relocateDtsFiles(distDir, typesDir);
         const typeMap = buildTypesMap(movedDts, packageName);

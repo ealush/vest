@@ -107,12 +107,6 @@ vxPath.VX_SCRIPTS_PATH = path.resolve(vxPath.VX_ROOT_PATH, opts.dir.SCRIPTS);
 
 vxPath.VX_COMMANDS_PATH = path.resolve(vxPath.VX_ROOT_PATH, opts.dir.COMMANDS);
 
-vxPath.ROLLUP_CONFIG_PATH = path.resolve(
-  vxPath.VX_CONFIG_PATH,
-  opts.dir.ROLLUP,
-  opts.fileNames.ROLLUP_CONFIG,
-);
-
 vxPath.VITEST_CONFIG_PATH = path.resolve(
   vxPath.VX_CONFIG_PATH,
   opts.dir.VITEST,

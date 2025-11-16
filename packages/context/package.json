@@ -2,7 +2,7 @@
   "version": "3.0.33",
   "license": "MIT",
   "main": "./dist/context.cjs",
-  "types": "./dist/context.d.cts",
+  "types": "./types/context.d.cts",
   "name": "context",
   "author": "ealush",
   "scripts": {
@@ -22,6 +22,22 @@
   "bugs": {
     "url": "https://github.com/ealush/vest.git/issues"
   },
-  "unpkg": "./dist/umd/context.production.js",
-  "jsdelivr": "./dist/umd/context.production.js"
+  "unpkg": "./dist/context.mjs",
+  "jsdelivr": "./dist/context.mjs",
+  "exports": {
+    ".": "./src/context.ts",
+    "./*": "./*",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "import": "./dist/context.mjs",
+        "require": "./dist/context.cjs",
+        "types": "./types/context.d.cts"
+      },
+      "./*": "./*",
+      "./package.json": "./package.json"
+    }
+  }
 }

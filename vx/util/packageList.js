@@ -5,6 +5,7 @@ const { glob } = require('glob');
 const vxPath = require('vx/vxPath');
 
 // Unordered list of package names
+/** @type {Array<[string, string]>} */
 module.exports.pairs = glob
   .sync(vxPath.package('*'))
   .reduce((packages, packagePath) => {
@@ -12,4 +13,5 @@ module.exports.pairs = glob
     return packages;
   }, []);
 
+/** @type {string[]} */
 module.exports.names = module.exports.pairs.map(([name]) => name);

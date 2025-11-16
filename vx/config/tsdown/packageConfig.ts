@@ -3,8 +3,8 @@ import path from 'path';
 
 import { defineConfig, type UserConfig } from 'tsdown';
 
-import opts from '../../opts';
-import vxPath from '../../vxPath';
+import opts from 'vx/opts';
+import vxPath from 'vx/vxPath';
 
 type PackageConfigOptions = {
   packageDir: string;
@@ -12,6 +12,59 @@ type PackageConfigOptions = {
 };
 
 const processedOutDirs = new Set<string>();
+
+export function createPackageConfig({
+  packageDir,
+  devExports = false,
+}: PackageConfigOptions): UserConfig {
+  const packageName = readPackageName(packageDir);
+  const mainEntry = vxPath.packageSrc(packageName, `${packageName}.ts`);
+
+  return defineConfig({
+    alias: {
+      [`@${packageName}`]: `./${opts.dir.SRC}`,
+      '@exports': `./${opts.dir.SRC}/${opts.dir.EXPORTS}`,
+    },
+    clean: [opts.dir.DIST, opts.dir.TYPES],
+    cwd: packageDir,
+    dts: {
+      sourcemap: true,
+      resolver: 'oxc',
+    },
+    entry: [mainEntry, vxPath.packageSrcExports(packageName, '*.ts')],
+    exports: {
+      all: true,
+      devExports,
+      customExports(exportsMap) {
+        return addExportsAliases(addRootExports(exportsMap, packageName));
+      },
+    },
+    format: ['esm', 'cjs'],
+    hash: true,
+    hooks: {
+      'build:done': async function ({ options }) {
+        const distDir = options.outDir;
+        const typesDir = vxPath.package(packageName, opts.dir.TYPES);
+
+        if (processedOutDirs.has(distDir)) {
+          return;
+        }
+        processedOutDirs.add(distDir);
+
+        const movedDts = await relocateDtsFiles(distDir, typesDir);
+        const typeMap = buildTypesMap(movedDts, packageName);
+
+        await updatePackageJsonTypes(packageDir, packageName, typeMap);
+      },
+    },
+    name: packageName,
+    outDir: opts.dir.DIST,
+    platform: 'node',
+    shims: true,
+    sourcemap: true,
+    tsconfig: vxPath.packageTsConfig(packageName),
+  });
+}
 
 function addRootExports(
   exportsMap: Record<string, any>,
@@ -23,14 +76,16 @@ function addRootExports(
     exportsMap['.'] = rootExport;
   }
 
-  if (!exportsMap['./package.json']) {
-    exportsMap['./package.json'] = './package.json';
-  }
+  const packageJson = `./${opts.fileNames.PACKAGE_JSON}`;
+
+  exportsMap[packageJson] ??= packageJson;
 
   return exportsMap;
 }
 
-function addExportsAliases(exportsMap: Record<string, any>): Record<string, any> {
+function addExportsAliases(
+  exportsMap: Record<string, any>,
+): Record<string, any> {
   const aliasPrefix = './exports/';
 
   Object.keys(exportsMap).forEach(key => {
@@ -48,11 +103,9 @@ function addExportsAliases(exportsMap: Record<string, any>): Record<string, any>
   return exportsMap;
 }
 
-async function readPackageName(packageDir: string): Promise<string> {
-  const packageName = path.basename(packageDir);
-  const pkgJsonPath = vxPath.packageJson(packageName);
-  const pkgJson = JSON.parse(await fsPromises.readFile(pkgJsonPath, 'utf8'));
-
+function readPackageName(packageDir: string): string {
+  const pkgJsonPath = vxPath.packageJson(path.basename(packageDir));
+  const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
   return pkgJson.name;
 }
 
@@ -134,50 +187,39 @@ function buildTypesMap(
   );
 }
 
+// eslint-disable-next-line complexity
 async function updatePackageJsonTypes(
   packageDir: string,
   packageName: string,
   typeMap: Record<string, string>,
 ): Promise<void> {
-  if (Object.keys(typeMap).length === 0) {
-    return;
-  }
+  if (Object.keys(typeMap).length === 0) return;
 
-  const packageJsonPath = path.join(packageDir, 'package.json');
+  const packageJsonPath = vxPath.packageJson(packageName);
   const pkg = JSON.parse(await fsPromises.readFile(packageJsonPath, 'utf8'));
-
   const distBasePath = `./${opts.dir.DIST}/${packageName}`;
 
-  pkg.main = `${distBasePath}.cjs`;
-  pkg.module = `${distBasePath}.mjs`;
-  pkg.unpkg = `${distBasePath}.mjs`;
-  pkg.jsdelivr = `${distBasePath}.mjs`;
+  pkg.main = `${distBasePath}.${opts.format.CJS}`;
+  pkg.module = `${distBasePath}.${opts.format.MJS}`;
+  pkg.unpkg = `${distBasePath}.${opts.format.MJS}`;
+  pkg.jsdelivr = `${distBasePath}.${opts.format.MJS}`;
 
   const mainTypes =
     typeMap[`./${packageName}`] ?? typeMap['.'] ?? typeMap['./index'];
-
-  if (mainTypes) {
-    pkg.types = mainTypes;
-  }
+  if (mainTypes) pkg.types = mainTypes;
 
   const publishExports = pkg.publishConfig?.exports;
-
   if (publishExports && typeof publishExports === 'object') {
-    Object.entries(publishExports).forEach(([exportPath, exportValue]) => {
+    for (const [exportPath, exportValue] of Object.entries(publishExports)) {
       const typesKey = exportPath === '.' ? `./${packageName}` : exportPath;
       const typesEntry = typeMap[typesKey];
-
-      if (!typesEntry) {
-        return;
-      }
-
+      if (!typesEntry) continue;
       const normalizedExport =
         exportValue && typeof exportValue === 'object'
           ? exportValue
           : { default: exportValue };
-
       publishExports[exportPath] = { ...normalizedExport, types: typesEntry };
-    });
+    }
   }
 
   await fsPromises.writeFile(
@@ -185,60 +227,6 @@ async function updatePackageJsonTypes(
     JSON.stringify(pkg, null, 2) + '\n',
     'utf8',
   );
-}
-
-export async function createPackageConfig({
-  packageDir,
-  devExports = false,
-}: PackageConfigOptions): Promise<UserConfig> {
-  const packageName = await readPackageName(packageDir);
-  const mainEntry = `${opts.dir.SRC}/${packageName}.ts`;
-
-  return defineConfig({
-    name: packageName,
-    cwd: packageDir,
-    entry: [mainEntry, `${opts.dir.SRC}/${opts.dir.EXPORTS}/*.ts`],
-    tsconfig: './tsconfig.json',
-    outDir: opts.dir.DIST,
-    clean: [opts.dir.DIST, opts.dir.TYPES],
-    sourcemap: true,
-    format: ['esm', 'cjs'],
-    platform: 'node',
-    shims: true,
-    hash: true,
-    dts: {
-      outDir: opts.dir.TYPES,
-      sourcemap: true,
-      resolver: 'oxc',
-    },
-    exports: {
-      all: true,
-      devExports,
-      customExports(exportsMap) {
-        return addExportsAliases(addRootExports(exportsMap, packageName));
-      },
-    },
-    alias: {
-      [`@${packageName}`]: `./${opts.dir.SRC}`,
-      '@exports': `./${opts.dir.SRC}/${opts.dir.EXPORTS}`,
-    },
-    hooks: {
-      async 'build:done'({ options }) {
-        const distDir = options.outDir;
-        const typesDir = path.join(packageDir, opts.dir.TYPES);
-
-        if (processedOutDirs.has(distDir)) {
-          return;
-        }
-        processedOutDirs.add(distDir);
-
-        const movedDts = await relocateDtsFiles(distDir, typesDir);
-        const typeMap = buildTypesMap(movedDts, packageName);
-
-        await updatePackageJsonTypes(packageDir, packageName, typeMap);
-      },
-    },
-  });
 }
 
 export default createPackageConfig;

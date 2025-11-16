@@ -5,6 +5,10 @@ const glob = require('glob');
 
 const vxPath = require('vx/vxPath');
 
+/**
+ * Removes generated dist files and extensionless exports for a package.
+ * @param {string} packageName Package to clean.
+ */
 function cleanupDistFiles(packageName) {
   fse.removeSync(vxPath.packageDist(packageName));
 

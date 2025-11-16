@@ -5,6 +5,11 @@ const glob = require('glob');
 const packageNames = require('vx/packageNames');
 const vxPath = require('vx/vxPath');
 
+/**
+ * @typedef {Record<string, string[]>} PackageExports
+ */
+
+/** @type {PackageExports} */
 module.exports = packageNames.list.reduce(
   (packageExports, packageName) =>
     Object.assign(packageExports, {

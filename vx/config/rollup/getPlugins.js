@@ -7,7 +7,7 @@ const ts = require('rollup-plugin-ts');
 const { disallowExternals } = require('./format');
 const addCJSPackageJson = require('./plugins/addCJSPackageJson');
 const addModulePackageJson = require('./plugins/addModulePackageJson');
-const handleExports = require('./plugins/handleExports');
+// const handleExports = require('./plugins/handleExports');
 
 const opts = require('vx/opts');
 const packageJson = require('vx/util/packageJson');
@@ -80,7 +80,7 @@ module.exports = function getPlugins({
     plugins.push(
       // compiler(),
       terser(),
-      handleExports({ namespace }),
+      // handleExports({ namespace }),
       addModulePackageJson(),
       addCJSPackageJson(),
     );

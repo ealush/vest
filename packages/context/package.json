@@ -25,7 +25,10 @@
   "unpkg": "./dist/context.mjs",
   "jsdelivr": "./dist/context.mjs",
   "exports": {
-    ".": "./src/context.ts",
+    ".": {
+      "import": "./dist/context.mjs",
+      "require": "./dist/context.cjs"
+    },
     "./*": "./*",
     "./package.json": "./package.json"
   },

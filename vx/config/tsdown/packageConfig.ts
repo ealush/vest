@@ -25,6 +25,24 @@ function addRootExports(
   return exportsMap;
 }
 
+function addExportsAliases(exportsMap: Record<string, any>): Record<string, any> {
+  const aliasPrefix = './exports/';
+
+  Object.keys(exportsMap).forEach(key => {
+    if (!key.startsWith(aliasPrefix)) {
+      return;
+    }
+
+    const shortKey = `./${key.slice(aliasPrefix.length)}`;
+
+    if (!exportsMap[shortKey]) {
+      exportsMap[shortKey] = exportsMap[key];
+    }
+  });
+
+  return exportsMap;
+}
+
 function readPackageName(packageDir: string): string {
   const pkgJsonPath = path.join(packageDir, 'package.json');
   const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
@@ -165,7 +183,7 @@ async function updatePackageJsonTypes(
 
 export function createPackageConfig({
   packageDir,
-  devExports = true,
+  devExports = false,
 }: PackageConfigOptions): UserConfig {
   const packageName = readPackageName(packageDir);
   const mainEntry = `src/${packageName}.ts`;
@@ -191,7 +209,7 @@ export function createPackageConfig({
       all: true,
       devExports,
       customExports(exportsMap) {
-        return addRootExports(exportsMap, packageName);
+        return addExportsAliases(addRootExports(exportsMap, packageName));
       },
     },
     alias: {

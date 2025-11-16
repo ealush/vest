@@ -30,13 +30,40 @@
     "validator"
   ],
   "exports": {
-    "./exports/date": "./src/exports/date.ts",
-    "./exports/email": "./src/exports/email.ts",
-    "./exports/isURL": "./src/exports/isURL.ts",
-    "./n4s": "./src/n4s.ts",
+    "./exports/date": {
+      "import": "./dist/exports/date.mjs",
+      "require": "./dist/exports/date.cjs"
+    },
+    "./exports/email": {
+      "import": "./dist/exports/email.mjs",
+      "require": "./dist/exports/email.cjs"
+    },
+    "./exports/isURL": {
+      "import": "./dist/exports/isURL.mjs",
+      "require": "./dist/exports/isURL.cjs"
+    },
+    "./n4s": {
+      "import": "./dist/n4s.mjs",
+      "require": "./dist/n4s.cjs"
+    },
     "./*": "./*",
-    ".": "./src/n4s.ts",
-    "./package.json": "./package.json"
+    ".": {
+      "import": "./dist/n4s.mjs",
+      "require": "./dist/n4s.cjs"
+    },
+    "./package.json": "./package.json",
+    "./date": {
+      "import": "./dist/exports/date.mjs",
+      "require": "./dist/exports/date.cjs"
+    },
+    "./email": {
+      "import": "./dist/exports/email.mjs",
+      "require": "./dist/exports/email.cjs"
+    },
+    "./isURL": {
+      "import": "./dist/exports/isURL.mjs",
+      "require": "./dist/exports/isURL.cjs"
+    }
   },
   "publishConfig": {
     "exports": {

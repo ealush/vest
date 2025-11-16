@@ -22,12 +22,32 @@
     "vest-utils": "^1.3.3"
   },
   "exports": {
-    "./exports/IsolateSerializer": "./src/exports/IsolateSerializer.ts",
-    "./exports/test-utils": "./src/exports/test-utils.ts",
-    "./vestjs-runtime": "./src/vestjs-runtime.ts",
+    "./exports/IsolateSerializer": {
+      "import": "./dist/exports/IsolateSerializer.mjs",
+      "require": "./dist/exports/IsolateSerializer.cjs"
+    },
+    "./exports/test-utils": {
+      "import": "./dist/exports/test-utils.mjs",
+      "require": "./dist/exports/test-utils.cjs"
+    },
+    "./vestjs-runtime": {
+      "import": "./dist/vestjs-runtime.mjs",
+      "require": "./dist/vestjs-runtime.cjs"
+    },
     "./*": "./*",
-    ".": "./src/vestjs-runtime.ts",
-    "./package.json": "./package.json"
+    ".": {
+      "import": "./dist/vestjs-runtime.mjs",
+      "require": "./dist/vestjs-runtime.cjs"
+    },
+    "./package.json": "./package.json",
+    "./IsolateSerializer": {
+      "import": "./dist/exports/IsolateSerializer.mjs",
+      "require": "./dist/exports/IsolateSerializer.cjs"
+    },
+    "./test-utils": {
+      "import": "./dist/exports/test-utils.mjs",
+      "require": "./dist/exports/test-utils.cjs"
+    }
   },
   "publishConfig": {
     "exports": {

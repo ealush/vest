@@ -26,14 +26,48 @@
   "jsdelivr": "./dist/anyone.mjs",
   "vxAllowResolve": [],
   "exports": {
-    "./anyone": "./src/anyone.ts",
-    "./exports/all": "./src/exports/all.ts",
-    "./exports/any": "./src/exports/any.ts",
-    "./exports/none": "./src/exports/none.ts",
-    "./exports/one": "./src/exports/one.ts",
+    "./anyone": {
+      "import": "./dist/anyone.mjs",
+      "require": "./dist/anyone.cjs"
+    },
+    "./exports/all": {
+      "import": "./dist/exports/all.mjs",
+      "require": "./dist/exports/all.cjs"
+    },
+    "./exports/any": {
+      "import": "./dist/exports/any.mjs",
+      "require": "./dist/exports/any.cjs"
+    },
+    "./exports/none": {
+      "import": "./dist/exports/none.mjs",
+      "require": "./dist/exports/none.cjs"
+    },
+    "./exports/one": {
+      "import": "./dist/exports/one.mjs",
+      "require": "./dist/exports/one.cjs"
+    },
     "./*": "./*",
-    ".": "./src/anyone.ts",
-    "./package.json": "./package.json"
+    ".": {
+      "import": "./dist/anyone.mjs",
+      "require": "./dist/anyone.cjs"
+    },
+    "./package.json": "./package.json",
+    "./all": {
+      "import": "./dist/exports/all.mjs",
+      "require": "./dist/exports/all.cjs"
+    },
+    "./any": {
+      "import": "./dist/exports/any.mjs",
+      "require": "./dist/exports/any.cjs"
+    },
+    "./none": {
+      "import": "./dist/exports/none.mjs",
+      "require": "./dist/exports/none.cjs"
+    },
+    "./one": {
+      "import": "./dist/exports/one.mjs",
+      "require": "./dist/exports/one.cjs"
+    }
   },
   "publishConfig": {
     "exports": {

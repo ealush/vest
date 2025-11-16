@@ -25,7 +25,10 @@
   "jsdelivr": "./dist/vast.mjs",
   "vxAllowResolve": [],
   "exports": {
-    ".": "./src/vast.ts",
+    ".": {
+      "import": "./dist/vast.mjs",
+      "require": "./dist/vast.cjs"
+    },
     "./*": "./*",
     "./package.json": "./package.json"
   },

@@ -22,11 +22,24 @@
   },
   "license": "MIT",
   "exports": {
-    "./exports/minifyObject": "./src/exports/minifyObject.ts",
-    "./vest-utils": "./src/vest-utils.ts",
+    "./exports/minifyObject": {
+      "import": "./dist/exports/minifyObject.mjs",
+      "require": "./dist/exports/minifyObject.cjs"
+    },
+    "./vest-utils": {
+      "import": "./dist/vest-utils.mjs",
+      "require": "./dist/vest-utils.cjs"
+    },
     "./*": "./*",
-    ".": "./src/vest-utils.ts",
-    "./package.json": "./package.json"
+    ".": {
+      "import": "./dist/vest-utils.mjs",
+      "require": "./dist/vest-utils.cjs"
+    },
+    "./package.json": "./package.json",
+    "./minifyObject": {
+      "import": "./dist/exports/minifyObject.mjs",
+      "require": "./dist/exports/minifyObject.cjs"
+    }
   },
   "publishConfig": {
     "exports": {

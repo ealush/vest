@@ -5,11 +5,11 @@
   "license": "MIT",
   "author": "ealush",
   "private": true,
-  "main": "./dist/cjs/n4s.js",
-  "module": "./dist/es/n4s.production.js",
-  "unpkg": "./dist/umd/n4s.production.js",
-  "jsdelivr": "./dist/umd/n4s.production.js",
-  "types": "./types/n4s.d.ts",
+  "main": "./dist/n4s.cjs",
+  "module": "./dist/n4s.mjs",
+  "unpkg": "./dist/n4s.mjs",
+  "jsdelivr": "./dist/n4s.mjs",
+  "types": "./types/n4s.d.cts",
   "repository": {
     "type": "git",
     "url": "https://github.com/ealush/vest.git",
@@ -28,5 +28,45 @@
   },
   "vxAllowResolve": [
     "validator"
-  ]
+  ],
+  "exports": {
+    "./exports/date": "./src/exports/date.ts",
+    "./exports/email": "./src/exports/email.ts",
+    "./exports/isURL": "./src/exports/isURL.ts",
+    "./n4s": "./src/n4s.ts",
+    "./*": "./*",
+    ".": "./src/n4s.ts",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      "./exports/date": {
+        "import": "./dist/exports/date.mjs",
+        "require": "./dist/exports/date.cjs",
+        "types": "./types/exports/date.d.cts"
+      },
+      "./exports/email": {
+        "import": "./dist/exports/email.mjs",
+        "require": "./dist/exports/email.cjs",
+        "types": "./types/exports/email.d.cts"
+      },
+      "./exports/isURL": {
+        "import": "./dist/exports/isURL.mjs",
+        "require": "./dist/exports/isURL.cjs",
+        "types": "./types/exports/isURL.d.cts"
+      },
+      "./n4s": {
+        "import": "./dist/n4s.mjs",
+        "require": "./dist/n4s.cjs",
+        "types": "./types/n4s.d.cts"
+      },
+      "./*": "./*",
+      ".": {
+        "import": "./dist/n4s.mjs",
+        "require": "./dist/n4s.cjs",
+        "types": "./types/n4s.d.cts"
+      },
+      "./package.json": "./package.json"
+    }
+  }
 }

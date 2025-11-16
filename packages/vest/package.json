@@ -4,11 +4,11 @@
   "description": "Declarative Form Validations Framework",
   "license": "MIT",
   "author": "ealush",
-  "main": "./dist/cjs/vest.js",
-  "module": "./dist/es/vest.production.js",
-  "unpkg": "./dist/umd/vest.production.js",
-  "jsdelivr": "./dist/umd/vest.production.js",
-  "types": "./types/vest.d.ts",
+  "main": "./dist/vest.cjs",
+  "module": "./dist/vest.mjs",
+  "unpkg": "./dist/vest.mjs",
+  "jsdelivr": "./dist/vest.mjs",
+  "types": "./types/vest.d.cts",
   "keywords": [
     "Form validation",
     "Unit testing",
@@ -41,5 +41,75 @@
     "vast": "^1.0.42",
     "vest-utils": "^1.3.3",
     "vestjs-runtime": "^1.5.1"
+  },
+  "exports": {
+    "./exports/classnames": "./src/exports/classnames.ts",
+    "./exports/debounce": "./src/exports/debounce.ts",
+    "./exports/enforce@date": "./src/exports/enforce@date.ts",
+    "./exports/enforce@email": "./src/exports/enforce@email.ts",
+    "./exports/enforce@isURL": "./src/exports/enforce@isURL.ts",
+    "./exports/memo": "./src/exports/memo.ts",
+    "./exports/parser": "./src/exports/parser.ts",
+    "./exports/SuiteSerializer": "./src/exports/SuiteSerializer.ts",
+    "./vest": "./src/vest.ts",
+    "./*": "./*",
+    ".": "./src/vest.ts",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      "./exports/classnames": {
+        "import": "./dist/exports/classnames.mjs",
+        "require": "./dist/exports/classnames.cjs",
+        "types": "./types/exports/classnames.d.cts"
+      },
+      "./exports/debounce": {
+        "import": "./dist/exports/debounce.mjs",
+        "require": "./dist/exports/debounce.cjs",
+        "types": "./types/exports/debounce.d.cts"
+      },
+      "./exports/enforce@date": {
+        "import": "./dist/exports/enforce@date.mjs",
+        "require": "./dist/exports/enforce@date.cjs",
+        "types": "./types/exports/enforce@date.d.cts"
+      },
+      "./exports/enforce@email": {
+        "import": "./dist/exports/enforce@email.mjs",
+        "require": "./dist/exports/enforce@email.cjs",
+        "types": "./types/exports/enforce@email.d.cts"
+      },
+      "./exports/enforce@isURL": {
+        "import": "./dist/exports/enforce@isURL.mjs",
+        "require": "./dist/exports/enforce@isURL.cjs",
+        "types": "./types/exports/enforce@isURL.d.cts"
+      },
+      "./exports/memo": {
+        "import": "./dist/exports/memo.mjs",
+        "require": "./dist/exports/memo.cjs",
+        "types": "./types/exports/memo.d.cts"
+      },
+      "./exports/parser": {
+        "import": "./dist/exports/parser.mjs",
+        "require": "./dist/exports/parser.cjs",
+        "types": "./types/exports/parser.d.cts"
+      },
+      "./exports/SuiteSerializer": {
+        "import": "./dist/exports/SuiteSerializer.mjs",
+        "require": "./dist/exports/SuiteSerializer.cjs",
+        "types": "./types/exports/SuiteSerializer.d.cts"
+      },
+      "./vest": {
+        "import": "./dist/vest.mjs",
+        "require": "./dist/vest.cjs",
+        "types": "./types/vest.d.cts"
+      },
+      "./*": "./*",
+      ".": {
+        "import": "./dist/vest.mjs",
+        "require": "./dist/vest.cjs",
+        "types": "./types/vest.d.cts"
+      },
+      "./package.json": "./package.json"
+    }
   }
 }

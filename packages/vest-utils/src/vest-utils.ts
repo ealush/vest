@@ -1,7 +1,8 @@
 export { withResolvers } from 'withResolvers';
-export { default as cache, CacheApi } from 'cache';
-export { BusType } from 'bus';
-export { TinyState } from 'tinyState';
+export { default as cache } from 'cache';
+export type { CacheApi } from 'cache';
+export type { BusType } from 'bus';
+export type { TinyState } from 'tinyState';
 export { isNullish, isNotNullish } from 'isNullish';
 export { default as asArray } from 'asArray';
 export { default as callEach } from 'callEach';
@@ -32,11 +33,8 @@ export { isArray, isNotArray } from 'isArrayValue';
 export { isEmpty, isNotEmpty } from 'isEmpty';
 export { isPositive } from 'isPositive';
 export { text } from 'text';
-export {
-  TStateMachine,
-  StateMachine,
-  TStateMachineApi,
-} from 'SimpleStateMachine';
+export { StateMachine } from 'SimpleStateMachine';
+export type { TStateMachine, TStateMachineApi } from 'SimpleStateMachine';
 export { nonnullish } from 'nonnullish';
 export * as tinyState from 'tinyState';
 export { StringObject } from 'StringObject';

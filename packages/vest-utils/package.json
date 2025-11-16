@@ -7,11 +7,11 @@
     "build": "vx build",
     "release": "vx release"
   },
-  "main": "./dist/cjs/vest-utils.js",
-  "module": "./dist/es/vest-utils.production.js",
-  "unpkg": "./dist/umd/vest-utils.production.js",
-  "jsdelivr": "./dist/umd/vest-utils.production.js",
-  "types": "./types/vest-utils.d.ts",
+  "main": "./dist/vest-utils.cjs",
+  "module": "./dist/vest-utils.mjs",
+  "unpkg": "./dist/vest-utils.mjs",
+  "jsdelivr": "./dist/vest-utils.mjs",
+  "types": "./types/vest-utils.d.cts",
   "repository": {
     "type": "git",
     "url": "https://github.com/ealush/vest.git",
@@ -20,5 +20,33 @@
   "bugs": {
     "url": "https://github.com/ealush/vest.git/issues"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "exports": {
+    "./exports/minifyObject": "./src/exports/minifyObject.ts",
+    "./vest-utils": "./src/vest-utils.ts",
+    "./*": "./*",
+    ".": "./src/vest-utils.ts",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      "./exports/minifyObject": {
+        "import": "./dist/exports/minifyObject.mjs",
+        "require": "./dist/exports/minifyObject.cjs",
+        "types": "./types/exports/minifyObject.d.cts"
+      },
+      "./vest-utils": {
+        "import": "./dist/vest-utils.mjs",
+        "require": "./dist/vest-utils.cjs",
+        "types": "./types/vest-utils.d.cts"
+      },
+      "./*": "./*",
+      ".": {
+        "import": "./dist/vest-utils.mjs",
+        "require": "./dist/vest-utils.cjs",
+        "types": "./types/vest-utils.d.cts"
+      },
+      "./package.json": "./package.json"
+    }
+  }
 }

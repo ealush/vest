@@ -4,11 +4,11 @@
   "description": "Internal runtime module used by Vest",
   "license": "MIT",
   "author": "ealush",
-  "main": "./dist/cjs/vestjs-runtime.js",
-  "module": "./dist/es/vestjs-runtime.production.js",
-  "unpkg": "./dist/umd/vestjs-runtime.production.js",
-  "jsdelivr": "./dist/umd/vestjs-runtime.production.js",
-  "types": "./types/vestjs-runtime.d.ts",
+  "main": "./dist/vestjs-runtime.cjs",
+  "module": "./dist/vestjs-runtime.mjs",
+  "unpkg": "./dist/vestjs-runtime.mjs",
+  "jsdelivr": "./dist/vestjs-runtime.mjs",
+  "types": "./types/vestjs-runtime.d.cts",
   "repository": {
     "type": "git",
     "url": "https://github.com/ealush/vest.git",
@@ -20,5 +20,39 @@
   "dependencies": {
     "context": "^3.0.33",
     "vest-utils": "^1.3.3"
+  },
+  "exports": {
+    "./exports/IsolateSerializer": "./src/exports/IsolateSerializer.ts",
+    "./exports/test-utils": "./src/exports/test-utils.ts",
+    "./vestjs-runtime": "./src/vestjs-runtime.ts",
+    "./*": "./*",
+    ".": "./src/vestjs-runtime.ts",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      "./exports/IsolateSerializer": {
+        "import": "./dist/exports/IsolateSerializer.mjs",
+        "require": "./dist/exports/IsolateSerializer.cjs",
+        "types": "./types/exports/IsolateSerializer.d.cts"
+      },
+      "./exports/test-utils": {
+        "import": "./dist/exports/test-utils.mjs",
+        "require": "./dist/exports/test-utils.cjs",
+        "types": "./types/exports/test-utils.d.cts"
+      },
+      "./vestjs-runtime": {
+        "import": "./dist/vestjs-runtime.mjs",
+        "require": "./dist/vestjs-runtime.cjs",
+        "types": "./types/vestjs-runtime.d.cts"
+      },
+      "./*": "./*",
+      ".": {
+        "import": "./dist/vestjs-runtime.mjs",
+        "require": "./dist/vestjs-runtime.cjs",
+        "types": "./types/vestjs-runtime.d.cts"
+      },
+      "./package.json": "./package.json"
+    }
   }
 }

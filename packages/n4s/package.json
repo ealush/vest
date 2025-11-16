@@ -5,11 +5,11 @@
   "license": "MIT",
   "author": "ealush",
   "private": true,
-  "main": "./dist/cjs/n4s.js",
-  "module": "./dist/es/n4s.production.js",
-  "unpkg": "./dist/umd/n4s.production.js",
-  "jsdelivr": "./dist/umd/n4s.production.js",
-  "types": "./types/n4s.d.ts",
+  "main": "./dist/n4s.cjs",
+  "module": "./dist/n4s.mjs",
+  "unpkg": "./dist/n4s.mjs",
+  "jsdelivr": "./dist/n4s.mjs",
+  "types": "./types/n4s.d.cts",
   "repository": {
     "type": "git",
     "url": "https://github.com/ealush/vest.git",
@@ -17,120 +17,6 @@
   },
   "bugs": {
     "url": "https://github.com/ealush/vest.git/issues"
-  },
-  "exports": {
-    "./isURL": {
-      "production": {
-        "types": "./types/isURL.d.ts",
-        "browser": "./dist/es/isURL.production.js",
-        "umd": "./dist/umd/isURL.production.js",
-        "import": "./dist/es/isURL.production.js",
-        "require": "./dist/cjs/isURL.production.js",
-        "node": "./dist/cjs/isURL.production.js",
-        "module": "./dist/es/isURL.production.js",
-        "default": "./dist/cjs/isURL.production.js"
-      },
-      "development": {
-        "types": "./types/isURL.d.ts",
-        "browser": "./dist/es/isURL.development.js",
-        "umd": "./dist/umd/isURL.development.js",
-        "import": "./dist/es/isURL.development.js",
-        "require": "./dist/cjs/isURL.development.js",
-        "node": "./dist/cjs/isURL.development.js",
-        "module": "./dist/es/isURL.development.js",
-        "default": "./dist/cjs/isURL.development.js"
-      },
-      "types": "./types/isURL.d.ts",
-      "browser": "./dist/es/isURL.production.js",
-      "umd": "./dist/umd/isURL.production.js",
-      "import": "./dist/es/isURL.production.js",
-      "require": "./dist/cjs/isURL.production.js",
-      "node": "./dist/cjs/isURL.production.js",
-      "module": "./dist/es/isURL.production.js",
-      "default": "./dist/cjs/isURL.production.js"
-    },
-    "./email": {
-      "production": {
-        "types": "./types/email.d.ts",
-        "browser": "./dist/es/email.production.js",
-        "umd": "./dist/umd/email.production.js",
-        "import": "./dist/es/email.production.js",
-        "require": "./dist/cjs/email.production.js",
-        "node": "./dist/cjs/email.production.js",
-        "module": "./dist/es/email.production.js",
-        "default": "./dist/cjs/email.production.js"
-      },
-      "development": {
-        "types": "./types/email.d.ts",
-        "browser": "./dist/es/email.development.js",
-        "umd": "./dist/umd/email.development.js",
-        "import": "./dist/es/email.development.js",
-        "require": "./dist/cjs/email.development.js",
-        "node": "./dist/cjs/email.development.js",
-        "module": "./dist/es/email.development.js",
-        "default": "./dist/cjs/email.development.js"
-      },
-      "types": "./types/email.d.ts",
-      "browser": "./dist/es/email.production.js",
-      "umd": "./dist/umd/email.production.js",
-      "import": "./dist/es/email.production.js",
-      "require": "./dist/cjs/email.production.js",
-      "node": "./dist/cjs/email.production.js",
-      "module": "./dist/es/email.production.js",
-      "default": "./dist/cjs/email.production.js"
-    },
-    "./date": {
-      "production": {
-        "types": "./types/date.d.ts",
-        "browser": "./dist/es/date.production.js",
-        "umd": "./dist/umd/date.production.js",
-        "import": "./dist/es/date.production.js",
-        "require": "./dist/cjs/date.production.js",
-        "node": "./dist/cjs/date.production.js",
-        "module": "./dist/es/date.production.js",
-        "default": "./dist/cjs/date.production.js"
-      },
-      "development": {
-        "types": "./types/date.d.ts",
-        "browser": "./dist/es/date.development.js",
-        "umd": "./dist/umd/date.development.js",
-        "import": "./dist/es/date.development.js",
-        "require": "./dist/cjs/date.development.js",
-        "node": "./dist/cjs/date.development.js",
-        "module": "./dist/es/date.development.js",
-        "default": "./dist/cjs/date.development.js"
-      },
-      "types": "./types/date.d.ts",
-      "browser": "./dist/es/date.production.js",
-      "umd": "./dist/umd/date.production.js",
-      "import": "./dist/es/date.production.js",
-      "require": "./dist/cjs/date.production.js",
-      "node": "./dist/cjs/date.production.js",
-      "module": "./dist/es/date.production.js",
-      "default": "./dist/cjs/date.production.js"
-    },
-    ".": {
-      "development": {
-        "types": "./types/n4s.d.ts",
-        "browser": "./dist/es/n4s.development.js",
-        "umd": "./dist/umd/n4s.development.js",
-        "import": "./dist/es/n4s.development.js",
-        "require": "./dist/cjs/n4s.development.js",
-        "node": "./dist/cjs/n4s.development.js",
-        "module": "./dist/es/n4s.development.js",
-        "default": "./dist/cjs/n4s.development.js"
-      },
-      "types": "./types/n4s.d.ts",
-      "browser": "./dist/es/n4s.production.js",
-      "umd": "./dist/umd/n4s.production.js",
-      "import": "./dist/es/n4s.production.js",
-      "require": "./dist/cjs/n4s.production.js",
-      "node": "./dist/cjs/n4s.production.js",
-      "module": "./dist/es/n4s.production.js",
-      "default": "./dist/cjs/n4s.production.js"
-    },
-    "./package.json": "./package.json",
-    "./*": "./*"
   },
   "dependencies": {
     "context": "^3.0.33",
@@ -142,5 +28,72 @@
   },
   "vxAllowResolve": [
     "validator"
-  ]
+  ],
+  "exports": {
+    "./exports/date": {
+      "import": "./dist/exports/date.mjs",
+      "require": "./dist/exports/date.cjs"
+    },
+    "./exports/email": {
+      "import": "./dist/exports/email.mjs",
+      "require": "./dist/exports/email.cjs"
+    },
+    "./exports/isURL": {
+      "import": "./dist/exports/isURL.mjs",
+      "require": "./dist/exports/isURL.cjs"
+    },
+    "./n4s": {
+      "import": "./dist/n4s.mjs",
+      "require": "./dist/n4s.cjs"
+    },
+    "./*": "./*",
+    ".": {
+      "import": "./dist/n4s.mjs",
+      "require": "./dist/n4s.cjs"
+    },
+    "./package.json": "./package.json",
+    "./date": {
+      "import": "./dist/exports/date.mjs",
+      "require": "./dist/exports/date.cjs"
+    },
+    "./email": {
+      "import": "./dist/exports/email.mjs",
+      "require": "./dist/exports/email.cjs"
+    },
+    "./isURL": {
+      "import": "./dist/exports/isURL.mjs",
+      "require": "./dist/exports/isURL.cjs"
+    }
+  },
+  "publishConfig": {
+    "exports": {
+      "./exports/date": {
+        "import": "./dist/exports/date.mjs",
+        "require": "./dist/exports/date.cjs",
+        "types": "./types/exports/date.d.cts"
+      },
+      "./exports/email": {
+        "import": "./dist/exports/email.mjs",
+        "require": "./dist/exports/email.cjs",
+        "types": "./types/exports/email.d.cts"
+      },
+      "./exports/isURL": {
+        "import": "./dist/exports/isURL.mjs",
+        "require": "./dist/exports/isURL.cjs",
+        "types": "./types/exports/isURL.d.cts"
+      },
+      "./n4s": {
+        "import": "./dist/n4s.mjs",
+        "require": "./dist/n4s.cjs",
+        "types": "./types/n4s.d.cts"
+      },
+      "./*": "./*",
+      ".": {
+        "import": "./dist/n4s.mjs",
+        "require": "./dist/n4s.cjs",
+        "types": "./types/n4s.d.cts"
+      },
+      "./package.json": "./package.json"
+    }
+  }
 }

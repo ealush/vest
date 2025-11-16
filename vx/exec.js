@@ -41,7 +41,8 @@ function execCommand(command, { silent, throwOnFailure, exitOnFailure }) {
 
 function run(command, silent) {
   execSync(command, {
-    cwd: vxPath.VX_ROOT_PATH,
+    // Run commands from the repo root so workspace binaries are available.
+    cwd: vxPath.ROOT_PATH,
     stdio: silent ? 'ignore' : 'inherit',
   });
 }

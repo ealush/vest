@@ -9,7 +9,8 @@
     "dev": "vx dev",
     "website:start": "yarn workspace website start",
     "website:build": "yarn workspace website build",
-    "build:fast": "vx build --fastBuild"
+    "build:fast": "vx build --fastBuild",
+    "build:tsdown": "tsdown --config tsdown.workspace.ts"
   },
   "homepage": "https://vestjs.dev",
   "name": "vest-monorepo",
@@ -39,6 +40,7 @@
     "prettier": "^3.3.1",
     "pretty-quick": "^3.3.1",
     "tsc": "^2.0.4",
+    "tsdown": "^0.16.4",
     "tslib": "^2.6.3",
     "typescript": "^4.9.5",
     "vx": "workspace:*",

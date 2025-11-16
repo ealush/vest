@@ -1,8 +1,18 @@
+const exec = require('vx/exec');
 const buildPackage = require('vx/scripts/build/buildPackage');
-const runOnActivePackages = require('vx/util/runOnActivePackages');
+const { usePackage } = require('vx/vxContext');
 
 function build(options = {}) {
-  runOnActivePackages(buildPackage, options);
+  const packageName = usePackage();
+
+  // If a package context is set, build only that package (used by release flow).
+  if (packageName) {
+    buildPackage(options);
+    return;
+  }
+
+  // Otherwise build the whole workspace in one go.
+  exec(['./node_modules/.bin/tsdown --config tsdown.workspace.ts', options.cliOptions]);
 }
 
 module.exports = build;

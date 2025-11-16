@@ -7,11 +7,11 @@
     "build": "vx build",
     "release": "vx release"
   },
-  "main": "./dist/cjs/vest-utils.js",
-  "module": "./dist/es/vest-utils.production.js",
-  "unpkg": "./dist/umd/vest-utils.production.js",
-  "jsdelivr": "./dist/umd/vest-utils.production.js",
-  "types": "./types/vest-utils.d.ts",
+  "main": "./dist/vest-utils.cjs",
+  "module": "./dist/vest-utils.mjs",
+  "unpkg": "./dist/vest-utils.mjs",
+  "jsdelivr": "./dist/vest-utils.mjs",
+  "types": "./types/vest-utils.d.cts",
   "repository": {
     "type": "git",
     "url": "https://github.com/ealush/vest.git",
@@ -20,60 +20,46 @@
   "bugs": {
     "url": "https://github.com/ealush/vest.git/issues"
   },
+  "license": "MIT",
   "exports": {
-    "./minifyObject": {
-      "production": {
-        "types": "./types/minifyObject.d.ts",
-        "browser": "./dist/es/minifyObject.production.js",
-        "umd": "./dist/umd/minifyObject.production.js",
-        "import": "./dist/es/minifyObject.production.js",
-        "require": "./dist/cjs/minifyObject.production.js",
-        "node": "./dist/cjs/minifyObject.production.js",
-        "module": "./dist/es/minifyObject.production.js",
-        "default": "./dist/cjs/minifyObject.production.js"
-      },
-      "development": {
-        "types": "./types/minifyObject.d.ts",
-        "browser": "./dist/es/minifyObject.development.js",
-        "umd": "./dist/umd/minifyObject.development.js",
-        "import": "./dist/es/minifyObject.development.js",
-        "require": "./dist/cjs/minifyObject.development.js",
-        "node": "./dist/cjs/minifyObject.development.js",
-        "module": "./dist/es/minifyObject.development.js",
-        "default": "./dist/cjs/minifyObject.development.js"
-      },
-      "types": "./types/minifyObject.d.ts",
-      "browser": "./dist/es/minifyObject.production.js",
-      "umd": "./dist/umd/minifyObject.production.js",
-      "import": "./dist/es/minifyObject.production.js",
-      "require": "./dist/cjs/minifyObject.production.js",
-      "node": "./dist/cjs/minifyObject.production.js",
-      "module": "./dist/es/minifyObject.production.js",
-      "default": "./dist/cjs/minifyObject.production.js"
+    "./exports/minifyObject": {
+      "import": "./dist/exports/minifyObject.mjs",
+      "require": "./dist/exports/minifyObject.cjs"
     },
+    "./vest-utils": {
+      "import": "./dist/vest-utils.mjs",
+      "require": "./dist/vest-utils.cjs"
+    },
+    "./*": "./*",
     ".": {
-      "development": {
-        "types": "./types/vest-utils.d.ts",
-        "browser": "./dist/es/vest-utils.development.js",
-        "umd": "./dist/umd/vest-utils.development.js",
-        "import": "./dist/es/vest-utils.development.js",
-        "require": "./dist/cjs/vest-utils.development.js",
-        "node": "./dist/cjs/vest-utils.development.js",
-        "module": "./dist/es/vest-utils.development.js",
-        "default": "./dist/cjs/vest-utils.development.js"
-      },
-      "types": "./types/vest-utils.d.ts",
-      "browser": "./dist/es/vest-utils.production.js",
-      "umd": "./dist/umd/vest-utils.production.js",
-      "import": "./dist/es/vest-utils.production.js",
-      "require": "./dist/cjs/vest-utils.production.js",
-      "node": "./dist/cjs/vest-utils.production.js",
-      "module": "./dist/es/vest-utils.production.js",
-      "default": "./dist/cjs/vest-utils.production.js"
+      "import": "./dist/vest-utils.mjs",
+      "require": "./dist/vest-utils.cjs"
     },
     "./package.json": "./package.json",
-    "./*": "./*"
+    "./minifyObject": {
+      "import": "./dist/exports/minifyObject.mjs",
+      "require": "./dist/exports/minifyObject.cjs"
+    }
   },
-  "vxAllowResolve": [],
-  "license": "MIT"
+  "publishConfig": {
+    "exports": {
+      "./exports/minifyObject": {
+        "import": "./dist/exports/minifyObject.mjs",
+        "require": "./dist/exports/minifyObject.cjs",
+        "types": "./types/exports/minifyObject.d.cts"
+      },
+      "./vest-utils": {
+        "import": "./dist/vest-utils.mjs",
+        "require": "./dist/vest-utils.cjs",
+        "types": "./types/vest-utils.d.cts"
+      },
+      "./*": "./*",
+      ".": {
+        "import": "./dist/vest-utils.mjs",
+        "require": "./dist/vest-utils.cjs",
+        "types": "./types/vest-utils.d.cts"
+      },
+      "./package.json": "./package.json"
+    }
+  }
 }

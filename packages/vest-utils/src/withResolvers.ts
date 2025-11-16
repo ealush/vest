@@ -2,7 +2,6 @@ import { noop } from 'noop';
 
 export function withResolvers<T>() {
   if (Promise.hasOwnProperty('withResolvers')) {
-    // @ts-expect-error - rollup ts plugin does not support withResolvers
     return Promise.withResolvers<T>();
   }
 

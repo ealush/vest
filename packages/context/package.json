@@ -1,8 +1,8 @@
 {
   "version": "3.0.33",
   "license": "MIT",
-  "main": "./dist/cjs/context.js",
-  "types": "./types/context.d.ts",
+  "main": "./dist/context.cjs",
+  "types": "./types/context.d.cts",
   "name": "context",
   "author": "ealush",
   "scripts": {
@@ -13,31 +13,7 @@
   "dependencies": {
     "vest-utils": "^1.3.3"
   },
-  "module": "./dist/es/context.production.js",
-  "exports": {
-    ".": {
-      "development": {
-        "types": "./types/context.d.ts",
-        "browser": "./dist/es/context.development.js",
-        "umd": "./dist/umd/context.development.js",
-        "import": "./dist/es/context.development.js",
-        "require": "./dist/cjs/context.development.js",
-        "node": "./dist/cjs/context.development.js",
-        "module": "./dist/es/context.development.js",
-        "default": "./dist/cjs/context.development.js"
-      },
-      "types": "./types/context.d.ts",
-      "browser": "./dist/es/context.production.js",
-      "umd": "./dist/umd/context.production.js",
-      "import": "./dist/es/context.production.js",
-      "require": "./dist/cjs/context.production.js",
-      "node": "./dist/cjs/context.production.js",
-      "module": "./dist/es/context.production.js",
-      "default": "./dist/cjs/context.production.js"
-    },
-    "./package.json": "./package.json",
-    "./*": "./*"
-  },
+  "module": "./dist/context.mjs",
   "repository": {
     "type": "git",
     "url": "https://github.com/ealush/vest.git",
@@ -46,7 +22,25 @@
   "bugs": {
     "url": "https://github.com/ealush/vest.git/issues"
   },
-  "unpkg": "./dist/umd/context.production.js",
-  "jsdelivr": "./dist/umd/context.production.js",
-  "vxAllowResolve": []
+  "unpkg": "./dist/context.mjs",
+  "jsdelivr": "./dist/context.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/context.mjs",
+      "require": "./dist/context.cjs"
+    },
+    "./*": "./*",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "import": "./dist/context.mjs",
+        "require": "./dist/context.cjs",
+        "types": "./types/context.d.cts"
+      },
+      "./*": "./*",
+      "./package.json": "./package.json"
+    }
+  }
 }

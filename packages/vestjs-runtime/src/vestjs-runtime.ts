@@ -1,7 +1,9 @@
 export { IsolateKeys } from 'IsolateKeys';
 export { RuntimeEvents } from 'RuntimeEvents';
-export { IsolateKey, TIsolate, Isolate } from 'Isolate';
-export { Reconciler, IRecociler } from 'Reconciler';
+export { Isolate } from 'Isolate';
+export type { IsolateKey, TIsolate } from 'Isolate';
+export { Reconciler } from 'Reconciler';
+export type { IRecociler } from 'Reconciler';
 export * as Walker from 'IsolateWalker';
 export { RuntimeApi as VestRuntime } from 'VestRuntime';
 export { IsolateInspector } from 'IsolateInspector';

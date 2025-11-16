@@ -5,7 +5,6 @@ module.exports = {
     DIST: 'dist',
     EXPORTS: 'exports',
     PACKAGES: 'packages',
-    ROLLUP: 'rollup',
     SCRIPTS: 'scripts',
     SRC: 'src',
     TESTS: '__tests__',
@@ -23,7 +22,6 @@ module.exports = {
     MAIN_EXPORT: 'index.js',
     NPM_IGNORE: '.npmignore',
     PACKAGE_JSON: 'package.json',
-    ROLLUP_CONFIG: 'rollup.config.cjs',
     TSCONFIG_JSON: 'tsconfig.json',
     VITEST_CONFIG: 'vitest.config.ts',
     VX_BUILD: 'vx.build.js',
@@ -40,10 +38,5 @@ module.exports = {
   },
   vx_config: {
     VX_ALLOW_RESOLVE: 'vxAllowResolve',
-    VX_ROLLUP_BUILD_ENTRY: 'configbuildEntry',
-    VX_ROLLUP_BUILD_ENTRY_EXPORTS: 'EXPORTS',
-    VX_ROLLUP_BUILD_ENTRY_MAIN: 'MAIN',
-    VX_ROLLUP_ENV: 'configEnv',
-    VX_ROLLUP_FAST_BUILD: 'configfastBuild',
   },
 };

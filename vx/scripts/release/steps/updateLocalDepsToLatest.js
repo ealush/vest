@@ -13,6 +13,10 @@ const {
 const vxPath = require('vx/vxPath');
 
 // eslint-disable-next-line complexity
+/**
+ * Aligns local workspace dependencies to the latest built versions based on branch rules.
+ * @returns {void}
+ */
 module.exports = function updateLocalDepsToLatest() {
   logger.log('Updating local dependencies to latest version');
   const pkgJson = packageJson();

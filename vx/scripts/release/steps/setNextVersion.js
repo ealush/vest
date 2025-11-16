@@ -7,6 +7,11 @@ const packageJson = require('vx/util/packageJson');
 const { usePackage } = require('vx/vxContext');
 const vxPath = require('vx/vxPath');
 
+/**
+ * Updates the package.json version for the current package unless skipped by branch rules.
+ * @param {{ tagId: string, tag?: string, versionToPublish: string, changeLevel: string }} param0 Diff metadata used for logging and version selection.
+ * @returns {void}
+ */
 function setNextVersion({ tagId, tag, versionToPublish, changeLevel }) {
   const packageName = usePackage();
   const existingPkgJson = packageJson(packageName);

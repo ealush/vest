@@ -27,6 +27,9 @@ const CREATE_GIT_TAG = path.resolve(RELEASE_SCRIPTS, 'create_git_tag.sh');
 
 const EMOJIS = ['🚀', '🦺', '🤘', '✨', '🌈', '✅'];
 
+/**
+ * Pushes release commits and tags to git.
+ */
 function commitChangesToGit() {
   logger.info('🌎 Pushing latest branch.');
 
@@ -39,6 +42,11 @@ function commitChangesToGit() {
 
 module.exports = commitChangesToGit;
 
+/**
+ * Pushes changes to the latest branch using the provided commit message.
+ * @param {{ title: string }[]} allChanges All commits since stable.
+ * @param {string[]} changedPackages Packages included in the release.
+ */
 function pushToLatestBranch(allChanges, changedPackages) {
   const messages = allChanges.map(({ title }) => title);
 
@@ -50,6 +58,11 @@ function pushToLatestBranch(allChanges, changedPackages) {
   ]);
 }
 
+/**
+ * Filters commits to packages changed in the current release window.
+ * @param {{ title: string, files: string[] }[]} commits Commits between stable and current branch.
+ * @returns {string[]} Names of changed packages.
+ */
 function filterChangedPackages(commits) {
   return packageNames.list.filter(packageName => {
     return commits.some(({ title, files }) => {
@@ -63,6 +76,11 @@ function filterChangedPackages(commits) {
   });
 }
 
+/**
+ * Creates a commit message summarizing updated packages.
+ * @param {string[]} changedPackages Packages included in the release.
+ * @returns {string}
+ */
 function createCommitMessage(changedPackages) {
   const msg = changedPackages
     .map(
@@ -73,6 +91,11 @@ function createCommitMessage(changedPackages) {
   return `${sample(EMOJIS)} Updating: ${msg}`;
 }
 
+/**
+ * Tags each changed package with its published version.
+ * @param {string[]} changedPackages Packages included in the release.
+ * @returns {void}
+ */
 function createTags(changedPackages) {
   return changedPackages.forEach(packageName => {
     const version = packageJson(packageName).version;

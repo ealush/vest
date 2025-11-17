@@ -53,8 +53,20 @@ export function createPackageConfig({
 
         const movedDts = await relocateDtsFiles(distDir, typesDir);
         const typeMap = buildTypesMap(movedDts, packageName);
+        const mainTypesPath = selectMainTypesFile(typeMap, packageName);
+        const legacyDtsPath = await ensureLegacyDtsFile(
+          packageDir,
+          mainTypesPath,
+          packageName,
+        );
 
-        await updatePackageJsonTypes(packageDir, packageName, typeMap);
+        await updatePackageJsonTypes(
+          packageDir,
+          packageName,
+          typeMap,
+          mainTypesPath,
+          legacyDtsPath,
+        );
       },
     },
     name: packageName,
@@ -171,10 +183,10 @@ function buildTypesMap(
     const value = `./types/${normalized}`;
     const existing = map.get(key);
 
-    if (!existing || rank < existing.rank) {
-      map.set(key, { rank, path: value });
-    }
-  });
+  if (!existing || rank < existing.rank) {
+    map.set(key, { rank, path: value });
+  }
+});
 
   const mainTypes = map.get(`./${packageName}`)?.path;
 
@@ -187,11 +199,55 @@ function buildTypesMap(
   );
 }
 
+function selectMainTypesFile(
+  typeMap: Record<string, string>,
+  packageName: string,
+): string | undefined {
+  const typeValues = new Set(Object.values(typeMap));
+  const preferredTypes = [
+    `./${opts.dir.TYPES}/${packageName}.d.cts`,
+    `./${opts.dir.TYPES}/${packageName}.d.mts`,
+  ];
+
+  const preferred = preferredTypes.find(typePath => typeValues.has(typePath));
+  if (preferred) return preferred;
+
+  return typeMap[`./${packageName}`] ?? typeMap['.'] ?? typeMap['./index'];
+}
+
+async function ensureLegacyDtsFile(
+  packageDir: string,
+  mainTypesPath: string | undefined,
+  packageName: string,
+): Promise<string | undefined> {
+  if (!mainTypesPath) return;
+
+  const sourcePath = path.join(packageDir, mainTypesPath.replace(/^\.\//, ''));
+  const legacyDtsPath = path.join(
+    packageDir,
+    opts.dir.TYPES,
+    `${packageName}.d.ts`,
+  );
+
+  try {
+    await fsPromises.access(sourcePath, fs.constants.R_OK);
+  } catch {
+    return;
+  }
+
+  await fsPromises.mkdir(path.dirname(legacyDtsPath), { recursive: true });
+  await fsPromises.copyFile(sourcePath, legacyDtsPath);
+
+  return `./${opts.dir.TYPES}/${packageName}.d.ts`;
+}
+
 // eslint-disable-next-line complexity
 async function updatePackageJsonTypes(
   packageDir: string,
   packageName: string,
   typeMap: Record<string, string>,
+  mainTypesPath?: string,
+  legacyDtsPath?: string,
 ): Promise<void> {
   if (Object.keys(typeMap).length === 0) return;
 
@@ -205,21 +261,24 @@ async function updatePackageJsonTypes(
   pkg.jsdelivr = `${distBasePath}.${opts.format.MJS}`;
 
   const mainTypes =
-    typeMap[`./${packageName}`] ?? typeMap['.'] ?? typeMap['./index'];
+    mainTypesPath ??
+    typeMap[`./${packageName}`] ??
+    typeMap['.'] ??
+    typeMap['./index'];
   if (mainTypes) pkg.types = mainTypes;
 
-  const publishExports = pkg.publishConfig?.exports;
-  if (publishExports && typeof publishExports === 'object') {
-    for (const [exportPath, exportValue] of Object.entries(publishExports)) {
-      const typesKey = exportPath === '.' ? `./${packageName}` : exportPath;
-      const typesEntry = typeMap[typesKey];
-      if (!typesEntry) continue;
-      const normalizedExport =
-        exportValue && typeof exportValue === 'object'
-          ? exportValue
-          : { default: exportValue };
-      publishExports[exportPath] = { ...normalizedExport, types: typesEntry };
-    }
+  pkg.exports = updateExports(pkg.exports, typeMap, packageName, {
+    mainTypes,
+    legacyDtsPath,
+  });
+
+  if (pkg.publishConfig?.exports) {
+    pkg.publishConfig.exports = updateExports(
+      pkg.publishConfig.exports,
+      typeMap,
+      packageName,
+      { mainTypes, legacyDtsPath },
+    );
   }
 
   await fsPromises.writeFile(
@@ -227,6 +286,54 @@ async function updatePackageJsonTypes(
     JSON.stringify(pkg, null, 2) + '\n',
     'utf8',
   );
+}
+
+function updateExports(
+  exportsField: any,
+  typeMap: Record<string, string>,
+  packageName: string,
+  {
+    mainTypes,
+    legacyDtsPath,
+  }: { mainTypes?: string; legacyDtsPath?: string },
+): Record<string, any> {
+  const exportsMap =
+    exportsField && typeof exportsField === 'object' ? { ...exportsField } : {};
+
+  Object.entries(exportsMap).forEach(([exportPath, exportValue]) => {
+    if (exportPath === `./${opts.fileNames.PACKAGE_JSON}`) {
+      return;
+    }
+
+    const normalizedExport =
+      exportValue && typeof exportValue === 'object'
+        ? { ...exportValue }
+        : { default: exportValue };
+
+    const typesKey = exportPath === '.' ? `./${packageName}` : exportPath;
+    const typesEntry = typeMap[typesKey] ?? mainTypes;
+
+    if (typesEntry) {
+      normalizedExport.types ??= typesEntry;
+    }
+
+    exportsMap[exportPath] = normalizedExport;
+  });
+
+  Object.entries(typeMap).forEach(([typesKey, typesPath]) => {
+    if (typesKey === `./${packageName}` || typesKey === '.') {
+      exportsMap[typesKey] ??= typesPath;
+    }
+  });
+
+  if (legacyDtsPath) {
+    exportsMap[`./${packageName}.d.ts`] ??= legacyDtsPath;
+  }
+
+  exportsMap[`./${opts.dir.TYPES}/*`] ??= `./${opts.dir.TYPES}/*`;
+  exportsMap[`./${opts.dir.DIST}/*`] ??= `./${opts.dir.DIST}/*`;
+
+  return exportsMap;
 }
 
 export default createPackageConfig;

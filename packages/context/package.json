@@ -27,10 +27,18 @@
   "exports": {
     ".": {
       "import": "./dist/context.mjs",
-      "require": "./dist/context.cjs"
+      "require": "./dist/context.cjs",
+      "types": "./types/context.d.cts"
     },
-    "./*": "./*",
-    "./package.json": "./package.json"
+    "./*": {
+      "default": "./*",
+      "types": "./types/context.d.cts"
+    },
+    "./package.json": "./package.json",
+    "./context": "./types/context.d.cts",
+    "./context.d.ts": "./types/context.d.ts",
+    "./types/*": "./types/*",
+    "./dist/*": "./dist/*"
   },
   "publishConfig": {
     "exports": {
@@ -39,8 +47,27 @@
         "require": "./dist/context.cjs",
         "types": "./types/context.d.cts"
       },
-      "./*": "./*",
-      "./package.json": "./package.json"
+      "./*": {
+        "default": "./*",
+        "types": "./types/context.d.cts"
+      },
+      "./package.json": "./package.json",
+      "./context": {
+        "default": "./types/context.d.cts",
+        "types": "./types/context.d.cts"
+      },
+      "./context.d.ts": {
+        "default": "./types/context.d.ts",
+        "types": "./types/context.d.cts"
+      },
+      "./types/*": {
+        "default": "./types/*",
+        "types": "./types/context.d.cts"
+      },
+      "./dist/*": {
+        "default": "./dist/*",
+        "types": "./types/context.d.cts"
+      }
     }
   }
 }

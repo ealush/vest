@@ -28,46 +28,62 @@
   "exports": {
     "./anyone": {
       "import": "./dist/anyone.mjs",
-      "require": "./dist/anyone.cjs"
+      "require": "./dist/anyone.cjs",
+      "types": "./types/anyone.d.cts"
     },
     "./exports/all": {
       "import": "./dist/exports/all.mjs",
-      "require": "./dist/exports/all.cjs"
+      "require": "./dist/exports/all.cjs",
+      "types": "./types/exports/all.d.cts"
     },
     "./exports/any": {
       "import": "./dist/exports/any.mjs",
-      "require": "./dist/exports/any.cjs"
+      "require": "./dist/exports/any.cjs",
+      "types": "./types/exports/any.d.cts"
     },
     "./exports/none": {
       "import": "./dist/exports/none.mjs",
-      "require": "./dist/exports/none.cjs"
+      "require": "./dist/exports/none.cjs",
+      "types": "./types/exports/none.d.cts"
     },
     "./exports/one": {
       "import": "./dist/exports/one.mjs",
-      "require": "./dist/exports/one.cjs"
+      "require": "./dist/exports/one.cjs",
+      "types": "./types/exports/one.d.cts"
     },
-    "./*": "./*",
+    "./*": {
+      "default": "./*",
+      "types": "./types/anyone.d.cts"
+    },
     ".": {
       "import": "./dist/anyone.mjs",
-      "require": "./dist/anyone.cjs"
+      "require": "./dist/anyone.cjs",
+      "types": "./types/anyone.d.cts"
     },
     "./package.json": "./package.json",
     "./all": {
       "import": "./dist/exports/all.mjs",
-      "require": "./dist/exports/all.cjs"
+      "require": "./dist/exports/all.cjs",
+      "types": "./types/anyone.d.cts"
     },
     "./any": {
       "import": "./dist/exports/any.mjs",
-      "require": "./dist/exports/any.cjs"
+      "require": "./dist/exports/any.cjs",
+      "types": "./types/anyone.d.cts"
     },
     "./none": {
       "import": "./dist/exports/none.mjs",
-      "require": "./dist/exports/none.cjs"
+      "require": "./dist/exports/none.cjs",
+      "types": "./types/anyone.d.cts"
     },
     "./one": {
       "import": "./dist/exports/one.mjs",
-      "require": "./dist/exports/one.cjs"
-    }
+      "require": "./dist/exports/one.cjs",
+      "types": "./types/anyone.d.cts"
+    },
+    "./anyone.d.ts": "./types/anyone.d.ts",
+    "./types/*": "./types/*",
+    "./dist/*": "./dist/*"
   },
   "publishConfig": {
     "exports": {
@@ -96,13 +112,60 @@
         "require": "./dist/exports/one.cjs",
         "types": "./types/exports/one.d.cts"
       },
-      "./*": "./*",
+      "./*": {
+        "default": "./*",
+        "types": "./types/anyone.d.cts"
+      },
       ".": {
         "import": "./dist/anyone.mjs",
         "require": "./dist/anyone.cjs",
         "types": "./types/anyone.d.cts"
       },
-      "./package.json": "./package.json"
+      "./package.json": "./package.json",
+      "./all-8-fac2En": {
+        "default": "./types/all-8-fac2En.d.mts",
+        "types": "./types/all-8-fac2En.d.mts"
+      },
+      "./all-DT3n67Q2": {
+        "default": "./types/all-DT3n67Q2.d.cts",
+        "types": "./types/all-DT3n67Q2.d.cts"
+      },
+      "./any-BDnUW0EC": {
+        "default": "./types/any-BDnUW0EC.d.mts",
+        "types": "./types/any-BDnUW0EC.d.mts"
+      },
+      "./any-BMwz5-AB": {
+        "default": "./types/any-BMwz5-AB.d.cts",
+        "types": "./types/any-BMwz5-AB.d.cts"
+      },
+      "./none-CKjw9Aoz": {
+        "default": "./types/none-CKjw9Aoz.d.mts",
+        "types": "./types/none-CKjw9Aoz.d.mts"
+      },
+      "./none-D0Wo1a6R": {
+        "default": "./types/none-D0Wo1a6R.d.cts",
+        "types": "./types/none-D0Wo1a6R.d.cts"
+      },
+      "./one-BuVF-m86": {
+        "default": "./types/one-BuVF-m86.d.cts",
+        "types": "./types/one-BuVF-m86.d.cts"
+      },
+      "./one-PuTrzIUg": {
+        "default": "./types/one-PuTrzIUg.d.mts",
+        "types": "./types/one-PuTrzIUg.d.mts"
+      },
+      "./anyone.d.ts": {
+        "default": "./types/anyone.d.ts",
+        "types": "./types/anyone.d.cts"
+      },
+      "./types/*": {
+        "default": "./types/*",
+        "types": "./types/anyone.d.cts"
+      },
+      "./dist/*": {
+        "default": "./dist/*",
+        "types": "./types/anyone.d.cts"
+      }
     }
   }
 }

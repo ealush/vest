@@ -1,9 +1,9 @@
 import { isNotNullish } from 'vest-utils';
 import { TIsolate, Walker } from 'vestjs-runtime';
 
-import { TIsolateTest } from 'IsolateTest';
-import { TFieldName } from 'SuiteResultTypes';
-import { FocusSelectors } from 'focused';
+import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
+import { TFieldName } from '../../suiteResult/SuiteResultTypes';
+import { FocusSelectors } from './focused';
 
 /**
  * Checks if context has included tests

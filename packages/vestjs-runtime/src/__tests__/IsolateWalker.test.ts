@@ -1,4 +1,4 @@
-import { walk, reduce, findAll } from 'IsolateWalker';
+import { walk, reduce, findAll } from '../IsolateWalker';
 import { describe, it, expect, beforeEach } from 'vitest'; // import { TIsolate } from 'Isolate';
 
 type WalkedNode = TIsolate<{ id: string }>;

@@ -1,12 +1,12 @@
-import { TTestSuite } from 'TVestMock';
+import { TTestSuite } from '../../../testUtils/TVestMock';
 import { describe, it, expect, beforeEach, test } from 'vitest';
 
 import { dummyTest } from '../../../testUtils/testDummy';
 
-import { Modes } from 'Modes';
-import { SuiteResult } from 'SuiteResultTypes';
-import { create, group } from 'vest';
-import * as vest from 'vest';
+import { Modes } from '../../../hooks/optional/Modes';
+import { SuiteResult } from '../../SuiteResultTypes';
+import { create, group } from '../../../vest';
+import * as vest from '../../../vest';
 
 describe('collectFailureMessages', () => {
   let suite: TTestSuite;

@@ -1,12 +1,12 @@
 import { isPositive } from 'vest-utils';
 
-import { countKeyBySeverity, Severity } from 'Severity';
+import { countKeyBySeverity, Severity } from '../Severity';
 import {
   FailureMessages,
   TestsContainer,
   TFieldName,
   TGroupName,
-} from 'SuiteResultTypes';
+} from '../SuiteResultTypes';
 
 // calls collectAll or getByFieldName depending on whether fieldName is provided
 

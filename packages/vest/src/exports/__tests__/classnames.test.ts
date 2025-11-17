@@ -3,8 +3,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { dummyTest } from '../../testUtils/testDummy';
 import classnames from '../classnames';
 
-import { Modes } from 'Modes';
-import * as vest from 'vest';
+import { Modes } from '../../hooks/optional/Modes';
+import * as vest from '../../vest';
 
 describe('Utility: classnames', () => {
   describe('When called without a vest result object', () => {

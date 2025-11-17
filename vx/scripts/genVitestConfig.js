@@ -3,12 +3,9 @@ const fs = require('fs');
 const exec = require('vx/exec');
 const logger = require('vx/logger');
 const opts = require('vx/opts');
-const packageNames = require('vx/packageNames');
-const packageList = require('vx/util/packageList');
-const { genPathsPerPackage } = require('vx/util/pathsPerPackage');
 const vxPath = require('vx/vxPath');
 
-const VITEST_CONFIG_PATH = 'vx/config/vitest/customMatchers.ts';
+const VITEST_CONFIG_PATH = 'vx/config/vitest';
 
 /**
  * Generates vitest configuration files for the workspace and each package.
@@ -18,50 +15,9 @@ module.exports = function genVitestConfig() {
   logger.info('Generating vitest.config.ts files...');
 
   mainConfig();
-  packageNames.list.forEach(packageName => {
-    perPackageConfig(packageName);
-  });
 
   logger.info('👌 Done generating vitest.config files.\n');
 };
-
-/**
- * Writes a per-package vitest config when content changed.
- * @param {string} packageName Target package name.
- */
-function perPackageConfig(packageName) {
-  const configPath = vxPath.packageVitestConfig(packageName);
-
-  let existingContent = '';
-
-  if (fs.existsSync(configPath)) {
-    existingContent = fs.readFileSync(configPath, 'utf8');
-  }
-
-  /**
-   * @type {Record<string, string>} alias // { 'moduleName': './path/to/moduleName' }
-   */
-  const allPaths = genPathsPerPackage(packageName, { addPathToArray: false });
-
-  const alias = Object.entries(allPaths)
-    .map(([name, path]) => {
-      // is name one word or multiple words (has -)?
-      const nameToUse = name.match(/[-@.]/) ? `'${name}'` : name;
-      return `${nameToUse}: resolve(__dirname, '${path.slice(2)}')`;
-    })
-    .join(',\n      ');
-
-  const next = genConfig(alias);
-
-  if (existingContent === next) {
-    logger.log(`✅ ${packageName} vitest.config is up to date. Skipping.`);
-    return;
-  }
-
-  logger.log(`📝 Writing vitest.config file for ${packageName}`);
-
-  fs.writeFileSync(configPath, next, 'utf8');
-}
 
 /**
  * Writes the top-level vitest configuration when content changed.
@@ -93,7 +49,7 @@ function mainConfig() {
  * @returns {string} Serialized config source.
  */
 function mainConfigTemplate() {
-  return `import tsconfigPaths from 'vite-tsconfig-paths';
+  return `;
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -103,36 +59,7 @@ export default defineConfig({
     setupFiles: ['${VITEST_CONFIG_PATH}/customMatchers.ts'],
   },
   root: __dirname,
-  plugins: [
-    tsconfigPaths({
-      loose: true,
-      projects: ${JSON.stringify(packageList.names.map(p => `${opts.dir.PACKAGES}/${p}`))},
-    }),
-  ],
+  plugins: [],
 });
 `;
-}
-
-/**
- * Template for per-package vitest config files.
- * @param {string} [alias=''] Alias map content for Vite resolve.
- * @returns {string} Serialized config source.
- */
-function genConfig(alias = {}) {
-  return `import { defineConfig } from 'vitest/config';
-import { resolve } from 'path';
-
-export default defineConfig({
-  test: {
-    globals: true,
-    include: ['./**/__tests__/*.test.ts'],
-    setupFiles: [resolve(__dirname, '../../', '${VITEST_CONFIG_PATH}')],
-  },
-  root: __dirname,
-  resolve: {
-    alias: {
-      ${alias}
-    }
-  },
-});`;
 }

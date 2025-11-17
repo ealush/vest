@@ -1,9 +1,9 @@
 import { defaultTo, isEmpty, Maybe, assign } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
-import { TIsolateSuite } from 'IsolateSuite';
-import { TIsolateTest } from 'IsolateTest';
-import { countKeyBySeverity, Severity } from 'Severity';
+import { TIsolateSuite } from '../../core/isolate/IsolateSuite/IsolateSuite';
+import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
+import { countKeyBySeverity, Severity } from '../Severity';
 import {
   CommonSummaryProperties,
   Groups,
@@ -13,14 +13,14 @@ import {
   Tests,
   TFieldName,
   TGroupName,
-} from 'SuiteResultTypes';
-import { SummaryFailure } from 'SummaryFailure';
-import { isVestIsolate } from 'VestIsolateType';
-import { VestTest } from 'VestTest';
+} from '../SuiteResultTypes';
+import { SummaryFailure } from '../SummaryFailure';
+import { isVestIsolate } from '../../core/isolate/VestIsolateType';
+import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
 import {
   useSetValidProperty,
   useSetValidPropertyImpl,
-} from 'useSetValidProperty';
+} from './useSetValidProperty';
 
 export function useProduceSuiteSummary<
   F extends TFieldName,

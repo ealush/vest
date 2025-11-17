@@ -1,6 +1,6 @@
 import { DynamicValue, OneOrMoreOf } from 'vest-utils';
 
-import { TFieldName } from 'SuiteResultTypes';
+import { TFieldName } from '../../suiteResult/SuiteResultTypes';
 
 export type OptionalFields = Record<string, OptionalFieldDeclaration>;
 

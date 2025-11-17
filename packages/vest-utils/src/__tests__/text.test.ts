@@ -1,4 +1,4 @@
-import { text } from 'text';
+import { text } from '../text';
 import { describe, it, expect } from 'vitest';
 
 describe('text', () => {

@@ -1,4 +1,4 @@
-import { isUndefined } from 'isUndefined';
+import { isUndefined } from '../isUndefined';
 import { describe, it, expect } from 'vitest';
 
 describe('Tests isUndefined rule', () => {

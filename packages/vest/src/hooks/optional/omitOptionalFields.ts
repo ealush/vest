@@ -1,10 +1,13 @@
 import { isEmpty, dynamicValue } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
-import { SuiteOptionalFields, TIsolateSuite } from 'IsolateSuite';
-import { TIsolateTest } from 'IsolateTest';
-import { TestWalker } from 'TestWalker';
-import { VestTest } from 'VestTest';
+import {
+  SuiteOptionalFields,
+  TIsolateSuite,
+} from '../../core/isolate/IsolateSuite/IsolateSuite';
+import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
+import { TestWalker } from '../../core/isolate/IsolateTest/TestWalker';
+import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
 
 /**
  * This module gets triggered once the suite is done running its sync tests.

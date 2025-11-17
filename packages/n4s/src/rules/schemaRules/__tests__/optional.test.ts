@@ -1,4 +1,4 @@
-import { enforce } from 'n4s';
+import { enforce } from '../../../n4s';
 import { describe, it, expect } from 'vitest';
 
 // schema combinators are accessed via enforce

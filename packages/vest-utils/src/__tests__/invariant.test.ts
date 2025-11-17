@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { invariant } from 'vest-utils';
+import { invariant } from '../vest-utils';
 
 describe('invariant', () => {
   it('should throw an error when condition is false', () => {

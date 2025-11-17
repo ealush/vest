@@ -1,4 +1,4 @@
-import type { Predicate } from 'chainExecutor';
+import type { Predicate } from './chainExecutor';
 
 const lazyRegistry: Record<string, (...args: any[]) => Predicate> = {};
 

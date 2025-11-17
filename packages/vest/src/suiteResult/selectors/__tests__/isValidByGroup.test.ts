@@ -3,7 +3,7 @@ import wait from 'wait';
 
 import { TTestSuite } from '../../../testUtils/TVestMock';
 
-import { Modes } from 'Modes';
+import { Modes } from '../../../hooks/optional/Modes';
 import {
   test,
   optional,
@@ -13,8 +13,8 @@ import {
   skip,
   only,
   group,
-} from 'vest';
-import * as vest from 'vest';
+} from '../../../vest';
+import * as vest from '../../../vest';
 
 const GROUP_NAME = 'group_1';
 

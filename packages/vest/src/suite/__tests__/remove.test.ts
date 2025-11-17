@@ -1,10 +1,10 @@
-import { Modes } from 'Modes';
+import { Modes } from '../../hooks/optional/Modes';
 import { describe, it, expect } from 'vitest';
 import wait from 'wait';
 
 import { dummyTest } from '../../testUtils/testDummy';
 
-import * as vest from 'vest';
+import * as vest from '../../vest';
 
 describe('suite.remove', () => {
   it('should remove the field from the validation result', async () => {

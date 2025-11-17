@@ -6,18 +6,18 @@ import {
   Walker,
 } from 'vestjs-runtime';
 
-import { ErrorStrings } from 'ErrorStrings';
-import type { TIsolateTest } from 'IsolateTest';
+import { ErrorStrings } from '../../../errors/ErrorStrings';
+import type { TIsolateTest } from './IsolateTest';
 import {
   IsolateTestStateMachine,
   TestAction,
   TestStatus,
-} from 'IsolateTestStateMachine';
-import { TestSeverity } from 'Severity';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { VestIsolate } from 'VestIsolate';
-import { VestIsolateType } from 'VestIsolateType';
-import { TIsolateGroup } from 'group';
+} from '../../StateMachines/IsolateTestStateMachine';
+import { TestSeverity } from '../../../suiteResult/Severity';
+import { TFieldName, TGroupName } from '../../../suiteResult/SuiteResultTypes';
+import { VestIsolate } from '../VestIsolate';
+import { VestIsolateType } from '../VestIsolateType';
+import { TIsolateGroup } from '../../../isolates/group';
 
 export class VestTest extends VestIsolate {
   static stateMachine = IsolateTestStateMachine;

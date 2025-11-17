@@ -1,4 +1,4 @@
-import { createBus } from 'bus';
+import { createBus } from '../bus';
 import { describe, it, expect, vi } from 'vitest';
 
 describe('bus', () => {

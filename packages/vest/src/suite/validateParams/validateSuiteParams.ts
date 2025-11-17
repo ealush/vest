@@ -1,6 +1,6 @@
 import { CB, invariant, isFunction } from 'vest-utils';
 
-import { ErrorStrings } from 'ErrorStrings';
+import { ErrorStrings } from '../../errors/ErrorStrings';
 
 export function validateSuiteCallback<T extends CB>(
   suiteCallback: T,

@@ -1,10 +1,13 @@
 import { CB, dynamicValue } from 'vest-utils';
 
-import { LazyDraft } from 'LazyDraft';
-import { SuiteContext, useSkipped } from 'SuiteContext';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { createVestIsolate, VestIsolateType } from 'VestIsolateType';
-import { TDraftCondition } from 'getTypedMethods';
+import { LazyDraft } from '../suiteResult/selectors/LazyDraft';
+import { SuiteContext, useSkipped } from '../core/context/SuiteContext';
+import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';
+import {
+  createVestIsolate,
+  VestIsolateType,
+} from '../core/isolate/VestIsolateType';
+import { TDraftCondition } from '../suite/getTypedMethods';
 
 /**
  * Conditionally skips running tests within the callback.

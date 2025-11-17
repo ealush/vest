@@ -1,4 +1,4 @@
-import { StateMachine } from 'SimpleStateMachine';
+import { StateMachine } from '../SimpleStateMachine';
 import { describe, test, it, expect } from 'vitest';
 
 describe('SimpleStateMachine', () => {

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
-import { deferThrow } from 'vest-utils';
+import { deferThrow } from '../vest-utils';
 // @ts-ignore
 const _to = global.setTimeout;
 describe('deferThrow', () => {

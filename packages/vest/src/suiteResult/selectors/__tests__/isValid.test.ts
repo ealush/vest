@@ -1,8 +1,16 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import wait from 'wait';
 
-import { TTestSuite } from 'TVestMock';
-import { test, optional, create, skipWhen, warn, skip, only } from 'vest';
+import { TTestSuite } from '../../../testUtils/TVestMock';
+import {
+  test,
+  optional,
+  create,
+  skipWhen,
+  warn,
+  skip,
+  only,
+} from '../../../vest';
 
 describe('isValid', () => {
   describe('Before any test ran', () => {

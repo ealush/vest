@@ -1,9 +1,13 @@
 import { CB, CacheApi, TinyState, cache, seq, tinyState } from 'vest-utils';
 import { IRecociler, VestRuntime } from 'vestjs-runtime';
 
-import { TIsolateSuite } from 'IsolateSuite';
-import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
-import { reprocessTree } from 'registerTests';
+import { TIsolateSuite } from './isolate/IsolateSuite/IsolateSuite';
+import {
+  SuiteResult,
+  TFieldName,
+  TGroupName,
+} from '../suiteResult/SuiteResultTypes';
+import { reprocessTree } from './isolate/registerTests';
 
 export type DoneCallback = (res: SuiteResult<TFieldName, TGroupName>) => void;
 type FieldCallbacks = Record<string, DoneCallbacks>;

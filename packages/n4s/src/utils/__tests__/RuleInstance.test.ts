@@ -1,7 +1,7 @@
-import { RuleInstance } from 'RuleInstance';
+import { RuleInstance } from '../RuleInstance';
 import { describe, it, expect } from 'vitest';
 
-import { RuleRunReturn } from 'RuleRunReturn';
+import { RuleRunReturn } from '../RuleRunReturn';
 
 describe('RuleInstance.create', () => {
   it('wraps a rule function and returns pass/fail correctly', () => {

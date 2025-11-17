@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 
-import { TTestSuite } from 'TVestMock';
-import * as vest from 'vest';
+import { TTestSuite } from '../../testUtils/TVestMock';
+import * as vest from '../../vest';
 
 describe('Suite Selectors on Suite', () => {
   let suite: TTestSuite;

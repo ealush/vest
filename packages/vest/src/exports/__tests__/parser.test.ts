@@ -3,8 +3,8 @@ import { describe, it, expect } from 'vitest';
 import * as suiteDummy from '../../testUtils/suiteDummy';
 import { ser } from '../../testUtils/suiteDummy';
 
-import { parse } from 'parser';
-import * as vest from 'vest';
+import { parse } from '../parser';
+import * as vest from '../../vest';
 
 describe('parser.parse', () => {
   describe('parse().invalid', () => {

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import wait from 'wait';
 
-import * as vest from 'vest';
+import * as vest from '../../../../vest';
 
 describe('SuiteWalker.useHasRemainingWithTestNameMatching', () => {
   let count = 0;

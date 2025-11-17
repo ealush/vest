@@ -1,4 +1,4 @@
-import { RuleInstance } from 'RuleInstance';
+import { RuleInstance } from '../utils/RuleInstance';
 
 export interface ObjectRuleInstance extends RuleInstance<object, [object]> {}
 
@@ -12,6 +12,6 @@ export type ObjectRulesUnion =
   | KeyOfRuleInstance
   | ValueOfRuleInstance<any>;
 
-export { isKeyOf, isNotKeyOf } from 'isKeyOf';
+export { isKeyOf, isNotKeyOf } from './object/isKeyOf';
 
-export { isValueOf, isNotValueOf } from 'isValueOf';
+export { isValueOf, isNotValueOf } from './object/isValueOf';

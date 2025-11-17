@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { addToChain, registerLazyRule } from 'genRuleChain';
+import { addToChain, registerLazyRule } from '../genRuleChain';
 
 describe('genRuleChain', () => {
   it('builds a chain with a base predicate and runs it', () => {

@@ -1,6 +1,6 @@
 import { Maybe, greaterThan, isPositive } from 'vest-utils';
 
-import { Severity, SeverityCount } from 'Severity';
+import { Severity, SeverityCount } from '../Severity';
 import {
   FailureMessages,
   GetFailuresResponse,
@@ -8,10 +8,10 @@ import {
   SuiteSummary,
   TFieldName,
   TGroupName,
-} from 'SuiteResultTypes';
-import { SummaryFailure } from 'SummaryFailure';
-import { gatherFailures } from 'collectFailures';
-import matchingFieldName from 'matchingFieldName';
+} from '../SuiteResultTypes';
+import { SummaryFailure } from '../SummaryFailure';
+import { gatherFailures } from './collectFailures';
+import matchingFieldName from '../../core/test/helpers/matchingFieldName';
 
 export function bindSuiteSelectors<F extends TFieldName, G extends TGroupName>(
   get: <F extends string, G extends string>() => SuiteResult<F, G>,

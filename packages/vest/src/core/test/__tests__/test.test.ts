@@ -5,11 +5,11 @@ import { describe, it, expect, vi } from 'vitest';
 
 import { TestPromise } from '../../../testUtils/testPromise';
 
-import { ErrorStrings } from 'ErrorStrings';
-import { TIsolateTest } from 'IsolateTest';
-import { VestTest } from 'VestTest';
-import { enforce } from 'vest';
-import * as vest from 'vest';
+import { ErrorStrings } from '../../../errors/ErrorStrings';
+import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
+import { VestTest } from '../../isolate/IsolateTest/VestTest';
+import { enforce } from '../../../vest';
+import * as vest from '../../../vest';
 
 let testObject: TIsolateTest;
 

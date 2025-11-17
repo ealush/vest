@@ -1,7 +1,7 @@
-import { Modes } from 'Modes';
-import { useMode } from 'SuiteContext';
-import { WithFieldName } from 'TestTypes';
-import { hasErrorsByTestObjects } from 'hasFailuresByTestObjects';
+import { Modes } from './Modes';
+import { useMode } from '../../core/context/SuiteContext';
+import { WithFieldName } from '../../core/test/TestTypes';
+import { hasErrorsByTestObjects } from '../../suiteResult/selectors/hasFailuresByTestObjects';
 
 /**
  * Sets the current execution mode for the current suite.

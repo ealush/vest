@@ -1,8 +1,8 @@
-import type { LooseShapeValue } from 'loose';
-import type { PartialShapeValue } from 'partial';
-import type { ShapeValue } from 'shape';
+import type { LooseShapeValue } from './loose';
+import type { PartialShapeValue } from './partial';
+import type { ShapeValue } from './shape';
 
-import { RuleInstance } from 'RuleInstance';
+import { RuleInstance } from '../../utils/RuleInstance';
 
 export type InferShape<T> = T extends RuleInstance<infer R, any> ? R : never;
 

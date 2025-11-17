@@ -1,7 +1,7 @@
-import { TIsolateTest } from 'IsolateTest';
-import { TestStatus } from 'IsolateTestStateMachine';
-import { VestTest } from 'VestTest';
-import { mockIsolateTest } from 'vestMocks';
+import { TIsolateTest } from '../IsolateTest';
+import { TestStatus } from '../../../StateMachines/IsolateTestStateMachine';
+import { VestTest } from '../VestTest';
+import { mockIsolateTest } from '../../../../testUtils/vestMocks';
 import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('VestTest', () => {

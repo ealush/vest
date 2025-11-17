@@ -8,7 +8,7 @@ describe('enforce.extend', () => {
     vi.resetModules();
     vi.clearAllMocks();
 
-    ({ enforce } = await import('n4s'));
+    ({ enforce } = await import('../n4s'));
   });
 
   describe('Basic functionality', () => {

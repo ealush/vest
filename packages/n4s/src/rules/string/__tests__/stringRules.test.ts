@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { enforce } from 'n4s';
+import { enforce } from '../../../n4s';
 
 describe('stringRules', () => {
   it('should return true when all rules pass', () => {

@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { longerThan } from 'longerThan';
+import { longerThan } from '../longerThan';
 import { describe, it, expect } from 'vitest';
 
 describe('Tests longerThan rule', () => {

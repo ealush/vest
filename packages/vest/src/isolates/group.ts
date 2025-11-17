@@ -1,12 +1,12 @@
 import { CB } from 'vest-utils';
 import { TIsolate } from 'vestjs-runtime';
 
-import { TGroupName } from 'SuiteResultTypes';
+import { TGroupName } from '../suiteResult/SuiteResultTypes';
 import {
   createVestIsolate,
   TVestIsolate,
   VestIsolateType,
-} from 'VestIsolateType';
+} from '../core/isolate/VestIsolateType';
 
 export function group<G extends TGroupName>(
   groupName: G,

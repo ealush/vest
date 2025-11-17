@@ -1,6 +1,6 @@
 import { Nullable, invariant, isNullish } from 'vest-utils';
 
-import { TIsolate } from 'Isolate';
+import { TIsolate } from './Isolate';
 
 export class IsolateMutator {
   static setParent(isolate: TIsolate, parent: Nullable<TIsolate>): TIsolate {

@@ -1,8 +1,11 @@
-import { createChainBuilder, type RuleFunctions } from 'chainBuilder';
+import {
+  createChainBuilder,
+  type RuleFunctions,
+} from './chainBuilder/chainBuilder';
 
-import { RuleInstance } from 'RuleInstance';
-import { type Predicate } from 'chainExecutor';
-import { registerLazyRule } from 'lazyRegistry';
+import { RuleInstance } from '../utils/RuleInstance';
+import { type Predicate } from './chainBuilder/chainExecutor';
+import { registerLazyRule } from './chainBuilder/lazyRegistry';
 
 export { registerLazyRule };
 

@@ -3,8 +3,11 @@ import {
   SuiteSummary,
   TFieldName,
   TGroupName,
-} from 'SuiteResultTypes';
-import { constructSuiteResultObject, useCreateSuiteResult } from 'suiteResult';
+} from '../SuiteResultTypes';
+import {
+  constructSuiteResultObject,
+  useCreateSuiteResult,
+} from '../suiteResult';
 
 // @vx-allow use-use
 export function LazyDraft<

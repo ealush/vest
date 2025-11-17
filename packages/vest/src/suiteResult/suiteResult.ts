@@ -1,16 +1,16 @@
 import { assign, freezeAssign } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
-import { TIsolateSuite } from 'IsolateSuite';
-import { useSuiteResultCache } from 'Runtime';
+import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
+import { useSuiteResultCache } from '../core/Runtime';
 import {
   SuiteResult,
   SuiteSummary,
   TFieldName,
   TGroupName,
-} from 'SuiteResultTypes';
-import { suiteSelectors } from 'suiteSelectors';
-import { useProduceSuiteSummary } from 'useProduceSuiteSummary';
+} from './SuiteResultTypes';
+import { suiteSelectors } from './selectors/suiteSelectors';
+import { useProduceSuiteSummary } from './selectors/useProduceSuiteSummary';
 
 export function useCreateSuiteResult<
   F extends TFieldName,

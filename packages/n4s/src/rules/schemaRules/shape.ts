@@ -1,8 +1,8 @@
-import { loose } from 'loose';
+import { loose } from './loose';
 import { hasOwnProperty } from 'vest-utils';
 
-import type { RuleInstance } from 'RuleInstance';
-import { RuleRunReturn } from 'RuleRunReturn';
+import type { RuleInstance } from '../../utils/RuleInstance';
+import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 /**
  * Validates that an object matches a schema exactly - all keys required, no extra keys allowed.

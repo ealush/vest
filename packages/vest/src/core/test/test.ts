@@ -1,11 +1,11 @@
 import { invariant, isFunction, isStringValue, text } from 'vest-utils';
 import { Bus, IsolateKey } from 'vestjs-runtime';
 
-import { ErrorStrings } from 'ErrorStrings';
-import { IsolateTest, TIsolateTest } from 'IsolateTest';
-import { TFieldName } from 'SuiteResultTypes';
-import { TestFn } from 'TestTypes';
-import { useAttemptRunTest } from 'runTest';
+import { ErrorStrings } from '../../errors/ErrorStrings';
+import { IsolateTest, TIsolateTest } from '../isolate/IsolateTest/IsolateTest';
+import { TFieldName } from '../../suiteResult/SuiteResultTypes';
+import { TestFn } from './TestTypes';
+import { useAttemptRunTest } from './testLevelFlowControl/runTest';
 
 function vestTest<F extends TFieldName>(
   fieldName: F,

@@ -1,7 +1,11 @@
 import { assign } from 'vest-utils';
 
-import { DoneCallback, useDoneCallbacks, useFieldCallbacks } from 'Runtime';
-import { TFieldName } from 'SuiteResultTypes';
+import {
+  DoneCallback,
+  useDoneCallbacks,
+  useFieldCallbacks,
+} from '../../core/Runtime';
+import { TFieldName } from '../../suiteResult/SuiteResultTypes';
 
 export function useDeferDoneCallback(
   doneCallback: DoneCallback,

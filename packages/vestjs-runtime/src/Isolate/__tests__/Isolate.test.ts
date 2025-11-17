@@ -1,9 +1,9 @@
 import { CB } from 'vest-utils';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-import { TIsolate, Isolate } from 'Isolate';
-import { StateRefType, useAvailableRoot } from 'VestRuntime';
-import { IsolateMutator, VestRuntime } from 'vestjs-runtime';
+import { TIsolate, Isolate } from '../Isolate';
+import { StateRefType, useAvailableRoot } from '../../VestRuntime';
+import { IsolateMutator, VestRuntime } from '../../vestjs-runtime';
 
 enum IsolateType {
   Isolate = 'Isolate',

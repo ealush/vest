@@ -1,7 +1,11 @@
 import { isFunction } from 'vest-utils';
 
-import { SuiteSummary, TFieldName, TGroupName } from 'SuiteResultTypes';
-import { ParsedVestObject, parse } from 'parser';
+import {
+  SuiteSummary,
+  TFieldName,
+  TGroupName,
+} from '../suiteResult/SuiteResultTypes';
+import { ParsedVestObject, parse } from './parser';
 
 /**
  * Creates a function that returns class names that match the validation result

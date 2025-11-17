@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import { defaultTo } from 'vest-utils';
+import { defaultTo } from '../vest-utils';
 
 describe('defaultTo', () => {
   describe('When value is a function', () => {

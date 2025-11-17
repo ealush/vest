@@ -1,6 +1,6 @@
 import { isNumeric } from 'vest-utils';
 
-import { toNumber } from 'toNumber';
+import { toNumber } from '../../utils/toNumber';
 
 /**
  * Validates that a given value is an odd number

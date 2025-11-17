@@ -1,5 +1,5 @@
-import dynamicValue from 'dynamicValue';
-import { DynamicValue } from 'utilityTypes';
+import dynamicValue from './dynamicValue';
+import { DynamicValue } from './utilityTypes';
 
 export function createTinyState<S>(
   initialValue: SetValueInput<S>,

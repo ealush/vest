@@ -4,9 +4,9 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { TTestSuite } from '../../../testUtils/TVestMock';
 import { dummyTest } from '../../../testUtils/testDummy';
 
-import { TIsolateTest } from 'IsolateTest';
-import { Modes } from 'Modes';
-import * as vest from 'vest';
+import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
+import { Modes } from '../../../hooks/optional/Modes';
+import * as vest from '../../../vest';
 
 vi.mock('vest-utils', async () => {
   const vu = await vi.importActual('vest-utils');

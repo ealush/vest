@@ -1,11 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
+import { Modes } from '../../../hooks/optional/Modes';
+import { TTestSuite } from '../../../testUtils/TVestMock';
 import { dummyTest } from '../../../testUtils/testDummy';
-
-import { Modes } from 'Modes';
-import { TTestSuite } from 'TVestMock';
-import { create, group } from 'vest';
-import * as vest from 'vest';
+import { create, group } from '../../../vest';
+import * as vest from '../../../vest';
 
 describe('SuiteResult', () => {
   let suite: TTestSuite;

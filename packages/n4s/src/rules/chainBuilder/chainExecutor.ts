@@ -1,4 +1,4 @@
-import { RuleRunReturn } from 'RuleRunReturn';
+import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 export type Predicate = (value: any) => boolean | RuleRunReturn<any>;
 

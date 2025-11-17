@@ -41,6 +41,7 @@
     "tsdown": "^0.16.4",
     "tslib": "^2.6.3",
     "typescript": "^4.9.5",
+    "vitest": "^4.0.10",
     "vx": "workspace:*",
     "wait": "^0.4.2"
   },

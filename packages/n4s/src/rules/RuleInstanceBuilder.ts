@@ -1,6 +1,6 @@
 import type { DropFirst } from 'vest-utils';
 
-import type { RuleInstance } from 'RuleInstance';
+import type { RuleInstance } from '../utils/RuleInstance';
 
 /**
  * Generic type utility to build RuleInstance interfaces with chaining methods.

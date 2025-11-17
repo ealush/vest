@@ -17,7 +17,10 @@ function build(options = {}) {
   }
 
   // Otherwise build the whole workspace in one go.
-  exec(['./node_modules/.bin/tsdown --config tsdown.workspace.ts', options.cliOptions]);
+  exec([
+    './node_modules/.bin/tsdown --config tsdown.workspace.ts',
+    options.cliOptions,
+  ]);
 }
 
 module.exports = build;

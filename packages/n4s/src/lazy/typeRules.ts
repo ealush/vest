@@ -1,10 +1,10 @@
-import type { ArrayRuleInstance } from 'arrayRules';
-import * as arrayRules from 'arrayRules';
-import { isBoolean, type BooleanRuleInstance } from 'booleanRules';
-import * as booleanRules from 'booleanRules';
-import { addToChain } from 'genRuleChain';
-import { isArray } from 'isArrayRule';
-import { isNumeric } from 'isNumeric';
+import type { ArrayRuleInstance } from '../rules/arrayRules';
+import * as arrayRules from '../rules/arrayRules';
+import { isBoolean, type BooleanRuleInstance } from '../rules/booleanRules';
+import * as booleanRules from '../rules/booleanRules';
+import { addToChain } from '../rules/genRuleChain';
+import { isArray } from '../rules/array/isArrayRule';
+import { isNumeric } from '../rules/numeric/isNumeric';
 import {
   isNull,
   isUndefined,
@@ -12,16 +12,16 @@ import {
   type NullRuleInstance,
   type UndefinedRuleInstance,
   type NullishRuleInstance,
-} from 'nullishRules';
+} from '../rules/nullishRules';
 import {
   isNumber,
   type NumberRuleInstance,
   type NumericRuleInstance,
-} from 'numberRules';
-import * as numberRules from 'numberRules';
-import * as numericRules from 'numberRules';
-import { isString, type StringRuleInstance } from 'stringRules';
-import * as stringRules from 'stringRules';
+} from '../rules/numberRules';
+import * as numberRules from '../rules/numberRules';
+import * as numericRules from '../rules/numberRules';
+import { isString, type StringRuleInstance } from '../rules/stringRules';
+import * as stringRules from '../rules/stringRules';
 
 export const typeRules = {
   isArray: <T = any>(): ArrayRuleInstance<T> =>

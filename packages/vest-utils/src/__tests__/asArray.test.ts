@@ -1,4 +1,4 @@
-import asArray from 'asArray';
+import asArray from '../asArray';
 import { describe, it, expect } from 'vitest';
 
 describe('asArray', () => {

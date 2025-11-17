@@ -1,17 +1,17 @@
 /**
  * Compound rules type declarations.
  */
-import 'allOf';
-import 'anyOf';
-import 'noneOf';
-import 'oneOf';
+import './allOf';
+import './anyOf';
+import './noneOf';
+import './oneOf';
 
 import type {
   AllOfRuleInstance,
   AnyOfRuleInstance,
   NoneOfRuleInstance,
   OneOfRuleInstance,
-} from 'compoundRules';
+} from './compoundRules';
 
 /**
  * Type mappings for compound rule lazy API return types

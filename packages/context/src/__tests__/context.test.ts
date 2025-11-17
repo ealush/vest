@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { createContext, CtxApi } from 'context';
+import { createContext, CtxApi } from '../context';
 
 describe('Context', () => {
   let ctx: CtxApi<any>;

@@ -1,4 +1,4 @@
-import { CB } from 'utilityTypes';
+import { CB } from './utilityTypes';
 
 const STATE_WILD_CARD = '*';
 type TStateWildCard = typeof STATE_WILD_CARD;

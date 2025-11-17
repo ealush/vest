@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { compose, enforce } from 'n4s';
+import { compose, enforce } from '../n4s';
 
 describe('compose() - Rule Composition', () => {
   describe('Basic composition', () => {

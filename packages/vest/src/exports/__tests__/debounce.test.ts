@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
 import wait from 'wait';
 
-import { TestFnPayload } from 'TestTypes';
-import debounce from 'debounce';
-import * as vest from 'vest';
+import { TestFnPayload } from '../../core/test/TestTypes';
+import debounce from '../debounce';
+import * as vest from '../../vest';
 
 describe('debounce', () => {
   describe('Sync test', () => {

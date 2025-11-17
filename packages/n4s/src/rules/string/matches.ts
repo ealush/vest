@@ -1,4 +1,4 @@
-import { toRegExp } from 'regex';
+import { toRegExp } from '../../utils/regex';
 
 // Checks if string matches the given regular expression pattern
 export function matches(str: string, regex: RegExp | string): boolean {

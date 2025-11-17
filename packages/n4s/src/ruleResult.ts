@@ -1,7 +1,7 @@
 import { dynamicValue, invariant, isNullish, StringObject } from 'vest-utils';
 import type { Stringable } from 'vest-utils';
 
-import * as booleanRules from 'booleanRules';
+import * as booleanRules from './rules/booleanRules';
 
 export type RuleValue = unknown;
 export type Args = any[];

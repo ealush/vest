@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforce } from 'n4s';
-import 'isURL';
+import { enforce } from '../../n4s';
+import '../isURL';
 
 describe('isURL', () => {
   describe('Type compatibility', () => {

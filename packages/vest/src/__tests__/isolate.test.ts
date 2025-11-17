@@ -2,8 +2,8 @@ import { CB, deferThrow } from 'vest-utils';
 import { Isolate } from 'vestjs-runtime';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { dummyTest } from 'testDummy';
-import * as vest from 'vest';
+import { dummyTest } from '../testUtils/testDummy';
+import * as vest from '../vest';
 
 vi.mock('vest-utils', async () => {
   const vu = await vi.importActual('vest-utils');

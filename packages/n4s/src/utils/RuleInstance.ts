@@ -1,4 +1,4 @@
-import { RuleRunReturn } from 'RuleRunReturn';
+import { RuleRunReturn } from './RuleRunReturn';
 
 /**
  * Represents a lazy validation rule that can be executed with a value.

@@ -1,4 +1,4 @@
-import { createTinyState } from 'tinyState';
+import { createTinyState } from '../tinyState';
 import { describe, it, expect } from 'vitest';
 
 describe('tinyTest', () => {

@@ -1,9 +1,9 @@
 import { CB, Nullable } from 'vest-utils';
 
-import { TIsolateSuite } from 'IsolateSuite';
-import { Severity } from 'Severity';
-import { SummaryFailure } from 'SummaryFailure';
-import { SuiteSelectors } from 'suiteSelectors';
+import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
+import { Severity } from './Severity';
+import { SummaryFailure } from './SummaryFailure';
+import { SuiteSelectors } from './selectors/suiteSelectors';
 
 export class SummaryBase {
   public errorCount = 0;

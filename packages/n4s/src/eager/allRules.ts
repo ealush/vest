@@ -1,17 +1,17 @@
-import * as arrayRules from 'arrayRules';
-import * as booleanRules from 'booleanRules';
-import * as commonComparison from 'commonComparison';
-import * as commonContainer from 'commonContainer';
-import * as commonLength from 'commonLength';
-import * as compoundRules from 'compoundRules';
-import * as generalRules from 'generalRules';
-import { isNumeric } from 'isNumeric';
-import * as nullishRules from 'nullishRules';
-import * as numberRules from 'numberRules';
-import * as numericRules from 'numberRules';
-import * as objectRules from 'objectRules';
-import * as schemaRules from 'schemaRules';
-import * as stringRules from 'stringRules';
+import * as arrayRules from '../rules/arrayRules';
+import * as booleanRules from '../rules/booleanRules';
+import * as commonComparison from '../rules/commonComparison';
+import * as commonContainer from '../rules/commonContainer';
+import * as commonLength from '../rules/commonLength';
+import * as compoundRules from '../rules/compoundRules/compoundRules';
+import * as generalRules from '../rules/generalRules';
+import { isNumeric } from '../rules/numeric/isNumeric';
+import * as nullishRules from '../rules/nullishRules';
+import * as numberRules from '../rules/numberRules';
+import * as numericRules from '../rules/numberRules';
+import * as objectRules from '../rules/objectRules';
+import * as schemaRules from '../rules/schemaRules/schemaRules';
+import * as stringRules from '../rules/stringRules';
 
 export const allRules = {
   ...arrayRules,

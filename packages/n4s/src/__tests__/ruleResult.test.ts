@@ -5,7 +5,7 @@ import {
   enforceMessage,
   validateResult,
   type RuleDetailedResult,
-} from 'ruleResult';
+} from '../ruleResult';
 
 describe('ruleResult helpers', () => {
   describe('transformResult', () => {

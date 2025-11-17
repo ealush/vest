@@ -1,5 +1,5 @@
-import { RuleInstance } from 'RuleInstance';
-import { toNumber } from 'toNumber';
+import { RuleInstance } from '../../utils/RuleInstance';
+import { toNumber } from '../../utils/toNumber';
 
 export interface NaNRuleInstance extends RuleInstance<number | string, [any]> {}
 

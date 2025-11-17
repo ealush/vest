@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars, @typescript-eslint/ban-ts-comment */
 import { describe, expect, it } from 'vitest';
 
-import { enforce } from 'n4s';
+import { enforce } from '../../n4s';
 
 // This test suite verifies that compound and schema rule types are properly defined
 // and can be used for type inference via the .infer property

@@ -1,4 +1,4 @@
-import { ErrorStrings } from 'ErrorStrings';
+import { ErrorStrings } from './errors/ErrorStrings';
 import {
   Maybe,
   Nullable,
@@ -7,11 +7,11 @@ import {
   dynamicValue,
 } from 'vest-utils';
 
-import { type TIsolate } from 'Isolate';
-import { IsolateInspector } from 'IsolateInspector';
-import { IsolateMutator } from 'IsolateMutator';
-import { isSameIsolateType } from 'IsolateSelectors';
-import * as VestRuntime from 'VestRuntime';
+import { type TIsolate } from './Isolate/Isolate';
+import { IsolateInspector } from './Isolate/IsolateInspector';
+import { IsolateMutator } from './Isolate/IsolateMutator';
+import { isSameIsolateType } from './Isolate/IsolateSelectors';
+import * as VestRuntime from './VestRuntime';
 // import { isSameIsolateType } from 'IsolateSelectors';
 
 // I would rather not use `any` here, but instead use `Isolate`.

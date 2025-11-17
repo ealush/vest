@@ -1,11 +1,11 @@
-import { useBus } from 'Bus';
-import { Isolate, TIsolate } from 'Isolate';
-import { RuntimeEvents } from 'RuntimeEvents';
+import { useBus } from '../../Bus';
+import { Isolate, TIsolate } from '../Isolate';
+import { RuntimeEvents } from '../../RuntimeEvents';
 import { CB } from 'vest-utils';
 import { describe, vi, it, expect, test } from 'vitest';
 import wait from 'wait';
 
-import { VestRuntime } from 'vestjs-runtime';
+import { VestRuntime } from '../../vestjs-runtime';
 
 describe('AsyncIsolate', () => {
   test('It should resolve async isolate into the parent', () => {

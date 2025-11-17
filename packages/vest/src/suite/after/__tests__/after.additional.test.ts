@@ -3,7 +3,7 @@ import wait from 'wait';
 
 import { dummyTest } from '../../../testUtils/testDummy';
 
-import * as vest from 'vest';
+import * as vest from '../../../vest';
 
 describe('after - additional test coverage', () => {
   describe('Chaining multiple after callbacks', () => {

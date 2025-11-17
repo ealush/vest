@@ -6,7 +6,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars, @typescript-eslint/ban-ts-comment */
 import { describe, it, expect } from 'vitest';
 
-import { enforce } from 'n4s';
+import { enforce } from '../n4s';
 
 // Wrap in a function so runtime won't execute; TypeScript still checks it.
 function typeChecks() {

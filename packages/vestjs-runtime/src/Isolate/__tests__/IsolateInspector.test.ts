@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-import { TIsolate } from 'Isolate';
-import { IsolateInspector } from 'IsolateInspector';
+import { TIsolate } from '../Isolate';
+import { IsolateInspector } from '../IsolateInspector';
 
 describe('IsolateInspector', () => {
   describe('at', () => {

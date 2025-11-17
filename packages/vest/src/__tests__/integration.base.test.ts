@@ -1,6 +1,6 @@
 import { describe, test, beforeEach, it, expect, vi } from 'vitest';
 
-import * as vest from 'vest';
+import * as vest from '../vest';
 
 const genSuite = () =>
   vest.create(() => {

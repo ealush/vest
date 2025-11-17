@@ -1,10 +1,10 @@
 import { invariant } from 'vest-utils';
 import { Bus, RuntimeEvents, TIsolate } from 'vestjs-runtime';
 
-import { TIsolateTest } from 'IsolateTest';
-import { VestIsolate } from 'VestIsolate';
-import { isVestIsolate } from 'VestIsolateType';
-import { VestTest } from 'VestTest';
+import { TIsolateTest } from './IsolateTest/IsolateTest';
+import { VestIsolate } from './VestIsolate';
+import { isVestIsolate } from './VestIsolateType';
+import { VestTest } from './IsolateTest/VestTest';
 
 export function registerTestNodes(isolate: TIsolate) {
   const tests: TIsolateTest[] = [];

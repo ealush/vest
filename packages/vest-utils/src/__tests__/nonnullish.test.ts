@@ -1,4 +1,4 @@
-import { nonnullish } from 'nonnullish';
+import { nonnullish } from '../nonnullish';
 import { describe, it, expect } from 'vitest';
 
 describe('nonnullish', () => {

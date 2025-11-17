@@ -1,12 +1,12 @@
 import { Nullable, dynamicValue } from 'vest-utils';
 import { TIsolate, Walker } from 'vestjs-runtime';
 
-import { TIsolateTest } from 'IsolateTest';
-import { useInclusion } from 'SuiteContext';
-import { VestTest } from 'VestTest';
-import { FocusSelectors, TIsolateFocused } from 'focused';
-import { useIsExcludedIndividually } from 'skipWhen';
-import { useHasOnliedTests } from 'useHasOnliedTests';
+import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
+import { useInclusion } from '../../core/context/SuiteContext';
+import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
+import { FocusSelectors, TIsolateFocused } from './focused';
+import { useIsExcludedIndividually } from '../../isolates/skipWhen';
+import { useHasOnliedTests } from './useHasOnliedTests';
 //Checks whether a certain test profile excluded by any of the exclusion groups.
 
 function useClosestMatchingFocus(

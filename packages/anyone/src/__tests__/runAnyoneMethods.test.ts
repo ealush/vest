@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { FALSY_VALUES, TRUTHY_VALUES } from './anyoneTestValues';
 
-import run from 'runAnyoneMethods';
+import run from '../runner/runAnyoneMethods';
 
 describe('lib/run', () => {
   describe('When value is falsy', () => {

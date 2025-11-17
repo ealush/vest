@@ -1,4 +1,4 @@
-import { isArray } from 'isArrayValue';
+import { isArray } from '../isArrayValue';
 import { describe, it, expect } from 'vitest';
 
 describe('Tests isArray rule', () => {

@@ -3,9 +3,9 @@ import wait from 'wait';
 
 import { TestPromise } from '../testUtils/testPromise';
 
-import { Modes } from 'Modes';
-import { TTestSuite } from 'TVestMock';
-import * as vest from 'vest';
+import { Modes } from '../hooks/optional/Modes';
+import { TTestSuite } from '../testUtils/TVestMock';
+import * as vest from '../vest';
 
 function genSuite() {
   return vest.create(() => {

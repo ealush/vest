@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { mapFirst } from 'vest-utils';
+import { mapFirst } from '../vest-utils';
 
 describe('mapFirst', () => {
   it('should return the broken out result', () => {

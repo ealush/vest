@@ -1,4 +1,4 @@
-import { isBlank } from 'isBlank';
+import { isBlank } from '../general/isBlank';
 import { isStringValue } from 'vest-utils';
 
 // Checks if string contains only whitespace characters

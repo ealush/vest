@@ -1,7 +1,7 @@
 import { CB } from 'vest-utils';
 import { describe, it, expect } from 'vitest';
 
-import * as vest from 'vest';
+import * as vest from '../../../vest';
 
 enum Fields {
   F1 = 'F1',

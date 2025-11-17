@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { createState } from 'vast';
+import { createState } from '../vast';
 
 let state = createState();
 

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import { dynamicValue } from 'vest-utils';
+import { dynamicValue } from '../vest-utils';
 
 describe('dynamicValue', () => {
   describe('When not a function', () => {

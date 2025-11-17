@@ -3,27 +3,27 @@ import {
   registerTestNodes,
   onTestStart,
   reprocessTree,
-} from 'registerTests';
+} from '../isolate/registerTests';
 import { CB, ValueOf } from 'vest-utils';
 import { Bus, RuntimeEvents, TIsolate, VestRuntime } from 'vestjs-runtime';
 
-import { Events } from 'BusEvents';
+import { Events } from './BusEvents';
 import {
   useExpireSuiteResultCache,
   useResetCallbacks,
   useResetSuite,
-} from 'Runtime';
-import { TFieldName } from 'SuiteResultTypes';
-import { SuiteWalker } from 'SuiteWalker';
-import { TestWalker } from 'TestWalker';
-import { VestIsolate } from 'VestIsolate';
-import { VestTest } from 'VestTest';
-import { useOmitOptionalFields } from 'omitOptionalFields';
+} from '../Runtime';
+import { TFieldName } from '../../suiteResult/SuiteResultTypes';
+import { SuiteWalker } from '../../suite/SuiteWalker';
+import { TestWalker } from '../isolate/IsolateTest/TestWalker';
+import { VestIsolate } from '../isolate/VestIsolate';
+import { VestTest } from '../isolate/IsolateTest/VestTest';
+import { useOmitOptionalFields } from '../../hooks/optional/omitOptionalFields';
 import {
   useRunDoneCallbacks,
   useRunFieldCallbacks,
   useRunSyncFieldCallbacks,
-} from 'runCallbacks';
+} from '../../suite/runCallbacks';
 
 // eslint-disable-next-line max-statements, max-lines-per-function
 export function useInitVestBus() {

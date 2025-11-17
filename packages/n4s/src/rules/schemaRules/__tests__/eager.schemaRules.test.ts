@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { enforce } from 'n4s';
+import { enforce } from '../../../n4s';
 
 describe('Schema Rules - Eager Notation', () => {
   describe('enforce.shape() - eager', () => {

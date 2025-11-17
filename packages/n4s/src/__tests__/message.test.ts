@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { enforce } from 'n4s';
+import { enforce } from '../n4s';
 
 describe('enforce().message() - Eager API', () => {
   describe('Basic message override', () => {

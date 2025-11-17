@@ -4,7 +4,7 @@ import {
   createVestIsolate,
   TVestIsolate,
   VestIsolateType,
-} from 'VestIsolateType';
+} from '../VestIsolateType';
 
 type TIsolateEach = TVestIsolate;
 

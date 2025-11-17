@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforce } from 'n4s';
-import 'date';
+import { enforce } from '../../n4s';
+import '../date';
 
 describe('date', () => {
   describe('Type compatibility', () => {

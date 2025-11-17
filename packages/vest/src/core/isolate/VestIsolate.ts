@@ -1,7 +1,10 @@
 import { Nullable, TStateMachineApi } from 'vest-utils';
 import { TIsolate } from 'vestjs-runtime';
 
-import { CommonStateMachine, CommonStates } from 'CommonStateMachine';
+import {
+  CommonStateMachine,
+  CommonStates,
+} from '../StateMachines/CommonStateMachine';
 
 export class VestIsolate {
   static stateMachine: TStateMachineApi = CommonStateMachine;

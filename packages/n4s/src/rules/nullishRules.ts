@@ -1,11 +1,11 @@
-import { RuleInstance } from 'RuleInstance';
+import { RuleInstance } from '../utils/RuleInstance';
 
 // Backward-compatible re-exports to avoid breaking existing imports
-export { isNull } from 'isNull';
+export { isNull } from './nullish/isNull';
 
-export { isUndefined } from 'isUndefined';
+export { isUndefined } from './nullish/isUndefined';
 
-export { isNullish } from 'isNullish';
+export { isNullish } from './nullish/isNullish';
 
 export interface NullRuleInstance extends RuleInstance<null, [null]> {}
 

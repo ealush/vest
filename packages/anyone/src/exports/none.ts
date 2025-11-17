@@ -1,6 +1,6 @@
 import { bindNot } from 'vest-utils';
 
-import run from 'runAnyoneMethods';
+import run from '../runner/runAnyoneMethods';
 
 /**
  * Checks that at none of the passed arguments evaluate to a truthy value.

@@ -1,20 +1,20 @@
 /**
  * Schema rules type declarations.
  */
-import 'isArrayOf';
-import 'loose';
-import 'optional';
-import 'partial';
-import 'shape';
+import './isArrayOf';
+import './loose';
+import './optional';
+import './partial';
+import './shape';
 
-import type { RuleInstance } from 'RuleInstance';
+import type { RuleInstance } from '../../utils/RuleInstance';
 import type {
   IsArrayOfRuleInstance,
   LooseRuleInstance,
   OptionalRuleInstance,
   PartialRuleInstance,
   ShapeRuleInstance,
-} from 'schemaRules';
+} from './schemaRules';
 
 /**
  * Type mappings for schema rule lazy API return types

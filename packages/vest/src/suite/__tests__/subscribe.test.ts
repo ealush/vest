@@ -2,8 +2,8 @@ import { enforce } from 'n4s';
 import { describe, it, expect, vi } from 'vitest';
 import wait from 'wait';
 
-import { SuiteSerializer } from 'SuiteSerializer';
-import * as vest from 'vest';
+import { SuiteSerializer } from '../../exports/SuiteSerializer';
+import * as vest from '../../vest';
 
 describe('suite.subscribe', () => {
   it('should be a function', () => {

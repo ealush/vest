@@ -1,8 +1,8 @@
 import { either } from 'vest-utils';
 
-import { TIsolateTest } from 'IsolateTest';
-import { Severity } from 'Severity';
-import { VestTest } from 'VestTest';
+import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
+import { Severity } from '../../../suiteResult/Severity';
+import { VestTest } from '../../isolate/IsolateTest/VestTest';
 
 /**
  * Checks that a given test object matches the currently specified severity level

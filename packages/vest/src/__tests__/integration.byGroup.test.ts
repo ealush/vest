@@ -3,9 +3,9 @@ import wait from 'wait';
 
 import { TTestSuite } from '../testUtils/TVestMock';
 
-import { Modes } from 'Modes';
-import { create, group, test, warn, skip, optional, only } from 'vest';
-import * as vest from 'vest';
+import { Modes } from '../hooks/optional/Modes';
+import { create, group, test, warn, skip, optional, only } from '../vest';
+import * as vest from '../vest';
 
 /**
  * Integration tests for byGroup selectors

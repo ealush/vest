@@ -1,4 +1,4 @@
-import { isNumeric } from 'isNumeric';
+import { isNumeric } from './isNumeric';
 
 export function greaterThan(
   value: number | string,

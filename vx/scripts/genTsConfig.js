@@ -4,7 +4,6 @@ const lodash = require('lodash');
 const exec = require('vx/exec');
 const logger = require('vx/logger');
 const packageNames = require('vx/packageNames');
-const { genPathsPerPackage } = require('vx/util/pathsPerPackage');
 const vxPath = require('vx/vxPath');
 
 /**
@@ -22,8 +21,7 @@ module.exports = function genTsConfig() {
   }
 
   packageNames.list.forEach(packageName => {
-    const paths = genPathsPerPackage(packageName, { addPathToArray: true });
-    const tsConfig = packageTsConfigTemplate(paths, packageName);
+    const tsConfig = packageTsConfigTemplate(packageName);
 
     const tsConfigPath = vxPath.packageTsConfig(packageName);
 
@@ -72,10 +70,9 @@ function writeTsConfig(path, tsConfig) {
 
 /**
  * Builds the per-package tsconfig template.
- * @param {Record<string, string[]>} paths Path mappings for the package.
  * @returns {object} tsconfig JSON object.
  */
-function packageTsConfigTemplate(paths = []) {
+function packageTsConfigTemplate() {
   return {
     extends: '../../tsconfig.json',
     rootDir: '.',
@@ -83,7 +80,6 @@ function packageTsConfigTemplate(paths = []) {
       declarationDir: './types',
       declarationMap: true,
       outDir: './dist',
-      paths,
     },
   };
 }
@@ -102,7 +98,6 @@ function rootTsConfigTemplate() {
       importHelpers: true,
       lib: ['esnext'],
       module: 'esnext',
-      moduleResolution: 'node',
       noEmit: true,
       noFallthroughCasesInSwitch: true,
       noImplicitAny: true,

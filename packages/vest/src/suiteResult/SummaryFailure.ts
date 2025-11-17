@@ -1,7 +1,7 @@
-import { TIsolateTest } from 'IsolateTest';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { WithFieldName } from 'TestTypes';
-import { VestTest } from 'VestTest';
+import { TIsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
+import { TFieldName, TGroupName } from './SuiteResultTypes';
+import { WithFieldName } from '../core/test/TestTypes';
+import { VestTest } from '../core/isolate/IsolateTest/VestTest';
 
 export class SummaryFailure<F extends TFieldName, G extends TGroupName>
   implements WithFieldName<F>

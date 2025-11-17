@@ -1,6 +1,6 @@
-import { BuildRuleInstance, ExtractRuleFunctions } from 'RuleInstanceBuilder';
-import { equals, notEquals } from 'commonComparison';
-import { inside, notInside } from 'commonContainer';
+import { BuildRuleInstance, ExtractRuleFunctions } from './RuleInstanceBuilder';
+import { equals, notEquals } from './commonComparison';
+import { inside, notInside } from './commonContainer';
 import {
   lengthEquals,
   lengthNotEquals,
@@ -10,16 +10,16 @@ import {
   minLength,
   shorterThan,
   shorterThanOrEquals,
-} from 'commonLength';
-import { doesNotEndWith } from 'doesNotEndWith';
-import { doesNotStartWith } from 'doesNotStartWith';
-import { endsWith } from 'endsWith';
-import { isBlankString as isBlank } from 'isBlankString';
-import { isNotBlank } from 'isNotBlank';
-import { isString } from 'isString';
-import { matches } from 'matches';
-import { notMatches } from 'notMatches';
-import { startsWith } from 'startsWith';
+} from './commonLength';
+import { doesNotEndWith } from './string/doesNotEndWith';
+import { doesNotStartWith } from './string/doesNotStartWith';
+import { endsWith } from './string/endsWith';
+import { isBlankString as isBlank } from './string/isBlankString';
+import { isNotBlank } from './string/isNotBlank';
+import { isString } from './string/isString';
+import { matches } from './string/matches';
+import { notMatches } from './string/notMatches';
+import { startsWith } from './string/startsWith';
 
 export {
   doesNotEndWith,

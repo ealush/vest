@@ -1,4 +1,4 @@
-import isPromise from 'isPromise';
+import isPromise from '../isPromise';
 import { describe, it, expect } from 'vitest';
 
 describe('isPromise', () => {

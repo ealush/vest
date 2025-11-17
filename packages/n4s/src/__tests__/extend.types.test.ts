@@ -6,7 +6,7 @@
 /* eslint-disable sort-keys, @typescript-eslint/no-namespace, @typescript-eslint/no-unused-vars, no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { enforce } from 'n4s';
+import { enforce } from '../n4s';
 
 // Declare custom rules in the n4s namespace
 declare global {

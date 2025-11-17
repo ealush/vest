@@ -1,7 +1,7 @@
 import { Maybe } from 'vest-utils';
 
-import { TIsolate } from 'Isolate';
-import { IsolateKeys } from 'IsolateKeys';
+import { TIsolate } from './Isolate';
+import { IsolateKeys } from './IsolateKeys';
 
 export function isIsolateType<I extends TIsolate>(
   node: Maybe<TIsolate>,

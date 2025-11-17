@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { lengthEquals } from 'lengthEquals';
+import { lengthEquals } from '../lengthEquals';
 import { describe, it, expect } from 'vitest';
 
 describe('Tests lengthEquals rule', () => {

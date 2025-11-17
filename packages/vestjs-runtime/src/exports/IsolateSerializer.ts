@@ -1,4 +1,4 @@
-import { ErrorStrings } from 'ErrorStrings';
+import { ErrorStrings } from '../errors/ErrorStrings';
 import {
   Nullable,
   hasOwnProperty,
@@ -9,9 +9,9 @@ import {
 } from 'vest-utils';
 import { expandObject, minifyObject } from 'vest-utils/minifyObject';
 
-import { TIsolate } from 'Isolate';
-import { ExcludedFromDump, IsolateKeys } from 'IsolateKeys';
-import { IsolateMutator } from 'IsolateMutator';
+import { TIsolate } from '../Isolate/Isolate';
+import { ExcludedFromDump, IsolateKeys } from '../Isolate/IsolateKeys';
+import { IsolateMutator } from '../Isolate/IsolateMutator';
 
 export class IsolateSerializer {
   static deserialize(node: Record<string, any> | TIsolate | string): TIsolate {

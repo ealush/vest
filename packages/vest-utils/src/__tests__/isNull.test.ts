@@ -1,4 +1,4 @@
-import { isNull } from 'isNull';
+import { isNull } from '../isNull';
 import { describe, it, expect } from 'vitest';
 
 describe('Tests isNull rule', () => {

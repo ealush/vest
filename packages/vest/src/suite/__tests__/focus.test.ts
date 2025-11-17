@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { dummyTest } from '../../testUtils/testDummy';
 
-import * as vest from 'vest';
+import * as vest from '../../vest';
 
 describe('suite.focus: only', () => {
   it('focus should be a function', () => {

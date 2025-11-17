@@ -1,8 +1,8 @@
-import { TIsolateTest } from 'IsolateTest';
-import { Severity } from 'Severity';
-import { VestTest } from 'VestTest';
-import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
-import { mockIsolateTest } from 'vestMocks';
+import { TIsolateTest } from '../../../isolate/IsolateTest/IsolateTest';
+import { Severity } from '../../../../suiteResult/Severity';
+import { VestTest } from '../../../isolate/IsolateTest/VestTest';
+import { nonMatchingSeverityProfile } from '../nonMatchingSeverityProfile';
+import { mockIsolateTest } from '../../../../testUtils/vestMocks';
 import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('nonMatchingSeverityProfile', () => {

@@ -1,12 +1,12 @@
 import { VestRuntime } from 'vestjs-runtime';
 
-import { TIsolateTest } from 'IsolateTest';
-import { Severity } from 'Severity';
-import { TFieldName } from 'SuiteResultTypes';
-import { isVestIsolate } from 'VestIsolateType';
-import { VestTest } from 'VestTest';
-import { nonMatchingFieldName } from 'matchingFieldName';
-import { nonMatchingSeverityProfile } from 'nonMatchingSeverityProfile';
+import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
+import { Severity } from '../Severity';
+import { TFieldName } from '../SuiteResultTypes';
+import { isVestIsolate } from '../../core/isolate/VestIsolateType';
+import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
+import { nonMatchingFieldName } from '../../core/test/helpers/matchingFieldName';
+import { nonMatchingSeverityProfile } from '../../core/test/helpers/nonMatchingSeverityProfile';
 
 /**
  * The difference between this file and hasFailures is that hasFailures uses the static

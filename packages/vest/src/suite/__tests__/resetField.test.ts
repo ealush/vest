@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { TTestSuite } from 'TVestMock';
-import { create, test } from 'vest';
+import { TTestSuite } from '../../testUtils/TVestMock';
+import { create, test } from '../../vest';
 
 describe('suite.resetField', () => {
   let suite: TTestSuite;

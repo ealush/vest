@@ -1,7 +1,7 @@
-import { RuleRunReturn } from 'RuleRunReturn';
-import { extendEager } from 'eager';
-import { ctx } from 'enforceContext';
-import { addToChain, registerLazyRule } from 'genRuleChain';
+import { RuleRunReturn } from './utils/RuleRunReturn';
+import { extendEager } from './eager';
+import { ctx } from './enforceContext';
+import { addToChain, registerLazyRule } from './rules/genRuleChain';
 
 /**
  * Extends the enforce API with custom validation rules.

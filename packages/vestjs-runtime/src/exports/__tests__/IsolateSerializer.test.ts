@@ -1,9 +1,9 @@
 import { CB } from 'vest-utils';
 import { describe, it, expect, test } from 'vitest';
 
-import { Isolate, TIsolate } from 'Isolate';
-import { IsolateSerializer } from 'IsolateSerializer';
-import { IRecociler, VestRuntime } from 'vestjs-runtime';
+import { Isolate, TIsolate } from '../../Isolate/Isolate';
+import { IsolateSerializer } from '../IsolateSerializer';
+import { IRecociler, VestRuntime } from '../../vestjs-runtime';
 
 describe('IsolateSerializer', () => {
   describe('serialize', () => {

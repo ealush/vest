@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import * as vest from 'vest';
+import * as vest from '../../vest';
 
 enum GroupNames {
   G1 = 'g1',

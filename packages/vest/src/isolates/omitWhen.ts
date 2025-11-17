@@ -1,11 +1,14 @@
 import type { CB } from 'vest-utils';
 import { dynamicValue } from 'vest-utils';
 
-import { LazyDraft } from 'LazyDraft';
-import { SuiteContext, useOmitted } from 'SuiteContext';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { createVestIsolate, VestIsolateType } from 'VestIsolateType';
-import { TDraftCondition } from 'getTypedMethods';
+import { LazyDraft } from '../suiteResult/selectors/LazyDraft';
+import { SuiteContext, useOmitted } from '../core/context/SuiteContext';
+import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';
+import {
+  createVestIsolate,
+  VestIsolateType,
+} from '../core/isolate/VestIsolateType';
+import { TDraftCondition } from '../suite/getTypedMethods';
 
 /**
  * Conditionally omits tests from the suite.

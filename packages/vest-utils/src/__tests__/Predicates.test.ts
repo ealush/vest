@@ -1,4 +1,4 @@
-import { all, any } from 'Predicates';
+import { all, any } from '../Predicates';
 import { describe, it, vi, expect } from 'vitest';
 
 describe('Predicates', () => {

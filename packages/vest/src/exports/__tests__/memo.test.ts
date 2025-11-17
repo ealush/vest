@@ -3,14 +3,14 @@ import wait from 'wait';
 
 import { TestPromise } from '../../testUtils/testPromise';
 
-import { CommonStates } from 'CommonStateMachine';
-import { TIsolateTest } from 'IsolateTest';
-import { TestStatus } from 'IsolateTestStateMachine';
-import { Modes } from 'Modes';
-import { VestTest } from 'VestTest';
-import { memo } from 'memo';
-import * as vest from 'vest';
-import { test as vestTest, enforce } from 'vest';
+import { CommonStates } from '../../core/StateMachines/CommonStateMachine';
+import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
+import { TestStatus } from '../../core/StateMachines/IsolateTestStateMachine';
+import { Modes } from '../../hooks/optional/Modes';
+import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
+import { memo } from '../memo';
+import * as vest from '../../vest';
+import { test as vestTest, enforce } from '../../vest';
 
 describe('memo', () => {
   describe('cache hit', () => {

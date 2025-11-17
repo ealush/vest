@@ -1,7 +1,7 @@
 import { mapFirst } from 'vest-utils';
 
-import { RuleInstance } from 'RuleInstance';
-import { RuleRunReturn } from 'RuleRunReturn';
+import { RuleInstance } from '../../utils/RuleInstance';
+import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 /**
  * Validates that a value passes none of the provided rules.

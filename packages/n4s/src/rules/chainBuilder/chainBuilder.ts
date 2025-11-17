@@ -5,9 +5,9 @@ import {
   type Stringable,
 } from 'vest-utils';
 
-import { RuleInstance } from 'RuleInstance';
-import { executeChain, type Predicate } from 'chainExecutor';
-import { createChainProxyHandlers } from 'proxyHandlers';
+import { RuleInstance } from '../../utils/RuleInstance';
+import { executeChain, type Predicate } from './chainExecutor';
+import { createChainProxyHandlers } from './proxyHandlers';
 
 export type RuleFunctions<T extends RuleInstance<any, any>> = Record<
   keyof Omit<T, 'run' | 'infer' | 'test'>,

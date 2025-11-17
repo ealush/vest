@@ -1,8 +1,8 @@
 import { deferThrow } from 'vest-utils';
 import { describe, it, expect, vi } from 'vitest';
 
-import { TIsolateTest } from 'IsolateTest';
-import * as vest from 'vest';
+import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
+import * as vest from '../../../vest';
 
 vi.mock('vest-utils', async () => {
   const vu = await vi.importActual('vest-utils');

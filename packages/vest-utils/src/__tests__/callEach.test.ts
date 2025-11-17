@@ -1,4 +1,4 @@
-import callEach from 'callEach';
+import callEach from '../callEach';
 import { describe, it, expect, vi } from 'vitest';
 
 describe('callEach', () => {

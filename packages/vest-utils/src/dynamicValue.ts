@@ -1,5 +1,5 @@
-import isFunction from 'isFunction';
-import { DynamicValue } from 'utilityTypes';
+import isFunction from './isFunction';
+import { DynamicValue } from './utilityTypes';
 
 export default function dynamicValue<T>(
   value: DynamicValue<T>,

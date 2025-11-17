@@ -1,4 +1,4 @@
-import { StringObject } from 'StringObject';
+import { StringObject } from '../StringObject';
 import { describe, test, expect } from 'vitest';
 
 describe('StringObject', () => {

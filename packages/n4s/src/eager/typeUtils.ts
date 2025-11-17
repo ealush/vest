@@ -1,4 +1,4 @@
-import type { RuleInstance } from 'RuleInstance';
+import type { RuleInstance } from '../utils/RuleInstance';
 
 export type AnyFn = (...args: any[]) => any;
 

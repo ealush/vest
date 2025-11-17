@@ -1,4 +1,4 @@
-import { ErrorStrings } from 'ErrorStrings';
+import { ErrorStrings } from './errors/ErrorStrings';
 import { createCascade } from 'context';
 import {
   invariant,
@@ -15,10 +15,10 @@ import {
   DynamicValue,
 } from 'vest-utils';
 
-import { TIsolate } from 'Isolate';
-import { IsolateInspector } from 'IsolateInspector';
-import { IsolateMutator } from 'IsolateMutator';
-import { IRecociler } from 'Reconciler';
+import { TIsolate } from './Isolate/Isolate';
+import { IsolateInspector } from './Isolate/IsolateInspector';
+import { IsolateMutator } from './Isolate/IsolateMutator';
+import { IRecociler } from './Reconciler';
 
 type CTXType = StateRefType & {
   historyNode: Nullable<TIsolate>;

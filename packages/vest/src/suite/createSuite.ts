@@ -4,18 +4,25 @@ import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { getTypedMethods } from './getTypedMethods';
 
-import { IsolateSuite, TIsolateSuite } from 'IsolateSuite';
-import { useCreateVestState, useLoadSuite } from 'Runtime';
-import { SuiteContext } from 'SuiteContext';
-import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
-import { Suite, SuiteModifiers } from 'SuiteTypes';
-import { useInitVestBus } from 'VestBus';
-import { VestReconciler } from 'VestReconciler';
-import { useDeferDoneCallback } from 'deferDoneCallback';
-import { only } from 'focused';
-import { useCreateSuiteResult } from 'suiteResult';
-import { bindSuiteSelectors } from 'suiteSelectors';
-import { validateSuiteCallback } from 'validateSuiteParams';
+import {
+  IsolateSuite,
+  TIsolateSuite,
+} from '../core/isolate/IsolateSuite/IsolateSuite';
+import { useCreateVestState, useLoadSuite } from '../core/Runtime';
+import { SuiteContext } from '../core/context/SuiteContext';
+import {
+  SuiteResult,
+  TFieldName,
+  TGroupName,
+} from '../suiteResult/SuiteResultTypes';
+import { Suite, SuiteModifiers } from './SuiteTypes';
+import { useInitVestBus } from '../core/VestBus/VestBus';
+import { VestReconciler } from '../core/isolate/VestReconciler';
+import { useDeferDoneCallback } from './after/deferDoneCallback';
+import { only } from '../hooks/focused/focused';
+import { useCreateSuiteResult } from '../suiteResult/suiteResult';
+import { bindSuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
+import { validateSuiteCallback } from './validateParams/validateSuiteParams';
 
 // @vx-allow use-use
 function createSuite<

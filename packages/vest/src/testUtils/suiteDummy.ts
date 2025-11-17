@@ -2,8 +2,8 @@ import { OneOrMoreOf, asArray, Maybe } from 'vest-utils';
 
 import { dummyTest } from './testDummy';
 
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { optional, create, skip, SuiteResult } from 'vest';
+import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';
+import { optional, create, skip, SuiteResult } from '../vest';
 
 export function failing(failingFields?: OneOrMoreOf<string>) {
   return createSuiteRunResult(failingFields, fieldName => {

@@ -1,7 +1,7 @@
 import { greaterThan } from 'vest-utils';
 
-import { RuleInstance } from 'RuleInstance';
-import { RuleRunReturn } from 'RuleRunReturn';
+import { RuleInstance } from '../../utils/RuleInstance';
+import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 const REQUIRED_COUNT = 1;
 

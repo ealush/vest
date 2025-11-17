@@ -1,5 +1,5 @@
-import dynamicValue from 'dynamicValue';
-import type { Stringable } from 'utilityTypes';
+import dynamicValue from './dynamicValue';
+import type { Stringable } from './utilityTypes';
 
 export default function invariant(
   condition: any,

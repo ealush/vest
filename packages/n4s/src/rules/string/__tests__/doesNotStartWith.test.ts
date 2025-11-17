@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforce } from 'n4s';
+import { enforce } from '../../../n4s';
 
 describe('doesNotStartWith', () => {
   it('pass when string does not start with prefix', () => {

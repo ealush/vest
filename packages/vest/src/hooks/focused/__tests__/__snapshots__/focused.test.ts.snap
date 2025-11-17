@@ -37,6 +37,26 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [
+    {
+      "message": "F1 error",
+      "path": [
+        "F1",
+      ],
+    },
+    {
+      "message": "F2 error",
+      "path": [
+        "F2",
+      ],
+    },
+    {
+      "message": "F3 error",
+      "path": [
+        "F3",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 3,
   "tests": {
@@ -74,6 +94,7 @@ Promise {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -117,6 +138,26 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [
+    {
+      "message": "F1 error",
+      "path": [
+        "F1",
+      ],
+    },
+    {
+      "message": "F2 error",
+      "path": [
+        "F2",
+      ],
+    },
+    {
+      "message": "F3 error",
+      "path": [
+        "F3",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 3,
   "tests": {
@@ -154,6 +195,7 @@ Promise {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],

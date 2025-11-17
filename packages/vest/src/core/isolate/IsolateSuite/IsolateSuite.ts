@@ -48,7 +48,7 @@ export class SuiteOptionalFields {
     suite: TIsolateSuite,
     fieldName: TFieldName,
   ): OptionalFieldDeclaration {
-    return SuiteOptionalFields.getOptionalFields(suite)[fieldName] ?? {};
+    return SuiteOptionalFields.getOptionalFields(suite)[fieldName] ?? ({} as OptionalFieldDeclaration);
   }
 
   static getOptionalFields(suite: TIsolateSuite): OptionalFields {

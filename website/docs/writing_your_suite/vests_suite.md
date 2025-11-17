@@ -38,6 +38,31 @@ const suite = create((data = {}) => {
 
 You pass a callback function to the `create` function, which takes the form data as its first argument, and any other arguments you might want to pass. You can then define your validations inside this function.
 
+## Schema Validation
+
+You can also pass an `n4s` schema as the second argument to `create`. This schema will be automatically executed when the suite runs, and any validation errors will be registered as Vest tests.
+
+```js
+import { create, enforce } from 'vest';
+
+const userSchema = enforce.shape({
+  username: enforce.isString(),
+  age: enforce.isNumber(),
+});
+
+const suite = create(data => {
+  // Additional validations...
+}, userSchema);
+```
+
+When `suite.run(data)` is called:
+
+1.  The schema is validated against `data`.
+2.  If the schema fails, errors are registered in the suite result.
+3.  The suite callback is executed.
+
+Note: Schema validation is skipped if you use `only()` to run specific fields.
+
 ## Running the Suite
 
 You can run your suite by calling it with the form data and any additional arguments you want to pass:

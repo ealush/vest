@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`named group > focus behavior > only > group only > should run only tests for the focused field within the group and run everything in other groups 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 4,
   "errors": [
@@ -101,6 +101,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 4,
   "tests": {
@@ -132,6 +133,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -139,7 +141,7 @@ SuiteSummary {
 `;
 
 exports[`named group > focus behavior > only > top level only > should run only tests for the focused field across all groups 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 3,
   "errors": [
@@ -234,6 +236,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 3,
   "tests": {
@@ -265,6 +268,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -272,7 +276,7 @@ SuiteSummary {
 `;
 
 exports[`named group > focus behavior > skip inside the group > should skip the field only within the current group 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 3,
   "errors": [
@@ -329,6 +333,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 3,
   "tests": {
@@ -351,6 +356,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -358,7 +364,7 @@ SuiteSummary {
 `;
 
 exports[`named group > focus behavior > skip inside the group > should skip the field only within the current group and not affect the next group 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 3,
   "errors": [
@@ -426,6 +432,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 3,
   "tests": {
@@ -448,6 +455,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -455,7 +463,7 @@ SuiteSummary {
 `;
 
 exports[`named group > focus behavior > skip inside the group > skip(true) > should skip all tests in the current group only 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 5,
   "errors": [
@@ -542,6 +550,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 5,
   "tests": {
@@ -573,6 +582,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -580,7 +590,7 @@ SuiteSummary {
 `;
 
 exports[`named group > focus behavior > skip outside of group > should skip tests for a field both inside and outside the group when skipped before grouping 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 1,
   "errors": [
@@ -627,6 +637,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 1,
   "tests": {
@@ -649,6 +660,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -656,7 +668,7 @@ SuiteSummary {
 `;
 
 exports[`named group > multiple named groups > should run the tests inside each named group 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 5,
   "errors": [
@@ -761,6 +773,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 7,
   "tests": {
@@ -792,6 +805,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -799,7 +813,7 @@ SuiteSummary {
 `;
 
 exports[`named group > should run the tests inside the named group 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 3,
   "errors": [
@@ -865,6 +879,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 4,
   "tests": {
@@ -896,6 +911,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -903,7 +919,7 @@ SuiteSummary {
 `;
 
 exports[`unnamed groups > should not add the unnamed group to the results object 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 3,
   "errors": [
@@ -939,6 +955,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 3,
   "tests": {
@@ -970,6 +987,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -977,7 +995,7 @@ SuiteSummary {
 `;
 
 exports[`unnamed groups > should run tests inside the unnamed group normally 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 3,
   "errors": [
@@ -1013,6 +1031,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 3,
   "tests": {
@@ -1044,6 +1063,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -1051,7 +1071,7 @@ SuiteSummary {
 `;
 
 exports[`unnamed groups > with only > should run only tests for the focused field inside the unnamed group 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 1,
   "errors": [
@@ -1077,6 +1097,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 1,
   "tests": {
@@ -1108,6 +1129,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -1115,7 +1137,7 @@ SuiteSummary {
 `;
 
 exports[`unnamed groups > with skip > should skip tests for the specified field only 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 2,
   "errors": [
@@ -1146,6 +1168,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {
@@ -1177,6 +1200,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -1184,7 +1208,7 @@ SuiteSummary {
 `;
 
 exports[`unnamed groups > with skip(true) > should skip all tests inside the unnamed group 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 0,
   "errors": [],
@@ -1204,6 +1228,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 0,
   "tests": {
@@ -1235,6 +1260,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],

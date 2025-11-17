@@ -4,16 +4,20 @@ import { Bus, VestRuntime } from 'vestjs-runtime';
 import { useLoadSuite } from '../core/Runtime';
 import { Subscribe } from '../core/VestBus/VestBus';
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
-import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';
+import {
+  TFieldName,
+  TGroupName,
+  TSchema,
+} from '../suiteResult/SuiteResultTypes';
 import { bindSuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
 import { SuiteModifiers } from './SuiteTypes';
 import { useDeferDoneCallback } from './after/deferDoneCallback';
 import { createSuite } from './createSuite';
+import { getStandardSchema } from './getStandardSchema';
 import { getTypedMethods } from './getTypedMethods';
 import { useCreateSuiteRunner } from './useCreateSuiteRunner';
-
 
 /**
  * Creates the methods available on the Suite object (e.g., run, get, reset).
@@ -27,42 +31,117 @@ export function useCreateSuiteMethods<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB = CB,
->(suiteCallback: T, modifiers: SuiteModifiers<F>, subscribe: Subscribe) {
+  S extends TSchema = undefined,
+>(
+  suiteCallback: T,
+  modifiers: SuiteModifiers<F>,
+  subscribe: Subscribe,
+  schema?: S,
+) {
   const persistedRun = VestRuntime.persist(
-    useCreateSuiteRunner<F, G, T>(suiteCallback, modifiers),
+    useCreateSuiteRunner<F, G, T, S>(suiteCallback, modifiers, schema),
+  );
+  const staticRunner = VestRuntime.persist(
+    createStaticRunner<F, G, T, S>(suiteCallback, schema),
   );
 
-  return getPreRunMethods();
+  return useCreateSuiteMethodsHelper({
+    modifiers,
+    persistedRun,
+    schema,
+    staticRunner,
+    subscribe,
+    suiteCallback,
+  });
+}
 
-  function addAfter(cb: CB, fieldName?: F) {
-    const returnValue = getPreRunMethods();
+function useCreateSuiteMethodsHelper<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB = CB,
+  S extends TSchema = undefined,
+>(ctx: {
+  suiteCallback: T;
+  modifiers: SuiteModifiers<F>;
+  subscribe: Subscribe;
+  schema?: S;
+  persistedRun: any;
+  staticRunner: any;
+}) {
+  const suiteMethods = useGetSuiteMethods<F, G, T, S>(ctx);
 
-    useDeferDoneCallback(withCatch(cb), fieldName);
-    return returnValue;
-  }
+  return {
+    ...suiteMethods,
+    '~standard': getStandardSchema<S>(ctx.staticRunner),
+  };
+}
 
-  function getPreRunMethods() {
-    return {
-      after: VestRuntime.persist((cb: CB) => addAfter(cb)),
-      afterField: VestRuntime.persist((fieldName: F, cb: CB) =>
-        addAfter(cb, fieldName),
-      ),
-      dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
-      focus: VestRuntime.persist(
-        useCreateFocus<F, G, T>(suiteCallback, modifiers, subscribe),
-      ),
-      get: VestRuntime.persist(useCreateSuiteResult<F, G>),
-      remove: Bus.usePrepareEmitter<string>('REMOVE_FIELD'),
-      reset: Bus.usePrepareEmitter('RESET_SUITE'),
-      resetField: Bus.usePrepareEmitter<string>('RESET_FIELD'),
-      resume: VestRuntime.persist(useLoadSuite),
-      run: persistedRun,
-      runStatic: VestRuntime.persist(createStaticRunner(suiteCallback)),
-      subscribe,
-      ...bindSuiteSelectors<F, G>(VestRuntime.persist(useCreateSuiteResult)),
-      ...getTypedMethods<F, G>(),
-    };
-  }
+function useGetSuiteMethods<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB = CB,
+  S extends TSchema = undefined,
+>(ctx: {
+  suiteCallback: T;
+  modifiers: SuiteModifiers<F>;
+  subscribe: Subscribe;
+  schema?: S;
+  persistedRun: any;
+  staticRunner: any;
+}) {
+  const {
+    suiteCallback,
+    modifiers,
+    subscribe,
+    schema,
+    persistedRun,
+    staticRunner,
+  } = ctx;
+
+  return {
+    after: VestRuntime.persist((cb: CB) => useAddAfterHelper(ctx, cb)),
+    afterField: VestRuntime.persist((fieldName: F, cb: CB) =>
+      useAddAfterHelper(ctx, cb, fieldName),
+    ),
+    dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
+    focus: VestRuntime.persist(
+      useCreateFocus<F, G, T, S>(suiteCallback, modifiers, subscribe, schema),
+    ),
+    get: VestRuntime.persist(() => useCreateSuiteResult<F, G, S>(schema)),
+    remove: Bus.usePrepareEmitter<string>('REMOVE_FIELD'),
+    reset: Bus.usePrepareEmitter('RESET_SUITE'),
+    resetField: Bus.usePrepareEmitter<string>('RESET_FIELD'),
+    resume: VestRuntime.persist(useLoadSuite),
+    run: persistedRun,
+    runStatic: staticRunner,
+    subscribe,
+    validate: (value: unknown) => (staticRunner as any)(value),
+    ...bindSuiteSelectors<F, G, S>(
+      VestRuntime.persist(() => useCreateSuiteResult<F, G, S>(schema)),
+    ),
+    ...getTypedMethods<F, G>(),
+  };
+}
+
+function useAddAfterHelper<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB = CB,
+  S extends TSchema = undefined,
+>(
+  ctx: {
+    suiteCallback: T;
+    modifiers: SuiteModifiers<F>;
+    subscribe: Subscribe;
+    schema?: S;
+    persistedRun: any;
+    staticRunner: any;
+  },
+  cb: CB,
+  fieldName?: F,
+) {
+  useDeferDoneCallback(withCatch(cb), fieldName);
+  return useCreateSuiteMethodsHelper(ctx);
 }
 
 /**
@@ -76,9 +155,10 @@ export function bindSuiteLifecycle<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB = CB,
+  S extends TSchema = undefined,
 >(
-  methods: ReturnType<typeof useCreateSuiteMethods<F, G, T>>,
-): ReturnType<typeof useCreateSuiteMethods<F, G, T>> {
+  methods: ReturnType<typeof useCreateSuiteMethods<F, G, T, S>>,
+): ReturnType<typeof useCreateSuiteMethods<F, G, T, S>> {
   return {
     ...methods,
     after: VestRuntime.persist(initCallback(methods.after)),
@@ -93,18 +173,26 @@ export function bindSuiteLifecycle<
  * @param {Function} suiteCallback - The body of the suite.
  * @param {Object} modifiers - The modifiers for the suite (e.g., only).
  * @param {Function} subscribe - The subscribe function for the suite bus.
+ * @param {Object} schema - The optional schema for the suite.
  * @returns {Function} - The focus function.
  */
 function useCreateFocus<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB = CB,
->(suiteCallback: T, modifiers: SuiteModifiers<F>, subscribe: Subscribe) {
+  S extends TSchema = undefined,
+>(
+  suiteCallback: T,
+  modifiers: SuiteModifiers<F>,
+  subscribe: Subscribe,
+  schema?: S,
+) {
   return function focus(config: SuiteModifiers<F>) {
-    return useCreateSuiteMethods<F, G, T>(
+    return useCreateSuiteMethods<F, G, T, S>(
       suiteCallback,
       { ...modifiers, ...config },
       subscribe,
+      schema,
     );
   };
 }
@@ -113,16 +201,18 @@ function useCreateFocus<
  * Creates a static runner for the suite.
  *
  * @param {Function} suiteCallback - The body of the suite.
+ * @param {Object} schema - The optional schema for the suite.
  * @returns {Function} - The static runner.
  */
 function createStaticRunner<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB = CB,
->(suiteCallback: T) {
+  S extends TSchema = undefined,
+>(suiteCallback: T, schema?: S) {
   return function runStatic(...runArgs: Parameters<T>) {
-    const suite = createSuite<F, G, T>(suiteCallback);
-    return suite.run(...runArgs);
+    const suite = createSuite<F, G, T, S>(suiteCallback, schema);
+    return suite.run(...(runArgs as any));
   };
 }
 

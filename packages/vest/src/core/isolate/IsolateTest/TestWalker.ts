@@ -7,7 +7,6 @@ import matchingFieldName from '../../test/helpers/matchingFieldName';
 import { TIsolateTest } from './IsolateTest';
 import { VestTest } from './VestTest';
 
-
 type MaybeRoot = Nullable<TIsolate>;
 
 export class TestWalker {

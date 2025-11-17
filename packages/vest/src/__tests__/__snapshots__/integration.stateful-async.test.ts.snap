@@ -48,6 +48,14 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [
+    {
+      "message": "field_message_1",
+      "path": [
+        "field_1",
+      ],
+    },
+  ],
   "pendingCount": 1,
   "testCount": 3,
   "tests": {
@@ -90,6 +98,7 @@ Promise {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -97,7 +106,7 @@ Promise {
 `;
 
 exports[`Stateful async tests > Merges skipped validations from previous suite 2`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 2,
   "errors": [
@@ -149,6 +158,20 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [
+    {
+      "message": "field_message_1",
+      "path": [
+        "field_1",
+      ],
+    },
+    {
+      "message": "rejection_message_1",
+      "path": [
+        "field_2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 3,
   "tests": {
@@ -193,6 +216,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -200,7 +224,7 @@ SuiteSummary {
 `;
 
 exports[`Stateful async tests > Merges skipped validations from previous suite 3`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 5,
   "errors": [
@@ -271,6 +295,38 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [
+    {
+      "message": "field_1_group_message",
+      "path": [
+        "field_1",
+      ],
+    },
+    {
+      "message": "field_4_group_message",
+      "path": [
+        "field_4",
+      ],
+    },
+    {
+      "message": "field_message_1",
+      "path": [
+        "field_1",
+      ],
+    },
+    {
+      "message": "field_message_3",
+      "path": [
+        "field_3",
+      ],
+    },
+    {
+      "message": "rejection_message_1",
+      "path": [
+        "field_2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 7,
   "tests": {
@@ -320,6 +376,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],

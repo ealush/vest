@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`suite.get() > exposed methods > Should have all exposed methods 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 0,
   "errors": [],
@@ -21,9 +21,11 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 0,
   "tests": {},
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -51,9 +53,11 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 0,
   "tests": {},
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],

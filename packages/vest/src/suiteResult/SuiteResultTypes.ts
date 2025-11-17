@@ -1,6 +1,7 @@
 import { CB, Nullable } from 'vest-utils';
 
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
+import { StandardSchemaV1 } from '../suite/standardSchemaSpec';
 
 import { Severity } from './Severity';
 import { SummaryFailure } from './SummaryFailure';
@@ -50,11 +51,49 @@ export type CommonSummaryProperties = SummaryBase & {
 export type GetFailuresResponse = FailureMessages | string[];
 
 export type FailureMessages = Record<string, string[]>;
+export type TSchema = any;
+
+type Simplify<T> = { [K in keyof T]: T[K] } & {};
+
+export type InferSchemaData<S> = S extends { infer: infer T }
+  ? Simplify<T>
+  : any;
+
+export type SuiteResultBody<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema = undefined,
+> =
+  | (Omit<SuiteSummary<F, G>, 'valid'> &
+      SuiteSelectors<F, G> & {
+        valid: true;
+        value: InferSchemaData<S>;
+        issues?: undefined;
+      })
+  | (Omit<SuiteSummary<F, G>, 'valid'> &
+      SuiteSelectors<F, G> & {
+        valid: false;
+        issues: ReadonlyArray<StandardSchemaV1.Issue>;
+        value?: undefined;
+      })
+  | (Omit<SuiteSummary<F, G>, 'valid'> &
+      SuiteSelectors<F, G> & {
+        valid: null;
+        issues?: undefined;
+        value?: undefined;
+      });
 
 export type SuiteResult<
   F extends TFieldName,
   G extends TGroupName,
-> = SuiteSummary<F, G> & SuiteSelectors<F, G> & { dump: CB<TIsolateSuite> };
+  S extends TSchema = undefined,
+> = SuiteResultBody<F, G, S> & {
+  dump: CB<TIsolateSuite>;
+  types: S extends undefined
+    ? undefined
+    : { input: InferSchemaData<S>; output: InferSchemaData<S> };
+};
 
 export type TFieldName<T extends string = string> = T;
 export type TGroupName<G extends string = string> = G;
+

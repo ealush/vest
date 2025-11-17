@@ -3,12 +3,16 @@ import { VestRuntime } from 'vestjs-runtime';
 
 import { useSuiteResultCache } from '../core/Runtime';
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
+import { StandardSchemaV1 } from '../suite/standardSchemaSpec';
 
+import { Severity } from './Severity';
 import {
   SuiteResult,
   SuiteSummary,
   TFieldName,
   TGroupName,
+  TSchema,
+  SuiteResultBody,
 } from './SuiteResultTypes';
 import { suiteSelectors } from './selectors/suiteSelectors';
 import { useProduceSuiteSummary } from './selectors/useProduceSuiteSummary';
@@ -16,22 +20,58 @@ import { useProduceSuiteSummary } from './selectors/useProduceSuiteSummary';
 export function useCreateSuiteResult<
   F extends TFieldName,
   G extends TGroupName,
->(): SuiteResult<F, G> {
-  return useSuiteResultCache<F, G>(() => {
+  S extends TSchema = undefined,
+>(schema?: S, data?: any): SuiteResult<F, G, S> {
+  return useSuiteResultCache<F, G, S>(() => {
     // @vx-allow use-use
     const summary = useProduceSuiteSummary<F, G>();
-    return freezeAssign(constructSuiteResultObject<F, G>(summary), {
+    const resultBody = constructSuiteResultObject<F, G, S>(summary, data);
+    return freezeAssign(resultBody as any, {
       dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
-    }) as SuiteResult<F, G>;
+      types: (schema
+        ? { input: data, output: data }
+        : undefined) as SuiteResult<F, G, S>['types'],
+    }) as SuiteResult<F, G, S>;
   });
 }
 
 export function constructSuiteResultObject<
   F extends TFieldName,
   G extends TGroupName,
->(summary: SuiteSummary<F, G>): SuiteResult<F, G> {
-  return assign(summary, suiteSelectors<F, G>(summary), {}) as SuiteResult<
-    F,
-    G
-  >;
+  S extends TSchema = undefined,
+>(summary: SuiteSummary<F, G>, data?: any): SuiteResultBody<F, G, S> {
+  const { valid, ...summaryWithoutValid } = summary;
+  const selectors = suiteSelectors<F, G>(summary);
+
+  const common = assign(summaryWithoutValid, selectors);
+
+  if (valid === true) {
+    return {
+      ...common,
+      valid: true,
+      value: data,
+    };
+  } else if (valid === false) {
+    const issues = summary[Severity.ERRORS].reduce((acc, failure) => {
+      if (failure.message) {
+        acc.push({
+          message: failure.message,
+          path: [failure.fieldName],
+        });
+      }
+      return acc;
+    }, [] as StandardSchemaV1.Issue[]);
+
+    return {
+      ...common,
+      valid: false,
+      issues,
+    };
+  }
+
+  // valid is null
+  return {
+    ...common,
+    valid: null as null,
+  };
 }

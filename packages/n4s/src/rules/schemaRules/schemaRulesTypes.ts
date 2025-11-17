@@ -4,7 +4,6 @@ import type { LooseShapeValue } from './loose';
 import type { PartialShapeValue } from './partial';
 import type { ShapeValue } from './shape';
 
-
 export type InferShape<T> = T extends RuleInstance<infer R, any> ? R : never;
 
 export type SchemaInfer<T extends Record<string, RuleInstance<any>>> = {

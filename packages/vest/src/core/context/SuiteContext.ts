@@ -2,6 +2,8 @@ import { createCascade } from 'context';
 import { assign, TinyState, tinyState, DynamicValue } from 'vest-utils';
 
 import { Modes } from '../../hooks/optional/Modes';
+import { SuiteModifiers } from '../../suite/SuiteTypes';
+import { TFieldName, TSchema } from '../../suiteResult/SuiteResultTypes';
 import { TIsolateTest } from '../isolate/IsolateTest/IsolateTest';
 
 export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
@@ -13,6 +15,8 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
     {
       inclusion: {},
       mode: tinyState.createTinyState<Modes>(Modes.EAGER),
+      modifiers: { only: undefined },
+      schema: null,
       suiteParams: [],
     },
     ctxRef,
@@ -26,6 +30,8 @@ type CTXType = {
   currentTest?: TIsolateTest;
   skipped?: boolean;
   omitted?: boolean;
+  schema: TSchema;
+  modifiers: SuiteModifiers<TFieldName>;
 };
 
 export function useCurrentTest(msg?: string) {
@@ -50,4 +56,8 @@ export function useOmitted() {
 
 export function useSuiteParams() {
   return SuiteContext.useX().suiteParams;
+}
+
+export function useSuiteSchema() {
+  return SuiteContext.useX().schema;
 }

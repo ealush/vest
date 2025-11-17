@@ -27,10 +27,18 @@
   "exports": {
     ".": {
       "import": "./dist/vast.mjs",
-      "require": "./dist/vast.cjs"
+      "require": "./dist/vast.cjs",
+      "types": "./types/vast.d.cts"
     },
-    "./*": "./*",
-    "./package.json": "./package.json"
+    "./*": {
+      "default": "./*",
+      "types": "./types/vast.d.cts"
+    },
+    "./package.json": "./package.json",
+    "./vast": "./types/vast.d.cts",
+    "./vast.d.ts": "./types/vast.d.ts",
+    "./types/*": "./types/*",
+    "./dist/*": "./dist/*"
   },
   "publishConfig": {
     "exports": {
@@ -39,8 +47,27 @@
         "require": "./dist/vast.cjs",
         "types": "./types/vast.d.cts"
       },
-      "./*": "./*",
-      "./package.json": "./package.json"
+      "./*": {
+        "default": "./*",
+        "types": "./types/vast.d.cts"
+      },
+      "./package.json": "./package.json",
+      "./vast": {
+        "default": "./types/vast.d.cts",
+        "types": "./types/vast.d.cts"
+      },
+      "./vast.d.ts": {
+        "default": "./types/vast.d.ts",
+        "types": "./types/vast.d.cts"
+      },
+      "./types/*": {
+        "default": "./types/*",
+        "types": "./types/vast.d.cts"
+      },
+      "./dist/*": {
+        "default": "./dist/*",
+        "types": "./types/vast.d.cts"
+      }
     }
   }
 }

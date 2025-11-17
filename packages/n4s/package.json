@@ -32,38 +32,52 @@
   "exports": {
     "./exports/date": {
       "import": "./dist/exports/date.mjs",
-      "require": "./dist/exports/date.cjs"
+      "require": "./dist/exports/date.cjs",
+      "types": "./types/exports/date.d.cts"
     },
     "./exports/email": {
       "import": "./dist/exports/email.mjs",
-      "require": "./dist/exports/email.cjs"
+      "require": "./dist/exports/email.cjs",
+      "types": "./types/exports/email.d.cts"
     },
     "./exports/isURL": {
       "import": "./dist/exports/isURL.mjs",
-      "require": "./dist/exports/isURL.cjs"
+      "require": "./dist/exports/isURL.cjs",
+      "types": "./types/exports/isURL.d.cts"
     },
     "./n4s": {
       "import": "./dist/n4s.mjs",
-      "require": "./dist/n4s.cjs"
+      "require": "./dist/n4s.cjs",
+      "types": "./types/n4s.d.cts"
     },
-    "./*": "./*",
+    "./*": {
+      "default": "./*",
+      "types": "./types/n4s.d.cts"
+    },
     ".": {
       "import": "./dist/n4s.mjs",
-      "require": "./dist/n4s.cjs"
+      "require": "./dist/n4s.cjs",
+      "types": "./types/n4s.d.cts"
     },
     "./package.json": "./package.json",
     "./date": {
       "import": "./dist/exports/date.mjs",
-      "require": "./dist/exports/date.cjs"
+      "require": "./dist/exports/date.cjs",
+      "types": "./types/n4s.d.cts"
     },
     "./email": {
       "import": "./dist/exports/email.mjs",
-      "require": "./dist/exports/email.cjs"
+      "require": "./dist/exports/email.cjs",
+      "types": "./types/n4s.d.cts"
     },
     "./isURL": {
       "import": "./dist/exports/isURL.mjs",
-      "require": "./dist/exports/isURL.cjs"
-    }
+      "require": "./dist/exports/isURL.cjs",
+      "types": "./types/n4s.d.cts"
+    },
+    "./n4s.d.ts": "./types/n4s.d.ts",
+    "./types/*": "./types/*",
+    "./dist/*": "./dist/*"
   },
   "publishConfig": {
     "exports": {
@@ -87,13 +101,28 @@
         "require": "./dist/n4s.cjs",
         "types": "./types/n4s.d.cts"
       },
-      "./*": "./*",
+      "./*": {
+        "default": "./*",
+        "types": "./types/n4s.d.cts"
+      },
       ".": {
         "import": "./dist/n4s.mjs",
         "require": "./dist/n4s.cjs",
         "types": "./types/n4s.d.cts"
       },
-      "./package.json": "./package.json"
+      "./package.json": "./package.json",
+      "./n4s.d.ts": {
+        "default": "./types/n4s.d.ts",
+        "types": "./types/n4s.d.cts"
+      },
+      "./types/*": {
+        "default": "./types/*",
+        "types": "./types/n4s.d.cts"
+      },
+      "./dist/*": {
+        "default": "./dist/*",
+        "types": "./types/n4s.d.cts"
+      }
     }
   }
 }

@@ -2,12 +2,11 @@ import { CB } from 'vest-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import wait from 'wait';
 
-import { dummyTest } from '../testUtils/testDummy';
-
 import { TIsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
+import { VestTest } from '../core/isolate/IsolateTest/VestTest';
 import { Modes } from '../hooks/optional/Modes';
 import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';
-import { VestTest } from '../core/isolate/IsolateTest/VestTest';
+import { dummyTest } from '../testUtils/testDummy';
 import * as vest from '../vest';
 
 type SuiteParams = { skip?: string; skipGroup?: true };
@@ -40,7 +39,6 @@ const genSuite = () =>
 let suite: vest.Suite<TFieldName, TGroupName, CB>;
 let callback_1 = vi.fn(),
   callback_2 = vi.fn(),
-  callback_3 = vi.fn(),
   callback_4 = vi.fn(),
   control = vi.fn();
 
@@ -48,7 +46,6 @@ describe('Stateful async tests', () => {
   beforeEach(() => {
     callback_1 = vi.fn();
     callback_2 = vi.fn();
-    callback_3 = vi.fn();
     callback_4 = vi.fn();
     control = vi.fn();
     suite = genSuite();
@@ -95,14 +92,27 @@ describe('Stateful async tests', () => {
     expect(res).toMatchSnapshot();
 
     await suite.run({ skip: 'field_2' });
-    expect(suite.get().testCount).toBe(7);
-    expect(suite.get().errorCount).toBe(5);
-    expect(suite.get().warnCount).toBe(0);
-    expect(suite.get().tests.field_1.errorCount).toBe(2);
-    expect(suite.hasErrors('field_2')).toBe(true);
-    expect(suite.hasErrors('field_3')).toBe(true);
-    expect(suite.hasErrors('field_4')).toBe(true);
-    expect(suite.get()).toMatchSnapshot();
+    const result = suite.get();
+    expect(result.testCount).toBe(7);
+    expect(result.errorCount).toBe(5);
+    expect(result.warnCount).toBe(0);
+    expect(result.tests.field_1.errorCount).toBe(2);
+    expect(result.hasErrors('field_2')).toBe(true);
+    expect(result.hasErrors('field_3')).toBe(true);
+    expect(result.hasErrors('field_4')).toBe(true);
+
+    if (result.valid === false) {
+      expect(result.issues).toHaveLength(5);
+      expect(result.issues).toEqual(
+        expect.arrayContaining([
+          { message: 'field_1_group_message', path: ['field_1'] },
+          { message: 'field_4_group_message', path: ['field_4'] },
+          { message: 'field_message_1', path: ['field_1'] },
+          { message: 'rejection_message_1', path: ['field_2'] },
+          { message: 'field_message_3', path: ['field_3'] },
+        ]),
+      );
+    }
   });
 
   it('Should discard of re-tested async tests', async () => {

@@ -183,10 +183,10 @@ function buildTypesMap(
     const value = `./types/${normalized}`;
     const existing = map.get(key);
 
-  if (!existing || rank < existing.rank) {
-    map.set(key, { rank, path: value });
-  }
-});
+    if (!existing || rank < existing.rank) {
+      map.set(key, { rank, path: value });
+    }
+  });
 
   const mainTypes = map.get(`./${packageName}`)?.path;
 
@@ -292,10 +292,7 @@ function updateExports(
   exportsField: any,
   typeMap: Record<string, string>,
   packageName: string,
-  {
-    mainTypes,
-    legacyDtsPath,
-  }: { mainTypes?: string; legacyDtsPath?: string },
+  { mainTypes, legacyDtsPath }: { mainTypes?: string; legacyDtsPath?: string },
 ): Record<string, any> {
   const exportsMap =
     exportsField && typeof exportsField === 'object' ? { ...exportsField } : {};

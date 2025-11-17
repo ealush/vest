@@ -5,14 +5,14 @@ import * as vest from '../../vest';
 
 describe('suite.focus: only', () => {
   it('focus should be a function', () => {
-    const suite = vest.create(() => { });
+    const suite = vest.create(() => {});
 
     expect(suite.focus).toBeTypeOf('function');
   });
 
   describe('focus return value', () => {
     it('should be the rest of the suite methods', () => {
-      const suite = vest.create(() => { });
+      const suite = vest.create(() => {});
 
       const focused = suite.focus({ only: ['field_1'] });
 

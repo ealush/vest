@@ -1,14 +1,22 @@
-import { assign, CB, withResolvers } from 'vest-utils';
+import {
+  assign,
+  CB,
+  isFunction,
+  withResolvers,
+} from 'vest-utils';
 import { Bus } from 'vestjs-runtime';
 
-
 import { SuiteContext } from '../core/context/SuiteContext';
+import { IsolateReorderable } from '../core/isolate/IsolateReorderable/IsolateReorderable';
 import { IsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
+import { test } from '../core/test/test';
 import { only } from '../hooks/focused/focused';
 import {
   SuiteResult,
   TFieldName,
   TGroupName,
+  InferSchemaData,
+  TSchema,
 } from '../suiteResult/SuiteResultTypes';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
@@ -23,34 +31,59 @@ import { SuiteModifiers } from './SuiteTypes';
  * @param {Object} modifiers - The modifiers for the suite (e.g., only).
  * @returns {Function} - The suite runner function.
  */
+// eslint-disable-next-line max-lines-per-function
 export function useCreateSuiteRunner<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB = CB,
->(suiteCallback: CB, modifiers: SuiteModifiers<F>) {
-  return function runSuite(...args: Parameters<T>): SuiteResult<F, G> {
+  S extends TSchema = undefined,
+>(suiteCallback: T, modifiers: SuiteModifiers<F>, schema?: S) {
+  // eslint-disable-next-line max-lines-per-function
+  return function runSuite(
+    ...args: S extends undefined
+      ? Parameters<T>
+      : [data: InferSchemaData<S>, ...args: any[]]
+  ): SuiteResult<F, G> {
     const { resolve, promise } = withResolvers<SuiteResult<F, G>>();
     return assign(
       promise,
       SuiteContext.run(
         {
-          suiteParams: args,
+          suiteParams: args as Parameters<T>,
+          schema,
         },
         () => {
           Bus.useEmit('SUITE_RUN_STARTED');
 
           function resolver() {
-            const result = useCreateSuiteResult<F, G>();
+            const result = useCreateSuiteResult<F, G, S>(schema, args[0]);
             resolve(result);
             return result;
           }
 
           return IsolateSuite(() => {
             only(modifiers.only);
-            suiteCallback(...args);
+            suiteCallback(...(args as Parameters<T>));
+            // eslint-disable-next-line complexity, max-nested-callbacks
+            IsolateReorderable(() => {
+              if (
+                typeof schema !== 'undefined' &&
+                !modifiers.only &&
+                schema &&
+                isFunction((schema as any).run)
+              ) {
+                const runResult = (schema as any).run(args[0]);
+
+                if (!runResult.pass && runResult.path) {
+                  // Use the top-level field name (first segment) for error reporting
+                  const fieldName = runResult.path[0];
+                  test(fieldName, runResult.message, () => false, fieldName);
+                }
+              }
+            });
             Bus.useEmit('SUITE_CALLBACK_RUN_FINISHED');
-            return useCreateSuiteResult<F, G>();
-          }, resolver);
+            return useCreateSuiteResult<F, G, S>(schema, args[0]);
+          }, resolver as any);
         },
       ).output,
     );

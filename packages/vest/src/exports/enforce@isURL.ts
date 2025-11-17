@@ -1,1 +1,1 @@
-export * as isURL from 'n4s/isURL';
+export * as isURL from 'n4s/dist/exports/isURL';

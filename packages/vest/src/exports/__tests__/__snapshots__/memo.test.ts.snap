@@ -27,6 +27,14 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [
+    {
+      "message": "msg1",
+      "path": [
+        "field1",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 4,
   "tests": {
@@ -60,6 +68,7 @@ Promise {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 1,
   "warnings": [
@@ -99,6 +108,14 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [
+    {
+      "message": "msg1",
+      "path": [
+        "field1",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 4,
   "tests": {
@@ -132,6 +149,7 @@ Promise {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 1,
   "warnings": [

@@ -27,6 +27,14 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [
+    {
+      "message": "field_statement_1",
+      "path": [
+        "field_1",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 1,
   "tests": {
@@ -78,6 +86,7 @@ Promise {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -121,6 +130,26 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [
+    {
+      "message": "field_statement_1",
+      "path": [
+        "field_1",
+      ],
+    },
+    {
+      "message": "field_statement_5",
+      "path": [
+        "field_5",
+      ],
+    },
+    {
+      "message": "field_statement_6",
+      "path": [
+        "field_5",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 3,
   "tests": {
@@ -175,6 +204,7 @@ Promise {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -223,6 +253,32 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [
+    {
+      "message": "field_statement_1",
+      "path": [
+        "field_1",
+      ],
+    },
+    {
+      "message": "field_statement_2",
+      "path": [
+        "field_2",
+      ],
+    },
+    {
+      "message": "field_statement_5",
+      "path": [
+        "field_5",
+      ],
+    },
+    {
+      "message": "field_statement_6",
+      "path": [
+        "field_5",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 7,
   "tests": {
@@ -281,6 +337,7 @@ Promise {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 1,
   "warnings": [
@@ -294,7 +351,7 @@ Promise {
 `;
 
 exports[`more complex > Should run correctly 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 0,
   "errors": [],
@@ -314,9 +371,11 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 0,
   "tests": {},
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -324,7 +383,7 @@ SuiteSummary {
 `;
 
 exports[`more complex > Should run correctly 2`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 0,
   "errors": [],
@@ -344,6 +403,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {
@@ -375,6 +435,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -382,7 +443,7 @@ SuiteSummary {
 `;
 
 exports[`more complex > Should run correctly 4`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 1,
   "errors": [
@@ -408,6 +469,14 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [
+    {
+      "message": "password is required",
+      "path": [
+        "password",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 3,
   "tests": {
@@ -441,6 +510,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -448,7 +518,7 @@ SuiteSummary {
 `;
 
 exports[`more complex > Should run correctly 6`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 1,
   "errors": [
@@ -474,6 +544,14 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [
+    {
+      "message": "password is required",
+      "path": [
+        "password",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 3,
   "tests": {
@@ -507,6 +585,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],

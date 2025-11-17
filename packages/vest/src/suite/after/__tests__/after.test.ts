@@ -2,8 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import wait from 'wait';
 
 import { dummyTest } from '../../../testUtils/testDummy';
-
-import * as vest from 'vest';
+import * as vest from '../../../vest';
 
 describe('after', () => {
   describe('When no async tests', () => {
@@ -165,12 +164,12 @@ describe('after', () => {
           vest.test('test', () => false);
 
           vest.group('group', async () => {
-            await wait(1000);
+            await wait(100);
           });
         });
 
         suite.after(cb).run();
-        await wait(1000);
+        await wait(100);
         expect(cb).toHaveBeenCalled();
       });
     });

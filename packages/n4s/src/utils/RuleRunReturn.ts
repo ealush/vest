@@ -24,6 +24,7 @@ export class RuleRunReturn<T> {
   type: T;
   /** Optional error message if validation failed */
   message?: string;
+  path?: string[];
 
   constructor(pass: boolean, type: T, message?: string) {
     this.pass = pass;
@@ -62,11 +63,17 @@ export class RuleRunReturn<T> {
       return new RuleRunReturn(false, type, dynamicValue(message, type));
     }
 
-    return new RuleRunReturn(
+    const res = new RuleRunReturn(
       !!pass.pass,
       type ?? pass.type,
       dynamicValue(message ?? pass.message, type),
     );
+
+    if (pass.path) {
+      res.path = pass.path;
+    }
+
+    return res;
   }
 
   /**

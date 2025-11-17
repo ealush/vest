@@ -37,5 +37,12 @@ exports[`suite.focus: only > focus return value > should be the rest of the suit
   "skipWhen": [Function],
   "subscribe": [Function],
   "test": [Function],
+  "validate": [Function],
+  "~standard": {
+    "types": undefined,
+    "validate": [Function],
+    "vendor": "vest",
+    "version": 1,
+  },
 }
 `;

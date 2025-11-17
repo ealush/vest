@@ -9,14 +9,17 @@ import {
   SuiteSummary,
   TFieldName,
   TGroupName,
+  TSchema,
 } from '../SuiteResultTypes';
 import { SummaryFailure } from '../SummaryFailure';
 
 import { gatherFailures } from './collectFailures';
 
-export function bindSuiteSelectors<F extends TFieldName, G extends TGroupName>(
-  get: <F extends string, G extends string>() => SuiteResult<F, G>,
-): SuiteSelectors<F, G> {
+export function bindSuiteSelectors<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema = undefined,
+>(get: () => SuiteResult<F, G, S>): SuiteSelectors<F, G> {
   return {
     getError: (...args: Parameters<SuiteSelectors<F, G>['getError']>) =>
       get().getError(...args),

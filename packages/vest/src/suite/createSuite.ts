@@ -1,38 +1,61 @@
+/* eslint-disable max-lines-per-function */
 import { CB } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
-
 
 import { useCreateVestState } from '../core/Runtime';
 import { useInitVestBus } from '../core/VestBus/VestBus';
 import { VestReconciler } from '../core/isolate/VestReconciler';
-import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';
+import {
+  TFieldName,
+  TGroupName,
+  InferSchemaData,
+  TSchema,
+} from '../suiteResult/SuiteResultTypes';
 
-import { Suite } from "./SuiteTypes";
+import { Suite } from './SuiteTypes';
 import {
   bindSuiteLifecycle,
   useCreateSuiteMethods,
-} from "./useCreateSuiteMethods";
+} from './useCreateSuiteMethods';
 import { validateSuiteCallback } from './validateParams/validateSuiteParams';
 
 // @vx-allow use-use
-/**
- * Creates a new Vest suite.
- *
- * @example
- * const suite = createSuite((data) => {
- *  test('field', 'message', () => {
- *    enforce(data.field).isNotEmpty();
- *  });
- * });
- *
- * @param {Function} suiteCallback - The body of the suite.
- * @returns {Suite} - The created suite.
- */
+function createSuite<
+  D extends object,
+  F extends TFieldName = keyof D & string,
+  G extends TGroupName = string,
+>(
+  suiteCallback: (data: D, ...args: any[]) => any,
+): Suite<F, G, (data: D, ...args: any[]) => any>;
+function createSuite<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema,
+  Args extends any[] = any[],
+  Return = any,
+>(
+  suiteCallback: (data: InferSchemaData<S>, ...args: Args) => Return,
+  schema: S,
+): Suite<F, G, (data: InferSchemaData<S>, ...args: Args) => Return, S>;
+
 function createSuite<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB = CB,
->(suiteCallback: T): Suite<F, G, T> {
+>(suiteCallback: T, schema?: null | undefined): Suite<F, G, T>;
+
+function createSuite<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB = CB,
+  S extends TSchema = undefined,
+>(suiteCallback: T, schema?: S): Suite<F, G, T, S>;
+function createSuite<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB = CB,
+  S extends TSchema = undefined,
+>(suiteCallback: T, schema?: S): Suite<F, G, T, S> {
   validateSuiteCallback(suiteCallback);
 
   // Create a stateRef for the suite
@@ -46,13 +69,14 @@ function createSuite<
     const VestBus = useInitVestBus();
     return createSuiteInstance();
 
-    function createSuiteInstance(): Suite<F, G, T> {
-      const methods = useCreateSuiteMethods<F, G, T>(
+    function createSuiteInstance(): Suite<F, G, T, S> {
+      const methods = useCreateSuiteMethods<F, G, T, S>(
         suiteCallback,
         {
           only: undefined,
         },
         VestBus.subscribe,
+        schema,
       );
 
       return bindSuiteLifecycle(methods);

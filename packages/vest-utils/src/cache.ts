@@ -1,4 +1,3 @@
-
 import { lengthEquals } from './lengthEquals';
 import { longerThan } from './longerThan';
 import { DynamicValue, Nullable } from './utilityTypes';

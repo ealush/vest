@@ -300,6 +300,20 @@ exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 1`]
       "parent": [Circular],
       "status": "DONE",
     },
+    {
+      "$type": "Reorderable",
+      "abortController": AbortController {},
+      "allowReorder": true,
+      "children": null,
+      "data": {
+        "tests": [],
+      },
+      "key": null,
+      "keys": null,
+      "output": undefined,
+      "parent": [Circular],
+      "status": "DONE",
+    },
   ],
   "data": {
     "optional": {},
@@ -806,7 +820,7 @@ exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 1`]
   },
   "key": null,
   "keys": null,
-  "output": SuiteSummary {
+  "output": {
     "dump": [Function],
     "errorCount": 4,
     "errors": [
@@ -879,6 +893,14 @@ exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 1`]
     "isTested": [Function],
     "isValid": [Function],
     "isValidByGroup": [Function],
+    "issues": [
+      {
+        "message": "t2 message",
+        "path": [
+          "t2",
+        ],
+      },
+    ],
     "pendingCount": 0,
     "testCount": 6,
     "tests": {
@@ -939,6 +961,7 @@ exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 1`]
         "warnings": [],
       },
     },
+    "types": undefined,
     "valid": false,
     "warnCount": 1,
     "warnings": [
@@ -955,7 +978,7 @@ exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 1`]
 `;
 
 exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 2`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 4,
   "errors": [
@@ -1028,6 +1051,14 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [
+    {
+      "message": "t2 message",
+      "path": [
+        "t2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 6,
   "tests": {
@@ -1088,6 +1119,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 1,
   "warnings": [

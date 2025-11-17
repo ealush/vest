@@ -247,7 +247,7 @@ exports[`omitWhen > when conditional is falsy > function conditional > should ru
 `;
 
 exports[`omitWhen > when conditional is truthy > boolean conditional > should avoid running the omitted tests 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 1,
   "errors": [
@@ -273,6 +273,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {
@@ -313,6 +314,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -320,7 +322,7 @@ SuiteSummary {
 `;
 
 exports[`omitWhen > when conditional is truthy > boolean conditional > should skip and not run omitted fields when no field filter is provided 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 1,
   "errors": [
@@ -346,6 +348,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {
@@ -386,6 +389,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -393,7 +397,7 @@ SuiteSummary {
 `;
 
 exports[`omitWhen > when conditional is truthy > function conditional > should avoid running the omitted tests 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 1,
   "errors": [
@@ -419,6 +423,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {
@@ -459,6 +464,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -466,7 +472,7 @@ SuiteSummary {
 `;
 
 exports[`omitWhen > when conditional is truthy > function conditional > should skip and not run omitted fields when no field filter is provided 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 1,
   "errors": [
@@ -492,6 +498,7 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {
@@ -532,6 +539,7 @@ SuiteSummary {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],

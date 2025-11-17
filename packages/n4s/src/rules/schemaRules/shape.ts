@@ -46,7 +46,9 @@ export function shape<T extends Record<string, any>>(
 
   for (const key in value) {
     if (!hasOwnProperty(schema, key)) {
-      return RuleRunReturn.Failing(value);
+      const res = RuleRunReturn.Failing(value);
+      const newRes = { ...res, path: [key] };
+      return newRes;
     }
   }
 

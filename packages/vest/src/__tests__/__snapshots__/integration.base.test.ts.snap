@@ -32,6 +32,20 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [
+    {
+      "message": "field_statement_1",
+      "path": [
+        "field_1",
+      ],
+    },
+    {
+      "message": "field_statement_2",
+      "path": [
+        "field_2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 5,
   "tests": {
@@ -87,6 +101,7 @@ Promise {
       "warnings": [],
     },
   },
+  "types": undefined,
   "valid": false,
   "warnCount": 1,
   "warnings": [

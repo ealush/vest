@@ -39,6 +39,20 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
         "status": "DONE",
       },
       [Circular],
+      {
+        "$type": "Reorderable",
+        "abortController": AbortController {},
+        "allowReorder": true,
+        "children": null,
+        "data": {
+          "tests": [],
+        },
+        "key": null,
+        "keys": null,
+        "output": undefined,
+        "parent": [Circular],
+        "status": "DONE",
+      },
     ],
     "data": {
       "optional": {},
@@ -49,7 +63,7 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     },
     "key": null,
     "keys": null,
-    "output": SuiteSummary {
+    "output": {
       "dump": [Function],
       "errorCount": 0,
       "errors": [],
@@ -82,7 +96,9 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
           "warnings": [],
         },
       },
+      "types": undefined,
       "valid": true,
+      "value": undefined,
       "warnCount": 0,
       "warnings": [],
     },
@@ -129,6 +145,20 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
         "status": "DONE",
       },
       [Circular],
+      {
+        "$type": "Reorderable",
+        "abortController": AbortController {},
+        "allowReorder": true,
+        "children": null,
+        "data": {
+          "tests": [],
+        },
+        "key": null,
+        "keys": null,
+        "output": undefined,
+        "parent": [Circular],
+        "status": "DONE",
+      },
     ],
     "data": {
       "optional": {},
@@ -141,7 +171,7 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     "keys": {
       "keyboardcat": [Circular],
     },
-    "output": SuiteSummary {
+    "output": {
       "dump": [Function],
       "errorCount": 0,
       "errors": [],
@@ -174,7 +204,9 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
           "warnings": [],
         },
       },
+      "types": undefined,
       "valid": true,
+      "value": undefined,
       "warnCount": 0,
       "warnings": [],
     },
@@ -221,6 +253,20 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
         "status": "DONE",
       },
       [Circular],
+      {
+        "$type": "Reorderable",
+        "abortController": AbortController {},
+        "allowReorder": true,
+        "children": null,
+        "data": {
+          "tests": [],
+        },
+        "key": null,
+        "keys": null,
+        "output": undefined,
+        "parent": [Circular],
+        "status": "DONE",
+      },
     ],
     "data": {
       "optional": {},
@@ -231,7 +277,7 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     },
     "key": null,
     "keys": null,
-    "output": SuiteSummary {
+    "output": {
       "dump": [Function],
       "errorCount": 0,
       "errors": [],
@@ -264,7 +310,9 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
           "warnings": [],
         },
       },
+      "types": undefined,
       "valid": true,
+      "value": undefined,
       "warnCount": 0,
       "warnings": [],
     },

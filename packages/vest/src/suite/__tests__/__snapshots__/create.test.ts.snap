@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Test createSuite module > Initial run > should be able to get the suite from the result of createSuite 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 0,
   "errors": [],
@@ -21,9 +21,11 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 0,
   "tests": {},
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],
@@ -31,7 +33,7 @@ SuiteSummary {
 `;
 
 exports[`Test createSuite module > Initial run > should initialize with an empty result object 1`] = `
-SuiteSummary {
+{
   "dump": [Function],
   "errorCount": 0,
   "errors": [],
@@ -51,9 +53,11 @@ SuiteSummary {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
+  "issues": [],
   "pendingCount": 0,
   "testCount": 0,
   "tests": {},
+  "types": undefined,
   "valid": false,
   "warnCount": 0,
   "warnings": [],

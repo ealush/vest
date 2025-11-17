@@ -243,6 +243,20 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
       "parent": [Circular],
       "status": "DONE",
     },
+    {
+      "$type": "Reorderable",
+      "abortController": AbortController {},
+      "allowReorder": true,
+      "children": null,
+      "data": {
+        "tests": [],
+      },
+      "key": null,
+      "keys": null,
+      "output": undefined,
+      "parent": [Circular],
+      "status": "DONE",
+    },
   ],
   "data": {
     "optional": {},
@@ -629,7 +643,7 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
   },
   "key": null,
   "keys": null,
-  "output": SuiteSummary {
+  "output": {
     "dump": [Function],
     "errorCount": 1,
     "errors": [
@@ -676,6 +690,14 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
     "isTested": [Function],
     "isValid": [Function],
     "isValidByGroup": [Function],
+    "issues": [
+      {
+        "message": "field_1_message",
+        "path": [
+          "field_1",
+        ],
+      },
+    ],
     "pendingCount": 0,
     "testCount": 1,
     "tests": {
@@ -727,6 +749,7 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
         "warnings": [],
       },
     },
+    "types": undefined,
     "valid": false,
     "warnCount": 0,
     "warnings": [],

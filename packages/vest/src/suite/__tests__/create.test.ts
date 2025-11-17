@@ -5,8 +5,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { dummyTest } from '../../testUtils/testDummy';
 import { TestPromise } from '../../testUtils/testPromise';
 
-import { ErrorStrings } from 'ErrorStrings';
-import { create } from 'vest';
+import { ErrorStrings } from '../../errors/ErrorStrings';
+import { create } from '../../vest';
 
 describe('Test createSuite module', () => {
   describe('Test suite Arguments', () => {

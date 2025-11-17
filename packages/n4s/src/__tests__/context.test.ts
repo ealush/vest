@@ -2,7 +2,7 @@ import { has } from 'lodash';
 import { isNullish } from 'vest-utils';
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { enforce } from 'n4s';
+import { enforce } from '../n4s';
 
 describe('enforce.context() API', () => {
   describe('Basic context access', () => {

@@ -1,12 +1,12 @@
 import { isStringValue, invariant, dynamicValue } from 'vest-utils';
 
-import { ErrorStrings } from 'ErrorStrings';
-import { TIsolateTest } from 'IsolateTest';
-import { useInclusion } from 'SuiteContext';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { TDraftCondition } from 'getTypedMethods';
-import { useCreateSuiteResult } from 'suiteResult';
-import { useHasOnliedTests } from 'useHasOnliedTests';
+import { ErrorStrings } from '../errors/ErrorStrings';
+import { TIsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
+import { useInclusion } from '../core/context/SuiteContext';
+import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';
+import { TDraftCondition } from '../suite/getTypedMethods';
+import { useCreateSuiteResult } from '../suiteResult/suiteResult';
+import { useHasOnliedTests } from './focused/useHasOnliedTests';
 
 /**
  * Conditionally includes a field for testing, based on specified criteria.

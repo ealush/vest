@@ -3,10 +3,10 @@ import wait from 'wait';
 
 import { dummyTest } from '../../testUtils/testDummy';
 
-import { Modes } from 'Modes';
-import { TTestSuite } from 'TVestMock';
-import { create, only, group, mode } from 'vest';
-import * as Vest from 'vest';
+import { Modes } from '../optional/Modes';
+import { TTestSuite } from '../../testUtils/TVestMock';
+import { create, only, group, mode } from '../../vest';
+import * as Vest from '../../vest';
 
 describe('mode', () => {
   let suite: TTestSuite;

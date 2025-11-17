@@ -1,8 +1,8 @@
 /* eslint-disable max-nested-callbacks */
-import { ctx } from 'enforceContext';
+import { ctx } from '../../enforceContext';
 import { mapFirst } from 'vest-utils';
 
-import { RuleRunReturn } from 'RuleRunReturn';
+import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 /**
  * Validates that a value is an array and all elements match at least one of the provided rules.
@@ -67,4 +67,4 @@ export function isArrayOf<T>(value: T[], ...rules: any[]): RuleRunReturn<T[]> {
 
 // Type for isArrayOf rule instance - should chain array rules like isArray does
 export type IsArrayOfRuleInstance<T> =
-  import('arrayRules').ArrayRuleInstance<T>;
+  import('../arrayRules').ArrayRuleInstance<T>;

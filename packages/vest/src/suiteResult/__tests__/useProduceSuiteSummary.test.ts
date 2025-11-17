@@ -4,8 +4,8 @@ import wait from 'wait';
 import { ser } from '../../testUtils/suiteDummy';
 import { dummyTest } from '../../testUtils/testDummy';
 
-import { Modes } from 'Modes';
-import * as vest from 'vest';
+import { Modes } from '../../hooks/optional/Modes';
+import * as vest from '../../vest';
 
 describe('useProduceSuiteSummary', () => {
   describe('Base structure', () => {

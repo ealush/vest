@@ -1,4 +1,4 @@
-import { greaterThan } from 'greaterThan';
+import { greaterThan } from './greaterThan';
 
 export function longerThan(
   value: string | unknown[],

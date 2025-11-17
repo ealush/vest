@@ -1,5 +1,5 @@
-import { TIsolate } from 'Isolate';
-import { IsolateKeys } from 'IsolateKeys';
+import { TIsolate } from '../Isolate/Isolate';
+import { IsolateKeys } from '../Isolate/IsolateKeys';
 
 export function genTestIsolate(payload: Record<string, any> = {}): TIsolate {
   const { status, ...data } = payload;

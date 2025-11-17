@@ -1,4 +1,4 @@
-import { enforce } from 'n4s';
+import { enforce } from '../n4s';
 import isAfter from 'validator/es/lib/isAfter';
 import isBefore from 'validator/es/lib/isBefore';
 import isDate from 'validator/es/lib/isDate';

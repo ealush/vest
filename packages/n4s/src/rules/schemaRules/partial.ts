@@ -1,8 +1,8 @@
-import { ctx } from 'enforceContext';
-import type { ShapeType } from 'shape';
+import { ctx } from '../../enforceContext';
+import type { ShapeType } from './shape';
 
-import type { RuleInstance } from 'RuleInstance';
-import { RuleRunReturn } from 'RuleRunReturn';
+import type { RuleInstance } from '../../utils/RuleInstance';
+import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 /**
  * Checks if value has any keys not present in schema.

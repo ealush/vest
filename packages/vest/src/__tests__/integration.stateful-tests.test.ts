@@ -1,8 +1,8 @@
 import { enforce } from 'n4s';
 import { describe, it, expect, test } from 'vitest';
 
-import { Modes } from 'Modes';
-import * as vest from 'vest';
+import { Modes } from '../hooks/optional/Modes';
+import * as vest from '../vest';
 
 describe('Stateful behavior', () => {
   let result;

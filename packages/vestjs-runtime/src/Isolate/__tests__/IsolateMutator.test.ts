@@ -1,5 +1,5 @@
-import { TIsolate } from 'Isolate';
-import { IsolateMutator } from 'IsolateMutator';
+import { TIsolate } from '../Isolate';
+import { IsolateMutator } from '../IsolateMutator';
 import { describe, it, expect, vi } from 'vitest';
 
 describe('IsolateMutator', () => {

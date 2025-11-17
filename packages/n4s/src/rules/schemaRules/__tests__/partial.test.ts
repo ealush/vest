@@ -1,7 +1,7 @@
-import { RuleInstance } from 'RuleInstance';
+import { RuleInstance } from '../../../utils/RuleInstance';
 import { describe, it, expect } from 'vitest';
 
-import { enforce } from 'n4s';
+import { enforce } from '../../../n4s';
 
 const longerThan = (n: number): RuleInstance<string> => ({
   run: (v: any) => ({ pass: typeof v === 'string' && v.length > n, type: v }),

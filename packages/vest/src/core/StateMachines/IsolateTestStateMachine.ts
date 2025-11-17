@@ -1,6 +1,6 @@
 import { StateMachine, TStateMachine, ValueOf } from 'vest-utils';
 
-import { CommonStates } from 'CommonStateMachine';
+import { CommonStates } from './CommonStateMachine';
 
 export const TestStatus = {
   [CommonStates.PENDING]: CommonStates.PENDING,

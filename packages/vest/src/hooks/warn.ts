@@ -1,8 +1,8 @@
 import { invariant } from 'vest-utils';
 
-import { ErrorStrings } from 'ErrorStrings';
-import { useCurrentTest } from 'SuiteContext';
-import { VestTest } from 'VestTest';
+import { ErrorStrings } from '../errors/ErrorStrings';
+import { useCurrentTest } from '../core/context/SuiteContext';
+import { VestTest } from '../core/isolate/IsolateTest/VestTest';
 
 const ERROR_OUTSIDE_OF_TEST = ErrorStrings.WARN_MUST_BE_CALLED_FROM_TEST;
 

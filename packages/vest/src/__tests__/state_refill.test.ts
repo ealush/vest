@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-import { Modes } from 'Modes';
-import * as vest from 'vest';
+import { Modes } from '../hooks/optional/Modes';
+import * as vest from '../vest';
 
 describe('state refill', () => {
   it('Should refill test state according to the execution order', () => {

@@ -1,7 +1,7 @@
 import { isNullish } from 'vest-utils';
 
-import { RuleInstance } from 'RuleInstance';
-import { RuleRunReturn } from 'RuleRunReturn';
+import { RuleInstance } from '../../utils/RuleInstance';
+import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 /**
  * Makes a validation rule optional by allowing null or undefined values to pass.

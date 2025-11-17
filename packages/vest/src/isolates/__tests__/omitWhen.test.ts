@@ -1,9 +1,9 @@
-import { TTestSuite } from 'TVestMock';
+import { TTestSuite } from '../../testUtils/TVestMock';
 import { Maybe } from 'vest-utils';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
-import * as vest from 'vest';
-import { omitWhen, only } from 'vest';
+import * as vest from '../../vest';
+import { omitWhen, only } from '../../vest';
 
 describe('omitWhen', () => {
   let suite: TTestSuite;

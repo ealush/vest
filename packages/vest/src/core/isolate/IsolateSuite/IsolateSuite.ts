@@ -1,12 +1,19 @@
 import { CB, assign } from 'vest-utils';
 
-import { OptionalFieldDeclaration, OptionalFields } from 'OptionalTypes';
-import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
+import {
+  OptionalFieldDeclaration,
+  OptionalFields,
+} from '../../../hooks/optional/OptionalTypes';
+import {
+  SuiteResult,
+  TFieldName,
+  TGroupName,
+} from '../../../suiteResult/SuiteResultTypes';
 import {
   createVestIsolate,
   TVestIsolate,
   VestIsolateType,
-} from 'VestIsolateType';
+} from '../VestIsolateType';
 
 export type TIsolateSuite = TVestIsolate<{
   optional: OptionalFields;

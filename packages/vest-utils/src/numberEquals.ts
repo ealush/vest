@@ -1,5 +1,5 @@
-import bindNot from 'bindNot';
-import { isNumeric } from 'isNumeric';
+import bindNot from './bindNot';
+import { isNumeric } from './isNumeric';
 
 export function numberEquals(
   value: string | number,

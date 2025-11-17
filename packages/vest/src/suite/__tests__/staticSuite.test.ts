@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import wait from 'wait';
 
-import { SuiteSerializer } from 'SuiteSerializer';
-import { VestIsolateType } from 'VestIsolateType';
-import * as vest from 'vest';
+import { SuiteSerializer } from '../../exports/SuiteSerializer';
+import { VestIsolateType } from '../../core/isolate/VestIsolateType';
+import * as vest from '../../vest';
 
 describe('runStatic', () => {
   it('should run a static suite', () => {

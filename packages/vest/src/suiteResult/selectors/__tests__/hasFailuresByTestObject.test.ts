@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
-import { TIsolateTest } from 'IsolateTest';
-import { Severity } from 'Severity';
-import { VestTest } from 'VestTest';
-import { hasFailuresByTestObject } from 'hasFailuresByTestObjects';
-import { mockIsolateTest } from 'vestMocks';
+import { TIsolateTest } from '../../../core/isolate/IsolateTest/IsolateTest';
+import { Severity } from '../../Severity';
+import { VestTest } from '../../../core/isolate/IsolateTest/VestTest';
+import { hasFailuresByTestObject } from '../hasFailuresByTestObjects';
+import { mockIsolateTest } from '../../../testUtils/vestMocks';
 import { describe, it, expect, beforeEach } from 'vitest';
 
 const fieldName: string = faker.lorem.word();

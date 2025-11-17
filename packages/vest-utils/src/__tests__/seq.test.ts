@@ -1,4 +1,4 @@
-import seq, { genSeq } from 'seq';
+import seq, { genSeq } from '../seq';
 import { describe, it, expect } from 'vitest';
 
 describe('lib:seq', () => {

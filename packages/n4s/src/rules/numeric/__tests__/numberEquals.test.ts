@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforce } from 'n4s';
+import { enforce } from '../../../n4s';
 
 describe('numberEquals (numeric)', () => {
   it('pass when numeric strings are equal', () => {

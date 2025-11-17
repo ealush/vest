@@ -1,7 +1,7 @@
 import { CB } from 'vest-utils';
 import { Isolate, IsolateKey, TIsolate } from 'vestjs-runtime';
 
-import { TIsolateTest } from 'IsolateTest';
+import { TIsolateTest } from './IsolateTest/IsolateTest';
 
 export const VestIsolateType = {
   Each: 'Each',

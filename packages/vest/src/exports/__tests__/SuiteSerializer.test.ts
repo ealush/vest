@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-import { SuiteSerializer } from 'SuiteSerializer';
-import * as vest from 'vest';
+import { SuiteSerializer } from '../SuiteSerializer';
+import * as vest from '../../vest';
 
 describe('SuiteSerializer', () => {
   it('should produce a valid serialized dump', () => {

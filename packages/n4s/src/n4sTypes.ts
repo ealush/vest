@@ -1,5 +1,5 @@
-import { RuleRunReturn } from 'RuleRunReturn';
-import type { FirstParam } from 'typeUtils';
+import { RuleRunReturn } from './utils/RuleRunReturn';
+import type { FirstParam } from './eager/typeUtils';
 import type { CB, DropFirst } from 'vest-utils';
 
 /**
@@ -56,5 +56,5 @@ export type TCustomRules<T, A, S> = {
     ? K
     : never]: (
     ...args: CustomMatcherArgs<K>
-  ) => import('eager').EnforceEagerReturn<T, A, S>;
+  ) => import('./eager').EnforceEagerReturn<T, A, S>;
 };

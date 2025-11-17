@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
 import wait from 'wait';
 
-import { TIsolateTest } from 'IsolateTest';
-import { VestTest } from 'VestTest';
-import * as vest from 'vest';
+import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
+import { VestTest } from '../../isolate/IsolateTest/VestTest';
+import * as vest from '../../../vest';
 
 describe('runAsyncTest', () => {
   describe('State Updates', () => {

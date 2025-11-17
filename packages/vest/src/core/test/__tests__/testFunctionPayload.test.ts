@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import * as vest from 'vest';
+import * as vest from '../../../vest';
 
 describe('Test Function Payload', () => {
   describe('AbortSignal', () => {

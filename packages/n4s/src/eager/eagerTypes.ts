@@ -1,6 +1,6 @@
-import type { RuleInstance } from 'RuleInstance';
-import { TCustomRules } from 'n4sTypes';
-import { MultiTypeInput } from 'schemaRulesTypes';
+import type { RuleInstance } from '../utils/RuleInstance';
+import { TCustomRules } from '../n4sTypes';
+import { MultiTypeInput } from '../rules/schemaRules/schemaRulesTypes';
 import type {
   AnyFn,
   FirstParam,
@@ -8,7 +8,7 @@ import type {
   InferNextValue,
   DropFirstFn,
   UnwrapRuleInstance,
-} from 'typeUtils';
+} from './typeUtils';
 
 type Msg<T, A, S> = { message: (input: string) => EnforceEagerReturn<T, A, S> };
 

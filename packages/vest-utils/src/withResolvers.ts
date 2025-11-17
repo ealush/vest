@@ -1,4 +1,4 @@
-import { noop } from 'noop';
+import { noop } from './noop';
 
 export function withResolvers<T>() {
   if (Promise.hasOwnProperty('withResolvers')) {

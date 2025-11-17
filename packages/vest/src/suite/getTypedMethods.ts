@@ -1,18 +1,22 @@
 // import { optional, skipWhen, omitWhen, IsolateTest, group } from 'vest';
-import { optional } from 'optional';
+import { optional } from '../hooks/optional/optional';
 import { CB, DynamicValue } from 'vest-utils';
 import { TIsolate, IsolateKey } from 'vestjs-runtime';
 
-import { TIsolateTest } from 'IsolateTest';
-import { OptionalsInput } from 'OptionalTypes';
-import { SuiteResult, TFieldName, TGroupName } from 'SuiteResultTypes';
-import { TestFn } from 'TestTypes';
-import { FieldExclusion, only, skip } from 'focused';
-import { group } from 'group';
-import { include } from 'include';
-import { omitWhen } from 'omitWhen';
-import { skipWhen } from 'skipWhen';
-import { test } from 'test';
+import { TIsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
+import { OptionalsInput } from '../hooks/optional/OptionalTypes';
+import {
+  SuiteResult,
+  TFieldName,
+  TGroupName,
+} from '../suiteResult/SuiteResultTypes';
+import { TestFn } from '../core/test/TestTypes';
+import { FieldExclusion, only, skip } from '../hooks/focused/focused';
+import { group } from '../isolates/group';
+import { include } from '../hooks/include';
+import { omitWhen } from '../isolates/omitWhen';
+import { skipWhen } from '../isolates/skipWhen';
+import { test } from '../core/test/test';
 
 export function getTypedMethods<
   F extends TFieldName,

@@ -1,4 +1,4 @@
-import isStringValue from 'isStringValue';
+import isStringValue from '../isStringValue';
 import { describe, it, expect } from 'vitest';
 
 describe('Tests isString rule', () => {

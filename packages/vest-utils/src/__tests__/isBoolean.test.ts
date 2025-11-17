@@ -1,4 +1,4 @@
-import isBoolean from 'isBooleanValue';
+import isBoolean from '../isBooleanValue';
 import { describe, it, expect } from 'vitest';
 
 describe('isBoolean', () => {

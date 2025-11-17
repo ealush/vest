@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { dummyTest } from '../../testUtils/testDummy';
 
-import { TTestSuite } from 'TVestMock';
-import * as vest from 'vest';
+import { TTestSuite } from '../../testUtils/TVestMock';
+import * as vest from '../../vest';
 
 describe('skipWhen', () => {
   let fn = vi.fn();

@@ -2,7 +2,7 @@
  * @returns a unique numeric id.
  */
 
-import { CB } from 'utilityTypes';
+import { CB } from './utilityTypes';
 
 const seq = genSeq();
 

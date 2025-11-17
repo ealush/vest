@@ -16,6 +16,8 @@ const packages = [
 
 export default defineConfig(
   packages.map(pkg =>
-    createPackageConfig({ packageDir: path.resolve(__dirname, 'packages', pkg) }),
+    createPackageConfig({
+      packageDir: path.resolve(__dirname, 'packages', pkg),
+    }),
   ),
 );

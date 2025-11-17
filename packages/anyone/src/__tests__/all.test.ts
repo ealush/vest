@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 
 import { TRUTHY_VALUES, FALSY_VALUES } from './anyoneTestValues';
 
-import all from 'all';
+import all from '../exports/all';
 
 describe('methods/all', () => {
   describe('When only falsy values', () => {

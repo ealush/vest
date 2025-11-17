@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-import { createCascade, CtxCascadeApi } from 'context';
+import { createCascade, CtxCascadeApi } from '../context';
 
 describe('Cascading Context', () => {
   let ctx: CtxCascadeApi<any>;

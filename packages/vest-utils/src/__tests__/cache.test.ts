@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-import { cache } from 'vest-utils';
+import { cache } from '../vest-utils';
 
 describe('lib: cache', () => {
   let c: ReturnType<typeof cache>;

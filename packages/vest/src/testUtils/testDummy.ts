@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { vi } from 'vitest';
 import wait from 'wait';
 
-import { test as vestTest, warn } from 'vest';
+import { test as vestTest, warn } from '../vest';
 
 /**
  * Generates dummy vest tests.

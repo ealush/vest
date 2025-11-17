@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
-import { TTestSuite } from 'TVestMock';
+import { TTestSuite } from '../../../testUtils/TVestMock';
 import { describe, it, expect } from 'vitest';
 
 import { dummyTest } from '../../../testUtils/testDummy';
 
-import * as vest from 'vest';
+import * as vest from '../../../vest';
 
 const fieldName = faker.lorem.word();
 const groupName = faker.lorem.word();

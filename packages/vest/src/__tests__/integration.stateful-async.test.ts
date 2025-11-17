@@ -4,11 +4,11 @@ import wait from 'wait';
 
 import { dummyTest } from '../testUtils/testDummy';
 
-import { TIsolateTest } from 'IsolateTest';
-import { Modes } from 'Modes';
-import { TFieldName, TGroupName } from 'SuiteResultTypes';
-import { VestTest } from 'VestTest';
-import * as vest from 'vest';
+import { TIsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
+import { Modes } from '../hooks/optional/Modes';
+import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';
+import { VestTest } from '../core/isolate/IsolateTest/VestTest';
+import * as vest from '../vest';
 
 type SuiteParams = { skip?: string; skipGroup?: true };
 

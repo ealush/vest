@@ -1,15 +1,15 @@
-import { enforceEager } from 'eager';
-import { ctx } from 'enforceContext';
-import type { EnforceContext } from 'enforceContext';
-import { extendEnforce } from 'extendLogic';
-import { enforceLazy } from 'lazy';
+import { enforceEager } from './eager';
+import { ctx } from './enforceContext';
+import type { EnforceContext } from './enforceContext';
+import { extendEnforce } from './extendLogic';
+import { enforceLazy } from './lazy';
 import { assign } from 'vest-utils';
 
 /**
  * Context API for accessing validation context.
  * Allows accessing metadata and parent validation context during rule execution.
  */
-export { ctx } from 'enforceContext';
+export { ctx } from './enforceContext';
 
 /**
  * Compose multiple validation rules into a single reusable rule.
@@ -35,7 +35,7 @@ export { ctx } from 'enforceContext';
  * });
  * ```
  */
-export { compose } from 'compose';
+export { compose } from './compose';
 
 type ExtendFn = (rules: Record<string, (...args: any[]) => any>) => void;
 type ContextFn = () => EnforceContext;

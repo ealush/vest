@@ -11,6 +11,7 @@ export const VestIsolateType = {
   SkipWhen: 'SkipWhen',
   Suite: 'Suite',
   Test: 'Test',
+  Reorderable: 'Reorderable',
 };
 
 export type TVestIsolate<P = void> = TIsolate<

@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`skipWhen > should pass the current result draft to the functional condition 1`] = `
-SuiteSummary {
+{
   "errorCount": 0,
   "errors": [],
   "getError": [Function],
@@ -30,7 +30,7 @@ SuiteSummary {
 `;
 
 exports[`skipWhen > should pass the current result draft to the functional condition 2`] = `
-SuiteSummary {
+{
   "errorCount": 1,
   "errors": [
     SummaryFailure {
@@ -77,7 +77,7 @@ SuiteSummary {
 `;
 
 exports[`skipWhen > should pass the current result draft to the functional condition 3`] = `
-SuiteSummary {
+{
   "errorCount": 2,
   "errors": [
     SummaryFailure {

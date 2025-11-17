@@ -44,7 +44,9 @@ export function loose<T extends Record<string, any>>(
       schema[key].run(fieldValue),
     );
     if (!res.pass) {
-      return res as RuleRunReturn<T>;
+      const currentPath = res.path || [];
+      const newRes = { ...res, path: [key, ...currentPath] };
+      return newRes as RuleRunReturn<T>;
     }
   }
   return RuleRunReturn.Passing(value);

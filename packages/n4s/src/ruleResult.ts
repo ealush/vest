@@ -5,7 +5,11 @@ import * as booleanRules from './rules/booleanRules';
 
 export type RuleValue = unknown;
 export type Args = any[];
-export type RuleDetailedResult = { pass: boolean; message?: Stringable };
+export type RuleDetailedResult = {
+  pass: boolean;
+  message?: Stringable;
+  path?: string[];
+};
 
 export function enforceMessage(
   ruleName: string,
@@ -35,6 +39,7 @@ export function transformResult(
   return {
     pass: !!result.pass,
     message: dynamicValue(result.message, ruleName, value, ...args),
+    path: result.path,
   };
 }
 

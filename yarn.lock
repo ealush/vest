@@ -3061,6 +3061,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@polka/url@npm:^1.0.0-next.24":
+  version: 1.0.0-next.29
+  resolution: "@polka/url@npm:1.0.0-next.29"
+  checksum: 69ca11ab15a4ffec7f0b07fcc4e1f01489b3d9683a7e1867758818386575c60c213401259ba3705b8a812228d17e2bfd18e6f021194d943fff4bca389c9d4f28
+  languageName: node
+  linkType: hard
+
 "@quansync/fs@npm:^0.1.5":
   version: 0.1.5
   resolution: "@quansync/fs@npm:0.1.5"
@@ -4295,6 +4302,23 @@ __metadata:
   version: 4.0.10
   resolution: "@vitest/spy@npm:4.0.10"
   checksum: b9d8736dde7a7ef2544e19b74bdfc37bb40624c9626be9cd110b0aae267fa81b4f1f82e8ccc9f7871682947dc33db0f9dea1b5691dfae532b4c222150f02d9b8
+  languageName: node
+  linkType: hard
+
+"@vitest/ui@npm:4.0.10":
+  version: 4.0.10
+  resolution: "@vitest/ui@npm:4.0.10"
+  dependencies:
+    "@vitest/utils": 4.0.10
+    fflate: ^0.8.2
+    flatted: ^3.3.3
+    pathe: ^2.0.3
+    sirv: ^3.0.2
+    tinyglobby: ^0.2.15
+    tinyrainbow: ^3.0.3
+  peerDependencies:
+    vitest: 4.0.10
+  checksum: b9ab3e92b126812db8fc9109eb97198e09e574a12044f50bc189d152ab343bf2d164168d84355737f6a29f6cb5f23db857370063c1627392bcaaab938136689a
   languageName: node
   linkType: hard
 
@@ -7458,6 +7482,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fflate@npm:^0.8.2":
+  version: 0.8.2
+  resolution: "fflate@npm:0.8.2"
+  checksum: 29470337b85d3831826758e78f370e15cda3169c5cd4477c9b5eea2402261a74b2975bae816afabe1c15d21d98591e0d30a574f7103aa117bff60756fa3035d4
+  languageName: node
+  linkType: hard
+
 "figures@npm:^5.0.0":
   version: 5.0.0
   resolution: "figures@npm:5.0.0"
@@ -7592,6 +7623,13 @@ __metadata:
   version: 3.2.7
   resolution: "flatted@npm:3.2.7"
   checksum: 427633049d55bdb80201c68f7eb1cbd533e03eac541f97d3aecab8c5526f12a20ccecaeede08b57503e772c769e7f8680b37e8d482d1e5f8d7e2194687f9ea35
+  languageName: node
+  linkType: hard
+
+"flatted@npm:^3.3.3":
+  version: 3.3.3
+  resolution: "flatted@npm:3.3.3"
+  checksum: 8c96c02fbeadcf4e8ffd0fa24983241e27698b0781295622591fc13585e2f226609d95e422bcf2ef044146ffacb6b68b1f20871454eddf75ab3caa6ee5f4a1fe
   languageName: node
   linkType: hard
 
@@ -10838,6 +10876,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mrmime@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "mrmime@npm:2.0.1"
+  checksum: 455a555009edb2ed6e587e0fcb5e41fcbf8f1dcca28242a57d054f02204ab198bed93ba9de75db06bd3447e8603bc74e10a22440ba99431fc4a751435fba35bf
+  languageName: node
+  linkType: hard
+
 "ms@npm:2.0.0":
   version: 2.0.0
   resolution: "ms@npm:2.0.0"
@@ -13465,6 +13510,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sirv@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "sirv@npm:3.0.2"
+  dependencies:
+    "@polka/url": ^1.0.0-next.24
+    mrmime: ^2.0.0
+    totalist: ^3.0.0
+  checksum: 570cc6c079e9b4161a6120239db2d97d7c34d216dc2b96b2c2e9d16d3afebc2495c98e8ade8fdaf16c0a49490e52009664261caaa640477f3a3ca518282ba007
+  languageName: node
+  linkType: hard
+
 "sisteransi@npm:^1.0.5":
   version: 1.0.5
   resolution: "sisteransi@npm:1.0.5"
@@ -14663,6 +14719,7 @@ __metadata:
     "@types/lodash": ^4.17.5
     "@typescript-eslint/eslint-plugin": ^6.21.0
     "@typescript-eslint/parser": ^6.21.0
+    "@vitest/ui": 4.0.10
     eslint: ^8.57.0
     eslint-config-prettier: ^9.1.0
     eslint-import-resolver-typescript: ^3.6.1

@@ -14,7 +14,7 @@ describe('debounce', () => {
         });
 
         const suite = vest.create(() => {
-          vest.test('test', 'message', debounce(test, 1500));
+          vest.test('test', 'message', debounce(test, 150));
         });
 
         suite.run();
@@ -36,7 +36,7 @@ describe('debounce', () => {
         });
 
         const suite = vest.create(() => {
-          vest.test('test', 'message', debounce(test, 1500));
+          vest.test('test', 'message', debounce(test, 150));
         });
 
         suite.run();
@@ -55,22 +55,22 @@ describe('debounce', () => {
   describe('Async test', () => {
     it('should start the async test only after the debounce delay', async () => {
       const t = vi.fn(async () => {
-        await wait(1000);
+        await wait(100);
         vest.enforce(1).equals(2);
       });
 
       const suite = vest.create(() => {
-        vest.test('test', 'message', debounce(t, 1500));
+        vest.test('test', 'message', debounce(t, 150));
       });
 
       suite.run();
       expect(t).toHaveBeenCalledTimes(0);
       expect(suite.isPending()).toBe(true);
-      await wait(2000);
+      await wait(200);
       expect(t).toHaveBeenCalledTimes(1);
       expect(suite.get().hasErrors('test')).toBe(false);
       expect(suite.isPending()).toBe(true);
-      await wait(1000);
+      await wait(100);
       expect(suite.isPending()).toBe(false);
       expect(suite.get().hasErrors('test')).toBe(true);
     });
@@ -83,11 +83,11 @@ describe('debounce', () => {
       });
 
       const suite = vest.create(() => {
-        vest.test('test', 'message', debounce(test, 1000));
+        vest.test('test', 'message', debounce(test, 100));
       });
 
       suite.run();
-      await wait(1000);
+      await wait(100);
       expect(suite.get().hasErrors('test')).toBe(true);
       expect(test).toHaveBeenCalledTimes(1);
 
@@ -95,7 +95,7 @@ describe('debounce', () => {
       suite.run();
       suite.run();
       expect(test).toHaveBeenCalledTimes(1);
-      await wait(1000);
+      await wait(100);
       expect(suite.get().hasErrors('test')).toBe(true);
       expect(test).toHaveBeenCalledTimes(2);
 
@@ -103,7 +103,7 @@ describe('debounce', () => {
       suite.run();
       suite.run();
       expect(test).toHaveBeenCalledTimes(2);
-      await wait(1000);
+      await wait(100);
     });
   });
 

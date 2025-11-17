@@ -54,13 +54,30 @@ export function isArrayOf<T>(value: T[], ...rules: any[]): RuleRunReturn<T[]> {
   return (
     mapFirst(value, (item, breakout, index) => {
       const res = ctx.run({ value: item, set: true, meta: { index } }, () => {
+        let lastRes: RuleRunReturn<any> | undefined;
         // Try each rule with the item - any rule passing is OK
-        const anyPass = rules.some(rule => rule.run(item).pass);
-        return anyPass
-          ? RuleRunReturn.Passing(item)
-          : RuleRunReturn.Failing(item);
+        const anyPass = rules.some(rule => {
+          lastRes = rule.run(item);
+          return lastRes.pass;
+        });
+
+        if (anyPass) {
+          return RuleRunReturn.Passing(item);
+        }
+
+        // If failed and we have a single rule, return its failure (might contain nested path)
+        if (rules.length === 1 && lastRes) {
+          return lastRes;
+        }
+
+        return RuleRunReturn.Failing(item);
       });
-      breakout(!res.pass, res);
+
+      if (!res.pass) {
+        const currentPath = res.path || [];
+        const newRes = { ...res, path: [index.toString(), ...currentPath] };
+        breakout(true, newRes);
+      }
     }) || RuleRunReturn.Passing(value)
   );
 }

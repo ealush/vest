@@ -96,7 +96,37 @@ const suite = create<FieldName, GroupName, Callback>(data => {
 const { test, group, only } = suite;
 ```
 
-## Exported Types
+## Schema-Aware Suite Creation
+
+Vest can infer the type of your suite's data argument directly from an `n4s` schema. This provides automatic type safety for your suite callback and `.run()` method without manually defining types. Additionally, the schema is executed at runtime, and validation errors are automatically registered in the suite result.
+
+To use this feature, pass your `n4s` schema as the second argument to `create`:
+
+```ts
+import { create, test, enforce } from 'vest';
+
+const userSchema = enforce.shape({
+  username: enforce.isString(),
+  age: enforce.isNumber(),
+});
+
+const suite = create(data => {
+  // data is automatically typed as: { username: string; age: number }
+
+  test('username', () => {
+    enforce(data.username).isNotEmpty();
+  });
+}, userSchema);
+
+// Type-safe execution
+suite.run({ username: 'example', age: 30 }); // ✅ Valid
+suite.run({ username: 'example' }); // ❌ Error: Property 'age' is missing
+suite.run({ username: 123, age: 30 }); // ❌ Error: Type 'number' is not assignable to type 'string'
+```
+
+This also works with `enforce.loose()` and `enforce.partial()` schemas.
+
+## Explicitly Typed Suite
 
 Vest exports the following types so you can use them to annotate your functions and variables:
 

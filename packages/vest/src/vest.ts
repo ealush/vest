@@ -9,12 +9,12 @@ import { mode } from './hooks/optional/mode';
 import { optional } from './hooks/optional/optional';
 import { warn } from './hooks/warn';
 import { each } from './isolates/each';
-import type { Suite } from './suite/SuiteTypes';
-import type { SuiteResult, SuiteSummary } from './suiteResult/SuiteResultTypes';
-import { createSuite } from './suite/createSuite';
 import { group } from './isolates/group';
 import { omitWhen } from './isolates/omitWhen';
 import { skipWhen } from './isolates/skipWhen';
+import type { Suite } from './suite/SuiteTypes';
+import { createSuite } from './suite/createSuite';
+import type { SuiteResult, SuiteSummary } from './suiteResult/SuiteResultTypes';
 import { suiteSelectors } from './suiteResult/selectors/suiteSelectors';
 
 export {

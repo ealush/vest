@@ -636,7 +636,7 @@ describe('Schema Rules - Eager Notation', () => {
             enforce.isString().isFriendTheSameAsUser(),
           ),
         }),
-      ).toThrow(/enforce/);
+      ).toThrow('Friend cannot be the same as username');
     });
   });
 

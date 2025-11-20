@@ -1,6 +1,7 @@
 import { hasOwnProperty } from 'vest-utils';
 
 import { RuleInstance } from '../../utils/RuleInstance';
+
 import type { Predicate } from './chainExecutor';
 import { getLazyRule } from './lazyRegistry';
 

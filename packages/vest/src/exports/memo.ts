@@ -1,4 +1,3 @@
-import { registerReconciler } from '../vest';
 import {
   cache,
   CacheApi,
@@ -10,11 +9,12 @@ import {
 import { TIsolate, IsolateSelectors, Walker } from 'vestjs-runtime';
 
 import { TIsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
+import { VestTest } from '../core/isolate/IsolateTest/VestTest';
 import {
   createVestIsolate,
   TVestIsolate,
 } from '../core/isolate/VestIsolateType';
-import { VestTest } from '../core/isolate/IsolateTest/VestTest';
+import { registerReconciler } from '../vest';
 
 const isolateType = 'Memo';
 

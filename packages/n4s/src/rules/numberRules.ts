@@ -1,19 +1,20 @@
+import { greaterThan, numberEquals } from 'vest-utils';
+
 import { BuildRuleInstance, ExtractRuleFunctions } from './RuleInstanceBuilder';
 import { equals } from './general/equals';
+import { isNaN } from './general/isNaN';
+import { isNotNaN } from './general/isNotNaN';
 import { greaterThanOrEquals } from './number/greaterThanOrEquals';
 import { isBetween } from './number/isBetween';
 import { isEven } from './number/isEven';
-import { isNaN } from './general/isNaN';
 import { isNegative } from './number/isNegative';
 import { isNotBetween } from './number/isNotBetween';
-import { isNotNaN } from './general/isNotNaN';
 import { isNumber } from './number/isNumber';
 import { isOdd } from './number/isOdd';
 import { isPositive } from './number/isPositive';
 import { lessThan } from './number/lessThan';
 import { lessThanOrEquals } from './number/lessThanOrEquals';
 import { numberNotEquals } from './number/numberNotEquals';
-import { greaterThan, numberEquals } from 'vest-utils';
 
 const gt = greaterThan;
 const gte = greaterThanOrEquals;

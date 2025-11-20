@@ -2,6 +2,7 @@ import { isArray, callEach } from 'vest-utils';
 
 import { useDoneCallbacks, useFieldCallbacks } from '../core/Runtime';
 import { TFieldName } from '../suiteResult/SuiteResultTypes';
+
 import { SuiteWalker } from './SuiteWalker';
 
 /**

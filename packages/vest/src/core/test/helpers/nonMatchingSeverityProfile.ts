@@ -1,7 +1,7 @@
 import { either } from 'vest-utils';
 
-import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
 import { Severity } from '../../../suiteResult/Severity';
+import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../isolate/IsolateTest/VestTest';
 
 /**

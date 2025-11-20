@@ -1,10 +1,9 @@
+import { isArray } from '../rules/array/isArrayRule';
 import type { ArrayRuleInstance } from '../rules/arrayRules';
 import * as arrayRules from '../rules/arrayRules';
 import { isBoolean, type BooleanRuleInstance } from '../rules/booleanRules';
 import * as booleanRules from '../rules/booleanRules';
 import { addToChain } from '../rules/genRuleChain';
-import { isArray } from '../rules/array/isArrayRule';
-import { isNumeric } from '../rules/numeric/isNumeric';
 import {
   isNull,
   isUndefined,
@@ -20,6 +19,7 @@ import {
 } from '../rules/numberRules';
 import * as numberRules from '../rules/numberRules';
 import * as numericRules from '../rules/numberRules';
+import { isNumeric } from '../rules/numeric/isNumeric';
 import { isString, type StringRuleInstance } from '../rules/stringRules';
 import * as stringRules from '../rules/stringRules';
 

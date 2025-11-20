@@ -1,8 +1,8 @@
-import { dynamicValue } from './vest-utils';
 
 import { lengthEquals } from './lengthEquals';
 import { longerThan } from './longerThan';
 import { DynamicValue, Nullable } from './utilityTypes';
+import { dynamicValue } from './vest-utils';
 
 /**
  * Creates a cache function

@@ -1,6 +1,7 @@
-import { RuleRunReturn } from './utils/RuleRunReturn';
-import type { FirstParam } from './eager/typeUtils';
 import type { CB, DropFirst } from 'vest-utils';
+
+import type { FirstParam } from './eager/typeUtils';
+import { RuleRunReturn } from './utils/RuleRunReturn';
 
 /**
  * Global namespace for n4s custom rules.

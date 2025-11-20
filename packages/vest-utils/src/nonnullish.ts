@@ -1,5 +1,4 @@
 import invariant from './invariant';
-
 import { isNullish } from './isNullish';
 import { Nullish } from './utilityTypes';
 

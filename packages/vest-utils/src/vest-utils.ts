@@ -41,6 +41,7 @@ export { StringObject } from './StringObject';
 export { noop } from './noop';
 export * as Predicates from './Predicates';
 export { freezeAssign } from './freezeAssign';
+export { withCatch } from './withCatch';
 
 export type {
   DropFirst,

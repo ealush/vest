@@ -5,6 +5,7 @@ import {
   TFieldName,
   TGroupName,
 } from '../suiteResult/SuiteResultTypes';
+
 import { ParsedVestObject, parse } from './parser';
 
 /**

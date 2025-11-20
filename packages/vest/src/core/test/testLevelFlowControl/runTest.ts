@@ -2,11 +2,12 @@ import { isPromise, isStringValue, text, deferThrow } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
 import { ErrorStrings } from '../../../errors/ErrorStrings';
-import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
 import { SuiteContext } from '../../context/SuiteContext';
-import { TestResult } from '../TestTypes';
+import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../isolate/IsolateTest/VestTest';
+import { TestResult } from '../TestTypes';
 import { shouldUseErrorAsMessage } from '../helpers/shouldUseErrorMessage';
+
 import { useVerifyTestRun } from './verifyTestRun';
 
 export function useAttemptRunTest(testObject: TIsolateTest) {

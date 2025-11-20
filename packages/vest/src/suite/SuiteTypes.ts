@@ -1,15 +1,16 @@
 import { CB } from 'vest-utils';
 
+import { Subscribe } from '../core/VestBus/VestBus';
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
+import { FieldExclusion } from '../hooks/focused/focused';
 import {
   SuiteResult,
   TFieldName,
   TGroupName,
 } from '../suiteResult/SuiteResultTypes';
-import { Subscribe } from '../core/VestBus/VestBus';
-import { FieldExclusion } from '../hooks/focused/focused';
-import { TTypedMethods } from './getTypedMethods';
 import { SuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
+
+import { TTypedMethods } from './getTypedMethods';
 
 export type Suite<
   F extends TFieldName,

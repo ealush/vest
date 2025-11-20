@@ -9,9 +9,10 @@ import {
 } from 'vest-utils';
 import { IsolateSelectors, TIsolate, Isolate } from 'vestjs-runtime';
 
-import { FocusModes } from './FocusedKeys';
-import { TFieldName } from '../../suiteResult/SuiteResultTypes';
 import { VestIsolateType } from '../../core/isolate/VestIsolateType';
+import { TFieldName } from '../../suiteResult/SuiteResultTypes';
+
+import { FocusModes } from './FocusedKeys';
 
 export type FieldExclusion<F extends TFieldName> = Maybe<OneOrMoreOf<F>>;
 

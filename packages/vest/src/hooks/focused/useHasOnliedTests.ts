@@ -3,6 +3,7 @@ import { TIsolate, Walker } from 'vestjs-runtime';
 
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
 import { TFieldName } from '../../suiteResult/SuiteResultTypes';
+
 import { FocusSelectors } from './focused';
 
 /**

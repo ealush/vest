@@ -1,6 +1,8 @@
-import { BuildRuleInstance, ExtractRuleFunctions } from './RuleInstanceBuilder';
 import { isEmpty, isNotEmpty } from 'vest-utils';
 
+import { BuildRuleInstance, ExtractRuleFunctions } from './RuleInstanceBuilder';
+import { includes } from './array/includes';
+import { isArray } from './array/isArrayRule';
 import { equals, notEquals } from './commonComparison';
 import { inside, notInside } from './commonContainer';
 import {
@@ -13,8 +15,6 @@ import {
   shorterThan,
   shorterThanOrEquals,
 } from './commonLength';
-import { includes } from './array/includes';
-import { isArray } from './array/isArrayRule';
 import { isNotArray } from './general/isNotArray';
 
 export {

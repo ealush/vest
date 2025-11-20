@@ -1,8 +1,9 @@
-import { ctx } from '../enforceContext';
 import { invariant } from 'vest-utils';
 
-import type { UnmodifiedRules, SchemaRules } from './ruleRegistry';
+import { ctx } from '../enforceContext';
 import { enforceMessage, transformResult } from '../ruleResult';
+
+import type { UnmodifiedRules, SchemaRules } from './ruleRegistry';
 
 type RuleCallConfig = {
   target: any;

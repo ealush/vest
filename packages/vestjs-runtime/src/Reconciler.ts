@@ -1,4 +1,3 @@
-import { ErrorStrings } from './errors/ErrorStrings';
 import {
   Maybe,
   Nullable,
@@ -12,6 +11,7 @@ import { IsolateInspector } from './Isolate/IsolateInspector';
 import { IsolateMutator } from './Isolate/IsolateMutator';
 import { isSameIsolateType } from './Isolate/IsolateSelectors';
 import * as VestRuntime from './VestRuntime';
+import { ErrorStrings } from './errors/ErrorStrings';
 // import { isSameIsolateType } from 'IsolateSelectors';
 
 // I would rather not use `any` here, but instead use `Isolate`.

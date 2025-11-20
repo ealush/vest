@@ -6,6 +6,7 @@ import {
 } from 'vest-utils';
 
 import { RuleInstance } from '../../utils/RuleInstance';
+
 import { executeChain, type Predicate } from './chainExecutor';
 import { createChainProxyHandlers } from './proxyHandlers';
 

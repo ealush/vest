@@ -1,8 +1,9 @@
+import type { Maybe } from 'vest-utils';
+
 import { allRules, schemaRulesMap } from './eager/allRules';
 import type { EnforceEagerReturn } from './eager/eagerTypes';
 import { createRuleCall } from './eager/ruleCallGenerator';
 import { extendEager, getRule, getSchemaRule } from './eager/ruleRegistry';
-import type { Maybe } from 'vest-utils';
 
 export { extendEager };
 export type { EnforceEagerReturn, TArraySchemaRules } from './eager/eagerTypes';

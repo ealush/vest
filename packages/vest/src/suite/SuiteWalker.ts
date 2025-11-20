@@ -3,10 +3,10 @@ import { VestRuntime } from 'vestjs-runtime';
 
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { TIsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
-import { TFieldName } from '../suiteResult/SuiteResultTypes';
-import { isVestIsolate } from '../core/isolate/VestIsolateType';
 import { VestTest } from '../core/isolate/IsolateTest/VestTest';
+import { isVestIsolate } from '../core/isolate/VestIsolateType';
 import { matchesOrHasNoFieldName } from '../core/test/helpers/matchingFieldName';
+import { TFieldName } from '../suiteResult/SuiteResultTypes';
 
 export class SuiteWalker {
   static defaultRoot = VestRuntime.useAvailableRoot;

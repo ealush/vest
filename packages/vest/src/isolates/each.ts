@@ -1,7 +1,7 @@
 import { invariant, isFunction } from 'vest-utils';
 
-import { ErrorStrings } from '../errors/ErrorStrings';
 import { IsolateEach } from '../core/isolate/IsolateEach/IsolateEach';
+import { ErrorStrings } from '../errors/ErrorStrings';
 
 /**
  * Iterates over an array of items, allowing to run tests individually per item.

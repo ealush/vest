@@ -8,6 +8,7 @@ import './partial';
 import './shape';
 
 import type { RuleInstance } from '../../utils/RuleInstance';
+
 import type {
   IsArrayOfRuleInstance,
   LooseRuleInstance,

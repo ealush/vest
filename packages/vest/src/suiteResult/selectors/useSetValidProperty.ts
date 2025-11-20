@@ -1,4 +1,3 @@
-import { useIsOptionalFieldApplied } from '../../hooks/optional/optional';
 import { Predicates } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
@@ -7,14 +6,16 @@ import {
   TIsolateSuite,
 } from '../../core/isolate/IsolateSuite/IsolateSuite';
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
-import { OptionalFieldTypes } from '../../hooks/optional/OptionalTypes';
-import { TFieldName, TGroupName } from '../SuiteResultTypes';
-import { SuiteWalker } from '../../suite/SuiteWalker';
 import { TestWalker } from '../../core/isolate/IsolateTest/TestWalker';
-import { isVestIsolate } from '../../core/isolate/VestIsolateType';
 import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
-import { hasErrorsByTestObjects } from './hasFailuresByTestObjects';
+import { isVestIsolate } from '../../core/isolate/VestIsolateType';
 import { nonMatchingFieldName } from '../../core/test/helpers/matchingFieldName';
+import { OptionalFieldTypes } from '../../hooks/optional/OptionalTypes';
+import { useIsOptionalFieldApplied } from '../../hooks/optional/optional';
+import { SuiteWalker } from '../../suite/SuiteWalker';
+import { TFieldName, TGroupName } from '../SuiteResultTypes';
+
+import { hasErrorsByTestObjects } from './hasFailuresByTestObjects';
 
 /**
  * Determines if a field (or field within a group) should be marked as "valid".

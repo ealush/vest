@@ -1,21 +1,21 @@
-import { type RuleInstance } from './utils/RuleInstance';
-import { RuleRunReturn } from './utils/RuleRunReturn';
+import { FirstParam } from './eager/typeUtils';
+import { ctx } from './enforceContext';
+import { adaptDynamicRules } from './lazy/ruleAdapter';
+import { typeRules } from './lazy/typeRules';
+import type { CustomMatcherArgs } from './n4sTypes';
 import type { ArrayRuleInstance } from './rules/arrayRules';
 import * as arrayRules from './rules/arrayRules';
 import * as compoundRules from './rules/compoundRules/compoundRules';
 import type { CompoundRuleLazyTypes } from './rules/compoundRules/compoundRules';
-import { ctx } from './enforceContext';
 import { addToChain } from './rules/genRuleChain';
 import { AnyRuleInstance } from './rules/generalRules';
 import * as generalRules from './rules/generalRules';
-import type { CustomMatcherArgs } from './n4sTypes';
 import type { ObjectRulesUnion } from './rules/objectRules';
 import * as objectRules from './rules/objectRules';
-import { adaptDynamicRules } from './lazy/ruleAdapter';
 import * as schemaRules from './rules/schemaRules/schemaRules';
 import type { SchemaRuleLazyTypes } from './rules/schemaRules/schemaRules';
-import { typeRules } from './lazy/typeRules';
-import { FirstParam } from './eager/typeUtils';
+import { type RuleInstance } from './utils/RuleInstance';
+import { RuleRunReturn } from './utils/RuleRunReturn';
 
 /**
  * Type mapping for custom rules in the lazy (builder) API.

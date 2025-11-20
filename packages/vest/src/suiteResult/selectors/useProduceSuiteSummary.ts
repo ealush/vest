@@ -3,6 +3,8 @@ import { VestRuntime } from 'vestjs-runtime';
 
 import { TIsolateSuite } from '../../core/isolate/IsolateSuite/IsolateSuite';
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
+import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
+import { isVestIsolate } from '../../core/isolate/VestIsolateType';
 import { countKeyBySeverity, Severity } from '../Severity';
 import {
   CommonSummaryProperties,
@@ -15,8 +17,7 @@ import {
   TGroupName,
 } from '../SuiteResultTypes';
 import { SummaryFailure } from '../SummaryFailure';
-import { isVestIsolate } from '../../core/isolate/VestIsolateType';
-import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
+
 import {
   useSetValidProperty,
   useSetValidPropertyImpl,

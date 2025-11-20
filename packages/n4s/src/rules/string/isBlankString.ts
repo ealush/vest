@@ -1,5 +1,6 @@
-import { isBlank } from '../general/isBlank';
 import { isStringValue } from 'vest-utils';
+
+import { isBlank } from '../general/isBlank';
 
 // Checks if string contains only whitespace characters
 export function isBlankString(str: string): boolean {

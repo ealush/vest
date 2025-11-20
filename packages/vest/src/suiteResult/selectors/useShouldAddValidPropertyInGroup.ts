@@ -1,4 +1,5 @@
 import { TFieldName, TGroupName } from '../SuiteResultTypes';
+
 import { useSetValidPropertyImpl } from './useSetValidProperty';
 
 export function useShouldAddValidPropertyInGroup(

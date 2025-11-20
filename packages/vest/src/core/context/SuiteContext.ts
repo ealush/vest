@@ -1,8 +1,8 @@
 import { createCascade } from 'context';
 import { assign, TinyState, tinyState, DynamicValue } from 'vest-utils';
 
-import { TIsolateTest } from '../isolate/IsolateTest/IsolateTest';
 import { Modes } from '../../hooks/optional/Modes';
+import { TIsolateTest } from '../isolate/IsolateTest/IsolateTest';
 
 export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
   if (parentContext) {

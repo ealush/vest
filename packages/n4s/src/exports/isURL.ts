@@ -1,5 +1,6 @@
-import { enforce } from '../n4s';
 import isURL from 'validator/es/lib/isURL';
+
+import { enforce } from '../n4s';
 
 enforce.extend({ isURL });
 

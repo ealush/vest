@@ -1,8 +1,9 @@
 import { assign, freezeAssign } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
-import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { useSuiteResultCache } from '../core/Runtime';
+import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
+
 import {
   SuiteResult,
   SuiteSummary,

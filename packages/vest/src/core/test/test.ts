@@ -2,8 +2,9 @@ import { invariant, isFunction, isStringValue, text } from 'vest-utils';
 import { Bus, IsolateKey } from 'vestjs-runtime';
 
 import { ErrorStrings } from '../../errors/ErrorStrings';
-import { IsolateTest, TIsolateTest } from '../isolate/IsolateTest/IsolateTest';
 import { TFieldName } from '../../suiteResult/SuiteResultTypes';
+import { IsolateTest, TIsolateTest } from '../isolate/IsolateTest/IsolateTest';
+
 import { TestFn } from './TestTypes';
 import { useAttemptRunTest } from './testLevelFlowControl/runTest';
 

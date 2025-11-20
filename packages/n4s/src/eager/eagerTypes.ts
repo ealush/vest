@@ -1,6 +1,7 @@
-import type { RuleInstance } from '../utils/RuleInstance';
 import { TCustomRules } from '../n4sTypes';
 import { MultiTypeInput } from '../rules/schemaRules/schemaRulesTypes';
+import type { RuleInstance } from '../utils/RuleInstance';
+
 import type {
   AnyFn,
   FirstParam,

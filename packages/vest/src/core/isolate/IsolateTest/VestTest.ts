@@ -7,17 +7,18 @@ import {
 } from 'vestjs-runtime';
 
 import { ErrorStrings } from '../../../errors/ErrorStrings';
-import type { TIsolateTest } from './IsolateTest';
+import { TIsolateGroup } from '../../../isolates/group';
+import { TestSeverity } from '../../../suiteResult/Severity';
+import { TFieldName, TGroupName } from '../../../suiteResult/SuiteResultTypes';
 import {
   IsolateTestStateMachine,
   TestAction,
   TestStatus,
 } from '../../StateMachines/IsolateTestStateMachine';
-import { TestSeverity } from '../../../suiteResult/Severity';
-import { TFieldName, TGroupName } from '../../../suiteResult/SuiteResultTypes';
 import { VestIsolate } from '../VestIsolate';
 import { VestIsolateType } from '../VestIsolateType';
-import { TIsolateGroup } from '../../../isolates/group';
+
+import type { TIsolateTest } from './IsolateTest';
 
 export class VestTest extends VestIsolate {
   static stateMachine = IsolateTestStateMachine;

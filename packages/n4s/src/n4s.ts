@@ -1,9 +1,10 @@
+import { assign } from 'vest-utils';
+
 import { enforceEager } from './eager';
 import { ctx } from './enforceContext';
 import type { EnforceContext } from './enforceContext';
 import { extendEnforce } from './extendLogic';
 import { enforceLazy } from './lazy';
-import { assign } from 'vest-utils';
 
 /**
  * Context API for accessing validation context.

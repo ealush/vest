@@ -2,13 +2,14 @@ import { enforce } from 'n4s';
 import { isArray, isStringValue, asArray, hasOwnProperty } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
+import { useSuiteParams } from '../../core/context/SuiteContext';
 import {
   SuiteOptionalFields,
   TIsolateSuite,
 } from '../../core/isolate/IsolateSuite/IsolateSuite';
-import { OptionalFieldTypes, OptionalsInput } from './OptionalTypes';
-import { useSuiteParams } from '../../core/context/SuiteContext';
 import { TFieldName } from '../../suiteResult/SuiteResultTypes';
+
+import { OptionalFieldTypes, OptionalsInput } from './OptionalTypes';
 
 // @vx-allow use-use
 export function optional<F extends TFieldName>(

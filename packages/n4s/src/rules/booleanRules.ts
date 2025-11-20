@@ -1,12 +1,13 @@
-import { equals } from './general/equals';
-import { isBoolean } from './boolean/isBoolean';
-import { isTruthy } from './general/isTruthy';
 import { type DropFirst } from 'vest-utils';
 
 import { RuleInstance } from '../utils/RuleInstance';
+
+import { isBoolean } from './boolean/isBoolean';
 import { isFalse } from './boolean/isFalse';
-import { isFalsy } from './general/isFalsy';
 import { isTrue } from './boolean/isTrue';
+import { equals } from './general/equals';
+import { isFalsy } from './general/isFalsy';
+import { isTruthy } from './general/isTruthy';
 
 export { equals, isFalsy, isFalse, isTrue, isTruthy, isBoolean };
 

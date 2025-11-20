@@ -1,7 +1,7 @@
 /* eslint-disable max-nested-callbacks */
-import { ctx } from '../../enforceContext';
 import { mapFirst } from 'vest-utils';
 
+import { ctx } from '../../enforceContext';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 /**

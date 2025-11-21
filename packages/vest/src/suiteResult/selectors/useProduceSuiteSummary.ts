@@ -87,7 +87,9 @@ function appendToGroup(
     return groups;
   }
 
-  groups[groupName] = groups[groupName] || ({} as Groups<TGroupName, TFieldName>[typeof groupName]);
+  groups[groupName] =
+    groups[groupName] ||
+    ({} as Groups<TGroupName, TFieldName>[typeof groupName]);
   const group = groups[groupName];
 
   group[fieldName] = appendTestSummaryObject<SingleTestSummary>(

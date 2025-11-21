@@ -14,7 +14,7 @@ type Inferred = InferSchemaData<Schema>;
 // Should be: { name: string; age: number }
 // Currently might be: ShapeType<{ name: StringRuleInstance; age: NumberRuleInstance }>
 
-const suite = create(data => {
+create(_data => {
   // Hovering over data should show { name: string; age: number }
-  data.name;
+  _data.name;
 }, schema);

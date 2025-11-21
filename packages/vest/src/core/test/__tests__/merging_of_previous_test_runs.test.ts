@@ -1,5 +1,5 @@
 import { deferThrow } from 'vest-utils';
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { TTestSuite } from '../../../testUtils/TVestMock';
 import { dummyTest } from '../../../testUtils/testDummy';

@@ -43,11 +43,20 @@ export type TArraySchemaRules<T, A, S> = T extends any[]
     }
   : Record<string, never>;
 
+export type TCompoundRules<T, A, S> = {
+  [K in keyof S as K extends 'allOf' | 'anyOf' | 'noneOf' | 'oneOf'
+    ? K
+    : never]: DropFirstFn<S[K]> extends (...args: infer Args) => infer _R
+    ? (...args: Args) => EnforceEagerReturn<T, A, S>
+    : never;
+};
+
 type Base<T, A, S> = Msg<T, A, S> &
   TRules<T, A, S> &
   TCustomRules<T, A, S> &
   TSchemaRules<T, S, A> &
-  TArraySchemaRules<T, A, S>;
+  TArraySchemaRules<T, A, S> &
+  TCompoundRules<T, A, S>;
 
 export type EnforceEagerReturn<T = any, A = any, S = any> = Base<T, A, S> & {
   pass: boolean;

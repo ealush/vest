@@ -12,7 +12,6 @@ import {
   TFieldName,
   TGroupName,
   TSchema,
-  SuiteResultBody,
 } from './SuiteResultTypes';
 import { suiteSelectors } from './selectors/suiteSelectors';
 import { useProduceSuiteSummary } from './selectors/useProduceSuiteSummary';
@@ -26,7 +25,7 @@ export function useCreateSuiteResult<
     // @vx-allow use-use
     const summary = useProduceSuiteSummary<F, G>();
     const resultBody = constructSuiteResultObject<F, G, S>(summary, data);
-    return freezeAssign(resultBody as any, {
+    return freezeAssign(resultBody as SuiteResult<F, G, S>, {
       dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
       types: (schema
         ? { input: data, output: data }
@@ -39,7 +38,10 @@ export function constructSuiteResultObject<
   F extends TFieldName,
   G extends TGroupName,
   S extends TSchema = undefined,
->(summary: SuiteSummary<F, G>, data?: any): SuiteResultBody<F, G, S> {
+>(
+  summary: SuiteSummary<F, G>,
+  data?: any,
+): Omit<SuiteResult<F, G, S>, 'dump' | 'types'> {
   const { valid, ...summaryWithoutValid } = summary;
   const selectors = suiteSelectors<F, G>(summary);
 

@@ -6,7 +6,9 @@ import * as commonLength from '../rules/commonLength';
 import * as compoundRules from '../rules/compoundRules/compoundRules';
 import * as generalRules from '../rules/generalRules';
 import * as nullishRules from '../rules/nullishRules';
+// eslint-disable-next-line import/no-duplicates
 import * as numberRules from '../rules/numberRules';
+// eslint-disable-next-line import/no-duplicates
 import * as numericRules from '../rules/numberRules';
 import { isNumeric } from '../rules/numeric/isNumeric';
 import * as objectRules from '../rules/objectRules';

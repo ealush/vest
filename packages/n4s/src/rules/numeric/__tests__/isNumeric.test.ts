@@ -2,6 +2,13 @@ import { describe, it, expect } from 'vitest';
 
 import { enforce } from '../../../n4s';
 
+const runNumeric = (value: unknown) =>
+  (enforce.isNumeric() as ReturnType<typeof enforce.isNumeric> & {
+    run: (value: unknown) => ReturnType<
+      ReturnType<typeof enforce.isNumeric>['run']
+    >;
+  }).run(value);
+
 describe('isNumeric', () => {
   describe('base predicate', () => {
     it('pass for numbers', () => {
@@ -34,13 +41,13 @@ describe('isNumeric', () => {
 
     it('fails for other types', () => {
       // Type test: - testing that non-numeric types are rejected
-      expect(enforce.isNumeric().run(true).pass).toBe(false);
+      expect(runNumeric(true).pass).toBe(false);
       // Type test: - testing that non-numeric types are rejected
-      expect(enforce.isNumeric().run(false).pass).toBe(false);
+      expect(runNumeric(false).pass).toBe(false);
       // Type test: - testing that non-numeric types are rejected
-      expect(enforce.isNumeric().run({}).pass).toBe(false);
+      expect(runNumeric({}).pass).toBe(false);
       // Type test: - testing that non-numeric types are rejected
-      expect(enforce.isNumeric().run([]).pass).toBe(false);
+      expect(runNumeric([]).pass).toBe(false);
     });
   });
 

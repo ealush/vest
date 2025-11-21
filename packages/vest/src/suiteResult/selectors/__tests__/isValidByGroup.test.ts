@@ -462,7 +462,7 @@ describe('isValidByGroup', () => {
   describe('When the only field in the group is optional', () => {
     it('should be valid when the optional field is blank', () => {
       expect(
-        create((data: any) => {
+        create((_data: any) => {
           optional('field_1');
           group(GROUP_NAME, () => {
             test('field_1', () => false);
@@ -475,7 +475,7 @@ describe('isValidByGroup', () => {
 
     it('should be invalid when the optional field has a value', () => {
       expect(
-        create((data: any) => {
+        create((_data: any) => {
           optional('field_1');
           group(GROUP_NAME, () => {
             test('field_1', () => false);
@@ -488,7 +488,7 @@ describe('isValidByGroup', () => {
 
     it('should be valid when an optional field has a null value', () => {
       expect(
-        create((data: any) => {
+        create((_data: any) => {
           optional('field_1');
           group(GROUP_NAME, () => {
             test('field_1', () => false);
@@ -501,7 +501,7 @@ describe('isValidByGroup', () => {
 
     it('should be valid when all optional fields are blank', () => {
       expect(
-        create((data: any) => {
+        create((_data: any) => {
           optional(['field_1', 'field_2', 'field_3']);
           group(GROUP_NAME, () => {
             test('field_1', () => false);
@@ -516,7 +516,7 @@ describe('isValidByGroup', () => {
 
     it('should be invalid when only some optional fields are blank', () => {
       expect(
-        create((data: any) => {
+        create((_data: any) => {
           optional(['field_1', 'field_2']);
           group(GROUP_NAME, () => {
             test('field_1', () => false);

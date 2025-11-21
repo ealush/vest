@@ -5,8 +5,17 @@ import { enforce } from '../../../n4s';
 
 const longerThan = (n: number): RuleInstance<string> => ({
   run: (v: any) => ({ pass: typeof v === 'string' && v.length > n, type: v }),
+  test: (v: any) => typeof v === 'string' && v.length > n,
   infer: {} as string,
 });
+
+const runPartialRule = <TRule extends { run: (...args: any[]) => any }>(
+  rule: TRule,
+  value: unknown,
+) =>
+  (rule as TRule & { run: (value: unknown) => ReturnType<TRule['run']> }).run(
+    value,
+  );
 
 describe('partial', () => {
   const schema = {
@@ -26,22 +35,24 @@ describe('partial', () => {
   it('disallows extra properties', () => {
     const rule = enforce.partial(schema);
     // Type test: runtime check for extra property
-    expect(rule.run({ name: 'John', extra: true }).pass).toBe(false);
+    expect(runPartialRule(rule, { name: 'John', extra: true }).pass).toBe(
+      false,
+    );
   });
 
   it('fails when object has none of the original fields', () => {
     const rule = enforce.partial(schema);
     // none of the keys match schema, should fail
     // Type test: runtime check for unrelated fields
-    expect(rule.run({ foo: 'bar' }).pass).toBe(false);
+    expect(runPartialRule(rule, { foo: 'bar' }).pass).toBe(false);
   });
 
   it('fails when provided field has wrong type', () => {
     const rule = enforce.partial(schema);
     // Type test: runtime check for wrong type
-    expect(rule.run({ name: 123 }).pass).toBe(false);
+    expect(runPartialRule(rule, { name: 123 }).pass).toBe(false);
     // Type test: runtime check for wrong type
-    expect(rule.run({ age: '30' }).pass).toBe(false);
+    expect(runPartialRule(rule, { age: '30' }).pass).toBe(false);
   });
 
   it('works with custom rules', () => {
@@ -54,7 +65,7 @@ describe('partial', () => {
     expect(rule.run({ id: 1 }).pass).toBe(true);
     expect(rule.run({ username: 'foo' }).pass).toBe(false);
     // Type test:
-    expect(rule.run({ id: '1' }).pass).toBe(false);
+    expect(runPartialRule(rule, { id: '1' }).pass).toBe(false);
   });
 });
 

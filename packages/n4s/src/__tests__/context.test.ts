@@ -1,8 +1,54 @@
-import { has } from 'lodash';
 import { isNullish } from 'vest-utils';
 import { describe, it, expect, beforeEach } from 'vitest';
 
 import { enforce } from '../n4s';
+
+type ContextRuleResult =
+  | boolean
+  | { pass: boolean; message?: string | (() => string) };
+
+declare global {
+  namespace n4s {
+    interface EnforceMatchers {
+      hasContext: (value: unknown) => ContextRuleResult;
+      checkContextStructure: (value: unknown) => ContextRuleResult;
+      checkValue: (value: unknown) => ContextRuleResult;
+      checkMetaName: (value: unknown, expectedName: string) => ContextRuleResult;
+      checkMetaIndex: (
+        value: unknown,
+        expectedIndex: number,
+      ) => ContextRuleResult;
+      hasMetaIndex: (value: unknown) => ContextRuleResult;
+      hasParent: (value: unknown) => ContextRuleResult;
+      canAccessParent: (value: unknown) => ContextRuleResult;
+      matchesParentUsername: (value: string) => ContextRuleResult;
+      differentFromParentUsername: (value: string) => ContextRuleResult;
+      isFriendTheSameAsUser: (value: string) => ContextRuleResult;
+      emailMatchesUsername: (value: string) => ContextRuleResult;
+      matchesTopLevelId: (value: string) => ContextRuleResult;
+      notSameAsSibling: (
+        value: string,
+        siblingKey: string,
+      ) => ContextRuleResult;
+      uniqueInArray: (value: unknown) => ContextRuleResult;
+      passwordsMatch: (value: string) => ContextRuleResult;
+      checkParentIsNull: (value: unknown) => ContextRuleResult;
+      requiredIfOtherFieldPresent: (
+        value: unknown,
+        otherField: string,
+      ) => ContextRuleResult;
+      differentFromUsername: (value: string) => ContextRuleResult;
+      minAgeIfCountry: (
+        value: number,
+        country: string,
+        minAge: number,
+      ) => ContextRuleResult;
+      matchesParentId: (value: string) => ContextRuleResult;
+      safeParentAccess: (value: unknown) => ContextRuleResult;
+      arrayLengthMatchesCount: (value: any[]) => ContextRuleResult;
+    }
+  }
+}
 
 describe('enforce.context() API', () => {
   describe('Basic context access', () => {
@@ -83,7 +129,7 @@ describe('enforce.context() API', () => {
   describe('Context meta property within shape', () => {
     beforeEach(() => {
       enforce.extend({
-        checkMetaName: (value: any, expectedName: string) => {
+        checkMetaName: (_value: any, expectedName: string) => {
           const context = enforce.context();
           return context?.meta?.key === expectedName;
         },
@@ -130,7 +176,7 @@ describe('enforce.context() API', () => {
   describe('Context meta property within isArrayOf', () => {
     beforeEach(() => {
       enforce.extend({
-        checkMetaIndex: (value: any, expectedIndex: number) => {
+        checkMetaIndex: (_value: any, expectedIndex: number) => {
           const context = enforce.context();
           return context?.meta?.index === expectedIndex;
         },
@@ -563,7 +609,7 @@ describe('enforce.context() API', () => {
   describe('Context at top level (no parent)', () => {
     beforeEach(() => {
       enforce.extend({
-        checkNoParent: () => {
+        checkParentIsNull: () => {
           const context = enforce.context();
           const parent = context?.parent();
           // At top level, parent should return null
@@ -575,7 +621,7 @@ describe('enforce.context() API', () => {
     it('should return null when calling parent at top level', () => {
       // This test verifies the documentation statement:
       // "When no levels left, parent will return null"
-      expect(() => enforce('test').checkNoParent()).not.toThrow();
+      expect(() => enforce('test').checkParentIsNull()).not.toThrow();
     });
   });
 

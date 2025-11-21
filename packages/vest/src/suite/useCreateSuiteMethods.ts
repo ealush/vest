@@ -67,7 +67,9 @@ function useCreateSuiteMethodsHelper<
   schema?: S;
   persistedRun: any;
   staticRunner: any;
-}) {
+}): ReturnType<typeof useGetSuiteMethods<F, G, T, S>> & {
+  '~standard': ReturnType<typeof getStandardSchema<S>>;
+} {
   const suiteMethods = useGetSuiteMethods<F, G, T, S>(ctx);
 
   return {
@@ -88,7 +90,7 @@ function useGetSuiteMethods<
   schema?: S;
   persistedRun: any;
   staticRunner: any;
-}) {
+}): any {
   const {
     suiteCallback,
     modifiers,
@@ -115,7 +117,7 @@ function useGetSuiteMethods<
     run: persistedRun,
     runStatic: staticRunner,
     subscribe,
-    validate: (value: unknown) => (staticRunner as any)(value),
+    validate: createValidate(staticRunner),
     ...bindSuiteSelectors<F, G, S>(
       VestRuntime.persist(() => useCreateSuiteResult<F, G, S>(schema)),
     ),
@@ -125,7 +127,6 @@ function useGetSuiteMethods<
 
 function useAddAfterHelper<
   F extends TFieldName,
-  G extends TGroupName,
   T extends CB = CB,
   S extends TSchema = undefined,
 >(
@@ -139,7 +140,7 @@ function useAddAfterHelper<
   },
   cb: CB,
   fieldName?: F,
-) {
+): any {
   useDeferDoneCallback(withCatch(cb), fieldName);
   return useCreateSuiteMethodsHelper(ctx);
 }
@@ -212,7 +213,7 @@ function createStaticRunner<
 >(suiteCallback: T, schema?: S) {
   return function runStatic(...runArgs: Parameters<T>) {
     const suite = createSuite<F, G, T, S>(suiteCallback, schema);
-    return suite.run(...(runArgs as any));
+    return suite.run(...(runArgs as Parameters<typeof suite.run>));
   };
 }
 
@@ -229,4 +230,8 @@ function initCallback<U extends (...args: any[]) => any>(cb: U): U {
     Bus.useEmit('INITIALIZING_CALLBACKS');
     return cb(...args);
   }) as U;
+}
+
+function createValidate(staticRunner: any) {
+  return (value: unknown) => (staticRunner as (value: unknown) => any)(value);
 }

@@ -5,7 +5,7 @@ import { CB } from 'vest-utils';
 import { describe, vi, it, expect, test } from 'vitest';
 import wait from 'wait';
 
-import { VestRuntime } from '../../vestjs-runtime';
+import { VestRuntime, IRecociler } from '../../vestjs-runtime';
 
 describe('AsyncIsolate', () => {
   test('It should resolve async isolate into the parent', () => {
@@ -75,9 +75,12 @@ describe('AsyncIsolate', () => {
 });
 
 function withRunTime<T>(fn: CB<T>) {
-  return VestRuntime.Run(VestRuntime.createRef({}), () => {
-    return fn();
-  });
+  return VestRuntime.Run(
+    VestRuntime.createRef({} as IRecociler, v => v),
+    () => {
+      return fn();
+    },
+  );
 }
 
 async function genChildren() {

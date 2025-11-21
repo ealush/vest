@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforce, compose, ctx } from '../n4s';
+import { enforce, compose } from '../n4s';
 
 describe('Documentation Examples', () => {
   describe('compose examples', () => {

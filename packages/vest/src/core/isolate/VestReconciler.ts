@@ -20,11 +20,11 @@ export function VestReconciler(
   return (
     reconcilers
       .find(reconciler => reconciler.match(currentNode, historyNode))
-      ?.reconcile(currentNode as any, historyNode as any) ?? null
+      ?.reconcile(currentNode, historyNode) ?? null
   );
 }
 
 export type IsolateReconciler = {
   match(currentNode: TIsolate, historyNode: TIsolate): boolean;
-  reconcile(elecurrentNode: TIsolate, historyNode: TIsolate): TIsolate;
+  reconcile(currentNode: TIsolate, historyNode: TIsolate): TIsolate;
 };

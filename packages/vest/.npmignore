@@ -6,10 +6,10 @@ src
 tsconfig.json
 !parser/
 !memo/
-!enforce@isURL/
-!enforce@email/
-!enforce@date/
+!isURL/
+!email/
 !debounce/
+!date/
 !classnames/
 !SuiteSerializer/
 

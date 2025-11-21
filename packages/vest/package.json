@@ -48,25 +48,25 @@
       "require": "./dist/exports/classnames.cjs",
       "types": "./types/exports/classnames.d.cts"
     },
+    "./exports/date": {
+      "import": "./dist/exports/date.mjs",
+      "require": "./dist/exports/date.cjs",
+      "types": "./types/exports/date.d.cts"
+    },
     "./exports/debounce": {
       "import": "./dist/exports/debounce.mjs",
       "require": "./dist/exports/debounce.cjs",
       "types": "./types/exports/debounce.d.cts"
     },
-    "./exports/enforce@date": {
-      "import": "./dist/exports/enforce@date.mjs",
-      "require": "./dist/exports/enforce@date.cjs",
-      "types": "./types/exports/enforce@date.d.cts"
+    "./exports/email": {
+      "import": "./dist/exports/email.mjs",
+      "require": "./dist/exports/email.cjs",
+      "types": "./types/exports/email.d.cts"
     },
-    "./exports/enforce@email": {
-      "import": "./dist/exports/enforce@email.mjs",
-      "require": "./dist/exports/enforce@email.cjs",
-      "types": "./types/exports/enforce@email.d.cts"
-    },
-    "./exports/enforce@isURL": {
-      "import": "./dist/exports/enforce@isURL.mjs",
-      "require": "./dist/exports/enforce@isURL.cjs",
-      "types": "./types/exports/enforce@isURL.d.cts"
+    "./exports/isURL": {
+      "import": "./dist/exports/isURL.mjs",
+      "require": "./dist/exports/isURL.cjs",
+      "types": "./types/exports/isURL.d.cts"
     },
     "./exports/memo": {
       "import": "./dist/exports/memo.mjs",
@@ -103,24 +103,24 @@
       "require": "./dist/exports/classnames.cjs",
       "types": "./types/vest.d.cts"
     },
+    "./date": {
+      "import": "./dist/exports/date.mjs",
+      "require": "./dist/exports/date.cjs",
+      "types": "./types/vest.d.cts"
+    },
     "./debounce": {
       "import": "./dist/exports/debounce.mjs",
       "require": "./dist/exports/debounce.cjs",
       "types": "./types/vest.d.cts"
     },
-    "./enforce@date": {
-      "import": "./dist/exports/enforce@date.mjs",
-      "require": "./dist/exports/enforce@date.cjs",
+    "./email": {
+      "import": "./dist/exports/email.mjs",
+      "require": "./dist/exports/email.cjs",
       "types": "./types/vest.d.cts"
     },
-    "./enforce@email": {
-      "import": "./dist/exports/enforce@email.mjs",
-      "require": "./dist/exports/enforce@email.cjs",
-      "types": "./types/vest.d.cts"
-    },
-    "./enforce@isURL": {
-      "import": "./dist/exports/enforce@isURL.mjs",
-      "require": "./dist/exports/enforce@isURL.cjs",
+    "./isURL": {
+      "import": "./dist/exports/isURL.mjs",
+      "require": "./dist/exports/isURL.cjs",
       "types": "./types/vest.d.cts"
     },
     "./memo": {

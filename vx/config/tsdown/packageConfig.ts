@@ -1,6 +1,7 @@
 import fs, { promises as fsPromises } from 'fs';
 import path from 'path';
 
+import { glob } from 'glob';
 import { defineConfig, type UserConfig } from 'tsdown';
 
 import opts from 'vx/opts';
@@ -67,6 +68,8 @@ export function createPackageConfig({
           mainTypesPath,
           legacyDtsPath,
         );
+
+        await generateExportPolyfills(packageDir, packageName);
       },
     },
     name: packageName,
@@ -334,3 +337,38 @@ function updateExports(
 }
 
 export default createPackageConfig;
+
+async function generateExportPolyfills(
+  packageDir: string,
+  packageName: string,
+): Promise<void> {
+  const exportsPattern = vxPath.packageSrcExports(packageName, '*.ts');
+  const exportsFiles = await glob(exportsPattern);
+
+  for (const exportFile of exportsFiles) {
+    const exportName = path.basename(exportFile, '.ts');
+    const exportDir = path.join(packageDir, exportName);
+
+    await fsPromises.mkdir(exportDir, { recursive: true });
+
+    const packageJsonContent = {
+      exports: {
+        '.': {
+          default: `../${opts.dir.DIST}/${opts.dir.EXPORTS}/${exportName}.mjs`,
+          import: `../${opts.dir.DIST}/${opts.dir.EXPORTS}/${exportName}.mjs`,
+          require: `../${opts.dir.DIST}/${opts.dir.EXPORTS}/${exportName}.cjs`,
+          types: `../${opts.dir.TYPES}/${opts.dir.EXPORTS}/${exportName}.d.mts`,
+        },
+      },
+      main: `../${opts.dir.DIST}/${opts.dir.EXPORTS}/${exportName}.cjs`,
+      module: `../${opts.dir.DIST}/${opts.dir.EXPORTS}/${exportName}.mjs`,
+      type: 'module',
+      types: `../${opts.dir.TYPES}/${opts.dir.EXPORTS}/${exportName}.d.mts`,
+    };
+
+    await fsPromises.writeFile(
+      path.join(exportDir, 'package.json'),
+      JSON.stringify(packageJsonContent, null, 2) + '\n',
+    );
+  }
+}

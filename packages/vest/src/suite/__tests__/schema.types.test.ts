@@ -3,9 +3,9 @@ import { describe, expect, it, expectTypeOf } from 'vitest';
 import { create, test } from '../../vest';
 
 // Mocking n4s types and functions for testing Vest's inference
-type RuleInstance<T> = {
-  test: (value: any) => boolean;
-  run: (value: any) => any;
+type RuleInstance<_T> = {
+  test: (_value: any) => boolean;
+  run: (_value: any) => any;
 };
 
 const enforce = {

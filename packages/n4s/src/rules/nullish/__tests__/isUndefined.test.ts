@@ -2,19 +2,26 @@ import { describe, it, expect } from 'vitest';
 
 import { enforce } from '../../../n4s';
 
+const runIsUndefined = (value: unknown) =>
+  (enforce.isUndefined() as ReturnType<typeof enforce.isUndefined> & {
+    run: (value: unknown) => ReturnType<
+      ReturnType<typeof enforce.isUndefined>['run']
+    >;
+  }).run(value);
+
 describe('isUndefined', () => {
   it('pass only for undefined', () => {
     expect(enforce.isUndefined().run(undefined).pass).toBe(true);
 
     let uninitialized: undefined | number;
     // Type test: - uninitialized may be number | undefined
-    expect(enforce.isUndefined().run(uninitialized).pass).toBe(true);
+    expect(runIsUndefined(uninitialized).pass).toBe(true);
   });
 
   it('fails for null', () => {
     const value: undefined | null = null;
     // Type test: - testing that null is rejected by isUndefined
-    expect(enforce.isUndefined().run(value).pass).toBe(false);
+    expect(runIsUndefined(value).pass).toBe(false);
   });
 
   it('fails for falsy primitives', () => {
@@ -24,13 +31,13 @@ describe('isUndefined', () => {
     const nanValue: undefined | number = NaN;
 
     // Type test: - testing that non-undefined values are rejected
-    expect(enforce.isUndefined().run(zero).pass).toBe(false);
+    expect(runIsUndefined(zero).pass).toBe(false);
     // Type test: - testing that non-undefined values are rejected
-    expect(enforce.isUndefined().run(emptyString).pass).toBe(false);
+    expect(runIsUndefined(emptyString).pass).toBe(false);
     // Type test: - testing that non-undefined values are rejected
-    expect(enforce.isUndefined().run(falseBool).pass).toBe(false);
+    expect(runIsUndefined(falseBool).pass).toBe(false);
     // Type test: - testing that non-undefined values are rejected
-    expect(enforce.isUndefined().run(nanValue).pass).toBe(false);
+    expect(runIsUndefined(nanValue).pass).toBe(false);
   });
 
   it('fails for truthy values', () => {
@@ -41,14 +48,14 @@ describe('isUndefined', () => {
     const arr: undefined | any[] = [];
 
     // Type test: - testing that non-undefined values are rejected
-    expect(enforce.isUndefined().run(num).pass).toBe(false);
+    expect(runIsUndefined(num).pass).toBe(false);
     // Type test: - testing that non-undefined values are rejected
-    expect(enforce.isUndefined().run(str).pass).toBe(false);
+    expect(runIsUndefined(str).pass).toBe(false);
     // Type test: - testing that non-undefined values are rejected
-    expect(enforce.isUndefined().run(bool).pass).toBe(false);
+    expect(runIsUndefined(bool).pass).toBe(false);
     // Type test: - testing that non-undefined values are rejected
-    expect(enforce.isUndefined().run(obj).pass).toBe(false);
+    expect(runIsUndefined(obj).pass).toBe(false);
     // Type test: - testing that non-undefined values are rejected
-    expect(enforce.isUndefined().run(arr).pass).toBe(false);
+    expect(runIsUndefined(arr).pass).toBe(false);
   });
 });

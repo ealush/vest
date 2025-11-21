@@ -150,7 +150,7 @@ describe('minifyObject', () => {
       lorem: ['lorem', 'lorem', 'lorem', 'lorem', 'lorem', 'lorem'],
     };
 
-    const [m, map] = minifyObject(obj);
+    const [_m, map] = minifyObject(obj);
 
     expect(map).toEqual({
       0: 'lorem',

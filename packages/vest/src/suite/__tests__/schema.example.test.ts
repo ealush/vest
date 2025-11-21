@@ -76,7 +76,7 @@ const schema = enforce.shape({
   age: enforce.isNumber(),
 });
 
-const suite = create(data => {
+create(data => {
   // @ts-expect-error: data should be strictly typed
   data.nonexistent;
   test('name', () => {

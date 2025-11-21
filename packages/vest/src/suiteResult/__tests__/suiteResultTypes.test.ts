@@ -7,7 +7,7 @@ test('suiteResultTypes', () => {
     username: enforce.isString(),
   });
 
-  const suite = create(data => {
+  const suite = create(_data => {
     // ...
   }, schema);
 
@@ -17,10 +17,11 @@ test('suiteResultTypes', () => {
   const types = result.types;
 
   if (types) {
-    const data = types;
+    // types should be defined when schema is provided
+    void types;
   }
 
-  const suiteNoSchema = create(() => {
+  create(() => {
     // ...
   });
 

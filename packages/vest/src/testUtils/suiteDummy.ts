@@ -44,7 +44,7 @@ export function passingWithUntestedOptional(
     asArray(required).forEach(fieldName => {
       dummyTest.passing(fieldName);
     });
-  }).run({});
+  }).run();
 }
 
 export function passingWithOptional(
@@ -61,7 +61,7 @@ export function passingWithOptional(
     asArray(required).forEach(fieldName => {
       dummyTest.passing(fieldName);
     });
-  }).run({});
+  }).run();
 }
 
 export function failingOptional(
@@ -78,21 +78,21 @@ export function failingOptional(
     asArray(required).forEach(fieldName => {
       dummyTest.passing(fieldName);
     });
-  }).run({});
+  }).run();
 }
 
 export function untested(fields?: OneOrMoreOf<string>) {
   const suite = createSuite(fields, fieldName => {
     dummyTest.failing(fieldName);
   });
-  return suite.get({});
+  return suite.get();
 }
 
 function createSuiteRunResult(
   fieldNames: Maybe<string[] | string>,
   callback: (_fieldName?: string) => void,
 ) {
-  return createSuite(fieldNames, callback).run({});
+  return createSuite(fieldNames, callback).run();
 }
 
 function createSuite(

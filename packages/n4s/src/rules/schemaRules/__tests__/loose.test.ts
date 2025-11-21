@@ -2,6 +2,14 @@ import { describe, it, expect } from 'vitest';
 
 import { enforce } from '../../../n4s';
 
+const runLooseRule = <TRule extends { run: (...args: any[]) => any }>(
+  rule: TRule,
+  value: unknown,
+) =>
+  (rule as TRule & { run: (value: unknown) => ReturnType<TRule['run']> }).run(
+    value,
+  );
+
 describe('loose', () => {
   const schema = {
     name: enforce.isString(),
@@ -29,21 +37,21 @@ describe('loose', () => {
   it('should fail if a property is missing', () => {
     const rule = enforce.loose(schema);
     // Type test:
-    const result = rule.run({ name: 'John' });
+    const result = runLooseRule(rule, { name: 'John' });
     expect(result.pass).toBe(false);
   });
 
   it('should fail if a property has wrong type', () => {
     const rule = enforce.loose(schema);
     // Type test:
-    const result = rule.run({ name: 'John', age: '30' });
+    const result = runLooseRule(rule, { name: 'John', age: '30' });
     expect(result.pass).toBe(false);
   });
 
   it('should fail with empty object', () => {
     const rule = enforce.loose(schema);
     // Type test:
-    const result = rule.run({});
+    const result = runLooseRule(rule, {});
     expect(result.pass).toBe(false);
   });
 

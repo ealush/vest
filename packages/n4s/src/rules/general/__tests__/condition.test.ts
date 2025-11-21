@@ -58,6 +58,7 @@ describe('enforce.condition', () => {
   describe('Error handling', () => {
     it('Should fail if not a function', () => {
       // Type test: - testing bad usage
+      // @ts-expect-error - Testing error handling for missing argument
       expect(() => enforce().condition('not a function')).toThrow();
       expect(enforce.condition('not a function').run(1)).toEqual({
         pass: false,

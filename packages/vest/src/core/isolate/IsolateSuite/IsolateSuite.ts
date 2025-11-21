@@ -17,12 +17,12 @@ import {
 
 export type TIsolateSuite = TVestIsolate<{
   optional: OptionalFields;
-  resolver: CB<SuiteResult<TFieldName, TGroupName>>;
+  resolver: CB<SuiteResult<TFieldName, TGroupName, any>>;
 }>;
 
 export function IsolateSuite<Callback extends CB = CB>(
   callback: Callback,
-  resolver: CB<SuiteResult<TFieldName, TGroupName>>,
+  resolver: CB<SuiteResult<TFieldName, TGroupName, any>>,
 ): TIsolateSuite {
   return createVestIsolate(VestIsolateType.Suite, callback, {
     optional: {},
@@ -48,7 +48,10 @@ export class SuiteOptionalFields {
     suite: TIsolateSuite,
     fieldName: TFieldName,
   ): OptionalFieldDeclaration {
-    return SuiteOptionalFields.getOptionalFields(suite)[fieldName] ?? ({} as OptionalFieldDeclaration);
+    return (
+      SuiteOptionalFields.getOptionalFields(suite)[fieldName] ??
+      ({} as OptionalFieldDeclaration)
+    );
   }
 
   static getOptionalFields(suite: TIsolateSuite): OptionalFields {

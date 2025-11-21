@@ -55,8 +55,8 @@ const schemaRulesWithArrayChaining = {
 const baseEnforceLazy = {
   ...(adaptDynamicRules<RuleInstance<any, [any]>, typeof compoundRules>(
     compoundRules,
-  ) as unknown as CompoundRuleLazyTypes),
-  ...(schemaRulesWithArrayChaining as unknown as SchemaRuleLazyTypes),
+  ) as CompoundRuleLazyTypes),
+  ...(schemaRulesWithArrayChaining as SchemaRuleLazyTypes),
   ...adaptDynamicRules<AnyRuleInstance, typeof generalRules>(generalRules),
   ...adaptDynamicRules<ObjectRulesUnion, typeof objectRules>(objectRules),
   ...typeRules,

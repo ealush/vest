@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
 import { enforce } from 'n4s';
-import { create, test, only } from '../../vest';
+import { describe, it, expect } from 'vitest';
+
+import { create, test } from '../../vest';
 
 describe('Schema Runtime Validation', () => {
   const schema = enforce.shape({
@@ -20,7 +21,8 @@ describe('Schema Runtime Validation', () => {
     expect(suite.run({ name: 'John', age: 30, tags: [] }).isValid()).toBe(true);
 
     // Invalid data
-    const result = suite.run({ name: 'John', age: '30' } as any);
+    // @ts-expect-error - Invalid data
+    const result = suite.run({ name: 'John', age: '30' });
     expect(result.hasErrors()).toBe(true);
     expect(result.hasErrors('age')).toBe(true);
   });
@@ -30,7 +32,8 @@ describe('Schema Runtime Validation', () => {
     // The schema validation should be skipped entirely
     const result = suite
       .focus({ only: 'name' })
-      .run({ name: 'John', age: '30' } as any);
+      // @ts-expect-error - Invalid data
+      .run({ name: 'John', age: '30' });
 
     expect(result.hasErrors('age')).toBe(false);
     expect(result.isValid()).toBe(true);
@@ -40,7 +43,8 @@ describe('Schema Runtime Validation', () => {
     // Invalid data for schema
     const result = suite
       .focus({ only: ['name'] })
-      .run({ name: 'John', age: '30' } as any);
+      // @ts-expect-error - Invalid data
+      .run({ name: 'John', age: '30' });
 
     expect(result.hasErrors('age')).toBe(false);
     expect(result.isValid()).toBe(true);
@@ -56,11 +60,14 @@ describe('Schema Runtime Validation', () => {
       );
 
       expect(partialSuite.run({}).hasErrors()).toBe(false);
-      expect(partialSuite.run({ optional: 123 } as any).hasErrors()).toBe(true);
+      expect(partialSuite.run({ optional: 123 }).hasErrors()).toBe(true);
     });
 
     it('should populate result.types with data', () => {
-      const s = create(_data => {}, enforce.shape({ name: enforce.isString() }));
+      const s = create(
+        _data => {},
+        enforce.shape({ name: enforce.isString() }),
+      );
       const res = s.run({ name: 'Test' });
 
       expect(res.types).toHaveProperty('input', { name: 'Test' });
@@ -72,9 +79,8 @@ describe('Schema Runtime Validation', () => {
         field: enforce.isString(),
       });
       const s = create(() => {}, strictSchema);
-      expect(s.run({ field: 'yes', extra: 'no' } as any).hasErrors()).toBe(
-        true,
-      );
+      // @ts-expect-error - Invalid data
+      expect(s.run({ field: 'yes', extra: 'no' }).hasErrors()).toBe(true);
     });
 
     it('should pass if extra fields are present when using enforce.loose', () => {
@@ -82,9 +88,7 @@ describe('Schema Runtime Validation', () => {
         field: enforce.isString(),
       });
       const s = create(() => {}, looseSchema);
-      expect(s.run({ field: 'yes', extra: 'no' } as any).hasErrors()).toBe(
-        false,
-      );
+      expect(s.run({ field: 'yes', extra: 'no' }).hasErrors()).toBe(false);
     });
   });
 
@@ -130,12 +134,13 @@ describe('Schema Runtime Validation', () => {
         required: enforce.isString(),
       });
 
-      const suite = create(data => {
+      const suite = create(_data => {
         test('field', () => {});
       }, schema);
 
       // First run: Focused
       // Schema validation should be skipped
+      // @ts-expect-error - Invalid data
       let res = suite.focus({ only: 'field' }).run({ required: 123 });
 
       expect(res.hasErrors()).toBe(false);
@@ -143,6 +148,7 @@ describe('Schema Runtime Validation', () => {
 
       // Second run: Not focused
       // Schema validation should run and fail
+      // @ts-expect-error - Invalid data
       res = suite.run({ required: 123 });
       expect(res.hasErrors()).toBe(true);
       expect(res.hasErrors('required')).toBe(true);

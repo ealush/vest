@@ -1,7 +1,8 @@
 /* eslint-disable max-nested-callbacks */
-import { mapFirst } from 'vest-utils';
+import { lengthEquals, mapFirst } from 'vest-utils';
 
 import { ctx } from '../../enforceContext';
+import { transformResult } from '../../ruleResult';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 /**
@@ -57,8 +58,10 @@ export function isArrayOf<T>(value: T[], ...rules: any[]): RuleRunReturn<T[]> {
         let lastRes: RuleRunReturn<any> | undefined;
         // Try each rule with the item - any rule passing is OK
         const anyPass = rules.some(rule => {
-          lastRes = rule.run(item);
-          return lastRes.pass;
+          const rawResult = rule.run(item);
+          lastRes = rawResult;
+          const transformed = transformResult(rawResult, 'isArrayOf', item);
+          return transformed.pass;
         });
 
         if (anyPass) {
@@ -66,7 +69,7 @@ export function isArrayOf<T>(value: T[], ...rules: any[]): RuleRunReturn<T[]> {
         }
 
         // If failed and we have a single rule, return its failure (might contain nested path)
-        if (rules.length === 1 && lastRes) {
+        if (lengthEquals(rules, 1) && lastRes) {
           return lastRes;
         }
 

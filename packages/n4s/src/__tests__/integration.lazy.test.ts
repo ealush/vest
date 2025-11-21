@@ -2,18 +2,37 @@ import { describe, it, expect } from 'vitest';
 
 import { enforce } from '../n4s';
 
+const runRuleUnsafe = <TRule extends { run: (...args: any[]) => any }>(
+  rule: TRule,
+  value: unknown,
+) =>
+  (rule as TRule & { run: (value: unknown) => ReturnType<TRule['run']> }).run(
+    value,
+  );
+
+const testRuleUnsafe = <TRule extends { test: (...args: any[]) => any }>(
+  rule: TRule,
+  value: unknown,
+) =>
+  (rule as TRule & { test: (value: unknown) => ReturnType<TRule['test']> }).test(
+    value,
+  );
+
 describe('Lazy API - Integration Tests', () => {
   describe('.run() method', () => {
     it('returns detailed result with pass and type', () => {
       const passResult = enforce.isNumber().run(5);
       expect(passResult).toEqual({ pass: true, type: 5 });
 
-      const failResult = enforce.isNumber().run('not a number');
+      const failResult = runRuleUnsafe(enforce.isNumber(), 'not a number');
       expect(failResult).toEqual({ pass: false, type: 'not a number' });
     });
 
     it('includes message on failure when available', () => {
-      const result = enforce.isNumber().message('Must be a number').run('text');
+      const result = runRuleUnsafe(
+        enforce.isNumber().message('Must be a number'),
+        'text',
+      );
       expect(result).toMatchObject({
         pass: false,
         type: 'text',
@@ -79,7 +98,7 @@ describe('Lazy API - Integration Tests', () => {
   describe('.test() method', () => {
     it('returns boolean (true/false)', () => {
       expect(enforce.isNumber().test(5)).toBe(true);
-      expect(enforce.isNumber().test('not a number')).toBe(false);
+      expect(testRuleUnsafe(enforce.isNumber(), 'not a number')).toBe(false);
     });
 
     it('is equivalent to .run().pass', () => {
@@ -104,7 +123,10 @@ describe('Lazy API - Integration Tests', () => {
     it('short-circuits on first failure', () => {
       // Even if later rules would also fail, returns false on first failure
       expect(
-        enforce.isNumber().greaterThan(100).lessThan(50).test('not a number'),
+        testRuleUnsafe(
+          enforce.isNumber().greaterThan(100).lessThan(50),
+          'not a number',
+        ),
       ).toBe(false);
     });
   });
@@ -121,7 +143,7 @@ describe('Lazy API - Integration Tests', () => {
         type: { name: 'John', age: 30 },
       });
 
-      const failResult = schema.run({ name: 'John', age: '30' });
+      const failResult = runRuleUnsafe(schema, { name: 'John', age: '30' });
       expect(failResult.pass).toBe(false);
     });
 
@@ -132,7 +154,7 @@ describe('Lazy API - Integration Tests', () => {
       });
 
       expect(schema.test({ name: 'John', age: 30 })).toBe(true);
-      expect(schema.test({ name: 'John', age: '30' })).toBe(false);
+      expect(testRuleUnsafe(schema, { name: 'John', age: '30' })).toBe(false);
     });
 
     it('validates loose shape', () => {
@@ -141,14 +163,14 @@ describe('Lazy API - Integration Tests', () => {
       });
 
       expect(schema.test({ name: 'John', extra: 'field' })).toBe(true);
-      expect(schema.test({ name: 123 })).toBe(false);
+      expect(testRuleUnsafe(schema, { name: 123 })).toBe(false);
     });
 
     it('validates isArrayOf', () => {
       const rule = enforce.isArrayOf(enforce.isNumber());
 
       expect(rule.test([1, 2, 3])).toBe(true);
-      expect(rule.test([1, '2', 3])).toBe(false);
+      expect(testRuleUnsafe(rule, [1, '2', 3])).toBe(false);
       expect(rule.test([])).toBe(true); // Empty array passes
     });
 
@@ -158,7 +180,7 @@ describe('Lazy API - Integration Tests', () => {
       expect(rule.test(undefined)).toBe(true);
       expect(rule.test(null)).toBe(true);
       expect(rule.test('hello')).toBe(true);
-      expect(rule.test(123)).toBe(false);
+      expect(testRuleUnsafe(rule, 123)).toBe(false);
     });
   });
 
@@ -168,7 +190,7 @@ describe('Lazy API - Integration Tests', () => {
 
       expect(rule.test('hello')).toBe(true);
       expect(rule.test(123)).toBe(true);
-      expect(rule.test(true)).toBe(false);
+      expect(testRuleUnsafe(rule, true)).toBe(false);
     });
 
     it('validates allOf', () => {
@@ -240,7 +262,7 @@ describe('Lazy API - Integration Tests', () => {
       ).toBe(true);
 
       expect(
-        rule.test([
+        testRuleUnsafe(rule, [
           { id: 1, name: 'Alice' },
           { id: '2', name: 'Bob' }, // Invalid: id should be number
         ]),
@@ -289,9 +311,9 @@ describe('Lazy API - Integration Tests', () => {
       expect(validators.shortString.test('very long string')).toBe(false);
 
       expect(validators.validUser.test({ name: 'John', age: 30 })).toBe(true);
-      expect(validators.validUser.test({ name: 'John', age: '30' })).toBe(
-        false,
-      );
+      expect(
+        testRuleUnsafe(validators.validUser, { name: 'John', age: '30' }),
+      ).toBe(false);
     });
 
     it('builds reusable validation libraries', () => {

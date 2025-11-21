@@ -49,6 +49,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     const ok: Addr = { city: 'a', country: 'US', street: 'x', zip: '12345' };
     void ok;
 
+    // @ts-expect-error - extra property should not be allowed on Addr
     const extra1 = {
       city: 'a',
       country: 'US',
@@ -89,6 +90,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     };
     void good;
 
+    // @ts-expect-error - count must be a number
     const badCount = {
       // Type test: count must be number
       count: '1',
@@ -96,6 +98,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     } satisfies T;
     void badCount;
 
+    // @ts-expect-error - totals.tax must be a number
     const badTotals = {
       count: 1,
       // Type test: totals.tax must be number
@@ -103,6 +106,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     } satisfies T;
     void badTotals;
 
+    // @ts-expect-error - maybeName accepts only string | null | undefined
     const badMaybe = {
       count: 1,
       // Type test: maybeName may be string | null | undefined, not boolean

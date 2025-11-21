@@ -1,9 +1,4 @@
-import {
-  assign,
-  CB,
-  isFunction,
-  withResolvers,
-} from 'vest-utils';
+import { assign, CB, isFunction, withResolvers } from 'vest-utils';
 import { Bus } from 'vestjs-runtime';
 
 import { SuiteContext } from '../core/context/SuiteContext';
@@ -43,8 +38,8 @@ export function useCreateSuiteRunner<
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
-  ): SuiteResult<F, G> {
-    const { resolve, promise } = withResolvers<SuiteResult<F, G>>();
+  ): SuiteResult<F, G, S> {
+    const { resolve, promise } = withResolvers<SuiteResult<F, G, S>>();
     return assign(
       promise,
       SuiteContext.run(
@@ -65,27 +60,31 @@ export function useCreateSuiteRunner<
             only(modifiers.only);
             suiteCallback(...(args as Parameters<T>));
             // eslint-disable-next-line complexity, max-nested-callbacks
-            IsolateReorderable(() => {
-              if (
-                typeof schema !== 'undefined' &&
-                !modifiers.only &&
-                schema &&
-                isFunction((schema as any).run)
-              ) {
-                const runResult = (schema as any).run(args[0]);
-
-                if (!runResult.pass && runResult.path) {
-                  // Use the top-level field name (first segment) for error reporting
-                  const fieldName = runResult.path[0];
-                  test(fieldName, runResult.message, () => false, fieldName);
-                }
-              }
-            });
+            IsolateReorderable(runSchemaValidation(schema, modifiers, args[0]));
             Bus.useEmit('SUITE_CALLBACK_RUN_FINISHED');
             return useCreateSuiteResult<F, G, S>(schema, args[0]);
-          }, resolver as any);
+          }, resolver);
         },
       ).output,
     );
+  };
+}
+
+function runSchemaValidation<
+  F extends TFieldName,
+  S extends TSchema = undefined,
+>(schema: S | undefined, modifiers: SuiteModifiers<F>, data: any) {
+  return () => {
+    if (modifiers.only) return;
+    if (!schema || typeof schema === 'undefined') return;
+    if (!isFunction((schema as any).run)) return;
+
+    const runResult = (schema as any).run(data);
+
+    if (!runResult.pass && runResult.path) {
+      // Use the top-level field name (first segment) for error reporting
+      const fieldName = runResult.path[0];
+      test(fieldName, runResult.message, () => false, fieldName);
+    }
   };
 }

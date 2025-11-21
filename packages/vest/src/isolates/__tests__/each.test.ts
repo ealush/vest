@@ -77,7 +77,6 @@ describe('each', () => {
   });
 
   it('should retain failed/passing tests even after skipping runs', () => {
-    let run = 0;
     const suite = vest.create((data: number[], only: number) => {
       vest.only(`item.${only}`);
 
@@ -90,7 +89,6 @@ describe('each', () => {
           item.toString(),
         );
       });
-      run++;
     });
     const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     data.forEach((_, idx) => suite.run(data, idx + 1));

@@ -1,5 +1,16 @@
 import { noop } from './noop';
 
+// Type declaration for Promise.withResolvers (ES2024 feature)
+declare global {
+  interface PromiseConstructor {
+    withResolvers<T>(): {
+      promise: Promise<T>;
+      resolve: (value: T | PromiseLike<T>) => void;
+      reject: (reason?: any) => void;
+    };
+  }
+}
+
 export function withResolvers<T>() {
   if (Promise.hasOwnProperty('withResolvers')) {
     return Promise.withResolvers<T>();

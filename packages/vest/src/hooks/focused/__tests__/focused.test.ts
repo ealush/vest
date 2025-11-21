@@ -154,6 +154,7 @@ describe('Top Level Focus', () => {
     describe('Empty skip call', () => {
       it('Should ignore skip call', () => {
         const result = testSuite(() => {
+          // @ts-expect-error - Testing empty skip call
           vest.skip();
 
           vest.test(Fields.F1, 'F1 error', () => false);
@@ -240,6 +241,7 @@ describe('Top Level Focus', () => {
     describe('When passing undefined', () => {
       it('Should run all fields', () => {
         const result = testSuite(() => {
+          // @ts-expect-error - Testing empty only call
           vest.only();
 
           vest.test(Fields.F1, 'F1 error', () => false);

@@ -53,13 +53,11 @@ export type GetFailuresResponse = FailureMessages | string[];
 export type FailureMessages = Record<string, string[]>;
 export type TSchema = any;
 
-type Simplify<T> = { [K in keyof T]: T[K] } & {};
-
 export type InferSchemaData<S> = S extends { infer: infer T }
-  ? Simplify<T>
+  ? { [K in keyof T]: T[K] } & {}
   : any;
 
-export type SuiteResultBody<
+type SuiteResultData<
   F extends TFieldName,
   G extends TGroupName,
   S extends TSchema = undefined,
@@ -87,7 +85,7 @@ export type SuiteResult<
   F extends TFieldName,
   G extends TGroupName,
   S extends TSchema = undefined,
-> = SuiteResultBody<F, G, S> & {
+> = SuiteResultData<F, G, S> & {
   dump: CB<TIsolateSuite>;
   types: S extends undefined
     ? undefined
@@ -96,4 +94,3 @@ export type SuiteResult<
 
 export type TFieldName<T extends string = string> = T;
 export type TGroupName<G extends string = string> = G;
-

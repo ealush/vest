@@ -2,6 +2,14 @@ import { describe, it, expect } from 'vitest';
 
 import { enforce } from '../../../n4s';
 
+const runShapeRule = <TRule extends { run: (...args: any[]) => any }>(
+  rule: TRule,
+  value: unknown,
+) =>
+  (rule as TRule & { run: (value: unknown) => ReturnType<TRule['run']> }).run(
+    value,
+  );
+
 describe('shape', () => {
   const schema = {
     name: enforce.isString(),
@@ -23,28 +31,28 @@ describe('shape', () => {
   it('should fail with extra properties', () => {
     const rule = enforce.shape(schema);
     // Type test:
-    const result = rule.run({ name: 'John', age: 30, extra: 'property' });
+    const result = runShapeRule(rule, { name: 'John', age: 30, extra: 'property' });
     expect(result.pass).toBe(false);
   });
 
   it('should fail if a property is missing', () => {
     const rule = enforce.shape(schema);
     // Type test:
-    const result = rule.run({ name: 'John' });
+    const result = runShapeRule(rule, { name: 'John' });
     expect(result.pass).toBe(false);
   });
 
   it('should fail if a property has wrong type', () => {
     const rule = enforce.shape(schema);
     // Type test:
-    const result = rule.run({ name: 'John', age: '30' });
+    const result = runShapeRule(rule, { name: 'John', age: '30' });
     expect(result.pass).toBe(false);
   });
 
   it('should fail with empty object', () => {
     const rule = enforce.shape(schema);
     // Type test:
-    const result = rule.run({});
+    const result = runShapeRule(rule, {});
     expect(result.pass).toBe(false);
   });
 
@@ -56,7 +64,7 @@ describe('shape', () => {
 
   it('should fail with an empty schema and non-empty object', () => {
     const rule = enforce.shape({});
-    const result = rule.run({ any: 'value' });
+    const result = runShapeRule(rule, { any: 'value' });
     expect(result.pass).toBe(false);
   });
 });

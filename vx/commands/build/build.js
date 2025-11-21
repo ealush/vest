@@ -1,6 +1,7 @@
 const exec = require('vx/exec');
 const buildPackage = require('vx/scripts/build/buildPackage');
 const { usePackage } = require('vx/vxContext');
+const typecheck = require('../typecheck/typecheck');
 
 /**
  * Builds either the active package or the entire workspace.
@@ -8,6 +9,8 @@ const { usePackage } = require('vx/vxContext');
  * @returns {void}
  */
 function build(options = {}) {
+  typecheck();
+
   const packageName = usePackage();
 
   // If a package context is set, build only that package (used by release flow).

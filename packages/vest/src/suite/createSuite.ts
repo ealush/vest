@@ -8,7 +8,6 @@ import { VestReconciler } from '../core/isolate/VestReconciler';
 import {
   TFieldName,
   TGroupName,
-  InferSchemaData,
   TSchema,
 } from '../suiteResult/SuiteResultTypes';
 
@@ -21,35 +20,12 @@ import { validateSuiteCallback } from './validateParams/validateSuiteParams';
 
 // @vx-allow use-use
 function createSuite<
-  D extends object,
-  F extends TFieldName = keyof D & string,
-  G extends TGroupName = string,
->(
-  suiteCallback: (data: D, ...args: any[]) => any,
-): Suite<F, G, (data: D, ...args: any[]) => any>;
-function createSuite<
-  F extends TFieldName,
-  G extends TGroupName,
-  S extends TSchema,
-  Args extends any[] = any[],
-  Return = any,
->(
-  suiteCallback: (data: InferSchemaData<S>, ...args: Args) => Return,
-  schema: S,
-): Suite<F, G, (data: InferSchemaData<S>, ...args: Args) => Return, S>;
-
-function createSuite<
-  F extends TFieldName,
-  G extends TGroupName,
-  T extends CB = CB,
->(suiteCallback: T, schema?: null | undefined): Suite<F, G, T>;
-
-function createSuite<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB = CB,
   S extends TSchema = undefined,
 >(suiteCallback: T, schema?: S): Suite<F, G, T, S>;
+// @vx-allow use-use
 function createSuite<
   F extends TFieldName,
   G extends TGroupName,

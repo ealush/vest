@@ -2,6 +2,13 @@ import { describe, it, expect } from 'vitest';
 
 import { enforce } from '../../../n4s';
 
+const runIsNull = (value: unknown) =>
+  (enforce.isNull() as ReturnType<typeof enforce.isNull> & {
+    run: (value: unknown) => ReturnType<
+      ReturnType<typeof enforce.isNull>['run']
+    >;
+  }).run(value);
+
 describe('isNull', () => {
   it('pass only for null', () => {
     expect(enforce.isNull().run(null).pass).toBe(true);
@@ -10,7 +17,7 @@ describe('isNull', () => {
   it('fails for undefined', () => {
     const value: null | undefined = undefined;
     // Type test: - testing that undefined is rejected by isNull
-    expect(enforce.isNull().run(value).pass).toBe(false);
+    expect(runIsNull(value).pass).toBe(false);
   });
 
   it('fails for falsy primitives', () => {
@@ -20,13 +27,13 @@ describe('isNull', () => {
     const nanValue: null | number = NaN;
 
     // Type test: - testing that non-null values are rejected
-    expect(enforce.isNull().run(zero).pass).toBe(false);
+    expect(runIsNull(zero).pass).toBe(false);
     // Type test: - testing that non-null values are rejected
-    expect(enforce.isNull().run(emptyString).pass).toBe(false);
+    expect(runIsNull(emptyString).pass).toBe(false);
     // Type test: - testing that non-null values are rejected
-    expect(enforce.isNull().run(falseBool).pass).toBe(false);
+    expect(runIsNull(falseBool).pass).toBe(false);
     // Type test: - testing that non-null values are rejected
-    expect(enforce.isNull().run(nanValue).pass).toBe(false);
+    expect(runIsNull(nanValue).pass).toBe(false);
   });
 
   it('fails for truthy values', () => {
@@ -37,14 +44,14 @@ describe('isNull', () => {
     const arr: null | any[] = [];
 
     // Type test: - testing that non-null values are rejected
-    expect(enforce.isNull().run(num).pass).toBe(false);
+    expect(runIsNull(num).pass).toBe(false);
     // Type test: - testing that non-null values are rejected
-    expect(enforce.isNull().run(str).pass).toBe(false);
+    expect(runIsNull(str).pass).toBe(false);
     // Type test: - testing that non-null values are rejected
-    expect(enforce.isNull().run(bool).pass).toBe(false);
+    expect(runIsNull(bool).pass).toBe(false);
     // Type test: - testing that non-null values are rejected
-    expect(enforce.isNull().run(obj).pass).toBe(false);
+    expect(runIsNull(obj).pass).toBe(false);
     // Type test: - testing that non-null values are rejected
-    expect(enforce.isNull().run(arr).pass).toBe(false);
+    expect(runIsNull(arr).pass).toBe(false);
   });
 });

@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
     "allowJs": false,
+    "baseUrl": ".",
     "declaration": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
     "lib": ["esnext"],
     "module": "esnext",
+    "moduleResolution": "node",
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -14,6 +16,18 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "paths": {
+      "anyone": ["./packages/anyone/src"],
+      "context": ["./packages/context/src"],
+      "n4s": ["./packages/n4s/src"],
+      "n4s/*": ["./packages/n4s/src/*"],
+      "vast": ["./packages/vast/src"],
+      "vest": ["./packages/vest/src"],
+      "vest-utils": ["./packages/vest-utils/src"],
+      "vest-utils/*": ["./packages/vest-utils/src/*"],
+      "vestjs-runtime": ["./packages/vestjs-runtime/src"],
+      "vestjs-runtime/*": ["./packages/vestjs-runtime/src/*"]
+    },
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,

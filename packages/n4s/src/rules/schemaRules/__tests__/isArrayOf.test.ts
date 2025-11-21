@@ -2,6 +2,11 @@ import { describe, it, expect } from 'vitest';
 
 import { enforce } from '../../../n4s';
 
+const runArrayRule = <TRule extends { run: (...args: any[]) => any }>(
+  rule: TRule,
+  value: unknown,
+) => (rule as TRule & { run: (value: unknown) => ReturnType<TRule['run']> }).run(value);
+
 describe('isArrayOf', () => {
   it('should return a rule instance', () => {
     const rule = enforce.isArrayOf(enforce.isNumber());
@@ -18,7 +23,7 @@ describe('isArrayOf', () => {
   it('should fail for an array with mixed types', () => {
     const rule = enforce.isArrayOf(enforce.isNumber());
     // Type test:
-    const result = rule.run([1, '2', 3]);
+    const result = runArrayRule(rule, [1, '2', 3]);
     expect(result.pass).toBe(false);
   });
 
@@ -31,7 +36,7 @@ describe('isArrayOf', () => {
   it('should fail if not an array', () => {
     const rule = enforce.isArrayOf(enforce.isNumber());
     // Type test:
-    const result = rule.run({ not: 'an array' });
+    const result = runArrayRule(rule, { not: 'an array' });
     expect(result.pass).toBe(false);
   });
 
@@ -44,7 +49,7 @@ describe('isArrayOf', () => {
   it('should fail for an array of mixed types when a type is not in the rules', () => {
     const rule = enforce.isArrayOf(enforce.isNumber(), enforce.isString());
     // Type test:
-    const result = rule.run([1, '2', true]);
+    const result = runArrayRule(rule, [1, '2', true]);
     expect(result.pass).toBe(false);
   });
 

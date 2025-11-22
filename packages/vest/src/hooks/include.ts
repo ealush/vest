@@ -56,7 +56,9 @@ export function include<F extends TFieldName, G extends TGroupName>(
         return useHasOnliedTests(currentNode, condition);
       }
 
-      return dynamicValue(condition, () => useCreateSuiteResult(undefined, undefined));
+      return dynamicValue(condition, () =>
+        useCreateSuiteResult(undefined, undefined),
+      );
     };
   }
 }

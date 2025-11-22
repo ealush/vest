@@ -1,20 +1,20 @@
-const fs = require('fs');
+import fs from 'fs';
 
-const { format } = require('date-fns');
-const fse = require('fs-extra');
+import { format } from 'date-fns';
+import fse from 'fs-extra';
 
-const determineLevel = require('../determineChangeLevel');
-const {
+import * as opts from '../../../opts.js';
+import { usePackage } from '../../../vxContext.js';
+import determineLevel from '../determineChangeLevel.js';
+import {
   KEYWORD_MAJOR,
   KEYWORD_MINOR,
   KEYWORD_PATCH,
   CHANGELOG_TITLES,
-} = require('../releaseKeywords');
+} from '../releaseKeywords.js';
 
-const logger = require('vx/logger');
-const opts = require('vx/opts');
-const { usePackage } = require('vx/vxContext');
-const vxPath = require('vx/vxPath');
+import * as logger from 'vx/logger.js';
+import vxPath from 'vx/vxPath.js';
 
 /**
  * Appends a changelog entry for the current package.
@@ -45,7 +45,7 @@ function updateChangelog({ messages, nextVersion }) {
   return { title, body };
 }
 
-module.exports = updateChangelog;
+export default updateChangelog;
 
 /**
  * Generates a changelog title for the provided version.
@@ -57,9 +57,9 @@ function changelogTitle(version) {
 }
 
 /**
- * Takes commit history and groups messages by change level
- * @param {String[]} gitLog commit history
- * @return {Object} an object with keys matching the semver levels
+ * Takes commit history and groups messages by change level.
+ * @param {string[]} messages Commit messages.
+ * @returns {Record<string, string>} Object with keys matching semver levels.
  */
 function groupMessages(messages) {
   return messages.reduce((accumulator, message) => {
@@ -75,10 +75,18 @@ function groupMessages(messages) {
   }, {});
 }
 
+/**
+ * Returns the path to the changelog file for the current package.
+ * @returns {string}
+ */
 function changelogPath() {
   return vxPath.package(usePackage(), opts.fileNames.CHANGELOG);
 }
 
+/**
+ * Reads the changelog file, creating it if it doesn't exist.
+ * @returns {string}
+ */
 function getChangelog() {
   fse.ensureFileSync(changelogPath());
 
@@ -89,6 +97,11 @@ function getChangelog() {
   return fs.readFileSync(changelogPath(), 'utf8');
 }
 
+/**
+ * Writes content to the changelog file.
+ * @param {string} changelog Content to write.
+ * @returns {void}
+ */
 function writeChangelog(changelog) {
   fse.writeFileSync(changelogPath(), changelog);
 }

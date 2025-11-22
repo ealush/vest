@@ -18,4 +18,4 @@ function once(callback) {
   };
 }
 
-module.exports = once;
+export default once;

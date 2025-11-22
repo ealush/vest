@@ -8,10 +8,10 @@ export const VestIsolateType = {
   Focused: 'Focused',
   Group: 'Group',
   OmitWhen: 'OmitWhen',
+  Reorderable: 'Reorderable',
   SkipWhen: 'SkipWhen',
   Suite: 'Suite',
   Test: 'Test',
-  Reorderable: 'Reorderable',
 };
 
 export type TVestIsolate<P = void> = TIsolate<

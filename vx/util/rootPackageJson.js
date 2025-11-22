@@ -1,8 +1,9 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
-const opts = require('vx/opts');
-const vxPath = require('vx/vxPath');
+import { fileNames } from '../opts.js';
+
+import vxPath from 'vx/vxPath.js';
 
 /**
  * Reads and parses the repository root package.json.
@@ -11,10 +12,10 @@ const vxPath = require('vx/vxPath');
 function rootPackageJson() {
   // Manually reading it instead of requiring to avoid caching
   const jsonString = fs.readFileSync(
-    path.join(vxPath.ROOT_PATH, opts.fileNames.PACKAGE_JSON),
+    path.join(vxPath.ROOT_PATH, fileNames.PACKAGE_JSON),
     'utf8',
   );
   return JSON.parse(jsonString);
 }
 
-module.exports = rootPackageJson;
+export default rootPackageJson;

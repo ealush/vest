@@ -1,15 +1,15 @@
-const genVitestConfig = require('../../scripts/genVitestConfig');
+import genVitestConfig from '../../scripts/genVitestConfig.js';
+import genNpmIgnore from '../npmignore/npmignore.js';
+import genTsConfig from '../tsconfig/tsconfig.js';
 
-const genNpmIgnore = require('vx/commands/npmignore/npmignore');
-const genTsConfig = require('vx/commands/tsconfig/tsconfig');
-const logger = require('vx/logger');
+import * as logger from 'vx/logger.js';
 
 /**
  * Generates supporting config files for all packages.
  */
-module.exports = () => {
+export default function prepare() {
   logger.info('Preparing packages...');
   genNpmIgnore();
   genTsConfig();
   genVitestConfig();
-};
+}

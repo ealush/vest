@@ -1,31 +1,35 @@
 #!/usr/bin/env node
+import { createRequire } from 'module';
+import path from 'path';
 
-const path = require('path');
+import { config as dotenvConfig } from 'dotenv';
+import { hideBin } from 'yargs/helpers';
+import yargs from 'yargs/yargs';
 
-const dotenv = require('dotenv');
+import { packageNames } from './packageNames.js';
+import joinTruthy from './util/joinTruthy.js';
+import { usePackage, withPackage } from './vxContext.js';
+
+import * as logger from 'vx/logger.js';
+import vxPath from 'vx/vxPath.js';
+
+const require = createRequire(import.meta.url);
 const glob = require('glob');
-const { hideBin } = require('yargs/helpers');
-const yargs = require('yargs/yargs');
 
-const logger = require('vx/logger');
-const packageNames = require('vx/packageNames');
-const joinTruthy = require('vx/util/joinTruthy');
-const { usePackage } = require('vx/vxContext');
-const ctx = require('vx/vxContext');
-const vxPath = require('vx/vxPath');
+dotenvConfig();
 
-dotenv.config();
-
-const commands = glob
-  .sync(path.join(vxPath.VX_COMMANDS_PATH, '*/*.js'), {
-    cwd: vxPath.VX_ROOT_PATH,
-    absolute: true,
-  })
-  .reduce((commands, command) => {
-    return Object.assign(commands, {
-      [path.basename(command, '.js')]: require(command),
-    });
-  }, {});
+const commands = Object.fromEntries(
+  glob
+    .sync(path.join(vxPath.VX_COMMANDS_PATH, '*/*.js'), {
+      cwd: vxPath.VX_ROOT_PATH,
+      absolute: true,
+    })
+    .map(commandPath => [
+      path.basename(commandPath, '.js'),
+      // Dynamic import for ESM
+      async (...args) => (await import(commandPath)).default(...args),
+    ]),
+);
 
 const argv = hideBin(process.argv);
 
@@ -49,11 +53,11 @@ const cli = yargs(argv)
   })
   .help().argv;
 
-const { package, command, _: cliOptions = [] } = cli;
+const { package: pkg, command, _: cliOptions = [] } = cli;
 
 // Prepare all packages before running any other command.
 if (command !== 'prepare' && command !== 'dev') {
-  commands.prepare();
+  await commands.prepare();
 }
 
 if (!commands[command]) {
@@ -61,13 +65,10 @@ if (!commands[command]) {
 }
 
 logger.info(
-  joinTruthy([
-    `Running command ${command}`,
-    package && `for package ${package}`,
-  ]),
+  joinTruthy([`Running command ${command}`, pkg && `for package ${pkg}`]),
 );
 
-ctx.withPackage(package, () =>
+await withPackage(pkg, async () =>
   commands[command]({
     cliOptions: cliOptions.join(' '),
   }),

@@ -1,11 +1,11 @@
-const { writeJSONSync } = require('fs-extra');
+import fse from 'fs-extra';
 
-const { isReleaseKeepVersionBranch } = require('../../../util/taggedBranch');
+import packageJson from '../../../util/packageJson.js';
+import { isReleaseKeepVersionBranch } from '../../../util/taggedBranch.js';
+import { usePackage } from '../../../vxContext.js';
 
-const logger = require('vx/logger');
-const packageJson = require('vx/util/packageJson');
-const { usePackage } = require('vx/vxContext');
-const vxPath = require('vx/vxPath');
+import * as logger from 'vx/logger.js';
+import vxPath from 'vx/vxPath.js';
 
 /**
  * Updates the package.json version for the current package unless skipped by branch rules.
@@ -41,7 +41,7 @@ function setNextVersion({ tagId, tag, versionToPublish, changeLevel }) {
     `🔢 Setting next version for ${usePackage()}. From ${prevVersion} to ${versionToPublish}`,
   );
 
-  writeJSONSync(vxPath.packageJson(packageName), nextPackageJson, {
+  fse.writeJSONSync(vxPath.packageJson(packageName), nextPackageJson, {
     spaces: 2,
   });
 
@@ -55,4 +55,4 @@ function setNextVersion({ tagId, tag, versionToPublish, changeLevel }) {
   }
 }
 
-module.exports = setNextVersion;
+export default setNextVersion;

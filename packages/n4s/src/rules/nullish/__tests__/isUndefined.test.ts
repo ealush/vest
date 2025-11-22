@@ -3,11 +3,13 @@ import { describe, it, expect } from 'vitest';
 import { enforce } from '../../../n4s';
 
 const runIsUndefined = (value: unknown) =>
-  (enforce.isUndefined() as ReturnType<typeof enforce.isUndefined> & {
-    run: (value: unknown) => ReturnType<
-      ReturnType<typeof enforce.isUndefined>['run']
-    >;
-  }).run(value);
+  (
+    enforce.isUndefined() as ReturnType<typeof enforce.isUndefined> & {
+      run: (
+        _value: unknown,
+      ) => ReturnType<ReturnType<typeof enforce.isUndefined>['run']>;
+    }
+  ).run(value);
 
 describe('isUndefined', () => {
   it('pass only for undefined', () => {

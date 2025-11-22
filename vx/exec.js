@@ -1,9 +1,9 @@
-const execSync = require('child_process').execSync;
+import { execSync } from 'child_process';
 
-const vxPath = require('./vxPath');
+import joinTruthy from './util/joinTruthy.js';
 
-const logger = require('vx/logger');
-const joinTruthy = require('vx/util/joinTruthy');
+import * as logger from 'vx/logger.js';
+import vxPath from 'vx/vxPath.js';
 
 /**
  * Executes a shell command from the repository root.
@@ -11,7 +11,8 @@ const joinTruthy = require('vx/util/joinTruthy');
  * @param {{ exitOnFailure?: boolean, throwOnFailure?: boolean, silent?: boolean, raw?: boolean }} [options] Execution options.
  * @returns {void}
  */
-function exec(
+
+export default function exec(
   command,
   {
     exitOnFailure = true,
@@ -29,12 +30,11 @@ function exec(
   execCommand(cmd, { exitOnFailure, silent, throwOnFailure });
 }
 
-module.exports = exec;
-
 /**
  * Executes command and handles failures based on options.
  * @param {string} command Command string to execute.
  * @param {{ silent?: boolean, throwOnFailure?: boolean, exitOnFailure?: boolean }} options Control logging and failure behavior.
+ * @returns {void}
  */
 function execCommand(command, { silent, throwOnFailure, exitOnFailure }) {
   try {
@@ -50,6 +50,12 @@ function execCommand(command, { silent, throwOnFailure, exitOnFailure }) {
   }
 }
 
+/**
+ * Runs a command synchronously.
+ * @param {string} command Command to execute.
+ * @param {boolean} silent Whether to suppress output.
+ * @returns {void}
+ */
 function run(command, silent) {
   execSync(command, {
     // Run commands from the repo root so workspace binaries are available.
@@ -58,6 +64,10 @@ function run(command, silent) {
   });
 }
 
+/**
+ * Exits the process with error code 1.
+ * @returns {never}
+ */
 function exit() {
   process.exit(1);
 }

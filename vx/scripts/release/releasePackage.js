@@ -1,14 +1,14 @@
-const build = require('../build/buildPackage');
+import { usePackage } from '../../vxContext.js';
+import build from '../build/buildPackage.js';
 
-const genDiffData = require('./genDiffData');
-const getDiff = require('./github/getDiff');
-const publishPackage = require('./steps/publishPackage');
-const setNextVersion = require('./steps/setNextVersion');
-// const updateChangelog = require('./steps/updateChangelog');
-const updateLocalDepsToLatest = require('./steps/updateLocalDepsToLatest');
+import genDiffData from './genDiffData.js';
+import getDiff from './github/getDiff.js';
+import publishPackage from './steps/publishPackage.js';
+import setNextVersion from './steps/setNextVersion.js';
+// import updateChangelog from './steps/updateChangelog.js';
+import updateLocalDepsToLatest from './steps/updateLocalDepsToLatest.js';
 
-const logger = require('vx/logger');
-const { usePackage } = require('vx/vxContext');
+import * as logger from 'vx/logger.js';
 
 /**
  * Releases the currently scoped package, performing build and publish steps.
@@ -42,4 +42,4 @@ function releasePackage({ isTopLevelChange }) {
   publishPackage(diffData);
 }
 
-module.exports = releasePackage;
+export default releasePackage;

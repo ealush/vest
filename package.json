@@ -1,4 +1,5 @@
 {
+  "name": "vest-monorepo",
   "scripts": {
     "build": "vx build",
     "test": "vx test",
@@ -8,10 +9,10 @@
     "prepare": "husky install",
     "dev": "vx dev",
     "website:start": "yarn workspace website start",
-    "website:build": "yarn workspace website build"
+    "website:build": "yarn workspace website build",
+    "postinstall": "husky install"
   },
   "homepage": "https://vestjs.dev",
-  "name": "vest-monorepo",
   "prettier": {
     "arrowParens": "avoid",
     "singleQuote": true
@@ -33,11 +34,12 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-prettier": "latest",
     "eslint-plugin-vitest": "^0.5.4",
     "husky": "^8.0.3",
+    "lint-staged": ">=10",
     "lodash": "^4.17.21",
     "prettier": "^3.3.1",
-    "pretty-quick": "^3.3.1",
     "tsc": "^2.0.4",
     "tsdown": "^0.16.4",
     "tslib": "^2.6.3",
@@ -51,82 +53,13 @@
     "type": "git",
     "url": "https://github.com/ealush/vest.git"
   },
-  "version": "0.0.0",
+  "version": "0",
   "packageManager": "yarn@3.5.1",
-  "exports": {
-    "./exports/classnames": {
-      "import": "./dist/exports/classnames.mjs",
-      "require": "./dist/exports/classnames.cjs"
-    },
-    "./exports/debounce": {
-      "import": "./dist/exports/debounce.mjs",
-      "require": "./dist/exports/debounce.cjs"
-    },
-    "./exports/enforce@date": {
-      "import": "./dist/exports/enforce@date.mjs",
-      "require": "./dist/exports/enforce@date.cjs"
-    },
-    "./exports/enforce@email": {
-      "import": "./dist/exports/enforce@email.mjs",
-      "require": "./dist/exports/enforce@email.cjs"
-    },
-    "./exports/enforce@isURL": {
-      "import": "./dist/exports/enforce@isURL.mjs",
-      "require": "./dist/exports/enforce@isURL.cjs"
-    },
-    "./exports/memo": {
-      "import": "./dist/exports/memo.mjs",
-      "require": "./dist/exports/memo.cjs"
-    },
-    "./exports/parser": {
-      "import": "./dist/exports/parser.mjs",
-      "require": "./dist/exports/parser.cjs"
-    },
-    "./exports/SuiteSerializer": {
-      "import": "./dist/exports/SuiteSerializer.mjs",
-      "require": "./dist/exports/SuiteSerializer.cjs"
-    },
-    "./vest": {
-      "import": "./dist/vest.mjs",
-      "require": "./dist/vest.cjs"
-    },
-    "./*": "./*",
-    ".": {
-      "import": "./dist/vest.mjs",
-      "require": "./dist/vest.cjs"
-    },
-    "./package.json": "./package.json",
-    "./classnames": {
-      "import": "./dist/exports/classnames.mjs",
-      "require": "./dist/exports/classnames.cjs"
-    },
-    "./debounce": {
-      "import": "./dist/exports/debounce.mjs",
-      "require": "./dist/exports/debounce.cjs"
-    },
-    "./enforce@date": {
-      "import": "./dist/exports/enforce@date.mjs",
-      "require": "./dist/exports/enforce@date.cjs"
-    },
-    "./enforce@email": {
-      "import": "./dist/exports/enforce@email.mjs",
-      "require": "./dist/exports/enforce@email.cjs"
-    },
-    "./enforce@isURL": {
-      "import": "./dist/exports/enforce@isURL.mjs",
-      "require": "./dist/exports/enforce@isURL.cjs"
-    },
-    "./memo": {
-      "import": "./dist/exports/memo.mjs",
-      "require": "./dist/exports/memo.cjs"
-    },
-    "./parser": {
-      "import": "./dist/exports/parser.mjs",
-      "require": "./dist/exports/parser.cjs"
-    },
-    "./SuiteSerializer": {
-      "import": "./dist/exports/SuiteSerializer.mjs",
-      "require": "./dist/exports/SuiteSerializer.cjs"
-    }
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "eslint --cache --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml,css,scss,html}": "prettier --write"
   }
 }

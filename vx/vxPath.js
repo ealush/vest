@@ -1,8 +1,8 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
-const opts = require('vx/opts');
-const { usePackage } = require('vx/vxContext');
+import * as opts from './opts.js';
+import { usePackage } from './vxContext.js';
 
 const vxPath = {};
 
@@ -18,7 +18,7 @@ vxPath.vxRoot = () => {
       return;
     }
 
-    const pkgJson = require(pkgJsonPath);
+    const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
 
     if (pkgJson[opts.dir.VX]) {
       breakout(current);
@@ -203,4 +203,4 @@ vxPath.TEST_FILE_PATTERN = `**/${opts.dir.TESTS}/*.test.ts`;
 
 vxPath.PACKAGES_PATH = path.resolve(vxPath.ROOT_PATH, opts.dir.PACKAGES);
 
-module.exports = vxPath;
+export default vxPath;

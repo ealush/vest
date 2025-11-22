@@ -14,9 +14,9 @@ const testRuleUnsafe = <TRule extends { test: (...args: any[]) => any }>(
   rule: TRule,
   value: unknown,
 ) =>
-  (rule as TRule & { test: (value: unknown) => ReturnType<TRule['test']> }).test(
-    value,
-  );
+  (
+    rule as TRule & { test: (value: unknown) => ReturnType<TRule['test']> }
+  ).test(value);
 
 describe('Lazy API - Integration Tests', () => {
   describe('.run() method', () => {

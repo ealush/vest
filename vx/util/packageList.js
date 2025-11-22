@@ -1,12 +1,12 @@
-const path = require('path');
+import path from 'path';
 
-const { glob } = require('glob');
+import { glob } from 'glob';
 
-const vxPath = require('vx/vxPath');
+import vxPath from 'vx/vxPath.js';
 
 // Unordered list of package names
 /** @type {Array<[string, string]>} */
-module.exports.pairs = glob
+export const pairs = glob
   .sync(vxPath.package('*'))
   .reduce((packages, packagePath) => {
     packages.push([path.basename(packagePath), packagePath]);
@@ -14,4 +14,4 @@ module.exports.pairs = glob
   }, []);
 
 /** @type {string[]} */
-module.exports.names = module.exports.pairs.map(([name]) => name);
+export const names = pairs.map(([name]) => name);

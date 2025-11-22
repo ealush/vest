@@ -10,16 +10,26 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
     keyof Omit<T, 'run' | 'infer' | 'test'>,
     (...args: any[]) => boolean
   >,
-  add: (p: Predicate) => T,
-  run: T['run'],
-  test: T['test'],
-  message: (msg: any) => T,
+  {
+    add,
+    run,
+    test,
+    message,
+  }: {
+    add: (p: Predicate) => T;
+    run: T['run'];
+    test: T['test'];
+    message: (msg: any) => T;
+  },
 ) {
+  const methods = { run, test, message };
+  const methodKeys = new Set(['run', 'infer', 'test', 'message']);
+
   return {
     get(_target: T, prop: string | symbol, receiver: any) {
-      if (prop === 'run') return run;
-      if (prop === 'test') return test;
-      if (prop === 'message') return message;
+      if (hasOwnProperty(methods, prop as any)) {
+        return methods[prop as keyof typeof methods];
+      }
 
       if (hasOwnProperty(rules, prop as any)) {
         return (...args: any[]) =>
@@ -34,13 +44,7 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
       return Reflect.get(_target as object, prop, receiver);
     },
     has(_target: T, prop: string | symbol) {
-      if (
-        prop === 'run' ||
-        prop === 'infer' ||
-        prop === 'test' ||
-        prop === 'message'
-      )
-        return true;
+      if (methodKeys.has(prop as string)) return true;
       if (hasOwnProperty(rules, prop as any)) return true;
       if (getLazyRule(prop as string)) return true;
       return Reflect.has(_target as object, prop);

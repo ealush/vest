@@ -1,15 +1,16 @@
-const cleanupDistFiles = require('./cleanupDistFiles');
+import { usePackage } from '../../vxContext.js';
 
-const exec = require('vx/exec');
-const logger = require('vx/logger');
-const { usePackage } = require('vx/vxContext');
-const vxPath = require('vx/vxPath');
+import cleanupDistFiles from './cleanupDistFiles.js';
+
+import exec from 'vx/exec.js';
+import * as logger from 'vx/logger.js';
+import vxPath from 'vx/vxPath.js';
 
 /**
  * Builds the currently scoped package with tsdown.
  * @param {{ cliOptions?: string }} [options] Optional CLI options appended to tsdown.
  */
-function buildPackage(options = {}) {
+export default function buildPackage(options = {}) {
   const name = usePackage();
   logger.info(`🛠 Building package: ${name}`);
 
@@ -34,5 +35,3 @@ function buildPackage(options = {}) {
     }
   }
 }
-
-module.exports = buildPackage;

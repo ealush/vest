@@ -60,7 +60,7 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
 
   const proxy: T = new Proxy(
     target as T,
-    createChainProxyHandlers(rules, add, run, test, message),
+    createChainProxyHandlers(rules, { add, message, run, test }),
   );
 
   return { add, proxy } as const;

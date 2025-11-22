@@ -1,5 +1,10 @@
+import path, { resolve } from 'path';
+import { fileURLToPath } from 'url';
+
 import { defineConfig } from 'vitest/config';
-import { resolve } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   test: {
@@ -10,49 +15,7 @@ export default defineConfig({
   root: __dirname,
   resolve: {
     alias: {
-      withResolvers: resolve(__dirname, 'src/withResolvers.ts'),
       'vest-utils': resolve(__dirname, 'src/vest-utils.ts'),
-      valueIsObject: resolve(__dirname, 'src/valueIsObject.ts'),
-      utilityTypes: resolve(__dirname, 'src/utilityTypes.ts'),
-      tinyState: resolve(__dirname, 'src/tinyState.ts'),
-      text: resolve(__dirname, 'src/text.ts'),
-      seq: resolve(__dirname, 'src/seq.ts'),
-      numberEquals: resolve(__dirname, 'src/numberEquals.ts'),
-      noop: resolve(__dirname, 'src/noop.ts'),
-      nonnullish: resolve(__dirname, 'src/nonnullish.ts'),
-      mapFirst: resolve(__dirname, 'src/mapFirst.ts'),
-      longerThan: resolve(__dirname, 'src/longerThan.ts'),
-      lengthEquals: resolve(__dirname, 'src/lengthEquals.ts'),
-      isUndefined: resolve(__dirname, 'src/isUndefined.ts'),
-      isStringValue: resolve(__dirname, 'src/isStringValue.ts'),
-      isPromise: resolve(__dirname, 'src/isPromise.ts'),
-      isPositive: resolve(__dirname, 'src/isPositive.ts'),
-      isNumeric: resolve(__dirname, 'src/isNumeric.ts'),
-      isNullish: resolve(__dirname, 'src/isNullish.ts'),
-      isNull: resolve(__dirname, 'src/isNull.ts'),
-      isFunction: resolve(__dirname, 'src/isFunction.ts'),
-      isEmpty: resolve(__dirname, 'src/isEmpty.ts'),
-      isBooleanValue: resolve(__dirname, 'src/isBooleanValue.ts'),
-      isArrayValue: resolve(__dirname, 'src/isArrayValue.ts'),
-      invariant: resolve(__dirname, 'src/invariant.ts'),
-      hasOwnProperty: resolve(__dirname, 'src/hasOwnProperty.ts'),
-      greaterThan: resolve(__dirname, 'src/greaterThan.ts'),
-      'globals.d': resolve(__dirname, 'src/globals.d.ts'),
-      freezeAssign: resolve(__dirname, 'src/freezeAssign.ts'),
-      either: resolve(__dirname, 'src/either.ts'),
-      dynamicValue: resolve(__dirname, 'src/dynamicValue.ts'),
-      deferThrow: resolve(__dirname, 'src/deferThrow.ts'),
-      defaultTo: resolve(__dirname, 'src/defaultTo.ts'),
-      callEach: resolve(__dirname, 'src/callEach.ts'),
-      cache: resolve(__dirname, 'src/cache.ts'),
-      bus: resolve(__dirname, 'src/bus.ts'),
-      bindNot: resolve(__dirname, 'src/bindNot.ts'),
-      assign: resolve(__dirname, 'src/assign.ts'),
-      asArray: resolve(__dirname, 'src/asArray.ts'),
-      StringObject: resolve(__dirname, 'src/StringObject.ts'),
-      SimpleStateMachine: resolve(__dirname, 'src/SimpleStateMachine.ts'),
-      Predicates: resolve(__dirname, 'src/Predicates.ts'),
-      minifyObject: resolve(__dirname, 'src/exports/minifyObject.ts'),
     },
   },
 });

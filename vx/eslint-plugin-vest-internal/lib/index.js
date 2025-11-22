@@ -1,8 +1,14 @@
 /**
  * @type {{ rules: Record<string, import('eslint').Rule.RuleModule> }}
  */
-module.exports = {
+import useUse from './rules/use-use.js';
+
+export default {
   rules: {
-    'use-use': require('./rules/use-use'),
+    'use-use': useUse,
   },
+};
+
+export const rules = {
+  'use-use': useUse,
 };

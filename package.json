@@ -12,7 +12,7 @@
     "build:fast": "vx build --fastBuild"
   },
   "homepage": "https://vestjs.dev",
-  "name": "vest",
+  "name": "vest-monorepo",
   "prettier": {
     "arrowParens": "avoid",
     "singleQuote": true

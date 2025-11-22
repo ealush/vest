@@ -18,7 +18,6 @@ import {
   type NumericRuleInstance,
 } from '../rules/numberRules';
 import * as numberRules from '../rules/numberRules';
-import * as numericRules from '../rules/numberRules';
 import { isNumeric } from '../rules/numeric/isNumeric';
 import { isString, type StringRuleInstance } from '../rules/stringRules';
 import * as stringRules from '../rules/stringRules';
@@ -30,7 +29,7 @@ export const typeRules = {
   isNull: (): NullRuleInstance => addToChain({}, isNull),
   isNullish: (): NullishRuleInstance => addToChain({}, isNullish),
   isNumber: (): NumberRuleInstance => addToChain(numberRules, isNumber),
-  isNumeric: (): NumericRuleInstance => addToChain(numericRules, isNumeric),
+  isNumeric: (): NumericRuleInstance => addToChain(numberRules, isNumeric),
   isString: (): StringRuleInstance => addToChain(stringRules, isString),
   isUndefined: (): UndefinedRuleInstance => addToChain({}, isUndefined),
 };

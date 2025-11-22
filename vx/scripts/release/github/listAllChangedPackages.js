@@ -1,7 +1,8 @@
-const listAllChangesSinceStableBranch = require('./listAllChangesSinceStableBranch');
+import * as packageNames from '../../../packageNames.js';
 
-const packageNames = require('vx/packageNames');
-const vxPath = require('vx/vxPath');
+import listAllChangesSinceStableBranch from './listAllChangesSinceStableBranch.js';
+
+import vxPath from 'vx/vxPath.js';
 
 /**
  * Lists all packages that have changed since the stable branch.
@@ -24,4 +25,4 @@ function listAllChangedPackages() {
   }, new Set());
 }
 
-module.exports = listAllChangedPackages;
+export default listAllChangedPackages;

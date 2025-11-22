@@ -4,8 +4,8 @@ import path from 'path';
 import { glob } from 'glob';
 import { defineConfig, type UserConfig } from 'tsdown';
 
-import opts from 'vx/opts';
-import vxPath from 'vx/vxPath';
+import { dir, fileNames, format } from 'vx/opts.js';
+import vxPath from 'vx/vxPath.js';
 
 type PackageConfigOptions = {
   packageDir: string;
@@ -23,10 +23,10 @@ export function createPackageConfig({
 
   return defineConfig({
     alias: {
-      [`@${packageName}`]: `./${opts.dir.SRC}`,
-      '@exports': `./${opts.dir.SRC}/${opts.dir.EXPORTS}`,
+      [`@${packageName}`]: `./${dir.SRC}`,
+      '@exports': `./${dir.SRC}/${dir.EXPORTS}`,
     },
-    clean: [opts.dir.DIST, opts.dir.TYPES],
+    clean: [dir.DIST, dir.TYPES],
     cwd: packageDir,
     dts: {
       sourcemap: true,
@@ -45,7 +45,7 @@ export function createPackageConfig({
     hooks: {
       'build:done': async function ({ options }) {
         const distDir = options.outDir;
-        const typesDir = vxPath.package(packageName, opts.dir.TYPES);
+        const typesDir = vxPath.package(packageName, dir.TYPES);
 
         if (processedOutDirs.has(distDir)) {
           return;
@@ -61,19 +61,17 @@ export function createPackageConfig({
           packageName,
         );
 
-        await updatePackageJsonTypes(
-          packageDir,
-          packageName,
+        await updatePackageJsonTypes(packageDir, packageName, {
           typeMap,
           mainTypesPath,
           legacyDtsPath,
-        );
+        });
 
         await generateExportPolyfills(packageDir, packageName);
       },
     },
     name: packageName,
-    outDir: opts.dir.DIST,
+    outDir: dir.DIST,
     platform: 'node',
     shims: true,
     sourcemap: true,
@@ -81,26 +79,33 @@ export function createPackageConfig({
   });
 }
 
+type ExportsMap = Record<string, string | ExportsEntry>;
+type ExportsEntry = {
+  default?: string;
+  import?: string;
+  require?: string;
+  types?: string;
+  [key: string]: unknown;
+};
+
 function addRootExports(
-  exportsMap: Record<string, any>,
+  exportsMap: ExportsMap,
   packageName: string,
-): Record<string, any> {
+): ExportsMap {
   const rootExport = exportsMap[`./${packageName}`] ?? exportsMap['./index'];
 
   if (rootExport && !exportsMap['.']) {
     exportsMap['.'] = rootExport;
   }
 
-  const packageJson = `./${opts.fileNames.PACKAGE_JSON}`;
+  const packageJson = `./${fileNames.PACKAGE_JSON}`;
 
   exportsMap[packageJson] ??= packageJson;
 
   return exportsMap;
 }
 
-function addExportsAliases(
-  exportsMap: Record<string, any>,
-): Record<string, any> {
+function addExportsAliases(exportsMap: ExportsMap): ExportsMap {
   const aliasPrefix = './exports/';
 
   Object.keys(exportsMap).forEach(key => {
@@ -208,8 +213,8 @@ function selectMainTypesFile(
 ): string | undefined {
   const typeValues = new Set(Object.values(typeMap));
   const preferredTypes = [
-    `./${opts.dir.TYPES}/${packageName}.d.cts`,
-    `./${opts.dir.TYPES}/${packageName}.d.mts`,
+    `./${dir.TYPES}/${packageName}.d.cts`,
+    `./${dir.TYPES}/${packageName}.d.mts`,
   ];
 
   const preferred = preferredTypes.find(typePath => typeValues.has(typePath));
@@ -226,11 +231,7 @@ async function ensureLegacyDtsFile(
   if (!mainTypesPath) return;
 
   const sourcePath = path.join(packageDir, mainTypesPath.replace(/^\.\//, ''));
-  const legacyDtsPath = path.join(
-    packageDir,
-    opts.dir.TYPES,
-    `${packageName}.d.ts`,
-  );
+  const legacyDtsPath = path.join(packageDir, dir.TYPES, `${packageName}.d.ts`);
 
   try {
     await fsPromises.access(sourcePath, fs.constants.R_OK);
@@ -241,27 +242,33 @@ async function ensureLegacyDtsFile(
   await fsPromises.mkdir(path.dirname(legacyDtsPath), { recursive: true });
   await fsPromises.copyFile(sourcePath, legacyDtsPath);
 
-  return `./${opts.dir.TYPES}/${packageName}.d.ts`;
+  return `./${dir.TYPES}/${packageName}.d.ts`;
 }
 
 // eslint-disable-next-line complexity
 async function updatePackageJsonTypes(
   packageDir: string,
   packageName: string,
-  typeMap: Record<string, string>,
-  mainTypesPath?: string,
-  legacyDtsPath?: string,
+  {
+    typeMap,
+    mainTypesPath,
+    legacyDtsPath,
+  }: {
+    typeMap: Record<string, string>;
+    mainTypesPath?: string;
+    legacyDtsPath?: string;
+  },
 ): Promise<void> {
   if (Object.keys(typeMap).length === 0) return;
 
   const packageJsonPath = vxPath.packageJson(packageName);
   const pkg = JSON.parse(await fsPromises.readFile(packageJsonPath, 'utf8'));
-  const distBasePath = `./${opts.dir.DIST}/${packageName}`;
+  const distBasePath = `./${dir.DIST}/${packageName}`;
 
-  pkg.main = `${distBasePath}.${opts.format.CJS}`;
-  pkg.module = `${distBasePath}.${opts.format.MJS}`;
-  pkg.unpkg = `${distBasePath}.${opts.format.MJS}`;
-  pkg.jsdelivr = `${distBasePath}.${opts.format.MJS}`;
+  pkg.main = `${distBasePath}.${format.CJS}`;
+  pkg.module = `${distBasePath}.${format.MJS}`;
+  pkg.unpkg = `${distBasePath}.${format.MJS}`;
+  pkg.jsdelivr = `${distBasePath}.${format.MJS}`;
 
   const mainTypes =
     mainTypesPath ??
@@ -292,48 +299,104 @@ async function updatePackageJsonTypes(
 }
 
 function updateExports(
-  exportsField: any,
+  exportsField: ExportsMap | undefined,
   typeMap: Record<string, string>,
   packageName: string,
-  { mainTypes, legacyDtsPath }: { mainTypes?: string; legacyDtsPath?: string },
-): Record<string, any> {
-  const exportsMap =
+  options: { mainTypes?: string; legacyDtsPath?: string },
+): ExportsMap {
+  const { mainTypes, legacyDtsPath } = options;
+  const exportsMap: ExportsMap =
     exportsField && typeof exportsField === 'object' ? { ...exportsField } : {};
 
+  updateExistingExports(exportsMap, typeMap, packageName, mainTypes);
+  addTypeMapEntries(exportsMap, typeMap, packageName);
+  addLegacyAndWildcardEntries(exportsMap, packageName, legacyDtsPath);
+
+  return exportsMap;
+}
+
+function updateExistingExports(
+  exportsMap: ExportsMap,
+  typeMap: Record<string, string>,
+  packageName: string,
+  mainTypes?: string,
+): void {
   Object.entries(exportsMap).forEach(([exportPath, exportValue]) => {
-    if (exportPath === `./${opts.fileNames.PACKAGE_JSON}`) {
+    if (exportPath === `./${fileNames.PACKAGE_JSON}`) {
       return;
     }
-
-    const normalizedExport =
-      exportValue && typeof exportValue === 'object'
-        ? { ...exportValue }
-        : { default: exportValue };
-
-    const typesKey = exportPath === '.' ? `./${packageName}` : exportPath;
-    const typesEntry = typeMap[typesKey] ?? mainTypes;
-
-    if (typesEntry) {
-      normalizedExport.types ??= typesEntry;
-    }
-
-    exportsMap[exportPath] = normalizedExport;
+    exportsMap[exportPath] = normalizeExport({
+      exportPath,
+      exportValue,
+      mainTypes,
+      packageName,
+      typeMap,
+    });
   });
+}
 
+function normalizeExport({
+  exportPath,
+  exportValue,
+  mainTypes,
+  packageName,
+  typeMap,
+}: {
+  exportPath: string;
+  exportValue: string | ExportsEntry;
+  typeMap: Record<string, string>;
+  packageName: string;
+  mainTypes?: string;
+}): ExportsEntry {
+  const normalizedExport = cloneExport(exportValue);
+  const typesKey = getTypesKey(exportPath, packageName);
+  const typesEntry = getTypesEntry(typesKey, typeMap, mainTypes);
+  if (typesEntry) {
+    normalizedExport.types ??= typesEntry;
+  }
+  return normalizedExport;
+}
+
+function cloneExport(exportValue: string | ExportsEntry): ExportsEntry {
+  return exportValue && typeof exportValue === 'object'
+    ? { ...exportValue }
+    : { default: exportValue };
+}
+
+function getTypesKey(exportPath: string, packageName: string): string {
+  return exportPath === '.' ? `./${packageName}` : exportPath;
+}
+
+function getTypesEntry(
+  typesKey: string,
+  typeMap: Record<string, string>,
+  mainTypes?: string,
+): string | undefined {
+  return typeMap[typesKey] ?? mainTypes;
+}
+
+function addTypeMapEntries(
+  exportsMap: ExportsMap,
+  typeMap: Record<string, string>,
+  packageName: string,
+): void {
   Object.entries(typeMap).forEach(([typesKey, typesPath]) => {
     if (typesKey === `./${packageName}` || typesKey === '.') {
       exportsMap[typesKey] ??= typesPath;
     }
   });
+}
 
+function addLegacyAndWildcardEntries(
+  exportsMap: ExportsMap,
+  packageName: string,
+  legacyDtsPath?: string,
+): void {
   if (legacyDtsPath) {
     exportsMap[`./${packageName}.d.ts`] ??= legacyDtsPath;
   }
-
-  exportsMap[`./${opts.dir.TYPES}/*`] ??= `./${opts.dir.TYPES}/*`;
-  exportsMap[`./${opts.dir.DIST}/*`] ??= `./${opts.dir.DIST}/*`;
-
-  return exportsMap;
+  exportsMap[`./${dir.TYPES}/*`] ??= `./${dir.TYPES}/*`;
+  exportsMap[`./${dir.DIST}/*`] ??= `./${dir.DIST}/*`;
 }
 
 export default createPackageConfig;
@@ -354,16 +417,16 @@ async function generateExportPolyfills(
     const packageJsonContent = {
       exports: {
         '.': {
-          default: `../${opts.dir.DIST}/${opts.dir.EXPORTS}/${exportName}.mjs`,
-          import: `../${opts.dir.DIST}/${opts.dir.EXPORTS}/${exportName}.mjs`,
-          require: `../${opts.dir.DIST}/${opts.dir.EXPORTS}/${exportName}.cjs`,
-          types: `../${opts.dir.TYPES}/${opts.dir.EXPORTS}/${exportName}.d.mts`,
+          default: `../${dir.DIST}/${dir.EXPORTS}/${exportName}.mjs`,
+          import: `../${dir.DIST}/${dir.EXPORTS}/${exportName}.mjs`,
+          require: `../${dir.DIST}/${dir.EXPORTS}/${exportName}.cjs`,
+          types: `../${dir.TYPES}/${dir.EXPORTS}/${exportName}.d.mts`,
         },
       },
-      main: `../${opts.dir.DIST}/${opts.dir.EXPORTS}/${exportName}.cjs`,
-      module: `../${opts.dir.DIST}/${opts.dir.EXPORTS}/${exportName}.mjs`,
+      main: `../${dir.DIST}/${dir.EXPORTS}/${exportName}.cjs`,
+      module: `../${dir.DIST}/${dir.EXPORTS}/${exportName}.mjs`,
       type: 'module',
-      types: `../${opts.dir.TYPES}/${opts.dir.EXPORTS}/${exportName}.d.mts`,
+      types: `../${dir.TYPES}/${dir.EXPORTS}/${exportName}.d.mts`,
     };
 
     await fsPromises.writeFile(

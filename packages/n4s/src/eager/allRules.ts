@@ -6,10 +6,7 @@ import * as commonLength from '../rules/commonLength';
 import * as compoundRules from '../rules/compoundRules/compoundRules';
 import * as generalRules from '../rules/generalRules';
 import * as nullishRules from '../rules/nullishRules';
-// eslint-disable-next-line import/no-duplicates
 import * as numberRules from '../rules/numberRules';
-// eslint-disable-next-line import/no-duplicates
-import * as numericRules from '../rules/numberRules';
 import { isNumeric } from '../rules/numeric/isNumeric';
 import * as objectRules from '../rules/objectRules';
 import * as schemaRules from '../rules/schemaRules/schemaRules';
@@ -26,7 +23,6 @@ export const allRules = {
   ...numberRules,
   // not ideal but it helps us that all the numeric rules are exported directly from number rules
   isNumeric,
-  ...numericRules,
   ...objectRules,
   ...stringRules,
 } as const;

@@ -1,6 +1,6 @@
-const genTsConfig = require('vx/scripts/genTsConfig');
+import genTsConfig from '../../scripts/genTsConfig.js';
 
 /**
  * Regenerates tsconfig files for the workspace.
  */
-module.exports = genTsConfig;
+export default genTsConfig;

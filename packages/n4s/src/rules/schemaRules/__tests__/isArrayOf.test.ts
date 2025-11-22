@@ -2,10 +2,13 @@ import { describe, it, expect } from 'vitest';
 
 import { enforce } from '../../../n4s';
 
-const runArrayRule = <TRule extends { run: (...args: any[]) => any }>(
+const runArrayRule = <TRule extends { run: (..._args: any[]) => any }>(
   rule: TRule,
   value: unknown,
-) => (rule as TRule & { run: (value: unknown) => ReturnType<TRule['run']> }).run(value);
+) =>
+  (rule as TRule & { run: (_value: unknown) => ReturnType<TRule['run']> }).run(
+    value,
+  );
 
 describe('isArrayOf', () => {
   it('should return a rule instance', () => {

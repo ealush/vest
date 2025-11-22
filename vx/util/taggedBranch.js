@@ -1,3 +1,5 @@
+import { packageNames } from '../packageNames.js';
+
 const {
   CURRENT_BRANCH = process.env.GITHUB_REF_NAME ?? 'LOCAL_DEVELOPMENT',
   INTEGRATION_BRANCH,
@@ -8,7 +10,6 @@ const {
   RELEASE_BRANCH,
   RELEASE_KEEP_VERSION_BRANCH,
 } = process.env;
-const packageNames = require('vx/packageNames');
 
 /** @type {boolean} */
 const isIntegrationBranch = CURRENT_BRANCH.startsWith(INTEGRATION_BRANCH);
@@ -35,7 +36,7 @@ const [, target = undefined] =
 const branchAllowsRelease =
   isReleaseBranch || isNextBranch || isIntegrationBranch || isNightlyBranch;
 
-module.exports = {
+export {
   CURRENT_BRANCH,
   INTEGRATION_BRANCH,
   LATEST_BRANCH,
@@ -51,5 +52,5 @@ module.exports = {
   isReleaseBranch,
   isReleaseKeepVersionBranch,
   isStableBranch,
-  targetPackage: packageNames.names[target],
 };
+export const targetPackage = packageNames.names[target];

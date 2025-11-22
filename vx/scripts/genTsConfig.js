@@ -1,16 +1,22 @@
-const { writeJSONSync } = require('fs-extra');
-const lodash = require('lodash');
+import { createRequire } from 'module';
 
-const exec = require('vx/exec');
-const logger = require('vx/logger');
-const packageNames = require('vx/packageNames');
-const vxPath = require('vx/vxPath');
+import fsExtra from 'fs-extra';
+import lodash from 'lodash';
+
+import { packageNames } from '../packageNames.js';
+
+import exec from 'vx/exec.js';
+import * as logger from 'vx/logger.js';
+import vxPath from 'vx/vxPath.js';
+
+const { writeJSONSync } = fsExtra;
+const require = createRequire(import.meta.url);
 
 /**
  * Generates tsconfig files for the workspace and each package.
  * @returns {void}
  */
-module.exports = function genTsConfig() {
+export default function genTsConfig() {
   const mainTsConfig = rootTsConfigTemplate();
 
   if (!isConfigEqual(vxPath.TSCONFIG_PATH, mainTsConfig)) {
@@ -36,30 +42,29 @@ module.exports = function genTsConfig() {
   });
 
   logger.info('👌 Done generating tsconfig files.\n');
-};
+}
 
 /**
  * Compares an existing tsconfig file against the provided config object.
  * @param {string} path Path to tsconfig.json.
- * @param {object} tsConfig Expected configuration object.
+ * @param {Record<string, any>} tsConfig Expected configuration object.
  * @returns {boolean} True when the file content matches the object.
  */
 function isConfigEqual(path, tsConfig) {
   let prev;
-
   try {
     prev = require(path);
   } catch (e) {
     prev = {};
   }
-
   return lodash.isEqual(prev, tsConfig);
 }
 
 /**
  * Writes a tsconfig file and formats it.
  * @param {string} path Destination path.
- * @param {object} tsConfig Configuration to serialize.
+ * @param {Record<string, any>} tsConfig Configuration to serialize.
+ * @returns {void}
  */
 function writeTsConfig(path, tsConfig) {
   logger.log(`📝 Writing ts config to ${path}`);
@@ -70,7 +75,7 @@ function writeTsConfig(path, tsConfig) {
 
 /**
  * Builds the per-package tsconfig template.
- * @returns {object} tsconfig JSON object.
+ * @returns {Record<string, any>} tsconfig JSON object.
  */
 function packageTsConfigTemplate() {
   return {
@@ -86,7 +91,7 @@ function packageTsConfigTemplate() {
 
 /**
  * Builds the root tsconfig template.
- * @returns {object} tsconfig JSON object.
+ * @returns {Record<string, any>} tsconfig JSON object.
  */
 function rootTsConfigTemplate() {
   return {
@@ -125,6 +130,9 @@ function rootTsConfigTemplate() {
       target: 'ES2015',
     },
     files: [`${vxPath.rel(vxPath.VITEST_CONFIG_PATH)}/vitest.d.ts`],
-    include: [vxPath.rel(vxPath.packageSrc('*', '**/*.ts'))],
+    include: [
+      vxPath.rel(vxPath.packageSrc('*', '**/*.ts')),
+      vxPath.rel(vxPath.packageVitestConfig('*')),
+    ],
   };
 }

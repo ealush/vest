@@ -3,11 +3,13 @@ import { describe, it, expect } from 'vitest';
 import { enforce } from '../../../n4s';
 
 const runIsNull = (value: unknown) =>
-  (enforce.isNull() as ReturnType<typeof enforce.isNull> & {
-    run: (value: unknown) => ReturnType<
-      ReturnType<typeof enforce.isNull>['run']
-    >;
-  }).run(value);
+  (
+    enforce.isNull() as ReturnType<typeof enforce.isNull> & {
+      run: (
+        _value: unknown,
+      ) => ReturnType<ReturnType<typeof enforce.isNull>['run']>;
+    }
+  ).run(value);
 
 describe('isNull', () => {
   it('pass only for null', () => {

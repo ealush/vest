@@ -1,6 +1,10 @@
-const fetch = require('node-fetch');
-
-const logger = require('vx/logger');
+import * as logger from 'vx/logger.js';
+// If using Node.js v18+, you can use the global fetch. Otherwise, ensure node-fetch is installed: npm install node-fetch
+let fetchImpl = typeof fetch !== 'undefined' ? fetch : undefined;
+if (!fetchImpl) {
+  // eslint-disable-next-line import/no-unresolved
+  fetchImpl = (await import('node-fetch')).default;
+}
 
 const { GITHUB_REPOSITORY, PUBLIC_REPO_TOKEN } = process.env;
 
@@ -10,15 +14,18 @@ const { GITHUB_REPOSITORY, PUBLIC_REPO_TOKEN } = process.env;
  * @returns {Promise<void>}
  */
 async function postRelease({ tag, body, title }) {
-  await fetch(`https://api.github.com/repos/${GITHUB_REPOSITORY}/releases`, {
-    method: 'POST',
-    headers: { Authorization: `token ${PUBLIC_REPO_TOKEN}` },
-    body: JSON.stringify({
-      tag_name: tag,
-      name: title.replace(/#/g, ''),
-      body,
-    }),
-  });
+  await fetchImpl(
+    `https://api.github.com/repos/${GITHUB_REPOSITORY}/releases`,
+    {
+      method: 'POST',
+      headers: { Authorization: `token ${PUBLIC_REPO_TOKEN}` },
+      body: JSON.stringify({
+        tag_name: tag,
+        name: title.replace(/#/g, ''),
+        body,
+      }),
+    },
+  );
 }
 
 /**
@@ -36,4 +43,4 @@ async function release({ tag, release }) {
   });
 }
 
-module.exports = release;
+export default release;

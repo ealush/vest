@@ -1,23 +1,23 @@
-const logger = require('vx/logger');
-const packagesToRelease = require('vx/scripts/release/packagesToRelease');
-const releasePackage = require('vx/scripts/release/releasePackage');
-const commitChangesToGit = require('vx/scripts/release/steps/commitChangesToGit');
-const { isReleaseBranch } = require('vx/util/taggedBranch');
-const {
+import packagesToRelease from '../../scripts/release/packagesToRelease.js';
+import releasePackage from '../../scripts/release/releasePackage.js';
+import commitChangesToGit from '../../scripts/release/steps/commitChangesToGit.js';
+import {
+  isReleaseBranch,
   targetPackage,
   branchAllowsRelease,
   CURRENT_BRANCH,
-} = require('vx/util/taggedBranch');
-const { usePackage } = require('vx/vxContext');
-const ctx = require('vx/vxContext');
+} from '../../util/taggedBranch.js';
+import { usePackage, withPackage, ctx } from '../../vxContext.js';
 
-require('vx/scripts/genTsConfig');
+import * as logger from 'vx/logger.js';
+import '../../scripts/genTsConfig.js';
 
 /**
  * Releases a specific package when scoped or the full set when not.
  * @param {{ isTopLevelChange?: boolean }} param0 Flag for workspace-level changes.
  */
-function release({ isTopLevelChange }) {
+
+export default function release({ isTopLevelChange }) {
   if (!branchAllowsRelease) {
     logger.info(`❌  Branch ${CURRENT_BRANCH} does not allow release. Exiting`);
     return;
@@ -25,12 +25,10 @@ function release({ isTopLevelChange }) {
 
   const pkg = usePackage() || targetPackage;
   if (pkg) {
-    return ctx.withPackage(pkg, () => releasePackage({ isTopLevelChange }));
+    return withPackage(pkg, () => releasePackage({ isTopLevelChange }));
   }
   releaseAll();
 }
-
-module.exports = release;
 
 /**
  * Releases all packages in dependency order.

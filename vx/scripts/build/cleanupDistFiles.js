@@ -1,15 +1,18 @@
-const path = require('path');
+import { createRequire } from 'module';
+import path from 'path';
 
-const fse = require('fs-extra');
+import fse from 'fs-extra';
+
+import vxPath from 'vx/vxPath.js';
+
+const require = createRequire(import.meta.url);
 const glob = require('glob');
-
-const vxPath = require('vx/vxPath');
 
 /**
  * Removes generated dist files and extensionless exports for a package.
  * @param {string} packageName Package to clean.
  */
-function cleanupDistFiles(packageName) {
+export default function cleanupDistFiles(packageName) {
   fse.removeSync(vxPath.packageDist(packageName));
 
   const exportNames = glob
@@ -20,5 +23,3 @@ function cleanupDistFiles(packageName) {
     fse.removeSync(vxPath.package(packageName, exportName));
   });
 }
-
-module.exports = cleanupDistFiles;

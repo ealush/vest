@@ -1,9 +1,10 @@
-const fs = require('fs');
+import fs from 'fs';
 
-const exec = require('vx/exec');
-const logger = require('vx/logger');
-const opts = require('vx/opts');
-const vxPath = require('vx/vxPath');
+import * as opts from '../opts.js';
+
+import exec from 'vx/exec.js';
+import * as logger from 'vx/logger.js';
+import vxPath from 'vx/vxPath.js';
 
 const VITEST_CONFIG_PATH = 'vx/config/vitest';
 
@@ -11,16 +12,16 @@ const VITEST_CONFIG_PATH = 'vx/config/vitest';
  * Generates vitest configuration files for the workspace and each package.
  * @returns {void}
  */
-module.exports = function genVitestConfig() {
+
+export default function genVitestConfig() {
   logger.info('Generating vitest.config.ts files...');
-
   mainConfig();
-
   logger.info('👌 Done generating vitest.config files.\n');
-};
+}
 
 /**
  * Writes the top-level vitest configuration when content changed.
+ * @returns {void}
  */
 function mainConfig() {
   const configPath = vxPath.VITEST_CONFIG_FILE_PATH;
@@ -50,7 +51,12 @@ function mainConfig() {
  */
 function mainConfigTemplate() {
   return `;
+import { fileURLToPath } from 'url';
+import path from 'path';
 import { defineConfig } from 'vitest/config';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   test: {

@@ -1,8 +1,10 @@
-const exec = require('vx/exec');
+import exec from 'vx/exec.js';
+import * as logger from 'vx/logger.js';
 
-function typecheckTests() {
+/**
+ * Runs TypeScript type checking on the entire project, including tests.
+ */
+export default function typecheckTests() {
   exec('tsc --noEmit');
-  console.log('✅ Typecheck passed (including tests).');
+  logger.info('✅ Typecheck passed (including tests).');
 }
-
-module.exports = typecheckTests;

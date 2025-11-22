@@ -8,44 +8,49 @@ type ContextRuleResult =
   | { pass: boolean; message?: string | (() => string) };
 
 declare global {
+  // eslint-disable-next-line no-unused-vars
   namespace n4s {
+    // eslint-disable-next-line no-unused-vars
     interface EnforceMatchers {
-      hasContext: (value: unknown) => ContextRuleResult;
-      checkContextStructure: (value: unknown) => ContextRuleResult;
-      checkValue: (value: unknown) => ContextRuleResult;
-      checkMetaName: (value: unknown, expectedName: string) => ContextRuleResult;
+      hasContext: (_value: unknown) => ContextRuleResult;
+      checkContextStructure: (_value: unknown) => ContextRuleResult;
+      checkValue: (_value: unknown) => ContextRuleResult;
+      checkMetaName: (
+        _value: unknown,
+        _expectedName: string,
+      ) => ContextRuleResult;
       checkMetaIndex: (
-        value: unknown,
-        expectedIndex: number,
+        _value: unknown,
+        _expectedIndex: number,
       ) => ContextRuleResult;
-      hasMetaIndex: (value: unknown) => ContextRuleResult;
-      hasParent: (value: unknown) => ContextRuleResult;
-      canAccessParent: (value: unknown) => ContextRuleResult;
-      matchesParentUsername: (value: string) => ContextRuleResult;
-      differentFromParentUsername: (value: string) => ContextRuleResult;
-      isFriendTheSameAsUser: (value: string) => ContextRuleResult;
-      emailMatchesUsername: (value: string) => ContextRuleResult;
-      matchesTopLevelId: (value: string) => ContextRuleResult;
+      hasMetaIndex: (_value: unknown) => ContextRuleResult;
+      hasParent: (_value: unknown) => ContextRuleResult;
+      canAccessParent: (_value: unknown) => ContextRuleResult;
+      matchesParentUsername: (_value: string) => ContextRuleResult;
+      differentFromParentUsername: (_value: string) => ContextRuleResult;
+      isFriendTheSameAsUser: (_value: string) => ContextRuleResult;
+      emailMatchesUsername: (_value: string) => ContextRuleResult;
+      matchesTopLevelId: (_value: string) => ContextRuleResult;
       notSameAsSibling: (
-        value: string,
-        siblingKey: string,
+        _value: string,
+        _siblingKey: string,
       ) => ContextRuleResult;
-      uniqueInArray: (value: unknown) => ContextRuleResult;
-      passwordsMatch: (value: string) => ContextRuleResult;
-      checkParentIsNull: (value: unknown) => ContextRuleResult;
+      uniqueInArray: (_value: unknown) => ContextRuleResult;
+      passwordsMatch: (_value: string) => ContextRuleResult;
+      checkParentIsNull: (_value: unknown) => ContextRuleResult;
       requiredIfOtherFieldPresent: (
-        value: unknown,
-        otherField: string,
+        _value: unknown,
+        _otherField: string,
       ) => ContextRuleResult;
-      differentFromUsername: (value: string) => ContextRuleResult;
+      differentFromUsername: (_value: string) => ContextRuleResult;
       minAgeIfCountry: (
-        value: number,
-        country: string,
-        minAge: number,
+        _value: number,
+        _country: string,
+        _minAge: number,
       ) => ContextRuleResult;
-      matchesParentId: (value: string) => ContextRuleResult;
-      safeParentAccess: (value: unknown) => ContextRuleResult;
-      arrayLengthMatchesCount: (value: any[]) => ContextRuleResult;
+      matchesParentId: (_value: string) => ContextRuleResult;
+      safeParentAccess: (_value: unknown) => ContextRuleResult;
+      arrayLengthMatchesCount: (_value: any[]) => ContextRuleResult;
     }
   }
 }

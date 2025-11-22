@@ -1,6 +1,5 @@
-const packageNames = require('vx/packageNames');
-const { usePackage } = require('vx/vxContext');
-const ctx = require('vx/vxContext');
+import { packageNames } from '../packageNames.js';
+import { usePackage, withPackage } from '../vxContext.js';
 
 /**
  * Runs a callback for the active package or iterates over all packages when none is selected.
@@ -9,7 +8,7 @@ const ctx = require('vx/vxContext');
  * @param {...Parameters<T>} args Arguments forwarded to the callback.
  * @returns {void}
  */
-module.exports = (callback, ...args) => {
+export default function runOnActivePackages(callback, ...args) {
   const packages = packageNames;
   const name = usePackage();
 
@@ -17,6 +16,6 @@ module.exports = (callback, ...args) => {
     return callback(...args);
   }
   packages.list.forEach(packageName =>
-    ctx.withPackage(packageName, () => callback(...args)),
+    withPackage(packageName, () => callback(...args)),
   );
-};
+}

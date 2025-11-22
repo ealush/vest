@@ -1,6 +1,5 @@
-import { vi } from 'vitest';
-
 import { genTestIsolate } from 'vestjs-runtime/test-utils';
+import { vi } from 'vitest';
 
 import {
   IsolateTestBase,

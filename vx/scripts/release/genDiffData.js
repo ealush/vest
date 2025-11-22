@@ -1,33 +1,46 @@
-const semver = require('semver');
+import { inc } from 'semver';
 
-const determineChangeLevel = require('./determineChangeLevel');
-
-const logger = require('vx/logger');
-const { release_tags } = require('vx/opts');
-const packageJson = require('vx/util/packageJson');
-const {
+import { release_tags } from '../../opts.js';
+import packageJson from '../../util/packageJson.js';
+import {
   isIntegrationBranch,
   isReleaseBranch,
   isNextBranch,
   isReleaseKeepVersionBranch,
   isNightlyBranch,
-} = require('vx/util/taggedBranch');
-const { CURRENT_BRANCH } = require('vx/util/taggedBranch');
-const { usePackage } = require('vx/vxContext');
+  CURRENT_BRANCH,
+} from '../../util/taggedBranch.js';
+import { usePackage } from '../../vxContext.js';
+
+import determineChangeLevel from './determineChangeLevel.js';
+
+import * as logger from 'vx/logger.js';
 
 const { GITHUB_SHA } = process.env;
+
+/**
+ * @typedef {Object} DiffData
+ * @property {string} changeLevel Semver change level (major/minor/patch).
+ * @property {string[]} messages Commit messages.
+ * @property {string} nextVersion Next semantic version.
+ * @property {string | undefined} packageName Name of the package being released.
+ * @property {string | undefined} tag Distribution tag (e.g., 'next', 'dev').
+ * @property {string} tagId Full tag identifier.
+ * @property {string} version Current version.
+ * @property {string} versionToPublish Version string to publish to npm.
+ */
 
 // commits: [{title: "...", files: ["..."]}]
 /**
  * Generates release metadata for the current package based on commit history.
  * @param {{ title: string, files?: string[] }[]} commits Commits affecting the package.
- * @returns {{ changeLevel: string, messages: string[], nextVersion: string, packageName: string | undefined, tag: string | undefined, tagId: string, version: string, versionToPublish: string }} Computed diff data.
+ * @returns {DiffData} Computed diff data.
  */
 function genDiffData(commits) {
   const version = packageJson().version;
   const messages = commits.map(({ title }) => title);
   const changeLevel = determineChangeLevel(...messages);
-  const nextVersion = semver.inc(version, changeLevel);
+  const nextVersion = inc(version, changeLevel);
   const tagId = pickTagId(nextVersion);
   const [, tag] = tagId.split('-');
   return {
@@ -46,7 +59,7 @@ function genDiffData(commits) {
   };
 }
 
-module.exports = genDiffData;
+export default genDiffData;
 
 /**
  * Determines a tag identifier based on branch and version.

@@ -1,4 +1,4 @@
-const concatTruthy = require('vx/util/concatTruthy');
+import concatTruthy from './concatTruthy.js';
 
 /**
  * Joins truthy string-like values with the provided delimiter.
@@ -6,6 +6,6 @@ const concatTruthy = require('vx/util/concatTruthy');
  * @param {string} delimiter Delimiter to place between values.
  * @returns {string} Concatenated string of all truthy values.
  */
-module.exports = function joinTruthy(values, delimiter) {
+export default function joinTruthy(values, delimiter) {
   return concatTruthy(values).join(delimiter);
-};
+}

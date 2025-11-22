@@ -54,7 +54,7 @@ export type FailureMessages = Record<string, string[]>;
 export type TSchema = any;
 
 export type InferSchemaData<S> = S extends { infer: infer T }
-  ? { [K in keyof T]: T[K] } & {}
+  ? { [K in keyof T]: T[K] } & NonNullable<unknown>
   : any;
 
 type SuiteResultData<

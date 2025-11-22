@@ -13,9 +13,7 @@ declare global {
   namespace n4s {
     interface EnforceMatchers {
       isPositive: (value: number) => boolean;
-      isEmail: (
-        value: string,
-      ) => boolean | { pass: boolean; message?: string };
+      isEmail: (value: string) => boolean | { pass: boolean; message?: string };
       isBetween: (value: number, min: number, max: number) => boolean;
       hasLength: (value: string, length: number) => boolean;
     }

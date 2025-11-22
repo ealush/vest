@@ -56,7 +56,7 @@ function useProcessTests<F extends TFieldName, G extends TGroupName>(
     const { fieldName } = VestTest.getData(testObject);
 
     summary.tests[fieldName] = appendToTest(summary.tests, testObject);
-    summary.groups = appendToGroup(summary.groups, testObject);
+    summary.groups = useAppendToGroup(summary.groups, testObject);
 
     if (summary.tests[fieldName].valid !== false) {
       summary.tests[fieldName].valid = useSetValidProperty(fieldName);
@@ -76,7 +76,7 @@ function useProcessTests<F extends TFieldName, G extends TGroupName>(
   return summary;
 }
 
-function appendToGroup(
+function useAppendToGroup(
   groups: Groups<TGroupName, TFieldName>,
   testObject: TIsolateTest,
 ): Groups<TGroupName, TFieldName> {

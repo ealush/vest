@@ -1,10 +1,10 @@
-const {
+import {
   KEYWORD_MAJOR,
   KEYWORD_MINOR,
   KEYWORD_PATCH,
   KEYWORDS_MAJOR,
   KEYWORDS_MINOR,
-} = require('./releaseKeywords');
+} from './releaseKeywords.js';
 
 const REGEXP_MAJOR = new RegExp(`(${KEYWORDS_MAJOR.join('|')})((.+))?:`, 'i');
 const REGEXP_MINOR = new RegExp(`(${KEYWORDS_MINOR.join('|')})((.+))?:`, 'i');
@@ -36,4 +36,4 @@ const determineChangeLevel = (...messages) => {
   }, KEYWORD_PATCH);
 };
 
-module.exports = determineChangeLevel;
+export default determineChangeLevel;

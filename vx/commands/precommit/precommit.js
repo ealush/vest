@@ -1,8 +1,8 @@
-const exec = require('vx/exec');
+import exec from 'vx/exec.js';
 
 /**
  * Runs formatting on staged files before commit.
  */
-module.exports = function precommit() {
-  exec('npx pretty-quick --staged');
-};
+export default function precommit() {
+  exec('npx lint-staged');
+}

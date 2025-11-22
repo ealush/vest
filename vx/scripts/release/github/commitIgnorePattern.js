@@ -5,4 +5,4 @@ const IGNORE_PATTERN = new RegExp(
   'i',
 );
 
-module.exports = IGNORE_PATTERN;
+export default IGNORE_PATTERN;

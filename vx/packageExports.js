@@ -1,16 +1,19 @@
-const path = require('path');
+import { createRequire } from 'module';
+import path from 'path';
 
+import { packageNames } from './packageNames.js';
+
+import vxPath from 'vx/vxPath.js';
+
+const require = createRequire(import.meta.url);
 const glob = require('glob');
-
-const packageNames = require('vx/packageNames');
-const vxPath = require('vx/vxPath');
 
 /**
  * @typedef {Record<string, string[]>} PackageExports
  */
 
 /** @type {PackageExports} */
-module.exports = packageNames.list.reduce(
+const packageExports = packageNames.list.reduce(
   (packageExports, packageName) =>
     Object.assign(packageExports, {
       [packageName]: glob
@@ -19,3 +22,5 @@ module.exports = packageNames.list.reduce(
     }),
   {},
 );
+
+export default packageExports;

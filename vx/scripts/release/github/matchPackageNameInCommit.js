@@ -3,6 +3,6 @@
  * @param {string} name Package name.
  * @returns {RegExp}
  */
-module.exports = function matchPackageNameInCommit(name) {
+export default function matchPackageNameInCommit(name) {
   return new RegExp(`\\[${name}\\]|\\(${name}\\)`, 'i');
-};
+}

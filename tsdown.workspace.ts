@@ -2,7 +2,9 @@ import path from 'path';
 
 import { defineConfig } from 'tsdown';
 
-import createPackageConfig from './vx/config/tsdown/packageConfig';
+import { createPackageConfig } from './vx/config/tsdown/packageConfig.ts';
+
+const workspaceRoot = process.cwd();
 
 const packages = [
   'anyone',
@@ -17,7 +19,7 @@ const packages = [
 export default defineConfig(
   packages.map(pkg =>
     createPackageConfig({
-      packageDir: path.resolve(__dirname, 'packages', pkg),
+      packageDir: path.resolve(workspaceRoot, 'packages', pkg),
     }),
   ),
 );

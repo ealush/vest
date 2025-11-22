@@ -69,9 +69,7 @@ export class RuleRunReturn<T> {
       dynamicValue(message ?? pass.message, type),
     );
 
-    if (pass.path) {
-      res.path = pass.path;
-    }
+    res.path = pass.path;
 
     return res;
   }

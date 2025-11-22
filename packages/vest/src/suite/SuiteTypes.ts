@@ -1,6 +1,8 @@
 import { CB } from 'vest-utils';
 
+import { Subscribe } from '../core/VestBus/VestBus';
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
+import { FieldExclusion } from '../hooks/focused/focused';
 import {
   SuiteResult,
   TFieldName,
@@ -8,19 +10,17 @@ import {
   InferSchemaData,
   TSchema,
 } from '../suiteResult/SuiteResultTypes';
-import { Subscribe } from '../core/VestBus/VestBus';
-import { FieldExclusion } from '../hooks/focused/focused';
-import { TTypedMethods } from './getTypedMethods';
 import { SuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 
+import { TTypedMethods } from './getTypedMethods';
 import { StandardSchemaV1 } from './standardSchemaSpec';
 
 export type SuiteCallback<Data = any, T extends CB = CB> = T extends (
   ...args: infer Args
 ) => infer Return
   ? Args extends [any, ...infer Rest]
-  ? (data: Data, ...rest: Rest) => Return
-  : (...args: Args) => Return
+    ? (data: Data, ...rest: Rest) => Return
+    : (...args: Args) => Return
   : T;
 
 export type Suite<

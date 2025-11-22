@@ -1,27 +1,29 @@
-const { memoize } = require('lodash');
+import lodash from 'lodash';
 
-const packageJson = require('vx/util/packageJson');
-const packageList = require('vx/util/packageList');
+import packageJson from '../../util/packageJson.js';
+import * as packageList from '../../util/packageList.js';
+
+const { memoize } = lodash;
 
 // Takes import map and turns it into a dependency map
 /**
  * Builds dependency entries for a given package.
- * @param {string} package Package name to process.
+ * @param {string} packageName Package name to process.
  * @param {Record<string, Record<string, any>>} deps Accumulator dependency tree.
  * @returns {Record<string, Record<string, any>>}
  */
-const buildDepsMemo = memoize(function (package, deps) {
-  const pkgJson = packageJson(package);
+const buildDepsMemo = memoize(function (packageName, deps) {
+  const pkgJson = packageJson(packageName);
 
   // This doesn't really do much, only prevent a circular dependency tree which countMaxDepth can't handle
-  deps[package] = deps[package] || {};
+  deps[packageName] = deps[packageName] || {};
 
   const dependencies = Object.keys(pkgJson.dependencies || {});
 
   dependencies.forEach(dependency => {
     deps[dependency] = deps[dependency] || {};
-    deps[dependency][package] =
-      deps[package] ?? buildDepsMemo(dependency, deps);
+    deps[dependency][packageName] =
+      deps[packageName] ?? buildDepsMemo(dependency, deps);
   });
 
   return deps;
@@ -52,7 +54,6 @@ function sortDependencies(packagesList) {
   );
 }
 
-// eslint-disable-next-line complexity
 /**
  * Checks whether package `a` depends (directly or indirectly) on package `b`.
  * @param {string} a Package to check.
@@ -62,6 +63,18 @@ function sortDependencies(packagesList) {
  * @returns {boolean}
  */
 function dependsOn(a, b, tree = buildDepsTree(), foundB = false) {
+  return _dependsOnHelper(a, b, tree, foundB);
+}
+
+/**
+ * Internal helper for dependsOn check.
+ * @param {string} a Package to check.
+ * @param {string} b Potential dependency.
+ * @param {Record<string, Record<string, any>>} tree Dependency tree.
+ * @param {boolean} foundB Whether package b has been found.
+ * @returns {boolean}
+ */
+function _dependsOnHelper(a, b, tree, foundB) {
   if (a === b) {
     return false;
   }
@@ -70,22 +83,28 @@ function dependsOn(a, b, tree = buildDepsTree(), foundB = false) {
     return true;
   }
 
-  for (const dep in tree) {
-    const res = dependsOn(a, b, tree[dep], dep === b);
+  return _dependsOnAny(a, b, tree, foundB);
+}
 
+/**
+ * Checks if package a depends on b in any subtree.
+ * @param {string} a Package to check.
+ * @param {string} b Potential dependency.
+ * @param {Record<string, Record<string, any>>} tree Dependency tree.
+ * @param {boolean} _foundB Whether package b has been found (unused in this function).
+ * @returns {boolean}
+ */
+function _dependsOnAny(a, b, tree, _foundB) {
+  for (const dep in tree) {
+    const res = _dependsOnHelper(a, b, tree[dep], dep === b);
     if (res) {
       return true;
     }
   }
-
   return false;
 }
 
-module.exports = {
-  buildDepsTree,
-  sortDependencies,
-  dependsOn,
-};
+export { buildDepsTree, sortDependencies, dependsOn };
 
 // Counts max dependency depth
 /**

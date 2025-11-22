@@ -1,10 +1,13 @@
-const path = require('path');
+import { createRequire } from 'module';
+import path from 'path';
 
+import { dir } from '../opts.js';
+import { usePackage } from '../vxContext.js';
+
+import vxPath from 'vx/vxPath.js';
+
+const require = createRequire(import.meta.url);
 const glob = require('glob');
-
-const opts = require('vx/opts');
-const { usePackage } = require('vx/vxContext');
-const vxPath = require('vx/vxPath');
 
 const namespaceDelimiter = '@';
 
@@ -25,7 +28,7 @@ function getExportedModuleNames(namespace, moduleName) {
  */
 function listExportedModules(pkgName = usePackage()) {
   return (
-    glob.sync(vxPath.packageSrc(pkgName, opts.dir.EXPORTS, '*.ts')).map(f => {
+    glob.sync(vxPath.packageSrc(pkgName, dir.EXPORTS, '*.ts')).map(f => {
       const [moduleName, namespace] = path
         .basename(f, '.ts')
         .split(namespaceDelimiter)
@@ -35,7 +38,4 @@ function listExportedModules(pkgName = usePackage()) {
   );
 }
 
-module.exports = {
-  listExportedModules,
-  getExportedModuleNames,
-};
+export { listExportedModules, getExportedModuleNames };

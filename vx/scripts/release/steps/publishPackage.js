@@ -1,8 +1,9 @@
-const exec = require('vx/exec');
-const logger = require('vx/logger');
-const joinTruthy = require('vx/util/joinTruthy');
-const taggedBranch = require('vx/util/taggedBranch');
-const { usePackage } = require('vx/vxContext');
+import joinTruthy from '../../../util/joinTruthy.js';
+import * as taggedBranch from '../../../util/taggedBranch.js';
+import { usePackage } from '../../../vxContext.js';
+
+import exec from 'vx/exec.js';
+import * as logger from 'vx/logger.js';
 
 /**
  * Publishes the currently scoped package to npm with optional dist-tag.
@@ -24,7 +25,7 @@ function publishPackage({ tag, tagId, versionToPublish }) {
   clearTag(tag, tagId);
 }
 
-module.exports = publishPackage;
+export default publishPackage;
 
 /**
  * Removes the temporary tag after publish.

@@ -1,10 +1,10 @@
-const { dependsOn } = require('../depsTree');
+import { usePackage } from '../../../vxContext.js';
+import { dependsOn } from '../depsTree.js';
 
-const listAllChangesSinceStableBranch = require('./listAllChangesSinceStableBranch');
-const matchPackageNameInCommit = require('./matchPackageNameInCommit');
+import listAllChangesSinceStableBranch from './listAllChangesSinceStableBranch.js';
+import matchPackageNameInCommit from './matchPackageNameInCommit.js';
 
-const { usePackage } = require('vx/vxContext');
-const vxPath = require('vx/vxPath');
+import vxPath from 'vx/vxPath.js';
 
 // [{title: "...", files: ["..."]}] ...
 /**
@@ -20,7 +20,7 @@ function getDiff(packageName = usePackage()) {
   return { changesToPackage, changedByDependency };
 }
 
-module.exports = getDiff;
+export default getDiff;
 
 /**
  * Filters commit list to only those that reference the package.

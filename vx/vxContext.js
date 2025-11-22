@@ -1,6 +1,6 @@
-const { createContext } = require('context');
+import { createContext } from 'context';
 
-const ctx = createContext();
+export const ctx = createContext();
 
 /**
  * Runs a callback within the provided package context.
@@ -8,11 +8,10 @@ const ctx = createContext();
  * @param {() => any} callback Function executed with context set.
  * @returns {any} Callback result.
  */
-function withPackage(packageName, callback) {
+export function withPackage(packageName, callback) {
   if (!packageName) {
     return callback();
   }
-
   process.env.VX_PACKAGE_NAME = packageName;
   return ctx.run({ packageName }, () => callback());
 }
@@ -21,11 +20,6 @@ function withPackage(packageName, callback) {
  * Retrieves the currently scoped package name, if any.
  * @returns {string | undefined}
  */
-function usePackage() {
+export function usePackage() {
   return ctx.use()?.packageName ?? process.env.VX_PACKAGE_NAME;
 }
-
-module.exports = {
-  withPackage,
-  usePackage,
-};

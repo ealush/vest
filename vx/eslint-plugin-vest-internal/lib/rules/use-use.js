@@ -1,12 +1,15 @@
-const path = require('path');
+import path from 'path';
 
-const { isAllowed } = require('./common/directives');
-const { USE_MATCHER, VAR_DEC, FUNC_DEC } = require('./common/matchers');
-const { findAncestor, getLoc } = require('./common/selectors');
+import { isAllowed } from './common/directives.js';
+import { USE_MATCHER, VAR_DEC, FUNC_DEC } from './common/matchers.js';
+import { findAncestor, getLoc } from './common/selectors.js';
 
-const RULE_NAME = path.basename(__filename, path.extname(__filename));
+const RULE_NAME = path.basename(
+  new URL('', import.meta.url).pathname,
+  path.extname(new URL('', import.meta.url).pathname),
+);
 
-module.exports = {
+export default {
   meta: {
     docs: {
       description:

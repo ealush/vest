@@ -1,8 +1,4 @@
-module.exports = {
-  findAncestor,
-  isType,
-  getLoc,
-};
+export { findAncestor, isType, getLoc };
 
 /**
  * Finds the first ancestor of a given AST node type.

@@ -4,9 +4,7 @@ const DIRECTIVE_NAME_DELIMITER = '-';
 
 const DIRECTIVES = new Set([DIRECTIVE_ALLOW]);
 
-module.exports = {
-  isAllowed,
-};
+export { isAllowed };
 
 /**
  * Checks whether an identifier is allowed by vx directive comments.

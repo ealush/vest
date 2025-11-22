@@ -1,14 +1,13 @@
-const { sortDependencies } = require('./scripts/release/depsTree');
-
-const packageList = require('vx/util/packageList');
-const { usePackage } = require('vx/vxContext');
+import { sortDependencies } from './scripts/release/depsTree.js';
+import * as packageList from './util/packageList.js';
+import { usePackage } from './vxContext.js';
 
 /**
  * @typedef {{ paths: Record<string, string>, list: string[], names: Record<string, string>, current?: string }} PackageNames
  */
 
 /** @type {PackageNames} */
-module.exports = Object.defineProperty(
+export const packageNames = Object.defineProperty(
   { paths: {}, list: [], names: {} },
   'current',
   {
@@ -19,8 +18,8 @@ module.exports = Object.defineProperty(
 );
 
 packageList.pairs.forEach(([name, path]) => {
-  module.exports.paths[name] = path;
-  module.exports.names[name] = name;
+  packageNames.paths[name] = path;
+  packageNames.names[name] = name;
 });
 
-module.exports.list = sortDependencies(packageList.names);
+packageNames.list = sortDependencies(packageList.names);

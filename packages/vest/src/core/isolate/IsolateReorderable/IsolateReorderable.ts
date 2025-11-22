@@ -1,4 +1,4 @@
-import { CB , ValueOf } from 'vest-utils';
+import { CB, ValueOf } from 'vest-utils';
 
 import {
   createVestIsolate,

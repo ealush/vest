@@ -9,5 +9,6 @@
   ],
   "author": "ealush",
   "main": "lib/index.js",
+  "type": "module",
   "license": "MIT"
 }

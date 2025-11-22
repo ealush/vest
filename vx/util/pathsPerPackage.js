@@ -1,9 +1,12 @@
-const path = require('path');
+import { createRequire } from 'module';
+import path from 'path';
 
+import { dir } from '../opts.js';
+
+import vxPath from 'vx/vxPath.js';
+
+const require = createRequire(import.meta.url);
 const glob = require('glob');
-
-const opts = require('vx/opts');
-const vxPath = require('vx/vxPath');
 
 /**
  * @typedef {Object} PackageModule
@@ -20,7 +23,7 @@ const matches = glob.sync(vxPath.rel(vxPath.packageSrc('*', '**/*.ts')), {
   absolute: false,
   ignore: [
     vxPath.rel(vxPath.packageSrc('*', '**/*/index.ts')),
-    `**/${opts.dir.TESTS}/**`,
+    `**/${dir.TESTS}/**`,
   ],
 });
 
@@ -48,11 +51,7 @@ const list = Object.entries(groupedMatches).map(([packageName, modules]) => ({
 
 findDuplicates();
 
-module.exports = {
-  packages: groupedMatches,
-  list,
-  genPathsPerPackage,
-};
+export { groupedMatches as packages, list, genPathsPerPackage };
 
 /**
  * Ensures there are no duplicate module names within a package.

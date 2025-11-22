@@ -3,11 +3,13 @@ import { describe, it, expect } from 'vitest';
 import { enforce } from '../../../n4s';
 
 const runNumeric = (value: unknown) =>
-  (enforce.isNumeric() as ReturnType<typeof enforce.isNumeric> & {
-    run: (value: unknown) => ReturnType<
-      ReturnType<typeof enforce.isNumeric>['run']
-    >;
-  }).run(value);
+  (
+    enforce.isNumeric() as ReturnType<typeof enforce.isNumeric> & {
+      run: (
+        value: unknown,
+      ) => ReturnType<ReturnType<typeof enforce.isNumeric>['run']>;
+    }
+  ).run(value);
 
 describe('isNumeric', () => {
   describe('base predicate', () => {

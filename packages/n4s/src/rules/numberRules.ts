@@ -24,11 +24,11 @@ const eq = equals;
 const neq = numberNotEquals;
 
 const aliases = {
+  eq,
   gt,
   gte,
   lt,
   lte,
-  eq,
   neq,
 };
 

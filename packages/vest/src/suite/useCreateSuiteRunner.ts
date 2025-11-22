@@ -75,9 +75,7 @@ function runSchemaValidation<
   S extends TSchema = undefined,
 >(schema: S | undefined, modifiers: SuiteModifiers<F>, data: any) {
   return () => {
-    if (modifiers.only) return;
-    if (!schema || typeof schema === 'undefined') return;
-    if (!isFunction((schema as any).run)) return;
+    if (!shouldRunSchema(schema, modifiers)) return;
 
     const runResult = (schema as any).run(data);
 
@@ -87,4 +85,8 @@ function runSchemaValidation<
       test(fieldName, runResult.message, () => false, fieldName);
     }
   };
+}
+
+function shouldRunSchema(schema: any, modifiers: SuiteModifiers<any>): boolean {
+  return !modifiers.only && !!schema && isFunction(schema.run);
 }

@@ -1,16 +1,16 @@
-const path = require('path');
+import path from 'path';
 
-const { sample } = require('lodash');
+import sample from 'lodash/sample.js';
 
-const listAllChangesSinceStableBranch = require('../github/listAllChangesSinceStableBranch');
-const matchPackageNameInCommit = require('../github/matchPackageNameInCommit');
+import * as opts from '../../../opts.js';
+import * as packageNames from '../../../packageNames.js';
+import packageJson from '../../../util/packageJson.js';
+import listAllChangesSinceStableBranch from '../github/listAllChangesSinceStableBranch.js';
+import matchPackageNameInCommit from '../github/matchPackageNameInCommit.js';
 
-const exec = require('vx/exec');
-const logger = require('vx/logger');
-const opts = require('vx/opts');
-const packageNames = require('vx/packageNames');
-const packageJson = require('vx/util/packageJson');
-const vxPath = require('vx/vxPath');
+import exec from 'vx/exec.js';
+import * as logger from 'vx/logger.js';
+import vxPath from 'vx/vxPath.js';
 
 const RELEASE_SCRIPTS = path.resolve(
   vxPath.VX_SCRIPTS_PATH,
@@ -25,13 +25,20 @@ const PUSH_TO_LATEST_BRANCH = path.resolve(
 
 const CREATE_GIT_TAG = path.resolve(RELEASE_SCRIPTS, 'create_git_tag.sh');
 
-const EMOJIS = ['🚀', '🦺', '🤘', '✨', '🌈', '✅'];
+const EMOJIS = [
+  '\ud83d\ude80',
+  '\ud83e\uddba',
+  '\ud83e\udd18',
+  '\u2728',
+  '\ud83c\udf08',
+  '\u2705',
+];
 
 /**
  * Pushes release commits and tags to git.
  */
 function commitChangesToGit() {
-  logger.info('🌎 Pushing latest branch.');
+  logger.info('\ud83c\udf0e Pushing latest branch.');
 
   const allChanges = listAllChangesSinceStableBranch();
   const changedPackages = filterChangedPackages(allChanges);
@@ -40,12 +47,13 @@ function commitChangesToGit() {
   createTags(changedPackages);
 }
 
-module.exports = commitChangesToGit;
+export default commitChangesToGit;
 
 /**
  * Pushes changes to the latest branch using the provided commit message.
  * @param {{ title: string }[]} allChanges All commits since stable.
  * @param {string[]} changedPackages Packages included in the release.
+ * @returns {void}
  */
 function pushToLatestBranch(allChanges, changedPackages) {
   const messages = allChanges.map(({ title }) => title);

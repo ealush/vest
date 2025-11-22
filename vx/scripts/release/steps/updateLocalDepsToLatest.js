@@ -1,23 +1,23 @@
-const fse = require('fs-extra');
+import fse from 'fs-extra';
 
-const { TAG_NEXT, TAG_DEV } = require('../releaseKeywords');
-
-const logger = require('vx/logger');
-const packageNames = require('vx/packageNames');
-const packageJson = require('vx/util/packageJson');
-const {
+import * as packageNames from '../../../packageNames.js';
+import packageJson from '../../../util/packageJson.js';
+import {
   isNextBranch,
   isIntegrationBranch,
   targetPackage,
-} = require('vx/util/taggedBranch');
-const vxPath = require('vx/vxPath');
+} from '../../../util/taggedBranch.js';
+import { TAG_NEXT, TAG_DEV } from '../releaseKeywords.js';
+
+import * as logger from 'vx/logger.js';
+import vxPath from 'vx/vxPath.js';
 
 // eslint-disable-next-line complexity
 /**
  * Aligns local workspace dependencies to the latest built versions based on branch rules.
  * @returns {void}
  */
-module.exports = function updateLocalDepsToLatest() {
+export default function updateLocalDepsToLatest() {
   logger.log('Updating local dependencies to latest version');
   const pkgJson = packageJson();
   const deps = pkgJson.dependencies;
@@ -26,34 +26,39 @@ module.exports = function updateLocalDepsToLatest() {
     return;
   }
 
-  for (const name in packageNames.names) {
-    if (!deps[name]) {
-      continue;
-    }
-
+  Object.keys(packageNames.names).forEach(name => {
+    if (!deps[name]) return;
     const depPkgJson = packageJson(name);
-
     if (depPkgJson && depPkgJson.name === name) {
-      // If we have a "targetPackage", we might not be building our dependencies, so start with
-      // taking the latest from the current tag. Might not be perfect, but since this is mostly
-      // used for development or "next", it's not too bad, and we're defaulting to the latest
-      // regardless.
-      if (targetPackage) {
-        deps[name] = isNextBranch
-          ? TAG_NEXT
-          : isIntegrationBranch
-            ? TAG_DEV
-            : depPkgJson.version;
-      } else {
-        deps[name] =
-          isNextBranch || isIntegrationBranch
-            ? depPkgJson.version // In development we want to use the specific version
-            : `^${depPkgJson.version}`; // In production we want to use the latest version within range
-      }
+      deps[name] = getDependencyVersion(depPkgJson, name);
     }
-  }
+  });
 
   fse.writeJSONSync(vxPath.packageJson(), pkgJson, {
     spaces: 2,
   });
-};
+}
+
+function getDependencyVersion(depPkgJson) {
+  if (targetPackage) {
+    return getTargetPackageVersion(depPkgJson);
+  }
+  return getDefaultPackageVersion(depPkgJson);
+}
+
+function getTargetPackageVersion(depPkgJson) {
+  if (isNextBranch) {
+    return TAG_NEXT;
+  }
+  if (isIntegrationBranch) {
+    return TAG_DEV;
+  }
+  return depPkgJson.version;
+}
+
+function getDefaultPackageVersion(depPkgJson) {
+  if (isNextBranch || isIntegrationBranch) {
+    return depPkgJson.version;
+  }
+  return `^${depPkgJson.version}`;
+}

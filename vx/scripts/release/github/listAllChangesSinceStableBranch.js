@@ -1,9 +1,10 @@
-const exec = require('child_process').execSync;
+import { execSync } from 'child_process';
 
-const IGNORE_PATTERN = require('./commitIgnorePattern');
+import { STABLE_BRANCH, CURRENT_BRANCH } from '../../../util/taggedBranch.js';
 
-const logger = require('vx/logger');
-const { STABLE_BRANCH, CURRENT_BRANCH } = require('vx/util/taggedBranch');
+import IGNORE_PATTERN from './commitIgnorePattern.js';
+
+import * as logger from 'vx/logger.js';
 
 /**
  * Lists all the commits and their changed files:
@@ -13,9 +14,9 @@ const { STABLE_BRANCH, CURRENT_BRANCH } = require('vx/util/taggedBranch');
  * @returns {{ title: string, files: string[] }[]} Commits from stable to current branch.
  */
 function listAllChangesSinceStableBranch() {
-  exec(`git fetch origin ${STABLE_BRANCH}`);
+  execSync(`git fetch origin ${STABLE_BRANCH}`);
 
-  const output = exec(
+  const output = execSync(
     `git log origin/${STABLE_BRANCH}..origin/${CURRENT_BRANCH} --name-only --pretty='format:%h  %s (%an)'`,
   );
 
@@ -41,4 +42,4 @@ function listAllChangesSinceStableBranch() {
     .filter(({ title }) => Boolean(title));
 }
 
-module.exports = listAllChangesSinceStableBranch;
+export default listAllChangesSinceStableBranch;

@@ -1,5 +1,8 @@
 import path from 'path';
 
+import type { Rule } from 'eslint';
+import type { Node } from 'estree';
+
 import { isAllowed } from './common/directives.js';
 import { USE_MATCHER, VAR_DEC, FUNC_DEC } from './common/matchers.js';
 import { findAncestor, getLoc } from './common/selectors.js';
@@ -9,8 +12,13 @@ const RULE_NAME = path.basename(
   path.extname(new URL('', import.meta.url).pathname),
 );
 
-const hasIdWithName = node =>
-  Boolean(node?.id && typeof node.id.name === 'string');
+type NodeWithId = Node & { id?: { name?: string } } & { parent?: Node };
+
+const hasIdWithName = (
+  node?: NodeWithId,
+): node is NodeWithId & {
+  id: { name: string };
+} => Boolean(node?.id && typeof node.id.name === 'string');
 
 export default {
   meta: {
@@ -24,23 +32,32 @@ export default {
     hasSuggestions: true,
     type: 'problem',
   },
-  create(context) {
+  create(context: Rule.RuleContext) {
     return {
       [matcher(FUNC_DEC)]() {
-        const parentFunction = findAncestor(context, FUNC_DEC);
+        const parentFunction = findAncestor(context, FUNC_DEC) as
+          | NodeWithId
+          | undefined;
 
         if (
           hasIdWithName(parentFunction) &&
           !USE_MATCHER.test(parentFunction.id.name)
         ) {
-          report(context, parentFunction, parentFunction.id);
+          if (parentFunction.id) {
+            report(context, parentFunction, parentFunction.id);
+          }
         }
       },
       [matcher(VAR_DEC)]() {
-        const parentFunction = findAncestor(context, 'ArrowFunctionExpression');
+        const parentFunction = findAncestor(
+          context,
+          'ArrowFunctionExpression',
+        ) as NodeWithId | undefined;
 
         if (parentFunction) {
-          const variableDeclarator = findAncestor(context, VAR_DEC);
+          const variableDeclarator = findAncestor(context, VAR_DEC) as
+            | NodeWithId
+            | undefined;
 
           if (hasIdWithName(variableDeclarator)) {
             report(context, parentFunction, variableDeclarator.id);
@@ -51,21 +68,25 @@ export default {
   },
 };
 
-function matcher(type) {
+function matcher(type: string): string {
   if (type === VAR_DEC) {
     return `${type}${ID_NAME_MATCHER} > ArrowFunctionExpression ${CALL_EXPRESSION_MATCHER}`;
   }
   return `${type}${ID_NAME_MATCHER} ${CALL_EXPRESSION_MATCHER}`;
 }
 
-function report(context, node, id) {
+function report(
+  context: Rule.RuleContext,
+  node: Node,
+  id: { name: string; type?: string; loc?: unknown },
+): void {
   if (isAllowed(context, node, id, RULE_NAME)) {
     return;
   }
-  const loc = id && id.loc ? getLoc(id) : {};
+  const loc = id && (id as any).loc ? getLoc(id as any) : {};
   return context.report({
     node,
-    ...loc,
+    ...(loc as any),
     data: {
       identifier: id.name,
     },
@@ -81,7 +102,7 @@ function report(context, node, id) {
   });
 }
 
-function addUseToName(name) {
+function addUseToName(name: string): string {
   return `use${name[0].toUpperCase()}${name.slice(1)}`;
 }
 

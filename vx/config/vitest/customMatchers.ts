@@ -1,4 +1,6 @@
+/// <reference types="vitest" />
 import { isFunction } from 'vest-utils';
+import { expect } from 'vitest';
 
 expect.extend({
   isDeepCopyOf,

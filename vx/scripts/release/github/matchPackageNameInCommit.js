@@ -1,8 +1,0 @@
-/**
- * Builds a regex that matches a package name within commit messages.
- * @param {string} name Package name.
- * @returns {RegExp}
- */
-export default function matchPackageNameInCommit(name) {
-  return new RegExp(`\\[${name}\\]|\\(${name}\\)`, 'i');
-}

@@ -18,7 +18,7 @@ export class SuiteWalker {
       return false;
     }
 
-    const allPending = root.data.tests.filter(VestTest.isPending);
+    const allPending = root.data.tests.filter(t => VestTest.isPending(t));
 
     if (isEmpty(allPending)) {
       return false;
@@ -47,7 +47,7 @@ export class SuiteWalker {
           return matchesOrHasNoFieldName(
             VestTest.getData(testObject),
             fieldName,
-          );
+          ).unwrap();
         }),
       ),
     );

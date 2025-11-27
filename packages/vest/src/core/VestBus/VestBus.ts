@@ -84,7 +84,7 @@ export function useInitVestBus() {
 
   VestBus.on(RuntimeEvents.ASYNC_ISOLATE_DONE, (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
-      if (!VestTest.isCanceled(isolate)) {
+      if (!VestTest.isCanceled(isolate).unwrap()) {
         const { fieldName } = VestTest.getData(isolate);
 
         useRunFieldCallbacks(fieldName);

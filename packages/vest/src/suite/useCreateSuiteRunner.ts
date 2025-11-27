@@ -15,7 +15,7 @@ import {
 } from '../suiteResult/SuiteResultTypes';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
-import { SuiteModifiers } from './SuiteTypes';
+import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
 
 /**
  * Creates the actual suite runner function.
@@ -32,7 +32,11 @@ export function useCreateSuiteRunner<
   G extends TGroupName,
   T extends CB = CB,
   S extends TSchema = undefined,
->(suiteCallback: T, modifiers: SuiteModifiers<F>, schema?: S) {
+>(
+  suiteCallback: SuiteCallbackWithSchema<S, T>,
+  modifiers: SuiteModifiers<F>,
+  schema?: S,
+) {
   // eslint-disable-next-line max-lines-per-function
   return function runSuite(
     ...args: S extends undefined
@@ -58,7 +62,7 @@ export function useCreateSuiteRunner<
 
           return IsolateSuite(() => {
             only(modifiers.only);
-            suiteCallback(...(args as Parameters<T>));
+            (suiteCallback as any)(...(args as Parameters<T>));
             // eslint-disable-next-line complexity, max-nested-callbacks
             IsolateReorderable(runSchemaValidation(schema, modifiers, args[0]));
             Bus.useEmit('SUITE_CALLBACK_RUN_FINISHED');

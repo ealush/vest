@@ -1,4 +1,4 @@
-import { isNullish } from 'vest-utils';
+import { isNullish, isObject } from 'vest-utils';
 import { describe, it, expect, beforeEach } from 'vitest';
 
 import { enforce } from '../n4s';
@@ -83,8 +83,7 @@ describe('enforce.context() API', () => {
         checkContextStructure: () => {
           const context = enforce.context();
           return (
-            context !== null &&
-            typeof context === 'object' &&
+            isObject(context) &&
             'value' in context &&
             'meta' in context &&
             'parent' in context

@@ -58,7 +58,7 @@ function usePickNode(
   // we want to re-evaluate it. The reason is that we may incorrectly
   // identify it is "optional" because it was omitted in the previous run.
   // There may be a better way to handle this. Need to revisit this.
-  if (VestTest.isOmitted(prevNode)) {
+  if (VestTest.isOmitted(prevNode).unwrap()) {
     return newNode;
   }
 
@@ -69,7 +69,7 @@ function useHandleTestWithKey(newNode: TIsolateTest): TIsolateTest {
   return VestTest.cast(
     Reconciler.handleIsolateNodeWithKey(newNode, (prevNode: TIsolateTest) => {
       // This is the revoke callback. it determines whether we should revoke the previous node and use the new one.
-      if (VestTest.isNonActionable(prevNode)) {
+      if (VestTest.isNonActionable(prevNode).unwrap()) {
         return true;
       }
 
@@ -88,7 +88,7 @@ function cancelOverriddenPendingTestOnTestReRun(
   prevTestObject: TIsolateTest,
 ) {
   if (nextNode === currentNode && VestTest.is(currentNode)) {
-    cancelOverriddenPendingTest(prevTestObject, currentNode);
+    cancelOverriddenPendingTest(prevTestObject, currentNode).unwrap();
   }
 }
 
@@ -96,7 +96,9 @@ function nodeReorderDetected(
   newNode: TIsolateTest,
   prevNode: Maybe<TIsolate>,
 ): boolean {
-  return VestTest.is(prevNode) && !isSameProfileTest(prevNode, newNode);
+  return (
+    VestTest.is(prevNode) && !isSameProfileTest(prevNode, newNode).unwrap()
+  );
 }
 
 function throwTestOrderError(

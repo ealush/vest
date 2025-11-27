@@ -1,3 +1,5 @@
+import { makeResult, Result } from 'vest-utils';
+
 import { TIsolateTest } from './IsolateTest';
 import { VestTest } from './VestTest';
 import { isSameProfileTest } from './isSameProfileTest';
@@ -5,12 +7,13 @@ import { isSameProfileTest } from './isSameProfileTest';
 export default function cancelOverriddenPendingTest(
   prevRunTestObject: TIsolateTest,
   currentRunTestObject: TIsolateTest,
-): void {
+): Result<void> {
   if (
     currentRunTestObject !== prevRunTestObject &&
-    isSameProfileTest(prevRunTestObject, currentRunTestObject) &&
+    isSameProfileTest(prevRunTestObject, currentRunTestObject).unwrap() &&
     VestTest.isPending(prevRunTestObject)
   ) {
     VestTest.cancel(prevRunTestObject);
   }
+  return makeResult.Ok(undefined);
 }

@@ -1,5 +1,6 @@
 import { bench, describe } from 'vitest';
 
+import { TFieldName } from '../src/suiteResult/SuiteResultTypes';
 import { create, enforce, include, only, skip, test } from '../src/vest';
 
 type FocusData = {
@@ -9,19 +10,19 @@ type FocusData = {
 };
 
 const focusSuite = create((data: FocusData) => {
-  only(data.focusField);
-  skip(data.skipField);
-  include(data.includeField ?? 'field_c').when(() => true);
+  only(data.focusField as TFieldName);
+  skip(data.skipField as TFieldName);
+  include((data.includeField ?? 'field_c') as TFieldName).when(() => true);
 
-  test('field_a', () => {
+  test('field_a' as TFieldName, () => {
     enforce(1).equals(1);
   });
 
-  test('field_b', () => {
+  test('field_b' as TFieldName, () => {
     enforce(2).greaterThan(1);
   });
 
-  test('field_c', () => {
+  test('field_c' as TFieldName, () => {
     enforce(3).lessThan(5);
   });
 });

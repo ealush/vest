@@ -1,5 +1,6 @@
+import { describe, it, expect, vi, test } from 'vitest';
+
 import { createBus } from '../bus';
-import { describe, it, expect, vi } from 'vitest';
 
 describe('bus', () => {
   it('should be a function', () => {

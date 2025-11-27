@@ -1,7 +1,7 @@
-import { Modes } from '../optional/Modes';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, test } from 'vitest';
 
 import * as vest from '../../vest';
+import { Modes } from '../optional/Modes';
 
 describe('include', () => {
   let cb1 = vi.fn(),

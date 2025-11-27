@@ -1,5 +1,6 @@
 import type { CB } from 'vest-utils';
 import { dynamicValue } from 'vest-utils';
+import { TIsolate } from 'vestjs-runtime';
 
 import { SuiteContext, useOmitted } from '../core/context/SuiteContext';
 import {
@@ -23,8 +24,8 @@ import { LazyDraft } from '../suiteResult/selectors/LazyDraft';
 export function omitWhen<F extends TFieldName, G extends TGroupName>(
   conditional: TDraftCondition<F, G>,
   callback: CB,
-): void {
-  createVestIsolate(
+): TIsolate {
+  return createVestIsolate(
     VestIsolateType.OmitWhen,
     () => {
       SuiteContext.run(

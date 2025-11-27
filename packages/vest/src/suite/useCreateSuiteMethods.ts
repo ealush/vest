@@ -1,4 +1,4 @@
-import { CB, withCatch } from 'vest-utils';
+import { CB, makeBrand, withCatch } from 'vest-utils';
 import { Bus, VestRuntime } from 'vestjs-runtime';
 
 import { useLoadSuite } from '../core/Runtime';
@@ -12,7 +12,7 @@ import {
 import { bindSuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
-import { SuiteModifiers } from './SuiteTypes';
+import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
 import { useDeferDoneCallback } from './after/deferDoneCallback';
 import { createSuite } from './createSuite';
 import { getStandardSchema } from './getStandardSchema';
@@ -33,7 +33,7 @@ export function useCreateSuiteMethods<
   T extends CB = CB,
   S extends TSchema = undefined,
 >(
-  suiteCallback: T,
+  suiteCallback: SuiteCallbackWithSchema<S, T>,
   modifiers: SuiteModifiers<F>,
   subscribe: Subscribe,
   schema?: S,
@@ -61,7 +61,7 @@ function useCreateSuiteMethodsHelper<
   T extends CB = CB,
   S extends TSchema = undefined,
 >(ctx: {
-  suiteCallback: T;
+  suiteCallback: SuiteCallbackWithSchema<S, T>;
   modifiers: SuiteModifiers<F>;
   subscribe: Subscribe;
   schema?: S;
@@ -84,7 +84,7 @@ function useGetSuiteMethods<
   T extends CB = CB,
   S extends TSchema = undefined,
 >(ctx: {
-  suiteCallback: T;
+  suiteCallback: SuiteCallbackWithSchema<S, T>;
   modifiers: SuiteModifiers<F>;
   subscribe: Subscribe;
   schema?: S;
@@ -102,17 +102,21 @@ function useGetSuiteMethods<
 
   return {
     after: VestRuntime.persist((cb: CB) => useAddAfterHelper(ctx, cb)),
-    afterField: VestRuntime.persist((fieldName: F, cb: CB) =>
-      useAddAfterHelper(ctx, cb, fieldName),
+    afterField: VestRuntime.persist((fieldName: F | string, cb: CB) =>
+      useAddAfterHelper(ctx, cb, makeBrand<TFieldName>(fieldName) as F),
     ),
     dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
     focus: VestRuntime.persist(
       useCreateFocus<F, G, T, S>(suiteCallback, modifiers, subscribe, schema),
     ),
     get: VestRuntime.persist(() => useCreateSuiteResult<F, G, S>(schema)),
-    remove: Bus.usePrepareEmitter<string>('REMOVE_FIELD'),
+    remove: VestRuntime.persist((fieldName: string) =>
+      Bus.useEmit('REMOVE_FIELD', makeBrand<TFieldName>(fieldName)),
+    ),
     reset: Bus.usePrepareEmitter('RESET_SUITE'),
-    resetField: Bus.usePrepareEmitter<string>('RESET_FIELD'),
+    resetField: VestRuntime.persist((fieldName: string) =>
+      Bus.useEmit('RESET_FIELD', makeBrand<TFieldName>(fieldName)),
+    ),
     resume: VestRuntime.persist(useLoadSuite),
     run: persistedRun,
     runStatic: staticRunner,
@@ -131,7 +135,7 @@ function useAddAfterHelper<
   S extends TSchema = undefined,
 >(
   ctx: {
-    suiteCallback: T;
+    suiteCallback: SuiteCallbackWithSchema<S, T>;
     modifiers: SuiteModifiers<F>;
     subscribe: Subscribe;
     schema?: S;
@@ -183,7 +187,7 @@ function useCreateFocus<
   T extends CB = CB,
   S extends TSchema = undefined,
 >(
-  suiteCallback: T,
+  suiteCallback: SuiteCallbackWithSchema<S, T>,
   modifiers: SuiteModifiers<F>,
   subscribe: Subscribe,
   schema?: S,
@@ -210,7 +214,7 @@ function createStaticRunner<
   G extends TGroupName,
   T extends CB = CB,
   S extends TSchema = undefined,
->(suiteCallback: T, schema?: S) {
+>(suiteCallback: SuiteCallbackWithSchema<S, T>, schema?: S) {
   return function runStatic(...runArgs: Parameters<T>) {
     const suite = createSuite<F, G, T, S>(suiteCallback, schema);
     return suite.run(...(runArgs as Parameters<typeof suite.run>));

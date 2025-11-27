@@ -38,6 +38,7 @@ describe('arrayRules', () => {
   });
 
   it('fails when not an array', () => {
+    // @ts-expect-error - string is not assignable to any[]
     expect(enforce.isArray().run('not array').pass).toBe(false);
   });
 });

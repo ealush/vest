@@ -1,7 +1,7 @@
-import { isFunction } from 'vest-utils';
+import { isFunction, makeBrand } from 'vest-utils';
 
 import {
-  SuiteSummary,
+  SuiteResult,
   TFieldName,
   TGroupName,
 } from '../suiteResult/SuiteResultTypes';
@@ -12,18 +12,24 @@ import { ParsedVestObject, parse } from './parser';
  * Creates a function that returns class names that match the validation result
  */
 export default function classnames<F extends TFieldName, G extends TGroupName>(
-  res: SuiteSummary<F, G>,
+  res: SuiteResult<F, G>,
   classes: SupportedClasses = {},
-): (fieldName: F) => string {
+): (fieldName: string) => string {
   const selectors = parse(res);
 
-  return function cn(fieldName: F): string {
+  return function cn(fieldName: string): string {
+    const safeFieldName = makeBrand<TFieldName>(fieldName);
     const classesArray: string[] = [];
 
-    for (const selector in classes) {
-      const sel = selector as keyof SupportedClasses;
-      if (isFunction(selectors[sel]) && selectors[sel](fieldName)) {
-        classesArray.push(classes[sel] as string);
+    for (const selector of Object.keys(classes) as Array<
+      keyof ParsedVestObject<TFieldName>
+    >) {
+      const sel = selector as keyof ParsedVestObject<TFieldName>;
+      const selectorFn = selectors[sel];
+      const className = classes[sel];
+
+      if (isFunction(selectorFn) && className && selectorFn?.(safeFieldName)) {
+        classesArray.push(className);
       }
     }
 
@@ -31,6 +37,6 @@ export default function classnames<F extends TFieldName, G extends TGroupName>(
   };
 }
 
-type SupportedClasses = {
-  [K in keyof ParsedVestObject<TFieldName>]?: string;
-};
+type SupportedClasses = Partial<
+  Record<keyof ParsedVestObject<TFieldName>, string>
+>;

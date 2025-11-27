@@ -38,6 +38,7 @@ describe('oneOf', () => {
 
   it('should fail with no rules', () => {
     const rule = enforce.oneOf();
+    // @ts-expect-error - Testing invalid input with no rules
     const result = rule.run('any value');
     expect(result.pass).toBe(false);
   });

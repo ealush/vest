@@ -1,3 +1,5 @@
+import { makeResult, Result } from 'vest-utils';
+
 import { useMode } from '../../core/context/SuiteContext';
 import { WithFieldName } from '../../core/test/TestTypes';
 import { hasErrorsByTestObjects } from '../../suiteResult/selectors/hasFailuresByTestObjects';
@@ -32,26 +34,26 @@ export function mode(mode: Modes): void {
   setMode(mode);
 }
 
-function useIsMode(mode: Modes): boolean {
+function useIsMode(mode: Modes): Result<boolean> {
   const [currentMode] = useMode();
 
-  return currentMode === mode;
+  return makeResult.Ok(currentMode === mode);
 }
 
-function useIsEager(): boolean {
+function useIsEager(): Result<boolean> {
   return useIsMode(Modes.EAGER);
 }
 
-function useIsOne(): boolean {
+function useIsOne(): Result<boolean> {
   return useIsMode(Modes.ONE);
 }
 
 export function useShouldSkipBasedOnMode(testData: WithFieldName): boolean {
-  if (useIsOne()) {
+  if (useIsOne().unwrap()) {
     return hasErrorsByTestObjects();
   }
 
-  if (useIsEager()) {
+  if (useIsEager().unwrap()) {
     return hasErrorsByTestObjects(testData.fieldName);
   }
 

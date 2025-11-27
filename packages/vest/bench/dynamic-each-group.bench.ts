@@ -1,12 +1,13 @@
 import { bench, describe } from 'vitest';
 
+import { TFieldName, TGroupName } from '../src/suiteResult/SuiteResultTypes';
 import { create, each, enforce, group, test } from '../src/vest';
 
 const eachSuite = create((items: number[]) => {
-  group('numbers', () => {
+  group('numbers' as TGroupName, () => {
     each(items, (value, index) => {
       test(
-        `item_${index}`,
+        `item_${index}` as TFieldName,
         () => {
           enforce(value).isNumber().greaterThanOrEquals(0);
         },

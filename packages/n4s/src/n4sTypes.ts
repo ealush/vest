@@ -59,3 +59,9 @@ export type TCustomRules<T, A, S> = {
     ...args: CustomMatcherArgs<K>
   ) => import('./eager').EnforceEagerReturn<T, A, S>;
 };
+export type WidenFirstParam<F, T> = F extends (
+  arg: any,
+  ...rest: infer R
+) => infer Ret
+  ? (arg: T, ...rest: R) => Ret
+  : never;

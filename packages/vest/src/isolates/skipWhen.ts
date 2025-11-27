@@ -1,4 +1,5 @@
 import { CB, dynamicValue } from 'vest-utils';
+import { TIsolate } from 'vestjs-runtime';
 
 import { SuiteContext, useSkipped } from '../core/context/SuiteContext';
 import {
@@ -22,8 +23,8 @@ import { LazyDraft } from '../suiteResult/selectors/LazyDraft';
 export function skipWhen<F extends TFieldName, G extends TGroupName>(
   condition: TDraftCondition<F, G>,
   callback: CB,
-): void {
-  createVestIsolate(
+): TIsolate {
+  return createVestIsolate(
     VestIsolateType.SkipWhen,
     () => {
       SuiteContext.run(

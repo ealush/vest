@@ -23,4 +23,4 @@ export default defineConfig({
       resolve(__dirname, '../../', 'vx/config/vitest/customMatchers.ts'),
     ],
   },
-});
+} as any);

@@ -1,5 +1,6 @@
 // @ts-nocheck
 /* eslint-disable sort-keys, @typescript-eslint/no-unused-vars, no-unused-vars, no-useless-escape */
+import { isObject } from 'vest-utils';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('enforce.extend', () => {
@@ -1290,7 +1291,7 @@ describe('enforce.extend', () => {
             value && value.hasOwnProperty(prop),
           arrayContains: (value: any[], item: any) =>
             value.some(v =>
-              v && item && typeof v === 'object' && typeof item === 'object'
+              v && item && isObject(v) && isObject(item)
                 ? JSON.stringify(v) === JSON.stringify(item)
                 : v === item,
             ),

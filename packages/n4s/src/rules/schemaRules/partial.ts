@@ -1,3 +1,5 @@
+import { isObject } from 'vest-utils';
+
 import { ctx } from '../../enforceContext';
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
@@ -84,6 +86,10 @@ export function partial<T extends Record<string, any>>(
   value: T,
   schema: Record<string, any>,
 ): RuleRunReturn<T> {
+  if (!isObject(value)) {
+    return RuleRunReturn.Failing(value);
+  }
+
   if (hasExtraKeys(value, schema)) {
     return RuleRunReturn.Failing(value);
   }

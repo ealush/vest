@@ -1,34 +1,6 @@
 import { describe, expect, it, expectTypeOf } from 'vitest';
 
-import { create, test } from '../../vest';
-
-// Mocking n4s types and functions for testing Vest's inference
-type RuleInstance<_T> = {
-  test: (_value: any) => boolean;
-  run: (_value: any) => any;
-};
-
-const enforce = {
-  isString: () =>
-    ({
-      test: (v: any) => typeof v === 'string',
-      run: () => {},
-    }) as RuleInstance<string>,
-  isNumber: () =>
-    ({
-      test: (v: any) => typeof v === 'number',
-      run: () => {},
-    }) as RuleInstance<number>,
-  isNotEmpty: () => ({ test: (v: any) => !!v }),
-  greaterThan: (n: number) => ({ test: (v: any) => v > n }),
-};
-
-// Helper to create a schema with a specific inferred type
-function mockSchema<T>(inferredType: T) {
-  return {
-    infer: inferredType,
-  };
-}
+import { create, test, enforce } from '../../vest';
 
 type AssertTrue<T extends true> = T;
 type IsEqual<A, B> =
@@ -42,7 +14,10 @@ type Simplify<T> = { [K in keyof T]: T[K] } & {};
 
 describe('schema driven suite types', () => {
   it('infers data type from schema', () => {
-    const schema = mockSchema({} as { name: string; age: number });
+    const schema = enforce.shape({
+      name: enforce.isString(),
+      age: enforce.isNumber(),
+    });
 
     const suite = create(data => {
       void (0 as unknown as AssertTrue<
@@ -60,7 +35,7 @@ describe('schema driven suite types', () => {
 
     void (0 as unknown as AssertTrue<
       IsEqual<
-        ReturnType<typeof suite.get>['types'],
+        ReturnType<typeof suite.get>['types']['output'],
         { name: string; age: number }
       >
     >);
@@ -82,7 +57,10 @@ describe('schema driven suite types', () => {
   });
 
   it('disallows invalid runs for custom schema', () => {
-    const schema = mockSchema({} as { name: string; number: number });
+    const schema = enforce.shape({
+      name: enforce.isString(),
+      number: enforce.isNumber(),
+    });
 
     const suite = create(data => {
       void (0 as unknown as AssertTrue<
@@ -106,16 +84,14 @@ describe('schema driven suite types', () => {
   });
 
   it('infers loose and partial schemas', () => {
-    const looseSchema = mockSchema(
-      {} as { title: string } & Record<string, unknown>,
-    );
+    const looseSchema = enforce.loose({
+      title: enforce.isString(),
+    });
 
-    const partialSchema = mockSchema(
-      {} as {
-        id?: number | undefined;
-        label?: string | undefined;
-      },
-    );
+    const partialSchema = enforce.partial({
+      id: enforce.isNumber(),
+      label: enforce.isString(),
+    });
 
     const looseSuite = create(data => {
       void (0 as unknown as AssertTrue<
@@ -137,14 +113,14 @@ describe('schema driven suite types', () => {
 
     void (0 as unknown as AssertTrue<
       IsEqual<
-        ReturnType<typeof looseSuite.get>['types'],
+        ReturnType<typeof looseSuite.get>['types']['output'],
         Simplify<{ title: string } & Record<string, unknown>>
       >
     >);
 
     void (0 as unknown as AssertTrue<
       IsEqual<
-        ReturnType<typeof partialSuite.get>['types'],
+        ReturnType<typeof partialSuite.get>['types']['output'],
         { id?: number | undefined; label?: string | undefined }
       >
     >);
@@ -167,10 +143,11 @@ describe('schema driven suite types', () => {
     void (0 as unknown as AssertTrue<
       IsEqual<ReturnType<typeof suite.get>['types'], undefined>
     >);
+    expect(suite.get().types).toBeUndefined();
   });
 
   it('infers data type from generic', () => {
-    const suite = create<{ name: string; age: number }>(data => {
+    const suite = create((data: { name: string; age: number }) => {
       expectTypeOf(data).toEqualTypeOf<{ name: string; age: number }>();
     });
 
@@ -194,12 +171,16 @@ describe('schema driven suite types', () => {
 
     // @ts-expect-error - wrong property types should fail
     suite.run({ name: '100', age: 'true' });
+    expect(suite.get()).toBeDefined();
   });
 });
 
 describe('Schema Type Safety', () => {
   it('should allow valid data that matches schema', () => {
-    const schema = mockSchema({} as { username: string; age: number });
+    const schema = enforce.shape({
+      username: enforce.isString(),
+      age: enforce.isNumber(),
+    });
 
     const suite = create(data => {
       test('username', () => {
@@ -216,7 +197,10 @@ describe('Schema Type Safety', () => {
   });
 
   it('callback parameter has correct type inference', () => {
-    const schema = mockSchema({} as { email: string; count: number });
+    const schema = enforce.shape({
+      email: enforce.isString(),
+      count: enforce.isNumber(),
+    });
 
     const suite = create(data => {
       // TypeScript knows data.email is a string
@@ -239,12 +223,14 @@ describe('Schema Type Safety', () => {
   });
 
   it('nested schema properties are properly typed', () => {
-    const schema = mockSchema(
-      {} as {
-        name: string;
-        address: { street: string; city: string; zipCode: string };
-      },
-    );
+    const schema = enforce.shape({
+      name: enforce.isString(),
+      address: enforce.shape({
+        street: enforce.isString(),
+        city: enforce.isString(),
+        zipCode: enforce.isString(),
+      }),
+    });
 
     const suite = create(data => {
       // TypeScript knows data.address.city is a string
@@ -268,9 +254,10 @@ describe('Schema Type Safety', () => {
   });
 
   it('loose schema allows extra properties', () => {
-    const schema = mockSchema(
-      {} as { id: number; name: string } & Record<string, unknown>,
-    );
+    const schema = enforce.loose({
+      id: enforce.isNumber(),
+      name: enforce.isString(),
+    });
 
     const suite = create(data => {
       // TypeScript knows about id and name
@@ -313,7 +300,10 @@ describe('Schema Type Safety', () => {
   });
 
   describe('non-compliant schema runs', () => {
-    const schema = mockSchema({} as { name: string; number: number });
+    const schema = enforce.shape({
+      name: enforce.isString(),
+      number: enforce.isNumber(),
+    });
     const suite = create(data => {
       test('name', () => {
         return enforce.isString().test(data.name);
@@ -343,7 +333,9 @@ describe('Schema Type Safety', () => {
   });
 
   it('should expose schema in suite result', () => {
-    const schema = mockSchema({} as { name: string });
+    const schema = enforce.shape({
+      name: enforce.isString(),
+    });
     const suite = create(() => {}, schema);
     const result = suite.run({ name: 'Test' });
     expect(result.types).toBeDefined();

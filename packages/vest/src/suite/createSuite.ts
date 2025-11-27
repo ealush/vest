@@ -1,5 +1,5 @@
 /* eslint-disable max-lines-per-function */
-import { CB } from 'vest-utils';
+import { CB, makeResult, Result } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
 import { useCreateVestState } from '../core/Runtime';
@@ -11,28 +11,28 @@ import {
   TSchema,
 } from '../suiteResult/SuiteResultTypes';
 
-import { Suite } from './SuiteTypes';
+import { Suite, SuiteCallbackWithSchema } from './SuiteTypes';
 import {
   bindSuiteLifecycle,
   useCreateSuiteMethods,
 } from './useCreateSuiteMethods';
-import { validateSuiteCallback } from './validateParams/validateSuiteParams';
+import { validateSuiteCallback } from './validateSuiteCallback/validateSuiteCallback';
 
 // @vx-allow use-use
 function createSuite<
-  F extends TFieldName,
-  G extends TGroupName,
+  F extends TFieldName = TFieldName,
+  G extends TGroupName = TGroupName,
   T extends CB = CB,
   S extends TSchema = undefined,
->(suiteCallback: T, schema?: S): Suite<F, G, T, S>;
+>(suiteCallback: SuiteCallbackWithSchema<S, T>, schema?: S): Suite<F, G, T, S>;
 // @vx-allow use-use
 function createSuite<
-  F extends TFieldName,
-  G extends TGroupName,
+  F extends TFieldName = TFieldName,
+  G extends TGroupName = TGroupName,
   T extends CB = CB,
   S extends TSchema = undefined,
 >(suiteCallback: T, schema?: S): Suite<F, G, T, S> {
-  validateSuiteCallback(suiteCallback);
+  const suiteCallbackResult = validateSuiteCallback(suiteCallback).unwrap();
 
   // Create a stateRef for the suite
   // It holds the suite's persisted values that may remain between runs.
@@ -43,11 +43,11 @@ function createSuite<
   // will be bound to the suite's stateRef and be able to access it.
   return VestRuntime.Run(stateRef, () => {
     const VestBus = useInitVestBus();
-    return createSuiteInstance();
+    return createSuiteInstance().unwrap();
 
-    function createSuiteInstance(): Suite<F, G, T, S> {
+    function createSuiteInstance(): Result<Suite<F, G, T, S>> {
       const methods = useCreateSuiteMethods<F, G, T, S>(
-        suiteCallback,
+        suiteCallbackResult as any,
         {
           only: undefined,
         },
@@ -55,7 +55,7 @@ function createSuite<
         schema,
       );
 
-      return bindSuiteLifecycle(methods);
+      return makeResult.Ok(bindSuiteLifecycle(methods));
     }
   });
 }

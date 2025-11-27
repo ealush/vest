@@ -6,11 +6,10 @@ import { config as dotenvConfig } from 'dotenv';
 import { hideBin } from 'yargs/helpers';
 import yargs from 'yargs/yargs';
 
-import { packageNames } from './packageNames.js';
-import joinTruthy from './util/joinTruthy.js';
-import { usePackage, withPackage } from './vxContext.js';
-
 import * as logger from 'vx/logger.js';
+import { packageNames } from 'vx/packageNames.js';
+import joinTruthy from 'vx/util/joinTruthy.js';
+import { usePackage, withPackage } from 'vx/vxContext.js';
 import vxPath from 'vx/vxPath.js';
 
 const require = createRequire(import.meta.url);

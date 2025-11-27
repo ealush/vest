@@ -34,5 +34,9 @@
     "target": "ES2015"
   },
   "files": ["./vx/config/vitest/vitest.d.ts"],
-  "include": ["./packages/*/src/**/*.ts", "./packages/*/vitest.config.ts"]
+  "include": [
+    "./packages/*/src/**/*.ts",
+    "./packages/*/vitest.config.ts",
+    "./packages/*/bench/**/*.ts"
+  ]
 }

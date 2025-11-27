@@ -1,6 +1,6 @@
-import { sortDependencies } from './scripts/release/depsTree.js';
-import * as packageList from './util/packageList.js';
-import { usePackage } from './vxContext.js';
+import { sortDependencies } from 'vx/scripts/release/depsTree.js';
+import * as packageList from 'vx/util/packageList.js';
+import { usePackage } from 'vx/vxContext.js';
 
 /**
  * @typedef {{ paths: Record<string, string>, list: string[], names: Record<string, string>, current?: string }} PackageNames

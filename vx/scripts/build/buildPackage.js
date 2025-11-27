@@ -1,9 +1,8 @@
-import { usePackage } from '../../vxContext.js';
-
 import cleanupDistFiles from './cleanupDistFiles.js';
 
 import exec from 'vx/exec.js';
 import * as logger from 'vx/logger.js';
+import { usePackage } from 'vx/vxContext.js';
 import vxPath from 'vx/vxPath.js';
 
 /**

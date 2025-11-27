@@ -3,10 +3,9 @@ import { createRequire } from 'module';
 import fsExtra from 'fs-extra';
 import lodash from 'lodash';
 
-import { packageNames } from '../packageNames.js';
-
 import exec from 'vx/exec.js';
 import * as logger from 'vx/logger.js';
+import { packageNames } from 'vx/packageNames.js';
 import vxPath from 'vx/vxPath.js';
 
 const { writeJSONSync } = fsExtra;
@@ -133,6 +132,7 @@ function rootTsConfigTemplate() {
     include: [
       vxPath.rel(vxPath.packageSrc('*', '**/*.ts')),
       vxPath.rel(vxPath.packageVitestConfig('*')),
+      './packages/*/bench/**/*.ts',
     ],
   };
 }

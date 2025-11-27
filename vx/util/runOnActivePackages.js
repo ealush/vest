@@ -1,5 +1,5 @@
-import { packageNames } from '../packageNames.js';
-import { usePackage, withPackage } from '../vxContext.js';
+import { packageNames } from 'vx/packageNames.js';
+import { usePackage, withPackage } from 'vx/vxContext.js';
 
 /**
  * Runs a callback for the active package or iterates over all packages when none is selected.

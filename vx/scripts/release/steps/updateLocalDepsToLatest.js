@@ -1,15 +1,15 @@
 import fse from 'fs-extra';
 
-import * as packageNames from '../../../packageNames.js';
-import packageJson from '../../../util/packageJson.js';
+import { TAG_NEXT, TAG_DEV } from '../releaseKeywords.js';
+
+import * as logger from 'vx/logger.js';
+import * as packageNames from 'vx/packageNames.js';
+import packageJson from 'vx/util/packageJson.js';
 import {
   isNextBranch,
   isIntegrationBranch,
   targetPackage,
-} from '../../../util/taggedBranch.js';
-import { TAG_NEXT, TAG_DEV } from '../releaseKeywords.js';
-
-import * as logger from 'vx/logger.js';
+} from 'vx/util/taggedBranch.js';
 import vxPath from 'vx/vxPath.js';
 
 // eslint-disable-next-line complexity

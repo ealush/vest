@@ -1,8 +1,8 @@
 import buildPackage from '../../scripts/build/buildPackage.js';
-import { usePackage } from '../../vxContext.js';
-// typecheck import removed - typecheck now runs separately after build
 
 import exec from 'vx/exec.js';
+import { usePackage } from 'vx/vxContext.js';
+// typecheck import removed - typecheck now runs separately after build
 
 /**
  * Builds either the active package or the entire workspace.

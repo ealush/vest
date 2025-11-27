@@ -1,9 +1,8 @@
 import fs from 'fs';
 
-import * as opts from '../opts.js';
-
 import exec from 'vx/exec.js';
 import * as logger from 'vx/logger.js';
+import * as opts from 'vx/opts.js';
 import vxPath from 'vx/vxPath.js';
 
 const VITEST_CONFIG_PATH = 'vx/config/vitest';

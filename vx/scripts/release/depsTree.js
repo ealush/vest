@@ -1,7 +1,7 @@
 import lodash from 'lodash';
 
-import packageJson from '../../util/packageJson.js';
-import * as packageList from '../../util/packageList.js';
+import packageJson from 'vx/util/packageJson.js';
+import * as packageList from 'vx/util/packageList.js';
 
 const { memoize } = lodash;
 

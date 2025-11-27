@@ -1,9 +1,9 @@
-import { usePackage } from '../../../vxContext.js';
 import { dependsOn } from '../depsTree.js';
 
 import listAllChangesSinceStableBranch from './listAllChangesSinceStableBranch.js';
 import matchPackageNameInCommit from './matchPackageNameInCommit.js';
 
+import { usePackage } from 'vx/vxContext.js';
 import vxPath from 'vx/vxPath.js';
 
 // [{title: "...", files: ["..."]}] ...

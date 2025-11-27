@@ -27,59 +27,59 @@
   "vxAllowResolve": [],
   "exports": {
     "./anyone": {
+      "types": "./types/anyone.d.cts",
       "import": "./dist/anyone.mjs",
-      "require": "./dist/anyone.cjs",
-      "types": "./types/anyone.d.cts"
+      "require": "./dist/anyone.cjs"
     },
     "./exports/all": {
+      "types": "./types/exports/all.d.cts",
       "import": "./dist/exports/all.mjs",
-      "require": "./dist/exports/all.cjs",
-      "types": "./types/exports/all.d.cts"
+      "require": "./dist/exports/all.cjs"
     },
     "./exports/any": {
+      "types": "./types/exports/any.d.cts",
       "import": "./dist/exports/any.mjs",
-      "require": "./dist/exports/any.cjs",
-      "types": "./types/exports/any.d.cts"
+      "require": "./dist/exports/any.cjs"
     },
     "./exports/none": {
+      "types": "./types/exports/none.d.cts",
       "import": "./dist/exports/none.mjs",
-      "require": "./dist/exports/none.cjs",
-      "types": "./types/exports/none.d.cts"
+      "require": "./dist/exports/none.cjs"
     },
     "./exports/one": {
+      "types": "./types/exports/one.d.cts",
       "import": "./dist/exports/one.mjs",
-      "require": "./dist/exports/one.cjs",
-      "types": "./types/exports/one.d.cts"
+      "require": "./dist/exports/one.cjs"
     },
     "./*": {
-      "default": "./*",
-      "types": "./types/anyone.d.cts"
+      "types": "./types/anyone.d.cts",
+      "default": "./*"
     },
     ".": {
+      "types": "./types/anyone.d.cts",
       "import": "./dist/anyone.mjs",
-      "require": "./dist/anyone.cjs",
-      "types": "./types/anyone.d.cts"
+      "require": "./dist/anyone.cjs"
     },
     "./package.json": "./package.json",
     "./all": {
+      "types": "./types/anyone.d.cts",
       "import": "./dist/exports/all.mjs",
-      "require": "./dist/exports/all.cjs",
-      "types": "./types/anyone.d.cts"
+      "require": "./dist/exports/all.cjs"
     },
     "./any": {
+      "types": "./types/anyone.d.cts",
       "import": "./dist/exports/any.mjs",
-      "require": "./dist/exports/any.cjs",
-      "types": "./types/anyone.d.cts"
+      "require": "./dist/exports/any.cjs"
     },
     "./none": {
+      "types": "./types/anyone.d.cts",
       "import": "./dist/exports/none.mjs",
-      "require": "./dist/exports/none.cjs",
-      "types": "./types/anyone.d.cts"
+      "require": "./dist/exports/none.cjs"
     },
     "./one": {
+      "types": "./types/anyone.d.cts",
       "import": "./dist/exports/one.mjs",
-      "require": "./dist/exports/one.cjs",
-      "types": "./types/anyone.d.cts"
+      "require": "./dist/exports/one.cjs"
     },
     "./anyone.d.ts": "./types/anyone.d.ts",
     "./types/*": "./types/*",
@@ -88,83 +88,83 @@
   "publishConfig": {
     "exports": {
       "./anyone": {
+        "types": "./types/anyone.d.cts",
         "import": "./dist/anyone.mjs",
-        "require": "./dist/anyone.cjs",
-        "types": "./types/anyone.d.cts"
+        "require": "./dist/anyone.cjs"
       },
       "./exports/all": {
+        "types": "./types/exports/all.d.cts",
         "import": "./dist/exports/all.mjs",
-        "require": "./dist/exports/all.cjs",
-        "types": "./types/exports/all.d.cts"
+        "require": "./dist/exports/all.cjs"
       },
       "./exports/any": {
+        "types": "./types/exports/any.d.cts",
         "import": "./dist/exports/any.mjs",
-        "require": "./dist/exports/any.cjs",
-        "types": "./types/exports/any.d.cts"
+        "require": "./dist/exports/any.cjs"
       },
       "./exports/none": {
+        "types": "./types/exports/none.d.cts",
         "import": "./dist/exports/none.mjs",
-        "require": "./dist/exports/none.cjs",
-        "types": "./types/exports/none.d.cts"
+        "require": "./dist/exports/none.cjs"
       },
       "./exports/one": {
+        "types": "./types/exports/one.d.cts",
         "import": "./dist/exports/one.mjs",
-        "require": "./dist/exports/one.cjs",
-        "types": "./types/exports/one.d.cts"
+        "require": "./dist/exports/one.cjs"
       },
       "./*": {
-        "default": "./*",
-        "types": "./types/anyone.d.cts"
+        "types": "./types/anyone.d.cts",
+        "default": "./*"
       },
       ".": {
+        "types": "./types/anyone.d.cts",
         "import": "./dist/anyone.mjs",
-        "require": "./dist/anyone.cjs",
-        "types": "./types/anyone.d.cts"
+        "require": "./dist/anyone.cjs"
       },
       "./package.json": "./package.json",
       "./all-8-fac2En": {
-        "default": "./types/all-8-fac2En.d.mts",
-        "types": "./types/all-8-fac2En.d.mts"
+        "types": "./types/all-8-fac2En.d.mts",
+        "default": "./types/all-8-fac2En.d.mts"
       },
       "./all-DT3n67Q2": {
-        "default": "./types/all-DT3n67Q2.d.cts",
-        "types": "./types/all-DT3n67Q2.d.cts"
+        "types": "./types/all-DT3n67Q2.d.cts",
+        "default": "./types/all-DT3n67Q2.d.cts"
       },
       "./any-BDnUW0EC": {
-        "default": "./types/any-BDnUW0EC.d.mts",
-        "types": "./types/any-BDnUW0EC.d.mts"
+        "types": "./types/any-BDnUW0EC.d.mts",
+        "default": "./types/any-BDnUW0EC.d.mts"
       },
       "./any-BMwz5-AB": {
-        "default": "./types/any-BMwz5-AB.d.cts",
-        "types": "./types/any-BMwz5-AB.d.cts"
+        "types": "./types/any-BMwz5-AB.d.cts",
+        "default": "./types/any-BMwz5-AB.d.cts"
       },
       "./none-CKjw9Aoz": {
-        "default": "./types/none-CKjw9Aoz.d.mts",
-        "types": "./types/none-CKjw9Aoz.d.mts"
+        "types": "./types/none-CKjw9Aoz.d.mts",
+        "default": "./types/none-CKjw9Aoz.d.mts"
       },
       "./none-D0Wo1a6R": {
-        "default": "./types/none-D0Wo1a6R.d.cts",
-        "types": "./types/none-D0Wo1a6R.d.cts"
+        "types": "./types/none-D0Wo1a6R.d.cts",
+        "default": "./types/none-D0Wo1a6R.d.cts"
       },
       "./one-BuVF-m86": {
-        "default": "./types/one-BuVF-m86.d.cts",
-        "types": "./types/one-BuVF-m86.d.cts"
+        "types": "./types/one-BuVF-m86.d.cts",
+        "default": "./types/one-BuVF-m86.d.cts"
       },
       "./one-PuTrzIUg": {
-        "default": "./types/one-PuTrzIUg.d.mts",
-        "types": "./types/one-PuTrzIUg.d.mts"
+        "types": "./types/one-PuTrzIUg.d.mts",
+        "default": "./types/one-PuTrzIUg.d.mts"
       },
       "./anyone.d.ts": {
-        "default": "./types/anyone.d.ts",
-        "types": "./types/anyone.d.cts"
+        "types": "./types/anyone.d.cts",
+        "default": "./types/anyone.d.ts"
       },
       "./types/*": {
-        "default": "./types/*",
-        "types": "./types/anyone.d.cts"
+        "types": "./types/anyone.d.cts",
+        "default": "./types/*"
       },
       "./dist/*": {
-        "default": "./dist/*",
-        "types": "./types/anyone.d.cts"
+        "types": "./types/anyone.d.cts",
+        "default": "./dist/*"
       }
     }
   }

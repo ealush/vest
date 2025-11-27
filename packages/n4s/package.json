@@ -31,98 +31,52 @@
   ],
   "exports": {
     "./exports/date": {
+      "types": "./types/exports/date.d.cts",
       "import": "./dist/exports/date.mjs",
-      "require": "./dist/exports/date.cjs",
-      "types": "./types/exports/date.d.cts"
+      "require": "./dist/exports/date.cjs"
     },
     "./exports/email": {
+      "types": "./types/exports/email.d.cts",
       "import": "./dist/exports/email.mjs",
-      "require": "./dist/exports/email.cjs",
-      "types": "./types/exports/email.d.cts"
+      "require": "./dist/exports/email.cjs"
     },
     "./exports/isURL": {
+      "types": "./types/exports/isURL.d.cts",
       "import": "./dist/exports/isURL.mjs",
-      "require": "./dist/exports/isURL.cjs",
-      "types": "./types/exports/isURL.d.cts"
+      "require": "./dist/exports/isURL.cjs"
     },
     "./n4s": {
+      "types": "./types/n4s.d.cts",
       "import": "./dist/n4s.mjs",
-      "require": "./dist/n4s.cjs",
-      "types": "./types/n4s.d.cts"
+      "require": "./dist/n4s.cjs"
     },
     "./*": {
-      "default": "./*",
-      "types": "./types/n4s.d.cts"
+      "types": "./types/n4s.d.cts",
+      "default": "./*"
     },
     ".": {
+      "types": "./types/n4s.d.cts",
       "import": "./dist/n4s.mjs",
-      "require": "./dist/n4s.cjs",
-      "types": "./types/n4s.d.cts"
+      "require": "./dist/n4s.cjs"
     },
     "./package.json": "./package.json",
     "./date": {
+      "types": "./types/n4s.d.cts",
       "import": "./dist/exports/date.mjs",
-      "require": "./dist/exports/date.cjs",
-      "types": "./types/n4s.d.cts"
+      "require": "./dist/exports/date.cjs"
     },
     "./email": {
+      "types": "./types/n4s.d.cts",
       "import": "./dist/exports/email.mjs",
-      "require": "./dist/exports/email.cjs",
-      "types": "./types/n4s.d.cts"
+      "require": "./dist/exports/email.cjs"
     },
     "./isURL": {
+      "types": "./types/n4s.d.cts",
       "import": "./dist/exports/isURL.mjs",
-      "require": "./dist/exports/isURL.cjs",
-      "types": "./types/n4s.d.cts"
+      "require": "./dist/exports/isURL.cjs"
     },
     "./n4s.d.ts": "./types/n4s.d.ts",
     "./types/*": "./types/*",
     "./dist/*": "./dist/*"
-  },
-  "publishConfig": {
-    "exports": {
-      "./exports/date": {
-        "import": "./dist/exports/date.mjs",
-        "require": "./dist/exports/date.cjs",
-        "types": "./types/exports/date.d.cts"
-      },
-      "./exports/email": {
-        "import": "./dist/exports/email.mjs",
-        "require": "./dist/exports/email.cjs",
-        "types": "./types/exports/email.d.cts"
-      },
-      "./exports/isURL": {
-        "import": "./dist/exports/isURL.mjs",
-        "require": "./dist/exports/isURL.cjs",
-        "types": "./types/exports/isURL.d.cts"
-      },
-      "./n4s": {
-        "import": "./dist/n4s.mjs",
-        "require": "./dist/n4s.cjs",
-        "types": "./types/n4s.d.cts"
-      },
-      "./*": {
-        "default": "./*",
-        "types": "./types/n4s.d.cts"
-      },
-      ".": {
-        "import": "./dist/n4s.mjs",
-        "require": "./dist/n4s.cjs",
-        "types": "./types/n4s.d.cts"
-      },
-      "./package.json": "./package.json",
-      "./n4s.d.ts": {
-        "default": "./types/n4s.d.ts",
-        "types": "./types/n4s.d.cts"
-      },
-      "./types/*": {
-        "default": "./types/*",
-        "types": "./types/n4s.d.cts"
-      },
-      "./dist/*": {
-        "default": "./dist/*",
-        "types": "./types/n4s.d.cts"
-      }
-    }
   }
 }

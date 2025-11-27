@@ -1,18 +1,23 @@
 import { faker } from '@faker-js/faker';
-import { TIsolateTest } from '../../../core/isolate/IsolateTest/IsolateTest';
-import { Severity } from '../../Severity';
-import { VestTest } from '../../../core/isolate/IsolateTest/VestTest';
-import { hasFailuresByTestObject } from '../hasFailuresByTestObjects';
-import { mockIsolateTest } from '../../../testUtils/vestMocks';
+import { makeBrand } from 'vest-utils';
 import { describe, it, expect, beforeEach } from 'vitest';
 
-const fieldName: string = faker.lorem.word();
+import { TIsolateTest } from '../../../core/isolate/IsolateTest/IsolateTest';
+import { VestTest } from '../../../core/isolate/IsolateTest/VestTest';
+import { mockIsolateTest } from '../../../testUtils/vestMocks';
+import { Severity } from '../../Severity';
+import { TFieldName } from '../../SuiteResultTypes';
+import { hasFailuresByTestObject } from '../hasFailuresByTestObjects';
+
+const generateFieldName = (): TFieldName =>
+  makeBrand<TFieldName>(faker.lorem.word());
+const fieldName = generateFieldName();
 
 describe('hasFailuresByTestObject', () => {
   let testObject: TIsolateTest;
 
   beforeEach(() => {
-    const fieldName: string = faker.lorem.word();
+    const fieldName = generateFieldName();
     testObject = mockIsolateTest({
       fieldName,
     });
@@ -66,7 +71,7 @@ describe('hasFailuresByTestObject', () => {
             hasFailuresByTestObject(
               testObject,
               Severity.ERRORS,
-              'non_matching',
+              makeBrand<TFieldName>('non_matching'),
             ),
           ).toBe(false);
         });

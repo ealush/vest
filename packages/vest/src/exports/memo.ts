@@ -92,7 +92,7 @@ function handleCacheMiss(
 function isCanceledTest(historicHit: TIsolateMemo): boolean {
   return Walker.some(
     historicHit,
-    i => VestTest.isCanceled(i as TIsolateTest),
+    i => VestTest.isCanceled(i as TIsolateTest).unwrap(),
     VestTest.is,
   );
 }

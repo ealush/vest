@@ -7,7 +7,7 @@
  */
 
 import { enforce } from 'n4s';
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { create, test } from 'vest';
 
@@ -77,15 +77,15 @@ const schema = enforce.shape({
 });
 
 create(data => {
-  // @ts-expect-error: data should be strictly typed
-  data.nonexistent;
+  // @ts-expect-error - Invalid data
+  void data.nonexistent;
   test('name', () => {
     enforce(data.name).isNotEmpty();
   });
 }, schema);
 
 // ✅ Should allow generic typing when no schema
-const suite2 = create<{ foo: string; bar: number }>(data => {
+const suite2 = create((data: { foo: string; bar: number }) => {
   test('foo', () => {
     enforce(data.foo).isNotEmpty();
   });
@@ -96,35 +96,41 @@ const suite2 = create<{ foo: string; bar: number }>(data => {
 
 describe('schema typing examples', () => {
   it('runs strict schema suites with correct data', () => {
-    validSuite.run({
-      username: 'john',
-      age: 30,
-      email: 'john@example.com',
-    });
+    expect(() =>
+      validSuite.run({
+        username: 'john',
+        age: 30,
+        email: 'john@example.com',
+      }),
+    ).not.toThrow();
   });
 
   it('allows extra properties with loose schema', () => {
-    looseSuite.run({
-      id: 1,
-      name: 'Test',
-      extra: 'This is fine with loose schema',
-      another: 42,
-    });
+    expect(() =>
+      looseSuite.run({
+        id: 1,
+        name: 'Test',
+        extra: 'This is fine with loose schema',
+        another: 42,
+      }),
+    ).not.toThrow();
   });
 
   it('resolves nested schemas', () => {
-    nestedSuite.run({
-      name: 'John',
-      address: {
-        street: '123 Main St',
-        city: 'Springfield',
-        zipCode: '12345',
-      },
-    });
+    expect(() =>
+      nestedSuite.run({
+        name: 'John',
+        address: {
+          street: '123 Main St',
+          city: 'Springfield',
+          zipCode: '12345',
+        },
+      }),
+    ).not.toThrow();
   });
 
   it('accepts correct shapes when no schema but explicit generic is provided', () => {
-    suite2.run({ foo: 'baz', bar: 1 });
+    expect(() => suite2.run({ foo: 'baz', bar: 1 })).not.toThrow();
   });
 });
 

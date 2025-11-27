@@ -23,7 +23,9 @@ export function useRunSyncFieldCallbacks(): void {
   const [fieldCallbacks] = useFieldCallbacks();
 
   for (const fieldName in fieldCallbacks) {
-    if (SuiteWalker.useHasRemainingWithTestNameMatching(fieldName)) {
+    if (
+      SuiteWalker.useHasRemainingWithTestNameMatching(fieldName as TFieldName)
+    ) {
       continue;
     }
 

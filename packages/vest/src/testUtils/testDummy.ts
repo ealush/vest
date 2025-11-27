@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import { vi } from 'vitest';
 import wait from 'wait';
 
+import { TFieldName } from '../suiteResult/SuiteResultTypes';
 import { test as vestTest, warn } from '../vest';
 
 /**
@@ -12,7 +13,7 @@ const createFailing = (
   message: string = faker.lorem.words(),
 ) =>
   vestTest(
-    name,
+    name as TFieldName,
     message,
     vi.fn(() => {
       throw new Error();
@@ -24,7 +25,7 @@ const createFailingWarning = (
   message = faker.lorem.words(),
 ) =>
   vestTest(
-    name,
+    name as TFieldName,
     message,
     vi.fn(() => {
       warn();
@@ -35,14 +36,14 @@ const createFailingWarning = (
 const createPassing = (
   name = faker.lorem.word(),
   message = faker.lorem.words(),
-) => vestTest(name, message, vi.fn());
+) => vestTest(name as TFieldName, message, vi.fn());
 
 const createPassingWarning = (
   name = faker.lorem.word(),
   message = faker.lorem.words(),
 ) =>
   vestTest(
-    name,
+    name as TFieldName,
     message,
     vi.fn(() => {
       warn();
@@ -54,7 +55,7 @@ const createFailingAsync = (
   { message = faker.lorem.words(), time = 0 } = {},
 ) =>
   vestTest(
-    name,
+    name as TFieldName,
     message,
     vi.fn(async () => {
       await wait(time);
@@ -67,7 +68,7 @@ const createFailingWarningAsync = (
   { message = faker.lorem.words(), time = 0 } = {},
 ) =>
   vestTest(
-    name,
+    name as TFieldName,
     message,
     vi.fn(async () => {
       warn();
@@ -81,7 +82,7 @@ const createPassingAsync = (
   { message = faker.lorem.words(), time = 0 } = {},
 ) =>
   vestTest(
-    name,
+    name as TFieldName,
     message,
     vi.fn(async () => {
       await wait(time);
@@ -93,7 +94,7 @@ const createPassingWarningAsync = (
   { message = faker.lorem.words(), time = 0 } = {},
 ) =>
   vestTest(
-    name,
+    name as TFieldName,
     message,
     vi.fn(async () => {
       warn();

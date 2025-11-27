@@ -25,7 +25,9 @@ export type SchemaRuleLazyTypes = {
   loose: <S extends Record<string, RuleInstance<any>>>(
     schema: S,
   ) => LooseRuleInstance<S>;
-  optional: <T>(rule: any) => OptionalRuleInstance<T>;
+  optional: <R extends RuleInstance<any>>(
+    rule: R,
+  ) => OptionalRuleInstance<R['infer']>;
   partial: <S extends Record<string, RuleInstance<any>>>(
     schema: S,
   ) => PartialRuleInstance<S>;

@@ -1,5 +1,6 @@
 import { bench, describe } from 'vitest';
 
+import { TFieldName, TGroupName } from '../src/suiteResult/SuiteResultTypes';
 import {
   Modes,
   create,
@@ -28,9 +29,9 @@ type EnforceData = {
 
 const enforceMatrixSuite = create((data: EnforceData) => {
   mode(Modes.ALL);
-  optional('optional_block');
+  optional('optional_block' as TFieldName);
 
-  test('numbers', () => {
+  test('numbers' as TFieldName, () => {
     enforce(data.num)
       .isNumber()
       .greaterThan(data.small)
@@ -38,7 +39,7 @@ const enforceMatrixSuite = create((data: EnforceData) => {
     enforce(data.small).isNumber().greaterThan(-100);
   });
 
-  test('strings', () => {
+  test('strings' as TFieldName, () => {
     enforce(data.text)
       .isString()
       .matches(/^[a-z0-9 ]+$/i)
@@ -48,16 +49,16 @@ const enforceMatrixSuite = create((data: EnforceData) => {
       .endsWith(data.end);
   });
 
-  test('array', () => {
+  test('array' as TFieldName, () => {
     enforce(data.arr).isArray().shorterThanOrEquals(100);
     enforce.isArrayOf(enforce.isNumber()).test(data.arr);
   });
 
-  test('tags', () => {
+  test('tags' as TFieldName, () => {
     enforce.isArrayOf(enforce.isString().longerThan(2)).test(data.tags);
   });
 
-  test('warned', () => {
+  test('warned' as TFieldName, () => {
     warn();
     enforce(data.num).greaterThan(0);
   });
@@ -71,14 +72,14 @@ type FlowData = {
 const createFlowSuite = (label: string) =>
   create((data: FlowData) => {
     mode(label === 'one' ? Modes.ONE : Modes.EAGER);
-    include('conditional').when(() => data.runConditional);
-    skip(data.runConditional ? undefined : 'skipped_static');
-    optional('optional_flow');
+    include('conditional' as TFieldName).when(() => data.runConditional);
+    skip((data.runConditional ? undefined : 'skipped_static') as TFieldName);
+    optional('optional_flow' as TFieldName);
 
-    group(`flow_${label}`, () => {
+    group(`flow_${label}` as TGroupName, () => {
       each(data.fields, (field, index) => {
         test(
-          `field_${label}_${field}`,
+          `field_${label}_${field}` as TFieldName,
           () => {
             enforce(index)
               .isNumber()
@@ -89,13 +90,13 @@ const createFlowSuite = (label: string) =>
       });
 
       skipWhen(!data.runConditional, () => {
-        test(`conditional_${label}`, () => {
+        test(`conditional_${label}` as TFieldName, () => {
           enforce(data.fields.length).greaterThan(0);
         });
       });
 
       omitWhen(data.fields.length > 5, () => {
-        test(`omitted_${label}`, () => {
+        test(`omitted_${label}` as TFieldName, () => {
           enforce(data.fields.length).lessThan(6);
         });
       });

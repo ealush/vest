@@ -1,4 +1,4 @@
-import { CB, Nullable } from 'vest-utils';
+import { Brand, CB, Nullable } from 'vest-utils';
 
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { StandardSchemaV1 } from '../suite/standardSchemaSpec';
@@ -25,15 +25,17 @@ export class SuiteSummary<
   public valid: Nullable<boolean> = null;
 }
 
-export type TestsContainer<F extends TFieldName, G extends TGroupName> =
-  | Group<G>
+export type TestsContainer<F extends TFieldName, _G extends TGroupName> =
+  | Group<F>
   | Tests<F>;
 
 export type Groups<G extends TGroupName, F extends TFieldName> = {
   [key in G]: Group<F>;
 };
-type Group<F extends TFieldName> = Record<F, SingleTestSummary> & ValidProperty;
-export type Tests<F extends TFieldName> = Record<F, SingleTestSummary>;
+type Group<F extends TFieldName> = {
+  [key in F]: SingleTestSummary;
+} & ValidProperty;
+export type Tests<F extends TFieldName> = { [key in F]: SingleTestSummary };
 
 export type SingleTestSummary = SummaryBase &
   CommonSummaryProperties &
@@ -81,16 +83,23 @@ type SuiteResultData<
         value?: undefined;
       });
 
+type BrandedFieldName<F extends string> = F & TFieldName;
+type BrandedGroupName<G extends string> = G & TGroupName;
+
 export type SuiteResult<
-  F extends TFieldName,
-  G extends TGroupName,
+  F extends string = TFieldName,
+  G extends string = TGroupName,
   S extends TSchema = undefined,
-> = SuiteResultData<F, G, S> & {
+> = SuiteResultData<BrandedFieldName<F>, BrandedGroupName<G>, S> & {
   dump: CB<TIsolateSuite>;
   types: S extends undefined
     ? undefined
     : { input: InferSchemaData<S>; output: InferSchemaData<S> };
 };
 
-export type TFieldName<T extends string = string> = T;
-export type TGroupName<G extends string = string> = G;
+export type FieldName<T extends string> = Brand<T, 'FieldName'>;
+export type GroupName<G extends string> = Brand<G, 'GroupName'>;
+
+// Public-facing aliases remain plain strings; internals can still brand via FieldName/GroupName.
+export type TFieldName = string;
+export type TGroupName = string;

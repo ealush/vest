@@ -1,16 +1,17 @@
 import { describe, it, expect, vi } from 'vitest';
 import wait from 'wait';
 
+import { TFieldName } from '../../../suiteResult/SuiteResultTypes';
+import * as vest from '../../../vest';
 import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../isolate/IsolateTest/VestTest';
-import * as vest from '../../../vest';
 
 describe('runAsyncTest', () => {
   describe('State Updates', () => {
     it('Should remove pending status from test object', async () => {
-      let testObject: void | TIsolateTest = undefined;
+      let testObject: TIsolateTest | undefined = undefined;
       const suite = vest.create(() => {
-        testObject = vest.test('field_1', async () => {
+        testObject = vest.test('field_1' as TFieldName, async () => {
           await wait(100);
         });
       });
@@ -32,19 +33,19 @@ describe('runAsyncTest', () => {
         const cb3 = vi.fn();
 
         const suite = vest.create(() => {
-          vest.test('field_1', async () => {
+          vest.test('field_1' as TFieldName, async () => {
             await wait(50);
           });
-          vest.test('field_2', () => {});
-          vest.test('field_3', async () => {
+          vest.test('field_2' as TFieldName, () => {});
+          vest.test('field_3' as TFieldName, async () => {
             await wait(100);
           });
         });
 
         suite
           .after(cb1)
-          .afterField('field_1', cb2)
-          .afterField('field_3', cb3)
+          .afterField('field_1' as TFieldName, cb2)
+          .afterField('field_3' as TFieldName, cb3)
           .run();
 
         expect(cb1).toHaveBeenCalled();
@@ -68,19 +69,19 @@ describe('runAsyncTest', () => {
         const cb3 = vi.fn();
 
         const suite = vest.create(() => {
-          vest.test('field_1', async () => {
+          vest.test('field_1' as TFieldName, async () => {
             await wait(100);
           });
-          vest.test('field_2', () => {});
-          vest.test('field_3', async () => {
+          vest.test('field_2' as TFieldName, () => {});
+          vest.test('field_3' as TFieldName, async () => {
             await wait(50);
           });
         });
 
         suite
           .after(cb1)
-          .afterField('field_2', cb2)
-          .afterField('field_3', cb3)
+          .afterField('field_2' as TFieldName, cb2)
+          .afterField('field_3' as TFieldName, cb3)
           .run();
 
         expect(cb1).toHaveBeenCalled();
@@ -106,17 +107,17 @@ describe('runAsyncTest', () => {
 
         const suite = vest.create(() => {
           testObject.push(
-            vest.test('field_1', async () => {
+            vest.test('field_1' as TFieldName, async () => {
               await wait(10);
             }),
           );
-          vest.test('field_2', () => {});
+          vest.test('field_2' as TFieldName, () => {});
         });
 
         suite
-          .afterField('field_1', cb1)
-          .afterField('field_1', cb2)
-          .afterField('field_1', cb3)
+          .afterField('field_1' as TFieldName, cb1)
+          .afterField('field_1' as TFieldName, cb2)
+          .afterField('field_1' as TFieldName, cb3)
           .run();
 
         expect(cb1).not.toHaveBeenCalled();
@@ -134,9 +135,9 @@ describe('runAsyncTest', () => {
   describe('Final test status', () => {
     describe('When passing', () => {
       it('Should set the test status to passing', async () => {
-        let testObject: void | TIsolateTest = undefined;
+        let testObject: TIsolateTest | undefined = undefined;
         const suite = vest.create(() => {
-          testObject = vest.test('field_1', async () => {
+          testObject = vest.test('field_1' as TFieldName, async () => {
             await wait(100);
           });
         });
@@ -144,16 +145,16 @@ describe('runAsyncTest', () => {
 
         testObject = VestTest.cast(testObject);
 
-        expect(VestTest.isPassing(testObject)).toBe(false);
+        expect(VestTest.isPassing(testObject).unwrap()).toBe(false);
         await wait(100);
-        expect(VestTest.isPassing(testObject)).toBe(true);
+        expect(VestTest.isPassing(testObject).unwrap()).toBe(true);
       });
     });
     describe('When failing', () => {
       it('Should set the test status to failing', async () => {
-        let testObject: void | TIsolateTest = undefined;
+        let testObject: TIsolateTest | undefined = undefined;
         const suite = vest.create(() => {
-          testObject = vest.test('field_1', async () => {
+          testObject = vest.test('field_1' as TFieldName, async () => {
             throw new Error('');
           });
         });
@@ -161,16 +162,16 @@ describe('runAsyncTest', () => {
 
         testObject = VestTest.cast(testObject);
 
-        expect(VestTest.isFailing(testObject)).toBe(false);
+        expect(VestTest.isFailing(testObject).unwrap()).toBe(false);
         await wait(100);
-        expect(VestTest.isFailing(testObject)).toBe(true);
+        expect(VestTest.isFailing(testObject).unwrap()).toBe(true);
       });
     });
     describe('When warning', () => {
       it('Should set the test status to failing', async () => {
-        let testObject: void | TIsolateTest = undefined;
+        let testObject: TIsolateTest | undefined = undefined;
         const suite = vest.create(() => {
-          testObject = vest.test('field_1', async () => {
+          testObject = vest.test('field_1' as TFieldName, async () => {
             vest.warn();
             throw new Error('');
           });
@@ -179,9 +180,9 @@ describe('runAsyncTest', () => {
 
         testObject = VestTest.cast(testObject);
 
-        expect(VestTest.isWarning(testObject)).toBe(false);
+        expect(VestTest.isWarning(testObject).unwrap()).toBe(false);
         await wait(100);
-        expect(VestTest.isWarning(testObject)).toBe(true);
+        expect(VestTest.isWarning(testObject).unwrap()).toBe(true);
       });
     });
   });

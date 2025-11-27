@@ -1,5 +1,6 @@
 import { bench, describe } from 'vitest';
 
+import { TFieldName, TGroupName } from '../src/suiteResult/SuiteResultTypes';
 import {
   create,
   enforce,
@@ -18,25 +19,25 @@ type SelectorInput = {
 };
 
 const selectorsSuite = create((input: SelectorInput) => {
-  group('profile', () => {
-    test('email', () => {
+  group('profile' as TGroupName, () => {
+    test('email' as TFieldName, () => {
       enforce(input.validEmail).matches(/@/).endsWith('.com');
     });
 
-    test('zip', () => {
+    test('zip' as TFieldName, () => {
       enforce(input.zip).isString().longerThan(3).shorterThan(10);
     });
   });
 
-  group('details', () => {
-    optional('age');
+  group('details' as TGroupName, () => {
+    optional('age' as TFieldName);
 
-    test('age', () => {
+    test('age' as TFieldName, () => {
       enforce(input.age).isNumber().greaterThan(17).lessThan(120);
     });
 
     skipWhen(!input.hasWarnings, () => {
-      test('warning_field', () => {
+      test('warning_field' as TFieldName, () => {
         warn();
         enforce(input.age).greaterThan(30);
       });
@@ -63,19 +64,19 @@ function touchSelectors(result: ReturnType<typeof selectorsSuite.run>): void {
   result.hasWarnings();
   result.getErrors();
   result.getWarnings();
-  result.getError('email');
-  result.getWarning('warning_field');
-  result.getMessage('zip');
-  result.getErrorsByGroup('profile');
-  result.getWarningsByGroup('details');
-  result.hasErrorsByGroup('profile');
-  result.hasWarningsByGroup('details');
+  result.getError('email' as TFieldName);
+  result.getWarning('warning_field' as TFieldName);
+  result.getMessage('zip' as TFieldName);
+  result.getErrorsByGroup('profile' as TGroupName);
+  result.getWarningsByGroup('details' as TGroupName);
+  result.hasErrorsByGroup('profile' as TGroupName);
+  result.hasWarningsByGroup('details' as TGroupName);
   result.isValid();
-  result.isValid('email' as any);
-  result.isValidByGroup('profile');
-  result.isValidByGroup('details', 'age' as any);
+  result.isValid('email' as TFieldName);
+  result.isValidByGroup('profile' as TGroupName);
+  result.isValidByGroup('details' as TGroupName, 'age' as TFieldName);
   result.isPending();
-  result.isTested('email' as any);
+  result.isTested('email' as TFieldName);
 }
 
 describe('Suite selectors coverage', () => {

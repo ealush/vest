@@ -6,6 +6,8 @@ import './anyOf';
 import './noneOf';
 import './oneOf';
 
+import type { RuleInstance } from '../../utils/RuleInstance';
+
 import type {
   AllOfRuleInstance,
   AnyOfRuleInstance,
@@ -18,7 +20,11 @@ import type {
  */
 export type CompoundRuleLazyTypes = {
   allOf: <T>(...rules: any[]) => AllOfRuleInstance<T>;
-  anyOf: <T>(...rules: any[]) => AnyOfRuleInstance<T>;
+  anyOf: <Rules extends RuleInstance<any>[]>(
+    ...rules: Rules
+  ) => AnyOfRuleInstance<Rules[number]['infer']>;
   noneOf: <T>(...rules: any[]) => NoneOfRuleInstance<T>;
-  oneOf: <T>(...rules: any[]) => OneOfRuleInstance<T>;
+  oneOf: <Rules extends RuleInstance<any>[]>(
+    ...rules: Rules
+  ) => OneOfRuleInstance<Rules[number]['infer']>;
 };

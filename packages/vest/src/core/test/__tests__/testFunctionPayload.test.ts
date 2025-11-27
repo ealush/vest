@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, Mock } from 'vitest';
 
 import * as vest from '../../../vest';
 
@@ -76,10 +76,6 @@ describe('Test Function Payload', () => {
   });
 });
 
-function callPayload(
-  fn: vi.Mock<any, any, any>,
-  call: number = 0,
-  arg: number = 0,
-) {
+function callPayload(fn: Mock, call: number = 0, arg: number = 0) {
   return fn.mock.calls[call][arg];
 }

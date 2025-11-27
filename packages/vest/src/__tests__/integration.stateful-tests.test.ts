@@ -1,5 +1,5 @@
 import { enforce } from 'n4s';
-import { describe, it, expect, test } from 'vitest';
+import { describe, it, expect, test, vi } from 'vitest';
 
 import { Modes } from '../hooks/optional/Modes';
 import * as vest from '../vest';
@@ -113,7 +113,7 @@ describe('more complex', () => {
   });
 
   const suite = vest.create(
-    (data: Record<string, unknown> = {}, only: string) => {
+    (data: Record<string, string> = {}, only: string) => {
       vest.only(only);
 
       vest.test('username', 'username is required', () => {

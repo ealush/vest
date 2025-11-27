@@ -2,11 +2,10 @@ import { describe, it, expect, beforeEach, test, vi } from 'vitest';
 import wait from 'wait';
 
 import { TestPromise } from '../../../testUtils/testPromise';
-
+import { mockIsolateTest } from '../../../testUtils/vestMocks';
+import * as vest from '../../../vest';
 import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../isolate/IsolateTest/VestTest';
-import * as vest from '../../../vest';
-import { mockIsolateTest } from '../../../testUtils/vestMocks';
 
 const fieldName = 'unicycle';
 const message = 'I am Root.';
@@ -27,9 +26,9 @@ describe('IsolateTest', () => {
 
   describe('testObject.warn', () => {
     it('Should mark the test as warning', () => {
-      expect(VestTest.warns(testObject)).toBe(false);
+      expect(VestTest.warns(testObject).unwrap()).toBe(false);
       VestTest.warn(testObject);
-      expect(VestTest.warns(testObject)).toBe(true);
+      expect(VestTest.warns(testObject).unwrap()).toBe(true);
       expect(testObject).toMatchSnapshot();
     });
   });
@@ -40,9 +39,9 @@ describe('IsolateTest', () => {
     });
 
     it('Should set status to failed', () => {
-      expect(VestTest.isFailing(testObject)).toBe(false);
+      expect(VestTest.isFailing(testObject).unwrap()).toBe(false);
       VestTest.fail(testObject);
-      expect(VestTest.isFailing(testObject)).toBe(true);
+      expect(VestTest.isFailing(testObject).unwrap()).toBe(true);
     });
   });
 
@@ -61,7 +60,7 @@ describe('IsolateTest', () => {
         });
         suite.run();
 
-        expect(VestTest.isCanceled(testObject)).toBe(true);
+        expect(VestTest.isCanceled(testObject).unwrap()).toBe(true);
         done();
       });
     });
@@ -79,16 +78,16 @@ describe('IsolateTest', () => {
               await wait(100);
             });
             VestTest.fail(testObject);
-            expect(VestTest.isFailing(testObject)).toBe(true);
+            expect(VestTest.isFailing(testObject).unwrap()).toBe(true);
             VestTest.skip(testObject);
-            expect(VestTest.isSkipped(testObject)).toBe(false);
-            expect(VestTest.isFailing(testObject)).toBe(true);
+            expect(VestTest.isSkipped(testObject).unwrap()).toBe(false);
+            expect(VestTest.isFailing(testObject).unwrap()).toBe(true);
             VestTest.cancel(testObject);
-            expect(VestTest.isCanceled(testObject)).toBe(false);
-            expect(VestTest.isFailing(testObject)).toBe(true);
+            expect(VestTest.isCanceled(testObject).unwrap()).toBe(false);
+            expect(VestTest.isFailing(testObject).unwrap()).toBe(true);
             VestTest.setPending(testObject);
             expect(VestTest.isPending(testObject)).toBe(false);
-            expect(VestTest.isFailing(testObject)).toBe(true);
+            expect(VestTest.isFailing(testObject).unwrap()).toBe(true);
             control();
           })
           .run();
@@ -103,16 +102,16 @@ describe('IsolateTest', () => {
               await wait(100);
             });
             VestTest.cancel(testObject);
-            expect(VestTest.isCanceled(testObject)).toBe(true);
+            expect(VestTest.isCanceled(testObject).unwrap()).toBe(true);
             VestTest.fail(testObject);
-            expect(VestTest.isCanceled(testObject)).toBe(true);
-            expect(VestTest.isFailing(testObject)).toBe(false);
+            expect(VestTest.isCanceled(testObject).unwrap()).toBe(true);
+            expect(VestTest.isFailing(testObject).unwrap()).toBe(false);
             VestTest.skip(testObject);
-            expect(VestTest.isSkipped(testObject)).toBe(false);
-            expect(VestTest.isCanceled(testObject)).toBe(true);
+            expect(VestTest.isSkipped(testObject).unwrap()).toBe(false);
+            expect(VestTest.isCanceled(testObject).unwrap()).toBe(true);
             VestTest.setPending(testObject);
             expect(VestTest.isPending(testObject)).toBe(false);
-            expect(VestTest.isCanceled(testObject)).toBe(true);
+            expect(VestTest.isCanceled(testObject).unwrap()).toBe(true);
             control();
           })
           .run();

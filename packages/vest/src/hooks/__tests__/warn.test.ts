@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { describe, it, expect, vi } from 'vitest';
 
-import { ErrorStrings } from '../../errors/ErrorStrings';
 import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
+import { ErrorStrings } from '../../errors/ErrorStrings';
 import * as vest from '../../vest';
 
 const { create, test, warn } = vest;
@@ -17,7 +17,7 @@ describe('warn hook', () => {
         });
       }).run();
 
-      expect(VestTest.warns(VestTest.cast(t))).toBe(true);
+      expect(VestTest.warns(VestTest.cast(t)).unwrap()).toBe(true);
     });
   });
 

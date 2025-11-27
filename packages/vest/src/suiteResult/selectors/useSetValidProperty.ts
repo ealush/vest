@@ -122,7 +122,7 @@ export function useSetValidPropertyImpl(
   // - AUTO: User marked 'secondaryEmail' as optional, and it's blank ('', null, undefined)
   // - AUTO: User marked 'pet_color' as optional, and tests were skipped via only()
   // - CUSTOM: optional({ age: () => !suite.get().hasErrors('birthdate') })
-  if (useIsOptionalFieldApplied(fieldName)) {
+  if (useIsOptionalFieldApplied(fieldName).unwrap()) {
     return true;
   }
 
@@ -215,17 +215,19 @@ function hasErrorsByTestObjectsInGroup(
     }
 
     // Skip tests that didn't fail
-    if (!VestTest.hasFailures(testObject)) {
+    if (!VestTest.hasFailures(testObject).unwrap()) {
       return false;
     }
 
     // Skip tests that aren't for our target field
-    if (nonMatchingFieldName(VestTest.getData(testObject), fieldName)) {
+    if (
+      nonMatchingFieldName(VestTest.getData(testObject), fieldName).unwrap()
+    ) {
       return false;
     }
 
     // This test is in our group, for our field, and it failed!
-    return VestTest.isFailing(testObject);
+    return VestTest.isFailing(testObject).unwrap();
   });
 }
 
@@ -274,9 +276,9 @@ function useHasNonOptionalIncomplete(
         !groupName || VestTest.getGroupName(testObject) === groupName,
       // Only check tests for our target field
       (testObject: TIsolateTest) =>
-        !nonMatchingFieldName(VestTest.getData(testObject), fieldName),
+        !nonMatchingFieldName(VestTest.getData(testObject), fieldName).unwrap(),
       // Ignore optional fields (they're valid even when pending)
-      () => !useIsOptionalFieldApplied(fieldName),
+      () => !useIsOptionalFieldApplied(fieldName).unwrap(),
     ),
   );
 }
@@ -319,7 +321,7 @@ function useHasNonOptionalIncomplete(
  * - `create(() => {})` - invalid (you forgot to add tests)
  */
 function useNoMissingTests(
-  fieldName?: string,
+  fieldName?: TFieldName,
   groupName?: TGroupName,
 ): boolean {
   let hasAnyTestsForField = false;
@@ -331,7 +333,9 @@ function useNoMissingTests(
     }
 
     // Skip tests not for our target field
-    if (nonMatchingFieldName(VestTest.getData(testObject), fieldName)) {
+    if (
+      nonMatchingFieldName(VestTest.getData(testObject), fieldName).unwrap()
+    ) {
       return true;
     }
 
@@ -384,7 +388,7 @@ function useNoMissingTestsLogic(
   testObject: TIsolateTest,
   fieldName?: TFieldName,
 ): boolean {
-  if (nonMatchingFieldName(VestTest.getData(testObject), fieldName)) {
+  if (nonMatchingFieldName(VestTest.getData(testObject), fieldName).unwrap()) {
     return true;
   }
 
@@ -405,8 +409,8 @@ function useNoMissingTestsLogic(
    */
 
   return (
-    VestTest.isOmitted(testObject) ||
-    VestTest.isTested(testObject) ||
+    VestTest.isOmitted(testObject).unwrap() ||
+    VestTest.isTested(testObject).unwrap() ||
     useOptionalTestAwaitsResolution(testObject)
   );
 }
@@ -453,6 +457,6 @@ function useOptionalTestAwaitsResolution(testObject: TIsolateTest): boolean {
 
   return (
     SuiteOptionalFields.getOptionalField(root, fieldName).type ===
-      OptionalFieldTypes.AUTO && VestTest.awaitsResolution(testObject)
+      OptionalFieldTypes.AUTO && VestTest.awaitsResolution(testObject).unwrap()
   );
 }

@@ -4,6 +4,7 @@ import isDate from 'validator/es/lib/isDate';
 import isISO8601 from 'validator/es/lib/isISO8601';
 
 import { enforce } from '../n4s';
+import type { WidenFirstParam } from '../n4sTypes';
 
 enforce.extend({ isAfter, isBefore, isDate, isISO8601 });
 
@@ -11,10 +12,10 @@ enforce.extend({ isAfter, isBefore, isDate, isISO8601 });
 declare global {
   namespace n4s {
     interface EnforceMatchers {
-      isAfter: typeof isAfter;
-      isBefore: typeof isBefore;
-      isDate: typeof isDate;
-      isISO8601: typeof isISO8601;
+      isAfter: WidenFirstParam<typeof isAfter, string | Date | number>;
+      isBefore: WidenFirstParam<typeof isBefore, string | Date | number>;
+      isDate: WidenFirstParam<typeof isDate, string | Date | number>;
+      isISO8601: WidenFirstParam<typeof isISO8601, string | Date | number>;
     }
   }
 }

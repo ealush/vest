@@ -1,4 +1,4 @@
-import { CB } from 'vest-utils';
+import { CB, Result } from 'vest-utils';
 import { IsolateSerializer, IsolateKeys } from 'vestjs-runtime';
 
 import { TestStatus } from '../core/StateMachines/IsolateTestStateMachine';
@@ -17,10 +17,18 @@ export class SuiteSerializer {
     return IsolateSerializer.serialize(dump, suiteSerializerReplacer);
   }
 
+  static safeDeserialize(
+    serialized: string | TIsolateSuite | Record<string, any>,
+  ): Result<TIsolateSuite, Error> {
+    return IsolateSerializer.safeDeserialize(serialized).map(
+      isolate => isolate as TIsolateSuite,
+    );
+  }
+
   static deserialize(
     serialized: string | TIsolateSuite | Record<string, any>,
   ): TIsolateSuite {
-    return IsolateSerializer.deserialize(serialized) as TIsolateSuite;
+    return SuiteSerializer.safeDeserialize(serialized).unwrap();
   }
 
   static resume(

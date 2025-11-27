@@ -62,7 +62,7 @@ function useProcessTests<F extends TFieldName, G extends TGroupName>(
       summary.tests[fieldName].valid = useSetValidProperty(fieldName);
     }
 
-    if (VestTest.isOmitted(testObject)) {
+    if (VestTest.isOmitted(testObject).unwrap()) {
       return summary;
     }
 
@@ -76,29 +76,29 @@ function useProcessTests<F extends TFieldName, G extends TGroupName>(
   return summary;
 }
 
-function useAppendToGroup(
-  groups: Groups<TGroupName, TFieldName>,
-  testObject: TIsolateTest,
-): Groups<TGroupName, TFieldName> {
-  const { fieldName } = VestTest.getData(testObject);
-  const groupName = VestTest.getGroupName(testObject);
+function useAppendToGroup<F extends TFieldName, G extends TGroupName>(
+  groups: Groups<G, F>,
+  testObject: TIsolateTest<F>,
+): Groups<G, F> {
+  const { fieldName } = VestTest.getData<F>(testObject);
+  const groupName = VestTest.getGroupName<G>(testObject);
 
   if (!groupName) {
     return groups;
   }
 
   groups[groupName] =
-    groups[groupName] ||
-    ({} as Groups<TGroupName, TFieldName>[typeof groupName]);
+    groups[groupName] || ({} as Groups<G, F>[typeof groupName]);
   const group = groups[groupName];
 
-  group[fieldName] = appendTestSummaryObject<SingleTestSummary>(
+  const nextGroupEntry = appendTestSummaryObject<SingleTestSummary>(
     group[fieldName],
     testObject,
   );
+  (group as Record<string, SingleTestSummary>)[fieldName] = nextGroupEntry;
 
   // Always re-evaluate validity to account for optional fields
-  group[fieldName].valid = useSetValidPropertyImpl(fieldName, groupName);
+  nextGroupEntry.valid = useSetValidPropertyImpl(fieldName, groupName);
 
   return groups;
 }
@@ -120,10 +120,10 @@ function addSummaryStats<F extends TFieldName, G extends TGroupName>(
   testObject: TIsolateTest<F>,
   summary: SuiteSummary<F, G>,
 ): SuiteSummary<F, G> {
-  if (VestTest.isWarning(testObject)) {
+  if (VestTest.isWarning(testObject).unwrap()) {
     summary.warnCount++;
     summary.warnings.push(SummaryFailure.fromTestObject(testObject));
-  } else if (VestTest.isFailing(testObject)) {
+  } else if (VestTest.isFailing(testObject).unwrap()) {
     summary.errorCount++;
     summary.errors.push(SummaryFailure.fromTestObject(testObject));
   }
@@ -145,7 +145,7 @@ function appendTestSummaryObject<S extends CommonSummaryProperties>(
 ): S {
   const nextSummaryKey = createNewSummaryKey(summaryKey);
 
-  if (VestTest.isNonActionable(testObject)) return nextSummaryKey;
+  if (VestTest.isNonActionable(testObject).unwrap()) return nextSummaryKey;
 
   return updateSummaryWithTestResults(nextSummaryKey, testObject);
 }
@@ -166,9 +166,9 @@ function updateSummaryWithTestResults<S extends CommonSummaryProperties>(
     nextSummaryKey.pendingCount++;
   }
 
-  if (VestTest.isFailing(testObject)) {
+  if (VestTest.isFailing(testObject).unwrap()) {
     incrementFailures(nextSummaryKey, Severity.ERRORS, message);
-  } else if (VestTest.isWarning(testObject)) {
+  } else if (VestTest.isWarning(testObject).unwrap()) {
     incrementFailures(nextSummaryKey, Severity.WARNINGS, message);
   }
 
@@ -201,5 +201,7 @@ function baseTestStats<S extends CommonSummaryProperties>(): S {
 function shouldCountTestRun<F extends TFieldName>(
   testObject: TIsolateTest<F>,
 ): boolean {
-  return VestTest.isTested(testObject) || VestTest.isPending(testObject);
+  return (
+    VestTest.isTested(testObject).unwrap() || VestTest.isPending(testObject)
+  );
 }

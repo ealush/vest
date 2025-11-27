@@ -3,13 +3,13 @@ import { text } from 'vest-utils';
 import { IsolateSerializer } from 'vestjs-runtime';
 import { describe, it, expect, vi } from 'vitest';
 
-import { TestPromise } from '../../../testUtils/testPromise';
-
 import { ErrorStrings } from '../../../errors/ErrorStrings';
-import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
-import { VestTest } from '../../isolate/IsolateTest/VestTest';
+import { TFieldName } from '../../../suiteResult/SuiteResultTypes';
+import { TestPromise } from '../../../testUtils/testPromise';
 import { enforce } from '../../../vest';
 import * as vest from '../../../vest';
+import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
+import { VestTest } from '../../isolate/IsolateTest/VestTest';
 
 let testObject: TIsolateTest;
 
@@ -20,7 +20,7 @@ describe("Test Vest's `test` function", () => {
         vest
           .create(() => {
             testObject = vest.test(
-              faker.lorem.word(),
+              faker.lorem.word() as TFieldName,
               faker.lorem.sentence(),
               () => {
                 vest.warn();
@@ -28,7 +28,7 @@ describe("Test Vest's `test` function", () => {
             );
           })
           .run();
-        expect(VestTest.warns(testObject)).toBe(true);
+        expect(VestTest.warns(testObject).unwrap()).toBe(true);
       });
     });
 
@@ -37,7 +37,7 @@ describe("Test Vest's `test` function", () => {
         vest
           .create(() => {
             testObject = vest.test(
-              faker.lorem.word(),
+              faker.lorem.word() as TFieldName,
               faker.lorem.sentence(),
               () => {
                 throw new Error();
@@ -45,16 +45,20 @@ describe("Test Vest's `test` function", () => {
             );
           })
           .run();
-        expect(VestTest.isFailing(testObject)).toBe(true);
+        expect(VestTest.isFailing(testObject).unwrap()).toBe(true);
       });
 
       it('Should be marked as failed for an explicit false return', () => {
         vest
           .create(() => {
-            vest.test(faker.lorem.word(), faker.lorem.sentence(), () => false);
+            vest.test(
+              faker.lorem.word() as TFieldName,
+              faker.lorem.sentence(),
+              () => false,
+            );
           })
           .run();
-        expect(VestTest.isFailing(testObject)).toBe(true);
+        expect(VestTest.isFailing(testObject).unwrap()).toBe(true);
       });
 
       describe('Thrown with a message', () => {
@@ -62,11 +66,15 @@ describe("Test Vest's `test` function", () => {
           it("Should use field's own message", () => {
             const res = vest
               .create(() => {
-                vest.test('field_with_message', 'some_field_message', () => {
-                  failWithString();
-                });
                 vest.test(
-                  'warning_field_with_message',
+                  'field_with_message' as TFieldName,
+                  'some_field_message',
+                  () => {
+                    failWithString();
+                  },
+                );
+                vest.test(
+                  'warning_field_with_message' as TFieldName,
                   'some_field_message',
                   () => {
                     vest.warn();
@@ -76,59 +84,59 @@ describe("Test Vest's `test` function", () => {
               })
               .run();
 
-            expect(res.getErrors('field_with_message')).toEqual([
+            expect(res.getErrors('field_with_message' as TFieldName)).toEqual([
               'some_field_message',
             ]);
-            expect(res.tests['field_with_message'].errors).toEqual([
-              'some_field_message',
-            ]);
-            expect(res.getWarnings('warning_field_with_message')).toEqual([
-              'some_field_message',
-            ]);
-            expect(res.tests['warning_field_with_message'].warnings).toEqual([
-              'some_field_message',
-            ]);
+            expect(
+              res.tests['field_with_message' as TFieldName].errors,
+            ).toEqual(['some_field_message']);
+            expect(
+              res.getWarnings('warning_field_with_message' as TFieldName),
+            ).toEqual(['some_field_message']);
+            expect(
+              res.tests['warning_field_with_message' as TFieldName].warnings,
+            ).toEqual(['some_field_message']);
           });
         });
         describe('When field does not have a message', () => {
           it('Should use message from enforce().message()', () => {
             const res = vest
               .create(() => {
-                vest.test('field_without_message', () => {
+                vest.test('field_without_message' as TFieldName, () => {
                   enforce(100).message('some_field_message').equals(0);
                 });
               })
               .run();
 
-            expect(res.getErrors('field_without_message')).toEqual([
-              'some_field_message',
-            ]);
+            expect(
+              res.getErrors('field_without_message' as TFieldName),
+            ).toEqual(['some_field_message']);
           });
           it('Should use message from thrown error', () => {
             const res = vest
               .create(() => {
-                vest.test('field_without_message', () => {
+                vest.test('field_without_message' as TFieldName, () => {
                   failWithString();
                 });
-                vest.test('warning_field_without_message', () => {
+                vest.test('warning_field_without_message' as TFieldName, () => {
                   vest.warn();
                   failWithString();
                 });
               })
               .run();
 
-            expect(res.getErrors('field_without_message')).toEqual([
-              'I fail with a message',
-            ]);
-            expect(res.tests['field_without_message'].errors).toEqual([
-              'I fail with a message',
-            ]);
-            expect(res.getWarnings('warning_field_without_message')).toEqual([
-              'I fail with a message',
-            ]);
-            expect(res.tests['warning_field_without_message'].warnings).toEqual(
-              ['I fail with a message'],
-            );
+            expect(
+              res.getErrors('field_without_message' as TFieldName),
+            ).toEqual(['I fail with a message']);
+            expect(
+              res.tests['field_without_message' as TFieldName].errors,
+            ).toEqual(['I fail with a message']);
+            expect(
+              res.getWarnings('warning_field_without_message' as TFieldName),
+            ).toEqual(['I fail with a message']);
+            expect(
+              res.tests['warning_field_without_message' as TFieldName].warnings,
+            ).toEqual(['I fail with a message']);
           });
         });
       });
@@ -140,17 +148,17 @@ describe("Test Vest's `test` function", () => {
           vest
             .create(() => {
               testObject = vest.test(
-                faker.lorem.word(),
+                faker.lorem.word() as TFieldName,
                 faker.lorem.sentence(),
                 () =>
                   new Promise((_, reject) => {
-                    expect(VestTest.isFailing(testObject)).toBe(false);
+                    expect(VestTest.isFailing(testObject).unwrap()).toBe(false);
                     setTimeout(reject, 300);
                   }),
               );
-              expect(VestTest.isFailing(testObject)).toBe(false);
+              expect(VestTest.isFailing(testObject).unwrap()).toBe(false);
               setTimeout(() => {
-                expect(VestTest.isFailing(testObject)).toBe(true);
+                expect(VestTest.isFailing(testObject).unwrap()).toBe(true);
                 done();
               }, 310);
             })
@@ -164,7 +172,7 @@ describe("Test Vest's `test` function", () => {
     it('creates a test without a message and without a key', () => {
       vest
         .create(() => {
-          testObject = vest.test('field_name', () => undefined);
+          testObject = vest.test('field_name' as TFieldName, () => undefined);
         })
         .run();
       expect(testObject.data.fieldName).toBe('field_name');
@@ -177,7 +185,7 @@ describe("Test Vest's `test` function", () => {
       vest
         .create(() => {
           testObject = vest.test(
-            'field_name',
+            'field_name' as TFieldName,
             'failure message',
             () => undefined,
           );
@@ -192,7 +200,11 @@ describe("Test Vest's `test` function", () => {
     it('creates a test without a message and with a key', () => {
       vest
         .create(() => {
-          testObject = vest.test('field_name', () => undefined, 'keyboardcat');
+          testObject = vest.test(
+            'field_name' as TFieldName,
+            () => undefined,
+            'keyboardcat',
+          );
         })
         .run();
       expect(testObject.data.fieldName).toBe('field_name');
@@ -205,7 +217,7 @@ describe("Test Vest's `test` function", () => {
       vest
         .create(() => {
           testObject = vest.test(
-            'field_name',
+            'field_name' as TFieldName,
             'failure message',
             () => undefined,
             'keyboardcat',
@@ -230,8 +242,8 @@ describe("Test Vest's `test` function", () => {
               expected: 'string',
             }),
           );
-          // @ts-expect-error
           expect(() =>
+            // @ts-expect-error
             vest.test(null, 'error message', () => undefined),
           ).toThrow(
             text(ErrorStrings.INVALID_PARAM_PASSED_TO_FUNCTION, {

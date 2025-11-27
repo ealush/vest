@@ -128,7 +128,7 @@ describe('Stateful async tests', () => {
     suite.run(); // not awaiting intentionally
     await suite.run();
 
-    expect(VestTest.isCanceled(tests[0])).toBe(true);
-    expect(VestTest.isFailing(tests[1])).toBe(true);
+    expect(VestTest.isCanceled(tests[0]).unwrap()).toBe(true);
+    expect(VestTest.isFailing(tests[1]).unwrap()).toBe(true);
   });
 });

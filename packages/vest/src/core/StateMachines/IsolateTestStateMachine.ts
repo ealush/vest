@@ -58,7 +58,4 @@ const machine: TStateMachine<TestStatus, TestStateMachineAction> = {
   },
 };
 
-export const IsolateTestStateMachine = StateMachine<
-  TestStatus,
-  TestStateMachineAction
->(machine);
+export const IsolateTestStateMachine = StateMachine(machine);

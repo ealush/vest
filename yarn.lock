@@ -14703,6 +14703,7 @@ __metadata:
     vast: ^1.0.42
     vest-utils: ^1.3.3
     vestjs-runtime: ^1.5.1
+    vitest: ^4.0.10
   languageName: unknown
   linkType: soft
 

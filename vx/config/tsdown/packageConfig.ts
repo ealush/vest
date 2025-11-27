@@ -1,3 +1,4 @@
+/* eslint-disable sort-keys */
 import fs, { promises as fsPromises } from 'fs';
 import path from 'path';
 
@@ -348,19 +349,30 @@ function normalizeExport({
   packageName: string;
   mainTypes?: string;
 }): ExportsEntry {
-  const normalizedExport = cloneExport(exportValue);
   const typesKey = getTypesKey(exportPath, packageName);
   const typesEntry = getTypesEntry(typesKey, typeMap, mainTypes);
-  if (typesEntry) {
-    normalizedExport.types ??= typesEntry;
-  }
-  return normalizedExport;
+  const normalizedExport = cloneExport(exportValue);
+  return placeTypesFirst(normalizedExport, typesEntry);
 }
 
 function cloneExport(exportValue: string | ExportsEntry): ExportsEntry {
   return exportValue && typeof exportValue === 'object'
     ? { ...exportValue }
     : { default: exportValue };
+}
+
+function placeTypesFirst(
+  exportEntry: ExportsEntry,
+  typesEntry?: string,
+): ExportsEntry {
+  const { types, ...rest } = exportEntry;
+  const resolvedTypes = typesEntry ?? types;
+
+  if (!resolvedTypes) {
+    return exportEntry;
+  }
+
+  return { types: resolvedTypes, ...rest };
 }
 
 function getTypesKey(exportPath: string, packageName: string): string {
@@ -417,10 +429,10 @@ async function generateExportPolyfills(
     const packageJsonContent = {
       exports: {
         '.': {
+          types: `../${dir.TYPES}/${dir.EXPORTS}/${exportName}.d.mts`,
           default: `../${dir.DIST}/${dir.EXPORTS}/${exportName}.mjs`,
           import: `../${dir.DIST}/${dir.EXPORTS}/${exportName}.mjs`,
           require: `../${dir.DIST}/${dir.EXPORTS}/${exportName}.cjs`,
-          types: `../${dir.TYPES}/${dir.EXPORTS}/${exportName}.d.mts`,
         },
       },
       main: `../${dir.DIST}/${dir.EXPORTS}/${exportName}.cjs`,

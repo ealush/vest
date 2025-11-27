@@ -1,7 +1,10 @@
 import { inc } from 'semver';
 
-import { release_tags } from '../../opts.js';
-import packageJson from '../../util/packageJson.js';
+import determineChangeLevel from './determineChangeLevel.js';
+
+import * as logger from 'vx/logger.js';
+import { release_tags } from 'vx/opts.js';
+import packageJson from 'vx/util/packageJson.js';
 import {
   isIntegrationBranch,
   isReleaseBranch,
@@ -9,12 +12,8 @@ import {
   isReleaseKeepVersionBranch,
   isNightlyBranch,
   CURRENT_BRANCH,
-} from '../../util/taggedBranch.js';
-import { usePackage } from '../../vxContext.js';
-
-import determineChangeLevel from './determineChangeLevel.js';
-
-import * as logger from 'vx/logger.js';
+} from 'vx/util/taggedBranch.js';
+import { usePackage } from 'vx/vxContext.js';
 
 const { GITHUB_SHA } = process.env;
 

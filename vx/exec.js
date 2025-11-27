@@ -1,8 +1,7 @@
 import { execSync } from 'child_process';
 
-import joinTruthy from './util/joinTruthy.js';
-
 import * as logger from 'vx/logger.js';
+import joinTruthy from 'vx/util/joinTruthy.js';
 import vxPath from 'vx/vxPath.js';
 
 /**

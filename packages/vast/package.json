@@ -26,13 +26,13 @@
   "vxAllowResolve": [],
   "exports": {
     ".": {
+      "types": "./types/vast.d.cts",
       "import": "./dist/vast.mjs",
-      "require": "./dist/vast.cjs",
-      "types": "./types/vast.d.cts"
+      "require": "./dist/vast.cjs"
     },
     "./*": {
-      "default": "./*",
-      "types": "./types/vast.d.cts"
+      "types": "./types/vast.d.cts",
+      "default": "./*"
     },
     "./package.json": "./package.json",
     "./vast": "./types/vast.d.cts",
@@ -43,30 +43,30 @@
   "publishConfig": {
     "exports": {
       ".": {
+        "types": "./types/vast.d.cts",
         "import": "./dist/vast.mjs",
-        "require": "./dist/vast.cjs",
-        "types": "./types/vast.d.cts"
+        "require": "./dist/vast.cjs"
       },
       "./*": {
-        "default": "./*",
-        "types": "./types/vast.d.cts"
+        "types": "./types/vast.d.cts",
+        "default": "./*"
       },
       "./package.json": "./package.json",
       "./vast": {
-        "default": "./types/vast.d.cts",
-        "types": "./types/vast.d.cts"
+        "types": "./types/vast.d.cts",
+        "default": "./types/vast.d.cts"
       },
       "./vast.d.ts": {
-        "default": "./types/vast.d.ts",
-        "types": "./types/vast.d.cts"
+        "types": "./types/vast.d.cts",
+        "default": "./types/vast.d.ts"
       },
       "./types/*": {
-        "default": "./types/*",
-        "types": "./types/vast.d.cts"
+        "types": "./types/vast.d.cts",
+        "default": "./types/*"
       },
       "./dist/*": {
-        "default": "./dist/*",
-        "types": "./types/vast.d.cts"
+        "types": "./types/vast.d.cts",
+        "default": "./dist/*"
       }
     }
   }

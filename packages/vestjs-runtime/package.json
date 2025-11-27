@@ -23,39 +23,39 @@
   },
   "exports": {
     "./exports/IsolateSerializer": {
+      "types": "./types/exports/IsolateSerializer.d.cts",
       "import": "./dist/exports/IsolateSerializer.mjs",
-      "require": "./dist/exports/IsolateSerializer.cjs",
-      "types": "./types/exports/IsolateSerializer.d.cts"
+      "require": "./dist/exports/IsolateSerializer.cjs"
     },
     "./exports/test-utils": {
+      "types": "./types/exports/test-utils.d.cts",
       "import": "./dist/exports/test-utils.mjs",
-      "require": "./dist/exports/test-utils.cjs",
-      "types": "./types/exports/test-utils.d.cts"
+      "require": "./dist/exports/test-utils.cjs"
     },
     "./vestjs-runtime": {
+      "types": "./types/vestjs-runtime.d.cts",
       "import": "./dist/vestjs-runtime.mjs",
-      "require": "./dist/vestjs-runtime.cjs",
-      "types": "./types/vestjs-runtime.d.cts"
+      "require": "./dist/vestjs-runtime.cjs"
     },
     "./*": {
-      "default": "./*",
-      "types": "./types/vestjs-runtime.d.cts"
+      "types": "./types/vestjs-runtime.d.cts",
+      "default": "./*"
     },
     ".": {
+      "types": "./types/vestjs-runtime.d.cts",
       "import": "./dist/vestjs-runtime.mjs",
-      "require": "./dist/vestjs-runtime.cjs",
-      "types": "./types/vestjs-runtime.d.cts"
+      "require": "./dist/vestjs-runtime.cjs"
     },
     "./package.json": "./package.json",
     "./IsolateSerializer": {
+      "types": "./types/vestjs-runtime.d.cts",
       "import": "./dist/exports/IsolateSerializer.mjs",
-      "require": "./dist/exports/IsolateSerializer.cjs",
-      "types": "./types/vestjs-runtime.d.cts"
+      "require": "./dist/exports/IsolateSerializer.cjs"
     },
     "./test-utils": {
+      "types": "./types/vestjs-runtime.d.cts",
       "import": "./dist/exports/test-utils.mjs",
-      "require": "./dist/exports/test-utils.cjs",
-      "types": "./types/vestjs-runtime.d.cts"
+      "require": "./dist/exports/test-utils.cjs"
     },
     "./vestjs-runtime.d.ts": "./types/vestjs-runtime.d.ts",
     "./types/*": "./types/*",
@@ -64,57 +64,57 @@
   "publishConfig": {
     "exports": {
       "./exports/IsolateSerializer": {
+        "types": "./types/exports/IsolateSerializer.d.cts",
         "import": "./dist/exports/IsolateSerializer.mjs",
-        "require": "./dist/exports/IsolateSerializer.cjs",
-        "types": "./types/exports/IsolateSerializer.d.cts"
+        "require": "./dist/exports/IsolateSerializer.cjs"
       },
       "./exports/test-utils": {
+        "types": "./types/exports/test-utils.d.cts",
         "import": "./dist/exports/test-utils.mjs",
-        "require": "./dist/exports/test-utils.cjs",
-        "types": "./types/exports/test-utils.d.cts"
+        "require": "./dist/exports/test-utils.cjs"
       },
       "./vestjs-runtime": {
+        "types": "./types/vestjs-runtime.d.cts",
         "import": "./dist/vestjs-runtime.mjs",
-        "require": "./dist/vestjs-runtime.cjs",
-        "types": "./types/vestjs-runtime.d.cts"
+        "require": "./dist/vestjs-runtime.cjs"
       },
       "./*": {
-        "default": "./*",
-        "types": "./types/vestjs-runtime.d.cts"
+        "types": "./types/vestjs-runtime.d.cts",
+        "default": "./*"
       },
       ".": {
+        "types": "./types/vestjs-runtime.d.cts",
         "import": "./dist/vestjs-runtime.mjs",
-        "require": "./dist/vestjs-runtime.cjs",
-        "types": "./types/vestjs-runtime.d.cts"
+        "require": "./dist/vestjs-runtime.cjs"
       },
       "./package.json": "./package.json",
       "./Isolate-DDQqod3l": {
-        "default": "./types/Isolate-DDQqod3l.d.mts",
-        "types": "./types/Isolate-DDQqod3l.d.mts"
+        "types": "./types/Isolate-DDQqod3l.d.mts",
+        "default": "./types/Isolate-DDQqod3l.d.mts"
       },
       "./Isolate-DI-lLdpw": {
-        "default": "./types/Isolate-DI-lLdpw.d.cts",
-        "types": "./types/Isolate-DI-lLdpw.d.cts"
+        "types": "./types/Isolate-DI-lLdpw.d.cts",
+        "default": "./types/Isolate-DI-lLdpw.d.cts"
       },
       "./IsolateSerializer-CrpXnofj": {
-        "default": "./types/IsolateSerializer-CrpXnofj.d.mts",
-        "types": "./types/IsolateSerializer-CrpXnofj.d.mts"
+        "types": "./types/IsolateSerializer-CrpXnofj.d.mts",
+        "default": "./types/IsolateSerializer-CrpXnofj.d.mts"
       },
       "./IsolateSerializer-Dqh6viJr": {
-        "default": "./types/IsolateSerializer-Dqh6viJr.d.cts",
-        "types": "./types/IsolateSerializer-Dqh6viJr.d.cts"
+        "types": "./types/IsolateSerializer-Dqh6viJr.d.cts",
+        "default": "./types/IsolateSerializer-Dqh6viJr.d.cts"
       },
       "./vestjs-runtime.d.ts": {
-        "default": "./types/vestjs-runtime.d.ts",
-        "types": "./types/vestjs-runtime.d.cts"
+        "types": "./types/vestjs-runtime.d.cts",
+        "default": "./types/vestjs-runtime.d.ts"
       },
       "./types/*": {
-        "default": "./types/*",
-        "types": "./types/vestjs-runtime.d.cts"
+        "types": "./types/vestjs-runtime.d.cts",
+        "default": "./types/*"
       },
       "./dist/*": {
-        "default": "./dist/*",
-        "types": "./types/vestjs-runtime.d.cts"
+        "types": "./types/vestjs-runtime.d.cts",
+        "default": "./dist/*"
       }
     }
   }

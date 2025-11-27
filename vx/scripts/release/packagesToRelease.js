@@ -1,9 +1,8 @@
-import * as packageNames from '../../packageNames.js';
-
 import { buildDepsTree, sortDependencies } from './depsTree.js';
 import listAllChangedPackages from './github/listAllChangedPackages.js';
 
 import * as logger from 'vx/logger.js';
+import * as packageNames from 'vx/packageNames.js';
 
 // Gets all the packages that need to be released in the correct order
 // eslint-disable-next-line complexity

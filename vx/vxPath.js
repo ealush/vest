@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-import * as opts from './opts.js';
-import { usePackage } from './vxContext.js';
+import * as opts from 'vx/opts.js';
+import { usePackage } from 'vx/vxContext.js';
 
 const vxPath = {};
 

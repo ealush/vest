@@ -1,9 +1,9 @@
 import fs from 'fs';
 
 import packageExports from '../packageExports.js';
-import { packageNames } from '../packageNames.js';
 
 import * as logger from 'vx/logger.js';
+import { packageNames } from 'vx/packageNames.js';
 import vxPath from 'vx/vxPath.js';
 
 /**

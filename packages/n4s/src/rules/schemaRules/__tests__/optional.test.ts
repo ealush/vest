@@ -1,5 +1,6 @@
-import { enforce } from '../../../n4s';
 import { describe, it, expect } from 'vitest';
+
+import { enforce } from '../../../n4s';
 
 const enforceAny = enforce as any;
 
@@ -32,6 +33,7 @@ describe('optional', () => {
 
   it('should fail for an invalid value', () => {
     const rule = enforce.optional(enforce.isNumber());
+    // @ts-expect-error - testing runtime failure with invalid type
     const result = rule.run('not a number');
     expect(result.pass).toBe(false);
   });

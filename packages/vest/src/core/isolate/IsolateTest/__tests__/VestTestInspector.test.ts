@@ -1,15 +1,17 @@
-import { TIsolateTest } from '../IsolateTest';
-import { TestStatus } from '../../../StateMachines/IsolateTestStateMachine';
-import { VestTest } from '../VestTest';
-import { mockIsolateTest } from '../../../../testUtils/vestMocks';
 import { describe, it, expect, beforeEach } from 'vitest';
+
+import { TFieldName } from '../../../../suiteResult/SuiteResultTypes';
+import { mockIsolateTest } from '../../../../testUtils/vestMocks';
+import { TestStatus } from '../../../StateMachines/IsolateTestStateMachine';
+import { TIsolateTest } from '../IsolateTest';
+import { VestTest } from '../VestTest';
 
 describe('VestTest', () => {
   let testObject: TIsolateTest;
 
   beforeEach(() => {
     testObject = mockIsolateTest({
-      fieldName: 'field_name',
+      fieldName: 'field_name' as TFieldName,
     });
   });
   describe('warns', () => {
@@ -165,17 +167,17 @@ describe('VestTest', () => {
       VestTest.fail(testObject);
       expect(VestTest.isTested(testObject)).toBe(true);
 
-      testObject = mockIsolateTest({ fieldName: 'f' });
+      testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
       VestTest.warn(testObject);
       VestTest.fail(testObject);
       expect(VestTest.isTested(testObject)).toBe(true);
 
-      testObject = mockIsolateTest({ fieldName: 'f' });
+      testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
       VestTest.pass(testObject);
 
       expect(VestTest.isTested(testObject)).toBe(true);
 
-      testObject = mockIsolateTest({ fieldName: 'f' });
+      testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
       VestTest.warn(testObject);
       VestTest.pass(testObject);
       expect(VestTest.isTested(testObject)).toBe(true);
@@ -183,19 +185,19 @@ describe('VestTest', () => {
 
     it('Should return false when the test is untested', () => {
       expect(VestTest.isTested(testObject)).toBe(false);
-      testObject = mockIsolateTest({ fieldName: 'f' });
+      testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
       VestTest.omit(testObject);
       expect(VestTest.isTested(testObject)).toBe(false);
 
-      testObject = mockIsolateTest({ fieldName: 'f' });
+      testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
       VestTest.skip(testObject);
       expect(VestTest.isTested(testObject)).toBe(false);
 
-      testObject = mockIsolateTest({ fieldName: 'f' });
+      testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
       VestTest.setPending(testObject);
       expect(VestTest.isTested(testObject)).toBe(false);
 
-      testObject = mockIsolateTest({ fieldName: 'f' });
+      testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
       VestTest.cancel(testObject);
       expect(VestTest.isTested(testObject)).toBe(false);
     });
@@ -209,7 +211,7 @@ describe('VestTest', () => {
 
     it('Should return true for an untetsted test', () => {
       expect(VestTest.awaitsResolution(testObject)).toBe(true);
-      testObject = mockIsolateTest({ fieldName: 'f' });
+      testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
     });
 
     it('Should return true for a pending test', () => {
@@ -220,7 +222,7 @@ describe('VestTest', () => {
     it('Should return false for a tested test', () => {
       VestTest.fail(testObject);
       expect(VestTest.awaitsResolution(testObject)).toBe(false);
-      testObject = mockIsolateTest({ fieldName: 'f' });
+      testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
       VestTest.pass(testObject);
       expect(VestTest.awaitsResolution(testObject)).toBe(false);
     });
@@ -240,12 +242,12 @@ describe('VestTest', () => {
     it('Should return true when test status equals the provided status', () => {
       VestTest.fail(testObject);
       expect(VestTest.statusEquals(testObject, TestStatus.FAILED)).toBe(true);
-      testObject = mockIsolateTest({ fieldName: 'f' });
+      testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
       VestTest.warn(testObject);
       VestTest.fail(testObject);
       expect(VestTest.statusEquals(testObject, TestStatus.WARNING)).toBe(true);
 
-      testObject = mockIsolateTest({ fieldName: 'f' });
+      testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
       VestTest.pass(testObject);
       expect(VestTest.statusEquals(testObject, TestStatus.PASSING)).toBe(true);
     });

@@ -1,5 +1,7 @@
-import { StateMachine } from '../SimpleStateMachine';
 import { describe, test, it, expect } from 'vitest';
+
+import { unwrap, isFailure, isSuccess } from '../Result';
+import { StateMachine } from '../SimpleStateMachine';
 
 describe('SimpleStateMachine', () => {
   test('sample', () => {
@@ -20,15 +22,15 @@ describe('SimpleStateMachine', () => {
 
     expect(machine.getState()).toBe('idle');
 
-    machine.transition('click');
+    unwrap(machine.transition('click'));
 
     expect(machine.getState()).toBe('loading');
 
-    machine.transition('success');
+    unwrap(machine.transition('success'));
 
     expect(machine.getState()).toBe('success');
 
-    machine.transition('click');
+    expect(isFailure(machine.transition('click'))).toBe(true);
 
     expect(machine.getState()).toBe('success');
   });
@@ -51,15 +53,15 @@ describe('SimpleStateMachine', () => {
 
     expect(machine.getState()).toBe('idle');
 
-    machine.transition('click');
+    expect(isFailure(machine.transition('click'))).toBe(true);
 
     expect(machine.getState()).toBe('idle');
 
-    machine.transition('success');
+    expect(isFailure(machine.transition('success'))).toBe(true);
 
     expect(machine.getState()).toBe('idle');
 
-    machine.transition('click');
+    expect(isFailure(machine.transition('click'))).toBe(true);
 
     expect(machine.getState()).toBe('idle');
   });
@@ -83,7 +85,7 @@ describe('SimpleStateMachine', () => {
     test('should not transition if payload is falsy', () => {
       expect(machine.getState()).toBe('idle');
 
-      machine.transition('click', 0);
+      expect(isFailure(machine.transition('click', 0))).toBe(true);
 
       expect(machine.getState()).toBe('idle');
     });
@@ -91,7 +93,7 @@ describe('SimpleStateMachine', () => {
     test('should transition if payload is truthy', () => {
       expect(machine.getState()).toBe('idle');
 
-      machine.transition('click', 1);
+      unwrap(machine.transition('click', 1));
 
       expect(machine.getState()).toBe('loading');
     });
@@ -115,11 +117,11 @@ describe('SimpleStateMachine', () => {
       });
       expect(machine.getState()).toBe('idle');
 
-      machine.transition('click');
+      unwrap(machine.transition('click'));
 
       expect(machine.getState()).toBe('loading');
 
-      machine.transition('click');
+      expect(isFailure(machine.transition('click'))).toBe(true);
 
       expect(machine.getState()).toBe('loading');
     });
@@ -141,11 +143,12 @@ describe('SimpleStateMachine', () => {
       });
       expect(machine.getState()).toBe('idle');
 
-      machine.transition('click');
+      unwrap(machine.transition('click'));
 
       expect(machine.getState()).toBe('loading');
 
-      machine.transition('finish');
+      // @ts-expect-error - Testing invalid transition
+      expect(isFailure(machine.transition('finish'))).toBe(true);
 
       expect(machine.getState()).toBe('loading');
     });
@@ -172,11 +175,11 @@ describe('SimpleStateMachine', () => {
       });
       expect(machine.getState()).toBe('idle');
 
-      machine.transition('click');
+      unwrap(machine.transition('click'));
 
       expect(machine.getState()).toBe('loading');
 
-      machine.transition('terminate');
+      unwrap(machine.transition('terminate'));
 
       expect(machine.getState()).toBe('x_x');
     });
@@ -184,7 +187,7 @@ describe('SimpleStateMachine', () => {
 
   describe('transition output value', () => {
     describe('when transition is valid', () => {
-      it('Should return the new state', () => {
+      it('Should return Success', () => {
         const machine = StateMachine({
           initial: 'idle',
           states: {
@@ -201,35 +204,29 @@ describe('SimpleStateMachine', () => {
         });
         expect(machine.getState()).toBe('idle');
 
-        expect(machine.transition('click')).toBe('loading');
+        expect(isSuccess(machine.transition('click'))).toBe(true);
       });
     });
 
     describe('When transitioning to the same state', () => {
-      it('Should return the same state', () => {
+      it('Should return Success if transition is valid', () => {
         const machine = StateMachine({
           initial: 'idle',
           states: {
-            error: {},
             idle: {
-              click: 'loading',
+              click: 'idle',
             },
-            loading: {
-              success: 'success',
-              error: 'error',
-            },
-            success: {},
           },
         });
         expect(machine.getState()).toBe('idle');
 
-        expect(machine.transition('click')).toBe('loading');
-        expect(machine.transition('click')).toBe('loading');
+        expect(isSuccess(machine.transition('click'))).toBe(true);
+        expect(machine.getState()).toBe('idle');
       });
     });
 
     describe('When target state does not exist', () => {
-      it('Should return the previous state', () => {
+      it('Should return Failure', () => {
         const machine = StateMachine({
           initial: 'idle',
           states: {
@@ -246,13 +243,14 @@ describe('SimpleStateMachine', () => {
         });
         expect(machine.getState()).toBe('idle');
 
-        expect(machine.transition('click')).toBe('loading');
-        expect(machine.transition('finish')).toBe('loading');
+        unwrap(machine.transition('click'));
+        // @ts-expect-error - Testing invalid transition
+        expect(isFailure(machine.transition('finish'))).toBe(true);
       });
     });
 
     describe('When transition is invalid', () => {
-      it('Should return the previous state', () => {
+      it('Should return Failure', () => {
         const machine = StateMachine({
           initial: 'idle',
           states: {
@@ -269,13 +267,13 @@ describe('SimpleStateMachine', () => {
         });
         expect(machine.getState()).toBe('idle');
 
-        expect(machine.transition('click')).toBe('loading');
-        expect(machine.transition('click')).toBe('loading');
+        unwrap(machine.transition('click'));
+        expect(isFailure(machine.transition('click'))).toBe(true);
       });
     });
 
     describe('When the transition is disallowed by a conditional', () => {
-      it('Should return the previous state', () => {
+      it('Should return Failure', () => {
         const machine = StateMachine({
           initial: 'idle',
           states: {
@@ -292,7 +290,7 @@ describe('SimpleStateMachine', () => {
         });
         expect(machine.getState()).toBe('idle');
 
-        expect(machine.transition('click')).toBe('idle');
+        expect(isFailure(machine.transition('click'))).toBe(true);
       });
     });
   });
@@ -356,6 +354,7 @@ describe('SimpleStateMachine', () => {
           },
         });
         expect(machine.getState()).toBe('idle');
+        // @ts-expect-error - Testing invalid transition
         expect(machine.staticTransition('idle', 'finish')).toBe('idle');
       });
     });

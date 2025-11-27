@@ -10,7 +10,7 @@ describe('Schema Runtime Validation', () => {
     tags: enforce.isArray(),
   });
 
-  const suite = create((data = {}) => {
+  const suite = create(data => {
     test('name', 'Name must be present', () => {
       enforce(data.name).isNotBlank();
     });
@@ -60,6 +60,7 @@ describe('Schema Runtime Validation', () => {
       );
 
       expect(partialSuite.run({}).hasErrors()).toBe(false);
+      // @ts-expect-error - Invalid data
       expect(partialSuite.run({ optional: 123 }).hasErrors()).toBe(true);
     });
 

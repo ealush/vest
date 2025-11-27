@@ -1,7 +1,7 @@
 /**
  * TypeScript Type Enforcement Examples
  *
- * This file demonstrates that TypeScript properly enforces types
+ * This file demonstrates
  * when using schemas with createSuite. Uncomment the error examples
  * to see TypeScript compilation errors.
  */
@@ -133,8 +133,8 @@ const schema = enforce.shape({
 });
 
 const suite = create(data => {
-  // @ts-expect-error: data should be strictly typed
-  data.nonexistent;
+  // @ts-expect-error - nonexistent property
+  void data.nonexistent;
   test('name', () => {
     enforce(data.name).isNotEmpty();
   });
@@ -156,7 +156,7 @@ suite.run({ number: 'john' });
 suite.run({ name: 'John', age: 42 });
 
 // ✅ Should allow generic typing when no schema
-const suite2 = create<{ foo: string; bar: number }>(data => {
+const suite2 = create((data: { foo: string; bar: number }) => {
   test('foo', () => {
     enforce(data.foo).isNotEmpty();
   });

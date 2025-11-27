@@ -1,7 +1,14 @@
-import { hasOwnProperty, invariant, isNullish, isPositive } from 'vest-utils';
+import {
+  hasOwnProperty,
+  invariant,
+  isNullish,
+  isPositive,
+  makeBrand,
+} from 'vest-utils';
 
 import { ErrorStrings } from '../errors/ErrorStrings';
 import {
+  SuiteResult,
   SuiteSummary,
   TFieldName,
   TGroupName,
@@ -9,7 +16,7 @@ import {
 import { suiteSelectors } from '../vest';
 
 export function parse<F extends TFieldName, G extends TGroupName>(
-  summary: SuiteSummary<F, G>,
+  summary: SuiteSummary<F, G> | SuiteResult<F, G>,
 ): ParsedVestObject<F> {
   invariant(
     summary && hasOwnProperty(summary, 'valid'),
@@ -32,36 +39,45 @@ export function parse<F extends TFieldName, G extends TGroupName>(
   return selectors;
 
   // Booleans
-  function isTested(fieldName?: F): boolean {
+  function isTested(fieldName?: F | string): boolean {
     if (isNullish(fieldName)) {
       return isPositive(summary.testCount);
     }
 
-    if (hasOwnProperty(testedStorage, fieldName)) {
-      return testedStorage[fieldName];
+    const safeFieldName = makeBrand<TFieldName>(fieldName);
+
+    if (hasOwnProperty(testedStorage, safeFieldName)) {
+      return testedStorage[safeFieldName];
     }
 
-    addFieldToTestedStorage(fieldName);
+    addFieldToTestedStorage(safeFieldName);
 
-    return selectors.tested(fieldName);
+    return selectors.tested(safeFieldName as F);
   }
 
-  function addFieldToTestedStorage(fieldName: F): void {
+  function addFieldToTestedStorage(fieldName: TFieldName): void {
     testedStorage[fieldName] =
       hasOwnProperty(summary.tests, fieldName) &&
       isPositive(summary.tests[fieldName].testCount);
   }
 
-  function isUntested(fieldName?: F): boolean {
-    return !(isPositive(summary.testCount) && selectors.tested(fieldName));
+  function isUntested(fieldName?: F | string): boolean {
+    const safeFieldName = fieldName
+      ? makeBrand<TFieldName>(fieldName)
+      : undefined;
+
+    return !(
+      isPositive(summary.testCount) &&
+      selectors.tested(safeFieldName as F | undefined)
+    );
   }
 }
 
 export type ParsedVestObject<F extends TFieldName> = {
-  valid(fieldName?: F): boolean;
-  tested(fieldName?: F): boolean;
-  invalid(fieldName?: F): boolean;
-  untested(fieldName?: F): boolean;
-  warning(fieldName?: F): boolean;
-  pending(fieldName?: F): boolean;
+  valid(fieldName?: F | string): boolean;
+  tested(fieldName?: F | string): boolean;
+  invalid(fieldName?: F | string): boolean;
+  untested(fieldName?: F | string): boolean;
+  warning(fieldName?: F | string): boolean;
+  pending(fieldName?: F | string): boolean;
 };

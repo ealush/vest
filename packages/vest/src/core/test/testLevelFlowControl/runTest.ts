@@ -1,4 +1,11 @@
-import { isPromise, isStringValue, text, deferThrow } from 'vest-utils';
+import {
+  isPromise,
+  isStringValue,
+  text,
+  deferThrow,
+  makeResult,
+  Result,
+} from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
 import { ErrorStrings } from '../../../errors/ErrorStrings';
@@ -14,7 +21,7 @@ export function useAttemptRunTest(testObject: TIsolateTest) {
   useVerifyTestRun(testObject);
 
   if (VestTest.isUntested(testObject)) {
-    return useRunTest(testObject);
+    return useRunTest(testObject).unwrap();
   }
 
   if (!VestTest.isNonActionable(testObject)) {
@@ -29,37 +36,41 @@ export function useAttemptRunTest(testObject: TIsolateTest) {
   }
 }
 
-function runSyncTest(testObject: TIsolateTest): TestResult {
-  return SuiteContext.run({ currentTest: testObject }, () => {
-    let result: TestResult;
+function runSyncTest(testObject: TIsolateTest): Result<TestResult> {
+  return makeResult.Ok(
+    SuiteContext.run({ currentTest: testObject }, () => {
+      let result: TestResult;
 
-    const { message, testFn } = VestTest.getData(testObject);
+      const { message, testFn } = VestTest.getData(testObject);
 
-    try {
-      result = testFn({ signal: testObject.abortController.signal });
-    } catch (error) {
-      if (shouldUseErrorAsMessage(message, error)) {
-        VestTest.getData(testObject).message = error;
+      try {
+        result = testFn({ signal: testObject.abortController.signal });
+      } catch (error) {
+        if (shouldUseErrorAsMessage(message, error).unwrap()) {
+          VestTest.getData(testObject).message = error as string;
+        }
+        result = false;
       }
-      result = false;
-    }
 
-    if (result === false) {
-      VestTest.fail(testObject);
-    }
+      if (result === false) {
+        VestTest.fail(testObject);
+      }
 
-    return result;
-  });
+      return result;
+    }),
+  );
 }
 
 /**
  * runs test, if async - adds to pending array
  */
-function useRunTest(testObject: TIsolateTest): Promise<void> | undefined {
+function useRunTest(
+  testObject: TIsolateTest,
+): Result<Promise<void> | undefined> {
   // Run test callback.
   // If a promise is returned, set as async and
   // Move to pending list.
-  const result = runSyncTest(testObject);
+  const result = runSyncTest(testObject).unwrap();
   try {
     // try catch for safe property access
     // in case object is an enforce chain
@@ -68,7 +79,8 @@ function useRunTest(testObject: TIsolateTest): Promise<void> | undefined {
       return useRunAsyncTest(testObject);
     }
 
-    onTestCompleted(testObject);
+    onTestCompleted(testObject).unwrap();
+    return makeResult.Ok(undefined);
   } catch (e) {
     // Probably unreachable. If we get here, it means that
     // something was really wrong and should be reported.
@@ -85,14 +97,16 @@ function useRunTest(testObject: TIsolateTest): Promise<void> | undefined {
 /**
  * Runs async test.
  */
-function useRunAsyncTest(testObject: TIsolateTest): Promise<void> | undefined {
+function useRunAsyncTest(
+  testObject: TIsolateTest,
+): Result<Promise<void> | undefined> {
   const { asyncTest, message } = VestTest.getData(testObject);
 
-  if (!isPromise(asyncTest)) return;
+  if (!isPromise(asyncTest)) return makeResult.Ok(undefined);
   // VestTest.setPending(testObject);
 
   const done = VestRuntime.persist(() => {
-    onTestCompleted(testObject);
+    onTestCompleted(testObject).unwrap();
   });
   const fail = VestRuntime.persist((rejectionMessage?: string) => {
     if (VestTest.isCanceled(testObject)) {
@@ -107,11 +121,12 @@ function useRunAsyncTest(testObject: TIsolateTest): Promise<void> | undefined {
     done();
   });
 
-  return asyncTest.then(done, fail);
+  return makeResult.Ok(asyncTest.then(done, fail));
 }
 
-function onTestCompleted(testObject: TIsolateTest) {
+function onTestCompleted(testObject: TIsolateTest): Result<void> {
   // Attempts passing if the test is not already failed.
   // or is not canceled/omitted.
   VestTest.pass(testObject);
+  return makeResult.Ok(undefined);
 }

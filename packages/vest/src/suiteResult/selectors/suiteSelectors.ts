@@ -1,4 +1,12 @@
-import { Maybe, greaterThan, isPositive } from 'vest-utils';
+import {
+  Maybe,
+  greaterThan,
+  isPositive,
+  isStringValue,
+  makeBrand,
+  makeResult,
+  Result,
+} from 'vest-utils';
 
 import matchingFieldName from '../../core/test/helpers/matchingFieldName';
 import { Severity, SeverityCount } from '../Severity';
@@ -14,6 +22,9 @@ import {
 import { SummaryFailure } from '../SummaryFailure';
 
 import { gatherFailures } from './collectFailures';
+
+type InputFieldName<F extends TFieldName> = F;
+type InputGroupName<G extends TGroupName> = G;
 
 export function bindSuiteSelectors<
   F extends TFieldName,
@@ -84,15 +95,40 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
 
   return selectors;
 
+  function asFieldName(fieldName?: InputFieldName<F>): F | undefined {
+    if (isStringValue(fieldName)) {
+      return makeBrand<TFieldName>(fieldName) as F;
+    }
+
+    return fieldName;
+  }
+
+  function asGroupName(groupName: InputGroupName<G>): G {
+    if (isStringValue(groupName)) {
+      return makeBrand<TGroupName>(groupName) as G;
+    }
+
+    return groupName;
+  }
+
   // Booleans
 
-  function isValid(fieldName?: F): boolean {
-    return Boolean(fieldName ? summary.tests[fieldName]?.valid : summary.valid);
+  function isValid(fieldName?: InputFieldName<F>): boolean {
+    const targetFieldName = asFieldName(fieldName);
+
+    return Boolean(
+      targetFieldName ? summary.tests[targetFieldName]?.valid : summary.valid,
+    );
   }
 
   // eslint-disable-next-line max-statements, complexity
-  function isValidByGroup(groupName: G, fieldName?: F): boolean {
-    const group = summary.groups[groupName];
+  function isValidByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): boolean {
+    const safeGroupName = asGroupName(groupName);
+    const safeFieldName = asFieldName(fieldName);
+    const group = summary.groups[safeGroupName];
 
     // If the group doesn't exist, it's vacuously valid (can't fail tests that don't exist)
     if (!group) {
@@ -100,8 +136,8 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     }
 
     // If checking a specific field within the group
-    if (fieldName) {
-      const fieldSummary = group[fieldName];
+    if (safeFieldName) {
+      const fieldSummary = group[safeFieldName];
       // If field doesn't exist in group, it's invalid (test was never run)
       if (!fieldSummary) {
         return false;
@@ -121,122 +157,204 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     return hasAnyFields;
   }
 
-  function hasErrors(fieldName?: F): boolean {
-    return hasFailures(summary, SeverityCount.ERROR_COUNT, fieldName);
+  function hasErrors(fieldName?: InputFieldName<F>): boolean {
+    return hasFailures(
+      summary,
+      SeverityCount.ERROR_COUNT,
+      asFieldName(fieldName),
+    ).unwrap();
   }
 
-  function hasWarnings(fieldName?: F): boolean {
-    return hasFailures(summary, SeverityCount.WARN_COUNT, fieldName);
+  function hasWarnings(fieldName?: InputFieldName<F>): boolean {
+    return hasFailures(
+      summary,
+      SeverityCount.WARN_COUNT,
+      asFieldName(fieldName),
+    ).unwrap();
   }
 
-  function isTested(fieldName: F): boolean {
-    return isPositive(summary.tests[fieldName]?.testCount);
+  function isTested(fieldName: InputFieldName<F>): boolean {
+    const safeFieldName = asFieldName(fieldName);
+
+    return safeFieldName
+      ? isPositive(summary.tests[safeFieldName]?.testCount)
+      : false;
   }
 
-  function hasWarningsByGroup<G extends TGroupName>(
-    groupName: G,
-    fieldName?: F,
+  function hasWarningsByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
   ): boolean {
     return hasFailuresByGroup(
       summary,
       SeverityCount.WARN_COUNT,
-      groupName,
-      fieldName,
-    );
+      asGroupName(groupName),
+      asFieldName(fieldName),
+    ).unwrap();
   }
 
-  function hasErrorsByGroup<G extends TGroupName>(
-    groupName: G,
-    fieldName?: F,
+  function hasErrorsByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
   ): boolean {
     return hasFailuresByGroup(
       summary,
       SeverityCount.ERROR_COUNT,
-      groupName,
-      fieldName,
-    );
+      asGroupName(groupName),
+      asFieldName(fieldName),
+    ).unwrap();
   }
 
   // Responses
 
   function getWarnings(): FailureMessages;
-  function getWarnings(fieldName: F): string[];
-  function getWarnings(fieldName?: F): GetFailuresResponse {
-    return getFailures(summary, Severity.WARNINGS, fieldName);
+  function getWarnings(fieldName: InputFieldName<F>): string[];
+  function getWarnings(fieldName?: InputFieldName<F>): GetFailuresResponse {
+    return getFailures(
+      summary,
+      Severity.WARNINGS,
+      asFieldName(fieldName),
+    ).unwrap();
   }
 
   function getWarning(): Maybe<SummaryFailure<F, G>>;
-  function getWarning(fieldName: F): Maybe<string>;
-  function getWarning(fieldName?: F): Maybe<SummaryFailure<F, G> | string> {
-    return getFailure<F, G>(Severity.WARNINGS, summary, fieldName as F);
+  function getWarning(fieldName: InputFieldName<F>): Maybe<string>;
+  function getWarning(
+    fieldName?: InputFieldName<F>,
+  ): Maybe<SummaryFailure<F, G> | string> {
+    const safeFieldName = asFieldName(fieldName);
+
+    return (
+      safeFieldName
+        ? getFailure<F, G>(Severity.WARNINGS, summary, safeFieldName)
+        : getFailure<F, G>(Severity.WARNINGS, summary)
+    ).unwrap();
   }
 
   function getErrors(): FailureMessages;
-  function getErrors(fieldName: F): string[];
-  function getErrors(fieldName?: F): GetFailuresResponse {
-    return getFailures(summary, Severity.ERRORS, fieldName);
+  function getErrors(fieldName: InputFieldName<F>): string[];
+  function getErrors(fieldName?: InputFieldName<F>): GetFailuresResponse {
+    return getFailures(
+      summary,
+      Severity.ERRORS,
+      asFieldName(fieldName),
+    ).unwrap();
   }
 
   function getError(): Maybe<SummaryFailure<F, G>>;
-  function getError(fieldName: F): Maybe<string>;
-  function getError(fieldName?: F): Maybe<SummaryFailure<F, G> | string> {
-    return getFailure<F, G>(Severity.ERRORS, summary, fieldName as F);
+  function getError(fieldName: InputFieldName<F>): Maybe<string>;
+  function getError(
+    fieldName?: InputFieldName<F>,
+  ): Maybe<SummaryFailure<F, G> | string> {
+    const safeFieldName = asFieldName(fieldName);
+
+    return (
+      safeFieldName
+        ? getFailure<F, G>(Severity.ERRORS, summary, safeFieldName)
+        : getFailure<F, G>(Severity.ERRORS, summary)
+    ).unwrap();
   }
 
-  function getErrorsByGroup(groupName: G): FailureMessages;
-  function getErrorsByGroup(groupName: G, fieldName: F): string[];
-  function getErrorsByGroup(groupName: G, fieldName?: F): GetFailuresResponse {
-    return getFailuresByGroup(summary, Severity.ERRORS, groupName, fieldName);
+  function getErrorsByGroup(groupName: InputGroupName<G>): FailureMessages;
+  function getErrorsByGroup(
+    groupName: InputGroupName<G>,
+    fieldName: InputFieldName<F>,
+  ): string[];
+  function getErrorsByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): GetFailuresResponse {
+    return getFailuresByGroup(
+      summary,
+      Severity.ERRORS,
+      asGroupName(groupName),
+      asFieldName(fieldName),
+    ).unwrap();
   }
 
-  function getMessage(fieldName: F): Maybe<string> {
+  function getMessage(fieldName: InputFieldName<F>): Maybe<string> {
     return getError(fieldName) || getWarning(fieldName);
   }
 
-  function getWarningsByGroup(groupName: G): FailureMessages;
-  function getWarningsByGroup(groupName: G, fieldName: F): string[];
+  function getWarningsByGroup(groupName: InputGroupName<G>): FailureMessages;
   function getWarningsByGroup(
-    groupName: G,
-    fieldName?: F,
+    groupName: InputGroupName<G>,
+    fieldName: InputFieldName<F>,
+  ): string[];
+  function getWarningsByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
   ): GetFailuresResponse {
-    return getFailuresByGroup(summary, Severity.WARNINGS, groupName, fieldName);
+    return getFailuresByGroup(
+      summary,
+      Severity.WARNINGS,
+      asGroupName(groupName),
+      asFieldName(fieldName),
+    ).unwrap();
   }
 
-  function isPending(fieldName?: F): boolean {
-    return fieldName
-      ? greaterThan(summary.tests[fieldName]?.pendingCount, 0)
+  function isPending(fieldName?: InputFieldName<F>): boolean {
+    const safeFieldName = asFieldName(fieldName);
+
+    return safeFieldName
+      ? greaterThan(summary.tests[safeFieldName]?.pendingCount, 0)
       : greaterThan(summary.pendingCount, 0);
   }
 }
 
 export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
   getWarning(): SummaryFailure<F, G> | undefined;
-  getWarning(fieldName: F): string | undefined;
-  getWarning(fieldName?: F): SummaryFailure<F, G> | string | undefined;
+  getWarning(fieldName: InputFieldName<F>): string | undefined;
+  getWarning(
+    fieldName?: InputFieldName<F>,
+  ): SummaryFailure<F, G> | string | undefined;
   getError(): SummaryFailure<F, G> | undefined;
-  getError(fieldName: F): string | undefined;
-  getError(fieldName?: F): SummaryFailure<F, G> | string | undefined;
-  getMessage(fieldName: F): string | undefined;
+  getError(fieldName: InputFieldName<F>): string | undefined;
+  getError(
+    fieldName?: InputFieldName<F>,
+  ): SummaryFailure<F, G> | string | undefined;
+  getMessage(fieldName: InputFieldName<F>): string | undefined;
   getErrors(): FailureMessages;
-  getErrors(fieldName: F): string[];
-  getErrors(fieldName?: F): string[] | FailureMessages;
+  getErrors(fieldName: InputFieldName<F>): string[];
+  getErrors(fieldName?: InputFieldName<F>): string[] | FailureMessages;
   getWarnings(): FailureMessages;
-  getWarnings(fieldName: F): string[];
-  getWarnings(fieldName?: F): string[] | FailureMessages;
-  getErrorsByGroup(groupName: G): FailureMessages;
-  getErrorsByGroup(groupName: G, fieldName: F): string[];
-  getErrorsByGroup(groupName: G, fieldName?: F): string[] | FailureMessages;
-  getWarningsByGroup(groupName: G): FailureMessages;
-  getWarningsByGroup(groupName: G, fieldName: F): string[];
-  getWarningsByGroup(groupName: G, fieldName?: F): string[] | FailureMessages;
-  hasErrors(fieldName?: F): boolean;
-  hasWarnings(fieldName?: F): boolean;
-  hasErrorsByGroup(groupName: G, fieldName?: F): boolean;
-  hasWarningsByGroup(groupName: G, fieldName?: F): boolean;
-  isTested(fieldName: F): boolean;
-  isPending(fieldName?: F): boolean;
-  isValid(fieldName?: F): boolean;
-  isValidByGroup(groupName: G, fieldName?: F): boolean;
+  getWarnings(fieldName: InputFieldName<F>): string[];
+  getWarnings(fieldName?: InputFieldName<F>): string[] | FailureMessages;
+  getErrorsByGroup(groupName: InputGroupName<G>): FailureMessages;
+  getErrorsByGroup(
+    groupName: InputGroupName<G>,
+    fieldName: InputFieldName<F>,
+  ): string[];
+  getErrorsByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): string[] | FailureMessages;
+  getWarningsByGroup(groupName: InputGroupName<G>): FailureMessages;
+  getWarningsByGroup(
+    groupName: InputGroupName<G>,
+    fieldName: InputFieldName<F>,
+  ): string[];
+  getWarningsByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): string[] | FailureMessages;
+  hasErrors(fieldName?: InputFieldName<F>): boolean;
+  hasWarnings(fieldName?: InputFieldName<F>): boolean;
+  hasErrorsByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): boolean;
+  hasWarningsByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): boolean;
+  isTested(fieldName: InputFieldName<F>): boolean;
+  isPending(fieldName?: InputFieldName<F>): boolean;
+  isValid(fieldName?: InputFieldName<F>): boolean;
+  isValidByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): boolean;
 }
 
 // Gathers all failures of a given severity
@@ -244,18 +362,18 @@ export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
 function getFailures<F extends TFieldName, G extends TGroupName>(
   summary: SuiteSummary<F, G>,
   severityKey: Severity,
-): FailureMessages;
+): Result<FailureMessages>;
 function getFailures<F extends TFieldName, G extends TGroupName>(
   summary: SuiteSummary<F, G>,
   severityKey: Severity,
   fieldName?: TFieldName,
-): string[];
+): Result<string[]>;
 function getFailures<F extends TFieldName, G extends TGroupName>(
   summary: SuiteSummary<F, G>,
   severityKey: Severity,
   fieldName?: TFieldName,
-): GetFailuresResponse {
-  return gatherFailures(summary.tests, severityKey, fieldName);
+): Result<GetFailuresResponse> {
+  return makeResult.Ok(gatherFailures(summary.tests, severityKey, fieldName));
 }
 
 // Gathers all failures of a given severity within a group
@@ -265,35 +383,37 @@ function getFailuresByGroup(
   severityKey: Severity,
   groupName: TGroupName,
   fieldName?: TFieldName,
-): GetFailuresResponse {
-  return gatherFailures(summary.groups[groupName], severityKey, fieldName);
+): Result<GetFailuresResponse> {
+  return makeResult.Ok(
+    gatherFailures(summary.groups[groupName], severityKey, fieldName),
+  );
 }
 
 // Checks if a there are any failures of a given severity within a group
 // If a fieldName is provided, it will only check for failures within that field
-function hasFailuresByGroup(
-  summary: SuiteSummary<TFieldName, TGroupName>,
+function hasFailuresByGroup<F extends TFieldName, G extends TGroupName>(
+  summary: SuiteSummary<F, G>,
   severityCount: SeverityCount,
-  groupName: TGroupName,
-  fieldName?: TFieldName,
-): boolean {
+  groupName: G,
+  fieldName?: F,
+): Result<boolean> {
   const group = summary.groups[groupName];
 
   if (!group) {
-    return false;
+    return makeResult.Ok(false);
   }
 
   if (fieldName) {
-    return isPositive(group[fieldName]?.[severityCount]);
+    return makeResult.Ok(isPositive(group[fieldName]?.[severityCount]));
   }
 
   for (const field in group) {
-    if (isPositive(group[field]?.[severityCount])) {
-      return true;
+    if (isPositive(group[field as unknown as F]?.[severityCount])) {
+      return makeResult.Ok(true);
     }
   }
 
-  return false;
+  return makeResult.Ok(false);
 }
 
 // Checks if there are any failures of a given severity
@@ -302,36 +422,37 @@ function hasFailures(
   summary: SuiteSummary<TFieldName, TGroupName>,
   countKey: SeverityCount,
   fieldName?: TFieldName,
-): boolean {
+): Result<boolean> {
   const failureCount = fieldName
     ? summary.tests[fieldName]?.[countKey]
     : summary[countKey] || 0;
 
-  return isPositive(failureCount);
+  return makeResult.Ok(isPositive(failureCount));
 }
 
 function getFailure<F extends TFieldName, G extends TGroupName>(
   severity: Severity,
   summary: SuiteSummary<F, G>,
-): Maybe<SummaryFailure<F, G>>;
+): Result<Maybe<SummaryFailure<F, G>>>;
 function getFailure<F extends TFieldName, G extends TGroupName>(
   severity: Severity,
   summary: SuiteSummary<F, G>,
   fieldName: F,
-): Maybe<string>;
+): Result<Maybe<string>>;
 function getFailure<F extends TFieldName, G extends TGroupName>(
   severity: Severity,
   summary: SuiteSummary<F, G>,
   fieldName?: F,
-): Maybe<SummaryFailure<F, G> | string> {
+): Result<Maybe<SummaryFailure<F, G> | string>> {
   const summaryKey = summary[severity];
 
   if (!fieldName) {
-    return summaryKey[0];
+    return makeResult.Ok(summaryKey[0]);
   }
 
-  return summaryKey.find(
-    (summaryFailure: SummaryFailure<TFieldName, TGroupName>) =>
+  return makeResult.Ok(
+    summaryKey.find((summaryFailure: SummaryFailure<TFieldName, TGroupName>) =>
       matchingFieldName(summaryFailure, fieldName),
-  )?.message;
+    )?.message,
+  );
 }

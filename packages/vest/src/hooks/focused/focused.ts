@@ -6,6 +6,7 @@ import {
   Nullable,
   isNotEmpty,
   isStringValue,
+  makeBrand,
 } from 'vest-utils';
 import { IsolateSelectors, TIsolate, Isolate } from 'vestjs-runtime';
 
@@ -14,7 +15,9 @@ import { TFieldName } from '../../suiteResult/SuiteResultTypes';
 
 import { FocusModes } from './FocusedKeys';
 
-export type FieldExclusion<F extends TFieldName> = Maybe<OneOrMoreOf<F>>;
+export type FieldExclusion<F extends string = TFieldName> = Maybe<
+  OneOrMoreOf<F>
+>;
 
 export type TIsolateFocused = TIsolate<IsolateFocusedPayload>;
 
@@ -26,11 +29,15 @@ type IsolateFocusedPayload = {
 
 export function IsolateFocused(
   focusMode: FocusModes,
-  match?: true | FieldExclusion<TFieldName>,
+  match?: true | FieldExclusion<string>,
 ): TIsolateFocused {
+  const matchedFields = asArray(match)
+    .filter(isStringValue)
+    .map(makeBrand<TFieldName>) as TFieldName[];
+
   return Isolate.create(VestIsolateType.Focused, noop, {
     focusMode,
-    match: asArray(match).filter(isStringValue),
+    match: matchedFields,
     matchAll: match === true,
   });
 }
@@ -66,7 +73,7 @@ export class FocusSelectors {
  *
  * only('username');
  */
-export function only(match: FieldExclusion<TFieldName> | false) {
+export function only(match: FieldExclusion<string> | false) {
   return IsolateFocused(FocusModes.ONLY, defaultMatch(match));
 }
 /**
@@ -76,11 +83,11 @@ export function only(match: FieldExclusion<TFieldName> | false) {
  *
  * skip('username');
  */
-export function skip(match: FieldExclusion<TFieldName> | boolean) {
+export function skip(match: FieldExclusion<string> | boolean) {
   return IsolateFocused(FocusModes.SKIP, defaultMatch(match));
 }
 
-function defaultMatch(match: FieldExclusion<TFieldName> | boolean) {
+function defaultMatch(match: FieldExclusion<string> | boolean) {
   return match === false ? [] : match;
 }
 

@@ -319,7 +319,7 @@ function useHasNonOptionalIncomplete(
  * - `create(() => {})` - invalid (you forgot to add tests)
  */
 function useNoMissingTests(
-  fieldName?: string,
+  fieldName?: TFieldName,
   groupName?: TGroupName,
 ): boolean {
   let hasAnyTestsForField = false;

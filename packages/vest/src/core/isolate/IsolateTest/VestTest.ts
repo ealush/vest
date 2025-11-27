@@ -48,7 +48,7 @@ export class VestTest extends VestIsolate {
     invariant(VestTest.is(isolate), ErrorStrings.EXPECTED_VEST_TEST);
   }
 
-  static cast<F extends TFieldName = string>(
+  static cast<F extends TFieldName = TFieldName>(
     isolate?: Maybe<TIsolate>,
   ): TIsolateTest<F> {
     VestTest.isX(isolate);

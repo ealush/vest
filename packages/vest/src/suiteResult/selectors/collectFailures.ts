@@ -1,4 +1,4 @@
-import { isPositive } from 'vest-utils';
+import { isPositive, makeResult, Result } from 'vest-utils';
 
 import { countKeyBySeverity, Severity } from '../Severity';
 import {
@@ -15,34 +15,36 @@ export function gatherFailures(
   severityKey: Severity,
   fieldName?: TFieldName,
 ): string[] | FailureMessages {
-  return fieldName
-    ? getByFieldName(testGroup, severityKey, fieldName)
-    : collectAll(testGroup, severityKey);
+  return (
+    fieldName
+      ? getByFieldName(testGroup, severityKey, fieldName)
+      : collectAll(testGroup, severityKey)
+  ).unwrap();
 }
 
 function getByFieldName(
   testGroup: TestsContainer<TFieldName, TGroupName>,
   severityKey: Severity,
   fieldName: TFieldName,
-): string[] {
-  return testGroup?.[fieldName]?.[severityKey] || [];
+): Result<string[]> {
+  return makeResult.Ok(testGroup?.[fieldName]?.[severityKey] || []);
 }
 
 function collectAll(
   testGroup: TestsContainer<TFieldName, TGroupName>,
   severityKey: Severity,
-): FailureMessages {
+): Result<FailureMessages> {
   const output: FailureMessages = {};
 
   const countKey = countKeyBySeverity(severityKey);
 
   for (const field in testGroup) {
-    if (isPositive(testGroup[field][countKey])) {
+    if (isPositive(testGroup[field as TFieldName][countKey])) {
       // We will probably never get to the fallback array
       // leaving it just in case the implementation changes
-      output[field] = testGroup[field][severityKey] || [];
+      output[field] = testGroup[field as TFieldName][severityKey] || [];
     }
   }
 
-  return output;
+  return makeResult.Ok(output);
 }

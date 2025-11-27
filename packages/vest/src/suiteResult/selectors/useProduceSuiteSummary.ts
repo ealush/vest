@@ -76,29 +76,29 @@ function useProcessTests<F extends TFieldName, G extends TGroupName>(
   return summary;
 }
 
-function useAppendToGroup(
-  groups: Groups<TGroupName, TFieldName>,
-  testObject: TIsolateTest,
-): Groups<TGroupName, TFieldName> {
-  const { fieldName } = VestTest.getData(testObject);
-  const groupName = VestTest.getGroupName(testObject);
+function useAppendToGroup<F extends TFieldName, G extends TGroupName>(
+  groups: Groups<G, F>,
+  testObject: TIsolateTest<F>,
+): Groups<G, F> {
+  const { fieldName } = VestTest.getData<F>(testObject);
+  const groupName = VestTest.getGroupName<G>(testObject);
 
   if (!groupName) {
     return groups;
   }
 
   groups[groupName] =
-    groups[groupName] ||
-    ({} as Groups<TGroupName, TFieldName>[typeof groupName]);
+    groups[groupName] || ({} as Groups<G, F>[typeof groupName]);
   const group = groups[groupName];
 
-  group[fieldName] = appendTestSummaryObject<SingleTestSummary>(
+  const nextGroupEntry = appendTestSummaryObject<SingleTestSummary>(
     group[fieldName],
     testObject,
   );
+  (group as Record<string, SingleTestSummary>)[fieldName] = nextGroupEntry;
 
   // Always re-evaluate validity to account for optional fields
-  group[fieldName].valid = useSetValidPropertyImpl(fieldName, groupName);
+  nextGroupEntry.valid = useSetValidPropertyImpl(fieldName, groupName);
 
   return groups;
 }

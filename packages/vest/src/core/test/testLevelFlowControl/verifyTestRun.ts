@@ -1,3 +1,5 @@
+import { makeResult, Result } from 'vest-utils';
+
 import { useIsExcluded } from '../../../hooks/focused/useIsExcluded';
 import { useShouldSkipBasedOnMode } from '../../../hooks/optional/mode';
 import { useIsOptionalFieldApplied } from '../../../hooks/optional/optional';
@@ -14,15 +16,15 @@ export function useVerifyTestRun(
   const testData = VestTest.getData(testObject);
 
   if (useShouldSkipBasedOnMode(testData)) {
-    return skipTestAndReturn(testObject);
+    return skipTestAndReturn(testObject).unwrap();
   }
 
   if (useShouldOmit(testData.fieldName)) {
-    return omitTestAndReturn(testObject);
+    return omitTestAndReturn(testObject).unwrap();
   }
 
   if (useIsExcluded(testObject)) {
-    return useForceSkipIfInSkipWhen(collisionResult);
+    return useForceSkipIfInSkipWhen(collisionResult).unwrap();
   }
 
   return testObject;
@@ -32,21 +34,23 @@ function useShouldOmit(fieldName: TFieldName): boolean {
   return useWithinActiveOmitWhen() || useIsOptionalFieldApplied(fieldName);
 }
 
-function skipTestAndReturn(testNode: TIsolateTest): TIsolateTest {
+function skipTestAndReturn(testNode: TIsolateTest): Result<TIsolateTest> {
   VestTest.skip(testNode);
-  return testNode;
+  return makeResult.Ok(testNode);
 }
 
-function omitTestAndReturn(testNode: TIsolateTest): TIsolateTest {
+function omitTestAndReturn(testNode: TIsolateTest): Result<TIsolateTest> {
   VestTest.omit(testNode);
-  return testNode;
+  return makeResult.Ok(testNode);
 }
 
-function useForceSkipIfInSkipWhen(testNode: TIsolateTest): TIsolateTest {
+function useForceSkipIfInSkipWhen(
+  testNode: TIsolateTest,
+): Result<TIsolateTest> {
   // We're forcing skipping the pending test
   // if we're directly within a skipWhen block
   // This mostly means that we're probably giving
   // up on this async test intentionally.
   VestTest.skip(testNode, useIsExcludedIndividually());
-  return testNode;
+  return makeResult.Ok(testNode);
 }

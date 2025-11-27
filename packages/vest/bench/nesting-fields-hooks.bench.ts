@@ -1,5 +1,6 @@
 import { bench, describe } from 'vitest';
 
+import { TFieldName, TGroupName } from '../src/suiteResult/SuiteResultTypes';
 import {
   create,
   enforce,
@@ -23,27 +24,27 @@ const createNestedFieldsSuite = ({ depth, fieldsPerLevel }: NestedConfig) =>
         return;
       }
 
-      group(`level_${level}`, () => {
-        optional(`optional_${level}`);
+      group(`level_${level}` as TGroupName, () => {
+        optional(`optional_${level}` as TFieldName);
 
         skipWhen(level % 2 === 0, () => {
-          test(`skipped_${level}`, () => {});
+          test(`skipped_${level}` as TFieldName, () => {});
         });
 
         omitWhen(level % 3 === 0, () => {
-          test(`omitted_${level}`, () => {});
+          test(`omitted_${level}` as TFieldName, () => {});
         });
 
-        test(`optional_${level}`, () => {
+        test(`optional_${level}` as TFieldName, () => {
           enforce(level).isNumber();
         });
 
         for (let i = 0; i < fieldsPerLevel; i++) {
-          test(`field_${level}_${i}`, () => {
+          test(`field_${level}_${i}` as TFieldName, () => {
             enforce(i + level).isNumber();
           });
 
-          test(`warn_field_${level}_${i}`, () => {
+          test(`warn_field_${level}_${i}` as TFieldName, () => {
             warn();
             enforce(i + level).isNumber();
           });

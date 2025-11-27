@@ -1,22 +1,23 @@
 import { bench, describe } from 'vitest';
 
+import { TFieldName, TGroupName } from '../src/suiteResult/SuiteResultTypes';
 import { create, group, omitWhen, skipWhen, test } from '../src/vest';
 
 const createNestedSuite = (depth: number) =>
   create(() => {
     const walk = (level: number) => {
       if (level <= 0) {
-        test('leaf', () => {});
+        test('leaf' as TFieldName, () => {});
         return;
       }
 
-      group(`group_${level}`, () => {
+      group(`group_${level}` as TGroupName, () => {
         skipWhen(level % 5 === 0, () => {
-          test(`skipped_${level}`, () => {});
+          test(`skipped_${level}` as TFieldName, () => {});
         });
 
         omitWhen(level % 7 === 0, () => {
-          test(`omitted_${level}`, () => {});
+          test(`omitted_${level}` as TFieldName, () => {});
         });
 
         walk(level - 1);

@@ -42,6 +42,18 @@ export { noop } from './noop';
 export * as Predicates from './Predicates';
 export { freezeAssign } from './freezeAssign';
 export { withCatch } from './withCatch';
+export { makeBrand } from './Brand';
+export type { Brand } from './Brand';
+export { toNumber } from './toNumber';
+export type { IO } from './IO';
+export {
+  makeResult,
+  isResult,
+  isSuccess,
+  isFailure,
+  unwrap,
+  type Result,
+} from './Result';
 
 export type {
   DropFirst,

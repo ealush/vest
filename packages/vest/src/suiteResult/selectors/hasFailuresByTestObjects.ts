@@ -42,15 +42,15 @@ export function hasFailuresByTestObject(
   severityKey: Severity,
   fieldName?: TFieldName,
 ): boolean {
-  if (!VestTest.hasFailures(testObject)) {
+  if (!VestTest.hasFailures(testObject).unwrap()) {
     return false;
   }
 
-  if (nonMatchingFieldName(VestTest.getData(testObject), fieldName)) {
+  if (nonMatchingFieldName(VestTest.getData(testObject), fieldName).unwrap()) {
     return false;
   }
 
-  if (nonMatchingSeverityProfile(severityKey, testObject)) {
+  if (nonMatchingSeverityProfile(severityKey, testObject).unwrap()) {
     return false;
   }
 

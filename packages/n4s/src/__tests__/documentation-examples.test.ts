@@ -111,6 +111,7 @@ describe('Documentation Examples', () => {
 
       // test method returns boolean
       expect(stringRule.test('hello')).toBe(true);
+      // @ts-expect-error - stringRule.test should accept string
       expect(stringRule.test(123)).toBe(false);
 
       // run method returns RuleRunReturn
@@ -164,7 +165,8 @@ describe('Documentation Examples', () => {
       expect(
         userSchema.test({
           name: 'John',
-          age: 'thirty', // wrong type
+          // @ts-expect-error - age should be number
+          age: 'thirty',
           email: 'john@example.com',
         }),
       ).toBe(false);
@@ -232,6 +234,7 @@ describe('Documentation Examples', () => {
 
       expect(rule.test('hello')).toBe(true);
       expect(rule.test(123)).toBe(true);
+      // @ts-expect-error - boolean is not string | number
       expect(rule.test(true)).toBe(false);
     });
 
@@ -255,36 +258,42 @@ describe('Documentation Examples', () => {
     it('should validate arrays', () => {
       const rule = enforce.isArray();
       expect(rule.test([1, 2, 3])).toBe(true);
+      // @ts-expect-error - rule.test should accept array
       expect(rule.test('not array')).toBe(false);
     });
 
     it('should validate strings', () => {
       const rule = enforce.isString();
       expect(rule.test('hello')).toBe(true);
+      // @ts-expect-error - rule.test should accept string
       expect(rule.test(123)).toBe(false);
     });
 
     it('should validate numbers', () => {
       const rule = enforce.isNumber();
       expect(rule.test(123)).toBe(true);
+      // @ts-expect-error - rule.test should accept number
       expect(rule.test('123')).toBe(false);
     });
 
     it('should validate booleans', () => {
       const rule = enforce.isBoolean();
       expect(rule.test(true)).toBe(true);
+      // @ts-expect-error - rule.test should accept boolean
       expect(rule.test('true')).toBe(false);
     });
 
     it('should validate null', () => {
       const rule = enforce.isNull();
       expect(rule.test(null)).toBe(true);
+      // @ts-expect-error - null should not accept undefined
       expect(rule.test(undefined)).toBe(false);
     });
 
     it('should validate undefined', () => {
       const rule = enforce.isUndefined();
       expect(rule.test(undefined)).toBe(true);
+      // @ts-expect-error - undefined should not accept null
       expect(rule.test(null)).toBe(false);
     });
 
@@ -292,6 +301,7 @@ describe('Documentation Examples', () => {
       const rule = enforce.isNullish();
       expect(rule.test(null)).toBe(true);
       expect(rule.test(undefined)).toBe(true);
+      // @ts-expect-error - nullish should not accept number
       expect(rule.test(0)).toBe(false);
     });
 

@@ -1,4 +1,4 @@
-import { describe, test, expect, vi } from 'vitest';
+import { describe, test, expect, vi, it } from 'vitest';
 
 import { bindNot } from '../vest-utils';
 

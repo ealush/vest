@@ -1,11 +1,12 @@
 import { bench, describe } from 'vitest';
 
+import { TFieldName } from '../src/suiteResult/SuiteResultTypes';
 import { create, enforce, test } from '../src/vest';
 
 const createFieldSuite = (fieldCount: number) =>
   create(() => {
     for (let i = 0; i < fieldCount; i++) {
-      test(`field_${i}`, () => {
+      test(`field_${i}` as TFieldName, () => {
         enforce(i).isNumber();
       });
     }

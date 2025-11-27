@@ -23,6 +23,13 @@ export type SuiteCallback<Data = any, T extends CB = CB> = T extends (
     : (...args: Args) => Return
   : T;
 
+export type SuiteCallbackWithSchema<
+  S extends TSchema,
+  T extends CB,
+> = S extends undefined
+  ? T
+  : (data: InferSchemaData<S>, ...args: any[]) => void;
+
 export type Suite<
   F extends TFieldName,
   G extends TGroupName,
@@ -42,8 +49,8 @@ type SuiteMethods<
   get: CB<SuiteResult<F, G, S>>;
   resume: CB<void, [TIsolateSuite]>;
   reset: CB<void>;
-  remove: CB<void, [fieldName: F]>;
-  resetField: CB<void, [fieldName: F]>;
+  remove: CB<void, [fieldName: F | string]>;
+  resetField: CB<void, [fieldName: F | string]>;
   run: (
     ...args: S extends undefined
       ? Parameters<T>
@@ -71,7 +78,10 @@ type AfterMethods<
   S extends TSchema,
 > = {
   after: CB<AfterMethods<F, G, T, S>, [callback: CB]>;
-  afterField: CB<AfterMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
+  afterField: CB<
+    AfterMethods<F, G, T, S>,
+    [fieldName: F | string, callback: CB]
+  >;
   focus: CB<AfterMethods<F, G, T, S>, [config: SuiteModifiers<F>]>;
   run: (
     ...args: S extends undefined
@@ -81,5 +91,5 @@ type AfterMethods<
 };
 
 export type SuiteModifiers<F extends TFieldName> = {
-  only?: FieldExclusion<F>;
+  only?: FieldExclusion<F> | FieldExclusion<string>;
 };

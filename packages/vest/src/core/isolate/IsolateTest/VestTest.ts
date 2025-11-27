@@ -1,4 +1,11 @@
-import { Maybe, invariant, isPromise, dynamicValue } from 'vest-utils';
+import {
+  Maybe,
+  invariant,
+  isPromise,
+  dynamicValue,
+  makeResult,
+  Result,
+} from 'vest-utils';
 import {
   IsolateMutator,
   IsolateSelectors,
@@ -48,68 +55,74 @@ export class VestTest extends VestIsolate {
     invariant(VestTest.is(isolate), ErrorStrings.EXPECTED_VEST_TEST);
   }
 
-  static cast<F extends TFieldName = string>(
+  static cast<F extends TFieldName = TFieldName>(
     isolate?: Maybe<TIsolate>,
   ): TIsolateTest<F> {
     VestTest.isX(isolate);
     return isolate as TIsolateTest<F>;
   }
 
-  static warns(test: TIsolateTest): boolean {
-    return VestTest.getData(test).severity === TestSeverity.Warning;
-  }
-
-  static isOmitted(test: TIsolateTest): boolean {
-    return VestTest.statusEquals(test, TestStatus.OMITTED);
-  }
-
-  static isUntested(test: TIsolateTest): boolean {
-    return VestTest.statusEquals(test, TestStatus.UNTESTED);
-  }
-
-  static isFailing(test: TIsolateTest): boolean {
-    return VestTest.statusEquals(test, TestStatus.FAILED);
-  }
-
-  static isCanceled(test: TIsolateTest): boolean {
-    return VestTest.statusEquals(test, TestStatus.CANCELED);
-  }
-
-  static isSkipped(test: TIsolateTest): boolean {
-    return VestTest.statusEquals(test, TestStatus.SKIPPED);
-  }
-
-  static isPassing(test: TIsolateTest): boolean {
-    return VestTest.statusEquals(test, TestStatus.PASSING);
-  }
-
-  static isWarning(test: TIsolateTest): boolean {
-    return VestTest.statusEquals(test, TestStatus.WARNING);
-  }
-
-  static hasFailures(test: TIsolateTest): boolean {
-    return VestTest.isFailing(test) || VestTest.isWarning(test);
-  }
-
-  static isNonActionable(test: TIsolateTest): boolean {
-    return (
-      VestTest.isSkipped(test) ||
-      VestTest.isOmitted(test) ||
-      VestTest.isCanceled(test)
+  static warns(test: TIsolateTest): Result<boolean> {
+    return makeResult.Ok(
+      VestTest.getData(test).severity === TestSeverity.Warning,
     );
   }
 
-  static isTested(test: TIsolateTest): boolean {
-    return VestTest.hasFailures(test) || VestTest.isPassing(test);
+  static isOmitted(test: TIsolateTest): Result<boolean> {
+    return makeResult.Ok(VestTest.statusEquals(test, TestStatus.OMITTED));
   }
 
-  static awaitsResolution(test: TIsolateTest): boolean {
+  static isUntested(test: TIsolateTest): Result<boolean> {
+    return makeResult.Ok(VestTest.statusEquals(test, TestStatus.UNTESTED));
+  }
+
+  static isFailing(test: TIsolateTest): Result<boolean> {
+    return makeResult.Ok(VestTest.statusEquals(test, TestStatus.FAILED));
+  }
+
+  static isCanceled(test: TIsolateTest): Result<boolean> {
+    return makeResult.Ok(VestTest.statusEquals(test, TestStatus.CANCELED));
+  }
+
+  static isSkipped(test: TIsolateTest): Result<boolean> {
+    return makeResult.Ok(VestTest.statusEquals(test, TestStatus.SKIPPED));
+  }
+
+  static isPassing(test: TIsolateTest): Result<boolean> {
+    return makeResult.Ok(VestTest.statusEquals(test, TestStatus.PASSING));
+  }
+
+  static isWarning(test: TIsolateTest): Result<boolean> {
+    return makeResult.Ok(VestTest.statusEquals(test, TestStatus.WARNING));
+  }
+
+  static hasFailures(test: TIsolateTest): Result<boolean> {
+    return makeResult.Ok(
+      VestTest.isFailing(test).unwrap() || VestTest.isWarning(test).unwrap(),
+    );
+  }
+
+  static isNonActionable(test: TIsolateTest): Result<boolean> {
+    return makeResult.Ok(
+      VestTest.isSkipped(test).unwrap() ||
+        VestTest.isOmitted(test).unwrap() ||
+        VestTest.isCanceled(test).unwrap(),
+    );
+  }
+
+  static isTested(test: TIsolateTest): Result<boolean> {
+    return makeResult.Ok(
+      VestTest.hasFailures(test).unwrap() || VestTest.isPassing(test).unwrap(),
+    );
+  }
+
+  static awaitsResolution(test: TIsolateTest): Result<boolean> {
     // Is the test in a state where it can still be run, or complete running
     // and its final status is indeterminate?
-    return (
-      VestTest.isSkipped(test) ||
-      VestTest.isUntested(test) ||
-      VestTest.isPending(test)
+    return makeResult.Ok(
+      VestTest.isSkipped(test).unwrap() ||
+        VestTest.isUntested(test).unwrap() ||
+        VestTest.isPending(test),
     );
   }
 
@@ -126,7 +139,7 @@ export class VestTest extends VestIsolate {
   static fail(test: TIsolateTest): void {
     VestTest.setStatus(
       test,
-      VestTest.warns(test) ? TestStatus.WARNING : TestStatus.FAILED,
+      VestTest.warns(test).unwrap() ? TestStatus.WARNING : TestStatus.FAILED,
     );
   }
 

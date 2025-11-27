@@ -5,6 +5,8 @@ import {
   isNullish,
   isStringValue,
   text,
+  makeResult,
+  Result,
 } from 'vest-utils';
 import { expandObject, minifyObject } from 'vest-utils/minifyObject';
 
@@ -14,18 +16,30 @@ import { IsolateMutator } from '../Isolate/IsolateMutator';
 import { ErrorStrings } from '../errors/ErrorStrings';
 
 export class IsolateSerializer {
-  static deserialize(node: Record<string, any> | TIsolate | string): TIsolate {
-    const expanded = expandNode(node);
-    const queue = [expanded];
+  static safeDeserialize(
+    node: Record<string, any> | TIsolate | string,
+  ): Result<TIsolate, Error> {
+    try {
+      const expanded = expandNode(node);
+      const queue = [expanded];
 
-    while (queue.length) {
-      const current = queue.shift();
-      if (current) {
-        processChildren(current, queue);
+      while (queue.length) {
+        const current = queue.shift();
+        if (current) {
+          processChildren(current, queue);
+        }
       }
-    }
 
-    return expanded;
+      return makeResult.Ok(expanded);
+    } catch (error) {
+      return makeResult.Err(
+        error instanceof Error ? error : new Error(String(error)),
+      );
+    }
+  }
+
+  static deserialize(node: Record<string, any> | TIsolate | string): TIsolate {
+    return IsolateSerializer.safeDeserialize(node).unwrap();
   }
 
   static serialize(

@@ -35,11 +35,13 @@ describe('Compound and Schema Rule Types', () => {
     void num;
 
     // Type test: boolean is not string | number
+    // @ts-expect-error - boolean is not string | number
     const badValue: InferredType = true;
     void badValue;
 
     expect(rule.run('test').pass).toBe(true);
     expect(rule.run(123).pass).toBe(true);
+    // @ts-expect-error - boolean is not string | number
     expect(rule.run(true).pass).toBe(false);
   });
 
@@ -85,12 +87,14 @@ describe('Compound and Schema Rule Types', () => {
     void nul;
 
     // Type test: number is not string | undefined | null
+    // @ts-expect-error - number is not string | undefined | null
     const badValue: InferredType = 123;
     void badValue;
 
     expect(rule.run('test').pass).toBe(true);
     expect(rule.run(undefined).pass).toBe(true);
     expect(rule.run(null).pass).toBe(true);
+    // @ts-expect-error - number is not string | undefined | null
     expect(rule.run(123).pass).toBe(false);
   });
 
@@ -120,10 +124,12 @@ describe('Compound and Schema Rule Types', () => {
     void obj;
 
     // Type test: age must be number
+    // @ts-expect-error - age must be number
     const badObj: InferredType = { name: 'John', age: 'thirty' };
     void badObj;
 
     expect(rule.run({ name: 'John', age: 30 }).pass).toBe(true);
+    // @ts-expect-error - age must be number
     expect(rule.run({ name: 'John', age: 'thirty' }).pass).toBe(false);
   });
 

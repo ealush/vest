@@ -111,7 +111,6 @@ describe('suite.focus: only', () => {
         expect(unfocusedResult.isValid()).toBe(false);
         expect(unfocusedResult.tests.f1.testCount).toBe(1);
         expect(unfocusedResult.tests.f2.testCount).toBe(1);
-
         // 3. Run without focus but with valid data - should be valid
         const validResult = suite.run({ f1: 1, f2: 2 });
         expect(validResult.hasErrors('f1')).toBe(false);

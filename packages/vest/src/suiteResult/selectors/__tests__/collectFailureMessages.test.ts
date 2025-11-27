@@ -1,16 +1,15 @@
-import { TTestSuite } from '../../../testUtils/TVestMock';
 import { describe, it, expect, beforeEach, test } from 'vitest';
 
-import { dummyTest } from '../../../testUtils/testDummy';
-
 import { Modes } from '../../../hooks/optional/Modes';
-import { SuiteResult } from '../../SuiteResultTypes';
+import { TTestSuite } from '../../../testUtils/TVestMock';
+import { dummyTest } from '../../../testUtils/testDummy';
 import { create, group } from '../../../vest';
 import * as vest from '../../../vest';
+import { SuiteResult, TFieldName, TGroupName } from '../../SuiteResultTypes';
 
 describe('collectFailureMessages', () => {
   let suite: TTestSuite;
-  let res: SuiteResult<string, string>;
+  let res: SuiteResult<TFieldName, TGroupName>;
 
   test('Result has an array of matching error messages', () => {
     const result = res.getErrors();

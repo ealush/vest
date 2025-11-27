@@ -1,3 +1,5 @@
+import { isObject } from 'vest-utils';
+
 import { ctx } from '../../enforceContext';
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
@@ -34,10 +36,15 @@ import type { ShapeType } from './shape';
  * partialUserSchema.test({ name: 'Jane' }); // false (missing email)
  * ```
  */
+// eslint-disable-next-line complexity
 export function loose<T extends Record<string, any>>(
   value: T,
   schema: Record<string, any>,
 ): RuleRunReturn<T> {
+  if (!isObject(value)) {
+    return RuleRunReturn.Failing(value);
+  }
+
   for (const key in schema) {
     const fieldValue = key in value ? value[key] : undefined;
     const res = ctx.run({ value: fieldValue, set: true, meta: { key } }, () =>

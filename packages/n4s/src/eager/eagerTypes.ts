@@ -51,12 +51,19 @@ export type TCompoundRules<T, A, S> = {
     : never;
 };
 
+export type TOptionalRule<T, A, S> = {
+  [K in keyof S as K extends 'optional' ? K : never]: (
+    ...args: TailParams<Extract<S[K], AnyFn>>
+  ) => EnforceEagerReturn<T, A, S>;
+};
+
 type Base<T, A, S> = Msg<T, A, S> &
   TRules<T, A, S> &
   TCustomRules<T, A, S> &
   TSchemaRules<T, S, A> &
   TArraySchemaRules<T, A, S> &
-  TCompoundRules<T, A, S>;
+  TCompoundRules<T, A, S> &
+  TOptionalRule<T, A, S>;
 
 export type EnforceEagerReturn<T = any, A = any, S = any> = Base<T, A, S> & {
   pass: boolean;

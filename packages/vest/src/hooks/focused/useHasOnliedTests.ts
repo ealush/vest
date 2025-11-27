@@ -17,7 +17,7 @@ export function useHasOnliedTests(
     Walker.findClosest(testObject, (child: TIsolate) => {
       if (!FocusSelectors.isIsolateFocused(child)) return false;
 
-      return FocusSelectors.isOnlyFocused(child, fieldName);
+      return FocusSelectors.isOnlyFocused(child, fieldName).unwrap();
     }),
   );
 }

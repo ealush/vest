@@ -1,9 +1,11 @@
+import { isObject } from 'vest-utils';
+
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 export type Predicate = (value: any) => boolean | RuleRunReturn<any>;
 
 function isRuleRunReturn(result: any): result is RuleRunReturn<any> {
-  return typeof result === 'object' && result !== null && 'pass' in result;
+  return isObject(result) && 'pass' in result;
 }
 
 export function executeChain(

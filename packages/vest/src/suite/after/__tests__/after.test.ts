@@ -1,6 +1,8 @@
+import { makeBrand } from 'vest-utils';
 import { describe, it, expect, vi } from 'vitest';
 import wait from 'wait';
 
+import { TFieldName } from '../../../suiteResult/SuiteResultTypes';
 import { dummyTest } from '../../../testUtils/testDummy';
 import * as vest from '../../../vest';
 
@@ -119,15 +121,16 @@ describe('after', () => {
     describe('When tests are omitted', () => {
       it('should run the callback', () => {
         const cb = vi.fn();
+        const f1 = makeBrand<TFieldName>('f1');
 
         const suite = vest.create(() => {
           vest.optional({ f1: true });
 
-          vest.test('f1', () => {});
+          vest.test(f1, () => {});
         });
 
         suite.after(cb).run();
-        expect(suite.get().tests.f1.testCount).toBe(0);
+        expect(suite.get().tests[f1].testCount).toBe(0);
         expect(cb).toHaveBeenCalled();
       });
     });

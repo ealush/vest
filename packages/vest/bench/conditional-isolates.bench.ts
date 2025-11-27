@@ -1,5 +1,6 @@
 import { bench, describe } from 'vitest';
 
+import { TFieldName } from '../src/suiteResult/SuiteResultTypes';
 import { create, enforce, omitWhen, skipWhen, test } from '../src/vest';
 
 type ConditionalData = {
@@ -10,7 +11,7 @@ type ConditionalData = {
 const conditionalSuite = create((data: ConditionalData) => {
   for (let i = 0; i < 10; i++) {
     skipWhen(data.skipEven && i % 2 === 0, () => {
-      test(`skip_${i}`, () => {
+      test(`skip_${i}` as TFieldName, () => {
         enforce(i).isNumber();
       });
     });
@@ -18,13 +19,13 @@ const conditionalSuite = create((data: ConditionalData) => {
     omitWhen(
       data.omitModulo !== undefined && i % (data.omitModulo || 1) === 0,
       () => {
-        test(`omit_${i}`, () => {
+        test(`omit_${i}` as TFieldName, () => {
           enforce(i).isNumber();
         });
       },
     );
 
-    test(`base_${i}`, () => {
+    test(`base_${i}` as TFieldName, () => {
       enforce(i).lessThan(20);
     });
   }

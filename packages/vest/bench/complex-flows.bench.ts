@@ -1,5 +1,6 @@
 import { bench, describe } from 'vitest';
 
+import { TFieldName, TGroupName } from '../src/suiteResult/SuiteResultTypes';
 import {
   create,
   each,
@@ -28,49 +29,49 @@ type ComplexInput = {
 
 const complexSuite = create((input: ComplexInput) => {
   mode(Modes.ALL);
-  only(input.onlyField);
-  skip(input.skipField);
-  optional('optional_field');
-  include('conditional_field').when(() => input.toggle);
+  only(input.onlyField as TFieldName);
+  skip(input.skipField as TFieldName);
+  optional('optional_field' as TFieldName);
+  include('conditional_field' as TFieldName).when(() => input.toggle);
 
-  group('main', () => {
-    test('field_primary', () => {
+  group('main' as TGroupName, () => {
+    test('field_primary' as TFieldName, () => {
       enforce(input.value).greaterThan(0);
     });
 
-    test('field_warning', () => {
+    test('field_warning' as TFieldName, () => {
       warn();
       enforce(input.value).greaterThan(5);
     });
 
-    test('optional_field', () => {
+    test('optional_field' as TFieldName, () => {
       enforce(input.value).isNumber();
     });
   });
 
-  test('skipped_field', () => {
+  test('skipped_field' as TFieldName, () => {
     enforce(input.value).isNumber();
   });
 
   skipWhen(!input.toggle, () => {
-    test('conditional_field', () => {
+    test('conditional_field' as TFieldName, () => {
       enforce(input.value).lessThan(1000);
     });
   });
 
-  omitWhen(input.omit, () => {
-    test('omittable_field', () => {
+  omitWhen(!!input.omit, () => {
+    test('omittable_field' as TFieldName, () => {
       enforce(input.value).notEquals(0);
     });
   });
 
   each(input.items, (value, index) => {
     test(
-      `list_item_${index}`,
+      `list_item_${index}` as TFieldName,
       () => {
         enforce(value).isNumber();
       },
-      index,
+      String(index),
     );
   });
 });

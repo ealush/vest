@@ -1,4 +1,4 @@
-import { isStringValue, invariant, dynamicValue } from 'vest-utils';
+import { dynamicValue, invariant, isStringValue, makeBrand } from 'vest-utils';
 
 import { useInclusion } from '../core/context/SuiteContext';
 import { TIsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
@@ -29,31 +29,34 @@ import { useHasOnliedTests } from './focused/useHasOnliedTests';
  */
 // @vx-allow use-use
 export function include<F extends TFieldName, G extends TGroupName>(
-  fieldName: F,
+  fieldName: F | string,
 ): {
-  when: (condition: F | TFieldName | TDraftCondition<F, G>) => void;
+  when: (condition: F | string | TFieldName | TDraftCondition<F, G>) => void;
 } {
   invariant(isStringValue(fieldName));
   const inclusion = useInclusion();
+  const safeFieldName = makeBrand<TFieldName>(fieldName);
 
-  inclusion[fieldName] = true;
+  inclusion[safeFieldName] = true;
 
   return { when };
 
   /**
    * Specifies the inclusion criteria for the field in `include` function.
    */
-  function when(condition: F | TFieldName | TDraftCondition<F, G>): void {
+  function when(
+    condition: F | string | TFieldName | TDraftCondition<F, G>,
+  ): void {
     invariant(condition !== fieldName, ErrorStrings.INCLUDE_SELF);
 
     const inclusion = useInclusion();
 
     // This callback will run as part of the "isExcluded" series of checks
-    inclusion[fieldName] = function isIncluded(
+    inclusion[safeFieldName] = function isIncluded(
       currentNode: TIsolateTest,
     ): boolean {
       if (isStringValue(condition)) {
-        return useHasOnliedTests(currentNode, condition);
+        return useHasOnliedTests(currentNode, makeBrand<TFieldName>(condition));
       }
 
       return dynamicValue(condition, () =>

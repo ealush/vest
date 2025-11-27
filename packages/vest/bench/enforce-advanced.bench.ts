@@ -14,6 +14,7 @@ function exerciseEnforceChains(values: Array<number | string>): void {
       enforce(value).isNumber().greaterThanOrEquals(0).lessThan(1_000_000);
       enforce(value).isEven();
     } else {
+      // @ts-expect-error - custom rule
       enforce(value).isString().isCapitalized().shorterThanOrEquals(20);
     }
   }

@@ -1,11 +1,12 @@
+import { makeBrand } from 'vest-utils';
 import { describe, it, expect } from 'vitest';
 import wait from 'wait';
 
+import { Modes } from '../../hooks/optional/Modes';
 import { ser } from '../../testUtils/suiteDummy';
 import { dummyTest } from '../../testUtils/testDummy';
-
-import { Modes } from '../../hooks/optional/Modes';
 import * as vest from '../../vest';
+import { TFieldName } from '../SuiteResultTypes';
 
 describe('useProduceSuiteSummary', () => {
   describe('Base structure', () => {
@@ -132,50 +133,58 @@ describe('suite.run()', () => {
 
 describe('pendingCount', () => {
   it('Should default to zero, both in the general summary and per test', () => {
+    const f1 = makeBrand<TFieldName>('f1');
+    const f2 = makeBrand<TFieldName>('f2');
     const suite = vest.create(() => {
-      vest.test('f1', () => {});
-      vest.test('f2', () => {});
+      vest.test(f1, () => {});
+      vest.test(f2, () => {});
     });
     expect(suite.run().pendingCount).toBe(0);
-    expect(suite.run().tests.f1.pendingCount).toBe(0);
-    expect(suite.run().tests.f2.pendingCount).toBe(0);
+    expect(suite.run().tests[f1].pendingCount).toBe(0);
+    expect(suite.run().tests[f2].pendingCount).toBe(0);
   });
 
   it('Should increment when a test is pending', () => {
+    const f1 = makeBrand<TFieldName>('f1');
+    const f2 = makeBrand<TFieldName>('f2');
     const suite = vest.create(() => {
-      vest.test('f1', async () => {});
-      vest.test('f2', async () => {});
+      vest.test(f1, async () => {});
+      vest.test(f2, async () => {});
     });
     suite.run();
     expect(suite.run().pendingCount).toBe(2);
-    expect(suite.run().tests.f1.pendingCount).toBe(1);
-    expect(suite.run().tests.f2.pendingCount).toBe(1);
+    expect(suite.run().tests[f1].pendingCount).toBe(1);
+    expect(suite.run().tests[f2].pendingCount).toBe(1);
   });
 
   it('Should increment per multiple pending tests of the same field', () => {
+    const f1 = makeBrand<TFieldName>('f1');
+    const f2 = makeBrand<TFieldName>('f2');
     const suite = vest.create(() => {
-      vest.test('f1', async () => {});
-      vest.test('f1', async () => {});
-      vest.test('f2', async () => {});
+      vest.test(f1, async () => {});
+      vest.test(f1, async () => {});
+      vest.test(f2, async () => {});
     });
     suite.run();
     expect(suite.run().pendingCount).toBe(3);
-    expect(suite.run().tests.f1.pendingCount).toBe(2);
-    expect(suite.run().tests.f2.pendingCount).toBe(1);
+    expect(suite.run().tests[f1].pendingCount).toBe(2);
+    expect(suite.run().tests[f2].pendingCount).toBe(1);
   });
 
   it('Should decrement when a test is done', async () => {
+    const f1 = makeBrand<TFieldName>('f1');
+    const f2 = makeBrand<TFieldName>('f2');
     const suite = vest.create(() => {
-      vest.test('f1', async () => {});
-      vest.test('f2', async () => {});
+      vest.test(f1, async () => {});
+      vest.test(f2, async () => {});
     });
     suite.run();
     expect(suite.run().pendingCount).toBe(2);
-    expect(suite.run().tests.f1.pendingCount).toBe(1);
-    expect(suite.run().tests.f2.pendingCount).toBe(1);
+    expect(suite.run().tests[f1].pendingCount).toBe(1);
+    expect(suite.run().tests[f2].pendingCount).toBe(1);
     await wait(0);
     expect(suite.get().pendingCount).toBe(0);
-    expect(suite.get().tests.f1.pendingCount).toBe(0);
-    expect(suite.get().tests.f2.pendingCount).toBe(0);
+    expect(suite.get().tests[f1].pendingCount).toBe(0);
+    expect(suite.get().tests[f2].pendingCount).toBe(0);
   });
 });

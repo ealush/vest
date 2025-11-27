@@ -28,4 +28,4 @@ const machine: TStateMachine<State> = {
   },
 };
 
-export const CommonStateMachine = StateMachine<State>(machine);
+export const CommonStateMachine = StateMachine(machine);

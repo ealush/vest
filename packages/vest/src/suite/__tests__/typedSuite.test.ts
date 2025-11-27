@@ -9,7 +9,10 @@ describe('typed suite', () => {
   let suite: vest.Suite<TestFields, TestGroups>;
 
   beforeEach(() => {
-    suite = vest.create(() => {});
+    suite = vest.create<TestFields, TestGroups>(() => {}) as vest.Suite<
+      TestFields,
+      TestGroups
+    >;
   });
 
   it('should support typed field names and group names', () => {
@@ -35,7 +38,7 @@ describe('typed suite', () => {
   });
 
   it('should only support annotated group and field names in the suite methods', () => {
-    const res = suite.get();
+    const res: vest.SuiteResult<TestFields, TestGroups> = suite.get();
 
     res.hasErrors('F1');
     res.hasErrors('F2');

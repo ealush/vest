@@ -1,7 +1,7 @@
-import type { ShapeType } from '../shape';
 import { describe, expect, it } from 'vitest';
 
 import { enforce } from '../../../n4s';
+import type { ShapeType } from '../shape';
 
 // schema combinators are consumed via enforce
 
@@ -49,11 +49,11 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     const ok: Addr = { city: 'a', country: 'US', street: 'x', zip: '12345' };
     void ok;
 
-    // @ts-expect-error - extra property should not be allowed on Addr
     const extra1 = {
       city: 'a',
       country: 'US',
       // Type test: extra property not allowed by exact shape
+      // @ts-expect-error - extra property should not be allowed on Addr
       extra: true,
       street: 'x',
       zip: '12345',
@@ -90,26 +90,26 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     };
     void good;
 
-    // @ts-expect-error - count must be a number
     const badCount = {
       // Type test: count must be number
+      // @ts-expect-error - count must be a number
       count: '1',
       totals: { subtotal: 1, tax: 0 },
     } satisfies T;
     void badCount;
 
-    // @ts-expect-error - totals.tax must be a number
     const badTotals = {
       count: 1,
       // Type test: totals.tax must be number
+      // @ts-expect-error - totals.tax must be a number
       totals: { subtotal: 1, tax: '0' },
     } satisfies T;
     void badTotals;
 
-    // @ts-expect-error - maybeName accepts only string | null | undefined
     const badMaybe = {
       count: 1,
       // Type test: maybeName may be string | null | undefined, not boolean
+      // @ts-expect-error - maybeName accepts only string | null | undefined
       maybeName: false,
       totals: { subtotal: 1, tax: 0 },
     } satisfies T;
@@ -127,6 +127,7 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     void okB;
 
     // Type test: boolean is not string | number
+    // @ts-expect-error - boolean is not string | number
     const badC: SOrN = true;
     void badC;
 

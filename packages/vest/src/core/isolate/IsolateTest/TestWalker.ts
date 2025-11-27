@@ -97,7 +97,7 @@ export class TestWalker {
 
   static resetField(fieldName: TFieldName): void {
     TestWalker.walkTests(testObject => {
-      if (matchingFieldName(VestTest.getData(testObject), fieldName)) {
+      if (matchingFieldName(VestTest.getData(testObject), fieldName).unwrap()) {
         VestTest.reset(testObject);
       }
     }, TestWalker.defaultRoot());
@@ -108,7 +108,10 @@ export class TestWalker {
     root: MaybeRoot = TestWalker.defaultRoot(),
   ): void {
     TestWalker.pluckTests(testObject => {
-      return matchingFieldName(VestTest.getData(testObject), fieldName);
+      return matchingFieldName(
+        VestTest.getData(testObject),
+        fieldName,
+      ).unwrap();
     }, root);
   }
 }

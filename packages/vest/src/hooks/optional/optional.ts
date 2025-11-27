@@ -1,5 +1,13 @@
 import { enforce } from 'n4s';
-import { isArray, isStringValue, asArray, hasOwnProperty } from 'vest-utils';
+import {
+  asArray,
+  hasOwnProperty,
+  isArray,
+  isStringValue,
+  makeBrand,
+  makeResult,
+  Result,
+} from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
 import { useSuiteParams } from '../../core/context/SuiteContext';
@@ -12,9 +20,7 @@ import { TFieldName } from '../../suiteResult/SuiteResultTypes';
 import { OptionalFieldTypes, OptionalsInput } from './OptionalTypes';
 
 // @vx-allow use-use
-export function optional<F extends TFieldName>(
-  optionals: OptionalsInput<F>,
-): void {
+export function optional<F extends string>(optionals: OptionalsInput<F>): void {
   const suiteRoot = VestRuntime.useAvailableRoot<TIsolateSuite>();
 
   const suiteParams = useSuiteParams();
@@ -35,21 +41,26 @@ export function optional<F extends TFieldName>(
 
   // AUTO case (field name)
   if (isArray(optionals) || isStringValue(optionals)) {
-    asArray(optionals).forEach(optionalField => {
-      SuiteOptionalFields.setOptionalField(suiteRoot, optionalField, () => ({
-        type: OptionalFieldTypes.AUTO,
-        applied: hasOwnProperty(dataObject, optionalField)
-          ? enforce.isBlank().test(dataObject?.[optionalField])
-          : false,
-        rule: null,
-      }));
-    });
+    asArray(optionals)
+      .map(makeBrand<TFieldName>)
+      .forEach(optionalField => {
+        SuiteOptionalFields.setOptionalField(suiteRoot, optionalField, () => ({
+          type: OptionalFieldTypes.AUTO,
+          applied: hasOwnProperty(dataObject, optionalField)
+            ? enforce.isBlank().test(dataObject?.[optionalField])
+            : false,
+          rule: null,
+        }));
+      });
   } else {
     // CUSTOM_LOGIC case (function or boolean)
-    for (const field in optionals) {
-      const value = optionals[field];
+    const optionalsObject = optionals as Record<string, any>;
 
-      SuiteOptionalFields.setOptionalField(suiteRoot, field, () => ({
+    for (const field in optionalsObject) {
+      const value = optionalsObject[field];
+      const optionalField = makeBrand<TFieldName>(field);
+
+      SuiteOptionalFields.setOptionalField(suiteRoot, optionalField, () => ({
         type: OptionalFieldTypes.CUSTOM_LOGIC,
         rule: value,
         applied: enforce.isBlank().test(value) || value === true,
@@ -58,14 +69,16 @@ export function optional<F extends TFieldName>(
   }
 }
 
-export function useIsOptionalFieldApplied(fieldName?: TFieldName) {
+export function useIsOptionalFieldApplied(
+  fieldName?: TFieldName,
+): Result<boolean> {
   if (!fieldName) {
-    return false;
+    return makeResult.Ok(false);
   }
 
   const root = VestRuntime.useAvailableRoot<TIsolateSuite>();
 
-  return (
-    SuiteOptionalFields.getOptionalField(root, fieldName)?.applied ?? false
+  return makeResult.Ok(
+    SuiteOptionalFields.getOptionalField(root, fieldName)?.applied ?? false,
   );
 }

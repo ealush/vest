@@ -41,6 +41,7 @@ describe('anyOf', () => {
 
   it('should fail with no rules', () => {
     const rule = enforce.anyOf();
+    // @ts-expect-error - Testing invalid input with no rules
     const result = rule.run('any value');
     expect(result.pass).toBe(false);
   });

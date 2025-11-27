@@ -1,5 +1,6 @@
 import { bench, describe } from 'vitest';
 
+import { TFieldName } from '../src/suiteResult/SuiteResultTypes';
 import {
   Modes,
   create,
@@ -17,17 +18,17 @@ type ModeData = {
 
 const modeSuite = create((data: ModeData) => {
   mode(data.useAll ? Modes.ALL : Modes.EAGER);
-  optional('optional_field');
+  optional('optional_field' as TFieldName);
 
-  test('required', () => {
+  test('required' as TFieldName, () => {
     enforce(data.value).greaterThan(0);
   });
 
-  test('optional_field', () => {
+  test('optional_field' as TFieldName, () => {
     enforce(data.value).lessThan(10_000);
   });
 
-  test('warn_field', () => {
+  test('warn_field' as TFieldName, () => {
     warn();
     enforce(data.value).greaterThan(5);
   });

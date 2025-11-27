@@ -1,14 +1,12 @@
 import { DynamicValue, OneOrMoreOf } from 'vest-utils';
 
-import { TFieldName } from '../../suiteResult/SuiteResultTypes';
-
 export type OptionalFields = Record<string, OptionalFieldDeclaration>;
 
-export type OptionalsInput<F extends TFieldName> =
+export type OptionalsInput<F extends string = string> =
   | OneOrMoreOf<F>
   | OptionalsObject<F>;
 
-type OptionalsObject<F extends TFieldName> = Record<F, TOptionalRule | any>;
+type OptionalsObject<F extends string> = Record<F, TOptionalRule | any>;
 
 type ImmediateOptionalFieldDeclaration = {
   type: OptionalFieldTypes.CUSTOM_LOGIC;

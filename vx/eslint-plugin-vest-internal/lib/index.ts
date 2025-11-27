@@ -1,3 +1,6 @@
+/**
+ * @type {{ rules: Record<string, import('eslint').Rule.RuleModule> }}
+ */
 import useUse from './rules/use-use.js';
 
 export default {

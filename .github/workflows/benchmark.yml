@@ -1,0 +1,68 @@
+name: Performance Benchmark
+
+on:
+  pull_request:
+    paths:
+      - 'packages/vest/**'
+      - 'packages/vestjs-runtime/**'
+      - '.github/workflows/benchmark.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Use Node.js 24
+        uses: actions/setup-node@v3
+        with:
+          node-version: 24
+      - name: Enable corepack (Yarn)
+        run: corepack enable
+      - name: Install dependencies
+        run: yarn install --immutable
+      - name: Build internal packages
+        run: yarn build
+      - name: Run benchmarks and generate report
+        run: node vx/scripts/benchmark-reporter.js
+
+      - name: Comment Benchmark Results
+        uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs');
+            const results = fs.readFileSync('benchmark-results.md', 'utf8');
+
+            // Get existing comments
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            // Find bot comment
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('🚀 Benchmark Results');
+            });
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: results
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: results
+              });
+            }

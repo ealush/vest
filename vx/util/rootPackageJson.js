@@ -1,8 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { fileNames } from '../opts.js';
-
+import { fileNames } from 'vx/opts.js';
 import vxPath from 'vx/vxPath.js';
 
 /**

@@ -1,4 +1,3 @@
-import { usePackage } from '../../vxContext.js';
 import build from '../build/buildPackage.js';
 
 import genDiffData from './genDiffData.js';
@@ -9,6 +8,7 @@ import setNextVersion from './steps/setNextVersion.js';
 import updateLocalDepsToLatest from './steps/updateLocalDepsToLatest.js';
 
 import * as logger from 'vx/logger.js';
+import { usePackage } from 'vx/vxContext.js';
 
 /**
  * Releases the currently scoped package, performing build and publish steps.

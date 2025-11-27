@@ -1,8 +1,7 @@
 import { createRequire } from 'module';
 import path from 'path';
 
-import { packageNames } from './packageNames.js';
-
+import { packageNames } from 'vx/packageNames.js';
 import vxPath from 'vx/vxPath.js';
 
 const require = createRequire(import.meta.url);

@@ -1,9 +1,8 @@
-import joinTruthy from '../../../util/joinTruthy.js';
-import * as taggedBranch from '../../../util/taggedBranch.js';
-import { usePackage } from '../../../vxContext.js';
-
 import exec from 'vx/exec.js';
 import * as logger from 'vx/logger.js';
+import joinTruthy from 'vx/util/joinTruthy.js';
+import * as taggedBranch from 'vx/util/taggedBranch.js';
+import { usePackage } from 'vx/vxContext.js';
 
 /**
  * Publishes the currently scoped package to npm with optional dist-tag.

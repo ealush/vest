@@ -1,10 +1,9 @@
 import { execSync } from 'child_process';
 
-import { STABLE_BRANCH, CURRENT_BRANCH } from '../../../util/taggedBranch.js';
-
 import IGNORE_PATTERN from './commitIgnorePattern.js';
 
 import * as logger from 'vx/logger.js';
+import { STABLE_BRANCH, CURRENT_BRANCH } from 'vx/util/taggedBranch.js';
 
 /**
  * Lists all the commits and their changed files:

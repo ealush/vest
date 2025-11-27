@@ -3,8 +3,6 @@ import fs from 'fs';
 import { format } from 'date-fns';
 import fse from 'fs-extra';
 
-import * as opts from '../../../opts.js';
-import { usePackage } from '../../../vxContext.js';
 import determineLevel from '../determineChangeLevel.js';
 import {
   KEYWORD_MAJOR,
@@ -14,6 +12,8 @@ import {
 } from '../releaseKeywords.js';
 
 import * as logger from 'vx/logger.js';
+import * as opts from 'vx/opts.js';
+import { usePackage } from 'vx/vxContext.js';
 import vxPath from 'vx/vxPath.js';
 
 /**

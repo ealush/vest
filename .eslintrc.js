@@ -21,7 +21,7 @@ module.exports = {
     expect: true,
     vi: true,
   },
-  ignorePatterns: ['*.d.ts', '/website/'],
+  ignorePatterns: ['*.d.ts', '/website/', '/vx/**'],
   overrides: [
     {
       files: ['./packages/*/src/**/*.*'],

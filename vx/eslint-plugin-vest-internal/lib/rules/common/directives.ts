@@ -4,7 +4,18 @@ const DIRECTIVE_NAME_DELIMITER = '-';
 
 const DIRECTIVES = new Set([DIRECTIVE_ALLOW]);
 
-export function isAllowed(context, node, id, ruleName) {
+export { isAllowed };
+
+/**
+ * Checks whether an identifier is allowed by vx directive comments.
+ */
+function isAllowed(
+  context: any,
+  node: any,
+  id: any,
+  ruleName: string,
+): boolean {
+  // This hnadles cases like: `const emit = useEmit();`
   if (id?.type === 'Identifier' && id?.parent?.type === 'VariableDeclarator') {
     return isAllowed(context, id.parent, id.parent, ruleName);
   }
@@ -13,7 +24,7 @@ export function isAllowed(context, node, id, ruleName) {
     node?.loc?.start?.column === 0 ? node : node?.parent;
 
   return (context.getCommentsBefore?.(nodeToCheckForComments) ?? []).some(
-    comment => {
+    (comment: any) => {
       if (!comment.value) {
         return false;
       }
@@ -36,7 +47,10 @@ export function isAllowed(context, node, id, ruleName) {
   );
 }
 
-function isDirective(name, target) {
+/**
+ * Validates a directive name and optional target.
+ */
+function isDirective(name: string, target?: string): boolean {
   const [prefix, directiveName] = name.split(DIRECTIVE_NAME_DELIMITER);
 
   const isValidDirective =

@@ -2,14 +2,14 @@ import path from 'path';
 
 import sample from 'lodash/sample.js';
 
-import * as opts from '../../../opts.js';
-import * as packageNames from '../../../packageNames.js';
-import packageJson from '../../../util/packageJson.js';
 import listAllChangesSinceStableBranch from '../github/listAllChangesSinceStableBranch.js';
 import matchPackageNameInCommit from '../github/matchPackageNameInCommit.js';
 
 import exec from 'vx/exec.js';
 import * as logger from 'vx/logger.js';
+import * as opts from 'vx/opts.js';
+import * as packageNames from 'vx/packageNames.js';
+import packageJson from 'vx/util/packageJson.js';
 import vxPath from 'vx/vxPath.js';
 
 const RELEASE_SCRIPTS = path.resolve(

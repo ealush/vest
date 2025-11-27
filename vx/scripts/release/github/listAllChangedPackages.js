@@ -1,7 +1,6 @@
-import * as packageNames from '../../../packageNames.js';
-
 import listAllChangesSinceStableBranch from './listAllChangesSinceStableBranch.js';
 
+import * as packageNames from 'vx/packageNames.js';
 import vxPath from 'vx/vxPath.js';
 
 /**

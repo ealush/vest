@@ -1,7 +1,6 @@
 import fs from 'fs';
 
-import { usePackage } from '../vxContext.js';
-
+import { usePackage } from 'vx/vxContext.js';
 import vxPath from 'vx/vxPath.js';
 
 /**

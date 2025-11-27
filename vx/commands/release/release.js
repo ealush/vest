@@ -1,16 +1,16 @@
-import packagesToRelease from '../../scripts/release/packagesToRelease.js';
-import releasePackage from '../../scripts/release/releasePackage.js';
-import commitChangesToGit from '../../scripts/release/steps/commitChangesToGit.js';
+import * as logger from 'vx/logger.js';
+import packagesToRelease from 'vx/scripts/release/packagesToRelease.js';
+import releasePackage from 'vx/scripts/release/releasePackage.js';
+import commitChangesToGit from 'vx/scripts/release/steps/commitChangesToGit.js';
 import {
   isReleaseBranch,
   targetPackage,
   branchAllowsRelease,
   CURRENT_BRANCH,
-} from '../../util/taggedBranch.js';
-import { usePackage, withPackage, ctx } from '../../vxContext.js';
+} from 'vx/util/taggedBranch.js';
+import { usePackage, withPackage, ctx } from 'vx/vxContext.js';
 
-import * as logger from 'vx/logger.js';
-import '../../scripts/genTsConfig.js';
+import 'vx/scripts/genTsConfig.js';
 
 /**
  * Releases a specific package when scoped or the full set when not.

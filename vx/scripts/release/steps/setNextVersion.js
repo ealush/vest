@@ -1,10 +1,9 @@
 import fse from 'fs-extra';
 
-import packageJson from '../../../util/packageJson.js';
-import { isReleaseKeepVersionBranch } from '../../../util/taggedBranch.js';
-import { usePackage } from '../../../vxContext.js';
-
 import * as logger from 'vx/logger.js';
+import packageJson from 'vx/util/packageJson.js';
+import { isReleaseKeepVersionBranch } from 'vx/util/taggedBranch.js';
+import { usePackage } from 'vx/vxContext.js';
 import vxPath from 'vx/vxPath.js';
 
 /**

@@ -1,4 +1,4 @@
-import genTsConfig from '../../scripts/genTsConfig.js';
+import genTsConfig from 'vx/scripts/genTsConfig.js';
 
 /**
  * Regenerates tsconfig files for the workspace.

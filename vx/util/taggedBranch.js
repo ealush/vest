@@ -1,4 +1,4 @@
-import { packageNames } from '../packageNames.js';
+import { packageNames } from 'vx/packageNames.js';
 
 const {
   CURRENT_BRANCH = process.env.GITHUB_REF_NAME ?? 'LOCAL_DEVELOPMENT',

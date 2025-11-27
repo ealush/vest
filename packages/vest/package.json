@@ -35,6 +35,9 @@
   "bugs": {
     "url": "https://github.com/ealush/vest.git/issues"
   },
+  "scripts": {
+    "bench": "vitest bench --run --config ./vitest.config.ts"
+  },
   "dependencies": {
     "context": "^3.0.33",
     "n4s": "^5.0.28",
@@ -42,101 +45,104 @@
     "vest-utils": "^1.3.3",
     "vestjs-runtime": "^1.5.1"
   },
+  "devDependencies": {
+    "vitest": "^4.0.10"
+  },
   "exports": {
     "./exports/classnames": {
+      "types": "./types/exports/classnames.d.cts",
       "import": "./dist/exports/classnames.mjs",
-      "require": "./dist/exports/classnames.cjs",
-      "types": "./types/exports/classnames.d.cts"
+      "require": "./dist/exports/classnames.cjs"
     },
     "./exports/date": {
+      "types": "./types/exports/date.d.cts",
       "import": "./dist/exports/date.mjs",
-      "require": "./dist/exports/date.cjs",
-      "types": "./types/exports/date.d.cts"
+      "require": "./dist/exports/date.cjs"
     },
     "./exports/debounce": {
+      "types": "./types/exports/debounce.d.cts",
       "import": "./dist/exports/debounce.mjs",
-      "require": "./dist/exports/debounce.cjs",
-      "types": "./types/exports/debounce.d.cts"
+      "require": "./dist/exports/debounce.cjs"
     },
     "./exports/email": {
+      "types": "./types/exports/email.d.cts",
       "import": "./dist/exports/email.mjs",
-      "require": "./dist/exports/email.cjs",
-      "types": "./types/exports/email.d.cts"
+      "require": "./dist/exports/email.cjs"
     },
     "./exports/isURL": {
+      "types": "./types/exports/isURL.d.cts",
       "import": "./dist/exports/isURL.mjs",
-      "require": "./dist/exports/isURL.cjs",
-      "types": "./types/exports/isURL.d.cts"
+      "require": "./dist/exports/isURL.cjs"
     },
     "./exports/memo": {
+      "types": "./types/exports/memo.d.cts",
       "import": "./dist/exports/memo.mjs",
-      "require": "./dist/exports/memo.cjs",
-      "types": "./types/exports/memo.d.cts"
+      "require": "./dist/exports/memo.cjs"
     },
     "./exports/parser": {
+      "types": "./types/exports/parser.d.cts",
       "import": "./dist/exports/parser.mjs",
-      "require": "./dist/exports/parser.cjs",
-      "types": "./types/exports/parser.d.cts"
+      "require": "./dist/exports/parser.cjs"
     },
     "./exports/SuiteSerializer": {
+      "types": "./types/exports/SuiteSerializer.d.cts",
       "import": "./dist/exports/SuiteSerializer.mjs",
-      "require": "./dist/exports/SuiteSerializer.cjs",
-      "types": "./types/exports/SuiteSerializer.d.cts"
+      "require": "./dist/exports/SuiteSerializer.cjs"
     },
     "./vest": {
+      "types": "./types/vest.d.cts",
       "import": "./dist/vest.mjs",
-      "require": "./dist/vest.cjs",
-      "types": "./types/vest.d.cts"
+      "require": "./dist/vest.cjs"
     },
     "./*": {
-      "default": "./*",
-      "types": "./types/vest.d.cts"
+      "types": "./types/vest.d.cts",
+      "default": "./*"
     },
     ".": {
+      "types": "./types/vest.d.cts",
       "import": "./dist/vest.mjs",
-      "require": "./dist/vest.cjs",
-      "types": "./types/vest.d.cts"
+      "require": "./dist/vest.cjs"
     },
     "./package.json": "./package.json",
     "./classnames": {
+      "types": "./types/vest.d.cts",
       "import": "./dist/exports/classnames.mjs",
-      "require": "./dist/exports/classnames.cjs",
-      "types": "./types/vest.d.cts"
+      "require": "./dist/exports/classnames.cjs"
     },
     "./date": {
+      "types": "./types/vest.d.cts",
       "import": "./dist/exports/date.mjs",
-      "require": "./dist/exports/date.cjs",
-      "types": "./types/vest.d.cts"
+      "require": "./dist/exports/date.cjs"
     },
     "./debounce": {
+      "types": "./types/vest.d.cts",
       "import": "./dist/exports/debounce.mjs",
-      "require": "./dist/exports/debounce.cjs",
-      "types": "./types/vest.d.cts"
+      "require": "./dist/exports/debounce.cjs"
     },
     "./email": {
+      "types": "./types/vest.d.cts",
       "import": "./dist/exports/email.mjs",
-      "require": "./dist/exports/email.cjs",
-      "types": "./types/vest.d.cts"
+      "require": "./dist/exports/email.cjs"
     },
     "./isURL": {
+      "types": "./types/vest.d.cts",
       "import": "./dist/exports/isURL.mjs",
-      "require": "./dist/exports/isURL.cjs",
-      "types": "./types/vest.d.cts"
+      "require": "./dist/exports/isURL.cjs"
     },
     "./memo": {
+      "types": "./types/vest.d.cts",
       "import": "./dist/exports/memo.mjs",
-      "require": "./dist/exports/memo.cjs",
-      "types": "./types/vest.d.cts"
+      "require": "./dist/exports/memo.cjs"
     },
     "./parser": {
+      "types": "./types/vest.d.cts",
       "import": "./dist/exports/parser.mjs",
-      "require": "./dist/exports/parser.cjs",
-      "types": "./types/vest.d.cts"
+      "require": "./dist/exports/parser.cjs"
     },
     "./SuiteSerializer": {
+      "types": "./types/vest.d.cts",
       "import": "./dist/exports/SuiteSerializer.mjs",
-      "require": "./dist/exports/SuiteSerializer.cjs",
-      "types": "./types/vest.d.cts"
+      "require": "./dist/exports/SuiteSerializer.cjs"
     },
     "./vest.d.ts": "./types/vest.d.ts",
     "./types/*": "./types/*",

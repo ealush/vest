@@ -67,6 +67,14 @@ Normal vitest options can be passed to the test command.
 
 `vx test --watch`
 
+### Performance benchmarking
+
+Vest includes a lightweight benchmark suite using Vitest. Run it before and after changes to the core reconciler to spot regressions:
+
+```bash
+yarn workspace vest bench
+```
+
 ### Building your changes
 
 To build your changes, you need to run `vx build`. This will build all packages.

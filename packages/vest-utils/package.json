@@ -23,29 +23,29 @@
   "license": "MIT",
   "exports": {
     "./exports/minifyObject": {
+      "types": "./types/exports/minifyObject.d.cts",
       "import": "./dist/exports/minifyObject.mjs",
-      "require": "./dist/exports/minifyObject.cjs",
-      "types": "./types/exports/minifyObject.d.cts"
+      "require": "./dist/exports/minifyObject.cjs"
     },
     "./vest-utils": {
+      "types": "./types/vest-utils.d.cts",
       "import": "./dist/vest-utils.mjs",
-      "require": "./dist/vest-utils.cjs",
-      "types": "./types/vest-utils.d.cts"
+      "require": "./dist/vest-utils.cjs"
     },
     "./*": {
-      "default": "./*",
-      "types": "./types/vest-utils.d.cts"
+      "types": "./types/vest-utils.d.cts",
+      "default": "./*"
     },
     ".": {
+      "types": "./types/vest-utils.d.cts",
       "import": "./dist/vest-utils.mjs",
-      "require": "./dist/vest-utils.cjs",
-      "types": "./types/vest-utils.d.cts"
+      "require": "./dist/vest-utils.cjs"
     },
     "./package.json": "./package.json",
     "./minifyObject": {
+      "types": "./types/vest-utils.d.cts",
       "import": "./dist/exports/minifyObject.mjs",
-      "require": "./dist/exports/minifyObject.cjs",
-      "types": "./types/vest-utils.d.cts"
+      "require": "./dist/exports/minifyObject.cjs"
     },
     "./vest-utils.d.ts": "./types/vest-utils.d.ts",
     "./types/*": "./types/*",
@@ -54,36 +54,36 @@
   "publishConfig": {
     "exports": {
       "./exports/minifyObject": {
+        "types": "./types/exports/minifyObject.d.cts",
         "import": "./dist/exports/minifyObject.mjs",
-        "require": "./dist/exports/minifyObject.cjs",
-        "types": "./types/exports/minifyObject.d.cts"
+        "require": "./dist/exports/minifyObject.cjs"
       },
       "./vest-utils": {
+        "types": "./types/vest-utils.d.cts",
         "import": "./dist/vest-utils.mjs",
-        "require": "./dist/vest-utils.cjs",
-        "types": "./types/vest-utils.d.cts"
+        "require": "./dist/vest-utils.cjs"
       },
       "./*": {
-        "default": "./*",
-        "types": "./types/vest-utils.d.cts"
+        "types": "./types/vest-utils.d.cts",
+        "default": "./*"
       },
       ".": {
+        "types": "./types/vest-utils.d.cts",
         "import": "./dist/vest-utils.mjs",
-        "require": "./dist/vest-utils.cjs",
-        "types": "./types/vest-utils.d.cts"
+        "require": "./dist/vest-utils.cjs"
       },
       "./package.json": "./package.json",
       "./vest-utils.d.ts": {
-        "default": "./types/vest-utils.d.ts",
-        "types": "./types/vest-utils.d.cts"
+        "types": "./types/vest-utils.d.cts",
+        "default": "./types/vest-utils.d.ts"
       },
       "./types/*": {
-        "default": "./types/*",
-        "types": "./types/vest-utils.d.cts"
+        "types": "./types/vest-utils.d.cts",
+        "default": "./types/*"
       },
       "./dist/*": {
-        "default": "./dist/*",
-        "types": "./types/vest-utils.d.cts"
+        "types": "./types/vest-utils.d.cts",
+        "default": "./dist/*"
       }
     }
   }

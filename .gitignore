@@ -15,6 +15,7 @@ packages/*/*
 !packages/*/.npmignore
 !packages/*/tsconfig.json
 !packages/*/vitest.config.ts
+!packages/*/bench
 .env
 
 playground.*

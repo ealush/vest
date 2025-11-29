@@ -1,7 +1,7 @@
 import { Brand, CB, Nullable } from 'vest-utils';
+import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
-import { StandardSchemaV1 } from '../suite/standardSchemaSpec';
 
 import { Severity } from './Severity';
 import { SummaryFailure } from './SummaryFailure';

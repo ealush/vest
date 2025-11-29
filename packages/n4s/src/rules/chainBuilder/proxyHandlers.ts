@@ -1,4 +1,5 @@
 import { hasOwnProperty } from 'vest-utils';
+import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { RuleInstance } from '../../utils/RuleInstance';
 
@@ -7,23 +8,34 @@ import { getLazyRule } from './lazyRegistry';
 
 export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
   rules: Record<
-    keyof Omit<T, 'run' | 'infer' | 'test'>,
+    keyof Omit<T, 'infer' | 'test' | 'validate' | '~standard'>,
     (...args: any[]) => boolean
   >,
   {
     add,
-    run,
     test,
+    validate,
+    run,
     message,
+    '~standard': standard,
   }: {
     add: (p: Predicate) => T;
-    run: T['run'];
     test: T['test'];
+    validate: T['validate'];
+    run: T['run'];
     message: (msg: any) => T;
+    '~standard': StandardSchemaV1.Props<any, any>;
   },
 ) {
-  const methods = { run, test, message };
-  const methodKeys = new Set(['run', 'infer', 'test', 'message']);
+  const methods = { '~standard': standard, message, run, test, validate };
+  const methodKeys = new Set([
+    'infer',
+    'test',
+    'validate',
+    'run',
+    'message',
+    '~standard',
+  ]);
 
   return {
     get(_target: T, prop: string | symbol, receiver: any) {

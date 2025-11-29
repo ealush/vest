@@ -1,4 +1,5 @@
 import { CB } from 'vest-utils';
+import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { Subscribe } from '../core/VestBus/VestBus';
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
@@ -13,7 +14,6 @@ import {
 import { SuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 
 import { TTypedMethods } from './getTypedMethods';
-import { StandardSchemaV1 } from './standardSchemaSpec';
 
 export type SuiteCallback<Data = any, T extends CB = CB> = T extends (
   ...args: infer Args

@@ -27,6 +27,11 @@
       "import": "./dist/exports/minifyObject.mjs",
       "require": "./dist/exports/minifyObject.cjs"
     },
+    "./exports/standardSchemaSpec": {
+      "types": "./types/exports/standardSchemaSpec.d.cts",
+      "import": "./dist/exports/standardSchemaSpec.mjs",
+      "require": "./dist/exports/standardSchemaSpec.cjs"
+    },
     "./vest-utils": {
       "types": "./types/vest-utils.d.cts",
       "import": "./dist/vest-utils.mjs",
@@ -46,6 +51,11 @@
       "types": "./types/vest-utils.d.cts",
       "import": "./dist/exports/minifyObject.mjs",
       "require": "./dist/exports/minifyObject.cjs"
+    },
+    "./standardSchemaSpec": {
+      "types": "./types/vest-utils.d.cts",
+      "import": "./dist/exports/standardSchemaSpec.mjs",
+      "require": "./dist/exports/standardSchemaSpec.cjs"
     },
     "./vest-utils.d.ts": "./types/vest-utils.d.ts",
     "./types/*": "./types/*",

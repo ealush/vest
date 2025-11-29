@@ -1,6 +1,6 @@
-import { InferSchemaData, TSchema } from '../suiteResult/SuiteResultTypes';
+import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
-import { StandardSchemaV1 } from './standardSchemaSpec';
+import { InferSchemaData, TSchema } from '../suiteResult/SuiteResultTypes';
 
 export function getStandardSchema<S extends TSchema = undefined>(
   staticRunner: any,

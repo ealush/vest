@@ -94,25 +94,6 @@ module.exports = {
     'import/no-self-import': 2,
     'import/no-unresolved': [2],
     'import/no-useless-path-segments': 2,
-    'import/order': [
-      'warn',
-      {
-        alphabetize: {
-          order: 'asc',
-        },
-        'newlines-between': 'always',
-        pathGroups: [
-          {
-            pattern: '^vx',
-            group: 'external',
-          },
-          {
-            pattern: './vx',
-            group: 'external',
-          },
-        ],
-      },
-    ],
     'max-params': [1, { max: 4 }],
     'no-console': 2,
     'no-else-return': 1,

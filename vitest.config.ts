@@ -1,6 +1,5 @@
-import path from 'path';
 import { fileURLToPath } from 'url';
-
+import path from 'path';
 import { defineConfig } from 'vitest/config';
 
 const __filename = fileURLToPath(import.meta.url);

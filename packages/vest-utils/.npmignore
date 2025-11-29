@@ -4,6 +4,7 @@ src
 !types/
 !dist/
 tsconfig.json
+!standardSchemaSpec/
 !minifyObject/
 
 # Manual Section. Edit at will.

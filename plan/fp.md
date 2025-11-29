@@ -1,261 +1,263 @@
-# Refactoring Plan: Adopt Result Monad in Internal Functions
+# Refactoring Plan: Implement StandardSchema Support in n4s
 
-## 1\. Establishment of User Intent
+This plan details the steps to integrate `StandardSchema` support into the `n4s` (enforce) package. This will allow `n4s` validators (lazy, schema, and compound rules) to be used interchangeably with other schema validation libraries within the Vest ecosystem.
 
-The user wants to increase the adoption of the `Result` monad pattern (from `vest-utils`) within the `packages/vest` codebase. The goal is to refactor **10 internal, non-exported functions** to return a `Result` type (`Success` or `Failure`) instead of their current direct return values, and then unwrap these results in their calling functions. This promotes type safety and functional programming principles without altering the public API.
+## 1\. Codebase Exploration & Mapping
 
-## 2\. Identify Relevant Files and Candidates
+**Reference Context:**
 
-Based on the analysis, the following 10 internal functions across 3 files have been selected for refactoring. These functions are internal (not exported) and are used by exported consumers in the same module.
+- **Target Package:** `packages/n4s`
+- **Key Utilities:** `packages/vest-utils/src/suite/standardSchemaSpec.ts` (Contains `StandardSchemaV1` type definition).
+- **Consumer:** `packages/vest` (specifically `createSuite`).
 
-**File 1: `packages/vest/src/suiteResult/selectors/collectFailures.ts`**
+**Component Analysis:**
 
-1.  `getByFieldName`
-2.  `collectAll`
+- **`Lazy` (n4s/src/lazy.ts):** currently defines the `run()` method which executes the validation chain. This needs to be renamed to `validate()` and exposed via the `~standard` property.
+- **Schema Rules (n4s/src/rules/schemaRules/):** Rules like `shape`, `partial`, `loose` likely return a `Lazy` instance or a similar object with a `run` method.
+- **Compound Rules (n4s/src/rules/compoundRules/):** Rules like `allOf`, `anyOf`, `oneOf` behave similarly to schema rules.
+- **Types:** The `Lazy` interface in `n4sTypes.ts` (or equivalent) defines the public API of the enforcement chain.
 
-**File 2: `packages/vest/src/suiteResult/selectors/suiteSelectors.ts`**
-3\. `getFailure`
-4\. `getFailures`
-5\. `getFailuresByGroup`
-6\. `hasFailures`
-7\. `hasFailuresByGroup`
+**Change Impact:**
 
-**File 3: `packages/vest/src/core/test/testLevelFlowControl/verifyTestRun.ts`**
-8\. `skipTestAndReturn`
-9\. `omitTestAndReturn`
-10\. `useForceSkipIfInSkipWhen`
+- Renaming `run` to `validate` is a breaking change for internal consumers if not handled carefully.
+- The `validate` method must conform to the `StandardSchemaV1` signature (returning a `Result` object rather than just throwing or returning boolean).
 
-## 3\. Unit Test Contract (TDD)
+---
 
-We will create a regression test file `packages/vest/src/__tests__/RefactorRegression.test.ts` to ensure the behavior of the exported consumers remains unchanged.
+## 2\. TDD Strategy: The Unit Test Contract
 
-**Test File:** `packages/vest/src/__tests__/RefactorRegression.test.ts`
+We will create a new test file to strictly define the `StandardSchema` compliance of `n4s` lazy validators.
+
+**File:** `packages/n4s/src/__tests__/standardSchema.test.ts`
 
 ```typescript
-import { TestSeverity } from 'vestjs-runtime'; // Mock or import if available
-import { makeResult } from 'vest-utils';
-import { gatherFailures } from '../suiteResult/selectors/collectFailures';
-import { suiteSelectors } from '../suiteResult/selectors/suiteSelectors';
-import { useVerifyTestRun } from '../core/test/testLevelFlowControl/verifyTestRun';
-import { VestTest } from '../core/isolate/IsolateTest/VestTest';
-import { IsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
+import { enforce } from '../n4s';
+import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
-// Mocks to support the test execution
-const mockTestObject = (fieldName, severity = 'error_count') => ({
-  fieldName,
-  [severity]: 1,
-});
-
-describe('Refactor Regression Tests', () => {
-  describe('collectFailures.ts consumers', () => {
-    it('gatherFailures should return specific field failures when fieldName is provided', () => {
-      const group = {
-        fieldA: { error_count: 1, errors: ['err1'] },
-        fieldB: { error_count: 0, errors: [] },
-      };
-      // @ts-ignore
-      const result = gatherFailures(group, 'errors', 'fieldA');
-      expect(result).toEqual(['err1']);
+describe('n4s StandardSchema Support', () => {
+  describe('Lazy Interface', () => {
+    it('Should have the "~standard" property', () => {
+      const validator = enforce.lazy(v => v.isString());
+      expect(validator).toHaveProperty('~standard');
+      expect(validator['~standard'].version).toBe(1);
+      expect(validator['~standard'].vendor).toBe('n4s');
     });
 
-    it('gatherFailures should return all failures when fieldName is omitted', () => {
-      const group = {
-        fieldA: { error_count: 1, errors: ['err1'] },
-        fieldB: { error_count: 1, errors: ['err2'] },
-      };
+    it('Should implement validate method matching StandardSchema spec', async () => {
+      const validator = enforce.lazy(v => v.isString());
+
+      const validResult = await validator['~standard'].validate('hello');
+      expect(validResult.issues).toBeNull();
       // @ts-ignore
-      const result = gatherFailures(group, 'errors');
-      expect(result).toEqual({ fieldA: ['err1'], fieldB: ['err2'] });
+      expect(validResult.value).toBe('hello');
+
+      const invalidResult = await validator['~standard'].validate(123);
+      expect(invalidResult.issues).toBeInstanceOf(Array);
+      expect(invalidResult.issues?.length).toBeGreaterThan(0);
     });
   });
 
-  describe('suiteSelectors.ts consumers', () => {
-    const summary = {
-      valid: false,
-      error_count: 1,
-      warn_count: 0,
-      test_count: 1,
-      errors: [{ fieldName: 'f1', message: 'e1' }],
-      warnings: [],
-      groups: {
-        g1: {
-          f1: { error_count: 1, errors: ['e1'] },
-        },
-      },
-      tests: {
-        f1: { error_count: 1, errors: ['e1'], pendingCount: 0, testCount: 1 },
-      },
-    };
+  describe('Shape/Schema Rules', () => {
+    it('enforce.shape should adhere to StandardSchema', async () => {
+      const shape = enforce.shape({
+        name: enforce.isString(),
+        age: enforce.isNumber(),
+      });
 
-    // @ts-ignore
-    const selectors = suiteSelectors(summary);
+      expect(shape['~standard']).toBeDefined();
 
-    it('should correctly retrieve error existence via hasErrors', () => {
-      expect(selectors.hasErrors('f1')).toBe(true);
-      expect(selectors.hasErrors('f2')).toBe(false);
-    });
-
-    it('should correctly retrieve errors via getErrors', () => {
-      expect(selectors.getErrors('f1')).toEqual(['e1']);
-    });
-
-    it('should correctly retrieve failures by group via hasErrorsByGroup', () => {
-      expect(selectors.hasErrorsByGroup('g1')).toBe(true);
-      expect(selectors.hasErrorsByGroup('g2')).toBe(false);
+      const res = await shape['~standard'].validate({ name: 'Bob', age: 30 });
+      expect(res.issues).toBeNull();
     });
   });
 
-  // Note: verifyTestRun tests rely on heavy runtime mocking (VestTest state).
-  // We rely on existing integration tests for full coverage, but basic invocation can be tested if feasible.
+  describe('Direct validate() method usage', () => {
+    it('should expose .validate() as an alias to the standard validation', async () => {
+      const validator = enforce.lazy(v => v.equals(5));
+      const res = await validator.validate(5);
+      expect(res.issues).toBeNull();
+    });
+  });
 });
 ```
 
-## 4\. Step-by-Step Execution Plan
+---
 
-### Step 1: Create Regression Test File
+## 3\. Step-by-Step Execution Plan
 
-Create the file defined above to verify the current behavior of the code before and after refactoring.
+### ⚠️ Pre-Work Validation
 
-- **Action:** Create `packages/vest/src/__tests__/RefactorRegression.test.ts`.
-- **Command:** `yarn test run` (Ensure it passes).
+Run the following to ensure a clean state:
 
-### Step 2: Refactor `collectFailures.ts`
+```bash
+yarn build
+yarn test run
+```
 
-Modify `packages/vest/src/suiteResult/selectors/collectFailures.ts`.
+### Phase 1: Type Definitions & Imports
 
-1.  **Import `makeResult` and `Result` from `vest-utils`**.
-    ```typescript
-    import { isPositive, makeResult, Result } from 'vest-utils';
-    ```
-2.  **Refactor `getByFieldName`**:
-    - Change return type to `Result<string[]>`.
-    - Wrap return value in `makeResult.Ok(...)`.
-3.  **Refactor `collectAll`**:
-    - Change return type to `Result<FailureMessages>`.
-    - Wrap return value in `makeResult.Ok(...)`.
-4.  **Update `gatherFailures`**:
-    - Unwrap the calls to `getByFieldName` and `collectAll`.
-    - Example:
-      ```typescript
-      export function gatherFailures(...): string[] | FailureMessages {
-        return (fieldName
-          ? getByFieldName(testGroup, severityKey, fieldName)
-          : collectAll(testGroup, severityKey)
-        ).unwrap();
-      }
-      ```
+**Goal:** Import the spec and update `n4s` types to recognize `StandardSchema`.
 
-### Step 3: Refactor `suiteSelectors.ts`
+1.  **Modify `packages/n4s/src/n4sTypes.ts` (or `lazy.ts` depending on export location):**
+    - Import `StandardSchemaV1` from `vest-utils/standardSchemaSpec`.
+    - Update the `LazyRule` or `Lazy` interface to include the `~standard` property.
 
-Modify `packages/vest/src/suiteResult/selectors/suiteSelectors.ts`.
+**Checklist:**
 
-1.  **Import `makeResult` and `Result` from `vest-utils`**.
-2.  **Refactor `getFailures`**:
-    - Return `Result<FailureMessages | string[]>` (or specific based on overload, but typically `Result<any>` internally if using overloads is complex, or just wrap the implementation result).
-    - Wrap calls to `gatherFailures` in `makeResult.Ok`.
-3.  **Refactor `getFailuresByGroup`**:
-    - Return `Result<GetFailuresResponse>`.
-    - Wrap return in `makeResult.Ok`.
-4.  **Refactor `hasFailures`**:
-    - Return `Result<boolean>`.
-    - Wrap return in `makeResult.Ok`.
-5.  **Refactor `hasFailuresByGroup`**:
-    - Return `Result<boolean>`.
-    - Wrap return in `makeResult.Ok`.
-6.  **Refactor `getFailure`**:
-    - Return `Result<Maybe<SummaryFailure<F, G> | string>>`.
-    - Wrap return in `makeResult.Ok`.
-7.  **Update `suiteSelectors` factory**:
-    - Update all closure methods (`isValid`, `hasErrors`, `getErrors`, etc.) to call `.unwrap()` on the refactored internal functions.
-    - Example:
-      ```typescript
-      function hasErrors(fieldName?: InputFieldName<F>): boolean {
-        return hasFailures(
-          summary,
-          SeverityCount.ERROR_COUNT,
-          asFieldName(fieldName),
-        ).unwrap();
-      }
-      ```
-    - **Note:** `isValid` and `isValidByGroup` were **not** selected for refactoring (as they contained logic not just delegating), so leave them unless they depend on refactored functions (they do not appear to).
+- [ ] Import `StandardSchemaV1`.
+- [ ] Update generic `Lazy` interface to extend or include `StandardSchemaV1`.
+- [ ] Ensure `validate` method is defined in the type interface: `validate(input: any): Promise<StandardSchemaV1.Result<T>> | StandardSchemaV1.Result<T>`.
 
-### Step 4: Refactor `verifyTestRun.ts`
+### Phase 2: Refactor `Lazy` Implementation
 
-Modify `packages/vest/src/core/test/testLevelFlowControl/verifyTestRun.ts`.
+**Goal:** Rename `run` to `validate` and implement the `~standard` property.
 
-1.  **Import `makeResult` and `Result` from `vest-utils`**.
-2.  **Refactor `skipTestAndReturn`**:
-    - Return `Result<TIsolateTest>`.
-    - Wrap return in `makeResult.Ok`.
-3.  **Refactor `omitTestAndReturn`**:
-    - Return `Result<TIsolateTest>`.
-    - Wrap return in `makeResult.Ok`.
-4.  **Refactor `useForceSkipIfInSkipWhen`**:
-    - Return `Result<TIsolateTest>`.
-    - Wrap return in `makeResult.Ok`.
-5.  **Update `useVerifyTestRun`**:
-    - Call `.unwrap()` on the returns of these functions.
-    - Example:
-      ```typescript
-      if (useShouldSkipBasedOnMode(testData)) {
-        return skipTestAndReturn(testObject).unwrap();
-      }
-      ```
+1.  **Modify `packages/n4s/src/lazy.ts`:**
+    - Rename the existing `run` method to `validate`.
+    - **Crucial:** Ensure `validate` logic adapts the internal `n4s` result (which might throw or return a Vest result) into the `StandardSchema` result format (`{ value: T } | { issues: Issue[] }`).
+    - Add the `~standard` property to the class/object.
+    - _Backward Compatibility:_ If necessary, keep `run` as a deprecated alias that calls `validate` (or vice versa) to prevent massive breakage during refactor, but the goal implies replacement.
 
-### Step 5: Verify Changes
+**Code Snippet Example (Lazy Class/Object):**
 
-1.  Run the regression test: `yarn test packages/vest/src/__tests__/RefactorRegression.test.ts`.
-2.  Run the full suite: `yarn test run`.
-3.  Run type checks: `yarn vx typecheck`.
-4.  Run cleanup: Remove `RefactorRegression.test.ts` if desired, or keep it for future safety.
+```typescript
+// inside Lazy class or factory
+public async validate(input: unknown): Promise<StandardSchemaV1.Result<Output>> {
+  try {
+    // ... execute existing enforcement logic ...
+    return { value: input as Output, issues: null };
+  } catch (err) {
+    return { issues: [{ message: err.message, path: [] }] }; // Adapt n4s error to StandardSchemaIssue
+  }
+}
 
-## 5\. Detailed Checklist
+// Add the property
+public get "~standard"() {
+  return {
+    version: 1,
+    vendor: 'n4s',
+    validate: this.validate.bind(this)
+  };
+}
+```
 
-- [ ] **Preparation**
+**Checklist:**
 
-  - [ ] Run `yarn build` and `yarn test run` to ensure clean slate.
-  - [ ] Create `packages/vest/src/__tests__/RefactorRegression.test.ts` with the provided content.
+- [ ] Rename `run` implementation to `validate`.
+- [ ] Implement result transformation (n4s throws -\> StandardSchema Result object).
+- [ ] Add `get "~standard"()` accessor.
+- [ ] Verify `vendor` is set to `'n4s'`.
 
-- [ ] **Refactor `collectFailures.ts`**
+### Phase 3: Update Schema & Compound Rules
 
-  - [ ] Import `{ makeResult, Result }` from `vest-utils`.
-  - [ ] Update `getByFieldName` signature to `Result<string[]>`.
-  - [ ] Update `getByFieldName` body to return `makeResult.Ok(...)`.
-  - [ ] Update `collectAll` signature to `Result<FailureMessages>`.
-  - [ ] Update `collectAll` body to return `makeResult.Ok(...)`.
-  - [ ] Update `gatherFailures` to `.unwrap()` the results.
+**Goal:** Ensure specific rule builders (`shape`, `allOf`, etc.) use the new `validate` method name and return compliant objects.
 
-- [ ] **Refactor `suiteSelectors.ts`**
+1.  **Modify `packages/n4s/src/rules/schemaRules/schemaRules.ts` (and `shape.ts`, etc.):**
 
-  - [ ] Import `{ makeResult, Result }` from `vest-utils`.
-  - [ ] Update `getFailures` to return `Result<GetFailuresResponse>`.
-  - [ ] Update `getFailuresByGroup` to return `Result<GetFailuresResponse>`.
-  - [ ] Update `hasFailures` to return `Result<boolean>`.
-  - [ ] Update `hasFailuresByGroup` to return `Result<boolean>`.
-  - [ ] Update `getFailure` to return `Result<Maybe<SummaryFailure<F, G> | string>>`.
-  - [ ] Update `suiteSelectors` function:
-    - [ ] Add `.unwrap()` to `hasErrors` implementation.
-    - [ ] Add `.unwrap()` to `hasWarnings` implementation.
-    - [ ] Add `.unwrap()` to `hasWarningsByGroup` implementation.
-    - [ ] Add `.unwrap()` to `hasErrorsByGroup` implementation.
-    - [ ] Add `.unwrap()` to `getWarnings` implementation.
-    - [ ] Add `.unwrap()` to `getWarning` implementation.
-    - [ ] Add `.unwrap()` to `getErrors` implementation.
-    - [ ] Add `.unwrap()` to `getError` implementation.
-    - [ ] Add `.unwrap()` to `getErrorsByGroup` implementation.
-    - [ ] Add `.unwrap()` to `getWarningsByGroup` implementation.
+    - These files often internally call `.run()`. Update them to call `.validate()` if they are recursively validating.
+    - Ensure the objects returned by `shape`, `partial`, etc., are instances of the updated `Lazy` (or equivalent) so they inherit `~standard`.
 
-- [ ] **Refactor `verifyTestRun.ts`**
+2.  **Modify `packages/n4s/src/rules/compoundRules/compoundRules.ts`:**
 
-  - [ ] Import `{ makeResult, Result }` from `vest-utils`.
-  - [ ] Update `skipTestAndReturn` to return `Result<TIsolateTest>`.
-  - [ ] Update `omitTestAndReturn` to return `Result<TIsolateTest>`.
-  - [ ] Update `useForceSkipIfInSkipWhen` to return `Result<TIsolateTest>`.
-  - [ ] Update `useVerifyTestRun` to `.unwrap()` calls to the above functions.
+    - Update internal usage of `.run()` to `.validate()`.
+    - Ensure `allOf`, `anyOf`, `oneOf` return standard-compliant objects.
 
-- [ ] **Verification**
+**Checklist:**
 
-  - [ ] Run `yarn build` to ensure no build errors.
-  - [ ] Run `yarn test run` to pass all tests. (run avoids watch mode)
-  - [ ] Run `yarn vx typecheck` to ensure no type errors.
-  - [ ] Run `yarn vx typecheck-tests` to ensure no type errors.
+- [ ] Search codebase for `.run(` usages within `packages/n4s`.
+- [ ] Replace internal calls with `.validate(` or `['~standard'].validate(`.
+- [ ] Ensure `shape()` returns a StandardSchema compliant object.
+- [ ] Ensure `compound` rules return StandardSchema compliant objects.
+
+### Phase 4: Integration with Vest
+
+**Goal:** Ensure `createSuite` can consume the updated `n4s` validators.
+
+1.  **Verify `packages/vest/src/suite/createSuite.ts` (or `createWithSchema.ts`):**
+
+    - If `createSuite` detects schemas via Duck Typing (checking for `~standard`), the new `n4s` objects should work automatically.
+    - If `createSuite` has specific `instanceof` checks for `n4s`, ensure those logic paths are compatible with the new structure.
+
+2.  **Test Integration:**
+
+    - Create a test case in `packages/vest/src/__tests__/integration.standardschema.test.ts`.
+
+<!-- end list -->
+
+```typescript
+import { create, test, enforce } from 'vest';
+
+const suite = create(data => {
+  test('field', 'msg', () => {
+    // This uses the new n4s StandardSchema support directly
+    enforce(data).shape({
+      id: enforce.isNumber(),
+    });
+  });
+});
+
+// Run suite and verify
+```
+
+**Checklist:**
+
+- [ ] Verify `vest` handles the new `n4s` object structure.
+- [ ] Run full test suite to ensure no regressions in basic Vest functionality.
+
+### Phase 5: Documentation Updates
+
+**Goal:** Document the new API capability.
+
+1.  **Modify `packages/n4s/README.md`:**
+
+    - Add a section about StandardSchema compatibility.
+    - Explain that `enforce.lazy` and `enforce.shape` now return StandardSchema v1 compliant objects.
+
+2.  **Modify `packages/vest/README.md` (Optional):**
+
+    - Briefly mention that Vest's `n4s` is now a StandardSchema provider.
+
+---
+
+## 4\. Documentation Changes
+
+**File:** `packages/n4s/README.md`
+
+**Insert Section:** "StandardSchema Support"
+
+````markdown
+## StandardSchema Support
+
+`n4s` fully supports the [StandardSchema](https://standardschema.dev/) specification (v1).
+All lazy validators, shapes, and compound rules expose the `~standard` property.
+
+```javascript
+import { enforce } from 'n4s';
+
+const userSchema = enforce.shape({
+  name: enforce.isString(),
+  age: enforce.isNumber(),
+});
+
+// Use with any StandardSchema consumer
+const result = await userSchema['~standard'].validate({ name: 'Bob', age: 20 });
+```
+````
+
+```
+
+---
+
+## 5. Verification & Final Checklist
+
+**⚠️ CRITICAL:** Run these commands to finalize.
+
+- [ ] `yarn build` - Ensure typescript compilation succeeds with new types.
+- [ ] `yarn test run` - Ensure the new `standardSchema.test.ts` passes and no regressions in `n4s` or `vest`.
+- [ ] `yarn vx typecheck` - Verify strict type compliance.
+- [ ] `yarn vx typecheck-tests` - Verify test types.
+
+**Final Sanity Check:**
+- Did we remove/replace `run` entirely? If so, verify no external consumers in the monorepo depended on it (e.g., `vest-utils` tests).
+- Does `validate` handle asynchronous rules (Promises) correctly as per StandardSchema spec? (Ensure `validate` return type allows `Promise<Result>`).
+```

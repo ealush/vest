@@ -1,19 +1,37 @@
-import { RuleInstance } from '../../../utils/RuleInstance';
 import { describe, it, expect } from 'vitest';
 
 import { enforce } from '../../../n4s';
+import { RuleInstance } from '../../../utils/RuleInstance';
 
-const longerThan = (n: number): RuleInstance<string> => ({
-  run: (v: any) => ({ pass: typeof v === 'string' && v.length > n, type: v }),
-  test: (v: any) => typeof v === 'string' && v.length > n,
-  infer: {} as string,
-});
+const longerThan = (n: number): RuleInstance<string> =>
+  ({
+    run: (v: any) => ({ pass: typeof v === 'string' && v.length > n, type: v }),
+    test: (v: any) => typeof v === 'string' && v.length > n,
+    validate: (v: any) => {
+      const pass = typeof v === 'string' && v.length > n;
+      return pass
+        ? { value: v }
+        : { issues: [{ message: 'Validation failed', path: [] }] };
+    },
+    '~standard': {
+      version: 1 as const,
+      vendor: 'n4s',
+      validate: (v: any) => {
+        const pass = typeof v === 'string' && v.length > n;
+        return pass
+          ? { value: v }
+          : { issues: [{ message: 'Validation failed', path: [] }] };
+      },
+      types: { input: undefined as any, output: undefined as any },
+    },
+    infer: {} as string,
+  }) as any;
 
-const runPartialRule = <TRule extends { run: (...args: any[]) => any }>(
+const runPartialRule = <TRule extends { run: (..._args: any[]) => any }>(
   rule: TRule,
   value: unknown,
 ) =>
-  (rule as TRule & { run: (value: unknown) => ReturnType<TRule['run']> }).run(
+  (rule as TRule & { run: (_value: unknown) => ReturnType<TRule['run']> }).run(
     value,
   );
 

@@ -46,8 +46,11 @@ const config = {
             '4.x': {
               label: '4.x',
             },
-            current: {
+            '5.x': {
               label: '5.x',
+            },
+            current: {
+              label: '6',
             },
           },
         },

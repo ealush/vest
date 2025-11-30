@@ -70,7 +70,7 @@ Below is a list of all the API functions exposed by Vest.
   - [enforce.extend](./enforce/creating_custom_rules.md) - Extends the enforce API with your own custom assertions.
   - [compose](./enforce/composing_enforce_rules.md) - Compose multiple enforcers into a single enforcer.
 
-- [only](./writing_your_suite/including_and_excluding/skip_and_only.md#only-running-specific-tests-including) - Makes Vest only run the provided field names.
+- [only](./writing_your_suite/including_and_excluding/skip_and_only.md#only-running-specific-fields) - Makes Vest only run the provided field names.
   - [only.group](./writing_your_suite/including_and_excluding/skip_and_only_group.md) - Makes Vest only run the provided group names.
 - [skip](./writing_your_suite/including_and_excluding/skip_and_only.md#skipping-tests) - Makes Vest skip the provided field names.
 - [include()/include.when()](./writing_your_suite/including_and_excluding/include) - Link fields by running them together based on a criteria.

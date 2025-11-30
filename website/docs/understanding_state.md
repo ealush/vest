@@ -17,7 +17,7 @@ When you skip fields in your validation suite, Vest will merge their results fro
 
 - _Skipped field merge_: Vest merges skipped fields' previous results with the current result object.
 
-- _Lagging async test completion blocking_: When an async test doesn't finish from the previous suite run, Vest blocks the [`after()` callbacks](./writing_your_suite/accessing_the_result.md#after) or `await suite.run()` for that field from running for the previous suite result. This ensures that only the latest result is processed and prevents outdated callbacks from running.
+- _Lagging async test completion blocking_: When an async test doesn't finish from the previous suite run, Vest blocks the [`after()` callbacks](./writing_your_suite/accessing_the_result.md#after-and-await-suiterun) or `await suite.run()` for that field from running for the previous suite result. This ensures that only the latest result is processed and prevents outdated callbacks from running.
 
 # Drawbacks when using stateful validations
 
@@ -31,7 +31,7 @@ Suppose your form is a part of a single-page-app with client-side routing. In th
 
 ### Solution: Resetting suite state with `.reset()`
 
-In some cases, such as form reset, we want to discard previous validation results. This can be done with `vest.reset()`.
+In some cases, such as form reset, we want to discard previous validation results. This can be done with `suite.reset()`.
 
 `.reset()` is a property on your validation suite. Calling it will remove the suite's state.
 

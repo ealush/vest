@@ -1,80 +1,75 @@
 ---
-
 sidebar_position: 2
 title: Accessing Vest's Result
 description: Vest validations return a results object that holds all the information regarding the current run and methods to interact with the data.
-keywords:
-[
-Vest,
-Results object,
-methods,
-selectors,
-hasErrors,
-isValid,
+keywords: [Vest, Results object, methods, selectors, hasErrors, isValid]
+---
 
-````js
+# Accessing Vest's Result
+
+Vest validations return a results object that holds all the information regarding the current run and methods to interact with the data. You can access it in three ways:
+
+- `const result = suite.run(data);` — runs the suite and returns the latest result (Promise-like when async).
+- `const result = suite.get();` — returns the current result without running.
+- `suite.hasErrors()`, `suite.isValid()`, etc. — selectors are also exposed directly on the suite.
+
+```js
+const result = suite.run(data);
+```
+
+:::note Async suites
+When your suite contains async tests, the returned result is also a Promise. You can still read sync fields immediately, while pending async fields report `isPending('field') === true`.
+:::
+
+## Example result object
+
+Below is a resolved result object taken from the snapshot tests (`memo > cache hit > Should produce correct initial result`). Functions (`hasErrors`, `getErrors`, `dump`, etc.) are omitted for brevity.
+
+```javascript
 {
-  'valid': false,           // Whether the suite as a whole is valid or not
-// Directly via the result object
-    ## `.after()` and `await suite.run()`
+  errorCount: 1,
+  warnCount: 1,
+  testCount: 4,
+  pendingCount: 0,
+  valid: false,
+  errors: [{ fieldName: 'field1', message: 'msg1', groupName: undefined }],
+  warnings: [{ fieldName: 'field3', message: undefined, groupName: undefined }],
+  tests: {
+    field1: {
+      testCount: 2,
+      errorCount: 1,
+      pendingCount: 0,
+      warnCount: 0,
+      valid: false,
+      errors: ['msg1'],
+      warnings: [],
+    },
+    field2: {
+      testCount: 1,
+      errorCount: 0,
+      pendingCount: 0,
+      warnCount: 0,
+      valid: true,
+      errors: [],
+      warnings: [],
+    },
+    field3: {
+      testCount: 1,
+      errorCount: 0,
+      pendingCount: 0,
+      warnCount: 1,
+      valid: true,
+      errors: [],
+      warnings: [],
+    },
+  },
+  types: undefined, // present when a schema is provided
+}
+```
 
-    Use `.after()` to register a callback that will be called when the suite finishes running. This is the recommended way to handle completion logic, including async suites. You can also use `await suite.run()` to get the result when all tests are finished.
-
-    If you need to check for completion of specific fields, do so inside your callback logic.
-
-    `.after()` can be chained before calling `.run()`, and multiple callbacks can be registered if needed.
-
-    Example:
-
-    ```js
-    import { create, test, enforce } from 'vest';
-
-    const suite = create(data => {
-      test(
-        'UserEmail',
-        'Marked as spam address',
-        async () => await isKnownSpammer(data.address),
-      );
-
-      test(
-        'UserName',
-        'must not be blacklisted',
-        async () => await isBlacklistedUser(data.username),
-      );
-    });
-
-    suite.after(res => {
-      if (res.hasErrors('UserName')) {
-        showUserNameErrors(res.errors);
-      }
-      reportToServer(res);
-      promptUserQuestionnaire(res);
-    }).run();
-    ```
-
-    :::danger IMPORTANT
-    Do not use `.after()` conditionally, especially with async tests. This might cause unexpected behavior or missed callbacks. Instead, perform your conditional logic within your callback.
-    :::
-
-    ```js
-    // 🚨 This might not work as expected when working with async validations
-
-    if (field === 'username') {
-      suite.after(result => {
-        /*do something*/
-      }).run();
-    }
-    ```
-
-    ```js
-    // ✅ Instead, perform your checks within your after callback
+## `isValid`
 
 `isValid` returns whether the validation suite as a whole or a single field is valid or not.
-      if (field === 'username') {
-        /*do something*/
-      }
-    }).run();
-    ```
 
 ### Suite validity
 
@@ -88,7 +83,7 @@ A _suite_ is considered valid if the following conditions are met:
 suite.isValid();
 suite.get().isValid();
 result.isValid();
-````
+```
 
 ### Field validity
 
@@ -113,20 +108,20 @@ When `isValid` equals `false` it does not necessarily mean that the form is inVa
 If you only need to know if a certain field has validation errors or warnings but don't really care which they are, you can use `hasErrors` or `hasWarnings` functions.
 
 ```js
-resultObject.hasErrors('username');
+result.hasErrors('username');
 // true
 
-resultObject.hasWarnings('password');
+result.hasWarnings('password');
 // false
 ```
 
 In case you want to know whether the whole suite has errors or warnings (to prevent submit, for example), you can use the same functions, just without specifying a field
 
 ```js
-resultObject.hasErrors();
+result.hasErrors();
 // true
 
-resultObject.hasWarnings();
+result.hasWarnings();
 // true
 ```
 
@@ -135,8 +130,8 @@ resultObject.hasWarnings();
 Similar to `isValid`, but returns the result for a specified [group](../writing_tests/advanced_test_features/grouping_tests.md). Providing a group name that doesn't exist will return `false`. When adding a fieldName, only the field within that group will be checked.
 
 ```js
-resultObject.isValidByGroup('groupName', 'fieldName');
-resultObject.isValidByGroup('groupName');
+result.isValidByGroup('groupName', 'fieldName');
+result.isValidByGroup('groupName');
 ```
 
 ### Return Value
@@ -157,20 +152,20 @@ Similar to `hasErrors` and `hasWarnings`, but returns the result for a specified
 To get the result for a given field in the group:
 
 ```js
-resultObject.hasErrorsByGroup('groupName', 'fieldName');
+result.hasErrorsByGroup('groupName', 'fieldName');
 // true
 
-resultObject.hasWarningsByGroup('groupName', 'fieldName');
+result.hasWarningsByGroup('groupName', 'fieldName');
 // false
 ```
 
 And to get the result for a whole group.
 
 ```js
-resultObject.hasErrorsByGroup('groupName');
+result.hasErrorsByGroup('groupName');
 // true
 
-resultObject.hasWarningsByGroup('groupName');
+result.hasWarningsByGroup('groupName');
 // true
 ```
 
@@ -234,27 +229,27 @@ If a field name is provided, it returns the first warning message for that field
 These functions return an array of errors for the specified field. If no field is specified, it returns an object with all fields as keys and their error arrays as values.
 
 ```js
-resultObject.getErrors('username');
+result.getErrors('username');
 // ['Username is too short', `Username already exists`]
 
-resultObject.getWarnings('password');
+result.getWarnings('password');
 // ['Password must contain special characters']
 ```
 
 If there are no errors for the field, the function defaults to an empty array:
 
 ```js
-resultObject.getErrors('username');
+result.getErrors('username');
 // []
 
-resultObject.getWarnings('username');
+result.getWarnings('username');
 // []
 ```
 
 You can also call these functions without a field name, which will return you an array per field:
 
 ```js
-resultObject.getErrors();
+result.getErrors();
 
 // {
 //   username: ['Username is too short', `Username already exists`],
@@ -271,21 +266,24 @@ If you did not specify error messages for your tests, your errors array will be 
 Just like get `getErrors` and `getWarnings`, but narrows the result to a specified [group](../writing_tests/advanced_test_features/grouping_tests.md).
 
 ```js
-resultObject.getErrorsByGroup('groupName', 'fieldName');
-resultObject.getWarningsByGroup('groupName', 'fieldName');
-resultObject.getErrorsByGroup('groupName');
-resultObject.getWarningsByGroup('groupName');
+result.getErrorsByGroup('groupName', 'fieldName');
+result.getWarningsByGroup('groupName', 'fieldName');
+result.getErrorsByGroup('groupName');
+result.getWarningsByGroup('groupName');
 ```
 
 [Read more about groups](../writing_tests/advanced_test_features/grouping_tests.md).
 
-| ----------- | ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `callback` | `Function` | Yes | A callback to be run when the suite finishes running. Use with `.after(callback).run()` for completion logic. |
-| `await suite.run()` | `Promise` | No | Returns a promise that resolves when the suite is done running. Use with async/await for modern async handling. |
-
 ## `.after()` and `await suite.run()`
 
+[Read the full guide on Handling Suite Completion](./handling_completion.md).
+
 Use `.after()` to register a callback that will be called when the suite finishes running. This is the recommended way to handle completion logic, including async suites. You can also use `await suite.run()` to get the result when all tests are finished.
+
+| Parameter           | Type       | Required? | Description                                                                                                     |
+| ------------------- | ---------- | --------- | --------------------------------------------------------------------------------------------------------------- |
+| `callback`          | `Function` | Yes       | A callback to be run when the suite finishes running. Use with `.after(callback).run()` for completion logic.   |
+| `await suite.run()` | `Promise`  | No        | Returns a promise that resolves when the suite is done running. Use with async/await for modern async handling. |
 
 If you need to check for completion of specific fields, do so inside your callback logic.
 
@@ -349,6 +347,18 @@ suite
   .run();
 ```
 
+## `.afterField()`
+
+Similar to `.after()`, but runs when a specific field finishes validation.
+
+```javascript
+suite.afterField('username', res => {
+  if (res.hasErrors('username')) {
+    // handle username errors
+  }
+});
+```
+
 ## isPending
 
 Returns whether the suite, or a specific field are pending or not. A suite is considered pending if it has unresolved [async tests](../writing_tests/async_tests.md).
@@ -356,16 +366,22 @@ Returns whether the suite, or a specific field are pending or not. A suite is co
 Returns `true` if the suite is pending, `false` otherwise.
 
 ```js
-const suite = vest.create((data = {}) => {
+import { create, test } from 'vest';
+
+const suite = create((data = {}) => {
   test('username', 'Username is already taken', async () => {
     await someServerCall();
   });
 });
 
-await suite.run(); // For async suites
-const result = suite.run(); // For sync suites
-result.isPending(); // Use result object
-result.isPending('username');
+// Hybrid result: sync selectors work immediately
+const result = suite.run(); // Promise-like
+
+if (result.isPending('username')) {
+  // show spinner while async test runs
+}
+
+await result; // resolves when async tests finish
 ```
 
 ## isTested
@@ -375,11 +391,14 @@ Returns whether a given field has been tested or not. A field is considered test
 Returns `true` if the field is tested, `false` otherwise.
 
 ```js
-const suite = vest.create((data = {}) => {
+import { create, test, enforce } from 'vest';
+
+const suite = create((data = {}) => {
   test('username', 'Username is required', () => {
-    enforce(username).isNotBlank();
+    enforce(data.username).isNotBlank();
   });
 });
 
+const result = suite.run();
 result.isTested('username'); // true if username has been tested
 ```

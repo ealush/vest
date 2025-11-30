@@ -31,10 +31,6 @@ Vest provides three modes of execution - `Eager`, `One` and `All`. The mode dete
 
 To set the mode to `Eager`, you don't need to do anything since this is already the default behavior.
 
-:::tip NOTE
-In Vest version 4, Eager mode was opt-in, and instead of stopping execution of a field when its validations failed, Vest continued to validate all tests. The reason for changing the default behavior to Eager mode in Vest 5 is that there is no much value in validating the field after we know that it failed to begin with. Stopping execution after the first error can save significant time when testing a large number of fields or running expensive validation tests.
-:::
-
 ## All Mode
 
 `All` mode is the alternative mode of operation in Vest. In this mode, Vest continues validating all tests within a field, even if a test fails. This means that Vest will execute all tests and report all failures within the test suite.

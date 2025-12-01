@@ -1,93 +1,133 @@
-# Contributing to the project
+# Contributing to Vest
 
-This repository is the home of multiple packages, all are either used by Vest or can be used with Vest. They are grouped in this repo to allow simpler configurations.
+Thank you for your interest in contributing to Vest! Whether you're fixing a bug, improving documentation, or proposing a new feature, your help is appreciated.
 
-The repo uses yarn, make sure you have yarn installed when you contribute to the repo.
+Vest is a monorepo managed by `yarn` and a custom tooling package called `vx`.
 
-## Repo structure
+## Prerequisites
 
-The structure of the repo is as follows
+- **Node.js**: Ensure you have a recent version of Node.js installed.
+- **Yarn**: This project uses Yarn (v3+) for package management.
+
+## Getting Started
+
+1. **Fork and Clone** the repository.
+2. **Install dependencies** by running `yarn` in the root directory.
+
+```bash
+git clone [https://github.com/ealush/vest.git](https://github.com/ealush/vest.git)
+cd vest
+yarn
+```
+
+## Repository Structure
+
+Vest is organized as a monorepo. Here is a high-level overview of the structure:
 
 ```
 ├── packages
-│   ├── */                      # Source code of the packages
-│   │   ├── src
-│   │   │   ├── **/__tests__    # Tests are being looked for in this directory
-│   │   │   ├── exports         # Secondary entries for the package
-│   │   └── types               # Generated declarations files
-│   ├── shared/                 # Shared code between packages
-├── vx                          # Repo setup and CI config
-│   ├── commands                # All the supported cli commands
-│   ├── config
-│   │   ├── vitest
-│   │   └── rollup
-│   │       ├── plugins
-│   ├── scripts                 # All the scripts used to build and release the packages
+│   ├── vest/                # Core Vest library
+│   ├── n4s/                 # Enforce rules and assertions
+│   ├── vest-utils/          # Shared internal utilities
+│   ├── vestjs-runtime/      # The runtime engine powering Vest
+│   ├── context/             # Context management package
+│   └── anyone/              # Test matching utility
+├── vx/                      # Internal tooling, scripts, and configuration
+│   ├── commands/            # CLI commands (build, test, release)
+│   └── config/              # Build tools configuration (Vitest, Rollup, etc.)
+└── website/                 # Documentation website (Docusaurus)
 ```
 
-## Working on a feature or a bug fix.
+## Development Workflow
 
-Before working on a big change on Vest’s codebase, it is a good idea to first discuss the change in an issue to make sure it fits the project’s goals and future plans.
+We use the `vx` CLI (located in the `vx/` folder) to manage tasks across the monorepo. Most common tasks are aliased in the root `package.json`.
 
-This project uses `yarn`. When working on this project you should first clone it locally, install its dependencies and run the tests (`vx test`) to make sure everything works. You should regularly run the tests during development to make sure they still pass and no functionality has been affected by your changes.
+### Building the Project
 
-Vest’s functionality is fully documented and fully tested. Please make sure to update the documentation and tests when making a functional change.
-
-The code in this repo is written with typescript and complied to javascript on build.
-
-### File import conventions
-
-Source files are globally and uniquely named in the repo, meaning that there cannot be two files with the same name in the repo. Files are imported using their unique name and that's it. no need for relative path.
-
-`import name from 'fileName'`
-
-### Adding new files
-
-When you add new files, they need to be added to the list of files so the aliasing works. You can run `yarn dev` while developing to continuously update the list of files upon change.
-
-### Testing your changes
-
-#### Test directory
-
-To test your changes, you need to create a test file inside a `__tests__` directory. Tests files are only looked for there.
-
-#### Test filename
-
-The naming convention for a test file is `moduleName.test.ts`.
-
-#### Running tests
-
-To run tests, you need to run `vx test`. This will run all tests in all packages. The tests are being run by vitest.
-
-You can narrow it down by specifying the package name:
-
-`vx test vest`
-
-Normal vitest options can be passed to the test command.
-
-`vx test --watch`
-
-### Performance benchmarking
-
-Vest includes a lightweight benchmark suite using Vitest. Run it before and after changes to the core reconciler to spot regressions:
+To build all packages in the monorepo:
 
 ```bash
-yarn workspace vest bench
+yarn build
 ```
 
-### Building your changes
+To build a specific package (e.g., only `vest`):
 
-To build your changes, you need to run `vx build`. This will build all packages.
-You can also run `vx build -p <packageName>` to build only one package.
+```bash
+yarn vx build -p vest
+```
 
-This will generate all distribution files and type declarations.
+### Running Tests
 
-## Branching strategy
+We use **Vitest** for testing. You should run tests regularly to ensure your changes don't break existing functionality.
 
-The repo's main branch is `latest`. It contains the latest unreleased changes. PRs are merged into this branch.
+To run all tests:
 
-| Branch Name | Role           | Description                                         |
-| ----------- | -------------- | --------------------------------------------------- |
-| `latest`    | Main (master)  | Contains latest unreleased changes                  |
-| `stable`    | Current/stable | Current version released version to npm             |
-| `release`   | CI             | Triggers ci build that merges from latest to stable |
+```bash
+yarn test
+```
+
+To run tests for a specific package:
+
+```bash
+yarn vx test vest
+```
+
+To run tests in watch mode:
+
+```bash
+yarn test --watch
+```
+
+### Type Checking
+
+Vest is written in TypeScript. Ensure your changes pass type checking before submitting a PR.
+
+To typecheck the source code:
+
+```bash
+yarn vx typecheck
+```
+
+To typecheck the test files:
+
+```bash
+yarn vx typecheck-tests
+```
+
+### Documentation
+
+The documentation website is built with Docusaurus and located in the `website/` directory.
+
+To start the documentation server locally:
+
+```bash
+yarn website:start
+```
+
+To build the documentation for deployment:
+
+```bash
+yarn website:build
+```
+
+_Note: This command also runs `yarn build:llms` to generate the LLM-friendly documentation files._
+
+## Making Changes
+
+1. **Create a Branch**: Create a new branch for your feature or fix.
+2. **Make Changes**: Modify the code in the relevant `packages/` directory.
+3. **Add Tests**:
+   - Tests are located in `__tests__` directories next to the source files.
+   - Test files should be named `*.test.ts`.
+   - If you are fixing a bug, please add a regression test.
+4. **Verify**: Run `yarn test` and `yarn vx typecheck` to ensure everything is green.
+
+## Branching Strategy
+
+We follow a standard flow for releases:
+
+| Branch Name | Role        | Description                                            |
+| :---------- | :---------- | :----------------------------------------------------- |
+| `latest`    | **Main**    | The active development branch. Submit all PRs here.    |
+| `stable`    | **Release** | The current version published to npm.                  |
+| `release`   | **CI**      | Used by CI to merge changes from `latest` to `stable`. |

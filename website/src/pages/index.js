@@ -15,19 +15,19 @@ import styles from './index.module.css';
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
   return (
-    <header className={clsx('hero hero__primary', styles.heroBanner)}>
+    <header className={clsx('hero', styles.heroBanner)}>
       <div className={styles.logoContainer}>
         <LogoSvg className={styles.vestLogo} />
       </div>
       <div className={styles.titleContainer}>
         <h1 className="hero__title">{siteConfig.title}</h1>
         <p className={clsx('hero__subtitle', styles.heroTagline)}>
-          <span>{siteConfig.tagline}</span>
+          {siteConfig.tagline}
         </p>
       </div>
       <div className={styles.buttons}>
         <Link
-          className={clsx('button', styles.btn, styles.btnPromote)}
+          className={clsx('button', styles.btn, styles.btnQuickStart)}
           to="/docs/get_started"
         >
           Quick Start Guide
@@ -41,10 +41,8 @@ function HomepageHeader() {
           />
           Github
         </Link>
-      </div>
-      <div className={styles.buttons}>
         <Link
-          className={clsx('button', styles.btn, styles.btnQuickStart)}
+          className={clsx('button', styles.btn, styles.btnGit)}
           to="/docs/upgrade_guide"
         >
           V5 Upgrade Guide

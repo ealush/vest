@@ -1,31 +1,79 @@
-.code {
-  margin-left: 4rem;
-}
-
 .section {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4rem;
+  padding: 6rem 2rem;
+  background-color: var(--ifm-color-emphasis-100);
 }
 
 .desc {
-  max-width: 400px;
-  jusify-self: flex-end;
+  max-width: 450px;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--ifm-color-emphasis-800);
+}
+
+.codeWindow {
+  margin-left: 4rem;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  background-color: #282a36; /* Dracula background or similar */
+  min-width: 500px;
+}
+
+.windowHeader {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.red {
+  background-color: #ff5f56;
+}
+.yellow {
+  background-color: #ffbd2e;
+}
+.green {
+  background-color: #27c93f;
+}
+
+.codeBlock {
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+  font-size: 0.9rem;
 }
 
 @media screen and (max-width: 966px) {
-  .code {
+  .codeWindow {
     margin-left: 0;
+    margin-top: 2rem;
+    width: 100%;
+    min-width: auto;
   }
 
   .section {
     flex-direction: column;
+    padding: 4rem 1.5rem;
+    text-align: center;
   }
 }
 
 @media screen and (max-width: 600px) {
-  .code {
-    display: none;
+  .codeWindow {
+    display: block; /* Show code on mobile but maybe smaller */
+    font-size: 0.8rem;
   }
 }

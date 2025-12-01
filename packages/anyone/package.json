@@ -28,28 +28,28 @@
   "exports": {
     "./anyone": {
       "types": "./types/anyone.d.cts",
-      "import": "./dist/anyone.mjs",
-      "require": "./dist/anyone.cjs"
+      "require": "./dist/anyone.cjs",
+      "import": "./dist/anyone.mjs"
     },
     "./exports/all": {
       "types": "./types/exports/all.d.cts",
-      "import": "./dist/exports/all.mjs",
-      "require": "./dist/exports/all.cjs"
+      "require": "./dist/exports/all.cjs",
+      "import": "./dist/exports/all.mjs"
     },
     "./exports/any": {
       "types": "./types/exports/any.d.cts",
-      "import": "./dist/exports/any.mjs",
-      "require": "./dist/exports/any.cjs"
+      "require": "./dist/exports/any.cjs",
+      "import": "./dist/exports/any.mjs"
     },
     "./exports/none": {
       "types": "./types/exports/none.d.cts",
-      "import": "./dist/exports/none.mjs",
-      "require": "./dist/exports/none.cjs"
+      "require": "./dist/exports/none.cjs",
+      "import": "./dist/exports/none.mjs"
     },
     "./exports/one": {
       "types": "./types/exports/one.d.cts",
-      "import": "./dist/exports/one.mjs",
-      "require": "./dist/exports/one.cjs"
+      "require": "./dist/exports/one.cjs",
+      "import": "./dist/exports/one.mjs"
     },
     "./*": {
       "types": "./types/anyone.d.cts",
@@ -57,29 +57,29 @@
     },
     ".": {
       "types": "./types/anyone.d.cts",
-      "import": "./dist/anyone.mjs",
-      "require": "./dist/anyone.cjs"
+      "require": "./dist/anyone.cjs",
+      "import": "./dist/anyone.mjs"
     },
     "./package.json": "./package.json",
     "./all": {
       "types": "./types/anyone.d.cts",
-      "import": "./dist/exports/all.mjs",
-      "require": "./dist/exports/all.cjs"
+      "require": "./dist/exports/all.cjs",
+      "import": "./dist/exports/all.mjs"
     },
     "./any": {
       "types": "./types/anyone.d.cts",
-      "import": "./dist/exports/any.mjs",
-      "require": "./dist/exports/any.cjs"
+      "require": "./dist/exports/any.cjs",
+      "import": "./dist/exports/any.mjs"
     },
     "./none": {
       "types": "./types/anyone.d.cts",
-      "import": "./dist/exports/none.mjs",
-      "require": "./dist/exports/none.cjs"
+      "require": "./dist/exports/none.cjs",
+      "import": "./dist/exports/none.mjs"
     },
     "./one": {
       "types": "./types/anyone.d.cts",
-      "import": "./dist/exports/one.mjs",
-      "require": "./dist/exports/one.cjs"
+      "require": "./dist/exports/one.cjs",
+      "import": "./dist/exports/one.mjs"
     },
     "./anyone.d.ts": "./types/anyone.d.ts",
     "./types/*": "./types/*",

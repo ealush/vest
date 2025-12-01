@@ -23,7 +23,7 @@
     "vest-utils": "^1.3.3"
   },
   "devDependencies": {
-    "@types/validator": "^13.11.10",
+    "@types/validator": "^13.15.10",
     "validator": "13.9.0"
   },
   "vxAllowResolve": [
@@ -32,23 +32,23 @@
   "exports": {
     "./exports/date": {
       "types": "./types/exports/date.d.cts",
-      "import": "./dist/exports/date.mjs",
-      "require": "./dist/exports/date.cjs"
+      "require": "./dist/exports/date.cjs",
+      "import": "./dist/exports/date.mjs"
     },
     "./exports/email": {
       "types": "./types/exports/email.d.cts",
-      "import": "./dist/exports/email.mjs",
-      "require": "./dist/exports/email.cjs"
+      "require": "./dist/exports/email.cjs",
+      "import": "./dist/exports/email.mjs"
     },
     "./exports/isURL": {
       "types": "./types/exports/isURL.d.cts",
-      "import": "./dist/exports/isURL.mjs",
-      "require": "./dist/exports/isURL.cjs"
+      "require": "./dist/exports/isURL.cjs",
+      "import": "./dist/exports/isURL.mjs"
     },
     "./n4s": {
       "types": "./types/n4s.d.cts",
-      "import": "./dist/n4s.mjs",
-      "require": "./dist/n4s.cjs"
+      "require": "./dist/n4s.cjs",
+      "import": "./dist/n4s.mjs"
     },
     "./*": {
       "types": "./types/n4s.d.cts",
@@ -56,24 +56,24 @@
     },
     ".": {
       "types": "./types/n4s.d.cts",
-      "import": "./dist/n4s.mjs",
-      "require": "./dist/n4s.cjs"
+      "require": "./dist/n4s.cjs",
+      "import": "./dist/n4s.mjs"
     },
     "./package.json": "./package.json",
     "./date": {
       "types": "./types/n4s.d.cts",
-      "import": "./dist/exports/date.mjs",
-      "require": "./dist/exports/date.cjs"
+      "require": "./dist/exports/date.cjs",
+      "import": "./dist/exports/date.mjs"
     },
     "./email": {
       "types": "./types/n4s.d.cts",
-      "import": "./dist/exports/email.mjs",
-      "require": "./dist/exports/email.cjs"
+      "require": "./dist/exports/email.cjs",
+      "import": "./dist/exports/email.mjs"
     },
     "./isURL": {
       "types": "./types/n4s.d.cts",
-      "import": "./dist/exports/isURL.mjs",
-      "require": "./dist/exports/isURL.cjs"
+      "require": "./dist/exports/isURL.cjs",
+      "import": "./dist/exports/isURL.mjs"
     },
     "./n4s.d.ts": "./types/n4s.d.ts",
     "./types/*": "./types/*",

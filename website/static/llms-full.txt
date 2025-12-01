@@ -4169,8 +4169,6 @@ When your suite contains async tests, the returned result is also a Promise. You
 
 ## Example result object
 
-Below is a resolved result object taken from the snapshot tests (`memo > cache hit > Should produce correct initial result`). Functions (`hasErrors`, `getErrors`, `dump`, etc.) are omitted for brevity.
-
 ```javascript
 {
   errorCount: 1,

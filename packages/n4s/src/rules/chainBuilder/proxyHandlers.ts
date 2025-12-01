@@ -37,6 +37,15 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
     '~standard',
   ]);
 
+  return createProxyHandlersHelper(rules, methods, methodKeys, add);
+}
+
+function createProxyHandlersHelper<T extends RuleInstance<any, any>>(
+  rules: Record<string, any>,
+  methods: Record<string, any>,
+  methodKeys: Set<string>,
+  add: (p: Predicate) => T,
+) {
   return {
     get(_target: T, prop: string | symbol, receiver: any) {
       if (hasOwnProperty(methods, prop as any)) {

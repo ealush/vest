@@ -1,112 +1,87 @@
 ---
-sidebar_position: 12
-title: Suite Serialization and Resumption
-description: Serialize and resume Vest suites across different environments, such as client-side and server-side.
-keywords:
-  [Vest, serialize, resume, client, server, validation, full stack validation]
+sidebar_position: 10
+title: Server-Side Rendering (SSR)
+description: How to serialize Vest state on the server and resume it on the client using SuiteSerializer.
+keywords: [Vest, SSR, Next.js, Remix, Hydration, Serialization, SuiteSerializer]
 ---
 
-# Suite Serialization and Resumption
+# Server-Side Rendering (SSR) & Hydration
 
-Vest provides the ability to serialize and resume validation suites, allowing you to transfer the state of validations between different environments, such as from the server to the client. This feature enhances the user experience by providing immediate feedback on the client-side based on server-side validations.
+Modern frameworks like Next.js, Remix, and SvelteKit often validate forms on the server before sending a response. A common problem is "Double Validation": running tests on the server, showing errors, but then forcing the client-side library to re-run everything from scratch to "know" about those errors.
 
-## Use Cases
+Vest 6 solves this with **State Serialization**. You can take the state of a suite calculated on the server and "inject" it into the client-side suite.
 
-- **Client-Server Validation:** Perform validations on the server and seamlessly resume them on the client, providing immediate feedback to the user without re-running all validations.
-- **Persistence:** Store the validation state and resume it later, for example, if the user navigates away from a form and returns.
-- **Debugging:** Serialize the state of a suite for debugging purposes, making it easier to reproduce and analyze validation issues.
+## The `SuiteSerializer`
 
-## How it Works
-
-The `SuiteSerializer` object provides two static methods: `serialize` and `resume`.
-
-### `SuiteSerializer.serialize()`
-
-This method takes a Vest suite instance and returns a string representation of the suite's current state. This string can be transferred to another environment, such as the client.
+To keep the API surface clean, serialization tools are grouped under the `SuiteSerializer` export.
 
 ```javascript
 import { SuiteSerializer } from 'vest';
-
-const suite = create(data => {
-  // ... your validation tests ...
-});
-
-suite.run(formData); // Run the suite with some data
-
-const serializedSuite = SuiteSerializer.serialize(suite);
 ```
 
-## SuiteSerializer.resume()
+### `SuiteSerializer.serialize(suite)`
 
-This method takes a Vest suite instance and a serialized suite string. It applies the serialized state to the provided suite instance, effectively resuming the validation state from the serialized data.
+Takes a suite instance and returns a serializable object (safe for JSON).
 
-```js
+### `SuiteSerializer.resume(suite, serializedData)`
+
+Takes a suite instance and a serialized data object, and applies that state to the suite.
+
+## Complete Workflow Example
+
+Imagine a Remix or Next.js action handling a form submission.
+
+### 1. Server Side
+
+Run the validation. If it fails, send the serialized state back to the frontend.
+
+```javascript
+// server-action.js
 import { SuiteSerializer } from 'vest';
+import suite from './validation';
 
-const suite = create(data => {
-  // ... your validation tests ...
-});
+export async function action(formData) {
+  // 1. Run validation
+  // We use runStatic, but we can capture the result from the suite instance
+  const result = suite.runStatic(formData);
 
-SuiteSerializer.resume(suite, serializedSuite);
+  if (result.hasErrors()) {
+    return {
+      success: false,
+      errors: result.getErrors(),
+      // 2. Serialize the suite!
+      vestState: SuiteSerializer.serialize(suite),
+    };
+  }
 
-// The suite now has the state from the serializedSuite string
+  // ... handle success
+}
 ```
 
-## Example: Client-Server Validation
+### 2. Client Side
 
-```js
-// suite.js
-import { create } from 'vest';
+When your component mounts or receives the action data, resume the suite.
+
+```javascript
+// registration-form.jsx
+import { useEffect } from 'react';
 import { SuiteSerializer } from 'vest';
+import suite from './validation';
 
-const suite = create(() => {
-  test('username', 'Username is required', () => {
-    enforce(data.username).isNotBlank();
-  });
+export function RegistrationForm({ actionData }) {
+  // 3. Resume state if it exists
+  if (actionData?.vestState) {
+    SuiteSerializer.resume(suite, actionData.vestState);
+  }
 
-  test('email', 'Email is invalid', () => {
-    enforce(data.email).isEmail();
-  });
-});
+  // suite.get() now immediately reflects the server errors!
+  // suite.hasErrors('username') will be true without running logic.
+
+  return <form>{/* ... inputs ... */}</form>;
+}
 ```
 
-```js
-// server.js
-
-app.post('/submit', (req, res) => {
-  const formData = req.body;
-
-  suite.run();
-
-  const serializedSuite = SuiteSerializer.serialize(suite);
-
-  res.json({ serializedSuite });
-});
-```
-
-```js
-// client.js
-import suite from './suite';
-import { SuiteSerializer } from 'vest';
-
-const form = document.getElementById('myForm');
-
-form.addEventListener('submit', (event) => {
-  event.preventDefault();
-
-  const formData = new FormData(form);  
-
-
-  fetch('/submit', {
-    method: 'POST',
-    body: formData,
-  })
-    .then((response) => response.json())
-    .then((data)  
- => {
-      SuiteSerializer.resume(suite, data.serializedSuite);
-    });
-});
-```
-
-In this example, the server performs the initial validation and sends the serialized suite state to the client. The client then resumes the suite with the received state, allowing for immediate feedback and a consistent validation experience across both environments.
+:::caution Why not just pass the errors?
+You might wonder, "Why not just pass the error object?"
+If you only pass errors, your suite doesn't know _which_ tests passed, which are pending, or which groups were skipped. By resuming the full state, Vest can continue validation seamlessly (e.g., when the user edits a field) without losing the context of the server-side run.
+:::

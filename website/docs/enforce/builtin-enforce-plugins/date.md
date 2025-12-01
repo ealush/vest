@@ -59,7 +59,7 @@ The `format` option accepts various valid date formats, including:
 
 ```javascript
 import { enforce } from 'vest';
-import 'vest/enforce/date';
+import 'vest/date';
 
 const dateString = '2002-07-15';
 
@@ -86,7 +86,7 @@ enforce(dateString).isAfter(comparisonDate);
 
 ```javascript
 import { enforce } from 'vest';
-import 'vest/enforce/date';
+import 'vest/date';
 
 const dateString = '2002-07-15';
 const comparisonDate = '2002-07-14';
@@ -107,7 +107,7 @@ enforce(dateString).isBefore(comparisonDate);
 
 ```javascript
 import { enforce } from 'vest';
-import 'vest/enforce/date';
+import 'vest/date';
 
 const dateString = '2002-07-15';
 const comparisonDate = '2002-07-16';
@@ -137,7 +137,7 @@ The `isISO8601` rule accepts an optional `options` object to customize the valid
 
 ```javascript
 import { enforce } from 'vest';
-import 'vest/enforce/date';
+import 'vest/date';
 
 const dateString = '2020-07-10T15:00:00.000';
 

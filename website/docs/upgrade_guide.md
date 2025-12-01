@@ -5,6 +5,126 @@ description: Guides for upgrading Vest
 keywords: [Vest, Upgrade]
 ---
 
+# Upgrading from V5 to V6
+
+Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.
+
+## `create` returns a Suite Object
+
+In V5, `create` returned a function that you would call directly to run the suite. In V6, `create` returns a **Suite Object** with methods like `.run()`, `.reset()`, and `.get()`.
+
+```diff
+- const suite = create(() => { ... });
+- const result = suite(data);
+
++ const suite = create(() => { ... });
++ const result = suite.run(data);
+```
+
+## `suite.run()` returns a Promise-like Result
+
+In V5, `suite()` returned the result object synchronously, and you had to use `promisify` or callbacks for async results. In V6, `suite.run()` returns a result object that is also a Promise.
+
+```diff
+- import { promisify } from 'vest';
+- const runAsync = promisify(suite);
+- const result = await runAsync(data);
+
++ const result = await suite.run(data);
+```
+
+## Removed `promisify` and `staticSuite`
+
+These utilities have been removed in favor of the new Suite Object API.
+
+- **promisify**: Use `await suite.run()` instead.
+- **staticSuite**: Use `suite.runStatic()` instead.
+
+```diff
+- import { staticSuite } from 'vest';
+- const suite = staticSuite(() => { ... });
+- suite(data);
+
++ import { create } from 'vest';
++ const suite = create(() => { ... });
++ suite.runStatic(data);
+```
+
+## `test.memo` is now a top-level `memo` export
+
+The memoization API has been promoted to a top-level export and can now wrap any part of the suite, not just single tests.
+
+```diff
+- import { create, test } from 'vest';
++ import { create, test, memo } from 'vest';
+
+create(data => {
+- test.memo('field', 'msg', () => { ... }, [data.field]);
+
++ memo(() => {
++   test('field', 'msg', () => { ... });
++ }, [data.field]);
+});
+```
+
+## `done()` callback removed from Result
+
+The `.done()` method on the result object has been removed. Use `suite.after()` or `await suite.run()` instead.
+
+```diff
+- suite(data).done(result => { ... });
+
++ suite.after(result => { ... }).run(data);
+// OR
++ const result = await suite.run(data);
+```
+
+## Standard Schema Support
+
+Vest implements the [Standard Schema](https://github.com/standard-schema/standard-schema) spec. You can now use Vest suites directly with libraries that support this standard.
+
+```javascript
+const result = await suite.validate(data);
+```
+
+---
+
+## Automated Migration Prompt
+
+You can use the following prompt with an LLM (like ChatGPT or Claude) to help migrate your codebase from Vest 5 to Vest 6.
+
+```markdown
+I am migrating my Vest validation suites from version 5 to version 6. Please refactor the following code according to these rules:
+
+1.  **Suite Creation**: `create` now returns a Suite Object, not a function.
+
+    - Change `const suite = create(...)` to keep the same variable name.
+    - Remove any suite name passed as the first argument to `create`.
+
+2.  **Running Suites**:
+
+    - Change `suite(data)` to `suite.run(data)`.
+    - Change `staticSuite(...)` to `create(...)` and run it with `suite.runStatic(data)`.
+
+3.  **Async Handling**:
+
+    - Remove `import { promisify } from 'vest'`.
+    - Remove `promisify(suite)`.
+    - Change `await suite(data)` or `promisified(data)` to `await suite.run(data)`.
+    - Remove `.done()` callbacks. Use `await suite.run()` or `suite.after()`.
+
+4.  **Memoization**:
+
+    - Change `test.memo(...)` to `memo(() => { test(...) }, deps)`.
+    - Ensure `memo` is imported from 'vest'.
+
+5.  **General**:
+    - Keep all validation logic intact.
+    - Preserve comments.
+```
+
+---
+
 # Upgrading from V4 to V5
 
 ### Migration guide

@@ -370,14 +370,14 @@ The `value` argument can be of the following types:
 ### Usage examples:
 
 ```js
-enforce([1]).lengthEquals(1);
-enforce('a').lengthEquals(1);
+enforce([1]).isArray().lengthEquals(1);
+enforce('a').isString().lengthEquals(1);
 // passes
 ```
 
 ```js
-enforce([1, 2]).lengthEquals(1);
-enforce('').lengthEquals(1);
+enforce([1, 2]).isArray().lengthEquals(1);
+enforce('').isString().lengthEquals(1);
 // throws
 ```
 
@@ -400,14 +400,14 @@ The `value` argument can be of the following types:
 ### Usage examples:
 
 ```js
-enforce([1]).lengthNotEquals(0);
-enforce('a').lengthNotEquals(3);
+enforce([1]).isArray().lengthNotEquals(0);
+enforce('a').isString().lengthNotEquals(3);
 // passes
 ```
 
 ```js
-enforce([1]).lengthNotEquals(1);
-enforce('').lengthNotEquals(0);
+enforce([1]).isArray().lengthNotEquals(1);
+enforce('').isString().lengthNotEquals(0);
 // throws
 ```
 
@@ -428,16 +428,16 @@ Strings are parsed using `Number()`, values which are not fully numeric always r
 ### Usage
 
 ```js
-enforce(0).lessThan(1);
-enforce(2).lessThan('10');
-enforce('90').lt(100);
+enforce(0).isNumber().lessThan(1);
+enforce(2).isNumber().lessThan('10');
+enforce('90').isNumeric().lt(100);
 // passes
 ```
 
 ```js
-enforce(100).lessThan(100);
-enforce('110').lessThan(100);
-enforce([0]).lt(1);
+enforce(100).isNumber().lessThan(100);
+enforce('110').isNumeric().lessThan(100);
+enforce([0]).isArray().lt(1);
 // throws
 ```
 
@@ -458,17 +458,17 @@ Strings are parsed using `Number()`, values which are not fully numeric always r
 ### Usage
 
 ```js
-enforce(0).lessThanOrEquals(1);
-enforce(2).lessThanOrEquals('10');
-enforce('90').lte(100);
-enforce(100).lte('100');
+enforce(0).isNumber().lessThanOrEquals(1);
+enforce(2).isNumber().lessThanOrEquals('10');
+enforce('90').isNumeric().lte(100);
+enforce(100).isNumber().lte('100');
 // passes
 ```
 
 ```js
-enforce(100).lessThanOrEquals(90);
-enforce('110').lessThanOrEquals(100);
-enforce([0]).lte(1);
+enforce(100).isNumber().lessThanOrEquals(90);
+enforce('110').isNumeric().lessThanOrEquals(100);
+enforce([0]).isArray().lte(1);
 // throws
 ```
 
@@ -490,14 +490,14 @@ The `value` argument can be of the following types:
 ### Usage examples:
 
 ```js
-enforce([1]).longerThan(0);
-enforce('ab').longerThan(1);
+enforce([1]).isArray().longerThan(0);
+enforce('ab').isString().longerThan(1);
 // passes
 ```
 
 ```js
-enforce([1]).longerThan(2);
-enforce('').longerThan(0);
+enforce([1]).isArray().longerThan(2);
+enforce('').isString().longerThan(0);
 // throws
 ```
 
@@ -519,16 +519,16 @@ The `value` argument can be of the following types:
 ### Usage examples:
 
 ```js
-enforce([1]).longerThanOrEquals(0);
-enforce('ab').longerThanOrEquals(1);
-enforce([1]).longerThanOrEquals(1);
-enforce('a').longerThanOrEquals(1);
+enforce([1]).isArray().longerThanOrEquals(0);
+enforce('ab').isString().longerThanOrEquals(1);
+enforce([1]).isArray().longerThanOrEquals(1);
+enforce('a').isString().longerThanOrEquals(1);
 // passes
 ```
 
 ```js
-enforce([1]).longerThanOrEquals(2);
-enforce('').longerThanOrEquals(1);
+enforce([1]).isArray().longerThanOrEquals(2);
+enforce('').isString().longerThanOrEquals(1);
 // throws
 ```
 
@@ -547,15 +547,15 @@ Strings are parsed using `Number()`, values which are not fully numeric always r
 ### Usage
 
 ```js
-enforce(0).numberEquals(0);
-enforce(2).numberEquals('2');
+enforce(0).isNumber().numberEquals(0);
+enforce(2).isNumber().numberEquals('2');
 // passes
 ```
 
 ```js
-enforce(100).numberEquals(10);
-enforce('110').numberEquals(100);
-enforce([0]).numberEquals(1);
+enforce(100).isNumber().numberEquals(10);
+enforce('110').isNumeric().numberEquals(100);
+enforce([0]).isArray().numberEquals(1);
 // throws
 ```
 
@@ -575,14 +575,14 @@ Strings are parsed using `Number()`, values which are not fully numeric always r
 ### Usage
 
 ```js
-enforce(2).numberNotEquals(0);
-enforce('11').numberNotEquals('10');
+enforce(2).isNumber().numberNotEquals(0);
+enforce('11').isNumeric().numberNotEquals('10');
 // passes
 ```
 
 ```js
-enforce(100).numberNotEquals(100);
-enforce('110').numberNotEquals(100);
+enforce(100).isNumber().numberNotEquals(100);
+enforce('110').isNumeric().numberNotEquals(100);
 // throws
 ```
 
@@ -604,14 +604,14 @@ The `value` argument can be of the following types:
 ### Usage examples:
 
 ```js
-enforce([]).shorterThan(1);
-enforce('a').shorterThan(2);
+enforce([]).isArray().shorterThan(1);
+enforce('a').isString().shorterThan(2);
 // passes
 ```
 
 ```js
-enforce([1]).shorterThan(0);
-enforce('').shorterThan(0);
+enforce([1]).isArray().shorterThan(0);
+enforce('').isString().shorterThan(0);
 // throws
 ```
 
@@ -633,16 +633,16 @@ The `value` argument can be of the following types:
 ### Usage examples:
 
 ```js
-enforce([]).shorterThanOrEquals(1);
-enforce('a').shorterThanOrEquals(2);
-enforce([]).shorterThanOrEquals(0);
-enforce('a').shorterThanOrEquals(1);
+enforce([]).isArray().shorterThanOrEquals(1);
+enforce('a').isString().shorterThanOrEquals(2);
+enforce([]).isArray().shorterThanOrEquals(0);
+enforce('a').isString().shorterThanOrEquals(1);
 // passes
 ```
 
 ```js
-enforce([1]).shorterThanOrEquals(0);
-enforce('ab').shorterThanOrEquals(1);
+enforce([1]).isArray().shorterThanOrEquals(0);
+enforce('ab').isString().shorterThanOrEquals(1);
 // throws
 ```
 
@@ -985,7 +985,7 @@ enforce('143').isNumber();
 Checks if a value is of any type other than `number`.
 Reverse implementation of `isNumber`.
 
-**note** isNotNumber does not check for `NaN` value. For NaN values, use [isNaN](#isNaN).
+**note** isNotNumber does not check for `NaN` value. For NaN values, use [isNaN](#isnan).
 
 ### Usage examples:
 

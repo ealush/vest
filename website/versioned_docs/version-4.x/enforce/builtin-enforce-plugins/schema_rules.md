@@ -18,11 +18,10 @@ import 'vest/enforce/schema';
 
 These rules will then become available in `enforce`:
 
-- [Schema rules](#schema-rules)
-  - [enforce.shape() - Lean schema validation.](#enforceshape---lean-schema-validation)
-    - [enforce.optional() - nullable values](#enforceoptional---nullable-values)
-    - [partial() - allows supplying a subset of keys](#partial---allows-supplying-a-subset-of-keys)
-    - [enforce.loose() - loose shape matching](#enforceloose---loose-shape-matching)
+- [enforce.shape() - Lean schema validation.](#enforceshape---lean-schema-validation)
+  - [enforce.optional() - nullable values](#enforceoptional---nullable-values)
+  - [partial() - allows supplying a subset of keys](#partial---allows-supplying-a-subset-of-keys)
+  - [enforce.loose() - loose shape matching](#enforceloose---loose-shape-matching)
   - [enforce.isArrayOf() - array shape matching](#enforceisarrayof---array-shape-matching)
 
 ## enforce.shape() - Lean schema validation.

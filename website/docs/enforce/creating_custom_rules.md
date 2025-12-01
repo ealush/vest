@@ -9,6 +9,16 @@ keywords: [Vest, custom, enforce, rule, creating, custom, rules]
 
 By default, enforce comes with a list of rules that are available to be used. They intentionally do not cover all the cases that can be encountered in a real-world application but instead focus on the most common use cases.
 
+## Why Custom Rules?
+
+Every application has unique domain logic. You might need to validate:
+
+- A specific product SKU format.
+- That a start date is before an end date.
+- That a username exists in your database.
+
+Custom rules allow you to extend Vest's vocabulary to speak your domain language.
+
 ## Inline logic with `condition`
 
 Sometimes you would need to add some custom logic to your validation. For that you can use `enforce.condition` which accepts a function.
@@ -84,85 +94,52 @@ enforce.extend({
 });
 ```
 
-## Traversing the input object in your custom Rules
+## Context Aware Rules
 
-Sometimes you would need to traverse your enforced object from within your rule to get other values that are present at some other nesting level.
+Custom rules can access the validation context using `enforce.context()`. This is useful when validating schemas where a rule needs to know about other fields (e.g., "confirm password").
 
-Let's assume we have a custom rule that makes its decision by factoring in two different values, one inside a nested object, and the other by a property in a parent object.
+```javascript
+import { enforce } from 'vest';
 
-Consider this user object. It looks fine, but if you look closely, you'll see that our johndoe listed a friend with the same user name. This can't happen.
-
-```js
-{
-  name: {
-    first: 'John',
-    last: 'Doe'
-  },
-  username: 'johndoe',
-  friends: ['Mike', 'Jim', 'johndoe']
-}
-```
-
-To access context you simply need to call `enforce.context()` within your custom rule. The function will return an object that matches this structure:
-
-```
-Object {
-  "meta": Object {},
-  "parent": [Function],
-  "value": Object {},
-}
-```
-
-- **value** contains the current value in the level you're at
-- **meta** will contain the name of the current key if called within `shape` or `loose`, or `index` if called within `isArrayOf`.
-- **parent** is a function that traverses up to the parent context, and you can access all its keys as if you're in that level. You can traverse up to the top level by chaining `parent` calls. When no levels left, parent will return `null`.
-
-### Usage example
-
-First, declare your custom rule in which you want to use a value that's higher up.
-In the following example, we're getting the context, and checking if our `value` equals to the "username" that's defined two levels up.
-
-```js
 enforce.extend({
-  isFriendTheSameAsUser: value => {
+  matchesField: (value, fieldName) => {
     const context = enforce.context();
-
-    if (value === context.parent().parent().value.username) {
-      return { pass: false };
-    }
-
-    return true;
+    // context.parent.value gives access to the parent object being validated
+    return value === context.parent.value[fieldName];
   },
 });
-```
 
-We'll use it like this:
-
-```js
-enforce({
-  username: 'johndoe',
-  friends: ['Mike', 'Jim', 'johndoe'],
-}).shape({
-  username: enforce.isString(),
-  friends: enforce.isArrayOf(enforce.isString().isFriendTheSameAsUser()),
+const schema = enforce.shape({
+  password: enforce.isString(),
+  confirm: enforce.isString().matchesField('password'),
 });
 ```
 
-## Custom Rule Typescript Support
+## TypeScript Support
 
-When adding custom rules, you might want to also add typescript support for it, for autocompletion and type checking within your project. To do so, add your new custom rules to a d.ts file like that:
+To ensure your custom rules are typed correctly in your IDE, you must extend the `n4s` namespace.
 
-```ts
-// global.d.ts
+```typescript
+// customRules.ts
+import { enforce } from 'vest';
 
+const customRules = {
+  isValidEmail: (value: string) => value.includes('@'),
+  isWithinRange: (value: number, min: number, max: number) =>
+    value >= min && value <= max,
+};
+
+enforce.extend(customRules);
+
+// Extend the interface to add types
 declare global {
   namespace n4s {
-    interface EnforceCustomMatchers<R> {
-      myCustomRule(): R;
-      myOtherCustomRule(value: string): R;
+    interface EnforceMatchers {
+      isValidEmail: (value: string) => boolean;
+      isWithinRange: (value: number, min: number, max: number) => boolean;
     }
   }
 }
-
-export {};
 ```
+
+_Note: In the interface definition, include the `value` as the first argument._

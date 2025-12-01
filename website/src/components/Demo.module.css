@@ -12,9 +12,9 @@
 
 .demoWrapper {
   height: 500px;
-  border: 1px solid var(--ifm-color-primary-lighter);
+  border: 1px solid var(--ifm-color-emphasis-300);
   border-radius: 4px;
-  background: #191919;
+  background: var(--ifm-background-surface-color);
 }
 
 .demoSwitchWrapper {
@@ -26,22 +26,32 @@
 
 .demoSwitch {
   border-radius: 0;
-  color: var(--ifm-color-primary-lightest);
-  border: 1px solid var(--ifm-color-primary-lighter);
+  color: var(--ifm-color-emphasis-600);
+  border: 1px solid var(--ifm-color-emphasis-300);
   border-bottom: 0;
   border-left: 0;
   padding: 0.5rem 2rem;
   cursor: pointer;
-  background-color: var(--ifm-color-primary-darkest);
+  background-color: var(--ifm-color-emphasis-100);
+  transition: all 0.2s ease;
+}
+
+.demoSwitch:hover {
+  background-color: var(--ifm-color-emphasis-200);
+  color: var(--ifm-color-emphasis-800);
 }
 
 .demoSwitchActive {
-  background-color: var(--ifm-color-primary-darker);
+  background-color: var(--ifm-background-surface-color);
+  color: var(--ifm-color-emphasis-900);
+  font-weight: 600;
+  border-bottom: 1px solid var(--ifm-background-surface-color); /* Hide bottom border to blend */
+  margin-bottom: -1px; /* Overlap container border */
 }
 
 .demoSwitch:first-child {
   border-radius: 4px 0 0 0;
-  border-left: 1px solid var(--ifm-color-primary-lighter);
+  border-left: 1px solid var(--ifm-color-emphasis-300);
 }
 
 .demoSwitch:last-child {

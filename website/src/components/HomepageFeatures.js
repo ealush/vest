@@ -69,12 +69,14 @@ const FeatureList = [
 function Feature({ emoji, title, description }) {
   return (
     <div className={clsx('col col--4')}>
-      <div className="text--center">
-        <span className={styles.emoji}>{emoji}</span>
-      </div>
-      <div className="text--center padding-horiz--md">
-        <h3>{title}</h3>
-        <p>{description}</p>
+      <div className={styles.featureCard}>
+        <div className="text--center">
+          <span className={styles.emoji}>{emoji}</span>
+        </div>
+        <div className="text--center padding-horiz--md">
+          <h3 className={styles.featureTitle}>{title}</h3>
+          <p className={styles.featureDescription}>{description}</p>
+        </div>
       </div>
     </div>
   );

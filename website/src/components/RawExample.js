@@ -16,7 +16,13 @@ export default () => {
         It allows you to express your validation logic in a simple and readable
         way that's also easy to maintain in the long run.
       </p>
-      <CodeBlock className={clsx('language-js', styles.code)}>{`
+      <div className={styles.codeWindow}>
+        <div className={styles.windowHeader}>
+          <div className={clsx(styles.dot, styles.red)} />
+          <div className={clsx(styles.dot, styles.yellow)} />
+          <div className={clsx(styles.dot, styles.green)} />
+        </div>
+        <CodeBlock className={clsx('language-js', styles.codeBlock)}>{`
 test("username", "Username is required", () => {
   enforce(data.username).isNotBlank();
 });
@@ -29,6 +35,7 @@ test('username', 'Username already taken', async () => {
   await doesUserExist(data.username);
 });
 `}</CodeBlock>
+      </div>
     </section>
   );
 };

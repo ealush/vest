@@ -15,9 +15,9 @@ import { TestFn } from './TestTypes';
 
 export type TestParams<F extends TFieldName = TFieldName> = {
   fieldName: F;
+  key?: IsolateKey;
   message?: string;
   testFn: TestFn;
-  key?: IsolateKey;
 };
 
 export function validateTestParams(
@@ -50,8 +50,8 @@ export function validateTestParams(
 
   return makeResult.Ok({
     fieldName: makeBrand<TFieldName>(fieldName),
+    key,
     message,
     testFn,
-    key,
   });
 }

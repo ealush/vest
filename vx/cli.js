@@ -8,12 +8,12 @@ import { fileURLToPath } from 'url';
 const require = createRequire(import.meta.url);
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
-const loaderPath = path.join(currentDir, 'ts-loader.js');
+const registerPath = path.join(currentDir, 'register.js');
 const entryPath = path.join(currentDir, 'cli.ts');
 
 const child = spawn(
   process.execPath,
-  ['--loader', loaderPath, entryPath, ...process.argv.slice(2)],
+  ['--import', registerPath, entryPath, ...process.argv.slice(2)],
   {
     env: process.env,
     stdio: 'inherit',

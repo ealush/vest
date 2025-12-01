@@ -91,25 +91,41 @@ function useGetSuiteMethods<
   persistedRun: any;
   staticRunner: any;
 }): any {
-  const {
-    suiteCallback,
-    modifiers,
-    subscribe,
-    schema,
-    persistedRun,
-    staticRunner,
-  } = ctx;
+  const { suiteCallback, modifiers, subscribe, schema } = ctx;
+
+  const get = VestRuntime.persist(() => useCreateSuiteResult<F, G, S>(schema));
+
+  return {
+    ...useGetLifecycleMethods(ctx),
+    dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
+    focus: VestRuntime.persist(
+      useCreateFocus<F, G, T, S>(suiteCallback, modifiers, subscribe, schema),
+    ),
+    get,
+    ...bindSuiteSelectors<F, G, S>(get),
+    ...getTypedMethods<F, G>(),
+  };
+}
+
+function useGetLifecycleMethods<
+  F extends TFieldName,
+  T extends CB = CB,
+  S extends TSchema = undefined,
+>(ctx: {
+  suiteCallback: SuiteCallbackWithSchema<S, T>;
+  modifiers: SuiteModifiers<F>;
+  subscribe: Subscribe;
+  schema?: S;
+  persistedRun: any;
+  staticRunner: any;
+}) {
+  const { persistedRun, staticRunner, subscribe } = ctx;
 
   return {
     after: VestRuntime.persist((cb: CB) => useAddAfterHelper(ctx, cb)),
     afterField: VestRuntime.persist((fieldName: F | string, cb: CB) =>
       useAddAfterHelper(ctx, cb, makeBrand<TFieldName>(fieldName) as F),
     ),
-    dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
-    focus: VestRuntime.persist(
-      useCreateFocus<F, G, T, S>(suiteCallback, modifiers, subscribe, schema),
-    ),
-    get: VestRuntime.persist(() => useCreateSuiteResult<F, G, S>(schema)),
     remove: VestRuntime.persist((fieldName: string) =>
       Bus.useEmit('REMOVE_FIELD', makeBrand<TFieldName>(fieldName)),
     ),
@@ -122,10 +138,6 @@ function useGetSuiteMethods<
     runStatic: staticRunner,
     subscribe,
     validate: createValidate(staticRunner),
-    ...bindSuiteSelectors<F, G, S>(
-      VestRuntime.persist(() => useCreateSuiteResult<F, G, S>(schema)),
-    ),
-    ...getTypedMethods<F, G>(),
   };
 }
 

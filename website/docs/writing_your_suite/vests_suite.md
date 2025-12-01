@@ -1,133 +1,123 @@
 ---
 sidebar_position: 1
-title: Vest's Suite
-description: All your validations reside in a Vest suite. The suite is a function that retains a javascript closure with the current validation state, and it returns the result object. It also exposes some methods to interact with the data, reset the state and handle async validations.
-keywords:
-  [
-    Vest,
-    Suite,
-    Form,
-    Validation,
-    create,
-    suite callback,
-    result object,
-    hasErrors,
-    result,
-    suite.reset(),
-    suite.resetField(),
-    suite.remove(),
-    async validations,
-  ]
+title: The Suite Object
+description: Understanding the Vest Suite Object, its methods, and how to manage validation state.
+keywords: [Vest, Suite, Validation, State Management, create, run, reset]
 ---
 
-# Vest's Suite: Writing Your Validation Suite
+# The Suite Object
 
-A Vest suite is the container for all your validations, where you can define and organize them. In this article, we will explain how to create a Vest suite and perform various operations on it.
+In the [Getting Started](../get_started.md) guide, we saw that `create()` returns a **Suite Object**. This object is your main interface for interacting with validations. It holds the state, runs the tests, and gives you the results.
 
-## Basic Suite Structure
-
-You can create a Vest suite using the `create` function provided by the `Vest` module. Here's a basic example:
-
-```js
+```javascript
 import { create } from 'vest';
 
-const suite = create((data = {}) => {
-  // ... Your validations go here
+const suite = create((data, currentField) => {
+  // Your logic resides here
 });
 ```
 
-You pass a callback function to the `create` function, which takes the form data as its first argument, and any other arguments you might want to pass. You can then define your validations inside this function.
+## Running Validations
 
-## Schema Validation
+The most common method you'll use is `.run()`. It executes the callback you passed to `create`.
 
-You can also pass an `n4s` schema as the second argument to `create`. This schema will be automatically executed when the suite runs, and any validation errors will be registered as Vest tests.
+```javascript
+const result = suite.run(formData, 'username');
+```
 
-```js
-import { create, enforce } from 'vest';
+:::note Async & Promises
+If your suite contains async tests (like checking a database), `.run()` returns a **Result Object** that also behaves like a **Promise**.
+You can `await suite.run(data)` to wait for all async operations to finish.
+Check out the **[Async Tests](../writing_tests/async_tests.md)** guide for details.
+:::
 
-const userSchema = enforce.shape({
-  username: enforce.isString(),
-  age: enforce.isNumber(),
+## Passing Arguments
+
+You aren't limited to just passing `data`. Whatever arguments you pass to `.run()` are forwarded directly to your suite callback. This is great for handling "modes" or "steps" in multi-step forms.
+
+```javascript
+const suite = create((data, currentStep) => {
+  if (currentStep === 'billing') {
+    // only validate billing fields
+  }
 });
 
-const suite = create(data => {
-  // Additional validations...
-}, userSchema);
+// Pass the step name as the second argument
+suite.run(formData, 'billing');
 ```
 
-When `suite.run(data)` is called:
+## Stateless Validation (Server-Side)
 
-1.  The schema is validated against `data`.
-2.  If the schema fails, errors are registered in the suite result.
-3.  The suite callback is executed.
+If you are running Vest on the server (Node.js, Deno, etc.), you usually don't want the suite to "remember" the previous request. You want a fresh start for every API call.
 
-Note: Schema validation is skipped if you use `only()` to run specific fields.
+Use `.runStatic()` for this. It runs the suite, returns the result, and immediately discards the state.
 
-## Running the Suite
+```javascript
+// Perfect for API handlers
+app.post('/register', (req, res) => {
+  const result = suite.runStatic(req.body);
 
-You can run your suite by calling it with the form data and any additional arguments you want to pass:
-
-```js
-const suite = create((data = {}, currentField) => {
-  // ... Your validations go here
-});
-
-suite.run(formData, fieldName);
-```
-
-You can pass as many arguments as you need to the suite function, and they will be available inside the callback function.
-
-## Getting the Current Suite State
-
-There are two main ways of getting the current state of our suite:
-
-### Using the Result Object
-
-When you run the suite, it returns a result object that contains the validation state:
-
-```js
-const result = suite.run(formData, fieldName);
-
-result.hasErrors(); // boolean
-```
-
-The result object is similar to the one you define in your suite function. To handle async completion, use `.after(callback).run()` or `await suite.run()` instead of the deprecated `done` property.
-
-### Using the result object
-
-You can get the current state of your suite by using the result object returned from `suite.run()`. This object contains the current validation state.
-
-This method is especially useful if we want to access our suite state from within a running suite, or when out of context - for example, from a different UI component than our form.
-
-## Cleaning up the Suite State
-
-If you need to clean up the validation state of your suite, you can call `suite.reset()`. This will reset the state of the suite and cancel any pending async validations that might still be running.
-
-## Resetting a Single Field
-
-To reset the validity of a single field, you can call `suite.resetField(fieldName)`. This can be useful, for example, when you only want to run the validation on blur.
-
-## Removing a Single Field from the Suite State
-
-In some cases, you may want to remove a field from the suite state. For example, when the user removes a dynamically added field. In this case, you can call `suite.remove(fieldName)` to remove the field from the state and cancel any pending async validations that might still be running.
-
-Note that you don't need to use `suite.remove` very often, as most users can simply use `reset` and `omitWhen`.
-
-## Subscribing to Suite State Changes
-
-You can subscribe to changes in the suite state by calling `suite.subscribe(callback)`. The callback will be called whenever the suite state changes internally.
-
-```js
-suite.subscribe(() => {
-  const result = suite.run();
-  // ... Do something with the result
+  if (result.hasErrors()) {
+    return res.status(400).json(result.getErrors());
+  }
 });
 ```
 
-### Unsubscribing from Suite State Changes
+## Managing State
 
-The `subscribe` method returns a function that you can call to unsubscribe from the suite state changes:
+Vest is "stateful" by default. This means if you run validation for just _one_ field, Vest remembers the results of the _other_ fields from the previous run. This is excellent for Single Page Applications (SPAs) where you don't want to lose existing errors just because the user updated a different input.
 
-```js
-const unsubscribe = suite.subscribe();
+However, sometimes you need to intervene manually.
+
+### Resetting the Suite
+
+If a user clears the form or navigates away, you might want to wipe the slate clean.
+
+```javascript
+// Clears all results, errors, and warnings
+suite.reset();
 ```
+
+### Resetting a Single Field
+
+To clear errors for just one field (useful if you want to implement a "reset input" button):
+
+```javascript
+suite.resetField('email');
+```
+
+### Removing a Field
+
+If a field is dynamically removed from your UI (like removing a row in a list), you should remove it from the validation state so `isValid()` doesn't get stuck waiting for it.
+
+```javascript
+suite.remove('passenger_2');
+```
+
+## Accessing Results Without Running
+
+Sometimes you need to check the validity of the form _without_ triggering a new run (e.g., to disable a submit button).
+
+```javascript
+const result = suite.get();
+```
+
+This returns the most recent result object instantly.
+
+## Advanced: SSR & Hydration
+
+If you are rendering on the server and hydrating on the client (Next.js, Remix, Nuxt), you can transfer Vest's state so the client picks up exactly where the server left off.
+
+We use the `SuiteSerializer` API for this.
+
+```javascript
+import { SuiteSerializer } from 'vest';
+
+// 1. Server: Serialize the suite after running
+const serializedState = SuiteSerializer.serialize(suite);
+
+// 2. Client: Resume the suite with that state
+SuiteSerializer.resume(suite, serializedState);
+```
+
+For a deep dive into this pattern, read **[Server-Side Rendering & Hydration](../suite_serialization.md)**.

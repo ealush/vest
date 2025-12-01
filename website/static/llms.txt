@@ -1,0 +1,22 @@
+# Vest 6
+> Vest is a framework-agnostic form validation library for JavaScript that derives its syntax from modern unit testing frameworks like Mocha or Jest. It supports React, Vue, Svelte, and vanilla JS.
+
+## Core Documentation
+- [Full Documentation (All-in-one)](/llms-full.txt)
+- [Getting Started](/docs/get_started): Installation, creating your first suite, and basic usage.
+- [The Suite Object](/docs/writing_your_suite/vests_suite): Understanding the suite lifecycle, running validations, and state management.
+- [Writing Tests](/docs/writing_tests/the_test_function): Detailed guide on the `test` function, grouping, and asynchronous validation.
+- [Enforce (Assertions)](/docs/enforce/enforce): The assertion library for value and schema validation.
+- [API Reference](/docs/api_reference): Complete API surface documentation.
+
+## Key Concepts
+- **Stateful Validation**: Vest manages validation state (pending, failed, valid) across renders.
+- **Focused Updates**: Validate only specific fields (e.g., on blur) using `only()` or `skip()` while retaining the state of others.
+- **Conditional Inclusion**: Use `skipWhen`, `omitWhen`, and `include` to dynamically control which tests run.
+- **Optional Fields**: Mark fields as optional to allow them to be empty or valid.
+
+## Advanced Features
+- **Async Tests**: Native Promise support for server-side checks.
+- **Server-Side Validation**: Stateless runs using `runStatic` and state serialization/hydration.
+- **Schema Validation**: Structural validation using `enforce` schemas.
+- **Type Safety**: TypeScript support for suites and enforce rules.

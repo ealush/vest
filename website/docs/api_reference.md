@@ -13,7 +13,6 @@ keywords:
     suite.reset,
     suite.resetField,
     test,
-    test.memo,
     warn,
     enforce,
     enforce.extend,
@@ -41,12 +40,12 @@ keywords:
     isTested,
     isValid,
     isValidByGroup,
-    done,
     classnames,
-    promisify,
-    compose,
-    staticSuite,
-    subscrib,
+    memo,
+    SuiteSerializer,
+    runStatic,
+    validate,
+    subscribe,
   ]
 ---
 
@@ -56,63 +55,210 @@ Below is a list of all the API functions exposed by Vest.
 
 ## Vest's main export API
 
-- [create](./writing_your_suite/vests_suite.md#basic-suite-structure) - Creates a new Vest suite. Returns a function that runs your validations.
+### `create(callback, schema?)`
 
-  - [suite.get](./writing_your_suite/vests_suite.md#using-suiteget) - Returns the current validation state of the suite.
-  - [suite.remove](./writing_your_suite/vests_suite.md#removing-a-single-field-from-the-suite-state) - Removes a single field from the suite.
-  - [suite.reset](./writing_your_suite/vests_suite.md#cleaning-up-our-validation-state) - Resets the suite to its initial state.
-  - [suite.resetField](./writing_your_suite/vests_suite.md#cleaning-up-our-validation-state) - Resets a single field to an untested state.
-  - [suite.subscribe](./writing_your_suite/vests_suite.md#subscribing-to-suite-state-changes) - Subscribes to suite state changes.
+Creates a new validation suite. Returns a **Suite Object**.
 
-- [staticSuite](./server_side_validations.md) - creates a stateless suite that is used for server side validations.
+- [Read more about `create`](./writing_your_suite/vests_suite.md)
+- [Read more about Schema Validation](./writing_your_suite/schema_validation.md)
 
-- [test](./writing_tests/the_test_function.md) - A single validation test inside your suite.
+- `callback`: The validation logic.
+- `schema` (Optional): An `enforce` schema definition.
 
-  - [test.memo](./writing_tests/advanced_test_features/test.memo.md) - Memoizes a test run as long as its dependencies haven't changed.
-  - [warn](./writing_tests/warn_only_tests.md) - resides within the test body. Sets the test's severity to warning.
-  - [debounce](./writing_tests/advanced_test_features/debounce.md) - Debounces a test to improve async test performance and flow control.
+### Suite Object Methods
 
-- [enforce](./enforce/enforce.md) - Asserts that a value matches your desired result.
+#### `suite.run(...args)`
 
-  - [enforce.extend](./enforce/creating_custom_rules.md) - Extends the enforce API with your own custom assertions.
-  - [compose](./enforce/composing_enforce_rules.md) - Compose multiple enforcers into a single enforcer.
+Runs the suite. Passes arguments to the suite callback.
 
-- [only](./writing_your_suite/including_and_excluding/skip_and_only.md#only-running-specific-tests-including) - Makes Vest only run the provided field names.
-- [skip](./writing_your_suite/including_and_excluding/skip_and_only.md#skipping-tests) - Makes Vest skip the provided field names.
-- [include()/include.when()](./writing_your_suite/including_and_excluding/include) - Link fields by running them together based on a criteria.
+- **Returns**: A `SuiteResult` object.
+  - If the suite contains async tests, the result object **also implements the Promise interface**, allowing you to `await` it.
+  - You can always access synchronous result data immediately (e.g., `result.hasErrors()`), even if the promise is pending.
+- [Read more about `suite.run`](./writing_your_suite/vests_suite.md#running-validations)
 
-- [skipWhen](./writing_your_suite/including_and_excluding/skipWhen.md) - Skips a portion of the suite when the provided condition is met.
-- [omitWhen](./writing_your_suite/including_and_excluding/omitWhen.md) - Omits a portion of the suite when the provided condition is met.
-- [optional](./writing_your_suite/optional_fields.md) - Allows you to mark a field as optional.
-- [group](./writing_tests/advanced_test_features/grouping_tests.md) - Allows grouping multiple tests with a given name.
-- [each](./writing_tests/advanced_test_features/dynamic_tests.md) - Allows iteration over an array of values to dynamically run tests.
-- [mode](./writing_your_suite/execution_modes.md) - Determines whether Vest should continue running tests after a field has failed, or if it should bail immediately.
-  - Possible modes are: 'EAGER' (default) and 'ALL'.
+#### `suite.runStatic(...args)`
+
+Runs the suite in stateless mode. Useful for server-side validation.
+
+- [Read more about Server Side Validation](./server_side_validations.md)
+
+#### `suite.reset()`
+
+Resets the suite state (clears all results).
+
+- [Read more about `suite.reset`](./writing_your_suite/vests_suite.md#resetting-the-suite)
+
+#### `suite.remove(fieldName)`
+
+Removes a specific field from the suite result state.
+
+- [Read more about `suite.remove`](./writing_your_suite/vests_suite.md#removing-a-field)
+
+#### `suite.resetField(fieldName)`
+
+Resets the state of a specific field (clears errors/warnings but keeps it in the result).
+
+- [Read more about `suite.resetField`](./writing_your_suite/vests_suite.md#resetting-a-single-field)
+
+#### `suite.focus(config)`
+
+Prepares a focused run.
+
+- `config`: `{ only?: string | string[], skip?: string | string[] }`
+- [Read more about Focused Updates](./writing_your_suite/focused_updates.md)
+
+#### `suite.after(callback)`
+
+Registers a callback to run when the suite finishes execution.
+
+- [Read more about `suite.after`](./writing_your_suite/handling_completion.md#2-using-suiteaftercallback)
+
+#### `suite.afterField(fieldName, callback)`
+
+Registers a callback to run when a specific field finishes execution.
+
+- [Read more about `suite.afterField`](./writing_your_suite/handling_completion.md#3-using-suiteafterfieldfieldname-callback)
+
+#### `suite.get()`
+
+Returns the current result object of the suite without running it. Useful for accessing the state inside UI components or subscribers.
+
+- [Read more about `suite.get`](./writing_your_suite/vests_suite.md#accessing-results-without-running)
+
+#### `SuiteSerializer.serialize(suite)`
+
+Returns a minified, serialized representation of the suite's state. Useful for SSR hydration.
+
+- [Read more about SSR Hydration](./server_side_validations.md#ssr--hydration)
+
+#### `SuiteSerializer.resume(suite, data)`
+
+Hydrates the suite with a serialized state.
+
+- `suite`: The suite to resume.
+- `data`: The serialized state object.
+- [Read more about SSR Hydration](./server_side_validations.md#ssr--hydration)
+
+#### `suite.validate(data)`
+
+Runs the suite and returns a result compatible with the [Standard Schema](https://github.com/standard-schema/standard-schema) specification.
+
+- [Read more about Standard Schema Support](./community_resources/standard_schema.md)
+
+### Top-Level Exports
+
+#### `enforce.context()`
+
+Retrieves the current validation context during a suite run. Useful within custom rules to access other fields in the data object.
+
+- **Returns**: `{ data: Object, value: any, ... }`
+- [Read more about Context Aware Rules](./enforce/creating_custom_rules.md#context-aware-rules)
+
+#### `enforce.extend(customRules)`
+
+Extends Vest's enforce with custom validation rules.
+
+- **Tip**: To add TypeScript support for your custom rules, see [TypeScript Support](./typescript_support.md#custom-enforce-rules).
+
+#### `memo(callback, deps)`
+
+Memoizes a block of tests.
+
+- [Read more about `memo`](./writing_tests/advanced_test_features/memo.md)
+
+#### `compose(...rules)`
+
+Combines multiple enforce rules.
+
+- [Read more about `compose`](./enforce/composing_enforce_rules.md)
+
+#### `test(fieldName, message, callback)`
+
+A single validation test inside your suite.
+
+- [Read more about `test`](./writing_tests/the_test_function.md)
+
+#### `enforce(value)`
+
+Asserts that a value matches your desired result.
+
+- [Read more about `enforce`](./enforce/enforce.md)
+
+#### `warn()`
+
+Sets the test's severity to warning.
+
+- [Read more about `warn`](./writing_tests/warn_only_tests.md)
+
+#### `only(fieldName)`
+
+Makes Vest only run the provided field names.
+
+- [Read more about `only`](./writing_your_suite/including_and_excluding/skip_and_only.md#only-running-specific-fields)
+
+#### `skip(fieldName)`
+
+Makes Vest skip the provided field names.
+
+- [Read more about `skip`](./writing_your_suite/including_and_excluding/skip_and_only.md#skipping-fields)
+
+#### `include(fieldName).when(condition)`
+
+Link fields by running them together based on a criteria.
+
+- [Read more about `include`](./writing_your_suite/including_and_excluding/include.md)
+
+#### `skipWhen(condition, callback)`
+
+Skips a portion of the suite when the provided condition is met.
+
+- [Read more about `skipWhen`](./writing_your_suite/including_and_excluding/skipWhen.md)
+
+#### `omitWhen(condition, callback)`
+
+Omits a portion of the suite when the provided condition is met.
+
+- [Read more about `omitWhen`](./writing_your_suite/including_and_excluding/omitWhen.md)
+
+#### `optional(fieldName)`
+
+Allows you to mark a field as optional.
+
+- [Read more about `optional`](./writing_your_suite/optional_fields.md)
+
+#### `group(groupName, callback)`
+
+Allows grouping multiple tests with a given name.
+
+- [Read more about `group`](./writing_tests/advanced_test_features/grouping_tests.md)
+
+#### `each(list, callback)`
+
+Allows iteration over an array of values to dynamically run tests.
+
+- [Read more about `each`](./writing_tests/advanced_test_features/dynamic_tests.md)
+
+#### `mode(mode)`
+
+Determines whether Vest should continue running tests after a field has failed.
+
+- [Read more about `mode`](./writing_your_suite/execution_modes.md)
 
 ## Suite Result API
 
 After running your suite, the results object is returned. It has the following functions:
 
-- [hasErrors](./writing_your_suite/accessing_the_result.md#haserrors-and-haswarnings) - Returns true if the suite or the provided field has errors.
-- [hasWarnings](./writing_your_suite/accessing_the_result.md#haserrors-and-haswarnings) - Returns true if the suite or the provided field has warnings.
-- [getError](./writing_your_suite/accessing_the_result.md#geterror-and-getwarning) - Returns the first error in the suite, or of a specific field.
-- [getWarning](./writing_your_suite/accessing_the_result.md#geterror-and-getwarning) - Returns the first warning in the suite, or of a specific field.
-- [getMessage](./writing_your_suite/accessing_the_result.md#getmessage) - Returns the first error or warning message of a specific field.
-- [getErrors](./writing_your_suite/accessing_the_result.md#geterrors-and-getwarnings) - Returns an object with errors in the suite, or an array of objects for a specific field.
-- [getWarnings](./writing_your_suite/accessing_the_result.md#geterrors-and-getwarnings) - Returns an object with warnings in the suite, or an array of objects for a specific field.
-- [hasErrorsByGroup](./writing_your_suite/accessing_the_result.md#haserrorsbygroup-and-haswarningsbygroup) - Returns true if the provided group has errors.
-- [hasWarningByGroup](./writing_your_suite/accessing_the_result.md#haserrorsbygroup-and-haswarningsbygroup) - Returns true if the provided group has warnings.
-- [getErrorsByGroup](./writing_your_suite/accessing_the_result.md#geterrorsbygroup-and-getwarningsbygroup) - Returns an object with errors in the provided group.
-- [getWarningsByGroup](./writing_your_suite/accessing_the_result.md#geterrorsbygroup-and-getwarningsbygroup) - Returns an object with warnings in the provided group.
-- [isPending](./writing_your_suite/accessing_the_result.md#ispending) - Returns true if the suite has pending async tests.
-- [isTested](./writing_your_suite/accessing_the_result.md#istested) - Returns true if the provided field has been tested.
-- [isValid](./writing_your_suite/accessing_the_result.md#isvalid) - Returns true if the suite or the provided field is valid.
-- [isValidByGroup](./writing_your_suite/accessing_the_result.md#isvalidbygroup) - Returns true if a certain group or a field in a group is valid or not.
-- [after(callback).run()](./writing_your_suite/accessing_the_result.md#after) - Accepts a callback that will run after the suite is done running. Recommended for handling async completion.
-- [await suite.run()](./writing_your_suite/accessing_the_result.md#await-suite-run) - Returns a promise that resolves when the suite is done running. Use with async/await for modern async handling.
+- [Read more about the Result Object](./writing_your_suite/accessing_the_result.md)
 
-## Vest's external exports
-
-- [vest/classnames](./utilities/classnames.md)
-- [vest/promisify](./utilities/promisify.md)
-- [vest/enforce/compose](./enforce/composing_enforce_rules.md)
+- `hasErrors(fieldName?)`: Returns true if the suite or the provided field has errors.
+- `hasWarnings(fieldName?)`: Returns true if the suite or the provided field has warnings.
+- `getErrors(fieldName?)`: Returns an object with errors in the suite, or an array of objects for a specific field.
+- `getWarnings(fieldName?)`: Returns an object with warnings in the suite, or an array of objects for a specific field.
+- `hasErrorsByGroup(groupName)`: Returns true if the provided group has errors.
+- `hasWarningByGroup(groupName)`: Returns true if the provided group has warnings.
+- `getErrorsByGroup(groupName)`: Returns an object with errors in the provided group.
+- `getWarningsByGroup(groupName)`: Returns an object with warnings in the provided group.
+- `isPending(fieldName?)`: Returns true if the suite has pending async tests.
+- `isTested(fieldName)`: Returns true if the provided field has been tested.
+- `isValid(fieldName?)`: Returns true if the suite or the provided field is valid.
+- `isValidByGroup(groupName)`: Returns true if a certain group or a field in a group is valid or not.

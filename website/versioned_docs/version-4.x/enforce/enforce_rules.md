@@ -980,7 +980,7 @@ enforce('143').isNumber();
 Checks if a value is of any type other than `number`.
 Reverse implementation of `isNumber`.
 
-**note** isNotNumber does not check for `NaN` value. For NaN values, use [isNaN](#isNaN).
+**note** isNotNumber does not check for `NaN` value. For NaN values, use [isNaN](#isnan).
 
 ### Usage examples:
 

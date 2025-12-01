@@ -5,92 +5,37 @@ description: When you have rules that you often use together or different groups
 keywords: [Vest, enforce, rules, composition, shape, loose, schema, compose]
 ---
 
-# Composing enforce rules
+# Composing Enforce Rules
 
-When you have rules that you often use together or different groups of rules that describe the same behavior, you can compose them into a single rule for easier reuse.
+You can combine multiple enforce rules into a single reusable validator using `compose`.
 
-`compose` allows us to create an "AND" relationship wrapper around multiple rules which acts like the regular enforce function.
+## Why Compose?
 
-A simple use-case example:
-Let's say we have multiple entities in our app that share some common characteristics, but some that are unique. We can compose the different validation rules for the common characteristics into a single rule that we can reuse across multiple entities.
+Sometimes you have a set of rules that always go together. For example, a "valid age" might always need to be:
 
-Let's assume the following:
+1.  A number
+2.  At least 18
+3.  Less than 120
 
-- Some of the entities in our app have an `id` property.
-- The person entity has a `name` property that includes a first, middle and last name.
-- The user entity has both an `id` and a `name` property. It also has a `username` property.
-- Users can also have a `friends` property, which is an array of other users.
+Instead of repeating these three checks every time, you can compose them into a single `isValidAge` rule. This promotes reuse and keeps your schemas clean.
 
-Expressing this with basic enforce rules is easy, but can be cumbersome, and also not very reusable.
+```javascript
+import { enforce, compose } from 'vest';
 
-```js
-import { enforce } from 'vest';
-import 'vest/enforce/schema'; // for the schema rules
+const isValidAge = compose(
+  enforce.isNumber(),
+  enforce.greaterThanOrEquals(18),
+  enforce.lessThan(120),
+);
 
-enforce(userObj).shape({
-  id: enforce.number(),
-  name: enforce.shape({
-    first: enforce.string(),
-    middle: enforce.optional(enforce.string()),
-    last: enforce.string(),
-  }),
-  username: enforce.string(),
-  friends: enforce.optional(
-    enforce.arrayOf(
-      enforce.shape({
-        id: enforce.number(),
-        username: enforce.string(),
-        name: enforce.shape({
-          first: enforce.string(),
-          middle: enforce.optional(enforce.string()),
-          last: enforce.string(),
-        }),
-      }),
-    ),
-  ),
+// Usage
+isValidAge.run(20); // { pass: true }
+isValidAge.run(15); // { pass: false }
+
+// Inside a schema
+const userSchema = enforce.shape({
+  age: isValidAge,
 });
 ```
 
-Instead, we can compose these different characteristics into composites that can later on be further reused.
-
-```js
-import compose from 'vest/enforce/compose';
-import 'vest/enforce/schema'; // for the schema rules
-
-const Entity = compose(
-  enforce.loose({
-    id: enforce.number(),
-  }),
-);
-
-const Person = compose(
-  enforce.loose({
-    name: enforce.shape({
-      first: enforce.string(),
-      middle: enforce.optional(enforce.string()),
-      last: enforce.string(),
-    }),
-  }),
-);
-
-const User = compose(
-  Entity,
-  Person,
-  enforce.loose({
-    username: enforce.string(),
-    friends: enforce.optional(enforce.arrayOf(User)),
-  }),
-);
-```
-
-This way, each composite can be used individually, but can also be composed together to create a more complex rule that can be easily reused.
-
-Using these composites is as easy as either calling the from within other compound rules, or calling them directly within a Vest test just like the regular enforce function:
-
-```js
-User(userObj); // Throws an error when failing
-```
-
-## Some notes
-
-When composing rules, be mindful when you are composing rules that have a `shape` rule inside of them. If these shape extend one another, you should probably use [loose](./builtin-enforce-plugins/schema_rules.md#enforceloose---loose-shape-matching) so they allow for extended properties.
+Composed rules act just like standard enforce rules and can be used for type guards, schema validation, or standalone assertions.

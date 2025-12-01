@@ -1,60 +1,67 @@
 ---
 sidebar_position: 2
-title: Dynamically adding tests by iterating over an array
-description: Vest allows you to add tests dynamically by iterating over an array.
-keywords: [Vest, dynamically, adding, tests, iterating, array]
+title: Dynamic Tests & Arrays
+description: Learn how to iterate over data to create dynamic validation rules using the 'each' helper.
+keywords: [Vest, each, dynamic tests, array validation, loops]
 ---
 
 # Dynamic Tests with `each`
 
-> This replaces Vest's test.each which used to have limited capabilities.
+Forms often have dynamic lists: a list of travelers, a set of product attributes, or multiple shipping addresses. You don't know how many fields you'll have until runtime.
 
-A common use case in forms is to have fields that are added dynamically via the user interface. These fields may have multiple validations of their own, and their amount and order may change via the lifetime of the suite.
+Vest provides the `each` helper to handle these lists efficiently.
 
-To handle these dynamic tests, you may use the `each` function provided by Vest. It accepts an array of values, and a callback. It then iterates over each of the array items, and runs the provided callback, similarly to a `forEach` call.
+## Using `each`
 
-Within your `each` callback you can add your tests. It is recommended that you add each tests a unique "key" prop as the last argument. This will guarantee correct behavior when tests are removed, or their order changes.
+Think of `each` as a smarter `forEach` loop designed specifically for validation. It takes three arguments:
 
-If you have just one test of each field (= the field name is a unique value), you can use the field name as the key as well.
+1. The array to iterate over.
+2. A callback function to run for every item.
+3. (Important!) A unique key for tracking.
 
-```js
+```javascript
 import { create, test, each, enforce } from 'vest';
 
-/*
-data.fields = [
-  {
-    name: 'GameBoy Color',
-    price: 200,
-    id: "gb-color"
-  },
-  {
-    name: 'GameBoy Advance',
-    price: 300,
-    id: "gb-advance"
-  },
-  {
-    name: 'Nintendo 64',
-    price: 400,
-    id: "n64"
-  },
-]
-*/
+const suite = create(data => {
+  // data.products is an array of objects
+  each(
+    data.products,
+    product => {
+      test('product_name', 'Name is required', () => {
+        enforce(product.name).isNotBlank();
+      });
 
-const suite = create((data = {}) => {
-  each(data.fields, field => {
-    test(
-      field.name,
-      'item price must be greater than 0',
-      () => {
-        enforce(field.price).isNumeric().greaterThan(0);
-      },
-      field.id, // the key is used to guarantee state persistence on reordering
-    );
-  });
+      test('product_price', 'Price must be positive', () => {
+        enforce(product.price).greaterThan(0);
+      });
+    },
+    'id',
+  ); // <--- The magic key property
 });
 ```
 
-:::tip The Key Prop
-When using the key argument, make sure you use a consistent key to the test itself, and avoid values that may change between runs - such as the item's index.
-If you have multiple tests in for the same item, each has to have its own unique key!
+## Why do I need a Key?
+
+You know how React warns you if you render a list without a `key` prop? Vest needs keys for the same reason.
+
+Vest is stateful. It remembers that the test for "Product A" failed. If you reorder the list or delete "Product A", Vest needs to know that the tests associated with "Product A" should move or disappear, rather than attaching the old error to the new item in that index.
+
+### How to specify the Key
+
+You can pass the key in two ways:
+
+1.  **As a property name** (String): If your objects have an ID field, just pass the name of that field.
+
+    ```javascript
+    each(items, item => { ... }, 'userId'); // Uses item.userId
+    ```
+
+2.  **As a function**: If you need to calculate the key.
+
+    ```javascript
+    each(items, item => { ... }, (item) => `${item.type}_${item.id}`);
+    ```
+
+:::danger Avoid using Index
+Never use the array index as a key (or omit the key argument, which defaults to index). If the user deletes the first item, the second item will inherit the first item's validation state (and errors!), leading to a confusing UI.
 :::

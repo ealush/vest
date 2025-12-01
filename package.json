@@ -9,7 +9,8 @@
     "prepare": "husky install",
     "dev": "vx dev",
     "website:start": "yarn workspace website start",
-    "website:build": "yarn workspace website build",
+    "build:llms": "node scripts/build-llms.js",
+    "website:build": "yarn build:llms && yarn workspace website build",
     "postinstall": "husky install"
   },
   "homepage": "https://vestjs.dev",

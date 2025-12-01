@@ -17,7 +17,7 @@ The rule exposes the [`validator.js`](https://www.npmjs.com/package/validator) i
 
 ```javascript
 import { enforce } from 'vest';
-import 'vest/enforce/email';
+import 'vest/email';
 
 const email = 'user@example.com';
 

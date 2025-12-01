@@ -8,88 +8,75 @@
 
 ---
 
-Vest is a declarative validations framework designed to simplify the process of writing and maintaining form validations for your web application. Inspired by popular unit testing libraries such as Mocha and Jest, Vest allows developers to describe their validation requirements using a suite-like syntax, separating validation logic from feature logic to create more maintainable and readable code.
+Vest is a validation framework that looks and feels like a unit testing framework. It is designed to be easy to learn, highly maintainable, and framework-agnostic.
 
-Vest's framework-agnostic approach means that it can be used with any UI framework, or without any framework at all. With Vest, you can reduce code bloat, improve feature readability and maintainability, and enhance the user experience of your web application.
+Write your validations as if they were unit tests, and run them in your app.
 
 ```js
-test('username', 'Username is required', () => {
-  enforce(data.username).isNotBlank();
+import { create, test, enforce } from 'vest';
+
+const suite = create(data => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  test('username', 'Username must be at least 3 chars', () => {
+    enforce(data.username).longerThanOrEquals(3);
+  });
+
+  test('username', 'Username already taken', async () => {
+    await doesUserExist(data.username);
+  });
 });
 
-test('username', 'Username must be at least 3 chars', () => {
-  enforce(data.username).longerThanOrEquals(3);
-});
-
-test('username', 'Username already taken', async () => {
-  await doesUserExist(data.username);
-});
+const result = await suite.run(formData);
 ```
 
-## Installation
+## Why Vest?
 
-```
-npm i vest
-```
-
-## Motivation
-
-Building web applications often involves writing complex forms that require validation. As the complexity of these forms increases, so does the complexity of the validation logic required to ensure data is accurate and complete.
-
-At this point, developers may start to experience issues with code bloat, poor maintainability, and difficulty in managing validation logic across different features of an application. This can lead to bugs, errors, and a poor user experience.
-
-Vest was designed to address these issues by providing a simple, intuitive way to write form validation that is easy to learn, scalable, and extensible. By separating validation logic from feature logic, Vest helps developers create maintainable code that is easy to update, debug, and refactor.
-
-With Vest, developers can reduce the complexity and increase the readability of their code, leading to more efficient development cycles, fewer bugs, and a better user experience overall.
-
-# Why Vest?
-
-Writing form validations can be time-consuming and complex, especially as your web application grows and evolves over time. Vest simplifies the process by providing a set of powerful tools that take care of the annoying parts for you, such as managing validation state and handling async validations.
-
-Vest's declarative syntax is also designed to be easy to learn, especially for developers who are already familiar with unit testing frameworks. With Vest, you can leverage your existing knowledge to write effective form validations quickly and easily.
+Writing form validations can be messy. Vest cleans it up by separating validation logic from feature logic and providing a familiar, powerful syntax.
 
 ### 💡 Easy to Learn
 
-Vest adopts the syntax and style of unit testing frameworks, so you can leverage the knowledge you already have to write your form validations.
+Vest adopts the syntax and style of unit testing frameworks (Mocha, Jest). If you've written a test, you already know Vest.
 
 ### 🎨 Framework Agnostic
 
-Vest is framework-agnostic, which means you can use it with any UI framework out there.
+React, Vue, Svelte, Angular, or Vanilla JS—Vest works everywhere. It doesn't depend on your UI library.
 
-### 🧠 Takes Care of the Annoying Parts
+### 🛡️ Type Safe
 
-Vest manages its validation state, handles async validations, and much more, so you don't have to.
+Vest is written in TypeScript and provides first-class type support, including typed suites and results.
 
-### 🧩 Extendable
+### 🔌 Standard Schema Support
 
-You can easily add new kinds of validations to Vest according to your needs.
+Vest implements the [Standard Schema](https://github.com/standard-schema/standard-schema) spec, making it a drop-in replacement for Zod or Yup in libraries like React Hook Form.
 
-### ♻️ Reusable Validation Logic
+### ⚡ SSR & Hydration
 
-Validation logic in Vest can be shared across multiple features in your app, making it easy to maintain and refactor your codebase.
+Built-in support for server-side validation and state hydration (`runStatic`, `SuiteSerializer`), enabling seamless full-stack validation flows.
 
-### 🧬 Supports Declarative Syntax
+### 🧩 Extendable & Composable
 
-Vest's declarative syntax makes it easy to describe your form or feature structure and write clear, concise validations.
+Create custom rules, compose existing ones, or use the optional schema validation (`n4s`) to enforce data structure.
 
-### 🧪 Promotes Testing and Debugging
+## Installation
 
-By separating validation logic from feature logic, Vest makes it easier to test and debug your code, which can save you time and reduce errors.
+```shell
+npm i vest
+```
 
-# Getting Started
+## Getting Started
 
-[Vest Documentation](https://vestjs.dev)
+Check out the [Vest Documentation](https://vestjs.dev) for guides, API references, and examples.
 
-Here are some code sandboxes to get you started:
+### Playgrounds
 
 - [React](https://codesandbox.io/s/react-vest-5-gdc698?file=/src/suite.js)
 - [Vue](https://codesandbox.io/s/vue-vest-5-d1g236?file=/src/suite.js)
 - [Svelte](https://codesandbox.io/s/svelte-vest-5-imnq9z?file=/suite.js)
 - [Vanilla](https://codesandbox.io/s/vest-vanilla-js-vest-5-3v4pqk?file=/src/suite.js)
-- [Angular](https://github.com/wardbell/ngc-validate) (by @wardbell)
 
-# Contribute
+## Contribute
 
-Information describing how to contribute can be found here:
-
-https://github.com/ealush/vest/blob/latest/CONTRIBUTING.md
+We welcome contributions! See [CONTRIBUTING.md](https://github.com/ealush/vest/blob/latest/CONTRIBUTING.md) for details.

@@ -15,7 +15,12 @@ const config = {
     'Declarative validations framework inspired by unit testing libraries',
   url: 'https://vestjs.dev',
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  markdown: {
+    // @ts-ignore
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
   organizationName: 'ealush', // Usually your GitHub org/user name.
   plugins: [
     // [

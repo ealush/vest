@@ -1,5 +1,10 @@
 # vest-utils
 
-Set of shared functions used by the different components of Vest validations framefork. You probably do not need to use this package directly.
+Internal utility collection used across the Vest ecosystem (Vest, n4s/enforce, Context, and more). It includes small, focused helpers such as:
 
-The modules in this package are considered internal and are likely to change in the future.
+- Type guards: `isArray`, `isBoolean`, `isString`, `isNumeric`, `isPromise`, and related predicates.
+- Data helpers: `asArray`, `defaultTo`, `nonnullish`, `text`, `toNumber`, comparison utilities, and length helpers.
+- Control flow: `either`, `bindNot`, `callEach`, `optionalFunctionValue`, `deferThrow`.
+- Lightweight primitives: cache, pub/sub bus, simple state machines, and result wrappers.
+
+These modules are maintained for internal consumption and may change between versions. Prefer using higher-level packages (`vest`, `n4s`, `context`, etc.) unless you have a specific need for a particular helper.

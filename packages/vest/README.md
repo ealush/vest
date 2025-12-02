@@ -4,7 +4,8 @@
 
 [Vest Documentation](https://vestjs.dev)
 
-[![Join Discord](https://badgen.net/discord/online-members/WmADZpJnSe?icon=discord&label=Discord)](https://discord.gg/WmADZpJnSe) [![Github Stars](https://badgen.net/github/stars/ealush/vest?color=yellow&label=Github%20🌟)](https://github.com/ealush/vest) [![Next Tag](https://badgen.net/npm/v/vest/next)](https://vestjs.dev/vest-5-is-ready) [![Version](https://badgen.net/npm/v/vest?&icon=npm)](https://www.npmjs.com/package/vest) [![Downloads](https://badgen.net/npm/dt/vest?label=Downloads)](https://www.npmjs.com/package/vest) [![bundlephobia](https://badgen.net/bundlephobia/minzip/vest)](https://bundlephobia.com/package/vest) [![Status](https://badgen.net/github/status/ealush/vest)](https://github.com/ealush/vest/actions)
+[![Join Discord](https://badgen.net/discord/online-members/WmADZpJnSe?icon=discord&label=Discord)](https://discord.gg/WmADZpJnSe) [![Github Stars](https://badgen.net/github/stars/ealush/vest?color=yellow&label=Github%20🌟)](https://github.com/ealush/vest)
+[![Next Tag](https://badgen.net/npm/v/vest/next)](https://vestjs.dev/vest-5-is-ready) [![Version](https://badgen.net/npm/v/vest?&icon=npm)](https://www.npmjs.com/package/vest) [![Downloads](https://badgen.net/npm/dt/vest?label=Downloads)](https://www.npmjs.com/package/vest) [![bundlephobia](https://badgen.net/bundlephobia/minzip/vest)](https://bundlephobia.com/package/vest) [![Status](https://badgen.net/github/status/ealush/vest)](https://github.com/ealush/vest/actions)
 
 ---
 
@@ -59,6 +60,50 @@ Built-in support for server-side validation and state hydration (`runStatic`, `S
 ### 🧩 Extendable & Composable
 
 Create custom rules, compose existing ones, or use the optional schema validation (`n4s`) to enforce data structure.
+
+## Examples
+
+### Basic suite with result helpers
+
+```js
+import { create, test, enforce } from 'vest';
+
+const signupSuite = create(data => {
+  test('email', 'Email is required', () => {
+    enforce(data.email).isNotBlank().isEmail();
+  });
+
+  test('password', 'Password must be at least 8 characters', () => {
+    enforce(data.password).isString().longerThanOrEquals(8);
+  });
+});
+
+const result = await signupSuite.run({ email: '', password: 'short' });
+result.hasErrors('email'); // true
+result.getErrors('password'); // ['Password must be at least 8 characters']
+```
+
+### Mixing sync and async validations
+
+```js
+import { create, test, enforce } from 'vest';
+
+const profileSuite = create(data => {
+  test('handle', 'Handle must be unique', async () => {
+    const exists = await handleExists(data.handle);
+    enforce(exists).isFalse();
+  });
+
+  test('handle', 'Handle must be 3-16 characters', () => {
+    enforce(data.handle).isString().longerThanOrEquals(3).shorterThanOrEquals(16);
+  });
+});
+
+const result = await profileSuite.run({ handle: 'ada' });
+if (result.hasErrors()) {
+  console.log(result.getErrors());
+}
+```
 
 ## Installation
 

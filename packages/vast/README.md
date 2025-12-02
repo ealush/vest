@@ -1,12 +1,14 @@
 # Vast - Simple State Utility for Libraries
 
-Vast is a simple state utility created to use in [Vest](https://github.com/ealush/vest). It allows using a similar pattern to React's useState hook to store data.
+Vast is a tiny state container inspired by React's `useState`, designed for libraries that need predictable, reusable state without a UI framework.
 
-Note that this is mostly intended to be used within libraries, and not as a consumer facing interface. When paired with a context propagation libraries such as [context](https://github.com/ealush/context), it can have pretty powerful capabilities. See Vest for a real life example.
+- Register any number of state keys, each with its own getter/setter pair.
+- Provide global `onStateChange` and per-key `onUpdate` callbacks to react to changes.
+- Reset state back to initial values at any time.
 
 ## Installation
 
-```
+```bash
 npm i vast
 ```
 
@@ -15,51 +17,49 @@ npm i vast
 ```js
 import { createState } from 'vast';
 
-const state = createState(); // Creates a state reference.
+// Optional callback runs on every state change
+const state = createState(() => console.log('state changed'));
 
-const useColor = state.registerStateKey('blue'); // Creates a new key in the state, and gives it an initial value
-// You can also pass in a function to use as the initial state
+// Create a key with an initial value
+const useColor = state.registerStateKey('blue');
 
-const [color, setColor] = useColor(); // ["blue", Function]
-setColor('red'); // set the color to "red"
+const [color, setColor] = useColor();
+setColor('red');
+
+// Next call returns the updated value
+const [current] = useColor();
+// current === 'red'
 ```
 
-The next time you will call `useColor` the value of `color` will be `"red"`.
-
-You can also set a computed value by passing in a function:
+The setter accepts either a value or an updater function that receives the current state value:
 
 ```js
-const [color, setColor] = useColor(); // ["blue", Function]
-setColor(currentColor => (color === 'red' ? 'blue' : 'red'));
+const [count, setCount] = state.registerStateKey(0)();
+setCount(prev => prev + 1);
 ```
 
-## Subscribing to changes
+## Subscriptions
 
-### Getting notified for every change in the state
-
-**NOTE** This will not let you know what change was made, but only that a key in the state was updated or added:
-
-Simply add an onChange callback to your createState:
+- `onStateChange` (passed to `createState`) fires after every update to any key.
+- `onUpdate` (passed to `registerStateKey`) fires for that key when it initializes and whenever it changes, receiving `(current, previous)`.
 
 ```js
-const state = createState(() => console.log('the state was updated!'));
+const logColorChange = (next, prev) =>
+  console.log(`color: ${prev} -> ${next}`);
+const useColor = state.registerStateKey('blue', logColorChange);
+
+useColor()[1]('green');
+// logs: color: blue -> green
 ```
 
-Now on every state change, this callback will run.
+`onUpdate` is invoked before the global `onStateChange`, matching the library's execution order.
 
-Alternatively, if you need more granularity, you can subscribe to specific state keys.
+## Resetting state
 
-### Subscribing to specific state key updates
-
-If you need to react to specific changes in your state, you can add an `onUpdate` callback to those state key registrations:
+Call `state.reset()` to restore every registered key to its initial value. Setters still work after a reset:
 
 ```js
-const useColor = state.registerStateKey(
-  'red',
-  (currentState, previousState) => {
-    console.log(`the color changed from ${previousState} to ${currentState}!`);
-  },
-);
+state.reset();
+const [color, setColor] = useColor();
+setColor('purple');
 ```
-
-Now, whenever a state update happens in that key, your callback will run, providing the previous and changed value as well.

@@ -1,3 +1,5 @@
 # vestjs-runtime
 
-Internal Runtime module used by Vest. This module is not intended to be used directly, but rather used by the `vest` package.
+Runtime building blocks used internally by the `vest` package. The runtime coordinates suite lifecycle, state management, and hooks that power Vest's validation engine.
+
+This package is not intended for direct consumption; APIs may change without notice. Use the public `vest` entry point instead.

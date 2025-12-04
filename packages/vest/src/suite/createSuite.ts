@@ -43,6 +43,7 @@ function createSuite<
   // will be bound to the suite's stateRef and be able to access it.
   return VestRuntime.Run(stateRef, () => {
     const VestBus = useInitVestBus();
+
     return createSuiteInstance().unwrap();
 
     function createSuiteInstance(): Result<Suite<F, G, T, S>> {

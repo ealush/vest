@@ -117,7 +117,7 @@ export function useInitVestBus() {
   });
 
   on('SUITE_CALLBACK_RUN_FINISHED', (isolate: TIsolate) => {
-    if (!SuiteWalker.useHasPending()) {
+    if (VestRuntime.useIsStable()) {
       // When no more async tests are running, emit the done event
       VestBus.emit('ALL_RUNNING_TESTS_FINISHED', isolate);
     }
@@ -140,10 +140,12 @@ export function useInitVestBus() {
     subscribe,
   };
 
-  function subscribe(event: Events, cb: CB): CB<void>;
+  function subscribe(event: VestEvents, cb: CB): CB<void>;
   function subscribe(cb: CB): CB<void>;
-  function subscribe(...args: [event: Events, cb: CB] | [cb: CB]): CB<void> {
-    const [cb, event] = args.reverse() as [CB, Events];
+  function subscribe(
+    ...args: [event: VestEvents, cb: CB] | [cb: CB]
+  ): CB<void> {
+    const [cb, event] = args.reverse() as [CB, VestEvents];
     return VestBus.on(event ?? '*', () => {
       cb();
     }).off;
@@ -162,6 +164,6 @@ export function useInitVestBus() {
 type VestEvents = Events | ValueOf<typeof RuntimeEvents> | '*';
 
 export type Subscribe = {
-  (event: Events, cb: CB): CB<void>;
+  (event: VestEvents, cb: CB): CB<void>;
   (cb: CB): CB<void>;
 };

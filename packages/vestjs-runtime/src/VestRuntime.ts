@@ -131,6 +131,7 @@ function useHandleEndMount() {
   setIsMounting(false);
   if (pendingIsolates.size === 0 && state !== RuntimeState.STABLE) {
     setState(RuntimeState.STABLE);
+    useX().stateRef.Bus.emit(RuntimeEvents.BECOME_STABLE);
   }
 }
 
@@ -156,6 +157,7 @@ function useHandleIsolateDone(isolate: TIsolate) {
     state !== RuntimeState.STABLE
   ) {
     setState(RuntimeState.STABLE);
+    useX().stateRef.Bus.emit(RuntimeEvents.BECOME_STABLE);
   }
 }
 
@@ -291,6 +293,7 @@ export const RuntimeApi = {
   useCurrentCursor,
   useHistoryRoot,
   useIsMounting,
+  useIsStable,
   usePendingIsolates,
   useRuntimeState,
   useSetHistoryRoot,

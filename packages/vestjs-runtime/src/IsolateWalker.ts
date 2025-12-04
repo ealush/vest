@@ -11,9 +11,21 @@ export function walk(
   callback: (isolate: TIsolate, breakout: CB<void>) => void,
   visitOnly?: VisitOnlyPredicate,
 ): void {
+  if (!startNode) {
+    return;
+  }
+
   let broke = false;
 
-  // If the breakout function has been called, stop the walk.
+  const breakout = () => {
+    broke = true;
+  };
+
+  // If visitOnly is not provided or the predicate is satisfied, call the callback function.
+  if (isNullish(visitOnly) || dynamicValue(visitOnly, startNode)) {
+    callback(startNode, breakout);
+  }
+
   if (broke) {
     return;
   }
@@ -31,19 +43,11 @@ export function walk(
       },
       visitOnly,
     );
+
     // If the breakout function has been called, stop the walk.
     if (broke) {
       return;
     }
-  }
-
-  // If visitOnly is not provided or the predicate is satisfied, call the callback function.
-  if (isNullish(visitOnly) || dynamicValue(visitOnly, startNode)) {
-    callback(startNode, breakout);
-  }
-
-  function breakout() {
-    broke = true;
   }
 }
 

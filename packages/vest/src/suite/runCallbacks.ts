@@ -1,9 +1,8 @@
 import { isArray, callEach } from 'vest-utils';
 
 import { useDoneCallbacks, useFieldCallbacks } from '../core/Runtime';
-import { TestWalker } from '../core/isolate/IsolateTest/TestWalker';
-import { VestTest } from '../core/isolate/IsolateTest/VestTest';
 import { TFieldName } from '../suiteResult/SuiteResultTypes';
+import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
 /**
  * Runs done callback per field when async tests are finished running.
@@ -18,17 +17,15 @@ export function useRunFieldCallbacks(fieldName: TFieldName): void {
 
 export function useRunSyncFieldCallbacks(): void {
   const [fieldCallbacks] = useFieldCallbacks();
+  const result = useCreateSuiteResult();
 
   for (const fieldName in fieldCallbacks) {
-    if (
-      isArray(fieldCallbacks[fieldName]) &&
-      TestWalker.someTests(
-        test =>
-          VestTest.getData(test).fieldName === fieldName &&
-          !VestTest.isPending(test),
-      )
-    ) {
-      callEach(fieldCallbacks[fieldName]);
+    if (isArray(fieldCallbacks[fieldName])) {
+      const testSummary = result.tests[fieldName];
+
+      if (testSummary && testSummary.testCount > testSummary.pendingCount) {
+        callEach(fieldCallbacks[fieldName]);
+      }
     }
   }
 }

@@ -1,11 +1,10 @@
-import { VestRuntime } from 'vestjs-runtime';
+import { VestRuntime, Walker } from 'vestjs-runtime';
 
 import {
   SuiteOptionalFields,
   TIsolateSuite,
 } from '../../core/isolate/IsolateSuite/IsolateSuite';
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
-import { TestWalker } from '../../core/isolate/IsolateTest/TestWalker';
 import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
 import { isVestIsolate } from '../../core/isolate/VestIsolateType';
 import { nonMatchingFieldName } from '../../core/test/helpers/matchingFieldName';
@@ -14,6 +13,7 @@ import { useIsOptionalFieldApplied } from '../../hooks/optional/optional';
 import { TFieldName, TGroupName } from '../SuiteResultTypes';
 
 import { hasErrorsByTestObjects } from './hasFailuresByTestObjects';
+import { usePendingIsolates } from '../../core/selectors/useIsPending';
 
 /**
  * Determines if a field (or field within a group) should be marked as "valid".
@@ -260,23 +260,35 @@ function useHasNonOptionalIncomplete(
   fieldName?: TFieldName,
   groupName?: TGroupName,
 ) {
-  return TestWalker.someTests(testObject => {
-    if (groupName && VestTest.getGroupName(testObject) !== groupName) {
-      return false;
-    }
+  const pendingIsolates = usePendingIsolates();
 
-    if (
-      nonMatchingFieldName(VestTest.getData(testObject), fieldName).unwrap()
-    ) {
-      return false;
+  for (const testObject of pendingIsolates) {
+    if (useIsPendingTestRelevant(testObject, fieldName, groupName)) {
+      return true;
     }
+  }
 
-    if (useIsOptionalFieldApplied(fieldName).unwrap()) {
-      return false;
-    }
+  return false;
+}
 
-    return VestTest.isPending(testObject);
-  });
+function useIsPendingTestRelevant(
+  testObject: TIsolateTest,
+  fieldName?: TFieldName,
+  groupName?: TGroupName,
+): boolean {
+  if (groupName && VestTest.getGroupName(testObject) !== groupName) {
+    return false;
+  }
+
+  if (nonMatchingFieldName(VestTest.getData(testObject), fieldName).unwrap()) {
+    return false;
+  }
+
+  if (useIsOptionalFieldApplied(fieldName).unwrap()) {
+    return false;
+  }
+
+  return true;
 }
 
 /**
@@ -321,25 +333,32 @@ function useNoMissingTests(
   groupName?: TGroupName,
 ): boolean {
   let hasAnyTestsForField = false;
+  const root = VestRuntime.useAvailableRoot();
 
-  const result = TestWalker.everyTest(testObject => {
-    // If checking a group, skip tests not in that group
-    if (groupName && VestTest.getGroupName(testObject) !== groupName) {
-      return true;
-    }
+  const result = Walker.every(
+    root,
+    isolate => {
+      const testObject = isolate as TIsolateTest;
 
-    // Skip tests not for our target field
-    if (
-      nonMatchingFieldName(VestTest.getData(testObject), fieldName).unwrap()
-    ) {
-      return true;
-    }
+      // If checking a group, skip tests not in that group
+      if (groupName && VestTest.getGroupName(testObject) !== groupName) {
+        return true;
+      }
 
-    // Found a test for our field!
-    hasAnyTestsForField = true;
+      // Skip tests not for our target field
+      if (
+        nonMatchingFieldName(VestTest.getData(testObject), fieldName).unwrap()
+      ) {
+        return true;
+      }
 
-    return useNoMissingTestsLogic(testObject, fieldName);
-  });
+      // Found a test for our field!
+      hasAnyTestsForField = true;
+
+      return useNoMissingTestsLogic(testObject, fieldName);
+    },
+    VestTest.is,
+  );
 
   // No tests exist for this field - handle based on context
   if (!hasAnyTestsForField) {
@@ -404,11 +423,19 @@ function useNoMissingTestsLogic(
    * 3. It's an optional AUTO field that's still running - we'll accept its absence
    */
 
-  return (
-    VestTest.isOmitted(testObject).unwrap() ||
-    VestTest.isTested(testObject).unwrap() ||
-    useOptionalTestAwaitsResolution(testObject)
-  );
+  const isOmitted = VestTest.isOmitted(testObject).unwrap();
+  const isTested = VestTest.isTested(testObject).unwrap();
+  const awaitsResolution = useOptionalTestAwaitsResolution(testObject);
+
+  const result = isOmitted || isTested || awaitsResolution;
+
+  if (result) {
+    // console.log('Test is not missing:', { isOmitted, isTested, awaitsResolution, fieldName });
+  } else {
+    // console.log('Test IS missing:', { isOmitted, isTested, awaitsResolution, fieldName });
+  }
+
+  return result;
 }
 
 /**

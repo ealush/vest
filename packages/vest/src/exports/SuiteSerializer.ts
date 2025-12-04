@@ -42,16 +42,8 @@ export class SuiteSerializer {
 }
 
 function suiteSerializerReplacer(value: any, key: string) {
-  if (key === 'output') {
-    return undefined;
-  }
-
-  if (key === IsolateKeys.Status) {
-    if (AllowedStatuses.has(value)) {
-      return value;
-    }
-
-    return undefined;
+  if (isStatusKey(key)) {
+    return getAllowedStatus(value);
   }
 
   if (DisallowedKeys.has(key)) {
@@ -59,6 +51,14 @@ function suiteSerializerReplacer(value: any, key: string) {
   }
 
   return value;
+}
+
+function isStatusKey(key: string): boolean {
+  return key === IsolateKeys.Status || key === 'testStatus';
+}
+
+function getAllowedStatus(value: any): any {
+  return AllowedStatuses.has(value) ? value : undefined;
 }
 
 const AllowedStatuses = new Set([
@@ -71,6 +71,7 @@ const DisallowedKeys = new Set([
   'focusMode',
   'match',
   'matchAll',
+  'output',
   'severity',
   'tests',
 ]);

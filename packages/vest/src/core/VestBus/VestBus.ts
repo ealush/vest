@@ -16,7 +16,7 @@ import {
 } from '../Runtime';
 import { TestWalker } from '../isolate/IsolateTest/TestWalker';
 import { VestTest } from '../isolate/IsolateTest/VestTest';
-import { VestIsolate } from '../isolate/VestIsolate';
+
 import {
   registerTestsTraverseUp,
   registerTestNodes,
@@ -66,10 +66,8 @@ export function useInitVestBus() {
 
   VestBus.on(RuntimeEvents.ISOLATE_PENDING, (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
-      VestTest.setPending(isolate);
+      VestTest.setStarted(isolate);
     }
-
-    VestIsolate.setPending(isolate);
   });
 
   VestBus.on(RuntimeEvents.ISOLATE_DONE, (isolate: TIsolate) => {
@@ -78,8 +76,6 @@ export function useInitVestBus() {
     } else {
       registerTestNodes(isolate);
     }
-
-    VestIsolate.setDone(isolate);
   });
 
   VestBus.on(RuntimeEvents.ASYNC_ISOLATE_DONE, (isolate: TIsolate) => {

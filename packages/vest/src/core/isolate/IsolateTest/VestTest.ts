@@ -22,12 +22,11 @@ import {
   TestAction,
   TestStatus,
 } from '../../StateMachines/IsolateTestStateMachine';
-import { VestIsolate } from '../VestIsolate';
 import { VestIsolateType } from '../VestIsolateType';
 
 import type { TIsolateTest } from './IsolateTest';
 
-export class VestTest extends VestIsolate {
+export class VestTest {
   static stateMachine = IsolateTestStateMachine;
 
   // Read
@@ -35,6 +34,29 @@ export class VestTest extends VestIsolate {
   static getData<F extends TFieldName = TFieldName>(test: TIsolateTest<F>) {
     invariant(test.data);
     return test.data;
+  }
+
+  static getStatus(test: TIsolateTest): TestStatus {
+    const data = VestTest.getData(test);
+    return data.testStatus;
+  }
+
+  static setStatus(
+    test: TIsolateTest,
+    status: TestStatus,
+    payload?: any,
+  ): void {
+    const currentStatus = VestTest.getStatus(test);
+    const nextStatus = VestTest.stateMachine.staticTransition(
+      currentStatus,
+      status,
+      payload,
+    );
+
+    VestTest.setData(test, current => ({
+      ...current,
+      testStatus: nextStatus,
+    }));
   }
 
   static getGroupName<G extends TGroupName>(test: TIsolateTest): Maybe<G> {
@@ -53,6 +75,10 @@ export class VestTest extends VestIsolate {
 
   static isX(isolate?: Maybe<TIsolate>): asserts isolate is TIsolateTest {
     invariant(VestTest.is(isolate), ErrorStrings.EXPECTED_VEST_TEST);
+  }
+
+  static statusEquals(test: TIsolateTest, status: TestStatus): boolean {
+    return VestTest.getStatus(test) === status;
   }
 
   static cast<F extends TFieldName = TFieldName>(
@@ -116,6 +142,14 @@ export class VestTest extends VestIsolate {
     );
   }
 
+  static isPending(test: TIsolateTest): boolean {
+    return VestTest.statusEquals(test, TestStatus.STARTED);
+  }
+
+  static isStarted(test: TIsolateTest): Result<boolean> {
+    return makeResult.Ok(VestTest.isPending(test));
+  }
+
   static awaitsResolution(test: TIsolateTest): Result<boolean> {
     // Is the test in a state where it can still be run, or complete running
     // and its final status is indeterminate?
@@ -132,9 +166,13 @@ export class VestTest extends VestIsolate {
 
   // Mutate
 
-  // static setPending(test: TIsolateTest) {
-  //   this.setStatus(test, TestStatus.PENDING);
-  // }
+  static setStarted(test: TIsolateTest) {
+    VestTest.setStatus(test, TestStatus.STARTED);
+  }
+
+  static setPending(test: TIsolateTest) {
+    VestTest.setStarted(test);
+  }
 
   static fail(test: TIsolateTest): void {
     VestTest.setStatus(

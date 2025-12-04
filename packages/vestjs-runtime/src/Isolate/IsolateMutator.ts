@@ -1,5 +1,8 @@
 import { Nullable, invariant, isNullish } from 'vest-utils';
 
+import { IsolateStateMachine } from './IsolateStateMachine';
+import { IsolateStatus } from './IsolateStatus';
+
 import { TIsolate } from './Isolate';
 
 export class IsolateMutator {
@@ -56,5 +59,25 @@ export class IsolateMutator {
       return;
     }
     isolate.abortController.abort(reason);
+  }
+
+  static setStatus(
+    isolate: TIsolate,
+    status: IsolateStatus,
+    payload?: any,
+  ): void {
+    isolate.status = IsolateStateMachine.staticTransition(
+      isolate.status ?? IsolateStatus.INITIAL,
+      status,
+      payload,
+    ) as IsolateStatus;
+  }
+
+  static setPending(isolate: TIsolate): void {
+    IsolateMutator.setStatus(isolate, IsolateStatus.PENDING);
+  }
+
+  static setDone(isolate: TIsolate): void {
+    IsolateMutator.setStatus(isolate, IsolateStatus.DONE);
   }
 }

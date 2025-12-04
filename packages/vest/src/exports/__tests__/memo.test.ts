@@ -3,7 +3,6 @@ import wait from 'wait';
 
 import { TestPromise } from '../../testUtils/testPromise';
 
-import { CommonStates } from '../../core/StateMachines/CommonStateMachine';
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
 import { TestStatus } from '../../core/StateMachines/IsolateTestStateMachine';
 import { Modes } from '../../hooks/optional/Modes';
@@ -147,8 +146,8 @@ describe('memo', () => {
         suite.run();
 
         expect(tests[0]).not.toBe(tests[1]);
-        expect(tests[0].status).toBe(TestStatus.CANCELED);
-        expect(tests[1].status).toBe(CommonStates.PENDING);
+        expect(VestTest.getStatus(tests[0])).toBe(TestStatus.CANCELED);
+        expect(VestTest.getStatus(tests[1])).toBe(TestStatus.STARTED);
         expect(tests).toHaveLength(2);
       });
     });

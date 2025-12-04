@@ -11,3 +11,5 @@ export { IsolateMutator } from './Isolate/IsolateMutator';
 export * as Bus from './Bus';
 export * as IsolateSelectors from './Isolate/IsolateSelectors';
 export { IsolateSerializer } from './exports/IsolateSerializer';
+export { IsolateStatus } from './Isolate/IsolateStatus';
+export { IsolateStateMachine } from './Isolate/IsolateStateMachine';

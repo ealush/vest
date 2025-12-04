@@ -3,7 +3,7 @@ import { describe, it, expect, test } from 'vitest';
 
 import { Isolate, TIsolate } from '../../Isolate/Isolate';
 import { IsolateSerializer } from '../IsolateSerializer';
-import { IRecociler, VestRuntime } from '../../vestjs-runtime';
+import { IRecociler, VestRuntime, IsolateStatus } from '../../vestjs-runtime';
 
 describe('IsolateSerializer', () => {
   describe('serialize', () => {
@@ -30,19 +30,23 @@ describe('IsolateSerializer', () => {
                 "some_data": true,
               },
               "parent": [Circular],
+              "status": "DONE",
             },
             {
               "$type": "UChild_2",
               "parent": [Circular],
+              "status": "DONE",
             },
             {
               "$type": "UChild_3",
               "parent": [Circular],
+              "status": "DONE",
             },
           ],
           "data": {
             "some_data": true,
           },
+          "status": "DONE",
         }
       `);
     });
@@ -67,7 +71,7 @@ describe('IsolateSerializer', () => {
     it('Should take a replacer param', () => {
       const { root } = createRoot();
 
-      root.status = 'pending';
+      root.status = IsolateStatus.PENDING;
       // @ts-ignore
       root.children[0].status = 'done';
       // @ts-ignore
@@ -76,7 +80,7 @@ describe('IsolateSerializer', () => {
       const serialized = IsolateSerializer.serialize(
         root,
         (value: any, key: string) => {
-          if (key === 'status' && value === 'pending') {
+          if (key === 'status' && value === IsolateStatus.PENDING) {
             return 'incomplete';
           }
 
@@ -97,7 +101,7 @@ describe('IsolateSerializer', () => {
       it('Should correctly expand values', () => {
         const { root } = createRoot();
 
-        root.status = 'pending';
+        root.status = IsolateStatus.PENDING;
         // @ts-ignore
         root.children[0].status = 'done';
         // @ts-ignore
@@ -106,7 +110,7 @@ describe('IsolateSerializer', () => {
         const serialized = IsolateSerializer.serialize(root, v => v);
         const inflated = IsolateSerializer.deserialize(serialized);
 
-        expect(inflated.status).toBe('pending');
+        expect(inflated.status).toBe(IsolateStatus.PENDING);
         // @ts-ignore
         expect(inflated.children[0].status).toBe('done');
         // @ts-ignore
@@ -131,12 +135,13 @@ describe('IsolateSerializer', () => {
               {
                 "$type": "UChild_3",
                 "parent": [Circular],
+                "status": "DONE",
               },
             ],
             "data": {
               "some_data": true,
             },
-            "status": "pending",
+            "status": "PENDING",
           }
         `);
       });
@@ -162,19 +167,23 @@ describe('IsolateSerializer', () => {
                 "some_data": true,
               },
               "parent": [Circular],
+              "status": "DONE",
             },
             {
               "$type": "UChild_2",
               "parent": [Circular],
+              "status": "DONE",
             },
             {
               "$type": "UChild_3",
               "parent": [Circular],
+              "status": "DONE",
             },
           ],
           "data": {
             "some_data": true,
           },
+          "status": "DONE",
         }
       `);
     });

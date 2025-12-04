@@ -7,7 +7,6 @@ import * as VestRuntime from '../VestRuntime';
 
 import { IsolateKeys } from './IsolateKeys';
 import { IsolateMutator } from './IsolateMutator';
-import { IsolateStateMachine } from './IsolateStateMachine';
 import { IsolateStatus } from './IsolateStatus';
 
 export type IsolateKey = Nullable<string>;
@@ -122,37 +121,26 @@ function useRunAsNewCallback(current: TIsolate, callback: CB): any {
 
   if (isPromise(output)) {
     emit(RuntimeEvents.ISOLATE_PENDING, current);
-    IsolateMutator.setStatus(
-      current,
-      IsolateStateMachine.staticTransition(
-        current.status,
-        IsolateStatus.PENDING,
-      ) as IsolateStatus,
-    );
-    output.then(iso => {
-      if (Isolate.isIsolate(iso)) {
-        IsolateMutator.addChild(current, iso);
-      }
+    IsolateMutator.setPending(current);
+    output.then(
+      VestRuntime.persist(iso => {
+        if (Isolate.isIsolate(iso)) {
+          IsolateMutator.addChild(current, iso);
+        }
 
-      emit(RuntimeEvents.ISOLATE_DONE, current);
-      IsolateMutator.setStatus(
-        current,
-        IsolateStateMachine.staticTransition(
-          current.status,
-          IsolateStatus.DONE,
-        ) as IsolateStatus,
-      );
-      emit(RuntimeEvents.ASYNC_ISOLATE_DONE, current);
-    });
+        emit(RuntimeEvents.ISOLATE_DONE, current);
+        IsolateMutator.setDone(current);
+        emit(RuntimeEvents.ASYNC_ISOLATE_DONE, current);
+      }),
+      VestRuntime.persist(() => {
+        emit(RuntimeEvents.ISOLATE_DONE, current);
+        IsolateMutator.setDone(current);
+        emit(RuntimeEvents.ASYNC_ISOLATE_DONE, current);
+      }),
+    );
   } else {
     emit(RuntimeEvents.ISOLATE_DONE, current);
-    IsolateMutator.setStatus(
-      current,
-      IsolateStateMachine.staticTransition(
-        current.status,
-        IsolateStatus.DONE,
-      ) as IsolateStatus,
-    );
+    IsolateMutator.setDone(current);
   }
 
   return output;

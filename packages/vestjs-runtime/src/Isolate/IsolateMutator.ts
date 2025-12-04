@@ -1,5 +1,7 @@
 import { Nullable, invariant, isNullish } from 'vest-utils';
 
+import { RuntimeApi } from '../VestRuntime';
+
 import { IsolateStateMachine } from './IsolateStateMachine';
 import { IsolateStatus } from './IsolateStatus';
 
@@ -75,9 +77,11 @@ export class IsolateMutator {
 
   static setPending(isolate: TIsolate): void {
     IsolateMutator.setStatus(isolate, IsolateStatus.PENDING);
+    RuntimeApi.registerPending(isolate);
   }
 
   static setDone(isolate: TIsolate): void {
     IsolateMutator.setStatus(isolate, IsolateStatus.DONE);
+    RuntimeApi.removePending(isolate);
   }
 }

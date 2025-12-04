@@ -118,29 +118,23 @@ export function useSetValidPropertyImpl(
   groupName?: TGroupName,
 ): boolean {
   // Step 1: Is the field optional, and the optional condition is applied?
-  // Examples:
-  // - AUTO: User marked 'secondaryEmail' as optional, and it's blank ('', null, undefined)
-  // - AUTO: User marked 'pet_color' as optional, and tests were skipped via only()
-  // - CUSTOM: optional({ age: () => !suite.get().hasErrors('birthdate') })
   if (useIsOptionalFieldApplied(fieldName).unwrap()) {
     return true;
   }
 
   // Step 2: Does the field have any tests with errors?
-  // Example: Password test failed because it's too short
   if (useHasErrors(fieldName, groupName)) {
     return false;
   }
 
   // Step 3: Does the given field have any pending tests that are not optional?
-  // Example: Email validation is still checking with the server
   if (useHasNonOptionalIncomplete(fieldName, groupName)) {
     return false;
   }
 
   // Step 4: Did all required tests for the field run?
-  // Example: Username uniqueness check was skipped
-  return useNoMissingTests(fieldName, groupName);
+  const noMissing = useNoMissingTests(fieldName, groupName);
+  return noMissing;
 }
 
 /**

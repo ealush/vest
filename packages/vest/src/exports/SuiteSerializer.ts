@@ -1,5 +1,5 @@
 import { CB, Result } from 'vest-utils';
-import { IsolateSerializer, IsolateKeys } from 'vestjs-runtime';
+import { IsolateSerializer } from 'vestjs-runtime';
 
 import { TestStatus } from '../core/StateMachines/IsolateTestStateMachine';
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
@@ -54,7 +54,7 @@ function suiteSerializerReplacer(value: any, key: string) {
 }
 
 function isStatusKey(key: string): boolean {
-  return key === IsolateKeys.Status || key === 'testStatus';
+  return key === 'testStatus';
 }
 
 function getAllowedStatus(value: any): any {

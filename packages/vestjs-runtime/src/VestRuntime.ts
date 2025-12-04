@@ -1,4 +1,5 @@
 import { createCascade } from 'context';
+import { RuntimeEvents } from './RuntimeEvents';
 import {
   invariant,
   deferThrow,
@@ -19,6 +20,7 @@ import { IsolateInspector } from './Isolate/IsolateInspector';
 import { IsolateMutator } from './Isolate/IsolateMutator';
 import { IRecociler } from './Reconciler';
 import { ErrorStrings } from './errors/ErrorStrings';
+import { RuntimeState } from './Orchestrator/RuntimeStates';
 
 type CTXType = StateRefType & {
   historyNode: Nullable<TIsolate>;
@@ -31,6 +33,9 @@ export type StateRefType = {
   Bus: BusType;
   appData: Record<string, any>;
   historyRoot: TinyState<Nullable<TIsolate>>;
+  isMounting: TinyState<boolean>;
+  pendingIsolates: TinyState<Set<TIsolate>>;
+  state: TinyState<RuntimeState>;
   Reconciler: IRecociler;
 };
 
@@ -57,18 +62,22 @@ const PersistedContext = createCascade<CTXType>((stateRef, parentContext) => {
 
 export const Run = PersistedContext.run;
 
-export const RuntimeApi = {
-  Run,
-  createRef,
-  persist,
-  reset,
-  useAvailableRoot,
-  useCurrentCursor,
-  useHistoryRoot,
-  useSetHistoryRoot,
-  useSetNextIsolateChild,
-  useXAppData,
-};
+export function useRuntimeState() {
+  return useX().stateRef.state();
+}
+
+export function useIsStable() {
+  const [state] = useRuntimeState();
+  return state === RuntimeState.STABLE;
+}
+
+export function useIsMounting() {
+  return useX().stateRef.isMounting();
+}
+
+export function usePendingIsolates() {
+  return useX().stateRef.pendingIsolates();
+}
 
 export function useXAppData<T = object>() {
   return useX().stateRef.appData as T;
@@ -83,7 +92,79 @@ export function createRef(
     Reconciler,
     appData: dynamicValue(setter),
     historyRoot: tinyState.createTinyState<Nullable<TIsolate>>(null),
+    isMounting: tinyState.createTinyState<boolean>(false),
+    pendingIsolates: tinyState.createTinyState<Set<TIsolate>>(new Set()),
+    state: tinyState.createTinyState<RuntimeState>(RuntimeState.STABLE),
   });
+}
+
+export function dispatch(event: { type: string; payload?: any }) {
+  switch (event.type) {
+    case RuntimeEvents.START_MOUNT:
+      useHandleStartMount();
+      break;
+
+    case RuntimeEvents.END_MOUNT:
+      useHandleEndMount();
+      break;
+
+    case RuntimeEvents.ISOLATE_PENDING:
+      useHandleIsolatePending(event.payload);
+      break;
+
+    case RuntimeEvents.ISOLATE_DONE:
+      useHandleIsolateDone(event.payload);
+      break;
+  }
+}
+
+function useHandleStartMount() {
+  const [, setIsMounting] = useIsMounting();
+  setIsMounting(true);
+}
+
+function useHandleEndMount() {
+  const [, setIsMounting] = useIsMounting();
+  const [pendingIsolates] = usePendingIsolates();
+  const [state, setState] = useRuntimeState();
+
+  setIsMounting(false);
+  if (pendingIsolates.size === 0 && state !== RuntimeState.STABLE) {
+    setState(RuntimeState.STABLE);
+  }
+}
+
+function useHandleIsolatePending(isolate: TIsolate) {
+  const [pendingIsolates] = usePendingIsolates();
+  const [state, setState] = useRuntimeState();
+
+  pendingIsolates.add(isolate);
+  if (state !== RuntimeState.PENDING) {
+    setState(RuntimeState.PENDING);
+  }
+}
+
+function useHandleIsolateDone(isolate: TIsolate) {
+  const [pendingIsolates] = usePendingIsolates();
+  const [state, setState] = useRuntimeState();
+  const [isMounting] = useIsMounting();
+
+  pendingIsolates.delete(isolate);
+  if (
+    pendingIsolates.size === 0 &&
+    !isMounting &&
+    state !== RuntimeState.STABLE
+  ) {
+    setState(RuntimeState.STABLE);
+  }
+}
+
+export function registerPending(isolate: TIsolate) {
+  dispatch({ type: RuntimeEvents.ISOLATE_PENDING, payload: isolate });
+}
+
+export function removePending(isolate: TIsolate) {
+  dispatch({ type: RuntimeEvents.ISOLATE_DONE, payload: isolate });
 }
 
 export function useReconciler() {
@@ -197,3 +278,22 @@ export function reset() {
 
   resetHistoryRoot();
 }
+
+export const RuntimeApi = {
+  Run,
+  createRef,
+  dispatch,
+  persist,
+  registerPending,
+  removePending,
+  reset,
+  useAvailableRoot,
+  useCurrentCursor,
+  useHistoryRoot,
+  useIsMounting,
+  usePendingIsolates,
+  useRuntimeState,
+  useSetHistoryRoot,
+  useSetNextIsolateChild,
+  useXAppData,
+};

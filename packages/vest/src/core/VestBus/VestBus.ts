@@ -64,12 +64,6 @@ export function useInitVestBus() {
     registerTestNodes(isolate);
   });
 
-  VestBus.on(RuntimeEvents.ISOLATE_PENDING, (isolate: TIsolate) => {
-    if (VestTest.is(isolate)) {
-      VestTest.setStarted(isolate);
-    }
-  });
-
   VestBus.on(RuntimeEvents.ISOLATE_DONE, (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
       VestBus.emit('TEST_COMPLETED', isolate);

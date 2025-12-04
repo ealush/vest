@@ -170,10 +170,6 @@ export class VestTest {
     VestTest.setStatus(test, TestStatus.STARTED);
   }
 
-  static setPending(test: TIsolateTest) {
-    VestTest.setStarted(test);
-  }
-
   static fail(test: TIsolateTest): void {
     VestTest.setStatus(
       test,

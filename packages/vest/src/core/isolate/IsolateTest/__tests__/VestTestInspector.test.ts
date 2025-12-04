@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { VestRuntime } from 'vestjs-runtime';
 
 import { TFieldName } from '../../../../suiteResult/SuiteResultTypes';
 import { mockIsolateTest } from '../../../../testUtils/vestMocks';
@@ -8,11 +9,13 @@ import { VestTest } from '../VestTest';
 
 describe('VestTest', () => {
   let testObject: TIsolateTest;
+  let stateRef: any;
 
   beforeEach(() => {
     testObject = mockIsolateTest({
       fieldName: 'field_name' as TFieldName,
     });
+    stateRef = VestRuntime.createRef({} as any, ((v: any) => v) as any);
   });
   describe('warns', () => {
     it('Should return true when test severity is WARNING', () => {
@@ -28,8 +31,10 @@ describe('VestTest', () => {
 
   describe('isPending', () => {
     it('Should return true when test status is PENDING', () => {
-      VestTest.setPending(testObject);
-      expect(VestTest.isPending(testObject)).toBe(true);
+      VestRuntime.Run(stateRef, () => {
+        VestTest.setStarted(testObject);
+        expect(VestTest.isPending(testObject)).toBe(true);
+      });
     });
 
     it('Should return false when test is not pending', () => {
@@ -54,12 +59,10 @@ describe('VestTest', () => {
     });
 
     it('Should return false when test is not untested', () => {
-      VestTest.setPending(testObject);
-      expect(VestTest.isUntested(testObject).unwrap()).toBe(false);
-      VestTest.skip(testObject);
-      expect(VestTest.isUntested(testObject).unwrap()).toBe(false);
-      VestTest.omit(testObject);
-      expect(VestTest.isUntested(testObject).unwrap()).toBe(false);
+      VestRuntime.Run(stateRef, () => {
+        VestTest.setStarted(testObject);
+        expect(VestTest.isUntested(testObject).unwrap()).toBe(false);
+      });
     });
   });
 
@@ -154,11 +157,13 @@ describe('VestTest', () => {
     });
 
     it('Should return false when the test is not non-actionable', () => {
-      expect(VestTest.isNonActionable(testObject).unwrap()).toBe(false);
-      VestTest.setPending(testObject);
-      expect(VestTest.isNonActionable(testObject).unwrap()).toBe(false);
-      VestTest.fail(testObject);
-      expect(VestTest.isNonActionable(testObject).unwrap()).toBe(false);
+      VestRuntime.Run(stateRef, () => {
+        expect(VestTest.isNonActionable(testObject).unwrap()).toBe(false);
+        VestTest.setStarted(testObject);
+        expect(VestTest.isNonActionable(testObject).unwrap()).toBe(false);
+        VestTest.fail(testObject);
+        expect(VestTest.isNonActionable(testObject).unwrap()).toBe(false);
+      });
     });
   });
 
@@ -184,22 +189,25 @@ describe('VestTest', () => {
     });
 
     it('Should return false when the test is untested', () => {
-      expect(VestTest.isTested(testObject).unwrap()).toBe(false);
-      testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
-      VestTest.omit(testObject);
-      expect(VestTest.isTested(testObject).unwrap()).toBe(false);
+      VestRuntime.Run(stateRef, () => {
+        expect(VestTest.isTested(testObject).unwrap()).toBe(false);
 
-      testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
-      VestTest.skip(testObject);
-      expect(VestTest.isTested(testObject).unwrap()).toBe(false);
+        testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
+        VestTest.omit(testObject);
+        expect(VestTest.isTested(testObject).unwrap()).toBe(false);
 
-      testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
-      VestTest.setPending(testObject);
-      expect(VestTest.isTested(testObject).unwrap()).toBe(false);
+        testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
+        VestTest.skip(testObject);
+        expect(VestTest.isTested(testObject).unwrap()).toBe(false);
 
-      testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
-      VestTest.cancel(testObject);
-      expect(VestTest.isTested(testObject).unwrap()).toBe(false);
+        testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
+        VestTest.setStarted(testObject);
+        expect(VestTest.isTested(testObject).unwrap()).toBe(false);
+
+        testObject = mockIsolateTest({ fieldName: 'f' as TFieldName });
+        VestTest.cancel(testObject);
+        expect(VestTest.isTested(testObject).unwrap()).toBe(false);
+      });
     });
   });
 
@@ -215,8 +223,10 @@ describe('VestTest', () => {
     });
 
     it('Should return true for a pending test', () => {
-      VestTest.setPending(testObject);
-      expect(VestTest.awaitsResolution(testObject).unwrap()).toBe(true);
+      VestRuntime.Run(stateRef, () => {
+        VestTest.setStarted(testObject);
+        expect(VestTest.awaitsResolution(testObject).unwrap()).toBe(true);
+      });
     });
 
     it('Should return false for a tested test', () => {

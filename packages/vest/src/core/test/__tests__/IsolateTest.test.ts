@@ -85,7 +85,7 @@ describe('IsolateTest', () => {
             VestTest.cancel(testObject);
             expect(VestTest.isCanceled(testObject).unwrap()).toBe(false);
             expect(VestTest.isFailing(testObject).unwrap()).toBe(true);
-            VestTest.setPending(testObject);
+            VestTest.setStarted(testObject);
             expect(VestTest.isPending(testObject)).toBe(false);
             expect(VestTest.isFailing(testObject).unwrap()).toBe(true);
             control();
@@ -109,7 +109,7 @@ describe('IsolateTest', () => {
             VestTest.skip(testObject);
             expect(VestTest.isSkipped(testObject).unwrap()).toBe(false);
             expect(VestTest.isCanceled(testObject).unwrap()).toBe(true);
-            VestTest.setPending(testObject);
+            VestTest.setStarted(testObject);
             expect(VestTest.isPending(testObject)).toBe(false);
             expect(VestTest.isCanceled(testObject).unwrap()).toBe(true);
             control();

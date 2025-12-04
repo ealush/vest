@@ -1,4 +1,3 @@
-import { Predicates } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
 import {
@@ -12,7 +11,6 @@ import { isVestIsolate } from '../../core/isolate/VestIsolateType';
 import { nonMatchingFieldName } from '../../core/test/helpers/matchingFieldName';
 import { OptionalFieldTypes } from '../../hooks/optional/OptionalTypes';
 import { useIsOptionalFieldApplied } from '../../hooks/optional/optional';
-import { SuiteWalker } from '../../suite/SuiteWalker';
 import { TFieldName, TGroupName } from '../SuiteResultTypes';
 
 import { hasErrorsByTestObjects } from './hasFailuresByTestObjects';
@@ -262,19 +260,23 @@ function useHasNonOptionalIncomplete(
   fieldName?: TFieldName,
   groupName?: TGroupName,
 ) {
-  return SuiteWalker.useHasPending(
-    Predicates.all(
-      VestTest.is,
-      // If groupName specified, only check tests in that group
-      (testObject: TIsolateTest) =>
-        !groupName || VestTest.getGroupName(testObject) === groupName,
-      // Only check tests for our target field
-      (testObject: TIsolateTest) =>
-        !nonMatchingFieldName(VestTest.getData(testObject), fieldName).unwrap(),
-      // Ignore optional fields (they're valid even when pending)
-      () => !useIsOptionalFieldApplied(fieldName).unwrap(),
-    ),
-  );
+  return TestWalker.someTests(testObject => {
+    if (groupName && VestTest.getGroupName(testObject) !== groupName) {
+      return false;
+    }
+
+    if (
+      nonMatchingFieldName(VestTest.getData(testObject), fieldName).unwrap()
+    ) {
+      return false;
+    }
+
+    if (useIsOptionalFieldApplied(fieldName).unwrap()) {
+      return false;
+    }
+
+    return VestTest.isPending(testObject);
+  });
 }
 
 /**

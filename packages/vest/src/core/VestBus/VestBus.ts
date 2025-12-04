@@ -2,7 +2,7 @@ import { CB, ValueOf } from 'vest-utils';
 import { Bus, RuntimeEvents, TIsolate, VestRuntime } from 'vestjs-runtime';
 
 import { useOmitOptionalFields } from '../../hooks/optional/omitOptionalFields';
-import { SuiteWalker } from '../../suite/SuiteWalker';
+import { TIsolateSuite } from '../isolate/IsolateSuite/IsolateSuite';
 import {
   useRunDoneCallbacks,
   useRunFieldCallbacks,
@@ -82,7 +82,7 @@ export function useInitVestBus() {
       }
     }
 
-    if (!SuiteWalker.useHasPending()) {
+    if (VestRuntime.useIsStable()) {
       // When no more async tests are running, emit the done event
       VestBus.emit('ALL_RUNNING_TESTS_FINISHED', isolate);
     }
@@ -103,7 +103,10 @@ export function useInitVestBus() {
     }
 
     // resolve the suite's promise
-    SuiteWalker.useResolve();
+    const root = VestRuntime.useAvailableRoot<TIsolateSuite>();
+    if (root) {
+      root.data.resolver();
+    }
   });
 
   on('RESET_FIELD', (fieldName: TFieldName) => {

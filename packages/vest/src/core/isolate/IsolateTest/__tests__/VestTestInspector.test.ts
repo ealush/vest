@@ -33,12 +33,12 @@ describe('VestTest', () => {
     it('Should return true when test status is PENDING', () => {
       VestRuntime.Run(stateRef, () => {
         VestTest.setStarted(testObject);
-        expect(VestTest.isPending(testObject)).toBe(true);
+        expect(VestTest.isStartedStatus(testObject)).toBe(true);
       });
     });
 
     it('Should return false when test is not pending', () => {
-      expect(VestTest.isPending(testObject)).toBe(false);
+      expect(VestTest.isStartedStatus(testObject)).toBe(false);
     });
   });
 

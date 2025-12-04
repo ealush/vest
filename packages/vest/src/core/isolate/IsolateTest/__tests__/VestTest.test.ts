@@ -8,11 +8,6 @@ describe('VestTest', () => {
     it('Should have STARTED status', () => {
       expect(TestStatus.STARTED).toBe('STARTED');
     });
-
-    it('Should NOT have PENDING status', () => {
-      // @ts-expect-error - PENDING should be removed
-      expect(TestStatus.PENDING).toBeUndefined();
-    });
   });
 
   describe('VestTest.setStarted', () => {

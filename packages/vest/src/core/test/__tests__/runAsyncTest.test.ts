@@ -19,9 +19,9 @@ describe('runAsyncTest', () => {
 
       testObject = VestTest.cast(testObject);
 
-      expect(VestTest.isPending(testObject)).toBe(true);
+      expect(VestTest.isStartedStatus(testObject)).toBe(true);
       await wait(100);
-      expect(VestTest.isPending(testObject)).toBe(false);
+      expect(VestTest.isStartedStatus(testObject)).toBe(false);
     });
   });
 

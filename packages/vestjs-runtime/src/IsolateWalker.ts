@@ -5,49 +5,53 @@ import { IsolateMutator } from './Isolate/IsolateMutator';
 
 type VisitOnlyPredicate = (isolate: TIsolate) => boolean;
 
-// eslint-disable-next-line
 export function walk(
   startNode: TIsolate,
   callback: (isolate: TIsolate, breakout: CB<void>) => void,
   visitOnly?: VisitOnlyPredicate,
 ): void {
-  if (!startNode) {
-    return;
-  }
+  if (!startNode) return;
 
   let broke = false;
 
-  const breakout = () => {
-    broke = true;
-  };
-
-  // If visitOnly is not provided or the predicate is satisfied, call the callback function.
-  if (isNullish(visitOnly) || dynamicValue(visitOnly, startNode)) {
-    callback(startNode, breakout);
+  if (shouldVisit(startNode, visitOnly)) {
+    callback(startNode, () => {
+      broke = true;
+    });
   }
 
-  if (broke) {
-    return;
-  }
+  if (broke) return;
 
-  // For each child Isolate object, call the callback function.
-  for (const isolate of startNode.children ?? []) {
-    // Recursively walk through the child Isolate object.
+  if (startNode.children) {
+    walkChildren(startNode.children, callback, visitOnly, () => (broke = true));
+  }
+}
+
+function shouldVisit(node: TIsolate, visitOnly?: VisitOnlyPredicate): boolean {
+  return isNullish(visitOnly) || dynamicValue(visitOnly, node);
+}
+
+function walkChildren(
+  children: TIsolate[],
+  callback: (isolate: TIsolate, breakout: CB<void>) => void,
+  visitOnly: VisitOnlyPredicate | undefined,
+  breakout: CB<void>,
+): void {
+  let broke = false;
+  for (const isolate of children) {
+    if (broke) return;
+
     walk(
       isolate,
       (child, innerBreakout) => {
         callback(child, () => {
           innerBreakout();
           breakout();
+          broke = true;
         });
       },
       visitOnly,
     );
-
-    // If the breakout function has been called, stop the walk.
-    if (broke) {
-      return;
-    }
   }
 }
 

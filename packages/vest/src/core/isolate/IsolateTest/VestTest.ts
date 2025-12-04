@@ -142,12 +142,12 @@ export class VestTest {
     );
   }
 
-  static isPending(test: TIsolateTest): boolean {
+  static isStartedStatus(test: TIsolateTest): boolean {
     return VestTest.statusEquals(test, TestStatus.STARTED);
   }
 
   static isStarted(test: TIsolateTest): Result<boolean> {
-    return makeResult.Ok(VestTest.isPending(test));
+    return makeResult.Ok(VestTest.isStartedStatus(test));
   }
 
   static awaitsResolution(test: TIsolateTest): Result<boolean> {
@@ -156,7 +156,7 @@ export class VestTest {
     return makeResult.Ok(
       VestTest.isSkipped(test).unwrap() ||
         VestTest.isUntested(test).unwrap() ||
-        VestTest.isPending(test),
+        VestTest.isStartedStatus(test),
     );
   }
 

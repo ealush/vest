@@ -427,15 +427,7 @@ function useNoMissingTestsLogic(
   const isTested = VestTest.isTested(testObject).unwrap();
   const awaitsResolution = useOptionalTestAwaitsResolution(testObject);
 
-  const result = isOmitted || isTested || awaitsResolution;
-
-  if (result) {
-    // console.log('Test is not missing:', { isOmitted, isTested, awaitsResolution, fieldName });
-  } else {
-    // console.log('Test IS missing:', { isOmitted, isTested, awaitsResolution, fieldName });
-  }
-
-  return result;
+  return isOmitted || isTested || awaitsResolution;
 }
 
 /**

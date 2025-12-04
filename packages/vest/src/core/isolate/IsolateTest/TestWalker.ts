@@ -12,33 +12,12 @@ type MaybeRoot = Nullable<TIsolate>;
 export class TestWalker {
   static defaultRoot = VestRuntime.useAvailableRoot;
 
-  static hasNoTests(root: MaybeRoot = TestWalker.defaultRoot()): boolean {
-    if (!root) return true;
-    return !Walker.has(root, VestTest.is);
-  }
-
   static someTests(
     predicate: (test: TIsolateTest) => boolean,
     root: MaybeRoot = TestWalker.defaultRoot(),
   ): boolean {
     if (!root) return false;
     return Walker.some(
-      root,
-      isolate => {
-        VestTest.isX(isolate);
-
-        return predicate(isolate);
-      },
-      VestTest.is,
-    );
-  }
-
-  static everyTest(
-    predicate: (test: TIsolateTest) => boolean,
-    root: MaybeRoot = TestWalker.defaultRoot(),
-  ): boolean {
-    if (!root) return false;
-    return Walker.every(
       root,
       isolate => {
         VestTest.isX(isolate);
@@ -59,22 +38,6 @@ export class TestWalker {
       (isolate, breakout) => {
         callback(VestTest.cast<F>(isolate), breakout);
       },
-      VestTest.is,
-    );
-  }
-
-  static reduceTests<T, I extends TIsolateTest = TIsolateTest>(
-    callback: (acc: T, test: I, breakout: () => void) => T,
-    initialValue: T,
-    root: MaybeRoot = TestWalker.defaultRoot(),
-  ): T {
-    if (!root) return initialValue;
-    return Walker.reduce(
-      root,
-      (acc, isolate, breakout) => {
-        return callback(acc, VestTest.cast(isolate) as I, breakout);
-      },
-      initialValue,
       VestTest.is,
     );
   }

@@ -30,7 +30,7 @@ export function useOmitOptionalFields(): void {
 
   // iterate over each of the tests in the state
   TestWalker.walkTests(testObject => {
-    if (VestTest.isPending(testObject)) {
+    if (VestTest.isStartedStatus(testObject)) {
       return;
     }
     const { fieldName } = VestTest.getData(testObject);

@@ -6,7 +6,7 @@ import {
   makeResult,
   Result,
 } from 'vest-utils';
-import { IsolateMutator, VestRuntime } from 'vestjs-runtime';
+import { VestRuntime } from 'vestjs-runtime';
 
 import { ErrorStrings } from '../../../errors/ErrorStrings';
 import { SuiteContext } from '../../context/SuiteContext';
@@ -107,7 +107,6 @@ function useRunAsyncTest(
 
   const done = VestRuntime.persist(() => {
     onTestCompleted(testObject).unwrap();
-    IsolateMutator.setDone(testObject);
   });
   const fail = VestRuntime.persist((rejectionMessage?: string) => {
     if (VestTest.isCanceled(testObject).unwrap()) {
@@ -120,7 +119,6 @@ function useRunAsyncTest(
     VestTest.fail(testObject);
 
     done();
-    IsolateMutator.setDone(testObject);
   });
 
   return makeResult.Ok(asyncTest.then(done, fail));

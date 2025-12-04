@@ -1,6 +1,7 @@
 import { VestRuntime } from 'vestjs-runtime';
 
 import { VestTest } from '../isolate/IsolateTest/VestTest';
+import matchingFieldName from '../test/helpers/matchingFieldName';
 
 export function usePendingIsolates() {
   const [pending] = VestRuntime.usePendingIsolates();
@@ -19,7 +20,7 @@ export function useIsPending(fieldName?: string): boolean {
   }
 
   for (const isolate of pending) {
-    if (VestTest.getData(isolate).fieldName === fieldName) {
+    if (matchingFieldName(VestTest.getData(isolate), fieldName).unwrap()) {
       return true;
     }
   }

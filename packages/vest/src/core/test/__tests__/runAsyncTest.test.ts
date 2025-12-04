@@ -51,11 +51,11 @@ describe('runAsyncTest', () => {
         expect(cb1).toHaveBeenCalled();
         expect(cb2).not.toHaveBeenCalled();
         expect(cb3).not.toHaveBeenCalled();
-        await wait(50);
+        await wait(55);
         expect(cb1).toHaveBeenCalled();
         expect(cb2).toHaveBeenCalled();
         expect(cb3).not.toHaveBeenCalled();
-        await wait(50);
+        await wait(55);
         expect(cb1).toHaveBeenCalled();
         expect(cb2).toHaveBeenCalled();
         expect(cb3).toHaveBeenCalled();

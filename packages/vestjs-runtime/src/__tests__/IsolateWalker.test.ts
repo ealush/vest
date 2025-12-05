@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { makeResult } from 'vest-utils';
 
 import { TIsolate } from '../Isolate/Isolate';
 import { walk, reduce, findAll } from '../IsolateWalker';
@@ -34,6 +35,7 @@ describe('walk', () => {
     const visited: Set<string> = new Set();
     walk(tree, isolate => {
       visited.add(isolate.data.id);
+      return makeResult.Ok(undefined);
     });
 
     expect(visited).toEqual(
@@ -54,31 +56,33 @@ describe('walk', () => {
     const visited: string[] = [];
     walk(tree, isolate => {
       visited.push(isolate.data.id);
+      return makeResult.Ok(undefined);
     });
 
     expect(visited).toEqual([
+      '0',
+      '0.0',
       '0.0.0',
+      '0.0.1',
       '0.0.1.0',
       '0.0.1.1',
-      '0.0.1',
       '0.0.2',
-      '0.0',
       '0.1',
-      '0',
     ]);
   });
 
   describe('Breakout', () => {
     it('Should stop the walk when breakout is called', () => {
       const visited: Array<string> = [];
-      walk(tree, (isolate, breakout) => {
+      walk(tree, isolate => {
         visited.push(isolate.data.id);
         if (isolate.data.id === '0.0.1') {
-          breakout();
+          return makeResult.Err(undefined);
         }
+        return makeResult.Ok(undefined);
       });
 
-      expect(visited).toEqual(['0.0.0', '0.0.1.0', '0.0.1.1', '0.0.1']);
+      expect(visited).toEqual(['0', '0.0', '0.0.0', '0.0.1']);
     });
   });
 
@@ -89,11 +93,12 @@ describe('walk', () => {
         tree,
         isolate => {
           visited.push(isolate.data.id);
+          return makeResult.Ok(undefined);
         },
         isolate => isolate.data.id.endsWith('1'),
       );
 
-      expect(visited).toEqual(['0.0.1.1', '0.0.1', '0.1']);
+      expect(visited).toEqual(['0.0.1', '0.0.1.1', '0.1']);
     });
   });
 });
@@ -121,7 +126,11 @@ describe('reduce', () => {
   });
 
   it('Should return the accumulated value of the tree', () => {
-    const sum = reduce(node, (acc, isolate) => acc + isolate.data.value, 0);
+    const sum = reduce(
+      node,
+      (acc, isolate) => makeResult.Ok(acc + isolate.data.value),
+      0,
+    );
     expect(sum).toBe(8);
   });
 
@@ -131,12 +140,12 @@ describe('reduce', () => {
       node,
       (acc, isolate) => {
         visited.push(isolate.data.value);
-        return acc;
+        return makeResult.Ok(acc);
       },
       '',
     );
 
-    expect(visited).toEqual([1, 0, 1, 2, 1, 2, 0, 1]);
+    expect(visited).toEqual([1, 2, 1, 2, 0, 1, 1, 0]);
   });
 
   describe('Breakout', () => {
@@ -144,17 +153,17 @@ describe('reduce', () => {
       const visited: Array<number> = [];
       reduce(
         node,
-        (acc, isolate, breakout) => {
+        (acc, isolate) => {
           visited.push(isolate.data.value);
           if (isolate.data.value === 2) {
-            breakout();
+            return makeResult.Err(acc);
           }
-          return acc;
+          return makeResult.Ok(acc);
         },
         '',
       );
 
-      expect(visited).toEqual([1, 0, 1, 2]);
+      expect(visited).toEqual([1, 2]);
     });
   });
 
@@ -163,7 +172,7 @@ describe('reduce', () => {
       const output = reduce(
         node,
         (acc, isolate) => {
-          return acc + isolate.data.value;
+          return makeResult.Ok(acc + isolate.data.value);
         },
         0,
         isolate => isolate.$type === 's',
@@ -200,9 +209,9 @@ describe('findAll', () => {
     const output = findAll(node, isolate => isolate.data.value === 100);
 
     expect(output).toEqual([
+      node,
       node.children?.[0]?.children?.[0],
       node.children?.[0]?.children?.[1]?.children?.[1],
-      node,
     ]);
   });
 });

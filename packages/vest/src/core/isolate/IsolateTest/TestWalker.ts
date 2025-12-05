@@ -1,4 +1,4 @@
-import { Nullable } from 'vest-utils';
+import { Nullable, makeResult } from 'vest-utils';
 import { Walker, VestRuntime, TIsolate } from 'vestjs-runtime';
 
 import { TFieldName } from '../../../suiteResult/SuiteResultTypes';
@@ -35,8 +35,15 @@ export class TestWalker {
     if (!root) return;
     Walker.walk(
       root,
-      (isolate, breakout) => {
-        callback(VestTest.cast<F>(isolate), breakout);
+      isolate => {
+        let broken = false;
+        callback(VestTest.cast<F>(isolate), () => {
+          broken = true;
+        });
+        if (broken) {
+          return makeResult.Err(undefined);
+        }
+        return makeResult.Ok(undefined);
       },
       VestTest.is,
     );

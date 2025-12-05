@@ -1,4 +1,11 @@
-import { CB, Nullable, isNullish, dynamicValue } from 'vest-utils';
+import {
+  Nullable,
+  isNullish,
+  dynamicValue,
+  Result,
+  makeResult,
+  isFailure,
+} from 'vest-utils';
 
 import { type TIsolate } from './Isolate/Isolate';
 import { IsolateMutator } from './Isolate/IsolateMutator';
@@ -13,52 +20,49 @@ type VisitOnlyPredicate = (isolate: TIsolate) => boolean;
  */
 export function walk(
   startNode: TIsolate,
-  callback: (isolate: TIsolate, breakout: CB<void>) => void,
+  callback: (isolate: TIsolate) => Result<void>,
   visitOnly?: VisitOnlyPredicate,
-): void {
-  if (!startNode) return;
+): Result<void> {
+  if (!startNode) return makeResult.Ok(undefined);
 
-  let broke = false;
+  const stack = [startNode];
 
-  if (startNode.children) {
-    walkChildren(startNode.children, callback, visitOnly, () => (broke = true));
+  while (stack.length > 0) {
+    const node = stack.pop()!;
+
+    const res = visit(node, visitOnly, callback);
+
+    if (isFailure(res)) {
+      return res;
+    }
+
+    if (node.children) {
+      pushChildren(stack, node.children);
+    }
   }
 
-  if (broke) return;
+  return makeResult.Ok(undefined);
+}
 
-  if (shouldVisit(startNode, visitOnly)) {
-    callback(startNode, () => {
-      broke = true;
-    });
+function visit(
+  node: TIsolate,
+  visitOnly: VisitOnlyPredicate | undefined,
+  callback: (isolate: TIsolate) => Result<void>,
+): Result<void> {
+  if (shouldVisit(node, visitOnly)) {
+    return callback(node);
+  }
+  return makeResult.Ok(undefined);
+}
+
+function pushChildren(stack: TIsolate[], children: TIsolate[]): void {
+  for (let i = children.length - 1; i >= 0; i--) {
+    stack.push(children[i]);
   }
 }
 
 function shouldVisit(node: TIsolate, visitOnly?: VisitOnlyPredicate): boolean {
   return isNullish(visitOnly) || dynamicValue(visitOnly, node);
-}
-
-function walkChildren(
-  children: TIsolate[],
-  callback: (isolate: TIsolate, breakout: CB<void>) => void,
-  visitOnly: VisitOnlyPredicate | undefined,
-  breakout: CB<void>,
-): void {
-  let broke = false;
-  for (const isolate of children) {
-    if (broke) return;
-
-    walk(
-      isolate,
-      (child, innerBreakout) => {
-        callback(child, () => {
-          innerBreakout();
-          breakout();
-          broke = true;
-        });
-      },
-      visitOnly,
-    );
-  }
 }
 
 /**
@@ -71,7 +75,7 @@ function walkChildren(
  */
 export function reduce<T>(
   startNode: TIsolate,
-  callback: (acc: T, isolate: TIsolate, breakout: CB<void>) => T,
+  callback: (acc: T, isolate: TIsolate) => Result<T>,
   initialValue: T,
   visitOnly?: VisitOnlyPredicate,
 ): T {
@@ -79,8 +83,14 @@ export function reduce<T>(
 
   walk(
     startNode,
-    (node, breakout) => {
-      acc = callback(acc, node, breakout);
+    node => {
+      const res = callback(acc, node);
+
+      if (isFailure(res)) {
+        return makeResult.Err(res.error);
+      }
+      acc = res.unwrap();
+      return makeResult.Ok(undefined);
     },
     visitOnly,
   );
@@ -105,11 +115,12 @@ export function some(
   // Call the walk function with a callback function that sets hasMatch to true if the predicate is satisfied.
   walk(
     startNode,
-    (node, breakout) => {
+    node => {
       if (predicate(node)) {
-        breakout();
         hasMatch = true;
+        return makeResult.Err(undefined);
       }
+      return makeResult.Ok(undefined);
     },
     visitOnly,
   );
@@ -168,14 +179,14 @@ export function find(
 ): Nullable<TIsolate> {
   let found = null;
 
-  // Call the walk function with a callback function that sets found to the current node if the predicate is satisfied.
   walk(
     startNode,
-    (node, breakout) => {
+    node => {
       if (predicate(node)) {
-        breakout();
         found = node;
+        return makeResult.Err(undefined);
       }
+      return makeResult.Ok(undefined);
     },
     visitOnly,
   );
@@ -203,6 +214,7 @@ export function findAll(
       if (predicate(node)) {
         found.push(node);
       }
+      return makeResult.Ok(undefined);
     },
     visitOnly,
   );
@@ -225,11 +237,12 @@ export function every(
   let hasMatch = true;
   walk(
     startNode,
-    (node, breakout) => {
+    node => {
       if (!predicate(node)) {
-        breakout();
         hasMatch = false;
+        return makeResult.Err(undefined);
       }
+      return makeResult.Ok(undefined);
     },
     visitOnly,
   );
@@ -254,6 +267,7 @@ export function pluck(
       if (predicate(node) && node.parent) {
         IsolateMutator.removeChild(node.parent, node);
       }
+      return makeResult.Ok(undefined);
     },
     visitOnly,
   );

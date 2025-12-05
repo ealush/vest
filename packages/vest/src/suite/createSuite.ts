@@ -12,7 +12,7 @@ import {
 
 import { Suite, SuiteCallbackWithSchema } from './SuiteTypes';
 import {
-  bindSuiteLifecycle,
+  useBindSuiteLifecycle,
   useCreateSuiteMethods,
 } from './useCreateSuiteMethods';
 import { validateSuiteCallback } from './validateSuiteCallback/validateSuiteCallback';
@@ -55,7 +55,7 @@ function createSuite<
         schema,
       );
 
-      return makeResult.Ok(bindSuiteLifecycle(methods));
+      return makeResult.Ok(useBindSuiteLifecycle(methods));
     }
   });
 }

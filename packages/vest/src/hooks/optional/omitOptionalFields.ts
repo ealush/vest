@@ -1,5 +1,6 @@
 import { isEmpty, dynamicValue } from 'vest-utils';
-import { Bus, VestRuntime } from 'vestjs-runtime';
+import { useEmit } from '../../core/VestBus/VestBus';
+import { VestRuntime } from 'vestjs-runtime';
 
 import {
   SuiteOptionalFields,
@@ -46,7 +47,7 @@ export function useOmitOptionalFields(): void {
     }
   });
 
-  Bus.useEmit('DONE_TEST_OMISSION_PASS');
+  useEmit('DONE_TEST_OMISSION_PASS');
 
   function verifyAndOmit(testObject: TIsolateTest) {
     const { fieldName } = VestTest.getData(testObject);

@@ -1,4 +1,5 @@
-import { Bus, IsolateKey } from 'vestjs-runtime';
+import { IsolateKey } from 'vestjs-runtime';
+import { useEmit } from '../VestBus/VestBus';
 
 import { IsolateTest, TIsolateTest } from '../isolate/IsolateTest/IsolateTest';
 
@@ -15,6 +16,7 @@ function vestTest(
   key: IsolateKey,
 ): TIsolateTest;
 function vestTest(fieldName: string, cb: TestFn, key: IsolateKey): TIsolateTest;
+// eslint-disable-next-line vest-internal/use-use
 function vestTest(
   fieldName: string,
   ...args:
@@ -33,7 +35,7 @@ function vestTest(
   const testObjectInput = { fieldName: safeFieldName, message, testFn };
 
   // This invalidates the suite cache.
-  Bus.useEmit('TEST_RUN_STARTED');
+  useEmit('TEST_RUN_STARTED');
 
   return IsolateTest(useAttemptRunTest, testObjectInput, key);
 }

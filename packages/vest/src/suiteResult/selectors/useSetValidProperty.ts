@@ -1,4 +1,4 @@
-import { VestRuntime, Walker } from 'vestjs-runtime';
+import { TIsolate, VestRuntime, Walker } from 'vestjs-runtime';
 
 import {
   SuiteOptionalFields,
@@ -13,7 +13,7 @@ import { useIsOptionalFieldApplied } from '../../hooks/optional/optional';
 import { TFieldName, TGroupName } from '../SuiteResultTypes';
 
 import { hasErrorsByTestObjects } from './hasFailuresByTestObjects';
-import { usePendingIsolates } from '../../core/selectors/useIsPending';
+import { useMapFirstPending } from '../../core/selectors/useIsPending';
 
 /**
  * Determines if a field (or field within a group) should be marked as "valid".
@@ -260,17 +260,31 @@ function useHasNonOptionalIncomplete(
   fieldName?: TFieldName,
   groupName?: TGroupName,
 ) {
-  const pendingIsolates = usePendingIsolates();
-
-  for (const testObject of pendingIsolates) {
-    if (useIsPendingTestRelevant(testObject, fieldName, groupName)) {
-      return true;
-    }
-  }
-
-  return false;
+  return (
+    useMapFirstPending(
+      (isolate: TIsolate, breakout: (value: boolean) => void) => {
+        const testObject = isolate as TIsolateTest;
+        if (useIsPendingTestRelevant(testObject, fieldName, groupName)) {
+          breakout(true);
+        }
+      },
+    ) ?? false
+  );
 }
 
+/**
+ * Determines if a pending test is relevant to the current validity check.
+ *
+ * A pending test is relevant if:
+ * 1. It belongs to the target group (if a group is specified)
+ * 2. It belongs to the target field (if a field is specified)
+ * 3. The field is NOT optional (optional fields are valid even if pending)
+ *
+ * @param testObject - The pending test to check
+ * @param fieldName - The field being validated
+ * @param groupName - The group being validated
+ * @returns `true` if the pending test prevents the field from being valid
+ */
 function useIsPendingTestRelevant(
   testObject: TIsolateTest,
   fieldName?: TFieldName,

@@ -30,17 +30,25 @@ export class VestTest {
   static stateMachine = IsolateTestStateMachine;
 
   // Read
-
+  /**
+   * Retrieves the data object from the test isolate.
+   */
   static getData<F extends TFieldName = TFieldName>(test: TIsolateTest<F>) {
     invariant(test.data);
     return test.data;
   }
 
+  /**
+   * Retrieves the current status of the test.
+   */
   static getStatus(test: TIsolateTest): TestStatus {
     const data = VestTest.getData(test);
     return data.testStatus;
   }
 
+  /**
+   * Sets the status of the test, triggering a state machine transition.
+   */
   static setStatus(
     test: TIsolateTest,
     status: TestStatus,
@@ -66,6 +74,9 @@ export class VestTest {
     return group?.data.groupName;
   }
 
+  /**
+   * Checks if the given isolate is a VestTest isolate.
+   */
   static is(isolate?: Maybe<TIsolate>): isolate is TIsolateTest {
     return IsolateSelectors.isIsolateType<TIsolateTest>(
       isolate,
@@ -81,6 +92,9 @@ export class VestTest {
     return VestTest.getStatus(test) === status;
   }
 
+  /**
+   * Casts an isolate to a VestTest isolate, throwing if it's not a valid test isolate.
+   */
   static cast<F extends TFieldName = TFieldName>(
     isolate?: Maybe<TIsolate>,
   ): TIsolateTest<F> {
@@ -122,6 +136,9 @@ export class VestTest {
     return makeResult.Ok(VestTest.statusEquals(test, TestStatus.WARNING));
   }
 
+  /**
+   * Checks if the test has failed or has a warning.
+   */
   static hasFailures(test: TIsolateTest): Result<boolean> {
     return makeResult.Ok(
       VestTest.isFailing(test).unwrap() || VestTest.isWarning(test).unwrap(),
@@ -136,6 +153,9 @@ export class VestTest {
     );
   }
 
+  /**
+   * Checks if the test has been run and completed (passed or failed).
+   */
   static isTested(test: TIsolateTest): Result<boolean> {
     return makeResult.Ok(
       VestTest.hasFailures(test).unwrap() || VestTest.isPassing(test).unwrap(),
@@ -150,6 +170,9 @@ export class VestTest {
     return makeResult.Ok(VestTest.isStartedStatus(test));
   }
 
+  /**
+   * Checks if the test is awaiting resolution (skipped, untested, or started).
+   */
   static awaitsResolution(test: TIsolateTest): Result<boolean> {
     // Is the test in a state where it can still be run, or complete running
     // and its final status is indeterminate?
@@ -160,6 +183,9 @@ export class VestTest {
     );
   }
 
+  /**
+   * Checks if the test is asynchronous.
+   */
   static isAsyncTest(test: TIsolateTest): boolean {
     return isPromise(VestTest.getData(test).asyncTest);
   }

@@ -17,6 +17,11 @@ import { shouldUseErrorAsMessage } from '../helpers/shouldUseErrorMessage';
 
 import { useVerifyTestRun } from './verifyTestRun';
 
+/**
+ * Attempts to run a test.
+ * This function verifies if the test should run, and if so, runs it.
+ * @param testObject - The test isolate to run.
+ */
 export function useAttemptRunTest(testObject: TIsolateTest) {
   useVerifyTestRun(testObject);
 
@@ -36,6 +41,11 @@ export function useAttemptRunTest(testObject: TIsolateTest) {
   }
 }
 
+/**
+ * Runs a synchronous test.
+ * @param testObject - The test isolate to run.
+ * @returns The result of the test run.
+ */
 function runSyncTest(testObject: TIsolateTest): Result<TestResult> {
   return makeResult.Ok(
     SuiteContext.run({ currentTest: testObject }, () => {
@@ -62,7 +72,10 @@ function runSyncTest(testObject: TIsolateTest): Result<TestResult> {
 }
 
 /**
- * runs test, if async - adds to pending array
+ * Runs a test, handling both synchronous and asynchronous tests.
+ * If the test returns a promise, it is marked as async and added to the pending list.
+ * @param testObject - The test isolate to run.
+ * @returns A promise if the test is async, or undefined if it's sync.
  */
 function useRunTest(
   testObject: TIsolateTest,
@@ -95,7 +108,10 @@ function useRunTest(
 }
 
 /**
- * Runs async test.
+ * Runs an asynchronous test.
+ * Sets up the success and failure callbacks for the promise.
+ * @param testObject - The test isolate to run.
+ * @returns The promise of the async test.
  */
 function useRunAsyncTest(
   testObject: TIsolateTest,

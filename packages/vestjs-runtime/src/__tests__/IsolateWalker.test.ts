@@ -38,14 +38,14 @@ describe('walk', () => {
 
     expect(visited).toEqual(
       new Set([
-        '0',
-        '0.0',
         '0.0.0',
-        '0.0.1',
         '0.0.1.0',
         '0.0.1.1',
+        '0.0.1',
         '0.0.2',
+        '0.0',
         '0.1',
+        '0',
       ]),
     );
   });
@@ -57,14 +57,14 @@ describe('walk', () => {
     });
 
     expect(visited).toEqual([
-      '0',
-      '0.0',
       '0.0.0',
-      '0.0.1',
       '0.0.1.0',
       '0.0.1.1',
+      '0.0.1',
       '0.0.2',
+      '0.0',
       '0.1',
+      '0',
     ]);
   });
 
@@ -78,7 +78,7 @@ describe('walk', () => {
         }
       });
 
-      expect(visited).toEqual(['0', '0.0', '0.0.0', '0.0.1']);
+      expect(visited).toEqual(['0.0.0', '0.0.1.0', '0.0.1.1', '0.0.1']);
     });
   });
 
@@ -93,7 +93,7 @@ describe('walk', () => {
         isolate => isolate.data.id.endsWith('1'),
       );
 
-      expect(visited).toEqual(['0.0.1', '0.0.1.1', '0.1']);
+      expect(visited).toEqual(['0.0.1.1', '0.0.1', '0.1']);
     });
   });
 });
@@ -136,7 +136,7 @@ describe('reduce', () => {
       '',
     );
 
-    expect(visited).toEqual([1, 2, 1, 2, 0, 1, 1, 0]);
+    expect(visited).toEqual([1, 0, 1, 2, 1, 2, 0, 1]);
   });
 
   describe('Breakout', () => {
@@ -154,7 +154,7 @@ describe('reduce', () => {
         '',
       );
 
-      expect(visited).toEqual([1, 2]);
+      expect(visited).toEqual([1, 0, 1, 2]);
     });
   });
 
@@ -200,9 +200,9 @@ describe('findAll', () => {
     const output = findAll(node, isolate => isolate.data.value === 100);
 
     expect(output).toEqual([
-      node,
       node.children?.[0]?.children?.[0],
       node.children?.[0]?.children?.[1]?.children?.[1],
+      node,
     ]);
   });
 });

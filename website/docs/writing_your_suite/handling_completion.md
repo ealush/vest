@@ -3,7 +3,17 @@ sidebar_position: 4
 title: Handling Suite Completion
 description: Learn how to handle the completion of your validation suite using Promises or callbacks.
 keywords:
-  [Vest, suite, completion, async, await, afterEach, afterField, promise, callback]
+  [
+    Vest,
+    suite,
+    completion,
+    async,
+    await,
+    afterEach,
+    afterField,
+    promise,
+    callback,
+  ]
 ---
 
 # Handling Suite Completion

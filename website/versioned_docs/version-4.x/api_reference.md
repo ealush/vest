@@ -54,19 +54,16 @@ Below is a list of all the API functions exposed by Vest.
 ## Vest's main export API
 
 - [create](./writing_your_suite/vests_suite.md#basic-suite-structure) - Creates a new Vest suite. Returns a function that runs your validations.
-
   - [suite.get](./writing_your_suite/vests_suite.md#using-suiteget) - Returns the current validation state of the suite.
   - [suite.remove](./writing_your_suite/vests_suite.md#removing-a-single-field-from-the-suite-state) - Removes a single field from the suite.
   - [suite.reset](./writing_your_suite/vests_suite.md#cleaning-up-our-validation-state) - Resets the suite to its initial state.
   - [suite.resetField](./writing_your_suite/vests_suite.md#cleaning-up-our-validation-state) - Resets a single field to an untested state.
 
 - [test](./writing_tests/using_the_test_function.md) - A single validation test inside your suite.
-
   - [test.memo](./writing_tests/advanced_test_features/test.memo.md) - Memoizes a test run as long as its dependencies haven't changed.
   - [warn](./writing_tests/warn_only_tests.md) - resides within the test body. Sets the test's severity to warning.
 
 - [enforce](./enforce/enforce.md) - Asserts that a value matches your desired result.
-
   - [enforce.extend](./enforce/creating_custom_rules.md) - Extends the enforce API with your own custom assertions.
   - [compose](./enforce/composing_enforce_rules.md) - Compose multiple enforcers into a single enforcer.
 
@@ -74,7 +71,6 @@ Below is a list of all the API functions exposed by Vest.
   - [only.group](./writing_your_suite/including_and_excluding/skip_and_only_group.md) - Makes Vest only run the provided group names.
 - [skip](./writing_your_suite/including_and_excluding/skip_and_only.md#skipping-tests) - Makes Vest skip the provided field names.
 - [include()/include.when()](./writing_your_suite/including_and_excluding/include) - Link fields by running them together based on a criteria.
-
   - [skip.group](./writing_your_suite/including_and_excluding/skip_and_only_group.md) - Makes Vest skip the provided group names.
 
 - [skipWhen](./writing_your_suite/including_and_excluding/skipWhen.md) - Skips a portion of the suite when the provided condition is met.

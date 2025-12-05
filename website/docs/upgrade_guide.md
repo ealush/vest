@@ -97,24 +97,20 @@ You can use the following prompt with an LLM (like ChatGPT or Claude) to help mi
 I am migrating my Vest validation suites from version 5 to version 6. Please refactor the following code according to these rules:
 
 1.  **Suite Creation**: `create` now returns a Suite Object, not a function.
-
     - Change `const suite = create(...)` to keep the same variable name.
     - Remove any suite name passed as the first argument to `create`.
 
 2.  **Running Suites**:
-
     - Change `suite(data)` to `suite.run(data)`.
     - Change `staticSuite(...)` to `create(...)` and run it with `suite.runStatic(data)`.
 
 3.  **Async Handling**:
-
     - Remove `import { promisify } from 'vest'`.
     - Remove `promisify(suite)`.
     - Change `await suite(data)` or `promisified(data)` to `await suite.run(data)`.
     - Remove `.done()` callbacks. Use `await suite.run()` or `suite.afterEach()`.
 
 4.  **Memoization**:
-
     - Change `test.memo(...)` to `memo(() => { test(...) }, deps)`.
     - Ensure `memo` is imported from 'vest'.
 

@@ -57,7 +57,3 @@ export function useOmitted() {
 export function useSuiteParams() {
   return SuiteContext.useX().suiteParams;
 }
-
-export function useSuiteSchema() {
-  return SuiteContext.useX().schema;
-}

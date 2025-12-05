@@ -15,14 +15,6 @@ import { SuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 
 import { TTypedMethods } from './getTypedMethods';
 
-export type SuiteCallback<Data = any, T extends CB = CB> = T extends (
-  ...args: infer Args
-) => infer Return
-  ? Args extends [any, ...infer Rest]
-    ? (data: Data, ...rest: Rest) => Return
-    : (...args: Args) => Return
-  : T;
-
 export type SuiteCallbackWithSchema<
   S extends TSchema,
   T extends CB,

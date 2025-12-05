@@ -44,8 +44,7 @@ setCount(prev => prev + 1);
 - `onUpdate` (passed to `registerStateKey`) fires for that key when it initializes and whenever it changes, receiving `(current, previous)`.
 
 ```js
-const logColorChange = (next, prev) =>
-  console.log(`color: ${prev} -> ${next}`);
+const logColorChange = (next, prev) => console.log(`color: ${prev} -> ${next}`);
 const useColor = state.registerStateKey('blue', logColorChange);
 
 useColor()[1]('green');

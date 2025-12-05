@@ -6,7 +6,7 @@ import { createRuleCall } from './eager/ruleCallGenerator';
 import { extendEager, getRule, getSchemaRule } from './eager/ruleRegistry';
 
 export { extendEager };
-export type { EnforceEagerReturn, TArraySchemaRules } from './eager/eagerTypes';
+export type { EnforceEagerReturn } from './eager/eagerTypes';
 
 const MESSAGE_KEY = 'message';
 

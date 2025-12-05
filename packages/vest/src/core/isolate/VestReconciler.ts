@@ -24,7 +24,7 @@ export function VestReconciler(
   );
 }
 
-export type IsolateReconciler = {
+type IsolateReconciler = {
   match(currentNode: TIsolate, historyNode: TIsolate): boolean;
   reconcile(currentNode: TIsolate, historyNode: TIsolate): TIsolate;
 };

@@ -29,7 +29,7 @@ jobs:
       - name: Build internal packages
         run: yarn build
       - name: Run benchmarks and generate report
-        run: node vx/scripts/benchmark-reporter.js
+        run: npx tsx vx/scripts/benchmark-reporter.ts
 
       - name: Comment Benchmark Results
         uses: actions/github-script@v6

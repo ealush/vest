@@ -24,8 +24,8 @@ If you prefer to inspect results without throwing, build a chain and call `.run(
 ```js
 const numberCheck = enforce.isNumber().greaterThan(0);
 
-const ok = numberCheck.run(5);    // { pass: true, type: 5 }
-const bad = numberCheck.run('5');  // { pass: false, type: '5' }
+const ok = numberCheck.run(5); // { pass: true, type: 5 }
+const bad = numberCheck.run('5'); // { pass: false, type: '5' }
 ```
 
 ## Built-in rules
@@ -67,9 +67,7 @@ Rules can return a boolean or an object with `{ pass, message }`. Custom rules w
 Use compound helpers to combine conditions without writing new functions:
 
 ```js
-enforce
-  .allOf(enforce.isString(), enforce.longerThan(2))
-  .run('Vest'); // pass: true
+enforce.allOf(enforce.isString(), enforce.longerThan(2)).run('Vest'); // pass: true
 
 enforce.anyOf(enforce.equals('foo'), enforce.equals('bar')).run('bar');
 ```

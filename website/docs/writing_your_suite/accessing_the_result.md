@@ -278,8 +278,8 @@ result.getWarningsByGroup('groupName');
 
 Use `.afterEach()` to register a callback that will be called after the initial sync completion and again after each async test finishes. This is the recommended way to handle completion logic, including async suites. You can also use `await suite.run()` to get the result when all tests are finished.
 
-| Parameter           | Type       | Required? | Description                                   |
-| ------------------- | ---------- | --------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Parameter           | Type       | Required? | Description                                                                                                     |
+| ------------------- | ---------- | --------- | --------------------------------------------------------------------------------------------------------------- |
 | `callback`          | `Function` | Yes       | A callback to be run after each completion cycle. Use with `.afterEach(callback).run()` for completion logic.   |
 | `await suite.run()` | `Promise`  | No        | Returns a promise that resolves when the suite is done running. Use with async/await for modern async handling. |
 

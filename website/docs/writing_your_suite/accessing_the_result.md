@@ -272,20 +272,20 @@ result.getWarningsByGroup('groupName');
 
 [Read more about groups](../writing_tests/advanced_test_features/grouping_tests.md).
 
-## `.after()` and `await suite.run()`
+## `.afterEach()` and `await suite.run()`
 
 [Read the full guide on Handling Suite Completion](./handling_completion.md).
 
-Use `.after()` to register a callback that will be called when the suite finishes running. This is the recommended way to handle completion logic, including async suites. You can also use `await suite.run()` to get the result when all tests are finished.
+Use `.afterEach()` to register a callback that will be called after the initial sync completion and again after each async test finishes. This is the recommended way to handle completion logic, including async suites. You can also use `await suite.run()` to get the result when all tests are finished.
 
-| Parameter           | Type       | Required? | Description                                                                                                     |
-| ------------------- | ---------- | --------- | --------------------------------------------------------------------------------------------------------------- |
-| `callback`          | `Function` | Yes       | A callback to be run when the suite finishes running. Use with `.after(callback).run()` for completion logic.   |
+| Parameter           | Type       | Required? | Description                                   |
+| ------------------- | ---------- | --------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `callback`          | `Function` | Yes       | A callback to be run after each completion cycle. Use with `.afterEach(callback).run()` for completion logic.   |
 | `await suite.run()` | `Promise`  | No        | Returns a promise that resolves when the suite is done running. Use with async/await for modern async handling. |
 
 If you need to check for completion of specific fields, do so inside your callback logic.
 
-`.after()` can be chained before calling `.run()`, and multiple callbacks can be registered if needed.
+`.afterEach()` can be chained before calling `.run()`, and multiple callbacks can be registered if needed.
 
 Example:
 
@@ -307,7 +307,7 @@ const suite = create(data => {
 });
 
 suite
-  .after(res => {
+  .afterEach(res => {
     if (res.hasErrors('UserName')) {
       showUserNameErrors(res.errors);
     }
@@ -318,7 +318,7 @@ suite
 ```
 
 :::danger IMPORTANT
-Do not use `.after()` conditionally, especially with async tests. This might cause unexpected behavior or missed callbacks. Instead, perform your conditional logic within your callback.
+Do not use `.afterEach()` conditionally, especially with async tests. This might cause unexpected behavior or missed callbacks. Instead, perform your conditional logic within your callback.
 :::
 
 ```js
@@ -326,7 +326,7 @@ Do not use `.after()` conditionally, especially with async tests. This might cau
 
 if (field === 'username') {
   suite
-    .after(result => {
+    .afterEach(result => {
       /*do something*/
     })
     .run();
@@ -337,7 +337,7 @@ if (field === 'username') {
 // ✅ Instead, perform your checks within your after callback
 
 suite
-  .after(result => {
+  .afterEach(result => {
     if (field === 'username') {
       /*do something*/
     }
@@ -347,7 +347,7 @@ suite
 
 ## `.afterField()`
 
-Similar to `.after()`, but runs when a specific field finishes validation.
+Similar to `.afterEach()`, but runs when a specific field finishes validation.
 
 ```javascript
 suite.afterField('username', res => {

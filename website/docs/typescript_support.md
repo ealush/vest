@@ -56,7 +56,7 @@ result.getErrors('username'); // typed
 // result.getErrors('full_name'); // 🚨 compile-time error
 ```
 
-The typed selectors include `getError`, `getErrors`, `getWarnings`, `hasErrors`, `hasWarnings`, `isValid`, `isValidByGroup`, and `suite.after`.
+The typed selectors include `getError`, `getErrors`, `getWarnings`, `hasErrors`, `hasWarnings`, `isValid`, `isValidByGroup`, and `suite.afterEach`.
 
 ## Typing Runtime Functions
 

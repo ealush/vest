@@ -237,19 +237,19 @@ describe('key', () => {
         });
 
         suite
-          .after(() => {
+          .afterEach(() => {
             expect(suite.hasErrors('test_a')).toBe(true);
             expect(suite.hasErrors('test_b')).toBe(true);
           })
           .run({ a: '', b: '' });
         suite
-          .after(() => {
+          .afterEach(() => {
             expect(suite.hasErrors('test_a')).toBe(false);
             expect(suite.hasErrors('test_b')).toBe(true);
           })
           .run({ a: 's', b: '' }, ['test_a']);
         suite
-          .after(() => {
+          .afterEach(() => {
             expect(suite.hasErrors('test_a')).toBe(false);
             expect(suite.hasErrors('test_b')).toBe(false);
           })
@@ -272,17 +272,17 @@ describe('key', () => {
         });
 
         suite
-          .after(() => {
+          .afterEach(() => {
             expect(suite.hasErrors('test_a')).toBe(true);
           })
           .run({ a: '' }, false);
         suite
-          .after(() => {
+          .afterEach(() => {
             expect(suite.hasErrors('test_a')).toBe(true);
           })
           .run({ a: '' }, false);
         suite
-          .after(() => {
+          .afterEach(() => {
             expect(suite.hasErrors('test_a')).toBe(false);
           })
           .run({ a: 's' }, true);

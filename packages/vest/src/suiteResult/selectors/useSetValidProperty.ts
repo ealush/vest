@@ -1,21 +1,19 @@
-import { Predicates } from 'vest-utils';
-import { VestRuntime } from 'vestjs-runtime';
+import { TIsolate, VestRuntime, Walker } from 'vestjs-runtime';
 
 import {
   SuiteOptionalFields,
   TIsolateSuite,
 } from '../../core/isolate/IsolateSuite/IsolateSuite';
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
-import { TestWalker } from '../../core/isolate/IsolateTest/TestWalker';
 import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
 import { isVestIsolate } from '../../core/isolate/VestIsolateType';
 import { nonMatchingFieldName } from '../../core/test/helpers/matchingFieldName';
 import { OptionalFieldTypes } from '../../hooks/optional/OptionalTypes';
 import { useIsOptionalFieldApplied } from '../../hooks/optional/optional';
-import { SuiteWalker } from '../../suite/SuiteWalker';
 import { TFieldName, TGroupName } from '../SuiteResultTypes';
 
 import { hasErrorsByTestObjects } from './hasFailuresByTestObjects';
+import { useMapFirstPending } from '../../core/selectors/useIsPending';
 
 /**
  * Determines if a field (or field within a group) should be marked as "valid".
@@ -118,29 +116,23 @@ export function useSetValidPropertyImpl(
   groupName?: TGroupName,
 ): boolean {
   // Step 1: Is the field optional, and the optional condition is applied?
-  // Examples:
-  // - AUTO: User marked 'secondaryEmail' as optional, and it's blank ('', null, undefined)
-  // - AUTO: User marked 'pet_color' as optional, and tests were skipped via only()
-  // - CUSTOM: optional({ age: () => !suite.get().hasErrors('birthdate') })
   if (useIsOptionalFieldApplied(fieldName).unwrap()) {
     return true;
   }
 
   // Step 2: Does the field have any tests with errors?
-  // Example: Password test failed because it's too short
   if (useHasErrors(fieldName, groupName)) {
     return false;
   }
 
   // Step 3: Does the given field have any pending tests that are not optional?
-  // Example: Email validation is still checking with the server
   if (useHasNonOptionalIncomplete(fieldName, groupName)) {
     return false;
   }
 
   // Step 4: Did all required tests for the field run?
-  // Example: Username uniqueness check was skipped
-  return useNoMissingTests(fieldName, groupName);
+  const noMissing = useNoMissingTests(fieldName, groupName);
+  return noMissing;
 }
 
 /**
@@ -268,19 +260,49 @@ function useHasNonOptionalIncomplete(
   fieldName?: TFieldName,
   groupName?: TGroupName,
 ) {
-  return SuiteWalker.useHasPending(
-    Predicates.all(
-      VestTest.is,
-      // If groupName specified, only check tests in that group
-      (testObject: TIsolateTest) =>
-        !groupName || VestTest.getGroupName(testObject) === groupName,
-      // Only check tests for our target field
-      (testObject: TIsolateTest) =>
-        !nonMatchingFieldName(VestTest.getData(testObject), fieldName).unwrap(),
-      // Ignore optional fields (they're valid even when pending)
-      () => !useIsOptionalFieldApplied(fieldName).unwrap(),
-    ),
+  return (
+    useMapFirstPending(
+      (isolate: TIsolate, breakout: (value: boolean) => void) => {
+        const testObject = isolate as TIsolateTest;
+        if (useIsPendingTestRelevant(testObject, fieldName, groupName)) {
+          breakout(true);
+        }
+      },
+    ) ?? false
   );
+}
+
+/**
+ * Determines if a pending test is relevant to the current validity check.
+ *
+ * A pending test is relevant if:
+ * 1. It belongs to the target group (if a group is specified)
+ * 2. It belongs to the target field (if a field is specified)
+ * 3. The field is NOT optional (optional fields are valid even if pending)
+ *
+ * @param testObject - The pending test to check
+ * @param fieldName - The field being validated
+ * @param groupName - The group being validated
+ * @returns `true` if the pending test prevents the field from being valid
+ */
+function useIsPendingTestRelevant(
+  testObject: TIsolateTest,
+  fieldName?: TFieldName,
+  groupName?: TGroupName,
+): boolean {
+  if (groupName && VestTest.getGroupName(testObject) !== groupName) {
+    return false;
+  }
+
+  if (nonMatchingFieldName(VestTest.getData(testObject), fieldName).unwrap()) {
+    return false;
+  }
+
+  if (useIsOptionalFieldApplied(fieldName).unwrap()) {
+    return false;
+  }
+
+  return true;
 }
 
 /**
@@ -325,25 +347,32 @@ function useNoMissingTests(
   groupName?: TGroupName,
 ): boolean {
   let hasAnyTestsForField = false;
+  const root = VestRuntime.useAvailableRoot();
 
-  const result = TestWalker.everyTest(testObject => {
-    // If checking a group, skip tests not in that group
-    if (groupName && VestTest.getGroupName(testObject) !== groupName) {
-      return true;
-    }
+  const result = Walker.every(
+    root,
+    isolate => {
+      const testObject = isolate as TIsolateTest;
 
-    // Skip tests not for our target field
-    if (
-      nonMatchingFieldName(VestTest.getData(testObject), fieldName).unwrap()
-    ) {
-      return true;
-    }
+      // If checking a group, skip tests not in that group
+      if (groupName && VestTest.getGroupName(testObject) !== groupName) {
+        return true;
+      }
 
-    // Found a test for our field!
-    hasAnyTestsForField = true;
+      // Skip tests not for our target field
+      if (
+        nonMatchingFieldName(VestTest.getData(testObject), fieldName).unwrap()
+      ) {
+        return true;
+      }
 
-    return useNoMissingTestsLogic(testObject, fieldName);
-  });
+      // Found a test for our field!
+      hasAnyTestsForField = true;
+
+      return useNoMissingTestsLogic(testObject, fieldName);
+    },
+    VestTest.is,
+  );
 
   // No tests exist for this field - handle based on context
   if (!hasAnyTestsForField) {
@@ -408,11 +437,11 @@ function useNoMissingTestsLogic(
    * 3. It's an optional AUTO field that's still running - we'll accept its absence
    */
 
-  return (
-    VestTest.isOmitted(testObject).unwrap() ||
-    VestTest.isTested(testObject).unwrap() ||
-    useOptionalTestAwaitsResolution(testObject)
-  );
+  const isOmitted = VestTest.isOmitted(testObject).unwrap();
+  const isTested = VestTest.isTested(testObject).unwrap();
+  const awaitsResolution = useOptionalTestAwaitsResolution(testObject);
+
+  return isOmitted || isTested || awaitsResolution;
 }
 
 /**

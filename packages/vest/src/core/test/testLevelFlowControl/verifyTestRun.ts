@@ -14,7 +14,7 @@ export function useVerifyTestRun(
   collisionResult: TIsolateTest = testObject,
 ): TIsolateTest {
   const testData = VestTest.getData(testObject);
-  if (VestTest.isPending(testObject)) {
+  if (VestTest.isStartedStatus(testObject)) {
     // If the test is pending, we don't want to run it again.
     // We just return the test object as is.
     return testObject;

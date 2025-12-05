@@ -46,8 +46,8 @@ If you prefer an event-driven approach, or if you need to react to updates _duri
 
 Unlike a Promise which resolves only once, **`after` callbacks may run multiple times**:
 
-1.  It runs **immediately** if there are no pending tests (synchronous completion).
-2.  It runs **again** whenever an async test completes and the suite state updates.
+1.  It runs **immediately** after the synchronous pass.
+2.  It runs **again** whenever an async test completes.
 
 This makes it perfect for keeping your UI in sync with the validation state.
 
@@ -68,14 +68,16 @@ suite
 
 ## 3. Using `suite.afterField(fieldName, callback)`
 
-Sometimes you only care about the completion of a specific field. `suite.afterField()` is a specialized hook that runs when all tests for a specific field have finished.
+Sometimes you only care about the completion of a specific field. `suite.afterField()` is a specialized hook that runs whenever a test for a specific field finishes running.
+
+If a field has multiple asynchronous tests, this callback will run multiple times (once for each completing test).
 
 This is highly useful for UI patterns like removing a loading spinner from a specific input "on blur" or when its validation completes.
 
 ```javascript
 suite
   .afterField('username', res => {
-    // Only runs when 'username' tests are finished
+    // Runs when a test for 'username' finishes
     setLoading('username', false);
 
     if (res.hasErrors('username')) {

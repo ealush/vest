@@ -7,27 +7,9 @@ import * as VestRuntime from '../VestRuntime';
 import { IsolateKeys } from './IsolateKeys';
 import { IsolateMutator } from './IsolateMutator';
 import { IsolateStatus } from './IsolateStatus';
+import { IsolateKey, IsolatePayload, TIsolate } from './IsolateTypes';
 
-export type IsolateKey = Nullable<string>;
-
-export type TIsolate<P extends IsolatePayload = IsolatePayload> = {
-  [IsolateKeys.AllowReorder]?: boolean;
-  [IsolateKeys.Parent]: Nullable<TIsolate>;
-  [IsolateKeys.Type]: string;
-  [IsolateKeys.Keys]: Nullable<Record<string, TIsolate>>;
-  [IsolateKeys.Data]: DataOnly<P>;
-  [IsolateKeys.Status]: IsolateStatus;
-  [IsolateKeys.AbortController]: AbortController;
-  children: Nullable<TIsolate[]>;
-  key: IsolateKey;
-  output: any;
-} & UsedFeaturesOnly<P>;
-
-type DataOnly<P extends IsolatePayload> = Omit<P, keyof IsolateFeatures>;
-type UsedFeaturesOnly<P extends IsolatePayload> = Pick<
-  P,
-  keyof IsolateFeatures
->;
+export { IsolateKey, TIsolate };
 
 export class Isolate {
   // eslint-disable-next-line max-statements
@@ -161,9 +143,3 @@ function baseIsolate(
     output: null,
   };
 }
-
-type IsolatePayload<P = Record<string, any>> = P & IsolateFeatures;
-type IsolateFeatures = {
-  [IsolateKeys.AllowReorder]?: boolean;
-  [IsolateKeys.Status]?: IsolateStatus;
-};

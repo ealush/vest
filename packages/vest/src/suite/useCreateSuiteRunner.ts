@@ -1,5 +1,7 @@
 import { assign, CB, isFunction, withResolvers } from 'vest-utils';
-import { Bus, VestRuntime } from 'vestjs-runtime';
+import { VestRuntime } from 'vestjs-runtime';
+
+import { useEmit } from '../core/VestBus/VestBus';
 
 import { SuiteContext } from '../core/context/SuiteContext';
 import { IsolateReorderable } from '../core/isolate/IsolateReorderable/IsolateReorderable';
@@ -51,7 +53,7 @@ export function useCreateSuiteRunner<
           schema,
         },
         () => {
-          Bus.useEmit('SUITE_RUN_STARTED');
+          useEmit('SUITE_RUN_STARTED');
 
           function resolver() {
             const result = useCreateSuiteResult<F, G, S>(schema, args[0]);
@@ -65,7 +67,7 @@ export function useCreateSuiteRunner<
             (suiteCallback as any)(...(args as Parameters<T>));
 
             IsolateReorderable(runSchemaValidation(schema, modifiers, args[0]));
-            Bus.useEmit('SUITE_CALLBACK_RUN_FINISHED');
+            useEmit('SUITE_CALLBACK_RUN_FINISHED');
             return useCreateSuiteResult<F, G, S>(schema, args[0]);
           }, resolver);
           VestRuntime.dispatch({ type: 'END_MOUNT' });

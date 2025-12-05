@@ -2,7 +2,11 @@ import { describe, it, expect, vi, test } from 'vitest';
 
 import { createBus } from '../bus';
 
-type TestEvents = 'test' | 't1' | 't2';
+type TestEvents = {
+  test: any;
+  t1: void;
+  t2: void;
+};
 
 describe('bus', () => {
   it('should be a function', () => {

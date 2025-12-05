@@ -1,8 +1,9 @@
 import { CB, makeBrand, withCatch } from 'vest-utils';
-import { Bus, VestRuntime } from 'vestjs-runtime';
+import { VestRuntime } from 'vestjs-runtime';
+
+import { useEmit, usePrepareEmitter, Subscribe } from '../core/VestBus/VestBus';
 
 import { useLoadSuite } from '../core/Runtime';
-import { Subscribe } from '../core/VestBus/VestBus';
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import {
   TFieldName,
@@ -126,12 +127,12 @@ function useGetLifecycleMethods<
     afterField: VestRuntime.persist((fieldName: F | string, cb: CB) =>
       useAddAfterHelper(ctx, cb, makeBrand<TFieldName>(fieldName) as F),
     ),
-    remove: VestRuntime.persist((fieldName: string) =>
-      Bus.useEmit('REMOVE_FIELD', makeBrand<TFieldName>(fieldName)),
+    remove: VestRuntime.persist((fieldName: F | string) =>
+      useEmit('REMOVE_FIELD', makeBrand<TFieldName>(fieldName)),
     ),
-    reset: Bus.usePrepareEmitter('RESET_SUITE'),
-    resetField: VestRuntime.persist((fieldName: string) =>
-      Bus.useEmit('RESET_FIELD', makeBrand<TFieldName>(fieldName)),
+    reset: VestRuntime.persist(usePrepareEmitter('RESET_SUITE')),
+    resetField: VestRuntime.persist((fieldName: F | string) =>
+      useEmit('RESET_FIELD', makeBrand<TFieldName>(fieldName)),
     ),
     resume: VestRuntime.persist(useLoadSuite),
     run: persistedRun,
@@ -168,7 +169,7 @@ function useAddAfterHelper<
  * @param {Object} methods - The suite methods.
  * @returns {Object} - The suite methods with lifecycle methods bound.
  */
-export function bindSuiteLifecycle<
+export function useBindSuiteLifecycle<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB = CB,
@@ -178,9 +179,9 @@ export function bindSuiteLifecycle<
 ): ReturnType<typeof useCreateSuiteMethods<F, G, T, S>> {
   return {
     ...methods,
-    afterEach: VestRuntime.persist(initCallback(methods.afterEach)),
-    afterField: VestRuntime.persist(initCallback(methods.afterField)),
-    run: VestRuntime.persist(initCallback(methods.run)),
+    afterEach: VestRuntime.persist(useInitCallback(methods.afterEach)),
+    afterField: VestRuntime.persist(useInitCallback(methods.afterField)),
+    run: VestRuntime.persist(useInitCallback(methods.run)),
   };
 }
 
@@ -241,9 +242,9 @@ function createStaticRunner<
  * @param {Function} cb - The callback to wrap.
  * @returns {Function} - The wrapped callback.
  */
-function initCallback<U extends (...args: any[]) => any>(cb: U): U {
+function useInitCallback<U extends (...args: any[]) => any>(cb: U): U {
   return ((...args: Parameters<U>) => {
-    Bus.useEmit('INITIALIZING_CALLBACKS');
+    useEmit('INITIALIZING_CALLBACKS');
     return cb(...args);
   }) as U;
 }

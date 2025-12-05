@@ -1,23 +1,23 @@
 import type { CB } from './utilityTypes';
 
 const EVENT_WILDCARD = '*';
+type TEventsWildcard = typeof EVENT_WILDCARD;
 
-export function createBus<TEvents extends string = string>(): BusType<TEvents> {
-  const listeners: Record<TEvents | TEventsWildcard, CB[]> = {} as Record<
-    TEvents | TEventsWildcard,
-    CB[]
-  >;
+export function createBus<
+  TEvents extends Record<string, any> = Record<string, any>,
+>(): BusType<TEvents> {
+  const listeners = {} as Record<keyof TEvents | TEventsWildcard, CB[]>;
 
   return {
-    emit(event: TEvents | '*', data?: any) {
+    emit(event: keyof TEvents | TEventsWildcard, payload?: any) {
       getListeners(event)
-        .concat(getListeners(EVENT_WILDCARD as TEvents | '*'))
+        .concat(getListeners(EVENT_WILDCARD))
         .forEach(handler => {
-          handler(data);
+          handler(payload);
         });
     },
 
-    on(event: TEvents | TEventsWildcard, handler: CB): OnReturn {
+    on(event: keyof TEvents | TEventsWildcard, handler: CB): OnReturn {
       listeners[event] = getListeners(event).concat(handler);
 
       return {
@@ -28,16 +28,25 @@ export function createBus<TEvents extends string = string>(): BusType<TEvents> {
     },
   };
 
-  function getListeners(event: TEvents | TEventsWildcard): CB[] {
+  function getListeners(event: keyof TEvents | TEventsWildcard): CB[] {
     return listeners[event] || [];
   }
 }
 
 type OnReturn = { off: CB<void> };
 
-export type BusType<TEvents extends string = string> = {
-  on: (event: TEvents | TEventsWildcard, handler: CB) => OnReturn;
-  emit: (event: TEvents | TEventsWildcard, data?: any) => void;
-};
+export type BusType<TEvents extends Record<string, any>> = {
+  on<T extends keyof TEvents>(
+    event: T,
+    handler: (payload: TEvents[T]) => void,
+  ): OnReturn;
+  on(event: TEventsWildcard, handler: (payload: any) => void): OnReturn;
 
-type TEventsWildcard = '*';
+  emit<T extends keyof TEvents>(
+    event: T,
+    ...args: TEvents[T] extends void
+      ? [payload?: TEvents[T]]
+      : [payload: TEvents[T]]
+  ): void;
+  emit(event: TEventsWildcard, payload?: any): void;
+};

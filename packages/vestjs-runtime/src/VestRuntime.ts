@@ -182,8 +182,12 @@ function subscribeToEvents(ref: StateRefType) {
  * Dispatches a runtime event to the internal Bus.
  * This is used to trigger state changes and notifications.
  */
-export function dispatch(event: { type: RuntimeEvents; payload?: any }) {
-  useX().stateRef.Bus.emit(event.type, event.payload);
+export function dispatch<T extends keyof RuntimeEvents>(
+  event: RuntimeEvents[T] extends void
+    ? { type: T; payload?: void }
+    : { type: T; payload: RuntimeEvents[T] },
+) {
+  useX().stateRef.Bus.emit(event.type, event.payload as any);
 }
 
 /**

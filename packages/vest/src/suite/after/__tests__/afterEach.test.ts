@@ -6,9 +6,9 @@ import { TFieldName } from '../../../suiteResult/SuiteResultTypes';
 import { dummyTest } from '../../../testUtils/testDummy';
 import * as vest from '../../../vest';
 
-describe('after', () => {
+describe('afterEach', () => {
   describe('When no async tests', () => {
-    it('should call the after callback immediately once', async () => {
+    it('should call the afterEach callback immediately once', async () => {
       const afterCallback = vi.fn();
 
       const res = vest
@@ -20,7 +20,7 @@ describe('after', () => {
           dummyTest.passing();
           dummyTest.failingWarning('field_2');
         })
-        .after(afterCallback)
+        .afterEach(afterCallback)
         .run();
 
       expect(afterCallback).toHaveBeenCalledOnce();
@@ -31,14 +31,14 @@ describe('after', () => {
   });
 
   describe('When both sync and async tests', () => {
-    it('should call the `after` callback once when the sync tests are done and again for each async test', async () => {
+    it('should call the `afterEach` callback once when the sync tests are done and again for each async test', async () => {
       const afterCallback = vi.fn();
       const suite = vest.create(() => {
         dummyTest.passing();
         dummyTest.failingAsync('field_1', { time: 10 });
         dummyTest.failingAsync('field_2', { time: 15 });
       });
-      suite.after(afterCallback).run();
+      suite.afterEach(afterCallback).run();
       expect(afterCallback).toHaveBeenCalledTimes(1);
       await wait(10);
       expect(afterCallback).toHaveBeenCalledTimes(2);
@@ -65,9 +65,9 @@ describe('after', () => {
       const secondCall_1 = vi.fn(() => 'c');
       const secondCall_2 = vi.fn(() => 'd');
 
-      suite.after(firstCall_1).after(firstCall_2).run();
+      suite.afterEach(firstCall_1).afterEach(firstCall_2).run();
 
-      await suite.after(secondCall_1).after(secondCall_2).run();
+      await suite.afterEach(secondCall_1).afterEach(secondCall_2).run();
       // the second run canceled the first run callbacks so they only ran once
       expect(firstCall_1).toHaveBeenCalledTimes(1);
       expect(firstCall_2).toHaveBeenCalledTimes(1);
@@ -90,7 +90,7 @@ describe('after', () => {
           dummyTest.failing();
           dummyTest.passing();
         })
-        .after(afterCallback)
+        .afterEach(afterCallback)
         .run();
 
       expect(afterCallback).toHaveBeenCalledTimes(1);
@@ -113,7 +113,7 @@ describe('after', () => {
 
       const suite = vest.create(() => {});
 
-      suite.after(cb).run();
+      suite.afterEach(cb).run();
 
       expect(cb).toHaveBeenCalled();
     });
@@ -129,7 +129,7 @@ describe('after', () => {
           vest.test(f1, () => {});
         });
 
-        suite.after(cb).run();
+        suite.afterEach(cb).run();
         expect(suite.get().tests[f1].testCount).toBe(0);
         expect(cb).toHaveBeenCalled();
       });
@@ -150,7 +150,7 @@ describe('after', () => {
           });
         });
 
-        const res = suite.after(cb).run();
+        const res = suite.afterEach(cb).run();
 
         expect(cb).toHaveBeenCalledOnce();
 
@@ -171,7 +171,7 @@ describe('after', () => {
           });
         });
 
-        suite.after(cb).run();
+        suite.afterEach(cb).run();
         await wait(100);
         expect(cb).toHaveBeenCalled();
       });
@@ -198,7 +198,7 @@ describe('suite resolve', () => {
     expect(result.tests).toMatchSnapshot();
   });
   describe('awaiting suite', () => {
-    it('should resolve when all tests finish and after() runs', async () => {
+    it('should resolve when all tests finish and afterEach() runs', async () => {
       const suite = vest.create(() => {
         vest.test('field_1', 'field_statement_1', async () => {
           await wait(100);

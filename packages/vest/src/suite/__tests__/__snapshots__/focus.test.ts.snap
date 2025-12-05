@@ -2,7 +2,7 @@
 
 exports[`suite.focus: only > focus return value > should be the rest of the suite methods 1`] = `
 {
-  "after": [Function],
+  "afterEach": [Function],
   "afterField": [Function],
   "dump": [Function],
   "focus": [Function],

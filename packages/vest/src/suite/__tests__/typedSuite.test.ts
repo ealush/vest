@@ -61,14 +61,14 @@ describe('typed suite', () => {
     res.hasWarnings('F10');
 
     suite
-      .after(() => {
+      .afterEach(() => {
         expect(suite.get().tests.F1).toBeUndefined();
         // @ts-expect-error
         expect(suite.get().tests.F14).toBeUndefined();
       })
       .run();
 
-    suite.after(() => {}).run();
+    suite.afterEach(() => {}).run();
   });
 });
 

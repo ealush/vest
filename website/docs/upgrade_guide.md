@@ -69,12 +69,12 @@ create(data => {
 
 ## `done()` callback removed from Result
 
-The `.done()` method on the result object has been removed. Use `suite.after()` or `await suite.run()` instead.
+The `.done()` method on the result object has been removed. Use `suite.afterEach()` or `await suite.run()` instead.
 
 ```diff
 - suite(data).done(result => { ... });
 
-+ suite.after(result => { ... }).run(data);
++ suite.afterEach(result => { ... }).run(data);
 // OR
 + const result = await suite.run(data);
 ```
@@ -111,7 +111,7 @@ I am migrating my Vest validation suites from version 5 to version 6. Please ref
     - Remove `import { promisify } from 'vest'`.
     - Remove `promisify(suite)`.
     - Change `await suite(data)` or `promisified(data)` to `await suite.run(data)`.
-    - Remove `.done()` callbacks. Use `await suite.run()` or `suite.after()`.
+    - Remove `.done()` callbacks. Use `await suite.run()` or `suite.afterEach()`.
 
 4.  **Memoization**:
 

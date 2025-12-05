@@ -43,7 +43,7 @@ describe('runAsyncTest', () => {
         });
 
         suite
-          .after(cb1)
+          .afterEach(cb1)
           .afterField('field_1' as TFieldName, cb2)
           .afterField('field_3' as TFieldName, cb3)
           .run();
@@ -79,7 +79,7 @@ describe('runAsyncTest', () => {
         });
 
         suite
-          .after(cb1)
+          .afterEach(cb1)
           .afterField('field_2' as TFieldName, cb2)
           .afterField('field_3' as TFieldName, cb3)
           .run();

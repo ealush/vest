@@ -50,7 +50,7 @@ describe('mode', () => {
                   });
                 });
                 suite
-                  .after(() => {
+                  .afterEach(() => {
                     expect(suite.getErrors()).toEqual({
                       t1: ['f1'],
                     });

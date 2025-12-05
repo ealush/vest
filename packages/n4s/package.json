@@ -4,7 +4,6 @@
   "description": "typed schema validation version of enforce",
   "license": "MIT",
   "author": "ealush",
-  "private": true,
   "main": "./dist/n4s.cjs",
   "module": "./dist/n4s.mjs",
   "unpkg": "./dist/n4s.mjs",

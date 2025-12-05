@@ -95,7 +95,10 @@ const profileSuite = create(data => {
   });
 
   test('handle', 'Handle must be 3-16 characters', () => {
-    enforce(data.handle).isString().longerThanOrEquals(3).shorterThanOrEquals(16);
+    enforce(data.handle)
+      .isString()
+      .longerThanOrEquals(3)
+      .shorterThanOrEquals(16);
   });
 });
 

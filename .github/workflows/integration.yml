@@ -12,7 +12,6 @@ on:
       - nightly
       - latest
   pull_request:
-    branches: [latest]
 
 jobs:
   build:

@@ -21,10 +21,9 @@ import { RuleRunReturn } from './utils/RuleRunReturn';
  *   }
  * }
  */
-/* eslint-disable @typescript-eslint/no-namespace, @typescript-eslint/no-empty-interface */
+
 declare global {
   namespace n4s {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
     interface EnforceMatchers {}
   }
 }

@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys */
 import fs, { promises as fsPromises } from 'fs';
 import path from 'path';
 
@@ -130,6 +129,7 @@ function readPackageName(packageDir: string): string {
   return pkgJson.name;
 }
 
+// eslint-disable-next-line complexity
 async function relocateDtsFiles(
   distDir: string,
   typesDir: string,
@@ -429,10 +429,10 @@ async function generateExportPolyfills(
     const packageJsonContent = {
       exports: {
         '.': {
-          types: `../${dir.TYPES}/${dir.EXPORTS}/${exportName}.d.mts`,
           default: `../${dir.DIST}/${dir.EXPORTS}/${exportName}.mjs`,
           import: `../${dir.DIST}/${dir.EXPORTS}/${exportName}.mjs`,
           require: `../${dir.DIST}/${dir.EXPORTS}/${exportName}.cjs`,
+          types: `../${dir.TYPES}/${dir.EXPORTS}/${exportName}.d.mts`,
         },
       },
       main: `../${dir.DIST}/${dir.EXPORTS}/${exportName}.cjs`,

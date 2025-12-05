@@ -13,6 +13,7 @@ type BenchmarkResult = {
   suite: string;
 };
 
+// eslint-disable-next-line complexity
 function runBenchmarks(): string {
   try {
     logger.log('Running benchmarks...');

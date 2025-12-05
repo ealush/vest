@@ -50,7 +50,6 @@ describe('RuleRunReturn', () => {
     });
 
     it('falls back to provided type when inner type is undefined', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const inner = new (RuleRunReturn as any)(
         false,
         undefined,

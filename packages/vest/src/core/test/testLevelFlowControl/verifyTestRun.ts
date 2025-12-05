@@ -9,6 +9,7 @@ import { TFieldName } from '../../../suiteResult/SuiteResultTypes';
 import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../isolate/IsolateTest/VestTest';
 
+// eslint-disable-next-line complexity
 export function useVerifyTestRun(
   testObject: TIsolateTest,
   collisionResult: TIsolateTest = testObject,

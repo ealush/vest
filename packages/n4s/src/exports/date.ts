@@ -8,7 +8,6 @@ import type { WidenFirstParam } from '../n4sTypes';
 
 enforce.extend({ isAfter, isBefore, isDate, isISO8601 });
 
-/* eslint-disable @typescript-eslint/no-namespace */
 declare global {
   namespace n4s {
     interface EnforceMatchers {

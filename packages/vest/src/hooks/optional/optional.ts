@@ -20,6 +20,7 @@ import { TFieldName } from '../../suiteResult/SuiteResultTypes';
 import { OptionalFieldTypes, OptionalsInput } from './OptionalTypes';
 
 // @vx-allow use-use
+// eslint-disable-next-line complexity
 export function optional<F extends string>(optionals: OptionalsInput<F>): void {
   const suiteRoot = VestRuntime.useAvailableRoot<TIsolateSuite>();
 

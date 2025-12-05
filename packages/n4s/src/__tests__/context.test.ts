@@ -8,9 +8,7 @@ type ContextRuleResult =
   | { pass: boolean; message?: string | (() => string) };
 
 declare global {
-  // eslint-disable-next-line no-unused-vars
   namespace n4s {
-    // eslint-disable-next-line no-unused-vars
     interface EnforceMatchers {
       hasContext: (_value: unknown) => ContextRuleResult;
       checkContextStructure: (_value: unknown) => ContextRuleResult;

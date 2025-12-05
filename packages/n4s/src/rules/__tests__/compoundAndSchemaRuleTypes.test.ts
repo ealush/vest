@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars, @typescript-eslint/ban-ts-comment */
 import { describe, expect, it } from 'vitest';
 
 import { enforce } from '../../n4s';

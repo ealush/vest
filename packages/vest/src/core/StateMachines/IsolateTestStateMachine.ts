@@ -57,13 +57,3 @@ const machine: TStateMachine<TestStatus, TestStateMachineAction> = {
 };
 
 export const IsolateTestStateMachine = StateMachine(machine);
-
-export function isFinalStatus(status: TestStatus): boolean {
-  return (
-    status === TestStatus.FAILED ||
-    status === TestStatus.CANCELED ||
-    status === TestStatus.PASSING ||
-    status === TestStatus.SKIPPED ||
-    status === TestStatus.OMITTED
-  );
-}

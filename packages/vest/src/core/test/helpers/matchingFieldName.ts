@@ -18,13 +18,3 @@ export default function matchingFieldName(
 ): Result<boolean> {
   return makeResult.Ok(!!(fieldName && WithFieldName.fieldName === fieldName));
 }
-
-export function matchesOrHasNoFieldName(
-  WithFieldName: WithFieldName<TFieldName>,
-  fieldName?: Maybe<TFieldName>,
-): Result<boolean> {
-  if (fieldName) {
-    return matchingFieldName(WithFieldName, fieldName);
-  }
-  return makeResult.Ok(true);
-}

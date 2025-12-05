@@ -1,4 +1,4 @@
-import { Brand, CB, Nullable } from 'vest-utils';
+import { CB, Nullable } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
@@ -96,9 +96,6 @@ export type SuiteResult<
     ? undefined
     : { input: InferSchemaData<S>; output: InferSchemaData<S> };
 };
-
-export type FieldName<T extends string> = Brand<T, 'FieldName'>;
-export type GroupName<G extends string> = Brand<G, 'GroupName'>;
 
 // Public-facing aliases remain plain strings; internals can still brand via FieldName/GroupName.
 export type TFieldName = string;

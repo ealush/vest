@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`suite resolve > awaiting suite > should resolve when all tests finish and after() runs 1`] = `
+exports[`suite resolve > awaiting suite > should resolve when all tests finish and afterEach() runs 1`] = `
 {
   "field_1": SummaryBase {
     "errorCount": 1,

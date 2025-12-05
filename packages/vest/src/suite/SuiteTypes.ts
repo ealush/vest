@@ -77,7 +77,7 @@ type AfterMethods<
   T extends CB,
   S extends TSchema,
 > = {
-  after: CB<AfterMethods<F, G, T, S>, [callback: CB]>;
+  afterEach: CB<AfterMethods<F, G, T, S>, [callback: CB]>;
   afterField: CB<
     AfterMethods<F, G, T, S>,
     [fieldName: F | string, callback: CB]

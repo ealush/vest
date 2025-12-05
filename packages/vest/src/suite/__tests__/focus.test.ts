@@ -17,7 +17,7 @@ describe('suite.focus: only', () => {
       const focused = suite.focus({ only: ['field_1'] });
 
       expect(focused).toBeTypeOf('object');
-      expect(focused.after).toBeTypeOf('function');
+      expect(focused.afterEach).toBeTypeOf('function');
       expect(focused.afterField).toBeTypeOf('function');
       expect(focused.run).toBeTypeOf('function');
       expect(focused).toMatchSnapshot();

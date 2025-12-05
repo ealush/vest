@@ -42,12 +42,12 @@ suite.focus({ skip: 'terms_of_service' }).run(formData);
 
 ## Fluent Chain
 
-`focus` returns a "runnable" interface, allowing you to chain it with `after` or `run`.
+`focus` returns a "runnable" interface, allowing you to chain it with `afterEach` or `run`.
 
 ```javascript
 suite
   .focus({ only: 'email' })
-  .after(res => updateUI(res))
+  .afterEach(res => updateUI(res))
   .run(formData);
 ```
 

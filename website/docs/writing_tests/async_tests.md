@@ -59,14 +59,14 @@ if (result.isPending('username')) {
 await result;
 ```
 
-### Option 2: Using `.after()`
+### Option 2: Using `.afterEach()`
 
-If you prefer callbacks, or cannot use `await` at the call site, use the `.after()` hook.
+If you prefer callbacks, or cannot use `await` at the call site, use the `.afterEach()` hook.
 
 ```javascript
 suite
-  .after(result => {
-    // This runs when all tests (sync and async) are finished
+  .afterEach(result => {
+    // This runs after the initial sync completion and after each async test finishes
     if (result.isValid()) {
       submitForm();
     }
@@ -75,7 +75,7 @@ suite
 ```
 
 :::info
-Unlike `await`, the `after` callback may run **multiple times** (once for sync completion, and again for each async completion). [Read more about Handling Suite Completion](../writing_your_suite/handling_completion.md).
+Unlike `await`, the `afterEach` callback may run **multiple times** (once for sync completion, and again for each async completion). [Read more about Handling Suite Completion](../writing_your_suite/handling_completion.md).
 :::
 
 ## Using AbortSignal

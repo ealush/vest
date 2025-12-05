@@ -3,8 +3,6 @@ import listAllChangesSinceStableBranch from './listAllChangesSinceStableBranch.j
 import { packageNames } from 'vx/packageNames.js';
 import vxPath from 'vx/vxPath.js';
 
-type CommitChange = { title: string; files: string[] };
-
 function listAllChangedPackages(): Set<string> {
   const changes = listAllChangesSinceStableBranch();
 

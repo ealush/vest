@@ -391,6 +391,7 @@ function getFailuresByGroup(
 
 // Checks if a there are any failures of a given severity within a group
 // If a fieldName is provided, it will only check for failures within that field
+// eslint-disable-next-line complexity
 function hasFailuresByGroup<F extends TFieldName, G extends TGroupName>(
   summary: SuiteSummary<F, G>,
   severityCount: SeverityCount,

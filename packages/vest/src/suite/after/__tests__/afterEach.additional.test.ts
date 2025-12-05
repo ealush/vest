@@ -24,7 +24,11 @@ describe('afterEach - additional test coverage', () => {
         dummyTest.failing();
       });
 
-      suite.afterEach(callback1).afterEach(callback2).afterEach(callback3).run();
+      suite
+        .afterEach(callback1)
+        .afterEach(callback2)
+        .afterEach(callback3)
+        .run();
 
       expect(callback1).toHaveBeenCalledOnce();
       expect(callback2).toHaveBeenCalledOnce();

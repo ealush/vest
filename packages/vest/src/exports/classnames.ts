@@ -17,6 +17,7 @@ export default function classnames<F extends TFieldName, G extends TGroupName>(
 ): (fieldName: string) => string {
   const selectors = parse(res);
 
+  // eslint-disable-next-line complexity
   return function cn(fieldName: string): string {
     const safeFieldName = makeBrand<TFieldName>(fieldName);
     const classesArray: string[] = [];

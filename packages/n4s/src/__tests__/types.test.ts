@@ -3,7 +3,7 @@
  * These tests verify type inference, type guards, and compile-time type safety
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars, @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect } from 'vitest';
 
 import { enforce } from '../n4s';

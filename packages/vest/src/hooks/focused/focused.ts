@@ -96,12 +96,13 @@ function defaultMatch(
   return makeResult.Ok(match === false ? [] : match);
 }
 
+// eslint-disable-next-line complexity
 function hasFocus(
   focus: Nullable<TIsolateFocused>,
   fieldName?: TFieldName,
 ): Result<boolean> {
   return makeResult.Ok(
     isNotEmpty(focus?.data.match) &&
-      (fieldName ? focus?.data.match?.includes(fieldName) ?? true : true),
+      (fieldName ? (focus?.data.match?.includes(fieldName) ?? true) : true),
   );
 }

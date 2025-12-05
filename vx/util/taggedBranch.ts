@@ -31,7 +31,7 @@ const isReleaseBranch = Boolean(
 );
 const isReleaseKeepVersionBranch = Boolean(
   RELEASE_KEEP_VERSION_BRANCH &&
-    CURRENT_BRANCH.startsWith(RELEASE_KEEP_VERSION_BRANCH),
+  CURRENT_BRANCH.startsWith(RELEASE_KEEP_VERSION_BRANCH),
 );
 const [, target = undefined] =
   isIntegrationBranch || isNextBranch || isNightlyBranch

@@ -4,9 +4,10 @@ import { WithFieldName } from '../core/test/TestTypes';
 
 import { TFieldName, TGroupName } from './SuiteResultTypes';
 
-export class SummaryFailure<F extends TFieldName, G extends TGroupName>
-  implements WithFieldName<F>
-{
+export class SummaryFailure<
+  F extends TFieldName,
+  G extends TGroupName,
+> implements WithFieldName<F> {
   constructor(
     public fieldName: F,
     public message: string | undefined,

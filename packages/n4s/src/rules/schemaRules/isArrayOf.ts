@@ -46,7 +46,7 @@ import { RuleRunReturn } from '../../utils/RuleRunReturn';
  * ]); // true
  * ```
  */
-// eslint-disable-next-line max-nested-callbacks
+
 export function isArrayOf<T>(value: T[], ...rules: any[]): RuleRunReturn<T[]> {
   if (!Array.isArray(value)) {
     return RuleRunReturn.Failing(value);

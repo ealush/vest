@@ -1,5 +1,5 @@
 import { invariant } from 'vest-utils';
-import { Bus, IsolateInspector, RuntimeEvents, TIsolate } from 'vestjs-runtime';
+import { Bus, IsolateInspector, TIsolate } from 'vestjs-runtime';
 
 import { TIsolateTest } from './IsolateTest/IsolateTest';
 import { VestTest } from './IsolateTest/VestTest';
@@ -56,6 +56,6 @@ export function reprocessTree(rootNode: TIsolate): void {
 
   for (const child of rootNode.children) {
     reprocessTree(child);
-    emit(RuntimeEvents.ISOLATE_RECONCILED, child);
+    emit('ISOLATE_RECONCILED', child);
   }
 }

@@ -34,7 +34,7 @@ type CTXType = StateRefType & {
  * Holds all mutable state for the runtime instance.
  */
 export type StateRefType = {
-  Bus: BusType;
+  Bus: BusType<RuntimeEvents>;
   appData: Record<string, any>;
   historyRoot: TinyState<Nullable<TIsolate>>;
   isMounting: TinyState<boolean>;
@@ -114,7 +114,7 @@ export function createRef(
   setter: DynamicValue<Record<string, any>>,
 ): StateRefType {
   const ref = Object.freeze({
-    Bus: bus.createBus(),
+    Bus: bus.createBus<RuntimeEvents>(),
     Reconciler,
     appData: dynamicValue(setter),
     historyRoot: tinyState.createTinyState<Nullable<TIsolate>>(null),
@@ -129,10 +129,10 @@ export function createRef(
 }
 
 function subscribeToEvents(ref: StateRefType) {
-  ref.Bus.on(RuntimeEvents.START_MOUNT, useHandleStartMount);
-  ref.Bus.on(RuntimeEvents.END_MOUNT, useHandleEndMount);
-  ref.Bus.on(RuntimeEvents.ISOLATE_PENDING, useHandleIsolatePending);
-  ref.Bus.on(RuntimeEvents.ISOLATE_DONE, useHandleIsolateDone);
+  ref.Bus.on('START_MOUNT', useHandleStartMount);
+  ref.Bus.on('END_MOUNT', useHandleEndMount);
+  ref.Bus.on('ISOLATE_PENDING', useHandleIsolatePending);
+  ref.Bus.on('ISOLATE_DONE', useHandleIsolateDone);
 
   function useHandleStartMount() {
     const [, setIsMounting] = ref.isMounting();
@@ -147,7 +147,7 @@ function subscribeToEvents(ref: StateRefType) {
     setIsMounting(false);
     if (pendingIsolates.size === 0 && state !== RuntimeState.STABLE) {
       setState(RuntimeState.STABLE);
-      ref.Bus.emit(RuntimeEvents.BECOME_STABLE);
+      ref.Bus.emit('BECOME_STABLE');
     }
   }
 
@@ -173,7 +173,7 @@ function subscribeToEvents(ref: StateRefType) {
       state !== RuntimeState.STABLE
     ) {
       setState(RuntimeState.STABLE);
-      ref.Bus.emit(RuntimeEvents.BECOME_STABLE);
+      ref.Bus.emit('BECOME_STABLE');
     }
   }
 }
@@ -182,7 +182,7 @@ function subscribeToEvents(ref: StateRefType) {
  * Dispatches a runtime event to the internal Bus.
  * This is used to trigger state changes and notifications.
  */
-export function dispatch(event: { type: string; payload?: any }) {
+export function dispatch(event: { type: RuntimeEvents; payload?: any }) {
   useX().stateRef.Bus.emit(event.type, event.payload);
 }
 
@@ -191,7 +191,7 @@ export function dispatch(event: { type: string; payload?: any }) {
  * This is used to track async tests and other async operations.
  */
 export function registerPending(isolate: TIsolate) {
-  dispatch({ type: RuntimeEvents.ISOLATE_PENDING, payload: isolate });
+  dispatch({ type: 'ISOLATE_PENDING', payload: isolate });
 }
 
 /**
@@ -199,7 +199,7 @@ export function registerPending(isolate: TIsolate) {
  * This is used when an async test or operation completes.
  */
 export function removePending(isolate: TIsolate) {
-  dispatch({ type: RuntimeEvents.ISOLATE_DONE, payload: isolate });
+  dispatch({ type: 'ISOLATE_DONE', payload: isolate });
 }
 
 /**

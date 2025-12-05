@@ -1,4 +1,4 @@
-import { CB, ValueOf } from 'vest-utils';
+import { CB } from 'vest-utils';
 import { Bus, RuntimeEvents, TIsolate, VestRuntime } from 'vestjs-runtime';
 
 import { useOmitOptionalFields } from '../../hooks/optional/omitOptionalFields';
@@ -54,17 +54,17 @@ export function useInitVestBus() {
     // any performance issues.
   });
 
-  VestBus.on(RuntimeEvents.ISOLATE_ENTER, (isolate: TIsolate) => {
+  VestBus.on('ISOLATE_ENTER', (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
       onTestStart(isolate);
     }
   });
 
-  VestBus.on(RuntimeEvents.ISOLATE_RECONCILED, (isolate: TIsolate) => {
+  VestBus.on('ISOLATE_RECONCILED', (isolate: TIsolate) => {
     registerTestNodes(isolate);
   });
 
-  VestBus.on(RuntimeEvents.ISOLATE_DONE, (isolate: TIsolate) => {
+  VestBus.on('ISOLATE_DONE', (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
       VestBus.emit('TEST_COMPLETED', isolate);
     } else {
@@ -72,7 +72,7 @@ export function useInitVestBus() {
     }
   });
 
-  VestBus.on(RuntimeEvents.ASYNC_ISOLATE_DONE, (isolate: TIsolate) => {
+  VestBus.on('ASYNC_ISOLATE_DONE', (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
       if (!VestTest.isCanceled(isolate).unwrap()) {
         const { fieldName } = VestTest.getData(isolate);
@@ -164,7 +164,7 @@ export function useInitVestBus() {
   }
 }
 
-type VestEvents = Events | ValueOf<typeof RuntimeEvents> | '*';
+type VestEvents = Events | RuntimeEvents | '*';
 
 export type Subscribe = {
   (event: VestEvents, cb: CB): CB<void>;

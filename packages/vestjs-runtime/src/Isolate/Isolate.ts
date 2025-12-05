@@ -2,7 +2,6 @@ import { CB, Maybe, Nullable, isNotNullish, isPromise } from 'vest-utils';
 
 import { useEmit } from '../Bus';
 import { Reconciler } from '../Reconciler';
-import { RuntimeEvents } from '../RuntimeEvents';
 import * as VestRuntime from '../VestRuntime';
 
 import { IsolateKeys } from './IsolateKeys';
@@ -64,7 +63,7 @@ export class Isolate {
     } else {
       const emit = useEmit();
       output = nextIsolateChild.output;
-      emit(RuntimeEvents.ISOLATE_RECONCILED, nextIsolateChild);
+      emit('ISOLATE_RECONCILED', nextIsolateChild);
     }
 
     IsolateMutator.saveOutput(nextIsolateChild, output);
@@ -116,11 +115,11 @@ function useRunAsNew<Callback extends CB = CB>(
 
 function useRunAsNewCallback(current: TIsolate, callback: CB): any {
   const emit = useEmit();
-  emit(RuntimeEvents.ISOLATE_ENTER, current);
+  emit('ISOLATE_ENTER', current);
   const output = callback(current);
 
   if (isPromise(output)) {
-    emit(RuntimeEvents.ISOLATE_PENDING, current);
+    emit('ISOLATE_PENDING', current);
     IsolateMutator.setPending(current);
     output.then(
       VestRuntime.persist(iso => {
@@ -129,11 +128,11 @@ function useRunAsNewCallback(current: TIsolate, callback: CB): any {
         }
 
         IsolateMutator.setDone(current);
-        emit(RuntimeEvents.ASYNC_ISOLATE_DONE, current);
+        emit('ASYNC_ISOLATE_DONE', current);
       }),
       VestRuntime.persist(() => {
         IsolateMutator.setDone(current);
-        emit(RuntimeEvents.ASYNC_ISOLATE_DONE, current);
+        emit('ASYNC_ISOLATE_DONE', current);
       }),
     );
   } else {

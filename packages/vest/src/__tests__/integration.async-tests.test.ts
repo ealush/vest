@@ -79,7 +79,7 @@ describe('Stateful behavior', () => {
     expect(callback_3).toHaveBeenCalledTimes(2);
     expect(suite.get().hasErrors('field_7')).toBe(true);
 
-    await result;
+    await wait(300);
 
     expect(callback_2).toHaveBeenCalledTimes(3);
     expect(callback_3).toHaveBeenCalledTimes(3);

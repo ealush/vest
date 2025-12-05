@@ -7,6 +7,7 @@ import * as VestRuntime from '../VestRuntime';
 
 import { IsolateKeys } from './IsolateKeys';
 import { IsolateMutator } from './IsolateMutator';
+import { IsolateStatus } from './IsolateStatus';
 
 export type IsolateKey = Nullable<string>;
 
@@ -16,7 +17,7 @@ export type TIsolate<P extends IsolatePayload = IsolatePayload> = {
   [IsolateKeys.Type]: string;
   [IsolateKeys.Keys]: Nullable<Record<string, TIsolate>>;
   [IsolateKeys.Data]: DataOnly<P>;
-  [IsolateKeys.Status]?: string;
+  [IsolateKeys.Status]: IsolateStatus;
   [IsolateKeys.AbortController]: AbortController;
   children: Nullable<TIsolate[]>;
   key: IsolateKey;
@@ -97,7 +98,6 @@ function useRunAsNew<Callback extends CB = CB>(
   callback: CB,
 ): ReturnType<Callback> {
   const runtimeRoot = VestRuntime.useRuntimeRoot();
-  const emit = useEmit();
 
   // We're creating a new child isolate context where the local history node
   // is the current history node, thus advancing the history cursor.
@@ -107,29 +107,39 @@ function useRunAsNew<Callback extends CB = CB>(
       runtimeNode: current,
       ...(!runtimeRoot && { runtimeRoot: current }),
     },
-    () => {
-      emit(RuntimeEvents.ISOLATE_ENTER, current);
-      const output = callback(current);
-
-      if (isPromise(output)) {
-        emit(RuntimeEvents.ISOLATE_PENDING, current);
-        output.then(iso => {
-          if (Isolate.isIsolate(iso)) {
-            IsolateMutator.addChild(current, iso);
-          }
-
-          emit(RuntimeEvents.ISOLATE_DONE, current);
-          emit(RuntimeEvents.ASYNC_ISOLATE_DONE, current);
-        });
-      } else {
-        emit(RuntimeEvents.ISOLATE_DONE, current);
-      }
-
-      return output;
-    },
+    () => useRunAsNewCallback(current, callback),
   );
 
   current.output = output;
+  return output;
+}
+
+function useRunAsNewCallback(current: TIsolate, callback: CB): any {
+  const emit = useEmit();
+  emit(RuntimeEvents.ISOLATE_ENTER, current);
+  const output = callback(current);
+
+  if (isPromise(output)) {
+    emit(RuntimeEvents.ISOLATE_PENDING, current);
+    IsolateMutator.setPending(current);
+    output.then(
+      VestRuntime.persist(iso => {
+        if (Isolate.isIsolate(iso)) {
+          IsolateMutator.addChild(current, iso);
+        }
+
+        IsolateMutator.setDone(current);
+        emit(RuntimeEvents.ASYNC_ISOLATE_DONE, current);
+      }),
+      VestRuntime.persist(() => {
+        IsolateMutator.setDone(current);
+        emit(RuntimeEvents.ASYNC_ISOLATE_DONE, current);
+      }),
+    );
+  } else {
+    IsolateMutator.setDone(current);
+  }
+
   return output;
 }
 
@@ -146,7 +156,7 @@ function baseIsolate(
     [IsolateKeys.Parent]: null,
     [IsolateKeys.Type]: type,
     [IsolateKeys.Data]: data,
-    ...(status && { [IsolateKeys.Status]: status }),
+    [IsolateKeys.Status]: status ?? IsolateStatus.INITIAL,
     children: null,
     key,
     output: null,
@@ -156,5 +166,5 @@ function baseIsolate(
 type IsolatePayload<P = Record<string, any>> = P & IsolateFeatures;
 type IsolateFeatures = {
   [IsolateKeys.AllowReorder]?: boolean;
-  [IsolateKeys.Status]?: string;
+  [IsolateKeys.Status]?: IsolateStatus;
 };

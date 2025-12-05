@@ -5,48 +5,70 @@ import { IsolateMutator } from './Isolate/IsolateMutator';
 
 type VisitOnlyPredicate = (isolate: TIsolate) => boolean;
 
-// eslint-disable-next-line
+/**
+ * Walks the isolate tree starting from the given node.
+ * @param startNode - The starting node for the traversal.
+ * @param callback - The callback function to be called for each visited node.
+ * @param visitOnly - Optional predicate to filter which nodes to visit.
+ */
 export function walk(
   startNode: TIsolate,
   callback: (isolate: TIsolate, breakout: CB<void>) => void,
   visitOnly?: VisitOnlyPredicate,
 ): void {
+  if (!startNode) return;
+
   let broke = false;
 
-  // If the breakout function has been called, stop the walk.
-  if (broke) {
-    return;
+  if (startNode.children) {
+    walkChildren(startNode.children, callback, visitOnly, () => (broke = true));
   }
 
-  // For each child Isolate object, call the callback function.
-  for (const isolate of startNode.children ?? []) {
-    // Recursively walk through the child Isolate object.
+  if (broke) return;
+
+  if (shouldVisit(startNode, visitOnly)) {
+    callback(startNode, () => {
+      broke = true;
+    });
+  }
+}
+
+function shouldVisit(node: TIsolate, visitOnly?: VisitOnlyPredicate): boolean {
+  return isNullish(visitOnly) || dynamicValue(visitOnly, node);
+}
+
+function walkChildren(
+  children: TIsolate[],
+  callback: (isolate: TIsolate, breakout: CB<void>) => void,
+  visitOnly: VisitOnlyPredicate | undefined,
+  breakout: CB<void>,
+): void {
+  let broke = false;
+  for (const isolate of children) {
+    if (broke) return;
+
     walk(
       isolate,
       (child, innerBreakout) => {
         callback(child, () => {
           innerBreakout();
           breakout();
+          broke = true;
         });
       },
       visitOnly,
     );
-    // If the breakout function has been called, stop the walk.
-    if (broke) {
-      return;
-    }
-  }
-
-  // If visitOnly is not provided or the predicate is satisfied, call the callback function.
-  if (isNullish(visitOnly) || dynamicValue(visitOnly, startNode)) {
-    callback(startNode, breakout);
-  }
-
-  function breakout() {
-    broke = true;
   }
 }
 
+/**
+ * Reduces the isolate tree to a single value.
+ * @param startNode - The starting node for the traversal.
+ * @param callback - The reducer function.
+ * @param initialValue - The initial value for the accumulator.
+ * @param visitOnly - Optional predicate to filter which nodes to visit.
+ * @returns The final accumulated value.
+ */
 export function reduce<T>(
   startNode: TIsolate,
   callback: (acc: T, isolate: TIsolate, breakout: CB<void>) => T,
@@ -66,8 +88,13 @@ export function reduce<T>(
   return acc;
 }
 
-// This function returns true if the given predicate function returns true for any Isolate object in the tree.
-// If visitOnly is provided, only Isolate objects that satisfy the predicate are visited.
+/**
+ * Checks if any node in the tree satisfies the predicate.
+ * @param startNode - The starting node for the traversal.
+ * @param predicate - The predicate function to test each node.
+ * @param visitOnly - Optional predicate to filter which nodes to visit.
+ * @returns True if any node satisfies the predicate, false otherwise.
+ */
 export function some(
   startNode: TIsolate,
   predicate: (node: TIsolate) => boolean,
@@ -90,14 +117,23 @@ export function some(
   return hasMatch;
 }
 
-// This function returns true if the given predicate function returns true for any Isolate object in the tree.
-// If visitOnly is provided, only Isolate objects that satisfy the predicate are visited.
+/**
+ * Checks if the tree contains a node that matches the predicate.
+ * @param startNode - The starting node for the traversal.
+ * @param match - The predicate function to match nodes.
+ * @returns True if a matching node is found, false otherwise.
+ */
 export function has(startNode: TIsolate, match: VisitOnlyPredicate): boolean {
   return some(startNode, () => true, match);
 }
 
-// traverses up to a parent node that satisfies the predicate
-// and returns the first direct descendant that satisfies the predicate
+/**
+ * Traverses up the tree to find the closest ancestor that satisfies the predicate,
+ * then returns the first direct descendant of that ancestor that satisfies the predicate.
+ * @param startNode - The starting node.
+ * @param predicate - The predicate to match.
+ * @returns The found node or null.
+ */
 export function findClosest<I extends TIsolate = TIsolate>(
   startNode: TIsolate,
   predicate: (node: TIsolate) => boolean,
@@ -118,8 +154,13 @@ export function findClosest<I extends TIsolate = TIsolate>(
   return found as Nullable<I>;
 }
 
-// This function returns the first Isolate object in the tree that satisfies the given predicate function.
-// If visitOnly is provided, only Isolate objects that satisfy the predicate are visited.
+/**
+ * Finds the first node in the tree that satisfies the predicate.
+ * @param startNode - The starting node.
+ * @param predicate - The predicate to match.
+ * @param visitOnly - Optional predicate to filter which nodes to visit.
+ * @returns The found node or null.
+ */
 export function find(
   startNode: TIsolate,
   predicate: (node: TIsolate) => boolean,
@@ -142,7 +183,13 @@ export function find(
   return found;
 }
 
-// this function acts like find, but returns an array of all matching nodes
+/**
+ * Finds all nodes in the tree that satisfy the predicate.
+ * @param startNode - The starting node.
+ * @param predicate - The predicate to match.
+ * @param visitOnly - Optional predicate to filter which nodes to visit.
+ * @returns An array of found nodes.
+ */
 export function findAll(
   startNode: TIsolate,
   predicate: (node: TIsolate) => boolean,
@@ -163,8 +210,13 @@ export function findAll(
   return found;
 }
 
-// This function returns true if the given predicate function returns true for every Isolate object in the tree.
-// If visitOnly is provided, only Isolate objects that satisfy the predicate are visited.
+/**
+ * Checks if every node in the tree satisfies the predicate.
+ * @param startNode - The starting node.
+ * @param predicate - The predicate to match.
+ * @param visitOnly - Optional predicate to filter which nodes to visit.
+ * @returns True if all nodes satisfy the predicate, false otherwise.
+ */
 export function every(
   startNode: TIsolate,
   predicate: (node: TIsolate) => boolean,
@@ -185,9 +237,12 @@ export function every(
   return hasMatch;
 }
 
-// This function removes all Isolate objects in the tree that
-// satisfy the given predicate function and have a parent.
-// If visitOnly is provided, only Isolate objects that satisfy the predicate are visited.
+/**
+ * Removes nodes from the tree that satisfy the predicate.
+ * @param startNode - The starting node.
+ * @param predicate - The predicate to match nodes to remove.
+ * @param visitOnly - Optional predicate to filter which nodes to visit.
+ */
 export function pluck(
   startNode: TIsolate,
   predicate: (node: TIsolate) => boolean,
@@ -204,8 +259,12 @@ export function pluck(
   );
 }
 
-// Returns the closest ancestor Isolate object of the given
-//startNode that satisfies the given predicate function.
+/**
+ * Finds the closest ancestor of the startNode that satisfies the predicate.
+ * @param startNode - The starting node.
+ * @param predicate - The predicate to match.
+ * @returns The found ancestor or null.
+ */
 export function closest<I extends TIsolate = TIsolate>(
   startNode: TIsolate,
   predicate: (node: TIsolate) => boolean,
@@ -220,8 +279,12 @@ export function closest<I extends TIsolate = TIsolate>(
   return null;
 }
 
-// This function returns true if the closest ancestor Isolates of the
-// given startNode that satisfies the given predicate function exists.
+/**
+ * Checks if an ancestor satisfying the predicate exists.
+ * @param startNode - The starting node.
+ * @param predicate - The predicate to match.
+ * @returns True if such an ancestor exists, false otherwise.
+ */
 export function closestExists(
   startNode: TIsolate,
   predicate: (node: TIsolate) => boolean,

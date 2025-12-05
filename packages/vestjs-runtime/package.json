@@ -89,11 +89,11 @@
       },
       "./package.json": "./package.json",
       "./Isolate-DDQqod3l": {
-        "types": "./types/Isolate-DDQqod3l.d.mts",
+        "types": "./types/vestjs-runtime.d.cts",
         "default": "./types/Isolate-DDQqod3l.d.mts"
       },
       "./Isolate-DI-lLdpw": {
-        "types": "./types/Isolate-DI-lLdpw.d.cts",
+        "types": "./types/vestjs-runtime.d.cts",
         "default": "./types/Isolate-DI-lLdpw.d.cts"
       },
       "./IsolateSerializer-CrpXnofj": {

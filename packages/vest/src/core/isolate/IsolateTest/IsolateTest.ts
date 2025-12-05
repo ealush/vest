@@ -41,14 +41,14 @@ export function IsolateTest<F extends TFieldName = TFieldName>(
 export function IsolateTestBase() {
   return {
     severity: TestSeverity.Error,
-    status: IsolateTestStateMachine.initial(),
+    testStatus: IsolateTestStateMachine.initial(),
   };
 }
 
 export type IsolateTestPayload<F extends TFieldName = TFieldName> =
   CommonTestFields<F> & {
     severity: TestSeverity;
-    status: TestStatus;
+    testStatus: TestStatus;
     asyncTest?: AsyncTest;
   };
 

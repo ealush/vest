@@ -6,16 +6,17 @@ import { pathToFileURL, fileURLToPath } from 'url';
 import ts from 'typescript';
 
 const compilerOptions = {
-  module: ts.ModuleKind.ESNext,
-  target: ts.ScriptTarget.ES2021,
-  moduleResolution: ts.ModuleResolutionKind.NodeNext,
-  jsx: ts.JsxEmit.Preserve,
   esModuleInterop: true,
+  jsx: ts.JsxEmit.Preserve,
+  module: ts.ModuleKind.ESNext,
+  moduleResolution: ts.ModuleResolutionKind.NodeNext,
   sourceMap: true,
+  target: ts.ScriptTarget.ES2021,
 };
 
 const VX_ROOT = new URL('./', import.meta.url);
 
+// eslint-disable-next-line complexity
 export async function resolve(specifier, context, next) {
   if (specifier.startsWith('vx/')) {
     const relativePath = specifier.replace(/^vx\//, '');

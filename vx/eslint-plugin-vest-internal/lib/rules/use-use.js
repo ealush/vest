@@ -25,25 +25,30 @@ export default {
     type: 'problem',
   },
   create(context) {
+    const sourceCode = context.sourceCode || context.getSourceCode();
     return {
-      [matcher(FUNC_DEC)]() {
-        const parentFunction = findAncestor(context, FUNC_DEC);
+      [matcher(FUNC_DEC)](node) {
+        const parentFunction = findAncestor(node, sourceCode, FUNC_DEC);
 
         if (
           hasIdWithName(parentFunction) &&
           !USE_MATCHER.test(parentFunction.id.name)
         ) {
-          report(context, parentFunction, parentFunction.id);
+          report(context, sourceCode, parentFunction, parentFunction.id);
         }
       },
-      [matcher(VAR_DEC)]() {
-        const parentFunction = findAncestor(context, 'ArrowFunctionExpression');
+      [matcher(VAR_DEC)](node) {
+        const parentFunction = findAncestor(
+          node,
+          sourceCode,
+          'ArrowFunctionExpression',
+        );
 
         if (parentFunction) {
-          const variableDeclarator = findAncestor(context, VAR_DEC);
+          const variableDeclarator = findAncestor(node, sourceCode, VAR_DEC);
 
           if (hasIdWithName(variableDeclarator)) {
-            report(context, parentFunction, variableDeclarator.id);
+            report(context, sourceCode, parentFunction, variableDeclarator.id);
           }
         }
       },
@@ -58,8 +63,8 @@ function matcher(type) {
   return `${type}${ID_NAME_MATCHER} ${CALL_EXPRESSION_MATCHER}`;
 }
 
-function report(context, node, id) {
-  if (isAllowed(context, node, id, RULE_NAME)) {
+function report(context, sourceCode, node, id) {
+  if (isAllowed(context, sourceCode, node, id, RULE_NAME)) {
     return;
   }
   const loc = id && id.loc ? getLoc(id) : {};

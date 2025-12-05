@@ -68,6 +68,7 @@ function genDiffData(
 
 export default genDiffData;
 
+// eslint-disable-next-line complexity
 function pickTagId(nextVersion: string): string {
   logger.log(`Picking tag id. Current branch: ${CURRENT_BRANCH}`);
 

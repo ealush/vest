@@ -4,7 +4,6 @@ import { enforce } from '../n4s';
 
 enforce.extend({ isEmail });
 
-/* eslint-disable @typescript-eslint/no-namespace */
 declare global {
   namespace n4s {
     interface EnforceMatchers {

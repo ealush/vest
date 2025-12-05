@@ -39,13 +39,13 @@ module.exports = {
     {
       excludedFiles: ['./**/__tests__/**/*.*', './**/testUtils/**/*'],
       extends: [
-        'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
         'plugin:import/typescript',
       ],
       files: ['packages/**/*.ts'],
       parserOptions: {
-        project: ['./tsconfig.json'], // Specify it only for TypeScript files
+        project: ['tsconfig.json', 'packages/*/tsconfig.json'],
+        tsconfigRootDir: __dirname,
       },
       rules: {
         '@typescript-eslint/no-explicit-any': 'off',
@@ -60,8 +60,10 @@ module.exports = {
       },
     },
     {
-      excludedFiles: ['./**/__tests__/**/*.*'],
-      files: ['*.ts'],
+      files: ['**/*.ts', '**/*.tsx'],
+      rules: {
+        'no-undef': 'off',
+      },
     },
     {
       files: ['./**/vest/src/**/*.*'],
@@ -100,9 +102,7 @@ module.exports = {
     'no-implicit-globals': 2,
     'no-lonely-if': 2,
     'no-multi-spaces': 1,
-    'no-prototype-builtins': 0,
     'no-trailing-spaces': [2, { ignoreComments: false }],
-    'no-undef': 2,
     'no-unneeded-ternary': 2,
     'no-unused-expressions': 2,
     'no-unused-vars': [
@@ -139,8 +139,10 @@ module.exports = {
     },
     'import/resolver': {
       typescript: {
-        project: 'packages/*/tsconfig.json',
+        alwaysTryTypes: true,
+        project: ['packages/*/tsconfig.json'],
       },
+      node: true,
     },
   },
 };

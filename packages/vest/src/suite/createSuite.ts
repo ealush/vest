@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import { CB, makeResult, Result } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 

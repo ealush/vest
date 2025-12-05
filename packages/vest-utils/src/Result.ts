@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys */
 import { isObject } from './valueIsObject';
 
 export type Result<T, E = unknown> = Success<T, E> | Failure<T, E>;

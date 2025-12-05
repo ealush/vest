@@ -13,7 +13,6 @@ import {
 } from 'vx/util/taggedBranch.js';
 import vxPath from 'vx/vxPath.js';
 
-// eslint-disable-next-line complexity
 /**
  * Aligns local workspace dependencies to the latest built versions based on branch rules.
  * @returns {void}

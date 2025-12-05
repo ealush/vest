@@ -2,8 +2,10 @@ import { RuleInstance } from '../utils/RuleInstance';
 
 export interface ObjectRuleInstance extends RuleInstance<object, [object]> {}
 
-export interface KeyOfRuleInstance
-  extends RuleInstance<string | number | symbol, [string | number | symbol]> {}
+export interface KeyOfRuleInstance extends RuleInstance<
+  string | number | symbol,
+  [string | number | symbol]
+> {}
 
 export interface ValueOfRuleInstance<T> extends RuleInstance<T, [T]> {}
 

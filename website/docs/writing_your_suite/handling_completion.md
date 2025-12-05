@@ -3,7 +3,7 @@ sidebar_position: 4
 title: Handling Suite Completion
 description: Learn how to handle the completion of your validation suite using Promises or callbacks.
 keywords:
-  [Vest, suite, completion, async, await, after, afterField, promise, callback]
+  [Vest, suite, completion, async, await, afterEach, afterField, promise, callback]
 ---
 
 # Handling Suite Completion
@@ -11,7 +11,7 @@ keywords:
 Vest suites run synchronously by default, but they often contain asynchronous tests (e.g., checking if a username is taken). Vest provides two main ways to handle the completion of your suite:
 
 1.  **Promises (Recommended)**: `await suite.run()`
-2.  **Event Callbacks**: `suite.after()` and `suite.afterField()`
+2.  **Event Callbacks**: `suite.afterEach()` and `suite.afterField()`
 
 ## 1. Promise-based Handling (Recommended)
 
@@ -36,15 +36,15 @@ if (result.isValid()) {
 - When you need to block an action (like form submission) until validation is complete.
 - When you want linear, readable code using `async/await`.
 
-## 2. Using `suite.after(callback)`
+## 2. Using `suite.afterEach(callback)`
 
-If you prefer an event-driven approach, or if you need to react to updates _during_ the validation process (e.g., updating the UI as individual async tests complete), use `suite.after()`.
+If you prefer an event-driven approach, or if you need to react to updates _during_ the validation process (e.g., updating the UI as individual async tests complete), use `suite.afterEach()`.
 
-`suite.after()` registers a callback that runs when the suite finishes. It is chainable and can be attached before or during the run.
+`suite.afterEach()` registers a callback that runs after the initial sync completion and again after each async test finishes. It is chainable and can be attached before or during the run.
 
 ### Key Behavior
 
-Unlike a Promise which resolves only once, **`after` callbacks may run multiple times**:
+Unlike a Promise which resolves only once, **`afterEach` callbacks may run multiple times**:
 
 1.  It runs **immediately** after the synchronous pass.
 2.  It runs **again** whenever an async test completes.
@@ -53,7 +53,7 @@ This makes it perfect for keeping your UI in sync with the validation state.
 
 ```javascript
 suite
-  .after(res => {
+  .afterEach(res => {
     // Called when the suite finishes sync execution
     // AND whenever an async test completes
     updateUI(res);
@@ -89,11 +89,11 @@ suite
 
 ## 4. Chaining Methods
 
-Both `after` and `afterField` return the suite API, allowing for fluent chaining.
+Both `afterEach` and `afterField` return the suite API, allowing for fluent chaining.
 
 ```javascript
 suite
-  .after(updateGeneralUI)
+  .afterEach(updateGeneralUI)
   .afterField('email', handleEmailCompletion)
   .afterField('username', handleUsernameCompletion)
   .run(data);
@@ -105,5 +105,5 @@ In Vest 5, the `done()` method was used on the result object. In Vest 6, this ha
 
 | Vest 5                  | Vest 6                                |
 | :---------------------- | :------------------------------------ |
-| `res.done(cb)`          | `suite.after(cb).run()`               |
+| `res.done(cb)`          | `suite.afterEach(cb).run()`           |
 | `res.done('field', cb)` | `suite.afterField('field', cb).run()` |

@@ -5,9 +5,9 @@ import { dummyTest } from '../../../testUtils/testDummy';
 
 import * as vest from '../../../vest';
 
-describe('after - additional test coverage', () => {
-  describe('Chaining multiple after callbacks', () => {
-    it('should execute multiple chained after callbacks in the order they were added', () => {
+describe('afterEach - additional test coverage', () => {
+  describe('Chaining multiple afterEach callbacks', () => {
+    it('should execute multiple chained afterEach callbacks in the order they were added', () => {
       const executionOrder: number[] = [];
       const callback1 = vi.fn(() => {
         executionOrder.push(1);
@@ -24,7 +24,7 @@ describe('after - additional test coverage', () => {
         dummyTest.failing();
       });
 
-      suite.after(callback1).after(callback2).after(callback3).run();
+      suite.afterEach(callback1).afterEach(callback2).afterEach(callback3).run();
 
       expect(callback1).toHaveBeenCalledOnce();
       expect(callback2).toHaveBeenCalledOnce();
@@ -33,22 +33,22 @@ describe('after - additional test coverage', () => {
     });
   });
 
-  describe('Return value of after', () => {
+  describe('Return value of afterEach', () => {
     it('should return a runnable', () => {
       const suite = vest.create(() => {
         dummyTest.passing();
       });
 
-      const returnValue = suite.after(() => {});
+      const returnValue = suite.afterEach(() => {});
 
       expect(typeof returnValue.run).toBe('function');
-      expect(typeof returnValue.after).toBe('function');
+      expect(typeof returnValue.afterEach).toBe('function');
       expect(typeof returnValue.afterField).toBe('function');
       expect(typeof returnValue.focus).toBe('function');
     });
   });
 
-  describe('Error handling in after callbacks', () => {
+  describe('Error handling in afterEach callbacks', () => {
     it('should not prevent other callbacks from running when one throws an error', () => {
       const callback1 = vi.fn(() => {
         throw new Error('Test error');
@@ -60,7 +60,7 @@ describe('after - additional test coverage', () => {
       });
 
       // We need to catch the error to prevent it from failing the test
-      suite.after(callback1).after(callback2).run();
+      suite.afterEach(callback1).afterEach(callback2).run();
 
       expect(callback1).toHaveBeenCalledOnce();
       expect(callback2).toHaveBeenCalledOnce();
@@ -75,7 +75,7 @@ describe('after - additional test coverage', () => {
         dummyTest.passing();
       });
 
-      suite.after(callback).run();
+      suite.afterEach(callback).run();
 
       expect(callback).toHaveBeenCalledOnce();
       expect(callback).toHaveReturnedWith('arrow');
@@ -91,14 +91,14 @@ describe('after - additional test coverage', () => {
         dummyTest.passing();
       });
 
-      suite.after(spy).run();
+      suite.afterEach(spy).run();
 
       expect(spy).toHaveBeenCalledOnce();
       expect(spy).toHaveReturnedWith('regular');
     });
   });
 
-  describe('after with async tests and multiple callbacks', () => {
+  describe('afterEach with async tests and multiple callbacks', () => {
     it('should call all callbacks after each async test completes', async () => {
       const callback1 = vi.fn();
       const callback2 = vi.fn();
@@ -108,7 +108,7 @@ describe('after - additional test coverage', () => {
         dummyTest.failingAsync('field_2', { time: 20 });
       });
 
-      const result = suite.after(callback1).after(callback2).run();
+      const result = suite.afterEach(callback1).afterEach(callback2).run();
 
       // Initial sync run
       expect(callback1).toHaveBeenCalledTimes(1);
@@ -128,7 +128,7 @@ describe('after - additional test coverage', () => {
     });
   });
 
-  describe('after callback parameters', () => {
+  describe('afterEach callback parameters', () => {
     test('should not receive any arguments', () => {
       const callback = vi.fn();
 
@@ -142,7 +142,7 @@ describe('after - additional test coverage', () => {
         });
       });
 
-      suite.after(callback).run();
+      suite.afterEach(callback).run();
 
       expect(callback).toHaveBeenCalledOnce();
 

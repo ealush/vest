@@ -107,11 +107,11 @@ Prepares a focused run.
 - `config`: `{ only?: string | string[], skip?: string | string[] }`
 - [Read more about Focused Updates](./writing_your_suite/focused_updates.md)
 
-#### `suite.after(callback)`
+#### `suite.afterEach(callback)`
 
-Registers a callback to run when the suite finishes execution.
+Registers a callback to run after each test completes (including the initial sync run and every async completion).
 
-- [Read more about `suite.after`](./writing_your_suite/handling_completion.md#2-using-suiteaftercallback)
+- [Read more about `suite.afterEach`](./writing_your_suite/handling_completion.md#2-using-suiteaftereachcallback)
 
 #### `suite.afterField(fieldName, callback)`
 

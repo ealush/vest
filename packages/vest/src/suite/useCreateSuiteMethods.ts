@@ -122,7 +122,7 @@ function useGetLifecycleMethods<
   const { persistedRun, staticRunner, subscribe } = ctx;
 
   return {
-    after: VestRuntime.persist((cb: CB) => useAddAfterHelper(ctx, cb)),
+    afterEach: VestRuntime.persist((cb: CB) => useAddAfterHelper(ctx, cb)),
     afterField: VestRuntime.persist((fieldName: F | string, cb: CB) =>
       useAddAfterHelper(ctx, cb, makeBrand<TFieldName>(fieldName) as F),
     ),
@@ -178,7 +178,7 @@ export function bindSuiteLifecycle<
 ): ReturnType<typeof useCreateSuiteMethods<F, G, T, S>> {
   return {
     ...methods,
-    after: VestRuntime.persist(initCallback(methods.after)),
+    afterEach: VestRuntime.persist(initCallback(methods.afterEach)),
     afterField: VestRuntime.persist(initCallback(methods.afterField)),
     run: VestRuntime.persist(initCallback(methods.run)),
   };

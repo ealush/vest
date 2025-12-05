@@ -1,11 +1,8 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 import { spawn } from 'child_process';
-import { createRequire } from 'module';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
-const require = createRequire(import.meta.url);
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
 const registerPath = path.join(currentDir, 'register.js');

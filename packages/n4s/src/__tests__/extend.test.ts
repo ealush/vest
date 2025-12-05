@@ -1,5 +1,5 @@
 // @ts-nocheck
-/* eslint-disable sort-keys, @typescript-eslint/no-unused-vars, no-unused-vars, no-useless-escape */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { isObject } from 'vest-utils';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 

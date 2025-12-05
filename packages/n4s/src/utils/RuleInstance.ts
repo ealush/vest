@@ -25,7 +25,7 @@ import { RuleRunReturn } from './RuleRunReturn';
  */
 export class RuleInstance<T, Args extends any[] = any[]> {
   // The runtime object produced by create() supports dynamic chaining.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   [key: string]: any;
 
   // Type-only property for inference of rule return type

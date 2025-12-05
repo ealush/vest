@@ -3,7 +3,6 @@ import { noop } from 'lodash';
 import { describe, it, expect, vi } from 'vitest';
 
 import { dummyTest } from '../../testUtils/testDummy';
-import { TestPromise } from '../../testUtils/testPromise';
 
 import { ErrorStrings } from '../../errors/ErrorStrings';
 import { create } from '../../vest';
@@ -28,13 +27,12 @@ describe('Test createSuite module', () => {
   });
 
   describe('When returned function is invoked', () => {
-    it('Calls `tests` argument', () =>
-      TestPromise(done => {
-        const suite = create(() => {
-          done();
-        });
-        suite.run();
-      }));
+    it('Calls `tests` argument', () => {
+      const testsCallback = vi.fn();
+      const suite = create(testsCallback);
+      suite.run();
+      expect(testsCallback).toHaveBeenCalledOnce();
+    });
 
     it('Passes all arguments over to tests callback', () => {
       const testsCallback = vi.fn();

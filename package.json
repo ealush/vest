@@ -5,7 +5,7 @@
     "test": "vx test run",
     "release": "vx release",
     "format": "prettier -c .",
-    "lint": "eslint . --ignore-path .gitignore",
+    "lint": "eslint --cache .",
     "prepare": "husky install",
     "dev": "vx dev",
     "website:start": "yarn workspace website start",

@@ -26,7 +26,7 @@ import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
  * @param {Object} modifiers - The modifiers for the suite (e.g., only).
  * @returns {Function} - The suite runner function.
  */
-// eslint-disable-next-line max-lines-per-function
+
 export function useCreateSuiteRunner<
   F extends TFieldName,
   G extends TGroupName,
@@ -37,7 +37,6 @@ export function useCreateSuiteRunner<
   modifiers: SuiteModifiers<F>,
   schema?: S,
 ) {
-  // eslint-disable-next-line max-lines-per-function
   return function runSuite(
     ...args: S extends undefined
       ? Parameters<T>
@@ -64,7 +63,7 @@ export function useCreateSuiteRunner<
           const output = IsolateSuite(() => {
             only(modifiers.only);
             (suiteCallback as any)(...(args as Parameters<T>));
-            // eslint-disable-next-line complexity, max-nested-callbacks
+
             IsolateReorderable(runSchemaValidation(schema, modifiers, args[0]));
             Bus.useEmit('SUITE_CALLBACK_RUN_FINISHED');
             return useCreateSuiteResult<F, G, S>(schema, args[0]);

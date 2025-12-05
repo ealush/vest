@@ -14,6 +14,7 @@ type ExecOptions = {
   env?: Record<string, string | undefined>;
 };
 
+// eslint-disable-next-line complexity
 export default function exec(
   command: ExecCommand,
   {
@@ -33,7 +34,7 @@ export default function exec(
     logger.info(`🎬 Executing command: "${cmd}"`);
   }
 
-  execCommand(cmd, { exitOnFailure, silent, throwOnFailure, env });
+  execCommand(cmd, { env, exitOnFailure, silent, throwOnFailure });
 }
 
 /**

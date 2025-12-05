@@ -3,7 +3,6 @@
  * This file uses TypeScript's type system to ensure proper type safety.
  */
 
-/* eslint-disable sort-keys, @typescript-eslint/no-namespace, @typescript-eslint/no-unused-vars, no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
 
 import { enforce } from '../n4s';

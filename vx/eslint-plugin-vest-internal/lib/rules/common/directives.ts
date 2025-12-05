@@ -9,6 +9,7 @@ export { isAllowed };
 /**
  * Checks whether an identifier is allowed by vx directive comments.
  */
+// eslint-disable-next-line complexity
 function isAllowed(
   context: any,
   node: any,

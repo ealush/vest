@@ -11,7 +11,7 @@ export default function cancelOverriddenPendingTest(
   if (
     currentRunTestObject !== prevRunTestObject &&
     isSameProfileTest(prevRunTestObject, currentRunTestObject).unwrap() &&
-    VestTest.isPending(prevRunTestObject)
+    VestTest.isStartedStatus(prevRunTestObject)
   ) {
     VestTest.cancel(prevRunTestObject);
   }

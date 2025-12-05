@@ -2,7 +2,7 @@
   "name": "vest-monorepo",
   "scripts": {
     "build": "vx build",
-    "test": "vx test",
+    "test": "vx test run",
     "release": "vx release",
     "format": "prettier -c .",
     "lint": "eslint . --ignore-path .gitignore",

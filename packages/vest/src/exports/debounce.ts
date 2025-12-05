@@ -10,10 +10,18 @@ export default function debounce<Callback extends CB = CB>(
   callback: Callback,
   delay: number = 0,
 ): TestFn {
+  let abort: Nullable<() => void> = null;
   let timeout: Nullable<NodeJS.Timeout> = null;
 
   const f = () => (payload: TestFnPayload) =>
     new Promise((resolve, reject) => {
+      abort = () => {
+        if (timeout) {
+          clearTimeout(timeout);
+        }
+        resolve(undefined);
+      };
+
       timeout = setTimeout(() => {
         let res = false;
         try {
@@ -31,9 +39,9 @@ export default function debounce<Callback extends CB = CB>(
     });
 
   const i = Isolate.create<IsolateDebouncePayload>(isolateType, f, {
-    clearTimeout: () => {
-      if (timeout) {
-        clearTimeout(timeout);
+    abort: () => {
+      if (abort) {
+        abort();
       }
     },
   });
@@ -50,7 +58,7 @@ class IsolateDebounceReconciler {
   }
 
   static reconcile(current: TIsolateDebounce, history: TIsolateDebounce) {
-    history?.data?.clearTimeout?.();
+    history?.data?.abort?.();
 
     return current;
   }
@@ -59,7 +67,7 @@ class IsolateDebounceReconciler {
 type TIsolateDebounce = TIsolate<IsolateDebouncePayload>;
 
 type IsolateDebouncePayload = {
-  clearTimeout: () => void;
+  abort: () => void;
 };
 
 registerReconciler(IsolateDebounceReconciler);

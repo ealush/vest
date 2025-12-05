@@ -1,4 +1,5 @@
 import { createCascade } from 'context';
+import { RuntimeEvents } from './RuntimeEvents';
 import {
   invariant,
   deferThrow,
@@ -19,6 +20,7 @@ import { IsolateInspector } from './Isolate/IsolateInspector';
 import { IsolateMutator } from './Isolate/IsolateMutator';
 import { IRecociler } from './Reconciler';
 import { ErrorStrings } from './errors/ErrorStrings';
+import { RuntimeState } from './Orchestrator/RuntimeStates';
 
 type CTXType = StateRefType & {
   historyNode: Nullable<TIsolate>;
@@ -27,10 +29,17 @@ type CTXType = StateRefType & {
   stateRef: StateRefType;
 };
 
+/**
+ * The state reference type for the Vest runtime.
+ * Holds all mutable state for the runtime instance.
+ */
 export type StateRefType = {
   Bus: BusType;
   appData: Record<string, any>;
   historyRoot: TinyState<Nullable<TIsolate>>;
+  isMounting: TinyState<boolean>;
+  pendingIsolates: TinyState<Set<TIsolate>>;
+  state: TinyState<RuntimeState>;
   Reconciler: IRecociler;
 };
 
@@ -55,41 +64,156 @@ const PersistedContext = createCascade<CTXType>((stateRef, parentContext) => {
   return ctxRef;
 });
 
+/**
+ * Runs a function within the Vest runtime context.
+ * This is the main entry point for executing Vest suites.
+ */
 export const Run = PersistedContext.run;
 
-export const RuntimeApi = {
-  Run,
-  createRef,
-  persist,
-  reset,
-  useAvailableRoot,
-  useCurrentCursor,
-  useHistoryRoot,
-  useSetHistoryRoot,
-  useSetNextIsolateChild,
-  useXAppData,
-};
+/**
+ * Retrieves the current runtime state (e.g., STABLE, PENDING).
+ */
+export function useRuntimeState() {
+  return useX().stateRef.state();
+}
 
+/**
+ * Checks if the runtime is currently stable (no pending tests).
+ */
+export function useIsStable() {
+  const [state] = useRuntimeState();
+  return state === RuntimeState.STABLE;
+}
+
+/**
+ * Checks if the runtime is currently mounting (initializing).
+ */
+export function useIsMounting() {
+  return useX().stateRef.isMounting();
+}
+
+/**
+ * Retrieves the set of currently pending isolates.
+ */
+export function usePendingIsolates() {
+  return useX().stateRef.pendingIsolates();
+}
+
+/**
+ * Retrieves the application-specific data stored in the runtime.
+ */
 export function useXAppData<T = object>() {
   return useX().stateRef.appData as T;
 }
 
+/**
+ * Creates a new state reference for such as the history root, pending isolates, and the current runtime state.
+ */
 export function createRef(
   Reconciler: IRecociler,
   setter: DynamicValue<Record<string, any>>,
 ): StateRefType {
-  return Object.freeze({
+  const ref = Object.freeze({
     Bus: bus.createBus(),
     Reconciler,
     appData: dynamicValue(setter),
     historyRoot: tinyState.createTinyState<Nullable<TIsolate>>(null),
+    isMounting: tinyState.createTinyState<boolean>(false),
+    pendingIsolates: tinyState.createTinyState<Set<TIsolate>>(new Set()),
+    state: tinyState.createTinyState<RuntimeState>(RuntimeState.STABLE),
   });
+
+  subscribeToEvents(ref);
+
+  return ref;
 }
 
+function subscribeToEvents(ref: StateRefType) {
+  ref.Bus.on(RuntimeEvents.START_MOUNT, useHandleStartMount);
+  ref.Bus.on(RuntimeEvents.END_MOUNT, useHandleEndMount);
+  ref.Bus.on(RuntimeEvents.ISOLATE_PENDING, useHandleIsolatePending);
+  ref.Bus.on(RuntimeEvents.ISOLATE_DONE, useHandleIsolateDone);
+
+  function useHandleStartMount() {
+    const [, setIsMounting] = ref.isMounting();
+    setIsMounting(true);
+  }
+
+  function useHandleEndMount() {
+    const [, setIsMounting] = ref.isMounting();
+    const [pendingIsolates] = ref.pendingIsolates();
+    const [state, setState] = ref.state();
+
+    setIsMounting(false);
+    if (pendingIsolates.size === 0 && state !== RuntimeState.STABLE) {
+      setState(RuntimeState.STABLE);
+      ref.Bus.emit(RuntimeEvents.BECOME_STABLE);
+    }
+  }
+
+  function useHandleIsolatePending(isolate: TIsolate) {
+    const [pendingIsolates] = ref.pendingIsolates();
+    const [state, setState] = ref.state();
+
+    pendingIsolates.add(isolate);
+    if (state !== RuntimeState.PENDING) {
+      setState(RuntimeState.PENDING);
+    }
+  }
+
+  function useHandleIsolateDone(isolate: TIsolate) {
+    const [pendingIsolates] = ref.pendingIsolates();
+    const [state, setState] = ref.state();
+    const [isMounting] = ref.isMounting();
+
+    pendingIsolates.delete(isolate);
+    if (
+      pendingIsolates.size === 0 &&
+      !isMounting &&
+      state !== RuntimeState.STABLE
+    ) {
+      setState(RuntimeState.STABLE);
+      ref.Bus.emit(RuntimeEvents.BECOME_STABLE);
+    }
+  }
+}
+
+/**
+ * Dispatches a runtime event to the internal Bus.
+ * This is used to trigger state changes and notifications.
+ */
+export function dispatch(event: { type: string; payload?: any }) {
+  useX().stateRef.Bus.emit(event.type, event.payload);
+}
+
+/**
+ * Registers an isolate as pending.
+ * This is used to track async tests and other async operations.
+ */
+export function registerPending(isolate: TIsolate) {
+  dispatch({ type: RuntimeEvents.ISOLATE_PENDING, payload: isolate });
+}
+
+/**
+ * Removes an isolate from the pending set.
+ * This is used when an async test or operation completes.
+ */
+export function removePending(isolate: TIsolate) {
+  dispatch({ type: RuntimeEvents.ISOLATE_DONE, payload: isolate });
+}
+
+/**
+ * Retrieves the Reconciler used by the current runtime.
+ */
 export function useReconciler() {
   return useX().stateRef.Reconciler;
 }
 
+/**
+ * Persists the current runtime context to a callback function.
+ * This allows the callback to be executed later (e.g. in an async operation)
+ * while still having access to the correct runtime context.
+ */
 export function persist<T extends (...args: any[]) => any>(cb: T): T {
   const prev = PersistedContext.useX();
 
@@ -98,13 +222,24 @@ export function persist<T extends (...args: any[]) => any>(cb: T): T {
     return PersistedContext.run(ctxToUse.stateRef, () => cb(...args));
   }) as T;
 }
+/**
+ * Retrieves the current runtime context.
+ * Throws if called outside of a Vest runtime.
+ */
 export function useX<T = object>(): CTXType & T {
   return PersistedContext.useX() as CTXType & T;
 }
 
+/**
+ * Retrieves the history root state.
+ */
 export function useHistoryRoot() {
   return useX().stateRef.historyRoot();
 }
+
+/**
+ * Retrieves the current history isolate (the one matching the current runtime isolate).
+ */
 export function useHistoryIsolate() {
   return useX().historyNode;
 }
@@ -131,10 +266,18 @@ export function useHistoryIsolateAtCurrentPosition() {
   return historyNode;
 }
 
+/**
+ * Sets the history root for the runtime.
+ * This is used to hydrate the runtime with previous results.
+ */
 export function useSetHistoryRoot(history: TIsolate) {
   const [, setHistoryRoot] = useHistoryRoot();
   setHistoryRoot(history);
 }
+
+/**
+ * Retrieves a child isolate from the history tree by its key.
+ */
 export function useHistoryKey(key?: Nullable<string>): Nullable<TIsolate> {
   if (isNullish(key)) {
     return null;
@@ -145,16 +288,31 @@ export function useHistoryKey(key?: Nullable<string>): Nullable<TIsolate> {
   return IsolateInspector.getChildByKey(historyNode, key);
 }
 
+/**
+ * Retrieves the currently active isolate in the runtime tree.
+ */
 export function useIsolate() {
   return useX().runtimeNode ?? null;
 }
+
+/**
+ * Retrieves the current cursor position within the active isolate.
+ */
 export function useCurrentCursor() {
   const isolate = useIsolate();
   return isolate ? IsolateInspector.cursor(isolate) : 0;
 }
+
+/**
+ * Retrieves the root of the current runtime tree.
+ */
 export function useRuntimeRoot() {
   return useX().runtimeRoot;
 }
+
+/**
+ * Adds a child isolate to the current isolate and sets the parent-child relationship.
+ */
 export function useSetNextIsolateChild(child: TIsolate): void {
   const currentIsolate = useIsolate();
 
@@ -163,6 +321,11 @@ export function useSetNextIsolateChild(child: TIsolate): void {
   IsolateMutator.addChild(currentIsolate, child);
   IsolateMutator.setParent(child, currentIsolate);
 }
+
+/**
+ * Sets a key for a child isolate within the current isolate.
+ * Throws if the key is already taken.
+ */
 export function useSetIsolateKey(key: Nullable<string>, node: TIsolate): void {
   if (!key) {
     return;
@@ -180,6 +343,11 @@ export function useSetIsolateKey(key: Nullable<string>, node: TIsolate): void {
 
   deferThrow(text(ErrorStrings.ENCOUNTERED_THE_SAME_KEY_TWICE, { key }));
 }
+/**
+ * Returns the available root isolate.
+ * If a runtime root exists (i.e. we are currently running a suite), it returns that.
+ * Otherwise, it returns the history root (i.e. the result of the last run).
+ */
 export function useAvailableRoot<I extends TIsolate = TIsolate>(): I {
   const root = useRuntimeRoot();
 
@@ -192,8 +360,31 @@ export function useAvailableRoot<I extends TIsolate = TIsolate>(): I {
   return historyRoot as I;
 }
 
+/**
+ * Resets the history root.
+ */
 export function reset() {
   const [, , resetHistoryRoot] = useHistoryRoot();
 
   resetHistoryRoot();
 }
+
+export const RuntimeApi = {
+  Run,
+  createRef,
+  dispatch,
+  persist,
+  registerPending,
+  removePending,
+  reset,
+  useAvailableRoot,
+  useCurrentCursor,
+  useHistoryRoot,
+  useIsMounting,
+  useIsStable,
+  usePendingIsolates,
+  useRuntimeState,
+  useSetHistoryRoot,
+  useSetNextIsolateChild,
+  useXAppData,
+};

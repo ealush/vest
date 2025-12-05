@@ -1,6 +1,7 @@
 import { Nullable, isNotNullish, isNullish } from 'vest-utils';
 
 import { TIsolate } from './Isolate';
+import { IsolateStatus } from './IsolateStatus';
 
 export class IsolateInspector {
   static at(isolate: Nullable<TIsolate>, at: number): Nullable<TIsolate> {
@@ -46,5 +47,27 @@ export class IsolateInspector {
       return null;
     }
     return isolate.keys?.[key] ?? null;
+  }
+
+  static getStatus(isolate: Nullable<TIsolate>): IsolateStatus {
+    if (isNullish(isolate)) {
+      return IsolateStatus.INITIAL;
+    }
+    return isolate.status ?? IsolateStatus.INITIAL;
+  }
+
+  static statusEquals(
+    isolate: Nullable<TIsolate>,
+    status: IsolateStatus,
+  ): boolean {
+    return IsolateInspector.getStatus(isolate) === status;
+  }
+
+  static isPending(isolate: Nullable<TIsolate>): boolean {
+    return IsolateInspector.statusEquals(isolate, IsolateStatus.PENDING);
+  }
+
+  static getParent(isolate: Nullable<TIsolate>): Nullable<TIsolate> {
+    return isolate?.parent ?? null;
   }
 }

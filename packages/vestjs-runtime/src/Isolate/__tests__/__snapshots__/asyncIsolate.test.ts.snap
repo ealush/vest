@@ -21,6 +21,7 @@ exports[`AsyncIsolate > It should resolve async isolate into the parent 2`] = `
           "keys": null,
           "output": undefined,
           "parent": [Circular],
+          "status": "DONE",
         },
         {
           "$type": "UGrandChild_2",
@@ -32,6 +33,7 @@ exports[`AsyncIsolate > It should resolve async isolate into the parent 2`] = `
           "keys": null,
           "output": undefined,
           "parent": [Circular],
+          "status": "DONE",
         },
         {
           "$type": "UGrandChild_3",
@@ -43,6 +45,7 @@ exports[`AsyncIsolate > It should resolve async isolate into the parent 2`] = `
           "keys": null,
           "output": undefined,
           "parent": [Circular],
+          "status": "DONE",
         },
       ],
       "data": {},
@@ -50,6 +53,7 @@ exports[`AsyncIsolate > It should resolve async isolate into the parent 2`] = `
       "keys": null,
       "output": undefined,
       "parent": [Circular],
+      "status": "DONE",
     },
   ],
   "data": {},
@@ -57,5 +61,6 @@ exports[`AsyncIsolate > It should resolve async isolate into the parent 2`] = `
   "keys": null,
   "output": Promise {},
   "parent": null,
+  "status": "DONE",
 }
 `;

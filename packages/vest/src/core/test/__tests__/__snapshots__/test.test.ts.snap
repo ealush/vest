@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Test Vest's \`test\` function > test params > creates a test with a message and with a key 1`] = `"[{"$type":"Test","data":{"severity":"error","fieldName":"field_name","message":"failure message"},"status":"PASSING","key":"keyboardcat"},{}]"`;
+exports[`Test Vest's \`test\` function > test params > creates a test with a message and with a key 1`] = `"[{"$type":"Test","data":{"severity":"error","testStatus":"PASSING","fieldName":"field_name","message":"failure message"},"status":"DONE","key":"keyboardcat"},{}]"`;
 
 exports[`Test Vest's \`test\` function > test params > creates a test without a key 1`] = `
 {
@@ -13,6 +13,7 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     "message": "failure message",
     "severity": "error",
     "testFn": [Function],
+    "testStatus": "PASSING",
   },
   "key": null,
   "keys": null,
@@ -105,7 +106,7 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     "parent": null,
     "status": "DONE",
   },
-  "status": "PASSING",
+  "status": "DONE",
 }
 `;
 
@@ -119,6 +120,7 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     "fieldName": "field_name",
     "severity": "error",
     "testFn": [Function],
+    "testStatus": "PASSING",
   },
   "key": "keyboardcat",
   "keys": null,
@@ -213,7 +215,7 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     "parent": null,
     "status": "DONE",
   },
-  "status": "PASSING",
+  "status": "DONE",
 }
 `;
 
@@ -227,6 +229,7 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     "fieldName": "field_name",
     "severity": "error",
     "testFn": [Function],
+    "testStatus": "PASSING",
   },
   "key": null,
   "keys": null,
@@ -319,6 +322,6 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     "parent": null,
     "status": "DONE",
   },
-  "status": "PASSING",
+  "status": "DONE",
 }
 `;

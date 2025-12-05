@@ -1,4 +1,16 @@
-import { Nullable, invariant, isNullish } from 'vest-utils';
+import {
+  Nullable,
+  invariant,
+  isNullish,
+  makeResult,
+  Result,
+  isFailure,
+} from 'vest-utils';
+
+import { RuntimeApi } from '../VestRuntime';
+
+import { IsolateStateMachine } from './IsolateStateMachine';
+import { IsolateStatus } from './IsolateStatus';
 
 import { TIsolate } from './Isolate';
 
@@ -56,5 +68,43 @@ export class IsolateMutator {
       return;
     }
     isolate.abortController.abort(reason);
+  }
+
+  static setStatus(
+    isolate: TIsolate,
+    status: IsolateStatus,
+    payload?: any,
+  ): Result<IsolateStatus, string> {
+    if (isolate.status === status) {
+      return makeResult.Err(`Isolate status is already ${status}`);
+    }
+
+    isolate.status = IsolateStateMachine.staticTransition(
+      isolate.status ?? IsolateStatus.INITIAL,
+      status,
+      payload,
+    ) as IsolateStatus;
+
+    return makeResult.Ok(isolate.status);
+  }
+
+  static setPending(isolate: TIsolate): void {
+    const result = IsolateMutator.setStatus(isolate, IsolateStatus.PENDING);
+
+    if (isFailure(result)) {
+      return;
+    }
+
+    RuntimeApi.registerPending(isolate);
+  }
+
+  static setDone(isolate: TIsolate): void {
+    const result = IsolateMutator.setStatus(isolate, IsolateStatus.DONE);
+
+    if (isFailure(result)) {
+      return;
+    }
+
+    RuntimeApi.removePending(isolate);
   }
 }

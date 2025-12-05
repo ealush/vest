@@ -22,19 +22,49 @@ import {
   TestAction,
   TestStatus,
 } from '../../StateMachines/IsolateTestStateMachine';
-import { VestIsolate } from '../VestIsolate';
 import { VestIsolateType } from '../VestIsolateType';
 
 import type { TIsolateTest } from './IsolateTest';
 
-export class VestTest extends VestIsolate {
+export class VestTest {
   static stateMachine = IsolateTestStateMachine;
 
   // Read
-
+  /**
+   * Retrieves the data object from the test isolate.
+   */
   static getData<F extends TFieldName = TFieldName>(test: TIsolateTest<F>) {
     invariant(test.data);
     return test.data;
+  }
+
+  /**
+   * Retrieves the current status of the test.
+   */
+  static getStatus(test: TIsolateTest): TestStatus {
+    const data = VestTest.getData(test);
+    return data.testStatus;
+  }
+
+  /**
+   * Sets the status of the test, triggering a state machine transition.
+   */
+  static setStatus(
+    test: TIsolateTest,
+    status: TestStatus,
+    payload?: any,
+  ): void {
+    const currentStatus = VestTest.getStatus(test);
+    const nextStatus = VestTest.stateMachine.staticTransition(
+      currentStatus,
+      status,
+      payload,
+    );
+
+    VestTest.setData(test, current => ({
+      ...current,
+      testStatus: nextStatus,
+    }));
   }
 
   static getGroupName<G extends TGroupName>(test: TIsolateTest): Maybe<G> {
@@ -44,6 +74,9 @@ export class VestTest extends VestIsolate {
     return group?.data.groupName;
   }
 
+  /**
+   * Checks if the given isolate is a VestTest isolate.
+   */
   static is(isolate?: Maybe<TIsolate>): isolate is TIsolateTest {
     return IsolateSelectors.isIsolateType<TIsolateTest>(
       isolate,
@@ -55,6 +88,13 @@ export class VestTest extends VestIsolate {
     invariant(VestTest.is(isolate), ErrorStrings.EXPECTED_VEST_TEST);
   }
 
+  static statusEquals(test: TIsolateTest, status: TestStatus): boolean {
+    return VestTest.getStatus(test) === status;
+  }
+
+  /**
+   * Casts an isolate to a VestTest isolate, throwing if it's not a valid test isolate.
+   */
   static cast<F extends TFieldName = TFieldName>(
     isolate?: Maybe<TIsolate>,
   ): TIsolateTest<F> {
@@ -96,6 +136,9 @@ export class VestTest extends VestIsolate {
     return makeResult.Ok(VestTest.statusEquals(test, TestStatus.WARNING));
   }
 
+  /**
+   * Checks if the test has failed or has a warning.
+   */
   static hasFailures(test: TIsolateTest): Result<boolean> {
     return makeResult.Ok(
       VestTest.isFailing(test).unwrap() || VestTest.isWarning(test).unwrap(),
@@ -110,31 +153,48 @@ export class VestTest extends VestIsolate {
     );
   }
 
+  /**
+   * Checks if the test has been run and completed (passed or failed).
+   */
   static isTested(test: TIsolateTest): Result<boolean> {
     return makeResult.Ok(
       VestTest.hasFailures(test).unwrap() || VestTest.isPassing(test).unwrap(),
     );
   }
 
+  static isStartedStatus(test: TIsolateTest): boolean {
+    return VestTest.statusEquals(test, TestStatus.STARTED);
+  }
+
+  static isStarted(test: TIsolateTest): Result<boolean> {
+    return makeResult.Ok(VestTest.isStartedStatus(test));
+  }
+
+  /**
+   * Checks if the test is awaiting resolution (skipped, untested, or started).
+   */
   static awaitsResolution(test: TIsolateTest): Result<boolean> {
     // Is the test in a state where it can still be run, or complete running
     // and its final status is indeterminate?
     return makeResult.Ok(
       VestTest.isSkipped(test).unwrap() ||
         VestTest.isUntested(test).unwrap() ||
-        VestTest.isPending(test),
+        VestTest.isStartedStatus(test),
     );
   }
 
+  /**
+   * Checks if the test is asynchronous.
+   */
   static isAsyncTest(test: TIsolateTest): boolean {
     return isPromise(VestTest.getData(test).asyncTest);
   }
 
   // Mutate
 
-  // static setPending(test: TIsolateTest) {
-  //   this.setStatus(test, TestStatus.PENDING);
-  // }
+  static setStarted(test: TIsolateTest) {
+    VestTest.setStatus(test, TestStatus.STARTED);
+  }
 
   static fail(test: TIsolateTest): void {
     VestTest.setStatus(

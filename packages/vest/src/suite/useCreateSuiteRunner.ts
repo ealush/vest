@@ -1,5 +1,5 @@
 import { assign, CB, isFunction, withResolvers } from 'vest-utils';
-import { Bus } from 'vestjs-runtime';
+import { Bus, RuntimeEvents, VestRuntime } from 'vestjs-runtime';
 
 import { SuiteContext } from '../core/context/SuiteContext';
 import { IsolateReorderable } from '../core/isolate/IsolateReorderable/IsolateReorderable';
@@ -60,7 +60,8 @@ export function useCreateSuiteRunner<
             return result;
           }
 
-          return IsolateSuite(() => {
+          VestRuntime.dispatch({ type: RuntimeEvents.START_MOUNT });
+          const output = IsolateSuite(() => {
             only(modifiers.only);
             (suiteCallback as any)(...(args as Parameters<T>));
             // eslint-disable-next-line complexity, max-nested-callbacks
@@ -68,6 +69,8 @@ export function useCreateSuiteRunner<
             Bus.useEmit('SUITE_CALLBACK_RUN_FINISHED');
             return useCreateSuiteResult<F, G, S>(schema, args[0]);
           }, resolver);
+          VestRuntime.dispatch({ type: RuntimeEvents.END_MOUNT });
+          return output;
         },
       ).output,
     );

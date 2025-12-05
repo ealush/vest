@@ -8,14 +8,13 @@ import wait from 'wait';
 import { VestRuntime, IRecociler } from '../../vestjs-runtime';
 
 describe('AsyncIsolate', () => {
-  test('It should resolve async isolate into the parent', () => {
-    return new Promise<void>(async done => {
-      let root = {} as TIsolate;
-      withRunTime(() => {
-        // Create root isolate from which all others will be created
-        root = Isolate.create('URoot', genChildren);
-      });
-      expect(root).toMatchInlineSnapshot(`
+  test('It should resolve async isolate into the parent', async () => {
+    let root = {} as TIsolate;
+    withRunTime(() => {
+      // Create root isolate from which all others will be created
+      root = Isolate.create('URoot', genChildren);
+    });
+    expect(root).toMatchInlineSnapshot(`
         {
           "$type": "URoot",
           "abortController": AbortController {},
@@ -26,51 +25,40 @@ describe('AsyncIsolate', () => {
           "keys": null,
           "output": Promise {},
           "parent": null,
+          "status": "PENDING",
         }
       `);
-      await wait(10);
-      expect(root?.children?.[0]?.$type).toBe('UChild_1');
-      expect(root?.children?.[0].parent).toBe(root);
-      expect(root?.children?.[0]?.children?.[0]?.$type).toBe('UGrandChild_1');
-      expect(root?.children?.[0]?.children?.[0].parent).toBe(
-        root?.children?.[0],
-      );
-      expect(root?.children?.[0]?.children?.[1]?.$type).toBe('UGrandChild_2');
-      expect(root?.children?.[0]?.children?.[1].parent).toBe(
-        root?.children?.[0],
-      );
-      expect(root?.children?.[0]?.children?.[2]?.$type).toBe('UGrandChild_3');
-      expect(root?.children?.[0]?.children?.[2].parent).toBe(
-        root?.children?.[0],
-      );
-      expect(root).toMatchSnapshot();
-
-      done();
-    });
+    await wait(10);
+    expect(root?.children?.[0]?.$type).toBe('UChild_1');
+    expect(root?.children?.[0].parent).toBe(root);
+    expect(root?.children?.[0]?.children?.[0]?.$type).toBe('UGrandChild_1');
+    expect(root?.children?.[0]?.children?.[0].parent).toBe(root?.children?.[0]);
+    expect(root?.children?.[0]?.children?.[1]?.$type).toBe('UGrandChild_2');
+    expect(root?.children?.[0]?.children?.[1].parent).toBe(root?.children?.[0]);
+    expect(root?.children?.[0]?.children?.[2]?.$type).toBe('UGrandChild_3');
+    expect(root?.children?.[0]?.children?.[2].parent).toBe(root?.children?.[0]);
+    expect(root).toMatchSnapshot();
   });
 
-  it('Should emit an event when an async isolate is done running', () => {
+  it('Should emit an event when an async isolate is done running', async () => {
     const cb = vi.fn();
-    return new Promise<void>(async done => {
-      let child = {} as TIsolate;
-      withRunTime(() => {
-        // Create root isolate from which all others will be created
-        Isolate.create('URoot', () => {
-          const bus = useBus();
-          bus.on(RuntimeEvents.ISOLATE_DONE, cb);
+    let child = {} as TIsolate;
+    withRunTime(() => {
+      // Create root isolate from which all others will be created
+      Isolate.create('URoot', () => {
+        const bus = useBus();
+        bus.on(RuntimeEvents.ISOLATE_DONE, cb);
 
-          expect(cb).not.toHaveBeenCalled();
-          child = Isolate.create('UChild_1', async () => {
-            await wait(10);
-          });
-          expect(cb).not.toHaveBeenCalled();
+        expect(cb).not.toHaveBeenCalled();
+        child = Isolate.create('UChild_1', async () => {
+          await wait(10);
         });
+        expect(cb).not.toHaveBeenCalled();
       });
-      expect(cb).not.toHaveBeenCalledWith(child);
-      await wait(10);
-      expect(cb).toHaveBeenCalledWith(child);
-      done();
     });
+    expect(cb).not.toHaveBeenCalledWith(child);
+    await wait(10);
+    expect(cb).toHaveBeenCalledWith(child);
   });
 });
 

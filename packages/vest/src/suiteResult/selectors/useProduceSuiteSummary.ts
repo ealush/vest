@@ -128,7 +128,7 @@ function addSummaryStats<F extends TFieldName, G extends TGroupName>(
     summary.errors.push(SummaryFailure.fromTestObject(testObject));
   }
 
-  if (VestTest.isPending(testObject)) {
+  if (VestTest.isStartedStatus(testObject)) {
     summary.pendingCount++;
   }
 
@@ -162,7 +162,7 @@ function updateSummaryWithTestResults<S extends CommonSummaryProperties>(
 ): S {
   const { message } = VestTest.getData(testObject);
 
-  if (VestTest.isPending(testObject)) {
+  if (VestTest.isStartedStatus(testObject)) {
     nextSummaryKey.pendingCount++;
   }
 
@@ -202,6 +202,7 @@ function shouldCountTestRun<F extends TFieldName>(
   testObject: TIsolateTest<F>,
 ): boolean {
   return (
-    VestTest.isTested(testObject).unwrap() || VestTest.isPending(testObject)
+    VestTest.isTested(testObject).unwrap() ||
+    VestTest.isStartedStatus(testObject)
   );
 }

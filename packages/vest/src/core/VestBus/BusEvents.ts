@@ -1,11 +1,15 @@
-export type Events =
-  | 'TEST_RUN_STARTED'
-  | 'TEST_COMPLETED'
-  | 'ALL_RUNNING_TESTS_FINISHED'
-  | 'REMOVE_FIELD'
-  | 'RESET_FIELD'
-  | 'RESET_SUITE'
-  | 'SUITE_RUN_STARTED'
-  | 'SUITE_CALLBACK_RUN_FINISHED'
-  | 'DONE_TEST_OMISSION_PASS'
-  | 'INITIALIZING_CALLBACKS';
+import { TIsolate } from 'vestjs-runtime';
+import { TFieldName } from '../../suiteResult/SuiteResultTypes';
+
+export type Events = {
+  TEST_RUN_STARTED: void;
+  TEST_COMPLETED: TIsolate;
+  ALL_RUNNING_TESTS_FINISHED: void;
+  REMOVE_FIELD: TFieldName;
+  RESET_FIELD: TFieldName;
+  RESET_SUITE: void;
+  SUITE_RUN_STARTED: void;
+  SUITE_CALLBACK_RUN_FINISHED: void;
+  DONE_TEST_OMISSION_PASS: void;
+  INITIALIZING_CALLBACKS: void;
+};

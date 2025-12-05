@@ -1,4 +1,4 @@
-import { CB } from 'vest-utils';
+import { CB, BusType } from 'vest-utils';
 import { Bus, RuntimeEvents, TIsolate, VestRuntime } from 'vestjs-runtime';
 
 import { useOmitOptionalFields } from '../../hooks/optional/omitOptionalFields';
@@ -28,7 +28,7 @@ import { Events } from './BusEvents';
 
 // eslint-disable-next-line max-statements, max-lines-per-function
 export function useInitVestBus() {
-  const VestBus = Bus.useBus();
+  const VestBus = Bus.useBus<VestEvents>();
 
   on('TEST_COMPLETED', (isolate: TIsolate) => {
     // #FIXME: This is not ideal as it traverses up all the way on every test
@@ -84,7 +84,7 @@ export function useInitVestBus() {
 
     if (VestRuntime.useIsStable()) {
       // When no more async tests are running, emit the done event
-      VestBus.emit('ALL_RUNNING_TESTS_FINISHED', isolate);
+      VestBus.emit('ALL_RUNNING_TESTS_FINISHED');
     }
   });
 
@@ -119,10 +119,10 @@ export function useInitVestBus() {
     useResetCallbacks();
   });
 
-  on('SUITE_CALLBACK_RUN_FINISHED', (isolate: TIsolate) => {
+  on('SUITE_CALLBACK_RUN_FINISHED', () => {
     if (VestRuntime.useIsStable()) {
       // When no more async tests are running, emit the done event
-      VestBus.emit('ALL_RUNNING_TESTS_FINISHED', isolate);
+      VestBus.emit('ALL_RUNNING_TESTS_FINISHED');
     }
 
     useOmitOptionalFields();
@@ -143,30 +143,58 @@ export function useInitVestBus() {
     subscribe,
   };
 
-  function subscribe(event: VestEvents, cb: CB): CB<void>;
+  function subscribe<T extends keyof VestEvents>(
+    event: T,
+    cb: (payload: VestEvents[T]) => void,
+  ): CB<void>;
   function subscribe(cb: CB): CB<void>;
   function subscribe(
-    ...args: [event: VestEvents, cb: CB] | [cb: CB]
+    ...args: [event: keyof VestEvents, cb: CB] | [cb: CB]
   ): CB<void> {
-    const [cb, event] = args.reverse() as [CB, VestEvents];
+    const [cb, event] = args.reverse() as [CB, keyof VestEvents];
+
+    // @ts-ignore - Argument type mismatch due to wildcard handling complexity
     return VestBus.on(event ?? '*', () => {
       cb();
     }).off;
   }
 
-  function on(event: VestEvents, cb: (...args: any[]) => void) {
-    VestBus.on(event, (...args: any[]) => {
+  function on<T extends keyof VestEvents>(
+    event: T,
+    cb: (payload: VestEvents[T]) => void,
+  ) {
+    VestBus.on(event, (arg: VestEvents[T]) => {
       // This is more concise, but it might be an overkill
       // if we're adding events that don't need to invalidate the cache
       useExpireSuiteResultCache();
-      cb(...args);
+      cb(arg);
     });
   }
 }
 
-type VestEvents = Events | RuntimeEvents | '*';
+export function useEmit(): BusType<VestEvents>['emit'];
+export function useEmit<T extends keyof VestEvents>(
+  event: T,
+  ...args: VestEvents[T] extends void
+    ? [payload?: VestEvents[T]]
+    : [payload: VestEvents[T]]
+): void;
+export function useEmit(event?: keyof VestEvents, data?: any): any {
+  return Bus.useEmit<VestEvents>(event!, data);
+}
+
+export function usePrepareEmitter<T extends keyof VestEvents>(
+  event: T,
+): (arg: VestEvents[T]) => void {
+  return Bus.usePrepareEmitter<VestEvents>(event);
+}
+
+export type VestEvents = Events & RuntimeEvents;
 
 export type Subscribe = {
-  (event: VestEvents, cb: CB): CB<void>;
+  <T extends keyof VestEvents>(
+    event: T,
+    cb: (payload: VestEvents[T]) => void,
+  ): CB<void>;
   (cb: CB): CB<void>;
 };

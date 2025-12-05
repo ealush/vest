@@ -2,19 +2,22 @@ import type { CB } from './utilityTypes';
 
 const EVENT_WILDCARD = '*';
 
-export function createBus(): BusType {
-  const listeners: Record<string, CB[]> = {};
+export function createBus<TEvents extends string = string>(): BusType<TEvents> {
+  const listeners: Record<TEvents | TEventsWildcard, CB[]> = {} as Record<
+    TEvents | TEventsWildcard,
+    CB[]
+  >;
 
   return {
-    emit(event: string, data?: any) {
+    emit(event: TEvents | '*', data?: any) {
       getListeners(event)
-        .concat(getListeners(EVENT_WILDCARD))
+        .concat(getListeners(EVENT_WILDCARD as TEvents | '*'))
         .forEach(handler => {
           handler(data);
         });
     },
 
-    on(event: string, handler: CB): OnReturn {
+    on(event: TEvents | TEventsWildcard, handler: CB): OnReturn {
       listeners[event] = getListeners(event).concat(handler);
 
       return {
@@ -25,14 +28,16 @@ export function createBus(): BusType {
     },
   };
 
-  function getListeners(event: string): CB[] {
+  function getListeners(event: TEvents | TEventsWildcard): CB[] {
     return listeners[event] || [];
   }
 }
 
 type OnReturn = { off: CB<void> };
 
-export type BusType = {
-  on: (event: string, handler: CB) => OnReturn;
-  emit: (event: string, data?: any) => void;
+export type BusType<TEvents extends string = string> = {
+  on: (event: TEvents | TEventsWildcard, handler: CB) => OnReturn;
+  emit: (event: TEvents | TEventsWildcard, data?: any) => void;
 };
+
+type TEventsWildcard = '*';

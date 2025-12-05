@@ -1,6 +1,7 @@
 import { isNullish } from 'vest-utils';
 
 import { persist, useX } from './VestRuntime';
+import { RuntimeEvents } from './RuntimeEvents';
 
 export function useBus() {
   return useX().stateRef.Bus;
@@ -10,7 +11,7 @@ export function useBus() {
   Returns an emitter, but it also has a shortcut for emitting an event immediately
   by passing an event name.
 */
-export function useEmit(event?: string, data?: any) {
+export function useEmit(event?: RuntimeEvents, data?: any) {
   const emit = useBus().emit;
 
   if (!isNullish(event)) {
@@ -20,7 +21,9 @@ export function useEmit(event?: string, data?: any) {
   return persist(emit);
 }
 
-export function usePrepareEmitter<T = void>(event: string): (arg: T) => void {
+export function usePrepareEmitter<T = void>(
+  event: RuntimeEvents,
+): (arg: T) => void {
   const emit = useEmit();
 
   return (arg: T) => emit(event, arg);

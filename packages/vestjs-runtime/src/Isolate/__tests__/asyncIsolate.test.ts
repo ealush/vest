@@ -1,6 +1,5 @@
 import { useBus } from '../../Bus';
 import { Isolate, TIsolate } from '../Isolate';
-import { RuntimeEvents } from '../../RuntimeEvents';
 import { CB } from 'vest-utils';
 import { describe, vi, it, expect, test } from 'vitest';
 import wait from 'wait';
@@ -47,7 +46,7 @@ describe('AsyncIsolate', () => {
       // Create root isolate from which all others will be created
       Isolate.create('URoot', () => {
         const bus = useBus();
-        bus.on(RuntimeEvents.ISOLATE_DONE, cb);
+        bus.on('ISOLATE_DONE', cb);
 
         expect(cb).not.toHaveBeenCalled();
         child = Isolate.create('UChild_1', async () => {

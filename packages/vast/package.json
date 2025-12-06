@@ -44,8 +44,8 @@
     "exports": {
       ".": {
         "types": "./types/vast.d.cts",
-        "import": "./dist/vast.mjs",
-        "require": "./dist/vast.cjs"
+        "require": "./dist/vast.cjs",
+        "import": "./dist/vast.mjs"
       },
       "./*": {
         "types": "./types/vast.d.cts",

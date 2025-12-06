@@ -65,13 +65,18 @@
     "exports": {
       "./exports/minifyObject": {
         "types": "./types/exports/minifyObject.d.cts",
-        "import": "./dist/exports/minifyObject.mjs",
-        "require": "./dist/exports/minifyObject.cjs"
+        "require": "./dist/exports/minifyObject.cjs",
+        "import": "./dist/exports/minifyObject.mjs"
+      },
+      "./exports/standardSchemaSpec": {
+        "types": "./types/exports/standardSchemaSpec.d.cts",
+        "require": "./dist/exports/standardSchemaSpec.cjs",
+        "import": "./dist/exports/standardSchemaSpec.mjs"
       },
       "./vest-utils": {
         "types": "./types/vest-utils.d.cts",
-        "import": "./dist/vest-utils.mjs",
-        "require": "./dist/vest-utils.cjs"
+        "require": "./dist/vest-utils.cjs",
+        "import": "./dist/vest-utils.mjs"
       },
       "./*": {
         "types": "./types/vest-utils.d.cts",
@@ -79,10 +84,20 @@
       },
       ".": {
         "types": "./types/vest-utils.d.cts",
-        "import": "./dist/vest-utils.mjs",
-        "require": "./dist/vest-utils.cjs"
+        "require": "./dist/vest-utils.cjs",
+        "import": "./dist/vest-utils.mjs"
       },
       "./package.json": "./package.json",
+      "./minifyObject": {
+        "types": "./types/exports/minifyObject.d.cts",
+        "require": "./dist/exports/minifyObject.cjs",
+        "import": "./dist/exports/minifyObject.mjs"
+      },
+      "./standardSchemaSpec": {
+        "types": "./types/exports/standardSchemaSpec.d.cts",
+        "require": "./dist/exports/standardSchemaSpec.cjs",
+        "import": "./dist/exports/standardSchemaSpec.mjs"
+      },
       "./vest-utils.d.ts": {
         "types": "./types/vest-utils.d.cts",
         "default": "./types/vest-utils.d.ts"

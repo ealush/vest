@@ -65,18 +65,18 @@
     "exports": {
       "./exports/IsolateSerializer": {
         "types": "./types/exports/IsolateSerializer.d.cts",
-        "import": "./dist/exports/IsolateSerializer.mjs",
-        "require": "./dist/exports/IsolateSerializer.cjs"
+        "require": "./dist/exports/IsolateSerializer.cjs",
+        "import": "./dist/exports/IsolateSerializer.mjs"
       },
       "./exports/test-utils": {
         "types": "./types/exports/test-utils.d.cts",
-        "import": "./dist/exports/test-utils.mjs",
-        "require": "./dist/exports/test-utils.cjs"
+        "require": "./dist/exports/test-utils.cjs",
+        "import": "./dist/exports/test-utils.mjs"
       },
       "./vestjs-runtime": {
         "types": "./types/vestjs-runtime.d.cts",
-        "import": "./dist/vestjs-runtime.mjs",
-        "require": "./dist/vestjs-runtime.cjs"
+        "require": "./dist/vestjs-runtime.cjs",
+        "import": "./dist/vestjs-runtime.mjs"
       },
       "./*": {
         "types": "./types/vestjs-runtime.d.cts",
@@ -84,25 +84,19 @@
       },
       ".": {
         "types": "./types/vestjs-runtime.d.cts",
-        "import": "./dist/vestjs-runtime.mjs",
-        "require": "./dist/vestjs-runtime.cjs"
+        "require": "./dist/vestjs-runtime.cjs",
+        "import": "./dist/vestjs-runtime.mjs"
       },
       "./package.json": "./package.json",
-      "./Isolate-DDQqod3l": {
-        "types": "./types/vestjs-runtime.d.cts",
-        "default": "./types/Isolate-DDQqod3l.d.mts"
+      "./IsolateSerializer": {
+        "types": "./types/exports/IsolateSerializer.d.cts",
+        "require": "./dist/exports/IsolateSerializer.cjs",
+        "import": "./dist/exports/IsolateSerializer.mjs"
       },
-      "./Isolate-DI-lLdpw": {
-        "types": "./types/vestjs-runtime.d.cts",
-        "default": "./types/Isolate-DI-lLdpw.d.cts"
-      },
-      "./IsolateSerializer-CrpXnofj": {
-        "types": "./types/vestjs-runtime.d.cts",
-        "default": "./types/IsolateSerializer-CrpXnofj.d.mts"
-      },
-      "./IsolateSerializer-Dqh6viJr": {
-        "types": "./types/vestjs-runtime.d.cts",
-        "default": "./types/IsolateSerializer-Dqh6viJr.d.cts"
+      "./test-utils": {
+        "types": "./types/exports/test-utils.d.cts",
+        "require": "./dist/exports/test-utils.cjs",
+        "import": "./dist/exports/test-utils.mjs"
       },
       "./vestjs-runtime.d.ts": {
         "types": "./types/vestjs-runtime.d.cts",

@@ -4,9 +4,6 @@ src
 !types/
 !dist/
 tsconfig.json
-!one/
-!none/
-!any/
-!all/
+!*/package.json
 
 # Manual Section. Edit at will.

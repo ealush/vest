@@ -4,6 +4,6 @@ src
 !types/
 !dist/
 tsconfig.json
-
+!*/package.json
 
 # Manual Section. Edit at will.

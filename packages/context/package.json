@@ -44,8 +44,8 @@
     "exports": {
       ".": {
         "types": "./types/context.d.cts",
-        "import": "./dist/context.mjs",
-        "require": "./dist/context.cjs"
+        "require": "./dist/context.cjs",
+        "import": "./dist/context.mjs"
       },
       "./*": {
         "types": "./types/context.d.cts",

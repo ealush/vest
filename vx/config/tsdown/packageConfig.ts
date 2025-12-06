@@ -419,8 +419,9 @@ async function updatePackageJsonTypes(
   });
 
   if (pkg.publishConfig?.exports) {
+    // Use pkg.exports as the source to ensure aliases are included
     pkg.publishConfig.exports = updateExports(
-      pkg.publishConfig.exports,
+      pkg.exports,
       typeMap,
       packageName,
       { mainTypes, legacyDtsPath },

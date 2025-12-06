@@ -4,8 +4,6 @@ src
 !types/
 !dist/
 tsconfig.json
-!isURL/
-!email/
-!date/
+!*/package.json
 
 # Manual Section. Edit at will.

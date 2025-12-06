@@ -4,13 +4,6 @@ src
 !types/
 !dist/
 tsconfig.json
-!parser/
-!memo/
-!isURL/
-!email/
-!debounce/
-!date/
-!classnames/
-!SuiteSerializer/
+!*/package.json
 
 # Manual Section. Edit at will.

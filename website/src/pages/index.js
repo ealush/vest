@@ -44,12 +44,16 @@ function HomepageHeader() {
             <Link className={clsx('button button--secondary', styles.secondaryCta)} to="/docs/api_reference">
               Explore the API
             </Link>
-            <button type="button" className={clsx('button', styles.copyButton)} onClick={handleCopy}>
-              {copied ? 'Copied!' : 'Copy install'}
-            </button>
+            <Link className={clsx('button button--secondary', styles.tertiaryCta)} to="/docs/next/get_started">
+              Try Vest v6
+            </Link>
           </div>
           <div className={styles.installBar}>
-            <code>{installCommand}</code>
+            <code className={styles.installCommand}>{installCommand}</code>
+            <button type="button" className={styles.copyPill} onClick={handleCopy} aria-label="Copy install command">
+              <span aria-hidden="true">📋</span>
+              <span className={styles.copyText}>{copied ? 'Copied' : 'Copy'}</span>
+            </button>
           </div>
         </div>
         <div className={styles.heroPanel}>

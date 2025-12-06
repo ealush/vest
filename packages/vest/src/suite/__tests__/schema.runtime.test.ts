@@ -16,38 +16,172 @@ describe('Schema Runtime Validation', () => {
     });
   }, schema);
 
-  it('should validate schema when no focus criteria is active', () => {
-    // Valid data
-    expect(suite.run({ name: 'John', age: 30, tags: [] }).isValid()).toBe(true);
+  describe('run() validation behavior', () => {
+    it('should validate schema when no focus criteria is active', () => {
+      // Valid data
+      expect(suite.run({ name: 'John', age: 30, tags: [] }).isValid()).toBe(
+        true,
+      );
 
-    // Invalid data
-    // @ts-expect-error - Invalid data
-    const result = suite.run({ name: 'John', age: '30' });
-    expect(result.hasErrors()).toBe(true);
-    expect(result.hasErrors('age')).toBe(true);
+      // Invalid data
+      // @ts-expect-error - Invalid data
+      const result = suite.run({ name: 'John', age: '30' });
+      expect(result.hasErrors()).toBe(true);
+      expect(result.hasErrors('age')).toBe(true);
+    });
+
+    it('should skip schema validation when "only" is active', () => {
+      // Invalid data for schema (age is string), but we focus on 'name'
+      // The schema validation should be skipped entirely
+      const result = suite
+        .focus({ only: 'name' })
+        // @ts-expect-error - Invalid data
+        .run({ name: 'John', age: '30' });
+
+      expect(result.hasErrors('age')).toBe(false);
+      expect(result.isValid()).toBe(true);
+    });
+
+    it('should skip schema validation when "only" is active via suite.focus().run()', () => {
+      // Invalid data for schema
+      const result = suite
+        .focus({ only: ['name'] })
+        // @ts-expect-error - Invalid data
+        .run({ name: 'John', age: '30' });
+
+      expect(result.hasErrors('age')).toBe(false);
+      expect(result.isValid()).toBe(true);
+    });
   });
 
-  it('should skip schema validation when "only" is active', () => {
-    // Invalid data for schema (age is string), but we focus on 'name'
-    // The schema validation should be skipped entirely
-    const result = suite
-      .focus({ only: 'name' })
-      // @ts-expect-error - Invalid data
-      .run({ name: 'John', age: '30' });
+  describe('runStatic() validation behavior', () => {
+    it('should always run schema validation', () => {
+      // Valid data
+      expect(
+        suite.runStatic({ name: 'John', age: 30, tags: [] }).isValid(),
+      ).toBe(true);
 
-    expect(result.hasErrors('age')).toBe(false);
-    expect(result.isValid()).toBe(true);
+      // Invalid data - age is a string instead of number
+      // @ts-expect-error - Invalid data
+      const result = suite.runStatic({ name: 'John', age: '30', tags: [] });
+      expect(result.hasErrors()).toBe(true);
+      expect(result.hasErrors('age')).toBe(true);
+    });
+
+    it('should run schema validation even after focusing the main suite', () => {
+      // Focus the main suite
+      suite.focus({ only: 'name' });
+
+      // runStatic should still validate schema (it creates a fresh suite)
+      // @ts-expect-error - Invalid data
+      const result = suite.runStatic({ name: 'John', age: '30', tags: [] });
+      expect(result.hasErrors()).toBe(true);
+      expect(result.hasErrors('age')).toBe(true);
+    });
   });
 
-  it('should skip schema validation when "only" is active via suite.focus().run()', () => {
-    // Invalid data for schema
-    const result = suite
-      .focus({ only: ['name'] })
-      // @ts-expect-error - Invalid data
-      .run({ name: 'John', age: '30' });
+  describe('Custom messages', () => {
+    it('should wire custom messages from schema validation using .message()', () => {
+      const schemaWithCustomMessage = enforce.shape({
+        name: enforce.isString(),
+        age: enforce.isNumber().message('Age must be a valid number'),
+        email: enforce.isString().message('Email must be a string'),
+      });
 
-    expect(result.hasErrors('age')).toBe(false);
-    expect(result.isValid()).toBe(true);
+      const suiteWithCustomMessages = create(data => {
+        test('name', () => {
+          enforce(data.name).isNotEmpty();
+        });
+      }, schemaWithCustomMessage);
+
+      // Schema will fail on first error (age), so email won't be validated
+      const result = suiteWithCustomMessages.runStatic({
+        name: 'John',
+        age: 'not a number',
+        email: 123,
+      } as any);
+
+      expect(result.hasErrors('age')).toBe(true);
+
+      // Verify custom message is included
+      expect(result.getErrors('age')).toContain('Age must be a valid number');
+    });
+
+    it('should use default message when no custom message is provided', () => {
+      const schemaWithDefaultMessage = enforce.shape({
+        count: enforce.isNumber(),
+      });
+
+      const suiteWithDefaultMessage = create(
+        () => {},
+        schemaWithDefaultMessage,
+      );
+
+      const result = suiteWithDefaultMessage.runStatic({
+        count: 'not a number',
+      } as any);
+
+      // Schema validation should create a test failure
+      expect(result.hasErrors('count')).toBe(true);
+      expect(result.isValid()).toBe(false);
+    });
+
+    it('should handle nested schema failures with custom messages', () => {
+      const nestedSchema = enforce.shape({
+        user: enforce.shape({
+          name: enforce.isString().message('User name must be a string'),
+          age: enforce.isNumber().message('User age must be a number'),
+        }),
+      });
+
+      const nestedSuite = create(() => {}, nestedSchema);
+
+      const result = nestedSuite.runStatic({
+        user: { name: 123, age: 'thirty' },
+      } as any);
+
+      // Schema will report the first failure under 'user' field
+      expect(result.hasErrors('user')).toBe(true);
+      const errors = result.getErrors('user');
+
+      // The error message should be one of the nested field's custom messages
+      expect(errors).toContain('User name must be a string');
+    });
+
+    it('should work with run() without focus', () => {
+      const schemaWithMessage = enforce.shape({
+        price: enforce.isNumber().message('Price must be a number'),
+      });
+
+      const testSuite = create(() => {}, schemaWithMessage);
+
+      const result = testSuite.run({ price: 'free' } as any);
+
+      expect(result.hasErrors('price')).toBe(true);
+      expect(result.getErrors('price')).toContain('Price must be a number');
+    });
+
+    it('should not run with focus enabled', () => {
+      const schemaWithMessage = enforce.shape({
+        price: enforce.isNumber().message('Price must be a number'),
+        quantity: enforce.isNumber().message('Quantity must be a number'),
+      });
+
+      const testSuite = create(_data => {
+        test('quantity', () => {
+          // Test passes
+        });
+      }, schemaWithMessage);
+
+      // Focus on quantity, invalid price should be ignored
+      const result = testSuite.focus({ only: 'quantity' }).run({
+        price: 'invalid',
+        quantity: 10,
+      } as any);
+
+      expect(result.hasErrors('price')).toBe(false);
+      expect(result.isValid()).toBe(true);
+    });
   });
 
   describe('Extensive scenarios', () => {

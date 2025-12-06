@@ -1,62 +1,150 @@
 .features {
-  display: flex;
+  padding: 4rem 0 5rem;
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.kicker {
+  display: inline-flex;
   align-items: center;
-  padding: 6rem 0;
-  width: 100%;
+  justify-content: center;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ifm-color-primary-dark);
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.22);
+}
+
+.sectionTitle {
+  margin: 0.6rem 0;
+  font-size: clamp(1.9rem, 2.5vw, 2.4rem);
+  letter-spacing: -0.02em;
+}
+
+.sectionLead {
+  margin: 0 auto;
+  max-width: 720px;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+html[data-theme='dark'] .sectionLead {
+  color: #cbd5e1;
+}
+
+.featureCol {
+  margin-bottom: 1.5rem;
 }
 
 .featureCard {
   height: 100%;
   padding: 2rem;
-  border-radius: 24px;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  background: transparent;
-  border: 1px solid transparent;
-  margin-bottom: 2rem; /* Add vertical gap */
+  border-radius: 18px;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  background: var(--ifm-card-background-color);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.featureCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.12), transparent 40%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
 .featureCard:hover {
-  background: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-  backdrop-filter: blur(4px);
+  transform: translateY(-6px);
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 22px 45px rgba(99, 102, 241, 0.18);
+}
+
+.featureCard:hover::after {
+  opacity: 1;
+}
+
+html[data-theme='dark'] .featureCard {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(30, 41, 59, 0.6);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
 }
 
 html[data-theme='dark'] .featureCard:hover {
-  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 25px 55px rgba(99, 102, 241, 0.3);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .emoji {
-  font-size: 3rem;
-  margin-bottom: 1.5rem;
-  display: flex;
+  width: 52px;
+  height: 52px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
-  border-radius: 24px;
-  background: var(--ifm-color-emphasis-100); /* Simple background */
-  margin-left: auto;
-  margin-right: auto;
-  transition: transform 0.3s ease;
+  border-radius: 14px;
+  font-size: 1.6rem;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.22);
+}
+
+.featureSubtitle {
+  margin: 0;
+  font-weight: 600;
+  color: var(--ifm-color-primary);
+  letter-spacing: 0.01em;
 }
 
 .featureTitle {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 1rem;
-  background: linear-gradient(
-    90deg,
-    var(--ifm-color-primary) 0%,
-    var(--ifm-color-primary-dark) 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  margin: 0.25rem 0 0;
+  font-size: 1.4rem;
+  letter-spacing: -0.01em;
 }
 
 .featureDescription {
-  color: var(--ifm-color-emphasis-600);
-  line-height: 1.8;
-  font-size: 1.1rem;
-  font-weight: 500;
+  margin: 0 0 1rem;
+  color: var(--ifm-color-emphasis-700);
+  line-height: 1.7;
+}
+
+html[data-theme='dark'] .featureDescription {
+  color: #e2e8f0;
+}
+
+.featureList {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--ifm-color-emphasis-700);
+  display: grid;
+  gap: 0.45rem;
+}
+
+.featureList li {
+  position: relative;
+  line-height: 1.5;
+}
+
+.featureList li::marker {
+  color: var(--ifm-color-primary);
+  font-size: 0.9rem;
+}
+
+html[data-theme='dark'] .featureList {
+  color: #cbd5e1;
 }

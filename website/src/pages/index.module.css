@@ -3,129 +3,276 @@
  * and scoped locally.
  */
 
-.heroBanner {
-  text-align: center;
+.hero {
   position: relative;
   overflow: hidden;
-  padding: 4rem 2rem;
+  padding: 6rem 1.5rem 4rem;
+  background: radial-gradient(circle at 20% 20%, rgba(129, 140, 248, 0.2), transparent 35%),
+    radial-gradient(circle at 80% 0%, rgba(45, 212, 191, 0.12), transparent 40%),
+    var(--ifm-background-color);
+}
+
+.heroBackdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.heroGlow {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  right: 10%;
+  top: 20%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.4), transparent 60%);
+  filter: blur(60px);
+}
+
+.heroGradient {
+  position: absolute;
+  width: 40%;
+  height: 100%;
+  left: -10%;
+  top: 0;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(129, 140, 248, 0.05));
+  transform: skewX(-8deg);
+}
+
+.heroContainer {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
+  align-items: center;
+  z-index: 1;
+}
+
+.heroContent {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  background: linear-gradient(
-    180deg,
-    var(--ifm-color-primary-lightest) 0%,
-    #ffffff 100%
-  );
-}
-
-html[data-theme='dark'] .heroBanner {
-  background: linear-gradient(180deg, #1b1b1d 0%, #000000 100%);
-}
-
-.logoContainer {
-  margin-bottom: 2rem;
-  position: relative;
-  z-index: 10;
-}
-
-.vestLogo {
-  width: 150px;
-  height: 150px;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
-}
-
-.titleContainer {
-  max-width: 800px;
-  margin: 0 auto 2rem;
-}
-
-.heroTagline {
-  font-size: 1.5rem;
-  line-height: 1.5;
-  color: var(--ifm-color-emphasis-700);
-  margin-top: 1rem;
-  font-weight: 400;
-}
-
-.buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 1.5rem;
-  margin-top: 2rem;
 }
 
-.btn {
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  color: var(--ifm-color-primary-dark);
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.heroHighlight {
+  color: var(--ifm-color-primary);
+}
+
+.heroLead {
+  max-width: 560px;
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: var(--ifm-color-emphasis-700);
+}
+
+html[data-theme='dark'] .heroLead {
+  color: #cbd5e1;
+}
+
+.ctaGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.primaryCta {
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.35);
+}
+
+.secondaryCta {
+  border-color: rgba(99, 102, 241, 0.4);
+  color: var(--ifm-color-primary);
+}
+
+.secondaryCta:hover {
+  border-color: var(--ifm-color-primary);
+  color: var(--ifm-color-primary-darkest);
+}
+
+html[data-theme='dark'] .secondaryCta {
+  color: var(--ifm-color-primary-lightest);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+html[data-theme='dark'] .secondaryCta:hover {
+  color: var(--ifm-color-primary);
+  border-color: var(--ifm-color-primary);
+}
+
+.installSnippet {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 14px;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(99, 102, 241, 0.05));
+  color: var(--ifm-color-primary-darkest);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.installSnippet:hover {
+  transform: translateY(-2px);
+  border-color: var(--ifm-color-primary-light);
+  box-shadow: 0 12px 28px rgba(99, 102, 241, 0.2);
+}
+
+html[data-theme='dark'] .installSnippet {
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.16), rgba(14, 165, 233, 0.05));
+}
+
+.installText {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.95rem;
+}
+
+.copyLabel {
+  font-weight: 600;
+  color: var(--ifm-color-primary-dark);
+}
+
+html[data-theme='dark'] .copyLabel {
+  color: var(--ifm-color-primary-lightest);
+}
+
+.heroMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  color: var(--ifm-color-emphasis-600);
+}
+
+.heroMeta li {
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  background: rgba(99, 102, 241, 0.08);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+html[data-theme='dark'] .heroMeta li {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: #e2e8f0;
+}
+
+.heroPanel {
+  border-radius: 20px;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(248, 250, 252, 0.95));
+  box-shadow: 0 30px 60px rgba(15, 23, 42, 0.15);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.panelHeader {
+  padding: 1.1rem 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--ifm-color-primary-darkest);
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.panelBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 1.5rem;
+}
+
+.panelRow {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.panelRow p {
+  margin: 0;
+  color: var(--ifm-color-emphasis-700);
+  line-height: 1.6;
+}
+
+.pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  height: 36px;
+  padding: 0 0.9rem;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--ifm-color-primary-dark);
+  border: 1px solid rgba(99, 102, 241, 0.25);
   font-weight: 700;
-  font-size: 1.1rem;
-  padding: 0.8rem 2rem;
-  border-radius: 50px;
-  transition: all 0.2s ease;
-  text-decoration: none !important;
-  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.02em;
 }
 
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+html[data-theme='dark'] .heroPanel {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
 }
 
-.btnQuickStart {
-  background-color: var(--ifm-color-primary);
-  color: #fff;
-  border: 2px solid var(--ifm-color-primary);
+html[data-theme='dark'] .panelHeader {
+  color: #e2e8f0;
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
-.btnQuickStart:hover {
-  background-color: var(--ifm-color-primary-dark);
-  border-color: var(--ifm-color-primary-dark);
-  color: #fff;
+html[data-theme='dark'] .panelRow p {
+  color: #cbd5e1;
 }
 
-.btnGit {
-  background-color: var(--ifm-color-emphasis-200);
-  color: var(--ifm-color-emphasis-900);
-  border: 2px solid transparent;
+html[data-theme='dark'] .pill {
+  background: rgba(129, 140, 248, 0.16);
+  color: #e0e7ff;
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
-.btnGit:hover {
-  background-color: var(--ifm-color-emphasis-300);
-  border-color: transparent;
-  color: var(--ifm-color-emphasis-900);
-}
-
-html[data-theme='dark'] .btnGit {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
-
-html[data-theme='dark'] .btnGit:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-.btnPromote {
-  display: none; /* Hiding promote button for cleaner look, or we can restyle it */
-}
-
-@media screen and (max-width: 768px) {
-  .heroBanner {
-    padding: 3rem 1rem;
+@media screen and (max-width: 996px) {
+  .hero {
+    padding-top: 5rem;
   }
 
-  .heroTagline {
-    font-size: 1.2rem;
+  .panelRow {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .hero {
+    padding: 4rem 1rem 3rem;
   }
 
-  .buttons {
+  .ctaGroup {
     flex-direction: column;
-    width: 100%;
+    align-items: stretch;
   }
 
-  .btn {
+  .installSnippet {
     width: 100%;
-    max-width: 300px;
+    justify-content: space-between;
   }
 }

@@ -11,213 +11,62 @@ Below is a list of all the API functions exposed by Vest.
 
 ## Vest's main export API
 
-### `create(callback, schema?)`
-
-Creates a new validation suite. Returns a **Suite Object**.
-
-- [Read more about `create`](./writing_your_suite/vests_suite.md)
-- [Read more about Schema Validation](./writing_your_suite/schema_validation.md)
-
-- `callback`: The validation logic.
-- `schema` (Optional): An `enforce` schema definition.
-
-### Suite Object Methods
-
-#### `suite.run(...args)`
-
-Runs the suite. Passes arguments to the suite callback.
-
-- **Returns**: A `SuiteResult` object.
-  - If the suite contains async tests, the result object **also implements the Promise interface**, allowing you to `await` it.
-  - You can always access synchronous result data immediately (e.g., `result.hasErrors()`), even if the promise is pending.
-- [Read more about `suite.run`](./writing_your_suite/vests_suite.md#running-validations)
-
-#### `suite.runStatic(...args)`
-
-Runs the suite in stateless mode. Useful for server-side validation.
-
-- [Read more about Server Side Validation](./server_side_validations.md)
-
-#### `suite.reset()`
-
-Resets the suite state (clears all results).
-
-- [Read more about `suite.reset`](./writing_your_suite/vests_suite.md#resetting-the-suite)
-
-#### `suite.remove(fieldName)`
-
-Removes a specific field from the suite result state.
-
-- [Read more about `suite.remove`](./writing_your_suite/vests_suite.md#removing-a-field)
-
-#### `suite.resetField(fieldName)`
-
-Resets the state of a specific field (clears errors/warnings but keeps it in the result).
-
-- [Read more about `suite.resetField`](./writing_your_suite/vests_suite.md#resetting-a-single-field)
-
-#### `suite.focus(config)`
-
-Prepares a focused run.
-
-- `config`: `{ only?: string | string[], skip?: string | string[] }`
-- [Read more about Focused Updates](./writing_your_suite/focused_updates.md)
-
-#### `suite.afterEach(callback)`
-
-Registers a callback to run after each test completes (initial sync completion and every async completion).
-
-- [Read more about `suite.afterEach`](./writing_your_suite/handling_completion.md#2-using-suiteaftereachcallback)
-
-#### `suite.afterField(fieldName, callback)`
-
-Registers a callback to run when a specific field finishes execution.
-
-- [Read more about `suite.afterField`](./writing_your_suite/handling_completion.md#3-using-suiteafterfieldfieldname-callback)
-
-#### `suite.get()`
-
-Returns the current result object of the suite without running it. Useful for accessing the state inside UI components or subscribers.
-
-- [Read more about `suite.get`](./writing_your_suite/vests_suite.md#accessing-results-without-running)
-
-#### `SuiteSerializer.serialize(suite)`
-
-Returns a minified, serialized representation of the suite's state. Useful for SSR hydration.
-
-- [Read more about SSR Hydration](./server_side_validations.md#ssr--hydration)
-
-#### `SuiteSerializer.resume(suite, data)`
-
-Hydrates the suite with a serialized state.
-
-- `suite`: The suite to resume.
-- `data`: The serialized state object.
-- [Read more about SSR Hydration](./server_side_validations.md#ssr--hydration)
-
-#### `suite.validate(data)`
-
-Runs the suite and returns a result compatible with the [Standard Schema](https://github.com/standard-schema/standard-schema) specification.
-
-- [Read more about Standard Schema Support](./community_resources/standard_schema.md)
-
-### Top-Level Exports
-
-#### `enforce.context()`
-
-Retrieves the current validation context during a suite run. Useful within custom rules to access other fields in the data object.
-
-- **Returns**: `{ data: Object, value: any, ... }`
-- [Read more about Context Aware Rules](./enforce/creating_custom_rules.md#context-aware-rules)
-
-#### `enforce.extend(customRules)`
-
-Extends Vest's enforce with custom validation rules.
-
-- **Tip**: To add TypeScript support for your custom rules, see [TypeScript Support](./typescript_support.md#custom-enforce-rules).
-
-#### `memo(callback, deps)`
-
-Memoizes a block of tests.
-
-- [Read more about `memo`](./writing_tests/advanced_test_features/memo.md)
-
-#### `compose(...rules)`
-
-Combines multiple enforce rules.
-
-- [Read more about `compose`](./enforce/composing_enforce_rules.md)
-
-#### `test(fieldName, message, callback)`
-
-A single validation test inside your suite.
-
-- [Read more about `test`](./writing_tests/the_test_function.md)
-
-#### `enforce(value)`
-
-Asserts that a value matches your desired result.
-
-- [Read more about `enforce`](./enforce/enforce.md)
-
-#### `warn()`
-
-Sets the test's severity to warning.
-
-- [Read more about `warn`](./writing_tests/warn_only_tests.md)
-
-#### `only(fieldName)`
-
-Makes Vest only run the provided field names.
-
-- [Read more about `only`](./writing_your_suite/including_and_excluding/skip_and_only.md#only-running-specific-fields)
-
-#### `skip(fieldName)`
-
-Makes Vest skip the provided field names.
-
-- [Read more about `skip`](./writing_your_suite/including_and_excluding/skip_and_only.md#skipping-fields)
-
-#### `include(fieldName).when(condition)`
-
-Link fields by running them together based on a criteria.
-
-- [Read more about `include`](./writing_your_suite/including_and_excluding/include.md)
-
-#### `skipWhen(condition, callback)`
-
-Skips a portion of the suite when the provided condition is met.
-
-- [Read more about `skipWhen`](./writing_your_suite/including_and_excluding/skipWhen.md)
-
-#### `omitWhen(condition, callback)`
-
-Omits a portion of the suite when the provided condition is met.
-
-- [Read more about `omitWhen`](./writing_your_suite/including_and_excluding/omitWhen.md)
-
-#### `optional(fieldName)`
-
-Allows you to mark a field as optional.
-
-- [Read more about `optional`](./writing_your_suite/optional_fields.md)
-
-#### `group(groupName, callback)`
-
-Allows grouping multiple tests with a given name.
-
-- [Read more about `group`](./writing_tests/advanced_test_features/grouping_tests.md)
-
-#### `each(list, callback)`
-
-Allows iteration over an array of values to dynamically run tests.
-
-- [Read more about `each`](./writing_tests/advanced_test_features/dynamic_tests.md)
-
-#### `mode(mode)`
-
-Determines whether Vest should continue running tests after a field has failed.
-
-- [Read more about `mode`](./writing_your_suite/execution_modes.md)
+- [create](./writing_your_suite/vests_suite.md#basic-suite-structure) - Creates a new Vest suite. Returns a function that runs your validations.
+  - [suite.get](./writing_your_suite/vests_suite.md#using-suiteget) - Returns the current validation state of the suite.
+  - [suite.remove](./writing_your_suite/vests_suite.md#removing-a-single-field-from-the-suite-state) - Removes a single field from the suite.
+  - [suite.reset](./writing_your_suite/vests_suite.md#cleaning-up-the-suite-state) - Resets the suite to its initial state.
+  - [suite.resetField](./writing_your_suite/vests_suite.md#cleaning-up-the-suite-state) - Resets a single field to an untested state.
+  - [suite.subscribe](./writing_your_suite/vests_suite.md#subscribing-to-suite-state-changes) - Subscribes to suite state changes.
+
+- [staticSuite](./server_side_validations.md) - creates a stateless suite that is used for server side validations.
+
+- [test](./writing_tests/the_test_function.md) - A single validation test inside your suite.
+  - [test.memo](./writing_tests/advanced_test_features/test.memo.md) - Memoizes a test run as long as its dependencies haven't changed.
+  - [warn](./writing_tests/warn_only_tests.md) - resides within the test body. Sets the test's severity to warning.
+  - [debounce](./writing_tests/advanced_test_features/debounce.md) - Debounces a test to improve async test performance and flow control.
+
+- [enforce](./enforce/enforce.md) - Asserts that a value matches your desired result.
+  - [enforce.extend](./enforce/creating_custom_rules.md) - Extends the enforce API with your own custom assertions.
+  - [compose](./enforce/composing_enforce_rules.md) - Compose multiple enforcers into a single enforcer.
+
+- [only](./writing_your_suite/including_and_excluding/skip_and_only.md#only-running-specific-fields) - Makes Vest only run the provided field names.
+- [skip](./writing_your_suite/including_and_excluding/skip_and_only.md#skipping-fields) - Makes Vest skip the provided field names.
+- [include()/include.when()](./writing_your_suite/including_and_excluding/include) - Link fields by running them together based on a criteria.
+
+- [skipWhen](./writing_your_suite/including_and_excluding/skipWhen.md) - Skips a portion of the suite when the provided condition is met.
+- [omitWhen](./writing_your_suite/including_and_excluding/omitWhen.md) - Omits a portion of the suite when the provided condition is met.
+- [optional](./writing_your_suite/optional_fields.md) - Allows you to mark a field as optional.
+- [group](./writing_tests/advanced_test_features/grouping_tests.md) - Allows grouping multiple tests with a given name.
+- [each](./writing_tests/advanced_test_features/dynamic_tests.md) - Allows iteration over an array of values to dynamically run tests.
+- [mode](./writing_your_suite/execution_modes.md) - Determines whether Vest should continue running tests after a field has failed, or if it should bail immediately.
+  - Possible modes are: 'EAGER' (default) and 'ALL'.
 
 ## Suite Result API
 
 After running your suite, the results object is returned. It has the following functions:
 
-- [Read more about the Result Object](./writing_your_suite/accessing_the_result.md)
+- [hasErrors](./writing_your_suite/accessing_the_result.md#haserrors-and-haswarnings) - Returns true if the suite or the provided field has errors.
+- [hasWarnings](./writing_your_suite/accessing_the_result.md#haserrors-and-haswarnings) - Returns true if the suite or the provided field has warnings.
+- [getError](./writing_your_suite/accessing_the_result.md#geterror-and-getwarning) - Returns the first error in the suite, or of a specific field.
+- [getWarning](./writing_your_suite/accessing_the_result.md#geterror-and-getwarning) - Returns the first warning in the suite, or of a specific field.
+- [getMessage](./writing_your_suite/accessing_the_result.md#getmessage) - Returns the first error or warning message of a specific field.
+- [getErrors](./writing_your_suite/accessing_the_result.md#geterrors-and-getwarnings) - Returns an object with errors in the suite, or an array of objects for a specific field.
+- [getWarnings](./writing_your_suite/accessing_the_result.md#geterrors-and-getwarnings) - Returns an object with warnings in the suite, or an array of objects for a specific field.
+- [hasErrorsByGroup](./writing_your_suite/accessing_the_result.md#haserrorsbygroup-and-haswarningsbygroup) - Returns true if the provided group has errors.
+- [hasWarningByGroup](./writing_your_suite/accessing_the_result.md#haserrorsbygroup-and-haswarningsbygroup) - Returns true if the provided group has warnings.
+- [getErrorsByGroup](./writing_your_suite/accessing_the_result.md#geterrorsbygroup-and-getwarningsbygroup) - Returns an object with errors in the provided group.
+- [getWarningsByGroup](./writing_your_suite/accessing_the_result.md#geterrorsbygroup-and-getwarningsbygroup) - Returns an object with warnings in the provided group.
+- [isPending](./writing_your_suite/accessing_the_result.md#ispending) - Returns true if the suite has pending async tests.
+- [isTested](./writing_your_suite/accessing_the_result.md#istested) - Returns true if the provided field has been tested.
+- [isValid](./writing_your_suite/accessing_the_result.md#isvalid) - Returns true if the suite or the provided field is valid.
+- [isValidByGroup](./writing_your_suite/accessing_the_result.md#isvalidbygroup) - Returns true if a certain group or a field in a group is valid or not.
+- [done](./writing_your_suite/accessing_the_result.md#done) - Accepts a callback that will run when the suite is done running.
 
-- `hasErrors(fieldName?)`: Returns true if the suite or the provided field has errors.
-- `hasWarnings(fieldName?)`: Returns true if the suite or the provided field has warnings.
-- `getErrors(fieldName?)`: Returns an object with errors in the suite, or an array of objects for a specific field.
-- `getWarnings(fieldName?)`: Returns an object with warnings in the suite, or an array of objects for a specific field.
-- `hasErrorsByGroup(groupName)`: Returns true if the provided group has errors.
-- `hasWarningByGroup(groupName)`: Returns true if the provided group has warnings.
-- `getErrorsByGroup(groupName)`: Returns an object with errors in the provided group.
-- `getWarningsByGroup(groupName)`: Returns an object with warnings in the provided group.
-- `isPending(fieldName?)`: Returns true if the suite has pending async tests.
-- `isTested(fieldName)`: Returns true if the provided field has been tested.
-- `isValid(fieldName?)`: Returns true if the suite or the provided field is valid.
-- `isValidByGroup(groupName)`: Returns true if a certain group or a field in a group is valid or not.
+## Vest's external exports
+
+- [vest/classnames](./utilities/classnames.md)
+- [vest/promisify](./utilities/promisify.md)
+- [vest/enforce/compose](./enforce/composing_enforce_rules.md)
 
 
 # community_resources/integrations.md
@@ -252,63 +101,6 @@ This is the place for the community to show off some of their custom Vest and En
 - [Vue `useSuite` Composable](https://gist.github.com/HappyTiptoe/b798357efc7c6bec59af01a5fa252f99) - A simple Vue composable for interacting with Vest validation suites.
 
 
-# Standard Schema Support
-
-# Standard Schema Support
-
-Vest implements the [Standard Schema V1](https://github.com/standard-schema/standard-schema) specification. This makes Vest compatible with the broader ecosystem of validation tools and form libraries that support this standard (like React Hook Form via a standard-schema resolver).
-
-## Why Standard Schema?
-
-The JavaScript ecosystem has many validation libraries (Zod, Yup, Valibot, etc.). Historically, integrating them with form libraries required specific adapters for each one.
-
-**Standard Schema** solves this by defining a common interface. Because Vest implements this interface, it can "plug and play" with any tool that supports Standard Schema, without needing a dedicated Vest adapter.
-
-## Usage
-
-Both **Suites** and **Enforce Rules** implement the `~standard` interface.
-
-### Using Vest with Libraries
-
-You can pass your suite directly to any library accepting a Standard Schema.
-
-```javascript
-import { create } from 'vest';
-import { useForm } from 'react-hook-form'; // Example
-import { vestResolver } from '@hookform/resolvers/vest'; // Hypothetical or generic standard resolver
-
-const suite = create(() => {
-  /* ... */
-});
-
-// Library usage (conceptual)
-// The library calls suite['~standard'].validate(data) internally
-useForm({
-  resolver: vestResolver(suite), // Or a generic standard-schema resolver
-});
-```
-
-### Validating Directly
-
-You can also use the `.validate()` method on the suite, which is an alias for the Standard Schema validation entry point.
-
-```javascript
-const result = await suite.validate(data);
-
-if (result.issues) {
-  // Handle validation errors (Standard Schema format)
-  console.log(result.issues);
-} else {
-  // Valid data
-  console.log(result.value);
-}
-```
-
-:::tip
-Use `suite.validate()` primarily when integrating with third-party libraries (like React Hook Form or Zod resolvers). For direct usage within your application logic, `suite.run()` provides a richer API (`hasErrors`, `isPending`, etc.).
-:::
-
-
 # community_resources/tutorials.md
 
 # Tutorials and learning resources
@@ -336,23 +128,14 @@ Vest is a form validation framework designed to simplify and optimize form valid
 
 ### Validation Suites
 
-With Vest, you define your form validations in a validation suite, which is separate from your feature code. The suite is an object with methods such as `run`, `runStatic`, and `reset`, and it retains state between runs. Use `run` to execute the suite with your form data:
+With Vest, you define your form validations in a validation suite, which is separate from your feature code. The validation suite is where all the validations of a given form reside. The suite returns a function that can take in any data you have in your form. Here's an example:
 
 ```js
-import { create, test, enforce } from 'vest';
+import { create } from 'vest';
 
 const suite = create((data = {}) => {
-  test('username', 'Username is required', () => {
-    enforce(data.username).isNotBlank();
-  });
+  // Your validations go here
 });
-
-// Execute the suite
-const result = suite.run({ username: 'Dana' });
-
-if (result.isValid()) {
-  // Form is valid
-}
 ```
 
 ### Stateful Validation
@@ -392,21 +175,25 @@ Yes, Vest supports internationalization. Developers can handle internationalizat
 
 Alongside the list of rules that only accept data provided by the user, enforce also supports compound rules - these are rules that accept other rules as their arguments. These rules let you validate more complex scenarios with the ergonomics of enforce.
 
-To use it, simply use them in your project.
+To use it, simply import these rules in your project:
 
-These rules are available in `enforce`:
+```js
+import 'vest/enforce/compounds';
+```
+
+These rules will then become available in `enforce`:
 
 - [enforce.anyOf() - or validations](#enforceanyof---or-validations)
-  - [enforce.allOf() - all/and validations](#enforceallof---alland-validations)
-  - [enforce.oneOf()](#enforceoneof)
-  - [enforce.noneOf - None rules](#enforcenoneof---none-rules)
+- [enforce.allOf() - all/and validations](#enforceallof---alland-validations)
+- [enforce.oneOf()](#enforceoneof)
+- [enforce.noneOf - None rules](#enforcenoneof---none-rules)
 
 ## enforce.anyOf() - or validations
 
 Sometimes a value has more than one valid possibility, `any` lets us validate that a value passes _at least_ one of the supplied rules.
 
 ```js
-enforce(value).anyOf(enforce.isString(), enforce.isArray());
+enforce(value).anyOf(enforce.isString(), enforce.isArray()).isNotEmpty();
 // A valid value would either an array or a string.
 ```
 
@@ -415,7 +202,7 @@ enforce(value).anyOf(enforce.isString(), enforce.isArray());
 `allOf` lets us validate that a value passes _all_ of the supplied rules.
 
 ```js
-enforce(value).allOf(enforce.isArray(), enforce.isArray().longerThan(2));
+enforce(value).allOf(enforce.isArray(), enforce.longerThan(2));
 ```
 
 ## enforce.oneOf()
@@ -426,13 +213,13 @@ enforce.oneOf can be used to determine if _exactly_ one of the rules applies. It
 enforce(value).oneOf(
   enforce.isString(),
   enforce.isNumber(),
-  enforce.isString().longerThan(1),
+  enforce.longerThan(1),
 );
 
 /*
 value = 1      -> ✅ (value is a number)
 value = "1"    -> ✅ (value is string)
-value = [1, 2] -> 🚨 (value is not a string or a number)
+value = [1, 2] -> ✅ (value is longer than 1)
 value = "12"   -> 🚨 (value is both a string and longer than 1)
 */
 ```
@@ -445,13 +232,13 @@ enforce.noneOf can be used to determine if _none_ of the rules apply. It will ru
 enforce(value).noneOf(
   enforce.isString(),
   enforce.isNumber(),
-  enforce.isString().longerThan(1)
+  enforce.longerThan(1)
 );
 
 value = 1      -> 🚨 (value is a number)
 value = "1"    -> 🚨 (value is string)
-value = [1, 2] -> ✅ (value is not a string and not longer than 1)
-value = "12"   -> 🚨 (value is a string and longer than 1)
+value = [1, 2] -> 🚨 (value is longer than 1)
+value = ["12"] -> ✅ (value is not a string and not longer than 1)
 
 ```
 
@@ -503,7 +290,7 @@ The `format` option accepts various valid date formats, including:
 
 ```javascript
 import { enforce } from 'vest';
-import 'vest/date';
+import 'vest/enforce/date';
 
 const dateString = '2002-07-15';
 
@@ -530,7 +317,7 @@ enforce(dateString).isAfter(comparisonDate);
 
 ```javascript
 import { enforce } from 'vest';
-import 'vest/date';
+import 'vest/enforce/date';
 
 const dateString = '2002-07-15';
 const comparisonDate = '2002-07-14';
@@ -551,7 +338,7 @@ enforce(dateString).isBefore(comparisonDate);
 
 ```javascript
 import { enforce } from 'vest';
-import 'vest/date';
+import 'vest/enforce/date';
 
 const dateString = '2002-07-15';
 const comparisonDate = '2002-07-16';
@@ -581,7 +368,7 @@ The `isISO8601` rule accepts an optional `options` object to customize the valid
 
 ```javascript
 import { enforce } from 'vest';
-import 'vest/date';
+import 'vest/enforce/date';
 
 const dateString = '2020-07-10T15:00:00.000';
 
@@ -610,7 +397,7 @@ The rule exposes the [`validator.js`](https://www.npmjs.com/package/validator) i
 
 ```javascript
 import { enforce } from 'vest';
-import 'vest/email';
+import 'vest/enforce/email';
 
 const email = 'user@example.com';
 
@@ -669,7 +456,7 @@ The `isURL` rule checks whether a given value is a valid URL. It accepts various
 To be used, the rule first needs to be imported:
 
 ```javascript
-import 'vest/isURL';
+import 'vest/enforce/isURL';
 
 enforce(value).isURL(options);
 ```
@@ -724,7 +511,7 @@ The following documents in this section describe the builtin plugins that are in
 To consume any of these plugins, simply import them in your project:
 
 ```js
-import 'vest/email';
+import 'vest/enforce/email';
 ```
 
 
@@ -734,15 +521,19 @@ import 'vest/email';
 
 While less common when using Vest, sometimes it might be useful to validate a value against a schema. Vest comes with some schema validation rules that are handy for data-shape validation.
 
-To use it, simply use them in your project.
+To use it, simply import these rules in your project:
 
-These rules are available in `enforce`:
+```js
+import 'vest/enforce/schema';
+```
+
+These rules will then become available in `enforce`:
 
 - [enforce.shape() - Lean schema validation.](#enforceshape---lean-schema-validation)
   - [enforce.optional() - nullable values](#enforceoptional---nullable-values)
-  - [enforce.partial() - allows supplying a subset of keys](#enforcepartial---allows-supplying-a-subset-of-keys)
+  - [partial() - allows supplying a subset of keys](#partial---allows-supplying-a-subset-of-keys)
   - [enforce.loose() - loose shape matching](#enforceloose---loose-shape-matching)
-  - [enforce.isArrayOf() - array shape matching](#enforceisarrayof---array-shape-matching)
+- [enforce.isArrayOf() - array shape matching](#enforceisarrayof---array-shape-matching)
 
 ## enforce.shape() - Lean schema validation.
 
@@ -809,15 +600,23 @@ enforce({
 });
 ```
 
-### enforce.partial() - allows supplying a subset of keys
+### partial() - allows supplying a subset of keys
 
-When supplying a "shape" or a "loose" matcher, enforce requires at least the keys that are specified by the matcher, unless you manually wrap them with "optional". `enforce.partial` is a shorthand for applyong the `optional` modifier on all shape object keys. By wrapping the input of a matcher with `enforce.partial`, you can supply a subset of the keys that are required as if you had used `optional` on each key.
+When supplying a "shape" or a "loose" matcher, enforce requires at least the keys that are specified by the matcher, unless you manually wrap them with "optional". `partial` is a shorthand for applyong the `optional` modifier on all shape object keys. By wrapping the input of a matcher with `partial`, you can supply a subset of the keys that are required as if you had used `optional` on each key.
+
+To be used, `partial` needs to be imported directly from `vest/enforce/schema`:
 
 ```js
-enforce({}).partial({
-  firstName: enforce.isString(),
-  lastName: enforce.isString(),
-});
+import { partial } from 'vest/enforce/schema';
+```
+
+```js
+enforce({}).shape(
+  partial({
+    firstName: enforce.isString(),
+    lastName: enforce.isString(),
+  }),
+);
 ```
 
 This won't throw because all the fields are now treated as optional.
@@ -863,40 +662,95 @@ enforce({ data: [1, 2, 3] }).shape({
 
 # Enforce Rules Composition
 
-# Composing Enforce Rules
+# Composing enforce rules
 
-You can combine multiple enforce rules into a single reusable validator using `compose`.
+When you have rules that you often use together or different groups of rules that describe the same behavior, you can compose them into a single rule for easier reuse.
 
-## Why Compose?
+`compose` allows us to create an "AND" relationship wrapper around multiple rules which acts like the regular enforce function.
 
-Sometimes you have a set of rules that always go together. For example, a "valid age" might always need to be:
+A simple use-case example:
+Let's say we have multiple entities in our app that share some common characteristics, but some that are unique. We can compose the different validation rules for the common characteristics into a single rule that we can reuse across multiple entities.
 
-1.  A number
-2.  At least 18
-3.  Less than 120
+Let's assume the following:
 
-Instead of repeating these three checks every time, you can compose them into a single `isValidAge` rule. This promotes reuse and keeps your schemas clean.
+- Some of the entities in our app have an `id` property.
+- The person entity has a `name` property that includes a first, middle and last name.
+- The user entity has both an `id` and a `name` property. It also has a `username` property.
+- Users can also have a `friends` property, which is an array of other users.
 
-```javascript
-import { enforce, compose } from 'vest';
+Expressing this with basic enforce rules is easy, but can be cumbersome, and also not very reusable.
 
-const isValidAge = compose(
-  enforce.isNumber(),
-  enforce.greaterThanOrEquals(18),
-  enforce.lessThan(120),
-);
+```js
+import { enforce } from 'vest';
+import 'vest/enforce/schema'; // for the schema rules
 
-// Usage
-isValidAge.run(20); // { pass: true }
-isValidAge.run(15); // { pass: false }
-
-// Inside a schema
-const userSchema = enforce.shape({
-  age: isValidAge,
+enforce(userObj).shape({
+  id: enforce.number(),
+  name: enforce.shape({
+    first: enforce.string(),
+    middle: enforce.optional(enforce.string()),
+    last: enforce.string(),
+  }),
+  username: enforce.string(),
+  friends: enforce.optional(
+    enforce.arrayOf(
+      enforce.shape({
+        id: enforce.number(),
+        username: enforce.string(),
+        name: enforce.shape({
+          first: enforce.string(),
+          middle: enforce.optional(enforce.string()),
+          last: enforce.string(),
+        }),
+      }),
+    ),
+  ),
 });
 ```
 
-Composed rules act just like standard enforce rules and can be used for type guards, schema validation, or standalone assertions.
+Instead, we can compose these different characteristics into composites that can later on be further reused.
+
+```js
+import compose from 'vest/enforce/compose';
+import 'vest/enforce/schema'; // for the schema rules
+
+const Entity = compose(
+  enforce.loose({
+    id: enforce.number(),
+  }),
+);
+
+const Person = compose(
+  enforce.loose({
+    name: enforce.shape({
+      first: enforce.string(),
+      middle: enforce.optional(enforce.string()),
+      last: enforce.string(),
+    }),
+  }),
+);
+
+const User = compose(
+  Entity,
+  Person,
+  enforce.loose({
+    username: enforce.string(),
+    friends: enforce.optional(enforce.arrayOf(User)),
+  }),
+);
+```
+
+This way, each composite can be used individually, but can also be composed together to create a more complex rule that can be easily reused.
+
+Using these composites is as easy as either calling the from within other compound rules, or calling them directly within a Vest test just like the regular enforce function:
+
+```js
+User(userObj); // Throws an error when failing
+```
+
+## Some notes
+
+When composing rules, be mindful when you are composing rules that have a `shape` rule inside of them. If these shape extend one another, you should probably use [loose](./builtin-enforce-plugins/schema_rules.md#enforceloose---loose-shape-matching) so they allow for extended properties.
 
 
 # Consuming third party rules
@@ -957,16 +811,6 @@ A full list of the supported validator.js rules can be found on [npmjs.com/packa
 # Creating Custom Rules
 
 By default, enforce comes with a list of rules that are available to be used. They intentionally do not cover all the cases that can be encountered in a real-world application but instead focus on the most common use cases.
-
-## Why Custom Rules?
-
-Every application has unique domain logic. You might need to validate:
-
-- A specific product SKU format.
-- That a start date is before an end date.
-- That a username exists in your database.
-
-Custom rules allow you to extend Vest's vocabulary to speak your domain language.
 
 ## Inline logic with `condition`
 
@@ -1043,55 +887,88 @@ enforce.extend({
 });
 ```
 
-## Context Aware Rules
+## Traversing the input object in your custom Rules
 
-Custom rules can access the validation context using `enforce.context()`. This is useful when validating schemas where a rule needs to know about other fields (e.g., "confirm password").
+Sometimes you would need to traverse your enforced object from within your rule to get other values that are present at some other nesting level.
 
-```javascript
-import { enforce } from 'vest';
+Let's assume we have a custom rule that makes its decision by factoring in two different values, one inside a nested object, and the other by a property in a parent object.
 
-enforce.extend({
-  matchesField: (value, fieldName) => {
-    const context = enforce.context();
-    // context.parent.value gives access to the parent object being validated
-    return value === context.parent.value[fieldName];
+Consider this user object. It looks fine, but if you look closely, you'll see that our johndoe listed a friend with the same user name. This can't happen.
+
+```js
+{
+  name: {
+    first: 'John',
+    last: 'Doe'
   },
-});
-
-const schema = enforce.shape({
-  password: enforce.isString(),
-  confirm: enforce.isString().matchesField('password'),
-});
-```
-
-## TypeScript Support
-
-To ensure your custom rules are typed correctly in your IDE, you must extend the `n4s` namespace.
-
-```typescript
-// customRules.ts
-import { enforce } from 'vest';
-
-const customRules = {
-  isValidEmail: (value: string) => value.includes('@'),
-  isWithinRange: (value: number, min: number, max: number) =>
-    value >= min && value <= max,
-};
-
-enforce.extend(customRules);
-
-// Extend the interface to add types
-declare global {
-  namespace n4s {
-    interface EnforceMatchers {
-      isValidEmail: (value: string) => boolean;
-      isWithinRange: (value: number, min: number, max: number) => boolean;
-    }
-  }
+  username: 'johndoe',
+  friends: ['Mike', 'Jim', 'johndoe']
 }
 ```
 
-_Note: In the interface definition, include the `value` as the first argument._
+To access context you simply need to call `enforce.context()` within your custom rule. The function will return an object that matches this structure:
+
+```
+Object {
+  "meta": Object {},
+  "parent": [Function],
+  "value": Object {},
+}
+```
+
+- **value** contains the current value in the level you're at
+- **meta** will contain the name of the current key if called within `shape` or `loose`, or `index` if called within `isArrayOf`.
+- **parent** is a function that traverses up to the parent context, and you can access all its keys as if you're in that level. You can traverse up to the top level by chaining `parent` calls. When no levels left, parent will return `null`.
+
+### Usage example
+
+First, declare your custom rule in which you want to use a value that's higher up.
+In the following example, we're getting the context, and checking if our `value` equals to the "username" that's defined two levels up.
+
+```js
+enforce.extend({
+  isFriendTheSameAsUser: value => {
+    const context = enforce.context();
+
+    if (value === context.parent().parent().value.username) {
+      return { pass: false };
+    }
+
+    return true;
+  },
+});
+```
+
+We'll use it like this:
+
+```js
+enforce({
+  username: 'johndoe',
+  friends: ['Mike', 'Jim', 'johndoe'],
+}).shape({
+  username: enforce.isString(),
+  friends: enforce.isArrayOf(enforce.isString().isFriendTheSameAsUser()),
+});
+```
+
+## Custom Rule Typescript Support
+
+When adding custom rules, you might want to also add typescript support for it, for autocompletion and type checking within your project. To do so, add your new custom rules to a d.ts file like that:
+
+```ts
+// global.d.ts
+
+declare global {
+  namespace n4s {
+    interface EnforceCustomMatchers<R> {
+      myCustomRule(): R;
+      myOtherCustomRule(value: string): R;
+    }
+  }
+}
+
+export {};
+```
 
 
 # enforce
@@ -1439,14 +1316,14 @@ The `value` argument can be of the following types:
 ### Usage examples:
 
 ```js
-enforce([1]).isArray().lengthEquals(1);
-enforce('a').isString().lengthEquals(1);
+enforce([1]).lengthEquals(1);
+enforce('a').lengthEquals(1);
 // passes
 ```
 
 ```js
-enforce([1, 2]).isArray().lengthEquals(1);
-enforce('').isString().lengthEquals(1);
+enforce([1, 2]).lengthEquals(1);
+enforce('').lengthEquals(1);
 // throws
 ```
 
@@ -1469,14 +1346,14 @@ The `value` argument can be of the following types:
 ### Usage examples:
 
 ```js
-enforce([1]).isArray().lengthNotEquals(0);
-enforce('a').isString().lengthNotEquals(3);
+enforce([1]).lengthNotEquals(0);
+enforce('a').lengthNotEquals(3);
 // passes
 ```
 
 ```js
-enforce([1]).isArray().lengthNotEquals(1);
-enforce('').isString().lengthNotEquals(0);
+enforce([1]).lengthNotEquals(1);
+enforce('').lengthNotEquals(0);
 // throws
 ```
 
@@ -1497,16 +1374,16 @@ Strings are parsed using `Number()`, values which are not fully numeric always r
 ### Usage
 
 ```js
-enforce(0).isNumber().lessThan(1);
-enforce(2).isNumber().lessThan('10');
-enforce('90').isNumeric().lt(100);
+enforce(0).lessThan(1);
+enforce(2).lessThan('10');
+enforce('90').lt(100);
 // passes
 ```
 
 ```js
-enforce(100).isNumber().lessThan(100);
-enforce('110').isNumeric().lessThan(100);
-enforce([0]).isArray().lt(1);
+enforce(100).lessThan(100);
+enforce('110').lessThan(100);
+enforce([0]).lt(1);
 // throws
 ```
 
@@ -1527,17 +1404,17 @@ Strings are parsed using `Number()`, values which are not fully numeric always r
 ### Usage
 
 ```js
-enforce(0).isNumber().lessThanOrEquals(1);
-enforce(2).isNumber().lessThanOrEquals('10');
-enforce('90').isNumeric().lte(100);
-enforce(100).isNumber().lte('100');
+enforce(0).lessThanOrEquals(1);
+enforce(2).lessThanOrEquals('10');
+enforce('90').lte(100);
+enforce(100).lte('100');
 // passes
 ```
 
 ```js
-enforce(100).isNumber().lessThanOrEquals(90);
-enforce('110').isNumeric().lessThanOrEquals(100);
-enforce([0]).isArray().lte(1);
+enforce(100).lessThanOrEquals(90);
+enforce('110').lessThanOrEquals(100);
+enforce([0]).lte(1);
 // throws
 ```
 
@@ -1559,14 +1436,14 @@ The `value` argument can be of the following types:
 ### Usage examples:
 
 ```js
-enforce([1]).isArray().longerThan(0);
-enforce('ab').isString().longerThan(1);
+enforce([1]).longerThan(0);
+enforce('ab').longerThan(1);
 // passes
 ```
 
 ```js
-enforce([1]).isArray().longerThan(2);
-enforce('').isString().longerThan(0);
+enforce([1]).longerThan(2);
+enforce('').longerThan(0);
 // throws
 ```
 
@@ -1588,16 +1465,16 @@ The `value` argument can be of the following types:
 ### Usage examples:
 
 ```js
-enforce([1]).isArray().longerThanOrEquals(0);
-enforce('ab').isString().longerThanOrEquals(1);
-enforce([1]).isArray().longerThanOrEquals(1);
-enforce('a').isString().longerThanOrEquals(1);
+enforce([1]).longerThanOrEquals(0);
+enforce('ab').longerThanOrEquals(1);
+enforce([1]).longerThanOrEquals(1);
+enforce('a').longerThanOrEquals(1);
 // passes
 ```
 
 ```js
-enforce([1]).isArray().longerThanOrEquals(2);
-enforce('').isString().longerThanOrEquals(1);
+enforce([1]).longerThanOrEquals(2);
+enforce('').longerThanOrEquals(1);
 // throws
 ```
 
@@ -1616,15 +1493,15 @@ Strings are parsed using `Number()`, values which are not fully numeric always r
 ### Usage
 
 ```js
-enforce(0).isNumber().numberEquals(0);
-enforce(2).isNumber().numberEquals('2');
+enforce(0).numberEquals(0);
+enforce(2).numberEquals('2');
 // passes
 ```
 
 ```js
-enforce(100).isNumber().numberEquals(10);
-enforce('110').isNumeric().numberEquals(100);
-enforce([0]).isArray().numberEquals(1);
+enforce(100).numberEquals(10);
+enforce('110').numberEquals(100);
+enforce([0]).numberEquals(1);
 // throws
 ```
 
@@ -1644,14 +1521,14 @@ Strings are parsed using `Number()`, values which are not fully numeric always r
 ### Usage
 
 ```js
-enforce(2).isNumber().numberNotEquals(0);
-enforce('11').isNumeric().numberNotEquals('10');
+enforce(2).numberNotEquals(0);
+enforce('11').numberNotEquals('10');
 // passes
 ```
 
 ```js
-enforce(100).isNumber().numberNotEquals(100);
-enforce('110').isNumeric().numberNotEquals(100);
+enforce(100).numberNotEquals(100);
+enforce('110').numberNotEquals(100);
 // throws
 ```
 
@@ -1673,14 +1550,14 @@ The `value` argument can be of the following types:
 ### Usage examples:
 
 ```js
-enforce([]).isArray().shorterThan(1);
-enforce('a').isString().shorterThan(2);
+enforce([]).shorterThan(1);
+enforce('a').shorterThan(2);
 // passes
 ```
 
 ```js
-enforce([1]).isArray().shorterThan(0);
-enforce('').isString().shorterThan(0);
+enforce([1]).shorterThan(0);
+enforce('').shorterThan(0);
 // throws
 ```
 
@@ -1702,16 +1579,16 @@ The `value` argument can be of the following types:
 ### Usage examples:
 
 ```js
-enforce([]).isArray().shorterThanOrEquals(1);
-enforce('a').isString().shorterThanOrEquals(2);
-enforce([]).isArray().shorterThanOrEquals(0);
-enforce('a').isString().shorterThanOrEquals(1);
+enforce([]).shorterThanOrEquals(1);
+enforce('a').shorterThanOrEquals(2);
+enforce([]).shorterThanOrEquals(0);
+enforce('a').shorterThanOrEquals(1);
 // passes
 ```
 
 ```js
-enforce([1]).isArray().shorterThanOrEquals(0);
-enforce('ab').isString().shorterThanOrEquals(1);
+enforce([1]).shorterThanOrEquals(0);
+enforce('ab').shorterThanOrEquals(1);
 // throws
 ```
 
@@ -2564,41 +2441,36 @@ enforce(value)
 ```
 
 
-# Getting Started with Vest
+# Getting started with Vest
 
-# Getting Started
+# Introduction to Vest
 
-Welcome to Vest! If you've used unit testing frameworks like Jest or Mocha, you're already halfway there. Vest takes that familiar syntax—`test`, `describe` (we call it `suite`), and assertions—and brings it to your form validation logic.
-
-In this guide, we'll build a simple validation suite for a user registration form.
+Vest is a powerful and easy-to-use JavaScript validation framework that allows you to write and run validations for your code. It is designed to handle complex validation scenarios while still being simple to use. This guide will show you how to install and use Vest@5, the latest version of the framework that's currently in development.
 
 ## Installation
 
-First, grab the package from npm:
+To get started with Vest, you will need to install it using npm. Open up your terminal and run the following command:
 
-```shell
+```
 npm i vest
 ```
 
-## Your First Suite
+This will install Vest in your project.
 
-Think of a **Suite** as the brain of your form. It holds all the validation rules for a specific feature. Unlike other libraries where you define a schema JSON, in Vest, you write a function.
+## Writing your first suite
 
-Here's a basic registration suite. We want to ensure the username is present and at least 3 characters long.
+Once you've installed Vest, you can start writing your first validation suite. A Vest suite is very similar to a unit testing suite in Jest or Mocha, so if you're familiar with those frameworks, the following code should look familiar:
 
-```javascript
+```js
+// suite.js
 import { create, test, enforce } from 'vest';
 
-// 1. We create the suite and pass it a callback function.
-// This callback will run every time we validate our form.
 const suite = create((data = {}) => {
-  // 2. We define a test for the 'username' field.
   test('username', 'Username is required', () => {
-    // 3. We use 'enforce' to check the data.
     enforce(data.username).isNotBlank();
   });
 
-  test('username', 'Username must be at least 3 chars', () => {
+  test('username', 'Username must be at least 3 characters long', () => {
     enforce(data.username).longerThan(2);
   });
 });
@@ -2606,42 +2478,28 @@ const suite = create((data = {}) => {
 export default suite;
 ```
 
-:::tip Pro Tip
-You can define multiple tests for the same field (like 'username' above). Vest runs them sequentially. If the first one fails, the second one won't run, saving you from showing multiple errors for the same issue.
-:::
+In this example, we're creating a new validation suite using the `create` function provided by Vest. The suite takes a callback function that defines the validation rules. In this case, we're defining two rules for the `username` field: it must not be blank, and it must be at least 3 characters long. We're using the `test` function to define each rule, and the `enforce` function to define the validation conditions.
 
-## Running the Suite
+Once you've defined your validation suite, you can use it in your application code to validate data. Here's an example of how you might use the suite to validate a form submission:
 
-Now that we've defined the rules, how do we use them?
-
-In Vest 6, the `create` function returns a **Suite Object**. To validate data, you call the `.run()` method on that object.
-
-```javascript
+```js
 import suite from './suite';
 
-// Let's try running it with invalid data
-const result = suite.run({ username: 'Jo' });
-```
+const formData = {
+  username: '',
+  password: '',
+};
 
-The `result` object is your dashboard. It tells you everything you need to know about the validation state:
+const validationResult = suite(formData);
 
-```javascript
-// Check if a specific field has errors
-if (result.hasErrors('username')) {
-  console.log('Username is too short!');
-}
-
-// Check if the whole form is valid
-if (result.isValid()) {
-  console.log('Ready to submit!');
+if (validationResult.isValid()) {
+  // Submit the form
+} else {
+  // Handle validation errors here
 }
 ```
 
-### What's Next?
-
-- **[Vest's Suite Structure](./writing_your_suite/vests_suite.md)**: Dive deeper into the Suite Object and its capabilities.
-- **[Writing Tests](./writing_tests/the_test_function.md)**: Learn about the `test` function arguments and behaviors.
-- **[Async Tests](./writing_tests/async_tests.md)**: Need to check a username against a database? See how to handle async validations.
+In this example, we're importing our validation suite and passing it some form data. The `suite` function returns a `ValidationResult` object that contains information about the validation outcome. We're using the `isValid` function to check if there are any errors in the result.
 
 
 # Recipe- "any" test - at least one must pass
@@ -2721,234 +2579,185 @@ test('fruit', 'fruit is a value of fruits enum', () => {
 ```
 
 
-# Server-Side & SSR
+# Server Side Validation
 
-# Server-Side Validations
+# Server Side Validation
 
-Vest is isomorphic and runs in Node.js environments.
+Using Vest in node is mostly the same as it is in the browser, but you should consider your runtime.
 
-## Stateless Runs
+## Validation state
 
-On the server, you typically want a stateless validation run—one that doesn't remember the previous state of fields.
+When running your validations on the server, you want to keep each request isolated with its own state, and not update the same validation state between requests. Doing that can cause failed validations to seem successful or vice versa due to different requests relying on the same state. [Read more in the Understanding Vest's state section](./understanding_state.md).
 
-In Vest, use the `.runStatic()` method. Each call produces a fresh result object without merging into prior state.
+### Solution: Treat validations as stateless
 
-```javascript
-import { create, test, enforce } from 'vest';
+While when on the browser you usually want to treat validations as stateful - even though it might sometimes not be the case - on the server you almost always want to treat your validations as stateless.
 
-const suite = create(data => {
-  test('username', 'Required', () => {
-    enforce(data.username).isNotBlank();
+#### Option 1: Using a staticSuite
+
+Another option is to use a `staticSuite` instead of a regular suite. A `staticSuite` is a suite that creates a new suite result instance each time it's called, and doesn't take into account the previous validation runs. This means that each time a `staticSuite` is called, a new result object will be created:
+
+```js
+import { staticSuite, test, enforce } from 'vest';
+
+const suite = staticSuite(data => {
+  test('username', 'username is required', () => {
+    enforce(data.username).isNotEmpty();
   });
 });
 
-export default suite;
+suite(data);
 ```
 
-**Usage in API Handler:**
+In the example above, `suite` is a function that runs the validations, similar to the output of `vest.create`. Note that since the `staticSuite` creates a new result instance each time it's called, there's no need to reset the suite between runs.
+
+#### Option 2: Resetting the suite between runs
+
+One option is to reset the entire suite before each run:
+
+```js
+import { create } from 'vest';
+
+function serversideCheck(data) {
+  const suite = create(() => {
+    test('username', 'username is required', () => {
+      enforce(data.username).isNotEmpty();
+    });
+  });
+
+  suite();
+  suite.reset();
+}
+```
+
+## Full stack validations
+
+Vest allows serializing and resuming validations across client and server. Read more in [suite serialization and resumption](./suite_serialization.md).
+
+
+# Suite Serialization and Resumption
+
+# Suite Serialization and Resumption
+
+Vest provides the ability to serialize and resume validation suites, allowing you to transfer the state of validations between different environments, such as from the server to the client. This feature enhances the user experience by providing immediate feedback on the client-side based on server-side validations.
+
+## Use Cases
+
+- **Client-Server Validation:** Perform validations on the server and seamlessly resume them on the client, providing immediate feedback to the user without re-running all validations.
+- **Persistence:** Store the validation state and resume it later, for example, if the user navigates away from a form and returns.
+- **Debugging:** Serialize the state of a suite for debugging purposes, making it easier to reproduce and analyze validation issues.
+
+## How it Works
+
+The `SuiteSerializer` object provides two static methods: `serialize` and `resume`.
+
+### `SuiteSerializer.serialize()`
+
+This method takes a Vest suite instance and returns a string representation of the suite's current state. This string can be transferred to another environment, such as the client.
 
 ```javascript
-import suite from './validation';
+import { SuiteSerializer } from 'vest';
 
-app.post('/user', (req, res) => {
-  // runStatic guarantees a fresh, stateless result every time
-  const result = suite.runStatic(req.body);
+const suite = create(data => {
+  // ... your validation tests ...
+});
 
-  if ((result as any).then) {
-    // If async tests exist, wait for completion
-    return result.then(finalResult => {
-      if (finalResult.hasErrors()) {
-        return res.status(400).json(finalResult.getErrors());
-      }
-      // ...
-      return res.sendStatus(204);
-    });
-  }
+suite(formData); // Run the suite with some data
 
-  if (result.hasErrors()) {
-    return res.status(400).json(result.getErrors());
-  }
+const serializedSuite = SuiteSerializer.serialize(suite);
+```
 
-  // ...
-  // ...
+## SuiteSerializer.resume()
+
+This method takes a Vest suite instance and a serialized suite string. It applies the serialized state to the provided suite instance, effectively resuming the validation state from the serialized data.
+
+```js
+import { SuiteSerializer } from 'vest';
+
+const suite = create(data => {
+  // ... your validation tests ...
+});
+
+SuiteSerializer.resume(suite, serializedSuite);
+
+// The suite now has the state from the serializedSuite string
+```
+
+## Example: Client-Server Validation
+
+```js
+// suite.js
+import { create } from 'vest';
+import { SuiteSerializer } from 'vest';
+
+const suite = create(data => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  test('email', 'Email is invalid', () => {
+    enforce(data.email).isEmail();
+  });
 });
 ```
 
-## SSR & Hydration
-
-When using Vest with Server-Side Rendering (SSR) frameworks (like Next.js, Remix, or Nuxt), you often want to validate on the server, send the validation state to the client, and resume without rerunning everything.
-
-Use `SuiteSerializer.serialize` to serialize the suite state and `SuiteSerializer.resume` on the client to hydrate it.
-
-### Server Side
-
-```javascript
+```js
 // server.js
-import { SuiteSerializer } from 'vest';
-import suite from './suite';
 
-export async function action({ request }) {
-  const formData = await request.formData();
-  const data = Object.fromEntries(formData);
+app.post('/submit', (req, res) => {
+  const formData = req.body;
 
-  // Run validation
-  const result = suite.runStatic(data);
+  suite(formData);
 
-  // Check for errors
-  if (result.hasErrors()) {
-    return json({
-      errors: result.getErrors(),
-      // Serialize the suite state to send to the client
-      vestState: SuiteSerializer.serialize(suite),
-    });
-  }
-}
+  const serializedSuite = SuiteSerializer.serialize(suite);
+
+  res.json({ serializedSuite });
+});
 ```
 
-### Client Side
-
-On the client, hydrate the suite with the state received from the server using `SuiteSerializer.resume()`.
-
-```javascript
+```js
 // client.js
-import { SuiteSerializer } from 'vest';
 import suite from './suite';
-
-export function MyForm({ actionData }) {
-  // Resume the suite state if provided by the server
-  if (actionData?.vestState) {
-    SuiteSerializer.resume(suite, actionData.vestState);
-  }
-
-  // ... render form
-}
-```
-
-Once resumed, `suite.hasErrors()`, `suite.isValid()`, and other selectors will return data reflecting the server-side run. Subsequent calls to `suite.run()` on the client will update this state normally.
-
-For a deep dive into this pattern, read **[Server-Side Rendering & Hydration](./suite_serialization.md)**.
-
-
-# Server-Side Rendering (SSR)
-
-# Server-Side Rendering (SSR) & Hydration
-
-Modern frameworks like Next.js, Remix, and SvelteKit often validate forms on the server before sending a response. A common problem is "Double Validation": running tests on the server, showing errors, but then forcing the client-side library to re-run everything from scratch to "know" about those errors.
-
-Vest 6 solves this with **State Serialization**. You can take the state of a suite calculated on the server and "inject" it into the client-side suite.
-
-## The `SuiteSerializer`
-
-To keep the API surface clean, serialization tools are grouped under the `SuiteSerializer` export.
-
-```javascript
 import { SuiteSerializer } from 'vest';
+
+const form = document.getElementById('myForm');
+
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const formData = new FormData(form);  
+
+
+  fetch('/submit', {
+    method: 'POST',
+    body: formData,
+  })
+    .then((response) => response.json())
+    .then((data)  
+ => {
+      SuiteSerializer.resume(suite, data.serializedSuite);
+    });
+});
 ```
 
-### `SuiteSerializer.serialize(suite)`
-
-Takes a suite instance and returns a serializable object (safe for JSON).
-
-### `SuiteSerializer.resume(suite, serializedData)`
-
-Takes a suite instance and a serialized data object, and applies that state to the suite.
-
-## Complete Workflow Example
-
-Imagine a Remix or Next.js action handling a form submission.
-
-### 1. Server Side
-
-Run the validation. If it fails, send the serialized state back to the frontend.
-
-```javascript
-// server-action.js
-import { SuiteSerializer } from 'vest';
-import suite from './validation';
-
-export async function action(formData) {
-  // 1. Run validation
-  // We use runStatic, but we can capture the result from the suite instance
-  const result = suite.runStatic(formData);
-
-  if (result.hasErrors()) {
-    return {
-      success: false,
-      errors: result.getErrors(),
-      // 2. Serialize the suite!
-      vestState: SuiteSerializer.serialize(suite),
-    };
-  }
-
-  // ... handle success
-}
-```
-
-### 2. Client Side
-
-When your component mounts or receives the action data, resume the suite.
-
-```javascript
-// registration-form.jsx
-import { useEffect } from 'react';
-import { SuiteSerializer } from 'vest';
-import suite from './validation';
-
-export function RegistrationForm({ actionData }) {
-  // 3. Resume state if it exists
-  if (actionData?.vestState) {
-    SuiteSerializer.resume(suite, actionData.vestState);
-  }
-
-  // suite.get() now immediately reflects the server errors!
-  // suite.hasErrors('username') will be true without running logic.
-
-  return <form>{/* ... inputs ... */}</form>;
-}
-```
-
-:::caution Why not just pass the errors?
-You might wonder, "Why not just pass the error object?"
-If you only pass errors, your suite doesn't know _which_ tests passed, which are pending, or which groups were skipped. By resuming the full state, Vest can continue validation seamlessly (e.g., when the user edits a field) without losing the context of the server-side run.
-:::
+In this example, the server performs the initial validation and sends the serialized suite state to the client. The client then resumes the suite with the received state, allowing for immediate feedback and a consistent validation experience across both environments.
 
 
 # Typescript Support
 
 # TypeScript Support
 
-Vest is written fully in TypeScript and provides first-class typing for suites, schemas, and custom rules.
-
-## Schema-Aware Suite Creation
-
-Passing an `n4s` schema as the second argument to `create` automatically types your suite callback and `.run()` calls. The schema is enforced at runtime and the suite result records the validated `input` and `output` in `result.types`.
-
-```typescript
-import { create, test, enforce } from 'vest';
-
-const userSchema = enforce.shape({
-  username: enforce.isString(),
-  age: enforce.isNumber(),
-  tags: enforce.isArrayOf(enforce.isString()),
-});
-
-const suite = create(data => {
-  // data is typed as: { username: string; age: number; tags: string[] }
-  test('username', () => {
-    enforce(data.username).isNotBlank();
-  });
-}, userSchema);
-
-suite.run({ username: 'alice', age: 30, tags: [] }); // ✅
-// suite.run({ username: 'alice' }); // ❌ Property 'age' is missing
-// suite.run({ username: 42, age: 30, tags: [] }); // ❌ Type mismatch
-```
-
-Works with `enforce.shape`, `enforce.loose`, and `enforce.partial`.
+Vest is written fully in TypeScript, and as such, it provides extensive TypeScript support.
 
 ## Suite Generics
 
-`create` also accepts generic parameters when you want explicit control over field names, group names, or the callback signature.
+The Suite's `create` function takes three **optional** generic types - `FieldName`, `GroupName` and `Callback`.
+
+| Name        | Type       | Optional? | Default    | Description                                                                                                                                                |
+| ----------- | ---------- | --------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `FieldName` | `string`   | Yes       | `string`   | A union of the allowed field names in the suite. This type is propagated to all the suite and suite response methods.                                      |
+| `GroupName` | `string`   | Yes       | `string`   | A union of the allowed group names in the suite. This type is propagated to all the suite and suite response methods.                                      |
+| `Callback`  | `Function` | Yes       | `Function` | The type for the suite callback. This type is propagated into the suite callback, and can be used to defined the shape of the data for the suite callback. |
 
 ```typescript
 import { create } from 'vest';
@@ -2958,75 +2767,98 @@ type GroupName = 'SignIn' | 'ChangePassword';
 type Callback = (data: { username: string; password: string }) => void;
 
 const suite = create<FieldName, GroupName, Callback>(data => {
-  // data is typed
+  // data is now typed
+  // ...
 });
 
-const result = suite.run();
-result.getErrors('username'); // typed
-// result.getErrors('full_name'); // 🚨 compile-time error
+const res = suite();
+
+res.getErrors('username');
+res.getErrors('full_name'); // 🚨 Throws a compilation error
 ```
 
-The typed selectors include `getError`, `getErrors`, `getWarnings`, `hasErrors`, `hasWarnings`, `isValid`, `isValidByGroup`, and `suite.afterEach`.
+The following methods are typed:
+
+- `getError`
+- `getErrors`
+- `getErrorsByGroup`
+- `getWarning`
+- `getWarnings`
+- `getWarningsByGroup`
+- `hasErrors`
+- `hasErrorsByGroup`
+- `hasWarnings`
+- `hasWarningsByGroup`
+- `isValid`
+- `isValidByGroup`
+- `res.done`
+- `suite.get`
 
 ## Typing Runtime Functions
 
-When you destructure helpers from the suite, they inherit the suite's types. This keeps runtime calls like `test`, `only`, and `group` aligned with your field and group unions.
+The types mentioned above are useful, but they are not as strict, and only provides partial safety, as they only deal with the result object and not with the suite's operation.
+
+The following functions can make use of the suite's types as well:
+
+- `group`
+- `include`
+- `omitWhen`
+- `only`
+- `optional`
+- `skip`
+- `skipWhen`
+- `test`
+
+To do so, you can type your suite as mentioned in the previous section, and destruct these from directly from the suite.
 
 ```typescript
 import { create } from 'vest';
 
-type Data = { username: string; password: string };
-type FieldName = keyof Data;
+type TData = { username: string; password: string };
+type FieldName = keyof TData;
 type GroupName = 'SignIn' | 'ChangePassword';
+type Callback = (data: TData) => void;
 
-const suite = create<FieldName, GroupName, (data: Data) => void>(data => {
+const suite = create<FieldName, GroupName, Callback>(data => {
   only('username');
-  test('username', 'Username required', () => {});
+
+  test('username', 'Password is required', () => {
+    /*...*/
+  }); // ✅
+  test('password', 'Password is too required', () => {
+    /*...*/
+  }); // ✅
+
+  test('confirm', 'Passwords do not match', () => {
+    /*...*/
+  }); // 🚨 Will throw a compilation error
 });
 
-const { test, group, only } = suite; // typed helpers
+const { test, group, only } = suite;
 ```
 
-## Suite Result Types
+## Exported Types
 
-Use exported types to annotate variables and APIs:
+Vest exports the following types so you can use them to annotate your functions and variables:
 
-- `Suite<FieldName, GroupName, Callback>` — a suite instance.
-- `SuiteResult<FieldName, GroupName>` — the result returned from `run`, `runStatic`, or `get`.
-- `SuiteSummary<FieldName, GroupName>` — the static snapshot of all test results.
-- `IsolateTest<FieldName, GroupName>` — represents a Vest test.
+- `Suite<FieldName, GroupName, Callback>`<br/>
+  A single suite instance.
 
-`SuiteResult` also carries `types.input` and `types.output` when a schema is present.
+- `SuiteRunResult<FieldName, GroupName>`<br/>
+  The immediate output of a suite invocation - `suite()`, including the `done()` function.
+
+- `SuiteResult<FieldName, GroupName>`<br/>
+  Non-actionable suite result, meaning - the same as SuiteRunResult, but without the `done()` function. The return type of `suite.get()`.
+
+- `SuiteSummary<FieldName, GroupName>`<br/>
+  The static suite summary, all test results defined in the result object.
+
+- `IsolateTest<FieldName, GroupName>`<br/>
+  Rperesents a Vest test.
 
 ## Custom Enforce Rules
 
-Extend `enforce` with value-first signatures so TypeScript can map them into both eager and lazy APIs.
-
-```typescript
-import { enforce } from 'vest';
-
-const customRules = {
-  isValidEmail: (value: string) => value.includes('@'),
-  isWithinRange: (value: number, min: number, max: number) =>
-    value >= min && value <= max,
-};
-
-enforce.extend(customRules);
-
-declare global {
-  namespace n4s {
-    interface EnforceMatchers {
-      isValidEmail: (value: string) => boolean;
-      isWithinRange: (value: number, min: number, max: number) => boolean;
-    }
-  }
-}
-
-enforce('test@example.com').isValidEmail();
-enforce(10).isWithinRange(5, 15);
-```
-
-[Read more about custom rule typing](./enforce/creating_custom_rules.md#typescript-support).
+See [Custom Rule Typescript Support](./enforce/creating_custom_rules.md#custom-rule-typescript-support);
 
 
 # Understanding Vest's state
@@ -3043,7 +2875,7 @@ When you skip fields in your validation suite, Vest will merge their results fro
 
 - _Skipped field merge_: Vest merges skipped fields' previous results with the current result object.
 
-- _Lagging async test completion blocking_: When an async test doesn't finish from the previous suite run, Vest blocks the [`after()` callbacks](./writing_your_suite/accessing_the_result.md#after-and-await-suiterun) or `await suite.run()` for that field from running for the previous suite result. This ensures that only the latest result is processed and prevents outdated callbacks from running.
+- _Lagging async `done` callback blocking_: When an async test doesn't finish from the previous suite run, Vest blocks the [`done()` callbacks](./writing_your_suite/accessing_the_result.md#done) for that field from running for the previous suite result.
 
 # Drawbacks when using stateful validations
 
@@ -3057,7 +2889,7 @@ Suppose your form is a part of a single-page-app with client-side routing. In th
 
 ### Solution: Resetting suite state with `.reset()`
 
-In some cases, such as form reset, we want to discard previous validation results. This can be done with `suite.reset()`.
+In some cases, such as form reset, we want to discard previous validation results. This can be done with `vest.reset()`.
 
 `.reset()` is a property on your validation suite. Calling it will remove the suite's state.
 
@@ -3066,7 +2898,7 @@ In some cases, such as form reset, we want to discard previous validation result
 ```js
 import { create } from 'vest';
 
-const suite = create((data = {}) => {
+const suite = create(() => {
   // Your tests go here
 });
 
@@ -3097,126 +2929,6 @@ suite.remove('username'); // validation result is removed from Vest's state.
 
 
 # Upgrade guides
-
-# Upgrading from V5 to V6
-
-Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.
-
-## `create` returns a Suite Object
-
-In V5, `create` returned a function that you would call directly to run the suite. In V6, `create` returns a **Suite Object** with methods like `.run()`, `.reset()`, and `.get()`.
-
-```diff
-- const suite = create(() => { ... });
-- const result = suite(data);
-
-+ const suite = create(() => { ... });
-+ const result = suite.run(data);
-```
-
-## `suite.run()` returns a Promise-like Result
-
-In V5, `suite()` returned the result object synchronously, and you had to use `promisify` or callbacks for async results. In V6, `suite.run()` returns a result object that is also a Promise.
-
-```diff
-- import { promisify } from 'vest';
-- const runAsync = promisify(suite);
-- const result = await runAsync(data);
-
-+ const result = await suite.run(data);
-```
-
-## Removed `promisify` and `staticSuite`
-
-These utilities have been removed in favor of the new Suite Object API.
-
-- **promisify**: Use `await suite.run()` instead.
-- **staticSuite**: Use `suite.runStatic()` instead.
-
-```diff
-- import { staticSuite } from 'vest';
-- const suite = staticSuite(() => { ... });
-- suite(data);
-
-+ import { create } from 'vest';
-+ const suite = create(() => { ... });
-+ suite.runStatic(data);
-```
-
-## `test.memo` is now a top-level `memo` export
-
-The memoization API has been promoted to a top-level export and can now wrap any part of the suite, not just single tests.
-
-```diff
-- import { create, test } from 'vest';
-+ import { create, test, memo } from 'vest';
-
-create(data => {
-- test.memo('field', 'msg', () => { ... }, [data.field]);
-
-+ memo(() => {
-+   test('field', 'msg', () => { ... });
-+ }, [data.field]);
-});
-```
-
-## `done()` callback removed from Result
-
-The `.done()` method on the result object has been removed. Use `suite.afterEach()` or `await suite.run()` instead.
-
-```diff
-- suite(data).done(result => { ... });
-
-+ suite.afterEach(result => { ... }).run(data);
-// OR
-+ const result = await suite.run(data);
-```
-
-## Standard Schema Support
-
-Vest implements the [Standard Schema](https://github.com/standard-schema/standard-schema) spec. You can now use Vest suites directly with libraries that support this standard.
-
-```javascript
-const result = await suite.validate(data);
-```
-
----
-
-## Automated Migration Prompt
-
-You can use the following prompt with an LLM (like ChatGPT or Claude) to help migrate your codebase from Vest 5 to Vest 6.
-
-```markdown
-I am migrating my Vest validation suites from version 5 to version 6. Please refactor the following code according to these rules:
-
-1.  **Suite Creation**: `create` now returns a Suite Object, not a function.
-
-    - Change `const suite = create(...)` to keep the same variable name.
-    - Remove any suite name passed as the first argument to `create`.
-
-2.  **Running Suites**:
-
-    - Change `suite(data)` to `suite.run(data)`.
-    - Change `staticSuite(...)` to `create(...)` and run it with `suite.runStatic(data)`.
-
-3.  **Async Handling**:
-
-    - Remove `import { promisify } from 'vest'`.
-    - Remove `promisify(suite)`.
-    - Change `await suite(data)` or `promisified(data)` to `await suite.run(data)`.
-    - Remove `.done()` callbacks. Use `await suite.run()` or `suite.afterEach()`.
-
-4.  **Memoization**:
-
-    - Change `test.memo(...)` to `memo(() => { test(...) }, deps)`.
-    - Ensure `memo` is imported from 'vest'.
-
-5.  **General**:
-    - Keep all validation logic intact.
-    - Preserve comments.
-```
-
----
 
 # Upgrading from V4 to V5
 
@@ -3268,16 +2980,16 @@ const suite = create(() => {
 });
 ```
 
-## All result methods are now available directly on the result object
+## All result methods are now available directly on the suite object
 
-In previous versions, you had to call `suite.get()` to access the different methods, such as `getErrors` and `isValid`. In V5, these methods are available directly on the result object returned from `suite.run()`. [Read more](./writing_your_suite/accessing_the_result.md).
+In previous versions, you had to call `suite.get()` to access the different methods, such as `getErrors` and `isValid`. In V5, these methods are available directly on the suite object. [Read more](./writing_your_suite/accessing_the_result.md).
 
 ```diff
 - suite.get().getErrors('username');
-+ result.getErrors('username');
++ suite.getErrors('username')
 
 - suite.get().isValid();
-+ result.isValid();
++ suite.isValid()
 ```
 
 ## Added `hasError` and `hasWarning` methods
@@ -3340,7 +3052,7 @@ In previous versions, as a user of Vest you had to set up your own state-reset m
 
 - function ServerValidation() {
 -  suite.reset();
--  suite.run();
+-  suite();
 - }
 ```
 
@@ -3381,7 +3093,7 @@ The way it works is simple. You call `classnames` with your result object, and t
 import classnames from 'vest/classnames';
 import suite from './suite';
 
-const res = suite.run(data);
+const res = suite(data);
 
 const cn = classnames(res, {
   untested: 'is-untested', // will only be applied if the provided field did not run yet
@@ -3395,6 +3107,46 @@ const cn = classnames(res, {
 const fieldOneClasses = cn('field_1'); // "is-untested"
 const fieldTwoClasses = cn('field_2'); // "some-tested-class my_invalid_class"
 const fieldThreeClasses = cn('field_3'); // "some-tested-class my_warning_class"
+```
+
+
+# Utility - Promisify
+
+## `promisify()`
+
+Promisify is a function that enables you to run your async validations as a [Javascript Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+This can be useful when running async validations on the server, or when you do not need the partial validation results.
+
+:::tip NOTE
+The Promise is resolved when all tests finish running.
+:::
+
+### Usage
+
+`promisify()` accepts a validation suite declaration, and returns a function that when called, returns a Promise.
+
+```js
+import { create, test, skipWhen } from "vest";
+import promisify from "vest/promisify";
+
+const suite = promisify(
+  create((data) => {
+    test("email", "The email already exists", () => doesEmailExist(data.email));
+    test("username", "The username already exists", () =>
+      doesUsernameExist(data.username)
+    );
+  })
+);
+
+suite(data).then((res) => {
+  if(res.hasErrors("email")) {
+    /* ... */
+  });
+
+  if(res.hasErrors("username")) {
+    /* ... */
+  });
+});
 ```
 
 
@@ -3423,19 +3175,16 @@ Notable libraries in this category include **Formik**, **Vuelidate**, **vee-vali
 
 **How does Vest compare to them?**
 
-| Features                             | Vest                                | Functional Matchers        | Schema Validation        | Framework-Specific Form State Managers       |
-| ------------------------------------ | ----------------------------------- | -------------------------- | ------------------------ | -------------------------------------------- |
-| **State Management**                 | Stateful                            | Manual                     | Manual                   | Stateful                                     |
-| **Per Field Validation**             | Supported                           | Not supported              | Not supported            | Supported                                    |
-| **Syntax Style**                     | Declarative                         | Function calls             | Declarative              | Declarative                                  |
-| **Code Organization**                | Separate validation suite           | Manual organization        | Manual organization      | Depends on library                           |
-| **Framework Agnostic**               | Yes                                 | Yes                        | Yes                      | No                                           |
-| **Type Inference & Schema**          | Built-in (`enforce` schemas)        | No                         | Yes                      | Limited (per framework)                      |
-| **SSR/Hydration**                    | Yes (`runStatic`, `dump`, `resume`) | No                         | No                       | Framework-specific                           |
-| **Standard Schema Interop**          | Yes (`suite.validate`)              | No                         | Rare                     | Rare                                         |
-| **Flexibility for Framework Switch** | High                                | High                       | High                     | Limited                                      |
-| **Code Reusability**                 | High                                | Medium (It's functions...) | Medium (Requires effort) | Low (Within the UI Framework)                |
-| **Example Libraries**                | -                                   | v8n, validatorjs, valibot  | yup, joi, zod, valibot   | Formik, Vuelidate, vee-validate, redux-forms |
+| Features                             | Vest                      | Functional Matchers        | Schema Validation        | Framework-Specific Form State Managers       |
+| ------------------------------------ | ------------------------- | -------------------------- | ------------------------ | -------------------------------------------- |
+| **State Management**                 | Stateful                  | Manual                     | Manual                   | Stateful                                     |
+| **Per Field Validation**             | Supported                 | Not supported              | Not supported            | Supported                                    |
+| **Syntax Style**                     | Declarative               | Function calls             | Declarative              | Declarative                                  |
+| **Code Organization**                | Separate validation suite | Manual organization        | Manual organization      | Depends on library                           |
+| **Framework Agnostic**               | Yes                       | Yes                        | Yes                      | No                                           |
+| **Flexibility for Framework Switch** | High                      | High                       | High                     | Limited                                      |
+| **Code Reusability**                 | High                      | Medium (It's functions...) | Medium (Requires effort) | Low (Within the UI Framework)                |
+| **Example Libraries**                | -                         | v8n, validatorjs           | yup, joi, zod            | Formik, Vuelidate, vee-validate, redux-forms |
 
 Vest is a new breed of form validation library that tries to answer the shortcomings of existing solutions, while not compromising on developer experience, user experience and performance. Here's how Vest stands out:
 
@@ -3448,14 +3197,6 @@ Vest is a new breed of form validation library that tries to answer the shortcom
 4. **Separate Validation Suite:** Vest keeps the validation code separate from the feature code, enabling better code organization and decoupling. This separation promotes code reuse and maintainability.
 
 5. **Framework Agnostic:** Vest is designed to be framework agnostic, allowing developers to reuse Vest validations across teams and different parts of their products. It provides the flexibility to rewrite the entire application with a different framework without needing to modify the validation code.
-
-6. **SSR & Hydration:** Vest ships `runStatic` for stateless server runs and `dump`/`resume` for hydrating validation state on the client—no framework lock-in.
-
-7. **Type Safety & Schemas:** Optional `enforce` schemas provide runtime guarantees and TypeScript inference for `suite.run` and result types, keeping client and server contracts in sync.
-
-8. **Standard Schema Compatibility:** Suites and rules implement the Standard Schema V1 interface via `suite.validate`, so you can plug Vest into libraries that speak the same spec.
-
-9. **Async by Default:** `suite.run()` is a hybrid result/Promise. You can read sync fields immediately and still await async completion—no extra wrappers like `promisify`.
 
 With its emphasis on improved developer experience, user experience, and performance, Vest offers a compelling alternative to existing form validation libraries.
 
@@ -3493,67 +3234,60 @@ When using `debounce`, all debounced tests are treated as async, even if the tes
 :::
 
 
-# Dynamic Tests & Arrays
+# Dynamically adding tests by iterating over an array
 
 # Dynamic Tests with `each`
 
-Forms often have dynamic lists: a list of travelers, a set of product attributes, or multiple shipping addresses. You don't know how many fields you'll have until runtime.
+> This replaces Vest's test.each which used to have limited capabilities.
 
-Vest provides the `each` helper to handle these lists efficiently.
+A common use case in forms is to have fields that are added dynamically via the user interface. These fields may have multiple validations of their own, and their amount and order may change via the lifetime of the suite.
 
-## Using `each`
+To handle these dynamic tests, you may use the `each` function provided by Vest. It accepts an array of values, and a callback. It then iterates over each of the array items, and runs the provided callback, similarly to a `forEach` call.
 
-Think of `each` as a smarter `forEach` loop designed specifically for validation. It takes three arguments:
+Within your `each` callback you can add your tests. It is recommended that you add each tests a unique "key" prop as the last argument. This will guarantee correct behavior when tests are removed, or their order changes.
 
-1. The array to iterate over.
-2. A callback function to run for every item.
-3. (Important!) A unique key for tracking.
+If you have just one test of each field (= the field name is a unique value), you can use the field name as the key as well.
 
-```javascript
+```js
 import { create, test, each, enforce } from 'vest';
 
-const suite = create(data => {
-  // data.products is an array of objects
-  each(
-    data.products,
-    product => {
-      test('product_name', 'Name is required', () => {
-        enforce(product.name).isNotBlank();
-      });
+/*
+data.fields = [
+  {
+    name: 'GameBoy Color',
+    price: 200,
+    id: "gb-color"
+  },
+  {
+    name: 'GameBoy Advance',
+    price: 300,
+    id: "gb-advance"
+  },
+  {
+    name: 'Nintendo 64',
+    price: 400,
+    id: "n64"
+  },
+]
+*/
 
-      test('product_price', 'Price must be positive', () => {
-        enforce(product.price).greaterThan(0);
-      });
-    },
-    'id',
-  ); // <--- The magic key property
+const suite = create((data = {}) => {
+  each(data.fields, field => {
+    test(
+      field.name,
+      'item price must be greater than 0',
+      () => {
+        enforce(field.price).isNumeric().greaterThan(0);
+      },
+      field.id, // the key is used to guarantee state persistence on reordering
+    );
+  });
 });
 ```
 
-## Why do I need a Key?
-
-You know how React warns you if you render a list without a `key` prop? Vest needs keys for the same reason.
-
-Vest is stateful. It remembers that the test for "Product A" failed. If you reorder the list or delete "Product A", Vest needs to know that the tests associated with "Product A" should move or disappear, rather than attaching the old error to the new item in that index.
-
-### How to specify the Key
-
-You can pass the key in two ways:
-
-1.  **As a property name** (String): If your objects have an ID field, just pass the name of that field.
-
-    ```javascript
-    each(items, item => { ... }, 'userId'); // Uses item.userId
-    ```
-
-2.  **As a function**: If you need to calculate the key.
-
-    ```javascript
-    each(items, item => { ... }, (item) => `${item.type}_${item.id}`);
-    ```
-
-:::danger Avoid using Index
-Never use the array index as a key (or omit the key argument, which defaults to index). If the user deletes the first item, the second item will inherit the first item's validation state (and errors!), leading to a confusing UI.
+:::tip The Key Prop
+When using the key argument, make sure you use a consistent key to the test itself, and avoid values that may change between runs - such as the item's index.
+If you have multiple tests in for the same item, each has to have its own unique key!
 :::
 
 
@@ -3576,7 +3310,7 @@ There are two ways to use `group()`:
 ```js
 import { create, test, group, enforce } from 'vest';
 
-create(data => {
+create('suite_name', data => {
   group('group_name', () => {
     test('field_name', 'error_message', () => {
       enforce(data.field_name).equals('value');
@@ -3590,7 +3324,7 @@ create(data => {
 ```js
 import { create, test, group, enforce } from 'vest';
 
-create(data => {
+create('suite_name', data => {
   group(() => {
     test('field_name', 'error_message', () => {
       enforce(data.field_name).equals('value');
@@ -3679,8 +3413,8 @@ export default suite;
 ```js
 // myFeature.js
 
-suite.run(data, 'overview_tab'); // will only validate 'overview_tab' group
-suite.run(data, 'pricing_tab'); // will only validate 'pricing_tab' group
+suite(data, 'overview_tab'); // will only validate 'overview_tab' group
+suite(data, 'pricing_tab'); // will only validate 'pricing_tab' group
 ```
 
 ### 2. Skipping only some of the tests of a given field
@@ -3730,140 +3464,54 @@ Your result object exposes the following methods:
 Read more about these methods in [the result object](../../writing_your_suite/accessing_the_result.md).
 
 
-# Memoizing Tests
+# Memoizing test results
 
-# Memoizing Tests
+## test.memo for memoized tests
 
-Vest introduces a new, top-level `memo` function. It allows you to cache parts of your suite execution based on dependencies, preventing unnecessary re-runs of expensive logic or async tests.
+In order to improve performance and runtime in heavy or long-running tests (such as async tests that go to the server), tests individual test results can be cached and saved for a later time, so whenever the exact same params appear again in the same runtime, the test result will be used from cache, instead of having to be re-evaluated.
 
-## Why Memoize?
+For brevity and simplicity, Vest adds a few implicit dependencies to the test.memo function. Vest uses the following dependencies along with yours:
 
-Validation suites often contain expensive operations, such as:
+1. The current suite instance id.
+2. The current field name.
+3. The Current test position within the suite.
 
-- **Async checks**: Checking if a username is taken (network request).
-- **Heavy computations**: Validating complex data structures.
+### Usage:
 
-If the relevant data hasn't changed (e.g., the user is typing in the "password" field, but the "username" field hasn't changed), re-running the username check is wasteful. Memoization lets you skip these tests and reuse the previous result.
+Memoized tests are almost identical to regular tests, only with the added dependency array as the last argument. The dependency array is an array of items, that when identical (strict equality, `===`) to a previously presented array in the same test, its previous result will be used. You can see it as your cache key to the test result.
 
-Unlike the previous `test.memo` which was limited to single tests, the new `memo` can wrap **any** part of your suite—single tests, multiple tests, groups, or arbitrary logic.
+### Example:
 
-## Usage
-
-Import `memo` from `vest`:
-
-```javascript
-import { create, test, memo } from 'vest';
-
-const suite = create(data => {
-  // cacheKey: [data.username]
-  // If data.username hasn't changed since the last run,
-  // this block is skipped, and previous results are restored.
-  memo(() => {
-    test('username', 'Username is taken', async () => {
-      await checkAvailability(data.username);
-    });
-  }, [data.username]);
+```js
+import { vest, test } from 'vest';
+export default create(data => {
+  test.memo(
+    'username',
+    'username already exists',
+    () => doesUserExist(data.username),
+    [data.username],
+  );
 });
 ```
-
-## Memoizing Groups
-
-You can use `memo` to skip entire groups of tests if their relevant data hasn't changed.
-
-```javascript
-memo(() => {
-  group('shipping_address', () => {
-    test('street', 'Required', () => {
-      /* ... */
-    });
-    test('city', 'Required', () => {
-      /* ... */
-    });
-  });
-}, [data.shipping_address]);
-```
-
-## How it works
-
-1.  Vest checks the dependency array passed as the second argument.
-2.  If the dependencies match the previous run, the callback function is **not executed**.
-3.  Instead, Vest restores the test results (pass/fail/warn) produced by that block in the previous run.
 
 
 # Async Validations
 
-# Async Tests
+# Writing Asynchronous Tests
 
-Vest supports asynchronous validation tests (e.g., checking if a username exists on the server).
+Sometimes you need to validate your data with information not present in your current context, for example - data from the server, such as username availability. In those cases, you need to go out to the server and fetch data as part of your validation logic.
 
-```javascript
-import { create, test, enforce } from 'vest';
+An async test is declared by returning a promise from your test body (or making it an async function). When the promise resolves, your test passes, and when your promise rejects, it fails.
 
-const suite = create(data => {
-  test('username', 'Username already taken', async () => {
-    await doesUserExist(data.username);
-  });
+```js
+// Example using a promise
+test('name', 'I always fail', () => Promise.reject());
+
+// Example using async/await
+test('name', 'Already Taken', async () => {
+  return await doesUserExist(user);
 });
 ```
-
-:::note
-In Vest, `suite.run()` returns a hybrid result object that is also a Promise. This means you can `await` it directly.
-:::
-
-## Handling Async Results
-
-Because async tests take time to complete, `suite.run()` creates a result object that is initially "pending".
-
-### Option 1: Awaiting the Result
-
-In Vest, `suite.run()` returns a Promise-like object if there are async tests. You can simply `await` it.
-
-```javascript
-const result = await suite.run(data);
-
-if (result.isValid()) {
-  submitForm();
-}
-```
-
-### Synchronous Access
-
-`suite.run()` returns a hybrid object: it acts like a Promise for async completion, but its sync selectors are available immediately.
-
-```javascript
-const result = suite.run(data);
-
-// Sync selectors are available right away
-if (result.hasErrors('password')) {
-  showPasswordError();
-}
-
-if (result.isPending('username')) {
-  showSpinner();
-}
-
-// Await for final async completion
-await result;
-```
-
-### Option 2: Using `.afterEach()`
-
-If you prefer callbacks, or cannot use `await` at the call site, use the `.afterEach()` hook.
-
-```javascript
-suite
-  .afterEach(result => {
-    // This runs when all tests (sync and async) are finished
-    if (result.isValid()) {
-      submitForm();
-    }
-  })
-  .run(data);
-```
-
-:::info
-Unlike `await`, the `after` callback may run **multiple times** (once for sync completion, and again for each async completion). [Read more about Handling Suite Completion](../writing_your_suite/handling_completion.md).
-:::
 
 ## Using AbortSignal
 
@@ -3879,12 +3527,9 @@ You can use the AbortSignal to stop the execution of your async test, or pass it
 
 [More on AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal).
 
-```javascript
+```js
 test('name', 'Already Taken', async ({ signal }) => {
-  const response = await fetch('/check-username', {
-    signal,
-    body: JSON.stringify({ username: data.username }),
-  });
+  // ...
 });
 ```
 
@@ -4096,7 +3741,7 @@ const suite = create(data => {
   }); // this test has a severity level of `warn`
 });
 
-const validationResult = suite.run(data);
+const validationResult = suite(data);
 ```
 
 **Limitations when using warn()**
@@ -4153,62 +3798,69 @@ result.getWarnings('password'); // Returns an array of warnings for the password
 
 # Accessing Vest's Result
 
-Vest validations return a results object that holds all the information regarding the current run and methods to interact with the data. You can access it in three ways:
+Vest validations return a results object that holds all the information regarding the current run and methods to interact with the data.
 
-- `const result = suite.run(data);` — runs the suite and returns the latest result (Promise-like when async).
-- `const result = suite.get();` — returns the current result without running.
-- `suite.hasErrors()`, `suite.isValid()`, etc. — selectors are also exposed directly on the suite.
+A result object would look somewhat like this:
 
 ```js
-const result = suite.run(data);
+{
+  'valid': false,           // Whether the suite as a whole is valid or not
+  'errorCount': 0,          // Overall count of errors in the suite
+  'warnCount': 0,           // Overall count of warnings in the suite
+  'testCount': 0,           // Overall test count for the suite (passing, failing and warning)
+  'pendingCount': 0,        // Overall count of unresolved async tests in the suite
+  'tests': {                // An object containing all non-skipped tests
+    ['fieldName']: {        // Name of each field
+      'errorCount': 0,      // Error count per field
+      'errors': [],         // Array of error messages fer field (may be undefined)
+      'warnings': [],       // Array of warning messages fer field (may be undefined)
+      'warnCount': 0,       // Warning count per field
+      'testCount': 0,       // Overall test count for the field (passing, failing and warning)
+      'pendingCount': 0,    // Overall count of unresolved async tests in the current field
+      'valid': false,       // Field specific validity
+    },
+    'groups': {             // An object containing groups declared in the suite
+      ['fieldName']: {      // Subset of res.tests[fieldName]
+        /*... */            // only containing tests that ran within the group
+      }
+    }
+  }
+  'errors': [               // An array containing all the errors occurred in order
+    {
+      fieldName: "fieldname",
+      groupName: undefined, // or whatever group we're in
+      message: "validation message"
+    },
+  ],
+  'warnings': [{            // An array containing all the warnings occurred in order
+      fieldName: "fieldname",
+      groupName: undefined, // or whatever group we're in
+      message: "validation message"
+    }]
+}
 ```
 
-:::note Async suites
-When your suite contains async tests, the returned result is also a Promise. You can still read sync fields immediately, while pending async fields report `isPending('field') === true`.
-:::
+# Suite Result Methods
 
-## Example result object
+Along with this data, our result object also contains a few other methods that can be used to interact with the data. All these methods can be accessed in the following ways:
 
-```javascript
-{
-  errorCount: 1,
-  warnCount: 1,
-  testCount: 4,
-  pendingCount: 0,
-  valid: false,
-  errors: [{ fieldName: 'field1', message: 'msg1', groupName: undefined }],
-  warnings: [{ fieldName: 'field3', message: undefined, groupName: undefined }],
-  tests: {
-    field1: {
-      testCount: 2,
-      errorCount: 1,
-      pendingCount: 0,
-      warnCount: 0,
-      valid: false,
-      errors: ['msg1'],
-      warnings: [],
-    },
-    field2: {
-      testCount: 1,
-      errorCount: 0,
-      pendingCount: 0,
-      warnCount: 0,
-      valid: true,
-      errors: [],
-      warnings: [],
-    },
-    field3: {
-      testCount: 1,
-      errorCount: 0,
-      pendingCount: 0,
-      warnCount: 1,
-      valid: true,
-      errors: [],
-      warnings: [],
-    },
-  },
-  types: undefined, // present when a schema is provided
-}
+1. Directly via the result object returned by the suite.
+2. Calling the method on the suite itself.
+3. Via the `suite.get()` method.
+
+All the following examples are valid and equivalent:
+
+```js
+const result = suite(formData);
+
+// 1 - Directly via the result object
+result.hasErrors();
+
+// 2 - Calling the method on the suite itself
+suite.hasErrors();
+
+// 3 - Via the `suite.get()` method
+suite.get().hasErrors();
 ```
 
 ## `isValid`
@@ -4224,9 +3876,11 @@ A _suite_ is considered valid if the following conditions are met:
 - There are no pending async tests.
 
 ```js
-suite.isValid();
-suite.get().isValid();
 result.isValid();
+
+suite.isValid();
+
+suite.get().isValid();
 ```
 
 ### Field validity
@@ -4238,9 +3892,11 @@ A _field_ is considered valid if the following conditions are met:
 - The field has no pending tests.
 
 ```js
-suite.isValid('username');
-suite.get().isValid('username');
 result.isValid('username');
+
+suite.isValid('username');
+
+suite.get().isValid('username');
 ```
 
 :::tip NOTE
@@ -4252,20 +3908,20 @@ When `isValid` equals `false` it does not necessarily mean that the form is inVa
 If you only need to know if a certain field has validation errors or warnings but don't really care which they are, you can use `hasErrors` or `hasWarnings` functions.
 
 ```js
-result.hasErrors('username');
+resultObject.hasErrors('username');
 // true
 
-result.hasWarnings('password');
+resultObject.hasWarnings('password');
 // false
 ```
 
 In case you want to know whether the whole suite has errors or warnings (to prevent submit, for example), you can use the same functions, just without specifying a field
 
 ```js
-result.hasErrors();
+resultObject.hasErrors();
 // true
 
-result.hasWarnings();
+resultObject.hasWarnings();
 // true
 ```
 
@@ -4274,8 +3930,8 @@ result.hasWarnings();
 Similar to `isValid`, but returns the result for a specified [group](../writing_tests/advanced_test_features/grouping_tests.md). Providing a group name that doesn't exist will return `false`. When adding a fieldName, only the field within that group will be checked.
 
 ```js
-result.isValidByGroup('groupName', 'fieldName');
-result.isValidByGroup('groupName');
+resultObject.isValidByGroup('groupName', 'fieldName');
+resultObject.isValidByGroup('groupName');
 ```
 
 ### Return Value
@@ -4296,20 +3952,20 @@ Similar to `hasErrors` and `hasWarnings`, but returns the result for a specified
 To get the result for a given field in the group:
 
 ```js
-result.hasErrorsByGroup('groupName', 'fieldName');
+resultObject.hasErrorsByGroup('groupName', 'fieldName');
 // true
 
-result.hasWarningsByGroup('groupName', 'fieldName');
+resultObject.hasWarningsByGroup('groupName', 'fieldName');
 // false
 ```
 
 And to get the result for a whole group.
 
 ```js
-result.hasErrorsByGroup('groupName');
+resultObject.hasErrorsByGroup('groupName');
 // true
 
-result.hasWarningsByGroup('groupName');
+resultObject.hasWarningsByGroup('groupName');
 // true
 ```
 
@@ -4373,27 +4029,27 @@ If a field name is provided, it returns the first warning message for that field
 These functions return an array of errors for the specified field. If no field is specified, it returns an object with all fields as keys and their error arrays as values.
 
 ```js
-result.getErrors('username');
+resultObject.getErrors('username');
 // ['Username is too short', `Username already exists`]
 
-result.getWarnings('password');
+resultObject.getWarnings('password');
 // ['Password must contain special characters']
 ```
 
 If there are no errors for the field, the function defaults to an empty array:
 
 ```js
-result.getErrors('username');
+resultObject.getErrors('username');
 // []
 
-result.getWarnings('username');
+resultObject.getWarnings('username');
 // []
 ```
 
 You can also call these functions without a field name, which will return you an array per field:
 
 ```js
-result.getErrors();
+resultObject.getErrors();
 
 // {
 //   username: ['Username is too short', `Username already exists`],
@@ -4410,30 +4066,32 @@ If you did not specify error messages for your tests, your errors array will be 
 Just like get `getErrors` and `getWarnings`, but narrows the result to a specified [group](../writing_tests/advanced_test_features/grouping_tests.md).
 
 ```js
-result.getErrorsByGroup('groupName', 'fieldName');
-result.getWarningsByGroup('groupName', 'fieldName');
-result.getErrorsByGroup('groupName');
-result.getWarningsByGroup('groupName');
+resultObject.getErrorsByGroup('groupName', 'fieldName');
+resultObject.getWarningsByGroup('groupName', 'fieldName');
+resultObject.getErrorsByGroup('groupName');
+resultObject.getWarningsByGroup('groupName');
 ```
 
 [Read more about groups](../writing_tests/advanced_test_features/grouping_tests.md).
 
-## `.afterEach()` and `await suite.run()`
+## `.done()`
 
-[Read the full guide on Handling Suite Completion](./handling_completion.md).
+Done is a function that can be chained to your validation suite, and allows invoking callbacks whenever one, or all fields, are finished running - regardless of the validation result.
 
-Use `.afterEach()` to register a callback that will be called after the initial sync completion and again after each async test finishes. This is the recommended way to handle completion logic, including async suites. You can also use `await suite.run()` to get the result when all tests are finished.
+If we specify a field name in our `done` call, Vest will not wait for the whole suite to finish before running our callback. It will invoke immediately when all tests with that given name finish running.
 
-| Parameter           | Type       | Required? | Description                                   |
-| ------------------- | ---------- | --------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `callback`          | `Function` | Yes       | A callback to be run after each completion cycle. Use with `.afterEach(callback).run()` for completion logic.   |
-| `await suite.run()` | `Promise`  | No        | Returns a promise that resolves when the suite is done running. Use with async/await for modern async handling. |
+`.done()` calls can be infinitely chained after one another, and as the validation suite completes - they will all run immediately.
 
-If you need to check for completion of specific fields, do so inside your callback logic.
+`done` takes one or two arguments:
 
-`.afterEach()` can be chained before calling `.run()`, and multiple callbacks can be registered if needed.
+| Name        | Type       | Optional | Description                                                                                                                     |
+| ----------- | ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `fieldName` | `String`   | Yes      | If passed, the current done call will not wait for the whole suite to complete, but instead wait for a certain field to finish. |
+| `callback`  | `Function` | No       | A callback to be run when either the whole suite or the specified field finished running.                                       |
 
-Example:
+The result object is being passed down to the `done` object as an argument.
+
+In the below example, the `done` callback for `UserName` may run before the whole suite finishes. Only when the rest of the suite finishes, it will call the other two done callbacks that do not have a field name specified.
 
 ```js
 import { create, test, enforce } from 'vest';
@@ -4452,53 +4110,40 @@ const suite = create(data => {
   );
 });
 
-suite
-  .afterEach(res => {
+const validationResult = suite(data)
+  .done('UserName', res => {
     if (res.hasErrors('UserName')) {
       showUserNameErrors(res.errors);
     }
-    reportToServer(res);
-    promptUserQuestionnaire(res);
   })
-  .run();
+  .done(output => {
+    reportToServer(output);
+  })
+  .done(output => {
+    promptUserQuestionnaire(output);
+  });
 ```
 
 :::danger IMPORTANT
-Do not use `.afterEach()` conditionally, especially with async tests. This might cause unexpected behavior or missed callbacks. Instead, perform your conditional logic within your callback.
+.done calls must not be used conditionally - especially when involving async tests. This might cause unexpected behavior or missed callbacks. Instead, if needed, perform your conditional logic within your callback.
 :::
 
 ```js
 // 🚨 This might not work as expected when working with async validations
 
 if (field === 'username') {
-  suite
-    .afterEach(result => {
-      /*do something*/
-    })
-    .run();
+  result.done(() => {
+    /*do something*/
+  });
 }
 ```
 
 ```js
-// ✅ Instead, perform your checks within your after callback
+// ✅ Instead, perform your checks within your done callback
 
-suite
-  .afterEach(result => {
-    if (field === 'username') {
-      /*do something*/
-    }
-  })
-  .run();
-```
-
-## `.afterField()`
-
-Similar to `.afterEach()`, but runs when a specific field finishes validation.
-
-```javascript
-suite.afterField('username', res => {
-  if (res.hasErrors('username')) {
-    // handle username errors
+result.done(() => {
+  if (field === 'username') {
+    /*do something*/
   }
 });
 ```
@@ -4510,22 +4155,23 @@ Returns whether the suite, or a specific field are pending or not. A suite is co
 Returns `true` if the suite is pending, `false` otherwise.
 
 ```js
-import { create, test } from 'vest';
-
-const suite = create((data = {}) => {
+const suite = vest.create(() => {
   test('username', 'Username is already taken', async () => {
     await someServerCall();
   });
 });
 
-// Hybrid result: sync selectors work immediately
-const result = suite.run(); // Promise-like
+result.isPending();
 
-if (result.isPending('username')) {
-  // show spinner while async test runs
-}
+suite.isPending();
 
-await result; // resolves when async tests finish
+suite.get().isPending();
+
+result.isPending('username');
+
+suite.isPending('username');
+
+suite.get().isPending('username');
 ```
 
 ## isTested
@@ -4535,16 +4181,13 @@ Returns whether a given field has been tested or not. A field is considered test
 Returns `true` if the field is tested, `false` otherwise.
 
 ```js
-import { create, test, enforce } from 'vest';
-
-const suite = create((data = {}) => {
+const suite = vest.create(() => {
   test('username', 'Username is required', () => {
-    enforce(data.username).isNotBlank();
+    enforce(username).isNotBlank();
   });
 });
 
-const result = suite.run();
-result.isTested('username'); // true if username has been tested
+suite.isTested('username'); // true if username has been tested
 ```
 
 
@@ -4576,7 +4219,7 @@ Instead of dirty checking, Vest provides the `isTested` method. This method can 
 The following code will only display validation errors for the username field if it has been tested:
 
 ```js
-const result = suite.run({ username: '' });
+const result = suite({ username: '' });
 
 if (result.isTested('username')) {
   // Display validation errors for the username field
@@ -4602,6 +4245,10 @@ Vest provides three modes of execution - `Eager`, `One` and `All`. The mode dete
 
 To set the mode to `Eager`, you don't need to do anything since this is already the default behavior.
 
+:::tip NOTE
+In Vest version 4, Eager mode was opt-in, and instead of stopping execution of a field when its validations failed, Vest continued to validate all tests. The reason for changing the default behavior to Eager mode in Vest 5 is that there is no much value in validating the field after we know that it failed to begin with. Stopping execution after the first error can save significant time when testing a large number of fields or running expensive validation tests.
+:::
+
 ## All Mode
 
 `All` mode is the alternative mode of operation in Vest. In this mode, Vest continues validating all tests within a field, even if a test fails. This means that Vest will execute all tests and report all failures within the test suite.
@@ -4611,7 +4258,7 @@ To set the mode to `All`, you can use the `mode()` function within the `create()
 ```js
 import { create, test, mode, Modes } from 'vest';
 
-const suite = create(() => {
+const suite = create('suite_name', () => {
   mode(Modes.ALL); // set the mode to All
 
   test('field_name', 'error_message_1', () => {
@@ -4637,7 +4284,7 @@ To set the mode to `One`, you can use the `mode()` function within the `create()
 ```js
 import { create, test, mode, Modes } from 'vest';
 
-const suite = create(() => {
+const suite = create('suite_name', () => {
   mode(Modes.ONE); // set the mode to One
 
   // 🚨 If this test fails, all next tests will be skipped
@@ -4652,164 +4299,6 @@ const suite = create(() => {
 ```
 
 In the above example, if the first test fails, Vest will immediately stop executing any remaining tests for the same field and also skip all tests for subsequent fields within the test suite.
-
-
-# Focused Updates
-
-# Focused Updates
-
-Sometimes you want to run validation only for a specific field (e.g., on blur) or skip certain fields. Vest introduces the `suite.focus()` method for declarative control over execution flow.
-
-## Why Focus?
-
-In a large form, re-validating the entire suite on every keystroke can be inefficient and annoying for the user (e.g., showing errors for fields they haven't touched yet). Focused updates allow you to:
-
-- **Validate on Blur**: Run checks only for the field the user just left.
-- **Skip Expensive Tests**: Temporarily bypass heavy async validations when they aren't needed.
-- **Improve Performance**: Run only what's necessary.
-
-## Running Only Specific Fields
-
-Use `focus({ only: ... })` to restrict the run to specific fields.
-
-```javascript
-// Run only the 'username' field tests
-suite.focus({ only: 'username' }).run(formData);
-
-// Run multiple fields
-suite.focus({ only: ['username', 'password'] }).run(formData);
-```
-
-This is equivalent to using the `only()` hook inside the suite, but defined externally at runtime.
-
-## Skipping Fields
-
-Use `focus({ skip: ... })` to ignore specific fields.
-
-```javascript
-// Run everything EXCEPT 'terms_of_service'
-suite.focus({ skip: 'terms_of_service' }).run(formData);
-```
-
-## Fluent Chain
-
-`focus` returns a "runnable" interface, allowing you to chain it with `after` or `run`.
-
-```javascript
-suite
-  .focus({ only: 'email' })
-  .afterEach(res => updateUI(res))
-  .run(formData);
-```
-
-:::caution Behavior notes
-
-- Focused runs do not persist between calls. Each `focus` call applies only to the immediately following run.
-- When focusing specific fields, schema validation is skipped for fields outside the focus scope, allowing targeted validation even if the full payload is invalid.
-  :::
-
-
-# Handling Suite Completion
-
-# Handling Suite Completion
-
-Vest suites run synchronously by default, but they often contain asynchronous tests (e.g., checking if a username is taken). Vest provides two main ways to handle the completion of your suite:
-
-1.  **Promises (Recommended)**: `await suite.run()`
-2.  **Event Callbacks**: `suite.afterEach()` and `suite.afterField()`
-
-## 1. Promise-based Handling (Recommended)
-
-For most modern applications, simply awaiting the result is the cleanest way to handle async validations. The result object returned by `suite.run()` implements the Promise interface, so you can `await` it directly.
-
-The promise resolves **once**, when **all** tests (both synchronous and asynchronous) have finished.
-
-```javascript
-const result = await suite.run(formData);
-
-if (result.isValid()) {
-  // All tests passed! Submit the form.
-  submitForm(formData);
-} else {
-  // Handle errors
-  showErrors(result.getErrors());
-}
-```
-
-### When to use it?
-
-- When you need to block an action (like form submission) until validation is complete.
-- When you want linear, readable code using `async/await`.
-
-## 2. Using `suite.afterEach(callback)`
-
-If you prefer an event-driven approach, or if you need to react to updates _during_ the validation process (e.g., updating the UI as individual async tests complete), use `suite.afterEach()`.
-
-`suite.afterEach()` registers a callback that runs after the initial sync completion and again after each async test finishes. It is chainable and can be attached before or during the run.
-
-### Key Behavior
-
-Unlike a Promise which resolves only once, **`afterEach` callbacks may run multiple times**:
-
-1.  It runs **immediately** after the synchronous pass.
-2.  It runs **again** whenever an async test completes.
-
-This makes it perfect for keeping your UI in sync with the validation state.
-
-```javascript
-suite
-  .afterEach(res => {
-    // Called when the suite finishes sync execution
-    // AND whenever an async test completes
-    updateUI(res);
-  })
-  .run(data);
-```
-
-### When to use it?
-
-- When you want to update the UI reactively as validation progresses.
-- When you are using a framework that relies on callbacks or subscriptions.
-
-## 3. Using `suite.afterField(fieldName, callback)`
-
-Sometimes you only care about the completion of a specific field. `suite.afterField()` is a specialized hook that runs when all tests for a specific field have finished.
-
-This is highly useful for UI patterns like removing a loading spinner from a specific input "on blur" or when its validation completes.
-
-```javascript
-suite
-  .afterField('username', res => {
-    // Only runs when 'username' tests are finished
-    setLoading('username', false);
-
-    if (res.hasErrors('username')) {
-      showUsernameError(res.getErrors('username'));
-    }
-  })
-  .run(data);
-```
-
-## 4. Chaining Methods
-
-Both `after` and `afterField` return the suite API, allowing for fluent chaining.
-
-```javascript
-suite
-  .afterEach(updateGeneralUI)
-  .afterField('email', handleEmailCompletion)
-  .afterField('username', handleUsernameCompletion)
-  .run(data);
-```
-
-## Migration from V5
-
-In Vest 5, the `done()` method was used on the result object. In Vest 6, this has been moved to the suite object itself for better ergonomics and chaining support.
-
-| Vest 5                  | Vest 6                                |
-| :---------------------- | :------------------------------------ |
-| `res.done(cb)`          | `suite.afterEach(cb).run()`               |
-| `res.done('field', cb)` | `suite.afterField('field', cb).run()` |
 
 
 # Linking fields together
@@ -5113,7 +4602,7 @@ const suite = create((data, fieldName) => {
   });
 });
 
-const validationResult = suite.run(formData, changedField);
+const validationResult = suite(formData, changedField);
 ```
 
 :::tip Linking Related Fields to Run Together
@@ -5136,7 +4625,7 @@ const suite = create(data => {
   });
 });
 
-const validationResult = suite.run(formData);
+const validationResult = suite(formData);
 ```
 
 By using `skip()` and `only()` functions in Vest, you can easily exclude or include fields from being validated, making your validation process more efficient and effective.
@@ -5261,7 +4750,7 @@ If the field was skipped in all runs of the suite, it will be considered as opti
 ```js
 import { create, optional, only, test, enforce } from 'vest';
 
-const suite = create((data = {}) => {
+const suite = create((data, currentField) => {
   only(currentField); // only validate this specified field
 
   optional(['pet_color', 'pet_age']);
@@ -5279,8 +4768,8 @@ const suite = create((data = {}) => {
   });
 });
 
-suite.run({ name: 'Indie' }, 'pet_name').isValid(); // ✅ Since pet_color and pet_age are optional, the suite may still be valid
-suite.run({ age: 'Five' }, 'pet_age').isValid(); // 🚨 When erroring, optional fields still make the suite invalid
+suite({ name: 'Indie' }, 'pet_name').isValid(); // ✅ Since pet_color and pet_age are optional, the suite may still be valid
+suite({ age: 'Five' }, 'pet_age').isValid(); // 🚨 When erroring, optional fields still make the suite invalid
 ```
 
 ## If the field is empty in the data object
@@ -5304,7 +4793,7 @@ const suite = create(data => {
   });
 });
 
-const result = suite.run({
+const result = suite({
   username: 'John',
   age: '', // age is empty
 });
@@ -5344,8 +4833,8 @@ The following code demonstrates how to allow a field to be empty if a different 
 ```js
 const suite = create(data => {
   optional({
-    pet_name: () => !result.hasErrors('owner_name'),
-    owner_name: () => !result.hasErrors('pet_name'),
+    pet_name: () => !suite.get().hasErrors('owner_name'),
+    owner_name: () => !suite.get().hasErrors('pet_name'),
   });
 
   test(
@@ -5375,183 +4864,91 @@ Another notable distinction is that tests marked as warnings do not make the sui
 In some rare instances, you might have a field that is both optional and a warning. In these cases, you can combine the two options.
 
 
-# Schema Validation
+# Vest's Suite
 
-# Schema Validation
+# Vest's Suite: Writing Your Validation Suite
 
-Vest introduces optional schema validation using `n4s` (enforce).
+A Vest suite is the container for all your validations, where you can define and organize them. In this article, we will explain how to create a Vest suite and perform various operations on it.
 
-## Why use a Schema?
+## Basic Suite Structure
 
-Validating data structure is often the first step in any validation pipeline. Before checking _if_ a username is available, you want to know that the `username` field actually exists and is a string.
+You can create a Vest suite using the `create` function provided by the `Vest` module. Here's a basic example:
 
-Vest's schema support gives you:
-
-1.  **Type Safety**: Automatically infers TypeScript types for your data, so you get autocomplete and error checking in your suite.
-2.  **Structural Integrity**: Ensures your data matches the expected shape before running more complex validations.
-3.  **Fail Fast**: If the data structure is wrong, Vest fails immediately, saving resources.
-
-## Defining a Schema
-
-Use `enforce.shape`, `enforce.loose`, or `enforce.partial` to define your data structure.
-
-```javascript
-import { create, test, enforce } from 'vest';
-
-const userSchema = enforce.shape({
-  username: enforce.isString(),
-  age: enforce.isNumber(),
-  email: enforce.optional(enforce.isString()), // Optional field
-});
-
-const suite = create(data => {
-  // `data` is typed: { username: string, age: number, email?: string | undefined }
-
-  test('username', 'Must be at least 3 chars', () => {
-    enforce(data.username).longerThan(2);
-  });
-}, userSchema);
-```
-
-## How it works
-
-When you pass a schema to `create`:
-
-1.  Vest implicitly runs the schema validation _before_ your tests.
-2.  If the data structure doesn't match the schema (e.g., `age` is a string instead of a number), the suite run fails immediately for those fields.
-3.  Your tests run assuming the data types are correct.
-
-:::note Focused runs
-When you focus the suite with `focus({ only })`, schema validation is skipped for fields outside the focus scope. This lets you validate a single field even if the full payload does not satisfy the schema.
-:::
-
-## Schema Types
-
-- `enforce.shape({})`: Strict shape. No extra keys allowed.
-- `enforce.loose({})`: Loose shape. Extra keys are ignored.
-- `enforce.partial({})`: Partial shape. All keys are optional, but if present must match the type. No extra keys.
-- `enforce.isArrayOf(rule)`: Validates an array where every item matches the rule.
-
-## Inspecting schema results
-
-The suite result includes a `types` object that captures the validated `input` and coerced `output` from the schema run. This is useful for debugging and type-safe consumers.
-
-
-# The Suite Object
-
-# The Suite Object
-
-In the [Getting Started](../get_started.md) guide, we saw that `create()` returns a **Suite Object**. This object is your main interface for interacting with validations. It holds the state, runs the tests, and gives you the results.
-
-```javascript
+```js
 import { create } from 'vest';
 
-const suite = create((data, currentField) => {
-  // Your logic resides here
+const suite = create((data = {}) => {
+  // ... Your validations go here
 });
 ```
 
-## Running Validations
+You pass a callback function to the `create` function, which takes the form data as its first argument, and any other arguments you might want to pass. You can then define your validations inside this function.
 
-The most common method you'll use is `.run()`. It executes the callback you passed to `create`.
+## Running the Suite
 
-```javascript
-const result = suite.run(formData, 'username');
-```
+You can run your suite by calling it with the form data and any additional arguments you want to pass:
 
-:::note Async & Promises
-If your suite contains async tests (like checking a database), `.run()` returns a **Result Object** that also behaves like a **Promise**.
-You can `await suite.run(data)` to wait for all async operations to finish.
-Check out the **[Async Tests](../writing_tests/async_tests.md)** guide for details.
-:::
-
-## Passing Arguments
-
-You aren't limited to just passing `data`. Whatever arguments you pass to `.run()` are forwarded directly to your suite callback. This is great for handling "modes" or "steps" in multi-step forms.
-
-```javascript
-const suite = create((data, currentStep) => {
-  if (currentStep === 'billing') {
-    // only validate billing fields
-  }
+```js
+const suite = create((data = {}, currentField) => {
+  // ... Your validations go here
 });
 
-// Pass the step name as the second argument
-suite.run(formData, 'billing');
+suite(formData, fieldName);
 ```
 
-## Stateless Validation (Server-Side)
+You can pass as many arguments as you need to the suite function, and they will be available inside the callback function.
 
-If you are running Vest on the server (Node.js, Deno, etc.), you usually don't want the suite to "remember" the previous request. You want a fresh start for every API call.
+## Getting the Current Suite State
 
-Use `.runStatic()` for this. It runs the suite, returns the result, and immediately discards the state.
+There are two main ways of getting the current state of our suite:
 
-```javascript
-// Perfect for API handlers
-app.post('/register', (req, res) => {
-  const result = suite.runStatic(req.body);
+### Using the Result Object
 
-  if (result.hasErrors()) {
-    return res.status(400).json(result.getErrors());
-  }
+When you run the suite, it returns a result object that contains the validation state:
+
+```js
+const result = suite(formData, fieldName);
+
+result.hasErrors(); // boolean
+```
+
+The result object is similar to the one you define in your suite function, except that it does not have the `done` property that allows you to set callbacks for async validations.
+
+### Using `suite.get()`
+
+You can also get the current state of your suite by calling `suite.get()` at any time, even within the suite itself. This method returns the current validation state, which may be partial if called within a running suite.
+
+This method is especially useful if we want to access our suite state from within a running suite, or when out of context - for example, from a different UI component than our form.
+
+## Cleaning up the Suite State
+
+If you need to clean up the validation state of your suite, you can call `suite.reset()`. This will reset the state of the suite and cancel any pending async validations that might still be running.
+
+## Resetting a Single Field
+
+To reset the validity of a single field, you can call `suite.resetField(fieldName)`. This can be useful, for example, when you only want to run the validation on blur.
+
+## Removing a Single Field from the Suite State
+
+In some cases, you may want to remove a field from the suite state. For example, when the user removes a dynamically added field. In this case, you can call `suite.remove(fieldName)` to remove the field from the state and cancel any pending async validations that might still be running.
+
+Note that you don't need to use `suite.remove` very often, as most users can simply use `reset` and `omitWhen`.
+
+## Subscribing to Suite State Changes
+
+You can subscribe to changes in the suite state by calling `suite.subscribe(callback)`. The callback will be called whenever the suite state changes internally.
+
+```js
+suite.subscribe(() => {
+  const result = suite.get();
+  // ... Do something with the result
 });
 ```
 
-## Managing State
+### Unsubscribing from Suite State Changes
 
-Vest is "stateful" by default. This means if you run validation for just _one_ field, Vest remembers the results of the _other_ fields from the previous run. This is excellent for Single Page Applications (SPAs) where you don't want to lose existing errors just because the user updated a different input.
+The `subscribe` method returns a function that you can call to unsubscribe from the suite state changes:
 
-However, sometimes you need to intervene manually.
-
-### Resetting the Suite
-
-If a user clears the form or navigates away, you might want to wipe the slate clean.
-
-```javascript
-// Clears all results, errors, and warnings
-suite.reset();
+```js
+const unsubscribe = suite.subscribe();
 ```
-
-### Resetting a Single Field
-
-To clear errors for just one field (useful if you want to implement a "reset input" button):
-
-```javascript
-suite.resetField('email');
-```
-
-### Removing a Field
-
-If a field is dynamically removed from your UI (like removing a row in a list), you should remove it from the validation state so `isValid()` doesn't get stuck waiting for it.
-
-```javascript
-suite.remove('passenger_2');
-```
-
-## Accessing Results Without Running
-
-Sometimes you need to check the validity of the form _without_ triggering a new run (e.g., to disable a submit button).
-
-```javascript
-const result = suite.get();
-```
-
-This returns the most recent result object instantly.
-
-## Advanced: SSR & Hydration
-
-If you are rendering on the server and hydrating on the client (Next.js, Remix, Nuxt), you can transfer Vest's state so the client picks up exactly where the server left off.
-
-We use the `SuiteSerializer` API for this.
-
-```javascript
-import { SuiteSerializer } from 'vest';
-
-// 1. Server: Serialize the suite after running
-const serializedState = SuiteSerializer.serialize(suite);
-
-// 2. Client: Resume the suite with that state
-SuiteSerializer.resume(suite, serializedState);
-```
-
-For a deep dive into this pattern, read **[Server-Side Rendering & Hydration](../suite_serialization.md)**.

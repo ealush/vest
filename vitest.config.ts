@@ -12,18 +12,5 @@ export default defineConfig({
     setupFiles: ['vx/config/vitest/customMatchers.ts'],
   },
   root: __dirname,
-  plugins: [
-    tsconfigPaths({
-      loose: true,
-      projects: [
-        'packages/vest-utils',
-        'packages/context',
-        'packages/vestjs-runtime',
-        'packages/vast',
-        'packages/n4s',
-        'packages/vest',
-        'packages/anyone',
-      ],
-    }),
-  ],
+  plugins: [],
 });

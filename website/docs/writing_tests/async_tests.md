@@ -5,78 +5,21 @@ description: Here's how to write async tests.
 keywords: [Vest, Async, Validations, AbortSignal, AbortController, lazy]
 ---
 
-# Async Tests
+# Writing Asynchronous Tests
 
-Vest supports asynchronous validation tests (e.g., checking if a username exists on the server).
+Sometimes you need to validate your data with information not present in your current context, for example - data from the server, such as username availability. In those cases, you need to go out to the server and fetch data as part of your validation logic.
 
-```javascript
-import { create, test, enforce } from 'vest';
+An async test is declared by returning a promise from your test body (or making it an async function). When the promise resolves, your test passes, and when your promise rejects, it fails.
 
-const suite = create(data => {
-  test('username', 'Username already taken', async () => {
-    await doesUserExist(data.username);
-  });
+```js
+// Example using a promise
+test('name', 'I always fail', () => Promise.reject());
+
+// Example using async/await
+test('name', 'Already Taken', async () => {
+  return await doesUserExist(user);
 });
 ```
-
-:::note
-In Vest, `suite.run()` returns a hybrid result object that is also a Promise. This means you can `await` it directly.
-:::
-
-## Handling Async Results
-
-Because async tests take time to complete, `suite.run()` creates a result object that is initially "pending".
-
-### Option 1: Awaiting the Result
-
-In Vest, `suite.run()` returns a Promise-like object if there are async tests. You can simply `await` it.
-
-```javascript
-const result = await suite.run(data);
-
-if (result.isValid()) {
-  submitForm();
-}
-```
-
-### Synchronous Access
-
-`suite.run()` returns a hybrid object: it acts like a Promise for async completion, but its sync selectors are available immediately.
-
-```javascript
-const result = suite.run(data);
-
-// Sync selectors are available right away
-if (result.hasErrors('password')) {
-  showPasswordError();
-}
-
-if (result.isPending('username')) {
-  showSpinner();
-}
-
-// Await for final async completion
-await result;
-```
-
-### Option 2: Using `.afterEach()`
-
-If you prefer callbacks, or cannot use `await` at the call site, use the `.afterEach()` hook.
-
-```javascript
-suite
-  .afterEach(result => {
-    // This runs after the initial sync completion and after each async test finishes
-    if (result.isValid()) {
-      submitForm();
-    }
-  })
-  .run(data);
-```
-
-:::info
-Unlike `await`, the `afterEach` callback may run **multiple times** (once for sync completion, and again for each async completion). [Read more about Handling Suite Completion](../writing_your_suite/handling_completion.md).
-:::
 
 ## Using AbortSignal
 
@@ -92,11 +35,8 @@ You can use the AbortSignal to stop the execution of your async test, or pass it
 
 [More on AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal).
 
-```javascript
+```js
 test('name', 'Already Taken', async ({ signal }) => {
-  const response = await fetch('/check-username', {
-    signal,
-    body: JSON.stringify({ username: data.username }),
-  });
+  // ...
 });
 ```

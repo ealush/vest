@@ -13,23 +13,14 @@ Vest is a form validation framework designed to simplify and optimize form valid
 
 ### Validation Suites
 
-With Vest, you define your form validations in a validation suite, which is separate from your feature code. The suite is an object with methods such as `run`, `runStatic`, and `reset`, and it retains state between runs. Use `run` to execute the suite with your form data:
+With Vest, you define your form validations in a validation suite, which is separate from your feature code. The validation suite is where all the validations of a given form reside. The suite returns a function that can take in any data you have in your form. Here's an example:
 
 ```js
-import { create, test, enforce } from 'vest';
+import { create } from 'vest';
 
 const suite = create((data = {}) => {
-  test('username', 'Username is required', () => {
-    enforce(data.username).isNotBlank();
-  });
+  // Your validations go here
 });
-
-// Execute the suite
-const result = suite.run({ username: 'Dana' });
-
-if (result.isValid()) {
-  // Form is valid
-}
 ```
 
 ### Stateful Validation

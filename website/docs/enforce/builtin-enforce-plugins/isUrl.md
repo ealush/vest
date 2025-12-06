@@ -20,7 +20,7 @@ The `isURL` rule checks whether a given value is a valid URL. It accepts various
 To be used, the rule first needs to be imported:
 
 ```javascript
-import 'vest/isURL';
+import 'vest/enforce/isURL';
 
 enforce(value).isURL(options);
 ```

@@ -1,128 +1,71 @@
 ---
 sidebar_position: 11
-title: Server-Side & SSR
-description: Learn how to use Vest with Node.js and Server-Side Rendering (SSR).
+title: Server Side Validation
+description: Learn how to use the Vest with Node.js
 keywords:
   [
     Server side validation,
     Node.js,
     Validation state,
     Stateful vs stateless,
-    runStatic,
+    staticSuite,
     Resetting the suite,
     require,
     import,
     CommonJS,
     Package entry points,
-    SSR,
-    Hydration,
-    SuiteSerializer,
-    serialize,
-    resume,
   ]
 ---
 
-# Server-Side Validations
+# Server Side Validation
 
-Vest is isomorphic and runs in Node.js environments.
+Using Vest in node is mostly the same as it is in the browser, but you should consider your runtime.
 
-## Stateless Runs
+## Validation state
 
-On the server, you typically want a stateless validation run—one that doesn't remember the previous state of fields.
+When running your validations on the server, you want to keep each request isolated with its own state, and not update the same validation state between requests. Doing that can cause failed validations to seem successful or vice versa due to different requests relying on the same state. [Read more in the Understanding Vest's state section](./understanding_state.md).
 
-In Vest, use the `.runStatic()` method. Each call produces a fresh result object without merging into prior state.
+### Solution: Treat validations as stateless
 
-```javascript
-import { create, test, enforce } from 'vest';
+While when on the browser you usually want to treat validations as stateful - even though it might sometimes not be the case - on the server you almost always want to treat your validations as stateless.
 
-const suite = create(data => {
-  test('username', 'Required', () => {
-    enforce(data.username).isNotBlank();
+#### Option 1: Using a staticSuite
+
+Another option is to use a `staticSuite` instead of a regular suite. A `staticSuite` is a suite that creates a new suite result instance each time it's called, and doesn't take into account the previous validation runs. This means that each time a `staticSuite` is called, a new result object will be created:
+
+```js
+import { staticSuite, test, enforce } from 'vest';
+
+const suite = staticSuite(data => {
+  test('username', 'username is required', () => {
+    enforce(data.username).isNotEmpty();
   });
 });
 
-export default suite;
+suite(data);
 ```
 
-**Usage in API Handler:**
+In the example above, `suite` is a function that runs the validations, similar to the output of `vest.create`. Note that since the `staticSuite` creates a new result instance each time it's called, there's no need to reset the suite between runs.
 
-```javascript
-import suite from './validation';
+#### Option 2: Resetting the suite between runs
 
-app.post('/user', (req, res) => {
-  // runStatic guarantees a fresh, stateless result every time
-  const result = suite.runStatic(req.body);
+One option is to reset the entire suite before each run:
 
-  if ((result as any).then) {
-    // If async tests exist, wait for completion
-    return result.then(finalResult => {
-      if (finalResult.hasErrors()) {
-        return res.status(400).json(finalResult.getErrors());
-      }
-      // ...
-      return res.sendStatus(204);
+```js
+import { create } from 'vest';
+
+function serversideCheck(data) {
+  const suite = create(() => {
+    test('username', 'username is required', () => {
+      enforce(data.username).isNotEmpty();
     });
-  }
+  });
 
-  if (result.hasErrors()) {
-    return res.status(400).json(result.getErrors());
-  }
-
-  // ...
-  // ...
-});
-```
-
-## SSR & Hydration
-
-When using Vest with Server-Side Rendering (SSR) frameworks (like Next.js, Remix, or Nuxt), you often want to validate on the server, send the validation state to the client, and resume without rerunning everything.
-
-Use `SuiteSerializer.serialize` to serialize the suite state and `SuiteSerializer.resume` on the client to hydrate it.
-
-### Server Side
-
-```javascript
-// server.js
-import { SuiteSerializer } from 'vest';
-import suite from './suite';
-
-export async function action({ request }) {
-  const formData = await request.formData();
-  const data = Object.fromEntries(formData);
-
-  // Run validation
-  const result = suite.runStatic(data);
-
-  // Check for errors
-  if (result.hasErrors()) {
-    return json({
-      errors: result.getErrors(),
-      // Serialize the suite state to send to the client
-      vestState: SuiteSerializer.serialize(suite),
-    });
-  }
+  suite();
+  suite.reset();
 }
 ```
 
-### Client Side
+## Full stack validations
 
-On the client, hydrate the suite with the state received from the server using `SuiteSerializer.resume()`.
-
-```javascript
-// client.js
-import { SuiteSerializer } from 'vest';
-import suite from './suite';
-
-export function MyForm({ actionData }) {
-  // Resume the suite state if provided by the server
-  if (actionData?.vestState) {
-    SuiteSerializer.resume(suite, actionData.vestState);
-  }
-
-  // ... render form
-}
-```
-
-Once resumed, `suite.hasErrors()`, `suite.isValid()`, and other selectors will return data reflecting the server-side run. Subsequent calls to `suite.run()` on the client will update this state normally.
-
-For a deep dive into this pattern, read **[Server-Side Rendering & Hydration](./suite_serialization.md)**.
+Vest allows serializing and resuming validations across client and server. Read more in [suite serialization and resumption](./suite_serialization.md).

@@ -61,7 +61,7 @@ const suite = create((data, fieldName) => {
   });
 });
 
-const validationResult = suite.run(formData, changedField);
+const validationResult = suite(formData, changedField);
 ```
 
 :::tip Linking Related Fields to Run Together
@@ -84,7 +84,7 @@ const suite = create(data => {
   });
 });
 
-const validationResult = suite.run(formData);
+const validationResult = suite(formData);
 ```
 
 By using `skip()` and `only()` functions in Vest, you can easily exclude or include fields from being validated, making your validation process more efficient and effective.

@@ -1,18 +1,14 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-import { Highlight, themes } from 'prism-react-renderer';
-
-// const darkCodeTheme = require('prism-react-renderer/themes/dracula');
-// const lightCodeTheme = require('prism-react-renderer/themes/github');
+import { themes } from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   baseUrl: '/',
   favicon: 'favicon.ico',
   title: 'Vest',
-  tagline:
-    'Declarative validations framework inspired by unit testing libraries',
+  tagline: 'Declarative validations framework inspired by unit testing libraries',
   url: 'https://vestjs.dev',
   onBrokenLinks: 'throw',
   markdown: {
@@ -23,12 +19,6 @@ const config = {
   },
   organizationName: 'ealush', // Usually your GitHub org/user name.
   plugins: [
-    // [
-    //   require.resolve('@easyops-cn/docusaurus-search-local'),
-    //   {
-    //     indexBlog: false,
-    //   },
-    // ],
     [
       '@docusaurus/plugin-google-gtag',
       {
@@ -43,8 +33,7 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
-          sidebarPath: require.resolve('./sidebars.js'),
-          // Please change this to your repo.
+          sidebarPath: './sidebars.js',
           editUrl: 'https://github.com/ealush/vest/edit/latest/website/',
           lastVersion: 'current',
           versions: {
@@ -76,7 +65,7 @@ const config = {
           beforeDefaultRehypePlugins: [],
         },
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
+          customCss: './src/css/custom.css',
         },
       }),
     ],
@@ -195,10 +184,6 @@ const config = {
           {
             title: 'More',
             items: [
-              // {
-              //   label: "Blog",
-              //   to: "/blog",
-              // },
               {
                 label: 'GitHub',
                 href: 'https://github.com/ealush/vest',
@@ -210,29 +195,23 @@ const config = {
       },
       prism: {
         theme: themes.github,
-        darkTheme: themes.dracula,
+        darkTheme: themes.vsDark,
       },
       announcementBar: {
         id: 'announcementBar-vest-6',
-        content:
-          'Vest 6 is ready for testing 🎉 <a href="/vest-6-is-ready">Try it out now!</a>',
+        content: 'Vest 6 is ready for testing 🎉 <a href="/vest-6-is-ready">Try it out now!</a>',
         textColor: 'var(--announcement-bar-color)',
         isCloseable: true,
       },
       algolia: {
-        // temporary disabled until the index gets updated
-        // The application ID provided by Algolia
         appId: '08EPW2MDNA',
-
-        // Public API key: it is safe to commit it
         apiKey: '68ec0830ab24fde651af5d85e19dddfe',
-
         indexName: 'vestjs',
       },
     }),
 };
 
-module.exports = config;
+export default config;
 
 function badgeLink(url, badge, name) {
   return `<a href="${url}" class="header-badge" target="_blank">

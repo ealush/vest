@@ -1,86 +1,72 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
- */
-
-/* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary-lightest: #fdfdfd;
-  --ifm-color-primary-lighter: #4b6889;
-  --ifm-color-primary-light: #486383;
-  --ifm-color-primary: #697098;
-  --ifm-color-primary-dark: #3b516b;
-  --ifm-color-primary-darker: #374d65;
-  --ifm-color-primary-darkest: #212432;
-  --ifm-font-family-base: 'Rubik', sans-serif;
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
   --ifm-code-font-size: 95%;
   --ifm-heading-color: var(--ifm-font-color-base);
+  --ifm-border-radius-base: 12px;
+  --ifm-color-primary: #6366f1;
+  --ifm-color-primary-dark: #4f46e5;
+  --ifm-color-primary-darker: #4338ca;
+  --ifm-color-primary-darkest: #3730a3;
+  --ifm-color-primary-light: #818cf8;
+  --ifm-color-primary-lighter: #a5b4fc;
+  --ifm-color-primary-lightest: #c7d2fe;
+  --ifm-background-color: #ffffff;
+  --ifm-navbar-background-color: rgba(255, 255, 255, 0.85);
+  --ifm-navbar-shadow: none;
+  --docusaurus-highlighted-code-line-bg: rgba(99, 102, 241, 0.08);
   --main-content-background-color: none;
-  --darkest-alt: #171819;
-  --announcement-bar-background: var(--ifm-color-primary-lightest);
-  --announcement-bar-color: var(--darkest-alt);
+  --announcement-bar-background: rgba(99, 102, 241, 0.08);
+  --announcement-bar-color: #0f172a;
 }
 
 html[data-theme='dark'] {
-  --ifm-background-color: var(--darkest-alt);
-  --announcement-bar-background: var(--ifm-color-primary-light);
-  --announcement-bar-color: var(--ifm-color-primary-lightest);
+  --ifm-background-color: #0f172a;
+  --ifm-navbar-background-color: rgba(15, 23, 42, 0.75);
+  --ifm-color-primary: #818cf8;
+  --ifm-color-primary-dark: #6366f1;
+  --ifm-color-primary-darker: #4f46e5;
+  --ifm-color-primary-darkest: #4338ca;
+  --ifm-color-primary-light: #a5b4fc;
+  --ifm-color-primary-lighter: #c7d2fe;
+  --ifm-color-primary-lightest: #e0e7ff;
+  --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.06);
+  --announcement-bar-background: rgba(99, 102, 241, 0.12);
+  --announcement-bar-color: #e0e7ff;
 }
 
 main {
   background-color: var(--main-content-background-color);
 }
 
-.aa-DetachedSearchButton {
-  color: blue;
+.navbar {
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
 }
 
-h1 {
-  padding-bottom: 1rem;
+html[data-theme='dark'] .navbar {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .docusaurus-highlight-code-line {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--docusaurus-highlighted-code-line-bg);
   display: block;
   margin: 0 calc(-1 * var(--ifm-pre-padding));
   padding: 0 var(--ifm-pre-padding);
 }
 
 .footer {
-  background-color: #272a36;
+  background-color: #0b1220;
 }
 
-html[data-theme='dark'] .docusaurus-highlight-code-line {
-  background-color: rgba(0, 0, 0, 0.3);
+html[data-theme='dark'] .footer {
+  background-color: #0b1220;
 }
 
-html[data-theme='dark'] .navbar {
-  background-color: var(--ifm-background-color);
-  border-bottom: 1px solid var(--ifm-color-primary-darker);
-}
-
-html[data-theme='light'] .hero__primary.hero {
-  background-color: var(--ifm-color-primary-lightest);
-  color: var(--ifm-color-primary-darkest);
-}
-
-html[data-theme='dark'] .hero__primary.hero {
-  background-color: var(--ifm-background-color);
-  color: var(--ifm-color-primary-darkest);
-}
-
-html[data-theme='dark'] .hero__title {
-  color: var(--ifm-color-primary-lightest);
-}
-
-.hero__title {
-  text-transform: uppercase;
-  color: var(--ifm-heading-color);
-}
-
+.hero__title,
 .hero__subtitle {
   color: var(--ifm-heading-color);
 }

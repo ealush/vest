@@ -1,88 +1,80 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
- */
-
-/* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary-lightest: #fdfdfd;
-  --ifm-color-primary-lighter: #4b6889;
-  --ifm-color-primary-light: #486383;
-  --ifm-color-primary: #697098;
-  --ifm-color-primary-dark: #3b516b;
-  --ifm-color-primary-darker: #374d65;
-  --ifm-color-primary-darkest: #212432;
-  --ifm-font-family-base: 'Rubik', sans-serif;
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
   --ifm-code-font-size: 95%;
-  --ifm-heading-color: var(--ifm-font-color-base);
-  --main-content-background-color: none;
-  --darkest-alt: #171819;
-  --announcement-bar-background: var(--ifm-color-primary-lightest);
-  --announcement-bar-color: var(--darkest-alt);
+  --ifm-border-radius-base: 12px;
+
+  /* Midnight & Neon palette (light mode) */
+  --ifm-color-primary: #6366f1;
+  --ifm-color-primary-dark: #4f46e5;
+  --ifm-color-primary-darker: #4338ca;
+  --ifm-color-primary-darkest: #3730a3;
+  --ifm-color-primary-light: #818cf8;
+  --ifm-color-primary-lighter: #a5b4fc;
+  --ifm-color-primary-lightest: #c7d2fe;
+
+  --ifm-background-color: #ffffff;
+  --ifm-navbar-background-color: rgba(255, 255, 255, 0.82);
+  --ifm-navbar-shadow: none;
+  --ifm-heading-color: #0f172a;
+  --ifm-font-color-base: #111827;
+  --ifm-card-background-color: #f8fafc;
+  --docusaurus-highlighted-code-line-bg: rgba(99, 102, 241, 0.08);
 }
 
 html[data-theme='dark'] {
-  --ifm-background-color: var(--darkest-alt);
-  --announcement-bar-background: var(--ifm-color-primary-light);
-  --announcement-bar-color: var(--ifm-color-primary-lightest);
+  --ifm-background-color: #0f172a;
+  --ifm-font-color-base: #e2e8f0;
+  --ifm-heading-color: #f8fafc;
+  --ifm-navbar-background-color: rgba(15, 23, 42, 0.78);
+  --ifm-card-background-color: rgba(30, 41, 59, 0.5);
+  --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.08);
+}
+
+body {
+  background: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.06), transparent 25%),
+    radial-gradient(circle at 80% 0%, rgba(79, 70, 229, 0.05), transparent 20%),
+    var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
 }
 
 main {
-  background-color: var(--main-content-background-color);
+  background-color: transparent;
 }
 
-.aa-DetachedSearchButton {
-  color: blue;
-}
-
-h1 {
-  padding-bottom: 1rem;
-}
-
-.docusaurus-highlight-code-line {
-  background-color: rgba(0, 0, 0, 0.1);
-  display: block;
-  margin: 0 calc(-1 * var(--ifm-pre-padding));
-  padding: 0 var(--ifm-pre-padding);
-}
-
-.footer {
-  background-color: #272a36;
-}
-
-html[data-theme='dark'] .docusaurus-highlight-code-line {
-  background-color: rgba(0, 0, 0, 0.3);
+.navbar {
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
 }
 
 html[data-theme='dark'] .navbar {
-  background-color: var(--ifm-background-color);
-  border-bottom: 1px solid var(--ifm-color-primary-darker);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
 }
 
-html[data-theme='light'] .hero__primary.hero {
-  background-color: var(--ifm-color-primary-lightest);
-  color: var(--ifm-color-primary-darkest);
+.docusaurus-highlight-code-line {
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+  background-color: var(--docusaurus-highlighted-code-line-bg);
 }
 
-html[data-theme='dark'] .hero__primary.hero {
-  background-color: var(--ifm-background-color);
-  color: var(--ifm-color-primary-darkest);
+.footer {
+  background: linear-gradient(180deg, rgba(79, 70, 229, 0.12), rgba(15, 23, 42, 0.92));
+  color: #e2e8f0;
 }
 
-html[data-theme='dark'] .hero__title {
-  color: var(--ifm-color-primary-lightest);
-}
-
-.hero__title {
-  text-transform: uppercase;
-  color: var(--ifm-heading-color);
-}
-
+.hero__title,
 .hero__subtitle {
   color: var(--ifm-heading-color);
+}
+
+html[data-theme='dark'] .hero__title,
+html[data-theme='dark'] .hero__subtitle {
+  color: var(--ifm-color-primary-lightest);
 }
 
 .header-badge {
@@ -91,7 +83,7 @@ html[data-theme='dark'] .hero__title {
 
 .header-github-link {
   content: '';
-  background-color: var(--ifm-color-primary-darkest);
+  background-color: var(--ifm-font-color-base);
   mask-image: url('/img/github.svg');
   mask-size: contain;
   mask-repeat: no-repeat;
@@ -99,8 +91,22 @@ html[data-theme='dark'] .hero__title {
   width: 1.5rem;
   height: 1.5rem;
   margin-right: 0.5rem;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.header-github-link:hover {
+  background-color: var(--ifm-color-primary);
+  transform: translateY(-1px);
 }
 
 html[data-theme='dark'] .header-github-link {
   background-color: var(--ifm-color-primary-lightest);
+}
+
+.aa-DetachedSearchButton {
+  color: var(--ifm-color-primary);
+}
+
+h1 {
+  padding-bottom: 1rem;
 }

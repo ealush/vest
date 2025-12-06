@@ -28,7 +28,7 @@ Vest is isomorphic and runs in Node.js environments.
 
 ## Stateless Runs
 
-On the server, you typically want a stateless validation run—one that doesn't remember the previous state of fields.
+On the server, you typically want a stateless validation run - one that doesn't remember the previous state of fields.
 
 In Vest, use the `.runStatic()` method. Each call produces a fresh result object without merging into prior state.
 

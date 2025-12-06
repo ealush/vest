@@ -27,11 +27,11 @@ keywords:
 
 Most validation libraries fall into one of two traps:
 
-1. **Schema libraries** (Zod, Yup, Joi) — Great for type safety, but they validate _everything_ at once. Not ideal when a user is filling out a form field-by-field.
+1. **Schema libraries** (Zod, Yup, Joi) - Great for type safety, but they validate _everything_ at once. Not ideal when a user is filling out a form field-by-field.
 
-2. **Form state managers** (Formik, Vuelidate) — Great for forms, but they lock you into one framework. Switching from React to Vue? Rewrite all your validation logic.
+2. **Form state managers** (Formik, Vuelidate) - Great for forms, but they lock you into one framework. Switching from React to Vue? Rewrite all your validation logic.
 
-**Vest takes a different approach.** It separates your validation logic from your UI entirely—making it fast, reusable, and framework-agnostic.
+**Vest takes a different approach.** It separates your validation logic from your UI entirely - making it fast, reusable, and framework-agnostic.
 
 > **If you know Jest or Mocha, you already know Vest.** The syntax is nearly identical.
 
@@ -42,7 +42,7 @@ Most validation libraries fall into one of two traps:
 | **Functional Matchers** | v8n, validatorjs                | Simple, composable                      | No structure, no state    |
 | **Schema Validation**   | Yup, Joi, Zod                   | Type-safe, expressive                   | All-or-nothing validation |
 | **Form State Managers** | Formik, Vuelidate, vee-validate | Integrated UX                           | Framework lock-in         |
-| **Vest**                | —                               | Stateful, per-field, framework-agnostic | New paradigm to learn     |
+| **Vest**                | -                               | Stateful, per-field, framework-agnostic | New paradigm to learn     |
 
 ## Feature Comparison
 
@@ -64,14 +64,14 @@ Most validation libraries fall into one of two traps:
 Your validation logic lives in its own file. Your React/Vue/Svelte component just calls `suite.run()` and reads the result. Clean components, testable validation.
 
 ```javascript
-// validation.js — framework-agnostic
+// validation.js - framework-agnostic
 const suite = create(data => {
   test('email', 'Required', () => {
     enforce(data.email).isNotBlank();
   });
 });
 
-// React, Vue, Svelte — your choice
+// React, Vue, Svelte - your choice
 const result = suite.run(formData);
 ```
 

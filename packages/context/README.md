@@ -1,6 +1,6 @@
 # Context 🪆
 
-Lightweight context propagation for JavaScript and TypeScript. Create a scoped storage object, run code inside it, and read the active value anywhere down the call stack—without depending on React.
+Lightweight context propagation for JavaScript and TypeScript. Create a scoped storage object, run code inside it, and read the active value anywhere down the call stack - without depending on React.
 
 - `createContext(defaultValue?)` – simplest option with a single value per run.
 - `createCascade(initializer?)` – merges parent and child context objects, ideal for layered data.

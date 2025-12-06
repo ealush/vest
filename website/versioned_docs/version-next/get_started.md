@@ -9,7 +9,7 @@ keywords: [Vest, Tutorial, Validation, JavaScript, React, Vue, Svelte]
 
 Welcome to Vest! If you've used unit testing frameworks like Jest or Mocha, you already know how to use Vest.
 
-Vest takes that familiar syntax—`test`, `describe` (we call it `suite`), and assertions—and brings it to your form validation logic.
+Vest takes that familiar syntax - `test`, `describe` (we call it `suite`), and assertions - and brings it to your form validation logic.
 
 ## Why Vest?
 

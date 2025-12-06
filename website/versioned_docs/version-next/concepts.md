@@ -18,7 +18,7 @@ The key insight behind Vest is that **validations are just tests**. Instead of m
 
 ### The Suite as a "Living Result"
 
-Think of a Suite as more than just a function—it's an **object that holds the truth about your data validity**. When you call `suite.run()`:
+Think of a Suite as more than just a function - it's an **object that holds the truth about your data validity**. When you call `suite.run()`:
 
 1. Vest executes your validation tests
 2. It stores the results internally
@@ -41,7 +41,7 @@ Think of a Suite as more than just a function—it's an **object that holds the 
 └─────────────────────────────────────────────────────────┘
 ```
 
-This is why Vest is so fast for form validation—it only runs what's needed while keeping the full picture intact.
+This is why Vest is so fast for form validation - it only runs what's needed while keeping the full picture intact.
 
 ## Core Concepts
 
@@ -75,9 +75,9 @@ Vest offers two modes:
 | **Stateful**  | `suite.run()`       | Client-side forms, SPAs, React/Vue/Svelte    |
 | **Stateless** | `suite.runStatic()` | Server-side API validation, Lambda functions |
 
-**Stateful** keeps results between runs—perfect for incrementally validating fields as users interact.
+**Stateful** keeps results between runs - perfect for incrementally validating fields as users interact.
 
-**Stateless** is a fresh start every time—perfect for API endpoints where each request is independent.
+**Stateless** is a fresh start every time - perfect for API endpoints where each request is independent.
 
 ### Framework Agnostic
 
@@ -99,4 +99,4 @@ Yes, Vest is compatible with various form libraries and UI frameworks. As a fram
 
 ### Does Vest support internationalization (i18n)?
 
-Yes, Vest supports internationalization. Use your already localized/translated strings as your error messages—Vest doesn't impose any specific i18n solution.
+Yes, Vest supports internationalization. Use your already localized/translated strings as your error messages - Vest doesn't impose any specific i18n solution.

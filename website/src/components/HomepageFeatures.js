@@ -9,7 +9,7 @@ const FeatureList = [
     emoji: '🧪',
     category: 'Familiar',
     description:
-      'Write validations using test() and enforce()—declarative syntax you already know from Mocha or Jest.',
+      'Write validations using test() and enforce() - declarative syntax you already know from Mocha or Jest.',
   },
   {
     title: 'Use it anywhere',

@@ -81,10 +81,10 @@ const { test, group, only } = suite; // typed helpers
 
 Use exported types to annotate variables and APIs:
 
-- `Suite<FieldName, GroupName, Callback>` — a suite instance.
-- `SuiteResult<FieldName, GroupName>` — the result returned from `run`, `runStatic`, or `get`.
-- `SuiteSummary<FieldName, GroupName>` — the static snapshot of all test results.
-- `IsolateTest<FieldName, GroupName>` — represents a Vest test.
+- `Suite<FieldName, GroupName, Callback>` - a suite instance.
+- `SuiteResult<FieldName, GroupName>` - the result returned from `run`, `runStatic`, or `get`.
+- `SuiteSummary<FieldName, GroupName>` - the static snapshot of all test results.
+- `IsolateTest<FieldName, GroupName>` - represents a Vest test.
 
 `SuiteResult` also carries `types.input` and `types.output` when a schema is present.
 

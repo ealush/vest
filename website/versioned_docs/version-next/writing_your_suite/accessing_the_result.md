@@ -9,9 +9,9 @@ keywords: [Vest, Results object, methods, selectors, hasErrors, isValid]
 
 Vest validations return a results object that holds all the information regarding the current run and methods to interact with the data. You can access it in three ways:
 
-- `const result = suite.run(data);` — runs the suite and returns the latest result (Promise-like when async).
-- `const result = suite.get();` — returns the current result without running.
-- `suite.hasErrors()`, `suite.isValid()`, etc. — selectors are also exposed directly on the suite.
+- `const result = suite.run(data);` - runs the suite and returns the latest result (Promise-like when async).
+- `const result = suite.get();` - returns the current result without running.
+- `suite.hasErrors()`, `suite.isValid()`, etc. - selectors are also exposed directly on the suite.
 
 ```js
 const result = suite.run(data);

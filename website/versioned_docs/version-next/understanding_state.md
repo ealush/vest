@@ -13,8 +13,8 @@ One of Vest's most powerful features is its **stateful validation**. Unlike sche
 
 Imagine a form with 10 fields. When a user updates just the "username" field, you have two options:
 
-1. **Re-validate everything** — Slow, and might flash errors on untouched fields
-2. **Validate only "username"** — Fast, but you lose the state of other fields
+1. **Re-validate everything** - Slow, and might flash errors on untouched fields
+2. **Validate only "username"** - Fast, but you lose the state of other fields
 
 Vest gives you the best of both worlds: **validate one field, keep the full picture**.
 
@@ -36,7 +36,7 @@ Step 3: User fixes username error
         └─→ Result: { username: ✓, password: ✓ }  ← Ready to submit!
 ```
 
-This is why `isValid()` always gives you the complete answer—even when you only validated one field.
+This is why `isValid()` always gives you the complete answer - even when you only validated one field.
 
 ## What Vest's State Does
 
@@ -49,7 +49,7 @@ Stateful validation is great for forms, but sometimes you need to reset it.
 
 ### Problem 1: Navigation in SPAs
 
-If a user submits a form successfully, navigates away, then comes back—the form still shows "success" state from the previous submission.
+If a user submits a form successfully, navigates away, then comes back - the form still shows "success" state from the previous submission.
 
 **Solution: Reset on mount**
 

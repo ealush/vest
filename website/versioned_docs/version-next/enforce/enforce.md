@@ -23,9 +23,9 @@ keywords:
 
 Enforce is a powerful assertion library that powers Vest's validations. It's designed to be:
 
-- **Fluent** — Chain multiple assertions together naturally
-- **Composable** — Build reusable validators from smaller pieces
-- **Extensible** — Add your own custom rules
+- **Fluent** - Chain multiple assertions together naturally
+- **Composable** - Build reusable validators from smaller pieces
+- **Extensible** - Add your own custom rules
 
 ## Basic Usage
 
@@ -107,7 +107,7 @@ test('age', 'Must be a valid age', () => {
 ```
 
 :::tip Functional Programming
-Enforce rules are **just functions**. The `compose` utility lets you build complex validators from simple, testable pieces—exactly like function composition in FP.
+Enforce rules are **just functions**. The `compose` utility lets you build complex validators from simple, testable pieces - exactly like function composition in FP.
 :::
 
 [Learn more about composing rules →](./composing_enforce_rules.md)
@@ -148,6 +148,6 @@ enforce(username).isValidUsername();
 
 ## Next Steps
 
-- [All Built-in Rules](./enforce_rules.md) — Complete reference
-- [Composing Rules](./composing_enforce_rules.md) — Build reusable validators
-- [Custom Rules](./creating_custom_rules.md) — Extend with your own logic
+- [All Built-in Rules](./enforce_rules.md) - Complete reference
+- [Composing Rules](./composing_enforce_rules.md) - Build reusable validators
+- [Custom Rules](./creating_custom_rules.md) - Extend with your own logic

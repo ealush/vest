@@ -42,7 +42,7 @@ Vest adopts the syntax and style of unit testing frameworks (Mocha, Jest). If yo
 
 ### 🎨 Framework Agnostic
 
-React, Vue, Svelte, Angular, or Vanilla JS—Vest works everywhere. It doesn't depend on your UI library.
+React, Vue, Svelte, Angular, or Vanilla JS - Vest works everywhere. It doesn't depend on your UI library.
 
 ### 🛡️ Type Safe
 

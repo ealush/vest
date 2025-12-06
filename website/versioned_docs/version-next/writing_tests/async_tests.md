@@ -52,7 +52,7 @@ One of Vest's superpowers is **built-in race condition handling**. Consider this
 suite.run({ username: 'ABC' });
 ```
 
-This is handled automatically—no extra code required.
+This is handled automatically - no extra code required.
 
 ## Handling Async Results
 

@@ -18,7 +18,7 @@ Validation suites often contain expensive operations, such as:
 
 If the relevant data hasn't changed (e.g., the user is typing in the "password" field, but the "username" field hasn't changed), re-running the username check is wasteful. Memoization lets you skip these tests and reuse the previous result.
 
-Unlike the previous `test.memo` which was limited to single tests, the new `memo` can wrap **any** part of your suite—single tests, multiple tests, groups, or arbitrary logic.
+Unlike the previous `test.memo` which was limited to single tests, the new `memo` can wrap **any** part of your suite - single tests, multiple tests, groups, or arbitrary logic.
 
 ## Usage
 

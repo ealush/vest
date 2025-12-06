@@ -48,12 +48,12 @@
     },
     "./package.json": "./package.json",
     "./minifyObject": {
-      "types": "./types/vest-utils.d.cts",
+      "types": "./types/exports/minifyObject.d.cts",
       "require": "./dist/exports/minifyObject.cjs",
       "import": "./dist/exports/minifyObject.mjs"
     },
     "./standardSchemaSpec": {
-      "types": "./types/vest-utils.d.cts",
+      "types": "./types/exports/standardSchemaSpec.d.cts",
       "require": "./dist/exports/standardSchemaSpec.cjs",
       "import": "./dist/exports/standardSchemaSpec.mjs"
     },

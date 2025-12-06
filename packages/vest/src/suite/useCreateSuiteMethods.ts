@@ -9,6 +9,7 @@ import {
   TFieldName,
   TGroupName,
   TSchema,
+  InferSchemaData,
 } from '../suiteResult/SuiteResultTypes';
 import { bindSuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
@@ -138,7 +139,7 @@ function useGetLifecycleMethods<
     run: persistedRun,
     runStatic: staticRunner,
     subscribe,
-    validate: createValidate(staticRunner),
+    validate: createValidate<T, S>(staticRunner),
   };
 }
 
@@ -228,7 +229,11 @@ function createStaticRunner<
   T extends CB = CB,
   S extends TSchema = undefined,
 >(suiteCallback: SuiteCallbackWithSchema<S, T>, schema?: S) {
-  return function runStatic(...runArgs: Parameters<T>) {
+  return function runStatic(
+    ...runArgs: S extends undefined
+      ? Parameters<T>
+      : [data: InferSchemaData<S>, ...args: any[]]
+  ) {
     const suite = createSuite<F, G, T, S>(suiteCallback, schema);
     return suite.run(...(runArgs as Parameters<typeof suite.run>));
   };
@@ -249,6 +254,12 @@ function useInitCallback<U extends (...args: any[]) => any>(cb: U): U {
   }) as U;
 }
 
-function createValidate(staticRunner: any) {
-  return (value: unknown) => (staticRunner as (value: unknown) => any)(value);
+function createValidate<T extends CB = CB, S extends TSchema = undefined>(
+  staticRunner: any,
+) {
+  return (
+    ...args: S extends undefined
+      ? [value: Parameters<T>[0]]
+      : [data: InferSchemaData<S>, ...args: any[]]
+  ) => (staticRunner as (...args: any[]) => any)(...args);
 }

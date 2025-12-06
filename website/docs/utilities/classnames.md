@@ -31,7 +31,7 @@ The way it works is simple. You call `classnames` with your result object, and t
 import classnames from 'vest/classnames';
 import suite from './suite';
 
-const res = suite.run(data);
+const res = suite(data);
 
 const cn = classnames(res, {
   untested: 'is-untested', // will only be applied if the provided field did not run yet

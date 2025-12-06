@@ -34,7 +34,7 @@ If the field was skipped in all runs of the suite, it will be considered as opti
 ```js
 import { create, optional, only, test, enforce } from 'vest';
 
-const suite = create((data = {}) => {
+const suite = create((data, currentField) => {
   only(currentField); // only validate this specified field
 
   optional(['pet_color', 'pet_age']);
@@ -52,8 +52,8 @@ const suite = create((data = {}) => {
   });
 });
 
-suite.run({ name: 'Indie' }, 'pet_name').isValid(); // ✅ Since pet_color and pet_age are optional, the suite may still be valid
-suite.run({ age: 'Five' }, 'pet_age').isValid(); // 🚨 When erroring, optional fields still make the suite invalid
+suite({ name: 'Indie' }, 'pet_name').isValid(); // ✅ Since pet_color and pet_age are optional, the suite may still be valid
+suite({ age: 'Five' }, 'pet_age').isValid(); // 🚨 When erroring, optional fields still make the suite invalid
 ```
 
 ## If the field is empty in the data object
@@ -77,7 +77,7 @@ const suite = create(data => {
   });
 });
 
-const result = suite.run({
+const result = suite({
   username: 'John',
   age: '', // age is empty
 });
@@ -117,8 +117,8 @@ The following code demonstrates how to allow a field to be empty if a different 
 ```js
 const suite = create(data => {
   optional({
-    pet_name: () => !result.hasErrors('owner_name'),
-    owner_name: () => !result.hasErrors('pet_name'),
+    pet_name: () => !suite.get().hasErrors('owner_name'),
+    owner_name: () => !suite.get().hasErrors('pet_name'),
   });
 
   test(

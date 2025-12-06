@@ -10,15 +10,19 @@ keywords:
 
 While less common when using Vest, sometimes it might be useful to validate a value against a schema. Vest comes with some schema validation rules that are handy for data-shape validation.
 
-To use it, simply use them in your project.
+To use it, simply import these rules in your project:
 
-These rules are available in `enforce`:
+```js
+import 'vest/enforce/schema';
+```
+
+These rules will then become available in `enforce`:
 
 - [enforce.shape() - Lean schema validation.](#enforceshape---lean-schema-validation)
   - [enforce.optional() - nullable values](#enforceoptional---nullable-values)
-  - [enforce.partial() - allows supplying a subset of keys](#enforcepartial---allows-supplying-a-subset-of-keys)
+  - [partial() - allows supplying a subset of keys](#partial---allows-supplying-a-subset-of-keys)
   - [enforce.loose() - loose shape matching](#enforceloose---loose-shape-matching)
-  - [enforce.isArrayOf() - array shape matching](#enforceisarrayof---array-shape-matching)
+- [enforce.isArrayOf() - array shape matching](#enforceisarrayof---array-shape-matching)
 
 ## enforce.shape() - Lean schema validation.
 
@@ -85,15 +89,23 @@ enforce({
 });
 ```
 
-### enforce.partial() - allows supplying a subset of keys
+### partial() - allows supplying a subset of keys
 
-When supplying a "shape" or a "loose" matcher, enforce requires at least the keys that are specified by the matcher, unless you manually wrap them with "optional". `enforce.partial` is a shorthand for applyong the `optional` modifier on all shape object keys. By wrapping the input of a matcher with `enforce.partial`, you can supply a subset of the keys that are required as if you had used `optional` on each key.
+When supplying a "shape" or a "loose" matcher, enforce requires at least the keys that are specified by the matcher, unless you manually wrap them with "optional". `partial` is a shorthand for applyong the `optional` modifier on all shape object keys. By wrapping the input of a matcher with `partial`, you can supply a subset of the keys that are required as if you had used `optional` on each key.
+
+To be used, `partial` needs to be imported directly from `vest/enforce/schema`:
 
 ```js
-enforce({}).partial({
-  firstName: enforce.isString(),
-  lastName: enforce.isString(),
-});
+import { partial } from 'vest/enforce/schema';
+```
+
+```js
+enforce({}).shape(
+  partial({
+    firstName: enforce.isString(),
+    lastName: enforce.isString(),
+  }),
+);
 ```
 
 This won't throw because all the fields are now treated as optional.

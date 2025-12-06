@@ -51,11 +51,13 @@ const config = {
             '4.x': {
               label: '4.x',
             },
-            '5.x': {
-              label: '5.x',
-            },
             current: {
-              label: '6',
+              label: '5.x',
+              banner: 'none',
+            },
+            next: {
+              label: '6.x (next)',
+              banner: 'unreleased',
             },
           },
         },

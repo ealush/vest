@@ -5,97 +5,75 @@ import styles from './HomepageFeatures.module.css';
 
 const FeatureList = [
   {
-    title: 'Easy to learn',
-    emoji: '💡',
-    description: (
-      <>
-        Vest adopts the syntax and style of unit testing frameworks, so you can
-        leverage the knowledge you already have to write your form validations.
-      </>
-    ),
+    title: 'Declarative by design',
+    emoji: '🧾',
+    category: 'DX',
+    description:
+      'Author validations like unit tests with suites, hooks, and familiar assertions.',
   },
   {
-    title: 'Framework Agnostic',
-    emoji: '🎨',
-    description: (
-      <>
-        Bring your own UI. Vest is framework agnostic, so you can use it with
-        any UI framework you have.
-      </>
-    ),
+    title: 'Framework agnostic',
+    emoji: '🌐',
+    category: 'Flexible',
+    description: 'Use Vest anywhere—React, Vue, Svelte, vanilla JS, or your favorite stack.',
   },
   {
-    title: 'Really smart',
-    emoji: '🧠',
-    description: (
-      <>
-        Vest takes care of all the annoying parts for you. It manages its own
-        state, handles async validations and much more.
-      </>
-    ),
+    title: 'Async ready',
+    emoji: '⚡️',
+    category: 'Performance',
+    description: 'Handle async flows out of the box with deterministic state management.',
   },
   {
-    title: 'Extendable',
+    title: 'Extendable core',
     emoji: '🧩',
-    description: (
-      <>
-        You can easily add new custom types of validations to Vest according to
-        your needs.
-      </>
-    ),
+    category: 'Composable',
+    description: 'Add custom validation rules and share suites across teams with ease.',
   },
   {
-    title: 'Reusable',
-    emoji: '♻️',
-    description: (
-      <>
-        Validation logic in Vest can be shared across multiple features in your
-        app.
-      </>
-    ),
+    title: 'Tiny footprint',
+    emoji: '🎯',
+    category: 'Shipping',
+    description: 'Zero dependencies and a few KBs—perfect for modern, lean bundles.',
   },
   {
-    title: 'Tiny',
-    emoji: '🐜',
-    description: (
-      <>
-        Packed with features, but optimized for size. Vest brings no
-        dependencies, and only takes a few KBs.
-      </>
-    ),
+    title: 'Test-like ergonomics',
+    emoji: '✅',
+    category: 'Productivity',
+    description: 'Readable error messages, deterministic runs, and intuitive APIs.',
   },
 ];
 
-function Feature({ emoji, title, description }) {
+function Feature({ emoji, title, category, description }) {
   return (
-    <div className={clsx('col col--4')}>
-      <div className={styles.featureCard}>
-        <div className="text--center">
-          <span className={styles.emoji}>{emoji}</span>
-        </div>
-        <div className="text--center padding-horiz--md">
-          <h3 className={styles.featureTitle}>{title}</h3>
-          <p className={styles.featureDescription}>{description}</p>
-        </div>
+    <div className={styles.featureCard}>
+      <div className={styles.featureHeader}>
+        <span className={styles.emoji}>{emoji}</span>
+        <span className={styles.category}>{category}</span>
       </div>
+      <h3 className={styles.featureTitle}>{title}</h3>
+      <p className={styles.featureDescription}>{description}</p>
     </div>
   );
 }
 
 export default function HomepageFeatures() {
   return (
-    <>
-      <section
-        className={clsx(styles.features, commonStyles.main_section_centered)}
-      >
-        <div className="container">
-          <div className="row">
-            {FeatureList.map((props, idx) => (
-              <Feature key={idx} {...props} />
-            ))}
-          </div>
+    <section className={clsx(styles.features, commonStyles.main_section_centered)}>
+      <div className="container">
+        <div className={styles.sectionHeader}>
+          <p className={styles.sectionEyebrow}>Built for modern DX</p>
+          <h2 className={styles.sectionTitle}>Everything you need to trust your forms</h2>
+          <p className={styles.sectionDescription}>
+            Vest pairs a lightweight core with a familiar testing-inspired API, so you can ship
+            confident experiences without fighting your validation layer.
+          </p>
         </div>
-      </section>
-    </>
+        <div className={styles.featuresGrid}>
+          {FeatureList.map((feature) => (
+            <Feature key={feature.title} {...feature} />
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

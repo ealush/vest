@@ -1,18 +1,20 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-import { Highlight, themes } from 'prism-react-renderer';
+import { themes as prismThemes } from 'prism-react-renderer';
 
-// const darkCodeTheme = require('prism-react-renderer/themes/dracula');
-// const lightCodeTheme = require('prism-react-renderer/themes/github');
+function badgeLink(url, badge, name) {
+  return `<a href="${url}" class="header-badge" target="_blank">
+    <img src="${badge}" alt="${name}"/>
+  </a>`;
+}
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   baseUrl: '/',
   favicon: 'favicon.ico',
   title: 'Vest',
-  tagline:
-    'Declarative validations framework inspired by unit testing libraries',
+  tagline: 'Declarative validations framework inspired by unit testing libraries',
   url: 'https://vestjs.dev',
   onBrokenLinks: 'throw',
   markdown: {
@@ -23,12 +25,6 @@ const config = {
   },
   organizationName: 'ealush', // Usually your GitHub org/user name.
   plugins: [
-    // [
-    //   require.resolve('@easyops-cn/docusaurus-search-local'),
-    //   {
-    //     indexBlog: false,
-    //   },
-    // ],
     [
       '@docusaurus/plugin-google-gtag',
       {
@@ -43,10 +39,11 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
-          sidebarPath: require.resolve('./sidebars.js'),
-          // Please change this to your repo.
+          sidebarPath: './sidebars.js',
           editUrl: 'https://github.com/ealush/vest/edit/latest/website/',
           lastVersion: 'current',
+          sidebarCollapsible: true,
+          sidebarCollapsed: true,
           versions: {
             '4.x': {
               label: '4.x',
@@ -76,7 +73,7 @@ const config = {
           beforeDefaultRehypePlugins: [],
         },
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
+          customCss: './src/css/custom.css',
         },
       }),
     ],
@@ -195,10 +192,6 @@ const config = {
           {
             title: 'More',
             items: [
-              // {
-              //   label: "Blog",
-              //   to: "/blog",
-              // },
               {
                 label: 'GitHub',
                 href: 'https://github.com/ealush/vest',
@@ -209,8 +202,8 @@ const config = {
         copyright: `Copyright © ${new Date().getFullYear()} ealush`,
       },
       prism: {
-        theme: themes.github,
-        darkTheme: themes.dracula,
+        theme: prismThemes.github,
+        darkTheme: prismThemes.vsDark,
       },
       announcementBar: {
         id: 'announcementBar-vest-6',
@@ -232,10 +225,4 @@ const config = {
     }),
 };
 
-module.exports = config;
-
-function badgeLink(url, badge, name) {
-  return `<a href="${url}" class="header-badge" target="_blank">
-    <img src="${badge}" alt="${name}"/>
-  </a>`;
-}
+export default config;

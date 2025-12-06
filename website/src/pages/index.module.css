@@ -1,131 +1,241 @@
-/**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
- */
-
 .heroBanner {
-  text-align: center;
   position: relative;
   overflow: hidden;
-  padding: 4rem 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: linear-gradient(
-    180deg,
-    var(--ifm-color-primary-lightest) 0%,
-    #ffffff 100%
-  );
+  padding: 5rem clamp(1rem, 5vw, 3rem);
+  background: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.08), transparent 35%),
+    radial-gradient(circle at 80% 0%, rgba(67, 56, 202, 0.1), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.6));
+  backdrop-filter: blur(10px);
 }
 
 html[data-theme='dark'] .heroBanner {
-  background: linear-gradient(180deg, #1b1b1d 0%, #000000 100%);
+  background: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.16), transparent 32%),
+    radial-gradient(circle at 80% 10%, rgba(67, 56, 202, 0.18), transparent 28%),
+    linear-gradient(180deg, rgba(17, 24, 39, 0.85), rgba(15, 23, 42, 0.9));
 }
 
-.logoContainer {
-  margin-bottom: 2rem;
+.heroGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(99, 102, 241, 0.15), transparent 40%),
+    radial-gradient(circle at 70% 10%, rgba(37, 99, 235, 0.1), transparent 35%),
+    radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.08), transparent 35%);
+  filter: blur(50px);
+  z-index: 1;
+}
+
+.heroGrid {
   position: relative;
-  z-index: 10;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: clamp(2rem, 4vw, 3rem);
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.vestLogo {
-  width: 150px;
-  height: 150px;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.titleContainer {
-  max-width: 800px;
-  margin: 0 auto 2rem;
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--ifm-color-primary);
+  font-weight: 600;
+  width: fit-content;
+  letter-spacing: 0.03em;
+  font-size: 0.95rem;
+}
+
+.heroTitle {
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  line-height: 1.1;
+  margin: 0;
+}
+
+.heroHighlight {
+  display: inline-block;
+  margin-left: 0.35rem;
+  color: var(--ifm-color-primary);
+  text-shadow: 0 10px 40px rgba(99, 102, 241, 0.35);
 }
 
 .heroTagline {
-  font-size: 1.5rem;
-  line-height: 1.5;
+  max-width: 640px;
+  font-size: 1.1rem;
   color: var(--ifm-color-emphasis-700);
-  margin-top: 1rem;
-  font-weight: 400;
 }
 
-.buttons {
+html[data-theme='dark'] .heroTagline {
+  color: #cbd5e1;
+}
+
+.heroActions {
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
   align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-top: 2rem;
 }
 
-.btn {
+.primaryCta {
+  border-radius: 999px;
+  box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+  padding-inline: 1.6rem;
+}
+
+.secondaryCta {
+  border-radius: 999px;
+  border: 1px solid var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
+  padding-inline: 1.6rem;
+}
+
+.installBar {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1.1rem;
-  padding: 0.8rem 2rem;
-  border-radius: 50px;
+  gap: 0.5rem;
+  background: rgba(15, 23, 42, 0.03);
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  margin-top: 0.35rem;
+  width: fit-content;
+}
+
+html[data-theme='dark'] .installBar {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(129, 140, 248, 0.35);
+}
+
+.installCommand {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.95rem;
+  color: inherit;
+}
+
+.copyButton {
+  border: 1px solid rgba(99, 102, 241, 0.5);
+  color: var(--ifm-color-primary);
+  background: rgba(99, 102, 241, 0.08);
+  border-radius: 10px;
+  padding: 0.45rem 0.85rem;
+  font-weight: 600;
   transition: all 0.2s ease;
-  text-decoration: none !important;
-  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+.copyButton:hover {
+  transform: translateY(-1px);
+  background: rgba(99, 102, 241, 0.14);
 }
 
-.btnQuickStart {
-  background-color: var(--ifm-color-primary);
-  color: #fff;
-  border: 2px solid var(--ifm-color-primary);
+.heroShowcase {
+  display: flex;
+  justify-content: center;
 }
 
-.btnQuickStart:hover {
-  background-color: var(--ifm-color-primary-dark);
-  border-color: var(--ifm-color-primary-dark);
-  color: #fff;
+.showcaseCard {
+  position: relative;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  padding: 1.25rem 1.5rem;
+  width: min(520px, 100%);
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
 }
 
-.btnGit {
-  background-color: var(--ifm-color-emphasis-200);
+html[data-theme='dark'] .showcaseCard {
+  background: rgba(17, 24, 39, 0.8);
+  border-color: rgba(129, 140, 248, 0.22);
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.45);
+}
+
+.cardGlow {
+  position: absolute;
+  inset: -10%;
+  background: radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.25), transparent 30%),
+    radial-gradient(circle at 80% 0%, rgba(56, 189, 248, 0.2), transparent 28%);
+  filter: blur(40px);
+  z-index: 1;
+}
+
+.cardHeader,
+.cardFooter,
+.codeBlock {
+  position: relative;
+  z-index: 2;
+}
+
+.cardHeader {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--ifm-color-primary);
+  margin-bottom: 0.65rem;
+}
+
+.codeBlock {
+  font-family: var(--ifm-font-family-monospace);
+  background: rgba(15, 23, 42, 0.03);
+  border-radius: 14px;
+  padding: 1rem;
   color: var(--ifm-color-emphasis-900);
-  border: 2px solid transparent;
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  overflow-x: auto;
 }
 
-.btnGit:hover {
-  background-color: var(--ifm-color-emphasis-300);
-  border-color: transparent;
-  color: var(--ifm-color-emphasis-900);
+html[data-theme='dark'] .codeBlock {
+  background: rgba(15, 23, 42, 0.65);
+  color: #e2e8f0;
+  border-color: rgba(129, 140, 248, 0.28);
 }
 
-html[data-theme='dark'] .btnGit {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #fff;
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  font-weight: 600;
+  color: var(--ifm-color-emphasis-800);
 }
 
-html[data-theme='dark'] .btnGit:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+html[data-theme='dark'] .cardFooter {
+  color: #cbd5e1;
 }
 
-.btnPromote {
-  display: none; /* Hiding promote button for cleaner look, or we can restyle it */
+.cardPill {
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--ifm-color-primary);
+  font-size: 0.85rem;
+  font-weight: 700;
 }
 
-@media screen and (max-width: 768px) {
+html[data-theme='dark'] .cardPill {
+  background: rgba(129, 140, 248, 0.22);
+}
+
+@media screen and (max-width: 996px) {
   .heroBanner {
-    padding: 3rem 1rem;
+    padding-top: 3.5rem;
+    padding-bottom: 4rem;
   }
 
-  .heroTagline {
-    font-size: 1.2rem;
+  .heroGrid {
+    grid-template-columns: 1fr;
   }
 
-  .buttons {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .btn {
-    width: 100%;
-    max-width: 300px;
+  .heroContent,
+  .heroShowcase {
+    text-align: left;
   }
 }

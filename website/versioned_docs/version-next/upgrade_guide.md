@@ -56,7 +56,8 @@ The memoization API has been promoted to a top-level export and can now wrap any
 
 ```diff
 - import { create, test } from 'vest';
-+ import { create, test, memo } from 'vest';
++ import { create, test } from 'vest';
++ import { memo } from 'vest/memo';
 
 create(data => {
 - test.memo('field', 'msg', () => { ... }, [data.field]);
@@ -112,7 +113,7 @@ I am migrating my Vest validation suites from version 5 to version 6. Please ref
 
 4.  **Memoization**:
     - Change `test.memo(...)` to `memo(() => { test(...) }, deps)`.
-    - Ensure `memo` is imported from 'vest'.
+    - Ensure `memo` is imported from 'vest/memo': `import { memo } from 'vest/memo';`.
 
 5.  **General**:
     - Keep all validation logic intact.

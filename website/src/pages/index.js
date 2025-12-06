@@ -43,9 +43,9 @@ function HomepageHeader() {
         </Link>
         <Link
           className={clsx('button', styles.btn, styles.btnGit)}
-          to="/docs/upgrade_guide"
+          to="/vest-6-is-ready"
         >
-          V5 Upgrade Guide
+          Try V6 instead
         </Link>
       </div>
     </header>

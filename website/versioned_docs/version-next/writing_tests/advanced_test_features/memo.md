@@ -25,7 +25,8 @@ Unlike the previous `test.memo` which was limited to single tests, the new `memo
 Import `memo` from `vest`:
 
 ```javascript
-import { create, test, memo } from 'vest';
+import { create, test } from 'vest';
+import { memo } from 'vest/memo';
 
 const suite = create(data => {
   // cacheKey: [data.username]

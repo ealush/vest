@@ -212,12 +212,13 @@ const config = {
         theme: themes.github,
         darkTheme: themes.dracula,
       },
-      // announcementBar: {
-      //   id: 'announcementBar-1',
-      //   content: '',
-      //   textColor: 'var(--announcement-bar-color)',
-      //   isCloseable: false,
-      // },
+      announcementBar: {
+        id: 'announcementBar-vest-6',
+        content:
+          'Vest 6 is ready for testing 🎉 <a href="/vest-6-is-ready">Try it out now!</a>',
+        textColor: 'var(--announcement-bar-color)',
+        isCloseable: true,
+      },
       algolia: {
         // temporary disabled until the index gets updated
         // The application ID provided by Algolia

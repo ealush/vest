@@ -3065,6 +3065,1847 @@ All of Vest's methods are now typed and make use of generics to enforce correct 
 Vest 5 uses Javascript Proxies, which were introduced in ES2015. Therefore, Vest 5 no longer supports pre-ES2015 versions of Javascript. If you need to support older browsers, you can still use Vest 4.
 
 
+# React
+
+# Using Vest with React
+
+Vest integrates seamlessly with React applications, providing powerful validation capabilities for forms and user input. This guide covers common patterns and best practices.
+
+## Quick Start
+
+```jsx
+import { create, test, enforce } from 'vest';
+import { useState } from 'react';
+
+const suite = create((data = {}) => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  test('username', 'Username must be at least 3 characters', () => {
+    enforce(data.username).longerThanOrEquals(3);
+  });
+
+  test('email', 'Email is required', () => {
+    enforce(data.email).isNotBlank();
+  });
+
+  test('email', 'Please enter a valid email', () => {
+    enforce(data.email).isEmail();
+  });
+});
+
+function SignupForm() {
+  const [formData, setFormData] = useState({ username: '', email: '' });
+  const [result, setResult] = useState(suite.get());
+
+  const handleChange = (name, value) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+    suite.afterEach(setResult).run({ ...formData, [name]: value }, name);
+  };
+
+  return (
+    <form>
+      <div>
+        <input
+          name="username"
+          value={formData.username}
+          onChange={e => handleChange('username', e.target.value)}
+        />
+        {result.hasErrors('username') && (
+          <span>{result.getErrors('username')[0]}</span>
+        )}
+      </div>
+
+      <div>
+        <input
+          name="email"
+          value={formData.email}
+          onChange={e => handleChange('email', e.target.value)}
+        />
+        {result.hasErrors('email') && (
+          <span>{result.getErrors('email')[0]}</span>
+        )}
+      </div>
+
+      <button type="submit" disabled={result.hasErrors()}>
+        Submit
+      </button>
+    </form>
+  );
+}
+```
+
+## Custom Hook Pattern
+
+Create a reusable hook for form validation:
+
+```jsx
+import { useCallback, useState } from 'react';
+
+function useVestForm(suite, initialData = {}) {
+  const [formData, setFormData] = useState(initialData);
+  const [result, setResult] = useState(suite.get());
+
+  const validate = useCallback(
+    (fieldName, value) => {
+      const newData = { ...formData, [fieldName]: value };
+      setFormData(newData);
+
+      suite
+        .afterEach(res => {
+          setResult(res);
+        })
+        .run(newData, fieldName);
+    },
+    [formData, suite],
+  );
+
+  const validateAll = useCallback(() => {
+    suite
+      .afterEach(res => {
+        setResult(res);
+      })
+      .run(formData);
+  }, [formData, suite]);
+
+  return {
+    formData,
+    result,
+    validate,
+    validateAll,
+    setFormData,
+  };
+}
+
+// Usage
+function MyForm() {
+  const { formData, result, validate, validateAll } = useVestForm(suite);
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    validateAll();
+
+    if (!result.hasErrors()) {
+      // Submit form
+    }
+  };
+
+  return <form onSubmit={handleSubmit}>{/* form fields */}</form>;
+}
+```
+
+## React Hook Form Integration
+
+Vest works excellently with [React Hook Form](https://react-hook-form.com/) through the official resolver:
+
+```bash
+npm install @hookform/resolvers
+```
+
+```jsx
+import { useForm } from 'react-hook-form';
+import { vestResolver } from '@hookform/resolvers/vest';
+import { create, test, enforce } from 'vest';
+
+const validationSuite = create((data = {}) => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  test('password', 'Password must be at least 8 characters', () => {
+    enforce(data.password).longerThanOrEquals(8);
+  });
+});
+
+function LoginForm() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: vestResolver(validationSuite),
+  });
+
+  const onSubmit = data => {
+    console.log('Valid data:', data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register('username')} />
+      {errors.username && <span>{errors.username.message}</span>}
+
+      <input type="password" {...register('password')} />
+      {errors.password && <span>{errors.password.message}</span>}
+
+      <button type="submit">Login</button>
+    </form>
+  );
+}
+```
+
+## Async Validation
+
+Handle async validations like API calls:
+
+```jsx
+import { create, test, enforce } from 'vest';
+
+const suite = create((data = {}) => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  test('username', 'Username is already taken', async () => {
+    // This test will run asynchronously
+    await enforce(data.username).isNotBlank();
+
+    const response = await fetch(
+      `/api/check-username?username=${data.username}`,
+    );
+    const { available } = await response.json();
+
+    enforce(available).isTruthy();
+  });
+});
+
+function UsernameField() {
+  const [username, setUsername] = useState('');
+  const [result, setResult] = useState(suite.get());
+  const [isChecking, setIsChecking] = useState(false);
+
+  const handleChange = value => {
+    setUsername(value);
+    setIsChecking(true);
+
+    suite
+      .afterEach(res => {
+        setResult(res);
+        setIsChecking(false);
+      })
+      .run({ username: value }, 'username');
+  };
+
+  return (
+    <div>
+      <input value={username} onChange={e => handleChange(e.target.value)} />
+      {isChecking && <span>Checking availability...</span>}
+      {result.hasErrors('username') && (
+        <span>{result.getErrors('username')[0]}</span>
+      )}
+    </div>
+  );
+}
+```
+
+## Best Practices
+
+### 1. Create Suite Outside Component
+
+Define your validation suite in a separate file or outside the component. Vest suites are stateful, so they should be treated as singletons for a given form.
+
+```javascript
+// validations/signupSuite.js
+import { create, test, enforce } from 'vest';
+
+export const suite = create(data => {
+  // validations
+});
+```
+
+```jsx
+// components/SignupForm.jsx
+import { suite } from '../validations/signupSuite';
+import { useState } from 'react';
+
+function SignupForm() {
+  const [result, setResult] = useState(suite.get());
+
+  // ...
+}
+```
+
+### 2. Field-Level Validation
+
+Validate individual fields on change for better UX:
+
+```jsx
+const handleFieldChange = (fieldName, value) => {
+  setFormData(prev => ({ ...prev, [fieldName]: value }));
+
+  // Only validate the changed field
+  suite
+    .afterEach(setResult)
+    .run({ ...formData, [fieldName]: value }, fieldName);
+};
+```
+
+### 3. Form-Level Validation on Submit
+
+Validate all fields before submission:
+
+```jsx
+const handleSubmit = e => {
+  e.preventDefault();
+
+  // Validate all fields
+  suite
+    .afterEach(result => {
+      if (!result.hasErrors()) {
+        // Submit form
+        submitForm(formData);
+      }
+    })
+    .run(formData);
+};
+```
+
+## TypeScript Support
+
+Vest has [excellent TypeScript support](/docs/typescript_support):
+
+```tsx
+import { create, test, enforce, SuiteResult } from 'vest';
+
+interface FormData {
+  username: string;
+  email: string;
+  age: number;
+}
+
+const suite = create((data: Partial<FormData> = {}) => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  test('email', 'Email is required', () => {
+    enforce(data.email).isNotBlank();
+  });
+
+  test('age', 'Must be 18 or older', () => {
+    enforce(data.age).greaterThanOrEquals(18);
+  });
+});
+
+function TypedForm() {
+  const [formData, setFormData] = useState<Partial<FormData>>({});
+  const [result, setResult] = useState<SuiteResult>(suite.get());
+
+  // Rest of component
+}
+```
+
+## Next Steps
+
+- Explore [Core Concepts](/docs/concepts) to understand Vest's architecture
+- Learn about [The Test Function](/docs/writing_tests/the_test_function) for advanced validation patterns
+- Check out [Async Tests](/docs/writing_tests/async_tests) for handling asynchronous validations
+
+
+# Svelte
+
+# Using Vest with Svelte
+
+Vest integrates naturally with Svelte's reactive stores and reactive statements, providing elegant validation for your forms.
+
+## Quick Start
+
+````svelte
+<script>
+  import { create, test, enforce } from 'vest';
+  import { writable } from 'svelte/store';
+
+  const suite = create((data = {}) => {
+    test('username', 'Username is required', () => {
+      enforce(data.username).isNotBlank();
+    });
+
+    test('username', 'Username must be at least 3 characters', () => {
+      enforce(data.username).longerThanOrEquals(3);
+    });
+
+    test('email', 'Email is required', () => {
+      enforce(data.email).isNotBlank();
+    });
+
+    test('email', 'Please enter a valid email', () => {
+      enforce(data.email).isEmail();
+    });
+  });
+
+  let formData = {
+    username: '',
+    email: ''
+  };
+
+  let result = suite.get();
+
+  function validateField(fieldName) {
+    suite.afterEach((res) => {
+      result = res;
+    }).run(formData, fieldName);
+  }
+
+  function handleSubmit() {
+    suite.afterEach((res) => {
+      result = res;
+
+      if (!res.hasErrors()) {
+        console.log('Form is valid!', formData);
+      }
+    }).run(formData);
+  }
+</script>
+
+<form on:submit|preventDefault={handleSubmit}>
+  <div>
+    <input
+      bind:value={formData.username}
+      on:input={() => validateField('username')}
+      placeholder="Username"
+    />
+    {#if result.hasErrors('username')}
+      <span class="error">{result.getErrors('username')[0]}</span>
+    {/if}
+  </div>
+
+  <div>
+    <input
+      bind:value={formData.email}
+      on:input={() => validateField('email')}
+      type="email"
+      placeholder="Email"
+    />
+    {#if result.hasErrors('email')}
+      <span class="error">{result.getErrors('email')[0]}</span>
+    {/if}
+  </div>
+
+  <button type="submit" disabled={result.hasErrors()}>
+    Submit
+  </button>
+</form>
+
+<style>
+  .error {
+    color: red;
+    font-size: 0.875rem;
+  }
+</style>
+
+## Using Svelte Stores
+
+Create a reactive store for your validation results:
+
+```svelte
+<script>
+  import { writable, derived } from 'svelte/store';
+  import { create, test, enforce } from 'vest';
+
+  const suite = create((data = {}) => {
+    test('email', 'Email is required', () => {
+      enforce(data.email).isNotBlank();
+    });
+
+    test('password', 'Password must be at least 8 characters', () => {
+      enforce(data.password).longerThanOrEquals(8);
+    });
+  });
+
+  const formData = writable({
+    email: '',
+    password: ''
+  });
+
+  const validationResult = writable(suite.get());
+
+  // Derived store for form validity
+  const isFormValid = derived(
+    validationResult,
+    $result => !$result.hasErrors()
+  );
+
+  function validateField(fieldName, value) {
+    formData.update(data => ({ ...data, [fieldName]: value }));
+
+    suite.afterEach((res) => {
+      validationResult.set(res);
+    }).run($formData, fieldName);
+  }
+
+  function handleSubmit() {
+    suite.afterEach((res) => {
+      validationResult.set(res);
+
+      if (!res.hasErrors()) {
+        console.log('Submitting:', $formData);
+      }
+    }).run($formData);
+  }
+</script>
+
+<form on:submit|preventDefault={handleSubmit}>
+  <input
+    value={$formData.email}
+    on:input={(e) => validateField('email', e.target.value)}
+    type="email"
+  />
+  {#if $validationResult.hasErrors('email')}
+    <span>{$validationResult.getErrors('email')[0]}</span>
+  {/if}
+
+  <button type="submit" disabled={!$isFormValid}>
+    Submit
+  </button>
+</form>
+
+## Reactive Statements
+
+Use Svelte's reactive statements for automatic validation:
+
+```svelte
+<script>
+  import { create, test, enforce } from 'vest';
+
+  const suite = create((data = {}) => {
+    test('username', 'Username is required', () => {
+      enforce(data.username).isNotBlank();
+    });
+  });
+
+  let username = '';
+  let result = suite.get();
+
+  // Automatically validate when username changes
+  $: if (username !== undefined) {
+    suite.afterEach((res) => {
+      result = res;
+    }).run({ username }, 'username');
+  }
+</script>
+
+<input bind:value={username} placeholder="Username" />
+{#if result.hasErrors('username')}
+  <span>{result.getErrors('username')[0]}</span>
+{/if}
+````
+
+## Async Validation
+
+Handle async validations with Svelte's reactivity:
+
+```svelte
+<script>
+  import { create, test, enforce } from 'vest';
+
+  const suite = create((data = {}) => {
+    test('username', 'Username is required', () => {
+      enforce(data.username).isNotBlank();
+    });
+
+    test('username', 'Username is already taken', async () => {
+      await enforce(data.username).isNotBlank();
+
+      const response = await fetch(`/api/check-username?username=${data.username}`);
+      const { available } = await response.json();
+
+      enforce(available).isTruthy();
+    });
+  });
+
+  let username = '';
+  let result = suite.get();
+  let isChecking = false;
+
+  async function checkUsername() {
+    isChecking = true;
+
+    suite.afterEach((res) => {
+      result = res;
+      isChecking = false;
+    }).run({ username }, 'username');
+  }
+
+  // Debounced reactive check
+  let debounceTimer;
+  $: {
+    clearTimeout(debounceTimer);
+    if (username) {
+      debounceTimer = setTimeout(checkUsername, 500);
+    }
+  }
+</script>
+
+<div>
+  <input bind:value={username} placeholder="Choose a username" />
+  {#if isChecking}
+    <span>Checking availability...</span>
+  {:else if result.hasErrors('username')}
+    <span class="error">{result.getErrors('username')[0]}</span>
+  {:else if result.isValid('username')}
+    <span class="success">Username is available!</span>
+  {/if}
+</div>
+```
+
+## Felte Integration
+
+Vest integrates with [Felte](https://felte.dev/), a popular form library for Svelte:
+
+```bash
+npm install felte @felte/validator-vest
+```
+
+```svelte
+<script>
+  import { createForm } from 'felte';
+  import { validator } from '@felte/validator-vest';
+  import { create, test, enforce } from 'vest';
+
+  const suite = create((data = {}) => {
+    test('email', 'Email is required', () => {
+      enforce(data.email).isNotBlank();
+    });
+
+    test('email', 'Please enter a valid email', () => {
+      enforce(data.email).isEmail();
+    });
+
+    test('password', 'Password must be at least 8 characters', () => {
+      enforce(data.password).longerThanOrEquals(8);
+    });
+  });
+
+  const { form, errors, isValid } = createForm({
+    extend: validator({ suite }),
+    onSubmit: (values) => {
+      console.log('Submitting:', values);
+    }
+  });
+</script>
+
+<form use:form>
+  <div>
+    <input name="email" type="email" />
+    {#if $errors.email}
+      <span>{$errors.email[0]}</span>
+    {/if}
+  </div>
+
+  <div>
+    <input name="password" type="password" />
+    {#if $errors.password}
+      <span>{$errors.password[0]}</span>
+    {/if}
+  </div>
+
+  <button type="submit" disabled={!$isValid}>
+    Login
+  </button>
+</form>
+```
+
+## Custom Validation Store
+
+Create a reusable validation store:
+
+```js
+// stores/validation.js
+import { writable, derived } from 'svelte/store';
+
+export function createValidationStore(suite, initialData = {}) {
+  const formData = writable(initialData);
+  const result = writable(suite.get());
+  const isValidating = writable(false);
+
+  function validate(fieldName) {
+    isValidating.set(true);
+
+    const currentData = get(formData);
+    suite
+      .afterEach(res => {
+        result.set(res);
+        isValidating.set(false);
+      })
+      .run(currentData, fieldName);
+  }
+
+  function validateAll() {
+    isValidating.set(true);
+
+    const currentData = get(formData);
+    suite
+      .afterEach(res => {
+        result.set(res);
+        isValidating.set(false);
+      })
+      .run(currentData);
+  }
+
+  function updateField(fieldName, value) {
+    formData.update(data => ({ ...data, [fieldName]: value }));
+    validate(fieldName);
+  }
+
+  function reset() {
+    formData.set(initialData);
+    result.set(suite.get());
+  }
+
+  const isValid = derived(result, $result => !$result.hasErrors());
+
+  return {
+    formData,
+    result,
+    isValidating,
+    isValid,
+    validate,
+    validateAll,
+    updateField,
+    reset,
+  };
+}
+```
+
+Usage:
+
+```svelte
+<script>
+  import { create, test, enforce } from 'vest';
+  import { createValidationStore } from './stores/validation';
+
+  const suite = create((data = {}) => {
+    test('username', 'Username is required', () => {
+      enforce(data.username).isNotBlank();
+    });
+  });
+
+  const {
+    formData,
+    result,
+    isValid,
+    updateField,
+    validateAll,
+    reset
+  } = createValidationStore(suite, { username: '', email: '' });
+
+  function handleSubmit() {
+    validateAll();
+
+    if ($isValid) {
+      console.log('Submitting:', $formData);
+    }
+  }
+</script>
+
+<form on:submit|preventDefault={handleSubmit}>
+  <input
+    value={$formData.username}
+    on:input={(e) => updateField('username', e.target.value)}
+  />
+  {#if $result.hasErrors('username')}
+    <span>{$result.getErrors('username')[0]}</span>
+  {/if}
+
+  <button type="submit" disabled={!$isValid}>Submit</button>
+  <button type="button" on:click={reset}>Reset</button>
+</form>
+```
+
+## TypeScript Support
+
+Vest works great with [TypeScript](/docs/typescript_support) in Svelte:
+
+````svelte
+<script lang="ts">
+  import { writable, type Writable } from 'svelte/store';
+  import { create, test, enforce, type SuiteResult } from 'vest';
+
+  interface FormData {
+    username: string;
+    email: string;
+    age: number;
+  }
+
+  const suite = create((data: Partial<FormData> = {}) => {
+    test('username', 'Username is required', () => {
+      enforce(data.username).isNotBlank();
+    });
+
+    test('age', 'Must be 18 or older', () => {
+      enforce(data.age).greaterThanOrEquals(18);
+    });
+  });
+
+  let formData: Partial<FormData> = {
+    username: '',
+    email: '',
+    age: undefined
+  };
+
+  let result: SuiteResult = suite.get();
+
+  function validateField(fieldName: keyof FormData): void {
+    suite.afterEach((res) => {
+      result = res;
+    }).run(formData, fieldName);
+  }
+</script>
+
+## Best Practices
+
+### 1. Create Suite Outside Component
+
+Define your validation suite in a separate file. Vest suites are stateful, so they should be treated as singletons for a given form.
+
+```js
+// validations/signupSuite.js
+import { create, test, enforce } from 'vest';
+
+export const signupSuite = create((data = {}) => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+  // ... more tests
+});
+```
+
+### 2. Debounce Expensive Validations
+
+Use debouncing for async or expensive validations:
+
+```svelte
+<script>
+  import { debounce } from './utils';
+
+  const validateUsername = debounce((value) => {
+    suite.afterEach(setResult).run({ username: value }, 'username');
+  }, 500);
+
+  $: validateUsername(username);
+</script>
+```
+
+### 3. Show Errors After Touch
+
+Only show errors after a field has been touched:
+
+```svelte
+<script>
+  let touched = {
+    username: false,
+    email: false
+  };
+
+  function handleBlur(fieldName) {
+    touched[fieldName] = true;
+  }
+
+  function shouldShowError(fieldName) {
+    return touched[fieldName] && result.hasErrors(fieldName);
+  }
+</script>
+
+<input
+  bind:value={formData.username}
+  on:blur={() => handleBlur('username')}
+  on:input={() => validateField('username')}
+/>
+{#if shouldShowError('username')}
+  <span>{result.getErrors('username')[0]}</span>
+{/if}
+```
+
+## Next Steps
+
+- Learn about [Core Concepts](/docs/concepts) to understand Vest's architecture
+- Explore [Async Tests](/docs/writing_tests/async_tests) for handling asynchronous validations
+- Check out [Skip and Only](/docs/writing_your_suite/including_and_excluding/skip_and_only) for complex validation scenarios
+
+````
+
+
+# Vanilla JavaScript
+
+# Using Vest with Vanilla JavaScript
+
+Vest works perfectly with plain JavaScript without any framework dependencies. This guide shows you how to use Vest for form validation in vanilla JS applications.
+
+## Quick Start
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vest Validation Example</title>
+  </head>
+  <body>
+    <form id="signup-form">
+      <div>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Username"
+        />
+        <span id="username-error" class="error"></span>
+      </div>
+
+      <div>
+        <input type="email" id="email" name="email" placeholder="Email" />
+        <span id="email-error" class="error"></span>
+      </div>
+
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <script type="module">
+      import {
+        create,
+        test,
+        enforce,
+      } from 'https://cdn.jsdelivr.net/npm/vest@latest/dist/vest.mjs';
+
+      const suite = create((data = {}) => {
+        test('username', 'Username is required', () => {
+          enforce(data.username).isNotBlank();
+        });
+
+        test('username', 'Username must be at least 3 characters', () => {
+          enforce(data.username).longerThanOrEquals(3);
+        });
+
+        test('email', 'Email is required', () => {
+          enforce(data.email).isNotBlank();
+        });
+
+        test('email', 'Please enter a valid email', () => {
+          enforce(data.email).isEmail();
+        });
+      });
+
+      const form = document.getElementById('signup-form');
+      const usernameInput = document.getElementById('username');
+      const emailInput = document.getElementById('email');
+
+      let formData = {
+        username: '',
+        email: '',
+      };
+
+      function validateField(fieldName) {
+        const result = suite
+          .afterEach(res => {
+            updateErrorDisplay(fieldName, res);
+          })
+          .run(formData, fieldName);
+      }
+
+      function updateErrorDisplay(fieldName, result) {
+        const errorElement = document.getElementById(`${fieldName}-error`);
+
+        if (result.hasErrors(fieldName)) {
+          errorElement.textContent = result.getErrors(fieldName)[0];
+          errorElement.style.display = 'block';
+        } else {
+          errorElement.textContent = '';
+          errorElement.style.display = 'none';
+        }
+      }
+
+      usernameInput.addEventListener('input', e => {
+        formData.username = e.target.value;
+        validateField('username');
+      });
+
+      emailInput.addEventListener('input', e => {
+        formData.email = e.target.value;
+        validateField('email');
+      });
+
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+
+        suite
+          .afterEach(res => {
+            if (!res.hasErrors()) {
+              console.log('Form is valid!', formData);
+              // Submit form
+            } else {
+              // Update all error displays
+              Object.keys(formData).forEach(field => {
+                updateErrorDisplay(field, res);
+              });
+            }
+          })
+          .run(formData);
+      });
+    </script>
+
+    <style>
+      .error {
+        color: red;
+        font-size: 0.875rem;
+        display: none;
+      }
+
+      input.invalid {
+        border-color: red;
+      }
+
+      input.valid {
+        border-color: green;
+      }
+    </style>
+  </body>
+</html>
+```
+
+## Using with NPM/Bundlers
+
+```bash
+npm install vest
+```
+
+```js
+// validation.js
+import { create, test, enforce } from 'vest';
+
+export const signupSuite = create((data = {}) => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  test('username', 'Username must be at least 3 characters', () => {
+    enforce(data.username).longerThanOrEquals(3);
+  });
+
+  test('email', 'Email is required', () => {
+    enforce(data.email).isNotBlank();
+  });
+
+  test('email', 'Please enter a valid email', () => {
+    enforce(data.email).isEmail();
+  });
+
+  test('password', 'Password is required', () => {
+    enforce(data.password).isNotBlank();
+  });
+
+  test('password', 'Password must be at least 8 characters', () => {
+    enforce(data.password).longerThanOrEquals(8);
+  });
+});
+```
+
+```js
+// main.js
+import { signupSuite } from './validation.js';
+
+class FormValidator {
+  constructor(formElement, suite) {
+    this.form = formElement;
+    this.suite = suite;
+    this.formData = {};
+    this.touched = {};
+
+    this.init();
+  }
+
+  init() {
+    // Get all form inputs
+    const inputs = this.form.querySelectorAll('input, select, textarea');
+
+    inputs.forEach(input => {
+      const fieldName = input.name;
+      this.formData[fieldName] = input.value;
+      this.touched[fieldName] = false;
+
+      // Validate on input
+      input.addEventListener('input', e => {
+        this.formData[fieldName] = e.target.value;
+        this.validateField(fieldName);
+      });
+
+      // Mark as touched on blur
+      input.addEventListener('blur', () => {
+        this.touched[fieldName] = true;
+        this.validateField(fieldName);
+      });
+    });
+
+    // Validate on submit
+    this.form.addEventListener('submit', e => {
+      e.preventDefault();
+      this.handleSubmit();
+    });
+  }
+
+  validateField(fieldName) {
+    this.suite
+      .afterEach(result => {
+        this.updateFieldUI(fieldName, result);
+      })
+      .run(this.formData, fieldName);
+  }
+
+  validateAll() {
+    return new Promise(resolve => {
+      this.suite
+        .afterEach(result => {
+          // Update UI for all fields
+          Object.keys(this.formData).forEach(fieldName => {
+            this.touched[fieldName] = true;
+            this.updateFieldUI(fieldName, result);
+          });
+
+          resolve(result);
+        })
+        .run(this.formData);
+    });
+  }
+
+  updateFieldUI(fieldName, result) {
+    const input = this.form.querySelector(`[name="${fieldName}"]`);
+    const errorContainer = this.form.querySelector(
+      `[data-error="${fieldName}"]`,
+    );
+
+    if (!input) return;
+
+    // Only show errors for touched fields
+    if (this.touched[fieldName] && result.hasErrors(fieldName)) {
+      input.classList.add('invalid');
+      input.classList.remove('valid');
+
+      if (errorContainer) {
+        errorContainer.textContent = result.getErrors(fieldName)[0];
+        errorContainer.style.display = 'block';
+      }
+    } else if (this.touched[fieldName] && result.isValid(fieldName)) {
+      input.classList.add('valid');
+      input.classList.remove('invalid');
+
+      if (errorContainer) {
+        errorContainer.textContent = '';
+        errorContainer.style.display = 'none';
+      }
+    } else {
+      input.classList.remove('valid', 'invalid');
+
+      if (errorContainer) {
+        errorContainer.textContent = '';
+        errorContainer.style.display = 'none';
+      }
+    }
+  }
+
+  async handleSubmit() {
+    const result = await this.validateAll();
+
+    if (!result.hasErrors()) {
+      console.log('Form is valid!', this.formData);
+      // Submit form data
+      this.submitForm();
+    }
+  }
+
+  submitForm() {
+    // Your form submission logic
+    fetch('/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(this.formData),
+    })
+      .then(response => response.json())
+      .then(data => console.log('Success:', data))
+      .catch(error => console.error('Error:', error));
+  }
+}
+
+// Initialize
+const form = document.getElementById('signup-form');
+new FormValidator(form, signupSuite);
+```
+
+HTML:
+
+```html
+<form id="signup-form">
+  <div>
+    <input type="text" name="username" placeholder="Username" />
+    <span data-error="username" class="error"></span>
+  </div>
+
+  <div>
+    <input type="email" name="email" placeholder="Email" />
+    <span data-error="email" class="error"></span>
+  </div>
+
+  <div>
+    <input type="password" name="password" placeholder="Password" />
+    <span data-error="password" class="error"></span>
+  </div>
+
+  <button type="submit">Sign Up</button>
+</form>
+```
+
+## Async Validation
+
+Handle async validations like API calls:
+
+```js
+import { create, test, enforce } from 'vest';
+
+const suite = create((data = {}) => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  test('username', 'Username is already taken', async () => {
+    await enforce(data.username).isNotBlank();
+
+    const response = await fetch(
+      `/api/check-username?username=${data.username}`,
+    );
+    const { available } = await response.json();
+
+    enforce(available).isTruthy();
+  });
+});
+
+// Usage with loading state
+const usernameInput = document.getElementById('username');
+const loadingIndicator = document.getElementById('username-loading');
+
+let debounceTimer;
+
+usernameInput.addEventListener('input', e => {
+  const username = e.target.value;
+
+  clearTimeout(debounceTimer);
+
+  if (username) {
+    loadingIndicator.style.display = 'inline';
+
+    debounceTimer = setTimeout(() => {
+      suite
+        .afterEach(result => {
+          loadingIndicator.style.display = 'none';
+          updateErrorDisplay('username', result);
+        })
+        .run({ username }, 'username');
+    }, 500);
+  }
+});
+```
+
+## Debounce Helper
+
+Create a debounce utility for better UX:
+
+```js
+function debounce(func, wait) {
+  let timeout;
+
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// Usage
+const debouncedValidate = debounce((fieldName, value) => {
+  formData[fieldName] = value;
+  validateField(fieldName);
+}, 300);
+
+usernameInput.addEventListener('input', e => {
+  debouncedValidate('username', e.target.value);
+});
+```
+
+## Real-time Validation Feedback
+
+Show validation status as the user types:
+
+```js
+function updateFieldStatus(fieldName, result) {
+  const input = document.querySelector(`[name="${fieldName}"]`);
+  const statusIcon = document.querySelector(`[data-status="${fieldName}"]`);
+
+  if (result.isPending(fieldName)) {
+    statusIcon.textContent = '⏳';
+    statusIcon.title = 'Validating...';
+  } else if (result.hasErrors(fieldName)) {
+    statusIcon.textContent = '❌';
+    statusIcon.title = result.getErrors(fieldName)[0];
+  } else if (result.isValid(fieldName)) {
+    statusIcon.textContent = '✅';
+    statusIcon.title = 'Valid';
+  } else {
+    statusIcon.textContent = '';
+  }
+}
+```
+
+## Best Practices
+
+### 1. Separate Validation Logic
+
+Keep validation suites in separate files. Vest suites are stateful, so they should be treated as singletons for a given form.
+
+```js
+// validations/signup.js
+export const signupSuite = create((data = {}) => {
+  // validation tests
+});
+
+// validations/login.js
+export const loginSuite = create((data = {}) => {
+  // validation tests
+});
+```
+
+### 2. Show Errors After Touch
+
+Only display errors after a user has interacted with a field:
+
+```js
+const touched = {};
+
+input.addEventListener('blur', () => {
+  touched[fieldName] = true;
+});
+
+function shouldShowError(fieldName, result) {
+  return touched[fieldName] && result.hasErrors(fieldName);
+}
+```
+
+### 3. Provide Visual Feedback
+
+Use CSS classes to indicate validation state:
+
+```css
+input.valid {
+  border-color: #22c55e;
+  background-image: url('data:image/svg+xml,...'); /* checkmark */
+}
+
+input.invalid {
+  border-color: #ef4444;
+  background-image: url('data:image/svg+xml,...'); /* x mark */
+}
+
+input.validating {
+  border-color: #3b82f6;
+  /* Add spinner animation */
+}
+```
+
+## Next Steps
+
+- Learn about [Core Concepts](/docs/concepts) to understand Vest's architecture
+- Explore [Async Tests](/docs/writing_tests/async_tests) for handling asynchronous validations
+- Check out [Skip and Only](/docs/writing_your_suite/including_and_excluding/skip_and_only) for complex validation scenarios
+
+
+# Vue
+
+# Using Vest with Vue
+
+Vest integrates beautifully with Vue 3's Composition API and reactivity system, providing declarative validation for your forms.
+
+## Quick Start with Composition API
+
+```vue
+<script setup>
+import { ref, reactive } from 'vue';
+import { create, test, enforce } from 'vest';
+
+const suite = create((data = {}) => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  test('username', 'Username must be at least 3 characters', () => {
+    enforce(data.username).longerThanOrEquals(3);
+  });
+
+  test('email', 'Email is required', () => {
+    enforce(data.email).isNotBlank();
+  });
+
+  test('email', 'Please enter a valid email', () => {
+    enforce(data.email).isEmail();
+  });
+});
+
+const formData = reactive({
+  username: '',
+  email: '',
+});
+
+const result = ref(suite.get());
+
+const validateField = fieldName => {
+  suite
+    .afterEach(res => {
+      result.value = res;
+    })
+    .run(formData, fieldName);
+};
+
+const handleSubmit = () => {
+  suite
+    .afterEach(res => {
+      result.value = res;
+
+      if (!res.hasErrors()) {
+        // Submit form
+        console.log('Form is valid!', formData);
+      }
+    })
+    .run(formData);
+};
+</script>
+
+<template>
+  <form @submit.prevent="handleSubmit">
+    <div>
+      <input
+        v-model="formData.username"
+        @input="validateField('username')"
+        placeholder="Username"
+      />
+      <span v-if="result.hasErrors('username')" class="error">
+        {{ result.getErrors('username')[0] }}
+      </span>
+    </div>
+
+    <div>
+      <input
+        v-model="formData.email"
+        @input="validateField('email')"
+        type="email"
+        placeholder="Email"
+      />
+      <span v-if="result.hasErrors('email')" class="error">
+        {{ result.getErrors('email')[0] }}
+      </span>
+    </div>
+
+    <button type="submit" :disabled="result.hasErrors()">Submit</button>
+  </form>
+</template>
+```
+
+## Composable Pattern
+
+Create a reusable composable for form validation:
+
+```js
+// composables/useVestForm.js
+import { ref, reactive, toRefs } from 'vue';
+
+export function useVestForm(suite, initialData = {}) {
+  const formData = reactive({ ...initialData });
+  const result = ref(suite.get());
+  const isValidating = ref(false);
+
+  const validate = fieldName => {
+    isValidating.value = true;
+
+    suite
+      .afterEach(res => {
+        result.value = res;
+        isValidating.value = false;
+      })
+      .run(formData, fieldName);
+  };
+
+  const validateAll = () => {
+    isValidating.value = true;
+
+    suite
+      .afterEach(res => {
+        result.value = res;
+        isValidating.value = false;
+      })
+      .run(formData);
+  };
+
+  const reset = () => {
+    Object.keys(formData).forEach(key => {
+      formData[key] = initialData[key] || '';
+    });
+    result.value = suite.get();
+  };
+
+  return {
+    formData,
+    result,
+    isValidating,
+    validate,
+    validateAll,
+    reset,
+  };
+}
+```
+
+Usage:
+
+```vue
+<script setup>
+import { create, test, enforce } from 'vest';
+import { useVestForm } from '@/composables/useVestForm';
+
+const suite = create((data = {}) => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+});
+
+const { formData, result, validate, validateAll, reset } = useVestForm(suite, {
+  username: '',
+  email: '',
+});
+
+const handleSubmit = () => {
+  validateAll();
+
+  if (!result.value.hasErrors()) {
+    // Submit form
+    console.log('Submitting:', formData);
+  }
+};
+</script>
+
+<template>
+  <form @submit.prevent="handleSubmit">
+    <input v-model="formData.username" @input="validate('username')" />
+    <span v-if="result.hasErrors('username')">
+      {{ result.getErrors('username')[0] }}
+    </span>
+
+    <button type="submit" :disabled="result.hasErrors()">Submit</button>
+    <button type="button" @click="reset">Reset</button>
+  </form>
+</template>
+```
+
+## Async Validation
+
+Handle async validations with Vue's reactivity:
+
+```vue
+<script setup>
+import { ref, reactive } from 'vue';
+import { create, test, enforce } from 'vest';
+
+const suite = create((data = {}) => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  test('username', 'Username is already taken', async () => {
+    await enforce(data.username).isNotBlank();
+
+    const response = await fetch(
+      `/api/check-username?username=${data.username}`,
+    );
+    const { available } = await response.json();
+
+    enforce(available).isTruthy();
+  });
+});
+
+const formData = reactive({ username: '' });
+const result = ref(suite.get());
+const isChecking = ref(false);
+
+const checkUsername = () => {
+  isChecking.value = true;
+
+  suite
+    .afterEach(res => {
+      result.value = res;
+      isChecking.value = false;
+    })
+    .run(formData, 'username');
+};
+</script>
+
+<template>
+  <div>
+    <input
+      v-model="formData.username"
+      @input="checkUsername"
+      placeholder="Choose a username"
+    />
+    <span v-if="isChecking">Checking availability...</span>
+    <span v-else-if="result.hasErrors('username')" class="error">
+      {{ result.getErrors('username')[0] }}
+    </span>
+    <span v-else-if="result.isValid('username')" class="success">
+      Username is available!
+    </span>
+  </div>
+</template>
+```
+
+## Options API Pattern
+
+For Vue 2 or Options API users:
+
+```vue
+<script>
+import { create, test, enforce } from 'vest';
+
+const suite = create((data = {}) => {
+  test('email', 'Email is required', () => {
+    enforce(data.email).isNotBlank();
+  });
+
+  test('email', 'Please enter a valid email', () => {
+    enforce(data.email).isEmail();
+  });
+});
+
+export default {
+  data() {
+    return {
+      formData: {
+        email: '',
+      },
+      result: suite.get(),
+    };
+  },
+  methods: {
+    validateField(fieldName) {
+      suite
+        .afterEach(res => {
+          this.result = res;
+        })
+        .run(this.formData, fieldName);
+    },
+    handleSubmit() {
+      suite
+        .afterEach(res => {
+          this.result = res;
+
+          if (!res.hasErrors()) {
+            // Submit form
+            console.log('Valid!', this.formData);
+          }
+        })
+        .run(this.formData);
+    },
+  },
+};
+</script>
+
+<template>
+  <form @submit.prevent="handleSubmit">
+    <input
+      v-model="formData.email"
+      @input="validateField('email')"
+      type="email"
+    />
+    <span v-if="result.hasErrors('email')">
+      {{ result.getErrors('email')[0] }}
+    </span>
+
+    <button type="submit" :disabled="result.hasErrors()">Submit</button>
+  </form>
+</template>
+```
+
+## Felte Integration
+
+Vest integrates with [Felte](https://felte.dev/), a popular form library for Vue:
+
+```bash
+npm install felte @felte/validator-vest
+```
+
+```vue
+<script setup>
+import { createForm } from 'felte';
+import { validator } from '@felte/validator-vest';
+import { create, test, enforce } from 'vest';
+
+const suite = create((data = {}) => {
+  test('email', 'Email is required', () => {
+    enforce(data.email).isNotBlank();
+  });
+
+  test('password', 'Password must be at least 8 characters', () => {
+    enforce(data.password).longerThanOrEquals(8);
+  });
+});
+
+const { form, errors } = createForm({
+  extend: validator({ suite }),
+  onSubmit: values => {
+    console.log('Submitting:', values);
+  },
+});
+</script>
+
+<template>
+  <form ref="form">
+    <input name="email" type="email" />
+    <span v-if="errors.email">{{ errors.email[0] }}</span>
+
+    <input name="password" type="password" />
+    <span v-if="errors.password">{{ errors.password[0] }}</span>
+
+    <button type="submit">Login</button>
+  </form>
+</template>
+```
+
+## TypeScript Support
+
+Vest works great with [TypeScript](/docs/typescript_support) in Vue:
+
+```vue
+<script setup lang="ts">
+import { ref, reactive } from 'vue';
+import { create, test, enforce, SuiteResult } from 'vest';
+
+interface FormData {
+  username: string;
+  email: string;
+  age: number;
+}
+
+const suite = create((data: Partial<FormData> = {}) => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  test('age', 'Must be 18 or older', () => {
+    enforce(data.age).greaterThanOrEquals(18);
+  });
+});
+
+const formData = reactive<Partial<FormData>>({
+  username: '',
+  email: '',
+  age: undefined,
+});
+
+const result = ref<SuiteResult>(suite.get());
+
+const validateField = (fieldName: keyof FormData) => {
+  suite
+    .afterEach(res => {
+      result.value = res;
+    })
+    .run(formData, fieldName);
+};
+</script>
+```
+
+## Best Practices
+
+### 1. Create Suite Outside Component
+
+Define your validation suite in a separate file. Vest suites are stateful, so they should be treated as singletons for a given form.
+
+```js
+// validations/signupSuite.js
+import { create, test, enforce } from 'vest';
+
+export const signupSuite = create((data = {}) => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+  // ... more tests
+});
+```
+
+```vue
+<script setup>
+import { signupSuite } from '@/validations/signupSuite';
+
+// Use the suite
+</script>
+```
+
+### 2. Debounce Async Validations
+
+Use Vue's `watchDebounced` or a debounce utility for expensive validations:
+
+```vue
+<script setup>
+import { ref, watchDebounced } from 'vue';
+
+const username = ref('');
+
+watchDebounced(
+  username,
+  newValue => {
+    // Validate username
+    suite.afterEach(setResult).run({ username: newValue }, 'username');
+  },
+  { debounce: 500 },
+);
+</script>
+```
+
+### 3. Show Errors After Touch
+
+Only show errors after a field has been touched:
+
+```vue
+<script setup>
+import { ref, reactive } from 'vue';
+
+const touched = reactive({
+  username: false,
+  email: false,
+});
+
+const handleBlur = fieldName => {
+  touched[fieldName] = true;
+};
+
+const shouldShowError = fieldName => {
+  return touched[fieldName] && result.value.hasErrors(fieldName);
+};
+</script>
+
+<template>
+  <input
+    v-model="formData.username"
+    @blur="handleBlur('username')"
+    @input="validate('username')"
+  />
+  <span v-if="shouldShowError('username')">
+    {{ result.getErrors('username')[0] }}
+  </span>
+</template>
+```
+
+## Next Steps
+
+- Learn about [Core Concepts](/docs/concepts) to understand Vest's architecture
+- Explore [Async Tests](/docs/writing_tests/async_tests) for handling asynchronous validations
+- Check out [Skip and Only](/docs/writing_your_suite/including_and_excluding/skip_and_only) for complex validation scenarios
+
+
 # Utility - Classnames
 
 # classnames

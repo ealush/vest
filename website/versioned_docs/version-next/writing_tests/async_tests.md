@@ -1,8 +1,17 @@
 ---
 sidebar_position: 2
 title: Async Validations
-description: Here's how to write async tests.
-keywords: [Vest, Async, Validations, AbortSignal, AbortController, lazy]
+description: How to write async tests, handle race conditions, and use AbortSignal for cancellation.
+keywords:
+  [
+    Vest,
+    Async,
+    Validations,
+    AbortSignal,
+    AbortController,
+    race conditions,
+    lazy,
+  ]
 ---
 
 # Async Tests
@@ -22,6 +31,28 @@ const suite = create(data => {
 :::note
 In Vest, `suite.run()` returns a hybrid result object that is also a Promise. This means you can `await` it directly.
 :::
+
+## Handling Race Conditions
+
+One of Vest's superpowers is **built-in race condition handling**. Consider this scenario:
+
+1. User types "A" → async validation starts
+2. User types "AB" → another async validation starts
+3. User types "ABC" → another async validation starts
+4. Validation for "A" returns (slow network)
+
+**Without Vest:** The old "A" result might overwrite the current "ABC" validation, causing incorrect UI state.
+
+**With Vest:** Vest automatically discards stale results. Only the most recent validation for each field is processed.
+
+```javascript
+// User types quickly: "A" → "AB" → "ABC"
+// Even if "A" validation finishes last, Vest ignores it
+// and only uses the "ABC" result
+suite.run({ username: 'ABC' });
+```
+
+This is handled automatically—no extra code required.
 
 ## Handling Async Results
 
@@ -82,21 +113,66 @@ Unlike `await`, the `afterEach` callback may run **multiple times** (once for sy
 
 > Since 5.1.0
 
-Each test function is passed an object with a `signal` property. This signal is an [AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) which can be used to terminate your async operations once a test is canceled. Vest creates an AbortController for each test, and passes its signal to the test function.
+Each test function is passed an object with a `signal` property. This signal is an [AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) which can be used to terminate your async operations once a test is canceled.
 
-The AbortSignal has a boolean `aborted` property, by which you can determine whether the test was canceled or not.
+### Why use AbortSignal?
 
-A test gets canceled when running the same test again before its previous run has completed.
+When a user types quickly, Vest cancels the previous async test and starts a new one. The AbortSignal lets you:
 
-You can use the AbortSignal to stop the execution of your async test, or pass it to your fetch request.
+1. **Stop unnecessary network requests** - Don't waste bandwidth on stale validations
+2. **Cancel fetch requests** - Pass the signal to `fetch()` for automatic cancellation
+3. **Clean up resources** - Check `signal.aborted` to bail early
+
+```javascript
+test('username', 'Already Taken', async ({ signal }) => {
+  // Early exit if already aborted
+  if (signal.aborted) return;
+
+  const response = await fetch('/check-username', {
+    signal, // Pass to fetch for automatic cancellation
+    method: 'POST',
+    body: JSON.stringify({ username: data.username }),
+  });
+
+  const { exists } = await response.json();
+  enforce(exists).isFalsy();
+});
+```
 
 [More on AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal).
 
+## Best Practices for Async Validation
+
+### 1. Debounce at the UI layer
+
+Don't call `suite.run()` on every keystroke. Debounce in your component:
+
 ```javascript
-test('name', 'Already Taken', async ({ signal }) => {
-  const response = await fetch('/check-username', {
-    signal,
-    body: JSON.stringify({ username: data.username }),
-  });
-});
+const debouncedValidate = debounce(data => {
+  suite.run(data);
+}, 300);
 ```
+
+### 2. Show pending state
+
+Use `isPending()` to show loading indicators:
+
+```javascript
+const result = suite.run(data);
+
+if (result.isPending('username')) {
+  showLoadingSpinner();
+}
+```
+
+### 3. Combine with `suite.focus()`
+
+For the best UX, only run async tests for the field the user is interacting with:
+
+```javascript
+function handleBlur(fieldName) {
+  suite.focus({ only: fieldName }).run(formData);
+}
+```
+
+This skips expensive async checks for fields the user hasn't touched yet.

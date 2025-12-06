@@ -7,38 +7,52 @@ keywords: [Vest, Tutorial, Validation, JavaScript, React, Vue, Svelte]
 
 # Getting Started
 
-Welcome to Vest! If you've used unit testing frameworks like Jest or Mocha, you're already halfway there. Vest takes that familiar syntax—`test`, `describe` (we call it `suite`), and assertions—and brings it to your form validation logic.
+Welcome to Vest! If you've used unit testing frameworks like Jest or Mocha, you already know how to use Vest.
 
-In this guide, we'll build a simple validation suite for a user registration form.
+Vest takes that familiar syntax—`test`, `describe` (we call it `suite`), and assertions—and brings it to your form validation logic.
+
+## Why Vest?
+
+Most validation libraries force you to write validation logic _inside_ your UI components. This makes your components messy, hard to read, and difficult to test.
+
+**Vest is different.** It lets you write your validation logic in a separate file, just like a unit test.
+
+- **Clean Components:** Your UI code only handles UI. Your validation code only handles validation.
+- **Framework Agnostic:** Use the same suite with React, Vue, Svelte, or vanilla JS.
+- **Easy to Test:** Since your validation is just a JS function, you can unit test it in isolation.
 
 ## Installation
-
-First, grab the package from npm:
 
 ```shell
 npm i vest
 ```
 
-## Your First Suite
+## 1. Write Your Suite
 
-Think of a **Suite** as the brain of your form. It holds all the validation rules for a specific feature. Unlike other libraries where you define a schema JSON, in Vest, you write a function.
+Think of a **Suite** as the brain of your form. It holds all the validation rules for a specific feature. Unlike other libraries where you define a static schema JSON, in Vest, you write a function using standard control flow (if/else, loops).
 
-Here's a basic registration suite. We want to ensure the username is present and at least 3 characters long.
+Create a file named `formValidation.js`:
 
 ```javascript
 import { create, test, enforce } from 'vest';
 
-// 1. We create the suite and pass it a callback function.
-// This callback will run every time we validate our form.
+// The suite function holds your validation logic.
+// It receives whatever data you pass to 'suite.run()' later.
 const suite = create((data = {}) => {
-  // 2. We define a test for the 'username' field.
+  // Check if 'username' exists
   test('username', 'Username is required', () => {
-    // 3. We use 'enforce' to check the data.
     enforce(data.username).isNotBlank();
   });
 
+  // You can verify multiple rules for the same field.
+  // This test only runs if the previous one passed.
   test('username', 'Username must be at least 3 chars', () => {
     enforce(data.username).longerThan(2);
+  });
+
+  // Simple conditional logic
+  test('password', 'Password is required', () => {
+    enforce(data.password).isNotBlank();
   });
 });
 
@@ -46,38 +60,40 @@ export default suite;
 ```
 
 :::tip Pro Tip
-You can define multiple tests for the same field (like 'username' above). Vest runs them sequentially. If the first one fails, the second one won't run, saving you from showing multiple errors for the same issue.
+Vest runs tests sequentially for a given field. If the first 'username' test fails, the second one won't run. This prevents "error overload" for your users.
 :::
 
-## Running the Suite
+## 2. Run the Suite
 
-Now that we've defined the rules, how do we use them?
+In your UI component (React, Svelte, etc.), import your suite.
 
-In Vest 6, the `create` function returns a **Suite Object**. To validate data, you call the `.run()` method on that object.
+The `create` function returns a **Suite Object**. To validate data, you call the `.run()` method on that object.
 
 ```javascript
-import suite from './suite';
+import suite from './formValidation';
 
-// Let's try running it with invalid data
+// 1. Run the validation with your form data
 const result = suite.run({ username: 'Jo' });
-```
 
-The `result` object is your dashboard. It tells you everything you need to know about the validation state:
-
-```javascript
-// Check if a specific field has errors
+// 2. Check the result
 if (result.hasErrors('username')) {
   console.log('Username is too short!');
+  // Output: "Username must be at least 3 chars"
 }
 
-// Check if the whole form is valid
 if (result.isValid()) {
-  console.log('Ready to submit!');
+  console.log('Form is valid! Ready to submit.');
 }
 ```
 
-### What's Next?
+The `result` object is your dashboard. It tells you everything you need to know about the validation state.
 
-- **[Vest's Suite Structure](./writing_your_suite/vests_suite.md)**: Dive deeper into the Suite Object and its capabilities.
-- **[Writing Tests](./writing_tests/the_test_function.md)**: Learn about the `test` function arguments and behaviors.
+:::note Notice something?
+Your validation logic is completely outside your component. That's the power of Vest. Your component stays clean, and your validation is easy to test.
+:::
+
+## Next Steps
+
+- **[Handling User Interaction](./writing_your_suite/dirty_checking.md)**: Learn how to show errors only when a user interacts with a field.
 - **[Async Tests](./writing_tests/async_tests.md)**: Need to check a username against a database? See how to handle async validations.
+- **[The Suite Object](./writing_your_suite/vests_suite.md)**: Dive deeper into the Suite Object capabilities (`reset`, `remove`, `get`).

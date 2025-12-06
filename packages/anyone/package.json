@@ -62,22 +62,22 @@
     },
     "./package.json": "./package.json",
     "./all": {
-      "types": "./types/anyone.d.cts",
+      "types": "./types/exports/all.d.cts",
       "require": "./dist/exports/all.cjs",
       "import": "./dist/exports/all.mjs"
     },
     "./any": {
-      "types": "./types/anyone.d.cts",
+      "types": "./types/exports/any.d.cts",
       "require": "./dist/exports/any.cjs",
       "import": "./dist/exports/any.mjs"
     },
     "./none": {
-      "types": "./types/anyone.d.cts",
+      "types": "./types/exports/none.d.cts",
       "require": "./dist/exports/none.cjs",
       "import": "./dist/exports/none.mjs"
     },
     "./one": {
-      "types": "./types/anyone.d.cts",
+      "types": "./types/exports/one.d.cts",
       "require": "./dist/exports/one.cjs",
       "import": "./dist/exports/one.mjs"
     },

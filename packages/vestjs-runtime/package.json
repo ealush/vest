@@ -48,12 +48,12 @@
     },
     "./package.json": "./package.json",
     "./IsolateSerializer": {
-      "types": "./types/vestjs-runtime.d.cts",
+      "types": "./types/exports/IsolateSerializer.d.cts",
       "require": "./dist/exports/IsolateSerializer.cjs",
       "import": "./dist/exports/IsolateSerializer.mjs"
     },
     "./test-utils": {
-      "types": "./types/vestjs-runtime.d.cts",
+      "types": "./types/exports/test-utils.d.cts",
       "require": "./dist/exports/test-utils.cjs",
       "import": "./dist/exports/test-utils.mjs"
     },

@@ -60,17 +60,17 @@
     },
     "./package.json": "./package.json",
     "./date": {
-      "types": "./types/n4s.d.cts",
+      "types": "./types/exports/date.d.cts",
       "require": "./dist/exports/date.cjs",
       "import": "./dist/exports/date.mjs"
     },
     "./email": {
-      "types": "./types/n4s.d.cts",
+      "types": "./types/exports/email.d.cts",
       "require": "./dist/exports/email.cjs",
       "import": "./dist/exports/email.mjs"
     },
     "./isURL": {
-      "types": "./types/n4s.d.cts",
+      "types": "./types/exports/isURL.d.cts",
       "require": "./dist/exports/isURL.cjs",
       "import": "./dist/exports/isURL.mjs"
     },

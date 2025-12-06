@@ -105,42 +105,42 @@
     },
     "./package.json": "./package.json",
     "./classnames": {
-      "types": "./types/vest.d.cts",
+      "types": "./types/exports/classnames.d.cts",
       "require": "./dist/exports/classnames.cjs",
       "import": "./dist/exports/classnames.mjs"
     },
     "./date": {
-      "types": "./types/vest.d.cts",
+      "types": "./types/exports/date.d.cts",
       "require": "./dist/exports/date.cjs",
       "import": "./dist/exports/date.mjs"
     },
     "./debounce": {
-      "types": "./types/vest.d.cts",
+      "types": "./types/exports/debounce.d.cts",
       "require": "./dist/exports/debounce.cjs",
       "import": "./dist/exports/debounce.mjs"
     },
     "./email": {
-      "types": "./types/vest.d.cts",
+      "types": "./types/exports/email.d.cts",
       "require": "./dist/exports/email.cjs",
       "import": "./dist/exports/email.mjs"
     },
     "./isURL": {
-      "types": "./types/vest.d.cts",
+      "types": "./types/exports/isURL.d.cts",
       "require": "./dist/exports/isURL.cjs",
       "import": "./dist/exports/isURL.mjs"
     },
     "./memo": {
-      "types": "./types/vest.d.cts",
+      "types": "./types/exports/memo.d.cts",
       "require": "./dist/exports/memo.cjs",
       "import": "./dist/exports/memo.mjs"
     },
     "./parser": {
-      "types": "./types/vest.d.cts",
+      "types": "./types/exports/parser.d.cts",
       "require": "./dist/exports/parser.cjs",
       "import": "./dist/exports/parser.mjs"
     },
     "./SuiteSerializer": {
-      "types": "./types/vest.d.cts",
+      "types": "./types/exports/SuiteSerializer.d.cts",
       "require": "./dist/exports/SuiteSerializer.cjs",
       "import": "./dist/exports/SuiteSerializer.mjs"
     },

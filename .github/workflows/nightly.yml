@@ -11,18 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [22.x]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
-          fetch-depth: 1
+          ref: latest
+          fetch-depth: 0
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
       - name: Push To Nightly Branch
         run: |
           echo "Pushing to nightly branch"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
-          git branch -D nightly || echo "No nightly branch"
-          git push origin --delete nightly || echo "No nightly branch"
-          git checkout -b nightly || git checkout nightly
-          git push origin nightly
+          git push origin HEAD:nightly --force

@@ -4,7 +4,9 @@ import {
   CB,
   Nullable,
   isNullish,
-  invariant,
+  makeResult,
+  Result,
+  unwrap,
 } from 'vest-utils';
 import { TIsolate, IsolateSelectors, Walker } from 'vestjs-runtime';
 
@@ -37,20 +39,20 @@ class IsolateMemoReconciler {
   }
 
   static reconcile(current: TIsolateMemo, history: TIsolateMemo): TIsolateMemo {
-    initializeCache(history);
+    const historyWithCache = unwrap(initializeCache(history));
 
-    const hit = history.data.cache.get(current.data.dependencies);
-    current.data.cache = history.data.cache;
+    const hit = historyWithCache.data.cache.get(current.data.dependencies);
+    current.data.cache = historyWithCache.data.cache;
 
     if (isNullish(hit)) {
-      return handleCacheMiss(current, history);
+      return handleCacheMiss(current, historyWithCache);
     }
 
     const historicHit = hit[1];
 
     if (isCanceledTest(historicHit)) {
-      history.data.cache.invalidate(current.data.dependencies);
-      return handleCacheMiss(current, history);
+      historyWithCache.data.cache.invalidate(current.data.dependencies);
+      return handleCacheMiss(current, historyWithCache);
     }
 
     return historicHit;
@@ -72,19 +74,21 @@ registerReconciler(IsolateMemoReconciler);
 
 function initializeCache(
   history: TIsolateMemo,
-): asserts history is TIsolateMemoWithCache {
+): Result<TIsolateMemoWithCache, string> {
   if (isNullish(history.data.cache)) {
     history.data.cache = cache<TIsolateMemo>(5);
     history.data.cache(history.data.dependencies, () => history);
   }
-  invariant(history.data.cache);
+
+  return isNullish(history.data.cache)
+    ? makeResult.Err('Cache initialization failed')
+    : makeResult.Ok(history as TIsolateMemoWithCache);
 }
 
 function handleCacheMiss(
   current: TIsolateMemo,
-  history: TIsolateMemo,
+  history: TIsolateMemoWithCache,
 ): TIsolateMemo {
-  invariant(history.data.cache);
   history.data.cache(current.data.dependencies, () => current);
   return current;
 }

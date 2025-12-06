@@ -20,9 +20,9 @@ export class TestWalker {
     return Walker.some(
       root,
       isolate => {
-        VestTest.isX(isolate);
+        const test = VestTest.cast(isolate).unwrap();
 
-        return predicate(isolate);
+        return predicate(test);
       },
       VestTest.is,
     );
@@ -37,7 +37,7 @@ export class TestWalker {
       root,
       isolate => {
         let broken = false;
-        callback(VestTest.cast<F>(isolate), () => {
+        callback(VestTest.cast<F>(isolate).unwrap(), () => {
           broken = true;
         });
         if (broken) {
@@ -57,9 +57,9 @@ export class TestWalker {
     Walker.pluck(
       root,
       isolate => {
-        VestTest.isX(isolate);
+        const test = VestTest.cast(isolate).unwrap();
 
-        return predicate(isolate);
+        return predicate(test);
       },
       VestTest.is,
     );

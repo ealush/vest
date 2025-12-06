@@ -13,7 +13,7 @@ type Success<T, E> = {
   readonly value: T;
 };
 
-type Failure<T, E> = {
+export type Failure<T, E> = {
   chain<U, E2 = E>(fn: (value: T) => Result<U, E2>): Result<U, E | E2>;
   readonly error: E;
   map<U>(fn: (value: T) => U): Result<U, E>;

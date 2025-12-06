@@ -53,6 +53,7 @@ export {
   isFailure,
   unwrap,
   type Result,
+  type Failure,
 } from './Result';
 
 export type {

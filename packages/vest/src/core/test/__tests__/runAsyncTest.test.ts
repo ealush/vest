@@ -17,7 +17,7 @@ describe('runAsyncTest', () => {
       });
       suite.run();
 
-      testObject = VestTest.cast(testObject);
+      testObject = VestTest.cast(testObject).unwrap();
 
       expect(VestTest.isStartedStatus(testObject)).toBe(true);
       await wait(100);
@@ -143,7 +143,7 @@ describe('runAsyncTest', () => {
         });
         suite.run();
 
-        testObject = VestTest.cast(testObject);
+        testObject = VestTest.cast(testObject).unwrap();
 
         expect(VestTest.isPassing(testObject).unwrap()).toBe(false);
         await wait(100);
@@ -160,7 +160,7 @@ describe('runAsyncTest', () => {
         });
         suite.run();
 
-        testObject = VestTest.cast(testObject);
+        testObject = VestTest.cast(testObject).unwrap();
 
         expect(VestTest.isFailing(testObject).unwrap()).toBe(false);
         await wait(100);
@@ -178,7 +178,7 @@ describe('runAsyncTest', () => {
         });
         suite.run();
 
-        testObject = VestTest.cast(testObject);
+        testObject = VestTest.cast(testObject).unwrap();
 
         expect(VestTest.isWarning(testObject).unwrap()).toBe(false);
         await wait(100);

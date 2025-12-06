@@ -1,7 +1,6 @@
 import {
   Nullable,
   hasOwnProperty,
-  invariant,
   isNullish,
   isStringValue,
   text,
@@ -62,11 +61,10 @@ export class IsolateSerializer {
 
   static validateIsolate(
     node: Record<string, any> | TIsolate,
-  ): asserts node is TIsolate {
-    invariant(
-      hasOwnProperty(node, IsolateKeys.Type),
-      text(ErrorStrings.INVALID_ISOLATE_CANNOT_PARSE),
-    );
+  ): Result<TIsolate, string> {
+    return hasOwnProperty(node, IsolateKeys.Type)
+      ? makeResult.Ok(node as TIsolate)
+      : makeResult.Err(text(ErrorStrings.INVALID_ISOLATE_CANNOT_PARSE));
   }
 }
 
@@ -98,7 +96,5 @@ function expandNode(node: Record<string, any> | TIsolate | string): TIsolate {
   ) as [any, any];
 
   const expanded = expandObject(...root);
-  IsolateSerializer.validateIsolate(expanded);
-
-  return expanded;
+  return IsolateSerializer.validateIsolate(expanded).unwrap();
 }

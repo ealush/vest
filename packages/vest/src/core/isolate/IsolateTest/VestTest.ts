@@ -84,22 +84,16 @@ export class VestTest {
     );
   }
 
-  static isX(isolate?: Maybe<TIsolate>): asserts isolate is TIsolateTest {
-    invariant(VestTest.is(isolate), ErrorStrings.EXPECTED_VEST_TEST);
+  static cast<F extends TFieldName = TFieldName>(
+    isolate?: Maybe<TIsolate>,
+  ): Result<TIsolateTest<F>, string> {
+    return VestTest.is(isolate)
+      ? makeResult.Ok(isolate as TIsolateTest<F>)
+      : makeResult.Err(ErrorStrings.EXPECTED_VEST_TEST);
   }
 
   static statusEquals(test: TIsolateTest, status: TestStatus): boolean {
     return VestTest.getStatus(test) === status;
-  }
-
-  /**
-   * Casts an isolate to a VestTest isolate, throwing if it's not a valid test isolate.
-   */
-  static cast<F extends TFieldName = TFieldName>(
-    isolate?: Maybe<TIsolate>,
-  ): TIsolateTest<F> {
-    VestTest.isX(isolate);
-    return isolate as TIsolateTest<F>;
   }
 
   static warns(test: TIsolateTest): Result<boolean> {

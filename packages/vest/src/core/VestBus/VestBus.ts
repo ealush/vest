@@ -1,4 +1,4 @@
-import { CB, BusType } from 'vest-utils';
+import { CB, BusType, Failure, deferThrow } from 'vest-utils';
 import { Bus, RuntimeEvents, TIsolate, VestRuntime } from 'vestjs-runtime';
 
 import { useOmitOptionalFields } from '../../hooks/optional/omitOptionalFields';
@@ -107,6 +107,10 @@ export function useInitVestBus() {
     if (root) {
       root.data.resolver();
     }
+  });
+
+  VestBus.on('DEFER_THROW', (failure: Failure<any, any>) => {
+    failure.mapError(deferThrow);
   });
 
   on('RESET_FIELD', (fieldName: TFieldName) => {

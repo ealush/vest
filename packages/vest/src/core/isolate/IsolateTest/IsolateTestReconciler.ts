@@ -1,4 +1,4 @@
-import { Maybe, deferThrow, text } from 'vest-utils';
+import { Maybe, Result, makeResult, text } from 'vest-utils';
 import { IsolateInspector, Reconciler } from 'vestjs-runtime';
 import type { TIsolate } from 'vestjs-runtime';
 
@@ -10,6 +10,7 @@ import type { TIsolateTest } from './IsolateTest';
 import { VestTest } from './VestTest';
 import cancelOverriddenPendingTest from './cancelOverriddenPendingTest';
 import { isSameProfileTest } from './isSameProfileTest';
+import { useEmit } from '../../VestBus/VestBus';
 
 export class IsolateTestReconciler {
   static match(currentNode: TIsolate, historyNode: TIsolate): boolean {
@@ -20,7 +21,7 @@ export class IsolateTestReconciler {
     currentNode: TIsolateTest,
     historyNode: TIsolateTest,
   ): TIsolateTest {
-    const reconcilerOutput = usePickNode(currentNode, historyNode);
+    const reconcilerOutput = usePickNode(currentNode, historyNode).unwrap();
 
     const nextNode = useVerifyTestRun(currentNode, reconcilerOutput);
 
@@ -30,26 +31,29 @@ export class IsolateTestReconciler {
   }
 }
 
+// eslint-disable-next-line max-statements
 function usePickNode(
   newNode: TIsolateTest,
   prevNode: TIsolateTest,
-): TIsolateTest {
+): Result<TIsolateTest> {
   if (IsolateInspector.usesKey(newNode)) {
     return useHandleTestWithKey(newNode);
   }
 
+  const newNodeResult = makeResult.Ok(newNode);
+
   if (
     Reconciler.dropNextNodesOnReorder(nodeReorderDetected, newNode, prevNode)
   ) {
-    throwTestOrderError(newNode, prevNode);
-    return newNode;
+    useOrderResult(newNode, prevNode);
+    return newNodeResult;
   }
 
   if (!VestTest.is(prevNode)) {
     // I believe we cannot actually reach this point.
     // Because it should already be handled by nodeReorderDetected.
     /* istanbul ignore next */
-    return newNode;
+    return newNodeResult;
   }
 
   // eslint-disable-next-line no-warning-comments
@@ -60,13 +64,13 @@ function usePickNode(
   // identify it is "optional" because it was omitted in the previous run.
   // There may be a better way to handle this. Need to revisit this.
   if (VestTest.isOmitted(prevNode).unwrap()) {
-    return newNode;
+    return newNodeResult;
   }
 
-  return prevNode;
+  return makeResult.Ok(prevNode);
 }
 
-function useHandleTestWithKey(newNode: TIsolateTest): TIsolateTest {
+function useHandleTestWithKey(newNode: TIsolateTest): Result<TIsolateTest> {
   return VestTest.cast(
     Reconciler.handleIsolateNodeWithKey(newNode, (prevNode: TIsolateTest) => {
       // This is the revoke callback. it determines whether we should revoke the previous node and use the new one.
@@ -102,15 +106,15 @@ function nodeReorderDetected(
   );
 }
 
-function throwTestOrderError(
+function useOrderResult(
   newNode: TIsolateTest,
   prevNode: Maybe<TIsolate>,
-): void {
+): Result<void> {
   if (IsolateInspector.canReorder(newNode)) {
-    return;
+    return makeResult.Ok(undefined);
   }
 
-  deferThrow(
+  const err = makeResult.Err(
     text(ErrorStrings.TESTS_CALLED_IN_DIFFERENT_ORDER, {
       fieldName: VestTest.getData(newNode).fieldName,
       prevName: VestTest.is(prevNode)
@@ -118,4 +122,7 @@ function throwTestOrderError(
         : undefined,
     }),
   );
+
+  useEmit('DEFER_THROW', err);
+  return err;
 }

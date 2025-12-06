@@ -35,6 +35,17 @@
   /* Light mode code block improvements */
   --prism-background-color: #f6f8fa;
   --prism-color: #24292e;
+
+  /* Global background gradient */
+  --vest-body-bg-gradient: linear-gradient(
+    180deg,
+    rgba(247, 249, 253, 0.75),
+    rgba(252, 252, 255, 0.98)
+  );
+
+  /* Footer theming */
+  --vest-footer-bg: #1e293b;
+  --vest-footer-color: #e2e8f0;
 }
 
 html[data-theme='dark'] {
@@ -44,16 +55,17 @@ html[data-theme='dark'] {
   --ifm-navbar-background-color: rgba(15, 23, 42, 0.78);
   --ifm-card-background-color: rgba(22, 30, 46, 0.7);
   --docusaurus-highlighted-code-line-bg: rgba(99, 102, 241, 0.15);
+  --vest-body-bg-gradient: none;
+  --vest-footer-bg: linear-gradient(
+    180deg,
+    rgba(79, 70, 229, 0.12),
+    rgba(15, 23, 42, 0.92)
+  );
+  --vest-footer-color: #e2e8f0;
 }
 
 body {
-  background:
-    linear-gradient(
-      180deg,
-      rgba(247, 249, 253, 0.75),
-      rgba(252, 252, 255, 0.98)
-    ),
-    var(--ifm-background-color);
+  background: var(--vest-body-bg-gradient), var(--ifm-background-color);
   color: var(--ifm-font-color-base);
 }
 
@@ -86,6 +98,10 @@ html[data-theme='light'] .prism-code {
   border: 1px solid #e1e4e8;
 }
 
+html[data-theme='dark'] .prism-code {
+  border: 1px solid #334155;
+}
+
 html[data-theme='light'] pre[class*='language-'] {
   background-color: var(--prism-background-color);
   border: 1px solid #e1e4e8;
@@ -97,12 +113,8 @@ html[data-theme='light'] code[class*='language-'] {
 }
 
 .footer {
-  background: linear-gradient(
-    180deg,
-    rgba(79, 70, 229, 0.12),
-    rgba(15, 23, 42, 0.92)
-  );
-  color: #e2e8f0;
+  background: var(--vest-footer-bg);
+  color: var(--vest-footer-color);
 }
 
 .hero__title,

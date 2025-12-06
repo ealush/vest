@@ -1,5 +1,5 @@
 export { IsolateKeys } from './Isolate/IsolateKeys';
-export { RuntimeEvents } from './RuntimeEvents';
+export type { RuntimeEvents } from './RuntimeEvents';
 export { Isolate } from './Isolate/Isolate';
 export type { IsolateKey, TIsolate } from './Isolate/Isolate';
 export { Reconciler } from './Reconciler';

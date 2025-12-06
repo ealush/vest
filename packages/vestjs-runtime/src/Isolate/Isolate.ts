@@ -7,7 +7,7 @@ import * as VestRuntime from '../VestRuntime';
 import { IsolateKeys } from './IsolateKeys';
 import { IsolateMutator } from './IsolateMutator';
 import { IsolateStatus } from './IsolateStatus';
-import { IsolateKey, IsolatePayload, TIsolate } from './IsolateTypes';
+import type { IsolateKey, IsolatePayload, TIsolate } from './IsolateTypes';
 
 export { IsolateKey, TIsolate };
 

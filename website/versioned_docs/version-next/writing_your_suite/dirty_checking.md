@@ -1,39 +1,123 @@
 ---
 sidebar_position: 6
-title: Dirty Checking
-description: How to check if a field is dirty using Vest
-keywords: [Vest, dirty, isDirty, isTested, validation, pristine]
+title: Handling User Interaction
+description: How to show validation errors only when users interact with fields using isTested and suite.focus()
+keywords: [Vest, dirty, isDirty, isTested, validation, pristine, focus, onBlur]
 ---
 
-# Checking if a field is dirty
+# Handling User Interaction
 
-:::tip TL;DR
+A common challenge in form validation is "noise control." You don't want to scream errors at a user before they've even touched a field.
 
-Use `isTested` instead of dirty checking.
-:::
+Traditionally, libraries use an `isDirty` flag to track if a user has modified a field. Since Vest is **UI-agnostic** (it doesn't touch your DOM or listen to events), it doesn't track "dirty" state for you.
 
-Many people search for isDirty / dirty checking. This does not work well with the Vest methodology because Vest does not interact with the form or the DOM and can sometimes even run on the server. Instead, most of the same capability as isDirty can be achieved with [`isTested`](./accessing_the_result.md#istested) which checks if the form has already had validation run on it, assuming it actually means it is dirty.
+Instead, Vest provides two powerful tools to handle user interaction: **`isTested()`** and **`suite.focus()`**.
 
-## What is dirty checking?
+## 1. `isTested()`: The Vest Alternative to `isDirty`
 
-In the context of form validation, dirty checking refers to the process of determining whether a field's value has been modified by the user. This information can be used to provide more targeted feedback to the user, such as only displaying validation errors for fields that have been interacted with.
+When you want to decide _if_ you should show an error message, you usually want to know: "Has this field actually been validated yet?"
 
-## Why Vest does not do dirty checking
+If a field hasn't been validated, it usually means the user hasn't interacted with it. Vest tracks this for you.
 
-Vest is a validation framework that is designed to be decoupled from the DOM. This means that it does not have access to the state of the form or its fields. As a result, Vest cannot directly determine whether a field is dirty or not.
+```javascript
+const result = suite.get();
 
-## Why isTested is a better alternative
+// Only show errors if the field has actually been tested
+const shouldShowError =
+  result.hasErrors('username') && result.isTested('username');
 
-Instead of dirty checking, Vest provides the `isTested` method. This method can be used to check if a particular field has been tested. This is a more reliable way to determine whether a field has been interacted with, as it does not rely on the state of the DOM and prevents unnecessary maintenance of state.
-
-## Example
-
-The following code will only display validation errors for the username field if it has been tested:
-
-```js
-const result = suite.run({ username: '' });
-
-if (result.isTested('username')) {
-  // Display validation errors for the username field
+if (shouldShowError) {
+  renderError(result.getErrors('username'));
 }
 ```
+
+This pattern ensures that empty, untouched fields don't show "Required" errors when the form first loads.
+
+## 2. Validating on Interaction with `suite.focus()`
+
+When a user blurs a field or types, you often want to validate **only that specific field**, while keeping the rest of the form state intact.
+
+Vest 6 introduces `suite.focus()`. This tells Vest to run validations for specific fields, while skipping others.
+
+```javascript
+// On Blur handler
+function handleBlur(fieldName, formData) {
+  // 1. Tell Vest to focus ONLY on the blurred field
+  // 2. Run the suite with the current data
+  suite.focus({ only: fieldName }).run(formData);
+}
+```
+
+### Why use `focus()`?
+
+- **Performance:** It skips expensive tests (like async checks) for fields the user isn't touching.
+- **User Experience:** It updates the state for the current field without accidentally flagging other fields as "tested" or "invalid" before the user reaches them.
+
+:::tip Real-World Pattern
+Combine `suite.focus()` with `isTested()` for the best UX:
+
+- Use `focus({ only: fieldName })` in your `onBlur` handler to validate only the current field
+- Use `isTested(fieldName)` when rendering to decide whether to show errors
+  :::
+
+## Complete Example
+
+```javascript
+import suite from './validation';
+
+function Form() {
+  const [formData, setFormData] = useState({});
+  const [result, setResult] = useState(suite.get());
+
+  const handleChange = e => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleBlur = e => {
+    const { name } = e.target;
+    // Validate only the blurred field
+    const res = suite.focus({ only: name }).run(formData);
+    setResult(res);
+  };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    // Validate all fields on submit
+    const res = suite.run(formData);
+    setResult(res);
+
+    if (res.isValid()) {
+      // Submit the form
+    }
+  };
+
+  // Only show error if field was tested
+  const showError = fieldName => {
+    return result.isTested(fieldName) && result.hasErrors(fieldName);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input name="username" onChange={handleChange} onBlur={handleBlur} />
+      {showError('username') && <span>{result.getErrors('username')[0]}</span>}
+
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+```
+
+## Summary
+
+| Goal                         | Traditional Approach          | Vest Approach                                   |
+| :--------------------------- | :---------------------------- | :---------------------------------------------- |
+| **Did the user touch this?** | Check `field.isDirty`         | Check `result.isTested('field')`                |
+| **Validate on Blur**         | Call `validateField('field')` | Call `suite.focus({ only: 'field' }).run(data)` |
+
+By combining `isTested()` (to hide premature errors) and `suite.focus()` (to update specific fields), you get precise control over the user experience without tightly coupling your validation to the DOM.
+
+## Related
+
+- [Focused Updates](./focused_updates.md) - Deep dive into `suite.focus()`
+- [Accessing the Result](./accessing_the_result.md) - Learn about `isTested()` and other result methods

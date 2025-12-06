@@ -10,30 +10,40 @@ export default () => {
       className={clsx(styles.section, commonStyles.main_section_centered)}
     >
       <p className={styles.desc}>
-        Vest is a form validations framework that looks and feels like a unit
-        testing framework.
+        <strong>
+          Vest looks and feels like a unit testing framework, but for your
+          forms.
+        </strong>
         <br />
-        It allows you to express your validation logic in a simple and readable
-        way that's also easy to maintain in the long run.
+        By separating validation logic from your UI, you get a system that
+        handles async checks, dependent fields, and conditional logic without
+        cluttering your component state.
       </p>
       <div className={styles.codeWindow}>
         <div className={styles.windowHeader}>
           <div className={clsx(styles.dot, styles.red)} />
           <div className={clsx(styles.dot, styles.yellow)} />
           <div className={clsx(styles.dot, styles.green)} />
+          <span className={styles.fileName}>validation.js</span>
         </div>
         <CodeBlock className={clsx('language-js', styles.codeBlock)}>{`
-test("username", "Username is required", () => {
-  enforce(data.username).isNotBlank();
+import { create, test, enforce } from 'vest';
+
+const suite = create((data) => {
+  test("username", "Username is required", () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  test("username", "Username must be at least 3 chars", () => {
+    enforce(data.username).longerThanOrEquals(3);
+  });
+
+  test('username', 'Username already taken', async () => {
+    await doesUserExist(data.username);
+  });
 });
 
-test("username", "Username must be at least 3 chars", () => {
-  enforce(data.username).longerThanOrEquals(3);
-});
-
-test('username', 'Username already taken', async () => {
-  await doesUserExist(data.username);
-});
+export default suite;
 `}</CodeBlock>
       </div>
     </section>

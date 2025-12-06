@@ -68,6 +68,52 @@ const validationResult = suite.run(formData, changedField);
 You can make fields run together by using [include](./include). This is useful when you have fields that depend on each other, and you want to make sure they run at the same time.
 :::
 
+## V6 Recommended: Using `suite.focus()`
+
+In Vest 6, the preferred way to focus validation on specific fields is to use the **`suite.focus()`** method. This approach is cleaner and separates the "what to validate" from "how to validate".
+
+```javascript
+import { create, test, enforce } from 'vest';
+
+const suite = create(data => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+  test('email', 'Email is required', () => {
+    enforce(data.email).isEmail();
+  });
+  test('password', 'Password is required', () => {
+    enforce(data.password).longerThanOrEquals(8);
+  });
+});
+
+// Focus on a single field
+suite.focus({ only: 'username' }).run(formData);
+
+// Focus on multiple fields
+suite.focus({ only: ['username', 'email'] }).run(formData);
+
+// Chain with afterEach for callbacks
+suite
+  .focus({ only: 'email' })
+  .afterEach(result => updateUI(result))
+  .run(formData);
+```
+
+### Why Use `suite.focus()` Over `only()`?
+
+| Feature                    | `only()` (inside suite)     | `suite.focus()` (outside)  |
+| -------------------------- | --------------------------- | -------------------------- |
+| **Declaration**            | Inside suite callback       | At call site               |
+| **Flexibility**            | Must be conditional         | Fully dynamic              |
+| **Separation of Concerns** | Mixed with validation logic | Decoupled from validation  |
+| **Chainable**              | No                          | Yes (returns runnable API) |
+| **Best For**               | Static exclusions           | UI-driven field focus      |
+
+> **Recommendation**: Use `suite.focus()` for runtime decisions (e.g., validating on blur), and `only()`/`skip()` for static, logic-based exclusions inside your suite.
+
+For more details, see [Focused Updates](../focused_updates).
+
 ## Skipping fields
 
 There are cases when you may need to skip specific tests. For example, when you wish to prevent validation of a promo code when none provided. You can use the `skip()` function to skip the specified fields. All other tests will run as usual.

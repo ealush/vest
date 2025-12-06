@@ -27,6 +27,10 @@ export default function Demo() {
     <section className={clsx(styles.demo, commonStyles.main_section_centered)}>
       <div className={clsx('container', styles.vestDemo)}>
         <h2>Try It Live</h2>
+        <p className={styles.demoSubtitle}>
+          Same validation suite, different frameworks. Pick your stack and see
+          Vest in action.
+        </p>
         <div className={styles.demoSwitchWrapper}>
           {embedLinks.map((link, i) => (
             <button

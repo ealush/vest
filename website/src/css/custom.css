@@ -1,88 +1,118 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
- */
-
-/* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary-lightest: #fdfdfd;
-  --ifm-color-primary-lighter: #4b6889;
-  --ifm-color-primary-light: #486383;
-  --ifm-color-primary: #697098;
-  --ifm-color-primary-dark: #3b516b;
-  --ifm-color-primary-darker: #374d65;
-  --ifm-color-primary-darkest: #212432;
-  --ifm-font-family-base: 'Rubik', sans-serif;
+  --ifm-font-family-base:
+    'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+  --ifm-font-family-monospace:
+    'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
   --ifm-code-font-size: 95%;
-  --ifm-heading-color: var(--ifm-font-color-base);
-  --main-content-background-color: none;
-  --darkest-alt: #171819;
-  --announcement-bar-background: var(--ifm-color-primary-lightest);
-  --announcement-bar-color: var(--darkest-alt);
+  --ifm-border-radius-base: 12px;
+
+  /* Accent tokens */
+  --vest-ink: #0e1324;
+  --vest-pink: #ff4f8f;
+  --vest-slate: #0f172a;
+
+  /* Midnight & Neon palette (light mode) */
+  --ifm-color-primary: #5f6afc;
+  --ifm-color-primary-dark: #4c55e8;
+  --ifm-color-primary-darker: #3d3fcf;
+  --ifm-color-primary-darkest: #2d2ea8;
+  --ifm-color-primary-light: #7f8bff;
+  --ifm-color-primary-lighter: #a7b3ff;
+  --ifm-color-primary-lightest: #d9ddff;
+
+  --ifm-background-color: #ffffff;
+  --ifm-navbar-background-color: rgba(255, 255, 255, 0.82);
+  --ifm-navbar-shadow: none;
+  --ifm-heading-color: #0b1021;
+  --ifm-font-color-base: #0f172a;
+  --ifm-card-background-color: #eef1f7;
+  --docusaurus-highlighted-code-line-bg: rgba(99, 102, 241, 0.1);
+
+  /* Light mode code block improvements */
+  --prism-background-color: #f6f8fa;
+  --prism-color: #24292e;
 }
 
 html[data-theme='dark'] {
-  --ifm-background-color: var(--darkest-alt);
-  --announcement-bar-background: var(--ifm-color-primary-light);
-  --announcement-bar-color: var(--ifm-color-primary-lightest);
+  --ifm-background-color: var(--vest-slate);
+  --ifm-font-color-base: #e6e9f4;
+  --ifm-heading-color: #f8fafc;
+  --ifm-navbar-background-color: rgba(15, 23, 42, 0.78);
+  --ifm-card-background-color: rgba(22, 30, 46, 0.7);
+  --docusaurus-highlighted-code-line-bg: rgba(99, 102, 241, 0.15);
+}
+
+body {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(247, 249, 253, 0.75),
+      rgba(252, 252, 255, 0.98)
+    ),
+    var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
 }
 
 main {
-  background-color: var(--main-content-background-color);
+  background-color: transparent;
 }
 
-.aa-DetachedSearchButton {
-  color: blue;
-}
-
-h1 {
-  padding-bottom: 1rem;
-}
-
-.docusaurus-highlight-code-line {
-  background-color: rgba(0, 0, 0, 0.1);
-  display: block;
-  margin: 0 calc(-1 * var(--ifm-pre-padding));
-  padding: 0 var(--ifm-pre-padding);
-}
-
-.footer {
-  background-color: #272a36;
-}
-
-html[data-theme='dark'] .docusaurus-highlight-code-line {
-  background-color: rgba(0, 0, 0, 0.3);
+.navbar {
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
 }
 
 html[data-theme='dark'] .navbar {
-  background-color: var(--ifm-background-color);
-  border-bottom: 1px solid var(--ifm-color-primary-darker);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
 }
 
-html[data-theme='light'] .hero__primary.hero {
-  background-color: var(--ifm-color-primary-lightest);
-  color: var(--ifm-color-primary-darkest);
+.docusaurus-highlight-code-line {
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+  background-color: var(--docusaurus-highlighted-code-line-bg);
 }
 
-html[data-theme='dark'] .hero__primary.hero {
-  background-color: var(--ifm-background-color);
-  color: var(--ifm-color-primary-darkest);
+/* Light mode code block improvements - GitHub Light inspired */
+html[data-theme='light'] .prism-code {
+  background-color: var(--prism-background-color) !important;
+  color: var(--prism-color) !important;
+  border: 1px solid #e1e4e8;
 }
 
-html[data-theme='dark'] .hero__title {
-  color: var(--ifm-color-primary-lightest);
+html[data-theme='light'] pre[class*='language-'] {
+  background-color: var(--prism-background-color);
+  border: 1px solid #e1e4e8;
 }
 
-.hero__title {
-  text-transform: uppercase;
-  color: var(--ifm-heading-color);
+html[data-theme='light'] code[class*='language-'] {
+  color: var(--prism-color);
+  background-color: transparent;
 }
 
+.footer {
+  background: linear-gradient(
+    180deg,
+    rgba(79, 70, 229, 0.12),
+    rgba(15, 23, 42, 0.92)
+  );
+  color: #e2e8f0;
+}
+
+.hero__title,
 .hero__subtitle {
   color: var(--ifm-heading-color);
+}
+
+html[data-theme='dark'] .hero__title,
+html[data-theme='dark'] .hero__subtitle {
+  color: var(--ifm-color-primary-lightest);
 }
 
 .header-badge {
@@ -91,7 +121,7 @@ html[data-theme='dark'] .hero__title {
 
 .header-github-link {
   content: '';
-  background-color: var(--ifm-color-primary-darkest);
+  background-color: var(--ifm-font-color-base);
   mask-image: url('/img/github.svg');
   mask-size: contain;
   mask-repeat: no-repeat;
@@ -99,8 +129,44 @@ html[data-theme='dark'] .hero__title {
   width: 1.5rem;
   height: 1.5rem;
   margin-right: 0.5rem;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.header-github-link:hover {
+  background-color: var(--ifm-color-primary);
+  transform: translateY(-1px);
 }
 
 html[data-theme='dark'] .header-github-link {
   background-color: var(--ifm-color-primary-lightest);
+}
+
+.aa-DetachedSearchButton {
+  color: var(--ifm-color-primary);
+}
+
+h1 {
+  padding-bottom: 1rem;
+}
+
+/* Hero title typography improvements */
+.hero__title {
+  letter-spacing: -0.4px;
+  line-height: 1.08;
+}
+
+/* Announcement bar dark mode fix */
+html[data-theme='dark'] [class*='announcementBar'] {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+html[data-theme='dark'] [class*='announcementBar'] a {
+  color: var(--ifm-color-primary-lighter);
+}
+
+html[data-theme='dark'] [class*='announcementBar'] a:hover {
+  color: var(--ifm-color-primary-lightest);
 }

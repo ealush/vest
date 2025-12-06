@@ -14,37 +14,140 @@ keywords:
     chaining,
     input data,
     conditions,
+    functional,
+    composable,
   ]
 ---
 
 # Enforce: The Assertion Library for Vest
 
-Enforce is a powerful assertion library used in the Vest validation framework to validate and enforce certain conditions on input data. With its intuitive API and fluent syntax, Enforce makes it easy to perform data validation and ensure that your code is robust and error-free.
+Enforce is a powerful assertion library that powers Vest's validations. It's designed to be:
 
-## How to Use Enforce
+- **Fluent** — Chain multiple assertions together naturally
+- **Composable** — Build reusable validators from smaller pieces
+- **Extensible** — Add your own custom rules
 
-Enforce is used within a Vest test, and can be imported alongside the `test` function from the `vest` package:
+## Basic Usage
+
+Import `enforce` from Vest and use it inside your tests:
 
 ```js
 import { enforce, test } from 'vest';
-```
 
-Once imported, you can use `enforce` to perform assertions on your input data. Here's a basic example that checks whether a `username` string is longer than `2` characters:
-
-```js
 test('username', 'Must be at least three characters long', () => {
   enforce(username).longerThan(2);
 });
 ```
 
-In this example, the `enforce` function is called with the `username` variable as input data, and the `longerThan` assertion is chained onto the function call with the value `2` passed as an argument. If the `username` string is shorter than `3` characters, the assertion will fail and an error will be thrown.
+When an assertion fails, it throws an error that Vest catches and records as a failed test.
 
-## Fluent Chaining API
+## Fluent Chaining
 
-Enforce provides a fluent chaining API that allows you to chain multiple assertions together and test various conditions on your input data. Here's an example that checks whether a number is greater than `2`:
+Chain multiple assertions together to test various conditions:
 
 ```js
-enforce(4).isNumber().greaterThan(2);
+enforce(username).isString().isNotBlank().longerThan(2).shorterThan(50);
 ```
 
-In this example, the `enforce` function is called with the number `4` as input data. The `isNumber` assertion is first chained onto the function call to check that the input is a number, and then the `greaterThan` assertion is chained on to check whether the input number is greater than `2`. If either of these assertions fails, an error will be thrown.
+All assertions must pass for the test to pass. If any assertion fails, the test stops at that point.
+
+## Common Patterns
+
+### Validating Strings
+
+```js
+// Required field
+enforce(email).isNotBlank();
+
+// Email format
+enforce(email).isEmail();
+
+// Length constraints
+enforce(password).longerThanOrEquals(8).shorterThanOrEquals(128);
+```
+
+### Validating Numbers
+
+```js
+// Range check
+enforce(age).isNumber().greaterThanOrEquals(18).lessThan(120);
+
+// Positive number
+enforce(price).isPositive();
+```
+
+### Validating Objects
+
+```js
+// Check shape/structure
+enforce(user).shape({
+  name: enforce.isString(),
+  email: enforce.isEmail(),
+  age: enforce.isNumber(),
+});
+```
+
+## Composing Rules
+
+For rules you use together frequently, create reusable validators:
+
+```js
+import { enforce, compose } from 'vest';
+
+const isValidAge = compose(
+  enforce.isNumber(),
+  enforce.greaterThanOrEquals(18),
+  enforce.lessThan(120),
+);
+
+// Use like any other rule
+test('age', 'Must be a valid age', () => {
+  enforce(data.age).condition(isValidAge);
+});
+```
+
+:::tip Functional Programming
+Enforce rules are **just functions**. The `compose` utility lets you build complex validators from simple, testable pieces—exactly like function composition in FP.
+:::
+
+[Learn more about composing rules →](./composing_enforce_rules.md)
+
+## Available Rules
+
+Enforce comes with a rich set of built-in rules:
+
+| Category         | Examples                                                       |
+| ---------------- | -------------------------------------------------------------- |
+| **Type Checks**  | `isString()`, `isNumber()`, `isBoolean()`, `isArray()`         |
+| **String Rules** | `isNotBlank()`, `isEmail()`, `matches()`, `startsWith()`       |
+| **Number Rules** | `greaterThan()`, `lessThan()`, `isPositive()`, `isNegative()`  |
+| **Comparison**   | `equals()`, `notEquals()`, `inside()`, `notInside()`           |
+| **Collection**   | `lengthEquals()`, `longerThan()`, `shorterThan()`, `isEmpty()` |
+| **Shape**        | `shape()`, `loose()`, `isArrayOf()`                            |
+
+[View all rules →](./enforce_rules.md)
+
+## Custom Rules
+
+Need validation logic that isn't built-in? Create your own:
+
+```js
+import { enforce } from 'vest';
+
+enforce.extend({
+  isValidUsername(value) {
+    return /^[a-zA-Z0-9_]+$/.test(value);
+  },
+});
+
+// Now use it anywhere
+enforce(username).isValidUsername();
+```
+
+[Learn more about custom rules →](./creating_custom_rules.md)
+
+## Next Steps
+
+- [All Built-in Rules](./enforce_rules.md) — Complete reference
+- [Composing Rules](./composing_enforce_rules.md) — Build reusable validators
+- [Custom Rules](./creating_custom_rules.md) — Extend with your own logic

@@ -6,6 +6,10 @@
   background-color: var(--ifm-color-emphasis-100);
 }
 
+.section > * {
+  text-align: left;
+}
+
 .desc {
   max-width: 450px;
   font-size: 1.2rem;
@@ -29,6 +33,13 @@
   padding: 0.75rem 1rem;
   background-color: rgba(255, 255, 255, 0.05);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.fileName {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--ifm-font-family-monospace);
 }
 
 .dot {
@@ -67,7 +78,10 @@
   .section {
     flex-direction: column;
     padding: 4rem 1.5rem;
-    text-align: center;
+  }
+
+  .desc {
+    text-align: left;
   }
 }
 

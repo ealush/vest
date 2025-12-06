@@ -10,6 +10,13 @@
   padding: 2rem;
 }
 
+.demoSubtitle {
+  color: var(--ifm-color-emphasis-600);
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  margin-top: -0.5rem;
+}
+
 .demoWrapper {
   height: 500px;
   border: 1px solid var(--ifm-color-emphasis-300);

@@ -6,6 +6,7 @@ import styles from './RawExample.module.css';
 
 const SuiteCode = `import { create, test, enforce } from 'vest';
 import {memo} from 'vest/memo';
+import { doesUserExist } from './api';
 
 const suite = create((data = {}) => {
   test("username", "Username is required", () => {
@@ -23,7 +24,10 @@ const suite = create((data = {}) => {
   }, [data.username]);
 });
 
-async function doesUserExist(username) {
+export default suite;
+`;
+
+const ApiCode = `export async function doesUserExist(username) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       // Mock API call: reject if username contains "taken"
@@ -35,8 +39,6 @@ async function doesUserExist(username) {
     }, 1000);
   });
 }
-
-export default suite;
 `;
 
 const AppCode = `import React, { useState } from "react";
@@ -191,6 +193,7 @@ export default function RawExample() {
             '/suite.js': SuiteCode,
             '/App.js': AppCode,
             '/styles.css': StylesCode,
+            '/api.js': ApiCode,
           }}
           customSetup={{
             dependencies: {

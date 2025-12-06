@@ -28,27 +28,9 @@ In a large form, re-validating the entire suite on every keystroke can be ineffi
 
 Use `focus({ only: ... })` to restrict the run to specific fields.
 
-```javascript
-import { create, test, enforce } from 'vest';
+import FocusedUpdatesSandpack from '@site/src/components/Sandpack/FocusedUpdates';
 
-const suite = create(data => {
-  test('username', 'Username is required', () => {
-    enforce(data.username).isNotBlank();
-  });
-  test('email', 'Email is required', () => {
-    enforce(data.email).isEmail();
-  });
-  test('password', 'Password must be 8+ characters', () => {
-    enforce(data.password).longerThanOrEquals(8);
-  });
-});
-
-// Run only the 'username' field tests
-suite.focus({ only: 'username' }).run(formData);
-
-// Run multiple fields
-suite.focus({ only: ['username', 'password'] }).run(formData);
-```
+<FocusedUpdatesSandpack />
 
 ## Fluent Chain API
 
@@ -113,6 +95,7 @@ function handleBlur(fieldName, value) {
 ```jsx
 import { useState, useCallback } from 'react';
 import { create, test, enforce } from 'vest';
+import 'vest/email';
 
 const suite = create(data => {
   test('username', 'Username is required', () => {

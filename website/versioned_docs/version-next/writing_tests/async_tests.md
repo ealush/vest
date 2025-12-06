@@ -18,15 +18,9 @@ keywords:
 
 Vest supports asynchronous validation tests (e.g., checking if a username exists on the server).
 
-```javascript
-import { create, test, enforce } from 'vest';
+import AsyncTestsSandpack from '@site/src/components/Sandpack/AsyncTests';
 
-const suite = create(data => {
-  test('username', 'Username already taken', async () => {
-    await doesUserExist(data.username);
-  });
-});
-```
+<AsyncTestsSandpack />
 
 :::note
 In Vest, `suite.run()` returns a hybrid result object that is also a Promise. This means you can `await` it directly.

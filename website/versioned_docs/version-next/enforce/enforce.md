@@ -31,6 +31,8 @@ Enforce is a powerful assertion library that powers Vest's validations. It's des
 
 Import `enforce` from Vest and use it inside your tests:
 
+import EnforcePlayground from '@site/src/components/Sandpack/EnforcePlayground';
+
 ```js
 import { enforce, test } from 'vest';
 
@@ -45,9 +47,7 @@ When an assertion fails, it throws an error that Vest catches and records as a f
 
 Chain multiple assertions together to test various conditions:
 
-```js
-enforce(username).isString().isNotBlank().longerThan(2).shorterThan(50);
-```
+<EnforcePlayground />
 
 All assertions must pass for the test to pass. If any assertion fails, the test stops at that point.
 

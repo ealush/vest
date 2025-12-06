@@ -9,13 +9,9 @@ keywords: [Vest, Suite, Validation, State Management, create, run, reset]
 
 In the [Getting Started](../get_started.md) guide, we saw that `create()` returns a **Suite Object**. This object is your main interface for interacting with validations. It holds the state, runs the tests, and gives you the results.
 
-```javascript
-import { create } from 'vest';
+import SuiteMethodsSandpack from '@site/src/components/Sandpack/SuiteMethods';
 
-const suite = create((data, currentField) => {
-  // Your logic resides here
-});
-```
+<SuiteMethodsSandpack />
 
 ## Running Validations
 

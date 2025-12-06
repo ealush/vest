@@ -45,18 +45,11 @@ enforce(2).condition(value => {
 
 To make it easier to reuse logic across your application, sometimes you would want to encapsulate bits of logic in rules that you can use later on, for example, "what's considered a valid email".
 
+import CustomRulesSandpack from '@site/src/components/Sandpack/CustomRules';
+
 Rules are called with the argument passed to enforce(x) followed by the arguments passed to `.yourRule(y, z)`.
 
-```js
-enforce.extend({
-  yourRule(x, y, z) {
-    return {
-      pass: true,
-      message: () => '',
-    };
-  },
-});
-```
+<CustomRulesSandpack />
 
 ```js
 enforce.extend({

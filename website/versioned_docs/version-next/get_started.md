@@ -9,6 +9,8 @@ keywords: [Vest, Tutorial, Validation, JavaScript, React, Vue, Svelte]
 
 Welcome to Vest! If you've used unit testing frameworks like Jest or Mocha, you already know how to use Vest.
 
+import GetStartedSandpack from '@site/src/components/Sandpack/GetStarted';
+
 Vest takes that familiar syntax - `test`, `describe` (we call it `suite`), and assertions - and brings it to your form validation logic.
 
 ## Why Vest?
@@ -27,66 +29,11 @@ Most validation libraries force you to write validation logic _inside_ your UI c
 npm i vest
 ```
 
-## 1. Write Your Suite
+## Interactive Example
 
-Think of a **Suite** as the brain of your form. It holds all the validation rules for a specific feature. Unlike other libraries where you define a static schema JSON, in Vest, you write a function using standard control flow (if/else, loops).
+Here is a complete, interactive example connecting a Vest suite to a React form. You can edit the code to see how Vest behaves!
 
-Create a file named `formValidation.js`:
-
-```javascript
-import { create, test, enforce } from 'vest';
-
-// The suite function holds your validation logic.
-// It receives whatever data you pass to 'suite.run()' later.
-const suite = create((data = {}) => {
-  // Check if 'username' exists
-  test('username', 'Username is required', () => {
-    enforce(data.username).isNotBlank();
-  });
-
-  // You can verify multiple rules for the same field.
-  // This test only runs if the previous one passed.
-  test('username', 'Username must be at least 3 chars', () => {
-    enforce(data.username).longerThan(2);
-  });
-
-  // Simple conditional logic
-  test('password', 'Password is required', () => {
-    enforce(data.password).isNotBlank();
-  });
-});
-
-export default suite;
-```
-
-:::tip Pro Tip
-Vest runs tests sequentially for a given field. If the first 'username' test fails, the second one won't run. This prevents "error overload" for your users.
-:::
-
-## 2. Run the Suite
-
-In your UI component (React, Svelte, etc.), import your suite.
-
-The `create` function returns a **Suite Object**. To validate data, you call the `.run()` method on that object.
-
-```javascript
-import suite from './formValidation';
-
-// 1. Run the validation with your form data
-const result = suite.run({ username: 'Jo' });
-
-// 2. Check the result
-if (result.hasErrors('username')) {
-  console.log('Username is too short!');
-  // Output: "Username must be at least 3 chars"
-}
-
-if (result.isValid()) {
-  console.log('Form is valid! Ready to submit.');
-}
-```
-
-The `result` object is your dashboard. It tells you everything you need to know about the validation state.
+<GetStartedSandpack />
 
 :::note Notice something?
 Your validation logic is completely outside your component. That's the power of Vest. Your component stays clean, and your validation is easy to test.

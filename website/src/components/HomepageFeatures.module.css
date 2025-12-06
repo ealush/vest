@@ -39,12 +39,20 @@
 }
 
 .featureCard {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(245, 247, 253, 0.9));
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.96),
+    rgba(245, 247, 253, 0.9)
+  );
   border: 1px solid rgba(15, 23, 42, 0.06);
   border-radius: 16px;
   padding: 1.5rem;
   height: 100%;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
   position: relative;
   overflow: hidden;
   box-shadow: 0 10px 18px rgba(0, 0, 0, 0.04);
@@ -54,7 +62,11 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 20% 20%, rgba(95, 106, 252, 0.06), transparent 45%);
+  background: radial-gradient(
+    circle at 20% 20%,
+    rgba(95, 106, 252, 0.06),
+    transparent 45%
+  );
   opacity: 0;
   transition: opacity 0.25s ease;
 }
@@ -80,7 +92,9 @@
 .featureCard:hover {
   transform: translateY(-1px);
   border-color: rgba(95, 106, 252, 0.2);
-  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(95, 106, 252, 0.08);
+  box-shadow:
+    0 10px 18px rgba(0, 0, 0, 0.06),
+    0 8px 24px rgba(95, 106, 252, 0.08);
 }
 
 .featureCard:hover::before {
@@ -92,14 +106,20 @@
 }
 
 html[data-theme='dark'] .featureCard {
-  background: linear-gradient(145deg, rgba(22, 30, 46, 0.88), rgba(30, 41, 59, 0.7));
+  background: linear-gradient(
+    145deg,
+    rgba(22, 30, 46, 0.88),
+    rgba(30, 41, 59, 0.7)
+  );
   border-color: rgba(255, 255, 255, 0.08);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.32);
 }
 
 html[data-theme='dark'] .featureCard:hover {
   border-color: rgba(95, 106, 252, 0.32);
-  box-shadow: 0 14px 26px rgba(0, 0, 0, 0.34), 0 0 24px rgba(95, 106, 252, 0.12);
+  box-shadow:
+    0 14px 26px rgba(0, 0, 0, 0.34),
+    0 0 24px rgba(95, 106, 252, 0.12);
 }
 
 .featureHeader {

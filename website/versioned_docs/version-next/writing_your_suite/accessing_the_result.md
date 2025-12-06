@@ -13,6 +13,8 @@ Vest validations return a results object that holds all the information regardin
 - `const result = suite.get();` - returns the current result without running.
 - `suite.hasErrors()`, `suite.isValid()`, etc. - selectors are also exposed directly on the suite.
 
+import AccessingResultSandpack from '@site/src/components/Sandpack/AccessingResult';
+
 ```js
 const result = suite.run(data);
 ```
@@ -21,49 +23,11 @@ const result = suite.run(data);
 When your suite contains async tests, the returned result is also a Promise. You can still read sync fields immediately, while pending async fields report `isPending('field') === true`.
 :::
 
-## Example result object
+## Interactive Result Inspector
 
-```javascript
-{
-  errorCount: 1,
-  warnCount: 1,
-  testCount: 4,
-  pendingCount: 0,
-  valid: false,
-  errors: [{ fieldName: 'field1', message: 'msg1', groupName: undefined }],
-  warnings: [{ fieldName: 'field3', message: undefined, groupName: undefined }],
-  tests: {
-    field1: {
-      testCount: 2,
-      errorCount: 1,
-      pendingCount: 0,
-      warnCount: 0,
-      valid: false,
-      errors: ['msg1'],
-      warnings: [],
-    },
-    field2: {
-      testCount: 1,
-      errorCount: 0,
-      pendingCount: 0,
-      warnCount: 0,
-      valid: true,
-      errors: [],
-      warnings: [],
-    },
-    field3: {
-      testCount: 1,
-      errorCount: 0,
-      pendingCount: 0,
-      warnCount: 1,
-      valid: true,
-      errors: [],
-      warnings: [],
-    },
-  },
-  types: undefined, // present when a schema is provided
-}
-```
+Use this playground to see how the result object properties change as you interact with the form.
+
+<AccessingResultSandpack />
 
 ## `isValid`
 

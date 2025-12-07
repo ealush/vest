@@ -74,9 +74,18 @@ main {
 }
 
 .navbar {
-  backdrop-filter: blur(12px);
+  background-color: transparent !important;
   border-bottom: 1px solid var(--ifm-color-emphasis-200);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.navbar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  backdrop-filter: blur(12px);
+  background-color: var(--ifm-navbar-background-color);
 }
 
 html[data-theme='dark'] .navbar {

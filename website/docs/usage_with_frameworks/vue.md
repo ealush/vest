@@ -3,9 +3,17 @@ sidebar_position: 2
 title: Vue
 ---
 
+import VueIntegrationSandpack from '@site/src/components/Sandpack/VueIntegration';
+
 # Using Vest with Vue
 
 Vest integrates beautifully with Vue 3's Composition API and reactivity system, providing declarative validation for your forms.
+
+## Interactive Example
+
+Explore a live Vue 3 form wired to a Vest suite. Edit the component or the suite to see validation updates instantly.
+
+<VueIntegrationSandpack />
 
 ## Quick Start with Composition API
 

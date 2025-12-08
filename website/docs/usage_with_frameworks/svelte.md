@@ -3,9 +3,17 @@ sidebar_position: 3
 title: Svelte
 ---
 
+import SvelteIntegrationSandpack from '@site/src/components/Sandpack/SvelteIntegration';
+
 # Using Vest with Svelte
 
 Vest integrates naturally with Svelte's reactive stores and reactive statements, providing elegant validation for your forms.
+
+## Interactive Example
+
+Edit this Svelte form to see how Vest's validation suite responds in real time.
+
+<SvelteIntegrationSandpack />
 
 ## Quick Start
 

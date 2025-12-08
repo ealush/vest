@@ -72,8 +72,8 @@ Vest works perfectly with plain JavaScript without any framework dependencies. T
 
       function validateField(fieldName) {
         const result = suite
-          .afterEach(res => {
-            updateErrorDisplay(fieldName, res);
+          .afterEach(() => {
+            updateErrorDisplay(fieldName, suite.get());
           })
           .run(formData, fieldName);
       }
@@ -104,7 +104,8 @@ Vest works perfectly with plain JavaScript without any framework dependencies. T
         e.preventDefault();
 
         suite
-          .afterEach(res => {
+          .afterEach(() => {
+            const res = suite.get();
             if (!res.hasErrors()) {
               console.log('Form is valid!', formData);
               // Submit form
@@ -220,8 +221,8 @@ class FormValidator {
 
   validateField(fieldName) {
     this.suite
-      .afterEach(result => {
-        this.updateFieldUI(fieldName, result);
+      .afterEach(() => {
+        this.updateFieldUI(fieldName, this.suite.get());
       })
       .run(this.formData, fieldName);
   }
@@ -229,7 +230,8 @@ class FormValidator {
   validateAll() {
     return new Promise(resolve => {
       this.suite
-        .afterEach(result => {
+        .afterEach(() => {
+          const result = this.suite.get();
           // Update UI for all fields
           Object.keys(this.formData).forEach(fieldName => {
             this.touched[fieldName] = true;
@@ -368,7 +370,8 @@ usernameInput.addEventListener('input', e => {
 
     debounceTimer = setTimeout(() => {
       suite
-        .afterEach(result => {
+        .afterEach(() => {
+          const result = suite.get();
           loadingIndicator.style.display = 'none';
           updateErrorDisplay('username', result);
         })

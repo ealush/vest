@@ -242,10 +242,10 @@ result.getWarningsByGroup('groupName');
 
 Use `.afterEach()` to register a callback that will be called after the initial sync completion and again after each async test finishes. This is the recommended way to handle completion logic, including async suites. You can also use `await suite.run()` to get the result when all tests are finished.
 
-| Parameter           | Type       | Required? | Description                                                                                                     |
-| ------------------- | ---------- | --------- | --------------------------------------------------------------------------------------------------------------- |
-| `callback`          | `Function` | Yes       | A callback to be run after each completion cycle. Use with `.afterEach(callback).run()` for completion logic.   |
-| `await suite.run()` | `Promise`  | No        | Returns a promise that resolves when the suite is done running. Use with async/await for modern async handling. |
+| Parameter           | Type       | Required? | Description                                                                                                                                       |
+| ------------------- | ---------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `callback`          | `Function` | Yes       | A callback to be run after each completion cycle. Use with `.afterEach(callback).run()` for completion logic. The callback receives no arguments. |
+| `await suite.run()` | `Promise`  | No        | Returns a promise that resolves when the suite is done running. Use with async/await for modern async handling.                                   |
 
 If you need to check for completion of specific fields, do so inside your callback logic.
 
@@ -271,7 +271,8 @@ const suite = create(data => {
 });
 
 suite
-  .afterEach(res => {
+  .afterEach(() => {
+    const res = suite.get();
     if (res.hasErrors('UserName')) {
       showUserNameErrors(res.errors);
     }
@@ -290,7 +291,7 @@ Do not use `.afterEach()` conditionally, especially with async tests. This might
 
 if (field === 'username') {
   suite
-    .afterEach(result => {
+    .afterEach(() => {
       /*do something*/
     })
     .run();
@@ -301,7 +302,8 @@ if (field === 'username') {
 // ✅ Instead, perform your checks within your after callback
 
 suite
-  .afterEach(result => {
+  .afterEach(() => {
+    /* ... */
     if (field === 'username') {
       /*do something*/
     }
@@ -314,7 +316,8 @@ suite
 Similar to `.afterEach()`, but runs when a specific field finishes validation.
 
 ```javascript
-suite.afterField('username', res => {
+suite.afterField('username', () => {
+  const res = suite.get();
   if (res.hasErrors('username')) {
     // handle username errors
   }

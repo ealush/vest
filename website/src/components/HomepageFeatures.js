@@ -46,6 +46,13 @@ const FeatureList = [
     description:
       'Vest remembers previous runs and merges results, allowing you to validate only the fields the user is interacting with.',
   },
+  {
+    title: 'Full stack',
+    emoji: '🥞',
+    category: 'Universal',
+    description:
+      'Run the same validation logic on both client and server. Share your suite between environments for consistent, tamper-proof validation.',
+  },
 ];
 
 function Feature({ emoji, title, category, description }) {

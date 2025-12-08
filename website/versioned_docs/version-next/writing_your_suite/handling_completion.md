@@ -63,10 +63,10 @@ This makes it perfect for keeping your UI in sync with the validation state.
 
 ```javascript
 suite
-  .afterEach(res => {
+  .afterEach(() => {
     // Called when the suite finishes sync execution
     // AND whenever an async test completes
-    updateUI(res);
+    updateUI(suite.get());
   })
   .run(data);
 ```
@@ -86,9 +86,10 @@ This is highly useful for UI patterns like removing a loading spinner from a spe
 
 ```javascript
 suite
-  .afterField('username', res => {
+  .afterField('username', () => {
     // Runs when a test for 'username' finishes
     setLoading('username', false);
+    const res = suite.get();
 
     if (res.hasErrors('username')) {
       showUsernameError(res.getErrors('username'));

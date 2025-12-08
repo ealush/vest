@@ -3,11 +3,13 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import CodeBlock from '@theme/CodeBlock';
 import Layout from '@theme/Layout';
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Demo from '../components/Demo';
 import HomepageFeatures from '../components/HomepageFeatures';
 import RawExample from '../components/RawExample';
+import Typewriter from '../components/Typewriter';
+import { TYPEWRITER_DATA } from '../components/Typewriter/data';
 
 import styles from './index.module.css';
 
@@ -15,6 +17,13 @@ function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
   const [copied, setCopied] = useState(false);
   const installCommand = 'npm i vest';
+  const [[prefix, values], setTypewriterData] = useState(TYPEWRITER_DATA[0]);
+
+  useEffect(() => {
+    setTypewriterData(
+      TYPEWRITER_DATA[Math.floor(Math.random() * TYPEWRITER_DATA.length)],
+    );
+  }, []);
 
   const handleCopy = () => {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
@@ -55,9 +64,11 @@ suite.run(formData);`;
             Form validation that feels like writing tests
           </p>
           <h1 className="hero__title">
-            Write validation logic,
-            <br />
-            <span className={styles.heroHighlight}>not boilerplate</span>
+            <Typewriter
+              prefix={prefix}
+              values={values}
+              highlightClassName={styles.heroHighlight}
+            />
           </h1>
           <p className={clsx('hero__subtitle', styles.heroTagline)}>
             {siteConfig.tagline}

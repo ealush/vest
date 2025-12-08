@@ -39,14 +39,14 @@ import FocusedUpdatesSandpack from '@site/src/components/Sandpack/FocusedUpdates
 ```javascript
 suite
   .focus({ only: 'email' })
-  .afterEach(result => updateUI(result))
+  .afterEach(() => updateUI(suite.get()))
   .run(formData);
 
 // Or with afterField for specific field callbacks
 suite
   .focus({ only: ['email', 'password'] })
-  .afterField('email', result => validateEmailUI(result))
-  .afterField('password', result => validatePasswordUI(result))
+  .afterField('email', () => validateEmailUI(suite.get()))
+  .afterField('password', () => validatePasswordUI(suite.get()))
   .run(formData);
 ```
 
@@ -59,7 +59,7 @@ suite
 function handleBlur(fieldName, formData) {
   suite
     .focus({ only: fieldName })
-    .afterEach(result => setValidationResult(result))
+    .afterEach(() => setValidationResult(suite.get()))
     .run(formData);
 }
 
@@ -78,14 +78,14 @@ When you need to validate everything (e.g., on form submit), simply call `run()`
 ```javascript
 // Validate all fields on submit
 function handleSubmit(formData) {
-  suite.afterEach(setResult).run(formData);
+  suite.afterEach(() => setResult(suite.get())).run(formData);
 }
 
 // Or for focused blur validation
 function handleBlur(fieldName, value) {
   suite
     .focus({ only: fieldName })
-    .afterEach(setResult)
+    .afterEach(() => setResult(suite.get()))
     .run({ ...formData, [fieldName]: value });
 }
 ```
@@ -112,13 +112,16 @@ function useFormValidation(initialData) {
 
   const validateField = useCallback(
     fieldName => {
-      suite.focus({ only: fieldName }).afterEach(setResult).run(formData);
+      suite
+        .focus({ only: fieldName })
+        .afterEach(() => setResult(suite.get()))
+        .run(formData);
     },
     [formData],
   );
 
   const validateAll = useCallback(() => {
-    suite.afterEach(setResult).run(formData);
+    suite.afterEach(() => setResult(suite.get())).run(formData);
   }, [formData]);
 
   return { formData, setFormData, result, validateField, validateAll };

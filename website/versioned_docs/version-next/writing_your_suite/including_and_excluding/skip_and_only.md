@@ -96,7 +96,7 @@ suite.focus({ only: ['username', 'email'] }).run(formData);
 // Chain with afterEach for callbacks
 suite
   .focus({ only: 'email' })
-  .afterEach(result => updateUI(result))
+  .afterEach(() => updateUI(suite.get()))
   .run(formData);
 ```
 

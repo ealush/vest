@@ -89,9 +89,11 @@ await result;
 If you prefer callbacks, or cannot use `await` at the call site, use the `.afterEach()` hook.
 
 ```javascript
+suite;
 suite
-  .afterEach(result => {
+  .afterEach(() => {
     // This runs after the initial sync completion and after each async test finishes
+    const result = suite.get();
     if (result.isValid()) {
       submitForm();
     }

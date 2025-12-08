@@ -9,8 +9,13 @@ Vest integrates seamlessly with React applications, providing powerful validatio
 
 ## Quick Start
 
+import ReactIntegration from '@site/src/components/Sandpack/ReactIntegration';
+
+<ReactIntegration />
+
 ```jsx
 import { create, test, enforce } from 'vest';
+import 'vest/email';
 import { useState } from 'react';
 
 const suite = create((data = {}) => {
@@ -38,12 +43,23 @@ function SignupForm() {
   const handleChange = (name, value) => {
     setFormData(prev => ({ ...prev, [name]: value }));
     suite
+      .focus({ only: name })
       .afterEach(() => setResult(suite.get()))
-      .run({ ...formData, [name]: value }, name);
+      .run({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    await suite.run(formData);
+
+    if (suite.isValid()) {
+      // Submit form
+      console.log('Form is valid!', formData);
+    }
   };
 
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <div>
         <input
           name="username"
@@ -51,7 +67,7 @@ function SignupForm() {
           onChange={e => handleChange('username', e.target.value)}
         />
         {result.hasErrors('username') && (
-          <span>{result.getErrors('username')[0]}</span>
+          <span>{result.getError('username')}</span>
         )}
       </div>
 
@@ -61,12 +77,10 @@ function SignupForm() {
           value={formData.email}
           onChange={e => handleChange('email', e.target.value)}
         />
-        {result.hasErrors('email') && (
-          <span>{result.getErrors('email')[0]}</span>
-        )}
+        {result.hasErrors('email') && <span>{result.getError('email')}</span>}
       </div>
 
-      <button type="submit" disabled={result.hasErrors()}>
+      <button type="submit" disabled={!result.isValid()}>
         Submit
       </button>
     </form>
@@ -133,62 +147,13 @@ function MyForm() {
 }
 ```
 
-## React Hook Form Integration
-
-Vest works excellently with [React Hook Form](https://react-hook-form.com/) through the official resolver:
-
-```bash
-npm install @hookform/resolvers
-```
-
-```jsx
-import { useForm } from 'react-hook-form';
-import { vestResolver } from '@hookform/resolvers/vest';
-import { create, test, enforce } from 'vest';
-
-const validationSuite = create((data = {}) => {
-  test('username', 'Username is required', () => {
-    enforce(data.username).isNotBlank();
-  });
-
-  test('password', 'Password must be at least 8 characters', () => {
-    enforce(data.password).longerThanOrEquals(8);
-  });
-});
-
-function LoginForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: vestResolver(validationSuite),
-  });
-
-  const onSubmit = data => {
-    console.log('Valid data:', data);
-  };
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <input {...register('username')} />
-      {errors.username && <span>{errors.username.message}</span>}
-
-      <input type="password" {...register('password')} />
-      {errors.password && <span>{errors.password.message}</span>}
-
-      <button type="submit">Login</button>
-    </form>
-  );
-}
-```
-
 ## Async Validation
 
 Handle async validations like API calls:
 
 ```jsx
 import { create, test, enforce } from 'vest';
+import 'vest/email';
 
 const suite = create((data = {}) => {
   test('username', 'Username is required', () => {
@@ -230,7 +195,7 @@ function UsernameField() {
       <input value={username} onChange={e => handleChange(e.target.value)} />
       {isChecking && <span>Checking availability...</span>}
       {result.hasErrors('username') && (
-        <span>{result.getErrors('username')[0]}</span>
+        <span>{result.getError('username')}</span>
       )}
     </div>
   );
@@ -306,6 +271,7 @@ Vest has [excellent TypeScript support](/docs/typescript_support):
 
 ```tsx
 import { create, test, enforce, SuiteResult } from 'vest';
+import 'vest/email';
 
 interface FormData {
   username: string;

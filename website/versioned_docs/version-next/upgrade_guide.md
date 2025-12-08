@@ -75,7 +75,7 @@ The `.done()` method on the result object has been removed. Use `suite.afterEach
 ```diff
 - suite(data).done(result => { ... });
 
-+ suite.afterEach(result => { ... }).run(data);
++ suite.afterEach(() => { ... }).run(data);
 // OR
 + const result = await suite.run(data);
 ```
@@ -189,7 +189,7 @@ In previous versions, you had to call `suite.get()` to access the different meth
 The result object has two new methods: hasError and hasWarning. They return a boolean value indicating whether a given field has an error or a warning. With these new methods, you can display the first error of a field. [Read more](./writing_your_suite/accessing_the_result.md).
 
 ```diff
-- res.getErrors('username')[0]
+- res.getError('username')
 + res.hasError('username')
 ```
 

@@ -30,15 +30,6 @@ const config = {
     },
   },
   organizationName: 'ealush', // Usually your GitHub org/user name.
-  plugins: [
-    [
-      '@docusaurus/plugin-google-gtag',
-      {
-        trackingID: 'G-M420W03G2K',
-        anonymizeIP: true,
-      },
-    ],
-  ],
   presets: [
     [
       '@docusaurus/preset-classic',
@@ -79,6 +70,10 @@ const config = {
         },
         theme: {
           customCss: path.resolve(__dirname, './src/css/custom.css'),
+        },
+        gtag: {
+          trackingID: 'G-M420W03G2K',
+          anonymizeIP: true,
         },
       }),
     ],

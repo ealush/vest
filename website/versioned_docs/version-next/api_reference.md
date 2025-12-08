@@ -109,13 +109,13 @@ Prepares a focused run.
 
 #### `suite.afterEach(callback)`
 
-Registers a callback to run after each test completes (including the initial sync run and every async completion).
+Registers a callback to run after each test completes (including the initial sync run and every async completion). The callback receives **no arguments**; you should access the result using `suite.get()`.
 
 - [Read more about `suite.afterEach`](./writing_your_suite/handling_completion.md#2-using-suiteaftereachcallback)
 
 #### `suite.afterField(fieldName, callback)`
 
-Registers a callback to run when a specific field finishes execution.
+Registers a callback to run when a specific field finishes execution. The callback receives **no arguments**; you should access the result using `suite.get()`.
 
 - [Read more about `suite.afterField`](./writing_your_suite/handling_completion.md#3-using-suiteafterfieldfieldname-callback)
 

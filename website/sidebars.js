@@ -22,7 +22,7 @@ const sidebars = {
       items: [
         'usage_with_frameworks/react',
         'usage_with_frameworks/vue',
-        'usage_with_frameworks/svelte',
+
         'usage_with_frameworks/vanilla',
       ],
     },

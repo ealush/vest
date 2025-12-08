@@ -40,13 +40,14 @@ Vest integrates naturally with Svelte's reactive stores and reactive statements,
   let result = suite.get();
 
   function validateField(fieldName) {
-    suite.afterEach((res) => {
-      result = res;
+    suite.afterEach(() => {
+      result = suite.get();
     }).run(formData, fieldName);
   }
 
   function handleSubmit() {
-    suite.afterEach((res) => {
+    suite.afterEach(() => {
+      const res = suite.get();
       result = res;
 
       if (!res.hasErrors()) {
@@ -127,13 +128,14 @@ Create a reactive store for your validation results:
   function validateField(fieldName, value) {
     formData.update(data => ({ ...data, [fieldName]: value }));
 
-    suite.afterEach((res) => {
-      validationResult.set(res);
+    suite.afterEach(() => {
+      validationResult.set(suite.get());
     }).run($formData, fieldName);
   }
 
   function handleSubmit() {
-    suite.afterEach((res) => {
+    suite.afterEach(() => {
+      const res = suite.get();
       validationResult.set(res);
 
       if (!res.hasErrors()) {
@@ -177,8 +179,8 @@ Use Svelte's reactive statements for automatic validation:
 
   // Automatically validate when username changes
   $: if (username !== undefined) {
-    suite.afterEach((res) => {
-      result = res;
+    suite.afterEach(() => {
+      result = suite.get();
     }).run({ username }, 'username');
   }
 </script>
@@ -219,8 +221,8 @@ Handle async validations with Svelte's reactivity:
   async function checkUsername() {
     isChecking = true;
 
-    suite.afterEach((res) => {
-      result = res;
+    suite.afterEach(() => {
+      result = suite.get();
       isChecking = false;
     }).run({ username }, 'username');
   }
@@ -322,8 +324,8 @@ export function createValidationStore(suite, initialData = {}) {
 
     const currentData = get(formData);
     suite
-      .afterEach(res => {
-        result.set(res);
+      .afterEach(() => {
+        result.set(suite.get());
         isValidating.set(false);
       })
       .run(currentData, fieldName);
@@ -334,8 +336,8 @@ export function createValidationStore(suite, initialData = {}) {
 
     const currentData = get(formData);
     suite
-      .afterEach(res => {
-        result.set(res);
+      .afterEach(() => {
+        result.set(suite.get());
         isValidating.set(false);
       })
       .run(currentData);
@@ -445,8 +447,8 @@ Vest works great with [TypeScript](/docs/typescript_support) in Svelte:
   let result: SuiteResult = suite.get();
 
   function validateField(fieldName: keyof FormData): void {
-    suite.afterEach((res) => {
-      result = res;
+    suite.afterEach(() => {
+      result = suite.get();
     }).run(formData, fieldName);
   }
 </script>
@@ -478,7 +480,7 @@ Use debouncing for async or expensive validations:
   import { debounce } from './utils';
 
   const validateUsername = debounce((value) => {
-    suite.afterEach(setResult).run({ username: value }, 'username');
+    suite.afterEach(() => setResult(suite.get())).run({ username: value }, 'username');
   }, 500);
 
   $: validateUsername(username);

@@ -100,7 +100,7 @@ function Form() {
   return (
     <form onSubmit={handleSubmit}>
       <input name="username" onChange={handleChange} onBlur={handleBlur} />
-      {showError('username') && <span>{result.getErrors('username')[0]}</span>}
+      {showError('username') && <span>{result.getError('username')}</span>}
 
       <button type="submit">Submit</button>
     </form>

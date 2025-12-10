@@ -1,9 +1,14 @@
-import { CB } from 'vest-utils';
+import { CB, isFailure } from 'vest-utils';
 import { describe, it, expect, test } from 'vitest';
 
 import { Isolate, TIsolate } from '../../Isolate/Isolate';
 import { IsolateSerializer } from '../IsolateSerializer';
-import { IRecociler, VestRuntime, IsolateStatus } from '../../vestjs-runtime';
+import {
+  IRecociler,
+  VestRuntime,
+  IsolateStatus,
+  IsolateMutator,
+} from '../../vestjs-runtime';
 
 describe('IsolateSerializer', () => {
   describe('serialize', () => {
@@ -186,6 +191,37 @@ describe('IsolateSerializer', () => {
           "status": "DONE",
         }
       `);
+    });
+  });
+
+  describe('Error handling', () => {
+    it('Should return error result if deserialization fails', () => {
+      const result = IsolateSerializer.safeDeserialize('invalid json');
+      expect(isFailure(result)).toBe(true);
+    });
+
+    it('Should return empty string if isolate is null', () => {
+      expect(IsolateSerializer.serialize(null, v => v)).toBe('');
+    });
+  });
+
+  describe('Children with keys', () => {
+    it('Should correctly handle children with keys during processing', () => {
+      let serialized: string;
+      withRunTime(() => {
+        const root = Isolate.create('Root', () => {
+          const child = Isolate.create('Child', () => {});
+          IsolateMutator.setKey(child, 'some-key');
+        });
+        serialized = IsolateSerializer.serialize(root, v => v);
+      });
+
+      // @ts-ignore
+      const inflated = IsolateSerializer.deserialize(serialized);
+      // @ts-ignore
+      expect(inflated.children[0].key).toBe('some-key');
+      // @ts-ignore
+      expect(inflated.keys['some-key']).toBeDefined();
     });
   });
 });

@@ -150,4 +150,15 @@ describe('IsolateMutator', () => {
       expect(isolate.abortController.abort).toHaveBeenCalledWith('foo');
     });
   });
+
+  describe('setData', () => {
+    it('Should set the data', () => {
+      const isolate = {} as TIsolate;
+      const data = { foo: 'bar' };
+
+      expect(isolate.data).toBeUndefined();
+      IsolateMutator.setData(isolate, data);
+      expect(isolate.data).toBe(data);
+    });
+  });
 });

@@ -1,3 +1,4 @@
+import isFunction from './isFunction';
 import { noop } from './noop';
 
 // Type declaration for Promise.withResolvers (ES2024 feature)
@@ -12,7 +13,7 @@ declare global {
 }
 
 export function withResolvers<T>() {
-  if (Promise.hasOwnProperty('withResolvers')) {
+  if (isFunction(Promise.withResolvers)) {
     return Promise.withResolvers<T>();
   }
 

@@ -11,8 +11,45 @@ import { RuntimeApi } from '../VestRuntime';
 
 import { IsolateStateMachine } from './IsolateStateMachine';
 import { IsolateStatus } from './IsolateStatus';
+import { IsolateInspector } from './IsolateInspector';
 
 import { TIsolate } from './Isolate';
+
+function bubbleUpPending(isolate: Nullable<TIsolate>): void {
+  if (isNullish(isolate)) {
+    return;
+  }
+  // If parent is already HAS_PENDING, we can stop the upward traversal.
+  if (IsolateInspector.isHasPending(isolate)) {
+    return;
+  }
+
+  const result = IsolateMutator.setHasPending(isolate);
+
+  if (isFailure(result)) {
+    return;
+  }
+
+  bubbleUpPending(isolate.parent);
+}
+
+function bubbleUpDone(isolate: Nullable<TIsolate>): void {
+  if (isNullish(isolate)) {
+    return;
+  }
+
+  if (!IsolateInspector.isHasPending(isolate)) {
+    return;
+  }
+
+  const result = IsolateMutator.setStatus(isolate, IsolateStatus.DONE, isolate);
+
+  if (isFailure(result)) {
+    return;
+  }
+
+  bubbleUpDone(isolate.parent);
+}
 
 export class IsolateMutator {
   static setParent(isolate: TIsolate, parent: Nullable<TIsolate>): TIsolate {
@@ -96,15 +133,31 @@ export class IsolateMutator {
     }
 
     RuntimeApi.registerPending(isolate);
+
+    // Bubble up the HAS_PENDING status to all ancestors.
+    bubbleUpPending(isolate.parent);
+  }
+
+  static setHasPending(isolate: TIsolate): Result<IsolateStatus, string> {
+    return IsolateMutator.setStatus(isolate, IsolateStatus.HAS_PENDING);
   }
 
   static setDone(isolate: TIsolate): void {
-    const result = IsolateMutator.setStatus(isolate, IsolateStatus.DONE);
+    const result = IsolateMutator.setStatus(
+      isolate,
+      IsolateStatus.DONE,
+      isolate,
+    );
 
     if (isFailure(result)) {
       return;
     }
 
     RuntimeApi.removePending(isolate);
+
+    // Bubble up the DONE status to ancestors if no other children are pending.
+    bubbleUpDone(isolate.parent);
   }
+
+  // Predicates moved to IsolateInspector
 }

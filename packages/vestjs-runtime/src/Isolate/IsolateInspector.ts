@@ -67,6 +67,26 @@ export class IsolateInspector {
     return IsolateInspector.statusEquals(isolate, IsolateStatus.PENDING);
   }
 
+  static isHasPending(isolate: Nullable<TIsolate>): boolean {
+    return IsolateInspector.statusEquals(isolate, IsolateStatus.HAS_PENDING);
+  }
+
+  static hasPending(isolate: Nullable<TIsolate>): boolean {
+    return (
+      IsolateInspector.isPending(isolate) ||
+      IsolateInspector.isHasPending(isolate)
+    );
+  }
+
+  static hasActiveChildren(isolate: Nullable<TIsolate>): boolean {
+    if (isNullish(isolate) || isNullish(isolate.children)) {
+      return false;
+    }
+
+    // Check if ANY immediate child is currently PENDING or HAS_PENDING
+    return isolate.children.some(child => IsolateInspector.hasPending(child));
+  }
+
   static getParent(isolate: Nullable<TIsolate>): Nullable<TIsolate> {
     return isolate?.parent ?? null;
   }

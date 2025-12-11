@@ -10,8 +10,9 @@ describe('Runtime Orchestration', () => {
       VestRuntime.dispatch({ type: 'START_MOUNT' });
 
       // Create a pending isolate
-      const isolate = Isolate.create('test', () => {});
-      IsolateMutator.setPending(isolate);
+      Isolate.create('test', async () => {
+        await new Promise(() => {});
+      });
 
       VestRuntime.dispatch({ type: 'END_MOUNT' });
 

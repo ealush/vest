@@ -1,16 +1,13 @@
-import { TIsolate, VestRuntime } from 'vestjs-runtime';
+import {
+  IsolateInspector,
+  TIsolate,
+  VestRuntime,
+  Walker,
+} from 'vestjs-runtime';
 
 import { TIsolateTest } from '../isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../isolate/IsolateTest/VestTest';
 import matchingFieldName from '../test/helpers/matchingFieldName';
-
-/**
- * Retrieves the Set of pending isolates from the runtime.
- */
-export function usePendingIsolates() {
-  const [pending] = VestRuntime.usePendingIsolates();
-  return pending;
-}
 
 /**
  * Checks if there are any pending isolates.
@@ -45,21 +42,11 @@ export function useIsPending(fieldName?: string): boolean {
 export function useMapFirstPending<T>(
   callback: (isolate: TIsolate, breakout: (value: T) => void) => void,
 ): T | null {
-  const pending = usePendingIsolates();
+  const root = VestRuntime.useAvailableRoot();
 
-  for (const isolate of pending) {
-    let result: T | null = null;
-    let broke = false;
-
-    callback(isolate, value => {
-      broke = true;
-      result = value;
-    });
-
-    if (broke) {
-      return result;
-    }
+  if (!IsolateInspector.hasPending(root)) {
+    return null;
   }
 
-  return null;
+  return Walker.mapFirst(root, callback);
 }

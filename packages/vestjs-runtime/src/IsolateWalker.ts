@@ -7,6 +7,7 @@ import {
   isFailure,
 } from 'vest-utils';
 
+import { IsolateInspector } from './Isolate/IsolateInspector';
 import { type TIsolate } from './Isolate/Isolate';
 import { IsolateMutator } from './Isolate/IsolateMutator';
 
@@ -304,4 +305,55 @@ export function closestExists(
   predicate: (node: TIsolate) => boolean,
 ): boolean {
   return !!closest(startNode, predicate);
+}
+
+/**
+ * Traverses the tree and returns the first non-nullish value returned by the callback.
+ * It optimizes traversal by only visiting nodes that have pending isolates or are pending themselves.
+ */
+export function mapFirst<T>(
+  startNode: TIsolate,
+  callback: (isolate: TIsolate, breakout: (value: T) => void) => void,
+): T | null {
+  const stack = [startNode];
+  let result: { value: T } | null = null;
+  const breakout = (value: T) => (result = { value });
+
+  while (stack.length > 0) {
+    if (result) {
+      break;
+    }
+
+    const node = stack.pop()!;
+    processNode(node, stack, callback, breakout);
+  }
+
+  return (result as { value: T } | null)?.value ?? null;
+}
+
+function processNode<T>(
+  node: TIsolate,
+  stack: TIsolate[],
+  callback: (isolate: TIsolate, breakout: (value: T) => void) => void,
+  breakout: (value: T) => void,
+): void {
+  if (!IsolateInspector.hasPending(node)) {
+    return;
+  }
+
+  runCallback(node, callback, breakout);
+
+  if (node.children) {
+    pushChildren(stack, node.children);
+  }
+}
+
+function runCallback<T>(
+  node: TIsolate,
+  callback: (isolate: TIsolate, breakout: (value: T) => void) => void,
+  breakout: (value: T) => void,
+): void {
+  if (IsolateInspector.isPending(node)) {
+    callback(node, breakout);
+  }
 }

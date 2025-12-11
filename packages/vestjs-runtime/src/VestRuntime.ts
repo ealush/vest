@@ -38,7 +38,6 @@ export type StateRefType = {
   appData: Record<string, any>;
   historyRoot: TinyState<Nullable<TIsolate>>;
   isMounting: TinyState<boolean>;
-  pendingIsolates: TinyState<Set<TIsolate>>;
   state: TinyState<RuntimeState>;
   Reconciler: IRecociler;
 };
@@ -93,13 +92,6 @@ export function useIsMounting() {
 }
 
 /**
- * Retrieves the set of currently pending isolates.
- */
-export function usePendingIsolates() {
-  return useX().stateRef.pendingIsolates();
-}
-
-/**
  * Retrieves the application-specific data stored in the runtime.
  */
 export function useXAppData<T = object>() {
@@ -119,7 +111,6 @@ export function createRef(
     appData: dynamicValue(setter),
     historyRoot: tinyState.createTinyState<Nullable<TIsolate>>(null),
     isMounting: tinyState.createTinyState<boolean>(false),
-    pendingIsolates: tinyState.createTinyState<Set<TIsolate>>(new Set()),
     state: tinyState.createTinyState<RuntimeState>(RuntimeState.STABLE),
   });
 
@@ -141,40 +132,37 @@ function subscribeToEvents(ref: StateRefType) {
 
   function useHandleEndMount() {
     const [, setIsMounting] = ref.isMounting();
-    const [pendingIsolates] = ref.pendingIsolates();
     const [state, setState] = ref.state();
 
     setIsMounting(false);
-    if (pendingIsolates.size === 0 && state !== RuntimeState.STABLE) {
+    if (!hasPending() && state !== RuntimeState.STABLE) {
       setState(RuntimeState.STABLE);
       ref.Bus.emit('BECOME_STABLE');
     }
   }
 
-  function useHandleIsolatePending(isolate: TIsolate) {
-    const [pendingIsolates] = ref.pendingIsolates();
+  function useHandleIsolatePending(_isolate: TIsolate) {
     const [state, setState] = ref.state();
 
-    pendingIsolates.add(isolate);
     if (state !== RuntimeState.PENDING) {
       setState(RuntimeState.PENDING);
     }
   }
 
-  function useHandleIsolateDone(isolate: TIsolate) {
-    const [pendingIsolates] = ref.pendingIsolates();
+  function useHandleIsolateDone(_isolate: TIsolate) {
     const [state, setState] = ref.state();
     const [isMounting] = ref.isMounting();
 
-    pendingIsolates.delete(isolate);
-    if (
-      pendingIsolates.size === 0 &&
-      !isMounting &&
-      state !== RuntimeState.STABLE
-    ) {
+    if (!hasPending() && !isMounting && state !== RuntimeState.STABLE) {
       setState(RuntimeState.STABLE);
       ref.Bus.emit('BECOME_STABLE');
     }
+  }
+
+  function hasPending() {
+    const ctx = PersistedContext.use();
+    const root = ctx?.runtimeRoot ?? ref.historyRoot()[0];
+    return IsolateInspector.hasPending(root);
   }
 }
 
@@ -386,7 +374,6 @@ export const RuntimeApi = {
   useHistoryRoot,
   useIsMounting,
   useIsStable,
-  usePendingIsolates,
   useRuntimeState,
   useSetHistoryRoot,
   useSetNextIsolateChild,

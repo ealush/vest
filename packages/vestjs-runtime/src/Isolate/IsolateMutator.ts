@@ -153,11 +153,9 @@ export class IsolateMutator {
       return;
     }
 
-    RuntimeApi.removePending(isolate);
-
     // Bubble up the DONE status to ancestors if no other children are pending.
     bubbleUpDone(isolate.parent);
-  }
 
-  // Predicates moved to IsolateInspector
+    RuntimeApi.removePending(isolate);
+  }
 }

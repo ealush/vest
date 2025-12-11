@@ -37,8 +37,6 @@ export type StateRefType = {
   Bus: BusType<RuntimeEvents>;
   appData: Record<string, any>;
   historyRoot: TinyState<Nullable<TIsolate>>;
-  isMounting: TinyState<boolean>;
-  state: TinyState<RuntimeState>;
   Reconciler: IRecociler;
 };
 
@@ -73,22 +71,20 @@ export const Run = PersistedContext.run;
  * Retrieves the current runtime state (e.g., STABLE, PENDING).
  */
 export function useRuntimeState() {
-  return useX().stateRef.state();
+  return useIsStable() ? RuntimeState.STABLE : RuntimeState.PENDING;
 }
 
 /**
  * Checks if the runtime is currently stable (no pending tests).
  */
 export function useIsStable() {
-  const [state] = useRuntimeState();
-  return state === RuntimeState.STABLE;
-}
+  const root = useAvailableRoot();
 
-/**
- * Checks if the runtime is currently mounting (initializing).
- */
-export function useIsMounting() {
-  return useX().stateRef.isMounting();
+  if (!root) {
+    return true;
+  }
+
+  return !IsolateInspector.hasPending(root);
 }
 
 /**
@@ -110,60 +106,9 @@ export function createRef(
     Reconciler,
     appData: dynamicValue(setter),
     historyRoot: tinyState.createTinyState<Nullable<TIsolate>>(null),
-    isMounting: tinyState.createTinyState<boolean>(false),
-    state: tinyState.createTinyState<RuntimeState>(RuntimeState.STABLE),
   });
 
-  subscribeToEvents(ref);
-
   return ref;
-}
-
-function subscribeToEvents(ref: StateRefType) {
-  ref.Bus.on('START_MOUNT', useHandleStartMount);
-  ref.Bus.on('END_MOUNT', useHandleEndMount);
-  ref.Bus.on('ISOLATE_PENDING', useHandleIsolatePending);
-  ref.Bus.on('ISOLATE_DONE', useHandleIsolateDone);
-
-  function useHandleStartMount() {
-    const [, setIsMounting] = ref.isMounting();
-    setIsMounting(true);
-  }
-
-  function useHandleEndMount() {
-    const [, setIsMounting] = ref.isMounting();
-    const [state, setState] = ref.state();
-
-    setIsMounting(false);
-    if (!hasPending() && state !== RuntimeState.STABLE) {
-      setState(RuntimeState.STABLE);
-      ref.Bus.emit('BECOME_STABLE');
-    }
-  }
-
-  function useHandleIsolatePending(_isolate: TIsolate) {
-    const [state, setState] = ref.state();
-
-    if (state !== RuntimeState.PENDING) {
-      setState(RuntimeState.PENDING);
-    }
-  }
-
-  function useHandleIsolateDone(_isolate: TIsolate) {
-    const [state, setState] = ref.state();
-    const [isMounting] = ref.isMounting();
-
-    if (!hasPending() && !isMounting && state !== RuntimeState.STABLE) {
-      setState(RuntimeState.STABLE);
-      ref.Bus.emit('BECOME_STABLE');
-    }
-  }
-
-  function hasPending() {
-    const ctx = PersistedContext.use();
-    const root = ctx?.runtimeRoot ?? ref.historyRoot()[0];
-    return IsolateInspector.hasPending(root);
-  }
 }
 
 /**
@@ -372,7 +317,6 @@ export const RuntimeApi = {
   useAvailableRoot,
   useCurrentCursor,
   useHistoryRoot,
-  useIsMounting,
   useIsStable,
   useRuntimeState,
   useSetHistoryRoot,

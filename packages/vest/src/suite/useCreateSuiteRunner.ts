@@ -1,5 +1,4 @@
 import { assign, CB, isFunction, withResolvers } from 'vest-utils';
-import { VestRuntime } from 'vestjs-runtime';
 
 import { useEmit } from '../core/VestBus/VestBus';
 
@@ -61,7 +60,6 @@ export function useCreateSuiteRunner<
             return result;
           }
 
-          VestRuntime.dispatch({ type: 'START_MOUNT' });
           const output = IsolateSuite(() => {
             only(modifiers.only);
             (suiteCallback as any)(...(args as Parameters<T>));
@@ -70,7 +68,6 @@ export function useCreateSuiteRunner<
             useEmit('SUITE_CALLBACK_RUN_FINISHED');
             return useCreateSuiteResult<F, G, S>(schema, args[0]);
           }, resolver);
-          VestRuntime.dispatch({ type: 'END_MOUNT' });
           return output;
         },
       ).output,

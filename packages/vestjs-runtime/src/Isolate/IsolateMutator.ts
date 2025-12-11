@@ -74,6 +74,10 @@ export class IsolateMutator {
 
     isolate.children.push(child);
     IsolateMutator.setParent(child, isolate);
+
+    if (IsolateInspector.hasPending(child)) {
+      bubbleUpPending(isolate);
+    }
   }
 
   static removeChild(isolate: TIsolate, node: TIsolate): void {

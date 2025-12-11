@@ -7,34 +7,30 @@ import { RuntimeState } from '../Orchestrator/RuntimeStates';
 describe('Runtime Orchestration', () => {
   it('Should transition to PENDING if an isolate is pending after mount', () => {
     VestRuntime.Run(VestRuntime.createRef({} as any, {} as any), () => {
-      VestRuntime.dispatch({ type: 'START_MOUNT' });
-
       // Create a pending isolate
-      Isolate.create('test', async () => {
+      const isolate = Isolate.create('test', async () => {
         await new Promise(() => {});
       });
 
-      VestRuntime.dispatch({ type: 'END_MOUNT' });
+      IsolateMutator.setParent(isolate, VestRuntime.useAvailableRoot());
+      IsolateMutator.setPending(isolate);
 
-      const [state] = VestRuntime.useRuntimeState();
-      expect(state).toBe(RuntimeState.PENDING);
+      expect(VestRuntime.useRuntimeState()).toBe(RuntimeState.PENDING);
     });
   });
 
   it('Should transition to STABLE when pending isolate is done', () => {
     VestRuntime.Run(VestRuntime.createRef({} as any, {} as any), () => {
-      VestRuntime.dispatch({ type: 'START_MOUNT' });
       const isolate = Isolate.create('test', async () => {
         await new Promise(() => {});
       });
+      IsolateMutator.setParent(isolate, VestRuntime.useAvailableRoot());
       IsolateMutator.setPending(isolate);
-      VestRuntime.dispatch({ type: 'END_MOUNT' });
 
       // Mark as done
       IsolateMutator.setDone(isolate);
 
-      const [state] = VestRuntime.useRuntimeState();
-      expect(state).toBe(RuntimeState.STABLE);
+      expect(VestRuntime.useRuntimeState()).toBe(RuntimeState.STABLE);
     });
   });
 });

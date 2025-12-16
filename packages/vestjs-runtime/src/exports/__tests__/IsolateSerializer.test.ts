@@ -224,6 +224,54 @@ describe('IsolateSerializer', () => {
       expect(inflated.keys['some-key']).toBeDefined();
     });
   });
+
+  describe('Security Scenarios', () => {
+    it('Should ignore malicious prototype keys in serialized string', () => {
+      // Manually constructed malicious string mimicking a serialized Isolate
+      // but injecting a __proto__ key into the data object
+      const maliciousJson = JSON.stringify([
+        {
+          $type: 'URoot',
+          data: {
+            __proto__: { isAdmin: true },
+          },
+        },
+        {},
+      ]);
+
+      const inflated = IsolateSerializer.deserialize(maliciousJson);
+
+      // Verify the object was deserialized
+      expect(inflated).toBeDefined();
+
+      // Verify pollution did not occur
+      // @ts-ignore
+      expect({}.isAdmin).toBeUndefined();
+
+      // Verify the malicious key was stripped or ignored
+      // @ts-ignore
+      expect(inflated.data.__proto__).not.toEqual({ isAdmin: true });
+    });
+
+    it('Should strip unsafe keys during JSON parsing (reviver check)', () => {
+      // Direct check against JSON.parse behvaior simulated via the serializer
+      const json =
+        '[{"$type":"URoot","__proto__":{"polluted":true},"valid":true}, {}]';
+
+      const expanded = IsolateSerializer.deserialize(json);
+
+      // Even if minifyObject handles it, we want to ensure the reviver did its job
+      // or at least that the combination is safe.
+      // Since deserialize calls expandNode -> JSON.parse(node, safeReviver)
+      // The resulting object should immediately lack the key.
+
+      // Note: we can't easily spy on the internal JSON.parse reviver without mocking,
+      // but we can verify the end result is clean.
+      expect(expanded).toBeDefined();
+      // @ts-ignore
+      expect(expanded.__proto__).not.toEqual({ polluted: true });
+    });
+  });
 });
 
 function withRunTime<T>(fn: CB<T>) {

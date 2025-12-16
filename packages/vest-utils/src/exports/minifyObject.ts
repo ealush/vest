@@ -1,3 +1,4 @@
+import isUnsafeKey from '../isUnsafeKey';
 import { isArray } from '../isArrayValue';
 import { isEmpty } from '../isEmpty';
 import isFunction from '../isFunction';
@@ -179,6 +180,10 @@ export function expandObject(minifiedObj: any, map: Record<string, any>): any {
 }
 
 function setValue(container: any, value: any, key: string) {
+  if (isUnsafeKey(key)) {
+    return;
+  }
+
   if (isArray(container)) {
     container.push(value);
   } else {

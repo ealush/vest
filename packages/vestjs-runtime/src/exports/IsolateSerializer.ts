@@ -6,6 +6,7 @@ import {
   text,
   makeResult,
   Result,
+  isUnsafeKey,
 } from 'vest-utils';
 import { expandObject, minifyObject } from 'vest-utils/minifyObject';
 
@@ -92,9 +93,18 @@ function processChildren(current: TIsolate, queue: TIsolate[]): void {
 
 function expandNode(node: Record<string, any> | TIsolate | string): TIsolate {
   const root = (
-    isStringValue(node) ? JSON.parse(node) : ({ ...node } as TIsolate)
+    isStringValue(node)
+      ? JSON.parse(node, safeReviver)
+      : ({ ...node } as TIsolate)
   ) as [any, any];
 
   const expanded = expandObject(...root);
   return IsolateSerializer.validateIsolate(expanded).unwrap();
+}
+
+function safeReviver(key: string, value: any): any {
+  if (isUnsafeKey(key)) {
+    return;
+  }
+  return value;
 }

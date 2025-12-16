@@ -13,6 +13,7 @@ export { default as assign } from './assign';
 export { default as defaultTo } from './defaultTo';
 export { default as invariant } from './invariant';
 export { default as isStringValue } from './isStringValue';
+export { default as isUnsafeKey } from './isUnsafeKey';
 export { default as bindNot } from './bindNot';
 export { default as either } from './either';
 export { default as isBoolean } from './isBooleanValue';

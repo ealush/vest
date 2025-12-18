@@ -6,6 +6,7 @@ import matchingFieldName from '../../test/helpers/matchingFieldName';
 
 import { TIsolateTest } from './IsolateTest';
 import { VestTest } from './VestTest';
+import { useTestObjects } from '../registerTests';
 
 type MaybeRoot = Nullable<TIsolate>;
 
@@ -83,5 +84,15 @@ export class TestWalker {
         fieldName,
       ).unwrap();
     }, root);
+
+    const [, setTests] = useTestObjects();
+    setTests(tests =>
+      tests.filter((testObject: TIsolateTest) => {
+        return (
+          !VestTest.is(testObject) ||
+          !matchingFieldName(VestTest.getData(testObject), fieldName).unwrap()
+        );
+      }),
+    );
   }
 }

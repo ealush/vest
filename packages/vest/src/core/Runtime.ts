@@ -9,7 +9,7 @@ import {
 } from '../suiteResult/SuiteResultTypes';
 
 import { TIsolateSuite } from './isolate/IsolateSuite/IsolateSuite';
-import { reprocessTree } from './isolate/registerTests';
+import { useReprocessTree } from './isolate/registerTests';
 
 export type DoneCallback = (res: SuiteResult<TFieldName, TGroupName>) => void;
 type FieldCallbacks = Record<string, DoneCallbacks>;
@@ -87,7 +87,7 @@ export function useResetSuite() {
 export function useLoadSuite(rootNode: TIsolateSuite): void {
   VestRuntime.useSetHistoryRoot(rootNode);
 
-  reprocessTree(rootNode);
+  useReprocessTree(rootNode);
 
   useExpireSuiteResultCache();
 }

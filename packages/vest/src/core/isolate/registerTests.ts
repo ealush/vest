@@ -1,61 +1,57 @@
-import { invariant } from 'vest-utils';
-import { Bus, IsolateInspector, TIsolate } from 'vestjs-runtime';
+import { dynamicValue } from 'vest-utils';
+import { VestRuntime, TIsolate } from 'vestjs-runtime';
 
 import { TIsolateTest } from './IsolateTest/IsolateTest';
 import { VestTest } from './IsolateTest/VestTest';
-import { isVestIsolate } from './VestIsolateType';
 
-export function registerTestNodes(isolate: TIsolate) {
-  const tests: TIsolateTest[] = [];
+export function useTestObjects(): [
+  TIsolateTest[],
+  (tests: TIsolateTest[] | ((prev: TIsolateTest[]) => TIsolateTest[])) => void,
+] {
+  const root = VestRuntime.useAvailableRoot();
 
-  const parent = IsolateInspector.getParent(isolate);
-
-  if (!parent) {
-    return;
+  if (!root) {
+    return [[], () => {}];
   }
 
-  invariant(parent.children, 'Expected parent to have children');
+  return [root.data.tests || [], setTests];
 
-  parent.data.tests = parent.children.reduce((tests, current) => {
-    if (VestTest.is(current)) {
-      tests.push(current);
-    }
-
-    if (isVestIsolate(current)) {
-      tests.push(...current.data.tests);
-    }
-
-    return tests;
-  }, tests);
-}
-
-// Traverses all the way up and registers all test nodes all the way up to the suite level
-export function registerTestsTraverseUp(isolate: TIsolate) {
-  let next = isolate.parent;
-
-  while (next) {
-    if (!isVestIsolate(next)) {
-      return;
-    }
-
-    registerTestNodes(next);
-    next = next.parent;
+  function setTests(
+    tests: TIsolateTest[] | ((prev: TIsolateTest[]) => TIsolateTest[]),
+  ) {
+    if (!root) return;
+    root.data.tests = dynamicValue(tests, root.data.tests || []);
   }
 }
 
-export function onTestStart(testObject: TIsolateTest) {
-  registerTestNodes(testObject);
+export function useAddTestToRoot(testObject: TIsolateTest) {
+  const [, setTests] = useTestObjects();
+
+  setTests(prev => {
+    if (prev.includes(testObject)) {
+      return prev;
+    }
+    prev.push(testObject);
+    return prev;
+  });
 }
 
-export function reprocessTree(rootNode: TIsolate): void {
-  if (!rootNode.children) {
-    return;
+export function useOnTestStart(testObject: TIsolateTest) {
+  useAddTestToRoot(testObject);
+}
+
+export function useRegisterSubtree(isolate: TIsolate) {
+  if (VestTest.is(isolate)) {
+    useAddTestToRoot(isolate);
   }
 
-  const emit = Bus.useEmit();
-
-  for (const child of rootNode.children) {
-    reprocessTree(child);
-    emit('ISOLATE_RECONCILED', child);
+  if (isolate.children) {
+    for (const child of isolate.children) {
+      useRegisterSubtree(child);
+    }
   }
+}
+
+export function useReprocessTree(rootNode: TIsolate): void {
+  useRegisterSubtree(rootNode);
 }

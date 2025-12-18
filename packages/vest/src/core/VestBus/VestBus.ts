@@ -17,12 +17,7 @@ import {
 import { TestWalker } from '../isolate/IsolateTest/TestWalker';
 import { VestTest } from '../isolate/IsolateTest/VestTest';
 
-import {
-  registerTestsTraverseUp,
-  registerTestNodes,
-  onTestStart,
-  reprocessTree,
-} from '../isolate/registerTests';
+import { useOnTestStart, useRegisterSubtree } from '../isolate/registerTests';
 
 import { Events } from './BusEvents';
 
@@ -30,16 +25,8 @@ import { Events } from './BusEvents';
 export function useInitVestBus() {
   const VestBus = Bus.useBus<VestEvents>();
 
-  VestBus.on('TEST_COMPLETED', (isolate: TIsolate) => {
+  VestBus.on('TEST_COMPLETED', () => {
     useExpireSuiteResultCache();
-
-    // #FIXME: This is not ideal as it traverses up all the way on every test
-    // but for now it should be ok. O(n)
-    // The reason we're doing this is that whenever tests are declared anywhere that's not the top level
-    // we still need them to be accessible from the root level tests[] array.
-    // This is because all of the runtime checks related to execution mode and early exit (eager, one, lazy)
-    // occur and are based on the top level registry instead of needing to always traverse all the way down.
-    registerTestsTraverseUp(isolate);
   });
 
   VestBus.on('TEST_RUN_STARTED', () => {
@@ -58,20 +45,22 @@ export function useInitVestBus() {
 
   VestBus.on('ISOLATE_ENTER', (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
-      onTestStart(isolate);
+      useOnTestStart(isolate);
     }
   });
 
   VestBus.on('ISOLATE_RECONCILED', (isolate: TIsolate) => {
-    registerTestNodes(isolate);
+    useRegisterSubtree(isolate);
   });
 
   VestBus.on('ISOLATE_DONE', (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
       VestBus.emit('TEST_COMPLETED', isolate);
-    } else {
-      registerTestNodes(isolate);
     }
+  });
+
+  VestBus.on('TEST_COMPLETED', () => {
+    useExpireSuiteResultCache();
   });
 
   VestBus.on('ASYNC_ISOLATE_DONE', (isolate: TIsolate) => {
@@ -146,7 +135,6 @@ export function useInitVestBus() {
     useExpireSuiteResultCache();
 
     TestWalker.removeTestByFieldName(fieldName);
-    reprocessTree(VestRuntime.useAvailableRoot());
   });
 
   VestBus.on('RESET_SUITE', () => {

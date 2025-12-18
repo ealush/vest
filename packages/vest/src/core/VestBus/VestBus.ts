@@ -30,26 +30,30 @@ import { Events } from './BusEvents';
 export function useInitVestBus() {
   const VestBus = Bus.useBus<VestEvents>();
 
-  on('TEST_COMPLETED', (isolate: TIsolate) => {
+  VestBus.on('TEST_COMPLETED', (isolate: TIsolate) => {
+    useExpireSuiteResultCache();
+
     // #FIXME: This is not ideal as it traverses up all the way on every test
     // but for now it should be ok. O(n)
     // The reason we're doing this is that whenever tests are declared anywhere that's not the top level
     // we still need them to be accessible from the root level tests[] array.
-    // This is becaue all of the runtime checks related to execution mode and early exit (eager, one, lazy)
+    // This is because all of the runtime checks related to execution mode and early exit (eager, one, lazy)
     // occur and are based on the top level registry instead of needing to always traverse all the way down.
     registerTestsTraverseUp(isolate);
   });
 
-  on('TEST_RUN_STARTED', () => {
-    // Bringin this back due to https://github.com/ealush/vest/issues/1157
-    // This is a very pecluiar bug in which we're seeing vest behaving differently between
+  VestBus.on('TEST_RUN_STARTED', () => {
+    useExpireSuiteResultCache();
+
+    // Bringing this back due to https://github.com/ealush/vest/issues/1157
+    // This is a very peculiar bug in which we're seeing vest behaving differently between
     // runs when suite.get() is called.
     // In the bug we experienced that failing tests were skipped in the second run.
     // The reason: suite.get() built the failures cache. Calling suite.get() before the test run
     // made Vest think that the field already had failing tests (even though it was the same test!)
     // and it skipped the test.
     // A better solution is to be able to identify each failure to its actual position in the suite
-    // but this requires some rearchitecting within Vest.
+    // but this requires some re-architecting within Vest.
     // This is an easy enough solution - we just reset the cache before the test run, let's hope we don't see
     // any performance issues.
   });
@@ -88,8 +92,9 @@ export function useInitVestBus() {
     }
   });
 
-  on('DONE_TEST_OMISSION_PASS', () => {
+  VestBus.on('DONE_TEST_OMISSION_PASS', () => {
     /* We NEED to refresh the cache here. Don't ask */
+    useExpireSuiteResultCache();
   });
 
   // Called when all the tests, including async, are done running
@@ -113,17 +118,24 @@ export function useInitVestBus() {
     failure.mapError(deferThrow);
   });
 
-  on('RESET_FIELD', (fieldName: TFieldName) => {
+  VestBus.on('RESET_FIELD', (fieldName: TFieldName) => {
+    useExpireSuiteResultCache();
+
     TestWalker.resetField(fieldName);
   });
 
-  on('SUITE_RUN_STARTED', () => {});
+  VestBus.on('SUITE_RUN_STARTED', () => {
+    useExpireSuiteResultCache();
+  });
 
-  on('INITIALIZING_CALLBACKS', () => {
+  VestBus.on('INITIALIZING_CALLBACKS', () => {
+    useExpireSuiteResultCache();
     useResetCallbacks();
   });
 
-  on('SUITE_CALLBACK_RUN_FINISHED', () => {
+  VestBus.on('SUITE_CALLBACK_RUN_FINISHED', () => {
+    useExpireSuiteResultCache();
+
     if (VestRuntime.useIsStable()) {
       // When no more async tests are running, emit the done event
       VestBus.emit('ALL_RUNNING_TESTS_FINISHED');
@@ -134,12 +146,14 @@ export function useInitVestBus() {
     useRunDoneCallbacks();
   });
 
-  on('REMOVE_FIELD', (fieldName: TFieldName) => {
+  VestBus.on('REMOVE_FIELD', (fieldName: TFieldName) => {
+    useExpireSuiteResultCache();
+
     TestWalker.removeTestByFieldName(fieldName);
     reprocessTree(VestRuntime.useAvailableRoot());
   });
 
-  on('RESET_SUITE', () => {
+  VestBus.on('RESET_SUITE', () => {
     useResetSuite();
   });
 
@@ -161,18 +175,6 @@ export function useInitVestBus() {
     return VestBus.on(event ?? '*', () => {
       cb();
     }).off;
-  }
-
-  function on<T extends keyof VestEvents>(
-    event: T,
-    cb: (payload: VestEvents[T]) => void,
-  ) {
-    VestBus.on(event, (arg: VestEvents[T]) => {
-      // This is more concise, but it might be an overkill
-      // if we're adding events that don't need to invalidate the cache
-      useExpireSuiteResultCache();
-      cb(arg);
-    });
   }
 }
 

@@ -79,6 +79,7 @@ export function useResetCallbacks() {
 }
 
 export function useResetSuite() {
+  useExpireSuiteResultCache();
   useResetCallbacks();
   VestRuntime.reset();
 }

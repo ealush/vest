@@ -5,7 +5,7 @@ import {
   useCurrentCursor,
   useSetIsolateKey,
 } from '../VestRuntime';
-import { IRecociler } from '../Reconciler';
+import { IReconciler } from '../Reconciler';
 import * as VestRuntime from '../VestRuntime';
 import { IsolateInspector } from '../Isolate/IsolateInspector';
 import { IsolateMutator } from '../Isolate/IsolateMutator';
@@ -58,7 +58,7 @@ vi.mock('context', () => ({
 }));
 
 describe('VestRuntime', () => {
-  let reconciler: IRecociler;
+  let reconciler: IReconciler;
 
   beforeEach(() => {
     reconciler = vi.fn();

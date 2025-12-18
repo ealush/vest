@@ -17,7 +17,7 @@ import { ErrorStrings } from './errors/ErrorStrings';
 // I would rather not use `any` here, but instead use `Isolate`.
 // The problem is that it breaks the actual implementation of `Isolate` in `IsolateTest`
 // As it is not properly extending `Isolate`.
-export interface IRecociler<I = any> {
+export interface IReconciler<I = any> {
   (currentNode: I, historyNode: I): Nullable<I>;
 }
 

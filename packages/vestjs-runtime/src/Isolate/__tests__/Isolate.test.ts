@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { TIsolate, Isolate } from '../Isolate';
 import { StateRefType, useAvailableRoot } from '../../VestRuntime';
-import { IsolateMutator, VestRuntime, IRecociler } from '../../vestjs-runtime';
+import { IsolateMutator, VestRuntime, IReconciler } from '../../vestjs-runtime';
 
 enum IsolateType {
   Isolate = 'Isolate',
@@ -14,7 +14,7 @@ describe('Isolate', () => {
   let stateRef: StateRefType;
 
   beforeEach(() => {
-    stateRef = VestRuntime.createRef({} as IRecociler, v => v);
+    stateRef = VestRuntime.createRef({} as IReconciler, v => v);
   });
 
   describe('Isolate.create', () => {

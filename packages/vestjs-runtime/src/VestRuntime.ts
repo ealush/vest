@@ -18,7 +18,7 @@ import {
 import { TIsolate } from './Isolate/Isolate';
 import { IsolateInspector } from './Isolate/IsolateInspector';
 import { IsolateMutator } from './Isolate/IsolateMutator';
-import { IRecociler } from './Reconciler';
+import { IReconciler } from './Reconciler';
 import { ErrorStrings } from './errors/ErrorStrings';
 import { RuntimeState } from './Orchestrator/RuntimeStates';
 
@@ -37,7 +37,7 @@ export type StateRefType = {
   Bus: BusType<RuntimeEvents>;
   appData: Record<string, any>;
   historyRoot: TinyState<Nullable<TIsolate>>;
-  Reconciler: IRecociler;
+  Reconciler: IReconciler;
 };
 
 const PersistedContext = createCascade<CTXType>((stateRef, parentContext) => {
@@ -98,7 +98,7 @@ export function useXAppData<T = object>() {
  * Creates a new state reference for such as the history root, pending isolates, and the current runtime state.
  */
 export function createRef(
-  Reconciler: IRecociler,
+  Reconciler: IReconciler,
   setter: DynamicValue<Record<string, any>>,
 ): StateRefType {
   const ref = Object.freeze({

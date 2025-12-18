@@ -1,5 +1,5 @@
 import { CB, CacheApi, TinyState, cache, seq, tinyState } from 'vest-utils';
-import { IRecociler, VestRuntime } from 'vestjs-runtime';
+import { IReconciler, VestRuntime } from 'vestjs-runtime';
 
 import {
   SuiteResult,
@@ -27,7 +27,7 @@ const suiteResultCache = cache<SuiteResult<TFieldName, TGroupName, TSchema>>();
 export function useCreateVestState({
   VestReconciler,
 }: {
-  VestReconciler: IRecociler;
+  VestReconciler: IReconciler;
 }) {
   const stateRef: StateExtra = {
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),

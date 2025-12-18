@@ -3,7 +3,7 @@ export type { RuntimeEvents } from './RuntimeEvents';
 export { Isolate } from './Isolate/Isolate';
 export type { IsolateKey, TIsolate } from './Isolate/Isolate';
 export { Reconciler } from './Reconciler';
-export type { IRecociler } from './Reconciler';
+export type { IReconciler } from './Reconciler';
 export * as Walker from './IsolateWalker';
 export { RuntimeApi as VestRuntime } from './VestRuntime';
 export { IsolateInspector } from './Isolate/IsolateInspector';

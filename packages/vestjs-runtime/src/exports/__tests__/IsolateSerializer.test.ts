@@ -4,7 +4,7 @@ import { describe, it, expect, test } from 'vitest';
 import { Isolate, TIsolate } from '../../Isolate/Isolate';
 import { IsolateSerializer } from '../IsolateSerializer';
 import {
-  IRecociler,
+  IReconciler,
   VestRuntime,
   IsolateStatus,
   IsolateMutator,
@@ -276,7 +276,7 @@ describe('IsolateSerializer', () => {
 
 function withRunTime<T>(fn: CB<T>) {
   return VestRuntime.Run(
-    VestRuntime.createRef({} as IRecociler, v => v),
+    VestRuntime.createRef({} as IReconciler, v => v),
     () => {
       return fn();
     },

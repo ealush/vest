@@ -43,8 +43,6 @@ export function useInitVestBus() {
   });
 
   VestBus.on('TEST_RUN_STARTED', () => {
-    useExpireSuiteResultCache();
-
     // Bringing this back due to https://github.com/ealush/vest/issues/1157
     // This is a very peculiar bug in which we're seeing vest behaving differently between
     // runs when suite.get() is called.
@@ -124,9 +122,7 @@ export function useInitVestBus() {
     TestWalker.resetField(fieldName);
   });
 
-  VestBus.on('SUITE_RUN_STARTED', () => {
-    useExpireSuiteResultCache();
-  });
+  VestBus.on('SUITE_RUN_STARTED', () => {});
 
   VestBus.on('INITIALIZING_CALLBACKS', () => {
     useExpireSuiteResultCache();

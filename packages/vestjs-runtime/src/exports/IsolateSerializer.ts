@@ -14,6 +14,7 @@ import { TIsolate } from '../Isolate/Isolate';
 import { ExcludedFromDump, IsolateKeys } from '../Isolate/IsolateKeys';
 import { IsolateMutator } from '../Isolate/IsolateMutator';
 import { ErrorStrings } from '../errors/ErrorStrings';
+import * as VestRuntime from '../VestRuntime';
 
 export class IsolateSerializer {
   static safeDeserialize(
@@ -80,6 +81,7 @@ function processChildren(current: TIsolate, queue: TIsolate[]): void {
     const nextChild = { ...child };
 
     IsolateMutator.setParent(nextChild, current);
+    VestRuntime.useAddWatchedIsolate(nextChild);
     queue.push(nextChild);
 
     if (nextChild.key) {

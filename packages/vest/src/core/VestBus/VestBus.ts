@@ -1,5 +1,18 @@
-import { CB, BusType, Failure, deferThrow } from 'vest-utils';
-import { Bus, RuntimeEvents, TIsolate, VestRuntime } from 'vestjs-runtime';
+import {
+  CB,
+  BusType,
+  Failure,
+  deferThrow,
+  isFunction,
+  makeResult,
+} from 'vest-utils';
+import {
+  Bus,
+  RuntimeEvents,
+  TIsolate,
+  VestRuntime,
+  Walker,
+} from 'vestjs-runtime';
 
 import { useOmitOptionalFields } from '../../hooks/optional/omitOptionalFields';
 import { TIsolateSuite } from '../isolate/IsolateSuite/IsolateSuite';
@@ -16,8 +29,6 @@ import {
 } from '../Runtime';
 import { TestWalker } from '../isolate/IsolateTest/TestWalker';
 import { VestTest } from '../isolate/IsolateTest/VestTest';
-
-import { useOnTestStart, useRegisterSubtree } from '../isolate/registerTests';
 
 import { Events } from './BusEvents';
 
@@ -43,24 +54,21 @@ export function useInitVestBus() {
     // any performance issues.
   });
 
-  VestBus.on('ISOLATE_ENTER', (isolate: TIsolate) => {
-    if (VestTest.is(isolate)) {
-      useOnTestStart(isolate);
-    }
-  });
-
-  VestBus.on('ISOLATE_RECONCILED', (isolate: TIsolate) => {
-    useRegisterSubtree(isolate);
-  });
-
   VestBus.on('ISOLATE_DONE', (isolate: TIsolate) => {
     if (VestTest.is(isolate)) {
       VestBus.emit('TEST_COMPLETED', isolate);
     }
   });
 
-  VestBus.on('TEST_COMPLETED', () => {
-    useExpireSuiteResultCache();
+  // When an isolate is reconciled (e.g., memo hit), we need to register
+  // all nodes from the historic subtree with the current watchers.
+  VestBus.on('ISOLATE_RECONCILED', (isolate: TIsolate) => {
+    // Use generic Walker to ensure ALL watched types (Tests, Groups, etc) are caught
+    // Let useAddWatchedIsolate's internal criteria filter what to add
+    Walker.walk(isolate, (node: TIsolate) => {
+      VestRuntime.useAddWatchedIsolate(node);
+      return makeResult.Ok(undefined);
+    });
   });
 
   VestBus.on('ASYNC_ISOLATE_DONE', (isolate: TIsolate) => {
@@ -96,7 +104,7 @@ export function useInitVestBus() {
 
     // resolve the suite's promise
     const root = VestRuntime.useAvailableRoot<TIsolateSuite>();
-    if (root) {
+    if (root && isFunction(root.data.resolver)) {
       root.data.resolver();
     }
   });
@@ -110,8 +118,6 @@ export function useInitVestBus() {
 
     TestWalker.resetField(fieldName);
   });
-
-  VestBus.on('SUITE_RUN_STARTED', () => {});
 
   VestBus.on('INITIALIZING_CALLBACKS', () => {
     useExpireSuiteResultCache();

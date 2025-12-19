@@ -38,11 +38,19 @@ export type StateRefType = {
   appData: Record<string, any>;
   historyRoot: TinyState<Nullable<TIsolate>>;
   Reconciler: IReconciler;
+  isolateWatchers: Record<string, Watcher>;
+};
+
+type Watcher = {
+  criteria: (isolate: TIsolate) => boolean;
+  isolates: Set<TIsolate>;
 };
 
 const PersistedContext = createCascade<CTXType>((stateRef, parentContext) => {
   if (parentContext) {
-    return null;
+    // Merge parent context with new stateRef for nested VestRuntime.Run calls
+    // This preserves the parent's runtime state while allowing new overrides
+    return assign({}, parentContext, stateRef);
   }
 
   invariant(stateRef.historyRoot);
@@ -106,6 +114,7 @@ export function createRef(
     Reconciler,
     appData: dynamicValue(setter),
     historyRoot: tinyState.createTinyState<Nullable<TIsolate>>(null),
+    isolateWatchers: {},
   });
 
   return ref;
@@ -306,6 +315,89 @@ export function reset() {
   resetHistoryRoot();
 }
 
+/**
+ * Registers a watcher for isolates.
+ * Named 'use' prefix because it consumes Context.
+ * Idempotent: silently skips if watcher already exists.
+ * @param key The key to identify the watcher.
+ * @param criteria The criteria to filter isolates.
+ */
+export function useRegisterIsolateWatcher(
+  key: string,
+  criteria: (isolate: TIsolate) => boolean,
+): void {
+  const { isolateWatchers } = useX().stateRef;
+
+  // Idempotent: skip if already registered (safe for multiple suite runs)
+  if (Object.prototype.hasOwnProperty.call(isolateWatchers, key)) {
+    return;
+  }
+
+  isolateWatchers[key] = {
+    criteria,
+    isolates: new Set(),
+  };
+}
+
+/**
+ * Retrieves the watched isolates for a given key.
+ * Returns an Iterable to avoid Array allocation on every call.
+ * @param key The key to identify the watcher.
+ */
+export function useWatchedIsolates(key: string): Iterable<TIsolate> {
+  return useX().stateRef.isolateWatchers[key]?.isolates ?? [];
+}
+
+/**
+ * Adds an isolate to the watched list if it matches the criteria.
+ * @param isolate The isolate to add.
+ */
+export function useAddWatchedIsolate(isolate: TIsolate): void {
+  const ctx = PersistedContext.use();
+
+  if (!ctx) {
+    return;
+  }
+
+  const { isolateWatchers } = ctx.stateRef;
+
+  for (const key in isolateWatchers) {
+    const watcher = isolateWatchers[key];
+
+    if (watcher.criteria(isolate)) {
+      watcher.isolates.add(isolate);
+    }
+  }
+}
+
+/**
+ * Removes an isolate from all watched lists.
+ * Set.delete is idempotent, so we don't need to check criteria.
+ * @param isolate The isolate to remove.
+ */
+export function useRemoveWatchedIsolate(isolate: TIsolate): void {
+  const ctx = PersistedContext.use();
+
+  if (!ctx) {
+    return;
+  }
+
+  const { isolateWatchers } = ctx.stateRef;
+
+  for (const key in isolateWatchers) {
+    // Set.delete is O(1) and idempotent - no need to check criteria
+    isolateWatchers[key].isolates.delete(isolate);
+  }
+}
+
+export function useResetIsolateWatchers(): void {
+  const { isolateWatchers } = useX().stateRef;
+
+  for (const key in isolateWatchers) {
+    isolateWatchers[key].isolates.clear();
+  }
+}
+
 export const RuntimeApi = {
   Run,
   createRef,
@@ -314,12 +406,17 @@ export const RuntimeApi = {
   registerPending,
   removePending,
   reset,
+  useAddWatchedIsolate,
   useAvailableRoot,
   useCurrentCursor,
   useHistoryRoot,
   useIsStable,
+  useRegisterIsolateWatcher,
+  useRemoveWatchedIsolate,
+  useResetIsolateWatchers,
   useRuntimeState,
   useSetHistoryRoot,
   useSetNextIsolateChild,
+  useWatchedIsolates,
   useXAppData,
 };

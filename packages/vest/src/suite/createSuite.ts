@@ -3,6 +3,7 @@ import { VestRuntime } from 'vestjs-runtime';
 
 import { useCreateVestState } from '../core/Runtime';
 import { useInitVestBus } from '../core/VestBus/VestBus';
+import { useRegisterTestWatcher } from '../core/isolate/IsolateTest/TestWalker';
 import { VestReconciler } from '../core/isolate/VestReconciler';
 import {
   TFieldName,
@@ -42,6 +43,9 @@ function createSuite<
   // will be bound to the suite's stateRef and be able to access it.
   return VestRuntime.Run(stateRef, () => {
     const VestBus = useInitVestBus();
+
+    // Register the test watcher. This is encapsulated in the Test domain.
+    useRegisterTestWatcher();
 
     return createSuiteInstance().unwrap();
 

@@ -1,4 +1,5 @@
 import { TIsolate, VestRuntime, Walker } from 'vestjs-runtime';
+import { TestWalker } from '../../core/isolate/IsolateTest/TestWalker';
 
 import {
   SuiteOptionalFields,
@@ -6,7 +7,6 @@ import {
 } from '../../core/isolate/IsolateSuite/IsolateSuite';
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
-import { isVestIsolate } from '../../core/isolate/VestIsolateType';
 import { nonMatchingFieldName } from '../../core/test/helpers/matchingFieldName';
 import { OptionalFieldTypes } from '../../hooks/optional/OptionalTypes';
 import { useIsOptionalFieldApplied } from '../../hooks/optional/optional';
@@ -192,15 +192,7 @@ function hasErrorsByTestObjectsInGroup(
   fieldName: TFieldName | undefined,
   groupName: TGroupName,
 ): boolean {
-  const root = VestRuntime.useAvailableRoot();
-
-  if (!isVestIsolate(root)) {
-    return false;
-  }
-
-  const tests = root.data.tests;
-
-  return tests.some(testObject => {
+  return TestWalker.someTests(testObject => {
     // Skip tests that aren't in our target group
     if (VestTest.getGroupName(testObject) !== groupName) {
       return false;

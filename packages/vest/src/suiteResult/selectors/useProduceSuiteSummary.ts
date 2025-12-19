@@ -4,6 +4,7 @@ import { VestRuntime } from 'vestjs-runtime';
 import { TIsolateSuite } from '../../core/isolate/IsolateSuite/IsolateSuite';
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
+import { useWatchedTests } from '../../core/isolate/IsolateTest/TestWalker';
 import { isVestIsolate } from '../../core/isolate/VestIsolateType';
 import { countKeyBySeverity, Severity } from '../Severity';
 import {
@@ -32,7 +33,10 @@ export function useProduceSuiteSummary<
   const summary = new SuiteSummary<F, G>();
 
   if (isVestIsolate(root)) {
-    useProcessTests(root.data.tests, summary);
+    // Summary generation happens once at the end, not in hot path.
+    // Convert Iterable to Array for reduce/map operations in useProcessTests.
+    const tests = Array.from(useWatchedTests<F>());
+    useProcessTests(tests, summary);
   }
 
   if (summary.valid !== false) {

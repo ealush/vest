@@ -8,6 +8,7 @@ import {
 } from 'vest-utils';
 
 import { RuntimeApi } from '../VestRuntime';
+import * as Walker from '../IsolateWalker';
 
 import { IsolateStateMachine } from './IsolateStateMachine';
 import { IsolateStatus } from './IsolateStatus';
@@ -83,6 +84,13 @@ export class IsolateMutator {
   static removeChild(isolate: TIsolate, node: TIsolate): void {
     isolate.children =
       isolate.children?.filter(child => child !== node) ?? null;
+
+    // RECURSIVE CLEANUP: Walk the detached node to unregister all descendants
+    // This prevents zombie state where children remain in watchers after parent removal
+    Walker.walk(node, child => {
+      RuntimeApi.useRemoveWatchedIsolate(child);
+      return makeResult.Ok(undefined);
+    });
   }
 
   static addChildKey(isolate: TIsolate, key: string, node: TIsolate): void {

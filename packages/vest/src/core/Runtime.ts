@@ -1,5 +1,13 @@
-import { CB, CacheApi, TinyState, cache, seq, tinyState } from 'vest-utils';
-import { IReconciler, VestRuntime } from 'vestjs-runtime';
+import {
+  CB,
+  CacheApi,
+  TinyState,
+  cache,
+  seq,
+  tinyState,
+  makeResult,
+} from 'vest-utils';
+import { IReconciler, VestRuntime, Walker } from 'vestjs-runtime';
 
 import {
   SuiteResult,
@@ -9,7 +17,6 @@ import {
 } from '../suiteResult/SuiteResultTypes';
 
 import { TIsolateSuite } from './isolate/IsolateSuite/IsolateSuite';
-import { useReprocessTree } from './isolate/registerTests';
 
 export type DoneCallback = (res: SuiteResult<TFieldName, TGroupName>) => void;
 type FieldCallbacks = Record<string, DoneCallbacks>;
@@ -86,8 +93,14 @@ export function useResetSuite() {
 
 export function useLoadSuite(rootNode: TIsolateSuite): void {
   VestRuntime.useSetHistoryRoot(rootNode);
-
-  useReprocessTree(rootNode);
+  VestRuntime.useResetIsolateWatchers();
+  // Only walk and add tests to the watcher (filtering via useAddWatchedIsolate criteria)
+  Walker.walk(rootNode, node => {
+    // useAddWatchedIsolate already filters by criteria (VestTest.is),
+    // so we just pass all nodes and let the watcher's criteria filter them
+    VestRuntime.useAddWatchedIsolate(node);
+    return makeResult.Ok(undefined);
+  });
 
   useExpireSuiteResultCache();
 }

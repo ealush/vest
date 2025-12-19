@@ -2,6 +2,7 @@ export { IsolateKeys } from './Isolate/IsolateKeys';
 export type { RuntimeEvents } from './RuntimeEvents';
 export { Isolate } from './Isolate/Isolate';
 export type { IsolateKey, TIsolate } from './Isolate/Isolate';
+export type { IsolatePayload } from './Isolate/IsolateTypes';
 export { Reconciler } from './Reconciler';
 export type { IReconciler } from './Reconciler';
 export * as Walker from './IsolateWalker';

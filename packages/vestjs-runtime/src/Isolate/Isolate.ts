@@ -32,6 +32,8 @@ export class Isolate {
 
     const shouldRunNew = Object.is(nextIsolateChild, newCreatedNode);
 
+    useHandleIsolateRegistration(newCreatedNode, shouldRunNew);
+
     if (parent) {
       // We are within an isolate context. This means that
       // we need to set the new node to be the child of this parent node.
@@ -142,4 +144,19 @@ function baseIsolate(
     key,
     output: null,
   };
+}
+
+/**
+ * Adds the new isolate to the watcher system if it's a new node.
+ * For cache hits, the ISOLATE_RECONCILED event handler is responsible for adding tests.
+ */
+function useHandleIsolateRegistration(
+  newCreatedNode: TIsolate,
+  shouldRunNew: boolean,
+): void {
+  // Add to watcher only for new nodes (not cache hits)
+  // For cache hits, ISOLATE_RECONCILED event handler adds the tests
+  if (shouldRunNew) {
+    VestRuntime.useAddWatchedIsolate(newCreatedNode);
+  }
 }

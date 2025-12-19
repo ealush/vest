@@ -1,8 +1,7 @@
-import { VestRuntime } from 'vestjs-runtime';
+import { TestWalker } from '../../core/isolate/IsolateTest/TestWalker';
 
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
-import { isVestIsolate } from '../../core/isolate/VestIsolateType';
 import { nonMatchingFieldName } from '../../core/test/helpers/matchingFieldName';
 import { nonMatchingSeverityProfile } from '../../core/test/helpers/nonMatchingSeverityProfile';
 import { Severity } from '../Severity';
@@ -21,15 +20,7 @@ function hasFailuresByTestObjects(
   severityKey: Severity,
   fieldName?: TFieldName,
 ): boolean {
-  const root = VestRuntime.useAvailableRoot();
-
-  if (!isVestIsolate(root)) {
-    return false;
-  }
-
-  const tests = root.data.tests;
-
-  return tests.some(testObject => {
+  return TestWalker.someTests(testObject => {
     return hasFailuresByTestObject(testObject, severityKey, fieldName);
   });
 }

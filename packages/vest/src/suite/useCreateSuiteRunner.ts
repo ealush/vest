@@ -1,4 +1,5 @@
 import { assign, CB, isFunction, withResolvers } from 'vest-utils';
+import { VestRuntime } from 'vestjs-runtime';
 
 import { useEmit } from '../core/VestBus/VestBus';
 
@@ -61,6 +62,7 @@ export function useCreateSuiteRunner<
           }
 
           const output = IsolateSuite(() => {
+            VestRuntime.useResetIsolateWatchers();
             only(modifiers.only);
             (suiteCallback as any)(...(args as Parameters<T>));
 

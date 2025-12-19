@@ -58,12 +58,14 @@ export class TestWalker {
   private static someTestsUsingWatcher(
     predicate: (test: TIsolateTest) => boolean,
   ): boolean {
-    const tests = VestRuntime.useWatchedIsolates(VEST_TEST_WATCHER_KEY);
-    // Manual iteration for Iterable (no Array.some on Set/Iterable)
-    for (const test of tests) {
-      if (predicate(test as TIsolateTest)) return true;
-    }
-    return false;
+    let result = false;
+    TestWalker.iterateTestsUsingWatcher((test, breakout) => {
+      if (predicate(test)) {
+        result = true;
+        breakout();
+      }
+    });
+    return result;
   }
 
   static walkTests<F extends TFieldName>(
@@ -95,16 +97,7 @@ export class TestWalker {
   private static walkTestsUsingWatcher<F extends TFieldName>(
     callback: (test: TIsolateTest<F>, breakout: () => void) => void,
   ): void {
-    const tests = VestRuntime.useWatchedIsolates(VEST_TEST_WATCHER_KEY);
-    for (const test of tests) {
-      let broken = false;
-      callback(test as TIsolateTest<F>, () => {
-        broken = true;
-      });
-      if (broken) {
-        return;
-      }
-    }
+    TestWalker.iterateTestsUsingWatcher(callback);
   }
 
   static pluckTests(
@@ -130,13 +123,26 @@ export class TestWalker {
   private static pluckTestsUsingWatcher(
     predicate: (test: TIsolateTest) => boolean,
   ): void {
-    const tests = VestRuntime.useWatchedIsolates(VEST_TEST_WATCHER_KEY);
-    // Use for...of for Iterable compatibility
-    for (const test of tests) {
-      if (predicate(test as TIsolateTest)) {
+    TestWalker.iterateTestsUsingWatcher(test => {
+      if (predicate(test)) {
         if (test.parent) {
           IsolateMutator.removeChild(test.parent, test);
         }
+      }
+    });
+  }
+
+  private static iterateTestsUsingWatcher<F extends TFieldName>(
+    iterator: (test: TIsolateTest<F>, breakout: () => void) => void,
+  ): void {
+    const tests = VestRuntime.useWatchedIsolates(VEST_TEST_WATCHER_KEY);
+    for (const test of tests) {
+      let broken = false;
+      iterator(test as TIsolateTest<F>, () => {
+        broken = true;
+      });
+      if (broken) {
+        return;
       }
     }
   }

@@ -13,6 +13,7 @@ import {
   bus,
   Nullable,
   DynamicValue,
+  hasOwnProperty,
 } from 'vest-utils';
 
 import { TIsolate } from './Isolate/Isolate';
@@ -329,7 +330,7 @@ export function useRegisterIsolateWatcher(
   const { isolateWatchers } = useX().stateRef;
 
   // Idempotent: skip if already registered (safe for multiple suite runs)
-  if (Object.prototype.hasOwnProperty.call(isolateWatchers, key)) {
+  if (hasOwnProperty(isolateWatchers, key)) {
     return;
   }
 
@@ -362,10 +363,12 @@ export function useAddWatchedIsolate(isolate: TIsolate): void {
   const { isolateWatchers } = ctx.stateRef;
 
   for (const key in isolateWatchers) {
-    const watcher = isolateWatchers[key];
+    if (hasOwnProperty(isolateWatchers, key)) {
+      const watcher = isolateWatchers[key];
 
-    if (watcher.criteria(isolate)) {
-      watcher.isolates.add(isolate);
+      if (watcher.criteria(isolate)) {
+        watcher.isolates.add(isolate);
+      }
     }
   }
 }
@@ -385,8 +388,10 @@ export function useRemoveWatchedIsolate(isolate: TIsolate): void {
   const { isolateWatchers } = ctx.stateRef;
 
   for (const key in isolateWatchers) {
-    // Set.delete is O(1) and idempotent - no need to check criteria
-    isolateWatchers[key].isolates.delete(isolate);
+    if (hasOwnProperty(isolateWatchers, key)) {
+      // Set.delete is O(1) and idempotent - no need to check criteria
+      isolateWatchers[key].isolates.delete(isolate);
+    }
   }
 }
 
@@ -394,7 +399,9 @@ export function useResetIsolateWatchers(): void {
   const { isolateWatchers } = useX().stateRef;
 
   for (const key in isolateWatchers) {
-    isolateWatchers[key].isolates.clear();
+    if (hasOwnProperty(isolateWatchers, key)) {
+      isolateWatchers[key].isolates.clear();
+    }
   }
 }
 

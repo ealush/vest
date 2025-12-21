@@ -18,6 +18,7 @@ import {
 import { TIsolate } from './Isolate/Isolate';
 import { IsolateInspector } from './Isolate/IsolateInspector';
 import { IsolateMutator } from './Isolate/IsolateMutator';
+import { TrackerConfig } from './Isolate/IsolateTypes';
 import { IReconciler } from './Reconciler';
 import { ErrorStrings } from './errors/ErrorStrings';
 import { RuntimeState } from './Orchestrator/RuntimeStates';
@@ -38,6 +39,7 @@ export type StateRefType = {
   appData: Record<string, any>;
   historyRoot: TinyState<Nullable<TIsolate>>;
   Reconciler: IReconciler;
+  trackers: TinyState<TrackerConfig[]>;
 };
 
 const PersistedContext = createCascade<CTXType>((stateRef, parentContext) => {
@@ -106,6 +108,7 @@ export function createRef(
     Reconciler,
     appData: dynamicValue(setter),
     historyRoot: tinyState.createTinyState<Nullable<TIsolate>>(null),
+    trackers: tinyState.createTinyState<TrackerConfig[]>([]),
   });
 
   return ref;
@@ -165,6 +168,32 @@ export function persist<T extends (...args: any[]) => any>(cb: T): T {
  */
 export function useX<T = object>(): CTXType & T {
   return PersistedContext.useX() as CTXType & T;
+}
+
+/**
+ * Retrieves the registered trackers.
+ */
+export function getTrackers(): TrackerConfig[] {
+  const [trackers] = useX().stateRef.trackers();
+
+  return trackers;
+}
+
+/**
+ * Registers a new tracker.
+ * Skips if a tracker with the same type is already registered.
+ */
+export function registerTracker(config: TrackerConfig) {
+  const [trackers, setTrackers] = useX().stateRef.trackers();
+
+  // Skip if already registered - prevent duplicate tracker types
+  if (trackers.some(t => t.type === config.type)) {
+    return;
+  }
+
+  setTrackers(currentTrackers => {
+    return [...currentTrackers, config];
+  });
 }
 
 /**
@@ -310,8 +339,10 @@ export const RuntimeApi = {
   Run,
   createRef,
   dispatch,
+  getTrackers,
   persist,
   registerPending,
+  registerTracker,
   removePending,
   reset,
   useAvailableRoot,

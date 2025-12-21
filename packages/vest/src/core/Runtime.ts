@@ -1,5 +1,5 @@
 import { CB, CacheApi, TinyState, cache, seq, tinyState } from 'vest-utils';
-import { IReconciler, VestRuntime } from 'vestjs-runtime';
+import { IReconciler, VestRuntime, IsolateTracker } from 'vestjs-runtime';
 
 import {
   SuiteResult,
@@ -9,7 +9,8 @@ import {
 } from '../suiteResult/SuiteResultTypes';
 
 import { TIsolateSuite } from './isolate/IsolateSuite/IsolateSuite';
-import { useReprocessTree } from './isolate/registerTests';
+import { VestTest } from './isolate/IsolateTest/VestTest';
+import { VestIsolateType } from './isolate/VestIsolateType';
 
 export type DoneCallback = (res: SuiteResult<TFieldName, TGroupName>) => void;
 type FieldCallbacks = Record<string, DoneCallbacks>;
@@ -36,7 +37,16 @@ export function useCreateVestState({
     suiteResultCache,
   };
 
-  return VestRuntime.createRef(VestReconciler, stateRef);
+  const ref = VestRuntime.createRef(VestReconciler, stateRef);
+
+  VestRuntime.Run(ref, () => {
+    VestRuntime.registerTracker({
+      type: VestIsolateType.Test,
+      predicate: VestTest.is,
+    });
+  });
+
+  return ref;
 }
 
 function useX() {
@@ -87,7 +97,11 @@ export function useResetSuite() {
 export function useLoadSuite(rootNode: TIsolateSuite): void {
   VestRuntime.useSetHistoryRoot(rootNode);
 
-  useReprocessTree(rootNode);
+  if (rootNode.refs) {
+    rootNode.refs = null;
+  }
+
+  IsolateTracker.reprocessTree(rootNode);
 
   useExpireSuiteResultCache();
 }

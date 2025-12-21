@@ -37,9 +37,7 @@ export function omitWhen<F extends TFieldName, G extends TGroupName>(
         callback,
       );
     },
-    {
-      tests: [],
-    },
+    {},
   );
 }
 

@@ -17,7 +17,14 @@ export default [
   // GLOBAL IGNORES
   // -------------------------
   {
-    ignores: ['*.d.ts', '**/*.d.ts', 'website/**', '**/dist/**', '**/types/**'],
+    ignores: [
+      '*.d.ts',
+      '**/*.d.ts',
+      'website/**',
+      '**/dist/**',
+      '**/types/**',
+      'coverage/**',
+    ],
   },
 
   // -------------------------
@@ -186,6 +193,9 @@ export default [
   {
     files: ['**/vest/src/**/*.*'],
     ignores: ['**/__tests__/**/*.*'],
+    plugins: {
+      'vest-internal': vestInternalPlugin,
+    },
     rules: {
       'vest-internal/use-use': 'error',
     },

@@ -12,6 +12,7 @@ import { RuntimeApi } from '../VestRuntime';
 import { IsolateStateMachine } from './IsolateStateMachine';
 import { IsolateStatus } from './IsolateStatus';
 import { IsolateInspector } from './IsolateInspector';
+import { IsolateTracker } from './IsolateTracker';
 
 import { TIsolate } from './Isolate';
 
@@ -74,6 +75,7 @@ export class IsolateMutator {
 
     isolate.children.push(child);
     IsolateMutator.setParent(child, isolate);
+    IsolateTracker.bubble(child, isolate);
 
     if (IsolateInspector.hasPending(child)) {
       bubbleUpPending(isolate);

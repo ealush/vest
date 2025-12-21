@@ -2,7 +2,10 @@ import { VestRuntime } from 'vestjs-runtime';
 
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
-import { isVestIsolate } from '../../core/isolate/VestIsolateType';
+import {
+  isVestIsolate,
+  VestIsolateType,
+} from '../../core/isolate/VestIsolateType';
 import { nonMatchingFieldName } from '../../core/test/helpers/matchingFieldName';
 import { nonMatchingSeverityProfile } from '../../core/test/helpers/nonMatchingSeverityProfile';
 import { Severity } from '../Severity';
@@ -27,7 +30,8 @@ function hasFailuresByTestObjects(
     return false;
   }
 
-  const tests = root.data.tests;
+  const refsSet = root.refs?.[VestIsolateType.Test];
+  const tests = (refsSet ? Array.from(refsSet) : []) as TIsolateTest[];
 
   return tests.some(testObject => {
     return hasFailuresByTestObject(testObject, severityKey, fieldName);

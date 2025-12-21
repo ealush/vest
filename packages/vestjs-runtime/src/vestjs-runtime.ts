@@ -13,3 +13,4 @@ export * as IsolateSelectors from './Isolate/IsolateSelectors';
 export { IsolateSerializer } from './exports/IsolateSerializer';
 export { IsolateStatus } from './Isolate/IsolateStatus';
 export { IsolateStateMachine } from './Isolate/IsolateStateMachine';
+export { IsolateTracker } from './Isolate/IsolateTracker';

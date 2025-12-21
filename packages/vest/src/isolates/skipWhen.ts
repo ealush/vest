@@ -39,9 +39,7 @@ export function skipWhen<F extends TFieldName, G extends TGroupName>(
         callback,
       );
     },
-    {
-      tests: [],
-    },
+    {},
   );
 }
 

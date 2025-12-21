@@ -8,10 +8,12 @@ export enum IsolateKeys {
   Status = 'status',
   AbortController = 'abortController',
   Children = 'children',
+  Refs = 'refs',
 }
 
 export const ExcludedFromDump = new Set([
   IsolateKeys.AbortController,
   IsolateKeys.Parent,
   IsolateKeys.Keys,
+  IsolateKeys.Refs,
 ]);

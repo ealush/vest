@@ -87,7 +87,8 @@ function useRunAsNew<Callback extends CB = CB>(
       historyNode: localHistoryNode,
       runtimeNode: current,
       ...(!runtimeRoot && { runtimeRoot: current }),
-    },
+      stateRef: VestRuntime.useX().stateRef,
+    } as any,
     () => useRunAsNewCallback(current, callback),
   );
 
@@ -141,5 +142,6 @@ function baseIsolate(
     children: null,
     key,
     output: null,
+    refs: null,
   };
 }

@@ -1,12 +1,12 @@
 import { Nullable, makeResult } from 'vest-utils';
-import { Walker, VestRuntime, TIsolate } from 'vestjs-runtime';
+import { Walker, VestRuntime, TIsolate, IsolateTracker } from 'vestjs-runtime';
 
 import { TFieldName } from '../../../suiteResult/SuiteResultTypes';
 import matchingFieldName from '../../test/helpers/matchingFieldName';
+import { VestIsolateType } from '../VestIsolateType';
 
 import { TIsolateTest } from './IsolateTest';
 import { VestTest } from './VestTest';
-import { useTestObjects } from '../registerTests';
 
 type MaybeRoot = Nullable<TIsolate>;
 
@@ -85,14 +85,19 @@ export class TestWalker {
       ).unwrap();
     }, root);
 
-    const [, setTests] = useTestObjects();
-    setTests(tests =>
-      tests.filter((testObject: TIsolateTest) => {
-        return (
-          !VestTest.is(testObject) ||
-          !matchingFieldName(VestTest.getData(testObject), fieldName).unwrap()
-        );
-      }),
+    TestWalker.updateTrackedTests(fieldName);
+  }
+
+  private static updateTrackedTests(fieldName: TFieldName): void {
+    const availableRoot = VestRuntime.useAvailableRoot();
+    if (!availableRoot) return;
+
+    IsolateTracker.prune(
+      availableRoot,
+      VestIsolateType.Test,
+      testObject =>
+        VestTest.is(testObject) &&
+        matchingFieldName(VestTest.getData(testObject), fieldName).unwrap(),
     );
   }
 }

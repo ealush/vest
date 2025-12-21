@@ -14,6 +14,8 @@ export type TIsolate<P extends IsolatePayload = IsolatePayload> = {
   [IsolateKeys.Status]: IsolateStatus;
   [IsolateKeys.AbortController]: AbortController;
   children: Nullable<TIsolate[]>;
+  /** Registry of tracked isolates by type. Uses Set for O(1) operations. */
+  refs: Nullable<Record<string, Set<TIsolate>>>;
   key: IsolateKey;
   output: any;
 } & UsedFeaturesOnly<P>;
@@ -28,4 +30,9 @@ export type IsolatePayload<P = Record<string, any>> = P & IsolateFeatures;
 export type IsolateFeatures = {
   [IsolateKeys.AllowReorder]?: boolean;
   [IsolateKeys.Status]?: IsolateStatus;
+};
+
+export type TrackerConfig = {
+  type: string;
+  predicate: (node: TIsolate) => boolean;
 };

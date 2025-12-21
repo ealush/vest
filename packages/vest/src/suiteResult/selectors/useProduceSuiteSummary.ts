@@ -4,7 +4,10 @@ import { VestRuntime } from 'vestjs-runtime';
 import { TIsolateSuite } from '../../core/isolate/IsolateSuite/IsolateSuite';
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
-import { isVestIsolate } from '../../core/isolate/VestIsolateType';
+import {
+  isVestIsolate,
+  VestIsolateType,
+} from '../../core/isolate/VestIsolateType';
 import { countKeyBySeverity, Severity } from '../Severity';
 import {
   CommonSummaryProperties,
@@ -32,7 +35,10 @@ export function useProduceSuiteSummary<
   const summary = new SuiteSummary<F, G>();
 
   if (isVestIsolate(root)) {
-    useProcessTests(root.data.tests, summary);
+    const refsSet = root.refs?.[VestIsolateType.Test];
+    const tests = (refsSet ? Array.from(refsSet) : []) as TIsolateTest<F>[];
+
+    useProcessTests(tests, summary);
   }
 
   if (summary.valid !== false) {

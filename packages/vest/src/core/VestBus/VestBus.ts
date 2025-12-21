@@ -17,8 +17,6 @@ import {
 import { TestWalker } from '../isolate/IsolateTest/TestWalker';
 import { VestTest } from '../isolate/IsolateTest/VestTest';
 
-import { useOnTestStart, useRegisterSubtree } from '../isolate/registerTests';
-
 import { Events } from './BusEvents';
 
 // eslint-disable-next-line max-statements, max-lines-per-function
@@ -41,16 +39,6 @@ export function useInitVestBus() {
     // but this requires some re-architecting within Vest.
     // This is an easy enough solution - we just reset the cache before the test run, let's hope we don't see
     // any performance issues.
-  });
-
-  VestBus.on('ISOLATE_ENTER', (isolate: TIsolate) => {
-    if (VestTest.is(isolate)) {
-      useOnTestStart(isolate);
-    }
-  });
-
-  VestBus.on('ISOLATE_RECONCILED', (isolate: TIsolate) => {
-    useRegisterSubtree(isolate);
   });
 
   VestBus.on('ISOLATE_DONE', (isolate: TIsolate) => {

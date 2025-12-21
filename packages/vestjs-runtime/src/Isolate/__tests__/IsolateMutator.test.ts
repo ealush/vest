@@ -1,6 +1,7 @@
 import { TIsolate } from '../Isolate';
 import { IsolateMutator } from '../IsolateMutator';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import * as VestRuntime from '../../VestRuntime';
 
 describe('IsolateMutator', () => {
   describe('setParent', () => {
@@ -50,25 +51,56 @@ describe('IsolateMutator', () => {
   });
 
   describe('addChild', () => {
-    it('should add child', () => {
-      const isolate = { children: [] } as unknown as TIsolate;
-      const child1 = {} as TIsolate;
-      const child2 = {} as TIsolate;
+    let stateRef: any;
 
-      expect(isolate.children).toEqual([]);
-      IsolateMutator.addChild(isolate, child1);
-      expect(isolate.children).toEqual([child1]);
-      IsolateMutator.addChild(isolate, child2);
-      expect(isolate.children).toEqual([child1, child2]);
+    beforeEach(() => {
+      const reconciler = {
+        reconcile: vi.fn(),
+        removeAll: vi.fn(),
+      };
+      stateRef = VestRuntime.createRef(reconciler as any, {});
+    });
+
+    it('should add child', () => {
+      VestRuntime.Run(stateRef, () => {
+        const isolate = { children: [] } as unknown as TIsolate;
+        const child1 = {} as TIsolate;
+        const child2 = {} as TIsolate;
+
+        expect(isolate.children).toEqual([]);
+        IsolateMutator.addChild(isolate, child1);
+        expect(isolate.children).toEqual([child1]);
+        IsolateMutator.addChild(isolate, child2);
+        expect(isolate.children).toEqual([child1, child2]);
+      });
     });
 
     it('should set parent of the child', () => {
-      const isolate = { children: [] } as unknown as TIsolate;
-      const child = {} as TIsolate;
+      VestRuntime.Run(stateRef, () => {
+        const isolate = { children: [] } as unknown as TIsolate;
+        const child = {} as TIsolate;
 
-      expect(child.parent).toBeUndefined();
-      IsolateMutator.addChild(isolate, child);
-      expect(child.parent).toBe(isolate);
+        expect(child.parent).toBeUndefined();
+        IsolateMutator.addChild(isolate, child);
+        expect(child.parent).toBe(isolate);
+      });
+    });
+
+    it('should bubble up tracked isolates', () => {
+      VestRuntime.Run(stateRef, () => {
+        VestRuntime.registerTracker({
+          type: 'target',
+          predicate: (node: any) => node.$type === 'target',
+        });
+
+        const root = { children: [], refs: null } as unknown as TIsolate;
+        const child = { $type: 'target' } as unknown as TIsolate;
+
+        IsolateMutator.addChild(root, child);
+
+        expect(root.refs?.['target']).toBeInstanceOf(Set);
+        expect(root.refs?.['target']?.has(child)).toBe(true);
+      });
     });
   });
 

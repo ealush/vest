@@ -21,6 +21,7 @@ exports[`AsyncIsolate > It should resolve async isolate into the parent 2`] = `
           "keys": null,
           "output": undefined,
           "parent": [Circular],
+          "refs": null,
           "status": "DONE",
         },
         {
@@ -33,6 +34,7 @@ exports[`AsyncIsolate > It should resolve async isolate into the parent 2`] = `
           "keys": null,
           "output": undefined,
           "parent": [Circular],
+          "refs": null,
           "status": "DONE",
         },
         {
@@ -45,6 +47,7 @@ exports[`AsyncIsolate > It should resolve async isolate into the parent 2`] = `
           "keys": null,
           "output": undefined,
           "parent": [Circular],
+          "refs": null,
           "status": "DONE",
         },
       ],
@@ -53,6 +56,7 @@ exports[`AsyncIsolate > It should resolve async isolate into the parent 2`] = `
       "keys": null,
       "output": undefined,
       "parent": [Circular],
+      "refs": null,
       "status": "DONE",
     },
   ],
@@ -61,6 +65,7 @@ exports[`AsyncIsolate > It should resolve async isolate into the parent 2`] = `
   "keys": null,
   "output": Promise {},
   "parent": null,
+  "refs": null,
   "status": "DONE",
 }
 `;

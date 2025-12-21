@@ -6,7 +6,10 @@ import {
 } from '../../core/isolate/IsolateSuite/IsolateSuite';
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
-import { isVestIsolate } from '../../core/isolate/VestIsolateType';
+import {
+  isVestIsolate,
+  VestIsolateType,
+} from '../../core/isolate/VestIsolateType';
 import { nonMatchingFieldName } from '../../core/test/helpers/matchingFieldName';
 import { OptionalFieldTypes } from '../../hooks/optional/OptionalTypes';
 import { useIsOptionalFieldApplied } from '../../hooks/optional/optional';
@@ -198,7 +201,8 @@ function hasErrorsByTestObjectsInGroup(
     return false;
   }
 
-  const tests = root.data.tests;
+  const refsSet = root.refs?.[VestIsolateType.Test];
+  const tests = (refsSet ? Array.from(refsSet) : []) as TIsolateTest[];
 
   return tests.some(testObject => {
     // Skip tests that aren't in our target group

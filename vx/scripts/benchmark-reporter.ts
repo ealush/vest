@@ -3,7 +3,9 @@ import fs from 'fs';
 
 import * as logger from '../logger.js';
 
-const OUTPUT_FILE = 'benchmark-results.md';
+const OUTPUT_FILE = process.env.CI
+  ? 'benchmark-results.md'
+  : 'benchmark-results-local.md';
 
 type BenchmarkResult = {
   hz: number;

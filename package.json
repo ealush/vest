@@ -4,6 +4,7 @@
     "build": "vx build",
     "test": "vx test run",
     "test:watch": "vx test",
+    "bench": "npx tsx vx/scripts/benchmark-reporter.ts --update",
     "release": "vx release",
     "format": "prettier -c .",
     "lint": "eslint --cache .",

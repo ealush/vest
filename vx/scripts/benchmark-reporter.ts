@@ -13,6 +13,11 @@ type BenchmarkResult = {
   suite: string;
 };
 
+type ComparisonResult = BenchmarkResult & {
+  diffAbs?: number; // Difference in Hz
+  diffPercent?: number;
+};
+
 // eslint-disable-next-line complexity
 function runBenchmarks(): string {
   try {
@@ -79,19 +84,171 @@ function parseOutput(output: string): BenchmarkResult[] {
   return results;
 }
 
-function generateMarkdown(results: BenchmarkResult[]): string {
-  if (results.length === 0) {
-    return 'No benchmark results found.';
+function parseTableRow(row: string): BenchmarkResult | null {
+  const cols = row
+    .split('|')
+    .map(c => c.trim())
+    .filter(c => c.length > 0);
+
+  if (cols.length < 5) return null;
+
+  const [suite, name, hzStr, p99Str, rme] = cols;
+
+  return {
+    hz: parseFloat(hzStr.replace(/\*\*/g, '').replace(/,/g, '')),
+    name,
+    p99: parseFloat(p99Str),
+    rme,
+    suite,
+  };
+}
+
+function parseBaselineContent(
+  content: string,
+): Record<string, BenchmarkResult> | null {
+  const tableStart = content.indexOf('| Suite |');
+  if (tableStart === -1) {
+    return null;
   }
 
-  let md = '## 🚀 Benchmark Results\n\n';
-  md += '| Suite | Benchmark | Ops/sec (Hz) | P99 (ms) | Margin of Error |\n';
-  md += '| :--- | :--- | :--- | :--- | :--- |\n';
+  const rows = content.slice(tableStart).split('\n');
+  const baseline: Record<string, BenchmarkResult> = {};
+
+  for (let i = 2; i < rows.length; i++) {
+    const row = rows[i].trim();
+    if (!row.startsWith('|')) {
+      break;
+    }
+
+    const result = parseTableRow(row);
+    if (result) {
+      baseline[`${result.suite}::${result.name}`] = result;
+    }
+  }
+
+  return baseline;
+}
+
+function getLatestBaseline(
+  filePath: string,
+): Record<string, BenchmarkResult> | null {
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
+
+  const content = fs.readFileSync(filePath, 'utf8');
+  return parseBaselineContent(content);
+}
+
+function calculateDiffs(
+  current: BenchmarkResult[],
+  baseline: Record<string, BenchmarkResult> | null,
+): ComparisonResult[] {
+  return current.map(res => {
+    const key = `${res.suite}::${res.name}`;
+    const base = baseline?.[key];
+
+    if (!base) {
+      return res;
+    }
+
+    const diffAbs = res.hz - base.hz;
+    const diffPercent = (diffAbs / base.hz) * 100;
+
+    return {
+      ...res,
+      diffAbs,
+      diffPercent,
+    };
+  });
+}
+
+function getGitInfo() {
+  try {
+    const hash = execSync('git rev-parse --short HEAD', {
+      encoding: 'utf8',
+    }).trim();
+    const date = execSync('git log -1 --format=%cd --date=short', {
+      encoding: 'utf8',
+    }).trim();
+    const title = execSync('git log -1 --format=%s', {
+      encoding: 'utf8',
+    }).trim();
+    return { hash, date, title };
+  } catch (e) {
+    return { hash: 'unknown', date: 'unknown', title: 'unknown' };
+  }
+}
+
+function formatDiff(diffAbs: number, diffPercent: number): string {
+  const diffAbsStr =
+    diffAbs > 0 ? `+${diffAbs.toLocaleString()}` : diffAbs.toLocaleString();
+  const diffPercentStr =
+    diffPercent > 0
+      ? `+${diffPercent.toFixed(2)}%`
+      : `${diffPercent.toFixed(2)}%`;
+
+  const mood = diffPercent > 5 ? '🎉' : diffPercent < -5 ? '⚠️' : '';
+
+  return ` ${diffAbsStr} | ${diffPercentStr} ${mood} |`;
+}
+
+function formatRow(res: ComparisonResult, showDiff: boolean): string {
+  let row = `| ${res.suite} | ${res.name} | **${res.hz.toLocaleString()}** | ${res.p99} | ${res.rme} |`;
+
+  if (showDiff) {
+    const diffAbs = res.diffAbs ?? 0;
+    const diffPercent = res.diffPercent ?? 0;
+    row += formatDiff(diffAbs, diffPercent);
+  }
+  return row;
+}
+
+function formatTable(results: ComparisonResult[], showDiff: boolean): string {
+  let md = '| Suite | Benchmark | Ops/sec (Hz) | P99 (ms) | Margin of Error |';
+  if (showDiff) {
+    md += ' Diff (Abs) | Diff (%) |';
+  }
+  md += '\n';
+
+  md += '| :--- | :--- | :--- | :--- | :--- |';
+  if (showDiff) {
+    md += ' :--- | :--- |';
+  }
+  md += '\n';
 
   for (const res of results) {
-    md += `| ${res.suite} | ${res.name} | **${res.hz.toLocaleString()}** | ${res.p99} | ${res.rme} |\n`;
+    md += formatRow(res, showDiff) + '\n';
+  }
+  return md;
+}
+
+function generateReport(
+  results: ComparisonResult[],
+  updateMode: boolean,
+): string {
+  if (updateMode) {
+    const { hash, date, title } = getGitInfo();
+    let content = `### ${hash} - ${date}\n`;
+    content += `> ${title}\n\n`;
+    content += formatTable(results, false);
+    content += '\n---\n\n';
+
+    let existingInfo = '';
+    if (fs.existsSync(OUTPUT_FILE)) {
+      existingInfo = fs.readFileSync(OUTPUT_FILE, 'utf8');
+      const lines = existingInfo.split('\n');
+      if (lines[0].startsWith('## 🚀 Benchmark Results')) {
+        existingInfo = lines.slice(1).join('\n').trim();
+      }
+    }
+
+    return `## 🚀 Benchmark Results\n\n${content}${existingInfo}`;
   }
 
+  // PR Mode
+  let md = '## 🚀 Benchmark Results\n\n';
+  md += formatTable(results, true);
   md +=
     '\n<details>\n<summary>Raw Output</summary>\n\n```\n' +
     'See CI logs for full output' +
@@ -101,15 +258,24 @@ function generateMarkdown(results: BenchmarkResult[]): string {
 
 function main(): void {
   try {
+    const args = process.argv.slice(2);
+    const updateMode = args.includes('--update');
+
     const output = runBenchmarks();
-    const results = parseOutput(output);
-    const markdown = generateMarkdown(results);
+    const rawResults = parseOutput(output);
+
+    let finalResults: ComparisonResult[] = rawResults;
+
+    if (!updateMode) {
+      const baseline = getLatestBaseline(OUTPUT_FILE);
+      finalResults = calculateDiffs(rawResults, baseline);
+    }
+
+    const markdown = generateReport(finalResults, updateMode);
 
     fs.writeFileSync(OUTPUT_FILE, markdown);
     logger.log(`Benchmark results written to ${OUTPUT_FILE}`);
-
-    // Also print to console for debugging
-    logger.log(markdown);
+    // logger.log(markdown);
   } catch (error) {
     logger.error('Error generating benchmark report:', error);
     process.exit(1);

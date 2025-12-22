@@ -39,6 +39,16 @@ jobs:
         run: yarn format
       - name: Lint
         run: yarn lint
+      - name: Run benchmarks
+        run: npx tsx vx/scripts/benchmark-reporter.ts --update
+
+      - name: Commit Benchmark Results
+        run: |
+          git config --global user.name "${{ secrets.GIT_NAME }}"
+          git config --global user.email "${{ secrets.EMAIL_ADDRESS }}"
+          git add benchmark-results.md
+          git commit -m "chore(benchmark): update benchmark results [skip ci]" || echo "No changes to commit"
+
       - name: Release
         run: yarn release
         env:

@@ -6,6 +6,7 @@ import matchingFieldName from '../../test/helpers/matchingFieldName';
 
 import { TIsolateTest } from './IsolateTest';
 import { VestTest } from './VestTest';
+
 import { useTestObjects } from '../registerTests';
 
 type MaybeRoot = Nullable<TIsolate>;
@@ -86,6 +87,7 @@ export class TestWalker {
     }, root);
 
     const [, setTests] = useTestObjects();
+
     setTests(tests =>
       tests.filter((testObject: TIsolateTest) => {
         return (

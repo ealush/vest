@@ -13,3 +13,8 @@ export * as IsolateSelectors from './Isolate/IsolateSelectors';
 export { IsolateSerializer } from './exports/IsolateSerializer';
 export { IsolateStatus } from './Isolate/IsolateStatus';
 export { IsolateStateMachine } from './Isolate/IsolateStateMachine';
+export * as IsolateRegistry from './Isolate/IsolateRegistry';
+export type {
+  RegistryCategoryConfig,
+  RegistryIndex,
+} from './Isolate/IsolateRegistry';

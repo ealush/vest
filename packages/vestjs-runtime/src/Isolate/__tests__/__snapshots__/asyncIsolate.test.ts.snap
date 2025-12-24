@@ -1,19 +1,19 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`AsyncIsolate > It should resolve async isolate into the parent 2`] = `
-{
+IsolateInstance {
   "$type": "URoot",
-  "abortController": AbortController {},
+  "abortController": null,
   "allowReorder": undefined,
   "children": [
-    {
+    IsolateInstance {
       "$type": "UChild_1",
-      "abortController": AbortController {},
+      "abortController": null,
       "allowReorder": undefined,
       "children": [
-        {
+        IsolateInstance {
           "$type": "UGrandChild_1",
-          "abortController": AbortController {},
+          "abortController": null,
           "allowReorder": undefined,
           "children": null,
           "data": {},
@@ -23,9 +23,9 @@ exports[`AsyncIsolate > It should resolve async isolate into the parent 2`] = `
           "parent": [Circular],
           "status": "DONE",
         },
-        {
+        IsolateInstance {
           "$type": "UGrandChild_2",
-          "abortController": AbortController {},
+          "abortController": null,
           "allowReorder": undefined,
           "children": null,
           "data": {},
@@ -35,9 +35,9 @@ exports[`AsyncIsolate > It should resolve async isolate into the parent 2`] = `
           "parent": [Circular],
           "status": "DONE",
         },
-        {
+        IsolateInstance {
           "$type": "UGrandChild_3",
-          "abortController": AbortController {},
+          "abortController": null,
           "allowReorder": undefined,
           "children": null,
           "data": {},

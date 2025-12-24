@@ -1,9 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Test Vest's \`test\` function > test params > creates a test with a message and with a key 1`] = `"[{"$type":"Test","data":{"severity":"error","testStatus":"PASSING","fieldName":"field_name","message":"failure message"},"status":"DONE","key":"keyboardcat"},{}]"`;
+exports[`Test Vest's \`test\` function > test params > creates a test with a message and with a key 1`] = `"[{"key":"keyboardcat","status":"DONE","$type":"Test","data":{"severity":"error","testStatus":"PASSING","fieldName":"field_name","message":"failure message"}},{}]"`;
 
 exports[`Test Vest's \`test\` function > test params > creates a test without a key 1`] = `
-{
+IsolateInstance {
   "$type": "Test",
   "abortController": AbortController {},
   "allowReorder": undefined,
@@ -18,14 +18,14 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
   "key": null,
   "keys": null,
   "output": undefined,
-  "parent": {
+  "parent": IsolateInstance {
     "$type": "Suite",
-    "abortController": AbortController {},
+    "abortController": null,
     "allowReorder": undefined,
     "children": [
-      {
+      IsolateInstance {
         "$type": "Focused",
-        "abortController": AbortController {},
+        "abortController": null,
         "allowReorder": undefined,
         "children": null,
         "data": {
@@ -40,9 +40,9 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
         "status": "DONE",
       },
       [Circular],
-      {
+      IsolateInstance {
         "$type": "Reorderable",
-        "abortController": AbortController {},
+        "abortController": null,
         "allowReorder": true,
         "children": null,
         "data": {
@@ -57,6 +57,30 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     ],
     "data": {
       "optional": {},
+      "registry_all": Map {
+        "field_name" => Set {
+          [Circular],
+        },
+      },
+      "registry_failed": Map {},
+      "registry_omitted": Map {},
+      "registry_passing": Map {
+        "field_name" => Set {
+          [Circular],
+        },
+      },
+      "registry_pending": Map {},
+      "registry_tested": Map {
+        "field_name" => Set {
+          [Circular],
+        },
+      },
+      "registry_valid": Map {
+        "field_name" => Set {
+          [Circular],
+        },
+      },
+      "registry_warning": Map {},
       "resolver": [Function],
       "tests": [
         [Circular],
@@ -111,7 +135,7 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
 `;
 
 exports[`Test Vest's \`test\` function > test params > creates a test without a message and with a key 1`] = `
-{
+IsolateInstance {
   "$type": "Test",
   "abortController": AbortController {},
   "allowReorder": undefined,
@@ -125,14 +149,14 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
   "key": "keyboardcat",
   "keys": null,
   "output": undefined,
-  "parent": {
+  "parent": IsolateInstance {
     "$type": "Suite",
-    "abortController": AbortController {},
+    "abortController": null,
     "allowReorder": undefined,
     "children": [
-      {
+      IsolateInstance {
         "$type": "Focused",
-        "abortController": AbortController {},
+        "abortController": null,
         "allowReorder": undefined,
         "children": null,
         "data": {
@@ -147,9 +171,9 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
         "status": "DONE",
       },
       [Circular],
-      {
+      IsolateInstance {
         "$type": "Reorderable",
-        "abortController": AbortController {},
+        "abortController": null,
         "allowReorder": true,
         "children": null,
         "data": {
@@ -164,6 +188,30 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     ],
     "data": {
       "optional": {},
+      "registry_all": Map {
+        "field_name" => Set {
+          [Circular],
+        },
+      },
+      "registry_failed": Map {},
+      "registry_omitted": Map {},
+      "registry_passing": Map {
+        "field_name" => Set {
+          [Circular],
+        },
+      },
+      "registry_pending": Map {},
+      "registry_tested": Map {
+        "field_name" => Set {
+          [Circular],
+        },
+      },
+      "registry_valid": Map {
+        "field_name" => Set {
+          [Circular],
+        },
+      },
+      "registry_warning": Map {},
       "resolver": [Function],
       "tests": [
         [Circular],
@@ -220,7 +268,7 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
 `;
 
 exports[`Test Vest's \`test\` function > test params > creates a test without a message and without a key 1`] = `
-{
+IsolateInstance {
   "$type": "Test",
   "abortController": AbortController {},
   "allowReorder": undefined,
@@ -234,14 +282,14 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
   "key": null,
   "keys": null,
   "output": undefined,
-  "parent": {
+  "parent": IsolateInstance {
     "$type": "Suite",
-    "abortController": AbortController {},
+    "abortController": null,
     "allowReorder": undefined,
     "children": [
-      {
+      IsolateInstance {
         "$type": "Focused",
-        "abortController": AbortController {},
+        "abortController": null,
         "allowReorder": undefined,
         "children": null,
         "data": {
@@ -256,9 +304,9 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
         "status": "DONE",
       },
       [Circular],
-      {
+      IsolateInstance {
         "$type": "Reorderable",
-        "abortController": AbortController {},
+        "abortController": null,
         "allowReorder": true,
         "children": null,
         "data": {
@@ -273,6 +321,30 @@ exports[`Test Vest's \`test\` function > test params > creates a test without a 
     ],
     "data": {
       "optional": {},
+      "registry_all": Map {
+        "field_name" => Set {
+          [Circular],
+        },
+      },
+      "registry_failed": Map {},
+      "registry_omitted": Map {},
+      "registry_passing": Map {
+        "field_name" => Set {
+          [Circular],
+        },
+      },
+      "registry_pending": Map {},
+      "registry_tested": Map {
+        "field_name" => Set {
+          [Circular],
+        },
+      },
+      "registry_valid": Map {
+        "field_name" => Set {
+          [Circular],
+        },
+      },
+      "registry_warning": Map {},
       "resolver": [Function],
       "tests": [
         [Circular],

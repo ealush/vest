@@ -124,22 +124,38 @@ function useRunAsNewCallback(current: TIsolate, callback: CB): any {
   return output;
 }
 
+class IsolateInstance implements TIsolate {
+  [IsolateKeys.Type]: string;
+  children: Nullable<TIsolate[]> = null;
+  [IsolateKeys.Keys]: Nullable<Record<string, TIsolate>> = null;
+  [IsolateKeys.Parent]: Nullable<TIsolate> = null;
+  output: any = null;
+  key: IsolateKey = null;
+  [IsolateKeys.AllowReorder]: Maybe<boolean> = undefined;
+  [IsolateKeys.Status]: IsolateStatus = IsolateStatus.INITIAL;
+  [IsolateKeys.AbortController]: Nullable<AbortController> = null;
+  [IsolateKeys.Data]: Maybe<any>;
+
+  constructor(
+    type: string,
+    payload: Maybe<IsolatePayload> = undefined,
+    key: IsolateKey = null,
+  ) {
+    this[IsolateKeys.Type] = type;
+    this.key = key;
+    const { allowReorder, status, ...data } = payload ?? {};
+    this[IsolateKeys.AllowReorder] = allowReorder;
+    if (status) {
+      this[IsolateKeys.Status] = status;
+    }
+    this[IsolateKeys.Data] = data;
+  }
+}
+
 function baseIsolate(
   type: string,
   payload: Maybe<IsolatePayload> = undefined,
   key: IsolateKey = null,
 ): TIsolate {
-  const { allowReorder, status, ...data } = payload ?? {};
-  return {
-    [IsolateKeys.AllowReorder]: allowReorder,
-    [IsolateKeys.AbortController]: new AbortController(),
-    [IsolateKeys.Keys]: null,
-    [IsolateKeys.Parent]: null,
-    [IsolateKeys.Type]: type,
-    [IsolateKeys.Data]: data,
-    [IsolateKeys.Status]: status ?? IsolateStatus.INITIAL,
-    children: null,
-    key,
-    output: null,
-  };
+  return new IsolateInstance(type, payload, key);
 }

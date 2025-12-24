@@ -125,9 +125,9 @@ describe('IsolateMutator', () => {
         abortController: { abort: vi.fn() },
       } as unknown as TIsolate;
 
-      expect(isolate.abortController.abort).not.toHaveBeenCalled();
+      expect(isolate.abortController!.abort).not.toHaveBeenCalled();
       IsolateMutator.abort(isolate);
-      expect(isolate.abortController.abort).toHaveBeenCalled();
+      expect(isolate.abortController!.abort).toHaveBeenCalled();
     });
 
     describe('When the controller is nullish', () => {
@@ -145,9 +145,9 @@ describe('IsolateMutator', () => {
         abortController: { abort: vi.fn() },
       } as unknown as TIsolate;
 
-      expect(isolate.abortController.abort).not.toHaveBeenCalled();
+      expect(isolate.abortController!.abort).not.toHaveBeenCalled();
       IsolateMutator.abort(isolate, 'foo');
-      expect(isolate.abortController.abort).toHaveBeenCalledWith('foo');
+      expect(isolate.abortController!.abort).toHaveBeenCalledWith('foo');
     });
   });
 

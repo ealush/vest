@@ -2,7 +2,7 @@ import { makeResult, Result } from 'vest-utils';
 
 import { useMode } from '../../core/context/SuiteContext';
 import { WithFieldName } from '../../core/test/TestTypes';
-import { hasErrorsByTestObjects } from '../../suiteResult/selectors/hasFailuresByTestObjects';
+import { useHasErrorsByTestObjects } from '../../suiteResult/selectors/hasFailuresByTestObjects';
 
 import { Modes } from './Modes';
 
@@ -50,11 +50,11 @@ function useIsOne(): Result<boolean> {
 
 export function useShouldSkipBasedOnMode(testData: WithFieldName): boolean {
   if (useIsOne().unwrap()) {
-    return hasErrorsByTestObjects();
+    return useHasErrorsByTestObjects();
   }
 
   if (useIsEager().unwrap()) {
-    return hasErrorsByTestObjects(testData.fieldName);
+    return useHasErrorsByTestObjects(testData.fieldName);
   }
 
   return false;

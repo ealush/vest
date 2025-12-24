@@ -14,19 +14,19 @@ describe('AsyncIsolate', () => {
       root = Isolate.create('URoot', genChildren);
     });
     expect(root).toMatchInlineSnapshot(`
-        {
-          "$type": "URoot",
-          "abortController": AbortController {},
-          "allowReorder": undefined,
-          "children": null,
-          "data": {},
-          "key": null,
-          "keys": null,
-          "output": Promise {},
-          "parent": null,
-          "status": "PENDING",
-        }
-      `);
+      IsolateInstance {
+        "$type": "URoot",
+        "abortController": null,
+        "allowReorder": undefined,
+        "children": null,
+        "data": {},
+        "key": null,
+        "keys": null,
+        "output": Promise {},
+        "parent": null,
+        "status": "PENDING",
+      }
+    `);
     await wait(10);
     expect(root?.children?.[0]?.$type).toBe('UChild_1');
     expect(root?.children?.[0].parent).toBe(root);

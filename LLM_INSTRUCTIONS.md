@@ -6,8 +6,9 @@ This document serves as the "Source of Truth" for Large Language Models (LLMs) g
 
 - **Declarative Validation:** Vest is designed to look and feel like a unit testing framework (Mocha/Jest) but for form validation.
 - **Isolate Architecture:** The core runtime mimics React's Fiber architecture. The system builds a tree of "Isolates" (stateful nodes) that are reconciled on every run.
-- **Hook-based Internals:** Internal implementation relies heavily on "Hooks" (e.g., `useIsolate`, `usePending`) that access the current runtime context. **These functions only work inside a `VestRuntime.Run` context.**
+- **Hook-based Internals:** Internal implementation relies heavily on "Hooks" (e.g., `useIsolate`, `useEmit`) that access the current runtime context. **These functions only work inside a `VestRuntime.Run` context.** All internal functions that interact with runtime state should be prefixed with `use`.
 - **Zero-Dependency Utils:** We do not use Lodash, Ramda, or other utility libraries. We maintain our own highly optimized, tree-shakeable utility library in `packages/vest-utils`.
+- **Result Pattern:** Use `Result<T, E>` from `vest-utils` for operations that can fail. Prefer `makeResult.Ok(value)` and `makeResult.Err(error)` over throwing exceptions.
 
 ## 2. Repository Structure & Boundaries
 
@@ -45,6 +46,8 @@ This project uses a custom task runner called `vx`. **Do not use `npm` or raw sc
 - **Async**: `isPromise`
 - **Types**: `isStringValue`, `isBoolean`, `isFunction`
 - **Data**: `assign` (Immutable object assignment), `bus` (Event emitter)
+- **Result Pattern**: `makeResult.Ok`, `makeResult.Err`, `Result<T>`, `unwrap()`, `isFailure()`
+- **Security**: `isUnsafeKey` (Guards against prototype pollution)
 
 ### B. TypeScript & Types
 
@@ -53,16 +56,62 @@ This project uses a custom task runner called `vx`. **Do not use `npm` or raw sc
   - `Maybe<T>` (T | undefined)
   - `Nullable<T>` (T | null)
   - `CB<T>` (Generic Callback function)
+  - `Result<T, E>` (For fallible operations)
 - **Generics**: Use generics heavily for Suites and Enforce extensions to maintain type safety for end-users.
 
 ### C. Internal Architectural Patterns
 
 1.  **Isolates**: If you are adding a new stateful entity (like a new type of Test or Group), it must be an `Isolate`.
     - Refer to `packages/vestjs-runtime/src/Isolate/Isolate.ts`.
-2.  **Runtime Hooks**: If you need to access the current suite state, use the `VestRuntime` hooks.
-    - Example: `const ctx = VestRuntime.useIsolate();`
-3.  **Event Bus**: Communication between the Runtime and the Suite happens via the Bus.
-    - Refer to `packages/vest/src/core/VestBus/VestBus.ts`.
+    - Isolate types are defined in `packages/vestjs-runtime/src/Isolate/IsolateTypes.ts`.
+
+2.  **Isolate Status**: Isolates have a status tracked via `IsolateStatus` enum:
+    - `INITIAL` → `PENDING` → `DONE`
+    - `INITIAL` → `HAS_PENDING` → `DONE` (for parent isolates with pending children)
+    - Use `IsolateMutator.setPending()` and `IsolateMutator.setDone()` to change status.
+    - Status automatically bubbles up to parent isolates.
+
+3.  **Test Status**: Tests have their own status tracked via `TestStatus`:
+    - `UNTESTED`, `STARTED`, `PASSING`, `FAILED`, `WARNING`, `CANCELED`, `SKIPPED`, `OMITTED`
+    - **Note**: Use `STARTED` (not `PENDING`) for tests that are running.
+    - Status is stored in `testStatus` property (not `status`).
+    - Use `VestTest.setStatus()`, `VestTest.isStartedStatus()`, `VestTest.getStatus()`.
+
+4.  **Registry System**: O(1) lookups for tests by characteristic:
+    - `IsolateRegistry` (vestjs-runtime): Generic registry for isolate categorization.
+    - `TestRegistry` (vest): Test-specific categories (`all`, `failed`, `passing`, `pending`, `warning`, `omitted`, `tested`, `valid`).
+    - Use `useUpdateRegistry()`, `useGetFromRegistry()`, `useHasFromRegistry()`.
+
+5.  **Runtime Hooks**: If you need to access the current suite state, use the `VestRuntime` hooks.
+    - Example: `const root = VestRuntime.useAvailableRoot();`
+    - Use `VestRuntime.useIsStable()` to check if all async operations are complete.
+
+6.  **Event Bus**: Communication between the Runtime and the Suite happens via typed events.
+    - Use `useEmit()` and `usePrepareEmitter()` from `VestBus.ts`.
+    - Events are typed in `BusEvents.ts` with payload types.
+    - Key events: `TEST_COMPLETED`, `TEST_RUN_STARTED`, `SUITE_RUN_STARTED`, `DEFER_THROW`.
+
+7.  **VestTest Class**: Standalone class for test operations (does not extend any base class).
+    - Use `VestTest.is()` to check if an isolate is a test.
+    - Use `VestTest.cast()` which returns `Result<TIsolateTest>` instead of throwing.
+    - Use `VestTest.getData()` to access test data.
+
+### D. Naming Conventions
+
+- **Hooks**: All functions that interact with runtime state must be prefixed with `use` (e.g., `useEmit`, `useReprocessTree`, `useOnTestStart`).
+- **Reconcilers**: Register custom reconcilers via `registerReconciler()` from `vestjs-runtime`.
+
+### E. Deleted/Deprecated Patterns
+
+Do NOT use these patterns - they have been removed:
+
+- ~~`VestIsolate` class~~ - Status is now managed directly on isolates via `IsolateMutator`.
+- ~~`CommonStateMachine`~~ - Replaced by `IsolateStateMachine` in vestjs-runtime.
+- ~~`SuiteWalker`~~ - Use `TestRegistry` for O(1) lookups or `Walker` for traversal.
+- ~~`TestStatus.PENDING`~~ - Use `TestStatus.STARTED` for running tests.
+- ~~`VestTest.isPending()`~~ - Use `VestTest.isStartedStatus()` or `VestTest.isStarted()`.
+- ~~`suite.after()`~~ - Renamed to `suite.afterEach()`.
+- ~~`Bus.useEmit()`~~ - Use `useEmit()` from VestBus.
 
 ## 5. Testing Strategy (TDD)
 
@@ -81,11 +130,13 @@ This project uses a custom task runner called `vx`. **Do not use `npm` or raw sc
 When asked to implement a feature or refactor code:
 
 1.  [ ] **Check `vest-utils` first**: Can I use an existing utility?
-2.  [ ] **Verify Context**: Am I inside a `VestRuntime` context? Do I need `useIsolate`?
-3.  [ ] **Type Safety**: Have I used `Maybe` or `Nullable` for optional values?
+2.  [ ] **Verify Context**: Am I inside a `VestRuntime` context? Do I need runtime hooks?
+3.  [ ] **Type Safety**: Have I used `Maybe` or `Nullable` for optional values? Am I using `Result<T>` for fallible operations?
 4.  [ ] **Immutability**: Am I mutating state directly? (Avoid this! Use the Reconciler or IsolateMutator).
-5.  [ ] **Tests**: Have I added a unit test in `__tests__` that fails before my changes?
-6.  [ ] **Dependencies**: Did I accidentally import `vest` into `vest-utils`? (Strictly forbidden).
+5.  [ ] **Hook Naming**: Does my function start with `use` if it interacts with runtime state?
+6.  [ ] **Registry Updates**: If I'm changing test status, am I calling `useUpdateRegistry()`?
+7.  [ ] **Tests**: Have I added a unit test in `__tests__` that fails before my changes?
+8.  [ ] **Dependencies**: Did I accidentally import `vest` into `vest-utils`? (Strictly forbidden).
 
 ## 7. Documentation
 

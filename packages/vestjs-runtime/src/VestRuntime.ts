@@ -315,6 +315,7 @@ export const RuntimeApi = {
   removePending,
   reset,
   useAvailableRoot,
+  useHistoryIsolateAtCurrentPosition,
   useCurrentCursor,
   useHistoryRoot,
   useIsStable,

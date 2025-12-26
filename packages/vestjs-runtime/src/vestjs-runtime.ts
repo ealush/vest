@@ -14,6 +14,9 @@ export { IsolateSerializer } from './exports/IsolateSerializer';
 export { IsolateStatus } from './Isolate/IsolateStatus';
 export { IsolateStateMachine } from './Isolate/IsolateStateMachine';
 export * as IsolateRegistry from './Isolate/IsolateRegistry';
+export { Protocol } from './Protocol';
+export { VEST_RUNTIME_VERSION } from './Version';
+export { useHistoryIsolateAtCurrentPosition } from './VestRuntime';
 export type {
   RegistryCategoryConfig,
   RegistryIndex,

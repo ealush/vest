@@ -23,6 +23,7 @@
       "n4s/*": ["./packages/n4s/src/*"],
       "vast": ["./packages/vast/src"],
       "vest": ["./packages/vest/src"],
+      "vest/*": ["./packages/vest/src/*"],
       "vest-utils": ["./packages/vest-utils/src"],
       "vest-utils/*": ["./packages/vest-utils/src/*"],
       "vestjs-runtime": ["./packages/vestjs-runtime/src"],

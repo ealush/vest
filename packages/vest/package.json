@@ -89,6 +89,16 @@
       "require": "./dist/exports/SuiteSerializer.cjs",
       "import": "./dist/exports/SuiteSerializer.mjs"
     },
+    "./exports/server": {
+      "types": "./types/exports/server.d.cts",
+      "require": "./dist/exports/server.cjs",
+      "import": "./dist/exports/server.mjs"
+    },
+    "./exports/constants": {
+      "types": "./types/exports/constants.d.cts",
+      "require": "./dist/exports/constants.cjs",
+      "import": "./dist/exports/constants.mjs"
+    },
     "./vest": {
       "types": "./types/vest.d.cts",
       "require": "./dist/vest.cjs",
@@ -143,6 +153,16 @@
       "types": "./types/exports/SuiteSerializer.d.cts",
       "require": "./dist/exports/SuiteSerializer.cjs",
       "import": "./dist/exports/SuiteSerializer.mjs"
+    },
+    "./server": {
+      "types": "./types/exports/server.d.cts",
+      "require": "./dist/exports/server.cjs",
+      "import": "./dist/exports/server.mjs"
+    },
+    "./constants": {
+      "types": "./types/exports/constants.d.cts",
+      "require": "./dist/exports/constants.cjs",
+      "import": "./dist/exports/constants.mjs"
     },
     "./vest.d.ts": "./types/vest.d.ts",
     "./types/*": "./types/*",

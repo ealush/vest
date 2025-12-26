@@ -7,19 +7,19 @@ The `vest/server` module implements an **Isomorphic Execution Boundary**. It pro
 This diagram illustrates how the `server()` function acts as a bridge between the Client Runtime and the Server Runtime.
 
 ```text
- CLIENT SIDE (Browser) SERVER SIDE (Node/Edge)
-+-------------------------------+ +--------------------------------+
-| | | |
-| vest.create('Signup', () => {| | // Registry Lookup |
-| test('name', ...); | | const cb = Registry.get(ID); |
-| | | |
-| // 1. Pause & Send | | // 2. Headless Run |
-| server(UserCheck, data);---|----->| vest.create(ID, cb)(); |
-| }); | | |
-| | | // 3. Serialize Tree |
-| // 4. Hydrate & Graft |<-----|--return serialized; |
-| (Result appears in suite) | | |
-+-------------------------------+ +--------------------------------+
+CLIENT SIDE (Browser)                  SERVER SIDE (Node/Edge)
++-------------------------------+      +--------------------------------+
+|                               |      |                                |
+|  vest.create('Signup', () => {|      |  // Registry Lookup            |
+|    test('name', ...);         |      |  const cb = Registry.get(ID);  |
+|                               |      |                                |
+|    // 1. Pause & Send         |      |  // 2. Headless Run            |
+|    server(UserCheck, data);---|----->|  vest.create(ID, cb)();        |
+|  });                          |      |                                |
+|                               |      |  // 3. Serialize Tree          |
+|  // 4. Hydrate & Graft        |<-----|--return serialized;            |
+|  (Result appears in suite)    |      |                                |
++-------------------------------+      +--------------------------------+
 
 ```
 

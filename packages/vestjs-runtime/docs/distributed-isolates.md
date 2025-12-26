@@ -11,33 +11,34 @@ If the payload contains a specific signature (the **Safety Envelope**), the runt
 ### Visual Flow: The Interception Loop
 
 ```text
+```text
 +-----------------------+
-| Async Isolate (Web) |
+|  Async Isolate (Web)  |
 +-----------------------+
- |
- v
- [ Await Promise ] <===============+
- | |
- v |
- [ Promise Resolves ] |
- | |
- v |
-+-----------------------+ |
-| Inspect Payload | |
-+-----------------------+ |
- | |
- Is it a VestEnvelope? |
- | |
- NO ----+---- YES |
- | | |
- v v |
-[Mark Done] [Deserialize] |
- [Graft Kids ] |
- | |
- v |
- [Mark Done] |
- |
-+-----------------------+ |
+           |
+           v
+   [ Await Promise ] <===============+
+           |                         |
+           v                         |
+   [ Promise Resolves ]              |
+           |                         |
+           v                         |
++-----------------------+            |
+|   Inspect Payload     |            |
++-----------------------+            |
+           |                         |
+  Is it a VestEnvelope?              |
+           |                         |
+    NO ----+---- YES                 |
+    |             |                  |
+    v             v                  |
+[Mark Done]   [Deserialize]          |
+              [Graft Kids ]          |
+                  |                  |
+                  v                  |
+             [Mark Done]             |
+                                     |
++-----------------------+            |
 | Server Response (API) |------------+
 +-----------------------+
 

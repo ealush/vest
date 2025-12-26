@@ -50,6 +50,7 @@ export async function resolve(specifier, context, next) {
   return next(specifier, context);
 }
 
+// eslint-disable-next-line complexity
 export async function load(url, context, next) {
   if (url.endsWith('.ts')) {
     const source = await readFile(new URL(url), 'utf8');
@@ -71,5 +72,17 @@ export async function load(url, context, next) {
     };
   }
 
-  return next(url, context);
+  const result = await next(url, context);
+
+  // Ensure source is returned if missing (fixes ERR_INVALID_RETURN_PROPERTY_VALUE in some environments)
+  if (!result.source && result.format !== 'builtin') {
+    try {
+      const source = await readFile(new URL(url), 'utf8');
+      return { ...result, source };
+    } catch {
+      // Ignore errors if file cannot be read (e.g. wasm or internal)
+    }
+  }
+
+  return result;
 }

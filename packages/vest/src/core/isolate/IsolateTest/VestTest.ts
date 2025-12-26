@@ -13,6 +13,8 @@ import {
   Walker,
 } from 'vestjs-runtime';
 
+import { useUpdateRegistry } from '../../test/TestRegistry';
+
 import { ErrorStrings } from '../../../errors/ErrorStrings';
 import { TIsolateGroup } from '../../../isolates/group';
 import { TestSeverity } from '../../../suiteResult/Severity';
@@ -65,6 +67,8 @@ export class VestTest {
       ...current,
       testStatus: nextStatus,
     }));
+
+    useUpdateRegistry(test);
   }
 
   static getGroupName<G extends TGroupName>(test: TIsolateTest): Maybe<G> {

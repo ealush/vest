@@ -97,18 +97,18 @@ describe('Isolate', () => {
   });
 
   describe('AbortController', () => {
-    it('Should create an AbortController', () => {
+    it('Should be initially null', () => {
       const isolate = withRunTime(() => {
         return Isolate.create(IsolateType.Isolate, () => {});
       });
-      expect(isolate.abortController).toBeDefined();
-      expect(isolate.abortController).toBeInstanceOf(AbortController);
+      expect(isolate.abortController).toBeNull();
     });
 
     it('Should abort the controller with the passed reason', () => {
       const isolate = withRunTime(() => {
         return Isolate.create(IsolateType.Isolate, () => {});
       });
+      isolate.abortController = new AbortController();
       const spy = vi.spyOn(isolate.abortController, 'abort');
       IsolateMutator.abort(isolate, 'foo');
       expect(spy).toHaveBeenCalledWith('foo');

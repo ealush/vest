@@ -14,6 +14,7 @@ import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../isolate/IsolateTest/VestTest';
 import { TestResult } from '../TestTypes';
 import { shouldUseErrorAsMessage } from '../helpers/shouldUseErrorMessage';
+import { getAbortController } from '../Abortable';
 
 import { useVerifyTestRun } from './verifyTestRun';
 
@@ -46,21 +47,10 @@ export function useAttemptRunTest(testObject: TIsolateTest) {
  * @param testObject - The test isolate to run.
  * @returns The result of the test run.
  */
-function runSyncTest(testObject: TIsolateTest): Result<TestResult> {
+function useRunSyncTest(testObject: TIsolateTest): Result<TestResult> {
   return makeResult.Ok(
     SuiteContext.run({ currentTest: testObject }, () => {
-      let result: TestResult;
-
-      const { message, testFn } = VestTest.getData(testObject);
-
-      try {
-        result = testFn({ signal: testObject.abortController.signal });
-      } catch (error) {
-        if (shouldUseErrorAsMessage(message, error).unwrap()) {
-          VestTest.getData(testObject).message = error as string;
-        }
-        result = false;
-      }
+      const result = runTestCallback(testObject);
 
       if (result === false) {
         VestTest.fail(testObject);
@@ -69,6 +59,19 @@ function runSyncTest(testObject: TIsolateTest): Result<TestResult> {
       return result;
     }),
   );
+}
+
+function runTestCallback(testObject: TIsolateTest): TestResult {
+  const { message, testFn } = VestTest.getData(testObject);
+
+  try {
+    return testFn({ signal: getAbortController(testObject).signal });
+  } catch (error) {
+    if (shouldUseErrorAsMessage(message, error).unwrap()) {
+      VestTest.getData(testObject).message = error as string;
+    }
+    return false;
+  }
 }
 
 /**
@@ -83,7 +86,7 @@ function useRunTest(
   // Run test callback.
   // If a promise is returned, set as async and
   // Move to pending list.
-  const result = runSyncTest(testObject).unwrap();
+  const result = useRunSyncTest(testObject).unwrap();
   try {
     // try catch for safe property access
     // in case object is an enforce chain

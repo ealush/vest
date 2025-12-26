@@ -1,14 +1,14 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
-{
+IsolateInstance {
   "$type": "Suite",
-  "abortController": AbortController {},
+  "abortController": null,
   "allowReorder": undefined,
   "children": [
-    {
+    IsolateInstance {
       "$type": "Focused",
-      "abortController": AbortController {},
+      "abortController": null,
       "allowReorder": undefined,
       "children": null,
       "data": {
@@ -22,9 +22,9 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
       "parent": [Circular],
       "status": "DONE",
     },
-    {
+    IsolateInstance {
       "$type": "Focused",
-      "abortController": AbortController {},
+      "abortController": null,
       "allowReorder": undefined,
       "children": null,
       "data": {
@@ -40,7 +40,7 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
       "parent": [Circular],
       "status": "DONE",
     },
-    {
+    IsolateInstance {
       "$type": "Test",
       "abortController": AbortController {},
       "allowReorder": undefined,
@@ -58,9 +58,9 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
       "parent": [Circular],
       "status": "DONE",
     },
-    {
+    IsolateInstance {
       "$type": "Test",
-      "abortController": AbortController {},
+      "abortController": null,
       "allowReorder": undefined,
       "children": null,
       "data": {
@@ -76,14 +76,14 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
       "parent": [Circular],
       "status": "DONE",
     },
-    {
+    IsolateInstance {
       "$type": "Group",
-      "abortController": AbortController {},
+      "abortController": null,
       "allowReorder": undefined,
       "children": [
-        {
+        IsolateInstance {
           "$type": "Test",
-          "abortController": AbortController {},
+          "abortController": null,
           "allowReorder": undefined,
           "children": null,
           "data": {
@@ -99,9 +99,9 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
           "parent": [Circular],
           "status": "DONE",
         },
-        {
+        IsolateInstance {
           "$type": "Test",
-          "abortController": AbortController {},
+          "abortController": null,
           "allowReorder": undefined,
           "children": null,
           "data": {
@@ -117,9 +117,9 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
           "parent": [Circular],
           "status": "DONE",
         },
-        {
+        IsolateInstance {
           "$type": "Test",
-          "abortController": AbortController {},
+          "abortController": null,
           "allowReorder": undefined,
           "children": null,
           "data": {
@@ -146,14 +146,14 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
       "parent": [Circular],
       "status": "DONE",
     },
-    {
+    IsolateInstance {
       "$type": "SkipWhen",
-      "abortController": AbortController {},
+      "abortController": null,
       "allowReorder": undefined,
       "children": [
-        {
+        IsolateInstance {
           "$type": "Test",
-          "abortController": AbortController {},
+          "abortController": null,
           "allowReorder": undefined,
           "children": null,
           "data": {
@@ -179,9 +179,9 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
       "parent": [Circular],
       "status": "DONE",
     },
-    {
+    IsolateInstance {
       "$type": "Reorderable",
-      "abortController": AbortController {},
+      "abortController": null,
       "allowReorder": true,
       "children": null,
       "data": {
@@ -196,9 +196,349 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
   ],
   "data": {
     "optional": {},
+    "registry_all": Map {
+      "field_1" => Set {
+        IsolateInstance {
+          "$type": "Test",
+          "abortController": AbortController {},
+          "allowReorder": undefined,
+          "children": null,
+          "data": {
+            "fieldName": "field_1",
+            "message": "field_1_message",
+            "severity": "error",
+            "testFn": [Function],
+            "testStatus": "FAILED",
+          },
+          "key": null,
+          "keys": null,
+          "output": undefined,
+          "parent": [Circular],
+          "status": "DONE",
+        },
+      },
+      "field_2" => Set {
+        IsolateInstance {
+          "$type": "Test",
+          "abortController": null,
+          "allowReorder": undefined,
+          "children": null,
+          "data": {
+            "fieldName": "field_2",
+            "message": "field_2_message",
+            "severity": "error",
+            "testFn": [Function],
+            "testStatus": "SKIPPED",
+          },
+          "key": null,
+          "keys": null,
+          "output": undefined,
+          "parent": [Circular],
+          "status": "DONE",
+        },
+      },
+      "field_3" => Set {
+        IsolateInstance {
+          "$type": "Test",
+          "abortController": null,
+          "allowReorder": undefined,
+          "children": null,
+          "data": {
+            "fieldName": "field_3",
+            "message": "field_3_message_1",
+            "severity": "error",
+            "testFn": [Function],
+            "testStatus": "SKIPPED",
+          },
+          "key": null,
+          "keys": null,
+          "output": undefined,
+          "parent": IsolateInstance {
+            "$type": "Group",
+            "abortController": null,
+            "allowReorder": undefined,
+            "children": [
+              [Circular],
+              IsolateInstance {
+                "$type": "Test",
+                "abortController": null,
+                "allowReorder": undefined,
+                "children": null,
+                "data": {
+                  "fieldName": "field_3",
+                  "message": "field_3_message_2",
+                  "severity": "error",
+                  "testFn": [Function],
+                  "testStatus": "SKIPPED",
+                },
+                "key": null,
+                "keys": null,
+                "output": undefined,
+                "parent": [Circular],
+                "status": "DONE",
+              },
+              IsolateInstance {
+                "$type": "Test",
+                "abortController": null,
+                "allowReorder": undefined,
+                "children": null,
+                "data": {
+                  "fieldName": "field_4",
+                  "message": "field_4_message",
+                  "severity": "error",
+                  "testFn": [Function],
+                  "testStatus": "SKIPPED",
+                },
+                "key": null,
+                "keys": null,
+                "output": undefined,
+                "parent": [Circular],
+                "status": "DONE",
+              },
+            ],
+            "data": {
+              "groupName": "group_1",
+              "tests": [],
+            },
+            "key": null,
+            "keys": null,
+            "output": undefined,
+            "parent": [Circular],
+            "status": "DONE",
+          },
+          "status": "DONE",
+        },
+        IsolateInstance {
+          "$type": "Test",
+          "abortController": null,
+          "allowReorder": undefined,
+          "children": null,
+          "data": {
+            "fieldName": "field_3",
+            "message": "field_3_message_2",
+            "severity": "error",
+            "testFn": [Function],
+            "testStatus": "SKIPPED",
+          },
+          "key": null,
+          "keys": null,
+          "output": undefined,
+          "parent": IsolateInstance {
+            "$type": "Group",
+            "abortController": null,
+            "allowReorder": undefined,
+            "children": [
+              IsolateInstance {
+                "$type": "Test",
+                "abortController": null,
+                "allowReorder": undefined,
+                "children": null,
+                "data": {
+                  "fieldName": "field_3",
+                  "message": "field_3_message_1",
+                  "severity": "error",
+                  "testFn": [Function],
+                  "testStatus": "SKIPPED",
+                },
+                "key": null,
+                "keys": null,
+                "output": undefined,
+                "parent": [Circular],
+                "status": "DONE",
+              },
+              [Circular],
+              IsolateInstance {
+                "$type": "Test",
+                "abortController": null,
+                "allowReorder": undefined,
+                "children": null,
+                "data": {
+                  "fieldName": "field_4",
+                  "message": "field_4_message",
+                  "severity": "error",
+                  "testFn": [Function],
+                  "testStatus": "SKIPPED",
+                },
+                "key": null,
+                "keys": null,
+                "output": undefined,
+                "parent": [Circular],
+                "status": "DONE",
+              },
+            ],
+            "data": {
+              "groupName": "group_1",
+              "tests": [],
+            },
+            "key": null,
+            "keys": null,
+            "output": undefined,
+            "parent": [Circular],
+            "status": "DONE",
+          },
+          "status": "DONE",
+        },
+      },
+      "field_4" => Set {
+        IsolateInstance {
+          "$type": "Test",
+          "abortController": null,
+          "allowReorder": undefined,
+          "children": null,
+          "data": {
+            "fieldName": "field_4",
+            "message": "field_4_message",
+            "severity": "error",
+            "testFn": [Function],
+            "testStatus": "SKIPPED",
+          },
+          "key": null,
+          "keys": null,
+          "output": undefined,
+          "parent": IsolateInstance {
+            "$type": "Group",
+            "abortController": null,
+            "allowReorder": undefined,
+            "children": [
+              IsolateInstance {
+                "$type": "Test",
+                "abortController": null,
+                "allowReorder": undefined,
+                "children": null,
+                "data": {
+                  "fieldName": "field_3",
+                  "message": "field_3_message_1",
+                  "severity": "error",
+                  "testFn": [Function],
+                  "testStatus": "SKIPPED",
+                },
+                "key": null,
+                "keys": null,
+                "output": undefined,
+                "parent": [Circular],
+                "status": "DONE",
+              },
+              IsolateInstance {
+                "$type": "Test",
+                "abortController": null,
+                "allowReorder": undefined,
+                "children": null,
+                "data": {
+                  "fieldName": "field_3",
+                  "message": "field_3_message_2",
+                  "severity": "error",
+                  "testFn": [Function],
+                  "testStatus": "SKIPPED",
+                },
+                "key": null,
+                "keys": null,
+                "output": undefined,
+                "parent": [Circular],
+                "status": "DONE",
+              },
+              [Circular],
+            ],
+            "data": {
+              "groupName": "group_1",
+              "tests": [],
+            },
+            "key": null,
+            "keys": null,
+            "output": undefined,
+            "parent": [Circular],
+            "status": "DONE",
+          },
+          "status": "DONE",
+        },
+      },
+      "field_5" => Set {
+        IsolateInstance {
+          "$type": "Test",
+          "abortController": null,
+          "allowReorder": undefined,
+          "children": null,
+          "data": {
+            "fieldName": "field_5",
+            "message": "field_5_message",
+            "severity": "error",
+            "testFn": [Function],
+            "testStatus": "SKIPPED",
+          },
+          "key": null,
+          "keys": null,
+          "output": undefined,
+          "parent": IsolateInstance {
+            "$type": "SkipWhen",
+            "abortController": null,
+            "allowReorder": undefined,
+            "children": [
+              [Circular],
+            ],
+            "data": {
+              "tests": [],
+            },
+            "key": null,
+            "keys": null,
+            "output": undefined,
+            "parent": [Circular],
+            "status": "DONE",
+          },
+          "status": "DONE",
+        },
+      },
+    },
+    "registry_failed": Map {
+      "field_1" => Set {
+        IsolateInstance {
+          "$type": "Test",
+          "abortController": AbortController {},
+          "allowReorder": undefined,
+          "children": null,
+          "data": {
+            "fieldName": "field_1",
+            "message": "field_1_message",
+            "severity": "error",
+            "testFn": [Function],
+            "testStatus": "FAILED",
+          },
+          "key": null,
+          "keys": null,
+          "output": undefined,
+          "parent": [Circular],
+          "status": "DONE",
+        },
+      },
+    },
+    "registry_omitted": Map {},
+    "registry_passing": Map {},
+    "registry_pending": Map {},
+    "registry_tested": Map {
+      "field_1" => Set {
+        IsolateInstance {
+          "$type": "Test",
+          "abortController": AbortController {},
+          "allowReorder": undefined,
+          "children": null,
+          "data": {
+            "fieldName": "field_1",
+            "message": "field_1_message",
+            "severity": "error",
+            "testFn": [Function],
+            "testStatus": "FAILED",
+          },
+          "key": null,
+          "keys": null,
+          "output": undefined,
+          "parent": [Circular],
+          "status": "DONE",
+        },
+      },
+    },
+    "registry_valid": Map {},
+    "registry_warning": Map {},
     "resolver": [Function],
     "tests": [
-      {
+      IsolateInstance {
         "$type": "Test",
         "abortController": AbortController {},
         "allowReorder": undefined,
@@ -216,9 +556,9 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
         "parent": [Circular],
         "status": "DONE",
       },
-      {
+      IsolateInstance {
         "$type": "Test",
-        "abortController": AbortController {},
+        "abortController": null,
         "allowReorder": undefined,
         "children": null,
         "data": {
@@ -234,9 +574,9 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
         "parent": [Circular],
         "status": "DONE",
       },
-      {
+      IsolateInstance {
         "$type": "Test",
-        "abortController": AbortController {},
+        "abortController": null,
         "allowReorder": undefined,
         "children": null,
         "data": {
@@ -249,15 +589,15 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
         "key": null,
         "keys": null,
         "output": undefined,
-        "parent": {
+        "parent": IsolateInstance {
           "$type": "Group",
-          "abortController": AbortController {},
+          "abortController": null,
           "allowReorder": undefined,
           "children": [
             [Circular],
-            {
+            IsolateInstance {
               "$type": "Test",
-              "abortController": AbortController {},
+              "abortController": null,
               "allowReorder": undefined,
               "children": null,
               "data": {
@@ -273,9 +613,9 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
               "parent": [Circular],
               "status": "DONE",
             },
-            {
+            IsolateInstance {
               "$type": "Test",
-              "abortController": AbortController {},
+              "abortController": null,
               "allowReorder": undefined,
               "children": null,
               "data": {
@@ -304,9 +644,9 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
         },
         "status": "DONE",
       },
-      {
+      IsolateInstance {
         "$type": "Test",
-        "abortController": AbortController {},
+        "abortController": null,
         "allowReorder": undefined,
         "children": null,
         "data": {
@@ -319,14 +659,14 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
         "key": null,
         "keys": null,
         "output": undefined,
-        "parent": {
+        "parent": IsolateInstance {
           "$type": "Group",
-          "abortController": AbortController {},
+          "abortController": null,
           "allowReorder": undefined,
           "children": [
-            {
+            IsolateInstance {
               "$type": "Test",
-              "abortController": AbortController {},
+              "abortController": null,
               "allowReorder": undefined,
               "children": null,
               "data": {
@@ -343,9 +683,9 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
               "status": "DONE",
             },
             [Circular],
-            {
+            IsolateInstance {
               "$type": "Test",
-              "abortController": AbortController {},
+              "abortController": null,
               "allowReorder": undefined,
               "children": null,
               "data": {
@@ -374,9 +714,9 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
         },
         "status": "DONE",
       },
-      {
+      IsolateInstance {
         "$type": "Test",
-        "abortController": AbortController {},
+        "abortController": null,
         "allowReorder": undefined,
         "children": null,
         "data": {
@@ -389,14 +729,14 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
         "key": null,
         "keys": null,
         "output": undefined,
-        "parent": {
+        "parent": IsolateInstance {
           "$type": "Group",
-          "abortController": AbortController {},
+          "abortController": null,
           "allowReorder": undefined,
           "children": [
-            {
+            IsolateInstance {
               "$type": "Test",
-              "abortController": AbortController {},
+              "abortController": null,
               "allowReorder": undefined,
               "children": null,
               "data": {
@@ -412,9 +752,9 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
               "parent": [Circular],
               "status": "DONE",
             },
-            {
+            IsolateInstance {
               "$type": "Test",
-              "abortController": AbortController {},
+              "abortController": null,
               "allowReorder": undefined,
               "children": null,
               "data": {
@@ -444,9 +784,9 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
         },
         "status": "DONE",
       },
-      {
+      IsolateInstance {
         "$type": "Test",
-        "abortController": AbortController {},
+        "abortController": null,
         "allowReorder": undefined,
         "children": null,
         "data": {
@@ -459,9 +799,9 @@ exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
         "key": null,
         "keys": null,
         "output": undefined,
-        "parent": {
+        "parent": IsolateInstance {
           "$type": "SkipWhen",
-          "abortController": AbortController {},
+          "abortController": null,
           "allowReorder": undefined,
           "children": [
             [Circular],

@@ -69,11 +69,9 @@ export function createCascade<T extends Record<string, unknown>>(
   function run<R>(value: Partial<T>, fn: () => R): R {
     const parentContext = ctx.use();
 
-    const out = assign(
-      {},
-      parentContext ? parentContext : {},
-      dynamicValue(init, value, parentContext) ?? value,
-    ) as T;
+    const initResult = dynamicValue(init, value, parentContext) ?? value;
+
+    const out = assign({}, parentContext ? parentContext : {}, initResult) as T;
 
     return ctx.run(Object.freeze(out), fn) as R;
   }

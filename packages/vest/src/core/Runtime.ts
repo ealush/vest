@@ -22,7 +22,8 @@ type StateExtra = {
   suiteId: string;
   suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName, TSchema>>;
 };
-const suiteResultCache = cache<SuiteResult<TFieldName, TGroupName, TSchema>>();
+const createSuiteResultCache = () =>
+  cache<SuiteResult<TFieldName, TGroupName, TSchema>>();
 
 export function useCreateVestState({
   VestReconciler,
@@ -33,26 +34,26 @@ export function useCreateVestState({
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
     suiteId: seq(),
-    suiteResultCache,
+    suiteResultCache: createSuiteResultCache(),
   };
 
   return VestRuntime.createRef(VestReconciler, stateRef);
 }
 
-function useX() {
+function useVestState() {
   return VestRuntime.useXAppData<StateExtra>();
 }
 
 export function useDoneCallbacks() {
-  return useX().doneCallbacks();
+  return useVestState().doneCallbacks();
 }
 
 export function useFieldCallbacks() {
-  return useX().fieldCallbacks();
+  return useVestState().fieldCallbacks();
 }
 
 function useSuiteId() {
-  return useX().suiteId;
+  return useVestState().suiteId;
 }
 
 export function useSuiteResultCache<
@@ -60,13 +61,13 @@ export function useSuiteResultCache<
   G extends TGroupName,
   S extends TSchema = undefined,
 >(action: CB<SuiteResult<F, G, S>>): SuiteResult<F, G, S> {
-  const suiteResultCache = useX().suiteResultCache;
+  const suiteResultCache = useVestState().suiteResultCache;
 
   return suiteResultCache([useSuiteId()], action) as SuiteResult<F, G, S>;
 }
 
 export function useExpireSuiteResultCache() {
-  const suiteResultCache = useX().suiteResultCache;
+  const suiteResultCache = useVestState().suiteResultCache;
   suiteResultCache.invalidate([useSuiteId()]);
 }
 

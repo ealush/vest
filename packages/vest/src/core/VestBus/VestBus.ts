@@ -18,12 +18,15 @@ import { TestWalker } from '../isolate/IsolateTest/TestWalker';
 import { VestTest } from '../isolate/IsolateTest/VestTest';
 
 import { useOnTestStart, useRegisterSubtree } from '../isolate/registerTests';
+import { useRegistryBusEvents } from '../test/TestRegistry';
 
 import { Events } from './BusEvents';
 
 // eslint-disable-next-line max-statements, max-lines-per-function
 export function useInitVestBus() {
   const VestBus = Bus.useBus<VestEvents>();
+
+  useRegistryBusEvents(VestBus);
 
   VestBus.on('TEST_COMPLETED', () => {
     useExpireSuiteResultCache();

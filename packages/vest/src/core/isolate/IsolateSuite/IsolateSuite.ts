@@ -1,4 +1,5 @@
 import { CB, assign } from 'vest-utils';
+import { RegistryIndex } from 'vestjs-runtime';
 
 import {
   OptionalFieldDeclaration,
@@ -18,6 +19,15 @@ import {
 export type TIsolateSuite = TVestIsolate<{
   optional: OptionalFields;
   resolver: CB<SuiteResult<TFieldName, TGroupName, any>>;
+  // Registry indices (populated by IsolateRegistry)
+  registry_all?: RegistryIndex;
+  registry_failed?: RegistryIndex;
+  registry_omitted?: RegistryIndex;
+  registry_passing?: RegistryIndex;
+  registry_pending?: RegistryIndex;
+  registry_tested?: RegistryIndex;
+  registry_valid?: RegistryIndex;
+  registry_warning?: RegistryIndex;
 }>;
 
 export function IsolateSuite<Callback extends CB = CB>(

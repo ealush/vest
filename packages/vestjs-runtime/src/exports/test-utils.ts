@@ -11,6 +11,7 @@ export function genTestIsolate(payload: Record<string, any> = {}): TIsolate {
     output: null,
     parent: null,
     [IsolateKeys.Type]: 'UnitTest',
+    [IsolateKeys.AbortController]: null,
     ...(status && { status }),
   };
 }

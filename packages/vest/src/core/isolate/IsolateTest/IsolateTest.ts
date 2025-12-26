@@ -28,6 +28,7 @@ export function IsolateTest<F extends TFieldName = TFieldName>(
   if (input.message) {
     payload.message = input.message;
   }
+
   const isolate = Isolate.create<IsolateTestPayload>(
     VestIsolateType.Test,
     callback,

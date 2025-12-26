@@ -58,9 +58,8 @@ export function bindSuiteSelectors<
     hasWarningsByGroup: (
       ...args: Parameters<SuiteSelectors<F, G>['hasWarningsByGroup']>
     ) => get().hasWarningsByGroup(...args),
-    isPending: (...args: Parameters<SuiteSelectors<F, G>['isPending']>) => {
-      return get().isPending(...args);
-    },
+    isPending: (...args: Parameters<SuiteSelectors<F, G>['isPending']>) =>
+      get().isPending(...args),
     isTested: (...args: Parameters<SuiteSelectors<F, G>['isTested']>) =>
       get().isTested(...args),
     isValid: (...args: Parameters<SuiteSelectors<F, G>['isValid']>) =>

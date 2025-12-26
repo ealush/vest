@@ -126,9 +126,10 @@ describe('Reconciler', () => {
     it('Should return existing node if found in history by key', () => {
       const node = { key: 'key1' } as TIsolate;
       const prevNode = { key: 'key1', old: true } as unknown as TIsolate;
+      const historyParent = { children: [prevNode] } as unknown as TIsolate;
 
       vi.mocked(IsolateInspector.usesKey).mockReturnValue(true);
-      vi.mocked(VestRuntime.useHistoryKey).mockReturnValue(prevNode);
+      vi.mocked(VestRuntime.useHistoryIsolate).mockReturnValue(historyParent);
 
       expect(Reconciler.handleIsolateNodeWithKey(node, false)).toBe(prevNode);
       expect(VestRuntime.useSetIsolateKey).toHaveBeenCalledWith(
@@ -139,9 +140,10 @@ describe('Reconciler', () => {
 
     it('Should return new node if not found in history', () => {
       const node = { key: 'key1' } as TIsolate;
+      const historyParent = { children: [] } as unknown as TIsolate;
 
       vi.mocked(IsolateInspector.usesKey).mockReturnValue(true);
-      vi.mocked(VestRuntime.useHistoryKey).mockReturnValue(null);
+      vi.mocked(VestRuntime.useHistoryIsolate).mockReturnValue(historyParent);
 
       expect(Reconciler.handleIsolateNodeWithKey(node, false)).toBe(node);
       expect(VestRuntime.useSetIsolateKey).toHaveBeenCalledWith('key1', node);

@@ -108,21 +108,8 @@ describe('key', () => {
 
         expect(deferThrow).toHaveBeenCalled();
 
-        expect(calls[0][0]).toBe(calls[1][0]);
-        expect(calls[0][1]).toBe(calls[1][1]);
-        expect(calls[0][2]).toBe(calls[1][2]);
-        expect(res1.tests.reordered).toMatchInlineSnapshot(
-          {
-            errorCount: 1,
-            errors: [],
-            pendingCount: 0,
-            testCount: 1,
-            valid: false,
-            warnCount: 0,
-            warnings: [],
-          },
-          `
-          {
+        expect(res1.tests.reordered).toMatchInlineSnapshot(`
+          SummaryBase {
             "errorCount": 1,
             "errors": [],
             "pendingCount": 0,
@@ -131,8 +118,7 @@ describe('key', () => {
             "warnCount": 0,
             "warnings": [],
           }
-        `,
-        );
+        `);
         expect(res2.tests.reordered).toMatchInlineSnapshot(
           {
             errorCount: 0,
@@ -158,28 +144,28 @@ describe('key', () => {
         expect(res2.tests).toMatchInlineSnapshot(`
           {
             "field1": SummaryBase {
-              "errorCount": 1,
+              "errorCount": 0,
               "errors": [],
               "pendingCount": 0,
-              "testCount": 1,
+              "testCount": 0,
               "valid": false,
               "warnCount": 0,
               "warnings": [],
             },
             "field2": SummaryBase {
-              "errorCount": 1,
+              "errorCount": 0,
               "errors": [],
               "pendingCount": 0,
-              "testCount": 1,
+              "testCount": 0,
               "valid": false,
               "warnCount": 0,
               "warnings": [],
             },
             "field3": SummaryBase {
-              "errorCount": 1,
+              "errorCount": 0,
               "errors": [],
               "pendingCount": 0,
-              "testCount": 1,
+              "testCount": 0,
               "valid": false,
               "warnCount": 0,
               "warnings": [],

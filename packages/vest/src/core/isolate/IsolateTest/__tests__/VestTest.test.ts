@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { getAbortController } from '../../../test/Abortable';
 import { VestTest } from '../VestTest';
 import {
   TestStatus,
@@ -144,6 +145,23 @@ describe('VestTest', () => {
           });
         },
       );
+    });
+  });
+
+  describe('getAbortController', () => {
+    it('Should create a new AbortController if one does not exist', () => {
+      const testObject = mockIsolateTest();
+      expect(testObject.abortController).toBeNull();
+      const controller = getAbortController(testObject);
+      expect(controller).toBeInstanceOf(AbortController);
+      expect(testObject.abortController).toBe(controller);
+    });
+
+    it('Should return the existing AbortController if it exists', () => {
+      const testObject = mockIsolateTest();
+      const controller = new AbortController();
+      testObject.abortController = controller;
+      expect(getAbortController(testObject)).toBe(controller);
     });
   });
 });

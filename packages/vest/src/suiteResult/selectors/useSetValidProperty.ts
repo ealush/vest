@@ -12,8 +12,11 @@ import { OptionalFieldTypes } from '../../hooks/optional/OptionalTypes';
 import { useIsOptionalFieldApplied } from '../../hooks/optional/optional';
 import { TFieldName, TGroupName } from '../SuiteResultTypes';
 
-import { hasErrorsByTestObjects } from './hasFailuresByTestObjects';
 import { useMapFirstPending } from '../../core/selectors/useIsPending';
+import {
+  useGetFromRegistry,
+  useHasFromRegistry,
+} from '../../core/test/TestRegistry';
 
 /**
  * Determines if a field (or field within a group) should be marked as "valid".
@@ -160,7 +163,8 @@ function useHasErrors(
   if (groupName) {
     return hasErrorsByTestObjectsInGroup(fieldName, groupName);
   }
-  return hasErrorsByTestObjects(fieldName);
+
+  return useHasFromRegistry('failed', fieldName);
 }
 
 /**
@@ -206,8 +210,8 @@ function hasErrorsByTestObjectsInGroup(
       return false;
     }
 
-    // Skip tests that didn't fail
-    if (!VestTest.hasFailures(testObject).unwrap()) {
+    // Skip tests that didn't fail (errors, not warnings)
+    if (!VestTest.isFailing(testObject).unwrap()) {
       return false;
     }
 
@@ -219,7 +223,7 @@ function hasErrorsByTestObjectsInGroup(
     }
 
     // This test is in our group, for our field, and it failed!
-    return VestTest.isFailing(testObject).unwrap();
+    return true;
   });
 }
 
@@ -260,16 +264,31 @@ function useHasNonOptionalIncomplete(
   fieldName?: TFieldName,
   groupName?: TGroupName,
 ) {
-  return (
-    useMapFirstPending(
-      (isolate: TIsolate, breakout: (value: boolean) => void) => {
-        const testObject = isolate as TIsolateTest;
-        if (useIsPendingTestRelevant(testObject, fieldName, groupName)) {
-          breakout(true);
-        }
-      },
-    ) ?? false
-  );
+  if (groupName) {
+    return (
+      useMapFirstPending(
+        (isolate: TIsolate, breakout: (value: boolean) => void) => {
+          const testObject = isolate as TIsolateTest;
+          if (useIsPendingTestRelevant(testObject, fieldName, groupName)) {
+            breakout(true);
+          }
+        },
+      ) ?? false
+    );
+  }
+
+  const pendingTests = useGetFromRegistry(
+    'pending',
+    fieldName,
+  ) as Set<TIsolateTest>;
+
+  for (const testObject of pendingTests) {
+    if (useIsPendingTestRelevant(testObject, fieldName)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 /**
@@ -280,7 +299,7 @@ function useHasNonOptionalIncomplete(
  * 2. It belongs to the target field (if a field is specified)
  * 3. The field is NOT optional (optional fields are valid even if pending)
  *
- * @param testObject - The pending test to check
+ * @param testObject - The test to check
  * @param fieldName - The field being validated
  * @param groupName - The group being validated
  * @returns `true` if the pending test prevents the field from being valid
@@ -346,6 +365,17 @@ function useNoMissingTests(
   fieldName?: TFieldName,
   groupName?: TGroupName,
 ): boolean {
+  if (groupName) {
+    return useNoMissingTestsInGroup(fieldName, groupName);
+  }
+
+  return useNoMissingTestsInSuite(fieldName);
+}
+
+function useNoMissingTestsInGroup(
+  fieldName: TFieldName | undefined,
+  groupName: TGroupName,
+): boolean {
   let hasAnyTestsForField = false;
   const root = VestRuntime.useAvailableRoot();
 
@@ -354,19 +384,16 @@ function useNoMissingTests(
     isolate => {
       const testObject = isolate as TIsolateTest;
 
-      // If checking a group, skip tests not in that group
-      if (groupName && VestTest.getGroupName(testObject) !== groupName) {
+      if (VestTest.getGroupName(testObject) !== groupName) {
         return true;
       }
 
-      // Skip tests not for our target field
       if (
         nonMatchingFieldName(VestTest.getData(testObject), fieldName).unwrap()
       ) {
         return true;
       }
 
-      // Found a test for our field!
       hasAnyTestsForField = true;
 
       return useNoMissingTestsLogic(testObject, fieldName);
@@ -374,14 +401,57 @@ function useNoMissingTests(
     VestTest.is,
   );
 
-  // No tests exist for this field - handle based on context
-  if (!hasAnyTestsForField) {
-    // Groups: empty is valid (vacuously true - you can't fail tests that don't exist)
-    // Top-level: empty is invalid (you probably forgot to add tests)
-    return !!groupName;
+  return !hasAnyTestsForField || result;
+}
+
+function useNoMissingTestsInSuite(fieldName?: TFieldName): boolean {
+  const tests = useGetFieldTests(fieldName);
+
+  if (tests.length === 0) {
+    return false;
   }
 
-  return result;
+  // Optimized path: All tests have explicitly finished or were omitted
+  if (useAllTestsFinished(tests.length, fieldName)) {
+    return true;
+  }
+
+  // Fallback: If we have pending tests, we need to check if they are optional async tests
+  // that are allowed to be "missing".
+  return tests.every((testObject: TIsolateTest) =>
+    useNoMissingTestsLogic(testObject, fieldName),
+  );
+}
+
+/**
+ * Retrieves all test isolates for a given field name, or all tests in the suite
+ * if no field name is provided.
+ *
+ * @param fieldName - The field name to look up.
+ * @returns An array of test isolates.
+ */
+function useGetFieldTests(fieldName?: TFieldName): TIsolateTest[] {
+  return Array.from(useGetFromRegistry('all', fieldName) as Set<TIsolateTest>);
+}
+
+/**
+ * Checks if all tests for a field (or the entire suite) have reached a final
+ * state (either tested or omitted).
+ *
+ * This is an O(1) optimization using the registry's set sizes.
+ *
+ * @param totalTests - The total number of tests expected for the field.
+ * @param fieldName - The field name.
+ * @returns `true` if all tests have finished/omitted.
+ */
+function useAllTestsFinished(
+  totalTests: number,
+  fieldName?: TFieldName,
+): boolean {
+  const testedCount = useGetFromRegistry('tested', fieldName).size;
+  const omittedCount = useGetFromRegistry('omitted', fieldName).size;
+
+  return testedCount + omittedCount === totalTests;
 }
 
 /**
@@ -413,7 +483,7 @@ function useNoMissingTests(
  * useNoMissingTestsLogic(testObject); // true (intentionally omitted)
  * ```
  */
-function useNoMissingTestsLogic(
+export function useNoMissingTestsLogic(
   testObject: TIsolateTest,
   fieldName?: TFieldName,
 ): boolean {

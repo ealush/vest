@@ -13,9 +13,7 @@ export function useBus<
   Returns an emitter, but it also has a shortcut for emitting an event immediately
   by passing an event name.
 */
-export function useEmit<
-  E extends Record<string, any> = RuntimeEvents,
->(): BusType<E>['emit'];
+
 export function useEmit<
   E extends Record<string, any> = RuntimeEvents,
   T extends keyof E = keyof E,
@@ -23,6 +21,10 @@ export function useEmit<
   event: T,
   ...args: E[T] extends void ? [payload?: E[T]] : [payload: E[T]]
 ): void;
+export function useEmit<_E extends Record<string, any> = RuntimeEvents>(): (
+  event: string,
+  data?: any,
+) => void;
 export function useEmit(event?: string, data?: any): any {
   const emit = useBus().emit;
 
@@ -40,5 +42,5 @@ export function usePrepareEmitter<
 >(event: T): (arg: E[T]) => void {
   const emit = useEmit<E>();
 
-  return (arg: E[T]) => emit(event, arg);
+  return (arg: E[T]) => emit(event as string, arg);
 }

@@ -19,8 +19,8 @@ import {
 import { SummaryFailure } from '../SummaryFailure';
 
 import {
+  useNoMissingTestsLogic,
   useSetValidProperty,
-  useSetValidPropertyImpl,
 } from './useSetValidProperty';
 
 export function useProduceSuiteSummary<
@@ -55,23 +55,26 @@ function useProcessTests<F extends TFieldName, G extends TGroupName>(
   tests.reduce((summary, testObject) => {
     const { fieldName } = VestTest.getData(testObject);
 
-    summary.tests[fieldName] = appendToTest(summary.tests, testObject);
+    summary.tests[fieldName] = useAppendToTest(summary.tests, testObject);
     summary.groups = useAppendToGroup(summary.groups, testObject);
-
-    if (summary.tests[fieldName].valid !== false) {
-      summary.tests[fieldName].valid = useSetValidProperty(fieldName);
-    }
 
     if (VestTest.isOmitted(testObject).unwrap()) {
       return summary;
     }
 
-    if (summary.tests[fieldName].valid === false) {
-      summary.valid = false;
-    }
-
     return addSummaryStats(testObject, summary);
   }, summary);
+
+  // After we have all the tests bucketed, we decide on the final validity
+  // of the suite.
+  // We iterate over all the fields we've seen, and if any of them is not valid,
+  // the suite is not valid.
+  for (const fieldName in summary.tests) {
+    if (summary.tests[fieldName].valid === false) {
+      summary.valid = false;
+      break;
+    }
+  }
 
   return summary;
 }
@@ -80,39 +83,41 @@ function useAppendToGroup<F extends TFieldName, G extends TGroupName>(
   groups: Groups<G, F>,
   testObject: TIsolateTest<F>,
 ): Groups<G, F> {
-  const { fieldName } = VestTest.getData<F>(testObject);
   const groupName = VestTest.getGroupName<G>(testObject);
 
   if (!groupName) {
     return groups;
   }
 
-  groups[groupName] =
-    groups[groupName] || ({} as Groups<G, F>[typeof groupName]);
-  const group = groups[groupName];
+  const group = ensureGroup<F, G>(groups, groupName);
 
-  const nextGroupEntry = appendTestSummaryObject<SingleTestSummary>(
+  const { fieldName } = VestTest.getData<F>(testObject);
+
+  const nextGroupEntry = useAppendTestSummaryObject(
     group[fieldName],
     testObject,
   );
   (group as Record<string, SingleTestSummary>)[fieldName] = nextGroupEntry;
 
-  // Always re-evaluate validity to account for optional fields
-  nextGroupEntry.valid = useSetValidPropertyImpl(fieldName, groupName);
-
   return groups;
 }
 
-function appendToTest<F extends TFieldName>(
+function ensureGroup<F extends TFieldName, G extends TGroupName>(
+  groups: Groups<G, F>,
+  groupName: G,
+): Groups<G, F>[G] {
+  groups[groupName] =
+    groups[groupName] || ({} as Groups<G, F>[typeof groupName]);
+  return groups[groupName];
+}
+
+function useAppendToTest<F extends TFieldName>(
   tests: Tests<F>,
   testObject: TIsolateTest<F>,
 ): SingleTestSummary {
   const fieldName = VestTest.getData<F>(testObject).fieldName;
 
-  const test = appendTestSummaryObject<SingleTestSummary>(
-    tests[fieldName],
-    testObject,
-  );
+  const test = useAppendTestSummaryObject(tests[fieldName], testObject);
   return test;
 }
 
@@ -139,13 +144,17 @@ function addSummaryStats<F extends TFieldName, G extends TGroupName>(
   return summary;
 }
 
-function appendTestSummaryObject<S extends CommonSummaryProperties>(
-  summaryKey: Maybe<S>,
+function useAppendTestSummaryObject(
+  summaryKey: Maybe<SingleTestSummary>,
   testObject: TIsolateTest,
-): S {
-  const nextSummaryKey = createNewSummaryKey(summaryKey);
+): SingleTestSummary {
+  const nextSummaryKey = createNewSummaryKey(summaryKey) as SingleTestSummary;
 
-  if (VestTest.isNonActionable(testObject).unwrap()) return nextSummaryKey;
+  const isNoMissing = useNoMissingTestsLogic(testObject);
+
+  if (nextSummaryKey.valid !== false) {
+    nextSummaryKey.valid = isNoMissing;
+  }
 
   return updateSummaryWithTestResults(nextSummaryKey, testObject);
 }
@@ -156,20 +165,21 @@ function createNewSummaryKey<S extends CommonSummaryProperties>(
   return defaultTo<S>(summaryKey ? { ...summaryKey } : null, baseTestStats);
 }
 
-function updateSummaryWithTestResults<S extends CommonSummaryProperties>(
-  nextSummaryKey: S,
+function updateSummaryWithTestResults(
+  nextSummaryKey: SingleTestSummary,
   testObject: TIsolateTest,
-): S {
-  const { message } = VestTest.getData(testObject);
+): SingleTestSummary {
+  const isStarted = VestTest.isStartedStatus(testObject);
+  const isFailing = VestTest.isFailing(testObject).unwrap();
 
-  if (VestTest.isStartedStatus(testObject)) {
+  if (isStarted) {
     nextSummaryKey.pendingCount++;
   }
 
-  if (VestTest.isFailing(testObject).unwrap()) {
-    incrementFailures(nextSummaryKey, Severity.ERRORS, message);
-  } else if (VestTest.isWarning(testObject).unwrap()) {
-    incrementFailures(nextSummaryKey, Severity.WARNINGS, message);
+  updateFailures(nextSummaryKey, testObject, isFailing);
+
+  if (isStarted || isFailing) {
+    nextSummaryKey.valid = false;
   }
 
   if (shouldCountTestRun(testObject)) {
@@ -177,6 +187,20 @@ function updateSummaryWithTestResults<S extends CommonSummaryProperties>(
   }
 
   return nextSummaryKey;
+}
+
+function updateFailures(
+  nextSummaryKey: SingleTestSummary,
+  testObject: TIsolateTest,
+  isFailing: boolean,
+): void {
+  const { message } = VestTest.getData(testObject);
+
+  if (isFailing) {
+    incrementFailures(nextSummaryKey, Severity.ERRORS, message);
+  } else if (VestTest.isWarning(testObject).unwrap()) {
+    incrementFailures(nextSummaryKey, Severity.WARNINGS, message);
+  }
 }
 
 function incrementFailures<S extends CommonSummaryProperties>(

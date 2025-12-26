@@ -3,6 +3,7 @@
 exports[`IsolateTest > TestObject constructor 1`] = `
 {
   "$type": "UnitTest",
+  "abortController": null,
   "children": [],
   "data": {
     "fieldName": "unicycle",
@@ -22,6 +23,7 @@ exports[`IsolateTest > TestObject constructor 1`] = `
 exports[`IsolateTest > testObject.warn > Should mark the test as warning 1`] = `
 {
   "$type": "UnitTest",
+  "abortController": null,
   "children": [],
   "data": {
     "fieldName": "unicycle",

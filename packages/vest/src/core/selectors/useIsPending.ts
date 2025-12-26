@@ -5,32 +5,14 @@ import {
   Walker,
 } from 'vestjs-runtime';
 
-import { TIsolateTest } from '../isolate/IsolateTest/IsolateTest';
-import { VestTest } from '../isolate/IsolateTest/VestTest';
-import matchingFieldName from '../test/helpers/matchingFieldName';
+import { useHasFromRegistry } from '../test/TestRegistry';
 
 /**
  * Checks if there are any pending isolates.
  * If a fieldName is provided, it checks if there are any pending isolates for that specific field.
  */
 export function useIsPending(fieldName?: string): boolean {
-  return (
-    useMapFirstPending((isolate, breakout) => {
-      if (!fieldName) {
-        breakout(true);
-        return;
-      }
-
-      if (
-        matchingFieldName(
-          VestTest.getData(isolate as TIsolateTest),
-          fieldName,
-        ).unwrap()
-      ) {
-        breakout(true);
-      }
-    }) ?? false
-  );
+  return useHasFromRegistry('pending', fieldName);
 }
 
 /**

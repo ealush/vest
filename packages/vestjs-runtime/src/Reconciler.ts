@@ -7,6 +7,7 @@ import {
 } from 'vest-utils';
 
 import { type TIsolate } from './Isolate/Isolate';
+import { createHistoryIndex } from './Isolate/IsolateIndexer';
 import { IsolateInspector } from './Isolate/IsolateInspector';
 import { IsolateMutator } from './Isolate/IsolateMutator';
 import { isSameIsolateType } from './Isolate/IsolateSelectors';
@@ -74,7 +75,7 @@ export class Reconciler {
   ): TIsolate {
     invariant(IsolateInspector.usesKey(node));
 
-    const prevNodeByKey = VestRuntime.useHistoryKey(node.key);
+    const prevNodeByKey = getNodeByKey(node.key);
     let nextNode = node;
 
     if (!isNullish(prevNodeByKey) && !dynamicValue(revoke, prevNodeByKey)) {
@@ -127,4 +128,43 @@ function removeAllNextNodesInIsolate() {
   }
 
   IsolateMutator.slice(historyNode, IsolateInspector.cursor(currentNode));
+}
+
+const historyIndexCache = new WeakMap<
+  TIsolate,
+  Map<string, TIsolate | TIsolate[]>
+>();
+
+function getNodeByKey(key: Nullable<string>): Nullable<TIsolate> {
+  const historyParent = VestRuntime.useHistoryIsolate();
+
+  if (isNullish(key) || !historyParent) {
+    return null;
+  }
+
+  const index = getHistoryIndex(historyParent);
+  const match = index.get(key);
+
+  if (!match) {
+    return null;
+  }
+
+  if (Array.isArray(match)) {
+    return match[0];
+  }
+
+  return match;
+}
+
+function getHistoryIndex(
+  historyParent: TIsolate,
+): Map<string, TIsolate | TIsolate[]> {
+  let index = historyIndexCache.get(historyParent);
+
+  if (!index) {
+    index = createHistoryIndex(historyParent.children);
+    historyIndexCache.set(historyParent, index);
+  }
+
+  return index;
 }

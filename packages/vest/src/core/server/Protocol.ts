@@ -1,3 +1,4 @@
+import { makeResult, Result } from 'vest-utils';
 import { VEST_VERSION } from '../../constants';
 
 export const SENTINEL = '__vest_sentinel__' as const;
@@ -15,14 +16,17 @@ export const Protocol = {
     version: VEST_VERSION,
     payload: serializedTree,
   }),
-  validate: (input: any): input is VestEnvelope =>
-    isEnvelope(input) && isValidVersion(input),
+  validate: (input: any): Result<VestEnvelope, string> =>
+    isEnvelope(input) && isValidVersion(input)
+      ? makeResult.Ok(input)
+      : makeResult.Err('Protocol validation failed'),
 };
 
 function isEnvelope(input: any): input is VestEnvelope {
   return (
     !!input &&
     typeof input === 'object' &&
+    !Array.isArray(input) &&
     input[SENTINEL] === true &&
     typeof input.payload === 'string'
   );

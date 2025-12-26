@@ -20,28 +20,27 @@ You define a validation suite. Parts of it run in the browser (sync), and parts 
 ### How Grafting Works
 
 ```text
-Your Suite Tree (Client) Remote Branch (Server)
-+----------------------+ +--------------------+
-| Root | | ServerRoot |
-| | | | | |
-| +-- Test: Required | | +-- Test: Unique |
-| | (Pass) | | (Fail) |
-| | | +--------------------+
-| +-- Server Isolate | |
-| (Pending...) | <-------[ JSON ]--+
+Your Suite Tree (Client)        Remote Branch (Server)
++----------------------+        +--------------------+
+|  Root                |        |  ServerRoot        |
+|  |                   |        |  |                 |
+|  +-- Test: Required  |        |  +-- Test: Unique  |
+|  |   (Pass)          |        |      (Fail)        |
+|  |                   |        +--------------------+
+|  +-- Server Isolate  |                   |
+|      (Pending...)    | <-------[ JSON ]--+
 +----------------------+
- |
- v
- ( After Grafting )
+          |
+          v
+   ( After Grafting )
 +----------------------+
-| Root |
-| | |
-| +-- Test: Required |
-| +-- Server Isolate |
-| | |
-| +-- Test: Unique| <--- The error is now here!
+|  Root                |
+|  |                   |
+|  +-- Test: Required  |
+|  +-- Server Isolate  |
+|      |               |
+|      +-- Test: Unique| <--- The error is now here!
 +----------------------+
-
 ```
 
 ## Quick Start
@@ -54,7 +53,6 @@ Create a file shared by Client and Server. This "Token" identifies the validatio
 // shared/contracts.ts
 import { createSession } from 'vest';
 export const UserUniqueCheck = createSession('USER_UNIQUE_CHECK');
-
 ```
 
 ### 2. Implement on Server
@@ -66,12 +64,11 @@ On your backend, register the logic. This code **never** loads in the browser.
 import { server, test } from 'vest';
 import { UserUniqueCheck } from '../shared/contracts';
 
-server(UserUniqueCheck, (data) => {
+server(UserUniqueCheck, data => {
   test('username', 'Username taken', async () => {
     return await db.users.isUnique(data.username);
   });
 });
-
 ```
 
 ### 3. Configure Transport (Client)
@@ -88,7 +85,8 @@ createServerAdapter(async (tokenId, data, { signal }) => {
     body: JSON.stringify({ tokenId, data }),
     signal // Connects the AbortSignal for cancellation
   });
-  return response.text(); // Return the raw string
+  });
+  return await response.json();
 });
 
 ```
@@ -102,7 +100,7 @@ Pass the **Token** and **Data** to `server()`. Vest handles the rest.
 import { create, server } from 'vest';
 import { UserUniqueCheck } from '../shared/contracts';
 
-create('Signup', (data) => {
+create('Signup', data => {
   // 1. Standard checks
   test('username', 'Required', () => !!data.username);
 
@@ -110,7 +108,6 @@ create('Signup', (data) => {
   // Vest pauses, sends 'data' to server, and merges the result here.
   server(UserUniqueCheck, data);
 });
-
 ```
 
 ## Safety & Security

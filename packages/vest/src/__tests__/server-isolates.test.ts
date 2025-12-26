@@ -89,20 +89,19 @@ describe('Server isolates', () => {
     expect(suite.get().getError('username')).toBe('Username is already taken');
   });
 
-  it('ignores raw strings returned by the adapter', async () => {
+  it('throws on raw strings returned by the adapter', async () => {
     vest.createServerAdapter(async () => 'not-json');
 
+    let p: any;
     const suite = vest.create(() => {
-      vest.server(session, { username: 'test' });
+      p = vest.server(session, { username: 'test' });
     });
 
-    expect(() => suite.run()).not.toThrow();
-    await wait(0);
-
-    expect(suite.get()).toBeDefined();
+    suite.run();
+    await expect(p.output).rejects.toThrow();
   });
 
-  it('warns and ignores version mismatches', async () => {
+  it('warns and throws on version mismatches', async () => {
     const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const mismatchedVersion = `${VEST_VERSION}-mismatch`;
     const mismatched = Protocol.wrap('');
@@ -113,13 +112,14 @@ describe('Server isolates', () => {
 
     vest.createServerAdapter(transport);
 
+    let p: any;
     const suite = vest.create(() => {
-      vest.server(session, { username: 'test' });
+      p = vest.server(session, { username: 'test' });
     });
 
     suite.run();
-    await wait(0);
 
+    await expect(p.output).rejects.toThrow();
     expect(consoleSpy).toHaveBeenCalledWith(
       expect.stringContaining('Version Mismatch'),
     );

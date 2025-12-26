@@ -34,8 +34,7 @@ export function server(session: ServerSession, actionOrData: any): any {
 
     return transport(session.id, actionOrData, { signal: controller.signal })
       .then(result => {
-        Protocol.validate(result);
-        return result;
+        return Protocol.validate(result).unwrap();
       })
       .finally(() => {
         if (pendingControllers.get(session.id) === controller) {

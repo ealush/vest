@@ -1,4 +1,11 @@
-import { CB, Maybe, Nullable, isNotNullish, isPromise } from 'vest-utils';
+import {
+  CB,
+  Maybe,
+  Nullable,
+  isNotNullish,
+  isPromise,
+  isFailure,
+} from 'vest-utils';
 
 import { useEmit } from '../Bus';
 import { Reconciler } from '../Reconciler';
@@ -106,24 +113,7 @@ function useRunAsNewCallback(current: TIsolate, callback: CB): any {
     emit('ISOLATE_PENDING', current);
     IsolateMutator.setPending(current);
     output.then(
-      VestRuntime.persist(result => {
-        if (Protocol.validate(result)) {
-          const deserialized = IsolateSerializer.safeDeserialize(
-            result.payload,
-          );
-          if (
-            deserialized.type === 'ok' &&
-            Isolate.isIsolate(deserialized.value)
-          ) {
-            IsolateMutator.addChild(current, deserialized.value);
-          }
-        } else if (Isolate.isIsolate(result)) {
-          IsolateMutator.addChild(current, result);
-        }
-
-        IsolateMutator.setDone(current);
-        emit('ASYNC_ISOLATE_DONE', current);
-      }),
+      VestRuntime.persist(result => handleAsyncIsolate(current, result)),
       VestRuntime.persist(() => {
         IsolateMutator.setDone(current);
         emit('ASYNC_ISOLATE_DONE', current);
@@ -134,6 +124,30 @@ function useRunAsNewCallback(current: TIsolate, callback: CB): any {
   }
 
   return output;
+}
+
+// eslint-disable-next-line complexity
+function handleAsyncIsolate(current: TIsolate, result: any): void {
+  const emit = useEmit();
+
+  if (Protocol.validate(result)) {
+    const deserialized = IsolateSerializer.safeDeserialize(result.payload);
+    if (deserialized.type === 'ok' && Isolate.isIsolate(deserialized.value)) {
+      IsolateMutator.addChild(current, deserialized.value);
+    } else if (
+      // Deserialization failed - payload may be malformed
+      process.env.NODE_ENV === 'development' &&
+      isFailure(deserialized)
+    ) {
+      // eslint-disable-next-line no-console
+      console.warn('Failed to deserialize server isolate payload');
+    }
+  } else if (Isolate.isIsolate(result)) {
+    IsolateMutator.addChild(current, result);
+  }
+
+  IsolateMutator.setDone(current);
+  emit('ASYNC_ISOLATE_DONE', current);
 }
 
 class IsolateInstance implements TIsolate {

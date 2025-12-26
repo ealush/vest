@@ -35,5 +35,10 @@ describe('Protocol', () => {
     expect(Protocol.validate('payload')).toBe(false);
     expect(Protocol.validate({})).toBe(false);
     expect(Protocol.validate({ __vest_sentinel__: true })).toBe(false);
+    expect(Protocol.validate(null)).toBe(false);
+    expect(Protocol.validate([])).toBe(false);
+    expect(Protocol.validate({ __vest_sentinel__: true, payload: 123 })).toBe(
+      false,
+    );
   });
 });

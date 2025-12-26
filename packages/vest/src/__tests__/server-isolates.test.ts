@@ -77,14 +77,16 @@ describe('Server isolates', () => {
     const result = suite.run({ username: 'taken_user' });
 
     expect(result.hasErrors('username')).toBe(false);
-    expect(transport).toHaveBeenCalledWith(session.id, { username: 'taken_user' }, expect.any(Object));
+    expect(transport).toHaveBeenCalledWith(
+      session.id,
+      { username: 'taken_user' },
+      expect.any(Object),
+    );
 
     await wait(0);
 
     expect(suite.get().hasErrors('username')).toBe(true);
-    expect(suite.get().getError('username')).toBe(
-      'Username is already taken',
-    );
+    expect(suite.get().getError('username')).toBe('Username is already taken');
   });
 
   it('ignores raw strings returned by the adapter', async () => {

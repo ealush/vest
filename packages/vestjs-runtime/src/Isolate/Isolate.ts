@@ -111,7 +111,10 @@ function useRunAsNewCallback(current: TIsolate, callback: CB): any {
           const deserialized = IsolateSerializer.safeDeserialize(
             result.payload,
           );
-          if (deserialized.type === 'ok' && Isolate.isIsolate(deserialized.value)) {
+          if (
+            deserialized.type === 'ok' &&
+            Isolate.isIsolate(deserialized.value)
+          ) {
             IsolateMutator.addChild(current, deserialized.value);
           }
         } else if (Isolate.isIsolate(result)) {

@@ -9,6 +9,7 @@ import { ServerSession } from '../server/Session';
 
 const pendingControllers = new Map<string, AbortController>();
 
+// @vx-allow use-use
 export function server(session: ServerSession, actionOrData: any): any {
   if (isFunction(actionOrData)) {
     ServerRegistry.register(session.id, actionOrData);

@@ -15,22 +15,26 @@ export const Protocol = {
     version: VEST_VERSION,
     payload: serializedTree,
   }),
-  validate: (input: any): input is VestEnvelope => {
-    if (!input || typeof input !== 'object') {
-      return false;
-    }
-    if (input[SENTINEL] !== true) {
-      return false;
-    }
-    if (typeof input.payload !== 'string') {
-      return false;
-    }
-    if (input.version !== VEST_VERSION) {
-      console.warn(
-        `[Vest] Version Mismatch. Client: ${VEST_VERSION}, Server: ${input.version}. Validation result ignored.`,
-      );
-      return false;
-    }
-    return true;
-  },
+  validate: (input: any): input is VestEnvelope =>
+    isEnvelope(input) && isValidVersion(input),
 };
+
+function isEnvelope(input: any): input is VestEnvelope {
+  return (
+    !!input &&
+    typeof input === 'object' &&
+    input[SENTINEL] === true &&
+    typeof input.payload === 'string'
+  );
+}
+
+function isValidVersion(input: VestEnvelope): boolean {
+  if (input.version !== VEST_VERSION) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[Vest] Version Mismatch. Client: ${VEST_VERSION}, Server: ${input.version}. Validation result ignored.`,
+    );
+    return false;
+  }
+  return true;
+}

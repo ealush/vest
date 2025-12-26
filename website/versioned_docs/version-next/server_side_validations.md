@@ -1,128 +1,122 @@
 ---
-sidebar_position: 11
-title: Server-Side & SSR
-description: Learn how to use Vest with Node.js and Server-Side Rendering (SSR).
-keywords:
-  [
-    Server side validation,
-    Node.js,
-    Validation state,
-    Stateful vs stateless,
-    runStatic,
-    Resetting the suite,
-    require,
-    import,
-    CommonJS,
-    Package entry points,
-    SSR,
-    Hydration,
-    SuiteSerializer,
-    serialize,
-    resume,
-  ]
+sidebar_position: 4
+title: Distributed Validations
 ---
 
-# Server-Side Validations
+# Distributed Validations
 
-Vest is isomorphic and runs in Node.js environments.
+:::info Feature Name
+Formerly known as "Server-Side Validations". We renamed it to **Distributed Validations** to reflect the mental model: extending your validation tree across the network.
+:::
 
-## Stateless Runs
+Vest allows you to run parts of your validation suite on the server (like checking if a username is taken) and seamlessly "graft" the results back into your client-side form.
 
-On the server, you typically want a stateless validation run - one that doesn't remember the previous state of fields.
+## The Mental Model
 
-In Vest, use the `.runStatic()` method. Each call produces a fresh result object without merging into prior state.
+Don't think of it as "calling an API." Think of it as **Distributed Execution**.
 
-```javascript
-import { create, test, enforce } from 'vest';
+You define a validation suite. Parts of it run in the browser (sync), and parts of it run on the server (remote). Vest stitches them together so they look like one unified result object.
 
-const suite = create(data => {
-  test('username', 'Required', () => {
-    enforce(data.username).isNotBlank();
+### How Grafting Works
+
+```text
+Your Suite Tree (Client) Remote Branch (Server)
++----------------------+ +--------------------+
+| Root | | ServerRoot |
+| | | | | |
+| +-- Test: Required | | +-- Test: Unique |
+| | (Pass) | | (Fail) |
+| | | +--------------------+
+| +-- Server Isolate | |
+| (Pending...) | <-------[ JSON ]--+
++----------------------+
+ |
+ v
+ ( After Grafting )
++----------------------+
+| Root |
+| | |
+| +-- Test: Required |
+| +-- Server Isolate |
+| | |
+| +-- Test: Unique| <--- The error is now here!
++----------------------+
+
+```
+
+## Quick Start
+
+### 1. Define a Contract (Shared)
+
+Create a file shared by Client and Server. This "Token" identifies the validation logic.
+
+```typescript
+// shared/contracts.ts
+import { createSession } from 'vest';
+export const UserUniqueCheck = createSession('USER_UNIQUE_CHECK');
+
+```
+
+### 2. Implement on Server
+
+On your backend, register the logic. This code **never** loads in the browser.
+
+```typescript
+// server/validations.ts
+import { server, test } from 'vest';
+import { UserUniqueCheck } from '../shared/contracts';
+
+server(UserUniqueCheck, (data) => {
+  test('username', 'Username taken', async () => {
+    return await db.users.isUnique(data.username);
   });
 });
 
-export default suite;
 ```
 
-**Usage in API Handler:**
+### 3. Configure Transport (Client)
 
-```javascript
-import suite from './validation';
+Tell Vest how to talk to your API (fetch, axios, etc). Do this once in your app setup.
 
-app.post('/user', (req, res) => {
-  // runStatic guarantees a fresh, stateless result every time
-  const result = suite.runStatic(req.body);
+```typescript
+// client/setup.ts
+import { createServerAdapter } from 'vest';
 
-  if ((result as any).then) {
-    // If async tests exist, wait for completion
-    return result.then(finalResult => {
-      if (finalResult.hasErrors()) {
-        return res.status(400).json(finalResult.getErrors());
-      }
-      // ...
-      return res.sendStatus(204);
-    });
-  }
-
-  if (result.hasErrors()) {
-    return res.status(400).json(result.getErrors());
-  }
-
-  // ...
-  // ...
+createServerAdapter(async (tokenId, data, { signal }) => {
+  const response = await fetch('/api/validate', {
+    method: 'POST',
+    body: JSON.stringify({ tokenId, data }),
+    signal // Connects the AbortSignal for cancellation
+  });
+  return response.text(); // Return the raw string
 });
+
 ```
 
-## SSR & Hydration
+### 4. Use in Suite (Client)
 
-When using Vest with Server-Side Rendering (SSR) frameworks (like Next.js, Remix, or Nuxt), you often want to validate on the server, send the validation state to the client, and resume without rerunning everything.
+Pass the **Token** and **Data** to `server()`. Vest handles the rest.
 
-Use `SuiteSerializer.serialize` to serialize the suite state and `SuiteSerializer.resume` on the client to hydrate it.
+```typescript
+// client/suite.ts
+import { create, server } from 'vest';
+import { UserUniqueCheck } from '../shared/contracts';
 
-### Server Side
+create('Signup', (data) => {
+  // 1. Standard checks
+  test('username', 'Required', () => !!data.username);
 
-```javascript
-// server.js
-import { SuiteSerializer } from 'vest';
-import suite from './suite';
+  // 2. Distributed check
+  // Vest pauses, sends 'data' to server, and merges the result here.
+  server(UserUniqueCheck, data);
+});
 
-export async function action({ request }) {
-  const formData = await request.formData();
-  const data = Object.fromEntries(formData);
-
-  // Run validation
-  const result = suite.runStatic(data);
-
-  // Check for errors
-  if (result.hasErrors()) {
-    return json({
-      errors: result.getErrors(),
-      // Serialize the suite state to send to the client
-      vestState: SuiteSerializer.serialize(suite),
-    });
-  }
-}
 ```
 
-### Client Side
+## Safety & Security
 
-On the client, hydrate the suite with the state received from the server using `SuiteSerializer.resume()`.
+Distributed Validations include a built-in **Safety Envelope**.
 
-```javascript
-// client.js
-import { SuiteSerializer } from 'vest';
-import suite from './suite';
-
-export function MyForm({ actionData }) {
-  // Resume the suite state if provided by the server
-  if (actionData?.vestState) {
-    SuiteSerializer.resume(suite, actionData.vestState);
-  }
-
-  // ... render form
-}
-```
-
-Once resumed, `suite.hasErrors()`, `suite.isValid()`, and other selectors will return data reflecting the server-side run. Subsequent calls to `suite.run()` on the client will update this state normally.
-
-For a deep dive into this pattern, read **[Server-Side Rendering & Hydration](./suite_serialization.md)**.
+1. **Versioning:** If your client and server versions drift, Vest detects the mismatch and ignores the server response to prevent "Zombie State" (loading incompatible validation trees).
+2. **Sentinels:** The protocol ensures you don't accidentally hydrate random API JSON responses into your validation state.
+3. **Auto-Abort:** If a user types quickly, Vest automatically aborts stale network requests, ensuring the UI always reflects the latest state.

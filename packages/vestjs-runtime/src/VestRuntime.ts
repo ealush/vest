@@ -316,6 +316,7 @@ export const RuntimeApi = {
   reset,
   useAvailableRoot,
   useCurrentCursor,
+  useHistoryIsolateAtCurrentPosition,
   useHistoryRoot,
   useIsStable,
   useRuntimeState,

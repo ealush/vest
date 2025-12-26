@@ -3,6 +3,8 @@ import { CB, Maybe, Nullable, isNotNullish, isPromise } from 'vest-utils';
 import { useEmit } from '../Bus';
 import { Reconciler } from '../Reconciler';
 import * as VestRuntime from '../VestRuntime';
+import { IsolateSerializer } from '../exports/IsolateSerializer';
+import { Protocol } from '../Protocol';
 
 import { IsolateKeys } from './IsolateKeys';
 import { IsolateMutator } from './IsolateMutator';
@@ -104,9 +106,19 @@ function useRunAsNewCallback(current: TIsolate, callback: CB): any {
     emit('ISOLATE_PENDING', current);
     IsolateMutator.setPending(current);
     output.then(
-      VestRuntime.persist(iso => {
-        if (Isolate.isIsolate(iso)) {
-          IsolateMutator.addChild(current, iso);
+      VestRuntime.persist(result => {
+        if (Protocol.validate(result)) {
+          const deserialized = IsolateSerializer.safeDeserialize(
+            result.payload,
+          );
+          if (
+            deserialized.type === 'ok' &&
+            Isolate.isIsolate(deserialized.value)
+          ) {
+            IsolateMutator.addChild(current, deserialized.value);
+          }
+        } else if (Isolate.isIsolate(result)) {
+          IsolateMutator.addChild(current, result);
         }
 
         IsolateMutator.setDone(current);

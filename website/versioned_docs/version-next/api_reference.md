@@ -262,3 +262,57 @@ After running your suite, the results object is returned. It has the following f
 - `isTested(fieldName)`: Returns true if the provided field has been tested.
 - `isValid(fieldName?)`: Returns true if the suite or the provided field is valid.
 - `isValidByGroup(groupName)`: Returns true if a certain group or a field in a group is valid or not.
+
+## Distributed Validations
+
+### `createSession(id)`
+
+Creates a unique token to identify a server-side validation suite.
+
+**Returns:** `ServerSession` (Shared Token)
+
+---
+
+### `server(session, data | callback)`
+
+The isomorphic entry point for distributed validations.
+
+**Behavior Diagram:**
+
+```text
+Environment | Input Arguments | Behavior
+------------|------------------------|---------------------------
+SERVER | (Session, Callback) | Registers Logic (No Run)
+CLIENT | (Session, Data) | Runs Remote Validation
+
+```
+
+**Overload 1: Client (Execution)**
+
+* **Params**:
+* `session` (`ServerSession`): The token created by `createSession`.
+* `data` (`any`): The payload to send to the server.
+
+* **Returns**: An internal `Isolate` that suspends execution until the server responds.
+
+**Overload 2: Server (Registration)**
+
+* **Params**:
+* `session` (`ServerSession`): The token created by `createSession`.
+* `callback` (`(data: any) => void`): The validation logic to execute.
+
+* **Returns**: `void`.
+
+---
+
+### `createServerAdapter(handler)`
+
+Registers the global transport method used by the client to communicate with the server.
+
+**Params:**
+
+* `handler` (`(tokenId, data, options) => Promise<string>`):
+* `tokenId`: The ID of the session being requested.
+* `data`: The payload passed to `server()`.
+* `options.signal`: An `AbortSignal` for cancelling stale requests.
+* **Must Return**: A Promise resolving to the serialized string returned by the server.

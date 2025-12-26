@@ -8,6 +8,9 @@ import { Modes } from './hooks/optional/Modes';
 import { mode } from './hooks/optional/mode';
 import { optional } from './hooks/optional/optional';
 import { warn } from './hooks/warn';
+import { server } from './core/isolate/IsolateServer';
+import { createServerAdapter } from './core/server/ServerAdapter';
+import { createSession } from './core/server/Session';
 import { each } from './isolates/each';
 import { group } from './isolates/group';
 import { omitWhen } from './isolates/omitWhen';
@@ -34,6 +37,9 @@ export {
   mode,
   Modes,
   registerReconciler,
+  server,
+  createServerAdapter,
+  createSession,
 };
 
 export type { SuiteResult, SuiteSummary, Suite };

@@ -18,6 +18,12 @@ const VX_ROOT = new URL('./', import.meta.url);
 
 // eslint-disable-next-line complexity
 export async function resolve(specifier, context, next) {
+  // Safety: Defer to next hook for non-file parent URLs (e.g. data:, node:)
+  // This prevents resolving relative paths against virtual modules/data URIs
+  if (context.parentURL && !context.parentURL.startsWith('file://')) {
+    return next(specifier, context);
+  }
+
   if (specifier.startsWith('vx/')) {
     const relativePath = specifier.replace(/^vx\//, '');
     const baseUrl = new URL(relativePath, VX_ROOT);
@@ -51,11 +57,18 @@ export async function resolve(specifier, context, next) {
 }
 
 export async function load(url, context, next) {
+  // Guard: Critical fix for Node 20+ loader bootstrap.
+  // We must strictly ignore data: URLs (used by --import) and node: internals.
+  // Intercepting these causes the ERR_INVALID_RETURN_PROPERTY_VALUE crash.
+  if (!url.startsWith('file://')) {
+    return next(url, context);
+  }
+
   if (url.endsWith('.ts')) {
     const source = await readFile(new URL(url), 'utf8');
     const transpiled = ts.transpileModule(source, {
       compilerOptions,
-      fileName: url,
+      fileName: fileURLToPath(url),
     });
 
     const sourceMap = transpiled.sourceMapText
@@ -71,5 +84,6 @@ export async function load(url, context, next) {
     };
   }
 
+  // Clean fallthrough for all other file:// URLs (js, json, etc.)
   return next(url, context);
 }

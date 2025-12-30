@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Vest Devtools",
+  "description": "Event-based Vest validation inspector inspired by Redux DevTools.",
+  "version": "0.2.0",
+  "permissions": ["scripting", "tabs"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "devtools_page": "devtools.html",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content-script.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["page-script.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

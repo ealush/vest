@@ -17,6 +17,8 @@ packages/*/*
 !packages/*/vitest.config.ts
 !packages/*/bench
 !packages/*/docs
+!packages/vest-devtools-extension/*
+!packages/vest-devtools-extension/**
 .env
 
 playground.*

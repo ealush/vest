@@ -3,6 +3,7 @@ import {
   hasOwnProperty,
   isNullish,
   isStringValue,
+  isFailure,
   text,
   makeResult,
   Result,
@@ -21,16 +22,12 @@ export class IsolateSerializer {
   ): Result<TIsolate, Error> {
     try {
       const expanded = expandNode(node);
-      const queue = [expanded];
-
-      while (queue.length) {
-        const current = queue.shift();
-        if (current) {
-          processChildren(current, queue);
-        }
+      if (isFailure(IsolateSerializer.validateIsolate(expanded))) {
+        return makeResult.Err(
+          new Error(ErrorStrings.INVALID_ISOLATE_CANNOT_PARSE),
+        );
       }
-
-      return makeResult.Ok(expanded);
+      return makeResult.Ok(hydrateIsolate(expanded));
     } catch (error) {
       return makeResult.Err(
         error instanceof Error ? error : new Error(String(error)),
@@ -39,12 +36,13 @@ export class IsolateSerializer {
   }
 
   static deserialize(node: Record<string, any> | TIsolate | string): TIsolate {
-    return IsolateSerializer.safeDeserialize(node).unwrap();
+    const result = IsolateSerializer.safeDeserialize(node);
+    return result.unwrap();
   }
 
   static serialize(
     isolate: Nullable<TIsolate>,
-    replacer: (value: any, key: string) => any,
+    replacer?: (value: any, key: string) => any,
   ): string {
     if (isNullish(isolate)) {
       return '';
@@ -54,7 +52,10 @@ export class IsolateSerializer {
       if (ExcludedFromDump.has(key as any)) {
         return undefined;
       }
-      return replacer(value, key);
+      if (replacer) {
+        return replacer(value, key);
+      }
+      return value;
     });
 
     return JSON.stringify(minified);
@@ -91,15 +92,26 @@ function processChildren(current: TIsolate, queue: TIsolate[]): void {
   });
 }
 
-function expandNode(node: Record<string, any> | TIsolate | string): TIsolate {
-  const root = (
-    isStringValue(node)
-      ? JSON.parse(node, safeReviver)
-      : ({ ...node } as TIsolate)
-  ) as [any, any];
+function hydrateIsolate(root: TIsolate): TIsolate {
+  const queue = [root];
 
-  const expanded = expandObject(...root);
-  return IsolateSerializer.validateIsolate(expanded).unwrap();
+  while (queue.length) {
+    const current = queue.shift();
+    if (current) {
+      processChildren(current, queue);
+    }
+  }
+
+  return root;
+}
+
+function expandNode(node: Record<string, any> | TIsolate | string): TIsolate {
+  const parsed = isStringValue(node)
+    ? JSON.parse(node, safeReviver)
+    : ({ ...node } as TIsolate);
+  const root = Array.isArray(parsed) ? parsed : [parsed, {}];
+  const expanded = expandObject(root[0], root[1]);
+  return expanded as TIsolate;
 }
 
 function safeReviver(key: string, value: any): any {

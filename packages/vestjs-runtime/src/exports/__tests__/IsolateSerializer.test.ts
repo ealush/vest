@@ -1,7 +1,8 @@
-import { CB, isFailure } from 'vest-utils';
+import { CB, isFailure, isSuccess } from 'vest-utils';
 import { describe, it, expect, test } from 'vitest';
 
 import { Isolate, TIsolate } from '../../Isolate/Isolate';
+import { IsolateKeys } from '../../Isolate/IsolateKeys';
 import { IsolateSerializer } from '../IsolateSerializer';
 import {
   IReconciler,
@@ -11,6 +12,32 @@ import {
 } from '../../vestjs-runtime';
 
 describe('IsolateSerializer', () => {
+  describe('safeDeserialize', () => {
+    it('Should successfully deserialize a valid isolate string', () => {
+      const { serialized } = createRoot();
+
+      const result = IsolateSerializer.safeDeserialize(serialized);
+
+      expect(isSuccess(result)).toBe(true);
+      expect(result.unwrap()[IsolateKeys.Type]).toBe('URoot');
+    });
+
+    it('Should return failure on malformed JSON', () => {
+      const result = IsolateSerializer.safeDeserialize('{ invalid_json: ');
+
+      expect(isFailure(result)).toBe(true);
+      if (isFailure(result)) {
+        expect(result.error).toBeInstanceOf(Error);
+      }
+    });
+
+    it('Should return failure if payload is not an isolate', () => {
+      const result = IsolateSerializer.safeDeserialize('{"foo":"bar"}');
+
+      expect(isFailure(result)).toBe(true);
+    });
+  });
+
   describe('serialize', () => {
     it('Should produce serialized dump', () => {
       const { serialized } = createRoot();
@@ -201,7 +228,7 @@ describe('IsolateSerializer', () => {
     });
 
     it('Should return empty string if isolate is null', () => {
-      expect(IsolateSerializer.serialize(null, v => v)).toBe('');
+      expect(IsolateSerializer.serialize(null)).toBe('');
     });
   });
 

@@ -100,5 +100,21 @@ describe('Context', () => {
         expect(ctx.use()).toBeUndefined();
       });
     });
+
+    describe('Context restoration when callback throws', () => {
+      it('should restore context to EMPTY_CONTEXT when callback throws', () => {
+        const valueA = { some: 'value' };
+
+        expect(() => {
+          ctx.run(valueA, () => {
+            expect(ctx.use()).toBe(valueA);
+            throw new Error('test error');
+          });
+        }).toThrow('test error');
+
+        // After the error, context should be reset to EMPTY_CONTEXT
+        expect(ctx.use()).toBeUndefined();
+      });
+    });
   });
 });

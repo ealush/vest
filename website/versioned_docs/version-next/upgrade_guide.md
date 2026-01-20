@@ -88,6 +88,21 @@ Vest implements the [Standard Schema](https://github.com/standard-schema/standar
 const result = await suite.validate(data);
 ```
 
+## `suite.only(...)` shorthand for focused runs
+
+If you previously used `suite.focus({ only: ... })`, you can now use the shorthand `suite.only(...)` to focus runs on specific fields or groups.
+
+```diff
+- suite.focus({ only: 'email' }).run(data);
++ suite.only('email').run(data);
+
+- suite.focus({ only: ['email', 'password'] }).run(data);
++ suite.only(['email', 'password']).run(data);
+
+- suite.focus({ only: { groups: 'billing' } }).run(data);
++ suite.only({ groups: 'billing' }).run(data);
+```
+
 ---
 
 ## Automated Migration Prompt

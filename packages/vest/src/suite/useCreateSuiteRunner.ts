@@ -6,7 +6,7 @@ import { SuiteContext } from '../core/context/SuiteContext';
 import { IsolateReorderable } from '../core/isolate/IsolateReorderable/IsolateReorderable';
 import { IsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { test } from '../core/test/test';
-import { only } from '../hooks/focused/focused';
+import { only, skip } from '../hooks/focused/focused';
 import {
   SuiteResult,
   TFieldName,
@@ -62,6 +62,7 @@ export function useCreateSuiteRunner<
 
           const output = IsolateSuite(() => {
             only(modifiers.only);
+            skip(modifiers.skip);
             (suiteCallback as any)(...(args as Parameters<T>));
 
             IsolateReorderable(runSchemaValidation(schema, modifiers, args[0]));

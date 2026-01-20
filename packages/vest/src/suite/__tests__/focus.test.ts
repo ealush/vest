@@ -85,6 +85,46 @@ describe('suite.only', () => {
       expect(res.tests.field_3.testCount).toBe(0);
     });
 
+    it('should skip the specified field when skip is provided', () => {
+      const suite = vest.create(() => {
+        dummyTest.failing('field_1');
+        dummyTest.failing('field_2');
+        dummyTest.failing('field_3');
+      });
+
+      const res = suite.focus({ skip: 'field_2' }).run();
+
+      expect(res.hasErrors('field_1')).toBe(true);
+      expect(res.hasErrors('field_2')).toBe(false);
+      expect(res.hasErrors('field_3')).toBe(true);
+      expect(res.tests.field_1.testCount).toBe(1);
+      expect(res.tests.field_2.testCount).toBe(0);
+      expect(res.tests.field_3.testCount).toBe(1);
+    });
+
+    it('should skip the specified group when skip groups are provided', () => {
+      const suite = vest.create(() => {
+        vest.group('group_1', () => {
+          dummyTest.failing('field_1');
+        });
+
+        vest.group('group_2', () => {
+          dummyTest.failing('field_2');
+        });
+
+        dummyTest.failing('field_3');
+      });
+
+      const res = suite.focus({ skip: { groups: 'group_1' } }).run();
+
+      expect(res.hasErrors('field_1')).toBe(false);
+      expect(res.hasErrors('field_2')).toBe(true);
+      expect(res.hasErrors('field_3')).toBe(true);
+      expect(res.groups.group_1.field_1.testCount).toBe(0);
+      expect(res.groups.group_2.field_2.testCount).toBe(1);
+      expect(res.tests.field_3.testCount).toBe(1);
+    });
+
     describe('multiple runs', () => {
       it('should reevaluate the focused fields on each run', () => {
         const suite = vest.create(() => {

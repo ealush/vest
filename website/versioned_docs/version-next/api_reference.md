@@ -108,6 +108,14 @@ Prepares a focused run.
 - Equivalent to `suite.focus({ only: targets })`.
 - [Read more about Focused Updates](./writing_your_suite/focused_updates.md)
 
+#### `suite.focus(config)`
+
+Prepares a focused run with both include and skip targets.
+
+- `config`: `{ only?: string | string[] | { fields?: string | string[]; groups?: string | string[] }; skip?: string | string[] | { fields?: string | string[]; groups?: string | string[] } }`
+- `suite.only(...)` is a shorthand for `suite.focus({ only: ... })`.
+- [Read more about Focused Updates](./writing_your_suite/focused_updates.md)
+
 #### `suite.afterEach(callback)`
 
 Registers a callback to run after each test completes (including the initial sync run and every async completion). The callback receives **no arguments**; you should access the result using `suite.get()`.

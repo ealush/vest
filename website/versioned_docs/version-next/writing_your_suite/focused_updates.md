@@ -11,6 +11,8 @@ Sometimes you want to run validation only for a specific field (e.g., on blur). 
 
 `suite.only(...)` is a shorthand for `suite.focus({ only: ... })`.
 
+You can also use `suite.focus({ skip: ... })` to skip specific fields or groups while running the rest of the suite.
+
 :::tip New in Vest 6
 `suite.only()` is the recommended way to handle field-focused validation in Vest 6. It provides a cleaner API compared to using `only()` and `skip()` hooks inside your suite.
 :::

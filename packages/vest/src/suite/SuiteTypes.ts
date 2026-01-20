@@ -85,4 +85,5 @@ type AfterMethods<
 
 export type SuiteModifiers<F extends TFieldName, G extends TGroupName> = {
   only?: FocusMatch<F, G> | FocusMatch<string, string>;
+  skip?: FocusMatch<F, G> | FocusMatch<string, string>;
 };

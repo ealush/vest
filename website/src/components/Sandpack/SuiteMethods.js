@@ -33,7 +33,7 @@ export default function App() {
     setForm(newForm);
     
     // Validate focus field
-    suite.focus({only: name}).run(newForm);
+    suite.only(name).run(newForm);
     setRes(suite.get());
   };
 

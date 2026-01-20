@@ -69,6 +69,16 @@ describe('typed suite', () => {
       .run();
 
     suite.afterEach(() => {}).run();
+
+    suite.only('F1').run();
+    suite.only({ fields: 'F2' }).run();
+    suite.only({ groups: 'G1' }).run();
+
+    // @ts-expect-error
+    suite.only('F100');
+
+    // @ts-expect-error
+    suite.only({ groups: 'G100' });
   });
 });
 

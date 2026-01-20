@@ -1,7 +1,7 @@
 ---
 sidebar_position: 6
 title: Handling User Interaction
-description: How to show validation errors only when users interact with fields using isTested and suite.focus()
+description: How to show validation errors only when users interact with fields using isTested and suite.only()
 keywords: [Vest, dirty, isDirty, isTested, validation, pristine, focus, onBlur]
 ---
 
@@ -11,7 +11,7 @@ A common challenge in form validation is "noise control." You don't want to scre
 
 Traditionally, libraries use an `isDirty` flag to track if a user has modified a field. Since Vest is **UI-agnostic** (it doesn't touch your DOM or listen to events), it doesn't track "dirty" state for you.
 
-Instead, Vest provides two powerful tools to handle user interaction: **`isTested()`** and **`suite.focus()`**.
+Instead, Vest provides two powerful tools to handle user interaction: **`isTested()`** and **`suite.only()`**.
 
 ## 1. `isTested()`: The Vest Alternative to `isDirty`
 
@@ -33,30 +33,30 @@ if (shouldShowError) {
 
 This pattern ensures that empty, untouched fields don't show "Required" errors when the form first loads.
 
-## 2. Validating on Interaction with `suite.focus()`
+## 2. Validating on Interaction with `suite.only()`
 
 When a user blurs a field or types, you often want to validate **only that specific field**, while keeping the rest of the form state intact.
 
-Vest 6 introduces `suite.focus()`. This tells Vest to run validations for specific fields, while skipping others.
+Vest 6 introduces `suite.only()`. This tells Vest to run validations for specific fields, while skipping others.
 
 ```javascript
 // On Blur handler
 function handleBlur(fieldName, formData) {
-  // 1. Tell Vest to focus ONLY on the blurred field
+  // 1. Tell Vest to validate ONLY the blurred field
   // 2. Run the suite with the current data
-  suite.focus({ only: fieldName }).run(formData);
+  suite.only(fieldName).run(formData);
 }
 ```
 
-### Why use `focus()`?
+### Why use `only()`?
 
 - **Performance:** It skips expensive tests (like async checks) for fields the user isn't touching.
 - **User Experience:** It updates the state for the current field without accidentally flagging other fields as "tested" or "invalid" before the user reaches them.
 
 :::tip Real-World Pattern
-Combine `suite.focus()` with `isTested()` for the best UX:
+Combine `suite.only()` with `isTested()` for the best UX:
 
-- Use `focus({ only: fieldName })` in your `onBlur` handler to validate only the current field
+- Use `only(fieldName)` in your `onBlur` handler to validate only the current field
 - Use `isTested(fieldName)` when rendering to decide whether to show errors
   :::
 
@@ -77,7 +77,7 @@ function Form() {
   const handleBlur = e => {
     const { name } = e.target;
     // Validate only the blurred field
-    const res = suite.focus({ only: name }).run(formData);
+    const res = suite.only(name).run(formData);
     setResult(res);
   };
 
@@ -110,14 +110,14 @@ function Form() {
 
 ## Summary
 
-| Goal                         | Traditional Approach          | Vest Approach                                   |
-| :--------------------------- | :---------------------------- | :---------------------------------------------- |
-| **Did the user touch this?** | Check `field.isDirty`         | Check `result.isTested('field')`                |
-| **Validate on Blur**         | Call `validateField('field')` | Call `suite.focus({ only: 'field' }).run(data)` |
+| Goal                         | Traditional Approach          | Vest Approach                        |
+| :--------------------------- | :---------------------------- | :----------------------------------- |
+| **Did the user touch this?** | Check `field.isDirty`         | Check `result.isTested('field')`     |
+| **Validate on Blur**         | Call `validateField('field')` | Call `suite.only('field').run(data)` |
 
-By combining `isTested()` (to hide premature errors) and `suite.focus()` (to update specific fields), you get precise control over the user experience without tightly coupling your validation to the DOM.
+By combining `isTested()` (to hide premature errors) and `suite.only()` (to update specific fields), you get precise control over the user experience without tightly coupling your validation to the DOM.
 
 ## Related
 
-- [Focused Updates](./focused_updates.md) - Deep dive into `suite.focus()`
+- [Focused Updates](./focused_updates.md) - Deep dive into `suite.only()`
 - [Accessing the Result](./accessing_the_result.md) - Learn about `isTested()` and other result methods

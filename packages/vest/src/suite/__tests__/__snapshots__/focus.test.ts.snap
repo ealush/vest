@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`suite.focus: only > focus return value > should be the rest of the suite methods 1`] = `
+exports[`suite.only > only return value > should be the rest of the suite methods 1`] = `
 {
   "afterEach": [Function],
   "afterField": [Function],

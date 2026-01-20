@@ -68,9 +68,9 @@ const validationResult = suite.run(formData, changedField);
 You can make fields run together by using [include](./include). This is useful when you have fields that depend on each other, and you want to make sure they run at the same time.
 :::
 
-## V6 Recommended: Using `suite.focus()`
+## V6 Recommended: Using `suite.only()`
 
-In Vest 6, the preferred way to focus validation on specific fields is to use the **`suite.focus()`** method. This approach is cleaner and separates the "what to validate" from "how to validate".
+In Vest 6, the preferred way to focus validation on specific fields is to use the **`suite.only()`** method. This approach is cleaner and separates the "what to validate" from "how to validate".
 
 ```javascript
 import { create, test, enforce } from 'vest';
@@ -88,21 +88,24 @@ const suite = create(data => {
 });
 
 // Focus on a single field
-suite.focus({ only: 'username' }).run(formData);
+suite.only('username').run(formData);
 
 // Focus on multiple fields
-suite.focus({ only: ['username', 'email'] }).run(formData);
+suite.only(['username', 'email']).run(formData);
+
+// Focus on a group
+suite.only({ groups: 'account' }).run(formData);
 
 // Chain with afterEach for callbacks
 suite
-  .focus({ only: 'email' })
+  .only('email')
   .afterEach(() => updateUI(suite.get()))
   .run(formData);
 ```
 
-### Why Use `suite.focus()` Over `only()`?
+### Why Use `suite.only()` Over `only()`?
 
-| Feature                    | `only()` (inside suite)     | `suite.focus()` (outside)  |
+| Feature                    | `only()` (inside suite)     | `suite.only()` (outside)   |
 | -------------------------- | --------------------------- | -------------------------- |
 | **Declaration**            | Inside suite callback       | At call site               |
 | **Flexibility**            | Must be conditional         | Fully dynamic              |
@@ -110,7 +113,7 @@ suite
 | **Chainable**              | No                          | Yes (returns runnable API) |
 | **Best For**               | Static exclusions           | UI-driven field focus      |
 
-> **Recommendation**: Use `suite.focus()` for runtime decisions (e.g., validating on blur), and `only()`/`skip()` for static, logic-based exclusions inside your suite.
+> **Recommendation**: Use `suite.only()` for runtime decisions (e.g., validating on blur), and `only()`/`skip()` for static, logic-based exclusions inside your suite.
 
 For more details, see [Focused Updates](../focused_updates).
 

@@ -1,16 +1,16 @@
 ---
 sidebar_position: 4
 title: Focused Updates
-description: Run validation only for specific fields using suite.focus()
+description: Run validation only for specific fields using suite.only()
 keywords: [Vest, Focus, Only, Validation]
 ---
 
 # Focused Updates
 
-Sometimes you want to run validation only for a specific field (e.g., on blur). Vest 6 introduces the `suite.focus()` method for declarative control over which fields to validate.
+Sometimes you want to run validation only for a specific field (e.g., on blur). Vest 6 introduces the `suite.only()` method for declarative control over which fields to validate.
 
 :::tip New in Vest 6
-`suite.focus()` is the recommended way to handle field-focused validation in Vest 6. It provides a cleaner API compared to using `only()` and `skip()` hooks inside your suite.
+`suite.only()` is the recommended way to handle field-focused validation in Vest 6. It provides a cleaner API compared to using `only()` and `skip()` hooks inside your suite.
 :::
 
 ## Why Focus?
@@ -26,7 +26,7 @@ In a large form, re-validating the entire suite on every keystroke can be ineffi
 
 ### Running Only Specific Fields
 
-Use `focus({ only: ... })` to restrict the run to specific fields.
+Use `only(...)` to restrict the run to specific fields, or pass a `groups` list to focus by group name.
 
 import FocusedUpdatesSandpack from '@site/src/components/Sandpack/FocusedUpdates';
 
@@ -34,20 +34,23 @@ import FocusedUpdatesSandpack from '@site/src/components/Sandpack/FocusedUpdates
 
 ## Fluent Chain API
 
-`focus()` returns a "runnable" interface, allowing you to chain it with `afterEach`, `afterField`, or `run`.
+`only()` returns a "runnable" interface, allowing you to chain it with `afterEach`, `afterField`, or `run`.
 
 ```javascript
 suite
-  .focus({ only: 'email' })
+  .only('email')
   .afterEach(() => updateUI(suite.get()))
   .run(formData);
 
 // Or with afterField for specific field callbacks
 suite
-  .focus({ only: ['email', 'password'] })
+  .only(['email', 'password'])
   .afterField('email', () => validateEmailUI(suite.get()))
   .afterField('password', () => validatePasswordUI(suite.get()))
   .run(formData);
+
+// Focus by group
+suite.only({ groups: 'billing' }).run(formData);
 ```
 
 ## Real-World Examples
@@ -58,7 +61,7 @@ suite
 // In your form component
 function handleBlur(fieldName, formData) {
   suite
-    .focus({ only: fieldName })
+    .only(fieldName)
     .afterEach(() => setValidationResult(suite.get()))
     .run(formData);
 }
@@ -73,7 +76,7 @@ function handleBlur(fieldName, formData) {
 
 ### Validating All Fields Without Focus
 
-When you need to validate everything (e.g., on form submit), simply call `run()` without `focus()`:
+When you need to validate everything (e.g., on form submit), simply call `run()` without `only()`:
 
 ```javascript
 // Validate all fields on submit
@@ -84,7 +87,7 @@ function handleSubmit(formData) {
 // Or for focused blur validation
 function handleBlur(fieldName, value) {
   suite
-    .focus({ only: fieldName })
+    .only(fieldName)
     .afterEach(() => setResult(suite.get()))
     .run({ ...formData, [fieldName]: value });
 }
@@ -113,7 +116,7 @@ function useFormValidation(initialData) {
   const validateField = useCallback(
     fieldName => {
       suite
-        .focus({ only: fieldName })
+        .only(fieldName)
         .afterEach(() => setResult(suite.get()))
         .run(formData);
     },
@@ -128,9 +131,9 @@ function useFormValidation(initialData) {
 }
 ```
 
-## Comparison: `suite.focus()` vs `only()`/`skip()`
+## Comparison: `suite.only()` vs `only()`/`skip()`
 
-| Feature                    | `only()`/`skip()`              | `suite.focus()`                        |
+| Feature                    | `only()`/`skip()`              | `suite.only()`                         |
 | -------------------------- | ------------------------------ | -------------------------------------- |
 | **Location**               | Inside suite callback          | Outside, at call site                  |
 | **Flexibility**            | Requires conditional logic     | Fully dynamic                          |
@@ -140,7 +143,7 @@ function useFormValidation(initialData) {
 
 ### When to Use Each
 
-**Use `suite.focus()`** when:
+**Use `suite.only()`** when:
 
 - Validating on blur or focus events
 - The decision of what to validate comes from UI interactions
@@ -156,14 +159,14 @@ function useFormValidation(initialData) {
 
 :::caution Important
 
-- **Non-persistent**: Focused runs do not persist between calls. Each `focus` call applies only to the immediately following `run()`.
+- **Non-persistent**: Focused runs do not persist between calls. Each `only` call applies only to the immediately following `run()`.
 - **Schema Validation**: When focusing specific fields, schema validation is skipped for fields outside the focus scope, allowing targeted validation even if the full payload is invalid.
 - **State Preservation**: Previous validation results for non-focused fields are preserved.
   :::
 
 ## TypeScript Support
 
-`suite.focus()` is fully typed. The field names are inferred from your suite definition:
+`suite.only()` is fully typed. The field names are inferred from your suite definition:
 
 ```typescript
 interface FormData {
@@ -180,8 +183,8 @@ const suite = create((data: FormData) => {
 });
 
 // TypeScript will autocomplete field names
-suite.focus({ only: 'username' }).run(formData); // ✅
-suite.focus({ only: 'nonexistent' }).run(formData); // ❌ Type error
+suite.only('username').run(formData); // ✅
+suite.only('nonexistent').run(formData); // ❌ Type error
 ```
 
 ## Related

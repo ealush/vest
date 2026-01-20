@@ -35,7 +35,7 @@ export function useCreateSuiteRunner<
   S extends TSchema = undefined,
 >(
   suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F>,
+  modifiers: SuiteModifiers<F, G>,
   schema?: S,
 ) {
   return function runSuite(
@@ -77,8 +77,9 @@ export function useCreateSuiteRunner<
 
 function runSchemaValidation<
   F extends TFieldName,
+  G extends TGroupName,
   S extends TSchema = undefined,
->(schema: S | undefined, modifiers: SuiteModifiers<F>, data: any) {
+>(schema: S | undefined, modifiers: SuiteModifiers<F, G>, data: any) {
   return () => {
     if (!shouldRunSchema(schema, modifiers)) return;
 
@@ -92,6 +93,9 @@ function runSchemaValidation<
   };
 }
 
-function shouldRunSchema(schema: any, modifiers: SuiteModifiers<any>): boolean {
+function shouldRunSchema(
+  schema: any,
+  modifiers: SuiteModifiers<TFieldName, TGroupName>,
+): boolean {
   return !modifiers.only && !!schema && isFunction(schema.run);
 }

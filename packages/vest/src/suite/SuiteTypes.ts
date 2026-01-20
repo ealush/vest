@@ -3,7 +3,7 @@ import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { Subscribe } from '../core/VestBus/VestBus';
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
-import { FieldExclusion } from '../hooks/focused/focused';
+import { FocusMatch } from '../hooks/focused/focused';
 import {
   SuiteResult,
   TFieldName,
@@ -74,7 +74,8 @@ type AfterMethods<
     AfterMethods<F, G, T, S>,
     [fieldName: F | string, callback: CB]
   >;
-  focus: CB<AfterMethods<F, G, T, S>, [config: SuiteModifiers<F>]>;
+  focus: CB<AfterMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
+  only: CB<AfterMethods<F, G, T, S>, [match: FocusMatch<F, G>]>;
   run: (
     ...args: S extends undefined
       ? Parameters<T>
@@ -82,6 +83,6 @@ type AfterMethods<
   ) => SuiteResult<F, G>;
 };
 
-export type SuiteModifiers<F extends TFieldName> = {
-  only?: FieldExclusion<F> | FieldExclusion<string>;
+export type SuiteModifiers<F extends TFieldName, G extends TGroupName> = {
+  only?: FocusMatch<F, G> | FocusMatch<string, string>;
 };

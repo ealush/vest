@@ -17,7 +17,7 @@ describe('Schema Runtime Validation', () => {
   }, schema);
 
   describe('run() validation behavior', () => {
-    it('should validate schema when no focus criteria is active', () => {
+    it('should validate schema when no only criteria is active', () => {
       // Valid data
       expect(suite.run({ name: 'John', age: 30, tags: [] }).isValid()).toBe(
         true,
@@ -31,10 +31,10 @@ describe('Schema Runtime Validation', () => {
     });
 
     it('should skip schema validation when "only" is active', () => {
-      // Invalid data for schema (age is string), but we focus on 'name'
+      // Invalid data for schema (age is string), but we only run 'name'
       // The schema validation should be skipped entirely
       const result = suite
-        .focus({ only: 'name' })
+        .only('name')
         // @ts-expect-error - Invalid data
         .run({ name: 'John', age: '30' });
 
@@ -42,10 +42,10 @@ describe('Schema Runtime Validation', () => {
       expect(result.isValid()).toBe(true);
     });
 
-    it('should skip schema validation when "only" is active via suite.focus().run()', () => {
+    it('should skip schema validation when "only" is active via suite.only().run()', () => {
       // Invalid data for schema
       const result = suite
-        .focus({ only: ['name'] })
+        .only(['name'])
         // @ts-expect-error - Invalid data
         .run({ name: 'John', age: '30' });
 
@@ -68,9 +68,9 @@ describe('Schema Runtime Validation', () => {
       expect(result.hasErrors('age')).toBe(true);
     });
 
-    it('should run schema validation even after focusing the main suite', () => {
-      // Focus the main suite
-      suite.focus({ only: 'name' });
+    it('should run schema validation even after applying only to the main suite', () => {
+      // Apply only to the main suite
+      suite.only('name');
 
       // runStatic should still validate schema (it creates a fresh suite)
       // @ts-expect-error - Invalid data
@@ -148,7 +148,7 @@ describe('Schema Runtime Validation', () => {
       expect(errors).toContain('User name must be a string');
     });
 
-    it('should work with run() without focus', () => {
+    it('should work with run() without only', () => {
       const schemaWithMessage = enforce.shape({
         price: enforce.isNumber().message('Price must be a number'),
       });
@@ -161,7 +161,7 @@ describe('Schema Runtime Validation', () => {
       expect(result.getErrors('price')).toContain('Price must be a number');
     });
 
-    it('should not run with focus enabled', () => {
+    it('should not run with only enabled', () => {
       const schemaWithMessage = enforce.shape({
         price: enforce.isNumber().message('Price must be a number'),
         quantity: enforce.isNumber().message('Quantity must be a number'),
@@ -174,7 +174,7 @@ describe('Schema Runtime Validation', () => {
       }, schemaWithMessage);
 
       // Focus on quantity, invalid price should be ignored
-      const result = testSuite.focus({ only: 'quantity' }).run({
+      const result = testSuite.only('quantity').run({
         price: 'invalid',
         quantity: 10,
       } as any);
@@ -185,7 +185,7 @@ describe('Schema Runtime Validation', () => {
   });
 
   describe('Extensive scenarios', () => {
-    it('should handle partial data validation when not focused', () => {
+    it('should handle partial data validation when not only', () => {
       const partialSuite = create(
         () => {},
         enforce.shape({
@@ -264,7 +264,7 @@ describe('Schema Runtime Validation', () => {
   });
 
   describe('Stateful behavior', () => {
-    it('should run schema validation only when not focused even if ran focused previously', () => {
+    it('should run schema validation only when not only even if ran only previously', () => {
       const schema = enforce.shape({
         required: enforce.isString(),
       });
@@ -273,15 +273,15 @@ describe('Schema Runtime Validation', () => {
         test('field', () => {});
       }, schema);
 
-      // First run: Focused
+      // First run: Only
       // Schema validation should be skipped
       // @ts-expect-error - Invalid data
-      let res = suite.focus({ only: 'field' }).run({ required: 123 });
+      let res = suite.only('field').run({ required: 123 });
 
       expect(res.hasErrors()).toBe(false);
       expect(res.isValid()).toBe(true);
 
-      // Second run: Not focused
+      // Second run: Not only
       // Schema validation should run and fail
       // @ts-expect-error - Invalid data
       res = suite.run({ required: 123 });

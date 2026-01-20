@@ -3,18 +3,18 @@ import { describe, it, expect } from 'vitest';
 import { dummyTest } from '../../testUtils/testDummy';
 import * as vest from '../../vest';
 
-describe('suite.focus: only', () => {
-  it('focus should be a function', () => {
+describe('suite.only', () => {
+  it('only should be a function', () => {
     const suite = vest.create(() => {});
 
-    expect(suite.focus).toBeTypeOf('function');
+    expect(suite.only).toBeTypeOf('function');
   });
 
-  describe('focus return value', () => {
+  describe('only return value', () => {
     it('should be the rest of the suite methods', () => {
       const suite = vest.create(() => {});
 
-      const focused = suite.focus({ only: ['field_1'] });
+      const focused = suite.only(['field_1']);
 
       expect(focused).toBeTypeOf('object');
       expect(focused.afterEach).toBeTypeOf('function');
@@ -32,7 +32,7 @@ describe('suite.focus: only', () => {
         dummyTest.failing('field_3');
       });
 
-      const res = suite.focus({ only: 'field_1' }).run();
+      const res = suite.only('field_1').run();
 
       expect(res.hasErrors('field_1')).toBe(true);
       expect(res.hasErrors('field_2')).toBe(false);
@@ -50,7 +50,7 @@ describe('suite.focus: only', () => {
         dummyTest.failing('field_3');
       });
 
-      const res = suite.focus({ only: ['field_1', 'field_3'] }).run();
+      const res = suite.only(['field_1', 'field_3']).run();
 
       expect(res.hasErrors('field_1')).toBe(true);
       expect(res.hasErrors('field_2')).toBe(false);
@@ -61,6 +61,30 @@ describe('suite.focus: only', () => {
       expect(res.tests.field_3.testCount).toBe(1);
     });
 
+    it('should focus on the specified group when a group is provided', () => {
+      const suite = vest.create(() => {
+        vest.group('group_1', () => {
+          dummyTest.failing('field_1');
+        });
+
+        vest.group('group_2', () => {
+          dummyTest.failing('field_2');
+        });
+
+        dummyTest.failing('field_3');
+      });
+
+      const res = suite.only({ groups: 'group_1' }).run();
+
+      expect(res.hasErrors('field_1')).toBe(true);
+      expect(res.hasErrors('field_2')).toBe(false);
+      expect(res.hasErrors('field_3')).toBe(false);
+
+      expect(res.groups.group_1.field_1.testCount).toBe(1);
+      expect(res.groups.group_2.field_2.testCount).toBe(0);
+      expect(res.tests.field_3.testCount).toBe(0);
+    });
+
     describe('multiple runs', () => {
       it('should reevaluate the focused fields on each run', () => {
         const suite = vest.create(() => {
@@ -69,17 +93,17 @@ describe('suite.focus: only', () => {
           dummyTest.failing('field_3');
         });
 
-        suite.focus({ only: 'field_1' }).run();
+        suite.only('field_1').run();
         expect(suite.hasErrors('field_1')).toBe(true);
         expect(suite.hasErrors('field_2')).toBe(false);
         expect(suite.hasErrors('field_3')).toBe(false);
 
-        suite.focus({ only: 'field_2' }).run();
+        suite.only('field_2').run();
         expect(suite.hasErrors('field_1')).toBe(true);
         expect(suite.hasErrors('field_2')).toBe(true);
         expect(suite.hasErrors('field_3')).toBe(false);
 
-        suite.focus({ only: 'field_3' }).run();
+        suite.only('field_3').run();
         expect(suite.hasErrors('field_1')).toBe(true);
         expect(suite.hasErrors('field_2')).toBe(true);
         expect(suite.hasErrors('field_3')).toBe(true);
@@ -98,7 +122,7 @@ describe('suite.focus: only', () => {
         );
 
         // 1. Run with focus on f1 - should not get errors for f1 (it's skipped)
-        const focusedResult = suite.focus({ only: 'f1' }).run({});
+        const focusedResult = suite.only('f1').run({});
         expect(focusedResult.hasErrors('f1')).toBe(true);
         expect(focusedResult.hasErrors('f2')).toBe(false);
         expect(focusedResult.tests.f1.testCount).toBe(1);

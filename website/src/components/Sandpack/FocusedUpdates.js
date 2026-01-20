@@ -43,7 +43,7 @@ export default function App() {
     setForm(newForm);
     
     // 2. Focused Update: Validate ONLY the changed field
-    suite.focus({ only: name }).run(newForm);
+    suite.only(name).run(newForm);
     
     // Update result
     setRes(suite.get());

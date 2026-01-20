@@ -13,36 +13,57 @@ import { useHasOnliedTests } from './useHasOnliedTests';
 function useClosestMatchingFocus(
   testObject: TIsolateTest,
 ): Result<Nullable<TIsolateFocused>> {
+  const { fieldName } = VestTest.getData(testObject);
+  const groupName = VestTest.getGroupName(testObject);
+
   return makeResult.Ok(
     Walker.findClosest(testObject, (child: TIsolate) => {
       if (!FocusSelectors.isIsolateFocused(child)) return false;
 
-      const { fieldName } = VestTest.getData(testObject);
-
-      return child.data.match?.includes(fieldName) || child.data.matchAll;
+      return FocusSelectors.isFocusMatch(
+        child as TIsolateFocused,
+        fieldName,
+        groupName,
+      ).unwrap();
     }),
   );
 }
 
 export function useIsExcluded(testObject: TIsolateTest): boolean {
-  const { fieldName } = VestTest.getData(testObject);
-
   if (useIsExcludedIndividually()) return true;
-  const inclusion = useInclusion();
+  return useIsExcludedByFocus(testObject);
+}
+
+function useIsExcludedByFocus(testObject: TIsolateTest): boolean {
+  const { fieldName } = VestTest.getData(testObject);
+  const groupName = VestTest.getGroupName(testObject);
   const focusMatch = useClosestMatchingFocus(testObject).unwrap();
+
   // if test is skipped
   // no need to proceed
-  if (FocusSelectors.isSkipFocused(focusMatch).unwrap()) return true;
-  const isTestIncluded = FocusSelectors.isOnlyFocused(focusMatch).unwrap();
-  // if field is only'ed
-  if (isTestIncluded) return false;
-
-  // If there is _ANY_ `only`ed test (and we already know this one isn't) return true
-  if (useHasOnliedTests(testObject)) {
-    // Check if inclusion rules for this field (`include` hook)
-    return !dynamicValue(inclusion[fieldName], testObject);
+  if (FocusSelectors.isSkipFocused(focusMatch, fieldName, groupName).unwrap()) {
+    return true;
   }
 
-  // We're done here. This field is not excluded
-  return false;
+  if (FocusSelectors.isOnlyFocused(focusMatch, fieldName, groupName).unwrap()) {
+    // if field is only'ed
+    return false;
+  }
+
+  return useIsExcludedByInclusion(testObject, fieldName, groupName);
+}
+
+function useIsExcludedByInclusion(
+  testObject: TIsolateTest,
+  fieldName: string,
+  groupName?: string,
+): boolean {
+  // If there is _ANY_ `only`ed test (and we already know this one isn't) return true
+  if (!useHasOnliedTests(testObject, fieldName, groupName)) {
+    return false;
+  }
+
+  const inclusion = useInclusion();
+  // Check if inclusion rules for this field (`include` hook)
+  return !dynamicValue(inclusion[fieldName], testObject);
 }

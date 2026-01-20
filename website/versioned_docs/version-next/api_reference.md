@@ -100,11 +100,12 @@ Resets the state of a specific field (clears errors/warnings but keeps it in the
 
 - [Read more about `suite.resetField`](./writing_your_suite/vests_suite.md#resetting-a-single-field)
 
-#### `suite.focus(config)`
+#### `suite.only(targets)`
 
 Prepares a focused run.
 
-- `config`: `{ only?: string | string[], skip?: string | string[] }`
+- `targets`: `string | string[] | { fields?: string | string[]; groups?: string | string[] }`
+- Equivalent to `suite.focus({ only: targets })`.
 - [Read more about Focused Updates](./writing_your_suite/focused_updates.md)
 
 #### `suite.afterEach(callback)`

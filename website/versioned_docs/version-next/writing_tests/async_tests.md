@@ -161,13 +161,13 @@ if (result.isPending('username')) {
 }
 ```
 
-### 3. Combine with `suite.focus()`
+### 3. Combine with `suite.only()`
 
 For the best UX, only run async tests for the field the user is interacting with:
 
 ```javascript
 function handleBlur(fieldName) {
-  suite.focus({ only: fieldName }).run(formData);
+  suite.only(fieldName).run(formData);
 }
 ```
 

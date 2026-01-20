@@ -4,7 +4,7 @@ import { TIsolate, IsolateKey } from 'vestjs-runtime';
 import { TIsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
 import { TestFn } from '../core/test/TestTypes';
 import { test } from '../core/test/test';
-import { FieldExclusion, only, skip } from '../hooks/focused/focused';
+import { FieldExclusion, skip } from '../hooks/focused/focused';
 import { include } from '../hooks/include';
 import { OptionalsInput } from '../hooks/optional/OptionalTypes';
 import { optional } from '../hooks/optional/optional';
@@ -25,7 +25,6 @@ export function getTypedMethods<
     group,
     include,
     omitWhen,
-    only,
     optional,
     skip,
     skipWhen,
@@ -38,9 +37,6 @@ export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
     when: (condition: F | TDraftCondition<F, G>) => void;
   };
   omitWhen: (conditional: TDraftCondition<F, G>, callback: CB) => void;
-  only: {
-    (item: FieldExclusion<F>): void;
-  };
   optional: (optionals: OptionalsInput<F>) => void;
   skip: {
     (item: FieldExclusion<F>): void;

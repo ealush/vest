@@ -63,6 +63,25 @@ type SuiteMethods<
   TTypedMethods<F, G> &
   SuiteSelectors<F, G>;
 
+type FocusedMethods<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB,
+  S extends TSchema,
+> = {
+  afterEach: CB<FocusedMethods<F, G, T, S>, [callback: CB]>;
+  afterField: CB<
+    FocusedMethods<F, G, T, S>,
+    [fieldName: F | string, callback: CB]
+  >;
+  focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F>]>;
+  run: (
+    ...args: S extends undefined
+      ? Parameters<T>
+      : [data: Partial<InferSchemaData<S>>, ...args: any[]]
+  ) => SuiteResult<F, G>;
+};
+
 type AfterMethods<
   F extends TFieldName,
   G extends TGroupName,
@@ -74,7 +93,7 @@ type AfterMethods<
     AfterMethods<F, G, T, S>,
     [fieldName: F | string, callback: CB]
   >;
-  focus: CB<AfterMethods<F, G, T, S>, [config: SuiteModifiers<F>]>;
+  focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F>]>;
   run: (
     ...args: S extends undefined
       ? Parameters<T>

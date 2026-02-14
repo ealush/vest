@@ -18,7 +18,7 @@ describe('IsolateTransient', () => {
   it('should create an isolate with transient flag set to true', () => {
     let node: any;
     withRunTime(() => {
-      node = Isolate.create('Root', () => {
+      Isolate.create('Root', () => {
         node = IsolateTransient(() => {});
       });
     });

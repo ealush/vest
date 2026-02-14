@@ -48,14 +48,17 @@ export class IsolateSerializer {
       return '';
     }
 
-    // Strip transient nodes before serialization.
-    // Transient nodes are runtime-only and should never be persisted.
-    const cleaned = stripTransientNodes(isolate);
-
-    const minified = minifyObject(cleaned, (value: any, key: string) => {
+    const minified = minifyObject(isolate, (value: any, key: string) => {
       if (ExcludedFromDump.has(key as any)) {
         return undefined;
       }
+
+      // Drop transient nodes — returning undefined causes
+      // minifyObject to skip the entry entirely.
+      if (value?.transient) {
+        return undefined;
+      }
+
       if (replacer) {
         return replacer(value, key);
       }
@@ -123,38 +126,4 @@ function safeReviver(key: string, value: any): any {
     return;
   }
   return value;
-}
-/**
- * Recursively strips transient nodes from the isolate tree.
- * Single-pass O(n) with copy-on-write: only allocates a new
- * array if a transient node is found or a child subtree changed.
- */
-function stripTransientNodes(node: TIsolate): TIsolate {
-  if (!node.children || node.children.length === 0) {
-    return node;
-  }
-
-  let hasChanges = false;
-  const newChildren: TIsolate[] = [];
-
-  for (let i = 0; i < node.children.length; i++) {
-    const child = node.children[i];
-
-    if (child?.transient) {
-      hasChanges = true;
-      continue;
-    }
-
-    const stripped = child ? stripTransientNodes(child) : child;
-
-    if (stripped !== child) {
-      hasChanges = true;
-    }
-
-    if (stripped) {
-      newChildren.push(stripped);
-    }
-  }
-
-  return hasChanges ? ({ ...node, children: newChildren } as TIsolate) : node;
 }

@@ -19,3 +19,4 @@ export type {
   RegistryIndex,
 } from './Isolate/IsolateRegistry';
 export { IsolateReorderable } from './Isolate/IsolateReorderable';
+export { IsolateTransient } from './Isolate/IsolateTransient';

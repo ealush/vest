@@ -561,3 +561,119 @@ describe('skip(true)', () => {
     expect(result.groups.Group.F2.testCount).toBe(0);
   });
 });
+
+describe('No Focused node created for empty values', () => {
+  function createSuite(fn: CB) {
+    const suite = vest.create(fn);
+    suite.run();
+    return suite;
+  }
+
+  describe('Focused node is not created in the tree', () => {
+    it('only(false) should not add a Focused node to the tree', () => {
+      const suite = createSuite(() => {
+        vest.only(false);
+        vest.test(Fields.F1, 'F1 error', () => false);
+        vest.test(Fields.F2, 'F2 error', () => false);
+      });
+      expect(suite.dump()).not.toContain('Focused');
+    });
+
+    it('only(undefined) should not add a Focused node to the tree', () => {
+      const suite = createSuite(() => {
+        // @ts-expect-error - Testing empty only call
+        vest.only();
+        vest.test(Fields.F1, 'F1 error', () => false);
+        vest.test(Fields.F2, 'F2 error', () => false);
+      });
+      expect(suite.dump()).not.toContain('Focused');
+    });
+
+    it('only("") should not add a Focused node to the tree', () => {
+      const suite = createSuite(() => {
+        vest.only('');
+        vest.test(Fields.F1, 'F1 error', () => false);
+        vest.test(Fields.F2, 'F2 error', () => false);
+      });
+      expect(suite.dump()).not.toContain('Focused');
+    });
+
+    it('only([]) should not add a Focused node to the tree', () => {
+      const suite = createSuite(() => {
+        vest.only([]);
+        vest.test(Fields.F1, 'F1 error', () => false);
+        vest.test(Fields.F2, 'F2 error', () => false);
+      });
+      expect(suite.dump()).not.toContain('Focused');
+    });
+
+    it('skip(false) should not add a Focused node to the tree', () => {
+      const suite = createSuite(() => {
+        vest.skip(false);
+        vest.test(Fields.F1, 'F1 error', () => false);
+        vest.test(Fields.F2, 'F2 error', () => false);
+      });
+      expect(suite.dump()).not.toContain('Focused');
+    });
+
+    it('skip(undefined) should not add a Focused node to the tree', () => {
+      const suite = createSuite(() => {
+        // @ts-expect-error - Testing empty skip call
+        vest.skip();
+        vest.test(Fields.F1, 'F1 error', () => false);
+        vest.test(Fields.F2, 'F2 error', () => false);
+      });
+      expect(suite.dump()).not.toContain('Focused');
+    });
+
+    it('skip("") should not add a Focused node to the tree', () => {
+      const suite = createSuite(() => {
+        vest.skip('');
+        vest.test(Fields.F1, 'F1 error', () => false);
+        vest.test(Fields.F2, 'F2 error', () => false);
+      });
+      expect(suite.dump()).not.toContain('Focused');
+    });
+
+    it('skip([]) should not add a Focused node to the tree', () => {
+      const suite = createSuite(() => {
+        vest.skip([]);
+        vest.test(Fields.F1, 'F1 error', () => false);
+        vest.test(Fields.F2, 'F2 error', () => false);
+      });
+      expect(suite.dump()).not.toContain('Focused');
+    });
+  });
+
+  describe('Focused node IS created for non-empty values', () => {
+    it('only(fieldName) should focus and exclude other fields', () => {
+      const result = testSuite(() => {
+        vest.only(Fields.F1);
+        vest.test(Fields.F1, 'F1 error', () => false);
+        vest.test(Fields.F2, 'F2 error', () => false);
+      });
+      expect(result.tests.F1.testCount).toBe(1);
+      expect(result.tests.F2.testCount).toBe(0);
+    });
+
+    it('skip(fieldName) should skip the field', () => {
+      const result = testSuite(() => {
+        vest.skip(Fields.F1);
+        vest.test(Fields.F1, 'F1 error', () => false);
+        vest.test(Fields.F2, 'F2 error', () => false);
+      });
+      expect(result.tests.F1.testCount).toBe(0);
+      expect(result.tests.F2.testCount).toBe(1);
+    });
+
+    it('skip(true) should skip all tests', () => {
+      const result = testSuite(() => {
+        vest.skip(true);
+        vest.test(Fields.F1, 'F1 error', () => false);
+        vest.test(Fields.F2, 'F2 error', () => false);
+      });
+      expect(result.tests.F1.testCount).toBe(0);
+      expect(result.tests.F2.testCount).toBe(0);
+    });
+  });
+});

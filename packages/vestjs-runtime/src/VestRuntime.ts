@@ -210,10 +210,7 @@ export function useHistoryIsolateAtCurrentPosition() {
 /**
  * Counts non-transient children before the given cursor position.
  */
-function countNonTransientBefore(
-  siblings: TIsolate[],
-  cursor: number,
-): number {
+function countNonTransientBefore(siblings: TIsolate[], cursor: number): number {
   let count = 0;
   for (let i = 0; i < cursor; i++) {
     if (!siblings[i]?.transient) {
@@ -225,22 +222,14 @@ function countNonTransientBefore(
 
 /**
  * Finds the Nth non-transient child in a children array.
+ * This is used to align the reconciler cursor, skipping over
+ * transient nodes that should not affect the index of stateful nodes.
  */
 function findNthNonTransient(
   children: TIsolate[],
   n: number,
 ): Nullable<TIsolate> {
-  let found = 0;
-  for (const child of children) {
-    if (!child || child.transient) {
-      continue;
-    }
-    if (found === n) {
-      return child;
-    }
-    found++;
-  }
-  return null;
+  return children.filter(child => child && !child.transient)[n] ?? null;
 }
 
 /**

@@ -10,7 +10,7 @@ import {
   makeResult,
   Result,
 } from 'vest-utils';
-import { IsolateSelectors, TIsolate, Isolate } from 'vestjs-runtime';
+import { IsolateSelectors, TIsolate, IsolateTransient } from 'vestjs-runtime';
 
 import { VestIsolateType } from '../../core/isolate/VestIsolateType';
 import { TFieldName } from '../../suiteResult/SuiteResultTypes';
@@ -29,19 +29,33 @@ type IsolateFocusedPayload = {
   matchAll: boolean;
 };
 
+/**
+ * Creates a focused isolate.
+ * Focused isolates are transient because they only affect the current run
+ * and do not need to be preserved in history or appearing in the suite result.
+ */
 export function IsolateFocused(
   focusMode: FocusModes,
   match?: true | FieldExclusion<string>,
-): TIsolateFocused {
+): TIsolateFocused | undefined {
   const matchedFields = asArray(match)
     .filter(isStringValue)
+    .filter(isNotEmpty)
     .map(makeBrand<TFieldName>) as TFieldName[];
 
-  return Isolate.create(VestIsolateType.Focused, noop, {
+  const matchAll = match === true;
+
+  // If there are no fields to match and matchAll is false,
+  // skip creating the isolate entirely — it would be a no-op.
+  if (!isNotEmpty(matchedFields) && !matchAll) {
+    return undefined;
+  }
+
+  return IsolateTransient(noop, VestIsolateType.Focused, {
     focusMode,
     match: matchedFields,
-    matchAll: match === true,
-  });
+    matchAll,
+  }) as TIsolateFocused;
 }
 
 export class FocusSelectors {

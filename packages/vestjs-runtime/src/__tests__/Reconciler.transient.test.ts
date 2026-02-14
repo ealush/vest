@@ -61,158 +61,106 @@ describe('Reconciler: Transient Isolates', () => {
     return ref;
   }
 
-  describe('Adding a transient node', () => {
-    it('History [A, B] → Current [A, T, B]: B should be reconciled, not re-run', () => {
+  type NodeSpec = { type: string; key?: string; transient?: boolean };
+
+  function buildTree(specs: NodeSpec[]): CB {
+    return () =>
+      Isolate.create('Root', () => {
+        for (const spec of specs) {
+          Isolate.create(
+            spec.type,
+            () => {},
+            spec.transient ? { transient: true } : {},
+            spec.key ?? null,
+          );
+        }
+      });
+  }
+
+  const A: NodeSpec = { type: 'Test', key: 'A' };
+  const B: NodeSpec = { type: 'Test', key: 'B' };
+  const T: NodeSpec = { type: 'Skip', transient: true };
+
+  it.each([
+    {
+      label: 'Adding: History [A, B] → Current [A, T, B]',
+      history: [A, B],
+      current: [A, T, B],
+      callsA: 0,
+      callsB: 0,
+    },
+    {
+      label: 'Removing: History [A, T, B] → Current [A, B]',
+      history: [A, T, B],
+      current: [A, B],
+      callsA: 0,
+      callsB: 0,
+    },
+    {
+      label: 'Moving: History [T, A, B] → Current [A, T, B]',
+      history: [T, A, B],
+      current: [A, T, B],
+      callsA: 0,
+      callsB: 0,
+    },
+    {
+      label: 'Baseline: History [A, B] → Current [A, B]',
+      history: [A, B],
+      current: [A, B],
+      callsA: 0,
+      callsB: 0,
+    },
+    {
+      label: 'New node: History [A] → Current [A, B]',
+      history: [A],
+      current: [A, B],
+      callsA: 0,
+      callsB: 1,
+    },
+  ])(
+    '$label',
+    ({ history, current, callsA: expectedCallsA, callsB: expectedCallsB }) => {
       const cbA = vi.fn();
       const cbB = vi.fn();
 
-      // Phase 1: Build history with [A, B]
-      const historyRoot = createHistory(() =>
-        Isolate.create('Root', () => {
-          Isolate.create('Test', () => {}, {}, 'A');
-          Isolate.create('Test', () => {}, {}, 'B');
-        }),
-      );
-
-      // Phase 2: Re-run with [A, T, B] against history
-      const ref = createReconcilerRef(historyRoot);
-      withRunTime(ref, () => {
-        Isolate.create('Root', () => {
-          Isolate.create('Test', cbA, {}, 'A');
-          Isolate.create('Skip', () => {}, { transient: true });
-          Isolate.create('Test', cbB, {}, 'B');
-        });
-      });
-
-      // A and B matched their history counterparts → reconciled, callbacks NOT called
-      expect(cbA).not.toHaveBeenCalled();
-      expect(cbB).not.toHaveBeenCalled();
-    });
-
-    it('Transient callback itself DOES run (it has no history)', () => {
-      const cbTrans = vi.fn();
-
-      const historyRoot = createHistory(() =>
-        Isolate.create('Root', () => {
-          Isolate.create('Test', () => {}, {}, 'A');
-          Isolate.create('Test', () => {}, {}, 'B');
-        }),
-      );
+      const historyRoot = createHistory(buildTree(history));
 
       const ref = createReconcilerRef(historyRoot);
       withRunTime(ref, () => {
         Isolate.create('Root', () => {
-          Isolate.create('Test', () => {}, {}, 'A');
-          Isolate.create('Skip', cbTrans, { transient: true });
-          Isolate.create('Test', () => {}, {}, 'B');
+          for (const spec of current) {
+            const cb =
+              spec.key === 'A' ? cbA : spec.key === 'B' ? cbB : () => {};
+            Isolate.create(
+              spec.type,
+              cb,
+              spec.transient ? { transient: true } : {},
+              spec.key ?? null,
+            );
+          }
         });
       });
 
-      // Transient nodes always run as new
-      expect(cbTrans).toHaveBeenCalledOnce();
-    });
-  });
+      expect(cbA).toHaveBeenCalledTimes(expectedCallsA);
+      expect(cbB).toHaveBeenCalledTimes(expectedCallsB);
+    },
+  );
 
-  describe('Removing a transient node', () => {
-    it('History [A, T, B] → Current [A, B]: B should be reconciled, not re-run', () => {
-      const cbA = vi.fn();
-      const cbB = vi.fn();
+  it('Transient callback itself DOES run (it has no history)', () => {
+    const cbTrans = vi.fn();
 
-      // Phase 1: Build history with [A, T, B]
-      const historyRoot = createHistory(() =>
-        Isolate.create('Root', () => {
-          Isolate.create('Test', () => {}, {}, 'A');
-          Isolate.create('Skip', () => {}, { transient: true });
-          Isolate.create('Test', () => {}, {}, 'B');
-        }),
-      );
+    const historyRoot = createHistory(buildTree([A, B]));
 
-      // Phase 2: Re-run with [A, B] against history (transient removed)
-      const ref = createReconcilerRef(historyRoot);
-      withRunTime(ref, () => {
-        Isolate.create('Root', () => {
-          Isolate.create('Test', cbA, {}, 'A');
-          Isolate.create('Test', cbB, {}, 'B');
-        });
+    const ref = createReconcilerRef(historyRoot);
+    withRunTime(ref, () => {
+      Isolate.create('Root', () => {
+        Isolate.create('Test', () => {}, {}, 'A');
+        Isolate.create('Skip', cbTrans, { transient: true });
+        Isolate.create('Test', () => {}, {}, 'B');
       });
-
-      // A and B matched their history counterparts → reconciled, callbacks NOT called
-      expect(cbA).not.toHaveBeenCalled();
-      expect(cbB).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('Moving a transient node', () => {
-    it('History [T, A, B] → Current [A, T, B]: A and B should reconcile', () => {
-      const cbA = vi.fn();
-      const cbB = vi.fn();
-
-      const historyRoot = createHistory(() =>
-        Isolate.create('Root', () => {
-          Isolate.create('Skip', () => {}, { transient: true });
-          Isolate.create('Test', () => {}, {}, 'A');
-          Isolate.create('Test', () => {}, {}, 'B');
-        }),
-      );
-
-      const ref = createReconcilerRef(historyRoot);
-      withRunTime(ref, () => {
-        Isolate.create('Root', () => {
-          Isolate.create('Test', cbA, {}, 'A');
-          Isolate.create('Skip', () => {}, { transient: true });
-          Isolate.create('Test', cbB, {}, 'B');
-        });
-      });
-
-      expect(cbA).not.toHaveBeenCalled();
-      expect(cbB).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('No transient nodes (baseline)', () => {
-    it('History [A, B] → Current [A, B]: both should reconcile normally', () => {
-      const cbA = vi.fn();
-      const cbB = vi.fn();
-
-      const historyRoot = createHistory(() =>
-        Isolate.create('Root', () => {
-          Isolate.create('Test', () => {}, {}, 'A');
-          Isolate.create('Test', () => {}, {}, 'B');
-        }),
-      );
-
-      const ref = createReconcilerRef(historyRoot);
-      withRunTime(ref, () => {
-        Isolate.create('Root', () => {
-          Isolate.create('Test', cbA, {}, 'A');
-          Isolate.create('Test', cbB, {}, 'B');
-        });
-      });
-
-      expect(cbA).not.toHaveBeenCalled();
-      expect(cbB).not.toHaveBeenCalled();
     });
 
-    it('History [A] → Current [A, B]: A reconciles, B runs as new', () => {
-      const cbA = vi.fn();
-      const cbB = vi.fn();
-
-      const historyRoot = createHistory(() =>
-        Isolate.create('Root', () => {
-          Isolate.create('Test', () => {}, {}, 'A');
-        }),
-      );
-
-      const ref = createReconcilerRef(historyRoot);
-      withRunTime(ref, () => {
-        Isolate.create('Root', () => {
-          Isolate.create('Test', cbA, {}, 'A');
-          Isolate.create('Test', cbB, {}, 'B');
-        });
-      });
-
-      expect(cbA).not.toHaveBeenCalled();
-      expect(cbB).toHaveBeenCalledOnce(); // No history match → runs as new
-    });
+    // Transient nodes always run as new
+    expect(cbTrans).toHaveBeenCalledOnce();
   });
 });

@@ -18,3 +18,4 @@ export type {
   RegistryCategoryConfig,
   RegistryIndex,
 } from './Isolate/IsolateRegistry';
+export { IsolateReorderable } from './Isolate/IsolateReorderable';

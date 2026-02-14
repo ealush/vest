@@ -3,7 +3,7 @@ import { assign, CB, isFunction, withResolvers } from 'vest-utils';
 import { useEmit } from '../core/VestBus/VestBus';
 
 import { SuiteContext } from '../core/context/SuiteContext';
-import { IsolateReorderable } from '../core/isolate/IsolateReorderable/IsolateReorderable';
+import { IsolateReorderable } from 'vestjs-runtime';
 import { IsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { test } from '../core/test/test';
 import { only } from '../hooks/focused/focused';
@@ -64,7 +64,13 @@ export function useCreateSuiteRunner<
             only(modifiers.only);
             (suiteCallback as any)(...(args as Parameters<T>));
 
-            IsolateReorderable(runSchemaValidation(schema, modifiers, args[0]));
+            IsolateReorderable(
+              runSchemaValidation(schema, modifiers, args[0]),
+              undefined,
+              {
+                tests: [],
+              },
+            );
             useEmit('SUITE_CALLBACK_RUN_FINISHED');
             return useCreateSuiteResult<F, G, S>(schema, args[0]);
           }, resolver);

@@ -25,6 +25,7 @@ describe('AsyncIsolate', () => {
         "output": Promise {},
         "parent": null,
         "status": "PENDING",
+        "transient": undefined,
       }
     `);
     await wait(10);

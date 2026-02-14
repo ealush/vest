@@ -132,6 +132,7 @@ class IsolateInstance implements TIsolate {
   output: any = null;
   key: IsolateKey = null;
   [IsolateKeys.AllowReorder]: Maybe<boolean> = undefined;
+  [IsolateKeys.Transient]: Maybe<boolean> = undefined;
   [IsolateKeys.Status]: IsolateStatus = IsolateStatus.INITIAL;
   [IsolateKeys.AbortController]: Nullable<AbortController> = null;
   [IsolateKeys.Data]: Maybe<any>;
@@ -143,8 +144,9 @@ class IsolateInstance implements TIsolate {
   ) {
     this[IsolateKeys.Type] = type;
     this.key = key;
-    const { allowReorder, status, ...data } = payload ?? {};
+    const { allowReorder, transient, status, ...data } = payload ?? {};
     this[IsolateKeys.AllowReorder] = allowReorder;
+    this[IsolateKeys.Transient] = transient;
     if (status) {
       this[IsolateKeys.Status] = status;
     }

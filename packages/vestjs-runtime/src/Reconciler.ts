@@ -44,6 +44,14 @@ export class Reconciler {
    * @returns The next isolate after reconciliation.
    */
   static reconcile(node: TIsolate): TIsolate {
+    // If the node is transient, it should not be reconciled with history
+    // and should not consume the history cursor.
+    // This allows us to insert/remove transient nodes without affecting
+    // the stable identity of their siblings.
+    if (node.transient) {
+      return node;
+    }
+
     const localHistoryNode = VestRuntime.useHistoryIsolateAtCurrentPosition();
 
     const nextNodeResult = pickNextNode(node, localHistoryNode);

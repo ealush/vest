@@ -189,18 +189,47 @@ export function useHistoryIsolate() {
  */
 export function useHistoryIsolateAtCurrentPosition() {
   const parent = useIsolate();
-
-  // This is most likely the historic counterpart of the parent node
-
   const historyNode = useHistoryIsolate();
 
-  if (parent) {
-    // If we have a parent, we need to get the history node from the parent's children
-    // We take the history node from the cursor of the active node's children
-    return IsolateInspector.at(historyNode, IsolateInspector.cursor(parent));
+  if (!parent) {
+    return historyNode;
   }
 
-  return historyNode;
+  if (isNullish(historyNode)) {
+    return null;
+  }
+
+  const nonTransientIndex = countNonTransientBefore(
+    parent.children || [],
+    IsolateInspector.cursor(parent),
+  );
+
+  return findNthNonTransient(historyNode.children || [], nonTransientIndex);
+}
+
+/**
+ * Counts non-transient children before the given cursor position.
+ */
+function countNonTransientBefore(siblings: TIsolate[], cursor: number): number {
+  let count = 0;
+  for (let i = 0; i < cursor; i++) {
+    if (!siblings[i]?.transient) {
+      count++;
+    }
+  }
+  return count;
+}
+
+/**
+ * Finds the Nth non-transient child in a children array.
+ * This is used to align the reconciler cursor, skipping over
+ * transient nodes that should not affect the index of stateful nodes.
+ */
+function findNthNonTransient(
+  children: TIsolate[],
+  n: number,
+): Nullable<TIsolate> {
+  return children.filter(child => child && !child.transient)[n] ?? null;
 }
 
 /**

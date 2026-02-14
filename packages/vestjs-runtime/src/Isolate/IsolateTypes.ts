@@ -7,6 +7,7 @@ export type IsolateKey = Nullable<string>;
 
 export type TIsolate<P extends IsolatePayload = IsolatePayload> = {
   [IsolateKeys.AllowReorder]?: boolean;
+  [IsolateKeys.Transient]?: boolean;
   [IsolateKeys.Parent]: Nullable<TIsolate>;
   [IsolateKeys.Type]: string;
   [IsolateKeys.Keys]: Nullable<Record<string, TIsolate>>;
@@ -27,5 +28,6 @@ type UsedFeaturesOnly<P extends IsolatePayload> = Pick<
 export type IsolatePayload<P = Record<string, any>> = P & IsolateFeatures;
 export type IsolateFeatures = {
   [IsolateKeys.AllowReorder]?: boolean;
+  [IsolateKeys.Transient]?: boolean;
   [IsolateKeys.Status]?: IsolateStatus;
 };

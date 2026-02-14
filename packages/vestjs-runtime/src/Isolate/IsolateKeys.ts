@@ -5,6 +5,7 @@ export enum IsolateKeys {
   Parent = 'parent',
   Data = 'data',
   AllowReorder = 'allowReorder',
+  Transient = 'transient',
   Status = 'status',
   AbortController = 'abortController',
   Children = 'children',

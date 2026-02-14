@@ -23,22 +23,6 @@ IsolateInstance {
     "abortController": null,
     "allowReorder": undefined,
     "children": [
-      IsolateInstance {
-        "$type": "Focused",
-        "abortController": null,
-        "allowReorder": undefined,
-        "children": null,
-        "data": {
-          "focusMode": 0,
-          "match": [],
-          "matchAll": false,
-        },
-        "key": null,
-        "keys": null,
-        "output": undefined,
-        "parent": [Circular],
-        "status": "DONE",
-      },
       [Circular],
       IsolateInstance {
         "$type": "Reorderable",
@@ -53,6 +37,7 @@ IsolateInstance {
         "output": undefined,
         "parent": [Circular],
         "status": "DONE",
+        "transient": undefined,
       },
     ],
     "data": {
@@ -129,8 +114,10 @@ IsolateInstance {
     },
     "parent": null,
     "status": "DONE",
+    "transient": undefined,
   },
   "status": "DONE",
+  "transient": undefined,
 }
 `;
 
@@ -154,22 +141,6 @@ IsolateInstance {
     "abortController": null,
     "allowReorder": undefined,
     "children": [
-      IsolateInstance {
-        "$type": "Focused",
-        "abortController": null,
-        "allowReorder": undefined,
-        "children": null,
-        "data": {
-          "focusMode": 0,
-          "match": [],
-          "matchAll": false,
-        },
-        "key": null,
-        "keys": null,
-        "output": undefined,
-        "parent": [Circular],
-        "status": "DONE",
-      },
       [Circular],
       IsolateInstance {
         "$type": "Reorderable",
@@ -184,6 +155,7 @@ IsolateInstance {
         "output": undefined,
         "parent": [Circular],
         "status": "DONE",
+        "transient": undefined,
       },
     ],
     "data": {
@@ -262,8 +234,10 @@ IsolateInstance {
     },
     "parent": null,
     "status": "DONE",
+    "transient": undefined,
   },
   "status": "DONE",
+  "transient": undefined,
 }
 `;
 
@@ -287,22 +261,6 @@ IsolateInstance {
     "abortController": null,
     "allowReorder": undefined,
     "children": [
-      IsolateInstance {
-        "$type": "Focused",
-        "abortController": null,
-        "allowReorder": undefined,
-        "children": null,
-        "data": {
-          "focusMode": 0,
-          "match": [],
-          "matchAll": false,
-        },
-        "key": null,
-        "keys": null,
-        "output": undefined,
-        "parent": [Circular],
-        "status": "DONE",
-      },
       [Circular],
       IsolateInstance {
         "$type": "Reorderable",
@@ -317,6 +275,7 @@ IsolateInstance {
         "output": undefined,
         "parent": [Circular],
         "status": "DONE",
+        "transient": undefined,
       },
     ],
     "data": {
@@ -393,7 +352,9 @@ IsolateInstance {
     },
     "parent": null,
     "status": "DONE",
+    "transient": undefined,
   },
   "status": "DONE",
+  "transient": undefined,
 }
 `;

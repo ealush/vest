@@ -52,6 +52,15 @@ export class IsolateSerializer {
       if (ExcludedFromDump.has(key as any)) {
         return undefined;
       }
+
+      // Drop transient nodes — returning undefined causes
+      // minifyObject to skip the entry entirely.
+      // Transient nodes are not part of the persistent state
+      // and should not be serialized.
+      if (value?.transient) {
+        return undefined;
+      }
+
       if (replacer) {
         return replacer(value, key);
       }

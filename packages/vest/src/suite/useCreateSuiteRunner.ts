@@ -6,7 +6,7 @@ import { SuiteContext } from '../core/context/SuiteContext';
 import { IsolateReorderable } from 'vestjs-runtime';
 import { IsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { test } from '../core/test/test';
-import { only } from '../hooks/focused/focused';
+import { only, skip } from '../hooks/focused/focused';
 import {
   SuiteResult,
   TFieldName,
@@ -50,6 +50,7 @@ export function useCreateSuiteRunner<
         {
           suiteParams: args as Parameters<T>,
           schema,
+          modifiers,
         },
         () => {
           useEmit('SUITE_RUN_STARTED');
@@ -61,7 +62,14 @@ export function useCreateSuiteRunner<
           }
 
           const output = IsolateSuite(() => {
+            // Apply field-level focus modifiers. These create transient Focused
+            // isolates at the suite root that affect all tests in the suite.
+            // `only` restricts the run to matching fields; `skip` excludes them.
+            // `skipGroup` is handled separately inside `group()` — when a group
+            // with a matching name is entered, it injects `skip(true)` into
+            // the group's callback via the modifiers stored in SuiteContext.
             only(modifiers.only);
+            skip(modifiers.skip);
             (suiteCallback as any)(...(args as Parameters<T>));
 
             IsolateReorderable(

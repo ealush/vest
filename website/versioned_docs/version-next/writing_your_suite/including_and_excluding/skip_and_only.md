@@ -93,12 +93,26 @@ suite.focus({ only: 'username' }).run(formData);
 // Focus on multiple fields
 suite.focus({ only: ['username', 'email'] }).run(formData);
 
+// Skip specific fields
+suite.focus({ skip: 'password' }).run(formData);
+
+// Skip entire groups
+suite.focus({ skipGroup: 'signUp' }).run(formData);
+
 // Chain with afterEach for callbacks
 suite
   .focus({ only: 'email' })
   .afterEach(() => updateUI(suite.get()))
   .run(formData);
 ```
+
+### `suite.focus()` Modifiers
+
+| Modifier    | Type                 | Description                                               |
+| ----------- | -------------------- | --------------------------------------------------------- |
+| `only`      | `string \| string[]` | Run only the specified field(s). All others are excluded. |
+| `skip`      | `string \| string[]` | Skip the specified field(s). All others run as usual.     |
+| `skipGroup` | `string \| string[]` | Skip all tests inside the named group(s).                 |
 
 ### Why Use `suite.focus()` Over `only()`?
 

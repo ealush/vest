@@ -1,8 +1,8 @@
 ---
 sidebar_position: 4
 title: Focused Updates
-description: Run validation only for specific fields using suite.focus()
-keywords: [Vest, Focus, Only, Validation]
+description: Run validation only for specific fields or skip groups using suite.focus()
+keywords: [Vest, Focus, Only, Skip, SkipGroup, Validation]
 ---
 
 # Focused Updates
@@ -19,6 +19,7 @@ In a large form, re-validating the entire suite on every keystroke can be ineffi
 
 - **Validate on Blur**: Run checks only for the field the user just left.
 - **Skip Expensive Tests**: Temporarily bypass heavy async validations when they aren't needed.
+- **Skip Entire Groups**: Bypass whole sections of validation (e.g., skip "sign-up" validations when signing in).
 - **Improve Performance**: Run only what's necessary.
 - **Better UX**: Avoid showing errors for untouched fields.
 
@@ -31,6 +32,67 @@ Use `focus({ only: ... })` to restrict the run to specific fields.
 import FocusedUpdatesSandpack from '@site/src/components/Sandpack/FocusedUpdates';
 
 <FocusedUpdatesSandpack />
+
+### Skipping Specific Fields
+
+Use `focus({ skip: ... })` to exclude specific fields from the run while running everything else.
+
+```javascript
+// Skip the 'promoCode' field during this run
+suite.focus({ skip: 'promoCode' }).run(formData);
+
+// Skip multiple fields
+suite.focus({ skip: ['promoCode', 'referralCode'] }).run(formData);
+```
+
+### Skipping Entire Groups
+
+Use `focus({ skipGroup: ... })` to skip all tests inside a named group. Tests outside the group run normally.
+
+```javascript
+import { create, test, group, enforce } from 'vest';
+
+const suite = create(data => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  group('signIn', () => {
+    test('password', 'Password is required', () => {
+      enforce(data.password).isNotBlank();
+    });
+  });
+
+  group('signUp', () => {
+    test('email', 'Email is required', () => {
+      enforce(data.email).isEmail();
+    });
+    test('tos', 'You must accept the terms', () => {
+      enforce(data.tos).equals(true);
+    });
+  });
+});
+
+// When signing in, skip the signUp group entirely
+suite.focus({ skipGroup: 'signUp' }).run(formData);
+
+// When signing up, skip the signIn group entirely
+suite.focus({ skipGroup: 'signIn' }).run(formData);
+
+// Skip multiple groups at once
+suite.focus({ skipGroup: ['signIn', 'signUp'] }).run(formData);
+```
+
+`skipGroup` works by injecting a `skip(true)` call at the beginning of each matching group's callback. Since `skip(true)` creates a transient isolate, it adds zero overhead to the stored suite state between runs.
+
+### Combining Modifiers
+
+You can combine `only`, `skip`, and `skipGroup` in a single `focus()` call:
+
+```javascript
+// Only validate 'username', and also skip the 'signUp' group
+suite.focus({ only: 'username', skipGroup: 'signUp' }).run(formData);
+```
 
 ## Fluent Chain API
 
@@ -69,6 +131,36 @@ function handleBlur(fieldName, formData) {
   onBlur={() => handleBlur('email', formData)}
   onChange={handleChange}
 />;
+```
+
+### Multi-Step Form with Group Skipping
+
+```javascript
+const suite = create(data => {
+  group('step1', () => {
+    test('name', 'Name is required', () => {
+      enforce(data.name).isNotBlank();
+    });
+  });
+
+  group('step2', () => {
+    test('address', 'Address is required', () => {
+      enforce(data.address).isNotBlank();
+    });
+  });
+
+  group('step3', () => {
+    test('payment', 'Payment method is required', () => {
+      enforce(data.payment).isNotBlank();
+    });
+  });
+});
+
+// Validate only step 2 by skipping the other steps
+suite
+  .focus({ skipGroup: ['step1', 'step3'] })
+  .afterEach(() => setResult(suite.get()))
+  .run(formData);
 ```
 
 ### Validating All Fields Without Focus
@@ -128,6 +220,14 @@ function useFormValidation(initialData) {
 }
 ```
 
+## Focus Modifiers Reference
+
+| Modifier    | Type                 | Description                                               |
+| ----------- | -------------------- | --------------------------------------------------------- |
+| `only`      | `string \| string[]` | Run only the specified field(s). All others are excluded. |
+| `skip`      | `string \| string[]` | Skip the specified field(s). All others run as usual.     |
+| `skipGroup` | `string \| string[]` | Skip all tests inside the named group(s).                 |
+
 ## Comparison: `suite.focus()` vs `only()`/`skip()`
 
 | Feature                    | `only()`/`skip()`              | `suite.focus()`                        |
@@ -135,6 +235,7 @@ function useFormValidation(initialData) {
 | **Location**               | Inside suite callback          | Outside, at call site                  |
 | **Flexibility**            | Requires conditional logic     | Fully dynamic                          |
 | **Separation of Concerns** | Mixed with validation          | Decoupled from validation              |
+| **Group Skipping**         | `skip(true)` inside group      | `skipGroup` modifier                   |
 | **Chainable**              | No                             | Yes (`afterEach`, `afterField`, `run`) |
 | **Best For**               | Static, logic-based exclusions | UI-driven field focus                  |
 
@@ -144,6 +245,7 @@ function useFormValidation(initialData) {
 
 - Validating on blur or focus events
 - The decision of what to validate comes from UI interactions
+- You want to skip entire groups from outside the suite
 - You want to chain callbacks
 
 **Use `only()`/`skip()`** when:
@@ -159,6 +261,7 @@ function useFormValidation(initialData) {
 - **Non-persistent**: Focused runs do not persist between calls. Each `focus` call applies only to the immediately following `run()`.
 - **Schema Validation**: When focusing specific fields, schema validation is skipped for fields outside the focus scope, allowing targeted validation even if the full payload is invalid.
 - **State Preservation**: Previous validation results for non-focused fields are preserved.
+- **skipGroup is transient**: The `skip(true)` isolate injected by `skipGroup` is transient — it is not stored in the suite state tree and adds zero overhead between runs.
   :::
 
 ## TypeScript Support
@@ -182,9 +285,13 @@ const suite = create((data: FormData) => {
 // TypeScript will autocomplete field names
 suite.focus({ only: 'username' }).run(formData); // ✅
 suite.focus({ only: 'nonexistent' }).run(formData); // ❌ Type error
+suite.focus({ skip: 'email' }).run(formData); // ✅
+suite.focus({ skipGroup: 'myGroup' }).run(formData); // ✅
+suite.focus({ skipGroup: ['groupA', 'groupB'] }).run(formData); // ✅
 ```
 
 ## Related
 
 - [Including and Excluding Fields](./including_and_excluding/skip_and_only) - Using `only()` and `skip()` inside suites
 - [Include](./including_and_excluding/include) - Link related fields to run together
+- [Test Groups](../writing_tests/advanced_test_features/grouping_tests) - Grouping tests together

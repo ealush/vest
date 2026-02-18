@@ -126,6 +126,8 @@ suite
 
 > **Recommendation**: Use `suite.focus()` for runtime decisions (e.g., validating on blur), and `only()`/`skip()` for static, logic-based exclusions inside your suite.
 
+When choosing between modifiers in `suite.focus()`, prefer `skipGroup` when your intent is to disable a named validation section (for example `signUp`), and prefer `skip` when your intent is to exclude a specific field everywhere it appears.
+
 For more details, see [Focused Updates](../focused_updates).
 
 ## Skipping fields

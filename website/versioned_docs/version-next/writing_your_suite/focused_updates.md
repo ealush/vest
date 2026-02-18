@@ -49,6 +49,21 @@ suite.focus({ skip: ['promoCode', 'referralCode'] }).run(formData);
 
 Use `focus({ skipGroup: ... })` to skip all tests inside a named group. Tests outside the group run normally.
 
+### `skip` vs `skipGroup`
+
+Both modifiers exclude tests, but they target different scopes:
+
+- `skip`: skips by **field name**, no matter where that field is declared.
+- `skipGroup`: skips by **group name**, regardless of field names inside that group.
+
+```javascript
+// Skip every `email` test across the suite (top-level and inside groups)
+suite.focus({ skip: 'email' }).run(formData);
+
+// Skip only tests declared inside group('signUp', ...)
+suite.focus({ skipGroup: 'signUp' }).run(formData);
+```
+
 ```javascript
 import { create, test, group, enforce } from 'vest';
 
@@ -295,3 +310,4 @@ suite.focus({ skipGroup: ['groupA', 'groupB'] }).run(formData); // ✅
 - [Including and Excluding Fields](./including_and_excluding/skip_and_only) - Using `only()` and `skip()` inside suites
 - [Include](./including_and_excluding/include) - Link related fields to run together
 - [Test Groups](../writing_tests/advanced_test_features/grouping_tests) - Grouping tests together
+- [focus({ skip / skipGroup }) Patterns](../recipes/focus_skipgroup_recipes) - Practical recipes for choosing and combining focus modifiers

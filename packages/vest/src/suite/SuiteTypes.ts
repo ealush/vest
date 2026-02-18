@@ -112,6 +112,10 @@ type AfterMethods<
  *   matched groups are unaffected. Internally, a `skip(true)` call is injected
  *   at the start of the matching group's callback, producing a transient
  *   Focused isolate that adds zero overhead to stored state.
+ *
+ * Modifiers are composable. For example, `{ skip: 'email', skipGroup: 'signUp' }`
+ * skips the `email` field everywhere while also skipping every test that runs
+ * inside `group('signUp', ...)`.
  */
 export type SuiteModifiers<F extends TFieldName> = {
   only?: FieldExclusion<F> | FieldExclusion<string>;

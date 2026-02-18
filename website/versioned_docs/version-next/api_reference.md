@@ -104,7 +104,7 @@ Resets the state of a specific field (clears errors/warnings but keeps it in the
 
 Prepares a focused run.
 
-- `config`: `{ only?: string | string[], skip?: string | string[] }`
+- `config`: `{ only?: string | string[], skip?: string | string[], skipGroup?: string | string[] }`
 - [Read more about Focused Updates](./writing_your_suite/focused_updates.md)
 
 #### `suite.afterEach(callback)`

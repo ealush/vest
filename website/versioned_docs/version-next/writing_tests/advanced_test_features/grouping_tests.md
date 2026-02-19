@@ -81,7 +81,50 @@ create(data => {
 
 ## Use cases
 
-### 1. Multi-stage form
+### 1. Skipping groups with `suite.focus()`
+
+The simplest way to skip groups is using `suite.focus({ skipGroup })` from outside the suite. This keeps your suite definition clean and moves the skip logic to the call site:
+
+```js
+import { create, test, group, enforce } from 'vest';
+
+const suite = create(data => {
+  group('overview_tab', () => {
+    test('productTitle', 'Must be at least 5 chars.', () => {
+      enforce(data.productTitle).longerThanOrEquals(5);
+    });
+    test('productDescription', "Can't be longer than 2500 chars.", () => {
+      enforce(data.productDescription).shorterThanOrEquals(2500);
+    });
+  });
+
+  group('pricing_tab', () => {
+    test('price', '5$ or more.', () => {
+      enforce(data.price).gte(5);
+    });
+    test('productExtras', "Can't be empty.", () => {
+      enforce(data.extras).isNotEmpty();
+    });
+  });
+});
+```
+
+```js
+// Only validate the overview tab - skip pricing
+suite.focus({ skipGroup: 'pricing_tab' }).run(data);
+
+// Only validate the pricing tab - skip overview
+suite.focus({ skipGroup: 'overview_tab' }).run(data);
+
+// Validate everything on submit (no focus)
+suite.run(data);
+```
+
+`skipGroup` internally injects a `skip(true)` call at the start of each matching group's callback. Because it creates a transient isolate, it adds zero overhead to the suite state.
+
+For more details, see [Focused Updates](../../writing_your_suite/focused_updates).
+
+### 2. Multi-stage form with `skip()` inside the suite
 
 You may have in your application a multi-screen form in which you want to validate each screen individually but submit it all at once.
 
@@ -129,7 +172,7 @@ suite.run(data, 'overview_tab'); // will only validate 'overview_tab' group
 suite.run(data, 'pricing_tab'); // will only validate 'pricing_tab' group
 ```
 
-### 2. Skipping only some of the tests of a given field
+### 3. Skipping only some of the tests of a given field
 
 If we want to conditionally skip a portion of our suite, we can use `skip()` within a group.
 

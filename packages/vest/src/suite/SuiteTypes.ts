@@ -101,6 +101,22 @@ type AfterMethods<
   ) => SuiteResult<F, G>;
 };
 
+/**
+ * Modifiers that control which fields and groups are included or excluded
+ * during a focused suite run. These are passed via `suite.focus(modifiers)`.
+ *
+ * - `only` — Run only the specified field(s). All others are excluded unless
+ *   explicitly included via `include()`.
+ * - `skip` — Skip the specified field(s). All others run as usual.
+ * - `skipGroup` — Skip all tests inside the named group(s). Tests outside the
+ *   matched groups are unaffected.
+ */
 export type SuiteModifiers<F extends TFieldName> = {
   only?: FieldExclusion<F> | FieldExclusion<string>;
+  skip?: FieldExclusion<F> | FieldExclusion<string>;
+  skipGroup?: string | string[];
+  /**
+   * @internal
+   */
+  skipGroupSet?: Set<string>;
 };

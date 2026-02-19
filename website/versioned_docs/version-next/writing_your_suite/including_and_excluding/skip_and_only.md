@@ -93,12 +93,26 @@ suite.focus({ only: 'username' }).run(formData);
 // Focus on multiple fields
 suite.focus({ only: ['username', 'email'] }).run(formData);
 
+// Skip specific fields
+suite.focus({ skip: 'password' }).run(formData);
+
+// Skip entire groups
+suite.focus({ skipGroup: 'signUp' }).run(formData);
+
 // Chain with afterEach for callbacks
 suite
   .focus({ only: 'email' })
   .afterEach(() => updateUI(suite.get()))
   .run(formData);
 ```
+
+### `suite.focus()` Modifiers
+
+| Modifier    | Type                 | Description                                               |
+| ----------- | -------------------- | --------------------------------------------------------- |
+| `only`      | `string \| string[]` | Run only the specified field(s). All others are excluded. |
+| `skip`      | `string \| string[]` | Skip the specified field(s). All others run as usual.     |
+| `skipGroup` | `string \| string[]` | Skip all tests inside the named group(s).                 |
 
 ### Why Use `suite.focus()` Over `only()`?
 
@@ -111,6 +125,8 @@ suite
 | **Best For**               | Static exclusions           | UI-driven field focus      |
 
 > **Recommendation**: Use `suite.focus()` for runtime decisions (e.g., validating on blur), and `only()`/`skip()` for static, logic-based exclusions inside your suite.
+
+When choosing between modifiers in `suite.focus()`, prefer `skipGroup` when your intent is to disable a named validation section (for example `signUp`), and prefer `skip` when your intent is to exclude a specific field everywhere it appears.
 
 For more details, see [Focused Updates](../focused_updates).
 

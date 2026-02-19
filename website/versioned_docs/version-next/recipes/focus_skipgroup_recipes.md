@@ -58,6 +58,14 @@ suite.focus({ skip: 'password', skipGroup: 'billing' }).run(formData);
 
 This skips all `password` tests globally and all tests in `billing` group.
 
+## Pattern 6: Validating a Group's Fields only (`onlyGroup`)
+
+```js
+// Validate ONLY the 'step1' group.
+// All other groups AND top-level tests are skipped.
+suite.focus({ onlyGroup: 'step1' }).run(formData);
+```
+
 ## See also
 
 - [Focused Updates](../writing_your_suite/focused_updates)

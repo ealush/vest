@@ -489,3 +489,111 @@ describe('suite.focus: skipGroup', () => {
     });
   });
 });
+
+describe('suite.focus: onlyGroup', () => {
+  describe('single group & top level tests', () => {
+    it('should run only tests in the specified group, skipping other groups and top-level tests', () => {
+      const cb1 = vi.fn(() => false);
+      const cb2 = vi.fn(() => false);
+      const cb3 = vi.fn(() => false);
+      const suite = vest.create(() => {
+        vest.mode(vest.Modes.ALL);
+
+        vest.group('groupA', () => vest.test('field_1', cb1));
+        vest.group('groupB', () => vest.test('field_2', cb2));
+        vest.test('field_3', cb3); // Top level test
+      });
+
+      const res = suite.focus({ onlyGroup: 'groupA' }).run();
+
+      expect(res.groups.groupA.field_1.testCount).toBe(1);
+      expect((res.groups.groupB as any)?.field_2?.testCount ?? 0).toBe(0);
+      expect(res.tests.field_3?.testCount ?? 0).toBe(0); // Top level test must skip
+
+      expect(cb1).toHaveBeenCalledTimes(1);
+      expect(cb2).not.toHaveBeenCalled();
+      expect(cb3).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('multiple groups', () => {
+    it('should run tests in all specified groups when passed as array', () => {
+      const cb1 = vi.fn(() => false);
+      const cb2 = vi.fn(() => false);
+      const cb3 = vi.fn(() => false);
+      const suite = vest.create(() => {
+        vest.mode(vest.Modes.ALL);
+        vest.group('groupA', () => vest.test('field_1', cb1));
+        vest.group('groupB', () => vest.test('field_2', cb2));
+        vest.group('groupC', () => vest.test('field_3', cb3));
+      });
+
+      const res = suite.focus({ onlyGroup: ['groupA', 'groupC'] }).run();
+
+      expect(res.groups.groupA.field_1.testCount).toBe(1);
+      expect(res.groups.groupC.field_3.testCount).toBe(1);
+      expect((res.groups.groupB as any)?.field_2?.testCount ?? 0).toBe(0);
+
+      expect(cb1).toHaveBeenCalledTimes(1);
+      expect(cb2).not.toHaveBeenCalled();
+      expect(cb3).toHaveBeenCalledTimes(1);
+    });
+  });
+});
+
+describe('Four-Way Scope Precedence: only, skip, onlyGroup, skipGroup', () => {
+  it('should enforce that skip constraints (skip, skipGroup) strictly override include constraints (only, onlyGroup)', () => {
+    const cbA1 = vi.fn(() => false);
+    const cbA2 = vi.fn(() => false);
+    const cbB1 = vi.fn(() => false);
+    const cbC1 = vi.fn(() => false);
+    const cbTop = vi.fn(() => false);
+
+    const suite = vest.create(() => {
+      vest.mode(vest.Modes.ALL);
+
+      // G_A is onlyGroup'd but also skipGroup'd -> skip overrides only
+      vest.group('groupA', () => {
+        vest.test('field_1', cbA1);
+        vest.test('field_2', cbA2);
+      });
+
+      // G_B is onlyGroup'd. field_1 is only'd, field_2 is skip'd
+      vest.group('groupB', () => {
+        vest.test('field_1', cbB1);
+        vest.test('field_2', cbB1);
+      });
+
+      // G_C is not in onlyGroup -> should skip entirely
+      vest.group('groupC', () => vest.test('field_1', cbC1));
+
+      // Top level tests -> should skip because onlyGroup is active
+      vest.test('field_1', cbTop);
+    });
+
+    const res = suite
+      .focus({
+        onlyGroup: ['groupA', 'groupB'],
+        skipGroup: 'groupA',
+        only: 'field_1',
+        skip: 'field_2',
+      })
+      .run();
+
+    // groupA skipped entirely due to skipGroup > onlyGroup
+    expect(cbA1).not.toHaveBeenCalled();
+    expect(cbA2).not.toHaveBeenCalled();
+
+    // groupC skipped due to not being in onlyGroup
+    expect(cbC1).not.toHaveBeenCalled();
+
+    // top-level skipped due to onlyGroup
+    expect(cbTop).not.toHaveBeenCalled();
+
+    // groupB evaluation:
+    // field_1 runs (onlyGroup matches, only matches)
+    expect(res.groups.groupB.field_1.testCount).toBe(1);
+    // field_2 skips (onlyGroup matches, but skip > only)
+    expect((res.groups.groupB as any)?.field_2?.testCount ?? 0).toBe(0);
+  });
+});

@@ -50,6 +50,7 @@ function createSuite<
         suiteCallbackResult as any,
         {
           only: undefined,
+          onlyGroup: undefined,
           skip: undefined,
           skipGroup: undefined,
         },

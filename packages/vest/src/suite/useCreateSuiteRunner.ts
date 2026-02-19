@@ -44,53 +44,84 @@ export function useCreateSuiteRunner<
       : [data: InferSchemaData<S>, ...args: any[]]
   ): SuiteResult<F, G, S> {
     const { resolve, promise } = withResolvers<SuiteResult<F, G, S>>();
+
     return assign(
       promise,
       SuiteContext.run(
         {
           suiteParams: args as Parameters<T>,
           schema,
-          modifiers: {
-            ...modifiers,
-            skipGroupSet: modifiers.skipGroup
-              ? new Set(asArray(modifiers.skipGroup))
-              : undefined,
-          },
+          modifiers: useEnhancedModifiers(modifiers),
         },
         () => {
           useEmit('SUITE_RUN_STARTED');
 
-          function resolver() {
+          const useResolver = () => {
             const result = useCreateSuiteResult<F, G, S>(schema, args[0]);
             resolve(result);
             return result;
-          }
+          };
 
-          const output = IsolateSuite(() => {
-            // Apply field-level focus modifiers. These create transient Focused
-            // isolates at the suite root that affect all tests in the suite.
-            // `only` restricts the run to matching fields; `skip` excludes them.
-            // `skipGroup` is handled separately inside `group()` — when a group
-            // with a matching name is entered, it injects `skip(true)` into
-            // the group's callback via the modifiers stored in SuiteContext.
-            only(modifiers.only);
-            skip(modifiers.skip);
-            (suiteCallback as any)(...(args as Parameters<T>));
-
-            IsolateReorderable(
-              runSchemaValidation(schema, modifiers, args[0]),
-              undefined,
-              {
-                tests: [],
-              },
-            );
-            useEmit('SUITE_CALLBACK_RUN_FINISHED');
-            return useCreateSuiteResult<F, G, S>(schema, args[0]);
-          }, resolver);
-          return output;
+          return IsolateSuite(
+            useRunSuiteCallback<F, G, T, S>(
+              suiteCallback,
+              modifiers,
+              args,
+              schema,
+            ),
+            useResolver,
+          );
         },
       ).output,
     );
+  };
+}
+
+function useEnhancedModifiers<F extends TFieldName>(
+  modifiers: SuiteModifiers<F>,
+): SuiteModifiers<F> {
+  return {
+    ...modifiers,
+    onlyGroupSet: modifiers.onlyGroup
+      ? new Set(asArray(modifiers.onlyGroup))
+      : undefined,
+    skipGroupSet: modifiers.skipGroup
+      ? new Set(asArray(modifiers.skipGroup))
+      : undefined,
+  };
+}
+
+function useRunSuiteCallback<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB = CB,
+  S extends TSchema = undefined,
+>(
+  suiteCallback: SuiteCallbackWithSchema<S, T>,
+  modifiers: SuiteModifiers<F>,
+  args: any[],
+  schema?: S,
+) {
+  return () => {
+    // Apply field-level focus modifiers. These create transient Focused
+    // isolates at the suite root that affect all tests in the suite.
+    // `only` restricts the run to matching fields; `skip` excludes them.
+    // `skipGroup` is handled separately inside `group()` — when a group
+    // with a matching name is entered, it injects `skip(true)` into
+    // the group's callback via the modifiers stored in SuiteContext.
+    only(modifiers.only);
+    skip(modifiers.skip);
+    (suiteCallback as any)(...(args as Parameters<T>));
+
+    IsolateReorderable(
+      runSchemaValidation(schema, modifiers, args[0]),
+      undefined,
+      {
+        tests: [],
+      },
+    );
+    useEmit('SUITE_CALLBACK_RUN_FINISHED');
+    return useCreateSuiteResult<F, G, S>(schema, args[0]);
   };
 }
 

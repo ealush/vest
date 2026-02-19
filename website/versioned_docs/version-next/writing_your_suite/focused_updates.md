@@ -49,6 +49,10 @@ suite.focus({ skip: ['promoCode', 'referralCode'] }).run(formData);
 
 Use `focus({ skipGroup: ... })` to skip all tests inside a named group. Tests outside the group run normally.
 
+### Running Only Entire Groups
+
+Use `focus({ onlyGroup: ... })` to run _only_ tests inside a named group. Tests outside the group (including top-level tests) are skipped.
+
 ### `skip` vs `skipGroup`
 
 Both modifiers exclude tests, but they target different scopes:
@@ -107,7 +111,20 @@ You can combine `only`, `skip`, and `skipGroup` in a single `focus()` call:
 ```javascript
 // Only validate 'username', and also skip the 'signUp' group
 suite.focus({ only: 'username', skipGroup: 'signUp' }).run(formData);
+// Only validate 'username', and also skip the 'signUp' group
+suite.focus({ only: 'username', skipGroup: 'signUp' }).run(formData);
 ```
+
+### Focus Modifier Precedence
+
+When multiple modifiers are used, they are evaluated in the following order of precedence (highest to lowest):
+
+1. `skipGroup` (Destructive): Explicitly skipped groups are always skipped.
+2. `onlyGroup` (Constructive): If present, restricts execution to specific groups. Top-level tests are excluded.
+3. `skip` (Destructive): Explicitly skipped fields are skipped, even if they match an allowed group.
+4. `only` (Constructive): If present, restricts execution to specific fields within the allowed groups.
+
+> **Note**: A test is run only if it passes _all_ active filters. For example, if you use `onlyGroup: 'A'` and `skip: 'field1'`, `field1` inside `Group A` will be skipped.
 
 ## Fluent Chain API
 
@@ -241,6 +258,7 @@ function useFormValidation(initialData) {
 | ----------- | -------------------- | --------------------------------------------------------- |
 | `only`      | `string \| string[]` | Run only the specified field(s). All others are excluded. |
 | `skip`      | `string \| string[]` | Skip the specified field(s). All others run as usual.     |
+| `onlyGroup` | `string \| string[]` | Run only tests inside the named group(s).                 |
 | `skipGroup` | `string \| string[]` | Skip all tests inside the named group(s).                 |
 
 ## Comparison: `suite.focus()` vs `only()`/`skip()`
@@ -303,6 +321,7 @@ suite.focus({ only: 'nonexistent' }).run(formData); // ❌ Type error
 suite.focus({ skip: 'email' }).run(formData); // ✅
 suite.focus({ skipGroup: 'myGroup' }).run(formData); // ✅
 suite.focus({ skipGroup: ['groupA', 'groupB'] }).run(formData); // ✅
+suite.focus({ onlyGroup: 'groupA' }).run(formData); // ✅
 ```
 
 ## Related

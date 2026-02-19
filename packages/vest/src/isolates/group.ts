@@ -48,7 +48,18 @@ export function group(
  */
 function shouldSkipGroup(groupName: string): boolean {
   const { modifiers } = SuiteContext.useX();
-  return modifiers.skipGroupSet ? modifiers.skipGroupSet.has(groupName) : false;
+
+  // 1. Destructive block-list takes absolute precedence
+  if (modifiers.skipGroupSet && modifiers.skipGroupSet.has(groupName)) {
+    return true;
+  }
+
+  // 2. Constructive allow-list pruning
+  if (modifiers.onlyGroupSet && !modifiers.onlyGroupSet.has(groupName)) {
+    return true;
+  }
+
+  return false;
 }
 
 export type TIsolateGroup<G extends TGroupName = TGroupName> = TVestIsolate<{

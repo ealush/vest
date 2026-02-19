@@ -15,7 +15,14 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
     {
       inclusion: {},
       mode: tinyState.createTinyState<Modes>(Modes.EAGER),
-      modifiers: { only: undefined, skip: undefined, skipGroup: undefined },
+      modifiers: {
+        only: undefined,
+        onlyGroup: undefined,
+        onlyGroupSet: undefined,
+        skip: undefined,
+        skipGroup: undefined,
+        skipGroupSet: undefined,
+      },
       schema: null,
       suiteParams: [],
     },

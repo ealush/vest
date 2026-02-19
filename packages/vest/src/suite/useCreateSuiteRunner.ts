@@ -1,4 +1,4 @@
-import { assign, CB, isFunction, withResolvers } from 'vest-utils';
+import { assign, asArray, CB, isFunction, withResolvers } from 'vest-utils';
 
 import { useEmit } from '../core/VestBus/VestBus';
 
@@ -50,7 +50,12 @@ export function useCreateSuiteRunner<
         {
           suiteParams: args as Parameters<T>,
           schema,
-          modifiers,
+          modifiers: {
+            ...modifiers,
+            skipGroupSet: modifiers.skipGroup
+              ? new Set(asArray(modifiers.skipGroup))
+              : undefined,
+          },
         },
         () => {
           useEmit('SUITE_RUN_STARTED');

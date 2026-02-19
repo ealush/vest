@@ -109,16 +109,14 @@ type AfterMethods<
  *   explicitly included via `include()`.
  * - `skip` — Skip the specified field(s). All others run as usual.
  * - `skipGroup` — Skip all tests inside the named group(s). Tests outside the
- *   matched groups are unaffected. Internally, a `skip(true)` call is injected
- *   at the start of the matching group's callback, producing a transient
- *   Focused isolate that adds zero overhead to stored state.
- *
- * Modifiers are composable. For example, `{ skip: 'email', skipGroup: 'signUp' }`
- * skips the `email` field everywhere while also skipping every test that runs
- * inside `group('signUp', ...)`.
+ *   matched groups are unaffected.
  */
 export type SuiteModifiers<F extends TFieldName> = {
   only?: FieldExclusion<F> | FieldExclusion<string>;
   skip?: FieldExclusion<F> | FieldExclusion<string>;
   skipGroup?: string | string[];
+  /**
+   * @internal
+   */
+  skipGroupSet?: Set<string>;
 };

@@ -1,4 +1,4 @@
-import { CB, asArray, makeBrand } from 'vest-utils';
+import { CB, makeBrand } from 'vest-utils';
 import { TIsolate } from 'vestjs-runtime';
 
 import { SuiteContext } from '../core/context/SuiteContext';
@@ -48,8 +48,7 @@ export function group(
  */
 function shouldSkipGroup(groupName: string): boolean {
   const { modifiers } = SuiteContext.useX();
-  if (!modifiers.skipGroup) return false;
-  return asArray(modifiers.skipGroup).includes(groupName);
+  return modifiers.skipGroupSet ? modifiers.skipGroupSet.has(groupName) : false;
 }
 
 export type TIsolateGroup<G extends TGroupName = TGroupName> = TVestIsolate<{

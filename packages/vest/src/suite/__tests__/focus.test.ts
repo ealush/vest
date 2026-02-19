@@ -437,7 +437,7 @@ describe('suite.focus: skipGroup', () => {
     });
   });
 
-  describe('chaining with focus', () => {
+  describe('focus with combined options', () => {
     it('should support combining only and skipGroup in a single focus call', () => {
       const suite = vest.create(() => {
         vest.mode(vest.Modes.ALL);

@@ -100,7 +100,7 @@ const suite = create(data => {
 
   group('pricing_tab', () => {
     test('price', '5$ or more.', () => {
-      enforce(data.price).lte(5);
+      enforce(data.price).gte(5);
     });
     test('productExtras', "Can't be empty.", () => {
       enforce(data.extras).isNotEmpty();
@@ -123,8 +123,6 @@ suite.run(data);
 `skipGroup` internally injects a `skip(true)` call at the start of each matching group's callback. Because it creates a transient isolate, it adds zero overhead to the suite state.
 
 For more details, see [Focused Updates](../../writing_your_suite/focused_updates).
-
-### 2. Multi-stage form with `skip()` inside the suite
 
 ### 2. Multi-stage form with `skip()` inside the suite
 

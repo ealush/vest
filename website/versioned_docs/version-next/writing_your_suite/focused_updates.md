@@ -111,8 +111,6 @@ You can combine `only`, `skip`, and `skipGroup` in a single `focus()` call:
 ```javascript
 // Only validate 'username', and also skip the 'signUp' group
 suite.focus({ only: 'username', skipGroup: 'signUp' }).run(formData);
-// Only validate 'username', and also skip the 'signUp' group
-suite.focus({ only: 'username', skipGroup: 'signUp' }).run(formData);
 ```
 
 ### Focus Modifier Precedence

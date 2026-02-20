@@ -546,6 +546,7 @@ describe('Four-Way Scope Precedence: only, skip, onlyGroup, skipGroup', () => {
     const cbA1 = vi.fn(() => false);
     const cbA2 = vi.fn(() => false);
     const cbB1 = vi.fn(() => false);
+    const cbB2 = vi.fn(() => false); // New callback for clarity
     const cbC1 = vi.fn(() => false);
     const cbTop = vi.fn(() => false);
 
@@ -561,7 +562,7 @@ describe('Four-Way Scope Precedence: only, skip, onlyGroup, skipGroup', () => {
       // G_B is onlyGroup'd. field_1 is only'd, field_2 is skip'd
       vest.group('groupB', () => {
         vest.test('field_1', cbB1);
-        vest.test('field_2', cbB1);
+        vest.test('field_2', cbB2); // Use separate callback
       });
 
       // G_C is not in onlyGroup -> should skip entirely
@@ -593,7 +594,10 @@ describe('Four-Way Scope Precedence: only, skip, onlyGroup, skipGroup', () => {
     // groupB evaluation:
     // field_1 runs (onlyGroup matches, only matches)
     expect(res.groups.groupB.field_1.testCount).toBe(1);
+    expect(cbB1).toHaveBeenCalledTimes(1);
+
     // field_2 skips (onlyGroup matches, but skip > only)
     expect((res.groups.groupB as any)?.field_2?.testCount ?? 0).toBe(0);
+    expect(cbB2).not.toHaveBeenCalled();
   });
 });

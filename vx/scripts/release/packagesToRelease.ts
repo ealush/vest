@@ -1,3 +1,5 @@
+import { isNotEmptySet, isEmptySet } from 'vest-utils';
+
 import { buildDepsTree, sortDependencies, type DepTree } from './depsTree.js';
 import listAllChangedPackages from './github/listAllChangedPackages.js';
 
@@ -12,7 +14,7 @@ function packagesToRelease(): {
 } {
   const deps = buildDepsTree();
   const changedPackagesSet = listAllChangedPackages();
-  const isTopLevelChange = changedPackagesSet.size === 0;
+  const isTopLevelChange = isEmptySet(changedPackagesSet);
   const changedPackagesArray = Array.from(changedPackagesSet);
   const release = new Set<string>();
   const unchangedDependents = new Set<string>();
@@ -100,7 +102,7 @@ function processReleaseQueue(
 }
 
 function logUnchangedDependents(unchangedDependents: Set<string>): void {
-  if (unchangedDependents.size) {
+  if (isNotEmptySet(unchangedDependents)) {
     logger.info(
       `🧱 The following packages did not change, but will be released because they are indirectly impacted by changes: \n  - ${[
         ...unchangedDependents,

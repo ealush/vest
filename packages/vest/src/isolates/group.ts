@@ -1,4 +1,4 @@
-import { CB, makeBrand } from 'vest-utils';
+import { CB, makeBrand, isNotEmptySet } from 'vest-utils';
 import { TIsolate } from 'vestjs-runtime';
 
 import { SuiteContext } from '../core/context/SuiteContext';
@@ -50,12 +50,18 @@ function shouldSkipGroup(groupName: string): boolean {
   const { modifiers } = SuiteContext.useX();
 
   // 1. Destructive block-list takes absolute precedence
-  if (modifiers.skipGroupSet && modifiers.skipGroupSet.has(groupName)) {
+  if (
+    isNotEmptySet(modifiers.skipGroup) &&
+    modifiers.skipGroup.has(groupName)
+  ) {
     return true;
   }
 
   // 2. Constructive allow-list pruning
-  if (modifiers.onlyGroupSet && !modifiers.onlyGroupSet.has(groupName)) {
+  if (
+    isNotEmptySet(modifiers.onlyGroup) &&
+    !modifiers.onlyGroup.has(groupName)
+  ) {
     return true;
   }
 

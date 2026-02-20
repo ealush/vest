@@ -1,4 +1,10 @@
-import { Nullable, dynamicValue, makeResult, Result } from 'vest-utils';
+import {
+  Nullable,
+  dynamicValue,
+  makeResult,
+  Result,
+  isNotEmptySet,
+} from 'vest-utils';
 import { TIsolate, Walker } from 'vestjs-runtime';
 
 import { SuiteContext, useInclusion } from '../../core/context/SuiteContext';
@@ -37,7 +43,7 @@ function useIsExcludedByGroup(testObject: TIsolateTest): boolean {
   const { modifiers } = SuiteContext.useX();
 
   // If `onlyGroup` is applied, ANY test outside of a group is excluded.
-  return !!modifiers.onlyGroupSet && !groupName;
+  return isNotEmptySet(modifiers.onlyGroup) && !groupName;
 }
 
 function useIsExcludedByField(testObject: TIsolateTest): boolean {

@@ -1,4 +1,4 @@
-import { Nullable } from 'vest-utils';
+import { Nullable, isEmptySet, isNotEmptySet } from 'vest-utils';
 
 import { useAvailableRoot } from '../VestRuntime';
 import { TIsolate } from './Isolate';
@@ -60,7 +60,7 @@ export function useGetFromRegistry(
  * Checks if the registry contains any isolates for a given category and optional key.
  */
 export function useHasFromRegistry(category: string, key?: string): boolean {
-  return useGetFromRegistry(category, key).size > 0;
+  return isNotEmptySet(useGetFromRegistry(category, key) as Set<any>);
 }
 
 /**
@@ -160,7 +160,7 @@ function useRemoveNodeFromRegistryIndex(
 
   if (entry) {
     entry.delete(isolate);
-    if (entry.size === 0) {
+    if (isEmptySet(entry)) {
       index.delete(indexKey);
     }
   }

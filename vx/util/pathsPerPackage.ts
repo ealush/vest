@@ -1,5 +1,7 @@
 import { createRequire } from 'module';
-import path from 'path';
+import { basename, join } from 'path';
+
+import { isNotEmptySet } from 'vest-utils';
 
 import { dir } from 'vx/opts.js';
 import vxPath from 'vx/vxPath.js';
@@ -31,9 +33,9 @@ const matches = glob.sync(vxPath.rel(vxPath.packageSrc('*', '**/*.ts')), {
 });
 
 const groupedMatches = matches.reduce<GroupedMatches>((acc, relative) => {
-  const name = path.basename(relative, '.ts');
+  const name = basename(relative, '.ts');
   const packageName = vxPath.packageNameFromPath(relative);
-  const absolute = path.join(vxPath.ROOT_PATH, relative);
+  const absolute = join(vxPath.ROOT_PATH, relative);
 
   const moduleData = {
     absolute,
@@ -88,7 +90,7 @@ function findDuplicates(): void {
   for (const [packageName, { duplicates }] of Object.entries(
     duplicatesContainer,
   )) {
-    if (duplicates.size > 0) {
+    if (isNotEmptySet(duplicates)) {
       duplicatesPerPackage.push(
         `${packageName}: ${[...duplicates].map(dup => `\n   -${dup}`).join('')}`,
       );

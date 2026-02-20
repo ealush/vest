@@ -51,7 +51,7 @@ export function useCreateSuiteRunner<
         {
           suiteParams: args as Parameters<T>,
           schema,
-          modifiers: useEnhancedModifiers(modifiers),
+          modifiers: useTransformedModifiers(modifiers),
         },
         () => {
           useEmit('SUITE_RUN_STARTED');
@@ -77,20 +77,6 @@ export function useCreateSuiteRunner<
   };
 }
 
-function useEnhancedModifiers<F extends TFieldName>(
-  modifiers: SuiteModifiers<F>,
-): SuiteModifiers<F> {
-  return {
-    ...modifiers,
-    onlyGroupSet: modifiers.onlyGroup
-      ? new Set(asArray(modifiers.onlyGroup))
-      : undefined,
-    skipGroupSet: modifiers.skipGroup
-      ? new Set(asArray(modifiers.skipGroup))
-      : undefined,
-  };
-}
-
 function useRunSuiteCallback<
   F extends TFieldName,
   G extends TGroupName,
@@ -111,7 +97,7 @@ function useRunSuiteCallback<
     // the group's callback via the modifiers stored in SuiteContext.
     only(modifiers.only);
     skip(modifiers.skip);
-    (suiteCallback as any)(...(args as Parameters<T>));
+    (suiteCallback as any)(...args);
 
     IsolateReorderable(
       runSchemaValidation(schema, modifiers, args[0]),
@@ -122,6 +108,16 @@ function useRunSuiteCallback<
     );
     useEmit('SUITE_CALLBACK_RUN_FINISHED');
     return useCreateSuiteResult<F, G, S>(schema, args[0]);
+  };
+}
+
+function useTransformedModifiers<F extends TFieldName>(
+  modifiers: SuiteModifiers<F>,
+) {
+  return {
+    ...modifiers,
+    onlyGroup: new Set(modifiers.onlyGroup ? asArray(modifiers.onlyGroup) : []),
+    skipGroup: new Set(modifiers.skipGroup ? asArray(modifiers.skipGroup) : []),
   };
 }
 

@@ -16,12 +16,8 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
       inclusion: {},
       mode: tinyState.createTinyState<Modes>(Modes.EAGER),
       modifiers: {
-        only: undefined,
-        onlyGroup: undefined,
-        onlyGroupSet: undefined,
-        skip: undefined,
-        skipGroup: undefined,
-        skipGroupSet: undefined,
+        onlyGroup: new Set<string>(),
+        skipGroup: new Set<string>(),
       },
       schema: null,
       suiteParams: [],
@@ -38,7 +34,15 @@ type CTXType = {
   skipped?: boolean;
   omitted?: boolean;
   schema: TSchema;
-  modifiers: SuiteModifiers<TFieldName>;
+  modifiers: TInternalModifiers<TFieldName>;
+};
+
+export type TInternalModifiers<F extends TFieldName = TFieldName> = Omit<
+  SuiteModifiers<F>,
+  'onlyGroup' | 'skipGroup'
+> & {
+  onlyGroup: Set<string>;
+  skipGroup: Set<string>;
 };
 
 export function useCurrentTest(msg?: string) {

@@ -48,12 +48,7 @@ function createSuite<
     function createSuiteInstance(): Result<Suite<F, G, T, S>> {
       const methods = useCreateSuiteMethods<F, G, T, S>(
         suiteCallbackResult as any,
-        {
-          only: undefined,
-          onlyGroup: undefined,
-          skip: undefined,
-          skipGroup: undefined,
-        },
+        {},
         VestBus.subscribe,
         schema,
       );

@@ -9,10 +9,14 @@ import { create, test, enforce } from 'vest';
 import 'vest/email';
 
 const suite = create((data = {}) => {
+  // \`test\` runs an assertion. The first argument is the name of the field.
   test('username', 'Username is required', () => {
+    // \`enforce\` checks that a condition is met. 
+    // If it throws an error, the test is marked as failed.
     enforce(data.username).isNotBlank();
   });
 
+  // You can define multiple tests for the same field.
   test('username', 'Username must be at least 3 characters', () => {
     enforce(data.username).longerThanOrEquals(3);
   });

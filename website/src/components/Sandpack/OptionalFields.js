@@ -5,11 +5,14 @@ import commonStyles from '../RawExample.module.css';
 const SuiteCode = `import { create, test, enforce, optional } from 'vest';
 
 const suite = create((data = {}) => {
+  // If \`pet_name\` is provided, \`owner_name\` becomes optional, and vice versa.
+  // This allows the form to be valid as long as at least one of them is provided.
   optional({
     pet_name: () => !!data.owner_name,
     owner_name: () => !!data.pet_name,
   });
 
+  // The \`isNotBlank\` assertion checks that the string isn't an empty string.
   test('pet_name', 'Pet name is required when owner name is blank', () => {
     enforce(data.pet_name).isNotBlank();
   });

@@ -5,12 +5,18 @@ import commonStyles from '../RawExample.module.css';
 const SuiteCode = `import { create, enforce, optional, test } from 'vest';
 
 const suite = create((data = {}) => {
+  // \`optional\` marks fields as fully valid if they are omitted.
+  // Here, we define that each field is optional *only if* at least
+  // one of the other fields is present and truthy.
   optional({
     email: () => !!data.sms || !!data.push,
     sms: () => !!data.email || !!data.push,
     push: () => !!data.email || !!data.sms,
   });
 
+  // These tests ensure each field is present.
+  // If the \`optional\` condition above is met (meaning another field is present),
+  // Vest will simply drop these tests and consider the omitted fields valid.
   test('email', 'Provide at least one channel', () => {
     enforce(data.email).isTruthy();
   });

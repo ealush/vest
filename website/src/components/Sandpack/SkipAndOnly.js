@@ -5,10 +5,13 @@ import commonStyles from '../RawExample.module.css';
 const SuiteCode = `import { create, test, enforce, skip, only } from 'vest';
 
 const suite = create((data = {}, currentField) => {
-  // Validate only the changed field in an interactive form.
+  // Validate only the changed field if a \`currentField\` is provided.
+  // This is a great way to handle "onChange" updates so that other untouched fields
+  // are not validated until the user interacts with the form.
   only(currentField);
 
-  // Skip promo checks when promo is blank.
+  // Skip the "promo" field tests entirely if the user hasn't entered anything yet.
+  // This causes the promo code to be considered completely valid when it's left blank.
   skip(!data.promo && 'promo');
 
   test('email', 'Email is required', () => {

@@ -6,6 +6,10 @@ const SuiteCode = `import { create, test, enforce, mode, Modes } from 'vest';
 
 export const createSignupSuite = selectedMode =>
   create((data = {}) => {
+    // Mode defines how tests act when encountering a failure:
+    // EAGER - Stop validating this field after the first failure.
+    // ALL   - Gather all errors for each field.
+    // ONE   - Stop validating the entire suite after any error.
     mode(selectedMode);
 
     test('email', 'Email is required', () => {

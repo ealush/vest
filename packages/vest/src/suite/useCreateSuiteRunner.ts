@@ -28,6 +28,7 @@ import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
  * @returns {Function} - The suite runner function.
  */
 
+// eslint-disable-next-line max-lines-per-function
 export function useCreateSuiteRunner<
   F extends TFieldName,
   G extends TGroupName,
@@ -38,56 +39,58 @@ export function useCreateSuiteRunner<
   modifiers: SuiteModifiers<F>,
   schema?: S,
 ) {
+  const transformedModifiers = useTransformedModifiers(modifiers);
   return function runSuite(
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
   ): SuiteResult<F, G, S> {
     const { resolve, promise } = withResolvers<SuiteResult<F, G, S>>();
-
     return assign(
       promise,
       SuiteContext.run(
         {
           suiteParams: args as Parameters<T>,
           schema,
-          modifiers: useTransformedModifiers(modifiers),
+          modifiers: transformedModifiers,
         },
         () => {
           useEmit('SUITE_RUN_STARTED');
-
           const useResolver = () => {
             const result = useCreateSuiteResult<F, G, S>(schema, args[0]);
-            resolve(result);
+            if (!result.isPending()) {
+              resolve(result);
+            }
             return result;
           };
-
           return IsolateSuite(
-            useRunSuiteCallback<F, G, T, S>(
-              suiteCallback,
-              modifiers,
+            useRunSuiteCallback<F, T, S>({
               args,
+              modifiers: transformedModifiers,
               schema,
-            ),
+              suiteCallback,
+              useResolver,
+            }),
             useResolver,
-          );
+          ).output;
         },
-      ).output,
+      ),
     );
   };
 }
 
 function useRunSuiteCallback<
   F extends TFieldName,
-  G extends TGroupName,
   T extends CB = CB,
   S extends TSchema = undefined,
->(
-  suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F>,
-  args: any[],
-  schema?: S,
-) {
+>(params: {
+  args: any[];
+  modifiers: ReturnType<typeof useTransformedModifiers<F>>;
+  schema: S | undefined;
+  suiteCallback: SuiteCallbackWithSchema<S, T>;
+  useResolver: () => SuiteResult<F, any, S>;
+}) {
+  const { args, modifiers, schema, suiteCallback, useResolver } = params;
   return () => {
     // Apply field-level focus modifiers. These create transient Focused
     // isolates at the suite root that affect all tests in the suite.
@@ -107,7 +110,7 @@ function useRunSuiteCallback<
       },
     );
     useEmit('SUITE_CALLBACK_RUN_FINISHED');
-    return useCreateSuiteResult<F, G, S>(schema, args[0]);
+    return useResolver();
   };
 }
 
@@ -124,7 +127,11 @@ function useTransformedModifiers<F extends TFieldName>(
 function runSchemaValidation<
   F extends TFieldName,
   S extends TSchema = undefined,
->(schema: S | undefined, modifiers: SuiteModifiers<F>, data: any) {
+>(
+  schema: S | undefined,
+  modifiers: ReturnType<typeof useTransformedModifiers<F>>,
+  data: any,
+) {
   return () => {
     if (!shouldRunSchema(schema, modifiers)) return;
 
@@ -138,6 +145,6 @@ function runSchemaValidation<
   };
 }
 
-function shouldRunSchema(schema: any, modifiers: SuiteModifiers<any>): boolean {
+function shouldRunSchema(schema: any, modifiers: any): boolean {
   return !modifiers.only && !!schema && isFunction(schema.run);
 }

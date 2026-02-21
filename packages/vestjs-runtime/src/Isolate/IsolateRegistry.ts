@@ -60,7 +60,7 @@ export function useGetFromRegistry(
  * Checks if the registry contains any isolates for a given category and optional key.
  */
 export function useHasFromRegistry(category: string, key?: string): boolean {
-  return isNotEmptySet(useGetFromRegistry(category, key) as Set<any>);
+  return isNotEmptySet(useGetFromRegistry(category, key));
 }
 
 /**

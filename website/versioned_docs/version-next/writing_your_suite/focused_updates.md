@@ -53,6 +53,14 @@ Use `focus({ skipGroup: ... })` to skip all tests inside a named group. Tests ou
 
 Use `focus({ onlyGroup: ... })` to run _only_ tests inside a named group. Tests outside the group (including top-level tests) are skipped.
 
+```javascript
+// Run only tests declared inside group('signUp', ...)
+suite.focus({ onlyGroup: 'signUp' }).run(formData);
+
+// Run only tests inside multiple specified groups
+suite.focus({ onlyGroup: ['signIn', 'signUp'] }).run(formData);
+```
+
 ### `skip` vs `skipGroup`
 
 Both modifiers exclude tests, but they target different scopes:
@@ -252,12 +260,12 @@ function useFormValidation(initialData) {
 
 ## Focus Modifiers Reference
 
-| Modifier    | Type                 | Description                                               |
-| ----------- | -------------------- | --------------------------------------------------------- |
-| `only`      | `string \| string[]` | Run only the specified field(s). All others are excluded. |
-| `skip`      | `string \| string[]` | Skip the specified field(s). All others run as usual.     |
-| `onlyGroup` | `string \| string[]` | Run only tests inside the named group(s).                 |
-| `skipGroup` | `string \| string[]` | Skip all tests inside the named group(s).                 |
+| Modifier    | Type                 | Description                                                                         |
+| ----------- | -------------------- | ----------------------------------------------------------------------------------- |
+| `only`      | `string \| string[]` | Run only the specified field(s). All others are excluded.                           |
+| `skip`      | `string \| string[]` | Skip the specified field(s). All others run as usual.                               |
+| `onlyGroup` | `string \| string[]` | Run only tests inside the named group(s); top-level (ungrouped) tests are excluded. |
+| `skipGroup` | `string \| string[]` | Skip all tests inside the named group(s).                                           |
 
 ## Comparison: `suite.focus()` vs `only()`/`skip()`
 

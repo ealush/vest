@@ -1,4 +1,4 @@
-import { CB, makeBrand } from 'vest-utils';
+import { CB, makeBrand, isNotEmptySet } from 'vest-utils';
 import { TIsolate } from 'vestjs-runtime';
 
 import { SuiteContext } from '../core/context/SuiteContext';
@@ -43,12 +43,37 @@ export function group(
 }
 
 /**
- * Checks whether the given group name is targeted for skipping by the
- * current suite run's `skipGroup` modifier (set via `suite.focus()`).
+ * Evaluates whether an entire group should be skipped based on `suite.focus()` modifiers.
+ *
+ * This function enforces the precedence rules: `skipGroup` > `onlyGroup`.
+ *
+ * 1. If `skipGroup` contains the group name, it is unconditionally skipped (destructive block-list).
+ * 2. If `onlyGroup` is active (has items), and the group name is NOT in it, it is skipped (constructive allow-list).
+ * 3. Otherwise, the group is allowed to run.
+ *
+ * @param {string} groupName - The name of the group being evaluated.
+ * @returns {boolean} `true` if the group should be skipped, `false` otherwise.
  */
 function shouldSkipGroup(groupName: string): boolean {
   const { modifiers } = SuiteContext.useX();
-  return modifiers.skipGroupSet ? modifiers.skipGroupSet.has(groupName) : false;
+
+  // 1. Destructive block-list takes absolute precedence
+  if (
+    isNotEmptySet(modifiers.skipGroup) &&
+    modifiers.skipGroup.has(groupName)
+  ) {
+    return true;
+  }
+
+  // 2. Constructive allow-list pruning
+  if (
+    isNotEmptySet(modifiers.onlyGroup) &&
+    !modifiers.onlyGroup.has(groupName)
+  ) {
+    return true;
+  }
+
+  return false;
 }
 
 export type TIsolateGroup<G extends TGroupName = TGroupName> = TVestIsolate<{

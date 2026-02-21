@@ -32,6 +32,7 @@ export { isNull, isNotNull } from './isNull';
 export { isUndefined, isNotUndefined } from './isUndefined';
 export { isArray, isNotArray } from './isArrayValue';
 export { isEmpty, isNotEmpty } from './isEmpty';
+export { isEmptySet, isNotEmptySet } from './isEmptySet';
 export { isPositive } from './isPositive';
 export { text } from './text';
 export { StateMachine } from './SimpleStateMachine';

@@ -1,11 +1,11 @@
 ---
 sidebar_position: 3
-title: Recipe - focus({ skip / skipGroup }) patterns
+title: Recipe - focus({ skip / skipGroup / onlyGroup }) patterns
 description: Practical patterns for combining suite.focus modifiers, with emphasis on skip vs skipGroup.
 keywords: [Recipe, focus, skip, skipGroup, only, Vest]
 ---
 
-# `focus({ skip / skipGroup })` Patterns
+# `focus({ skip / skipGroup / onlyGroup })` Patterns
 
 This recipe clarifies a common source of confusion:
 
@@ -57,6 +57,14 @@ suite.focus({ skip: 'password', skipGroup: 'billing' }).run(formData);
 ```
 
 This skips all `password` tests globally and all tests in `billing` group.
+
+## Pattern 6: Validating a Group's Fields only (`onlyGroup`)
+
+```js
+// Validate ONLY the 'step1' group.
+// All other groups AND top-level tests are skipped.
+suite.focus({ onlyGroup: 'step1' }).run(formData);
+```
 
 ## See also
 

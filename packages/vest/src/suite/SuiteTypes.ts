@@ -113,10 +113,7 @@ type AfterMethods<
  */
 export type SuiteModifiers<F extends TFieldName> = {
   only?: FieldExclusion<F> | FieldExclusion<string>;
+  onlyGroup?: string | string[];
   skip?: FieldExclusion<F> | FieldExclusion<string>;
   skipGroup?: string | string[];
-  /**
-   * @internal
-   */
-  skipGroupSet?: Set<string>;
 };

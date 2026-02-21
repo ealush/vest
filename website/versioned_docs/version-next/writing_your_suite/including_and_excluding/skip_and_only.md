@@ -5,6 +5,8 @@ description: Learn how to use skip() and only() functions in Vest to include or 
 keywords: [Vest, Skip, Only, exclude, include, validation framework, tests]
 ---
 
+import SkipAndOnlySandpack from '@site/src/components/Sandpack/SkipAndOnly';
+
 # Including or Excluding Fields in Vest Validation Framework
 
 In real-world scenarios, you may need to run tests only on a specific field or skip some tests according to some logic. To handle such cases, Vest includes `skip()` and `only()` functions.
@@ -129,6 +131,10 @@ suite
 When choosing between modifiers in `suite.focus()`, prefer `skipGroup` when your intent is to disable a named validation section (for example `signUp`), and prefer `skip` when your intent is to exclude a specific field everywhere it appears.
 
 For more details, see [Focused Updates](../focused_updates).
+
+## Interactive example
+
+<SkipAndOnlySandpack />
 
 ## Skipping fields
 

@@ -5,6 +5,8 @@ description: A common scenario is to require at least one test to pass to consid
 keywords: [Recipe, any, test, at least, one, must, pass]
 ---
 
+import AnyTestRecipeSandpack from '@site/src/components/Sandpack/AnyTestRecipe';
+
 # "any" Test - At least one test must pass
 
 A common scenario is to require at least one test to pass to consider the suite as passing. For example, you might require just one checkbox to be checked.
@@ -16,7 +18,10 @@ In our case, the following logic should apply - Each of the checkboxes can be op
 Vest has the [optional](./../writing_your_suite/optional_fields.md) function, which allows you to specify just that. You can specify a condition in which a test can be omitted from the results.
 
 Our code might look somewhat like this:
-[Live codesandbox](https://codesandbox.io/s/vest-4-any-test-optional-q8m67).
+
+## Live example
+
+<AnyTestRecipeSandpack />
 
 ```js
 import { create, test, enforce, only, optional } from 'vest';

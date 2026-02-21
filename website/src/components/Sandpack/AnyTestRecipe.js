@@ -1,0 +1,93 @@
+import React from 'react';
+import Sandpack from './index';
+import commonStyles from '../RawExample.module.css';
+
+const SuiteCode = `import { create, enforce, optional, test } from 'vest';
+
+const suite = create((data = {}) => {
+  optional({
+    email: () => suite.get().isValid('sms') || suite.get().isValid('push'),
+    sms: () => suite.get().isValid('email') || suite.get().isValid('push'),
+    push: () => suite.get().isValid('email') || suite.get().isValid('sms'),
+  });
+
+  test('email', 'Provide at least one channel', () => {
+    enforce(data.email).isTruthy();
+  });
+
+  test('sms', 'Provide at least one channel', () => {
+    enforce(data.sms).isTruthy();
+  });
+
+  test('push', 'Provide at least one channel', () => {
+    enforce(data.push).isTruthy();
+  });
+});
+
+export default suite;
+`;
+
+const AppCode = `import React, { useState } from 'react';
+import suite from './suite';
+import './styles.css';
+
+export default function App() {
+  const [channels, setChannels] = useState({ email: false, sms: false, push: false });
+  const result = suite(channels);
+
+  return (
+    <div className="App">
+      <h3>At least one contact channel</h3>
+      {Object.keys(channels).map(name => (
+        <label key={name}>
+          <input
+            type="checkbox"
+            checked={channels[name]}
+            onChange={() => setChannels(prev => ({ ...prev, [name]: !prev[name] }))}
+          />
+          {name}
+        </label>
+      ))}
+
+      <div className={result.isValid() ? 'ok' : 'error'}>
+        {result.isValid() ? 'Valid: at least one option was selected.' : result.getError('email')}
+      </div>
+    </div>
+  );
+}
+`;
+
+const StylesCode = `body { background: #111; color: #f4f4f4; font-family: sans-serif; }
+.App { max-width: 460px; margin: 0 auto; padding: 20px; }
+label { display: block; margin: 10px 0; text-transform: capitalize; }
+input { margin-right: 8px; }
+.error { margin-top: 14px; color: #ff7b72; }
+.ok { margin-top: 14px; color: #3fb950; }
+`;
+
+export default function AnyTestRecipeSandpack() {
+  return (
+    <div className={commonStyles.codeWindow}>
+      <Sandpack
+        template="react"
+        theme="dark"
+        files={{
+          '/suite.js': SuiteCode,
+          '/App.js': AppCode,
+          '/styles.css': StylesCode,
+        }}
+        customSetup={{
+          dependencies: {
+            vest: 'next',
+          },
+        }}
+        options={{
+          activeFile: '/App.js',
+          showCommonFiles: false,
+          visibleFiles: ['/App.js', '/suite.js'],
+          editorHeight: 560,
+        }}
+      />
+    </div>
+  );
+}

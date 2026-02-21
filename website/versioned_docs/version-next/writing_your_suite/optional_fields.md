@@ -15,6 +15,8 @@ keywords:
   ]
 ---
 
+import OptionalFieldsSandpack from '@site/src/components/Sandpack/OptionalFields';
+
 # Optional Fields
 
 By default, all tests inside Vest are required for the suite to be considered "valid". However, there may be situations in which some tests can be skipped, such as when dealing with optional fields in your application's logic. In such cases, Vest provides the optional function, which allows you to mark fields as optional, so that they can be skipped during validation without affecting the overall validity of the suite.
@@ -34,7 +36,7 @@ If the field was skipped in all runs of the suite, it will be considered as opti
 ```js
 import { create, optional, only, test, enforce } from 'vest';
 
-const suite = create((data = {}) => {
+const suite = create((data = {}, currentField) => {
   only(currentField); // only validate this specified field
 
   optional(['pet_color', 'pet_age']);
@@ -44,16 +46,16 @@ const suite = create((data = {}) => {
   });
 
   test('pet_color', 'If provided, pet color must be a string', () => {
-    enforce(data.color).isString();
+    enforce(data.pet_color).isString();
   });
 
   test('pet_age', 'If provided, pet age must be numeric', () => {
-    enforce(data.age).isNumeric();
+    enforce(data.pet_age).isNumeric();
   });
 });
 
-suite.run({ name: 'Indie' }, 'pet_name').isValid(); // ✅ Since pet_color and pet_age are optional, the suite may still be valid
-suite.run({ age: 'Five' }, 'pet_age').isValid(); // 🚨 When erroring, optional fields still make the suite invalid
+suite.run({ pet_name: 'Indie' }, 'pet_name').isValid(); // ✅ Since pet_color and pet_age are optional, the suite may still be valid
+suite.run({ pet_age: 'Five' }, 'pet_age').isValid(); // 🚨 When erroring, optional fields still make the suite invalid
 ```
 
 ## If the field is empty in the data object
@@ -117,8 +119,8 @@ The following code demonstrates how to allow a field to be empty if a different 
 ```js
 const suite = create(data => {
   optional({
-    pet_name: () => !result.hasErrors('owner_name'),
-    owner_name: () => !result.hasErrors('pet_name'),
+    pet_name: () => !suite.get().hasErrors('owner_name'),
+    owner_name: () => !suite.get().hasErrors('pet_name'),
   });
 
   test(
@@ -138,6 +140,10 @@ const suite = create(data => {
   );
 });
 ```
+
+## Live example
+
+<OptionalFieldsSandpack />
 
 ## Difference between `optional` and `warn`
 

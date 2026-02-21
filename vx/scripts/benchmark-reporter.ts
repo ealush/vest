@@ -26,7 +26,6 @@ function getBenchFiles(baseDir: string): string[] {
   const benchDir = path.join(baseDir, 'packages', 'vest', 'bench');
   if (!fs.existsSync(benchDir)) return [];
 
-  // @ts-expect-error - recursive is typed in newer Node but works in Node 24
   const files = fs.readdirSync(benchDir, { recursive: true }) as string[];
   return files
     .filter(f => f.endsWith('.ts'))

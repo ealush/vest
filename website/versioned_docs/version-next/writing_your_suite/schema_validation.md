@@ -50,7 +50,7 @@ When you pass a schema to `create`:
 3.  Your tests run assuming the data types are correct.
 
 :::note Focused runs
-When you focus the suite with `focus({ only })`, schema validation is skipped for fields outside the focus scope. This allows you to validate a single field even if the full payload does not satisfy the schema.
+When you focus the suite with `suite.only()` or `suite.focus({ only })`, schema validation is skipped for fields outside the focus scope. This allows you to validate a single field even if the full payload does not satisfy the schema.
 
 ```javascript
 // Validate only the username field

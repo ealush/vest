@@ -102,10 +102,18 @@ Resets the state of a specific field (clears errors/warnings but keeps it in the
 
 #### `suite.focus(config)`
 
-Prepares a focused run.
+Prepares a focused run with combined modifiers. Use this when you need to combine `only`, `skip`, `skipGroup`, or `onlyGroup` in a single call.
 
-- `config`: `{ only?: string | string[], skip?: string | string[], skipGroup?: string | string[] }`
+- `config`: `{ only?: string | string[], skip?: string | string[], skipGroup?: string | string[], onlyGroup?: string | string[] }`
 - [Read more about Focused Updates](./writing_your_suite/focused_updates.md)
+
+#### `suite.only(fieldName)`
+
+Shorthand for `suite.focus({ only: fieldName })`. Restricts the next run to the specified field(s).
+
+- `fieldName`: `string | string[]`
+- Returns a chainable suite with `run`, `afterEach`, `afterField`, `focus`, and `only`.
+- [Read more about Focused Updates](./writing_your_suite/focused_updates.md#running-only-specific-fields)
 
 #### `suite.afterEach(callback)`
 

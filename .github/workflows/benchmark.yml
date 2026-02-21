@@ -38,21 +38,14 @@ jobs:
         working-directory: .benchmark-baseline
         run: yarn build
 
-      - name: Run benchmarks (baseline)
-        working-directory: .benchmark-baseline
-        run: npx tsx vx/scripts/benchmark-reporter.ts --update
-
-      - name: Copy baseline results
-        run: cp .benchmark-baseline/benchmark-results.md ./benchmark-results.md
-
       - name: Install dependencies (PR)
         run: yarn install --immutable
 
       - name: Build internal packages (PR)
         run: yarn build
 
-      - name: Run benchmarks and generate report (PR)
-        run: npx tsx vx/scripts/benchmark-reporter.ts
+      - name: Run interlaced benchmarks and generate report
+        run: npx tsx vx/scripts/benchmark-reporter.ts --interlace .benchmark-baseline
 
       - name: Comment Benchmark Results
         uses: actions/github-script@v7

@@ -1,5 +1,7 @@
+/* eslint-disable complexity */
 import { execSync } from 'child_process';
 import fs from 'fs';
+import path from 'path';
 
 import * as logger from '../logger.js';
 
@@ -16,25 +18,34 @@ type BenchmarkResult = {
 };
 
 type ComparisonResult = BenchmarkResult & {
-  diffAbs?: number; // Difference in Hz
+  diffAbs?: number;
   diffPercent?: number;
 };
 
-// eslint-disable-next-line complexity
-function runBenchmarks(): string {
+function getBenchFiles(baseDir: string): string[] {
+  const benchDir = path.join(baseDir, 'packages', 'vest', 'bench');
+  if (!fs.existsSync(benchDir)) return [];
+
+  // @ts-expect-error - recursive is typed in newer Node but works in Node 24
+  const files = fs.readdirSync(benchDir, { recursive: true }) as string[];
+  return files
+    .filter(f => f.endsWith('.ts'))
+    .map(f => path.join('packages/vest/bench', f).replace(/\\/g, '/'));
+}
+
+function runBenchmarkFile(filePath: string, cwd: string): string {
   try {
-    logger.log('Running benchmarks...');
-    const output = execSync(
-      'yarn vitest bench --run --config packages/vest/vitest.config.ts --passWithNoTests --no-color packages/vest/bench/',
+    logger.log(`Running benchmark file: ${filePath} in ${cwd}...`);
+    return execSync(
+      `yarn vitest bench --run --config packages/vest/vitest.config.ts --passWithNoTests --no-color ${filePath}`,
       {
         encoding: 'utf8',
-        stdio: ['ignore', 'pipe', 'inherit'], // Capture stdout, let stderr go to console
-        cwd: process.cwd(),
+        stdio: ['ignore', 'pipe', 'inherit'],
+        cwd,
       },
     );
-    return output;
   } catch (error) {
-    logger.error('Benchmark command failed or found no tests.');
+    logger.error(`Benchmark command failed for ${filePath} in ${cwd}`);
     if (
       typeof error === 'object' &&
       error !== null &&
@@ -43,7 +54,7 @@ function runBenchmarks(): string {
     ) {
       return (error as { stdout: Buffer }).stdout.toString();
     }
-    throw error;
+    return '';
   }
 }
 
@@ -52,14 +63,10 @@ function parseOutput(output: string): BenchmarkResult[] {
   const results: BenchmarkResult[] = [];
   let currentSuite = '';
 
-  // Regex to match result lines:
-  //    · full run with feature flags  415.54  1.9833   9.4383  2.4065  2.5399  3.5622  3.6703   9.4383  ±2.07%      416
-  // We look for lines starting with "   · "
   const resultRegex =
     /^\s+·\s+(.+?)\s+([\d.]+)\s+[\d.]+\s+[\d.]+\s+[\d.]+\s+[\d.]+\s+([\d.]+)\s+[\d.]+\s+[\d.]+\s+±([\d.]+%)\s+\d+$/;
 
   for (const line of lines) {
-    // Check for suite name (e.g. " ✓ bench/complex-flows.bench.ts > Complex Feature Mix")
     if (line.includes('>')) {
       const parts = line.split('>');
       if (parts.length > 1) {
@@ -86,76 +93,29 @@ function parseOutput(output: string): BenchmarkResult[] {
   return results;
 }
 
-function parseTableRow(row: string): BenchmarkResult | null {
-  const cols = row
-    .split('|')
-    .map(c => c.trim())
-    .filter(c => c.length > 0);
-
-  if (cols.length < 5) return null;
-
-  const [suite, name, hzStr, p99Str, rme] = cols;
-
-  return {
-    hz: parseFloat(hzStr.replace(/\*\*/g, '').replace(/,/g, '')),
-    name,
-    p99: parseFloat(p99Str),
-    rme,
-    suite,
-  };
-}
-
-function parseBaselineContent(
-  content: string,
-): Record<string, BenchmarkResult> | null {
-  const tableStart = content.indexOf('| Suite |');
-  if (tableStart === -1) {
-    return null;
-  }
-
-  const rows = content.slice(tableStart).split('\n');
-  const baseline: Record<string, BenchmarkResult> = {};
-
-  for (let i = 2; i < rows.length; i++) {
-    const row = rows[i].trim();
-    if (!row.startsWith('|')) {
-      break;
-    }
-
-    const result = parseTableRow(row);
-    if (result) {
-      baseline[`${result.suite}::${result.name}`] = result;
-    }
-  }
-
-  return baseline;
-}
-
-function getLatestBaseline(
-  filePath: string,
-): Record<string, BenchmarkResult> | null {
-  if (!fs.existsSync(filePath)) {
-    return null;
-  }
-
-  const content = fs.readFileSync(filePath, 'utf8');
-  return parseBaselineContent(content);
-}
-
 function calculateDiffs(
   current: BenchmarkResult[],
-  baseline: Record<string, BenchmarkResult> | null,
+  baseline: Record<string, BenchmarkResult>,
 ): ComparisonResult[] {
   return current.map(res => {
     const key = `${res.suite}::${res.name}`;
-    const base = baseline?.[key];
+    const base = baseline[key];
 
     if (!base) {
       return res;
     }
 
-    const diffAbs = res.hz - base.hz;
-    const diffPercent = (diffAbs / base.hz) * 100;
+    let diffAbs = res.hz - base.hz;
+    let diffPercent = (diffAbs / base.hz) * 100;
+
+    // Mask diff if within margin of error OR less than 5%
+    const rmeVal = parseFloat(res.rme.replace('±', '').replace('%', ''));
+    const threshold = Math.max(5, rmeVal || 5);
+
+    if (Math.abs(diffPercent) < threshold) {
+      diffAbs = 0;
+      diffPercent = 0;
+    }
 
     return {
       ...res,
@@ -165,24 +125,10 @@ function calculateDiffs(
   });
 }
 
-function getGitInfo() {
-  try {
-    const hash = execSync('git rev-parse --short HEAD', {
-      encoding: 'utf8',
-    }).trim();
-    const date = execSync('git log -1 --format=%cd --date=short', {
-      encoding: 'utf8',
-    }).trim();
-    const title = execSync('git log -1 --format=%s', {
-      encoding: 'utf8',
-    }).trim();
-    return { hash, date, title };
-  } catch (e) {
-    return { hash: 'unknown', date: 'unknown', title: 'unknown' };
-  }
-}
-
 function formatDiff(diffAbs: number, diffPercent: number): string {
+  if (diffAbs === 0 && diffPercent === 0) {
+    return ' 0 | 0.00% |';
+  }
   const diffAbsStr =
     diffAbs > 0 ? `+${diffAbs.toLocaleString()}` : diffAbs.toLocaleString();
   const diffPercentStr =
@@ -225,30 +171,7 @@ function formatTable(results: ComparisonResult[], showDiff: boolean): string {
   return md;
 }
 
-function generateReport(
-  results: ComparisonResult[],
-  updateMode: boolean,
-): string {
-  if (updateMode) {
-    const { hash, date, title } = getGitInfo();
-    let content = `### ${hash} - ${date}\n`;
-    content += `> ${title}\n\n`;
-    content += formatTable(results, false);
-    content += '\n---\n\n';
-
-    let existingInfo = '';
-    if (fs.existsSync(OUTPUT_FILE)) {
-      existingInfo = fs.readFileSync(OUTPUT_FILE, 'utf8');
-      const lines = existingInfo.split('\n');
-      if (lines[0].startsWith('## 🚀 Benchmark Results')) {
-        existingInfo = lines.slice(1).join('\n').trim();
-      }
-    }
-
-    return `## 🚀 Benchmark Results\n\n${content}${existingInfo}`;
-  }
-
-  // PR Mode
+function generateReport(results: ComparisonResult[]): string {
   let md = '## 🚀 Benchmark Results\n\n';
   md += formatTable(results, true);
   md +=
@@ -261,23 +184,50 @@ function generateReport(
 function main(): void {
   try {
     const args = process.argv.slice(2);
-    const updateMode = args.includes('--update');
+    const interlaceIndex = args.indexOf('--interlace');
 
-    const output = runBenchmarks();
-    const rawResults = parseOutput(output);
-
-    let finalResults: ComparisonResult[] = rawResults;
-
-    if (!updateMode) {
-      const baseline = getLatestBaseline(OUTPUT_FILE);
-      finalResults = calculateDiffs(rawResults, baseline);
+    // Fallback if not interlacing (run all at once, no comparison)
+    if (interlaceIndex === -1 || interlaceIndex + 1 >= args.length) {
+      const out = runBenchmarkFile('packages/vest/bench/', process.cwd());
+      const rawResults = parseOutput(out);
+      const markdown = generateReport(rawResults);
+      fs.writeFileSync(OUTPUT_FILE, markdown);
+      logger.log(`Benchmark results written to ${OUTPUT_FILE}`);
+      return;
     }
 
-    const markdown = generateReport(finalResults, updateMode);
+    // Interlaced comparison mode
+    const baselineDir = path.resolve(args[interlaceIndex + 1]);
+    const currentDir = process.cwd();
 
+    const baselineFiles = getBenchFiles(baselineDir);
+    const currentFiles = getBenchFiles(currentDir);
+
+    const allFiles = Array.from(new Set([...baselineFiles, ...currentFiles]));
+
+    const allCurrentResults: BenchmarkResult[] = [];
+    const allBaselineResults: BenchmarkResult[] = [];
+
+    for (const file of allFiles) {
+      if (baselineFiles.includes(file)) {
+        const out = runBenchmarkFile(file, baselineDir);
+        allBaselineResults.push(...parseOutput(out));
+      }
+      if (currentFiles.includes(file)) {
+        const out = runBenchmarkFile(file, currentDir);
+        allCurrentResults.push(...parseOutput(out));
+      }
+    }
+
+    const baselineDict: Record<string, BenchmarkResult> = {};
+    for (const res of allBaselineResults) {
+      baselineDict[`${res.suite}::${res.name}`] = res;
+    }
+
+    const finalResults = calculateDiffs(allCurrentResults, baselineDict);
+    const markdown = generateReport(finalResults);
     fs.writeFileSync(OUTPUT_FILE, markdown);
     logger.log(`Benchmark results written to ${OUTPUT_FILE}`);
-    // logger.log(markdown);
   } catch (error) {
     logger.error('Error generating benchmark report:', error);
     process.exit(1);

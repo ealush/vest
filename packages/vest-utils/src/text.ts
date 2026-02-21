@@ -1,7 +1,7 @@
 import { isEmpty } from './isEmpty';
 import { isObject } from './valueIsObject';
 
-const regexp = /{(.*?)}/g;
+const regexp = /{([^}]*)}/g;
 
 export function text(str: string, ...substitutions: Array<unknown>): string {
   const first = substitutions[0];

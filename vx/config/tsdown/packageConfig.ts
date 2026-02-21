@@ -418,16 +418,6 @@ async function updatePackageJsonTypes(
     legacyDtsPath,
   });
 
-  if (pkg.publishConfig?.exports) {
-    // Use pkg.exports as the source to ensure aliases are included
-    pkg.publishConfig.exports = updateExports(
-      pkg.exports,
-      typeMap,
-      packageName,
-      { mainTypes, legacyDtsPath },
-    );
-  }
-
   await fsPromises.writeFile(
     packageJsonPath,
     JSON.stringify(pkg, null, 2) + '\n',

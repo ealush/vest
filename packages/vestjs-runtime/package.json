@@ -11,7 +11,7 @@
   "types": "./types/vestjs-runtime.d.cts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ealush/vest.git",
+    "url": "git+https://github.com/ealush/vest.git",
     "directory": "packages/vestjs-runtime"
   },
   "bugs": {
@@ -60,56 +60,5 @@
     "./vestjs-runtime.d.ts": "./types/vestjs-runtime.d.ts",
     "./types/*": "./types/*",
     "./dist/*": "./dist/*"
-  },
-  "publishConfig": {
-    "exports": {
-      "./exports/IsolateSerializer": {
-        "types": "./types/exports/IsolateSerializer.d.cts",
-        "require": "./dist/exports/IsolateSerializer.cjs",
-        "import": "./dist/exports/IsolateSerializer.mjs"
-      },
-      "./exports/test-utils": {
-        "types": "./types/exports/test-utils.d.cts",
-        "require": "./dist/exports/test-utils.cjs",
-        "import": "./dist/exports/test-utils.mjs"
-      },
-      "./vestjs-runtime": {
-        "types": "./types/vestjs-runtime.d.cts",
-        "require": "./dist/vestjs-runtime.cjs",
-        "import": "./dist/vestjs-runtime.mjs"
-      },
-      "./*": {
-        "types": "./types/vestjs-runtime.d.cts",
-        "default": "./*"
-      },
-      ".": {
-        "types": "./types/vestjs-runtime.d.cts",
-        "require": "./dist/vestjs-runtime.cjs",
-        "import": "./dist/vestjs-runtime.mjs"
-      },
-      "./package.json": "./package.json",
-      "./IsolateSerializer": {
-        "types": "./types/exports/IsolateSerializer.d.cts",
-        "require": "./dist/exports/IsolateSerializer.cjs",
-        "import": "./dist/exports/IsolateSerializer.mjs"
-      },
-      "./test-utils": {
-        "types": "./types/exports/test-utils.d.cts",
-        "require": "./dist/exports/test-utils.cjs",
-        "import": "./dist/exports/test-utils.mjs"
-      },
-      "./vestjs-runtime.d.ts": {
-        "types": "./types/vestjs-runtime.d.cts",
-        "default": "./types/vestjs-runtime.d.ts"
-      },
-      "./types/*": {
-        "types": "./types/vestjs-runtime.d.cts",
-        "default": "./types/*"
-      },
-      "./dist/*": {
-        "types": "./types/vestjs-runtime.d.cts",
-        "default": "./dist/*"
-      }
-    }
   }
 }

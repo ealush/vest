@@ -12,7 +12,7 @@
   "module": "./dist/vast.mjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ealush/vest.git",
+    "url": "git+https://github.com/ealush/vest.git",
     "directory": "packages/vast"
   },
   "bugs": {
@@ -39,35 +39,5 @@
     "./vast.d.ts": "./types/vast.d.ts",
     "./types/*": "./types/*",
     "./dist/*": "./dist/*"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": {
-        "types": "./types/vast.d.cts",
-        "require": "./dist/vast.cjs",
-        "import": "./dist/vast.mjs"
-      },
-      "./*": {
-        "types": "./types/vast.d.cts",
-        "default": "./*"
-      },
-      "./package.json": "./package.json",
-      "./vast": {
-        "types": "./types/vast.d.cts",
-        "default": "./types/vast.d.cts"
-      },
-      "./vast.d.ts": {
-        "types": "./types/vast.d.cts",
-        "default": "./types/vast.d.ts"
-      },
-      "./types/*": {
-        "types": "./types/vast.d.cts",
-        "default": "./types/*"
-      },
-      "./dist/*": {
-        "types": "./types/vast.d.cts",
-        "default": "./dist/*"
-      }
-    }
   }
 }

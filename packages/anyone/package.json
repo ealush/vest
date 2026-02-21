@@ -16,7 +16,7 @@
   "module": "./dist/anyone.mjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ealush/vest.git",
+    "url": "git+https://github.com/ealush/vest.git",
     "directory": "packages/anyone"
   },
   "bugs": {
@@ -84,76 +84,5 @@
     "./anyone.d.ts": "./types/anyone.d.ts",
     "./types/*": "./types/*",
     "./dist/*": "./dist/*"
-  },
-  "publishConfig": {
-    "exports": {
-      "./anyone": {
-        "types": "./types/anyone.d.cts",
-        "require": "./dist/anyone.cjs",
-        "import": "./dist/anyone.mjs"
-      },
-      "./exports/all": {
-        "types": "./types/exports/all.d.cts",
-        "require": "./dist/exports/all.cjs",
-        "import": "./dist/exports/all.mjs"
-      },
-      "./exports/any": {
-        "types": "./types/exports/any.d.cts",
-        "require": "./dist/exports/any.cjs",
-        "import": "./dist/exports/any.mjs"
-      },
-      "./exports/none": {
-        "types": "./types/exports/none.d.cts",
-        "require": "./dist/exports/none.cjs",
-        "import": "./dist/exports/none.mjs"
-      },
-      "./exports/one": {
-        "types": "./types/exports/one.d.cts",
-        "require": "./dist/exports/one.cjs",
-        "import": "./dist/exports/one.mjs"
-      },
-      "./*": {
-        "types": "./types/anyone.d.cts",
-        "default": "./*"
-      },
-      ".": {
-        "types": "./types/anyone.d.cts",
-        "require": "./dist/anyone.cjs",
-        "import": "./dist/anyone.mjs"
-      },
-      "./package.json": "./package.json",
-      "./all": {
-        "types": "./types/exports/all.d.cts",
-        "require": "./dist/exports/all.cjs",
-        "import": "./dist/exports/all.mjs"
-      },
-      "./any": {
-        "types": "./types/exports/any.d.cts",
-        "require": "./dist/exports/any.cjs",
-        "import": "./dist/exports/any.mjs"
-      },
-      "./none": {
-        "types": "./types/exports/none.d.cts",
-        "require": "./dist/exports/none.cjs",
-        "import": "./dist/exports/none.mjs"
-      },
-      "./one": {
-        "types": "./types/exports/one.d.cts",
-        "require": "./dist/exports/one.cjs",
-        "import": "./dist/exports/one.mjs"
-      },
-      "./anyone.d.ts": {
-        "types": "./types/anyone.d.cts",
-        "default": "./types/anyone.d.ts"
-      },
-      "./types/*": {
-        "types": "./types/anyone.d.cts",
-        "default": "./types/*"
-      },
-      "./dist/*": {
-        "types": "./types/anyone.d.cts",
-        "default": "./dist/*"
-      }
-    }
   }
 }

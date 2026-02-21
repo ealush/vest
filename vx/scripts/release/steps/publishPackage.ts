@@ -3,6 +3,7 @@ import * as logger from 'vx/logger.js';
 import joinTruthy from 'vx/util/joinTruthy.js';
 import * as taggedBranch from 'vx/util/taggedBranch.js';
 import { usePackage } from 'vx/vxContext.js';
+import vxPath from 'vx/vxPath.js';
 
 type PublishData = { tag?: string; tagId: string; versionToPublish: string };
 
@@ -60,7 +61,13 @@ function genPublishCommand(tag?: string): Array<string | undefined> {
   if (!packageName) {
     throw new Error('Package context is required for publishing.');
   }
-  return [`yarn workspace ${packageName} npm publish`, tag && `--tag ${tag}`];
+
+  // Use npm directly instead of yarn so that OIDC Trusted Publishing works
+  return [
+    `cd ${vxPath.package(packageName)} && npm publish`,
+    tag && `--tag ${tag}`,
+    `--provenance`, // Recommended for trusted publishers
+  ];
 }
 
 function shouldRelease(_versionToUse: string): boolean {

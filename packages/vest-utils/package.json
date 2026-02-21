@@ -14,7 +14,7 @@
   "types": "./types/vest-utils.d.cts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ealush/vest.git",
+    "url": "git+https://github.com/ealush/vest.git",
     "directory": "packages/vest-utils"
   },
   "bugs": {
@@ -60,56 +60,5 @@
     "./vest-utils.d.ts": "./types/vest-utils.d.ts",
     "./types/*": "./types/*",
     "./dist/*": "./dist/*"
-  },
-  "publishConfig": {
-    "exports": {
-      "./exports/minifyObject": {
-        "types": "./types/exports/minifyObject.d.cts",
-        "require": "./dist/exports/minifyObject.cjs",
-        "import": "./dist/exports/minifyObject.mjs"
-      },
-      "./exports/standardSchemaSpec": {
-        "types": "./types/exports/standardSchemaSpec.d.cts",
-        "require": "./dist/exports/standardSchemaSpec.cjs",
-        "import": "./dist/exports/standardSchemaSpec.mjs"
-      },
-      "./vest-utils": {
-        "types": "./types/vest-utils.d.cts",
-        "require": "./dist/vest-utils.cjs",
-        "import": "./dist/vest-utils.mjs"
-      },
-      "./*": {
-        "types": "./types/vest-utils.d.cts",
-        "default": "./*"
-      },
-      ".": {
-        "types": "./types/vest-utils.d.cts",
-        "require": "./dist/vest-utils.cjs",
-        "import": "./dist/vest-utils.mjs"
-      },
-      "./package.json": "./package.json",
-      "./minifyObject": {
-        "types": "./types/exports/minifyObject.d.cts",
-        "require": "./dist/exports/minifyObject.cjs",
-        "import": "./dist/exports/minifyObject.mjs"
-      },
-      "./standardSchemaSpec": {
-        "types": "./types/exports/standardSchemaSpec.d.cts",
-        "require": "./dist/exports/standardSchemaSpec.cjs",
-        "import": "./dist/exports/standardSchemaSpec.mjs"
-      },
-      "./vest-utils.d.ts": {
-        "types": "./types/vest-utils.d.cts",
-        "default": "./types/vest-utils.d.ts"
-      },
-      "./types/*": {
-        "types": "./types/vest-utils.d.cts",
-        "default": "./types/*"
-      },
-      "./dist/*": {
-        "types": "./types/vest-utils.d.cts",
-        "default": "./dist/*"
-      }
-    }
   }
 }

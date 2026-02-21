@@ -16,7 +16,7 @@
   "module": "./dist/context.mjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ealush/vest.git",
+    "url": "git+https://github.com/ealush/vest.git",
     "directory": "packages/context"
   },
   "bugs": {
@@ -39,35 +39,5 @@
     "./context.d.ts": "./types/context.d.ts",
     "./types/*": "./types/*",
     "./dist/*": "./dist/*"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": {
-        "types": "./types/context.d.cts",
-        "require": "./dist/context.cjs",
-        "import": "./dist/context.mjs"
-      },
-      "./*": {
-        "types": "./types/context.d.cts",
-        "default": "./*"
-      },
-      "./package.json": "./package.json",
-      "./context": {
-        "types": "./types/context.d.cts",
-        "default": "./types/context.d.cts"
-      },
-      "./context.d.ts": {
-        "types": "./types/context.d.cts",
-        "default": "./types/context.d.ts"
-      },
-      "./types/*": {
-        "types": "./types/context.d.cts",
-        "default": "./types/*"
-      },
-      "./dist/*": {
-        "types": "./types/context.d.cts",
-        "default": "./dist/*"
-      }
-    }
   }
 }

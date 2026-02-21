@@ -35,9 +35,9 @@ This pattern ensures that empty, untouched fields don't show "Required" errors w
 
 ## 2. Validating on Interaction with `suite.only()`
 
-When a user blurs a field or types, you often want to validate **only that specific field**, while keeping the rest of the form state intact.
+When a user blurs a field or types, you often want to validate **only that specific field**, without affecting other fields.
 
-Vest provides `suite.only()` to validate a specific field, while keeping the rest of the form state intact.
+`suite.only()` does exactly this — it tells Vest to run validations for a specific field, while preserving the results of everything else.
 
 ```javascript
 // On Blur handler
@@ -47,7 +47,7 @@ function handleBlur(fieldName, formData) {
 }
 ```
 
-### Why use `only()`?
+### Why use `suite.only()`?
 
 - **Performance:** It skips expensive tests (like async checks) for fields the user isn't touching.
 - **User Experience:** It updates the state for the current field without accidentally flagging other fields as "tested" or "invalid" before the user reaches them.

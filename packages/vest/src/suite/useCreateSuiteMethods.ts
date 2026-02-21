@@ -240,13 +240,14 @@ function useCreateOnly<
   subscribe: Subscribe,
   schema?: S,
 ) {
+  const focus = useCreateFocus<F, G, T, S>(
+    suiteCallback,
+    modifiers,
+    subscribe,
+    schema,
+  );
   return function only(onlyField: NonNullable<SuiteModifiers<F>['only']>) {
-    return useCreateSuiteMethods<F, G, T, S>(
-      suiteCallback,
-      { ...modifiers, only: onlyField },
-      subscribe,
-      schema,
-    );
+    return focus({ only: onlyField });
   };
 }
 

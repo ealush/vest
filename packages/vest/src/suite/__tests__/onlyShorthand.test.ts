@@ -3,7 +3,7 @@ import * as vest from '../../vest';
 import { test as vestTest } from '../../core/test/test';
 
 describe('Suite .only() shorthand', () => {
-  it('should act as a shorthand for suite.focus({ only })', () => {
+  it('should act as a shorthand for suite.focus({ only }) and run only the specified field', () => {
     let runCount1 = 0;
     let runCount2 = 0;
     const suite = vest.create(() => {
@@ -20,24 +20,6 @@ describe('Suite .only() shorthand', () => {
     expect(focusedSuite).toHaveProperty('get');
 
     focusedSuite.run();
-    expect(runCount1).toBe(1);
-    expect(runCount2).toBe(0);
-  });
-
-  it('should run only the specified field', () => {
-    let runCount1 = 0;
-    let runCount2 = 0;
-    const suite = vest.create(() => {
-      vestTest('field1', () => {
-        runCount1++;
-      });
-      vestTest('field2', () => {
-        runCount2++;
-      });
-    });
-
-    suite.only('field1').run();
-
     expect(runCount1).toBe(1);
     expect(runCount2).toBe(0);
   });

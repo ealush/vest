@@ -15,6 +15,8 @@ keywords:
   ]
 ---
 
+import ExecutionModesSandpack from '@site/src/components/Sandpack/ExecutionModes';
+
 # Execution Modes
 
 Vest provides three modes of execution - `Eager`, `One` and `All`. The mode determines how Vest behaves when a validation error occurs during the execution of a test suite. They can be set using the `mode()` function within the `create()` function.
@@ -54,6 +56,10 @@ const suite = create(() => {
 ```
 
 In the above example, if the first test fails, Vest will continue validating the second test and report both failures.
+
+## Live example
+
+<ExecutionModesSandpack />
 
 ## One mode
 

@@ -6,10 +6,14 @@ import commonStyles from '../RawExample.module.css';
 const SuiteCode = `import { create, test, enforce } from 'vest';
 
 const suite = create((data = {}) => {
+  // \`test\` runs an assertion. The first argument is the name of the field.
   test('username', 'Username is required', () => {
+    // \`enforce\` checks that a condition is met. 
+    // If it throws an error, the test is marked as failed.
     enforce(data.username).isNotBlank();
   });
 
+  // You can define multiple tests for the same field.
   test('username', 'Username must be at least 3 chars', () => {
     enforce(data.username).longerThan(2);
   });

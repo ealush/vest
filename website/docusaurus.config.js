@@ -43,14 +43,14 @@ const config = {
           versions: {
             '4.x': {
               label: '4.x',
+              banner: 'unmaintained',
+            },
+            '5.x': {
+              label: '5.x',
             },
             current: {
-              label: '5.x',
+              label: '6.x',
               banner: 'none',
-            },
-            next: {
-              label: '6.x (next)',
-              banner: 'unreleased',
             },
           },
         },
@@ -206,9 +206,9 @@ const config = {
         darkTheme: themes.nightOwl,
       },
       announcementBar: {
-        id: 'announcementBar-vest-6',
+        id: 'announcementBar-vest-6-released',
         content:
-          'Vest 6 is ready for testing 🎉 <a href="/vest-6-is-ready">Try it out now!</a>',
+          'Vest 6 is here! 🎉 <a href="/docs/upgrade_guide">Upgrade guide</a>',
         textColor: 'var(--announcement-bar-color)',
         isCloseable: true,
       },

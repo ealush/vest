@@ -1,0 +1,385 @@
+# Vest — Declarative Form Validation Framework
+
+Vest is a framework-agnostic form validation library for JavaScript/TypeScript. Its syntax is inspired by unit testing frameworks like Mocha and Jest. It works with React, Vue, Svelte, Angular, and vanilla JS.
+
+Full documentation: https://vestjs.dev
+
+## Installation
+
+```
+npm i vest
+```
+
+## Quick Start
+
+```js
+import { create, test, enforce } from 'vest';
+
+const suite = create((data = {}) => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  test('username', 'Username must be at least 3 characters', () => {
+    enforce(data.username).longerThanOrEquals(3);
+  });
+
+  test('email', 'Email is not valid', () => {
+    enforce(data.email).isNotBlank().isEmail();
+  });
+});
+
+// Run the suite
+const result = suite(formData);
+
+result.isValid();           // true if the entire suite passed
+result.isValid('username'); // true if the 'username' field passed
+result.hasErrors('email');  // true if 'email' has errors
+result.getErrors('email');  // ['Email is not valid']
+```
+
+## Core Concepts
+
+### Suites
+
+A suite is created with `create()`. It retains validation state across runs — only changed fields need re-validation.
+
+```js
+import { create } from 'vest';
+
+const suite = create((data, currentField) => {
+  // validations go here
+});
+
+// Run the suite
+const result = suite(formData, 'username');
+
+// Access current state at any time (even outside the suite)
+const currentState = suite.get();
+```
+
+**Suite methods:**
+- `suite.get()` — Returns the current validation state
+- `suite.reset()` — Resets all validation state
+- `suite.resetField(fieldName)` — Resets a single field
+- `suite.remove(fieldName)` — Removes a field from the suite state
+- `suite.subscribe(callback)` — Subscribes to state changes
+- `suite.afterEach(callback)` — Runs callback after each validation cycle (sync and async)
+
+### Tests
+
+The `test()` function defines a single validation. It fails by throwing (via `enforce`) or returning `false`.
+
+```js
+import { test, enforce } from 'vest';
+
+// Sync test
+test('password', 'Password must be 8+ chars', () => {
+  enforce(data.password).longerThanOrEquals(8);
+});
+
+// Async test
+test('username', 'Username already taken', async () => {
+  const exists = await checkUsername(data.username);
+  enforce(exists).isFalse();
+});
+
+// Return false to fail
+test('age', 'Must be 18+', () => {
+  return data.age >= 18;
+});
+```
+
+### Enforce (Assertions)
+
+`enforce` is Vest's chainable assertion library. It throws on failure.
+
+```js
+enforce(value).isNotBlank();
+enforce(value).isString().longerThan(2);
+enforce(value).isNumber().greaterThan(0).lessThan(100);
+enforce(value).isArray().isNotEmpty();
+```
+
+**Common enforce rules:**
+- String: `isString`, `isNotBlank`, `longerThan`, `longerThanOrEquals`, `shorterThan`, `shorterThanOrEquals`, `matches` (regex)
+- Number: `isNumber`, `greaterThan`, `greaterThanOrEquals`, `lessThan`, `lessThanOrEquals`, `isBetween`
+- Boolean: `isBoolean`, `isTruthy`, `isFalsy`, `isTrue`, `isFalse`
+- Array: `isArray`, `isNotEmpty`, `longerThan`, `shorterThan`
+- General: `equals`, `notEquals`, `isEmpty`, `isNotEmpty`, `isNullish`, `isNotNullish`
+
+**Optional enforce plugins** (import to use):
+- `import 'vest/enforce/email';` → `enforce(val).isEmail()`
+- `import 'vest/enforce/date';` → `enforce(val).isDate()`, `.isAfter()`, `.isBefore()`
+- `import 'vest/enforce/isURL';` → `enforce(val).isURL()`
+- `import 'vest/enforce/schema';` → `enforce(obj).shape({...})`, `.loose({...})`, `.isArrayOf()`
+- `import 'vest/enforce/compounds';` → `enforce.anyOf()`, `.allOf()`, `.oneOf()`, `.noneOf()`
+
+### Focused Validation with `only()` and `skip()`
+
+Validate specific fields (e.g., on blur) while retaining the state of others:
+
+```js
+import { create, test, only, skip, enforce } from 'vest';
+
+const suite = create((data, currentField) => {
+  only(currentField); // only run tests for this field
+
+  test('username', 'Required', () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  test('email', 'Required', () => {
+    enforce(data.email).isNotBlank();
+  });
+});
+
+// Validate only 'username', keep previous 'email' state
+suite(formData, 'username');
+```
+
+**Important:** `only()` and `skip()` must NOT be called conditionally (inside `if`). Instead pass falsy values:
+
+```js
+only(shouldFocus && 'fieldName'); // ✅ correct
+// if (shouldFocus) only('fieldName'); // ❌ wrong
+```
+
+### Conditional Tests
+
+```js
+import { skipWhen, omitWhen } from 'vest';
+
+// skipWhen: skips tests but remembers previous results
+skipWhen(data.promo === '', () => {
+  test('promo', 'Invalid promo code', () => { /* ... */ });
+});
+
+// omitWhen: skips tests and clears their results
+omitWhen(data.role !== 'admin', () => {
+  test('adminCode', 'Invalid admin code', () => { /* ... */ });
+});
+```
+
+### Optional Fields
+
+```js
+import { optional } from 'vest';
+
+const suite = create(data => {
+  optional('nickname'); // 'nickname' won't fail the suite if empty/untested
+
+  test('nickname', 'Too long', () => {
+    enforce(data.nickname).shorterThan(20);
+  });
+});
+```
+
+### Linking Fields with `include()`
+
+Run related fields together even when using `only()`:
+
+```js
+import { include, only, test } from 'vest';
+
+const suite = create((data, field) => {
+  only(field);
+  include('confirm').when('password'); // when 'password' runs, also run 'confirm'
+
+  test('password', 'Required', () => { /* ... */ });
+  test('confirm', 'Passwords must match', () => {
+    enforce(data.confirm).equals(data.password);
+  });
+});
+```
+
+### Warning-Only Tests
+
+```js
+import { test, enforce } from 'vest';
+
+test('password', 'Consider a stronger password', () => {
+  vest.warn(); // marks this test as a warning, not an error
+  enforce(data.password).longerThan(8);
+});
+```
+
+Warnings don't affect `isValid()` but appear in `hasWarnings()` and `getWarnings()`.
+
+### Groups
+
+```js
+import { group, test } from 'vest';
+
+const suite = create(data => {
+  group('billing', () => {
+    test('card', 'Card number is invalid', () => { /* ... */ });
+  });
+
+  group('shipping', () => {
+    test('address', 'Address is required', () => { /* ... */ });
+  });
+});
+
+const result = suite(data);
+result.hasErrorsByGroup('billing');
+result.getErrorsByGroup('shipping');
+```
+
+### Dynamic Tests with `each()`
+
+```js
+import { each, test, enforce } from 'vest';
+
+const suite = create(data => {
+  each(data.items, (item, index) => {
+    test(`item_${index}`, 'Item name is required', () => {
+      enforce(item.name).isNotBlank();
+    });
+  });
+});
+```
+
+### Execution Modes
+
+```js
+import { mode, Modes } from 'vest';
+
+const suite = create(data => {
+  mode(Modes.ALL); // run ALL tests even after failures (default: EAGER — stops after first failure per field)
+  // ...
+});
+```
+
+## Suite Result API
+
+After running a suite, the result object provides:
+
+```js
+const result = suite(data);
+
+// Error/Warning checks
+result.hasErrors();              // any errors in the suite?
+result.hasErrors('fieldName');   // errors for this field?
+result.hasWarnings();            // any warnings?
+result.hasWarnings('fieldName'); // warnings for this field?
+
+// Get messages
+result.getErrors();              // { fieldName: ['msg1', 'msg2'] }
+result.getErrors('fieldName');   // ['msg1', 'msg2']
+result.getWarnings('fieldName'); // ['warning msg']
+result.getError('fieldName');    // 'msg1' (first error only)
+result.getWarning('fieldName');  // 'warning msg' (first warning only)
+result.getMessage('fieldName');  // first error or warning message
+
+// State checks
+result.isValid();                // true if entire suite is valid
+result.isValid('fieldName');     // true if specific field is valid
+result.isPending();              // true if async tests are still running
+result.isTested('fieldName');    // true if field has been tested
+
+// Groups
+result.hasErrorsByGroup('groupName');
+result.getErrorsByGroup('groupName');
+result.isValidByGroup('groupName');
+
+// Async completion
+result.done(callback);                   // called when ALL async tests finish
+result.done('fieldName', callback);      // called when field's async tests finish
+```
+
+## Server-Side Validation
+
+Use `staticSuite` for stateless validation (no retained state between runs):
+
+```js
+import { staticSuite, test, enforce } from 'vest';
+
+const suite = staticSuite((data) => {
+  test('email', 'Email is required', () => {
+    enforce(data.email).isNotBlank();
+  });
+});
+
+// Each call is independent — no shared state
+const result = suite(requestBody);
+```
+
+## Schema Validation with Enforce
+
+```js
+import { enforce } from 'vest';
+import 'vest/enforce/schema';
+
+enforce(userData).shape({
+  name: enforce.isString().isNotBlank(),
+  age: enforce.isNumber().greaterThan(0),
+  email: enforce.optional(enforce.isString()),
+  address: enforce.shape({
+    street: enforce.isString(),
+    city: enforce.isString(),
+  }),
+});
+```
+
+## Custom Enforce Rules
+
+```js
+enforce.extend({
+  isPositiveNumber: value => ({
+    pass: typeof value === 'number' && value > 0,
+    message: () => 'Value must be a positive number',
+  }),
+});
+
+enforce(42).isPositiveNumber(); // passes
+```
+
+## Utilities
+
+- **`vest/classnames`**: Generates CSS class names from validation results
+- **`vest/promisify`**: Wraps a suite to return a Promise that resolves with results
+
+## TypeScript Support
+
+Vest provides full TypeScript support. Suites and results are typed:
+
+```ts
+import { create, test, enforce } from 'vest';
+
+type FormFields = 'username' | 'email' | 'password';
+type FormGroups = 'credentials';
+
+const suite = create<FormFields, FormGroups>((data: FormData) => {
+  test('username', 'Required', () => {
+    enforce(data.username).isNotBlank();
+  });
+});
+
+const result = suite(data);
+result.hasErrors('username'); // autocomplete for field names
+```
+
+## Common Patterns
+
+### Per-field validation (React example)
+
+```js
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData(prev => ({ ...prev, [name]: value }));
+  suite({ ...formData, [name]: value }, name); // validate only changed field
+};
+```
+
+### Debounced async validation
+
+```js
+import 'vest/debounce';
+import { test, enforce } from 'vest';
+
+test('username', 'Username is taken', debounce(async () => {
+  const taken = await checkUsername(data.username);
+  enforce(taken).isFalse();
+}, 300));
+```

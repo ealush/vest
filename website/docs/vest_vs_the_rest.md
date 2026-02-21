@@ -23,48 +23,121 @@ keywords:
 
 # Comparing Vest to Other Form Validation Libraries
 
-## Vest vs. the Rest
+## The Problem
 
-When comparing Vest to other form validation libraries, it's important to understand the different types of libraries available and their respective strengths and weaknesses.
+Most validation libraries fall into one of two traps:
 
-**1. Functional Matchers:**
-Functional matchers are the most basic form validation libraries. They consist of functions that return a Boolean value based on whether a value meets certain criteria. While these libraries are essential, they lack the structure required for complex form validation scenarios.
+1. **Schema libraries** (Zod, Yup, Joi) - Great for type safety, but they validate _everything_ at once. Not ideal when a user is filling out a form field-by-field.
 
-Notable libraries in this category include **v8n** and **validatorjs**.
+2. **Form state managers** (Formik, Vuelidate) - Great for forms, but they lock you into one framework. Switching from React to Vue? Rewrite all your validation logic.
 
-**2. Schema Validation:**
-Schema validation libraries extend the concept of functional matchers by allowing developers to specify the shape of the entire dataset. A schema validator ensures that the data conforms to the defined schema. While this provides some structure, it may not be efficient for client-side use, because it requires validating the whole schema while users type into field-by-field. Additionally, describing complex scenarios and handling partial form validation can be challenging with schema validators.
+**Vest takes a different approach.** It separates your validation logic from your UI entirely - making it fast, reusable, and framework-agnostic.
 
-Notable libraries in this category include **yup**, **joi**, and **zod**.
+> **If you know Jest or Mocha, you already know Vest.** The syntax is nearly identical.
 
-**3. Framework-Specific Form State Managers:**
-These libraries have gained popularity in recent years. They integrate with UI frameworks and handle form state, interactions, and validations. While they offer mature solutions for client-side use, they often come with limitations. They are tied to specific frameworks or tech stacks, making it difficult to share validation code across teams or switch frameworks without significant refactoring.
+## The Landscape
 
-Notable libraries in this category include **Formik**, **Vuelidate**, **vee-validate**, and **redux-forms**.
+| Category                | Libraries                       | Pros                                    | Cons                      |
+| ----------------------- | ------------------------------- | --------------------------------------- | ------------------------- |
+| **Functional Matchers** | v8n, validatorjs                | Simple, composable                      | No structure, no state    |
+| **Schema Validation**   | Yup, Joi, Zod                   | Type-safe, expressive                   | All-or-nothing validation |
+| **Form State Managers** | Formik, Vuelidate, vee-validate | Integrated UX                           | Framework lock-in         |
+| **Vest**                | -                               | Stateful, per-field, framework-agnostic | New paradigm to learn     |
 
-**How does Vest compare to them?**
+## Feature Comparison
 
-| Features                             | Vest                      | Functional Matchers        | Schema Validation        | Framework-Specific Form State Managers       |
-| ------------------------------------ | ------------------------- | -------------------------- | ------------------------ | -------------------------------------------- |
-| **State Management**                 | Stateful                  | Manual                     | Manual                   | Stateful                                     |
-| **Per Field Validation**             | Supported                 | Not supported              | Not supported            | Supported                                    |
-| **Syntax Style**                     | Declarative               | Function calls             | Declarative              | Declarative                                  |
-| **Code Organization**                | Separate validation suite | Manual organization        | Manual organization      | Depends on library                           |
-| **Framework Agnostic**               | Yes                       | Yes                        | Yes                      | No                                           |
-| **Flexibility for Framework Switch** | High                      | High                       | High                     | Limited                                      |
-| **Code Reusability**                 | High                      | Medium (It's functions...) | Medium (Requires effort) | Low (Within the UI Framework)                |
-| **Example Libraries**                | -                         | v8n, validatorjs           | yup, joi, zod            | Formik, Vuelidate, vee-validate, redux-forms |
+| Features                    | Vest                               | Functional Matchers | Schema Validation | Form State Managers |
+| --------------------------- | ---------------------------------- | ------------------- | ----------------- | ------------------- |
+| **State Management**        | Automatic                          | Manual              | Manual            | Automatic           |
+| **Per Field Validation**    | ✅ Built-in (`only()` / `focus`)   | ❌                  | ❌                | ✅                  |
+| **Framework Agnostic**      | ✅                                 | ✅                  | ✅                | ❌                  |
+| **Async + Race Conditions** | ✅ Handled automatically           | ❌                  | Varies            | Varies              |
+| **SSR/Hydration**           | ✅ (`runStatic`, `dump`, `resume`) | ❌                  | ❌                | Framework-specific  |
+| **Standard Schema Interop** | ✅ (`suite.validate`)              | ❌                  | Some              | Rare                |
+| **Code Reusability**        | High                               | Medium              | Medium            | Low                 |
+| **Syntax**                  | Unit-test style                    | Function calls      | Declarative       | Declarative         |
 
-Vest is a new breed of form validation library that tries to answer the shortcomings of existing solutions, while not compromising on developer experience, user experience and performance. Here's how Vest stands out:
+## Why Vest?
 
-1. **Stateful:** Vest manages the state of validated fields internally, eliminating the need for developers to manually track field states. It takes care of merging states and handling interactivity seamlessly.
+### 1. Separation of Concerns
 
-2. **Selective Field Validation:** Vest allows developers to run validations only on specific fields upon interaction. This eliminates the need to exclude untouched fields from validation results.
+Your validation logic lives in its own file. Your React/Vue/Svelte component just calls `suite.run()` and reads the result. Clean components, testable validation.
 
-3. **Simple and Declarative Syntax:** Vest adopts a straightforward, unit-test-like syntax that is easy to read, write, and maintain. This simplicity enhances developer productivity.
+```javascript
+// validation.js - framework-agnostic
+const suite = create(data => {
+  test('email', 'Required', () => {
+    enforce(data.email).isNotBlank();
+  });
+});
 
-4. **Separate Validation Suite:** Vest keeps the validation code separate from the feature code, enabling better code organization and decoupling. This separation promotes code reuse and maintainability.
+// React, Vue, Svelte - your choice
+const result = suite.run(formData);
+```
 
-5. **Framework Agnostic:** Vest is designed to be framework agnostic, allowing developers to reuse Vest validations across teams and different parts of their products. It provides the flexibility to rewrite the entire application with a different framework without needing to modify the validation code.
+### 2. Per-Field Validation with State Merging
+
+Validate just the field the user is touching. Vest remembers the rest.
+
+```javascript
+// User blurs "email" field
+suite.only('email').run(formData);
+
+// Result includes email validation + previous password result
+result.isValid(); // Full picture
+```
+
+### 3. Async Without the Headaches
+
+Vest handles race conditions automatically. Type "A" → "AB" → "ABC" quickly, and Vest discards stale results.
+
+```javascript
+test('username', 'Already taken', async ({ signal }) => {
+  await fetch('/check', { signal, body: username });
+});
+```
+
+### 4. Switch Frameworks, Keep Validation
+
+Moving from React to Vue? Your Vest suites don't change. Share validation logic between frontend and backend. Use the same suite in your API handlers with `runStatic()`.
+
+### 5. Unit-Test Your Validation
+
+Since your suite is just JavaScript, you can test it like any other unit:
+
+```javascript
+import suite from './validation';
+
+test('requires email', () => {
+  const result = suite.runStatic({ email: '' });
+  expect(result.hasErrors('email')).toBe(true);
+});
+```
+
+## Quick Comparison: Vest vs Zod
+
+| Aspect               | Zod                                 | Vest                                     |
+| -------------------- | ----------------------------------- | ---------------------------------------- |
+| **Primary use**      | Schema definition, type inference   | Form validation                          |
+| **Validation style** | All-at-once                         | Incremental, per-field                   |
+| **State**            | Stateless                           | Stateful (remembers fields)              |
+| **Async**            | Supported                           | Supported + race condition handling      |
+| **Framework**        | Agnostic                            | Agnostic                                 |
+| **Best for**         | API payload validation, static data | Interactive forms, UX-focused validation |
+
+:::tip Use Both!
+Vest and Zod aren't mutually exclusive. Use Zod for API payload types and Vest for form UX. Vest even supports Standard Schema, so you can use Zod rules inside Vest tests.
+:::
+
+## Summary
+
+**Stop writing spaghetti validation logic inside your components.**
+
+Vest lets you write validations as **business logic suites** that are:
+
+- ✅ Readable (unit-test syntax)
+- ✅ Reusable (framework-agnostic)
+- ✅ Fast (per-field validation)
+- ✅ Resilient (async race condition handling)
 
 With its emphasis on improved developer experience, user experience, and performance, Vest offers a compelling alternative to existing form validation libraries.

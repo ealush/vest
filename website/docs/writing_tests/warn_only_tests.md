@@ -11,33 +11,9 @@ By default, a failing test has a severity of `error`. Sometimes you may need to 
 
 To set a test's severity level to `warn` call the warn function from the body of your test.
 
-```js
-import { create, test, enforce, warn } from 'vest';
+import WarnOnlyTestsSandpack from '@site/src/components/Sandpack/WarnOnlyTests';
 
-const suite = create(data => {
-  test('password', 'A password must have at least 6 characters', () => {
-    enforce(data.password).longerThan(5);
-  }); // this test has a severity level of `error`
-
-  test('password', 'Your password strength is: WEAK', () => {
-    warn();
-
-    enforce(data.password).matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]$/,
-    );
-  }); // this test has a severity level of `warn`
-
-  test('password', 'Your password strength is: MEDIUM', () => {
-    warn();
-
-    enforce(data.password).matches(
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]$/,
-    );
-  }); // this test has a severity level of `warn`
-});
-
-const validationResult = suite(data);
-```
+<WarnOnlyTestsSandpack />
 
 **Limitations when using warn()**
 

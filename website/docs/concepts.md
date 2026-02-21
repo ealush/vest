@@ -2,34 +2,86 @@
 sidebar_position: 2
 title: Vest's core concepts
 description: Understand the core concepts of Vest and how it differs from other validation libraries.
-keywords: [Vest, Core concepts, Framework Agnostic, Validation, Suite]
+keywords:
+  [Vest, Core concepts, Framework Agnostic, Validation, Suite, Mental Model]
 ---
 
 ## Introduction
 
-Vest is a form validation framework designed to simplify and optimize form validations in JavaScript. Inspired by the syntax and style of popular unit testing tools like Mocha and Jest, using Vest will feel familiar to developers who have experience with those tools. However, Vest has some unique features that make it more suitable for form validation.
+Vest is a form validation framework designed to simplify and optimize form validations in JavaScript. Inspired by the syntax and style of popular unit testing tools like Mocha and Jest, using Vest will feel familiar to developers who have experience with those tools.
+
+**If you know Jest, you already know Vest.**
+
+## The Mental Model
+
+The key insight behind Vest is that **validations are just tests**. Instead of mixing validation logic into your UI components, Vest lets you write it in a separate file using the same patterns you'd use for unit tests.
+
+### The Suite as a "Living Result"
+
+Think of a Suite as more than just a function - it's an **object that holds the truth about your data validity**. When you call `suite.run()`:
+
+1. Vest executes your validation tests
+2. It stores the results internally
+3. It merges new results with previous field results
+4. It returns a result object with everything you need
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                      Your Suite                          │
+├─────────────────────────────────────────────────────────┤
+│  User types in "Username"                                │
+│           ↓                                              │
+│  suite.only('username').run(data)            │
+│           ↓                                              │
+│  Vest runs ONLY "Username" tests                         │
+│           ↓                                              │
+│  Vest MERGES result with previous "Password" result      │
+│           ↓                                              │
+│  UI receives COMPLETE validation picture                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+This is why Vest is so fast for form validation - it only runs what's needed while keeping the full picture intact.
 
 ## Core Concepts
 
 ### Validation Suites
 
-With Vest, you define your form validations in a validation suite, which is separate from your feature code. The validation suite is where all the validations of a given form reside. The suite returns a function that can take in any data you have in your form. Here's an example:
+With Vest, you define your form validations in a validation suite, which is separate from your feature code. The suite is an object with methods such as `run`, `runStatic`, and `reset`, and it retains state between runs.
 
 ```js
-import { create } from 'vest';
+import { create, test, enforce } from 'vest';
 
 const suite = create((data = {}) => {
-  // Your validations go here
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
 });
+
+// Execute the suite
+const result = suite.run({ username: 'Dana' });
+
+if (result.isValid()) {
+  // Form is valid
+}
 ```
 
-### Stateful Validation
+### Stateful vs Stateless Validation
 
-When you create a validation suite, Vest also initializes a suite-state where the current validation results are stored. This suite-state is merged with the next suite-state when the suite is run. This approach allows for very performant validations of only the field the user is interacting with, and not the entire form. [Read more on validation state](./understanding_state.md).
+Vest offers two modes:
+
+| Mode          | Method              | Use Case                                     |
+| ------------- | ------------------- | -------------------------------------------- |
+| **Stateful**  | `suite.run()`       | Client-side forms, SPAs, React/Vue/Svelte    |
+| **Stateless** | `suite.runStatic()` | Server-side API validation, Lambda functions |
+
+**Stateful** keeps results between runs - perfect for incrementally validating fields as users interact.
+
+**Stateless** is a fresh start every time - perfect for API endpoints where each request is independent.
 
 ### Framework Agnostic
 
-Since you write your validation suite outside of your feature code, and Vest retains its own state, you can use Vest with any framework you want. Vest only requires a limited interface with your feature code.
+Since you write your validation suite outside of your feature code, and Vest retains its own state, you can use Vest with any framework you want. The same suite works with React, Vue, Svelte, Angular, or vanilla JS.
 
 ## Common Questions
 
@@ -39,16 +91,12 @@ Yes! Unlike testing libraries, Vest is designed to run in production. Although V
 
 ### Does Vest support asynchronous validations?
 
-Yes, Vest supports asynchronous validations. It provides utilities and mechanisms to handle asynchronous validations using promises or async/await syntax. Users can include asynchronous logic within their validation rules. [Read more on asynchronous validations](./writing_tests/async_tests.md).
+Yes, Vest supports asynchronous validations with built-in race condition handling. It provides utilities and mechanisms to handle asynchronous validations using promises or async/await syntax. [Read more on asynchronous validations](./writing_tests/async_tests.md).
 
-### Can I customize the error messages in Vest?
+### Is Vest compatible with form libraries?
 
-Yes, Vest allows customization of error messages. There are multiple ways you can customize error messages in Vest. [Read more on customizing error messages](./writing_tests/failing_with_a_custom_message.md).
-
-### Is Vest compatible with form libraries or UI frameworks?
-
-Yes, Vest is compatible with various form libraries and UI frameworks, including popular ones like React, Vue.js, and Angular. As a framework-agnostic validation library, Vest can be integrated into any JavaScript framework seamlessly. Developers can incorporate Vest's validation logic into their form components and leverage the benefits of Vest alongside their chosen form library or UI framework.
+Yes, Vest is compatible with various form libraries and UI frameworks. As a framework-agnostic validation library, it can be integrated into React Hook Form, Formik, Felte, and others via the **Standard Schema** support. [Read more](./community_resources/standard_schema.md).
 
 ### Does Vest support internationalization (i18n)?
 
-Yes, Vest supports internationalization. Developers can handle internationalization requirements by leveraging the existing localization mechanisms of their chosen framework or by implementing custom approaches. All you need to do is use your already localized/translated strings as your error messages.
+Yes, Vest supports internationalization. Use your already localized/translated strings as your error messages - Vest doesn't impose any specific i18n solution.

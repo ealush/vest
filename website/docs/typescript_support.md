@@ -7,17 +7,38 @@ keywords: [Vest, Typescript, Typescript support]
 
 # TypeScript Support
 
-Vest is written fully in TypeScript, and as such, it provides extensive TypeScript support.
+Vest is written fully in TypeScript and provides first-class typing for suites, schemas, and custom rules.
+
+## Schema-Aware Suite Creation
+
+Passing an `n4s` schema as the second argument to `create` automatically types your suite callback and `.run()` calls. The schema is enforced at runtime and the suite result records the validated `input` and `output` in `result.types`.
+
+```typescript
+import { create, test, enforce } from 'vest';
+
+const userSchema = enforce.shape({
+  username: enforce.isString(),
+  age: enforce.isNumber(),
+  tags: enforce.isArrayOf(enforce.isString()),
+});
+
+const suite = create(data => {
+  // data is typed as: { username: string; age: number; tags: string[] }
+  test('username', () => {
+    enforce(data.username).isNotBlank();
+  });
+}, userSchema);
+
+suite.run({ username: 'alice', age: 30, tags: [] }); // ✅
+// suite.run({ username: 'alice' }); // ❌ Property 'age' is missing
+// suite.run({ username: 42, age: 30, tags: [] }); // ❌ Type mismatch
+```
+
+Works with `enforce.shape`, `enforce.loose`, and `enforce.partial`.
 
 ## Suite Generics
 
-The Suite's `create` function takes three **optional** generic types - `FieldName`, `GroupName` and `Callback`.
-
-| Name        | Type       | Optional? | Default    | Description                                                                                                                                                |
-| ----------- | ---------- | --------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `FieldName` | `string`   | Yes       | `string`   | A union of the allowed field names in the suite. This type is propagated to all the suite and suite response methods.                                      |
-| `GroupName` | `string`   | Yes       | `string`   | A union of the allowed group names in the suite. This type is propagated to all the suite and suite response methods.                                      |
-| `Callback`  | `Function` | Yes       | `Function` | The type for the suite callback. This type is propagated into the suite callback, and can be used to defined the shape of the data for the suite callback. |
+`create` also accepts generic parameters when you want explicit control over field names, group names, or the callback signature.
 
 ```typescript
 import { create } from 'vest';
@@ -27,95 +48,72 @@ type GroupName = 'SignIn' | 'ChangePassword';
 type Callback = (data: { username: string; password: string }) => void;
 
 const suite = create<FieldName, GroupName, Callback>(data => {
-  // data is now typed
-  // ...
+  // data is typed
 });
 
-const res = suite();
-
-res.getErrors('username');
-res.getErrors('full_name'); // 🚨 Throws a compilation error
+const result = suite.run();
+result.getErrors('username'); // typed
+// result.getErrors('full_name'); // 🚨 compile-time error
 ```
 
-The following methods are typed:
-
-- `getError`
-- `getErrors`
-- `getErrorsByGroup`
-- `getWarning`
-- `getWarnings`
-- `getWarningsByGroup`
-- `hasErrors`
-- `hasErrorsByGroup`
-- `hasWarnings`
-- `hasWarningsByGroup`
-- `isValid`
-- `isValidByGroup`
-- `res.done`
-- `suite.get`
+The typed selectors include `getError`, `getErrors`, `getWarnings`, `hasErrors`, `hasWarnings`, `isValid`, `isValidByGroup`, and `suite.afterEach`.
 
 ## Typing Runtime Functions
 
-The types mentioned above are useful, but they are not as strict, and only provides partial safety, as they only deal with the result object and not with the suite's operation.
-
-The following functions can make use of the suite's types as well:
-
-- `group`
-- `include`
-- `omitWhen`
-- `only`
-- `optional`
-- `skip`
-- `skipWhen`
-- `test`
-
-To do so, you can type your suite as mentioned in the previous section, and destruct these from directly from the suite.
+When you destructure helpers from the suite, they inherit the suite's types. This keeps runtime calls like `test`, `only`, and `group` aligned with your field and group unions.
 
 ```typescript
 import { create } from 'vest';
 
-type TData = { username: string; password: string };
-type FieldName = keyof TData;
+type Data = { username: string; password: string };
+type FieldName = keyof Data;
 type GroupName = 'SignIn' | 'ChangePassword';
-type Callback = (data: TData) => void;
 
-const suite = create<FieldName, GroupName, Callback>(data => {
+const suite = create<FieldName, GroupName, (data: Data) => void>(data => {
   only('username');
-
-  test('username', 'Password is required', () => {
-    /*...*/
-  }); // ✅
-  test('password', 'Password is too required', () => {
-    /*...*/
-  }); // ✅
-
-  test('confirm', 'Passwords do not match', () => {
-    /*...*/
-  }); // 🚨 Will throw a compilation error
+  test('username', 'Username required', () => {});
 });
 
-const { test, group, only } = suite;
+const { test, group, only } = suite; // typed helpers
 ```
 
-## Exported Types
+## Suite Result Types
 
-Vest exports the following types so you can use them to annotate your functions and variables:
+Use exported types to annotate variables and APIs:
 
-- `Suite<FieldName, GroupName, Callback>`<br/>
-  A single suite instance.
+- `Suite<FieldName, GroupName, Callback>` - a suite instance.
+- `SuiteResult<FieldName, GroupName>` - the result returned from `run`, `runStatic`, or `get`.
+- `SuiteSummary<FieldName, GroupName>` - the static snapshot of all test results.
+- `IsolateTest<FieldName, GroupName>` - represents a Vest test.
 
-- `SuiteRunResult<FieldName, GroupName>`<br/>
-  The immediate output of a suite invocation - `suite()`, including the `done()` function.
-
-- `SuiteResult<FieldName, GroupName>`<br/>
-  Non-actionable suite result, meaning - the same as SuiteRunResult, but without the `done()` function. The return type of `suite.get()`.
-
-- `SuiteSummary<FieldName, GroupName>`<br/>
-  The static suite summary, all test results defined in the result object.
-
-- `IsolateTest<FieldName, GroupName>`<br/>
-  Rperesents a Vest test.
+`SuiteResult` also carries `types.input` and `types.output` when a schema is present.
 
 ## Custom Enforce Rules
 
-See [Custom Rule Typescript Support](./enforce/creating_custom_rules.md#custom-rule-typescript-support);
+Extend `enforce` with value-first signatures so TypeScript can map them into both eager and lazy APIs.
+
+```typescript
+import { enforce } from 'vest';
+
+const customRules = {
+  isValidEmail: (value: string) => value.includes('@'),
+  isWithinRange: (value: number, min: number, max: number) =>
+    value >= min && value <= max,
+};
+
+enforce.extend(customRules);
+
+declare global {
+  namespace n4s {
+    interface EnforceMatchers {
+      isValidEmail: (value: string) => boolean;
+      isWithinRange: (value: number, min: number, max: number) => boolean;
+    }
+  }
+}
+
+enforce('test@example.com').isValidEmail();
+enforce(10).isWithinRange(5, 15);
+```
+
+[Read more about custom rule typing](./enforce/creating_custom_rules.md#typescript-support).

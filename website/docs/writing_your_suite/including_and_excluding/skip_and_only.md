@@ -5,6 +5,8 @@ description: Learn how to use skip() and only() functions in Vest to include or 
 keywords: [Vest, Skip, Only, exclude, include, validation framework, tests]
 ---
 
+import SkipAndOnlySandpack from '@site/src/components/Sandpack/SkipAndOnly';
+
 # Including or Excluding Fields in Vest Validation Framework
 
 In real-world scenarios, you may need to run tests only on a specific field or skip some tests according to some logic. To handle such cases, Vest includes `skip()` and `only()` functions.
@@ -61,12 +63,78 @@ const suite = create((data, fieldName) => {
   });
 });
 
-const validationResult = suite(formData, changedField);
+const validationResult = suite.run(formData, changedField);
 ```
 
 :::tip Linking Related Fields to Run Together
 You can make fields run together by using [include](./include). This is useful when you have fields that depend on each other, and you want to make sure they run at the same time.
 :::
+
+## V6 Recommended: Using `suite.only()` and `suite.focus()`
+
+In Vest 6, the preferred way to focus validation on specific fields is to use the **`suite.only()`** and **`suite.focus()`** methods. This approach is cleaner and separates the "what to validate" from "how to validate".
+
+```javascript
+import { create, test, enforce } from 'vest';
+
+const suite = create(data => {
+  test('username', 'Username is required', () => {
+    enforce(data.username).isNotBlank();
+  });
+  test('email', 'Email is required', () => {
+    enforce(data.email).isEmail();
+  });
+  test('password', 'Password is required', () => {
+    enforce(data.password).longerThanOrEquals(8);
+  });
+});
+
+// Focus on a single field
+suite.only('username').run(formData);
+
+// Focus on multiple fields
+suite.only(['username', 'email']).run(formData);
+
+// Skip specific fields
+suite.focus({ skip: 'password' }).run(formData);
+
+// Skip entire groups
+suite.focus({ skipGroup: 'signUp' }).run(formData);
+
+// Chain with afterEach for callbacks
+suite
+  .only('email')
+  .afterEach(() => updateUI(suite.get()))
+  .run(formData);
+```
+
+### `suite.focus()` Modifiers
+
+| Modifier    | Type                 | Description                                               |
+| ----------- | -------------------- | --------------------------------------------------------- |
+| `only`      | `string \| string[]` | Run only the specified field(s). All others are excluded. |
+| `skip`      | `string \| string[]` | Skip the specified field(s). All others run as usual.     |
+| `skipGroup` | `string \| string[]` | Skip all tests inside the named group(s).                 |
+
+### Why Use `suite.only()` Over `only()`?
+
+| Feature                    | `only()` (inside suite)     | `suite.only()` / `suite.focus()` (outside) |
+| -------------------------- | --------------------------- | ------------------------------------------ |
+| **Declaration**            | Inside suite callback       | At call site                               |
+| **Flexibility**            | Must be conditional         | Fully dynamic                              |
+| **Separation of Concerns** | Mixed with validation logic | Decoupled from validation                  |
+| **Chainable**              | No                          | Yes (returns runnable API)                 |
+| **Best For**               | Static exclusions           | UI-driven field focus                      |
+
+> **Recommendation**: Use `suite.only()` or `suite.focus()` for runtime decisions (e.g., validating on blur), and `only()`/`skip()` for static, logic-based exclusions inside your suite.
+
+When choosing between modifiers in `suite.focus()`, prefer `skipGroup` when your intent is to disable a named validation section (for example `signUp`), and prefer `skip` when your intent is to exclude a specific field everywhere it appears.
+
+For more details, see [Focused Updates](../focused_updates).
+
+## Interactive example
+
+<SkipAndOnlySandpack />
 
 ## Skipping fields
 
@@ -84,7 +152,7 @@ const suite = create(data => {
   });
 });
 
-const validationResult = suite(formData);
+const validationResult = suite.run(formData);
 ```
 
 By using `skip()` and `only()` functions in Vest, you can easily exclude or include fields from being validated, making your validation process more efficient and effective.

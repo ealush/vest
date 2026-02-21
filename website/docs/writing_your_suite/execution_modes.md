@@ -15,6 +15,8 @@ keywords:
   ]
 ---
 
+import ExecutionModesSandpack from '@site/src/components/Sandpack/ExecutionModes';
+
 # Execution Modes
 
 Vest provides three modes of execution - `Eager`, `One` and `All`. The mode determines how Vest behaves when a validation error occurs during the execution of a test suite. They can be set using the `mode()` function within the `create()` function.
@@ -31,10 +33,6 @@ Vest provides three modes of execution - `Eager`, `One` and `All`. The mode dete
 
 To set the mode to `Eager`, you don't need to do anything since this is already the default behavior.
 
-:::tip NOTE
-In Vest version 4, Eager mode was opt-in, and instead of stopping execution of a field when its validations failed, Vest continued to validate all tests. The reason for changing the default behavior to Eager mode in Vest 5 is that there is no much value in validating the field after we know that it failed to begin with. Stopping execution after the first error can save significant time when testing a large number of fields or running expensive validation tests.
-:::
-
 ## All Mode
 
 `All` mode is the alternative mode of operation in Vest. In this mode, Vest continues validating all tests within a field, even if a test fails. This means that Vest will execute all tests and report all failures within the test suite.
@@ -44,7 +42,7 @@ To set the mode to `All`, you can use the `mode()` function within the `create()
 ```js
 import { create, test, mode, Modes } from 'vest';
 
-const suite = create('suite_name', () => {
+const suite = create(() => {
   mode(Modes.ALL); // set the mode to All
 
   test('field_name', 'error_message_1', () => {
@@ -59,6 +57,10 @@ const suite = create('suite_name', () => {
 
 In the above example, if the first test fails, Vest will continue validating the second test and report both failures.
 
+## Live example
+
+<ExecutionModesSandpack />
+
 ## One mode
 
 `One` mode is a mode of operation in Vest that is similar to `Eager` mode, but with a slight difference in behavior. In `One` mode, like `Eager` mode, Vest stops executing tests for a given field once a test fails. However, unlike `Eager` mode, `One` mode goes a step further and skips all the tests that follow a failing test, regardless of the field they belong to.
@@ -70,7 +72,7 @@ To set the mode to `One`, you can use the `mode()` function within the `create()
 ```js
 import { create, test, mode, Modes } from 'vest';
 
-const suite = create('suite_name', () => {
+const suite = create(() => {
   mode(Modes.ONE); // set the mode to One
 
   // 🚨 If this test fails, all next tests will be skipped

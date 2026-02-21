@@ -1,64 +1,46 @@
 ---
 sidebar_position: 1
-title: Getting started with Vest
-description: Vest is a powerful framework that allows you to write and run validations for your JavaScript code. This guide will walk you through the installation process and show you how to write your first suite.
-keywords: [Vest, Get started, Quickstart, Validation, JavaScript]
+title: Getting Started with Vest
+description: Learn the basics of Vest validation. Install the library, create your first suite, and run validations in minutes.
+keywords: [Vest, Tutorial, Validation, JavaScript, React, Vue, Svelte]
 ---
 
-# Introduction to Vest
+# Getting Started
 
-Vest is a powerful and easy-to-use JavaScript validation framework that allows you to write and run validations for your code. It is designed to handle complex validation scenarios while still being simple to use. This guide will show you how to install and use Vest@5, the latest version of the framework that's currently in development.
+Welcome to Vest! If you've used unit testing frameworks like Jest or Mocha, you already know how to use Vest.
+
+import GetStartedSandpack from '@site/src/components/Sandpack/GetStarted';
+
+Vest takes that familiar syntax - `test`, `describe` (we call it `suite`), and assertions - and brings it to your form validation logic.
+
+## Why Vest?
+
+Most validation libraries force you to write validation logic _inside_ your UI components. This makes your components messy, hard to read, and difficult to test.
+
+**Vest is different.** It lets you write your validation logic in a separate file, just like a unit test.
+
+- **Clean Components:** Your UI code only handles UI. Your validation code only handles validation.
+- **Framework Agnostic:** Use the same suite with React, Vue, Svelte, or vanilla JS.
+- **Easy to Test:** Since your validation is just a JS function, you can unit test it in isolation.
 
 ## Installation
 
-To get started with Vest, you will need to install it using npm. Open up your terminal and run the following command:
-
-```
+```shell
 npm i vest
 ```
 
-This will install Vest in your project.
+## Interactive Example
 
-## Writing your first suite
+Here is a complete, interactive example connecting a Vest suite to a React form. You can edit the code to see how Vest behaves!
 
-Once you've installed Vest, you can start writing your first validation suite. A Vest suite is very similar to a unit testing suite in Jest or Mocha, so if you're familiar with those frameworks, the following code should look familiar:
+<GetStartedSandpack />
 
-```js
-// suite.js
-import { create, test, enforce } from 'vest';
+:::note Notice something?
+Your validation logic is completely outside your component. That's the power of Vest. Your component stays clean, and your validation is easy to test.
+:::
 
-const suite = create((data = {}) => {
-  test('username', 'Username is required', () => {
-    enforce(data.username).isNotBlank();
-  });
+## Next Steps
 
-  test('username', 'Username must be at least 3 characters long', () => {
-    enforce(data.username).longerThan(2);
-  });
-});
-
-export default suite;
-```
-
-In this example, we're creating a new validation suite using the `create` function provided by Vest. The suite takes a callback function that defines the validation rules. In this case, we're defining two rules for the `username` field: it must not be blank, and it must be at least 3 characters long. We're using the `test` function to define each rule, and the `enforce` function to define the validation conditions.
-
-Once you've defined your validation suite, you can use it in your application code to validate data. Here's an example of how you might use the suite to validate a form submission:
-
-```js
-import suite from './suite';
-
-const formData = {
-  username: '',
-  password: '',
-};
-
-const validationResult = suite(formData);
-
-if (validationResult.isValid()) {
-  // Submit the form
-} else {
-  // Handle validation errors here
-}
-```
-
-In this example, we're importing our validation suite and passing it some form data. The `suite` function returns a `ValidationResult` object that contains information about the validation outcome. We're using the `isValid` function to check if there are any errors in the result.
+- **[Handling User Interaction](./writing_your_suite/dirty_checking.md)**: Learn how to show errors only when a user interacts with a field.
+- **[Async Tests](./writing_tests/async_tests.md)**: Need to check a username against a database? See how to handle async validations.
+- **[The Suite Object](./writing_your_suite/vests_suite.md)**: Dive deeper into the Suite Object capabilities (`reset`, `remove`, `get`).

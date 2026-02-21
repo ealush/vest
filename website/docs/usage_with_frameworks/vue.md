@@ -9,10 +9,15 @@ Vest integrates beautifully with Vue 3's Composition API and reactivity system, 
 
 ## Quick Start with Composition API
 
+import VueIntegration from '@site/src/components/Sandpack/VueIntegration';
+
+<VueIntegration />
+
 ```vue
 <script setup>
 import { ref, reactive } from 'vue';
 import { create, test, enforce } from 'vest';
+import 'vest/email';
 
 const suite = create((data = {}) => {
   test('username', 'Username is required', () => {
@@ -37,28 +42,24 @@ const formData = reactive({
   email: '',
 });
 
-const result = ref(suite.get());
+const res = ref(suite.get());
 
 const validateField = fieldName => {
   suite
+    .only(fieldName)
     .afterEach(() => {
-      result.value = suite.get();
-    })
-    .run(formData, fieldName);
-};
-
-const handleSubmit = () => {
-  suite
-    .afterEach(() => {
-      const res = suite.get();
-      result.value = res;
-
-      if (!res.hasErrors()) {
-        // Submit form
-        console.log('Form is valid!', formData);
-      }
+      res.value = suite.get();
     })
     .run(formData);
+};
+
+const handleSubmit = async () => {
+  await suite.run(formData);
+
+  if (suite.isValid()) {
+    // Submit form
+    console.log('Form is valid!', formData);
+  }
 };
 </script>
 
@@ -70,8 +71,8 @@ const handleSubmit = () => {
         @input="validateField('username')"
         placeholder="Username"
       />
-      <span v-if="result.hasErrors('username')" class="error">
-        {{ result.getErrors('username')[0] }}
+      <span v-if="res.hasErrors('username')" class="error">
+        {{ res.getError('username') }}
       </span>
     </div>
 
@@ -82,12 +83,12 @@ const handleSubmit = () => {
         type="email"
         placeholder="Email"
       />
-      <span v-if="result.hasErrors('email')" class="error">
-        {{ result.getErrors('email')[0] }}
+      <span v-if="res.hasErrors('email')" class="error">
+        {{ res.getError('email') }}
       </span>
     </div>
 
-    <button type="submit" :disabled="result.hasErrors()">Submit</button>
+    <button type="submit" :disabled="!res.isValid()">Submit</button>
   </form>
 </template>
 ```
@@ -109,11 +110,12 @@ export function useVestForm(suite, initialData = {}) {
     isValidating.value = true;
 
     suite
+      .only(fieldName)
       .afterEach(() => {
         result.value = suite.get();
         isValidating.value = false;
       })
-      .run(formData, fieldName);
+      .run(formData);
   };
 
   const validateAll = () => {
@@ -131,6 +133,7 @@ export function useVestForm(suite, initialData = {}) {
     Object.keys(formData).forEach(key => {
       formData[key] = initialData[key] || '';
     });
+    suite.reset();
     result.value = suite.get();
   };
 
@@ -150,6 +153,7 @@ Usage:
 ```vue
 <script setup>
 import { create, test, enforce } from 'vest';
+import 'vest/email';
 import { useVestForm } from '@/composables/useVestForm';
 
 const suite = create((data = {}) => {
@@ -176,11 +180,11 @@ const handleSubmit = () => {
 <template>
   <form @submit.prevent="handleSubmit">
     <input v-model="formData.username" @input="validate('username')" />
-    <span v-if="result.hasErrors('username')">
-      {{ result.getErrors('username')[0] }}
+    <span v-if="res.hasErrors('username')">
+      {{ res.getError('username') }}
     </span>
 
-    <button type="submit" :disabled="result.hasErrors()">Submit</button>
+    <button type="submit" :disabled="res.hasErrors()">Submit</button>
     <button type="button" @click="reset">Reset</button>
   </form>
 </template>
@@ -194,6 +198,7 @@ Handle async validations with Vue's reactivity:
 <script setup>
 import { ref, reactive } from 'vue';
 import { create, test, enforce } from 'vest';
+import 'vest/email';
 
 const suite = create((data = {}) => {
   test('username', 'Username is required', () => {
@@ -220,11 +225,12 @@ const checkUsername = () => {
   isChecking.value = true;
 
   suite
+    .only('username')
     .afterEach(() => {
       result.value = suite.get();
       isChecking.value = false;
     })
-    .run(formData, 'username');
+    .run(formData);
 };
 </script>
 
@@ -236,10 +242,10 @@ const checkUsername = () => {
       placeholder="Choose a username"
     />
     <span v-if="isChecking">Checking availability...</span>
-    <span v-else-if="result.hasErrors('username')" class="error">
-      {{ result.getErrors('username')[0] }}
+    <span v-else-if="res.hasErrors('username')" class="error">
+      {{ res.getError('username') }}
     </span>
-    <span v-else-if="result.isValid('username')" class="success">
+    <span v-else-if="res.isValid('username')" class="success">
       Username is available!
     </span>
   </div>
@@ -253,6 +259,7 @@ For Vue 2 or Options API users:
 ```vue
 <script>
 import { create, test, enforce } from 'vest';
+import 'vest/email';
 
 const suite = create((data = {}) => {
   test('email', 'Email is required', () => {
@@ -276,10 +283,11 @@ export default {
   methods: {
     validateField(fieldName) {
       suite
+        .only(fieldName)
         .afterEach(() => {
           this.result = suite.get();
         })
-        .run(this.formData, fieldName);
+        .run(this.formData);
     },
     handleSubmit() {
       suite
@@ -305,56 +313,11 @@ export default {
       @input="validateField('email')"
       type="email"
     />
-    <span v-if="result.hasErrors('email')">
-      {{ result.getErrors('email')[0] }}
+    <span v-if="res.hasErrors('email')">
+      {{ res.getError('email') }}
     </span>
 
-    <button type="submit" :disabled="result.hasErrors()">Submit</button>
-  </form>
-</template>
-```
-
-## Felte Integration
-
-Vest integrates with [Felte](https://felte.dev/), a popular form library for Vue:
-
-```bash
-npm install felte @felte/validator-vest
-```
-
-```vue
-<script setup>
-import { createForm } from 'felte';
-import { validator } from '@felte/validator-vest';
-import { create, test, enforce } from 'vest';
-
-const suite = create((data = {}) => {
-  test('email', 'Email is required', () => {
-    enforce(data.email).isNotBlank();
-  });
-
-  test('password', 'Password must be at least 8 characters', () => {
-    enforce(data.password).longerThanOrEquals(8);
-  });
-});
-
-const { form, errors } = createForm({
-  extend: validator({ suite }),
-  onSubmit: values => {
-    console.log('Submitting:', values);
-  },
-});
-</script>
-
-<template>
-  <form ref="form">
-    <input name="email" type="email" />
-    <span v-if="errors.email">{{ errors.email[0] }}</span>
-
-    <input name="password" type="password" />
-    <span v-if="errors.password">{{ errors.password[0] }}</span>
-
-    <button type="submit">Login</button>
+    <button type="submit" :disabled="res.hasErrors()">Submit</button>
   </form>
 </template>
 ```
@@ -394,10 +357,11 @@ const result = ref<SuiteResult>(suite.get());
 
 const validateField = (fieldName: keyof FormData) => {
   suite
+    .only(fieldName)
     .afterEach(() => {
       result.value = suite.get();
     })
-    .run(formData, fieldName);
+    .run(formData);
 };
 </script>
 ```
@@ -411,6 +375,7 @@ Define your validation suite in a separate file. Vest suites are stateful, so th
 ```js
 // validations/signupSuite.js
 import { create, test, enforce } from 'vest';
+import 'vest/email';
 
 export const signupSuite = create((data = {}) => {
   test('username', 'Username is required', () => {
@@ -443,8 +408,9 @@ watchDebounced(
   newValue => {
     // Validate username
     suite
+      .only('username')
       .afterEach(() => setResult(suite.get()))
-      .run({ username: newValue }, 'username');
+      .run({ username: newValue });
   },
   { debounce: 500 },
 );
@@ -480,7 +446,7 @@ const shouldShowError = fieldName => {
     @input="validate('username')"
   />
   <span v-if="shouldShowError('username')">
-    {{ result.getErrors('username')[0] }}
+    {{ res.getError('username') }}
   </span>
 </template>
 ```

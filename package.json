@@ -1,7 +1,7 @@
 {
   "name": "vest-monorepo",
   "scripts": {
-    "build": "vx build",
+    "build": "vx build && yarn build:llms",
     "test": "vx test run",
     "test:watch": "vx test",
     "bench": "npx tsx vx/scripts/benchmark-reporter.ts --update",

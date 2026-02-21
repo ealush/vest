@@ -39,7 +39,7 @@ export default function App() {
     const { name, value } = e.target;
     const next = { ...form, [name]: value };
     setForm(next);
-    setResult(suite(next, name));
+    setResult(suite.run(next, name));
   };
 
   return (

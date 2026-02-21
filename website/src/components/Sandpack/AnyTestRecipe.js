@@ -33,7 +33,7 @@ import './styles.css';
 
 export default function App() {
   const [channels, setChannels] = useState({ email: false, sms: false, push: false });
-  const result = suite(channels);
+  const result = suite.run(channels);
 
   return (
     <div className="App">

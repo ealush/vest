@@ -327,4 +327,4 @@ suite.focus({ onlyGroup: 'groupA' }).run(formData); // ✅
 - [Including and Excluding Fields](./including_and_excluding/skip_and_only) - Using `only()` and `skip()` inside suites
 - [Include](./including_and_excluding/include) - Link related fields to run together
 - [Test Groups](../writing_tests/advanced_test_features/grouping_tests) - Grouping tests together
-- [focus({ skip / skipGroup }) Patterns](../recipes/focus_skipgroup_recipes) - Practical recipes for choosing and combining focus modifiers
+- [`focus({ skip / skipGroup })` Patterns](../recipes/focus_skipgroup_recipes) - Practical recipes for choosing and combining focus modifiers

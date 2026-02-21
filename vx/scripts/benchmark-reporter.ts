@@ -36,8 +36,9 @@ function runBenchmarkFile(filePath: string, cwd: string): string {
   try {
     logger.log(`Running benchmark file: ${filePath} in ${cwd}...`);
     // We explicitly enforce that filePath must be within the bench/ directory to prevent injection.
+    const safeFilePath = filePath.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     return execSync(
-      `yarn vitest bench --run --config packages/vest/vitest.config.ts --passWithNoTests --no-color "${filePath.replace(/"/g, '\\"')}"`,
+      `yarn vitest bench --run --config packages/vest/vitest.config.ts --passWithNoTests --no-color "${safeFilePath}"`,
       {
         encoding: 'utf8',
         stdio: ['ignore', 'pipe', 'inherit'],

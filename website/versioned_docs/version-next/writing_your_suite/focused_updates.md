@@ -31,7 +31,7 @@ The most common use case is validating a single field as the user types or leave
 
 (For multiple fields, you can pass an array: `suite.only(['field1', 'field2'])`).
 
-If you need to combine focusing with other modifiers, you can use `.only(... )`.
+If you need to combine focusing with other modifiers (e.g. `only` + `skipGroup`), use `suite.focus({ ... })` instead.
 
 import FocusedUpdatesSandpack from '@site/src/components/Sandpack/FocusedUpdates';
 

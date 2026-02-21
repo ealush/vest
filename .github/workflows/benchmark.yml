@@ -11,19 +11,19 @@ jobs:
   benchmark:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Checkout baseline branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: latest
           path: .benchmark-baseline
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Use Node.js 24
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 24
 
@@ -55,7 +55,7 @@ jobs:
         run: npx tsx vx/scripts/benchmark-reporter.ts
 
       - name: Comment Benchmark Results
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         if: github.event_name == 'pull_request'
         with:
           script: |
@@ -83,7 +83,10 @@ jobs:
               if (prevResultsIndex !== -1) {
                 const previousLatest = oldContent.substring(0, prevResultsIndex).trim();
                 const pastHistory = oldContent.substring(prevResultsIndex + prevMarker.length, oldContent.lastIndexOf('</details>')).trim();
-                historical = previousLatest + '\n\n---\n\n' + pastHistory;
+                
+                const historyEntries = pastHistory.split('\n\n---\n\n').map(e => e.trim()).filter(Boolean);
+                historyEntries.unshift(previousLatest);
+                historical = historyEntries.slice(0, 5).join('\n\n---\n\n');
               }
               
               const newBody = results + '\n\n' + prevMarker + '\n\n' + historical + '\n</details>';

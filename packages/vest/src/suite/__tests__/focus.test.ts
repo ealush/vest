@@ -539,6 +539,52 @@ describe('suite.focus: onlyGroup', () => {
       expect(cb3).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('extensive top-level test exclusion', () => {
+    it('should skip top-level tests even when they share the same field name as a test inside an onlyGroup', () => {
+      const topCb = vi.fn(() => false);
+      const groupCb = vi.fn(() => false);
+      const suite = vest.create(() => {
+        vest.mode(vest.Modes.ALL);
+
+        // Same field name outside the group
+        vest.test('shared_field', topCb);
+
+        vest.group('groupA', () => {
+          // Same field name inside the group
+          vest.test('shared_field', groupCb);
+        });
+      });
+
+      const res = suite.focus({ onlyGroup: 'groupA' }).run();
+
+      expect(res.groups.groupA.shared_field.testCount).toBe(1);
+      expect(res.tests.shared_field?.testCount ?? 0).toBe(1); // the group test gets aggregated here too, but we verify cb executions
+      expect(topCb).not.toHaveBeenCalled();
+      expect(groupCb).toHaveBeenCalledTimes(1);
+    });
+
+    it('should skip top-level tests even if `only` explicitly includes their field name', () => {
+      const topCb = vi.fn(() => false);
+      const groupCb = vi.fn(() => false);
+      const suite = vest.create(() => {
+        vest.mode(vest.Modes.ALL);
+
+        vest.test('explicit_field', topCb);
+
+        vest.group('groupA', () => {
+          vest.test('explicit_field', groupCb);
+        });
+      });
+
+      // field is only'd, but group restricts to 'groupA'
+      // Top level test for explicit_field should STILL not run
+      suite.focus({ only: 'explicit_field', onlyGroup: 'groupA' }).run();
+
+      expect(topCb).not.toHaveBeenCalled();
+      expect(groupCb).toHaveBeenCalledTimes(1);
+    });
+  });
 });
 
 describe('Four-Way Scope Precedence: only, skip, onlyGroup, skipGroup', () => {

@@ -43,8 +43,16 @@ export function group(
 }
 
 /**
- * Checks whether the given group name is targeted for skipping by the
- * current suite run's `skipGroup` modifier (set via `suite.focus()`).
+ * Evaluates whether an entire group should be skipped based on `suite.focus()` modifiers.
+ *
+ * This function enforces the precedence rules: `skipGroup` > `onlyGroup`.
+ *
+ * 1. If `skipGroup` contains the group name, it is unconditionally skipped (destructive block-list).
+ * 2. If `onlyGroup` is active (has items), and the group name is NOT in it, it is skipped (constructive allow-list).
+ * 3. Otherwise, the group is allowed to run.
+ *
+ * @param {string} groupName - The name of the group being evaluated.
+ * @returns {boolean} `true` if the group should be skipped, `false` otherwise.
  */
 function shouldSkipGroup(groupName: string): boolean {
   const { modifiers } = SuiteContext.useX();

@@ -1,11 +1,11 @@
 ---
 sidebar_position: 3
-title: Recipe - focus({ skip / skipGroup }) patterns
+title: Recipe - focus({ skip / skipGroup / onlyGroup }) patterns
 description: Practical patterns for combining suite.focus modifiers, with emphasis on skip vs skipGroup.
 keywords: [Recipe, focus, skip, skipGroup, only, Vest]
 ---
 
-# `focus({ skip / skipGroup })` Patterns
+# `focus({ skip / skipGroup / onlyGroup })` Patterns
 
 This recipe clarifies a common source of confusion:
 

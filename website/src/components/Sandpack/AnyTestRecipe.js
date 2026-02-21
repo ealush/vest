@@ -6,9 +6,9 @@ const SuiteCode = `import { create, enforce, optional, test } from 'vest';
 
 const suite = create((data = {}) => {
   optional({
-    email: () => suite.get().isValid('sms') || suite.get().isValid('push'),
-    sms: () => suite.get().isValid('email') || suite.get().isValid('push'),
-    push: () => suite.get().isValid('email') || suite.get().isValid('sms'),
+    email: () => !!data.sms || !!data.push,
+    sms: () => !!data.email || !!data.push,
+    push: () => !!data.email || !!data.sms,
   });
 
   test('email', 'Provide at least one channel', () => {
@@ -50,7 +50,7 @@ export default function App() {
       ))}
 
       <div className={result.isValid() ? 'ok' : 'error'}>
-        {result.isValid() ? 'Valid: at least one option was selected.' : result.getError('email')}
+        {result.isValid() ? 'Valid: at least one option was selected.' : result.getError()}
       </div>
     </div>
   );

@@ -45,6 +45,7 @@ export type StateRefType = {
   appData: Record<string, any>;
   historyRoot: TinyState<Nullable<TIsolate>>;
   Reconciler: IReconciler;
+  implicitOnlyNodes: Set<TIsolate>;
 };
 
 const PersistedContext = createCascade<CTXType>((stateRef, parentContext) => {
@@ -113,6 +114,7 @@ export function createRef(
     Reconciler,
     appData: dynamicValue(setter),
     historyRoot: tinyState.createTinyState<Nullable<TIsolate>>(null),
+    implicitOnlyNodes: new Set<TIsolate>(),
   });
 
   return ref;
@@ -298,10 +300,7 @@ export function useSetNextIsolateChild(child: TIsolate): void {
     FocusSelectors.isIsolateFocused(child) &&
     child.data?.focusMode === FocusModes.ONLY
   ) {
-    const root = useAvailableRoot() as Record<string, any>;
-    if (root) {
-      root._hasImplicitOnly = true;
-    }
+    useX().stateRef.implicitOnlyNodes.add(currentIsolate);
   }
 }
 
@@ -373,8 +372,10 @@ export function useIsFocusedOut(key?: string): boolean {
 
 function hasImplicitOnly(): boolean {
   let current = useIsolate();
+  const registry = useX().stateRef.implicitOnlyNodes;
+
   while (current) {
-    if ((current as Record<string, any>)._hasImplicitOnly) {
+    if (registry.has(current)) {
       return true;
     }
     current = current.parent;

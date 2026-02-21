@@ -26,13 +26,13 @@ Step 1: User fills "Password" field
         └─→ Result: { password: ✓ }
 
 Step 2: User fills "Username" field
-        └─→ suite.focus({ only: 'username' }).run()
+        └─→ suite.only('username').run()
         └─→ Vest runs ONLY username tests
         └─→ Vest MERGES with previous password result
         └─→ Result: { username: ?, password: ✓ }  ← Full picture!
 
 Step 3: User fixes username error
-        └─→ suite.focus({ only: 'username' }).run()
+        └─→ suite.only('username').run()
         └─→ Result: { username: ✓, password: ✓ }  ← Ready to submit!
 ```
 

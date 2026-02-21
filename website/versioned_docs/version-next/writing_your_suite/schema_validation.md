@@ -54,7 +54,7 @@ When you focus the suite with `focus({ only })`, schema validation is skipped fo
 
 ```javascript
 // Validate only the username field
-suite.focus({ only: 'username' }).run({
+suite.only('username').run({
   username: 'example',
 });
 ```

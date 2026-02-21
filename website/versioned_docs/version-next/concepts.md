@@ -31,7 +31,7 @@ Think of a Suite as more than just a function - it's an **object that holds the 
 ├─────────────────────────────────────────────────────────┤
 │  User types in "Username"                                │
 │           ↓                                              │
-│  suite.focus({ only: 'username' }).run(data)            │
+│  suite.only('username').run(data)            │
 │           ↓                                              │
 │  Vest runs ONLY "Username" tests                         │
 │           ↓                                              │

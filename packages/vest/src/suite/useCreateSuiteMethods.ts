@@ -104,6 +104,9 @@ function useGetSuiteMethods<
       useCreateFocus<F, G, T, S>(suiteCallback, modifiers, subscribe, schema),
     ),
     get,
+    only: VestRuntime.persist(
+      useCreateOnly<F, G, T, S>(suiteCallback, modifiers, subscribe, schema),
+    ),
     ...bindSuiteSelectors<F, G, S>(get),
     ...getTypedMethods<F, G>(),
   };
@@ -210,6 +213,37 @@ function useCreateFocus<
     return useCreateSuiteMethods<F, G, T, S>(
       suiteCallback,
       { ...modifiers, ...config },
+      subscribe,
+      schema,
+    );
+  };
+}
+
+/**
+ * Creates an only function that can be used to create a focused suite on a specific field.
+ * This is a shorthand for suite.focus({ only: 'fieldName' }).
+ *
+ * @param {Function} suiteCallback - The body of the suite.
+ * @param {Object} modifiers - The modifiers for the suite (e.g., only).
+ * @param {Function} subscribe - The subscribe function for the suite bus.
+ * @param {Object} schema - The optional schema for the suite.
+ * @returns {Function} - The only function.
+ */
+function useCreateOnly<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB = CB,
+  S extends TSchema = undefined,
+>(
+  suiteCallback: SuiteCallbackWithSchema<S, T>,
+  modifiers: SuiteModifiers<F>,
+  subscribe: Subscribe,
+  schema?: S,
+) {
+  return function only(onlyField: SuiteModifiers<F>['only']) {
+    return useCreateSuiteMethods<F, G, T, S>(
+      suiteCallback,
+      { ...modifiers, only: onlyField },
       subscribe,
       schema,
     );

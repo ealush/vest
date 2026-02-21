@@ -46,7 +46,7 @@ const res = ref(suite.get());
 
 const validateField = fieldName => {
   suite
-    .focus({ only: fieldName })
+    .only(fieldName)
     .afterEach(() => {
       res.value = suite.get();
     })
@@ -404,7 +404,7 @@ watchDebounced(
   newValue => {
     // Validate username
     suite
-      .focus({ only: 'username' })
+      .only('username')
       .afterEach(() => setResult(suite.get()))
       .run({ username: newValue });
   },

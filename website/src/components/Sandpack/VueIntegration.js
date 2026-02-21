@@ -34,7 +34,7 @@ const formData = reactive({
 const res = ref(suite.get());
 
 const validateField = fieldName => {
-  suite.focus({ only: fieldName }).afterEach(() => {
+  suite.only(fieldName).afterEach(() => {
     res.value = suite.get();
   }).run(formData);
 };

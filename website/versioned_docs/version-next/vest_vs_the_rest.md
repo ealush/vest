@@ -81,7 +81,7 @@ Validate just the field the user is touching. Vest remembers the rest.
 
 ```javascript
 // User blurs "email" field
-suite.focus({ only: 'email' }).run(formData);
+suite.only('email').run(formData);
 
 // Result includes email validation + previous password result
 result.isValid(); // Full picture

@@ -43,7 +43,7 @@ function SignupForm() {
   const handleChange = (name, value) => {
     setFormData(prev => ({ ...prev, [name]: value }));
     suite
-      .focus({ only: name })
+      .only(name)
       .afterEach(() => setResult(suite.get()))
       .run({ ...formData, [name]: value });
   };

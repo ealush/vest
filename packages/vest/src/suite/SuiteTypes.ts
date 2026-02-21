@@ -75,6 +75,10 @@ type FocusedMethods<
     [fieldName: F | string, callback: CB]
   >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F>]>;
+  only: CB<
+    FocusedMethods<F, G, T, S>,
+    [onlyField: FieldExclusion<F> | FieldExclusion<string>]
+  >;
   run: (
     ...args: S extends undefined
       ? Parameters<T>
@@ -94,6 +98,10 @@ type AfterMethods<
     [fieldName: F | string, callback: CB]
   >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F>]>;
+  only: CB<
+    FocusedMethods<F, G, T, S>,
+    [onlyField: FieldExclusion<F> | FieldExclusion<string>]
+  >;
   run: (
     ...args: S extends undefined
       ? Parameters<T>

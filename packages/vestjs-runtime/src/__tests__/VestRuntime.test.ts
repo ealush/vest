@@ -12,10 +12,7 @@ import { IsolateMutator } from '../Isolate/IsolateMutator';
 
 import { ErrorStrings } from '../errors/ErrorStrings';
 import { deferThrow, text } from 'vest-utils';
-
-// Mock dependencies but keep VestRuntime real or partially mock?
-// Can't partially mock local file easily.
-// But we can mock `IsolateMutator` and `IsolateInspector`.
+import { FocusModes, VestIsolateTypeFocused } from '../Isolate/IsolateFocused';
 
 vi.mock('../Isolate/IsolateInspector', () => ({
   IsolateInspector: {
@@ -24,9 +21,15 @@ vi.mock('../Isolate/IsolateInspector', () => ({
   },
 }));
 
+vi.mock('../IsolateWalker', () => ({
+  findClosest: vi.fn(),
+}));
+
 vi.mock('../Isolate/IsolateMutator', () => ({
   IsolateMutator: {
     addChildKey: vi.fn(),
+    addChild: vi.fn(),
+    setParent: vi.fn(),
   },
 }));
 
@@ -155,6 +158,55 @@ describe('VestRuntime', () => {
         );
         expect(IsolateMutator.addChildKey).not.toHaveBeenCalled();
       }, parent);
+    });
+  });
+
+  describe('useSetNextIsolateChild', () => {
+    it('Should add child to current isolate and set parent', () => {
+      const parent = { $type: 'Parent' };
+      const child = { $type: 'Child' };
+      withRun(() => {
+        VestRuntime.useSetNextIsolateChild(child as any);
+        expect(IsolateMutator.addChild).toHaveBeenCalledWith(parent, child);
+        expect(IsolateMutator.setParent).toHaveBeenCalledWith(child, parent);
+      }, parent);
+    });
+
+    it('Should add parent to implicitOnlyNodes if child is ONLY focused', () => {
+      const parent = { $type: 'Parent' };
+      const child = {
+        $type: VestIsolateTypeFocused,
+        data: { focusMode: FocusModes.ONLY },
+      };
+      withRun(() => {
+        VestRuntime.useSetNextIsolateChild(child as any);
+        const ctx = (global as any).__mockCtx;
+        expect(ctx.stateRef.implicitOnlyNodes.has(parent)).toBe(true);
+      }, parent);
+    });
+  });
+
+  describe('hasImplicitOnly', () => {
+    it('Should return true if an ancestor is in implicitOnlyNodes', () => {
+      const grandparent = { $type: 'Grandparent' };
+      const parent = { $type: 'Parent', parent: grandparent };
+      const child = { $type: 'Child', parent };
+
+      withRun(() => {
+        const ctx = (global as any).__mockCtx;
+        ctx.stateRef.implicitOnlyNodes.add(grandparent);
+        // The current node is `child`
+        expect(VestRuntime.useIsFocusedOut()).toBe(true);
+      }, child);
+    });
+
+    it('Should return false if no ancestor is in implicitOnlyNodes', () => {
+      const parent = { $type: 'Parent' };
+      const child = { $type: 'Child', parent };
+
+      withRun(() => {
+        expect(VestRuntime.useIsFocusedOut()).toBe(false);
+      }, child);
     });
   });
 });

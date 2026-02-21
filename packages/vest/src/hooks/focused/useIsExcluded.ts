@@ -1,32 +1,40 @@
+import { asArray, dynamicValue, isNotEmptySet } from 'vest-utils';
 import {
-  Nullable,
-  dynamicValue,
-  makeResult,
-  Result,
-  isNotEmptySet,
-} from 'vest-utils';
-import { TIsolate, Walker } from 'vestjs-runtime';
+  TIsolate,
+  Walker,
+  FocusSelectors,
+  TIsolateFocused,
+  VestRuntime,
+} from 'vestjs-runtime';
 
 import { SuiteContext, useInclusion } from '../../core/context/SuiteContext';
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
 import { useIsExcludedIndividually } from '../../isolates/skipWhen';
 
-import { FocusSelectors, TIsolateFocused } from './focused';
-import { useHasOnliedTests } from './useHasOnliedTests';
-
+/**
+ * Finds the closest focus isolate that matches a given field name.
+ *
+ * Uses `Walker.findClosest` starting from `testObject`. Since `findClosest`
+ * walks UP through ancestors and searches each level's CHILDREN (siblings),
+ * starting from the test ensures we correctly find sibling `IsolateFocused`
+ * nodes created by `only()` and `skip()`.
+ *
+ * Starting from `useIsolate()` (the parent context) would be one level too
+ * high, missing focus isolates at the test's own sibling level.
+ */
 function useClosestMatchingFocus(
   testObject: TIsolateTest,
-): Result<Nullable<TIsolateFocused>> {
-  return makeResult.Ok(
-    Walker.findClosest(testObject, (child: TIsolate) => {
-      if (!FocusSelectors.isIsolateFocused(child)) return false;
+  fieldName: string,
+): TIsolateFocused | null {
+  return Walker.findClosest<TIsolateFocused>(testObject, (child: TIsolate) => {
+    if (!FocusSelectors.isIsolateFocused(child)) return false;
 
-      const { fieldName } = VestTest.getData(testObject);
+    const data = child.data;
+    if (!data) return false;
 
-      return child.data.match?.includes(fieldName) || child.data.matchAll;
-    }),
-  );
+    return data.matchAll || asArray(data.match).includes(fieldName);
+  });
 }
 
 /**
@@ -67,28 +75,29 @@ function useIsExcludedByGroup(testObject: TIsolateTest): boolean {
   return isNotEmptySet(modifiers.onlyGroup) && !groupName;
 }
 
+/**
+ * Checks if a specific test should be excluded by field-level focus rules.
+ *
+ * 1. Explicit focus: find the closest `IsolateFocused` sibling from the test's
+ *    perspective. If found, skip/only takes immediate effect.
+ * 2. Implicit only: if no explicit match was found, query the centralized
+ *    `implicitOnlyNodes` registry on the runtime StateRef. If an ancestor
+ *    has been flagged (because it contains an ONLY child), the test is excluded
+ *    unless it has a matching `include()` rule.
+ */
 function useIsExcludedByField(testObject: TIsolateTest): boolean {
-  const focusMatch = useClosestMatchingFocus(testObject).unwrap();
+  const { fieldName } = VestTest.getData(testObject);
+  const focusMatch = useClosestMatchingFocus(testObject, fieldName);
 
-  // if test is skipped
-  // no need to proceed
-  if (FocusSelectors.isSkipFocused(focusMatch).unwrap()) return true;
+  if (FocusSelectors.isSkipFocused(focusMatch, fieldName)) return true;
+  if (FocusSelectors.isOnlyFocused(focusMatch, fieldName)) return false;
 
-  // if field is only'ed
-  if (FocusSelectors.isOnlyFocused(focusMatch).unwrap()) return false;
-
-  return useIsExcludedByImplicitOnly(testObject);
-}
-
-function useIsExcludedByImplicitOnly(testObject: TIsolateTest): boolean {
-  // If there is _ANY_ `only`ed test (and we already know this one isn't) return true
-  if (useHasOnliedTests(testObject)) {
-    // Check if inclusion rules for this field (`include` hook)
-    const { fieldName } = VestTest.getData(testObject);
+  // No explicit focus match for this field.
+  // Check the centralized runtime registry for implicit ONLY exclusion.
+  if (VestRuntime.hasImplicitOnly()) {
     const inclusion = useInclusion();
     return !dynamicValue(inclusion[fieldName], testObject);
   }
 
-  // We're done here. This field is not excluded
   return false;
 }

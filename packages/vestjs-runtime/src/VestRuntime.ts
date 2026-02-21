@@ -13,8 +13,15 @@ import {
   bus,
   Nullable,
   DynamicValue,
+  asArray,
 } from 'vest-utils';
 
+import * as Walker from './IsolateWalker';
+import {
+  TIsolateFocused,
+  FocusSelectors,
+  FocusModes,
+} from './Isolate/IsolateFocused';
 import { TIsolate } from './Isolate/Isolate';
 import { IsolateInspector } from './Isolate/IsolateInspector';
 import { IsolateMutator } from './Isolate/IsolateMutator';
@@ -38,6 +45,7 @@ export type StateRefType = {
   appData: Record<string, any>;
   historyRoot: TinyState<Nullable<TIsolate>>;
   Reconciler: IReconciler;
+  implicitOnlyNodes: Set<TIsolate>;
 };
 
 const PersistedContext = createCascade<CTXType>((stateRef, parentContext) => {
@@ -47,7 +55,14 @@ const PersistedContext = createCascade<CTXType>((stateRef, parentContext) => {
 
   invariant(stateRef.historyRoot);
 
-  const [historyRootNode] = stateRef.historyRoot();
+  const ref = stateRef as StateRefType;
+
+  const [historyRootNode] = ref.historyRoot();
+
+  // Clear the implicit-only registry from any previous run.
+  // The Set lives on stateRef (persisted across runs), so stale
+  // entries would cause hasImplicitOnly() false positives.
+  ref.implicitOnlyNodes.clear();
 
   const ctxRef = {} as CTXType;
 
@@ -106,6 +121,7 @@ export function createRef(
     Reconciler,
     appData: dynamicValue(setter),
     historyRoot: tinyState.createTinyState<Nullable<TIsolate>>(null),
+    implicitOnlyNodes: new Set<TIsolate>(),
   });
 
   return ref;
@@ -286,6 +302,13 @@ export function useSetNextIsolateChild(child: TIsolate): void {
 
   IsolateMutator.addChild(currentIsolate, child);
   IsolateMutator.setParent(child, currentIsolate);
+
+  if (
+    FocusSelectors.isIsolateFocused(child) &&
+    child.data?.focusMode === FocusModes.ONLY
+  ) {
+    useX().stateRef.implicitOnlyNodes.add(currentIsolate);
+  }
 }
 
 /**
@@ -327,6 +350,48 @@ export function useAvailableRoot<I extends TIsolate = TIsolate>(): I {
 }
 
 /**
+ * Checks whether a specific key is heavily focused out.
+ */
+export function useIsFocusedOut(key?: string): boolean {
+  const current = useIsolate();
+  if (!current) return false;
+
+  const focusMatch = Walker.findClosest<TIsolateFocused>(
+    current,
+    (child: TIsolate): boolean => {
+      if (!FocusSelectors.isIsolateFocused(child)) return false;
+      const data = child.data;
+      if (!data) return false;
+      if (data.matchAll) return true;
+
+      if (isNullish(key)) return false;
+      return asArray(data.match).includes(key);
+    },
+  );
+
+  if (focusMatch) {
+    if (FocusSelectors.isSkipFocused(focusMatch, key)) return true;
+    if (FocusSelectors.isOnlyFocused(focusMatch, key)) return false;
+  }
+
+  return hasImplicitOnly();
+}
+
+function hasImplicitOnly(): boolean {
+  let current = useIsolate();
+  const registry = useX().stateRef.implicitOnlyNodes;
+
+  while (current) {
+    if (registry.has(current)) {
+      return true;
+    }
+    current = current.parent;
+  }
+
+  return false;
+}
+
+/**
  * Resets the history root.
  */
 export function reset() {
@@ -339,6 +404,7 @@ export const RuntimeApi = {
   Run,
   createRef,
   dispatch,
+  hasImplicitOnly,
   persist,
   registerPending,
   removePending,
@@ -346,6 +412,7 @@ export const RuntimeApi = {
   useAvailableRoot,
   useCurrentCursor,
   useHistoryRoot,
+  useIsFocusedOut,
   useIsStable,
   useRuntimeState,
   useSetHistoryRoot,

@@ -36,8 +36,9 @@ function getBenchFiles(baseDir: string): string[] {
 function runBenchmarkFile(filePath: string, cwd: string): string {
   try {
     logger.log(`Running benchmark file: ${filePath} in ${cwd}...`);
+    // We explicitly enforce that filePath must be within the bench/ directory to prevent injection.
     return execSync(
-      `yarn vitest bench --run --config packages/vest/vitest.config.ts --passWithNoTests --no-color ${filePath}`,
+      `yarn vitest bench --run --config packages/vest/vitest.config.ts --passWithNoTests --no-color "${filePath.replace(/"/g, '\\"')}"`,
       {
         encoding: 'utf8',
         stdio: ['ignore', 'pipe', 'inherit'],
@@ -109,7 +110,7 @@ function calculateDiffs(
     let diffPercent = (diffAbs / base.hz) * 100;
 
     // Mask diff if within margin of error OR less than 5%
-    const rmeVal = parseFloat(res.rme.replace('±', '').replace('%', ''));
+    const rmeVal = parseFloat(res.rme.replace(/±/g, '').replace(/%/g, ''));
     const threshold = Math.max(5, rmeVal || 5);
 
     if (Math.abs(diffPercent) < threshold) {

@@ -2,10 +2,6 @@ name: Performance Benchmark
 
 on:
   pull_request:
-    paths:
-      - 'packages/vest/**'
-      - 'packages/vestjs-runtime/**'
-      - '.github/workflows/benchmark.yml'
 
 permissions:
   contents: read
@@ -18,17 +14,44 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - name: Checkout baseline branch
+        uses: actions/checkout@v3
+        with:
+          ref: latest
+          path: .benchmark-baseline
+          fetch-depth: 0
+
       - name: Use Node.js 24
         uses: actions/setup-node@v3
         with:
           node-version: 24
+
       - name: Enable corepack (Yarn)
         run: corepack enable
-      - name: Install dependencies
+
+      - name: Install dependencies (baseline)
+        working-directory: .benchmark-baseline
         run: yarn install --immutable
-      - name: Build internal packages
+
+      - name: Build internal packages (baseline)
+        working-directory: .benchmark-baseline
         run: yarn build
-      - name: Run benchmarks and generate report
+
+      - name: Run benchmarks (baseline)
+        working-directory: .benchmark-baseline
+        run: npx tsx vx/scripts/benchmark-reporter.ts --update
+
+      - name: Copy baseline results
+        run: cp .benchmark-baseline/benchmark-results.md ./benchmark-results.md
+
+      - name: Install dependencies (PR)
+        run: yarn install --immutable
+
+      - name: Build internal packages (PR)
+        run: yarn build
+
+      - name: Run benchmarks and generate report (PR)
         run: npx tsx vx/scripts/benchmark-reporter.ts
 
       - name: Comment Benchmark Results
@@ -52,11 +75,24 @@ jobs:
             });
 
             if (botComment) {
+              const oldContent = botComment.body;
+              const prevMarker = '<details>\n<summary>PREVIOUS_RESULTS</summary>';
+              let historical = oldContent;
+              
+              const prevResultsIndex = oldContent.indexOf(prevMarker);
+              if (prevResultsIndex !== -1) {
+                const previousLatest = oldContent.substring(0, prevResultsIndex).trim();
+                const pastHistory = oldContent.substring(prevResultsIndex + prevMarker.length, oldContent.lastIndexOf('</details>')).trim();
+                historical = previousLatest + '\n\n---\n\n' + pastHistory;
+              }
+              
+              const newBody = results + '\n\n' + prevMarker + '\n\n' + historical + '\n</details>';
+
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 comment_id: botComment.id,
-                body: results
+                body: newBody
               });
             } else {
               await github.rest.issues.createComment({

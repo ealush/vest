@@ -50,7 +50,7 @@ export default function App() {
       ))}
 
       <div className={result.isValid() ? 'ok' : 'error'}>
-        {result.isValid() ? 'Valid: at least one option was selected.' : result.getError()}
+        {result.isValid() ? 'Valid: at least one option was selected.' : result.getError()?.message || 'At least one option must be selected.'}
       </div>
     </div>
   );

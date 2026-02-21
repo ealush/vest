@@ -358,7 +358,7 @@ export function useIsFocusedOut(key?: string): boolean {
       if (!data) return false;
       if (data.matchAll) return true;
 
-      if (key == null) return false;
+      if (isNullish(key)) return false;
       return asArray(data.match).includes(key);
     },
   );

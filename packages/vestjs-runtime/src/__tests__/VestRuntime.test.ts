@@ -21,7 +21,7 @@ vi.mock('../Isolate/IsolateInspector', () => ({
   },
 }));
 
-vi.mock('../Isolate/IsolateWalker', () => ({
+vi.mock('../IsolateWalker', () => ({
   findClosest: vi.fn(),
 }));
 

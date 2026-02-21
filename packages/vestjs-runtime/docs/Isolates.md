@@ -51,14 +51,40 @@ These are primarily used as invisible "modifiers" that dictate logic over their 
 
 Because they are transient, testing an `only()` block will not incorrectly disrupt the index sequence of test components evaluated below it. It is strictly used as an execution-context layer.
 
-### How Focus Checking Works (`useIsFocusedOut`):
+### How Focus Checking Works
 
-The method `useIsFocusedOut` is utilized during the execution of any node traversing the tree. It is inherently evaluated against its parents (bottom-up approach).
+Focus checking uses a **two-tier approach**: explicit matching and implicit exclusion.
 
-1. **Explicit Targeting (`findClosest`)**: The runtime travels upward traversing parent paths specifically looking for an `IsolateFocused` element. If found, it establishes whether the targeted node matches the parent's `match` rule.
-2. **Implicit ONLY Identification (`hasImplicitOnly`)**: An `ONLY` isolate natively restricts any untested sibling in the entire scoped branch! To keep the runtime $O(Depth)$ performant—instead of $O(N)$ traversing thousands of elements per check—the runtime directly registers its parent node to a master `implicitOnlyNodes` Set attached to the `StateRef` context when instantiated. When an unrecognized node verifies its focus state, it gracefully crawls upward and queries the `implicitOnlyNodes` registry to see if any of its structural ancestors are within it.
+#### 1. Explicit Focus Matching (`findClosest` — sibling-aware)
 
-This approach separates structural properties fully from AST-state variables and minimizes tree-walking lookup latency drastically.
+`Walker.findClosest` traverses UP through ancestor levels, and at each level searches the **children** (siblings) for a matching `IsolateFocused` node. Because `only()` and `skip()` create transient isolates that are **siblings** of the tests they affect (not ancestors), the search must start from the test object itself to correctly find focus rules at the same tree level.
+
+**Important:** Starting from `useIsolate()` (the parent context) would be one level too high and would miss sibling focus isolates entirely. This is why the vest-level `useIsExcludedByField` passes the specific `testObject` to `findClosest`, while the runtime-level `useIsFocusedOut` starts from the current isolate context.
+
+If an explicit focus match is found:
+
+- **Skip-focused:** The test is excluded immediately.
+- **Only-focused:** The test is NOT excluded (it matched the only rule).
+
+#### 2. Implicit ONLY Identification (`hasImplicitOnly` — centralized registry)
+
+When no explicit focus match is found for a test, the runtime checks whether any ancestor scope contains an `ONLY` rule — meaning any test _not_ explicitly matched should be excluded.
+
+To keep this check **O(Depth)** performant — instead of O(N) traversing thousands of elements per check — the runtime maintains a centralized `implicitOnlyNodes` Set on the `StateRef` context. When an `IsolateFocused` node with `FocusModes.ONLY` is created, its **parent** is registered in this Set via `useSetNextIsolateChild`.
+
+When checking implicit exclusion, `hasImplicitOnly()` simply walks up the current node's ancestors and queries `implicitOnlyNodes.has(current)` at each level. This approach:
+
+- **Separates concerns:** The Isolate data model remains pure — no focus-specific flags on AST nodes.
+- **Is O(Depth):** Only walks the ancestor chain, not the full tree.
+- **Is centralized:** All implicit-only state lives on the runtime's `StateRef`, not scattered across nodes.
+
+### Interaction with `include()`
+
+At the vest application layer, `useIsExcludedByField` combines both tiers:
+
+1. Explicit focus match via `useClosestMatchingFocus(testObject, fieldName)`.
+2. If no match, falls back to `VestRuntime.hasImplicitOnly()`.
+3. If implicitly excluded, checks the `inclusion` map — `include()` rules can override implicit exclusion but **not** explicit `skip()`.
 
 ---
 

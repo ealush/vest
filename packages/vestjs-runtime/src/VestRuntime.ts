@@ -55,7 +55,14 @@ const PersistedContext = createCascade<CTXType>((stateRef, parentContext) => {
 
   invariant(stateRef.historyRoot);
 
-  const [historyRootNode] = stateRef.historyRoot();
+  const ref = stateRef as StateRefType;
+
+  const [historyRootNode] = ref.historyRoot();
+
+  // Clear the implicit-only registry from any previous run.
+  // The Set lives on stateRef (persisted across runs), so stale
+  // entries would cause hasImplicitOnly() false positives.
+  ref.implicitOnlyNodes.clear();
 
   const ctxRef = {} as CTXType;
 
@@ -397,6 +404,7 @@ export const RuntimeApi = {
   Run,
   createRef,
   dispatch,
+  hasImplicitOnly,
   persist,
   registerPending,
   removePending,

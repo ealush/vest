@@ -38,14 +38,14 @@ export default function App() {
         value={form.pet_name}
         onChange={e => setForm(prev => ({ ...prev, pet_name: e.target.value }))}
       />
-      <p>{result.getErrors('pet_name').join(', ') || 'No errors'}</p>
+      <p className={result.hasErrors('pet_name') ? 'error' : 'ok'}>{result.getErrors('pet_name').join(', ') || 'No errors'}</p>
 
       <input
         placeholder="owner name"
         value={form.owner_name}
         onChange={e => setForm(prev => ({ ...prev, owner_name: e.target.value }))}
       />
-      <p>{result.getErrors('owner_name').join(', ') || 'No errors'}</p>
+      <p className={result.hasErrors('owner_name') ? 'error' : 'ok'}>{result.getErrors('owner_name').join(', ') || 'No errors'}</p>
     </div>
   );
 }
@@ -54,7 +54,9 @@ export default function App() {
 const StylesCode = `body { background: #0d1117; color: #fff; font-family: sans-serif; }
 .App { padding: 20px; max-width: 480px; margin: 0 auto; }
 input { display: block; width: 100%; margin-top: 10px; background: #161b22; border: 1px solid #30363d; color: #fff; border-radius: 6px; padding: 8px; }
-p { min-height: 20px; color: #ff7b72; margin: 6px 0 12px; }
+p { min-height: 20px; margin: 6px 0 12px; }
+.error { color: #ff7b72; }
+.ok { color: #3fb950; }
 `;
 
 export default function OptionalFieldsSandpack() {

@@ -54,7 +54,7 @@ export default function App() {
             onChange={onChange}
             placeholder={field === 'promo' ? 'optional' : ''}
           />
-          <small>{result.getErrors(field).join(', ') || 'No errors'}</small>
+          <small className={result.hasErrors(field) ? 'error' : 'ok'}>{result.getErrors(field).join(', ') || 'No errors'}</small>
         </div>
       ))}
       <p>
@@ -70,7 +70,9 @@ const StylesCode = `body { background: #0f1115; color: #fff; font-family: Inter,
 .field { margin: 10px 0; }
 label { display: block; margin-bottom: 4px; text-transform: capitalize; }
 input { width: 100%; background: #181c24; color: #fff; border: 1px solid #2f3440; border-radius: 6px; padding: 8px; }
-small { color: #ff8e8e; display: block; margin-top: 6px; min-height: 18px; }
+small { display: block; margin-top: 6px; min-height: 18px; }
+.error { color: #ff8e8e; }
+.ok { color: #3fb950; }
 p { color: #9aa4b2; }
 `;
 

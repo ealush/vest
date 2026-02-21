@@ -64,7 +64,7 @@ export default function App() {
         onChange={e => setForm(current => ({ ...current, email: e.target.value }))}
         placeholder="name@gmail.com"
       />
-      <p className="errors">{result.getErrors('email').join(' · ') || 'No email errors'}</p>
+      <p className={result.hasErrors('email') ? 'status error' : 'status ok'}>{result.getErrors('email').join(' · ') || 'No email errors'}</p>
 
       <label>Password</label>
       <input
@@ -72,7 +72,7 @@ export default function App() {
         onChange={e => setForm(current => ({ ...current, password: e.target.value }))}
         placeholder="short"
       />
-      <p className="errors">{result.getErrors('password').join(' · ') || 'No password errors'}</p>
+      <p className={result.hasErrors('password') ? 'status error' : 'status ok'}>{result.getErrors('password').join(' · ') || 'No password errors'}</p>
 
       <p className="caption">
         Eager returns first failure per field, All returns all failures, and One stops after the first failure in the whole run.
@@ -123,10 +123,15 @@ label {
   display: block;
   margin-top: 12px;
 }
-.errors {
-  color: #f85149;
+.status {
   min-height: 20px;
   margin: 0;
+}
+.error {
+  color: #f85149;
+}
+.ok {
+  color: #3fb950;
 }
 .caption {
   margin-top: 16px;

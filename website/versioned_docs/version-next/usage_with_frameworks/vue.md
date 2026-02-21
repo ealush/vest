@@ -110,11 +110,12 @@ export function useVestForm(suite, initialData = {}) {
     isValidating.value = true;
 
     suite
+      .only(fieldName)
       .afterEach(() => {
         result.value = suite.get();
         isValidating.value = false;
       })
-      .run(formData, fieldName);
+      .run(formData);
   };
 
   const validateAll = () => {
@@ -224,11 +225,12 @@ const checkUsername = () => {
   isChecking.value = true;
 
   suite
+    .only('username')
     .afterEach(() => {
       result.value = suite.get();
       isChecking.value = false;
     })
-    .run(formData, 'username');
+    .run(formData);
 };
 </script>
 
@@ -281,10 +283,11 @@ export default {
   methods: {
     validateField(fieldName) {
       suite
+        .only(fieldName)
         .afterEach(() => {
           this.result = suite.get();
         })
-        .run(this.formData, fieldName);
+        .run(this.formData);
     },
     handleSubmit() {
       suite
@@ -354,10 +357,11 @@ const result = ref<SuiteResult>(suite.get());
 
 const validateField = (fieldName: keyof FormData) => {
   suite
+    .only(fieldName)
     .afterEach(() => {
       result.value = suite.get();
     })
-    .run(formData, fieldName);
+    .run(formData);
 };
 </script>
 ```

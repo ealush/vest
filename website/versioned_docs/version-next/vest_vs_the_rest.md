@@ -49,7 +49,7 @@ Most validation libraries fall into one of two traps:
 | Features                    | Vest                               | Functional Matchers | Schema Validation | Form State Managers |
 | --------------------------- | ---------------------------------- | ------------------- | ----------------- | ------------------- |
 | **State Management**        | Automatic                          | Manual              | Manual            | Automatic           |
-| **Per Field Validation**    | ✅ Built-in (`focus`)              | ❌                  | ❌                | ✅                  |
+| **Per Field Validation**    | ✅ Built-in (`only()` / `focus`)   | ❌                  | ❌                | ✅                  |
 | **Framework Agnostic**      | ✅                                 | ✅                  | ✅                | ❌                  |
 | **Async + Race Conditions** | ✅ Handled automatically           | ❌                  | Varies            | Varies              |
 | **SSR/Hydration**           | ✅ (`runStatic`, `dump`, `resume`) | ❌                  | ❌                | Framework-specific  |

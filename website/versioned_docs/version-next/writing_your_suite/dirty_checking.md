@@ -37,7 +37,7 @@ This pattern ensures that empty, untouched fields don't show "Required" errors w
 
 When a user blurs a field or types, you often want to validate **only that specific field**, while keeping the rest of the form state intact.
 
-Vest 6 introduces `suite.only()`. This tells Vest to run validations for a specific field, while skipping others.
+Vest provides `suite.only()` to validate a specific field, while keeping the rest of the form state intact.
 
 ```javascript
 // On Blur handler

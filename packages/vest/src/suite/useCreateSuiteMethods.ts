@@ -96,19 +96,19 @@ function useGetSuiteMethods<
   const { suiteCallback, modifiers, subscribe, schema } = ctx;
 
   const get = VestRuntime.persist(() => useCreateSuiteResult<F, G, S>(schema));
-
   return {
     ...useGetLifecycleMethods(ctx),
     dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
+    get,
+    ...bindSuiteSelectors<F, G, S>(get),
+    ...getTypedMethods<F, G>(),
+    // focus and only must come after the spreads to prevent spread keys from overriding them
     focus: VestRuntime.persist(
       useCreateFocus<F, G, T, S>(suiteCallback, modifiers, subscribe, schema),
     ),
-    get,
     only: VestRuntime.persist(
       useCreateOnly<F, G, T, S>(suiteCallback, modifiers, subscribe, schema),
     ),
-    ...bindSuiteSelectors<F, G, S>(get),
-    ...getTypedMethods<F, G>(),
   };
 }
 
@@ -240,7 +240,7 @@ function useCreateOnly<
   subscribe: Subscribe,
   schema?: S,
 ) {
-  return function only(onlyField: SuiteModifiers<F>['only']) {
+  return function only(onlyField: NonNullable<SuiteModifiers<F>['only']>) {
     return useCreateSuiteMethods<F, G, T, S>(
       suiteCallback,
       { ...modifiers, only: onlyField },

@@ -1,6 +1,7 @@
 import { CB } from 'vest-utils';
 
 import { Isolate } from './Isolate';
+import type { IsolatePayload, TIsolate } from './IsolateTypes';
 
 /**
  * Creates a transient isolate.
@@ -14,10 +15,13 @@ import { Isolate } from './Isolate';
  * This is useful for "structural" isolates that are used for control flow or grouping
  * but do not hold state that needs to be preserved between runs, such as `focused` (skip/only) isolates.
  */
-export function IsolateTransient(
+export function IsolateTransient<Payload extends IsolatePayload>(
   callback: CB,
   type = 'Transient',
-  payload: Record<string, any> = {},
-) {
-  return Isolate.create(type, callback, { ...payload, transient: true });
+  payload: Payload = {} as Payload,
+): TIsolate<Payload> {
+  return Isolate.create<Payload>(type, callback, {
+    ...payload,
+    transient: true,
+  });
 }

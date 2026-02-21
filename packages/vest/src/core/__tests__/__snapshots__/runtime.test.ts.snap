@@ -12,7 +12,7 @@ IsolateInstance {
       "allowReorder": undefined,
       "children": null,
       "data": {
-        "focusMode": 1,
+        "focusMode": "skip",
         "match": [
           "t5",
         ],

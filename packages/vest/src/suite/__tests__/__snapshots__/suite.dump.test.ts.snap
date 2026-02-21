@@ -3,6 +3,7 @@
 exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `
 IsolateInstance {
   "$type": "Suite",
+  "_hasImplicitOnly": true,
   "abortController": null,
   "allowReorder": undefined,
   "children": [
@@ -12,7 +13,7 @@ IsolateInstance {
       "allowReorder": undefined,
       "children": null,
       "data": {
-        "focusMode": 0,
+        "focusMode": "only",
         "match": [
           "field_1",
         ],

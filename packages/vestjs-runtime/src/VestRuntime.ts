@@ -13,8 +13,15 @@ import {
   bus,
   Nullable,
   DynamicValue,
+  asArray,
 } from 'vest-utils';
 
+import * as Walker from './IsolateWalker';
+import {
+  TIsolateFocused,
+  FocusSelectors,
+  FocusModes,
+} from './Isolate/IsolateFocused';
 import { TIsolate } from './Isolate/Isolate';
 import { IsolateInspector } from './Isolate/IsolateInspector';
 import { IsolateMutator } from './Isolate/IsolateMutator';
@@ -286,6 +293,16 @@ export function useSetNextIsolateChild(child: TIsolate): void {
 
   IsolateMutator.addChild(currentIsolate, child);
   IsolateMutator.setParent(child, currentIsolate);
+
+  if (
+    FocusSelectors.isIsolateFocused(child) &&
+    child.data?.focusMode === FocusModes.ONLY
+  ) {
+    const root = useAvailableRoot() as Record<string, any>;
+    if (root) {
+      root._hasImplicitOnly = true;
+    }
+  }
 }
 
 /**
@@ -327,6 +344,46 @@ export function useAvailableRoot<I extends TIsolate = TIsolate>(): I {
 }
 
 /**
+ * Checks whether a specific key is heavily focused out.
+ */
+export function useIsFocusedOut(key?: string): boolean {
+  const current = useIsolate();
+  if (!current) return false;
+
+  const focusMatch = Walker.findClosest<TIsolateFocused>(
+    current,
+    (child: TIsolate): boolean => {
+      if (!FocusSelectors.isIsolateFocused(child)) return false;
+      const data = child.data;
+      if (!data) return false;
+      if (data.matchAll) return true;
+
+      if (key == null) return false;
+      return asArray(data.match).includes(key);
+    },
+  );
+
+  if (focusMatch) {
+    if (FocusSelectors.isSkipFocused(focusMatch, key)) return true;
+    if (FocusSelectors.isOnlyFocused(focusMatch, key)) return false;
+  }
+
+  return hasImplicitOnly();
+}
+
+function hasImplicitOnly(): boolean {
+  let current = useIsolate();
+  while (current) {
+    if ((current as Record<string, any>)._hasImplicitOnly) {
+      return true;
+    }
+    current = current.parent;
+  }
+
+  return false;
+}
+
+/**
  * Resets the history root.
  */
 export function reset() {
@@ -346,6 +403,7 @@ export const RuntimeApi = {
   useAvailableRoot,
   useCurrentCursor,
   useHistoryRoot,
+  useIsFocusedOut,
   useIsStable,
   useRuntimeState,
   useSetHistoryRoot,

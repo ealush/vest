@@ -1,23 +1,25 @@
 import { isNotNullish } from 'vest-utils';
-import { TIsolate, Walker } from 'vestjs-runtime';
+import {
+  TIsolate,
+  Walker,
+  FocusSelectors,
+  TIsolateFocused,
+} from 'vestjs-runtime';
 
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
-import { TFieldName } from '../../suiteResult/SuiteResultTypes';
-
-import { FocusSelectors } from './focused';
 
 /**
  * Checks if context has included tests
  */
 export function useHasOnliedTests(
   testObject: TIsolateTest,
-  fieldName?: TFieldName,
+  fieldName?: string,
 ): boolean {
   return isNotNullish(
-    Walker.findClosest(testObject, (child: TIsolate) => {
+    Walker.findClosest<TIsolateFocused>(testObject, (child: TIsolate) => {
       if (!FocusSelectors.isIsolateFocused(child)) return false;
 
-      return FocusSelectors.isOnlyFocused(child, fieldName).unwrap();
+      return FocusSelectors.isOnlyFocused(child, fieldName);
     }),
   );
 }

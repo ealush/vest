@@ -20,3 +20,9 @@ export type {
 } from './Isolate/IsolateRegistry';
 export { IsolateReorderable } from './Isolate/IsolateReorderable';
 export { IsolateTransient } from './Isolate/IsolateTransient';
+export {
+  IsolateFocused,
+  FocusModes,
+  FocusSelectors,
+  type TIsolateFocused,
+} from './Isolate/IsolateFocused';

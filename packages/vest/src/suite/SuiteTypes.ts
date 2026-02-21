@@ -75,6 +75,12 @@ type FocusedMethods<
     [fieldName: F | string, callback: CB]
   >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F>]>;
+  only: CB<
+    FocusedMethods<F, G, T, S>,
+    [onlyField: FieldExclusion<F> | FieldExclusion<string>]
+  >;
+  // run is included but runStatic is intentionally omitted: runStatic is stateless
+  // and does not carry focus modifiers, so it is not part of the focused API surface.
   run: (
     ...args: S extends undefined
       ? Parameters<T>
@@ -94,6 +100,10 @@ type AfterMethods<
     [fieldName: F | string, callback: CB]
   >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F>]>;
+  only: CB<
+    FocusedMethods<F, G, T, S>,
+    [onlyField: FieldExclusion<F> | FieldExclusion<string>]
+  >;
   run: (
     ...args: S extends undefined
       ? Parameters<T>
@@ -103,13 +113,17 @@ type AfterMethods<
 
 /**
  * Modifiers that control which fields and groups are included or excluded
- * during a focused suite run. These are passed via `suite.focus(modifiers)`.
+ * during a focused suite run. These can be provided either via
+ * `suite.focus(modifiers)` or via shorthand methods:
+ *   - `suite.only(field)` is a shortcut for `suite.focus({ only: field })`
  *
  * - `only` — Run only the specified field(s). All others are excluded unless
  *   explicitly included via `include()`.
  * - `skip` — Skip the specified field(s). All others run as usual.
  * - `skipGroup` — Skip all tests inside the named group(s). Tests outside the
  *   matched groups are unaffected.
+ * - `onlyGroup` — Run only tests inside the named group(s). Top-level tests
+ *   outside any group are also excluded.
  */
 export type SuiteModifiers<F extends TFieldName> = {
   only?: FieldExclusion<F> | FieldExclusion<string>;

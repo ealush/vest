@@ -89,7 +89,6 @@ await result;
 If you prefer callbacks, or cannot use `await` at the call site, use the `.afterEach()` hook.
 
 ```javascript
-suite;
 suite
   .afterEach(() => {
     // This runs after the initial sync completion and after each async test finishes
@@ -161,13 +160,13 @@ if (result.isPending('username')) {
 }
 ```
 
-### 3. Combine with `suite.focus()`
+### 3. Combine with `suite.only()`
 
-For the best UX, only run async tests for the field the user is interacting with:
+For the best UX, only run async tests for the field the user is interacting with. Use `suite.only(fieldName)` for the common case of targeting a single field:
 
 ```javascript
 function handleBlur(fieldName) {
-  suite.focus({ only: fieldName }).run(formData);
+  suite.only(fieldName).run(formData);
 }
 ```
 

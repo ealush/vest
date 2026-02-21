@@ -43,7 +43,7 @@ function SignupForm() {
   const handleChange = (name, value) => {
     setFormData(prev => ({ ...prev, [name]: value }));
     suite
-      .focus({ only: name })
+      .only(name)
       .afterEach(() => setResult(suite.get()))
       .run({ ...formData, [name]: value });
   };
@@ -105,10 +105,11 @@ function useVestForm(suite, initialData = {}) {
       setFormData(newData);
 
       suite
+        .only(fieldName)
         .afterEach(() => {
           setResult(suite.get());
         })
-        .run(newData, fieldName);
+        .run(newData);
     },
     [formData, suite],
   );
@@ -183,11 +184,12 @@ function UsernameField() {
     setIsChecking(true);
 
     suite
+      .only('username')
       .afterEach(() => {
         setResult(suite.get());
         setIsChecking(false);
       })
-      .run({ username: value }, 'username');
+      .run({ username: value });
   };
 
   return (
@@ -239,8 +241,9 @@ const handleFieldChange = (fieldName, value) => {
 
   // Only validate the changed field
   suite
+    .only(fieldName)
     .afterEach(() => setResult(suite.get()))
-    .run({ ...formData, [fieldName]: value }, fieldName);
+    .run({ ...formData, [fieldName]: value });
 };
 ```
 

@@ -68,9 +68,9 @@ const validationResult = suite.run(formData, changedField);
 You can make fields run together by using [include](./include). This is useful when you have fields that depend on each other, and you want to make sure they run at the same time.
 :::
 
-## V6 Recommended: Using `suite.focus()`
+## V6 Recommended: Using `suite.only()` and `suite.focus()`
 
-In Vest 6, the preferred way to focus validation on specific fields is to use the **`suite.focus()`** method. This approach is cleaner and separates the "what to validate" from "how to validate".
+In Vest 6, the preferred way to focus validation on specific fields is to use the **`suite.only()`** and **`suite.focus()`** methods. This approach is cleaner and separates the "what to validate" from "how to validate".
 
 ```javascript
 import { create, test, enforce } from 'vest';
@@ -88,10 +88,10 @@ const suite = create(data => {
 });
 
 // Focus on a single field
-suite.focus({ only: 'username' }).run(formData);
+suite.only('username').run(formData);
 
 // Focus on multiple fields
-suite.focus({ only: ['username', 'email'] }).run(formData);
+suite.only(['username', 'email']).run(formData);
 
 // Skip specific fields
 suite.focus({ skip: 'password' }).run(formData);
@@ -101,7 +101,7 @@ suite.focus({ skipGroup: 'signUp' }).run(formData);
 
 // Chain with afterEach for callbacks
 suite
-  .focus({ only: 'email' })
+  .only('email')
   .afterEach(() => updateUI(suite.get()))
   .run(formData);
 ```
@@ -114,17 +114,17 @@ suite
 | `skip`      | `string \| string[]` | Skip the specified field(s). All others run as usual.     |
 | `skipGroup` | `string \| string[]` | Skip all tests inside the named group(s).                 |
 
-### Why Use `suite.focus()` Over `only()`?
+### Why Use `suite.only()` Over `only()`?
 
-| Feature                    | `only()` (inside suite)     | `suite.focus()` (outside)  |
-| -------------------------- | --------------------------- | -------------------------- |
-| **Declaration**            | Inside suite callback       | At call site               |
-| **Flexibility**            | Must be conditional         | Fully dynamic              |
-| **Separation of Concerns** | Mixed with validation logic | Decoupled from validation  |
-| **Chainable**              | No                          | Yes (returns runnable API) |
-| **Best For**               | Static exclusions           | UI-driven field focus      |
+| Feature                    | `only()` (inside suite)     | `suite.only()` / `suite.focus()` (outside) |
+| -------------------------- | --------------------------- | ------------------------------------------ |
+| **Declaration**            | Inside suite callback       | At call site                               |
+| **Flexibility**            | Must be conditional         | Fully dynamic                              |
+| **Separation of Concerns** | Mixed with validation logic | Decoupled from validation                  |
+| **Chainable**              | No                          | Yes (returns runnable API)                 |
+| **Best For**               | Static exclusions           | UI-driven field focus                      |
 
-> **Recommendation**: Use `suite.focus()` for runtime decisions (e.g., validating on blur), and `only()`/`skip()` for static, logic-based exclusions inside your suite.
+> **Recommendation**: Use `suite.only()` or `suite.focus()` for runtime decisions (e.g., validating on blur), and `only()`/`skip()` for static, logic-based exclusions inside your suite.
 
 When choosing between modifiers in `suite.focus()`, prefer `skipGroup` when your intent is to disable a named validation section (for example `signUp`), and prefer `skip` when your intent is to exclude a specific field everywhere it appears.
 

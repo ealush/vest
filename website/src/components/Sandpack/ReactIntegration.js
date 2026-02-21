@@ -37,7 +37,7 @@ export default function App() {
   const handleChange = (name, value) => {
     const newData = { ...formData, [name]: value };
     setFormData(newData);
-    suite.focus({ only: name }).run(newData);
+    suite.only(name).run(newData);
   };
 
   const handleSubmit = async (e) => {

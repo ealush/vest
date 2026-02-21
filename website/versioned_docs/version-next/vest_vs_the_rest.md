@@ -49,7 +49,7 @@ Most validation libraries fall into one of two traps:
 | Features                    | Vest                               | Functional Matchers | Schema Validation | Form State Managers |
 | --------------------------- | ---------------------------------- | ------------------- | ----------------- | ------------------- |
 | **State Management**        | Automatic                          | Manual              | Manual            | Automatic           |
-| **Per Field Validation**    | ✅ Built-in (`focus`)              | ❌                  | ❌                | ✅                  |
+| **Per Field Validation**    | ✅ Built-in (`only()` / `focus`)   | ❌                  | ❌                | ✅                  |
 | **Framework Agnostic**      | ✅                                 | ✅                  | ✅                | ❌                  |
 | **Async + Race Conditions** | ✅ Handled automatically           | ❌                  | Varies            | Varies              |
 | **SSR/Hydration**           | ✅ (`runStatic`, `dump`, `resume`) | ❌                  | ❌                | Framework-specific  |
@@ -81,7 +81,7 @@ Validate just the field the user is touching. Vest remembers the rest.
 
 ```javascript
 // User blurs "email" field
-suite.focus({ only: 'email' }).run(formData);
+suite.only('email').run(formData);
 
 // Result includes email validation + previous password result
 result.isValid(); // Full picture

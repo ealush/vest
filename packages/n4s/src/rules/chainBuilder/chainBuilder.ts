@@ -14,7 +14,7 @@ import { executeChain, type Predicate } from './chainExecutor';
 import { createChainProxyHandlers } from './proxyHandlers';
 
 export type RuleFunctions<T extends RuleInstance<any, any>> = Record<
-  keyof Omit<T, 'infer' | 'test' | 'validate' | '~standard'>,
+  keyof Omit<T, 'infer' | 'test' | 'validate' | 'parse' | '~standard'>,
   (...args: any[]) => boolean
 >;
 
@@ -66,6 +66,14 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
     };
   }) as T['validate'];
 
+  const parse: T['parse'] = ((...args: any[]) => {
+    const result = executeChain(chain, args[0]);
+    if (!result.pass) {
+      throw new Error(resolveMessage(result, args[0]));
+    }
+    return result.type;
+  }) as T['parse'];
+
   const test: T['test'] = ((...args: any[]) => {
     const result = validate(...args);
     return !result.issues;
@@ -96,15 +104,19 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
     createChainProxyHandlers(rules, {
       '~standard': {
         types: {
-          input: undefined as unknown as any,
-          output: undefined as unknown as any,
+          input: undefined as unknown as Parameters<T['run']>[0],
+          output: undefined as unknown as ReturnType<T['parse']>,
         },
         validate,
         vendor: 'n4s',
         version: 1 as const,
-      } as StandardSchemaV1.Props<any, any>,
+      } as StandardSchemaV1.Props<
+        Parameters<T['run']>[0],
+        ReturnType<T['parse']>
+      >,
       add,
       message,
+      parse,
       run,
       test,
       validate,

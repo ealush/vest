@@ -18,16 +18,18 @@ import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
 import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
 
+type SchemaRunResult = {
+  pass: boolean;
+  type?: unknown;
+  path?: string[];
+  message?: string;
+};
+
 /**
  * Creates the actual suite runner function.
  * This function is responsible for initializing the suite context,
  * running the suite callback, and returning the result.
- *
- * @param {Function} suiteCallback - The body of the suite.
- * @param {Object} modifiers - The modifiers for the suite (e.g., only).
- * @returns {Function} - The suite runner function.
  */
-
 export function useCreateSuiteRunner<
   F extends TFieldName,
   G extends TGroupName,
@@ -44,11 +46,21 @@ export function useCreateSuiteRunner<
       : [data: InferSchemaData<S>, ...args: any[]]
   ): SuiteResult<F, G, S> {
     const { resolve, promise } = withResolvers<SuiteResult<F, G, S>>();
+    const [inputData, ...restArgs] = args as [unknown, ...unknown[]];
+
+    const schemaRunResult = getSchemaRunResult(schema, inputData);
+    const parsedData = getParsedSchemaData<S>(
+      schema,
+      inputData,
+      schemaRunResult,
+    );
+    const callbackArgs = [parsedData, ...restArgs] as Parameters<T>;
+
     return assign(
       promise,
       SuiteContext.run(
         {
-          suiteParams: args as Parameters<T>,
+          suiteParams: callbackArgs,
           schema,
           modifiers: {
             ...modifiers,
@@ -61,31 +73,30 @@ export function useCreateSuiteRunner<
           useEmit('SUITE_RUN_STARTED');
 
           function resolver() {
-            const result = useCreateSuiteResult<F, G, S>(schema, args[0]);
+            const result = useCreateSuiteResult<F, G, S>(schema, parsedData);
             resolve(result);
             return result;
           }
 
           const output = IsolateSuite(() => {
-            // Apply field-level focus modifiers. These create transient Focused
-            // isolates at the suite root that affect all tests in the suite.
-            // `only` restricts the run to matching fields; `skip` excludes them.
-            // `skipGroup` is handled separately inside `group()` — when a group
-            // with a matching name is entered, it injects `skip(true)` into
-            // the group's callback via the modifiers stored in SuiteContext.
             only(modifiers.only);
             skip(modifiers.skip);
-            (suiteCallback as any)(...(args as Parameters<T>));
+            (suiteCallback as any)(...callbackArgs);
 
             IsolateReorderable(
-              runSchemaValidation(schema, modifiers, args[0]),
+              runSchemaValidation(
+                schema,
+                modifiers,
+                inputData,
+                schemaRunResult,
+              ),
               undefined,
               {
                 tests: [],
               },
             );
             useEmit('SUITE_CALLBACK_RUN_FINISHED');
-            return useCreateSuiteResult<F, G, S>(schema, args[0]);
+            return useCreateSuiteResult<F, G, S>(schema, parsedData);
           }, resolver);
           return output;
         },
@@ -97,20 +108,106 @@ export function useCreateSuiteRunner<
 function runSchemaValidation<
   F extends TFieldName,
   S extends TSchema = undefined,
->(schema: S | undefined, modifiers: SuiteModifiers<F>, data: any) {
-  return () => {
-    if (!shouldRunSchema(schema, modifiers)) return;
-
-    const runResult = (schema as any).run(data);
-
-    if (!runResult.pass && runResult.path) {
-      // Use the top-level field name (first segment) for error reporting
-      const fieldName = runResult.path[0];
-      test(fieldName, runResult.message, () => false, fieldName);
-    }
-  };
+>(
+  schema: S | undefined,
+  modifiers: SuiteModifiers<F>,
+  data: any,
+  precomputedRunResult?: SchemaRunResult,
+) {
+  return () =>
+    applySchemaValidation(schema, modifiers, data, precomputedRunResult);
 }
 
-function shouldRunSchema(schema: any, modifiers: SuiteModifiers<any>): boolean {
-  return !modifiers.only && !!schema && isFunction(schema.run);
+// eslint-disable-next-line complexity
+function applySchemaValidation(
+  schema: any,
+  modifiers: SuiteModifiers<any>,
+  data: unknown,
+  precomputedRunResult?: SchemaRunResult,
+): void {
+  if (shouldSkipSchemaValidation(schema, modifiers)) {
+    return;
+  }
+
+  const runResult = precomputedRunResult ?? getSchemaRunResult(schema, data);
+
+  if (!hasSchemaIssue(runResult)) {
+    return;
+  }
+
+  const fieldName = runResult.path[0];
+  if (!fieldName) return;
+
+  test(
+    fieldName,
+    runResult.message ?? 'Validation failed',
+    () => false,
+    fieldName,
+  );
+}
+
+function shouldSkipSchemaValidation(
+  schema: any,
+  modifiers: SuiteModifiers<any>,
+): boolean {
+  return !!modifiers.only || !schema || !isFunction(schema.run);
+}
+
+function hasSchemaIssue(
+  runResult?: SchemaRunResult,
+): runResult is Required<Pick<SchemaRunResult, 'path'>> & SchemaRunResult {
+  return !!runResult && !runResult.pass && Array.isArray(runResult.path);
+}
+
+function getSchemaRunResult(
+  schema: any,
+  data: unknown,
+): SchemaRunResult | undefined {
+  if (!schema || !isFunction(schema.run)) {
+    return undefined;
+  }
+
+  return schema.run(data) as SchemaRunResult;
+}
+
+/**
+ * Prefer `schema.parse` for parsing semantics when available.
+ * Fallback to `schema.run` transformed type.
+ */
+function getParsedSchemaData<S extends TSchema>(
+  schema: S | undefined,
+  data: unknown,
+  schemaRunResult?: SchemaRunResult,
+): InferSchemaData<S> {
+  if (!schema) {
+    return data as InferSchemaData<S>;
+  }
+
+  if (isFunction((schema as any).parse)) {
+    return safeParseSchema<S>(schema, data);
+  }
+
+  return parseFromRunResult<S>(data, schemaRunResult);
+}
+
+function parseFromRunResult<S extends TSchema>(
+  data: unknown,
+  schemaRunResult?: SchemaRunResult,
+): InferSchemaData<S> {
+  if (!schemaRunResult || !schemaRunResult.pass) {
+    return data as InferSchemaData<S>;
+  }
+
+  return schemaRunResult.type as InferSchemaData<S>;
+}
+
+function safeParseSchema<S extends TSchema>(
+  schema: S,
+  data: unknown,
+): InferSchemaData<S> {
+  try {
+    return (schema as any).parse(data) as InferSchemaData<S>;
+  } catch {
+    return data as InferSchemaData<S>;
+  }
 }

@@ -8,7 +8,7 @@ import { getLazyRule } from './lazyRegistry';
 
 export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
   rules: Record<
-    keyof Omit<T, 'infer' | 'test' | 'validate' | '~standard'>,
+    keyof Omit<T, 'infer' | 'test' | 'validate' | 'parse' | '~standard'>,
     (...args: any[]) => boolean
   >,
   {
@@ -16,6 +16,7 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
     test,
     validate,
     run,
+    parse,
     message,
     '~standard': standard,
   }: {
@@ -23,16 +24,25 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
     test: T['test'];
     validate: T['validate'];
     run: T['run'];
+    parse: T['parse'];
     message: (msg: any) => T;
     '~standard': StandardSchemaV1.Props<any, any>;
   },
 ) {
-  const methods = { '~standard': standard, message, run, test, validate };
+  const methods = {
+    '~standard': standard,
+    message,
+    parse,
+    run,
+    test,
+    validate,
+  };
   const methodKeys = new Set([
     'infer',
     'test',
     'validate',
     'run',
+    'parse',
     'message',
     '~standard',
   ]);

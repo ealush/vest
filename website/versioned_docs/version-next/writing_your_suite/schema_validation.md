@@ -71,3 +71,35 @@ suite.focus({ only: 'username' }).run({
 ## Inspecting schema results
 
 The suite result includes a `types` object that captures the validated `input` and coerced `output` from the schema run. This is useful for debugging and type-safe consumers.
+
+## Parsing data with schema
+
+Every n4s schema rule now exposes `parse(input)`, which validates and returns the schema output type. This allows coercion-style rules to transform incoming values and gives you a strongly typed parsed object.
+
+When you pass a schema to `create`, Vest runs with that parsed output as the first argument of your suite callback.
+
+```javascript
+import { create, test, enforce } from 'vest';
+
+enforce.extend({
+  toNumber: value => {
+    const parsed = Number(value);
+    return Number.isNaN(parsed)
+      ? { pass: false, type: value }
+      : { pass: true, type: parsed };
+  },
+});
+
+const schema = enforce.shape({
+  age: enforce.toNumber(),
+});
+
+const suite = create(data => {
+  // data.age is the parsed output (number)
+  test('age', () => {
+    enforce(data.age).isNumber();
+  });
+}, schema);
+
+suite.run({ age: '42' });
+```

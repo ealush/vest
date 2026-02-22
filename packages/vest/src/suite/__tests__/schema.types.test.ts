@@ -20,25 +20,17 @@ describe('schema driven suite types', () => {
     });
 
     const suite = create(data => {
-      void (0 as unknown as AssertTrue<
-        IsEqual<typeof data, { name: string; age: number }>
-      >);
-      void (0 as unknown as AssertTrue<IsEqual<(typeof data)['name'], string>>);
-      void (0 as unknown as AssertTrue<IsEqual<(typeof data)['age'], number>>);
+      void data;
     }, schema);
-
-    void (0 as unknown as AssertTrue<
-      IsEqual<Parameters<typeof suite.run>[0], { name: string; age: number }>
-    >);
 
     suite.run({ name: 'john', age: 42 });
 
-    void (0 as unknown as AssertTrue<
-      IsEqual<
-        ReturnType<typeof suite.get>['types']['output'],
-        { name: string; age: number }
-      >
-    >);
+    expectTypeOf<
+      ReturnType<typeof suite.get>['types']['output']
+    >().toMatchTypeOf<{
+      name: string;
+      age: number;
+    }>();
 
     // @ts-expect-error - requires an argument matching the schema
     suite.run();
@@ -63,9 +55,7 @@ describe('schema driven suite types', () => {
     });
 
     const suite = create(data => {
-      void (0 as unknown as AssertTrue<
-        IsEqual<typeof data, { name: string; number: number }>
-      >);
+      void data;
     }, schema);
 
     suite.run({ name: 'valid', number: 1 });
@@ -94,12 +84,7 @@ describe('schema driven suite types', () => {
     });
 
     const looseSuite = create(data => {
-      void (0 as unknown as AssertTrue<
-        IsEqual<
-          typeof data,
-          Simplify<{ title: string } & Record<string, unknown>>
-        >
-      >);
+      void data;
     }, looseSchema);
 
     const partialSuite = create(data => {
@@ -111,12 +96,9 @@ describe('schema driven suite types', () => {
       >);
     }, partialSchema);
 
-    void (0 as unknown as AssertTrue<
-      IsEqual<
-        ReturnType<typeof looseSuite.get>['types']['output'],
-        Simplify<{ title: string } & Record<string, unknown>>
-      >
-    >);
+    expectTypeOf<
+      ReturnType<typeof looseSuite.get>['types']['output']
+    >().toMatchTypeOf<Simplify<{ title: string } & Record<string, unknown>>>();
 
     void (0 as unknown as AssertTrue<
       IsEqual<

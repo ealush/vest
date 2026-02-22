@@ -10,7 +10,7 @@ export function getStandardSchema<S extends TSchema = undefined>(
     validate: (value: unknown) => {
       const result = staticRunner(value);
       if (!result.hasErrors()) {
-        return { value: value as InferSchemaData<S> };
+        return { value: result.value as InferSchemaData<S> };
       }
       return {
         issues: result.errors.map((error: any) => ({

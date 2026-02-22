@@ -63,10 +63,12 @@ export class RuleRunReturn<T> {
       return new RuleRunReturn(false, type, dynamicValue(message, type));
     }
 
+    const resolvedType = 'type' in pass ? pass.type : type;
+
     const res = new RuleRunReturn(
       !!pass.pass,
-      type ?? pass.type,
-      dynamicValue(message ?? pass.message, type),
+      resolvedType,
+      dynamicValue(message ?? pass.message, resolvedType),
     );
 
     res.path = pass.path;

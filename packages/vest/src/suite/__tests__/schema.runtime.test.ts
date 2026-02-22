@@ -4,6 +4,14 @@ import { describe, it, expect } from 'vitest';
 import { create, test } from '../../vest';
 
 describe('Schema Runtime Validation', () => {
+  enforce.extend({
+    toNumber: (value: unknown) => {
+      const parsed = Number(value);
+      return Number.isNaN(parsed)
+        ? { pass: false, type: value }
+        : { pass: true, type: parsed };
+    },
+  });
   const schema = enforce.shape({
     name: enforce.isString(),
     age: enforce.isNumber(),
@@ -288,5 +296,27 @@ describe('Schema Runtime Validation', () => {
       expect(res.hasErrors()).toBe(true);
       expect(res.hasErrors('required')).toBe(true);
     });
+  });
+
+  it('should pass parsed schema output into the suite callback', () => {
+    const schemaWithParsing = {
+      parse: (value: any) => ({ age: Number(value.age) }),
+      run: (value: any) => ({ pass: true, type: { age: Number(value.age) } }),
+    } as any;
+
+    let receivedAge: unknown;
+    const parsedSuite = create((data: any) => {
+      receivedAge = data.age;
+      test('age', () => {
+        enforce(data.age).isNumber();
+      });
+    }, schemaWithParsing);
+
+    const result = parsedSuite.run({ age: '32' } as any);
+
+    expect(receivedAge).toBe(32);
+    expect(result.value).toEqual({ age: 32 });
+    expect((result.types as any)?.output).toEqual({ age: 32 });
+    expect(result.isValid()).toBe(true);
   });
 });

@@ -35,7 +35,11 @@ type SchemaRunResult = {
 };
 
 const VENDOR_N4S_SENTINEL = 'n4s';
-const EXPECTED_PARSE_ERROR_NAMES = new Set(['ZodError', 'ValidationError']);
+const EXPECTED_PARSE_ERROR_NAMES = new Set([
+  'ZodError',
+  'ValidationError',
+  'TypeError',
+]);
 
 /**
  * Creates the suite runner bound to a callback, modifiers and (optional) schema.

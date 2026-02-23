@@ -75,7 +75,7 @@ export function rejectDangerousKeys<T extends Record<string, any>>(
   if (dangerousSchemaKey) {
     const result = RuleRunReturn.Failing(value);
     result.message = `dangerous key in schema: ${dangerousSchemaKey}`;
-    result.path = ['<schema>', dangerousSchemaKey];
+    result.path = [dangerousSchemaKey];
     return result;
   }
 

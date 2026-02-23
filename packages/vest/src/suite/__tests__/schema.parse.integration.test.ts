@@ -62,6 +62,46 @@ describe('suite schema parse integration', () => {
     });
   });
 
+  it('passes parsed array of objects output into suite body', () => {
+    const schema = {
+      parse: (value: any) => ({
+        users: value.users.map((u: any) => ({
+          age: Number(u.age),
+          name: String(u.name).trim(),
+        })),
+      }),
+      run: (value: any) => ({ pass: true, type: value }),
+    } as any;
+
+    let callbackUsers: any;
+
+    const suite = create((data: any) => {
+      callbackUsers = data.users;
+      test('users', () => {
+        enforce(data.users).isNotEmpty();
+      });
+    }, schema);
+
+    const result = suite.run({
+      users: [
+        { age: '25', name: '  Alice  ' },
+        { age: '30', name: ' Bob ' },
+      ],
+    } as any);
+
+    expect(callbackUsers).toEqual([
+      { age: 25, name: 'Alice' },
+      { age: 30, name: 'Bob' },
+    ]);
+    expect(result.isValid()).toBe(true);
+    expect(result.value).toEqual({
+      users: [
+        { age: 25, name: 'Alice' },
+        { age: 30, name: 'Bob' },
+      ],
+    });
+  });
+
   it('passes parsed output to callback and result.value', () => {
     const schema = {
       parse: (value: any) => ({
@@ -142,7 +182,7 @@ describe('suite schema parse integration', () => {
       parse: (value: any) => {
         const quantity = Number(value.quantity);
         if (Number.isNaN(quantity)) {
-          throw new Error('parse failed');
+          throw new TypeError('parse failed');
         }
 
         return { quantity };

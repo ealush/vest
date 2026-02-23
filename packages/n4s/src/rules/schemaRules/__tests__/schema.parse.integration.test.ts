@@ -97,4 +97,23 @@ describe('schema parse integration', () => {
     expect(result.pass).toBe(false);
     expect(result.path).toEqual(['__proto__']);
   });
+
+  it('isArrayOf parses array elements and preserves type transformations', () => {
+    const schema = enforce.isArrayOf(
+      enforce.shape({
+        name: enforce.trimString(),
+        age: enforce.toNumber(),
+      }),
+    );
+
+    const result = schema.parse([
+      { name: '  Jane  ', age: '34' },
+      { name: ' John ', age: '45' },
+    ]);
+
+    expect(result).toEqual([
+      { name: 'Jane', age: 34 },
+      { name: 'John', age: 45 },
+    ]);
+  });
 });

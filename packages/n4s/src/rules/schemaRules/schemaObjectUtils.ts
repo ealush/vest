@@ -1,4 +1,4 @@
-import { hasOwnProperty, isObject } from 'vest-utils';
+import { isObject } from 'vest-utils';
 
 /**
  * Keys that can mutate object prototypes when assigned.
@@ -54,9 +54,7 @@ export function safeShallowCopy(
       continue;
     }
 
-    if (hasOwnProperty(value, key)) {
-      output[key] = value[key];
-    }
+    output[key] = value[key];
   }
 
   return output;

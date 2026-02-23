@@ -27,10 +27,10 @@ import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
 
 type SchemaRunResult = {
-  message?: string;
-  pass: boolean;
-  path?: string[];
-  type?: unknown;
+  readonly message?: string;
+  readonly pass: boolean;
+  readonly path?: readonly string[];
+  readonly type?: unknown;
 };
 
 /**
@@ -198,7 +198,8 @@ function runSchemaValidation<
       return;
     }
 
-    for (const error of schemaRunResult) {
+    for (let i = 0; i < schemaRunResult.length; i++) {
+      const error = schemaRunResult[i];
       if (error.pass) {
         continue;
       }
@@ -209,10 +210,41 @@ function runSchemaValidation<
         fieldName,
         error.message ?? 'Validation failed',
         () => false,
-        fieldName,
+        `${fieldName}_${i}`,
       );
     }
   };
+}
+
+/**
+ * Attempts to parse the schema. Returns null if parse fails gracefully,
+ * so the caller can fall back to schema.run.
+ */
+function tryParseSchema(schema: any, data: unknown): SchemaRunResult[] | null {
+  if (!isFunction(schema.parse)) {
+    return null;
+  }
+
+  try {
+    const parsedValue = schema.parse(data);
+
+    if (shouldRunAfterParse(schema)) {
+      return normalizeSchemaRunResult(schema.run(parsedValue), parsedValue);
+    }
+
+    return [
+      {
+        pass: true,
+        type: parsedValue,
+      },
+    ];
+  } catch (error) {
+    if (!isExpectedSchemaParseError(error)) {
+      throw error;
+    }
+    // Expected validation failures can fallback to run(raw) for field-level path/message details.
+    return null;
+  }
 }
 
 /**
@@ -221,28 +253,10 @@ function runSchemaValidation<
  * 2) if parse succeeds, treat it as the authoritative validation output
  * 3) on expected parse validation failures, fallback to run(raw)
  */
-// eslint-disable-next-line complexity
 function runSchemaWithParse(schema: any, data: unknown): SchemaRunResult[] {
-  if (isFunction(schema.parse)) {
-    try {
-      const parsedValue = schema.parse(data);
-
-      if (shouldRunAfterParse(schema)) {
-        return normalizeSchemaRunResult(schema.run(parsedValue), parsedValue);
-      }
-
-      return [
-        {
-          pass: true,
-          type: parsedValue,
-        },
-      ];
-    } catch (error) {
-      if (!isExpectedSchemaParseError(error)) {
-        throw error;
-      }
-      // Expected validation failures can fallback to run(raw) for field-level path/message details.
-    }
+  const parseResult = tryParseSchema(schema, data);
+  if (parseResult) {
+    return parseResult;
   }
 
   if (isFunction(schema.run)) {
@@ -317,17 +331,19 @@ function isSchemaRunResult(candidate: unknown): candidate is SchemaRunResult {
  * Detects parse errors that represent expected validation failures.
  */
 function isExpectedSchemaParseError(error: unknown): boolean {
+  if (error instanceof TypeError) {
+    return true;
+  }
+
   if (!isObject(error)) {
     return false;
   }
 
   const typedError = error as { isValidation?: unknown; name?: unknown };
-  return (
-    typedError.isValidation === true ||
-    typedError.name === 'TypeError' ||
-    error instanceof Error
-  );
+  return typedError.isValidation === true || typedError.name === 'TypeError';
 }
+
+const N4S_VENDOR = 'n4s';
 
 /**
  * Determines whether schema.run should execute after a successful parse call.
@@ -341,7 +357,7 @@ function shouldRunAfterParse(schema: any): boolean {
     return false;
   }
 
-  return schema?.['~standard']?.vendor !== 'n4s';
+  return schema?.['~standard']?.vendor !== N4S_VENDOR;
 }
 
 /**

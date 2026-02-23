@@ -53,4 +53,14 @@ describe('parse()', () => {
 
     expect(schema.parse({ age: '42' })).toEqual({ age: 42 });
   });
+
+  it('should transform items when used in isArrayOf', () => {
+    const schema = enforce.isArrayOf(enforce.toNumber());
+    expect(schema.parse(['42', '100', 5])).toEqual([42, 100, 5]);
+  });
+
+  it('should throw an error if an item in isArrayOf fails to parse', () => {
+    const schema = enforce.isArrayOf(enforce.toNumber());
+    expect(() => schema.parse(['42', 'not-a-number'])).toThrow();
+  });
 });

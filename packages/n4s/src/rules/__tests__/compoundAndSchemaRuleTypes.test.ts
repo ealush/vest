@@ -105,10 +105,12 @@ describe('Compound and Schema Rule Types', () => {
     void arr;
 
     // Type test: number[] is not string[]
+    // @ts-expect-error - number is not assignable to string
     const badArr: InferredType = [1, 2, 3];
     void badArr;
 
     expect(rule.run(['a', 'b']).pass).toBe(true);
+    // @ts-expect-error - number is not assignable to string
     expect(rule.run([1, 2]).pass).toBe(false);
   });
 

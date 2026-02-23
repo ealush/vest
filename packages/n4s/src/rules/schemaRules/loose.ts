@@ -9,7 +9,8 @@ import {
   ownKeys,
   safeShallowCopy,
 } from './schemaObjectUtils';
-import type { ShapeType } from './shape';
+import type { Prettify } from './schemaRulesTypes';
+import type { ShapeInputType, ShapeType } from './shape';
 
 /**
  * Validates that an object matches a schema loosely - all schema keys required, extra keys allowed.
@@ -88,9 +89,9 @@ export function loose<T extends Record<string, any>>(
 // Types colocated with loose rule
 export type LooseRuleInstance<S extends Record<string, RuleInstance<any>>> =
   RuleInstance<
-    ShapeType<S> & Record<string, unknown>,
-    [ShapeType<S> & Record<string, unknown>]
+    Prettify<ShapeType<S> & Record<string, unknown>>,
+    [Prettify<ShapeInputType<S> & Record<string, unknown>>]
   >;
 
 export type LooseShapeValue<S extends Record<string, RuleInstance<any>>> =
-  ShapeType<S> & Record<string, unknown>;
+  Prettify<ShapeType<S> & Record<string, unknown>>;

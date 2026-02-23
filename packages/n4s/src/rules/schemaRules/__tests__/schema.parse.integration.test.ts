@@ -5,8 +5,8 @@ import { enforce } from '../../../n4s';
 declare global {
   namespace n4s {
     interface EnforceMatchers {
-      toNumber: (value: unknown) => { pass: boolean; type: unknown };
-      trimString: (value: unknown) => { pass: boolean; type: unknown };
+      toNumber: (value: unknown) => { pass: boolean; type: number };
+      trimString: (value: unknown) => { pass: boolean; type: string };
     }
   }
 }

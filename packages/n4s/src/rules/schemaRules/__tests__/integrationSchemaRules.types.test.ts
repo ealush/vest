@@ -17,10 +17,12 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     void ok1;
 
     // Type test: boolean is not allowed in (number | string)[]
+    // @ts-expect-error - boolean is not assignable to number | string
     const badArr1: Arr = [true];
     void badArr1;
 
     // Type test: object is not allowed in (number | string)[]
+    // @ts-expect-error - object is not assignable to number | string
     const badArr2: Arr = [{}];
     void badArr2;
     expect(true).toBe(true);
@@ -156,14 +158,53 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     void ok;
 
     // Type test: items must be array of lineItem
+    // @ts-expect-error - string is not a valid lineItem
     const badCart1 = { items: ['x'] } satisfies Cart;
     void badCart1;
 
     const badCart2 = {
       // Type test: qty must be number > 0 (type-wise: number, so boolean is invalid)
+      // @ts-expect-error - qty must be number, not boolean
       items: [{ price: 1, qty: true, sku: 'x' }],
     } satisfies Cart;
     void badCart2;
+    expect(true).toBe(true);
+  });
+
+  it('parse() return type for shape is correctly inferred', () => {
+    const schema = enforce.shape({
+      name: enforce.isString(),
+      age: enforce.isNumber(),
+    });
+
+    // Compile-time check: parse() should return { name: string; age: number }
+    const parseResult = schema.parse({ name: 'Alice', age: 30 });
+    const _checkShape: { name: string; age: number } = parseResult;
+    void _checkShape;
+    expect(true).toBe(true);
+  });
+
+  it('parse() return type for isArrayOf is correctly inferred', () => {
+    const schema = enforce.isArrayOf(enforce.isNumber());
+
+    // Compile-time check: parse() should return number[]
+    const parseResult = schema.parse([1, 2, 3]);
+    const _checkArr: number[] = parseResult;
+    void _checkArr;
+    expect(true).toBe(true);
+  });
+
+  it('parse() return type for nested isArrayOf(shape) is correctly inferred', () => {
+    const itemSchema = enforce.shape({
+      id: enforce.isNumber(),
+      label: enforce.isString(),
+    });
+    const listSchema = enforce.isArrayOf(itemSchema);
+
+    // Compile-time check: parse() should return { id: number; label: string }[]
+    const parseResult = listSchema.parse([{ id: 1, label: 'x' }]);
+    const _checkNested: { id: number; label: string }[] = parseResult;
+    void _checkNested;
     expect(true).toBe(true);
   });
 });

@@ -9,7 +9,7 @@ import {
   ownKeys,
   safeShallowCopy,
 } from './schemaObjectUtils';
-import type { ShapeType } from './shape';
+import type { ShapeInputType, ShapeType } from './shape';
 
 /**
  * Checks if value has any keys not present in schema.
@@ -145,7 +145,7 @@ export function partial<T extends Record<string, any>>(
 
 // Types colocated with partial rule
 export type PartialRuleInstance<S extends Record<string, RuleInstance<any>>> =
-  RuleInstance<Partial<ShapeType<S>>, [Partial<ShapeType<S>>]>;
+  RuleInstance<Partial<ShapeType<S>>, [Partial<ShapeInputType<S>>]>;
 
 export type PartialShapeValue<S extends Record<string, RuleInstance<any>>> =
   Partial<ShapeType<S>>;

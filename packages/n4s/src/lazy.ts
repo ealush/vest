@@ -18,9 +18,17 @@ import { type RuleInstance } from './utils/RuleInstance';
 import { RuleRunReturn } from './utils/RuleRunReturn';
 
 /**
- * Type mapping for custom rules in the lazy (builder) API.
- * Excludes schema and compound rules as they have special handling.
+ * Extracts the output type from a custom matcher function.
+ * If the matcher returns { type: T }, uses T (coercion rules like toNumber).
+ * Otherwise falls back to the first parameter type (validation rules like isPositive).
  */
+type InferMatcherOutput<K extends keyof n4s.EnforceMatchers> =
+  ReturnType<Extract<n4s.EnforceMatchers[K], (...args: any[]) => any>> extends {
+    type: infer T;
+  }
+    ? T
+    : FirstParam<n4s.EnforceMatchers[K]>;
+
 type TCustomLazyRules = {
   [K in keyof n4s.EnforceMatchers as K extends keyof SchemaRuleLazyTypes
     ? never
@@ -29,7 +37,7 @@ type TCustomLazyRules = {
       : K]: (
     ...args: CustomMatcherArgs<K>
   ) => RuleInstance<
-    FirstParam<n4s.EnforceMatchers[K]>,
+    InferMatcherOutput<K>,
     [FirstParam<n4s.EnforceMatchers[K]>]
   >;
 };

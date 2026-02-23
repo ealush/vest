@@ -215,6 +215,7 @@ describe('Documentation Examples', () => {
       const numbersRule = enforce.isArrayOf(enforce.isNumber());
 
       expect(numbersRule.test([1, 2, 3])).toBe(true);
+      // @ts-expect-error - string is not assignable to number
       expect(numbersRule.test([1, 'two', 3])).toBe(false);
     });
   });

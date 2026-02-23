@@ -94,5 +94,7 @@ export function isArrayOf<T>(value: T[], ...rules: any[]): RuleRunReturn<T[]> {
 }
 
 // Type for isArrayOf rule instance - should chain array rules like isArray does
-export type IsArrayOfRuleInstance<T> =
-  import('../arrayRules').ArrayRuleInstance<T>;
+export type IsArrayOfRuleInstance<
+  T,
+  TInput = T,
+> = import('../arrayRules').ArrayRuleInstance<T, TInput>;

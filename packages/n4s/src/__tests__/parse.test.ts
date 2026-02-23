@@ -5,7 +5,7 @@ import { enforce } from '../n4s';
 declare global {
   namespace n4s {
     interface EnforceMatchers {
-      toNumber: (value: unknown) => { pass: boolean; type: unknown };
+      toNumber: (value: unknown) => { pass: boolean; type: number };
     }
   }
 }
@@ -43,7 +43,7 @@ describe('parse()', () => {
 
   it('should throw on failed parse', () => {
     const validator = enforce.isString().message('Must be string');
-    expect(() => validator.parse(100 as any)).toThrow('Must be string');
+    expect(() => validator.parse(100)).toThrow('Must be string');
   });
 
   it('should return transformed output for schema rules', () => {
@@ -56,6 +56,7 @@ describe('parse()', () => {
 
   it('should transform items when used in isArrayOf', () => {
     const schema = enforce.isArrayOf(enforce.toNumber());
+
     expect(schema.parse(['42', '100', 5])).toEqual([42, 100, 5]);
   });
 

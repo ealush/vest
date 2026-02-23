@@ -1,4 +1,12 @@
-import { assign, asArray, CB, isFunction, withResolvers } from 'vest-utils';
+import {
+  assign,
+  asArray,
+  CB,
+  isArray,
+  isFunction,
+  isObject,
+  withResolvers,
+} from 'vest-utils';
 
 import { useEmit } from '../core/VestBus/VestBus';
 
@@ -18,16 +26,19 @@ import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
 import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
 
-/**
- * Creates the actual suite runner function.
- * This function is responsible for initializing the suite context,
- * running the suite callback, and returning the result.
- *
- * @param {Function} suiteCallback - The body of the suite.
- * @param {Object} modifiers - The modifiers for the suite (e.g., only).
- * @returns {Function} - The suite runner function.
- */
+type SchemaRunResult = {
+  message?: string;
+  pass: boolean;
+  path?: string[];
+  type: unknown;
+};
 
+/**
+ * Creates the suite runner bound to a callback, modifiers and (optional) schema.
+ *
+ * The runner performs schema preprocessing once per run, stores the original input
+ * and parsed output, and then executes the suite callback within SuiteContext.
+ */
 // eslint-disable-next-line max-lines-per-function
 export function useCreateSuiteRunner<
   F extends TFieldName,
@@ -40,34 +51,56 @@ export function useCreateSuiteRunner<
   schema?: S,
 ) {
   const transformedModifiers = useTransformedModifiers(modifiers);
+
   return function runSuite(
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
   ): SuiteResult<F, G, S> {
     const { resolve, promise } = withResolvers<SuiteResult<F, G, S>>();
+
+    const schemaInput = args[0];
+    const schemaRunResult = shouldRunSchema(schema, transformedModifiers)
+      ? runSchemaWithParse(schema, schemaInput)
+      : undefined;
+
+    // Only expose parsed output to the callback when schema processing succeeded.
+    const callbackInput = schemaRunResult?.pass
+      ? schemaRunResult.type
+      : schemaInput;
+    const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
+
     return assign(
       promise,
       SuiteContext.run(
         {
-          suiteParams: args as Parameters<T>,
+          suiteParams: callbackArgs,
           schema,
           modifiers: transformedModifiers,
         },
         () => {
           useEmit('SUITE_RUN_STARTED');
+
           const useResolver = () => {
-            const result = useCreateSuiteResult<F, G, S>(schema, args[0]);
+            const result = useCreateSuiteResult<F, G, S>(
+              schema,
+              callbackInput,
+              schemaInput,
+            );
+
             if (!result.isPending()) {
               resolve(result);
             }
+
             return result;
           };
+
           return IsolateSuite(
             useRunSuiteCallback<F, T, S>({
-              args,
+              args: callbackArgs,
               modifiers: transformedModifiers,
               schema,
+              schemaRunResult,
               suiteCallback,
               useResolver,
             }),
@@ -79,6 +112,9 @@ export function useCreateSuiteRunner<
   };
 }
 
+/**
+ * Wraps suite callback execution and schema failure emission into an isolate callback.
+ */
 function useRunSuiteCallback<
   F extends TFieldName,
   T extends CB = CB,
@@ -87,33 +123,42 @@ function useRunSuiteCallback<
   args: any[];
   modifiers: ReturnType<typeof useTransformedModifiers<F>>;
   schema: S | undefined;
+  schemaRunResult?: SchemaRunResult;
   suiteCallback: SuiteCallbackWithSchema<S, T>;
   useResolver: () => SuiteResult<F, any, S>;
 }) {
-  const { args, modifiers, schema, suiteCallback, useResolver } = params;
+  const {
+    args,
+    modifiers,
+    schema,
+    schemaRunResult,
+    suiteCallback,
+    useResolver,
+  } = params;
+
   return () => {
-    // Apply field-level focus modifiers. These create transient Focused
-    // isolates at the suite root that affect all tests in the suite.
-    // `only` restricts the run to matching fields; `skip` excludes them.
-    // `skipGroup` is handled separately inside `group()` — when a group
-    // with a matching name is entered, it injects `skip(true)` into
-    // the group's callback via the modifiers stored in SuiteContext.
+    // Focused modifiers are applied before user callback so every test in this run
+    // observes the same focus context.
     only(modifiers.only);
     skip(modifiers.skip);
     (suiteCallback as any)(...args);
 
     IsolateReorderable(
-      runSchemaValidation(schema, modifiers, args[0]),
+      runSchemaValidation(schema, modifiers, schemaRunResult),
       undefined,
       {
         tests: [],
       },
     );
+
     useEmit('SUITE_CALLBACK_RUN_FINISHED');
     return useResolver();
   };
 }
 
+/**
+ * Normalizes user-provided modifiers into deterministic sets for O(1) membership checks.
+ */
 function useTransformedModifiers<F extends TFieldName>(
   modifiers: SuiteModifiers<F>,
 ) {
@@ -124,27 +169,127 @@ function useTransformedModifiers<F extends TFieldName>(
   };
 }
 
+/**
+ * Emits schema failure into vest test tree when schema processing failed.
+ */
+
 function runSchemaValidation<
   F extends TFieldName,
   S extends TSchema = undefined,
 >(
   schema: S | undefined,
   modifiers: ReturnType<typeof useTransformedModifiers<F>>,
-  data: any,
+  schemaRunResult?: SchemaRunResult,
 ) {
+  // eslint-disable-next-line complexity
   return () => {
-    if (!shouldRunSchema(schema, modifiers)) return;
-
-    const runResult = (schema as any).run(data);
-
-    if (!runResult.pass && runResult.path) {
-      // Use the top-level field name (first segment) for error reporting
-      const fieldName = runResult.path[0];
-      test(fieldName, runResult.message, () => false, fieldName);
+    if (
+      !shouldRunSchema(schema, modifiers) ||
+      !schemaRunResult ||
+      schemaRunResult.pass
+    ) {
+      return;
     }
+
+    const fieldName = schemaRunResult.path?.[0];
+    if (!fieldName) {
+      return;
+    }
+
+    test(
+      fieldName,
+      schemaRunResult.message ?? 'Validation failed',
+      () => false,
+      fieldName,
+    );
   };
 }
 
-function shouldRunSchema(schema: any, modifiers: any): boolean {
-  return !modifiers.only && !!schema && isFunction(schema.run);
+/**
+ * Runs schema parsing/validation in a safe order:
+ * 1) try parse
+ * 2) if parse succeeds and run exists, validate parsed value with run
+ * 3) on parse failure, fallback to run(raw)
+ *
+ * Returned payload is normalized so downstream consumers can rely on shape.
+ */
+function runSchemaWithParse(schema: any, data: unknown): SchemaRunResult {
+  if (isFunction(schema.parse)) {
+    try {
+      const parsedValue = schema.parse(data);
+
+      if (isFunction(schema.run)) {
+        return normalizeSchemaRunResult(schema.run(parsedValue), parsedValue);
+      }
+
+      return {
+        pass: true,
+        type: parsedValue,
+      };
+    } catch (_error) {
+      // parse may throw intentionally; fallback to run(raw) for path/message details.
+    }
+  }
+
+  if (isFunction(schema.run)) {
+    return normalizeSchemaRunResult(schema.run(data), data);
+  }
+
+  return {
+    pass: true,
+    type: data,
+  };
+}
+
+/**
+ * Converts unknown schema.run return value into a stable internal representation.
+ *
+ * This avoids runtime crashes when a custom schema returns malformed payloads.
+ */
+function normalizeSchemaRunResult(
+  candidate: unknown,
+  fallbackType: unknown,
+): SchemaRunResult {
+  if (!isSchemaRunResult(candidate)) {
+    return {
+      pass: false,
+      type: fallbackType,
+    };
+  }
+
+  return {
+    message: candidate.message,
+    pass: candidate.pass,
+    path: candidate.path,
+    type: candidate.type,
+  };
+}
+
+/**
+ * Runtime type guard for schema run payloads.
+ */
+
+function isSchemaRunResult(candidate: unknown): candidate is SchemaRunResult {
+  if (!isObject(candidate)) {
+    return false;
+  }
+
+  const value = candidate as Partial<SchemaRunResult>;
+
+  const hasPass = typeof value.pass === 'boolean';
+  const hasPath =
+    value.path === undefined ||
+    (isArray(value.path) && value.path.every(item => typeof item === 'string'));
+
+  return hasPass && hasPath;
+}
+
+/**
+ * Schema should run only when schema exists and the run is not field-focused.
+ */
+function shouldRunSchema(
+  schema: unknown,
+  modifiers: { only?: unknown },
+): boolean {
+  return !modifiers.only && !!schema;
 }

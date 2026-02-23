@@ -4,6 +4,12 @@ import { ctx } from '../../enforceContext';
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
+import {
+  findDangerousOwnKey,
+  ownKeys,
+  safeHasOwn,
+  safeShallowCopy,
+} from './schemaObjectUtils';
 import type { ShapeType } from './shape';
 
 /**
@@ -45,8 +51,26 @@ export function loose<T extends Record<string, any>>(
     return RuleRunReturn.Failing(value);
   }
 
-  for (const key in schema) {
-    const fieldValue = key in value ? value[key] : undefined;
+  const dangerousSchemaKey = findDangerousOwnKey(schema);
+  if (dangerousSchemaKey) {
+    return {
+      ...RuleRunReturn.Failing(value),
+      path: [dangerousSchemaKey],
+    };
+  }
+
+  const dangerousValueKey = findDangerousOwnKey(value);
+  if (dangerousValueKey) {
+    return {
+      ...RuleRunReturn.Failing(value),
+      path: [dangerousValueKey],
+    };
+  }
+
+  const parsedValue: Record<string, any> = safeShallowCopy(value);
+
+  for (const key of ownKeys(schema)) {
+    const fieldValue = safeHasOwn(value, key) ? value[key] : undefined;
     const res = ctx.run({ value: fieldValue, set: true, meta: { key } }, () =>
       schema[key].run(fieldValue),
     );
@@ -55,8 +79,11 @@ export function loose<T extends Record<string, any>>(
       const newRes = { ...res, path: [key, ...currentPath] };
       return newRes as RuleRunReturn<T>;
     }
+
+    parsedValue[key] = res.type;
   }
-  return RuleRunReturn.Passing(value);
+
+  return RuleRunReturn.Passing(parsedValue as T);
 }
 
 // Types colocated with loose rule

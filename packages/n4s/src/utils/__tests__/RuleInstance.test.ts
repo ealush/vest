@@ -62,4 +62,34 @@ describe('RuleInstance.create', () => {
       ],
     });
   });
+
+  it('parse() returns transformed output for valid input', () => {
+    type R = RuleInstance<number, [string]>;
+
+    const toNumber = (value: string) => {
+      const parsed = Number(value);
+      return Number.isNaN(parsed)
+        ? RuleRunReturn.Failing(value as any, 'not a number')
+        : RuleRunReturn.Passing(parsed);
+    };
+
+    const rule = RuleInstance.create<R, number, [string]>(toNumber as any);
+
+    expect(rule.parse('15')).toBe(15);
+  });
+
+  it('parse() throws when validation fails', () => {
+    type R = RuleInstance<number, [string]>;
+
+    const toNumber = (value: string) => {
+      const parsed = Number(value);
+      return Number.isNaN(parsed)
+        ? RuleRunReturn.Failing(value as any, 'not a number')
+        : RuleRunReturn.Passing(parsed);
+    };
+
+    const rule = RuleInstance.create<R, number, [string]>(toNumber as any);
+
+    expect(() => rule.parse('bad')).toThrow('not a number');
+  });
 });

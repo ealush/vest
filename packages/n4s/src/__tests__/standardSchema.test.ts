@@ -62,6 +62,22 @@ describe('n4s StandardSchema Support', () => {
     });
   });
 
+  it('should expose .parse() and return transformed value when valid', async () => {
+    const { enforce } = await import('../n4s');
+    enforce.extend({
+      toNumberForParse: (value: any) => {
+        const parsed = Number(value);
+        return {
+          pass: !Number.isNaN(parsed),
+          type: parsed,
+          message: 'not numeric',
+        };
+      },
+    });
+
+    expect((enforce as any).toNumberForParse().parse('12')).toBe(12);
+  });
+
   describe('Direct validate() method usage', () => {
     it('should expose .validate() as a direct method', () => {
       const validator = enforce.equals(5);

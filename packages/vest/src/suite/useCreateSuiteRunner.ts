@@ -34,6 +34,9 @@ type SchemaRunResult = {
   type?: unknown;
 };
 
+const VENDOR_N4S_SENTINEL = 'n4s';
+const EXPECTED_PARSE_ERROR_NAMES = new Set(['ZodError', 'ValidationError']);
+
 /**
  * Creates the suite runner bound to a callback, modifiers and (optional) schema.
  *
@@ -338,10 +341,14 @@ function isExpectedSchemaParseError(error: unknown): boolean {
   }
 
   const typedError = error as { isValidation?: unknown; name?: unknown };
+
+  if (typedError.isValidation === true) {
+    return true;
+  }
+
   return (
-    typedError.isValidation === true ||
-    typedError.name === 'TypeError' ||
-    error instanceof Error
+    typeof typedError.name === 'string' &&
+    EXPECTED_PARSE_ERROR_NAMES.has(typedError.name)
   );
 }
 
@@ -357,7 +364,7 @@ function shouldRunAfterParse(schema: any): boolean {
     return false;
   }
 
-  return schema?.['~standard']?.vendor !== 'n4s';
+  return schema?.['~standard']?.vendor !== VENDOR_N4S_SENTINEL;
 }
 
 /**

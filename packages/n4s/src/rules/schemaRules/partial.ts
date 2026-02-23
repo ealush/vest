@@ -53,7 +53,6 @@ function validateProvidedKeys<T extends Record<string, any>>(
         const result = RuleRunReturn.Failing(value);
         result.message = res.message;
         result.path = [key, ...currentPath];
-        result.type = res.type as T;
 
         return { ok: false, result };
       }
@@ -125,11 +124,12 @@ export function partial<T extends Record<string, any>>(
     return result;
   }
 
-  const parsedValue = safeShallowCopy(value);
   const parsedEntriesResult = validateProvidedKeys(value, schema);
   if (!parsedEntriesResult.ok) {
     return parsedEntriesResult.result;
   }
+
+  const parsedValue = safeShallowCopy(value);
 
   return RuleRunReturn.Passing({
     ...parsedValue,

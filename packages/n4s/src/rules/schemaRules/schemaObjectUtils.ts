@@ -74,13 +74,15 @@ export function rejectDangerousKeys<T extends Record<string, any>>(
   const dangerousSchemaKey = findDangerousOwnKey(schema);
   if (dangerousSchemaKey) {
     const result = RuleRunReturn.Failing(value);
-    result.path = [dangerousSchemaKey];
+    result.message = `dangerous key in schema: ${dangerousSchemaKey}`;
+    result.path = ['<schema>', dangerousSchemaKey];
     return result;
   }
 
   const dangerousValueKey = findDangerousOwnKey(value);
   if (dangerousValueKey) {
     const result = RuleRunReturn.Failing(value);
+    result.message = `dangerous key in value: ${dangerousValueKey}`;
     result.path = [dangerousValueKey];
     return result;
   }

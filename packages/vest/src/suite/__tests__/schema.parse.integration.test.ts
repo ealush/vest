@@ -83,7 +83,7 @@ describe('suite schema parse integration', () => {
       parse: (value: any) => {
         const quantity = Number(value.quantity);
         if (Number.isNaN(quantity)) {
-          throw new Error('parse failed');
+          throw { message: 'parse failed', name: 'ValidationError' };
         }
 
         return { quantity };

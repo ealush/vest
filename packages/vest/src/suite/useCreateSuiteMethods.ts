@@ -95,7 +95,9 @@ function useGetSuiteMethods<
 }): any {
   const { suiteCallback, modifiers, subscribe, schema } = ctx;
 
-  const get = VestRuntime.persist(() => useCreateSuiteResult<F, G, S>(schema));
+  const get = VestRuntime.persist(() =>
+    useCreateSuiteResult<F, G, S>(schema, undefined, undefined),
+  );
   return {
     ...useGetLifecycleMethods(ctx),
     dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),

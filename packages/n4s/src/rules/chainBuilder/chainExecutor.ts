@@ -12,15 +12,18 @@ export function executeChain(
   chain: Predicate[],
   value: any,
 ): RuleRunReturn<any> {
+  let currentValue = value;
+
   for (const predicate of chain) {
-    const result = predicate(value);
+    const result = predicate(currentValue);
 
     if (isRuleRunReturn(result)) {
       if (!result.pass) return result as RuleRunReturn<any>;
+      currentValue = result.type;
     } else if (!result) {
-      return RuleRunReturn.Failing(value);
+      return RuleRunReturn.Failing(currentValue);
     }
   }
 
-  return RuleRunReturn.Passing(value);
+  return RuleRunReturn.Passing(currentValue);
 }

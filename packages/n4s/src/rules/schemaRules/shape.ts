@@ -1,9 +1,8 @@
-import { hasOwnProperty } from 'vest-utils';
-
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 import { loose } from './loose';
+import { ownKeys, safeHasOwn } from './schemaObjectUtils';
 
 /**
  * Validates that an object matches a schema exactly - all keys required, no extra keys allowed.
@@ -44,15 +43,15 @@ export function shape<T extends Record<string, any>>(
     return baseRes;
   }
 
-  for (const key in value) {
-    if (!hasOwnProperty(schema, key)) {
+  for (const key of ownKeys(value)) {
+    if (!safeHasOwn(schema, key)) {
       const res = RuleRunReturn.Failing(value);
       const newRes = { ...res, path: [key] };
       return newRes;
     }
   }
 
-  return RuleRunReturn.Passing(value);
+  return RuleRunReturn.Passing(baseRes.type);
 }
 
 // Types colocated with shape rule

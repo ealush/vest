@@ -52,6 +52,7 @@ export class RuleRunReturn<T> {
     return RuleRunReturn.fromObject(pass, type, message);
   }
 
+  // eslint-disable-next-line complexity
   private static fromObject<T>(
     pass: any,
     type: T,
@@ -63,9 +64,14 @@ export class RuleRunReturn<T> {
       return new RuleRunReturn(false, type, dynamicValue(message, type));
     }
 
+    const resolvedPass = !!pass.pass;
+    const resolvedType = resolvedPass
+      ? (pass.type ?? type)
+      : (type ?? pass.type);
+
     const res = new RuleRunReturn(
-      !!pass.pass,
-      type ?? pass.type,
+      resolvedPass,
+      resolvedType,
       dynamicValue(message ?? pass.message, type),
     );
 

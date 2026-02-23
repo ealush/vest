@@ -20,15 +20,15 @@ export function useCreateSuiteResult<
   F extends TFieldName,
   G extends TGroupName,
   S extends TSchema = undefined,
->(schema?: S, data?: any): SuiteResult<F, G, S> {
+>(schema?: S, outputData?: any, inputData?: any): SuiteResult<F, G, S> {
   return useSuiteResultCache<F, G, S>(() => {
     // @vx-allow use-use
     const summary = useProduceSuiteSummary<F, G>();
-    const resultBody = constructSuiteResultObject<F, G, S>(summary, data);
+    const resultBody = constructSuiteResultObject<F, G, S>(summary, outputData);
     return freezeAssign(resultBody as SuiteResult<F, G, S>, {
       dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
       types: (schema
-        ? { input: data, output: data }
+        ? { input: inputData, output: outputData }
         : undefined) as SuiteResult<F, G, S>['types'],
     }) as SuiteResult<F, G, S>;
   });

@@ -2,6 +2,18 @@ import { describe, expect, it } from 'vitest';
 
 import { enforce } from '../n4s';
 
+declare global {
+  namespace n4s {
+    interface EnforceMatchers {
+      toNumberForParse: (value: unknown) => {
+        message: string;
+        pass: boolean;
+        type: number;
+      };
+    }
+  }
+}
+
 describe('n4s StandardSchema Support', () => {
   describe('Lazy Interface', () => {
     it('Should have the "~standard" property', () => {
@@ -60,6 +72,22 @@ describe('n4s StandardSchema Support', () => {
       expect((invalidResult as any).issues?.[0]).toHaveProperty('path');
       expect(Array.isArray((invalidResult as any).issues?.[0].path)).toBe(true);
     });
+  });
+
+  it('should expose .parse() and return transformed value when valid', async () => {
+    const { enforce } = await import('../n4s');
+    enforce.extend({
+      toNumberForParse: (value: any) => {
+        const parsed = Number(value);
+        return {
+          pass: !Number.isNaN(parsed),
+          type: parsed,
+          message: 'not numeric',
+        };
+      },
+    });
+
+    expect(enforce.toNumberForParse().parse('12')).toBe(12);
   });
 
   describe('Direct validate() method usage', () => {

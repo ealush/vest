@@ -55,9 +55,21 @@ export type GetFailuresResponse = FailureMessages | string[];
 export type FailureMessages = Record<string, string[]>;
 export type TSchema = any;
 
-export type InferSchemaData<S> = S extends { infer: infer T }
-  ? { [K in keyof T]: T[K] } & NonNullable<unknown>
-  : any;
+export type InferSchemaData<S> = S extends {
+  '~standard': { types: { input: infer I } };
+}
+  ? I
+  : S extends { infer: infer T }
+    ? { [K in keyof T]: T[K] } & NonNullable<unknown>
+    : any;
+
+export type InferSchemaOutput<S> = S extends {
+  '~standard': { types: { output: infer O } };
+}
+  ? O
+  : S extends { infer: infer T }
+    ? { [K in keyof T]: T[K] } & NonNullable<unknown>
+    : any;
 
 type SuiteResultData<
   F extends TFieldName,
@@ -67,7 +79,7 @@ type SuiteResultData<
   | (Omit<SuiteSummary<F, G>, 'valid'> &
       SuiteSelectors<F, G> & {
         valid: true;
-        value: InferSchemaData<S>;
+        value: InferSchemaOutput<S>;
         issues?: undefined;
       })
   | (Omit<SuiteSummary<F, G>, 'valid'> &
@@ -94,7 +106,7 @@ export type SuiteResult<
   dump: CB<TIsolateSuite>;
   types: S extends undefined
     ? undefined
-    : { input: InferSchemaData<S>; output: InferSchemaData<S> };
+    : { input: InferSchemaData<S>; output: InferSchemaOutput<S> };
 };
 
 // Public-facing aliases remain plain strings; internals can still brand via FieldName/GroupName.

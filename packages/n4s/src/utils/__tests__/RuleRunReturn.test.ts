@@ -67,8 +67,8 @@ describe('RuleRunReturn', () => {
       const msgFn = vi.fn((t: string) => `outer:${t}`);
       const res = RuleRunReturn.create(inner, 'OUTER', msgFn);
 
-      // final type prefers explicit type
-      expect(res.type).toBe('OUTER');
+      // final type preserves inner transformed type on pass
+      expect(res.type).toBe('INNER');
       // message function receives the second arg to create (OUTER)
       expect(res.message).toBe('outer:OUTER');
       expect(msgFn).toHaveBeenCalledTimes(1);

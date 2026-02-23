@@ -41,6 +41,9 @@ export class RuleInstance<T, Args extends any[] = any[]> {
   // Type-only declaration for the StandardSchema validate method
   validate!: (...args: Args) => StandardSchemaV1.Result<T>;
 
+  // Type-only declaration for parse helper that throws on issues
+  parse!: (...args: Args) => T;
+
   // Type-only declaration for StandardSchema property
   '~standard'!: StandardSchemaV1.Props<Args[0], T>;
 
@@ -77,6 +80,16 @@ export class RuleInstance<T, Args extends any[] = any[]> {
       return rule(...args);
     };
 
+    const parse = (...args: Args): T => {
+      const result = validate(...args);
+      if (!result.issues) {
+        return result.value;
+      }
+
+      const [firstIssue] = result.issues;
+      throw new TypeError(firstIssue?.message || 'Validation failed');
+    };
+
     return {
       '~standard': {
         types: {
@@ -89,6 +102,7 @@ export class RuleInstance<T, Args extends any[] = any[]> {
       },
       infer: {} as T,
       run,
+      parse,
       test: (...args: Args) => {
         const result = validate(...args);
         return !result.issues;

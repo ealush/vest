@@ -14,7 +14,7 @@ import { executeChain, type Predicate } from './chainExecutor';
 import { createChainProxyHandlers } from './proxyHandlers';
 
 export type RuleFunctions<T extends RuleInstance<any, any>> = Record<
-  keyof Omit<T, 'infer' | 'test' | 'validate' | '~standard'>,
+  keyof Omit<T, 'infer' | 'test' | 'validate' | 'parse' | '~standard'>,
   (...args: any[]) => boolean
 >;
 
@@ -72,6 +72,17 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
   }) as T['test'];
 
   // Internal compatibility method - converts StandardSchema Result to RuleRunReturn
+
+  const parse: T['parse'] = ((...args: any[]) => {
+    const result = validate(...args);
+    if (!result.issues) {
+      return result.value;
+    }
+
+    const [firstIssue] = result.issues;
+    throw new TypeError(firstIssue?.message || 'Validation failed');
+  }) as T['parse'];
+
   const run: T['run'] = ((...args: any[]) => {
     const result = executeChain(chain, args[0]);
     if (!result.pass && lazyMessage) {
@@ -105,6 +116,7 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
       } as StandardSchemaV1.Props<any, any>,
       add,
       message,
+      parse,
       run,
       test,
       validate,

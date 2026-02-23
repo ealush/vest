@@ -4,6 +4,7 @@ import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 import { loose } from './loose';
+import { ownKeys } from './schemaObjectUtils';
 
 /**
  * Validates that an object matches a schema exactly - all keys required, no extra keys allowed.
@@ -44,7 +45,7 @@ export function shape<T extends Record<string, any>>(
     return baseRes;
   }
 
-  for (const key in value) {
+  for (const key of ownKeys(value)) {
     if (!hasOwnProperty(schema, key)) {
       const res = RuleRunReturn.Failing(value);
       const newRes = { ...res, path: [key] };
@@ -52,7 +53,7 @@ export function shape<T extends Record<string, any>>(
     }
   }
 
-  return RuleRunReturn.Passing(value);
+  return RuleRunReturn.Passing(baseRes.type);
 }
 
 // Types colocated with shape rule

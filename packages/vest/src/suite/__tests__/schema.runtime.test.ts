@@ -242,6 +242,7 @@ describe('Schema Runtime Validation', () => {
       });
 
       const res = schema.run({
+        // @ts-expect-error - Invalid data: 123 is not a string
         tags: ['valid', 123, 'valid'],
       });
 
@@ -262,6 +263,7 @@ describe('Schema Runtime Validation', () => {
       const res = schema.run({
         users: [
           { name: 'John', age: 30 },
+          // @ts-expect-error - Invalid data: '25' is not a number
           { name: 'Jane', age: '25' }, // Invalid age
         ],
       });

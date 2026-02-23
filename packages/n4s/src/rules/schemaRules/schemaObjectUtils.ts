@@ -1,11 +1,4 @@
-import { isObject } from 'vest-utils';
-
-/**
- * Keys that can mutate object prototypes when assigned.
- *
- * This set is intentionally tiny and lookup is O(1).
- */
-const DANGEROUS_KEYS = new Set(['__proto__', 'prototype', 'constructor']);
+import { isObject, isUnsafeKey } from 'vest-utils';
 
 /**
  * Returns only own enumerable keys for object-like values.
@@ -21,18 +14,11 @@ export function ownKeys(value: unknown): string[] {
 }
 
 /**
- * Checks whether a key is known to be unsafe for object assignment/traversal.
- */
-export function isDangerousKey(key: string): boolean {
-  return DANGEROUS_KEYS.has(key);
-}
-
-/**
  * Returns the first dangerous own key if present; otherwise null.
  */
 export function findDangerousOwnKey(value: unknown): string | null {
   for (const key of ownKeys(value)) {
-    if (isDangerousKey(key)) {
+    if (isUnsafeKey(key)) {
       return key;
     }
   }
@@ -50,7 +36,7 @@ export function safeShallowCopy(
   const output: Record<string, any> = {};
 
   for (const key of ownKeys(value)) {
-    if (isDangerousKey(key)) {
+    if (isUnsafeKey(key)) {
       continue;
     }
 

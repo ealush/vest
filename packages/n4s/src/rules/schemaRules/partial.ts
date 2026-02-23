@@ -5,8 +5,8 @@ import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 import {
-  findDangerousOwnKey,
   ownKeys,
+  rejectDangerousKeys,
   safeShallowCopy,
 } from './schemaObjectUtils';
 import type { ShapeType } from './shape';
@@ -27,6 +27,10 @@ function getFirstExtraKey<T extends Record<string, any>>(
   return null;
 }
 
+type ParsedKeysResult<T extends Record<string, any>> =
+  | { ok: true; parsedEntries: Record<string, any> }
+  | { ok: false; result: RuleRunReturn<T> };
+
 /**
  * Validates provided keys against their schema rules and returns parsed entries.
  *
@@ -35,7 +39,7 @@ function getFirstExtraKey<T extends Record<string, any>>(
 function validateProvidedKeys<T extends Record<string, any>>(
   value: T,
   schema: Record<string, any>,
-): RuleRunReturn<T> | { parsedEntries: Record<string, any> } {
+): ParsedKeysResult<T> {
   const parsedEntries: Record<string, any> = {};
 
   for (const key of ownKeys(schema)) {
@@ -46,17 +50,19 @@ function validateProvidedKeys<T extends Record<string, any>>(
       );
       if (!res.pass) {
         const currentPath = res.path || [];
-        return {
-          ...res,
-          path: [key, ...currentPath],
-        } as RuleRunReturn<T>;
+        const result = RuleRunReturn.Failing(value);
+        result.message = res.message;
+        result.path = [key, ...currentPath];
+        result.type = res.type as T;
+
+        return { ok: false, result };
       }
 
       parsedEntries[key] = res.type;
     }
   }
 
-  return { parsedEntries };
+  return { ok: true, parsedEntries };
 }
 
 /**
@@ -98,7 +104,7 @@ function validateProvidedKeys<T extends Record<string, any>>(
  * updateSchema.test({ name: 'Jane', extra: 'x' }); // false (extra key not in schema)
  * ```
  */
-// eslint-disable-next-line complexity
+
 export function partial<T extends Record<string, any>>(
   value: T,
   schema: Record<string, any>,
@@ -107,39 +113,27 @@ export function partial<T extends Record<string, any>>(
     return RuleRunReturn.Failing(value);
   }
 
-  const dangerousSchemaKey = findDangerousOwnKey(schema);
-  if (dangerousSchemaKey) {
-    return {
-      ...RuleRunReturn.Failing(value),
-      path: [dangerousSchemaKey],
-    };
-  }
-
-  const dangerousValueKey = findDangerousOwnKey(value);
-  if (dangerousValueKey) {
-    return {
-      ...RuleRunReturn.Failing(value),
-      path: [dangerousValueKey],
-    };
+  const rejected = rejectDangerousKeys(value, schema);
+  if (rejected) {
+    return rejected;
   }
 
   const extraKey = getFirstExtraKey(value, schema);
   if (extraKey) {
-    return {
-      ...RuleRunReturn.Failing(value),
-      path: [extraKey],
-    };
+    const result = RuleRunReturn.Failing(value);
+    result.path = [extraKey];
+    return result;
   }
 
   const parsedValue = safeShallowCopy(value);
-  const parsedEntriesOrFailure = validateProvidedKeys(value, schema);
-  if ('pass' in parsedEntriesOrFailure) {
-    return parsedEntriesOrFailure;
+  const parsedEntriesResult = validateProvidedKeys(value, schema);
+  if (!parsedEntriesResult.ok) {
+    return parsedEntriesResult.result;
   }
 
   return RuleRunReturn.Passing({
     ...parsedValue,
-    ...parsedEntriesOrFailure.parsedEntries,
+    ...parsedEntriesResult.parsedEntries,
   } as T);
 }
 

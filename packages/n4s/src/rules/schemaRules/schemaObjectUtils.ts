@@ -1,4 +1,6 @@
-import { hasOwnProperty, isObject } from 'vest-utils';
+import { isObject } from 'vest-utils';
+
+import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 /**
  * Keys that can mutate object prototypes when assigned.
@@ -49,15 +51,39 @@ export function safeShallowCopy(
 ): Record<string, any> {
   const output: Record<string, any> = {};
 
+  // ownKeys already guarantees own enumerable keys only.
   for (const key of ownKeys(value)) {
     if (isDangerousKey(key)) {
       continue;
     }
 
-    if (hasOwnProperty(value, key)) {
-      output[key] = value[key];
-    }
+    output[key] = value[key];
   }
 
   return output;
+}
+
+/**
+ * Rejects dangerous keys in both schema and runtime value and returns a failing
+ * RuleRunReturn when such key is found.
+ */
+export function rejectDangerousKeys<T extends Record<string, any>>(
+  value: T,
+  schema: Record<string, any>,
+): RuleRunReturn<T> | null {
+  const dangerousSchemaKey = findDangerousOwnKey(schema);
+  if (dangerousSchemaKey) {
+    const result = RuleRunReturn.Failing(value);
+    result.path = [dangerousSchemaKey];
+    return result;
+  }
+
+  const dangerousValueKey = findDangerousOwnKey(value);
+  if (dangerousValueKey) {
+    const result = RuleRunReturn.Failing(value);
+    result.path = [dangerousValueKey];
+    return result;
+  }
+
+  return null;
 }

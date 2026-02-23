@@ -5,8 +5,8 @@ import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 import {
-  findDangerousOwnKey,
   ownKeys,
+  rejectDangerousKeys,
   safeShallowCopy,
 } from './schemaObjectUtils';
 import type { ShapeType } from './shape';
@@ -50,20 +50,9 @@ export function loose<T extends Record<string, any>>(
     return RuleRunReturn.Failing(value);
   }
 
-  const dangerousSchemaKey = findDangerousOwnKey(schema);
-  if (dangerousSchemaKey) {
-    return {
-      ...RuleRunReturn.Failing(value),
-      path: [dangerousSchemaKey],
-    };
-  }
-
-  const dangerousValueKey = findDangerousOwnKey(value);
-  if (dangerousValueKey) {
-    return {
-      ...RuleRunReturn.Failing(value),
-      path: [dangerousValueKey],
-    };
+  const rejected = rejectDangerousKeys(value, schema);
+  if (rejected) {
+    return rejected;
   }
 
   const parsedValue: Record<string, any> = safeShallowCopy(value);

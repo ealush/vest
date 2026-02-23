@@ -20,6 +20,7 @@ import {
   TFieldName,
   TGroupName,
   InferSchemaData,
+  InferSchemaOutput,
   TSchema,
 } from '../suiteResult/SuiteResultTypes';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
@@ -81,7 +82,7 @@ export function useCreateSuiteRunner<
           const useResolver = () => {
             const result = useCreateSuiteResult<F, G, S>(
               schema,
-              callbackInput,
+              callbackInput as InferSchemaOutput<S>,
               schemaInput,
             );
 
@@ -116,12 +117,16 @@ function getCallbackInput(
   schemaRunResult: SchemaRunResult[] | undefined,
   fallback: unknown,
 ): unknown {
-  if (!schemaRunResult || schemaRunResult.some(result => !result.pass)) {
+  if (
+    !schemaRunResult ||
+    schemaRunResult.length === 0 ||
+    schemaRunResult.some(result => !result.pass)
+  ) {
     return fallback;
   }
 
   const [firstResult] = schemaRunResult;
-  return firstResult?.type ?? fallback;
+  return firstResult.type ?? fallback;
 }
 
 /**
@@ -240,6 +245,17 @@ function runSchemaWithParse(schema: any, data: unknown): SchemaRunResult[] {
     } catch (error) {
       if (!isExpectedSchemaParseError(error)) {
         throw error;
+      }
+
+      if (!isFunction(schema.run)) {
+        return normalizeSchemaRunResult(
+          {
+            message:
+              error instanceof Error ? error.message : 'Validation failed',
+            pass: false,
+          },
+          data,
+        );
       }
       // Expected validation failures can fallback to run(raw) for field-level path/message details.
     }

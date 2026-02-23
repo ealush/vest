@@ -7,6 +7,8 @@ import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 
 import { Severity } from './Severity';
 import {
+  InferSchemaData,
+  InferSchemaOutput,
   SuiteResult,
   SuiteSummary,
   TFieldName,
@@ -20,16 +22,22 @@ export function useCreateSuiteResult<
   F extends TFieldName,
   G extends TGroupName,
   S extends TSchema = undefined,
->(schema?: S, outputData?: any, inputData?: any): SuiteResult<F, G, S> {
+>(
+  schema?: S,
+  outputData?: InferSchemaOutput<S>,
+  inputData?: InferSchemaData<S>,
+): SuiteResult<F, G, S> {
   return useSuiteResultCache<F, G, S>(() => {
     // @vx-allow use-use
     const summary = useProduceSuiteSummary<F, G>();
     const resultBody = constructSuiteResultObject<F, G, S>(summary, outputData);
+    const frozenTypes = schema
+      ? Object.freeze({ input: inputData, output: outputData })
+      : undefined;
+
     return freezeAssign(resultBody as SuiteResult<F, G, S>, {
       dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
-      types: (schema
-        ? { input: inputData, output: outputData }
-        : undefined) as SuiteResult<F, G, S>['types'],
+      types: frozenTypes as SuiteResult<F, G, S>['types'],
     }) as SuiteResult<F, G, S>;
   });
 }
@@ -40,7 +48,7 @@ export function constructSuiteResultObject<
   S extends TSchema = undefined,
 >(
   summary: SuiteSummary<F, G>,
-  outputData?: any,
+  outputData?: InferSchemaOutput<S>,
 ): Omit<SuiteResult<F, G, S>, 'dump' | 'types'> {
   const { valid, ...summaryWithoutValid } = summary;
   const selectors = suiteSelectors<F, G>(summary);
@@ -56,10 +64,16 @@ export function constructSuiteResultObject<
   } else if (valid === false) {
     const issues = summary[Severity.ERRORS].reduce((acc, failure) => {
       if (failure.message) {
-        acc.push({
-          message: failure.message,
-          path: [failure.fieldName],
-        });
+        if (failure.fieldName !== undefined) {
+          acc.push({
+            message: failure.message,
+            path: [failure.fieldName],
+          });
+        } else {
+          acc.push({
+            message: failure.message,
+          });
+        }
       }
       return acc;
     }, [] as StandardSchemaV1.Issue[]);

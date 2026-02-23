@@ -1,4 +1,4 @@
-import { isObject } from 'vest-utils';
+import { hasOwnProperty, isObject } from 'vest-utils';
 
 import { ctx } from '../../enforceContext';
 import type { RuleInstance } from '../../utils/RuleInstance';
@@ -7,7 +7,6 @@ import { RuleRunReturn } from '../../utils/RuleRunReturn';
 import {
   findDangerousOwnKey,
   ownKeys,
-  safeHasOwn,
   safeShallowCopy,
 } from './schemaObjectUtils';
 import type { ShapeType } from './shape';
@@ -20,7 +19,7 @@ function getFirstExtraKey<T extends Record<string, any>>(
   schema: Record<string, any>,
 ): string | null {
   for (const key of ownKeys(value)) {
-    if (!safeHasOwn(schema, key)) {
+    if (!hasOwnProperty(schema, key)) {
       return key;
     }
   }
@@ -29,16 +28,18 @@ function getFirstExtraKey<T extends Record<string, any>>(
 }
 
 /**
- * Validates provided keys against their schema rules.
+ * Validates provided keys against their schema rules and returns parsed entries.
+ *
  * Missing keys are allowed (partial validation).
  */
 function validateProvidedKeys<T extends Record<string, any>>(
   value: T,
   schema: Record<string, any>,
-  parsedValue: Record<string, any>,
-): RuleRunReturn<T> | null {
+): RuleRunReturn<T> | { parsedEntries: Record<string, any> } {
+  const parsedEntries: Record<string, any> = {};
+
   for (const key of ownKeys(schema)) {
-    if (safeHasOwn(value, key)) {
+    if (hasOwnProperty(value, key)) {
       const fieldValue = value[key];
       const res = ctx.run({ value: fieldValue, set: true, meta: { key } }, () =>
         schema[key].run(fieldValue),
@@ -51,10 +52,11 @@ function validateProvidedKeys<T extends Record<string, any>>(
         } as RuleRunReturn<T>;
       }
 
-      parsedValue[key] = res.type;
+      parsedEntries[key] = res.type;
     }
   }
-  return null;
+
+  return { parsedEntries };
 }
 
 /**
@@ -130,12 +132,15 @@ export function partial<T extends Record<string, any>>(
   }
 
   const parsedValue = safeShallowCopy(value);
-  const validationResult = validateProvidedKeys(value, schema, parsedValue);
-  if (validationResult) {
-    return validationResult;
+  const parsedEntriesOrFailure = validateProvidedKeys(value, schema);
+  if ('pass' in parsedEntriesOrFailure) {
+    return parsedEntriesOrFailure;
   }
 
-  return RuleRunReturn.Passing(parsedValue as T);
+  return RuleRunReturn.Passing({
+    ...parsedValue,
+    ...parsedEntriesOrFailure.parsedEntries,
+  } as T);
 }
 
 // Types colocated with partial rule

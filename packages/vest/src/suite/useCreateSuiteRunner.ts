@@ -30,7 +30,7 @@ type SchemaRunResult = {
   message?: string;
   pass: boolean;
   path?: string[];
-  type: unknown;
+  type?: unknown;
 };
 
 /**
@@ -64,10 +64,7 @@ export function useCreateSuiteRunner<
       ? runSchemaWithParse(schema, schemaInput)
       : undefined;
 
-    // Only expose parsed output to the callback when schema processing succeeded.
-    const callbackInput = schemaRunResult?.pass
-      ? schemaRunResult.type
-      : schemaInput;
+    const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
 
     return assign(
@@ -113,6 +110,21 @@ export function useCreateSuiteRunner<
 }
 
 /**
+ * Resolves the value that should be passed into the suite callback.
+ */
+function getCallbackInput(
+  schemaRunResult: SchemaRunResult[] | undefined,
+  fallback: unknown,
+): unknown {
+  if (!schemaRunResult || schemaRunResult.some(result => !result.pass)) {
+    return fallback;
+  }
+
+  const [firstResult] = schemaRunResult;
+  return firstResult?.type ?? fallback;
+}
+
+/**
  * Wraps suite callback execution and schema failure emission into an isolate callback.
  */
 function useRunSuiteCallback<
@@ -123,7 +135,7 @@ function useRunSuiteCallback<
   args: any[];
   modifiers: ReturnType<typeof useTransformedModifiers<F>>;
   schema: S | undefined;
-  schemaRunResult?: SchemaRunResult;
+  schemaRunResult?: SchemaRunResult[];
   suiteCallback: SuiteCallbackWithSchema<S, T>;
   useResolver: () => SuiteResult<F, any, S>;
 }) {
@@ -170,64 +182,66 @@ function useTransformedModifiers<F extends TFieldName>(
 }
 
 /**
- * Emits schema failure into vest test tree when schema processing failed.
+ * Emits schema failures into vest test tree.
  */
-
 function runSchemaValidation<
   F extends TFieldName,
   S extends TSchema = undefined,
 >(
   schema: S | undefined,
   modifiers: ReturnType<typeof useTransformedModifiers<F>>,
-  schemaRunResult?: SchemaRunResult,
+  schemaRunResult?: SchemaRunResult[],
 ) {
   // eslint-disable-next-line complexity
   return () => {
-    if (
-      !shouldRunSchema(schema, modifiers) ||
-      !schemaRunResult ||
-      schemaRunResult.pass
-    ) {
+    if (!shouldRunSchema(schema, modifiers) || !schemaRunResult) {
       return;
     }
 
-    const fieldName = schemaRunResult.path?.[0];
-    if (!fieldName) {
-      return;
-    }
+    for (const error of schemaRunResult) {
+      if (error.pass) {
+        continue;
+      }
 
-    test(
-      fieldName,
-      schemaRunResult.message ?? 'Validation failed',
-      () => false,
-      fieldName,
-    );
+      const fieldName = error.path?.length ? error.path.join('.') : '__root__';
+
+      test(
+        fieldName,
+        error.message ?? 'Validation failed',
+        () => false,
+        fieldName,
+      );
+    }
   };
 }
 
 /**
  * Runs schema parsing/validation in a safe order:
  * 1) try parse
- * 2) if parse succeeds and run exists, validate parsed value with run
- * 3) on parse failure, fallback to run(raw)
- *
- * Returned payload is normalized so downstream consumers can rely on shape.
+ * 2) if parse succeeds, treat it as the authoritative validation output
+ * 3) on expected parse validation failures, fallback to run(raw)
  */
-function runSchemaWithParse(schema: any, data: unknown): SchemaRunResult {
+// eslint-disable-next-line complexity
+function runSchemaWithParse(schema: any, data: unknown): SchemaRunResult[] {
   if (isFunction(schema.parse)) {
     try {
       const parsedValue = schema.parse(data);
 
-      if (isFunction(schema.run)) {
+      if (shouldRunAfterParse(schema)) {
         return normalizeSchemaRunResult(schema.run(parsedValue), parsedValue);
       }
 
-      return {
-        pass: true,
-        type: parsedValue,
-      };
-    } catch (_error) {
-      // parse may throw intentionally; fallback to run(raw) for path/message details.
+      return [
+        {
+          pass: true,
+          type: parsedValue,
+        },
+      ];
+    } catch (error) {
+      if (!isExpectedSchemaParseError(error)) {
+        throw error;
+      }
+      // Expected validation failures can fallback to run(raw) for field-level path/message details.
     }
   }
 
@@ -235,18 +249,34 @@ function runSchemaWithParse(schema: any, data: unknown): SchemaRunResult {
     return normalizeSchemaRunResult(schema.run(data), data);
   }
 
-  return {
-    pass: true,
-    type: data,
-  };
+  return [
+    {
+      pass: true,
+      type: data,
+    },
+  ];
 }
 
 /**
  * Converts unknown schema.run return value into a stable internal representation.
- *
- * This avoids runtime crashes when a custom schema returns malformed payloads.
  */
 function normalizeSchemaRunResult(
+  candidate: unknown,
+  fallbackType: unknown,
+): SchemaRunResult[] {
+  if (isArray(candidate)) {
+    return candidate.map(entry =>
+      normalizeSingleSchemaRunResult(entry, fallbackType),
+    );
+  }
+
+  return [normalizeSingleSchemaRunResult(candidate, fallbackType)];
+}
+
+/**
+ * Converts a single unknown run payload into a safe result shape.
+ */
+function normalizeSingleSchemaRunResult(
   candidate: unknown,
   fallbackType: unknown,
 ): SchemaRunResult {
@@ -261,14 +291,13 @@ function normalizeSchemaRunResult(
     message: candidate.message,
     pass: candidate.pass,
     path: candidate.path,
-    type: candidate.type,
+    type: candidate.type ?? fallbackType,
   };
 }
 
 /**
  * Runtime type guard for schema run payloads.
  */
-
 function isSchemaRunResult(candidate: unknown): candidate is SchemaRunResult {
   if (!isObject(candidate)) {
     return false;
@@ -285,11 +314,46 @@ function isSchemaRunResult(candidate: unknown): candidate is SchemaRunResult {
 }
 
 /**
+ * Detects parse errors that represent expected validation failures.
+ */
+function isExpectedSchemaParseError(error: unknown): boolean {
+  if (!isObject(error)) {
+    return false;
+  }
+
+  const typedError = error as { isValidation?: unknown; name?: unknown };
+  return (
+    typedError.isValidation === true ||
+    typedError.name === 'TypeError' ||
+    error instanceof Error
+  );
+}
+
+/**
+ * Determines whether schema.run should execute after a successful parse call.
+ *
+ * For n4s StandardSchema-backed rules, parse already performs full validation.
+ * Re-running run(parsed) can break coercion chains where post-parse types differ
+ * from pre-parse input expectations.
+ */
+function shouldRunAfterParse(schema: any): boolean {
+  if (!isFunction(schema.run)) {
+    return false;
+  }
+
+  return schema?.['~standard']?.vendor !== 'n4s';
+}
+
+/**
  * Schema should run only when schema exists and the run is not field-focused.
  */
 function shouldRunSchema(
   schema: unknown,
   modifiers: { only?: unknown },
 ): boolean {
-  return !modifiers.only && !!schema;
+  const hasOnly = isArray(modifiers.only)
+    ? modifiers.only.length > 0
+    : !!modifiers.only;
+
+  return !hasOnly && !!schema;
 }

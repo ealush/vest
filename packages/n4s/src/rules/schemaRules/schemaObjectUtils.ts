@@ -28,13 +28,6 @@ export function isDangerousKey(key: string): boolean {
 }
 
 /**
- * Safe own-property check that does not rely on user-provided prototypes.
- */
-export function safeHasOwn(value: unknown, key: string): boolean {
-  return hasOwnProperty(value, key);
-}
-
-/**
  * Returns the first dangerous own key if present; otherwise null.
  */
 export function findDangerousOwnKey(value: unknown): string | null {
@@ -48,12 +41,12 @@ export function findDangerousOwnKey(value: unknown): string | null {
 }
 
 /**
- * Produces a shallow sanitized copy that excludes dangerous keys.
- *
- * Shallow copy is intentional for performance; nested rules are responsible
- * for validating nested payloads.
+ * Produces a plain shallow sanitized copy that includes only own enumerable keys
+ * and excludes dangerous keys. Prototype and non-enumerable properties are not preserved.
  */
-export function safeShallowCopy<T extends Record<string, any>>(value: T): T {
+export function safeShallowCopy(
+  value: Record<string, any>,
+): Record<string, any> {
   const output: Record<string, any> = {};
 
   for (const key of ownKeys(value)) {
@@ -61,8 +54,10 @@ export function safeShallowCopy<T extends Record<string, any>>(value: T): T {
       continue;
     }
 
-    output[key] = value[key];
+    if (hasOwnProperty(value, key)) {
+      output[key] = value[key];
+    }
   }
 
-  return output as T;
+  return output;
 }

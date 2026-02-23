@@ -40,7 +40,7 @@ export function constructSuiteResultObject<
   S extends TSchema = undefined,
 >(
   summary: SuiteSummary<F, G>,
-  data?: any,
+  outputData?: any,
 ): Omit<SuiteResult<F, G, S>, 'dump' | 'types'> {
   const { valid, ...summaryWithoutValid } = summary;
   const selectors = suiteSelectors<F, G>(summary);
@@ -51,7 +51,7 @@ export function constructSuiteResultObject<
     return {
       ...common,
       valid: true,
-      value: data,
+      value: outputData,
     };
   } else if (valid === false) {
     const issues = summary[Severity.ERRORS].reduce((acc, failure) => {

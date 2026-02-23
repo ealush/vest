@@ -1,8 +1,10 @@
+import { hasOwnProperty } from 'vest-utils';
+
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 import { loose } from './loose';
-import { ownKeys, safeHasOwn } from './schemaObjectUtils';
+import { ownKeys } from './schemaObjectUtils';
 
 /**
  * Validates that an object matches a schema exactly - all keys required, no extra keys allowed.
@@ -44,7 +46,7 @@ export function shape<T extends Record<string, any>>(
   }
 
   for (const key of ownKeys(value)) {
-    if (!safeHasOwn(schema, key)) {
+    if (!hasOwnProperty(schema, key)) {
       const res = RuleRunReturn.Failing(value);
       const newRes = { ...res, path: [key] };
       return newRes;

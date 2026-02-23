@@ -65,13 +65,14 @@ export class RuleRunReturn<T> {
     }
 
     const resolvedPass = !!pass.pass;
-    const resolvedType = resolvedPass
-      ? (pass.type ?? type)
-      : (type ?? pass.type);
+
+    const successType = pass.type === undefined ? type : pass.type;
+    const failureType = type === undefined ? pass.type : type;
+    const resolvedType = (resolvedPass ? successType : failureType) as T;
 
     const res = new RuleRunReturn(
       resolvedPass,
-      resolvedType,
+      resolvedType as T,
       dynamicValue(message ?? pass.message, type),
     );
 

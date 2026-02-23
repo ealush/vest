@@ -1,4 +1,4 @@
-import { isObject } from 'vest-utils';
+import { hasOwnProperty, isObject } from 'vest-utils';
 
 import { ctx } from '../../enforceContext';
 import type { RuleInstance } from '../../utils/RuleInstance';
@@ -7,7 +7,6 @@ import { RuleRunReturn } from '../../utils/RuleRunReturn';
 import {
   findDangerousOwnKey,
   ownKeys,
-  safeHasOwn,
   safeShallowCopy,
 } from './schemaObjectUtils';
 import type { ShapeType } from './shape';
@@ -70,7 +69,7 @@ export function loose<T extends Record<string, any>>(
   const parsedValue: Record<string, any> = safeShallowCopy(value);
 
   for (const key of ownKeys(schema)) {
-    const fieldValue = safeHasOwn(value, key) ? value[key] : undefined;
+    const fieldValue = hasOwnProperty(value, key) ? value[key] : undefined;
     const res = ctx.run({ value: fieldValue, set: true, meta: { key } }, () =>
       schema[key].run(fieldValue),
     );

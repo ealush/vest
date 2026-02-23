@@ -62,6 +62,17 @@ describe('RuleRunReturn', () => {
       expect(res.message).toBe('outer');
     });
 
+    it('falls back to provided type when inner passing type is undefined', () => {
+      const inner = new (RuleRunReturn as any)(
+        true,
+        undefined,
+      ) as RuleRunReturn<any>;
+      const res = RuleRunReturn.create(inner, 'FALLBACK');
+
+      expect(res.pass).toBe(true);
+      expect(res.type).toBe('FALLBACK');
+    });
+
     it('invokes provided message function with provided type argument', () => {
       const inner = RuleRunReturn.Passing('INNER');
       const msgFn = vi.fn((t: string) => `outer:${t}`);

@@ -148,9 +148,9 @@ describe('Schema Runtime Validation', () => {
         user: { name: 123, age: 'thirty' },
       } as any);
 
-      // Schema will report the first failure under 'user' field
-      expect(result.hasErrors('user')).toBe(true);
-      const errors = result.getErrors('user');
+      // Schema reports nested paths with full field specificity
+      expect(result.hasErrors('user.name')).toBe(true);
+      const errors = result.getErrors('user.name');
 
       // The error message should be one of the nested field's custom messages
       expect(errors).toContain('User name must be a string');
@@ -271,26 +271,28 @@ describe('Schema Runtime Validation', () => {
     });
   });
 
-  it('should pass parsed schema output into the suite callback', () => {
-    const schemaWithParsing = {
-      parse: (value: any) => ({ age: Number(value.age) }),
-      run: (value: any) => ({ pass: true, type: { age: Number(value.age) } }),
-    } as any;
+  describe('Parsed schema output', () => {
+    it('should pass parsed schema output into the suite callback', () => {
+      const schemaWithParsing = {
+        parse: (value: any) => ({ age: Number(value.age) }),
+        run: (value: any) => ({ pass: true, type: { age: Number(value.age) } }),
+      } as any;
 
-    let receivedAge: unknown;
-    const parsedSuite = create((data: any) => {
-      receivedAge = data.age;
-      test('age', () => {
-        enforce(data.age).isNumber();
-      });
-    }, schemaWithParsing);
+      let receivedAge: unknown;
+      const parsedSuite = create((data: any) => {
+        receivedAge = data.age;
+        test('age', () => {
+          enforce(data.age).isNumber();
+        });
+      }, schemaWithParsing);
 
-    const result = parsedSuite.run({ age: '32' } as any);
+      const result = parsedSuite.run({ age: '32' } as any);
 
-    expect(receivedAge).toBe(32);
-    expect(result.value).toEqual({ age: 32 });
-    expect((result.types as any)?.output).toEqual({ age: 32 });
-    expect(result.isValid()).toBe(true);
+      expect(receivedAge).toBe(32);
+      expect(result.value).toEqual({ age: 32 });
+      expect((result.types as any)?.output).toEqual({ age: 32 });
+      expect(result.isValid()).toBe(true);
+    });
   });
 
   describe('Stateful behavior', () => {

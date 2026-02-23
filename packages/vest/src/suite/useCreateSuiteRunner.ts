@@ -38,7 +38,7 @@ const VENDOR_N4S_SENTINEL = 'n4s';
 const EXPECTED_PARSE_ERROR_NAMES = new Set([
   'ZodError',
   'ValidationError',
-  'TypeError',
+  'ValiError',
 ]);
 
 /**
@@ -210,18 +210,21 @@ function runSchemaValidation<
       return;
     }
 
-    for (const error of schemaRunResult) {
+    for (const [index, error] of schemaRunResult.entries()) {
       if (error.pass) {
         continue;
       }
 
-      const fieldName = error.path?.length ? error.path.join('.') : '__root__';
+      const pathArray = error.path?.length ? error.path : undefined;
+      const displayName =
+        pathArray?.join('.') ?? error.message ?? 'Validation failed';
+      const uniqueTestKey = `${JSON.stringify(pathArray ?? null)}:${index}`;
 
       test(
-        fieldName,
+        displayName,
         error.message ?? 'Validation failed',
         () => false,
-        fieldName,
+        uniqueTestKey,
       );
     }
   };
@@ -274,7 +277,10 @@ function runSchemaWithParse(schema: any, data: unknown): SchemaRunResult[] {
 
   return [
     {
-      pass: true,
+      message: `Misconfigured schema: expected parse or run function, received ${String(
+        schema,
+      )}`,
+      pass: false,
       type: data,
     },
   ];

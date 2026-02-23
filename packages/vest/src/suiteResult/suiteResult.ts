@@ -64,7 +64,11 @@ export function constructSuiteResultObject<
   } else if (valid === false) {
     const issues = summary[Severity.ERRORS].reduce((acc, failure) => {
       if (failure.message) {
-        if (failure.fieldName && failure.fieldName !== '__root__') {
+        if (
+          failure.fieldName &&
+          failure.fieldName !== '__root__' &&
+          failure.fieldName !== failure.message
+        ) {
           acc.push({
             message: failure.message,
             path: failure.fieldName.split('.'),

@@ -112,6 +112,37 @@ describe('suite schema parse integration', () => {
     expect(result.value).toBeUndefined();
   });
 
+  it('treats Valibot parse errors as expected validation failures', () => {
+    const schema = {
+      parse: () => {
+        throw { message: 'valibot parse failed', name: 'ValiError' };
+      },
+      run: () => ({
+        message: 'quantity must be numeric',
+        pass: false,
+        path: ['quantity'],
+        type: { quantity: NaN },
+      }),
+    };
+
+    const suite = create(() => {}, schema as any);
+
+    const result = suite.run({ quantity: 'not-a-number' } as any);
+
+    expect(result.hasErrors('quantity')).toBe(true);
+  });
+
+  it('fails with a clear error when schema is misconfigured', () => {
+    const suite = create(() => {}, { unexpected: true } as any);
+
+    const result = suite.run({ quantity: '10' } as any);
+
+    expect(result.hasErrors()).toBe(true);
+    expect(JSON.stringify(result.getErrors())).toContain(
+      'Misconfigured schema',
+    );
+  });
+
   it('maps security-related schema run paths into suite errors', () => {
     const schema = {
       parse: (value: any) => value,

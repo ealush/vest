@@ -39,6 +39,8 @@ const EXPECTED_PARSE_ERROR_NAMES = new Set([
   'ZodError',
   'ValidationError',
   'ValiError',
+  // n4s parse currently throws TypeError for schema validation failures.
+  'TypeError',
 ]);
 
 /**
@@ -216,8 +218,7 @@ function runSchemaValidation<
       }
 
       const pathArray = error.path?.length ? error.path : undefined;
-      const displayName =
-        pathArray?.join('.') ?? error.message ?? 'Validation failed';
+      const displayName = pathArray?.join('.') ?? '__schema__';
       const uniqueTestKey = `${JSON.stringify(pathArray ?? null)}:${index}`;
 
       test(

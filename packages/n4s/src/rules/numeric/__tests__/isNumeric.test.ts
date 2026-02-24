@@ -207,6 +207,10 @@ describe('isNumeric', () => {
         plutoniumCores: 1,
       });
     });
+
+    it('throws when parsing a value that is not a valid number', () => {
+      expect(() => enforce.isNumeric().toNumber().parse('1.2.3')).toThrow();
+    });
   });
 
   describe('isPositive', () => {

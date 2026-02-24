@@ -9,7 +9,7 @@ import { getLazyRule } from './lazyRegistry';
 export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
   rules: Record<
     keyof Omit<T, 'infer' | 'test' | 'validate' | 'parse' | '~standard'>,
-    (...args: any[]) => boolean
+    (...args: any[]) => boolean | ReturnType<Predicate>
   >,
   {
     add,

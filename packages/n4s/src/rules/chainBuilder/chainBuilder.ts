@@ -15,7 +15,7 @@ import { createChainProxyHandlers } from './proxyHandlers';
 
 export type RuleFunctions<T extends RuleInstance<any, any>> = Record<
   keyof Omit<T, 'infer' | 'test' | 'validate' | 'parse' | '~standard'>,
-  (...args: any[]) => boolean
+  (...args: any[]) => boolean | ReturnType<Predicate>
 >;
 
 type LazyMessage = DynamicValue<

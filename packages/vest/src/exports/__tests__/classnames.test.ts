@@ -38,6 +38,26 @@ describe('Utility: classnames', () => {
     });
   });
 
+  it('accepts suite results created with schema typings', () => {
+    const typedSuite = vest.create(
+      data => {
+        vest.test('travelerName', 'Traveler name is required', () => {
+          vest.enforce(data.travelerName).isNotBlank();
+        });
+      },
+      vest.enforce.shape({
+        travelerName: vest.enforce.isString(),
+      }),
+    );
+
+    const cn = classnames(typedSuite.run({ travelerName: '' }), {
+      warning: 'warning',
+      invalid: 'invalid',
+    });
+
+    expect(cn('travelerName')).toContain('invalid');
+  });
+
   const suite = vest.create(() => {
     vest.mode(Modes.ALL);
     vest.skip('field_1');

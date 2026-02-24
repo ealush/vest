@@ -12,12 +12,15 @@ import {
   SuiteSummary,
   TFieldName,
   TGroupName,
+  TSchema,
 } from '../suiteResult/SuiteResultTypes';
 import { suiteSelectors } from '../vest';
 
-export function parse<F extends TFieldName, G extends TGroupName>(
-  summary: SuiteSummary<F, G> | SuiteResult<F, G>,
-): ParsedVestObject<F> {
+export function parse<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema,
+>(summary: SuiteSummary<F, G> | SuiteResult<F, G, S>): ParsedVestObject<F> {
   invariant(
     summary && hasOwnProperty(summary, 'valid'),
     ErrorStrings.PARSER_EXPECT_RESULT_OBJECT,

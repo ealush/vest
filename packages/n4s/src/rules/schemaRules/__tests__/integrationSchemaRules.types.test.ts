@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expectTypeOf, it } from 'vitest';
 
 import { enforce } from '../../../n4s';
 import type { ShapeType } from '../shape';
@@ -17,13 +17,14 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     void ok1;
 
     // Type test: boolean is not allowed in (number | string)[]
+    // @ts-expect-error - boolean is not assignable to number | string
     const badArr1: Arr = [true];
     void badArr1;
 
     // Type test: object is not allowed in (number | string)[]
+    // @ts-expect-error - object is not assignable to number | string
     const badArr2: Arr = [{}];
     void badArr2;
-    expect(true).toBe(true);
   });
 
   it('shape: exact fields and correct types', () => {
@@ -68,7 +69,6 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
       zip: true,
     } satisfies Addr;
     void badZip;
-    expect(true).toBe(true);
   });
 
   it('optional + base shape: wrong inner types should error', () => {
@@ -114,7 +114,6 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
       totals: { subtotal: 1, tax: 0 },
     } satisfies T;
     void badMaybe;
-    expect(true).toBe(true);
   });
 
   it('anyOf/noneOf: union types vs mismatches', () => {
@@ -137,7 +136,6 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     // Type test: expects string inferred type, assigning number
     const badNotStr: NotStr = 1;
     void badNotStr;
-    expect(true).toBe(true);
   });
 
   it('composed shapes with nested arrays: incorrect element type', () => {
@@ -156,14 +154,48 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     void ok;
 
     // Type test: items must be array of lineItem
+    // @ts-expect-error - string is not a valid lineItem
     const badCart1 = { items: ['x'] } satisfies Cart;
     void badCart1;
 
     const badCart2 = {
       // Type test: qty must be number > 0 (type-wise: number, so boolean is invalid)
+      // @ts-expect-error - qty must be number, not boolean
       items: [{ price: 1, qty: true, sku: 'x' }],
     } satisfies Cart;
     void badCart2;
-    expect(true).toBe(true);
+  });
+
+  it('parse() return type for shape is correctly inferred', () => {
+    const schema = enforce.shape({
+      name: enforce.isString(),
+      age: enforce.isNumber(),
+    });
+
+    // eslint-disable-next-line vitest/valid-expect
+    expectTypeOf(schema.parse).returns.toMatchTypeOf<{
+      name: string;
+      age: number;
+    }>();
+  });
+
+  it('parse() return type for isArrayOf is correctly inferred', () => {
+    const schema = enforce.isArrayOf(enforce.isNumber());
+
+    // eslint-disable-next-line vitest/valid-expect
+    expectTypeOf(schema.parse).returns.toMatchTypeOf<number[]>();
+  });
+
+  it('parse() return type for nested isArrayOf(shape) is correctly inferred', () => {
+    const itemSchema = enforce.shape({
+      id: enforce.isNumber(),
+      label: enforce.isString(),
+    });
+    const listSchema = enforce.isArrayOf(itemSchema);
+
+    // eslint-disable-next-line vitest/valid-expect
+    expectTypeOf(listSchema.parse).returns.toMatchTypeOf<
+      { id: number; label: string }[]
+    >();
   });
 });

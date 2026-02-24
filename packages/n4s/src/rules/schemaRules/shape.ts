@@ -4,6 +4,10 @@ import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 import { loose } from './loose';
+import { ownKeys } from './schemaObjectUtils';
+
+// Types colocated with shape rule
+import type { InferShape, SchemaInfer, SchemaInput } from './schemaRulesTypes';
 
 /**
  * Validates that an object matches a schema exactly - all keys required, no extra keys allowed.
@@ -44,7 +48,7 @@ export function shape<T extends Record<string, any>>(
     return baseRes;
   }
 
-  for (const key in value) {
+  for (const key of ownKeys(value)) {
     if (!hasOwnProperty(schema, key)) {
       const res = RuleRunReturn.Failing(value);
       const newRes = { ...res, path: [key] };
@@ -52,27 +56,19 @@ export function shape<T extends Record<string, any>>(
     }
   }
 
-  return RuleRunReturn.Passing(value);
+  return RuleRunReturn.Passing(baseRes.type);
 }
 
-// Types colocated with shape rule
-export type InferShape<T> = T extends RuleInstance<infer R, any> ? R : never;
-
-export type SchemaInfer<T extends Record<string, RuleInstance<any>>> = {
-  [K in keyof T as undefined extends InferShape<T[K]> ? never : K]: InferShape<
-    T[K]
-  >;
-} & {
-  [K in keyof T as undefined extends InferShape<T[K]> ? K : never]?: InferShape<
-    T[K]
-  >;
-};
+export type { InferShape, SchemaInfer };
 
 export type ShapeType<T extends Record<string, RuleInstance<any>>> =
   SchemaInfer<T>;
 
+export type ShapeInputType<T extends Record<string, RuleInstance<any>>> =
+  SchemaInput<T>;
+
 export type ShapeRuleInstance<S extends Record<string, RuleInstance<any>>> =
-  RuleInstance<ShapeType<S>, [ShapeType<S>]>;
+  RuleInstance<ShapeType<S>, [ShapeInputType<S>]>;
 
 export type ShapeValue<S extends Record<string, RuleInstance<any>>> =
   ShapeType<S>;

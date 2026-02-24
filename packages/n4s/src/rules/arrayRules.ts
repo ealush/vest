@@ -55,8 +55,8 @@ const arrayRules = {
   shorterThanOrEquals,
 } as const;
 
-export type ArrayRuleInstance<T = any> = BuildRuleInstance<
+export type ArrayRuleInstance<T = any, TInput = T> = BuildRuleInstance<
   T[],
-  [T[]],
+  [TInput[]],
   ExtractRuleFunctions<typeof arrayRules>
 >;

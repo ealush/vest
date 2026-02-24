@@ -1,46 +1,62 @@
-import { isObject } from 'vest-utils';
+import { hasOwnProperty, isObject } from 'vest-utils';
 
 import { ctx } from '../../enforceContext';
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
-import type { ShapeType } from './shape';
+import {
+  findDangerousOwnKey,
+  ownKeys,
+  safeShallowCopy,
+} from './schemaObjectUtils';
+import type { ShapeInputType, ShapeType } from './shape';
 
 /**
  * Checks if value has any keys not present in schema.
  */
-function hasExtraKeys<T extends Record<string, any>>(
+function getFirstExtraKey<T extends Record<string, any>>(
   value: T,
   schema: Record<string, any>,
-): boolean {
-  for (const key in value) {
-    if (!(key in schema)) {
-      return true;
+): string | null {
+  for (const key of ownKeys(value)) {
+    if (!hasOwnProperty(schema, key)) {
+      return key;
     }
   }
-  return false;
+
+  return null;
 }
 
 /**
- * Validates provided keys against their schema rules.
+ * Validates provided keys against their schema rules and returns parsed entries.
+ *
  * Missing keys are allowed (partial validation).
  */
 function validateProvidedKeys<T extends Record<string, any>>(
   value: T,
   schema: Record<string, any>,
-): RuleRunReturn<T> | null {
-  for (const key in schema) {
-    if (key in value) {
+): RuleRunReturn<T> | { parsedEntries: Record<string, any> } {
+  const parsedEntries: Record<string, any> = {};
+
+  for (const key of ownKeys(schema)) {
+    if (hasOwnProperty(value, key)) {
       const fieldValue = value[key];
       const res = ctx.run({ value: fieldValue, set: true, meta: { key } }, () =>
         schema[key].run(fieldValue),
       );
       if (!res.pass) {
-        return res as RuleRunReturn<T>;
+        const currentPath = res.path || [];
+        return {
+          ...res,
+          path: [key, ...currentPath],
+        } as RuleRunReturn<T>;
       }
+
+      parsedEntries[key] = res.type;
     }
   }
-  return null;
+
+  return { parsedEntries };
 }
 
 /**
@@ -82,6 +98,7 @@ function validateProvidedKeys<T extends Record<string, any>>(
  * updateSchema.test({ name: 'Jane', extra: 'x' }); // false (extra key not in schema)
  * ```
  */
+// eslint-disable-next-line complexity
 export function partial<T extends Record<string, any>>(
   value: T,
   schema: Record<string, any>,
@@ -90,21 +107,45 @@ export function partial<T extends Record<string, any>>(
     return RuleRunReturn.Failing(value);
   }
 
-  if (hasExtraKeys(value, schema)) {
-    return RuleRunReturn.Failing(value);
+  const dangerousSchemaKey = findDangerousOwnKey(schema);
+  if (dangerousSchemaKey) {
+    return {
+      ...RuleRunReturn.Failing(value),
+      path: [dangerousSchemaKey],
+    };
   }
 
-  const validationResult = validateProvidedKeys(value, schema);
-  if (validationResult) {
-    return validationResult;
+  const dangerousValueKey = findDangerousOwnKey(value);
+  if (dangerousValueKey) {
+    return {
+      ...RuleRunReturn.Failing(value),
+      path: [dangerousValueKey],
+    };
   }
 
-  return RuleRunReturn.Passing(value);
+  const extraKey = getFirstExtraKey(value, schema);
+  if (extraKey) {
+    return {
+      ...RuleRunReturn.Failing(value),
+      path: [extraKey],
+    };
+  }
+
+  const parsedValue = safeShallowCopy(value);
+  const parsedEntriesOrFailure = validateProvidedKeys(value, schema);
+  if ('pass' in parsedEntriesOrFailure) {
+    return parsedEntriesOrFailure;
+  }
+
+  return RuleRunReturn.Passing({
+    ...parsedValue,
+    ...parsedEntriesOrFailure.parsedEntries,
+  } as T);
 }
 
 // Types colocated with partial rule
 export type PartialRuleInstance<S extends Record<string, RuleInstance<any>>> =
-  RuleInstance<Partial<ShapeType<S>>, [Partial<ShapeType<S>>]>;
+  RuleInstance<Partial<ShapeType<S>>, [Partial<ShapeInputType<S>>]>;
 
 export type PartialShapeValue<S extends Record<string, RuleInstance<any>>> =
   Partial<ShapeType<S>>;

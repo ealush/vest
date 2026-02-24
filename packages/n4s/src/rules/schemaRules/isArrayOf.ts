@@ -52,39 +52,49 @@ export function isArrayOf<T>(value: T[], ...rules: any[]): RuleRunReturn<T[]> {
     return RuleRunReturn.Failing(value);
   }
 
-  return (
-    mapFirst(value, (item, breakout, index) => {
-      const res = ctx.run({ value: item, set: true, meta: { index } }, () => {
-        let lastRes: RuleRunReturn<any> | undefined;
-        // Try each rule with the item - any rule passing is OK
-        const anyPass = rules.some(rule => {
-          const rawResult = rule.run(item);
-          lastRes = rawResult;
-          const transformed = transformResult(rawResult, 'isArrayOf', item);
-          return transformed.pass;
-        });
+  const parsedArray: any[] = [];
 
-        if (anyPass) {
-          return RuleRunReturn.Passing(item);
+  const failingResult = mapFirst(value, (item, breakout, index) => {
+    const res = ctx.run({ value: item, set: true, meta: { index } }, () => {
+      let lastRes: RuleRunReturn<any> | undefined;
+      let passingTransformedType: any = item;
+
+      // Try each rule with the item - any rule passing is OK
+      const anyPass = rules.some(rule => {
+        const rawResult = rule.run(item);
+        lastRes = rawResult;
+        const transformed = transformResult(rawResult, 'isArrayOf', item);
+        if (transformed.pass) {
+          passingTransformedType = rawResult.type ?? item;
         }
-
-        // If failed and we have a single rule, return its failure (might contain nested path)
-        if (lengthEquals(rules, 1) && lastRes) {
-          return lastRes;
-        }
-
-        return RuleRunReturn.Failing(item);
+        return transformed.pass;
       });
 
-      if (!res.pass) {
-        const currentPath = res.path || [];
-        const newRes = { ...res, path: [index.toString(), ...currentPath] };
-        breakout(true, newRes);
+      if (anyPass) {
+        parsedArray.push(passingTransformedType);
+        return RuleRunReturn.Passing(passingTransformedType);
       }
-    }) || RuleRunReturn.Passing(value)
-  );
+
+      // If failed and we have a single rule, return its failure (might contain nested path)
+      if (lengthEquals(rules, 1) && lastRes) {
+        return lastRes;
+      }
+
+      return RuleRunReturn.Failing(item);
+    });
+
+    if (!res.pass) {
+      const currentPath = res.path || [];
+      const newRes = { ...res, path: [index.toString(), ...currentPath] };
+      breakout(true, newRes);
+    }
+  });
+
+  return failingResult || RuleRunReturn.Passing(parsedArray as T[]);
 }
 
 // Type for isArrayOf rule instance - should chain array rules like isArray does
-export type IsArrayOfRuleInstance<T> =
-  import('../arrayRules').ArrayRuleInstance<T>;
+export type IsArrayOfRuleInstance<
+  T,
+  TInput = T,
+> = import('../arrayRules').ArrayRuleInstance<T, TInput>;

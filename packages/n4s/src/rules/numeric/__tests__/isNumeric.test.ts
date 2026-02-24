@@ -177,6 +177,42 @@ describe('isNumeric', () => {
     });
   });
 
+  describe('toNumber', () => {
+    it('transforms numeric strings to numbers in parse', () => {
+      expect(enforce.isNumeric().toNumber().parse('1985')).toBe(1985);
+    });
+
+    it('coerces numeric strings in shape parsing', () => {
+      const ChronoSchema = enforce.shape({
+        travelerName: enforce.isString(),
+        mission: enforce.isString(),
+        birthYear: enforce.isNumeric().toNumber(),
+        destinationYear: enforce.isNumeric(),
+        plutoniumCores: enforce.isNumeric(),
+      });
+
+      expect(
+        ChronoSchema.parse({
+          travelerName: 'Marty McFly',
+          mission: 'Save Doc',
+          birthYear: '1968',
+          destinationYear: '1955',
+          plutoniumCores: 1,
+        }),
+      ).toEqual({
+        travelerName: 'Marty McFly',
+        mission: 'Save Doc',
+        birthYear: 1968,
+        destinationYear: '1955',
+        plutoniumCores: 1,
+      });
+    });
+
+    it('throws when parsing a value that is not a valid number', () => {
+      expect(() => enforce.isNumeric().toNumber().parse('1.2.3')).toThrow();
+    });
+  });
+
   describe('isPositive', () => {
     it('pass for positive numeric strings', () => {
       expect(enforce.isNumeric().isPositive().run('1').pass).toBe(true);

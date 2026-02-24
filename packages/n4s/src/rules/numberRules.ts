@@ -14,6 +14,7 @@ import { isOdd } from './number/isOdd';
 import { isPositive } from './number/isPositive';
 import { lessThan } from './number/lessThan';
 import { lessThanOrEquals } from './number/lessThanOrEquals';
+import { toNumber } from './numeric/toNumber';
 import { numberNotEquals } from './number/numberNotEquals';
 
 const gt = greaterThan;
@@ -55,6 +56,7 @@ export {
   lessThanOrEquals,
   numberEquals,
   numberNotEquals,
+  toNumber,
 };
 
 const numberRules = {
@@ -75,6 +77,7 @@ const numberRules = {
   lessThanOrEquals,
   numberEquals,
   numberNotEquals,
+  toNumber,
 } as const;
 
 export type NumberRuleInstance = BuildRuleInstance<

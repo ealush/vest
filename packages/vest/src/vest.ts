@@ -7,6 +7,7 @@ import { include } from './hooks/include';
 import { Modes } from './hooks/optional/Modes';
 import { mode } from './hooks/optional/mode';
 import { optional } from './hooks/optional/optional';
+import { useSetSeverity } from './hooks/useSetSeverity';
 import { warn } from './hooks/warn';
 import { each } from './isolates/each';
 import { group } from './isolates/group';
@@ -15,6 +16,7 @@ import { skipWhen } from './isolates/skipWhen';
 import type { Suite } from './suite/SuiteTypes';
 import { createSuite } from './suite/createSuite';
 import type { SuiteResult, SuiteSummary } from './suiteResult/SuiteResultTypes';
+import { TestSeverity } from './suiteResult/Severity';
 import { suiteSelectors } from './suiteResult/selectors/suiteSelectors';
 
 export {
@@ -28,11 +30,13 @@ export {
   omitWhen,
   only,
   warn,
+  useSetSeverity,
   include,
   suiteSelectors,
   each,
   mode,
   Modes,
+  TestSeverity,
   registerReconciler,
 };
 

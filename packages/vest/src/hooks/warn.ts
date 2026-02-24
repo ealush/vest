@@ -3,8 +3,7 @@ import { invariant } from 'vest-utils';
 import { useCurrentTest } from '../core/context/SuiteContext';
 import { VestTest } from '../core/isolate/IsolateTest/VestTest';
 import { ErrorStrings } from '../errors/ErrorStrings';
-
-const ERROR_OUTSIDE_OF_TEST = ErrorStrings.WARN_MUST_BE_CALLED_FROM_TEST;
+import { TestSeverity } from '../suiteResult/Severity';
 
 /**
  * Sets the severity level of a test to `warn`, allowing it to fail without marking the suite as invalid.
@@ -28,7 +27,7 @@ const ERROR_OUTSIDE_OF_TEST = ErrorStrings.WARN_MUST_BE_CALLED_FROM_TEST;
 export function warn(): void {
   const currentTest = useCurrentTest(ErrorStrings.HOOK_CALLED_OUTSIDE);
 
-  invariant(currentTest, ERROR_OUTSIDE_OF_TEST);
+  invariant(currentTest, ErrorStrings.WARN_MUST_BE_CALLED_FROM_TEST);
 
-  VestTest.warn(currentTest);
+  VestTest.setSeverity(currentTest, TestSeverity.Warning);
 }

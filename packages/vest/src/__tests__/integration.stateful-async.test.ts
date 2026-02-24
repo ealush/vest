@@ -115,6 +115,29 @@ describe('Stateful async tests', () => {
     }
   });
 
+  it('Allows setting warning severity after await in async test', async () => {
+    const suite = vest.create(() => {
+      vest.test('field_1', 'dynamic_severity', async () => {
+        const setSeverity = vest.useSetSeverity();
+        await wait(0);
+        setSeverity(vest.TestSeverity.Warning);
+        vest.enforce(false).equals(true);
+      });
+    });
+
+    const result = suite.run();
+
+    expect(result.warnCount).toBe(0);
+    await wait(0);
+
+    const finalResult = suite.get();
+
+    expect(finalResult.hasWarnings('field_1')).toBe(true);
+    expect(finalResult.hasErrors('field_1')).toBe(false);
+    expect(finalResult.warnCount).toBe(1);
+    expect(finalResult.errorCount).toBe(0);
+    expect(finalResult.valid).toBe(true);
+  });
   it('Should discard of re-tested async tests', async () => {
     const tests: Array<TIsolateTest> = [];
     const suite = vest.create(() => {

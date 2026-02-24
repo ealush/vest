@@ -206,9 +206,13 @@ export class VestTest {
   }
 
   static warn(test: TIsolateTest): void {
+    VestTest.setSeverity(test, TestSeverity.Warning);
+  }
+
+  static setSeverity(test: TIsolateTest, severity: TestSeverity): void {
     VestTest.setData(test, current => ({
       ...current,
-      severity: TestSeverity.Warning,
+      severity,
     }));
   }
 

@@ -38,7 +38,7 @@ describe('Utility: classnames', () => {
     });
   });
 
-  it('accepts suite results created with schema typings', () => {
+  it('accepts schema-typed suite results from suite.get()', () => {
     const typedSuite = vest.create(
       data => {
         vest.test('travelerName', 'Traveler name is required', () => {
@@ -50,7 +50,9 @@ describe('Utility: classnames', () => {
       }),
     );
 
-    const cn = classnames(typedSuite.run({ travelerName: '' }), {
+    typedSuite.run({ travelerName: '' });
+
+    const cn = classnames(typedSuite.get(), {
       warning: 'warning',
       invalid: 'invalid',
     });

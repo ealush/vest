@@ -20,7 +20,7 @@ import { TestSeverity } from '../suiteResult/Severity';
  *
  * @limitations
  * - The `warn` function should only be used within the body of a `test` function.
- * - When using `warn()` in an async test, it should be called in the synchronous portion of the test, not after an `await` call or in the Promise body.
+ * - When using `warn()` in an async test, it should be called in the synchronous portion of the test, not after an `await` call or in the Promise body (see `useSetSeverity`).
  * - It is recommended to call `warn()` at the top of the test function.
  */
 // @vx-allow use-use

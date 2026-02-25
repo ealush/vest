@@ -7,6 +7,7 @@ import { include } from './hooks/include';
 import { Modes } from './hooks/optional/Modes';
 import { mode } from './hooks/optional/mode';
 import { optional } from './hooks/optional/optional';
+import { useWarn } from './hooks/useWarn';
 import { warn } from './hooks/warn';
 import { each } from './isolates/each';
 import { group } from './isolates/group';
@@ -28,6 +29,7 @@ export {
   omitWhen,
   only,
   warn,
+  useWarn,
   include,
   suiteSelectors,
   each,

@@ -25,7 +25,7 @@ describe('warn hook', () => {
     it('should throw when called outside a test body', () => {
       const done = vi.fn();
       create(() => {
-        expect(warn).toThrow(ErrorStrings.WARN_MUST_BE_CALLED_FROM_TEST);
+        expect(warn).toThrow(ErrorStrings.USE_WARN_MUST_BE_CALLED_FROM_TEST);
         done();
       }).run();
       expect(done).toHaveBeenCalled();

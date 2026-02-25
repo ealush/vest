@@ -206,9 +206,18 @@ export class VestTest {
   }
 
   static warn(test: TIsolateTest): void {
+    VestTest.setSeverity(test, TestSeverity.Warning);
+  }
+
+  // VestTest.setSeverity intentionally skips useUpdateRegistry; severity is consumed by fail() -> VestTest.setStatus(), which calls useUpdateRegistry and avoids intermediate registry updates.
+  static setSeverity(test: TIsolateTest, severity: TestSeverity): void {
+    if (VestTest.isTested(test).unwrap()) {
+      return;
+    }
+
     VestTest.setData(test, current => ({
       ...current,
-      severity: TestSeverity.Warning,
+      severity,
     }));
   }
 

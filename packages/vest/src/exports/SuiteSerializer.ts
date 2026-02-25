@@ -117,7 +117,7 @@ function containsPassing(
   }
 
   if (seen.has(node)) {
-    return false;
+    return true;
   }
 
   if ((node as Record<string, unknown>).testStatus === TestStatus.PASSING) {

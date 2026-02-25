@@ -52,12 +52,22 @@ export class SuiteSerializer {
 
 function stripMessageFromPassingTests<T>(node: T): T {
   const visited = new WeakMap<object, any>();
+  const containsPassingMemo = new WeakMap<object, boolean>();
 
-  return strip(node, visited);
+  return strip(node, visited, containsPassingMemo);
 }
 
-function strip<T>(node: T, visited: WeakMap<object, any>): T {
+// eslint-disable-next-line complexity, max-statements
+function strip<T>(
+  node: T,
+  visited: WeakMap<object, any>,
+  containsPassingMemo: WeakMap<object, boolean>,
+): T {
   if (!node || typeof node !== 'object') {
+    return node;
+  }
+
+  if (!containsPassing(node, new WeakSet<object>(), containsPassingMemo)) {
     return node;
   }
 
@@ -70,7 +80,7 @@ function strip<T>(node: T, visited: WeakMap<object, any>): T {
     visited.set(node, arr);
 
     node.forEach(value => {
-      arr.push(strip(value, visited));
+      arr.push(strip(value, visited, containsPassingMemo));
     });
 
     return arr as T;
@@ -81,15 +91,58 @@ function strip<T>(node: T, visited: WeakMap<object, any>): T {
   const clonedNode: Record<string, any> = {};
   visited.set(node, clonedNode);
 
-  Object.keys(root).forEach(key => {
+  for (const [key, value] of Object.entries(root)) {
     if (shouldStripMessage && key === 'message') {
-      return;
+      continue;
     }
 
-    clonedNode[key] = strip(root[key], visited);
-  });
+    clonedNode[key] = strip(value, visited, containsPassingMemo);
+  }
 
   return clonedNode as T;
+}
+
+// eslint-disable-next-line complexity, max-statements
+function containsPassing(
+  node: unknown,
+  seen: WeakSet<object>,
+  memo: WeakMap<object, boolean>,
+): boolean {
+  if (!node || typeof node !== 'object') {
+    return false;
+  }
+
+  if (memo.has(node)) {
+    return memo.get(node) ?? false;
+  }
+
+  if (seen.has(node)) {
+    return false;
+  }
+
+  if ((node as Record<string, unknown>).testStatus === TestStatus.PASSING) {
+    memo.set(node, true);
+    return true;
+  }
+
+  seen.add(node);
+
+  const values = Array.isArray(node)
+    ? node
+    : Object.values(node as Record<string, unknown>);
+
+  for (const value of values) {
+    if (containsPassing(value, seen, memo)) {
+      memo.set(node, true);
+      seen.delete(node);
+      return true;
+    }
+  }
+
+  memo.set(node, false);
+  seen.delete(node);
+
+  return false;
 }
 
 function suiteSerializerReplacer(value: any, key: string) {

@@ -37,8 +37,21 @@ describe('SuiteSerializer', () => {
 
     const serialized = SuiteSerializer.serialize(suite);
     const parsed = SuiteSerializer.deserialize(serialized);
-    const [passingTest, failingTest] = parsed.children ?? [];
 
+    expect(parsed.children).toBeDefined();
+
+    const testChildren = parsed.children?.filter(child => child.data.fieldName);
+    expect(testChildren).toHaveLength(2);
+
+    const passingTest = testChildren?.find(
+      child => child.data.fieldName === 'passing_field',
+    );
+    const failingTest = testChildren?.find(
+      child => child.data.fieldName === 'failing_field',
+    );
+
+    expect(passingTest).toBeDefined();
+    expect(failingTest).toBeDefined();
     expect(passingTest?.data).not.toHaveProperty('message');
     expect(failingTest?.data.message).toBe('failing_field_message');
   });

@@ -20,14 +20,14 @@ const GROUP_NAME = 'group_1';
 
 describe('isValidByGroup', () => {
   describe('Before any test ran', () => {
-    it('should treat an empty group as valid (no tests ran)', () => {
+    it('should treat an empty group as invalid (no tests ran)', () => {
       const suite = create(() => {
         group(GROUP_NAME, () => {
           test('field_1', () => {});
         });
       });
 
-      expect(suite.get().isValidByGroup(GROUP_NAME)).toBe(true);
+      expect(suite.get().isValidByGroup(GROUP_NAME)).toBe(false);
     });
   });
 

@@ -39,7 +39,12 @@ const [, target = undefined] =
     : [];
 
 const branchAllowsRelease =
-  isReleaseBranch || isNextBranch || isIntegrationBranch || isNightlyBranch;
+  isReleaseBranch ||
+  isNextBranch ||
+  isIntegrationBranch ||
+  isNightlyBranch ||
+  isLatestBranch ||
+  isStableBranch;
 
 export {
   CURRENT_BRANCH,

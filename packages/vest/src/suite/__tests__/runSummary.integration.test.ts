@@ -15,6 +15,7 @@ describe('suite result run summary metadata', () => {
     expect(Object.prototype.propertyIsEnumerable.call(result, 'run')).toBe(
       false,
     );
+    expect(Object.isFrozen(result.run)).toBe(true);
     expect(result.run.time).toBeInstanceOf(Date);
     expect(result.run.time.getTime()).toBeGreaterThanOrEqual(before);
     expect(result.run.time.getTime()).toBeLessThanOrEqual(after);

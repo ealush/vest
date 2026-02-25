@@ -47,10 +47,12 @@ export function useCreateSuiteResult<
         : undefined) as SuiteResult<F, G, S, D>['types'],
     }) as SuiteResult<F, G, S, D>;
 
+    const runMeta = Object.freeze({ ...summary.run });
+
     Object.defineProperty(result, 'run', {
       configurable: true,
       enumerable: false,
-      value: summary.run,
+      value: runMeta,
       writable: true,
     });
 

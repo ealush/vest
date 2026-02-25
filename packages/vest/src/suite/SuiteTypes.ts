@@ -15,7 +15,7 @@ import { SuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 
 import { TTypedMethods } from './getTypedMethods';
 
-type SuiteRunData<
+export type SuiteRunData<
   S extends TSchema,
   T extends CB,
   IsFocused extends boolean = false,

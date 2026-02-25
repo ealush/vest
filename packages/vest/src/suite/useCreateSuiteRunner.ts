@@ -24,7 +24,11 @@ import {
 } from '../suiteResult/SuiteResultTypes';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
-import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
+import {
+  SuiteModifiers,
+  SuiteCallbackWithSchema,
+  SuiteRunData,
+} from './SuiteTypes';
 
 type SchemaRunResult = {
   readonly message?: string;
@@ -56,15 +60,10 @@ export function useCreateSuiteRunner<
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
-  ): SuiteResult<
-    F,
-    G,
-    S,
-    S extends undefined ? Parameters<T>[0] : InferSchemaData<S>
-  > {
-    type RunData = S extends undefined ? Parameters<T>[0] : InferSchemaData<S>;
+  ): SuiteResult<F, G, S, SuiteRunData<S, T>> {
     const runTime = new Date();
-    const { resolve, promise } = withResolvers<SuiteResult<F, G, S, RunData>>();
+    const { resolve, promise } =
+      withResolvers<SuiteResult<F, G, S, SuiteRunData<S, T>>>();
 
     const schemaInput = args[0];
     const schemaRunResult = shouldRunSchema(schema, transformedModifiers)
@@ -73,7 +72,7 @@ export function useCreateSuiteRunner<
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
-    const runData = callbackInput as RunData | undefined;
+    const runData = callbackInput as SuiteRunData<S, T> | undefined;
 
     const suiteResult = SuiteContext.run(
       {
@@ -85,7 +84,7 @@ export function useCreateSuiteRunner<
         useEmit('SUITE_RUN_STARTED');
 
         const useResolver = () => {
-          const result = useCreateSuiteResult<F, G, S, RunData>(
+          const result = useCreateSuiteResult<F, G, S, SuiteRunData<S, T>>(
             schema,
             callbackInput,
             runData,
@@ -100,7 +99,7 @@ export function useCreateSuiteRunner<
         };
 
         return IsolateSuite(
-          useRunSuiteCallback<F, T, S, G, RunData>({
+          useRunSuiteCallback<F, T, S, G, SuiteRunData<S, T>>({
             args: callbackArgs,
             modifiers: transformedModifiers,
             schema,
@@ -118,10 +117,10 @@ export function useCreateSuiteRunner<
     Object.defineProperty(result, 'run', {
       configurable: true,
       enumerable: false,
-      value: {
+      value: Object.freeze({
         data: runData,
         time: runTime,
-      },
+      }),
       writable: true,
     });
 

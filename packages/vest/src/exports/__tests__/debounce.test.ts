@@ -112,6 +112,46 @@ describe('debounce', () => {
       expect(suite.get().hasErrors('name')).toBe(true);
       expect(suite.get().getErrors('name')).toEqual([dynamicMessage]);
     });
+
+    it('should mark failures as warnings when setWarn is called before await in debounced async callbacks', async () => {
+      const suite = vest.create(() => {
+        vest.test(
+          'destinationYear',
+          debounce(async () => {
+            const setWarn = vest.useWarn();
+            await wait(20);
+
+            setWarn();
+
+            vest.enforce(1).message('message').equals(2);
+          }, 10),
+        );
+      });
+
+      await expect(suite.run()).resolves.toBeDefined();
+      expect(suite.get().hasErrors('destinationYear')).toBe(false);
+      expect(suite.get().hasWarnings('destinationYear')).toBe(true);
+      expect(suite.get().getWarnings('destinationYear')).toEqual(['message']);
+    });
+
+    it('should keep failures as errors when setWarn is not called in debounced async callbacks', async () => {
+      const suite = vest.create(() => {
+        vest.test(
+          'destinationYear',
+          debounce(async () => {
+            vest.useWarn();
+            await wait(20);
+
+            vest.enforce(1).message('message').equals(2);
+          }, 10),
+        );
+      });
+
+      await expect(suite.run()).resolves.toBeDefined();
+      expect(suite.get().hasErrors('destinationYear')).toBe(true);
+      expect(suite.get().hasWarnings('destinationYear')).toBe(false);
+      expect(suite.get().getErrors('destinationYear')).toEqual(['message']);
+    });
   });
 
   describe('When delay met multiple times', () => {

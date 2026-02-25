@@ -4,7 +4,11 @@ import { IsolateSerializer } from 'vestjs-runtime';
 import { TestStatus } from '../core/StateMachines/IsolateTestStateMachine';
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { Suite } from '../suite/SuiteTypes';
-import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';
+import {
+  TFieldName,
+  TGroupName,
+  TSchema,
+} from '../suiteResult/SuiteResultTypes';
 
 type Dumpable = {
   dump: CB<TIsolateSuite>;
@@ -31,8 +35,13 @@ export class SuiteSerializer {
     return SuiteSerializer.safeDeserialize(serialized).unwrap();
   }
 
-  static resume(
-    suite: Suite<TFieldName, TGroupName>,
+  static resume<
+    F extends TFieldName,
+    G extends TGroupName,
+    T extends CB,
+    S extends TSchema,
+  >(
+    suite: Suite<F, G, T, S>,
     root: string | TIsolateSuite | Record<string, any>,
   ): void {
     const suiteRoot = SuiteSerializer.deserialize(root);

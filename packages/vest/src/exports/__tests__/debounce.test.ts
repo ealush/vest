@@ -74,6 +74,44 @@ describe('debounce', () => {
       expect(suite.isPending()).toBe(false);
       expect(suite.get().hasErrors('test')).toBe(true);
     });
+
+    it('should preserve enforce.message values for debounced async failures', async () => {
+      const dynamicMessage = 'Name is required';
+
+      const suite = vest.create(() => {
+        vest.test(
+          'name',
+          debounce(async () => {
+            await wait(20);
+            vest.enforce('').message(dynamicMessage).isNotBlank();
+          }, 10),
+        );
+      });
+
+      await suite.run();
+
+      expect(suite.get().hasErrors('name')).toBe(true);
+      expect(suite.get().getErrors('name')).toEqual([dynamicMessage]);
+    });
+
+    it('should use Error.message for debounced async failures when no test message is provided', async () => {
+      const dynamicMessage = 'Thrown from async branch';
+
+      const suite = vest.create(() => {
+        vest.test(
+          'name',
+          debounce(async () => {
+            await wait(20);
+            throw new Error(dynamicMessage);
+          }, 10),
+        );
+      });
+
+      await suite.run();
+
+      expect(suite.get().hasErrors('name')).toBe(true);
+      expect(suite.get().getErrors('name')).toEqual([dynamicMessage]);
+    });
   });
 
   describe('When delay met multiple times', () => {

@@ -150,9 +150,15 @@ Asserts that a value matches your desired result.
 
 #### `warn()`
 
-Sets the test's severity to warning.
+Sets the test's severity to warning in the synchronous part of a test.
 
 - [Read more about `warn`](./writing_tests/warn_only_tests.md)
+
+#### `useWarn()`
+
+Returns a setter function that marks the current test as warning severity, including async flows after an `await`.
+
+- [Read more about `useWarn`](./writing_tests/warn_only_tests.md)
 
 #### `only(fieldName)`
 
@@ -5240,16 +5246,19 @@ function isEmailTaken(email) {
 
 By default, a failing test has a severity of `error`. Sometimes you may need to lower the severity level of a given test to `warn` so that even when it fails, it should not prevent submission. An example of this would be validating password strength.
 
-To set a test's severity level to `warn` call the warn function from the body of your test.
+To set a test's severity level to `warn`, call `warn()` from the body of your test.
+
+If you need to set warning severity after an `await` in an async test, use `useWarn()` and call the setter it returns.
 
 import WarnOnlyTestsSandpack from '@site/src/components/Sandpack/WarnOnlyTests';
 
 <WarnOnlyTestsSandpack />
 
-**Limitations when using warn()**
+## `warn()` vs `useWarn()` in async tests
 
-- You may only use warn from within the body of a `test` function.
-- When using `warn()` in an async test you should call the `warn` function in the sync portion of your test (and not after an `await` call or in the Promise body). Ideally, you want to call `warn()` at the top of your test function.
+- You may only use `warn()` and `useWarn()` from within the body of a `test` function.
+- `warn()` should be called in the synchronous portion of your test.
+- `useWarn()` is the async-safe alternative when warning severity needs to be set later.
 
 ```js
 // ✔
@@ -5276,6 +5285,16 @@ test('password', () => {
   return anAsyncFunction().then(() => {
     warn(); // 🚨
   });
+});
+
+// ✔ Use useWarn() when you need to set warn after await
+test('password', async () => {
+  const setWarn = useWarn();
+
+  await someAsyncFunction();
+  setWarn();
+
+  enforce(passwordStrength).isNotWeak();
 });
 ```
 

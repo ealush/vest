@@ -5,6 +5,7 @@ import {
   deferThrow,
   makeResult,
   Result,
+  isUndefined,
 } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
@@ -127,13 +128,19 @@ function useRunAsyncTest(
   const done = VestRuntime.persist(() => {
     onTestCompleted(testObject).unwrap();
   });
-  const fail = VestRuntime.persist((rejectionMessage?: string) => {
+  const fail = VestRuntime.persist((rejectionMessage?: unknown) => {
     if (VestTest.isCanceled(testObject).unwrap()) {
       return;
     }
 
-    VestTest.getData(testObject).message = isStringValue(rejectionMessage)
+    const errorMessage = isStringValue(rejectionMessage)
       ? rejectionMessage
+      : rejectionMessage instanceof Error
+        ? rejectionMessage.message
+        : undefined;
+
+    VestTest.getData(testObject).message = isUndefined(message)
+      ? errorMessage
       : message;
     VestTest.fail(testObject);
 

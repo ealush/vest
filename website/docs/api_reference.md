@@ -14,6 +14,7 @@ keywords:
     suite.resetField,
     test,
     warn,
+    useWarn,
     enforce,
     enforce.extend,
     compose,
@@ -194,9 +195,15 @@ Asserts that a value matches your desired result.
 
 #### `warn()`
 
-Sets the test's severity to warning.
+Sets the test's severity to warning in the synchronous part of a test.
 
 - [Read more about `warn`](./writing_tests/warn_only_tests.md)
+
+#### `useWarn()`
+
+Returns a setter function that marks the current test as warning severity, including async flows after an `await`.
+
+- [Read more about `useWarn`](./writing_tests/warn_only_tests.md)
 
 #### `only(fieldName)`
 

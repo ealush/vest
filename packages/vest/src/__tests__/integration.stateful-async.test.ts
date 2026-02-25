@@ -118,9 +118,9 @@ describe('Stateful async tests', () => {
   it('Allows setting warning severity after await in async test', async () => {
     const suite = vest.create(() => {
       vest.test('field_1', 'dynamic_severity', async () => {
-        const setSeverity = vest.useSetSeverity();
+        const setWarn = vest.useWarn();
         await wait(0);
-        setSeverity(vest.TestSeverity.Warning);
+        setWarn();
         vest.enforce(false).equals(true);
       });
     });

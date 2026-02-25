@@ -5,7 +5,7 @@ export enum ErrorStrings {
   SUITE_MUST_BE_INITIALIZED_WITH_FUNCTION = 'Suite must be initialized with a function',
   PARSER_EXPECT_RESULT_OBJECT = "Vest parser: expected argument at position 0 to be Vest's result object.",
   WARN_MUST_BE_CALLED_FROM_TEST = 'Warn must be called from within the body of a test function',
-  SET_SEVERITY_MUST_BE_CALLED_FROM_TEST = 'useSetSeverity must be called from within the body of a test function',
+  USE_WARN_MUST_BE_CALLED_FROM_TEST = 'useWarn must be called from within the body of a test function',
   EACH_CALLBACK_MUST_BE_A_FUNCTION = 'Each must be called with a function',
   INVALID_PARAM_PASSED_TO_FUNCTION = 'Incompatible params passed to {fn_name} function. "{param}" must be of type {expected}',
   TESTS_CALLED_IN_DIFFERENT_ORDER = `Vest Critical Error: Tests called in different order than previous run.

@@ -112,6 +112,23 @@ describe('debounce', () => {
       expect(suite.get().hasErrors('name')).toBe(true);
       expect(suite.get().getErrors('name')).toEqual([dynamicMessage]);
     });
+
+    it('should allow calling useWarn in debounced async callbacks after await', async () => {
+      const suite = vest.create(() => {
+        vest.test(
+          'destinationYear',
+          debounce(async () => {
+            await wait(20);
+
+            const setWarn = vest.useWarn();
+            setWarn();
+          }, 10),
+        );
+      });
+
+      await expect(suite.run()).resolves.toBeDefined();
+      expect(suite.get().hasErrors('destinationYear')).toBe(false);
+    });
   });
 
   describe('When delay met multiple times', () => {

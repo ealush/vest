@@ -38,6 +38,23 @@ describe('useWarn hook', () => {
     expect(useWarn).toThrow(ErrorStrings.HOOK_CALLED_OUTSIDE);
   });
 
+  it('should surface the correct error when called after await in async test body', async () => {
+    const fieldName = faker.lorem.word();
+
+    const suite = create(() => {
+      test(fieldName, async () => {
+        await Promise.resolve();
+        useWarn();
+      });
+    });
+
+    await suite.run();
+
+    expect(suite.get().getErrors(fieldName)).toEqual([
+      ErrorStrings.HOOK_CALLED_OUTSIDE,
+    ]);
+  });
+
   it('should no-op when setter is called after test resolution', () => {
     let t: ReturnType<typeof test> | undefined;
     let setWarn: ReturnType<typeof useWarn> | undefined;

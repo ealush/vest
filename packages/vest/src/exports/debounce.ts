@@ -1,6 +1,8 @@
 import { CB, isPromise, Nullable } from 'vest-utils';
 import { Isolate, TIsolate, IsolateSelectors } from 'vestjs-runtime';
 
+import { SuiteContext } from '../core/context/SuiteContext';
+import { getTestFromAbortSignal } from '../core/test/Abortable';
 import { TestFn, TestFnPayload } from '../core/test/TestTypes';
 import { registerReconciler } from '../vest';
 
@@ -25,7 +27,12 @@ export default function debounce<Callback extends CB = CB>(
       timeout = setTimeout(() => {
         let res = false;
         try {
-          res = callback(payload);
+          res = SuiteContext.run(
+            {
+              currentTest: getTestFromAbortSignal(payload.signal),
+            },
+            () => callback(payload),
+          );
         } catch (e) {
           return reject(e);
         }

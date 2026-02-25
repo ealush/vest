@@ -53,8 +53,9 @@ export class SuiteSerializer {
 function stripMessageFromPassingTests<T>(node: T): T {
   const visited = new WeakMap<object, any>();
   const containsPassingMemo = new WeakMap<object, boolean>();
+  const seen = new WeakSet<object>();
 
-  return strip(node, visited, containsPassingMemo);
+  return strip(node, visited, containsPassingMemo, seen);
 }
 
 // eslint-disable-next-line complexity, max-statements
@@ -62,12 +63,9 @@ function strip<T>(
   node: T,
   visited: WeakMap<object, any>,
   containsPassingMemo: WeakMap<object, boolean>,
+  seen: WeakSet<object>,
 ): T {
   if (!node || typeof node !== 'object') {
-    return node;
-  }
-
-  if (!containsPassing(node, new WeakSet<object>(), containsPassingMemo)) {
     return node;
   }
 
@@ -75,12 +73,16 @@ function strip<T>(
     return visited.get(node as object);
   }
 
+  if (!containsPassing(node, seen, containsPassingMemo)) {
+    return node;
+  }
+
   if (Array.isArray(node)) {
     const arr: any[] = [];
     visited.set(node, arr);
 
     node.forEach(value => {
-      arr.push(strip(value, visited, containsPassingMemo));
+      arr.push(strip(value, visited, containsPassingMemo, seen));
     });
 
     return arr as T;
@@ -96,7 +98,7 @@ function strip<T>(
       continue;
     }
 
-    clonedNode[key] = strip(value, visited, containsPassingMemo);
+    clonedNode[key] = strip(value, visited, containsPassingMemo, seen);
   }
 
   return clonedNode as T;

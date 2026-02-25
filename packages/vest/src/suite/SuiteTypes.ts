@@ -9,6 +9,7 @@ import {
   TFieldName,
   TGroupName,
   InferSchemaData,
+  InferSchemaOutput,
   TSchema,
 } from '../suiteResult/SuiteResultTypes';
 import { SuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
@@ -20,7 +21,7 @@ export type SuiteCallbackWithSchema<
   T extends CB,
 > = S extends undefined
   ? T
-  : (data: InferSchemaData<S>, ...args: any[]) => void;
+  : (data: InferSchemaOutput<S>, ...args: any[]) => void;
 
 export type Suite<
   F extends TFieldName,
@@ -28,7 +29,7 @@ export type Suite<
   T extends CB = CB,
   S extends TSchema = undefined,
 > = SuiteMethods<F, G, T, S> &
-  StandardSchemaV1<InferSchemaData<S>, InferSchemaData<S>>;
+  StandardSchemaV1<InferSchemaData<S>, InferSchemaOutput<S>>;
 
 type SuiteMethods<
   F extends TFieldName,

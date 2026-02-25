@@ -23,7 +23,7 @@ export class SuiteSummary<
   public [Severity.WARNINGS]: SummaryFailure<F, G>[] = [];
   public groups: Groups<G, F> = {} as Groups<G, F>;
   public tests: Tests<F> = {} as Tests<F>;
-  public run!: { data: D; time: Date };
+  public run!: { data: D | undefined; time: Date };
   public valid: Nullable<boolean> = null;
 
   constructor() {
@@ -33,7 +33,7 @@ export class SuiteSummary<
       configurable: true,
       enumerable: false,
       value: {
-        data: undefined as D,
+        data: undefined,
         time: new Date(0),
       },
       writable: true,

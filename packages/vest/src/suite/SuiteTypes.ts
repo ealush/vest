@@ -15,9 +15,15 @@ import { SuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 
 import { TTypedMethods } from './getTypedMethods';
 
-type SuiteRunData<S extends TSchema, T extends CB> = S extends undefined
+type SuiteRunData<
+  S extends TSchema,
+  T extends CB,
+  IsFocused extends boolean = false,
+> = S extends undefined
   ? Parameters<T>[0]
-  : InferSchemaData<S>;
+  : IsFocused extends true
+    ? Partial<InferSchemaData<S>>
+    : InferSchemaData<S>;
 
 export type SuiteCallbackWithSchema<
   S extends TSchema,
@@ -89,7 +95,7 @@ type FocusedMethods<
     ...args: S extends undefined
       ? Parameters<T>
       : [data: Partial<InferSchemaData<S>>, ...args: any[]]
-  ) => SuiteResult<F, G, S, SuiteRunData<S, T>>;
+  ) => SuiteResult<F, G, S, SuiteRunData<S, T, true>>;
 };
 
 type AfterMethods<

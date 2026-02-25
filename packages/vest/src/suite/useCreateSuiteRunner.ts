@@ -62,16 +62,9 @@ export function useCreateSuiteRunner<
     S,
     S extends undefined ? Parameters<T>[0] : InferSchemaData<S>
   > {
+    type RunData = S extends undefined ? Parameters<T>[0] : InferSchemaData<S>;
     const runTime = new Date();
-    const { resolve, promise } =
-      withResolvers<
-        SuiteResult<
-          F,
-          G,
-          S,
-          S extends undefined ? Parameters<T>[0] : InferSchemaData<S>
-        >
-      >();
+    const { resolve, promise } = withResolvers<SuiteResult<F, G, S, RunData>>();
 
     const schemaInput = args[0];
     const schemaRunResult = shouldRunSchema(schema, transformedModifiers)
@@ -80,9 +73,7 @@ export function useCreateSuiteRunner<
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
-    const runData = callbackInput as
-      | (S extends undefined ? Parameters<T>[0] : InferSchemaData<S>)
-      | undefined;
+    const runData = callbackInput as RunData | undefined;
 
     const suiteResult = SuiteContext.run(
       {
@@ -94,12 +85,12 @@ export function useCreateSuiteRunner<
         useEmit('SUITE_RUN_STARTED');
 
         const useResolver = () => {
-          const result = useCreateSuiteResult<
-            F,
-            G,
-            S,
-            S extends undefined ? Parameters<T>[0] : InferSchemaData<S>
-          >(schema, callbackInput, runData, runTime);
+          const result = useCreateSuiteResult<F, G, S, RunData>(
+            schema,
+            callbackInput,
+            runData,
+            runTime,
+          );
 
           if (!result.isPending()) {
             resolve(result);
@@ -109,7 +100,7 @@ export function useCreateSuiteRunner<
         };
 
         return IsolateSuite(
-          useRunSuiteCallback<F, T, S>({
+          useRunSuiteCallback<F, T, S, G, RunData>({
             args: callbackArgs,
             modifiers: transformedModifiers,
             schema,
@@ -124,14 +115,15 @@ export function useCreateSuiteRunner<
 
     const result = assign(promise, suiteResult);
 
-    if (suiteResult && 'run' in suiteResult) {
-      Object.defineProperty(result, 'run', {
-        configurable: true,
-        enumerable: false,
-        value: suiteResult.run,
-        writable: true,
-      });
-    }
+    Object.defineProperty(result, 'run', {
+      configurable: true,
+      enumerable: false,
+      value: {
+        data: runData,
+        time: runTime,
+      },
+      writable: true,
+    });
 
     return result;
   };
@@ -159,13 +151,15 @@ function useRunSuiteCallback<
   F extends TFieldName,
   T extends CB = CB,
   S extends TSchema = undefined,
+  G extends TGroupName = TGroupName,
+  D = unknown,
 >(params: {
   args: any[];
   modifiers: ReturnType<typeof useTransformedModifiers<F>>;
   schema: S | undefined;
   schemaRunResult?: SchemaRunResult[];
   suiteCallback: SuiteCallbackWithSchema<S, T>;
-  useResolver: () => SuiteResult<F, any, S>;
+  useResolver: () => SuiteResult<F, G, S, D>;
 }) {
   const {
     args,

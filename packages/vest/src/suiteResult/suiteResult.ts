@@ -31,7 +31,7 @@ export function useCreateSuiteResult<
     // @vx-allow use-use
     const summary = useProduceSuiteSummary<F, G, D>();
     summary.run = {
-      data: inputData as D,
+      data: inputData,
       time: runTime,
     };
 

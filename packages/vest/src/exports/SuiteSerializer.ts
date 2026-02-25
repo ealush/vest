@@ -104,6 +104,12 @@ function strip<T>(
   return clonedNode as T;
 }
 
+// `strip` calls this with a shared `seen` set that is expected to be empty
+// at call boundaries. Inside this DFS, revisiting a node (`seen.has(node)`) means
+// we've encountered a cycle currently in-flight, so we conservatively return `true`
+// to avoid suppressing message-stripping while still preventing infinite recursion.
+// This is safe because every path that adds to `seen` removes it (`seen.delete`) on
+// return, and `memo` only stores final computed booleans for completed nodes.
 // eslint-disable-next-line complexity, max-statements
 function containsPassing(
   node: unknown,

@@ -125,13 +125,17 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     groupName: InputGroupName<G>,
     fieldName?: InputFieldName<F>,
   ): boolean {
+    if (summary.valid === null) {
+      return false;
+    }
+
     const safeGroupName = asGroupName(groupName);
     const safeFieldName = asFieldName(fieldName);
     const group = summary.groups[safeGroupName];
 
-    // If the group doesn't exist, it's vacuously valid (can't fail tests that don't exist)
+    // If the group doesn't exist, it means this group did not run in the current result.
     if (!group) {
-      return true;
+      return false;
     }
 
     // If checking a specific field within the group

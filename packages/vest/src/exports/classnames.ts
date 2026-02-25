@@ -4,6 +4,7 @@ import {
   SuiteResult,
   TFieldName,
   TGroupName,
+  TSchema,
 } from '../suiteResult/SuiteResultTypes';
 
 import { ParsedVestObject, parse } from './parser';
@@ -11,8 +12,12 @@ import { ParsedVestObject, parse } from './parser';
 /**
  * Creates a function that returns class names that match the validation result
  */
-export default function classnames<F extends TFieldName, G extends TGroupName>(
-  res: SuiteResult<F, G>,
+export default function classnames<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema,
+>(
+  res: SuiteResult<F, G, S>,
   classes: SupportedClasses = {},
 ): (fieldName: string) => string {
   const selectors = parse(res);

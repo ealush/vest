@@ -3,6 +3,7 @@ import { Isolate, TIsolate, IsolateSelectors } from 'vestjs-runtime';
 
 import { SuiteContext } from '../core/context/SuiteContext';
 import { TIsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
+import { getTestFromAbortSignal } from '../core/test/Abortable';
 import { TestFn, TestFnPayload } from '../core/test/TestTypes';
 import { registerReconciler } from '../vest';
 
@@ -16,9 +17,9 @@ export default function debounce<Callback extends CB = CB>(
   let timeout: Nullable<NodeJS.Timeout> = null;
 
   const f = () => (payload: TestFnPayload) => {
-    const currentTest = SuiteContext.useX().currentTest as
-      | TIsolateTest
-      | undefined;
+    const currentTest =
+      getTestFromAbortSignal(payload?.signal) ??
+      (SuiteContext.useX().currentTest as TIsolateTest | undefined);
 
     return new Promise((resolve, reject) => {
       abort = () => {

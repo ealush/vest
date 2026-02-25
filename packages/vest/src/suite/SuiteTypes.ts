@@ -15,6 +15,16 @@ import { SuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 
 import { TTypedMethods } from './getTypedMethods';
 
+export type SuiteRunData<
+  S extends TSchema,
+  T extends CB,
+  IsFocused extends boolean = false,
+> = S extends undefined
+  ? Parameters<T>[0]
+  : IsFocused extends true
+    ? Partial<InferSchemaData<S>>
+    : InferSchemaData<S>;
+
 export type SuiteCallbackWithSchema<
   S extends TSchema,
   T extends CB,
@@ -47,17 +57,17 @@ type SuiteMethods<
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G>;
+  ) => SuiteResult<F, G, S, SuiteRunData<S, T>>;
   runStatic: (
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G>;
+  ) => SuiteResult<F, G, S, SuiteRunData<S, T>>;
   validate: (
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G>;
+  ) => SuiteResult<F, G, S, SuiteRunData<S, T>>;
   subscribe: Subscribe;
 } & AfterMethods<F, G, T, S> &
   TTypedMethods<F, G> &
@@ -85,7 +95,7 @@ type FocusedMethods<
     ...args: S extends undefined
       ? Parameters<T>
       : [data: Partial<InferSchemaData<S>>, ...args: any[]]
-  ) => SuiteResult<F, G>;
+  ) => SuiteResult<F, G, S, SuiteRunData<S, T, true>>;
 };
 
 type AfterMethods<
@@ -108,7 +118,7 @@ type AfterMethods<
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G>;
+  ) => SuiteResult<F, G, S, SuiteRunData<S, T>>;
 };
 
 /**

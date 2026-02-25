@@ -60,10 +60,11 @@ export function useSuiteResultCache<
   F extends TFieldName,
   G extends TGroupName,
   S extends TSchema = undefined,
->(action: CB<SuiteResult<F, G, S>>): SuiteResult<F, G, S> {
+  D = unknown,
+>(action: CB<SuiteResult<F, G, S, D>>): SuiteResult<F, G, S, D> {
   const suiteResultCache = useVestState().suiteResultCache;
 
-  return suiteResultCache([useSuiteId()], action) as SuiteResult<F, G, S>;
+  return suiteResultCache([useSuiteId()], action) as SuiteResult<F, G, S, D>;
 }
 
 export function useExpireSuiteResultCache() {

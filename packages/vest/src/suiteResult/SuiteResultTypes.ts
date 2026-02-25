@@ -17,12 +17,28 @@ export class SummaryBase {
 export class SuiteSummary<
   F extends TFieldName,
   G extends TGroupName,
+  D = unknown,
 > extends SummaryBase {
   public [Severity.ERRORS]: SummaryFailure<F, G>[] = [];
   public [Severity.WARNINGS]: SummaryFailure<F, G>[] = [];
   public groups: Groups<G, F> = {} as Groups<G, F>;
   public tests: Tests<F> = {} as Tests<F>;
+  public run!: { data: D | undefined; time: Date };
   public valid: Nullable<boolean> = null;
+
+  constructor() {
+    super();
+
+    Object.defineProperty(this, 'run', {
+      configurable: true,
+      enumerable: false,
+      value: {
+        data: undefined,
+        time: new Date(0),
+      },
+      writable: true,
+    });
+  }
 }
 
 export type TestsContainer<F extends TFieldName, _G extends TGroupName> =
@@ -75,20 +91,21 @@ type SuiteResultData<
   F extends TFieldName,
   G extends TGroupName,
   S extends TSchema = undefined,
+  D = unknown,
 > =
-  | (Omit<SuiteSummary<F, G>, 'valid'> &
+  | (Omit<SuiteSummary<F, G, D>, 'valid'> &
       SuiteSelectors<F, G> & {
         valid: true;
         value: InferSchemaOutput<S>;
         issues?: undefined;
       })
-  | (Omit<SuiteSummary<F, G>, 'valid'> &
+  | (Omit<SuiteSummary<F, G, D>, 'valid'> &
       SuiteSelectors<F, G> & {
         valid: false;
         issues: ReadonlyArray<StandardSchemaV1.Issue>;
         value?: undefined;
       })
-  | (Omit<SuiteSummary<F, G>, 'valid'> &
+  | (Omit<SuiteSummary<F, G, D>, 'valid'> &
       SuiteSelectors<F, G> & {
         valid: null;
         issues?: undefined;
@@ -102,7 +119,8 @@ export type SuiteResult<
   F extends string = TFieldName,
   G extends string = TGroupName,
   S extends TSchema = undefined,
-> = SuiteResultData<BrandedFieldName<F>, BrandedGroupName<G>, S> & {
+  D = unknown,
+> = SuiteResultData<BrandedFieldName<F>, BrandedGroupName<G>, S, D> & {
   dump: CB<TIsolateSuite>;
   types: S extends undefined
     ? undefined

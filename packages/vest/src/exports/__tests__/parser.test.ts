@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, expectTypeOf } from 'vitest';
 
 import * as suiteDummy from '../../testUtils/suiteDummy';
 import { ser } from '../../testUtils/suiteDummy';
@@ -499,5 +499,27 @@ describe('parser.parse', () => {
         parse({});
       }).toThrow();
     });
+  });
+});
+
+describe('parser.parse type-compatibility', () => {
+  it('accepts schema-driven suite.run() results and returns typed selectors', () => {
+    const suite = vest.create(
+      data => {
+        vest.test('email', () => {
+          vest.enforce(data.email).isString();
+        });
+      },
+      vest.enforce.shape({
+        email: vest.enforce.isString(),
+      }),
+    );
+
+    const parsed = parse(suite.run({ email: 'a@b.com' }));
+
+    expectTypeOf(parsed.valid).toEqualTypeOf<
+      (fieldName?: string | undefined) => boolean
+    >();
+    expect(parsed.valid('email')).toBe(true);
   });
 });

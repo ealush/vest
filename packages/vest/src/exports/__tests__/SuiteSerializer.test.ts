@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, expectTypeOf } from 'vitest';
 
 import { SuiteSerializer } from '../SuiteSerializer';
 import * as vest from '../../vest';
@@ -144,5 +144,33 @@ describe('suite.resume', () => {
         expect(suite2.getErrors()).toMatchSnapshot();
       });
     });
+  });
+});
+
+describe('SuiteSerializer type-compatibility', () => {
+  it('accepts schema-typed suites in resume()', () => {
+    const schema = vest.enforce.shape({
+      username: vest.enforce.isString(),
+    });
+
+    const suite = vest.create(data => {
+      vest.test('username', () => {
+        vest.enforce(data.username).isNotBlank();
+      });
+    }, schema);
+
+    suite.run({ username: '' });
+
+    const serialized = SuiteSerializer.serialize(suite);
+
+    const suite2 = vest.create(data => {
+      vest.test('username', () => {
+        vest.enforce(data.username).isNotBlank();
+      });
+    }, schema);
+
+    expectTypeOf(SuiteSerializer.resume).toBeFunction();
+    SuiteSerializer.resume(suite2, serialized);
+    expect(suite2.hasErrors('username')).toBe(true);
   });
 });

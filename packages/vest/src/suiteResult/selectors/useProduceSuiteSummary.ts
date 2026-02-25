@@ -26,10 +26,11 @@ import {
 export function useProduceSuiteSummary<
   F extends TFieldName,
   G extends TGroupName,
->(): SuiteSummary<F, G> {
+  D = unknown,
+>(): SuiteSummary<F, G, D> {
   const root = VestRuntime.useAvailableRoot<TIsolateSuite>();
 
-  const summary = new SuiteSummary<F, G>();
+  const summary = new SuiteSummary<F, G, D>();
 
   if (isVestIsolate(root)) {
     useProcessTests(root.data.tests, summary);

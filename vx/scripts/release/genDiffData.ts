@@ -13,6 +13,8 @@ import {
   isNextBranch,
   isReleaseKeepVersionBranch,
   isNightlyBranch,
+  isLatestBranch,
+  isStableBranch,
   CURRENT_BRANCH,
 } from 'vx/util/taggedBranch.js';
 import { usePackage } from 'vx/vxContext.js';
@@ -72,7 +74,7 @@ export default genDiffData;
 function pickTagId(nextVersion: string): string {
   logger.log(`Picking tag id. Current branch: ${CURRENT_BRANCH}`);
 
-  if (isReleaseBranch) {
+  if (isLatestBranch || isStableBranch || isReleaseBranch) {
     return nextVersion;
   }
 

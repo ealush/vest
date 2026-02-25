@@ -56,8 +56,22 @@ export function useCreateSuiteRunner<
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
-  ): SuiteResult<F, G, S> {
-    const { resolve, promise } = withResolvers<SuiteResult<F, G, S>>();
+  ): SuiteResult<
+    F,
+    G,
+    S,
+    S extends undefined ? Parameters<T>[0] : InferSchemaData<S>
+  > {
+    const runTime = new Date();
+    const { resolve, promise } =
+      withResolvers<
+        SuiteResult<
+          F,
+          G,
+          S,
+          S extends undefined ? Parameters<T>[0] : InferSchemaData<S>
+        >
+      >();
 
     const schemaInput = args[0];
     const schemaRunResult = shouldRunSchema(schema, transformedModifiers)
@@ -66,46 +80,60 @@ export function useCreateSuiteRunner<
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
+    const runData = callbackInput as
+      | (S extends undefined ? Parameters<T>[0] : InferSchemaData<S>)
+      | undefined;
 
-    return assign(
-      promise,
-      SuiteContext.run(
-        {
-          suiteParams: callbackArgs,
-          schema,
-          modifiers: transformedModifiers,
-        },
-        () => {
-          useEmit('SUITE_RUN_STARTED');
+    const suiteResult = SuiteContext.run(
+      {
+        suiteParams: callbackArgs,
+        schema,
+        modifiers: transformedModifiers,
+      },
+      () => {
+        useEmit('SUITE_RUN_STARTED');
 
-          const useResolver = () => {
-            const result = useCreateSuiteResult<F, G, S>(
-              schema,
-              callbackInput,
-              schemaInput,
-            );
+        const useResolver = () => {
+          const result = useCreateSuiteResult<
+            F,
+            G,
+            S,
+            S extends undefined ? Parameters<T>[0] : InferSchemaData<S>
+          >(schema, callbackInput, runData, runTime);
 
-            if (!result.isPending()) {
-              resolve(result);
-            }
+          if (!result.isPending()) {
+            resolve(result);
+          }
 
-            return result;
-          };
+          return result;
+        };
 
-          return IsolateSuite(
-            useRunSuiteCallback<F, T, S>({
-              args: callbackArgs,
-              modifiers: transformedModifiers,
-              schema,
-              schemaRunResult,
-              suiteCallback,
-              useResolver,
-            }),
+        return IsolateSuite(
+          useRunSuiteCallback<F, T, S>({
+            args: callbackArgs,
+            modifiers: transformedModifiers,
+            schema,
+            schemaRunResult,
+            suiteCallback,
             useResolver,
-          ).output;
-        },
-      ),
+          }),
+          useResolver,
+        ).output;
+      },
     );
+
+    const result = assign(promise, suiteResult);
+
+    if (suiteResult && 'run' in suiteResult) {
+      Object.defineProperty(result, 'run', {
+        configurable: true,
+        enumerable: false,
+        value: suiteResult.run,
+        writable: true,
+      });
+    }
+
+    return result;
   };
 }
 

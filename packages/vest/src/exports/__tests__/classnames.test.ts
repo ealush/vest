@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, expectTypeOf, vi } from 'vitest';
 
 import { dummyTest } from '../../testUtils/testDummy';
 import classnames from '../classnames';
@@ -57,6 +57,29 @@ describe('Utility: classnames', () => {
       invalid: 'invalid',
     });
 
+    expect(cn('travelerName')).toContain('invalid');
+  });
+
+  it('accepts schema-typed suite results from suite.run() and preserves parser output type', () => {
+    const typedSuite = vest.create(
+      data => {
+        vest.test('travelerName', 'Traveler name is required', () => {
+          vest.enforce(data.travelerName).isNotBlank();
+        });
+      },
+      vest.enforce.shape({
+        travelerName: vest.enforce.isString(),
+      }),
+    );
+
+    const result = typedSuite.run({ travelerName: '' });
+
+    const cn = classnames(result, {
+      warning: 'warning',
+      invalid: 'invalid',
+    });
+
+    expectTypeOf(cn).toEqualTypeOf<(fieldName: string) => string>();
     expect(cn('travelerName')).toContain('invalid');
   });
 

@@ -1,4 +1,4 @@
-import { assign, freezeAssign } from 'vest-utils';
+import { assign } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 import { VestRuntime } from 'vestjs-runtime';
 
@@ -20,17 +20,41 @@ export function useCreateSuiteResult<
   F extends TFieldName,
   G extends TGroupName,
   S extends TSchema = undefined,
->(schema?: S, outputData?: any, inputData?: any): SuiteResult<F, G, S> {
-  return useSuiteResultCache<F, G, S>(() => {
+  D = unknown,
+>(
+  schema?: S,
+  outputData?: any,
+  inputData?: D,
+  runTime: Date = new Date(),
+): SuiteResult<F, G, S, D> {
+  return useSuiteResultCache<F, G, S, D>(() => {
     // @vx-allow use-use
-    const summary = useProduceSuiteSummary<F, G>();
-    const resultBody = constructSuiteResultObject<F, G, S>(summary, outputData);
-    return freezeAssign(resultBody as SuiteResult<F, G, S>, {
+    const summary = useProduceSuiteSummary<F, G, D>();
+    summary.run = {
+      data: inputData as D,
+      time: runTime,
+    };
+
+    const resultBody = constructSuiteResultObject<F, G, S, D>(
+      summary,
+      outputData,
+    );
+
+    const result = assign(resultBody as SuiteResult<F, G, S, D>, {
       dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
       types: (schema
         ? { input: inputData, output: outputData }
-        : undefined) as SuiteResult<F, G, S>['types'],
-    }) as SuiteResult<F, G, S>;
+        : undefined) as SuiteResult<F, G, S, D>['types'],
+    }) as SuiteResult<F, G, S, D>;
+
+    Object.defineProperty(result, 'run', {
+      configurable: true,
+      enumerable: false,
+      value: summary.run,
+      writable: true,
+    });
+
+    return Object.freeze(result);
   });
 }
 
@@ -38,10 +62,11 @@ export function constructSuiteResultObject<
   F extends TFieldName,
   G extends TGroupName,
   S extends TSchema = undefined,
+  D = unknown,
 >(
-  summary: SuiteSummary<F, G>,
+  summary: SuiteSummary<F, G, D>,
   outputData?: any,
-): Omit<SuiteResult<F, G, S>, 'dump' | 'types'> {
+): Omit<SuiteResult<F, G, S, D>, 'dump' | 'types'> {
   const { valid, ...summaryWithoutValid } = summary;
   const selectors = suiteSelectors<F, G>(summary);
 

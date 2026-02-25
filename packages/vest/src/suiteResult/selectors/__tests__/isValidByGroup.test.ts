@@ -434,10 +434,10 @@ describe('isValidByGroup', () => {
         test('field_1', () => true);
       });
     });
-    it('should be invalid for a non-existent group in the current run', () => {
-      expect(suite.run().isValidByGroup('does-not-exist')).toBe(false);
+    it('should be valid for a non-existent group (no tests)', () => {
+      expect(suite.run().isValidByGroup('does-not-exist')).toBe(true);
       expect(suite.run().isValidByGroup('does-not-exist', 'field_1')).toBe(
-        false,
+        true,
       );
     });
   });

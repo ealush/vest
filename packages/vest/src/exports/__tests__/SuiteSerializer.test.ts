@@ -26,6 +26,35 @@ describe('SuiteSerializer', () => {
     const serialized = SuiteSerializer.serialize(suite);
     expect(serialized).toMatchSnapshot();
   });
+
+  it('should strip message from passing tests only', () => {
+    const suite = vest.create(() => {
+      vest.test('passing_field', 'passing_field_message', () => true);
+      vest.test('failing_field', 'failing_field_message', () => false);
+    });
+
+    suite.run();
+
+    const serialized = SuiteSerializer.serialize(suite);
+    const parsed = SuiteSerializer.deserialize(serialized);
+
+    expect(parsed.children).toBeDefined();
+
+    const testChildren = parsed.children?.filter(child => child.data.fieldName);
+    expect(testChildren).toHaveLength(2);
+
+    const passingTest = testChildren?.find(
+      child => child.data.fieldName === 'passing_field',
+    );
+    const failingTest = testChildren?.find(
+      child => child.data.fieldName === 'failing_field',
+    );
+
+    expect(passingTest).toBeDefined();
+    expect(failingTest).toBeDefined();
+    expect(passingTest?.data).not.toHaveProperty('message');
+    expect(failingTest?.data.message).toBe('failing_field_message');
+  });
 });
 
 describe('suite.resume', () => {

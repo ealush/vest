@@ -16,7 +16,7 @@ type Dumpable = {
 
 export class SuiteSerializer {
   static serialize(suite: Dumpable) {
-    const dump = { ...suite.dump() };
+    const dump = stripMessageFromPassingTests(suite.dump());
 
     return IsolateSerializer.serialize(dump, suiteSerializerReplacer);
   }
@@ -48,6 +48,109 @@ export class SuiteSerializer {
 
     suite.resume(suiteRoot);
   }
+}
+
+function stripMessageFromPassingTests<T>(node: T): T {
+  const visited = new WeakMap<object, any>();
+  const containsPassingMemo = new WeakMap<object, boolean>();
+  const seen = new WeakSet<object>();
+
+  return strip(node, visited, containsPassingMemo, seen);
+}
+
+// eslint-disable-next-line complexity, max-statements
+function strip<T>(
+  node: T,
+  visited: WeakMap<object, any>,
+  containsPassingMemo: WeakMap<object, boolean>,
+  seen: WeakSet<object>,
+): T {
+  if (!node || typeof node !== 'object') {
+    return node;
+  }
+
+  if (visited.has(node as object)) {
+    return visited.get(node as object);
+  }
+
+  if (!containsPassing(node, seen, containsPassingMemo)) {
+    return node;
+  }
+
+  if (Array.isArray(node)) {
+    const arr: any[] = [];
+    visited.set(node, arr);
+
+    node.forEach(value => {
+      arr.push(strip(value, visited, containsPassingMemo, seen));
+    });
+
+    return arr as T;
+  }
+
+  const root = node as Record<string, any>;
+  const shouldStripMessage = root.testStatus === TestStatus.PASSING;
+  const clonedNode: Record<string, any> = {};
+  visited.set(node, clonedNode);
+
+  for (const [key, value] of Object.entries(root)) {
+    if (shouldStripMessage && key === 'message') {
+      continue;
+    }
+
+    clonedNode[key] = strip(value, visited, containsPassingMemo, seen);
+  }
+
+  return clonedNode as T;
+}
+
+// `strip` calls this with a shared `seen` set that is expected to be empty
+// at call boundaries. Inside this DFS, revisiting a node (`seen.has(node)`) means
+// we've encountered a cycle currently in-flight, so we conservatively return `true`
+// to avoid suppressing message-stripping while still preventing infinite recursion.
+// This is safe because every path that adds to `seen` removes it (`seen.delete`) on
+// return, and `memo` only stores final computed booleans for completed nodes.
+// eslint-disable-next-line complexity, max-statements
+function containsPassing(
+  node: unknown,
+  seen: WeakSet<object>,
+  memo: WeakMap<object, boolean>,
+): boolean {
+  if (!node || typeof node !== 'object') {
+    return false;
+  }
+
+  if (memo.has(node)) {
+    return memo.get(node) ?? false;
+  }
+
+  if (seen.has(node)) {
+    return true;
+  }
+
+  if ((node as Record<string, unknown>).testStatus === TestStatus.PASSING) {
+    memo.set(node, true);
+    return true;
+  }
+
+  seen.add(node);
+
+  const values = Array.isArray(node)
+    ? node
+    : Object.values(node as Record<string, unknown>);
+
+  for (const value of values) {
+    if (containsPassing(value, seen, memo)) {
+      memo.set(node, true);
+      seen.delete(node);
+      return true;
+    }
+  }
+
+  memo.set(node, false);
+  seen.delete(node);
+
+  return false;
 }
 
 function suiteSerializerReplacer(value: any, key: string) {

@@ -16,7 +16,7 @@ type Dumpable = {
 
 export class SuiteSerializer {
   static serialize(suite: Dumpable) {
-    const dump = { ...suite.dump() };
+    const dump = stripMessageFromPassingTests(suite.dump());
 
     return IsolateSerializer.serialize(dump, suiteSerializerReplacer);
   }
@@ -48,6 +48,48 @@ export class SuiteSerializer {
 
     suite.resume(suiteRoot);
   }
+}
+
+function stripMessageFromPassingTests<T>(node: T): T {
+  const visited = new WeakMap<object, any>();
+
+  return strip(node, visited);
+}
+
+function strip<T>(node: T, visited: WeakMap<object, any>): T {
+  if (!node || typeof node !== 'object') {
+    return node;
+  }
+
+  if (visited.has(node as object)) {
+    return visited.get(node as object);
+  }
+
+  if (Array.isArray(node)) {
+    const arr: any[] = [];
+    visited.set(node, arr);
+
+    node.forEach(value => {
+      arr.push(strip(value, visited));
+    });
+
+    return arr as T;
+  }
+
+  const root = node as Record<string, any>;
+  const shouldStripMessage = root.testStatus === TestStatus.PASSING;
+  const clonedNode: Record<string, any> = {};
+  visited.set(node, clonedNode);
+
+  Object.keys(root).forEach(key => {
+    if (shouldStripMessage && key === 'message') {
+      return;
+    }
+
+    clonedNode[key] = strip(root[key], visited);
+  });
+
+  return clonedNode as T;
 }
 
 function suiteSerializerReplacer(value: any, key: string) {

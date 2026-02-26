@@ -14,7 +14,7 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
   id-token: write # Required for OIDC npm publishing
 
 jobs:
@@ -28,7 +28,7 @@ jobs:
       NEXT_BRANCH: next
       STABLE_BRANCH: stable
       LATEST_BRANCH: latest
-      PUBLIC_REPO_TOKEN: ${{secrets.PUBLIC_REPO_TOKEN}}
+      PUBLIC_REPO_TOKEN: ${{secrets.GH_TOKEN}}
       EMAIL_ADDRESS: ${{secrets.EMAIL_ADDRESS}}
       GIT_NAME: ${{secrets.GIT_NAME}}
     strategy:

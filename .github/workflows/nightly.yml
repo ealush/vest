@@ -20,7 +20,7 @@ jobs:
         with:
           ref: latest
           fetch-depth: 1
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
       - name: Push To Nightly Branch
         run: |
           echo "Pushing to nightly branch"

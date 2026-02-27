@@ -13,12 +13,16 @@ Vest is a monorepo managed by `yarn` and a custom tooling package called `vx`.
 
 1. **Fork and Clone** the repository.
 2. **Install dependencies** by running `yarn` in the root directory.
+3. **Build the workspace once** to ensure internal package dependencies are linked correctly.
 
 ```bash
 git clone [https://github.com/ealush/vest.git](https://github.com/ealush/vest.git)
 cd vest
 yarn
+yarn build
 ```
+
+> ℹ️ `yarn` installs dependencies, but a first `yarn build` is required before working with packages that depend on built workspace artifacts.
 
 ## Repository Structure
 

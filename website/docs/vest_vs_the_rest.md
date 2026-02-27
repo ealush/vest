@@ -46,16 +46,16 @@ Most validation libraries fall into one of two traps:
 
 ## Feature Comparison
 
-| Features                    | Vest                               | Functional Matchers | Schema Validation | Form State Managers |
-| --------------------------- | ---------------------------------- | ------------------- | ----------------- | ------------------- |
-| **State Management**        | Automatic                          | Manual              | Manual            | Automatic           |
-| **Per Field Validation**    | ✅ Built-in (`only()` / `focus`)   | ❌                  | ❌                | ✅                  |
-| **Framework Agnostic**      | ✅                                 | ✅                  | ✅                | ❌                  |
-| **Async + Race Conditions** | ✅ Handled automatically           | ❌                  | Varies            | Varies              |
-| **SSR/Hydration**           | ✅ (`runStatic`, `dump`, `resume`) | ❌                  | ❌                | Framework-specific  |
-| **Standard Schema Interop** | ✅ (`suite.validate`)              | ❌                  | Some              | Rare                |
-| **Code Reusability**        | High                               | Medium              | Medium            | Low                 |
-| **Syntax**                  | Unit-test style                    | Function calls      | Declarative       | Declarative         |
+| Features                    | Vest                                                                    | Functional Matchers | Schema Validation | Form State Managers |
+| --------------------------- | ----------------------------------------------------------------------- | ------------------- | ----------------- | ------------------- |
+| **State Management**        | Automatic                                                               | Manual              | Manual            | Automatic           |
+| **Per Field Validation**    | ✅ Built-in (`only()` / `focus`)                                        | ❌                  | ❌                | ✅                  |
+| **Framework Agnostic**      | ✅                                                                      | ✅                  | ✅                | ❌                  |
+| **Async + Race Conditions** | ✅ Handled automatically                                                | ❌                  | Varies            | Varies              |
+| **SSR/Hydration**           | ✅ (`runStatic`, `SuiteSerializer.serialize`, `SuiteSerializer.resume`) | ❌                  | ❌                | Framework-specific  |
+| **Standard Schema Interop** | ✅ (`suite.validate`)                                                   | ❌                  | Some              | Rare                |
+| **Code Reusability**        | High                                                                    | Medium              | Medium            | Low                 |
+| **Syntax**                  | Unit-test style                                                         | Function calls      | Declarative       | Declarative         |
 
 ## Why Vest?
 

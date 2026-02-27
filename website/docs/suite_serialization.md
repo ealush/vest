@@ -16,16 +16,16 @@ Vest 6 solves this with **State Serialization**. You can take the state of a sui
 To keep the API surface clean, serialization tools are grouped under the `SuiteSerializer` export.
 
 ```javascript
-import { SuiteSerializer } from 'vest';
+import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
 ```
 
-### `SuiteSerializer.serialize(suite)`
+### `SuiteSerializer.serialize(result)`
 
-Takes a suite instance and returns a serializable object (safe for JSON).
+Takes a result object (for example, from `suite.runStatic(data)`) and returns a serializable string (safe for JSON transport).
 
 ### `SuiteSerializer.resume(suite, serializedData)`
 
-Takes a suite instance and a serialized data object, and applies that state to the suite.
+Takes a suite instance and serialized data, and applies that state to the suite.
 
 ## Complete Workflow Example
 
@@ -37,20 +37,20 @@ Run the validation. If it fails, send the serialized state back to the frontend.
 
 ```javascript
 // server-action.js
-import { SuiteSerializer } from 'vest';
+import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
 import suite from './validation';
 
 export async function action(formData) {
   // 1. Run validation
-  // We use runStatic, but we can capture the result from the suite instance
+  // We use runStatic and serialize that result for hydration
   const result = suite.runStatic(formData);
 
   if (result.hasErrors()) {
     return {
       success: false,
       errors: result.getErrors(),
-      // 2. Serialize the suite!
-      vestState: SuiteSerializer.serialize(suite),
+      // 2. Serialize the server result state
+      vestState: SuiteSerializer.serialize(result),
     };
   }
 
@@ -65,7 +65,7 @@ When your component mounts or receives the action data, resume the suite.
 ```javascript
 // registration-form.jsx
 import { useEffect } from 'react';
-import { SuiteSerializer } from 'vest';
+import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
 import suite from './validation';
 
 export function RegistrationForm({ actionData }) {

@@ -134,9 +134,9 @@ Returns the current result object of the suite without running it. Useful for ac
 
 - [Read more about `suite.get`](./writing_your_suite/vests_suite.md#accessing-results-without-running)
 
-#### `SuiteSerializer.serialize(suite)`
+#### `SuiteSerializer.serialize(result)`
 
-Returns a minified, serialized representation of the suite's state. Useful for SSR hydration.
+Returns a minified, serialized representation of a validation result. Useful for SSR hydration.
 
 - [Read more about SSR Hydration](./server_side_validations.md#ssr--hydration)
 
@@ -145,7 +145,7 @@ Returns a minified, serialized representation of the suite's state. Useful for S
 Hydrates the suite with a serialized state.
 
 - `suite`: The suite to resume.
-- `data`: The serialized state object.
+- `data`: The serialized state string.
 - [Read more about SSR Hydration](./server_side_validations.md#ssr--hydration)
 
 #### `suite.validate(data)`

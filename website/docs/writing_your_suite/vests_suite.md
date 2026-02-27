@@ -107,10 +107,11 @@ If you are rendering on the server and hydrating on the client (Next.js, Remix, 
 We use the `SuiteSerializer` API for this.
 
 ```javascript
-import { SuiteSerializer } from 'vest';
+import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
 
 // 1. Server: Serialize the suite after running
-const serializedState = SuiteSerializer.serialize(suite);
+const result = suite.runStatic(formData);
+const serializedState = SuiteSerializer.serialize(result);
 
 // 2. Client: Resume the suite with that state
 SuiteSerializer.resume(suite, serializedState);

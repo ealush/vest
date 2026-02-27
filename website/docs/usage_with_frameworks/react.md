@@ -114,6 +114,7 @@ function useVestForm(suite, initialData = {}) {
   const validateAll = useCallback(() => {
     suite
       .afterEach(() => {
+        // Create a new object reference to trigger a re-render
         setFormData(current => ({ ...current }));
       })
       .run(formData);

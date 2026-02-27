@@ -134,7 +134,9 @@ describe('Result', () => {
       it('should chain with a Failure', () => {
         const result = makeResult.Ok(1).chain(() => makeResult.Err('fail'));
         expect(isFailure(result)).toBe(true);
-        expect((result as any).error).toBe('fail');
+        if (isFailure(result)) {
+          expect(result.error).toBe('fail');
+        }
       });
     });
 
@@ -162,7 +164,9 @@ describe('Result', () => {
       it('should not transform the value (no-op for Failure)', () => {
         const result = makeResult.Err('error').map((x: any) => x + 1);
         expect(isFailure(result)).toBe(true);
-        expect((result as any).error).toBe('error');
+        if (isFailure(result)) {
+          expect(result.error).toBe('error');
+        }
       });
     });
 
@@ -179,7 +183,9 @@ describe('Result', () => {
       it('should transform the error', () => {
         const result = makeResult.Err('error').mapError(e => e.toUpperCase());
         expect(isFailure(result)).toBe(true);
-        expect((result as any).error).toBe('ERROR');
+        if (isFailure(result)) {
+          expect(result.error).toBe('ERROR');
+        }
       });
     });
 
@@ -278,7 +284,9 @@ describe('Result', () => {
 
       expect(fn).not.toHaveBeenCalled();
       expect(isFailure(result)).toBe(true);
-      expect((result as any).error).toBe('First Failure');
+      if (isFailure(result)) {
+        expect(result.error).toBe('First Failure');
+      }
     });
   });
 });

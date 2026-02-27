@@ -21,18 +21,14 @@ describe('numberRules', () => {
 
   it('rejects non-number inputs at the root', () => {
     // Type test: testing runtime behavior
-    expect(enforce.isNumber().run('4' as any).pass).toBe(false);
+    // @ts-expect-error - testing invalid input type
+    expect(enforce.isNumber().run('4').pass).toBe(false);
   });
 
   it('numberEquals / numberNotEquals', () => {
     expect(enforce.isNumber().numberEquals(4).run(4).pass).toBe(true);
     // Type test: runtime path: string is not a number entry
-    expect(
-      enforce
-        .isNumber()
-        .numberEquals('4' as any)
-        .run(4 as any).pass,
-    ).toBe(true);
+    expect(enforce.isNumber().numberEquals('4').run(4).pass).toBe(true);
     expect(enforce.isNumber().numberNotEquals(5).run(4).pass).toBe(true);
     expect(enforce.isNumber().numberNotEquals(4).run(4).pass).toBe(false);
   });

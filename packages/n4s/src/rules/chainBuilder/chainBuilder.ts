@@ -29,7 +29,7 @@ type LazyMessage = DynamicValue<
  * Implements StandardSchema v1 support.
  */
 export function createChainBuilder<T extends RuleInstance<any, any>>(
-  rules: RuleFunctions<T>,
+  rules: RuleFunctions<T> | Record<string, (...args: any[]) => any>,
 ) {
   const chain: Predicate[] = [];
   const target: Partial<T> = {};
@@ -107,8 +107,8 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
     createChainProxyHandlers(rules, {
       '~standard': {
         types: {
-          input: undefined as unknown as any,
-          output: undefined as unknown as any,
+          input: undefined!,
+          output: undefined!,
         },
         validate,
         vendor: 'n4s',

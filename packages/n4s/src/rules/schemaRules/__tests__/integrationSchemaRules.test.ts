@@ -18,7 +18,8 @@ describe('integration: rules with schema combinators', () => {
     expect(userSchema.run({ name: 'A', tags: ['dev'] }).pass).toBe(false);
     // extra field should fail shape
     expect(
-      userSchema.run({ name: 'Alice', tags: ['dev'], extra: 1 } as any).pass,
+      // @ts-expect-error - testing extra property fails strict shape
+      userSchema.run({ name: 'Alice', tags: ['dev'], extra: 1 }).pass,
     ).toBe(false);
   });
 
@@ -31,7 +32,8 @@ describe('integration: rules with schema combinators', () => {
     expect(schema.run({ id: 1 }).pass).toBe(true);
     expect(schema.run({ id: 1, deletedAt: null }).pass).toBe(true);
     // non-nullish value fails optional(isNullish())
-    expect(schema.run({ id: 1, deletedAt: 'now' as any }).pass).toBe(false);
+    // @ts-expect-error - testing wrong type for optional field
+    expect(schema.run({ id: 1, deletedAt: 'now' }).pass).toBe(false);
   });
 
   it('isArrayOf with numeric acceptance (numbers or numeric strings)', () => {
@@ -61,9 +63,7 @@ describe('integration: rules with schema combinators', () => {
       envValue: enforce.isValueOf({ a: 1, b: 2, c: 3 }),
     });
 
-    expect(schema.run({ envKey: 'dev', envValue: 2 } as any).pass).toBe(true);
-    expect(schema.run({ envKey: 'stage', envValue: 4 } as any).pass).toBe(
-      false,
-    );
+    expect(schema.run({ envKey: 'dev', envValue: 2 }).pass).toBe(true);
+    expect(schema.run({ envKey: 'stage', envValue: 4 }).pass).toBe(false);
   });
 });

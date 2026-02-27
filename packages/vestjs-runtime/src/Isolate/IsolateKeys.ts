@@ -11,7 +11,7 @@ export enum IsolateKeys {
   Children = 'children',
 }
 
-export const ExcludedFromDump = new Set([
+export const ExcludedFromDump: Set<string> = new Set([
   IsolateKeys.AbortController,
   IsolateKeys.Parent,
   IsolateKeys.Keys,

@@ -50,11 +50,7 @@ describe('RuleRunReturn', () => {
     });
 
     it('falls back to provided type when inner type is undefined', () => {
-      const inner = new (RuleRunReturn as any)(
-        false,
-        undefined,
-        'm',
-      ) as RuleRunReturn<any>;
+      const inner = new RuleRunReturn<undefined>(false, undefined, 'm');
       const res = RuleRunReturn.create(inner, 'FALLBACK', 'outer');
       expect(res.pass).toBe(false);
       expect(res.type).toBe('FALLBACK');
@@ -63,10 +59,7 @@ describe('RuleRunReturn', () => {
     });
 
     it('falls back to provided type when inner passing type is undefined', () => {
-      const inner = new (RuleRunReturn as any)(
-        true,
-        undefined,
-      ) as RuleRunReturn<any>;
+      const inner = new RuleRunReturn<undefined>(true, undefined);
       const res = RuleRunReturn.create(inner, 'FALLBACK');
 
       expect(res.pass).toBe(true);

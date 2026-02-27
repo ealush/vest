@@ -2,8 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { enforce } from '../n4s';
 
-const enforceAny = enforce as any;
-
 declare global {
   namespace n4s {
     interface EnforceMatchers {
@@ -167,7 +165,7 @@ describe('enforce().message() - Eager API', () => {
   describe('Message with compound rules', () => {
     it('Should override message for anyOf', () => {
       expect(() => {
-        enforceAny(true)
+        enforce(true)
           .message('Must be string or number')
           .anyOf(enforce.isString(), enforce.isNumber());
       }).toThrow('Must be string or number');
@@ -175,7 +173,7 @@ describe('enforce().message() - Eager API', () => {
 
     it('Should override message for allOf', () => {
       expect(() => {
-        enforceAny('hi')
+        enforce('hi')
           .message('Must satisfy all conditions')
           .allOf(enforce.isString(), enforce.isString().longerThan(5));
       }).toThrow('Must satisfy all conditions');
@@ -183,7 +181,7 @@ describe('enforce().message() - Eager API', () => {
 
     it('Should override message for oneOf', () => {
       expect(() => {
-        enforceAny(5)
+        enforce(5)
           .message('Must match exactly one condition')
           .oneOf(enforce.isNumber().greaterThan(10), enforce.isString());
       }).toThrow('Must match exactly one condition');
@@ -191,7 +189,7 @@ describe('enforce().message() - Eager API', () => {
 
     it('Should override message for noneOf', () => {
       expect(() => {
-        enforceAny('hello')
+        enforce('hello')
           .message('Must not be a string')
           .noneOf(enforce.isString());
       }).toThrow('Must not be a string');
@@ -201,25 +199,25 @@ describe('enforce().message() - Eager API', () => {
   describe('Message with type rules', () => {
     it('Should override message for isString', () => {
       expect(() => {
-        enforceAny(123).message('Value must be a string').isString();
+        enforce(123).message('Value must be a string').isString();
       }).toThrow('Value must be a string');
     });
 
     it('Should override message for isNumber', () => {
       expect(() => {
-        enforceAny('123').message('Value must be a number').isNumber();
+        enforce('123').message('Value must be a number').isNumber();
       }).toThrow('Value must be a number');
     });
 
     it('Should override message for isBoolean', () => {
       expect(() => {
-        enforceAny('true').message('Value must be a boolean').isBoolean();
+        enforce('true').message('Value must be a boolean').isBoolean();
       }).toThrow('Value must be a boolean');
     });
 
     it('Should override message for isArray', () => {
       expect(() => {
-        enforceAny({}).message('Value must be an array').isArray();
+        enforce({}).message('Value must be an array').isArray();
       }).toThrow('Value must be an array');
     });
   });

@@ -136,7 +136,8 @@ export function dispatch<T extends keyof RuntimeEvents>(
     ? { type: T; payload?: void }
     : { type: T; payload: RuntimeEvents[T] },
 ) {
-  useX().stateRef.Bus.emit(event.type, event.payload as any);
+  const { type, payload } = event as { type: T; payload: RuntimeEvents[T] };
+  useX().stateRef.Bus.emit(type, payload);
 }
 
 /**

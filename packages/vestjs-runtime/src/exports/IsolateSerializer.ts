@@ -49,7 +49,7 @@ export class IsolateSerializer {
     }
 
     const minified = minifyObject(isolate, (value: any, key: string) => {
-      if (ExcludedFromDump.has(key as any)) {
+      if (ExcludedFromDump.has(key)) {
         return undefined;
       }
 

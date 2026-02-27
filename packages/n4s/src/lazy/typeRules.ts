@@ -24,7 +24,7 @@ import * as stringRules from '../rules/stringRules';
 
 export const typeRules = {
   isArray: <T = any>(): ArrayRuleInstance<T> =>
-    addToChain<ArrayRuleInstance<T>>(arrayRules as any, isArray),
+    addToChain<ArrayRuleInstance<T>>(arrayRules, isArray),
   isBoolean: (): BooleanRuleInstance => addToChain(booleanRules, isBoolean),
   isNull: (): NullRuleInstance => addToChain({}, isNull),
   isNullish: (): NullishRuleInstance => addToChain({}, isNullish),

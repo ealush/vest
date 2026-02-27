@@ -2,6 +2,18 @@ import { describe, it, expect } from 'vitest';
 
 import { enforce, compose } from '../n4s';
 
+declare global {
+  namespace n4s {
+    interface EnforceMatchers {
+      isPositive: (value: number) => boolean;
+      isBetween: (value: number, min: number, max: number) => boolean;
+      isEven: (value: number) => boolean;
+      isPositiveNumber: (value: number) => boolean;
+      isBetweenRange: (value: number, min: number, max: number) => boolean;
+    }
+  }
+}
+
 describe('Documentation Examples', () => {
   describe('compose examples', () => {
     it('should validate username with composed rule', () => {
@@ -91,15 +103,15 @@ describe('Documentation Examples', () => {
 
       // Eager API
       expect(() => {
-        (enforce(5) as any).isPositive();
+        enforce(5).isPositive();
       }).not.toThrow();
 
       expect(() => {
-        (enforce(-5) as any).isPositive();
+        enforce(-5).isPositive();
       }).toThrow();
 
       // Lazy API
-      const rule = (enforce as any).isPositive();
+      const rule = enforce.isPositive();
       expect(rule.test(5)).toBe(true);
       expect(rule.test(-3)).toBe(false);
     });
@@ -322,15 +334,15 @@ describe('Documentation Examples', () => {
 
       // Eager API
       expect(() => {
-        (enforce(10) as any).isEven();
+        enforce(10).isEven();
       }).not.toThrow();
 
       expect(() => {
-        (enforce(11) as any).isEven();
+        enforce(11).isEven();
       }).toThrow();
 
       // Lazy API
-      const evenRule = (enforce as any).isEven();
+      const evenRule = enforce.isEven();
       expect(evenRule.test(10)).toBe(true);
       expect(evenRule.test(11)).toBe(false);
     });
@@ -343,11 +355,8 @@ describe('Documentation Examples', () => {
       });
 
       const schema = enforce.shape({
-        age: (enforce as any)
-          .isNumber()
-          .isPositiveNumber()
-          .isBetweenRange(18, 100),
-        score: (enforce as any).isNumber().isEven(),
+        age: enforce.isNumber().isPositiveNumber().isBetweenRange(18, 100),
+        score: enforce.isNumber().isEven(),
       });
 
       expect(schema.test({ age: 25, score: 100 })).toBe(true);

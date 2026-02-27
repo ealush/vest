@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { enforce } from '../n4s';
 
@@ -12,6 +13,27 @@ declare global {
       };
     }
   }
+}
+
+/**
+ * Helper type that combines both branches of StandardSchemaV1.Result
+ * into a single type where both `value` and `issues` are optional.
+ * This allows direct property access in test assertions without
+ * requiring type narrowing or `as any` casts.
+ */
+type ValidateResult<T = unknown> = {
+  readonly value?: T;
+  readonly issues?: ReadonlyArray<StandardSchemaV1.Issue>;
+};
+
+/**
+ * Casts a StandardSchemaV1.Result (or its Promise-union variant) to
+ * a ValidateResult so both `.value` and `.issues` are accessible.
+ */
+function asResult<T>(
+  result: StandardSchemaV1.Result<T> | Promise<StandardSchemaV1.Result<T>>,
+): ValidateResult<T> {
+  return result as ValidateResult<T>;
 }
 
 describe('n4s StandardSchema Support', () => {
@@ -39,38 +61,38 @@ describe('n4s StandardSchema Support', () => {
     it('Should implement validate method matching StandardSchema spec - success case', () => {
       const validator = enforce.isString();
 
-      const validResult = validator['~standard'].validate('hello');
+      const validResult = asResult(validator['~standard'].validate('hello'));
       expect(validResult).toHaveProperty('value');
-      expect((validResult as any).value).toBe('hello');
-      expect((validResult as any).issues).toBeUndefined();
+      expect(validResult.value).toBe('hello');
+      expect(validResult.issues).toBeUndefined();
     });
 
     it('Should implement validate method matching StandardSchema spec - failure case', () => {
       const validator = enforce.isString();
 
-      const invalidResult = validator['~standard'].validate(123);
+      const invalidResult = asResult(validator['~standard'].validate(123));
       expect(invalidResult).toHaveProperty('issues');
       expect(invalidResult).not.toHaveProperty('value');
-      expect(Array.isArray((invalidResult as any).issues)).toBe(true);
-      expect((invalidResult as any).issues?.length).toBeGreaterThan(0);
+      expect(Array.isArray(invalidResult.issues)).toBe(true);
+      expect(invalidResult.issues?.length).toBeGreaterThan(0);
     });
 
     it('Should include message in issues array', () => {
       const validator = enforce.isString();
 
-      const invalidResult = validator['~standard'].validate(123);
-      expect((invalidResult as any).issues).toBeDefined();
-      expect((invalidResult as any).issues?.[0]).toHaveProperty('message');
-      expect(typeof (invalidResult as any).issues?.[0].message).toBe('string');
+      const invalidResult = asResult(validator['~standard'].validate(123));
+      expect(invalidResult.issues).toBeDefined();
+      expect(invalidResult.issues?.[0]).toHaveProperty('message');
+      expect(typeof invalidResult.issues?.[0].message).toBe('string');
     });
 
     it('Should include path in issues array', () => {
       const validator = enforce.isString();
 
-      const invalidResult = validator['~standard'].validate(123);
-      expect((invalidResult as any).issues).toBeDefined();
-      expect((invalidResult as any).issues?.[0]).toHaveProperty('path');
-      expect(Array.isArray((invalidResult as any).issues?.[0].path)).toBe(true);
+      const invalidResult = asResult(validator['~standard'].validate(123));
+      expect(invalidResult.issues).toBeDefined();
+      expect(invalidResult.issues?.[0]).toHaveProperty('path');
+      expect(Array.isArray(invalidResult.issues?.[0].path)).toBe(true);
     });
   });
 
@@ -98,17 +120,17 @@ describe('n4s StandardSchema Support', () => {
 
     it('should return success result for valid input', () => {
       const validator = enforce.equals(5);
-      const res = validator.validate(5);
-      expect((res as any).value).toBe(5);
-      expect((res as any).issues).toBeUndefined();
+      const res = asResult(validator.validate(5));
+      expect(res.value).toBe(5);
+      expect(res.issues).toBeUndefined();
     });
 
     it('should return failure result for invalid input', () => {
       const validator = enforce.equals(5);
-      const res = validator.validate(10);
-      expect((res as any).value).toBeUndefined();
-      expect((res as any).issues).toBeDefined();
-      expect((res as any).issues?.length).toBeGreaterThan(0);
+      const res = asResult(validator.validate(10));
+      expect(res.value).toBeUndefined();
+      expect(res.issues).toBeDefined();
+      expect(res.issues?.length).toBeGreaterThan(0);
     });
   });
 
@@ -130,9 +152,11 @@ describe('n4s StandardSchema Support', () => {
         age: enforce.isNumber(),
       });
 
-      const res = shape['~standard'].validate({ name: 'Bob', age: 30 });
-      expect((res as any).value).toEqual({ name: 'Bob', age: 30 });
-      expect((res as any).issues).toBeUndefined();
+      const res = asResult(
+        shape['~standard'].validate({ name: 'Bob', age: 30 }),
+      );
+      expect(res.value).toEqual({ name: 'Bob', age: 30 });
+      expect(res.issues).toBeUndefined();
     });
 
     it('enforce.shape should fail with invalid data', () => {
@@ -141,10 +165,12 @@ describe('n4s StandardSchema Support', () => {
         age: enforce.isNumber(),
       });
 
-      const res = shape['~standard'].validate({ name: 'Bob', age: 'thirty' });
-      expect((res as any).value).toBeUndefined();
-      expect((res as any).issues).toBeDefined();
-      expect((res as any).issues?.length).toBeGreaterThan(0);
+      const res = asResult(
+        shape['~standard'].validate({ name: 'Bob', age: 'thirty' }),
+      );
+      expect(res.value).toBeUndefined();
+      expect(res.issues).toBeDefined();
+      expect(res.issues?.length).toBeGreaterThan(0);
     });
 
     it('enforce.loose should have ~standard property', () => {
@@ -179,17 +205,17 @@ describe('n4s StandardSchema Support', () => {
     it('enforce.anyOf should validate correctly', () => {
       const validator = enforce.anyOf(enforce.isNumber(), enforce.isString());
 
-      const stringResult = validator['~standard'].validate('hello');
-      expect((stringResult as any).value).toBe('hello');
-      expect((stringResult as any).issues).toBeUndefined();
+      const stringResult = asResult(validator['~standard'].validate('hello'));
+      expect(stringResult.value).toBe('hello');
+      expect(stringResult.issues).toBeUndefined();
 
-      const numberResult = validator['~standard'].validate(42);
-      expect((numberResult as any).value).toBe(42);
-      expect((numberResult as any).issues).toBeUndefined();
+      const numberResult = asResult(validator['~standard'].validate(42));
+      expect(numberResult.value).toBe(42);
+      expect(numberResult.issues).toBeUndefined();
 
-      const invalidResult = validator['~standard'].validate(true);
-      expect((invalidResult as any).value).toBeUndefined();
-      expect((invalidResult as any).issues).toBeDefined();
+      const invalidResult = asResult(validator['~standard'].validate(true));
+      expect(invalidResult.value).toBeUndefined();
+      expect(invalidResult.issues).toBeDefined();
     });
 
     it('enforce.allOf should have ~standard property', () => {
@@ -221,13 +247,13 @@ describe('n4s StandardSchema Support', () => {
     it('should validate chained rules correctly', () => {
       const validator = enforce.isNumber().greaterThan(0).lessThan(100);
 
-      const validResult = validator['~standard'].validate(50);
-      expect((validResult as any).value).toBe(50);
-      expect((validResult as any).issues).toBeUndefined();
+      const validResult = asResult(validator['~standard'].validate(50));
+      expect(validResult.value).toBe(50);
+      expect(validResult.issues).toBeUndefined();
 
-      const invalidResult = validator['~standard'].validate(150);
-      expect((invalidResult as any).value).toBeUndefined();
-      expect((invalidResult as any).issues).toBeDefined();
+      const invalidResult = asResult(validator['~standard'].validate(150));
+      expect(invalidResult.value).toBeUndefined();
+      expect(invalidResult.issues).toBeDefined();
     });
   });
 
@@ -242,13 +268,17 @@ describe('n4s StandardSchema Support', () => {
     it('enforce.isArrayOf should validate correctly', () => {
       const validator = enforce.isArrayOf(enforce.isString());
 
-      const validResult = validator['~standard'].validate(['a', 'b', 'c']);
-      expect((validResult as any).value).toEqual(['a', 'b', 'c']);
-      expect((validResult as any).issues).toBeUndefined();
+      const validResult = asResult(
+        validator['~standard'].validate(['a', 'b', 'c']),
+      );
+      expect(validResult.value).toEqual(['a', 'b', 'c']);
+      expect(validResult.issues).toBeUndefined();
 
-      const invalidResult = validator['~standard'].validate([1, 2, 3]);
-      expect((invalidResult as any).value).toBeUndefined();
-      expect((invalidResult as any).issues).toBeDefined();
+      const invalidResult = asResult(
+        validator['~standard'].validate([1, 2, 3]),
+      );
+      expect(invalidResult.value).toBeUndefined();
+      expect(invalidResult.issues).toBeDefined();
     });
   });
 });

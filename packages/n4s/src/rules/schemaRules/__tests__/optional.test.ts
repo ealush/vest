@@ -2,8 +2,6 @@ import { describe, it, expect } from 'vitest';
 
 import { enforce } from '../../../n4s';
 
-const enforceAny = enforce as any;
-
 // schema combinators are accessed via enforce
 
 describe('optional', () => {
@@ -42,25 +40,25 @@ describe('optional', () => {
 describe('optional - eager API', () => {
   it('should pass for null (eager)', () => {
     expect(() => {
-      enforceAny(null).optional(enforce.isNumber());
+      enforce(null).optional(enforce.isNumber());
     }).not.toThrow();
   });
 
   it('should pass for undefined (eager)', () => {
     expect(() => {
-      enforceAny(undefined).optional(enforce.isNumber());
+      enforce(undefined).optional(enforce.isNumber());
     }).not.toThrow();
   });
 
   it('should pass for a valid value (eager)', () => {
     expect(() => {
-      enforceAny(123).optional(enforce.isNumber());
+      enforce(123).optional(enforce.isNumber());
     }).not.toThrow();
   });
 
   it('should fail for an invalid value (eager)', () => {
     expect(() => {
-      enforceAny('not a number').optional(enforce.isNumber());
+      enforce('not a number').optional(enforce.isNumber());
     }).toThrow();
   });
 });

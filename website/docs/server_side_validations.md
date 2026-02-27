@@ -53,7 +53,7 @@ app.post('/user', (req, res) => {
   // runStatic guarantees a fresh, stateless result every time
   const result = suite.runStatic(req.body);
 
-  if ((result as any).then) {
+  if ('then' in result) {
     // If async tests exist, wait for completion
     return result.then(finalResult => {
       if (finalResult.hasErrors()) {

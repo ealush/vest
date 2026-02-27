@@ -2,6 +2,15 @@ import { bench, describe } from 'vitest';
 
 import { enforce } from '../src/vest';
 
+declare global {
+  namespace n4s {
+    interface EnforceMatchers {
+      isEven: (value: number) => boolean;
+      isCapitalized: (value: string) => boolean;
+    }
+  }
+}
+
 enforce.extend({
   isEven: value => typeof value === 'number' && value % 2 === 0,
   isCapitalized: value => typeof value === 'string' && /^[A-Z]/.test(value),
@@ -14,7 +23,6 @@ function exerciseEnforceChains(values: Array<number | string>): void {
       enforce(value).isNumber().greaterThanOrEquals(0).lessThan(1_000_000);
       enforce(value).isEven();
     } else {
-      // @ts-expect-error - custom rule
       enforce(value).isString().isCapitalized().shorterThanOrEquals(20);
     }
   }

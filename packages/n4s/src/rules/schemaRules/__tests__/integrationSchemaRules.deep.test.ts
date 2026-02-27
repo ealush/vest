@@ -28,7 +28,7 @@ describe('integration: extensive schema + combinators', () => {
 
     const contactSchema = enforce.shape({
       metaEnvKey: enforce.isKeyOf(Envs),
-      metaRoleValue: enforce.isValueOf(Roles as any),
+      metaRoleValue: enforce.isValueOf(Roles as Record<string, string>),
       method: enforce.oneOf(
         enforce.isString().equals('email'),
         enforce.isString().equals('phone'),
@@ -94,14 +94,14 @@ describe('integration: extensive schema + combinators', () => {
         ],
         contacts: [
           {
-            metaEnvKey: 'dev' as any,
-            metaRoleValue: 'user' as any,
+            metaEnvKey: 'dev',
+            metaRoleValue: 'user',
             method: 'email',
             value: 'jane@example.com',
           },
           {
-            metaEnvKey: 'prod' as any,
-            metaRoleValue: 'admin' as any,
+            metaEnvKey: 'prod',
+            metaRoleValue: 'admin',
             method: 'phone',
             value: 1234567890,
           },
@@ -124,8 +124,8 @@ describe('integration: extensive schema + combinators', () => {
         addresses: [{ city: 'b', country: 'US', street: 'a', zip: '12345' }],
         contacts: [
           {
-            metaEnvKey: 'dev' as any,
-            metaRoleValue: 'user' as any,
+            metaEnvKey: 'dev',
+            metaRoleValue: 'user',
             method: 'email',
             value: 'x',
           },
@@ -133,7 +133,7 @@ describe('integration: extensive schema + combinators', () => {
         favoriteNumbers: [1],
         id: 1,
         username: 'root',
-      } as any).pass,
+      }).pass,
     ).toBe(false);
 
     expect(
@@ -141,8 +141,8 @@ describe('integration: extensive schema + combinators', () => {
         addresses: [{ city: 'b', country: 'US', street: 'a', zip: '12345' }],
         contacts: [
           {
-            metaEnvKey: 'dev' as any,
-            metaRoleValue: 'user' as any,
+            metaEnvKey: 'dev',
+            metaRoleValue: 'user',
             method: 'sms',
             value: '1234567890',
           },
@@ -150,7 +150,7 @@ describe('integration: extensive schema + combinators', () => {
         favoriteNumbers: [1],
         id: 2,
         username: 'ok_user',
-      } as any).pass,
+      }).pass,
     ).toBe(false);
 
     expect(
@@ -159,15 +159,16 @@ describe('integration: extensive schema + combinators', () => {
           {
             city: 'b',
             country: 'US',
+            // @ts-expect-error - extra field not in strict shape
             extra: true,
             street: 'a',
             zip: '12345',
-          } as any,
+          },
         ],
         contacts: [
           {
-            metaEnvKey: 'dev' as any,
-            metaRoleValue: 'user' as any,
+            metaEnvKey: 'dev',
+            metaRoleValue: 'user',
             method: 'email',
             value: 'x@y',
           },
@@ -175,7 +176,7 @@ describe('integration: extensive schema + combinators', () => {
         favoriteNumbers: [1],
         id: 3,
         username: 'user3',
-      } as any).pass,
+      }).pass,
     ).toBe(false);
 
     expect(
@@ -183,8 +184,8 @@ describe('integration: extensive schema + combinators', () => {
         addresses: [{ city: 'b', country: 'US', street: 'a', zip: '12345' }],
         contacts: [
           {
-            metaEnvKey: 'dev' as any,
-            metaRoleValue: 'user' as any,
+            metaEnvKey: 'dev',
+            metaRoleValue: 'user',
             method: 'email',
             value: 'x@y',
           },
@@ -192,7 +193,7 @@ describe('integration: extensive schema + combinators', () => {
         favoriteNumbers: [1, 'two'],
         id: 4,
         username: 'user4',
-      } as any).pass,
+      }).pass,
     ).toBe(false);
   });
 
@@ -273,7 +274,7 @@ describe('integration: extensive schema + combinators', () => {
         items: [{ price: 1, qty: 1, sku: 'DDD', tags: [''] }],
         shipping: { address: { line1: 'X', zip: 'ABCDE' } },
         totals: { subtotal: 1, tax: 0 },
-      } as any).pass,
+      }).pass,
     ).toBe(false);
   });
 });

@@ -178,14 +178,14 @@ describe('enforce.extend', () => {
   describe('Edge cases and error handling', () => {
     it('Should handle custom rule that returns undefined', () => {
       enforce.extend({
-        returnsUndefined: () => undefined as any,
+        returnsUndefined: () => undefined,
       });
       expect(() => enforce('test').returnsUndefined()).toThrow();
     });
 
     it('Should handle custom rule that returns null', () => {
       enforce.extend({
-        returnsNull: () => null as any,
+        returnsNull: () => null,
       });
       expect(() => enforce('test').returnsNull()).toThrow();
     });
@@ -632,7 +632,7 @@ describe('enforce.extend', () => {
     it('Should handle custom rules that might be used async (returning promises should fail sync)', () => {
       enforce.extend({
         // This simulates someone accidentally returning a promise
-        asyncRule: () => Promise.resolve(true) as any,
+        asyncRule: () => Promise.resolve(true),
       });
 
       // In n4spath, invalid return values should throw
@@ -649,7 +649,7 @@ describe('enforce.extend', () => {
         temporaryRule: () => true,
       });
 
-      expect((enforce as any).temporaryRule).toBeDefined();
+      expect(enforce.temporaryRule).toBeDefined();
     });
   });
 
@@ -934,9 +934,9 @@ describe('enforce.extend', () => {
           throwsError: () => {
             throw new Error('Custom validation error');
           },
-          returnsUndefined: () => undefined as any,
-          returnsNull: () => null as any,
-          returnsInvalidObject: () => ({ invalid: true }) as any,
+          returnsUndefined: () => undefined,
+          returnsNull: () => null,
+          returnsInvalidObject: () => ({ invalid: true }),
         });
       });
 

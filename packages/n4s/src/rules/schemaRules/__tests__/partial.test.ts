@@ -2,30 +2,13 @@ import { describe, it, expect } from 'vitest';
 
 import { enforce } from '../../../n4s';
 import { RuleInstance } from '../../../utils/RuleInstance';
+import { RuleRunReturn } from '../../../utils/RuleRunReturn';
 
-const longerThan = (n: number): RuleInstance<string> =>
-  ({
-    run: (v: any) => ({ pass: typeof v === 'string' && v.length > n, type: v }),
-    test: (v: any) => typeof v === 'string' && v.length > n,
-    validate: (v: any) => {
-      const pass = typeof v === 'string' && v.length > n;
-      return pass
-        ? { value: v }
-        : { issues: [{ message: 'Validation failed', path: [] }] };
-    },
-    '~standard': {
-      version: 1 as const,
-      vendor: 'n4s',
-      validate: (v: any) => {
-        const pass = typeof v === 'string' && v.length > n;
-        return pass
-          ? { value: v }
-          : { issues: [{ message: 'Validation failed', path: [] }] };
-      },
-      types: { input: undefined, output: undefined as any },
-    },
-    infer: {} as string,
-  }) as any;
+const longerThan = (n: number): RuleInstance<string, [string]> =>
+  RuleInstance.create<RuleInstance<string, [string]>, string, [string]>(
+    (v: string) =>
+      RuleRunReturn.create(typeof v === 'string' && v.length > n, v),
+  );
 
 const runPartialRule = <TRule extends { run: (..._args: any[]) => any }>(
   rule: TRule,

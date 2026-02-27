@@ -52,7 +52,7 @@ const adaptedSchemaRules = adaptDynamicRules<
 const schemaRulesWithArrayChaining = {
   ...adaptedSchemaRules,
   isArrayOf: <T>(...rules: any[]): ArrayRuleInstance<T> =>
-    addToChain<ArrayRuleInstance<T>>(arrayRules as any, (value: any) => {
+    addToChain<ArrayRuleInstance<T>>(arrayRules, (value: any) => {
       const result = ctx.run({ value }, () =>
         schemaRules.isArrayOf(value, ...rules),
       );

@@ -21,8 +21,11 @@ describe('toRegExp', () => {
   });
 
   it('returns null for invalid inputs', () => {
-    expect(toRegExp(123 as any)).toBe(null);
-    expect(toRegExp({} as any)).toBe(null);
-    expect(toRegExp(null as any)).toBe(null);
+    // @ts-expect-error - testing invalid input type
+    expect(toRegExp(123)).toBe(null);
+    // @ts-expect-error - testing invalid input type
+    expect(toRegExp({})).toBe(null);
+    // @ts-expect-error - testing invalid input type
+    expect(toRegExp(null)).toBe(null);
   });
 });

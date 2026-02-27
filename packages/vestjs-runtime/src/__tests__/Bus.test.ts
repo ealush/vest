@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useBus, useEmit, usePrepareEmitter } from '../Bus';
-import { Run, createRef } from '../VestRuntime';
+import { Run, createRef, StateRefType } from '../VestRuntime';
 
 describe('Bus', () => {
-  let ref: any;
+  let ref: StateRefType;
 
   beforeEach(() => {
-    ref = createRef(vi.fn(), {} as any);
+    ref = createRef(vi.fn(), {});
   });
 
   const withRun = (fn: () => void) => {
@@ -28,7 +28,7 @@ describe('Bus', () => {
 
       withRun(() => {
         const emit = useEmit();
-        emit('test' as any, 'payload');
+        emit('test', 'payload');
         expect(spy).toHaveBeenCalledWith('test', 'payload');
       });
     });
@@ -37,7 +37,8 @@ describe('Bus', () => {
       const spy = vi.spyOn(ref.Bus, 'emit');
 
       withRun(() => {
-        useEmit('immediate' as any, 123);
+        // @ts-expect-error - Testing with a non-RuntimeEvents event name
+        useEmit('immediate', 123);
         expect(spy).toHaveBeenCalledWith('immediate', 123);
       });
     });
@@ -48,7 +49,7 @@ describe('Bus', () => {
       const spy = vi.spyOn(ref.Bus, 'emit');
 
       withRun(() => {
-        const emitter = usePrepareEmitter<any>('prepared');
+        const emitter = usePrepareEmitter<Record<string, string>>('prepared');
         emitter('data');
         expect(spy).toHaveBeenCalledWith('prepared', 'data');
       });

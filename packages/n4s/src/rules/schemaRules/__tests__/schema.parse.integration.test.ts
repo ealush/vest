@@ -84,13 +84,11 @@ describe('schema parse integration', () => {
 
     expect(result.pass).toBe(false);
     expect(result.path).toEqual(['__proto__']);
-    expect(({} as any).polluted).toBeUndefined();
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined();
   });
 
   it('rejects dangerous schema keys', () => {
-    const schema = enforce.shape(
-      JSON.parse('{"__proto__":true}') as Record<string, unknown> as any,
-    );
+    const schema = enforce.shape(JSON.parse('{"__proto__":true}'));
 
     const result = schema.run({});
 

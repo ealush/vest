@@ -107,7 +107,7 @@ describe('Schema Runtime Validation', () => {
         name: 'John',
         age: 'not a number',
         email: 123,
-      } as any);
+      });
 
       expect(result.hasErrors('age')).toBe(true);
 
@@ -126,8 +126,9 @@ describe('Schema Runtime Validation', () => {
       );
 
       const result = suiteWithDefaultMessage.runStatic({
+        // @ts-expect-error - testing invalid input
         count: 'not a number',
-      } as any);
+      });
 
       // Schema validation should create a test failure
       expect(result.hasErrors('count')).toBe(true);
@@ -146,7 +147,7 @@ describe('Schema Runtime Validation', () => {
 
       const result = nestedSuite.runStatic({
         user: { name: 123, age: 'thirty' },
-      } as any);
+      });
 
       // Schema reports nested paths with full field specificity
       expect(result.hasErrors('user.name')).toBe(true);
@@ -163,7 +164,7 @@ describe('Schema Runtime Validation', () => {
 
       const testSuite = create(() => {}, schemaWithMessage);
 
-      const result = testSuite.run({ price: 'free' } as any);
+      const result = testSuite.run({ price: 'free' });
 
       expect(result.hasErrors('price')).toBe(true);
       expect(result.getErrors('price')).toContain('Price must be a number');
@@ -185,7 +186,7 @@ describe('Schema Runtime Validation', () => {
       const result = testSuite.focus({ only: 'quantity' }).run({
         price: 'invalid',
         quantity: 10,
-      } as any);
+      });
 
       expect(result.hasErrors('price')).toBe(false);
       expect(result.isValid()).toBe(true);
@@ -276,23 +277,27 @@ describe('Schema Runtime Validation', () => {
   describe('Parsed schema output', () => {
     it('should pass parsed schema output into the suite callback', () => {
       const schemaWithParsing = {
-        parse: (value: any) => ({ age: Number(value.age) }),
-        run: (value: any) => ({ pass: true, type: { age: Number(value.age) } }),
-      } as any;
+        parse: (value: Record<string, unknown>) => ({ age: Number(value.age) }),
+        run: (value: Record<string, unknown>) => ({
+          pass: true,
+          type: { age: Number(value.age) },
+        }),
+      };
 
       let receivedAge: unknown;
-      const parsedSuite = create((data: any) => {
+      const parsedSuite = create((data: Record<string, unknown>) => {
         receivedAge = data.age;
         test('age', () => {
           enforce(data.age).isNumber();
         });
       }, schemaWithParsing);
 
-      const result = parsedSuite.run({ age: '32' } as any);
+      const result = parsedSuite.run({ age: '32' });
 
       expect(receivedAge).toBe(32);
       expect(result.value).toEqual({ age: 32 });
-      expect((result.types as any)?.output).toEqual({ age: 32 });
+      // @ts-expect-error - types is defined at runtime when schema is used, but typed as undefined in SuiteResult return
+      expect(result.types?.output).toEqual({ age: 32 });
       expect(result.isValid()).toBe(true);
     });
   });

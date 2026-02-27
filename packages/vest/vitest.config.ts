@@ -7,9 +7,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default defineConfig({
-  benchmark: {
-    include: ['./bench/**/*.bench.ts'],
-  },
   resolve: {
     alias: {
       vest: resolve(__dirname, 'src/vest.ts'),
@@ -19,8 +16,11 @@ export default defineConfig({
   test: {
     globals: true,
     include: ['./**/__tests__/*.test.ts'],
+    benchmark: {
+      include: ['./bench/**/*.bench.ts'],
+    },
     setupFiles: [
       resolve(__dirname, '../../', 'vx/config/vitest/customMatchers.ts'),
     ],
   },
-} as any);
+});

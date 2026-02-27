@@ -78,15 +78,15 @@ function matcher(type: string): string {
 function report(
   context: Rule.RuleContext,
   node: Node,
-  id: { name: string; type?: string; loc?: unknown },
+  id: { name: string; type?: string; loc?: Rule.Node['loc'] },
 ): void {
   if (isAllowed(context, node, id, RULE_NAME)) {
     return;
   }
-  const loc = id && (id as any).loc ? getLoc(id as any) : {};
+  const loc = id && id.loc ? getLoc(id) : {};
   return context.report({
     node,
-    ...(loc as any),
+    ...loc,
     data: {
       identifier: id.name,
     },

@@ -169,7 +169,7 @@ function useRunSuiteCallback<
     // observes the same focus context.
     only(modifiers.only);
     skip(modifiers.skip);
-    (suiteCallback as any)(...args);
+    (suiteCallback as CB)(...args);
 
     IsolateReorderable(
       runSchemaValidation(schema, modifiers, schemaRunResult),

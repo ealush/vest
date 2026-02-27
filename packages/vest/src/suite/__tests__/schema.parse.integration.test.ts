@@ -115,7 +115,8 @@ describe('suite schema integration', () => {
 
     expect(callbackData).toEqual({ quantity: 10, label: 'item' });
     expect(result.value).toEqual({ quantity: 10, label: 'item' });
-    expect((result.types as any)?.output).toEqual({
+    // @ts-expect-error - types is defined at runtime when schema is used, but typed as undefined in SuiteResult return
+    expect(result.types?.output).toEqual({
       quantity: 10,
       label: 'item',
     });
@@ -153,7 +154,8 @@ describe('suite schema integration', () => {
       });
     }, schema);
 
-    const result = suite.run({ quantity: 'not-a-number' } as any);
+    // @ts-expect-error - testing invalid input
+    const result = suite.run({ quantity: 'not-a-number' });
 
     expect(callbackData).toEqual({ quantity: 'not-a-number' });
     expect(result.hasErrors('quantity')).toBe(true);
@@ -165,7 +167,8 @@ describe('suite schema integration', () => {
 
     const suite = create(() => {}, schema);
 
-    const result = suite.run({ name: 'safe' } as any);
+    // @ts-expect-error - testing invalid input
+    const result = suite.run({ name: 'safe' });
 
     expect(result.hasErrors()).toBe(true);
     expect(result.hasErrors('security')).toBe(true);

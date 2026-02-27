@@ -10,12 +10,10 @@ import { describe, it, expect, vi } from 'vitest';
 
 function mockRunTime(fn: () => void) {
   // We mock a minimal runtime context for the test
-  const ref = {
-    historyNode: null,
-    runtimeNode: null,
-    runtimeRoot: null,
-  };
-  return VestRuntime.Run(VestRuntime.createRef(ref as any, vi.fn()), fn);
+  return VestRuntime.Run(
+    VestRuntime.createRef(() => null, vi.fn()),
+    fn,
+  );
 }
 
 describe('Isolate Status Propagation (HAS_PENDING)', () => {

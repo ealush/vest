@@ -14,7 +14,7 @@ function isDeepCopyOf(
   const queue = [[source, clone]];
 
   outer: while (queue.length) {
-    const [source, clone] = (queue as any[]).shift();
+    const [source, clone] = queue.shift()!;
 
     if (!source || typeof source !== 'object') {
       if (!isFunction(clone)) {

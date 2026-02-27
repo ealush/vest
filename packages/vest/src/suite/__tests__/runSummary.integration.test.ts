@@ -39,8 +39,9 @@ describe('suite result run summary metadata', () => {
     const schema = enforce.loose({ amount: enforce.isNumber() });
 
     const payload = { amount: '12' };
-    const suite = create(() => {}, schema as any);
+    const suite = create(() => {}, schema);
 
+    // @ts-expect-error - testing schema validation failure with intentionally mismatched data
     const result = suite.run(payload);
 
     expect(result.run.data).toBe(payload);

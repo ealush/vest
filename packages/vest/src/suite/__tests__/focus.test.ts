@@ -507,7 +507,7 @@ describe('suite.focus: onlyGroup', () => {
       const res = suite.focus({ onlyGroup: 'groupA' }).run();
 
       expect(res.groups.groupA.field_1.testCount).toBe(1);
-      expect((res.groups.groupB as any)?.field_2?.testCount ?? 0).toBe(0);
+      expect(res.groups['groupB']?.field_2?.testCount ?? 0).toBe(0);
       expect(res.tests.field_3?.testCount ?? 0).toBe(0); // Top level test must skip
 
       expect(cb1).toHaveBeenCalledTimes(1);
@@ -532,7 +532,7 @@ describe('suite.focus: onlyGroup', () => {
 
       expect(res.groups.groupA.field_1.testCount).toBe(1);
       expect(res.groups.groupC.field_3.testCount).toBe(1);
-      expect((res.groups.groupB as any)?.field_2?.testCount ?? 0).toBe(0);
+      expect(res.groups['groupB']?.field_2?.testCount ?? 0).toBe(0);
 
       expect(cb1).toHaveBeenCalledTimes(1);
       expect(cb2).not.toHaveBeenCalled();
@@ -643,7 +643,7 @@ describe('Four-Way Scope Precedence: only, skip, onlyGroup, skipGroup', () => {
     expect(cbB1).toHaveBeenCalledTimes(1);
 
     // field_2 skips (onlyGroup matches, but skip > only)
-    expect((res.groups.groupB as any)?.field_2?.testCount ?? 0).toBe(0);
+    expect(res.groups['groupB']?.field_2?.testCount ?? 0).toBe(0);
     expect(cbB2).not.toHaveBeenCalled();
   });
 });

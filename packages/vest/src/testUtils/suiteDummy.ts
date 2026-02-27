@@ -34,7 +34,7 @@ export function passingWithUntestedOptional(
   required: OneOrMoreOf<string> = 'field_1',
 ) {
   return create(() => {
-    optional(optionals as any);
+    optional(optionals);
     skip(optionals as TFieldName);
 
     asArray(optionals).forEach(fieldName => {
@@ -52,7 +52,7 @@ export function passingWithOptional(
   required: OneOrMoreOf<string> = 'field_1',
 ) {
   return create(() => {
-    optional(optionals as any);
+    optional(optionals);
 
     asArray(optionals).forEach(fieldName => {
       dummyTest.passing(fieldName);
@@ -69,7 +69,7 @@ export function failingOptional(
   required: OneOrMoreOf<string> = 'field_1',
 ) {
   return create(() => {
-    optional(optionals as any);
+    optional(optionals);
 
     asArray(optionals).forEach(fieldName => {
       dummyTest.failing(fieldName);

@@ -34,29 +34,31 @@ vi.mock('../Isolate/IsolateMutator', () => ({
 }));
 
 vi.mock('vest-utils', async importOriginal => {
-  const actual = await importOriginal();
+  const actual = (await importOriginal()) as Record<string, unknown>;
   return {
-    ...(actual as any),
+    ...actual,
     deferThrow: vi.fn(),
     text: vi.fn(str => str),
     invariant: vi.fn(),
   };
 });
 
+const mockGlobal = global as Record<string, unknown>;
+
 vi.mock('context', () => ({
   createCascade: () => ({
-    run: (stateRef: any, fn: () => void) => {
+    run: (stateRef: Record<string, unknown>, fn: () => void) => {
       // Create a mutable object
       const ctx = { stateRef, runtimeNode: null };
       // Make it accessible to useX via closure?
       // This closure is per createCascade call.
       // VestRuntime calls createCascade once at top level.
       // So this works perfectly.
-      (global as any).__mockCtx = ctx;
+      mockGlobal.__mockCtx = ctx;
       return fn();
     },
-    useX: () => (global as any).__mockCtx,
-    use: () => (global as any).__mockCtx,
+    useX: () => mockGlobal.__mockCtx,
+    use: () => mockGlobal.__mockCtx,
   }),
 }));
 
@@ -68,8 +70,11 @@ describe('VestRuntime', () => {
     vi.resetAllMocks();
   });
 
-  const withRun = (fn: () => void, runtimeNode: any = null) => {
-    const ref = createRef(reconciler, {} as any);
+  const withRun = (
+    fn: () => void,
+    runtimeNode: Record<string, unknown> | null = null,
+  ) => {
+    const ref = createRef(reconciler, {});
     // Determine how to inject runtimeNode?
     // ref is internal state.
     // 'runtimeNode' property in context.
@@ -122,7 +127,8 @@ describe('VestRuntime', () => {
   describe('useSetIsolateKey', () => {
     it('Should return early if key is null', () => {
       withRun(() => {
-        useSetIsolateKey(null, {} as any);
+        // @ts-expect-error - Passing empty object as mock TIsolate
+        useSetIsolateKey(null, {});
         expect(true).toBe(true);
       });
     });
@@ -134,7 +140,8 @@ describe('VestRuntime', () => {
       vi.mocked(IsolateInspector.getChildByKey).mockReturnValue(null);
 
       withRun(() => {
-        useSetIsolateKey('key1', node as any);
+        // @ts-expect-error - Passing partial mock as TIsolate
+        useSetIsolateKey('key1', node);
         expect(IsolateMutator.addChildKey).toHaveBeenCalledWith(
           parent,
           'key1',
@@ -147,10 +154,12 @@ describe('VestRuntime', () => {
       const node = { $type: 'child' };
       const parent = { $type: 'parent' };
 
-      vi.mocked(IsolateInspector.getChildByKey).mockReturnValue({} as any);
+      // @ts-expect-error - Returning partial mock as TIsolate
+      vi.mocked(IsolateInspector.getChildByKey).mockReturnValue({});
 
       withRun(() => {
-        useSetIsolateKey('key1', node as any);
+        // @ts-expect-error - Passing partial mock as TIsolate
+        useSetIsolateKey('key1', node);
         expect(deferThrow).toHaveBeenCalled();
         expect(text).toHaveBeenCalledWith(
           ErrorStrings.ENCOUNTERED_THE_SAME_KEY_TWICE,
@@ -166,7 +175,8 @@ describe('VestRuntime', () => {
       const parent = { $type: 'Parent' };
       const child = { $type: 'Child' };
       withRun(() => {
-        VestRuntime.useSetNextIsolateChild(child as any);
+        // @ts-expect-error - Passing partial mock as TIsolate
+        VestRuntime.useSetNextIsolateChild(child);
         expect(IsolateMutator.addChild).toHaveBeenCalledWith(parent, child);
         expect(IsolateMutator.setParent).toHaveBeenCalledWith(child, parent);
       }, parent);
@@ -179,8 +189,11 @@ describe('VestRuntime', () => {
         data: { focusMode: FocusModes.ONLY },
       };
       withRun(() => {
-        VestRuntime.useSetNextIsolateChild(child as any);
-        const ctx = (global as any).__mockCtx;
+        // @ts-expect-error - Passing partial mock as TIsolate
+        VestRuntime.useSetNextIsolateChild(child);
+        const ctx = mockGlobal.__mockCtx as {
+          stateRef: { implicitOnlyNodes: Set<unknown> };
+        };
         expect(ctx.stateRef.implicitOnlyNodes.has(parent)).toBe(true);
       }, parent);
     });
@@ -193,7 +206,9 @@ describe('VestRuntime', () => {
       const child = { $type: 'Child', parent };
 
       withRun(() => {
-        const ctx = (global as any).__mockCtx;
+        const ctx = mockGlobal.__mockCtx as {
+          stateRef: { implicitOnlyNodes: Set<unknown> };
+        };
         ctx.stateRef.implicitOnlyNodes.add(grandparent);
         // The current node is `child`
         expect(VestRuntime.useIsFocusedOut()).toBe(true);

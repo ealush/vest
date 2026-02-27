@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { VestRuntime } from 'vestjs-runtime';
+import { VestRuntime, IReconciler } from 'vestjs-runtime';
 
 import { TFieldName } from '../../../../suiteResult/SuiteResultTypes';
 import { mockIsolateTest } from '../../../../testUtils/vestMocks';
@@ -15,7 +15,11 @@ describe('VestTest', () => {
     testObject = mockIsolateTest({
       fieldName: 'field_name' as TFieldName,
     });
-    stateRef = VestRuntime.createRef({} as any, ((v: any) => v) as any);
+    const noopReconciler: IReconciler = (current, _history) => current;
+    stateRef = VestRuntime.createRef(
+      noopReconciler,
+      (v: Record<string, any>) => v,
+    );
   });
   describe('warns', () => {
     it('Should return true when test severity is WARNING', () => {

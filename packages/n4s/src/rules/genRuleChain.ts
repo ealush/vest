@@ -13,7 +13,7 @@ export { registerLazyRule };
  * Adds a predicate to a new rule chain and returns the chained rule instance.
  */
 export function addToChain<T extends RuleInstance<any, any>>(
-  rules: RuleFunctions<T>,
+  rules: RuleFunctions<T> | Record<string, (...args: any[]) => any>,
   predicate: Predicate,
 ): T {
   const { add, proxy } = createChainBuilder<T>(rules);

@@ -42,7 +42,7 @@
   background: linear-gradient(
     145deg,
     rgba(255, 255, 255, 0.96),
-    rgba(245, 247, 253, 0.9)
+    rgba(244, 242, 252, 0.92)
   );
   border: 1px solid rgba(15, 23, 42, 0.06);
   border-radius: 16px;
@@ -91,10 +91,11 @@
 
 .featureCard:hover {
   transform: translateY(-1px);
-  border-color: rgba(95, 106, 252, 0.2);
+  border-color: rgba(124, 58, 237, 0.3);
   box-shadow:
     0 10px 18px rgba(0, 0, 0, 0.06),
-    0 8px 24px rgba(95, 106, 252, 0.08);
+    0 8px 24px rgba(95, 106, 252, 0.1),
+    0 0 26px rgba(244, 114, 182, 0.12);
 }
 
 .featureCard:hover::before {
@@ -116,10 +117,11 @@ html[data-theme='dark'] .featureCard {
 }
 
 html[data-theme='dark'] .featureCard:hover {
-  border-color: rgba(95, 106, 252, 0.32);
+  border-color: rgba(244, 114, 182, 0.42);
   box-shadow:
     0 14px 26px rgba(0, 0, 0, 0.34),
-    0 0 24px rgba(95, 106, 252, 0.12);
+    0 0 24px rgba(95, 106, 252, 0.16),
+    0 0 28px rgba(34, 211, 238, 0.12);
 }
 
 .featureHeader {
@@ -131,7 +133,11 @@ html[data-theme='dark'] .featureCard:hover {
 
 .emoji {
   font-size: 1.9rem;
-  background: rgba(99, 102, 241, 0.12);
+  background: linear-gradient(
+    145deg,
+    rgba(99, 102, 241, 0.16),
+    rgba(244, 114, 182, 0.16)
+  );
   width: 54px;
   height: 54px;
   border-radius: 14px;

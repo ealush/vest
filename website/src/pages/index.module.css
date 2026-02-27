@@ -4,21 +4,31 @@
   padding: 8rem 1.75rem 6rem;
   background:
     radial-gradient(
-      circle at 40% 35%,
-      rgba(120, 132, 255, 0.22),
-      transparent 55%
+      circle at 18% 8%,
+      rgba(244, 114, 182, 0.18),
+      transparent 42%
     ),
-    linear-gradient(180deg, #ffffff 0%, #f3f4f8 85%);
+    radial-gradient(
+      circle at 82% 16%,
+      rgba(34, 211, 238, 0.16),
+      transparent 44%
+    ),
+    linear-gradient(180deg, #fcfcff 0%, #f2f1fb 88%);
 }
 
 html[data-theme='dark'] .heroBanner {
   background:
     radial-gradient(
-      circle at 40% 35%,
-      rgba(120, 132, 255, 0.25),
-      transparent 55%
+      circle at 14% 6%,
+      rgba(244, 114, 182, 0.22),
+      transparent 40%
     ),
-    linear-gradient(180deg, #0c1020 0%, #0b0e1a 85%);
+    radial-gradient(
+      circle at 88% 10%,
+      rgba(34, 211, 238, 0.2),
+      transparent 44%
+    ),
+    linear-gradient(180deg, #0b0f21 0%, #100818 88%);
 }
 
 .heroGlow {
@@ -106,7 +116,7 @@ html[data-theme='dark'] .heroLogoText {
 }
 
 .heroHighlight {
-  background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+  background: linear-gradient(120deg, #22d3ee 0%, #6366f1 44%, #f472b6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -147,9 +157,11 @@ html[data-theme='dark'] .heroTagline {
 }
 
 .primaryCta {
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  background: linear-gradient(120deg, #5b21b6, #6366f1 45%, #f472b6 100%);
   color: #ffffff;
-  box-shadow: 0 12px 26px rgba(99, 102, 241, 0.25);
+  box-shadow:
+    0 12px 26px rgba(99, 102, 241, 0.25),
+    0 0 24px rgba(244, 114, 182, 0.24);
   border: none;
   position: relative;
   overflow: hidden;
@@ -171,7 +183,9 @@ html[data-theme='dark'] .heroTagline {
 
 .primaryCta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 36px rgba(99, 102, 241, 0.32);
+  box-shadow:
+    0 18px 36px rgba(99, 102, 241, 0.32),
+    0 0 30px rgba(244, 114, 182, 0.32);
 }
 
 .secondaryCta {
@@ -298,9 +312,13 @@ html[data-theme='dark'] .copyPill {
 }
 
 .heroPanel {
-  background: rgba(30, 41, 82, 0.52);
+  background: linear-gradient(
+    165deg,
+    rgba(30, 41, 82, 0.58),
+    rgba(76, 29, 149, 0.4)
+  );
   backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(167, 139, 250, 0.36);
   box-shadow:
     0 16px 32px rgba(0, 0, 0, 0.15),
     0 8px 16px rgba(95, 106, 252, 0.08);
@@ -357,7 +375,7 @@ html[data-theme='dark'] .copyPill {
   border-radius: 999px;
   background: rgba(15, 23, 42, 0.4);
   color: #e0e7ff;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(167, 139, 250, 0.36);
   font-weight: 600;
   letter-spacing: 0.03em;
 }

@@ -33,9 +33,9 @@ describe('schema driven suite types', () => {
 
     suite.run({ name: 'john', age: 42 });
 
-    expectTypeOf(suite.run({ name: 'jane', age: 30 }).run.data).toEqualTypeOf<
-      { name: string; age: number } | undefined
-    >();
+    expectTypeOf(
+      suite.run({ name: 'jane', age: 30 }).run.data,
+    ).toEqualTypeOf<unknown>();
 
     void (0 as unknown as AssertTrue<
       IsEqual<
@@ -144,9 +144,7 @@ describe('schema driven suite types', () => {
 
     suite.run(10, true);
 
-    expectTypeOf(suite.run(10, true).run.data).toEqualTypeOf<
-      number | undefined
-    >();
+    expectTypeOf(suite.run(10, true).run.data).toEqualTypeOf<unknown>();
 
     void (0 as unknown as AssertTrue<
       IsEqual<ReturnType<typeof suite.get>['types'], undefined>
@@ -166,9 +164,9 @@ describe('schema driven suite types', () => {
 
     suite.run({ name: 'john', age: 42 });
 
-    expectTypeOf(suite.run({ name: 'john', age: 42 }).run.data).toEqualTypeOf<
-      { name: string; age: number } | undefined
-    >();
+    expectTypeOf(
+      suite.run({ name: 'john', age: 42 }).run.data,
+    ).toEqualTypeOf<unknown>();
 
     expectTypeOf(suite.get().types).toBeUndefined();
 

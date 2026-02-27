@@ -22,7 +22,7 @@ const longerThan = (n: number): RuleInstance<string> =>
           ? { value: v }
           : { issues: [{ message: 'Validation failed', path: [] }] };
       },
-      types: { input: undefined as any, output: undefined as any },
+      types: { input: undefined, output: undefined as any },
     },
     infer: {} as string,
   }) as any;
@@ -36,41 +36,50 @@ const runPartialRule = <TRule extends { run: (..._args: any[]) => any }>(
   );
 
 describe('partial', () => {
-  const schema = {
-    name: enforce.isString(),
-    age: enforce.isNumber(),
-  };
-
   it('validates subset; empty object is allowed', () => {
-    const rule = enforce.partial(schema);
+    const rule = enforce.partial({
+      firstName: enforce.isString(),
+      lastName: enforce.isString(),
+    });
 
-    expect(rule.run({ name: 'John' }).pass).toBe(true);
-    expect(rule.run({ age: 30 }).pass).toBe(true);
-    expect(rule.run({ name: 'John', age: 30 }).pass).toBe(true);
+    expect(rule.run({ firstName: 'Rick' }).pass).toBe(true);
+    expect(rule.run({ lastName: 'Sanchez' }).pass).toBe(true);
+    expect(rule.run({ firstName: 'Rick', lastName: 'Sanchez' }).pass).toBe(
+      true,
+    );
     expect(rule.run({}).pass).toBe(true);
   });
 
   it('disallows extra properties', () => {
-    const rule = enforce.partial(schema);
+    const rule = enforce.partial({
+      firstName: enforce.isString(),
+      lastName: enforce.isString(),
+    });
     // Type test: runtime check for extra property
-    expect(runPartialRule(rule, { name: 'John', extra: true }).pass).toBe(
+    expect(runPartialRule(rule, { firstName: 'Rick', extra: true }).pass).toBe(
       false,
     );
   });
 
   it('fails when object has none of the original fields', () => {
-    const rule = enforce.partial(schema);
+    const rule = enforce.partial({
+      firstName: enforce.isString(),
+      lastName: enforce.isString(),
+    });
     // none of the keys match schema, should fail
     // Type test: runtime check for unrelated fields
     expect(runPartialRule(rule, { foo: 'bar' }).pass).toBe(false);
   });
 
   it('fails when provided field has wrong type', () => {
-    const rule = enforce.partial(schema);
+    const rule = enforce.partial({
+      firstName: enforce.isString(),
+      lastName: enforce.isString(),
+    });
     // Type test: runtime check for wrong type
-    expect(runPartialRule(rule, { name: 123 }).pass).toBe(false);
+    expect(runPartialRule(rule, { firstName: 123 }).pass).toBe(false);
     // Type test: runtime check for wrong type
-    expect(runPartialRule(rule, { age: '30' }).pass).toBe(false);
+    expect(runPartialRule(rule, { lastName: 42 }).pass).toBe(false);
   });
 
   it('works with custom rules', () => {
@@ -88,44 +97,60 @@ describe('partial', () => {
 });
 
 describe('partial - eager API', () => {
-  const schema = {
-    name: enforce.isString(),
-    age: enforce.isNumber(),
-  };
-
   it('should pass with subset of properties (eager)', () => {
     expect(() => {
-      enforce({ name: 'John' }).partial(schema);
+      enforce({ firstName: 'Rick' }).partial({
+        firstName: enforce.isString(),
+        lastName: enforce.isString(),
+      });
     }).not.toThrow();
 
     expect(() => {
-      enforce({ age: 30 }).partial(schema);
+      enforce({ lastName: 'Sanchez' }).partial({
+        firstName: enforce.isString(),
+        lastName: enforce.isString(),
+      });
     }).not.toThrow();
 
     expect(() => {
-      enforce({ name: 'John', age: 30 }).partial(schema);
+      enforce({ firstName: 'Rick', lastName: 'Sanchez' }).partial({
+        firstName: enforce.isString(),
+        lastName: enforce.isString(),
+      });
     }).not.toThrow();
   });
 
   it('should pass with empty object (eager)', () => {
     expect(() => {
-      enforce({}).partial(schema);
+      enforce({}).partial({
+        firstName: enforce.isString(),
+        lastName: enforce.isString(),
+      });
     }).not.toThrow();
   });
 
   it('should fail with extra properties (eager)', () => {
     expect(() => {
-      enforce({ name: 'John', extra: true }).partial(schema);
+      enforce({ firstName: 'Rick', extra: true }).partial({
+        firstName: enforce.isString(),
+        lastName: enforce.isString(),
+      });
     }).toThrow();
   });
 
   it('should fail when provided field has wrong type (eager)', () => {
     expect(() => {
-      enforce({ name: 123 }).partial(schema);
+      enforce({ firstName: 123 }).partial({
+        firstName: enforce.isString(),
+        lastName: enforce.isString(),
+      });
     }).toThrow();
 
     expect(() => {
-      enforce({ age: '30' }).partial(schema);
+      enforce({ lastName: 42 }).partial({
+        firstName: enforce.isString(),
+        lastName: enforce.isString(),
+      });
     }).toThrow();
   });
 });

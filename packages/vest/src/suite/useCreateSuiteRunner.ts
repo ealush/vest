@@ -24,11 +24,7 @@ import {
 } from '../suiteResult/SuiteResultTypes';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
-import {
-  SuiteModifiers,
-  SuiteCallbackWithSchema,
-  SuiteRunData,
-} from './SuiteTypes';
+import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
 
 type SchemaRunResult = {
   readonly message?: string;
@@ -60,10 +56,9 @@ export function useCreateSuiteRunner<
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
-  ): SuiteResult<F, G, S, SuiteRunData<S, T>> {
+  ): SuiteResult<F, G, S> {
     const runTime = new Date();
-    const { resolve, promise } =
-      withResolvers<SuiteResult<F, G, S, SuiteRunData<S, T>>>();
+    const { resolve, promise } = withResolvers<SuiteResult<F, G, S>>();
 
     const schemaInput = args[0];
     const schemaRunResult = shouldRunSchema(schema, transformedModifiers)
@@ -72,7 +67,7 @@ export function useCreateSuiteRunner<
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
-    const runData = callbackInput as SuiteRunData<S, T> | undefined;
+    const runData = callbackInput;
 
     const suiteResult = SuiteContext.run(
       {
@@ -84,7 +79,7 @@ export function useCreateSuiteRunner<
         useEmit('SUITE_RUN_STARTED');
 
         const useResolver = () => {
-          const result = useCreateSuiteResult<F, G, S, SuiteRunData<S, T>>(
+          const result = useCreateSuiteResult<F, G, S>(
             schema,
             callbackInput,
             runData,
@@ -99,7 +94,7 @@ export function useCreateSuiteRunner<
         };
 
         return IsolateSuite(
-          useRunSuiteCallback<F, T, S, G, SuiteRunData<S, T>>({
+          useRunSuiteCallback<F, T, S, G>({
             args: callbackArgs,
             modifiers: transformedModifiers,
             schema,

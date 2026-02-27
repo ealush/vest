@@ -2,12 +2,9 @@ import { describe, expect, it } from 'vitest';
 
 import { create, enforce, test } from '../../vest';
 
-describe('suite schema parse integration', () => {
-  it('passes parsed schema object output into suite body', () => {
-    const schema = {
-      parse: (value: any) => ({ amount: Number(value.amount) }),
-      run: (value: any) => ({ pass: true, type: value }),
-    } as any;
+describe('suite schema integration', () => {
+  it('validates schema object and passes data into suite body', () => {
+    const schema = enforce.loose({ amount: enforce.isNumber() });
 
     let callbackValue: unknown;
 
@@ -19,23 +16,20 @@ describe('suite schema parse integration', () => {
       });
     }, schema);
 
-    const result = suite.run({ amount: '12' } as any);
+    const result = suite.run({ amount: 12 });
 
     expect(callbackValue).toBe(12);
     expect(result.isValid()).toBe(true);
     expect(result.value).toEqual({ amount: 12 });
   });
 
-  it('passes parsed nested schema object output into suite body', () => {
-    const schema = {
-      parse: (value: any) => ({
-        profile: {
-          age: Number(value.profile.age),
-          name: String(value.profile.name).trim(),
-        },
+  it('validates nested shape schema', () => {
+    const schema = enforce.loose({
+      profile: enforce.shape({
+        age: enforce.isNumber(),
+        name: enforce.isString(),
       }),
-      run: (value: any) => ({ pass: true, type: value }),
-    } as any;
+    });
 
     let callbackProfile: any;
 
@@ -52,8 +46,8 @@ describe('suite schema parse integration', () => {
     }, schema);
 
     const result = suite.run({
-      profile: { age: '33', name: '  Jane  ' },
-    } as any);
+      profile: { age: 33, name: 'Jane' },
+    });
 
     expect(callbackProfile).toEqual({ age: 33, name: 'Jane' });
     expect(result.isValid()).toBe(true);
@@ -62,16 +56,15 @@ describe('suite schema parse integration', () => {
     });
   });
 
-  it('passes parsed array of objects output into suite body', () => {
-    const schema = {
-      parse: (value: any) => ({
-        users: value.users.map((u: any) => ({
-          age: Number(u.age),
-          name: String(u.name).trim(),
-        })),
-      }),
-      run: (value: any) => ({ pass: true, type: value }),
-    } as any;
+  it('validates array of objects schema', () => {
+    const schema = enforce.loose({
+      users: enforce.isArrayOf(
+        enforce.shape({
+          age: enforce.isNumber(),
+          name: enforce.isString(),
+        }),
+      ),
+    });
 
     let callbackUsers: any;
 
@@ -84,10 +77,10 @@ describe('suite schema parse integration', () => {
 
     const result = suite.run({
       users: [
-        { age: '25', name: '  Alice  ' },
-        { age: '30', name: ' Bob ' },
+        { age: 25, name: 'Alice' },
+        { age: 30, name: 'Bob' },
       ],
-    } as any);
+    });
 
     expect(callbackUsers).toEqual([
       { age: 25, name: 'Alice' },
@@ -102,32 +95,11 @@ describe('suite schema parse integration', () => {
     });
   });
 
-  it('passes parsed output to callback and result.value', () => {
-    const schema = {
-      parse: (value: any) => ({
-        quantity: Number(value.quantity),
-        label: String(value.label).trim(),
-      }),
-      run: (value: any) => {
-        const quantity = Number(value.quantity);
-        if (Number.isNaN(quantity)) {
-          return {
-            message: 'quantity must be numeric',
-            pass: false,
-            path: ['quantity'],
-            type: value,
-          };
-        }
-
-        return {
-          pass: true,
-          type: {
-            quantity,
-            label: String(value.label).trim(),
-          },
-        };
-      },
-    };
+  it('provides validated data in callback and result.value', () => {
+    const schema = enforce.loose({
+      quantity: enforce.isNumber(),
+      label: enforce.isString(),
+    });
 
     let callbackData: any;
 
@@ -137,9 +109,9 @@ describe('suite schema parse integration', () => {
       test('quantity', () => {
         enforce(data.quantity).isNumber();
       });
-    }, schema as any);
+    }, schema);
 
-    const result = suite.run({ quantity: '10', label: '  item  ' } as any);
+    const result = suite.run({ quantity: 10, label: 'item' });
 
     expect(callbackData).toEqual({ quantity: 10, label: 'item' });
     expect(result.value).toEqual({ quantity: 10, label: 'item' });
@@ -149,18 +121,10 @@ describe('suite schema parse integration', () => {
     });
   });
 
-  it('uses parsed data with extra payload keys', () => {
-    const schema = {
-      parse: (value: any) => ({
-        amount: Number(value.amount),
-        extra: value.extra,
-      }),
-      run: (value: any) => ({
-        pass: !Number.isNaN(Number(value.amount)),
-        path: ['amount'],
-        type: { amount: Number(value.amount), extra: value.extra },
-      }),
-    };
+  it('loose schema allows extra payload keys', () => {
+    const schema = enforce.loose({
+      amount: enforce.isNumber(),
+    });
 
     let callbackAmount: unknown;
 
@@ -169,40 +133,25 @@ describe('suite schema parse integration', () => {
       test('amount', () => {
         enforce(data.amount).isNumber();
       });
-    }, schema as any);
+    }, schema);
 
-    const result = suite.run({ amount: '7', extra: 'keep' } as any);
+    const result = suite.run({ amount: 7, extra: 'keep' });
 
     expect(callbackAmount).toBe(7);
     expect(result.value).toEqual({ amount: 7, extra: 'keep' });
   });
 
-  it('falls back to original input when parse fails', () => {
-    const schema = {
-      parse: (value: any) => {
-        const quantity = Number(value.quantity);
-        if (Number.isNaN(quantity)) {
-          throw new TypeError('parse failed');
-        }
-
-        return { quantity };
-      },
-      run: (value: any) => ({
-        message: 'quantity must be numeric',
-        pass: !Number.isNaN(Number(value.quantity)),
-        path: ['quantity'],
-        type: { quantity: Number(value.quantity) },
-      }),
-    };
+  it('falls back to original input when schema validation fails', () => {
+    const schema = enforce.loose({ quantity: enforce.isNumber() });
 
     let callbackData: any;
 
-    const suite = create((data: any) => {
+    const suite = create(data => {
       callbackData = data;
       test('quantity', () => {
         enforce(data.quantity).isNotEmpty();
       });
-    }, schema as any);
+    }, schema);
 
     const result = suite.run({ quantity: 'not-a-number' } as any);
 
@@ -211,18 +160,10 @@ describe('suite schema parse integration', () => {
     expect(result.value).toBeUndefined();
   });
 
-  it('maps security-related schema run paths into suite errors', () => {
-    const schema = {
-      parse: (value: any) => value,
-      run: () => ({
-        message: 'dangerous key',
-        pass: false,
-        path: ['security'],
-        type: {},
-      }),
-    };
+  it('maps schema validation paths into suite errors', () => {
+    const schema = enforce.shape({ security: enforce.isString() });
 
-    const suite = create(() => {}, schema as any);
+    const suite = create(() => {}, schema);
 
     const result = suite.run({ name: 'safe' } as any);
 

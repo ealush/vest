@@ -1,19 +1,19 @@
 ---
-title: Vest 6 is ready for testing
-description: Vest 6 is now available for testing, bringing significant improvements to the API, type safety, and standard compliance.
+title: Vest 6 is now stable
+description: Vest 6 is now the default stable release, with major improvements to the API, type safety, and standard compliance.
 keywords: [Vest, v6, upgrade, schema, validation, standard schema]
 ---
 
-# Vest 6 is ready for testing
+# Vest 6 is now stable
 
-Vest 6 is now available under the `next` tag. This release represents a significant architectural shift, focusing on improved developer experience, predictability, and stronger type safety.
+Vest 6 is now the default stable release. This version represents a significant architectural shift, focusing on improved developer experience, predictability, and stronger type safety.
 
 While Vest 5 focused on runtime performance and execution modes, Vest 6 overhauls the API surface to make suite interaction more intuitive and standard-compliant.
 
-You can install it today:
+Install the latest stable version:
 
 ```bash
-npm install vest@next
+npm install vest
 ```
 
 ## Highlights
@@ -100,14 +100,10 @@ create(data => {
 
 ## Migrating from V5
 
-Because V6 introduces changes to the core API (specifically `suite.run()`), a migration step is required. We have prepared a detailed [Upgrade Guide](https://vestjs.dev/docs/next/upgrade_guide) to help you transition your codebase.
+If you're upgrading from V5, a migration step is required due to changes to the core API (specifically `suite.run()`). We have prepared a detailed [Upgrade Guide](https://vestjs.dev/docs/upgrade_guide) to help you transition your codebase.
 
 The guide also includes a prompt you can use with LLMs to help automate the refactoring process.
 
 ## Feedback
 
 This release contains internal architectural changes designed to improve stability and runtime safety. We encourage you to try it out and report any issues on [GitHub](https://github.com/ealush/vest/issues).
-
-```
-
-```

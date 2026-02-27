@@ -38,14 +38,14 @@ const suite = create((data = {}) => {
 
 function SignupForm() {
   const [formData, setFormData] = useState({ username: '', email: '' });
-  const [result, setResult] = useState(suite.get());
 
   const handleChange = (name, value) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const nextState = { ...formData, [name]: value };
+
     suite
       .only(name)
-      .afterEach(() => setResult(suite.get()))
-      .run({ ...formData, [name]: value });
+      .afterEach(() => setFormData(nextState))
+      .run(nextState);
   };
 
   const handleSubmit = async e => {
@@ -66,8 +66,8 @@ function SignupForm() {
           value={formData.username}
           onChange={e => handleChange('username', e.target.value)}
         />
-        {result.hasErrors('username') && (
-          <span>{result.getError('username')}</span>
+        {suite.hasErrors('username') && (
+          <span>{suite.getError('username')}</span>
         )}
       </div>
 
@@ -77,10 +77,10 @@ function SignupForm() {
           value={formData.email}
           onChange={e => handleChange('email', e.target.value)}
         />
-        {result.hasErrors('email') && <span>{result.getError('email')}</span>}
+        {suite.hasErrors('email') && <span>{suite.getError('email')}</span>}
       </div>
 
-      <button type="submit" disabled={!result.isValid()}>
+      <button type="submit" disabled={!suite.isValid()}>
         Submit
       </button>
     </form>
@@ -97,17 +97,14 @@ import { useCallback, useState } from 'react';
 
 function useVestForm(suite, initialData = {}) {
   const [formData, setFormData] = useState(initialData);
-  const [result, setResult] = useState(suite.get());
 
   const validate = useCallback(
     (fieldName, value) => {
       const newData = { ...formData, [fieldName]: value };
-      setFormData(newData);
-
       suite
         .only(fieldName)
         .afterEach(() => {
-          setResult(suite.get());
+          setFormData(newData);
         })
         .run(newData);
     },
@@ -117,14 +114,14 @@ function useVestForm(suite, initialData = {}) {
   const validateAll = useCallback(() => {
     suite
       .afterEach(() => {
-        setResult(suite.get());
+        // Create a new object reference to trigger a re-render
+        setFormData(current => ({ ...current }));
       })
       .run(formData);
   }, [formData, suite]);
 
   return {
     formData,
-    result,
     validate,
     validateAll,
     setFormData,
@@ -133,13 +130,13 @@ function useVestForm(suite, initialData = {}) {
 
 // Usage
 function MyForm() {
-  const { formData, result, validate, validateAll } = useVestForm(suite);
+  const { formData, validate, validateAll } = useVestForm(suite);
 
   const handleSubmit = e => {
     e.preventDefault();
     validateAll();
 
-    if (!result.hasErrors()) {
+    if (!suite.hasErrors()) {
       // Submit form
     }
   };
@@ -176,17 +173,15 @@ const suite = create((data = {}) => {
 
 function UsernameField() {
   const [username, setUsername] = useState('');
-  const [result, setResult] = useState(suite.get());
   const [isChecking, setIsChecking] = useState(false);
 
   const handleChange = value => {
-    setUsername(value);
     setIsChecking(true);
 
     suite
       .only('username')
       .afterEach(() => {
-        setResult(suite.get());
+        setUsername(value);
         setIsChecking(false);
       })
       .run({ username: value });
@@ -196,9 +191,7 @@ function UsernameField() {
     <div>
       <input value={username} onChange={e => handleChange(e.target.value)} />
       {isChecking && <span>Checking availability...</span>}
-      {result.hasErrors('username') && (
-        <span>{result.getError('username')}</span>
-      )}
+      {suite.hasErrors('username') && <span>{suite.getError('username')}</span>}
     </div>
   );
 }
@@ -225,8 +218,6 @@ import { suite } from '../validations/signupSuite';
 import { useState } from 'react';
 
 function SignupForm() {
-  const [result, setResult] = useState(suite.get());
-
   // ...
 }
 ```
@@ -237,13 +228,13 @@ Validate individual fields on change for better UX:
 
 ```jsx
 const handleFieldChange = (fieldName, value) => {
-  setFormData(prev => ({ ...prev, [fieldName]: value }));
+  const nextState = { ...formData, [fieldName]: value };
 
   // Only validate the changed field
   suite
     .only(fieldName)
-    .afterEach(() => setResult(suite.get()))
-    .run({ ...formData, [fieldName]: value });
+    .afterEach(() => setFormData(nextState))
+    .run(nextState);
 };
 ```
 
@@ -258,8 +249,7 @@ const handleSubmit = e => {
   // Validate all fields
   suite
     .afterEach(() => {
-      const result = suite.get();
-      if (!result.hasErrors()) {
+      if (!suite.hasErrors()) {
         // Submit form
         submitForm(formData);
       }
@@ -273,7 +263,7 @@ const handleSubmit = e => {
 Vest has [excellent TypeScript support](/docs/typescript_support):
 
 ```tsx
-import { create, test, enforce, SuiteResult } from 'vest';
+import { create, test, enforce } from 'vest';
 import 'vest/email';
 
 interface FormData {
@@ -298,7 +288,6 @@ const suite = create((data: Partial<FormData> = {}) => {
 
 function TypedForm() {
   const [formData, setFormData] = useState<Partial<FormData>>({});
-  const [result, setResult] = useState<SuiteResult>(suite.get());
 
   // Rest of component
 }

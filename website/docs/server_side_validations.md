@@ -77,13 +77,13 @@ app.post('/user', (req, res) => {
 
 When using Vest with Server-Side Rendering (SSR) frameworks (like Next.js, Remix, or Nuxt), you often want to validate on the server, send the validation state to the client, and resume without rerunning everything.
 
-Use `SuiteSerializer.serialize` to serialize the suite state and `SuiteSerializer.resume` on the client to hydrate it.
+Use `SuiteSerializer.serialize` to serialize the validation result state and `SuiteSerializer.resume` on the client to hydrate it.
 
 ### Server Side
 
 ```javascript
 // server.js
-import { SuiteSerializer } from 'vest';
+import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
 import suite from './suite';
 
 export async function action({ request }) {
@@ -97,8 +97,8 @@ export async function action({ request }) {
   if (result.hasErrors()) {
     return json({
       errors: result.getErrors(),
-      // Serialize the suite state to send to the client
-      vestState: SuiteSerializer.serialize(suite),
+      // Serialize the result state to send to the client
+      vestState: SuiteSerializer.serialize(result),
     });
   }
 }
@@ -110,7 +110,7 @@ On the client, hydrate the suite with the state received from the server using `
 
 ```javascript
 // client.js
-import { SuiteSerializer } from 'vest';
+import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
 import suite from './suite';
 
 export function MyForm({ actionData }) {

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/exports/IsolateSerializer.ts`.
+ *
+ * Provides `IsolateSerializer`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 import {
   Nullable,
   hasOwnProperty,

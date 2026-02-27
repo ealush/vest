@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/general/isNotNumeric.ts`.
+ *
+ * Provides `isNotNumeric`-related runtime and type utilities used by `n4s`.
+ */
 import { isNumeric as isNumericValue } from 'vest-utils';
 
 /**

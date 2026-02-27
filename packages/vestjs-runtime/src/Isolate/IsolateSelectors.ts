@@ -1,3 +1,8 @@
+/**
+ * Module: `src/Isolate/IsolateSelectors.ts`.
+ *
+ * Provides `IsolateSelectors`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 import { Maybe } from 'vest-utils';
 
 import { TIsolate } from './Isolate';

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suiteResult/selectors/collectFailures.ts`.
+ *
+ * Provides `collectFailures`-related runtime and type utilities used by `vest`.
+ */
 import { isPositive, makeResult, Result } from 'vest-utils';
 
 import { countKeyBySeverity, Severity } from '../Severity';

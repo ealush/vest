@@ -1,3 +1,8 @@
+/**
+ * Module: `src/utils/RuleInstance.ts`.
+ *
+ * Provides `RuleInstance`-related runtime and type utilities used by `n4s`.
+ */
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { RuleRunReturn } from './RuleRunReturn';

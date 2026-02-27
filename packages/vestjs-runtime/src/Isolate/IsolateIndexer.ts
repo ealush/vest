@@ -1,3 +1,8 @@
+/**
+ * Module: `src/Isolate/IsolateIndexer.ts`.
+ *
+ * Provides `IsolateIndexer`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 import { isNullish, Nullable } from 'vest-utils';
 
 import { TIsolate } from './IsolateTypes';

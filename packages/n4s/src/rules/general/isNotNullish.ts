@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/general/isNotNullish.ts`.
+ *
+ * Provides `isNotNullish`-related runtime and type utilities used by `n4s`.
+ */
 import { isNotNullish as isNotNullishValue } from 'vest-utils';
 
 /**

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/chainBuilder/chainBuilder.ts`.
+ *
+ * Provides `chainBuilder`-related runtime and type utilities used by `n4s`.
+ */
 /* eslint-disable max-statements */
 /* eslint-disable max-lines-per-function */
 import {
@@ -35,11 +40,17 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
   const target: Partial<T> = {};
   let lazyMessage: Maybe<LazyMessage> = undefined;
 
+  /**
+   * Appends a predicate to the chain and returns the fluent proxy for continued chaining.
+   */
   const add = (p: Predicate): T => {
     chain.push(p);
     return proxy;
   };
 
+  /**
+   * Resolves final error message, optionally through user-provided lazy message resolvers.
+   */
   const resolveMessage = (
     result: ReturnType<typeof executeChain>,
     value: unknown,
@@ -51,6 +62,9 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
     return dynamicValue(lazyMessage, value, result.message) ?? defaultMessage;
   };
 
+  /**
+   * Executes the predicate chain and returns StandardSchema-compliant validation output.
+   */
   const validate: T['validate'] = ((...args: any[]) => {
     const result = executeChain(chain, args[0]);
     if (result.pass) {
@@ -83,6 +97,9 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
     throw new TypeError(firstIssue?.message || 'Validation failed');
   }) as T['parse'];
 
+  /**
+   * Internal rule-runner API used by n4s to obtain raw pass/message/path payloads.
+   */
   const run: T['run'] = ((...args: any[]) => {
     const result = executeChain(chain, args[0]);
     if (!result.pass && lazyMessage) {
@@ -102,6 +119,7 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
     return proxy;
   };
 
+  // The proxy virtualizes rule method access and wires each call back into `add`.
   const proxy: T = new Proxy(
     target as T,
     createChainProxyHandlers(rules, {

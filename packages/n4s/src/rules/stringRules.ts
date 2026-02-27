@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/stringRules.ts`.
+ *
+ * Provides `stringRules`-related runtime and type utilities used by `n4s`.
+ */
 import { BuildRuleInstance, ExtractRuleFunctions } from './RuleInstanceBuilder';
 import { equals, notEquals } from './commonComparison';
 import { inside, notInside } from './commonContainer';

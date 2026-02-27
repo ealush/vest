@@ -1,3 +1,8 @@
+/**
+ * Module: `src/context.ts`.
+ *
+ * Provides `context`-related runtime and type utilities used by `context`.
+ */
 import type { CB, Maybe } from 'vest-utils';
 import {
   assign,

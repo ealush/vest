@@ -1,3 +1,8 @@
+/**
+ * Module: `src/isEmpty.ts`.
+ *
+ * Provides `isEmpty`-related runtime and type utilities used by `vest-utils`.
+ */
 import bindNot from './bindNot';
 import hasOwnProperty from './hasOwnProperty';
 import { lengthEquals } from './lengthEquals';

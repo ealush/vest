@@ -1,3 +1,8 @@
+/**
+ * Module: `src/isolates/omitWhen.ts`.
+ *
+ * Provides `omitWhen`-related runtime and type utilities used by `vest`.
+ */
 import type { CB } from 'vest-utils';
 import { dynamicValue } from 'vest-utils';
 import { TIsolate } from 'vestjs-runtime';

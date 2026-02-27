@@ -1,3 +1,8 @@
+/**
+ * Module: `src/Isolate/IsolateFocused.ts`.
+ *
+ * Provides `IsolateFocused`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 import {
   asArray,
   Maybe,

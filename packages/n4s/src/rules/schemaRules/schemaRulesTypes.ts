@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/schemaRules/schemaRulesTypes.ts`.
+ *
+ * Provides `schemaRulesTypes`-related runtime and type utilities used by `n4s`.
+ */
 import { RuleInstance } from '../../utils/RuleInstance';
 
 /**

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/schemaRules/optional.ts`.
+ *
+ * Provides `optional`-related runtime and type utilities used by `n4s`.
+ */
 import { isNullish } from 'vest-utils';
 
 import { RuleInstance } from '../../utils/RuleInstance';

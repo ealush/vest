@@ -1,3 +1,8 @@
+/**
+ * Module: `src/cache.ts`.
+ *
+ * Provides `cache`-related runtime and type utilities used by `vest-utils`.
+ */
 import { lengthEquals } from './lengthEquals';
 import { longerThan } from './longerThan';
 import { DynamicValue, Nullable } from './utilityTypes';

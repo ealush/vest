@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/number/isEven.ts`.
+ *
+ * Provides `isEven`-related runtime and type utilities used by `n4s`.
+ */
 import { isNumeric, toNumber } from 'vest-utils';
 
 /**

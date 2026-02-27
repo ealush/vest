@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/schemaRules/shape.ts`.
+ *
+ * Provides `shape`-related runtime and type utilities used by `n4s`.
+ */
 import { hasOwnProperty } from 'vest-utils';
 
 import type { RuleInstance } from '../../utils/RuleInstance';

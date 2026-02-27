@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/test/Abortable.ts`.
+ *
+ * Provides `Abortable`-related runtime and type utilities used by `vest`.
+ */
 import { TIsolate } from 'vestjs-runtime';
 
 import { TIsolateTest } from '../isolate/IsolateTest/IsolateTest';

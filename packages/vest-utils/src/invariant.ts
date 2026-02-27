@@ -1,3 +1,8 @@
+/**
+ * Module: `src/invariant.ts`.
+ *
+ * Provides `invariant`-related runtime and type utilities used by `vest-utils`.
+ */
 import dynamicValue from './dynamicValue';
 import type { Stringable } from './utilityTypes';
 

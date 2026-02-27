@@ -1,3 +1,8 @@
+/**
+ * Module: `src/errors/ErrorStrings.ts`.
+ *
+ * Provides `ErrorStrings`-related runtime and type utilities used by `vest`.
+ */
 export enum ErrorStrings {
   HOOK_CALLED_OUTSIDE = 'hook called outside of a running suite.',
   EXPECTED_VEST_TEST = 'Expected value to be an instance of IsolateTest',

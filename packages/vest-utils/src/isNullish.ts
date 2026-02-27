@@ -1,3 +1,8 @@
+/**
+ * Module: `src/isNullish.ts`.
+ *
+ * Provides `isNullish`-related runtime and type utilities used by `vest-utils`.
+ */
 import bindNot from './bindNot';
 import { isNull } from './isNull';
 import { isUndefined } from './isUndefined';

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/utils/regex.ts`.
+ *
+ * Provides `regex`-related runtime and type utilities used by `n4s`.
+ */
 import { isStringValue } from 'vest-utils';
 
 export function toRegExp(regex: RegExp | string): RegExp | null {

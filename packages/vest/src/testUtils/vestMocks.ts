@@ -1,3 +1,8 @@
+/**
+ * Module: `src/testUtils/vestMocks.ts`.
+ *
+ * Provides `vestMocks`-related runtime and type utilities used by `vest`.
+ */
 import { genTestIsolate } from 'vestjs-runtime/test-utils';
 import { vi } from 'vitest';
 

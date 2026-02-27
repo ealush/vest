@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/string/matches.ts`.
+ *
+ * Provides `matches`-related runtime and type utilities used by `n4s`.
+ */
 import { toRegExp } from '../../utils/regex';
 
 // Checks if string matches the given regular expression pattern

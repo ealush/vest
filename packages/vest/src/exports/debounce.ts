@@ -1,3 +1,8 @@
+/**
+ * Module: `src/exports/debounce.ts`.
+ *
+ * Provides `debounce`-related runtime and type utilities used by `vest`.
+ */
 import { CB, isPromise, Nullable } from 'vest-utils';
 import { Isolate, TIsolate, IsolateSelectors } from 'vestjs-runtime';
 

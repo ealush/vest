@@ -1,3 +1,8 @@
+/**
+ * Module: `src/testUtils/testDummy.ts`.
+ *
+ * Provides `testDummy`-related runtime and type utilities used by `vest`.
+ */
 import { faker } from '@faker-js/faker';
 import { vi } from 'vitest';
 import wait from 'wait';

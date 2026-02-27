@@ -1,3 +1,8 @@
+/**
+ * Module: `src/hooks/optional/mode.ts`.
+ *
+ * Provides `mode`-related runtime and type utilities used by `vest`.
+ */
 import { makeResult, Result } from 'vest-utils';
 
 import { useMode } from '../../core/context/SuiteContext';

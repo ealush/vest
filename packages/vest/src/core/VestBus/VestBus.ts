@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/VestBus/VestBus.ts`.
+ *
+ * Provides `VestBus`-related runtime and type utilities used by `vest`.
+ */
 import { CB, BusType, Failure, deferThrow } from 'vest-utils';
 import { Bus, RuntimeEvents, TIsolate, VestRuntime } from 'vestjs-runtime';
 

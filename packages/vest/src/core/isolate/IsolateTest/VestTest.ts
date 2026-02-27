@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/isolate/IsolateTest/VestTest.ts`.
+ *
+ * Provides `VestTest`-related runtime and type utilities used by `vest`.
+ */
 import {
   Maybe,
   invariant,

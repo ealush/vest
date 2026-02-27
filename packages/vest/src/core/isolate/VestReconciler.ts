@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/isolate/VestReconciler.ts`.
+ *
+ * Provides `VestReconciler`-related runtime and type utilities used by `vest`.
+ */
 import { Nullable } from 'vest-utils';
 import { TIsolate } from 'vestjs-runtime';
 

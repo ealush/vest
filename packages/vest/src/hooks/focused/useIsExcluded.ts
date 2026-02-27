@@ -1,3 +1,8 @@
+/**
+ * Module: `src/hooks/focused/useIsExcluded.ts`.
+ *
+ * Provides `useIsExcluded`-related runtime and type utilities used by `vest`.
+ */
 import { asArray, dynamicValue, isNotEmptySet } from 'vest-utils';
 import {
   TIsolate,

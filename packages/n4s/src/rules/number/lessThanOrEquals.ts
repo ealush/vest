@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/number/lessThanOrEquals.ts`.
+ *
+ * Provides `lessThanOrEquals`-related runtime and type utilities used by `n4s`.
+ */
 import { numberEquals } from 'vest-utils';
 
 import { lessThan } from './lessThan';

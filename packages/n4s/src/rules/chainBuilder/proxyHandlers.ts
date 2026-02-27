@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/chainBuilder/proxyHandlers.ts`.
+ *
+ * Provides `proxyHandlers`-related runtime and type utilities used by `n4s`.
+ */
 import { hasOwnProperty } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 

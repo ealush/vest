@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suiteResult/selectors/useSetValidProperty.ts`.
+ *
+ * Provides `useSetValidProperty`-related runtime and type utilities used by `vest`.
+ */
 import { TIsolate, VestRuntime, Walker } from 'vestjs-runtime';
 
 import {

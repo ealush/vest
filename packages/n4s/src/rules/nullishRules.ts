@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/nullishRules.ts`.
+ *
+ * Provides `nullishRules`-related runtime and type utilities used by `n4s`.
+ */
 import { RuleInstance } from '../utils/RuleInstance';
 
 // Backward-compatible re-exports to avoid breaking existing imports

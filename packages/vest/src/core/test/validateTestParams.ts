@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/test/validateTestParams.ts`.
+ *
+ * Provides `validateTestParams`-related runtime and type utilities used by `vest`.
+ */
 import {
   isFunction,
   isStringValue,

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/n4sTypes.ts`.
+ *
+ * Provides `n4sTypes`-related runtime and type utilities used by `n4s`.
+ */
 import type { CB, DropFirst } from 'vest-utils';
 
 import type { FirstParam } from './eager/typeUtils';

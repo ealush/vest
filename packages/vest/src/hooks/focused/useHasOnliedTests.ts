@@ -1,3 +1,8 @@
+/**
+ * Module: `src/hooks/focused/useHasOnliedTests.ts`.
+ *
+ * Provides `useHasOnliedTests`-related runtime and type utilities used by `vest`.
+ */
 import { isNotNullish } from 'vest-utils';
 import {
   TIsolate,

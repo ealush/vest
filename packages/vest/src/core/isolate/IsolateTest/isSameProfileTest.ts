@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/isolate/IsolateTest/isSameProfileTest.ts`.
+ *
+ * Provides `isSameProfileTest`-related runtime and type utilities used by `vest`.
+ */
 import { makeResult, Result } from 'vest-utils';
 
 import matchingFieldName from '../../test/helpers/matchingFieldName';

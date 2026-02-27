@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/StateMachines/IsolateTestStateMachine.ts`.
+ *
+ * Provides `IsolateTestStateMachine`-related runtime and type utilities used by `vest`.
+ */
 import { StateMachine, TStateMachine, ValueOf } from 'vest-utils';
 
 export const TestStatus = {

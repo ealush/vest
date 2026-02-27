@@ -1,3 +1,8 @@
+/**
+ * Module: `src/Brand.ts`.
+ *
+ * Provides `Brand`-related runtime and type utilities used by `vest-utils`.
+ */
 // Utility for creating opaque branded types to avoid primitive mixing
 // Brand is represented as an intersection type with a unique symbol index
 // This pattern prevents accidental assignment between different domain primitives

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/object/isValueOf.ts`.
+ *
+ * Provides `isValueOf`-related runtime and type utilities used by `n4s`.
+ */
 import { isObject } from 'vest-utils';
 
 // Checks if value exists in the given object's values

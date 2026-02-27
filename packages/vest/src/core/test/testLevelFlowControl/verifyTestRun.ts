@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/test/testLevelFlowControl/verifyTestRun.ts`.
+ *
+ * Provides `verifyTestRun`-related runtime and type utilities used by `vest`.
+ */
 import { makeResult, Result } from 'vest-utils';
 
 import { useIsExcluded } from '../../../hooks/focused/useIsExcluded';

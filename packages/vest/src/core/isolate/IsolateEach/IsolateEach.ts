@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/isolate/IsolateEach/IsolateEach.ts`.
+ *
+ * Provides `IsolateEach`-related runtime and type utilities used by `vest`.
+ */
 import { CB } from 'vest-utils';
 
 import { IsolateReorderable } from 'vestjs-runtime';

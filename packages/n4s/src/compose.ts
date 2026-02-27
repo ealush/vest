@@ -1,3 +1,8 @@
+/**
+ * Module: `src/compose.ts`.
+ *
+ * Provides `compose`-related runtime and type utilities used by `n4s`.
+ */
 import { StringObject, assign, invariant, mapFirst } from 'vest-utils';
 
 import { ctx } from './enforceContext';

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/RuleInstanceBuilder.ts`.
+ *
+ * Provides `RuleInstanceBuilder`-related runtime and type utilities used by `n4s`.
+ */
 import type { DropFirst } from 'vest-utils';
 
 import type { RuleInstance } from '../utils/RuleInstance';

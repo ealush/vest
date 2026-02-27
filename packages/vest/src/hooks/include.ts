@@ -1,3 +1,8 @@
+/**
+ * Module: `src/hooks/include.ts`.
+ *
+ * Provides `include`-related runtime and type utilities used by `vest`.
+ */
 import { dynamicValue, invariant, isStringValue, makeBrand } from 'vest-utils';
 
 import { useInclusion } from '../core/context/SuiteContext';

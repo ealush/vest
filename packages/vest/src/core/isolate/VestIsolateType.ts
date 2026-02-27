@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/isolate/VestIsolateType.ts`.
+ *
+ * Provides `VestIsolateType`-related runtime and type utilities used by `vest`.
+ */
 import { CB } from 'vest-utils';
 import { Isolate, IsolateKey, TIsolate } from 'vestjs-runtime';
 

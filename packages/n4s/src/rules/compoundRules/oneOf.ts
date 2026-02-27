@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/compoundRules/oneOf.ts`.
+ *
+ * Provides `oneOf`-related runtime and type utilities used by `n4s`.
+ */
 import { greaterThan } from 'vest-utils';
 
 import { RuleInstance } from '../../utils/RuleInstance';

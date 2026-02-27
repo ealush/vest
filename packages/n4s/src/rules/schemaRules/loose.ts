@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/schemaRules/loose.ts`.
+ *
+ * Provides `loose`-related runtime and type utilities used by `n4s`.
+ */
 import { hasOwnProperty, isObject } from 'vest-utils';
 
 import { ctx } from '../../enforceContext';

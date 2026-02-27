@@ -1,3 +1,8 @@
+/**
+ * Module: `src/eager/typeUtils.ts`.
+ *
+ * Provides `typeUtils`-related runtime and type utilities used by `n4s`.
+ */
 import type { RuleInstance } from '../utils/RuleInstance';
 
 export type AnyFn = (...args: any[]) => any;

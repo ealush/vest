@@ -1,3 +1,8 @@
+/**
+ * Module: `src/Bus.ts`.
+ *
+ * Provides `Bus`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 import { BusType, isNullish } from 'vest-utils';
 
 import { persist, useX } from './VestRuntime';

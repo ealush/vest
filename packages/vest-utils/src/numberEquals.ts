@@ -1,3 +1,8 @@
+/**
+ * Module: `src/numberEquals.ts`.
+ *
+ * Provides `numberEquals`-related runtime and type utilities used by `vest-utils`.
+ */
 import bindNot from './bindNot';
 import { isNumeric } from './isNumeric';
 

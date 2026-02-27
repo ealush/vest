@@ -1,3 +1,8 @@
+/**
+ * Module: `src/lazy.ts`.
+ *
+ * Provides `lazy`-related runtime and type utilities used by `n4s`.
+ */
 import { FirstParam } from './eager/typeUtils';
 import { ctx } from './enforceContext';
 import { adaptDynamicRules } from './lazy/ruleAdapter';

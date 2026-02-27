@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/general/isNotNull.ts`.
+ *
+ * Provides `isNotNull`-related runtime and type utilities used by `n4s`.
+ */
 import { isNotNull as isNotNullValue } from 'vest-utils';
 
 /**

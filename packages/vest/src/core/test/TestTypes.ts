@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/test/TestTypes.ts`.
+ *
+ * Provides `TestTypes`-related runtime and type utilities used by `vest`.
+ */
 import { Maybe } from 'vest-utils';
 
 import { TFieldName } from '../../suiteResult/SuiteResultTypes';

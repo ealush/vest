@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/numberRules.ts`.
+ *
+ * Provides `numberRules`-related runtime and type utilities used by `n4s`.
+ */
 import { greaterThan, numberEquals } from 'vest-utils';
 
 import { BuildRuleInstance, ExtractRuleFunctions } from './RuleInstanceBuilder';

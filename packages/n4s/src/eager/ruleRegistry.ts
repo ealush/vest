@@ -1,3 +1,8 @@
+/**
+ * Module: `src/eager/ruleRegistry.ts`.
+ *
+ * Provides `ruleRegistry`-related runtime and type utilities used by `n4s`.
+ */
 import { assign } from 'vest-utils';
 
 import { allRules, schemaRulesMap } from './allRules';

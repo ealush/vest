@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/chainBuilder/chainExecutor.ts`.
+ *
+ * Provides `chainExecutor`-related runtime and type utilities used by `n4s`.
+ */
 import { isObject } from 'vest-utils';
 
 import { RuleRunReturn } from '../../utils/RuleRunReturn';

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suite/getStandardSchema.ts`.
+ *
+ * Provides `getStandardSchema`-related runtime and type utilities used by `vest`.
+ */
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { InferSchemaData, TSchema } from '../suiteResult/SuiteResultTypes';

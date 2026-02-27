@@ -1,3 +1,8 @@
+/**
+ * Module: `src/extendLogic.ts`.
+ *
+ * Provides `extendLogic`-related runtime and type utilities used by `n4s`.
+ */
 import { extendEager } from './eager';
 import { ctx } from './enforceContext';
 import { addToChain, registerLazyRule } from './rules/genRuleChain';

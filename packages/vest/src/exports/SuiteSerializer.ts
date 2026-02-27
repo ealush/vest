@@ -1,3 +1,8 @@
+/**
+ * Module: `src/exports/SuiteSerializer.ts`.
+ *
+ * Provides `SuiteSerializer`-related runtime and type utilities used by `vest`.
+ */
 import { CB, Result } from 'vest-utils';
 import { IsolateSerializer } from 'vestjs-runtime';
 

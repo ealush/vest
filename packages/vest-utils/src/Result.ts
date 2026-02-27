@@ -1,3 +1,8 @@
+/**
+ * Module: `src/Result.ts`.
+ *
+ * Provides `Result`-related runtime and type utilities used by `vest-utils`.
+ */
 import { isObject } from './valueIsObject';
 
 export type Result<T, E = unknown> = Success<T, E> | Failure<T, E>;

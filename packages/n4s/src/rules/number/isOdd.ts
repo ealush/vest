@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/number/isOdd.ts`.
+ *
+ * Provides `isOdd`-related runtime and type utilities used by `n4s`.
+ */
 import { isNumeric, toNumber } from 'vest-utils';
 
 /**

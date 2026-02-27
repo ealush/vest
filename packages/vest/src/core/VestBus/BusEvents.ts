@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/VestBus/BusEvents.ts`.
+ *
+ * Provides `BusEvents`-related runtime and type utilities used by `vest`.
+ */
 import { TIsolate } from 'vestjs-runtime';
 import { TFieldName } from '../../suiteResult/SuiteResultTypes';
 import { Failure } from 'vest-utils';

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/test/helpers/matchingFieldName.ts`.
+ *
+ * Provides `matchingFieldName`-related runtime and type utilities used by `vest`.
+ */
 import { Maybe, makeResult, Result } from 'vest-utils';
 
 import { TFieldName } from '../../../suiteResult/SuiteResultTypes';

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/lazy/typeRules.ts`.
+ *
+ * Provides `typeRules`-related runtime and type utilities used by `n4s`.
+ */
 import { isArray } from '../rules/array/isArrayRule';
 import type { ArrayRuleInstance } from '../rules/arrayRules';
 import * as arrayRules from '../rules/arrayRules';

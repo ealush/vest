@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suite/SuiteTypes.ts`.
+ *
+ * Provides `SuiteTypes`-related runtime and type utilities used by `vest`.
+ */
 import { CB } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 

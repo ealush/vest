@@ -1,3 +1,8 @@
+/**
+ * Module: `src/toNumber.ts`.
+ *
+ * Provides `toNumber`-related runtime and type utilities used by `vest-utils`.
+ */
 import { makeResult, Result } from './Result';
 
 export function toNumber(value: any): Result<number, string> {

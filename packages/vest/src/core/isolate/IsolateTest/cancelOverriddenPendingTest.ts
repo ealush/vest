@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/isolate/IsolateTest/cancelOverriddenPendingTest.ts`.
+ *
+ * Provides `cancelOverriddenPendingTest`-related runtime and type utilities used by `vest`.
+ */
 import { makeResult, Result } from 'vest-utils';
 
 import { TIsolateTest } from './IsolateTest';

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/Isolate/IsolateInspector.ts`.
+ *
+ * Provides `IsolateInspector`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 import { Nullable, isNotNullish, isNullish } from 'vest-utils';
 
 import { TIsolate } from './Isolate';

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/exports/all.ts`.
+ *
+ * Provides `all`-related runtime and type utilities used by `anyone`.
+ */
 import run from '../runner/runAnyoneMethods';
 
 /**

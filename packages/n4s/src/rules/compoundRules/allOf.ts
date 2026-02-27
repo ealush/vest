@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/compoundRules/allOf.ts`.
+ *
+ * Provides `allOf`-related runtime and type utilities used by `n4s`.
+ */
 import { mapFirst } from 'vest-utils';
 
 import { RuleInstance } from '../../utils/RuleInstance';

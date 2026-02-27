@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/test/TestRegistry.ts`.
+ *
+ * Provides `TestRegistry`-related runtime and type utilities used by `vest`.
+ */
 import {
   IsolateRegistry,
   RegistryCategoryConfig,

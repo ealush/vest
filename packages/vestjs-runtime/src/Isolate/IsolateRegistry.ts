@@ -1,3 +1,8 @@
+/**
+ * Module: `src/Isolate/IsolateRegistry.ts`.
+ *
+ * Provides `IsolateRegistry`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 import { Nullable, isEmptySet, isNotEmptySet } from 'vest-utils';
 
 import { useAvailableRoot } from '../VestRuntime';

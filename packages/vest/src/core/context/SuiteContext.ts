@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/context/SuiteContext.ts`.
+ *
+ * Provides `SuiteContext`-related runtime and type utilities used by `vest`.
+ */
 import { createCascade } from 'context';
 import { assign, TinyState, tinyState, DynamicValue } from 'vest-utils';
 

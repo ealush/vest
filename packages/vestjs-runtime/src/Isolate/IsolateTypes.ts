@@ -1,3 +1,8 @@
+/**
+ * Module: `src/Isolate/IsolateTypes.ts`.
+ *
+ * Provides `IsolateTypes`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 import { Nullable } from 'vest-utils';
 
 import { IsolateKeys } from './IsolateKeys';

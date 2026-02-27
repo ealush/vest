@@ -1,3 +1,8 @@
+/**
+ * Module: `src/hooks/useWarn.ts`.
+ *
+ * Provides `useWarn`-related runtime and type utilities used by `vest`.
+ */
 import { invariant } from 'vest-utils';
 
 import { useCurrentTest } from '../core/context/SuiteContext';

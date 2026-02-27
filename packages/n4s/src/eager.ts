@@ -1,3 +1,8 @@
+/**
+ * Module: `src/eager.ts`.
+ *
+ * Provides `eager`-related runtime and type utilities used by `n4s`.
+ */
 import type { Maybe } from 'vest-utils';
 
 import { allRules, schemaRulesMap } from './eager/allRules';

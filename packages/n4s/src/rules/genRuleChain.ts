@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/genRuleChain.ts`.
+ *
+ * Provides `genRuleChain`-related runtime and type utilities used by `n4s`.
+ */
 import { RuleInstance } from '../utils/RuleInstance';
 
 import {

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/Isolate/IsolateStateMachine.ts`.
+ *
+ * Provides `IsolateStateMachine`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 import { StateMachine, TStateMachine } from 'vest-utils';
 
 import { TIsolate } from './Isolate';

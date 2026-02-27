@@ -1,3 +1,8 @@
+/**
+ * Module: `src/isolates/each.ts`.
+ *
+ * Provides `each`-related runtime and type utilities used by `vest`.
+ */
 import { invariant, isFunction } from 'vest-utils';
 
 import {

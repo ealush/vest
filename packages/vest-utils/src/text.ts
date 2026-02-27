@@ -1,3 +1,8 @@
+/**
+ * Module: `src/text.ts`.
+ *
+ * Provides `text`-related runtime and type utilities used by `vest-utils`.
+ */
 import { isEmpty } from './isEmpty';
 import { isObject } from './valueIsObject';
 

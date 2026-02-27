@@ -1,3 +1,8 @@
+/**
+ * Module: `src/VestRuntime.ts`.
+ *
+ * Provides `VestRuntime`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 import { createCascade } from 'context';
 import { RuntimeEvents } from './RuntimeEvents';
 import {

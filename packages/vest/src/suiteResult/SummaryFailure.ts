@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suiteResult/SummaryFailure.ts`.
+ *
+ * Provides `SummaryFailure`-related runtime and type utilities used by `vest`.
+ */
 import { TIsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../core/isolate/IsolateTest/VestTest';
 import { WithFieldName } from '../core/test/TestTypes';

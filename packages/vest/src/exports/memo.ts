@@ -1,3 +1,8 @@
+/**
+ * Module: `src/exports/memo.ts`.
+ *
+ * Provides `memo`-related runtime and type utilities used by `vest`.
+ */
 import {
   cache,
   CacheApi,

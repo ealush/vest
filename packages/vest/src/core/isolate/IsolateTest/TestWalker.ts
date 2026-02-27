@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/isolate/IsolateTest/TestWalker.ts`.
+ *
+ * Provides `TestWalker`-related runtime and type utilities used by `vest`.
+ */
 import { Nullable, makeResult } from 'vest-utils';
 import { Walker, VestRuntime, TIsolate } from 'vestjs-runtime';
 

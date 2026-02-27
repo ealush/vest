@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/isolate/IsolateTest/IsolateTestReconciler.ts`.
+ *
+ * Provides `IsolateTestReconciler`-related runtime and type utilities used by `vest`.
+ */
 import { Maybe, Result, makeResult, text } from 'vest-utils';
 import { IsolateInspector, Reconciler } from 'vestjs-runtime';
 import type { TIsolate } from 'vestjs-runtime';

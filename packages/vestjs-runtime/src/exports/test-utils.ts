@@ -1,3 +1,8 @@
+/**
+ * Module: `src/exports/test-utils.ts`.
+ *
+ * Provides `test-utils`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 import { TIsolate } from '../Isolate/Isolate';
 import { IsolateKeys } from '../Isolate/IsolateKeys';
 

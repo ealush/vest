@@ -1,3 +1,8 @@
+/**
+ * Module: `src/exports/parser.ts`.
+ *
+ * Provides `parser`-related runtime and type utilities used by `vest`.
+ */
 import {
   hasOwnProperty,
   invariant,

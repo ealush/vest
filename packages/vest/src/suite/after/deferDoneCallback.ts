@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suite/after/deferDoneCallback.ts`.
+ *
+ * Provides `deferDoneCallback`-related runtime and type utilities used by `vest`.
+ */
 import { assign } from 'vest-utils';
 
 import {

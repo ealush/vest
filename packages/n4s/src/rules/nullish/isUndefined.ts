@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/nullish/isUndefined.ts`.
+ *
+ * Provides `isUndefined`-related runtime and type utilities used by `n4s`.
+ */
 import { isUndefined as isUndefinedValue } from 'vest-utils';
 
 /**

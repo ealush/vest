@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/object/isKeyOf.ts`.
+ *
+ * Provides `isKeyOf`-related runtime and type utilities used by `n4s`.
+ */
 import { isObject, hasOwnProperty } from 'vest-utils';
 
 // Checks if value is a key that exists in the given object

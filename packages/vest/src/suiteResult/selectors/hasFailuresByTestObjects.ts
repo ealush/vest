@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suiteResult/selectors/hasFailuresByTestObjects.ts`.
+ *
+ * Provides `hasFailuresByTestObjects`-related runtime and type utilities used by `vest`.
+ */
 import { VestRuntime } from 'vestjs-runtime';
 
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';

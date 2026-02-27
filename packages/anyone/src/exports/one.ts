@@ -1,3 +1,8 @@
+/**
+ * Module: `src/exports/one.ts`.
+ *
+ * Provides `one`-related runtime and type utilities used by `anyone`.
+ */
 import run from '../runner/runAnyoneMethods';
 
 /**

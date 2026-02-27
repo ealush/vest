@@ -1,3 +1,8 @@
+/**
+ * Module: `src/isolates/group.ts`.
+ *
+ * Provides `group`-related runtime and type utilities used by `vest`.
+ */
 import { CB, makeBrand, isNotEmptySet } from 'vest-utils';
 import { TIsolate } from 'vestjs-runtime';
 

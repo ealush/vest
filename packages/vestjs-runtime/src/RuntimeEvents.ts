@@ -1,3 +1,8 @@
+/**
+ * Module: `src/RuntimeEvents.ts`.
+ *
+ * Provides `RuntimeEvents`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 import { TIsolate } from './Isolate/IsolateTypes';
 
 export type RuntimeEvents = {

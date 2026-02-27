@@ -1,3 +1,8 @@
+/**
+ * Module: `src/eager/ruleCallGenerator.ts`.
+ *
+ * Provides `ruleCallGenerator`-related runtime and type utilities used by `n4s`.
+ */
 import { invariant } from 'vest-utils';
 
 import { ctx } from '../enforceContext';

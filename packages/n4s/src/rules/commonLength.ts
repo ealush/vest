@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/commonLength.ts`.
+ *
+ * Provides `commonLength`-related runtime and type utilities used by `n4s`.
+ */
 // Shared length-based predicates for strings and arrays.
 // Works on any value with a .length property.
 

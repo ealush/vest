@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/boolean/isBoolean.ts`.
+ *
+ * Provides `isBoolean`-related runtime and type utilities used by `n4s`.
+ */
 import { isBoolean as isBooleanValue } from 'vest-utils';
 
 /**

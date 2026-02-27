@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/isolate/IsolateTest/IsolateTest.ts`.
+ *
+ * Provides `IsolateTest`-related runtime and type utilities used by `vest`.
+ */
 import { CB, Maybe } from 'vest-utils';
 import { TIsolate, Isolate, IsolateKey } from 'vestjs-runtime';
 

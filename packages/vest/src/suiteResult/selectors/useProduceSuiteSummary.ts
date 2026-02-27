@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suiteResult/selectors/useProduceSuiteSummary.ts`.
+ *
+ * Provides `useProduceSuiteSummary`-related runtime and type utilities used by `vest`.
+ */
 import { defaultTo, isEmpty, Maybe, assign } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 

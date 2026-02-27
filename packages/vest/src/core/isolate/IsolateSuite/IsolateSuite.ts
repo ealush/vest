@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/isolate/IsolateSuite/IsolateSuite.ts`.
+ *
+ * Provides `IsolateSuite`-related runtime and type utilities used by `vest`.
+ */
 import { CB, assign } from 'vest-utils';
 import { RegistryIndex } from 'vestjs-runtime';
 

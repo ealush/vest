@@ -1,3 +1,8 @@
+/**
+ * Module: `src/SimpleStateMachine.ts`.
+ *
+ * Provides `SimpleStateMachine`-related runtime and type utilities used by `vest-utils`.
+ */
 import { isFailure, makeResult, Result } from './Result';
 import { CB } from './utilityTypes';
 

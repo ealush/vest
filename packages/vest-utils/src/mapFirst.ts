@@ -1,3 +1,8 @@
+/**
+ * Module: `src/mapFirst.ts`.
+ *
+ * Provides `mapFirst`-related runtime and type utilities used by `vest-utils`.
+ */
 export default function mapFirst<T>(
   array: T[],
   callback: (

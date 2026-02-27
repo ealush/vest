@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/test/helpers/nonMatchingSeverityProfile.ts`.
+ *
+ * Provides `nonMatchingSeverityProfile`-related runtime and type utilities used by `vest`.
+ */
 import { either, makeResult, Result } from 'vest-utils';
 
 import { Severity } from '../../../suiteResult/Severity';

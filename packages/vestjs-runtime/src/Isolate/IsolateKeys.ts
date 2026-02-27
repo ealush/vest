@@ -1,3 +1,8 @@
+/**
+ * Module: `src/Isolate/IsolateKeys.ts`.
+ *
+ * Provides `IsolateKeys`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 export enum IsolateKeys {
   Type = '$type',
   Keys = 'keys',

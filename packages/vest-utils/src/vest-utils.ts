@@ -1,3 +1,8 @@
+/**
+ * Module: `src/vest-utils.ts`.
+ *
+ * Provides `vest-utils`-related runtime and type utilities used by `vest-utils`.
+ */
 export { withResolvers } from './withResolvers';
 export { default as cache } from './cache';
 export type { CacheApi } from './cache';

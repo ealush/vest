@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/schemaRules/schemaRules.ts`.
+ *
+ * Provides `schemaRules`-related runtime and type utilities used by `n4s`.
+ */
 import './schemaRulesLazyTypes';
 
 export { isArrayOf, type IsArrayOfRuleInstance } from './isArrayOf';

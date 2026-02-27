@@ -1,3 +1,8 @@
+/**
+ * Module: `src/vestjs-runtime.ts`.
+ *
+ * Provides `vestjs-runtime`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 export { IsolateKeys } from './Isolate/IsolateKeys';
 export type { RuntimeEvents } from './RuntimeEvents';
 export { Isolate } from './Isolate/Isolate';

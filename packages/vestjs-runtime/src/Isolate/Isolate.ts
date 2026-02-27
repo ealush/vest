@@ -1,3 +1,8 @@
+/**
+ * Module: `src/Isolate/Isolate.ts`.
+ *
+ * Provides `Isolate`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 import { CB, Maybe, Nullable, isNotNullish, isPromise } from 'vest-utils';
 
 import { useEmit } from '../Bus';
@@ -11,7 +16,19 @@ import type { IsolateKey, IsolatePayload, TIsolate } from './IsolateTypes';
 
 export { IsolateKey, TIsolate };
 
+/**
+ * Isolate factory and type guards for the runtime tree model.
+ *
+ * Isolates are reconciled nodes that represent deterministic execution units
+ * and carry status, output, and parent/child relationships.
+ */
 export class Isolate {
+  /**
+   * Creates (or reconciles) an isolate node and executes its callback when needed.
+   *
+   * - New nodes run callback logic and become part of the next runtime tree.
+   * - Reconciled nodes reuse previous output and emit reconciliation events.
+   */
   // eslint-disable-next-line max-statements
   static create<Payload extends IsolatePayload>(
     type: string,
@@ -26,10 +43,12 @@ export class Isolate {
       parent,
     );
 
+    // Reconciler decides whether this position should reuse a prior node or keep the new one.
     const nextIsolateChild = Reconciler.reconcile(newCreatedNode);
 
     const localHistoryNode = VestRuntime.useHistoryIsolateAtCurrentPosition();
 
+    // Identity equality means reconcile kept the fresh node, so callback must run.
     const shouldRunNew = Object.is(nextIsolateChild, newCreatedNode);
 
     if (parent) {
@@ -41,8 +60,10 @@ export class Isolate {
     let output;
 
     if (shouldRunNew) {
+      // New node execution path: enter runtime context and compute output.
       output = useRunAsNew(localHistoryNode, newCreatedNode, callback);
     } else {
+      // Reconciled path: skip execution and preserve previous output snapshot.
       const emit = useEmit();
       output = nextIsolateChild.output;
       emit('ISOLATE_RECONCILED', nextIsolateChild);
@@ -95,12 +116,16 @@ function useRunAsNew<Callback extends CB = CB>(
   return output;
 }
 
+/**
+ * Runs isolate callback and transitions isolate status for sync and async outputs.
+ */
 function useRunAsNewCallback(current: TIsolate, callback: CB): any {
   const emit = useEmit();
   emit('ISOLATE_ENTER', current);
   const output = callback(current);
 
   if (isPromise(output)) {
+    // Pending isolates complete asynchronously and must emit completion events later.
     emit('ISOLATE_PENDING', current);
     IsolateMutator.setPending(current);
     output.then(

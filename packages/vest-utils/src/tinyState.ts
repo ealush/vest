@@ -1,3 +1,8 @@
+/**
+ * Module: `src/tinyState.ts`.
+ *
+ * Provides `tinyState`-related runtime and type utilities used by `vest-utils`.
+ */
 import dynamicValue from './dynamicValue';
 import { DynamicValue } from './utilityTypes';
 

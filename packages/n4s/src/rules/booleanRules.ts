@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/booleanRules.ts`.
+ *
+ * Provides `booleanRules`-related runtime and type utilities used by `n4s`.
+ */
 import { type DropFirst } from 'vest-utils';
 
 import { RuleInstance } from '../utils/RuleInstance';

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/number/lessThan.ts`.
+ *
+ * Provides `lessThan`-related runtime and type utilities used by `n4s`.
+ */
 import { isNumeric } from 'vest-utils';
 
 // Checks if numeric value is less than the given threshold

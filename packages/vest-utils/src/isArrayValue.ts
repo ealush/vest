@@ -1,3 +1,8 @@
+/**
+ * Module: `src/isArrayValue.ts`.
+ *
+ * Provides `isArrayValue`-related runtime and type utilities used by `vest-utils`.
+ */
 import bindNot from './bindNot';
 
 // The module is named "isArrayValue" since it

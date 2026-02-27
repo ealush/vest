@@ -1,3 +1,8 @@
+/**
+ * Module: `src/eager/allRules.ts`.
+ *
+ * Provides `allRules`-related runtime and type utilities used by `n4s`.
+ */
 import * as arrayRules from '../rules/arrayRules';
 import * as booleanRules from '../rules/booleanRules';
 import * as commonComparison from '../rules/commonComparison';

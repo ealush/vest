@@ -1,3 +1,8 @@
+/**
+ * Module: `src/hooks/optional/optional.ts`.
+ *
+ * Provides `optional`-related runtime and type utilities used by `vest`.
+ */
 import { enforce } from 'n4s';
 import {
   asArray,

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/utils/RuleRunReturn.ts`.
+ *
+ * Provides `RuleRunReturn`-related runtime and type utilities used by `n4s`.
+ */
 import { isBoolean, Stringable, dynamicValue } from 'vest-utils';
 
 /**

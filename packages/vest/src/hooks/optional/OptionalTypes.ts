@@ -1,3 +1,8 @@
+/**
+ * Module: `src/hooks/optional/OptionalTypes.ts`.
+ *
+ * Provides `OptionalTypes`-related runtime and type utilities used by `vest`.
+ */
 import { DynamicValue, OneOrMoreOf } from 'vest-utils';
 
 export type OptionalFields = Record<string, OptionalFieldDeclaration>;

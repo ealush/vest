@@ -1,3 +1,8 @@
+/**
+ * Module: `src/eager/eagerTypes.ts`.
+ *
+ * Provides `eagerTypes`-related runtime and type utilities used by `n4s`.
+ */
 import { TCustomRules } from '../n4sTypes';
 import { MultiTypeInput } from '../rules/schemaRules/schemaRulesTypes';
 import type { RuleInstance } from '../utils/RuleInstance';

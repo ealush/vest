@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/Runtime.ts`.
+ *
+ * Provides `Runtime`-related runtime and type utilities used by `vest`.
+ */
 import { CB, CacheApi, TinyState, cache, seq, tinyState } from 'vest-utils';
 import { IReconciler, VestRuntime } from 'vestjs-runtime';
 

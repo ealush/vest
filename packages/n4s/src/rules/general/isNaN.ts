@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/general/isNaN.ts`.
+ *
+ * Provides `isNaN`-related runtime and type utilities used by `n4s`.
+ */
 import { toNumber } from 'vest-utils';
 
 import { RuleInstance } from '../../utils/RuleInstance';

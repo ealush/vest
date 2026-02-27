@@ -1,3 +1,8 @@
+/**
+ * Module: `src/runner/runAnyoneMethods.ts`.
+ *
+ * Provides `runAnyoneMethods`-related runtime and type utilities used by `anyone`.
+ */
 import { isFunction } from 'vest-utils';
 
 /**

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/enforceContext.ts`.
+ *
+ * Provides `enforceContext`-related runtime and type utilities used by `n4s`.
+ */
 import { createCascade } from 'context';
 import { assign, Nullable } from 'vest-utils';
 

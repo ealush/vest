@@ -1,3 +1,8 @@
+/**
+ * Module: `src/isNumeric.ts`.
+ *
+ * Provides `isNumeric`-related runtime and type utilities used by `vest-utils`.
+ */
 import bindNot from './bindNot';
 
 export function isNumeric(value: string | number): boolean {

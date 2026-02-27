@@ -1,3 +1,8 @@
+/**
+ * Module: `src/hooks/optional/omitOptionalFields.ts`.
+ *
+ * Provides `omitOptionalFields`-related runtime and type utilities used by `vest`.
+ */
 import { isEmpty, dynamicValue } from 'vest-utils';
 import { useEmit } from '../../core/VestBus/VestBus';
 import { VestRuntime } from 'vestjs-runtime';

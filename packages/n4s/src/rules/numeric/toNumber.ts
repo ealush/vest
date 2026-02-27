@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/numeric/toNumber.ts`.
+ *
+ * Provides `toNumber`-related runtime and type utilities used by `n4s`.
+ */
 import { isFailure, toNumber as toNumberValue } from 'vest-utils';
 
 import { RuleRunReturn } from '../../utils/RuleRunReturn';

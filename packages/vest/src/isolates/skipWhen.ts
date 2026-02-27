@@ -1,3 +1,8 @@
+/**
+ * Module: `src/isolates/skipWhen.ts`.
+ *
+ * Provides `skipWhen`-related runtime and type utilities used by `vest`.
+ */
 import { CB, dynamicValue } from 'vest-utils';
 import { TIsolate } from 'vestjs-runtime';
 

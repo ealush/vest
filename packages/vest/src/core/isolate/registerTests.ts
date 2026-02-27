@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/isolate/registerTests.ts`.
+ *
+ * Provides `registerTests`-related runtime and type utilities used by `vest`.
+ */
 import { dynamicValue } from 'vest-utils';
 import { VestRuntime, TIsolate } from 'vestjs-runtime';
 

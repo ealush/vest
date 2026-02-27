@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/number/isBetween.ts`.
+ *
+ * Provides `isBetween`-related runtime and type utilities used by `n4s`.
+ */
 import { bindNot } from 'vest-utils';
 
 import { greaterThanOrEquals as gte } from './greaterThanOrEquals';

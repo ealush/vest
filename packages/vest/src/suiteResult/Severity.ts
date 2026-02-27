@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suiteResult/Severity.ts`.
+ *
+ * Provides `Severity`-related runtime and type utilities used by `vest`.
+ */
 export enum Severity {
   WARNINGS = 'warnings',
   ERRORS = 'errors',

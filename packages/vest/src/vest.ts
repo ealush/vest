@@ -1,3 +1,8 @@
+/**
+ * Module: `src/vest.ts`.
+ *
+ * Provides `vest`-related runtime and type utilities used by `vest`.
+ */
 import { enforce } from 'n4s';
 
 import { registerReconciler } from './core/isolate/VestReconciler';

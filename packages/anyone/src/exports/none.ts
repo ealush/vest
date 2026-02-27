@@ -1,3 +1,8 @@
+/**
+ * Module: `src/exports/none.ts`.
+ *
+ * Provides `none`-related runtime and type utilities used by `anyone`.
+ */
 import { bindNot } from 'vest-utils';
 
 import run from '../runner/runAnyoneMethods';

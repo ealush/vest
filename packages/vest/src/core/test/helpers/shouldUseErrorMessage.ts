@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/test/helpers/shouldUseErrorMessage.ts`.
+ *
+ * Provides `shouldUseErrorMessage`-related runtime and type utilities used by `vest`.
+ */
 import {
   Maybe,
   isStringValue,

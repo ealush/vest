@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/compoundRules/compoundRules.ts`.
+ *
+ * Provides `compoundRules`-related runtime and type utilities used by `n4s`.
+ */
 import './compoundRulesTypes';
 
 export { allOf, type AllOfRuleInstance } from './allOf';

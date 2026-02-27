@@ -1,3 +1,8 @@
+/**
+ * Module: `src/hooks/focused/focused.ts`.
+ *
+ * Provides `focused`-related runtime and type utilities used by `vest`.
+ */
 import { Maybe, OneOrMoreOf, Result, makeResult } from 'vest-utils';
 import {
   IsolateFocused as VestRuntimeIsolateFocused,

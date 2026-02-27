@@ -1,3 +1,8 @@
+/**
+ * Module: `src/lazy/ruleAdapter.ts`.
+ *
+ * Provides `ruleAdapter`-related runtime and type utilities used by `n4s`.
+ */
 import { ctx } from '../enforceContext';
 import { addToChain } from '../rules/genRuleChain';
 import { RuleInstance } from '../utils/RuleInstance';

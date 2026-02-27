@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suite/useCreateSuiteRunner.ts`.
+ *
+ * Provides `useCreateSuiteRunner`-related runtime and type utilities used by `vest`.
+ */
 import {
   assign,
   asArray,

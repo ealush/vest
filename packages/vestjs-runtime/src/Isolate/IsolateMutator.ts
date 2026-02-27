@@ -1,3 +1,8 @@
+/**
+ * Module: `src/Isolate/IsolateMutator.ts`.
+ *
+ * Provides `IsolateMutator`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 import {
   Nullable,
   invariant,

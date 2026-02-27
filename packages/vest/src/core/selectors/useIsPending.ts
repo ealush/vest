@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/selectors/useIsPending.ts`.
+ *
+ * Provides `useIsPending`-related runtime and type utilities used by `vest`.
+ */
 import {
   IsolateInspector,
   TIsolate,

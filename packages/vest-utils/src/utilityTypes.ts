@@ -1,3 +1,8 @@
+/**
+ * Module: `src/utilityTypes.ts`.
+ *
+ * Provides `utilityTypes`-related runtime and type utilities used by `vest-utils`.
+ */
 export type DropFirst<T extends unknown[]> = T extends [unknown, ...infer U]
   ? U
   : never;

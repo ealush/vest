@@ -1,3 +1,8 @@
+/**
+ * Module: `src/testUtils/suiteDummy.ts`.
+ *
+ * Provides `suiteDummy`-related runtime and type utilities used by `vest`.
+ */
 import { OneOrMoreOf, asArray, Maybe } from 'vest-utils';
 
 import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';

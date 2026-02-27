@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/nullish/isNull.ts`.
+ *
+ * Provides `isNull`-related runtime and type utilities used by `n4s`.
+ */
 import { isNull as isNullValue } from 'vest-utils';
 
 /**

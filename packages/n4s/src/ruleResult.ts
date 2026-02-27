@@ -1,3 +1,8 @@
+/**
+ * Module: `src/ruleResult.ts`.
+ *
+ * Provides `ruleResult`-related runtime and type utilities used by `n4s`.
+ */
 import { dynamicValue, invariant, isNullish, StringObject } from 'vest-utils';
 import type { Stringable } from 'vest-utils';
 

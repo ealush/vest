@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suiteResult/suiteResult.ts`.
+ *
+ * Provides `suiteResult`-related runtime and type utilities used by `vest`.
+ */
 import { assign } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 import { VestRuntime } from 'vestjs-runtime';

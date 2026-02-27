@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suite/runCallbacks.ts`.
+ *
+ * Provides `runCallbacks`-related runtime and type utilities used by `vest`.
+ */
 import { isArray, callEach, greaterThan } from 'vest-utils';
 
 import { useDoneCallbacks, useFieldCallbacks } from '../core/Runtime';

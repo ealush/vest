@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/general/isNotUndefined.ts`.
+ *
+ * Provides `isNotUndefined`-related runtime and type utilities used by `n4s`.
+ */
 import { isNotUndefined as isNotUndefinedValue } from 'vest-utils';
 
 /**

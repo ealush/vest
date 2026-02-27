@@ -1,3 +1,8 @@
+/**
+ * Module: `src/Predicates.ts`.
+ *
+ * Provides `Predicates`-related runtime and type utilities used by `vest-utils`.
+ */
 import dynamicValue from './dynamicValue';
 import { isEmpty } from './isEmpty';
 import { Predicate } from './utilityTypes';

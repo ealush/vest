@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/generalRules.ts`.
+ *
+ * Provides `generalRules`-related runtime and type utilities used by `n4s`.
+ */
 import { RuleInstance } from '../utils/RuleInstance';
 
 // Common type for rules that accept any value

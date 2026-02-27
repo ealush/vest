@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suite/useCreateSuiteMethods.ts`.
+ *
+ * Provides `useCreateSuiteMethods`-related runtime and type utilities used by `vest`.
+ */
 import { CB, makeBrand, withCatch } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 

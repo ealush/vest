@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suite/validateSuiteCallback/validateSuiteCallback.ts`.
+ *
+ * Provides `validateSuiteCallback`-related runtime and type utilities used by `vest`.
+ */
 import { CB, isFunction, makeResult, Result } from 'vest-utils';
 
 import { ErrorStrings } from '../../errors/ErrorStrings';

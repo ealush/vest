@@ -1,3 +1,8 @@
+/**
+ * Module: `src/exports/minifyObject.ts`.
+ *
+ * Provides `minifyObject`-related runtime and type utilities used by `vest-utils`.
+ */
 import isUnsafeKey from '../isUnsafeKey';
 import { isArray } from '../isArrayValue';
 import { isEmpty } from '../isEmpty';

@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/schemaRules/isArrayOf.ts`.
+ *
+ * Provides `isArrayOf`-related runtime and type utilities used by `n4s`.
+ */
 /* eslint-disable max-nested-callbacks */
 import { lengthEquals, mapFirst } from 'vest-utils';
 

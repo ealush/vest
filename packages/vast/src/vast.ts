@@ -1,3 +1,8 @@
+/**
+ * Module: `src/vast.ts`.
+ *
+ * Provides `vast`-related runtime and type utilities used by `vast`.
+ */
 import { CB, DynamicValue, Maybe, isFunction, dynamicValue } from 'vest-utils';
 
 // eslint-disable-next-line max-lines-per-function

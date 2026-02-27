@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suite/getTypedMethods.ts`.
+ *
+ * Provides `getTypedMethods`-related runtime and type utilities used by `vest`.
+ */
 import { CB, DynamicValue } from 'vest-utils';
 import { TIsolate, IsolateKey } from 'vestjs-runtime';
 

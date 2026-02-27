@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/schemaRules/schemaObjectUtils.ts`.
+ *
+ * Provides `schemaObjectUtils`-related runtime and type utilities used by `n4s`.
+ */
 import { isObject, isUnsafeKey } from 'vest-utils';
 
 /**

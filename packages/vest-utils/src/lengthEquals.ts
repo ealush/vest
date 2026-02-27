@@ -1,3 +1,8 @@
+/**
+ * Module: `src/lengthEquals.ts`.
+ *
+ * Provides `lengthEquals`-related runtime and type utilities used by `vest-utils`.
+ */
 import bindNot from './bindNot';
 import { numberEquals } from './numberEquals';
 

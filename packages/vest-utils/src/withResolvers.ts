@@ -1,3 +1,8 @@
+/**
+ * Module: `src/withResolvers.ts`.
+ *
+ * Provides `withResolvers`-related runtime and type utilities used by `vest-utils`.
+ */
 import isFunction from './isFunction';
 import { noop } from './noop';
 

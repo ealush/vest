@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suiteResult/SuiteResultTypes.ts`.
+ *
+ * Provides `SuiteResultTypes`-related runtime and type utilities used by `vest`.
+ */
 import { CB, Nullable } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 

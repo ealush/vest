@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/schemaRules/partial.ts`.
+ *
+ * Provides `partial`-related runtime and type utilities used by `n4s`.
+ */
 import { hasOwnProperty, isObject } from 'vest-utils';
 
 import { ctx } from '../../enforceContext';

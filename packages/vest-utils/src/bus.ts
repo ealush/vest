@@ -1,3 +1,8 @@
+/**
+ * Module: `src/bus.ts`.
+ *
+ * Provides `bus`-related runtime and type utilities used by `vest-utils`.
+ */
 import type { CB } from './utilityTypes';
 
 const EVENT_WILDCARD = '*';

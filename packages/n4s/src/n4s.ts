@@ -1,3 +1,8 @@
+/**
+ * Module: `src/n4s.ts`.
+ *
+ * Provides `n4s`-related runtime and type utilities used by `n4s`.
+ */
 import { assign } from 'vest-utils';
 
 import { enforceEager } from './eager';

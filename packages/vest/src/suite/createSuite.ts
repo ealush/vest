@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suite/createSuite.ts`.
+ *
+ * Provides `createSuite`-related runtime and type utilities used by `vest`.
+ */
 import { CB, makeResult, Result } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
@@ -18,6 +23,13 @@ import {
 import { validateSuiteCallback } from './validateSuiteCallback/validateSuiteCallback';
 
 // @vx-allow use-use
+/**
+ * Creates a typed Vest suite and binds it to a dedicated runtime state container.
+ *
+ * The returned suite function is lifecycle-aware: each invocation runs inside
+ * the suite runtime context, with method helpers and bus subscriptions already
+ * initialized.
+ */
 function createSuite<
   F extends TFieldName = TFieldName,
   G extends TGroupName = TGroupName,
@@ -31,6 +43,7 @@ function createSuite<
   T extends CB = CB,
   S extends TSchema = undefined,
 >(suiteCallback: T, schema?: S): Suite<F, G, T, S> {
+  // Validate once up-front so runtime execution can assume a normalized callback shape.
   const suiteCallbackResult = validateSuiteCallback(suiteCallback).unwrap();
 
   // Create a stateRef for the suite
@@ -41,11 +54,13 @@ function createSuite<
   // We do this within the VestRuntime so that the suite methods
   // will be bound to the suite's stateRef and be able to access it.
   return VestRuntime.Run(stateRef, () => {
+    // Each suite instance owns a bus used for orchestrating test/suite lifecycle events.
     const VestBus = useInitVestBus();
 
     return createSuiteInstance().unwrap();
 
     function createSuiteInstance(): Result<Suite<F, G, T, S>> {
+      // Build the method facade (`test`, `group`, `only`, etc.) around the validated callback.
       const methods = useCreateSuiteMethods<F, G, T, S>(
         suiteCallbackResult as any,
         {},
@@ -53,6 +68,7 @@ function createSuite<
         schema,
       );
 
+      // Lifecycle binding injects post-run hooks and exposes the user-facing suite API.
       return makeResult.Ok(useBindSuiteLifecycle(methods));
     }
   });

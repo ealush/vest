@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/string/isString.ts`.
+ *
+ * Provides `isString`-related runtime and type utilities used by `n4s`.
+ */
 import { isStringValue } from 'vest-utils';
 
 /**

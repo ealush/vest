@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/objectRules.ts`.
+ *
+ * Provides `objectRules`-related runtime and type utilities used by `n4s`.
+ */
 import { RuleInstance } from '../utils/RuleInstance';
 
 export interface ObjectRuleInstance extends RuleInstance<object, [object]> {}

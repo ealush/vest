@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suiteResult/selectors/LazyDraft.ts`.
+ *
+ * Provides `LazyDraft`-related runtime and type utilities used by `vest`.
+ */
 import {
   SuiteResult,
   SuiteSummary,

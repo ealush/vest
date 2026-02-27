@@ -1,3 +1,8 @@
+/**
+ * Module: `src/exports/date.ts`.
+ *
+ * Provides `date`-related runtime and type utilities used by `n4s`.
+ */
 import isAfter from 'validator/es/lib/isAfter';
 import isBefore from 'validator/es/lib/isBefore';
 import isDate from 'validator/es/lib/isDate';

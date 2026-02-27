@@ -1,3 +1,8 @@
+/**
+ * Module: `src/exports/classnames.ts`.
+ *
+ * Provides `classnames`-related runtime and type utilities used by `vest`.
+ */
 import { isFunction, makeBrand } from 'vest-utils';
 
 import {

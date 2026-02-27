@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/compoundRules/anyOf.ts`.
+ *
+ * Provides `anyOf`-related runtime and type utilities used by `n4s`.
+ */
 import { mapFirst } from 'vest-utils';
 
 import { RuleInstance } from '../../utils/RuleInstance';

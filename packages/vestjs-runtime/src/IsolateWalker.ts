@@ -1,3 +1,8 @@
+/**
+ * Module: `src/IsolateWalker.ts`.
+ *
+ * Provides `IsolateWalker`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 import {
   Nullable,
   isNullish,

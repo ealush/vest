@@ -1,3 +1,8 @@
+/**
+ * Module: `src/defaultTo.ts`.
+ *
+ * Provides `defaultTo`-related runtime and type utilities used by `vest-utils`.
+ */
 import dynamicValue from './dynamicValue';
 import { DynamicValue, Nullish } from './utilityTypes';
 

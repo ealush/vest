@@ -1,3 +1,8 @@
+/**
+ * Module: `src/testUtils/partition.ts`.
+ *
+ * Provides `partition`-related runtime and type utilities used by `vest`.
+ */
 export default function partition<T>(
   array: T[],
   predicate: (_value: T, _index: number, _array: T[]) => boolean,

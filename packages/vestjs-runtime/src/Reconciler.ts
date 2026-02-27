@@ -1,3 +1,8 @@
+/**
+ * Module: `src/Reconciler.ts`.
+ *
+ * Provides `Reconciler`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 import {
   Maybe,
   Nullable,

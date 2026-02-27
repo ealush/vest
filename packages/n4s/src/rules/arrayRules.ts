@@ -1,3 +1,8 @@
+/**
+ * Module: `src/rules/arrayRules.ts`.
+ *
+ * Provides `arrayRules`-related runtime and type utilities used by `n4s`.
+ */
 import { isEmpty, isNotEmpty } from 'vest-utils';
 
 import { BuildRuleInstance, ExtractRuleFunctions } from './RuleInstanceBuilder';

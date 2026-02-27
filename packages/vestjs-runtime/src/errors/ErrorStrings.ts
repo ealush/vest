@@ -1,3 +1,8 @@
+/**
+ * Module: `src/errors/ErrorStrings.ts`.
+ *
+ * Provides `ErrorStrings`-related runtime and type utilities used by `vestjs-runtime`.
+ */
 export enum ErrorStrings {
   NO_ACTIVE_ISOLATE = 'Not within an active isolate',
   UNABLE_TO_PICK_NEXT_ISOLATE = 'Unable to pick next isolate. This is a bug, please report it to the Vest maintainers.',

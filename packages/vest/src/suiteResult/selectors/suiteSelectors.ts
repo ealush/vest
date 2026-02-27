@@ -1,3 +1,8 @@
+/**
+ * Module: `src/suiteResult/selectors/suiteSelectors.ts`.
+ *
+ * Provides `suiteSelectors`-related runtime and type utilities used by `vest`.
+ */
 import {
   Maybe,
   greaterThan,

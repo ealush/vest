@@ -1,3 +1,8 @@
+/**
+ * Module: `src/core/test/testLevelFlowControl/runTest.ts`.
+ *
+ * Provides `runTest`-related runtime and type utilities used by `vest`.
+ */
 import {
   isPromise,
   isStringValue,

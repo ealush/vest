@@ -1,3 +1,8 @@
+/**
+ * Module: `src/hooks/warn.ts`.
+ *
+ * Provides `warn`-related runtime and type utilities used by `vest`.
+ */
 import { useWarn } from './useWarn';
 
 /**

@@ -74,7 +74,7 @@ type FocusedMethods<
     FocusedMethods<F, G, T, S>,
     [fieldName: F | string, callback: CB]
   >;
-  focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F>]>;
+  focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<
     FocusedMethods<F, G, T, S>,
     [onlyField: FieldExclusion<F> | FieldExclusion<string>]
@@ -99,7 +99,7 @@ type AfterMethods<
     AfterMethods<F, G, T, S>,
     [fieldName: F | string, callback: CB]
   >;
-  focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F>]>;
+  focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<
     FocusedMethods<F, G, T, S>,
     [onlyField: FieldExclusion<F> | FieldExclusion<string>]
@@ -125,9 +125,12 @@ type AfterMethods<
  * - `onlyGroup` — Run only tests inside the named group(s). Top-level tests
  *   outside any group are also excluded.
  */
-export type SuiteModifiers<F extends TFieldName> = {
+export type SuiteModifiers<
+  F extends TFieldName,
+  G extends TGroupName = TGroupName,
+> = {
   only?: FieldExclusion<F> | FieldExclusion<string>;
-  onlyGroup?: string | string[];
+  onlyGroup?: G | G[];
   skip?: FieldExclusion<F> | FieldExclusion<string>;
-  skipGroup?: string | string[];
+  skipGroup?: G | G[];
 };

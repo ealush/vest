@@ -85,6 +85,15 @@ create(data => {
 }, schema);
 
 // ✅ Should allow generic typing when no schema
+
+const inferredFieldSuite = create(data => {
+  test('username', () => {
+    enforce(data.username).isNotEmpty();
+  });
+}, userSchema);
+
+inferredFieldSuite.remove('username');
+inferredFieldSuite.focus({ only: 'age' });
 const suite2 = create((data: { foo: string; bar: number }) => {
   test('foo', () => {
     enforce(data.foo).isNotEmpty();

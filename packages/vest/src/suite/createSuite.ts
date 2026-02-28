@@ -5,6 +5,7 @@ import { useCreateVestState } from '../core/Runtime';
 import { useInitVestBus } from '../core/VestBus/VestBus';
 import { VestReconciler } from '../core/isolate/VestReconciler';
 import {
+  InferSchemaData,
   TFieldName,
   TGroupName,
   TSchema,
@@ -17,6 +18,19 @@ import {
 } from './useCreateSuiteMethods';
 import { validateSuiteCallback } from './validateSuiteCallback/validateSuiteCallback';
 
+type SuiteConfig = {
+  fields: string;
+  groups?: string;
+};
+
+// @vx-allow use-use
+function createSuite<
+  S extends TSchema,
+  T extends (data: InferSchemaData<S>, ...args: any[]) => void = (
+    data: InferSchemaData<S>,
+    ...args: any[]
+  ) => void,
+>(suiteCallback: T, schema: S): Suite<TFieldName, TGroupName, T, S>;
 // @vx-allow use-use
 function createSuite<
   F extends TFieldName = TFieldName,
@@ -26,6 +40,23 @@ function createSuite<
 >(suiteCallback: SuiteCallbackWithSchema<S, T>, schema?: S): Suite<F, G, T, S>;
 // @vx-allow use-use
 function createSuite<
+  C extends SuiteConfig,
+  Data = any,
+  T extends (data: Data, ...args: any[]) => void = (
+    data: Data,
+    ...args: any[]
+  ) => void,
+>(
+  suiteCallback: T,
+  schema?: any,
+): Suite<
+  C['fields'],
+  C['groups'] extends string ? C['groups'] : string,
+  T,
+  undefined
+>;
+// @vx-allow use-use
+function createSuite<
   F extends TFieldName = TFieldName,
   G extends TGroupName = TGroupName,
   T extends CB = CB,
@@ -33,13 +64,8 @@ function createSuite<
 >(suiteCallback: T, schema?: S): Suite<F, G, T, S> {
   const suiteCallbackResult = validateSuiteCallback(suiteCallback).unwrap();
 
-  // Create a stateRef for the suite
-  // It holds the suite's persisted values that may remain between runs.
   const stateRef = useCreateVestState({ VestReconciler });
 
-  // Assign methods to the suite
-  // We do this within the VestRuntime so that the suite methods
-  // will be bound to the suite's stateRef and be able to access it.
   return VestRuntime.Run(stateRef, () => {
     const VestBus = useInitVestBus();
 

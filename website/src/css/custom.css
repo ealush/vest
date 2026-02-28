@@ -15,49 +15,54 @@
   --vest-pink: #ff4f8f;
   --vest-slate: #0f172a;
 
-  /* Midnight & Neon palette (light mode) */
-  --ifm-color-primary: #5f6afc;
-  --ifm-color-primary-dark: #4c55e8;
-  --ifm-color-primary-darker: #3d3fcf;
-  --ifm-color-primary-darkest: #2d2ea8;
-  --ifm-color-primary-light: #7f8bff;
-  --ifm-color-primary-lighter: #a7b3ff;
-  --ifm-color-primary-lightest: #d9ddff;
+  /* Midnight & Neon palette */
+  --ifm-color-primary: #ff4dc4;
+  --ifm-color-primary-dark: #ff2db8;
+  --ifm-color-primary-darker: #ed1da8;
+  --ifm-color-primary-darkest: #c10086;
+  --ifm-color-primary-light: #ff72d2;
+  --ifm-color-primary-lighter: #ff97e0;
+  --ifm-color-primary-lightest: #ffc9ef;
 
-  --ifm-background-color: #ffffff;
-  --ifm-navbar-background-color: rgba(255, 255, 255, 0.82);
+  --ifm-background-color: #0a0d24;
+  --ifm-navbar-background-color: rgba(10, 13, 36, 0.74);
   --ifm-navbar-shadow: none;
-  --ifm-heading-color: #0b1021;
-  --ifm-font-color-base: #0f172a;
-  --ifm-card-background-color: #eef1f7;
-  --docusaurus-highlighted-code-line-bg: rgba(99, 102, 241, 0.1);
+  --ifm-heading-color: #ffe4f8;
+  --ifm-font-color-base: #f1ddff;
+  --ifm-card-background-color: rgba(27, 20, 56, 0.8);
+  --docusaurus-highlighted-code-line-bg: rgba(255, 77, 196, 0.14);
 
-  /* Light mode code block improvements */
-  --prism-background-color: #f6f8fa;
-  --prism-color: #24292e;
+  /* Code block improvements */
+  --prism-background-color: #131633;
+  --prism-color: #f8ecff;
 
   /* Global background gradient */
   --vest-body-bg-gradient: linear-gradient(
     180deg,
-    rgba(247, 249, 253, 0.75),
-    rgba(252, 252, 255, 0.98)
+    #090d2b 0%,
+    #0a0520 50%,
+    #060313 100%
   );
 
   /* Footer theming */
-  --vest-footer-bg: #1e293b;
-  --vest-footer-color: #e2e8f0;
-  --vest-neon-cyan: #22d3ee;
-  --vest-neon-magenta: #f472b6;
-  --vest-neon-violet: #7c3aed;
+  --vest-footer-bg: linear-gradient(
+    180deg,
+    rgba(255, 77, 196, 0.12),
+    rgba(7, 4, 18, 0.95)
+  );
+  --vest-footer-color: #f2d9ff;
+  --vest-neon-cyan: #7de6ff;
+  --vest-neon-magenta: #ff4dc4;
+  --vest-neon-violet: #a45bff;
 }
 
 html[data-theme='dark'] {
-  --ifm-background-color: var(--vest-slate);
-  --ifm-font-color-base: #e6e9f4;
-  --ifm-heading-color: #f8fafc;
-  --ifm-navbar-background-color: rgba(15, 23, 42, 0.78);
-  --ifm-card-background-color: rgba(22, 30, 46, 0.7);
-  --docusaurus-highlighted-code-line-bg: rgba(99, 102, 241, 0.15);
+  --ifm-background-color: #070412;
+  --ifm-font-color-base: #f1ddff;
+  --ifm-heading-color: #ffe4f8;
+  --ifm-navbar-background-color: rgba(10, 6, 28, 0.76);
+  --ifm-card-background-color: rgba(24, 16, 52, 0.78);
+  --docusaurus-highlighted-code-line-bg: rgba(255, 77, 196, 0.16);
   --vest-body-bg-gradient: none;
   --vest-footer-bg: linear-gradient(
     180deg,
@@ -81,13 +86,13 @@ body::before {
   background:
     radial-gradient(
       circle at 15% 0%,
-      rgba(124, 58, 237, 0.09),
-      transparent 40%
+      rgba(255, 77, 196, 0.18),
+      transparent 38%
     ),
     radial-gradient(
       circle at 85% 10%,
-      rgba(34, 211, 238, 0.08),
-      transparent 38%
+      rgba(118, 57, 255, 0.14),
+      transparent 42%
     );
 }
 
@@ -97,8 +102,8 @@ main {
 
 .navbar {
   background-color: transparent !important;
-  border-bottom: 1px solid var(--ifm-color-emphasis-200);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid rgba(255, 97, 206, 0.24);
+  box-shadow: 0 12px 30px rgba(6, 3, 20, 0.45);
 }
 
 .navbar::before {
@@ -125,8 +130,8 @@ html[data-theme='dark'] .navbar::after {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(34, 211, 238, 0.8),
-    rgba(244, 114, 182, 0.85),
+    rgba(143, 115, 255, 0.76),
+    rgba(255, 77, 196, 0.9),
     transparent
   );
 }

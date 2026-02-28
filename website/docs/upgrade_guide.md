@@ -80,6 +80,35 @@ The `.done()` method on the result object has been removed. Use `suite.afterEach
 + const result = await suite.run(data);
 ```
 
+## Field-Focused Validation with `suite.focus()` and `suite.only()`
+
+V6 introduces `suite.focus()` and `suite.only()` as the recommended way to run validation for specific fields. In V5, you had to pass the field name into the suite callback and call `only()` inside it. In V6, you declare what to focus on externally, keeping focus logic separate from validation logic.
+
+```diff
+- const suite = create((data, fieldName) => {
+-   only(fieldName);
+-   test('username', 'Username is required', () => { ... });
+-   test('email', 'Email is required', () => { ... });
+- });
+- suite(formData, 'email');
+
++ const suite = create(data => {
++   test('username', 'Username is required', () => { ... });
++   test('email', 'Email is required', () => { ... });
++ });
++ suite.only('email').run(formData);
+```
+
+`suite.focus()` accepts a config object with `only`, `skip`, `onlyGroup`, and `skipGroup` modifiers, allowing you to combine multiple criteria in a single call:
+
+```javascript
+suite.focus({ only: 'email', skipGroup: 'signUp' }).run(formData);
+```
+
+`suite.only(field)` is a shorthand for `suite.focus({ only: field })`.
+
+The V5 pattern of calling `only()` and `skip()` inside the callback still works, but the new suite-level methods are recommended for cleaner separation of concerns.
+
 ## Standard Schema Support
 
 Vest implements the [Standard Schema](https://github.com/standard-schema/standard-schema) spec. You can now use Vest suites directly with libraries that support this standard.
@@ -109,13 +138,18 @@ I am migrating my Vest validation suites from version 5 to version 6. Please ref
     - Remove `import { promisify } from 'vest'`.
     - Remove `promisify(suite)`.
     - Change `await suite(data)` or `promisified(data)` to `await suite.run(data)`.
-    - Remove `.done()` callbacks. Use `await suite.run()` or `suite.afterEach()`.
+    - Remove `.done()` callbacks. Use `await suite.afterField('fieldName', callback)` or `suite.afterEach(callback)`.
 
 4.  **Memoization**:
     - Change `test.memo(...)` to `memo(() => { test(...) }, deps)`.
     - Ensure `memo` is imported from 'vest/memo': `import { memo } from 'vest/memo';`.
 
-5.  **General**:
+5.  **Field-Focused Validation**:
+    - If the suite callback accepts a second argument used with `only(fieldName)` inside the callback, refactor it to use `suite.only(fieldName).run(data)` or `suite.focus({ only: fieldName }).run(data)` at the call site instead.
+    - Remove the extra callback parameter and the `only()` / `skip()` call from inside the callback body.
+    - For group-level skipping, replace `skip(true)` inside `group()` with `suite.focus({ skipGroup: 'groupName' }).run(data)`.
+
+6.  **General**:
     - Keep all validation logic intact.
     - Preserve comments.
 ```

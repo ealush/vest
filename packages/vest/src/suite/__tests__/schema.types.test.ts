@@ -185,6 +185,95 @@ describe('schema driven suite types', () => {
   });
 });
 
+describe('schema inferred suite typing coverage', () => {
+  it('keeps callback and run payload strongly typed while allowing dynamic field APIs', () => {
+    const accountSchema = enforce.shape({
+      username: enforce.isString(),
+      age: enforce.isNumber(),
+      profile: enforce.shape({
+        bio: enforce.isString(),
+      }),
+    });
+
+    const suite = create(data => {
+      test('username', () => {
+        enforce(data.username).isNotBlank();
+      });
+      test('age', () => {
+        enforce(data.age).greaterThan(17);
+      });
+      test('profile', () => {
+        enforce(data.profile.bio).isString();
+      });
+    }, accountSchema);
+
+    suite.remove('username');
+    suite.resetField('age');
+    suite.afterField('profile', () => {
+      const result = suite.get();
+      result.hasErrors('profile');
+      result.getErrors('profile');
+    });
+
+    suite.focus({ only: 'username' }).run({
+      username: 'john',
+      age: 20,
+      profile: { bio: 'hello' },
+    });
+
+    suite.only(['username', 'age']).run({
+      username: 'john',
+      age: 20,
+      profile: { bio: 'hello' },
+    });
+
+    const result = suite.run({
+      username: 'john',
+      age: 20,
+      profile: { bio: 'hello' },
+    });
+
+    result.hasErrors('username');
+    result.hasErrors('age');
+    result.hasErrors('profile');
+
+    // Unknown field names are still allowed for dynamic/nested suites.
+    suite.remove('email');
+    suite.resetField('email');
+    suite.afterField('email', () => {});
+    suite.focus({ only: 'email' }).run({
+      username: 'john',
+      age: 20,
+      profile: { bio: 'hello' },
+    });
+    suite.only('email').run({
+      username: 'john',
+      age: 20,
+      profile: { bio: 'hello' },
+    });
+    result.hasErrors('email');
+
+    // @ts-expect-error - schema-inferred run requires full typed payload
+    suite.run({ username: 'john' });
+  });
+
+  it('keeps group modifiers open when groups are not explicitly typed', () => {
+    const schema = enforce.shape({
+      username: enforce.isString(),
+    });
+
+    const suite = create(data => {
+      test('username', () => {
+        enforce(data.username).isNotBlank();
+      });
+    }, schema);
+
+    suite.focus({ onlyGroup: 'auth', skipGroup: ['admin', 'internal'] }).run({
+      username: 'john',
+    });
+  });
+});
+
 describe('Schema Type Safety', () => {
   it('should allow valid data that matches schema', () => {
     const schema = enforce.shape({

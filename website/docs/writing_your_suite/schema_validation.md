@@ -49,6 +49,56 @@ When you pass a schema to `create`:
 2.  If the data structure doesn't match the schema (e.g., `age` is a string instead of a number), the suite run fails immediately for those fields.
 3.  Your tests run assuming the data types are correct.
 
+## TypeScript Inference for `create`
+
+When a schema is passed as the second argument to `create`, Vest infers the suite callback data type and `run(...)` payload type directly from that schema.
+
+```typescript
+const userSchema = enforce.shape({
+  username: enforce.isString(),
+  age: enforce.isNumber(),
+});
+
+const suite = create(data => {
+  // data is inferred as: { username: string; age: number }
+  test('username', () => {
+    enforce(data.username).isNotBlank();
+  });
+
+  // `run` payload is typed from schema
+  suite.run({ username: 'john', age: 42 });
+
+  // TypeScript error: `age` must be a number
+  // suite.run({ username: 'john', age: '42' });
+}, userSchema);
+```
+
+### What becomes typed from the schema
+
+With `create(callback, schema)`, TypeScript narrows:
+
+- callback data (`data`) to the schema input shape.
+- `suite.run(...)` / `suite.validate(...)` first argument to the schema input shape.
+- `result.types.input` and `result.types.output` to schema input/output types.
+
+Field-name APIs (`remove`, `resetField`, `only`, `focus.only`, selectors) intentionally stay open to `string` to support dynamic keys and nested field naming patterns.
+
+Group modifiers (`onlyGroup` / `skipGroup`) remain `string` unless you explicitly provide group generics to `create`.
+
+### Explicit generic override (advanced)
+
+If needed, you can still provide explicit suite generics to fully control field/group names:
+
+```typescript
+const suite = create<'username' | 'age', 'account'>(data => {
+  test('username', () => {
+    enforce(data.username).isNotBlank();
+  });
+});
+
+suite.focus({ onlyGroup: 'account' }); // typed group name
+```
+
 :::note Focused runs
 When you focus the suite with `suite.only()` or `suite.focus({ only })`, schema validation is skipped for fields outside the focus scope. This allows you to validate a single field even if the full payload does not satisfy the schema.
 

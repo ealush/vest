@@ -144,7 +144,7 @@ export default function AsyncTestsSandpack() {
         }}
         customSetup={{
           dependencies: {
-            vest: 'next',
+            vest: 'latest',
           },
         }}
         options={{

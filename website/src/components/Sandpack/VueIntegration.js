@@ -182,7 +182,7 @@ export default function VueIntegrationSandpack() {
         }}
         customSetup={{
           dependencies: {
-            vest: 'next',
+            vest: 'latest',
           },
         }}
         options={{

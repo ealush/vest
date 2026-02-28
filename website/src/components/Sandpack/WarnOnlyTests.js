@@ -142,7 +142,7 @@ export default function WarnOnlyTestsSandpack() {
         }}
         customSetup={{
           dependencies: {
-            vest: 'next',
+            vest: 'latest',
           },
         }}
         options={{

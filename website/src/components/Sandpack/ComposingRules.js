@@ -107,7 +107,7 @@ export default function ComposingRulesSandpack() {
         }}
         customSetup={{
           dependencies: {
-            vest: 'next',
+            vest: 'latest',
           },
         }}
         options={{

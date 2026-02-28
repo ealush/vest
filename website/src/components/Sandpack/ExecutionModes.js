@@ -156,7 +156,7 @@ export default function ExecutionModesSandpack() {
         }}
         customSetup={{
           dependencies: {
-            vest: 'next',
+            vest: 'latest',
           },
         }}
         options={{

@@ -110,6 +110,7 @@ If needed, you can still provide explicit suite generics to fully control field/
 
 ```typescript
 const suite = create<'username' | 'age', 'account'>(data => {
+  // Without a schema, `data` is intentionally untyped (effectively `any`).
   test('username', () => {
     enforce(data.username).isNotBlank();
   });

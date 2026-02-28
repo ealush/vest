@@ -13,6 +13,7 @@ import {
   isNextBranch,
   isReleaseKeepVersionBranch,
   isNightlyBranch,
+  isLatestBranch,
   CURRENT_BRANCH,
 } from 'vx/util/taggedBranch.js';
 import { usePackage } from 'vx/vxContext.js';
@@ -92,6 +93,10 @@ function pickTagId(nextVersion: string): string {
 
   if (isNightlyBranch) {
     return getTag(nextVersion, release_tags.NIGHTLY, nextHash);
+  }
+
+  if (isLatestBranch) {
+    return getTag(nextVersion, release_tags.NEXT, nextHash);
   }
 
   throw Error('pickTagId: Encountered an unexpected input.');

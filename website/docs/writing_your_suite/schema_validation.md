@@ -64,13 +64,13 @@ const suite = create(data => {
   test('username', () => {
     enforce(data.username).isNotBlank();
   });
-
-  // `run` payload is typed from schema
-  suite.run({ username: 'john', age: 42 });
-
-  // TypeScript error: `age` must be a number
-  // suite.run({ username: 'john', age: '42' });
 }, userSchema);
+
+// `run` payload is typed from schema
+suite.run({ username: 'john', age: 42 });
+
+// TypeScript error: `age` must be a number
+// suite.run({ username: 'john', age: '42' });
 ```
 
 ### What becomes typed from the schema

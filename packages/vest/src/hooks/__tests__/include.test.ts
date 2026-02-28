@@ -151,6 +151,26 @@ describe('include', () => {
             expect(res).toMatchSnapshot();
           });
         });
+
+        it('should not run the included field when condition is undefined', () => {
+          const suite = vest.create(() => {
+            vest.only('field_1');
+            // @ts-expect-error runtime safety for undefined input
+            vest.include('field_2').when(undefined);
+
+            vest.test('field_1', () => false);
+            vest.test('field_2', () => false);
+            vest.test('field_3', () => false);
+          });
+
+          const res = suite.run();
+          expect(res.hasErrors('field_1')).toBe(true);
+          expect(res.tests.field_1.testCount).toBe(1);
+          expect(res.hasErrors('field_2')).toBe(false);
+          expect(res.tests.field_2.testCount).toBe(0);
+          expect(res.hasErrors('field_3')).toBe(false);
+          expect(res.tests.field_3.testCount).toBe(0);
+        });
       });
       describe('`when` param is a function', () => {
         describe('when returning `true`', () => {

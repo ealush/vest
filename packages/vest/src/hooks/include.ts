@@ -1,4 +1,5 @@
 import { dynamicValue, invariant, isStringValue, makeBrand } from 'vest-utils';
+import { IsolateTransient, type TIsolate } from 'vestjs-runtime';
 
 import { useInclusion } from '../core/context/SuiteContext';
 import { TIsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
@@ -8,6 +9,8 @@ import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
 import { useHasOnliedTests } from './focused/useHasOnliedTests';
+
+const INCLUDE_UNSET = Symbol('include_unset');
 
 /**
  * Conditionally includes a field for testing, based on specified criteria.
@@ -34,10 +37,15 @@ export function include<F extends TFieldName, G extends TGroupName>(
   when: (condition: F | string | TFieldName | TDraftCondition<F, G>) => void;
 } {
   invariant(isStringValue(fieldName));
-  const inclusion = useInclusion();
   const safeFieldName = makeBrand<TFieldName>(fieldName);
+  const conditionRef: IncludeConditionRef<F, G> = {
+    current: INCLUDE_UNSET,
+  };
 
-  inclusion[safeFieldName] = true;
+  IsolateTransient(useSetIncluded, 'Include', {
+    conditionRef,
+    fieldName: safeFieldName,
+  });
 
   return { when };
 
@@ -49,19 +57,47 @@ export function include<F extends TFieldName, G extends TGroupName>(
   ): void {
     invariant(condition !== fieldName, ErrorStrings.INCLUDE_SELF);
 
-    const inclusion = useInclusion();
-
-    // This callback will run as part of the "isExcluded" series of checks
-    inclusion[safeFieldName] = function isIncluded(
-      currentNode: TIsolateTest,
-    ): boolean {
-      if (isStringValue(condition)) {
-        return useHasOnliedTests(currentNode, makeBrand<TFieldName>(condition));
-      }
-
-      return dynamicValue(condition, () =>
-        useCreateSuiteResult(undefined, undefined),
-      );
-    };
+    conditionRef.current = condition;
   }
+}
+
+type IncludeCondition<F extends TFieldName, G extends TGroupName> =
+  | F
+  | string
+  | TFieldName
+  | TDraftCondition<F, G>;
+
+type IncludeConditionRef<F extends TFieldName, G extends TGroupName> = {
+  current: IncludeCondition<F, G> | typeof INCLUDE_UNSET;
+};
+
+type IncludePayload<F extends TFieldName, G extends TGroupName> = {
+  conditionRef: IncludeConditionRef<F, G>;
+  fieldName: TFieldName;
+};
+
+function useSetIncluded<F extends TFieldName, G extends TGroupName>(
+  isolate: TIsolate<IncludePayload<F, G>>,
+): void {
+  const inclusion = useInclusion();
+  const { fieldName, conditionRef } = isolate.data;
+
+  // This callback will run as part of the "isExcluded" series of checks
+  inclusion[fieldName] = function isIncluded(
+    currentNode: TIsolateTest,
+  ): boolean {
+    const condition = conditionRef.current;
+
+    if (condition === INCLUDE_UNSET) {
+      return true;
+    }
+
+    if (isStringValue(condition)) {
+      return useHasOnliedTests(currentNode, makeBrand<TFieldName>(condition));
+    }
+
+    return dynamicValue(condition, () =>
+      useCreateSuiteResult(undefined, undefined),
+    );
+  };
 }

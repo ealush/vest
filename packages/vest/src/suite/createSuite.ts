@@ -24,6 +24,11 @@ export type SuiteConfig = {
 };
 
 // @vx-allow use-use
+function createSuite<_Escape>(
+  suiteCallback: [_Escape] extends [null] ? CB : never,
+  schema?: any,
+): [_Escape] extends [null] ? Suite<TFieldName, TGroupName, CB, any> : never;
+// @vx-allow use-use
 function createSuite<
   C extends SuiteConfig,
   Data = any,
@@ -58,11 +63,6 @@ function createSuite<
   T extends CB = CB,
   S extends TSchema = undefined,
 >(suiteCallback: SuiteCallbackWithSchema<S, T>, schema?: S): Suite<F, G, T, S>;
-// @vx-allow use-use
-function createSuite<_Escape extends null>(
-  suiteCallback: CB,
-  schema?: any,
-): Suite<TFieldName, TGroupName, CB, any>;
 // @vx-allow use-use
 function createSuite<
   F extends TFieldName = TFieldName,

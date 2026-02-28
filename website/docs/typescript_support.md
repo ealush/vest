@@ -5,6 +5,8 @@ description: Use Vest with the safety Typescript Provides you.
 keywords: [Vest, Typescript, Typescript support]
 ---
 
+import { SchemaTypedSandpack, ConfigTypedSandpack } from '@site/src/components/Sandpack/TypedSuites';
+
 # TypeScript Support
 
 Vest is written fully in TypeScript and provides first-class typing for suites, schemas, and custom rules. There are four ways to create a typed suite, each offering a different level of control.
@@ -50,6 +52,10 @@ result.hasErrors('username'); // ✅
 
 Works with `enforce.shape`, `enforce.loose`, and `enforce.partial`.
 
+### Try it
+
+<SchemaTypedSandpack />
+
 ## Config Generic
 
 Use `create<SuiteConfig>` when you want to declare field and group names explicitly without a schema. This gives you full type safety over all suite APIs.
@@ -86,6 +92,10 @@ The `SuiteConfig` type is exported from Vest for reuse:
 ```typescript
 import type { SuiteConfig } from 'vest';
 ```
+
+### Try it
+
+<ConfigTypedSandpack />
 
 ## Escape Hatch
 

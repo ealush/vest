@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
-import { create, enforce, test } from '../../vest';
+import { create, enforce, group, only, skip, test } from '../../vest';
 
 type AssertTrue<T extends true> = T;
 type IsEqual<A, B> =
@@ -127,6 +127,41 @@ describe('createSuite examples - permutation 1: happy path schema inference', ()
       status: string;
       retries: number;
     }>();
+  });
+
+  it('example 12: API coverage checklist for field/group typing behavior', () => {
+    const suite = create(data => {
+      // context APIs
+      test('username', 'Username is required', () => {
+        enforce(data.username).isNotBlank();
+      });
+      only('username');
+      skip('email');
+      suite.include('password').when(() => true);
+      suite.optional('email');
+      group('auth', () => {
+        test('password', 'Password is required', () => {
+          enforce(data.password).isNotBlank();
+        });
+      });
+    }, userSchema);
+
+    // suite APIs
+    suite.remove('username');
+    suite.resetField('email');
+    suite.focus({ only: 'password', skipGroup: 'runtime_group' }).run({
+      username: 'john',
+      password: '123456',
+      email: 'john@example.com',
+    });
+    suite.only('username').run({
+      username: 'john',
+      password: '123456',
+      email: 'john@example.com',
+    });
+    suite.afterField('username', () => {
+      expect(suite.get().hasErrors('username')).toBeTypeOf('boolean');
+    });
   });
 });
 

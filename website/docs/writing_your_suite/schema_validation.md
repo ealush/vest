@@ -86,6 +86,24 @@ Some lifecycle/focus helpers (`remove`, `resetField`, `afterField`, `only`, `foc
 
 Group modifiers (`onlyGroup` / `skipGroup`) remain `string` unless you explicitly provide group generics to `create`.
 
+### API coverage (current typing standard)
+
+When using `create(callback, schema)`, the current TypeScript standard is:
+
+- Field-key inferred from schema for:
+  - `test(fieldName, message?, callback)`
+  - `include(fieldName).when(condition)`
+  - `optional(fieldName)`
+- Group generic-aware (when explicitly provided):
+  - `group(groupName, callback)`
+  - `suite.focus({ onlyGroup / skipGroup })`
+- Intentionally dynamic string-friendly:
+  - `suite.remove(fieldName)`
+  - `suite.resetField(fieldName)`
+  - `suite.only(fieldName)`
+  - `suite.afterField(fieldName, callback)`
+  - `only(fieldName)` / `skip(fieldName)` hooks
+
 ### Explicit generic override (advanced)
 
 If needed, you can still provide explicit suite generics to fully control field/group names:

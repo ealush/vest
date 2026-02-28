@@ -143,15 +143,15 @@ describe('Schema Runtime Validation', () => {
         }),
       });
 
-      const nestedSuite = create(() => {}, nestedSchema);
+      const nestedSuite = create<null>(() => {}, nestedSchema);
 
       const result = nestedSuite.runStatic({
         user: { name: 123, age: 'thirty' },
       });
 
       // Schema reports nested paths with full field specificity
-      expect(result.hasErrors('user.name' as any)).toBe(true);
-      const errors = result.getErrors('user.name' as any);
+      expect(result.hasErrors('user.name')).toBe(true);
+      const errors = result.getErrors('user.name');
 
       // The error message should be one of the nested field's custom messages
       expect(errors).toContain('User name must be a string');

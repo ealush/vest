@@ -248,7 +248,7 @@ describe('createSuite examples - permutation 3: escape hatch / untyped usage', (
     expect(result.valid).toBe(true);
 
     // still schema-validated at runtime
-    const bad = suite.run({ id: 'oops', enabled: false } as any);
+    const bad = suite.run({ id: 'oops', enabled: false });
     expect(bad.valid).toBe(false);
   });
 
@@ -271,6 +271,6 @@ describe('createSuite examples - permutation 3: escape hatch / untyped usage', (
       test('field_x', () => true);
     });
 
-    suite.focus({ skipGroup: dynamicGroups }).run({ field_x: 'ok' } as any);
+    suite.focus({ skipGroup: dynamicGroups }).run({ field_x: 'ok' });
   });
 });

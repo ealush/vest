@@ -186,7 +186,7 @@ describe('schema driven suite types', () => {
 });
 
 describe('schema inferred suite typing coverage', () => {
-  it('keeps callback and run payload strongly typed while allowing dynamic field APIs', () => {
+  it('infers schema keys for typed field APIs on the happy path', () => {
     const accountSchema = enforce.shape({
       username: enforce.isString(),
       age: enforce.isNumber(),
@@ -237,21 +237,30 @@ describe('schema inferred suite typing coverage', () => {
     result.hasErrors('age');
     result.hasErrors('profile');
 
-    // Unknown field names are still allowed for dynamic/nested suites.
-    suite.remove('email');
-    suite.resetField('email');
-    suite.afterField('email', () => {});
-    suite.focus({ only: 'email' }).run({
-      username: 'john',
-      age: 20,
-      profile: { bio: 'hello' },
-    });
-    suite.only('email').run({
-      username: 'john',
-      age: 20,
-      profile: { bio: 'hello' },
-    });
-    result.hasErrors('email');
+    const assertTestField = <K extends Parameters<typeof suite.test>[0]>(
+      field: K,
+    ) => field;
+    const assertOptionalField = <
+      K extends Parameters<typeof suite.optional>[0],
+    >(
+      field: K,
+    ) => field;
+    const assertIncludeField = <K extends Parameters<typeof suite.include>[0]>(
+      field: K,
+    ) => field;
+
+    assertTestField('username');
+    assertOptionalField('age');
+    assertIncludeField('profile');
+
+    // @ts-expect-error - schema-inferred fields should reject unknown keys
+    assertTestField('email');
+
+    // @ts-expect-error - schema-inferred fields should reject unknown keys
+    assertOptionalField('email');
+
+    // @ts-expect-error - schema-inferred fields should reject unknown keys
+    assertIncludeField('email');
 
     // @ts-expect-error - schema-inferred run requires full typed payload
     suite.run({ username: 'john' });

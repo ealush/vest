@@ -47,7 +47,10 @@ function createSuite<
     data: InferSchemaData<S>,
     ...args: any[]
   ) => void,
->(suiteCallback: T, schema: S): Suite<TFieldName, TGroupName, T, S>;
+>(
+  suiteCallback: T,
+  schema: S,
+): Suite<Extract<keyof InferSchemaData<S>, string>, TGroupName, T, S>;
 // @vx-allow use-use
 function createSuite<
   F extends TFieldName = TFieldName,

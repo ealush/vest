@@ -79,9 +79,10 @@ With `create(callback, schema)`, TypeScript narrows:
 
 - callback data (`data`) to the schema input shape.
 - `suite.run(...)` / `suite.validate(...)` first argument to the schema input shape.
+- field-oriented happy-path APIs (`test`, `optional`, `include`) to schema keys.
 - `result.types.input` and `result.types.output` to schema input/output types.
 
-Field-name APIs (`remove`, `resetField`, `only`, `focus.only`, selectors) intentionally stay open to `string` to support dynamic keys and nested field naming patterns.
+Some lifecycle/focus helpers (`remove`, `resetField`, `afterField`, `only`, `focus.only`) intentionally still accept dynamic strings for nested/dynamic runtime workflows.
 
 Group modifiers (`onlyGroup` / `skipGroup`) remain `string` unless you explicitly provide group generics to `create`.
 

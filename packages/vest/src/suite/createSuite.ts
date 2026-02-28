@@ -25,6 +25,23 @@ type SuiteConfig = {
 
 // @vx-allow use-use
 function createSuite<
+  C extends SuiteConfig,
+  Data = any,
+  T extends (data: Data, ...args: any[]) => void = (
+    data: Data,
+    ...args: any[]
+  ) => void,
+>(
+  suiteCallback: T,
+  schema?: undefined,
+): Suite<
+  C['fields'],
+  C['groups'] extends string ? C['groups'] : string,
+  T,
+  undefined
+>;
+// @vx-allow use-use
+function createSuite<
   S extends TSchema,
   T extends (data: InferSchemaData<S>, ...args: any[]) => void = (
     data: InferSchemaData<S>,
@@ -38,23 +55,6 @@ function createSuite<
   T extends CB = CB,
   S extends TSchema = undefined,
 >(suiteCallback: SuiteCallbackWithSchema<S, T>, schema?: S): Suite<F, G, T, S>;
-// @vx-allow use-use
-function createSuite<
-  C extends SuiteConfig,
-  Data = any,
-  T extends (data: Data, ...args: any[]) => void = (
-    data: Data,
-    ...args: any[]
-  ) => void,
->(
-  suiteCallback: T,
-  schema?: any,
-): Suite<
-  C['fields'],
-  C['groups'] extends string ? C['groups'] : string,
-  T,
-  undefined
->;
 // @vx-allow use-use
 function createSuite<
   F extends TFieldName = TFieldName,

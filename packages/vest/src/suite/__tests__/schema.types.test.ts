@@ -257,6 +257,14 @@ describe('schema inferred suite typing coverage', () => {
     suite.run({ username: 'john' });
   });
 
+  it('rejects passing a schema to config-only generic overload', () => {
+    const schema = enforce.shape({
+      username: enforce.isString(),
+    });
+
+    // @ts-expect-error - config generic overload is schema-less by design
+    void create<{ fields: 'username'; groups: 'auth' }>(() => {}, schema);
+  });
   it('keeps group modifiers open when groups are not explicitly typed', () => {
     const schema = enforce.shape({
       username: enforce.isString(),

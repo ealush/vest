@@ -41,8 +41,8 @@ type SuiteMethods<
   get: CB<SuiteResult<F, G, S>>;
   resume: CB<void, [TIsolateSuite]>;
   reset: CB<void>;
-  remove: CB<void, [fieldName: F | string]>;
-  resetField: CB<void, [fieldName: F | string]>;
+  remove: CB<void, [fieldName: F]>;
+  resetField: CB<void, [fieldName: F]>;
   run: (
     ...args: S extends undefined
       ? Parameters<T>
@@ -70,15 +70,9 @@ type FocusedMethods<
   S extends TSchema,
 > = {
   afterEach: CB<FocusedMethods<F, G, T, S>, [callback: CB]>;
-  afterField: CB<
-    FocusedMethods<F, G, T, S>,
-    [fieldName: F | string, callback: CB]
-  >;
+  afterField: CB<FocusedMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
-  only: CB<
-    FocusedMethods<F, G, T, S>,
-    [onlyField: FieldExclusion<F> | FieldExclusion<string>]
-  >;
+  only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
   // run is included but runStatic is intentionally omitted: runStatic is stateless
   // and does not carry focus modifiers, so it is not part of the focused API surface.
   run: (
@@ -95,15 +89,9 @@ type AfterMethods<
   S extends TSchema,
 > = {
   afterEach: CB<AfterMethods<F, G, T, S>, [callback: CB]>;
-  afterField: CB<
-    AfterMethods<F, G, T, S>,
-    [fieldName: F | string, callback: CB]
-  >;
+  afterField: CB<AfterMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
-  only: CB<
-    FocusedMethods<F, G, T, S>,
-    [onlyField: FieldExclusion<F> | FieldExclusion<string>]
-  >;
+  only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
   run: (
     ...args: S extends undefined
       ? Parameters<T>
@@ -129,8 +117,8 @@ export type SuiteModifiers<
   F extends TFieldName,
   G extends TGroupName = TGroupName,
 > = {
-  only?: FieldExclusion<F> | FieldExclusion<string>;
+  only?: FieldExclusion<F>;
   onlyGroup?: G | G[];
-  skip?: FieldExclusion<F> | FieldExclusion<string>;
+  skip?: FieldExclusion<F>;
   skipGroup?: G | G[];
 };

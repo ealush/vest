@@ -72,7 +72,7 @@ describe('createSuite examples - permutation 1: happy path schema inference', ()
       payment_token: 'token',
     });
 
-    // focus/only remain permissive for dynamic/nested field names
+    // @ts-expect-error - unknown field rejected by typed focus
     checkoutSuite.focus({ only: 'unknown_field' }).run({
       cart_items: ['sku_1'],
       billing_address: '',

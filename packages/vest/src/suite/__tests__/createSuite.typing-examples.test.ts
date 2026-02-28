@@ -103,9 +103,24 @@ describe('Suite typing examples', () => {
       suite.remove('username');
       suite.resetField('email');
       suite.focus({ only: 'username', onlyGroup: 'auth' });
+      suite.only('email');
       suite.afterField('password', () => {});
 
-      // Type-level assertions for typed methods
+      // Suite-bound APIs reject invalid fields
+      // @ts-expect-error - invalid field for suite.remove
+      suite.remove('invalid');
+
+      // @ts-expect-error - invalid field for suite.resetField
+      suite.resetField('invalid');
+
+      // @ts-expect-error - invalid field for suite.afterField
+      suite.afterField('invalid', () => {});
+
+      // @ts-expect-error - invalid field for suite.focus only
+      suite.focus({ only: 'invalid' });
+
+      // @ts-expect-error - invalid group for suite.focus onlyGroup
+      suite.focus({ onlyGroup: 'invalid' });
       const assertTestField = <K extends Parameters<typeof suite.test>[0]>(
         field: K,
       ) => field;
@@ -157,9 +172,6 @@ describe('Suite typing examples', () => {
 
       // @ts-expect-error - invalid field for result.hasErrors
       result.hasErrors('invalid');
-
-      // @ts-expect-error - invalid group for focus
-      suite.focus({ onlyGroup: 'invalid' });
     });
   });
 
@@ -189,7 +201,21 @@ describe('Suite typing examples', () => {
       suite.remove('firstName');
       suite.resetField('lastName');
       suite.focus({ only: 'age' });
+      suite.only('firstName');
       suite.afterField('age', () => {});
+
+      // Suite-bound APIs reject unknown fields
+      // @ts-expect-error - unknown field for suite.remove
+      suite.remove('unknown');
+
+      // @ts-expect-error - unknown field for suite.resetField
+      suite.resetField('unknown');
+
+      // @ts-expect-error - unknown field for suite.afterField
+      suite.afterField('unknown', () => {});
+
+      // @ts-expect-error - unknown field for suite.focus only
+      suite.focus({ only: 'unknown' });
 
       // Type-level assertions for typed methods
       const assertTestField = <K extends Parameters<typeof suite.test>[0]>(

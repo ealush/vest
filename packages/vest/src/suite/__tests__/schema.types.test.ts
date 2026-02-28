@@ -619,6 +619,19 @@ describe('comprehensive typed API coverage', () => {
     suite.resetField('a');
     suite.afterField('a', () => {});
 
+    // Suite-bound APIs reject invalid fields
+    // @ts-expect-error - invalid field for suite.remove
+    suite.remove('invalid');
+
+    // @ts-expect-error - invalid field for suite.resetField
+    suite.resetField('invalid');
+
+    // @ts-expect-error - invalid field for suite.afterField
+    suite.afterField('invalid', () => {});
+
+    // @ts-expect-error - invalid field for suite.focus only
+    suite.focus({ only: 'invalid' });
+
     // Type-level assertions for suite typed methods
     const assertTestField = <K extends Parameters<typeof suite.test>[0]>(
       field: K,
@@ -697,6 +710,19 @@ describe('comprehensive typed API coverage', () => {
     suite.remove('email');
     suite.resetField('count');
     suite.afterField('email', () => {});
+
+    // Suite-bound APIs reject unknown fields
+    // @ts-expect-error - unknown field for suite.remove
+    suite.remove('unknown');
+
+    // @ts-expect-error - unknown field for suite.resetField
+    suite.resetField('unknown');
+
+    // @ts-expect-error - unknown field for suite.afterField
+    suite.afterField('unknown', () => {});
+
+    // @ts-expect-error - unknown field for suite.focus only
+    suite.focus({ only: 'unknown' });
 
     // Type-level assertions for suite typed methods
     const assertTestField = <K extends Parameters<typeof suite.test>[0]>(

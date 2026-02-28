@@ -15,6 +15,7 @@ import { omitWhen } from './isolates/omitWhen';
 import { skipWhen } from './isolates/skipWhen';
 import type { Suite } from './suite/SuiteTypes';
 import { createSuite } from './suite/createSuite';
+import type { SuiteConfig } from './suite/createSuite';
 import type { SuiteResult, SuiteSummary } from './suiteResult/SuiteResultTypes';
 import { suiteSelectors } from './suiteResult/selectors/suiteSelectors';
 
@@ -38,4 +39,4 @@ export {
   registerReconciler,
 };
 
-export type { SuiteResult, SuiteSummary, Suite };
+export type { SuiteResult, SuiteSummary, Suite, SuiteConfig };

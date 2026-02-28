@@ -143,7 +143,7 @@ describe('Schema Runtime Validation', () => {
         }),
       });
 
-      const nestedSuite = create(() => {}, nestedSchema);
+      const nestedSuite = create<null>(() => {}, nestedSchema);
 
       const result = nestedSuite.runStatic({
         user: { name: 123, age: 'thirty' },

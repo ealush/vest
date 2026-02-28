@@ -68,7 +68,8 @@ describe('create accepts schema argument', () => {
       }),
     );
 
-    const fieldsToValidate: [string, string][] = [
+    type ContactField = 'firstName' | 'lastName' | 'phoneNumber' | 'email';
+    const fieldsToValidate: [ContactField, string][] = [
       ['firstName', 'John'],
       ['lastName', 'Doe'],
       ['phoneNumber', '555-1234'],
@@ -124,14 +125,15 @@ describe('create accepts schema argument', () => {
     );
 
     // Some fields will fail validation
-    const fieldsToValidate: [string, string][] = [
+    type ContactField = 'firstName' | 'lastName' | 'phoneNumber' | 'email';
+    const fieldsToValidate: [ContactField, string][] = [
       ['firstName', 'Jo'], // Too short - will fail "longerThan(3)"
       ['lastName', ''], // Blank - will fail "isNotBlank"
       ['phoneNumber', '555-1234'], // Valid
       ['email', ''], // Blank - will fail "isNotBlank"
     ];
 
-    const results: { name: string; hasError: boolean }[] = [];
+    const results: { name: ContactField; hasError: boolean }[] = [];
 
     fieldsToValidate.forEach(([name, value]) => {
       const result = contactSuite.focus({ only: name }).run({

@@ -148,7 +148,7 @@ export default function AccessingResultSandpack() {
         }}
         customSetup={{
           dependencies: {
-            vest: 'next',
+            vest: 'latest',
           },
         }}
         options={{

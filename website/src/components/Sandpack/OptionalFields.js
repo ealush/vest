@@ -73,7 +73,7 @@ export default function OptionalFieldsSandpack() {
           '/App.js': AppCode,
           '/styles.css': StylesCode,
         }}
-        customSetup={{ dependencies: { vest: 'next' } }}
+        customSetup={{ dependencies: { vest: 'latest' } }}
         options={{
           activeFile: '/suite.js',
           showCommonFiles: false,

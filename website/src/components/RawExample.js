@@ -197,7 +197,7 @@ export default function RawExample() {
           }}
           customSetup={{
             dependencies: {
-              vest: 'next',
+              vest: 'latest',
             },
           }}
           options={{

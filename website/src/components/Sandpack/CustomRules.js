@@ -110,7 +110,7 @@ export default function CustomRulesSandpack() {
         }}
         customSetup={{
           dependencies: {
-            vest: 'next',
+            vest: 'latest',
           },
         }}
         options={{

@@ -37,6 +37,15 @@ describe('typed suite', () => {
     expect(result.groups.G100?.F1).toBeUndefined();
   });
 
+  it('should type focus group modifiers based on suite group generics', () => {
+    suite.focus({ onlyGroup: 'G1', skipGroup: ['G2'] }).run();
+
+    // @ts-expect-error - invalid group name
+    suite.focus({ onlyGroup: 'G100' }).run();
+
+    // @ts-expect-error - invalid group name in skip list
+    suite.focus({ skipGroup: ['G1', 'G100'] }).run();
+  });
   it('should only support annotated group and field names in the suite methods', () => {
     const res: vest.SuiteResult<TestFields, TestGroups> = suite.get();
 

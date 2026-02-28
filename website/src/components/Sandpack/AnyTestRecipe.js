@@ -84,7 +84,7 @@ export default function AnyTestRecipeSandpack() {
         }}
         customSetup={{
           dependencies: {
-            vest: 'next',
+            vest: 'latest',
           },
         }}
         options={{

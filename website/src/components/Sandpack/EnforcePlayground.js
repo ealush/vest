@@ -106,7 +106,7 @@ export default function EnforcePlayground() {
         }}
         customSetup={{
           dependencies: {
-            vest: 'next',
+            vest: 'latest',
           },
         }}
         options={{

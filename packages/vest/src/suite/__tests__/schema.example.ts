@@ -13,7 +13,7 @@ import { create, test } from '../../vest';
 // ✅ CORRECT: Data matches schema
 const userSchema = enforce.shape({
   username: enforce.isString(),
-  age: enforce.isNumber(),
+  age: enforce.isNumeric().toNumber(),
   email: enforce.isString(),
 });
 

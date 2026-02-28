@@ -89,9 +89,9 @@ Returns the current result object of the suite without running it. Useful for ac
 
 - [Read more about `suite.get`](./writing_your_suite/vests_suite.md#accessing-results-without-running)
 
-#### `SuiteSerializer.serialize(suite)`
+#### `SuiteSerializer.serialize(result)`
 
-Returns a minified, serialized representation of the suite's state. Useful for SSR hydration.
+Returns a minified, serialized representation of a validation result. Useful for SSR hydration.
 
 - [Read more about SSR Hydration](./server_side_validations.md#ssr--hydration)
 
@@ -100,7 +100,7 @@ Returns a minified, serialized representation of the suite's state. Useful for S
 Hydrates the suite with a serialized state.
 
 - `suite`: The suite to resume.
-- `data`: The serialized state object.
+- `data`: The serialized state string.
 - [Read more about SSR Hydration](./server_side_validations.md#ssr--hydration)
 
 #### `suite.validate(data)`
@@ -2961,13 +2961,13 @@ app.post('/user', (req, res) => {
 
 When using Vest with Server-Side Rendering (SSR) frameworks (like Next.js, Remix, or Nuxt), you often want to validate on the server, send the validation state to the client, and resume without rerunning everything.
 
-Use `SuiteSerializer.serialize` to serialize the suite state and `SuiteSerializer.resume` on the client to hydrate it.
+Use `SuiteSerializer.serialize` to serialize the validation result state and `SuiteSerializer.resume` on the client to hydrate it.
 
 ### Server Side
 
 ```javascript
 // server.js
-import { SuiteSerializer } from 'vest';
+import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
 import suite from './suite';
 
 export async function action({ request }) {
@@ -2981,8 +2981,8 @@ export async function action({ request }) {
   if (result.hasErrors()) {
     return json({
       errors: result.getErrors(),
-      // Serialize the suite state to send to the client
-      vestState: SuiteSerializer.serialize(suite),
+      // Serialize the result state to send to the client
+      vestState: SuiteSerializer.serialize(result),
     });
   }
 }
@@ -2994,7 +2994,7 @@ On the client, hydrate the suite with the state received from the server using `
 
 ```javascript
 // client.js
-import { SuiteSerializer } from 'vest';
+import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
 import suite from './suite';
 
 export function MyForm({ actionData }) {
@@ -3025,16 +3025,16 @@ Vest 6 solves this with **State Serialization**. You can take the state of a sui
 To keep the API surface clean, serialization tools are grouped under the `SuiteSerializer` export.
 
 ```javascript
-import { SuiteSerializer } from 'vest';
+import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
 ```
 
-### `SuiteSerializer.serialize(suite)`
+### `SuiteSerializer.serialize(result)`
 
-Takes a suite instance and returns a serializable object (safe for JSON).
+Takes a result object (for example, from `suite.runStatic(data)`) and returns a serializable string (safe for JSON transport).
 
 ### `SuiteSerializer.resume(suite, serializedData)`
 
-Takes a suite instance and a serialized data object, and applies that state to the suite.
+Takes a suite instance and serialized data, and applies that state to the suite.
 
 ## Complete Workflow Example
 
@@ -3046,20 +3046,20 @@ Run the validation. If it fails, send the serialized state back to the frontend.
 
 ```javascript
 // server-action.js
-import { SuiteSerializer } from 'vest';
+import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
 import suite from './validation';
 
 export async function action(formData) {
   // 1. Run validation
-  // We use runStatic, but we can capture the result from the suite instance
+  // We use runStatic and serialize that result for hydration
   const result = suite.runStatic(formData);
 
   if (result.hasErrors()) {
     return {
       success: false,
       errors: result.getErrors(),
-      // 2. Serialize the suite!
-      vestState: SuiteSerializer.serialize(suite),
+      // 2. Serialize the server result state
+      vestState: SuiteSerializer.serialize(result),
     };
   }
 
@@ -3074,7 +3074,7 @@ When your component mounts or receives the action data, resume the suite.
 ```javascript
 // registration-form.jsx
 import { useEffect } from 'react';
-import { SuiteSerializer } from 'vest';
+import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
 import suite from './validation';
 
 export function RegistrationForm({ actionData }) {
@@ -3632,14 +3632,14 @@ const suite = create((data = {}) => {
 
 function SignupForm() {
   const [formData, setFormData] = useState({ username: '', email: '' });
-  const [result, setResult] = useState(suite.get());
 
   const handleChange = (name, value) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const nextState = { ...formData, [name]: value };
+
     suite
       .only(name)
-      .afterEach(() => setResult(suite.get()))
-      .run({ ...formData, [name]: value });
+      .afterEach(() => setFormData(nextState))
+      .run(nextState);
   };
 
   const handleSubmit = async e => {
@@ -3660,8 +3660,8 @@ function SignupForm() {
           value={formData.username}
           onChange={e => handleChange('username', e.target.value)}
         />
-        {result.hasErrors('username') && (
-          <span>{result.getError('username')}</span>
+        {suite.hasErrors('username') && (
+          <span>{suite.getError('username')}</span>
         )}
       </div>
 
@@ -3671,10 +3671,10 @@ function SignupForm() {
           value={formData.email}
           onChange={e => handleChange('email', e.target.value)}
         />
-        {result.hasErrors('email') && <span>{result.getError('email')}</span>}
+        {suite.hasErrors('email') && <span>{suite.getError('email')}</span>}
       </div>
 
-      <button type="submit" disabled={!result.isValid()}>
+      <button type="submit" disabled={!suite.isValid()}>
         Submit
       </button>
     </form>
@@ -3691,17 +3691,14 @@ import { useCallback, useState } from 'react';
 
 function useVestForm(suite, initialData = {}) {
   const [formData, setFormData] = useState(initialData);
-  const [result, setResult] = useState(suite.get());
 
   const validate = useCallback(
     (fieldName, value) => {
       const newData = { ...formData, [fieldName]: value };
-      setFormData(newData);
-
       suite
         .only(fieldName)
         .afterEach(() => {
-          setResult(suite.get());
+          setFormData(newData);
         })
         .run(newData);
     },
@@ -3711,14 +3708,14 @@ function useVestForm(suite, initialData = {}) {
   const validateAll = useCallback(() => {
     suite
       .afterEach(() => {
-        setResult(suite.get());
+        // Create a new object reference to trigger a re-render
+        setFormData(current => ({ ...current }));
       })
       .run(formData);
   }, [formData, suite]);
 
   return {
     formData,
-    result,
     validate,
     validateAll,
     setFormData,
@@ -3727,13 +3724,13 @@ function useVestForm(suite, initialData = {}) {
 
 // Usage
 function MyForm() {
-  const { formData, result, validate, validateAll } = useVestForm(suite);
+  const { formData, validate, validateAll } = useVestForm(suite);
 
   const handleSubmit = e => {
     e.preventDefault();
     validateAll();
 
-    if (!result.hasErrors()) {
+    if (!suite.hasErrors()) {
       // Submit form
     }
   };
@@ -3770,17 +3767,15 @@ const suite = create((data = {}) => {
 
 function UsernameField() {
   const [username, setUsername] = useState('');
-  const [result, setResult] = useState(suite.get());
   const [isChecking, setIsChecking] = useState(false);
 
   const handleChange = value => {
-    setUsername(value);
     setIsChecking(true);
 
     suite
       .only('username')
       .afterEach(() => {
-        setResult(suite.get());
+        setUsername(value);
         setIsChecking(false);
       })
       .run({ username: value });
@@ -3790,9 +3785,7 @@ function UsernameField() {
     <div>
       <input value={username} onChange={e => handleChange(e.target.value)} />
       {isChecking && <span>Checking availability...</span>}
-      {result.hasErrors('username') && (
-        <span>{result.getError('username')}</span>
-      )}
+      {suite.hasErrors('username') && <span>{suite.getError('username')}</span>}
     </div>
   );
 }
@@ -3819,8 +3812,6 @@ import { suite } from '../validations/signupSuite';
 import { useState } from 'react';
 
 function SignupForm() {
-  const [result, setResult] = useState(suite.get());
-
   // ...
 }
 ```
@@ -3831,13 +3822,13 @@ Validate individual fields on change for better UX:
 
 ```jsx
 const handleFieldChange = (fieldName, value) => {
-  setFormData(prev => ({ ...prev, [fieldName]: value }));
+  const nextState = { ...formData, [fieldName]: value };
 
   // Only validate the changed field
   suite
     .only(fieldName)
-    .afterEach(() => setResult(suite.get()))
-    .run({ ...formData, [fieldName]: value });
+    .afterEach(() => setFormData(nextState))
+    .run(nextState);
 };
 ```
 
@@ -3852,8 +3843,7 @@ const handleSubmit = e => {
   // Validate all fields
   suite
     .afterEach(() => {
-      const result = suite.get();
-      if (!result.hasErrors()) {
+      if (!suite.hasErrors()) {
         // Submit form
         submitForm(formData);
       }
@@ -3867,7 +3857,7 @@ const handleSubmit = e => {
 Vest has [excellent TypeScript support](/docs/typescript_support):
 
 ```tsx
-import { create, test, enforce, SuiteResult } from 'vest';
+import { create, test, enforce } from 'vest';
 import 'vest/email';
 
 interface FormData {
@@ -3892,7 +3882,6 @@ const suite = create((data: Partial<FormData> = {}) => {
 
 function TypedForm() {
   const [formData, setFormData] = useState<Partial<FormData>>({});
-  const [result, setResult] = useState<SuiteResult>(suite.get());
 
   // Rest of component
 }
@@ -4434,16 +4423,16 @@ Most validation libraries fall into one of two traps:
 
 ## Feature Comparison
 
-| Features                    | Vest                               | Functional Matchers | Schema Validation | Form State Managers |
-| --------------------------- | ---------------------------------- | ------------------- | ----------------- | ------------------- |
-| **State Management**        | Automatic                          | Manual              | Manual            | Automatic           |
-| **Per Field Validation**    | ✅ Built-in (`only()` / `focus`)   | ❌                  | ❌                | ✅                  |
-| **Framework Agnostic**      | ✅                                 | ✅                  | ✅                | ❌                  |
-| **Async + Race Conditions** | ✅ Handled automatically           | ❌                  | Varies            | Varies              |
-| **SSR/Hydration**           | ✅ (`runStatic`, `dump`, `resume`) | ❌                  | ❌                | Framework-specific  |
-| **Standard Schema Interop** | ✅ (`suite.validate`)              | ❌                  | Some              | Rare                |
-| **Code Reusability**        | High                               | Medium              | Medium            | Low                 |
-| **Syntax**                  | Unit-test style                    | Function calls      | Declarative       | Declarative         |
+| Features                    | Vest                                                                    | Functional Matchers | Schema Validation | Form State Managers |
+| --------------------------- | ----------------------------------------------------------------------- | ------------------- | ----------------- | ------------------- |
+| **State Management**        | Automatic                                                               | Manual              | Manual            | Automatic           |
+| **Per Field Validation**    | ✅ Built-in (`only()` / `focus`)                                        | ❌                  | ❌                | ✅                  |
+| **Framework Agnostic**      | ✅                                                                      | ✅                  | ✅                | ❌                  |
+| **Async + Race Conditions** | ✅ Handled automatically                                                | ❌                  | Varies            | Varies              |
+| **SSR/Hydration**           | ✅ (`runStatic`, `SuiteSerializer.serialize`, `SuiteSerializer.resume`) | ❌                  | ❌                | Framework-specific  |
+| **Standard Schema Interop** | ✅ (`suite.validate`)                                                   | ❌                  | Some              | Rare                |
+| **Code Reusability**        | High                                                                    | Medium              | Medium            | Low                 |
+| **Syntax**                  | Unit-test style                                                         | Function calls      | Declarative       | Declarative         |
 
 ## Why Vest?
 
@@ -7132,10 +7121,11 @@ If you are rendering on the server and hydrating on the client (Next.js, Remix, 
 We use the `SuiteSerializer` API for this.
 
 ```javascript
-import { SuiteSerializer } from 'vest';
+import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
 
 // 1. Server: Serialize the suite after running
-const serializedState = SuiteSerializer.serialize(suite);
+const result = suite.runStatic(formData);
+const serializedState = SuiteSerializer.serialize(result);
 
 // 2. Client: Resume the suite with that state
 SuiteSerializer.resume(suite, serializedState);

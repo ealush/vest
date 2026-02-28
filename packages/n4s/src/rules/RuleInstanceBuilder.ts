@@ -2,6 +2,12 @@ import type { DropFirst } from 'vest-utils';
 
 import type { RuleInstance } from '../utils/RuleInstance';
 
+type InferRuleReturn<TValue, TFunc> = TFunc extends (...args: any[]) => {
+  type: infer U;
+}
+  ? U
+  : TValue;
+
 /**
  * Generic type utility to build RuleInstance interfaces with chaining methods.
  * Eliminates repetitive interface definitions across rule type files.
@@ -17,7 +23,7 @@ export type BuildRuleInstance<
 > = RuleInstance<TValue, TArgs> & {
   [K in keyof TRules]: (
     ...args: DropFirst<Parameters<TRules[K]>>
-  ) => BuildRuleInstance<TValue, TArgs, TRules>;
+  ) => BuildRuleInstance<InferRuleReturn<TValue, TRules[K]>, TArgs, TRules>;
 };
 
 /**

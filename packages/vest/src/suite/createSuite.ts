@@ -18,7 +18,7 @@ import {
 } from './useCreateSuiteMethods';
 import { validateSuiteCallback } from './validateSuiteCallback/validateSuiteCallback';
 
-type SuiteConfig = {
+export type SuiteConfig = {
   fields: string;
   groups?: string;
 };
@@ -58,6 +58,11 @@ function createSuite<
   T extends CB = CB,
   S extends TSchema = undefined,
 >(suiteCallback: SuiteCallbackWithSchema<S, T>, schema?: S): Suite<F, G, T, S>;
+// @vx-allow use-use
+function createSuite<_Escape extends null>(
+  suiteCallback: CB,
+  schema?: any,
+): Suite<TFieldName, TGroupName, CB, any>;
 // @vx-allow use-use
 function createSuite<
   F extends TFieldName = TFieldName,

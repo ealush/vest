@@ -291,6 +291,68 @@ describe('schema inferred suite typing coverage', () => {
   });
 });
 
+describe('escape hatch and config overload typing', () => {
+  it('supports create<null>() as an explicit untyped escape hatch', () => {
+    const schema = enforce.shape({
+      name: enforce.isString(),
+      count: enforce.isNumber(),
+    });
+
+    const suite = create<null>((data: any) => {
+      void data.anything;
+    });
+
+    const suiteWithSchema = create<null>((data: any) => {
+      void data.whatever;
+    }, schema);
+
+    const assertEscapeField = <K extends Parameters<typeof suite.test>[0]>(
+      field: K,
+    ) => field;
+
+    assertEscapeField('dynamic_field');
+    suite.focus({ onlyGroup: 'dynamic_group', skipGroup: ['another_group'] });
+
+    suiteWithSchema.run({ anything: 'goes' });
+    suiteWithSchema.get().hasErrors('any_field_name');
+
+    expectTypeOf<
+      Parameters<typeof suiteWithSchema.run>[0]
+    >().toEqualTypeOf<any>();
+  });
+
+  it('supports explicit SuiteConfig generic typing for fields/groups', () => {
+    const suite = create<{ fields: 'id' | 'role'; groups: 'auth' | 'admin' }>(
+      (_data: unknown) => {},
+    );
+
+    const assertField = <K extends Parameters<typeof suite.test>[0]>(
+      field: K,
+    ) => field;
+
+    assertField('id');
+    assertField('role');
+
+    // @ts-expect-error - invalid field should fail for config overload
+    assertField('email');
+
+    const assertGroup = <
+      K extends Exclude<Parameters<typeof suite.group>[0], () => void>,
+    >(
+      groupName: K,
+    ) => groupName;
+
+    assertGroup('auth');
+
+    // @ts-expect-error - invalid group should fail for config overload
+    assertGroup('payments');
+
+    suite.remove('id');
+    suite.focus({ only: 'role', onlyGroup: 'admin' });
+    suite.get().hasErrors('role');
+  });
+});
+
 describe('Schema Type Safety', () => {
   it('should allow valid data that matches schema', () => {
     const schema = enforce.shape({

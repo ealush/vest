@@ -228,9 +228,13 @@ describe('createSuite examples - permutation 3: escape hatch / untyped usage', (
       });
     });
 
-    suite.run({ random: 'value' });
-    suite.run(['x']);
-    suite.run(1);
+    const objectResult = suite.run({ random: 'value' });
+    const arrayResult = suite.run(['x']);
+    const numberResult = suite.run(1);
+
+    expect(objectResult.hasErrors()).toBe(false);
+    expect(arrayResult.hasErrors()).toBe(false);
+    expect(numberResult.hasErrors()).toBe(false);
   });
 
   it('example 9: using explicit any generic with schema keeps runtime schema checks while allowing loose field APIs', () => {

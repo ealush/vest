@@ -1,22 +1,70 @@
 export const TYPEWRITER_DATA = [
   [
     'Write validation logic,',
-    ['not boilerplate', 'not spaghetti', 'not hassle'],
+    [
+      'like a test suite',
+      'not inside UI components',
+      'once and reuse everywhere',
+    ],
   ],
-  ['Your form validation,', ['declarative', 'elegant', 'maintainable']],
-  ['Input validation,', ['simplified', 'streamlined', 'organized']],
-  ['Form validation that', ['just works', 'feels right', 'makes sense']],
-  ['Validate like a', ['unit test', 'pro developer', 'Jest hero']],
-  ['Decouple validation from', ['your UI', 'frameworks', 'component logic']],
-  ['Validation that', ['is lightning fast', 'only runs once']],
-  ['Focus on fields you', ['are touching', 'care about']],
-  ['Stop fighting', ['async race conditions', 'framework lock-in']],
   [
-    'Validation for',
-    ['every framework', 'modern applications', 'complex forms', 'you'],
+    'Validate only what changed,',
+    [
+      'keep the full picture',
+      'stay fast as users type',
+      'without losing state',
+    ],
   ],
-  ['Clean, testable validation', ['in minutes', 'every time']],
-  ['Handle async tests', ['effortlessly', 'race-free', 'like a boss']],
-  ['Your validation code', ['is reusable', 'is separated', 'is safe']],
-  ['A validation library', ['that gets it', 'just for forms']],
+  [
+    'Async checks that',
+    [
+      'stay race-condition free',
+      'ignore stale responses',
+      'play nicely with real APIs',
+    ],
+  ],
+  [
+    'One suite for',
+    [
+      'React, Vue, Svelte, and beyond',
+      'client and server',
+      'every form in your stack',
+    ],
+  ],
+  [
+    'Type-safe forms,',
+    [
+      'from schema to result',
+      'with autocomplete everywhere',
+      'with less guesswork',
+    ],
+  ],
+  [
+    'Form validation that',
+    [
+      'feels calm in complex flows',
+      'scales with your product',
+      'reads like clean tests',
+    ],
+  ],
+  [
+    'Keep components focused on UI,',
+    [
+      'let Vest handle validation state',
+      'separate concerns like a pro',
+      'ship cleaner code',
+    ],
+  ],
+  [
+    'From signup to checkout,',
+    [
+      'Vest keeps validation predictable',
+      'errors stay relevant',
+      'results stay in sync',
+    ],
+  ],
+  [
+    'Validation with',
+    ['framework freedom', 'test-like clarity', 'serious DX and zero drama'],
+  ],
 ];

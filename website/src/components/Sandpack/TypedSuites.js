@@ -1,5 +1,5 @@
 import React from 'react';
-import Sandpack from './index';
+import BrowserOnly from '@docusaurus/BrowserOnly';
 import commonStyles from '../RawExample.module.css';
 
 const SchemaSuiteCode = `import { create, test, enforce } from 'vest';
@@ -96,27 +96,34 @@ result.isValid('password');
 export default suite;
 `;
 
+function EditorOnly({ code }) {
+  return (
+    <BrowserOnly fallback={<div>Loading Editor...</div>}>
+      {() => {
+        const {
+          SandpackProvider,
+          SandpackCodeEditor,
+        } = require('@codesandbox/sandpack-react');
+        return (
+          <SandpackProvider
+            template="react-ts"
+            theme="dark"
+            files={{ '/suite.ts': code }}
+            customSetup={{ dependencies: { vest: 'next' } }}
+            options={{ activeFile: '/suite.ts' }}
+          >
+            <SandpackCodeEditor style={{ height: 500 }} />
+          </SandpackProvider>
+        );
+      }}
+    </BrowserOnly>
+  );
+}
+
 export function SchemaTypedSandpack() {
   return (
     <div className={commonStyles.codeWindow}>
-      <Sandpack
-        template="react-ts"
-        theme="dark"
-        files={{
-          '/suite.ts': SchemaSuiteCode,
-        }}
-        customSetup={{
-          dependencies: {
-            vest: 'next',
-          },
-        }}
-        options={{
-          activeFile: '/suite.ts',
-          showCommonFiles: false,
-          visibleFiles: ['/suite.ts'],
-          editorHeight: 500,
-        }}
-      />
+      <EditorOnly code={SchemaSuiteCode} />
     </div>
   );
 }
@@ -124,24 +131,7 @@ export function SchemaTypedSandpack() {
 export function ConfigTypedSandpack() {
   return (
     <div className={commonStyles.codeWindow}>
-      <Sandpack
-        template="react-ts"
-        theme="dark"
-        files={{
-          '/suite.ts': ConfigSuiteCode,
-        }}
-        customSetup={{
-          dependencies: {
-            vest: 'next',
-          },
-        }}
-        options={{
-          activeFile: '/suite.ts',
-          showCommonFiles: false,
-          visibleFiles: ['/suite.ts'],
-          editorHeight: 500,
-        }}
-      />
+      <EditorOnly code={ConfigSuiteCode} />
     </div>
   );
 }

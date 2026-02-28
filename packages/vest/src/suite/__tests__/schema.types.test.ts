@@ -1,6 +1,14 @@
 import { describe, expect, it, expectTypeOf } from 'vitest';
 
-import { create, test, enforce } from '../../vest';
+import {
+  create,
+  test,
+  enforce,
+  only,
+  skip,
+  include,
+  optional,
+} from '../../vest';
 
 type AssertTrue<T extends true> = T;
 type IsEqual<A, B> =
@@ -517,5 +525,301 @@ describe('Schema Type Safety', () => {
     const suite = create(() => {}, schema);
     const result = suite.run({ name: 'Test' });
     expect(result.types).toBeDefined();
+  });
+});
+
+describe('callback-level only() typing', () => {
+  it('types suite.only() with config-based fields', () => {
+    const suite = create<{ fields: 'a' | 'b'; groups: 'g1' }>(
+      (_data: unknown) => {
+        // Top-level only() inside callback compiles (untyped)
+        only('a');
+        only(['a', 'b']);
+      },
+    );
+
+    const assertSkipField = <K extends Parameters<typeof suite.skip>[0]>(
+      field: K,
+    ) => field;
+
+    assertSkipField('a');
+
+    // @ts-expect-error - invalid field should fail on suite.skip
+    assertSkipField('invalid');
+  });
+
+  it('types suite.only() with schema-inferred fields', () => {
+    const schema = enforce.shape({
+      username: enforce.isString(),
+      age: enforce.isNumber(),
+    });
+
+    const suite = create(data => {
+      // Top-level only() inside callback compiles (untyped)
+      only('username');
+      only(['username', 'age']);
+
+      test('username', () => {
+        enforce(data.username).isNotBlank();
+      });
+    }, schema);
+
+    const assertSkipField = <K extends Parameters<typeof suite.skip>[0]>(
+      field: K,
+    ) => field;
+
+    assertSkipField('username');
+
+    // @ts-expect-error - invalid field should fail on suite.skip
+    assertSkipField('email');
+  });
+
+  it('allows any string for only() in untyped fallback', () => {
+    const suite = create((_data: any) => {
+      only('anything');
+      only(['x', 'y', 'z']);
+    });
+
+    const assertSkipField = <K extends Parameters<typeof suite.skip>[0]>(
+      field: K,
+    ) => field;
+
+    assertSkipField('anything');
+  });
+
+  it('allows any string for only() with escape hatch', () => {
+    const suite = create<null>((_data: any) => {
+      only('dynamic');
+      only(['a', 'b']);
+    });
+
+    const assertSkipField = <K extends Parameters<typeof suite.skip>[0]>(
+      field: K,
+    ) => field;
+
+    assertSkipField('dynamic');
+  });
+});
+
+describe('comprehensive typed API coverage', () => {
+  it('config-based: all APIs accept typed fields and reject invalid ones', () => {
+    const suite = create<{ fields: 'a' | 'b'; groups: 'g1' }>(
+      (_data: unknown) => {
+        // Top-level functions inside callback are untyped — always compile
+        test('a', () => {});
+        only('a');
+        skip('b');
+        include('a').when('b');
+        optional('a');
+      },
+    );
+
+    // Suite-level APIs — positive cases (no runtime context needed)
+    suite.remove('a');
+    suite.resetField('a');
+    suite.afterField('a', () => {});
+
+    // Type-level assertions for suite typed methods
+    const assertTestField = <K extends Parameters<typeof suite.test>[0]>(
+      field: K,
+    ) => field;
+    const assertSkipField = <K extends Parameters<typeof suite.skip>[0]>(
+      field: K,
+    ) => field;
+    const assertIncludeField = <K extends Parameters<typeof suite.include>[0]>(
+      field: K,
+    ) => field;
+    const assertOptionalField = <
+      K extends Parameters<typeof suite.optional>[0],
+    >(
+      field: K,
+    ) => field;
+    const assertGroupName = <
+      K extends Exclude<Parameters<typeof suite.group>[0], () => void>,
+    >(
+      group: K,
+    ) => group;
+
+    assertTestField('a');
+    assertSkipField('b');
+    assertIncludeField('a');
+    assertOptionalField('a');
+    assertGroupName('g1');
+
+    // @ts-expect-error - invalid field for suite.test
+    assertTestField('invalid');
+
+    // @ts-expect-error - invalid field for suite.skip
+    assertSkipField('invalid');
+
+    // @ts-expect-error - invalid field for suite.include
+    assertIncludeField('invalid');
+
+    // @ts-expect-error - invalid field for suite.optional
+    assertOptionalField('invalid');
+
+    // @ts-expect-error - invalid group for suite.group
+    assertGroupName('invalid');
+
+    // Result selectors reject invalid fields
+    const result = suite.get();
+    result.hasErrors('a');
+    result.getErrors('a');
+
+    // @ts-expect-error - invalid field for result.hasErrors
+    result.hasErrors('invalid');
+
+    // @ts-expect-error - invalid field for result.getErrors
+    result.getErrors('invalid');
+
+    // @ts-expect-error - invalid group for focus
+    suite.focus({ onlyGroup: 'invalid' });
+  });
+
+  it('schema-inferred: all APIs accept schema fields and reject invalid ones', () => {
+    const schema = enforce.shape({
+      email: enforce.isString(),
+      count: enforce.isNumber(),
+    });
+
+    const suite = create(data => {
+      // Top-level functions inside callback are untyped — always compile
+      test('email', () => {
+        enforce(data.email).isNotBlank();
+      });
+      only('email');
+      skip('count');
+      include('email').when('count');
+      optional('email');
+    }, schema);
+
+    // Suite-level APIs — positive cases (no runtime context needed)
+    suite.remove('email');
+    suite.resetField('count');
+    suite.afterField('email', () => {});
+
+    // Type-level assertions for suite typed methods
+    const assertTestField = <K extends Parameters<typeof suite.test>[0]>(
+      field: K,
+    ) => field;
+    const assertSkipField = <K extends Parameters<typeof suite.skip>[0]>(
+      field: K,
+    ) => field;
+    const assertIncludeField = <K extends Parameters<typeof suite.include>[0]>(
+      field: K,
+    ) => field;
+    const assertOptionalField = <
+      K extends Parameters<typeof suite.optional>[0],
+    >(
+      field: K,
+    ) => field;
+
+    assertTestField('email');
+    assertSkipField('count');
+    assertIncludeField('email');
+    assertOptionalField('count');
+
+    // @ts-expect-error - unknown field for suite.test
+    assertTestField('unknown');
+
+    // @ts-expect-error - unknown field for suite.skip
+    assertSkipField('unknown');
+
+    // @ts-expect-error - unknown field for suite.include
+    assertIncludeField('unknown');
+
+    // @ts-expect-error - unknown field for suite.optional
+    assertOptionalField('unknown');
+
+    // Result selectors reject unknown fields
+    const result = suite.get();
+    result.hasErrors('email');
+    result.getErrors('count');
+
+    // @ts-expect-error - unknown field for result.hasErrors
+    result.hasErrors('unknown');
+
+    // @ts-expect-error - unknown field for result.getErrors
+    result.getErrors('unknown');
+  });
+
+  it('escape hatch: all APIs accept any string', () => {
+    const suite = create<null>((_data: any) => {
+      test('anything', () => {});
+      only('anything');
+      skip('anything');
+      include('anything').when('other');
+      optional('anything');
+    });
+
+    suite.remove('anything');
+    suite.resetField('anything');
+    suite.focus({ only: 'anything' });
+    suite.afterField('anything', () => {});
+
+    // Type-level assertions — all accept any string
+    const assertTestField = <K extends Parameters<typeof suite.test>[0]>(
+      field: K,
+    ) => field;
+    const assertSkipField = <K extends Parameters<typeof suite.skip>[0]>(
+      field: K,
+    ) => field;
+    const assertIncludeField = <K extends Parameters<typeof suite.include>[0]>(
+      field: K,
+    ) => field;
+    const assertOptionalField = <
+      K extends Parameters<typeof suite.optional>[0],
+    >(
+      field: K,
+    ) => field;
+
+    assertTestField('anything');
+    assertSkipField('anything');
+    assertIncludeField('anything');
+    assertOptionalField('anything');
+
+    const result = suite.get();
+    result.hasErrors('anything');
+    result.getErrors('anything');
+  });
+
+  it('untyped fallback: all APIs accept any string', () => {
+    const suite = create((_data: any) => {
+      test('anything', () => {});
+      only('anything');
+      skip('anything');
+      include('anything').when('other');
+      optional('anything');
+    });
+
+    suite.remove('anything');
+    suite.resetField('anything');
+    suite.focus({ only: 'anything' });
+    suite.afterField('anything', () => {});
+
+    // Type-level assertions — all accept any string
+    const assertTestField = <K extends Parameters<typeof suite.test>[0]>(
+      field: K,
+    ) => field;
+    const assertSkipField = <K extends Parameters<typeof suite.skip>[0]>(
+      field: K,
+    ) => field;
+    const assertIncludeField = <K extends Parameters<typeof suite.include>[0]>(
+      field: K,
+    ) => field;
+    const assertOptionalField = <
+      K extends Parameters<typeof suite.optional>[0],
+    >(
+      field: K,
+    ) => field;
+
+    assertTestField('anything');
+    assertSkipField('anything');
+    assertIncludeField('anything');
+    assertOptionalField('anything');
+
+    const result = suite.get();
+    result.hasErrors('anything');
+    result.getErrors('anything');
   });
 });

@@ -10,6 +10,8 @@ import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
 import { useHasOnliedTests } from './focused/useHasOnliedTests';
 
+const INCLUDE_UNSET = Symbol('include_unset');
+
 /**
  * Conditionally includes a field for testing, based on specified criteria.
  *
@@ -37,7 +39,7 @@ export function include<F extends TFieldName, G extends TGroupName>(
   invariant(isStringValue(fieldName));
   const safeFieldName = makeBrand<TFieldName>(fieldName);
   const conditionRef: IncludeConditionRef<F, G> = {
-    current: undefined,
+    current: INCLUDE_UNSET,
   };
 
   IsolateTransient(useSetIncluded, 'Include', {
@@ -66,7 +68,7 @@ type IncludeCondition<F extends TFieldName, G extends TGroupName> =
   | TDraftCondition<F, G>;
 
 type IncludeConditionRef<F extends TFieldName, G extends TGroupName> = {
-  current: IncludeCondition<F, G> | undefined;
+  current: IncludeCondition<F, G> | typeof INCLUDE_UNSET;
 };
 
 type IncludePayload<F extends TFieldName, G extends TGroupName> = {
@@ -86,7 +88,7 @@ function useSetIncluded<F extends TFieldName, G extends TGroupName>(
   ): boolean {
     const condition = conditionRef.current;
 
-    if (condition === undefined) {
+    if (condition === INCLUDE_UNSET) {
       return true;
     }
 

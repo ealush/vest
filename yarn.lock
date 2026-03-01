@@ -5468,12 +5468,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/pretty-format@npm:4.0.14":
-  version: 4.0.14
-  resolution: "@vitest/pretty-format@npm:4.0.14"
+"@vitest/pretty-format@npm:4.0.18":
+  version: 4.0.18
+  resolution: "@vitest/pretty-format@npm:4.0.18"
   dependencies:
     tinyrainbow: ^3.0.3
-  checksum: 07febc84f89126274ec3b7be3d640131771547d231063c4595edb6357726f52fc23f85e8e8bc183a8327451030f21f9a3d293eb4efa1a2f136e1792a6d820843
+  checksum: 7e095a69badfec07db5dc374c9d7f7aa4d0cd9795b508b23c989dbcb7c0d6a06acb35ed01a0f777ab297a99aa6c6a09b4dcca53c097429184ad93606166ec261
   languageName: node
   linkType: hard
 
@@ -5505,11 +5505,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/ui@npm:4.0.14":
-  version: 4.0.14
-  resolution: "@vitest/ui@npm:4.0.14"
+"@vitest/ui@npm:4.0.18":
+  version: 4.0.18
+  resolution: "@vitest/ui@npm:4.0.18"
   dependencies:
-    "@vitest/utils": 4.0.14
+    "@vitest/utils": 4.0.18
     fflate: ^0.8.2
     flatted: ^3.3.3
     pathe: ^2.0.3
@@ -5517,8 +5517,8 @@ __metadata:
     tinyglobby: ^0.2.15
     tinyrainbow: ^3.0.3
   peerDependencies:
-    vitest: 4.0.14
-  checksum: 5817d673b7b0e11e5a2ed89d4dd906baab0b1bd361bc8c4c874a723a34780bffee954c04b64702fbdd6967c60a5fa2fc47cc08d879b45cd56c7fdcb12e6580ff
+    vitest: 4.0.18
+  checksum: 7e0ee8523f0a1f2c75b852a4236434f075558e09ea273c338b025632a7e0d3b1c85cd29dfc4bdeb9366a8f3c12e2101ee715a11dc2ad1cd8436353723b5db37c
   languageName: node
   linkType: hard
 
@@ -5532,13 +5532,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/utils@npm:4.0.14":
-  version: 4.0.14
-  resolution: "@vitest/utils@npm:4.0.14"
+"@vitest/utils@npm:4.0.18":
+  version: 4.0.18
+  resolution: "@vitest/utils@npm:4.0.18"
   dependencies:
-    "@vitest/pretty-format": 4.0.14
+    "@vitest/pretty-format": 4.0.18
     tinyrainbow: ^3.0.3
-  checksum: 61048d5f9c1555bda343f1c3d04fc51b622dbebd2c690720e0c97d54d7ccf9f94cf9a89baac45b2b9c2d02e1502caee52e7101ce0b60a31798e732abb273ff2f
+  checksum: f536bf5700cbf72703b6cd17083f321fef16ce40910c8a7e6a5939bac8dac2a421518ffa0ea825b18d002bb4f0f62c697e971e725cbf55744b56ea748e424c35
   languageName: node
   linkType: hard
 
@@ -17063,7 +17063,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^7
     "@typescript-eslint/parser": ^7
     "@vitest/coverage-v8": 4.0.10
-    "@vitest/ui": 4.0.14
+    "@vitest/ui": 4.0.18
     eslint: ^9
     eslint-config-prettier: ^9
     eslint-import-resolver-typescript: ^3

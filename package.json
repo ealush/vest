@@ -41,7 +41,7 @@
     "eslint-plugin-prettier": "^5",
     "eslint-plugin-vitest": "^0",
     "husky": "^8.0.3",
-    "lint-staged": "^16.2.7",
+    "lint-staged": "^16.3.0",
     "lodash": "^4.17.21",
     "prettier": "^3.7.3",
     "tsc": "^2.0.4",

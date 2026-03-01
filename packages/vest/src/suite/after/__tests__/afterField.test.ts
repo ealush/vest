@@ -33,7 +33,15 @@ describe('afterField', () => {
     describe('When there are async tests for the field', () => {
       it('Should only run field callbacks for completed tests', async () => {
         const control = vi.fn();
-        let suite: ReturnType<typeof vest.create>;
+        const suite = vest.create(() => {
+          vest.test('field_1' as TFieldName, async () => {
+            await wait(100);
+          });
+          vest.test('field_2' as TFieldName, () => {});
+          vest.test('field_3' as TFieldName, async () => {
+            await wait(50);
+          });
+        });
 
         const cb2 = vi.fn((res: ReturnType<typeof suite.get>) => {
           expect(res).toEqual(suite.get());
@@ -42,16 +50,6 @@ describe('afterField', () => {
         const cb3 = vi.fn((res: ReturnType<typeof suite.get>) => {
           expect(res).toEqual(suite.get());
           control();
-        });
-
-        suite = vest.create(() => {
-          vest.test('field_1' as TFieldName, async () => {
-            await wait(100);
-          });
-          vest.test('field_2' as TFieldName, () => {});
-          vest.test('field_3' as TFieldName, async () => {
-            await wait(50);
-          });
         });
 
         suite

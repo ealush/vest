@@ -33,15 +33,14 @@ describe('afterEach', () => {
   describe('When both sync and async tests', () => {
     it('should call the `afterEach` callback once when the sync tests are done and again for each async test', async () => {
       const control = vi.fn();
-      let suite: ReturnType<typeof vest.create>;
-      const afterCallback = vi.fn((res: ReturnType<typeof suite.get>) => {
-        expect(res).toEqual(suite.get());
-        control();
-      });
-      suite = vest.create(() => {
+      const suite = vest.create(() => {
         dummyTest.passing();
         dummyTest.failingAsync('field_1', { time: 10 });
         dummyTest.failingAsync('field_2', { time: 15 });
+      });
+      const afterCallback = vi.fn((res: ReturnType<typeof suite.get>) => {
+        expect(res).toEqual(suite.get());
+        control();
       });
       suite.afterEach(afterCallback).run();
       expect(afterCallback).toHaveBeenCalledTimes(1);

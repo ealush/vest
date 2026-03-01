@@ -1,12 +1,10 @@
 import { mapPassing } from './parserUtils';
 
-const WORD_SEPARATOR_REGEX = /[\s_-]+(.)?/g;
-
 function toCamelCase(value: string): string {
   return value
     .trim()
     .toLowerCase()
-    .replace(WORD_SEPARATOR_REGEX, (_match, chr: string | undefined) =>
+    .replace(/[\s_-]+(.)?/g, (_match, chr: string | undefined) =>
       chr ? chr.toUpperCase() : '',
     );
 }
@@ -66,13 +64,13 @@ export const replaceAll = (
 ) =>
   mapPassing((current: string) =>
     typeof searchValue === 'string'
-      ? current.split(searchValue).join(replaceValue)
+      ? searchValue === ''
+        ? current
+        : current.split(searchValue).join(replaceValue)
       : current.replace(
           new RegExp(
             searchValue.source,
-            searchValue.flags.includes('g')
-              ? searchValue.flags
-              : searchValue.flags + 'g',
+            [...new Set(searchValue.flags + 'g')].join(''),
           ),
           replaceValue,
         ),

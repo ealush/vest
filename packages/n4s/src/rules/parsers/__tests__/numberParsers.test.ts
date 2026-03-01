@@ -38,7 +38,7 @@ describe('number parsers', () => {
     expect(clamp(50, 10, 10).type).toBe(10);
   });
 
-  it('clamp when min > max', () => {
+  it('clamp does not validate min <= max', () => {
     expect(clamp(50, 100, 0).type).toBe(0);
   });
 

@@ -1,4 +1,5 @@
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
+import { CHAIN_PREPEND } from './parserUtils';
 import { toBoolean } from './toBoolean';
 
 export function defaultTo<TValue>(
@@ -11,6 +12,8 @@ export function defaultTo<TValue>(
 
   return RuleRunReturn.Passing(value as NonNullable<TValue>);
 }
+
+(defaultTo as unknown as Record<symbol, boolean>)[CHAIN_PREPEND] = true;
 
 export const parseJSON = (value: string): RuleRunReturn<unknown> => {
   try {

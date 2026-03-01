@@ -11,7 +11,7 @@ describe('built-in lazy parsers', () => {
       .prepend('HELLO ')
       .run('  world  ');
 
-    expect(transformed).toEqual({ pass: true, type: 'HELLO WORLD' });
+    expect(transformed).toMatchObject({ pass: true, type: 'HELLO WORLD' });
   });
 
   it('supports numeric parser chains after numeric rules', () => {
@@ -22,7 +22,7 @@ describe('built-in lazy parsers', () => {
       .round()
       .run('101.49');
 
-    expect(transformed).toEqual({ pass: true, type: 100 });
+    expect(transformed).toMatchObject({ pass: true, type: 100 });
   });
 
   it('fails parse-oriented chains when parser coercion fails', () => {

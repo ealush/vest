@@ -143,4 +143,16 @@ describe('schema parse integration', () => {
       nickname: '',
     });
   });
+
+  it('defaultTo applies fallback for nullish values before type checks', () => {
+    const schema = enforce.shape({
+      label: enforce.isString().defaultTo('N/A'),
+    });
+
+    // @ts-expect-error - testing nullish input against string schema
+    expect(schema.parse({ label: null })).toEqual({ label: 'N/A' });
+    // @ts-expect-error - testing nullish input against string schema
+    expect(schema.parse({ label: undefined })).toEqual({ label: 'N/A' });
+    expect(schema.parse({ label: 'hello' })).toEqual({ label: 'hello' });
+  });
 });

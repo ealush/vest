@@ -2,6 +2,7 @@ import { hasOwnProperty } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { RuleInstance } from '../../utils/RuleInstance';
+import { CHAIN_PREPEND } from '../parsers/parserUtils';
 
 import type { Predicate } from './chainExecutor';
 import { getLazyRule } from './lazyRegistry';
@@ -60,7 +61,9 @@ function createProxyHandlersHelper<T extends RuleInstance<any, any>>(
 ) {
   function getRuleHandler(prop: string | symbol) {
     if (hasOwnProperty(rules, prop)) {
-      const insert = prop === 'defaultTo' ? inserters.prepend : inserters.add;
+      const insert = rules[prop][CHAIN_PREPEND]
+        ? inserters.prepend
+        : inserters.add;
       return (...args: any[]) =>
         insert((value: any) => rules[prop](value, ...args));
     }

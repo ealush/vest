@@ -40,6 +40,11 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
     return proxy;
   };
 
+  const prepend = (p: Predicate): T => {
+    chain.unshift(p);
+    return proxy;
+  };
+
   const resolveMessage = (
     result: ReturnType<typeof executeChain>,
     value: unknown,
@@ -117,6 +122,7 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
       add,
       message,
       parse,
+      prepend,
       run,
       test,
       validate,

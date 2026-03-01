@@ -15,6 +15,7 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
     run,
     parse,
     message,
+    prepend,
     '~standard': standard,
   }: {
     add: (p: Predicate) => T;
@@ -23,6 +24,7 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
     run: T['run'];
     parse: T['parse'];
     message: (msg: any) => T;
+    prepend: (p: Predicate) => T;
     '~standard': StandardSchemaV1.Props<any, any>;
   },
 ) {
@@ -44,34 +46,44 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
     '~standard',
   ]);
 
-  return createProxyHandlersHelper(rules, methods, methodKeys, add);
+  return createProxyHandlersHelper(rules, methods, methodKeys, {
+    add,
+    prepend,
+  });
 }
 
 function createProxyHandlersHelper<T extends RuleInstance<any, any>>(
   rules: Record<string, any>,
   methods: Record<string, any>,
   methodKeys: Set<string>,
-  add: (p: Predicate) => T,
+  inserters: { add: (p: Predicate) => T; prepend: (p: Predicate) => T },
 ) {
+  function getRuleHandler(prop: string | symbol) {
+    if (hasOwnProperty(rules, prop)) {
+      const insert = prop === 'defaultTo' ? inserters.prepend : inserters.add;
+      return (...args: any[]) =>
+        insert((value: any) => rules[prop](value, ...args));
+    }
+
+    if (typeof prop === 'string') {
+      const lazyRule = getLazyRule(prop);
+      if (lazyRule) {
+        return (...args: any[]) => inserters.add(lazyRule(...args));
+      }
+    }
+
+    return undefined;
+  }
+
   return {
     get(_target: T, prop: string | symbol, receiver: any) {
       if (hasOwnProperty(methods, prop)) {
         return methods[prop];
       }
 
-      if (hasOwnProperty(rules, prop)) {
-        return (...args: any[]) =>
-          add((value: any) => rules[prop](value, ...args));
-      }
-
-      if (typeof prop === 'string') {
-        const lazyRule = getLazyRule(prop);
-        if (lazyRule) {
-          return (...args: any[]) => add(lazyRule(...args));
-        }
-      }
-
-      return Reflect.get(_target as object, prop, receiver);
+      return (
+        getRuleHandler(prop) ?? Reflect.get(_target as object, prop, receiver)
+      );
     },
     has(_target: T, prop: string | symbol) {
       if (typeof prop === 'string') {

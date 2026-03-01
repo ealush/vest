@@ -18,6 +18,17 @@ export const toAbsolute = (value: number) =>
   mapPassing((current: number) => Math.abs(current))(value);
 
 export const toDate = (value: unknown): RuleRunReturn<Date> => {
+  if (
+    typeof value !== 'string' &&
+    typeof value !== 'number' &&
+    !(value instanceof Date)
+  ) {
+    return RuleRunReturn.Failing(
+      new Date(NaN),
+      'Could not parse to Date: expected string, number, or Date',
+    );
+  }
+
   const parsed = new Date(value as string | number | Date);
   if (Number.isNaN(parsed.getTime())) {
     return RuleRunReturn.Failing(parsed, 'Could not parse to Date');
@@ -35,10 +46,21 @@ export const toFloat = (value: unknown): RuleRunReturn<number> => {
   return RuleRunReturn.Passing(parsed);
 };
 
+function isValidRadix(radix: number): boolean {
+  return Number.isInteger(radix) && radix >= 2 && radix <= 36;
+}
+
 export const toInteger = (
   value: unknown,
   radix = 10,
 ): RuleRunReturn<number> => {
+  if (!isValidRadix(radix)) {
+    return RuleRunReturn.Failing(
+      NaN,
+      'Invalid radix: must be an integer between 2 and 36',
+    );
+  }
+
   const parsed =
     typeof value === 'number'
       ? Math.trunc(value)

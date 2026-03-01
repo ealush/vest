@@ -1,11 +1,14 @@
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
+const TRUTHY_STRINGS = new Set(['true', '1', 'yes', 'on']);
+const FALSY_STRINGS = new Set(['false', '0', 'no', 'off']);
+
 function parseStringBoolean(value: string): boolean | undefined {
   const normalized = value.trim().toLowerCase();
-  if (['true', '1', 'yes', 'on'].includes(normalized)) {
+  if (TRUTHY_STRINGS.has(normalized)) {
     return true;
   }
-  if (['false', '0', 'no', 'off'].includes(normalized)) {
+  if (FALSY_STRINGS.has(normalized)) {
     return false;
   }
 

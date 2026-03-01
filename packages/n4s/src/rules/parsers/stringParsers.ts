@@ -4,6 +4,7 @@ const WORD_SEPARATOR_REGEX = /[\s_-]+(.)?/g;
 
 function toCamelCase(value: string): string {
   return value
+    .trim()
     .toLowerCase()
     .replace(WORD_SEPARATOR_REGEX, (_match, chr: string | undefined) =>
       chr ? chr.toUpperCase() : '',
@@ -58,6 +59,25 @@ export const replace = (
     value,
   );
 
+export const replaceAll = (
+  value: string,
+  searchValue: string | RegExp,
+  replaceValue: string,
+) =>
+  mapPassing((current: string) =>
+    typeof searchValue === 'string'
+      ? current.split(searchValue).join(replaceValue)
+      : current.replace(
+          new RegExp(
+            searchValue.source,
+            searchValue.flags.includes('g')
+              ? searchValue.flags
+              : searchValue.flags + 'g',
+          ),
+          replaceValue,
+        ),
+  )(value);
+
 export const split = (
   value: string,
   separator: string | RegExp,
@@ -90,10 +110,7 @@ export const toSnake = (value: string) =>
 
 export const toTitle = (value: string) =>
   mapPassing((current: string) =>
-    current
-      .toLowerCase()
-      .replace(/\b\w/g, char => char.toUpperCase())
-      .trim(),
+    current.toLowerCase().replace(/\b\w/g, char => char.toUpperCase()),
   )(value);
 
 export const toUpper = (value: string) =>
@@ -116,6 +133,7 @@ export const stringParsers = {
   removeNonDigits,
   removeNonLetters,
   replace,
+  replaceAll,
   split,
   stripWhitespace,
   toCamel,

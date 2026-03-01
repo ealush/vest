@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { defaultTo, generalParsers, toJSON } from '../generalParsers';
+import { defaultTo, generalParsers, parseJSON } from '../generalParsers';
 
 describe('general parsers', () => {
   it('exports all general parser functions', () => {
     expect(Object.keys(generalParsers).sort()).toEqual([
       'defaultTo',
+      'parseJSON',
       'toBoolean',
-      'toJSON',
     ]);
   });
 
@@ -20,8 +20,8 @@ describe('general parsers', () => {
     expect(defaultTo('value', 'fallback').type).toBe('value');
   });
 
-  it('toJSON passes for valid JSON', () => {
-    expect(toJSON('{"name":"vest"}')).toEqual({
+  it('parseJSON passes for valid JSON', () => {
+    expect(parseJSON('{"name":"vest"}')).toEqual({
       pass: true,
       type: { name: 'vest' },
       message: undefined,
@@ -29,8 +29,8 @@ describe('general parsers', () => {
     });
   });
 
-  it('toJSON fails for invalid JSON', () => {
-    const result = toJSON('not-json');
+  it('parseJSON fails for invalid JSON', () => {
+    const result = parseJSON('not-json');
 
     expect(result.pass).toBe(false);
     expect(result.type).toBe('not-json');

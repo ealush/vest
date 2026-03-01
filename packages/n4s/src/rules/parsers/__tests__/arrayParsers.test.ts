@@ -9,9 +9,11 @@ describe('array parsers', () => {
 
   it('join', () => {
     expect(join(['a', 'b', 'c'], '-').type).toBe('a-b-c');
+    expect(join(['a', 'b', 'c'], '-').pass).toBe(true);
   });
 
   it('uniq', () => {
     expect(uniq(['a', 'a', 'b']).type).toEqual(['a', 'b']);
+    expect(uniq(['a', 'a', 'b']).pass).toBe(true);
   });
 });

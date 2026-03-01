@@ -8,6 +8,7 @@ import {
   removeNonDigits,
   removeNonLetters,
   replace,
+  replaceAll,
   split,
   stringParsers,
   stripWhitespace,
@@ -34,6 +35,7 @@ describe('string parsers', () => {
       'removeNonDigits',
       'removeNonLetters',
       'replace',
+      'replaceAll',
       'split',
       'stripWhitespace',
       'toCamel',
@@ -78,6 +80,12 @@ describe('string parsers', () => {
     expect(replace('vest rocks', 'rocks', 'rules').type).toBe('vest rules');
   });
 
+  it('replaceAll', () => {
+    expect(replaceAll('vest vest vest', 'vest', 'n4s').type).toBe(
+      'n4s n4s n4s',
+    );
+  });
+
   it('split', () => {
     expect(split('a,b,c', ',', 2).type).toEqual(['a', 'b']);
   });
@@ -88,6 +96,10 @@ describe('string parsers', () => {
 
   it('toCamel', () => {
     expect(toCamel('hello_world-test').type).toBe('helloWorldTest');
+  });
+
+  it('toCamel handles leading whitespace', () => {
+    expect(toCamel(' foo bar').type).toBe('fooBar');
   });
 
   it('toCapitalized', () => {

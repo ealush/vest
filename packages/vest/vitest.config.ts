@@ -10,15 +10,16 @@ export default defineConfig({
   resolve: {
     alias: {
       vest: resolve(__dirname, 'src/vest.ts'),
+      n4s: resolve(__dirname, '../n4s/src/n4s.ts'),
     },
   },
   root: __dirname,
   test: {
-    globals: true,
-    include: ['./**/__tests__/*.test.ts'],
     benchmark: {
       include: ['./bench/**/*.bench.ts'],
     },
+    globals: true,
+    include: ['./**/__tests__/*.test.ts'],
     setupFiles: [
       resolve(__dirname, '../../', 'vx/config/vitest/customMatchers.ts'),
     ],

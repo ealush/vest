@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { create, enforce, test } from '../../vest';
-import { enforce as n4sEnforce } from '../../../../n4s/src/n4s';
+import { enforce as n4sEnforce } from 'n4s';
 
 describe('suite schema integration', () => {
   it('validates schema object and passes data into suite body', () => {
@@ -181,7 +181,7 @@ describe('suite schema integration', () => {
       name: n4sEnforce.isString().trim().toTitle(),
       subscribed: n4sEnforce.isString().trim().toBoolean(),
       tags: n4sEnforce.isArray<string>().uniq().join('|'),
-      payload: n4sEnforce.isString().toJSON(),
+      payload: n4sEnforce.isString().parseJSON(),
     });
 
     let callbackData: any;
@@ -211,12 +211,9 @@ describe('suite schema integration', () => {
     }, schema);
 
     const result = suite.run({
-      // @ts-expect-error - input value is intentionally pre-parse
       age: '180',
       name: '  jANE DOE ',
-      // @ts-expect-error - input value is intentionally pre-parse
       subscribed: ' yes ',
-      // @ts-expect-error - input value is intentionally pre-parse
       tags: ['vest', 'n4s', 'vest'],
       payload: '{"env":"test"}',
     });
@@ -252,7 +249,6 @@ describe('suite schema integration', () => {
       });
     }, schema);
 
-    // @ts-expect-error - testing parser failure with pre-parse input
     const result = suite.run({ subscribed: 'unknown' });
 
     expect(callbackData).toEqual({ subscribed: 'unknown' });

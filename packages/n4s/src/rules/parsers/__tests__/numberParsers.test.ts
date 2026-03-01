@@ -34,6 +34,14 @@ describe('number parsers', () => {
     expect(clamp(120, 0, 100).type).toBe(100);
   });
 
+  it('clamp when min equals max', () => {
+    expect(clamp(50, 10, 10).type).toBe(10);
+  });
+
+  it('clamp when min > max', () => {
+    expect(clamp(50, 100, 0).type).toBe(0);
+  });
+
   it('floor', () => {
     expect(floor(2.9).type).toBe(2);
   });
@@ -61,6 +69,15 @@ describe('number parsers', () => {
     expect(result.message).toBe('Could not parse to Date');
   });
 
+  it('toDate fails for non-string/number/Date types', () => {
+    const result = toDate({ year: 2024 });
+
+    expect(result.pass).toBe(false);
+    expect(result.message).toBe(
+      'Could not parse to Date: expected string, number, or Date',
+    );
+  });
+
   it('toFloat passes', () => {
     expect(toFloat('10.5')).toEqual({
       pass: true,
@@ -68,6 +85,11 @@ describe('number parsers', () => {
       message: undefined,
       path: undefined,
     });
+  });
+
+  it('toFloat passes for number input', () => {
+    expect(toFloat(10.5).type).toBe(10.5);
+    expect(toFloat(10.5).pass).toBe(true);
   });
 
   it('toFloat fails', () => {
@@ -82,11 +104,30 @@ describe('number parsers', () => {
     expect(toInteger('11.8').type).toBe(11);
   });
 
+  it('toInteger passes for number input', () => {
+    expect(toInteger(11.8).type).toBe(11);
+    expect(toInteger(11.8).pass).toBe(true);
+  });
+
+  it('toInteger with binary radix', () => {
+    expect(toInteger('1011', 2).type).toBe(11);
+    expect(toInteger('1011', 2).pass).toBe(true);
+  });
+
   it('toInteger fails', () => {
     const result = toInteger('abc');
 
     expect(result.pass).toBe(false);
     expect(Number.isNaN(result.type)).toBe(true);
     expect(result.message).toBe('Could not parse to integer');
+  });
+
+  it('toInteger fails for invalid radix', () => {
+    const result = toInteger('10', 1);
+
+    expect(result.pass).toBe(false);
+    expect(result.message).toBe(
+      'Invalid radix: must be an integer between 2 and 36',
+    );
   });
 });

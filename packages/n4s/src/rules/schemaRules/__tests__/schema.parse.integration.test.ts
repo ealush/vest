@@ -121,7 +121,7 @@ describe('schema parse integration', () => {
       age: enforce.isNumeric().toNumber().clamp(0, 120),
       subscribed: enforce.isString().trim().toBoolean(),
       tags: enforce.isArray<string>().uniq().join('|'),
-      payload: enforce.isString().toJSON(),
+      payload: enforce.isString().parseJSON(),
       nickname: enforce.isString().trim().defaultTo('N/A'),
     });
 

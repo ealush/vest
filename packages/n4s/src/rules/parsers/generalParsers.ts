@@ -12,7 +12,7 @@ export function defaultTo<TValue>(
   return RuleRunReturn.Passing(value as NonNullable<TValue>);
 }
 
-export const toJSON = (value: string): RuleRunReturn<unknown> => {
+export const parseJSON = (value: string): RuleRunReturn<unknown> => {
   try {
     return RuleRunReturn.Passing(JSON.parse(value));
   } catch {
@@ -22,6 +22,6 @@ export const toJSON = (value: string): RuleRunReturn<unknown> => {
 
 export const generalParsers = {
   defaultTo,
+  parseJSON,
   toBoolean,
-  toJSON,
 } as const;

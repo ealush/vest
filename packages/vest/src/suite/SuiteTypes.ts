@@ -69,8 +69,14 @@ type FocusedMethods<
   T extends CB,
   S extends TSchema,
 > = {
-  afterEach: CB<FocusedMethods<F, G, T, S>, [callback: CB]>;
-  afterField: CB<FocusedMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
+  afterEach: CB<
+    FocusedMethods<F, G, T, S>,
+    [callback: (res: SuiteResult<F, G, S>) => void]
+  >;
+  afterField: CB<
+    FocusedMethods<F, G, T, S>,
+    [fieldName: F, callback: (res: SuiteResult<F, G, S>) => void]
+  >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
   // run is included but runStatic is intentionally omitted: runStatic is stateless
@@ -88,8 +94,14 @@ type AfterMethods<
   T extends CB,
   S extends TSchema,
 > = {
-  afterEach: CB<AfterMethods<F, G, T, S>, [callback: CB]>;
-  afterField: CB<AfterMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
+  afterEach: CB<
+    AfterMethods<F, G, T, S>,
+    [callback: (res: SuiteResult<F, G, S>) => void]
+  >;
+  afterField: CB<
+    AfterMethods<F, G, T, S>,
+    [fieldName: F, callback: (res: SuiteResult<F, G, S>) => void]
+  >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
   run: (

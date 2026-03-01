@@ -133,7 +133,7 @@ describe('afterEach - additional test coverage', () => {
   });
 
   describe('afterEach callback parameters', () => {
-    test('should not receive any arguments', () => {
+    test('should receive the suite result as an argument', () => {
       const callback = vi.fn();
 
       const suite = vest.create(() => {
@@ -151,7 +151,7 @@ describe('afterEach - additional test coverage', () => {
       expect(callback).toHaveBeenCalledOnce();
 
       const param = callback.mock.calls[0][0];
-      expect(param).toBeUndefined();
+      expect(param).toEqual(suite.get());
     });
   });
 });

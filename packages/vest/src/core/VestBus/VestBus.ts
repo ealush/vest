@@ -14,6 +14,7 @@ import {
   useResetCallbacks,
   useResetSuite,
 } from '../Runtime';
+import { useCreateSuiteResult } from '../../suiteResult/suiteResult';
 import { TestWalker } from '../isolate/IsolateTest/TestWalker';
 import { VestTest } from '../isolate/IsolateTest/VestTest';
 
@@ -71,8 +72,9 @@ export function useInitVestBus() {
       if (!VestTest.isCanceled(isolate).unwrap()) {
         const { fieldName } = VestTest.getData(isolate);
 
-        useRunFieldCallbacks(fieldName);
-        useRunDoneCallbacks();
+        const result = useCreateSuiteResult();
+        useRunFieldCallbacks(fieldName, result);
+        useRunDoneCallbacks(result);
       }
     }
 
@@ -130,8 +132,9 @@ export function useInitVestBus() {
     }
 
     useOmitOptionalFields();
-    useRunSyncFieldCallbacks();
-    useRunDoneCallbacks();
+    const result = useCreateSuiteResult();
+    useRunSyncFieldCallbacks(result);
+    useRunDoneCallbacks(result);
   });
 
   VestBus.on('REMOVE_FIELD', (fieldName: TFieldName) => {

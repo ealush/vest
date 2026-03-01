@@ -1,17 +1,23 @@
-import { isArray, callEach, greaterThan } from 'vest-utils';
+import { isArray } from 'vest-utils';
 
 import { useDoneCallbacks, useFieldCallbacks } from '../core/Runtime';
-import { TFieldName } from '../suiteResult/SuiteResultTypes';
-import { useCreateSuiteResult } from '../suiteResult/suiteResult';
+import {
+  SuiteResult,
+  TFieldName,
+  TGroupName,
+} from '../suiteResult/SuiteResultTypes';
 
 /**
  * Runs done callback per field when async tests are finished running.
  */
-export function useRunFieldCallbacks(fieldName: TFieldName): void {
+export function useRunFieldCallbacks(
+  fieldName: TFieldName,
+  result: SuiteResult<TFieldName, TGroupName>,
+): void {
   const [fieldCallbacks] = useFieldCallbacks();
 
   if (isArray(fieldCallbacks[fieldName])) {
-    callEach(fieldCallbacks[fieldName]);
+    fieldCallbacks[fieldName].forEach(cb => cb(result));
   }
 }
 
@@ -19,9 +25,10 @@ export function useRunFieldCallbacks(fieldName: TFieldName): void {
  * Runs field callbacks (done callbacks) that can be executed immediately.
  * This happens when a field has non-pending tests (synchronous tests).
  */
-export function useRunSyncFieldCallbacks(): void {
+export function useRunSyncFieldCallbacks(
+  result: SuiteResult<TFieldName, TGroupName>,
+): void {
   const [fieldCallbacks] = useFieldCallbacks();
-  const result = useCreateSuiteResult();
 
   // Iterate over all fields that have registered done callbacks
   for (const fieldName in fieldCallbacks) {
@@ -37,13 +44,10 @@ export function useRunSyncFieldCallbacks(): void {
       // pendingCount is the number of tests currently running (async).
       // If testCount > pendingCount, it means there is at least one test
       // that has already finished (synchronous), so we can run the callbacks.
-      if (
-        testSummary &&
-        greaterThan(testSummary.testCount, testSummary.pendingCount)
-      ) {
+      if (testSummary && testSummary.testCount > testSummary.pendingCount) {
         // Execute all registered callbacks for this field.
         // This is the "nested loop" that iterates over the callbacks array.
-        callEach(callbacks);
+        callbacks.forEach(cb => cb(result));
       }
     }
   }
@@ -52,8 +56,10 @@ export function useRunSyncFieldCallbacks(): void {
 /**
  * Runs unlabelled done callback when async tests are finished running.
  */
-export function useRunDoneCallbacks() {
+export function useRunDoneCallbacks(
+  result: SuiteResult<TFieldName, TGroupName>,
+) {
   const [doneCallbacks] = useDoneCallbacks();
 
-  callEach(doneCallbacks);
+  doneCallbacks.forEach(cb => cb(result));
 }

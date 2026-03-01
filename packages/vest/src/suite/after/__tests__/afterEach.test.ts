@@ -11,39 +11,61 @@ describe('afterEach', () => {
     it('should call the afterEach callback immediately once', async () => {
       const afterCallback = vi.fn();
 
-      const res = vest
-        .create(() => {
-          dummyTest.passing();
-          dummyTest.passing();
-          dummyTest.failing();
-          dummyTest.failing();
-          dummyTest.passing();
-          dummyTest.failingWarning('field_2');
-        })
-        .afterEach(afterCallback)
-        .run();
+      const suite = vest.create(() => {
+        dummyTest.passing();
+        dummyTest.passing();
+        dummyTest.failing();
+        dummyTest.failing();
+        dummyTest.passing();
+        dummyTest.failingWarning('field_2');
+      });
+
+      const res = suite.afterEach(afterCallback).run();
 
       expect(afterCallback).toHaveBeenCalledOnce();
 
       await res;
       expect(afterCallback).toHaveBeenCalledOnce();
+      expect(afterCallback.mock.calls[0][0]).toEqual(suite.get());
     });
   });
 
   describe('When both sync and async tests', () => {
     it('should call the `afterEach` callback once when the sync tests are done and again for each async test', async () => {
-      const afterCallback = vi.fn();
-      const suite = vest.create(() => {
+      const control = vi.fn();
+      let suite: ReturnType<typeof vest.create>;
+      const afterCallback = vi.fn((res: ReturnType<typeof suite.get>) => {
+        expect(res).toEqual(suite.get());
+        control();
+      });
+      suite = vest.create(() => {
         dummyTest.passing();
         dummyTest.failingAsync('field_1', { time: 10 });
         dummyTest.failingAsync('field_2', { time: 15 });
       });
       suite.afterEach(afterCallback).run();
       expect(afterCallback).toHaveBeenCalledTimes(1);
+      expect(control).toHaveBeenCalledTimes(1);
+
+      const res1 = afterCallback.mock.calls[0][0];
+      expect(res1).toEqual(suite.get());
+      expect(res1.hasErrors()).toBe(false);
+
       await wait(10);
       expect(afterCallback).toHaveBeenCalledTimes(2);
+      expect(control).toHaveBeenCalledTimes(2);
+
+      const res2 = afterCallback.mock.calls[1][0];
+      expect(res2).toEqual(suite.get());
+      expect(res2.hasErrors('field_1')).toBe(true);
+
       await wait(10);
       expect(afterCallback).toHaveBeenCalledTimes(3);
+      expect(control).toHaveBeenCalledTimes(3);
+
+      const res3 = afterCallback.mock.calls[2][0];
+      expect(res3).toEqual(suite.get());
+      expect(res3.hasErrors('field_2')).toBe(true);
     });
   });
 

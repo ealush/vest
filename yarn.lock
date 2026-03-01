@@ -14590,12 +14590,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18.3.1":
-  version: 18.3.1
-  resolution: "react@npm:18.3.1"
-  dependencies:
-    loose-envify: ^1.1.0
-  checksum: a27bcfa8ff7c15a1e50244ad0d0c1cb2ad4375eeffefd266a64889beea6f6b64c4966c9b37d14ee32d6c9fcd5aa6ba183b6988167ab4d127d13e7cb5b386a376
+"react@npm:^19.2.4":
+  version: 19.2.4
+  resolution: "react@npm:19.2.4"
+  checksum: edf2b96619fab3a8b11714f16a0994a92c6b473aecf3269b63e4fa317d3073d40513c1f19cf4415ebbad94d35b48ff76ad768480db663037e2d929e8d60596b8
   languageName: node
   linkType: hard
 
@@ -17520,7 +17518,7 @@ __metadata:
     clsx: ^2.1.1
     file-loader: ^6.2.0
     prism-react-renderer: ^2.4.1
-    react: ^18.3.1
+    react: ^19.2.4
     react-dom: ^18.3.1
     url-loader: ^4.1.1
   languageName: unknown

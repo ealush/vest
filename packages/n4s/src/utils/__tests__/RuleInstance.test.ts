@@ -68,10 +68,11 @@ describe('RuleInstance.create', () => {
 
     const toNumber = (value: string): RuleRunReturn<number> => {
       const parsed = Number(value);
-      // @ts-expect-error - RuleRunReturn.Failing returns RuleRunReturn<string> but function declares RuleRunReturn<number>
-      return Number.isNaN(parsed)
-        ? RuleRunReturn.Failing(value, 'not a number')
-        : RuleRunReturn.Passing(parsed);
+      if (Number.isNaN(parsed)) {
+        // @ts-expect-error - RuleRunReturn.Failing returns RuleRunReturn<string> but function declares RuleRunReturn<number>
+        return RuleRunReturn.Failing(value, 'not a number');
+      }
+      return RuleRunReturn.Passing(parsed);
     };
 
     const rule = RuleInstance.create<R, number, [string]>(toNumber);
@@ -84,10 +85,11 @@ describe('RuleInstance.create', () => {
 
     const toNumber = (value: string): RuleRunReturn<number> => {
       const parsed = Number(value);
-      // @ts-expect-error - RuleRunReturn.Failing returns RuleRunReturn<string> but function declares RuleRunReturn<number>
-      return Number.isNaN(parsed)
-        ? RuleRunReturn.Failing(value, 'not a number')
-        : RuleRunReturn.Passing(parsed);
+      if (Number.isNaN(parsed)) {
+        // @ts-expect-error - RuleRunReturn.Failing returns RuleRunReturn<string> but function declares RuleRunReturn<number>
+        return RuleRunReturn.Failing(value, 'not a number');
+      }
+      return RuleRunReturn.Passing(parsed);
     };
 
     const rule = RuleInstance.create<R, number, [string]>(toNumber);

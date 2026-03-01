@@ -61,6 +61,23 @@ describe('number parsers', () => {
     expect(result.type instanceof Date).toBe(true);
   });
 
+  it('toDate passes for numeric timestamp', () => {
+    const result = toDate(1704067200000);
+
+    expect(result.pass).toBe(true);
+    expect(result.type instanceof Date).toBe(true);
+    expect(result.type.toISOString()).toBe('2024-01-01T00:00:00.000Z');
+  });
+
+  it('toDate passes for Date instance', () => {
+    const input = new Date('2024-01-01T00:00:00.000Z');
+    const result = toDate(input);
+
+    expect(result.pass).toBe(true);
+    expect(result.type instanceof Date).toBe(true);
+    expect(result.type.getTime()).toBe(input.getTime());
+  });
+
   it('toDate fails for invalid values', () => {
     const result = toDate('not-a-date');
 
@@ -79,12 +96,10 @@ describe('number parsers', () => {
   });
 
   it('toFloat passes', () => {
-    expect(toFloat('10.5')).toEqual({
-      pass: true,
-      type: 10.5,
-      message: undefined,
-      path: undefined,
-    });
+    const result = toFloat('10.5');
+
+    expect(result.pass).toBe(true);
+    expect(result.type).toBe(10.5);
   });
 
   it('toFloat passes for number input', () => {

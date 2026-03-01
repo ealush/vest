@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { create, enforce, test } from '../../vest';
+import { enforce as n4sEnforce } from 'n4s';
 
 describe('suite schema integration', () => {
   it('validates schema object and passes data into suite body', () => {
@@ -172,5 +173,86 @@ describe('suite schema integration', () => {
 
     expect(result.hasErrors()).toBe(true);
     expect(result.hasErrors('security')).toBe(true);
+  });
+
+  it('applies lazy parser chains before running the suite callback', () => {
+    const schema = n4sEnforce.shape({
+      age: n4sEnforce.isNumeric().toNumber().clamp(0, 120),
+      name: n4sEnforce.isString().trim().toTitle(),
+      subscribed: n4sEnforce.isString().trim().toBoolean(),
+      tags: n4sEnforce.isArray<string>().uniq().join('|'),
+      payload: n4sEnforce.isString().parseJSON(),
+    });
+
+    let callbackData: any;
+
+    const suite = create((data: any) => {
+      callbackData = data;
+
+      test('age', () => {
+        enforce(data.age).equals(120);
+      });
+
+      test('name', () => {
+        enforce(data.name).equals('Jane Doe');
+      });
+
+      test('subscribed', () => {
+        enforce(data.subscribed).isTruthy();
+      });
+
+      test('tags', () => {
+        enforce(data.tags).equals('vest|n4s');
+      });
+
+      test('payload', () => {
+        enforce(data.payload.env).equals('test');
+      });
+    }, schema);
+
+    const result = suite.run({
+      age: '180',
+      name: '  jANE DOE ',
+      subscribed: ' yes ',
+      tags: ['vest', 'n4s', 'vest'],
+      payload: '{"env":"test"}',
+    });
+
+    expect(callbackData).toEqual({
+      age: 120,
+      name: 'Jane Doe',
+      subscribed: true,
+      tags: 'vest|n4s',
+      payload: { env: 'test' },
+    });
+    expect(result.value).toEqual({
+      age: 120,
+      name: 'Jane Doe',
+      subscribed: true,
+      tags: 'vest|n4s',
+      payload: { env: 'test' },
+    });
+    expect(result.isValid()).toBe(true);
+  });
+
+  it('uses original data in callback when parser chain fails in schema parse', () => {
+    const schema = n4sEnforce.shape({
+      subscribed: n4sEnforce.isString().trim().toBoolean(),
+    });
+
+    let callbackData: any;
+
+    const suite = create((data: any) => {
+      callbackData = data;
+      test('subscribed', () => {
+        enforce(data.subscribed).isNotEmpty();
+      });
+    }, schema);
+
+    const result = suite.run({ subscribed: 'unknown' });
+
+    expect(callbackData).toEqual({ subscribed: 'unknown' });
+    expect(result.value).toBeUndefined();
+    expect(result.hasErrors('subscribed')).toBe(true);
   });
 });

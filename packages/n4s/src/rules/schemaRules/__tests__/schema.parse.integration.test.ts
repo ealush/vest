@@ -114,4 +114,45 @@ describe('schema parse integration', () => {
       { name: 'John', age: 45 },
     ]);
   });
+
+  it('shape parses values with built-in lazy parser chains', () => {
+    const schema = enforce.shape({
+      name: enforce.isString().trim().toTitle(),
+      age: enforce.isNumeric().toNumber().clamp(0, 120),
+      subscribed: enforce.isString().trim().toBoolean(),
+      tags: enforce.isArray<string>().uniq().join('|'),
+      payload: enforce.isString().parseJSON(),
+      nickname: enforce.isString().trim().defaultTo('N/A'),
+    });
+
+    const result = schema.parse({
+      name: '  jANE DOE ',
+      age: '180',
+      subscribed: ' yes ',
+      tags: ['vest', 'n4s', 'vest'],
+      payload: '{"env":"test"}',
+      nickname: '   ',
+    });
+
+    expect(result).toEqual({
+      name: 'Jane Doe',
+      age: 120,
+      subscribed: true,
+      tags: 'vest|n4s',
+      payload: { env: 'test' },
+      nickname: '',
+    });
+  });
+
+  it('defaultTo applies fallback for nullish values before type checks', () => {
+    const schema = enforce.shape({
+      label: enforce.isString().defaultTo('N/A'),
+    });
+
+    // @ts-expect-error - testing nullish input against string schema
+    expect(schema.parse({ label: null })).toEqual({ label: 'N/A' });
+    // @ts-expect-error - testing nullish input against string schema
+    expect(schema.parse({ label: undefined })).toEqual({ label: 'N/A' });
+    expect(schema.parse({ label: 'hello' })).toEqual({ label: 'hello' });
+  });
 });

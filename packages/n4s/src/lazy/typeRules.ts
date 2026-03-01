@@ -1,5 +1,8 @@
 import { isArray } from '../rules/array/isArrayRule';
-import type { ArrayRuleInstance } from '../rules/arrayRules';
+import {
+  BuildRuleInstance,
+  ExtractRuleFunctions,
+} from '../rules/RuleInstanceBuilder';
 import * as arrayRules from '../rules/arrayRules';
 import { isBoolean, type BooleanRuleInstance } from '../rules/booleanRules';
 import * as booleanRules from '../rules/booleanRules';
@@ -12,24 +15,69 @@ import {
   type UndefinedRuleInstance,
   type NullishRuleInstance,
 } from '../rules/nullishRules';
-import {
-  isNumber,
-  type NumberRuleInstance,
-  type NumericRuleInstance,
-} from '../rules/numberRules';
+import { isNumber } from '../rules/numberRules';
 import * as numberRules from '../rules/numberRules';
 import { isNumeric } from '../rules/numeric/isNumeric';
-import { isString, type StringRuleInstance } from '../rules/stringRules';
+import { arrayParsers } from '../rules/parsers/arrayParsers';
+import { generalParsers } from '../rules/parsers/generalParsers';
+import { numberParsers } from '../rules/parsers/numberParsers';
+import { stringParsers } from '../rules/parsers/stringParsers';
+import { isString } from '../rules/stringRules';
 import * as stringRules from '../rules/stringRules';
 
+const lazyArrayRules = {
+  ...arrayRules,
+  ...arrayParsers,
+  ...generalParsers,
+} as const;
+
+const lazyNumberRules = {
+  ...numberRules,
+  ...numberParsers,
+  ...generalParsers,
+} as const;
+
+const lazyStringRules = {
+  ...stringRules,
+  ...stringParsers,
+  ...generalParsers,
+} as const;
+
+type LazyArrayRuleInstance<T = any> = BuildRuleInstance<
+  T[],
+  [T[]],
+  ExtractRuleFunctions<typeof lazyArrayRules>
+>;
+
+type LazyNumberRuleInstance = BuildRuleInstance<
+  number,
+  [number],
+  ExtractRuleFunctions<typeof lazyNumberRules>
+>;
+
+type LazyNumericRuleInstance = BuildRuleInstance<
+  string | number,
+  [string | number],
+  ExtractRuleFunctions<typeof lazyNumberRules>
+>;
+
+type LazyStringRuleInstance = BuildRuleInstance<
+  string,
+  [string],
+  ExtractRuleFunctions<typeof lazyStringRules>
+>;
+
 export const typeRules = {
-  isArray: <T = any>(): ArrayRuleInstance<T> =>
-    addToChain<ArrayRuleInstance<T>>(arrayRules, isArray),
+  isArray: <T = any>(): LazyArrayRuleInstance<T> =>
+    addToChain<LazyArrayRuleInstance<T>>(lazyArrayRules, isArray),
   isBoolean: (): BooleanRuleInstance => addToChain(booleanRules, isBoolean),
   isNull: (): NullRuleInstance => addToChain({}, isNull),
   isNullish: (): NullishRuleInstance => addToChain({}, isNullish),
-  isNumber: (): NumberRuleInstance => addToChain(numberRules, isNumber),
-  isNumeric: (): NumericRuleInstance => addToChain(numberRules, isNumeric),
-  isString: (): StringRuleInstance => addToChain(stringRules, isString),
+  isNumber: (): LazyNumberRuleInstance =>
+    addToChain<LazyNumberRuleInstance>(lazyNumberRules, isNumber),
+  isNumeric: (): LazyNumericRuleInstance =>
+    addToChain<LazyNumericRuleInstance>(lazyNumberRules, isNumeric),
+  isString: (): LazyStringRuleInstance =>
+    addToChain<LazyStringRuleInstance>(lazyStringRules, isString),
   isUndefined: (): UndefinedRuleInstance => addToChain({}, isUndefined),
 };

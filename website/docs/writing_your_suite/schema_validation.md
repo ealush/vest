@@ -141,3 +141,26 @@ suite.only('username').run({
 ## Inspecting schema results
 
 The suite result includes a `types` object that captures the validated `input` and coerced `output` from the schema run. This is useful for debugging and type-safe consumers.
+
+## Schema Parsing
+
+Schema rules support built-in [data parsers](../enforce/builtin-enforce-plugins/data_parsers.md) that transform values as part of validation. When a schema uses parsers, `suite.run()` receives the transformed data in the callback, and `result.value` contains the parsed output.
+
+```js
+import { create, test, enforce } from 'vest';
+
+const schema = enforce.shape({
+  name: enforce.isString().trim().toTitle(),
+  age: enforce.isNumeric().toNumber().clamp(0, 120),
+});
+
+const suite = create(data => {
+  // data is already parsed: { name: 'Jane Doe', age: 120 }
+  test('name', 'Name is required', () => {
+    enforce(data.name).isNotBlank();
+  });
+}, schema);
+
+const result = suite.run({ name: '  jANE DOE ', age: '180' });
+// result.value → { name: 'Jane Doe', age: 120 }
+```

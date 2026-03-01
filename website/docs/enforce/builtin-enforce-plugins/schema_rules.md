@@ -135,3 +135,19 @@ enforce({ data: [1, 2, 3] }).shape({
   data: enforce.isArrayOf(enforce.isNumber()),
 });
 ```
+
+## Schema Parsing
+
+Schema rules can also **transform** values using built-in data parsers. Parsers like `trim()`, `toNumber()`, and `toBoolean()` coerce data as it passes through the chain, and `schema.parse()` returns the fully transformed result.
+
+```js
+const schema = enforce.shape({
+  name: enforce.isString().trim().toTitle(),
+  age: enforce.isNumeric().toNumber().clamp(0, 120),
+});
+
+schema.parse({ name: '  jANE DOE ', age: '180' });
+// → { name: 'Jane Doe', age: 120 }
+```
+
+See the full list of available parsers in [Data Parsers](./data_parsers.md).

@@ -510,8 +510,6 @@ value = "12"   -> 🚨 (value is a string and longer than 1)
 
 # Data Parsers
 
-# Data Parsers
-
 Data parsers transform values as they pass through an enforce chain. Unlike validation rules that only check whether a value is valid, parsers **coerce the value** into a new form — trimming whitespace, converting types, clamping numbers, and more.
 
 Parsers are available on **lazy chains** started with a type rule such as `enforce.isString()`, `enforce.isNumber()`, or `enforce.isArray()`. They are not available on eager `enforce(value)` chains.
@@ -742,6 +740,15 @@ enforce.isString().removeNonLetters().parse('v1e_2s-3t!');
 ## Number Parsers
 
 Available on `enforce.isNumber()` and `enforce.isNumeric()` chains.
+
+### toNumber
+
+Parses a string or number into a JavaScript Number. Fails if the result is `NaN` or invalid.
+
+```js
+enforce.isNumeric().toNumber().clamp(0, 100).parse('120');
+// → 100
+```
 
 ### round
 

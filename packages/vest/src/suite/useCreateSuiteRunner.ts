@@ -103,6 +103,8 @@ export function useCreateSuiteRunner<
             useResolver,
           }),
           useResolver,
+          schema,
+          callbackInput,
         ).output;
       },
     );

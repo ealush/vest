@@ -19,6 +19,8 @@ import {
 export type TIsolateSuite = TVestIsolate<{
   optional: OptionalFields;
   resolver: CB<SuiteResult<TFieldName, TGroupName, any>>;
+  schema?: any;
+  outputData?: any;
   // Registry indices (populated by IsolateRegistry)
   registry_all?: RegistryIndex;
   registry_failed?: RegistryIndex;
@@ -33,10 +35,14 @@ export type TIsolateSuite = TVestIsolate<{
 export function IsolateSuite<Callback extends CB = CB>(
   callback: Callback,
   resolver: CB<SuiteResult<TFieldName, TGroupName, any>>,
+  schema?: any,
+  outputData?: any,
 ): TIsolateSuite {
   return createVestIsolate(VestIsolateType.Suite, callback, {
     optional: {},
     resolver,
+    schema,
+    outputData,
   });
 }
 

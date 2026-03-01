@@ -72,7 +72,12 @@ export function useInitVestBus() {
       if (!VestTest.isCanceled(isolate).unwrap()) {
         const { fieldName } = VestTest.getData(isolate);
 
-        const result = useCreateSuiteResult();
+        useExpireSuiteResultCache();
+        const root = VestRuntime.useAvailableRoot<TIsolateSuite>();
+        const result = useCreateSuiteResult(
+          root?.data.schema,
+          root?.data.outputData,
+        );
         useRunFieldCallbacks(fieldName, result);
         useRunDoneCallbacks(result);
       }
@@ -132,7 +137,14 @@ export function useInitVestBus() {
     }
 
     useOmitOptionalFields();
-    const result = useCreateSuiteResult();
+
+    // Attempt extracting the snapshot of schema and raw params passed natively to cache
+    const root = VestRuntime.useAvailableRoot<TIsolateSuite>();
+    const result = useCreateSuiteResult(
+      root?.data.schema,
+      root?.data.outputData,
+    );
+
     useRunSyncFieldCallbacks(result);
     useRunDoneCallbacks(result);
   });

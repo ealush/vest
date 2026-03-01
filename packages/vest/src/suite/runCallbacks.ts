@@ -12,7 +12,7 @@ import {
  */
 export function useRunFieldCallbacks(
   fieldName: TFieldName,
-  result: SuiteResult<TFieldName, TGroupName>,
+  result: SuiteResult<TFieldName, TGroupName, any, any>,
 ): void {
   const [fieldCallbacks] = useFieldCallbacks();
 
@@ -26,7 +26,7 @@ export function useRunFieldCallbacks(
  * This happens when a field has non-pending tests (synchronous tests).
  */
 export function useRunSyncFieldCallbacks(
-  result: SuiteResult<TFieldName, TGroupName>,
+  result: SuiteResult<TFieldName, TGroupName, any, any>,
 ): void {
   const [fieldCallbacks] = useFieldCallbacks();
 
@@ -57,7 +57,7 @@ export function useRunSyncFieldCallbacks(
  * Runs unlabelled done callback when async tests are finished running.
  */
 export function useRunDoneCallbacks(
-  result: SuiteResult<TFieldName, TGroupName>,
+  result: SuiteResult<TFieldName, TGroupName, any, any>,
 ) {
   const [doneCallbacks] = useDoneCallbacks();
 

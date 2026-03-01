@@ -71,11 +71,11 @@ type FocusedMethods<
 > = {
   afterEach: CB<
     FocusedMethods<F, G, T, S>,
-    [callback: (res: SuiteResult<F, G, S>) => void]
+    [callback: (res: SuiteResult<F, G, S>) => unknown]
   >;
   afterField: CB<
     FocusedMethods<F, G, T, S>,
-    [fieldName: F, callback: (res: SuiteResult<F, G, S>) => void]
+    [fieldName: F, callback: (res: SuiteResult<F, G, S>) => unknown]
   >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
@@ -96,11 +96,11 @@ type AfterMethods<
 > = {
   afterEach: CB<
     AfterMethods<F, G, T, S>,
-    [callback: (res: SuiteResult<F, G, S>) => void]
+    [callback: (res: SuiteResult<F, G, S>) => unknown]
   >;
   afterField: CB<
     AfterMethods<F, G, T, S>,
-    [fieldName: F, callback: (res: SuiteResult<F, G, S>) => void]
+    [fieldName: F, callback: (res: SuiteResult<F, G, S>) => unknown]
   >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;

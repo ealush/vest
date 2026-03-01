@@ -11,7 +11,9 @@ import {
 import { TIsolateSuite } from './isolate/IsolateSuite/IsolateSuite';
 import { useReprocessTree } from './isolate/registerTests';
 
-export type DoneCallback = (res: SuiteResult<TFieldName, TGroupName>) => void;
+export type DoneCallback = (
+  res: SuiteResult<TFieldName, TGroupName, any, any>,
+) => void;
 type FieldCallbacks = Record<string, DoneCallbacks>;
 
 type DoneCallbacks = Array<DoneCallback>;

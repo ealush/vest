@@ -35,7 +35,7 @@ describe('afterField', () => {
         const control = vi.fn();
         const suite = vest.create(() => {
           vest.test('field_1' as TFieldName, async () => {
-            await wait(100);
+            await wait(200);
           });
           vest.test('field_2' as TFieldName, () => {});
           vest.test('field_3' as TFieldName, async () => {
@@ -62,7 +62,7 @@ describe('afterField', () => {
         expect(control).toHaveBeenCalledTimes(1);
         expect(cb3).not.toHaveBeenCalled();
 
-        await wait(55);
+        await wait(100);
         expect(cb3).toHaveBeenCalled();
         expect(cb3.mock.calls[0][0]).toEqual(suite.get());
         expect(control).toHaveBeenCalledTimes(2);
@@ -94,6 +94,8 @@ describe('afterField', () => {
 
         // Calling run again cancels the pending async tests from the previous run
         suite.run();
+
+        await wait(15);
 
         expect(cb1).not.toHaveBeenCalled();
         expect(cb2).not.toHaveBeenCalled();

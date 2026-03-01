@@ -3436,10 +3436,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@faker-js/faker@npm:^8.4.1":
-  version: 8.4.1
-  resolution: "@faker-js/faker@npm:8.4.1"
-  checksum: d802d531f8929562715adc279cfec763c9a4bc596ec67b0ce43fd0ae61b285d2b0eec6f1f4aa852452a63721a842fe7e81926dce7bd92acca94b01e2a1f55f5a
+"@faker-js/faker@npm:^10.3.0":
+  version: 10.3.0
+  resolution: "@faker-js/faker@npm:10.3.0"
+  checksum: 29ab68af1c9c5e5885134b8ece5285a3de0d545df0b657898d377b6e41823b3ca5af7ec01183d7411ef80606dabfdcecf5d3b3b1fb62f5b34cebb57220279b53
   languageName: node
   linkType: hard
 
@@ -17058,7 +17058,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "vest-monorepo@workspace:."
   dependencies:
-    "@faker-js/faker": ^8.4.1
+    "@faker-js/faker": ^10.3.0
     "@types/lodash": ^4.17.21
     "@typescript-eslint/eslint-plugin": ^7
     "@typescript-eslint/parser": ^7

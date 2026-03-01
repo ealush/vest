@@ -16,6 +16,7 @@ Promise {
       "message": "field_statement_2",
     },
   ],
+  "getData": [Function],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],

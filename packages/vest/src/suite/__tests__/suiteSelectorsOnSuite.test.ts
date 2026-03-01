@@ -29,7 +29,7 @@ describe('Suite Selectors on Suite', () => {
 
   test('All `get` functions exist on the suite', () => {
     const res = suite.get();
-    const keys = Object.keys(res);
+    const keys = Object.keys(res).filter(key => key !== 'getData');
     let count = 0;
     keys.forEach(key => {
       // @ts-ignore
@@ -43,7 +43,7 @@ describe('Suite Selectors on Suite', () => {
   });
   test('All suite selectors return the same value', () => {
     const res = suite.get();
-    const keys = Object.keys(res);
+    const keys = Object.keys(res).filter(key => key !== 'getData');
     let count = 0;
     keys.forEach(key => {
       // @ts-ignore

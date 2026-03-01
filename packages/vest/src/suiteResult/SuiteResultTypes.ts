@@ -26,6 +26,10 @@ export class SuiteSummary<
   public run!: { data: D | undefined; time: Date };
   public valid: Nullable<boolean> = null;
 
+  public getData(): D | undefined {
+    return this.run.data;
+  }
+
   constructor() {
     super();
 
@@ -93,21 +97,24 @@ type SuiteResultData<
   S extends TSchema = undefined,
   D = unknown,
 > =
-  | (Omit<SuiteSummary<F, G, D>, 'valid'> &
+  | (Omit<SuiteSummary<F, G, D>, 'valid' | 'getData'> &
       SuiteSelectors<F, G> & {
         valid: true;
         value: InferSchemaOutput<S>;
+        getData(): S extends undefined ? D | undefined : InferSchemaOutput<S>;
         issues?: undefined;
       })
-  | (Omit<SuiteSummary<F, G, D>, 'valid'> &
+  | (Omit<SuiteSummary<F, G, D>, 'valid' | 'getData'> &
       SuiteSelectors<F, G> & {
         valid: false;
         issues: ReadonlyArray<StandardSchemaV1.Issue>;
+        getData(): D | undefined;
         value?: undefined;
       })
-  | (Omit<SuiteSummary<F, G, D>, 'valid'> &
+  | (Omit<SuiteSummary<F, G, D>, 'valid' | 'getData'> &
       SuiteSelectors<F, G> & {
         valid: null;
+        getData(): D | undefined;
         issues?: undefined;
         value?: undefined;
       });

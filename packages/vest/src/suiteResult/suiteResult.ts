@@ -7,6 +7,7 @@ import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 
 import { Severity } from './Severity';
 import {
+  InferSchemaOutput,
   SuiteResult,
   SuiteSummary,
   TFieldName,
@@ -72,7 +73,14 @@ export function constructSuiteResultObject<
   const { valid, ...summaryWithoutValid } = summary;
   const selectors = suiteSelectors<F, G>(summary);
 
-  const common = assign(summaryWithoutValid, selectors);
+  const common = assign(summaryWithoutValid, selectors, {
+    getData: () =>
+      (outputData !== undefined
+        ? outputData
+        : summary.run.data) as S extends undefined
+        ? D | undefined
+        : InferSchemaOutput<S>,
+  });
 
   if (valid === true) {
     return {

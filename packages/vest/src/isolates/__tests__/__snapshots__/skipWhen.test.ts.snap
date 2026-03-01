@@ -4,6 +4,7 @@ exports[`skipWhen > should pass the current result draft to the functional condi
 {
   "errorCount": 0,
   "errors": [],
+  "getData": [Function],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -39,6 +40,7 @@ exports[`skipWhen > should pass the current result draft to the functional condi
       "message": "msg",
     },
   ],
+  "getData": [Function],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
@@ -91,6 +93,7 @@ exports[`skipWhen > should pass the current result draft to the functional condi
       "message": "msg",
     },
   ],
+  "getData": [Function],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],

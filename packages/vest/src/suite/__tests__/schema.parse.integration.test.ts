@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
 import { create, enforce, test } from '../../vest';
-import { enforce as n4sEnforce } from 'n4s';
 
 describe('suite schema integration', () => {
   it('validates schema object and passes data into suite body', () => {
@@ -176,12 +175,12 @@ describe('suite schema integration', () => {
   });
 
   it('applies lazy parser chains before running the suite callback', () => {
-    const schema = n4sEnforce.shape({
-      age: n4sEnforce.isNumeric().toNumber().clamp(0, 120),
-      name: n4sEnforce.isString().trim().toTitle(),
-      subscribed: n4sEnforce.isString().trim().toBoolean(),
-      tags: n4sEnforce.isArray<string>().uniq().join('|'),
-      payload: n4sEnforce.isString().parseJSON(),
+    const schema = enforce.shape({
+      age: enforce.isNumeric().toNumber().clamp(0, 120),
+      name: enforce.isString().trim().toTitle(),
+      subscribed: enforce.isString().trim().toBoolean(),
+      tags: enforce.isArray<string>().uniq().join('|'),
+      payload: enforce.isString().parseJSON(),
     });
 
     let callbackData: any;
@@ -211,9 +210,12 @@ describe('suite schema integration', () => {
     }, schema);
 
     const result = suite.run({
+      // @ts-expect-error - testing coercable string
       age: '180',
       name: '  jANE DOE ',
+      // @ts-expect-error - testing coercable string
       subscribed: ' yes ',
+      // @ts-expect-error - testing array to string mapping coercion
       tags: ['vest', 'n4s', 'vest'],
       payload: '{"env":"test"}',
     });
@@ -236,8 +238,8 @@ describe('suite schema integration', () => {
   });
 
   it('uses original data in callback when parser chain fails in schema parse', () => {
-    const schema = n4sEnforce.shape({
-      subscribed: n4sEnforce.isString().trim().toBoolean(),
+    const schema = enforce.shape({
+      subscribed: enforce.isString().trim().toBoolean(),
     });
 
     let callbackData: any;
@@ -249,6 +251,7 @@ describe('suite schema integration', () => {
       });
     }, schema);
 
+    // @ts-expect-error - testing invalid fallback schema error
     const result = suite.run({ subscribed: 'unknown' });
 
     expect(callbackData).toEqual({ subscribed: 'unknown' });

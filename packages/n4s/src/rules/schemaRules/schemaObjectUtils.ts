@@ -52,7 +52,7 @@ export function safeShallowCopy(
 export function checkDangerousKeys<T>(
   value: T,
   schema: Record<string, any>,
-): { pass: boolean; path: string[] } | null {
+): { pass: false; path: string[] } | null {
   const dangerousSchemaKey = findDangerousOwnKey(schema);
   if (dangerousSchemaKey) {
     return { pass: false, path: [dangerousSchemaKey] };

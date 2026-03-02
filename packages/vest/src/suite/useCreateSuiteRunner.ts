@@ -285,23 +285,24 @@ function applySchemaFocus(
   schema: any,
   modifiers: { only?: unknown; skip?: unknown },
 ): any {
-  if (!schema.__schema) return schema;
+  if (schema?.['~standard']?.vendor !== 'n4s') {
+    return schema;
+  }
 
-  const onlyFields = modifiers.only
-    ? (asArray(modifiers.only) as string[])
-    : null;
-  const skipFields = modifiers.skip
-    ? (asArray(modifiers.skip) as string[])
-    : null;
+  return buildFocusedSchemaInstance(schema, modifiers);
+}
 
-  return buildFocusedSchemaInstance(schema, onlyFields, skipFields);
+function buildArrayProp(prop: unknown): string[] | null {
+  return prop ? (asArray(prop) as string[]) : null;
 }
 
 function buildFocusedSchemaInstance(
   schema: any,
-  only: string[] | null,
-  skip: string[] | null,
+  modifiers: { only?: unknown; skip?: unknown },
 ): any {
+  const only = buildArrayProp(modifiers.only);
+  const skip = buildArrayProp(modifiers.skip);
+
   if (only && skip) {
     return enforce.pick(
       schema.__schema,

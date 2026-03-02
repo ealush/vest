@@ -134,7 +134,7 @@ Memoizes a block of tests.
 
 Combines multiple enforce rules.
 
-- [Read more about `compose`](./enforce/composing_enforce_rules.md)
+- [Read more about `compose`](../docs/enforce/composing_enforce_rules.md)
 
 #### `test(fieldName, message, callback)`
 
@@ -1347,7 +1347,7 @@ schema.parse({ name: '  jANE DOE ', age: '180' });
 // → { name: 'Jane Doe', age: 120 }
 ```
 
-See the full list of available parsers in [Data Parsers](./data_parsers.md).
+See the full list of available parsers in [Data Parsers](../docs/enforce/builtin-enforce-plugins/data_parsers.md).
 
 
 # Enforce Rules Composition
@@ -7649,7 +7649,7 @@ The suite result includes a `types` object that captures the validated `input` a
 
 ## Schema Parsing
 
-Schema rules support built-in [data parsers](../enforce/builtin-enforce-plugins/data_parsers.md) that transform values as part of validation. When a schema uses parsers, `suite.run()` receives the transformed data in the callback, and `result.value` contains the parsed output.
+Schema rules support built-in [data parsers](../docs/enforce/builtin-enforce-plugins/data_parsers.md) that transform values as part of validation. When a schema uses parsers, `suite.run()` receives the transformed data in the callback, and `result.value` contains the parsed output.
 
 ```js
 import { create, test, enforce } from 'vest';

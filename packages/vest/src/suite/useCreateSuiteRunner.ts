@@ -281,11 +281,15 @@ function runSchemaWithParse(
   ];
 }
 
+function isN4sSchema(schema: any): boolean {
+  return schema?.['~standard']?.vendor === 'n4s' && !!schema?.__schema;
+}
+
 function applySchemaFocus(
   schema: any,
   modifiers: { only?: unknown; skip?: unknown },
 ): any {
-  if (schema?.['~standard']?.vendor !== 'n4s') {
+  if (!isN4sSchema(schema)) {
     return schema;
   }
 
@@ -315,8 +319,6 @@ function buildFocusedSchemaInstance(
   only: string[] | null,
   skip: string[] | null,
 ): any {
-  if (!schema.__schema) return schema;
-
   if (only) {
     return skip
       ? buildIntersectedSchemaInstance(schema, only, skip)

@@ -281,8 +281,10 @@ function runSchemaWithParse(
   ];
 }
 
+const N4S_VENDOR = 'n4s';
+
 function isN4sSchema(schema: any): boolean {
-  return schema?.['~standard']?.vendor === 'n4s' && !!schema?.__schema;
+  return schema?.['~standard']?.vendor === N4S_VENDOR && !!schema?.__schema;
 }
 
 function applySchemaFocus(
@@ -399,8 +401,6 @@ function isExpectedSchemaParseError(error: unknown): boolean {
   const typedError = error as { isValidation?: unknown; name?: unknown };
   return typedError.isValidation === true || typedError.name === 'TypeError';
 }
-
-const N4S_VENDOR = 'n4s';
 
 /**
  * Determines whether schema.run should execute after a successful parse call.

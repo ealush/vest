@@ -129,7 +129,7 @@ suite.only('username').run({
 });
 ```
 
-::::
+:::
 
 ## Schema Types
 

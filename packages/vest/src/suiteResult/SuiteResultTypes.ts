@@ -122,7 +122,7 @@ export type SuiteResult<
   D = unknown,
 > = SuiteResultData<BrandedFieldName<F>, BrandedGroupName<G>, S, D> & {
   dump: CB<TIsolateSuite>;
-  getData: () => S extends TSchema ? InferSchemaOutput<S> | D : D;
+  getData: () => S extends undefined ? D : InferSchemaOutput<S> | D;
   types: S extends undefined
     ? undefined
     : { input: InferSchemaData<S>; output: InferSchemaOutput<S> };

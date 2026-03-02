@@ -5,6 +5,8 @@ import './isArrayOf';
 import './loose';
 import './optional';
 import './partial';
+import './pick';
+import './omit';
 import './shape';
 
 import type { RuleInstance } from '../../utils/RuleInstance';
@@ -15,6 +17,8 @@ import type {
   LooseRuleInstance,
   OptionalRuleInstance,
   PartialRuleInstance,
+  PickRuleInstance,
+  OmitRuleInstance,
   ShapeRuleInstance,
 } from './schemaRules';
 
@@ -34,6 +38,14 @@ export type SchemaRuleLazyTypes = {
   partial: <S extends Record<string, RuleInstance<any>>>(
     schema: S,
   ) => PartialRuleInstance<S>;
+  pick: <S extends Record<string, RuleInstance<any>>>(
+    schema: S,
+    keys: string[] | string,
+  ) => PickRuleInstance<S>;
+  omit: <S extends Record<string, RuleInstance<any>>>(
+    schema: S,
+    keys: string[] | string,
+  ) => OmitRuleInstance<S>;
   shape: <S extends Record<string, RuleInstance<any>>>(
     schema: S,
   ) => ShapeRuleInstance<S>;

@@ -38,9 +38,9 @@ describe('Schema Runtime Validation', () => {
       expect(result.hasErrors('age')).toBe(true);
     });
 
-    it('should skip schema validation when "only" is active', () => {
+    it('should validate only the focused fields when "only" is active', () => {
       // Invalid data for schema (age is string), but we focus on 'name'
-      // The schema validation should be skipped entirely
+      // The schema validation should pick 'name' and skip 'age'
       const result = suite
         .focus({ only: 'name' })
         // @ts-expect-error - Invalid data
@@ -50,7 +50,7 @@ describe('Schema Runtime Validation', () => {
       expect(result.isValid()).toBe(true);
     });
 
-    it('should skip schema validation when "only" is active via suite.focus().run()', () => {
+    it('should validate only the focused fields when "only" is active via suite.focus().run()', () => {
       // Invalid data for schema
       const result = suite
         .focus({ only: ['name'] })
@@ -170,7 +170,7 @@ describe('Schema Runtime Validation', () => {
       expect(result.getErrors('price')).toContain('Price must be a number');
     });
 
-    it('should not run with focus enabled', () => {
+    it('should only validate focused schema fields with focus enabled', () => {
       const schemaWithMessage = enforce.shape({
         price: enforce.isNumber().message('Price must be a number'),
         quantity: enforce.isNumber().message('Quantity must be a number'),
@@ -182,9 +182,9 @@ describe('Schema Runtime Validation', () => {
         });
       }, schemaWithMessage);
 
-      // Focus on quantity, invalid price should be ignored
+      // Focus on quantity, invalid price should be ignored naturally by `pick`
       const result = testSuite.focus({ only: 'quantity' }).run({
-        price: 'invalid',
+        price: 'invalid', // should be naturally dropped from validation
         quantity: 10,
       });
 
@@ -303,9 +303,10 @@ describe('Schema Runtime Validation', () => {
   });
 
   describe('Stateful behavior', () => {
-    it('should run schema validation only when not focused even if ran focused previously', () => {
+    it('should run schema validation dynamically based on focus per execution', () => {
       const schema = enforce.shape({
         required: enforce.isString(),
+        field: enforce.optional(enforce.isString()), // Define 'field' so it's a valid generic for .only()
       });
 
       const suite = create(_data => {
@@ -313,15 +314,17 @@ describe('Schema Runtime Validation', () => {
       }, schema);
 
       // First run: Focused
-      // Schema validation should be skipped
-      // @ts-expect-error - Invalid data
-      let res = suite.focus({ only: 'field' }).run({ required: 123 });
+      // Schema validation should pick 'field' and ignore 'required'
+      let res = suite.focus({ only: 'field' }).run({
+        // @ts-expect-error - Invalid data skipped by focus filtering
+        required: 123,
+      });
 
       expect(res.hasErrors()).toBe(false);
       expect(res.isValid()).toBe(true);
 
       // Second run: Not focused
-      // Schema validation should run and fail
+      // Schema validation should pick all fields intrinsically and fail
       // @ts-expect-error - Invalid data
       res = suite.run({ required: 123 });
       expect(res.hasErrors()).toBe(true);

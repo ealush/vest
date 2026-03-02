@@ -62,6 +62,7 @@
 - [Creating custom enforce rules](/docs/enforce/creating_custom_rules)
 - [Schema Validation with Enforce](/docs/enforce/builtin-enforce-plugins/schema_rules)
 - [Consuming third party rules](/docs/enforce/consuming_external_rules)
+- [Data Parsers](/docs/enforce/builtin-enforce-plugins/data_parsers)
 - [Enforce Rules Composition](/docs/enforce/composing_enforce_rules)
 - [Failing with a message](/docs/enforce/failing_with_a_message)
 

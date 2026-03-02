@@ -58,6 +58,26 @@ const schemaRulesWithArrayChaining = {
       );
       return RuleRunReturn.create(result, value);
     }),
+  shape: (schema: any) => {
+    const rule = adaptedSchemaRules.shape(schema);
+    rule.__schema = schema;
+    return rule;
+  },
+  loose: (schema: any) => {
+    const rule = adaptedSchemaRules.loose(schema);
+    rule.__schema = schema;
+    return rule;
+  },
+  pick: (schema: any, keys: string[] | string) => {
+    const rule = adaptedSchemaRules.pick(schema, keys);
+    rule.__schema = schema;
+    return rule;
+  },
+  omit: (schema: any, keys: string[] | string) => {
+    const rule = adaptedSchemaRules.omit(schema, keys);
+    rule.__schema = schema;
+    return rule;
+  },
 };
 
 const baseEnforceLazy = {

@@ -120,16 +120,16 @@ suite.focus({ onlyGroup: 'account' }); // typed group name
 ```
 
 :::note Focused runs
-When you focus the suite with `suite.only()` or `suite.focus({ only })`, schema validation is skipped for fields outside the focus scope. This allows you to validate a single field even if the full payload does not satisfy the schema.
+When you focus the suite with `suite.only()`, `suite.skip()`, or `suite.focus()`, Vest intelligently subsets your validation schema under the hood using `enforce.pick` and `enforce.omit`. This ensures that schema validation still runs securely for the fields in focus—and provides correct types in the test callback!—while safely ignoring un-focused fields and allowing you to validate partial payloads effectively.
 
 ```javascript
-// Validate only the username field
+// Validate only the username field, enforcing the schema for 'username' while ignoring 'age'
 suite.only('username').run({
   username: 'example',
 });
 ```
 
-:::
+::::
 
 ## Schema Types
 

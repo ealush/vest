@@ -18,6 +18,8 @@ These rules are available in `enforce`:
   - [enforce.optional() - nullable values](#enforceoptional---nullable-values)
   - [enforce.partial() - allows supplying a subset of keys](#enforcepartial---allows-supplying-a-subset-of-keys)
   - [enforce.loose() - loose shape matching](#enforceloose---loose-shape-matching)
+  - [enforce.pick() - pick a subset of fields](#enforcepick---pick-a-subset-of-fields)
+  - [enforce.omit() - omit a subset of fields](#enforceomit---omit-a-subset-of-fields)
   - [enforce.isArrayOf() - array shape matching](#enforceisarrayof---array-shape-matching)
 
 ## enforce.shape() - Lean schema validation.
@@ -110,6 +112,37 @@ enforce({ name: 'Laura', code: 'x23' }).shape({ name: enforce.isString() });
 ```js
 enforce({ name: 'Laura', code: 'x23' }).loose({ name: enforce.isString() });
 // ✅ This will pass with `code` not being validated
+```
+
+### enforce.pick() - pick a subset of fields
+
+When you want to validate only a specific subset of fields from an existing schema, you can use `enforce.pick`. This rule validates only the designated fields, ignoring any extra keys present.
+
+```js
+enforce({ name: 'Laura', code: 'x23', internal: true }).pick(
+  {
+    name: enforce.isString(),
+    code: enforce.isString(),
+    internal: enforce.isBoolean(),
+  },
+  ['name', 'code'],
+);
+// ✅ This will pass, picking only the `name` and `code` fields for validation
+```
+
+### enforce.omit() - omit a subset of fields
+
+When you want to validate an object against a schema but explicitly exclude certain fields from that validation, use `enforce.omit`.
+
+```js
+enforce({ name: 'Laura', code: 'x23' }).omit(
+  {
+    name: enforce.isString(),
+    code: enforce.isNumber(),
+  },
+  'code',
+);
+// ✅ This will pass, validating `name` but skipping `code`
 ```
 
 ## enforce.isArrayOf() - array shape matching

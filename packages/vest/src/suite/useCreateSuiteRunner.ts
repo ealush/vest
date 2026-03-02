@@ -1,3 +1,4 @@
+import { enforce } from 'n4s';
 import {
   assign,
   asArray,
@@ -61,8 +62,8 @@ export function useCreateSuiteRunner<
     const { resolve, promise } = withResolvers<SuiteResult<F, G, S>>();
 
     const schemaInput = args[0];
-    const schemaRunResult = shouldRunSchema(schema, transformedModifiers)
-      ? runSchemaWithParse(schema, schemaInput)
+    const schemaRunResult = shouldRunSchema(schema)
+      ? runSchemaWithParse(schema, schemaInput, transformedModifiers)
       : undefined;
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
@@ -172,7 +173,7 @@ function useRunSuiteCallback<
     (suiteCallback as CB)(...args);
 
     IsolateReorderable(
-      runSchemaValidation(schema, modifiers, schemaRunResult),
+      runSchemaValidation(schema, schemaRunResult),
       undefined,
       {
         tests: [],
@@ -200,17 +201,13 @@ function useTransformedModifiers<F extends TFieldName>(
 /**
  * Emits schema failures into vest test tree.
  */
-function runSchemaValidation<
-  F extends TFieldName,
-  S extends TSchema = undefined,
->(
+function runSchemaValidation<S extends TSchema = undefined>(
   schema: S | undefined,
-  modifiers: ReturnType<typeof useTransformedModifiers<F>>,
   schemaRunResult?: SchemaRunResult[],
 ) {
   // eslint-disable-next-line complexity
   return () => {
-    if (!shouldRunSchema(schema, modifiers) || !schemaRunResult) {
+    if (!shouldRunSchema(schema) || !schemaRunResult) {
       return;
     }
 
@@ -236,30 +233,23 @@ function runSchemaValidation<
  * Attempts to parse the schema. Returns null if parse fails gracefully,
  * so the caller can fall back to schema.run.
  */
-function tryParseSchema(schema: any, data: unknown): SchemaRunResult[] | null {
-  if (!isFunction(schema.parse)) {
-    return null;
-  }
+function tryParseSchema(
+  schema: any,
+  data: unknown,
+  modifiers: { only?: unknown; skip?: unknown },
+): SchemaRunResult[] | null {
+  if (!isFunction(schema.parse)) return null;
 
   try {
-    const parsedValue = schema.parse(data);
+    const executableSchema = applySchemaFocus(schema, modifiers);
+    const parsedValue = executableSchema.parse(data);
 
-    if (shouldRunAfterParse(schema)) {
-      return normalizeSchemaRunResult(schema.run(parsedValue), parsedValue);
-    }
-
-    return [
-      {
-        pass: true,
-        type: parsedValue,
-      },
-    ];
+    return shouldRunAfterParse(executableSchema)
+      ? normalizeSchemaRunResult(executableSchema.run(parsedValue), parsedValue)
+      : [{ pass: true, type: parsedValue }];
   } catch (error) {
-    if (!isExpectedSchemaParseError(error)) {
-      throw error;
-    }
-    // Expected validation failures can fallback to run(raw) for field-level path/message details.
-    return null;
+    if (isExpectedSchemaParseError(error)) return null;
+    throw error;
   }
 }
 
@@ -269,8 +259,12 @@ function tryParseSchema(schema: any, data: unknown): SchemaRunResult[] | null {
  * 2) if parse succeeds, treat it as the authoritative validation output
  * 3) on expected parse validation failures, fallback to run(raw)
  */
-function runSchemaWithParse(schema: any, data: unknown): SchemaRunResult[] {
-  const parseResult = tryParseSchema(schema, data);
+function runSchemaWithParse(
+  schema: any,
+  data: unknown,
+  modifiers: { only?: unknown; skip?: unknown },
+): SchemaRunResult[] {
+  const parseResult = tryParseSchema(schema, data, modifiers);
   if (parseResult) {
     return parseResult;
   }
@@ -285,6 +279,38 @@ function runSchemaWithParse(schema: any, data: unknown): SchemaRunResult[] {
       type: data,
     },
   ];
+}
+
+function applySchemaFocus(
+  schema: any,
+  modifiers: { only?: unknown; skip?: unknown },
+): any {
+  if (!schema.__schema) return schema;
+
+  const onlyFields = modifiers.only
+    ? (asArray(modifiers.only) as string[])
+    : null;
+  const skipFields = modifiers.skip
+    ? (asArray(modifiers.skip) as string[])
+    : null;
+
+  return buildFocusedSchemaInstance(schema, onlyFields, skipFields);
+}
+
+function buildFocusedSchemaInstance(
+  schema: any,
+  only: string[] | null,
+  skip: string[] | null,
+): any {
+  if (only && skip) {
+    return enforce.pick(
+      schema.__schema,
+      only.filter(f => !skip.includes(f)),
+    );
+  }
+  if (only) return enforce.pick(schema.__schema, only);
+  if (skip) return enforce.omit(schema.__schema, skip);
+  return schema;
 }
 
 /**
@@ -376,16 +402,6 @@ function shouldRunAfterParse(schema: any): boolean {
   return schema?.['~standard']?.vendor !== N4S_VENDOR;
 }
 
-/**
- * Schema should run only when schema exists and the run is not field-focused.
- */
-function shouldRunSchema(
-  schema: unknown,
-  modifiers: { only?: unknown },
-): boolean {
-  const hasOnly = isArray(modifiers.only)
-    ? modifiers.only.length > 0
-    : !!modifiers.only;
-
-  return !hasOnly && !!schema;
+function shouldRunSchema(schema: unknown): boolean {
+  return !!schema;
 }

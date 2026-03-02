@@ -7,6 +7,7 @@ exports[`suite.focus: only > focus return value > should be the rest of the suit
   "dump": [Function],
   "focus": [Function],
   "get": [Function],
+  "getData": [Function],
   "getError": [Function],
   "getErrors": [Function],
   "getErrorsByGroup": [Function],

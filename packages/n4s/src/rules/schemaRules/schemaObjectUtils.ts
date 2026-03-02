@@ -45,3 +45,23 @@ export function safeShallowCopy(
 
   return output;
 }
+
+/**
+ * Checks if the value or the schema contain any inherently dangerous keys natively.
+ */
+export function checkDangerousKeys<T>(
+  value: T,
+  schema: Record<string, any>,
+): { pass: boolean; path: string[] } | null {
+  const dangerousSchemaKey = findDangerousOwnKey(schema);
+  if (dangerousSchemaKey) {
+    return { pass: false, path: [dangerousSchemaKey] };
+  }
+
+  const dangerousValueKey = findDangerousOwnKey(value);
+  if (dangerousValueKey) {
+    return { pass: false, path: [dangerousValueKey] };
+  }
+
+  return null;
+}

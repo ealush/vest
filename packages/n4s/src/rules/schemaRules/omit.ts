@@ -2,11 +2,7 @@ import { isObject } from 'vest-utils';
 
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
-import {
-  findDangerousOwnKey,
-  ownKeys,
-  safeShallowCopy,
-} from './schemaObjectUtils';
+import { ownKeys, checkDangerousKeys } from './schemaObjectUtils';
 import { loose } from './loose';
 
 /**
@@ -28,64 +24,35 @@ export function omit<T extends Record<string, any>>(
     return RuleRunReturn.Failing(value);
   }
 
-  const omitKeys = Array.isArray(keysToOmit) ? keysToOmit : [keysToOmit];
+  const omitKeys = new Set(
+    Array.isArray(keysToOmit) ? keysToOmit : [keysToOmit],
+  );
 
   const dangerousKeyError = checkDangerousKeys(value, schema);
   if (dangerousKeyError) {
-    return dangerousKeyError;
+    return { ...RuleRunReturn.Failing(value), ...dangerousKeyError };
   }
 
   const omittedSchema = buildOmittedSchema(schema, omitKeys);
 
   const baseRes = loose(value, omittedSchema);
-  if (!baseRes.pass) {
-    return baseRes;
-  }
-
-  return RuleRunReturn.Passing(
-    buildOmittedResult(baseRes.type, omitKeys, value) as T,
-  );
+  return baseRes.pass ? RuleRunReturn.Passing(baseRes.type as T) : baseRes;
 }
 
 function buildOmittedSchema(
   schema: Record<string, any>,
-  omitKeys: string[],
+  omitKeys: Set<string>,
 ): Record<string, any> {
   const omittedSchema: Record<string, any> = {};
+  if (!isObject(schema)) {
+    return omittedSchema;
+  }
   for (const key of ownKeys(schema)) {
-    if (!omitKeys.includes(key)) {
+    if (!omitKeys.has(key)) {
       omittedSchema[key] = schema[key];
     }
   }
   return omittedSchema;
-}
-
-function buildOmittedResult(
-  validatedValue: Record<string, any>,
-  omitKeys: string[],
-  originalValue: Record<string, any>,
-): Record<string, any> {
-  const result: Record<string, any> = safeShallowCopy(originalValue);
-  for (const key of ownKeys(validatedValue)) {
-    if (!omitKeys.includes(key)) {
-      result[key] = validatedValue[key];
-    }
-  }
-  return result;
-}
-
-function checkDangerousKeys<T>(value: T, schema: Record<string, any>) {
-  const dangerousSchemaKey = findDangerousOwnKey(schema);
-  if (dangerousSchemaKey) {
-    return { ...RuleRunReturn.Failing(value), path: [dangerousSchemaKey] };
-  }
-
-  const dangerousValueKey = findDangerousOwnKey(value);
-  if (dangerousValueKey) {
-    return { ...RuleRunReturn.Failing(value), path: [dangerousValueKey] };
-  }
-
-  return null;
 }
 
 export type OmitRuleInstance<S extends Record<string, RuleInstance<any>>> =

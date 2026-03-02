@@ -62,6 +62,12 @@ const schemaEvaluators = adaptDynamicRules<
   loose: schemaRules.loose,
 });
 
+const schemaAttacher = (ruleFn: any) => (schema: any) => {
+  const rule = ruleFn(schema);
+  rule.__schema = schema;
+  return rule;
+};
+
 // Build the final schema rules object with special handling for arrays and base evaluators
 const schemaRulesWithArrayChaining = {
   ...schemaModifiers,
@@ -72,16 +78,8 @@ const schemaRulesWithArrayChaining = {
       );
       return RuleRunReturn.create(result, value);
     }),
-  shape: (schema: any) => {
-    const rule = schemaEvaluators.shape(schema);
-    rule.__schema = schema;
-    return rule;
-  },
-  loose: (schema: any) => {
-    const rule = schemaEvaluators.loose(schema);
-    rule.__schema = schema;
-    return rule;
-  },
+  shape: schemaAttacher(schemaEvaluators.shape),
+  loose: schemaAttacher(schemaEvaluators.loose),
 };
 
 const baseEnforceLazy = {

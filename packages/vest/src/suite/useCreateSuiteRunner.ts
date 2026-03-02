@@ -234,14 +234,12 @@ function runSchemaValidation<S extends TSchema = undefined>(
  * so the caller can fall back to schema.run.
  */
 function tryParseSchema(
-  schema: any,
+  executableSchema: any,
   data: unknown,
-  modifiers: { only?: unknown; skip?: unknown },
 ): SchemaRunResult[] | null {
-  if (!isFunction(schema.parse)) return null;
+  if (!isFunction(executableSchema.parse)) return null;
 
   try {
-    const executableSchema = applySchemaFocus(schema, modifiers);
     const parsedValue = executableSchema.parse(data);
 
     return shouldRunAfterParse(executableSchema)
@@ -264,13 +262,15 @@ function runSchemaWithParse(
   data: unknown,
   modifiers: { only?: unknown; skip?: unknown },
 ): SchemaRunResult[] {
-  const parseResult = tryParseSchema(schema, data, modifiers);
+  const executableSchema = applySchemaFocus(schema, modifiers);
+
+  const parseResult = tryParseSchema(executableSchema, data);
   if (parseResult) {
     return parseResult;
   }
 
-  if (isFunction(schema.run)) {
-    return normalizeSchemaRunResult(schema.run(data), data);
+  if (isFunction(executableSchema.run)) {
+    return normalizeSchemaRunResult(executableSchema.run(data), data);
   }
 
   return [

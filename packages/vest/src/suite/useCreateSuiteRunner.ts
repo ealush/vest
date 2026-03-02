@@ -289,29 +289,41 @@ function applySchemaFocus(
     return schema;
   }
 
-  return buildFocusedSchemaInstance(schema, modifiers);
+  const only = buildArrayProp(modifiers.only);
+  const skip = buildArrayProp(modifiers.skip);
+
+  return buildFocusedSchemaInstance(schema, only, skip);
 }
 
 function buildArrayProp(prop: unknown): string[] | null {
   return prop ? (asArray(prop) as string[]) : null;
 }
 
+function buildIntersectedSchemaInstance(
+  schema: any,
+  only: string[],
+  skip: string[],
+): any {
+  return enforce.pick(
+    schema.__schema,
+    only.filter(f => !skip.includes(f)),
+  );
+}
+
 function buildFocusedSchemaInstance(
   schema: any,
-  modifiers: { only?: unknown; skip?: unknown },
+  only: string[] | null,
+  skip: string[] | null,
 ): any {
-  const only = buildArrayProp(modifiers.only);
-  const skip = buildArrayProp(modifiers.skip);
+  if (!schema.__schema) return schema;
 
-  if (only && skip) {
-    return enforce.pick(
-      schema.__schema,
-      only.filter(f => !skip.includes(f)),
-    );
+  if (only) {
+    return skip
+      ? buildIntersectedSchemaInstance(schema, only, skip)
+      : enforce.pick(schema.__schema, only);
   }
-  if (only) return enforce.pick(schema.__schema, only);
-  if (skip) return enforce.omit(schema.__schema, skip);
-  return schema;
+
+  return skip ? enforce.omit(schema.__schema, skip) : schema;
 }
 
 /**

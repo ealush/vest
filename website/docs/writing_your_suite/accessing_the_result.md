@@ -236,6 +236,30 @@ result.getWarningsByGroup('groupName');
 
 [Read more about groups](../writing_tests/advanced_test_features/grouping_tests.md).
 
+## `getData`
+
+`getData` returns the data payload that the suite validation ran against.
+
+When your suite utilizes Schema Validation, `getData` returns the parsed and coerced data from your schema validator if the suite is fully valid. If the validation fails (i.e. if `.isValid()` is false), it falls back to safely returning the un-coerced raw input data.
+
+```js
+const schema = enforce.shape({ age: enforce.isNumeric().toNumber() });
+
+const suite = vest.create(data => {
+  vest.test('age', () => {
+    vest.enforce(data.age).isNotNaN();
+  });
+}, schema);
+
+const res = suite.run({ age: '25' });
+
+if (res.isValid()) {
+  const data = res.getData(); // { age: 25 }
+}
+```
+
+If your suite does not utilize a schema, `getData` simply returns the input data exactly as passed to the `run()` function.
+
 ## `.afterEach()` and `await suite.run()`
 
 [Read the full guide on Handling Suite Completion](./handling_completion.md).

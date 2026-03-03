@@ -1,3 +1,5 @@
+import { asArray } from 'vest-utils';
+
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 import {
@@ -27,9 +29,7 @@ export function pick<T extends Record<string, any>>(
     return RuleRunReturn.Failing(value);
   }
 
-  const pickKeys = new Set(
-    Array.isArray(keysToPick) ? keysToPick : [keysToPick],
-  );
+  const pickKeys = new Set(asArray(keysToPick));
 
   const dangerousKeyError = checkDangerousKeys(value, schema);
   if (dangerousKeyError) {

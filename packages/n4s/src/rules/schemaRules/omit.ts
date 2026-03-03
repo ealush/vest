@@ -1,3 +1,5 @@
+import { asArray } from 'vest-utils';
+
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 import {
@@ -27,9 +29,7 @@ export function omit<T extends Record<string, any>>(
     return RuleRunReturn.Failing(value);
   }
 
-  const omitKeys = new Set(
-    Array.isArray(keysToOmit) ? keysToOmit : [keysToOmit],
-  );
+  const omitKeys = new Set(asArray(keysToOmit));
 
   const dangerousKeyError = checkDangerousKeys(value, schema);
   if (dangerousKeyError) {

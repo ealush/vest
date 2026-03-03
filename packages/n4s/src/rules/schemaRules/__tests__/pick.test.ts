@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { enforce } from '../../../n4s';
-import { pick } from '../pick';
 
 describe('pick', () => {
   it('Should successfully validate the picked subset of a schema', () => {
@@ -10,15 +9,19 @@ describe('pick', () => {
       email: enforce.isString(),
     };
 
-    const value = { name: 'John Doe', age: 30 };
+    const pickedSchema = enforce.pick(schema, ['name', 'age']);
 
     // Pick name and age, validating valid inputs
-    const result = pick(value, schema, ['name', 'age']);
+    // @ts-expect-error - partial object, un-picked keys omitted
+    const result = pickedSchema.run({ name: 'John Doe', age: 30 });
     expect(result.pass).toBe(true);
 
     // Test failing condition in the picked keys
-    const invalidValue = { name: 'John Doe', age: 'thirty' };
-    const invalidResult = pick(invalidValue, schema, ['name', 'age']);
+    const invalidResult = pickedSchema.run({
+      name: 'John Doe',
+      // @ts-expect-error - intentionally passing string instead of number
+      age: 'thirty',
+    });
     expect(invalidResult.pass).toBe(false);
   });
 
@@ -28,11 +31,16 @@ describe('pick', () => {
       name: enforce.isString(),
     };
 
-    const value = { id: 1 };
-    const result = pick(value, schema, 'id');
+    const pickedSchema = enforce.pick(schema, 'id');
+
+    // @ts-expect-error - partial object, un-picked keys omitted
+    const result = pickedSchema.run({ id: 1 });
     expect(result.pass).toBe(true);
 
-    const invalidResult = pick({ id: 'one' }, schema, 'id');
+    const invalidResult = pickedSchema.run({
+      // @ts-expect-error - intentionally passing string instead of number
+      id: 'one',
+    });
     expect(invalidResult.pass).toBe(false);
   });
 
@@ -45,8 +53,9 @@ describe('pick', () => {
 
     // 'email' is in the schema but missing in the value.
     // If we only pick 'name' and 'age', it should still pass.
-    const value = { name: 'John Doe', age: 30 };
-    const result = pick(value, schema, ['name', 'age']);
+    const pickedSchema = enforce.pick(schema, ['name', 'age']);
+    // @ts-expect-error - partial object, un-picked keys omitted
+    const result = pickedSchema.run({ name: 'John Doe', age: 30 });
     expect(result.pass).toBe(true);
   });
 
@@ -56,53 +65,57 @@ describe('pick', () => {
     };
 
     // 'extra' is not in the schema, but pick validates via loose under the hood
-    const value = { id: 1, extra: 'data' };
-    const result = pick(value, schema, ['id']);
+    const pickedSchema = enforce.pick(schema, ['id']);
+    // @ts-expect-error - extra keys not in schema
+    const result = pickedSchema.run({ id: 1, extra: 'data' });
     expect(result.pass).toBe(true);
   });
 
   it('Should fail immediately and return false if the value is not an object', () => {
     const schema = { name: enforce.isString() };
+    const pickedSchema = enforce.pick(schema, ['name']);
 
-    expect(pick('string_value' as any, schema, ['name']).pass).toBe(false);
-    expect(pick(123 as any, schema, ['name']).pass).toBe(false);
-    expect(pick(null as any, schema, ['name']).pass).toBe(false);
+    expect(pickedSchema.run('string_value' as any).pass).toBe(false);
+    expect(pickedSchema.run(123 as any).pass).toBe(false);
+    expect(pickedSchema.run(null as any).pass).toBe(false);
   });
 
   it('Should protect against dangerous prototype keys', () => {
     const schema = { admin: enforce.isBoolean() };
+    const pickedSchema = enforce.pick(schema, ['admin']);
 
     const dangerousValue = JSON.parse('{"__proto__": {"admin": true}}');
-    const result = pick(dangerousValue, schema, ['admin']);
+    const result = pickedSchema.run(dangerousValue);
     expect(result.pass).toBe(false);
   });
 
   it('Should fail when schema is not an object', () => {
     const schema = 'not_a_schema' as any;
-    const value = { id: 1 };
+    const pickedSchema = enforce.pick(schema, ['id']);
 
-    const result = pick(value, schema, ['id']);
+    const result = pickedSchema.run({ id: 1 });
     expect(result.pass).toBe(false);
   });
 
   it('Should work with empty pick list', () => {
     const schema = { id: enforce.isNumber() };
-    const value = { id: 'invalid_type_but_not_checked' };
+    const pickedSchema = enforce.pick(schema, []);
 
-    const result = pick(value, schema, []);
+    const result = pickedSchema.run({
+      // @ts-expect-error - intentionally passing string instead of number
+      id: 'invalid_type_but_not_checked',
+    });
     expect(result.pass).toBe(true);
   });
-});
 
-describe('pick - lazy API', () => {
-  it('should successfully evaluate enforce.pick() wrapped schema shapes dynamically', () => {
-    const defaultSchema = {
+  it('Should pass with valid picked fields and ignore invalid un-picked fields', () => {
+    const schema = {
       name: enforce.isString(),
       age: enforce.isNumber(),
       email: enforce.isString(),
     };
 
-    const pickedSchema = enforce.pick(defaultSchema, ['name', 'age']);
+    const pickedSchema = enforce.pick(schema, ['name', 'age']);
 
     // Should pass since we dropped the invalid email constraint
     const result = pickedSchema.run({

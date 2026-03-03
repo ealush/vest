@@ -61,9 +61,12 @@ describe('omit', () => {
     const schema = { name: enforce.isString() };
     const omittedSchema = enforce.omit(schema, ['name']);
 
-    expect(omittedSchema.run('string_value' as any).pass).toBe(false);
-    expect(omittedSchema.run(123 as any).pass).toBe(false);
-    expect(omittedSchema.run(null as any).pass).toBe(false);
+    // @ts-expect-error - testing non-object value
+    expect(omittedSchema.run('string_value').pass).toBe(false);
+    // @ts-expect-error - testing non-object value
+    expect(omittedSchema.run(123).pass).toBe(false);
+    // @ts-expect-error - testing non-object value
+    expect(omittedSchema.run(null).pass).toBe(false);
   });
 
   it('Should protect against dangerous prototype keys', () => {
@@ -76,7 +79,8 @@ describe('omit', () => {
   });
 
   it('Should fail when schema is not an object', () => {
-    const schema = 'not_a_schema' as any;
+    const schema = 'not_a_schema';
+    // @ts-expect-error - testing non-object schema
     const omittedSchema = enforce.omit(schema, ['id']);
 
     const result = omittedSchema.run({ id: 1 });

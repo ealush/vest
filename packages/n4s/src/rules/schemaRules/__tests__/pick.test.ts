@@ -75,9 +75,12 @@ describe('pick', () => {
     const schema = { name: enforce.isString() };
     const pickedSchema = enforce.pick(schema, ['name']);
 
-    expect(pickedSchema.run('string_value' as any).pass).toBe(false);
-    expect(pickedSchema.run(123 as any).pass).toBe(false);
-    expect(pickedSchema.run(null as any).pass).toBe(false);
+    // @ts-expect-error - testing non-object value
+    expect(pickedSchema.run('string_value').pass).toBe(false);
+    // @ts-expect-error - testing non-object value
+    expect(pickedSchema.run(123).pass).toBe(false);
+    // @ts-expect-error - testing non-object value
+    expect(pickedSchema.run(null).pass).toBe(false);
   });
 
   it('Should protect against dangerous prototype keys', () => {
@@ -90,7 +93,8 @@ describe('pick', () => {
   });
 
   it('Should fail when schema is not an object', () => {
-    const schema = 'not_a_schema' as any;
+    const schema = 'not_a_schema';
+    // @ts-expect-error - testing non-object schema
     const pickedSchema = enforce.pick(schema, ['id']);
 
     const result = pickedSchema.run({ id: 1 });

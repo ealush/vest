@@ -62,6 +62,12 @@ const schemaEvaluators = adaptDynamicRules<
   loose: schemaRules.loose,
 });
 
+/**
+ * Wraps a lazy schema evaluator so the resulting RuleInstance carries
+ * a `__schema` reference to the original schema definition.
+ * Downstream code (e.g. vest's focus/only filtering) reads `__schema`
+ * to introspect the schema keys. Treat `__schema` as internal metadata.
+ */
 const schemaAttacher =
   (ruleFn: (schema: any) => RuleInstance<any, [any]>) => (schema: any) => {
     const rule = ruleFn(schema);
@@ -79,8 +85,8 @@ const schemaRulesWithArrayChaining = {
       );
       return RuleRunReturn.create(result, value);
     }),
-  shape: schemaAttacher(schemaEvaluators.shape),
   loose: schemaAttacher(schemaEvaluators.loose),
+  shape: schemaAttacher(schemaEvaluators.shape),
 };
 
 const baseEnforceLazy = {

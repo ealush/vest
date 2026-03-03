@@ -47,6 +47,13 @@ export function safeShallowCopy(
 }
 
 /**
+ * Returns true if both value and schema are plain objects.
+ */
+export function isValidSchemaInput(value: unknown, schema: unknown): boolean {
+  return isObject(value) && isObject(schema);
+}
+
+/**
  * Checks if the value or the schema contain any inherently dangerous keys natively.
  */
 export function checkDangerousKeys<T>(

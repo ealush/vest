@@ -65,14 +65,12 @@ describe('omit', () => {
     expect(result.pass).toBe(false);
   });
 
-  it('Should gracefully handle schemas that are not objects', () => {
-    // e.g. enforcing shape with `omit` but passing a bad schema representation
+  it('Should fail when schema is not an object', () => {
     const schema = 'not_a_schema' as any;
     const value = { id: 1 };
 
-    // Still passes by checking nothing and defaulting to loose empty schema check
     const result = omit(value, schema, ['id']);
-    expect(result.pass).toBe(true);
+    expect(result.pass).toBe(false);
   });
 
   it('Should omit everything and accept invalid un-checked properties', () => {

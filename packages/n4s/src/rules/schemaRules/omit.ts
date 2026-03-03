@@ -1,8 +1,10 @@
-import { isObject } from 'vest-utils';
-
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
-import { checkDangerousKeys, filterSchemaKeys } from './schemaObjectUtils';
+import {
+  checkDangerousKeys,
+  filterSchemaKeys,
+  isValidSchemaInput,
+} from './schemaObjectUtils';
 import { loose } from './loose';
 import type { ShapeType, ShapeInputType } from './shape';
 
@@ -21,7 +23,7 @@ export function omit<T extends Record<string, any>>(
   schema: Record<string, any>,
   keysToOmit: string[] | string,
 ): RuleRunReturn<T> {
-  if (!isObject(value)) {
+  if (!isValidSchemaInput(value, schema)) {
     return RuleRunReturn.Failing(value);
   }
 

@@ -95,20 +95,21 @@ describe('omit - lazy API', () => {
     const omittedSchema = enforce.omit(defaultSchema, ['email']);
 
     // Should pass since we dropped the invalid email constraint via omit
-    // @ts-expect-error - Expected 2 arguments but got 1
     const result = omittedSchema.run({
       name: 'John',
       age: 30,
+      // @ts-expect-error - intentionally passing number instead of string
       email: 123,
     });
 
     expect(result.pass).toBe(true);
 
     // Should fail because age breaks the remaining shape constraint
-    // @ts-expect-error - Expected 2 arguments but got 1
     const invalidResult = omittedSchema.run({
       name: 'John',
+      // @ts-expect-error - intentionally passing string instead of number
       age: 'thirty',
+      // @ts-expect-error - intentionally passing number instead of string
       email: 123,
     });
 

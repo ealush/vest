@@ -45,12 +45,12 @@ type TCustomLazyRules = {
 // Explicitly adapt only the schema modifiers that act as wrappers
 const schemaModifiers = adaptDynamicRules<
   RuleInstance<any, [any]>,
-  Pick<typeof schemaRules, 'optional' | 'partial' | 'pick' | 'omit'>
+  Pick<typeof schemaRules, 'omit' | 'optional' | 'partial' | 'pick'>
 >({
+  omit: schemaRules.omit,
   optional: schemaRules.optional,
   partial: schemaRules.partial,
   pick: schemaRules.pick,
-  omit: schemaRules.omit,
 });
 
 // Explicitly adapt the base schema evaluators that need __schema exposure
@@ -62,11 +62,12 @@ const schemaEvaluators = adaptDynamicRules<
   loose: schemaRules.loose,
 });
 
-const schemaAttacher = (ruleFn: any) => (schema: any) => {
-  const rule = ruleFn(schema);
-  rule.__schema = schema;
-  return rule;
-};
+const schemaAttacher =
+  (ruleFn: (schema: any) => RuleInstance<any, [any]>) => (schema: any) => {
+    const rule = ruleFn(schema);
+    (rule as any).__schema = schema;
+    return rule;
+  };
 
 // Build the final schema rules object with special handling for arrays and base evaluators
 const schemaRulesWithArrayChaining = {

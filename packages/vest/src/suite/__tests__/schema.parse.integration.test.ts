@@ -211,10 +211,10 @@ describe('suite schema integration', () => {
     }, schema);
 
     const result = suite.run({
-      // @ts-expect-error - testing coercable string
+      // @ts-expect-error - testing coercible string
       age: '180',
       name: '  jANE DOE ',
-      // @ts-expect-error - testing coercable string
+      // @ts-expect-error - testing coercible string
       subscribed: ' yes ',
       // @ts-expect-error - testing array to string mapping coercion
       tags: ['vest', 'n4s', 'vest'],

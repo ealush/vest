@@ -65,3 +65,23 @@ export function checkDangerousKeys<T>(
 
   return null;
 }
+
+/**
+ * Filters schema keys using a predicate, returning a new schema
+ * containing only the keys for which the predicate returns true.
+ */
+export function filterSchemaKeys(
+  schema: Record<string, any>,
+  predicate: (key: string) => boolean,
+): Record<string, any> {
+  const filtered: Record<string, any> = {};
+  if (!isObject(schema)) {
+    return filtered;
+  }
+  for (const key of ownKeys(schema)) {
+    if (predicate(key)) {
+      filtered[key] = schema[key];
+    }
+  }
+  return filtered;
+}

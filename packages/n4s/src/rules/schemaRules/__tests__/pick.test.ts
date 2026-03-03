@@ -107,20 +107,21 @@ describe('pick - lazy API', () => {
     const pickedSchema = enforce.pick(defaultSchema, ['name', 'age']);
 
     // Should pass since we dropped the invalid email constraint
-    // @ts-expect-error - Expected 2 arguments but got 1
     const result = pickedSchema.run({
       name: 'John',
       age: 30,
+      // @ts-expect-error - intentionally passing number instead of string
       email: 123,
     });
 
     expect(result.pass).toBe(true);
 
     // Should fail because age breaks the explicitly picked constraint
-    // @ts-expect-error - Expected 2 arguments but got 1
     const invalidResult = pickedSchema.run({
       name: 'John',
+      // @ts-expect-error - intentionally passing string instead of number
       age: 'thirty',
+      // @ts-expect-error - intentionally passing number instead of string
       email: 123,
     });
 

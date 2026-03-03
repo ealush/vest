@@ -2,8 +2,9 @@ import { isObject } from 'vest-utils';
 
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
-import { ownKeys, checkDangerousKeys } from './schemaObjectUtils';
+import { checkDangerousKeys, filterSchemaKeys } from './schemaObjectUtils';
 import { loose } from './loose';
+import type { ShapeType, ShapeInputType } from './shape';
 
 /**
  * Validates that an object loosely matches a schema but only validates the specified keys.
@@ -33,7 +34,7 @@ export function pick<T extends Record<string, any>>(
     return { ...RuleRunReturn.Failing(value), ...dangerousKeyError };
   }
 
-  const pickedSchema = buildPickedSchema(schema, pickKeys);
+  const pickedSchema = filterSchemaKeys(schema, key => pickKeys.has(key));
 
   // Use `loose` so we only care about validating our picked subset of schema rules
   // without failing if the object has extra unspecified fields.
@@ -41,21 +42,5 @@ export function pick<T extends Record<string, any>>(
   return baseRes.pass ? RuleRunReturn.Passing(baseRes.type as T) : baseRes;
 }
 
-function buildPickedSchema(
-  schema: Record<string, any>,
-  pickKeys: Set<string>,
-): Record<string, any> {
-  const pickedSchema: Record<string, any> = {};
-  if (!isObject(schema)) {
-    return pickedSchema;
-  }
-  for (const key of ownKeys(schema)) {
-    if (pickKeys.has(key)) {
-      pickedSchema[key] = schema[key];
-    }
-  }
-  return pickedSchema;
-}
-
 export type PickRuleInstance<S extends Record<string, RuleInstance<any>>> =
-  RuleInstance<any, [S, string[] | string]>;
+  RuleInstance<ShapeType<S>, [ShapeInputType<S>]>;

@@ -32,12 +32,15 @@ describe('schemaObjectUtils', () => {
   });
 
   describe('findDangerousOwnKey', () => {
-    it('Should identify __proto__ and constructor as dangerous', () => {
+    it('Should identify __proto__, constructor, and prototype as dangerous', () => {
       expect(findDangerousOwnKey(JSON.parse('{"__proto__": {}}'))).toBe(
         '__proto__',
       );
       expect(findDangerousOwnKey(JSON.parse('{"constructor": {}}'))).toBe(
         'constructor',
+      );
+      expect(findDangerousOwnKey(JSON.parse('{"prototype": {}}'))).toBe(
+        'prototype',
       );
     });
 

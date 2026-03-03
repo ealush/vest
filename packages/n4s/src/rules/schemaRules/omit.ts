@@ -2,8 +2,9 @@ import { isObject } from 'vest-utils';
 
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
-import { ownKeys, checkDangerousKeys } from './schemaObjectUtils';
+import { checkDangerousKeys, filterSchemaKeys } from './schemaObjectUtils';
 import { loose } from './loose';
+import type { ShapeType, ShapeInputType } from './shape';
 
 /**
  * Validates that an object loosely matches a schema but omits specified keys from validation.
@@ -33,27 +34,11 @@ export function omit<T extends Record<string, any>>(
     return { ...RuleRunReturn.Failing(value), ...dangerousKeyError };
   }
 
-  const omittedSchema = buildOmittedSchema(schema, omitKeys);
+  const omittedSchema = filterSchemaKeys(schema, key => !omitKeys.has(key));
 
   const baseRes = loose(value, omittedSchema);
   return baseRes.pass ? RuleRunReturn.Passing(baseRes.type as T) : baseRes;
 }
 
-function buildOmittedSchema(
-  schema: Record<string, any>,
-  omitKeys: Set<string>,
-): Record<string, any> {
-  const omittedSchema: Record<string, any> = {};
-  if (!isObject(schema)) {
-    return omittedSchema;
-  }
-  for (const key of ownKeys(schema)) {
-    if (!omitKeys.has(key)) {
-      omittedSchema[key] = schema[key];
-    }
-  }
-  return omittedSchema;
-}
-
 export type OmitRuleInstance<S extends Record<string, RuleInstance<any>>> =
-  RuleInstance<any, [S, string[] | string]>;
+  RuleInstance<ShapeType<S>, [ShapeInputType<S>]>;

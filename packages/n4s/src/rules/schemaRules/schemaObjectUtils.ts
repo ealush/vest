@@ -47,10 +47,15 @@ export function safeShallowCopy(
 }
 
 /**
- * Returns true if both value and schema are plain objects.
+ * Returns true if both value and schema are plain objects (not arrays).
  */
 export function isValidSchemaInput(value: unknown, schema: unknown): boolean {
-  return isObject(value) && isObject(schema);
+  return (
+    isObject(value) &&
+    !Array.isArray(value) &&
+    isObject(schema) &&
+    !Array.isArray(schema)
+  );
 }
 
 /**

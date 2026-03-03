@@ -42,6 +42,8 @@ export function useCreateSuiteResult<
 
     const result = assign(resultBody as SuiteResult<F, G, S, D>, {
       dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
+      getData: () =>
+        !resultBody.hasErrors() && schema ? outputData : inputData,
       types: (schema
         ? { input: inputData, output: outputData }
         : undefined) as SuiteResult<F, G, S, D>['types'],
@@ -68,7 +70,7 @@ export function constructSuiteResultObject<
 >(
   summary: SuiteSummary<F, G, D>,
   outputData?: any,
-): Omit<SuiteResult<F, G, S, D>, 'dump' | 'types'> {
+): Omit<SuiteResult<F, G, S, D>, 'dump' | 'types' | 'getData'> {
   const { valid, ...summaryWithoutValid } = summary;
   const selectors = suiteSelectors<F, G>(summary);
 

@@ -277,3 +277,4 @@ After running your suite, the results object is returned. It has the following f
 - `isTested(fieldName)`: Returns true if the provided field has been tested.
 - `isValid(fieldName?)`: Returns true if the suite or the provided field is valid.
 - `isValidByGroup(groupName)`: Returns true if a certain group or a field in a group is valid or not.
+- `getData()`: Returns the validated schema parse output if validations pass and a schema exists, otherwise falls back to the raw input data.

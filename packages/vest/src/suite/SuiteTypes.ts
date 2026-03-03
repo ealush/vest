@@ -39,6 +39,7 @@ type SuiteMethods<
   dump: CB<TIsolateSuite>;
 
   get: CB<SuiteResult<F, G, S>>;
+  getData: SuiteResult<F, G, S>['getData'];
   resume: CB<void, [TIsolateSuite]>;
   reset: CB<void>;
   remove: CB<void, [fieldName: F]>;

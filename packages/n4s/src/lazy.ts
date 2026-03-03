@@ -42,15 +42,35 @@ type TCustomLazyRules = {
   >;
 };
 
-// Create schema rules with isArrayOf handled specially
-const adaptedSchemaRules = adaptDynamicRules<
+// Explicitly adapt only the schema modifiers that act as wrappers
+const schemaModifiers = adaptDynamicRules<
   RuleInstance<any, [any]>,
-  typeof schemaRules
->(schemaRules);
+  Pick<typeof schemaRules, 'optional' | 'partial' | 'pick' | 'omit'>
+>({
+  optional: schemaRules.optional,
+  partial: schemaRules.partial,
+  pick: schemaRules.pick,
+  omit: schemaRules.omit,
+});
 
-// Override isArrayOf to chain array rules
+// Explicitly adapt the base schema evaluators that need __schema exposure
+const schemaEvaluators = adaptDynamicRules<
+  RuleInstance<any, [any]>,
+  Pick<typeof schemaRules, 'shape' | 'loose'>
+>({
+  shape: schemaRules.shape,
+  loose: schemaRules.loose,
+});
+
+const schemaAttacher = (ruleFn: any) => (schema: any) => {
+  const rule = ruleFn(schema);
+  rule.__schema = schema;
+  return rule;
+};
+
+// Build the final schema rules object with special handling for arrays and base evaluators
 const schemaRulesWithArrayChaining = {
-  ...adaptedSchemaRules,
+  ...schemaModifiers,
   isArrayOf: <T>(...rules: any[]): ArrayRuleInstance<T> =>
     addToChain<ArrayRuleInstance<T>>(arrayRules, (value: any) => {
       const result = ctx.run({ value }, () =>
@@ -58,6 +78,8 @@ const schemaRulesWithArrayChaining = {
       );
       return RuleRunReturn.create(result, value);
     }),
+  shape: schemaAttacher(schemaEvaluators.shape),
+  loose: schemaAttacher(schemaEvaluators.loose),
 };
 
 const baseEnforceLazy = {

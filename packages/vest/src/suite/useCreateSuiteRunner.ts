@@ -108,19 +108,7 @@ export function useCreateSuiteRunner<
       },
     );
 
-    const result = assign(promise, suiteResult);
-
-    Object.defineProperty(result, 'run', {
-      configurable: true,
-      enumerable: false,
-      value: Object.freeze({
-        data: runData,
-        time: runTime,
-      }),
-      writable: true,
-    });
-
-    return result;
+    return bindSuiteResultMethods(promise, suiteResult, runData, runTime);
   };
 }
 
@@ -419,4 +407,29 @@ function shouldRunAfterParse(schema: any): boolean {
 
 function shouldRunSchema(schema: unknown): boolean {
   return !!schema;
+}
+
+function bindSuiteResultMethods<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema,
+>(
+  promise: Promise<SuiteResult<F, G, S>>,
+  suiteResult: SuiteResult<F, G, S>,
+  runData: unknown,
+  runTime: Date,
+): SuiteResult<F, G, S> {
+  const result = assign(promise, suiteResult);
+
+  Object.defineProperty(result, 'run', {
+    configurable: true,
+    enumerable: false,
+    value: Object.freeze({
+      data: runData,
+      time: runTime,
+    }),
+    writable: true,
+  });
+
+  return result;
 }

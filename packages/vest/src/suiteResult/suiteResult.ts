@@ -43,7 +43,7 @@ export function useCreateSuiteResult<
     const result = assign(resultBody as SuiteResult<F, G, S, D>, {
       dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
       getData: () =>
-        resultBody.valid === true && schema ? outputData : inputData,
+        !resultBody.hasErrors() && schema ? outputData : inputData,
       types: (schema
         ? { input: inputData, output: outputData }
         : undefined) as SuiteResult<F, G, S, D>['types'],

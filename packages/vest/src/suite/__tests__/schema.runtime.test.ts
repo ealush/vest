@@ -60,6 +60,22 @@ describe('Schema Runtime Validation', () => {
       expect(result.hasErrors('age')).toBe(false);
       expect(result.isValid()).toBe(true);
     });
+
+    it('should drop intersected fields and parse schemas securely when only and skip intersect', () => {
+      // Only runs fields uniquely listed in `only` missing from `skip` natively.
+      // Expected execution: 'name' evaluates. 'age' and 'tags' bypass safely.
+      const result = suite
+        .focus({ only: ['name', 'age'], skip: 'age' })
+        // @ts-expect-error - Invalid data
+        .run({ name: 'John', age: 'thirty', tags: 'invalid_array' });
+
+      // Validating assertions
+      expect(result.hasErrors('name')).toBe(false); // Valid string evaluates correctly
+      expect(result.hasErrors('age')).toBe(false); // Skipped cleanly
+      expect(result.hasErrors('tags')).toBe(false); // Implicitly bypassed because it's missing from `only`
+
+      expect(result.isValid()).toBe(true);
+    });
   });
 
   describe('runStatic() validation behavior', () => {

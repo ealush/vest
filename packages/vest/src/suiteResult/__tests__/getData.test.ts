@@ -67,5 +67,63 @@ describe('suiteResult.getData()', () => {
       // The parsed output contains a number
       expect(res.getData()).toEqual({ age: 25 });
     });
+
+    test('Should selectively parse focused rules bypassing failing background payload states', () => {
+      const schema = enforce.shape({
+        age: enforce.isNumeric().toNumber(),
+        score: enforce.isNumber(), // not numeric, requires strict number
+      });
+
+      const suite = vest.create(() => {
+        vest.test('age', 'Must be valid', () => {
+          vest.enforce(1).isTruthy();
+        });
+        vest.test('score', 'Score test', () => {
+          vest.enforce(1).isTruthy();
+        });
+      }, schema);
+
+      // We focus only on age, ignoring the strictly broken 'score'
+      const res = suite
+        .focus({ only: 'age' })
+        // @ts-expect-error - testing invalid score type
+        .run({ age: '25', score: 'invalid_string' });
+
+      // Validation passes for 'age', schema parsing coerces age successfully!
+      // 'score' goes unparsed since we never ran the broken rule against it natively.
+      expect(res.getErrors('age')).toEqual([]);
+      expect(res.getErrors('score')).toEqual([]);
+      expect(res.getData()).toEqual({ age: 25, score: 'invalid_string' });
+    });
+
+    test('Should prioritize intersecting skip states dropping matching only fields from parsed validations', () => {
+      const schema = enforce.shape({
+        age: enforce.isNumeric().toNumber(),
+        score: enforce.isNumeric().toNumber(),
+      });
+
+      const suite = vest.create(() => {
+        vest.test('age', () => {
+          vest.enforce(1).isTruthy();
+        });
+        vest.test('score', () => {
+          vest.enforce(1).isTruthy();
+        });
+      }, schema);
+
+      // Only age and score are targeted, BUT skip overrides and drops score.
+      // So ONLY 'age' actually gets executed and parsed gracefully!
+
+      const res = suite
+        .focus({ only: ['age', 'score'], skip: ['score'] })
+        // @ts-expect-error - testing invalid score type natively
+        .run({ age: '25', score: 'not_numeric' });
+
+      expect(res.getErrors('age')).toEqual([]); // 'age' passed
+      expect(res.getErrors('score')).toEqual([]); // 'score' was skipped
+
+      // 'age' is parsed into a number (25). 'score' was skipped, so it fails to parse natively and remains the raw invalid input!
+      expect(res.getData()).toEqual({ age: 25, score: 'not_numeric' });
+    });
   });
 });

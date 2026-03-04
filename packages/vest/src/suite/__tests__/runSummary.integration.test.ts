@@ -64,105 +64,136 @@ describe('suite result run summary metadata', () => {
   });
 
   describe('cumulative parsed data tracking', () => {
-    it('should cumulatively merge parsed data over successive runs', () => {
+    it('should show different raw and parsed values when parsers transform data', () => {
       const schema = enforce.shape({
-        firstName: enforce.isString(),
-        lastName: enforce.isString(),
+        name: enforce.isString().trim().toUpper(),
+        age: enforce.isNumeric().toNumber(),
       });
 
       const suite = create(() => {}, schema);
 
-      // First run: only provide firstName, focus on it
+      // @ts-expect-error - testing parser coercion: age is string '25' that gets parsed to number
+      const result = suite.run({ name: '  alice  ', age: '25' });
+
+      // raw reflects the parsed/transformed input for the current run
+      expect(result.run.data.raw).toEqual({ name: 'ALICE', age: 25 });
+
+      // parsed also holds the same transformed values
+      expect(result.run.data.parsed).toEqual({ name: 'ALICE', age: 25 });
+
+      // Critical: the original input was '  alice  ' (string with spaces)
+      // and '25' (string), but parsed values are 'ALICE' (trimmed+uppercased)
+      // and 25 (number) — proving the parser pipeline ran
+      expect(result.run.data.parsed).not.toEqual({
+        name: '  alice  ',
+        age: '25',
+      });
+    });
+
+    it('should cumulatively merge parsed data over successive focused runs with parsers', () => {
+      const schema = enforce.shape({
+        firstName: enforce.isString().trim().toUpper(),
+        lastName: enforce.isString().trim(),
+      });
+
+      const suite = create(() => {}, schema);
+
+      // Run 1: focus on firstName only, pass untrimmed input
       const res1 = suite
         .focus({ only: 'firstName' })
-        .run({ firstName: 'John' } as any);
-      expect(res1.run.data.raw).toEqual({ firstName: 'John' });
-      expect(res1.run.data.parsed).toEqual({ firstName: 'John' });
+        .run({ firstName: '  john  ' } as any);
 
-      // Second run: only provide lastName, focus on it
-      // Previous parsed data should be preserved and merged
+      // raw is the transformed value for this run
+      expect(res1.run.data.raw).toEqual({ firstName: 'JOHN' });
+      // parsed holds the parsed output
+      expect(res1.run.data.parsed).toEqual({ firstName: 'JOHN' });
+
+      // Run 2: focus on lastName only, pass untrimmed input
       const res2 = suite
         .focus({ only: 'lastName' })
-        .run({ lastName: 'Doe' } as any);
-      expect(res2.run.data.raw).toEqual({ lastName: 'Doe' });
-      expect(res2.run.data.parsed).toEqual({
-        firstName: 'John',
-        lastName: 'Doe',
-      });
+        .run({ lastName: '  doe  ' } as any);
 
-      // The overall value exposed by getters might also reflect this merged state
+      // raw is ONLY the current run's transformed value
+      expect(res2.run.data.raw).toEqual({ lastName: 'doe' });
+
+      // parsed cumulatively merges: firstName from Run 1 is retained as 'JOHN'
+      expect(res2.run.data.parsed).toEqual({
+        firstName: 'JOHN',
+        lastName: 'doe',
+      });
     });
 
-    it('should overwrite old parsed values with new ones on subsequent runs', () => {
+    it('should overwrite previously parsed values with new transformed values on subsequent runs', () => {
       const schema = enforce.shape({
-        count: enforce.isNumber(),
-        name: enforce.isString(),
+        score: enforce.isNumeric().toNumber(),
+        label: enforce.isString().trim().toUpper(),
       });
 
       const suite = create(() => {}, schema);
 
-      const res1 = suite.run({ count: 1, name: 'Initial' });
-      expect(res1.run.data.parsed).toEqual({ count: 1, name: 'Initial' });
+      // Run 1: both fields
+      // @ts-expect-error - testing parser coercion: score is string that gets parsed to number
+      const res1 = suite.run({ score: '42', label: '  hello  ' });
+      expect(res1.run.data.parsed).toEqual({ score: 42, label: 'HELLO' });
 
-      // Update count, leave name omitted but we will focus only count
-      const res2 = suite.focus({ only: 'count' }).run({ count: 2 } as any);
-      expect(res2.run.data.parsed).toEqual({ count: 2, name: 'Initial' });
+      // Run 2: focus on score only, update it
+      const res2 = suite.focus({ only: 'score' }).run({ score: '99' } as any);
+      // parsed retains the previous label and updates score
+      expect(res2.run.data.parsed).toEqual({ score: 99, label: 'HELLO' });
 
-      // Update both
-      const res3 = suite.run({ count: 3, name: 'Updated' });
-      expect(res3.run.data.parsed).toEqual({ count: 3, name: 'Updated' });
+      // Run 3: update both again
+      // @ts-expect-error - testing parser coercion
+      const res3 = suite.run({ score: '7', label: '  world  ' });
+      expect(res3.run.data.parsed).toEqual({ score: 7, label: 'WORLD' });
     });
 
-    it('should not merge raw data, only parsed data', () => {
-      const schema = enforce.shape({
-        fieldA: enforce.isString(),
-        fieldB: enforce.isString(),
-      });
-
-      const suite = create(() => {}, schema);
-
-      const res1 = suite
-        .focus({ only: 'fieldA' })
-        .run({ fieldA: 'A', extra: 'drop-me' } as any);
-      expect(res1.run.data.raw).toEqual({ fieldA: 'A', extra: 'drop-me' });
-      // Without a strict parse method that strips, enforce.shape passes input as-is
-      expect(res1.run.data.parsed).toEqual({ fieldA: 'A', extra: 'drop-me' });
-
-      const res2 = suite
-        .focus({ only: 'fieldB' })
-        .run({ fieldB: 'B', another: 'raw-only' } as any);
-      expect(res2.run.data.raw).toEqual({ fieldB: 'B', another: 'raw-only' });
-      // parsed data cumulatively merges the parsed output from previous runs
-      expect(res2.run.data.parsed).toEqual({
-        fieldA: 'A',
-        fieldB: 'B',
-        extra: 'drop-me',
-        another: 'raw-only',
-      });
-    });
-
-    it('should fall back to empty object for parsed data chunk if a run fails schema validation, but retain previous valid parsed data', () => {
+    it('should retain parsed values from previous runs even when current run fails schema validation', () => {
       const schema = enforce.shape({
         age: enforce.isNumber(),
-        name: enforce.isString(),
+        name: enforce.isString().trim().toUpper(),
       });
 
       const suite = create(() => {}, schema);
 
+      // Run 1: valid name, parsed to trimmed+uppercase
       const res1 = suite
         .focus({ only: 'name' })
-        .run({ name: 'ValidName' } as any);
-      expect(res1.run.data.parsed).toEqual({ name: 'ValidName' });
+        .run({ name: '  valid  ' } as any);
+      expect(res1.run.data.parsed).toEqual({ name: 'VALID' });
 
-      // This run will fail schema validation for age since it's a string, not number
+      // Run 2: invalid age (string instead of number) — schema validation fails
       const payload = { age: 'not a number' };
       // @ts-expect-error
       const res2 = suite.focus({ only: 'age' }).run(payload);
 
-      // raw is the new input
+      // raw is the failing input
       expect(res2.run.data.raw).toEqual(payload);
-      // new parsed data is empty due to parse failure, but keeps previous 'name'
-      expect(res2.run.data.parsed).toEqual({ name: 'ValidName' });
+      // parsed retains the previous valid 'name' since the current chunk failed
+      expect(res2.run.data.parsed).toEqual({ name: 'VALID' });
+    });
+
+    it('should prove parsed values are transformed types (number vs string) that persist across runs', () => {
+      const schema = enforce.shape({
+        count: enforce.isNumeric().toNumber(),
+        tag: enforce.isString().trim(),
+      });
+
+      const suite = create(() => {}, schema);
+
+      // Run 1: focus on count — input is string '10', parsed should be number 10
+      const res1 = suite.focus({ only: 'count' }).run({ count: '10' } as any);
+      expect(res1.run.data.parsed).toEqual({ count: 10 });
+      expect(typeof (res1.run.data.parsed as any).count).toBe('number');
+
+      // Run 2: focus on tag
+      const res2 = suite
+        .focus({ only: 'tag' })
+        .run({ tag: '  trimmed  ' } as any);
+      expect(res2.run.data.parsed).toEqual({ count: 10, tag: 'trimmed' });
+
+      // Verify the count from Run 1 is still a number, not reverted to string
+      expect(typeof (res2.run.data.parsed as any).count).toBe('number');
+      expect((res2.run.data.parsed as any).count).toBe(10);
     });
   });
 });

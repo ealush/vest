@@ -318,54 +318,58 @@ describe('Schema Runtime Validation', () => {
   });
 
   describe('Parsed schema output metadata', () => {
-    it('should expose the parsed data on data.parsed instead of just data.raw', () => {
-      const schemaWithParsing = {
-        parse: (value: Record<string, unknown>) => ({ age: Number(value.age) }),
-        run: (value: Record<string, unknown>) => ({
-          pass: true,
-          type: { age: Number(value.age) },
-        }),
-      };
+    it('should expose transformed data on data.parsed using enforce parsers (trim, toNumber)', () => {
+      const schema = enforce.shape({
+        name: enforce.isString().trim().toUpper(),
+        age: enforce.isNumeric().toNumber(),
+      });
 
-      const parsedSuite = create(() => {}, schemaWithParsing);
+      const suite = create(() => {}, schema);
 
-      const result = parsedSuite.run({ age: '32', extra: 'drop-this' });
+      // @ts-expect-error - testing parser coercion: age is string
+      const result = suite.run({ name: '  bob  ', age: '30' });
 
-      // raw contains the parsed schema output for this single run
-      expect(result.run.data.raw).toEqual({ age: 32 });
+      // raw is the single-run transformed output
+      expect(result.run.data.raw).toEqual({ name: 'BOB', age: 30 });
 
-      // parsed contains ONLY the schema's parse() output
-      expect(result.run.data.parsed).toEqual({ age: 32 });
+      // parsed also holds the same transformed values
+      expect(result.run.data.parsed).toEqual({ name: 'BOB', age: 30 });
+
+      // Proves the parsers ran: original was '  bob  ' (string), now 'BOB' (trimmed, uppercased)
+      // and original age was '30' (string), now 30 (number)
+      expect(typeof (result.run.data.parsed as any).age).toBe('number');
+      expect((result.run.data.parsed as any).name).toBe('BOB');
     });
 
-    it('should cumulatively assign parsed data across suite runs when filtering with focus/only', () => {
-      // Mocking a schema that processes individual fields
-      const schemaWithParsing = {
-        parse: (value: Record<string, unknown>) => {
-          const res: Record<string, unknown> = {};
-          if ('age' in value) res.age = Number(value.age);
-          if ('score' in value) res.score = Number(value.score) * 10;
-          return res;
-        },
-        run: (value: Record<string, unknown>) => ({
-          pass: true,
-          type: value,
-        }),
-      };
+    it('should cumulatively assign parsed data across focused suite runs using enforce parsers', () => {
+      const schema = enforce.shape({
+        username: enforce.isString().trim().toLower(),
+        score: enforce.isNumeric().toNumber(),
+      });
 
-      const parsedSuite = create(() => {}, schemaWithParsing);
+      const suite = create(() => {}, schema);
 
-      // Run 1: age only
-      const res1 = parsedSuite.focus({ only: 'age' }).run({ age: '25' });
-      expect(res1.run.data.raw).toEqual({ age: 25 });
-      expect(res1.run.data.parsed).toEqual({ age: 25 });
+      // Run 1: focus on username only
+      const res1 = suite
+        .focus({ only: 'username' })
+        .run({ username: '  Alice  ' } as any);
 
-      // Run 2: score only
-      const res2 = parsedSuite.focus({ only: 'score' }).run({ score: '5' });
-      expect(res2.run.data.raw).toEqual({ score: 50 });
+      expect(res1.run.data.raw).toEqual({ username: 'alice' });
+      expect(res1.run.data.parsed).toEqual({ username: 'alice' });
 
-      // The parsed data from Run 1 should be cumulatively assigned to Run 2's parsed data!
-      expect(res2.run.data.parsed).toEqual({ age: 25, score: 50 });
+      // Run 2: focus on score only
+      const res2 = suite.focus({ only: 'score' }).run({ score: '99' } as any);
+
+      // raw is ONLY the current run's transformed value
+      expect(res2.run.data.raw).toEqual({ score: 99 });
+
+      // parsed cumulatively merges: username from Run 1 is still 'alice' (trimmed + lowercased)
+      expect(res2.run.data.parsed).toEqual({ username: 'alice', score: 99 });
+
+      // Prove type persistence: score is number, not string
+      expect(typeof (res2.run.data.parsed as any).score).toBe('number');
+      // And username from Run 1 is still present as 'alice'
+      expect((res2.run.data.parsed as any).username).toBe('alice');
     });
   });
 

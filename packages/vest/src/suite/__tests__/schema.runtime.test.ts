@@ -346,5 +346,38 @@ describe('Schema Runtime Validation', () => {
       expect(res.hasErrors()).toBe(true);
       expect(res.hasErrors('required')).toBe(true);
     });
+
+    it('should maintain state of previously tested fields during focused runs', () => {
+      const schema = enforce.shape({
+        field1: enforce.isString(),
+        field2: enforce.isString(),
+      });
+
+      const suite = create(data => {
+        test('field1', () => {
+          enforce(data.field1).isNotBlank();
+        });
+        test('field2', () => {
+          enforce(data.field2).isNotBlank();
+        });
+      }, schema);
+      expect(suite.get().isValid('field1')).toBe(false);
+      expect(suite.get().isValid('field2')).toBe(false);
+
+      // First run: Both fields
+      suite.run({ field1: 'value1', field2: 'value2' });
+      expect(suite.get().isValid('field1')).toBe(true);
+      expect(suite.get().isValid('field2')).toBe(true);
+
+      // Second run: Focused on field1 only. field2 should remain valid from previous run.
+      suite
+        .focus({ only: 'field1' })
+        // @ts-expect-error - Invalid data
+        .run({ field1: null, field2: 'value2' });
+
+      expect(suite.get().isValid('field1')).toBe(false);
+      expect(suite.get().isValid('field2')).toBe(true); // Should remain valid from first run
+      expect(suite.get().testCount).toBe(2); // Both tests should be in the result
+    });
   });
 });

@@ -171,7 +171,7 @@ suite2.run({ foo: 'baz' });
 suite2.run({ foo: 'baz', bar: 1 });
 
 // ✅ Should pass missing age when focused on name using `pick` organically
-// The schema compiler will inherently drop the `age` requirement.
+// The schema parser will inherently drop the `age` requirement.
 suite.focus({ only: 'name' }).run({ name: 'John' });
 
 export { validSuite, looseSuite, nestedSuite };

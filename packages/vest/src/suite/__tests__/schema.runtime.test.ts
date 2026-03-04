@@ -292,22 +292,19 @@ describe('Schema Runtime Validation', () => {
 
   describe('Parsed schema output', () => {
     it('should pass parsed schema output into the suite callback', () => {
-      const schemaWithParsing = {
-        parse: (value: Record<string, unknown>) => ({ age: Number(value.age) }),
-        run: (value: Record<string, unknown>) => ({
-          pass: true,
-          type: { age: Number(value.age) },
-        }),
-      };
+      const schema = enforce.shape({
+        age: enforce.isNumeric().toNumber(),
+      });
 
       let receivedAge: unknown;
-      const parsedSuite = create((data: Record<string, unknown>) => {
+      const parsedSuite = create(data => {
         receivedAge = data.age;
         test('age', () => {
           enforce(data.age).isNumber();
         });
-      }, schemaWithParsing);
+      }, schema);
 
+      // @ts-expect-error - testing parser coercion: age is string '32' that gets parsed to number
       const result = parsedSuite.run({ age: '32' });
 
       expect(receivedAge).toBe(32);

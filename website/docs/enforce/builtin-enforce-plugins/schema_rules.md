@@ -132,7 +132,7 @@ enforce({ name: 'Laura', code: 'x23', internal: true }).pick(
 
 ### enforce.omit() - omit a subset of fields
 
-When you want to validate an object against a schema but explicitly exclude certain fields from that validation, use `enforce.omit`.
+When you want to validate an object against a schema but explicitly exclude certain fields from that validation, use `enforce.omit`. The second argument accepts a single key or an array of keys to omit.
 
 ```js
 enforce({ name: 'Laura', code: 'x23' }).omit(
@@ -143,6 +143,16 @@ enforce({ name: 'Laura', code: 'x23' }).omit(
   'code',
 );
 // ✅ This will pass, validating `name` but skipping `code`
+
+enforce({ name: 'Laura', code: 'x23', internal: true }).omit(
+  {
+    name: enforce.isString(),
+    code: enforce.isNumber(),
+    internal: enforce.isBoolean(),
+  },
+  ['code', 'internal'],
+);
+// ✅ This will pass, validating only `name` and skipping `code` and `internal`
 ```
 
 ## enforce.isArrayOf() - array shape matching

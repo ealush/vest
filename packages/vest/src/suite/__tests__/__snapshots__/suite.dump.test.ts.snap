@@ -859,6 +859,7 @@ IsolateInstance {
         "message": "field_1_message",
       },
     ],
+    "getData": [Function],
     "getError": [Function],
     "getErrors": [Function],
     "getErrorsByGroup": [Function],

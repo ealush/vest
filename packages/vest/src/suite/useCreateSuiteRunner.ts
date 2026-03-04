@@ -83,7 +83,7 @@ export function useCreateSuiteRunner<
           const result = useCreateSuiteResult<F, G, S>(
             schema,
             callbackInput,
-            runData,
+            schemaInput,
             runTime,
           );
 

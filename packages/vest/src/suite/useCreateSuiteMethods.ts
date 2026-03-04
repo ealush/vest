@@ -100,6 +100,7 @@ function useGetSuiteMethods<
     ...useGetLifecycleMethods(ctx),
     dump: VestRuntime.persist(VestRuntime.useAvailableRoot<TIsolateSuite>),
     get,
+    getData: () => get().getData(),
     ...bindSuiteSelectors<F, G, S>(get),
     ...getTypedMethods<F, G>(),
     // focus and only must come after the spreads to prevent spread keys from overriding them

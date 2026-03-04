@@ -19,6 +19,7 @@ type DoneCallbacks = Array<DoneCallback>;
 type StateExtra = {
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
+  parsedDataCache: TinyState<Record<string, unknown>>;
   suiteId: string;
   suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName, TSchema>>;
 };
@@ -33,6 +34,9 @@ export function useCreateVestState({
   const stateRef: StateExtra = {
     doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
+    parsedDataCache: tinyState.createTinyState<Record<string, unknown>>(
+      () => ({}),
+    ),
     suiteId: seq(),
     suiteResultCache: createSuiteResultCache(),
   };
@@ -54,6 +58,10 @@ export function useFieldCallbacks() {
 
 function useSuiteId() {
   return useVestState().suiteId;
+}
+
+export function useParsedDataCache() {
+  return useVestState().parsedDataCache();
 }
 
 export function useSuiteResultCache<
@@ -93,8 +101,10 @@ export function useResetCallbacks() {
 }
 
 export function useResetSuite() {
+  const [, , resetParsedData] = useParsedDataCache();
   useExpireSuiteResultCache();
   useResetCallbacks();
+  resetParsedData();
   VestRuntime.reset();
 }
 

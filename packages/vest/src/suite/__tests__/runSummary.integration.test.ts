@@ -62,4 +62,107 @@ describe('suite result run summary metadata', () => {
     expect(first.run.data.raw).toEqual({ count: 1 });
     expect(second.run.data.raw).toEqual({ count: 2 });
   });
+
+  describe('cumulative parsed data tracking', () => {
+    it('should cumulatively merge parsed data over successive runs', () => {
+      const schema = enforce.shape({
+        firstName: enforce.isString(),
+        lastName: enforce.isString(),
+      });
+
+      const suite = create(() => {}, schema);
+
+      // First run: only provide firstName, focus on it
+      const res1 = suite
+        .focus({ only: 'firstName' })
+        .run({ firstName: 'John' } as any);
+      expect(res1.run.data.raw).toEqual({ firstName: 'John' });
+      expect(res1.run.data.parsed).toEqual({ firstName: 'John' });
+
+      // Second run: only provide lastName, focus on it
+      // Previous parsed data should be preserved and merged
+      const res2 = suite
+        .focus({ only: 'lastName' })
+        .run({ lastName: 'Doe' } as any);
+      expect(res2.run.data.raw).toEqual({ lastName: 'Doe' });
+      expect(res2.run.data.parsed).toEqual({
+        firstName: 'John',
+        lastName: 'Doe',
+      });
+
+      // The overall value exposed by getters might also reflect this merged state
+    });
+
+    it('should overwrite old parsed values with new ones on subsequent runs', () => {
+      const schema = enforce.shape({
+        count: enforce.isNumber(),
+        name: enforce.isString(),
+      });
+
+      const suite = create(() => {}, schema);
+
+      const res1 = suite.run({ count: 1, name: 'Initial' });
+      expect(res1.run.data.parsed).toEqual({ count: 1, name: 'Initial' });
+
+      // Update count, leave name omitted but we will focus only count
+      const res2 = suite.focus({ only: 'count' }).run({ count: 2 } as any);
+      expect(res2.run.data.parsed).toEqual({ count: 2, name: 'Initial' });
+
+      // Update both
+      const res3 = suite.run({ count: 3, name: 'Updated' });
+      expect(res3.run.data.parsed).toEqual({ count: 3, name: 'Updated' });
+    });
+
+    it('should not merge raw data, only parsed data', () => {
+      const schema = enforce.shape({
+        fieldA: enforce.isString(),
+        fieldB: enforce.isString(),
+      });
+
+      const suite = create(() => {}, schema);
+
+      const res1 = suite
+        .focus({ only: 'fieldA' })
+        .run({ fieldA: 'A', extra: 'drop-me' } as any);
+      expect(res1.run.data.raw).toEqual({ fieldA: 'A', extra: 'drop-me' });
+      // Without a strict parse method that strips, enforce.shape passes input as-is
+      expect(res1.run.data.parsed).toEqual({ fieldA: 'A', extra: 'drop-me' });
+
+      const res2 = suite
+        .focus({ only: 'fieldB' })
+        .run({ fieldB: 'B', another: 'raw-only' } as any);
+      expect(res2.run.data.raw).toEqual({ fieldB: 'B', another: 'raw-only' });
+      // parsed data cumulatively merges the parsed output from previous runs
+      expect(res2.run.data.parsed).toEqual({
+        fieldA: 'A',
+        fieldB: 'B',
+        extra: 'drop-me',
+        another: 'raw-only',
+      });
+    });
+
+    it('should fall back to empty object for parsed data chunk if a run fails schema validation, but retain previous valid parsed data', () => {
+      const schema = enforce.shape({
+        age: enforce.isNumber(),
+        name: enforce.isString(),
+      });
+
+      const suite = create(() => {}, schema);
+
+      const res1 = suite
+        .focus({ only: 'name' })
+        .run({ name: 'ValidName' } as any);
+      expect(res1.run.data.parsed).toEqual({ name: 'ValidName' });
+
+      // This run will fail schema validation for age since it's a string, not number
+      const payload = { age: 'not a number' };
+      // @ts-expect-error
+      const res2 = suite.focus({ only: 'age' }).run(payload);
+
+      // raw is the new input
+      expect(res2.run.data.raw).toEqual(payload);
+      // new parsed data is empty due to parse failure, but keeps previous 'name'
+      expect(res2.run.data.parsed).toEqual({ name: 'ValidName' });
+    });
+  });
 });

@@ -36,7 +36,7 @@
     "@vitest/ui": "4.0.18",
     "eslint": "^9",
     "eslint-config-prettier": "^9",
-    "eslint-import-resolver-typescript": "^3",
+    "eslint-import-resolver-typescript": "^4",
     "eslint-plugin-import": "^2",
     "eslint-plugin-prettier": "^5",
     "eslint-plugin-vitest": "^0",

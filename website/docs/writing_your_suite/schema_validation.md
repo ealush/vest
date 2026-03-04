@@ -169,9 +169,9 @@ suite.only('username').run({
 The suite result includes typed properties for accessing validated and parsed data:
 
 - `result.value` — The parsed output when the suite is valid. Typed as the schema's output type. `undefined` when invalid.
-- `result.types.input` — Typed as the schema's input type (what `suite.run()` accepts).
-- `result.types.output` — Typed as the schema's output type (what the callback receives).
-- `result.run.data.raw` — The parsed data for the current run only.
+- `result.types.input` — Carries the schema's input type for static analysis. At runtime, holds the parsed output value.
+- `result.types.output` — Carries the schema's output type. At runtime, holds the parsed output value.
+- `result.run.data.raw` — The current run data passed into the suite callback (parsed when schema validation succeeds; original input when it fails).
 - `result.run.data.parsed` — Cumulatively merged parsed data across focused runs.
 
 ```typescript

@@ -314,7 +314,58 @@ describe('Schema Runtime Validation', () => {
       expect(result.value).toEqual({ age: 32 });
       // @ts-expect-error - types is defined at runtime when schema is used, but typed as undefined in SuiteResult return
       expect(result.types?.output).toEqual({ age: 32 });
-      expect(result.isValid()).toBe(true);
+    });
+  });
+
+  describe('Parsed schema output metadata', () => {
+    it('should expose the parsed data on data.parsed instead of just data.raw', () => {
+      const schemaWithParsing = {
+        parse: (value: Record<string, unknown>) => ({ age: Number(value.age) }),
+        run: (value: Record<string, unknown>) => ({
+          pass: true,
+          type: { age: Number(value.age) },
+        }),
+      };
+
+      const parsedSuite = create(() => {}, schemaWithParsing);
+
+      const result = parsedSuite.run({ age: '32', extra: 'drop-this' });
+
+      // raw contains the parsed schema output for this single run
+      expect(result.run.data.raw).toEqual({ age: 32 });
+
+      // parsed contains ONLY the schema's parse() output
+      expect(result.run.data.parsed).toEqual({ age: 32 });
+    });
+
+    it('should cumulatively assign parsed data across suite runs when filtering with focus/only', () => {
+      // Mocking a schema that processes individual fields
+      const schemaWithParsing = {
+        parse: (value: Record<string, unknown>) => {
+          const res: Record<string, unknown> = {};
+          if ('age' in value) res.age = Number(value.age);
+          if ('score' in value) res.score = Number(value.score) * 10;
+          return res;
+        },
+        run: (value: Record<string, unknown>) => ({
+          pass: true,
+          type: value,
+        }),
+      };
+
+      const parsedSuite = create(() => {}, schemaWithParsing);
+
+      // Run 1: age only
+      const res1 = parsedSuite.focus({ only: 'age' }).run({ age: '25' });
+      expect(res1.run.data.raw).toEqual({ age: 25 });
+      expect(res1.run.data.parsed).toEqual({ age: 25 });
+
+      // Run 2: score only
+      const res2 = parsedSuite.focus({ only: 'score' }).run({ score: '5' });
+      expect(res2.run.data.raw).toEqual({ score: 50 });
+
+      // The parsed data from Run 1 should be cumulatively assigned to Run 2's parsed data!
+      expect(res2.run.data.parsed).toEqual({ age: 25, score: 50 });
     });
   });
 

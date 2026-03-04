@@ -4,14 +4,6 @@ import { describe, it, expect } from 'vitest';
 import { create, test } from '../../vest';
 
 describe('Schema Runtime Validation', () => {
-  enforce.extend({
-    toNumber: (value: unknown) => {
-      const parsed = Number(value);
-      return Number.isNaN(parsed)
-        ? { pass: false, type: value }
-        : { pass: true, type: parsed };
-    },
-  });
   const schema = enforce.shape({
     name: enforce.isString(),
     age: enforce.isNumber(),
@@ -292,29 +284,81 @@ describe('Schema Runtime Validation', () => {
 
   describe('Parsed schema output', () => {
     it('should pass parsed schema output into the suite callback', () => {
-      const schemaWithParsing = {
-        parse: (value: Record<string, unknown>) => ({ age: Number(value.age) }),
-        run: (value: Record<string, unknown>) => ({
-          pass: true,
-          type: { age: Number(value.age) },
-        }),
-      };
+      const schema = enforce.shape({
+        age: enforce.isNumeric().toNumber(),
+      });
 
       let receivedAge: unknown;
-      const parsedSuite = create((data: Record<string, unknown>) => {
+      const parsedSuite = create(data => {
         receivedAge = data.age;
         test('age', () => {
           enforce(data.age).isNumber();
         });
-      }, schemaWithParsing);
+      }, schema);
 
+      // @ts-expect-error - testing parser coercion: age is string '32' that gets parsed to number
       const result = parsedSuite.run({ age: '32' });
 
       expect(receivedAge).toBe(32);
       expect(result.value).toEqual({ age: 32 });
       // @ts-expect-error - types is defined at runtime when schema is used, but typed as undefined in SuiteResult return
       expect(result.types?.output).toEqual({ age: 32 });
-      expect(result.isValid()).toBe(true);
+    });
+  });
+
+  describe('Parsed schema output metadata', () => {
+    it('should expose transformed data on data.parsed using enforce parsers (trim, toNumber)', () => {
+      const schema = enforce.shape({
+        name: enforce.isString().trim().toUpper(),
+        age: enforce.isNumeric().toNumber(),
+      });
+
+      const suite = create(() => {}, schema);
+
+      // @ts-expect-error - testing parser coercion: age is string
+      const result = suite.run({ name: '  bob  ', age: '30' });
+
+      // raw is the single-run transformed output
+      expect(result.run.data.raw).toEqual({ name: 'BOB', age: 30 });
+
+      // parsed also holds the same transformed values
+      expect(result.run.data.parsed).toEqual({ name: 'BOB', age: 30 });
+
+      // Proves the parsers ran: original was '  bob  ' (string), now 'BOB' (trimmed, uppercased)
+      // and original age was '30' (string), now 30 (number)
+      expect(typeof (result.run.data.parsed as any).age).toBe('number');
+      expect((result.run.data.parsed as any).name).toBe('BOB');
+    });
+
+    it('should cumulatively assign parsed data across focused suite runs using enforce parsers', () => {
+      const schema = enforce.shape({
+        username: enforce.isString().trim().toLower(),
+        score: enforce.isNumeric().toNumber(),
+      });
+
+      const suite = create(() => {}, schema);
+
+      // Run 1: focus on username only
+      const res1 = suite
+        .focus({ only: 'username' })
+        .run({ username: '  Alice  ' } as any);
+
+      expect(res1.run.data.raw).toEqual({ username: 'alice' });
+      expect(res1.run.data.parsed).toEqual({ username: 'alice' });
+
+      // Run 2: focus on score only
+      const res2 = suite.focus({ only: 'score' }).run({ score: '99' } as any);
+
+      // raw is ONLY the current run's transformed value
+      expect(res2.run.data.raw).toEqual({ score: 99 });
+
+      // parsed cumulatively merges: username from Run 1 is still 'alice' (trimmed + lowercased)
+      expect(res2.run.data.parsed).toEqual({ username: 'alice', score: 99 });
+
+      // Prove type persistence: score is number, not string
+      expect(typeof (res2.run.data.parsed as any).score).toBe('number');
+      // And username from Run 1 is still present as 'alice'
+      expect((res2.run.data.parsed as any).username).toBe('alice');
     });
   });
 

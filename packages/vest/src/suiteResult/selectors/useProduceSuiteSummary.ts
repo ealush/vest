@@ -15,6 +15,7 @@ import {
   Tests,
   TFieldName,
   TGroupName,
+  TSchema,
 } from '../SuiteResultTypes';
 import { SummaryFailure } from '../SummaryFailure';
 
@@ -27,10 +28,11 @@ export function useProduceSuiteSummary<
   F extends TFieldName,
   G extends TGroupName,
   D = unknown,
->(): SuiteSummary<F, G, D> {
+  S extends TSchema = undefined,
+>(): SuiteSummary<F, G, D, S> {
   const root = VestRuntime.useAvailableRoot<TIsolateSuite>();
 
-  const summary = new SuiteSummary<F, G, D>();
+  const summary = new SuiteSummary<F, G, D, S>();
 
   if (isVestIsolate(root)) {
     useProcessTests(root.data.tests, summary);

@@ -3,6 +3,7 @@ import {
   assign,
   asArray,
   CB,
+  freezeAssign,
   isArray,
   isFunction,
   isObject,
@@ -12,6 +13,7 @@ import {
 import { useEmit } from '../core/VestBus/VestBus';
 
 import { SuiteContext } from '../core/context/SuiteContext';
+import { useParsedDataCache } from '../core/Runtime';
 import { IsolateReorderable } from 'vestjs-runtime';
 import { IsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { test } from '../core/test/test';
@@ -53,7 +55,6 @@ export function useCreateSuiteRunner<
   schema?: S,
 ) {
   const transformedModifiers = useTransformedModifiers(modifiers);
-  let previousParsedData: any = {};
 
   return function runSuite(
     ...args: S extends undefined
@@ -69,17 +70,15 @@ export function useCreateSuiteRunner<
       : undefined;
 
     const parsedDataChunk = getParsedDataChunk(schemaRunResult);
+    const [previousParsedData, setParsedData] = useParsedDataCache();
 
     const mergedParsedData = (
       schema
-        ? Object.freeze({
-            ...previousParsedData,
-            ...(parsedDataChunk as object),
-          })
+        ? freezeAssign({}, previousParsedData, parsedDataChunk as object)
         : undefined
     ) as Partial<InferSchemaOutput<S>> | undefined;
 
-    previousParsedData = mergedParsedData ?? {};
+    setParsedData(mergedParsedData ?? {});
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;

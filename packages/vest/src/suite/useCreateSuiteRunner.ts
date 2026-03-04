@@ -300,9 +300,10 @@ function buildIntersectedSchemaInstance(
   only: string[],
   skip: string[],
 ): any {
+  const skipSet = new Set(skip);
   return enforce.pick(
     schema.__schema,
-    only.filter(f => !skip.includes(f)),
+    only.filter(f => !skipSet.has(f)),
   );
 }
 

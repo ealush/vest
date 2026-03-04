@@ -4,14 +4,6 @@ import { describe, it, expect } from 'vitest';
 import { create, test } from '../../vest';
 
 describe('Schema Runtime Validation', () => {
-  enforce.extend({
-    toNumber: (value: unknown) => {
-      const parsed = Number(value);
-      return Number.isNaN(parsed)
-        ? { pass: false, type: value }
-        : { pass: true, type: parsed };
-    },
-  });
   const schema = enforce.shape({
     name: enforce.isString(),
     age: enforce.isNumber(),

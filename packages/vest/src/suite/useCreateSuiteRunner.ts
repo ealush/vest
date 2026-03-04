@@ -3,6 +3,7 @@ import {
   assign,
   asArray,
   CB,
+  freezeAssign,
   isArray,
   isFunction,
   isObject,
@@ -73,10 +74,7 @@ export function useCreateSuiteRunner<
 
     const mergedParsedData = (
       schema
-        ? Object.freeze({
-            ...previousParsedData,
-            ...(parsedDataChunk as object),
-          })
+        ? freezeAssign({}, previousParsedData, parsedDataChunk as object)
         : undefined
     ) as Partial<InferSchemaOutput<S>> | undefined;
 

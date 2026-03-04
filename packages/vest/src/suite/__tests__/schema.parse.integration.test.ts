@@ -211,9 +211,12 @@ describe('suite schema integration', () => {
     }, schema);
 
     const result = suite.run({
+      // @ts-expect-error - testing coercible string
       age: '180',
       name: '  jANE DOE ',
+      // @ts-expect-error - testing coercible string
       subscribed: ' yes ',
+      // @ts-expect-error - testing array to string mapping coercion
       tags: ['vest', 'n4s', 'vest'],
       payload: '{"env":"test"}',
     });
@@ -249,6 +252,7 @@ describe('suite schema integration', () => {
       });
     }, schema);
 
+    // @ts-expect-error - testing invalid fallback schema error
     const result = suite.run({ subscribed: 'unknown' });
 
     expect(callbackData).toEqual({ subscribed: 'unknown' });

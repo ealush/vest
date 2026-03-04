@@ -45,3 +45,55 @@ export function safeShallowCopy(
 
   return output;
 }
+
+/**
+ * Returns true if both value and schema are plain objects (not arrays).
+ */
+export function isValidSchemaInput(value: unknown, schema: unknown): boolean {
+  return (
+    isObject(value) &&
+    !Array.isArray(value) &&
+    isObject(schema) &&
+    !Array.isArray(schema)
+  );
+}
+
+/**
+ * Checks if the value or the schema contain any inherently dangerous keys natively.
+ */
+export function checkDangerousKeys<T>(
+  value: T,
+  schema: Record<string, any>,
+): { pass: false; path: string[] } | null {
+  const dangerousSchemaKey = findDangerousOwnKey(schema);
+  if (dangerousSchemaKey) {
+    return { pass: false, path: [dangerousSchemaKey] };
+  }
+
+  const dangerousValueKey = findDangerousOwnKey(value);
+  if (dangerousValueKey) {
+    return { pass: false, path: [dangerousValueKey] };
+  }
+
+  return null;
+}
+
+/**
+ * Filters schema keys using a predicate, returning a new schema
+ * containing only the keys for which the predicate returns true.
+ */
+export function filterSchemaKeys(
+  schema: Record<string, any>,
+  predicate: (key: string) => boolean,
+): Record<string, any> {
+  const filtered: Record<string, any> = {};
+  if (!isObject(schema)) {
+    return filtered;
+  }
+  for (const key of ownKeys(schema)) {
+    if (predicate(key)) {
+      filtered[key] = schema[key];
+    }
+  }
+  return filtered;
+}

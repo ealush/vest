@@ -22,6 +22,7 @@ import {
   TGroupName,
   InferSchemaData,
   TSchema,
+  InferSchemaOutput,
 } from '../suiteResult/SuiteResultTypes';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
@@ -52,6 +53,7 @@ export function useCreateSuiteRunner<
   schema?: S,
 ) {
   const transformedModifiers = useTransformedModifiers(modifiers);
+  let previousParsedData: any = {};
 
   return function runSuite(
     ...args: S extends undefined
@@ -65,6 +67,19 @@ export function useCreateSuiteRunner<
     const schemaRunResult = shouldRunSchema(schema)
       ? runSchemaWithParse(schema, schemaInput, transformedModifiers)
       : undefined;
+
+    const parsedDataChunk = getParsedDataChunk(schemaRunResult);
+
+    const mergedParsedData = (
+      schema
+        ? Object.freeze({
+            ...previousParsedData,
+            ...(parsedDataChunk as object),
+          })
+        : undefined
+    ) as Partial<InferSchemaOutput<S>> | undefined;
+
+    previousParsedData = mergedParsedData ?? {};
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
@@ -85,6 +100,7 @@ export function useCreateSuiteRunner<
             callbackInput,
             runData,
             runTime,
+            mergedParsedData,
           );
 
           if (!result.isPending()) {
@@ -110,6 +126,20 @@ export function useCreateSuiteRunner<
 
     return bindSuiteResultMethods(promise, suiteResult, runData, runTime);
   };
+}
+
+/**
+ * Resolves the partial parsed data chunk from the schema run payload.
+ */
+function getParsedDataChunk(
+  schemaRunResult: SchemaRunResult[] | undefined,
+): unknown {
+  if (!schemaRunResult || schemaRunResult.some(result => !result.pass)) {
+    return {};
+  }
+
+  const [firstResult] = schemaRunResult;
+  return firstResult?.type ?? {};
 }
 
 /**
@@ -428,7 +458,10 @@ function bindSuiteResultMethods<
     configurable: true,
     enumerable: false,
     value: Object.freeze({
-      data: runData,
+      data: Object.freeze({
+        raw: runData,
+        parsed: suiteResult.run.data.parsed,
+      }),
       time: runTime,
     }),
     writable: true,

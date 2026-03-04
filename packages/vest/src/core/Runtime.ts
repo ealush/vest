@@ -67,6 +67,18 @@ export function useSuiteResultCache<
   return suiteResultCache([useSuiteId()], action) as SuiteResult<F, G, S, D>;
 }
 
+export function usePreviousSuiteResult<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema = undefined,
+  D = unknown,
+>(): SuiteResult<F, G, S, D> | undefined {
+  const suiteResultCache = useVestState().suiteResultCache;
+  return suiteResultCache.get([useSuiteId()])?.[1] as unknown as
+    | SuiteResult<F, G, S, D>
+    | undefined;
+}
+
 export function useExpireSuiteResultCache() {
   const suiteResultCache = useVestState().suiteResultCache;
   suiteResultCache.invalidate([useSuiteId()]);

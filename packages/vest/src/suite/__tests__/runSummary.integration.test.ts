@@ -11,7 +11,8 @@ describe('suite result run summary metadata', () => {
     const result = suite.run(payload);
     const after = Date.now();
 
-    expect(result.run.data).toBe(payload);
+    expect(result.run.data.raw).toBe(payload);
+    expect(result.run.data.parsed).toBeUndefined();
     expect(Object.prototype.propertyIsEnumerable.call(result, 'run')).toBe(
       false,
     );
@@ -31,8 +32,9 @@ describe('suite result run summary metadata', () => {
 
     const result = suite.run({ amount: 12 });
 
-    expect(result.run.data).toEqual({ amount: 12 });
-    expect(callbackValue).toEqual(result.run.data);
+    expect(result.run.data.raw).toEqual({ amount: 12 });
+    expect(result.run.data.parsed).toEqual({ amount: 12 });
+    expect(callbackValue).toEqual(result.run.data.parsed);
   });
 
   it('falls back to the original data in run metadata when schema validation fails', () => {
@@ -44,7 +46,8 @@ describe('suite result run summary metadata', () => {
     // @ts-expect-error - testing schema validation failure with intentionally mismatched data
     const result = suite.run(payload);
 
-    expect(result.run.data).toBe(payload);
+    expect(result.run.data.raw).toBe(payload);
+    expect(result.run.data.parsed).toEqual({});
   });
 
   it('captures run.time per run', () => {
@@ -56,7 +59,7 @@ describe('suite result run summary metadata', () => {
     expect(second.run.time.getTime()).toBeGreaterThanOrEqual(
       first.run.time.getTime(),
     );
-    expect(first.run.data).toEqual({ count: 1 });
-    expect(second.run.data).toEqual({ count: 2 });
+    expect(first.run.data.raw).toEqual({ count: 1 });
+    expect(second.run.data.raw).toEqual({ count: 2 });
   });
 });

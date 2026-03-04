@@ -12,6 +12,7 @@ import {
   TFieldName,
   TGroupName,
   TSchema,
+  InferSchemaOutput,
 } from './SuiteResultTypes';
 import { suiteSelectors } from './selectors/suiteSelectors';
 import { useProduceSuiteSummary } from './selectors/useProduceSuiteSummary';
@@ -26,12 +27,16 @@ export function useCreateSuiteResult<
   outputData?: any,
   inputData?: D,
   runTime: Date = new Date(),
+  parsedData?: Partial<InferSchemaOutput<S>>,
 ): SuiteResult<F, G, S, D> {
   return useSuiteResultCache<F, G, S, D>(() => {
     // @vx-allow use-use
-    const summary = useProduceSuiteSummary<F, G, D>();
+    const summary = useProduceSuiteSummary<F, G, D, S>();
     summary.run = {
-      data: inputData,
+      data: {
+        raw: inputData,
+        parsed: parsedData,
+      },
       time: runTime,
     };
 
@@ -66,7 +71,7 @@ export function constructSuiteResultObject<
   S extends TSchema = undefined,
   D = unknown,
 >(
-  summary: SuiteSummary<F, G, D>,
+  summary: SuiteSummary<F, G, D, S>,
   outputData?: any,
 ): Omit<SuiteResult<F, G, S, D>, 'dump' | 'types'> {
   const { valid, ...summaryWithoutValid } = summary;

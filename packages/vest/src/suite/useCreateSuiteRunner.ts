@@ -290,7 +290,9 @@ function applySchemaFocus(
 }
 
 function buildArrayProp(prop: unknown): string[] | null {
-  return prop ? (asArray(prop) as string[]) : null;
+  if (!prop) return null;
+  const arr = asArray(prop) as string[];
+  return arr.length > 0 ? arr : null;
 }
 
 function buildIntersectedSchemaInstance(

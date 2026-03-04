@@ -176,7 +176,28 @@ Use exported types to annotate variables and APIs:
 - `SuiteResult<FieldName, GroupName>` - the result returned from `run`, `runStatic`, or `get`.
 - `SuiteSummary<FieldName, GroupName>` - the static snapshot of all test results.
 
-`SuiteResult` also carries `types.input` and `types.output` when a schema is present.
+`SuiteResult` also carries `types.input` and `types.output` when a schema is present. When the schema uses parser chains (e.g., `isNumeric().toNumber()`), the input and output types are distinct:
+
+```typescript
+const schema = enforce.shape({
+  age: enforce.isNumeric().toNumber(),
+  name: enforce.isString().trim(),
+});
+
+const suite = create(data => {
+  test('age', () => {
+    enforce(data.age).greaterThan(0);
+  });
+}, schema);
+
+// suite.run() accepts the input type: { age: string | number; name: string }
+const result = suite.run({ age: '25', name: '  alice  ' });
+
+// result.value is typed as the output type: { age: number; name: string }
+result.value; // { age: 25, name: 'alice' }
+```
+
+`result.value` is typed as the schema output and is only available when the suite is valid (`result.valid === true`).
 
 ## Custom Enforce Rules
 

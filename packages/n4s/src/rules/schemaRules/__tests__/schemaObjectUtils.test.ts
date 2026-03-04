@@ -25,9 +25,9 @@ describe('schemaObjectUtils', () => {
     });
 
     it('Should return empty array for non-objects', () => {
-      expect(ownKeys(null as any)).toEqual([]);
-      expect(ownKeys(undefined as any)).toEqual([]);
-      expect(ownKeys('string' as any)).toEqual([]);
+      expect(ownKeys(null)).toEqual([]);
+      expect(ownKeys(undefined)).toEqual([]);
+      expect(ownKeys('string')).toEqual([]);
     });
   });
 
@@ -77,9 +77,9 @@ describe('schemaObjectUtils', () => {
     });
 
     it('Should handle non-object payloads gracefully (returns null)', () => {
-      expect(checkDangerousKeys(null as any, {})).toBeNull();
-      expect(checkDangerousKeys(undefined as any, {})).toBeNull();
-      expect(checkDangerousKeys('string' as any, {})).toBeNull();
+      expect(checkDangerousKeys(null, {})).toBeNull();
+      expect(checkDangerousKeys(undefined, {})).toBeNull();
+      expect(checkDangerousKeys('string', {})).toBeNull();
     });
   });
 });

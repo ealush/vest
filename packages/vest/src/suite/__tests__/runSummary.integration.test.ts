@@ -72,7 +72,6 @@ describe('suite result run summary metadata', () => {
 
       const suite = create(() => {}, schema);
 
-      // @ts-expect-error - testing parser coercion: age is string '25' that gets parsed to number
       const result = suite.run({ name: '  alice  ', age: '25' });
 
       // raw reflects the parsed/transformed input for the current run
@@ -101,7 +100,7 @@ describe('suite result run summary metadata', () => {
       // Run 1: focus on firstName only, pass untrimmed input
       const res1 = suite
         .focus({ only: 'firstName' })
-        .run({ firstName: '  john  ' } as any);
+        .run({ firstName: '  john  ' });
 
       // raw is the transformed value for this run
       expect(res1.run.data.raw).toEqual({ firstName: 'JOHN' });
@@ -111,7 +110,7 @@ describe('suite result run summary metadata', () => {
       // Run 2: focus on lastName only, pass untrimmed input
       const res2 = suite
         .focus({ only: 'lastName' })
-        .run({ lastName: '  doe  ' } as any);
+        .run({ lastName: '  doe  ' });
 
       // raw is ONLY the current run's transformed value
       expect(res2.run.data.raw).toEqual({ lastName: 'doe' });
@@ -132,17 +131,15 @@ describe('suite result run summary metadata', () => {
       const suite = create(() => {}, schema);
 
       // Run 1: both fields
-      // @ts-expect-error - testing parser coercion: score is string that gets parsed to number
       const res1 = suite.run({ score: '42', label: '  hello  ' });
       expect(res1.run.data.parsed).toEqual({ score: 42, label: 'HELLO' });
 
       // Run 2: focus on score only, update it
-      const res2 = suite.focus({ only: 'score' }).run({ score: '99' } as any);
+      const res2 = suite.focus({ only: 'score' }).run({ score: '99' });
       // parsed retains the previous label and updates score
       expect(res2.run.data.parsed).toEqual({ score: 99, label: 'HELLO' });
 
       // Run 3: update both again
-      // @ts-expect-error - testing parser coercion
       const res3 = suite.run({ score: '7', label: '  world  ' });
       expect(res3.run.data.parsed).toEqual({ score: 7, label: 'WORLD' });
     });
@@ -156,9 +153,7 @@ describe('suite result run summary metadata', () => {
       const suite = create(() => {}, schema);
 
       // Run 1: valid name, parsed to trimmed+uppercase
-      const res1 = suite
-        .focus({ only: 'name' })
-        .run({ name: '  valid  ' } as any);
+      const res1 = suite.focus({ only: 'name' }).run({ name: '  valid  ' });
       expect(res1.run.data.parsed).toEqual({ name: 'VALID' });
 
       // Run 2: invalid age (string instead of number) — schema validation fails
@@ -181,19 +176,17 @@ describe('suite result run summary metadata', () => {
       const suite = create(() => {}, schema);
 
       // Run 1: focus on count — input is string '10', parsed should be number 10
-      const res1 = suite.focus({ only: 'count' }).run({ count: '10' } as any);
+      const res1 = suite.focus({ only: 'count' }).run({ count: '10' });
       expect(res1.run.data.parsed).toEqual({ count: 10 });
-      expect(typeof (res1.run.data.parsed as any).count).toBe('number');
+      expect(typeof res1.run.data.parsed?.count).toBe('number');
 
       // Run 2: focus on tag
-      const res2 = suite
-        .focus({ only: 'tag' })
-        .run({ tag: '  trimmed  ' } as any);
+      const res2 = suite.focus({ only: 'tag' }).run({ tag: '  trimmed  ' });
       expect(res2.run.data.parsed).toEqual({ count: 10, tag: 'trimmed' });
 
       // Verify the count from Run 1 is still a number, not reverted to string
-      expect(typeof (res2.run.data.parsed as any).count).toBe('number');
-      expect((res2.run.data.parsed as any).count).toBe(10);
+      expect(typeof res2.run.data.parsed?.count).toBe('number');
+      expect(res2.run.data.parsed?.count).toBe(10);
     });
   });
 });

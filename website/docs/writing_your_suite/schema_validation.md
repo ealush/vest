@@ -73,6 +73,32 @@ suite.run({ username: 'john', age: 42 });
 // suite.run({ username: 'john', age: '42' });
 ```
 
+### Input vs output types with parsers
+
+When a schema uses [data parsers](../enforce/builtin-enforce-plugins/data_parsers.md), Vest distinguishes between the **input type** (what `suite.run()` accepts) and the **output type** (what the callback receives and what `result.value` contains).
+
+```typescript
+const schema = enforce.shape({
+  age: enforce.isNumeric().toNumber(), // input: string | number, output: number
+  name: enforce.isString().trim().toUpper(), // input: string, output: string
+});
+
+const suite = create(data => {
+  // data.age is typed as `number` (the output type)
+  test('age', () => {
+    enforce(data.age).greaterThan(0);
+  });
+}, schema);
+
+// suite.run() accepts `string | number` for age (the input type)
+suite.run({ age: '25', name: '  alice  ' }); // ✅ No type error
+
+const result = suite.run({ age: '25', name: '  alice  ' });
+result.value; // typed as { age: number; name: string }
+```
+
+The first rule in a chain determines the input type, and the last parser in the chain determines the output type. This means you never need `@ts-expect-error` or `as any` for valid parser coercion inputs.
+
 ### What becomes typed from the schema
 
 With `create(callback, schema)`, TypeScript narrows:
@@ -140,7 +166,31 @@ suite.only('username').run({
 
 ## Inspecting schema results
 
-The suite result includes a `types` object that captures the validated `input` and coerced `output` from the schema run. This is useful for debugging and type-safe consumers.
+The suite result includes typed properties for accessing validated and parsed data:
+
+- `result.value` — The parsed output when the suite is valid. Typed as the schema's output type. `undefined` when invalid.
+- `result.types.input` — Carries the schema's input type for static analysis. At runtime, holds the parsed output value.
+- `result.types.output` — Carries the schema's output type. At runtime, holds the parsed output value.
+- `result.run.data.raw` — The current run data passed into the suite callback (parsed when schema validation succeeds; original input when it fails).
+- `result.run.data.parsed` — Cumulatively merged parsed data across focused runs.
+
+```typescript
+const schema = enforce.shape({
+  score: enforce.isNumeric().toNumber(),
+});
+
+const suite = create(data => {
+  test('score', () => {
+    enforce(data.score).greaterThan(0);
+  });
+}, schema);
+
+const result = suite.run({ score: '42' });
+result.value; // { score: 42 }
+result.types?.output; // { score: 42 }
+result.run.data.raw; // { score: 42 }
+result.run.data.parsed; // { score: 42 }
+```
 
 ## Schema Parsing
 

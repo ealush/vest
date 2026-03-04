@@ -116,7 +116,6 @@ describe('suite schema integration', () => {
 
     expect(callbackData).toEqual({ quantity: 10, label: 'item' });
     expect(result.value).toEqual({ quantity: 10, label: 'item' });
-    // @ts-expect-error - types is defined at runtime when schema is used, but typed as undefined in SuiteResult return
     expect(result.types?.output).toEqual({
       quantity: 10,
       label: 'item',
@@ -211,12 +210,9 @@ describe('suite schema integration', () => {
     }, schema);
 
     const result = suite.run({
-      // @ts-expect-error - testing coercible string
       age: '180',
       name: '  jANE DOE ',
-      // @ts-expect-error - testing coercible string
       subscribed: ' yes ',
-      // @ts-expect-error - testing array to string mapping coercion
       tags: ['vest', 'n4s', 'vest'],
       payload: '{"env":"test"}',
     });
@@ -252,7 +248,6 @@ describe('suite schema integration', () => {
       });
     }, schema);
 
-    // @ts-expect-error - testing invalid fallback schema error
     const result = suite.run({ subscribed: 'unknown' });
 
     expect(callbackData).toEqual({ subscribed: 'unknown' });

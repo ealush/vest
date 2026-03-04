@@ -47,17 +47,17 @@ type SuiteMethods<
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G>;
+  ) => SuiteResult<F, G, S>;
   runStatic: (
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G>;
+  ) => SuiteResult<F, G, S>;
   validate: (
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G>;
+  ) => SuiteResult<F, G, S>;
   subscribe: Subscribe;
 } & AfterMethods<F, G, T, S> &
   TTypedMethods<F, G> &
@@ -79,7 +79,7 @@ type FocusedMethods<
     ...args: S extends undefined
       ? Parameters<T>
       : [data: Partial<InferSchemaData<S>>, ...args: any[]]
-  ) => SuiteResult<F, G>;
+  ) => SuiteResult<F, G, S>;
 };
 
 type AfterMethods<
@@ -96,7 +96,7 @@ type AfterMethods<
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G>;
+  ) => SuiteResult<F, G, S>;
 };
 
 /**

@@ -440,3 +440,20 @@ schema.parse({
 //   nickname: '',
 // }
 ```
+
+### TypeScript type inference
+
+Parser chains correctly distinguish between input and output types. The first rule in the chain determines the **input type** (what the caller passes in), and the last parser determines the **output type** (what the consumer receives).
+
+```typescript
+// Input: string | number → Output: number
+const ageRule = enforce.isNumeric().toNumber().clamp(0, 120);
+
+// Input: string → Output: boolean
+const subscribedRule = enforce.isString().trim().toBoolean();
+
+// Input: string[] → Output: string
+const tagsRule = enforce.isArray<string>().uniq().join('|');
+```
+
+When used inside a Vest suite schema, this means `suite.run()` accepts the input types while the suite callback and `result.value` use the output types — no type casts needed.

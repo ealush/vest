@@ -296,12 +296,10 @@ describe('Schema Runtime Validation', () => {
         });
       }, schema);
 
-      // @ts-expect-error - testing parser coercion: age is string '32' that gets parsed to number
       const result = parsedSuite.run({ age: '32' });
 
       expect(receivedAge).toBe(32);
       expect(result.value).toEqual({ age: 32 });
-      // @ts-expect-error - types is defined at runtime when schema is used, but typed as undefined in SuiteResult return
       expect(result.types?.output).toEqual({ age: 32 });
     });
   });
@@ -315,7 +313,6 @@ describe('Schema Runtime Validation', () => {
 
       const suite = create(() => {}, schema);
 
-      // @ts-expect-error - testing parser coercion: age is string
       const result = suite.run({ name: '  bob  ', age: '30' });
 
       // raw is the single-run transformed output
@@ -326,8 +323,9 @@ describe('Schema Runtime Validation', () => {
 
       // Proves the parsers ran: original was '  bob  ' (string), now 'BOB' (trimmed, uppercased)
       // and original age was '30' (string), now 30 (number)
-      expect(typeof (result.run.data.parsed as any).age).toBe('number');
-      expect((result.run.data.parsed as any).name).toBe('BOB');
+      expect(typeof result.run.data.parsed?.age).toBe('number');
+      expect(result.run.data.parsed?.age).toBe(30);
+      expect(result.run.data.parsed?.name).toBe('BOB');
     });
 
     it('should cumulatively assign parsed data across focused suite runs using enforce parsers', () => {
@@ -341,13 +339,13 @@ describe('Schema Runtime Validation', () => {
       // Run 1: focus on username only
       const res1 = suite
         .focus({ only: 'username' })
-        .run({ username: '  Alice  ' } as any);
+        .run({ username: '  Alice  ' });
 
       expect(res1.run.data.raw).toEqual({ username: 'alice' });
       expect(res1.run.data.parsed).toEqual({ username: 'alice' });
 
       // Run 2: focus on score only
-      const res2 = suite.focus({ only: 'score' }).run({ score: '99' } as any);
+      const res2 = suite.focus({ only: 'score' }).run({ score: '99' });
 
       // raw is ONLY the current run's transformed value
       expect(res2.run.data.raw).toEqual({ score: 99 });
@@ -356,9 +354,9 @@ describe('Schema Runtime Validation', () => {
       expect(res2.run.data.parsed).toEqual({ username: 'alice', score: 99 });
 
       // Prove type persistence: score is number, not string
-      expect(typeof (res2.run.data.parsed as any).score).toBe('number');
+      expect(typeof res2.run.data.parsed?.score).toBe('number');
       // And username from Run 1 is still present as 'alice'
-      expect((res2.run.data.parsed as any).username).toBe('alice');
+      expect(res2.run.data.parsed?.username).toBe('alice');
     });
   });
 
@@ -422,6 +420,327 @@ describe('Schema Runtime Validation', () => {
       expect(suite.get().isValid('field1')).toBe(false);
       expect(suite.get().isValid('field2')).toBe(true); // Should remain valid from first run
       expect(suite.get().testCount).toBe(2); // Both tests should be in the result
+    });
+  });
+});
+
+describe('Schema input vs output type inference', () => {
+  describe('isNumeric().toNumber() — input: string | number, output: number', () => {
+    it('should accept string input without type error', () => {
+      const schema = enforce.shape({
+        age: enforce.isNumeric().toNumber(),
+      });
+      const suite = create(data => {
+        test('age', () => {
+          enforce(data.age).isNumber();
+        });
+      }, schema);
+
+      // string input is valid because isNumeric() accepts string | number
+      const result = suite.run({ age: '25' });
+      expect(result.hasErrors()).toBe(false);
+      expect(result.isValid()).toBe(true);
+      expect(result.value).toEqual({ age: 25 });
+    });
+
+    it('should accept number input without type error', () => {
+      const schema = enforce.shape({
+        age: enforce.isNumeric().toNumber(),
+      });
+      const suite = create(data => {
+        test('age', () => {
+          enforce(data.age).isNumber();
+        });
+      }, schema);
+
+      // number input is also valid
+      const result = suite.run({ age: 25 });
+      expect(result.isValid()).toBe(true);
+      expect(result.value).toEqual({ age: 25 });
+    });
+
+    it('should coerce string to number in parsed output', () => {
+      const schema = enforce.shape({
+        age: enforce.isNumeric().toNumber(),
+      });
+      const suite = create(data => {
+        test('age', () => {
+          enforce(data.age).isNumber();
+        });
+      }, schema);
+
+      const result = suite.run({ age: '42' });
+      expect(result.value).toEqual({ age: 42 });
+      expect(typeof result.value?.age).toBe('number');
+
+      // run.data holds the parsed value for both raw and parsed
+      expect(result.run.data.raw).toEqual({ age: 42 });
+      expect(result.run.data.parsed).toEqual({ age: 42 });
+      expect(typeof result.run.data.parsed?.age).toBe('number');
+    });
+  });
+
+  describe('isString().trim().toUpper() — input: string, output: string', () => {
+    it('should accept string input and produce transformed string output', () => {
+      const schema = enforce.shape({
+        name: enforce.isString().trim().toUpper(),
+      });
+      const suite = create(data => {
+        test('name', () => {
+          enforce(data.name).isNotBlank();
+        });
+      }, schema);
+
+      const result = suite.run({ name: '  alice  ' });
+      expect(result.isValid()).toBe(true);
+      expect(result.value).toEqual({ name: 'ALICE' });
+
+      // types reflect the parsed data at runtime
+      expect(result.types?.output).toEqual({ name: 'ALICE' });
+    });
+  });
+
+  describe('isString().toBoolean() — input: string, output: boolean', () => {
+    it('should accept string input and produce boolean output', () => {
+      const schema = enforce.shape({
+        active: enforce.isString().trim().toBoolean(),
+      });
+      const suite = create(data => {
+        test('active', () => {
+          enforce(data.active).isTruthy();
+        });
+      }, schema);
+
+      const result = suite.run({ active: ' yes ' });
+      expect(result.isValid()).toBe(true);
+      expect(result.value?.active).toBe(true);
+      expect(typeof result.value?.active).toBe('boolean');
+    });
+  });
+
+  describe('isArray<string>().uniq().join() — input: string[], output: string', () => {
+    it('should accept array input and produce string output', () => {
+      const schema = enforce.shape({
+        tags: enforce.isArray<string>().uniq().join('|'),
+      });
+      const suite = create(data => {
+        test('tags', () => {
+          enforce(data.tags).isNotEmpty();
+        });
+      }, schema);
+
+      const result = suite.run({ tags: ['a', 'b', 'a'] });
+      expect(result.isValid()).toBe(true);
+      expect(result.value?.tags).toBe('a|b');
+      expect(typeof result.value?.tags).toBe('string');
+    });
+  });
+
+  describe('isNumeric().toNumber().clamp() — multi-step parser chain', () => {
+    it('should accept string input through multi-step chain', () => {
+      const schema = enforce.shape({
+        score: enforce.isNumeric().toNumber().clamp(0, 100),
+      });
+      const suite = create(data => {
+        test('score', () => {
+          enforce(data.score).greaterThanOrEquals(0);
+        });
+      }, schema);
+
+      // String '150' accepted by isNumeric, converted to 150, clamped to 100
+      const result = suite.run({ score: '150' });
+      expect(result.isValid()).toBe(true);
+      expect(result.value?.score).toBe(100);
+    });
+
+    it('should accept number input through multi-step chain', () => {
+      const schema = enforce.shape({
+        score: enforce.isNumeric().toNumber().clamp(0, 100),
+      });
+      const suite = create(data => {
+        test('score', () => {
+          enforce(data.score).greaterThanOrEquals(0);
+        });
+      }, schema);
+
+      const result = suite.run({ score: -5 });
+      expect(result.isValid()).toBe(true);
+      expect(result.value?.score).toBe(0);
+    });
+  });
+
+  describe('Mixed schema with parser and non-parser fields', () => {
+    it('should correctly type each field independently', () => {
+      const schema = enforce.shape({
+        name: enforce.isString(),
+        age: enforce.isNumeric().toNumber(),
+        active: enforce.isString().toBoolean(),
+        tags: enforce.isArray<string>().uniq().join(','),
+      });
+
+      const suite = create(data => {
+        test('name', () => {
+          enforce(data.name).isNotBlank();
+        });
+      }, schema);
+
+      // Each field uses its own input type:
+      // name: string (no coercion)
+      // age: string | number (isNumeric accepts both)
+      // active: string (isString)
+      // tags: string[] (isArray<string>)
+      const result = suite.run({
+        name: 'Bob',
+        age: '30',
+        active: 'true',
+        tags: ['x', 'y', 'x'],
+      });
+
+      expect(result.isValid()).toBe(true);
+      expect(result.value).toEqual({
+        name: 'Bob',
+        age: 30,
+        active: true,
+        tags: 'x,y',
+      });
+    });
+
+    it('should still reject genuinely invalid input types', () => {
+      const schema = enforce.shape({
+        name: enforce.isString(),
+        age: enforce.isNumber(),
+      });
+
+      const suite = create(() => {}, schema);
+
+      // isNumber (not isNumeric) — input IS number, string is invalid
+      // @ts-expect-error - isNumber() does not accept string input
+      const result = suite.run({ name: 'Bob', age: '30' });
+      expect(result.hasErrors('age')).toBe(true);
+    });
+  });
+
+  describe('result.types carries schema type information', () => {
+    it('should have types defined when schema is used', () => {
+      const schema = enforce.shape({
+        value: enforce.isNumeric().toNumber(),
+      });
+      const suite = create(data => {
+        test('value', () => {
+          enforce(data.value).isNumber();
+        });
+      }, schema);
+
+      const result = suite.run({ value: '99' });
+
+      // types is defined (not undefined) when schema is present
+      expect(result.types).toBeDefined();
+      expect(result.types?.output).toEqual({ value: 99 });
+      // types.input also holds the parsed data at runtime
+      expect(result.types?.input).toEqual({ value: 99 });
+    });
+
+    it('should have matching input and output when no parsers are used', () => {
+      const schema = enforce.shape({
+        name: enforce.isString(),
+        count: enforce.isNumber(),
+      });
+      const suite = create(data => {
+        test('name', () => {
+          enforce(data.name).isNotBlank();
+        });
+      }, schema);
+
+      const result = suite.run({ name: 'test', count: 5 });
+
+      expect(result.types?.input).toEqual({ name: 'test', count: 5 });
+      expect(result.types?.output).toEqual({ name: 'test', count: 5 });
+    });
+  });
+
+  describe('Focused runs with parser schemas', () => {
+    it('should accept partial input matching the focused field types', () => {
+      const schema = enforce.shape({
+        username: enforce.isString().trim().toLower(),
+        score: enforce.isNumeric().toNumber(),
+      });
+
+      const suite = create(data => {
+        test('score', () => {
+          enforce(data.score).isNumber();
+        });
+        test('username', () => {
+          enforce(data.username).isNotBlank();
+        });
+      }, schema);
+
+      // Focus on score — passing string '88' is valid because isNumeric accepts string | number
+      const result = suite.focus({ only: 'score' }).run({ score: '88' });
+      expect(result.hasErrors('score')).toBe(false);
+    });
+
+    it('should cumulatively merge parsed values across focused runs', () => {
+      const schema = enforce.shape({
+        a: enforce.isString().trim(),
+        b: enforce.isNumeric().toNumber(),
+      });
+
+      const suite = create(data => {
+        test('a', () => {
+          enforce(data.a).isNotBlank();
+        });
+        test('b', () => {
+          enforce(data.b).isNumber();
+        });
+      }, schema);
+
+      const r1 = suite.focus({ only: 'a' }).run({ a: '  x  ' });
+      expect(r1.run.data.parsed).toEqual({ a: 'x' });
+
+      const r2 = suite.focus({ only: 'b' }).run({ b: '7' });
+      expect(r2.run.data.parsed).toEqual({ a: 'x', b: 7 });
+    });
+  });
+
+  describe('n4s RuleInstance type-level contract', () => {
+    it('should expose correct input and output on ~standard.types', () => {
+      const rule = enforce.isNumeric().toNumber();
+      const types = rule['~standard'].types;
+
+      // The types property should exist (not optional)
+      expect(types).toBeDefined();
+      expect(types).toHaveProperty('input');
+      expect(types).toHaveProperty('output');
+    });
+
+    it('should distinguish input from output in shape schemas', () => {
+      const schema = enforce.shape({
+        x: enforce.isNumeric().toNumber(),
+      });
+      const types = schema['~standard'].types;
+      expect(types).toBeDefined();
+    });
+
+    it('should produce correct parsed value from parse()', () => {
+      const rule = enforce.isNumeric().toNumber();
+      expect(rule.parse('42')).toBe(42);
+      expect(rule.parse(42)).toBe(42);
+    });
+
+    it('should accept input type in test()', () => {
+      const rule = enforce.isNumeric().toNumber();
+      expect(rule.test('100')).toBe(true);
+      expect(rule.test(100)).toBe(true);
+    });
+
+    it('should produce correct shape parse with coercion', () => {
+      const schema = enforce.shape({
+        name: enforce.isString().trim().toUpper(),
+        score: enforce.isNumeric().toNumber(),
+      });
+
+      const parsed = schema.parse({ name: '  hello  ', score: '7' });
+      expect(parsed).toEqual({ name: 'HELLO', score: 7 });
     });
   });
 });

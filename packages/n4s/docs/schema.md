@@ -49,8 +49,24 @@ When a suite is created with a schema:
 - If `schema.parse` exists, it is used first.
 - On parse throw, Vest falls back to `schema.run` for rich path/message reporting.
 - The suite callback receives parsed data.
-- `SuiteResult.value` and `types.output` are parsed output.
-- `types.input` remains the original input.
+- `SuiteResult.value` and `types.output` are the parsed output.
+- `types.input` and `types.output` are typed from the schema's `~standard.types`.
+
+## Type-level input vs output distinction
+
+Parser chains produce `RuleInstance<T, [Args]>` where `Args[0]` is the input type and `T` is the
+output type. For example, `enforce.isNumeric().toNumber()` produces `RuleInstance<number, [string | number]>`:
+
+- Input type (`Args[0]`): `string | number` — what `suite.run()` accepts.
+- Output type (`T`): `number` — what the suite callback receives and what `result.value` contains.
+
+This distinction is preserved through `~standard.types.input` and `~standard.types.output` on each
+`RuleInstance`, and `InferSchemaData<S>` / `InferSchemaOutput<S>` extract the correct side.
+
+The `types` property on `RuleInstance`'s `~standard` declaration is intersected as required (not
+optional as in the base `StandardSchemaV1.Props`) so that TypeScript's conditional type inference
+can reliably match `{ '~standard': { types: { input: infer I } } }` and extract the input type
+separately from the output type.
 
 ## Complexity notes
 

@@ -7,8 +7,8 @@ import { RuleRunReturn } from './RuleRunReturn';
  * RuleInstances support chaining and can be reused across multiple validations.
  * Implements StandardSchemaV1 for interoperability with other schema libraries.
  *
- * @template T - The type of value this rule validates
- * @template Args - The argument types for this rule (first arg is always the value)
+ * @template T - The output type this rule produces (may differ from input when parsers are used)
+ * @template Args - The argument types for this rule (Args[0] is the input type)
  *
  * @example
  * ```typescript
@@ -44,8 +44,17 @@ export class RuleInstance<T, Args extends any[] = any[]> {
   // Type-only declaration for parse helper that throws on issues
   parse!: (...args: Args) => T;
 
-  // Type-only declaration for StandardSchema property
-  '~standard'!: StandardSchemaV1.Props<Args[0], T>;
+  // Type-only declaration for StandardSchema property.
+  // The intersection with `{ readonly types: ... }` narrows `types` from optional
+  // (as declared in StandardSchemaV1.Props) to required. This is safe because
+  // RuleInstance.create() always sets `types` at runtime, and it enables
+  // TypeScript's conditional type inference in `InferSchemaData<S>` and
+  // `InferSchemaOutput<S>` to correctly extract `input` (Args[0]) vs `output` (T)
+  // — which is critical for parser chains where input and output types differ
+  // (e.g., isNumeric().toNumber(): input = string | number, output = number).
+  '~standard'!: StandardSchemaV1.Props<Args[0], T> & {
+    readonly types: StandardSchemaV1.Types<Args[0], T>;
+  };
 
   private constructor() {}
 

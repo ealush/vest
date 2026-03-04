@@ -71,7 +71,7 @@ const schemaEvaluators = adaptDynamicRules<
 const schemaAttacher =
   (ruleFn: (schema: any) => RuleInstance<any, [any]>) => (schema: any) => {
     const rule = ruleFn(schema);
-    (rule as any).__schema = schema;
+    rule.__schema = schema;
     return rule;
   };
 

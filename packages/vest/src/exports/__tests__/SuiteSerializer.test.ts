@@ -27,33 +27,76 @@ describe('SuiteSerializer', () => {
     expect(serialized).toMatchSnapshot();
   });
 
-  it('should strip message from passing tests only', () => {
+  it('should only serialize failing and warning messages', async () => {
+    const untestedMessage = 'untested_message_should_not_serialize';
+    const pendingMessage = 'pending_message_should_not_serialize';
+    const passingMessage = 'passing_message_should_not_serialize';
+    const implicitPassingMessage =
+      'implicit_passing_message_should_not_serialize';
+    const failedMessage = 'failed_message_should_serialize';
+    const warningMessage = 'warning_message_should_serialize';
+    const implicitFailingMessage = 'implicit_failing_message_should_serialize';
+    const asyncFailingMessage = 'async_failing_message_should_serialize';
+
     const suite = vest.create(() => {
-      vest.test('passing_field', 'passing_field_message', () => true);
-      vest.test('failing_field', 'failing_field_message', () => false);
+      vest.skipWhen(true, () => {
+        vest.test('untested_field', untestedMessage, () => false);
+      });
+
+      vest.test('pending_field', pendingMessage, async () => {
+        await new Promise(resolve => setTimeout(resolve, 15));
+      });
+
+      vest.test('passing_field', passingMessage, () => true);
+
+      vest.test('implicit_passing_field', () => {
+        vest.enforce('Vest').message(implicitPassingMessage).isNotBlank();
+      });
+
+      vest.test('failed_field', failedMessage, () => false);
+
+      vest.test('warning_field', warningMessage, () => {
+        vest.warn();
+        return false;
+      });
+
+      vest.test('implicit_failing_field', () => {
+        vest.enforce('').message(implicitFailingMessage).isNotBlank();
+      });
+
+      vest.test('async_failing_field', async () => {
+        await Promise.reject(asyncFailingMessage);
+      });
     });
 
-    suite.run();
+    const runPromise = suite.run();
 
-    const serialized = SuiteSerializer.serialize(suite);
-    const parsed = SuiteSerializer.deserialize(serialized);
+    const serializedWhilePending = SuiteSerializer.serialize(suite);
 
-    expect(parsed.children).toBeDefined();
+    expect(serializedWhilePending).not.toContain(untestedMessage);
+    expect(serializedWhilePending).not.toContain(pendingMessage);
+    expect(serializedWhilePending).not.toContain(passingMessage);
+    expect(serializedWhilePending).not.toContain(implicitPassingMessage);
 
-    const testChildren = parsed.children?.filter(child => child.data.fieldName);
-    expect(testChildren).toHaveLength(2);
+    expect(serializedWhilePending).toContain(failedMessage);
+    expect(serializedWhilePending).toContain(warningMessage);
+    expect(serializedWhilePending).toContain(implicitFailingMessage);
 
-    const passingTest = testChildren?.find(
-      child => child.data.fieldName === 'passing_field',
-    );
-    const failingTest = testChildren?.find(
-      child => child.data.fieldName === 'failing_field',
-    );
+    expect(serializedWhilePending).not.toContain(asyncFailingMessage);
 
-    expect(passingTest).toBeDefined();
-    expect(failingTest).toBeDefined();
-    expect(passingTest?.data).not.toHaveProperty('message');
-    expect(failingTest?.data.message).toBe('failing_field_message');
+    await runPromise;
+
+    const serializedAfterDone = SuiteSerializer.serialize(suite);
+
+    expect(serializedAfterDone).not.toContain(untestedMessage);
+    expect(serializedAfterDone).not.toContain(pendingMessage);
+    expect(serializedAfterDone).not.toContain(passingMessage);
+    expect(serializedAfterDone).not.toContain(implicitPassingMessage);
+
+    expect(serializedAfterDone).toContain(failedMessage);
+    expect(serializedAfterDone).toContain(warningMessage);
+    expect(serializedAfterDone).toContain(implicitFailingMessage);
+    expect(serializedAfterDone).toContain(asyncFailingMessage);
   });
 });
 

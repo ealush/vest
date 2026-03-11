@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `"[{"0":"1","2":"Suite","3":{},"6":[{"0":"1","2":"4","3":{"5":"field_1","testStatus":"FAILED","message":"field_1_message"}},{"0":"1","2":"4","3":{"5":"field_2"}},{"0":"1","2":"Group","3":{"groupName":"group_1"},"6":[{"0":"1","2":"4","3":{"5":"7"}},{"0":"1","2":"4","3":{"5":"7"}},{"0":"1","2":"4","3":{"5":"field_4"}}]},{"0":"1","2":"SkipWhen","3":{},"6":[{"0":"1","2":"4","3":{"5":"field_5"}}]},{"0":"1","2":"Reorderable","3":{},"allowReorder":true}]},{"0":"status","1":"DONE","2":"$type","3":"data","4":"Test","5":"fieldName","6":"children","7":"field_3"}]"`;
+exports[`SuiteSerializer > should produce a valid serialized dump 1`] = `"[{"0":"1","2":"Suite","3":{},"6":[{"0":"1","2":"4","3":{"5":"field_1","testStatus":"FAILED","message":"field_1_message"}},{"0":"1","2":"4","3":{"5":"field_2"}},{"0":"1","2":"Group","3":{"groupName":"group_1"},"6":[{"0":"1","2":"4","3":{"5":"7"}},{"0":"1","2":"4","3":{"5":"7"}},{"0":"1","2":"4","3":{"5":"field_4"}}]},{"0":"1","2":"SkipWhen","6":[{"0":"1","2":"4","3":{"5":"field_5"}}]},{"0":"1","2":"Reorderable","allowReorder":true}]},{"0":"status","1":"DONE","2":"$type","3":"data","4":"Test","5":"fieldName","6":"children","7":"field_3"}]"`;
 
 exports[`suite.resume > Running the suite after resuming > sanity - suite should run as expected > should have the correct state after resuming 1`] = `
 {

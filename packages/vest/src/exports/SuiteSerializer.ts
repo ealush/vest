@@ -16,7 +16,7 @@ type Dumpable = {
 
 export class SuiteSerializer {
   static serialize(suite: Dumpable) {
-    const dump = stripMessageFromPassingTests(suite.dump());
+    const dump = stripMessagesExceptFailedAndWarning(suite.dump());
 
     return IsolateSerializer.serialize(dump, suiteSerializerReplacer);
   }
@@ -50,7 +50,7 @@ export class SuiteSerializer {
   }
 }
 
-function stripMessageFromPassingTests<T>(node: T): T {
+function stripMessagesExceptFailedAndWarning<T>(node: T): T {
   const visited = new WeakMap<object, any>();
 
   return strip(node, visited);
@@ -85,6 +85,10 @@ function strip<T>(node: T, visited: WeakMap<object, any>): T {
   visited.set(node, clonedNode);
 
   for (const [key, value] of Object.entries(root)) {
+    if (SkipTraversalKeys.has(key)) {
+      continue;
+    }
+
     if (!shouldKeepMessage && key === 'message') {
       continue;
     }
@@ -115,12 +119,6 @@ function getAllowedStatus(value: any): any {
   return AllowedStatuses.has(value) ? value : undefined;
 }
 
-const AllowedStatuses = new Set([
-  TestStatus.FAILED,
-  TestStatus.PASSING,
-  TestStatus.WARNING,
-]);
-
 const DisallowedKeys = new Set([
   'focusMode',
   'match',
@@ -128,4 +126,17 @@ const DisallowedKeys = new Set([
   'output',
   'severity',
   'tests',
+]);
+
+const SkipTraversalKeys = new Set([
+  'parent',
+  'abortController',
+  'keys',
+  ...DisallowedKeys,
+]);
+
+const AllowedStatuses = new Set([
+  TestStatus.FAILED,
+  TestStatus.PASSING,
+  TestStatus.WARNING,
 ]);

@@ -1,6 +1,7 @@
 import { describe, it, expect, expectTypeOf } from 'vitest';
 
 import { SuiteSerializer } from '../SuiteSerializer';
+import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
 import * as vest from '../../vest';
 
 describe('SuiteSerializer', () => {
@@ -31,6 +32,9 @@ describe('SuiteSerializer', () => {
     const untestedMessage = 'untested_message_should_not_serialize';
     const pendingMessage = 'pending_message_should_not_serialize';
     const passingMessage = 'passing_message_should_not_serialize';
+    const skippedMessage = 'skipped_message_should_not_serialize';
+    const omittedMessage = 'omitted_message_should_not_serialize';
+    const canceledMessage = 'canceled_message_should_not_serialize';
     const implicitPassingMessage =
       'implicit_passing_message_should_not_serialize';
     const failedMessage = 'failed_message_should_serialize';
@@ -38,7 +42,11 @@ describe('SuiteSerializer', () => {
     const implicitFailingMessage = 'implicit_failing_message_should_serialize';
     const asyncFailingMessage = 'async_failing_message_should_serialize';
 
+    let runCount = 0;
+
     const suite = vest.create(() => {
+      runCount++;
+
       vest.skipWhen(true, () => {
         vest.test('untested_field', untestedMessage, () => false);
       });
@@ -48,6 +56,25 @@ describe('SuiteSerializer', () => {
       });
 
       vest.test('passing_field', passingMessage, () => true);
+
+      vest.skip('skipped_field');
+      vest.test('skipped_field', skippedMessage, () => false);
+
+      vest.optional('omitted_field');
+      vest.skip('omitted_field');
+      vest.test('omitted_field', omittedMessage, () => false);
+
+      const canceledTest = vest.test(
+        'canceled_field',
+        canceledMessage,
+        async () => {
+          await new Promise(resolve => setTimeout(resolve, 15));
+        },
+      );
+
+      if (runCount === 1) {
+        VestTest.cancel(canceledTest);
+      }
 
       vest.test('implicit_passing_field', () => {
         vest.enforce('Vest').message(implicitPassingMessage).isNotBlank();
@@ -69,34 +96,54 @@ describe('SuiteSerializer', () => {
       });
     });
 
+    const checkMessages = (
+      serialized: string,
+      expected: Record<string, boolean>,
+    ) => {
+      for (const [message, shouldBePresent] of Object.entries(expected)) {
+        if (shouldBePresent) {
+          expect(serialized).toContain(message);
+        } else {
+          expect(serialized).not.toContain(message);
+        }
+      }
+    };
+
     const runPromise = suite.run();
 
     const serializedWhilePending = SuiteSerializer.serialize(suite);
 
-    expect(serializedWhilePending).not.toContain(untestedMessage);
-    expect(serializedWhilePending).not.toContain(pendingMessage);
-    expect(serializedWhilePending).not.toContain(passingMessage);
-    expect(serializedWhilePending).not.toContain(implicitPassingMessage);
-
-    expect(serializedWhilePending).toContain(failedMessage);
-    expect(serializedWhilePending).toContain(warningMessage);
-    expect(serializedWhilePending).toContain(implicitFailingMessage);
-
-    expect(serializedWhilePending).not.toContain(asyncFailingMessage);
+    checkMessages(serializedWhilePending, {
+      [untestedMessage]: false,
+      [pendingMessage]: false,
+      [passingMessage]: false,
+      [skippedMessage]: false,
+      [omittedMessage]: false,
+      [canceledMessage]: false,
+      [implicitPassingMessage]: false,
+      [failedMessage]: true,
+      [warningMessage]: true,
+      [implicitFailingMessage]: true,
+      [asyncFailingMessage]: false,
+    });
 
     await runPromise;
 
     const serializedAfterDone = SuiteSerializer.serialize(suite);
 
-    expect(serializedAfterDone).not.toContain(untestedMessage);
-    expect(serializedAfterDone).not.toContain(pendingMessage);
-    expect(serializedAfterDone).not.toContain(passingMessage);
-    expect(serializedAfterDone).not.toContain(implicitPassingMessage);
-
-    expect(serializedAfterDone).toContain(failedMessage);
-    expect(serializedAfterDone).toContain(warningMessage);
-    expect(serializedAfterDone).toContain(implicitFailingMessage);
-    expect(serializedAfterDone).toContain(asyncFailingMessage);
+    checkMessages(serializedAfterDone, {
+      [untestedMessage]: false,
+      [pendingMessage]: false,
+      [passingMessage]: false,
+      [skippedMessage]: false,
+      [omittedMessage]: false,
+      [canceledMessage]: false,
+      [implicitPassingMessage]: false,
+      [failedMessage]: true,
+      [warningMessage]: true,
+      [implicitFailingMessage]: true,
+      [asyncFailingMessage]: true,
+    });
   });
 });
 

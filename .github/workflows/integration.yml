@@ -63,6 +63,6 @@ jobs:
       - name: Commit Benchmark Results
         run: |
           git config --global user.name "${{ secrets.GIT_NAME }}"
-          git config --global user.email "${{ secrets.EMAIL_ADDRESS }}"
+          git config --global --replace-all user.email "${{ secrets.EMAIL_ADDRESS }}"
           git add benchmark-results.md
           git commit -m "chore(benchmark): update benchmark results [skip ci]" || echo "No changes to commit"

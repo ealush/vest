@@ -22,14 +22,15 @@ function publishPackage({ tag, tagId, versionToPublish }: PublishData): void {
   }
 
   // High-signal logging so CI output clearly shows what we intend to publish.
-  logger.info(`🚀 Publishing package ${usePackage()}.
+  logger.info(`🚀 Publishing package ${packageName}.
     Version: ${versionToPublish}
     Tag Id: ${tagId}
     Tag: ${tag}`);
 
   // Respect branch policy. If publishing is not allowed, exit this step early.
   if (!shouldRelease(versionToPublish)) {
-    return logger.info(`❌  Not in release branch. Skipping publish.`);
+    logger.info(`❌  Not in release branch. Skipping publish.`);
+    return;
   }
 
   // Resolve the effective npm tag used for `npm publish`.
@@ -38,14 +39,15 @@ function publishPackage({ tag, tagId, versionToPublish }: PublishData): void {
   const publishTag = pickPublishTag(tag);
 
   // Build the command in tokenized form so optional parts can be omitted safely.
-  const command = genPublishCommand(publishTag);
+  const command = genPublishCommand(packageName, publishTag);
 
-  // Configure git and execute publish in one shell script. Git identity is needed
-  // for release side effects and consistency in CI environments.
+  // Configure git and execute publish. Publish execution must fail the release
+  // if it fails, so it is run as a separate command with default failure behavior.
   execCommandWithGitConfig(command);
 
-  // Clean up ephemeral local tags created during release flow.
-  clearTag(tag, tagId);
+  // In current flow, ephemeral local tags are created only when a dist-tag exists.
+  // Keep that assumption explicit via an intent flag.
+  clearTag({ isEphemeralTag: Boolean(tag), tagId });
 }
 
 export default publishPackage;
@@ -66,9 +68,15 @@ function pickPublishTag(tag?: string): string | undefined {
   return undefined;
 }
 
-function clearTag(tag?: string, tagId?: string): void {
-  // We only clean up if both pieces exist and represent an actual tag flow.
-  if (tag && tagId) {
+function clearTag({
+  isEphemeralTag,
+  tagId,
+}: {
+  isEphemeralTag: boolean;
+  tagId?: string;
+}): void {
+  // We only clean up tags that were created as ephemeral release artifacts.
+  if (isEphemeralTag && tagId) {
     // Local cleanup only. It should never fail the release step.
     exec(`git tag -d ${tagId} || echo "git tag not found. skipping."`, {
       exitOnFailure: false,
@@ -86,24 +94,19 @@ function execCommandWithGitConfig(command: Array<string | undefined>): void {
     Name "${GIT_NAME}"`,
   );
 
-  exec(
-    // `--replace-all` prevents failures when CI/global git config already has
-    // multiple user.email values.
-    `git config --global --replace-all user.email "${EMAIL_ADDRESS}"
-git config --global user.name "${GIT_NAME}"
-${joinTruthy(command, ' ')}`,
-    { exitOnFailure: false },
-  );
+  // `--replace-all` prevents failures when CI/global git config already has
+  // multiple user.email values.
+  exec(`git config --global --replace-all user.email "${EMAIL_ADDRESS}"`);
+  exec(`git config --global user.name "${GIT_NAME}"`);
+
+  // Publish runs with default error handling so failures fail CI.
+  exec(joinTruthy(command, ' '));
 }
 
-function genPublishCommand(tag?: string): Array<string | undefined> {
-  const packageName = usePackage();
-
-  // Defensive check: command generation requires package context.
-  if (!packageName) {
-    throw new Error('Package context is required for publishing.');
-  }
-
+function genPublishCommand(
+  packageName: string,
+  tag?: string,
+): Array<string | undefined> {
   // Use npm directly (not yarn npm publish) so OIDC trusted publishing works
   // correctly in GitHub Actions.
   return [
@@ -116,6 +119,8 @@ function genPublishCommand(tag?: string): Array<string | undefined> {
 }
 
 function shouldRelease(_versionToUse: string): boolean {
-  // Branch gate is centralized in taggedBranch utilities.
-  return taggedBranch.branchAllowsRelease;
+  // Release-keep-version is a valid publish path and must not be blocked.
+  return (
+    taggedBranch.branchAllowsRelease || taggedBranch.isReleaseKeepVersionBranch
+  );
 }

@@ -6,6 +6,7 @@ import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { Severity } from './Severity';
 import { SummaryFailure } from './SummaryFailure';
 import { SuiteSelectors } from './selectors/suiteSelectors';
+import { SuiteModifiers } from '../suite/SuiteTypes';
 
 export class SummaryBase {
   public errorCount = 0;
@@ -30,6 +31,7 @@ export class SuiteSummary<
       parsed: Partial<InferSchemaOutput<S>> | undefined;
     };
     time: Date;
+    focus?: SuiteModifiers<F, G>;
   };
   public valid: Nullable<boolean> = null;
 

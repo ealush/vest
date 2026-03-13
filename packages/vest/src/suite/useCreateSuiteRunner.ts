@@ -51,10 +51,10 @@ export function useCreateSuiteRunner<
   S extends TSchema = undefined,
 >(
   suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F>,
+  modifiers: SuiteModifiers<F, G>,
   schema?: S,
 ) {
-  const transformedModifiers = useTransformedModifiers(modifiers);
+  const transformedModifiers = useTransformedModifiers<F, G>(modifiers);
 
   return function runSuite(
     ...args: S extends undefined
@@ -100,6 +100,7 @@ export function useCreateSuiteRunner<
             runData,
             runTime,
             mergedParsedData,
+            snapshotFocus(transformedModifiers),
           );
 
           if (!result.isPending()) {
@@ -167,7 +168,7 @@ function useRunSuiteCallback<
   D = unknown,
 >(params: {
   args: any[];
-  modifiers: ReturnType<typeof useTransformedModifiers<F>>;
+  modifiers: ReturnType<typeof useTransformedModifiers<F, G>>;
   schema: S | undefined;
   schemaRunResult?: SchemaRunResult[];
   suiteCallback: SuiteCallbackWithSchema<S, T>;
@@ -205,14 +206,51 @@ function useRunSuiteCallback<
 /**
  * Normalizes user-provided modifiers into deterministic sets for O(1) membership checks.
  */
-function useTransformedModifiers<F extends TFieldName>(
-  modifiers: SuiteModifiers<F>,
+function useTransformedModifiers<F extends TFieldName, G extends TGroupName>(
+  modifiers: SuiteModifiers<F, G>,
 ) {
   return {
     ...modifiers,
     onlyGroup: new Set(modifiers.onlyGroup ? asArray(modifiers.onlyGroup) : []),
     skipGroup: new Set(modifiers.skipGroup ? asArray(modifiers.skipGroup) : []),
   };
+}
+
+/**
+ * Normalizes internal focus Sets back into the external Array representation
+ * and freezes the structure explicitly for immutability in the results.
+ */
+function snapshotFocus<F extends TFieldName, G extends TGroupName>(
+  modifiers: ReturnType<typeof useTransformedModifiers<F, G>>,
+): SuiteModifiers<F, G> {
+  return freezeAssign<SuiteModifiers<F, G>>(
+    {},
+    snapshotField(modifiers, 'only'),
+    snapshotField(modifiers, 'skip'),
+    snapshotGroup(modifiers, 'onlyGroup'),
+    snapshotGroup(modifiers, 'skipGroup'),
+  );
+}
+
+function snapshotField<F extends TFieldName, G extends TGroupName>(
+  modifiers: ReturnType<typeof useTransformedModifiers<F, G>>,
+  key: 'only' | 'skip',
+): Partial<SuiteModifiers<F, G>> {
+  const original = modifiers[key];
+
+  if (!original) {
+    return {};
+  }
+  const value = asArray(original);
+  return value.length > 0 ? { [key]: Object.freeze([...value]) } : {};
+}
+
+function snapshotGroup<F extends TFieldName, G extends TGroupName>(
+  modifiers: ReturnType<typeof useTransformedModifiers<F, G>>,
+  key: 'onlyGroup' | 'skipGroup',
+): Partial<SuiteModifiers<F, G>> {
+  const value = modifiers[key];
+  return value.size > 0 ? { [key]: Object.freeze([...value]) } : {};
 }
 
 /**
@@ -461,6 +499,7 @@ function bindSuiteResultMethods<
         raw: runData,
         parsed: suiteResult.run.data.parsed,
       }),
+      focus: suiteResult.run.focus,
       time: runTime,
     }),
     writable: true,

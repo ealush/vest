@@ -24,6 +24,104 @@ describe('suite.focus: only', () => {
     });
   });
 
+  describe('run.focus property', () => {
+    describe('focus object parameters', () => {
+      it('should reflect the only property when provided', () => {
+        const suite = vest.create(() => {});
+        const res = suite.focus({ only: ['field_1'] }).run();
+
+        expect(res.run.focus?.only).toEqual(['field_1']);
+      });
+
+      it('should reflect the skip property when provided', () => {
+        const suite = vest.create(() => {});
+        const res = suite.focus({ skip: ['field_2'] }).run();
+
+        expect(res.run.focus?.skip).toEqual(['field_2']);
+      });
+
+      it('should reflect the skipGroup property when provided', () => {
+        const suite = vest.create(() => {});
+        const res = suite.focus({ skipGroup: 'groupA' }).run();
+
+        expect(res.run.focus?.skipGroup).toEqual(['groupA']);
+      });
+
+      it('should reflect the onlyGroup property when provided', () => {
+        const suite = vest.create(() => {});
+        const res = suite.focus({ onlyGroup: 'groupB' }).run();
+
+        expect(res.run.focus?.onlyGroup).toEqual(['groupB']);
+      });
+    });
+
+    describe('focus methods', () => {
+      it('should reflect a .only() call deeply within run.focus', () => {
+        const suite = vest.create(() => {});
+        const res = suite.only('field_3').run();
+
+        expect(res.run.focus?.only).toEqual(['field_3']);
+      });
+
+      it('should reflect a .skip() call deeply within run.focus', () => {
+        const suite = vest.create(() => {});
+
+        // We capture focus via focus({ skip: ... }) because
+        // there's currently no top-level trailing .skip syntax exposed
+        const res = suite.focus({ skip: 'field_4' }).run();
+
+        expect(res.run.focus?.skip).toEqual(['field_4']);
+      });
+    });
+
+    describe('focus array parameters', () => {
+      it('should reflect the onlyGroup property when an array is provided', () => {
+        const suite = vest.create(() => {});
+        const res = suite.focus({ onlyGroup: ['groupC', 'groupD'] }).run();
+
+        expect(res.run.focus?.onlyGroup).toEqual(['groupC', 'groupD']);
+      });
+
+      it('should reflect the skipGroup property when an array is provided', () => {
+        const suite = vest.create(() => {});
+        const res = suite.focus({ skipGroup: ['groupE', 'groupF'] }).run();
+
+        expect(res.run.focus?.skipGroup).toEqual(['groupE', 'groupF']);
+      });
+    });
+
+    describe('consecutive runs', () => {
+      it('should not persist focus data from previous runs', () => {
+        const suite = vest.create(() => {});
+
+        // First run with focus
+        suite.only('field_1').run();
+
+        // Second run without focus
+        const res2 = suite.run();
+
+        // Should be an empty object because the second run had no focus modifiers
+        expect(res2.run.focus).toEqual({});
+      });
+
+      it('should not mutate previous run results with new focus data', () => {
+        const suite = vest.create(() => {});
+
+        // First run with focus on field_1
+        const res1 = suite.only('field_1').run();
+
+        // Second run with focus on field_2
+        const res2 = suite.only('field_2').run();
+
+        // Check that the first result was not mutated
+        expect(res1.run.focus?.only).toEqual(['field_1']);
+
+        // Check that the second result has the new focus
+        expect(res2.run.focus?.only).toEqual(['field_2']);
+      });
+    });
+  });
+
   describe('behavior', () => {
     it('should focus on the specified field when a single field is provided', () => {
       const suite = vest.create(() => {

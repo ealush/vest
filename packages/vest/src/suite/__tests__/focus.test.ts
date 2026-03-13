@@ -89,6 +89,37 @@ describe('suite.focus: only', () => {
         expect(res.run.focus?.skipGroup).toEqual(['groupE', 'groupF']);
       });
     });
+
+    describe('consecutive runs', () => {
+      it('should not persist focus data from previous runs', () => {
+        const suite = vest.create(() => {});
+
+        // First run with focus
+        suite.only('field_1').run();
+
+        // Second run without focus
+        const res2 = suite.run();
+
+        // Should be undefined because the second run had no focus modifiers
+        expect(res2.run.focus).toEqual({});
+      });
+
+      it('should not mutate previous run results with new focus data', () => {
+        const suite = vest.create(() => {});
+
+        // First run with focus on field_1
+        const res1 = suite.only('field_1').run();
+
+        // Second run with focus on field_2
+        const res2 = suite.only('field_2').run();
+
+        // Check that the first result was not mutated
+        expect(res1.run.focus?.only).toEqual(['field_1']);
+
+        // Check that the second result has the new focus
+        expect(res2.run.focus?.only).toEqual(['field_2']);
+      });
+    });
   });
 
   describe('behavior', () => {

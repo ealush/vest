@@ -32,7 +32,6 @@ type CTXType = {
   suiteParams: any[];
   currentTest?: TIsolateTest;
   skipped?: boolean;
-  omitted?: boolean;
   schema: TSchema;
   modifiers: TInternalModifiers<TFieldName>;
 };
@@ -59,10 +58,6 @@ export function useMode() {
 
 export function useSkipped() {
   return SuiteContext.useX().skipped ?? false;
-}
-
-export function useOmitted() {
-  return SuiteContext.useX().omitted ?? false;
 }
 
 export function useSuiteParams() {

@@ -223,26 +223,35 @@ function useTransformedModifiers<F extends TFieldName, G extends TGroupName>(
 function snapshotFocus<F extends TFieldName, G extends TGroupName>(
   modifiers: ReturnType<typeof useTransformedModifiers<F, G>>,
 ): SuiteModifiers<F, G> {
-  return Object.freeze({
-    ...(modifiers.only && {
-      only: Object.freeze([...asArray(modifiers.only)]) as SuiteModifiers<
-        F,
-        G
-      >['only'],
-    }),
-    ...(modifiers.skip && {
-      skip: Object.freeze([...asArray(modifiers.skip)]) as SuiteModifiers<
-        F,
-        G
-      >['skip'],
-    }),
-    ...(modifiers.onlyGroup.size > 0 && {
-      onlyGroup: Object.freeze([...modifiers.onlyGroup]) as G[],
-    }),
-    ...(modifiers.skipGroup.size > 0 && {
-      skipGroup: Object.freeze([...modifiers.skipGroup]) as G[],
-    }),
-  });
+  return freezeAssign<SuiteModifiers<F, G>>(
+    {},
+    modifiers.only
+      ? {
+          only: Object.freeze([...asArray(modifiers.only)]) as SuiteModifiers<
+            F,
+            G
+          >['only'],
+        }
+      : {},
+    modifiers.skip
+      ? {
+          skip: Object.freeze([...asArray(modifiers.skip)]) as SuiteModifiers<
+            F,
+            G
+          >['skip'],
+        }
+      : {},
+    modifiers.onlyGroup.size > 0
+      ? {
+          onlyGroup: Object.freeze([...modifiers.onlyGroup]) as G[],
+        }
+      : {},
+    modifiers.skipGroup.size > 0
+      ? {
+          skipGroup: Object.freeze([...modifiers.skipGroup]) as G[],
+        }
+      : {},
+  );
 }
 
 /**

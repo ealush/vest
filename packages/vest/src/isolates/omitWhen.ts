@@ -2,7 +2,6 @@ import type { CB } from 'vest-utils';
 import { dynamicValue } from 'vest-utils';
 import { TIsolate } from 'vestjs-runtime';
 
-import { SuiteContext, useOmitted } from '../core/context/SuiteContext';
 import {
   createVestIsolate,
   VestIsolateType,
@@ -13,6 +12,9 @@ import { LazyDraft } from '../suiteResult/selectors/LazyDraft';
 
 /**
  * Conditionally omits tests from the suite.
+ *
+ * When the condition is met, the tests within the callback will be omitted
+ * and will not be executed. The callback itself will also be skipped.
  *
  * @example
  *
@@ -28,22 +30,14 @@ export function omitWhen<F extends TFieldName, G extends TGroupName>(
   return createVestIsolate(
     VestIsolateType.OmitWhen,
     () => {
-      SuiteContext.run(
-        {
-          omitted:
-            useWithinActiveOmitWhen() ||
-            dynamicValue(conditional, LazyDraft<F, G>()),
-        },
-        callback,
-      );
+      const isOmitted = dynamicValue(conditional, LazyDraft<F, G>());
+
+      if (!isOmitted) {
+        callback();
+      }
     },
     {
       tests: [],
     },
   );
-}
-
-// Checks that we're currently in an active omitWhen block
-export function useWithinActiveOmitWhen(): boolean {
-  return useOmitted();
 }

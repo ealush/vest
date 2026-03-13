@@ -3,7 +3,6 @@ import { makeResult, Result } from 'vest-utils';
 import { useIsExcluded } from '../../../hooks/focused/useIsExcluded';
 import { useShouldSkipBasedOnMode } from '../../../hooks/optional/mode';
 import { useIsOptionalFieldApplied } from '../../../hooks/optional/optional';
-import { useWithinActiveOmitWhen } from '../../../isolates/omitWhen';
 import { useIsExcludedIndividually } from '../../../isolates/skipWhen';
 import { TFieldName } from '../../../suiteResult/SuiteResultTypes';
 import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
@@ -37,9 +36,7 @@ export function useVerifyTestRun(
 }
 
 function useShouldOmit(fieldName: TFieldName): Result<boolean> {
-  return makeResult.Ok(
-    useWithinActiveOmitWhen() || useIsOptionalFieldApplied(fieldName).unwrap(),
-  );
+  return makeResult.Ok(useIsOptionalFieldApplied(fieldName).unwrap());
 }
 
 function skipTestAndReturn(testNode: TIsolateTest): Result<TIsolateTest> {

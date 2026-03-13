@@ -397,7 +397,7 @@ describe('Integration: byGroup selectors', () => {
       const result = suite.run(true);
       expect(result.hasErrorsByGroup('omit_group', 'field_1')).toBe(false);
       expect(result.hasErrorsByGroup('omit_group', 'field_2')).toBe(true);
-      expect(result.isValidByGroup('omit_group', 'field_1')).toBe(true);
+      expect(result.isValidByGroup('omit_group', 'field_1')).toBe(false);
     });
 
     it('should run the test and report its errors when omitWhen(false)', () => {

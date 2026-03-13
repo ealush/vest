@@ -104,9 +104,9 @@ describe('omitWhen', () => {
         suite.run(omitConditional, 'field_2');
         expect(suite.get().tests.field_2.testCount).toBe(1);
         suite.run(omitConditional, 'field_3');
-        expect(suite.get().tests.field_3.testCount).toBe(0);
+        expect(suite.get().tests.field_3?.testCount).toBeUndefined();
         suite.run(omitConditional, 'field_4');
-        expect(suite.get().tests.field_4.testCount).toBe(0);
+        expect(suite.get().tests.field_4?.testCount).toBeUndefined();
         expect(cb1).toHaveBeenCalledTimes(1);
         expect(cb2).toHaveBeenCalledTimes(1);
         expect(cb3).toHaveBeenCalledTimes(0);
@@ -131,8 +131,8 @@ describe('omitWhen', () => {
         suite.run(omitConditional, 'field_2');
         expect(suite.get().tests.field_1.testCount).toBe(1);
         expect(suite.get().tests.field_2.testCount).toBe(1);
-        expect(suite.get().tests.field_3.testCount).toBe(0);
-        expect(suite.get().tests.field_4.testCount).toBe(0);
+        expect(suite.get().tests.field_3?.testCount).toBeUndefined();
+        expect(suite.get().tests.field_4?.testCount).toBeUndefined();
 
         expect(suite.get().isValid()).toBe(true);
       });
@@ -141,8 +141,8 @@ describe('omitWhen', () => {
         suite.run(omitConditional);
         expect(suite.get().tests.field_1.testCount).toBe(1);
         expect(suite.get().tests.field_2.testCount).toBe(1);
-        expect(suite.get().tests.field_3.testCount).toBe(0);
-        expect(suite.get().tests.field_4.testCount).toBe(0);
+        expect(suite.get().tests.field_3?.testCount).toBeUndefined();
+        expect(suite.get().tests.field_4?.testCount).toBeUndefined();
         expect(suite.get()).toMatchSnapshot();
       });
     });
@@ -162,7 +162,7 @@ describe('omitWhen', () => {
 
     it('should run fields that were previously omitted when changing to false', () => {
       suite.run(true, 'field_3');
-      expect(suite.get().tests.field_3.testCount).toBe(0);
+      expect(suite.get().tests.field_3?.testCount).toBeUndefined();
       expect(cb4).toHaveBeenCalledTimes(0);
       suite.run(false, 'field_3');
       expect(suite.get().tests.field_3.testCount).toBe(1);
@@ -246,6 +246,133 @@ describe('omitWhen', () => {
         .run();
       expect(res.isValid()).toBe(false);
       expect(res.isValid('f1')).toBe(false);
+    });
+  });
+
+  describe('stateful omitWhen', () => {
+    function setupStatefulSuite(isAsync = false) {
+      const cbs = [vi.fn(), vi.fn(), vi.fn(), vi.fn(), vi.fn()];
+      const testFn = (cb: () => void) => (isAsync ? async () => cb() : cb);
+
+      const suite = vest.create((shouldOmit: boolean) => {
+        vest.test('field_0', testFn(cbs[0]));
+        vest.test('field_1', testFn(cbs[1]));
+        vest.omitWhen(shouldOmit, () => {
+          vest.test('field_2', testFn(cbs[2]));
+          vest.test('field_3', testFn(cbs[3]));
+        });
+        vest.test('field_4', testFn(cbs[4]));
+      });
+
+      return { suite, cbs };
+    }
+
+    describe('sync tests', () => {
+      it('should omit previously run fields when changing to true without causing reorder issues', () => {
+        const { suite, cbs } = setupStatefulSuite();
+
+        suite.run(false);
+        expect(suite.get().tests.field_0.testCount).toBe(1);
+        expect(suite.get().tests.field_1.testCount).toBe(1);
+        expect(suite.get().tests.field_2.testCount).toBe(1);
+        expect(suite.get().tests.field_3.testCount).toBe(1);
+        expect(suite.get().tests.field_4.testCount).toBe(1);
+        cbs.forEach(cb => expect(cb).toHaveBeenCalledTimes(1));
+
+        suite.run(true);
+        expect(suite.get().tests.field_0.testCount).toBe(1);
+        expect(suite.get().tests.field_1.testCount).toBe(1);
+        expect(suite.get().tests.field_2?.testCount).toBeUndefined();
+        expect(suite.get().tests.field_3?.testCount).toBeUndefined();
+        expect(suite.get().tests.field_4.testCount).toBe(1);
+        expect(cbs[0]).toHaveBeenCalledTimes(2);
+        expect(cbs[1]).toHaveBeenCalledTimes(2);
+        expect(cbs[2]).toHaveBeenCalledTimes(1);
+        expect(cbs[3]).toHaveBeenCalledTimes(1);
+        expect(cbs[4]).toHaveBeenCalledTimes(2);
+      });
+
+      it('should run fields that were previously omitted when changing to false without causing reorder issues', () => {
+        const { suite, cbs } = setupStatefulSuite();
+
+        suite.run(true);
+        expect(suite.get().tests.field_0.testCount).toBe(1);
+        expect(suite.get().tests.field_1.testCount).toBe(1);
+        expect(suite.get().tests.field_2?.testCount).toBeUndefined();
+        expect(suite.get().tests.field_3?.testCount).toBeUndefined();
+        expect(suite.get().tests.field_4.testCount).toBe(1);
+        expect(cbs[0]).toHaveBeenCalledTimes(1);
+        expect(cbs[1]).toHaveBeenCalledTimes(1);
+        expect(cbs[2]).toHaveBeenCalledTimes(0);
+        expect(cbs[3]).toHaveBeenCalledTimes(0);
+        expect(cbs[4]).toHaveBeenCalledTimes(1);
+
+        suite.run(false);
+        expect(suite.get().tests.field_0.testCount).toBe(1);
+        expect(suite.get().tests.field_1.testCount).toBe(1);
+        expect(suite.get().tests.field_2.testCount).toBe(1);
+        expect(suite.get().tests.field_3.testCount).toBe(1);
+        expect(suite.get().tests.field_4.testCount).toBe(1);
+        expect(cbs[0]).toHaveBeenCalledTimes(2);
+        expect(cbs[1]).toHaveBeenCalledTimes(2);
+        expect(cbs[2]).toHaveBeenCalledTimes(1);
+        expect(cbs[3]).toHaveBeenCalledTimes(1);
+        expect(cbs[4]).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    describe('async tests', () => {
+      it('should omit previously run async tests when changing to true without causing reorder issues', async () => {
+        const { suite, cbs } = setupStatefulSuite(true);
+
+        await suite.run(false);
+        expect(suite.get().tests.field_0.testCount).toBe(1);
+        expect(suite.get().tests.field_1.testCount).toBe(1);
+        expect(suite.get().tests.field_2.testCount).toBe(1);
+        expect(suite.get().tests.field_3.testCount).toBe(1);
+        expect(suite.get().tests.field_4.testCount).toBe(1);
+        cbs.forEach(cb => expect(cb).toHaveBeenCalledTimes(1));
+
+        await suite.run(true);
+        expect(suite.get().tests.field_0.testCount).toBe(1);
+        expect(suite.get().tests.field_1.testCount).toBe(1);
+        expect(suite.get().tests.field_2?.testCount).toBeUndefined();
+        expect(suite.get().tests.field_3?.testCount).toBeUndefined();
+        expect(suite.get().tests.field_4.testCount).toBe(1);
+        expect(cbs[0]).toHaveBeenCalledTimes(2);
+        expect(cbs[1]).toHaveBeenCalledTimes(2);
+        expect(cbs[2]).toHaveBeenCalledTimes(1);
+        expect(cbs[3]).toHaveBeenCalledTimes(1);
+        expect(cbs[4]).toHaveBeenCalledTimes(2);
+      });
+
+      it('should run async tests that were previously omitted when changing to false without causing reorder issues', async () => {
+        const { suite, cbs } = setupStatefulSuite(true);
+
+        await suite.run(true);
+        expect(suite.get().tests.field_0.testCount).toBe(1);
+        expect(suite.get().tests.field_1.testCount).toBe(1);
+        expect(suite.get().tests.field_2?.testCount).toBeUndefined();
+        expect(suite.get().tests.field_3?.testCount).toBeUndefined();
+        expect(suite.get().tests.field_4.testCount).toBe(1);
+        expect(cbs[0]).toHaveBeenCalledTimes(1);
+        expect(cbs[1]).toHaveBeenCalledTimes(1);
+        expect(cbs[2]).toHaveBeenCalledTimes(0);
+        expect(cbs[3]).toHaveBeenCalledTimes(0);
+        expect(cbs[4]).toHaveBeenCalledTimes(1);
+
+        await suite.run(false);
+        expect(suite.get().tests.field_0.testCount).toBe(1);
+        expect(suite.get().tests.field_1.testCount).toBe(1);
+        expect(suite.get().tests.field_2.testCount).toBe(1);
+        expect(suite.get().tests.field_3.testCount).toBe(1);
+        expect(suite.get().tests.field_4.testCount).toBe(1);
+        expect(cbs[0]).toHaveBeenCalledTimes(2);
+        expect(cbs[1]).toHaveBeenCalledTimes(2);
+        expect(cbs[2]).toHaveBeenCalledTimes(1);
+        expect(cbs[3]).toHaveBeenCalledTimes(1);
+        expect(cbs[4]).toHaveBeenCalledTimes(2);
+      });
     });
   });
 });

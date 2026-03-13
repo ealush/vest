@@ -44,11 +44,11 @@ result.run.focus; // { only: ..., skip: ..., onlyGroup: ..., skipGroup: ... }
 Provides insight into the exact modifiers that were used to focus the current run. This is either populated by calling `.focus(...)` or `.only(...)`/`.skip(...)`.
 
 ```js
-suite.only('username').run().focus;
+suite.only('username').run().run.focus;
 // { only: ['username'] }
 
-suite.focus({ skipGroup: 'groupA' }).run().focus;
-// { skipGroup: 'groupA' }
+suite.focus({ skipGroup: 'groupA' }).run().run.focus;
+// { skipGroup: ['groupA'] }
 ```
 
 ## `isValid`

@@ -13,6 +13,9 @@ import { LazyDraft } from '../suiteResult/selectors/LazyDraft';
 /**
  * Conditionally omits tests from the suite.
  *
+ * When the condition is met, the tests within the callback will be omitted
+ * and will not be executed. The callback itself will also be skipped.
+ *
  * @example
  *
  * omitWhen(res => res.hasErrors('username'), () => {

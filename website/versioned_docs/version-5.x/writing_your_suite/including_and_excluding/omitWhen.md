@@ -99,12 +99,12 @@ omitWhen(
 );
 ```
 
-:::caution IMPORTANT
-The code within omitWhen will always run, regardless of whether the condition is met or not. `omitWhen` only affects the validation result, but if you call a function within `omitWhen`, it will run regardless of the condition.
+:::info IMPORTANT
+The code within `omitWhen` will only run if the condition is not met. If the condition is truthy, `omitWhen` skip calling the callback altogether, and the tests within it will not be executed or registered.
 
 ```js
 omitWhen(true, () => {
-  console.log('This will always run');
+  console.log('This will NOT run');
 });
 ```
 

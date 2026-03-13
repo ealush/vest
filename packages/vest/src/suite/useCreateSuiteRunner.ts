@@ -100,7 +100,7 @@ export function useCreateSuiteRunner<
             runData,
             runTime,
             mergedParsedData,
-            modifiers,
+            snapshotFocus(transformedModifiers),
           );
 
           if (!result.isPending()) {
@@ -214,6 +214,33 @@ function useTransformedModifiers<F extends TFieldName, G extends TGroupName>(
     onlyGroup: new Set(modifiers.onlyGroup ? asArray(modifiers.onlyGroup) : []),
     skipGroup: new Set(modifiers.skipGroup ? asArray(modifiers.skipGroup) : []),
   };
+}
+
+/**
+ * Normalizes internal focus Sets back into the external Array representation
+ * and freezes the structure explicitly for immutability in the results.
+ */
+function snapshotFocus<F extends TFieldName, G extends TGroupName>(
+  modifiers: ReturnType<typeof useTransformedModifiers<F, G>>,
+): SuiteModifiers<F, G> {
+  const result: SuiteModifiers<F, G> = {};
+  if (modifiers.only)
+    result.only = Object.freeze([...asArray(modifiers.only)]) as SuiteModifiers<
+      F,
+      G
+    >['only'];
+  if (modifiers.skip)
+    result.skip = Object.freeze([...asArray(modifiers.skip)]) as SuiteModifiers<
+      F,
+      G
+    >['skip'];
+
+  if (modifiers.onlyGroup.size > 0)
+    result.onlyGroup = Object.freeze([...modifiers.onlyGroup]) as G[];
+  if (modifiers.skipGroup.size > 0)
+    result.skipGroup = Object.freeze([...modifiers.skipGroup]) as G[];
+
+  return Object.freeze(result);
 }
 
 /**

@@ -44,14 +44,14 @@ describe('suite.focus: only', () => {
         const suite = vest.create(() => {});
         const res = suite.focus({ skipGroup: 'groupA' }).run();
 
-        expect(res.run.focus?.skipGroup).toBe('groupA');
+        expect(res.run.focus?.skipGroup).toEqual(['groupA']);
       });
 
       it('should reflect the onlyGroup property when provided', () => {
         const suite = vest.create(() => {});
         const res = suite.focus({ onlyGroup: 'groupB' }).run();
 
-        expect(res.run.focus?.onlyGroup).toBe('groupB');
+        expect(res.run.focus?.onlyGroup).toEqual(['groupB']);
       });
     });
 
@@ -60,7 +60,33 @@ describe('suite.focus: only', () => {
         const suite = vest.create(() => {});
         const res = suite.only('field_3').run();
 
-        expect(res.run.focus?.only).toBe('field_3');
+        expect(res.run.focus?.only).toEqual(['field_3']);
+      });
+
+      it('should reflect a .skip() call deeply within run.focus', () => {
+        const suite = vest.create(() => {});
+
+        // We capture focus via focus({ skip: ... }) because
+        // there's currenty no top-level trailing .skip syntax exposed
+        const res = suite.focus({ skip: 'field_4' }).run();
+
+        expect(res.run.focus?.skip).toEqual(['field_4']);
+      });
+    });
+
+    describe('focus array parameters', () => {
+      it('should reflect the onlyGroup property when an array is provided', () => {
+        const suite = vest.create(() => {});
+        const res = suite.focus({ onlyGroup: ['groupC', 'groupD'] }).run();
+
+        expect(res.run.focus?.onlyGroup).toEqual(['groupC', 'groupD']);
+      });
+
+      it('should reflect the skipGroup property when an array is provided', () => {
+        const suite = vest.create(() => {});
+        const res = suite.focus({ skipGroup: ['groupE', 'groupF'] }).run();
+
+        expect(res.run.focus?.skipGroup).toEqual(['groupE', 'groupF']);
       });
     });
   });

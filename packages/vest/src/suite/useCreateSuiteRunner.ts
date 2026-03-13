@@ -225,33 +225,32 @@ function snapshotFocus<F extends TFieldName, G extends TGroupName>(
 ): SuiteModifiers<F, G> {
   return freezeAssign<SuiteModifiers<F, G>>(
     {},
-    modifiers.only
-      ? {
-          only: Object.freeze([...asArray(modifiers.only)]) as SuiteModifiers<
-            F,
-            G
-          >['only'],
-        }
-      : {},
-    modifiers.skip
-      ? {
-          skip: Object.freeze([...asArray(modifiers.skip)]) as SuiteModifiers<
-            F,
-            G
-          >['skip'],
-        }
-      : {},
-    modifiers.onlyGroup.size > 0
-      ? {
-          onlyGroup: Object.freeze([...modifiers.onlyGroup]) as G[],
-        }
-      : {},
-    modifiers.skipGroup.size > 0
-      ? {
-          skipGroup: Object.freeze([...modifiers.skipGroup]) as G[],
-        }
-      : {},
+    snapshotField(modifiers, 'only'),
+    snapshotField(modifiers, 'skip'),
+    snapshotGroup(modifiers, 'onlyGroup'),
+    snapshotGroup(modifiers, 'skipGroup'),
   );
+}
+
+function snapshotField<F extends TFieldName, G extends TGroupName>(
+  modifiers: ReturnType<typeof useTransformedModifiers<F, G>>,
+  key: 'only' | 'skip',
+): Partial<SuiteModifiers<F, G>> {
+  const original = modifiers[key];
+
+  if (!original) {
+    return {};
+  }
+  const value = asArray(original);
+  return value.length > 0 ? { [key]: Object.freeze([...value]) } : {};
+}
+
+function snapshotGroup<F extends TFieldName, G extends TGroupName>(
+  modifiers: ReturnType<typeof useTransformedModifiers<F, G>>,
+  key: 'onlyGroup' | 'skipGroup',
+): Partial<SuiteModifiers<F, G>> {
+  const value = modifiers[key];
+  return value.size > 0 ? { [key]: Object.freeze([...value]) } : {};
 }
 
 /**

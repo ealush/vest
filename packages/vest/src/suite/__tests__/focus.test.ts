@@ -67,7 +67,7 @@ describe('suite.focus: only', () => {
         const suite = vest.create(() => {});
 
         // We capture focus via focus({ skip: ... }) because
-        // there's currenty no top-level trailing .skip syntax exposed
+        // there's currently no top-level trailing .skip syntax exposed
         const res = suite.focus({ skip: 'field_4' }).run();
 
         expect(res.run.focus?.skip).toEqual(['field_4']);
@@ -100,7 +100,7 @@ describe('suite.focus: only', () => {
         // Second run without focus
         const res2 = suite.run();
 
-        // Should be undefined because the second run had no focus modifiers
+        // Should be an empty object because the second run had no focus modifiers
         expect(res2.run.focus).toEqual({});
       });
 

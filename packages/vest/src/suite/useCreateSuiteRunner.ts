@@ -51,10 +51,10 @@ export function useCreateSuiteRunner<
   S extends TSchema = undefined,
 >(
   suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F>,
+  modifiers: SuiteModifiers<F, G>,
   schema?: S,
 ) {
-  const transformedModifiers = useTransformedModifiers(modifiers);
+  const transformedModifiers = useTransformedModifiers<F, G>(modifiers);
 
   return function runSuite(
     ...args: S extends undefined
@@ -100,6 +100,7 @@ export function useCreateSuiteRunner<
             runData,
             runTime,
             mergedParsedData,
+            modifiers,
           );
 
           if (!result.isPending()) {
@@ -167,7 +168,7 @@ function useRunSuiteCallback<
   D = unknown,
 >(params: {
   args: any[];
-  modifiers: ReturnType<typeof useTransformedModifiers<F>>;
+  modifiers: ReturnType<typeof useTransformedModifiers<F, G>>;
   schema: S | undefined;
   schemaRunResult?: SchemaRunResult[];
   suiteCallback: SuiteCallbackWithSchema<S, T>;
@@ -205,8 +206,8 @@ function useRunSuiteCallback<
 /**
  * Normalizes user-provided modifiers into deterministic sets for O(1) membership checks.
  */
-function useTransformedModifiers<F extends TFieldName>(
-  modifiers: SuiteModifiers<F>,
+function useTransformedModifiers<F extends TFieldName, G extends TGroupName>(
+  modifiers: SuiteModifiers<F, G>,
 ) {
   return {
     ...modifiers,
@@ -461,6 +462,7 @@ function bindSuiteResultMethods<
         raw: runData,
         parsed: suiteResult.run.data.parsed,
       }),
+      focus: suiteResult.run.focus,
       time: runTime,
     }),
     writable: true,

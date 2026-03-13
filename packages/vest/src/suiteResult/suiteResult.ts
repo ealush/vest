@@ -4,6 +4,7 @@ import { VestRuntime } from 'vestjs-runtime';
 
 import { useSuiteResultCache } from '../core/Runtime';
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
+import { SuiteModifiers } from '../suite/SuiteTypes';
 
 import { Severity } from './Severity';
 import {
@@ -28,6 +29,7 @@ export function useCreateSuiteResult<
   inputData?: D,
   runTime: Date = new Date(),
   parsedData?: Partial<InferSchemaOutput<S>>,
+  focus?: SuiteModifiers<F, G>,
 ): SuiteResult<F, G, S, D> {
   return useSuiteResultCache<F, G, S, D>(() => {
     // @vx-allow use-use
@@ -37,6 +39,7 @@ export function useCreateSuiteResult<
         raw: inputData,
         parsed: parsedData,
       },
+      focus,
       time: runTime,
     };
 

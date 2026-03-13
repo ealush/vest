@@ -24,6 +24,47 @@ describe('suite.focus: only', () => {
     });
   });
 
+  describe('run.focus property', () => {
+    describe('focus object parameters', () => {
+      it('should reflect the only property when provided', () => {
+        const suite = vest.create(() => {});
+        const res = suite.focus({ only: ['field_1'] }).run();
+
+        expect(res.run.focus?.only).toEqual(['field_1']);
+      });
+
+      it('should reflect the skip property when provided', () => {
+        const suite = vest.create(() => {});
+        const res = suite.focus({ skip: ['field_2'] }).run();
+
+        expect(res.run.focus?.skip).toEqual(['field_2']);
+      });
+
+      it('should reflect the skipGroup property when provided', () => {
+        const suite = vest.create(() => {});
+        const res = suite.focus({ skipGroup: 'groupA' }).run();
+
+        expect(res.run.focus?.skipGroup).toBe('groupA');
+      });
+
+      it('should reflect the onlyGroup property when provided', () => {
+        const suite = vest.create(() => {});
+        const res = suite.focus({ onlyGroup: 'groupB' }).run();
+
+        expect(res.run.focus?.onlyGroup).toBe('groupB');
+      });
+    });
+
+    describe('focus methods', () => {
+      it('should reflect a .only() call deeply within run.focus', () => {
+        const suite = vest.create(() => {});
+        const res = suite.only('field_3').run();
+
+        expect(res.run.focus?.only).toBe('field_3');
+      });
+    });
+  });
+
   describe('behavior', () => {
     it('should focus on the specified field when a single field is provided', () => {
       const suite = vest.create(() => {

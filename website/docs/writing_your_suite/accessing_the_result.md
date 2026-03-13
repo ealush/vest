@@ -29,6 +29,28 @@ Use this playground to see how the result object properties change as you intera
 
 <AccessingResultSandpack />
 
+## `run`
+
+The `run` object contains metadata about the current suite execution.
+
+```js
+result.run.data; // { raw: ..., parsed: ... }
+result.run.time; // Date object
+result.run.focus; // { only: ..., skip: ..., onlyGroup: ..., skipGroup: ... }
+```
+
+### `run.focus`
+
+Provides insight into the exact modifiers that were used to focus the current run. This is either populated by calling `.focus(...)` or `.only(...)`/`.skip(...)`.
+
+```js
+suite.only('username').run().focus;
+// { only: ['username'] }
+
+suite.focus({ skipGroup: 'groupA' }).run().focus;
+// { skipGroup: 'groupA' }
+```
+
 ## `isValid`
 
 `isValid` returns whether the validation suite as a whole or a single field is valid or not.

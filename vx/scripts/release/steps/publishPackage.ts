@@ -21,12 +21,6 @@ function publishPackage({ tag, tagId, versionToPublish }: PublishData): void {
     throw new Error('Package context is required for publishing.');
   }
 
-  // High-signal logging so CI output clearly shows what we intend to publish.
-  logger.info(`🚀 Publishing package ${packageName}.
-    Version: ${versionToPublish}
-    Tag Id: ${tagId}
-    Tag: ${tag}`);
-
   // Respect branch policy. If publishing is not allowed, exit this step early.
   if (!shouldRelease(versionToPublish)) {
     logger.info(`❌  Not in release branch. Skipping publish.`);
@@ -38,16 +32,26 @@ function publishPackage({ tag, tagId, versionToPublish }: PublishData): void {
   // in scenarios where that would fail.
   const publishTag = pickPublishTag(tag);
 
+  // High-signal logging so CI output clearly shows what we intend to publish.
+  logger.info(`🚀 Publishing package ${packageName}.
+    Version: ${versionToPublish}
+    Tag Id: ${tagId}
+    Publish Tag: ${publishTag}`);
+
   // Build the command in tokenized form so optional parts can be omitted safely.
   const command = genPublishCommand(packageName, publishTag);
 
-  // Configure git and execute publish. Publish execution must fail the release
-  // if it fails, so it is run as a separate command with default failure behavior.
-  execCommandWithGitConfig(command);
-
   // In current flow, ephemeral local tags are created only when a dist-tag exists.
   // Keep that assumption explicit via an intent flag.
-  clearTag({ isEphemeralTag: Boolean(tag), tagId });
+  const isEphemeralTag = Boolean(tag);
+
+  try {
+    // Configure git and execute publish.
+    execCommandWithGitConfig(command);
+  } finally {
+    // Ensure cleanup runs on both success and failure.
+    clearTag({ isEphemeralTag, tagId });
+  }
 }
 
 export default publishPackage;
@@ -88,19 +92,21 @@ function clearTag({
 function execCommandWithGitConfig(command: Array<string | undefined>): void {
   const { EMAIL_ADDRESS, GIT_NAME } = process.env;
 
-  logger.info(
-    `Setting git config:
-    Email "${EMAIL_ADDRESS}"
-    Name "${GIT_NAME}"`,
-  );
+  logger.info('Configuring git identity for release publish.');
 
   // `--replace-all` prevents failures when CI/global git config already has
-  // multiple user.email values.
-  exec(`git config --global --replace-all user.email "${EMAIL_ADDRESS}"`);
-  exec(`git config --global user.name "${GIT_NAME}"`);
+  // multiple values for user identity keys.
+  exec(`git config --global --replace-all user.email "${EMAIL_ADDRESS}"`, {
+    silent: true,
+    throwOnFailure: true,
+  });
+  exec(`git config --global --replace-all user.name "${GIT_NAME}"`, {
+    silent: true,
+    throwOnFailure: true,
+  });
 
-  // Publish runs with default error handling so failures fail CI.
-  exec(joinTruthy(command, ' '));
+  // Publish runs with throwOnFailure so callers can run cleanup in finally.
+  exec(joinTruthy(command, ' '), { throwOnFailure: true });
 }
 
 function genPublishCommand(

@@ -279,4 +279,4 @@ After running your suite, the results object is returned. It has the following f
 - `isValidByGroup(groupName)`: Returns true if a certain group or a field in a group is valid or not.
 - `value`: The parsed schema output when the suite is valid. Typed as the schema's output type. `undefined` when invalid or when no schema is used.
 - `types`: When a schema is present, an object with `input` and `output` properties typed from the schema. `undefined` when no schema is used.
-- `run`: Metadata about the latest run, including `run.data.raw` (current run data), `run.data.parsed` (cumulative parsed data across focused runs), and `run.time` (timestamp).
+- `run`: Metadata about the latest run, including `run.data.raw` (current run data), `run.data.parsed` (parsed data for the current run), and `run.time` (timestamp).

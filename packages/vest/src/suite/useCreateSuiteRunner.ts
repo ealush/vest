@@ -13,7 +13,6 @@ import {
 import { useEmit } from '../core/VestBus/VestBus';
 
 import { SuiteContext } from '../core/context/SuiteContext';
-import { useParsedDataCache } from '../core/Runtime';
 import { IsolateReorderable } from 'vestjs-runtime';
 import { IsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { test } from '../core/test/test';
@@ -70,15 +69,10 @@ export function useCreateSuiteRunner<
       : undefined;
 
     const parsedDataChunk = getParsedDataChunk(schemaRunResult);
-    const [previousParsedData, setParsedData] = useParsedDataCache();
 
-    const mergedParsedData = (
-      schema
-        ? freezeAssign({}, previousParsedData, parsedDataChunk as object)
-        : undefined
+    const parsedData = (
+      schema ? snapshotParsedData(parsedDataChunk) : undefined
     ) as Partial<InferSchemaOutput<S>> | undefined;
-
-    setParsedData(mergedParsedData ?? {});
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
@@ -99,7 +93,7 @@ export function useCreateSuiteRunner<
             callbackInput,
             runData,
             runTime,
-            mergedParsedData,
+            parsedData,
             snapshotFocus(transformedModifiers),
           );
 
@@ -140,6 +134,20 @@ function getParsedDataChunk(
 
   const [firstResult] = schemaRunResult;
   return firstResult?.type ?? {};
+}
+
+/**
+ * Creates a defensive snapshot of the parsed data to prevent mutations
+ * in the suite callback from affecting the result object.
+ */
+function snapshotParsedData(data: unknown): unknown {
+  if (isArray(data)) {
+    return Object.freeze([...(data as unknown[])]);
+  }
+  if (isObject(data)) {
+    return freezeAssign({}, data as object);
+  }
+  return data;
 }
 
 /**

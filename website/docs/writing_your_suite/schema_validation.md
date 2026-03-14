@@ -172,7 +172,7 @@ The suite result includes typed properties for accessing validated and parsed da
 - `result.types.input` — Carries the schema's input type for static analysis. At runtime, holds the parsed output value.
 - `result.types.output` — Carries the schema's output type. At runtime, holds the parsed output value.
 - `result.run.data.raw` — The current run data passed into the suite callback (parsed when schema validation succeeds; original input when it fails).
-- `result.run.data.parsed` — Cumulatively merged parsed data across focused runs.
+- `result.run.data.parsed` — Parsed data for the current run.
 
 ```typescript
 const schema = enforce.shape({

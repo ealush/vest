@@ -360,6 +360,23 @@ describe('Schema Runtime Validation', () => {
     });
   });
 
+  describe('Mutation resilience', () => {
+    it('should freeze parsed data snapshot so callback mutations do not affect run metadata', () => {
+      const schema = enforce.shape({
+        score: enforce.isNumeric().toNumber(),
+      });
+
+      const suite = create(data => {
+        // Maliciously mutate the input
+        data.score = 500;
+      }, schema);
+
+      const result = suite.run({ score: '42' });
+
+      expect(result.run.data.parsed).toEqual({ score: 42 });
+    });
+  });
+
   describe('Stateful behavior', () => {
     it('should run schema validation dynamically based on focus per execution', () => {
       const schema = enforce.shape({

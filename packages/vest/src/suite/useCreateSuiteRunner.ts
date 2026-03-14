@@ -70,9 +70,9 @@ export function useCreateSuiteRunner<
 
     const parsedDataChunk = getParsedDataChunk(schemaRunResult);
 
-    const parsedData = (schema ? parsedDataChunk : undefined) as
-      | Partial<InferSchemaOutput<S>>
-      | undefined;
+    const parsedData = (
+      schema ? snapshotParsedData(parsedDataChunk) : undefined
+    ) as Partial<InferSchemaOutput<S>> | undefined;
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
@@ -134,6 +134,20 @@ function getParsedDataChunk(
 
   const [firstResult] = schemaRunResult;
   return firstResult?.type ?? {};
+}
+
+/**
+ * Creates a defensive snapshot of the parsed data to prevent mutations
+ * in the suite callback from affecting the result object.
+ */
+function snapshotParsedData(data: unknown): unknown {
+  if (isArray(data)) {
+    return Object.freeze([...(data as unknown[])]);
+  }
+  if (isObject(data)) {
+    return freezeAssign({}, data as object);
+  }
+  return data;
 }
 
 /**

@@ -1,13 +1,22 @@
 import { lengthEquals } from './lengthEquals';
 import { longerThan } from './longerThan';
 import { DynamicValue, Nullable } from './utilityTypes';
-import { dynamicValue } from './vest-utils';
+import { dynamicValue, isNullish, isObject } from './vest-utils';
+
+export type CacheConfig = {
+  maxSize?: number;
+  ttl?: number;
+};
 
 /**
  * Creates a cache function
  */
-export default function createCache<T = unknown>(maxSize = 1): CacheApi<T> {
-  const cacheStorage: Array<[unknown[], T]> = [];
+export default function createCache<T = unknown>(
+  maxSizeOrConfig?: number | CacheConfig,
+): CacheApi<T> {
+  const { maxSize, ttl } = getCacheConfig(maxSizeOrConfig);
+
+  const cacheStorage: Array<[unknown[], T, number]> = [];
 
   const cache = (deps: unknown[], cacheAction: DynamicValue<T>): T => {
     const cacheHit = cache.get(deps);
@@ -15,7 +24,7 @@ export default function createCache<T = unknown>(maxSize = 1): CacheApi<T> {
     if (cacheHit) return cacheHit[1];
 
     const result = dynamicValue(cacheAction);
-    cacheStorage.unshift([deps.concat(), result]);
+    cacheStorage.unshift([deps.concat(), result, Date.now()]);
 
     trimToSize();
 
@@ -29,16 +38,27 @@ export default function createCache<T = unknown>(maxSize = 1): CacheApi<T> {
   };
 
   // Retrieves an item from the cache.
-  cache.get = (deps: unknown[]): Nullable<[unknown[], T]> =>
-    cacheStorage[findIndex(deps)] || null;
+  cache.get = (deps: unknown[]): Nullable<[unknown[], T]> => {
+    const index = findIndex(deps);
+    const item = cacheStorage[index];
+
+    if (!item) return null;
+
+    if (!isNullish(ttl) && Date.now() - item[2] > ttl) {
+      cacheStorage.splice(index, 1);
+      return null;
+    }
+
+    return [item[0], item[1]];
+  };
 
   // sets a value to the cache by its dependencies, updating if a hit is found.
   cache.set = (deps: unknown[], value: T): void => {
     const index = findIndex(deps);
     if (index > -1) {
-      cacheStorage[index] = [deps, value];
+      cacheStorage[index] = [deps, value, Date.now()];
     } else {
-      cacheStorage.unshift([deps, value]);
+      cacheStorage.unshift([deps, value, Date.now()]);
     }
     trimToSize();
   };
@@ -66,3 +86,15 @@ export type CacheApi<T = unknown> = {
   set(deps: unknown[], value: T): void;
   invalidate(item: any): void;
 };
+
+function getCacheConfig(
+  maxSizeOrConfig?: number | CacheConfig,
+): Required<Pick<CacheConfig, 'maxSize'>> & Pick<CacheConfig, 'ttl'> {
+  const config = isObject(maxSizeOrConfig)
+    ? maxSizeOrConfig
+    : { maxSize: maxSizeOrConfig as number | undefined };
+  return {
+    maxSize: config.maxSize ?? 1,
+    ttl: config.ttl,
+  };
+}

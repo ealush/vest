@@ -169,9 +169,13 @@ Extends Vest's enforce with custom validation rules.
 
 - **Tip**: To add TypeScript support for your custom rules, see [TypeScript Support](./typescript_support.md#custom-enforce-rules).
 
-#### `memo(callback, deps)`
+#### `memo(callback, deps, options?)`
 
 Memoizes a block of tests.
+
+- `callback`: The function to execute if dependencies change.
+- `deps`: Array of dependencies determining if the callback executes.
+- `options` (Optional): Configuration object with `cacheSize` (max cached results) and `ttl` (Time-to-Live in ms).
 
 - [Read more about `memo`](./writing_tests/advanced_test_features/memo.md)
 

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import { cache } from '../vest-utils';
 
@@ -80,6 +80,64 @@ describe('lib: cache', () => {
       });
     });
   });
+
+  describe('Configuration Options', () => {
+    it('Should allow setting maxSize through a config object', () => {
+      const c = cache({ maxSize: 2 });
+      const cb = vi.fn(() => Math.random());
+
+      c([1], cb);
+      c([2], cb);
+      c([3], cb);
+
+      expect(c.get([1])).toBeNull();
+      expect(c.get([2])?.[0]).toEqual([2]);
+      expect(c.get([3])?.[0]).toEqual([3]);
+    });
+
+    describe('ttl', () => {
+      beforeEach(() => {
+        vi.useFakeTimers();
+        vi.setSystemTime(1000);
+      });
+
+      afterEach(() => {
+        vi.useRealTimers();
+      });
+
+      it('Should retain cache item if ttl has not passed', () => {
+        const c = cache({ ttl: 50 });
+        const cb = vi.fn(() => Math.random());
+        c([1], cb);
+
+        vi.setSystemTime(1040); // 40ms later, inside 50ms ttl
+        c([1], cb);
+        expect(cb).toHaveBeenCalledTimes(1);
+        expect(c.get([1])).not.toBeNull();
+      });
+
+      it('Should evict cache item if ttl has passed', () => {
+        const c = cache({ ttl: 50 });
+        const cb = vi.fn(() => Math.random());
+        c([1], cb);
+
+        vi.setSystemTime(1060); // 60ms later, exceeded 50ms ttl
+        c([1], cb);
+
+        expect(cb).toHaveBeenCalledTimes(2);
+      });
+
+      it('get() should return null and evict from storage if ttl has passed', () => {
+        const c = cache({ ttl: 50 });
+        const cb = vi.fn(() => Math.random());
+        c([1], cb);
+
+        vi.setSystemTime(1060);
+        expect(c.get([1])).toBeNull();
+      });
+    });
+  });
+
   it('Should take into account the deps array in its entirety', () => {
     const deps = Array.from({ length: 100 }, () =>
       _.sample([{}, false, Math.random(), true, () => null]),

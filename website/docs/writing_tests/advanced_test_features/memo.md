@@ -57,6 +57,32 @@ memo(() => {
 }, [data.shipping_address]);
 ```
 
+## Advanced Configuration
+
+`memo` accepts an optional third parameter: an options object to further control caching behavior.
+
+```javascript
+memo(
+  () => {
+    test('username', 'Username is taken', async () => {
+      await checkAvailability(data.username);
+    });
+  },
+  [data.username],
+  {
+    cacheSize: 5, // Keep up to 5 previous results
+    ttl: 10000, // Invalidate cache after 10 seconds
+  },
+);
+```
+
+### Options
+
+| Option      | Type     | Default     | Description                                                                                                                                    |
+| :---------- | :------- | :---------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cacheSize` | `number` | `5`         | The maximum number of previous memo results to retain in the cache. When the limit is reached, the oldest result is evicted.                   |
+| `ttl`       | `number` | `undefined` | Time-to-Live in milliseconds. If the cached result is older than the `ttl`, the cache will be invalidated and the test blocked will be re-run. |
+
 ## How it works
 
 1.  Vest checks the dependency array passed as the second argument.

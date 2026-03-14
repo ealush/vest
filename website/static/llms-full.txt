@@ -234,7 +234,7 @@ After running your suite, the results object is returned. It has the following f
 - `isValidByGroup(groupName)`: Returns true if a certain group or a field in a group is valid or not.
 - `value`: The parsed schema output when the suite is valid. Typed as the schema's output type. `undefined` when invalid or when no schema is used.
 - `types`: When a schema is present, an object with `input` and `output` properties typed from the schema. `undefined` when no schema is used.
-- `run`: Metadata about the latest run, including `run.data.raw` (current run data), `run.data.parsed` (cumulative parsed data across focused runs), and `run.time` (timestamp).
+- `run`: Metadata about the latest run, including `run.data.raw` (current run data), `run.data.parsed` (parsed data for the current run), and `run.time` (timestamp).
 
 
 # community_resources/integrations.md
@@ -5977,6 +5977,28 @@ Use this playground to see how the result object properties change as you intera
 
 <AccessingResultSandpack />
 
+## `run`
+
+The `run` object contains metadata about the current suite execution.
+
+```js
+result.run.data; // { raw: ..., parsed: ... }
+result.run.time; // Date object
+result.run.focus; // { only: ..., skip: ..., onlyGroup: ..., skipGroup: ... }
+```
+
+### `run.focus`
+
+Provides insight into the exact modifiers that were used to focus the current run. This is either populated by calling `.focus(...)` or `.only(...)`/`.skip(...)`.
+
+```js
+suite.only('username').run().run.focus;
+// { only: ['username'] }
+
+suite.focus({ skipGroup: 'groupA' }).run().run.focus;
+// { skipGroup: ['groupA'] }
+```
+
 ## `isValid`
 
 `isValid` returns whether the validation suite as a whole or a single field is valid or not.
@@ -7127,12 +7149,12 @@ omitWhen(
 );
 ```
 
-:::caution IMPORTANT
-The code within omitWhen will always run, regardless of whether the condition is met or not. `omitWhen` only affects the validation result, but if you call a function within `omitWhen`, it will run regardless of the condition.
+:::info IMPORTANT
+The code within `omitWhen` will only run if the condition is not met. If the condition is truthy, `omitWhen` skip calling the callback altogether, and the tests within it will not be executed or registered.
 
 ```js
 omitWhen(true, () => {
-  console.log('This will always run');
+  console.log('This will NOT run');
 });
 ```
 
@@ -7763,7 +7785,7 @@ The suite result includes typed properties for accessing validated and parsed da
 - `result.types.input` — Carries the schema's input type for static analysis. At runtime, holds the parsed output value.
 - `result.types.output` — Carries the schema's output type. At runtime, holds the parsed output value.
 - `result.run.data.raw` — The current run data passed into the suite callback (parsed when schema validation succeeds; original input when it fails).
-- `result.run.data.parsed` — Cumulatively merged parsed data across focused runs.
+- `result.run.data.parsed` — Parsed data for the current run.
 
 ```typescript
 const schema = enforce.shape({

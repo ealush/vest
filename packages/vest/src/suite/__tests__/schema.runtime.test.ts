@@ -374,6 +374,7 @@ describe('Schema Runtime Validation', () => {
       const result = suite.run({ score: '42' });
 
       expect(result.run.data.parsed).toEqual({ score: 42 });
+      expect(Object.isFrozen(result.run.data.parsed)).toBe(true);
     });
   });
 

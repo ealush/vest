@@ -173,6 +173,10 @@ Extends Vest's enforce with custom validation rules.
 
 Memoizes a block of tests.
 
+- `callback`: The function to execute if dependencies change.
+- `deps`: Array of dependencies determining if the callback executes.
+- `options` (Optional): Configuration object with `cacheSize` (max cached results) and `ttl` (Time-to-Live in ms).
+
 - [Read more about `memo`](./writing_tests/advanced_test_features/memo.md)
 
 #### `compose(...rules)`

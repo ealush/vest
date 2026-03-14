@@ -64,7 +64,7 @@ create(data => {
 
 + memo(() => {
 +   test('field', 'msg', () => { ... });
-+ }, [data.field]);
++ }, [data.field], { cacheSize: 5 });
 });
 ```
 
@@ -141,7 +141,7 @@ I am migrating my Vest validation suites from version 5 to version 6. Please ref
     - Remove `.done()` callbacks. Use `await suite.afterField('fieldName', callback)` or `suite.afterEach(callback)`.
 
 4.  **Memoization**:
-    - Change `test.memo(...)` to `memo(() => { test(...) }, deps)`.
+    - Change `test.memo(...)` to `memo(() => { test(...) }, deps, options?)`.
     - Ensure `memo` is imported from 'vest/memo': `import { memo } from 'vest/memo';`.
 
 5.  **Field-Focused Validation**:

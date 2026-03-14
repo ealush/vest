@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "context": "^4.0.3",
-    "n4s": "^6.0.3",
+    "n4s": "^6.1.1",
     "vast": "^2.0.3",
     "vest-utils": "^2.0.3",
     "vestjs-runtime": "^2.0.3"

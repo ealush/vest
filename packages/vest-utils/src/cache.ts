@@ -1,7 +1,7 @@
 import { lengthEquals } from './lengthEquals';
 import { longerThan } from './longerThan';
 import { DynamicValue, Nullable } from './utilityTypes';
-import { dynamicValue } from './vest-utils';
+import { dynamicValue, isNullish, isObject } from './vest-utils';
 
 export type CacheConfig = {
   maxSize?: number;
@@ -44,7 +44,7 @@ export default function createCache<T = unknown>(
 
     if (!item) return null;
 
-    if (ttl !== undefined && Date.now() - item[2] > ttl) {
+    if (!isNullish(ttl) && Date.now() - item[2] > ttl) {
       cacheStorage.splice(index, 1);
       return null;
     }
@@ -90,10 +90,9 @@ export type CacheApi<T = unknown> = {
 function getCacheConfig(
   maxSizeOrConfig?: number | CacheConfig,
 ): Required<Pick<CacheConfig, 'maxSize'>> & Pick<CacheConfig, 'ttl'> {
-  const config =
-    typeof maxSizeOrConfig === 'object' && maxSizeOrConfig !== null
-      ? maxSizeOrConfig
-      : { maxSize: maxSizeOrConfig as number | undefined };
+  const config = isObject(maxSizeOrConfig)
+    ? maxSizeOrConfig
+    : { maxSize: maxSizeOrConfig as number | undefined };
   return {
     maxSize: config.maxSize ?? 1,
     ttl: config.ttl,

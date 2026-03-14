@@ -1,6 +1,6 @@
 {
   "name": "vest",
-  "version": "6.1.1",
+  "version": "6.1.2",
   "description": "Declarative Form Validations Framework",
   "license": "MIT",
   "author": "ealush",
@@ -39,11 +39,11 @@
     "bench": "vitest bench --run --config ./vitest.config.ts"
   },
   "dependencies": {
-    "context": "^4.0.4",
-    "n4s": "^6.1.1",
-    "vast": "^2.0.4",
-    "vest-utils": "^2.0.4",
-    "vestjs-runtime": "^2.0.4"
+    "context": "^4.0.5",
+    "n4s": "^6.1.2",
+    "vast": "^2.0.5",
+    "vest-utils": "^2.0.5",
+    "vestjs-runtime": "^2.0.5"
   },
   "devDependencies": {
     "vitest": "^4.0.18"

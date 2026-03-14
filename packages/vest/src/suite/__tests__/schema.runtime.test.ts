@@ -366,13 +366,17 @@ describe('Schema Runtime Validation', () => {
         score: enforce.isNumeric().toNumber(),
       });
 
+      let callbackRan = false;
+
       const suite = create(data => {
+        callbackRan = true;
         // Maliciously mutate the input
         data.score = 500;
       }, schema);
 
       const result = suite.run({ score: '42' });
 
+      expect(callbackRan).toBe(true);
       expect(result.run.data.parsed).toEqual({ score: 42 });
       expect(Object.isFrozen(result.run.data.parsed)).toBe(true);
     });

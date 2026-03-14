@@ -3,7 +3,7 @@
   "license": "MIT",
   "main": "./dist/anyone.cjs",
   "types": "./types/anyone.d.cts",
-  "version": "2.0.5",
+  "version": "2.0.7",
   "author": "ealush",
   "scripts": {
     "test": "vx test",
@@ -11,7 +11,7 @@
     "release": "vx release"
   },
   "dependencies": {
-    "vest-utils": "^2.0.5"
+    "vest-utils": "^2.0.7"
   },
   "module": "./dist/anyone.mjs",
   "repository": {

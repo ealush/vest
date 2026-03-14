@@ -89,7 +89,7 @@ describe('suite result run summary metadata', () => {
       });
     });
 
-    it('should cumulatively merge parsed data over successive focused runs with parsers', () => {
+    it('should return isolated parsed data over successive focused runs with parsers', () => {
       const schema = enforce.shape({
         firstName: enforce.isString().trim().toUpper(),
         lastName: enforce.isString().trim(),
@@ -115,11 +115,8 @@ describe('suite result run summary metadata', () => {
       // raw is ONLY the current run's transformed value
       expect(res2.run.data.raw).toEqual({ lastName: 'doe' });
 
-      // parsed cumulatively merges: firstName from Run 1 is retained as 'JOHN'
-      expect(res2.run.data.parsed).toEqual({
-        firstName: 'JOHN',
-        lastName: 'doe',
-      });
+      // parsed only holds the new transformed value
+      expect(res2.run.data.parsed).toEqual({ lastName: 'doe' });
     });
 
     it('should overwrite previously parsed values with new transformed values on subsequent runs', () => {
@@ -136,15 +133,15 @@ describe('suite result run summary metadata', () => {
 
       // Run 2: focus on score only, update it
       const res2 = suite.focus({ only: 'score' }).run({ score: '99' });
-      // parsed retains the previous label and updates score
-      expect(res2.run.data.parsed).toEqual({ score: 99, label: 'HELLO' });
+      // parsed only contains score
+      expect(res2.run.data.parsed).toEqual({ score: 99 });
 
       // Run 3: update both again
       const res3 = suite.run({ score: '7', label: '  world  ' });
       expect(res3.run.data.parsed).toEqual({ score: 7, label: 'WORLD' });
     });
 
-    it('should retain parsed values from previous runs even when current run fails schema validation', () => {
+    it('should not retain parsed values from previous runs when current run fails schema validation', () => {
       const schema = enforce.shape({
         age: enforce.isNumber(),
         name: enforce.isString().trim().toUpper(),
@@ -163,8 +160,8 @@ describe('suite result run summary metadata', () => {
 
       // raw is the failing input
       expect(res2.run.data.raw).toEqual(payload);
-      // parsed retains the previous valid 'name' since the current chunk failed
-      expect(res2.run.data.parsed).toEqual({ name: 'VALID' });
+      // parsed is empty since the current chunk failed
+      expect(res2.run.data.parsed).toEqual({});
     });
 
     it('should prove parsed values are transformed types (number vs string) that persist across runs', () => {
@@ -182,11 +179,7 @@ describe('suite result run summary metadata', () => {
 
       // Run 2: focus on tag
       const res2 = suite.focus({ only: 'tag' }).run({ tag: '  trimmed  ' });
-      expect(res2.run.data.parsed).toEqual({ count: 10, tag: 'trimmed' });
-
-      // Verify the count from Run 1 is still a number, not reverted to string
-      expect(typeof res2.run.data.parsed?.count).toBe('number');
-      expect(res2.run.data.parsed?.count).toBe(10);
+      expect(res2.run.data.parsed).toEqual({ tag: 'trimmed' });
     });
   });
 });

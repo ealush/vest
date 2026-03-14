@@ -328,7 +328,7 @@ describe('Schema Runtime Validation', () => {
       expect(result.run.data.parsed?.name).toBe('BOB');
     });
 
-    it('should cumulatively assign parsed data across focused suite runs using enforce parsers', () => {
+    it('should assign isolated parsed data across focused suite runs using enforce parsers', () => {
       const schema = enforce.shape({
         username: enforce.isString().trim().toLower(),
         score: enforce.isNumeric().toNumber(),
@@ -350,13 +350,13 @@ describe('Schema Runtime Validation', () => {
       // raw is ONLY the current run's transformed value
       expect(res2.run.data.raw).toEqual({ score: 99 });
 
-      // parsed cumulatively merges: username from Run 1 is still 'alice' (trimmed + lowercased)
-      expect(res2.run.data.parsed).toEqual({ username: 'alice', score: 99 });
+      // parsed only contains the score
+      expect(res2.run.data.parsed).toEqual({ score: 99 });
 
       // Prove type persistence: score is number, not string
       expect(typeof res2.run.data.parsed?.score).toBe('number');
-      // And username from Run 1 is still present as 'alice'
-      expect(res2.run.data.parsed?.username).toBe('alice');
+
+      expect(res2.run.data.parsed?.username).toBeUndefined();
     });
   });
 
@@ -679,7 +679,7 @@ describe('Schema input vs output type inference', () => {
       expect(result.hasErrors('score')).toBe(false);
     });
 
-    it('should cumulatively merge parsed values across focused runs', () => {
+    it('should isolate parsed values across focused runs', () => {
       const schema = enforce.shape({
         a: enforce.isString().trim(),
         b: enforce.isNumeric().toNumber(),
@@ -698,7 +698,7 @@ describe('Schema input vs output type inference', () => {
       expect(r1.run.data.parsed).toEqual({ a: 'x' });
 
       const r2 = suite.focus({ only: 'b' }).run({ b: '7' });
-      expect(r2.run.data.parsed).toEqual({ a: 'x', b: 7 });
+      expect(r2.run.data.parsed).toEqual({ b: 7 });
     });
   });
 

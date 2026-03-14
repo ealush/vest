@@ -13,7 +13,6 @@ import {
 import { useEmit } from '../core/VestBus/VestBus';
 
 import { SuiteContext } from '../core/context/SuiteContext';
-import { useParsedDataCache } from '../core/Runtime';
 import { IsolateReorderable } from 'vestjs-runtime';
 import { IsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { test } from '../core/test/test';
@@ -70,15 +69,10 @@ export function useCreateSuiteRunner<
       : undefined;
 
     const parsedDataChunk = getParsedDataChunk(schemaRunResult);
-    const [previousParsedData, setParsedData] = useParsedDataCache();
 
-    const mergedParsedData = (
-      schema
-        ? freezeAssign({}, previousParsedData, parsedDataChunk as object)
-        : undefined
-    ) as Partial<InferSchemaOutput<S>> | undefined;
-
-    setParsedData(mergedParsedData ?? {});
+    const parsedData = (schema ? parsedDataChunk : undefined) as
+      | Partial<InferSchemaOutput<S>>
+      | undefined;
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
@@ -99,7 +93,7 @@ export function useCreateSuiteRunner<
             callbackInput,
             runData,
             runTime,
-            mergedParsedData,
+            parsedData,
             snapshotFocus(transformedModifiers),
           );
 

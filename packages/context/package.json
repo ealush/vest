@@ -1,5 +1,5 @@
 {
-  "version": "4.0.11",
+  "version": "4.0.13",
   "license": "MIT",
   "main": "./dist/context.cjs",
   "types": "./types/context.d.cts",
@@ -11,7 +11,7 @@
     "release": "vx release"
   },
   "dependencies": {
-    "vest-utils": "^2.0.11"
+    "vest-utils": "^2.0.13"
   },
   "module": "./dist/context.mjs",
   "repository": {

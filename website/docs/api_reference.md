@@ -169,7 +169,7 @@ Extends Vest's enforce with custom validation rules.
 
 - **Tip**: To add TypeScript support for your custom rules, see [TypeScript Support](./typescript_support.md#custom-enforce-rules).
 
-#### `memo(callback, deps)`
+#### `memo(callback, deps, options?)`
 
 Memoizes a block of tests.
 
